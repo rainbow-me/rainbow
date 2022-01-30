@@ -16,7 +16,7 @@ import {
   UNIQUE_TOKENS_LIMIT_TOTAL,
 } from '@rainbow-me/handlers/opensea-api';
 import { fetchPoaps } from '@rainbow-me/handlers/poap';
-import NetworkTypes from '@rainbow-me/networkTypes';
+import { Network } from '@rainbow-me/helpers/networkTypes';
 import { dedupeAssetsWithFamilies, getFamilies } from '@rainbow-me/parsers';
 
 // -- Constants ------------------------------------------------------------- //
@@ -168,11 +168,6 @@ interface UniqueTokensClearStateShowcaseAction {
 }
 
 /**
- * An ID for a timeout used when fetching pages of tokens.
- */
-let uniqueTokensHandle: null | ReturnType<typeof setTimeout> = null;
-
-/**
  * Loads unique tokens from local storage and updates state.
  */
 export const uniqueTokensLoadState = () => async (
@@ -198,7 +193,6 @@ export const uniqueTokensLoadState = () => async (
 export const uniqueTokensResetState = () => (
   dispatch: Dispatch<UniqueTokensClearStateAction>
 ) => {
-  uniqueTokensHandle && clearTimeout(uniqueTokensHandle);
   dispatch({ type: UNIQUE_TOKENS_CLEAR_STATE });
 };
 
@@ -213,7 +207,7 @@ export const uniqueTokensRefreshState = () => async (
   const { network } = getState().settings;
 
   // Currently not supported in testnets
-  if (network !== NetworkTypes.mainnet && network !== NetworkTypes.rinkeby) {
+  if (network !== Network.mainnet && network !== Network.rinkeby) {
     return;
   }
 
@@ -244,58 +238,58 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
       type: UNIQUE_TOKENS_CLEAR_STATE_SHOWCASE,
     });
   }
-  const { network } = getState().settings;
+  const { network: currentNetwork } = getState().settings;
   const accountAddress = showcaseAddress || getState().settings.accountAddress;
   const { accountAssetsData } = getState().data;
   const { uniqueTokens: existingUniqueTokens } = getState().uniqueTokens;
   const shouldUpdateInBatches = isEmpty(existingUniqueTokens);
-
-  let shouldStopFetching = false;
-  let page = 0;
   let uniqueTokens: UniqueAsset[] = [];
 
-  const fetchPage = async () => {
+  const fetchNetwork = async (network: Network) => {
+    let shouldStopFetching = false;
+    let page = 0;
+    while (!shouldStopFetching) {
+      shouldStopFetching = await fetchPage(page, network);
+      // check that the account address to fetch for has not changed while fetching
+      const isCurrentAccountAddress =
+        accountAddress ===
+        (showcaseAddress || getState().settings.accountAddress);
+      if (!isCurrentAccountAddress) {
+        shouldStopFetching = true;
+      }
+
+      page++;
+    }
+  };
+
+  const fetchPage = async (page: number, network: Network) => {
+    let shouldStopFetching = false;
     try {
       const newPageResults = await apiGetAccountUniqueTokens(
         network,
         accountAddress,
         page
       );
-
-      // check that the account address to fetch for has not changed
-      const currentAccountAddress =
-        showcaseAddress || getState().settings.accountAddress;
-      if (currentAccountAddress !== accountAddress) return;
-
       uniqueTokens = concat(uniqueTokens, newPageResults);
       shouldStopFetching =
         newPageResults.length < UNIQUE_TOKENS_LIMIT_PER_PAGE ||
         uniqueTokens.length >= UNIQUE_TOKENS_LIMIT_TOTAL;
-      page += 1;
 
       if (shouldUpdateInBatches) {
-        dispatch({
-          payload: uniqueTokens,
-          showcase: !!showcaseAddress,
-          type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,
-        });
-      }
-      if (shouldStopFetching) {
-        const poaps = (await fetchPoaps(accountAddress)) ?? [];
-        if (poaps.length > 0) {
-          uniqueTokens = uniqueTokens.filter(
-            token => token.familyName !== 'POAP'
-          );
-          uniqueTokens = concat(uniqueTokens, poaps);
-        }
+        // check that the account address to fetch for has not changed while fetching
 
-        if (!shouldUpdateInBatches) {
+        const isCurrentAccountAddress =
+          accountAddress ===
+          (showcaseAddress || getState().settings.accountAddress);
+        if (isCurrentAccountAddress) {
           dispatch({
             payload: uniqueTokens,
             showcase: !!showcaseAddress,
             type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,
           });
         }
+      }
+      if (shouldStopFetching) {
         const existingFamilies = getFamilies(existingUniqueTokens);
         const newFamilies = getFamilies(uniqueTokens);
         const incomingFamilies = without(newFamilies, ...existingFamilies);
@@ -306,12 +300,6 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
           );
           dispatch(dataUpdateAssets(dedupedAssets));
         }
-        if (!showcaseAddress) {
-          analytics.identify(null, { NFTs: uniqueTokens.length });
-          saveUniqueTokens(uniqueTokens, accountAddress, network);
-        }
-      } else {
-        uniqueTokensHandle = setTimeout(fetchPage, 200);
       }
     } catch (error) {
       dispatch({
@@ -319,10 +307,39 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
         type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE,
       });
       captureException(error);
+      // stop fetching if there is an error
+      shouldStopFetching = true;
     }
+    return shouldStopFetching;
   };
 
-  fetchPage();
+  await fetchNetwork(currentNetwork);
+  // Only include poaps and L2 nft's on mainnet
+  if (currentNetwork === Network.mainnet) {
+    const poaps = (await fetchPoaps(accountAddress)) ?? [];
+    if (poaps.length > 0) {
+      uniqueTokens = uniqueTokens.filter(token => token.familyName !== 'POAP');
+      uniqueTokens = concat(uniqueTokens, poaps);
+    }
+    await fetchNetwork(Network.polygon);
+    //we only care about analytics for mainnet + L2's
+    analytics.identify(null, { NFTs: uniqueTokens.length });
+  }
+
+  // NFT Fetching clean up
+  // check that the account address to fetch for has not changed while fetching before updating state
+  const isCurrentAccountAddress =
+    accountAddress === (showcaseAddress || getState().settings.accountAddress);
+  if (!showcaseAddress && isCurrentAccountAddress) {
+    saveUniqueTokens(uniqueTokens, accountAddress, currentNetwork);
+  }
+  if (!shouldUpdateInBatches && isCurrentAccountAddress) {
+    dispatch({
+      payload: uniqueTokens,
+      showcase: !!showcaseAddress,
+      type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,
+    });
+  }
 };
 
 // -- Reducer --------------------------------------------------------------- //

@@ -1,4 +1,4 @@
-import { toLower } from 'lodash';
+import { startCase, toLower } from 'lodash';
 import React, { useCallback } from 'react';
 import { Linking } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
@@ -20,6 +20,7 @@ import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
 import { padding, position } from '@rainbow-me/styles';
 import {
   buildRainbowUrl,
+  ethereumUtils,
   magicMemo,
   showActionSheetWithOptions,
 } from '@rainbow-me/utils';
@@ -31,7 +32,7 @@ const AssetActionsEnum = {
   rainbowWeb: 'rainbowWeb',
 };
 
-const AssetActions = {
+const getAssetActions = network => ({
   [AssetActionsEnum.copyTokenID]: {
     actionKey: AssetActionsEnum.copyTokenID,
     actionTitle: 'Copy Token ID',
@@ -50,7 +51,9 @@ const AssetActions = {
   },
   [AssetActionsEnum.etherscan]: {
     actionKey: AssetActionsEnum.etherscan,
-    actionTitle: 'View on Etherscan',
+    actionTitle: `View on ${startCase(
+      ethereumUtils.getBlockExplorer(network)
+    )}`,
     icon: {
       iconType: 'SYSTEM',
       iconValue: 'link',
@@ -64,7 +67,7 @@ const AssetActions = {
       iconValue: 'safari.fill',
     },
   },
-};
+});
 
 const FamilyActionsEnum = {
   collectionWebsite: 'collectionWebsite',
@@ -199,6 +202,7 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
 
   const isPhotoDownloadAvailable = !isSVG && !isENS;
   const assetMenuConfig = useMemo(() => {
+    const AssetActions = getAssetActions(asset?.network);
     return {
       menuItems: [
         {
@@ -223,7 +227,7 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
       ],
       menuTitle: '',
     };
-  }, [asset.id, isPhotoDownloadAvailable]);
+  }, [asset.id, asset?.network, isPhotoDownloadAvailable]);
 
   const handlePressFamilyMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
@@ -249,11 +253,10 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
   const handlePressAssetMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === AssetActionsEnum.etherscan) {
-        Linking.openURL(
-          'https://etherscan.io/token/' +
-            asset.asset_contract.address +
-            '?a=' +
-            asset.id
+        ethereumUtils.openNftInBlockExplorer(
+          asset.asset_contract.address,
+          asset.id,
+          asset?.network
         );
       } else if (actionKey === AssetActionsEnum.rainbowWeb) {
         Linking.openURL(buildRainbowUrl(asset, accountENS, accountAddress));
