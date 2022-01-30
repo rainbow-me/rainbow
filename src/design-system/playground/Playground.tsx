@@ -64,11 +64,17 @@ const styles = StyleSheet.create({
   },
 });
 
-const CodePreview = ({ Example }: { Example: Example['Example'] }) => {
+const CodePreview = ({
+  wrapper = children => children,
+  Example,
+}: {
+  wrapper: Example['wrapper'];
+  Example: Example['Example'];
+}) => {
   const { element } = React.useMemo(() => getSourceFromExample({ Example }), [
     Example,
   ]);
-  return <>{element}</>;
+  return <>{wrapper(element)}</>;
 };
 
 const DocsRow = ({ meta, examples }: Docs) => {
@@ -87,7 +93,7 @@ const DocsRow = ({ meta, examples }: Docs) => {
         </Inline>
       </TouchableOpacity>
       {open
-        ? examples?.map(({ name, Example }, index) =>
+        ? examples?.map(({ name, Example, wrapper }, index) =>
             Example ? (
               <Stack key={index} space="12px">
                 <Heading size="18px" weight="bold">
@@ -100,7 +106,7 @@ const DocsRow = ({ meta, examples }: Docs) => {
                       : undefined
                   }
                 >
-                  <CodePreview Example={Example} />
+                  <CodePreview Example={Example} wrapper={wrapper} />
                 </View>
               </Stack>
             ) : null

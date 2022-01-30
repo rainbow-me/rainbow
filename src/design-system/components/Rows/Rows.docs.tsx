@@ -34,7 +34,7 @@ const docs: DocsType = {
             <Docs.Code>height</Docs.Code> prop.
           </Docs.Text>
           <Docs.Text>
-            A common usage of this is to make a row shrink to the width of its
+            A common usage of this is to make a row shrink to the height of its
             content. This can be achieved by setting the row{' '}
             <Docs.Code>height</Docs.Code> prop to{' '}
             <Docs.Code>&quot;content&quot;</Docs.Code>. Any rows without an

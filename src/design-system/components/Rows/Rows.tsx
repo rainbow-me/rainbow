@@ -15,13 +15,13 @@ export interface RowProps {
 }
 
 /**
- * @description Provides manual control of column widths within `Rows`.
+ * @description Provides manual control of row heights within `Rows`.
  * Children of `Rows` are equal-height by default, but you can optionally
  * render a `Row` element instead which allows you to specify a `height`
  * prop. Note that `Row` must be rendered as an immediate child of
  * `Rows` or it will throw an error. You can set a fractional height, e.g.
- * `<Row height="1/3">`, or make the column shrink to fit the size of the
- * content with `<Row height="content">`. Any columns without an
+ * `<Row height="1/3">`, or make the row shrink to fit the size of the
+ * content with `<Row height="content">`. Any rows without an
  * explicit height will share the remaining space equally.
  */
 export function Row(_props: RowProps): JSX.Element {
@@ -92,8 +92,8 @@ export interface RowsProps {
  * spacing between them. You can optionally control row heights by
  * manually rendering a `Row` as a direct child of `Rows`, which allows
  * you to set an explicit `height` prop, e.g. `<Row height="content">` will
- * cause the column to shrink to the size of its content. When setting custom
- * heights, any rows without an explicit width will share the remaining space
+ * cause the row to shrink to the size of its content. When setting custom
+ * heights, any rows without an explicit height will share the remaining space
  * equally. Rows can optionally be aligned horizontally and/or vertically,
  * but note that this only affects the rows themselves relative to the
  * container, not the content within the row. To align content within a
@@ -123,11 +123,11 @@ export function Rows({
       marginBottom={space ? negateSpace(space) : undefined}
     >
       {Children.map(flattenedChildren, child => {
-        const columnProps = getRowProps(child);
+        const rowProps = getRowProps(child);
 
-        return columnProps ? (
+        return rowProps ? (
           <PrivateRow
-            {...columnProps}
+            {...rowProps}
             alignVertical={alignVertical}
             space={space}
           />
