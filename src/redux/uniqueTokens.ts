@@ -246,15 +246,10 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
   let uniqueTokens: UniqueAsset[] = [];
 
   const fetchNetwork = async (network: Network) => {
-    let shouldStopFetching: boolean = false;
-    let page: number = 0;
+    let shouldStopFetching = false;
+    let page = 0;
     while (!shouldStopFetching) {
-      shouldStopFetching = (await fetchPage(
-        shouldStopFetching,
-        page,
-        network
-      )) as boolean;
-
+      shouldStopFetching = await fetchPage(page, network);
       // check that the account address to fetch for has not changed while fetching
       const isCurrentAccountAddress =
         accountAddress ===
@@ -267,11 +262,8 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
     }
   };
 
-  const fetchPage = async (
-    shouldStopFetching: boolean,
-    page: number,
-    network: Network
-  ) => {
+  const fetchPage = async (page: number, network: Network) => {
+    let shouldStopFetching = false;
     try {
       const newPageResults = await apiGetAccountUniqueTokens(
         network,
@@ -285,6 +277,7 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
 
       if (shouldUpdateInBatches) {
         // check that the account address to fetch for has not changed while fetching
+
         const isCurrentAccountAddress =
           accountAddress ===
           (showcaseAddress || getState().settings.accountAddress);
