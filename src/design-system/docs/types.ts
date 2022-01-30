@@ -1,4 +1,5 @@
 import React from 'react';
+import { BoxProps } from '../components/Box/Box';
 import { Source } from './utils/source.macro';
 
 export type Docs = {
@@ -21,6 +22,7 @@ export type DocsExample = Example & {
 
 export type Example = {
   name: string;
+  wrapper?: (children: React.ReactNode) => React.ReactNode;
   Example?: () => Source<React.ReactChild>;
 };
 

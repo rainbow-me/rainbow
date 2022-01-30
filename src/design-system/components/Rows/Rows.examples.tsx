@@ -9,172 +9,161 @@ import { Row, Rows } from './Rows';
 
 export const basicUsage: Example = {
   name: 'Basic usage',
+  wrapper: children => <Box height={{ custom: 200 }}>{children}</Box>,
   Example: () =>
     source(
-      <Box height={{ custom: 200 }}>
-        <Rows space="19px">
-          <Placeholder height="100%" />
-          <Placeholder height="100%" />
-          <Placeholder height="100%" />
-        </Rows>
-      </Box>
+      <Rows space="19px">
+        <Placeholder height="100%" />
+        <Placeholder height="100%" />
+        <Placeholder height="100%" />
+      </Rows>
     ),
 };
 
 export const customSpace: Example = {
   name: 'Custom space',
+  wrapper: children => <Box height={{ custom: 200 }}>{children}</Box>,
   Example: () =>
     source(
-      <Box height={{ custom: 200 }}>
-        <Rows space={{ custom: 10 }}>
-          <Placeholder height="100%" />
-          <Placeholder height="100%" />
-          <Placeholder height="100%" />
-        </Rows>
-      </Box>
+      <Rows space={{ custom: 10 }}>
+        <Placeholder height="100%" />
+        <Placeholder height="100%" />
+        <Placeholder height="100%" />
+      </Rows>
     ),
 };
 
 export const customHeights: Example = {
   name: 'Custom heights',
+  wrapper: children => <Box height={{ custom: 200 }}>{children}</Box>,
   Example: () =>
     source(
-      <Box height={{ custom: 200 }}>
-        <Rows space={{ custom: 10 }}>
-          <Row height="1/4">
-            <Placeholder height="100%" />
-          </Row>
-          <Row height="3/4">
-            <Placeholder height="100%" />
-          </Row>
-        </Rows>
-      </Box>
+      <Rows space="19px">
+        <Row height="1/4">
+          <Placeholder height="100%" />
+        </Row>
+        <Row height="3/4">
+          <Placeholder height="100%" />
+        </Row>
+      </Rows>
     ),
 };
 
 export const rowWithContentHeight: Example = {
   name: 'Row with content height',
+  wrapper: children => <Box height={{ custom: 200 }}>{children}</Box>,
   Example: () =>
     source(
-      <Box height={{ custom: 200 }}>
-        <Rows space="12px">
-          <Placeholder height="100%" />
-          <Row height="content">
-            <Placeholder />
-          </Row>
-        </Rows>
-      </Box>
+      <Rows space="12px">
+        <Placeholder height="100%" />
+        <Row height="content">
+          <Placeholder />
+        </Row>
+      </Rows>
     ),
 };
 
 export const nestedRows: Example = {
   name: 'Nested rows',
+  wrapper: children => <Box height={{ custom: 200 }}>{children}</Box>,
   Example: () =>
     source(
-      <Box height={{ custom: 200 }}>
-        <Rows space="12px">
+      <Rows space="12px">
+        <Placeholder height="100%" />
+        <Rows space="3px">
           <Placeholder height="100%" />
-          <Rows space="3px">
-            <Placeholder height="100%" />
-            <Placeholder height="100%" />
-          </Rows>
+          <Placeholder height="100%" />
         </Rows>
-      </Box>
+      </Rows>
     ),
 };
 
 export const nestedRowsWithExplicitHeights: Example = {
   name: 'Nested rows with explicit heights',
+  wrapper: children => <Box height={{ custom: 200 }}>{children}</Box>,
   Example: () =>
     source(
-      <Box height={{ custom: 200 }}>
+      <Rows space="12px">
+        <Placeholder height="100%" />
         <Rows space="12px">
-          <Placeholder height="100%" />
-          <Rows space="12px">
-            <Row height="1/3">
-              <Placeholder height="100%" />
-            </Row>
+          <Row height="1/3">
             <Placeholder height="100%" />
-          </Rows>
+          </Row>
+          <Placeholder height="100%" />
         </Rows>
-      </Box>
+      </Rows>
     ),
 };
 
 export const nestedRowsWithExplicitHeightsContent: Example = {
   name: 'Nested rows with explicit heights (content)',
+  wrapper: children => <Box height={{ custom: 200 }}>{children}</Box>,
   Example: () =>
     source(
-      <Box height={{ custom: 200 }}>
-        <Rows space="19px">
-          <Placeholder height="100%" />
-          <Row height="content">
-            <Rows space="6px">
-              <Row height="content">
-                <Placeholder height={60} />
-              </Row>
-              <Row height="content">
-                <Placeholder height={60} />
-              </Row>
-            </Rows>
-          </Row>
-        </Rows>
-      </Box>
+      <Rows space="19px">
+        <Placeholder height="100%" />
+        <Row height="content">
+          <Rows space="6px">
+            <Row height="content">
+              <Placeholder height={60} />
+            </Row>
+            <Row height="content">
+              <Placeholder height={60} />
+            </Row>
+          </Rows>
+        </Row>
+      </Rows>
     ),
 };
 
 export const centerAlignedVertically: Example = {
   name: 'Center-aligned vertically',
+  wrapper: children => <Box height={{ custom: 300 }}>{children}</Box>,
   Example: () =>
     source(
-      <Box height={{ custom: 300 }}>
-        <Rows alignVertical="center" space="19px">
-          <Placeholder height={30} />
-          <Placeholder height={60} />
-          <Placeholder height={20} />
-        </Rows>
-      </Box>
+      <Rows alignVertical="center" space="19px">
+        <Placeholder height={30} />
+        <Placeholder height={60} />
+        <Placeholder height={20} />
+      </Rows>
     ),
 };
 
 export const bottomAlignedVertically: Example = {
   name: 'Bottom-aligned vertically',
+  wrapper: children => <Box height={{ custom: 300 }}>{children}</Box>,
   Example: () =>
     source(
-      <Box height={{ custom: 300 }}>
-        <Rows alignVertical="bottom" space="19px">
-          <Placeholder height={30} />
-          <Placeholder height={60} />
-          <Placeholder height={20} />
-        </Rows>
-      </Box>
+      <Rows alignVertical="bottom" space="19px">
+        <Placeholder height={30} />
+        <Placeholder height={60} />
+        <Placeholder height={20} />
+      </Rows>
     ),
 };
 
 export const centerAlignedHorizontally: Example = {
   name: 'Center-aligned horizontally',
+  wrapper: children => <Box height={{ custom: 200 }}>{children}</Box>,
   Example: () =>
     source(
-      <Box height={{ custom: 200 }}>
-        <Rows alignHorizontal="center" space="19px">
-          <Placeholder height="100%" width={30} />
-          <Placeholder height="100%" width={60} />
-          <Placeholder height="100%" width={20} />
-        </Rows>
-      </Box>
+      <Rows alignHorizontal="center" space="19px">
+        <Placeholder height="100%" width={30} />
+        <Placeholder height="100%" width={60} />
+        <Placeholder height="100%" width={20} />
+      </Rows>
     ),
 };
 
 export const rightAlignedHorizontally: Example = {
   name: 'Right-aligned horizontally',
+  wrapper: children => <Box height={{ custom: 200 }}>{children}</Box>,
   Example: () =>
     source(
-      <Box height={{ custom: 200 }}>
-        <Rows alignHorizontal="right" space="19px">
-          <Placeholder height="100%" width={30} />
-          <Placeholder height="100%" width={60} />
-          <Placeholder height="100%" width={20} />
-        </Rows>
-      </Box>
+      <Rows alignHorizontal="right" space="19px">
+        <Placeholder height="100%" width={30} />
+        <Placeholder height="100%" width={60} />
+        <Placeholder height="100%" width={20} />
+      </Rows>
     ),
 };
