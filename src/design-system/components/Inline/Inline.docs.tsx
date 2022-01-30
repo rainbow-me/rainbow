@@ -25,6 +25,16 @@ const docs: DocsType = {
   ),
   examples: [
     examples.basicUsage,
+    {
+      ...examples.noWrap,
+      description: (
+        <Docs.Text>
+          To disable wrapping of the child nodes, set the{' '}
+          <Docs.Code>wrap</Docs.Code> prop to <Docs.Code>false</Docs.Code>.
+        </Docs.Text>
+      ),
+    },
+    examples.noWrap,
     examples.customSpace,
     examples.differentSpaceOnAxis,
     examples.customSpaceOnAxis,

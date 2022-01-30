@@ -44,7 +44,7 @@ const getRowProps = (node: NonNullable<ReactNode>): RowProps | null =>
 
 interface PrivateRowProps extends RowProps {
   space?: Space;
-  alignVertical: AlignVertical | undefined;
+  alignHorizontal: AlignHorizontal | undefined;
 }
 
 // This is the component that's rendered instead of the Row component that
@@ -54,18 +54,20 @@ interface PrivateRowProps extends RowProps {
 function PrivateRow({
   space,
   height,
-  alignVertical,
+  alignHorizontal,
   children,
 }: PrivateRowProps) {
   return (
     <Box
+      alignItems={
+        alignHorizontal
+          ? alignHorizontalToFlexAlign[alignHorizontal]
+          : undefined
+      }
       flexBasis={height ? undefined : 0}
       flexGrow={height ? 0 : 1}
       flexShrink={height ? 0 : 1}
       height={height !== 'content' ? height : undefined}
-      justifyContent={
-        alignVertical ? alignVerticalToFlexAlign[alignVertical] : undefined
-      }
       paddingBottom={space}
     >
       {children}
@@ -128,11 +130,11 @@ export function Rows({
         return rowProps ? (
           <PrivateRow
             {...rowProps}
-            alignVertical={alignVertical}
+            alignHorizontal={alignHorizontal}
             space={space}
           />
         ) : (
-          <PrivateRow alignVertical={alignVertical} space={space}>
+          <PrivateRow alignHorizontal={alignHorizontal} space={space}>
             {child}
           </PrivateRow>
         );

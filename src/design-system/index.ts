@@ -4,6 +4,7 @@ export { Bleed } from './components/Bleed/Bleed';
 export { Box } from './components/Box/Box';
 export { ColorModeProvider } from './color/ColorMode';
 export { Columns, Column } from './components/Columns/Columns';
+export { DesignSystemProvider } from './context/DesignSystemContext';
 export { Cover } from './components/Cover/Cover';
 export { Divider } from './components/Divider/Divider';
 export { DebugLayout } from './components/DebugLayout/DebugLayout';
