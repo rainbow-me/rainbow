@@ -85,8 +85,6 @@ const SearchInputGradientBackground = ({
 
 export default SearchInputGradientBackground;
 
-//////////////////////////////////////////////////////////////////
-
 const AnimatedRadialGradient = ({
   variant,
   currentState,
