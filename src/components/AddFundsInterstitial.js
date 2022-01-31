@@ -170,7 +170,7 @@ const AmountButton = ({ amount, backgroundColor, color, onPress }) => {
 };
 
 const AddFundsInterstitial = ({ network }) => {
-  const { isSmallPhone, isTinyPhone } = useDimensions();
+  const { isSmallPhone } = useDimensions();
   const { navigate } = useNavigation();
   const { isDamaged } = useWallets();
   const { accountAddress } = useAccountSettings();
