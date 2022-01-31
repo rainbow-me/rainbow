@@ -8,7 +8,7 @@ import { magicMemo, showActionSheetWithOptions } from '../utils';
 import { ButtonPressAnimation } from './animations';
 import { Centered, Column } from './layout';
 import { Text as TextElement } from './text';
-import { Row } from '@rainbow-me/design-system';
+import { Inline } from '@rainbow-me/design-system';
 import { padding } from '@rainbow-me/styles';
 
 const HairlineSpace = '\u200a';
@@ -132,7 +132,7 @@ const Tag = ({ color, disableMenu, slug, text, title, maxValue, ...props }) => {
         <OuterBorder {...props} color={color}>
           <Container>
             <Title color={color}>{upperCase(title)}</Title>
-            <Row>
+            <Inline wrap={false}>
               <Text>{upperFirst(text)}</Text>
               {maxValue && (
                 <Text>
@@ -142,7 +142,7 @@ const Tag = ({ color, disableMenu, slug, text, title, maxValue, ...props }) => {
                   {maxValue}
                 </Text>
               )}
-            </Row>
+            </Inline>
           </Container>
         </OuterBorder>
       </ButtonPressAnimation>
