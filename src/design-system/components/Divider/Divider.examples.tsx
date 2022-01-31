@@ -4,7 +4,7 @@ import { Example } from '../../docs/types';
 import source from '../../docs/utils/source.macro';
 import { Placeholder } from '../../playground/Placeholder';
 import { Box } from '../Box/Box';
-import { Row } from '../Row/Row';
+import { Inline } from '../Inline/Inline';
 import { Divider } from './Divider';
 
 export const basicUsage: Example = {
@@ -62,13 +62,13 @@ export const vertical: Example = {
   Example: () =>
     source(
       <Box background="body" borderRadius={8} padding="19px">
-        <Row space="19px">
+        <Inline space="19px" wrap={false}>
           <Placeholder width={20} />
           <Divider direction="vertical" />
           <Placeholder width={20} />
           <Divider direction="vertical" />
           <Placeholder width={20} />
-        </Row>
+        </Inline>
       </Box>
     ),
 };

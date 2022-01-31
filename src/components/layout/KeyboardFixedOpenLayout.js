@@ -10,7 +10,7 @@ import { position } from '@rainbow-me/styles';
 const Container = styled(Transitioning.View)`
   height: ${({ height }) => height};
   left: 0;
-  position: ${android ? 'relative' : 'absolute'};
+  position: ${({ position }) => position};
   right: 0;
   top: 0;
 `;
@@ -27,6 +27,7 @@ const transition = (
 
 export default function KeyboardFixedOpenLayout({
   additionalPadding = 0,
+  position = android ? 'relative' : 'absolute',
   ...props
 }) {
   const insets = useSafeArea();
@@ -40,7 +41,12 @@ export default function KeyboardFixedOpenLayout({
     useEffect(() => ref.current.animateNextTransition(), [containerHeight]);
 
   return (
-    <Container height={containerHeight} ref={ref} transition={transition}>
+    <Container
+      height={containerHeight}
+      position={position}
+      ref={ref}
+      transition={transition}
+    >
       <KeyboardAvoidingView behavior="height" enabled={!!keyboardHeight}>
         <InnerWrapper {...props} insets={insets} />
       </KeyboardAvoidingView>

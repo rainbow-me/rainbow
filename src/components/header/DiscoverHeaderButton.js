@@ -59,6 +59,7 @@ export default function DiscoverHeaderButton() {
     <HeaderButton
       {...(__DEV__ ? { onLongPress } : {})}
       onPress={onPress}
+      overflowMargin={20}
       paddingLeft={0}
       paddingRight={0}
       scaleTo={0.9}
