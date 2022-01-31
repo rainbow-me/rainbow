@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery } from 'react-query';
 import styled from 'styled-components';
-import { Input } from '../components/inputs';
+import SearchInput from '../components/ens-registration/SearchInput/SearchInput';
 import {
   SheetActionButton,
   SheetActionButtonRow,
@@ -32,7 +32,7 @@ export default function RegisterEnsSheet() {
   const debouncedSearchQuery = useDebounceString(searchQuery);
 
   const { data: registration, status } = useQuery(
-    searchQuery.length > 3 && ['registration', debouncedSearchQuery],
+    debouncedSearchQuery.length > 3 && ['registration', debouncedSearchQuery],
     async (_, searchQuery) => {
       const fastFormatter = timestamp => {
         const date = new Date(Number(timestamp) * 1000);
@@ -49,10 +49,19 @@ export default function RegisterEnsSheet() {
   const isLoading = status === 'loading';
   const isSuccess = registration && status === 'success';
 
+  const state = useMemo(() => {
+    if (isSuccess) {
+      if (registration?.isRegistered) {
+        return 'warning';
+      }
+      return 'success';
+    }
+    return undefined;
+  }, [isSuccess, registration?.isRegistered]);
+
   return (
     <Container>
       <SlackSheet
-        backgroundColor="white"
         bottomInset={42}
         {...(ios
           ? { height: '100%' }
@@ -73,9 +82,11 @@ export default function RegisterEnsSheet() {
             paddingHorizontal="19px"
             paddingVertical="42px"
           >
-            <Input
+            <SearchInput
+              isLoading={isLoading}
               onChangeText={setSearchQuery}
               placeholder="Input placeholder"
+              state={state}
             />
           </Box>
 
