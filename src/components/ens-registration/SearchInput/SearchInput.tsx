@@ -113,6 +113,7 @@ const SearchInput = ({
             </Column>
             <Input
               autoFocus
+              keyboardType="visible-password"
               onChangeText={onChangeText}
               style={{
                 ...headingStyle,
