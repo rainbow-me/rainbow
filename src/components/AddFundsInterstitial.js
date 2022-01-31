@@ -30,7 +30,7 @@ const ContainerWidth = 261;
 const Container = styled(Centered).attrs({ direction: 'column' })`
   position: absolute;
   top: 60;
-  bottom: ${({ isSmallPhone }) => isSmallPhone && 80};
+  bottom: ${({ isSmallPhone }) => (isSmallPhone ? 80 : 0)};
   width: ${ContainerWidth};
 `;
 
@@ -170,7 +170,7 @@ const AmountButton = ({ amount, backgroundColor, color, onPress }) => {
 };
 
 const AddFundsInterstitial = ({ network }) => {
-  const { isSmallPhone, isTinyPhone } = useDimensions();
+  const { isSmallPhone } = useDimensions();
   const { navigate } = useNavigation();
   const { isDamaged } = useWallets();
   const { accountAddress } = useAccountSettings();
