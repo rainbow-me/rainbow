@@ -36,6 +36,7 @@ export default function AvatarCircle({
   image,
   showcaseAccountSymbol,
   showcaseAccountColor,
+  ...props
 }) {
   const { colors, isDarkMode } = useTheme();
   const {
@@ -74,8 +75,10 @@ export default function AvatarCircle({
       enableHapticFeedback={isAvatarPickerAvailable}
       marginTop={2}
       onPress={onPress}
+      overflowMargin={30}
       pressOutDuration={200}
       scaleTo={isAvatarPickerAvailable ? 0.9 : 1}
+      {...props}
     >
       <ShadowStack
         {...position.sizeAsObject(AvatarCircleSize)}
