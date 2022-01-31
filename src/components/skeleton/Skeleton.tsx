@@ -1,6 +1,7 @@
 import MaskedView from '@react-native-community/masked-view';
 import React from 'react';
 import { View, ViewProps } from 'react-native';
+import { IS_TESTING } from 'react-native-dotenv';
 import styled from 'styled-components';
 import { withThemeContext } from '../../context/ThemeContext';
 import { deviceUtils } from '../../utils';
@@ -57,7 +58,7 @@ function Skeleton({
   colors: any;
   width?: number;
 }) {
-  if (animated) {
+  if (animated && IS_TESTING !== 'true') {
     return (
       <MaskedView
         maskElement={<Wrapper style={style}>{children}</Wrapper>}
