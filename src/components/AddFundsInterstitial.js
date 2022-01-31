@@ -30,7 +30,7 @@ const ContainerWidth = 261;
 const Container = styled(Centered).attrs({ direction: 'column' })`
   position: absolute;
   top: 60;
-  bottom: ${props => props.isSmallScreen && 80};
+  bottom: ${({ isSmallPhone }) => isSmallPhone && 80};
   width: ${ContainerWidth};
 `;
 
@@ -220,7 +220,7 @@ const AddFundsInterstitial = ({ network }) => {
   }, [navigate, isDamaged]);
 
   return (
-    <Container isSmallScreen={isSmallPhone || isTinyPhone}>
+    <Container isSmallPhone={isSmallPhone}>
       {network === networkTypes.mainnet ? (
         <Fragment>
           <Title>
