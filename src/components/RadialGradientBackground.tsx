@@ -6,12 +6,9 @@ import Animated from 'react-native-reanimated';
 
 const AnimatedRadialGradient = Animated.createAnimatedComponent(RadialGradient);
 
-export type RadialGradientBackgroundProps = {
-  colors: RadialGradientProps['colors'];
+export type RadialGradientBackgroundProps = RadialGradientProps & {
   width: number;
   height: number;
-  stops: RadialGradientProps['stops'];
-  style?: RadialGradientProps['style'];
 };
 
 const RadialGradientBackground = ({
