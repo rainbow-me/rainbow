@@ -332,7 +332,7 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
   // check that the account address to fetch for has not changed while fetching before updating state
   const isCurrentAccountAddress =
     accountAddress === (showcaseAddress || getState().settings.accountAddress);
-  if (!showcaseAddress && isCurrentAccountAddress) {
+  if (!showcaseAddress && isCurrentAccountAddress && !errorCheck) {
     saveUniqueTokens(uniqueTokens, accountAddress, currentNetwork);
   }
   if (!shouldUpdateInBatches && isCurrentAccountAddress && !errorCheck) {
