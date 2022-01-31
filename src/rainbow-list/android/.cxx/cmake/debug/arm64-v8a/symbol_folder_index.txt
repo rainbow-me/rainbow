@@ -1,1 +1,0 @@
-/Users/osdnk/work/rainbow-priv/src/rainbow-list/android/build/intermediates/cmake/debug/obj/arm64-v8a

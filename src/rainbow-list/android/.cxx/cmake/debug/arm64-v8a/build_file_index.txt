@@ -1,1 +1,0 @@
-/Users/osdnk/work/rainbow-priv/src/rainbow-list/android/CMakeLists.txt
