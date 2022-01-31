@@ -15,6 +15,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import useWallets from '../../hooks/useWallets';
 import { lightModeThemeColors } from '../../styles/colors';
+import L2Disclaimer from '../L2Disclaimer';
 import Link from '../Link';
 import { ButtonPressAnimation } from '../animations';
 import { Centered, Column, Row } from '../layout';
@@ -34,6 +35,7 @@ import {
   UniqueTokenExpandedStateContent,
   UniqueTokenExpandedStateHeader,
 } from './unique-token';
+import { AssetTypes } from '@rainbow-me/entities';
 import { apiGetUniqueTokenFloorPrice } from '@rainbow-me/handlers/opensea-api';
 import { buildUniqueTokenName } from '@rainbow-me/helpers/assets';
 import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
@@ -135,10 +137,17 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
     opacity: 1 - animationProgress.value,
   }));
 
+  const handleL2DisclaimerPress = useCallback(() => {
+    navigate(Routes.EXPLAIN_SHEET, {
+      type: asset.network,
+    });
+  }, [asset.network, navigate]);
+
   const isShowcaseAsset = useMemo(() => showcaseTokens.includes(uniqueId), [
     showcaseTokens,
     uniqueId,
   ]);
+
   const isSVG = isSupportedUriExtension(lowResUrl, ['.svg']);
 
   const imageColor =
@@ -159,10 +168,12 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
   }, [colors.whiteLabel, imageColor]);
 
   useEffect(() => {
-    apiGetUniqueTokenFloorPrice(network, urlSuffixForAsset).then(result => {
-      setFloorPrice(result);
-    });
-  }, [network, urlSuffixForAsset]);
+    !isPoap &&
+      asset.network !== AssetTypes.polygon &&
+      apiGetUniqueTokenFloorPrice(network, urlSuffixForAsset).then(result => {
+        setFloorPrice(result);
+      });
+  }, [asset.network, isPoap, network, urlSuffixForAsset]);
 
   const handlePressCollectionFloor = useCallback(() => {
     navigate(Routes.EXPLAIN_SHEET, {
@@ -321,7 +332,18 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
             </SheetActionButtonRow>
           )}
 
-          {!isPoap && (
+          {asset.network === AssetTypes.polygon && (
+            <L2Disclaimer
+              assetType={AssetTypes.polygon}
+              colors={colors}
+              hideDivider
+              isNft
+              onPress={handleL2DisclaimerPress}
+              symbol="NFT"
+            />
+          )}
+
+          {!isPoap && asset.network !== AssetTypes.polygon && (
             <TokenInfoSection isNft>
               <TokenInfoRow>
                 <TokenInfoItem

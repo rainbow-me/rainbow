@@ -128,6 +128,7 @@ export default () => {
     onAvatarChooseImage,
     onAvatarPickEmoji,
     onAvatarRemovePhoto,
+    setNextEmoji,
   ]);
 
   const avatarOptions = useMemo(
