@@ -79,7 +79,7 @@ export default function TopMoversSection() {
       {(gainerItems?.length > 0 || loserItems?.length > 0) && (
         <Flex marginBottom={12} paddingHorizontal={19}>
           <Text size="larger" weight="heavy">
-            {lang.t('discover.top_movers.title')}
+            {lang.t('discover.top_movers.top_movers_title')}
           </Text>
         </Flex>
       )}

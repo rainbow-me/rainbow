@@ -211,7 +211,7 @@ export default function RestoreCloudStep({
       }
     } catch (e) {
       setIsWalletLoading(null);
-      Alert.alert(lang.t('back_up.restore_cloud.error_alert'));
+      Alert.alert(lang.t('back_up.restore_cloud.error_while_restoring'));
     }
   }, [
     backupSelected?.name,

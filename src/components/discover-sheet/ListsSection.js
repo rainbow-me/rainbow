@@ -276,7 +276,7 @@ export default function ListSection() {
     <Column testID="lists-section">
       <Flex paddingHorizontal={19}>
         <Text size="larger" weight="heavy">
-          {lang.t('discover.lists.title')}
+          {lang.t('discover.lists.lists_title')}
         </Text>
       </Flex>
 
@@ -325,7 +325,7 @@ export default function ListSection() {
                 size="large"
                 weight="semibold"
               >
-                {lang.t('discover.lists.empty_description')}
+                {lang.t('discover.lists.this_list_is_empty')}
               </Text>
             </Centered>
           )}

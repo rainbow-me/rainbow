@@ -101,8 +101,8 @@ export default function DiscoverSearch() {
         {
           color: '#5893ff',
           data: ensResults,
-          key: `􀏼 ${lang.t('discover.search.ens')}`,
-          title: `􀏼 ${lang.t('discover.search.ens')}`,
+          key: `􀏼 ${lang.t('discover.search.ethereum_name_service')}`,
+          title: `􀏼 ${lang.t('discover.search.ethereum_name_service')}`,
         },
       ];
     }

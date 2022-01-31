@@ -149,8 +149,8 @@ const ExchangeAssetList = (
   const handleUnverifiedTokenPress = useCallback(
     item => {
       Alert.alert(
-        lang.t('exchange.unverified_token.title'),
-        lang.t('exchange.unverified_token.description'),
+        lang.t('exchange.unverified_token.unverified_token_title'),
+        lang.t('exchange.unverified_token.token_not_verified'),
         [
           {
             onPress: () => itemProps.onPress(item),

@@ -185,7 +185,9 @@ export default function BackupConfirmPasswordStep() {
         {(isTinyPhone || samsungGalaxy) && isKeyboardOpen ? null : (
           <MastheadIcon>􀙶</MastheadIcon>
         )}
-        <Title>{lang.t('back_up.confirm_password.enter_backup')}</Title>
+        <Title>
+          {lang.t('back_up.confirm_password.enter_backup_password')}
+        </Title>
         <DescriptionText>
           {lang.t('back_up.confirm_password.enter_backup_description', {
             cloudPlatformName: cloudPlatform,

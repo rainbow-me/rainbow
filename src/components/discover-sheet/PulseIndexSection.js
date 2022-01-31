@@ -130,7 +130,7 @@ const PulseIndex = () => {
                 style={ios ? {} : { marginTop: -10 }}
                 weight="semibold"
               >
-                {lang.t('discover.pulse.description')}
+                {lang.t('discover.pulse.pulse_description')}
               </Text>
             </Column>
             <Column

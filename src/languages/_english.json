@@ -61,29 +61,29 @@
     "back_up": {
       "cloud": {
         "password": {
-          "backup_placeholder": "Backup Password",
-          "choose": "Choose a password",
+          "backup_password": "Backup Password",
+          "choose_a_password": "Choose a password",
           "confirm_backup": "Confirm Backup",
-          "confirm_label": "Confirm password",
+          "confirm_password": "Confirm password",
           "confirm_placeholder": "Confirm Password",
           "minimum_characters": "Minimum %{minimumLength} characters",
-          "not_matching": "Passwords don't match",
-          "not_recoverable": "It can't be recovered!",
-          "remember": "Please use a password you'll remember.",
+          "passwords_dont_match": "Passwords don't match",
+          "it_cant_be_recovered": "It can't be recovered!",
+          "a_password_youll_remember": "Please use a password you'll remember.",
           "strength": {
             "level1": "Weak password",
             "level2": "Good password",
             "level3": "Great password",
             "level4": "Strong password"
           },
-          "use_longer_password": "Use a longer password"
+          "use_a_longer_password": "Use a longer password"
         }
       },
       "confirm_password": {
         "add_to_cloud_platform": "Add to %{cloudPlatformName} Backup",
         "backup_password_placeholder": "Backup Password",
         "confirm_backup": "Confirm Backup",
-        "enter_backup": "Enter backup password",
+        "enter_backup_password": "Enter backup password",
         "enter_backup_description": "To add this wallet to your %{cloudPlatformName} backup, enter your existing backup password"
       },
       "explainers": {
@@ -107,28 +107,28 @@
         "confirm_backup": "Confirm Backup",
         "enter_backup_password": "Enter backup password",
         "enter_backup_password_description": "To restore your wallet, enter the backup password you created",
-        "error_alert": "Error while restoring backup",
+        "error_while_restoring": "Error while restoring backup",
         "incorrect_password": "Incorrect Password",
         "restore_from_cloud_platform": "Restore from %{cloudPlatformName}"
       },
       "restore_sheet": {
         "from_backup": {
           "ios": {
-            "description_multiple_backups": "You have %{walletsBackedUpCount} wallets backed up",
-            "description_one_backup": "You have 1 wallet backed up"
+            "you_have_multiple_wallets": "You have %{walletsBackedUpCount} wallets backed up",
+            "you_have_1_wallet": "You have 1 wallet backed up"
           },
           "non_ios": {
-            "description_cloud_platform": "If you previously backed up your wallet on %{cloudPlatformName} tap here to restore it."
+            "if_you_previously_backed_up": "If you previously backed up your wallet on %{cloudPlatformName} tap here to restore it."
           },
           "restore_from_cloud_platform": "Restore from %{cloudPlatformName}"
         },
         "from_key": {
-          "description": "Use your secret phrase from Rainbow or another crypto wallet",
-          "label": "Restore with a secret phrase or private key"
+          "secret_phrase_description": "Use your secret phrase from Rainbow or another crypto wallet",
+          "secret_phrase_title": "Restore with a secret phrase or private key"
         },
         "watch_address": {
-          "description": "Watch a public address or ENS name",
-          "label": "Watch an Ethereum address"
+          "watch_description": "Watch a public address or ENS name",
+          "watch_title": "Watch an Ethereum address"
         }
       }
     },
@@ -206,27 +206,27 @@
     },
     "discover": {
       "lists": {
-        "empty_description": "This list is empty!",
-        "title": "Lists"
+        "this_list_is_empty": "This list is empty!",
+        "lists_title": "Lists"
       },
       "pulse": {
-        "description": "All the top DeFi tokens in one",
+        "pulse_description": "All the top DeFi tokens in one",
         "today_suffix": "today",
         "trading_at_prefix": "Trading at"
       },
       "search": {
-        "ens": "Ethereum Name Service",
+        "ethereum_name_service": "Ethereum Name Service",
         "search_ethereum": "Search all of Ethereum"
       },
       "strategies": {
-        "description": "Smart yield strategies from yearn.finance",
-        "title": "Strategies"
+        "yearn_finance_description": "Smart yield strategies from yearn.finance",
+        "strategies_title": "Strategies"
       },
       "title_discover": "Discover",
       "title_search": "Search",
       "top_movers": {
         "disabled_testnets": "Top movers are disabled on Testnets",
-        "title": "Top Movers"
+        "top_movers_title": "Top Movers"
       },
       "uniswap": {
         "data": {
@@ -236,16 +236,16 @@
           "volume_24_hours": "24h volume"
         },
         "disabled_testnets": "Pools are disabled on Testnets",
-        "error_message": "There was an error loading Uniswap pool data",
+        "error_loading_uniswap": "There was an error loading Uniswap pool data",
         "show_more": "Show more",
         "title_pools": "Uniswap Pools"
       }
     },
     "error_boundary": {
-      "description": "Don't worry, your wallets are safe! Just restart the app to get back to business.",
-      "intro": "Oops!",
-      "restart_button": "Restart Rainbow",
-      "title": "Something went wrong."
+      "wallets_are_safe": "Don't worry, your wallets are safe! Just restart the app to get back to business.",
+      "error_boundary_oops": "Oops!",
+      "restart_rainbow": "Restart Rainbow",
+      "something_went_wrong": "Something went wrong."
     },
     "exchange": {
       "coin_row": {
@@ -268,10 +268,10 @@
       },
       "swapping_for_prefix": "Swapping for",
       "unverified_token": {
-        "description": "This token has not been verified! Rainbow surfaces all tokens that exist on Uniswap. Anyone can create a token, including fake versions of existing tokens and tokens that claim to represent projects that do not have a token. Please do your own research and be careful when interacting with unverified tokens!",
+        "token_not_verified": "This token has not been verified! Rainbow surfaces all tokens that exist on Uniswap. Anyone can create a token, including fake versions of existing tokens and tokens that claim to represent projects that do not have a token. Please do your own research and be careful when interacting with unverified tokens!",
         "go_back": "Go Back",
         "proceed_anyway": "Proceed Anyway",
-        "title": "Unverified Token"
+        "unverified_token_title": "Unverified Token"
       },
       "view_details": "View Details"
     },
@@ -329,7 +329,7 @@
         "us_except": "United States (except Texas and New York)"
       },
       "swap": {
-        "copy": "Copy Contract Address",
+        "copy_contract_address": "Copy Contract Address",
         "losing": "Losing",
         "slippage_message": "This is a small market, so you’re getting a bad price. Try a smaller trade!",
         "swapping_via": "Swapping via",
@@ -774,16 +774,6 @@
       "push_notifications": {
         "please_enable_body": "It looks like you are using WalletConnect. Please enable push notifications to be notified of transaction requests from WalletConnect.",
         "please_enable_title": "Rainbow would like to send you push notifications"
-      },
-      "restore": {
-        "phrase_key": {
-          "description": "Use your secret phrase from Rainbow or another crypto wallet",
-          "label": "Restore with a secret phrase or private key"
-        },
-        "watch": {
-          "description": "Watch a public address or ENS name",
-          "label": "Watch an Ethereum address"
-        }
       },
       "settings": {
         "copy_address": "Copy address",

@@ -134,16 +134,16 @@ export default function RestoreSheetFirstStep({
                     // would be false in that case.
                     walletsBackedUp > 1
                     ? lang.t(
-                        'back_up.restore_sheet.from_backup.ios.description_multiple_backups',
+                        'back_up.restore_sheet.from_backup.ios.you_have_multiple_wallets',
                         {
                           walletsBackedUpCount: walletsBackedUp,
                         }
                       )
                     : lang.t(
-                        'back_up.restore_sheet.from_backup.ios.description_one_backup'
+                        'back_up.restore_sheet.from_backup.ios.you_have_1_wallet'
                       )
                   : lang.t(
-                      'back_up.restore_sheet.from_backup.non_ios.description_cloud_platform',
+                      'back_up.restore_sheet.from_backup.non_ios.if_you_previously_backed_up',
                       {
                         cloudPlatformName: cloudPlatform,
                       }
@@ -163,11 +163,13 @@ export default function RestoreSheetFirstStep({
         <Column>
           <TextIcon color={colors.purple}>􀑚</TextIcon>
           <TitleRow justify="space-between" width="100%">
-            <Title>{lang.t('back_up.restore_sheet.from_key.label')}</Title>
+            <Title>
+              {lang.t('back_up.restore_sheet.from_key.secret_phrase_title')}
+            </Title>
             <CaretIcon />
           </TitleRow>
           <DescriptionText>
-            {lang.t('back_up.restore_sheet.from_key.description')}
+            {lang.t('back_up.restore_sheet.from_key.secret_phrase_description')}
           </DescriptionText>
         </Column>
       </SheetRow>
@@ -182,11 +184,13 @@ export default function RestoreSheetFirstStep({
         <Column>
           <TextIcon color={colors.mintDark}>􀒒</TextIcon>
           <TitleRow justify="space-between" width="100%">
-            <Title>{lang.t('back_up.restore_sheet.watch_address.label')}</Title>
+            <Title>
+              {lang.t('back_up.restore_sheet.watch_address.watch_title')}
+            </Title>
             <CaretIcon />
           </TitleRow>
           <DescriptionText>
-            {lang.t('back_up.restore_sheet.watch_address.description')}
+            {lang.t('back_up.restore_sheet.watch_address.watch_description')}
           </DescriptionText>
         </Column>
       </SheetRow>

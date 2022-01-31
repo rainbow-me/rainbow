@@ -286,7 +286,7 @@ export default function UniswapPools({
       </Column>
       {error ? (
         <ErrorMessage colors={colors}>
-          {lang.t('discover.uniswap.error_message')}...
+          {lang.t('discover.uniswap.error_loading_uniswap')}...
         </ErrorMessage>
       ) : network !== networkTypes.mainnet ? (
         <ErrorMessage colors={colors}>

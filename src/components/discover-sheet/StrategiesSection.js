@@ -17,10 +17,10 @@ export default function Strategies() {
   return (
     <Column paddingHorizontal={12}>
       <Text size="larger" weight="bold">
-        🧠 {lang.t('discover.strategies.title')}
+        🧠 {lang.t('discover.strategies.strategies_title')}
       </Text>
       <Text color={colors.grey} size="medium" weight="bold">
-        {lang.t('discover.strategies.description')}
+        {lang.t('discover.strategies.yearn_finance_description')}
       </Text>
       <View style={{ height: 100, marginTop: 12, width: 100 }}>
         <ShadowStack

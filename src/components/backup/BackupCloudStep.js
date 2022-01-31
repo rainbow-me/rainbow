@@ -177,19 +177,19 @@ export default function BackupCloudStep() {
       password.length < cloudBackupPasswordMinLength &&
       !passwordRef.current?.isFocused()
     ) {
-      newLabel = lang.t('back_up.cloud.password.use_longer_password');
+      newLabel = lang.t('back_up.cloud.password.use_a_longer_password');
     } else if (
       isCloudBackupPasswordValid(password) &&
       isCloudBackupPasswordValid(confirmPassword) &&
       confirmPassword.length >= password.length &&
       password !== confirmPassword
     ) {
-      newLabel = lang.t('back_up.cloud.password.not_matching');
+      newLabel = lang.t('back_up.cloud.password.passwords_dont_match');
     } else if (
       password.length >= cloudBackupPasswordMinLength &&
       !passwordFocused
     ) {
-      newLabel = lang.t('back_up.cloud.password.confirm_label');
+      newLabel = lang.t('back_up.cloud.password.confirm_password');
     } else if (
       password.length >= cloudBackupPasswordMinLength &&
       passwordFocused
@@ -294,12 +294,12 @@ export default function BackupCloudStep() {
           <MastheadIcon>􀌍</MastheadIcon>
         )}
         <Title isTinyPhone={isTinyPhone}>
-          {lang.t('back_up.cloud.password.choose')}
+          {lang.t('back_up.cloud.password.choose_a_password')}
         </Title>
         <DescriptionText isTinyPhone={isTinyPhone}>
-          {lang.t('back_up.cloud.password.remember')}&nbsp;
+          {lang.t('back_up.cloud.password.a_password_youll_remember')}&nbsp;
           <ImportantText isTinyPhone={isTinyPhone}>
-            {lang.t('back_up.cloud.password.not_recoverable')}
+            {lang.t('back_up.cloud.password.it_cant_be_recovered')}
           </ImportantText>
         </DescriptionText>
       </Masthead>
@@ -316,7 +316,7 @@ export default function BackupCloudStep() {
           onFocus={onPasswordFocus}
           onSubmitEditing={onPasswordSubmit}
           password={password}
-          placeholder={lang.t('back_up.cloud.password.backup_placeholder')}
+          placeholder={lang.t('back_up.cloud.password.backup_password')}
           ref={passwordRef}
           returnKeyType="next"
           textContentType="newPassword"

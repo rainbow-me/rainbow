@@ -36,7 +36,7 @@ export default function Fallback() {
       <Message>
         <Centered>
           <Text align="center" color={colors.dark} size="bigger" weight="heavy">
-            {lang.t('error_boundary.intro')} 😅
+            {lang.t('error_boundary.error_boundary_oops')} 😅
           </Text>
         </Centered>
         <Spacer height={15} />
@@ -48,7 +48,7 @@ export default function Fallback() {
             size="large"
             weight="bold"
           >
-            {lang.t('error_boundary.title')}
+            {lang.t('error_boundary.something_went_wrong')}
           </Text>
         </Centered>
         <Spacer height={21} />
@@ -60,7 +60,7 @@ export default function Fallback() {
             size="large"
             weight="bold"
           >
-            {lang.t('error_boundary.description')}
+            {lang.t('error_boundary.wallets_are_safe')}
           </Text>
         </Centered>
         <Spacer height={33} />
@@ -70,7 +70,7 @@ export default function Fallback() {
             isTransparent
             // @ts-expect-error `SheetActionButton` is untyped so `label`
             // is expected to be `null`.
-            label={`🌈 ${lang.t('error_boundary.restart_button')}`}
+            label={`🌈 ${lang.t('error_boundary.restart_rainbow')}`}
             onPress={handleRestart}
             // @ts-ignore
             size="big"
