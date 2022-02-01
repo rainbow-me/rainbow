@@ -14,7 +14,7 @@ import {
   Column,
   Columns,
   Heading,
-  Row,
+  Inline,
   Stack,
   Text,
 } from '@rainbow-me/design-system';
@@ -115,13 +115,13 @@ export default function RegisterEnsSheet() {
                   </Text>
                 </Column>
               </Columns>
-              <Row>
+              <Inline wrap={false}>
                 <Text color="secondary40" size="18px" weight="bold">
                   {registration.isRegistered
                     ? `Til ${registration.expiryDate}`
                     : `"Price"`}
                 </Text>
-              </Row>
+              </Inline>
               {!registration.isRegistered && (
                 <Text color="secondary40" size="18px" weight="bold">
                   Estimated cost?
