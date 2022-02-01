@@ -15,7 +15,7 @@ function trim(val) {
 const Label = styled(Text)({
   fontSize: fonts.size.smedium,
   fontWeight: fonts.weight.bold,
-  letterspacing: fonts.letterSpacing.roundedTighter,
+  letterSpacing: fonts.letterSpacing.roundedTighter,
   position: 'absolute',
   textAlign: 'center',
 });
