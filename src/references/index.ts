@@ -3,7 +3,7 @@ import { savingsAssets } from './compound';
 import { default as DefaultTokenListsSource } from './default-token-lists.json';
 import { Asset, SavingsAsset } from '@rainbow-me/entities';
 import { Network } from '@rainbow-me/helpers/networkTypes';
-
+export { default as polygonAllowList } from './polygon-allowlist.json';
 export { default as balanceCheckerContractAbi } from './balances-checker-abi.json';
 export { default as balanceCheckerContractAbiOVM } from './balances-checker-abi-ovm.json';
 export { default as chains } from './chains.json';

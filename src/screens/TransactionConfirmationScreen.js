@@ -154,6 +154,8 @@ const WalletText = styled(Text).attrs(
 
 const NOOP = () => undefined;
 
+const Wrapper = ios ? SlackSheet : ({ children }) => children;
+
 export default function TransactionConfirmationScreen() {
   const { colors } = useTheme();
   const [provider, setProvider] = useState();
@@ -995,7 +997,7 @@ export default function TransactionConfirmationScreen() {
       isKeyboardVisible={false}
       translateY={offset}
     >
-      <SlackSheet
+      <Wrapper
         backgroundColor={colors.transparent}
         borderRadius={0}
         height={sheetHeight}
@@ -1138,7 +1140,7 @@ export default function TransactionConfirmationScreen() {
             <GasSpeedButton currentNetwork={currentNetwork} theme="dark" />
           )}
         </Column>
-      </SlackSheet>
+      </Wrapper>
     </SheetKeyboardAnimation>
   );
 }

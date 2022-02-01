@@ -97,7 +97,9 @@ export type ForegroundColor =
   | 'secondary50'
   | 'secondary60'
   | 'secondary70'
-  | 'secondary80';
+  | 'secondary80'
+  | 'shadow'
+  | 'swap';
 
 export const foregroundColors: Record<
   ForegroundColor,
@@ -175,6 +177,13 @@ export const foregroundColors: Record<
     darkTinted: colors.white80,
     light: colors.grey80,
   },
+  shadow: {
+    dark: colors.black,
+    darkTinted: colors.black,
+    light: colors.blackTint,
+    lightTinted: colors.blackTint,
+  },
+  swap: colors.swapPurple,
 };
 
 /**
@@ -255,6 +264,14 @@ export const textColors = selectForegroundColors(
   'secondary80'
 );
 export type TextColor = typeof textColors[number];
+
+export const shadowColors = selectForegroundColors(
+  'shadow',
+  'accent',
+  'swap',
+  'action'
+);
+export type ShadowColor = typeof shadowColors[number];
 
 export const dividerColors = selectForegroundColors(
   'divider20',
