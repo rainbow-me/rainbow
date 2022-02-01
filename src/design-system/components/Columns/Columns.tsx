@@ -1,30 +1,19 @@
 import React, { Children, ReactNode } from 'react';
 import flattenChildren from 'react-flatten-children';
+import {
+  AlignHorizontal,
+  alignHorizontalToFlexAlign,
+  AlignVertical,
+  alignVerticalToFlexAlign,
+} from '../../layout/alignment';
 import { negateSpace, Space } from '../../layout/space';
 import { Box, BoxProps } from '../Box/Box';
-
-const alignHorizontalToFlexAlign = {
-  center: 'center',
-  justify: 'space-between',
-  left: 'flex-start',
-  right: 'flex-end',
-} as const;
-
-type AlignHorizontal = keyof typeof alignHorizontalToFlexAlign;
-
-const alignVerticalToFlexAlign = {
-  bottom: 'flex-end',
-  center: 'center',
-  top: 'flex-start',
-} as const;
-
-type AlignVertical = keyof typeof alignVerticalToFlexAlign;
 
 type Width = Exclude<NonNullable<BoxProps['width']>, 'full'>;
 
 export interface ColumnProps {
   width?: Width | 'content';
-  children: ReactNode;
+  children?: ReactNode;
 }
 
 /**
@@ -56,7 +45,7 @@ const getColumnProps = (node: NonNullable<ReactNode>): ColumnProps | null =>
     : null;
 
 interface PrivateColumnProps extends ColumnProps {
-  space: Space;
+  space?: Space;
   alignVertical: AlignVertical | undefined;
 }
 
@@ -87,7 +76,7 @@ function PrivateColumn({
 }
 
 export interface ColumnsProps {
-  space: Space;
+  space?: Space;
   children: ReactNode;
   alignHorizontal?: AlignHorizontal;
   alignVertical?: AlignVertical;
@@ -123,7 +112,7 @@ export function Columns({
           ? alignHorizontalToFlexAlign[alignHorizontal]
           : undefined
       }
-      marginRight={negateSpace(space)}
+      marginRight={space ? negateSpace(space) : undefined}
     >
       {Children.map(flattenChildren(children), child => {
         const columnProps = getColumnProps(child);

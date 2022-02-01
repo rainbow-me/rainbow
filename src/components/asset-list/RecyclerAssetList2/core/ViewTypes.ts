@@ -38,6 +38,7 @@ export type UniswapPoolExtraData = {
 export type CoinDividerExtraData = {
   type: CellType.COIN_DIVIDER;
   value: number;
+  defaultToEditButton: boolean;
 };
 export type AssetsHeaderExtraData = {
   type: CellType.ASSETS_HEADER;

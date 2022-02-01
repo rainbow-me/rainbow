@@ -48,7 +48,7 @@ const { RainbowRequestReview, RNReview } = NativeModules;
 
 export const SettingsExternalURLs = {
   rainbowHomepage: 'https://rainbow.me',
-  rainbowLearn: 'https://rainbow.me/learn',
+  rainbowLearn: 'https://learn.rainbow.me',
   review:
     'itms-apps://itunes.apple.com/us/app/appName/id1457119021?mt=8&action=write-review',
   twitterDeepLink: 'twitter://user?screen_name=rainbowdotme',

@@ -159,6 +159,7 @@ export const ChartPath = React.memo(
     const resetGestureState = useWorkletCallback(() => {
       originalX.value = '';
       originalY.value = '';
+      positionY.value = -1;
       isActive.value = false;
       pathOpacity.value = withTiming(
         1,
