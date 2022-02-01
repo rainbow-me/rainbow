@@ -58,7 +58,6 @@
     "@apollo/client": "3.2.4",
     "@bankify/react-native-animate-number": "0.2.1",
     "@capsizecss/core": "3.0.0",
-    "@ensdomains/ensjs": "2.0.1",
     "@ethersproject/abi": "5.4.0",
     "@ethersproject/abstract-provider": "5.4.0",
     "@ethersproject/abstract-signer": "5.4.0",
