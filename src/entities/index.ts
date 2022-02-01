@@ -1,5 +1,8 @@
 export { default as AssetTypes, AssetType } from './assetTypes';
 export type {
+  BlocksToConfirmation,
+  BlocksToConfirmationByBaseFee,
+  BlocksToConfirmationByPriorityFee,
   CurrentBlockParams,
   Fee,
   GasFee,
@@ -18,9 +21,6 @@ export type {
   TransactionGasParams,
   RainbowMeteorologyData,
   SelectedGasFee,
-  BlocksToConfirmation,
-  BlocksToConfirmationByBaseFee,
-  BlocksToConfirmationByPriorityFee,
 } from './gas';
 export { NativeCurrencyKeys } from './nativeCurrencyTypes';
 export type Numberish = string | number;
