@@ -42,7 +42,7 @@ export const customAccentColorDark: Example = {
     source(
       <AccentColorProvider color={darkAccentColor}>
         <BackgroundProvider color="accent">
-          {backgroundStyle => (
+          {({ backgroundStyle }) => (
             <View style={backgroundStyle}>
               <Inset space="19px">
                 <Stack space="10px">
@@ -67,7 +67,7 @@ export const customAccentColorLight: Example = {
     source(
       <AccentColorProvider color={lightAccentColor}>
         <BackgroundProvider color="accent">
-          {backgroundStyle => (
+          {({ backgroundStyle }) => (
             <View style={backgroundStyle}>
               <Inset space="19px">
                 <Stack space="10px">
