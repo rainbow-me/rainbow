@@ -132,14 +132,19 @@ export default function RegisterEnsSheet() {
         </Box>
         <Box>
           {debouncedSearchQuery.length < 3 && (
-            <Row alignHorizontal="center" alignVertical="center" space="6px">
+            <Inline
+              alignHorizontal="center"
+              alignVertical="center"
+              space="6px"
+              wrap={false}
+            >
               <Box>
                 <ImgixImage source={dice} style={{ height: 20, width: 20 }} />
               </Box>
               <Text color="secondary50" size="16px" weight="bold">
                 Minimum 3 characters
               </Text>
-            </Row>
+            </Inline>
           )}
           <SheetActionButtonRow>
             {isSuccess && debouncedSearchQuery.length > 2 && (
