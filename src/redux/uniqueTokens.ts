@@ -244,6 +244,7 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
   const { uniqueTokens: existingUniqueTokens } = getState().uniqueTokens;
   const shouldUpdateInBatches = isEmpty(existingUniqueTokens);
   let uniqueTokens: UniqueAsset[] = [];
+  let errorCheck = false;
 
   const fetchNetwork = async (network: Network) => {
     let shouldStopFetching = false;
@@ -307,8 +308,9 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
         type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE,
       });
       captureException(error);
-      // stop fetching if there is an error
+      // stop fetching if there is an error & dont save results
       shouldStopFetching = true;
+      errorCheck = true;
     }
     return shouldStopFetching;
   };
@@ -330,10 +332,10 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
   // check that the account address to fetch for has not changed while fetching before updating state
   const isCurrentAccountAddress =
     accountAddress === (showcaseAddress || getState().settings.accountAddress);
-  if (!showcaseAddress && isCurrentAccountAddress) {
+  if (!showcaseAddress && isCurrentAccountAddress && !errorCheck) {
     saveUniqueTokens(uniqueTokens, accountAddress, currentNetwork);
   }
-  if (!shouldUpdateInBatches && isCurrentAccountAddress) {
+  if (!shouldUpdateInBatches && isCurrentAccountAddress && !errorCheck) {
     dispatch({
       payload: uniqueTokens,
       showcase: !!showcaseAddress,
