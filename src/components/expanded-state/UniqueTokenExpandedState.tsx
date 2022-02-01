@@ -18,6 +18,7 @@ import styled from 'styled-components';
 import URL from 'url-parse';
 import useWallets from '../../hooks/useWallets';
 import { lightModeThemeColors } from '../../styles/colors';
+import L2Disclaimer from '../L2Disclaimer';
 import Link from '../Link';
 import { ButtonPressAnimation } from '../animations';
 import {
@@ -41,16 +42,16 @@ import {
   Columns,
   Divider,
   Heading,
+  Inline,
   Inset,
   MarkdownText,
   MarkdownTextProps,
-  Row,
   Space,
   Stack,
   Text,
   TextProps,
 } from '@rainbow-me/design-system';
-import { UniqueAsset } from '@rainbow-me/entities';
+import { AssetTypes, UniqueAsset } from '@rainbow-me/entities';
 import { apiGetUniqueTokenFloorPrice } from '@rainbow-me/handlers/opensea-api';
 import { buildUniqueTokenName } from '@rainbow-me/helpers/assets';
 import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
@@ -216,10 +217,17 @@ const UniqueTokenExpandedState = ({
     opacity: 1 - animationProgress.value,
   }));
 
+  const handleL2DisclaimerPress = useCallback(() => {
+    navigate(Routes.EXPLAIN_SHEET, {
+      type: asset.network,
+    });
+  }, [asset.network, navigate]);
+
   const isShowcaseAsset = useMemo(
     () => showcaseTokens.includes(uniqueId) as boolean,
     [showcaseTokens, uniqueId]
   );
+
   const isSVG = isSupportedUriExtension(lowResUrl, ['.svg']);
 
   const imageColor =
@@ -241,10 +249,12 @@ const UniqueTokenExpandedState = ({
   }, [colors.whiteLabel, imageColor]);
 
   useEffect(() => {
-    apiGetUniqueTokenFloorPrice(network, urlSuffixForAsset).then(result => {
-      setFloorPrice(result);
-    });
-  }, [network, urlSuffixForAsset]);
+    !isPoap &&
+      asset.network !== AssetTypes.polygon &&
+      apiGetUniqueTokenFloorPrice(network, urlSuffixForAsset).then(result => {
+        setFloorPrice(result);
+      });
+  }, [asset.network, isPoap, network, urlSuffixForAsset]);
 
   const handlePressCollectionFloor = useCallback(() => {
     navigate(Routes.EXPLAIN_SHEET, {
@@ -360,14 +370,14 @@ const UniqueTokenExpandedState = ({
               <Inset horizontal="24px" vertical={sectionSpace}>
                 <Stack space={sectionSpace}>
                   <Stack space="42px">
-                    <Row alignHorizontal="justify">
+                    <Inline alignHorizontal="justify" wrap={false}>
                       <TextButton onPress={handlePressShowcase}>
                         {isShowcaseAsset ? '􀫝 In Showcase' : '􀐇 Showcase'}
                       </TextButton>
                       <TextButton align="right" onPress={handlePressShare}>
                         􀈂 Share
                       </TextButton>
-                    </Row>
+                    </Inline>
                     <UniqueTokenExpandedStateHeader asset={asset} />
                   </Stack>
                   {!isPoap ? (
@@ -393,11 +403,24 @@ const UniqueTokenExpandedState = ({
                       ) : null}
                     </Columns>
                   ) : null}
+                  {asset.network === AssetTypes.polygon ? (
+                    // @ts-expect-error JavaScript component
+                    <L2Disclaimer
+                      assetType={AssetTypes.polygon}
+                      colors={colors}
+                      hideDivider
+                      isNft
+                      marginBottom={0}
+                      marginHorizontal={0}
+                      onPress={handleL2DisclaimerPress}
+                      symbol="NFT"
+                    />
+                  ) : null}
                   <Stack
                     separator={<Divider color="divider20" />}
                     space={sectionSpace}
                   >
-                    {!isPoap ? (
+                    {!isPoap && asset.network !== AssetTypes.polygon ? (
                       <Bleed // Manually crop surrounding space until TokenInfoItem uses design system components
                         bottom={android ? '15px' : '6px'}
                         top={android ? '10px' : '4px'}

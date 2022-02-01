@@ -128,14 +128,14 @@ export default function SecretDisplaySection({
 
   const { colors } = useTheme();
   return (
-    <ColumnWithMargins
-      align="center"
-      justify="center"
-      margin={16}
-      paddingHorizontal={30}
-    >
+    <>
       {visible ? (
-        <Fragment>
+        <ColumnWithMargins
+          align="center"
+          justify="center"
+          margin={16}
+          paddingHorizontal={30}
+        >
           {seed ? (
             <Fragment>
               <CopyFloatingEmojis textToCopy={seed}>
@@ -159,9 +159,9 @@ export default function SecretDisplaySection({
           ) : (
             <LoadingSpinner color={colors.blueGreyDark50} />
           )}
-        </Fragment>
+        </ColumnWithMargins>
       ) : (
-        <Fragment>
+        <ColumnWithMargins align="center" justify="center">
           <AuthenticationText>
             {`You need to authenticate in order to access your recovery ${typeLabel}`}
           </AuthenticationText>
@@ -172,8 +172,8 @@ export default function SecretDisplaySection({
               showIcon={!seed}
             />
           </ToggleSecretButton>
-        </Fragment>
+        </ColumnWithMargins>
       )}
-    </ColumnWithMargins>
+    </>
   );
 }

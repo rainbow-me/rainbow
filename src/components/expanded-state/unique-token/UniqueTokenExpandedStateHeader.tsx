@@ -1,7 +1,7 @@
-import { toLower } from 'lodash';
+import { startCase, toLower } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import { Linking, View } from 'react-native';
-// @ts-expect-error
+// @ts-expect-error Missing types
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import styled from 'styled-components';
 import URL from 'url-parse';
@@ -13,13 +13,14 @@ import {
   Column,
   Columns,
   Heading,
+  Inline,
   Inset,
-  Row,
   Space,
   Stack,
   Text,
 } from '@rainbow-me/design-system';
 import { UniqueAsset } from '@rainbow-me/entities';
+import { Network } from '@rainbow-me/helpers';
 import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
 import {
   useAccountProfile,
@@ -31,6 +32,7 @@ import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
 import { position } from '@rainbow-me/styles';
 import {
   buildRainbowUrl,
+  ethereumUtils,
   magicMemo,
   showActionSheetWithOptions,
 } from '@rainbow-me/utils';
@@ -42,40 +44,43 @@ const AssetActionsEnum = {
   rainbowWeb: 'rainbowWeb',
 } as const;
 
-const AssetActions = {
-  [AssetActionsEnum.copyTokenID]: {
-    actionKey: AssetActionsEnum.copyTokenID,
-    actionTitle: 'Copy Token ID',
-    icon: {
-      iconType: 'SYSTEM',
-      iconValue: 'square.on.square',
+const getAssetActions = (network: Network) =>
+  ({
+    [AssetActionsEnum.copyTokenID]: {
+      actionKey: AssetActionsEnum.copyTokenID,
+      actionTitle: 'Copy Token ID',
+      icon: {
+        iconType: 'SYSTEM',
+        iconValue: 'square.on.square',
+      },
     },
-  },
-  [AssetActionsEnum.download]: {
-    actionKey: AssetActionsEnum.download,
-    actionTitle: 'Save to Photos',
-    icon: {
-      iconType: 'SYSTEM',
-      iconValue: 'photo.on.rectangle.angled',
+    [AssetActionsEnum.download]: {
+      actionKey: AssetActionsEnum.download,
+      actionTitle: 'Save to Photos',
+      icon: {
+        iconType: 'SYSTEM',
+        iconValue: 'photo.on.rectangle.angled',
+      },
     },
-  },
-  [AssetActionsEnum.etherscan]: {
-    actionKey: AssetActionsEnum.etherscan,
-    actionTitle: 'View on Etherscan',
-    icon: {
-      iconType: 'SYSTEM',
-      iconValue: 'link',
+    [AssetActionsEnum.etherscan]: {
+      actionKey: AssetActionsEnum.etherscan,
+      actionTitle: `View on ${startCase(
+        ethereumUtils.getBlockExplorer(network)
+      )}`,
+      icon: {
+        iconType: 'SYSTEM',
+        iconValue: 'link',
+      },
     },
-  },
-  [AssetActionsEnum.rainbowWeb]: {
-    actionKey: AssetActionsEnum.rainbowWeb,
-    actionTitle: 'View on Web',
-    icon: {
-      iconType: 'SYSTEM',
-      iconValue: 'safari.fill',
+    [AssetActionsEnum.rainbowWeb]: {
+      actionKey: AssetActionsEnum.rainbowWeb,
+      actionTitle: 'View on Web',
+      icon: {
+        iconType: 'SYSTEM',
+        iconValue: 'safari.fill',
+      },
     },
-  },
-} as const;
+  } as const);
 
 const FamilyActionsEnum = {
   collectionWebsite: 'collectionWebsite',
@@ -186,6 +191,8 @@ const UniqueTokenExpandedStateHeader = ({
 
   const isPhotoDownloadAvailable = !isSVG && !isENS;
   const assetMenuConfig = useMemo(() => {
+    // @ts-expect-error network could be undefined?
+    const AssetActions = getAssetActions(asset?.network);
     return {
       menuItems: [
         {
@@ -210,7 +217,7 @@ const UniqueTokenExpandedStateHeader = ({
       ],
       menuTitle: '',
     } as const;
-  }, [asset.id, isPhotoDownloadAvailable]);
+  }, [asset.id, asset?.network, isPhotoDownloadAvailable]);
 
   const handlePressFamilyMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
@@ -240,11 +247,11 @@ const UniqueTokenExpandedStateHeader = ({
   const handlePressAssetMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === AssetActionsEnum.etherscan) {
-        Linking.openURL(
-          'https://etherscan.io/token/' +
-            asset.asset_contract.address +
-            '?a=' +
-            asset.id
+        ethereumUtils.openNftInBlockExplorer(
+          // @ts-expect-error address could be undefined?
+          asset.asset_contract.address,
+          asset.id,
+          asset?.network
         );
       } else if (actionKey === AssetActionsEnum.rainbowWeb) {
         Linking.openURL(buildRainbowUrl(asset, accountENS, accountAddress));
@@ -401,7 +408,7 @@ const UniqueTokenExpandedStateHeader = ({
           </Bleed>
         </Column>
       </Columns>
-      <Row>
+      <Inline wrap={false}>
         <Bleed space={familyNameHitSlop}>
           <ContextMenuButton
             activeOpacity={0}
@@ -414,7 +421,7 @@ const UniqueTokenExpandedStateHeader = ({
           >
             <ButtonPressAnimation scaleTo={0.88}>
               <Inset space={familyNameHitSlop}>
-                <Row alignVertical="center" space="6px">
+                <Inline alignVertical="center" space="6px" wrap={false}>
                   {asset.familyImage ? (
                     <Bleed vertical="6px">
                       <FamilyImageWrapper>
@@ -422,7 +429,7 @@ const UniqueTokenExpandedStateHeader = ({
                       </FamilyImageWrapper>
                     </Bleed>
                   ) : null}
-                  <Row space="4px">
+                  <Inline space="4px" wrap={false}>
                     <View
                       style={{
                         maxWidth: deviceWidth - paddingHorizontal * 6,
@@ -435,13 +442,13 @@ const UniqueTokenExpandedStateHeader = ({
                     <Text color="secondary50" weight="bold">
                       􀆊
                     </Text>
-                  </Row>
-                </Row>
+                  </Inline>
+                </Inline>
               </Inset>
             </ButtonPressAnimation>
           </ContextMenuButton>
         </Bleed>
-      </Row>
+      </Inline>
     </Stack>
   );
 };
