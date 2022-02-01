@@ -1,4 +1,3 @@
-import styled from '@rainbow-me/styled-components';
 import analytics from '@segment/analytics-react-native';
 import { captureMessage } from '@sentry/react-native';
 import lang from 'i18n-js';
@@ -22,17 +21,20 @@ import {
   useWallets,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const ContainerWidth = 261;
 
-const Container = styled(Centered).attrs({ direction: 'column' })({
-  bottom: ({ isSmallPhone }) => isSmallPhone && 80,
-  position: 'absolute',
-  top: 60,
-  width: ContainerWidth,
-});
+const Container = styled(Centered).attrs({ direction: 'column' })(
+  ({ isSmallPhone }) => ({
+    ...(isSmallPhone && { bottom: 80 }),
+    position: 'absolute',
+    top: 60,
+    width: ContainerWidth,
+  })
+);
 
 const InterstitialButton = styled(ButtonPressAnimation).attrs(
   ({ theme: { colors } }) => ({
@@ -172,7 +174,7 @@ const AmountButton = ({ amount, backgroundColor, color, onPress }) => {
 };
 
 const AddFundsInterstitial = ({ network }) => {
-  const { isSmallPhone, isTinyPhone } = useDimensions();
+  const { isSmallPhone } = useDimensions();
   const { navigate } = useNavigation();
   const { isDamaged } = useWallets();
   const { accountAddress } = useAccountSettings();
