@@ -3,6 +3,7 @@ import { web3Provider } from '@rainbow-me/handlers/web3';
 import { ENSABI, ETHRegistrarControllerABI } from '@rainbow-me/references';
 
 const ensAddress = '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e';
+// fixed to main regsitrar for now
 const ensRegistrarAddress = '0x283Af0B28c62C092C9727F1Ee09c02CA627EB7F5';
 
 const getENSContract = () => {
