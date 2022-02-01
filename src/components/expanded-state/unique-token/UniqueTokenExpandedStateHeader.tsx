@@ -341,7 +341,8 @@ const UniqueTokenExpandedStateHeader = ({
   const onPressAndroidAsset = useCallback(() => {
     const androidContractActions = [
       'View On Web',
-      'View on Etherscan',
+      // @ts-expect-error network could be undefined?
+      `View on ${startCase(ethereumUtils.getBlockExplorer(asset?.network))}`,
       ...(isPhotoDownloadAvailable ? (['Save to Photos'] as const) : []),
       'Copy Token ID',
     ] as const;
@@ -356,11 +357,11 @@ const UniqueTokenExpandedStateHeader = ({
         if (idx === 0) {
           Linking.openURL(buildRainbowUrl(asset, accountENS, accountAddress));
         } else if (idx === 1) {
-          Linking.openURL(
-            'https://etherscan.io/token/' +
-              asset.asset_contract.address +
-              '?a=' +
-              asset.id
+          ethereumUtils.openNftInBlockExplorer(
+            // @ts-expect-error address could be undefined?
+            asset.asset_contract.address,
+            asset.id,
+            asset?.network
           );
         } else if (isPhotoDownloadAvailable ? idx === 3 : idx === 2) {
           setClipboard(asset.id);
