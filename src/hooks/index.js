@@ -120,3 +120,4 @@ export { default as useFeesPanelInputRefs } from './useFeesPanelInputRefs';
 export { default as useAsyncEffect } from './useAsyncEffect';
 export { default as useHardwareBack } from './useHardwareBack';
 export { default as useUniswapCurrencyList } from './useUniswapCurrencyList';
+export { default as useENS } from './useENS';

@@ -18,7 +18,8 @@ import {
 } from '@rainbow-me/design-system';
 
 import { fetchRegistration } from '@rainbow-me/handlers/ens';
-import { useDebounceString, useDimensions } from '@rainbow-me/hooks';
+import { fromWei } from '@rainbow-me/helpers/utilities';
+import { useDebounceString, useDimensions, useENS } from '@rainbow-me/hooks';
 import { colors } from '@rainbow-me/styles';
 
 const Container = styled.View`
@@ -31,6 +32,7 @@ export default function RegisterEnsSheet() {
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounceString(searchQuery);
 
+  const { getAvailable, getRentPrice } = useENS();
   const { data: registration, status } = useQuery(
     debouncedSearchQuery.length > 3 && ['registration', debouncedSearchQuery],
     async (_, searchQuery) => {
@@ -38,11 +40,15 @@ export default function RegisterEnsSheet() {
         const date = new Date(Number(timestamp) * 1000);
         return `${date.toDateString()}`;
       };
+      const isAvailable = await getAvailable(searchQuery);
+      // dummy default to 1 year
+      const rentPrice = await getRentPrice(searchQuery, 31536000);
       const registration = await fetchRegistration(searchQuery + '.eth');
       return {
         expiryDate: fastFormatter(registration.expiryDate),
-        isRegistered: registration.isRegistered,
+        isRegistered: !isAvailable,
         registrationDate: fastFormatter(registration.registrationDate),
+        rentPrice: fromWei(rentPrice.toString()),
       };
     }
   );
