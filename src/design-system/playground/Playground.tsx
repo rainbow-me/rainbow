@@ -30,7 +30,7 @@ import headingPlayground from '../components/Heading/Heading.playground';
 import inlinePlayground from '../components/Inline/Inline.playground';
 import insetPlayground from '../components/Inset/Inset.playground';
 import markdownTextPlayground from '../components/MarkdownText/MarkdownText.playground';
-import rowPlayground from '../components/Row/Row.playground';
+import rowsPlayground from '../components/Rows/Rows.playground';
 import stackPlayground from '../components/Stack/Stack.playground';
 import textPlayground from '../components/Text/Text.playground';
 import textLinkPlayground from '../components/TextLink/TextLink.playground';
@@ -49,7 +49,7 @@ const allDocs = [
   inlinePlayground,
   insetPlayground,
   markdownTextPlayground,
-  rowPlayground,
+  rowsPlayground,
   stackPlayground,
   textPlayground,
   textLinkPlayground,
@@ -66,19 +66,26 @@ const styles = StyleSheet.create({
   },
 });
 
-const CodePreview = ({ Example }: { Example: Example['Example'] }) => {
+const CodePreview = ({
+  wrapper = children => children,
+  Example,
+}: {
+  wrapper: Example['wrapper'];
+  Example: Example['Example'];
+}) => {
   const { element } = React.useMemo(() => getSourceFromExample({ Example }), [
     Example,
   ]);
-  return <>{element}</>;
+  return <>{wrapper(element)}</>;
 };
 
 const ExamplePreview = ({
+  examples,
   name,
   subTitle,
   meta,
+  wrapper,
   Example,
-  examples,
 }: Example & { meta: Meta }) => {
   return (
     <Stack space="19px">
@@ -99,7 +106,7 @@ const ExamplePreview = ({
               : undefined
           }
         >
-          <CodePreview Example={Example} />
+          <CodePreview Example={Example} wrapper={wrapper} />
         </View>
       )}
       {examples?.map((example, i) => (
@@ -127,17 +134,19 @@ const DocsRow = ({ meta, examples }: Docs) => {
         </Inline>
       </TouchableOpacity>
       {open
-        ? examples?.map(({ name, subTitle, Example, examples }, index) =>
-            Example || examples ? (
-              <ExamplePreview
-                Example={Example}
-                examples={examples}
-                key={index}
-                meta={meta}
-                name={name}
-                subTitle={subTitle}
-              />
-            ) : null
+        ? examples?.map(
+            ({ name, subTitle, Example, examples, wrapper }, index) =>
+              Example || examples ? (
+                <ExamplePreview
+                  Example={Example}
+                  examples={examples}
+                  key={index}
+                  meta={meta}
+                  name={name}
+                  subTitle={subTitle}
+                  wrapper={wrapper}
+                />
+              ) : null
           )
         : null}
     </Stack>
