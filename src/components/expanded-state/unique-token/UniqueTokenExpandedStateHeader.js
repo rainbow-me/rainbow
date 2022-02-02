@@ -94,14 +94,6 @@ const FamilyActions = {
       iconValue: 'safari.fill',
     },
   },
-  [FamilyActionsEnum.etherscan]: {
-    actionKey: AssetActionsEnum.etherscan,
-    actionTitle: 'View on Etherscan',
-    icon: {
-      iconType: 'SYSTEM',
-      iconValue: 'safari.fill',
-    },
-  },
   [FamilyActionsEnum.discord]: {
     actionKey: FamilyActionsEnum.discord,
     actionTitle: 'Discord',
@@ -345,7 +337,7 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
   const onPressAndroidAsset = useCallback(() => {
     const androidContractActions = [
       'View On Web',
-      'View on Etherscan',
+      `View on ${startCase(ethereumUtils.getBlockExplorer(asset?.network))}`,
       ...(isPhotoDownloadAvailable ? ['Save to Photos'] : []),
       'Copy Token ID',
     ];
@@ -360,11 +352,10 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
         if (idx === 0) {
           Linking.openURL(buildRainbowUrl(asset, accountENS, accountAddress));
         } else if (idx === 1) {
-          Linking.openURL(
-            'https://etherscan.io/token/' +
-              asset.asset_contract.address +
-              '?a=' +
-              asset.id
+          ethereumUtils.openNftInBlockExplorer(
+            asset.asset_contract.address,
+            asset.id,
+            asset?.network
           );
         } else if (isPhotoDownloadAvailable ? idx === 3 : idx === 2) {
           setClipboard(asset.id);
