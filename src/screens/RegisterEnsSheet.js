@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import { useQuery } from 'react-query';
 import styled from 'styled-components';
-import SearchResultIndicator from '../components/ens-registration/SearchResultIndicator';
+import SearchResultIndicator from '../components/ens-registration/SearchResult/SearchResultIndicator';
 import dice from '../assets/dice.png';
 import TintButton from '../components/buttons/TintButton';
 import SearchInput from '../components/ens-registration/SearchInput/SearchInput';

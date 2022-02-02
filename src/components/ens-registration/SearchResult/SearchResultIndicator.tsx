@@ -1,7 +1,7 @@
 import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components';
-import { Text } from '../text';
+import { Text } from '../../text';
 import { colors } from '@rainbow-me/styles';
 
 interface Props {
