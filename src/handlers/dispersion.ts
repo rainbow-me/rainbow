@@ -55,15 +55,17 @@ export const getUniswapV2Tokens = async (
   return null;
 };
 
-export const getDPIBalance = async (): Promise<
-  { base: IndexToken; underlying: IndexToken[] } | undefined
-> => {
+export const getDPIBalance = async (): Promise<{
+  base: IndexToken;
+  underlying: IndexToken[];
+} | null> => {
   try {
     const res = await dispersionApi.get('/dispersion/v1/dpi');
-    return res?.data?.data;
+    return res?.data?.data ?? null;
   } catch (error) {
     logger.sentry(`Error fetching dpi balance: ${error}`);
     captureException(error);
+    return null;
   }
 };
 
