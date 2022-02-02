@@ -142,7 +142,6 @@ const GasSpeedButton = ({
 
   const {
     gasFeeParamsBySpeed,
-    gasFeesBySpeed,
     isSufficientGas,
     updateGasFeeOption,
     selectedGasFee,
@@ -151,8 +150,6 @@ const GasSpeedButton = ({
   } = useGas();
 
   const [gasPriceReady, setGasPriceReady] = useState(false);
-  const [estimatedTimeValue, setEstimatedTimeValue] = useState(0);
-  const [estimatedTimeUnit, setEstimatedTimeUnit] = useState('min');
   const [shouldOpenCustomGasSheet, setShouldOpenCustomGasSheet] = useState({
     focusTo: null,
     shouldOpen: false,
@@ -288,40 +285,18 @@ const GasSpeedButton = ({
 
   const formatTransactionTime = useCallback(() => {
     if (!gasPriceReady) return '';
-    const time = parseFloat(estimatedTimeValue || 0).toFixed(0);
-    let timeSymbol = '~';
+    const estimatedTime = (selectedGasFee?.estimatedTime?.display || '').split(
+      ' '
+    );
+    const [estimatedTimeValue = 0, estimatedTimeUnit = 'min'] = estimatedTime;
+    const time = parseFloat(estimatedTimeValue).toFixed(0);
 
-    if (selectedGasFeeOption === CUSTOM) {
-      const customWei = gasFeesBySpeed?.[CUSTOM]?.estimatedFee?.value?.amount;
-      if (customWei) {
-        const normalWei = gasFeesBySpeed?.[NORMAL]?.estimatedFee?.value?.amount;
-        const urgentWei = gasFeesBySpeed?.[URGENT]?.estimatedFee?.value?.amount;
-        const minGasPriceSlow = normalWei | urgentWei;
-        const maxGasPriceFast = urgentWei;
-        if (normalWei < minGasPriceSlow) {
-          timeSymbol = '>';
-        } else if (normalWei > maxGasPriceFast) {
-          timeSymbol = '<';
-        }
-
-        return `${timeSymbol}${time} ${estimatedTimeUnit}`;
-      } else {
-        return '';
-      }
-    }
-
+    let timeSymbol = estimatedTimeUnit === 'hr' ? '>' : '~';
     if (time === '0' && estimatedTimeUnit === 'min') {
       return '';
     }
-
     return `${timeSymbol}${time} ${estimatedTimeUnit}`;
-  }, [
-    estimatedTimeUnit,
-    estimatedTimeValue,
-    gasFeesBySpeed,
-    gasPriceReady,
-    selectedGasFeeOption,
-  ]);
+  }, [gasPriceReady, selectedGasFee?.estimatedTime?.display]);
 
   const openGasHelper = useCallback(() => {
     android && Keyboard.dismiss();
@@ -509,15 +484,6 @@ const GasSpeedButton = ({
     prevShouldOpenCustomGasSheet,
     shouldOpenCustomGasSheet.shouldOpen,
   ]);
-
-  useEffect(() => {
-    const estimatedTime = (selectedGasFee?.estimatedTime?.display || '').split(
-      ' '
-    );
-
-    setEstimatedTimeValue(estimatedTime[0] || 0);
-    setEstimatedTimeUnit(estimatedTime[1] || 'min');
-  }, [selectedGasFee, selectedGasFeeOption]);
 
   return (
     <Container
