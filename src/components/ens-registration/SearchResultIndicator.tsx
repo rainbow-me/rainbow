@@ -5,10 +5,10 @@ import { Text } from '../text';
 import { colors } from '@rainbow-me/styles';
 
 interface Props {
-  type: string;
-  isRegistered: boolean;
-  price: string;
-  expiryDate: string;
+  type: 'availability' | 'expiration' | 'price';
+  isRegistered?: boolean;
+  price?: string;
+  expiryDate?: string;
 }
 
 const SearchResultIndicator = ({
@@ -17,7 +17,7 @@ const SearchResultIndicator = ({
   price,
   expiryDate,
 }: Props) => {
-  let text: string, gradient: string[], textColor: string;
+  let text: string | undefined, gradient: string[], textColor: string;
   switch (type) {
     case 'availability':
       if (isRegistered) {
@@ -40,8 +40,6 @@ const SearchResultIndicator = ({
       gradient = colors.gradients.transparentToLightGrey;
       textColor = colors.blueGreyDark;
       break;
-    default:
-      return;
   }
 
   const Gradient = styled(LinearGradient).attrs({
