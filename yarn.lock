@@ -14176,9 +14176,10 @@ react-native-android-keyboard-adjust@1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/react-native-android-keyboard-adjust/-/react-native-android-keyboard-adjust-1.2.0.tgz#7988b1258482c08548ce972401b2ae03a674fcb4"
 
-react-native-branch@5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/react-native-branch/-/react-native-branch-5.0.0.tgz#9d2102abb3c9a577ce4327e434151ece2b4c7c78"
+react-native-branch@5.3.1:
+  version "5.3.1"
+  resolved "https://registry.yarnpkg.com/react-native-branch/-/react-native-branch-5.3.1.tgz#872bb3500a6756e9e59883bd03fd8f9aab4857c6"
+  integrity sha512-d7gaQQg43bS57O4j8V07s7lqD5gu3G4Vrf23bS/RnxTmQMKcifVFpUCSyUYuiUyL4H58D7pL2GgsujP2TRuhkw==
 
 react-native-camera@4.2.1:
   version "4.2.1"
@@ -14263,9 +14264,10 @@ react-native-extra-dimensions-android@1.2.2:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/react-native-extra-dimensions-android/-/react-native-extra-dimensions-android-1.2.2.tgz#04e311bc27f66ec5b15e8a719abba462a2d71e58"
 
-react-native-fast-image@8.3.4:
-  version "8.3.4"
-  resolved "https://registry.yarnpkg.com/react-native-fast-image/-/react-native-fast-image-8.3.4.tgz#79edca177e30311b19d59ff335625bcbe22650d7"
+react-native-fast-image@8.5.11:
+  version "8.5.11"
+  resolved "https://registry.yarnpkg.com/react-native-fast-image/-/react-native-fast-image-8.5.11.tgz#e3dc969d0e4e8df026646bf18194465aa55cbc2b"
+  integrity sha512-cNW4bIJg3nvKaheG8vGMfqCt5LMWX9MS5+wMudgKIHbGO51spRr4sgnlhVgwHLcZ5aeNOVJ8CPRxDIWKRq/0QA==
 
 react-native-fit-image@^1.5.5:
   version "1.5.5"
