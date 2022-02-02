@@ -17,33 +17,26 @@ const SearchResultIndicator = ({
   price,
   expiryDate,
 }: Props) => {
-  let text: string,
-    containerWidth: number,
-    gradient: string[],
-    textColor: string;
+  let text: string, gradient: string[], textColor: string;
   switch (type) {
     case 'availability':
       if (isRegistered) {
         text = '😭 Taken';
-        containerWidth = 110;
         gradient = colors.gradients.transparentToLightOrange;
         textColor = colors.lightOrange;
       } else {
         text = '🥳 Available';
-        containerWidth = 140;
         gradient = colors.gradients.transparentToGreen;
         textColor = colors.green;
       }
       break;
     case 'expiration':
       text = `Til ${expiryDate}`; // fix when we have backend
-      containerWidth = 210;
       gradient = colors.gradients.transparentToLightGrey;
       textColor = colors.blueGreyDark;
       break;
     case 'price':
       text = price; // fix when we have backend
-      containerWidth = 110;
       gradient = colors.gradients.transparentToLightGrey;
       textColor = colors.blueGreyDark;
       break;
@@ -61,7 +54,8 @@ const SearchResultIndicator = ({
     height: 40;
     justify-content: center;
     overflow: hidden;
-    width: ${containerWidth};
+    padding-left: 15;
+    padding-right: 15;
   `;
 
   return (
@@ -69,7 +63,7 @@ const SearchResultIndicator = ({
       <Text
         color={textColor}
         containsEmoji={type === 'availability'}
-        size="18px"
+        size="20px"
         weight="heavy"
       >
         {text}

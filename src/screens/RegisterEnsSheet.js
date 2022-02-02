@@ -89,18 +89,6 @@ export default function RegisterEnsSheet() {
                   <SearchResultIndicator price="$5 / Year" type="price" />
                 )}
               </Row>
-              <Row alignHorizontal="center">
-                <Text color="secondary40" size="18px" weight="bold">
-                  {registration.isRegistered
-                    ? `Til ${registration.expiryDate}`
-                    : `"Price"`}
-                </Text>
-              </Row>
-              {!registration.isRegistered && (
-                <Text color="secondary40" size="18px" weight="bold">
-                  Estimated cost?
-                </Text>
-              )}
             </Stack>
           )}
         </Box>
