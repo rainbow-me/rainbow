@@ -54,6 +54,7 @@ export {
   ENSRegistryWithFallbackABI,
   ETHRegistrarControllerABI,
   ReverseRegistrarABI,
+  ENSBaseRegistrarImplementationABI,
 } from './ens';
 
 export const OVM_GAS_PRICE_ORACLE =
