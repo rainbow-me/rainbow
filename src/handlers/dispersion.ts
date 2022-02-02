@@ -70,13 +70,14 @@ export const getDPIBalance = async (): Promise<{
 };
 
 export const getTrendingAddresses = async (): Promise<
-  EthereumAddress[] | undefined
+  EthereumAddress[] | null
 > => {
   try {
     const res = await dispersionApi.get('/dispersion/v1/trending');
-    return res?.data?.data?.trending || [];
+    return res?.data?.data?.trending ?? null;
   } catch (error) {
     logger.sentry(`Error fetching trending addresses: ${error}`);
     captureException(error);
+    return null;
   }
 };
