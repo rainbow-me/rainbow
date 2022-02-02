@@ -49,11 +49,13 @@ export default function RegisterEnsSheet() {
       // dummy default to 1 year
       const rentPrice = await getRentPrice(searchQuery, 31536000);
       const exipryDate = await getNameExpires(searchQuery);
-      const registration = await fetchRegistration(searchQuery + '.eth');
+      const { registrationDate } = await fetchRegistration(
+        searchQuery + '.eth'
+      );
       return {
         expiryDate: fastFormatter(exipryDate),
         isRegistered: !isAvailable,
-        registrationDate: fastFormatter(registration.registrationDate),
+        registrationDate: fastFormatter(registrationDate),
         rentPrice: fromWei(rentPrice.toString()),
       };
     }

@@ -75,14 +75,12 @@ export const fetchRegistration = async (recipient: any) => {
       },
     });
 
-    const { registrationDate, expiryDate } =
-      registrations?.data?.registrations?.[0] || {};
+    const { registrationDate } = registrations?.data?.registrations?.[0] || {};
 
     if (!isEmpty(registrations?.data?.registrations?.[0])) {
-      return { expiryDate, isRegistered: true, registrationDate };
+      return { isRegistered: true, registrationDate };
     } else {
       return {
-        expiryDate: null,
         isRegistered: false,
         registrationDate: null,
       };
