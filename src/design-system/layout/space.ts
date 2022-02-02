@@ -6,6 +6,7 @@ export const space = {
   '4px': 4,
   '5px': 5,
   '6px': 6,
+  '8px': 8,
   '10px': 10,
   '12px': 12,
   '15px': 15,
@@ -13,6 +14,9 @@ export const space = {
   '24px': 24,
   '30px': 30,
   '42px': 42,
+  '60px': 60,
+  '72px': 72,
+  '76px': 76,
 } as const;
 
 export const negativeSpace = {
@@ -22,6 +26,7 @@ export const negativeSpace = {
   '-4px': -4,
   '-5px': -5,
   '-6px': -6,
+  '-8px': -8,
   '-10px': -10,
   '-12px': -12,
   '-15px': -15,
@@ -29,6 +34,9 @@ export const negativeSpace = {
   '-24px': -24,
   '-30px': -30,
   '-42px': -42,
+  '-60px': -60,
+  '-72px': -72,
+  '-76px': -76,
 } as const;
 
 const spaceToNegativeSpace: Record<
@@ -41,6 +49,7 @@ const spaceToNegativeSpace: Record<
   '4px': '-4px',
   '5px': '-5px',
   '6px': '-6px',
+  '8px': '-8px',
   '10px': '-10px',
   '12px': '-12px',
   '15px': '-15px',
@@ -48,6 +57,9 @@ const spaceToNegativeSpace: Record<
   '24px': '-24px',
   '30px': '-30px',
   '42px': '-42px',
+  '60px': '-60px',
+  '72px': '-72px',
+  '76px': '-76px',
 };
 
 export const positionSpace = {

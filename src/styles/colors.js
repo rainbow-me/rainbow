@@ -188,6 +188,12 @@ const getColorsByTheme = darkMode => {
       'transparent',
       buildRgba(base.lightOrange, 0.06),
     ],
+    success: ['#FAFF00', '#2CCC00'],
+    successTint: ['#FFFFF0', '#FCFEFB'],
+    vividRainbow: ['#FFB114', '#FF54BB', '#00F0FF'],
+    vividRainbowTint: ['#FFFAF1', '#FFF5FB', '#F0FEFF'],
+    warning: ['#FFD963', '#FFB200'],
+    warningTint: ['#FFFDF6', '#FFFBF2'],
     whiteButton: ['#FFFFFF', '#F7F9FA'],
   };
 
@@ -286,6 +292,12 @@ const getColorsByTheme = darkMode => {
         'transparent',
         buildRgba(base.lightOrange, 0.06),
       ],
+      success: ['#FAFF00', '#2CCC00'],
+      successTint: ['#202118', '#141E18'],
+      vividRainbow: ['#FFB114', '#FF54BB', '#00F0FF'],
+      vividRainbowTint: ['#201C19', '#201723', '#112028'],
+      warning: ['#FFD963', '#FFB200'],
+      warningTint: ['#201F1E', '#201C18'],
       whiteButton: ['#404656', buildRgba('#404656', 0.8)],
     };
 

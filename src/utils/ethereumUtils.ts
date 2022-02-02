@@ -493,6 +493,17 @@ function openTokenEtherscanURL(address: EthereumAddress, network: Network) {
   Linking.openURL(`https://${etherscanHost}/token/${address}`);
 }
 
+function openNftInBlockExplorer(
+  contractAddress: string,
+  tokenId: string,
+  network: Network
+) {
+  const etherscanHost = getEtherscanHostForNetwork(network);
+  Linking.openURL(
+    `https://${etherscanHost}/token/${contractAddress}?a=${tokenId}`
+  );
+}
+
 function openTransactionInBlockExplorer(hash: string, network: Network) {
   const normalizedHash = hash.replace(/-.*/g, '');
   if (!isString(hash)) return;
@@ -647,6 +658,7 @@ export default {
   hasPreviousTransactions,
   isEthAddress,
   openAddressInBlockExplorer,
+  openNftInBlockExplorer,
   openTokenEtherscanURL,
   openTransactionInBlockExplorer,
   padLeft,

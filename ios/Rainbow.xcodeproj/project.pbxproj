@@ -722,7 +722,7 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Rainbow/Pods-Rainbow-frameworks.sh",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes/hermes.framework/hermes",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/hermes.framework/hermes",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -945,7 +945,7 @@
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 1.6.3;
+				MARKETING_VERSION = 1.6.5;
 				OTHER_CFLAGS = (
 					"$(inherited)",
 					"-DFB_SONARKIT_ENABLED=1",
@@ -1007,7 +1007,7 @@
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 1.6.3;
+				MARKETING_VERSION = 1.6.5;
 				OTHER_CFLAGS = (
 					"$(inherited)",
 					"-DFB_SONARKIT_ENABLED=1",
@@ -1107,7 +1107,7 @@
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 1.6.3;
+				MARKETING_VERSION = 1.6.5;
 				OTHER_CFLAGS = (
 					"$(inherited)",
 					"-DFB_SONARKIT_ENABLED=1",
@@ -1208,7 +1208,7 @@
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 1.6.3;
+				MARKETING_VERSION = 1.6.5;
 				OTHER_CFLAGS = (
 					"$(inherited)",
 					"-DFB_SONARKIT_ENABLED=1",

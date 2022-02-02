@@ -21,7 +21,8 @@
   },
   "globals": [
     "android",
-    "ios"
+    "ios",
+    "web"
   ],
   "include": [
     "next-env.d.ts",

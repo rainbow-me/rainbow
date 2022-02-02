@@ -1,4 +1,4 @@
-import React, { Children, ReactNode } from 'react';
+import React, { Children, ReactElement, ReactNode, useMemo } from 'react';
 import flattenChildren from 'react-flatten-children';
 import {
   AlignHorizontal,
@@ -16,7 +16,16 @@ export type InlineProps = {
   space?: Space;
   horizontalSpace?: Space;
   verticalSpace?: Space;
-};
+} & (
+  | {
+      separator?: undefined;
+      wrap?: true;
+    }
+  | {
+      separator?: ReactElement;
+      wrap: false;
+    }
+);
 
 /**
  * @description Renders flowing content with equal spacing between items
@@ -29,9 +38,15 @@ export function Inline({
   space,
   horizontalSpace: horizontalSpaceProp,
   verticalSpace: verticalSpaceProp,
+  separator,
+  wrap = true,
 }: InlineProps) {
   const verticalSpace = verticalSpaceProp ?? space;
   const horizontalSpace = horizontalSpaceProp ?? space;
+
+  const flattenedChildren = useMemo(() => flattenChildren(children), [
+    children,
+  ]);
 
   return (
     <Box
@@ -39,20 +54,40 @@ export function Inline({
         alignVertical ? alignVerticalToFlexAlign[alignVertical] : undefined
       }
       flexDirection="row"
-      flexWrap="wrap"
+      flexWrap={wrap ? 'wrap' : undefined}
       justifyContent={
         alignHorizontal
           ? alignHorizontalToFlexAlign[alignHorizontal]
           : undefined
       }
-      marginRight={horizontalSpace ? negateSpace(horizontalSpace) : undefined}
-      marginTop={verticalSpace ? negateSpace(verticalSpace) : undefined}
+      marginRight={
+        wrap && horizontalSpace ? negateSpace(horizontalSpace) : undefined
+      }
+      marginTop={wrap && verticalSpace ? negateSpace(verticalSpace) : undefined}
     >
-      {Children.map(flattenChildren(children), child => (
-        <Box paddingRight={horizontalSpace} paddingTop={verticalSpace}>
-          {child}
-        </Box>
-      ))}
+      {Children.map(flattenedChildren, (child, index) => {
+        if (wrap) {
+          return (
+            <Box paddingRight={horizontalSpace} paddingTop={verticalSpace}>
+              {child}
+            </Box>
+          );
+        }
+
+        const isLastChild = index === flattenedChildren.length - 1;
+        return (
+          <>
+            {horizontalSpace && !isLastChild ? (
+              <Box paddingRight={horizontalSpace}>{child}</Box>
+            ) : (
+              child
+            )}
+            {separator && !isLastChild ? (
+              <Box paddingRight={horizontalSpace}>{separator}</Box>
+            ) : null}
+          </>
+        );
+      })}
     </Box>
   );
 }

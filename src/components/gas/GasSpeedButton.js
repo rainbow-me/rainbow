@@ -142,7 +142,6 @@ const GasSpeedButton = ({
 
   const {
     gasFeeParamsBySpeed,
-    gasFeesBySpeed,
     isSufficientGas,
     updateGasFeeOption,
     selectedGasFee,
@@ -151,8 +150,6 @@ const GasSpeedButton = ({
   } = useGas();
 
   const [gasPriceReady, setGasPriceReady] = useState(false);
-  const [estimatedTimeValue, setEstimatedTimeValue] = useState(0);
-  const [estimatedTimeUnit, setEstimatedTimeUnit] = useState('min');
   const [shouldOpenCustomGasSheet, setShouldOpenCustomGasSheet] = useState({
     focusTo: null,
     shouldOpen: false,
@@ -210,17 +207,14 @@ const GasSpeedButton = ({
     [gasPriceReady, isL2, nativeCurrencySymbol, nativeCurrency]
   );
 
-  const openCustomOptions = useCallback(focusTo => {
-    android && Keyboard.dismiss();
-    setShouldOpenCustomGasSheet({ focusTo, shouldOpen: true });
-  }, []);
+  const openCustomOptionsRef = useRef();
 
   const openCustomGasSheet = useCallback(() => {
     if (gasIsNotReady) return;
     navigate(Routes.CUSTOM_GAS_SHEET, {
       asset,
       focusTo: shouldOpenCustomGasSheet.focusTo,
-      openCustomOptions: focusTo => openCustomOptions(focusTo),
+      openCustomOptions: focusTo => openCustomOptionsRef.current(focusTo),
       speeds: speeds ?? GasSpeedOrder,
       type: 'custom_gas',
     });
@@ -230,8 +224,20 @@ const GasSpeedButton = ({
     asset,
     shouldOpenCustomGasSheet.focusTo,
     speeds,
-    openCustomOptions,
   ]);
+
+  const openCustomOptions = useCallback(
+    focusTo => {
+      if (ios) {
+        setShouldOpenCustomGasSheet({ focusTo, shouldOpen: true });
+      } else {
+        openCustomGasSheet();
+      }
+    },
+    [openCustomGasSheet]
+  );
+
+  openCustomOptionsRef.current = openCustomOptions;
 
   const renderGasPriceText = useCallback(
     animatedNumber => {
@@ -255,57 +261,42 @@ const GasSpeedButton = ({
     [theme, colors]
   );
 
+  // I'M SHITTY CODE BUT GOT THINGS DONE REFACTOR ME ASAP
   const handlePressSpeedOption = useCallback(
     selectedSpeed => {
-      updateGasFeeOption(selectedSpeed);
-      InteractionManager.runAfterInteractions(() => {
-        if (selectedSpeed === CUSTOM) {
-          setShouldOpenCustomGasSheet({
-            focusTo: null,
-            shouldOpen: true,
+      if (selectedSpeed === CUSTOM) {
+        if (ios) {
+          InteractionManager.runAfterInteractions(() => {
+            setShouldOpenCustomGasSheet({
+              focusTo: null,
+              shouldOpen: true,
+            });
           });
+        } else {
+          openCustomGasSheet();
+          setTimeout(() => updateGasFeeOption(selectedSpeed), 500);
+          return;
         }
-      });
+      }
+      updateGasFeeOption(selectedSpeed);
     },
-    [updateGasFeeOption]
+    [updateGasFeeOption, openCustomGasSheet]
   );
 
   const formatTransactionTime = useCallback(() => {
     if (!gasPriceReady) return '';
-    const time = parseFloat(estimatedTimeValue || 0).toFixed(0);
-    let timeSymbol = '~';
+    const estimatedTime = (selectedGasFee?.estimatedTime?.display || '').split(
+      ' '
+    );
+    const [estimatedTimeValue = 0, estimatedTimeUnit = 'min'] = estimatedTime;
+    const time = parseFloat(estimatedTimeValue).toFixed(0);
 
-    if (selectedGasFeeOption === CUSTOM) {
-      const customWei = gasFeesBySpeed?.[CUSTOM]?.estimatedFee?.value?.amount;
-      if (customWei) {
-        const normalWei = gasFeesBySpeed?.[NORMAL]?.estimatedFee?.value?.amount;
-        const urgentWei = gasFeesBySpeed?.[URGENT]?.estimatedFee?.value?.amount;
-        const minGasPriceSlow = normalWei | urgentWei;
-        const maxGasPriceFast = urgentWei;
-        if (normalWei < minGasPriceSlow) {
-          timeSymbol = '>';
-        } else if (normalWei > maxGasPriceFast) {
-          timeSymbol = '<';
-        }
-
-        return `${timeSymbol}${time} ${estimatedTimeUnit}`;
-      } else {
-        return '';
-      }
-    }
-
+    let timeSymbol = estimatedTimeUnit === 'hr' ? '>' : '~';
     if (time === '0' && estimatedTimeUnit === 'min') {
       return '';
     }
-
     return `${timeSymbol}${time} ${estimatedTimeUnit}`;
-  }, [
-    estimatedTimeUnit,
-    estimatedTimeValue,
-    gasFeesBySpeed,
-    gasPriceReady,
-    selectedGasFeeOption,
-  ]);
+  }, [gasPriceReady, selectedGasFee?.estimatedTime?.display]);
 
   const openGasHelper = useCallback(() => {
     android && Keyboard.dismiss();
@@ -493,15 +484,6 @@ const GasSpeedButton = ({
     prevShouldOpenCustomGasSheet,
     shouldOpenCustomGasSheet.shouldOpen,
   ]);
-
-  useEffect(() => {
-    const estimatedTime = (selectedGasFee?.estimatedTime?.display || '').split(
-      ' '
-    );
-
-    setEstimatedTimeValue(estimatedTime[0] || 0);
-    setEstimatedTimeUnit(estimatedTime[1] || 'min');
-  }, [selectedGasFee, selectedGasFeeOption]);
 
   return (
     <Container
