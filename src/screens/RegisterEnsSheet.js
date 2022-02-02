@@ -1,27 +1,18 @@
 import React, { useState } from 'react';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import { useQuery } from 'react-query';
-import styled from 'styled-components';
-import SearchResultIndicator from '../components/ens-registration/SearchResult/SearchResultIndicator';
 import dice from '../assets/dice.png';
 import TintButton from '../components/buttons/TintButton';
-import SearchInput from '../components/ens-registration/SearchInput/SearchInput';
+import {
+  SearchInput,
+  SearchResultIndicator,
+} from '../components/ens-registration';
 import {
   SheetActionButton,
   SheetActionButtonRow,
   SlackSheet,
 } from '../components/sheet';
-import {
-  Box,
-  Column,
-  Columns,
-  Heading,
-  Inline,
-  Row,
-  Stack,
-  Text,
-} from '@rainbow-me/design-system';
-
+import { Box, Heading, Inline, Stack, Text } from '@rainbow-me/design-system';
 import { fetchRegistration } from '@rainbow-me/handlers/ens';
 import {
   useDebounceString,
@@ -75,7 +66,7 @@ export default function RegisterEnsSheet() {
           ? { height: '100%' }
           : { additionalTopPadding: true, contentHeight: deviceHeight })}
       >
-        <Box flexGrow={1} paddingTop="30px">
+        <Box flexGrow={1} paddingHorizontal="19px" paddingTop="30px">
           <Stack alignHorizontal="center" space="15px">
             <Heading size="23px" weight="heavy">
               􀠎 Find your name
@@ -85,11 +76,7 @@ export default function RegisterEnsSheet() {
             </Text>
           </Stack>
 
-          <Box
-            alignItems="center"
-            paddingHorizontal="19px"
-            paddingVertical="42px"
-          >
+          <Box alignItems="center" paddingBottom="24px" paddingTop="42px">
             <SearchInput
               isLoading={isLoading}
               onChangeText={setSearchQuery}
@@ -105,22 +92,20 @@ export default function RegisterEnsSheet() {
             </Text>
           )}
           {isSuccess && (
-            <Stack space="5px">
-              <Row alignHorizontal="justify">
+            <Inline alignHorizontal="justify">
+              <SearchResultIndicator
+                isRegistered={registration.isRegistered}
+                type="availability"
+              />
+              {registration.isRegistered ? (
                 <SearchResultIndicator
-                  isRegistered={registration.isRegistered}
-                  type="availability"
+                  expiryDate={registration.expiryDate}
+                  type="expiration"
                 />
-                {registration.isRegistered ? (
-                  <SearchResultIndicator
-                    expiryDate={registration.expiryDate}
-                    type="expiration"
-                  />
-                ) : (
-                  <SearchResultIndicator price="$5 / Year" type="price" />
-                )}
-              </Row>
-            </Stack>
+              ) : (
+                <SearchResultIndicator price="$5 / Year" type="price" />
+              )}
+            </Inline>
           )}
         </Box>
         <Box>

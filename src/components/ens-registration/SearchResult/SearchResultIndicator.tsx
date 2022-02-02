@@ -4,12 +4,26 @@ import styled from 'styled-components';
 import { Text } from '../../text';
 import { useTheme } from '@rainbow-me/context';
 
-interface Props {
+type Props = {
   type: 'availability' | 'expiration' | 'price';
   isRegistered?: boolean;
   price?: string;
   expiryDate?: string;
-}
+};
+
+const GradientBackground = styled(LinearGradient).attrs(({ colors }) => ({
+  colors: colors,
+  end: { x: 1, y: 0 },
+  start: { x: 0, y: 1 },
+}))`
+  align-items: center;
+  border-radius: 46;
+  height: 40;
+  justify-content: center;
+  overflow: hidden;
+  padding-left: 15;
+  padding-right: 15;
+`;
 
 const SearchResultIndicator = ({
   type,
@@ -43,22 +57,8 @@ const SearchResultIndicator = ({
       break;
   }
 
-  const Gradient = styled(LinearGradient).attrs({
-    colors: gradient,
-    end: { x: 1, y: 0 },
-    start: { x: 0, y: 1 },
-  })`
-    align-items: center;
-    border-radius: 46;
-    height: 40;
-    justify-content: center;
-    overflow: hidden;
-    padding-left: 15;
-    padding-right: 15;
-  `;
-
   return (
-    <Gradient>
+    <GradientBackground colors={gradient}>
       <Text
         color={textColor}
         containsEmoji={type === 'availability'}
@@ -67,7 +67,7 @@ const SearchResultIndicator = ({
       >
         {text}
       </Text>
-    </Gradient>
+    </GradientBackground>
   );
 };
 
