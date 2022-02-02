@@ -3,6 +3,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components';
 import { Text } from '../../text';
 import { useTheme } from '@rainbow-me/context';
+import { useDimensions } from '@rainbow-me/hooks';
 
 type Props = {
   type: 'availability' | 'expiration' | 'price';
@@ -32,6 +33,7 @@ const SearchResultIndicator = ({
   expiryDate,
 }: Props) => {
   const { colors } = useTheme();
+  const { isSmallPhone } = useDimensions();
   let text: string | undefined, gradient: string[], textColor: string;
   switch (type) {
     case 'availability':
@@ -62,7 +64,7 @@ const SearchResultIndicator = ({
       <Text
         color={textColor}
         containsEmoji={type === 'availability'}
-        size="20px"
+        size={isSmallPhone ? '18px' : '20px'}
         weight="heavy"
       >
         {text}
