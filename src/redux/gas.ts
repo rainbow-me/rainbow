@@ -371,7 +371,7 @@ export const gasPricesStartPolling = (network = Network.mainnet) => async (
       // 20 secs
       normalWait: 0.34,
       urgent: normalGasPrice,
-      urgentWait: 34,
+      urgentWait: 0.34,
     };
     return priceData;
   };
