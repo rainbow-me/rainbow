@@ -2,7 +2,7 @@ import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components';
 import { Text } from '../../text';
-import { colors } from '@rainbow-me/styles';
+import { useTheme } from '@rainbow-me/context';
 
 interface Props {
   type: 'availability' | 'expiration' | 'price';
@@ -17,6 +17,7 @@ const SearchResultIndicator = ({
   price,
   expiryDate,
 }: Props) => {
+  const { colors } = useTheme();
   let text: string | undefined, gradient: string[], textColor: string;
   switch (type) {
     case 'availability':
