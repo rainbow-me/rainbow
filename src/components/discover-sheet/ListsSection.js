@@ -104,7 +104,7 @@ export default function ListSection() {
     const tokens = await getTrendingAddresses();
     clearList('trending');
 
-    if (!tokens) {
+    if (tokens) {
       dispatch(emitAssetRequest(tokens));
       dispatch(emitChartsRequest(tokens));
       updateList(tokens, 'trending', true);
