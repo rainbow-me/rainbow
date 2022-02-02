@@ -1,37 +1,29 @@
-import React, { Children, ReactNode } from 'react';
+import React, { Children, ReactElement, ReactNode, useMemo } from 'react';
 import flattenChildren from 'react-flatten-children';
+import {
+  AlignHorizontal,
+  alignHorizontalToFlexAlign,
+  AlignVertical,
+  alignVerticalToFlexAlign,
+} from '../../layout/alignment';
 import { negateSpace, Space } from '../../layout/space';
 import { Box } from '../Box/Box';
-
-const alignHorizontalToFlexAlign = {
-  center: 'center',
-  justify: 'space-between',
-  left: 'flex-start',
-  right: 'flex-end',
-} as const;
-type AlignHorizontal = keyof typeof alignHorizontalToFlexAlign;
-
-const alignVerticalToFlexAlign = {
-  bottom: 'flex-end',
-  center: 'center',
-  top: 'flex-start',
-} as const;
-type AlignVertical = keyof typeof alignVerticalToFlexAlign;
 
 export type InlineProps = {
   children: ReactNode;
   alignHorizontal?: AlignHorizontal;
   alignVertical?: AlignVertical;
+  space?: Space;
+  horizontalSpace?: Space;
+  verticalSpace?: Space;
 } & (
   | {
-      space: Space;
-      horizontalSpace?: Space;
-      verticalSpace?: Space;
+      separator?: undefined;
+      wrap?: true;
     }
   | {
-      space?: Space;
-      horizontalSpace: Space;
-      verticalSpace: Space;
+      separator?: ReactElement;
+      wrap: false;
     }
 );
 
@@ -46,9 +38,15 @@ export function Inline({
   space,
   horizontalSpace: horizontalSpaceProp,
   verticalSpace: verticalSpaceProp,
+  separator,
+  wrap = true,
 }: InlineProps) {
   const verticalSpace = verticalSpaceProp ?? space;
   const horizontalSpace = horizontalSpaceProp ?? space;
+
+  const flattenedChildren = useMemo(() => flattenChildren(children), [
+    children,
+  ]);
 
   return (
     <Box
@@ -56,20 +54,40 @@ export function Inline({
         alignVertical ? alignVerticalToFlexAlign[alignVertical] : undefined
       }
       flexDirection="row"
-      flexWrap="wrap"
+      flexWrap={wrap ? 'wrap' : undefined}
       justifyContent={
         alignHorizontal
           ? alignHorizontalToFlexAlign[alignHorizontal]
           : undefined
       }
-      marginBottom={verticalSpace ? negateSpace(verticalSpace) : undefined}
-      marginLeft={horizontalSpace ? negateSpace(horizontalSpace) : undefined}
+      marginRight={
+        wrap && horizontalSpace ? negateSpace(horizontalSpace) : undefined
+      }
+      marginTop={wrap && verticalSpace ? negateSpace(verticalSpace) : undefined}
     >
-      {Children.map(flattenChildren(children), child => (
-        <Box paddingBottom={verticalSpace} paddingLeft={horizontalSpace}>
-          {child}
-        </Box>
-      ))}
+      {Children.map(flattenedChildren, (child, index) => {
+        if (wrap) {
+          return (
+            <Box paddingRight={horizontalSpace} paddingTop={verticalSpace}>
+              {child}
+            </Box>
+          );
+        }
+
+        const isLastChild = index === flattenedChildren.length - 1;
+        return (
+          <>
+            {horizontalSpace && !isLastChild ? (
+              <Box paddingRight={horizontalSpace}>{child}</Box>
+            ) : (
+              child
+            )}
+            {separator && !isLastChild ? (
+              <Box paddingRight={horizontalSpace}>{separator}</Box>
+            ) : null}
+          </>
+        );
+      })}
     </Box>
   );
 }

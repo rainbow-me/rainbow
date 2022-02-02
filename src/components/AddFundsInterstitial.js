@@ -31,6 +31,7 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
   position: absolute;
   top: 60;
   width: ${ContainerWidth};
+  ${({ isSmallPhone }) => (isSmallPhone ? 'bottom: 80' : '')};
 `;
 
 const InterstitialButton = styled(ButtonPressAnimation).attrs(
@@ -219,7 +220,7 @@ const AddFundsInterstitial = ({ network }) => {
   }, [navigate, isDamaged]);
 
   return (
-    <Container>
+    <Container isSmallPhone={isSmallPhone}>
       {network === networkTypes.mainnet ? (
         <Fragment>
           <Title>

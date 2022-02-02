@@ -27,48 +27,48 @@ const styles = StyleSheet.create({
 });
 
 const defaultProps: {
-  nestedSpace: Space;
-  space: Space;
+  listSpace: Space;
+  paragraphSpace: Space;
   size: NonNullable<TextProps['size']>;
 } = {
-  nestedSpace: '19px',
+  listSpace: '19px',
+  paragraphSpace: '30px',
   size: '16px',
-  space: '30px',
 };
 
 interface MarkdownStackContextObject {
-  space: Space;
-  nestedSpace: Space;
+  paragraphSpace: Space;
+  listSpace: Space;
   depth: number;
 }
 const MarkdownStackContext = createContext<MarkdownStackContextObject>({
   depth: 0,
-  nestedSpace: defaultProps.nestedSpace,
-  space: defaultProps.space,
+  listSpace: defaultProps.listSpace,
+  paragraphSpace: defaultProps.paragraphSpace,
 });
 
 interface MarkdownStackProps {
-  space?: Space;
-  nestedSpace?: Space;
+  paragraphSpace?: Space;
+  listSpace?: Space;
   children: ReactNode;
 }
 
 function MarkdownStack({
-  space = defaultProps.space,
-  nestedSpace = defaultProps.nestedSpace,
+  paragraphSpace = defaultProps.paragraphSpace,
+  listSpace = defaultProps.listSpace,
   children,
 }: MarkdownStackProps) {
   const depth = useContext(MarkdownStackContext).depth + 1;
 
   return (
     <MarkdownStackContext.Provider
-      value={useMemo(() => ({ depth, nestedSpace, space }), [
+      value={useMemo(() => ({ depth, listSpace, paragraphSpace }), [
         depth,
-        space,
-        nestedSpace,
+        paragraphSpace,
+        listSpace,
       ])}
     >
-      <Box marginBottom={negateSpace(depth === 1 ? space : nestedSpace)}>
+      <Box marginBottom={negateSpace(depth === 1 ? paragraphSpace : listSpace)}>
         {children}
       </Box>
     </MarkdownStackContext.Provider>
@@ -80,10 +80,12 @@ interface MarkdownStackItemProps {
 }
 
 function MarkdownStackItem({ children }: MarkdownStackItemProps) {
-  const { depth, space, nestedSpace } = useContext(MarkdownStackContext);
+  const { depth, paragraphSpace, listSpace } = useContext(MarkdownStackContext);
 
   return (
-    <Box paddingBottom={depth === 1 ? space : nestedSpace}>{children}</Box>
+    <Box paddingBottom={depth === 1 ? paragraphSpace : listSpace}>
+      {children}
+    </Box>
   );
 }
 
@@ -116,10 +118,13 @@ function isNativeText(child: ReactNode) {
 export type MarkdownTextProps = {
   children: string;
   size?: TextProps['size'];
-} & (
-  | { space?: never; nestedSpace?: never }
-  | { space: Space; nestedSpace: Space }
-);
+  color?: TextProps['color'];
+  heading1Color?: TextProps['color'];
+  heading2Color?: TextProps['color'];
+  paragraphSpace: Space;
+  listSpace: Space;
+  handleLinkPress?: (url: string) => void;
+};
 
 /**
  * @description Renders a markdown string as a series of Text components. The
@@ -127,13 +132,20 @@ export type MarkdownTextProps = {
  */
 export const MarkdownText = memo(function MarkdownText({
   children,
-  space = defaultProps.space,
-  nestedSpace = defaultProps.nestedSpace,
+  color,
+  handleLinkPress,
+  heading1Color: heading1ColorProp,
+  heading2Color: heading2ColorProp,
+  listSpace = defaultProps.listSpace,
+  paragraphSpace = defaultProps.paragraphSpace,
   size = defaultProps.size,
 }: MarkdownTextProps) {
-  const spaceProps = useMemo(() => ({ nestedSpace, space }), [
-    space,
-    nestedSpace,
+  const heading1Color = heading1ColorProp ?? color;
+  const heading2Color = heading2ColorProp ?? heading1ColorProp ?? color;
+
+  const spaceProps = useMemo(() => ({ listSpace, paragraphSpace }), [
+    paragraphSpace,
+    listSpace,
   ]);
 
   const rules: RenderRules = useMemo(() => {
@@ -156,7 +168,7 @@ export const MarkdownText = memo(function MarkdownText({
 
         return (
           <MarkdownStackItem key={key}>
-            <Text color="secondary50" size={size}>
+            <Text color={color} size={size}>
               <NativeText style={styles.code}>{trimmedContent}</NativeText>
             </Text>
           </MarkdownStackItem>
@@ -182,7 +194,7 @@ export const MarkdownText = memo(function MarkdownText({
 
         return (
           <MarkdownStackItem key={key}>
-            <Text color="secondary50" size={size}>
+            <Text color={color} size={size}>
               <NativeText style={styles.code}>{trimmedContent}</NativeText>
             </Text>
           </MarkdownStackItem>
@@ -190,56 +202,60 @@ export const MarkdownText = memo(function MarkdownText({
       },
       heading1: ({ key }, children) => (
         <MarkdownStackItem key={key}>
-          <Text size={size} weight="heavy">
+          <Text color={heading1Color} size={size} weight="heavy">
             {children}
           </Text>
         </MarkdownStackItem>
       ),
       heading2: ({ key }, children) => (
         <MarkdownStackItem key={key}>
-          <Text size={size} weight="bold">
+          <Text color={heading1Color} size={size} weight="bold">
             {children}
           </Text>
         </MarkdownStackItem>
       ),
       heading3: ({ key }, children) => (
         <MarkdownStackItem key={key}>
-          <Text size={size} weight="semibold">
+          <Text color={heading1Color} size={size} weight="semibold">
             {children}
           </Text>
         </MarkdownStackItem>
       ),
       heading4: ({ key }, children) => (
         <MarkdownStackItem key={key}>
-          <Text color="secondary70" size={size} weight="heavy">
+          <Text color={heading2Color} size={size} weight="heavy">
             {children}
           </Text>
         </MarkdownStackItem>
       ),
       heading5: ({ key }, children) => (
         <MarkdownStackItem key={key}>
-          <Text color="secondary70" size={size} weight="bold">
+          <Text color={heading2Color} size={size} weight="bold">
             {children}
           </Text>
         </MarkdownStackItem>
       ),
       heading6: ({ key }, children) => (
         <MarkdownStackItem key={key}>
-          <Text color="secondary70" size={size} weight="semibold">
+          <Text color={heading2Color} size={size} weight="semibold">
             {children}
           </Text>
         </MarkdownStackItem>
       ),
       hr: () => null, // Not currently supported
       link: ({ key, attributes }, children) => (
-        <TextLink key={key} url={attributes.href}>
+        <TextLink
+          handleLinkPress={handleLinkPress}
+          key={key}
+          url={attributes.href}
+        >
           {children}
         </TextLink>
       ),
       list_item: ({ key, index }, children, parents) => (
         <MarkdownStackItem key={key}>
           <Box flexDirection="row">
-            <Text color="secondary50" size={size}>
+            <Text color={color} size={size}>
               <NativeText accessible={false}>
                 {renderBullet(parents, index)}{' '}
               </NativeText>
@@ -248,7 +264,7 @@ export const MarkdownText = memo(function MarkdownText({
               {Children.map(children, child =>
                 isNativeText(child) ? (
                   <MarkdownStackItem>
-                    <Text color="secondary50" size={size}>
+                    <Text color={color} size={size}>
                       {child}
                     </Text>
                   </MarkdownStackItem>
@@ -267,7 +283,7 @@ export const MarkdownText = memo(function MarkdownText({
       ),
       paragraph: ({ key }, children) => (
         <MarkdownStackItem key={key}>
-          <Text color="secondary50" size={size}>
+          <Text color={color} size={size}>
             {children}
           </Text>
         </MarkdownStackItem>
@@ -284,7 +300,7 @@ export const MarkdownText = memo(function MarkdownText({
       ),
       td: ({ key }, children) => (
         <View key={key} style={styles.tableCell}>
-          <Text color="secondary50" size={size}>
+          <Text color={color} size={size}>
             {children}
           </Text>
         </View>
@@ -294,7 +310,7 @@ export const MarkdownText = memo(function MarkdownText({
       ),
       th: ({ key }, children) => (
         <View key={key} style={styles.tableCell}>
-          <Text color="secondary70" size={size} weight="medium">
+          <Text color={color} size={size} weight="medium">
             {children}
           </Text>
         </View>
@@ -305,7 +321,7 @@ export const MarkdownText = memo(function MarkdownText({
         </MarkdownStackItem>
       ),
     };
-  }, [spaceProps, size]);
+  }, [spaceProps, size, color, handleLinkPress, heading1Color, heading2Color]);
 
   return (
     <MarkdownStack {...spaceProps}>

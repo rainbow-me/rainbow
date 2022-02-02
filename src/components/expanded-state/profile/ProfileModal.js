@@ -15,6 +15,7 @@ export default function ProfileModal({ onPressBackdrop, ...props }) {
       additionalPadding={
         params?.additionalPadding && isNativeStackAvailable ? 80 : 0
       }
+      position="absolute"
     >
       <TouchableBackdrop onPress={onPressBackdrop} />
       <FloatingPanels maxWidth={deviceWidth - 110}>

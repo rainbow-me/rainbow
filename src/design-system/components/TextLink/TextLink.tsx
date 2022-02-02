@@ -1,24 +1,31 @@
-import React, { ReactNode, useCallback, useMemo } from 'react';
-import { Linking, Text as NativeText } from 'react-native';
-import { useForegroundColor } from '../../color/useForegroundColor';
+import React, { ReactNode, useCallback } from 'react';
+import { Linking, Text as NativeText, TextStyle } from 'react-native';
+
+const style: TextStyle = {
+  textDecorationLine: 'underline',
+};
 
 export interface TextLinkProps {
   url: string;
   children: ReactNode;
+  handleLinkPress?: (url: string) => void;
 }
 
 /**
  * @description Renders a plain, static text link, designed to be used within a
  * block of text.
  */
-export function TextLink({ children, url }: TextLinkProps) {
-  const accentColor = useForegroundColor('accent');
+export function TextLink({
+  children,
+  url,
+  handleLinkPress = Linking.openURL,
+}: TextLinkProps) {
+  const onPressHandler = useCallback(() => {
+    handleLinkPress(url);
+  }, [handleLinkPress, url]);
 
   return (
-    <NativeText
-      onPress={useCallback(() => Linking.openURL(url), [url])}
-      style={useMemo(() => ({ color: accentColor }), [accentColor])}
-    >
+    <NativeText onPress={onPressHandler} style={style}>
       {children}
     </NativeText>
   );

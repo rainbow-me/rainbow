@@ -1,11 +1,19 @@
 import React, { useContext, useMemo } from 'react';
+import { StyleProp, ViewStyle } from 'react-native';
 import { AccentColorContext } from '../../color/AccentColorContext';
 import { ColorModeContext, ColorModeProvider } from '../../color/ColorMode';
 import { BackgroundColor } from '../../color/palettes';
 
 export type BackgroundProviderProps = {
   color: BackgroundColor | 'accent';
-  children: (style: { backgroundColor: string }) => JSX.Element;
+  children: ({
+    backgroundColor,
+    backgroundStyle,
+  }: {
+    backgroundColor: ViewStyle['backgroundColor'];
+    backgroundStyle: StyleProp<ViewStyle>;
+  }) => JSX.Element;
+  style?: StyleProp<ViewStyle>;
 };
 
 /**
@@ -18,19 +26,23 @@ export type BackgroundProviderProps = {
 export function BackgroundProvider({
   color,
   children,
+  style: styleProp,
 }: BackgroundProviderProps) {
-  const { colorMode, backgroundColors } = useContext(ColorModeContext);
+  const { backgroundColors } = useContext(ColorModeContext);
   const accentColor = useContext(AccentColorContext);
   const background = color === 'accent' ? accentColor : backgroundColors[color];
-  const style = useMemo(() => ({ backgroundColor: background.color }), [
-    background,
-  ]);
-
-  const child = children(style);
-
-  return background.mode !== colorMode ? (
-    <ColorModeProvider value={background.mode}>{child}</ColorModeProvider>
-  ) : (
-    child
+  const style = useMemo(
+    () => [
+      { backgroundColor: background.color },
+      ...(Array.isArray(styleProp) ? styleProp : [styleProp]),
+    ],
+    [background, styleProp]
   );
+
+  const child = children({
+    backgroundColor: background.color,
+    backgroundStyle: style,
+  });
+
+  return <ColorModeProvider value={background.mode}>{child}</ColorModeProvider>;
 }

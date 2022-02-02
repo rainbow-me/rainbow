@@ -12,9 +12,6 @@ import { Centered, Column, Row, RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
 import AvatarCircle from './AvatarCircle';
 import ProfileAction from './ProfileAction';
-import useExperimentalFlag, {
-  AVATAR_PICKER,
-} from '@rainbow-me/config/experimentalHooks';
 import showWalletErrorAlert from '@rainbow-me/helpers/support';
 import {
   useAccountProfile,
@@ -101,7 +98,6 @@ export default function ProfileMasthead({
     accountName,
     accountImage,
   } = useAccountProfile();
-  const isAvatarPickerAvailable = useExperimentalFlag(AVATAR_PICKER);
 
   const { onAvatarPress } = useOnAvatarPress();
 
@@ -170,8 +166,9 @@ export default function ProfileMasthead({
         accountColor={accountColor}
         accountSymbol={accountSymbol}
         image={accountImage}
-        isAvatarPickerAvailable={isAvatarPickerAvailable}
+        isAvatarPickerAvailable
         onPress={handlePressAvatar}
+        style={android && { marginTop: 10 }}
       />
       <ButtonPressAnimation onPress={handlePressChangeWallet}>
         <Row>

@@ -142,7 +142,7 @@ export default function DiscoverSearch() {
   }, [isSearchModeEnabled]);
 
   return (
-    <View style={[!android && { height: deviceUtils.dimensions.height - 140 }]}>
+    <View style={{ height: deviceUtils.dimensions.height - 140 }}>
       <SearchContainer>
         <CurrencySelectionList
           footerSpacer
