@@ -20,18 +20,18 @@ const dispersionApi = new RainbowFetchClient({
 
 export const getUniswapV2Pools = async (
   token?: EthereumAddress
-): Promise<UniswapPoolData[]> => {
+): Promise<UniswapPoolData[] | null> => {
   try {
     const tokenPath = token ? `/${token}` : '';
     const res = await dispersionApi.get(
       `/dispersion/v1/pools/uniswap/v2${tokenPath}`
     );
-    return res?.data;
+    return res?.data?.pools ?? null;
   } catch (error) {
     logger.sentry(`Error fetching uniswap v2 pools: ${error}`);
     captureException(error);
   }
-  return [];
+  return null;
 };
 
 export const getUniswapV2Tokens = async (

@@ -189,8 +189,8 @@ export default function useUniswapPools(sortField, sortDirection, token) {
   );
 
   const handleGetUniswapV2PoolsResponse = useCallback(() => {
-    const { pools } = poolData;
-    const topPairs = pools.map(
+    if (!poolData) return;
+    const topPairs = poolData.map(
       ({ pair, oneDayBlock, oneDayHistory, oneMonthHistory }) => {
         return parseData(
           pair,
@@ -206,7 +206,7 @@ export default function useUniswapPools(sortField, sortDirection, token) {
   }, [poolData, priceOfEther, ethereumPriceOneMonthAgo]);
 
   useEffect(() => {
-    if (poolData?.pools && priceOfEther && ethereumPriceOneMonthAgo) {
+    if (poolData && priceOfEther && ethereumPriceOneMonthAgo) {
       handleGetUniswapV2PoolsResponse();
     }
   }, [
