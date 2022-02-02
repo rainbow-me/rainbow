@@ -5,7 +5,7 @@ import dice from '../assets/dice.png';
 import TintButton from '../components/buttons/TintButton';
 import {
   SearchInput,
-  SearchResultIndicator,
+  SearchResultGradientIndicator,
 } from '../components/ens-registration';
 import {
   SheetActionButton,
@@ -93,17 +93,17 @@ export default function RegisterEnsSheet() {
           )}
           {isSuccess && (
             <Inline alignHorizontal="justify">
-              <SearchResultIndicator
+              <SearchResultGradientIndicator
                 isRegistered={registration.isRegistered}
                 type="availability"
               />
               {registration.isRegistered ? (
-                <SearchResultIndicator
+                <SearchResultGradientIndicator
                   expiryDate={registration.expiryDate}
                   type="expiration"
                 />
               ) : (
-                <SearchResultIndicator price="$5 / Year" type="price" />
+                <SearchResultGradientIndicator price="$5 / Year" type="price" />
               )}
             </Inline>
           )}

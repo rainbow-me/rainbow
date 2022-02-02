@@ -26,7 +26,7 @@ const GradientBackground = styled(LinearGradient).attrs(({ colors }) => ({
   padding-right: 15;
 `;
 
-const SearchResultIndicator = ({
+const SearchResultGradientIndicator = ({
   type,
   isRegistered,
   price,
@@ -73,4 +73,4 @@ const SearchResultIndicator = ({
   );
 };
 
-export default SearchResultIndicator;
+export default SearchResultGradientIndicator;
