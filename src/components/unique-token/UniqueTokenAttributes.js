@@ -6,13 +6,21 @@ import Tag from '../Tag';
 import { Row } from '../layout';
 import { margin } from '@rainbow-me/styles';
 
-const AttributeItem = ({ color, trait_type: type, slug, value, disableMenu }) =>
+const AttributeItem = ({
+  color,
+  trait_type: type,
+  slug,
+  value,
+  disableMenu,
+  max_value: maxValue,
+}) =>
   type && value ? (
     <Tag
       color={color}
       css={margin(7, 10, 3, 0)}
       disableMenu={disableMenu}
       key={`${type}${value}`}
+      maxValue={maxValue}
       slug={slug}
       text={value}
       title={type}

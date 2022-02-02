@@ -101,11 +101,24 @@ export interface GasFeesPolygonGasStationData {
   };
 }
 
-export interface ConfirmationTimeByPriorityFee {
-  15: string;
-  30: string;
-  45: string;
-  60: string;
+export interface BlocksToConfirmationByPriorityFee {
+  1: string;
+  2: string;
+  3: string;
+  4: string;
+}
+
+export interface BlocksToConfirmationByBaseFee {
+  4: string;
+  8: string;
+  40: string;
+  120: string;
+  240: string;
+}
+
+export interface BlocksToConfirmation {
+  byBaseFee: BlocksToConfirmationByBaseFee;
+  byPriorityFee: BlocksToConfirmationByPriorityFee;
 }
 
 export interface MaxPriorityFeeSuggestions {
@@ -119,7 +132,8 @@ export interface RainbowMeteorologyData {
     currentBaseFee: string;
     baseFeeSuggestion: string;
     baseFeeTrend: number;
-    confirmationTimeByPriorityFee: ConfirmationTimeByPriorityFee;
+    blocksToConfirmationByPriorityFee: BlocksToConfirmationByPriorityFee;
+    blocksToConfirmationByBaseFee: BlocksToConfirmationByBaseFee;
     maxPriorityFeeSuggestions: MaxPriorityFeeSuggestions;
   };
   meta: {
