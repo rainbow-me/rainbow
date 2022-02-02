@@ -58,6 +58,7 @@ import { ExchangeModalNavigator } from './index';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
+const AuthStack = createStackNavigator();
 const BSStack = createBottomSheetNavigator();
 
 function SendFlowNavigator() {
@@ -241,11 +242,6 @@ function MainOuterNavigator() {
         options={expandedPresetWithSmallGestureResponseDistance}
       />
       <OuterStack.Screen
-        component={PinAuthenticationScreen}
-        name={Routes.PIN_AUTHENTICATION_SCREEN}
-        options={{ ...sheetPreset, gestureEnabled: false }}
-      />
-      <OuterStack.Screen
         component={BackupSheet}
         name={Routes.BACKUP_SCREEN}
         options={expandedPreset}
@@ -303,6 +299,9 @@ function BSNavigator() {
       <BSStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.CUSTOM_GAS_SHEET}
+        options={{
+          backdropOpacity: 1,
+        }}
       />
       <BSStack.Screen
         component={WalletDiagnosticsSheet}
@@ -314,9 +313,29 @@ function BSNavigator() {
   );
 }
 
+function AuthNavigator() {
+  return (
+    <AuthStack.Navigator
+      {...stackNavigationConfig}
+      initialRouteName={Routes.MAIN_NATIVE_BOTTOM_SHEET_NAVIGATOR}
+      screenOptions={defaultScreenStackOptions}
+    >
+      <AuthStack.Screen
+        component={BSNavigator}
+        name={Routes.MAIN_NATIVE_BOTTOM_SHEET_NAVIGATOR}
+      />
+      <AuthStack.Screen
+        component={PinAuthenticationScreen}
+        name={Routes.PIN_AUTHENTICATION_SCREEN}
+        options={{ ...sheetPreset, gestureEnabled: false }}
+      />
+    </AuthStack.Navigator>
+  );
+}
+
 const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
   <NavigationContainer onStateChange={onNavigationStateChange} ref={ref}>
-    <BSNavigator />
+    <AuthNavigator />
   </NavigationContainer>
 ));
 
