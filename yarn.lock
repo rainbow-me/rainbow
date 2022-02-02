@@ -14176,9 +14176,10 @@ react-native-android-keyboard-adjust@1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/react-native-android-keyboard-adjust/-/react-native-android-keyboard-adjust-1.2.0.tgz#7988b1258482c08548ce972401b2ae03a674fcb4"
 
-react-native-branch@5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/react-native-branch/-/react-native-branch-5.0.0.tgz#9d2102abb3c9a577ce4327e434151ece2b4c7c78"
+react-native-branch@5.3.1:
+  version "5.3.1"
+  resolved "https://registry.yarnpkg.com/react-native-branch/-/react-native-branch-5.3.1.tgz#872bb3500a6756e9e59883bd03fd8f9aab4857c6"
+  integrity sha512-d7gaQQg43bS57O4j8V07s7lqD5gu3G4Vrf23bS/RnxTmQMKcifVFpUCSyUYuiUyL4H58D7pL2GgsujP2TRuhkw==
 
 react-native-camera@4.2.1:
   version "4.2.1"
