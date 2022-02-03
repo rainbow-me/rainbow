@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import { useQuery } from 'react-query';
 import dice from '../assets/dice.png';
@@ -15,6 +15,7 @@ import {
   Columns,
   Heading,
   Inline,
+  Inset,
   Stack,
   Text,
 } from '@rainbow-me/design-system';
@@ -27,6 +28,7 @@ import {
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { colors } from '@rainbow-me/styles';
+import { normalizeENS, validateENS } from '@rainbow-me/utils';
 
 export default function RegisterEnsSheet() {
   const { height: deviceHeight } = useDimensions();
@@ -35,8 +37,14 @@ export default function RegisterEnsSheet() {
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounceString(searchQuery);
 
+  const ensValidation = useMemo(
+    () =>
+      validateENS(`${debouncedSearchQuery}.eth`, { includeSubdomains: false }),
+    [debouncedSearchQuery]
+  );
+
   const { data: registration, status } = useQuery(
-    debouncedSearchQuery.length > 2 && ['registration', debouncedSearchQuery],
+    ensValidation.valid && ['registration', debouncedSearchQuery],
     async (_, searchQuery) => {
       const fastFormatter = timestamp => {
         const date = new Date(Number(timestamp) * 1000);
@@ -53,15 +61,26 @@ export default function RegisterEnsSheet() {
   const isLoading = status === 'loading';
   const isSuccess = registration && status === 'success';
 
+  const isNameInvalid = useMemo(
+    () =>
+      debouncedSearchQuery.length > 2 &&
+      (registration?.isRegistered || !ensValidation.valid),
+    [
+      debouncedSearchQuery.length,
+      ensValidation.valid,
+      registration?.isRegistered,
+    ]
+  );
+
   const state = useMemo(() => {
+    if (isNameInvalid) {
+      return 'warning';
+    }
     if (isSuccess) {
-      if (registration?.isRegistered) {
-        return 'warning';
-      }
       return 'success';
     }
     return undefined;
-  }, [isSuccess, registration?.isRegistered]);
+  }, [isNameInvalid, isSuccess]);
 
   return (
     <Box background="body" flexGrow={1}>
@@ -88,18 +107,25 @@ export default function RegisterEnsSheet() {
             paddingVertical="42px"
           >
             <SearchInput
+              contextMenuHidden
               isLoading={isLoading}
-              onChangeText={setSearchQuery}
+              onChangeText={value => setSearchQuery(normalizeENS(value))}
               placeholder="Input placeholder"
               state={state}
               value={searchQuery}
             />
           </Box>
-
-          {isLoading && (
-            <Text color="secondary40" size="18px" weight="bold">
-              Hold a sec...
-            </Text>
+          {isNameInvalid && (
+            <Inset horizontal="30px">
+              <Text
+                align="center"
+                color="secondary50"
+                size="16px"
+                weight="bold"
+              >
+                {ensValidation.hint}
+              </Text>
+            </Inset>
           )}
           {isSuccess && (
             <Stack alignHorizontal="center" space="5px">
@@ -131,7 +157,7 @@ export default function RegisterEnsSheet() {
           )}
         </Box>
         <Box>
-          {debouncedSearchQuery.length < 3 && (
+          {ensValidation.code === 'invalid-length' && (
             <Inline
               alignHorizontal="center"
               alignVertical="center"
@@ -147,20 +173,20 @@ export default function RegisterEnsSheet() {
             </Inline>
           )}
           <SheetActionButtonRow>
-            {isSuccess && debouncedSearchQuery.length > 2 && (
+            {isSuccess && !isNameInvalid ? (
+              <SheetActionButton
+                color={colors.green}
+                label="Continue on 􀆊"
+                onPress={() => null}
+                size="big"
+                weight="heavy"
+              />
+            ) : (
               <>
-                {registration.isRegistered ? (
+                {debouncedSearchQuery.length > 2 && (
                   <TintButton onPress={() => setSearchQuery('')}>
                     􀅉 Clear
                   </TintButton>
-                ) : (
-                  <SheetActionButton
-                    color={colors.green}
-                    label="Continue on 􀆊"
-                    onPress={() => null}
-                    size="big"
-                    weight="heavy"
-                  />
                 )}
               </>
             )}
