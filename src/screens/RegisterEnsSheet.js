@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { format } from 'date-fns';
 import { KeyboardArea } from 'react-native-keyboard-area';
-import { useQuery } from 'react-query';
 import dice from '../assets/dice.png';
 import TintButton from '../components/buttons/TintButton';
 import {
@@ -22,10 +21,10 @@ import {
   Stack,
   Text,
 } from '@rainbow-me/design-system';
-import { fetchRegistration } from '@rainbow-me/handlers/ens';
 import {
   useDebounceString,
   useDimensions,
+  useENSRegistration,
   useKeyboardHeight,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
@@ -39,33 +38,23 @@ export default function RegisterEnsSheet() {
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounceString(searchQuery);
 
-  const { data: registration, status } = useQuery(
-    debouncedSearchQuery.length > 2 && ['registration', debouncedSearchQuery],
-    async (_, searchQuery) => {
-      const fastFormatter = (timestamp, abbreviated = true) => {
-        let style = abbreviated ? 'MMM d, y' : 'MMMM d, y';
-        return format(new Date(Number(timestamp) * 1000), style);
-      };
-      const registration = await fetchRegistration(searchQuery + '.eth');
-      return {
-        expirationDate: fastFormatter(registration.expiryDate),
-        isRegistered: registration.isRegistered,
-        registrationDate: fastFormatter(registration.registrationDate, false),
-      };
-    }
-  );
+  const { available, rentPrice, expirationDate, status } = useENSRegistration({
+    duration: 1,
+    name: debouncedSearchQuery,
+  });
+
   const isLoading = status === 'loading';
-  const isSuccess = registration && status === 'success';
+  const isSuccess = status === 'success';
 
   const state = useMemo(() => {
     if (isSuccess) {
-      if (registration?.isRegistered) {
-        return 'warning';
+      if (available) {
+        return 'success';
       }
-      return 'success';
+      return 'warning';
     }
     return undefined;
-  }, [isSuccess, registration?.isRegistered]);
+  }, [isSuccess, available]);
 
   return (
     <Box background="body" flexGrow={1}>
@@ -128,7 +117,7 @@ export default function RegisterEnsSheet() {
                     />
                   ) : (
                     <SearchResultGradientIndicator
-                      price="$5 / Year"
+                      price={`${rentPrice?.perYear?.display}  / Year`}
                       type="price"
                     />
                   )}
@@ -174,11 +163,7 @@ export default function RegisterEnsSheet() {
           <SheetActionButtonRow>
             {isSuccess && debouncedSearchQuery.length > 2 && (
               <>
-                {registration.isRegistered ? (
-                  <TintButton onPress={() => setSearchQuery('')}>
-                    􀅉 Clear
-                  </TintButton>
-                ) : (
+                {available ? (
                   <SheetActionButton
                     color={colors.green}
                     label="Continue on 􀆊"
@@ -186,6 +171,10 @@ export default function RegisterEnsSheet() {
                     size="big"
                     weight="heavy"
                   />
+                ) : (
+                  <TintButton onPress={() => setSearchQuery('')}>
+                    􀅉 Clear
+                  </TintButton>
                 )}
               </>
             )}
