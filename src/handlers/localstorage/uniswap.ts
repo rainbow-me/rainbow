@@ -13,6 +13,7 @@ import {
   saveAccountLocal,
   saveGlobal,
 } from './common';
+import { Network } from '@rainbow-me/helpers/networkTypes';
 
 const ASSETS = 'uniswapassets';
 const LIQUIDITY = 'uniswapliquidity';
@@ -24,7 +25,9 @@ const uniswapPositionsVersion = '0.1.0';
 
 export const uniswapAccountLocalKeys = [ASSETS, LIQUIDITY, UNISWAP_POSITIONS];
 
-export const getUniswapFavorites = (network: any): Promise<EthereumAddress[]> =>
+export const getUniswapFavorites = (
+  network: Network
+): Promise<EthereumAddress[]> =>
   // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   getGlobal(UNISWAP_FAVORITES, DefaultUniswapFavorites[network]);
 
