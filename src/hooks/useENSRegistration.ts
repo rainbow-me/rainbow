@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
+import { useQuery } from 'react-query';
 import { useAccountSettings } from '.';
 import { fetchRegistrationDate } from '@rainbow-me/handlers/ens';
 import {
@@ -13,11 +14,6 @@ import {
   fromWei,
 } from '@rainbow-me/helpers/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
-
-const WAITING_STATUS = 'waiting';
-const FAILED_STATUS = 'failed';
-const SUCCESS_STATUS = 'success';
-const LOADING_STATUS = 'loading';
 
 const secsInYear = 31536000;
 
@@ -73,85 +69,45 @@ export default function useENSRegistration({
   duration: number;
   name: string;
 }) {
-  const [registrationData, setRegistrationData] = useState<{
-    available: boolean | null;
-    rentPrice: {
-      total: { amount: string; display: string };
-      perYear: { amount: string; display: string };
-      wei: string;
-    } | null;
-    expirationDate: string | null;
-    registrationDate: string | null;
-  }>({
-    available: null,
-    expirationDate: null,
-    registrationDate: null,
-    rentPrice: null,
-  });
-
   const { nativeCurrency } = useAccountSettings();
+  const isValidLength = useMemo(() => name.length > 2, [name.length]);
 
-  const isInvalidLength = useMemo(() => name.length > 2, [name.length]);
-
-  // status is going to depend if the name is ready and also if is available or not
-  const status = useMemo(() => {
-    if (!isInvalidLength) {
-      return WAITING_STATUS;
-    } else if (registrationData.available === null) {
-      return LOADING_STATUS;
-    } else if (registrationData.available === true) {
-      return registrationData.rentPrice ? SUCCESS_STATUS : FAILED_STATUS;
+  const getRegistrationValues = useCallback(async () => {
+    const isAvailable = await getAvailable(name);
+    if (isAvailable) {
+      // we need the price only if is available
+      const rentPrice = await getRentPrice(name, duration * secsInYear);
+      const formattedRentPrice = formatRentPrice(
+        rentPrice,
+        duration,
+        nativeCurrency
+      );
+      return {
+        available: isAvailable,
+        expirationDate: null,
+        registrationDate: null,
+        rentPrice: formattedRentPrice,
+      };
     } else {
-      return Boolean(registrationData.registrationDate) &&
-        Boolean(registrationData.expirationDate)
-        ? SUCCESS_STATUS
-        : FAILED_STATUS;
+      // we need the expiration and registration date when is not available
+      const registrationDate = await fetchRegistrationDate(name + '.eth');
+      const nameExpires = await getNameExpires(name);
+      const formattedRegistrarionDate = formatTime(registrationDate);
+      const formattedExpirationDate = formatTime(nameExpires);
+
+      return {
+        available: isAvailable,
+        expirationDate: formattedExpirationDate,
+        registrationDate: formattedRegistrarionDate,
+        rentPrice: null,
+      };
     }
-  }, [
-    isInvalidLength,
-    registrationData.available,
-    registrationData.expirationDate,
-    registrationData.registrationDate,
-    registrationData.rentPrice,
-  ]);
+  }, [duration, nativeCurrency, name]);
 
-  useEffect(() => {
-    const getRegistrationValues = async () => {
-      const isAvailable = await getAvailable(name);
-      if (isAvailable) {
-        // we need the price only if is available
-        const rentPrice = await getRentPrice(name, duration * secsInYear);
-        const formattedRentPrice = formatRentPrice(
-          rentPrice,
-          duration,
-          nativeCurrency
-        );
-        setRegistrationData({
-          available: isAvailable,
-          expirationDate: null,
-          registrationDate: null,
-          rentPrice: formattedRentPrice,
-        });
-      } else {
-        // we need the expiration and registration date when is not available
-        const registrationDate = await fetchRegistrationDate(name + '.eth');
-        const nameExpires = await getNameExpires(name);
-        const formattedRegistrarionDate = formatTime(registrationDate);
-        const formattedExpirationDate = formatTime(nameExpires);
+  const { data: registrationData, status } = useQuery(
+    isValidLength && ['registration', name],
+    () => getRegistrationValues()
+  );
 
-        setRegistrationData({
-          available: isAvailable,
-          expirationDate: formattedExpirationDate,
-          registrationDate: formattedRegistrarionDate,
-          rentPrice: null,
-        });
-      }
-    };
-    isInvalidLength && getRegistrationValues();
-  }, [duration, name, isInvalidLength, nativeCurrency]);
-
-  return {
-    status,
-    ...registrationData,
-  };
+  return { status: isValidLength ? status : 'idle', ...registrationData };
 }
