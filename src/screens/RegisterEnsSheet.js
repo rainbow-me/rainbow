@@ -12,7 +12,14 @@ import {
   SheetActionButtonRow,
   SlackSheet,
 } from '../components/sheet';
-import { Box, Heading, Inline, Stack, Text } from '@rainbow-me/design-system';
+import {
+  Box,
+  Heading,
+  Inline,
+  Inset,
+  Stack,
+  Text,
+} from '@rainbow-me/design-system';
 import { fetchRegistration } from '@rainbow-me/handlers/ens';
 import {
   useDebounceString,
@@ -66,7 +73,7 @@ export default function RegisterEnsSheet() {
           ? { height: '100%' }
           : { additionalTopPadding: true, contentHeight: deviceHeight })}
       >
-        <Box flexGrow={1} paddingHorizontal="19px" paddingTop="30px">
+        <Box flexGrow={1} paddingTop="30px">
           <Stack alignHorizontal="center" space="15px">
             <Heading size="23px" weight="heavy">
               􀠎 Find your name
@@ -76,7 +83,12 @@ export default function RegisterEnsSheet() {
             </Text>
           </Stack>
 
-          <Box alignItems="center" paddingBottom="24px" paddingTop="42px">
+          <Box
+            alignItems="center"
+            paddingBottom="24px"
+            paddingHorizontal="19px"
+            paddingTop="42px"
+          >
             <SearchInput
               isLoading={isLoading}
               onChangeText={setSearchQuery}
@@ -92,20 +104,25 @@ export default function RegisterEnsSheet() {
             </Text>
           )}
           {isSuccess && (
-            <Inline alignHorizontal="justify">
-              <SearchResultGradientIndicator
-                isRegistered={registration.isRegistered}
-                type="availability"
-              />
-              {registration.isRegistered ? (
+            <Inset horizontal="19px">
+              <Inline alignHorizontal="justify" wrap={false}>
                 <SearchResultGradientIndicator
-                  expiryDate={registration.expiryDate}
-                  type="expiration"
+                  isRegistered={registration.isRegistered}
+                  type="availability"
                 />
-              ) : (
-                <SearchResultGradientIndicator price="$5 / Year" type="price" />
-              )}
-            </Inline>
+                {registration.isRegistered ? (
+                  <SearchResultGradientIndicator
+                    expiryDate={registration.expiryDate}
+                    type="expiration"
+                  />
+                ) : (
+                  <SearchResultGradientIndicator
+                    price="$5 / Year"
+                    type="price"
+                  />
+                )}
+              </Inline>
+            </Inset>
           )}
         </Box>
         <Box>
