@@ -39,9 +39,11 @@ export default function useENSRegistration({
     rentPrice: null,
   });
 
+  const nameIsValid = useMemo(() => name.length > 2, [name.length]);
+
   // status is going to depend if the name is ready and also if is available or not
   const status = useMemo(() => {
-    if (name.length < 3) {
+    if (!nameIsValid) {
       return WAITING_STATUS;
     } else if (registrationData.available === null) {
       return LOADING_STATUS;
@@ -54,7 +56,7 @@ export default function useENSRegistration({
         : FAILED_STATUS;
     }
   }, [
-    name.length,
+    nameIsValid,
     registrationData.available,
     registrationData.nameExpires,
     registrationData.registrationDate,
@@ -88,8 +90,8 @@ export default function useENSRegistration({
         });
       }
     };
-    getRegistrationValues();
-  }, [duration, name]);
+    nameIsValid && getRegistrationValues();
+  }, [duration, name, nameIsValid]);
 
   return {
     status,
