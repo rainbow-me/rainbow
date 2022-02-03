@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { KeyboardArea } from 'react-native-keyboard-area';
-import { useQuery } from 'react-query';
 import dice from '../assets/dice.png';
 import TintButton from '../components/buttons/TintButton';
 import SearchInput from '../components/ens-registration/SearchInput/SearchInput';
@@ -19,7 +18,6 @@ import {
   Text,
 } from '@rainbow-me/design-system';
 
-import { fetchRegistration } from '@rainbow-me/handlers/ens';
 import {
   useDebounceString,
   useDimensions,
@@ -36,29 +34,18 @@ export default function RegisterEnsSheet() {
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounceString(searchQuery);
 
-  const fastFormatter = timestamp => {
-    const date = new Date(Number(timestamp) * 1000);
-    return `${date.toDateString()}`;
-  };
-
-  const { available, rentPrice, nameExpires } = useENSRegistration({
+  const {
+    available,
+    rentPrice,
+    nameExpires,
+    registrationDate,
+    status,
+  } = useENSRegistration({
     name: debouncedSearchQuery,
   });
 
-  const { data: registration, status } = useQuery(
-    debouncedSearchQuery.length > 2 && ['registration', debouncedSearchQuery],
-    async (_, searchQuery) => {
-      const { registrationDate } = await fetchRegistration(
-        searchQuery + '.eth'
-      );
-      return {
-        registrationDate: fastFormatter(registrationDate),
-      };
-    }
-  );
-
   const isLoading = status === 'loading';
-  const isSuccess = registration && status === 'success';
+  const isSuccess = status === 'success';
 
   const state = useMemo(() => {
     if (isSuccess) {
@@ -111,14 +98,11 @@ export default function RegisterEnsSheet() {
           {isSuccess && (
             <Stack alignHorizontal="center" space="5px">
               <Columns alignHorizontal="center" space="19px">
-                <Column width="1/2">
+                <Column width="1">
                   <Text color="secondary40" size="18px" weight="bold">
-                    {available ? 'Available' : 'Taken'}
-                  </Text>
-                </Column>
-                <Column width="1/2">
-                  <Text color="secondary40" size="18px" weight="bold">
-                    {available ? 'Available' : 'Taken'}
+                    {available
+                      ? 'Available'
+                      : `Taken since ${registrationDate}`}
                   </Text>
                 </Column>
               </Columns>

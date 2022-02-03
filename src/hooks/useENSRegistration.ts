@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { useQuery } from 'react-query';
+import { fetchRegistrationDate } from '@rainbow-me/handlers/ens';
 import {
   getAvailable,
   getNameExpires,
@@ -25,6 +27,16 @@ export default function useENSRegistration({
   const [rentPrice, setRentPrice] = useState<string | null>(null);
   const [nameExpires, setNameExpires] = useState<string | null>(null);
 
+  const { data, status } = useQuery(
+    name.length > 2 && ['registration', name],
+    async (_, name) => {
+      const registrationDate = await fetchRegistrationDate(name + '.eth');
+      return {
+        registrationDate: formatTime(registrationDate),
+      };
+    }
+  );
+
   useEffect(() => {
     const getRegistrationValues = async () => {
       const newAvailable = await getAvailable(name);
@@ -42,6 +54,8 @@ export default function useENSRegistration({
   return {
     available,
     nameExpires,
+    registrationDate: data?.registrationDate,
     rentPrice,
+    status,
   };
 }

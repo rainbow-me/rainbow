@@ -32,17 +32,18 @@ const getBaseRegistrarImplementationContract = () => {
   );
 };
 
-const getResolver = async (name: string) => getENSContract().resolver(name);
+const getResolver = async (name: string): Promise<string> =>
+  getENSContract().resolver(name);
 
-const getAvailable = async (name: string) =>
+const getAvailable = async (name: string): Promise<boolean> =>
   getENSRegistrarContract().available(name);
 
-const getNameExpires = async (name: string) =>
+const getNameExpires = async (name: string): Promise<string> =>
   getBaseRegistrarImplementationContract().nameExpires(
     addHexPrefix(sha3(name))
   );
 
-const getRentPrice = async (name: string, duration: number) =>
+const getRentPrice = async (name: string, duration: number): Promise<string> =>
   getENSRegistrarContract().rentPrice(name, duration);
 
 export {
