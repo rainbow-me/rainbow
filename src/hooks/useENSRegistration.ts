@@ -24,6 +24,43 @@ const secsInYear = 31536000;
 const getRentPricePerYear = (rentPrice: string, duration: number) =>
   divide(rentPrice, duration);
 
+const formatRentPrice = (
+  rentPrice: string,
+  duration: number,
+  nativeCurrency: any
+) => {
+  const rentPriceInETH = fromWei(rentPrice.toString());
+  const rentPricePerYear = getRentPricePerYear(rentPriceInETH, duration);
+  const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
+    Network.mainnet
+  );
+  const { amount, display } = convertAmountAndPriceToNativeDisplay(
+    rentPriceInETH,
+    nativeAssetPrice,
+    nativeCurrency
+  );
+  const {
+    display: displayPerYear,
+    amount: amountPerYear,
+  } = convertAmountAndPriceToNativeDisplay(
+    rentPricePerYear,
+    nativeAssetPrice,
+    nativeCurrency
+  );
+
+  return {
+    perYear: {
+      amount: amountPerYear,
+      display: displayPerYear,
+    },
+    total: {
+      amount,
+      display,
+    },
+    wei: rentPrice.toString(),
+  };
+};
+
 const formatTime = (timestamp: string) => {
   const date = new Date(Number(timestamp) * 1000);
   return `${date.toDateString()}`;
@@ -84,40 +121,16 @@ export default function useENSRegistration({
       if (isAvailable) {
         // we need the price only if is available
         const rentPrice = await getRentPrice(name, duration * secsInYear);
-        const rentPriceString = rentPrice.toString();
-        const rentPriceInETH = fromWei(rentPriceString);
-        const rentPricePerYear = getRentPricePerYear(rentPriceInETH, duration);
-        const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
-          Network.mainnet
-        );
-        const { amount, display } = convertAmountAndPriceToNativeDisplay(
-          rentPriceInETH,
-          nativeAssetPrice,
-          nativeCurrency
-        );
-        const {
-          display: displayPerYear,
-          amount: amountPerYear,
-        } = convertAmountAndPriceToNativeDisplay(
-          rentPricePerYear,
-          nativeAssetPrice,
+        const formattedRentPrice = formatRentPrice(
+          rentPrice,
+          duration,
           nativeCurrency
         );
         setRegistrationData({
           available: isAvailable,
           expirationDate: null,
           registrationDate: null,
-          rentPrice: {
-            perYear: {
-              amount: amountPerYear,
-              display: displayPerYear,
-            },
-            total: {
-              amount,
-              display,
-            },
-            wei: rentPrice.toString(),
-          },
+          rentPrice: formattedRentPrice,
         });
       } else {
         // we need the expiration and registration date when is not available
