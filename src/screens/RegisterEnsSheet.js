@@ -5,7 +5,6 @@ import dice from '../assets/dice.png';
 import TintButton from '../components/buttons/TintButton';
 import {
   SearchInput,
-  SearchResultBasicIndicator,
   SearchResultGradientIndicator,
 } from '../components/ens-registration';
 import {
@@ -134,12 +133,20 @@ export default function RegisterEnsSheet() {
                 </Inline>
                 <Inset horizontal="19px">
                   {registration.isRegistered ? (
-                    <SearchResultBasicIndicator
-                      registrationDate="January 24, 2020"
-                      type="age"
-                    />
+                    <Text color="secondary50" size="16px" weight="bold">
+                      This name was last registered on{' '}
+                      {registration.registrationDate}
+                    </Text>
                   ) : (
-                    <SearchResultBasicIndicator feesCost={87.57} type="fees" />
+                    <Inline>
+                      <Text color="secondary50" size="16px" weight="bold">
+                        Estimated total cost of
+                        <Text color="secondary80" size="16px" weight="heavy">
+                          {' $87.57 '}
+                        </Text>
+                        with current network fees
+                      </Text>
+                    </Inline>
                   )}
                 </Inset>
               </Stack>
