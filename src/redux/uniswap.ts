@@ -15,7 +15,7 @@ import {
   saveUniswapFavoritesMetadata,
 } from '@rainbow-me/handlers/localstorage/uniswap';
 import { getTestnetUniswapPairs } from '@rainbow-me/handlers/uniswap';
-import networkTypes, { Network } from '@rainbow-me/helpers/networkTypes';
+import { Network } from '@rainbow-me/helpers/networkTypes';
 import {
   DefaultUniswapFavorites,
   DefaultUniswapFavoritesMeta,
@@ -165,7 +165,7 @@ export const uniswapPairsInit = () => (
 ) => {
   const { network } = getState().settings;
   const pairs =
-    network === networkTypes.mainnet
+    network === Network.mainnet
       ? rainbowTokenList.CURATED_TOKENS
       : getTestnetUniswapPairs(network);
   dispatch({
