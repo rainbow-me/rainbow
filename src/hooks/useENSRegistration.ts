@@ -27,8 +27,9 @@ export default function useENSRegistration({
   const [rentPrice, setRentPrice] = useState<string | null>(null);
   const [nameExpires, setNameExpires] = useState<string | null>(null);
 
+  // we need the registration date only if is not available
   const { data, status } = useQuery(
-    name.length > 2 && ['registration', name],
+    !available && name.length > 2 && ['registration', name],
     async (_, name) => {
       const registrationDate = await fetchRegistrationDate(name + '.eth');
       return {
@@ -40,13 +41,18 @@ export default function useENSRegistration({
   useEffect(() => {
     const getRegistrationValues = async () => {
       const newAvailable = await getAvailable(name);
-      const newRentPrice = await getRentPrice(name, duration);
-      const formattedRentPrice = formatRentPrice(newRentPrice);
-      const newNameExpires = await getNameExpires(name);
-      const formattedNamesExpires = formatTime(newNameExpires);
+      if (newAvailable) {
+        // we need the price only if is available
+        const newRentPrice = await getRentPrice(name, duration);
+        const formattedRentPrice = formatRentPrice(newRentPrice);
+        setRentPrice(formattedRentPrice);
+      } else {
+        // we need the expiration date when is not available
+        const newNameExpires = await getNameExpires(name);
+        const formattedNamesExpires = formatTime(newNameExpires);
+        setNameExpires(formattedNamesExpires);
+      }
       setAvailable(newAvailable);
-      setRentPrice(formattedRentPrice);
-      setNameExpires(formattedNamesExpires);
     };
     getRegistrationValues();
   }, [duration, name]);
