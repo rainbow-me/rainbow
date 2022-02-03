@@ -15,7 +15,7 @@ import {
   saveUniswapFavoritesMetadata,
 } from '@rainbow-me/handlers/localstorage/uniswap';
 import { getTestnetUniswapPairs } from '@rainbow-me/handlers/uniswap';
-import networkTypes from '@rainbow-me/networkTypes';
+import networkTypes, { Network } from '@rainbow-me/helpers/networkTypes';
 import {
   DefaultUniswapFavorites,
   DefaultUniswapFavoritesMeta,
@@ -188,7 +188,7 @@ export const uniswapResetState = () => (
  */
 const getUniswapFavoritesMetadata = async (
   addresses: EthereumAddress[],
-  network?: string
+  network?: Network
 ) => {
   let favoritesMetadata = (await getUniswapFavoritesMetadataLS(network)) || {};
   if (Object.keys(favoritesMetadata).length !== addresses.length) {
