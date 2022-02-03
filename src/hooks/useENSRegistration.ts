@@ -63,7 +63,7 @@ const formatRentPrice = (
 
 const formatTime = (timestamp: string) => {
   const date = new Date(Number(timestamp) * 1000);
-  return `${date.toDateString()}`;
+  return `${date.toLocaleDateString()}`;
 };
 
 export default function useENSRegistration({
