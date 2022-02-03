@@ -35,13 +35,8 @@ export default function RegisterEnsSheet() {
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounceString(searchQuery);
 
-  const {
-    available,
-    rentPrice,
-    nameExpires,
-    registrationDate,
-    status,
-  } = useENSRegistration({
+  const { available, rentPrice, expirationDate, status } = useENSRegistration({
+    duration: 1,
     name: debouncedSearchQuery,
   });
 
@@ -106,12 +101,12 @@ export default function RegisterEnsSheet() {
                 />
                 {!available ? (
                   <SearchResultGradientIndicator
-                    expiryDate={nameExpires}
+                    expiryDate={expirationDate}
                     type="expiration"
                   />
                 ) : (
                   <SearchResultGradientIndicator
-                    price="$5 / Year"
+                    price={`${rentPrice?.perYear?.display}  / Year`}
                     type="price"
                   />
                 )}

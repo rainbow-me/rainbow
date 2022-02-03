@@ -1,19 +1,28 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useAccountSettings } from '.';
 import { fetchRegistrationDate } from '@rainbow-me/handlers/ens';
 import {
   getAvailable,
   getNameExpires,
   getRentPrice,
 } from '@rainbow-me/helpers/ens';
-import { formatFixedDecimals, fromWei } from '@rainbow-me/helpers/utilities';
+import { Network } from '@rainbow-me/helpers/networkTypes';
+import {
+  convertAmountAndPriceToNativeDisplay,
+  divide,
+  fromWei,
+} from '@rainbow-me/helpers/utilities';
+import { ethereumUtils } from '@rainbow-me/utils';
 
 const WAITING_STATUS = 'waiting';
 const FAILED_STATUS = 'failed';
 const SUCCESS_STATUS = 'success';
 const LOADING_STATUS = 'loading';
 
-const formatRentPrice = (rentPrice: string) =>
-  formatFixedDecimals(fromWei(rentPrice.toString()), 5);
+const secsInYear = 31536000;
+
+const getRentPricePerYear = (rentPrice: string, duration: number) =>
+  divide(rentPrice, duration);
 
 const formatTime = (timestamp: string) => {
   const date = new Date(Number(timestamp) * 1000);
@@ -21,23 +30,29 @@ const formatTime = (timestamp: string) => {
 };
 
 export default function useENSRegistration({
+  duration,
   name,
-  duration = 31536000,
 }: {
-  name: string;
   duration: number;
+  name: string;
 }) {
   const [registrationData, setRegistrationData] = useState<{
     available: boolean | null;
-    rentPrice: string | null;
-    nameExpires: string | null;
+    rentPrice: {
+      total: { amount: string; display: string };
+      perYear: { amount: string; display: string };
+      wei: string;
+    } | null;
+    expirationDate: string | null;
     registrationDate: string | null;
   }>({
     available: null,
-    nameExpires: null,
+    expirationDate: null,
     registrationDate: null,
     rentPrice: null,
   });
+
+  const { nativeCurrency } = useAccountSettings();
 
   const nameIsValid = useMemo(() => name.length > 2, [name.length]);
 
@@ -51,14 +66,14 @@ export default function useENSRegistration({
       return registrationData.rentPrice ? SUCCESS_STATUS : FAILED_STATUS;
     } else {
       return Boolean(registrationData.registrationDate) &&
-        Boolean(registrationData.nameExpires)
+        Boolean(registrationData.expirationDate)
         ? SUCCESS_STATUS
         : FAILED_STATUS;
     }
   }, [
     nameIsValid,
     registrationData.available,
-    registrationData.nameExpires,
+    registrationData.expirationDate,
     registrationData.registrationDate,
     registrationData.rentPrice,
   ]);
@@ -68,30 +83,59 @@ export default function useENSRegistration({
       const isAvailable = await getAvailable(name);
       if (isAvailable) {
         // we need the price only if is available
-        const newRentPrice = await getRentPrice(name, duration);
-        const formattedRentPrice = formatRentPrice(newRentPrice);
+        const rentPrice = await getRentPrice(name, duration * secsInYear);
+        const rentPriceString = rentPrice.toString();
+        const rentPriceInETH = fromWei(rentPriceString);
+        const rentPricePerYear = getRentPricePerYear(rentPriceInETH, duration);
+        const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
+          Network.mainnet
+        );
+        const { amount, display } = convertAmountAndPriceToNativeDisplay(
+          rentPriceInETH,
+          nativeAssetPrice,
+          nativeCurrency
+        );
+        const {
+          display: displayPerYear,
+          amount: amountPerYear,
+        } = convertAmountAndPriceToNativeDisplay(
+          rentPricePerYear,
+          nativeAssetPrice,
+          nativeCurrency
+        );
         setRegistrationData({
           available: isAvailable,
-          nameExpires: null,
+          expirationDate: null,
           registrationDate: null,
-          rentPrice: formattedRentPrice,
+          rentPrice: {
+            perYear: {
+              amount: amountPerYear,
+              display: displayPerYear,
+            },
+            total: {
+              amount,
+              display,
+            },
+            wei: rentPrice.toString(),
+          },
         });
       } else {
         // we need the expiration and registration date when is not available
         const registrationDate = await fetchRegistrationDate(name + '.eth');
-        const newNameExpires = await getNameExpires(name);
+        const nameExpires = await getNameExpires(name);
         const formattedRegistrarionDate = formatTime(registrationDate);
-        const formattedNamesExpires = formatTime(newNameExpires);
+        const formattedExpirationDate = formatTime(nameExpires);
+
         setRegistrationData({
           available: isAvailable,
-          nameExpires: formattedNamesExpires,
+          expirationDate: formattedExpirationDate,
           registrationDate: formattedRegistrarionDate,
           rentPrice: null,
         });
       }
     };
     nameIsValid && getRegistrationValues();
-  }, [duration, name, nameIsValid]);
+  }, [duration, name, nameIsValid, nativeCurrency]);
 
   return {
     status,
