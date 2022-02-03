@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { format } from 'date-fns';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import { useQuery } from 'react-query';
 import dice from '../assets/dice.png';
@@ -29,6 +30,7 @@ import {
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { colors } from '@rainbow-me/styles';
+import { NativeModules } from 'react-native';
 
 export default function RegisterEnsSheet() {
   const { height: deviceHeight } = useDimensions();
@@ -40,15 +42,15 @@ export default function RegisterEnsSheet() {
   const { data: registration, status } = useQuery(
     debouncedSearchQuery.length > 2 && ['registration', debouncedSearchQuery],
     async (_, searchQuery) => {
-      const fastFormatter = timestamp => {
-        const date = new Date(Number(timestamp) * 1000);
-        return `${date.toDateString()}`;
+      const fastFormatter = (timestamp, abbreviated = true) => {
+        let style = abbreviated ? 'MMM d, y' : 'MMMM d, y';
+        return format(new Date(Number(timestamp) * 1000), style);
       };
       const registration = await fetchRegistration(searchQuery + '.eth');
       return {
-        expiryDate: fastFormatter(registration.expiryDate),
+        expirationDate: fastFormatter(registration.expiryDate),
         isRegistered: registration.isRegistered,
-        registrationDate: fastFormatter(registration.registrationDate),
+        registrationDate: fastFormatter(registration.registrationDate, false),
       };
     }
   );
@@ -121,7 +123,7 @@ export default function RegisterEnsSheet() {
                   />
                   {registration.isRegistered ? (
                     <SearchResultGradientIndicator
-                      expiryDate={registration.expiryDate}
+                      expirationDate={registration.expirationDate}
                       type="expiration"
                     />
                   ) : (
