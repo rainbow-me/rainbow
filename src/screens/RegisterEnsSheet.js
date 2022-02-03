@@ -3,7 +3,10 @@ import { KeyboardArea } from 'react-native-keyboard-area';
 import { useQuery } from 'react-query';
 import dice from '../assets/dice.png';
 import TintButton from '../components/buttons/TintButton';
-import SearchInput from '../components/ens-registration/SearchInput/SearchInput';
+import {
+  SearchInput,
+  SearchResultGradientIndicator,
+} from '../components/ens-registration';
 import {
   SheetActionButton,
   SheetActionButtonRow,
@@ -11,14 +14,12 @@ import {
 } from '../components/sheet';
 import {
   Box,
-  Column,
-  Columns,
   Heading,
   Inline,
+  Inset,
   Stack,
   Text,
 } from '@rainbow-me/design-system';
-
 import { fetchRegistration } from '@rainbow-me/handlers/ens';
 import {
   useDebounceString,
@@ -84,8 +85,9 @@ export default function RegisterEnsSheet() {
 
           <Box
             alignItems="center"
+            paddingBottom="24px"
             paddingHorizontal="19px"
-            paddingVertical="42px"
+            paddingTop="42px"
           >
             <SearchInput
               isLoading={isLoading}
@@ -102,32 +104,25 @@ export default function RegisterEnsSheet() {
             </Text>
           )}
           {isSuccess && (
-            <Stack alignHorizontal="center" space="5px">
-              <Columns alignHorizontal="center" space="19px">
-                <Column width="1/2">
-                  <Text color="secondary40" size="18px" weight="bold">
-                    {registration.isRegistered ? 'Taken' : 'Available'}
-                  </Text>
-                </Column>
-                <Column width="1/2">
-                  <Text color="secondary40" size="18px" weight="bold">
-                    {registration.isRegistered ? 'Taken' : 'Available'}
-                  </Text>
-                </Column>
-              </Columns>
-              <Inline wrap={false}>
-                <Text color="secondary40" size="18px" weight="bold">
-                  {registration.isRegistered
-                    ? `Til ${registration.expiryDate}`
-                    : `"Price"`}
-                </Text>
+            <Inset horizontal="19px">
+              <Inline alignHorizontal="justify" wrap={false}>
+                <SearchResultGradientIndicator
+                  isRegistered={registration.isRegistered}
+                  type="availability"
+                />
+                {registration.isRegistered ? (
+                  <SearchResultGradientIndicator
+                    expiryDate={registration.expiryDate}
+                    type="expiration"
+                  />
+                ) : (
+                  <SearchResultGradientIndicator
+                    price="$5 / Year"
+                    type="price"
+                  />
+                )}
               </Inline>
-              {!registration.isRegistered && (
-                <Text color="secondary40" size="18px" weight="bold">
-                  Estimated cost?
-                </Text>
-              )}
-            </Stack>
+            </Inset>
           )}
         </Box>
         <Box>
