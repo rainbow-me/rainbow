@@ -4,6 +4,7 @@ import { useQuery } from 'react-query';
 import dice from '../assets/dice.png';
 import TintButton from '../components/buttons/TintButton';
 import SearchInput from '../components/ens-registration/SearchInput/SearchInput';
+import SearchResultBasicIndicator from '../components/ens-registration/SearchResult/SearchResultBasicIndicator';
 import {
   SheetActionButton,
   SheetActionButtonRow,
@@ -15,6 +16,7 @@ import {
   Columns,
   Heading,
   Inline,
+  Inset,
   Stack,
   Text,
 } from '@rainbow-me/design-system';
@@ -130,6 +132,18 @@ export default function RegisterEnsSheet() {
             </Stack>
           )}
         </Box>
+        {isSuccess && (
+          <Inset horizontal="34px">
+            {registration.isRegistered ? (
+              <SearchResultBasicIndicator
+                registrationDate="January 24, 2020"
+                type="age"
+              />
+            ) : (
+              <SearchResultBasicIndicator feesCost={87.57} type="fees" />
+            )}
+          </Inset>
+        )}
         <Box>
           {debouncedSearchQuery.length < 3 && (
             <Inline
