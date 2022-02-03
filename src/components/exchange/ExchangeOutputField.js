@@ -13,6 +13,7 @@ const Container = styled(Row).attrs({ align: 'center' })`
 `;
 
 export default function ExchangeOutputField({
+  editable,
   onFocus,
   onPressSelectOutputCurrency,
   outputAmount,
@@ -27,6 +28,7 @@ export default function ExchangeOutputField({
       <ExchangeField
         address={outputCurrencyAddress}
         amount={outputAmount}
+        editable={editable}
         onFocus={onFocus}
         onPressSelectCurrency={onPressSelectOutputCurrency}
         ref={outputFieldRef}

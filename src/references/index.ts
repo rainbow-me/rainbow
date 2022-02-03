@@ -7,7 +7,7 @@ import {
   UniswapFavoriteTokenData,
 } from '@rainbow-me/entities';
 import { Network } from '@rainbow-me/helpers/networkTypes';
-
+export { default as polygonAllowList } from './polygon-allowlist.json';
 export { default as balanceCheckerContractAbi } from './balances-checker-abi.json';
 export { default as balanceCheckerContractAbiOVM } from './balances-checker-abi-ovm.json';
 export { default as chains } from './chains.json';
@@ -16,10 +16,6 @@ export { default as chainAssets } from './chain-assets.json';
 export { default as coingeckoIdsFallback } from './coingecko/ids.json';
 export { compoundCERC20ABI, compoundCETHABI } from './compound';
 export { DefaultTokenListsSource as DefaultTokenLists };
-export {
-  defiSdkAdapterRegistryABI,
-  DEFI_SDK_ADAPTER_REGISTRY_ADDRESS,
-} from './defisdk';
 export {
   signatureRegistryABI,
   SIGNATURE_REGISTRY_ADDRESS,

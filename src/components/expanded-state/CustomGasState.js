@@ -1,6 +1,7 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
+import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import styled from 'styled-components';
 import Divider from '../Divider';
 import { ExchangeHeader } from '../exchange';
@@ -78,13 +79,15 @@ export default function CustomGasState({ asset }) {
   return (
     <SlackSheet
       additionalTopPadding
-      backgroundColor={android ? colors.shadowBlack : colors.transparent}
-      borderBottomRadius={0}
-      contentHeight={longFormHeight}
-      deviceHeight={deviceHeight}
       hideHandle
+      {...(ios && {
+        borderBottomRadius: 0,
+        deviceHeight,
+        removeTopPadding: true,
+      })}
+      backgroundColor={colors.transparent}
+      contentHeight={ios ? longFormHeight : deviceHeight - getStatusBarHeight()}
       radius={0}
-      removeTopPadding
       scrollEnabled={false}
     >
       <FloatingPanel radius={android ? 30 : 39}>
