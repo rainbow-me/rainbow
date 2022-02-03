@@ -11,5 +11,5 @@ export function useRatio() {
     return firstValue === Number(firstValue)
       ? (originalY.value || lastValue) / firstValue
       : 1;
-  }, [data]);
+  });
 }
