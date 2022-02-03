@@ -17,6 +17,7 @@ export type DocsExample = Example & {
 
 export type Example = {
   name: string;
+  wrapper?: (children: React.ReactNode) => React.ReactNode;
   subTitle?: string;
   Example?: () => Source<React.ReactChild>;
   examples?: Example[];

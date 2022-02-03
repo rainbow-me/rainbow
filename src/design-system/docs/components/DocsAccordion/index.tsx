@@ -45,6 +45,7 @@ export const DocsAccordion = ({ meta, description, examples }: Docs) => {
                   description,
                   enablePlayroom,
                   enableCodeSnippet,
+                  wrapper,
                   showFrame,
                   examples,
                   Example,
@@ -60,6 +61,7 @@ export const DocsAccordion = ({ meta, description, examples }: Docs) => {
                   key={index}
                   name={name}
                   showFrame={showFrame}
+                  wrapper={wrapper}
                 />
               )
             )}
@@ -79,6 +81,7 @@ const ExamplePreview = ({
   enableCodeSnippet = true,
   showFrame = false,
   enablePlayroom = true,
+  wrapper,
   examples,
   Example,
 }: DocsExample) => {
@@ -104,6 +107,7 @@ const ExamplePreview = ({
           enableCodeSnippet={enableCodeSnippet}
           enablePlayroom={enablePlayroom}
           showFrame={showFrame}
+          wrapper={wrapper}
         />
       )}
       {examples?.map((example, i) => (
