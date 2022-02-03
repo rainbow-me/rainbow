@@ -181,7 +181,7 @@ export const DefaultUniswapFavoritesMeta: Record<
       isVerified: true,
       name: 'Dai',
       symbol: 'DAI',
-      uniqueId: '0x6b175474e89094c44da98b954eedeac495271d0f',
+      uniqueId: DAI_ADDRESS,
     },
     [ETH_ADDRESS]: {
       address: ETH_ADDRESS,
