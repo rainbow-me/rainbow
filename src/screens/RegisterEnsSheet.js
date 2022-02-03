@@ -37,7 +37,10 @@ export default function RegisterEnsSheet() {
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounceString(searchQuery);
 
-  const { getAvailable, getRentPrice, getNameExpires } = useENSRegistration();
+  const { available, rentPrice, nameExpires } = useENSRegistration({
+    name: debouncedSearchQuery,
+  });
+
   const { data: registration, status } = useQuery(
     debouncedSearchQuery.length > 2 && ['registration', debouncedSearchQuery],
     async (_, searchQuery) => {
@@ -45,21 +48,18 @@ export default function RegisterEnsSheet() {
         const date = new Date(Number(timestamp) * 1000);
         return `${date.toDateString()}`;
       };
-      const isAvailable = await getAvailable(searchQuery);
-      // dummy default to 1 year
-      const rentPrice = await getRentPrice(searchQuery, 31536000);
-      const exipryDate = await getNameExpires(searchQuery);
       const { registrationDate } = await fetchRegistration(
         searchQuery + '.eth'
       );
       return {
-        expiryDate: fastFormatter(exipryDate),
-        isRegistered: !isAvailable,
+        expiryDate: fastFormatter(nameExpires),
+        isRegistered: !available,
         registrationDate: fastFormatter(registrationDate),
         rentPrice: fromWei(rentPrice.toString()),
       };
     }
   );
+
   const isLoading = status === 'loading';
   const isSuccess = registration && status === 'success';
 

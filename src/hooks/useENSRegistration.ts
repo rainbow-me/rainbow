@@ -1,11 +1,16 @@
+import { BigNumber } from 'ethers';
 import { keccak_256 as sha3 } from 'js-sha3';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   getBaseRegistrarImplementationContract,
   getENSContract,
   getENSRegistrarContract,
 } from '@rainbow-me/helpers/ens';
-export default function useENSRegistration() {
+export default function useENSRegistration({ name }: { name: string }) {
+  const [available, setAvailable] = useState<boolean>(false);
+  const [rentPrice, setRentPrice] = useState<BigNumber | null>(null);
+  const [nameExpires, setNameExpires] = useState<BigNumber | null>(null);
+
   const ensContract = getENSContract();
   const ensRegistrarContract = getENSRegistrarContract();
   const ensBaseRegistrarContract = getBaseRegistrarImplementationContract();
@@ -33,5 +38,25 @@ export default function useENSRegistration() {
     [ensRegistrarContract]
   );
 
-  return { getAvailable, getNameExpires, getRentPrice, getResolver };
+  useEffect(() => {
+    const getRegistrationValues = async () => {
+      const newAvailable = await getAvailable(name);
+      const newRentPrice = await getRentPrice(name, 31536000);
+      const newNameExpires = await getNameExpires(name);
+      setAvailable(newAvailable);
+      setRentPrice(newRentPrice);
+      setNameExpires(newNameExpires);
+    };
+    getRegistrationValues();
+  }, [getAvailable, getNameExpires, getRentPrice, name]);
+
+  return {
+    available,
+    getAvailable,
+    getNameExpires,
+    getRentPrice,
+    getResolver,
+    nameExpires,
+    rentPrice,
+  };
 }
