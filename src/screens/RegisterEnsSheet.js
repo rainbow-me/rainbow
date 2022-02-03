@@ -20,7 +20,6 @@ import {
 } from '@rainbow-me/design-system';
 
 import { fetchRegistration } from '@rainbow-me/handlers/ens';
-import { fromWei } from '@rainbow-me/helpers/utilities';
 import {
   useDebounceString,
   useDimensions,
@@ -37,6 +36,11 @@ export default function RegisterEnsSheet() {
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounceString(searchQuery);
 
+  const fastFormatter = timestamp => {
+    const date = new Date(Number(timestamp) * 1000);
+    return `${date.toDateString()}`;
+  };
+
   const { available, rentPrice, nameExpires } = useENSRegistration({
     name: debouncedSearchQuery,
   });
@@ -44,18 +48,11 @@ export default function RegisterEnsSheet() {
   const { data: registration, status } = useQuery(
     debouncedSearchQuery.length > 2 && ['registration', debouncedSearchQuery],
     async (_, searchQuery) => {
-      const fastFormatter = timestamp => {
-        const date = new Date(Number(timestamp) * 1000);
-        return `${date.toDateString()}`;
-      };
       const { registrationDate } = await fetchRegistration(
         searchQuery + '.eth'
       );
       return {
-        expiryDate: fastFormatter(nameExpires),
-        isRegistered: !available,
         registrationDate: fastFormatter(registrationDate),
-        rentPrice: fromWei(rentPrice.toString()),
       };
     }
   );
@@ -65,13 +62,13 @@ export default function RegisterEnsSheet() {
 
   const state = useMemo(() => {
     if (isSuccess) {
-      if (registration?.isRegistered) {
-        return 'warning';
+      if (available) {
+        return 'success';
       }
-      return 'success';
+      return 'warning';
     }
     return undefined;
-  }, [isSuccess, registration?.isRegistered]);
+  }, [isSuccess, available]);
 
   return (
     <Box background="body" flexGrow={1}>
@@ -116,27 +113,20 @@ export default function RegisterEnsSheet() {
               <Columns alignHorizontal="center" space="19px">
                 <Column width="1/2">
                   <Text color="secondary40" size="18px" weight="bold">
-                    {registration.isRegistered ? 'Taken' : 'Available'}
+                    {available ? 'Available' : 'Taken'}
                   </Text>
                 </Column>
                 <Column width="1/2">
                   <Text color="secondary40" size="18px" weight="bold">
-                    {registration.isRegistered ? 'Taken' : 'Available'}
+                    {available ? 'Available' : 'Taken'}
                   </Text>
                 </Column>
               </Columns>
               <Inline wrap={false}>
                 <Text color="secondary40" size="18px" weight="bold">
-                  {registration.isRegistered
-                    ? `Til ${registration.expiryDate}`
-                    : `"Price"`}
+                  {available ? `Price: ${rentPrice} ETH` : `Til ${nameExpires}`}
                 </Text>
               </Inline>
-              {!registration.isRegistered && (
-                <Text color="secondary40" size="18px" weight="bold">
-                  Estimated cost?
-                </Text>
-              )}
             </Stack>
           )}
         </Box>
@@ -159,11 +149,7 @@ export default function RegisterEnsSheet() {
           <SheetActionButtonRow>
             {isSuccess && debouncedSearchQuery.length > 2 && (
               <>
-                {registration.isRegistered ? (
-                  <TintButton onPress={() => setSearchQuery('')}>
-                    􀅉 Clear
-                  </TintButton>
-                ) : (
+                {available ? (
                   <SheetActionButton
                     color={colors.green}
                     label="Continue on 􀆊"
@@ -171,6 +157,10 @@ export default function RegisterEnsSheet() {
                     size="big"
                     weight="heavy"
                   />
+                ) : (
+                  <TintButton onPress={() => setSearchQuery('')}>
+                    􀅉 Clear
+                  </TintButton>
                 )}
               </>
             )}
