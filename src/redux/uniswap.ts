@@ -261,8 +261,8 @@ export const uniswapUpdateFavorites = (
 // -- Reducer --------------------------------------------------------------- //
 
 export const INITIAL_UNISWAP_STATE: UniswapState = {
-  favorites: DefaultUniswapFavorites['mainnet'],
-  favoritesMeta: DefaultUniswapFavoritesMeta['mainnet'],
+  favorites: DefaultUniswapFavorites[Network.mainnet],
+  favoritesMeta: DefaultUniswapFavoritesMeta[Network.mainnet],
   loadingUniswap: false,
   get pairs() {
     return rainbowTokenList.CURATED_TOKENS;
