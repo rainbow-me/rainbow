@@ -2,6 +2,8 @@ import React from 'react';
 import Animated from 'react-native-reanimated';
 import { Path } from 'react-native-redash';
 
+export type Interpolator = (data: Point[]) => Point[];
+
 export const CurveType = {
   basis: 'basis',
   bump: 'bump',
@@ -28,6 +30,7 @@ export type CallbackType = {
   width: number;
   height: number;
   yRange?: [number, number];
+  interpolator?: Interpolator;
 };
 
 export interface PathData {

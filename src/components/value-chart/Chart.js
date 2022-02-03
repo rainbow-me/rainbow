@@ -1,11 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Dimensions } from 'react-native';
+import { Dimensions, FlatList, StyleSheet } from 'react-native';
 import Animated, {
-  cancelAnimation,
   Easing,
-  repeat,
   useAnimatedStyle,
   useSharedValue,
+  withRepeat,
   withTiming,
 } from 'react-native-reanimated';
 import styled from 'styled-components';
@@ -108,52 +107,17 @@ const longPressGestureHandlerProps = {
   minDurationMs: 60,
 };
 
-export default function ChartWrapper({
-  chartType,
-  color,
-  fetchingCharts,
-  isPool,
-  updateChartType,
-  showChart,
-  showMonth,
-  showYear,
-  testID,
-  throttledData,
-  overrideValue = false,
-  ...props
-}) {
-  const timespanIndex = useMemo(() => ChartTimespans.indexOf(chartType), [
-    chartType,
-  ]);
-
-  const { progress } = useChartData();
+function EmptyComponent({ isEmpty, color }) {
+  // const { progress } = useChartData();
   const spinnerRotation = useSharedValue(0);
   const spinnerScale = useSharedValue(0);
 
-  const { colors } = useTheme();
-
-  const { setOptions } = useNavigation();
-  useEffect(
-    () =>
-      setOptions({
-        onWillDismiss: () => {
-          cancelAnimation(progress);
-          cancelAnimation(spinnerRotation);
-          cancelAnimation(spinnerScale);
-          nativeStackConfig.screenOptions.onWillDismiss();
-        },
-      }),
-    [setOptions, progress, spinnerRotation, spinnerScale]
-  );
-
-  const showLoadingState = useShowLoadingState(fetchingCharts);
-
   const spinnerTimeout = useRef();
   useEffect(() => {
-    if (showLoadingState) {
+    if (isEmpty) {
       clearTimeout(spinnerTimeout.current);
       spinnerRotation.value = 0;
-      spinnerRotation.value = repeat(
+      spinnerRotation.value = withRepeat(
         withTiming(360, rotationConfig),
         -1,
         false
@@ -167,7 +131,7 @@ export default function ChartWrapper({
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showLoadingState]);
+  }, [isEmpty]);
 
   const overlayStyle = useAnimatedStyle(() => {
     return {
@@ -186,6 +150,48 @@ export default function ChartWrapper({
   });
 
   return (
+    <Overlay style={overlayStyle}>
+      <Animated.View style={spinnerStyle}>
+        <ChartSpinner color={color} />
+      </Animated.View>
+    </Overlay>
+  );
+}
+
+export default function ChartWrapper({
+  chartType,
+  color,
+  fetchingCharts,
+  isPool,
+  updateChartType,
+  showChart,
+  showMonth,
+  showYear,
+  testID,
+  throttledData,
+  overrideValue = false,
+  ...props
+}) {
+  const timespanIndex = useMemo(() => ChartTimespans.indexOf(chartType), [
+    chartType,
+  ]);
+
+  const { colors } = useTheme();
+
+  const { setOptions } = useNavigation();
+  useEffect(
+    () =>
+      setOptions({
+        onWillDismiss: () => {
+          nativeStackConfig.screenOptions.onWillDismiss();
+        },
+      }),
+    [setOptions]
+  );
+
+  const showLoadingState = useShowLoadingState(fetchingCharts);
+
+  return (
     <Container>
       <ChartExpandedStateHeader
         {...props}
@@ -193,50 +199,43 @@ export default function ChartWrapper({
         color={color}
         isPool={isPool}
         overrideValue={overrideValue}
-        showChart={showChart}
+        showChart
         testID={testID}
       />
       <ChartContainer showChart={showChart}>
-        {showChart && (
-          <>
-            <Labels color={color} width={WIDTH} />
-            <ChartPath
-              fill="none"
-              gestureEnabled={!fetchingCharts && !!throttledData}
-              hapticsEnabled={ios}
-              height={HEIGHT}
-              hitSlop={30}
-              longPressGestureHandlerProps={longPressGestureHandlerProps}
-              selectedStrokeWidth={3}
-              stroke={color}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={3.5}
-              width={WIDTH}
-            />
-            <Dot color={colors.alpha(color, 0.03)} size={65}>
-              <InnerDot color={color} />
-            </Dot>
-            <Overlay style={overlayStyle}>
-              <Animated.View style={spinnerStyle}>
-                <ChartSpinner color={color} />
-              </Animated.View>
-            </Overlay>
-          </>
-        )}
-      </ChartContainer>
-      {showChart ? (
-        <TimespanSelector
-          color={color}
-          defaultIndex={timespanIndex}
-          // fixme temporary to fix animation
-          key={`ts_${showMonth}_${showYear}`}
-          reloadChart={updateChartType}
-          showMonth={showMonth}
-          showYear={showYear}
-          timespans={ChartTimespans}
+        <Labels color={color} width={WIDTH} />
+        <ChartPath
+          EmptyComponent={props => <EmptyComponent {...props} color={color} />}
+          fill="none"
+          gestureEnabled={!fetchingCharts && !!throttledData}
+          hapticsEnabled={ios}
+          height={HEIGHT}
+          hitSlop={30}
+          longPressGestureHandlerProps={longPressGestureHandlerProps}
+          selectedStrokeWidth={3}
+          stroke={color}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={3.5}
+          width={WIDTH}
         />
-      ) : null}
+        <Dot color={colors.alpha(color, 0.03)} size={65}>
+          <InnerDot color={color} />
+        </Dot>
+      </ChartContainer>
+      {/* {showChart ? ( */}
+      <TimespanSelector
+        color={color}
+        defaultIndex={timespanIndex}
+        key={`ts_${showMonth}_${showYear}`}
+        // fixme temporary to fix animation
+        reloadChart={updateChartType}
+        show={showChart}
+        showMonth={showMonth}
+        showYear={showYear}
+        timespans={ChartTimespans}
+      />
+      {/* ) : null} */}
     </Container>
   );
 }

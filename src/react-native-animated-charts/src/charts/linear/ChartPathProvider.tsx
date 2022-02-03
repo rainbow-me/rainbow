@@ -9,6 +9,7 @@ import {
   ChartContext,
   CurveType,
   DataType,
+  Interpolator,
   PathData,
   PathScales,
   Point,
@@ -23,6 +24,7 @@ interface ChartPathProviderProps {
   width?: number;
   height?: number;
   yRange?: [number, number];
+  interpolator?: Interpolator;
 }
 
 function getCurveType(curveType: keyof typeof CurveType) {
@@ -131,7 +133,14 @@ function createPath({ data, width, height, yRange }: CallbackType): PathData {
 }
 
 export const ChartPathProvider = React.memo<ChartPathProviderProps>(
-  ({ children, data, width = WIDTH, height = HEIGHT, yRange }) => {
+  ({
+    children,
+    data,
+    width = WIDTH,
+    height = HEIGHT,
+    yRange,
+    interpolator,
+  }) => {
     // path interpolation animation progress
     const progress = useSharedValue(1);
 
@@ -159,7 +168,9 @@ export const ChartPathProvider = React.memo<ChartPathProviderProps>(
     // used for memoization since useMemo with empty deps array
     // still can be re-run according to the docs
     const [initialPath] = useState<PathData | null>(() =>
-      data.points.length ? createPath({ data, height, width, yRange }) : null
+      data.points.length
+        ? createPath({ data, height, interpolator, width, yRange })
+        : null
     );
 
     const [paths, setPaths] = useState<[PathData | null, PathData | null]>(
@@ -177,7 +188,7 @@ export const ChartPathProvider = React.memo<ChartPathProviderProps>(
         setPaths(([_, curr]) => [
           curr,
           data.points.length
-            ? createPath({ data, height, width, yRange })
+            ? createPath({ data, height, interpolator, width, yRange })
             : null,
         ]);
       } else {

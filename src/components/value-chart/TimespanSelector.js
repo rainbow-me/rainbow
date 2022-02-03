@@ -9,6 +9,7 @@ import { padding } from '@rainbow-me/styles';
 const Container = styled(Centered)`
   padding-top: 49;
   width: 100%;
+  height: 81;
 `;
 
 const TimespanItemLabel = styled(Text).attrs(
@@ -46,6 +47,7 @@ const TimespanSelector = ({
   showMonth,
   showYear,
   timespans,
+  show,
 }) => {
   const { colors } = useTheme();
   const filteredTimespans = useMemo(() => {
@@ -57,19 +59,21 @@ const TimespanSelector = ({
   }, [showMonth, showYear, timespans]);
   return (
     <Container>
-      <JellySelector
-        backgroundColor={colors.alpha(color || colors.dark, 0.06)}
-        color={color || colors.dark}
-        defaultIndex={defaultIndex}
-        enableHapticFeedback
-        height={32}
-        items={filteredTimespans}
-        onSelect={reloadChart}
-        renderItem={TimespanItem}
-        renderRow={TimespanItemRow}
-        scaleTo={1.2}
-        width="100%"
-      />
+      {show && (
+        <JellySelector
+          backgroundColor={colors.alpha(color || colors.dark, 0.06)}
+          color={color || colors.dark}
+          defaultIndex={defaultIndex}
+          enableHapticFeedback
+          height={32}
+          items={filteredTimespans}
+          onSelect={reloadChart}
+          renderItem={TimespanItem}
+          renderRow={TimespanItemRow}
+          scaleTo={1.2}
+          width="100%"
+        />
+      )}
     </Container>
   );
 };

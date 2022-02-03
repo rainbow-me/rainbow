@@ -91,6 +91,7 @@ interface ChartPathProps extends PathProps {
   longPressGestureHandlerProps?: LongPressGestureHandlerProperties;
   timingFeedbackConfig?: Animated.WithTimingConfig;
   timingAnimationConfig?: Animated.WithTimingConfig;
+  EmptyComponent: React.ComponentType<{ isEmpty: boolean }>;
 }
 
 function positionXWithMargin(x: number, margin: number, width: number) {
@@ -118,6 +119,7 @@ export const ChartPath = React.memo(
     timingFeedbackConfig,
     timingAnimationConfig,
     longPressGestureHandlerProps = {},
+    EmptyComponent,
     ...props
   }: ChartPathProps) => {
     const {
@@ -367,6 +369,8 @@ export const ChartPath = React.memo(
 
     return (
       <View style={{ height, width }}>
+        {EmptyComponent && <EmptyComponent isEmpty={!currentPath?.path} />}
+
         <LongPressGestureHandler
           enabled={gestureEnabled}
           maxDist={100000}
