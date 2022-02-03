@@ -35,12 +35,9 @@ export const saveUniswapFavorites = (favorites: any) =>
   saveGlobal(UNISWAP_FAVORITES, favorites);
 
 export const getUniswapFavoritesMetadata = (
-  network?: string
+  network: Network = Network.mainnet
 ): Promise<UniswapFavoriteTokenData> =>
-  getGlobal(
-    UNISWAP_FAVORITES_METADATA,
-    DefaultUniswapFavoritesMeta[network || 'mainnet']
-  );
+  getGlobal(UNISWAP_FAVORITES_METADATA, DefaultUniswapFavoritesMeta[network]);
 
 export const saveUniswapFavoritesMetadata = (
   data: Record<EthereumAddress, RainbowToken>
