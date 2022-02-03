@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useQuery } from 'react-query';
 import { fetchRegistrationDate } from '@rainbow-me/handlers/ens';
 import {
   getAvailable,
@@ -28,60 +27,72 @@ export default function useENSRegistration({
   name: string;
   duration: number;
 }) {
-  const [available, setAvailable] = useState<boolean | null>(null);
-  const [rentPrice, setRentPrice] = useState<string | null>(null);
-  const [nameExpires, setNameExpires] = useState<string | null>(null);
-
-  // we can get the registration date only if is not available
-  const { data } = useQuery(
-    !available && name.length > 2 && ['registration', name],
-    async (_, name) => {
-      const registrationDate = await fetchRegistrationDate(name + '.eth');
-      return {
-        registrationDate: formatTime(registrationDate),
-      };
-    }
-  );
+  const [registrationData, setRegistrationData] = useState<{
+    available: boolean | null;
+    rentPrice: string | null;
+    nameExpires: string | null;
+    registrationDate: string | null;
+  }>({
+    available: null,
+    nameExpires: null,
+    registrationDate: null,
+    rentPrice: null,
+  });
 
   // status is going to depend if the name is ready and also if is available or not
   const status = useMemo(() => {
     if (name.length < 3) {
       return WAITING_STATUS;
-    } else if (available === null) {
+    } else if (registrationData.available === null) {
       return LOADING_STATUS;
-    } else if (available === true) {
-      return rentPrice ? SUCCESS_STATUS : FAILED_STATUS;
+    } else if (registrationData.available === true) {
+      return registrationData.rentPrice ? SUCCESS_STATUS : FAILED_STATUS;
     } else {
-      return Boolean(data?.registrationDate) && Boolean(nameExpires)
+      return Boolean(registrationData.registrationDate) &&
+        Boolean(registrationData.nameExpires)
         ? SUCCESS_STATUS
         : FAILED_STATUS;
     }
-  }, [available, data?.registrationDate, name.length, nameExpires, rentPrice]);
+  }, [
+    name.length,
+    registrationData.available,
+    registrationData.nameExpires,
+    registrationData.registrationDate,
+    registrationData.rentPrice,
+  ]);
 
   useEffect(() => {
     const getRegistrationValues = async () => {
-      const newAvailable = await getAvailable(name);
-      if (newAvailable) {
+      const isAvailable = await getAvailable(name);
+      if (isAvailable) {
         // we need the price only if is available
         const newRentPrice = await getRentPrice(name, duration);
         const formattedRentPrice = formatRentPrice(newRentPrice);
-        setRentPrice(formattedRentPrice);
+        setRegistrationData({
+          available: isAvailable,
+          nameExpires: null,
+          registrationDate: null,
+          rentPrice: formattedRentPrice,
+        });
       } else {
-        // we need the expiration date when is not available
+        // we need the expiration and registration date when is not available
+        const registrationDate = await fetchRegistrationDate(name + '.eth');
         const newNameExpires = await getNameExpires(name);
+        const formattedRegistrarionDate = formatTime(registrationDate);
         const formattedNamesExpires = formatTime(newNameExpires);
-        setNameExpires(formattedNamesExpires);
+        setRegistrationData({
+          available: isAvailable,
+          nameExpires: formattedNamesExpires,
+          registrationDate: formattedRegistrarionDate,
+          rentPrice: null,
+        });
       }
-      setAvailable(newAvailable);
     };
     getRegistrationValues();
   }, [duration, name]);
 
   return {
-    available,
-    nameExpires,
-    registrationDate: data?.registrationDate,
-    rentPrice,
     status,
+    ...registrationData,
   };
 }
