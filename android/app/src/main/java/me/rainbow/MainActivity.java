@@ -1,5 +1,4 @@
 package me.rainbow;
-import com.facebook.react.modules.network.OkHttpClientProvider;
 import android.content.res.Configuration;
 import android.os.Bundle;
 
@@ -20,8 +19,6 @@ public class MainActivity extends ReactActivity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-
-      OkHttpClientProvider.setOkHttpClientFactory(new CustomNetworkModule());
       super.onCreate(savedInstanceState);
       WebView.setWebContentsDebuggingEnabled(false);
   }
