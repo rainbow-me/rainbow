@@ -24,7 +24,7 @@ import { fromWei } from '@rainbow-me/helpers/utilities';
 import {
   useDebounceString,
   useDimensions,
-  useENS,
+  useENSRegistration,
   useKeyboardHeight,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
@@ -37,7 +37,7 @@ export default function RegisterEnsSheet() {
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounceString(searchQuery);
 
-  const { getAvailable, getRentPrice, getNameExpires } = useENS();
+  const { getAvailable, getRentPrice, getNameExpires } = useENSRegistration();
   const { data: registration, status } = useQuery(
     debouncedSearchQuery.length > 2 && ['registration', debouncedSearchQuery],
     async (_, searchQuery) => {

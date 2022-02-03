@@ -5,7 +5,7 @@ import {
   getENSContract,
   getENSRegistrarContract,
 } from '@rainbow-me/helpers/ens';
-export default function useENS() {
+export default function useENSRegistration() {
   const ensContract = getENSContract();
   const ensRegistrarContract = getENSRegistrarContract();
   const ensBaseRegistrarContract = getBaseRegistrarImplementationContract();
