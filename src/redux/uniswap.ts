@@ -190,7 +190,7 @@ const getUniswapFavoritesMetadata = async (
   addresses: EthereumAddress[],
   network?: string
 ) => {
-  let favoritesMetadata = await getUniswapFavoritesMetadataLS(network);
+  let favoritesMetadata = (await getUniswapFavoritesMetadataLS(network)) || {};
   if (Object.keys(favoritesMetadata).length !== addresses.length) {
     try {
       const newFavoritesMeta = await getUniswapV2Tokens(
