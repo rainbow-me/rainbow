@@ -1,8 +1,8 @@
+import { format } from 'date-fns';
 import { useCallback, useMemo } from 'react';
 import { useQuery } from 'react-query';
 import { useAccountSettings } from '.';
 import { fetchRegistrationDate } from '@rainbow-me/handlers/ens';
-import { format } from 'date-fns';
 import {
   getAvailable,
   getNameExpires,

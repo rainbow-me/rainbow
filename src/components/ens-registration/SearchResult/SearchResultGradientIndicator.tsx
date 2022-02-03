@@ -1,6 +1,5 @@
 import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import { addHours, differenceInMinutes, isPast } from 'date-fns';
 import { useTheme } from '@rainbow-me/context';
 import {
   AccentColorProvider,

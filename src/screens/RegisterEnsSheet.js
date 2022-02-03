@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { format } from 'date-fns';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import dice from '../assets/dice.png';
 import TintButton from '../components/buttons/TintButton';
@@ -29,7 +28,6 @@ import {
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { colors } from '@rainbow-me/styles';
-import { NativeModules } from 'react-native';
 
 export default function RegisterEnsSheet() {
   const { height: deviceHeight } = useDimensions();
@@ -38,7 +36,13 @@ export default function RegisterEnsSheet() {
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounceString(searchQuery);
 
-  const { available, rentPrice, expirationDate, status } = useENSRegistration({
+  const {
+    available,
+    rentPrice,
+    expirationDate,
+    status,
+    registrationDate,
+  } = useENSRegistration({
     duration: 1,
     name: debouncedSearchQuery,
   });
@@ -107,26 +111,25 @@ export default function RegisterEnsSheet() {
               >
                 <Inline alignHorizontal="justify" wrap={false}>
                   <SearchResultGradientIndicator
-                    isRegistered={registration.isRegistered}
+                    isRegistered={!available}
                     type="availability"
                   />
-                  {registration.isRegistered ? (
+                  {!available ? (
                     <SearchResultGradientIndicator
-                      expirationDate={registration.expirationDate}
+                      expirationDate={expirationDate}
                       type="expiration"
                     />
                   ) : (
                     <SearchResultGradientIndicator
-                      price={`${rentPrice?.perYear?.display}  / Year`}
+                      price={`${rentPrice?.perYear?.display} / Year`}
                       type="price"
                     />
                   )}
                 </Inline>
                 <Inset horizontal="19px">
-                  {registration.isRegistered ? (
+                  {!available ? (
                     <Text color="secondary50" size="16px" weight="bold">
-                      This name was last registered on{' '}
-                      {registration.registrationDate}
+                      This name was last registered on {registrationDate}
                     </Text>
                   ) : (
                     <Inline>
