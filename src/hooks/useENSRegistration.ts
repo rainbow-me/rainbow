@@ -91,11 +91,11 @@ export default function useENSRegistration({
 
   const { nativeCurrency } = useAccountSettings();
 
-  const nameIsValid = useMemo(() => name.length > 2, [name.length]);
+  const isInvalidLength = useMemo(() => name.length > 2, [name.length]);
 
   // status is going to depend if the name is ready and also if is available or not
   const status = useMemo(() => {
-    if (!nameIsValid) {
+    if (!isInvalidLength) {
       return WAITING_STATUS;
     } else if (registrationData.available === null) {
       return LOADING_STATUS;
@@ -108,7 +108,7 @@ export default function useENSRegistration({
         : FAILED_STATUS;
     }
   }, [
-    nameIsValid,
+    isInvalidLength,
     registrationData.available,
     registrationData.expirationDate,
     registrationData.registrationDate,
@@ -147,8 +147,8 @@ export default function useENSRegistration({
         });
       }
     };
-    nameIsValid && getRegistrationValues();
-  }, [duration, name, nameIsValid, nativeCurrency]);
+    isInvalidLength && getRegistrationValues();
+  }, [duration, name, isInvalidLength, nativeCurrency]);
 
   return {
     status,
