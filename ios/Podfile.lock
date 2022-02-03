@@ -476,6 +476,8 @@ PODS:
   - RNAnalytics (1.5.0):
     - Analytics
     - React-Core
+  - RNBootSplash (4.1.0):
+    - React-Core
   - RNCAsyncStorage (1.12.1):
     - React-Core
   - RNCClipboard (1.2.3):
@@ -667,6 +669,7 @@ DEPENDENCIES:
   - "ReactNativePayments (from `../node_modules/@rainbow-me/react-native-payments/lib/ios`)"
   - rn-fetch-blob (from `../node_modules/rn-fetch-blob`)
   - "RNAnalytics (from `../node_modules/@segment/analytics-react-native`)"
+  - RNBootSplash (from `../node_modules/react-native-bootsplash`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
   - "RNCClipboard (from `../node_modules/@react-native-community/clipboard`)"
   - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
@@ -868,6 +871,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/rn-fetch-blob"
   RNAnalytics:
     :path: "../node_modules/@segment/analytics-react-native"
+  RNBootSplash:
+    :path: "../node_modules/react-native-bootsplash"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-community/async-storage"
   RNCClipboard:
@@ -1027,6 +1032,7 @@ SPEC CHECKSUMS:
   ReactNativePayments: 40a266450628c05db440fe219b631210e4358a49
   rn-fetch-blob: f065bb7ab7fb48dd002629f8bdcb0336602d3cba
   RNAnalytics: a6dc48511d5d99b1ecaaf7157d8b5c618d15337e
+  RNBootSplash: 605c94f76180e3f8e5832bcafbe52ff5194a51d0
   RNCAsyncStorage: b03032fdbdb725bea0bd9e5ec5a7272865ae7398
   RNCClipboard: 48eaf27bea3de7c9a265529725434268d47a2ee9
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
