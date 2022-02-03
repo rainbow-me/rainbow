@@ -5,6 +5,7 @@ import dice from '../assets/dice.png';
 import TintButton from '../components/buttons/TintButton';
 import {
   SearchInput,
+  SearchResultBasicIndicator,
   SearchResultGradientIndicator,
 } from '../components/ens-registration';
 import {
@@ -14,6 +15,7 @@ import {
 } from '../components/sheet';
 import {
   Box,
+  Divider,
   Heading,
   Inline,
   Inset,
@@ -105,39 +107,46 @@ export default function RegisterEnsSheet() {
           )}
           {isSuccess && (
             <Inset horizontal="19px">
-              <Inline alignHorizontal="justify" wrap={false}>
-                <SearchResultGradientIndicator
-                  isRegistered={registration.isRegistered}
-                  type="availability"
-                />
-                {registration.isRegistered ? (
+              <Stack
+                separator={
+                  <Inset horizontal="19px">
+                    <Divider />
+                  </Inset>
+                }
+                space="19px"
+              >
+                <Inline alignHorizontal="justify" wrap={false}>
                   <SearchResultGradientIndicator
-                    expiryDate={registration.expiryDate}
-                    type="expiration"
+                    isRegistered={registration.isRegistered}
+                    type="availability"
                   />
-                ) : (
-                  <SearchResultGradientIndicator
-                    price="$5 / Year"
-                    type="price"
-                  />
-                )}
-              </Inline>
+                  {registration.isRegistered ? (
+                    <SearchResultGradientIndicator
+                      expiryDate={registration.expiryDate}
+                      type="expiration"
+                    />
+                  ) : (
+                    <SearchResultGradientIndicator
+                      price="$5 / Year"
+                      type="price"
+                    />
+                  )}
+                </Inline>
+                <Inset horizontal="19px">
+                  {registration.isRegistered ? (
+                    <SearchResultBasicIndicator
+                      registrationDate="January 24, 2020"
+                      type="age"
+                    />
+                  ) : (
+                    <SearchResultBasicIndicator feesCost={87.57} type="fees" />
+                  )}
+                </Inset>
+              </Stack>
             </Inset>
           )}
         </Box>
-        {isSuccess && (
-          <Inset horizontal="34px">
-            {registration.isRegistered ? (
-              <SearchResultBasicIndicator
-                registrationDate="January 24, 2020"
-                type="age"
-              />
-            ) : (
-              <SearchResultBasicIndicator feesCost={87.57} type="fees" />
-            )}
-          </Inset>
-        )}
-        <Box>
+        <Box paddingTop="42px">
           {debouncedSearchQuery.length < 3 && (
             <Inline
               alignHorizontal="center"
