@@ -1,13 +1,10 @@
 import { getCoingeckoIds } from '@rainbow-me/handlers/dispersion';
 import { AppDispatch, AppState } from '@rainbow-me/redux/store';
+import { ETH_ADDRESS } from '@rainbow-me/references';
 
 // -- Constants ------------------------------------------------------------- //
 const ADDITIONAL_ASSET_DATA_COINGECKO_IDS =
   'additionalAssetData/ADDITIONAL_ASSET_DATA_COINGOCKO_IDS';
-
-export type AdditionalDataUniswap = {
-  oneDayVolumeUSD?: number;
-};
 
 type AdditionalAssetCoingeckoIdsAction = {
   type: typeof ADDITIONAL_ASSET_DATA_COINGECKO_IDS;
@@ -33,7 +30,7 @@ export const additionalDataCoingeckoIds = async (
   if (Object.keys(getState().additionalAssetsData.coingeckoIds).length === 0) {
     const idMap = await getCoingeckoIds();
     if (idMap) {
-      idMap['eth'] = 'ethereum';
+      idMap[ETH_ADDRESS] = 'ethereum';
       dispatch({ payload: idMap, type: ADDITIONAL_ASSET_DATA_COINGECKO_IDS });
     }
   }

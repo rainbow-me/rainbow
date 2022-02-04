@@ -5,10 +5,14 @@ import { useAccountSettings } from './index';
 import { EthereumAddress } from '@rainbow-me/entities';
 import { getAdditionalAssetData } from '@rainbow-me/handlers/dispersion';
 import { bigNumberFormat } from '@rainbow-me/helpers/bigNumberFormat';
+import {
+  greaterThan,
+  greaterThanOrEqualTo,
+} from '@rainbow-me/helpers/utilities';
 import { ETH_ADDRESS, WETH_ADDRESS } from '@rainbow-me/references';
 
 function cutIfOver10000(value: number): number {
-  return value > 10000 ? Math.round(value) : value;
+  return greaterThan(value, 10000) ? Math.round(value) : value;
 }
 
 export default function useAdditionalAssetData(
@@ -30,7 +34,11 @@ export default function useAdditionalAssetData(
   const format = useCallback(
     value =>
       value
-        ? bigNumberFormat(cutIfOver10000(value), nativeCurrency, value >= 10000)
+        ? bigNumberFormat(
+            cutIfOver10000(value),
+            nativeCurrency,
+            greaterThanOrEqualTo(value, 10000)
+          )
         : '',
     [nativeCurrency]
   );
