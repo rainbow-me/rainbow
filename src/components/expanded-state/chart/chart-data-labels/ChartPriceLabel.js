@@ -17,6 +17,7 @@ const Label = styled(ChartYLabel)({
   color: ({ theme: { colors } }) => colors.dark,
   ...fontWithWidth(fonts.weight.heavy),
   fontSize: fonts.size.big,
+  fontVariant: ({ tabularNums }) => (tabularNums ? ['tabular-nums'] : []),
   letterSpacing: fonts.letterSpacing.roundedTight,
   ...(android
     ? {
@@ -78,6 +79,7 @@ export default function ChartPriceLabel({
   defaultValue,
   isNoPriceData,
   priceValue,
+  tabularNums,
 }) {
   const { nativeCurrency } = useAccountSettings();
   const nativeSelected = get(supportedNativeCurrencies, `${nativeCurrency}`);
@@ -107,7 +109,7 @@ export default function ChartPriceLabel({
           {nativeSelected?.symbol}
         </AndroidCurrencySymbolLabel>
       )}
-      <Label format={format} />
+      <Label format={format} tabularNums={tabularNums} />
     </ChartPriceRow>
   );
 }
