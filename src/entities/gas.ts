@@ -79,14 +79,12 @@ export interface CurrentBlockParams {
 // API
 
 export interface GasPricesAPIData {
-  average: Numberish;
-  avgWait: Numberish;
+  normal: Numberish;
+  normalWait: Numberish;
   fast: Numberish;
   fastWait: Numberish;
-  safeLow: Numberish;
-  safeLowWait: Numberish;
-  fastest: Numberish;
-  fastestWait: Numberish;
+  urgent: Numberish;
+  urgentWait: Numberish;
 }
 
 export interface GasFeesPolygonGasStationData {
