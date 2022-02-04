@@ -157,6 +157,7 @@ export default function ChartExpandedStateHeader({
               }
               latestChange={latestChange}
               overrideValue={overrideValue}
+              ratio={ratio}
             />
           )}
         </RowWithMargins>

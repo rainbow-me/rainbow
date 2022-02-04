@@ -81,7 +81,6 @@ export default function ChartPercentChangeLabel({ ratio, latestChange }) {
   const sharedRatio = useRatio();
 
   const textStyle = useAnimatedStyle(() => {
-    1;
     const realRatio = isActive.value ? sharedRatio.value : ratio;
     return {
       color:
