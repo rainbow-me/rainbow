@@ -318,7 +318,6 @@ export default function ChartExpandedState({ asset }) {
       </View>
     );
   }, [delayedMorePoolsVisible]);
-
   return (
     <SlackSheet
       additionalTopPadding={android}
