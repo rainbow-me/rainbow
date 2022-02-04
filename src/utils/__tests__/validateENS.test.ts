@@ -9,6 +9,22 @@ describe('valid names', () => {
     `);
   });
 
+  it('domain with emojis', () => {
+    expect(validateENS('lol😊.eth')).toMatchInlineSnapshot(`
+      Object {
+        "valid": true,
+      }
+    `);
+  });
+
+  it('domain with ñ', () => {
+    expect(validateENS('estebañ.eth')).toMatchInlineSnapshot(`
+      Object {
+        "valid": true,
+      }
+    `);
+  });
+
   it('subdomain', () => {
     expect(validateENS('super.lol.eth')).toMatchInlineSnapshot(`
       Object {
@@ -33,7 +49,7 @@ describe('invalid names', () => {
     expect(validateENS('omg$.eth')).toMatchInlineSnapshot(`
       Object {
         "code": "invalid-domain-name",
-        "hint": "Your name can not include special characters",
+        "hint": "Your name cannot include special characters",
         "valid": false,
       }
     `);
@@ -74,7 +90,7 @@ describe('invalid names', () => {
     expect(validateENS('haha$.rofl.eth')).toMatchInlineSnapshot(`
       Object {
         "code": "invalid-subdomain-name",
-        "hint": "Your subdomain can not include special characters",
+        "hint": "Your subdomain cannot include special characters",
         "valid": false,
       }
     `);
