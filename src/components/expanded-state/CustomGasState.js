@@ -2,7 +2,6 @@ import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
-import styled from 'styled-components';
 import Divider from '../Divider';
 import { ExchangeHeader } from '../exchange';
 import { FloatingPanel } from '../floating-panels';
@@ -19,6 +18,7 @@ import {
   useKeyboardHeight,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
+import styled from '@rainbow-me/styled-components';
 import { margin } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';
 
@@ -33,13 +33,9 @@ function useAndroidDisableGesturesOnFocus() {
   }, [isFocused, params]);
 }
 
-const FeesPanelWrapper = styled(Column)`
-  ${margin(13, 12, 30, 24)}
-`;
+const FeesPanelWrapper = styled(Column)(margin.object(13, 12, 30, 24));
 
-const FeesPanelTabswrapper = styled(Column)`
-  ${margin(19, 0, 24, 0)}
-`;
+const FeesPanelTabswrapper = styled(Column)(margin.object(19, 0, 24, 0));
 
 export default function CustomGasState({ asset }) {
   const { network } = useAccountSettings();

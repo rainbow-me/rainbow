@@ -1,21 +1,20 @@
+import lang from 'i18n-js';
 import React from 'react';
-import styled from 'styled-components';
 import Divider from '../../Divider';
 import { Centered, Column, ColumnWithMargins, Row } from '../../layout';
 import { Emoji, Text } from '../../text';
+import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 
 const Container = styled(ColumnWithMargins).attrs({
   align: 'center',
   margin: 8,
-})`
-  ${padding(30, 42, 24)};
-`;
+})(padding.object(30, 42, 24));
 
 const Heading = styled(Text).attrs(({ weight = 'bold' }) => ({
   size: 'larger',
   weight,
-}))``;
+}))({});
 
 const Message = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
@@ -23,7 +22,7 @@ const Message = styled(Text).attrs(({ theme: { colors } }) => ({
   lineHeight: 22,
   size: 'smedium',
   weight: 'semibold',
-}))``;
+}))({});
 
 export default function SwapDetailsSlippageMessage({
   isHighPriceImpact,
@@ -38,7 +37,9 @@ export default function SwapDetailsSlippageMessage({
     <Column align="center" {...props}>
       <Container>
         <Row align="center">
-          <Heading color={priceImpactColor}>Losing </Heading>
+          <Heading color={priceImpactColor}>
+            {lang.t('expanded_state.swap.losing')}{' '}
+          </Heading>
           <Heading
             color={priceImpactColor}
             letterSpacing="roundedTight"
@@ -48,10 +49,7 @@ export default function SwapDetailsSlippageMessage({
           </Heading>
           <Emoji size="larger"> 🥵</Emoji>
         </Row>
-        <Message>
-          This is a small market, so you’re getting a bad price. Try a smaller
-          trade!
-        </Message>
+        <Message>{lang.t('expanded_state.swap.slippage_message')}</Message>
       </Container>
       <Centered width={139}>
         <Divider color={colors.rowDividerExtraLight} inset={false} />

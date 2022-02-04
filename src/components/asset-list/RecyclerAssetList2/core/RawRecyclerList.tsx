@@ -11,7 +11,7 @@ import useLayoutItemAnimator from './useLayoutItemAnimator';
 import { useCoinListEdited } from '@rainbow-me/hooks';
 
 const dataProvider = new DataProvider((r1, r2) => {
-  return r1.uid === r2.uid;
+  return r1.uid !== r2.uid;
 });
 
 const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
@@ -52,7 +52,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
       onLayout={onLayout}
       ref={ref as LegacyRef<RecyclerListViewRef>}
       refreshControl={<RefreshControl />}
-      renderAheadOffset={ios ? 700 : 2000}
+      renderAheadOffset={700}
       rowRenderer={rowRenderer}
     />
   );

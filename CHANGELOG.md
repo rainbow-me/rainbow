@@ -12,6 +12,23 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.6.5](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.5)
+### Changed
+* Fix NFT Family Image Crash
+
+## [1.6.4](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.4)
+### Changed
+* Fix NFT fetching on failure
+
+## [1.6.3](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.3)
+### Changed
+* Improved L2 support
+* Update deprecated keychain flags
+* Asset list improvements (RLV v2)
+* More backend proxy updates
+* Performance improvements
+* Bug fixes
+
 ## [1.6.2](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.2)
 ### Changed
 * Fix Add Cash crash

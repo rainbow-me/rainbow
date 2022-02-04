@@ -1,11 +1,21 @@
 import { isUndefined } from 'lodash';
-import styled from 'styled-components';
+import styled from '@rainbow-me/styled-components';
 
-const FlexItem = styled.View`
-  flex: ${({ flex, grow, shrink }) =>
-    isUndefined(flex) && isUndefined(grow) && isUndefined(shrink) ? 1 : flex};
-  ${({ grow }) => (grow !== undefined ? `flex-grow: ${grow};` : '')}
-  ${({ shrink }) => (shrink !== undefined ? `flex-shrink: ${shrink};` : '')}
-`;
+const FlexItem = styled.View(({ flex, grow, shrink }) => {
+  const props = {
+    flex:
+      isUndefined(flex) && isUndefined(grow) && isUndefined(shrink) ? 1 : flex,
+  };
+
+  if (grow !== undefined) {
+    props.flexGrow = grow;
+  }
+
+  if (shrink !== undefined) {
+    props.flexShrink = shrink;
+  }
+
+  return props;
+});
 
 export default FlexItem;

@@ -123,10 +123,12 @@ export default () => {
       }
     );
   }, [
+    setNextEmoji,
     accountImage,
     onAvatarChooseImage,
     onAvatarPickEmoji,
     onAvatarRemovePhoto,
+    setNextEmoji,
   ]);
 
   const avatarOptions = useMemo(

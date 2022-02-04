@@ -1,4 +1,5 @@
 import React from 'react';
+import { Inset } from '../../../components/Inset/Inset';
 
 import { Heading, Stack } from '../../system';
 import { sprinkles } from '../../system/sprinkles.css';
@@ -44,7 +45,9 @@ export const DocsAccordion = ({ meta, description, examples }: Docs) => {
                   description,
                   enablePlayroom,
                   enableCodeSnippet,
+                  wrapper,
                   showFrame,
+                  examples,
                   Example,
                 },
                 index
@@ -54,9 +57,11 @@ export const DocsAccordion = ({ meta, description, examples }: Docs) => {
                   description={description}
                   enableCodeSnippet={enableCodeSnippet}
                   enablePlayroom={enablePlayroom}
+                  examples={examples}
                   key={index}
                   name={name}
                   showFrame={showFrame}
+                  wrapper={wrapper}
                 />
               )
             )}
@@ -71,17 +76,26 @@ export const DocsAccordion = ({ meta, description, examples }: Docs) => {
 
 const ExamplePreview = ({
   name,
+  subTitle,
   description,
   enableCodeSnippet = true,
   showFrame = false,
   enablePlayroom = true,
+  wrapper,
+  examples,
   Example,
 }: DocsExample) => {
   return (
     <Stack space="24px">
-      <Heading color="secondary60" weight="bold">
-        {name}
-      </Heading>
+      {subTitle ? (
+        <Heading color="secondary60" size="20px" weight="semibold">
+          {subTitle}
+        </Heading>
+      ) : (
+        <Heading color="secondary60" weight="bold">
+          {name}
+        </Heading>
+      )}
       {description && (
         <div className={sprinkles({ paddingBottom: '8px' })}>
           <Stack space="32px">{description}</Stack>
@@ -93,8 +107,14 @@ const ExamplePreview = ({
           enableCodeSnippet={enableCodeSnippet}
           enablePlayroom={enablePlayroom}
           showFrame={showFrame}
+          wrapper={wrapper}
         />
       )}
+      {examples?.map((example, i) => (
+        <Inset key={i} vertical="12px">
+          <ExamplePreview {...example} />
+        </Inset>
+      ))}
     </Stack>
   );
 };
