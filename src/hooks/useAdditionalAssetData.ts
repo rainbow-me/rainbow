@@ -5,16 +5,8 @@ import { useAccountSettings } from './index';
 import { EthereumAddress } from '@rainbow-me/entities';
 import { getAdditionalAssetData } from '@rainbow-me/handlers/dispersion';
 import { bigNumberFormat } from '@rainbow-me/helpers/bigNumberFormat';
-import {
-  greaterThan,
-  greaterThanOrEqualTo,
-  multiply,
-} from '@rainbow-me/helpers/utilities';
+import { greaterThanOrEqualTo, multiply } from '@rainbow-me/helpers/utilities';
 import { ETH_ADDRESS, WETH_ADDRESS } from '@rainbow-me/references';
-
-function cutIfOver10000(value: number): number {
-  return greaterThan(value, 10000) ? Math.round(value) : value;
-}
 
 export default function useAdditionalAssetData(
   rawAddress: EthereumAddress,
@@ -22,9 +14,9 @@ export default function useAdditionalAssetData(
 ): {
   description?: string;
   loading: boolean;
-  totalVolume?: string;
-  totalLiquidity?: string;
-  marketCap?: string;
+  totalVolume: string | null;
+  totalLiquidity: string | null;
+  marketCap: string | null;
   links: Record<string, string[]>;
 } {
   const address = rawAddress === ETH_ADDRESS ? WETH_ADDRESS : rawAddress;
@@ -33,33 +25,31 @@ export default function useAdditionalAssetData(
   );
   const { nativeCurrency } = useAccountSettings();
   const format = useCallback(
-    value =>
-      value
-        ? bigNumberFormat(
-            cutIfOver10000(value),
-            nativeCurrency,
-            greaterThanOrEqualTo(value, 10000)
-          )
-        : '',
+    (value: string) =>
+      bigNumberFormat(
+        value,
+        nativeCurrency,
+        greaterThanOrEqualTo(value, 10000)
+      ),
     [nativeCurrency]
   );
   const rate = useNativeCurrencyToUSD();
   const loading = !data;
-  const marketCap = data?.totalLiquidity
-    ? multiply(data?.totalLiquidity, tokenPrice)
+  const marketCap = data?.circulatingSupply
+    ? format(multiply(data?.circulatingSupply, tokenPrice))
     : null;
   const totalLiquidity = data?.totalLiquidity
-    ? multiply(data?.totalLiquidity, tokenPrice)
+    ? format(multiply(data?.totalLiquidity, tokenPrice))
     : null;
   const totalVolume = data?.oneDayVolumeUSD
-    ? multiply(data?.oneDayVolumeUSD, rate)
+    ? format(multiply(data?.oneDayVolumeUSD, rate))
     : null;
   return {
     description: data?.description,
     links: data?.links,
     loading,
-    marketCap: format(marketCap),
-    totalLiquidity: format(totalLiquidity),
-    totalVolume: format(totalVolume),
+    marketCap,
+    totalLiquidity,
+    totalVolume,
   };
 }
