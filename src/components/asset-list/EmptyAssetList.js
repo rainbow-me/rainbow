@@ -1,3 +1,4 @@
+import ConditionalWrap from 'conditional-wrap';
 import { times } from 'lodash';
 import React, { useMemo } from 'react';
 import { RefreshControl, ScrollView } from 'react-native';
@@ -34,11 +35,18 @@ const EmptyAssetList = ({
   const { refresh, isRefreshing } = useRefreshAccountData();
 
   return (
-    <ScrollView
-      contentContainerStyle={{ height: '100%' }}
-      refreshControl={
-        <RefreshControl onRefresh={refresh} refreshing={isRefreshing} />
-      }
+    <ConditionalWrap
+      condition={isWalletEthZero}
+      wrap={children => (
+        <ScrollView
+          contentContainerStyle={{ height: '100%' }}
+          refreshControl={
+            <RefreshControl onRefresh={refresh} refreshing={isRefreshing} />
+          }
+        >
+          {children}
+        </ScrollView>
+      )}
     >
       <Container {...props}>
         <Centered flex={1}>
@@ -64,7 +72,7 @@ const EmptyAssetList = ({
           )}
         </Centered>
       </Container>
-    </ScrollView>
+    </ConditionalWrap>
   );
 };
 
