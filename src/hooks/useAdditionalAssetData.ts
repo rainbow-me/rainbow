@@ -8,6 +8,7 @@ import { bigNumberFormat } from '@rainbow-me/helpers/bigNumberFormat';
 import {
   greaterThan,
   greaterThanOrEqualTo,
+  multiply,
 } from '@rainbow-me/helpers/utilities';
 import { ETH_ADDRESS, WETH_ADDRESS } from '@rainbow-me/references';
 
@@ -44,12 +45,21 @@ export default function useAdditionalAssetData(
   );
   const rate = useNativeCurrencyToUSD();
   const loading = !data;
+  const marketCap = data?.totalLiquidity
+    ? multiply(data?.totalLiquidity, tokenPrice)
+    : null;
+  const totalLiquidity = data?.totalLiquidity
+    ? multiply(data?.totalLiquidity, tokenPrice)
+    : null;
+  const totalVolume = data?.oneDayVolumeUSD
+    ? multiply(data?.oneDayVolumeUSD, rate)
+    : null;
   return {
     description: data?.description,
     links: data?.links,
     loading,
-    marketCap: format(data?.circulatingSupply * tokenPrice),
-    totalLiquidity: format(data?.totalLiquidity * tokenPrice),
-    totalVolume: format(data?.oneDayVolumeUSD * rate),
+    marketCap: format(marketCap),
+    totalLiquidity: format(totalLiquidity),
+    totalVolume: format(totalVolume),
   };
 }
