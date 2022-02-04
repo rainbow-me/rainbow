@@ -147,6 +147,7 @@ export default function ChartExpandedStateHeader({
             isScrubbing={isScrubbing}
             priceRef={priceRef}
             priceValue={defaultPriceValue}
+            ratio={ratio}
             tabularNums={tabularNums}
           />
           {showPriceChange && (
