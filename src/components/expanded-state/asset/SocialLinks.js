@@ -1,9 +1,9 @@
 import lang from 'i18n-js';
 import { startCase } from 'lodash';
 import React from 'react';
-import styled from 'styled-components';
 import Link from '../../Link';
 import EdgeFade from '../../discover-sheet/EdgeFade';
+import styled from '@rainbow-me/styled-components';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 const TWITTER_URL = 'https://twitter.com/';
@@ -16,21 +16,20 @@ const Carousel = styled.ScrollView.attrs({
   },
   horizontal: true,
   showsHorizontalScrollIndicator: false,
-})``;
+})({});
 
 const CommunityLink = styled(Link).attrs({
   scaleTo: 0.925,
   weight: 'heavy',
-})`
-  background-color: ${({ color, theme: { colors } }) =>
-    colors.alpha(color, 0.1)};
-  border-radius: 20;
-  height: 40;
-  margin-horizontal: 6;
-  padding-bottom: ${ios ? 11.5 : 5};
-  padding-horizontal: 15;
-  padding-top: ${ios ? 9.5 : 5};
-`;
+})({
+  backgroundColor: ({ color, theme: { colors } }) => colors.alpha(color, 0.1),
+  borderRadius: 20,
+  height: 40,
+  marginHorizontal: 6,
+  paddingBottom: ios ? 11.5 : 5,
+  paddingHorizontal: 15,
+  paddingTop: ios ? 9.5 : 5,
+});
 
 export default function SocialLinks({
   address,

@@ -3,7 +3,6 @@ import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
-import styled from 'styled-components';
 import { isSamsungGalaxy } from '../../helpers/samsung';
 import { saveBackupPassword } from '../../model/backup';
 import { cloudPlatform } from '../../utils/platform';
@@ -25,6 +24,7 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { margin, padding } from '@rainbow-me/styles';
 import logger from 'logger';
 
@@ -33,16 +33,16 @@ const DescriptionText = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.5),
   lineHeight: 'looser',
   size: 'large',
-}))`
-  ${padding(0, 50)};
-`;
+}))({
+  ...padding.object(0, 50),
+});
 
 const Masthead = styled(Centered).attrs({
   direction: 'column',
-})`
-  ${padding(24, 0, 42)}
-  flex-shrink: 0;
-`;
+})({
+  ...padding.object(24, 0, 42),
+  flexShrink: 0,
+});
 
 const MastheadIcon = styled(GradientText).attrs({
   align: 'center',
@@ -54,14 +54,14 @@ const MastheadIcon = styled(GradientText).attrs({
   start: { x: 1, y: 1 },
   steps: [0, 0.5, 1],
   weight: 'bold',
-})``;
+})({});
 
 const Title = styled(Text).attrs({
   size: 'big',
   weight: 'bold',
-})`
-  ${margin(15, 0, 12)};
-`;
+})({
+  ...margin.object(15, 0, 12),
+});
 
 const samsungGalaxy = (android && isSamsungGalaxy()) || false;
 

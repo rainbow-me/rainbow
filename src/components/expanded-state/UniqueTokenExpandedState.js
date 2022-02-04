@@ -14,7 +14,6 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
-import styled from 'styled-components';
 import useWallets from '../../hooks/useWallets';
 import { lightModeThemeColors } from '../../styles/colors';
 import L2Disclaimer from '../L2Disclaimer';
@@ -51,6 +50,7 @@ import {
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import { convertAmountToNativeDisplay } from '@rainbow-me/utilities';
 import {
@@ -62,43 +62,43 @@ import {
 
 const NftExpandedStateSection = styled(ExpandedStateSection).attrs({
   isNft: true,
-})``;
+})({});
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurAmount: 100,
   blurType: 'light',
-})`
-  ${position.cover};
-`;
+})({
+  ...position.coverAsObject,
+});
 
-const BackgroundImage = styled.View`
-  ${position.cover};
-`;
+const BackgroundImage = styled.View({
+  ...position.coverAsObject,
+});
 
 const BlurWrapper = styled.View.attrs({
   shouldRasterizeIOS: true,
-})`
-  background-color: ${({ theme: { colors } }) => colors.trueBlack};
-  height: ${({ height }) => height};
-  left: 0;
-  overflow: hidden;
-  position: absolute;
-  width: ${({ width }) => width};
-  ${android && 'border-top-left-radius: 30; border-top-right-radius: 30;'}
-`;
+})({
+  backgroundColor: ({ theme: { colors } }) => colors.trueBlack,
+  height: ({ height }) => height,
+  left: 0,
+  overflow: 'hidden',
+  position: 'absolute',
+  width: ({ width }) => width,
+  ...(android ? { borderTopLeftRadius: 30, borderTopRightRadius: 30 } : {}),
+});
 
-const SheetDivider = styled(Row)`
-  align-self: center;
-  background-color: ${({ theme: { colors } }) =>
-    colors.alpha(colors.whiteLabel, 0.01)};
-  border-radius: 1;
-  height: 2;
-  width: ${({ deviceWidth }) => deviceWidth - 48};
-`;
+const SheetDivider = styled(Row)({
+  alignSelf: 'center',
+  backgroundColor: ({ theme: { colors } }) =>
+    colors.alpha(colors.whiteLabel, 0.01),
+  borderRadius: 1,
+  height: 2,
+  width: ({ deviceWidth }) => deviceWidth - 48,
+});
 
-const Spacer = styled.View`
-  height: ${safeAreaInsetValues.bottom + 20};
-`;
+const Spacer = styled.View({
+  height: safeAreaInsetValues.bottom + 20,
+});
 
 const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
   const { accountAddress, accountENS } = useAccountProfile();

@@ -1,22 +1,20 @@
 import lang from 'i18n-js';
 import React from 'react';
-import styled from 'styled-components';
 import Divider from '../../Divider';
 import { Centered, Column, ColumnWithMargins, Row } from '../../layout';
 import { Emoji, Text } from '../../text';
+import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 
 const Container = styled(ColumnWithMargins).attrs({
   align: 'center',
   margin: 8,
-})`
-  ${padding(30, 42, 24)};
-`;
+})(padding.object(30, 42, 24));
 
 const Heading = styled(Text).attrs(({ weight = 'bold' }) => ({
   size: 'larger',
   weight,
-}))``;
+}))({});
 
 const Message = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
@@ -24,7 +22,7 @@ const Message = styled(Text).attrs(({ theme: { colors } }) => ({
   lineHeight: 22,
   size: 'smedium',
   weight: 'semibold',
-}))``;
+}))({});
 
 export default function SwapDetailsSlippageMessage({
   isHighPriceImpact,

@@ -2,7 +2,6 @@ import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { fonts } from '../../styles';
 import { magicMemo, measureText } from '../../utils';
@@ -11,20 +10,21 @@ import { CoinIcon } from '../coin-icon';
 import { Centered, ColumnWithMargins, RowWithMargins } from '../layout';
 import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
+import styled from '@rainbow-me/styled-components';
 
 const TopMoverCoinIconSize = 36;
 const TopMoverCoinRowMargin = 8;
 const TopMoverPriceMargin = 5;
 
-const Spacer = styled.View`
-  width: ${TopMoverPriceMargin};
-`;
+const Spacer = styled.View({
+  width: TopMoverPriceMargin,
+});
 
 const TopMoverTitle = styled(CoinName).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.8),
   paddingRight: 0,
   weight: 'semibold',
-}))``;
+}))({});
 
 export const measureBottomRowText = text =>
   measureText(text, {

@@ -9,7 +9,6 @@ import React, {
 } from 'react';
 import { InteractionManager, View } from 'react-native';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components';
 import CurrencySelectionTypes from '../../helpers/currencySelectionTypes';
 import { emitAssetRequest } from '../../redux/explorer';
 import deviceUtils from '../../utils/deviceUtils';
@@ -21,11 +20,12 @@ import { fetchSuggestions } from '@rainbow-me/handlers/ens';
 import { useTimeout, useUniswapCurrencyList } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { ethereumUtils } from '@rainbow-me/utils';
 
-export const SearchContainer = styled(Row)`
-  height: 100%;
-`;
+export const SearchContainer = styled(Row)({
+  height: '100%',
+});
 
 export default function DiscoverSearch() {
   const { navigate } = useNavigation();

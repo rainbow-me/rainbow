@@ -6,13 +6,13 @@ import {
   useSpringTransition,
   useTimingTransition,
 } from 'react-native-redash/src/v1';
-import styled from 'styled-components';
 import { darkModeThemeColors } from '../../styles/colors';
 import { ButtonPressAnimation, interpolate } from '../animations';
 import { CoinIcon } from '../coin-icon';
 import { Centered, RowWithMargins } from '../layout';
 import { Text } from '../text';
 import PriceImpactWarning from './PriceImpactWarning';
+import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 
 const springConfig = {
@@ -27,10 +27,10 @@ const springConfig = {
 const Container = styled(RowWithMargins).attrs({
   centered: true,
   margin: 5,
-})`
-  ${padding(android ? 6 : 10, 10, 2)};
-  width: 100%;
-`;
+})({
+  ...padding.object(android ? 6 : 10, 10, 2),
+  width: '100%',
+});
 
 export default function DepositInfo({
   amount,

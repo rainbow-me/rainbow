@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types';
 import React, { Children, Fragment } from 'react';
-import styled from 'styled-components';
 import Divider from '../Divider';
 import { Row } from '../layout';
+import styled from '@rainbow-me/styled-components';
 
-const Container = styled(Row)`
-  border-top-color: ${({ theme: { colors } }) => colors.rowDivider};
-  border-top-width: 2;
-`;
+const Container = styled(Row)({
+  borderTopColor: ({ theme: { colors } }) => colors.rowDivider,
+  borderTopWidth: 2,
+});
 
 const ModalFooterButtonsRow = ({ children, ...props }) => (
   <Container {...props}>

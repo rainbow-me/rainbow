@@ -1,7 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useCallback, useEffect } from 'react';
-import styled from 'styled-components';
 import { cloudPlatform } from '../../../utils/platform';
 import { RainbowButton } from '../../buttons';
 import { Centered, Column } from '../../layout';
@@ -14,56 +13,57 @@ import { useWallets } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { fonts, padding } from '@rainbow-me/styles';
 
 const BackupButton = styled(RainbowButton).attrs({
   type: 'small',
   width: ios ? 221 : 270,
-})`
-  margin-bottom: 19;
-`;
+})({
+  marginBottom: 19,
+});
 
 const Content = styled(Centered).attrs({
   direction: 'column',
-})`
-  ${padding(0, 19, 42)};
-  flex: 1;
-`;
+})({
+  ...padding.object(0, 19, 42),
+  flex: 1,
+});
 
 const DescriptionText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.alpha(colors.blueGreyDark, 0.5),
   lineHeight: 'loosest',
   size: 'large',
-}))`
-  margin-bottom: 42;
-  padding-horizontal: 23;
-`;
+}))({
+  marginBottom: 42,
+  paddingHorizontal: 23,
+});
 
 const Subtitle = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.orangeLight,
   size: fonts.size.smedium,
   weight: fonts.weight.medium,
-}))`
-  margin-top: -10;
-`;
+}))({
+  marginTop: -10,
+});
 
 const Title = styled(Text).attrs({
   align: 'center',
   size: 'larger',
   weight: 'bold',
-})`
-  margin-bottom: 8;
-  padding-horizontal: 11;
-`;
+})({
+  marginBottom: 8,
+  paddingHorizontal: 11,
+});
 
 const TopIcon = styled(ImgixImage).attrs({
   resizeMode: ImgixImage.resizeMode.contain,
-})`
-  height: 74;
-  width: 75;
-`;
+})({
+  height: 74,
+  width: 75,
+});
 
 export default function NeedsBackupView() {
   const { navigate, setParams } = useNavigation();

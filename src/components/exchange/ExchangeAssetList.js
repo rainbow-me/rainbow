@@ -10,7 +10,6 @@ import React, {
 } from 'react';
 import { Alert, Keyboard, SectionList } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import styled from 'styled-components';
 import { ButtonPressAnimation } from '../../components/animations';
 import { CoinRowHeight, ExchangeCoinRow } from '../coin-row';
 import { ContactRow } from '../contacts';
@@ -21,15 +20,16 @@ import { TokenSectionTypes } from '@rainbow-me/helpers';
 import { usePrevious } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 import { abbreviations, deviceUtils, magicMemo } from '@rainbow-me/utils';
 
 const deviceWidth = deviceUtils.dimensions.width;
 
-const Header = styled.View`
-  ${padding(11, 0, 2.5, 19)};
-  position: relative;
-`;
+const Header = styled.View({
+  position: 'relative',
+  ...padding.object(11, 0, 2.5, 19),
+});
 
 const HeaderBackground = styled(LinearGradient).attrs(
   ({ theme: { colors } }) => ({
@@ -38,18 +38,18 @@ const HeaderBackground = styled(LinearGradient).attrs(
     locations: [0.55, 1],
     start: { x: 0.5, y: 0 },
   })
-)`
-  height: 40px;
-  position: absolute;
-  width: ${deviceWidth};
-`;
+)({
+  height: 40,
+  position: 'absolute',
+  width: deviceWidth,
+});
 
 const HeaderTitle = styled(Text).attrs(({ color, theme: { colors } }) => ({
   color: color || colors.blueGreyDark50,
   letterSpacing: 'roundedMedium',
   size: 'smedium',
   weight: 'heavy',
-}))``;
+}))({});
 
 const HeaderTitleGradient = styled(GradientText).attrs({
   colors: ['#6AA2E3', '#FF54BB', '#FFA230'],
@@ -57,9 +57,9 @@ const HeaderTitleGradient = styled(GradientText).attrs({
   size: 'smedium',
   steps: [0, 0.2867132868, 1],
   weight: 'heavy',
-})``;
+})({});
 
-const HeaderTitleWrapper = styled.View``;
+const HeaderTitleWrapper = styled.View({});
 
 const contentContainerStyle = { paddingBottom: 9.5 };
 const keyExtractor = ({ uniqueId }) => `ExchangeAssetList-${uniqueId}`;
@@ -87,10 +87,10 @@ function useSwapDetailsClipboardState() {
   };
 }
 
-const Spacer = styled.View`
-  height: 35px;
-  width: 100%;
-`;
+const Spacer = styled.View({
+  height: 35,
+  width: '100%',
+});
 
 const ExchangeAssetSectionList = styled(SectionList).attrs({
   alwaysBounceVertical: true,
@@ -104,9 +104,9 @@ const ExchangeAssetSectionList = styled(SectionList).attrs({
   scrollEventThrottle: 32,
   scrollIndicatorInsets,
   windowSize: 41,
-})`
-  height: 100%;
-`;
+})({
+  height: '100%',
+});
 
 const ExchangeAssetList = (
   {

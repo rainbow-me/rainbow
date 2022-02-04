@@ -3,7 +3,6 @@ import { toLower } from 'lodash';
 import React, { useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
-import styled from 'styled-components';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import { CopyFloatingEmojis } from '../components/floating-emojis';
 import { Centered, Column, ColumnWithMargins } from '../components/layout';
@@ -15,6 +14,7 @@ import { CopyToast, ToastPositionContainer } from '../components/toasts';
 import { useNavigation } from '../navigation/Navigation';
 import { abbreviations, deviceUtils } from '../utils';
 import { useAccountProfile } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { padding, shadow } from '@rainbow-me/styles';
 
 const QRCodeSize = ios ? 250 : Math.min(230, deviceUtils.dimensions.width - 20);
@@ -26,30 +26,31 @@ const AddressText = styled(TruncatedAddress).attrs(({ theme: { colors } }) => ({
   opacity: 0.6,
   size: 'large',
   weight: 'semibold',
-}))`
-  width: 100%;
-`;
+}))({
+  width: '100%',
+});
 
 const Container = styled(Centered).attrs({
   direction: 'column',
-})`
-  bottom: 16;
-  flex: 1;
-`;
+})({
+  bottom: 16,
+  flex: 1,
+});
 
 const Handle = styled(SheetHandle).attrs(({ theme: { colors } }) => ({
   color: colors.whiteLabel,
-}))`
-  margin-bottom: 19;
-`;
+}))({
+  marginBottom: 19,
+});
 
-const QRWrapper = styled(Column).attrs({ align: 'center' })`
-  ${padding(24)};
-  ${({ theme: { colors } }) =>
-    shadow.build(0, 10, 50, colors.shadowBlack, 0.6)};
-  background-color: ${({ theme: { colors } }) => colors.whiteLabel};
-  border-radius: 39;
-`;
+const QRWrapper = styled(Column).attrs({ align: 'center' })(
+  ({ theme: { colors } }) => ({
+    ...shadow.buildAsObject(0, 10, 50, colors.shadowBlack, 0.6),
+    ...padding.object(24),
+    backgroundColor: colors.whiteLabel,
+    borderRadius: 39,
+  })
+);
 
 const NameText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
@@ -57,7 +58,7 @@ const NameText = styled(Text).attrs(({ theme: { colors } }) => ({
   letterSpacing: 'roundedMedium',
   size: 'bigger',
   weight: 'bold',
-}))``;
+}))({});
 
 const accountAddressSelector = state => state.settings.accountAddress;
 const lowercaseAccountAddressSelector = createSelector(

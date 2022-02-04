@@ -10,7 +10,6 @@ import React, {
 } from 'react';
 import { LayoutAnimation, View } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
-import styled from 'styled-components';
 import { ModalContext } from '../../../react-native-cool-modals/NativeStackView';
 import L2Disclaimer from '../../L2Disclaimer';
 import { ButtonPressAnimation } from '../../animations';
@@ -51,6 +50,7 @@ import {
 import { useNavigation } from '@rainbow-me/navigation';
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { ethereumUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 
 const defaultCarouselHeight = 60;
@@ -69,17 +69,17 @@ const Carousel = styled.ScrollView.attrs({
   },
   horizontal: true,
   showsHorizontalScrollIndicator: false,
-})``;
+})({});
 
-const AdditionalContentWrapper = styled.View``;
+const AdditionalContentWrapper = styled.View({});
 
 const CarouselItem = styled(TokenInfoItem).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.7),
   letterSpacing: 'roundedTighter',
   weight: 'semibold',
-}))`
-  margin-horizontal: 12;
-`;
+}))({
+  marginHorizontal: 12,
+});
 
 const TIMEOUT = 15000;
 
@@ -88,7 +88,7 @@ const ReadMoreButton = styled(Text).attrs(({ theme: { colors } }) => ({
   lineHeight: 37,
   size: 'lmedium',
   weight: 'heavy',
-}))``;
+}))({});
 
 function CarouselWrapper({
   style,
@@ -128,9 +128,9 @@ function CarouselWrapper({
   );
 }
 
-const Spacer = styled.View`
-  height: ${safeAreaInsetValues.bottom + 20 + getSoftMenuBarHeight()};
-`;
+const Spacer = styled.View({
+  height: safeAreaInsetValues.bottom + 20 + getSoftMenuBarHeight(),
+});
 
 // truncate after the first paragraph or 4th dot
 function truncate(text) {
@@ -369,11 +369,11 @@ export default function ChartExpandedState({ asset }) {
         </TokenInfoSection>
       )}
       {needsEth ? (
-        <SheetActionButtonRow paddingBottom={isL2 && 19}>
+        <SheetActionButtonRow paddingBottom={isL2 ? 19 : undefined}>
           <BuyActionButton color={color} />
         </SheetActionButtonRow>
       ) : (
-        <SheetActionButtonRow paddingBottom={isL2 && 19}>
+        <SheetActionButtonRow paddingBottom={isL2 ? 19 : undefined}>
           {showSwapButton && (
             <SwapActionButton color={color} inputType={AssetInputTypes.in} />
           )}

@@ -2,28 +2,30 @@ import lang from 'i18n-js';
 import React from 'react';
 import { View } from 'react-native';
 import RNExitApp from 'react-native-exit-app';
-import styled from 'styled-components';
 import { Centered } from '../layout';
 import { SheetActionButton } from '../sheet';
 import Text from '../text/Text';
 import { useTheme } from '@rainbow-me/context';
+import styled from '@rainbow-me/styled-components';
 import logger from 'logger';
 
-const Spacer = styled(View)<{ height: Number }>`
-  height: ${({ height }) => `${height}`};
-`;
+// @ts-ignore
+const Spacer = styled(View)<{ height: Number }>({
+  // @ts-ignore
+  height: ({ height }) => height,
+});
 
-const Container = styled(View)`
-  height: 100%;
-  flex: 1;
-  justify-content: center;
-  align-items: center;
-`;
+const Container = styled(View)({
+  alignItems: 'center',
+  flex: 1,
+  height: '100%',
+  justifyContent: 'center',
+});
 
-const Message = styled(View)`
-  text-align: center;
-  padding: 30px;
-`;
+const Message = styled(View)({
+  padding: 30,
+  textAlign: 'center',
+});
 
 export default function Fallback() {
   const { colors } = useTheme();
