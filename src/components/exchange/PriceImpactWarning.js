@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React from 'react';
 import Animated from 'react-native-reanimated';
 import styled from 'styled-components';
@@ -42,8 +43,12 @@ export default function PriceImpactWarning({
         <ButtonPressAnimation onPress={onPress} scaleTo={0.94}>
           <Content>
             <Label color={priceImpactColor}>{`􀇿 `}</Label>
-            <Label color="whiteLabel">Small Market</Label>
-            <Label color={priceImpactColor}>{` • Losing `}</Label>
+            <Label color="whiteLabel">
+              {lang.t('exchange.price_impact.small_market')}
+            </Label>
+            <Label color={priceImpactColor}>{` • ${lang.t(
+              'exchange.price_impact.losing_prefix'
+            )} `}</Label>
             <Label color={priceImpactColor} letterSpacing="roundedTight">
               {headingValue}
             </Label>

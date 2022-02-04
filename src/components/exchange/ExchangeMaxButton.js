@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React from 'react';
 import styled from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
@@ -38,7 +39,7 @@ export default function ExchangeMaxButton({
     <Container disabled={disabled} onPress={onPress} testID={testID}>
       <MaxButtonContent>
         <MaxButtonLabel color={colorForAsset || colors.appleBlue}>
-          􀜍 Max
+          􀜍 {lang.t('exchange.max')}
         </MaxButtonLabel>
       </MaxButtonContent>
     </Container>

@@ -90,7 +90,7 @@ const SettingsPages = {
   },
   privacy: {
     component: PrivacySection,
-    getTitle: () => 'Privacy',
+    getTitle: () => lang.t('settings.privacy'),
     key: 'PrivacySection',
   },
 };
