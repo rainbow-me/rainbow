@@ -35,8 +35,9 @@ const ContractActions = {
 };
 
 const buildBlockExplorerAction = type => {
-  const blockExplorerText =
-    'View on ' + startCase(ethereumUtils.getBlockExplorer(type));
+  const blockExplorerText = `View on ${startCase(
+    ethereumUtils.getBlockExplorer(type)
+  )}`;
   return {
     actionKey: ContractActionsEnum.blockExplorer,
     actionTitle: blockExplorerText,
@@ -132,8 +133,9 @@ export default function SwapDetailsContractRow({
   );
 
   const onPressAndroid = useCallback(() => {
-    const blockExplorerText =
-      'View on ' + startCase(ethereumUtils.getBlockExplorer(asset?.type));
+    const blockExplorerText = `View on ${startCase(
+      ethereumUtils.getBlockExplorer(asset?.type)
+    )}`;
     const androidContractActions = [
       'Copy Contract Address',
       blockExplorerText,

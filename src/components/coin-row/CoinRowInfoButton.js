@@ -74,8 +74,9 @@ const CoinRowActions = {
 };
 
 const buildBlockExplorerAction = type => {
-  const blockExplorerText =
-    'View on ' + startCase(ethereumUtils.getBlockExplorer(type));
+  const blockExplorerText = `View on ${startCase(
+    ethereumUtils.getBlockExplorer(type)
+  )}`;
   return {
     actionKey: CoinRowActionsEnum.blockExplorer,
     actionTitle: blockExplorerText,
@@ -98,7 +99,7 @@ const CoinRowInfoButton = ({ item, onCopySwapDetailsText }) => {
   );
 
   const onPressAndroid = useCallback(() => {
-    const blockExplorerText = `View on ' ${startCase(
+    const blockExplorerText = `View on ${startCase(
       ethereumUtils.getBlockExplorer(item?.type)
     )}`;
     const androidContractActions = [

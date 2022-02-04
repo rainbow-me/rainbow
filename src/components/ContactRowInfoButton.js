@@ -74,8 +74,9 @@ const ContactRowActions = {
 };
 
 const buildBlockExplorerAction = type => {
-  const blockExplorerText =
-    'View on ' + startCase(ethereumUtils.getBlockExplorer(type));
+  const blockExplorerText = `View on ${startCase(
+    ethereumUtils.getBlockExplorer(type)
+  )}`;
   return {
     actionKey: ContactRowActionsEnum.blockExplorer,
     actionTitle: blockExplorerText,
@@ -97,7 +98,7 @@ const ContactRowInfoButton = ({ children, item, network, scaleTo }) => {
   );
 
   const onPressAndroid = useCallback(() => {
-    const blockExplorerText = `View on ' ${startCase(
+    const blockExplorerText = `View on ${startCase(
       ethereumUtils.getBlockExplorer(item?.type)
     )}`;
     const androidContractActions = [
