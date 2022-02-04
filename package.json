@@ -42,7 +42,8 @@
     "update-tokens": "yarn update-token-list && yarn update-token-metadata",
     "update-token-list": "./scripts/update-token-list.sh",
     "update-token-metadata": "./scripts/update-token-metadata.sh",
-    "check-translations": "./scripts/check-translations.sh ./src './src/languages/*.json' lang.t"
+    "check-translations": "./scripts/check-translations.sh ./src './src/languages/*.json' lang.t",
+    "codegen-translations": "node ./scripts/codegen-translations.js"
   },
   "husky": {
     "hooks": {

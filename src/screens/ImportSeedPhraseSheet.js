@@ -216,7 +216,7 @@ export default function ImportSeedPhraseSheet() {
                 testID="import-sheet-button-label"
                 weight="bold"
               >
-                {lang.t('button.paste')}
+                {lang.t('button.paste_seed_phrase')}
               </Text>
             </FooterButton>
           )}

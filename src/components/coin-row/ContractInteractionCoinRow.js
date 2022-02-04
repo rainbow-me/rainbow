@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
@@ -22,7 +23,10 @@ export default function ContractInteractionCoinRow({
     showActionSheetWithOptions(
       {
         cancelButtonIndex: 1,
-        options: ['View on Etherscan', 'Cancel'],
+        options: [
+          lang.t('exchange.coin_row.view_on_etherscan'),
+          lang.t('button.cancel'),
+        ],
       },
       buttonIndex => {
         if (buttonIndex === 0) {

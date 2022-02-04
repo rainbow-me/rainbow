@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { startCase } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
@@ -26,7 +27,7 @@ const ContractActionsEnum = {
 const ContractActions = {
   [ContractActionsEnum.copyAddress]: {
     actionKey: ContractActionsEnum.copyAddress,
-    actionTitle: 'Copy Contract Address',
+    actionTitle: lang.t('expanded_state.swap.copy_contract_address'),
     icon: {
       iconType: 'SYSTEM',
       iconValue: 'doc.on.doc',
@@ -35,9 +36,9 @@ const ContractActions = {
 };
 
 const buildBlockExplorerAction = type => {
-  const blockExplorerText = `View on ${startCase(
-    ethereumUtils.getBlockExplorer(type)
-  )}`;
+  const blockExplorerText = lang.t('expanded_state.swap.view_on', {
+    blockExplorerName: startCase(ethereumUtils.getBlockExplorer(type)),
+  });
   return {
     actionKey: ContractActionsEnum.blockExplorer,
     actionTitle: blockExplorerText,
@@ -133,13 +134,13 @@ export default function SwapDetailsContractRow({
   );
 
   const onPressAndroid = useCallback(() => {
-    const blockExplorerText = `View on ${startCase(
-      ethereumUtils.getBlockExplorer(asset?.type)
-    )}`;
+    const blockExplorerText = lang.t('expanded_state.swap.view_on', {
+      blockExplorerName: startCase(ethereumUtils.getBlockExplorer(asset?.type)),
+    });
     const androidContractActions = [
-      'Copy Contract Address',
+      lang.t('expanded_state.swap.copy_contract_address'),
       blockExplorerText,
-      'Cancel',
+      lang.t('button.cancel'),
     ];
     showActionSheetWithOptions(
       {
