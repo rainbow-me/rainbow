@@ -1,13 +1,21 @@
 import { Contract } from 'ethers';
 import { keccak_256 as sha3 } from 'js-sha3';
-import { addHexPrefix, web3Provider } from '@rainbow-me/handlers/web3';
+import { multiply } from './utilities';
+import { addHexPrefix, toHex, web3Provider } from '@rainbow-me/handlers/web3';
 import {
-  ENSABI,
   ENSBaseRegistrarImplementationABI,
-  ETHRegistrarControllerABI,
+  ensBaseRegistrarImplementationAddress,
+  ENSETHRegistrarControllerABI,
+  ensETHRegistrarControllerAddress,
+  ENSPublicResolverABI,
+  ensPublicResolverAddress,
+  ensRegistryAddress,
+  ENSRegistryWithFallbackABI,
+  ENSReverseRegistrarABI,
+  ensReverseRegistrarAddress,
 } from '@rainbow-me/references';
 
-enum ENSRegistrationStepType {
+export enum ENSRegistrationStepType {
   COMMIT,
   REGISTER_WITH_CONFIG,
   SET_TEXT,
@@ -15,24 +23,37 @@ enum ENSRegistrationStepType {
   MULTICALL,
 }
 
-const ensAddress = '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e';
-// fixed to main registrar for now
-const ensRegistrarAddress = '0x283Af0B28c62C092C9727F1Ee09c02CA627EB7F5';
-const ensBaseRegistrarImplementationAddress =
-  '0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85';
-
-const getENSContract = () => {
-  return new Contract(ensAddress, ENSABI, web3Provider);
-};
-const getENSRegistrarContract = (registrarAddress?: string) => {
+const getENSRegistryContract = () => {
   return new Contract(
-    registrarAddress || ensRegistrarAddress,
-    ETHRegistrarControllerABI,
+    ensRegistryAddress,
+    ENSRegistryWithFallbackABI,
+    web3Provider
+  );
+};
+const getENSRegistrarControllerContract = (registrarAddress?: string) => {
+  return new Contract(
+    registrarAddress || ensETHRegistrarControllerAddress,
+    ENSETHRegistrarControllerABI,
+    web3Provider
+  );
+};
+const getENSPublicResolverContract = () => {
+  return new Contract(
+    ensPublicResolverAddress,
+    ENSPublicResolverABI,
     web3Provider
   );
 };
 
-const getBaseRegistrarImplementationContract = () => {
+const getENSReverseRegistrarContract = () => {
+  return new Contract(
+    ensReverseRegistrarAddress,
+    ENSReverseRegistrarABI,
+    web3Provider
+  );
+};
+
+const getENSBaseRegistrarImplementationContract = () => {
   return new Contract(
     ensBaseRegistrarImplementationAddress,
     ENSBaseRegistrarImplementationABI,
@@ -41,66 +62,90 @@ const getBaseRegistrarImplementationContract = () => {
 };
 
 const getResolver = async (name: string): Promise<string> =>
-  getENSContract().resolver(name);
+  getENSRegistryContract().resolver(name);
 
 const getAvailable = async (name: string): Promise<boolean> =>
-  getENSRegistrarContract().available(name);
+  getENSRegistrarControllerContract().available(name);
 
 const getNameExpires = async (name: string): Promise<string> =>
-  getBaseRegistrarImplementationContract().nameExpires(
+  getENSBaseRegistrarImplementationContract().nameExpires(
     addHexPrefix(sha3(name))
   );
 
 const getRentPrice = async (name: string, duration: number): Promise<string> =>
-  getENSRegistrarContract().rentPrice(name, duration);
+  getENSRegistrarControllerContract().rentPrice(name, duration);
 
-const getExecutionDetails = (
-  accountAddress: string,
-  ensRegistrationStepType: ENSRegistrationStepType
+const getENSExecutionDetails = (
+  name: string,
+  ensRegistrationStepType: ENSRegistrationStepType,
+  accountAddress?: string,
+  rentPrice?: string,
+  duration?: number
 ): {
-  methodArguments: (string | string[] | number)[];
-  methodNames: string[];
+  methodArguments: (string | string[] | number | { value: string })[] | null;
+  methodNames: string[] | null;
   value: string | null;
+  contract: Contract | null;
 } => {
-  // let estimate: Function, method: Function,
-  let methodNames: string[],
-    args: (string | string[] | number)[],
-    value: string | null = null;
+  let methodNames: string[] | null = null;
+  let args: (string | string[] | number | { value: string })[] | null = null;
+  let value: string | null = null;
+  let contract: Contract | null = null;
+
   switch (ensRegistrationStepType) {
-    // to ETHRegistrarController
-    case ENSRegistrationStepType.COMMIT:
+    case ENSRegistrationStepType.COMMIT: {
+      const random = new Uint8Array(32);
+      crypto.getRandomValues(random);
+      const salt =
+        '0x' +
+        Array.from(random)
+          .map(b => b.toString(16).padStart(2, '0'))
+          .join('');
+
+      const registrarController = getENSRegistrarControllerContract();
+      const commitment = registrarController.makeCommitment(
+        name,
+        accountAddress,
+        salt
+      );
       methodNames = ['commit'];
-      args = ['dummy commitment'];
+      args = [commitment];
+      contract = getENSRegistrarControllerContract();
       break;
-    // to ETHRegistrarController
-    case ENSRegistrationStepType.REGISTER_WITH_CONFIG:
+    }
+    case ENSRegistrationStepType.REGISTER_WITH_CONFIG: {
+      if (!name || !accountAddress || !duration || !rentPrice) break;
+      const random = new Uint8Array(32);
+      crypto.getRandomValues(random);
+      const salt =
+        '0x' +
+        Array.from(random)
+          .map(b => b.toString(16).padStart(2, '0'))
+          .join('');
       methodNames = ['register'];
-      args = [
-        'name',
-        'owner',
-        'duration',
-        'secret',
-        `{ value: price.toString() }`,
-      ];
-      value = 'eth value';
+      args = [name, accountAddress, duration, salt];
+      value = toHex(Number(multiply(rentPrice, 1.1)).toFixed(0));
+      contract = getENSRegistrarControllerContract();
       break;
-    // to Resolver
+    }
     case ENSRegistrationStepType.SET_TEXT:
       methodNames = ['setText'];
       args = ['node (bytes32)', 'key (string)', 'value (string)'];
+      contract = getENSPublicResolverContract();
       break;
-    // to Resolver
     case ENSRegistrationStepType.MULTICALL:
       methodNames = ['multicall'];
       args = ['data (bytes[])'];
+      contract = getENSPublicResolverContract();
       break;
-    // to ReverseRegistrar
     case ENSRegistrationStepType.SET_NAME:
       methodNames = ['setName'];
-      args = ['name'];
+      args = [name];
+      contract = getENSReverseRegistrarContract();
       break;
   }
   return {
+    contract,
     methodArguments: args,
     methodNames,
     value,
@@ -108,12 +153,14 @@ const getExecutionDetails = (
 };
 
 export {
-  getENSContract,
-  getENSRegistrarContract,
-  getBaseRegistrarImplementationContract,
+  getENSRegistryContract,
+  getENSRegistrarControllerContract,
+  getENSBaseRegistrarImplementationContract,
+  getENSPublicResolverContract,
+  getENSReverseRegistrarContract,
   getResolver,
   getAvailable,
   getNameExpires,
   getRentPrice,
-  getExecutionDetails,
+  getENSExecutionDetails,
 };

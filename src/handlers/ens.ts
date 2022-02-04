@@ -5,7 +5,14 @@ import {
   ENS_REGISTRATIONS,
   ENS_SUGGESTIONS,
 } from '../apollo/queries';
+import { estimateGasWithPadding } from './web3';
+import {
+  ENSRegistrationStepType,
+  getENSExecutionDetails,
+} from '@rainbow-me/helpers/ens';
 import { profileUtils } from '@rainbow-me/utils';
+
+const secsInYear = 31536000;
 
 export const fetchSuggestions = async (
   recipient: any,
@@ -80,4 +87,112 @@ export const fetchRegistrationDate = async (recipient: any) => {
 
     return registrationDate;
   }
+};
+
+export const estimateENSRegisterGasLimit = async (
+  name: string,
+  accountAddress: string,
+  duration: number,
+  rentPrice: string
+) => {
+  const { contract, methodArguments, value } = getENSExecutionDetails(
+    name,
+    ENSRegistrationStepType.REGISTER_WITH_CONFIG,
+    accountAddress,
+    rentPrice,
+    duration * secsInYear
+  );
+
+  const params = {
+    from: accountAddress,
+    ...(value ? { value } : {}),
+  };
+
+  const registerGasLimit = await estimateGasWithPadding(
+    params,
+    contract?.estimateGas['register'],
+    methodArguments
+  );
+  return registerGasLimit;
+};
+
+export const estimateENSCommitGasLimit = async (
+  name: string,
+  accountAddress: string,
+  duration: number,
+  rentPrice: string
+) => {
+  const {
+    contract,
+    methodArguments,
+    value: commitValue,
+  } = getENSExecutionDetails(
+    name,
+    ENSRegistrationStepType.COMMIT,
+    accountAddress,
+    rentPrice,
+    duration * secsInYear
+  );
+
+  const commitParams = {
+    from: accountAddress,
+    ...(commitValue ? { value: commitValue } : {}),
+  };
+
+  const commitGasLimit = await estimateGasWithPadding(
+    commitParams,
+    contract?.estimateGas['commit'],
+    methodArguments
+  );
+
+  return commitGasLimit;
+};
+
+export const estimateENSSetNameGasLimit = async (name: string) => {
+  const { contract, methodArguments } = getENSExecutionDetails(
+    name,
+    ENSRegistrationStepType.SET_NAME
+  );
+
+  const commitParams = {};
+
+  const commitGasLimit = await estimateGasWithPadding(
+    commitParams,
+    contract?.estimateGas['setName'],
+    methodArguments
+  );
+
+  return commitGasLimit;
+};
+
+export const estimateENSMulticallGasLimit = async (
+  name: string,
+  accountAddress: string,
+  duration: number,
+  rentPrice: string
+) => {
+  const {
+    contract,
+    methodArguments,
+    value: commitValue,
+  } = getENSExecutionDetails(
+    name,
+    ENSRegistrationStepType.MULTICALL,
+    accountAddress,
+    rentPrice,
+    duration * secsInYear
+  );
+
+  const commitParams = {
+    from: accountAddress,
+    ...(commitValue ? { value: commitValue } : {}),
+  };
+
+  const commitGasLimit = await estimateGasWithPadding(
+    commitParams,
+    contract?.estimateGas['multicall'],
+    methodArguments
+  );
+
+  return commitGasLimit;
 };
