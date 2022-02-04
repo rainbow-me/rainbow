@@ -148,10 +148,19 @@ export const estimateENSCommitGasLimit = async (
   return commitGasLimit;
 };
 
-export const estimateENSSetNameGasLimit = async (name: string) => {
+export const estimateENSSetNameGasLimit = async (
+  name: string,
+  recordKey: string,
+  recordValue: string
+) => {
   const { contract, methodArguments } = getENSExecutionDetails(
     name,
-    ENSRegistrationStepType.SET_NAME
+    ENSRegistrationStepType.SET_NAME,
+    undefined,
+    undefined,
+    undefined,
+    recordKey,
+    recordValue
   );
 
   const commitParams = {};
@@ -165,28 +174,13 @@ export const estimateENSSetNameGasLimit = async (name: string) => {
   return commitGasLimit;
 };
 
-export const estimateENSMulticallGasLimit = async (
-  name: string,
-  accountAddress: string,
-  duration: number,
-  rentPrice: string
-) => {
-  const {
-    contract,
-    methodArguments,
-    value: commitValue,
-  } = getENSExecutionDetails(
+export const estimateENSMulticallGasLimit = async (name: string) => {
+  const { contract, methodArguments } = getENSExecutionDetails(
     name,
-    ENSRegistrationStepType.MULTICALL,
-    accountAddress,
-    rentPrice,
-    duration * secsInYear
+    ENSRegistrationStepType.MULTICALL
   );
 
-  const commitParams = {
-    from: accountAddress,
-    ...(commitValue ? { value: commitValue } : {}),
-  };
+  const commitParams = {};
 
   const commitGasLimit = await estimateGasWithPadding(
     commitParams,

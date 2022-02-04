@@ -1,3 +1,5 @@
+import { formatsByName } from '@ensdomains/address-encoder';
+import { hash } from '@ensdomains/eth-ens-namehash';
 import { Contract } from 'ethers';
 import { keccak_256 as sha3 } from 'js-sha3';
 import { multiply } from './utilities';
@@ -75,12 +77,96 @@ const getNameExpires = async (name: string): Promise<string> =>
 const getRentPrice = async (name: string, duration: number): Promise<string> =>
   getENSRegistrarControllerContract().rentPrice(name, duration);
 
+const setupMulticallRecords = (
+  name: string,
+  records: {
+    coinAddress: { key: string; address: string }[] | null;
+    contentHash: string | null;
+    ensAssociatedAddress: string | null;
+    text: { key: string; value: string }[] | null;
+  },
+  resolverInstance: Contract
+): string[] => {
+  const resolver = resolverInstance.interface;
+  const namehash = hash(name);
+
+  const calls = [];
+
+  // ens associated address
+  const ensAssociatedRecord = records.ensAssociatedAddress;
+  if (
+    Boolean(ensAssociatedRecord) &&
+    typeof ensAssociatedRecord === 'string' &&
+    parseInt(ensAssociatedRecord, 16) !== 0
+  ) {
+    calls.push(
+      resolver.encodeFunctionData('setAddr(bytes32,address)', [
+        namehash,
+        ensAssociatedRecord,
+      ])
+    );
+  }
+  // content hash address
+  const contentHashAssociatedRecord = records.contentHash;
+  if (
+    Boolean(contentHashAssociatedRecord) &&
+    typeof contentHashAssociatedRecord === 'string' &&
+    parseInt(contentHashAssociatedRecord, 16) !== 0
+  ) {
+    calls.push(
+      resolver.encodeFunctionData('setContenthash', [
+        namehash,
+        ensAssociatedRecord,
+      ])
+    );
+  }
+  // coin addresses
+  const coinAddressesAssociatedRecord = records.coinAddress;
+  if (coinAddressesAssociatedRecord) {
+    calls.push(
+      coinAddressesAssociatedRecord.map(coinRecord => {
+        // if (parseInt(coinRecord.address, 16) === 0) return undefined;
+        const { decoder, coinType } = formatsByName[coinRecord.key];
+        let addressAsBytes;
+        if (!coinRecord.address || coinRecord.address === '') {
+          addressAsBytes = Buffer.from('');
+        } else {
+          addressAsBytes = decoder(coinRecord.address);
+        }
+        return resolver.encodeFunctionData('setAddr(bytes32,uint256,bytes)', [
+          namehash,
+          coinType,
+          addressAsBytes,
+        ]);
+      })
+    );
+  }
+  // text addresses
+  const textAssociatedRecord = records.text;
+  if (textAssociatedRecord) {
+    calls.push(
+      textAssociatedRecord.map(textRecord => {
+        // if (textRecord.value.length === 0) return undefined;
+        return resolver.encodeFunctionData('setText', [
+          namehash,
+          textRecord.key,
+          textRecord.value,
+        ]);
+      })
+    );
+  }
+  // flatten textrecords and addresses and remove undefined
+  return calls.flat().filter(bytes => Boolean(bytes));
+};
+
 const getENSExecutionDetails = (
   name: string,
   ensRegistrationStepType: ENSRegistrationStepType,
   accountAddress?: string,
   rentPrice?: string,
-  duration?: number
+  duration?: number,
+  recordKey?: string,
+  recordValue?: string
 ): {
   methodArguments: (string | string[] | number | { value: string })[] | null;
   methodNames: string[] | null;
@@ -128,16 +214,30 @@ const getENSExecutionDetails = (
       contract = getENSRegistrarControllerContract();
       break;
     }
-    case ENSRegistrationStepType.SET_TEXT:
+    case ENSRegistrationStepType.SET_TEXT: {
       methodNames = ['setText'];
-      args = ['node (bytes32)', 'key (string)', 'value (string)'];
+      const namehash = hash(name);
+      args = [namehash, recordKey, recordValue];
       contract = getENSPublicResolverContract();
       break;
-    case ENSRegistrationStepType.MULTICALL:
+    }
+    case ENSRegistrationStepType.MULTICALL: {
       methodNames = ['multicall'];
-      args = ['data (bytes[])'];
       contract = getENSPublicResolverContract();
+      const data =
+        setupMulticallRecords(
+          name,
+          {
+            coinAddress: null,
+            contentHash: null,
+            ensAssociatedAddress: null,
+            text: [{ key: 'name', value: 'blabla' }],
+          },
+          contract
+        ) || [];
+      args = [data];
       break;
+    }
     case ENSRegistrationStepType.SET_NAME:
       methodNames = ['setName'];
       args = [name];

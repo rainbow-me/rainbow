@@ -94,6 +94,7 @@ export default function useENSRegistration({
       const nameExpires = await getNameExpires(name);
       const formattedRegistrarionDate = formatTime(registrationDate);
       const formattedExpirationDate = formatTime(nameExpires);
+      // const gaslimit = await estimateENSMulticallGasLimit(name);
 
       return {
         available: isAvailable,
