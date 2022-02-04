@@ -128,7 +128,6 @@ export default function ChartExpandedStateHeader({
             isPool={isPool}
             priceRef={priceRef}
             priceValue={defaultPriceValue}
-            ratio={ratio}
           />
           {showPriceChange && (
             <ChartPercentChangeLabel
