@@ -97,6 +97,7 @@ export default function useENSRegistration({
         return {
           available: true,
           rentPrice: formattedRentPrice,
+          valid: true,
         };
       } else {
         // we need the expiration and registration date when is not available
@@ -109,6 +110,7 @@ export default function useENSRegistration({
           available: false,
           expirationDate: formattedExpirationDate,
           registrationDate: formattedRegistrarionDate,
+          valid: true,
         };
       }
     },
