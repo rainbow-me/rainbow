@@ -31,10 +31,13 @@ const formatRentPrice = (
   const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
     Network.mainnet
   );
+
   const { amount, display } = convertAmountAndPriceToNativeDisplay(
     rentPriceInETH,
     nativeAssetPrice,
-    nativeCurrency
+    nativeCurrency,
+    3,
+    true
   );
   const {
     display: displayPerYear,
@@ -42,7 +45,9 @@ const formatRentPrice = (
   } = convertAmountAndPriceToNativeDisplay(
     rentPricePerYear,
     nativeAssetPrice,
-    nativeCurrency
+    nativeCurrency,
+    3,
+    true
   );
 
   return {
