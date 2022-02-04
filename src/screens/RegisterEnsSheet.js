@@ -148,7 +148,7 @@ export default function RegisterEnsSheet() {
                 weight="heavy"
               />
             )}
-            {isRegistered && (
+            {(isRegistered || isInvalid) && (
               <TintButton onPress={() => setSearchQuery('')}>
                 􀅉 Clear
               </TintButton>
