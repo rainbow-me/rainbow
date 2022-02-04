@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useCallback, useEffect, useState } from 'react';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import styled from 'styled-components';
@@ -102,8 +103,8 @@ const AddressField = (
           <TouchableWithoutFeedback onPress={ref?.current?.focus}>
             <PlaceholderText>
               {android || isTinyPhone
-                ? 'ENS or address'
-                : 'Name, ENS, or address'}
+                ? lang.t('fields.address.short_placeholder')
+                : lang.t('fields.address.long_placeholder')}
             </PlaceholderText>
           </TouchableWithoutFeedback>
         </Placeholder>

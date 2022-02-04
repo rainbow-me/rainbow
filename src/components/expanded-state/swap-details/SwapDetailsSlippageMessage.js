@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React from 'react';
 import styled from 'styled-components';
 import Divider from '../../Divider';
@@ -38,7 +39,9 @@ export default function SwapDetailsSlippageMessage({
     <Column align="center" {...props}>
       <Container>
         <Row align="center">
-          <Heading color={priceImpactColor}>Losing </Heading>
+          <Heading color={priceImpactColor}>
+            {lang.t('expanded_state.swap.losing')}{' '}
+          </Heading>
           <Heading
             color={priceImpactColor}
             letterSpacing="roundedTight"
@@ -48,10 +51,7 @@ export default function SwapDetailsSlippageMessage({
           </Heading>
           <Emoji size="larger"> 🥵</Emoji>
         </Row>
-        <Message>
-          This is a small market, so you’re getting a bad price. Try a smaller
-          trade!
-        </Message>
+        <Message>{lang.t('expanded_state.swap.slippage_message')}</Message>
       </Container>
       <Centered width={139}>
         <Divider color={colors.rowDividerExtraLight} inset={false} />
