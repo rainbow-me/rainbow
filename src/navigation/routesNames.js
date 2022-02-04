@@ -14,8 +14,6 @@ const Routes = {
   CURRENCY_SELECT_SCREEN: 'CurrencySelectScreen',
   CUSTOM_GAS_SHEET: 'CustomGasSheet',
   ENS_ASSIGN_RECORDS_SHEET: 'ENSAssignRecordsSheet',
-  ENS_COMMIT_INTERLUDE_SHEET: 'ENSCommitInterludeSheet',
-  ENS_CONFIRM_COMMIT_SHEET: 'ENSConfirmCommitSheet',
   ENS_CONFIRM_REGISTER_SHEET: 'ENSConfirmRegisterSheet',
   ENS_SEARCH_SHEET: 'ENSSearchSheet',
   EXAMPLE_SCREEN: 'ExampleScreen',

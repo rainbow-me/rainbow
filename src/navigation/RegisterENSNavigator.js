@@ -3,7 +3,6 @@ import React, { useEffect } from 'react';
 import { StatusBar } from 'react-native';
 import { SheetHandleFixedToTopHeight, SlackSheet } from '../components/sheet';
 import ENSAssignRecordsSheet from '../screens/ENSAssignRecordsSheet';
-import ENSCommitInterludeSheet from '../screens/ENSCommitInterludeSheet';
 import ENSSearchSheet from '../screens/ENSSearchSheet';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
 import { sharedCoolModalTopOffset } from './config';
@@ -55,10 +54,6 @@ export default function RegisterENSNavigator() {
           <Swipe.Screen
             component={ENSSearchSheet}
             name={Routes.ENS_SEARCH_SHEET}
-          />
-          <Swipe.Screen
-            component={ENSCommitInterludeSheet}
-            name={Routes.ENS_COMMIT_INTERLUDE_SHEET}
           />
           <Swipe.Screen
             component={ENSAssignRecordsSheet}

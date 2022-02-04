@@ -7,7 +7,6 @@ import { SheetHandleFixedToTopHeight } from '../components/sheet';
 import { Text } from '../components/text';
 import { useTheme } from '../context/ThemeContext';
 import colors from '../context/currentColors';
-import { ENSConfirmCommitSheetHeight } from '../screens/ENSConfirmCommitSheet';
 import { ENSConfirmRegisterSheetHeight } from '../screens/ENSConfirmRegisterSheet';
 import { explainers, ExplainSheetHeight } from '../screens/ExplainSheet';
 import { SendConfirmationSheetHeight } from '../screens/SendConfirmationSheet';
@@ -140,15 +139,6 @@ export const registerENSNavigatorConfig = {
       ...params,
       backgroundOpacity: 1,
       springDamping: 1,
-    }),
-  }),
-};
-
-export const ensConfirmCommitSheetConfig = {
-  options: ({ route: { params = {} } }) => ({
-    ...buildCoolModalConfig({
-      ...params,
-      longFormHeight: ENSConfirmCommitSheetHeight,
     }),
   }),
 };

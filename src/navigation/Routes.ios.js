@@ -13,7 +13,6 @@ import BackupSheet from '../screens/BackupSheet';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
 import ConnectedDappsSheet from '../screens/ConnectedDappsSheet';
 import DepositModal from '../screens/DepositModal';
-import ENSConfirmCommitSheet from '../screens/ENSConfirmCommitSheet';
 import ENSConfirmRegisterSheet from '../screens/ENSConfirmRegisterSheet';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ExplainSheet from '../screens/ExplainSheet';
@@ -41,7 +40,6 @@ import {
   basicSheetConfig,
   customGasSheetConfig,
   defaultScreenStackOptions,
-  ensConfirmCommitSheetConfig,
   ensConfirmRegisterSheetConfig,
   expandedAssetSheetConfig,
   expandedAssetSheetConfigWithLimit,
@@ -392,11 +390,6 @@ function NativeStackNavigator() {
             component={RegisterENSNavigator}
             name={Routes.REGISTER_ENS_NAVIGATOR}
             {...registerENSNavigatorConfig}
-          />
-          <NativeStack.Screen
-            component={ENSConfirmCommitSheet}
-            name={Routes.ENS_CONFIRM_COMMIT_SHEET}
-            {...ensConfirmCommitSheetConfig}
           />
           <NativeStack.Screen
             component={ENSConfirmRegisterSheet}
