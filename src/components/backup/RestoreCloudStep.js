@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, InteractionManager, Keyboard } from 'react-native';
 import { useDispatch } from 'react-redux';
@@ -84,7 +85,9 @@ export default function RestoreCloudStep({
   const [incorrectPassword, setIncorrectPassword] = useState(false);
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const [password, setPassword] = useState('');
-  const [label, setLabel] = useState('􀎽 Confirm Backup');
+  const [label, setLabel] = useState(
+    `􀎽 ${lang.t('back_up.restore_cloud.confirm_backup')}`
+  );
   const passwordRef = useRef();
   const { userAccounts } = useUserAccounts();
   const initializeWallet = useInitializeWallet();
@@ -120,13 +123,18 @@ export default function RestoreCloudStep({
     let passwordIsValid = false;
 
     if (incorrectPassword) {
-      newLabel = 'Incorrect Password';
+      newLabel = lang.t('back_up.restore_cloud.incorrect_password');
     } else {
       if (isCloudBackupPasswordValid(password)) {
         passwordIsValid = true;
       }
 
-      newLabel = `􀑙 Restore from ${cloudPlatform}`;
+      newLabel = `􀑙 ${lang.t(
+        'back_up.restore_cloud.restore_from_cloud_platform',
+        {
+          cloudPlatformName: cloudPlatform,
+        }
+      )}`;
     }
 
     setValidPassword(passwordIsValid);
@@ -203,7 +211,7 @@ export default function RestoreCloudStep({
       }
     } catch (e) {
       setIsWalletLoading(null);
-      Alert.alert('Error while restoring backup');
+      Alert.alert(lang.t('back_up.restore_cloud.error_while_restoring'));
     }
   }, [
     backupSelected?.name,
@@ -234,9 +242,9 @@ export default function RestoreCloudStep({
         {(isTinyPhone || samsungGalaxy) && isKeyboardOpen ? null : (
           <MastheadIcon>􀙶</MastheadIcon>
         )}
-        <Title>Enter backup password</Title>
+        <Title>{lang.t('back_up.restore_cloud.enter_backup_password')}</Title>
         <DescriptionText>
-          To restore your wallet, enter the backup password you created
+          {lang.t('back_up.restore_cloud.enter_backup_password_description')}
         </DescriptionText>
       </Masthead>
       <Column align="center" flex={1}>
@@ -251,7 +259,9 @@ export default function RestoreCloudStep({
           onChange={onPasswordChange}
           onSubmitEditing={onPasswordSubmit}
           password={password}
-          placeholder="Backup Password"
+          placeholder={lang.t(
+            'back_up.restore_cloud.backup_password_placeholder'
+          )}
           ref={passwordRef}
           returnKeyType="next"
         />

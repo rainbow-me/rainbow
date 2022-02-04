@@ -1,4 +1,5 @@
 import { useRoute } from '@react-navigation/core';
+import lang from 'i18n-js';
 import { toLower } from 'lodash';
 import React, { Fragment, useEffect, useMemo } from 'react';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
@@ -183,10 +184,10 @@ const LiquidityPoolExpandedState = () => {
 
   const formattedHalf0 = half0
     ? bigNumberFormat(half0, nativeCurrency, half0 >= 10000)
-    : 'Half';
+    : lang.t('expanded_state.liquidity_pool.half');
   const formattedHalf1 = half1
     ? bigNumberFormat(half1, nativeCurrency, half1 >= 10000)
-    : 'Half';
+    : lang.t('expanded_state.liquidity_pool.half');
 
   return (
     <SlackSheet
@@ -220,8 +221,15 @@ const LiquidityPoolExpandedState = () => {
           <SheetDivider />
           <TokenInfoSection>
             <TokenInfoRow>
-              <TokenInfoItem title="Pool shares">{uniBalance}</TokenInfoItem>
-              <TokenInfoItem title="Total value" weight="bold">
+              <TokenInfoItem
+                title={lang.t('expanded_state.liquidity_pool.pool_shares')}
+              >
+                {uniBalance}
+              </TokenInfoItem>
+              <TokenInfoItem
+                title={lang.t('expanded_state.liquidity_pool.total_value')}
+                weight="bold"
+              >
                 {totalNativeDisplay}
               </TokenInfoItem>
             </TokenInfoRow>
@@ -260,7 +268,11 @@ const LiquidityPoolExpandedState = () => {
       )}
       <CarouselWrapper>
         <Carousel>
-          <CarouselItem loading={!fee} showDivider title="Annualized fees">
+          <CarouselItem
+            loading={!fee}
+            showDivider
+            title={lang.t('expanded_state.liquidity_pool.annualized_fees')}
+          >
             <APYWrapper>
               <PoolValue
                 simple
@@ -274,15 +286,22 @@ const LiquidityPoolExpandedState = () => {
             <CarouselItem
               loading={!totalFeeEarned}
               showDivider
-              title="Fees earned"
+              title={lang.t('expanded_state.liquidity_pool.fees_earned')}
             >
               {totalFeeEarned}
             </CarouselItem>
           )}
-          <CarouselItem loading={!volume} showDivider title="24h pool volume">
+          <CarouselItem
+            loading={!volume}
+            showDivider
+            title={lang.t('expanded_state.liquidity_pool.pool_volume_24h')}
+          >
             {volume}
           </CarouselItem>
-          <CarouselItem loading={!nativeLiquidity} title="Pool size">
+          <CarouselItem
+            loading={!nativeLiquidity}
+            title={lang.t('expanded_state.liquidity_pool.pool_size')}
+          >
             {nativeLiquidity}
           </CarouselItem>
         </Carousel>
@@ -299,7 +318,7 @@ const LiquidityPoolExpandedState = () => {
                 size="smedium"
                 weight="semibold"
               >
-                Underlying tokens
+                {lang.t('expanded_state.liquidity_pool.underlying_tokens')}
               </Text>
             </Column>
             <Column align="end" flex={1}>
@@ -310,7 +329,7 @@ const LiquidityPoolExpandedState = () => {
                 size="smedium"
                 weight="semibold"
               >
-                Pool makeup
+                {lang.t('expanded_state.liquidity_pool.pool_makeup')}
               </Text>
             </Column>
           </Row>

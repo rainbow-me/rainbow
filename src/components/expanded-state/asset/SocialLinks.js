@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { startCase } from 'lodash';
 import React from 'react';
 import Link from '../../Link';
@@ -55,7 +56,7 @@ export default function SocialLinks({
         {!!links?.twitter_screen_name && (
           <CommunityLink
             color={color}
-            display="Twitter"
+            display={lang.t('expanded_state.asset.social.twitter')}
             emojiName="twitter"
             transformOrigin="center"
             url={`${TWITTER_URL}${links?.twitter_screen_name}`}
@@ -64,7 +65,7 @@ export default function SocialLinks({
         {!!links?.homepage?.[0] && (
           <CommunityLink
             color={color}
-            display="Homepage"
+            display={lang.t('expanded_state.asset.social.homepage')}
             transformOrigin="center"
             url={links?.homepage?.[0]}
           />
@@ -72,7 +73,7 @@ export default function SocialLinks({
         {!!links?.telegram_channel_identifier && (
           <CommunityLink
             color={color}
-            display="Telegram"
+            display={lang.t('expanded_state.asset.social.telegram')}
             emojiName="telegram"
             transformOrigin="center"
             url={`${TELEGRAM_URL}${links?.telegram_channel_identifier}`}
@@ -81,7 +82,7 @@ export default function SocialLinks({
         {!!links?.subreddit_url && (
           <CommunityLink
             color={color}
-            display="Reddit"
+            display={lang.t('expanded_state.asset.social.reddit')}
             emojiName="reddit"
             transformOrigin="center"
             url={links?.subreddit_url}
@@ -90,7 +91,7 @@ export default function SocialLinks({
         {!!links?.facebook_username && (
           <CommunityLink
             color={color}
-            display="Facebook"
+            display={lang.t('expanded_state.asset.social.facebook')}
             emojiName="facebook"
             transformOrigin="center"
             url={`${FACEBOOK_URL}${links?.facebook_username}`}

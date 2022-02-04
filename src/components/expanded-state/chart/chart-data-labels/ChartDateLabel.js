@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React from 'react';
 import { View } from 'react-native';
 import { useAnimatedStyle } from 'react-native-reanimated';
@@ -16,18 +17,18 @@ const Label = styled(ChartXLabel)({
 });
 
 const MONTHS = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
+  lang.t('expanded_state.chart.date.months.month_00'),
+  lang.t('expanded_state.chart.date.months.month_01'),
+  lang.t('expanded_state.chart.date.months.month_02'),
+  lang.t('expanded_state.chart.date.months.month_03'),
+  lang.t('expanded_state.chart.date.months.month_04'),
+  lang.t('expanded_state.chart.date.months.month_05'),
+  lang.t('expanded_state.chart.date.months.month_06'),
+  lang.t('expanded_state.chart.date.months.month_07'),
+  lang.t('expanded_state.chart.date.months.month_08'),
+  lang.t('expanded_state.chart.date.months.month_09'),
+  lang.t('expanded_state.chart.date.months.month_10'),
+  lang.t('expanded_state.chart.date.months.month_11'),
 ];
 
 function formatDatetime(value, chartTimeDefaultValue) {

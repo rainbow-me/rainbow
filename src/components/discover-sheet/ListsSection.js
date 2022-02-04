@@ -1,4 +1,5 @@
 import analytics from '@segment/analytics-react-native';
+import lang from 'i18n-js';
 import { times, toLower } from 'lodash';
 import React, {
   Fragment,
@@ -250,7 +251,7 @@ export default function ListSection() {
     <Column testID="lists-section">
       <Flex paddingHorizontal={19}>
         <Text size="larger" weight="heavy">
-          Lists
+          {lang.t('discover.lists.lists_title')}
         </Text>
       </Flex>
 
@@ -299,7 +300,7 @@ export default function ListSection() {
                 size="large"
                 weight="semibold"
               >
-                This list is empty!
+                {lang.t('discover.lists.this_list_is_empty')}
               </Text>
             </Centered>
           )}

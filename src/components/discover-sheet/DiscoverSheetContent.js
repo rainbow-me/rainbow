@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useRef, useState } from 'react';
 import { View } from 'react-native';
 import { ColumnWithMargins, FlexItem } from '../layout';
@@ -43,7 +44,9 @@ export default function DiscoverSheetContent() {
       <HeaderTitle
         testID={showSearch ? 'discover-header-search' : 'discover-header'}
       >
-        {showSearch ? 'Search' : 'Discover'}
+        {showSearch
+          ? lang.t('discover.title_search')
+          : lang.t('discover.title_discover')}
       </HeaderTitle>
       <ColumnWithMargins flex={1} margin={42} testID="discover-home">
         <DiscoverSearchContainer

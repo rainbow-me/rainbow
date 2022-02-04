@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useEffect, useRef } from 'react';
 import Animated from 'react-native-reanimated';
 import {
@@ -111,7 +112,7 @@ export default function DepositInfo({
                 size="smedium"
                 weight="semibold"
               >
-                Swapping for{' '}
+                {lang.t('exchange.swapping_for_prefix')}{' '}
               </Text>
               <Text color="whiteLabel" size="smedium" weight="bold">
                 {`${amountToDisplay} ${asset?.symbol || ''}`}

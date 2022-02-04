@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { invert } from 'lodash';
 import React, { useMemo } from 'react';
 import { CoinIcon, CoinIconGroup } from '../../coin-icon';
@@ -17,7 +18,7 @@ import { useAccountSettings } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 
-const noPriceData = 'No price data';
+const noPriceData = lang.t('expanded_state.chart.no_price_data');
 
 const Container = styled(ColumnWithMargins).attrs({
   margin: 12,
@@ -50,7 +51,11 @@ export default function ChartExpandedStateHeader({
 
   const isNoPriceData = latestPrice === noPriceData;
 
-  const title = isPool ? `${asset.tokenNames} Pool` : asset?.name;
+  const title = isPool
+    ? lang.t('expanded_state.chart.token_pool', {
+        tokenName: asset.tokenNames,
+      })
+    : asset?.name;
 
   const titleOrNoPriceData = isNoPriceData ? noPriceData : title;
 

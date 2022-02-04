@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
 import { ActivityIndicator, Keyboard } from 'react-native';
@@ -265,7 +266,11 @@ class HoldToAuthorizeButton extends PureComponent {
                     )}
                     {android && isAuthorizing && <LoadingSpinner />}
                     <Label
-                      label={isAuthorizing ? 'Authorizing' : label}
+                      label={
+                        isAuthorizing
+                          ? lang.t('button.hold_to_authorize.authorizing')
+                          : label
+                      }
                       showIcon={showBiometryIcon && !isAuthorizing}
                       smallButton={smallButton}
                       testID={testID}
@@ -311,7 +316,10 @@ const HoldToAuthorizeButtonWithBiometrics = ({
       label={
         isLongPressAvailableForBiometryType
           ? label
-          : label.replace('Hold', 'Tap')
+          : label.replace(
+              lang.t('button.hold_to_authorize.hold_keyword'),
+              lang.t('button.hold_to_authorize.tap_keyword')
+            )
       }
     />
   );

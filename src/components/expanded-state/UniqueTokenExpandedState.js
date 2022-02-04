@@ -1,5 +1,6 @@
 import { BlurView } from '@react-native-community/blur';
 import c from 'chroma-js';
+import lang from 'i18n-js';
 import React, {
   Fragment,
   useCallback,
@@ -280,7 +281,9 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
                 size="lmedium"
                 weight="heavy"
               >
-                {isShowcaseAsset ? '􀫝 In Showcase' : '􀐇 Showcase'}
+                {isShowcaseAsset
+                  ? `􀁏 ${lang.t('expanded_state.unique_expanded.in_showcase')}`
+                  : `􀁍 ${lang.t('expanded_state.unique_expanded.showcase')}`}
               </Text>
             </ButtonPressAnimation>
             <ButtonPressAnimation
@@ -295,7 +298,7 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
                 size="lmedium"
                 weight="heavy"
               >
-                􀈂 Share
+                􀈂 {lang.t('button.share')}
               </Text>
             </ButtonPressAnimation>
           </Row>
@@ -444,9 +447,13 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
       </SlackSheet>
       <ToastPositionContainer>
         <ToggleStateToast
-          addCopy="Added to showcase"
+          addCopy={lang.t(
+            'expanded_state.unique_expanded.toast_added_to_showcase'
+          )}
           isAdded={isShowcaseAsset}
-          removeCopy="Removed from showcase"
+          removeCopy={lang.t(
+            'expanded_state.unique_expanded.toast_removed_from_showcase'
+          )}
         />
       </ToastPositionContainer>
     </Fragment>

@@ -78,7 +78,9 @@ export default function BackupConfirmPasswordStep() {
     setPasswordBlurred,
   ] = useBooleanState(true);
   const [password, setPassword] = useState('');
-  const [label, setLabel] = useState('􀎽 Confirm Backup');
+  const [label, setLabel] = useState(
+    `􀎽 ${lang.t('back_up.confirm_password.confirm_backup')}`
+  );
   const passwordRef = useRef();
   const { selectedWallet, setIsWalletLoading } = useWallets();
   const walletId = params?.walletId || selectedWallet.id;
@@ -115,7 +117,11 @@ export default function BackupConfirmPasswordStep() {
 
     if (isCloudBackupPasswordValid(password)) {
       passwordIsValid = true;
-      setLabel(`􀑙 Add to ${cloudPlatform} Backup`);
+      setLabel(
+        `􀑙 ${lang.t('back_up.confirm_password.add_to_cloud_platform', {
+          cloudPlatformName: cloudPlatform,
+        })}`
+      );
     }
     setValidPassword(passwordIsValid);
   }, [password, passwordFocused]);
@@ -179,10 +185,13 @@ export default function BackupConfirmPasswordStep() {
         {(isTinyPhone || samsungGalaxy) && isKeyboardOpen ? null : (
           <MastheadIcon>􀙶</MastheadIcon>
         )}
-        <Title>Enter backup password</Title>
+        <Title>
+          {lang.t('back_up.confirm_password.enter_backup_password')}
+        </Title>
         <DescriptionText>
-          To add this wallet to your {cloudPlatform} backup, enter your existing
-          backup password
+          {lang.t('back_up.confirm_password.enter_backup_description', {
+            cloudPlatformName: cloudPlatform,
+          })}
         </DescriptionText>
       </Masthead>
       <Column align="center" flex={1}>
@@ -198,7 +207,9 @@ export default function BackupConfirmPasswordStep() {
           onFocus={setPasswordFocused}
           onSubmitEditing={onSubmit}
           password={password}
-          placeholder="Backup Password"
+          placeholder={lang.t(
+            'back_up.confirm_password.backup_password_placeholder'
+          )}
           ref={passwordRef}
         />
       </Column>

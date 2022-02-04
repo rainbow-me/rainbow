@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { values } from 'lodash';
 import React from 'react';
 import { FloatingEmojisTapper } from '../floating-emojis';
@@ -35,7 +36,7 @@ const TitleText = styled(Text).attrs({
 
 const countries = values(wyreSupportedCountries).map(c =>
   c.name === 'United States'
-    ? 'United\xa0States (except Texas and New York)'
+    ? lang.t('expanded_state.supported_countries.us_except')
     : c.name.replace(/ /g, '\xa0')
 );
 const countriesList = `${countries.join(', ')}`;
@@ -62,7 +63,9 @@ const SupportCountriesExpandedState = () => {
       >
         <AssetPanel>
           <Centered direction="column" style={centeredStyles}>
-            <TitleText>Supported Countries</TitleText>
+            <TitleText>
+              {lang.t('expanded_state.supported_countries.supported_countries')}
+            </TitleText>
             <Text
               align="center"
               color={colors.alpha(colors.blueGreyDark, 0.6)}
