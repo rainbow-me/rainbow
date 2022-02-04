@@ -60,7 +60,7 @@ export default function validateENS(
   } catch (err) {
     return {
       code: ERROR_CODES.INVALID_DOMAIN_NAME,
-      hint: 'Your name can not include special characters',
+      hint: 'Your name cannot include special characters',
       valid: false,
     };
   }
@@ -71,7 +71,7 @@ export default function validateENS(
     } catch (err) {
       return {
         code: ERROR_CODES.INVALID_SUBDOMAIN_NAME,
-        hint: 'Your subdomain can not include special characters',
+        hint: 'Your subdomain cannot include special characters',
         valid: false,
       };
     }
