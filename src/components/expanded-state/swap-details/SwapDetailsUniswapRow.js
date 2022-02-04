@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { constant, times } from 'lodash';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import Animated from 'react-native-reanimated';
@@ -15,7 +16,10 @@ const animationColorsFactory = colors => [
   colors.alpha(colors.blueGreyDark, 0.8),
   colors.uniswapPink,
 ];
-const labels = [...times(8, constant('Uniswap v2')), 'that unicorn one'];
+const labels = [
+  ...times(8, constant(lang.t('expanded_state.swap.uniswap_v2'))),
+  lang.t('expanded_state.swap.unicorn_one'),
+];
 const emojis = [
   ...times(5, constant('unicorn')),
   'socks',
@@ -66,7 +70,7 @@ export default function SwapDetailsUniswapRow(props) {
       wiggleFactor={0}
       {...props}
     >
-      <SwapDetailsRow label="Swapping via">
+      <SwapDetailsRow label={lang.t('expanded_state.swap.swapping_via')}>
         <AnimatedSwapDetailsValue color={color}>
           {label}
         </AnimatedSwapDetailsValue>

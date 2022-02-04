@@ -1,4 +1,5 @@
 import { addHours, differenceInMinutes, isPast } from 'date-fns';
+import lang from 'i18n-js';
 import React, {
   useCallback,
   useEffect,
@@ -46,7 +47,7 @@ const TopRow = ({ expirationColor, expiresAt }) => {
     <RowWithMargins margin={2}>
       <ClockEmoji />
       <Text color={expirationColor} size="smedium" weight="semibold">
-        Expires in {minutes || 0}m
+        {lang.t('exchange.coin_row.expires_in', { minutes: minutes || 0 })}
       </Text>
     </RowWithMargins>
   );

@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -213,7 +214,7 @@ export default function AddressRow({
                 marginRight={editMode || isSelected ? -9 : 19}
               >
                 <ReadOnlyText color={colors.alpha(colors.blueGreyDark, 0.5)}>
-                  Watching
+                  {lang.t('wallet.change_wallet.watching')}
                 </ReadOnlyText>
               </LinearGradient>
             )}
