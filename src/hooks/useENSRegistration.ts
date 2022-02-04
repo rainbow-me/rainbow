@@ -59,7 +59,7 @@ const formatRentPrice = (
 };
 
 const formatTime = (timestamp: string, abbreviated: boolean = true) => {
-  let style = abbreviated ? 'MMM d, y' : 'MMMM d, y';
+  const style = abbreviated ? 'MMM d, y' : 'MMMM d, y';
   return format(new Date(Number(timestamp) * 1000), style);
 };
 
