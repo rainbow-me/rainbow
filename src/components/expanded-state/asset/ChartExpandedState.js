@@ -210,9 +210,11 @@ export default function ChartExpandedState({ asset }) {
   const ogAsset = useMemo(() => {
     return {
       ...assetWithPrice,
-      address: isL2 ? assetWithPrice.l2Address : assetWithPrice.address,
+      address: isL2
+        ? assetWithPrice.l2Address || asset?.address
+        : assetWithPrice.address,
     };
-  }, [assetWithPrice, isL2]);
+  }, [assetWithPrice, isL2, asset]);
 
   const { height: screenHeight } = useDimensions();
   const {
@@ -321,7 +323,6 @@ export default function ChartExpandedState({ asset }) {
       </View>
     );
   }, [delayedMorePoolsVisible]);
-
   return (
     <SlackSheet
       additionalTopPadding={android}

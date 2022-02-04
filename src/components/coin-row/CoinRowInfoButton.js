@@ -100,7 +100,7 @@ const CoinRowInfoButton = ({ item, onCopySwapDetailsText }) => {
   );
 
   const onPressAndroid = useCallback(() => {
-    const blockExplorerText = `View on ' ${startCase(
+    const blockExplorerText = `View on ${startCase(
       ethereumUtils.getBlockExplorer(item?.type)
     )}`;
     const androidContractActions = [
