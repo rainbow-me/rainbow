@@ -7,8 +7,8 @@ import {
   ViewStyle,
 } from 'react-native';
 import { WebView } from 'react-native-webview';
-import styled from 'styled-components';
 import { ImgixImage } from '@rainbow-me/images';
+import styled from '@rainbow-me/styled-components';
 import { padding, position } from '@rainbow-me/styles';
 
 export type ModelViewerProps = {
@@ -20,17 +20,17 @@ export type ModelViewerProps = {
   readonly fallbackUri?: string;
 };
 
-const StyledWebView = styled(WebView)`
-  ${position.size('100%')};
-`;
+const StyledWebView = styled(WebView)({
+  ...position.sizeAsObject('100%'),
+});
 
-const ProgressIndicatorContainer = styled(Animated.View)`
-  ${position.size('100%')};
-  position: absolute;
-  align-items: flex-end;
-  justify-content: flex-end;
-  ${padding(10)};
-`;
+const ProgressIndicatorContainer = styled(Animated.View)({
+  ...position.sizeAsObject('100%'),
+  alignItems: 'flex-end',
+  justifyContent: 'flex-end',
+  position: 'absolute',
+  ...padding.object(10),
+});
 
 const getSource = ({ alt, uri }: { alt?: string; uri: string }) =>
   `

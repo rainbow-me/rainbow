@@ -1,16 +1,16 @@
 import React from 'react';
-import styled from 'styled-components';
 import { Row } from '../layout';
 import ExchangeField from './ExchangeField';
+import styled from '@rainbow-me/styled-components';
 
 const paddingTop = android ? 15 : 32;
 
-const Container = styled(Row).attrs({ align: 'center' })`
-  overflow: hidden;
-  padding-bottom: 21;
-  padding-top: ${paddingTop};
-  width: 100%;
-`;
+const Container = styled(Row).attrs({ align: 'center' })({
+  overflow: 'hidden',
+  paddingBottom: 21,
+  paddingTop,
+  width: '100%',
+});
 
 export default function ExchangeOutputField({
   editable,

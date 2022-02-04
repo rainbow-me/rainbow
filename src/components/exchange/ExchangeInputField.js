@@ -1,23 +1,23 @@
 import React from 'react';
-import styled from 'styled-components';
 import { ColumnWithMargins, Row } from '../layout';
 import ExchangeField from './ExchangeField';
 import ExchangeMaxButton from './ExchangeMaxButton';
 import ExchangeNativeField from './ExchangeNativeField';
+import styled from '@rainbow-me/styled-components';
 
-const Container = styled(ColumnWithMargins).attrs({ margin: 5 })`
-  padding-top: 6;
-  width: 100%;
-  z-index: 1;
-`;
+const Container = styled(ColumnWithMargins).attrs({ margin: 5 })({
+  paddingTop: 6,
+  width: '100%',
+  zIndex: 1,
+});
 
 const NativeFieldRow = styled(Row).attrs({
   align: 'center',
   justify: 'space-between',
-})`
-  height: ${android ? 16 : 32};
-  padding-left: 19;
-`;
+})({
+  height: android ? 16 : 32,
+  paddingLeft: 19,
+});
 
 export default function ExchangeInputField({
   disableInputCurrencySelection,
