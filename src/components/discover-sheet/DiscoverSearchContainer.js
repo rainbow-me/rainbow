@@ -68,19 +68,6 @@ export default forwardRef(function DiscoverSearchContainer(
     params: { setSwipeEnabled: setViewPagerSwipeEnabled },
   } = useRoute();
 
-  const contextValue = useMemo(
-    () => ({
-      ...upperContext,
-      isFetchingEns,
-      isSearching,
-      searchInputRef,
-      searchQuery,
-      sectionListRef,
-      setIsFetchingEns,
-      setIsSearching,
-    }),
-    [upperContext, isFetchingEns, isSearching, searchQuery]
-  );
   const setIsInputFocused = useCallback(
     value => {
       setShowSearch(value);
@@ -116,6 +103,27 @@ export default forwardRef(function DiscoverSearchContainer(
 
   onFabSearch.current = onTapSearch;
 
+  const cancelSearch = useCallback(() => {
+    searchInputRef.current?.blur();
+    setIsInputFocused(false);
+    sendQueryAnalytics(searchQuery);
+  }, [searchInputRef, setIsInputFocused, searchQuery]);
+
+  const contextValue = useMemo(
+    () => ({
+      ...upperContext,
+      cancelSearch,
+      isFetchingEns,
+      isSearching,
+      searchInputRef,
+      searchQuery,
+      sectionListRef,
+      setIsFetchingEns,
+      setIsSearching,
+    }),
+    [upperContext, isFetchingEns, isSearching, searchQuery, cancelSearch]
+  );
+
   useEffect(() => {
     if (!isSearchModeEnabled) {
       setSearchQuery('');
@@ -150,14 +158,7 @@ export default forwardRef(function DiscoverSearchContainer(
             testID="discover-search"
           />
         </Column>
-        <CancelButton
-          onPress={() => {
-            searchInputRef.current?.blur();
-            setIsInputFocused(false);
-            sendQueryAnalytics(searchQuery);
-          }}
-          testID="done-button"
-        >
+        <CancelButton onPress={cancelSearch} testID="done-button">
           {delayedShowSearch && (
             <CancelText>{lang.t('button.done')}</CancelText>
           )}

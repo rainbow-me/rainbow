@@ -17,7 +17,11 @@ import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/Ch
 import { Row } from '../layout';
 import DiscoverSheetContext from './DiscoverSheetContext';
 import { fetchSuggestions } from '@rainbow-me/handlers/ens';
-import { useTimeout, useUniswapCurrencyList } from '@rainbow-me/hooks';
+import {
+  useHardwareBackOnFocus,
+  useTimeout,
+  useUniswapCurrencyList,
+} from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
@@ -38,6 +42,7 @@ export default function DiscoverSearch() {
     isSearchModeEnabled,
     setIsSearchModeEnabled,
     searchInputRef,
+    cancelSearch,
   } = useContext(DiscoverSheetContext);
 
   const currencySelectionListRef = useRef();
@@ -52,6 +57,12 @@ export default function DiscoverSearch() {
     uniswapCurrencyList,
     ensResults,
   ]);
+
+  useHardwareBackOnFocus(() => {
+    cancelSearch();
+    // prevent other back handlers from firing
+    return true;
+  });
 
   const handlePress = useCallback(
     item => {
