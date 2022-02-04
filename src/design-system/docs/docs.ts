@@ -13,6 +13,7 @@ export * as DividerDocs from '../components/Divider/Divider.docs';
 export * as HeadingDocs from '../components/Heading/Heading.docs';
 export * as InlineDocs from '../components/Inline/Inline.docs';
 export * as InsetDocs from '../components/Inset/Inset.docs';
+export * as RowsDocs from '../components/Rows/Rows.docs';
 export * as StackDocs from '../components/Stack/Stack.docs';
 export * as TextDocs from '../components/Text/Text.docs';
 export * as TextLinkDocs from '../components/TextLink/TextLink.docs';

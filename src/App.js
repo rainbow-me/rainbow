@@ -80,6 +80,11 @@ if (__DEV__) {
     dsn: SENTRY_ENDPOINT,
     enableAutoSessionTracking: true,
     environment: SENTRY_ENVIRONMENT,
+    integrations: [
+      new Sentry.ReactNativeTracing({
+        tracingOrigins: ['localhost', /^\//],
+      }),
+    ],
   };
   Sentry.init(sentryOptions);
 }
@@ -319,5 +324,5 @@ const AppWithRedux = connect(
 const AppWithReduxStore = () => <AppWithRedux store={store} />;
 
 AppRegistry.registerComponent('Rainbow', () =>
-  designSystemPlaygroundEnabled ? Playground : AppWithReduxStore
+  designSystemPlaygroundEnabled ? Playground : Sentry.wrap(AppWithReduxStore)
 );

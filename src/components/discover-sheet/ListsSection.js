@@ -1,5 +1,5 @@
 import analytics from '@segment/analytics-react-native';
-import { findIndex, keys, times, toLower } from 'lodash';
+import { times, toLower } from 'lodash';
 import React, {
   Fragment,
   useCallback,
@@ -18,31 +18,13 @@ import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/Ch
 import { Centered, Column, Flex, Row } from '../layout';
 import { Emoji, Text } from '../text';
 import EdgeFade from './EdgeFade';
+import { getTrendingAddresses } from '@rainbow-me/handlers/dispersion';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { useAccountSettings, useUserLists } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { ethereumUtils } from '@rainbow-me/utils';
-
-const COINGECKO_TRENDING_ENDPOINT =
-  'https://api.coingecko.com/api/v3/search/trending';
-
-const fetchTrendingAddresses = async coingeckoIds => {
-  const trendingAddresses = [];
-  try {
-    const request = await fetch(COINGECKO_TRENDING_ENDPOINT);
-    const trending = await request.json();
-    const idsToLookUp = trending.coins.map(coin => coin.item?.id);
-    keys(coingeckoIds).forEach(address => {
-      if (idsToLookUp.indexOf(coingeckoIds[address]) !== -1) {
-        trendingAddresses.push(toLower(address));
-      }
-    });
-    // eslint-disable-next-line no-empty
-  } catch (e) {}
-  return trendingAddresses;
-};
 
 const ListButton = styled(ButtonPressAnimation).attrs({
   scaleTo: 0.96,
@@ -97,10 +79,6 @@ export default function ListSection() {
     ({ data: { genericAssets } }) => genericAssets
   );
 
-  const coingeckoIds = useSelector(
-    ({ additionalAssetsData: { coingeckoIds } }) => coingeckoIds
-  );
-
   const { colors } = useTheme();
   const listData = useMemo(() => DefaultTokenLists[network], [network]);
 
@@ -119,18 +97,20 @@ export default function ListSection() {
   const trendingListHandler = useRef(null);
 
   const updateTrendingList = useCallback(async () => {
-    const tokens = await fetchTrendingAddresses(coingeckoIds);
+    const tokens = await getTrendingAddresses();
     clearList('trending');
 
-    dispatch(emitAssetRequest(tokens));
-    dispatch(emitChartsRequest(tokens));
-    updateList(tokens, 'trending', true);
+    if (tokens) {
+      dispatch(emitAssetRequest(tokens));
+      dispatch(emitChartsRequest(tokens));
+      updateList(tokens, 'trending', true);
+    }
 
     trendingListHandler.current = setTimeout(
       () => updateTrendingList(),
       TRENDING_LIST_UPDATE_INTERVAL
     );
-  }, [clearList, coingeckoIds, dispatch, updateList]);
+  }, [clearList, dispatch, updateList]);
 
   const handleSwitchList = useCallback(
     (id, index) => {
@@ -150,8 +130,7 @@ export default function ListSection() {
   useEffect(() => {
     if (ready && !initialized.current) {
       ready && updateTrendingList();
-      const currentListIndex = findIndex(
-        lists,
+      const currentListIndex = lists.findIndex(
         list => list?.id === selectedList
       );
       if (listData?.length > 0) {

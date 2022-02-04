@@ -42,7 +42,11 @@ const TokenFamilyHeaderIcon = ({
       style={style}
     >
       {familyImage ? (
-        <ImgixImage source={{ uri: familyImage }} style={circleStyle} />
+        <ImgixImage
+          size={isCoinRow ? 40 : 32}
+          source={{ uri: familyImage }}
+          style={circleStyle}
+        />
       ) : (
         <FallbackIcon {...circleStyle} symbol={initials(familyName)} />
       )}
