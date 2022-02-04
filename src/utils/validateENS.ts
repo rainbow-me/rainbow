@@ -1,5 +1,6 @@
+import uts46 from 'idna-uts46-hx';
+
 const supportedTLDs = ['eth'];
-const domainNameRegex = /^([A-Z]|[a-z])([A-Z]|[a-z]|-)*([A-Z]|[a-z])$/;
 
 const ERROR_CODES = {
   INVALID_DOMAIN: 'invalid-domain',
@@ -54,7 +55,9 @@ export default function validateENS(
     };
   }
 
-  if (!domainNameRegex.test(domainName)) {
+  try {
+    uts46.toUnicode(domainName, { useStd3ASCII: true });
+  } catch (err) {
     return {
       code: ERROR_CODES.INVALID_DOMAIN_NAME,
       hint: 'Your name can not include special characters',
@@ -62,12 +65,16 @@ export default function validateENS(
     };
   }
 
-  if (!domainNameRegex.test(subDomainName)) {
-    return {
-      code: ERROR_CODES.INVALID_SUBDOMAIN_NAME,
-      hint: 'Your subdomain can not include special characters',
-      valid: false,
-    };
+  if (subDomainName) {
+    try {
+      uts46.toUnicode(subDomainName, { useStd3ASCII: true });
+    } catch (err) {
+      return {
+        code: ERROR_CODES.INVALID_SUBDOMAIN_NAME,
+        hint: 'Your subdomain can not include special characters',
+        valid: false,
+      };
+    }
   }
 
   return { valid: true };

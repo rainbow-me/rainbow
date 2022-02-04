@@ -27,7 +27,7 @@ import {
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { colors } from '@rainbow-me/styles';
-import { normalizeENS, validateENS } from '@rainbow-me/utils';
+import { normalizeENS } from '@rainbow-me/utils';
 
 export default function RegisterEnsSheet() {
   const { height: deviceHeight } = useDimensions();
@@ -36,29 +36,23 @@ export default function RegisterEnsSheet() {
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounceString(searchQuery);
 
-  const ensValidation = useMemo(
-    () =>
-      validateENS(`${debouncedSearchQuery}.eth`, { includeSubdomains: false }),
-    [debouncedSearchQuery]
-  );
-
-  const { available, rentPrice, expirationDate, status } = useENSRegistration({
+  const {
+    data,
+    isIdle,
+    isRegistered,
+    isLoading,
+    isInvalid,
+    isAvailable,
+  } = useENSRegistration({
     duration: 1,
     name: debouncedSearchQuery,
   });
 
-  const isLoading = status === 'loading';
-  const isSuccess = status === 'success';
-
   const state = useMemo(() => {
-    if (isSuccess) {
-      if (available) {
-        return 'success';
-      }
-      return 'warning';
-    }
-    return undefined;
-  }, [isSuccess, available]);
+    if (isAvailable) return 'success';
+    if (isRegistered || isInvalid) return 'warning';
+    return 'rainbow';
+  }, [isAvailable, isInvalid, isRegistered]);
 
   return (
     <Box background="body" flexGrow={1}>
@@ -94,7 +88,7 @@ export default function RegisterEnsSheet() {
               value={searchQuery}
             />
           </Box>
-          {false && (
+          {isInvalid && (
             <Inset horizontal="30px">
               <Text
                 align="center"
@@ -102,25 +96,25 @@ export default function RegisterEnsSheet() {
                 size="16px"
                 weight="bold"
               >
-                {ensValidation.hint}
+                {data?.hint}
               </Text>
             </Inset>
           )}
-          {isSuccess && (
+          {(isAvailable || isRegistered) && (
             <Inset horizontal="19px">
               <Inline alignHorizontal="justify" wrap={false}>
                 <SearchResultGradientIndicator
-                  isRegistered={!available}
+                  isRegistered={isRegistered}
                   type="availability"
                 />
-                {!available ? (
+                {!isAvailable ? (
                   <SearchResultGradientIndicator
-                    expiryDate={expirationDate}
+                    expiryDate={data?.expirationDate}
                     type="expiration"
                   />
                 ) : (
                   <SearchResultGradientIndicator
-                    price={`${rentPrice?.perYear?.display}  / Year`}
+                    price={`${data?.rentPrice?.perYear?.display}  / Year`}
                     type="price"
                   />
                 )}
@@ -129,7 +123,7 @@ export default function RegisterEnsSheet() {
           )}
         </Box>
         <Box>
-          {ensValidation.code === 'invalid-length' && (
+          {isIdle && (
             <Inline
               alignHorizontal="center"
               alignVertical="center"
@@ -145,7 +139,7 @@ export default function RegisterEnsSheet() {
             </Inline>
           )}
           <SheetActionButtonRow>
-            {available ? (
+            {isAvailable && (
               <SheetActionButton
                 color={colors.green}
                 label="Continue on 􀆊"
@@ -153,7 +147,8 @@ export default function RegisterEnsSheet() {
                 size="big"
                 weight="heavy"
               />
-            ) : (
+            )}
+            {isRegistered && (
               <TintButton onPress={() => setSearchQuery('')}>
                 􀅉 Clear
               </TintButton>
