@@ -14556,6 +14556,11 @@ react-native-webview@11.2.3:
     escape-string-regexp "2.0.0"
     invariant "2.2.4"
 
+react-native-widgetkit@1.0.9:
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/react-native-widgetkit/-/react-native-widgetkit-1.0.9.tgz#aded1c12f7c7cfd18912b947228aac433c05ddc2"
+  integrity sha512-WBwdUbcOzyL0LiqhRyd7gS9A1D0X5A/m2h0fAKTbxUAbp3r2D2pdjyPnVW/6q0otpq7RIyZFo6Ln1EDJ9gfhEg==
+
 react-native@0.66.1:
   version "0.66.1"
   resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.66.1.tgz#96defaf60579406321340ebe1dcea76a3c942806"

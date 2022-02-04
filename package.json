@@ -231,6 +231,7 @@
     "react-native-video": "5.1.1",
     "react-native-video-cache": "2.0.5",
     "react-native-webview": "11.2.3",
+    "react-native-widgetkit": "1.0.9",
     "react-navigation-backhandler": "2.0.1",
     "react-primitives": "0.8.1",
     "react-query": "1.5.10",
