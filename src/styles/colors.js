@@ -29,6 +29,7 @@ const darkModeColors = {
   lighterGrey: '#12131A',
   lightestGrey: '#FFFFFF',
   lightGrey: '#333333',
+  lightOrange: '#FFA64D',
   offWhite: '#1F222A',
   offWhite80: '#1C1F27',
   rowDivider: 'rgba(60, 66, 82, 0.075)',
@@ -100,6 +101,7 @@ const getColorsByTheme = darkMode => {
     lighterGrey: '#F7F7F8', // '247, 247, 248'
     lightestGrey: '#E9EBEF', // '238, 233, 232'
     lightGrey: '#CDCFD4', // '205, 207, 212'
+    lightOrange: '#FFA64D', // '255, 166, 77'
     mediumGrey: '#A1A5B3', // '161, 165, 179'
     mintDark: '#00E0A9', // '0, 224, 169'
     neonSkyblue: '#34FFFF', // '52, 255, 255'
@@ -182,6 +184,12 @@ const getColorsByTheme = darkMode => {
     sendBackground: ['#FAFAFA00', '#FAFAFAFF'],
     success: ['#FAFF00', '#2CCC00'],
     successTint: ['#FFFFF0', '#FCFEFB'],
+    transparentToGreen: ['transparent', buildRgba(base.green, 0.06)],
+    transparentToLightGrey: ['transparent', buildRgba(base.blueGreyDark, 0.06)],
+    transparentToLightOrange: [
+      'transparent',
+      buildRgba(base.lightOrange, 0.06),
+    ],
     vividRainbow: ['#FFB114', '#FF54BB', '#00F0FF'],
     vividRainbowTint: ['#FFFAF1', '#FFF5FB', '#F0FEFF'],
     warning: ['#FFD963', '#FFB200'],
@@ -277,6 +285,15 @@ const getColorsByTheme = darkMode => {
       sendBackground: ['#12131A00', '#12131AFF'],
       success: ['#FAFF00', '#2CCC00'],
       successTint: ['#202118', '#141E18'],
+      transparentToGreen: ['transparent', buildRgba(base.green, 0.06)],
+      transparentToLightGrey: [
+        'transparent',
+        buildRgba(base.blueGreyDark, 0.06),
+      ],
+      transparentToLightOrange: [
+        'transparent',
+        buildRgba(base.lightOrange, 0.06),
+      ],
       vividRainbow: ['#FFB114', '#FF54BB', '#00F0FF'],
       vividRainbowTint: ['#201C19', '#201723', '#112028'],
       warning: ['#FFD963', '#FFB200'],

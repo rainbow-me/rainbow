@@ -57,7 +57,7 @@ export const fetchSuggestions = async (
 
 export const debouncedFetchSuggestions = debounce(fetchSuggestions, 200);
 
-export const fetchRegistration = async (recipient: any) => {
+export const fetchRegistrationDate = async (recipient: any) => {
   if (recipient.length > 2) {
     const recpt = recipient.toLowerCase();
     const result = await ensClient.query({
@@ -67,7 +67,6 @@ export const fetchRegistration = async (recipient: any) => {
       },
     });
     const labelHash = result?.data?.domains?.[0]?.labelhash;
-
     const registrations = await ensClient.query({
       query: ENS_REGISTRATIONS,
       variables: {
@@ -75,17 +74,10 @@ export const fetchRegistration = async (recipient: any) => {
       },
     });
 
-    const { registrationDate, expiryDate } =
-      registrations?.data?.registrations?.[0] || {};
+    const { registrationDate } = registrations?.data?.registrations?.[0] || {
+      registrationDate: null,
+    };
 
-    if (!isEmpty(registrations?.data?.registrations?.[0])) {
-      return { expiryDate, isRegistered: true, registrationDate };
-    } else {
-      return {
-        expiryDate: null,
-        isRegistered: false,
-        registrationDate: null,
-      };
-    }
+    return registrationDate;
   }
 };

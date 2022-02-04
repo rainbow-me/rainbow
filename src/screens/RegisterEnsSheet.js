@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { KeyboardArea } from 'react-native-keyboard-area';
-import { useQuery } from 'react-query';
 import dice from '../assets/dice.png';
 import TintButton from '../components/buttons/TintButton';
-import SearchInput from '../components/ens-registration/SearchInput/SearchInput';
+import {
+  SearchInput,
+  SearchResultGradientIndicator,
+} from '../components/ens-registration';
 import {
   SheetActionButton,
   SheetActionButtonRow,
@@ -11,18 +13,16 @@ import {
 } from '../components/sheet';
 import {
   Box,
-  Column,
-  Columns,
   Heading,
   Inline,
+  Inset,
   Stack,
   Text,
 } from '@rainbow-me/design-system';
-
-import { fetchRegistration } from '@rainbow-me/handlers/ens';
 import {
   useDebounceString,
   useDimensions,
+  useENSRegistration,
   useKeyboardHeight,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
@@ -35,33 +35,23 @@ export default function RegisterEnsSheet() {
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounceString(searchQuery);
 
-  const { data: registration, status } = useQuery(
-    debouncedSearchQuery.length > 2 && ['registration', debouncedSearchQuery],
-    async (_, searchQuery) => {
-      const fastFormatter = timestamp => {
-        const date = new Date(Number(timestamp) * 1000);
-        return `${date.toDateString()}`;
-      };
-      const registration = await fetchRegistration(searchQuery + '.eth');
-      return {
-        expiryDate: fastFormatter(registration.expiryDate),
-        isRegistered: registration.isRegistered,
-        registrationDate: fastFormatter(registration.registrationDate),
-      };
-    }
-  );
+  const { available, rentPrice, expirationDate, status } = useENSRegistration({
+    duration: 1,
+    name: debouncedSearchQuery,
+  });
+
   const isLoading = status === 'loading';
-  const isSuccess = registration && status === 'success';
+  const isSuccess = status === 'success';
 
   const state = useMemo(() => {
     if (isSuccess) {
-      if (registration?.isRegistered) {
-        return 'warning';
+      if (available) {
+        return 'success';
       }
-      return 'success';
+      return 'warning';
     }
     return undefined;
-  }, [isSuccess, registration?.isRegistered]);
+  }, [isSuccess, available]);
 
   return (
     <Box background="body" flexGrow={1}>
@@ -84,8 +74,9 @@ export default function RegisterEnsSheet() {
 
           <Box
             alignItems="center"
+            paddingBottom="24px"
             paddingHorizontal="19px"
-            paddingVertical="42px"
+            paddingTop="42px"
           >
             <SearchInput
               isLoading={isLoading}
@@ -102,32 +93,25 @@ export default function RegisterEnsSheet() {
             </Text>
           )}
           {isSuccess && (
-            <Stack alignHorizontal="center" space="5px">
-              <Columns alignHorizontal="center" space="19px">
-                <Column width="1/2">
-                  <Text color="secondary40" size="18px" weight="bold">
-                    {registration.isRegistered ? 'Taken' : 'Available'}
-                  </Text>
-                </Column>
-                <Column width="1/2">
-                  <Text color="secondary40" size="18px" weight="bold">
-                    {registration.isRegistered ? 'Taken' : 'Available'}
-                  </Text>
-                </Column>
-              </Columns>
-              <Inline wrap={false}>
-                <Text color="secondary40" size="18px" weight="bold">
-                  {registration.isRegistered
-                    ? `Til ${registration.expiryDate}`
-                    : `"Price"`}
-                </Text>
+            <Inset horizontal="19px">
+              <Inline alignHorizontal="justify" wrap={false}>
+                <SearchResultGradientIndicator
+                  isRegistered={!available}
+                  type="availability"
+                />
+                {!available ? (
+                  <SearchResultGradientIndicator
+                    expiryDate={expirationDate}
+                    type="expiration"
+                  />
+                ) : (
+                  <SearchResultGradientIndicator
+                    price={`${rentPrice?.perYear?.display}  / Year`}
+                    type="price"
+                  />
+                )}
               </Inline>
-              {!registration.isRegistered && (
-                <Text color="secondary40" size="18px" weight="bold">
-                  Estimated cost?
-                </Text>
-              )}
-            </Stack>
+            </Inset>
           )}
         </Box>
         <Box>
@@ -149,11 +133,7 @@ export default function RegisterEnsSheet() {
           <SheetActionButtonRow>
             {isSuccess && debouncedSearchQuery.length > 2 && (
               <>
-                {registration.isRegistered ? (
-                  <TintButton onPress={() => setSearchQuery('')}>
-                    􀅉 Clear
-                  </TintButton>
-                ) : (
+                {available ? (
                   <SheetActionButton
                     color={colors.green}
                     label="Continue on 􀆊"
@@ -161,6 +141,10 @@ export default function RegisterEnsSheet() {
                     size="big"
                     weight="heavy"
                   />
+                ) : (
+                  <TintButton onPress={() => setSearchQuery('')}>
+                    􀅉 Clear
+                  </TintButton>
                 )}
               </>
             )}
