@@ -107,7 +107,7 @@ export default function RegisterEnsSheet() {
                   isRegistered={isRegistered}
                   type="availability"
                 />
-                {!isAvailable ? (
+                {isRegistered ? (
                   <SearchResultGradientIndicator
                     expiryDate={data?.expirationDate}
                     type="expiration"
