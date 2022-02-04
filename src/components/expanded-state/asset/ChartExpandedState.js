@@ -424,7 +424,7 @@ export default function ChartExpandedState({ asset }) {
               {totalLiquidity}
             </CarouselItem>
             <CarouselItem
-              loading={marketCapLoading}
+              loading={additionalAssetDataLoading}
               title={lang.t('expanded_state.asset.market_cap')}
               weight="bold"
             >
