@@ -222,9 +222,7 @@ export default function ChartExpandedState({ asset }) {
     marketCap,
     totalLiquidity,
     totalVolume,
-    marketCapLoading,
-    totalLiquidityLoading,
-    totalVolumeLoading,
+    loading: additionalAssetDataLoading,
     links,
   } = useAdditionalAssetData(asset?.address, assetWithPrice?.price?.value);
 
@@ -405,15 +403,13 @@ export default function ChartExpandedState({ asset }) {
 
       {!isL2 && (
         <CarouselWrapper
-          isAnyItemLoading={
-            totalVolumeLoading || totalLiquidityLoading || marketCapLoading
-          }
+          isAnyItemLoading={additionalAssetDataLoading}
           isAnyItemVisible={!!(totalVolume || totalLiquidity || marketCap)}
           setCarouselHeight={setCarouselHeight}
         >
           <Carousel>
             <CarouselItem
-              loading={totalVolumeLoading}
+              loading={additionalAssetDataLoading}
               showDivider
               title={lang.t('expanded_state.asset.volume_24_hours')}
               weight="bold"
@@ -421,7 +417,7 @@ export default function ChartExpandedState({ asset }) {
               {totalVolume}
             </CarouselItem>
             <CarouselItem
-              loading={totalLiquidityLoading}
+              loading={additionalAssetDataLoading}
               showDivider
               title={lang.t('expanded_state.asset.uniswap_liquidity')}
               weight="bold"
@@ -429,7 +425,7 @@ export default function ChartExpandedState({ asset }) {
               {totalLiquidity}
             </CarouselItem>
             <CarouselItem
-              loading={marketCapLoading}
+              loading={additionalAssetDataLoading}
               title={lang.t('expanded_state.asset.market_cap')}
               weight="bold"
             >
