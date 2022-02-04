@@ -1,33 +1,34 @@
+import lang from 'i18n-js';
 import React from 'react';
 import { View } from 'react-native';
 import { useAnimatedStyle } from 'react-native-reanimated';
-import styled from 'styled-components';
 import { useRatio } from './useRatio';
 import { ChartXLabel, useChartData } from '@rainbow-me/animated-charts';
+import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth } from '@rainbow-me/styles';
 
-const Label = styled(ChartXLabel)`
-  ${fontWithWidth(fonts.weight.semibold)};
-  font-size: ${fonts.size.larger};
-  font-variant: tabular-nums;
-  letter-spacing: ${fonts.letterSpacing.roundedMedium};
-  text-align: right;
-  ${android && `margin-vertical: -20px`}
-`;
+const Label = styled(ChartXLabel)({
+  ...fontWithWidth(fonts.weight.semibold),
+  fontSize: fonts.size.larger,
+  fontVariant: ['tabular-nums'],
+  letterSpacing: fonts.letterSpacing.roundedMedium,
+  textAlign: 'right',
+  ...(android ? { marginVertical: -20 } : {}),
+});
 
 const MONTHS = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
+  lang.t('expanded_state.chart.date.months.month_00'),
+  lang.t('expanded_state.chart.date.months.month_01'),
+  lang.t('expanded_state.chart.date.months.month_02'),
+  lang.t('expanded_state.chart.date.months.month_03'),
+  lang.t('expanded_state.chart.date.months.month_04'),
+  lang.t('expanded_state.chart.date.months.month_05'),
+  lang.t('expanded_state.chart.date.months.month_06'),
+  lang.t('expanded_state.chart.date.months.month_07'),
+  lang.t('expanded_state.chart.date.months.month_08'),
+  lang.t('expanded_state.chart.date.months.month_09'),
+  lang.t('expanded_state.chart.date.months.month_10'),
+  lang.t('expanded_state.chart.date.months.month_11'),
 ];
 
 function formatDatetime(value, chartTimeDefaultValue) {

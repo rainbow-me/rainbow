@@ -1,28 +1,28 @@
 import React, { Fragment, useCallback, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import TextInputMask from 'react-native-text-input-mask';
-import styled from 'styled-components';
 import { Text } from '../text';
+import styled from '@rainbow-me/styled-components';
 import { buildTextStyles } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
-const AndroidMaskWrapper = styled.View`
-  background-color: ${({ theme: { colors } }) => colors.white};
-  bottom: 0;
-  left: 68.7;
-  position: absolute;
-  right: 0;
-  top: 11.5;
-`;
+const AndroidMaskWrapper = styled.View({
+  backgroundColor: ({ theme: { colors } }) => colors.white,
+  bottom: 0,
+  left: 68.7,
+  position: 'absolute',
+  right: 0,
+  top: 11.5,
+});
 
 const Input = styled(TextInputMask).attrs({
   allowFontScaling: false,
   keyboardType: 'decimal-pad',
-})`
-  ${buildTextStyles};
-  ${android ? 'font-weight: normal' : ''};
-  flex: 1;
-`;
+})(props => ({
+  flex: 1,
+  ...buildTextStyles.object(props),
+  ...(android ? { fontWeight: 'normal' } : {}),
+}));
 
 const ExchangeInput = (
   {

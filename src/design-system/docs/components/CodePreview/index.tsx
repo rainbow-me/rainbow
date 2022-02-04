@@ -1,11 +1,13 @@
 import lzString from 'lz-string';
 import React from 'react';
 
+import { Box } from '../../../components/Box/Box';
 import ChevronDownIcon from '../../icons/ChevronDownIcon';
 import ChevronUpIcon from '../../icons/ChevronUpIcon';
 import PlayIcon from '../../icons/PlayIcon';
 import { Button, ButtonLink, CodeBlock, Inline, Stack } from '../../system';
 import { sprinkles } from '../../system/sprinkles.css';
+import { Example } from '../../types';
 import { getSourceFromExample } from '../../utils/getSourceFromExample.web';
 import { Source } from '../../utils/source.macro';
 
@@ -13,6 +15,7 @@ export const CodePreview = ({
   disableActions = false,
   enableCodeSnippet = true,
   enablePlayroom = true,
+  wrapper = children => children,
   showCode: defaultShowCode = false,
   showFrame = false,
   Example,
@@ -22,6 +25,7 @@ export const CodePreview = ({
   showCode?: boolean;
   enablePlayroom?: boolean;
   showFrame?: boolean;
+  wrapper?: Example['wrapper'];
   Example: () => Source<React.ReactChild>;
 }) => {
   const [showCode, setShowCode] = React.useState(Boolean(defaultShowCode));
@@ -52,7 +56,7 @@ export const CodePreview = ({
               : {}),
           })}
         >
-          {element}
+          <Box>{wrapper(element)}</Box>
         </div>
       </div>
       {displayCode && (

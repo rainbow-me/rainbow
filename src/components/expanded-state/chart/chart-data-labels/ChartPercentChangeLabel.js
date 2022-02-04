@@ -1,26 +1,26 @@
 import React, { useMemo } from 'react';
 import { TextInput } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
-import styled from 'styled-components';
 import { RowWithMargins } from '../../../layout';
 import ChartChangeDirectionArrow from './ChartChangeDirectionArrow';
 import { useRatio } from './useRatio';
 import { useChartData } from '@rainbow-me/animated-charts';
+import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth } from '@rainbow-me/styles';
 
 Animated.addWhitelistedNativeProps({ color: true });
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
-const PercentLabel = styled(AnimatedTextInput)`
-  ${fontWithWidth(fonts.weight.bold)};
-  background-color: ${({ theme: { colors } }) => colors.transparent};
-  font-size: ${fonts.size.big};
-  font-variant: tabular-nums;
-  letter-spacing: ${fonts.letterSpacing.roundedTightest};
-  text-align: right;
-  ${android && `margin-vertical: -19px;`}
-`;
+const PercentLabel = styled(AnimatedTextInput)({
+  ...fontWithWidth(fonts.weight.bold),
+  backgroundColor: ({ theme: { colors } }) => colors.transparent,
+  fontSize: fonts.size.big,
+  fontVariant: ['tabular-nums'],
+  letterSpacing: fonts.letterSpacing.roundedTightest,
+  textAlign: 'right',
+  ...(android && { marginVertical: -19 }),
+});
 
 function formatNumber(num) {
   'worklet';
@@ -61,7 +61,8 @@ const format = (originalY, data, latestChange) => {
 export default function ChartPercentChangeLabel({ ratio, latestChange }) {
   const { originalY, data, isActive } = useChartData();
   const { colors } = useTheme();
-  // we don't want the label to change on latestChange
+
+  // we don't need to format on latestChange changes
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const defaultValue = useMemo(() => format(originalY, data, latestChange), [
     originalY,

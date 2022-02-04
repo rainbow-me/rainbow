@@ -1,8 +1,7 @@
-import { toLower } from 'lodash';
+import { startCase, toLower } from 'lodash';
 import React, { useCallback } from 'react';
 import { Linking } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
-import styled from 'styled-components';
 import URL from 'url-parse';
 import { buildUniqueTokenName } from '../../../helpers/assets';
 import { ButtonPressAnimation } from '../../animations';
@@ -17,9 +16,11 @@ import {
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
+import styled from '@rainbow-me/styled-components';
 import { padding, position } from '@rainbow-me/styles';
 import {
   buildRainbowUrl,
+  ethereumUtils,
   magicMemo,
   showActionSheetWithOptions,
 } from '@rainbow-me/utils';
@@ -31,7 +32,7 @@ const AssetActionsEnum = {
   rainbowWeb: 'rainbowWeb',
 };
 
-const AssetActions = {
+const getAssetActions = network => ({
   [AssetActionsEnum.copyTokenID]: {
     actionKey: AssetActionsEnum.copyTokenID,
     actionTitle: 'Copy Token ID',
@@ -50,7 +51,9 @@ const AssetActions = {
   },
   [AssetActionsEnum.etherscan]: {
     actionKey: AssetActionsEnum.etherscan,
-    actionTitle: 'View on Etherscan',
+    actionTitle: `View on ${startCase(
+      ethereumUtils.getBlockExplorer(network)
+    )}`,
     icon: {
       iconType: 'SYSTEM',
       iconValue: 'link',
@@ -64,7 +67,7 @@ const AssetActions = {
       iconValue: 'safari.fill',
     },
   },
-};
+});
 
 const FamilyActionsEnum = {
   collectionWebsite: 'collectionWebsite',
@@ -86,14 +89,6 @@ const FamilyActions = {
   [FamilyActionsEnum.collectionWebsite]: {
     actionKey: FamilyActionsEnum.collectionWebsite,
     actionTitle: 'Collection Website',
-    icon: {
-      iconType: 'SYSTEM',
-      iconValue: 'safari.fill',
-    },
-  },
-  [FamilyActionsEnum.etherscan]: {
-    actionKey: AssetActionsEnum.etherscan,
-    actionTitle: 'View on Etherscan',
     icon: {
       iconType: 'SYSTEM',
       iconValue: 'safari.fill',
@@ -122,40 +117,40 @@ const paddingHorizontal = 24;
 const Container = styled(Row).attrs({
   align: 'center',
   justify: 'space-between',
-})`
-  ${padding(21, paddingHorizontal, paddingHorizontal)};
-`;
+})({
+  ...padding.object(21, paddingHorizontal, paddingHorizontal),
+});
 
 const FamilyName = styled(TruncatedText).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.whiteLabel, 0.5),
   size: 'lmedium',
   weight: 'bold',
-}))`
-  max-width: ${({ deviceWidth }) => deviceWidth - paddingHorizontal * 6};
-`;
+}))({
+  maxWidth: ({ deviceWidth }) => deviceWidth - paddingHorizontal * 6,
+});
 
-const FamilyImageWrapper = styled.View`
-  height: 20;
-  margin-right: 7;
-  shadow-color: ${({ theme: { colors } }) => colors.shadowBlack};
-  shadow-offset: 0 3px;
-  shadow-opacity: 0.15;
-  shadow-radius: 4.5px;
-  width: 20;
-`;
+const FamilyImageWrapper = styled.View({
+  height: 20,
+  marginRight: 7,
+  shadowColor: ({ theme: { colors } }) => colors.shadowBlack,
+  shadowOffset: { height: 3, width: 0 },
+  shadowOpacity: 0.15,
+  shadowRadius: 4.5,
+  width: 20,
+});
 
-const FamilyImage = styled(ImgixImage)`
-  ${position.cover};
-  border-radius: 10;
-`;
+const FamilyImage = styled(ImgixImage)({
+  ...position.coverAsObject,
+  borderRadius: 10,
+});
 
 const HeadingColumn = styled(ColumnWithMargins).attrs({
   align: 'start',
   justify: 'start',
   margin: 6,
-})`
-  width: 100%;
-`;
+})({
+  width: '100%',
+});
 
 const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
   const { accountAddress, accountENS } = useAccountProfile();
@@ -199,6 +194,7 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
 
   const isPhotoDownloadAvailable = !isSVG && !isENS;
   const assetMenuConfig = useMemo(() => {
+    const AssetActions = getAssetActions(asset?.network);
     return {
       menuItems: [
         {
@@ -223,7 +219,7 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
       ],
       menuTitle: '',
     };
-  }, [asset.id, isPhotoDownloadAvailable]);
+  }, [asset.id, asset?.network, isPhotoDownloadAvailable]);
 
   const handlePressFamilyMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
@@ -249,11 +245,10 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
   const handlePressAssetMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === AssetActionsEnum.etherscan) {
-        Linking.openURL(
-          'https://etherscan.io/token/' +
-            asset.asset_contract.address +
-            '?a=' +
-            asset.id
+        ethereumUtils.openNftInBlockExplorer(
+          asset.asset_contract.address,
+          asset.id,
+          asset?.network
         );
       } else if (actionKey === AssetActionsEnum.rainbowWeb) {
         Linking.openURL(buildRainbowUrl(asset, accountENS, accountAddress));
@@ -342,7 +337,7 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
   const onPressAndroidAsset = useCallback(() => {
     const androidContractActions = [
       'View On Web',
-      'View on Etherscan',
+      `View on ${startCase(ethereumUtils.getBlockExplorer(asset?.network))}`,
       ...(isPhotoDownloadAvailable ? ['Save to Photos'] : []),
       'Copy Token ID',
     ];
@@ -357,11 +352,10 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
         if (idx === 0) {
           Linking.openURL(buildRainbowUrl(asset, accountENS, accountAddress));
         } else if (idx === 1) {
-          Linking.openURL(
-            'https://etherscan.io/token/' +
-              asset.asset_contract.address +
-              '?a=' +
-              asset.id
+          ethereumUtils.openNftInBlockExplorer(
+            asset.asset_contract.address,
+            asset.id,
+            asset?.network
           );
         } else if (isPhotoDownloadAvailable ? idx === 3 : idx === 2) {
           setClipboard(asset.id);
@@ -418,7 +412,7 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
                 <FamilyImageWrapper>
                   <FamilyImage
                     source={{ uri: asset?.familyImage }}
-                    style={position.cover}
+                    style={position.coverAsObject}
                   />
                 </FamilyImageWrapper>
               ) : null}

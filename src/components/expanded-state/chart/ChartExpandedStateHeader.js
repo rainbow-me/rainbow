@@ -1,8 +1,7 @@
+import lang from 'i18n-js';
 import { invert } from 'lodash';
 import React, { useMemo } from 'react';
 import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
-import styled from 'styled-components';
-
 import { CoinIcon, CoinIconGroup } from '../../coin-icon';
 import { Column, ColumnWithMargins, Row, RowWithMargins } from '../../layout';
 import ChartAddToListButton from './ChartAddToListButton';
@@ -17,16 +16,17 @@ import { useChartData } from '@rainbow-me/animated-charts';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
 import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
 import { useAccountSettings, useBooleanState } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 
-const noPriceData = 'No price data';
+const noPriceData = lang.t('expanded_state.chart.no_price_data');
 
 const Container = styled(ColumnWithMargins).attrs({
   margin: 12,
   marginTop: android ? -10 : 0,
-})`
-  ${({ showChart }) => padding(0, 19, showChart ? (android ? 15 : 30) : 0)};
-`;
+})(({ showChart }) => ({
+  ...padding.object(0, 19, showChart ? (android ? 15 : 30) : 0),
+}));
 
 function useTabularNumsWhileScrubbing() {
   const [tabularNums, enable, disable] = useBooleanState();
@@ -69,7 +69,11 @@ export default function ChartExpandedStateHeader({
 
   const isNoPriceData = latestPrice === noPriceData;
 
-  const title = isPool ? `${asset.tokenNames} Pool` : asset?.name;
+  const title = isPool
+    ? lang.t('expanded_state.chart.token_pool', {
+        tokenName: asset.tokenNames,
+      })
+    : asset?.name;
 
   const titleOrNoPriceData = isNoPriceData ? noPriceData : title;
 
@@ -153,7 +157,6 @@ export default function ChartExpandedStateHeader({
               }
               latestChange={latestChange}
               overrideValue={overrideValue}
-              ratio={ratio}
             />
           )}
         </RowWithMargins>

@@ -1,9 +1,13 @@
 import { mapKeys, mapValues } from 'lodash';
 import { savingsAssets } from './compound';
 import { default as DefaultTokenListsSource } from './default-token-lists.json';
-import { Asset, SavingsAsset } from '@rainbow-me/entities';
+import {
+  Asset,
+  SavingsAsset,
+  UniswapFavoriteTokenData,
+} from '@rainbow-me/entities';
 import { Network } from '@rainbow-me/helpers/networkTypes';
-
+export { default as polygonAllowList } from './polygon-allowlist.json';
 export { default as balanceCheckerContractAbi } from './balances-checker-abi.json';
 export { default as balanceCheckerContractAbiOVM } from './balances-checker-abi-ovm.json';
 export { default as chains } from './chains.json';
@@ -12,10 +16,6 @@ export { default as chainAssets } from './chain-assets.json';
 export { default as coingeckoIdsFallback } from './coingecko/ids.json';
 export { compoundCERC20ABI, compoundCETHABI } from './compound';
 export { DefaultTokenListsSource as DefaultTokenLists };
-export {
-  defiSdkAdapterRegistryABI,
-  DEFI_SDK_ADAPTER_REGISTRY_ADDRESS,
-} from './defisdk';
 export {
   signatureRegistryABI,
   SIGNATURE_REGISTRY_ADDRESS,
@@ -161,6 +161,57 @@ export const DefaultUniswapFavorites = {
     // DAI
     '0x5592ec0cfb4dbc12d3ab100b257153436a1f0fea',
   ],
+};
+
+export const DefaultUniswapFavoritesMeta: Record<
+  string,
+  UniswapFavoriteTokenData
+> = {
+  mainnet: {
+    [DAI_ADDRESS]: {
+      address: DAI_ADDRESS,
+      color: '#F0B340',
+      decimals: 18,
+      highLiquidity: true,
+      isRainbowCurated: true,
+      isVerified: true,
+      name: 'Dai',
+      symbol: 'DAI',
+      uniqueId: DAI_ADDRESS,
+    },
+    [ETH_ADDRESS]: {
+      address: ETH_ADDRESS,
+      color: '#25292E',
+      decimals: 18,
+      highLiquidity: true,
+      isVerified: true,
+      name: 'Ethereum',
+      symbol: 'ETH',
+      uniqueId: ETH_ADDRESS,
+    },
+    [SOCKS_ADDRESS]: {
+      address: SOCKS_ADDRESS,
+      color: '#E15EE5',
+      decimals: 18,
+      highLiquidity: true,
+      isRainbowCurated: true,
+      isVerified: true,
+      name: 'Unisocks',
+      symbol: 'SOCKS',
+      uniqueId: SOCKS_ADDRESS,
+    },
+    [WBTC_ADDRESS]: {
+      address: WBTC_ADDRESS,
+      color: '#FF9900',
+      decimals: 8,
+      highLiquidity: true,
+      isRainbowCurated: true,
+      isVerified: true,
+      name: 'Wrapped Bitcoin',
+      symbol: 'WBTC',
+      uniqueId: WBTC_ADDRESS,
+    },
+  },
 };
 
 export const savingsAssetsList: Record<
