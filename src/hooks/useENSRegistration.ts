@@ -41,7 +41,9 @@ const formatRentPrice = (
   } = convertAmountAndPriceToNativeDisplay(
     rentPricePerYear,
     nativeAssetPrice,
-    nativeCurrency
+    nativeCurrency,
+    undefined,
+    true
   );
 
   return {
@@ -82,6 +84,13 @@ export default function useENSRegistration({
         duration,
         nativeCurrency
       );
+      // const gasLimit = await estimateENSRegistrationGasLimit(
+      //   name,
+      //   accountAddress,
+      //   duration * secsInYear,
+      //   rentPrice.toString()
+      // );
+
       return {
         available: isAvailable,
         expirationDate: null,
@@ -94,7 +103,6 @@ export default function useENSRegistration({
       const nameExpires = await getNameExpires(name);
       const formattedRegistrarionDate = formatTime(registrationDate);
       const formattedExpirationDate = formatTime(nameExpires);
-      // const gaslimit = await estimateENSMulticallGasLimit(name);
 
       return {
         available: isAvailable,

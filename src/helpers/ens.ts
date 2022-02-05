@@ -170,7 +170,7 @@ const generateSalt = () => {
   return salt;
 };
 
-const getENSExecutionDetails = ({
+const getENSExecutionDetails = async ({
   name,
   type,
   ownerAddress,
@@ -184,21 +184,20 @@ const getENSExecutionDetails = ({
   rentPrice?: string;
   duration?: number;
   records?: ENSRegistrationRecords;
-}): {
+}): Promise<{
   methodArguments: (string | string[] | number)[] | null;
   value: BigNumberish | null;
   contract: Contract | null;
-} => {
+}> => {
   let args: (string | string[] | number)[] | null = null;
   let value: string | null = null;
   let contract: Contract | null = null;
-
   switch (type) {
     case ENSRegistrationTransactionType.COMMIT: {
       if (!name || !ownerAddress) throw new Error('Bad arguments for commit');
       const salt = generateSalt();
       const registrarController = getENSRegistrarControllerContract();
-      const commitment = registrarController.makeCommitment(
+      const commitment = await registrarController.makeCommitment(
         name,
         ownerAddress,
         salt
