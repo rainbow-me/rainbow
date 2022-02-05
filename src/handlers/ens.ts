@@ -88,22 +88,22 @@ export const fetchRegistrationDate = async (recipient: any) => {
   }
 };
 
-export const estimateENSRegisterGasLimit = async (
+export const estimateENSRegisterWithConfigGasLimit = async (
   name: string,
-  accountAddress: string,
+  ownerAddress: string,
   duration: number,
   rentPrice: string
 ) => {
   const { contract, methodArguments, value } = getENSExecutionDetails({
-    accountAddress,
     duration,
     name,
+    ownerAddress,
     rentPrice,
     type: ENSRegistrationTransactionType.REGISTER_WITH_CONFIG,
   });
 
   const txPayload = {
-    from: accountAddress,
+    from: ownerAddress,
     ...(value ? { value } : {}),
   };
 
@@ -117,20 +117,20 @@ export const estimateENSRegisterGasLimit = async (
 
 export const estimateENSCommitGasLimit = async (
   name: string,
-  accountAddress: string,
+  ownerAddress: string,
   duration: number,
   rentPrice: string
 ) => {
   const { contract, methodArguments } = getENSExecutionDetails({
-    accountAddress,
     duration,
     name,
+    ownerAddress,
     rentPrice,
     type: ENSRegistrationTransactionType.COMMIT,
   });
 
   const txPayload = {
-    from: accountAddress,
+    from: ownerAddress,
   };
 
   const gasLimit = await estimateGasWithPadding(
@@ -144,7 +144,7 @@ export const estimateENSCommitGasLimit = async (
 
 export const estimateENSSetTextGasLimit = async (
   name: string,
-  accountAddress: string,
+  ownerAddress: string,
   recordKey: string,
   recordValue: string
 ) => {
@@ -164,7 +164,7 @@ export const estimateENSSetTextGasLimit = async (
     type: ENSRegistrationTransactionType.SET_TEXT,
   });
 
-  const txPayload = { from: accountAddress };
+  const txPayload = { from: ownerAddress };
 
   const gasLimit = await estimateGasWithPadding(
     txPayload,
@@ -177,14 +177,14 @@ export const estimateENSSetTextGasLimit = async (
 
 export const estimateENSSetNameGasLimit = async (
   name: string,
-  accountAddress: string
+  ownerAddress: string
 ) => {
   const { contract, methodArguments } = getENSExecutionDetails({
     name,
     type: ENSRegistrationTransactionType.SET_NAME,
   });
 
-  const txPayload = { from: accountAddress };
+  const txPayload = { from: ownerAddress };
 
   const gasLimit = await estimateGasWithPadding(
     txPayload,
@@ -197,7 +197,7 @@ export const estimateENSSetNameGasLimit = async (
 
 export const estimateENSMulticallGasLimit = async (
   name: string,
-  accountAddress: string,
+  ownerAddress: string,
   records: ENSRegistrationRecords
 ) => {
   const { contract, methodArguments } = getENSExecutionDetails({
@@ -206,7 +206,7 @@ export const estimateENSMulticallGasLimit = async (
     type: ENSRegistrationTransactionType.MULTICALL,
   });
 
-  const txPayload = { from: accountAddress };
+  const txPayload = { from: ownerAddress };
 
   const gasLimit = await estimateGasWithPadding(
     txPayload,

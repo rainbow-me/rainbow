@@ -173,14 +173,14 @@ const generateSalt = () => {
 const getENSExecutionDetails = ({
   name,
   type,
-  accountAddress,
+  ownerAddress,
   rentPrice,
   duration,
   records,
 }: {
   name: string;
   type: ENSRegistrationTransactionType;
-  accountAddress?: string;
+  ownerAddress?: string;
   rentPrice?: string;
   duration?: number;
   records?: ENSRegistrationRecords;
@@ -195,12 +195,12 @@ const getENSExecutionDetails = ({
 
   switch (type) {
     case ENSRegistrationTransactionType.COMMIT: {
-      if (!name || !accountAddress) throw new Error('Bad arguments for commit');
+      if (!name || !ownerAddress) throw new Error('Bad arguments for commit');
       const salt = generateSalt();
       const registrarController = getENSRegistrarControllerContract();
       const commitment = registrarController.makeCommitment(
         name,
-        accountAddress,
+        ownerAddress,
         salt
       );
       args = [commitment];
@@ -208,10 +208,17 @@ const getENSExecutionDetails = ({
       break;
     }
     case ENSRegistrationTransactionType.REGISTER_WITH_CONFIG: {
-      if (!name || !accountAddress || !duration || !rentPrice)
+      if (!name || !ownerAddress || !duration || !rentPrice)
         throw new Error('Bad arguments for registerWithConfig');
       const salt = generateSalt();
-      args = [name, accountAddress, duration, salt];
+      args = [
+        name,
+        ownerAddress,
+        duration,
+        salt,
+        ensPublicResolverAddress,
+        ownerAddress,
+      ];
       contract = getENSRegistrarControllerContract();
       value = toHex(addBuffer(rentPrice, 1.1));
       break;
