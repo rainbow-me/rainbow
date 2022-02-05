@@ -40,7 +40,7 @@ export default function RegisterEnsSheet() {
     rentPrice,
     expirationDate,
     status,
-    estimatedTotalCost,
+    estimatedTotalRegistrationCost,
   } = useENSRegistration({
     duration: 1,
     name: debouncedSearchQuery,
@@ -123,8 +123,9 @@ export default function RegisterEnsSheet() {
             <Inset horizontal="30px">
               <Inline alignHorizontal="justify" wrap={false}>
                 <Text color="secondary40" size="18px" weight="bold">
-                  Estimated total cost of {estimatedTotalCost?.display} with
-                  current network fees
+                  Estimated total cost of{' '}
+                  {estimatedTotalRegistrationCost?.display} with current network
+                  fees
                 </Text>
               </Inline>
             </Inset>

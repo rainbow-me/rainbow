@@ -30,13 +30,11 @@ const getRentPricePerYear = (rentPrice: string, duration: number) =>
 const formatRentPrice = (
   rentPrice: string,
   duration: number,
-  nativeCurrency: any
+  nativeCurrency: any,
+  nativeAssetPrice: any
 ) => {
   const rentPriceInETH = fromWei(rentPrice.toString());
   const rentPricePerYear = getRentPricePerYear(rentPriceInETH, duration);
-  const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
-    Network.mainnet
-  );
   const { amount, display } = convertAmountAndPriceToNativeDisplay(
     rentPriceInETH,
     nativeAssetPrice,
@@ -66,20 +64,19 @@ const formatRentPrice = (
   };
 };
 
-const formatNetworkFee = (
+const formatEstimatedNetworkFee = (
   gasLimit: string,
   maxBaseFee: string,
   maxPriorityFee: string,
-  nativeCurrency: any
+  nativeCurrency: any,
+  nativeAssetPrice: any
 ) => {
   const networkFeeInWei = multiply(
     gweiToWei(add(maxBaseFee, maxPriorityFee)),
     gasLimit
   );
   const networkFeeInEth = fromWei(networkFeeInWei);
-  const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
-    Network.mainnet
-  );
+
   const { amount, display } = convertAmountAndPriceToNativeDisplay(
     networkFeeInEth,
     nativeAssetPrice,
@@ -93,11 +90,13 @@ const formatNetworkFee = (
   };
 };
 
-const formatTotalCost = (wei: string, nativeCurrency: any) => {
+const formatTotalRegistrationCost = (
+  wei: string,
+  nativeCurrency: any,
+  nativeAssetPrice: any
+) => {
   const networkFeeInEth = fromWei(wei);
-  const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
-    Network.mainnet
-  );
+
   const { amount, display } = convertAmountAndPriceToNativeDisplay(
     networkFeeInEth,
     nativeAssetPrice,
@@ -129,12 +128,15 @@ export default function useENSRegistration({
   const getRegistrationValues = useCallback(async () => {
     const isAvailable = await getAvailable(name);
     if (isAvailable) {
-      // we need the price only if is available
       const rentPrice = await getRentPrice(name, duration * secsInYear);
+      const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
+        Network.mainnet
+      );
       const formattedRentPrice = formatRentPrice(
         rentPrice,
         duration,
-        nativeCurrency
+        nativeCurrency,
+        nativeAssetPrice
       );
       const gasLimit = await estimateENSRegistrationGasLimit(
         name,
@@ -148,22 +150,27 @@ export default function useENSRegistration({
         currentBaseFee,
       } = await getEIP1559GasParams();
 
-      const estimatedNetworkFee = formatNetworkFee(
+      const formattedEstimatedNetworkFee = formatEstimatedNetworkFee(
         gasLimit,
         currentBaseFee.gwei,
         gasFeeParamsBySpeed.normal.maxPriorityFeePerGas.gwei,
-        nativeCurrency
+        nativeCurrency,
+        nativeAssetPrice
       );
 
       const weiEstimatedTotalCost = add(
-        estimatedNetworkFee.wei,
+        formattedEstimatedNetworkFee.wei,
         formattedRentPrice.wei
       );
-      const totalCost = formatTotalCost(weiEstimatedTotalCost, nativeCurrency);
+      const totalRegistrationCost = formatTotalRegistrationCost(
+        weiEstimatedTotalCost,
+        nativeCurrency,
+        nativeAssetPrice
+      );
 
       return {
         available: isAvailable,
-        estimatedTotalCost: totalCost,
+        estimatedTotalRegistrationCost: totalRegistrationCost,
         expirationDate: null,
         registrationDate: null,
         rentPrice: formattedRentPrice,

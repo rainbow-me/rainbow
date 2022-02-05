@@ -81,7 +81,7 @@ const getNameExpires = async (name: string): Promise<string> =>
     addHexPrefix(sha3(name))
   );
 
-const getRentPrice = async (name: string, duration: number): Promise<string> =>
+const getRentPrice = async (name: string, duration: number): Promise<any> =>
   getENSRegistrarControllerContract().rentPrice(name, duration);
 
 const setupMulticallRecords = (
