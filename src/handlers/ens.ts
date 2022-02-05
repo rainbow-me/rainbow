@@ -7,6 +7,7 @@ import {
 } from '../apollo/queries';
 import { estimateGasWithPadding } from './web3';
 import {
+  ENSRegistrationRecords,
   ENSRegistrationStepType,
   getENSExecutionDetails,
 } from '@rainbow-me/helpers/ens';
@@ -108,7 +109,7 @@ export const estimateENSRegisterGasLimit = async (
 
   const gasLimit = await estimateGasWithPadding(
     txPayload,
-    contract?.estimateGas['register'],
+    contract?.estimateGas[ENSRegistrationStepType.REGISTER_WITH_CONFIG],
     methodArguments
   );
   return gasLimit;
@@ -134,47 +135,62 @@ export const estimateENSCommitGasLimit = async (
 
   const gasLimit = await estimateGasWithPadding(
     txPayload,
-    contract?.estimateGas['commit'],
+    contract?.estimateGas[ENSRegistrationStepType.COMMIT],
     methodArguments
   );
 
   return gasLimit;
 };
 
-export const estimateENSSetNameGasLimit = async (
+export const estimateENSSetTextGasLimit = async (
   name: string,
+  accountAddress: string,
   recordKey: string,
   recordValue: string
 ) => {
   const { contract, methodArguments } = getENSExecutionDetails({
     name,
-    recordKey,
-    recordValue,
-    type: ENSRegistrationStepType.SET_NAME,
+    records: {
+      coinAddress: null,
+      contentHash: null,
+      ensAssociatedAddress: null,
+      text: [
+        {
+          key: recordKey,
+          value: recordValue,
+        },
+      ],
+    },
+    type: ENSRegistrationStepType.SET_TEXT,
   });
 
-  const txPayload = {};
+  const txPayload = { from: accountAddress };
 
   const gasLimit = await estimateGasWithPadding(
     txPayload,
-    contract?.estimateGas['setName'],
+    contract?.estimateGas[ENSRegistrationStepType.SET_TEXT],
     methodArguments
   );
 
   return gasLimit;
 };
 
-export const estimateENSMulticallGasLimit = async (name: string) => {
+export const estimateENSMulticallGasLimit = async (
+  name: string,
+  accountAddress: string,
+  records: ENSRegistrationRecords
+) => {
   const { contract, methodArguments } = getENSExecutionDetails({
     name,
+    records,
     type: ENSRegistrationStepType.MULTICALL,
   });
 
-  const txPayload = {};
+  const txPayload = { from: accountAddress };
 
   const gasLimit = await estimateGasWithPadding(
     txPayload,
-    contract?.estimateGas['multicall'],
+    contract?.estimateGas[ENSRegistrationStepType.MULTICALL],
     methodArguments
   );
 

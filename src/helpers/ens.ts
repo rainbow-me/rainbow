@@ -18,14 +18,14 @@ import {
 } from '@rainbow-me/references';
 
 export enum ENSRegistrationStepType {
-  COMMIT,
-  REGISTER_WITH_CONFIG,
-  SET_TEXT,
-  SET_NAME,
-  MULTICALL,
+  COMMIT = 'commit',
+  REGISTER_WITH_CONFIG = 'registerWithConfig',
+  SET_TEXT = 'setText',
+  SET_NAME = 'setName',
+  MULTICALL = 'multicall',
 }
 
-interface ENSRegistrationRecords {
+export interface ENSRegistrationRecords {
   coinAddress: { key: string; address: string }[] | null;
   contentHash: string | null;
   ensAssociatedAddress: string | null;
@@ -176,8 +176,6 @@ const getENSExecutionDetails = ({
   accountAddress,
   rentPrice,
   duration,
-  recordKey,
-  recordValue,
   records,
 }: {
   name: string;
@@ -185,16 +183,12 @@ const getENSExecutionDetails = ({
   accountAddress?: string;
   rentPrice?: string;
   duration?: number;
-  recordKey?: string;
-  recordValue?: string;
   records?: ENSRegistrationRecords;
 }): {
   methodArguments: (string | string[] | number)[] | null;
-  methodNames: string[] | null;
   value: BigNumberish | null;
   contract: Contract | null;
 } => {
-  let methodNames: string[] | null = null;
   let args: (string | string[] | number)[] | null = null;
   let value: string | null = null;
   let contract: Contract | null = null;
@@ -202,7 +196,6 @@ const getENSExecutionDetails = ({
   switch (type) {
     case ENSRegistrationStepType.COMMIT: {
       if (!name || !accountAddress) throw new Error('Bad arguments for commit');
-      methodNames = ['commit'];
       const salt = generateSalt();
       const registrarController = getENSRegistrarControllerContract();
       const commitment = registrarController.makeCommitment(
@@ -217,7 +210,6 @@ const getENSExecutionDetails = ({
     case ENSRegistrationStepType.REGISTER_WITH_CONFIG: {
       if (!name || !accountAddress || !duration || !rentPrice)
         throw new Error('Bad arguments for registerWithConfig');
-      methodNames = ['register'];
       const salt = generateSalt();
       args = [name, accountAddress, duration, salt];
       contract = getENSRegistrarControllerContract();
@@ -225,17 +217,16 @@ const getENSExecutionDetails = ({
       break;
     }
     case ENSRegistrationStepType.SET_TEXT: {
-      if (!name || !recordKey || !recordValue)
+      if (!name || !records || !records?.text?.[0])
         throw new Error('Bad arguments for setText');
-      methodNames = ['setText'];
+      const record = records?.text[0];
       const namehash = hash(name);
-      args = [namehash, recordKey, recordValue];
+      args = [namehash, record.key, record.value];
       contract = getENSPublicResolverContract();
       break;
     }
     case ENSRegistrationStepType.MULTICALL: {
       if (!name || !records) throw new Error('Bad arguments for multicall');
-      methodNames = ['multicall'];
       contract = getENSPublicResolverContract();
       const data = setupMulticallRecords(name, records, contract) || [];
       args = [data];
@@ -243,7 +234,6 @@ const getENSExecutionDetails = ({
     }
     case ENSRegistrationStepType.SET_NAME:
       if (!name) throw new Error('Bad arguments for setName');
-      methodNames = ['setName'];
       args = [name];
       contract = getENSReverseRegistrarContract();
       break;
@@ -251,7 +241,6 @@ const getENSExecutionDetails = ({
   return {
     contract,
     methodArguments: args,
-    methodNames,
     value,
   };
 };
