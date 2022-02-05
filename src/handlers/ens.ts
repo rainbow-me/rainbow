@@ -175,6 +175,26 @@ export const estimateENSSetTextGasLimit = async (
   return gasLimit;
 };
 
+export const estimateENSSetNameGasLimit = async (
+  name: string,
+  accountAddress: string
+) => {
+  const { contract, methodArguments } = getENSExecutionDetails({
+    name,
+    type: ENSRegistrationStepType.SET_NAME,
+  });
+
+  const txPayload = { from: accountAddress };
+
+  const gasLimit = await estimateGasWithPadding(
+    txPayload,
+    contract?.estimateGas[ENSRegistrationStepType.SET_NAME],
+    methodArguments
+  );
+
+  return gasLimit;
+};
+
 export const estimateENSMulticallGasLimit = async (
   name: string,
   accountAddress: string,
