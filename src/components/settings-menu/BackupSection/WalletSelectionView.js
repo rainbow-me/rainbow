@@ -1,6 +1,5 @@
 import React, { useCallback } from 'react';
 import { ScrollView } from 'react-native';
-import styled from 'styled-components';
 import { useTheme } from '../../../context/ThemeContext';
 import { cloudPlatform } from '../../../utils/platform';
 import Divider from '../../Divider';
@@ -16,17 +15,18 @@ import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { useManageCloudBackups, useWallets } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
+import styled from '@rainbow-me/styled-components';
 import { fonts, padding } from '@rainbow-me/styles';
 import { abbreviations } from '@rainbow-me/utils';
 
 const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
   source: Caret,
   tintColor: colors.alpha(colors.blueGreyDark, 0.6),
-}))`
-  height: 18;
-  margin-top: 15;
-  width: 8;
-`;
+}))({
+  height: 18,
+  marginTop: 15,
+  width: 8,
+});
 
 const Address = styled(TruncatedAddress).attrs(({ theme: { colors } }) => ({
   color: colors.dark,
@@ -34,54 +34,57 @@ const Address = styled(TruncatedAddress).attrs(({ theme: { colors } }) => ({
   size: fonts.size.lmedium,
   truncationLength: 4,
   weight: 'regular',
-}))``;
+}))({});
 
 const AccountLabel = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.dark,
   size: fonts.size.lmedium,
   weight: 'regular',
-}))``;
+}))({});
 
 const CheckmarkIcon = styled(Icon).attrs({
   name: 'checkmarkCircled',
-})`
-  align-self: center;
-  margin-bottom: 1px;
-  margin-right: 7px;
-`;
+})({
+  alignSelf: 'center',
+  marginBottom: 1,
+  marginRight: 7,
+});
 
 const GreenCheck = styled(CheckmarkIcon).attrs(({ theme: { colors } }) => ({
   color: colors.green,
-}))`
-  box-shadow: 0px 4px 6px
-    ${({ theme: { colors, isDarkMode } }) =>
-      colors.alpha(isDarkMode ? colors.shadow : colors.green, 0.4)};
-`;
+}))({
+  shadowColor: ({ theme: { colors, isDarkMode } }) =>
+    colors.alpha(isDarkMode ? colors.shadow : colors.green, 0.4),
+  shadowOffset: { height: 4, width: 0 },
+  shadowRadius: 6,
+});
 
 const GreyCheck = styled(CheckmarkIcon).attrs(({ theme: { colors } }) => ({
   color: colors.blueGreyDark50,
-}))`
-  box-shadow: 0px 4px 6px
-    ${({ theme: { colors, isDarkMode } }) =>
-      colors.alpha(isDarkMode ? colors.shadow : colors.blueGreyDark50, 0.4)};
-`;
+}))({
+  shadowColor: ({ theme: { colors, isDarkMode } }) =>
+    colors.alpha(isDarkMode ? colors.shadow : colors.blueGreyDark50, 0.4),
+  shadowOffset: { height: 4, width: 0 },
+  shadowRadius: 6,
+});
 
 const WarningIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
   color: colors.orangeLight,
   name: 'warning',
-}))`
-  align-self: center;
-  box-shadow: 0px 4px 6px
-    ${({ theme: { colors, isDarkMode } }) =>
-      colors.alpha(isDarkMode ? colors.shadow : colors.orangeLight, 0.4)};
-  margin-right: 7px;
-`;
+}))({
+  alignSelf: 'center',
+  marginRight: 7,
+  shadowColor: ({ theme: { colors, isDarkMode } }) =>
+    colors.alpha(isDarkMode ? colors.shadow : colors.orangeLight, 0.4),
+  shadowOffset: { height: 4, width: 0 },
+  shadowRadius: 6,
+});
 
-const Footer = styled(Centered)`
-  flex: 1;
-  align-items: flex-end;
-  ${padding(19, 15, 30)};
-`;
+const Footer = styled(Centered)({
+  alignItems: 'flex-end',
+  flex: 1,
+  ...padding.object(19, 15, 30),
+});
 
 const WalletSelectionView = () => {
   const { navigate } = useNavigation();

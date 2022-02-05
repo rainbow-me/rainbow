@@ -1,7 +1,7 @@
+import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText } from '../coin-row';
@@ -15,6 +15,7 @@ import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
 } from '@rainbow-me/helpers/emojiHandler';
+import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth, getFontSize } from '@rainbow-me/styles';
 import { deviceUtils, profileUtils } from '@rainbow-me/utils';
 
@@ -55,15 +56,6 @@ const sx = StyleSheet.create({
     marginLeft: 19,
     textAlign: 'center',
   },
-  readOnlyText: {
-    fontFamily: fonts.family.SFProRounded,
-    fontWeight: fonts.weight.semibold,
-    letterSpacing: fonts.letterSpacing.roundedTight,
-    lineHeight: 22,
-    paddingHorizontal: 6.5,
-    paddingVertical: 1,
-    textAlign: 'center',
-  },
   rightContent: {
     flex: 0,
     flexDirection: 'row',
@@ -76,20 +68,25 @@ const gradientProps = {
   style: sx.gradient,
 };
 
-const StyledTruncatedText = styled(TruncatedText)`
-  ${sx.accountLabel}
-  ${fontWithWidth(sx.accountLabel.fontWeight)}
-`;
+const StyledTruncatedText = styled(TruncatedText)({
+  ...sx.accountLabel,
+  ...fontWithWidth(sx.accountLabel.fontWeight),
+});
 
-const StyledBottomRowText = styled(BottomRowText)`
-  ${sx.bottomRowText}
-  ${fontWithWidth(sx.bottomRowText.fontWeight)}
-`;
+const StyledBottomRowText = styled(BottomRowText)({
+  ...sx.bottomRowText,
+  ...fontWithWidth(sx.bottomRowText.fontWeight),
+});
 
-const ReadOnlyText = styled(Text)`
-  ${sx.readOnlyText}
-  ${fontWithWidth(sx.readOnlyText.fontWeight)}
-`;
+const ReadOnlyText = styled(Text).attrs({
+  align: 'center',
+  letterSpacing: 'roundedTight',
+  lineHeight: 'paragraphSmall',
+  weight: 'semibold',
+})({
+  paddingHorizontal: 6.5,
+  paddingVertical: 1,
+});
 
 const OptionsIcon = ({ onPress }) => {
   const { colors } = useTheme();
@@ -213,7 +210,7 @@ export default function AddressRow({
                 marginRight={editMode || isSelected ? -9 : 19}
               >
                 <ReadOnlyText color={colors.alpha(colors.blueGreyDark, 0.5)}>
-                  Watching
+                  {lang.t('wallet.change_wallet.watching')}
                 </ReadOnlyText>
               </LinearGradient>
             )}

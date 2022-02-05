@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled from '@rainbow-me/styled-components';
 
 export const HandleHeight = 5;
 
@@ -10,15 +10,15 @@ const defaultColor = (colors, showBlur) =>
       : colors.blueGreyDark30
     : colors.alpha(colors.blueGreyDark30, showBlur ? 0.7 : 1.0);
 
-const Handle = styled.View`
-  background-color: ${({ color, theme: { colors }, showBlur }) =>
-    color || defaultColor(colors, showBlur)};
-  border-radius: 3;
-  height: ${HandleHeight};
-  overflow: hidden;
-  width: 36;
-  z-index: 9;
-`;
+const Handle = styled.View({
+  backgroundColor: ({ color, theme: { colors }, showBlur }) =>
+    color || defaultColor(colors, showBlur),
+  borderRadius: 3,
+  height: HandleHeight,
+  overflow: 'hidden',
+  width: 36,
+  zIndex: 9,
+});
 
 export default function SheetHandle({ showBlur, ...props }) {
   const { isDarkMode } = useTheme();

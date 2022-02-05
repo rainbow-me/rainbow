@@ -1,17 +1,18 @@
 import React, { useEffect } from 'react';
 import { StatusBar, StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
-import styled from 'styled-components';
 import Spinner from '../Spinner';
 import { Centered, FlexItem } from '../layout';
+import styled from '@rainbow-me/styled-components';
 
-const Container = styled(FlexItem)`
-  background-color: ${({ theme: { colors } }) => colors.transparent};
-`;
-const StyledWebView = styled(WebView)`
-  background-color: ${({ theme: { colors } }) => colors.transparent};
-  margin-top: ${android ? 30 : 50};
-`;
+const Container = styled(FlexItem)({
+  backgroundColor: ({ theme: { colors } }) => colors.transparent,
+});
+
+const StyledWebView = styled(WebView)({
+  backgroundColor: ({ theme: { colors } }) => colors.transparent,
+  marginTop: android ? 30 : 50,
+});
 
 const formatColor = color => color.replace('#', '');
 

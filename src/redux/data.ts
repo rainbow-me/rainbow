@@ -611,34 +611,6 @@ export const fetchAssetPricesWithCoingecko = async (
 };
 
 /**
- * Fetches Coingecko IDs.
- *
- * @returns An object mapping addresses to Coingecko IDs.
- */
-export const fetchCoingeckoIds = async (): Promise<{
-  [address: string]: string;
-}> => {
-  let ids: typeof coingeckoIdsFallback;
-  try {
-    const request = await fetch(COINGECKO_IDS_ENDPOINT);
-    ids = await request.json();
-  } catch (e) {
-    ids = coingeckoIdsFallback;
-  }
-
-  const idsMap: {
-    [address: string]: string;
-  } = {};
-  ids.forEach(({ id, platforms: { ethereum: tokenAddress } }) => {
-    const address = tokenAddress && toLower(tokenAddress);
-    if (address && address.substr(0, 2) === '0x') {
-      idsMap[address] = id;
-    }
-  });
-  return idsMap;
-};
-
-/**
  * Loads generic asset prices from fallback data and updates state, in the
  * event that Zerion is unavailable.
  */

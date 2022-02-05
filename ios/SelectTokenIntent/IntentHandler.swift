@@ -6,9 +6,13 @@
 //
 
 import Intents
+import WidgetKit
 
 @available(iOS 14.0, *)
 class IntentHandler: INExtension, SelectTokenIntentHandling {
+  func defaultCurrency(for intent: SelectTokenIntent) -> Currency? {
+    return Currency(identifier: "default", display: "Default")
+  }
   
   func provideTokenOptionsCollection(for intent: SelectTokenIntent, searchTerm: String?, with completion: @escaping (INObjectCollection<Token>?, Error?) -> Void) {
     var topTokenItems = [Token]()
@@ -57,9 +61,15 @@ class IntentHandler: INExtension, SelectTokenIntentHandling {
   
   func provideCurrencyOptionsCollection(for intent: SelectTokenIntent, searchTerm: String?, with completion: @escaping (INObjectCollection<Currency>?, Error?) -> Void) {
     var currencies = [Currency]()
+    let defaultCurrency = CurrencyProvider.getCurrency()
+    var currencyDict = Constants.currencyDict
+    currencyDict["default"] = CurrencyDetails(identifier: "default", display: "Default", symbol: defaultCurrency.symbol, rank: 0)
     
-    currencies = Constants.currencyDict.values.map { currency in
-      Currency(identifier: currency.identifier, display: currency.display)
+    currencies = currencyDict.values.map { currency in
+      if (currency.rank == 0) {
+        return Currency(identifier: currency.identifier, display: currency.display, subtitle: defaultCurrency.display, image: nil)
+      }
+      return Currency(identifier: currency.identifier, display: currency.display)
     }
     
     if let searchTerm = searchTerm {
@@ -69,7 +79,7 @@ class IntentHandler: INExtension, SelectTokenIntentHandling {
     }
     
     currencies.sort(by: {
-      Constants.currencyDict[$0.identifier!]!.rank < Constants.currencyDict[$1.identifier!]!.rank
+      currencyDict[$0.identifier!]!.rank < currencyDict[$1.identifier!]!.rank
     })
     
     completion(INObjectCollection(items: currencies), nil)

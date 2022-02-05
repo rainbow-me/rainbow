@@ -1,5 +1,4 @@
 import React, { Fragment } from 'react';
-import styled from 'styled-components';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
@@ -16,6 +15,7 @@ import {
   isValidDomainFormat,
 } from '@rainbow-me/helpers/validators';
 import { useDimensions } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { margin } from '@rainbow-me/styles';
 
 const ContactAddress = styled(TruncatedAddress).attrs(
@@ -28,9 +28,9 @@ const ContactAddress = styled(TruncatedAddress).attrs(
     truncationLength: 4,
     weight: lite ? 'regular' : 'medium',
   })
-)`
-  width: 100%;
-`;
+)({
+  width: '100%',
+});
 
 const ContactENS = styled(TruncatedENS).attrs(({ theme: { colors } }) => ({
   align: 'left',
@@ -39,17 +39,19 @@ const ContactENS = styled(TruncatedENS).attrs(({ theme: { colors } }) => ({
   size: 'smedium',
   truncationLength: 18,
   weight: 'medium',
-}))`
-  width: 100%;
-`;
+}))({
+  width: '100%',
+});
 
 const ContactName = styled(TruncatedText).attrs(({ lite }) => ({
   size: 'lmedium',
   weight: lite ? 'regular' : 'medium',
-}))`
-  width: ${({ deviceWidth }) => deviceWidth - 90};
-  height: 22;
-`;
+}))({
+  height: 22,
+  width: ({ deviceWidth }) => deviceWidth - 90,
+});
+
+const css = margin.object(6, 19, 13);
 
 const ContactRow = ({ address, color, nickname, ...props }, ref) => {
   const { width: deviceWidth } = useDimensions();
@@ -103,9 +105,9 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
       onPress={handlePress}
     >
       <RowWithMargins
-        css={margin(6, 19, 13)}
         height={40}
         margin={10}
+        style={css}
         testID={`${testID}-contact-row-${
           removeFirstEmojiFromString(nickname) || ''
         }`}
