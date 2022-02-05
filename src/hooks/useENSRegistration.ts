@@ -1,7 +1,10 @@
 import { useCallback, useMemo } from 'react';
 import { useQuery } from 'react-query';
 import { useAccountSettings } from '.';
-import { fetchRegistrationDate } from '@rainbow-me/handlers/ens';
+import {
+  estimateENSRegistrationGasLimit,
+  fetchRegistrationDate,
+} from '@rainbow-me/handlers/ens';
 import {
   getAvailable,
   getNameExpires,
@@ -9,10 +12,14 @@ import {
 } from '@rainbow-me/helpers/ens';
 import { Network } from '@rainbow-me/helpers/networkTypes';
 import {
+  add,
   convertAmountAndPriceToNativeDisplay,
   divide,
   fromWei,
+  multiply,
 } from '@rainbow-me/helpers/utilities';
+import { gweiToWei } from '@rainbow-me/parsers';
+import { getEIP1559GasParams } from '@rainbow-me/redux/gas';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 const secsInYear = 31536000;
@@ -59,6 +66,51 @@ const formatRentPrice = (
   };
 };
 
+const formatNetworkFee = (
+  gasLimit: string,
+  maxBaseFee: string,
+  maxPriorityFee: string,
+  nativeCurrency: any
+) => {
+  const networkFeeInWei = multiply(
+    gweiToWei(add(maxBaseFee, maxPriorityFee)),
+    gasLimit
+  );
+  const networkFeeInEth = fromWei(networkFeeInWei);
+  const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
+    Network.mainnet
+  );
+  const { amount, display } = convertAmountAndPriceToNativeDisplay(
+    networkFeeInEth,
+    nativeAssetPrice,
+    nativeCurrency
+  );
+
+  return {
+    amount,
+    display,
+    wei: networkFeeInWei,
+  };
+};
+
+const formatTotalCost = (wei: string, nativeCurrency: any) => {
+  const networkFeeInEth = fromWei(wei);
+  const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
+    Network.mainnet
+  );
+  const { amount, display } = convertAmountAndPriceToNativeDisplay(
+    networkFeeInEth,
+    nativeAssetPrice,
+    nativeCurrency
+  );
+
+  return {
+    amount,
+    display,
+    wei,
+  };
+};
+
 const formatTime = (timestamp: string) => {
   const date = new Date(Number(timestamp) * 1000);
   return `${date.toLocaleDateString()}`;
@@ -71,7 +123,7 @@ export default function useENSRegistration({
   duration: number;
   name: string;
 }) {
-  const { nativeCurrency } = useAccountSettings();
+  const { nativeCurrency, accountAddress } = useAccountSettings();
   const isValidLength = useMemo(() => name.length > 2, [name.length]);
 
   const getRegistrationValues = useCallback(async () => {
@@ -84,15 +136,34 @@ export default function useENSRegistration({
         duration,
         nativeCurrency
       );
-      // const gasLimit = await estimateENSRegistrationGasLimit(
-      //   name,
-      //   accountAddress,
-      //   duration * secsInYear,
-      //   rentPrice.toString()
-      // );
+      const gasLimit = await estimateENSRegistrationGasLimit(
+        name,
+        accountAddress,
+        duration * secsInYear,
+        rentPrice.toString()
+      );
+
+      const {
+        gasFeeParamsBySpeed,
+        currentBaseFee,
+      } = await getEIP1559GasParams();
+
+      const estimatedNetworkFee = formatNetworkFee(
+        gasLimit,
+        currentBaseFee.gwei,
+        gasFeeParamsBySpeed.normal.maxPriorityFeePerGas.gwei,
+        nativeCurrency
+      );
+
+      const weiEstimatedTotalCost = add(
+        estimatedNetworkFee.wei,
+        formattedRentPrice.wei
+      );
+      const totalCost = formatTotalCost(weiEstimatedTotalCost, nativeCurrency);
 
       return {
         available: isAvailable,
+        estimatedTotalCost: totalCost,
         expirationDate: null,
         registrationDate: null,
         rentPrice: formattedRentPrice,
@@ -111,7 +182,7 @@ export default function useENSRegistration({
         rentPrice: null,
       };
     }
-  }, [duration, nativeCurrency, name]);
+  }, [name, duration, nativeCurrency, accountAddress]);
 
   const { data: registrationData, status } = useQuery(
     isValidLength && ['registration', name],

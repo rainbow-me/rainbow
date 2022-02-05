@@ -35,7 +35,13 @@ export default function RegisterEnsSheet() {
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounceString(searchQuery);
 
-  const { available, rentPrice, expirationDate, status } = useENSRegistration({
+  const {
+    available,
+    rentPrice,
+    expirationDate,
+    status,
+    estimatedTotalCost,
+  } = useENSRegistration({
     duration: 1,
     name: debouncedSearchQuery,
   });
@@ -110,6 +116,16 @@ export default function RegisterEnsSheet() {
                     type="price"
                   />
                 )}
+              </Inline>
+            </Inset>
+          )}
+          {isSuccess && available && (
+            <Inset horizontal="30px">
+              <Inline alignHorizontal="justify" wrap={false}>
+                <Text color="secondary40" size="18px" weight="bold">
+                  Estimated total cost of {estimatedTotalCost?.display} with
+                  current network fees
+                </Text>
               </Inline>
             </Inset>
           )}
