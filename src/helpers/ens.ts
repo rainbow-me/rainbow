@@ -17,7 +17,7 @@ import {
   ensReverseRegistrarAddress,
 } from '@rainbow-me/references';
 
-export enum ENSRegistrationStepType {
+export enum ENSRegistrationTransactionType {
   COMMIT = 'commit',
   REGISTER_WITH_CONFIG = 'registerWithConfig',
   SET_TEXT = 'setText',
@@ -179,7 +179,7 @@ const getENSExecutionDetails = ({
   records,
 }: {
   name: string;
-  type: ENSRegistrationStepType;
+  type: ENSRegistrationTransactionType;
   accountAddress?: string;
   rentPrice?: string;
   duration?: number;
@@ -194,7 +194,7 @@ const getENSExecutionDetails = ({
   let contract: Contract | null = null;
 
   switch (type) {
-    case ENSRegistrationStepType.COMMIT: {
+    case ENSRegistrationTransactionType.COMMIT: {
       if (!name || !accountAddress) throw new Error('Bad arguments for commit');
       const salt = generateSalt();
       const registrarController = getENSRegistrarControllerContract();
@@ -207,7 +207,7 @@ const getENSExecutionDetails = ({
       contract = getENSRegistrarControllerContract();
       break;
     }
-    case ENSRegistrationStepType.REGISTER_WITH_CONFIG: {
+    case ENSRegistrationTransactionType.REGISTER_WITH_CONFIG: {
       if (!name || !accountAddress || !duration || !rentPrice)
         throw new Error('Bad arguments for registerWithConfig');
       const salt = generateSalt();
@@ -216,7 +216,7 @@ const getENSExecutionDetails = ({
       value = toHex(addBuffer(rentPrice, 1.1));
       break;
     }
-    case ENSRegistrationStepType.SET_TEXT: {
+    case ENSRegistrationTransactionType.SET_TEXT: {
       if (!name || !records || !records?.text?.[0])
         throw new Error('Bad arguments for setText');
       const record = records?.text[0];
@@ -225,14 +225,14 @@ const getENSExecutionDetails = ({
       contract = getENSPublicResolverContract();
       break;
     }
-    case ENSRegistrationStepType.MULTICALL: {
+    case ENSRegistrationTransactionType.MULTICALL: {
       if (!name || !records) throw new Error('Bad arguments for multicall');
       contract = getENSPublicResolverContract();
       const data = setupMulticallRecords(name, records, contract) || [];
       args = [data];
       break;
     }
-    case ENSRegistrationStepType.SET_NAME:
+    case ENSRegistrationTransactionType.SET_NAME:
       if (!name) throw new Error('Bad arguments for setName');
       args = [name];
       contract = getENSReverseRegistrarContract();

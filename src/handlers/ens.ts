@@ -8,7 +8,7 @@ import {
 import { estimateGasWithPadding } from './web3';
 import {
   ENSRegistrationRecords,
-  ENSRegistrationStepType,
+  ENSRegistrationTransactionType,
   getENSExecutionDetails,
 } from '@rainbow-me/helpers/ens';
 import { profileUtils } from '@rainbow-me/utils';
@@ -99,7 +99,7 @@ export const estimateENSRegisterGasLimit = async (
     duration,
     name,
     rentPrice,
-    type: ENSRegistrationStepType.REGISTER_WITH_CONFIG,
+    type: ENSRegistrationTransactionType.REGISTER_WITH_CONFIG,
   });
 
   const txPayload = {
@@ -109,7 +109,7 @@ export const estimateENSRegisterGasLimit = async (
 
   const gasLimit = await estimateGasWithPadding(
     txPayload,
-    contract?.estimateGas[ENSRegistrationStepType.REGISTER_WITH_CONFIG],
+    contract?.estimateGas[ENSRegistrationTransactionType.REGISTER_WITH_CONFIG],
     methodArguments
   );
   return gasLimit;
@@ -126,7 +126,7 @@ export const estimateENSCommitGasLimit = async (
     duration,
     name,
     rentPrice,
-    type: ENSRegistrationStepType.COMMIT,
+    type: ENSRegistrationTransactionType.COMMIT,
   });
 
   const txPayload = {
@@ -135,7 +135,7 @@ export const estimateENSCommitGasLimit = async (
 
   const gasLimit = await estimateGasWithPadding(
     txPayload,
-    contract?.estimateGas[ENSRegistrationStepType.COMMIT],
+    contract?.estimateGas[ENSRegistrationTransactionType.COMMIT],
     methodArguments
   );
 
@@ -161,14 +161,14 @@ export const estimateENSSetTextGasLimit = async (
         },
       ],
     },
-    type: ENSRegistrationStepType.SET_TEXT,
+    type: ENSRegistrationTransactionType.SET_TEXT,
   });
 
   const txPayload = { from: accountAddress };
 
   const gasLimit = await estimateGasWithPadding(
     txPayload,
-    contract?.estimateGas[ENSRegistrationStepType.SET_TEXT],
+    contract?.estimateGas[ENSRegistrationTransactionType.SET_TEXT],
     methodArguments
   );
 
@@ -181,14 +181,14 @@ export const estimateENSSetNameGasLimit = async (
 ) => {
   const { contract, methodArguments } = getENSExecutionDetails({
     name,
-    type: ENSRegistrationStepType.SET_NAME,
+    type: ENSRegistrationTransactionType.SET_NAME,
   });
 
   const txPayload = { from: accountAddress };
 
   const gasLimit = await estimateGasWithPadding(
     txPayload,
-    contract?.estimateGas[ENSRegistrationStepType.SET_NAME],
+    contract?.estimateGas[ENSRegistrationTransactionType.SET_NAME],
     methodArguments
   );
 
@@ -203,14 +203,14 @@ export const estimateENSMulticallGasLimit = async (
   const { contract, methodArguments } = getENSExecutionDetails({
     name,
     records,
-    type: ENSRegistrationStepType.MULTICALL,
+    type: ENSRegistrationTransactionType.MULTICALL,
   });
 
   const txPayload = { from: accountAddress };
 
   const gasLimit = await estimateGasWithPadding(
     txPayload,
-    contract?.estimateGas[ENSRegistrationStepType.MULTICALL],
+    contract?.estimateGas[ENSRegistrationTransactionType.MULTICALL],
     methodArguments
   );
 
