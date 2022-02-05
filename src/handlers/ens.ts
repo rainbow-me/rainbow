@@ -12,8 +12,6 @@ import {
 } from '@rainbow-me/helpers/ens';
 import { profileUtils } from '@rainbow-me/utils';
 
-const secsInYear = 31536000;
-
 export const fetchSuggestions = async (
   recipient: any,
   setSuggestions: any,
@@ -95,25 +93,25 @@ export const estimateENSRegisterGasLimit = async (
   duration: number,
   rentPrice: string
 ) => {
-  const { contract, methodArguments, value } = getENSExecutionDetails(
-    name,
-    ENSRegistrationStepType.REGISTER_WITH_CONFIG,
+  const { contract, methodArguments, value } = getENSExecutionDetails({
     accountAddress,
+    duration,
+    name,
     rentPrice,
-    duration * secsInYear
-  );
+    type: ENSRegistrationStepType.REGISTER_WITH_CONFIG,
+  });
 
-  const params = {
+  const txPayload = {
     from: accountAddress,
     ...(value ? { value } : {}),
   };
 
-  const registerGasLimit = await estimateGasWithPadding(
-    params,
+  const gasLimit = await estimateGasWithPadding(
+    txPayload,
     contract?.estimateGas['register'],
     methodArguments
   );
-  return registerGasLimit;
+  return gasLimit;
 };
 
 export const estimateENSCommitGasLimit = async (
@@ -122,30 +120,25 @@ export const estimateENSCommitGasLimit = async (
   duration: number,
   rentPrice: string
 ) => {
-  const {
-    contract,
-    methodArguments,
-    value: commitValue,
-  } = getENSExecutionDetails(
-    name,
-    ENSRegistrationStepType.COMMIT,
+  const { contract, methodArguments } = getENSExecutionDetails({
     accountAddress,
+    duration,
+    name,
     rentPrice,
-    duration * secsInYear
-  );
+    type: ENSRegistrationStepType.COMMIT,
+  });
 
-  const commitParams = {
+  const txPayload = {
     from: accountAddress,
-    ...(commitValue ? { value: commitValue } : {}),
   };
 
-  const commitGasLimit = await estimateGasWithPadding(
-    commitParams,
+  const gasLimit = await estimateGasWithPadding(
+    txPayload,
     contract?.estimateGas['commit'],
     methodArguments
   );
 
-  return commitGasLimit;
+  return gasLimit;
 };
 
 export const estimateENSSetNameGasLimit = async (
@@ -153,40 +146,37 @@ export const estimateENSSetNameGasLimit = async (
   recordKey: string,
   recordValue: string
 ) => {
-  const { contract, methodArguments } = getENSExecutionDetails(
+  const { contract, methodArguments } = getENSExecutionDetails({
     name,
-    ENSRegistrationStepType.SET_NAME,
-    undefined,
-    undefined,
-    undefined,
     recordKey,
-    recordValue
-  );
+    recordValue,
+    type: ENSRegistrationStepType.SET_NAME,
+  });
 
-  const commitParams = {};
+  const txPayload = {};
 
-  const commitGasLimit = await estimateGasWithPadding(
-    commitParams,
+  const gasLimit = await estimateGasWithPadding(
+    txPayload,
     contract?.estimateGas['setName'],
     methodArguments
   );
 
-  return commitGasLimit;
+  return gasLimit;
 };
 
 export const estimateENSMulticallGasLimit = async (name: string) => {
-  const { contract, methodArguments } = getENSExecutionDetails(
+  const { contract, methodArguments } = getENSExecutionDetails({
     name,
-    ENSRegistrationStepType.MULTICALL
-  );
+    type: ENSRegistrationStepType.MULTICALL,
+  });
 
-  const commitParams = {};
+  const txPayload = {};
 
-  const commitGasLimit = await estimateGasWithPadding(
-    commitParams,
+  const gasLimit = await estimateGasWithPadding(
+    txPayload,
     contract?.estimateGas['multicall'],
     methodArguments
   );
 
-  return commitGasLimit;
+  return gasLimit;
 };

@@ -1,8 +1,8 @@
 import { formatsByName } from '@ensdomains/address-encoder';
 import { hash } from '@ensdomains/eth-ens-namehash';
-import { Contract } from 'ethers';
+import { BigNumberish, Contract } from 'ethers';
 import { keccak_256 as sha3 } from 'js-sha3';
-import { multiply } from './utilities';
+import { addBuffer } from './utilities';
 import { addHexPrefix, toHex, web3Provider } from '@rainbow-me/handlers/web3';
 import {
   ENSBaseRegistrarImplementationABI,
@@ -23,6 +23,13 @@ export enum ENSRegistrationStepType {
   SET_TEXT,
   SET_NAME,
   MULTICALL,
+}
+
+interface ENSRegistrationRecords {
+  coinAddress: { key: string; address: string }[] | null;
+  contentHash: string | null;
+  ensAssociatedAddress: string | null;
+  text: { key: string; value: string }[] | null;
 }
 
 const getENSRegistryContract = () => {
@@ -79,18 +86,13 @@ const getRentPrice = async (name: string, duration: number): Promise<string> =>
 
 const setupMulticallRecords = (
   name: string,
-  records: {
-    coinAddress: { key: string; address: string }[] | null;
-    contentHash: string | null;
-    ensAssociatedAddress: string | null;
-    text: { key: string; value: string }[] | null;
-  },
+  records: ENSRegistrationRecords,
   resolverInstance: Contract
 ): string[] => {
   const resolver = resolverInstance.interface;
   const namehash = hash(name);
 
-  const calls = [];
+  const data = [];
 
   // ens associated address
   const ensAssociatedRecord = records.ensAssociatedAddress;
@@ -99,7 +101,7 @@ const setupMulticallRecords = (
     typeof ensAssociatedRecord === 'string' &&
     parseInt(ensAssociatedRecord, 16) !== 0
   ) {
-    calls.push(
+    data.push(
       resolver.encodeFunctionData('setAddr(bytes32,address)', [
         namehash,
         ensAssociatedRecord,
@@ -113,19 +115,18 @@ const setupMulticallRecords = (
     typeof contentHashAssociatedRecord === 'string' &&
     parseInt(contentHashAssociatedRecord, 16) !== 0
   ) {
-    calls.push(
+    data.push(
       resolver.encodeFunctionData('setContenthash', [
         namehash,
-        ensAssociatedRecord,
+        contentHashAssociatedRecord,
       ])
     );
   }
   // coin addresses
   const coinAddressesAssociatedRecord = records.coinAddress;
   if (coinAddressesAssociatedRecord) {
-    calls.push(
+    data.push(
       coinAddressesAssociatedRecord.map(coinRecord => {
-        // if (parseInt(coinRecord.address, 16) === 0) return undefined;
         const { decoder, coinType } = formatsByName[coinRecord.key];
         let addressAsBytes;
         if (!coinRecord.address || coinRecord.address === '') {
@@ -144,9 +145,8 @@ const setupMulticallRecords = (
   // text addresses
   const textAssociatedRecord = records.text;
   if (textAssociatedRecord) {
-    calls.push(
+    data.push(
       textAssociatedRecord.map(textRecord => {
-        // if (textRecord.value.length === 0) return undefined;
         return resolver.encodeFunctionData('setText', [
           namehash,
           textRecord.key,
@@ -156,65 +156,77 @@ const setupMulticallRecords = (
     );
   }
   // flatten textrecords and addresses and remove undefined
-  return calls.flat().filter(bytes => Boolean(bytes));
+  return data.flat().filter(Boolean);
 };
 
-const getENSExecutionDetails = (
-  name: string,
-  ensRegistrationStepType: ENSRegistrationStepType,
-  accountAddress?: string,
-  rentPrice?: string,
-  duration?: number,
-  recordKey?: string,
-  recordValue?: string
-): {
-  methodArguments: (string | string[] | number | { value: string })[] | null;
+const generateSalt = () => {
+  const random = new Uint8Array(32);
+  crypto.getRandomValues(random);
+  const salt =
+    '0x' +
+    Array.from(random)
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+  return salt;
+};
+
+const getENSExecutionDetails = ({
+  name,
+  type,
+  accountAddress,
+  rentPrice,
+  duration,
+  recordKey,
+  recordValue,
+  records,
+}: {
+  name: string;
+  type: ENSRegistrationStepType;
+  accountAddress?: string;
+  rentPrice?: string;
+  duration?: number;
+  recordKey?: string;
+  recordValue?: string;
+  records?: ENSRegistrationRecords;
+}): {
+  methodArguments: (string | string[] | number)[] | null;
   methodNames: string[] | null;
-  value: string | null;
+  value: BigNumberish | null;
   contract: Contract | null;
 } => {
   let methodNames: string[] | null = null;
-  let args: (string | string[] | number | { value: string })[] | null = null;
+  let args: (string | string[] | number)[] | null = null;
   let value: string | null = null;
   let contract: Contract | null = null;
 
-  switch (ensRegistrationStepType) {
+  switch (type) {
     case ENSRegistrationStepType.COMMIT: {
-      const random = new Uint8Array(32);
-      crypto.getRandomValues(random);
-      const salt =
-        '0x' +
-        Array.from(random)
-          .map(b => b.toString(16).padStart(2, '0'))
-          .join('');
-
+      if (!name || !accountAddress) throw new Error('Bad arguments for commit');
+      methodNames = ['commit'];
+      const salt = generateSalt();
       const registrarController = getENSRegistrarControllerContract();
       const commitment = registrarController.makeCommitment(
         name,
         accountAddress,
         salt
       );
-      methodNames = ['commit'];
       args = [commitment];
       contract = getENSRegistrarControllerContract();
       break;
     }
     case ENSRegistrationStepType.REGISTER_WITH_CONFIG: {
-      if (!name || !accountAddress || !duration || !rentPrice) break;
-      const random = new Uint8Array(32);
-      crypto.getRandomValues(random);
-      const salt =
-        '0x' +
-        Array.from(random)
-          .map(b => b.toString(16).padStart(2, '0'))
-          .join('');
+      if (!name || !accountAddress || !duration || !rentPrice)
+        throw new Error('Bad arguments for registerWithConfig');
       methodNames = ['register'];
+      const salt = generateSalt();
       args = [name, accountAddress, duration, salt];
-      value = toHex(Number(multiply(rentPrice, 1.1)).toFixed(0));
       contract = getENSRegistrarControllerContract();
+      value = toHex(addBuffer(rentPrice, 1.1));
       break;
     }
     case ENSRegistrationStepType.SET_TEXT: {
+      if (!name || !recordKey || !recordValue)
+        throw new Error('Bad arguments for setText');
       methodNames = ['setText'];
       const namehash = hash(name);
       args = [namehash, recordKey, recordValue];
@@ -222,23 +234,15 @@ const getENSExecutionDetails = (
       break;
     }
     case ENSRegistrationStepType.MULTICALL: {
+      if (!name || !records) throw new Error('Bad arguments for multicall');
       methodNames = ['multicall'];
       contract = getENSPublicResolverContract();
-      const data =
-        setupMulticallRecords(
-          name,
-          {
-            coinAddress: null,
-            contentHash: null,
-            ensAssociatedAddress: null,
-            text: [{ key: 'name', value: 'blabla' }],
-          },
-          contract
-        ) || [];
+      const data = setupMulticallRecords(name, records, contract) || [];
       args = [data];
       break;
     }
     case ENSRegistrationStepType.SET_NAME:
+      if (!name) throw new Error('Bad arguments for setName');
       methodNames = ['setName'];
       args = [name];
       contract = getENSReverseRegistrarContract();
