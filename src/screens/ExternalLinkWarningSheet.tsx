@@ -78,6 +78,7 @@ const ExternalLinkWarningSheet = () => {
               align="center"
               lineHeight="big"
               numberOfLines={1}
+              // @ts-expect-error JavaScript component
               size="big"
               weight="heavy"
             >

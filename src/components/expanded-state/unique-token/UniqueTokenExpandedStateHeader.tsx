@@ -3,7 +3,6 @@ import React, { useCallback, useMemo } from 'react';
 import { Linking, View } from 'react-native';
 // @ts-expect-error Missing types
 import { ContextMenuButton } from 'react-native-ios-context-menu';
-import styled from 'styled-components';
 import URL from 'url-parse';
 import { buildUniqueTokenName } from '../../../helpers/assets';
 import { ButtonPressAnimation } from '../../animations';
@@ -29,6 +28,7 @@ import {
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import {
   buildRainbowUrl,
@@ -127,19 +127,20 @@ const FamilyActions = {
 
 const paddingHorizontal = 24;
 
-const FamilyImageWrapper = styled(View)`
-  height: 20;
-  shadow-color: ${({ theme: { colors } }) => colors.shadowBlack};
-  shadow-offset: 0 3px;
-  shadow-opacity: 0.15;
-  shadow-radius: 4.5px;
-  width: 20;
-`;
+const FamilyImageWrapper = styled(View)({
+  height: 20,
+  // @ts-expect-error missing theme types
+  shadowColor: ({ theme: { colors } }) => colors.shadowBlack,
+  shadowOffset: { height: 3, width: 0 },
+  shadowOpacity: 0.15,
+  shadowRadius: 4.5,
+  width: 20,
+});
 
-const FamilyImage = styled(ImgixImage)`
-  ${position.cover};
-  border-radius: 10;
-`;
+const FamilyImage = styled(ImgixImage)({
+  ...position.coverAsObject,
+  borderRadius: 10,
+});
 
 interface UniqueTokenExpandedStateHeaderProps {
   asset: UniqueAsset;

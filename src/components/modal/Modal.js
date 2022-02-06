@@ -1,34 +1,35 @@
 import React from 'react';
 import { StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
-import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import TouchableBackdrop from '../TouchableBackdrop';
 import { Centered, Column } from '../layout';
 import { useDimensions } from '@rainbow-me/hooks';
-import { padding, position } from '@rainbow-me/styles';
+import styled from '@rainbow-me/styled-components';
+import { position } from '@rainbow-me/styles';
 
 const Container = styled(Centered).attrs(({ fixedToTop }) => ({
   direction: 'column',
   justify: fixedToTop ? 'start' : 'center',
-}))`
-  ${({ containerPadding }) => padding(containerPadding)};
-  ${position.size('100%')};
-  shadow-color: ${({ shadowColor }) => shadowColor};
-  shadow-offset: 0px 10px;
-  shadow-opacity: 0.5;
-  shadow-radius: 25;
-`;
+}))({
+  padding: ({ containerPadding }) => containerPadding,
+  ...position.sizeAsObject('100%'),
+  shadowColor: ({ shadowColor }) => shadowColor,
 
-const Content = styled(Column).attrs({ shrink: 0 })`
-  border-radius: ${({ radius }) => radius};
-  height: ${({ height }) => height};
-  margin-top: ${({ fixedToTop }) => (fixedToTop ? 91 : 0)};
-  overflow: hidden;
-  padding-top: ${({ fullScreenOnAndroid }) =>
-    fullScreenOnAndroid && android ? getStatusBarHeight() : 0};
-  width: 100%;
-`;
+  shadowOffset: { height: 10, width: 0 },
+  shadowOpacity: 0.5,
+  shadowRadius: 25,
+});
+
+const Content = styled(Column).attrs({ shrink: 0 })({
+  borderRadius: ({ radius }) => radius,
+  height: ({ height }) => height,
+  marginTop: ({ fixedToTop }) => (fixedToTop ? 91 : 0),
+  overflow: 'hidden',
+  paddingTop: ({ fullScreenOnAndroid }) =>
+    fullScreenOnAndroid && android ? getStatusBarHeight() : 0,
+  width: '100%',
+});
 
 export default function Modal({
   containerPadding = 15,

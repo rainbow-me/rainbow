@@ -41,8 +41,8 @@ const L2Disclaimer = ({
       >
         <Row
           borderRadius={16}
-          css={padding(android ? 6 : 10, 10, android ? 6 : 10, 10)}
           marginHorizontal={marginHorizontal}
+          style={padding.object(android ? 6 : 10, 10, android ? 6 : 10, 10)}
         >
           <RadialGradient
             {...radialGradientProps}

@@ -1,5 +1,6 @@
 import { BlurView } from '@react-native-community/blur';
 import c from 'chroma-js';
+import lang from 'i18n-js';
 import React, {
   Fragment,
   ReactNode,
@@ -14,7 +15,6 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
-import styled from 'styled-components';
 import URL from 'url-parse';
 import useWallets from '../../hooks/useWallets';
 import { lightModeThemeColors } from '../../styles/colors';
@@ -65,6 +65,7 @@ import {
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation, useUntrustedUrlOpener } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import { convertAmountToNativeDisplay } from '@rainbow-me/utilities';
 import {
@@ -77,13 +78,13 @@ import {
 const BackgroundBlur = styled(BlurView).attrs({
   blurAmount: 100,
   blurType: 'light',
-})`
-  ${position.cover};
-`;
+})({
+  ...position.coverAsObject,
+});
 
-const BackgroundImage = styled(View)`
-  ${position.cover};
-`;
+const BackgroundImage = styled(View)({
+  ...position.coverAsObject,
+});
 
 interface BlurWrapperProps {
   height: number;
@@ -92,19 +93,20 @@ interface BlurWrapperProps {
 
 const BlurWrapper = styled(View).attrs({
   shouldRasterizeIOS: true,
-})<BlurWrapperProps>`
-  background-color: ${({ theme: { colors } }) => colors.trueBlack};
-  height: ${({ height }) => height};
-  left: 0;
-  overflow: hidden;
-  position: absolute;
-  width: ${({ width }) => width};
-  ${android && 'border-top-left-radius: 30; border-top-right-radius: 30;'}
-`;
+})({
+  // @ts-expect-error missing theme types
+  backgroundColor: ({ theme: { colors } }) => colors.trueBlack,
+  height: ({ height }: BlurWrapperProps) => height,
+  left: 0,
+  overflow: 'hidden',
+  position: 'absolute',
+  width: ({ width }: BlurWrapperProps) => width,
+  ...(android ? { borderTopLeftRadius: 30, borderTopRightRadius: 30 } : {}),
+});
 
-const Spacer = styled(View)`
-  height: ${safeAreaInsetValues.bottom + 40};
-`;
+const Spacer = styled(View)({
+  height: safeAreaInsetValues.bottom + 20,
+});
 
 const TextButton = ({
   onPress,
@@ -372,10 +374,16 @@ const UniqueTokenExpandedState = ({
                   <Stack space="42px">
                     <Inline alignHorizontal="justify" wrap={false}>
                       <TextButton onPress={handlePressShowcase}>
-                        {isShowcaseAsset ? '􀫝 In Showcase' : '􀐇 Showcase'}
+                        {isShowcaseAsset
+                          ? `􀁏 ${lang.t(
+                              'expanded_state.unique_expanded.in_showcase'
+                            )}`
+                          : `􀁍 ${lang.t(
+                              'expanded_state.unique_expanded.showcase'
+                            )}`}
                       </TextButton>
                       <TextButton align="right" onPress={handlePressShare}>
-                        􀈂 Share
+                        􀈂 {lang.t('button.share')}
                       </TextButton>
                     </Inline>
                     <UniqueTokenExpandedStateHeader asset={asset} />
@@ -532,9 +540,13 @@ const UniqueTokenExpandedState = ({
       </SlackSheet>
       <ToastPositionContainer>
         <ToggleStateToast
-          addCopy="Added to showcase"
+          addCopy={lang.t(
+            'expanded_state.unique_expanded.toast_added_to_showcase'
+          )}
           isAdded={isShowcaseAsset}
-          removeCopy="Removed from showcase"
+          removeCopy={lang.t(
+            'expanded_state.unique_expanded.toast_removed_from_showcase'
+          )}
         />
       </ToastPositionContainer>
     </Fragment>

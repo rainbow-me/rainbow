@@ -1,48 +1,47 @@
 import React, { useState } from 'react';
 import Animated, { SpringUtils } from 'react-native-reanimated';
 import { useSpringTransition } from 'react-native-redash/src/v1';
-import styled from 'styled-components';
 import { magicMemo } from '../../utils';
 import { interpolate } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { useTimeout } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { borders, position } from '@rainbow-me/styles';
 
-const Container = styled(Animated.View)`
-  ${position.centered};
-  height: ${({ size }) => size};
-  position: absolute;
-  right: ${({ offset }) => offset * -1};
-  top: ${({ offset }) => offset * -1};
-  z-index: 1;
-`;
+const Container = styled(Animated.View)({
+  ...position.centeredAsObject,
+  height: ({ size }) => size,
+  position: 'absolute',
+  right: ({ offset }) => offset * -1,
+  top: ({ offset }) => offset * -1,
+  zIndex: 1,
+});
 
-const Circle = styled(Centered)`
-  ${({ offset, size, valueLength }) =>
-    valueLength === 1
-      ? `
-        ${borders.buildCircle(size)};
-        padding-left: 1;
-      `
-      : `
-        padding-left: 5.5;
-        padding-right: 5.5;
-        transform: translateX(${Math.floor(offset / 2)}px);
-      `}
-  background-color: ${({ theme: { colors } }) => colors.appleBlue};
-  border-radius: 15;
-  padding-bottom: 3;
-  padding-top: 2;
-`;
+const Circle = styled(Centered)(
+  ({ offset, size, valueLength, theme: { colors } }) => ({
+    backgroundColor: colors.appleBlue,
+    borderRadius: 15,
+    paddingBottom: 3,
+    paddingTop: 2,
+    ...(valueLength === 1
+      ? {
+          ...borders.buildCircleAsObject(size),
+          paddingLeft: 1,
+        }
+      : {
+          paddingLeft: 5.5,
+          paddingRight: 5.5,
+          transform: [{ translateX: Math.floor(offset / 2) }],
+        }),
+  })
+);
 
 const NumberText = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.whiteLabel,
   size: 'smaller',
   weight: 'bold',
-}))`
-  ${android && `lineHeight: 17`};
-`;
+}))(android ? { lineHeight: 17 } : {});
 
 const BadgeSpringConfig = SpringUtils.makeConfigFromOrigamiTensionAndFriction({
   ...SpringUtils.makeDefaultConfig(),
