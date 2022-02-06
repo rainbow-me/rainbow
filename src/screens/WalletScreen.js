@@ -5,7 +5,6 @@ import { StatusBar } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useValue } from 'react-native-redash/src/v1';
 import { useDispatch, useSelector } from 'react-redux';
-import styled from 'styled-components';
 import { OpacityToggler } from '../components/animations';
 import { AssetList } from '../components/asset-list';
 import { ExchangeFab, FabWrapper, SendFab } from '../components/fab';
@@ -35,21 +34,22 @@ import {
   emitChartsRequest,
   emitPortfolioRequest,
 } from '@rainbow-me/redux/explorer';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 
 const HeaderOpacityToggler = styled(OpacityToggler).attrs(({ isVisible }) => ({
   endingOpacity: 0.4,
   pointerEvents: isVisible ? 'none' : 'auto',
-}))`
-  padding-top: 5;
-  z-index: 1;
-  elevation: 1;
-`;
+}))({
+  elevation: 1,
+  paddingTop: 5,
+  zIndex: 1,
+});
 
-const WalletPage = styled(Page)`
-  ${position.size('100%')};
-  flex: 1;
-`;
+const WalletPage = styled(Page)({
+  ...position.sizeAsObject('100%'),
+  flex: 1,
+});
 
 export default function WalletScreen() {
   const { params } = useRoute();

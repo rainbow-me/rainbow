@@ -6,6 +6,8 @@
 
 📲️ [Available on the iOS App Store.](https://apps.apple.com/us/app/rainbow-ethereum-wallet/id1457119021)
 
+🤖 [Android Beta available on Google Play Store](https://play.google.com/store/apps/details?id=me.rainbow)
+
 🐦️ [Follow us on Twitter](https://twitter.com/rainbowdotme)
 
 ## Setup

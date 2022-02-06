@@ -1,21 +1,14 @@
 import React, { ElementRef, forwardRef, ReactNode, useMemo } from 'react';
 import { Text as NativeText } from 'react-native';
-import {
-  CustomColor,
-  useForegroundColor,
-} from '../../color/useForegroundColor';
+import { CustomColor } from '../../color/useForegroundColor';
 import { createLineHeightFixNode } from '../../typography/createLineHeightFixNode';
 import {
   nodeHasEmoji,
   nodeIsString,
   renderStringWithEmoji,
 } from '../../typography/renderStringWithEmoji';
-import {
-  TextColor,
-  textColors,
-  textSizes,
-  textWeights,
-} from '../../typography/typography';
+import { TextColor, textSizes, textWeights } from '../../typography/typography';
+import { useTextStyle } from './useTextStyle';
 
 export type TextProps = {
   align?: 'center' | 'left' | 'right';
@@ -44,12 +37,12 @@ export const Text = forwardRef<ElementRef<typeof NativeText>, TextProps>(
       containsEmoji: containsEmojiProp = false,
       children,
       testID,
-      align: textAlign,
-      color = 'primary',
-      size = '16px',
-      weight = 'regular',
-      tabularNumbers = false,
-      uppercase = false,
+      align,
+      color,
+      size,
+      weight,
+      tabularNumbers,
+      uppercase,
     },
     ref
   ) {
@@ -66,45 +59,20 @@ export const Text = forwardRef<ElementRef<typeof NativeText>, TextProps>(
           'Text: When "containsEmoji" is set to true, children can only be strings. If you need low-level control of emoji rendering, you can also use the "renderStringWithEmoji" function directly which accepts a string.'
         );
       }
-
-      if (color && typeof color === 'string' && !textColors.includes(color)) {
-        throw new Error(
-          `Text: Invalid color "${color}". Valid colors are: ${textColors
-            .map(x => `"${x}"`)
-            .join(', ')}`
-        );
-      }
     }
 
-    const colorValue = useForegroundColor(color);
-    const sizeStyles = textSizes[size];
-    const weightStyles = textWeights[weight];
+    const textStyle = useTextStyle({
+      align,
+      color,
+      size,
+      tabularNumbers,
+      uppercase,
+      weight,
+    });
 
     const lineHeightFixNode = useMemo(
-      () => createLineHeightFixNode(sizeStyles.lineHeight),
-      [sizeStyles]
-    );
-
-    const textStyle = useMemo(
-      () =>
-        ({
-          color: colorValue,
-          textAlign,
-          ...sizeStyles,
-          ...weightStyles,
-          ...(uppercase ? { textTransform: 'uppercase' as const } : null),
-          ...(tabularNumbers
-            ? { fontVariant: ['tabular-nums' as const] }
-            : null),
-        } as const),
-      [
-        sizeStyles,
-        weightStyles,
-        textAlign,
-        colorValue,
-        tabularNumbers,
-        uppercase,
-      ]
+      () => createLineHeightFixNode(textStyle.lineHeight),
+      [textStyle]
     );
 
     return (

@@ -209,25 +209,6 @@ export const fetchAssetPricesWithCoingecko = async (
   }
 };
 
-export const fetchCoingeckoIds = async () => {
-  let ids;
-  try {
-    const request = await fetch(COINGECKO_IDS_ENDPOINT);
-    ids = await request.json();
-  } catch (e) {
-    ids = coingeckoIdsFallback;
-  }
-
-  const idsMap = {};
-  ids.forEach(({ id, platforms: { ethereum: tokenAddress } }) => {
-    const address = tokenAddress && toLower(tokenAddress);
-    if (address && address.substr(0, 2) === '0x') {
-      idsMap[address] = id;
-    }
-  });
-  return idsMap;
-};
-
 const genericAssetsFallback = () => async (dispatch, getState) => {
   logger.log('ZERION IS DOWN! ENABLING GENERIC ASSETS FALLBACK');
   const { nativeCurrency } = getState().settings;

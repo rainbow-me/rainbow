@@ -2,18 +2,20 @@ import { useRoute } from '@react-navigation/core';
 import React, { useEffect, useState } from 'react';
 import { StatusBar } from 'react-native';
 import { WebView } from 'react-native-webview';
-import styled from 'styled-components';
 import Spinner from '../components/Spinner';
 import { Centered, FlexItem } from '../components/layout';
 import { reserveWyreOrder } from '../handlers/wyre';
 import { useAccountSettings } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 
-const Container = styled(FlexItem)`
-  background-color: ${({ theme: { colors } }) => colors.white};
-`;
-const StyledWebView = styled(WebView)`
-  background-color: ${({ theme: { colors } }) => colors.white};
-`;
+const Container = styled(FlexItem)({
+  backgroundColor: ({ theme: { colors } }) => colors.white,
+});
+
+const StyledWebView = styled(WebView)({
+  backgroundColor: ({ theme: { colors } }) => colors.white,
+});
+
 export default function WyreWebview() {
   const { params } = useRoute();
   const [url, setUrl] = useState(null);

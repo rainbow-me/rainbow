@@ -1,3 +1,10 @@
 import buildLayoutStyles from './buildLayoutStyles';
+import { memoFn } from '@rainbow-me/utils/memoFn';
 
-export default (...options) => buildLayoutStyles(options, 'padding', true);
+export default function padding(...options) {
+  return buildLayoutStyles(options, 'padding', true);
+}
+
+padding.object = memoFn((...options) => {
+  return buildLayoutStyles.object(options, 'padding');
+});
