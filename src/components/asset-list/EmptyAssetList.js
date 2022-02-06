@@ -1,3 +1,4 @@
+import styled from '@rainbow-me/styled-components';
 import ConditionalWrap from 'conditional-wrap';
 import { times } from 'lodash';
 import React, { useMemo } from 'react';
@@ -9,13 +10,13 @@ import { Centered, Column } from '../layout';
 import AssetListHeader, { AssetListHeaderHeight } from './AssetListHeader';
 import AssetListItemSkeleton from './AssetListItemSkeleton';
 import { useRefreshAccountData } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 
 const Container = styled(Column)(position.sizeAsObject('100%'));
 
 const EmptyAssetList = ({
   descendingOpacity,
+  isLoading,
   isWalletEthZero,
   network,
   skeletonCount = 5,
@@ -34,9 +35,11 @@ const EmptyAssetList = ({
 
   const { refresh, isRefreshing } = useRefreshAccountData();
 
+  const showAddFunds = !isLoading && isWalletEthZero;
+
   return (
     <ConditionalWrap
-      condition={isWalletEthZero}
+      condition={showAddFunds}
       wrap={children => (
         <ScrollView
           contentContainerStyle={{ height: '100%' }}
@@ -50,7 +53,7 @@ const EmptyAssetList = ({
     >
       <Container {...props}>
         <Centered flex={1}>
-          {isWalletEthZero ? (
+          {showAddFunds ? (
             <AddFundsInterstitial
               network={network}
               offsetY={interstitialOffset}

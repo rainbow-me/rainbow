@@ -1,3 +1,4 @@
+import styled from '@rainbow-me/styled-components';
 import { useRoute } from '@react-navigation/core';
 import { compact, find, get, isEmpty, keys, map, toLower } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -34,7 +35,6 @@ import {
   emitChartsRequest,
   emitPortfolioRequest,
 } from '@rainbow-me/redux/explorer';
-import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 
 const HeaderOpacityToggler = styled(OpacityToggler).attrs(({ isVisible }) => ({
@@ -195,6 +195,7 @@ export default function WalletScreen() {
         <AssetList
           disableRefreshControl={isLoadingAssets}
           isEmpty={isAccountEmpty || !!params?.emptyWallet}
+          isLoading={android && isLoadingAssets}
           isWalletEthZero={isWalletEthZero}
           network={network}
           scrollViewTracker={scrollViewTracker}
