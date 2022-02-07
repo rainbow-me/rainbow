@@ -1,14 +1,19 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { FlexItem } from '../components/layout';
 import { TestnetToast } from '../components/toasts';
+import ENSAssignRecordsSheet from '../screens/ENSAssignRecordsSheet';
 import ProfileScreen from '../screens/ProfileScreen';
 import QRScannerScreen from '../screens/QRScannerScreen';
 import WalletScreen from '../screens/WalletScreen';
 import { deviceUtils } from '../utils';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
 import Routes from './routesNames';
-import { useAccountSettings, useCoinListEdited } from '@rainbow-me/hooks';
+import {
+  useAccountSettings,
+  useCoinListEdited,
+  useHideSplashScreen,
+} from '@rainbow-me/hooks';
 
 const Swipe = createMaterialTopTabNavigator();
 
@@ -23,10 +28,14 @@ export function SwipeNavigator() {
   const { network } = useAccountSettings();
   const [swipeEnabled, setSwipeEnabled] = useState(true);
   const params = useMemo(() => ({ setSwipeEnabled }), []);
+  const hide = useHideSplashScreen();
+
+  useEffect(() => hide(), [hide]);
 
   return (
     <FlexItem>
-      <Swipe.Navigator
+      <ENSAssignRecordsSheet />
+      {/* <Swipe.Navigator
         initialLayout={deviceUtils.dimensions}
         initialRouteName={Routes.WALLET_SCREEN}
         pager={renderPager}
@@ -41,7 +50,7 @@ export function SwipeNavigator() {
           name={Routes.QR_SCANNER_SCREEN}
         />
       </Swipe.Navigator>
-      <TestnetToast network={network} />
+      <TestnetToast network={network} /> */}
     </FlexItem>
   );
 }
