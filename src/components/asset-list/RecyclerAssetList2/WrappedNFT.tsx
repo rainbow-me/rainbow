@@ -16,13 +16,12 @@ export default React.memo(function WrappedNFT({
   const { navigate } = useNavigation();
 
   const handleItemPress = useCallback(
-    (asset, lowResUrl) =>
+    asset =>
       navigate(Routes.EXPANDED_ASSET_SHEET, {
         asset,
         backgroundOpacity: 1,
         cornerRadius: 'device',
         external: false,
-        lowResUrl,
         springDamping: 1,
         topOffset: 0,
         transitionDuration: 0.25,
