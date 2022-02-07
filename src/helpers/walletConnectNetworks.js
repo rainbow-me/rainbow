@@ -12,7 +12,7 @@ const androidReverseNetworkWithName = name =>
 export const NETWORK_MENU_ACTION_KEY_FILTER = 'switch-to-network-';
 
 export const networksMenuItems = () => {
-  const testnetsEnabled = store.getState().settings.testnetsEnabled;
+  const { testnetsEnabled } = store.getState().settings;
   return Object.values(networkInfo)
     .filter(
       ({ disabled, testnet }) => !disabled && (testnetsEnabled || !testnet)
