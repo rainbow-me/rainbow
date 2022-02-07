@@ -1,9 +1,9 @@
+import styled from '@rainbow-me/styled-components';
 import MaskedView from '@react-native-community/masked-view';
 import React from 'react';
 import { View, ViewProps } from 'react-native';
 // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { IS_TESTING } from 'react-native-dotenv';
-import styled from 'styled-components';
 import { withThemeContext } from '../../context/ThemeContext';
 import { deviceUtils } from '../../utils';
 import { ShimmerAnimation } from '../animations';
@@ -13,11 +13,12 @@ import { position } from '@rainbow-me/styles';
 
 export const AssetListItemSkeletonHeight = CoinRowHeight;
 
-export const FakeAvatar = styled(View)`
-  ${position.size(40)};
-  background-color: ${({ theme: { colors } }) => colors.skeleton};
-  border-radius: 20;
-`;
+// @ts-expect-error Property 'View' does not exist on type...
+export const FakeAvatar = styled.View({
+  ...position.sizeAsObject(40),
+  backgroundColor: ({ theme: { colors } }: any) => colors.skeleton,
+  borderRadius: 20,
+});
 
 export const FakeRow = styled(Row).attrs({
   align: 'flex-end',
@@ -26,25 +27,25 @@ export const FakeRow = styled(Row).attrs({
   justify: 'space-between',
   paddingBottom: 5,
   paddingTop: 5,
-})(Row);
+})({});
 
 export const FakeText = styled(View).attrs(
   ({ height = 10 }: { height: number }) => ({
     height,
   })
-)`
-  background-color: ${({ theme: { colors } }) => colors.skeleton};
-  border-radius: ${({ height }: { height: number }) => height / 2};
-  height: ${({ height }: { height: number }) => height};
-`;
+)({
+  backgroundColor: ({ theme: { colors } }: any) => colors.skeleton,
+  borderRadius: ({ height }: { height: number }) => height / 2,
+  height: ({ height }: { height: number }) => height,
+});
 
-const Wrapper = styled(View)`
-  ${position.size('100%')};
-`;
+const Wrapper = styled(View)({
+  ...position.sizeAsObject('100%'),
+});
 
-const ShimmerWrapper = styled(Wrapper)`
-  background-color: ${({ theme: { colors } }) => colors.skeleton};
-`;
+const ShimmerWrapper = styled(Wrapper)({
+  backgroundColor: ({ theme: { colors } }: any) => colors.skeleton,
+});
 
 function Skeleton({
   animated = true,

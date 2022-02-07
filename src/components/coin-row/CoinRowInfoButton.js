@@ -1,15 +1,16 @@
+import lang from 'i18n-js';
 import { startCase } from 'lodash';
 import React from 'react';
 import { View } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import RadialGradient from 'react-native-radial-gradient';
-import styled from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { CoinRowHeight } from './CoinRow';
 import { useClipboard } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth, padding } from '@rainbow-me/styles';
 import {
   abbreviations,
@@ -18,31 +19,31 @@ import {
   showActionSheetWithOptions,
 } from '@rainbow-me/utils';
 
-const InfoButton = styled(Centered)`
-  ${padding(8, 0)}
-  align-items: center;
-  justify-content: center;
-  bottom: 0;
-  flex: 0;
-  height: ${CoinRowHeight};
-  position: absolute;
-  right: 40;
-  top: 0;
-  width: 68px;
-`;
+const InfoButton = styled(Centered)({
+  ...padding.object(8, 0),
+  alignItems: 'center',
+  bottom: 0,
+  flex: 0,
+  height: CoinRowHeight,
+  justifyContent: 'center',
+  position: 'absolute',
+  right: 40,
+  top: 0,
+  width: 68,
+});
 
 const Circle = styled(IS_TESTING === 'true' ? View : RadialGradient).attrs(
   ({ theme: { colors } }) => ({
     center: [0, 15],
     colors: colors.gradients.lightestGrey,
   })
-)`
-  border-radius: 15px;
-  height: 30px;
-  overflow: hidden;
-  width: 30px;
-  margin: 10px;
-`;
+)({
+  borderRadius: 15,
+  height: 30,
+  margin: 10,
+  overflow: 'hidden',
+  width: 30,
+});
 
 const Icon = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
@@ -50,12 +51,12 @@ const Icon = styled(Text).attrs(({ theme: { colors } }) => ({
   letterSpacing: 'zero',
   size: 'lmedium',
   weight: 'bold',
-}))`
-  height: 100%;
-  line-height: 30px;
-  width: 100%;
-  ${fontWithWidth(fonts.weight.bold)};
-`;
+}))({
+  ...fontWithWidth(fonts.weight.bold),
+  height: '100%',
+  lineHeight: 30,
+  width: '100%',
+});
 
 const CoinRowActionsEnum = {
   blockExplorer: 'blockExplorer',
@@ -65,7 +66,7 @@ const CoinRowActionsEnum = {
 const CoinRowActions = {
   [CoinRowActionsEnum.copyAddress]: {
     actionKey: CoinRowActionsEnum.copyAddress,
-    actionTitle: 'Copy Contract Address',
+    actionTitle: lang.t('exchange.coin_row.copy_address'),
     icon: {
       iconType: 'SYSTEM',
       iconValue: 'doc.on.doc',
@@ -74,8 +75,9 @@ const CoinRowActions = {
 };
 
 const buildBlockExplorerAction = type => {
-  const blockExplorerText =
-    'View on ' + startCase(ethereumUtils.getBlockExplorer(type));
+  const blockExplorerText = lang.t('exchange.coin_row.view_on', {
+    blockExplorerName: startCase(ethereumUtils.getBlockExplorer(type)),
+  });
   return {
     actionKey: CoinRowActionsEnum.blockExplorer,
     actionTitle: blockExplorerText,
@@ -98,13 +100,13 @@ const CoinRowInfoButton = ({ item, onCopySwapDetailsText }) => {
   );
 
   const onPressAndroid = useCallback(() => {
-    const blockExplorerText = `View on ' ${startCase(
+    const blockExplorerText = `View on ${startCase(
       ethereumUtils.getBlockExplorer(item?.type)
     )}`;
     const androidContractActions = [
-      'Copy Contract Address',
+      lang.t('exchange.coin_row.copy_address'),
       blockExplorerText,
-      'Cancel',
+      lang.t('button.cancel'),
     ];
 
     showActionSheetWithOptions(

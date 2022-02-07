@@ -1,11 +1,12 @@
+import lang from 'i18n-js';
 import React, { useRef, useState } from 'react';
 import { View } from 'react-native';
-import styled from 'styled-components';
 import { ColumnWithMargins, FlexItem } from '../layout';
 import { Text } from '../text';
 import DiscoverHome from './DiscoverHome';
 import DiscoverSearch from './DiscoverSearch';
 import DiscoverSearchContainer from './DiscoverSearchContainer';
+import styled from '@rainbow-me/styled-components';
 
 const HeaderTitle = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
@@ -14,11 +15,11 @@ const HeaderTitle = styled(Text).attrs(({ theme: { colors } }) => ({
   lineHeight: 'loose',
   size: 'large',
   weight: 'heavy',
-}))``;
+}))({});
 
-const Spacer = styled.View`
-  height: 16;
-`;
+const Spacer = styled.View({
+  height: 16,
+});
 
 function Switcher({ showSearch, children }) {
   return (
@@ -43,7 +44,9 @@ export default function DiscoverSheetContent() {
       <HeaderTitle
         testID={showSearch ? 'discover-header-search' : 'discover-header'}
       >
-        {showSearch ? 'Search' : 'Discover'}
+        {showSearch
+          ? lang.t('discover.title_search')
+          : lang.t('discover.title_discover')}
       </HeaderTitle>
       <ColumnWithMargins flex={1} margin={42} testID="discover-home">
         <DiscoverSearchContainer

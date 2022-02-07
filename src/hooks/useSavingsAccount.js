@@ -106,16 +106,13 @@ function usePersistentBackupSavings(accountAddress, network) {
 
 export default function useSavingsAccount(includeDefaultDai) {
   const dispatch = useDispatch();
-  const { selectedWallet } = useWallets();
   const { accountAddress, network } = useAccountSettings();
   const [backupSavings = null, setBackupSavings] = usePersistentBackupSavings(
     accountAddress,
     network
   );
 
-  const hasAccountAddress =
-    !!accountAddress &&
-    selectedWallet.addresses.find(({ address }) => accountAddress === address);
+  const hasAccountAddress = !!accountAddress;
 
   const shouldRefetchSavings = useSelector(
     ({ data: { shouldRefetchSavings } }) => shouldRefetchSavings

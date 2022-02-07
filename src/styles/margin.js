@@ -1,3 +1,10 @@
 import buildLayoutStyles from './buildLayoutStyles';
+import { memoFn } from '@rainbow-me/utils/memoFn';
 
-export default (...options) => buildLayoutStyles(options, 'margin', true);
+export default function margin(...options) {
+  return buildLayoutStyles(options, 'margin', true);
+}
+
+margin.object = memoFn((...options) => {
+  return buildLayoutStyles.object(options, 'margin');
+});

@@ -1,3 +1,4 @@
+import styled from '@rainbow-me/styled-components';
 import React, { useEffect } from 'react';
 import {
   Easing,
@@ -5,7 +6,6 @@ import {
   withRepeat,
   withTiming,
 } from 'react-native-reanimated';
-import styled from 'styled-components';
 import { withThemeContext } from '../../context/ThemeContext';
 import { CoinRowHeight } from '../coin-row';
 import { ColumnWithMargins, RowWithMargins } from '../layout';
@@ -14,27 +14,26 @@ import { padding } from '@rainbow-me/styles';
 
 export const AssetListItemSkeletonHeight = CoinRowHeight;
 
-const Container = styled.View`
-  height: ${AssetListItemSkeletonHeight};
-  opacity: ${({ descendingOpacity, index }) =>
-    1 - 0.2 * (descendingOpacity ? index : 0)};
-  width: 100%;
-`;
+const Container = styled.View({
+  height: AssetListItemSkeletonHeight,
+  opacity: ({ descendingOpacity, index }) =>
+    1 - 0.2 * (descendingOpacity ? index : 0),
+  width: '100%',
+});
 
 const Wrapper = styled(RowWithMargins).attrs({
   align: 'flex-end',
   justify: 'space-between',
   margin: 10,
-})`
-  ${({ ignorePaddingHorizontal }) =>
-    padding(
-      9,
-      ignorePaddingHorizontal ? 0 : 19,
-      10,
-      ignorePaddingHorizontal ? 0 : 19
-    )};
-  background-color: ${({ theme: { colors } }) => colors.transparent};
-`;
+})(({ ignorePaddingHorizontal }) => ({
+  ...padding.object(
+    9,
+    ignorePaddingHorizontal ? 0 : 19,
+    10,
+    ignorePaddingHorizontal ? 0 : 19
+  ),
+  backgroundColor: ({ theme: { colors } }) => colors.transparent,
+}));
 
 function AssetListItemSkeleton({
   animated = true,

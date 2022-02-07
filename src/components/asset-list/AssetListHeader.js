@@ -1,9 +1,8 @@
+import styled from '@rainbow-me/styled-components';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { View } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
-import styled from 'styled-components';
 import { abbreviations, magicMemo, measureText } from '../../utils';
 import { DividerSize } from '../Divider';
 import { ButtonPressAnimation } from '../animations';
@@ -31,29 +30,29 @@ const AccountName = styled(TruncatedText).attrs({
   size: 'big',
   truncationLength: 4,
   weight: 'heavy',
-})`
-  height: ${android ? '35' : '30'};
-  margin-top: 2;
-  margin-bottom: ${android ? '8' : '0'};
-  max-width: ${({ maxWidth }) => maxWidth};
-  padding-right: 6;
-`;
+})({
+  height: android ? 35 : 30,
+  marginBottom: android ? 8 : 0,
+  marginTop: 2,
+  maxWidth: ({ maxWidth }) => maxWidth,
+  paddingRight: 6,
+});
 
-const DropdownArrow = styled(Centered)`
-  border-radius: 15;
-  height: ${dropdownArrowWidth};
-  margin-top: ${android ? '9' : '2'};
-  width: ${dropdownArrowWidth};
-`;
+const DropdownArrow = styled(Centered)({
+  borderRadius: 15,
+  height: dropdownArrowWidth,
+  marginTop: android ? 9 : 2,
+  width: dropdownArrowWidth,
+});
 
-const WalletSelectButtonWrapper = styled(View)`
-  flex: 1;
-`;
+const WalletSelectButtonWrapper = styled.View({
+  flex: 1,
+});
 
-const TotalAmountSkeleton = styled(Skeleton)`
-  align-items: flex-end;
-  justify-content: center;
-`;
+const TotalAmountSkeleton = styled(Skeleton)({
+  alignItems: 'flex-end',
+  justifyContent: 'center',
+});
 
 const WalletSelectButton = ({
   truncatedAccountName,

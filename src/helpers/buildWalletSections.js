@@ -142,14 +142,19 @@ const withUniswapSection = (
   };
 };
 
-const withBriefUniswapSection = (uniswap, uniswapTotal, nativeCurrency) => {
+const withBriefUniswapSection = (
+  uniswap,
+  uniswapTotal,
+  nativeCurrency,
+  isLoadingAssets
+) => {
   const pools = uniswap.map(pool => ({
     address: pool.address,
     type: 'UNISWAP_POOL',
     uid: 'pool-' + pool.address,
   }));
 
-  if (pools.length > 0) {
+  if (!isLoadingAssets && pools.length > 0) {
     return [
       {
         type: 'POOLS_HEADER',
@@ -193,7 +198,7 @@ const withBalanceSavingsSection = savings => {
   return savingsSection;
 };
 
-const withBriefBalanceSavingsSection = savings => {
+const withBriefBalanceSavingsSection = (savings, isLoadingAssets) => {
   let totalUnderlyingNativeValue = '0';
   for (let saving of savings) {
     const { underlyingBalanceNativeValue } = saving;
@@ -203,6 +208,9 @@ const withBriefBalanceSavingsSection = savings => {
     );
   }
   const addresses = savings?.map(asset => asset.cToken.address);
+  if (isLoadingAssets) {
+    return [];
+  }
   return [
     {
       type: 'SAVINGS_HEADER_SPACE_BEFORE',
@@ -466,7 +474,7 @@ const balanceSavingsSectionSelector = createSelector(
 );
 
 const briefBalanceSavingsSectionSelector = createSelector(
-  [savingsSelector],
+  [savingsSelector, isLoadingAssetsSelector],
   withBriefBalanceSavingsSection
 );
 
@@ -481,7 +489,12 @@ const uniswapSectionSelector = createSelector(
 );
 
 const briefUniswapSectionSelector = createSelector(
-  [uniswapSelector, uniswapTotalSelector, nativeCurrencySelector],
+  [
+    uniswapSelector,
+    uniswapTotalSelector,
+    nativeCurrencySelector,
+    isLoadingAssetsSelector,
+  ],
   withBriefUniswapSection
 );
 

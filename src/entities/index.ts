@@ -1,6 +1,8 @@
 export { default as AssetTypes, AssetType } from './assetTypes';
 export type {
-  ConfirmationTimeByPriorityFee,
+  BlocksToConfirmation,
+  BlocksToConfirmationByBaseFee,
+  BlocksToConfirmationByPriorityFee,
   CurrentBlockParams,
   Fee,
   GasFee,
@@ -59,3 +61,5 @@ export type {
   TokenSearchTokenListId,
   TokenSearchUniswapAssetKey,
 } from './tokenSearch';
+export type { UniswapFavoriteTokenData } from './uniswap';
+export type { UniswapPoolData } from './dispersion';
