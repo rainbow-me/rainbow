@@ -26,7 +26,7 @@ import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 import { normalizeENS } from '@rainbow-me/utils';
 
-export default function RegisterEnsSheet() {
+export default function ENSSearchSheet() {
   const { navigate } = useNavigation();
   const keyboardHeight = useKeyboardHeight();
 
