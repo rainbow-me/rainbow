@@ -11,9 +11,9 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import styled from 'styled-components';
 import { normalizeTransformOrigin } from './NativeButton';
 import { useLongPressEvents } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 
 const ZoomableRawButton = requireNativeComponent('RNZoomableButton');
 
@@ -31,9 +31,9 @@ const OVERFLOW_MARGIN = 5;
 
 const ScaleButtonContext = createContext(null);
 
-const Content = styled.View`
-  overflow: visible;
-`;
+const Content = styled.View({
+  overflow: 'visible',
+});
 
 // I managed to implement partially overflow in scale button (up to 5px),
 // but overflow is not visible beyond small boundaries. Hence, to make it reactive to touches

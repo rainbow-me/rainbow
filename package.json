@@ -42,7 +42,8 @@
     "update-tokens": "yarn update-token-list && yarn update-token-metadata",
     "update-token-list": "./scripts/update-token-list.sh",
     "update-token-metadata": "./scripts/update-token-metadata.sh",
-    "check-translations": "./scripts/check-translations.sh ./src './src/languages/*.json' lang.t"
+    "check-translations": "./scripts/check-translations.sh ./src './src/languages/*.json' lang.t",
+    "codegen-translations": "node ./scripts/codegen-translations.js"
   },
   "husky": {
     "hooks": {
@@ -231,6 +232,7 @@
     "react-native-video": "5.1.1",
     "react-native-video-cache": "2.0.5",
     "react-native-webview": "11.2.3",
+    "react-native-widgetkit": "1.0.9",
     "react-navigation-backhandler": "2.0.1",
     "react-primitives": "0.8.1",
     "react-query": "1.5.10",

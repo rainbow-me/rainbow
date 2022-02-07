@@ -402,6 +402,8 @@ PODS:
     - React
   - react-native-webview (11.2.3):
     - React-Core
+  - react-native-widgetkit (1.0.9):
+    - React
   - React-perflogger (0.66.1)
   - React-RCTActionSheet (0.66.1):
     - React-Core/RCTActionSheetHeaders (= 0.66.1)
@@ -653,6 +655,7 @@ DEPENDENCIES:
   - react-native-video-cache (from `../node_modules/react-native-video-cache`)
   - "react-native-viewpager (from `../node_modules/@react-native-community/viewpager`)"
   - react-native-webview (from `../node_modules/react-native-webview`)
+  - react-native-widgetkit (from `../node_modules/react-native-widgetkit`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
   - React-RCTAnimation (from `../node_modules/react-native/Libraries/NativeAnimation`)
@@ -839,6 +842,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/viewpager"
   react-native-webview:
     :path: "../node_modules/react-native-webview"
+  react-native-widgetkit:
+    :path: "../node_modules/react-native-widgetkit"
   React-perflogger:
     :path: "../node_modules/react-native/ReactCommon/reactperflogger"
   React-RCTActionSheet:
@@ -1016,6 +1021,7 @@ SPEC CHECKSUMS:
   react-native-video-cache: 0f8b1b2195f234eabd507cfebdd91c2e82695008
   react-native-viewpager: 7238df0b6b9ee5a50f882750269f3c76639b195f
   react-native-webview: 6520e3e7b4933de76b95ef542c8d7115cf45b68e
+  react-native-widgetkit: efb6680df237463bbe1be3a4d1a1578a1b0bb08f
   React-perflogger: fcac6090a80e3d967791b4c7f1b1a017f9d4a398
   React-RCTActionSheet: caf5913d9f9e605f5467206cf9d1caa6d47d7ad6
   React-RCTAnimation: 6539e3bf594f6a529cd861985ba6548286ae1ead

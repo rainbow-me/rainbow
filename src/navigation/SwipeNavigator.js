@@ -2,6 +2,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import React, { useMemo, useState } from 'react';
 import { FlexItem } from '../components/layout';
 import { TestnetToast } from '../components/toasts';
+import { web3Provider } from '../handlers/web3';
 import ProfileScreen from '../screens/ProfileScreen';
 import QRScannerScreen from '../screens/QRScannerScreen';
 import WalletScreen from '../screens/WalletScreen';
@@ -41,7 +42,7 @@ export function SwipeNavigator() {
           name={Routes.QR_SCANNER_SCREEN}
         />
       </Swipe.Navigator>
-      <TestnetToast network={network} />
+      <TestnetToast network={network} web3Provider={web3Provider} />
     </FlexItem>
   );
 }

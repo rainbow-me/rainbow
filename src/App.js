@@ -14,6 +14,7 @@ import {
   LogBox,
   NativeModules,
   StatusBar,
+  View,
 } from 'react-native';
 import branch from 'react-native-branch';
 import {
@@ -31,7 +32,6 @@ import { connect, Provider } from 'react-redux';
 import { RecoilRoot } from 'recoil';
 import PortalConsumer from './components/PortalConsumer';
 import ErrorBoundary from './components/error-boundary/ErrorBoundary';
-import { FlexItem } from './components/layout';
 import { OfflineToast } from './components/toasts';
 import {
   designSystemPlaygroundEnabled,
@@ -92,6 +92,8 @@ if (__DEV__) {
 enableScreens();
 
 const { RNTestFlight } = NativeModules;
+
+const containerStyle = { flex: 1 };
 
 class App extends Component {
   static propTypes = {
@@ -290,7 +292,7 @@ class App extends Component {
               <Provider store={store}>
                 <RecoilRoot>
                   <SharedValuesProvider>
-                    <FlexItem>
+                    <View style={containerStyle}>
                       {this.state.initialRoute && (
                         <InitialRouteContext.Provider
                           value={this.state.initialRoute}
@@ -300,7 +302,7 @@ class App extends Component {
                         </InitialRouteContext.Provider>
                       )}
                       <OfflineToast />
-                    </FlexItem>
+                    </View>
                   </SharedValuesProvider>
                 </RecoilRoot>
               </Provider>

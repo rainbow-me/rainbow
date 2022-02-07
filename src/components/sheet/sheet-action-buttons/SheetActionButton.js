@@ -1,32 +1,32 @@
 import React, { useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import styled from 'styled-components';
 import { useTheme } from '../../../context/ThemeContext';
 import { ButtonPressAnimation } from '../../animations';
 import { Icon } from '../../icons';
 import { Centered, InnerBorder, RowWithMargins } from '../../layout';
 import { Emoji, Text } from '../../text';
 import { containsEmoji } from '@rainbow-me/helpers/strings';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const addChartsStyling = isCharts =>
-  isCharts ? 'position: absolute; width: 100%;' : '';
+  isCharts ? { position: 'absolute', width: '100%' } : {};
 
-const Button = styled(Centered)`
-  height: ${({ size }) => (size === 'big' ? 56 : 46)};
-  ${({ isCharts }) => addChartsStyling(isCharts)}
-`;
+const Button = styled(Centered)(({ isCharts, size }) => ({
+  ...addChartsStyling(isCharts),
+  height: size === 'big' ? 56 : 46,
+}));
 
 const Content = styled(RowWithMargins).attrs({
   align: 'center',
   margin: 4,
-})`
-  height: ${({ size }) => (size === 'big' ? 56 : 46)};
-  padding-bottom: ${({ label }) => (label && containsEmoji(label) ? 4 : 2)};
-  padding-horizontal: 19;
-  z-index: 1;
-`;
+})({
+  height: ({ size }) => (size === 'big' ? 56 : 46),
+  paddingBottom: ({ label }) => (label && containsEmoji(label) ? 4 : 2),
+  paddingHorizontal: 19,
+  zIndex: 1,
+});
 
 const neverRerender = () => true;
 // eslint-disable-next-line react/display-name
@@ -62,6 +62,7 @@ const SheetActionButton = ({
   size = null,
   testID = null,
   textColor: givenTextColor,
+  truncate = false,
   weight = 'semibold',
   ...props
 }) => {
@@ -135,6 +136,7 @@ const SheetActionButton = ({
           <Text
             align="center"
             color={textColor}
+            numberOfLines={truncate ? 1 : undefined}
             size={size === 'big' ? 'larger' : 'large'}
             weight={weight}
           >
