@@ -237,7 +237,7 @@ export default function TransactionConfirmationScreen() {
       setProvider(p);
     };
     currentNetwork && initProvider();
-  }, [isL2, isTestnet, currentNetwork]);
+  }, [currentNetwork]);
 
   useEffect(() => {
     const getNativeAsset = async () => {
