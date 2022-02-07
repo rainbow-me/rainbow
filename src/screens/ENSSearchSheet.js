@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import dice from '../assets/dice.png';
 import TintButton from '../components/buttons/TintButton';
@@ -24,6 +24,7 @@ import {
 import { ImgixImage } from '@rainbow-me/images';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
+import { normalizeENS } from '@rainbow-me/utils';
 
 export default function RegisterEnsSheet() {
   const { navigate } = useNavigation();
@@ -32,23 +33,23 @@ export default function RegisterEnsSheet() {
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounceString(searchQuery);
 
-  const { available, rentPrice, expirationDate, status } = useENSRegistration({
+  const {
+    data,
+    isIdle,
+    isRegistered,
+    isLoading,
+    isInvalid,
+    isAvailable,
+  } = useENSRegistration({
     duration: 1,
     name: debouncedSearchQuery,
   });
 
-  const isLoading = status === 'loading';
-  const isSuccess = status === 'success';
-
   const state = useMemo(() => {
-    if (isSuccess) {
-      if (available) {
-        return 'success';
-      }
-      return 'warning';
-    }
-    return undefined;
-  }, [isSuccess, available]);
+    if (isAvailable) return 'success';
+    if (isRegistered || isInvalid) return 'warning';
+    return 'rainbow';
+  }, [isAvailable, isInvalid, isRegistered]);
 
   return (
     <Box background="body" flexGrow={1}>
@@ -61,6 +62,7 @@ export default function RegisterEnsSheet() {
             Search available profile names
           </Text>
         </Stack>
+
         <Box
           alignItems="center"
           paddingBottom="24px"
@@ -68,28 +70,36 @@ export default function RegisterEnsSheet() {
           paddingTop="42px"
         >
           <SearchInput
+            contextMenuHidden
             isLoading={isLoading}
-            onChangeText={setSearchQuery}
+            onChangeText={value => setSearchQuery(normalizeENS(value))}
             placeholder="Input placeholder"
             state={state}
             value={searchQuery}
           />
         </Box>
-        {isSuccess && (
+        {isInvalid && (
+          <Inset horizontal="30px">
+            <Text align="center" color="secondary50" size="16px" weight="bold">
+              {data?.hint}
+            </Text>
+          </Inset>
+        )}
+        {(isAvailable || isRegistered) && (
           <Inset horizontal="19px">
             <Inline alignHorizontal="justify" wrap={false}>
               <SearchResultGradientIndicator
-                isRegistered={!available}
+                isRegistered={isRegistered}
                 type="availability"
               />
-              {!available ? (
+              {isRegistered ? (
                 <SearchResultGradientIndicator
-                  expiryDate={expirationDate}
+                  expiryDate={data?.expirationDate}
                   type="expiration"
                 />
               ) : (
                 <SearchResultGradientIndicator
-                  price={`${rentPrice?.perYear?.display} / Year`}
+                  price={`${data?.rentPrice?.perYear?.display}  / Year`}
                   type="price"
                 />
               )}
@@ -98,7 +108,7 @@ export default function RegisterEnsSheet() {
         )}
       </Box>
       <Box>
-        {debouncedSearchQuery.length < 3 && (
+        {isIdle && (
           <Inline
             alignHorizontal="center"
             alignVertical="center"
@@ -114,22 +124,17 @@ export default function RegisterEnsSheet() {
           </Inline>
         )}
         <SheetActionButtonRow>
-          {isSuccess && debouncedSearchQuery.length > 2 && (
-            <>
-              {available ? (
-                <SheetActionButton
-                  color={colors.green}
-                  label="Continue on 􀆊"
-                  onPress={() => navigate(Routes.ENS_ASSIGN_RECORDS_SHEET)}
-                  size="big"
-                  weight="heavy"
-                />
-              ) : (
-                <TintButton onPress={() => setSearchQuery('')}>
-                  􀅉 Clear
-                </TintButton>
-              )}
-            </>
+          {isAvailable && (
+            <SheetActionButton
+              color={colors.green}
+              label="Continue on 􀆊"
+              onPress={() => navigate(Routes.ENS_ASSIGN_RECORDS_SHEET)}
+              size="big"
+              weight="heavy"
+            />
+          )}
+          {(isRegistered || isInvalid) && (
+            <TintButton onPress={() => setSearchQuery('')}>􀅉 Clear</TintButton>
           )}
         </SheetActionButtonRow>
         <KeyboardArea initialHeight={keyboardHeight} isOpen />
