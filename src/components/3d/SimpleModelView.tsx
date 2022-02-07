@@ -1,3 +1,4 @@
+import styled from '@rainbow-me/styled-components';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Animated,
@@ -8,12 +9,12 @@ import {
 } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { ImgixImage } from '@rainbow-me/images';
-import styled from '@rainbow-me/styled-components';
 import { padding, position } from '@rainbow-me/styles';
 
 export type ModelViewerProps = {
   readonly setLoading: (loading: boolean) => void;
   readonly loading: boolean;
+  readonly size: number;
   readonly style?: ViewStyle;
   readonly uri: string;
   readonly alt?: string;
@@ -76,6 +77,7 @@ const getSource = ({ alt, uri }: { alt?: string; uri: string }) =>
 export default function ModelViewer({
   loading,
   setLoading,
+  size,
   style,
   uri,
   alt,
@@ -133,6 +135,7 @@ export default function ModelViewer({
         style={{ opacity }}
       >
         <ImgixImage
+          size={size}
           source={{ uri: fallbackUri }}
           style={StyleSheet.absoluteFill}
         />
