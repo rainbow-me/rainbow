@@ -1,4 +1,3 @@
-import styled from '@rainbow-me/styled-components';
 import MaskedView from '@react-native-community/masked-view';
 import React from 'react';
 import { View, ViewProps } from 'react-native';
@@ -9,6 +8,7 @@ import { deviceUtils } from '../../utils';
 import { ShimmerAnimation } from '../animations';
 import { CoinRowHeight } from '../coin-row';
 import { Row } from '../layout';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 
 export const AssetListItemSkeletonHeight = CoinRowHeight;

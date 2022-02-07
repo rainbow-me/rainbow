@@ -1,4 +1,3 @@
-import styled from '@rainbow-me/styled-components';
 import React, { useEffect } from 'react';
 import {
   Easing,
@@ -10,6 +9,7 @@ import { withThemeContext } from '../../context/ThemeContext';
 import { CoinRowHeight } from '../coin-row';
 import { ColumnWithMargins, RowWithMargins } from '../layout';
 import Skeleton, { FakeAvatar, FakeRow, FakeText } from '../skeleton/Skeleton';
+import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 
 export const AssetListItemSkeletonHeight = CoinRowHeight;
