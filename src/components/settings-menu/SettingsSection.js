@@ -256,7 +256,7 @@ export default function SettingsSection({
                   source={isDarkMode ? NetworkIconDark : NetworkIcon}
                 />
               }
-              label="Network"
+              label={lang.t('settings.network')}
               onPress={onPressNetwork}
               testID="network-section"
             >
