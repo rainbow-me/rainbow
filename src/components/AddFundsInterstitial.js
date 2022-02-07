@@ -4,7 +4,6 @@ import lang from 'i18n-js';
 import { get } from 'lodash';
 import React, { Fragment, useCallback } from 'react';
 import { Linking } from 'react-native';
-import styled from 'styled-components';
 import { useTheme } from '../context/ThemeContext';
 import networkInfo from '../helpers/networkInfo';
 import networkTypes from '../helpers/networkTypes';
@@ -22,50 +21,54 @@ import {
   useWallets,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const ContainerWidth = 261;
 
-const Container = styled(Centered).attrs({ direction: 'column' })`
-  position: absolute;
-  top: 60;
-  width: ${ContainerWidth};
-`;
+const Container = styled(Centered).attrs({ direction: 'column' })(
+  ({ isSmallPhone }) => ({
+    ...(isSmallPhone && { bottom: 80 }),
+    position: 'absolute',
+    top: 60,
+    width: ContainerWidth,
+  })
+);
 
 const InterstitialButton = styled(ButtonPressAnimation).attrs(
   ({ theme: { colors } }) => ({
     backgroundColor: colors.alpha(colors.blueGreyDark, 0.06),
     borderRadius: 23,
   })
-)`
-  ${padding(11, 15, 14)};
-`;
+)({
+  ...padding.object(11, 15, 14),
+});
 
-const InterstitialButtonRow = styled(Row)`
-  margin-bottom: ${({ isSmallPhone }) => (isSmallPhone ? 19 : 42)};
-`;
+const InterstitialButtonRow = styled(Row)({
+  marginBottom: ({ isSmallPhone }) => (isSmallPhone ? 19 : 42),
+});
 
 const InterstitialDivider = styled(Divider).attrs(({ theme: { colors } }) => ({
   color: colors.rowDividerExtraLight,
   inset: [0, 0, 0, 0],
-}))`
-  border-radius: 1;
-`;
+}))({
+  borderRadius: 1,
+});
 
 const CopyAddressButton = styled(ButtonPressAnimation).attrs(
   ({ theme: { colors } }) => ({
     backgroundColor: colors.alpha(colors.appleBlue, 0.06),
     borderRadius: 23,
   })
-)`
-  ${padding(10.5, 15, 14.5)};
-`;
+)({
+  ...padding.object(10.5, 15, 14.5),
+});
 
-const AmountBPA = styled(ButtonPressAnimation)`
-  border-radius: 25px;
-  overflow: visible;
-`;
+const AmountBPA = styled(ButtonPressAnimation)({
+  borderRadius: 25,
+  overflow: 'visible',
+});
 
 const Paragraph = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
@@ -74,10 +77,10 @@ const Paragraph = styled(Text).attrs(({ theme: { colors } }) => ({
   lineHeight: 'paragraphSmall',
   size: 'lmedium',
   weight: 'semibold',
-}))`
-  margin-bottom: 24;
-  margin-top: 19;
-`;
+}))({
+  marginBottom: 24,
+  marginTop: 19,
+});
 
 const Title = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
@@ -85,15 +88,15 @@ const Title = styled(Text).attrs(({ theme: { colors } }) => ({
   lineHeight: 32,
   size: 'bigger',
   weight: 'heavy',
-}))`
-  margin-horizontal: 27;
-`;
+}))({
+  marginHorizontal: 27,
+});
 
 const Subtitle = styled(Title).attrs(({ theme: { colors } }) => ({
   color: colors.dark,
-}))`
-  margin-top: ${({ isSmallPhone }) => (isSmallPhone ? 19 : 42)};
-`;
+}))({
+  marginTop: ({ isSmallPhone }) => (isSmallPhone ? 19 : 42),
+});
 
 const AmountText = styled(Text).attrs(({ children }) => ({
   align: 'center',
@@ -101,20 +104,22 @@ const AmountText = styled(Text).attrs(({ children }) => ({
   letterSpacing: 'roundedTightest',
   size: 'bigger',
   weight: 'heavy',
-}))`
-  ${android ? padding(15, 4.5) : padding(24, 15, 25)};
-  align-self: center;
-  text-shadow: 0px 0px 20px ${({ color }) => color};
-  z-index: 1;
-`;
+}))(({ color }) => ({
+  ...(android ? padding.object(15, 4.5) : padding.object(24, 15, 25)),
+  alignSelf: 'center',
+  textShadowColor: color,
+  textShadowOffset: { height: 0, width: 0 },
+  textShadowRadius: 20,
+  zIndex: 1,
+}));
 
 const AmountButtonWrapper = styled(Row).attrs({
   justify: 'center',
   marginLeft: 7.5,
   marginRight: 7.5,
-})`
-  ${android ? 'width: 100' : ''};
-`;
+})({
+  ...(android && { width: 100 }),
+});
 
 const onAddFromFaucet = accountAddress =>
   Linking.openURL(`https://faucet.paradigm.xyz/?addr=${accountAddress}`);
@@ -222,7 +227,7 @@ const AddFundsInterstitial = ({ network }) => {
   }, [navigate, isDamaged]);
 
   return (
-    <Container>
+    <Container isSmallPhone={isSmallPhone}>
       {network === networkTypes.mainnet ? (
         <Fragment>
           <Title>

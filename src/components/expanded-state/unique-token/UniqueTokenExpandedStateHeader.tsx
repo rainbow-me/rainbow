@@ -1,14 +1,25 @@
-import { toLower } from 'lodash';
-import React, { useCallback } from 'react';
-import { Linking } from 'react-native';
+import { startCase, toLower } from 'lodash';
+import React, { useCallback, useMemo } from 'react';
+import { Linking, View } from 'react-native';
+// @ts-expect-error Missing types
 import { ContextMenuButton } from 'react-native-ios-context-menu';
-import styled from 'styled-components';
 import URL from 'url-parse';
 import { buildUniqueTokenName } from '../../../helpers/assets';
 import { ButtonPressAnimation } from '../../animations';
-import { Column, ColumnWithMargins, Row, RowWithMargins } from '../../layout';
-import { Text, TruncatedText } from '../../text';
 import saveToCameraRoll from './saveToCameraRoll';
+import {
+  Bleed,
+  Column,
+  Columns,
+  Heading,
+  Inline,
+  Inset,
+  Space,
+  Stack,
+  Text,
+} from '@rainbow-me/design-system';
+import { UniqueAsset } from '@rainbow-me/entities';
+import { Network } from '@rainbow-me/helpers';
 import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
 import {
   useAccountProfile,
@@ -17,9 +28,11 @@ import {
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
-import { padding, position } from '@rainbow-me/styles';
+import styled from '@rainbow-me/styled-components';
+import { position } from '@rainbow-me/styles';
 import {
   buildRainbowUrl,
+  ethereumUtils,
   magicMemo,
   showActionSheetWithOptions,
 } from '@rainbow-me/utils';
@@ -29,49 +42,52 @@ const AssetActionsEnum = {
   download: 'download',
   etherscan: 'etherscan',
   rainbowWeb: 'rainbowWeb',
-};
+} as const;
 
-const AssetActions = {
-  [AssetActionsEnum.copyTokenID]: {
-    actionKey: AssetActionsEnum.copyTokenID,
-    actionTitle: 'Copy Token ID',
-    icon: {
-      iconType: 'SYSTEM',
-      iconValue: 'square.on.square',
+const getAssetActions = (network: Network) =>
+  ({
+    [AssetActionsEnum.copyTokenID]: {
+      actionKey: AssetActionsEnum.copyTokenID,
+      actionTitle: 'Copy Token ID',
+      icon: {
+        iconType: 'SYSTEM',
+        iconValue: 'square.on.square',
+      },
     },
-  },
-  [AssetActionsEnum.download]: {
-    actionKey: AssetActionsEnum.download,
-    actionTitle: 'Save to Photos',
-    icon: {
-      iconType: 'SYSTEM',
-      iconValue: 'photo.on.rectangle.angled',
+    [AssetActionsEnum.download]: {
+      actionKey: AssetActionsEnum.download,
+      actionTitle: 'Save to Photos',
+      icon: {
+        iconType: 'SYSTEM',
+        iconValue: 'photo.on.rectangle.angled',
+      },
     },
-  },
-  [AssetActionsEnum.etherscan]: {
-    actionKey: AssetActionsEnum.etherscan,
-    actionTitle: 'View on Etherscan',
-    icon: {
-      iconType: 'SYSTEM',
-      iconValue: 'link',
+    [AssetActionsEnum.etherscan]: {
+      actionKey: AssetActionsEnum.etherscan,
+      actionTitle: `View on ${startCase(
+        ethereumUtils.getBlockExplorer(network)
+      )}`,
+      icon: {
+        iconType: 'SYSTEM',
+        iconValue: 'link',
+      },
     },
-  },
-  [AssetActionsEnum.rainbowWeb]: {
-    actionKey: AssetActionsEnum.rainbowWeb,
-    actionTitle: 'View on Web',
-    icon: {
-      iconType: 'SYSTEM',
-      iconValue: 'safari.fill',
+    [AssetActionsEnum.rainbowWeb]: {
+      actionKey: AssetActionsEnum.rainbowWeb,
+      actionTitle: 'View on Web',
+      icon: {
+        iconType: 'SYSTEM',
+        iconValue: 'safari.fill',
+      },
     },
-  },
-};
+  } as const);
 
 const FamilyActionsEnum = {
   collectionWebsite: 'collectionWebsite',
   discord: 'discord',
   twitter: 'twitter',
   viewCollection: 'viewCollection',
-};
+} as const;
 
 const FamilyActions = {
   [FamilyActionsEnum.viewCollection]: {
@@ -86,14 +102,6 @@ const FamilyActions = {
   [FamilyActionsEnum.collectionWebsite]: {
     actionKey: FamilyActionsEnum.collectionWebsite,
     actionTitle: 'Collection Website',
-    icon: {
-      iconType: 'SYSTEM',
-      iconValue: 'safari.fill',
-    },
-  },
-  [FamilyActionsEnum.etherscan]: {
-    actionKey: AssetActionsEnum.etherscan,
-    actionTitle: 'View on Etherscan',
     icon: {
       iconType: 'SYSTEM',
       iconValue: 'safari.fill',
@@ -115,57 +123,41 @@ const FamilyActions = {
       iconValue: 'at.circle.fill',
     },
   },
-};
+} as const;
 
 const paddingHorizontal = 24;
 
-const Container = styled(Row).attrs({
-  align: 'center',
-  justify: 'space-between',
-})`
-  ${padding(21, paddingHorizontal, paddingHorizontal)};
-`;
+const FamilyImageWrapper = styled(View)({
+  height: 20,
+  // @ts-expect-error missing theme types
+  shadowColor: ({ theme: { colors } }) => colors.shadowBlack,
+  shadowOffset: { height: 3, width: 0 },
+  shadowOpacity: 0.15,
+  shadowRadius: 4.5,
+  width: 20,
+});
 
-const FamilyName = styled(TruncatedText).attrs(({ theme: { colors } }) => ({
-  color: colors.alpha(colors.whiteLabel, 0.5),
-  size: 'lmedium',
-  weight: 'bold',
-}))`
-  max-width: ${({ deviceWidth }) => deviceWidth - paddingHorizontal * 6};
-`;
+const FamilyImage = styled(ImgixImage)({
+  ...position.coverAsObject,
+  borderRadius: 10,
+});
 
-const FamilyImageWrapper = styled.View`
-  height: 20;
-  margin-right: 7;
-  shadow-color: ${({ theme: { colors } }) => colors.shadowBlack};
-  shadow-offset: 0 3px;
-  shadow-opacity: 0.15;
-  shadow-radius: 4.5px;
-  width: 20;
-`;
+interface UniqueTokenExpandedStateHeaderProps {
+  asset: UniqueAsset;
+}
 
-const FamilyImage = styled(ImgixImage)`
-  ${position.cover};
-  border-radius: 10;
-`;
-
-const HeadingColumn = styled(ColumnWithMargins).attrs({
-  align: 'start',
-  justify: 'start',
-  margin: 6,
-})`
-  width: 100%;
-`;
-
-const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
+const UniqueTokenExpandedStateHeader = ({
+  asset,
+}: UniqueTokenExpandedStateHeaderProps) => {
   const { accountAddress, accountENS } = useAccountProfile();
   const { setClipboard } = useClipboard();
   const { width: deviceWidth } = useDimensions();
-  const { colors } = useTheme();
 
   const formattedCollectionUrl = useMemo(() => {
+    // @ts-expect-error external_link could be null or undefined?
     const { hostname } = new URL(asset.external_link);
     const { hostname: hostnameFallback } = new URL(
+      // @ts-expect-error external_url could be null or undefined?
       asset.collection.external_url
     );
     const formattedUrl = hostname || hostnameFallback;
@@ -190,15 +182,18 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
         },
       ],
       menuTitle: '',
-    };
+    } as const;
   }, [asset, formattedCollectionUrl]);
 
+  // @ts-expect-error image_url could be null or undefined?
   const isSVG = isSupportedUriExtension(asset.image_url, ['.svg']);
   const isENS =
     toLower(asset.asset_contract.address) === toLower(ENS_NFT_CONTRACT_ADDRESS);
 
   const isPhotoDownloadAvailable = !isSVG && !isENS;
   const assetMenuConfig = useMemo(() => {
+    // @ts-expect-error network could be undefined?
+    const AssetActions = getAssetActions(asset?.network);
     return {
       menuItems: [
         {
@@ -222,8 +217,8 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
         },
       ],
       menuTitle: '',
-    };
-  }, [asset.id, isPhotoDownloadAvailable]);
+    } as const;
+  }, [asset.id, asset?.network, isPhotoDownloadAvailable]);
 
   const handlePressFamilyMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
@@ -234,12 +229,16 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
             '?search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW'
         );
       } else if (actionKey === FamilyActionsEnum.collectionWebsite) {
+        // @ts-expect-error external_link and external_url could be null or undefined?
         Linking.openURL(asset.external_link || asset.collection.external_url);
       } else if (actionKey === FamilyActionsEnum.twitter) {
         Linking.openURL(
           'https://twitter.com/' + asset.collection.twitter_username
         );
-      } else if (actionKey === FamilyActionsEnum.discord) {
+      } else if (
+        actionKey === FamilyActionsEnum.discord &&
+        asset.collection.discord_url
+      ) {
         Linking.openURL(asset.collection.discord_url);
       }
     },
@@ -249,11 +248,11 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
   const handlePressAssetMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === AssetActionsEnum.etherscan) {
-        Linking.openURL(
-          'https://etherscan.io/token/' +
-            asset.asset_contract.address +
-            '?a=' +
-            asset.id
+        ethereumUtils.openNftInBlockExplorer(
+          // @ts-expect-error address could be undefined?
+          asset.asset_contract.address,
+          asset.id,
+          asset?.network
         );
       } else if (actionKey === AssetActionsEnum.rainbowWeb) {
         Linking.openURL(buildRainbowUrl(asset, accountENS, accountAddress));
@@ -277,9 +276,9 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
       'Twitter',
       'Discord',
     ];
-    const websiteIndex = 1 - (!hasCollection && 1);
-    const twitterIndex = 2 - (!hasWebsite && 1);
-    const discordIndex = 3 - (!hasWebsite && 1) - (!hasTwitter && 1);
+    const websiteIndex = 1 - (!hasCollection ? 1 : 0);
+    const twitterIndex = 2 - (!hasWebsite ? 1 : 0);
+    const discordIndex = 3 - (!hasWebsite ? 1 : 0) - (!hasTwitter ? 1 : 0);
 
     if (!hasCollection) baseActions.splice(1, 1);
     if (!hasWebsite) baseActions.splice(websiteIndex, 1);
@@ -292,7 +291,7 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
         showSeparators: true,
         title: '',
       },
-      idx => {
+      (idx: number) => {
         if (idx === 0) {
           Linking.openURL(
             'https://opensea.io/collection/' +
@@ -303,6 +302,7 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
         if (idx === 1) {
           if (hasWebsite) {
             Linking.openURL(
+              // @ts-expect-error external_link and external_url could be null or undefined?
               asset.external_link || asset.collection.external_url
             );
           } else if (hasTwitter && twitterIndex === 1) {
@@ -326,7 +326,7 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
             );
           }
         }
-        if (idx === 3) {
+        if (idx === 3 && asset.collection.discord_url) {
           Linking.openURL(asset.collection.discord_url);
         }
       }
@@ -342,10 +342,11 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
   const onPressAndroidAsset = useCallback(() => {
     const androidContractActions = [
       'View On Web',
-      'View on Etherscan',
-      ...(isPhotoDownloadAvailable ? ['Save to Photos'] : []),
+      // @ts-expect-error network could be undefined?
+      `View on ${startCase(ethereumUtils.getBlockExplorer(asset?.network))}`,
+      ...(isPhotoDownloadAvailable ? (['Save to Photos'] as const) : []),
       'Copy Token ID',
-    ];
+    ] as const;
 
     showActionSheetWithOptions(
       {
@@ -353,15 +354,15 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
         showSeparators: true,
         title: '',
       },
-      idx => {
+      (idx: number) => {
         if (idx === 0) {
           Linking.openURL(buildRainbowUrl(asset, accountENS, accountAddress));
         } else if (idx === 1) {
-          Linking.openURL(
-            'https://etherscan.io/token/' +
-              asset.asset_contract.address +
-              '?a=' +
-              asset.id
+          ethereumUtils.openNftInBlockExplorer(
+            // @ts-expect-error address could be undefined?
+            asset.asset_contract.address,
+            asset.id,
+            asset?.network
           );
         } else if (isPhotoDownloadAvailable ? idx === 3 : idx === 2) {
           setClipboard(asset.id);
@@ -378,65 +379,79 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
     setClipboard,
   ]);
 
+  const overflowMenuHitSlop: Space = '15px';
+  const familyNameHitSlop: Space = '19px';
+
   return (
-    <Container>
-      <HeadingColumn>
-        <RowWithMargins margin={10}>
-          <Column flex={1}>
-            <Text color={colors.whiteLabel} size="big" weight="heavy">
-              {buildUniqueTokenName(asset)}
-            </Text>
-          </Column>
+    <Stack space="15px">
+      <Columns space="24px">
+        <Heading size="23px" weight="heavy">
+          {buildUniqueTokenName(asset)}
+        </Heading>
+        <Column width="content">
+          <Bleed space={overflowMenuHitSlop}>
+            <ContextMenuButton
+              activeOpacity={1}
+              menuConfig={assetMenuConfig}
+              {...(android ? { onPress: onPressAndroidAsset } : {})}
+              isMenuPrimaryAction
+              onPressMenuItem={handlePressAssetMenuItem}
+              useActionSheetFallback={false}
+              wrapNativeComponent
+            >
+              <ButtonPressAnimation scaleTo={0.75}>
+                <Inset space={overflowMenuHitSlop}>
+                  <Text color="accent" size="23px" weight="heavy">
+                    􀍡
+                  </Text>
+                </Inset>
+              </ButtonPressAnimation>
+            </ContextMenuButton>
+          </Bleed>
+        </Column>
+      </Columns>
+      <Inline wrap={false}>
+        <Bleed space={familyNameHitSlop}>
           <ContextMenuButton
-            activeOpacity={1}
-            menuConfig={assetMenuConfig}
-            {...(android ? { onPress: onPressAndroidAsset } : {})}
+            activeOpacity={0}
+            menuConfig={familyMenuConfig}
+            {...(android ? { onPress: onPressAndroidFamily } : {})}
             isMenuPrimaryAction
-            onPressMenuItem={handlePressAssetMenuItem}
+            onPressMenuItem={handlePressFamilyMenuItem}
             useActionSheetFallback={false}
-            wrapNativeComponent
+            wrapNativeComponent={false}
           >
-            <ButtonPressAnimation scaleTo={0.75}>
-              <Text align="right" color={imageColor} size="big" weight="heavy">
-                􀍡
-              </Text>
+            <ButtonPressAnimation scaleTo={0.88}>
+              <Inset space={familyNameHitSlop}>
+                <Inline alignVertical="center" space="6px" wrap={false}>
+                  {asset.familyImage ? (
+                    <Bleed vertical="6px">
+                      <FamilyImageWrapper>
+                        <FamilyImage source={{ uri: asset.familyImage }} />
+                      </FamilyImageWrapper>
+                    </Bleed>
+                  ) : null}
+                  <Inline space="4px" wrap={false}>
+                    <View
+                      style={{
+                        maxWidth: deviceWidth - paddingHorizontal * 6,
+                      }}
+                    >
+                      <Text color="secondary50" numberOfLines={1} weight="bold">
+                        {asset.familyName}
+                      </Text>
+                    </View>
+                    <Text color="secondary50" weight="bold">
+                      􀆊
+                    </Text>
+                  </Inline>
+                </Inline>
+              </Inset>
             </ButtonPressAnimation>
           </ContextMenuButton>
-        </RowWithMargins>
-        <ContextMenuButton
-          activeOpacity={0}
-          menuConfig={familyMenuConfig}
-          {...(android ? { onPress: onPressAndroidFamily } : {})}
-          isMenuPrimaryAction
-          onPressMenuItem={handlePressFamilyMenuItem}
-          useActionSheetFallback={false}
-          wrapNativeComponent={false}
-        >
-          <ButtonPressAnimation scaleTo={0.88}>
-            <Row align="center" marginTop={android ? -10 : 0}>
-              {asset.familyImage ? (
-                <FamilyImageWrapper>
-                  <FamilyImage
-                    source={{ uri: asset?.familyImage }}
-                    style={position.cover}
-                  />
-                </FamilyImageWrapper>
-              ) : null}
-              <FamilyName deviceWidth={deviceWidth}>
-                {asset.familyName}
-              </FamilyName>
-              <Text
-                color={colors.alpha(colors.whiteLabel, 0.5)}
-                size="lmedium"
-                weight="bold"
-              >
-                {' 􀆊'}
-              </Text>
-            </Row>
-          </ButtonPressAnimation>
-        </ContextMenuButton>
-      </HeadingColumn>
-    </Container>
+        </Bleed>
+      </Inline>
+    </Stack>
   );
 };
 

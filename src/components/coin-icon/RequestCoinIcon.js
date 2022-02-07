@@ -1,8 +1,8 @@
 import React, { useCallback } from 'react';
 import { CircularProgress } from 'react-native-circular-progress';
-import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import RequestVendorLogoIcon from './RequestVendorLogoIcon';
+import styled from '@rainbow-me/styled-components';
 
 const RequestCoinIconSize = 48;
 
@@ -13,7 +13,7 @@ const ProgressBorder = styled(CircularProgress).attrs({
   lineCap: 'round',
   rotation: 0,
   width: 2,
-})``;
+})({});
 
 const RequestCoinIcon = ({
   dappName,

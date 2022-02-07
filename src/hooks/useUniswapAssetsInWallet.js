@@ -18,7 +18,7 @@ const useUniswapAssetsInWallet = () => {
       const uniswapData = await getUniswapV2Tokens(
         sortedAssets.map(({ address }) => address)
       );
-      uniswapAssets = uniswapData || [];
+      uniswapAssets = uniswapData ? Object.values(uniswapData) : [];
     } else {
       uniswapAssets = sortedAssets;
     }

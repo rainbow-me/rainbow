@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
-import styled from 'styled-components';
 import { Emoji } from '../text';
 import { ImgixImage } from '@rainbow-me/images';
+import styled from '@rainbow-me/styled-components';
 import { borders } from '@rainbow-me/styles';
 import { FallbackIcon, initials } from '@rainbow-me/utils';
 import ShadowStack from 'react-native-shadow-stack';
@@ -12,11 +12,11 @@ const TrophyEmoji = styled(Emoji).attrs({
   align: 'center',
   name: 'trophy',
   size: 'medium',
-})`
-  height: 22;
-  margin-right: 4.5;
-  text-align-vertical: center;
-`;
+})({
+  height: 22,
+  marginRight: 4.5,
+  textAlignVertical: 'center',
+});
 
 const TokenFamilyHeaderIcon = ({
   familyImage,
@@ -42,7 +42,11 @@ const TokenFamilyHeaderIcon = ({
       style={style}
     >
       {familyImage ? (
-        <ImgixImage source={{ uri: familyImage }} style={circleStyle} />
+        <ImgixImage
+          size={isCoinRow ? 40 : 32}
+          source={{ uri: familyImage }}
+          style={circleStyle}
+        />
       ) : (
         <FallbackIcon {...circleStyle} symbol={initials(familyName)} />
       )}

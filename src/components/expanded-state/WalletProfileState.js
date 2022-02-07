@@ -1,7 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useRef, useState } from 'react';
-import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { getRandomColor } from '../../styles/colors';
 import Divider from '../Divider';
@@ -21,6 +20,7 @@ import {
 import { useAccountProfile } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { margin, padding, position } from '@rainbow-me/styles';
 import { profileUtils } from '@rainbow-me/utils';
 
@@ -33,43 +33,44 @@ const WalletProfileAddressText = styled(TruncatedAddress).attrs(
     truncationLength: 4,
     weight: 'bold',
   })
-)`
-  ${margin(android ? 0 : 6, 0, android ? 0 : 5)};
-  width: 100%;
-`;
+)({
+  ...margin.object(android ? 0 : 6, 0, android ? 0 : 5),
+  width: '100%',
+});
 
-const Spacer = styled.View`
-  height: 19;
-`;
+const Spacer = styled.View({
+  height: 19,
+});
 
-const WalletProfileButton = styled(ButtonPressAnimation)`
-  ${padding(15, 0, 19)};
-  ${position.centered};
-  flex-direction: row;
-  height: 58;
-  width: 100%;
-`;
+const WalletProfileButton = styled(ButtonPressAnimation)({
+  ...padding.object(15, 0, 19),
+  ...position.centeredAsObject,
+  flexDirection: 'row',
+  height: 58,
+  width: '100%',
+});
 
 const WalletProfileButtonText = styled(Text).attrs({
   align: 'center',
   size: 'larger',
-})``;
+})({});
 
-const ProfileImage = styled(ImageAvatar)`
-  margin-bottom: 15;
-`;
+const ProfileImage = styled(ImageAvatar)({
+  marginBottom: 15,
+});
 
 const WalletProfileDivider = styled(Divider).attrs(({ theme: { colors } }) => ({
   borderRadius: 1,
   color: colors.rowDividerLight,
   inset: false,
-}))``;
+}))({});
+
 const WalletProfileModal = styled(ProfileModal).attrs({
   dividerRenderer: WalletProfileDivider,
-})`
-  ${padding(24, 19, 0)};
-  width: 100%;
-`;
+})({
+  ...padding.object(24, 19, 0),
+  width: '100%',
+});
 
 export default function WalletProfileState({
   actionType,

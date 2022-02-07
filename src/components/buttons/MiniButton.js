@@ -1,11 +1,11 @@
 import React from 'react';
 import { View } from 'react-native';
-import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { darkModeThemeColors, lightModeThemeColors } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
 import { RowWithMargins } from '../layout';
 import { Text } from '../text';
+import styled from '@rainbow-me/styled-components';
 import { padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
@@ -37,13 +37,12 @@ const shadowsDark = shadowsFactory(true);
 const Content = styled(RowWithMargins).attrs({
   align: 'center',
   margin: 5,
-})`
-  ${({ hasLeadingIcon, small }) =>
-    padding(0, small ? 8 : 10, 0, hasLeadingIcon ? 6 : small ? 8 : 10)};
-  border-radius: 15px;
-  height: ${({ small }) => (small ? 27 : 30)};
-  z-index: 1;
-`;
+})(({ hasLeadingIcon, small }) => ({
+  ...padding.object(0, small ? 8 : 10, 0, hasLeadingIcon ? 6 : small ? 8 : 10),
+  borderRadius: 15,
+  height: small ? 27 : 30,
+  zIndex: 1,
+}));
 
 export default function MiniButton({
   backgroundColor,

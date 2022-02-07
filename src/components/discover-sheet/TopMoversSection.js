@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { IS_TESTING } from 'react-native-dotenv';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/ChartExpandedState';
@@ -78,14 +79,14 @@ export default function TopMoversSection() {
       {(gainerItems?.length > 0 || loserItems?.length > 0) && (
         <Flex marginBottom={12} paddingHorizontal={19}>
           <Text size="larger" weight="heavy">
-            Top Movers
+            {lang.t('discover.top_movers.top_movers_title')}
           </Text>
         </Flex>
       )}
 
       {network !== networkTypes.mainnet ? (
         <ErrorMessage colors={colors}>
-          Top movers are disabled on Testnets
+          {lang.t('discover.top_movers.disabled_testnets')}
         </ErrorMessage>
       ) : (
         <Column>

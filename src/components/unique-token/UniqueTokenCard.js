@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo } from 'react';
-import styled from 'styled-components';
 import { getLowResUrl } from '../../utils/getLowResUrl';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder } from '../layout';
@@ -9,21 +8,22 @@ import {
   usePersistentAspectRatio,
   usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { shadow as shadowUtil } from '@rainbow-me/styles';
 
 const UniqueTokenCardBorderRadius = 20;
 const UniqueTokenCardShadowFactory = colors => [0, 2, 6, colors.shadow, 0.08];
 
-const Container = styled.View`
-  ${({ shadow }) => shadowUtil.build(...shadow)};
-`;
+const Container = styled.View(({ shadow }) =>
+  shadowUtil.buildAsObject(...shadow)
+);
 
-const Content = styled.View`
-  border-radius: ${UniqueTokenCardBorderRadius};
-  height: ${({ height }) => height || CardSize};
-  overflow: hidden;
-  width: ${({ width }) => width || CardSize};
-`;
+const Content = styled.View({
+  borderRadius: UniqueTokenCardBorderRadius,
+  height: ({ height }) => height || CardSize,
+  overflow: 'hidden',
+  width: ({ width }) => width || CardSize,
+});
 
 const UniqueTokenCard = ({
   borderEnabled = true,

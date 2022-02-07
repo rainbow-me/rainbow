@@ -1,22 +1,22 @@
 import React, { useMemo } from 'react';
-import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import ImageAvatar from '../contacts/ImageAvatar';
 import { Flex, InnerBorder } from '../layout';
 import { Text } from '../text';
 import { useAccountProfile } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const AvatarCircleSize = 65;
 
-const AvatarCircleView = styled(Flex)`
-  ${position.size(AvatarCircleSize)};
-  margin-bottom: 16px;
-  justify-content: ${ios ? 'flex-start' : 'center'};
-  align-items: ${ios ? 'flex-start' : 'center'};
-`;
+const AvatarCircleView = styled(Flex)({
+  ...position.sizeAsObject(AvatarCircleSize),
+  alignItems: ios ? 'flex-start' : 'center',
+  justifyContent: ios ? 'flex-start' : 'center',
+  marginBottom: 16,
+});
 
 const FirstLetter = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
@@ -25,9 +25,9 @@ const FirstLetter = styled(Text).attrs(({ theme: { colors } }) => ({
   lineHeight: android ? 68 : 66,
   size: ios ? 38 : 30,
   weight: 'semibold',
-}))`
-  width: ${android ? 66 : 67};
-`;
+}))({
+  width: android ? 66 : 67,
+});
 
 export default function AvatarCircle({
   isAvatarPickerAvailable,
@@ -36,6 +36,7 @@ export default function AvatarCircle({
   image,
   showcaseAccountSymbol,
   showcaseAccountColor,
+  ...props
 }) {
   const { colors, isDarkMode } = useTheme();
   const {
@@ -74,8 +75,10 @@ export default function AvatarCircle({
       enableHapticFeedback={isAvatarPickerAvailable}
       marginTop={2}
       onPress={onPress}
+      overflowMargin={30}
       pressOutDuration={200}
       scaleTo={isAvatarPickerAvailable ? 0.9 : 1}
+      {...props}
     >
       <ShadowStack
         {...position.sizeAsObject(AvatarCircleSize)}

@@ -9,7 +9,7 @@ import {
 } from 'react-native-dotenv';
 import { AppDispatch, AppGetState } from './store';
 import {
-  ConfirmationTimeByPriorityFee,
+  BlocksToConfirmation,
   CurrentBlockParams,
   GasFee,
   GasFeeParam,
@@ -28,7 +28,6 @@ import {
 
 import {
   polygonGasStationGetGasPrices,
-  polygonGetGasEstimates,
   rainbowMeteorologyGetData,
 } from '@rainbow-me/handlers/gasFees';
 import {
@@ -104,7 +103,7 @@ interface GasState {
   gasFeesBySpeed: GasFeesBySpeed | LegacyGasFeesBySpeed;
   txNetwork: Network | null;
   currentBlockParams: CurrentBlockParams;
-  confirmationTimeByPriorityFee: ConfirmationTimeByPriorityFee;
+  blocksToConfirmation: BlocksToConfirmation;
   customGasFeeModifiedByUser: boolean;
   l1GasFeeOptimism: BigNumber | null;
 }
@@ -259,7 +258,7 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
     gasFeeParamsBySpeed,
     gasLimit,
     currentBlockParams,
-    confirmationTimeByPriorityFee,
+    blocksToConfirmation,
   } = getState().gas;
 
   const { nativeCurrency } = getState().settings;
@@ -283,10 +282,9 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
   newGasFeesBySpeed[CUSTOM] = customGasFees;
   newGasFeeParamsBySpeed[CUSTOM] = defaultGasParamsFormat(
     CUSTOM,
-    currentBlockParams.baseFeePerGas.amount,
     gasParams.maxFeePerGas.amount,
     gasParams.maxPriorityFeePerGas.amount,
-    confirmationTimeByPriorityFee
+    blocksToConfirmation
   );
   const newSelectedGasFee = getSelectedGasFee(
     newGasFeeParamsBySpeed,
@@ -320,29 +318,42 @@ export const gasPricesStartPolling = (network = Network.mainnet) => async (
     }: {
       data: GasFeesPolygonGasStationData;
     } = await polygonGasStationGetGasPrices();
+    const polygonGasPriceBumpFactor = 1.05;
+
     // Override required to make it compatible with other responses
     const polygonGasStationPrices = {
-      average: Math.ceil(Number(result['SafeGasPrice'])),
-      fast: Math.ceil(Number(result['ProposeGasPrice'])),
-      fastest: Math.ceil(Number(result['FastGasPrice'])),
+      fast: Math.ceil(
+        Number(multiply(result['ProposeGasPrice'], polygonGasPriceBumpFactor))
+      ),
+      // 1 blocks, 2.5 - 3 secs
+      fastWait: 0.05,
+      normal: Math.ceil(
+        Number(multiply(result['SafeGasPrice'], polygonGasPriceBumpFactor))
+      ),
+      // 2 blocks, 6 secs
+      normalWait: 0.1,
+      urgent: Math.ceil(
+        Number(multiply(result['FastGasPrice'], polygonGasPriceBumpFactor))
+      ),
+      // 1 blocks, 2.5 - 3 secs
+      urgentWait: 0.05,
     };
-    return polygonGetGasEstimates(polygonGasStationPrices);
+    return polygonGasStationPrices;
   };
 
   const getArbitrumGasPrices = async () => {
     const provider = await getProviderForNetwork(Network.arbitrum);
     const baseGasPrice = await provider.getGasPrice();
-    const baseGasPriceGwei = weiToGwei(baseGasPrice.toString());
-    const fastGasPriceAdjusted = multiply(baseGasPriceGwei, '1.2');
-    const normalGasPriceAdjusted = multiply(baseGasPriceGwei, '1');
-    const safeLowGasPriceWithBuffer = multiply(baseGasPriceGwei, '0.8');
+    const normalGasPrice = weiToGwei(baseGasPrice.toString());
+
     const priceData = {
-      average: Number(normalGasPriceAdjusted),
-      avgWait: 0.5,
-      fast: Number(fastGasPriceAdjusted),
-      fastWait: 0.2,
-      safeLow: Number(safeLowGasPriceWithBuffer),
-      safeLowWait: 1,
+      fast: Number(normalGasPrice),
+      fastWait: 0.14,
+      // 2 blocks, 8 secs
+      normal: Number(normalGasPrice),
+      normalWait: 0.14,
+      urgent: Number(normalGasPrice),
+      urgentWait: 0.14,
     };
 
     return priceData;
@@ -351,15 +362,16 @@ export const gasPricesStartPolling = (network = Network.mainnet) => async (
   const getOptimismGasPrices = async () => {
     const provider = await getProviderForNetwork(Network.optimism);
     const baseGasPrice = await provider.getGasPrice();
-    const gasPriceGwei = Number(weiToGwei(baseGasPrice.toString()));
+    const normalGasPrice = weiToGwei(baseGasPrice.toString());
 
     const priceData = {
-      average: gasPriceGwei,
-      avgWait: 0.5,
-      fast: gasPriceGwei,
-      fastWait: 0.2,
-      safeLow: gasPriceGwei,
-      safeLowWait: 1,
+      fast: normalGasPrice,
+      fastWait: 0.34,
+      normal: normalGasPrice,
+      // 20 secs
+      normalWait: 0.34,
+      urgent: normalGasPrice,
+      urgentWait: 0.34,
     };
     return priceData;
   };
@@ -373,11 +385,11 @@ export const gasPricesStartPolling = (network = Network.mainnet) => async (
       baseFeePerGas,
       baseFeeTrend,
       currentBaseFee,
-      confirmationTimeByPriorityFee,
+      blocksToConfirmation,
     } = parseRainbowMeteorologyData(data);
     return {
       baseFeePerGas,
-      confirmationTimeByPriorityFee,
+      blocksToConfirmation,
       currentBaseFee,
       gasFeeParamsBySpeed,
       trend: baseFeeTrend,
@@ -416,11 +428,9 @@ export const gasPricesStartPolling = (network = Network.mainnet) => async (
                 adjustedGasFees = await getOptimismGasPrices();
                 dataIsReady = l1GasFeeOptimism !== null;
               }
+              if (!adjustedGasFees) return;
 
-              const gasFeeParamsBySpeed = parseL2GasPrices(
-                adjustedGasFees,
-                network
-              );
+              const gasFeeParamsBySpeed = parseL2GasPrices(adjustedGasFees);
 
               if (!gasFeeParamsBySpeed) return;
 
@@ -465,7 +475,7 @@ export const gasPricesStartPolling = (network = Network.mainnet) => async (
                   baseFeePerGas,
                   trend,
                   currentBaseFee,
-                  confirmationTimeByPriorityFee,
+                  blocksToConfirmation,
                 } = await getEIP1559GasParams();
 
                 // Set a really gas estimate to guarantee that we're gonna be over
@@ -514,7 +524,7 @@ export const gasPricesStartPolling = (network = Network.mainnet) => async (
 
                 dispatch({
                   payload: {
-                    confirmationTimeByPriorityFee,
+                    blocksToConfirmation,
                     currentBlockParams: {
                       baseFeePerGas: currentBaseFee,
                       trend,
@@ -670,7 +680,7 @@ export const gasPricesStopPolling = () => (dispatch: AppDispatch) => {
 
 // -- Reducer --------------------------------------------------------------- //
 const INITIAL_STATE: GasState = {
-  confirmationTimeByPriorityFee: {} as ConfirmationTimeByPriorityFee,
+  blocksToConfirmation: {} as BlocksToConfirmation,
   currentBlockParams: {} as CurrentBlockParams,
   customGasFeeModifiedByUser: false,
   defaultGasLimit: ethUnits.basic_tx,
@@ -707,8 +717,7 @@ export default (
     case GAS_FEES_SUCCESS:
       return {
         ...state,
-        confirmationTimeByPriorityFee:
-          action.payload.confirmationTimeByPriorityFee,
+        blocksToConfirmation: action.payload.blocksToConfirmation,
         currentBlockParams: action.payload.currentBlockParams,
         gasFeeParamsBySpeed: action.payload.gasFeeParamsBySpeed,
         gasFeesBySpeed: action.payload.gasFeesBySpeed,
