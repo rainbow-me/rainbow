@@ -4,7 +4,6 @@ import LottieView from 'lottie-react-native';
 import React, { Fragment, useEffect, useMemo, useRef } from 'react';
 import { StyleSheet } from 'react-native';
 import { Transition, Transitioning } from 'react-native-reanimated';
-import styled from 'styled-components';
 import jumpingDaiAnimation from '../../assets/lottie/jumping-dai.json';
 import jumpingEthAnimation from '../../assets/lottie/jumping-eth.json';
 import { CoinIcon } from '../coin-icon';
@@ -22,6 +21,7 @@ import { useDimensions, usePrevious, useTimeout } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import { ETH_ADDRESS, getWyreErrorOverride } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 
 const OrderIdText = styled(Text).attrs({
@@ -29,14 +29,14 @@ const OrderIdText = styled(Text).attrs({
   lineHeight: 20,
   size: 18,
   weight: 'bold',
-})``;
+})({});
 
 const StatusMessageText = styled(Text).attrs({
   align: 'center',
   lineHeight: 30,
   size: 23,
   weight: 'bold',
-})``;
+})({});
 
 const sx = StyleSheet.create({
   container: {

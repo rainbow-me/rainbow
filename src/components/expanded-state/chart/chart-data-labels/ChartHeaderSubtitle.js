@@ -1,5 +1,5 @@
-import styled from 'styled-components';
 import { TruncatedText } from '../../../text';
+import styled from '@rainbow-me/styled-components';
 
 const ChartHeaderSubtitle = styled(TruncatedText).attrs(
   ({
@@ -15,11 +15,9 @@ const ChartHeaderSubtitle = styled(TruncatedText).attrs(
     testID,
     weight,
   })
-)`
-  flex: 1;
-  ${android &&
-  `margin-vertical: -10px
-    margin-left: 9`}
-`;
+)({
+  flex: 1,
+  ...(android ? { marginLeft: 9, marginVertical: -10 } : {}),
+});
 
 export default ChartHeaderSubtitle;

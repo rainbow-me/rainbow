@@ -31,17 +31,3 @@ const polygonGasStationApi = new RainbowFetchClient({
  */
 export const polygonGasStationGetGasPrices = () =>
   polygonGasStationApi.get(`/gasapi.ashx?apikey=key&method=gasoracle`);
-
-/**
- * @desc get Polygon time estimates
- * @params {data}
- * @return {Promise}
- */
-export const polygonGetGasEstimates = (data: any) => {
-  return {
-    ...data,
-    avgWait: 0.5,
-    fastWait: 0.2,
-    safeLowWait: 1,
-  };
-};
