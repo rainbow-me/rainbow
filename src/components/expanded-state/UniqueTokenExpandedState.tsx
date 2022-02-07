@@ -1,4 +1,3 @@
-import styled from '@rainbow-me/styled-components';
 import { BlurView } from '@react-native-community/blur';
 import c from 'chroma-js';
 import lang from 'i18n-js';
@@ -65,6 +64,7 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation, useUntrustedUrlOpener } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import { convertAmountToNativeDisplay } from '@rainbow-me/utilities';
 import {

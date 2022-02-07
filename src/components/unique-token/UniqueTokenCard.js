@@ -1,4 +1,3 @@
-import styled from '@rainbow-me/styled-components';
 import React, { useCallback, useMemo } from 'react';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder } from '../layout';
@@ -8,6 +7,7 @@ import {
   usePersistentAspectRatio,
   usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { shadow as shadowUtil } from '@rainbow-me/styles';
 
 const UniqueTokenCardBorderRadius = 20;

@@ -1,4 +1,3 @@
-import styled from '@rainbow-me/styled-components';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Animated,
@@ -9,6 +8,7 @@ import {
 } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { ImgixImage } from '@rainbow-me/images';
+import styled from '@rainbow-me/styled-components';
 import { padding, position } from '@rainbow-me/styles';
 
 export type ModelViewerProps = {
