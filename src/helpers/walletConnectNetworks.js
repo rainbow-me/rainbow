@@ -2,9 +2,14 @@ import networkInfo from './networkInfo';
 import store from '@rainbow-me/redux/store';
 import { ethereumUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
 
-const androidNetworkActions = Object.values(networkInfo)
-  .filter(({ disabled, testnet }) => !disabled && !testnet)
-  .map(netInfo => netInfo.name);
+const androidNetworkActions = () => {
+  const { testnetsEnabled } = store.getState().settings;
+  return Object.values(networkInfo)
+    .filter(
+      ({ disabled, testnet }) => !disabled && (testnetsEnabled || !testnet)
+    )
+    .map(netInfo => netInfo.name);
+};
 
 const androidReverseNetworkWithName = name =>
   Object.values(networkInfo).find(netInfo => netInfo.name === name);
@@ -71,7 +76,7 @@ export const changeConnectionMenuItems = () => {
 export const androidShowNetworksActionSheet = callback => {
   showActionSheetWithOptions(
     {
-      options: androidNetworkActions,
+      options: androidNetworkActions(),
       showSeparators: true,
       title: `Available Networks`,
     },
