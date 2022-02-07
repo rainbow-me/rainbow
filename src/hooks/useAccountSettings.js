@@ -29,9 +29,9 @@ export default function useAccountSettings() {
       settings: {
         accountAddress,
         chainId,
-        testnetsEnabled,
         nativeCurrency,
         network,
+        testnetsEnabled,
       },
     }) => ({
       accountAddress,
