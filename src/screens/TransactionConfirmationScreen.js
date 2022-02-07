@@ -222,13 +222,8 @@ export default function TransactionConfirmationScreen() {
 
   const getNextNonce = useCurrentNonce(accountInfo.address, currentNetwork);
 
-  const isTestnet = useMemo(() => {
-    return isTestnetNetwork(currentNetwork);
-  }, [currentNetwork]);
-
-  const isL2 = useMemo(() => {
-    return isL2Network(currentNetwork);
-  }, [currentNetwork]);
+  const isTestnet = isTestnetNetwork(currentNetwork);
+  const isL2 = isL2Network(currentNetwork);
 
   useEffect(() => {
     setCurrentNetwork(
