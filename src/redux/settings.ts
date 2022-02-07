@@ -32,6 +32,8 @@ const SETTINGS_UPDATE_NETWORK_SUCCESS =
   'settings/SETTINGS_UPDATE_NETWORK_SUCCESS';
 const SETTINGS_UPDATE_TESTNET_PREF_SUCCESS =
   'settings/SETTINGS_UPDATE_TESTNET_PREF_SUCCESS';
+const SETTINGS_UPDATE_NATIVE_CURRENCY_AND_TESTNETS_SUCCESS =
+  'settings/SETTINGS_UPDATE_NATIVE_CURRENCY_AND_TESTNETS_SUCCESS';
 
 // -- Actions --------------------------------------------------------------- //
 
@@ -55,6 +57,7 @@ type SettingsStateUpdateAction =
   | SettingsStateUpdateNativeCurrencySuccessAction
   | SettingsStateUpdateNetworkSuccessAction
   | SettingsStateUpdateTestnetPrefAction
+  | SettingsStateUpdateNativeCurrencyAndTestnetsSuccessAction
   | SettingsStateUpdateLanguageSuccessAction;
 
 interface SettingsStateUpdateSettingsAddressAction {
@@ -67,11 +70,11 @@ interface SettingsStateUpdateNativeCurrencySuccessAction {
   payload: SettingsState['nativeCurrency'];
 }
 
-interface SettingsStateUpdateNetworkSuccessAction {
-  type: typeof SETTINGS_UPDATE_NETWORK_SUCCESS;
+interface SettingsStateUpdateNativeCurrencyAndTestnetsSuccessAction {
+  type: typeof SETTINGS_UPDATE_NATIVE_CURRENCY_AND_TESTNETS_SUCCESS;
   payload: {
-    chainId: SettingsState['chainId'];
-    network: SettingsState['network'];
+    nativeCurrency: SettingsState['nativeCurrency'];
+    testnetsEnabled: SettingsState['testnetsEnabled'];
   };
 }
 
@@ -80,13 +83,21 @@ interface SettingsStateUpdateTestnetPrefAction {
   payload: SettingsState['testnetsEnabled'];
 }
 
+interface SettingsStateUpdateNetworkSuccessAction {
+  type: typeof SETTINGS_UPDATE_NETWORK_SUCCESS;
+  payload: {
+    chainId: SettingsState['chainId'];
+    network: SettingsState['network'];
+  };
+}
+
 interface SettingsStateUpdateLanguageSuccessAction {
   type: typeof SETTINGS_UPDATE_LANGUAGE_SUCCESS;
   payload: SettingsState['language'];
 }
 
 export const settingsLoadState = () => async (
-  dispatch: Dispatch<SettingsStateUpdateNativeCurrencySuccessAction>
+  dispatch: Dispatch<SettingsStateUpdateNativeCurrencyAndTestnetsSuccessAction>
 ) => {
   try {
     const nativeCurrency = await getNativeCurrency();
@@ -97,11 +108,11 @@ export const settingsLoadState = () => async (
     });
 
     dispatch({
-      payload: nativeCurrency,
-      type: SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS,
+      payload: { nativeCurrency, testnetsEnabled },
+      type: SETTINGS_UPDATE_NATIVE_CURRENCY_AND_TESTNETS_SUCCESS,
     });
   } catch (error) {
-    logger.log('Error loading native currency', error);
+    logger.log('Error loading native currency and testnets pref', error);
   }
 };
 
@@ -121,33 +132,6 @@ export const settingsLoadNetwork = () => async (
   }
 };
 
-export const settingsLoadTestnetsEnabled = () => async (
-  dispatch: Dispatch<SettingsStateUpdateTestnetPrefAction>
-) => {
-  try {
-    const testnetsEnabled = await getTestnetsEnabled();
-    analytics.identify(null, {
-      enabledTestnets: testnetsEnabled,
-    });
-
-    dispatch({
-      payload: testnetsEnabled,
-      type: SETTINGS_UPDATE_TESTNET_PREF_SUCCESS,
-    });
-  } catch (error) {
-    logger.log('Error loading testnetsEnabled', error);
-  }
-};
-export const settingsChangeTestnetsEnabled = (testnetsEnabled: any) => async (
-  dispatch: Dispatch<SettingsStateUpdateTestnetPrefAction>
-) => {
-  dispatch({
-    payload: testnetsEnabled,
-    type: SETTINGS_UPDATE_TESTNET_PREF_SUCCESS,
-  });
-  saveTestnetsEnabled(testnetsEnabled);
-};
-
 export const settingsLoadLanguage = () => async (
   dispatch: Dispatch<SettingsStateUpdateLanguageSuccessAction>
 ) => {
@@ -161,6 +145,16 @@ export const settingsLoadLanguage = () => async (
   } catch (error) {
     logger.log('Error loading language settings', error);
   }
+};
+
+export const settingsChangeTestnetsEnabled = (testnetsEnabled: any) => async (
+  dispatch: Dispatch<SettingsStateUpdateTestnetPrefAction>
+) => {
+  dispatch({
+    payload: testnetsEnabled,
+    type: SETTINGS_UPDATE_TESTNET_PREF_SUCCESS,
+  });
+  saveTestnetsEnabled(testnetsEnabled);
 };
 
 export const settingsUpdateAccountAddress = (accountAddress: string) => async (
@@ -259,10 +253,11 @@ export default (state = INITIAL_STATE, action: SettingsStateUpdateAction) => {
         ...state,
         language: action.payload,
       };
-    case SETTINGS_UPDATE_TESTNET_PREF_SUCCESS:
+    case SETTINGS_UPDATE_NATIVE_CURRENCY_AND_TESTNETS_SUCCESS:
       return {
         ...state,
-        testnetsEnabled: action.payload,
+        nativeCurrency: action.payload.nativeCurrency,
+        testnetsEnabled: action.payload.testnetsEnabled,
       };
     default:
       return state;
