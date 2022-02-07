@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import dice from '../assets/dice.png';
 import TintButton from '../components/buttons/TintButton';
@@ -28,6 +28,7 @@ import {
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { colors } from '@rainbow-me/styles';
+import { normalizeENS } from '@rainbow-me/utils';
 
 export default function RegisterEnsSheet() {
   const { height: deviceHeight } = useDimensions();
@@ -37,28 +38,22 @@ export default function RegisterEnsSheet() {
   const debouncedSearchQuery = useDebounceString(searchQuery);
 
   const {
-    available,
-    rentPrice,
-    expirationDate,
-    status,
-    registrationDate,
+    data,
+    isIdle,
+    isRegistered,
+    isLoading,
+    isInvalid,
+    isAvailable,
   } = useENSRegistration({
     duration: 1,
     name: debouncedSearchQuery,
   });
 
-  const isLoading = status === 'loading';
-  const isSuccess = status === 'success';
-
   const state = useMemo(() => {
-    if (isSuccess) {
-      if (available) {
-        return 'success';
-      }
-      return 'warning';
-    }
-    return undefined;
-  }, [isSuccess, available]);
+    if (isAvailable) return 'success';
+    if (isRegistered || isInvalid) return 'warning';
+    return 'rainbow';
+  }, [isAvailable, isInvalid, isRegistered]);
 
   return (
     <Box background="body" flexGrow={1}>
@@ -86,20 +81,27 @@ export default function RegisterEnsSheet() {
             paddingTop="42px"
           >
             <SearchInput
+              contextMenuHidden
               isLoading={isLoading}
-              onChangeText={setSearchQuery}
+              onChangeText={value => setSearchQuery(normalizeENS(value))}
               placeholder="Input placeholder"
               state={state}
               value={searchQuery}
             />
           </Box>
-
-          {isLoading && (
-            <Text color="secondary40" size="18px" weight="bold">
-              Hold a sec...
-            </Text>
+          {isInvalid && (
+            <Inset horizontal="30px">
+              <Text
+                align="center"
+                color="secondary50"
+                size="16px"
+                weight="bold"
+              >
+                {data?.hint}
+              </Text>
+            </Inset>
           )}
-          {isSuccess && (
+          {(isAvailable || isRegistered) && (
             <Inset horizontal="19px">
               <Stack
                 separator={
@@ -111,25 +113,25 @@ export default function RegisterEnsSheet() {
               >
                 <Inline alignHorizontal="justify" wrap={false}>
                   <SearchResultGradientIndicator
-                    isRegistered={!available}
+                    isRegistered={isRegistered}
                     type="availability"
                   />
-                  {!available ? (
+                  {isRegistered ? (
                     <SearchResultGradientIndicator
-                      expirationDate={expirationDate}
+                      expirationDate={data?.expirationDate}
                       type="expiration"
                     />
                   ) : (
                     <SearchResultGradientIndicator
-                      price={`${rentPrice?.perYear?.display} / Year`}
+                      price={`${data?.rentPrice?.perYear?.display} / Year`}
                       type="price"
                     />
                   )}
                 </Inline>
                 <Inset horizontal="19px">
-                  {!available ? (
+                  {isRegistered ? (
                     <Text color="secondary50" size="16px" weight="bold">
-                      This name was last registered on {registrationDate}
+                      This name was last registered on {data?.registrationDate}
                     </Text>
                   ) : (
                     <Inline>
@@ -147,8 +149,8 @@ export default function RegisterEnsSheet() {
             </Inset>
           )}
         </Box>
-        <Box paddingTop="42px">
-          {debouncedSearchQuery.length < 3 && (
+        <Box paddingTop="34px">
+          {isIdle && (
             <Inline
               alignHorizontal="center"
               alignVertical="center"
@@ -164,22 +166,19 @@ export default function RegisterEnsSheet() {
             </Inline>
           )}
           <SheetActionButtonRow>
-            {isSuccess && debouncedSearchQuery.length > 2 && (
-              <>
-                {available ? (
-                  <SheetActionButton
-                    color={colors.green}
-                    label="Continue on 􀆊"
-                    onPress={() => null}
-                    size="big"
-                    weight="heavy"
-                  />
-                ) : (
-                  <TintButton onPress={() => setSearchQuery('')}>
-                    􀅉 Clear
-                  </TintButton>
-                )}
-              </>
+            {isAvailable && (
+              <SheetActionButton
+                color={colors.green}
+                label="Continue on 􀆊"
+                onPress={() => null}
+                size="big"
+                weight="heavy"
+              />
+            )}
+            {(isRegistered || isInvalid) && (
+              <TintButton onPress={() => setSearchQuery('')}>
+                􀅉 Clear
+              </TintButton>
             )}
           </SheetActionButtonRow>
           <KeyboardArea initialHeight={keyboardHeight} isOpen />

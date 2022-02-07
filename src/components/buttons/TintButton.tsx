@@ -27,6 +27,7 @@ const TintButton = ({
       justifyContent="center"
       // @ts-expect-error
       onPress={onPress}
+      style={{ overflow: 'hidden' }}
     >
       <Cover>
         <Box
