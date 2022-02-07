@@ -7,13 +7,13 @@ import { settingsUpdateNetwork } from '../../redux/settings';
 import { Column } from '../layout';
 import { ListFooter, ListItem } from '../list';
 import NetworkSection from './NetworkSection';
-
 import {
   useAccountSettings,
   useInitializeAccountData,
   useLoadAccountData,
   useResetAccountState,
 } from '@rainbow-me/hooks';
+
 const UserDevSection = () => {
   const dispatch = useDispatch();
 
