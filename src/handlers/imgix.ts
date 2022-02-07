@@ -72,7 +72,7 @@ const shouldSignUri = (
       // Check that the URL was signed as expected.
       if (typeof signedExternalImageUri === 'string') {
         // Buffer the signature into the LRU for future use.
-        const signature = `${externalImageUri}-${options?.w}-${options?.fm}`;
+        const signature = `${externalImageUri}-${options?.w}`;
         !staticSignatureLRU.has(signature) &&
           staticSignatureLRU.set(signature, signedExternalImageUri);
         // Return the signed image.
@@ -115,7 +115,7 @@ export const maybeSignUri = (
   skipCaching: boolean = false
 ): string | undefined => {
   // If the image has already been signed, return this quickly.
-  const signature = `${externalImageUri}-${options?.w}-${options?.fm}`;
+  const signature = `${externalImageUri}-${options?.w}`;
   if (
     typeof externalImageUri === 'string' &&
     staticSignatureLRU.has(signature as string) &&
