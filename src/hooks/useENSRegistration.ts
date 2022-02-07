@@ -36,7 +36,7 @@ const formatRentPrice = (
     rentPriceInETH,
     nativeAssetPrice,
     nativeCurrency,
-    3,
+    undefined,
     true
   );
   const {
@@ -46,7 +46,7 @@ const formatRentPrice = (
     rentPricePerYear,
     nativeAssetPrice,
     nativeCurrency,
-    3,
+    undefined,
     true
   );
 
