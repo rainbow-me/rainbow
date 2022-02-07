@@ -2,11 +2,11 @@ import React, { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
 import { ScrollView, Switch } from 'react-native-gesture-handler';
 import { useDispatch } from 'react-redux';
-import networkTypes from '../../helpers/networkTypes';
 import { settingsUpdateNetwork } from '../../redux/settings';
 import { Column } from '../layout';
 import { ListFooter, ListItem } from '../list';
 import NetworkSection from './NetworkSection';
+import { Network } from '@rainbow-me/helpers/networkTypes';
 import {
   useAccountSettings,
   useInitializeAccountData,
@@ -28,9 +28,9 @@ const UserDevSection = () => {
 
   const revertToMainnet = useCallback(async () => {
     await resetAccountState();
-    await dispatch(settingsUpdateNetwork(networkTypes.mainnet));
+    await dispatch(settingsUpdateNetwork(Network.mainnet));
     InteractionManager.runAfterInteractions(async () => {
-      await loadAccountData(networkTypes.mainnet);
+      await loadAccountData(Network.mainnet);
       initializeAccountData();
     });
   }, [dispatch, initializeAccountData, loadAccountData, resetAccountState]);
