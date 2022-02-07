@@ -1,4 +1,5 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
+import { Keyboard } from 'react-native';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import dice from '../assets/dice.png';
 import TintButton from '../components/buttons/TintButton';
@@ -50,6 +51,11 @@ export default function ENSSearchSheet() {
     if (isRegistered || isInvalid) return 'warning';
     return 'rainbow';
   }, [isAvailable, isInvalid, isRegistered]);
+
+  const handlePressContinue = useCallback(() => {
+    Keyboard.dismiss();
+    navigate(Routes.ENS_ASSIGN_RECORDS_SHEET);
+  }, [navigate]);
 
   return (
     <Box background="body" flexGrow={1}>
@@ -128,7 +134,7 @@ export default function ENSSearchSheet() {
             <SheetActionButton
               color={colors.green}
               label="Continue on 􀆊"
-              onPress={() => navigate(Routes.ENS_ASSIGN_RECORDS_SHEET)}
+              onPress={handlePressContinue}
               size="big"
               weight="heavy"
             />
