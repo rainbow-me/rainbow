@@ -4,7 +4,9 @@ import analytics from '@segment/analytics-react-native';
 import * as Sentry from '@sentry/react-native';
 import { get } from 'lodash';
 import { nanoid } from 'nanoid/non-secure';
+import pako from 'pako';
 import PropTypes from 'prop-types';
+import qs from 'qs';
 import React, { Component } from 'react';
 import {
   AppRegistry,
@@ -136,7 +138,7 @@ class App extends Component {
 
       if (params['+non_branch_link']) {
         const nonBranchUrl = params['+non_branch_link'];
-        this.handleOpenLinkingURL(nonBranchUrl);
+        this.handleOpenLinkingURL(this.decodeBranchUrl(nonBranchUrl));
         return;
       } else if (!params['+clicked_branch_link']) {
         // Indicates initialization success and some other conditions.
@@ -183,6 +185,23 @@ class App extends Component {
     this.backgroundNotificationListener?.();
     this.branchListener?.();
   }
+
+  decodeBranchUrl = source => {
+    // Before: rainbow://open?_branch_referrer=a&link_click_id=b
+    const query = source.split('?')[1];
+
+    // Before: _branch_referrer=A&link_click_id=B
+    const queryParam = qs.parse(query)['_branch_referrer'];
+
+    const base64Url = decodeURIComponent(queryParam);
+    const ascii = Buffer.from(base64Url, 'base64');
+
+    // https://rnbwapp.com/C?uri=D
+    const originalUniversalUrl = pako.inflate(ascii, { to: 'string' });
+    const uriParam = qs.parse(originalUniversalUrl.split('?')[1]).uri;
+
+    return uriParam;
+  };
 
   identifyFlow = async () => {
     const address = await loadAddress();
