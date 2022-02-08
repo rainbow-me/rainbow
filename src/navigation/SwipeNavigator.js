@@ -28,14 +28,14 @@ export function SwipeNavigator() {
   const { network } = useAccountSettings();
   const [swipeEnabled, setSwipeEnabled] = useState(true);
   const params = useMemo(() => ({ setSwipeEnabled }), []);
-  const hide = useHideSplashScreen();
+  // const hide = useHideSplashScreen();
 
-  useEffect(() => hide(), [hide]);
+  // useEffect(() => hide(), [hide]);
 
   return (
     <FlexItem>
-      <ENSAssignRecordsSheet />
-      {/* <Swipe.Navigator
+      {/* <ENSAssignRecordsSheet /> */}
+      <Swipe.Navigator
         initialLayout={deviceUtils.dimensions}
         initialRouteName={Routes.WALLET_SCREEN}
         pager={renderPager}
@@ -50,7 +50,7 @@ export function SwipeNavigator() {
           name={Routes.QR_SCANNER_SCREEN}
         />
       </Swipe.Navigator>
-      <TestnetToast network={network} /> */}
+      <TestnetToast network={network} />
     </FlexItem>
   );
 }

@@ -12,14 +12,12 @@ import {
 type InlineFieldProps = {
   label: string;
   placeholder?: string;
-  multiline?: boolean;
   inputProps?: Partial<TextInputProps>;
 };
 
 export default function InlineField({
   label,
   placeholder,
-  multiline,
   inputProps,
 }: InlineFieldProps) {
   const textSize = 16;
@@ -45,7 +43,6 @@ export default function InlineField({
         </Inset>
       </Column>
       <Input
-        multiline={multiline}
         onContentSizeChange={handleContentSizeChange}
         placeholder={placeholder}
         style={{
@@ -54,7 +51,7 @@ export default function InlineField({
           lineHeight: undefined,
           marginBottom: 0,
           marginTop: 0,
-          paddingTop: multiline ? 15 : 0,
+          paddingTop: inputProps?.multiline ? 15 : 0,
         }}
         {...inputProps}
       />

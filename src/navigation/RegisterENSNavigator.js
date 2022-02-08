@@ -46,7 +46,7 @@ export default function RegisterENSNavigator() {
       >
         <Swipe.Navigator
           initialLayout={deviceUtils.dimensions}
-          initialRouteName={Routes.ENS_ASSIGN_RECORDS_SHEET}
+          initialRouteName={Routes.ENS_SEARCH_SHEET}
           pager={renderPager}
           swipeEnabled={false}
           tabBar={renderTabBar}

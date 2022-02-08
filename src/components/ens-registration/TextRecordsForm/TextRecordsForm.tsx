@@ -1,4 +1,6 @@
+/* eslint-disable sort-keys-fix/sort-keys-fix */
 import React from 'react';
+import { TextInputProps } from 'react-native';
 import InlineField from '../../inputs/InlineField';
 import { Box, Divider } from '@rainbow-me/design-system';
 
@@ -7,16 +9,39 @@ type Field = {
   key: string;
   label: string;
   placeholder: string;
-  multiline?: boolean;
+  inputProps?: Partial<TextInputProps>;
 };
 
 export const fields = {
+  name: {
+    id: 'name',
+    key: 'me.rainbow.displayName',
+    label: 'Name',
+    placeholder: 'Add a display name',
+  },
   bio: {
     id: 'bio',
+    inputProps: {
+      multiline: true,
+    },
     key: 'description',
     label: 'Bio',
-    multiline: true,
     placeholder: 'Add a bio to your profile',
+  },
+  twitter: {
+    id: 'twitter',
+    key: 'com.twitter',
+    label: 'Twitter',
+    placeholder: '@username',
+  },
+  website: {
+    id: 'website',
+    inputProps: {
+      keyboardType: 'url',
+    },
+    key: 'website',
+    label: 'Website',
+    placeholder: 'Add your website',
   },
   github: {
     id: 'github',
@@ -30,29 +55,11 @@ export const fields = {
     label: 'Instagram',
     placeholder: '@username',
   },
-  name: {
-    id: 'name',
-    key: 'me.rainbow.displayName',
-    label: 'Name',
-    placeholder: 'Add a display name',
-  },
   snapchat: {
     id: 'snapchat',
     key: 'com.snapchat',
     label: 'Snapchat',
     placeholder: '@username',
-  },
-  twitter: {
-    id: 'twitter',
-    key: 'com.twitter',
-    label: 'Twitter',
-    placeholder: '@username',
-  },
-  website: {
-    id: 'website',
-    key: 'website',
-    label: 'Website',
-    placeholder: 'Add your website',
   },
   youtube: {
     id: 'youtube',
@@ -63,20 +70,20 @@ export const fields = {
 };
 
 type TextRecordsFormProps = {
-  defaultFields: Field[];
+  selectedFields: Field[];
 };
 
 export default function TextRecordsForm({
-  defaultFields,
+  selectedFields,
 }: TextRecordsFormProps) {
   return (
     <Box>
-      {defaultFields.map(({ label, multiline, placeholder }, i) => (
-        <Box key={i}>
+      {selectedFields.map(({ label, inputProps, placeholder, id }) => (
+        <Box key={id}>
           <Divider />
           <InlineField
+            inputProps={inputProps}
             label={label}
-            multiline={multiline}
             placeholder={placeholder}
           />
         </Box>

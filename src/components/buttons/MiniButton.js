@@ -38,10 +38,17 @@ const Content = styled(RowWithMargins).attrs({
   align: 'center',
   margin: 5,
 })`
-  ${({ hasLeadingIcon, small }) =>
-    padding(0, small ? 8 : 10, 0, hasLeadingIcon ? 6 : small ? 8 : 10)};
+  ${({ hasLeadingIcon, small, disablePadding }) =>
+    padding(
+      0,
+      disablePadding ? 0 : small ? 8 : 10,
+      0,
+      disablePadding ? 0 : hasLeadingIcon ? 6 : small ? 8 : 10
+    )};
   border-radius: 15px;
-  height: ${({ small }) => (small ? 27 : 30)};
+  align-items: center;
+  justify-content: center;
+  height: ${({ height }) => height};
   z-index: 1;
 `;
 
@@ -51,6 +58,7 @@ export default function MiniButton({
   children,
   color,
   disabled,
+  disablePadding,
   hasLeadingIcon,
   height,
   hideShadow,
@@ -104,8 +112,9 @@ export default function MiniButton({
                 : backgroundColor || colors.appleBlue
               : 'none'
           }
+          disablePadding={disablePadding}
           hasLeadingIcon={hasLeadingIcon}
-          small={small}
+          height={height ? height : small ? 27 : 30}
         >
           {typeof children === 'string' ? (
             <Text

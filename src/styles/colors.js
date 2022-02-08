@@ -114,6 +114,7 @@ const getColorsByTheme = darkMode => {
     purple: '#735CFF', // '115, 92, 255'
     purpleDark: '#6F00A3', // '111, 0, 163'
     purpleLight: '#FFD9FE', // '255, 217, 254'
+    purpleTint: '#9875D7', // 152, 117, 215
     purpleUniswap: '#FF007A', // '255,0,122'
     red: '#FF494A', // '255, 73, 74'
     rowDivider: 'rgba(60, 66, 82, 0.03)', // '60, 66, 82, 0.03'
