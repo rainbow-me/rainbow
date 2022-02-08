@@ -38,10 +38,22 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   const ref = useRef<RecyclerListViewRef>();
 
   useEffect(() => {
+    // this is hacky, but let me explain what's happening here:
+    // RecyclerListView is trying to persist the position while updating the component.
+    // Therefore, internally the library wants to scroll to old position.
+    // However, Android is setting the position to 0, because there's no content so
+    // the event has no effect on content position and this is set to 0 as expected.
+    // To avoid generating this nonsense event, I firstly set internally the position to 0.
+    // Then the update might happen, but this is OK, because I overrode the position
+    // with `updateOffset` method. However, this is happening inside `setTimeout`
+    // so the callback might be already scheduled (this is a race condition, happens randomly).
+    // We need to clear this scheduled event with `clearTimeout` method.
+    // Then, in case the event was not emitted, we want to emit this anyway (`scrollToOffset`)
+    // to make headers located in `0` position.
     // @ts-ignore
     ref.current?._virtualRenderer
       ?.getViewabilityTracker?.()
-      .updateOffset(0, true, 0);
+      ?.updateOffset?.(0, true, 0);
     // @ts-ignore
     clearTimeout(ref.current?._processInitialOffsetTimeout);
     ref.current?.scrollToOffset(0, 0);
