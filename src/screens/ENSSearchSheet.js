@@ -20,6 +20,7 @@ import {
 import {
   useDebounceString,
   useENSRegistration,
+  useENSRegistrationEstimations,
   useKeyboardHeight,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
@@ -35,7 +36,7 @@ export default function ENSSearchSheet() {
   const debouncedSearchQuery = useDebounceString(searchQuery);
 
   const {
-    data,
+    data: registrationData,
     isIdle,
     isRegistered,
     isLoading,
@@ -45,6 +46,24 @@ export default function ENSSearchSheet() {
     duration: 1,
     name: debouncedSearchQuery,
   });
+
+  const {
+    data: estimationsData,
+    isAvailable: estimationIsAvailable,
+  } = useENSRegistrationEstimations({
+    duration: 1,
+    ensIsAvailable: isAvailable,
+    name: debouncedSearchQuery,
+    rentPrice: registrationData?.rentPrice?.wei,
+  });
+
+  console.log(
+    'screen rent price ',
+    1,
+    isAvailable,
+    debouncedSearchQuery,
+    registrationData?.rentPrice?.wei
+  );
 
   const state = useMemo(() => {
     if (isAvailable) return 'success';
@@ -87,7 +106,7 @@ export default function ENSSearchSheet() {
         {isInvalid && (
           <Inset horizontal="30px">
             <Text align="center" color="secondary50" size="16px" weight="bold">
-              {data?.hint}
+              {registrationData?.hint}
             </Text>
           </Inset>
         )}
@@ -100,25 +119,25 @@ export default function ENSSearchSheet() {
               />
               {isRegistered ? (
                 <SearchResultGradientIndicator
-                  expiryDate={data?.expirationDate}
+                  expiryDate={registrationData?.expirationDate}
                   type="expiration"
                 />
               ) : (
                 <SearchResultGradientIndicator
-                  price={`${data?.rentPrice?.perYear?.display}  / Year`}
+                  price={`${registrationData?.rentPrice?.perYear?.display}  / Year`}
                   type="price"
                 />
               )}
             </Inline>
           </Inset>
         )}
-        {isAvailable && (
+        {estimationIsAvailable && (
           <Inset horizontal="30px">
             <Inline alignHorizontal="justify" wrap={false}>
               <Text color="secondary40" size="18px" weight="bold">
                 Estimated total cost of{' '}
-                {data?.estimatedTotalRegistrationCost?.display} with current
-                network fees
+                {estimationsData?.estimatedTotalRegistrationCost?.display} with
+                current network fees
               </Text>
             </Inline>
           </Inset>
