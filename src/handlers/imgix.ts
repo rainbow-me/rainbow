@@ -36,6 +36,9 @@ const staticImgixClient = shouldCreateImgixClient();
 // for components which may have been unmounted/remounted. This is done to
 // increase performance.
 
+// TODO: We need to find a suitable upper limit.
+//       This might be conditional based upon either the runtime
+//       hardware or the number of unique tokens a user may have.
 const capacity = 512;
 export const staticSignatureLRU = new LRUCache<string, string>(capacity);
 
