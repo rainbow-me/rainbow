@@ -138,7 +138,16 @@ class App extends Component {
 
       if (params['+non_branch_link']) {
         const nonBranchUrl = params['+non_branch_link'];
-        this.handleOpenLinkingURL(this.decodeBranchUrl(nonBranchUrl));
+
+        // This happens when branch.io redirects user to the app in the
+        // aggressive redirect mode with a confirmation modal in Safari.
+        if (nonBranchUrl.startsWith('rainbow://open')) {
+          this.handleOpenLinkingURL(this.decodeBranchUrl(nonBranchUrl));
+          // This happens when user taps Rainbow universal link managed by branch.io
+          // and it is handled by iOS
+        } else {
+          this.handleOpenLinkingURL(nonBranchUrl);
+        }
         return;
       } else if (!params['+clicked_branch_link']) {
         // Indicates initialization success and some other conditions.
@@ -149,7 +158,7 @@ class App extends Component {
           return;
         }
       } else if (uri) {
-        this.handleOpenLinkingURL(uri);
+        this.handleOpenLinkingURL(params.uri);
       }
     });
 
