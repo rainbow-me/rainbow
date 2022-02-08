@@ -1,3 +1,4 @@
+import { format } from 'date-fns';
 import { useCallback, useMemo } from 'react';
 import { useQuery } from 'react-query';
 import { useAccountSettings } from '.';
@@ -30,10 +31,13 @@ const formatRentPrice = (
   const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
     Network.mainnet
   );
+
   const { amount, display } = convertAmountAndPriceToNativeDisplay(
     rentPriceInETH,
     nativeAssetPrice,
-    nativeCurrency
+    nativeCurrency,
+    undefined,
+    true
   );
   const {
     display: displayPerYear,
@@ -41,7 +45,9 @@ const formatRentPrice = (
   } = convertAmountAndPriceToNativeDisplay(
     rentPricePerYear,
     nativeAssetPrice,
-    nativeCurrency
+    nativeCurrency,
+    undefined,
+    true
   );
 
   return {
@@ -57,9 +63,9 @@ const formatRentPrice = (
   };
 };
 
-const formatTime = (timestamp: string) => {
-  const date = new Date(Number(timestamp) * 1000);
-  return `${date.toLocaleDateString()}`;
+const formatTime = (timestamp: string, abbreviated: boolean = true) => {
+  const style = abbreviated ? 'MMM d, y' : 'MMMM d, y';
+  return format(new Date(Number(timestamp) * 1000), style);
 };
 
 export default function useENSRegistration({
@@ -103,7 +109,7 @@ export default function useENSRegistration({
         // we need the expiration and registration date when is not available
         const registrationDate = await fetchRegistrationDate(name + '.eth');
         const nameExpires = await getNameExpires(name);
-        const formattedRegistrarionDate = formatTime(registrationDate);
+        const formattedRegistrarionDate = formatTime(registrationDate, false);
         const formattedExpirationDate = formatTime(nameExpires);
 
         return {
