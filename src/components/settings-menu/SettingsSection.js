@@ -2,7 +2,6 @@ import AsyncStorage from '@react-native-community/async-storage';
 import lang from 'i18n-js';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { Image, Linking, NativeModules, ScrollView, Share } from 'react-native';
-import styled from 'styled-components';
 import { THEMES, useTheme } from '../../context/ThemeContext';
 import { supportedLanguages } from '../../languages';
 import AppVersionStamp from '../AppVersionStamp';
@@ -38,6 +37,7 @@ import {
   useSendFeedback,
   useWallets,
 } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import {
   AppleReviewAddress,
@@ -48,7 +48,7 @@ const { RainbowRequestReview, RNReview } = NativeModules;
 
 export const SettingsExternalURLs = {
   rainbowHomepage: 'https://rainbow.me',
-  rainbowLearn: 'https://rainbow.me/learn',
+  rainbowLearn: 'https://learn.rainbow.me',
   review:
     'itms-apps://itunes.apple.com/us/app/appName/id1457119021?mt=8&action=write-review',
   twitterDeepLink: 'twitter://user?screen_name=rainbowdotme',
@@ -57,47 +57,50 @@ export const SettingsExternalURLs = {
 
 const CheckmarkIcon = styled(Icon).attrs({
   name: 'checkmarkCircled',
-})`
-  box-shadow: 0px 4px 6px
-    ${({ theme: { colors, isDarkMode } }) =>
-      colors.alpha(isDarkMode ? colors.shadow : colors.blueGreyDark50, 0.4)};
-`;
+})({
+  shadowColor: ({ theme: { colors, isDarkMode } }) =>
+    colors.alpha(isDarkMode ? colors.shadow : colors.blueGreyDark50, 0.4),
+  shadowOffset: { height: 4, width: 0 },
+  shadowRadius: 6,
+});
 
-const Container = styled(Column).attrs({})`
-  ${position.cover};
-  background-color: ${({ backgroundColor }) => backgroundColor};
-`;
+const Container = styled(Column).attrs({})({
+  ...position.coverAsObject,
+
+  backgroundColor: ({ backgroundColor }) => backgroundColor,
+});
 
 const scrollContainerStyle = { flex: 1 };
 const ScrollContainer = styled(ScrollView).attrs({
   scrollEventThrottle: 32,
-})``;
+})({});
 
 // ⚠️ Beware: magic numbers lol
-const SettingIcon = styled(Image)`
-  ${position.size(60)};
-  margin-left: -16;
-  margin-right: -11;
-  margin-top: 8;
-`;
+const SettingIcon = styled(Image)({
+  ...position.sizeAsObject(60),
+  marginLeft: -16,
+  marginRight: -11,
+  marginTop: 8,
+});
 
 const VersionStampContainer = styled(Column).attrs({
   align: 'center',
   justify: 'end',
-})`
-  flex: 1;
-  padding-bottom: 19;
-`;
+})({
+  flex: 1,
+  paddingBottom: 19,
+});
 
 const WarningIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
   color: colors.orangeLight,
   name: 'warning',
-}))`
-  box-shadow: 0px 4px 6px
-    ${({ theme: { colors, isDarkMode } }) =>
-      isDarkMode ? colors.shadow : colors.alpha(colors.orangeLight, 0.4)};
-  margin-top: 1;
-`;
+}))({
+  marginTop: 1,
+  shadowColor: ({ theme: { colors, isDarkMode } }) =>
+    isDarkMode ? colors.shadow : colors.alpha(colors.orangeLight, 0.4),
+  shadowOffset: { height: 4, width: 0 },
+  shadowRadius: 6,
+});
 
 function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -268,7 +271,7 @@ export default function SettingsSection({
             onPress={toggleTheme}
             testID={`darkmode-section-${isDarkMode}`}
           >
-            <Column align="end" flex="1" justify="end">
+            <Column align="end" flex={1} justify="end">
               <Text
                 color={colors.alpha(colors.blueGreyDark, 0.6)}
                 size="large"

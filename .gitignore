@@ -100,3 +100,6 @@ out/
 # Ts-coverage
 coverage-ts
 .type-coverage/
+
+# Generated TypeScript declarations
+src/languages/types-generated.d.ts

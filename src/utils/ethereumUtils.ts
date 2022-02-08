@@ -469,7 +469,7 @@ function getBlockExplorer(network: Network) {
     case Network.mainnet:
       return 'etherscan';
     case Network.polygon:
-      return 'polygonScan';
+      return 'polygonscan';
     case Network.optimism:
       return 'etherscan';
     case Network.arbitrum:
@@ -491,6 +491,17 @@ function openTokenEtherscanURL(address: EthereumAddress, network: Network) {
   if (!isString(address)) return;
   const etherscanHost = getEtherscanHostForNetwork(network);
   Linking.openURL(`https://${etherscanHost}/token/${address}`);
+}
+
+function openNftInBlockExplorer(
+  contractAddress: string,
+  tokenId: string,
+  network: Network
+) {
+  const etherscanHost = getEtherscanHostForNetwork(network);
+  Linking.openURL(
+    `https://${etherscanHost}/token/${contractAddress}?a=${tokenId}`
+  );
 }
 
 function openTransactionInBlockExplorer(hash: string, network: Network) {
@@ -647,6 +658,7 @@ export default {
   hasPreviousTransactions,
   isEthAddress,
   openAddressInBlockExplorer,
+  openNftInBlockExplorer,
   openTokenEtherscanURL,
   openTransactionInBlockExplorer,
   padLeft,

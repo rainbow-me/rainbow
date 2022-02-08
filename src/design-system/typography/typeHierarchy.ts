@@ -66,5 +66,14 @@ export const typeHierarchy = {
         ios: -0.3,
       },
     },
+    '23px': {
+      fontSize: 23,
+      letterSpacing: 0.6,
+      lineHeight: 27,
+      marginCorrection: {
+        android: -0.3,
+        ios: -0.3,
+      },
+    },
   },
 } as const;

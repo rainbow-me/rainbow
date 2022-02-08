@@ -1,7 +1,6 @@
 import lang from 'i18n-js';
 import React, { useCallback, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
-import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { useNavigation } from '../../navigation/Navigation';
 import { abbreviations, magicMemo, profileUtils } from '../../utils';
@@ -19,6 +18,7 @@ import {
 } from '@rainbow-me/helpers/emojiHandler';
 import { isValidDomainFormat } from '@rainbow-me/helpers/validators';
 import { useAccountSettings, useContacts } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { margin, padding } from '@rainbow-me/styles';
 
 const AddressAbbreviation = styled(TruncatedAddress).attrs(
@@ -30,11 +30,11 @@ const AddressAbbreviation = styled(TruncatedAddress).attrs(
     truncationLength: 4,
     weight: 'regular',
   })
-)`
-  ${margin(9, 0, 5)};
-  opacity: 0.6;
-  width: 100%;
-`;
+)({
+  ...margin.object(9, 0, 5),
+  opacity: 0.6,
+  width: '100%',
+});
 
 const ENSAbbreviation = styled(TruncatedENS).attrs(({ theme: { colors } }) => ({
   align: 'center',
@@ -42,15 +42,15 @@ const ENSAbbreviation = styled(TruncatedENS).attrs(({ theme: { colors } }) => ({
   size: 'lmedium',
   truncationLength: 18,
   weight: 'regular',
-}))`
-  ${margin(9, 0, 5)};
-  opacity: 0.6;
-  width: 100%;
-`;
+}))({
+  ...margin.object(9, 0, 5),
+  opacity: 0.6,
+  width: '100%',
+});
 
-const Spacer = styled.View`
-  height: 19;
-`;
+const Spacer = styled.View({
+  height: 19,
+});
 
 const SubmitButton = styled(Button).attrs(
   ({ theme: { colors }, value, color }) => ({
@@ -64,18 +64,21 @@ const SubmitButton = styled(Button).attrs(
     showShadow: true,
     size: 'small',
   })
-)`
-  height: 43;
-  width: 215;
-`;
+)({
+  height: 43,
+  width: 215,
+});
 
 const SubmitButtonLabel = styled(Text).attrs(({ value }) => ({
   color: value.length > 0 ? 'whiteLabel' : 'white',
   size: 'lmedium',
   weight: 'bold',
-}))`
-  margin-bottom: 1.5;
-`;
+}))({
+  marginBottom: 1.5,
+});
+
+const centerdStyles = padding.object(24, 25);
+const bottomStyles = padding.object(8, 9);
 
 const ContactProfileState = ({ address, color: colorProp, contact }) => {
   const { goBack } = useNavigation();
@@ -135,7 +138,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
 
   return (
     <ProfileModal onPressBackdrop={handleAddContact}>
-      <Centered css={padding(24, 25)} direction="column">
+      <Centered direction="column" style={centerdStyles}>
         <ProfileAvatarButton
           changeAvatar={handleChangeAvatar}
           color={color}
@@ -157,7 +160,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
         <CopyTooltip
           onHide={handleTriggerFocusInput}
           textToCopy={address}
-          tooltipText={lang.t('wallet.settings.copy_address')}
+          tooltipText={lang.t('wallet.settings.copy_address_capitalized')}
         >
           {isValidDomainFormat(address) ? (
             <ENSAbbreviation ens={address} />
@@ -192,7 +195,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
         >
           <Centered
             backgroundColor={colors.white}
-            css={padding(8, 9)}
+            style={bottomStyles}
             testID="contact-profile-cancel-button"
           >
             <Text

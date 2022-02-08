@@ -12,7 +12,6 @@ import React, {
 } from 'react';
 import { StatusBar } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
-import styled from 'styled-components';
 import GestureBlocker from '../components/GestureBlocker';
 import {
   CurrencySelectionList,
@@ -25,6 +24,7 @@ import { usePagerPosition } from '../navigation/ScrollPositionContext';
 import { addHexPrefix } from '@rainbow-me/handlers/web3';
 import { CurrencySelectionTypes } from '@rainbow-me/helpers';
 import {
+  useCoinListEditOptions,
   useInteraction,
   useMagicAutofocus,
   usePrevious,
@@ -35,12 +35,13 @@ import {
 import { delayNext } from '@rainbow-me/hooks/useMagicAutofocus';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import { filterList } from '@rainbow-me/utils';
 
-const TabTransitionAnimation = styled(Animated.View)`
-  ${position.size('100%')};
-`;
+const TabTransitionAnimation = styled(Animated.View)(
+  position.sizeAsObject('100%')
+);
 
 const headerlessSection = data => [{ data, title: '' }];
 const Wrapper = ios ? KeyboardFixedOpenLayout : Fragment;
@@ -87,6 +88,16 @@ export default function CurrencySelectModal() {
     searchQuery,
   ]);
   const uniswapAssetsInWallet = useUniswapAssetsInWallet();
+  const { hiddenCoins } = useCoinListEditOptions();
+
+  const filteredUniswapAssetsInWallet = useMemo(
+    () =>
+      uniswapAssetsInWallet.filter(
+        ({ uniqueId }) => !hiddenCoins.includes(uniqueId)
+      ),
+    [uniswapAssetsInWallet, hiddenCoins]
+  );
+
   const {
     uniswapCurrencyList,
     uniswapCurrencyListLoading,
@@ -95,12 +106,12 @@ export default function CurrencySelectModal() {
   const getWalletCurrencyList = () => {
     if (searchQueryForSearch !== '') {
       const searchResults = searchWalletCurrencyList(
-        uniswapAssetsInWallet,
+        filteredUniswapAssetsInWallet,
         searchQueryForSearch
       );
       return headerlessSection(searchResults);
     } else {
-      return headerlessSection(uniswapAssetsInWallet);
+      return headerlessSection(filteredUniswapAssetsInWallet);
     }
   };
   const currencyList =
@@ -218,6 +229,10 @@ export default function CurrencySelectModal() {
       shouldUpdateFavoritesRef.current = true;
     }
   }, [assetsToFavoriteQueue, handleApplyFavoritesQueue, searchQueryExists]);
+
+  useEffect(() => {
+    setIsSearching(uniswapCurrencyListLoading);
+  }, [uniswapCurrencyListLoading]);
 
   const style = useAnimatedStyle(() => ({
     opacity: scrollPosition.value,

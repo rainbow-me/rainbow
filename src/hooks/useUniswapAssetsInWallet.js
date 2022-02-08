@@ -18,24 +18,34 @@ const useUniswapAssetsInWallet = () => {
       const uniswapData = await getUniswapV2Tokens(
         sortedAssets.map(({ address }) => address)
       );
-      uniswapAssets = uniswapData || [];
+      uniswapAssets = uniswapData ? Object.values(uniswapData) : [];
     } else {
       uniswapAssets = sortedAssets;
     }
     setUniswapAssets(uniswapAssets);
   }, [sortedAssets, isMainnet]);
-  const getIsUniswapAsset = asset => {
-    return (
-      uniswapAssets.find(
-        ({ address }) => address === asset.address.toLowerCase()
-      ) || asset.address === ETH_ADDRESS
-    );
-  };
+
+  const getIsUniswapAsset = useCallback(
+    asset => {
+      return (
+        uniswapAssets.find(
+          ({ address }) => address === asset.address.toLowerCase()
+        ) || asset.address === ETH_ADDRESS
+      );
+    },
+    [uniswapAssets]
+  );
+
   useEffect(() => {
     getUniswapAssets();
   }, [getUniswapAssets]);
 
-  return sortedAssets.filter(getIsUniswapAsset);
+  const uniswapAssetsInWallet = useMemo(
+    () => sortedAssets.filter(getIsUniswapAsset),
+    [sortedAssets, getIsUniswapAsset]
+  );
+
+  return uniswapAssetsInWallet;
 };
 
 export default useUniswapAssetsInWallet;
