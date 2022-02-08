@@ -2,10 +2,12 @@ import { map } from 'lodash';
 import { convertAmountToNativeDisplay, multiply } from '../helpers/utilities';
 import useAccountSettings from './useAccountSettings';
 import useSavingsAccount from './useSavingsAccount';
+import { Network } from '@rainbow-me/helpers';
 
 export default function useSendSavingsAccount() {
-  const { nativeCurrency } = useAccountSettings();
+  const { nativeCurrency, network: currentNetwork } = useAccountSettings();
   let { savings } = useSavingsAccount();
+  if (currentNetwork !== Network.mainnet) return;
   savings = map(savings, asset => {
     const { cToken, cTokenBalance, exchangeRate, underlyingPrice } = asset;
     const cTokenBalanceDisplay = `${cTokenBalance} ${cToken.symbol}`;
