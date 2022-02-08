@@ -38,6 +38,9 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   const ref = useRef<RecyclerListViewRef>();
 
   useEffect(() => {
+    if (ios) {
+      return;
+    }
     // this is hacky, but let me explain what's happening here:
     // RecyclerListView is trying to persist the position while updating the component.
     // Therefore, internally the library wants to scroll to old position.
