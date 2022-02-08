@@ -66,12 +66,10 @@ export default function useENSRegistrationCosts({
   duration,
   name,
   rentPrice,
-  ensIsAvailable,
 }: {
   duration: number;
   name: string;
   rentPrice: BigNumber;
-  ensIsAvailable: boolean;
 }) {
   const { nativeCurrency, accountAddress } = useAccountSettings();
   const isValidLength = useMemo(() => name.length > 2, [name.length]);
@@ -113,7 +111,7 @@ export default function useENSRegistrationCosts({
   }, [accountAddress, duration, name, nativeCurrency, rentPrice]);
 
   const { data, status } = useQuery(
-    ensIsAvailable && [
+    rentPrice && [
       'getRegistrationValuesEstimations',
       duration,
       name,

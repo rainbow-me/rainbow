@@ -52,7 +52,6 @@ export default function ENSSearchSheet() {
     isAvailable: registrationCostsDataIsAvailable,
   } = useENSRegistrationCosts({
     duration: 1,
-    ensIsAvailable: isAvailable,
     name: debouncedSearchQuery,
     rentPrice: registrationData?.rentPrice?.wei,
   });
