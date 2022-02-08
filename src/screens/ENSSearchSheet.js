@@ -57,14 +57,6 @@ export default function ENSSearchSheet() {
     rentPrice: registrationData?.rentPrice?.wei,
   });
 
-  console.log(
-    'screen rent price ',
-    1,
-    isAvailable,
-    debouncedSearchQuery,
-    registrationData?.rentPrice?.wei
-  );
-
   const state = useMemo(() => {
     if (isAvailable) return 'success';
     if (isRegistered || isInvalid) return 'warning';

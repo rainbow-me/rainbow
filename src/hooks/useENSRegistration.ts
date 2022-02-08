@@ -1,3 +1,4 @@
+import { BigNumber } from 'ethers';
 import { useCallback, useMemo } from 'react';
 import { useQuery } from 'react-query';
 import { useAccountSettings } from '.';
@@ -21,7 +22,7 @@ const getRentPricePerYear = (rentPrice: string, duration: number) =>
   divide(rentPrice, duration);
 
 const formatRentPrice = (
-  rentPrice: string,
+  rentPrice: BigNumber,
   duration: number,
   nativeCurrency: any,
   nativeAssetPrice: any
@@ -53,7 +54,7 @@ const formatRentPrice = (
       amount,
       display,
     },
-    wei: rentPrice.toString(),
+    wei: rentPrice,
   };
 };
 

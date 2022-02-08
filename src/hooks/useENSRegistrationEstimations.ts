@@ -1,3 +1,4 @@
+import { BigNumber } from 'ethers';
 import { useCallback, useMemo } from 'react';
 import { useQuery } from 'react-query';
 import { useAccountSettings } from '.';
@@ -69,7 +70,7 @@ export default function useENSRegistrationEstimations({
 }: {
   duration: number;
   name: string;
-  rentPrice: string;
+  rentPrice: BigNumber;
   ensIsAvailable: boolean;
 }) {
   const { nativeCurrency, accountAddress } = useAccountSettings();
@@ -98,7 +99,7 @@ export default function useENSRegistrationEstimations({
 
     const weiEstimatedTotalCost = add(
       formattedEstimatedNetworkFee.wei,
-      rentPrice
+      rentPrice.toString()
     );
     const totalRegistrationCost = formatTotalRegistrationCost(
       weiEstimatedTotalCost,
