@@ -197,10 +197,12 @@ const getENSExecutionDetails = async ({
       if (!name || !ownerAddress) throw new Error('Bad arguments for commit');
       const salt = generateSalt();
       const registrarController = getENSRegistrarControllerContract();
-      const commitment = await registrarController.makeCommitment(
+      const commitment = await registrarController.makeCommitmentWithConfig(
         name,
         ownerAddress,
-        salt
+        salt,
+        ensPublicResolverAddress,
+        ownerAddress
       );
       args = [commitment];
       contract = getENSRegistrarControllerContract();

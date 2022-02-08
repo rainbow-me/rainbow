@@ -223,7 +223,7 @@ export const estimateENSRegistrationGasLimit = async (
     setNameGasLimitPromise,
     multicallGasLimitPromise,
   ]);
-  // we need to add register gas limit manually since the gas estimation will fail
+  // we need to add register gas limit manually since the gas estimation will fail since the commit tx is not sent yet
   gasLimits.push(`${ethUnits.ens_register_with_config}`);
   const gasLimit = gasLimits.reduce((a, b) => add(a || 0, b || 0));
   if (!gasLimit) return '0';
