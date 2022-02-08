@@ -21,6 +21,7 @@ import { lightModeThemeColors } from '../../styles/colors';
 import L2Disclaimer from '../L2Disclaimer';
 import Link from '../Link';
 import { ButtonPressAnimation } from '../animations';
+import TokenHistory from '../expanded-state/token-history/TokenHistory';
 import {
   SendActionButton,
   SheetActionButton,
@@ -269,6 +270,10 @@ const UniqueTokenExpandedState = ({
     [asset.permalink]
   );
 
+  const [contractAddress, tokenID] = !isPoap
+    ? urlSuffixForAsset.split('/')
+    : [null, null];
+
   const handlePressShowcase = useCallback(() => {
     if (isShowcaseAsset) {
       removeShowcaseToken(uniqueId);
@@ -493,6 +498,11 @@ const UniqueTokenExpandedState = ({
                                 )}
                           </TokenInfoItem>
                         </Columns>
+                        <TokenHistory
+                          color={imageColor}
+                          contract={contractAddress}
+                          token={tokenID}
+                        />
                       </Bleed>
                     ) : null}
                     {description ? (
