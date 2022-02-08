@@ -1,4 +1,3 @@
-import styled from '@rainbow-me/styled-components';
 import { toLower } from 'lodash';
 import React, { Fragment, useCallback, useState } from 'react';
 import { useTheme } from '../../context/ThemeContext';
