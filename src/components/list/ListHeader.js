@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { createElement, Fragment } from 'react';
 import { Share } from 'react-native';
 import Divider from '../Divider';
@@ -34,7 +35,11 @@ const ShareCollectiblesBPA = styled(ButtonPressAnimation)({
 
 const ShareCollectiblesButton = ({ onPress }) => (
   <ShareCollectiblesBPA onPress={onPress} scale={0.9}>
-    <CoinDividerButtonLabel align="center" label="􀈂 Share" shareButton />
+    <CoinDividerButtonLabel
+      align="center"
+      label={`􀈂 ${lang.t('button.share')}}`}
+      shareButton
+    />
   </ShareCollectiblesBPA>
 );
 
@@ -80,8 +85,8 @@ export default function ListHeader({
     }`;
     const shareOptions = {
       message: isReadOnlyWallet
-        ? `Check out this wallet's collectibles on 🌈 Rainbow at ${showcaseUrl}`
-        : `Check out my collectibles on 🌈 Rainbow at ${showcaseUrl}`,
+        ? lang.t('list.share.check_out_this_wallet', { showcaseUrl })
+        : lang.t('list.share.check_out_my_wallet', { showcaseUrl }),
     };
     Share.share(shareOptions);
   }, [
@@ -91,7 +96,7 @@ export default function ListHeader({
     isReadOnlyWallet,
   ]);
 
-  if (title === 'Pools') {
+  if (title === lang.t('pools.pools_title')) {
     return (
       <SavingsListHeader
         emoji="whale"
@@ -99,7 +104,7 @@ export default function ListHeader({
         onPress={() => {}}
         savingsSumValue={totalValue}
         showSumValue
-        title="Pools"
+        title={lang.t('pools.pools_title')}
       />
     );
   } else {
@@ -124,7 +129,7 @@ export default function ListHeader({
           {children}
         </Content>
         {
-          /* 
+          /*
            The divider shows up as a white line in dark mode (android)
            so we won't render it till we figure it out why
           */

@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React from 'react';
 import { ColumnWithMargins } from '../../layout';
 import SwapDetailsContractRow from './SwapDetailsContractRow';
@@ -48,7 +49,7 @@ export default function SwapDetailsContent({
       {...props}
     >
       {showPriceImpact && (
-        <SwapDetailsRow label="Price impact">
+        <SwapDetailsRow label={lang.t('expanded_state.swap.price_impact')}>
           <SwapDetailsValue
             color={priceImpactColor}
             letterSpacing="roundedTight"

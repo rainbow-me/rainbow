@@ -22,7 +22,7 @@ export default function ShareButton({ accountAddress, ...props }) {
   const handlePress = useCallback(() => {
     Share.share({
       message: accountAddress,
-      title: 'My account address:',
+      title: lang.t('wallet.my_account_address'),
     });
   }, [accountAddress]);
 

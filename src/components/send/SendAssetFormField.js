@@ -1,4 +1,5 @@
 import analytics from '@segment/analytics-react-native';
+import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import { useTheme } from '../../context/ThemeContext';
@@ -100,7 +101,7 @@ const SendAssetFormField = (
       >
         <BubbleField
           autoFocus={autoFocus}
-          buttonText="Max"
+          buttonText={lang.t('wallet.transaction.max')}
           colorForAsset={colorForAsset || colors.dark}
           format={format}
           keyboardType="decimal-pad"

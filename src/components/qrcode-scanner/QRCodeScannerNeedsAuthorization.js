@@ -66,10 +66,10 @@ export default function QRCodeScannerNeedsAuthorization({ onGetBack }) {
   return (
     <Container>
       <QRIcon />
-      <Title>Scan to pay or connect</Title>
-      <Subtitle>Camera access needed to scan!</Subtitle>
+      <Title>{lang.t('wallet.qr.scan_to_pay_or_connect')}</Title>
+      <Subtitle>{lang.t('wallet.qr.camera_access_needed')}</Subtitle>
       <Button onPress={handlePressSettings}>
-        <ButtonLabel>Enable camera access 􀄫</ButtonLabel>
+        <ButtonLabel>{lang.t('wallet.qr.enable_camera_access')} 􀄫</ButtonLabel>
       </Button>
     </Container>
   );

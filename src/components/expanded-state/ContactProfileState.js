@@ -151,7 +151,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
         <ProfileNameInput
           onChange={setValue}
           onSubmitEditing={handleAddContact}
-          placeholder="Name"
+          placeholder={lang.t('expanded_state.contact_profile.name')}
           ref={inputRef}
           selectionColor={colors.avatarBackgrounds[color]}
           testID="contact-profile-name-input"

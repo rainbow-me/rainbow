@@ -89,11 +89,13 @@ export default function ChartExpandedStateHeader({
 
   const defaultTimeValue = useMemo(() => {
     if (chartType === ChartTypes.day) {
-      return 'Today';
+      return lang.t('expanded_state.chart.today');
     } else if (chartType === ChartTypes.max) {
-      return 'All Time';
+      return lang.t('expanded_state.chart.all_time');
     } else {
-      return `Past ${formattedTimespan}`;
+      return lang.t('expanded_state.chart.past_timespan', {
+        formattedTimespan,
+      });
     }
     // we need to make sure we recreate this value only when chart's data change
     // eslint-disable-next-line react-hooks/exhaustive-deps

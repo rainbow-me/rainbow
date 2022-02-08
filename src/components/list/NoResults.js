@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React from 'react';
 import { Centered, ColumnWithMargins } from '../layout';
 import { Emoji, Text } from '../text';
@@ -15,7 +16,7 @@ const NoResults = () => {
         size="lmedium"
         weight="medium"
       >
-        Nothing here!
+        {lang.t('list.nothing_here')}
       </Text>
     </ColumnWithMargins>
   );

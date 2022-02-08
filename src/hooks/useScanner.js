@@ -113,8 +113,8 @@ export default function useScanner(enabled, onSuccess) {
 
       Alert({
         buttons: [{ onPress: enableScanning, text: lang.t('button.okay') }],
-        message: lang.t('wallet.unrecognized_qrcode'),
-        title: lang.t('wallet.unrecognized_qrcode_title'),
+        message: lang.t('wallet.qr.sorry_could_not_be_recognized'),
+        title: lang.t('wallet.qr.unrecognized_qr_code_title'),
       });
     },
     [enableScanning]

@@ -60,15 +60,15 @@
     "back_up": {
       "cloud": {
         "password": {
+          "a_password_youll_remember": "Please use a password you'll remember. :)",
           "backup_password": "Backup Password :)",
           "choose_a_password": "Choose a password :)",
           "confirm_backup": "Confirm Backup :)",
           "confirm_password": "Confirm password :)",
           "confirm_placeholder": "Confirm Password :)",
+          "it_cant_be_recovered": "It can't be recovered! :)",
           "minimum_characters": "Minimum %{minimumLength} characters :)",
           "passwords_dont_match": "Passwords don't match :)",
-          "it_cant_be_recovered": "It can't be recovered! :)",
-          "a_password_youll_remember": "Please use a password you'll remember. :)",
           "strength": {
             "level1": "Weak password :)",
             "level2": "Good password :)",
@@ -82,8 +82,8 @@
         "add_to_cloud_platform": "Add to %{cloudPlatformName} Backup :)",
         "backup_password_placeholder": "Backup Password :)",
         "confirm_backup": "Confirm Backup :)",
-        "enter_backup_password": "Enter backup password :)",
-        "enter_backup_description": "To add this wallet to your %{cloudPlatformName} backup, enter your existing backup password :)"
+        "enter_backup_description": "To add this wallet to your %{cloudPlatformName} backup, enter your existing backup password :)",
+        "enter_backup_password": "Enter backup password :)"
       },
       "explainers": {
         "backup": "Don't forget this password! It is separate from your %{cloudPlatformName} password, and you should save it in a secure location.\n\nYou will need it in order to restore your wallet from the backup in the future. :)"
@@ -113,8 +113,8 @@
       "restore_sheet": {
         "from_backup": {
           "ios": {
-            "you_have_multiple_wallets": "You have %{walletsBackedUpCount} wallets backed up :)",
-            "you_have_1_wallet": "You have 1 wallet backed up :)"
+            "you_have_1_wallet": "You have 1 wallet backed up :)",
+            "you_have_multiple_wallets": "You have %{walletsBackedUpCount} wallets backed up :)"
           },
           "non_ios": {
             "if_you_previously_backed_up": "If you previously backed up your wallet on %{cloudPlatformName} tap here to restore it. :)"
@@ -129,6 +129,13 @@
           "watch_description": "Watch a public address or ENS name :)",
           "watch_title": "Watch an Ethereum address  :) "
         }
+      },
+      "secret": {
+        "anyone_who_has_these": "Anyone who has these words can access your entire wallet! :)",
+        "copy_to_clipboard": "Copy to clipboard :)",
+        "for_your_eyes_only": "For your eyes only :)",
+        "show_recovery": "Show Recovery %{typeName} :)",
+        "you_need_to_authenticate": "You need to authenticate in order to access your recovery %{typeName} :)"
       }
     },
     "button": {
@@ -168,6 +175,7 @@
         "hold_keyword": "Tenir",
         "tap_keyword": "Tap :)"
       },
+      "hold_to_send": "Hold to Send :)",
       "import": "Importer",
       "learn_more": "En savoir plus",
       "less": "Moins",
@@ -183,6 +191,7 @@
       "pin": "Epingler",
       "proceed": "Proceed :)",
       "receive": "Recevoir",
+      "save": "Save :)",
       "send": "Envoyer",
       "send_another": "Envoyer un autre",
       "share": "Share :)",
@@ -199,17 +208,23 @@
       "contact_row": {
         "balance_eth": "%{balanceEth} ETH :)"
       },
+      "contacts_title": "Contacts :)",
+      "my_wallets": "My wallets :)",
       "options": {
         "add": "Ajouter le contact",
         "cancel": "Annuler",
         "delete": "Effacer le contact",
         "edit": "Modifier le contact"
-      }
+      },
+      "send_header": "Send :)",
+      "suggestions": "Suggestions :)",
+      "to_header": "To :)",
+      "watching": "Watching :)"
     },
     "discover": {
       "lists": {
-        "this_list_is_empty": "This list is empty! :)",
-        "lists_title": "Lists :)"
+        "lists_title": "Lists :)",
+        "this_list_is_empty": "This list is empty! :)"
       },
       "pulse": {
         "pulse_description": "All the top DeFi tokens in one :)",
@@ -221,8 +236,8 @@
         "search_ethereum": "Search all of Ethereum :)"
       },
       "strategies": {
-        "yearn_finance_description": "Smart yield strategies from yearn.finance :)",
-        "strategies_title": "Strategies :)"
+        "strategies_title": "Strategies :)",
+        "yearn_finance_description": "Smart yield strategies from yearn.finance :)"
       },
       "title_discover": "Discover :)",
       "title_search": "Search :)",
@@ -244,10 +259,10 @@
       }
     },
     "error_boundary": {
-      "wallets_are_safe": "Don't worry, your wallets are safe! Just restart the app to get back to business. :)",
       "error_boundary_oops": "Oops! :)",
       "restart_rainbow": "Restart Rainbow :)",
-      "something_went_wrong": "Something went wrong. :)"
+      "something_went_wrong": "Something went wrong. :)",
+      "wallets_are_safe": "Don't worry, your wallets are safe! Just restart the app to get back to business. :)"
     },
     "exchange": {
       "coin_row": {
@@ -270,9 +285,9 @@
       },
       "swapping_for_prefix": "Swapping for :)",
       "unverified_token": {
-        "token_not_verified": "This token has not been verified! Rainbow surfaces all tokens that exist on Uniswap. Anyone can create a token, including fake versions of existing tokens and tokens that claim to represent projects that do not have a token. Please do your own research and be careful when interacting with unverified tokens! :)",
         "go_back": "Go Back :)",
         "proceed_anyway": "Proceed Anyway :)",
+        "token_not_verified": "This token has not been verified! Rainbow surfaces all tokens that exist on Uniswap. Anyone can create a token, including fake versions of existing tokens and tokens that claim to represent projects that do not have a token. Please do your own research and be careful when interacting with unverified tokens! :)",
         "unverified_token_title": "Unverified Token :)"
       },
       "view_details": "View Details :)"
@@ -296,6 +311,7 @@
         "volume_24_hours": "24h volume :)"
       },
       "chart": {
+        "all_time": "All Time :)",
         "date": {
           "months": {
             "month_00": "Jan :)",
@@ -313,7 +329,12 @@
           }
         },
         "no_price_data": "No price data :)",
+        "past_timespan": "Past %{formattedTimespan} :)",
+        "today": "Today :)",
         "token_pool": "%{tokenName} Pool :)"
+      },
+      "contact_profile": {
+        "name": "Name :)"
       },
       "liquidity_pool": {
         "annualized_fees": "Annualized fees :)",
@@ -333,6 +354,8 @@
       "swap": {
         "copy_contract_address": "Copy Contract Address :)",
         "losing": "Losing :)",
+        "price_impact": "Price impact :)",
+        "price_row_per_token": "per :)",
         "slippage_message": "This is a small market, so you’re getting a bad price. Try a smaller trade! :)",
         "swapping_via": "Swapping via :)",
         "unicorn_one": "that unicorn one :)",
@@ -348,16 +371,37 @@
         "underlying_tokens": "Underlying tokens :)"
       },
       "unique": {
+        "save": {
+          "access_to_photo_library_was_denied": "Access to photo library was denied :)",
+          "failed_to_save_image": "Failed to save Image :)",
+          "image_download_permission": "Image Download Permission :)",
+          "nft_image": "NFT image :)",
+          "your_permission_is_required": "Your permission is required to save images to your device :)"
+        },
         "view_on_opensea": "View on OpenSea :)"
       },
       "unique_expanded": {
         "about": "About %{assetFamilyName} :)",
         "attributes": "Attributes :)",
+        "collection_website": "Collection Website :)",
+        "copy_token_id": "Copy Token ID :)",
         "description": "Description :)",
+        "discord": "Discord",
+        "floor_price": "Floor price :)",
+        "for_sale": "For sale :)",
         "in_showcase": "In Showcase :)",
+        "last_sale_price": "Last sale price :)",
+        "opensea": "OpenSea",
+        "properties": "Properties :)",
+        "save_to_photos": "Save to Photos :)",
+        "share_token_info": "Share %{uniqueTokenName} Info :)",
         "showcase": "Showcase :)",
         "toast_added_to_showcase": "Added to showcase :)",
-        "toast_removed_from_showcase": "Removed from showcase :)"
+        "toast_removed_from_showcase": "Removed from showcase :)",
+        "twitter": "Twitter",
+        "view_collection": "View Collection :)",
+        "view_on_block_explorer": "View on %{blockExplorerName} :)",
+        "view_on_web": "View on Web :)"
       }
     },
     "fields": {
@@ -404,6 +448,13 @@
       "password_placeholder": "••••••••••",
       "private_key": "Clé privée",
       "recipient_address": "Adresse du destinataire"
+    },
+    "list": {
+      "nothing_here": "Nothing here! :)",
+      "share": {
+        "check_out_my_wallet": "Check out my collectibles on 🌈 Rainbow at %{showcaseUrl} :)",
+        "check_out_this_wallet": "Check out this wallet's collectibles on 🌈 Rainbow at %{showcaseUrl} :)"
+      }
     },
     "message": {
       "click_to_copy_to_clipboard": "Cliquez ici pour copier dans les presse-papiers",
@@ -522,11 +573,14 @@
       "per_share": "par action",
       "pool": "Pool",
       "pool_shares": "Partages de Pool",
+      "pools_title": "Pools :)",
       "total_value": "Valeur totale",
       "withdraw": "Retrait"
     },
     "savings": {
       "deposit": "Dépôt",
+      "deposit_from_wallet": "Deposit from Wallet :)",
+      "earned_lifetime_interest": "Earned %{lifetimeAccruedInterest} :)",
       "earnings": {
         "100_year": "100-Ans",
         "10_year": "10-Ans",
@@ -538,8 +592,15 @@
         "monthly": "Mensuel",
         "yearly": "Annuel"
       },
+      "get_prefix": "Get :)",
       "label": "Epargne",
-      "withdraw": "Retrait"
+      "on_your_dollars_suffix": "on your dollars :)",
+      "percentage": "%{percentage}\\% :)",
+      "percentage_apy": "%{percentage}\\% APY :)",
+      "with_digital_dollars_line_1": "With digital dollars like Dai, saving :)",
+      "with_digital_dollars_line_2": "earns you more than ever before :)",
+      "withdraw": "Retrait",
+      "zero_currency": "$0.00 :)"
     },
     "send_feedback": {
       "copy_email": "Copy email address :)",
@@ -582,6 +643,7 @@
         "custom": "Personnalisé",
         "edit_price": "Modifier le prix du gaz",
         "enter_price": "Enter Gas Price :)",
+        "estimated_fee": "Estimated fee :)",
         "fast": "Rapide",
         "network_fee": "Frais de Réseau",
         "normal": "Normal",
@@ -750,6 +812,7 @@
         "message": "Message :)",
         "request": "Message Signing Request :)"
       },
+      "my_account_address": "My account address: :)",
       "new": {
         "already_have_wallet": "I already have on :) ",
         "create_wallet": "Créez un portefeuille",
@@ -763,6 +826,18 @@
       "push_notifications": {
         "please_enable_body": "It looks like you are using WalletConnect. Please enable push notifications to be notified of transaction requests from WalletConnect. :)",
         "please_enable_title": "Rainbow would like to send you push notifications :)"
+      },
+      "qr": {
+        "camera_access_needed": "Camera access needed to scan! :)",
+        "enable_camera_access": "Enable camera access :)",
+        "error_mounting_camera": "Error mounting camera :)",
+        "find_a_code": "Find a code to scan :)",
+        "qr_1_app_connected": "1 app connected :)",
+        "qr_multiple_apps_connected": "%{appsConnectedCount} apps connected :)",
+        "scan_to_pay_or_connect": "Scan to pay or connect :)",
+        "simulator_mode": "Simulator Mode :)",
+        "sorry_could_not_be_recognized": "Sorry, this QR code could not be recognized. :)",
+        "unrecognized_qr_code_title": "Unrecognized QR Code :)"
       },
       "receive": "Recovoir",
       "settings": {
@@ -781,12 +856,12 @@
           "failed_transaction_status": "Échec de l'envoie du status de la transaction échouée",
           "transaction_status": "Échec de l'envoie du status de la transaction"
         },
+        "complete_checks": "Complete checks :)",
         "confirm": "Confirmer transaction",
+        "max": "Max :)",
         "request": "Demande de transaction",
         "send": "Envoyer transaction"
       },
-      "unrecognized_qrcode": "Sorry, this QR code could not be recognized. :)",
-      "unrecognized_qrcode_title": "Unrecognized QR Code :)",
       "wallet_connect": {
         "error": "Erreur d'initialisation avec WalletConnect",
         "missing_fcm": "Unable to initialize WalletConnect: missing push notification token. Please try again. :)"

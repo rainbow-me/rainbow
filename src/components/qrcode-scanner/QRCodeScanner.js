@@ -176,7 +176,7 @@ export default function QRCodeScanner({
 
       {cameraState === CameraState.Error && (
         <ContentOverlay contentPositionTop={contentPositionTop}>
-          <ErrorText error="Error mounting camera" />
+          <ErrorText error={lang.t('wallet.qr.error_mounting_camera')} />
 
           <ConnectedDapps />
         </ContentOverlay>

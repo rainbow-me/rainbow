@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { map } from 'lodash';
 import React, { Fragment } from 'react';
 import { OpacityToggler } from '../animations';
@@ -31,7 +32,7 @@ export default function PoolsListWrapper({
         onPress={toggleOpenInvestmentCards}
         savingsSumValue={totalValue}
         showSumValue
-        title="Pools"
+        title={lang.t('pools.pools_title')}
       />
       <OpacityToggler
         isVisible={!isInvestmentCardsOpen}

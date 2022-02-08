@@ -177,24 +177,28 @@ export default function SendContactList({
   const sections = useMemo(() => {
     const tmp = [];
     filteredContacts.length &&
-      tmp.push({ data: filteredContacts, id: 'contacts', title: '􀉮 Contacts' });
+      tmp.push({
+        data: filteredContacts,
+        id: 'contacts',
+        title: `􀉮 ${lang.t('contacts.contacts_title')}`,
+      });
     filteredAddresses.length &&
       tmp.push({
         data: filteredAddresses,
         id: 'accounts',
-        title: '􀢲 My wallets',
+        title: `􀢲 ${lang.t('contacts.my_wallets')}`,
       });
     filteredWatchedAddresses.length &&
       tmp.push({
         data: filteredWatchedAddresses,
         id: 'watching',
-        title: `${isDarkMode ? '􀨭' : '􀦧'} Watching`,
+        title: `${isDarkMode ? '􀨭' : '􀦧'} ${lang.t('contacts.watching')}`,
       });
     filteredEnsSuggestions.length &&
       tmp.push({
         data: filteredEnsSuggestions,
         id: 'suggestions',
-        title: '􀊫 Suggestions',
+        title: `􀊫 ${lang.t('contacts.suggestions')}`,
       });
     return tmp;
     // eslint-disable-next-line react-hooks/exhaustive-deps
