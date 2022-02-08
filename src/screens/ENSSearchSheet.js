@@ -112,6 +112,17 @@ export default function ENSSearchSheet() {
             </Inline>
           </Inset>
         )}
+        {isAvailable && (
+          <Inset horizontal="30px">
+            <Inline alignHorizontal="justify" wrap={false}>
+              <Text color="secondary40" size="18px" weight="bold">
+                Estimated total cost of{' '}
+                {data?.estimatedTotalRegistrationCost?.display} with current
+                network fees
+              </Text>
+            </Inline>
+          </Inset>
+        )}
       </Box>
       <Box>
         {isIdle && (
