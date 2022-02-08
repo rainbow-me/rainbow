@@ -20,7 +20,7 @@ import {
 } from '@rainbow-me/helpers/utilities';
 import { gweiToWei } from '@rainbow-me/parsers';
 import { getEIP1559GasParams } from '@rainbow-me/redux/gas';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils, validateENS } from '@rainbow-me/utils';
 
 const secsInYear = 31536000;
 
@@ -126,6 +126,17 @@ export default function useENSRegistration({
   const isValidLength = useMemo(() => name.length > 2, [name.length]);
 
   const getRegistrationValues = useCallback(async () => {
+    const ensValidation = validateENS(`${name}.eth`, {
+      includeSubdomains: false,
+    });
+    if (!ensValidation.valid) {
+      return {
+        code: ensValidation.code,
+        hint: ensValidation.hint,
+        valid: false,
+      };
+    }
+
     const isAvailable = await getAvailable(name);
     if (isAvailable) {
       const rentPrice = await getRentPrice(name, duration * secsInYear);
@@ -191,10 +202,26 @@ export default function useENSRegistration({
     }
   }, [name, duration, nativeCurrency, accountAddress]);
 
-  const { data: registrationData, status } = useQuery(
+  const { data, status } = useQuery(
     isValidLength && ['registration', name],
-    () => getRegistrationValues()
+    getRegistrationValues,
+    { retry: 0 }
   );
 
-  return { status: isValidLength ? status : 'idle', ...registrationData };
+  const newStatus = isValidLength ? status : 'idle';
+
+  const isIdle = newStatus === 'idle';
+  const isLoading = newStatus === 'loading';
+  const isAvailable = newStatus === 'success' && data?.available === true;
+  const isRegistered = newStatus === 'success' && data?.available === false;
+  const isInvalid = newStatus === 'success' && !data?.valid;
+
+  return {
+    data,
+    isAvailable,
+    isIdle,
+    isInvalid,
+    isLoading,
+    isRegistered,
+  };
 }
