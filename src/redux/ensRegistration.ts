@@ -1,39 +1,27 @@
 import { AnyAction } from 'redux';
 import { AppDispatch } from './store';
+import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 
 const ENS_REGISTRATION_UPDATE_NAME =
   'ensRegistration/ENS_REGISTRATION_UPDATE_NAME';
+const ENS_REGISTRATION_UPDATE_RECORD_BY_KEY =
+  'ensRegistration/ENS_REGISTRATION_UPDATE_RECORD_BY_KEY';
 const ENS_REGISTRATION_DUMMY_UPDATE_RECORDS =
   'ensRegistration/ENS_REGISTRATION_DUMMY_UPDATE_RECORDS';
-const ENS_REGISTRATION_UPDATE_RECORD =
-  'ensRegistration/ENS_REGISTRATION_UPDATE_RECORD';
-const ENS_REGISTRATION_UPDATE_RECORDS_ADDRESSES =
-  'ensRegistration/ENS_REGISTRATION_UPDATE_ADDRESSES_RECORD';
-const ENS_REGISTRATION_UPDATE_RECORDS_CONTENT =
-  'ensRegistration/ENS_REGISTRATION_UPDATE_RECORDS_CONTENT';
-const ENS_REGISTRATION_UPDATE_RECORDS_TEXT =
-  'ensRegistration/ENS_REGISTRATION_UPDATE_RECORDS_TEXT';
+const ENS_REGISTRATION_UPDATE_RECORDS =
+  'ensRegistration/ENS_REGISTRATION_UPDATE_RECORDS';
+const ENS_REGISTRATION_UPDATE_DURATION =
+  'ensRegistration/ENS_REGISTRATION_UPDATE_DURATION';
 
-enum RECORD_KEYS {
-  ADDRESSES_KEY,
-  CONTENT_KEY,
-  TEXT_KEY,
-}
-// -- Actions ---------------------------------------- //
+type Records = Record<ENS_RECORDS, string>;
 
-interface Records {
-  [key: string]: string;
-}
-
-interface ChartsState {
+interface ENSRegistrationState {
   name: string;
-  records: {
-    [RECORD_KEYS.ADDRESSES_KEY]: Records;
-    [RECORD_KEYS.CONTENT_KEY]: Records;
-    [RECORD_KEYS.TEXT_KEY]: Records;
-  };
+  duration: number;
+  records: Records;
 }
 
+// -- Actions ---------------------------------------- //
 export const ensRegistrationUpdateName = (name: string) => async (
   dispatch: AppDispatch
 ) =>
@@ -50,23 +38,20 @@ export const ensRegistrationUpdateRecords = (records: Records) => async (
     type: ENS_REGISTRATION_DUMMY_UPDATE_RECORDS,
   });
 
-export const ensRegistrationUpdateRecord = (
+export const ensRegistrationUpdateRecordByKey = (
   key: string,
   value: string
 ) => async (dispatch: AppDispatch) =>
   dispatch({
     payload: { key, value },
-    type: ENS_REGISTRATION_UPDATE_RECORD,
+    type: ENS_REGISTRATION_UPDATE_RECORD_BY_KEY,
   });
 
 // -- Reducer ----------------------------------------- //
-const INITIAL_STATE: ChartsState = {
+const INITIAL_STATE: ENSRegistrationState = {
+  duration: 0,
   name: '',
-  records: {
-    [RECORD_KEYS.ADDRESSES_KEY]: {} as Records,
-    [RECORD_KEYS.CONTENT_KEY]: {} as Records,
-    [RECORD_KEYS.TEXT_KEY]: {} as Records,
-  },
+  records: {} as Records,
 };
 
 export default (state = INITIAL_STATE, action: AnyAction) => {
@@ -81,34 +66,13 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
         ...state,
         name: action.payload,
       };
-    case ENS_REGISTRATION_UPDATE_RECORDS_ADDRESSES: {
+    case ENS_REGISTRATION_UPDATE_RECORDS: {
       return {
         ...state,
-        records: {
-          ...state.records,
-          [RECORD_KEYS.ADDRESSES_KEY]: action.payload,
-        },
+        records: action.payload,
       };
     }
-    case ENS_REGISTRATION_UPDATE_RECORDS_CONTENT: {
-      return {
-        ...state,
-        records: {
-          ...state.records,
-          [RECORD_KEYS.CONTENT_KEY]: action.payload,
-        },
-      };
-    }
-    case ENS_REGISTRATION_UPDATE_RECORDS_TEXT: {
-      return {
-        ...state,
-        records: {
-          ...state.records,
-          [RECORD_KEYS.TEXT_KEY]: action.payload,
-        },
-      };
-    }
-    case ENS_REGISTRATION_UPDATE_RECORD: {
+    case ENS_REGISTRATION_UPDATE_RECORD_BY_KEY: {
       const { key, value } = action.payload;
       return {
         ...state,
@@ -116,6 +80,12 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
           ...state.records,
           [key]: value,
         },
+      };
+    }
+    case ENS_REGISTRATION_UPDATE_DURATION: {
+      return {
+        ...state,
+        duration: action.payload,
       };
     }
     default:

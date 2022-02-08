@@ -13,6 +13,25 @@ const ensRegistrarAddress = '0x283Af0B28c62C092C9727F1Ee09c02CA627EB7F5';
 const ensBaseRegistrarImplementationAddress =
   '0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85';
 
+enum ENS_RECORDS {
+  ETH = 'ETH',
+  BTC = 'BTC',
+  LTC = 'LTC',
+  DOGE = 'DOGE',
+  content = 'content',
+  email = 'email',
+  url = 'url',
+  avatar = 'avatar',
+  description = 'description',
+  notice = 'notice',
+  keywords = 'keywords',
+  discord = 'com.discord',
+  github = 'com.github',
+  reddit = 'com.reddit',
+  twitter = 'com.twitter',
+  telegram = 'com.telegram',
+  ensDelegate = 'eth.ens.delegate',
+}
 const getENSContract = () => {
   return new Contract(ensAddress, ENSABI, web3Provider);
 };
@@ -46,8 +65,14 @@ const getNameExpires = async (name: string): Promise<string> =>
 const getRentPrice = async (name: string, duration: number): Promise<string> =>
   getENSRegistrarContract().rentPrice(name, duration);
 
+const getENSRecordKeys = () => Object.keys(ENS_RECORDS);
+const getENSRecordValues = () => Object.values(ENS_RECORDS);
+
 export {
+  ENS_RECORDS,
   getENSContract,
+  getENSRecordKeys,
+  getENSRecordValues,
   getENSRegistrarContract,
   getBaseRegistrarImplementationContract,
   getResolver,
