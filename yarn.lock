@@ -14444,10 +14444,10 @@ react-native-randombytes@3.5.3:
     buffer "^4.9.1"
     sjcl "^1.0.3"
 
-react-native-reanimated@2.4.0:
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-2.4.0.tgz#660860f3c9d36dc09e80e784306591c67060f940"
-  integrity sha512-KogpQaRxFu2jgIEWRwoHaTQ2TQbHva49rJFnXtEdMZ5LJefVMFITiEwRuyjlD4ZWpstFiaP0mWkR6uuS2APutA==
+react-native-reanimated@2.4.1:
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-2.4.1.tgz#4e33876fba525ce60ac13ab3c81fc3a9f8b132fe"
+  integrity sha512-kvf7ylGlwa5hxMQ+wpPFjQrI2c6eexf53/xRo+dvXBNefGmSYaYR5sFtD0XMMzIPQlkCB9tJ0Pu9+2WCQUY7Cg==
   dependencies:
     "@babel/plugin-transform-object-assign" "^7.10.4"
     "@types/invariant" "^2.2.35"

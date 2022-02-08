@@ -210,7 +210,7 @@
     "react-native-qrcode-svg": "mikedemarais/react-native-qrcode-svg#c0302a698ea4fa0bb9b506a11ef39905674f2221",
     "react-native-radial-gradient": "rainbow-me/react-native-radial-gradient#1266cd8f6ac3321bcf27357f8771bd088f9f27ef",
     "react-native-randombytes": "3.5.3",
-    "react-native-reanimated": "2.4.0",
+    "react-native-reanimated": "2.4.1",
     "react-native-redash": "16.2.2",
     "react-native-restart": "0.0.22",
     "react-native-safe-area-context": "0.5.0",
