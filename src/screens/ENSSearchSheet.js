@@ -48,8 +48,8 @@ export default function ENSSearchSheet() {
   });
 
   const {
-    data: estimationsData,
-    isAvailable: estimationIsAvailable,
+    data: registrationCostsData,
+    isAvailable: registrationCostsDataIsAvailable,
   } = useENSRegistrationCosts({
     duration: 1,
     ensIsAvailable: isAvailable,
@@ -123,13 +123,13 @@ export default function ENSSearchSheet() {
             </Inline>
           </Inset>
         )}
-        {estimationIsAvailable && (
+        {registrationCostsDataIsAvailable && (
           <Inset horizontal="30px">
             <Inline alignHorizontal="justify" wrap={false}>
               <Text color="secondary40" size="18px" weight="bold">
                 Estimated total cost of{' '}
-                {estimationsData?.estimatedTotalRegistrationCost?.display} with
-                current network fees
+                {registrationCostsData?.estimatedTotalRegistrationCost?.display}{' '}
+                with current network fees
               </Text>
             </Inline>
           </Inset>
