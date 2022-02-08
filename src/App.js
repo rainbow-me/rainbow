@@ -159,7 +159,7 @@ class App extends Component {
           return;
         }
       } else if (uri) {
-        this.handleOpenLinkingURL(uri);
+        this.handleOpenLinkingURL(params.uri);
       }
     });
 
