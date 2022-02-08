@@ -141,10 +141,11 @@ class App extends Component {
 
         // This happens when branch.io redirects user to the app in the
         // aggressive redirect mode with a confirmation modal in Safari.
+        // Those URLs have shape rainbow://open?_branch_referrer=A&link_click_id=B
         if (nonBranchUrl.startsWith('rainbow://open')) {
           this.handleOpenLinkingURL(this.decodeBranchUrl(nonBranchUrl));
           // This happens when user taps Rainbow universal link managed by branch.io
-          // and it is handled by iOS
+          // and it is handled by iOS.
         } else {
           this.handleOpenLinkingURL(nonBranchUrl);
         }
@@ -158,7 +159,7 @@ class App extends Component {
           return;
         }
       } else if (uri) {
-        this.handleOpenLinkingURL(params.uri);
+        this.handleOpenLinkingURL(uri);
       }
     });
 
