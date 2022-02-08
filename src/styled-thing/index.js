@@ -97,6 +97,12 @@ export default function styled(Component) {
   }
 
   function StyledComponentFactory(styles) {
+    if (Array.isArray(styles)) {
+      throw new TypeError(
+        '@rainbow-me/styled-components only support object syntax.\nUse the function call with an object as an argument instead of template literal string, for example styled({}) instead of styled``\nSee https://github.com/rainbow-me/rainbow/pull/2730'
+      );
+    }
+
     let WrappedStyledComponent;
 
     let shouldForwardProp = StyledComponentFactory.shouldForwardProp;
