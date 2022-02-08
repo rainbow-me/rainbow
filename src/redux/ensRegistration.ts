@@ -4,14 +4,12 @@ import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 
 const ENS_REGISTRATION_UPDATE_NAME =
   'ensRegistration/ENS_REGISTRATION_UPDATE_NAME';
-const ENS_REGISTRATION_UPDATE_RECORD_BY_KEY =
-  'ensRegistration/ENS_REGISTRATION_UPDATE_RECORD_BY_KEY';
-const ENS_REGISTRATION_DUMMY_UPDATE_RECORDS =
-  'ensRegistration/ENS_REGISTRATION_DUMMY_UPDATE_RECORDS';
-const ENS_REGISTRATION_UPDATE_RECORDS =
-  'ensRegistration/ENS_REGISTRATION_UPDATE_RECORDS';
 const ENS_REGISTRATION_UPDATE_DURATION =
   'ensRegistration/ENS_REGISTRATION_UPDATE_DURATION';
+const ENS_REGISTRATION_UPDATE_RECORDS =
+  'ensRegistration/ENS_REGISTRATION_UPDATE_RECORDS';
+const ENS_REGISTRATION_UPDATE_RECORD_BY_KEY =
+  'ensRegistration/ENS_REGISTRATION_UPDATE_RECORD_BY_KEY';
 
 type Records = Record<ENS_RECORDS, string>;
 
@@ -30,12 +28,20 @@ export const ensRegistrationUpdateName = (name: string) => async (
     type: ENS_REGISTRATION_UPDATE_NAME,
   });
 
+export const ensRegistrationUpdateDuration = (duration: number) => async (
+  dispatch: AppDispatch
+) =>
+  dispatch({
+    payload: duration,
+    type: ENS_REGISTRATION_UPDATE_DURATION,
+  });
+
 export const ensRegistrationUpdateRecords = (records: Records) => async (
   dispatch: AppDispatch
 ) =>
   dispatch({
     payload: records,
-    type: ENS_REGISTRATION_DUMMY_UPDATE_RECORDS,
+    type: ENS_REGISTRATION_UPDATE_RECORDS,
   });
 
 export const ensRegistrationUpdateRecordByKey = (
@@ -56,22 +62,21 @@ const INITIAL_STATE: ENSRegistrationState = {
 
 export default (state = INITIAL_STATE, action: AnyAction) => {
   switch (action.type) {
-    case ENS_REGISTRATION_DUMMY_UPDATE_RECORDS:
-      return {
-        ...state,
-        records: action.payload,
-      };
     case ENS_REGISTRATION_UPDATE_NAME:
       return {
         ...state,
         name: action.payload,
       };
-    case ENS_REGISTRATION_UPDATE_RECORDS: {
+    case ENS_REGISTRATION_UPDATE_DURATION:
+      return {
+        ...state,
+        duration: action.payload,
+      };
+    case ENS_REGISTRATION_UPDATE_RECORDS:
       return {
         ...state,
         records: action.payload,
       };
-    }
     case ENS_REGISTRATION_UPDATE_RECORD_BY_KEY: {
       const { key, value } = action.payload;
       return {
@@ -80,12 +85,6 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
           ...state.records,
           [key]: value,
         },
-      };
-    }
-    case ENS_REGISTRATION_UPDATE_DURATION: {
-      return {
-        ...state,
-        duration: action.payload,
       };
     }
     default:
