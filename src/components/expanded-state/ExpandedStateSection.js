@@ -6,22 +6,12 @@ import { padding } from '@rainbow-me/styles';
 
 const Container = styled(ColumnWithMargins).attrs({
   margin: 12,
-<<<<<<< HEAD
-})`
-  ${padding(android ? 19 : 36, 19, 24)};
-  ${({ isNft }) => padding(android ? 19 : 36, isNft ? 24 : 19, 24)};
-  ${({ isTokenHistory }) =>
-    padding(android ? 19 : 36, isTokenHistory ? 0 : 19, 24)};
-  padding-top: ${({ isL2, isNft, isTokenHistory }) =>
-    isL2 || isNft || isTokenHistory ? 24 : android ? 19 : 36};
-`;
-=======
-})(({ isNft, isL2 }) => ({
+})(({ isNft, isL2, isTokenHistory }) => ({
   ...padding.object(android ? 19 : 36, 19, 24),
   ...padding.object(android ? 19 : 36, isNft ? 24 : 19, 24),
-  paddingTop: isL2 || isNft ? 24 : android ? 19 : 36,
+  ...padding.object(android ? 19 : 36, isTokenHistory ? 0 : 19, 24),
+  paddingTop: isL2 || isNft || isTokenHistory ? 24 : android ? 19 : 36,
 }));
->>>>>>> 3dd5ecfc0c0471f257e9ee0c92d26e32f40d132c
 
 export default function ExpandedStateSection({
   children,
