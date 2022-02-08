@@ -62,7 +62,7 @@ const formatTotalRegistrationCost = (
   };
 };
 
-export default function useENSRegistrationEstimations({
+export default function useENSRegistrationCosts({
   duration,
   name,
   rentPrice,

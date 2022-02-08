@@ -20,7 +20,7 @@ import {
 import {
   useDebounceString,
   useENSRegistration,
-  useENSRegistrationEstimations,
+  useENSRegistrationCosts,
   useKeyboardHeight,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
@@ -50,7 +50,7 @@ export default function ENSSearchSheet() {
   const {
     data: estimationsData,
     isAvailable: estimationIsAvailable,
-  } = useENSRegistrationEstimations({
+  } = useENSRegistrationCosts({
     duration: 1,
     ensIsAvailable: isAvailable,
     name: debouncedSearchQuery,
