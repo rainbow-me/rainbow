@@ -252,7 +252,7 @@ export default function SettingsSection({
           >
             <ListItemArrowGroup>{nativeCurrency || ''}</ListItemArrowGroup>
           </ListItem>
-          {testnetsEnabled && (
+          {(testnetsEnabled || IS_DEV) && (
             <ListItem
               icon={
                 <SettingIcon
