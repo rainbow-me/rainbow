@@ -43,17 +43,17 @@ const NativeAmount = styled(Text).attrs(({ theme: { colors } }) => ({
   marginTop: android ? 0 : 19,
 });
 
-const CenteredSpinner = styled(Centered).attrs()`
-  margin-bottom: ${android ? -10 : 10};
-  margin-top: ${android ? 0 : 19};
-`;
+const CenteredSpinner = styled(Centered)({
+  marginBottom: android ? -10 : 10,
+  marginTop: android ? 0 : 19,
+});
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
   ({ theme: { colors } }) => ({
     color: colors.alpha(colors.blueGreyDark, 0.3),
     size: 50,
   })
-)``;
+);
 
 export default function TransactionConfirmationSection({
   address,
