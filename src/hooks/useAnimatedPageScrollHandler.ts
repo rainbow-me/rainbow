@@ -1,7 +1,15 @@
 import { MutableRefObject, RefObject, useEffect, useRef } from 'react';
 import { NativeScrollEvent, Platform } from 'react-native';
-import WorkletEventHandler from 'react-native-reanimated/src/reanimated2/WorkletEventHandler';
-import { makeRemote } from 'react-native-reanimated/src/reanimated2/core';
+import { WorkletEventHandler } from 'react-native-reanimated';
+
+// we convert it to require to make sure each type is any
+// otherwise it breaks ts linting
+// ts wants to lint reanimated codebase but it doesn't quite work
+// so let's just assume it's any for now
+/* eslint-disable import/no-commonjs */
+const WorkletEventHandlerClass = require('react-native-reanimated/src/reanimated2/WorkletEventHandler');
+const { makeRemote } = require('react-native-reanimated/src/reanimated2/core');
+/* eslint-enable import/no-commonjs */
 
 type DependencyList = unknown[] | undefined;
 type Context = Record<string, unknown>;
@@ -27,11 +35,11 @@ function useEvent<T>(
   handler: (event: T) => void,
   eventNames: string[] = [],
   rebuild = false
-): MutableRefObject<WorkletEventHandler | null> {
-  const initRef = useRef<WorkletEventHandler | null>(null);
+): MutableRefObject<WorkletEventHandler<T> | null> {
+  const initRef = useRef<WorkletEventHandler<T> | null>(null);
   if (initRef.current === null) {
     // @ts-ignore
-    initRef.current = new WorkletEventHandler(handler, eventNames);
+    initRef.current = new WorkletEventHandlerClass(handler, eventNames);
   } else if (rebuild) {
     initRef.current.updateWorklet(handler);
   }
@@ -87,7 +95,7 @@ export function useHandler<T, TContext extends Context>(
   const initRef = useRef<any>(null);
   if (initRef.current === null) {
     initRef.current = {
-      context: makeRemote({}),
+      context: makeRemote({}) as TContext,
       savedDependencies: [],
     };
   }
@@ -128,7 +136,7 @@ interface ScrollEvent extends NativeScrollEvent {
 export function useAnimatedPageScrollHandler<TContext extends Context>(
   handlers: ScrollHandler<TContext>,
   dependencies?: DependencyList
-): RefObject<WorkletEventHandler> {
+): RefObject<WorkletEventHandler<ScrollEvent>> {
   // case when handlers is a function
   const scrollHandlers: Record<string, Handler<ScrollEvent, TContext>> = {
     onPageScroll: handlers,
