@@ -129,7 +129,7 @@ export default function useENSRegistrationCosts({
 
   return {
     data,
-    isAvailable,
+    isSuccess,
     isIdle,
     isLoading,
   };
