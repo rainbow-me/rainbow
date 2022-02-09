@@ -39,7 +39,6 @@ export default function ENSAssignRecordsSheet() {
           􀆉 Back
         </TintButton>
         <SheetActionButton
-          color={'#9875D7'}
           label="Review"
           onPress={handlePressContinue}
           size="big"
