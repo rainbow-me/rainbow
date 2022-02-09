@@ -11,6 +11,7 @@ import { SheetActionButton, SheetActionButtonRow } from '../components/sheet';
 import { useNavigation } from '../navigation/Navigation';
 import {
   Box,
+  Divider,
   Heading,
   Inline,
   Inset,
@@ -103,68 +104,92 @@ export default function ENSSearchSheet() {
         )}
         {(isAvailable || isRegistered) && (
           <Inset horizontal="19px">
-            <Inline alignHorizontal="justify" wrap={false}>
-              <SearchResultGradientIndicator
-                isRegistered={isRegistered}
-                type="availability"
-              />
-              {isRegistered ? (
+            <Stack
+              separator={
+                <Inset horizontal="19px">
+                  <Divider />
+                </Inset>
+              }
+              space="19px"
+            >
+              <Inline alignHorizontal="justify" wrap={false}>
                 <SearchResultGradientIndicator
-                  expiryDate={registrationData?.expirationDate}
-                  type="expiration"
+                  isRegistered={isRegistered}
+                  type="availability"
                 />
-              ) : (
-                <SearchResultGradientIndicator
-                  price={`${registrationData?.rentPrice?.perYear?.display}  / Year`}
-                  type="price"
-                />
-              )}
-            </Inline>
+                {isRegistered ? (
+                  <SearchResultGradientIndicator
+                    expirationDate={registrationData?.expirationDate}
+                    type="expiration"
+                  />
+                ) : (
+                  <SearchResultGradientIndicator
+                    price={registrationData?.rentPrice?.perYear?.display}
+                    type="price"
+                  />
+                )}
+              </Inline>
+              <Inset horizontal="19px">
+                {isRegistered ? (
+                  <Text color="secondary50" size="16px" weight="bold">
+                    This name was last registered on{' '}
+                    {registrationData?.registrationDate}
+                  </Text>
+                ) : (
+                  <Inline>
+                    {registrationCostsDataIsAvailable && (
+                      <Text color="secondary50" size="16px" weight="bold">
+                        Estimated total cost of
+                        <Text color="secondary80" size="16px" weight="heavy">
+                          {' '}
+                          {
+                            registrationCostsData
+                              ?.estimatedTotalRegistrationCost?.display
+                          }{' '}
+                        </Text>
+                        with current network fees
+                      </Text>
+                    )}
+                  </Inline>
+                )}
+              </Inset>
+            </Stack>
           </Inset>
         )}
-        {registrationCostsDataIsAvailable && (
-          <Inset horizontal="30px">
-            <Inline alignHorizontal="justify" wrap={false}>
-              <Text color="secondary40" size="18px" weight="bold">
-                Estimated total cost of{' '}
-                {registrationCostsData?.estimatedTotalRegistrationCost?.display}{' '}
-                with current network fees
+        <Box paddingTop="34px">
+          {isIdle && (
+            <Inline
+              alignHorizontal="center"
+              alignVertical="center"
+              space="6px"
+              wrap={false}
+            >
+              <Box>
+                <ImgixImage source={dice} style={{ height: 20, width: 20 }} />
+              </Box>
+              <Text color="secondary50" size="16px" weight="bold">
+                Minimum 3 characters
               </Text>
             </Inline>
-          </Inset>
-        )}
-      </Box>
-      <Box>
-        {isIdle && (
-          <Inline
-            alignHorizontal="center"
-            alignVertical="center"
-            space="6px"
-            wrap={false}
-          >
-            <Box>
-              <ImgixImage source={dice} style={{ height: 20, width: 20 }} />
-            </Box>
-            <Text color="secondary50" size="16px" weight="bold">
-              Minimum 3 characters
-            </Text>
-          </Inline>
-        )}
-        <SheetActionButtonRow>
-          {isAvailable && (
-            <SheetActionButton
-              color={colors.green}
-              label="Continue on 􀆊"
-              onPress={handlePressContinue}
-              size="big"
-              weight="heavy"
-            />
           )}
-          {(isRegistered || isInvalid) && (
-            <TintButton onPress={() => setSearchQuery('')}>􀅉 Clear</TintButton>
-          )}
-        </SheetActionButtonRow>
-        <KeyboardArea initialHeight={keyboardHeight} isOpen />
+          <SheetActionButtonRow>
+            {isAvailable && (
+              <SheetActionButton
+                color={colors.green}
+                label="Continue on 􀆊"
+                onPress={handlePressContinue}
+                size="big"
+                weight="heavy"
+              />
+            )}
+            {(isRegistered || isInvalid) && (
+              <TintButton onPress={() => setSearchQuery('')}>
+                􀅉 Clear
+              </TintButton>
+            )}
+          </SheetActionButtonRow>
+          <KeyboardArea initialHeight={keyboardHeight} isOpen />
+        </Box>
       </Box>
     </Box>
   );

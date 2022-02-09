@@ -13,14 +13,14 @@ type Props = {
   type: 'availability' | 'expiration' | 'price';
   isRegistered?: boolean;
   price?: string;
-  expiryDate?: string;
+  expirationDate?: string;
 };
 
 const SearchResultGradientIndicator = ({
   type,
   isRegistered = false,
   price,
-  expiryDate,
+  expirationDate,
 }: Props) => {
   const { colors } = useTheme();
   const { isSmallPhone } = useDimensions();
@@ -36,11 +36,11 @@ const SearchResultGradientIndicator = ({
       }
       break;
     case 'expiration':
-      text = `Til ${expiryDate}`; // fix when we have backend
+      text = `Til ${expirationDate}`;
       gradient = colors.gradients.transparentToLightGrey;
       break;
     case 'price':
-      text = price; // fix when we have backend
+      text = `${price} / Year`;
       gradient = colors.gradients.transparentToLightGrey;
       break;
   }

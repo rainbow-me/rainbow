@@ -256,7 +256,7 @@ export const convertAmountAndPriceToNativeDisplay = (
   priceUnit: BigNumberish,
   nativeCurrency: string,
   buffer?: number,
-  skipDecimals?: boolean
+  skipDecimals: boolean = false
 ): { amount: string; display: string } => {
   const nativeBalanceRaw = convertAmountToNativeAmount(amount, priceUnit);
   const nativeDisplay = convertAmountToNativeDisplay(

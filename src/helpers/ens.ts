@@ -39,6 +39,25 @@ const getENSRegistryContract = () => {
     web3Provider
   );
 };
+enum ENS_RECORDS {
+  ETH = 'ETH',
+  BTC = 'BTC',
+  LTC = 'LTC',
+  DOGE = 'DOGE',
+  content = 'content',
+  email = 'email',
+  url = 'url',
+  avatar = 'avatar',
+  description = 'description',
+  notice = 'notice',
+  keywords = 'keywords',
+  discord = 'com.discord',
+  github = 'com.github',
+  reddit = 'com.reddit',
+  twitter = 'com.twitter',
+  telegram = 'com.telegram',
+  ensDelegate = 'eth.ens.delegate',
+}
 const getENSRegistrarControllerContract = (registrarAddress?: string) => {
   return new Contract(
     registrarAddress || ensETHRegistrarControllerAddress,
@@ -252,6 +271,9 @@ const getENSExecutionDetails = async ({
     value,
   };
 };
+
+const getENSRecordKeys = () => Object.keys(ENS_RECORDS);
+const getENSRecordValues = () => Object.values(ENS_RECORDS);
 
 export {
   getENSRegistryContract,
