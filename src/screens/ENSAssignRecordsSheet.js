@@ -19,32 +19,35 @@ export default function ENSAssignRecordsSheet() {
   }, [navigate]);
 
   return (
-    <Box background="body" flexGrow={1} paddingVertical="30px">
-      <Box flexGrow={1}>
-        <Stack alignHorizontal="center" space="15px">
-          <Heading size="26px" weight="heavy">
-            placeholder.eth
-          </Heading>
-          <Text
-            color={{ custom: 'rgba(152, 117, 215, 1)' }}
-            size="16px"
+    <>
+      <Box background="body" flexGrow={1}>
+        <Box background="accent" height={{ custom: 125 }}></Box>
+        <Box flexGrow={1}>
+          <Stack alignHorizontal="center" space="15px">
+            <Heading size="26px" weight="heavy">
+              placeholder.eth
+            </Heading>
+            <Text
+              color={{ custom: 'rgba(152, 117, 215, 1)' }}
+              size="16px"
+              weight="heavy"
+            >
+              Create your profile
+            </Text>
+          </Stack>
+        </Box>
+        <SheetActionButtonRow>
+          <TintButton onPress={handlePressBack} color="secondary60">
+            􀆉 Back
+          </TintButton>
+          <SheetActionButton
+            label="Review"
+            onPress={handlePressContinue}
+            size="big"
             weight="heavy"
-          >
-            Create your profile
-          </Text>
-        </Stack>
+          />
+        </SheetActionButtonRow>
       </Box>
-      <SheetActionButtonRow>
-        <TintButton onPress={handlePressBack} color="secondary60">
-          􀆉 Back
-        </TintButton>
-        <SheetActionButton
-          label="Review"
-          onPress={handlePressContinue}
-          size="big"
-          weight="heavy"
-        />
-      </SheetActionButtonRow>
-    </Box>
+    </>
   );
 }

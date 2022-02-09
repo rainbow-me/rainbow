@@ -32,6 +32,8 @@ export default function ENSSearchSheet() {
   const { navigate } = useNavigation();
   const keyboardHeight = useKeyboardHeight();
 
+  const topPadding = android ? 29 : 19;
+
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounceString(searchQuery);
 
@@ -59,7 +61,7 @@ export default function ENSSearchSheet() {
   }, [navigate]);
 
   return (
-    <Box background="body" flexGrow={1}>
+    <Box background="body" flexGrow={1} paddingTop={{ custom: topPadding }}>
       <Box flexGrow={1} paddingTop="30px">
         <Stack alignHorizontal="center" space="15px">
           <Heading size="23px" weight="heavy">

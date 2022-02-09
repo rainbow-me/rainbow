@@ -34,7 +34,7 @@ export default function RegisterENSNavigator() {
 
   return (
     <SlackSheet
-      additionalTopPadding
+      removeTopPadding
       contentHeight={contentHeight}
       height="100%"
       scrollEnabled={false}
