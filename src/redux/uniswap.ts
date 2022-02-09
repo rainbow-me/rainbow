@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { concat, isArray, map, omit, toLower, uniq, without } from 'lodash';
+import { concat, isArray, map, toLower, uniq, without } from 'lodash';
 import { Dispatch } from 'redux';
 import { AppGetState } from './store';
 import {
