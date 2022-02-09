@@ -204,7 +204,7 @@
     "react-native-mail": "4.1.0",
     "react-native-markdown-display": "7.0.0-alpha.2",
     "react-native-minimizer": "brunobar79/react-native-minimizer#26ae6dce10d353de701cebc3a1ae126729bf87f0",
-    "react-native-mmkv": "1.5.2",
+    "react-native-mmkv": "2.1.0",
     "react-native-os": "brunobar79/react-native-os#41a08e45260b8c1c53c77ad00e13ae954cb9337c",
     "react-native-palette-full": "1.2.0",
     "react-native-permissions": "3.0.5",
