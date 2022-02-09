@@ -96,7 +96,7 @@ export const estimateENSRegisterWithConfigGasLimit = async (
   duration: number,
   rentPrice: string
 ) =>
-  estimateENSTransactionGaslimit({
+  estimateENSTransactionGasLimit({
     duration,
     name,
     ownerAddress,
@@ -110,7 +110,7 @@ export const estimateENSCommitGasLimit = async (
   duration: number,
   rentPrice: string
 ) =>
-  estimateENSTransactionGaslimit({
+  estimateENSTransactionGasLimit({
     duration,
     name,
     ownerAddress,
@@ -123,7 +123,7 @@ export const estimateENSSetTextGasLimit = async (
   recordKey: string,
   recordValue: string
 ) =>
-  estimateENSTransactionGaslimit({
+  estimateENSTransactionGasLimit({
     name,
     records: {
       coinAddress: null,
@@ -143,7 +143,7 @@ export const estimateENSSetNameGasLimit = async (
   name: string,
   ownerAddress: string
 ) =>
-  estimateENSTransactionGaslimit({
+  estimateENSTransactionGasLimit({
     name,
     ownerAddress,
     type: ENSRegistrationTransactionType.SET_NAME,
@@ -153,13 +153,13 @@ export const estimateENSMulticallGasLimit = async (
   name: string,
   records: ENSRegistrationRecords
 ) =>
-  estimateENSTransactionGaslimit({
+  estimateENSTransactionGasLimit({
     name,
     records,
     type: ENSRegistrationTransactionType.MULTICALL,
   });
 
-export const estimateENSTransactionGaslimit = async ({
+export const estimateENSTransactionGasLimit = async ({
   name,
   type,
   ownerAddress,
