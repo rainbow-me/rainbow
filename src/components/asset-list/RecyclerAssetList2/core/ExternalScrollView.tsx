@@ -44,7 +44,7 @@ const ExternalScrollViewWithRef = React.forwardRef<
   useImperativeHandle(ref, () => ({
     scrollTo: (value) => {
       console.log("XXX", y.setValue, value.y)
-      y.setValue(value.y)
+    //  y.setValue(value.y)
       scrollViewRef.current?.scrollTo(value);
     },
     scrollToOffset: (value) => {

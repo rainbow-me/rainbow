@@ -56,12 +56,12 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
     // Then, in case the event was not emitted, we want to emit this anyway (`scrollToOffset`)
     // to make headers located in `0` position.
     // @ts-ignore
-    ref.current?._virtualRenderer
-      ?.getViewabilityTracker?.()
-      ?.updateOffset?.(0, true, 0);
-    // @ts-ignore
-    clearTimeout(ref.current?._processInitialOffsetTimeout);
-    ref.current?.scrollToOffset(0, 0);
+    // ref.current?._virtualRenderer
+    //   ?.getViewabilityTracker?.()
+    //   ?.updateOffset?.(0, true, 0);
+    // // @ts-ignore
+    // clearTimeout(ref.current?._processInitialOffsetTimeout);
+    // ref.current?.scrollToOffset(0, 0);
     y.setValue(0);
   }, [y, accountAddress]);
 
