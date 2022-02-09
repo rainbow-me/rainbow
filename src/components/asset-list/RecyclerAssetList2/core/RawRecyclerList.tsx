@@ -3,6 +3,7 @@ import { LayoutChangeEvent } from 'react-native';
 import { DataProvider, RecyclerListView } from 'recyclerlistview';
 import { useMemoOne } from 'use-memo-one';
 import useAccountSettings from '../../../../hooks/useAccountSettings';
+import { useRecyclerAssetListPosition } from './Contexts';
 import ExternalScrollViewWithRef from './ExternalScrollView';
 import RefreshControl from './RefreshControl';
 import rowRenderer from './RowRenderer';
@@ -25,6 +26,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
     [briefSectionsData]
   );
   const { isCoinListEdited } = useCoinListEdited();
+  const y = useRecyclerAssetListPosition()!;
 
   const layoutProvider = useMemoOne(
     () => getLayoutProvider(briefSectionsData, isCoinListEdited),
@@ -60,7 +62,8 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
     // @ts-ignore
     clearTimeout(ref.current?._processInitialOffsetTimeout);
     ref.current?.scrollToOffset(0, 0);
-  }, [accountAddress]);
+    y.setValue(0);
+  }, [y, accountAddress]);
 
   const onLayout = useCallback(
     () => ({ nativeEvent }: LayoutChangeEvent) => {
