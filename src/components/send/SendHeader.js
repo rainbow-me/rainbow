@@ -3,7 +3,6 @@ import lang from 'i18n-js';
 import { get, isEmpty, toLower } from 'lodash';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { ActivityIndicator, Keyboard } from 'react-native';
-import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { useNavigation } from '../../navigation/Navigation';
 import Divider from '../Divider';
@@ -18,46 +17,48 @@ import { resolveNameOrAddress } from '@rainbow-me/handlers/web3';
 import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
 import { useClipboard, useDimensions } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 import { profileUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
 
-const AddressInputContainer = styled(Row).attrs({ align: 'center' })`
-  ${({ isSmallPhone, isTinyPhone }) =>
-    android
-      ? padding(0, 19)
+const AddressInputContainer = styled(Row).attrs({ align: 'center' })(
+  ({ isSmallPhone, theme: { colors }, isTinyPhone }) => ({
+    ...(android
+      ? padding.object(0, 19)
       : isTinyPhone
-      ? padding(23, 15, 10)
+      ? padding.object(23, 15, 10)
       : isSmallPhone
-      ? padding(11, 19, 15)
-      : padding(18, 19, 19)};
-  background-color: ${({ theme: { colors } }) => colors.white};
-  overflow: hidden;
-  width: 100%;
-`;
+      ? padding.object(11, 19, 15)
+      : padding.object(18, 19, 19)),
+    backgroundColor: colors.white,
+    overflow: 'hidden',
+    width: '100%',
+  })
+);
 
 const AddressFieldLabel = styled(Label).attrs({
   size: 'large',
   weight: 'bold',
-})`
-  color: ${({ theme: { colors } }) => colors.alpha(colors.blueGreyDark, 0.6)};
-  margin-right: 4;
-  opacity: 1;
-`;
+})({
+  color: ({ theme: { colors } }) => colors.alpha(colors.blueGreyDark, 0.6),
+  marginRight: 4,
+  opacity: 1,
+});
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
   ({ theme: { colors } }) => ({
     color: colors.alpha(colors.blueGreyDark, 0.3),
   })
-)`
-  margin-right: 2;
-`;
+)({
+  marginRight: 2,
+});
 
 const SendSheetTitle = styled(SheetTitle).attrs({
   weight: 'heavy',
-})`
-  margin-bottom: ${android ? -10 : 0};
-  margin-top: ${android ? 10 : 17};
-`;
+})({
+  marginBottom: android ? -10 : 0,
+  marginTop: android ? 10 : 17,
+});
 
 const defaultContactItem = {
   address: '',

@@ -13,6 +13,7 @@ import DepositModal from '../screens/DepositModal';
 import ENSConfirmRegisterSheet from '../screens/ENSConfirmRegisterSheet';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ExplainSheet from '../screens/ExplainSheet';
+import ExternalLinkWarningSheet from '../screens/ExternalLinkWarningSheet';
 import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
 import ModalScreen from '../screens/ModalScreen';
 import PinAuthenticationScreen from '../screens/PinAuthenticationScreen';
@@ -302,6 +303,11 @@ function BSNavigator() {
       <BSStack.Screen
         component={ExplainSheet}
         name={Routes.EXPLAIN_SHEET}
+        options={bottomSheetPreset}
+      />
+      <BSStack.Screen
+        component={ExternalLinkWarningSheet}
+        name={Routes.EXTERNAL_LINK_WARNING_SHEET}
         options={bottomSheetPreset}
       />
       <BSStack.Screen

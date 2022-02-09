@@ -36,10 +36,12 @@ export type {
   RainbowToken,
   UniswapCurrency,
   ZerionAsset,
+  ZerionAssetFallback,
 } from './tokens';
 export type {
   GasFeeType,
   NewTransaction,
+  NewTransactionOrAddCashTransaction,
   RainbowTransaction,
   ZerionTransaction,
   ZerionTransactionChange,
@@ -61,4 +63,5 @@ export type {
   TokenSearchTokenListId,
   TokenSearchUniswapAssetKey,
 } from './tokenSearch';
+export type { UniswapFavoriteTokenData } from './uniswap';
 export type { UniswapPoolData } from './dispersion';

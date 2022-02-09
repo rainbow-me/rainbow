@@ -1,6 +1,5 @@
 import React from 'react';
 import { View } from 'react-native';
-import styled from 'styled-components';
 import { ButtonPressAnimation, ShimmerAnimation } from '../animations';
 import { ColumnWithMargins, RowWithMargins } from '../layout';
 import TokenInfoBalanceValue from './TokenInfoBalanceValue';
@@ -8,26 +7,25 @@ import TokenInfoHeading from './TokenInfoHeading';
 import TokenInfoValue from './TokenInfoValue';
 import { useTheme } from '@rainbow-me/context';
 import { useDelayedValueWithLayoutAnimation } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 
-const Container = styled.View``;
+const VerticalDivider = styled.View({
+  backgroundColor: ({ theme: { colors } }) => colors.rowDividerExtraLight,
+  borderRadius: 1,
+  height: 40,
+  marginTop: 2,
+  width: 2,
+});
 
-const VerticalDivider = styled.View`
-  background-color: ${({ theme: { colors } }) => colors.rowDividerExtraLight};
-  border-radius: 1;
-  height: 40;
-  margin-top: 2;
-  width: 2;
-`;
-
-const WrapperView = styled.View`
-  align-self: ${({ align }) => (align === 'left' ? 'flex-start' : 'flex-end')};
-  border-radius: 12;
-  height: 24;
-  margin-top: -17;
-  overflow: hidden;
-  padding-top: 12;
-  width: 50;
-`;
+const WrapperView = styled.View({
+  alignSelf: ({ align }) => (align === 'left' ? 'flex-start' : 'flex-end'),
+  borderRadius: 12,
+  height: 24,
+  marginTop: -17,
+  overflow: 'hidden',
+  paddingTop: 12,
+  width: 50,
+});
 
 export default function TokenInfoItem({
   align = 'left',
@@ -57,11 +55,10 @@ export default function TokenInfoItem({
     return null;
   }
 
+  const Container = showDivider ? RowWithMargins : View;
+
   return (
-    <Container
-      as={showDivider ? RowWithMargins : View}
-      margin={showDivider ? 12 : 0}
-    >
+    <Container margin={showDivider ? 12 : 0}>
       <ColumnWithMargins
         flex={asset ? 1 : 0}
         justify={align === 'left' ? 'start' : 'end'}

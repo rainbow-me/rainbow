@@ -402,6 +402,8 @@ PODS:
     - React
   - react-native-webview (11.2.3):
     - React-Core
+  - react-native-widgetkit (1.0.9):
+    - React
   - React-perflogger (0.66.1)
   - React-RCTActionSheet (0.66.1):
     - React-Core/RCTActionSheetHeaders (= 0.66.1)
@@ -475,6 +477,8 @@ PODS:
     - React-Core
   - RNAnalytics (1.5.0):
     - Analytics
+    - React-Core
+  - RNBootSplash (4.1.0):
     - React-Core
   - RNCAsyncStorage (1.12.1):
     - React-Core
@@ -651,6 +655,7 @@ DEPENDENCIES:
   - react-native-video-cache (from `../node_modules/react-native-video-cache`)
   - "react-native-viewpager (from `../node_modules/@react-native-community/viewpager`)"
   - react-native-webview (from `../node_modules/react-native-webview`)
+  - react-native-widgetkit (from `../node_modules/react-native-widgetkit`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
   - React-RCTAnimation (from `../node_modules/react-native/Libraries/NativeAnimation`)
@@ -667,6 +672,7 @@ DEPENDENCIES:
   - "ReactNativePayments (from `../node_modules/@rainbow-me/react-native-payments/lib/ios`)"
   - rn-fetch-blob (from `../node_modules/rn-fetch-blob`)
   - "RNAnalytics (from `../node_modules/@segment/analytics-react-native`)"
+  - RNBootSplash (from `../node_modules/react-native-bootsplash`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
   - "RNCClipboard (from `../node_modules/@react-native-community/clipboard`)"
   - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
@@ -836,6 +842,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/viewpager"
   react-native-webview:
     :path: "../node_modules/react-native-webview"
+  react-native-widgetkit:
+    :path: "../node_modules/react-native-widgetkit"
   React-perflogger:
     :path: "../node_modules/react-native/ReactCommon/reactperflogger"
   React-RCTActionSheet:
@@ -868,6 +876,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/rn-fetch-blob"
   RNAnalytics:
     :path: "../node_modules/@segment/analytics-react-native"
+  RNBootSplash:
+    :path: "../node_modules/react-native-bootsplash"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-community/async-storage"
   RNCClipboard:
@@ -1011,6 +1021,7 @@ SPEC CHECKSUMS:
   react-native-video-cache: 0f8b1b2195f234eabd507cfebdd91c2e82695008
   react-native-viewpager: 7238df0b6b9ee5a50f882750269f3c76639b195f
   react-native-webview: 6520e3e7b4933de76b95ef542c8d7115cf45b68e
+  react-native-widgetkit: efb6680df237463bbe1be3a4d1a1578a1b0bb08f
   React-perflogger: fcac6090a80e3d967791b4c7f1b1a017f9d4a398
   React-RCTActionSheet: caf5913d9f9e605f5467206cf9d1caa6d47d7ad6
   React-RCTAnimation: 6539e3bf594f6a529cd861985ba6548286ae1ead
@@ -1027,6 +1038,7 @@ SPEC CHECKSUMS:
   ReactNativePayments: 40a266450628c05db440fe219b631210e4358a49
   rn-fetch-blob: f065bb7ab7fb48dd002629f8bdcb0336602d3cba
   RNAnalytics: a6dc48511d5d99b1ecaaf7157d8b5c618d15337e
+  RNBootSplash: 605c94f76180e3f8e5832bcafbe52ff5194a51d0
   RNCAsyncStorage: b03032fdbdb725bea0bd9e5ec5a7272865ae7398
   RNCClipboard: 48eaf27bea3de7c9a265529725434268d47a2ee9
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f

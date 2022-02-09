@@ -1,5 +1,5 @@
-import styled from 'styled-components';
 import { Text } from '../text';
+import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth } from '@rainbow-me/styles';
 
 const TokenInfoHeading = styled(Text).attrs(
@@ -11,7 +11,8 @@ const TokenInfoHeading = styled(Text).attrs(
     size: isNft ? 'lmedium' : 'smedium',
     weight: isNft ? 'bold' : 'semibold',
   })
-)`
-${isNft => fontWithWidth(isNft ? fonts.weight.bold : fonts.weight.semibold)}}`;
+)(({ isNft }) =>
+  fontWithWidth(isNft ? fonts.weight.bold : fonts.weight.semibold)
+);
 
 export default TokenInfoHeading;

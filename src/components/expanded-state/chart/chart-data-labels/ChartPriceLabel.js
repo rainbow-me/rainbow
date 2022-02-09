@@ -2,42 +2,49 @@ import { get } from 'lodash';
 import React from 'react';
 import { PixelRatio, Text } from 'react-native';
 import { useWorkletCallback } from 'react-native-reanimated';
-import styled from 'styled-components';
 import { Row } from '../../../layout';
 import ChartHeaderTitle from './ChartHeaderTitle';
 import { ChartYLabel } from '@rainbow-me/animated-charts';
 import { NativeCurrencyKeys } from '@rainbow-me/entities';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
+import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth } from '@rainbow-me/styles';
 
-const ChartPriceRow = styled(Row)``;
+const ChartPriceRow = styled(Row)({});
 
-const Label = styled(ChartYLabel)`
-  color: ${({ theme: { colors } }) => colors.dark};
-  ${fontWithWidth(fonts.weight.heavy)};
-  font-size: ${fonts.size.big};
-  letter-spacing: ${fonts.letterSpacing.roundedTight};
-  ${android &&
-  `margin-top: -30;
-     margin-bottom: -30;
-     `}
-`;
+const Label = styled(ChartYLabel)({
+  color: ({ theme: { colors } }) => colors.dark,
+  ...fontWithWidth(fonts.weight.heavy),
+  fontSize: fonts.size.big,
+  fontVariant: ({ tabularNums }) => (tabularNums ? ['tabular-nums'] : []),
+  letterSpacing: fonts.letterSpacing.roundedTight,
+  ...(android
+    ? {
+        marginBottom: -30,
+        marginTop: -30,
+      }
+    : {}),
+});
 
-const AndroidCurrencySymbolLabel = styled(ChartYLabel)`
-  color: ${({ theme: { colors } }) => colors.dark};
-  ${fontWithWidth(fonts.weight.heavy)};
-  font-size: ${fonts.size.big};
-  letter-spacing: ${fonts.letterSpacing.roundedTight};
-  ${android &&
-  `margin-top: -30;
-     margin-bottom: -30;
-     `}
-  height: 69;
-  left: 5.5;
-  margin-right: 3;
-  top: ${PixelRatio.get() <= 2.625 ? 22 : 23};
-`;
+const AndroidCurrencySymbolLabel = styled(ChartYLabel)({
+  color: ({ theme: { colors } }) => colors.dark,
+  ...fontWithWidth(fonts.weight.heavy),
+  fontSize: fonts.size.big,
+  letterSpacing: fonts.letterSpacing.roundedTight,
+
+  ...(android
+    ? {
+        marginBottom: -30,
+        marginTop: -30,
+      }
+    : {}),
+
+  height: 69,
+  left: 5.5,
+  marginRight: 3,
+  top: PixelRatio.get() <= 2.625 ? 22 : 23,
+});
 
 export function formatNative(value, defaultPriceValue, nativeSelected) {
   'worklet';
@@ -72,6 +79,7 @@ export default function ChartPriceLabel({
   defaultValue,
   isNoPriceData,
   priceValue,
+  tabularNums,
 }) {
   const { nativeCurrency } = useAccountSettings();
   const nativeSelected = get(supportedNativeCurrencies, `${nativeCurrency}`);
@@ -101,7 +109,7 @@ export default function ChartPriceLabel({
           {nativeSelected?.symbol}
         </AndroidCurrencySymbolLabel>
       )}
-      <Label format={format} />
+      <Label format={format} tabularNums={tabularNums} />
     </ChartPriceRow>
   );
 }

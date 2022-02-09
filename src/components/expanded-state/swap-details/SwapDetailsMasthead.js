@@ -1,9 +1,9 @@
 import React from 'react';
-import styled from 'styled-components';
 import { Icon } from '../../icons';
 import { RowWithMargins } from '../../layout';
 import CurrencyTile, { CurrencyTileHeight } from './CurrencyTile';
 import { useSwapCurrencies } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 
 const containerPaddingTop = 34;
@@ -13,10 +13,10 @@ export const SwapDetailsMastheadHeight =
 const Container = styled(RowWithMargins).attrs({
   align: 'center',
   margin: 7,
-})`
-  ${padding(containerPaddingTop, 24, 0)};
-  width: 100%;
-`;
+})({
+  ...padding.object(containerPaddingTop, 24, 0),
+  width: '100%',
+});
 
 export default function SwapDetailsMasthead({
   inputAmount,
