@@ -1,6 +1,5 @@
 import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import styled from 'styled-components';
 import ActivityIndicator from '../../../components/ActivityIndicator';
 import Spinner from '../../../components/Spinner';
 import { CoinIcon } from '../../coin-icon';
