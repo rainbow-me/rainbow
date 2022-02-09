@@ -34,29 +34,6 @@ diff --git a/node_modules/react-native-mmkv/lib/module/hooks.js b/node_modules/r
 index d65192e..8aee856 100644
 --- a/node_modules/react-native-mmkv/lib/module/hooks.js
 +++ b/node_modules/react-native-mmkv/lib/module/hooks.js
-@@ -31,8 +31,12 @@ function createMMKVHook(getter) {
-   return (key, instance) => {
-     const mmkv = instance !== null && instance !== void 0 ? instance : getDefaultInstance();
-     const [value, setValue] = useState(() => getter(mmkv, key));
-+
-+    const valueNonReactive = useRef();
-+    valueNonReactive.current = value;
-+
-     const set = useCallback(v => {
--      const newValue = typeof v === 'function' ? v(value) : v;
-+      const newValue = typeof v === 'function' ? v(valueNonReactive.current) : v;
- 
-       switch (typeof newValue) {
-         case 'number':
-@@ -48,7 +52,7 @@ function createMMKVHook(getter) {
-         default:
-           throw new Error(`MMKV: Type ${typeof newValue} is not supported!`);
-       }
--    }, [key, mmkv, value]);
-+    }, [key, mmkv]);
-     useEffect(() => {
-       const listener = mmkv.addOnValueChangedListener(changedKey => {
-         if (changedKey === key) {
 @@ -57,6 +61,11 @@ function createMMKVHook(getter) {
        });
        return () => listener.remove();
