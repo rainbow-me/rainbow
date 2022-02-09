@@ -50,7 +50,7 @@ export default function ENSSearchSheet() {
 
   const {
     data: registrationCostsData,
-    isAvailable: registrationCostsDataIsAvailable,
+    isSuccess: registrationCostsDataIsAvailable,
   } = useENSRegistrationCosts({
     duration: 1,
     name: debouncedSearchQuery,
