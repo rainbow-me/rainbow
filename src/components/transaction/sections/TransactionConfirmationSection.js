@@ -43,22 +43,20 @@ const NativeAmount = styled(Text).attrs(({ theme: { colors } }) => ({
   marginTop: android ? 0 : 19,
 });
 
-const CenteredSpinner = styled(Centered)({
-  marginBottom: android ? -10 : 10,
-  marginTop: android ? 0 : 19,
-});
-
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
   ({ theme: { colors } }) => ({
     color: colors.alpha(colors.blueGreyDark, 0.3),
     size: 50,
   })
-);
+)({
+  marginBottom: android ? -10 : 19,
+  marginTop: android ? 0 : 0,
+});
 
 export default function TransactionConfirmationSection({
   address,
   amount,
-  nativeAmountDisplay,
+  nativeAmountDisplay = '',
   symbol,
   method,
 }) {
@@ -66,9 +64,7 @@ export default function TransactionConfirmationSection({
     <TransactionSheet method={method}>
       <Centered>
         {!nativeAmountDisplay ? (
-          <CenteredSpinner>
-            <LoadingSpinner />
-          </CenteredSpinner>
+          <LoadingSpinner />
         ) : (
           <NativeAmount>{nativeAmountDisplay}</NativeAmount>
         )}

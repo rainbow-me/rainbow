@@ -210,15 +210,7 @@ export default function TransactionConfirmationScreen() {
   const isMessageRequest = isMessageDisplayType(method);
   const [ready, setReady] = useState(isMessageRequest);
   const genericNativeAsset = useNativeAssetForNetwork(currentNetwork);
-
   const walletConnector = walletConnectors[peerId];
-
-  const priceOfNativeAsset = useMemo(() => {
-    if (greaterThan(genericNativeAsset?.price?.value, 1)) {
-      return genericNativeAsset?.price?.value;
-    }
-    return null;
-  }, [genericNativeAsset?.price?.value]);
 
   const accountInfo = useMemo(() => {
     const address = walletConnector?._accounts?.[0];
@@ -896,7 +888,8 @@ export default function TransactionConfirmationScreen() {
 
     if (isTransactionDisplayType(method) && request?.asset) {
       const amount = request?.value ?? '0.00';
-      const nativeAmount = multiply(priceOfNativeAsset, amount);
+      const nativeAssetPrice = genericNativeAsset?.price?.value;
+      const nativeAmount = multiply(nativeAssetPrice, amount);
       const nativeAmountDisplay = convertAmountToNativeDisplay(
         nativeAmount,
         nativeCurrency
@@ -908,7 +901,7 @@ export default function TransactionConfirmationScreen() {
           amount={amount}
           method={method}
           name={request?.asset?.name}
-          nativeAmountDisplay={priceOfNativeAsset ? nativeAmountDisplay : null}
+          nativeAmountDisplay={!nativeAssetPrice ? null : nativeAmountDisplay}
           symbol={request?.asset?.symbol}
         />
       );
@@ -929,7 +922,7 @@ export default function TransactionConfirmationScreen() {
     request?.data,
     request?.value,
     request.message,
-    priceOfNativeAsset,
+    genericNativeAsset?.price?.value,
     nativeCurrency,
   ]);
 
