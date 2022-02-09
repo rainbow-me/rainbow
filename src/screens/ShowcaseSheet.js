@@ -51,13 +51,11 @@ export default function ShowcaseScreen() {
 
   useEffect(() => {
     const init = async () => {
-      const address = backupAddress
-        ? backupAddress
-        : await resolveNameOrAddress(addressOrDomain);
+      const address = await resolveNameOrAddress(addressOrDomain);
       setAcccountAddress(address?.toLowerCase());
     };
     init();
-  }, [addressOrDomain, backupAddress]);
+  }, [addressOrDomain]);
 
   useEffect(() => {
     accountAddress && dispatch(fetchUniqueTokens(accountAddress));

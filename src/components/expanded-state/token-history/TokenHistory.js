@@ -191,7 +191,6 @@ const TokenHistory = ({ contract, token, color }) => {
     (address, ens) => {
       navigate(Routes.SHOWCASE_SHEET, {
         address: ens && ens.slice(-4) === '.eth' ? ens : address,
-        backupAddress: address,
       });
     },
     [navigate]
