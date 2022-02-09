@@ -187,13 +187,13 @@ const useUniswapCurrencyList = (searchQuery: string) => {
           data: unfilteredFavorites,
           title: tokenSectionTypes.favoriteTokenSection,
         });
-        if (curatedAssets.length) {
-          list.push({
-            data: curatedAssets,
-            title: tokenSectionTypes.verifiedTokenSection,
-            useGradientText: IS_TESTING === 'true' ? false : true,
-          });
-        }
+      }
+      if (curatedAssets.length) {
+        list.push({
+          data: curatedAssets,
+          title: tokenSectionTypes.verifiedTokenSection,
+          useGradientText: IS_TESTING === 'true' ? false : true,
+        });
       }
     }
     return list;
