@@ -2,7 +2,7 @@ import React from 'react';
 import { SheetActionButton, SheetActionButtonRow } from '../components/sheet';
 import TintButton from '../components/buttons/TintButton';
 import { useNavigation } from '../navigation/Navigation';
-import { Box, Heading, Stack, Text } from '@rainbow-me/design-system';
+import { Box, Cover, Heading, Stack, Text } from '@rainbow-me/design-system';
 import Routes from '@rainbow-me/routes';
 import { useTheme } from '@rainbow-me/context';
 
@@ -18,11 +18,23 @@ export default function ENSAssignRecordsSheet() {
     navigate(Routes.ENS_SEARCH_SHEET);
   }, [navigate]);
 
+  const avatarRadius = 35;
+
   return (
     <>
-      <Box background="body" flexGrow={1}>
-        <Box background="accent" height={{ custom: 125 }}></Box>
+      <Box background={'body'} flexGrow={1}>
         <Box flexGrow={1}>
+          <Box background="accent" height={{ custom: 125 }}>
+            <Cover alignHorizontal="center">
+              <Box
+                background="swap"
+                top={{ custom: 105 }}
+                height={{ custom: avatarRadius * 2 }}
+                width={{ custom: avatarRadius * 2 }}
+                borderRadius={avatarRadius}
+              ></Box>
+            </Cover>
+          </Box>
           <Stack alignHorizontal="center" space="15px">
             <Heading size="26px" weight="heavy">
               placeholder.eth
