@@ -41,7 +41,18 @@ const ExternalScrollViewWithRef = React.forwardRef<
     [onScroll, y]
   );
 
-  useImperativeHandle(ref, () => scrollViewRef.current!);
+  useImperativeHandle(ref, () => ({
+    scrollTo: (value) => {
+      console.log("XXX", y.setValue, value.y)
+      y.setValue(value.y)
+      scrollViewRef.current?.scrollTo(value);
+    },
+    scrollToOffset: (value) => {
+      console.log("XXX", value)
+      scrollViewRef.current?.scrollToOffset(value);
+    },
+    ...scrollViewRef.current,
+  }));
 
   return (
     <RNAnimated.ScrollView
