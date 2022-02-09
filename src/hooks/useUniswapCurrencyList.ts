@@ -54,7 +54,6 @@ const useUniswapCurrencyList = (searchQuery: string) => {
   const favoriteAddresses = useSelector(uniswapFavoritesSelector);
 
   const [loading, setLoading] = useState(true);
-  const [curatedAssets, setCuratedAssets] = useState<RT[]>([]);
   const [favoriteAssets, setFavoriteAssets] = useState<RT[]>([]);
   const [highLiquidityAssets, setHighLiquidityAssets] = useState<RT[]>([]);
   const [lowLiquidityAssets, setLowLiquidityAssets] = useState<RT[]>([]);
@@ -104,12 +103,9 @@ const useUniswapCurrencyList = (searchQuery: string) => {
         case 'favoriteAssets':
           setFavoriteAssets((await getFavorites()) || []);
           break;
-        case 'curatedAssets':
-          setCuratedAssets(getCurated());
-          break;
       }
     },
-    [getCurated, getFavorites, handleVerifiedResponse, searchQuery]
+    [getFavorites, handleVerifiedResponse, searchQuery]
   );
 
   const search = () => {
@@ -193,9 +189,10 @@ const useUniswapCurrencyList = (searchQuery: string) => {
           title: tokenSectionTypes.favoriteTokenSection,
         });
       }
+      const curatedAssets = getCurated();
       if (curatedAssets.length) {
         list.push({
-          data: getCurated(),
+          data: curatedAssets,
           key: 'curated',
           title: tokenSectionTypes.verifiedTokenSection,
           useGradientText: IS_TESTING === 'true' ? false : true,
@@ -205,7 +202,6 @@ const useUniswapCurrencyList = (searchQuery: string) => {
     return list;
   }, [
     colors.yellowFavorite,
-    curatedAssets,
     favoriteAssets,
     highLiquidityAssets,
     lowLiquidityAssets,
