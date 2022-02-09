@@ -1,15 +1,13 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import { Keyboard, ScrollView } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import { useSelector } from 'react-redux';
 import { MiniButton } from '../components/buttons';
-import {
-  textRecordsFields,
-  TextRecordsForm,
-} from '../components/ens-registration';
+import { TextRecordsForm } from '../components/ens-registration';
 import SelectableButton from '../components/ens-registration/TextRecordsForm/SelectableButton';
 import { SheetActionButton, SheetActionButtonRow } from '../components/sheet';
 import { useNavigation } from '../navigation/Navigation';
@@ -24,23 +22,37 @@ import {
   Stack,
   Text,
 } from '@rainbow-me/design-system';
-import { useKeyboardHeight } from '@rainbow-me/hooks';
+import { ENS_RECORDS, textRecordFields } from '@rainbow-me/helpers/ens';
+import { useENSProfileForm, useKeyboardHeight } from '@rainbow-me/hooks';
+import { AppState } from '@rainbow-me/redux/store';
 import Routes from '@rainbow-me/routes';
 
 export default function ENSAssignRecordsSheet() {
   const { navigate } = useNavigation();
   const keyboardHeight = useKeyboardHeight();
+  const ensName = useSelector(
+    ({ ensRegistration }: AppState) => ensRegistration.name
+  );
 
   const handlePressContinue = useCallback(() => {
     navigate(Routes.ENS_CONFIRM_REGISTER_SHEET);
   }, [navigate]);
 
-  const [selectedFields, setSelectedFields] = useState([
-    textRecordsFields.name,
-    textRecordsFields.bio,
-    textRecordsFields.website,
-    textRecordsFields.twitter,
-  ]);
+  const {
+    selectedFields,
+    onAddField,
+    onRemoveField,
+    onChangeField,
+    onBlurField,
+    values,
+  } = useENSProfileForm({
+    defaultFields: [
+      textRecordFields[ENS_RECORDS.displayName],
+      textRecordFields[ENS_RECORDS.description],
+      textRecordFields[ENS_RECORDS.url],
+      textRecordFields[ENS_RECORDS.twitter],
+    ],
+  });
 
   return (
     <Box background="body" flexGrow={1} paddingTop="30px">
@@ -51,13 +63,18 @@ export default function ENSAssignRecordsSheet() {
               <Stack space="30px">
                 <Stack alignHorizontal="center" space="15px">
                   <Heading size="26px" weight="heavy">
-                    placeholder.eth
+                    {ensName}
                   </Heading>
                   <Text color="action" size="16px" weight="heavy">
                     Create your profile
                   </Text>
                 </Stack>
-                <TextRecordsForm selectedFields={selectedFields} />
+                <TextRecordsForm
+                  onBlurField={onBlurField}
+                  onChangeField={onChangeField}
+                  selectedFields={selectedFields}
+                  values={values}
+                />
               </Stack>
             </Inset>
           </Box>
@@ -73,37 +90,11 @@ export default function ENSAssignRecordsSheet() {
             <Rows>
               <Row>
                 <Inset space="19px">
-                  <Inline space="10px">
-                    {Object.values(textRecordsFields).map(
-                      (textRecordField, i) => {
-                        const isSelected = selectedFields.some(
-                          field => field.id === textRecordField.id
-                        );
-                        return (
-                          <SelectableButton
-                            isSelected={isSelected}
-                            key={i}
-                            onSelect={() => {
-                              setSelectedFields(fields => {
-                                if (isSelected) {
-                                  const index = selectedFields.findIndex(
-                                    ({ id }) => textRecordField.id === id
-                                  );
-                                  let newFields = [...fields];
-                                  newFields.splice(index, 1);
-                                  return newFields;
-                                } else {
-                                  return [...fields, textRecordField];
-                                }
-                              });
-                            }}
-                          >
-                            {textRecordField.label}
-                          </SelectableButton>
-                        );
-                      }
-                    )}
-                  </Inline>
+                  <SelectableAttributesButtons
+                    onAddField={onAddField}
+                    onRemoveField={onRemoveField}
+                    selectedFields={selectedFields}
+                  />
                 </Inset>
               </Row>
               <Row height="content">
@@ -194,5 +185,43 @@ function Shadow() {
         <Box background="body" height="46px" width="full" />
       </Cover>
     </>
+  );
+}
+
+function SelectableAttributesButtons({
+  selectedFields,
+  onAddField,
+  onRemoveField,
+}) {
+  return (
+    <Inline space="10px">
+      {Object.values(textRecordFields).map((textRecordField, i) => {
+        const isSelected = selectedFields.some(
+          field => field.id === textRecordField.id
+        );
+        return (
+          <SelectableButton
+            isSelected={isSelected}
+            key={i}
+            onSelect={() => {
+              if (isSelected) {
+                const index = selectedFields.findIndex(
+                  ({ id }) => textRecordField.id === id
+                );
+                const fieldToRemove = selectedFields[index];
+                let newFields = [...selectedFields];
+                newFields.splice(index, 1);
+                onRemoveField(fieldToRemove, newFields);
+              } else {
+                const fieldToAdd = textRecordField;
+                onAddField(fieldToAdd, [...selectedFields, fieldToAdd]);
+              }
+            }}
+          >
+            {textRecordField.label}
+          </SelectableButton>
+        );
+      })}
+    </Inline>
   );
 }

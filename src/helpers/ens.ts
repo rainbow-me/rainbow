@@ -1,5 +1,6 @@
 import { Contract } from 'ethers';
 import { keccak_256 as sha3 } from 'js-sha3';
+import { InlineFieldProps } from '../components/inputs/InlineField';
 import { addHexPrefix, web3Provider } from '@rainbow-me/handlers/web3';
 import {
   ENSABI,
@@ -18,6 +19,7 @@ enum ENS_RECORDS {
   BTC = 'BTC',
   LTC = 'LTC',
   DOGE = 'DOGE',
+  displayName = 'me.rainbow.displayName',
   content = 'content',
   email = 'email',
   url = 'url',
@@ -28,10 +30,114 @@ enum ENS_RECORDS {
   discord = 'com.discord',
   github = 'com.github',
   reddit = 'com.reddit',
+  instagram = 'com.instagram',
+  snapchat = 'com.snapchat',
   twitter = 'com.twitter',
   telegram = 'com.telegram',
   ensDelegate = 'eth.ens.delegate',
 }
+
+export type TextRecordField = {
+  id: string;
+  key: string;
+  label: InlineFieldProps['label'];
+  placeholder: InlineFieldProps['placeholder'];
+  inputProps?: InlineFieldProps['inputProps'];
+  validations?: InlineFieldProps['validations'];
+};
+
+const textRecordFields = {
+  [ENS_RECORDS.displayName]: {
+    id: 'name',
+    inputProps: {
+      maxLength: 50,
+    },
+    key: ENS_RECORDS.displayName,
+    label: 'Name',
+    placeholder: 'Add a display name',
+  },
+  [ENS_RECORDS.description]: {
+    id: 'bio',
+    inputProps: {
+      maxLength: 100,
+      multiline: true,
+    },
+    key: ENS_RECORDS.description,
+    label: 'Bio',
+    placeholder: 'Add a bio to your profile',
+  },
+  [ENS_RECORDS.twitter]: {
+    id: 'twitter',
+    inputProps: {
+      maxLength: 16,
+    },
+    key: ENS_RECORDS.twitter,
+    label: 'Twitter',
+    placeholder: '@username',
+    validations: {
+      allowCharacterRegex: {
+        match: /^@?\w*$/,
+      },
+    },
+  },
+  [ENS_RECORDS.url]: {
+    id: 'website',
+    inputProps: {
+      keyboardType: 'url',
+      maxLength: 100,
+    },
+    key: ENS_RECORDS.url,
+    label: 'Website',
+    placeholder: 'Add your website',
+  },
+  [ENS_RECORDS.github]: {
+    id: 'github',
+    inputProps: {
+      maxLength: 20,
+    },
+    key: ENS_RECORDS.github,
+    label: 'GitHub',
+    placeholder: '@username',
+  },
+  [ENS_RECORDS.instagram]: {
+    id: 'instagram',
+    inputProps: {
+      maxLength: 30,
+    },
+    key: ENS_RECORDS.instagram,
+    label: 'Instagram',
+    placeholder: '@username',
+    validations: {
+      allowCharacterRegex: {
+        match: /^@?([\w.])*$/,
+      },
+    },
+  },
+  [ENS_RECORDS.snapchat]: {
+    id: 'snapchat',
+    inputProps: {
+      maxLength: 16,
+    },
+    key: ENS_RECORDS.snapchat,
+    label: 'Snapchat',
+    placeholder: '@username',
+    validations: {
+      allowCharacterRegex: {
+        match: /^@?([\w.])*$/,
+      },
+    },
+  },
+  [ENS_RECORDS.discord]: {
+    id: 'discord',
+    inputProps: {
+      maxLength: 50,
+    },
+    key: ENS_RECORDS.discord,
+    label: 'Discord',
+    placeholder: '@username',
+  },
+} as const;
+
 const getENSContract = () => {
   return new Contract(ensAddress, ENSABI, web3Provider);
 };
@@ -79,4 +185,5 @@ export {
   getAvailable,
   getNameExpires,
   getRentPrice,
+  textRecordFields,
 };

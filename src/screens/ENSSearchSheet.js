@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
 import { KeyboardArea } from 'react-native-keyboard-area';
+import { useDispatch } from 'react-redux';
 import dice from '../assets/dice.png';
 import TintButton from '../components/buttons/TintButton';
 import {
@@ -23,11 +24,13 @@ import {
   useKeyboardHeight,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
+import { ensRegistrationUpdateName } from '@rainbow-me/redux/ensRegistration';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 import { normalizeENS } from '@rainbow-me/utils';
 
 export default function ENSSearchSheet() {
+  const dispatch = useDispatch();
   const { navigate } = useNavigation();
   const keyboardHeight = useKeyboardHeight();
 
@@ -53,9 +56,10 @@ export default function ENSSearchSheet() {
   }, [isAvailable, isInvalid, isRegistered]);
 
   const handlePressContinue = useCallback(() => {
+    dispatch(ensRegistrationUpdateName(`${searchQuery}.eth`));
     Keyboard.dismiss();
     navigate(Routes.ENS_ASSIGN_RECORDS_SHEET);
-  }, [navigate]);
+  }, [dispatch, navigate, searchQuery]);
 
   return (
     <Box background="body" flexGrow={1}>

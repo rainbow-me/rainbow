@@ -10,23 +10,28 @@ import {
 } from '@rainbow-me/design-system';
 
 export type InlineFieldProps = {
+  defaultValue?: string;
   label: string;
   placeholder?: string;
   inputProps?: Partial<TextInputProps>;
+  onChangeText: (text: string) => void;
+  onEndEditing?: TextInputProps['onEndEditing'];
   validations?: {
     allowCharacterRegex?: { match: RegExp };
     maxLength?: { value: number };
   };
+  value: string;
 };
 
 export default function InlineField({
   label,
+  onChangeText,
   placeholder,
   inputProps,
   validations,
+  onEndEditing,
+  value,
 }: InlineFieldProps) {
-  const [value, setValue] = React.useState();
-
   const textSize = 16;
   const textStyle = useTextStyle({ size: `${textSize}px`, weight: 'bold' });
 
@@ -44,19 +49,19 @@ export default function InlineField({
     text => {
       const { allowCharacterRegex } = validations || {};
       if (!allowCharacterRegex) {
-        setValue(text);
+        onChangeText(text);
         return;
       }
       if (text === '') {
-        setValue(text);
+        onChangeText(text);
         return;
       }
       if (allowCharacterRegex?.match.test(text)) {
-        setValue(text);
+        onChangeText(text);
         return;
       }
     },
-    [validations]
+    [onChangeText, validations]
   );
 
   return (
@@ -72,6 +77,7 @@ export default function InlineField({
         maxLength={validations?.maxLength?.value}
         onChangeText={handleChangeText}
         onContentSizeChange={handleContentSizeChange}
+        onEndEditing={onEndEditing}
         placeholder={placeholder}
         style={{
           ...textStyle,
