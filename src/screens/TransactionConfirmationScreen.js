@@ -21,7 +21,6 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { useDispatch, useSelector } from 'react-redux';
-import styled from 'styled-components';
 import URL from 'url-parse';
 import Divider from '../components/Divider';
 import L2Disclaimer from '../components/L2Disclaimer';
@@ -78,6 +77,7 @@ import { useNavigation } from '@rainbow-me/navigation';
 import { parseGasParamsForTransaction } from '@rainbow-me/parsers';
 import { walletConnectRemovePendingRedirect } from '@rainbow-me/redux/walletconnect';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 import {
   convertAmountToNativeDisplay,
@@ -114,7 +114,7 @@ const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
   ({ theme: { colors } }) => ({
     color: colors.alpha(colors.blueGreyDark, 0.3),
   })
-)``;
+)({});
 
 const DappLogo = styled(RequestVendorLogoIcon).attrs(
   ({ theme: { colors } }) => ({
@@ -123,13 +123,13 @@ const DappLogo = styled(RequestVendorLogoIcon).attrs(
     showLargeShadow: true,
     size: 50,
   })
-)`
-  margin-bottom: 14;
-`;
+)({
+  marginBottom: 14,
+});
 
-const Container = styled(Column)`
-  flex: 1;
-`;
+const Container = styled(Column)({
+  flex: 1,
+});
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const AnimatedSheet = Animated.createAnimatedComponent(Centered);
@@ -139,9 +139,9 @@ const WalletLabel = styled(Text).attrs(({ theme: { colors } }) => ({
   letterSpacing: 'roundedMedium',
   size: 'smedium',
   weight: 'semibold',
-}))`
-  margin-bottom: 3;
-`;
+}))({
+  marginBottom: 3,
+});
 
 const WalletText = styled(Text).attrs(
   ({ balanceTooLow, theme: { colors } }) => ({
@@ -151,7 +151,11 @@ const WalletText = styled(Text).attrs(
     size: 'larger',
     weight: balanceTooLow ? 'bold' : 'semibold',
   })
-)``;
+)({});
+
+const messageRequestContainerStyle = padding.object(24, 0);
+
+const rowStyle = padding.object(6, 24, 30);
 
 const NOOP = () => undefined;
 
@@ -884,7 +888,7 @@ export default function TransactionConfirmationScreen() {
   const renderTransactionSection = useCallback(() => {
     if (isMessageRequest) {
       return (
-        <RowWithMargins css={padding(24, 0)}>
+        <RowWithMargins style={messageRequestContainerStyle}>
           <MessageSigningSection message={request.message} method={method} />
         </RowWithMargins>
       );
@@ -1110,7 +1114,7 @@ export default function TransactionConfirmationScreen() {
                   </Column>
                 )}
                 {renderTransactionButtons()}
-                <RowWithMargins css={padding(6, 24, 30)} margin={15}>
+                <RowWithMargins margin={15} style={rowStyle}>
                   <Column>
                     <WalletLabel>Wallet</WalletLabel>
                     <RowWithMargins margin={5}>

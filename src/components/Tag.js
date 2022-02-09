@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Linking } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
-import styled from 'styled-components';
 import { magicMemo, showActionSheetWithOptions } from '../utils';
 import { ButtonPressAnimation } from './animations';
 import { Centered, Column } from './layout';
 import { Text as TextElement } from './text';
 import { Inline } from '@rainbow-me/design-system';
+import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 
 const HairlineSpace = '\u200a';
@@ -29,39 +29,39 @@ const viewTraitOnOpenseaAction = {
 
 const TagBorderRadius = 16;
 
-const Container = styled(Column)`
-  ${padding(8, 10)};
-  border-radius: ${TagBorderRadius};
-  text-align: left;
-  z-index: 1;
-`;
+const Container = styled(Column)({
+  ...padding.object(8, 10),
+  borderRadius: TagBorderRadius,
+  textAlign: 'left',
+  zIndex: 1,
+});
 
-const OuterBorder = styled(Centered)`
-  border-color: ${({ color, theme: { colors } }) =>
-    color || colors.alpha(colors.whiteLabel, 0.15)};
-  border-radius: ${TagBorderRadius};
-  border-width: 2;
-  flex: 0;
-  overflow: hidden;
-  z-index: 2;
-`;
+const OuterBorder = styled(Centered)({
+  borderColor: ({ color, theme: { colors } }) =>
+    color || colors.alpha(colors.whiteLabel, 0.15),
+  borderRadius: TagBorderRadius,
+  borderWidth: 2,
+  flex: 0,
+  overflow: 'hidden',
+  zIndex: 2,
+});
 
 const Text = styled(TextElement).attrs(({ color, theme: { colors } }) => ({
   color: color || colors.whiteLabel,
   size: 'lmedium',
   weight: 'semibold',
-}))`
-  line-height: 18;
-`;
+}))({
+  lineHeight: 18,
+});
 
 const Title = styled(TextElement).attrs(({ color, theme: { colors } }) => ({
   color: color || colors.alpha(colors.whiteLabel, 0.5),
   size: 'tiny',
   weight: 'heavy',
-}))`
-  line-height: 13;
-  margin-bottom: 1;
-`;
+}))({
+  lineHeight: 13,
+  marginBottom: 1,
+});
 
 const Tag = ({ color, disableMenu, slug, text, title, maxValue, ...props }) => {
   const { colors } = useTheme();

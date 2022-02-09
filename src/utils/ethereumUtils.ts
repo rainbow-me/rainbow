@@ -484,7 +484,7 @@ function getBlockExplorer(network: Network) {
     case Network.mainnet:
       return 'etherscan';
     case Network.polygon:
-      return 'polygonScan';
+      return 'polygonscan';
     case Network.optimism:
       return 'etherscan';
     case Network.arbitrum:

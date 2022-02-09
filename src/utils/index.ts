@@ -13,6 +13,7 @@ export { default as profileUtils } from './profileUtils';
 export { default as dimensionsPropType } from './dimensionsPropType';
 export { default as directionPropType } from './directionPropType';
 export { default as ethereumUtils } from './ethereumUtils';
+export { default as formatURLForDisplay } from './formatURLForDisplay';
 export { default as gasUtils } from './gas';
 export { default as getBlocksFromTimestamps } from './getBlocksFromTimestamps';
 export { default as getDominantColorFromImage } from './getDominantColorFromImage';

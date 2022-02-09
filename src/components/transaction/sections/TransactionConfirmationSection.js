@@ -8,6 +8,7 @@ import { Centered, Column, RowWithMargins } from '../../layout';
 import { Text, TruncatedText } from '../../text';
 import TransactionSheet from '../TransactionSheet';
 import { formatFixedDecimals } from '@rainbow-me/helpers/utilities';
+import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 
 const Amount = styled(TruncatedText).attrs(({ theme: { colors } }) => ({
@@ -16,19 +17,21 @@ const Amount = styled(TruncatedText).attrs(({ theme: { colors } }) => ({
   size: 'larger',
   uppercase: true,
   weight: 'bold',
-}))``;
+}))({});
 
 const AmountRow = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
   colors: colors.gradients.lighterGrey,
   end: { x: 0, y: 0.5 },
   start: { x: 1, y: 0.5 },
-}))`
-  ${padding(android ? 1 : 7, 12, android ? 2 : 9, 11)};
-  border-radius: 40;
-  margin: auto;
-  margin-bottom: 17;
-  overflow: hidden;
-`;
+}))({
+  ...padding.object(android ? 1 : 7, 12, android ? 2 : 9, 11),
+  borderRadius: 40,
+  marginBottom: 17,
+  marginLeft: 'auto',
+  marginRight: 'auto',
+  marginTop: 'auto',
+  overflow: 'hidden',
+});
 
 const NativeAmount = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
@@ -36,10 +39,10 @@ const NativeAmount = styled(Text).attrs(({ theme: { colors } }) => ({
   letterSpacing: 'zero',
   size: 'headline',
   weight: 'heavy',
-}))`
-  margin-bottom: ${android ? -10 : 10};
-  margin-top: ${android ? 0 : 19};
-`;
+}))({
+  marginBottom: android ? -10 : 10,
+  marginTop: android ? 0 : 19,
+});
 
 const CenteredSpinner = styled(Centered).attrs()`
   margin-bottom: ${android ? -10 : 10};
