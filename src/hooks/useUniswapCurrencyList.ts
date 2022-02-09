@@ -158,12 +158,14 @@ const useUniswapCurrencyList = (searchQuery: string) => {
         list.push({
           color: colors.yellowFavorite,
           data: favoriteAssets,
+          key: 'favorites',
           title: tokenSectionTypes.favoriteTokenSection,
         });
       }
       if (verifiedAssets.length) {
         list.push({
           data: verifiedAssets,
+          key: 'verified',
           title: tokenSectionTypes.verifiedTokenSection,
           useGradientText: IS_TESTING === 'true' ? false : true,
         });
@@ -171,12 +173,14 @@ const useUniswapCurrencyList = (searchQuery: string) => {
       if (highLiquidityAssets.length) {
         list.push({
           data: highLiquidityAssets,
+          key: 'highLiquidity',
           title: tokenSectionTypes.unverifiedTokenSection,
         });
       }
       if (lowLiquidityAssets?.length) {
         list.push({
           data: lowLiquidityAssets,
+          key: 'lowLiqudiity',
           title: tokenSectionTypes.lowLiquidityTokenSection,
         });
       }
@@ -185,12 +189,14 @@ const useUniswapCurrencyList = (searchQuery: string) => {
         list.push({
           color: colors.yellowFavorite,
           data: unfilteredFavorites,
+          key: 'unfilteredFavorites',
           title: tokenSectionTypes.favoriteTokenSection,
         });
       }
       if (curatedAssets.length) {
         list.push({
-          data: curatedAssets,
+          data: getCurated(),
+          key: 'curated',
           title: tokenSectionTypes.verifiedTokenSection,
           useGradientText: IS_TESTING === 'true' ? false : true,
         });
@@ -206,6 +212,7 @@ const useUniswapCurrencyList = (searchQuery: string) => {
     searching,
     unfilteredFavorites,
     verifiedAssets,
+    getCurated,
   ]);
 
   const updateFavorites = useCallback(
