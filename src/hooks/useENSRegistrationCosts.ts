@@ -124,7 +124,7 @@ export default function useENSRegistrationCosts({
 
   const isIdle = newStatus === 'idle';
   const isLoading = newStatus === 'loading';
-  const isAvailable =
+  const isSuccess =
     newStatus === 'success' && !!data?.estimatedTotalRegistrationCost;
 
   return {
