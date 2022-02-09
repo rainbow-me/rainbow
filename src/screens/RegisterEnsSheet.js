@@ -13,6 +13,7 @@ import {
 } from '../components/sheet';
 import {
   Box,
+  Divider,
   Heading,
   Inline,
   Inset,
@@ -102,27 +103,53 @@ export default function RegisterEnsSheet() {
           )}
           {(isAvailable || isRegistered) && (
             <Inset horizontal="19px">
-              <Inline alignHorizontal="justify" wrap={false}>
-                <SearchResultGradientIndicator
-                  isRegistered={isRegistered}
-                  type="availability"
-                />
-                {isRegistered ? (
+              <Stack
+                separator={
+                  <Inset horizontal="19px">
+                    <Divider />
+                  </Inset>
+                }
+                space="19px"
+              >
+                <Inline alignHorizontal="justify" wrap={false}>
                   <SearchResultGradientIndicator
-                    expiryDate={data?.expirationDate}
-                    type="expiration"
+                    isRegistered={isRegistered}
+                    type="availability"
                   />
-                ) : (
-                  <SearchResultGradientIndicator
-                    price={`${data?.rentPrice?.perYear?.display}  / Year`}
-                    type="price"
-                  />
-                )}
-              </Inline>
+                  {isRegistered ? (
+                    <SearchResultGradientIndicator
+                      expirationDate={data?.expirationDate}
+                      type="expiration"
+                    />
+                  ) : (
+                    <SearchResultGradientIndicator
+                      price={`${data?.rentPrice?.perYear?.display} / Year`}
+                      type="price"
+                    />
+                  )}
+                </Inline>
+                <Inset horizontal="19px">
+                  {isRegistered ? (
+                    <Text color="secondary50" size="16px" weight="bold">
+                      This name was last registered on {data?.registrationDate}
+                    </Text>
+                  ) : (
+                    <Inline>
+                      <Text color="secondary50" size="16px" weight="bold">
+                        Estimated total cost of
+                        <Text color="secondary80" size="16px" weight="heavy">
+                          {' $87.57 '}
+                        </Text>
+                        with current network fees
+                      </Text>
+                    </Inline>
+                  )}
+                </Inset>
+              </Stack>
             </Inset>
           )}
         </Box>
-        <Box>
+        <Box paddingTop="34px">
           {isIdle && (
             <Inline
               alignHorizontal="center"
