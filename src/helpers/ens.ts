@@ -276,6 +276,9 @@ const getENSRecordKeys = () => Object.keys(ENS_RECORDS);
 const getENSRecordValues = () => Object.values(ENS_RECORDS);
 
 export {
+  ENS_RECORDS,
+  getENSRecordKeys,
+  getENSRecordValues,
   getENSRegistryContract,
   getENSRegistrarControllerContract,
   getENSBaseRegistrarImplementationContract,
