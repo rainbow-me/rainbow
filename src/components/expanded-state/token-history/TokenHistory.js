@@ -314,9 +314,15 @@ const TokenHistory = ({ contract, token, color }) => {
   };
 
   return (
-    <MaskedView maskElement={<TokenHistoryEdgeFade />}>
+    <MaskedView
+      style={{ marginLeft: -19, marginRight: -19 }}
+      maskElement={<TokenHistoryEdgeFade />}
+    >
       <FlatList
-        contentContainerStyle={{ paddingLeft: 19, paddingRight: 19 }}
+        contentContainerStyle={{
+          paddingLeft: 19,
+          paddingRight: 19,
+        }}
         data={tokenHistory}
         horizontal
         inverted={tokenHistory.length > 2}
