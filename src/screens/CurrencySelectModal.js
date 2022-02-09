@@ -180,8 +180,8 @@ export default function CurrencySelectModal() {
     () => ({
       onActionAsset: handleFavoriteAsset,
       onPress: handleSelectAsset,
-      showBalance: type === CurrencySelectionTypes.input,
-      showFavoriteButton: type === CurrencySelectionTypes.output,
+      showBalance: () => type === CurrencySelectionTypes.input,
+      showFavoriteButton: () => type === CurrencySelectionTypes.output,
     }),
     [handleFavoriteAsset, handleSelectAsset, type]
   );

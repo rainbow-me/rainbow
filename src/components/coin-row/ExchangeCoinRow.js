@@ -68,7 +68,6 @@ const ExchangeCoinRow = ({
 }) => {
   const { width: deviceWidth } = useDimensions();
   const [localFavorite, setLocalFavorite] = useState(!!item.favorite);
-
   const handlePress = useCallback(() => {
     if (isVerified || showBalance) {
       onPress(item);
@@ -116,7 +115,7 @@ const ExchangeCoinRow = ({
           onCopySwapDetailsText={onCopySwapDetailsText}
         />
       )}
-      {showFavoriteButton && ios && (
+      {showFavoriteButton?.(item) && ios && (
         <FloatingFavoriteEmojis deviceWidth={deviceWidth}>
           {({ onNewEmoji }) => (
             <CoinRowFavoriteButton
@@ -126,13 +125,13 @@ const ExchangeCoinRow = ({
           )}
         </FloatingFavoriteEmojis>
       )}
-      {showFavoriteButton && android && (
+      {showFavoriteButton?.(item) && android && (
         <CoinRowFavoriteButton
           isFavorited={localFavorite}
           onPress={() => toggleFavorite}
         />
       )}
-      {showAddButton && (
+      {showAddButton?.(item) && (
         <CoinRowAddButton
           onPress={() => {
             onActionAsset(item);

@@ -213,8 +213,9 @@ export default function ListSection() {
 
   const itemProps = useMemo(
     () => ({
-      showAddButton: true,
+      showAddButton: item => item.favorite,
       showBalance: false,
+      showFavoriteButton: item => !item.favorite,
     }),
     []
   );
