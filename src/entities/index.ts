@@ -36,10 +36,12 @@ export type {
   RainbowToken,
   UniswapCurrency,
   ZerionAsset,
+  ZerionAssetFallback,
 } from './tokens';
 export type {
   GasFeeType,
   NewTransaction,
+  NewTransactionOrAddCashTransaction,
   RainbowTransaction,
   ZerionTransaction,
   ZerionTransactionChange,
