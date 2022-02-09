@@ -24,15 +24,12 @@ import {
 } from '@rainbow-me/design-system';
 import { ENS_RECORDS, textRecordFields } from '@rainbow-me/helpers/ens';
 import { useENSProfileForm, useKeyboardHeight } from '@rainbow-me/hooks';
-import { AppState } from '@rainbow-me/redux/store';
 import Routes from '@rainbow-me/routes';
 
 export default function ENSAssignRecordsSheet() {
   const { navigate } = useNavigation();
   const keyboardHeight = useKeyboardHeight();
-  const ensName = useSelector(
-    ({ ensRegistration }: AppState) => ensRegistration.name
-  );
+  const ensName = useSelector(({ ensRegistration }) => ensRegistration.name);
 
   const handlePressContinue = useCallback(() => {
     navigate(Routes.ENS_CONFIRM_REGISTER_SHEET);
