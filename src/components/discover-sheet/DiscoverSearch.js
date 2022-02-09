@@ -99,9 +99,8 @@ export default function DiscoverSearch() {
     () => ({
       onActionAsset: handleActionAsset,
       onPress: handlePress,
-      showAddButton: item => !item.favorite,
+      showAddButton: true,
       showBalance: false,
-      showFavoriteButton: item => item.favorite,
     }),
     [handleActionAsset, handlePress]
   );
