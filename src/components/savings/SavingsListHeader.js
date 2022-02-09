@@ -2,7 +2,6 @@ import lang from 'i18n-js';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Animated, Easing } from 'react-native';
-import styled from 'styled-components';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
 import { useTheme } from '../../context/ThemeContext';
 import { convertAmountToNativeDisplay } from '../../helpers/utilities';
@@ -11,6 +10,7 @@ import { Row, RowWithMargins } from '../layout';
 import { Emoji, Text, TruncatedText } from '../text';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
+import styled from '@rainbow-me/styled-components';
 
 const AnimatedImgixImage = Animated.createAnimatedComponent(ImgixImage);
 
@@ -20,14 +20,14 @@ const TokenFamilyHeaderHeight = 44;
 const SumValueText = styled(Text).attrs({
   align: 'right',
   size: 'large',
-})`
-  margin-bottom: 1;
-  color: ${({ theme: { colors } }) => colors.dark};
-`;
+})({
+  color: ({ theme: { colors } }) => colors.dark,
+  marginBottom: 1,
+});
 
-const ListHeaderEmoji = styled(Emoji).attrs({ size: 'medium' })`
-  margin-bottom: 3.5;
-`;
+const ListHeaderEmoji = styled(Emoji).attrs({ size: 'medium' })({
+  marginBottom: 3.5,
+});
 
 const SavingsListHeader = ({
   emoji,

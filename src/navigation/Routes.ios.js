@@ -16,6 +16,7 @@ import DepositModal from '../screens/DepositModal';
 import ENSConfirmRegisterSheet from '../screens/ENSConfirmRegisterSheet';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ExplainSheet from '../screens/ExplainSheet';
+import ExternalLinkWarningSheet from '../screens/ExternalLinkWarningSheet';
 import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
 import ModalScreen from '../screens/ModalScreen';
 import ReceiveModal from '../screens/ReceiveModal';
@@ -44,6 +45,7 @@ import {
   expandedAssetSheetConfig,
   expandedAssetSheetConfigWithLimit,
   explainSheetConfig,
+  externalLinkWarningSheetConfig,
   nativeStackDefaultConfig,
   nativeStackDefaultConfigWithoutStatusBar,
   registerENSNavigatorConfig,
@@ -299,6 +301,11 @@ function NativeStackNavigator() {
         component={ExplainSheet}
         name={Routes.EXPLAIN_SHEET}
         {...explainSheetConfig}
+      />
+      <NativeStack.Screen
+        component={ExternalLinkWarningSheet}
+        name={Routes.EXTERNAL_LINK_WARNING_SHEET}
+        {...externalLinkWarningSheetConfig}
       />
       <NativeStack.Screen
         component={WalletDiagnosticsSheet}

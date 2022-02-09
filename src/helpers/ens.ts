@@ -163,7 +163,7 @@ const getResolver = async (name: string): Promise<string> =>
 const getAvailable = async (name: string): Promise<boolean> =>
   getENSRegistrarContract().available(name);
 
-const getNameExpires = async (name: string): Promise<string> =>
+const getNameExpires = async (name: string): Promise<object> =>
   getBaseRegistrarImplementationContract().nameExpires(
     addHexPrefix(sha3(name))
   );

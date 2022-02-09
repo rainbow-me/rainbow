@@ -1,10 +1,10 @@
 import { isArray, isString, pick } from 'lodash';
 import React from 'react';
-import styled from 'styled-components';
 import { useTheme } from '../../../context/ThemeContext';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered, InnerBorder } from '../../layout';
 import { Text } from '../../text';
+import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 
 const ButtonSizeTypes = {
@@ -23,24 +23,34 @@ const ButtonShapeTypes = {
   rounded: 'rounded',
 };
 
-const shadowStyles = (colors, disabled, isDarkMode) => `
-  shadow-color: ${colors.alpha(
+const shadowStyles = (colors, disabled, isDarkMode) => ({
+  shadowColor: colors.alpha(
     isDarkMode ? colors.shadow : colors.blueGreyDark,
     isDarkMode && disabled ? 0.2 : 0.5
-  )};
-  shadow-offset: 0px 4px;
-  shadow-opacity: 0.2;
-  shadow-radius: 6;
-`;
+  ),
+  shadowOffset: { height: 4, width: 0 },
+  shadowOpacity: 0.2,
+  shadowRadius: 6,
+});
 
-const Container = styled(Centered)`
-  ${({ disabled, showShadow, theme: { colors, isDarkMode } }) =>
-    showShadow ? shadowStyles(colors, disabled, isDarkMode) : ''}
-  ${({ size }) => padding(...ButtonSizeTypes[size].padding)}
-  background-color: ${({ backgroundColor }) => backgroundColor};
-  border-radius: ${({ borderRadius }) => borderRadius};
-  flex-grow: 0;
-`;
+const Container = styled(Centered)(
+  ({
+    disabled,
+    backgroundColor,
+    size,
+    showShadow,
+    borderRadius,
+    theme: { colors, isDarkMode },
+  }) => ({
+    ...(showShadow ? shadowStyles(colors, disabled, isDarkMode) : {}),
+
+    ...padding.object(...ButtonSizeTypes[size].padding),
+    backgroundColor: backgroundColor,
+
+    borderRadius: borderRadius,
+    flexGrow: 0,
+  })
+);
 
 const shouldRenderChildrenAsText = children =>
   isArray(children) ? isString(children[0]) : isString(children);
@@ -77,11 +87,10 @@ export default function Button({
           backgroundColor || (isDarkMode ? colors.offWhite : colors.grey)
         }
         borderRadius={borderRadius}
-        css={containerStyles}
         disabled={disabled}
         showShadow={showShadow}
         size={size}
-        style={style}
+        style={[containerStyles, style]}
       >
         {shouldRenderChildrenAsText(children) ? (
           <Text

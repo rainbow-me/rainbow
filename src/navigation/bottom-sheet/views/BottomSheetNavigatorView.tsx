@@ -72,6 +72,7 @@ const BottomSheetNavigatorView = ({
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   //#endregion
   return (
     <NavigationHelpersContext.Provider value={navigation}>

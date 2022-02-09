@@ -5,6 +5,7 @@ import { EthereumAddress } from '../wallet';
 import { TransactionStatus } from './transactionStatus';
 import { TransactionType } from './transactionType';
 import { Network } from '@rainbow-me/helpers/networkTypes';
+import { AddCashCurrencyAsset } from '@rainbow-me/references';
 
 export interface RainbowTransaction {
   address: string;
@@ -63,6 +64,22 @@ export interface NewTransaction {
   to: EthereumAddress | null;
   transferId?: string; // for purchases
   type?: TransactionType;
-  value: BigNumberish;
-  txTo: EthereumAddress | null;
+  value?: BigNumberish;
+  txTo?: EthereumAddress | null;
+}
+
+export interface NewTransactionOrAddCashTransaction
+  extends Omit<NewTransaction, 'asset'> {
+  // Although the type of `asset` really represents
+  // `ParsedAddressAsset | AddCashCurrencyAsset | null`, it is more
+  // convenient for typing purposes to use
+  // `Partial<ParsedAddressAsset> & AddCashCurrencyAsset` with the implication
+  // that all of the `ParsedAddressAsset` fields would be undefined.
+  // Statements such as `transaction?.asset?.price?.value` would fail to
+  // compile without the partial since `AddCashCurrencyAsset` does not have the
+  // key `price`, even though the statement is safe.
+  asset:
+    | ParsedAddressAsset
+    | (Partial<ParsedAddressAsset> & AddCashCurrencyAsset)
+    | null;
 }

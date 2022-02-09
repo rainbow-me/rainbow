@@ -7,6 +7,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
 import { MiniButton } from '../components/buttons';
+import TintButton from '../components/buttons/TintButton';
 import { TextRecordsForm } from '../components/ens-registration';
 import SelectableButton from '../components/ens-registration/TextRecordsForm/SelectableButton';
 import { SheetActionButton, SheetActionButtonRow } from '../components/sheet';
@@ -30,6 +31,10 @@ export default function ENSAssignRecordsSheet() {
   const { navigate } = useNavigation();
   const keyboardHeight = useKeyboardHeight();
   const ensName = useSelector(({ ensRegistration }) => ensRegistration.name);
+
+  const handlePressBack = useCallback(() => {
+    navigate(Routes.ENS_SEARCH_SHEET);
+  }, [navigate]);
 
   const handlePressContinue = useCallback(() => {
     navigate(Routes.ENS_CONFIRM_REGISTER_SHEET);
@@ -96,6 +101,9 @@ export default function ENSAssignRecordsSheet() {
               </Row>
               <Row height="content">
                 <SheetActionButtonRow>
+                  <TintButton color="secondary60" onPress={handlePressBack}>
+                    􀆉 Back
+                  </TintButton>
                   <SheetActionButton
                     label="Review"
                     onPress={handlePressContinue}

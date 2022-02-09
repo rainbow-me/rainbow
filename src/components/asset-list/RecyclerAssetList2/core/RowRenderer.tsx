@@ -56,6 +56,7 @@ function rowRenderer(type: CellType, { uid }: { uid: string }) {
             );
           case CellType.ASSETS_HEADER:
             return (
+              // @ts-expect-error JavaScript component
               <AssetListHeader
                 totalValue={(data as AssetsHeaderExtraData).value}
               />
@@ -90,7 +91,10 @@ function rowRenderer(type: CellType, { uid }: { uid: string }) {
               />
             );
           case CellType.NFTS_HEADER:
-            return <AssetListHeader title="Collectibles" />;
+            return (
+              // @ts-expect-error JavaScript component
+              <AssetListHeader title="Collectibles" />
+            );
           case CellType.FAMILY_HEADER: {
             const { name, image, total } = data as NFTFamilyExtraData;
             return (
