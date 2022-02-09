@@ -120,7 +120,7 @@ export default function useENSRegistrationCosts({
     getRegistrationValuesEstimations
   );
 
-  const newStatus = isValidLength ? status : 'idle';
+  const newStatus = rentPrice ? status : 'idle';
 
   const isIdle = newStatus === 'idle';
   const isLoading = newStatus === 'loading';
