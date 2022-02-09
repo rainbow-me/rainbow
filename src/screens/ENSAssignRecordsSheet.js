@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Keyboard, ScrollView } from 'react-native';
 import Animated, {
   useAnimatedStyle,

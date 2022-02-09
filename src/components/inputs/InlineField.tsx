@@ -9,17 +9,24 @@ import {
   useTextStyle,
 } from '@rainbow-me/design-system';
 
-type InlineFieldProps = {
+export type InlineFieldProps = {
   label: string;
   placeholder?: string;
   inputProps?: Partial<TextInputProps>;
+  validations?: {
+    allowCharacterRegex?: { match: RegExp };
+    maxLength?: { value: number };
+  };
 };
 
 export default function InlineField({
   label,
   placeholder,
   inputProps,
+  validations,
 }: InlineFieldProps) {
+  const [value, setValue] = React.useState();
+
   const textSize = 16;
   const textStyle = useTextStyle({ size: `${textSize}px`, weight: 'bold' });
 
@@ -33,9 +40,28 @@ export default function InlineField({
     }
   }, []);
 
+  const handleChangeText = useCallback(
+    text => {
+      const { allowCharacterRegex } = validations || {};
+      if (!allowCharacterRegex) {
+        setValue(text);
+        return;
+      }
+      if (text === '') {
+        setValue(text);
+        return;
+      }
+      if (allowCharacterRegex?.match.test(text)) {
+        setValue(text);
+        return;
+      }
+    },
+    [validations]
+  );
+
   return (
     <Columns>
-      <Column width="1/4">
+      <Column width="1/3">
         <Inset top="19px">
           <Text size={`${textSize}px`} weight="heavy">
             {label}
@@ -43,6 +69,8 @@ export default function InlineField({
         </Inset>
       </Column>
       <Input
+        maxLength={validations?.maxLength?.value}
+        onChangeText={handleChangeText}
         onContentSizeChange={handleContentSizeChange}
         placeholder={placeholder}
         style={{
@@ -53,6 +81,7 @@ export default function InlineField({
           marginTop: 0,
           paddingTop: inputProps?.multiline ? 15 : 0,
         }}
+        value={value}
         {...inputProps}
       />
     </Columns>
