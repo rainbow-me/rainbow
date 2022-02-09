@@ -4,15 +4,18 @@ import { ButtonProps } from 'react-native';
 import RadialGradientBackground from '../RadialGradientBackground';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { useTheme } from '@rainbow-me/context';
+import { TextColor } from '../../design-system/typography/typography';
 import { Box, Cover, Text } from '@rainbow-me/design-system';
 import { useDimensions } from '@rainbow-me/hooks';
 
 const TintButton = ({
   children,
   onPress,
+  color = 'secondary80',
 }: {
   children: ReactNode;
   onPress: ButtonProps['onPress'];
+  color: TextColor;
 }) => {
   const { width: deviceWidth } = useDimensions();
   const { colors } = useTheme();
@@ -50,7 +53,7 @@ const TintButton = ({
           />
         </Box>
       </Cover>
-      <Text color="secondary80" size="20px" weight="heavy">
+      <Text color={color} size="20px" weight="heavy">
         {children}
       </Text>
     </Box>
