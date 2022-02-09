@@ -259,6 +259,11 @@ export default (state = INITIAL_STATE, action: SettingsStateUpdateAction) => {
         nativeCurrency: action.payload.nativeCurrency,
         testnetsEnabled: action.payload.testnetsEnabled,
       };
+    case SETTINGS_UPDATE_TESTNET_PREF_SUCCESS:
+      return {
+        ...state,
+        testnetsEnabled: action.payload,
+      };
     default:
       return state;
   }
