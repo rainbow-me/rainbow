@@ -110,7 +110,7 @@ export default function useENSRegistration({
         const registrationDate = await fetchRegistrationDate(name + '.eth');
         const nameExpires = await getNameExpires(name);
         const formattedRegistrarionDate = formatTime(registrationDate, false);
-        const formattedExpirationDate = formatTime(nameExpires);
+        const formattedExpirationDate = formatTime(nameExpires.toString());
 
         return {
           available: false,

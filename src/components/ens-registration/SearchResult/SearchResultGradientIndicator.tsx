@@ -36,11 +36,11 @@ const SearchResultGradientIndicator = ({
       }
       break;
     case 'expiration':
-      text = `Til ${expirationDate}`; // fix when we have backend
+      text = `Til ${expirationDate}`;
       gradient = colors.gradients.transparentToLightGrey;
       break;
     case 'price':
-      text = price; // fix when we have backend
+      text = `${price} / Year`;
       gradient = colors.gradients.transparentToLightGrey;
       break;
   }
