@@ -1,14 +1,21 @@
 import React from 'react';
 import { SheetActionButton, SheetActionButtonRow } from '../components/sheet';
+import TintButton from '../components/buttons/TintButton';
 import { useNavigation } from '../navigation/Navigation';
 import { Box, Heading, Stack, Text } from '@rainbow-me/design-system';
 import Routes from '@rainbow-me/routes';
+import { useTheme } from '@rainbow-me/context';
 
 export default function ENSAssignRecordsSheet() {
   const { navigate } = useNavigation();
+  const { colors } = useTheme();
 
   const handlePressContinue = useCallback(() => {
     navigate(Routes.ENS_CONFIRM_REGISTER_SHEET);
+  }, [navigate]);
+
+  const handlePressBack = useCallback(() => {
+    navigate(Routes.ENS_SEARCH_SHEET);
   }, [navigate]);
 
   return (
@@ -28,7 +35,11 @@ export default function ENSAssignRecordsSheet() {
         </Stack>
       </Box>
       <SheetActionButtonRow>
+        <TintButton onPress={handlePressBack} color="secondary60">
+          􀆉 Back
+        </TintButton>
         <SheetActionButton
+          color={'#9875D7'}
           label="Review"
           onPress={handlePressContinue}
           size="big"
