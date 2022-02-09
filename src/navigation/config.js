@@ -7,6 +7,7 @@ import { Text } from '../components/text';
 import { useTheme } from '../context/ThemeContext';
 import colors from '../context/currentColors';
 import { explainers, ExplainSheetHeight } from '../screens/ExplainSheet';
+import { ExternalLinkWarningSheetHeight } from '../screens/ExternalLinkWarningSheet';
 import { SendConfirmationSheetHeight } from '../screens/SendConfirmationSheet';
 import { onWillPop } from './Navigation';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
@@ -142,6 +143,15 @@ export const explainSheetConfig = {
       longFormHeight:
         ExplainSheetHeight +
         (explainerConfig?.extraHeight ? explainerConfig?.extraHeight : 0),
+    });
+  },
+};
+
+export const externalLinkWarningSheetConfig = {
+  options: ({ route: { params = {} } }) => {
+    return buildCoolModalConfig({
+      ...params,
+      longFormHeight: ExternalLinkWarningSheetHeight,
     });
   },
 };
