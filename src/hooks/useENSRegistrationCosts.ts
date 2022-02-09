@@ -1,5 +1,5 @@
 import { BigNumber } from 'ethers';
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import { useQuery } from 'react-query';
 import { useAccountSettings } from '.';
 import { estimateENSRegistrationGasLimit } from '@rainbow-me/handlers/ens';
@@ -72,7 +72,6 @@ export default function useENSRegistrationCosts({
   rentPrice: BigNumber;
 }) {
   const { nativeCurrency, accountAddress } = useAccountSettings();
-  const isValidLength = useMemo(() => name.length > 2, [name.length]);
 
   const getRegistrationValuesEstimations = useCallback(async () => {
     const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
@@ -129,8 +128,8 @@ export default function useENSRegistrationCosts({
 
   return {
     data,
-    isSuccess,
     isIdle,
     isLoading,
+    isSuccess,
   };
 }
