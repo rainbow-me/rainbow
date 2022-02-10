@@ -1,6 +1,6 @@
 import React from 'react';
-import { SheetActionButton, SheetActionButtonRow } from '../components/sheet';
 import TintButton from '../components/buttons/TintButton';
+import { SheetActionButton, SheetActionButtonRow } from '../components/sheet';
 import { useNavigation } from '../navigation/Navigation';
 import { useTheme } from '../context/ThemeContext';
 import { usePersistentDominantColorFromImage } from '@rainbow-me/hooks';

@@ -21,6 +21,7 @@ import {
 import {
   useDebounceString,
   useENSRegistration,
+  useENSRegistrationCosts,
   useKeyboardHeight,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
@@ -38,7 +39,7 @@ export default function ENSSearchSheet() {
   const debouncedSearchQuery = useDebounceString(searchQuery);
 
   const {
-    data,
+    data: registrationData,
     isIdle,
     isRegistered,
     isLoading,
@@ -47,6 +48,15 @@ export default function ENSSearchSheet() {
   } = useENSRegistration({
     duration: 1,
     name: debouncedSearchQuery,
+  });
+
+  const {
+    data: registrationCostsData,
+    isSuccess: registrationCostsDataIsAvailable,
+  } = useENSRegistrationCosts({
+    duration: 1,
+    name: debouncedSearchQuery,
+    rentPrice: registrationData?.rentPrice?.wei,
   });
 
   const state = useMemo(() => {
@@ -90,7 +100,7 @@ export default function ENSSearchSheet() {
         {isInvalid && (
           <Inset horizontal="30px">
             <Text align="center" color="secondary50" size="16px" weight="bold">
-              {data?.hint}
+              {registrationData?.hint}
             </Text>
           </Inset>
         )}
@@ -111,12 +121,12 @@ export default function ENSSearchSheet() {
                 />
                 {isRegistered ? (
                   <SearchResultGradientIndicator
-                    expirationDate={data?.expirationDate}
+                    expirationDate={registrationData?.expirationDate}
                     type="expiration"
                   />
                 ) : (
                   <SearchResultGradientIndicator
-                    price={data?.rentPrice?.perYear?.display}
+                    price={registrationData?.rentPrice?.perYear?.display}
                     type="price"
                   />
                 )}
@@ -124,17 +134,24 @@ export default function ENSSearchSheet() {
               <Inset horizontal="19px">
                 {isRegistered ? (
                   <Text color="secondary50" size="16px" weight="bold">
-                    This name was last registered on {data?.registrationDate}
+                    This name was last registered on{' '}
+                    {registrationData?.registrationDate}
                   </Text>
                 ) : (
                   <Inline>
-                    <Text color="secondary50" size="16px" weight="bold">
-                      Estimated total cost of
-                      <Text color="secondary80" size="16px" weight="heavy">
-                        {' $87.57 '}
+                    {registrationCostsDataIsAvailable && (
+                      <Text color="secondary50" size="16px" weight="bold">
+                        Estimated total cost of
+                        <Text color="secondary80" size="16px" weight="heavy">
+                          {' '}
+                          {
+                            registrationCostsData
+                              ?.estimatedTotalRegistrationCost?.display
+                          }{' '}
+                        </Text>
+                        with current network fees
                       </Text>
-                      with current network fees
-                    </Text>
+                    )}
                   </Inline>
                 )}
               </Inset>
