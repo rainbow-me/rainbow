@@ -1,4 +1,4 @@
-import { format, isValid } from 'date-fns';
+import { format } from 'date-fns';
 import { BigNumber } from 'ethers';
 import { useCallback, useMemo } from 'react';
 import { useQuery } from 'react-query';
@@ -130,8 +130,6 @@ export default function useENSRegistration({
     getRegistrationValues,
     { retry: 0 }
   );
-
-  console.log(data);
 
   const newStatus = isValidLength ? status : 'idle';
 

@@ -139,17 +139,17 @@ export default function ENSSearchSheet() {
                   </Text>
                 ) : (
                   <Inline>
-                    {registrationCostsDataIsAvailable && (
+                    {registrationCostsDataIsAvailable ? (
                       <Text color="secondary50" size="16px" weight="bold">
                         Estimated total cost of
                         <Text color="secondary80" size="16px" weight="heavy">
-                          {' '}
-                          {
-                            registrationCostsData
-                              ?.estimatedTotalRegistrationCost?.display
-                          }{' '}
+                          {` ${registrationCostsData?.estimatedTotalRegistrationCost?.display} `}
                         </Text>
                         with current network fees
+                      </Text>
+                    ) : (
+                      <Text color="secondary50" size="16px" weight="bold">
+                        {'Loading network fees...\n'}
                       </Text>
                     )}
                   </Inline>

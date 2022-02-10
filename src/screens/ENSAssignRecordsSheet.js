@@ -1,9 +1,9 @@
+import { useRoute } from '@react-navigation/native';
 import React from 'react';
 import TintButton from '../components/buttons/TintButton';
 import { SheetActionButton, SheetActionButtonRow } from '../components/sheet';
-import { useNavigation } from '../navigation/Navigation';
 import { useTheme } from '../context/ThemeContext';
-import { usePersistentDominantColorFromImage } from '@rainbow-me/hooks';
+import { useNavigation } from '../navigation/Navigation';
 import {
   AccentColorProvider,
   Box,
@@ -12,8 +12,8 @@ import {
   Stack,
   Text,
 } from '@rainbow-me/design-system';
+import { usePersistentDominantColorFromImage } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
-import { useRoute } from '@react-navigation/native';
 
 export default function ENSAssignRecordsSheet() {
   const { params } = useRoute();
@@ -37,7 +37,7 @@ export default function ENSAssignRecordsSheet() {
 
   return (
     <AccentColorProvider color={avatarColor}>
-      <Box background={'body'} flexGrow={1}>
+      <Box background="body" flexGrow={1}>
         <Box flexGrow={1}>
           <Box
             background="accent"
@@ -47,10 +47,10 @@ export default function ENSAssignRecordsSheet() {
             <Cover alignHorizontal="center">
               <Box
                 background="swap"
-                top={{ custom: 105 }}
-                height={{ custom: avatarRadius * 2 }}
-                width={{ custom: avatarRadius * 2 }}
                 borderRadius={avatarRadius}
+                height={{ custom: avatarRadius * 2 }}
+                top={{ custom: 105 }}
+                width={{ custom: avatarRadius * 2 }}
               />
             </Cover>
           </Box>
@@ -64,11 +64,11 @@ export default function ENSAssignRecordsSheet() {
           </Stack>
         </Box>
         <SheetActionButtonRow>
-          <TintButton onPress={handlePressBack} color="secondary60">
+          <TintButton color="secondary60" onPress={handlePressBack}>
             􀆉 Back
           </TintButton>
           {formIsEmpty ? (
-            <TintButton onPress={handlePressContinue} color="secondary60">
+            <TintButton color="secondary60" onPress={handlePressContinue}>
               Skip
             </TintButton>
           ) : (
