@@ -1,3 +1,4 @@
+import { omit } from 'lodash';
 import { AnyAction } from 'redux';
 import { AppDispatch } from './store';
 import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
@@ -10,8 +11,10 @@ const ENS_REGISTRATION_UPDATE_RECORDS =
   'ensRegistration/ENS_REGISTRATION_UPDATE_RECORDS';
 const ENS_REGISTRATION_UPDATE_RECORD_BY_KEY =
   'ensRegistration/ENS_REGISTRATION_UPDATE_RECORD_BY_KEY';
+const ENS_REGISTRATION_REMOVE_RECORD_BY_KEY =
+  'ensRegistration/ENS_REGISTRATION_REMOVE_RECORD_BY_KEY';
 
-type Records = Record<ENS_RECORDS, string>;
+export type Records = { [key in keyof typeof ENS_RECORDS]: string };
 
 interface ENSRegistrationState {
   name: string;
@@ -53,6 +56,14 @@ export const ensRegistrationUpdateRecordByKey = (
     type: ENS_REGISTRATION_UPDATE_RECORD_BY_KEY,
   });
 
+export const ensRegistrationRemoveRecordByKey = (key: string) => async (
+  dispatch: AppDispatch
+) =>
+  dispatch({
+    payload: { key },
+    type: ENS_REGISTRATION_REMOVE_RECORD_BY_KEY,
+  });
+
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE: ENSRegistrationState = {
   duration: 0,
@@ -60,7 +71,10 @@ const INITIAL_STATE: ENSRegistrationState = {
   records: {} as Records,
 };
 
-export default (state = INITIAL_STATE, action: AnyAction) => {
+export default (
+  state = INITIAL_STATE,
+  action: AnyAction
+): ENSRegistrationState => {
   switch (action.type) {
     case ENS_REGISTRATION_UPDATE_NAME:
       return {
@@ -85,6 +99,14 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
           ...state.records,
           [key]: value,
         },
+      };
+    }
+    case ENS_REGISTRATION_REMOVE_RECORD_BY_KEY: {
+      const { key } = action.payload;
+      const newRecords = omit(state.records, key) as Records;
+      return {
+        ...state,
+        records: newRecords,
       };
     }
     default:

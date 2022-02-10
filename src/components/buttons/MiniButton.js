@@ -37,10 +37,17 @@ const shadowsDark = shadowsFactory(true);
 const Content = styled(RowWithMargins).attrs({
   align: 'center',
   margin: 5,
-})(({ hasLeadingIcon, small }) => ({
-  ...padding.object(0, small ? 8 : 10, 0, hasLeadingIcon ? 6 : small ? 8 : 10),
+})(({ hasLeadingIcon, height, small, disablePadding }) => ({
+  ...padding.object(
+    0,
+    disablePadding ? 0 : small ? 8 : 10,
+    0,
+    disablePadding ? 0 : hasLeadingIcon ? 6 : small ? 8 : 10
+  ),
+  alignItems: 'center',
   borderRadius: 15,
-  height: small ? 27 : 30,
+  height,
+  justifyContent: 'center',
   zIndex: 1,
 }));
 
@@ -50,6 +57,7 @@ export default function MiniButton({
   children,
   color,
   disabled,
+  disablePadding,
   hasLeadingIcon,
   height,
   hideShadow,
@@ -103,8 +111,9 @@ export default function MiniButton({
                 : backgroundColor || colors.appleBlue
               : 'none'
           }
+          disablePadding={disablePadding}
           hasLeadingIcon={hasLeadingIcon}
-          small={small}
+          height={height ? height : small ? 27 : 30}
         >
           {typeof children === 'string' ? (
             <Text
