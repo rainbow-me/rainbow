@@ -4,6 +4,7 @@
   "basic_deposit_eth": 200000,
   "basic_swap": 160000,
   "basic_swap_require_approval": 350000,
+  "ens_register_with_config": 280000,
   "basic_tx": 21000,
   "basic_withdrawal": 550000,
   "basic_transfer": 50000,

@@ -1,10 +1,10 @@
 import MaskedView from '@react-native-community/masked-view';
 import React, { ReactNode } from 'react';
 import { ButtonProps } from 'react-native';
+import { TextColor } from '../../design-system/typography/typography';
 import RadialGradientBackground from '../RadialGradientBackground';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { useTheme } from '@rainbow-me/context';
-import { TextColor } from '../../design-system/typography/typography';
 import { Box, Cover, Text } from '@rainbow-me/design-system';
 import { useDimensions } from '@rainbow-me/hooks';
 
