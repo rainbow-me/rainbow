@@ -4,7 +4,13 @@ import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import { Trade } from '@uniswap/sdk';
 import { join, map } from 'lodash';
-import { depositCompound, swap, unlock, withdrawCompound } from './actions';
+import {
+  depositCompound,
+  ens,
+  swap,
+  unlock,
+  withdrawCompound,
+} from './actions';
 import {
   createSwapAndDepositCompoundRap,
   estimateSwapAndDepositCompound,
@@ -20,6 +26,15 @@ import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
 
 import logger from 'logger';
 
+const {
+  commitENS,
+  waitENS,
+  registerENS,
+  multicallENS,
+  setTextENS,
+  setNameENS,
+} = ens;
+
 export enum RapActionType {
   depositCompound = 'depositCompound',
   swap = 'swap',
@@ -33,13 +48,19 @@ export enum RapActionType {
   waitENS = 'waitENS',
 }
 
-export interface RapActionParameters extends RegisterENSActionParameters {
+export interface RapActionParameters {
   amount?: string | null;
   assetToUnlock?: Asset;
   contractAddress?: string;
   inputAmount?: string | null;
   outputAmount?: string | null;
   tradeDetails?: Trade;
+  name?: string;
+  duration?: number;
+  rentPrice?: string;
+  recordKey?: string;
+  recordValue?: string;
+  records?: ENSRegistrationRecords;
 }
 
 export interface UnlockActionParameters {
@@ -80,15 +101,6 @@ export interface SetNameENSActionParameters {
 export interface MulticallENSActionParameters {
   name: string;
   records: ENSRegistrationRecords;
-}
-
-export interface RegisterENSActionParameters
-  extends CommitENSActionParameters,
-    RegisterWithConfigENSActionParameters,
-    SetTextENSActionParameters,
-    SetNameENSActionParameters,
-    MulticallENSActionParameters {
-  ownerAddress: string;
 }
 
 export interface RapActionTransaction {
@@ -170,17 +182,17 @@ const findActionByType = (type: RapActionType) => {
     case RapActionTypes.withdrawCompound:
       return withdrawCompound;
     case RapActionTypes.commitENS:
-      return withdrawCompound;
+      return commitENS;
     case RapActionTypes.waitENS:
-      return withdrawCompound;
+      return waitENS;
     case RapActionTypes.registerENS:
-      return withdrawCompound;
+      return registerENS;
     case RapActionTypes.multicallENS:
-      return withdrawCompound;
+      return multicallENS;
     case RapActionTypes.setTextENS:
-      return withdrawCompound;
+      return setTextENS;
     case RapActionTypes.setNameENS:
-      return withdrawCompound;
+      return setNameENS;
     default:
       return NOOP;
   }

@@ -167,13 +167,14 @@ export const estimateENSTransactionGasLimit = async ({
   duration,
   records,
 }: {
-  name: string;
+  name?: string;
   type: ENSRegistrationTransactionType;
   ownerAddress?: string;
   rentPrice?: string;
   duration?: number;
   records?: ENSRegistrationRecords;
 }) => {
+  if (!name) return;
   const { contract, methodArguments, value } = await getENSExecutionDetails({
     duration,
     name,
