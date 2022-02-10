@@ -57,8 +57,8 @@ export default function ENSSearchSheet() {
 
   const handlePressContinue = useCallback(() => {
     Keyboard.dismiss();
-    navigate(Routes.ENS_ASSIGN_RECORDS_SHEET);
-  }, [navigate]);
+    navigate(Routes.ENS_ASSIGN_RECORDS_SHEET, { name: `${searchQuery}.eth` });
+  }, [navigate, searchQuery]);
 
   return (
     <Box background="body" flexGrow={1} paddingTop={{ custom: topPadding }}>
