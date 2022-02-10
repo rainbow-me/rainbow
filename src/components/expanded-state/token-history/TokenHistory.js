@@ -5,7 +5,6 @@ import { FlatList, View } from 'react-native';
 import styled from 'styled-components';
 import { ButtonPressAnimation } from '../../animations';
 import { Column, Row } from '../../layout';
-import { Text } from '../../text';
 import TokenHistoryEdgeFade from './TokenHistoryEdgeFade';
 import { useTheme } from '@rainbow-me/context/ThemeContext';
 import {
@@ -27,6 +26,14 @@ import Routes from '@rainbow-me/routes';
 import { handleSignificantDecimals } from '@rainbow-me/utilities';
 import { abbreviations } from '@rainbow-me/utils';
 import { EventTypes, PaymentTokens } from '@rainbow-me/utils/tokenHistoryUtils';
+import {
+  AccentColorProvider,
+  Box,
+  Inline,
+  Inset,
+  Stack,
+  Text,
+} from '@rainbow-me/design-system';
 
 const Timeline = styled(View)`
   height: 3;
@@ -38,11 +45,6 @@ const Timeline = styled(View)`
   left: 16;
   right: -13;
 `;
-
-const AccentText = styled(Text).attrs({
-  size: 'smedium',
-  weight: 'heavy',
-})``;
 
 const TokenHistory = ({ contract, token, color }) => {
   const [tokenHistory, setTokenHistory] = useState([]);
@@ -237,14 +239,24 @@ const TokenHistory = ({ contract, token, color }) => {
     });
   };
 
-  const renderHistoryDescription = ({
+  // const [width, setWidth] = useState(null);
+
+  // const onLayout = useCallback(event => {
+  //   const { width } = event.nativeEvent.layout;
+  //   console.log('hi');
+  //   console.log(width);
+  //   console.log(event.nativeEvent.layout);
+  //   setWidth(width);
+  // }, []);
+
+  function renderHistoryDescription({
     icon,
     isClickable,
     index,
     item,
     label,
     clickableIcon,
-  }) => {
+  }) {
     let isFirst = index === 0;
     let isLast = index === tokenHistory.length - 1;
     let isShort = tokenHistory.length <= 2;
@@ -253,65 +265,84 @@ const TokenHistory = ({ contract, token, color }) => {
       new Date(item.createdDate).getTime() / 1000
     );
 
+    // const [width, setWidth] = useState(null);
+
+    // const onLayout = useCallback(event => {
+    //   const { width } = event.nativeEvent.layout;
+    //   console.log('hi');
+    //   console.log(width);
+    //   console.log(event.nativeEvent.layout);
+    //   setWidth(width);
+    // }, []);
+
     return (
       // when the token history isShort, invert the horizontal scroll so the history is pinned to the left instead of right
-      <Column
-        style={
-          (isShort && !isFirst) || (!isShort && !isLast)
-            ? { marginLeft: 19 }
-            : {}
-        }
-      >
-        {tokenHistory.length > 1 && (
-          <Row
-            style={{
-              height: 10,
-              marginBottom: 6,
-              marginTop: 4,
-            }}
-          >
-            <View
-              style={{
-                backgroundColor: color,
-                borderRadius: 5,
-                height: 10,
-                width: 10,
-              }}
-            />
-            {((!isShort && !isFirst) || (isShort && !isLast)) && (
-              <Timeline color={color} />
+      <Box onLayout={width ? undefined : undefined}>
+        <AccentColorProvider color={color}>
+          <Stack>
+            {tokenHistory.length > 1 && (
+              <Inline>
+                {/* <View
+                style={{
+                  backgroundColor: color,
+                  borderRadius: 5,
+                  height: 10,
+                  width: 10,
+                }}
+              /> */}
+                <Box
+                  background="accent"
+                  borderRadius={5}
+                  height={{ custom: 10 }}
+                  width={{ custom: 10 }}
+                />
+                {((!isShort && !isFirst) || (isShort && !isLast)) && (
+                  <Inset top="3px" horizontal="6px">
+                    <Box
+                      background="accent"
+                      borderRadius={1.5}
+                      height={{ custom: 3 }}
+                      width={{ custom: 100 }}
+                    />
+                  </Inset>
+                )}
+              </Inline>
             )}
-          </Row>
-        )}
-        <Column>
-          <Row style={{ marginBottom: 3 }}>
-            <AccentText color={color}>{date}</AccentText>
-          </Row>
-          <ButtonPressAnimation
-            disabled={!isClickable}
-            hapticType="selection"
-            onPress={() =>
-              handlePress(item.toAccountEthAddress, item.toAccount)
-            }
-            scaleTo={0.92}
-          >
-            <Row style={{ marginTop: -3 }}>
-              <AccentText color={color} style={{ lineHeight: 20 }}>
-                {icon}
-              </AccentText>
-              <AccentText
-                color={colors.whiteLabel}
-                style={{ lineHeight: 20, marginLeft: 2 }}
-              >
-                {label}
-                {isClickable && clickableIcon}
-              </AccentText>
-            </Row>
-          </ButtonPressAnimation>
-        </Column>
-      </Column>
+            <Inset top="3px">
+              <Text weight="heavy" size="14px" color="accent">
+                {date}
+              </Text>
+            </Inset>
+            <ButtonPressAnimation
+              disabled={!isClickable}
+              hapticType="selection"
+              onPress={() =>
+                handlePress(item.toAccountEthAddress, item.toAccount)
+              }
+              scaleTo={0.92}
+            >
+              <Inset top="12px" right="19px">
+                <Inline>
+                  <Text weight="heavy" size="14px" color="accent" containsEmoji>
+                    {`${icon}`}
+                  </Text>
+                  <Text
+                    weight="heavy"
+                    size="14px"
+                    color={{ custom: colors.whiteLabel }}
+                    containsEmoji
+                  >
+                    {` ${label}`}
+                    {/* {isClickable && clickableIcon} */}
+                  </Text>
+                </Inline>
+              </Inset>
+            </ButtonPressAnimation>
+          </Stack>
+        </AccentColorProvider>
+      </Box>
     );
-  };
+  }
 
   return (
     <MaskedView
