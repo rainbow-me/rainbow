@@ -1,4 +1,3 @@
-import styled from '@rainbow-me/styled-components';
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import React, {
@@ -40,6 +39,7 @@ import {
 import { useAccountSettings, useWallets } from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
