@@ -12,7 +12,6 @@ import React, {
 } from 'react';
 import { StatusBar } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
-import styled from 'styled-components';
 import GestureBlocker from '../components/GestureBlocker';
 import {
   CurrencySelectionList,
@@ -36,12 +35,13 @@ import {
 import { delayNext } from '@rainbow-me/hooks/useMagicAutofocus';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import { filterList } from '@rainbow-me/utils';
 
-const TabTransitionAnimation = styled(Animated.View)`
-  ${position.size('100%')};
-`;
+const TabTransitionAnimation = styled(Animated.View)(
+  position.sizeAsObject('100%')
+);
 
 const headerlessSection = data => [{ data, title: '' }];
 const Wrapper = ios ? KeyboardFixedOpenLayout : Fragment;

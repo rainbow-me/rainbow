@@ -71,46 +71,12 @@ export const UNISWAP_PRICES_QUERY = gql`
   }
 `;
 
-const TokenFields = `
-  fragment TokenFields on Token {
-    tradeVolumeUSD
-  }
-`;
-
-export const TOKEN_DATA = (tokenAddress, block) => {
-  const queryString = `
-    ${TokenFields}
-    query tokens {
-      tokens(${
-        block ? `block : {number: ${block}}` : ``
-      } where: {id:"${tokenAddress}"}) {
-        ...TokenFields
-      }
-      pairs0: pairs(where: {token0: "${tokenAddress}"}, first: 50, orderBy: reserveUSD, orderDirection: desc){
-        id
-      }
-      pairs1: pairs(where: {token1: "${tokenAddress}"}, first: 50, orderBy: reserveUSD, orderDirection: desc){
-        id
-      }
-    }
-  `;
-  return gql(queryString);
-};
-
 export const UNISWAP_ADDITIONAL_POOL_DATA = gql`
   query pairs($address: String!) {
     pairs(where: { id: $address }) {
       volumeUSD
       reserveUSD
       trackedReserveETH
-    }
-  }
-`;
-
-export const UNISWAP_ADDITIONAL_TOKEN_DATA = gql`
-  query pairs($address: String!) {
-    tokens(where: { id: $address }) {
-      tradeVolumeUSD
     }
   }
 `;

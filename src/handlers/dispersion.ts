@@ -81,3 +81,28 @@ export const getTrendingAddresses = async (): Promise<
     return null;
   }
 };
+
+export const getAdditionalAssetData = async (address: EthereumAddress) => {
+  try {
+    const res = await dispersionApi.get(`/dispersion/v1/expanded/1/${address}`);
+    return res?.data?.data ?? null;
+  } catch (error) {
+    logger.sentry(`Error fetching additional asset data: ${error}`);
+    captureException(error);
+    return null;
+  }
+};
+
+export const getCoingeckoIds = async (): Promise<Record<
+  EthereumAddress,
+  string
+> | null> => {
+  try {
+    const res = await dispersionApi.get('/dispersion/v1/coingecko/ids/1');
+    return res?.data?.data?.ids ?? null;
+  } catch (error) {
+    logger.sentry(`Error fetching coingecko ids: ${error}`);
+    captureException(error);
+    return null;
+  }
+};

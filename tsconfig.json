@@ -28,6 +28,7 @@
       "@rainbow-me/model": ["src/model"],
       "@rainbow-me/model/*": ["src/model/*"],
       "@rainbow-me/navigation": ["src/navigation"],
+      "@rainbow-me/navigation/*": ["src/navigation/*"],
       "@rainbow-me/networkTypes": ["./src/helpers/networkTypes"],
       "@rainbow-me/parsers": ["src/parsers"],
       "@rainbow-me/raps": ["src/raps"],
@@ -36,25 +37,21 @@
       "@rainbow-me/references": ["src/references"],
       "@rainbow-me/routes": ["src/navigation/routesNames"],
       "@rainbow-me/styles": ["src/styles"],
+      "@rainbow-me/styled-components": ["src/styled-thing"],
       "@rainbow-me/utilities": ["./src/helpers/utilities"],
       "@rainbow-me/utils": ["src/utils"],
       "@rainbow-me/utils/*": ["src/utils/*"],
       "logger": ["src/utils/logger"],
       "react-native-cool-modals": ["src/react-native-cool-modals"],
-      "react-native-yet-another-bottom-sheet": ["src/react-native-yet-another-bottom-sheet"],
+      "react-native-yet-another-bottom-sheet": [
+        "src/react-native-yet-another-bottom-sheet"
+      ],
       "@rainbow-me/animated-charts": ["src/react-native-animated-charts/src"],
       "react-native-shadow-stack": ["src/react-native-shadow-stack"]
     },
     "resolveJsonModule": true
   },
-  "globals": [
-    "useTheme", 
-    "ios", 
-    "android", 
-    "web",
-    "__DEV__", 
-    "IS_DEV" 
-  ],
+  "globals": ["useTheme", "ios", "android", "web", "__DEV__", "IS_DEV"],
   "exclude": [
     "ios",
     "patches/reanimated",

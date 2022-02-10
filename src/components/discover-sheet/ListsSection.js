@@ -1,4 +1,5 @@
 import analytics from '@segment/analytics-react-native';
+import lang from 'i18n-js';
 import { times, toLower } from 'lodash';
 import React, {
   Fragment,
@@ -9,7 +10,6 @@ import React, {
 } from 'react';
 import { FlatList, LayoutAnimation } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import styled from 'styled-components';
 import { emitAssetRequest, emitChartsRequest } from '../../redux/explorer';
 import { DefaultTokenLists } from '../../references';
 import { ButtonPressAnimation } from '../animations';
@@ -24,30 +24,27 @@ import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { useAccountSettings, useUserLists } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 const ListButton = styled(ButtonPressAnimation).attrs({
   scaleTo: 0.96,
-})`
-  margin-right: 16px;
-  ${({ selected, theme: { colors } }) =>
-    selected
-      ? `
-        background-color: ${colors.alpha(colors.blueGreyDark, 0.06)};
-        border-radius: 12px;
-        height: 30px;
-        padding-horizontal: 8px;
-        padding-top: ${ios ? 6.5 : 4.5}px;
-      `
-      : `
-        padding-top: ${ios ? 6.5 : 4.5}px;
-      `}
-`;
+})(({ selected, theme: { colors } }) => ({
+  marginRight: 16,
+  paddingTop: ios ? 6.5 : 4.5,
 
-const ListName = styled(Text)`
-  margin-left: 3px;
-  margin-top: ${ios ? -4.5 : 0}px;
-`;
+  ...(selected && {
+    backgroundColor: colors.alpha(colors.blueGreyDark, 0.06),
+    borderRadius: 12,
+    height: 30,
+    paddingHorizontal: 8,
+  }),
+}));
+
+const ListName = styled(Text)({
+  marginLeft: 3,
+  marginTop: ios ? -4.5 : 0,
+});
 
 // Update trending lists every 5 minutes
 const TRENDING_LIST_UPDATE_INTERVAL = 5 * 60 * 1000;
@@ -254,7 +251,7 @@ export default function ListSection() {
     <Column testID="lists-section">
       <Flex paddingHorizontal={19}>
         <Text size="larger" weight="heavy">
-          Lists
+          {lang.t('discover.lists.lists_title')}
         </Text>
       </Flex>
 
@@ -303,7 +300,7 @@ export default function ListSection() {
                 size="large"
                 weight="semibold"
               >
-                This list is empty!
+                {lang.t('discover.lists.this_list_is_empty')}
               </Text>
             </Centered>
           )}

@@ -1,13 +1,12 @@
-import { Platform } from 'react-native';
-import styled from 'styled-components';
 import { FloatingPanels } from '../floating-panels';
+import styled from '@rainbow-me/styled-components';
 
 const ExchangeFloatingPanels = styled(FloatingPanels).attrs({
   margin: 0,
   translateY: ios ? 0 : -16,
-})`
-  padding-top: 24;
-  ${Platform.select({ android: 'height: 85%;', ios: '' })}
-`;
+})({
+  paddingTop: 24,
+  ...(android && { height: '85%' }),
+});
 
 export default ExchangeFloatingPanels;
