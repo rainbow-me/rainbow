@@ -15,6 +15,7 @@ import {
   estimateWithdrawFromCompound,
 } from './withdrawFromCompound';
 import { Asset } from '@rainbow-me/entities';
+import { ENSRegistrationRecords } from '@rainbow-me/helpers/ens';
 import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
 
 import logger from 'logger';
@@ -24,9 +25,15 @@ export enum RapActionType {
   swap = 'swap',
   unlock = 'unlock',
   withdrawCompound = 'withdrawCompound',
+  commitENS = 'commitENS',
+  registerENS = 'registerENS',
+  multicallENS = 'multicallENS',
+  setTextENS = 'setTextENS',
+  setNameENS = 'setNameENS',
+  waitENS = 'waitENS',
 }
 
-export interface RapActionParameters {
+export interface RapActionParameters extends RegisterENSActionParameters {
   amount?: string | null;
   assetToUnlock?: Asset;
   contractAddress?: string;
@@ -46,6 +53,42 @@ export interface SwapActionParameters {
   nonce: number;
   outputAmount: string;
   tradeDetails: Trade;
+}
+
+export interface CommitENSActionParameters {
+  name: string;
+  duration: number;
+  rentPrice: string;
+}
+
+export interface RegisterWithConfigENSActionParameters {
+  name: string;
+  duration: number;
+  rentPrice: string;
+}
+
+export interface SetTextENSActionParameters {
+  name: string;
+  recordKey: string;
+  recordValue: string;
+}
+
+export interface SetNameENSActionParameters {
+  name: string;
+}
+
+export interface MulticallENSActionParameters {
+  name: string;
+  records: ENSRegistrationRecords;
+}
+
+export interface RegisterENSActionParameters
+  extends CommitENSActionParameters,
+    RegisterWithConfigENSActionParameters,
+    SetTextENSActionParameters,
+    SetNameENSActionParameters,
+    MulticallENSActionParameters {
+  ownerAddress: string;
 }
 
 export interface RapActionTransaction {
@@ -74,9 +117,15 @@ interface EthersError extends Error {
 const NOOP = () => null;
 
 export const RapActionTypes = {
+  commitENS: 'commitENS' as RapActionType,
   depositCompound: 'depositCompound' as RapActionType,
+  multicallENS: 'multicallENS' as RapActionType,
+  registerENS: 'registerENS' as RapActionType,
+  setNameENS: 'setNameENS' as RapActionType,
+  setTextENS: 'setTextENS' as RapActionType,
   swap: 'swap' as RapActionType,
   unlock: 'unlock' as RapActionType,
+  waitENS: 'waitENS' as RapActionType,
   withdrawCompound: 'withdrawCompound' as RapActionType,
 };
 
@@ -119,6 +168,18 @@ const findActionByType = (type: RapActionType) => {
     case RapActionTypes.depositCompound:
       return depositCompound;
     case RapActionTypes.withdrawCompound:
+      return withdrawCompound;
+    case RapActionTypes.commitENS:
+      return withdrawCompound;
+    case RapActionTypes.waitENS:
+      return withdrawCompound;
+    case RapActionTypes.registerENS:
+      return withdrawCompound;
+    case RapActionTypes.multicallENS:
+      return withdrawCompound;
+    case RapActionTypes.setTextENS:
+      return withdrawCompound;
+    case RapActionTypes.setNameENS:
       return withdrawCompound;
     default:
       return NOOP;
