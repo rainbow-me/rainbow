@@ -1,0 +1,444 @@
+// Adopted from official styled components TS definition
+
+// Type definitions for styled-components 5.1
+// Project: https://github.com/styled-components/styled-components, https://styled-components.com
+// Definitions by: Igor Oleinikov <https://github.com/Igorbek>
+//                 Ihor Chulinda <https://github.com/Igmat>
+//                 Adam Lavin <https://github.com/lavoaster>
+//                 Jessica Franco <https://github.com/Jessidhia>
+//                 Jason Killian <https://github.com/jkillian>
+//                 Sebastian Silbermann <https://github.com/eps1lon>
+//                 David Ruisinger <https://github.com/flavordaaave>
+//                 Matthew Wagerfield <https://github.com/wagerfield>
+//                 Yuki Ito <https://github.com/Lazyuki>
+//                 Maciej Goszczycki <https://github.com/mgoszcz2>
+//                 Danilo Fuchs <https://github.com/danilofuchs>
+// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
+
+// forward declarations
+import * as hoistNonReactStatics from 'hoist-non-react-statics';
+import * as React from 'react';
+import {
+  ActivityIndicator,
+  Button,
+  DatePickerIOS,
+  FlatList,
+  Image,
+  ImageBackground,
+  KeyboardAvoidingView,
+  ListView,
+  Modal,
+  Picker,
+  Pressable,
+  ProgressBarAndroid,
+  ProgressViewIOS,
+  RecyclerViewBackedScrollView,
+  RefreshControl,
+  SafeAreaView,
+  ScrollView,
+  SectionList,
+  SegmentedControlIOS,
+  Slider,
+  SnapshotViewIOS,
+  Switch,
+  SwitchIOS,
+  TabBarIOS,
+  Text,
+  TextInput,
+  TouchableHighlight,
+  TouchableNativeFeedback,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+  ViewPagerAndroid,
+  VirtualizedList,
+} from 'react-native';
+
+declare interface RNFactories {
+  ActivityIndicator: typeof ActivityIndicator;
+  Button: typeof Button;
+  DatePickerIOS: typeof DatePickerIOS;
+  FlatList: typeof FlatList;
+  Image: typeof Image;
+  ImageBackground: typeof ImageBackground;
+  KeyboardAvoidingView: typeof KeyboardAvoidingView;
+  ListView: typeof ListView;
+  Modal: typeof Modal;
+  Picker: typeof Picker;
+  Pressable: typeof Pressable;
+  ProgressBarAndroid: typeof ProgressBarAndroid;
+  ProgressViewIOS: typeof ProgressViewIOS;
+  RecyclerViewBackedScrollView: typeof RecyclerViewBackedScrollView;
+  RefreshControl: typeof RefreshControl;
+  SafeAreaView: typeof SafeAreaView;
+  ScrollView: typeof ScrollView;
+  SectionList: typeof SectionList;
+  SegmentedControlIOS: typeof SegmentedControlIOS;
+  Slider: typeof Slider;
+  SnapshotViewIOS: typeof SnapshotViewIOS;
+  Switch: typeof Switch;
+  SwitchIOS: typeof SwitchIOS;
+  TabBarIOS: typeof TabBarIOS;
+  Text: typeof Text;
+  TextInput: typeof TextInput;
+  TouchableHighlight: typeof TouchableHighlight;
+  TouchableNativeFeedback: typeof TouchableNativeFeedback;
+  TouchableOpacity: typeof TouchableOpacity;
+  TouchableWithoutFeedback: typeof TouchableWithoutFeedback;
+  View: typeof View;
+  ViewPagerAndroid: typeof ViewPagerAndroid;
+  VirtualizedList: typeof VirtualizedList;
+}
+
+declare global {
+  namespace NodeJS {
+    // eslint-disable-next-line @typescript-eslint/no-empty-interface
+    interface ReadableStream {}
+  }
+}
+
+export interface ThemeProps<T> {
+  theme: T;
+}
+
+export type ThemedStyledProps<P, T> = P & ThemeProps<T>;
+export type StyledProps<P> = ThemedStyledProps<P, AnyIfEmpty<DefaultTheme>>;
+
+// Any prop that has a default prop becomes optional, but its type is unchanged
+// Undeclared default props are augmented into the resulting allowable attributes
+// If declared props have indexed properties, ignore default props entirely as keyof gets widened
+// Wrap in an outer-level conditional type to allow distribution over props that are unions
+type Defaultize<P, D> = P extends any
+  ? string extends keyof P
+    ? P
+    : Pick<P, Exclude<keyof P, keyof D>> &
+        Partial<Pick<P, Extract<keyof P, keyof D>>> &
+        Partial<Pick<D, Exclude<keyof D, keyof P>>>
+  : never;
+
+type ReactDefaultizedProps<C, P> = C extends { defaultProps: infer D }
+  ? Defaultize<P, D>
+  : P;
+
+export type StyledComponentProps<
+  // The Component from whose props are derived
+  C extends string | React.ComponentType<any>,
+  // The Theme from the current context
+  T extends object,
+  // The other props added by the template
+  O extends object,
+  // The props that are made optional by .attrs
+  A extends keyof any
+> =
+  // Distribute O if O is a union type
+  O extends object
+    ? WithOptionalTheme<
+        Omit<
+          ReactDefaultizedProps<
+            C,
+            React.ComponentPropsWithRef<React.ComponentType<any>>
+          > &
+            O,
+          A
+        > &
+          Partial<
+            Pick<React.ComponentPropsWithRef<React.ComponentType<any>> & O, A>
+          >,
+        T
+      > &
+        WithChildrenIfReactComponentClass<C>
+    : never;
+
+// Because of React typing quirks, when getting props from a React.ComponentClass,
+// we need to manually add a `children` field.
+// See https://github.com/DefinitelyTyped/DefinitelyTyped/pull/31945
+// and https://github.com/DefinitelyTyped/DefinitelyTyped/pull/32843
+type WithChildrenIfReactComponentClass<
+  C extends string | React.ComponentType<any>
+> = C extends React.ComponentClass<any> ? { children?: React.ReactNode } : {};
+
+type StyledComponentPropsWithAs<
+  C extends string | React.ComponentType<any>,
+  T extends object,
+  O extends object,
+  A extends keyof any,
+  F extends string | React.ComponentType<any> = C
+> = StyledComponentProps<C, T, O, A> & { as?: C; forwardedAs?: F };
+
+export type FalseyValue = undefined | null | false;
+export type Interpolation<P> =
+  | InterpolationValue
+  | InterpolationFunction<P>
+  | FlattenInterpolation<P>;
+// cannot be made a self-referential interface, breaks WithPropNested
+// see https://github.com/microsoft/TypeScript/issues/34796
+export type FlattenInterpolation<P> = readonly Interpolation<P>[];
+export type InterpolationValue =
+  | string
+  | number
+  | FalseyValue
+  | StyledComponentInterpolation;
+export type SimpleInterpolation =
+  | InterpolationValue
+  | FlattenSimpleInterpolation;
+export type FlattenSimpleInterpolation = readonly SimpleInterpolation[];
+
+export type InterpolationFunction<P> = (props: P) => Interpolation<P>;
+
+type Attrs<P, A extends Partial<P>, T> =
+  | ((props: ThemedStyledProps<P, T>) => A)
+  | A;
+
+export type ThemedGlobalStyledClassProps<P, T> = WithOptionalTheme<P, T> & {
+  suppressMultiMountWarning?: boolean;
+};
+
+export interface GlobalStyleComponent<P, T>
+  extends React.ComponentClass<ThemedGlobalStyledClassProps<P, T>> {}
+
+// remove the call signature from StyledComponent so Interpolation can still infer InterpolationFunction
+type StyledComponentInterpolation =
+  | Pick<
+      StyledComponentBase<any, any, any, any>,
+      keyof StyledComponentBase<any, any>
+    >
+  | Pick<
+      StyledComponentBase<any, any, any>,
+      keyof StyledComponentBase<any, any>
+    >;
+
+// abuse Pick to strip the call signature from ForwardRefExoticComponent
+type ForwardRefExoticBase<P> = Pick<
+  React.ForwardRefExoticComponent<P>,
+  keyof React.ForwardRefExoticComponent<any>
+>;
+
+// Config to be used with withConfig
+export interface StyledConfig<O extends object = {}> {
+  // TODO: Add all types from the original StyledComponentWrapperProperties
+  shouldForwardProp?: (
+    prop: keyof O,
+    defaultValidatorFn: (prop: keyof O) => boolean
+  ) => boolean;
+}
+
+// extracts React defaultProps
+type ReactDefaultProps<C> = C extends { defaultProps: infer D } ? D : never;
+
+// any doesn't count as assignable to never in the extends clause, and we default A to never
+export type AnyStyledComponent =
+  | StyledComponent<any, any, any, any>
+  | StyledComponent<any, any, any>;
+
+export type StyledComponent<
+  C extends React.ComponentType<any>,
+  T extends object,
+  O extends object = {},
+  A extends keyof any = never
+> = // the "string" allows this to be used as an object key
+  // I really want to avoid this if possible but it's the only way to use nesting with object styles...
+  string &
+    StyledComponentBase<C, T, O, A> &
+    hoistNonReactStatics.NonReactStatics<
+      C extends React.ComponentType<any> ? C : never
+    >;
+
+export interface StyledComponentBase<
+  C extends string | React.ComponentType<any>,
+  T extends object,
+  O extends object = {},
+  A extends keyof any = never
+> extends ForwardRefExoticBase<StyledComponentProps<C, T, O, A>> {
+  // add our own fake call signature to implement the polymorphic 'as' prop
+  (
+    props: StyledComponentProps<C, T, O, A> & {
+      as?: never;
+      forwardedAs?: never;
+    }
+  ): React.ReactElement<StyledComponentProps<C, T, O, A>>;
+  <
+    AsC extends string | React.ComponentType<any> = C,
+    FAsC extends string | React.ComponentType<any> = AsC
+  >(
+    props: StyledComponentPropsWithAs<AsC, T, O, A, FAsC>
+  ): React.ReactElement<StyledComponentPropsWithAs<AsC, T, O, A, FAsC>>;
+
+  withComponent<WithC extends AnyStyledComponent>(
+    component: WithC
+  ): StyledComponent<
+    StyledComponentInnerComponent<WithC>,
+    T,
+    O & StyledComponentInnerOtherProps<WithC>,
+    A | StyledComponentInnerAttrs<WithC>
+  >;
+  withComponent<WithC extends React.ComponentType<any>>(
+    component: WithC
+  ): StyledComponent<WithC, T, O, A>;
+}
+
+export interface ThemedStyledFunctionBase<
+  C extends React.ComponentType<any>,
+  T extends object,
+  O extends object = {},
+  A extends keyof any = never
+> {
+  (
+    styles: InterpolationFunction<
+      ThemedStyledProps<StyledComponentPropsWithRef<C> & O, T>
+    >
+  ): StyledComponent<C, T, O, A>;
+  <U extends object>(
+    styles: InterpolationFunction<
+      ThemedStyledProps<StyledComponentPropsWithRef<C> & O & U, T>
+    >
+  ): StyledComponent<C, T, O & U, A>;
+}
+
+export interface ThemedStyledFunction<
+  C extends React.ComponentType<any>,
+  T extends object,
+  O extends object = {},
+  A extends keyof any = never
+> extends ThemedStyledFunctionBase<C, T, O, A> {
+  // Fun thing: 'attrs' can also provide a polymorphic 'as' prop
+  // My head already hurts enough so maybe later...
+  attrs<
+    U,
+    NewA extends Partial<StyledComponentPropsWithRef<C> & U> & {
+      [others: string]: any;
+    } = {}
+  >(
+    attrs: Attrs<StyledComponentPropsWithRef<C> & U, NewA, T>
+  ): ThemedStyledFunction<C, T, O & NewA, A | keyof NewA>;
+
+  withConfig: <Props extends O = O>(
+    config: StyledConfig<StyledComponentPropsWithRef<C> & Props>
+  ) => ThemedStyledFunction<C, T, Props, A>;
+}
+
+export type StyledFunction<
+  C extends React.ComponentType<any>
+> = ThemedStyledFunction<C, any>;
+
+type ThemedStyledComponentFactories<T extends object> = {
+  [TTag in keyof RNFactories]: ThemedStyledFunction<RNFactories[TTag], T>;
+};
+
+export type StyledComponentInnerComponent<
+  C extends React.ComponentType<any>
+> = C extends StyledComponent<infer I, any, any, any>
+  ? I
+  : C extends StyledComponent<infer I, any, any>
+  ? I
+  : C;
+export type StyledComponentPropsWithRef<
+  C extends React.ComponentType<any>
+> = C extends AnyStyledComponent
+  ? React.ComponentPropsWithRef<StyledComponentInnerComponent<C>>
+  : React.ComponentPropsWithRef<C>;
+export type StyledComponentInnerOtherProps<
+  C extends AnyStyledComponent
+> = C extends StyledComponent<any, any, infer O, any>
+  ? O
+  : C extends StyledComponent<any, any, infer O>
+  ? O
+  : never;
+export type StyledComponentInnerAttrs<
+  C extends AnyStyledComponent
+> = C extends StyledComponent<any, any, any, infer A> ? A : never;
+
+export interface ThemedBaseStyledInterface<T extends object>
+  extends ThemedStyledComponentFactories<T> {
+  <C extends AnyStyledComponent>(component: C): ThemedStyledFunction<
+    StyledComponentInnerComponent<C>,
+    T,
+    StyledComponentInnerOtherProps<C>,
+    StyledComponentInnerAttrs<C>
+  >;
+  <C extends React.ComponentType<any>>(
+    // unfortunately using a conditional type to validate that it can receive a `theme?: Theme`
+    // causes tests to fail in TS 3.1
+    component: C
+  ): ThemedStyledFunction<C, T>;
+}
+
+export type ThemedStyledInterface<T extends object> = ThemedBaseStyledInterface<
+  AnyIfEmpty<T>
+>;
+export type StyledInterface = ThemedStyledInterface<DefaultTheme>;
+
+// Helper type operators
+type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+type WithOptionalTheme<P extends { theme?: T }, T> = Omit<P, 'theme'> & {
+  theme?: T;
+};
+type AnyIfEmpty<T extends object> = keyof T extends never ? any : T;
+
+export interface ThemedStyledComponentsModule<
+  T extends object,
+  U extends object = T
+> {
+  default: ThemedStyledInterface<T>;
+
+  css: object;
+
+  withTheme: WithThemeFnInterface<T>;
+  ThemeProvider: ThemeProviderComponent<T, U>;
+  ThemeConsumer: React.Consumer<T>;
+  ThemeContext: React.Context<T>;
+  useTheme(): T;
+
+  // This could be made to assert `target is StyledComponent<any, T>` instead, but that feels not type safe
+  isStyledComponent: typeof isStyledComponent;
+}
+
+declare const styled: StyledInterface;
+
+export type BaseWithThemeFnInterface<T extends object> = <
+  C extends React.ComponentType<any>
+>(
+  // this check is roundabout because the extends clause above would
+  // not allow any component that accepts _more_ than theme as a prop
+  component: React.ComponentProps<C> extends { theme?: T } ? C : never
+) => React.ForwardRefExoticComponent<
+  WithOptionalTheme<React.ComponentPropsWithRef<C>, T>
+>;
+export type WithThemeFnInterface<T extends object> = BaseWithThemeFnInterface<
+  AnyIfEmpty<T>
+>;
+export const withTheme: WithThemeFnInterface<DefaultTheme>;
+
+export function useTheme(): DefaultTheme;
+
+/**
+ * This interface can be augmented by users to add types to `styled-components`' default theme
+ * without needing to reexport `ThemedStyledComponentsModule`.
+ */
+// Unfortunately, there is no way to write tests for this
+// as any augmentation will break the tests for the default case (not augmented).
+// tslint:disable-next-line:no-empty-interface
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface DefaultTheme {}
+
+export interface ThemeProviderProps<T extends object, U extends object = T> {
+  children?: React.ReactNode;
+  theme: T | ((theme: U) => T);
+}
+export type BaseThemeProviderComponent<
+  T extends object,
+  U extends object = T
+> = React.ComponentClass<ThemeProviderProps<T, U>>;
+export type ThemeProviderComponent<
+  T extends object,
+  U extends object = T
+> = BaseThemeProviderComponent<AnyIfEmpty<T>, AnyIfEmpty<U>>;
+export const ThemeProvider: ThemeProviderComponent<AnyIfEmpty<DefaultTheme>>;
+// NOTE: this technically starts as undefined, but allowing undefined is unhelpful when used correctly
+export const ThemeContext: React.Context<AnyIfEmpty<DefaultTheme>>;
+export const ThemeConsumer: typeof ThemeContext['Consumer'];
+
+export function isStyledComponent(
+  target: any
+): target is StyledComponent<any, any>;
+
+export default styled;
