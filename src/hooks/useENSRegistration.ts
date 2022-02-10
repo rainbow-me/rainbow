@@ -1,4 +1,4 @@
-import { format } from 'date-fns';
+import { format, isValid } from 'date-fns';
 import { BigNumber } from 'ethers';
 import { useCallback, useMemo } from 'react';
 import { useQuery } from 'react-query';
@@ -81,6 +81,7 @@ export default function useENSRegistration({
     const ensValidation = validateENS(`${name}.eth`, {
       includeSubdomains: false,
     });
+
     if (!ensValidation.valid) {
       return {
         code: ensValidation.code,
@@ -112,7 +113,7 @@ export default function useENSRegistration({
       // we need the expiration and registration date when is not available
       const registrationDate = await fetchRegistrationDate(name + '.eth');
       const nameExpires = await getNameExpires(name);
-      const formattedRegistrarionDate = formatTime(registrationDate);
+      const formattedRegistrarionDate = formatTime(registrationDate, false);
       const formattedExpirationDate = formatTime(nameExpires);
 
       return {
@@ -129,6 +130,8 @@ export default function useENSRegistration({
     getRegistrationValues,
     { retry: 0 }
   );
+
+  console.log(data);
 
   const newStatus = isValidLength ? status : 'idle';
 
