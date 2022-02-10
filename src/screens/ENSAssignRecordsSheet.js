@@ -29,9 +29,11 @@ export default function ENSAssignRecordsSheet() {
   }, [navigate]);
 
   const avatarColor =
-    usePersistentDominantColorFromImage('tbd').result || colors.purple;
+    usePersistentDominantColorFromImage('TODO').result || colors.purple;
 
   const avatarRadius = 35;
+
+  const formIsEmpty = true; // change this when ens records are merged in
 
   return (
     <AccentColorProvider color={avatarColor}>
@@ -65,13 +67,19 @@ export default function ENSAssignRecordsSheet() {
           <TintButton onPress={handlePressBack} color="secondary60">
             􀆉 Back
           </TintButton>
-          <SheetActionButton
-            color={avatarColor}
-            label="Review"
-            onPress={handlePressContinue}
-            size="big"
-            weight="heavy"
-          />
+          {formIsEmpty ? (
+            <TintButton onPress={handlePressContinue} color="secondary60">
+              Skip
+            </TintButton>
+          ) : (
+            <SheetActionButton
+              color={avatarColor}
+              label="Review"
+              onPress={handlePressContinue}
+              size="big"
+              weight="heavy"
+            />
+          )}
         </SheetActionButtonRow>
       </Box>
     </AccentColorProvider>

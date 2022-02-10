@@ -46,9 +46,9 @@ const TintButton = ({
           style={{ height: '100%', width: '100%' }}
         >
           <RadialGradientBackground
-            colors={colors.gradients.lighterGrey}
+            colors={colors.gradients.transparentToLightGrey}
             height={height}
-            stops={[1, 0]}
+            stops={[1, 0.6]}
             width={deviceWidth}
           />
         </Box>
