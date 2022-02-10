@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
 import { KeyboardArea } from 'react-native-keyboard-area';
+import { useDispatch } from 'react-redux';
 import dice from '../assets/dice.png';
 import TintButton from '../components/buttons/TintButton';
 import {
@@ -25,11 +26,13 @@ import {
   useKeyboardHeight,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
+import { ensRegistrationUpdateName } from '@rainbow-me/redux/ensRegistration';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 import { normalizeENS } from '@rainbow-me/utils';
 
 export default function ENSSearchSheet() {
+  const dispatch = useDispatch();
   const { navigate } = useNavigation();
   const keyboardHeight = useKeyboardHeight();
 
@@ -64,9 +67,10 @@ export default function ENSSearchSheet() {
   }, [isAvailable, isInvalid, isRegistered]);
 
   const handlePressContinue = useCallback(() => {
+    dispatch(ensRegistrationUpdateName(`${searchQuery}.eth`));
     Keyboard.dismiss();
     navigate(Routes.ENS_ASSIGN_RECORDS_SHEET);
-  }, [navigate]);
+  }, [dispatch, navigate, searchQuery]);
 
   return (
     <Box background="body" flexGrow={1}>
@@ -156,40 +160,38 @@ export default function ENSSearchSheet() {
             </Stack>
           </Inset>
         )}
-        <Box paddingTop="34px">
-          {isIdle && (
-            <Inline
-              alignHorizontal="center"
-              alignVertical="center"
-              space="6px"
-              wrap={false}
-            >
-              <Box>
-                <ImgixImage source={dice} style={{ height: 20, width: 20 }} />
-              </Box>
-              <Text color="secondary50" size="16px" weight="bold">
-                Minimum 3 characters
-              </Text>
-            </Inline>
+      </Box>
+      <Box>
+        {isIdle && (
+          <Inline
+            alignHorizontal="center"
+            alignVertical="center"
+            space="6px"
+            wrap={false}
+          >
+            <Box>
+              <ImgixImage source={dice} style={{ height: 20, width: 20 }} />
+            </Box>
+            <Text color="secondary50" size="16px" weight="bold">
+              Minimum 3 characters
+            </Text>
+          </Inline>
+        )}
+        <SheetActionButtonRow>
+          {isAvailable && (
+            <SheetActionButton
+              color={colors.green}
+              label="Continue on 􀆊"
+              onPress={handlePressContinue}
+              size="big"
+              weight="heavy"
+            />
           )}
-          <SheetActionButtonRow>
-            {isAvailable && (
-              <SheetActionButton
-                color={colors.green}
-                label="Continue on 􀆊"
-                onPress={handlePressContinue}
-                size="big"
-                weight="heavy"
-              />
-            )}
-            {(isRegistered || isInvalid) && (
-              <TintButton onPress={() => setSearchQuery('')}>
-                􀅉 Clear
-              </TintButton>
-            )}
-          </SheetActionButtonRow>
-          <KeyboardArea initialHeight={keyboardHeight} isOpen />
-        </Box>
+          {(isRegistered || isInvalid) && (
+            <TintButton onPress={() => setSearchQuery('')}>􀅉 Clear</TintButton>
+          )}
+        </SheetActionButtonRow>
+        <KeyboardArea initialHeight={keyboardHeight} isOpen />
       </Box>
     </Box>
   );

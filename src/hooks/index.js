@@ -33,6 +33,7 @@ export { default as useDimensions } from './useDimensions';
 export { default as useDPI } from './useDPI';
 export { default as useEffectDebugger } from './useEffectDebugger';
 export { default as useEmailRainbow } from './useEmailRainbow';
+export { default as useENSProfileForm } from './useENSProfileForm';
 export { default as useExpandedStateNavigation } from './useExpandedStateNavigation';
 export { default as useGas } from './useGas';
 export { default as useGenericAsset } from './useGenericAsset';
