@@ -1,5 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
+import lang from 'i18n-js';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
 import { View } from 'react-native';
 import { useTheme } from '../../../context/ThemeContext';
@@ -175,7 +176,11 @@ export default function AlreadyBackedUpView() {
 
   const handleViewRecoveryPhrase = useCallback(() => {
     navigate('ShowSecretView', {
-      title: `${isSecretPhrase ? 'Secret Phrase' : 'Private Key'}`,
+      title: `${
+        isSecretPhrase
+          ? lang.t('back_up.secret.secret_phrase_title')
+          : lang.t('back_up.secret.private_key_title')
+      }`,
       walletId,
     });
   }, [isSecretPhrase, navigate, walletId]);
@@ -212,17 +217,23 @@ export default function AlreadyBackedUpView() {
           </Title>
           <DescriptionText>
             {(walletStatus === WalletBackupStatus.CLOUD_BACKUP &&
-              `If you lose this device, you can recover your encrypted wallet backup from ${cloudPlatform}.`) ||
+              lang.t('back_up.explainers.if_lose_cloud', {
+                cloudPlatformName: cloudPlatform,
+              })) ||
               (walletStatus === WalletBackupStatus.MANUAL_BACKUP &&
-                `If you lose this device, you can restore your wallet with the secret phrase you saved.`) ||
+                lang.t('back_up.explainers.if_lose_manual')) ||
               (walletStatus === WalletBackupStatus.IMPORTED &&
-                `If you lose this device, you can restore your wallet with the key you originally imported.`)}
+                lang.t('back_up.explainers.if_lose_imported'))}
           </DescriptionText>
         </Centered>
         <Column>
           <SheetActionButton
             color={colors.white}
-            label={`🗝 View ${isSecretPhrase ? 'secret phrase' : 'private key'}`}
+            label={`🗝 ${
+              isSecretPhrase
+                ? lang.t('back_up.secret.view_secret_phrase')
+                : lang.t('back_up.secret.view_private_key')
+            }`}
             onPress={handleViewRecoveryPhrase}
             textColor={colors.alpha(colors.blueGreyDark, 0.8)}
           />
@@ -238,7 +249,10 @@ export default function AlreadyBackedUpView() {
               size="large"
               weight="semibold"
             >
-              􀙶 Back up to {cloudPlatform}
+              􀙶{' '}
+              {lang.t('back_up.cloud.back_up_to_platform', {
+                cloudPlatformName: cloudPlatform,
+              })}
             </Text>
           </ButtonPressAnimation>
         </Footer>
@@ -252,7 +266,10 @@ export default function AlreadyBackedUpView() {
               size="lmedium"
               weight="semibold"
             >
-              􀍢 Manage {cloudPlatform} Backups
+              􀍢{' '}
+              {lang.t('back_up.cloud.manage_platform_backups', {
+                cloudPlatformName: cloudPlatform,
+              })}
             </Text>
           </ButtonPressAnimation>
         </Footer>

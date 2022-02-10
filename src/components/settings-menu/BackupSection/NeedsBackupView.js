@@ -109,24 +109,25 @@ export default function NeedsBackupView() {
 
   return (
     <Fragment>
-      <Subtitle>Not backed up</Subtitle>
+      <Subtitle>{lang.t('back_up.needs_backup.not_backed_up')}</Subtitle>
       <Content>
         <Column align="center">
           <TopIcon source={isDarkMode ? BackupIconDark : BackupIcon} />
-          <Title>Back up your wallet </Title>
+          <Title>{lang.t('back_up.needs_backup.back_up_your_wallet')} </Title>
           <DescriptionText>
-            Don&apos;t risk your money! Back up your wallet so you can recover
-            it if you lose this device.
+            {lang.t('back_up.needs_backup.dont_risk')}
           </DescriptionText>
         </Column>
         <Column align="center">
           <BackupButton
-            label={`􀙶 Back up to ${cloudPlatform}`}
+            label={`􀙶 ${lang.t('modal.back_up.default.button.cloud_platform', {
+              cloudPlatformName: cloudPlatform,
+            })}`}
             onPress={onIcloudBackup}
           />
           <SheetActionButton
             color={colors.white}
-            label="🤓 Back up manually"
+            label={`🤓 ${lang.t('modal.back_up.default.button.manual')}`}
             onPress={onManualBackup}
             textColor={colors.alpha(colors.blueGreyDark, 0.8)}
           />

@@ -59,6 +59,7 @@
     },
     "back_up": {
       "cloud": {
+        "manage_platform_backups": "Manage %{cloudPlatformName} Backups :)",
         "password": {
           "a_password_youll_remember": "Please use a password you'll remember. :)",
           "backup_password": "Backup Password :)",
@@ -86,7 +87,10 @@
         "enter_backup_password": "Enter backup password :)"
       },
       "explainers": {
-        "backup": "Don't forget this password! It is separate from your %{cloudPlatformName} password, and you should save it in a secure location.\n\nYou will need it in order to restore your wallet from the backup in the future. :)"
+        "backup": "Don't forget this password! It is separate from your %{cloudPlatformName} password, and you should save it in a secure location.\n\nYou will need it in order to restore your wallet from the backup in the future. :)",
+        "if_lose_cloud": "If you lose this device, you can recover your encrypted wallet backup from %{cloudPlatformName}. :)",
+        "if_lose_imported": "If you lose this device, you can restore your wallet with the key you originally imported. :)",
+        "if_lose_manual": "If you lose this device, you can restore your wallet with the secret phrase you saved. :)"
       },
       "manual": {
         "label": "Back up manually :)",
@@ -100,6 +104,11 @@
           "save_them": "Write them down or save them in your password manager. :)",
           "these_keys": "These words are the keys to your wallet! :)"
         }
+      },
+      "needs_backup": {
+        "back_up_your_wallet": "Back up your wallet :)",
+        "dont_risk": "Don't risk your money! Back up your wallet so you can recover it if you lose this device. :)",
+        "not_backed_up": "Not backed up :)"
       },
       "restore_cloud": {
         "backup_password_placeholder": "Backup Password :)",
@@ -134,7 +143,11 @@
         "anyone_who_has_these": "Anyone who has these words can access your entire wallet! :)",
         "copy_to_clipboard": "Copy to clipboard :)",
         "for_your_eyes_only": "For your eyes only :)",
+        "private_key_title": "Private Key :)",
+        "secret_phrase_title": "Secret Phrase :)",
         "show_recovery": "Show Recovery %{typeName} :)",
+        "view_private_key": "View private key :)",
+        "view_secret_phrase": "View secret phrase :)",
         "you_need_to_authenticate": "You need to authenticate in order to access your recovery %{typeName} :)"
       }
     },
@@ -220,6 +233,21 @@
       "suggestions": "Suggestions :)",
       "to_header": "To :)",
       "watching": "Watching :)"
+    },
+    "developer_settings": {
+      "alert": "Alert :)",
+      "applied": "APPLIED :)",
+      "backups_deleted_successfully": "Backups deleted successfully :)",
+      "clear_async_storage": "Clear async storage :)",
+      "clear_image_metadata_cache": "Clear Image Metadata Cache :)",
+      "connect_to_hardhat": "Connect to hardhat :)",
+      "crash_app_render_error": "Crash app (render error) :)",
+      "not_applied": "NOT APPLIED :)",
+      "remove_all_backups": "Remove all backups :)",
+      "reset_keychain": "Reset Keychain :)",
+      "restart_app": "Restart app :)",
+      "restore_default_experimental_config": "Restore default experimental config :)",
+      "status": "Status :)"
     },
     "discover": {
       "lists": {
@@ -492,6 +520,7 @@
         "default": {
           "button": {
             "cloud": "Back up your wallet :)",
+            "cloud_platform": "Back up to %{cloudPlatformName} :)",
             "manual": "Back up manually :)"
           },
           "description": "Don't lose your wallet! Save an encrypted copy to %{cloudPlatformName} :)",
@@ -620,14 +649,21 @@
       "feedback_and_reports": "Feedback & Bug Reports :)",
       "feedback_and_support": "Feedback & Support :)",
       "follow_twitter": "Follow Us on Twitter :)",
+      "follow_us_on_twitter": "Follow Us on Twitter :)",
+      "hey_friend_message": "👋️ Hey friend! You should download Rainbow, it's my favorite Ethereum wallet 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️ :)",
       "label": "Réglages",
       "language": "Langue",
       "learn": "Learn about Rainbow and Ethereum :)",
       "learn_short": "Learn about Rainbow :)",
       "network": "Réseau",
       "privacy": "Privacy :)",
+      "privacy_section": {
+        "public_showcase": "Public Showcase :)",
+        "when_public_prefix": "When public, your NFT Showcase will be visible on your Rainbow web profile! You can view your profile at :)"
+      },
       "review": "Review Rainbow :)",
       "share": "Share Rainbow:)",
+      "share_rainbow": "Share Rainbow :)",
       "theme": "Theme :)"
     },
     "subscribe_form": {
@@ -783,6 +819,13 @@
       "authenticate": {
         "please": "Veuillez vous authentifier",
         "please_seed_phrase": "Veuillez vous authentifier pour afficher votre clé mnémonique"
+      },
+      "back_ups": {
+        "and_1_more_wallet": "And 1 more wallet :)",
+        "and_more_wallets": "And %{moreWalletCount} more wallets :)",
+        "backed_up": "Backed up :)",
+        "backed_up_manually": "Backed up manually :)",
+        "imported": "Imported :)"
       },
       "change_wallet": {
         "balance_eth": "%{balanceEth} ETH :)",

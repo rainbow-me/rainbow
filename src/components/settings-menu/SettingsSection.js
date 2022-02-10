@@ -171,7 +171,9 @@ export default function SettingsSection({
 
   const onPressShare = useCallback(() => {
     Share.share({
-      message: `👋️ Hey friend! You should download Rainbow, it's my favorite Ethereum wallet 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️ ${SettingsExternalURLs.rainbowHomepage}`,
+      message: `${lang.t('settings.hey_friend_message')} ${
+        SettingsExternalURLs.rainbowHomepage
+      }`,
     });
   }, []);
 
@@ -318,7 +320,7 @@ export default function SettingsSection({
         <ColumnWithDividers dividerRenderer={ListItemDivider}>
           <ListItem
             icon={<Emoji name="rainbow" />}
-            label="Share Rainbow"
+            label={lang.t('settings.share_rainbow')}
             onPress={onPressShare}
             testID="share-section"
             value={SettingsExternalURLs.rainbowHomepage}
@@ -334,7 +336,7 @@ export default function SettingsSection({
           />
           <ListItem
             icon={<Emoji name="bird" />}
-            label="Follow Us on Twitter"
+            label={lang.t('settings.follow_us_on_twitter')}
             onPress={onPressTwitter}
             testID="twitter-section"
             value={SettingsExternalURLs.twitter}

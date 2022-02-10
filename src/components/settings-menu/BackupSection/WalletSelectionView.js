@@ -161,29 +161,32 @@ const WalletSelectionView = () => {
                       </Row>
                       {totalAccounts > 1 ? (
                         <BottomRowText weight={fonts.weight.medium}>
-                          And {totalAccounts - 1} more{' '}
-                          {totalAccounts > 2 ? `wallets` : `wallet`}
+                          {totalAccounts > 2
+                            ? lang.t('wallet.back_ups.and_more_wallets', {
+                                moreWalletCount: totalAccounts - 1,
+                              })
+                            : lang.t('wallet.back_ups.and_1_more_wallet')}
                         </BottomRowText>
                       ) : wallet.backedUp ? (
                         wallet.backupType === WalletBackupTypes.cloud ? (
                           <BottomRowText weight={fonts.weight.medium}>
-                            Backed up
+                            {lang.t('wallet.back_ups.backed_up')}
                           </BottomRowText>
                         ) : (
                           <BottomRowText weight={fonts.weight.medium}>
-                            Backed up manually
+                            {lang.t('wallet.back_ups.backed_up_manually')}
                           </BottomRowText>
                         )
                       ) : wallet.imported ? (
                         <BottomRowText weight={fonts.weight.medium}>
-                          Imported
+                          {lang.t('wallet.back_ups.imported')}
                         </BottomRowText>
                       ) : (
                         <BottomRowText
                           color={colors.orangeLight}
                           weight={fonts.weight.medium}
                         >
-                          Not backed up
+                          {lang.t('back_up.needs_backup.not_backed_up')}
                         </BottomRowText>
                       )}
                     </ColumnWithMargins>
@@ -219,7 +222,10 @@ const WalletSelectionView = () => {
               size="lmedium"
               weight="semibold"
             >
-              􀍢 Manage {cloudPlatform} Backups
+              􀍢{' '}
+              {lang.t('back_up.cloud.manage_platform_backups', {
+                cloudPlatformName: cloudPlatform,
+              })}
             </Text>
           </ButtonPressAnimation>
         </Footer>

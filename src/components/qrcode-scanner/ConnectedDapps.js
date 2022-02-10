@@ -65,7 +65,7 @@ function ConnectedDapps() {
             >
               ️‍🌈{' '}
               {walletConnectorsByDappName.length === 1
-                ? lang.t('wallet.qr_1_app_connected')
+                ? lang.t('wallet.qr.qr_1_app_connected')
                 : lang.t('wallet.qr.qr_multiple_apps_connected', {
                     appsConnectedCount: walletConnectorsByDappName.length,
                   })}{' '}
