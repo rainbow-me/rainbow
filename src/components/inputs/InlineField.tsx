@@ -36,14 +36,19 @@ export default function InlineField({
   const textStyle = useTextStyle({ size: `${textSize}px`, weight: 'bold' });
 
   const [inputHeight, setInputHeight] = useState(textSize);
-  const handleContentSizeChange = useCallback(({ nativeEvent }) => {
-    const contentHeight = nativeEvent.contentSize.height;
-    if (contentHeight > 30) {
-      setInputHeight(nativeEvent.contentSize.height);
-    } else {
-      setInputHeight(textSize);
-    }
-  }, []);
+  const handleContentSizeChange = useCallback(
+    ({ nativeEvent }) => {
+      if (inputProps?.multiline) {
+        const contentHeight = nativeEvent.contentSize.height;
+        if (contentHeight > 30) {
+          setInputHeight(nativeEvent.contentSize.height);
+        } else {
+          setInputHeight(textSize);
+        }
+      }
+    },
+    [inputProps?.multiline]
+  );
 
   const handleChangeText = useCallback(
     text => {
@@ -81,14 +86,22 @@ export default function InlineField({
         placeholder={placeholder}
         style={{
           ...textStyle,
-          height: inputHeight + 34,
-          lineHeight: undefined,
+          height: inputHeight + 34 + (android ? 2 : 0),
+          lineHeight: android ? textStyle.lineHeight : undefined,
           marginBottom: 0,
           marginTop: 0,
-          paddingTop: inputProps?.multiline ? 15 : 0,
+          paddingTop: inputProps?.multiline
+            ? android
+              ? 11
+              : 15
+            : android
+            ? 15
+            : 0,
+          textAlignVertical: 'top',
         }}
         value={value}
         {...inputProps}
+        keyboardType={android ? 'visible-password' : inputProps?.keyboardType}
       />
     </Columns>
   );
