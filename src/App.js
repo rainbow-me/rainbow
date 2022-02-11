@@ -4,9 +4,7 @@ import analytics from '@segment/analytics-react-native';
 import * as Sentry from '@sentry/react-native';
 import { get } from 'lodash';
 import { nanoid } from 'nanoid/non-secure';
-import pako from 'pako';
 import PropTypes from 'prop-types';
-import qs from 'qs';
 import React, { Component } from 'react';
 import {
   AppRegistry,
@@ -63,6 +61,7 @@ import store from './redux/store';
 import { uniswapPairsInit } from './redux/uniswap';
 import { walletConnectLoadState } from './redux/walletconnect';
 import { rainbowTokenList } from './references';
+import decodeBranchUrl from './utils/decodeBranchUrl';
 import { analyticsUserIdentifier } from './utils/keychainConstants';
 import { SharedValuesProvider } from '@rainbow-me/helpers/SharedValuesContext';
 import Routes from '@rainbow-me/routes';
@@ -139,14 +138,14 @@ class App extends Component {
       if (params['+non_branch_link']) {
         const nonBranchUrl = params['+non_branch_link'];
 
-        // This happens when branch.io redirects user to the app in the
-        // aggressive redirect mode with a confirmation modal in Safari.
-        // Those URLs have shape rainbow://open?_branch_referrer=A&link_click_id=B
         if (nonBranchUrl.startsWith('rainbow://open')) {
-          this.handleOpenLinkingURL(this.decodeBranchUrl(nonBranchUrl));
+          // This happens when branch.io redirects user to the app in the
+          // aggressive redirect mode with a confirmation modal in Safari.
+          // Those URLs have shape rainbow://open?_branch_referrer=A&link_click_id=B
+          this.handleOpenLinkingURL(decodeBranchUrl(nonBranchUrl));
+        } else {
           // This happens when user taps Rainbow universal link managed by branch.io
           // and it is handled by iOS.
-        } else {
           this.handleOpenLinkingURL(nonBranchUrl);
         }
         return;
@@ -195,23 +194,6 @@ class App extends Component {
     this.backgroundNotificationListener?.();
     this.branchListener?.();
   }
-
-  decodeBranchUrl = source => {
-    // Before: rainbow://open?_branch_referrer=a&link_click_id=b
-    const query = source.split('?')[1];
-
-    // Before: _branch_referrer=A&link_click_id=B
-    const queryParam = qs.parse(query)['_branch_referrer'];
-
-    const base64Url = decodeURIComponent(queryParam);
-    const ascii = Buffer.from(base64Url, 'base64');
-
-    // https://rnbwapp.com/C?uri=D
-    const originalUniversalUrl = pako.inflate(ascii, { to: 'string' });
-    const uriParam = qs.parse(originalUniversalUrl.split('?')[1]).uri;
-
-    return uriParam;
-  };
 
   identifyFlow = async () => {
     const address = await loadAddress();
