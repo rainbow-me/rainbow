@@ -148,8 +148,5 @@ export const maybeSignSource = (source: Source, options?: {}): Source => {
 };
 
 export const imageToPng = (url: string, w: number) => {
-  return staticImgixClient?.buildURL(url, {
-    fm: 'png',
-    w: w,
-  });
+  return maybeSignUri(url, { w });
 };
