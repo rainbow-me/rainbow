@@ -82,9 +82,8 @@ export const androidShowNetworksActionSheet = callback => {
     },
     idx => {
       if (idx !== undefined) {
-        const { value } = androidReverseNetworkWithName(
-          androidNetworkActions[idx]
-        );
+        const networkActions = androidNetworkActions();
+        const { value } = androidReverseNetworkWithName(networkActions[idx]);
         const chainId = ethereumUtils.getChainIdFromNetwork(value);
         callback({ chainId, network: value });
       }
