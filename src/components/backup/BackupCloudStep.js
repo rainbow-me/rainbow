@@ -270,6 +270,10 @@ export default function BackupCloudStep() {
   }, [onError, onSuccess, password, walletCloudBackup, walletId]);
 
   const showExplainerConfirmation = useCallback(async () => {
+    if (android) {
+      passwordRef?.current.blur();
+      confirmPasswordRef?.current.blur();
+    }
     navigate(Routes.EXPLAIN_SHEET, {
       onClose: () => {
         InteractionManager.runAfterInteractions(() => {
