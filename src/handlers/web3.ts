@@ -511,15 +511,15 @@ export const resolveUnstoppableDomain = async (
  * @return The address, or undefined if one could not be resolved.
  */
 export const resolveNameOrAddress = async (
-  nameOrAddress: string,
-  provider: StaticJsonRpcProvider | null = null
+  nameOrAddress: string
 ): Promise<string | void> => {
   if (!isHexString(nameOrAddress)) {
     if (isUnstoppableAddressFormat(nameOrAddress)) {
       return resolveUnstoppableDomain(nameOrAddress);
     }
-    const p = provider || web3Provider;
-    return p?.resolveName(nameOrAddress);
+    const p = await getProviderForNetwork(Network.mainnet);
+    const name = p?.resolveName(nameOrAddress);
+    return name;
   }
   return nameOrAddress;
 };
@@ -734,10 +734,7 @@ export const buildTransaction = async (
       ? convertAmountToRawAmount(amount, asset.decimals)
       : estimateAssetBalancePortion(asset);
   const value = _amount.toString();
-  const _recipient = (await resolveNameOrAddress(
-    recipient,
-    provider
-  )) as string;
+  const _recipient = (await resolveNameOrAddress(recipient)) as string;
   let txData: TransactionRequest = {
     data: '0x',
     from: address,
