@@ -15,9 +15,7 @@ import {
   NativeModules,
   StatusBar,
 } from 'react-native';
-import branch from 'react-native-branch';
 import {
-  IS_TESTING,
   REACT_APP_SEGMENT_API_WRITE_KEY,
   SENTRY_ENDPOINT,
   SENTRY_ENVIRONMENT,
@@ -61,7 +59,7 @@ import store from './redux/store';
 import { uniswapPairsInit } from './redux/uniswap';
 import { walletConnectLoadState } from './redux/walletconnect';
 import { rainbowTokenList } from './references';
-import decodeBranchUrl from './utils/decodeBranchUrl';
+import { branchListener } from './utils/branch';
 import { analyticsUserIdentifier } from './utils/keychainConstants';
 import { SharedValuesProvider } from '@rainbow-me/helpers/SharedValuesContext';
 import Routes from '@rainbow-me/routes';
@@ -130,37 +128,7 @@ class App extends Component {
       }
     );
 
-    this.branchListener = branch.subscribe(({ error, params, uri }) => {
-      if (error) {
-        logger.error('Error from Branch: ' + error);
-      }
-
-      if (params['+non_branch_link']) {
-        const nonBranchUrl = params['+non_branch_link'];
-
-        if (nonBranchUrl.startsWith('rainbow://open')) {
-          // This happens when branch.io redirects user to the app in the
-          // aggressive redirect mode with a confirmation modal in Safari.
-          // Those URLs have shape rainbow://open?_branch_referrer=A&link_click_id=B
-          this.handleOpenLinkingURL(decodeBranchUrl(nonBranchUrl));
-        } else {
-          // This happens when user taps Rainbow universal link managed by branch.io
-          // and it is handled by iOS.
-          this.handleOpenLinkingURL(nonBranchUrl);
-        }
-        return;
-      } else if (!params['+clicked_branch_link']) {
-        // Indicates initialization success and some other conditions.
-        // No link was opened.
-        if (IS_TESTING === 'true') {
-          this.handleOpenLinkingURL(uri);
-        } else {
-          return;
-        }
-      } else if (uri) {
-        this.handleOpenLinkingURL(params.uri);
-      }
-    });
+    this.branchListener = branchListener(this.handleOpenLinkingURL);
 
     // Walletconnect uses direct deeplinks
     if (android) {
