@@ -65,17 +65,27 @@ const AvatarWrapper = styled(Column)({
   marginTop: 1,
 });
 
-const LabelText = ({ children, ...props }) => (
-  <Text color="primary" numberOfLines={1} size="18px" weight="bold" {...props}>
-    {children}
-  </Text>
-);
+const LabelText = ({ children, ...props }) => {
+  return (
+    <Text
+      color="primary"
+      numberOfLines={1}
+      size="18px"
+      weight="bold"
+      {...props}
+    >
+      {children}
+    </Text>
+  );
+};
 
-const SwitchText = ({ children, ...props }) => (
-  <Text color="secondary40" size="14px" weight="semibold" {...props}>
-    {children}
-  </Text>
-);
+const SwitchText = ({ children, ...props }) => {
+  return (
+    <Text color="secondary40" size="14px" weight="semibold" {...props}>
+      {children}
+    </Text>
+  );
+};
 
 export default function WalletConnectApprovalSheet() {
   const { colors } = useTheme();
