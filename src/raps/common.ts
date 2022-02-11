@@ -21,7 +21,10 @@ import {
   estimateWithdrawFromCompound,
 } from './withdrawFromCompound';
 import { Asset } from '@rainbow-me/entities';
-import { estimateENSCommitGasLimit } from '@rainbow-me/handlers/ens';
+import {
+  estimateENSCommitGasLimit,
+  estimateENSRegisterSetRecordsAndNameGasLimit,
+} from '@rainbow-me/handlers/ens';
 import { ENSRegistrationRecords } from '@rainbow-me/helpers/ens';
 import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
 
@@ -77,31 +80,13 @@ export interface SwapActionParameters {
   tradeDetails: Trade;
 }
 
-export interface CommitENSActionParameters {
+export interface RegisterENSActionParameters {
   name: string;
   duration: number;
   rentPrice: string;
   ownerAddress: string;
-}
-
-export interface RegisterWithConfigENSActionParameters {
-  name: string;
-  duration: number;
-  rentPrice: string;
-}
-
-export interface SetTextENSActionParameters {
-  name: string;
   recordKey: string;
   recordValue: string;
-}
-
-export interface SetNameENSActionParameters {
-  name: string;
-}
-
-export interface MulticallENSActionParameters {
-  name: string;
   records: ENSRegistrationRecords;
 }
 
@@ -135,6 +120,7 @@ export const RapActionTypes = {
   depositCompound: 'depositCompound' as RapActionType,
   multicallENS: 'multicallENS' as RapActionType,
   registerENS: 'registerENS' as RapActionType,
+  registerSetRecordsAndName: 'setTextENS' as RapActionType,
   setNameENS: 'setNameENS' as RapActionType,
   setTextENS: 'setTextENS' as RapActionType,
   swap: 'swap' as RapActionType,
@@ -164,7 +150,7 @@ export const getRapEstimationByType = (
     ensRegistrationParameters,
   }: {
     swapParameters: SwapActionParameters;
-    ensRegistrationParameters: CommitENSActionParameters;
+    ensRegistrationParameters: RegisterENSActionParameters;
   }
 ) => {
   switch (type) {
@@ -175,11 +161,10 @@ export const getRapEstimationByType = (
     case ExchangeModalTypes.withdrawal:
       return estimateWithdrawFromCompound();
     case RapActionTypes.commitENS:
-      return estimateENSCommitGasLimit(
-        ensRegistrationParameters.name,
-        ensRegistrationParameters.ownerAddress,
-        ensRegistrationParameters.duration,
-        ensRegistrationParameters.rentPrice
+      return estimateENSCommitGasLimit(ensRegistrationParameters);
+    case RapActionTypes.registerSetRecordsAndName:
+      return estimateENSRegisterSetRecordsAndNameGasLimit(
+        ensRegistrationParameters
       );
     default:
       return null;

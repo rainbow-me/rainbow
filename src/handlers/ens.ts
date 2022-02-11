@@ -90,12 +90,17 @@ export const fetchRegistrationDate = async (recipient: any) => {
   }
 };
 
-export const estimateENSRegisterWithConfigGasLimit = async (
-  name: string,
-  ownerAddress: string,
-  duration: number,
-  rentPrice: string
-) =>
+export const estimateENSRegisterWithConfigGasLimit = async ({
+  name,
+  ownerAddress,
+  duration,
+  rentPrice,
+}: {
+  name: string;
+  ownerAddress: string;
+  duration: number;
+  rentPrice: string;
+}) =>
   estimateENSTransactionGasLimit({
     duration,
     name,
@@ -104,12 +109,17 @@ export const estimateENSRegisterWithConfigGasLimit = async (
     type: ENSRegistrationTransactionType.REGISTER_WITH_CONFIG,
   });
 
-export const estimateENSCommitGasLimit = async (
-  name: string,
-  ownerAddress: string,
-  duration: number,
-  rentPrice: string
-) =>
+export const estimateENSCommitGasLimit = async ({
+  name,
+  ownerAddress,
+  duration,
+  rentPrice,
+}: {
+  name: string;
+  ownerAddress: string;
+  duration: number;
+  rentPrice: string;
+}) =>
   estimateENSTransactionGasLimit({
     duration,
     name,
@@ -118,11 +128,15 @@ export const estimateENSCommitGasLimit = async (
     type: ENSRegistrationTransactionType.COMMIT,
   });
 
-export const estimateENSSetTextGasLimit = async (
-  name: string,
-  recordKey: string,
-  recordValue: string
-) =>
+export const estimateENSSetTextGasLimit = async ({
+  name,
+  recordKey,
+  recordValue,
+}: {
+  name: string;
+  recordKey: string;
+  recordValue: string;
+}) =>
   estimateENSTransactionGasLimit({
     name,
     records: {
@@ -139,20 +153,26 @@ export const estimateENSSetTextGasLimit = async (
     type: ENSRegistrationTransactionType.SET_TEXT,
   });
 
-export const estimateENSSetNameGasLimit = async (
-  name: string,
-  ownerAddress: string
-) =>
+export const estimateENSSetNameGasLimit = async ({
+  name,
+  ownerAddress,
+}: {
+  name: string;
+  ownerAddress: string;
+}) =>
   estimateENSTransactionGasLimit({
     name,
     ownerAddress,
     type: ENSRegistrationTransactionType.SET_NAME,
   });
 
-export const estimateENSMulticallGasLimit = async (
-  name: string,
-  records: ENSRegistrationRecords
-) =>
+export const estimateENSMulticallGasLimit = async ({
+  name,
+  records,
+}: {
+  name: string;
+  records: ENSRegistrationRecords;
+}) =>
   estimateENSTransactionGasLimit({
     name,
     records,
@@ -202,22 +222,28 @@ export const estimateENSRegistrationGasLimit = async (
   duration: number,
   rentPrice: string
 ) => {
-  const commitGasLimitPromise = estimateENSCommitGasLimit(
+  const commitGasLimitPromise = estimateENSCommitGasLimit({
+    duration,
     name,
     ownerAddress,
-    duration,
-    rentPrice
-  );
-  const setNameGasLimitPromise = estimateENSSetNameGasLimit(name, ownerAddress);
-  const multicallGasLimitPromise = estimateENSMulticallGasLimit(name, {
-    coinAddress: null,
-    contentHash: null,
-    ensAssociatedAddress: ownerAddress,
-    text: [
-      { key: 'key1', value: 'value1' },
-      { key: 'key2', value: 'value2' },
-      { key: 'key3', value: 'value3' },
-    ],
+    rentPrice,
+  });
+  const setNameGasLimitPromise = estimateENSSetNameGasLimit({
+    name,
+    ownerAddress,
+  });
+  const multicallGasLimitPromise = estimateENSMulticallGasLimit({
+    name,
+    records: {
+      coinAddress: null,
+      contentHash: null,
+      ensAssociatedAddress: ownerAddress,
+      text: [
+        { key: 'key1', value: 'value1' },
+        { key: 'key2', value: 'value2' },
+        { key: 'key3', value: 'value3' },
+      ],
+    },
   });
   const gasLimits = await Promise.all([
     commitGasLimitPromise,
@@ -226,6 +252,55 @@ export const estimateENSRegistrationGasLimit = async (
   ]);
   // we need to add register gas limit manually since the gas estimation will fail since the commit tx is not sent yet
   gasLimits.push(`${ethUnits.ens_register_with_config}`);
+  const gasLimit = gasLimits.reduce((a, b) => add(a || 0, b || 0));
+  if (!gasLimit) return '0';
+  return gasLimit;
+};
+
+export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
+  name,
+  ownerAddress,
+  records,
+  duration,
+  rentPrice,
+}: {
+  name: string;
+  ownerAddress: string;
+  records: ENSRegistrationRecords;
+  duration: number;
+  rentPrice: string;
+}) => {
+  let registerGasLimitPromise = ethUnits.ens_register_with_config;
+  const setReverseRecord = true;
+  const setRecords = true;
+  // wip
+  estimateENSRegisterWithConfigGasLimit({
+    duration,
+    name,
+    ownerAddress,
+    rentPrice,
+  });
+
+  const setNameGasLimitPromise = setReverseRecord
+    ? estimateENSSetNameGasLimit({
+        name,
+        ownerAddress,
+      })
+    : 0;
+
+  const multicallGasLimitPromise = setRecords
+    ? estimateENSMulticallGasLimit({
+        name,
+        records,
+      })
+    : 0;
+
+  const gasLimits = await Promise.all([
+    registerGasLimitPromise,
+    setNameGasLimitPromise,
+    multicallGasLimitPromise,
+  ]);
+
   const gasLimit = gasLimits.reduce((a, b) => add(a || 0, b || 0));
   if (!gasLimit) return '0';
   return gasLimit;

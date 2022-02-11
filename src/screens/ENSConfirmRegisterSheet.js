@@ -22,20 +22,25 @@ export default function ENSConfirmRegisterSheet() {
   const { accountAddress } = useAccountSettings();
 
   const { gasFeeParamsBySpeed, updateTxFee, startPollingGasFees } = useGas();
-  const { name, duration } = useENSProfile();
+  const { name, records } = useENSProfile();
 
   const updateGasLimit = useCallback(async () => {
     const rentPrice = await getRentPrice(name, secsInYear);
-    const gasLimit = await getRapEstimationByType(RapActionTypes.commitENS, {
-      ensRegistrationParameters: {
-        duration: duration,
-        name: name,
-        ownerAddress: accountAddress,
-        rentPrice: rentPrice.toString(),
-      },
-    });
+    const gasLimit = await getRapEstimationByType(
+      RapActionTypes.registerSetRecordsAndName,
+      {
+        ensRegistrationParameters: {
+          duration: secsInYear,
+          name: name,
+          ownerAddress: accountAddress,
+          records,
+          rentPrice: rentPrice.toString(),
+        },
+      }
+    );
     updateTxFee(gasLimit);
-  }, [accountAddress, duration, name, updateTxFee]);
+  }, [accountAddress, name, records, updateTxFee]);
+
   // Update gas limit
   useEffect(() => {
     if (!isEmpty(gasFeeParamsBySpeed)) {
