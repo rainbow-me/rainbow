@@ -271,6 +271,7 @@ const TokenHistory = ({ contract, token, color }) => {
                 {((!isShort && !isFirst) || (isShort && !isLast)) && (
                   <Inset top={{ custom: 3.5 }} horizontal="6px">
                     <Box
+                      opacity={0.6}
                       background="accent"
                       position="absolute"
                       borderRadius={1.5}
