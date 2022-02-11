@@ -21,6 +21,7 @@ import {
   estimateWithdrawFromCompound,
 } from './withdrawFromCompound';
 import { Asset } from '@rainbow-me/entities';
+import { estimateENSCommitGasLimit } from '@rainbow-me/handlers/ens';
 import { ENSRegistrationRecords } from '@rainbow-me/helpers/ens';
 import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
 
@@ -80,6 +81,7 @@ export interface CommitENSActionParameters {
   name: string;
   duration: number;
   rentPrice: string;
+  ownerAddress: string;
 }
 
 export interface RegisterWithConfigENSActionParameters {
@@ -157,7 +159,13 @@ const createRapByType = (
 
 export const getRapEstimationByType = (
   type: string,
-  swapParameters: SwapActionParameters
+  {
+    swapParameters,
+    ensRegistrationParameters,
+  }: {
+    swapParameters: SwapActionParameters;
+    ensRegistrationParameters: CommitENSActionParameters;
+  }
 ) => {
   switch (type) {
     case ExchangeModalTypes.deposit:
@@ -166,6 +174,13 @@ export const getRapEstimationByType = (
       return estimateUnlockAndSwap(swapParameters);
     case ExchangeModalTypes.withdrawal:
       return estimateWithdrawFromCompound();
+    case RapActionTypes.commitENS:
+      return estimateENSCommitGasLimit(
+        ensRegistrationParameters.name,
+        ensRegistrationParameters.ownerAddress,
+        ensRegistrationParameters.duration,
+        ensRegistrationParameters.rentPrice
+      );
     default:
       return null;
   }

@@ -1,17 +1,49 @@
-import React from 'react';
+import { isEmpty } from 'lodash';
+import React, { useEffect } from 'react';
+import { GasSpeedButton } from '../components/gas';
 import {
   SheetActionButton,
   SheetActionButtonRow,
   SlackSheet,
 } from '../components/sheet';
 import { useNavigation } from '../navigation/Navigation';
+import { RapActionTypes } from '../raps/common';
 import { Box, Text } from '@rainbow-me/design-system';
+import { getRentPrice } from '@rainbow-me/helpers/ens';
+import { useAccountSettings, useENSProfile, useGas } from '@rainbow-me/hooks';
+import { getRapEstimationByType } from '@rainbow-me/raps';
 import Routes from '@rainbow-me/routes';
 
 export const ENSConfirmRegisterSheetHeight = 600;
+const secsInYear = 31536000;
 
 export default function ENSConfirmRegisterSheet() {
   const { navigate, goBack } = useNavigation();
+  const { accountAddress } = useAccountSettings();
+
+  const { gasFeeParamsBySpeed, updateTxFee, startPollingGasFees } = useGas();
+  const { name, duration } = useENSProfile();
+
+  const updateGasLimit = useCallback(async () => {
+    const rentPrice = await getRentPrice(name, secsInYear);
+    const gasLimit = await getRapEstimationByType(RapActionTypes.commitENS, {
+      ensRegistrationParameters: {
+        duration: duration,
+        name: name,
+        ownerAddress: accountAddress,
+        rentPrice: rentPrice.toString(),
+      },
+    });
+    updateTxFee(gasLimit);
+  }, [accountAddress, duration, name, updateTxFee]);
+  // Update gas limit
+  useEffect(() => {
+    if (!isEmpty(gasFeeParamsBySpeed)) {
+      updateGasLimit();
+    }
+  }, [gasFeeParamsBySpeed, updateGasLimit, updateTxFee]);
+
+  useEffect(() => startPollingGasFees(), [startPollingGasFees]);
 
   return (
     <SlackSheet
@@ -27,6 +59,7 @@ export default function ENSConfirmRegisterSheet() {
       >
         <Box alignItems="center" flexGrow={1} justifyContent="center">
           <Text>register confirmation placeholder</Text>
+          <GasSpeedButton currentNetwork="mainnet" theme="light" />
         </Box>
         <SheetActionButtonRow>
           <SheetActionButton

@@ -256,7 +256,9 @@ export default function ExchangeModal({
         outputAmount,
         tradeDetails,
       };
-      const gasLimit = await getRapEstimationByType(type, swapParams);
+      const gasLimit = await getRapEstimationByType(type, {
+        swapParameters: swapParams,
+      });
       if (gasLimit) {
         updateTxFee(gasLimit);
       }
