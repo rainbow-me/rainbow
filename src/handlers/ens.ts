@@ -203,7 +203,6 @@ export const estimateENSTransactionGasLimit = async ({
     rentPrice,
     type,
   });
-
   const txPayload = {
     ...(ownerAddress ? { from: ownerAddress } : {}),
     ...(value ? { value } : {}),
@@ -252,6 +251,7 @@ export const estimateENSRegistrationGasLimit = async (
   ]);
   // we need to add register gas limit manually since the gas estimation will fail since the commit tx is not sent yet
   gasLimits.push(`${ethUnits.ens_register_with_config}`);
+
   const gasLimit = gasLimits.reduce((a, b) => add(a || 0, b || 0));
   if (!gasLimit) return '0';
   return gasLimit;
@@ -270,16 +270,15 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
   duration: number;
   rentPrice: string;
 }) => {
-  let registerGasLimitPromise = ethUnits.ens_register_with_config;
-  const setReverseRecord = true;
-  const setRecords = true;
-  // wip
-  estimateENSRegisterWithConfigGasLimit({
+  let registerGasLimitPromise = estimateENSRegisterWithConfigGasLimit({
     duration,
     name,
     ownerAddress,
     rentPrice,
   });
+  const setReverseRecord = true;
+  const setRecords = true;
+  // wip
 
   const setNameGasLimitPromise = setReverseRecord
     ? estimateENSSetNameGasLimit({

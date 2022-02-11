@@ -32,16 +32,18 @@ const executeCommit = async (
     type: ENSRegistrationTransactionType.COMMIT,
     wallet,
   });
-
-  return contract?.commit(methodArguments, {
-    gasLimit: gasLimit ? toHex(gasLimit) : undefined,
-    maxFeePerGas: maxFeePerGas ? toHex(maxFeePerGas) : undefined,
-    maxPriorityFeePerGas: maxPriorityFeePerGas
-      ? toHex(maxPriorityFeePerGas)
-      : undefined,
-    nonce: nonce ? toHex(nonce) : undefined,
-    ...(value ? { value } : {}),
-  });
+  return (
+    methodArguments &&
+    contract?.commit(...methodArguments, {
+      gasLimit: gasLimit ? toHex(gasLimit) : undefined,
+      maxFeePerGas: maxFeePerGas ? toHex(maxFeePerGas) : undefined,
+      maxPriorityFeePerGas: maxPriorityFeePerGas
+        ? toHex(maxPriorityFeePerGas)
+        : undefined,
+      nonce: nonce ? toHex(nonce) : undefined,
+      ...(value ? { value } : {}),
+    })
+  );
 };
 
 const executeRegisterWithConfig = async (
@@ -63,16 +65,18 @@ const executeRegisterWithConfig = async (
     type: ENSRegistrationTransactionType.REGISTER_WITH_CONFIG,
     wallet,
   });
-
-  return contract?.registerWithConfig(methodArguments, {
-    gasLimit: gasLimit ? toHex(gasLimit) : undefined,
-    maxFeePerGas: maxFeePerGas ? toHex(maxFeePerGas) : undefined,
-    maxPriorityFeePerGas: maxPriorityFeePerGas
-      ? toHex(maxPriorityFeePerGas)
-      : undefined,
-    nonce: nonce ? toHex(nonce) : undefined,
-    ...(value ? { value } : {}),
-  });
+  return (
+    methodArguments &&
+    contract?.registerWithConfig(...methodArguments, {
+      gasLimit: gasLimit ? toHex(gasLimit) : undefined,
+      maxFeePerGas: maxFeePerGas ? toHex(maxFeePerGas) : undefined,
+      maxPriorityFeePerGas: maxPriorityFeePerGas
+        ? toHex(maxPriorityFeePerGas)
+        : undefined,
+      nonce: nonce ? toHex(nonce) : undefined,
+      ...(value ? { value } : {}),
+    })
+  );
 };
 
 const executeMulticall = async (
@@ -91,15 +95,18 @@ const executeMulticall = async (
     wallet,
   });
 
-  return contract?.setText(methodArguments, {
-    gasLimit: gasLimit ? toHex(gasLimit) : undefined,
-    maxFeePerGas: maxFeePerGas ? toHex(maxFeePerGas) : undefined,
-    maxPriorityFeePerGas: maxPriorityFeePerGas
-      ? toHex(maxPriorityFeePerGas)
-      : undefined,
-    nonce: nonce ? toHex(nonce) : undefined,
-    ...(value ? { value } : {}),
-  });
+  return (
+    methodArguments &&
+    contract?.setText(...methodArguments, {
+      gasLimit: gasLimit ? toHex(gasLimit) : undefined,
+      maxFeePerGas: maxFeePerGas ? toHex(maxFeePerGas) : undefined,
+      maxPriorityFeePerGas: maxPriorityFeePerGas
+        ? toHex(maxPriorityFeePerGas)
+        : undefined,
+      nonce: nonce ? toHex(nonce) : undefined,
+      ...(value ? { value } : {}),
+    })
+  );
 };
 
 const executeSetName = async (
@@ -118,15 +125,18 @@ const executeSetName = async (
     wallet,
   });
 
-  return contract?.setText(methodArguments, {
-    gasLimit: gasLimit ? toHex(gasLimit) : undefined,
-    maxFeePerGas: maxFeePerGas ? toHex(maxFeePerGas) : undefined,
-    maxPriorityFeePerGas: maxPriorityFeePerGas
-      ? toHex(maxPriorityFeePerGas)
-      : undefined,
-    nonce: nonce ? toHex(nonce) : undefined,
-    ...(value ? { value } : {}),
-  });
+  return (
+    methodArguments &&
+    contract?.setText(...methodArguments, {
+      gasLimit: gasLimit ? toHex(gasLimit) : undefined,
+      maxFeePerGas: maxFeePerGas ? toHex(maxFeePerGas) : undefined,
+      maxPriorityFeePerGas: maxPriorityFeePerGas
+        ? toHex(maxPriorityFeePerGas)
+        : undefined,
+      nonce: nonce ? toHex(nonce) : undefined,
+      ...(value ? { value } : {}),
+    })
+  );
 };
 
 const executeSetText = async (
@@ -156,15 +166,18 @@ const executeSetText = async (
     wallet,
   });
 
-  return contract?.setText(methodArguments, {
-    gasLimit: gasLimit ? toHex(gasLimit) : undefined,
-    maxFeePerGas: maxFeePerGas ? toHex(maxFeePerGas) : undefined,
-    maxPriorityFeePerGas: maxPriorityFeePerGas
-      ? toHex(maxPriorityFeePerGas)
-      : undefined,
-    nonce: nonce ? toHex(nonce) : undefined,
-    ...(value ? { value } : {}),
-  });
+  return (
+    methodArguments &&
+    contract?.setText(...methodArguments, {
+      gasLimit: gasLimit ? toHex(gasLimit) : undefined,
+      maxFeePerGas: maxFeePerGas ? toHex(maxFeePerGas) : undefined,
+      maxPriorityFeePerGas: maxPriorityFeePerGas
+        ? toHex(maxPriorityFeePerGas)
+        : undefined,
+      nonce: nonce ? toHex(nonce) : undefined,
+      ...(value ? { value } : {}),
+    })
+  );
 };
 
 const ensAction = async (
@@ -192,12 +205,19 @@ const ensAction = async (
 
   let gasLimit;
   try {
-    logger.sentry(`[${actionName}] estimate gas`, {
-      ...parameters,
-    });
+    logger.sentry(
+      `[${actionName}] estimate gas`,
+      {
+        ...parameters,
+      },
+      type,
+      'baseNonce',
+      baseNonce
+    );
     gasLimit = await estimateENSTransactionGasLimit({
       duration,
       name,
+      ownerAddress,
       records,
       rentPrice,
       type,
@@ -282,7 +302,7 @@ const ensAction = async (
         );
     }
   } catch (e) {
-    logger.sentry(`[${actionName}] Error approving`);
+    logger.sentry(`[${actionName}] Error executing`);
     captureException(e);
     throw e;
   }

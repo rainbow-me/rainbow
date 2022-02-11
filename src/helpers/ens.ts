@@ -315,11 +315,11 @@ const getENSExecutionDetails = async ({
   records?: ENSRegistrationRecords;
   wallet?: Wallet;
 }): Promise<{
-  methodArguments: (string | string[] | number)[] | null;
+  methodArguments: any[] | null;
   value: BigNumberish | null;
   contract: Contract | null;
 }> => {
-  let args: (string | string[] | number)[] | null = null;
+  let args: any[] | null = null;
   let value: string | null = null;
   let contract: Contract | null = null;
   switch (type) {
@@ -328,7 +328,7 @@ const getENSExecutionDetails = async ({
       const salt = generateSalt();
       const registrarController = getENSRegistrarControllerContract(wallet);
       const commitment = await registrarController.makeCommitmentWithConfig(
-        name,
+        name.replace('.eth', ''),
         ownerAddress,
         salt,
         ensPublicResolverAddress,
@@ -342,8 +342,9 @@ const getENSExecutionDetails = async ({
       if (!name || !ownerAddress || !duration || !rentPrice)
         throw new Error('Bad arguments for registerWithConfig');
       const salt = generateSalt();
+      value = toHex(addBuffer(rentPrice, 1.1));
       args = [
-        name,
+        name.replace('.eth', ''),
         ownerAddress,
         duration,
         salt,
@@ -351,7 +352,6 @@ const getENSExecutionDetails = async ({
         ownerAddress,
       ];
       contract = getENSRegistrarControllerContract(wallet);
-      value = toHex(addBuffer(rentPrice, 1.1));
       break;
     }
     case ENSRegistrationTransactionType.SET_TEXT: {

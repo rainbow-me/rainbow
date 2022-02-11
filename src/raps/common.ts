@@ -11,6 +11,7 @@ import {
   unlock,
   withdrawCompound,
 } from './actions';
+import { createCommitENSRap } from './registerENS';
 import {
   createSwapAndDepositCompoundRap,
   estimateSwapAndDepositCompound,
@@ -20,6 +21,7 @@ import {
   createWithdrawFromCompoundRap,
   estimateWithdrawFromCompound,
 } from './withdrawFromCompound';
+import { createRegisterENSRap } from '.';
 import { Asset } from '@rainbow-me/entities';
 import {
   estimateENSCommitGasLimit,
@@ -81,6 +83,7 @@ export interface SwapActionParameters {
 }
 
 export interface RegisterENSActionParameters {
+  nonce: number;
   name: string;
   duration: number;
   rentPrice: string;
@@ -131,13 +134,23 @@ export const RapActionTypes = {
 
 const createRapByType = (
   type: string,
-  swapParameters: SwapActionParameters
+  {
+    swapParameters,
+    ensRegistrationParameters,
+  }: {
+    swapParameters: SwapActionParameters;
+    ensRegistrationParameters: RegisterENSActionParameters;
+  }
 ) => {
   switch (type) {
     case ExchangeModalTypes.deposit:
       return createSwapAndDepositCompoundRap(swapParameters);
     case ExchangeModalTypes.withdrawal:
       return createWithdrawFromCompoundRap(swapParameters);
+    case RapActionTypes.registerSetRecordsAndName:
+      return createRegisterENSRap(ensRegistrationParameters);
+    case RapActionTypes.commitENS:
+      return createCommitENSRap(ensRegistrationParameters);
     default:
       return createUnlockAndSwapRap(swapParameters);
   }
@@ -258,9 +271,13 @@ export const executeRap = async (
   wallet: Wallet,
   type: string,
   swapParameters: SwapActionParameters,
+  ensRegistrationParameters: RegisterENSActionParameters,
   callback: (success?: boolean, errorMessage?: string | null) => void
 ) => {
-  const rap: Rap = await createRapByType(type, swapParameters);
+  const rap: Rap = await createRapByType(type, {
+    ensRegistrationParameters,
+    swapParameters,
+  });
   const { actions } = rap;
   const rapName = getRapFullName(actions);
 

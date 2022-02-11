@@ -6,51 +6,66 @@ import {
   RapActionTypes,
   RegisterENSActionParameters,
 } from './common';
-import store from '@rainbow-me/redux/store';
 
 export const createRegisterENSRap = async (
   registerENSActionParameters: RegisterENSActionParameters
 ) => {
-  // create unlock rap
-  const { accountAddress } = store.getState().settings;
-
   let actions: RapAction[] = [];
 
-  // commit rap
-  const commit = createNewAction(RapActionTypes.commitENS, {
-    ...registerENSActionParameters,
-    ownerAddress: accountAddress,
-  });
-  actions = concat(actions, commit);
-  // wait 60 secs rap
-  const wait = createNewAction(RapActionTypes.waitENS, {
-    ...registerENSActionParameters,
-    ownerAddress: accountAddress,
-  });
-  actions = concat(actions, wait);
+  // // commit rap
+  // const commit = createNewAction(
+  //   RapActionTypes.commitENS,
+  //   registerENSActionParameters
+  // );
+  // actions = concat(actions, commit);
+  // // wait 60 secs rap
+  // const wait = createNewAction(
+  //   RapActionTypes.waitENS,
+  //   registerENSActionParameters
+  // );
+  // actions = concat(actions, wait);
   // register rap
-  const register = createNewAction(RapActionTypes.registerENS, {
-    ...registerENSActionParameters,
-    ownerAddress: accountAddress,
-  });
+  const register = createNewAction(
+    RapActionTypes.registerENS,
+    registerENSActionParameters
+  );
   actions = concat(actions, register);
+
   // ? records rap
-  const multicall = createNewAction(RapActionTypes.multicallENS, {
-    ...registerENSActionParameters,
-    ownerAddress: accountAddress,
-  });
+  const multicall = createNewAction(
+    RapActionTypes.multicallENS,
+    registerENSActionParameters
+  );
   actions = concat(actions, multicall);
-  const setText = createNewAction(RapActionTypes.setTextENS, {
-    ...registerENSActionParameters,
-    ownerAddress: accountAddress,
-  });
+
+  const setText = createNewAction(
+    RapActionTypes.setTextENS,
+    registerENSActionParameters
+  );
   actions = concat(actions, setText);
+
   // ? reverse name rap
-  const setName = createNewAction(RapActionTypes.setNameENS, {
-    ...registerENSActionParameters,
-    ownerAddress: accountAddress,
-  });
+  const setName = createNewAction(
+    RapActionTypes.setNameENS,
+    registerENSActionParameters
+  );
   actions = concat(actions, setName);
+
+  // create the overall rap
+  const newRap = createNewRap(actions);
+  return newRap;
+};
+
+export const createCommitENSRap = async (
+  registerENSActionParameters: RegisterENSActionParameters
+) => {
+  let actions: RapAction[] = [];
+  // // commit rap
+  const commit = createNewAction(
+    RapActionTypes.commitENS,
+    registerENSActionParameters
+  );
+  actions = concat(actions, commit);
 
   // create the overall rap
   const newRap = createNewRap(actions);
