@@ -5,6 +5,7 @@ import { FlatList, View } from 'react-native';
 import styled from 'styled-components';
 import { ButtonPressAnimation } from '../../animations';
 import { Column, Row } from '../../layout';
+import { Text as IconText } from '../../../components/text';
 import TokenHistoryEdgeFade from './TokenHistoryEdgeFade';
 import { useTheme } from '@rainbow-me/context/ThemeContext';
 import {
@@ -45,7 +46,6 @@ const Timeline = styled(View)`
   left: 16;
   right: -13;
 `;
-
 const TokenHistory = ({ contract, token, color }) => {
   const [tokenHistory, setTokenHistory] = useState([]);
   const { colors } = useTheme();
@@ -239,16 +239,6 @@ const TokenHistory = ({ contract, token, color }) => {
     });
   };
 
-  // const [width, setWidth] = useState(null);
-
-  // const onLayout = useCallback(event => {
-  //   const { width } = event.nativeEvent.layout;
-  //   console.log('hi');
-  //   console.log(width);
-  //   console.log(event.nativeEvent.layout);
-  //   setWidth(width);
-  // }, []);
-
   function renderHistoryDescription({
     icon,
     isClickable,
@@ -265,31 +255,13 @@ const TokenHistory = ({ contract, token, color }) => {
       new Date(item.createdDate).getTime() / 1000
     );
 
-    // const [width, setWidth] = useState(null);
-
-    // const onLayout = useCallback(event => {
-    //   const { width } = event.nativeEvent.layout;
-    //   console.log('hi');
-    //   console.log(width);
-    //   console.log(event.nativeEvent.layout);
-    //   setWidth(width);
-    // }, []);
-
     return (
       // when the token history isShort, invert the horizontal scroll so the history is pinned to the left instead of right
-      <Box onLayout={width ? undefined : undefined}>
+      <Box>
         <AccentColorProvider color={color}>
           <Stack>
             {tokenHistory.length > 1 && (
               <Inline>
-                {/* <View
-                style={{
-                  backgroundColor: color,
-                  borderRadius: 5,
-                  height: 10,
-                  width: 10,
-                }}
-              /> */}
                 <Box
                   background="accent"
                   borderRadius={5}
@@ -297,18 +269,21 @@ const TokenHistory = ({ contract, token, color }) => {
                   width={{ custom: 10 }}
                 />
                 {((!isShort && !isFirst) || (isShort && !isLast)) && (
-                  <Inset top="3px" horizontal="6px">
+                  <Inset top={{ custom: 3.5 }} horizontal="6px">
                     <Box
                       background="accent"
+                      position="absolute"
                       borderRadius={1.5}
                       height={{ custom: 3 }}
+                      left="auto"
+                      right="auto"
                       width={{ custom: 100 }}
                     />
                   </Inset>
                 )}
               </Inline>
             )}
-            <Inset top="3px">
+            <Inset top={{ custom: 8 }}>
               <Text weight="heavy" size="14px" color="accent">
                 {date}
               </Text>
@@ -321,19 +296,16 @@ const TokenHistory = ({ contract, token, color }) => {
               }
               scaleTo={0.92}
             >
-              <Inset top="12px" right="19px">
-                <Inline>
-                  <Text weight="heavy" size="14px" color="accent" containsEmoji>
-                    {`${icon}`}
-                  </Text>
+              <Inset top="6px" right="19px">
+                <Inline alignVertical="center">
+                  <IconText color={color}>{`${icon}`}</IconText>
                   <Text
                     weight="heavy"
                     size="14px"
                     color={{ custom: colors.whiteLabel }}
                     containsEmoji
                   >
-                    {` ${label}`}
-                    {/* {isClickable && clickableIcon} */}
+                    {` ${label} ${isClickable ? clickableIcon : ''}`}
                   </Text>
                 </Inline>
               </Inset>
