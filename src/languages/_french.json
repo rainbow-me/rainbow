@@ -29,6 +29,7 @@
       "tx_failed": "Échoué",
       "tx_fee": "Frais",
       "tx_from": "De",
+      "tx_from_lowercase": "from :)",
       "tx_hash": "Hachage de transaction",
       "tx_pending": "En attente",
       "tx_received": "Reçu",
@@ -36,6 +37,7 @@
       "tx_sent": "Envoyé",
       "tx_timestamp": "Horodatage",
       "tx_to": "À",
+      "tx_to_lowercase": "to :)",
       "unknown_token": "Token inconnu"
     },
     "activity_list": {
@@ -44,6 +46,20 @@
         "recycler_label": "No transactions yet :)",
         "testnet_label": "Your testnet transaction history starts now! :)"
       }
+    },
+    "add_funds": {
+      "eth": {
+        "or_send_eth": "or send ETH to your wallet :)",
+        "send_from_another_source": "Send from Coinbase or another exchange—or ask a friend! :)"
+      },
+      "test_eth": {
+        "add_from_faucet": "Add from faucet :)",
+        "or_send_test_eth": "or send test ETH to your wallet :)",
+        "request_test_eth": "Request test ETH through the %{testnetName} faucet :)",
+        "send_test_eth_from_another_source": "Send test ETH from another %{testnetName} wallet—or ask a friend! :)"
+      },
+      "to_get_started_ios": "To get started, buy some ETH with Apple Pay :)",
+      "to_get_started_non_ios": "To get started, buy some ETH :)"
     },
     "avatar_builder": {
       "emoji_categories": {
@@ -155,6 +171,7 @@
       "add": "Ajouter",
       "add_cash": "Ajouter de l'argent",
       "all": "Tous",
+      "buy_more_eth": "Buy more ETH :)",
       "cancel": "Annuler",
       "close": "Fermer",
       "confirm": "Confirmer",
@@ -212,7 +229,8 @@
       "try_again": "Réessayer",
       "unhide": "Afficher",
       "unpin": "Détacher",
-      "view": "Affichage"
+      "view": "Affichage",
+      "watch_this_wallet": "Watch this Wallet :)"
     },
     "cloud": {
       "backup_success": "Your wallet has been backed up successfully!"
@@ -427,6 +445,7 @@
         "toast_added_to_showcase": "Added to showcase :)",
         "toast_removed_from_showcase": "Removed from showcase :)",
         "twitter": "Twitter",
+        "view_all_with_property": "View All With Property :)",
         "view_collection": "View Collection :)",
         "view_on_block_explorer": "View on %{blockExplorerName} :)",
         "view_on_web": "View on Web :)"
@@ -769,10 +788,15 @@
         }
       }
     },
+    "toasts": {
+      "copied": "Copied \"%{copiedText}\" :)",
+      "invalid_paste": "You can't paste that here :)"
+    },
     "wallet": {
       "action": {
         "add_existing": "Ajouter un portefeuille existant",
         "cancel": "Annuler",
+        "copy_contract_address": "Copy Contract Address :)",
         "create_new": "Créez un nouveau portefeuille",
         "delete": "Supprimer le Portefeuille",
         "delete_confirm": "Voulez-vous vraiment supprimer ce portefeuille",
@@ -832,6 +856,7 @@
         "watching": "Watching :)"
       },
       "copy_address": "Copy Address",
+      "error_displaying_address": "Error displaying address :)",
       "feedback": {
         "cancel": "Non merci",
         "choice": "Souhaitez-vous copier manuellement l'adresse email de feedback dans votre presse papier ?",
@@ -911,6 +936,8 @@
       }
     },
     "walletconnect": {
+      "change_network": "Change Network :)",
+      "disconnect": "Disconnect :)",
       "learn_more": "Apprendre encore plus",
       "paste_uri": {
         "button": "Coller l'URI de session",
@@ -924,7 +951,10 @@
       "scan_to_send": {
         "description": "Vous pouvez scanner un code QR pour envoyer de l'argent",
         "label": "Numériser pour envoyer"
-      }
+      },
+      "switch_network": "Switch Network :)",
+      "switch_wallet": "Switch Wallet :)",
+      "unknown_application": "Unknown Application :)"
     },
     "warning": {
       "user_is_offline": "Hors connexion, veuillez vérifier votre connexion Internet",

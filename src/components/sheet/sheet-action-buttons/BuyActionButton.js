@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import analytics from '@segment/analytics-react-native';
 import React, { useCallback } from 'react';
 import SheetActionButton from './SheetActionButton';
@@ -44,7 +45,7 @@ function BuyActionButton({ color: givenColor, ...props }) {
     <SheetActionButton
       {...props}
       color={color}
-      label="􀍰 Buy more ETH"
+      label={`􀍰 ${lang.t('button.buy_more_eth')}`}
       onPress={handlePress}
       weight="bold"
     />

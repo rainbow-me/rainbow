@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useMemo } from 'react';
 import Text from './Text';
 import { toChecksumAddress } from '@rainbow-me/handlers/web3';
@@ -15,7 +16,7 @@ const TruncatedAddress = (
             truncationLength,
             firstSectionLength
           )
-        : 'Error displaying address',
+        : lang.t('wallet.error_displaying_address'),
     [address, firstSectionLength, truncationLength]
   );
 

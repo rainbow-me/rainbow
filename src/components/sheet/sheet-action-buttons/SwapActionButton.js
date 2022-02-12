@@ -30,16 +30,16 @@ function SwapActionButton({
   const handlePress = useCallback(() => {
     if (requireVerification && !verified) {
       Alert.alert(
-        `Unverified Token`,
-        'This token has not been verified! Rainbow surfaces all tokens that exist on Uniswap. Anyone can create a token, including fake versions of existing tokens and tokens that claim to represent projects that do not have a token. Please do your own research and be careful when interacting with unverified tokens!',
+        lang.t('exchange.unverified_token.unverified_token_title'),
+        lang.t('exchange.unverified_token.token_not_verified'),
         [
           {
             onPress: goToSwap,
-            text: `Proceed Anyway`,
+            text: lang.t('exchange.unverified_token.proceed_anyway'),
           },
           {
             style: 'cancel',
-            text: 'Go Back',
+            text: lang.t('exchange.unverified_token.go_back'),
           },
         ]
       );

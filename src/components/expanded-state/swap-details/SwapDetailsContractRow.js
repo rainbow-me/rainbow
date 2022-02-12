@@ -27,7 +27,7 @@ const ContractActionsEnum = {
 const ContractActions = {
   [ContractActionsEnum.copyAddress]: {
     actionKey: ContractActionsEnum.copyAddress,
-    actionTitle: lang.t('expanded_state.swap.copy_contract_address'),
+    actionTitle: lang.t('wallet.action.copy_contract_address'),
     icon: {
       iconType: 'SYSTEM',
       iconValue: 'doc.on.doc',
@@ -138,7 +138,7 @@ export default function SwapDetailsContractRow({
       blockExplorerName: startCase(ethereumUtils.getBlockExplorer(asset?.type)),
     });
     const androidContractActions = [
-      lang.t('expanded_state.swap.copy_contract_address'),
+      lang.t('wallet.action.copy_contract_address'),
       blockExplorerText,
       lang.t('button.cancel'),
     ];

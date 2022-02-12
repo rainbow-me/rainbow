@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useEffect } from 'react';
 import Toast from './Toast';
 import { useBooleanState, usePrevious } from '@rainbow-me/hooks';
@@ -24,7 +25,12 @@ const CopyToast = ({ copiedText, copyCount }) => {
     showToast,
   ]);
 
-  return <Toast isVisible={isVisible} text={`􀁣 Copied "${copiedText}"`} />;
+  return (
+    <Toast
+      isVisible={isVisible}
+      text={`􀁣 ${lang.t('toasts.copied', { copiedText })}`}
+    />
+  );
 };
 
 export default magicMemo(CopyToast, ['copiedText', 'copyCount']);

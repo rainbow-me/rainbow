@@ -1,5 +1,6 @@
 import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
+import lang from 'i18n-js';
 import { pick, startCase, toLower } from 'lodash';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { requireNativeComponent } from 'react-native';
@@ -140,7 +141,9 @@ export default function TransactionList({
 
       const headerInfo = {
         address: '',
-        divider: isSent ? 'to' : 'from',
+        divider: isSent
+          ? lang.t('account.tx_to_lowercase')
+          : lang.t('account.tx_from_lowercase'),
         type: status.charAt(0).toUpperCase() + status.slice(1),
       };
 
@@ -163,9 +166,9 @@ export default function TransactionList({
       const canBeCancelled =
         canBeResubmitted && status !== TransactionStatusTypes.cancelling;
 
-      const blockExplorerAction = `View on ${startCase(
-        ethereumUtils.getBlockExplorer(network)
-      )}`;
+      const blockExplorerAction = lang.t('wallet.action.view_on', {
+        blockExplorerName: startCase(ethereumUtils.getBlockExplorer(network)),
+      });
 
       if (hash) {
         let buttons = [

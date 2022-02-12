@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { startCase } from 'lodash';
 import React from 'react';
 import { View } from 'react-native';
@@ -65,7 +66,7 @@ const ContactRowActionsEnum = {
 const ContactRowActions = {
   [ContactRowActionsEnum.copyAddress]: {
     actionKey: ContactRowActionsEnum.copyAddress,
-    actionTitle: 'Copy Address',
+    actionTitle: lang.t('wallet.copy_address'),
     icon: {
       iconType: 'SYSTEM',
       iconValue: 'doc.on.doc',
@@ -74,9 +75,10 @@ const ContactRowActions = {
 };
 
 const buildBlockExplorerAction = type => {
-  const blockExplorerText = `View on ${startCase(
-    ethereumUtils.getBlockExplorer(type)
-  )}`;
+  const blockExplorerText = lang.t('wallet.action.view_on', {
+    blockExplorerName: startCase(ethereumUtils.getBlockExplorer(type)),
+  });
+
   return {
     actionKey: ContactRowActionsEnum.blockExplorer,
     actionTitle: blockExplorerText,
@@ -102,9 +104,9 @@ const ContactRowInfoButton = ({ children, item, network, scaleTo }) => {
       ethereumUtils.getBlockExplorer(item?.type)
     )}`;
     const androidContractActions = [
-      'Copy Contract Address',
+      lang.t('wallet.action.copy_contract_address'),
       blockExplorerText,
-      'Cancel',
+      lang.t('button.cancel'),
     ];
     showActionSheetWithOptions(
       {

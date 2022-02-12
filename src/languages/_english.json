@@ -30,6 +30,7 @@
       "tx_failed": "Failed",
       "tx_fee": "Fee",
       "tx_from": "From",
+      "tx_from_lowercase": "from",
       "tx_hash": "Transaction Hash",
       "tx_pending": "Pending",
       "tx_received": "Received",
@@ -37,6 +38,7 @@
       "tx_sent": "Sent",
       "tx_timestamp": "Timestamp",
       "tx_to": "To",
+      "tx_to_lowercase": "to",
       "unknown_token": "Unknown Token"
     },
     "activity_list": {
@@ -45,6 +47,20 @@
         "recycler_label": "No transactions yet",
         "testnet_label": "Your testnet transaction history starts now!"
       }
+    },
+    "add_funds": {
+      "eth": {
+        "or_send_eth": "or send ETH to your wallet",
+        "send_from_another_source": "Send from Coinbase or another exchange—or ask a friend!"
+      },
+      "test_eth": {
+        "add_from_faucet": "Add from faucet",
+        "or_send_test_eth": "or send test ETH to your wallet",
+        "request_test_eth": "Request test ETH through the %{testnetName} faucet",
+        "send_test_eth_from_another_source": "Send test ETH from another %{testnetName} wallet—or ask a friend!"
+      },
+      "to_get_started_ios": "To get started, buy some ETH with Apple Pay",
+      "to_get_started_non_ios": "To get started, buy some ETH"
     },
     "avatar_builder": {
       "emoji_categories": {
@@ -153,8 +169,10 @@
       }
     },
     "button": {
+      "add": "Add",
       "add_cash": "Add Cash",
       "all": "All",
+      "buy_more_eth": "Buy more ETH",
       "cancel": "Cancel",
       "close": "Close",
       "confirm": "Confirm",
@@ -210,7 +228,8 @@
       "try_again": "Try again",
       "unhide": "Unhide",
       "unpin": "Unpin",
-      "view": "View"
+      "view": "View",
+      "watch_this_wallet": "Watch this Wallet"
     },
     "cloud": {
       "backup_success": "Your wallet has been backed up successfully!"
@@ -292,7 +311,6 @@
     },
     "exchange": {
       "coin_row": {
-        "copy_address": "Copy Contract Address",
         "expires_in": "Expires in %{minutes}m",
         "from_divider": "from",
         "to_divider": "to",
@@ -378,7 +396,6 @@
         "us_except": "United States (except Texas and New York)"
       },
       "swap": {
-        "copy_contract_address": "Copy Contract Address",
         "losing": "Losing",
         "price_impact": "Price impact",
         "price_row_per_token": "per",
@@ -425,6 +442,7 @@
         "toast_added_to_showcase": "Added to showcase",
         "toast_removed_from_showcase": "Removed from showcase",
         "twitter": "Twitter",
+        "view_all_with_property": "View All With Property",
         "view_collection": "View Collection",
         "view_on_block_explorer": "View on %{blockExplorerName}",
         "view_on_web": "View on Web"
@@ -783,10 +801,15 @@
         }
       }
     },
+    "toasts": {
+      "copied": "Copied \"%{copiedText}\"",
+      "invalid_paste": "You can't paste that here"
+    },
     "wallet": {
       "action": {
         "add_existing": "Add an existing wallet",
         "cancel": "Cancel",
+        "copy_contract_address": "Copy Contract Address",
         "create_new": "Create a new wallet",
         "delete": "Delete Wallet",
         "delete_confirm": "Are you sure you want to delete this wallet?",
@@ -844,6 +867,7 @@
         "watching": "Watching"
       },
       "copy_address": "Copy Address",
+      "error_displaying_address": "Error displaying address",
       "feedback": {
         "cancel": "No thanks",
         "choice": "Would you like to manually copy our feedback email address to your clipboard?",
@@ -922,11 +946,16 @@
       }
     },
     "walletconnect": {
+      "change_network": "Change Network",
+      "disconnect": "Disconnect",
       "paste_uri": {
         "button": "Paste session URI",
         "message": "Paste WalletConnect URI below",
         "title": "New WalletConnect Session"
-      }
+      },
+      "switch_network": "Switch Network",
+      "switch_wallet": "Switch Wallet",
+      "unknown_application": "Unknown Application"
     },
     "warning": {
       "user_is_offline": "Connection offline, please check your internet connection",

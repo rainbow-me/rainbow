@@ -1,4 +1,5 @@
 import analytics from '@segment/analytics-react-native';
+import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import ChainLogo from '../ChainLogo';
 import NetworkPill from '../NetworkPill';
@@ -47,10 +48,17 @@ const LabelText = styled(Text).attrs(() => ({
 
 const networksAvailable = networksMenuItems();
 
-const androidContextMenuActions = ['Switch Wallet', 'Disconnect'];
+const androidContextMenuActions = [
+  lang.t('walletconnect.switch_wallet'),
+  lang.t('walletconnect.disconnect'),
+];
 
 if (networksAvailable.length > 1) {
-  androidContextMenuActions.splice(0, 0, 'Switch Network');
+  androidContextMenuActions.splice(
+    0,
+    0,
+    lang.t('walletconnect.switch_network')
+  );
 }
 
 const AvatarWrapper = styled(Column)({
@@ -222,7 +230,9 @@ export default function WalletConnectListItem({
           <ColumnWithMargins flex={1} margin={5} style={columnStyle}>
             <Row width="70%">
               <TruncatedText size="lmedium" weight="heavy">
-                {overrideName || dappName || 'Unknown Application'}{' '}
+                {overrideName ||
+                  dappName ||
+                  lang.t('walletconnect.unknown_application')}{' '}
               </TruncatedText>
             </Row>
 
@@ -258,7 +268,7 @@ export default function WalletConnectListItem({
           </ColumnWithMargins>
           <ContextMenuButton
             menuItems={networksMenuItems()}
-            menuTitle="Change Network"
+            menuTitle={lang.t('walletconnect.change_network')}
             onPressAndroid={onPressAndroid}
             onPressMenuItem={handleOnPressMenuItem}
           >
