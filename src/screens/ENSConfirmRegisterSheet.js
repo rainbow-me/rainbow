@@ -1,17 +1,33 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { ReviewRegistration } from '../components/ens-registration';
 import {
   SheetActionButton,
   SheetActionButtonRow,
   SlackSheet,
 } from '../components/sheet';
 import { useNavigation } from '../navigation/Navigation';
-import { Box, Text } from '@rainbow-me/design-system';
+import { Box, Inset } from '@rainbow-me/design-system';
+import { useENSRegistration, useENSRegistrationCosts } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 
 export const ENSConfirmRegisterSheetHeight = 600;
 
 export default function ENSConfirmRegisterSheet() {
   const { navigate, goBack } = useNavigation();
+  const ensName = useSelector(({ ensRegistration }) => ensRegistration.name);
+
+  const [duration, setDuration] = useState(2);
+
+  const { data: registrationData } = useENSRegistration({
+    name: ensName.replace('.eth', ''),
+  });
+
+  const { data: registrationCostsData } = useENSRegistrationCosts({
+    duration,
+    name: ensName.replace('.eth', ''),
+    rentPrice: registrationData?.rentPrice,
+  });
 
   return (
     <SlackSheet
@@ -25,8 +41,16 @@ export default function ENSConfirmRegisterSheet() {
         paddingVertical="30px"
         style={{ height: ENSConfirmRegisterSheetHeight }}
       >
-        <Box alignItems="center" flexGrow={1} justifyContent="center">
-          <Text>register confirmation placeholder</Text>
+        <Box flexGrow={1}>
+          <Inset horizontal="30px">
+            <ReviewRegistration
+              duration={duration}
+              networkFee={registrationCostsData?.estimatedNetworkFeeCost}
+              onChangeDuration={setDuration}
+              registrationCost={registrationCostsData?.estimatedRentPrice}
+              totalCost={registrationCostsData?.estimatedTotalRegistrationCost}
+            />
+          </Inset>
         </Box>
         <SheetActionButtonRow>
           <SheetActionButton

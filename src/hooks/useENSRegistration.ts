@@ -30,6 +30,7 @@ const formatRentPrice = (
 ) => {
   const rentPriceInETH = fromWei(rentPrice.toString());
   const rentPricePerYear = getRentPricePerYear(rentPriceInETH, duration);
+  const rentPricePerYearInWei = divide(rentPrice.toString(), duration);
 
   const { amount, display } = convertAmountAndPriceToNativeDisplay(
     rentPriceInETH,
@@ -53,6 +54,7 @@ const formatRentPrice = (
     perYear: {
       amount: amountPerYear,
       display: displayPerYear,
+      wei: rentPricePerYearInWei,
     },
     total: {
       amount,
@@ -68,63 +70,69 @@ const formatTime = (timestamp: string, abbreviated: boolean = true) => {
 };
 
 export default function useENSRegistration({
-  duration,
+  duration = 1,
   name,
 }: {
-  duration: number;
+  duration?: number;
   name: string;
 }) {
   const { nativeCurrency } = useAccountSettings();
   const isValidLength = useMemo(() => name.length > 2, [name.length]);
 
-  const getRegistrationValues = useCallback(async () => {
-    const ensValidation = validateENS(`${name}.eth`, {
-      includeSubdomains: false,
-    });
-    if (!ensValidation.valid) {
-      return {
-        code: ensValidation.code,
-        hint: ensValidation.hint,
-        valid: false,
-      };
-    }
+  const getRegistrationValues = useCallback(
+    async (_, { name, duration, nativeCurrency }) => {
+      const ensValidation = validateENS(`${name}.eth`, {
+        includeSubdomains: false,
+      });
+      if (!ensValidation.valid) {
+        return {
+          code: ensValidation.code,
+          hint: ensValidation.hint,
+          valid: false,
+        };
+      }
 
-    const isAvailable = await getAvailable(name);
-    if (isAvailable) {
-      const rentPrice = await getRentPrice(name, duration * secsInYear);
-      const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
-        Network.mainnet
-      );
-      const formattedRentPrice = formatRentPrice(
-        rentPrice,
-        duration,
-        nativeCurrency,
-        nativeAssetPrice
-      );
+      const isAvailable = await getAvailable(name);
+      if (isAvailable) {
+        const rentPrice = await getRentPrice(name, duration * secsInYear);
+        const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
+          Network.mainnet
+        );
+        const formattedRentPrice = formatRentPrice(
+          rentPrice,
+          duration,
+          nativeCurrency,
+          nativeAssetPrice
+        );
 
-      return {
-        available: isAvailable,
-        rentPrice: formattedRentPrice,
-        valid: true,
-      };
-    } else {
-      // we need the expiration and registration date when is not available
-      const registrationDate = await fetchRegistrationDate(name + '.eth');
-      const nameExpires = await getNameExpires(name);
-      const formattedRegistrarionDate = formatTime(registrationDate);
-      const formattedExpirationDate = formatTime(nameExpires);
+        return {
+          available: isAvailable,
+          rentPrice: formattedRentPrice,
+          valid: true,
+        };
+      } else {
+        // we need the expiration and registration date when is not available
+        const registrationDate = await fetchRegistrationDate(name + '.eth');
+        const nameExpires = await getNameExpires(name);
+        const formattedRegistrarionDate = formatTime(registrationDate);
+        const formattedExpirationDate = formatTime(nameExpires);
 
-      return {
-        available: isAvailable,
-        expirationDate: formattedExpirationDate,
-        registrationDate: formattedRegistrarionDate,
-        valid: true,
-      };
-    }
-  }, [name, duration, nativeCurrency]);
+        return {
+          available: isAvailable,
+          expirationDate: formattedExpirationDate,
+          registrationDate: formattedRegistrarionDate,
+          valid: true,
+        };
+      }
+    },
+    []
+  );
 
   const { data, status } = useQuery(
-    isValidLength && ['getRegistrationValues', name],
+    isValidLength && [
+      'getRegistrationValues',
+      { duration, name, nativeCurrency },
+    ],
     getRegistrationValues,
     { retry: 0 }
   );
