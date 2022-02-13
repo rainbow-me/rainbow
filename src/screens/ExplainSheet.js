@@ -49,53 +49,44 @@ const Gradient = styled(GradientText).attrs({
   weight: 'heavy',
 })({});
 
-const SENDING_FUNDS_TO_CONTRACT = `The address you entered is for a smart contract. 
+const SENDING_FUNDS_TO_CONTRACT = lang.t('explain.sending_to_contract.text');
 
-Except for rare situations, you probably shouldn't do this. You could lose your assets or they might go to the wrong place.
+const FLOOR_PRICE_EXPLAINER = lang.t('explain.floor_price.text');
 
-Double check the address, verify it with the recipient, or contact support first.`;
+const gasExplainer = network =>
+  lang.t('explain.gas.text', { networkName: network });
 
-const FLOOR_PRICE_EXPLAINER = `A collection's floor price is the lowest asking price across all the items currently for sale in a collection.`;
+const CURRENT_BASE_FEE_TITLE = lang.t('explain.base_fee.title');
 
-const gasExplainer = network => `This is the "gas fee" used by the ${network} blockchain to securely validate your transaction.
+const BASE_CURRENT_BASE_FEE_EXPLAINER = lang.t('explain.base_fee.text_prefix');
 
-This fee varies depending on the complexity of your transaction and how busy the network is!`;
+const CURRENT_BASE_FEE_EXPLAINER_STABLE = lang.t(
+  'explain.base_fee.text_stable'
+);
 
-const CURRENT_BASE_FEE_TITLE = `Current base fee`;
+const CURRENT_BASE_FEE_EXPLAINER_FALLING = lang.t(
+  'explain.base_fee.text_falling'
+);
 
-const BASE_CURRENT_BASE_FEE_EXPLAINER = `The base fee is set by the Ethereum network and changes depending on how busy the network is.`;
+const CURRENT_BASE_FEE_EXPLAINER_RISING = lang.t(
+  'explain.base_fee.text_rising'
+);
 
-const CURRENT_BASE_FEE_EXPLAINER_STABLE = `\n\nNetwork traffic is stable right now. Have fun!`;
+const CURRENT_BASE_FEE_EXPLAINER_SURGING = lang.t(
+  'explain.base_fee.text_surging'
+);
 
-const CURRENT_BASE_FEE_EXPLAINER_FALLING = `\n\nFees are dropping right now!`;
+const MAX_BASE_FEE_EXPLAINER = lang.t('explain.max_base_fee.text');
 
-const CURRENT_BASE_FEE_EXPLAINER_RISING = `\n\nFees are rising right now! It’s best to use a higher max base fee to avoid a stuck transaction.`;
+const MINER_TIP_EXPLAINER = lang.t('explain.miner_tip.text');
 
-const CURRENT_BASE_FEE_EXPLAINER_SURGING = `\n\nFees are unusually high right now! Unless your transaction is urgent, it’s best to wait for fees to drop.`;
+const VERIFIED_EXPLAINER = lang.t('explain.verified.text');
 
-const MAX_BASE_FEE_EXPLAINER = `This is the maximum base fee you’re willing to pay for this transaction.
+const OPTIMISM_EXPLAINER = lang.t('explain.optimism.text');
 
-Setting a higher max base fee prevents your transaction from getting stuck if fees rise.`;
+const ARBITRUM_EXPLAINER = lang.t('explain.arbitrum.text');
 
-const MINER_TIP_EXPLAINER = `The miner tip goes directly to the miner who confirms your transaction on the network.
-
-A higher tip makes your transaction more likely to be confirmed quickly.`;
-
-const VERIFIED_EXPLAINER = `Tokens with a verified badge mean they have appeared on at least 3 other outside token lists.
-
-Always do your own research to ensure you are interacting with a token you trust.`;
-
-const OPTIMISM_EXPLAINER = `Optimism is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.
-
-It bundles lots of transactions together in a "roll up" before sending them down to live permanently on Ethereum.`;
-
-const ARBITRUM_EXPLAINER = `Arbitrum is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.
-
-It bundles lots of transactions together in a "roll up" before sending them down to live permanently on Ethereum.`;
-
-const POLYGON_EXPLAINER = `Polygon is a sidechain, a distinct network that runs alongside Ethereum and is compatible with it. 
-
-It allows for cheaper and faster transactions, but unlike Layer 2 networks, Polygon has its own security and consensus mechanisms that differ from Ethereum.`;
+const POLYGON_EXPLAINER = lang.t('explain.polygon.text');
 
 const BACKUP_EXPLAINER = lang.t('back_up.explainers.backup', {
   cloudPlatformName: cloudPlatformAccountName,
@@ -106,13 +97,13 @@ export const explainers = network => ({
     emoji: '📊',
     extraHeight: -102,
     text: FLOOR_PRICE_EXPLAINER,
-    title: 'Collection floor price',
+    title: lang.t('explain.floor_price.title'),
   },
   gas: {
     emoji: '⛽️',
     extraHeight: 2,
     text: gasExplainer(network),
-    title: `${network} network fee`,
+    title: lang.t('explain.gas.title'),
   },
   currentBaseFeeStable: {
     emoji: '🌞',
@@ -148,24 +139,24 @@ export const explainers = network => ({
     emoji: '📈',
     extraHeight: -31,
     text: MAX_BASE_FEE_EXPLAINER,
-    title: 'Max base fee',
+    title: lang.t('explain.max_base_fee.title'),
   },
   minerTip: {
     emoji: '⛏',
     extraHeight: -31,
     text: MINER_TIP_EXPLAINER,
-    title: 'Miner tip',
+    title: lang.t('explain.miner_tip.title'),
   },
   sending_funds_to_contract: {
     emoji: '✋',
     extraHeight: 80,
     text: SENDING_FUNDS_TO_CONTRACT,
-    title: 'Hold your horses!',
+    title: lang.t('explain.sending_to_contract.title'),
   },
   verified: {
     emoji: '􀇻',
     text: VERIFIED_EXPLAINER,
-    title: 'Verified Tokens',
+    title: lang.t('explain.verified.title'),
   },
   optimism: {
     emoji: '⛽️',
@@ -181,7 +172,7 @@ export const explainers = network => ({
     readMoreLink:
       'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
     text: OPTIMISM_EXPLAINER,
-    title: `What's Optimism?`,
+    title: lang.t('explain.optimism.title'),
   },
   arbitrum: {
     emoji: '⛽️',
@@ -197,7 +188,7 @@ export const explainers = network => ({
     readMoreLink:
       'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
     text: ARBITRUM_EXPLAINER,
-    title: `What's Arbitrum?`,
+    title: lang.t('explain.arbitrum.title'),
   },
   polygon: {
     emoji: '⛽️',
@@ -213,20 +204,19 @@ export const explainers = network => ({
     readMoreLink:
       'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
     text: POLYGON_EXPLAINER,
-    title: `What's Polygon?`,
+    title: lang.t('explain.polygon.title'),
   },
   failed_wc_connection: {
     emoji: '😵',
     extraHeight: -50,
-    text:
-      'Uh oh, something went wrong! The site may be experiencing a connection outage. Please try again later or contact the site’s team for more details.',
-    title: 'Connection failed',
+    text: lang.t('explain.failed_walletconnect.text'),
+    title: lang.t('explain.failed_walletconnect.title'),
   },
   backup: {
     emoji: '🔐',
     extraHeight: 20,
     text: BACKUP_EXPLAINER,
-    title: 'Important',
+    title: lang.t('explain.backup.title'),
   },
 });
 
@@ -335,7 +325,7 @@ const ExplainSheet = () => {
                 <SheetActionButton
                   color={colors.blueGreyDarkLight}
                   isTransparent
-                  label="Read More"
+                  label={lang.t('explain.read_more')}
                   onPress={handleReadMore}
                   size="big"
                   textColor={colors.blueGreyDark60}
@@ -346,7 +336,7 @@ const ExplainSheet = () => {
             <SheetActionButton
               color={colors.alpha(colors.appleBlue, 0.04)}
               isTransparent
-              label="Got it"
+              label={lang.t('explain.got_it')}
               onPress={handleClose}
               size="big"
               textColor={colors.appleBlue}

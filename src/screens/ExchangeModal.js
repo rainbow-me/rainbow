@@ -1,4 +1,5 @@
 import analytics from '@segment/analytics-react-native';
+import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, {
   useCallback,
@@ -81,11 +82,13 @@ const Spacer = styled.View({
 const getInputHeaderTitle = (type, defaultInputAsset) => {
   switch (type) {
     case ExchangeModalTypes.deposit:
-      return 'Deposit';
+      return lang.t('swap.modal_types.deposit');
     case ExchangeModalTypes.withdrawal:
-      return `Withdraw ${defaultInputAsset.symbol}`;
+      return lang.t('swap.modal_types.withdraw_symbol', {
+        symbol: defaultInputAsset.symbol,
+      });
     default:
-      return 'Swap';
+      return lang.t('swap.modal_types.swap');
   }
 };
 
@@ -324,21 +327,21 @@ export default function ExchangeModal({
     if (greaterThan(outputPrice, 0) && greaterThan(gasPrice, outputPrice)) {
       const res = new Promise(resolve => {
         Alert.alert(
-          'Are you sure?',
-          'This transaction will cost you more than the value you are swapping to, are you sure you want to continue?',
+          lang.t('swap.warning.cost.are_you_sure_title'),
+          lang.t('swap.warning.cost.this_transaction_will_cost_you_more'),
           [
             {
               onPress: () => {
                 resolve(false);
               },
-              text: 'Proceed Anyway',
+              text: lang.t('swap.warning.proceed_anyway'),
             },
             {
               onPress: () => {
                 resolve(true);
               },
               style: 'cancel',
-              text: 'Cancel',
+              text: lang.t('button.cancel'),
             },
           ]
         );

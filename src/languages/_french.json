@@ -52,6 +52,8 @@
         "or_send_eth": "or send ETH to your wallet :)",
         "send_from_another_source": "Send from Coinbase or another exchange—or ask a friend! :)"
       },
+      "limit_left_this_week": "$%{remainingLimit} left this week :)",
+      "limit_left_this_year": "$%{remainingLimit} left this year :)",
       "test_eth": {
         "add_from_faucet": "Add from faucet :)",
         "or_send_test_eth": "or send test ETH to your wallet :)",
@@ -59,7 +61,9 @@
         "send_test_eth_from_another_source": "Send test ETH from another %{testnetName} wallet—or ask a friend! :)"
       },
       "to_get_started_ios": "To get started, buy some ETH with Apple Pay :)",
-      "to_get_started_non_ios": "To get started, buy some ETH :)"
+      "to_get_started_non_ios": "To get started, buy some ETH :)",
+      "weekly_limit_reached": "Weekly limit reached :)",
+      "yearly_limit_reached": "Yearly limit reached :)"
     },
     "avatar_builder": {
       "emoji_categories": {
@@ -170,6 +174,7 @@
     "button": {
       "add": "Ajouter",
       "add_cash": "Ajouter de l'argent",
+      "add_to_list": "Add to List :)",
       "all": "Tous",
       "buy_more_eth": "Buy more ETH :)",
       "cancel": "Annuler",
@@ -221,6 +226,7 @@
       "pin": "Epingler",
       "proceed": "Proceed :)",
       "receive": "Recevoir",
+      "remove": "Remove :)",
       "save": "Save :)",
       "send": "Envoyer",
       "send_another": "Envoyer un autre",
@@ -449,6 +455,61 @@
         "view_collection": "View Collection :)",
         "view_on_block_explorer": "View on %{blockExplorerName} :)",
         "view_on_web": "View on Web :)"
+      }
+    },
+    "explain": {
+      "arbitrum": {
+        "text": "Arbitrum is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum. :)",
+        "title": "What's Arbitrum? :)"
+      },
+      "backup": {
+        "title": "Important :)"
+      },
+      "base_fee": {
+        "text_falling": "\n\nFees are dropping right now! :)",
+        "text_prefix": "The base fee is set by the Ethereum network and changes depending on how busy the network is. :)",
+        "text_rising": "\n\nFees are rising right now! It’s best to use a higher max base fee to avoid a stuck transaction. :)",
+        "text_stable": "\n\nNetwork traffic is stable right now. Have fun! :)",
+        "text_surging": "\n\nFees are unusually high right now! Unless your transaction is urgent, it’s best to wait for fees to drop. :)",
+        "title": "Current base fee :)"
+      },
+      "failed_walletconnect": {
+        "text": "Uh oh, something went wrong! The site may be experiencing a connection outage. Please try again later or contact the site’s team for more details. :)",
+        "title": "Connection failed :)"
+      },
+      "floor_price": {
+        "text": "A collection's floor price is the lowest asking price across all the items currently for sale in a collection. :)",
+        "title": "Collection floor price :)"
+      },
+      "gas": {
+        "text": "This is the \"gas fee\" used by the %{networkName} blockchain to securely validate your transaction.\n\nThis fee varies depending on the complexity of your transaction and how busy the network is! :)",
+        "title": "%{networkName} network fee :)"
+      },
+      "got_it": "Got it :)",
+      "max_base_fee": {
+        "text": "This is the maximum base fee you’re willing to pay for this transaction.\n\nSetting a higher max base fee prevents your transaction from getting stuck if fees rise. :)",
+        "title": "Max base fee :)"
+      },
+      "miner_tip": {
+        "text": "The miner tip goes directly to the miner who confirms your transaction on the network.\n\nA higher tip makes your transaction more likely to be confirmed quickly. :)",
+        "title": "Miner tip :)"
+      },
+      "optimism": {
+        "text": "Optimism is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum. :)",
+        "title": "What's Optimism? :)"
+      },
+      "polygon": {
+        "text": "Polygon is a sidechain, a distinct network that runs alongside Ethereum and is compatible with it.\n\nIt allows for cheaper and faster transactions, but unlike Layer 2 networks, Polygon has its own security and consensus mechanisms that differ from Ethereum. :)",
+        "title": "What's Polygon? :)"
+      },
+      "read_more": "Read More :)",
+      "sending_to_contract": {
+        "text": "The address you entered is for a smart contract.\n\nExcept for rare situations, you probably shouldn't do this. You could lose your assets or they might go to the wrong place.\n\nDouble check the address, verify it with the recipient, or contact support first. :)",
+        "title": "Hold your horses! :)"
+      },
+      "verified": {
+        "text": "Tokens with a verified badge mean they have appeared on at least 3 other outside token lists.\n\nAlways do your own research to ensure you are interacting with a token you trust. :)",
+        "title": "Verified Tokens :)"
       }
     },
     "fields": {
@@ -711,9 +772,14 @@
         "confirm": "Confirme dans",
         "deposit": "Dépôts dans",
         "swap": "Swaps en",
-        "withdraw": "Se retire dans"
+        "withdraw": "Se retire dans",
+        "withdraw_symbol": "Withdraw %{symbol} :)"
       },
       "warning": {
+        "cost": {
+          "are_you_sure_title": "Are you sure? :)",
+          "this_transaction_will_cost_you_more": "This transaction will cost you more than the value you are swapping to, are you sure you want to continue? :)"
+        },
         "edit_price": "Modifier le prix du gaz",
         "invalid_price": {
           "message": "Vous devez entrer un montant valide",
@@ -937,6 +1003,7 @@
     },
     "walletconnect": {
       "change_network": "Change Network :)",
+      "connected_apps": "Connected apps :)",
       "disconnect": "Disconnect :)",
       "learn_more": "Apprendre encore plus",
       "paste_uri": {

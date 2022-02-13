@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useEffect } from 'react';
 import { useSafeArea } from 'react-native-safe-area-context';
 import Divider from '../components/Divider';
@@ -43,7 +44,9 @@ export default function ConnectedDappsSheet() {
       paddingTop={0}
     >
       <SheetHandleFixedToTop />
-      <SheetTitleWithPadding>Connected apps</SheetTitleWithPadding>
+      <SheetTitleWithPadding>
+        {lang.t('walletconnect.connected_apps')}
+      </SheetTitleWithPadding>
       <Divider color={colors.rowDividerExtraLight} inset={[0, 19]} />
       <ScrollableItems length={walletConnectorsByDappName.length}>
         <Row height={4} />

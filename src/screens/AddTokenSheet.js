@@ -1,4 +1,5 @@
 import { useRoute } from '@react-navigation/native';
+import lang from 'i18n-js';
 import { toLower } from 'lodash';
 import React, { useCallback } from 'react';
 import { StatusBar } from 'react-native';
@@ -128,7 +129,7 @@ export default function AddTokenSheet() {
               size="larger"
               weight="heavy"
             >
-              Add to List
+              {lang.t('button.add_to_list')}
             </Text>
           </Column>
 
@@ -177,7 +178,9 @@ export default function AddTokenSheet() {
                         onPress={handleRemove}
                         testID={`remove-from-${list?.id}`}
                       >
-                        <RemoveButtonContent>􀈔 Remove</RemoveButtonContent>
+                        <RemoveButtonContent>
+                          􀈔 {lang.t('button.remove')}
+                        </RemoveButtonContent>
                       </RemoveButton>
                     )}
                   </Row>
@@ -188,7 +191,7 @@ export default function AddTokenSheet() {
           <SheetActionButtonRow>
             <SheetActionButton
               color={colors.white}
-              label="Cancel"
+              label={lang.t('button.cancel')}
               onPress={goBack}
               size="big"
               testID="close"

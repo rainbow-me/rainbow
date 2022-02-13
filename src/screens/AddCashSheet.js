@@ -57,12 +57,16 @@ export default function AddCashSheet() {
     () => ({
       weekly:
         weeklyRemainingLimit > 0
-          ? `$${weeklyRemainingLimit} left this week`
-          : 'Weekly limit reached',
+          ? lang.t('add_funds.limit_left_this_week', {
+              remainingLimit: weeklyRemainingLimit,
+            })
+          : lang.t('add_funds.weekly_limit_reached'),
       yearly:
         yearlyRemainingLimit > 0
-          ? `$${yearlyRemainingLimit} left this year`
-          : 'Yearly limit reached',
+          ? lang.t('add_funds.limit_left_this_year', {
+              remainingLimit: yearlyRemainingLimit,
+            })
+          : lang.t('add_funds.yearly_limit_reached'),
     }),
     [weeklyRemainingLimit, yearlyRemainingLimit]
   );
