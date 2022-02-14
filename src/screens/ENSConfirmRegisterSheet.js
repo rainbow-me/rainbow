@@ -64,18 +64,15 @@ export default function ENSConfirmRegisterSheet() {
   }, [name]);
 
   const updateGasLimit = useCallback(async () => {
-    const gasLimit = await getRapEstimationByType(
-      RapActionTypes.registerSetRecordsAndName,
-      {
-        ensRegistrationParameters: {
-          duration: secsInYear,
-          name: name,
-          ownerAddress: accountAddress,
-          records,
-          rentPrice: rentPrice.toString(),
-        },
-      }
-    );
+    const gasLimit = await getRapEstimationByType(RapActionTypes.commitENS, {
+      ensRegistrationParameters: {
+        duration: secsInYear,
+        name: name,
+        ownerAddress: accountAddress,
+        records,
+        rentPrice: rentPrice.toString(),
+      },
+    });
     updateTxFee(gasLimit);
     setGasLimit(gasLimit);
   }, [accountAddress, name, records, rentPrice, updateTxFee]);
