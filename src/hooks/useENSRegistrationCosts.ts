@@ -21,16 +21,15 @@ export default function useENSRegistrationCosts({
 }: {
   duration: number;
   name: string;
-  rentPrice?: { perYear: { wei: number } };
+  rentPrice?: { wei: number; perYear: { wei: number } };
 }) {
   const { nativeCurrency, accountAddress } = useAccountSettings();
 
   const getEstimatedNetworkFee = useCallback(
-    async (_, { accountAddress, rentPricePerYear, name, nativeCurrency }) => {
+    async (_, { accountAddress, rentPrice, name, nativeCurrency }) => {
       const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
         Network.mainnet
       );
-      const rentPrice = multiply(rentPricePerYear, duration);
       const gasLimit = await estimateENSRegistrationGasLimit(
         name,
         accountAddress,
@@ -56,15 +55,15 @@ export default function useENSRegistrationCosts({
     [duration]
   );
 
-  const rentPricePerYear = rentPrice?.perYear?.wei?.toString();
+  const rentPriceInWei = rentPrice?.wei?.toString();
   const { data: estimatedNetworkFee, status } = useQuery(
-    Boolean(rentPricePerYear) && [
+    Boolean(rentPrice) && [
       'getEstimatedNetworkFee',
       {
         accountAddress,
         name,
         nativeCurrency,
-        rentPricePerYear,
+        rentPrice: rentPriceInWei,
       },
     ],
     getEstimatedNetworkFee,
@@ -72,11 +71,12 @@ export default function useENSRegistrationCosts({
   );
 
   const data = useMemo(() => {
-    if (estimatedNetworkFee && rentPricePerYear) {
+    const rentPricePerYearInWei = rentPrice?.perYear?.wei?.toString();
+    if (estimatedNetworkFee && rentPricePerYearInWei) {
       const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
         Network.mainnet
       );
-      const rentPrice = multiply(rentPricePerYear, duration);
+      const rentPrice = multiply(rentPricePerYearInWei, duration);
       const estimatedRentPrice = formatRentPrice(
         rentPrice,
         duration,
@@ -107,9 +107,9 @@ export default function useENSRegistrationCosts({
         },
       };
     }
-  }, [duration, estimatedNetworkFee, nativeCurrency, rentPricePerYear]);
+  }, [duration, estimatedNetworkFee, nativeCurrency, rentPrice?.perYear?.wei]);
 
-  const newStatus = rentPricePerYear ? status : 'idle';
+  const newStatus = rentPrice ? status : 'idle';
 
   const isIdle = newStatus === 'idle';
   const isLoading = newStatus === 'loading';
