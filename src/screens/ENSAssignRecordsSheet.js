@@ -14,7 +14,7 @@ import SelectableButton from '../components/ens-registration/TextRecordsForm/Sel
 import { SheetActionButton, SheetActionButtonRow } from '../components/sheet';
 import { useTheme } from '../context/ThemeContext';
 import { useNavigation } from '../navigation/Navigation';
-import { usePersistentDominantColorFromImage } from '@rainbow-me/hooks';
+// import { usePersistentDominantColorFromImage } from '@rainbow-me/hooks';
 import {
   AccentColorProvider,
   Box,
@@ -32,7 +32,6 @@ import { useENSProfileForm, useKeyboardHeight } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 
 export default function ENSAssignRecordsSheet() {
-  const { params } = useRoute();
   const { navigate } = useNavigation();
   const { colors } = useTheme();
   const keyboardHeight = useKeyboardHeight();
@@ -145,7 +144,7 @@ export default function ENSAssignRecordsSheet() {
                     <Heading size="26px" weight="heavy">
                       {ensName}
                     </Heading>
-                    <Text color="action" size="16px" weight="heavy">
+                    <Text color="accent" size="16px" weight="heavy">
                       Create your profile
                     </Text>
                   </Stack>
@@ -156,11 +155,6 @@ export default function ENSAssignRecordsSheet() {
                     values={values}
                   />
                 </Stack>
-              </Inset>
-            </Box>
-            <Box bottom="0px" position="absolute" right="0px">
-              <Inset bottom="19px" right="19px">
-                <HideKeyboardButton />
               </Inset>
             </Box>
           </Row>
@@ -205,13 +199,22 @@ export default function ENSAssignRecordsSheet() {
           </Row>
         </Rows>
       </Box>
+      <Box
+        position="absolute"
+        right="0px"
+        style={{ bottom: keyboardHeight - 40 }}
+      >
+        <Inset bottom="19px" right="19px">
+          <HideKeyboardButton color={avatarColor} />
+        </Inset>
+      </Box>
     </AccentColorProvider>
   );
 }
 
 const AnimatedBox = Animated.createAnimatedComponent(Box);
 
-function HideKeyboardButton() {
+function HideKeyboardButton({ color }) {
   const show = useSharedValue(false);
 
   useEffect(() => {
@@ -235,6 +238,7 @@ function HideKeyboardButton() {
   return (
     <AnimatedBox style={style}>
       <MiniButton
+        backgroundColor={color}
         disablePadding
         height={30}
         onPress={() => Keyboard.dismiss()}
