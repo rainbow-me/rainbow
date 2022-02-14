@@ -3,6 +3,7 @@ import React, { ReactNode } from 'react';
 import { ButtonProps } from 'react-native';
 import { TextColor } from '../../design-system/typography/typography';
 import RadialGradientBackground from '../RadialGradientBackground';
+import LinearGradient from 'react-native-linear-gradient';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { useTheme } from '@rainbow-me/context';
 import { Box, Cover, Text } from '@rainbow-me/design-system';
@@ -34,24 +35,16 @@ const TintButton = ({
     >
       <Cover>
         <Box
-          as={MaskedView}
-          maskElement={
-            <Box
-              background="body"
-              borderRadius={46}
-              height={`${height}px`}
-              width="full"
-            />
-          }
-          style={{ height: '100%', width: '100%' }}
-        >
-          <RadialGradientBackground
-            colors={colors.gradients.transparentToLightGrey}
-            height={height}
-            stops={[1, 0.6]}
-            width={deviceWidth}
-          />
-        </Box>
+          alignItems="center"
+          as={LinearGradient}
+          borderRadius={46}
+          colors={colors.gradients.transparentToLightGrey}
+          end={{ x: 0.6, y: 0 }}
+          height={`${height}px`}
+          width="full"
+          justifyContent="center"
+          start={{ x: 0, y: 0.6 }}
+        />
       </Cover>
       <Text color={color} size="20px" weight="heavy">
         {children}
