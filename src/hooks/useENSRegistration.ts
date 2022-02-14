@@ -84,7 +84,7 @@ export default function useENSRegistration({
       { duration, name, nativeCurrency },
     ],
     getRegistrationValues,
-    { retry: 0 }
+    { retry: 0, staleTime: Infinity }
   );
 
   const newStatus = isValidLength ? status : 'idle';
