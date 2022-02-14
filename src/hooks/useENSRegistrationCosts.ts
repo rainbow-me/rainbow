@@ -2,68 +2,17 @@ import { useCallback, useMemo } from 'react';
 import { useQuery } from 'react-query';
 import { useAccountSettings } from '.';
 import { estimateENSRegistrationGasLimit } from '@rainbow-me/handlers/ens';
-import { Network } from '@rainbow-me/helpers/networkTypes';
 import {
-  add,
-  addDisplay,
-  convertAmountAndPriceToNativeDisplay,
-  fromWei,
-  multiply,
-} from '@rainbow-me/helpers/utilities';
-import { gweiToWei } from '@rainbow-me/parsers';
+  formatEstimatedNetworkFee,
+  formatRentPrice,
+  formatTotalRegistrationCost,
+} from '@rainbow-me/helpers/ens';
+import { Network } from '@rainbow-me/helpers/networkTypes';
+import { add, addDisplay, multiply } from '@rainbow-me/helpers/utilities';
 import { getEIP1559GasParams } from '@rainbow-me/redux/gas';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 const secsInYear = 31536000;
-
-const formatEstimatedNetworkFee = (
-  gasLimit: string,
-  maxBaseFee: string,
-  maxPriorityFee: string,
-  nativeCurrency: any,
-  nativeAssetPrice: any
-) => {
-  const networkFeeInWei = multiply(
-    gweiToWei(add(maxBaseFee, maxPriorityFee)),
-    gasLimit
-  );
-  const networkFeeInEth = fromWei(networkFeeInWei);
-
-  const { amount, display } = convertAmountAndPriceToNativeDisplay(
-    networkFeeInEth,
-    nativeAssetPrice,
-    nativeCurrency
-  );
-
-  return {
-    amount,
-    display,
-    wei: networkFeeInWei,
-  };
-};
-
-const formatTotalRegistrationCost = (
-  wei: string,
-  nativeCurrency: any,
-  nativeAssetPrice: any,
-  skipDecimals: boolean = false
-) => {
-  const networkFeeInEth = fromWei(wei);
-
-  const { amount, display } = convertAmountAndPriceToNativeDisplay(
-    networkFeeInEth,
-    nativeAssetPrice,
-    nativeCurrency,
-    undefined,
-    skipDecimals
-  );
-
-  return {
-    amount,
-    display,
-    wei,
-  };
-};
 
 export default function useENSRegistrationCosts({
   duration,
@@ -102,19 +51,13 @@ export default function useENSRegistrationCosts({
         nativeAssetPrice
       );
 
-      const networkFeeCost = formatTotalRegistrationCost(
-        formattedEstimatedNetworkFee.wei,
-        nativeCurrency,
-        nativeAssetPrice
-      );
-
-      return networkFeeCost;
+      return formattedEstimatedNetworkFee;
     },
     [duration]
   );
 
   const rentPricePerYear = rentPrice?.perYear?.wei?.toString();
-  const { data: networkFee, status } = useQuery(
+  const { data: estimatedNetworkFee, status } = useQuery(
     Boolean(rentPricePerYear) && [
       'getEstimatedNetworkFee',
       {
@@ -129,29 +72,34 @@ export default function useENSRegistrationCosts({
   );
 
   const data = useMemo(() => {
-    if (networkFee && rentPricePerYear) {
+    if (estimatedNetworkFee && rentPricePerYear) {
       const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
         Network.mainnet
       );
       const rentPrice = multiply(rentPricePerYear, duration);
-      const estimatedRentPrice = formatTotalRegistrationCost(
+      const estimatedRentPrice = formatRentPrice(
         rentPrice,
+        duration,
         nativeCurrency,
-        nativeAssetPrice,
-        true
+        nativeAssetPrice
       );
-      const weiEstimatedTotalCost = add(networkFee.wei, estimatedRentPrice.wei);
+
+      const weiEstimatedTotalCost = add(
+        estimatedNetworkFee.wei,
+        estimatedRentPrice.wei.toString()
+      );
       const displayEstimatedTotalCost = addDisplay(
-        networkFee.display,
-        estimatedRentPrice.display
+        estimatedNetworkFee.display,
+        estimatedRentPrice.total.display
       );
       const estimatedTotalRegistrationCost = formatTotalRegistrationCost(
         weiEstimatedTotalCost,
         nativeCurrency,
         nativeAssetPrice
       );
+
       return {
-        estimatedNetworkFeeCost: networkFee,
+        estimatedNetworkFee: estimatedNetworkFee,
         estimatedRentPrice,
         estimatedTotalRegistrationCost: {
           ...estimatedTotalRegistrationCost,
@@ -159,7 +107,7 @@ export default function useENSRegistrationCosts({
         },
       };
     }
-  }, [duration, nativeCurrency, networkFee, rentPricePerYear]);
+  }, [duration, estimatedNetworkFee, nativeCurrency, rentPricePerYear]);
 
   const newStatus = rentPricePerYear ? status : 'idle';
 

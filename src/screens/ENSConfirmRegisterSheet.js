@@ -17,15 +17,15 @@ export default function ENSConfirmRegisterSheet() {
   const { navigate, goBack } = useNavigation();
   const ensName = useSelector(({ ensRegistration }) => ensRegistration.name);
 
-  const [duration, setDuration] = useState(2);
+  const [duration, setDuration] = useState(1);
 
+  const name = ensName.replace('.eth', '');
   const { data: registrationData } = useENSRegistration({
-    name: ensName.replace('.eth', ''),
+    name,
   });
-
   const { data: registrationCostsData } = useENSRegistrationCosts({
     duration,
-    name: ensName.replace('.eth', ''),
+    name,
     rentPrice: registrationData?.rentPrice,
   });
 
@@ -45,10 +45,15 @@ export default function ENSConfirmRegisterSheet() {
           <Inset horizontal="30px">
             <ReviewRegistration
               duration={duration}
-              networkFee={registrationCostsData?.estimatedNetworkFeeCost}
+              maxDuration={99}
+              networkFee={registrationCostsData?.estimatedNetworkFee?.display}
               onChangeDuration={setDuration}
-              registrationCost={registrationCostsData?.estimatedRentPrice}
-              totalCost={registrationCostsData?.estimatedTotalRegistrationCost}
+              registrationFee={
+                registrationCostsData?.estimatedRentPrice?.total?.display
+              }
+              totalCost={
+                registrationCostsData?.estimatedTotalRegistrationCost?.display
+              }
             />
           </Inset>
         </Box>

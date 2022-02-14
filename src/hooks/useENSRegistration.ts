@@ -1,68 +1,18 @@
 import { format } from 'date-fns';
-import { BigNumber } from 'ethers';
 import { useCallback, useMemo } from 'react';
 import { useQuery } from 'react-query';
 import { useAccountSettings } from '.';
 import { fetchRegistrationDate } from '@rainbow-me/handlers/ens';
 import {
+  formatRentPrice,
   getAvailable,
   getNameExpires,
   getRentPrice,
 } from '@rainbow-me/helpers/ens';
 import { Network } from '@rainbow-me/helpers/networkTypes';
-import {
-  convertAmountAndPriceToNativeDisplay,
-  divide,
-  fromWei,
-} from '@rainbow-me/helpers/utilities';
 import { ethereumUtils, validateENS } from '@rainbow-me/utils';
 
 const secsInYear = 31536000;
-
-const getRentPricePerYear = (rentPrice: string, duration: number) =>
-  divide(rentPrice, duration);
-
-const formatRentPrice = (
-  rentPrice: BigNumber,
-  duration: number,
-  nativeCurrency: any,
-  nativeAssetPrice: any
-) => {
-  const rentPriceInETH = fromWei(rentPrice.toString());
-  const rentPricePerYear = getRentPricePerYear(rentPriceInETH, duration);
-  const rentPricePerYearInWei = divide(rentPrice.toString(), duration);
-
-  const { amount, display } = convertAmountAndPriceToNativeDisplay(
-    rentPriceInETH,
-    nativeAssetPrice,
-    nativeCurrency,
-    undefined,
-    true
-  );
-  const {
-    display: displayPerYear,
-    amount: amountPerYear,
-  } = convertAmountAndPriceToNativeDisplay(
-    rentPricePerYear,
-    nativeAssetPrice,
-    nativeCurrency,
-    undefined,
-    true
-  );
-
-  return {
-    perYear: {
-      amount: amountPerYear,
-      display: displayPerYear,
-      wei: rentPricePerYearInWei,
-    },
-    total: {
-      amount,
-      display,
-    },
-    wei: rentPrice,
-  };
-};
 
 const formatTime = (timestamp: string, abbreviated: boolean = true) => {
   const style = abbreviated ? 'MMM d, y' : 'MMMM d, y';

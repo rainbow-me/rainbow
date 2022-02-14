@@ -4,21 +4,42 @@ import {
   Box,
   Column,
   Columns,
-  DebugLayout,
-  Inline,
   Inset,
-  Row,
-  Rows,
   Stack,
   Text,
 } from '@rainbow-me/design-system';
 
+function StepButton({
+  onPress,
+  type,
+}: {
+  onPress: () => void;
+  type: 'increment' | 'decrement';
+}) {
+  return (
+    // @ts-ignore
+    <Box as={ButtonPressAnimation} onPress={onPress} scaleTo={0.75}>
+      <Text color="action" weight="heavy">
+        {type === 'increment' ? '􀁍' : '􀁏'}
+      </Text>
+    </Box>
+  );
+}
+
 export default function ReviewRegistration({
   duration,
   onChangeDuration,
+  maxDuration,
   networkFee,
   totalCost,
-  registrationCost,
+  registrationFee,
+}: {
+  maxDuration: number;
+  duration: number;
+  onChangeDuration: (duration: number) => void;
+  networkFee: string;
+  totalCost: string;
+  registrationFee: string;
 }) {
   return (
     <Box>
@@ -30,34 +51,30 @@ export default function ReviewRegistration({
             </Text>
           </Column>
           <Column width="2/5">
-            <Inset horizontal="4px">
+            <Inset left="4px">
               <Columns>
                 <Column width="content">
-                  <Box
-                    as={ButtonPressAnimation}
-                    onPress={() => onChangeDuration(duration - 1)}
-                    scaleTo={0.75}
-                  >
-                    <Text color="action" weight="heavy">
-                      {false ? '􀁍' : '􀁏'}
-                    </Text>
-                  </Box>
+                  <StepButton
+                    onPress={() =>
+                      duration > 1 ? onChangeDuration(duration - 1) : undefined
+                    }
+                    type="decrement"
+                  />
                 </Column>
                 <Box>
                   <Text align="center" size="16px" weight="heavy">
-                    {duration} years
+                    {duration} year{duration > 1 ? 's' : ''}
                   </Text>
                 </Box>
                 <Column width="content">
-                  <Box
-                    as={ButtonPressAnimation}
-                    onPress={() => onChangeDuration(duration + 1)}
-                    scaleTo={0.75}
-                  >
-                    <Text color="action" weight="heavy">
-                      {true ? '􀁍' : '􀁏'}
-                    </Text>
-                  </Box>
+                  <StepButton
+                    onPress={() =>
+                      duration < maxDuration
+                        ? onChangeDuration(duration + 1)
+                        : undefined
+                    }
+                    type="increment"
+                  />
                 </Column>
               </Columns>
             </Inset>
@@ -71,7 +88,7 @@ export default function ReviewRegistration({
           </Column>
           <Column width="1/3">
             <Text align="right" color="secondary80" size="16px" weight="bold">
-              {registrationCost?.display}
+              {registrationFee}
             </Text>
           </Column>
         </Columns>
@@ -83,7 +100,7 @@ export default function ReviewRegistration({
           </Column>
           <Column width="1/3">
             <Text align="right" color="secondary80" size="16px" weight="bold">
-              {networkFee?.display}
+              {networkFee}
             </Text>
           </Column>
         </Columns>
@@ -95,7 +112,7 @@ export default function ReviewRegistration({
           </Column>
           <Column width="1/3">
             <Text align="right" size="16px" weight="heavy">
-              {totalCost?.display}
+              {totalCost}
             </Text>
           </Column>
         </Columns>
