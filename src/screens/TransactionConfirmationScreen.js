@@ -13,6 +13,7 @@ import React, {
   useState,
 } from 'react';
 import { ActivityIndicator, Alert, InteractionManager } from 'react-native';
+import { Text } from '@rainbow-me/design-system';
 import { isEmulatorSync } from 'react-native-device-info';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, {
@@ -20,6 +21,7 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
+import colors from '../styles/colors';
 import { useDispatch, useSelector } from 'react-redux';
 import URL from 'url-parse';
 import Divider from '../components/Divider';
@@ -37,7 +39,6 @@ import {
   SheetKeyboardAnimation,
   SlackSheet,
 } from '../components/sheet';
-import { Text } from '../components/text';
 import {
   DefaultTransactionConfirmationSection,
   MessageSigningSection,
@@ -133,24 +134,44 @@ const Container = styled(Column)({
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const AnimatedSheet = Animated.createAnimatedComponent(Centered);
 
-const WalletLabel = styled(Text).attrs(({ theme: { colors } }) => ({
-  color: colors.alpha(colors.blueGreyDark, 0.5),
-  letterSpacing: 'roundedMedium',
-  size: 'smedium',
-  weight: 'semibold',
-}))({
-  marginBottom: 3,
-});
+const SwitchText = ({ children, ...props }) => {
+  return (
+    <Text color="secondary40" size="14px" weight="semibold" {...props}>
+      {children}
+    </Text>
+  );
+};
 
-const WalletText = styled(Text).attrs(
-  ({ balanceTooLow, theme: { colors } }) => ({
-    color: balanceTooLow
-      ? colors.avatarColor[7]
-      : colors.alpha(colors.blueGreyDark, 0.8),
-    size: 'larger',
-    weight: balanceTooLow ? 'bold' : 'semibold',
-  })
-)({});
+const LabelText = ({ children, ...props }) => {
+  return (
+    <Text
+      color="primary"
+      numberOfLines={1}
+      size="18px"
+      weight="bold"
+      {...props}
+    >
+      {children}
+    </Text>
+  );
+};
+
+const WalletText = ({ children, balanceTooLow }) => {
+  return (
+    <Text
+      numberOfLines={1}
+      color={
+        balanceTooLow
+          ? { custom: colors.lightModeThemeColors.avatarColor[7] }
+          : 'secondary80'
+      }
+      size="18px"
+      weight={balanceTooLow ? 'bold' : 'semibold'}
+    >
+      {children}
+    </Text>
+  );
+};
 
 const messageRequestContainerStyle = padding.object(24, 0);
 
@@ -1041,24 +1062,24 @@ export default function TransactionConfirmationScreen() {
                   network={currentNetwork}
                 />
                 <Row marginBottom={android ? -6 : 5}>
-                  <Text
-                    align="center"
-                    color={colors.alpha(colors.blueGreyDark, 0.8)}
-                    letterSpacing="roundedMedium"
-                    size="large"
-                    weight="bold"
-                  >
-                    {isAuthenticated ? dappName : formattedDappUrl}
-                  </Text>
+                  <Row marginBottom={android ? 16 : 8}>
+                    <Text
+                      align="center"
+                      color="secondary80"
+                      size="18px"
+                      weight="bold"
+                    >
+                      {isAuthenticated ? dappName : formattedDappUrl}
+                    </Text>
+                  </Row>
                   {
                     //We only show the checkmark
                     // if it's on the override list (dappNameHandler.js)
                     isAuthenticated && (
                       <Text
                         align="center"
-                        color={colors.appleBlue}
-                        letterSpacing="roundedMedium"
-                        size="large"
+                        color="action"
+                        size="18px"
                         weight="bold"
                       >
                         {' 􀇻'}
@@ -1072,9 +1093,8 @@ export default function TransactionConfirmationScreen() {
                 >
                   <Text
                     align="center"
-                    color={methodName ? 'dark' : 'white'}
-                    letterSpacing="roundedMedium"
-                    size="larger"
+                    color={methodName ? 'primary' : { custom: 'transparent' }}
+                    size="18px"
                     weight="heavy"
                   >
                     {methodName || 'Placeholder'}
@@ -1099,37 +1119,37 @@ export default function TransactionConfirmationScreen() {
                 )}
                 {renderTransactionButtons()}
                 <RowWithMargins margin={15} style={rowStyle}>
-                  <Column>
-                    <WalletLabel>Wallet</WalletLabel>
-                    <RowWithMargins margin={5}>
-                      <Column marginTop={ios ? 2 : 8}>
-                        {accountInfo.accountImage ? (
-                          <ImageAvatar
-                            image={accountInfo.accountImage}
-                            size="smaller"
-                          />
-                        ) : (
-                          <ContactAvatar
-                            color={
-                              isNaN(accountInfo.accountColor)
-                                ? colors.skeleton
-                                : accountInfo.accountColor
-                            }
-                            size="smaller"
-                            value={accountInfo.accountSymbol}
-                          />
-                        )}
-                      </Column>
-                      <WalletText>{accountInfo.accountName}</WalletText>
+                  <Column flex={1}>
+                    <Row marginBottom={8}>
+                      <SwitchText>Wallet</SwitchText>
+                    </Row>
+                    <RowWithMargins margin={5} style={{ alignItems: 'center' }}>
+                      {accountInfo.accountImage ? (
+                        <ImageAvatar
+                          image={accountInfo.accountImage}
+                          size="smaller"
+                        />
+                      ) : (
+                        <ContactAvatar
+                          color={
+                            isNaN(accountInfo.accountColor)
+                              ? colors.skeleton
+                              : accountInfo.accountColor
+                          }
+                          size="smaller"
+                          value={accountInfo.accountSymbol}
+                        />
+                      )}
+                      <WalletText>
+                        12312312erjigrejgirejeii{accountInfo.accountName}
+                      </WalletText>
                     </RowWithMargins>
                   </Column>
-                  <Column align="flex-end" flex={1} justify="end">
-                    <WalletLabel align="right">Balance</WalletLabel>
-                    <WalletText
-                      align="right"
-                      balanceTooLow={balanceTooLow}
-                      letterSpacing="roundedTight"
-                    >
+                  <Column marginLeft={16}>
+                    <Row marginBottom={12} justify="end">
+                      <SwitchText align="right">Balance</SwitchText>
+                    </Row>
+                    <WalletText align="right" balanceTooLow={balanceTooLow}>
                       {isBalanceEnough === false &&
                         isSufficientGas !== null &&
                         '􀇿 '}
