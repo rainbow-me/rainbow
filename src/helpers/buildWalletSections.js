@@ -208,9 +208,7 @@ const withBriefBalanceSavingsSection = (savings, isLoadingAssets) => {
     );
   }
   const addresses = savings?.map(asset => asset.cToken.address);
-  if (isLoadingAssets) {
-    return [];
-  }
+  if (isLoadingAssets) return [];
   return [
     {
       type: 'SAVINGS_HEADER_SPACE_BEFORE',

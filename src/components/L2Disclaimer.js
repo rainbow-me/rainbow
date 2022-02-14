@@ -15,6 +15,7 @@ const L2Disclaimer = ({
   hideDivider,
   isNft = false,
   marginBottom = 24,
+  marginHorizontal = 19,
   onPress,
   prominent,
   sending,
@@ -40,7 +41,7 @@ const L2Disclaimer = ({
       >
         <Row
           borderRadius={16}
-          marginHorizontal={19}
+          marginHorizontal={marginHorizontal}
           style={padding.object(android ? 6 : 10, 10, android ? 6 : 10, 10)}
         >
           <RadialGradient
@@ -73,7 +74,7 @@ const L2Disclaimer = ({
           <Column align="end" justify="center">
             <Text
               align="center"
-              color={localColors.alpha(colors.blueGreyDark, 0.3)}
+              color={colors.alpha(localColors.blueGreyDark, 0.3)}
               size="smedium"
               weight="heavy"
             >
