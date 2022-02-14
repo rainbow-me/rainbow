@@ -86,7 +86,7 @@ export default function InlineField({
         : 0,
       textAlignVertical: 'top',
     }),
-    [android, textStyle, inputHeight, inputProps?.multiline]
+    [textStyle, inputHeight, inputProps?.multiline]
   );
 
   return (
