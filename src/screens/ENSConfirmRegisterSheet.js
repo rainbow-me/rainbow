@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { ReviewRegistration } from '../components/ens-registration';
-import {
-  SheetActionButton,
-  SheetActionButtonRow,
-  SlackSheet,
-} from '../components/sheet';
+import brain from '../assets/brain.png';
+import { HoldToAuthorizeButton } from '../components/buttons';
+import { RegistrationReviewRows } from '../components/ens-registration';
+import { SheetActionButtonRow, SlackSheet } from '../components/sheet';
 import { useNavigation } from '../navigation/Navigation';
-import { Box, Inset } from '@rainbow-me/design-system';
+import { Box, Inline, Inset, Stack, Text } from '@rainbow-me/design-system';
 import { useENSRegistration, useENSRegistrationCosts } from '@rainbow-me/hooks';
+import { ImgixImage } from '@rainbow-me/images';
 import Routes from '@rainbow-me/routes';
 
 export const ENSConfirmRegisterSheetHeight = 600;
@@ -43,31 +42,50 @@ export default function ENSConfirmRegisterSheet() {
       >
         <Box flexGrow={1}>
           <Inset horizontal="30px">
-            <ReviewRegistration
-              duration={duration}
-              maxDuration={99}
-              networkFee={registrationCostsData?.estimatedNetworkFee?.display}
-              onChangeDuration={setDuration}
-              registrationFee={
-                registrationCostsData?.estimatedRentPrice?.total?.display
-              }
-              totalCost={
-                registrationCostsData?.estimatedTotalRegistrationCost?.display
-              }
-            />
+            <Stack space="34px">
+              <Inline
+                alignHorizontal="center"
+                alignVertical="center"
+                space="6px"
+                wrap={false}
+              >
+                <Box>
+                  <ImgixImage
+                    source={brain}
+                    style={{ height: 20, width: 20 }}
+                  />
+                </Box>
+                <Text color="secondary50" size="14px" weight="heavy">
+                  Buy more years now to save on fees
+                </Text>
+              </Inline>
+              <RegistrationReviewRows
+                duration={duration}
+                maxDuration={99}
+                networkFee={registrationCostsData?.estimatedNetworkFee?.display}
+                onChangeDuration={setDuration}
+                registrationFee={
+                  registrationCostsData?.estimatedRentPrice?.total?.display
+                }
+                totalCost={
+                  registrationCostsData?.estimatedTotalRegistrationCost?.display
+                }
+              />
+            </Stack>
           </Inset>
         </Box>
         <SheetActionButtonRow>
-          <SheetActionButton
+          <HoldToAuthorizeButton
+            hideInnerBorder
             label="Hold to Buy"
-            onPress={() => {
+            onLongPress={() => {
               goBack();
               setTimeout(() => {
                 navigate(Routes.PROFILE_SCREEN);
               }, 50);
             }}
-            size="big"
-            weight="heavy"
+            parentHorizontalPadding={19}
+            showBiometryIcon
           />
         </SheetActionButtonRow>
       </Box>

@@ -26,7 +26,7 @@ function StepButton({
   );
 }
 
-export default function ReviewRegistration({
+export default function RegistrationReviewRows({
   duration,
   onChangeDuration,
   maxDuration,
