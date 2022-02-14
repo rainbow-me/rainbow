@@ -6,10 +6,11 @@ import { ThunkDispatch } from 'redux-thunk';
 import { dataAddNewTransaction } from './data';
 import { AppGetState, AppState } from './store';
 import {
+  NewTransactionOrAddCashTransaction,
   ParsedAddressAsset,
   RainbowTransaction,
-  TransactionStatusTypes,
-  TransactionTypes,
+  TransactionStatus,
+  TransactionType,
 } from '@rainbow-me/entities';
 import {
   getPurchaseTransactions,
@@ -200,7 +201,7 @@ export const addCashUpdatePurchases = (purchases: RainbowTransaction[]) => (
   const { accountAddress, network } = getState().settings;
 
   const updatedPurchases = map(purchaseTransactions, txn => {
-    if (txn.status === TransactionStatusTypes.purchasing) {
+    if (txn.status === TransactionStatus.purchasing) {
       const updatedPurchase = find(
         purchases,
         purchase =>
@@ -425,22 +426,22 @@ const addCashGetTransferHash = (
         if (!asset) {
           asset = AddCashCurrencyInfo[network]![destAssetAddress];
         }
-        const txDetails = {
+        const txDetails: NewTransactionOrAddCashTransaction = {
           amount: destAmount,
           asset,
           from: null,
           hash: transferHash,
           nonce: null,
           sourceAmount,
-          status: TransactionStatusTypes.purchasing,
+          status: TransactionStatus.purchasing,
           timestamp: Date.now(),
           to: accountAddress,
           transferId,
-          type: TransactionTypes.purchase,
+          type: TransactionType.purchase,
         };
         logger.log('[add cash] - add new pending txn');
         const newTxDetails = await dispatch(dataAddNewTransaction(txDetails));
-        dispatch(addCashNewPurchaseTransaction(newTxDetails));
+        dispatch(addCashNewPurchaseTransaction(newTxDetails!));
       } else {
         transferHashHandle = setTimeout(
           () =>

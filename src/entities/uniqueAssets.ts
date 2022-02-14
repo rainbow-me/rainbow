@@ -1,3 +1,4 @@
+import { Network } from '../helpers/networkTypes';
 import { AssetContract, AssetType } from '.';
 
 interface UniqueAssetLastSale {
@@ -58,4 +59,5 @@ export interface UniqueAsset {
   uniqueId: string;
   urlSuffixForAsset: string;
   isPoap?: boolean;
+  network?: Network;
 }

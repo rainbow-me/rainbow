@@ -1,6 +1,5 @@
 import React from 'react';
 import { Keyboard } from 'react-native';
-import styled from 'styled-components';
 import BackButton from '../components/header/BackButton';
 import { Icon } from '../components/icons';
 import { SheetHandleFixedToTopHeight } from '../components/sheet';
@@ -8,11 +7,13 @@ import { Text } from '../components/text';
 import { useTheme } from '../context/ThemeContext';
 import colors from '../context/currentColors';
 import { explainers, ExplainSheetHeight } from '../screens/ExplainSheet';
+import { ExternalLinkWarningSheetHeight } from '../screens/ExternalLinkWarningSheet';
 import { SendConfirmationSheetHeight } from '../screens/SendConfirmationSheet';
 import { onWillPop } from './Navigation';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
+import styled from '@rainbow-me/styled-components';
 import { fonts } from '@rainbow-me/styles';
 import { deviceUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 
@@ -142,6 +143,15 @@ export const explainSheetConfig = {
       longFormHeight:
         ExplainSheetHeight +
         (explainerConfig?.extraHeight ? explainerConfig?.extraHeight : 0),
+    });
+  },
+};
+
+export const externalLinkWarningSheetConfig = {
+  options: ({ route: { params = {} } }) => {
+    return buildCoolModalConfig({
+      ...params,
+      longFormHeight: ExternalLinkWarningSheetHeight,
     });
   },
 };
@@ -283,11 +293,12 @@ const BackArrow = styled(Icon).attrs({
   color: colors.themedColors.appleBlue,
   direction: 'left',
   name: 'caret',
-})`
-  margin-left: 15;
-  margin-right: 5;
-  margin-top: ${android ? 2 : 0.5};
-`;
+})({
+  marginLeft: 15,
+  marginRight: 5,
+  marginTop: android ? 2 : 0.5,
+});
+
 const BackImage = () => <BackArrow />;
 
 const headerConfigOptions = {
@@ -312,9 +323,9 @@ const headerConfigOptions = {
   },
 };
 
-const EmptyButtonPlaceholder = styled.View`
-  flex: 1;
-`;
+const EmptyButtonPlaceholder = styled.View({
+  flex: 1,
+});
 
 const SettingsTitle = ({ children }) => {
   const { colors } = useTheme();

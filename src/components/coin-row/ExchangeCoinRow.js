@@ -1,5 +1,4 @@
 import React, { useCallback, useState } from 'react';
-import styled from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIconSize } from '../coin-icon';
 import { FloatingEmojis } from '../floating-emojis';
@@ -12,6 +11,7 @@ import CoinRowAddButton from './CoinRowAddButton';
 import CoinRowFavoriteButton from './CoinRowFavoriteButton';
 import CoinRowInfoButton from './CoinRowInfoButton';
 import { useDimensions } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { haptics, neverRerender } from '@rainbow-me/utils';
 
 const CoinRowPaddingTop = 9.5;
@@ -33,17 +33,17 @@ const FloatingFavoriteEmojis = styled(FloatingEmojis).attrs({
   scaleTo: 0,
   size: 32,
   wiggleFactor: 0,
-})`
-  left: ${({ deviceWidth }) => deviceWidth - 52.25};
-  position: absolute;
-  right: 0;
-  top: 0;
-  z-index: 100;
-`;
+})({
+  left: ({ deviceWidth }) => deviceWidth - 52.25,
+  position: 'absolute',
+  right: 0,
+  top: 0,
+  zIndex: 100,
+});
 
-const ExchangeCoinName = styled(CoinName)`
-  width: ${({ showBalance }) => (showBalance ? '100%' : '90%')};
-`;
+const ExchangeCoinName = styled(CoinName)({
+  width: ({ showBalance }) => (showBalance ? '100%' : '90%'),
+});
 
 const BottomRow = ({ showBalance, symbol }) =>
   showBalance ? null : <BottomRowText>{symbol}</BottomRowText>;

@@ -1,28 +1,37 @@
-import { useEffect, useState } from 'react';
-import { getAccountEmptyState } from '../handlers/localstorage/accountLocal';
+import { useEffect, useMemo } from 'react';
+import { useSelector } from 'react-redux';
+import {
+  getAccountEmptyState,
+  saveAccountEmptyState,
+} from '../handlers/localstorage/accountLocal';
 import useAccountSettings from './useAccountSettings';
 import useWalletSectionsData from './useWalletSectionsData';
 
 export default function useAccountEmptyState() {
   const { network, accountAddress } = useAccountSettings();
-  const { isEmpty } = useWalletSectionsData();
-  const [isReallyEmpty, setIsReallyEmpty] = useState(true);
+  const { isEmpty: isSectionsEmpty } = useWalletSectionsData();
+  const isLoadingAssets = useSelector(state => state.data.isLoadingAssets);
+  const isAccountEmptyInStorage = useMemo(
+    () => getAccountEmptyState(accountAddress, network),
+    [accountAddress, network]
+  );
+  const isEmpty = useMemo(
+    () => ({
+      ...isEmpty,
+      [accountAddress]: isLoadingAssets
+        ? isAccountEmptyInStorage
+        : isSectionsEmpty,
+    }),
+    [accountAddress, isAccountEmptyInStorage, isLoadingAssets, isSectionsEmpty]
+  );
 
   useEffect(() => {
-    const checkStorage = async () => {
-      const reallyEmpty = await getAccountEmptyState(accountAddress, network);
-
-      if (reallyEmpty) {
-        setIsReallyEmpty(true);
-      } else {
-        setIsReallyEmpty(isEmpty);
-      }
-    };
-
-    checkStorage();
-  }, [accountAddress, isEmpty, network]);
+    if (!isLoadingAssets) {
+      saveAccountEmptyState(false, accountAddress, network);
+    }
+  }, [accountAddress, isLoadingAssets, isSectionsEmpty, network]);
 
   return {
-    isEmpty: isReallyEmpty,
+    isEmpty: isEmpty[accountAddress],
   };
 }

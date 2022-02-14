@@ -3,7 +3,6 @@ import { toUpper } from 'lodash';
 import React, { useCallback } from 'react';
 import { View } from 'react-native';
 import { useSelector } from 'react-redux';
-import styled from 'styled-components';
 import { useRemoveNextToLast } from '../../navigation/useRemoveNextToLast';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText, CoinRow } from '../coin-row';
@@ -16,16 +15,17 @@ import { useAccountSettings, useGenericAsset } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { parseAssetNative } from '@rainbow-me/parsers';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 
-const BottomRowContainer = styled(Row)`
-  margin-bottom: 10;
-  margin-top: -7.75;
-`;
+const BottomRowContainer = styled(Row)({
+  marginBottom: 10,
+  marginTop: -7.75,
+});
 
 const TopRowContainer = styled(Row).attrs({
   align: 'flex-start',
   justify: 'flex-start',
-})``;
+})({});
 
 const BottomRow = ({ symbol }) => {
   return (

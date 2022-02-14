@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import styled from 'styled-components';
 import { Row } from '../layout';
 import Text from './Text';
+import styled from '@rainbow-me/styled-components';
 
 const Cents = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'right',
@@ -10,9 +10,9 @@ const Cents = styled(Text).attrs(({ theme: { colors } }) => ({
   letterSpacing: 'roundedTightest',
   size: 'large',
   weight: 'heavy',
-}))`
-  top: 7;
-`;
+}))({
+  top: 7,
+});
 
 const DollarFigure = ({ value, decimals = 2 }) => {
   const [dollars, cents = '00'] = value.split('.');

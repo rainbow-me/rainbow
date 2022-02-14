@@ -186,7 +186,7 @@ export const DEFAULT_WALLET_NAME = 'My Wallet';
 const authenticationPrompt = lang.t('wallet.authenticate.please');
 
 export const walletInit = async (
-  seedPhrase = null,
+  seedPhrase = undefined,
   color = null,
   name = null,
   overwrite = false,
@@ -194,7 +194,11 @@ export const walletInit = async (
   network: string
 ): Promise<WalletInitialized> => {
   let walletAddress = null;
-  let isNew = false;
+
+  // When the `seedPhrase` is not defined in the args, then
+  // this means it's a new fresh wallet created by the user.
+  let isNew = typeof seedPhrase === 'undefined';
+
   // Importing a seedphrase
   if (!isEmpty(seedPhrase)) {
     const wallet = await createWallet(
@@ -214,7 +218,9 @@ export const walletInit = async (
     const wallet = await createWallet();
     walletAddress = wallet?.address;
     isNew = true;
-    await saveAccountEmptyState(true, walletAddress?.toLowerCase(), network);
+  }
+  if (isNew) {
+    saveAccountEmptyState(true, walletAddress?.toLowerCase(), network);
   }
   return { isNew, walletAddress };
 };

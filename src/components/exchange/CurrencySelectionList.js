@@ -1,7 +1,6 @@
 import { get } from 'lodash';
 import React, { forwardRef, useEffect, useRef } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
-import styled from 'styled-components';
 import { magicMemo } from '../../utils';
 import { EmptyAssetList } from '../asset-list';
 import { Centered } from '../layout';
@@ -10,18 +9,19 @@ import { CurrencySelectModalHeaderHeight } from './CurrencySelectModalHeader';
 import ExchangeAssetList from './ExchangeAssetList';
 import { ExchangeSearchHeight } from './ExchangeSearch';
 import { usePrevious } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 
 const EmptyCurrencySelectionList = styled(EmptyAssetList).attrs({
   pointerEvents: 'none',
-})`
-  ${position.cover};
-  background-color: ${({ theme: { colors } }) => colors.white};
-`;
+})({
+  ...position.coverAsObject,
+  backgroundColor: ({ theme: { colors } }) => colors.white,
+});
 
-const NoCurrencyResults = styled(NoResults)`
-  padding-bottom: ${CurrencySelectModalHeaderHeight + ExchangeSearchHeight / 2};
-`;
+const NoCurrencyResults = styled(NoResults)({
+  paddingBottom: CurrencySelectModalHeaderHeight + ExchangeSearchHeight / 2,
+});
 
 const skeletonTransition = (
   <Transition.Sequence>
