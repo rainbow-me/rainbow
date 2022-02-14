@@ -25,46 +25,38 @@ export default function useENSRegistrationCosts({
 }) {
   const { nativeCurrency, accountAddress } = useAccountSettings();
 
-  const getEstimatedNetworkFee = useCallback(
-    async (_, { accountAddress, rentPrice, name, nativeCurrency }) => {
-      const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
-        Network.mainnet
-      );
-      const gasLimit = await estimateENSRegistrationGasLimit(
-        name,
-        accountAddress,
-        duration * secsInYear,
-        rentPrice
-      );
-
-      const {
-        gasFeeParamsBySpeed,
-        currentBaseFee,
-      } = await getEIP1559GasParams();
-
-      const formattedEstimatedNetworkFee = formatEstimatedNetworkFee(
-        gasLimit,
-        currentBaseFee.gwei,
-        gasFeeParamsBySpeed.normal.maxPriorityFeePerGas.gwei,
-        nativeCurrency,
-        nativeAssetPrice
-      );
-
-      return formattedEstimatedNetworkFee;
-    },
-    [duration]
-  );
-
   const rentPriceInWei = rentPrice?.wei?.toString();
+
+  const getEstimatedNetworkFee = useCallback(async () => {
+    if (!rentPriceInWei) return;
+
+    const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
+      Network.mainnet
+    );
+    const gasLimit = await estimateENSRegistrationGasLimit(
+      name,
+      accountAddress,
+      duration * secsInYear,
+      rentPriceInWei
+    );
+
+    const { gasFeeParamsBySpeed, currentBaseFee } = await getEIP1559GasParams();
+
+    const formattedEstimatedNetworkFee = formatEstimatedNetworkFee(
+      gasLimit,
+      currentBaseFee.gwei,
+      gasFeeParamsBySpeed.normal.maxPriorityFeePerGas.gwei,
+      nativeCurrency,
+      nativeAssetPrice
+    );
+
+    return formattedEstimatedNetworkFee;
+  }, [accountAddress, duration, name, nativeCurrency, rentPriceInWei]);
+
   const { data: estimatedNetworkFee, status } = useQuery(
-    Boolean(rentPrice) && [
+    Boolean(rentPriceInWei) && [
       'getEstimatedNetworkFee',
-      {
-        accountAddress,
-        name,
-        nativeCurrency,
-        rentPrice: rentPriceInWei,
-      },
+      [accountAddress, name, nativeCurrency, rentPriceInWei],
     ],
     getEstimatedNetworkFee,
     { cacheTime: 0 }
