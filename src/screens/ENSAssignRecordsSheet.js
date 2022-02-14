@@ -62,8 +62,8 @@ export default function ENSAssignRecordsSheet() {
     ],
   });
 
-  const avatarColor =
-    usePersistentDominantColorFromImage('TODO').result || colors.purple;
+  const avatarColor = colors.purple;
+  //   usePersistentDominantColorFromImage('TODO').result || colors.purple;   // add this when we implement avatars
 
   const avatarRadius = 35;
 
@@ -73,22 +73,22 @@ export default function ENSAssignRecordsSheet() {
     // <<<<<<< HEAD
     //     <AccentColorProvider color={avatarColor}>
     //       <Box background="body" flexGrow={1}>
-    //         <Box flexGrow={1}>
-    //           <Box
-    //             background="accent"
-    //             height={{ custom: 125 }}
-    //             marginBottom={{ custom: 70 }}
-    //           >
-    //             <Cover alignHorizontal="center">
-    //               <Box
-    //                 background="swap"
-    //                 borderRadius={avatarRadius}
-    //                 height={{ custom: avatarRadius * 2 }}
-    //                 top={{ custom: 105 }}
-    //                 width={{ custom: avatarRadius * 2 }}
-    //               />
-    //             </Cover>
-    //           </Box>
+    // <Box flexGrow={1}>
+    // <Box
+    //   background="accent"
+    //   height={{ custom: 125 }}
+    //   marginBottom={{ custom: 70 }}
+    // >
+    //   <Cover alignHorizontal="center">
+    //     <Box
+    //       background="swap"
+    //       borderRadius={avatarRadius}
+    //       height={{ custom: avatarRadius * 2 }}
+    //       top={{ custom: 105 }}
+    //       width={{ custom: avatarRadius * 2 }}
+    //     />
+    //   </Cover>
+    // </Box>
     //           <Stack alignHorizontal="center" space="15px">
     //             <Heading size="26px" weight="heavy">
     //               {params ? params.name : ''}
@@ -119,66 +119,93 @@ export default function ENSAssignRecordsSheet() {
     //       </Box>
     //     </AccentColorProvider>
     // =======
-    <Box background="body" flexGrow={1} paddingTop="30px">
-      <Rows>
-        <Row>
-          <Box as={ScrollView} flexGrow={1}>
-            <Inset horizontal="19px" top="4px">
-              <Stack space="30px">
-                <Stack alignHorizontal="center" space="15px">
-                  <Heading size="26px" weight="heavy">
-                    {ensName}
-                  </Heading>
-                  <Text color="action" size="16px" weight="heavy">
-                    Create your profile
-                  </Text>
-                </Stack>
-                <TextRecordsForm
-                  onBlurField={onBlurField}
-                  onChangeField={onChangeField}
-                  selectedFields={selectedFields}
-                  values={values}
-                />
-              </Stack>
-            </Inset>
-          </Box>
-          <Box bottom="0px" position="absolute" right="0px">
-            <Inset bottom="19px" right="19px">
-              <HideKeyboardButton />
-            </Inset>
-          </Box>
-        </Row>
-        <Row height="content">
-          <Box paddingBottom="30px" style={{ height: keyboardHeight }}>
-            <Shadow />
-            <Rows>
-              <Row>
-                <Inset space="19px">
-                  <SelectableAttributesButtons
-                    onAddField={onAddField}
-                    onRemoveField={onRemoveField}
+    <AccentColorProvider color={avatarColor}>
+      <Box background="body" flexGrow={1}>
+        <Rows>
+          <Row>
+            <Box as={ScrollView} flexGrow={1}>
+              <Box
+                background="accent"
+                height={{ custom: 125 }}
+                marginBottom={{ custom: 70 }}
+              >
+                <Cover alignHorizontal="center">
+                  <Box
+                    background="swap"
+                    borderRadius={avatarRadius}
+                    height={{ custom: avatarRadius * 2 }}
+                    top={{ custom: 105 }}
+                    width={{ custom: avatarRadius * 2 }}
+                  />
+                </Cover>
+              </Box>
+              <Inset horizontal="19px" top="4px">
+                <Stack space="30px">
+                  <Stack alignHorizontal="center" space="15px">
+                    <Heading size="26px" weight="heavy">
+                      {ensName}
+                    </Heading>
+                    <Text color="action" size="16px" weight="heavy">
+                      Create your profile
+                    </Text>
+                  </Stack>
+                  <TextRecordsForm
+                    onBlurField={onBlurField}
+                    onChangeField={onChangeField}
                     selectedFields={selectedFields}
+                    values={values}
                   />
-                </Inset>
-              </Row>
-              <Row height="content">
-                <SheetActionButtonRow>
-                  <TintButton color="secondary60" onPress={handlePressBack}>
-                    􀆉 Back
-                  </TintButton>
-                  <SheetActionButton
-                    label="Review"
-                    onPress={handlePressContinue}
-                    size="big"
-                    weight="heavy"
-                  />
-                </SheetActionButtonRow>
-              </Row>
-            </Rows>
-          </Box>
-        </Row>
-      </Rows>
-    </Box>
+                </Stack>
+              </Inset>
+            </Box>
+            <Box bottom="0px" position="absolute" right="0px">
+              <Inset bottom="19px" right="19px">
+                <HideKeyboardButton />
+              </Inset>
+            </Box>
+          </Row>
+          <Row height="content">
+            <Box style={{ height: 250 }}>
+              <Shadow />
+              <Rows>
+                <Row>
+                  <Inset top="30px" horizontal="19px">
+                    <SelectableAttributesButtons
+                      onAddField={onAddField}
+                      onRemoveField={onRemoveField}
+                      selectedFields={selectedFields}
+                    />
+                  </Inset>
+                </Row>
+                <Row height="content">
+                  <SheetActionButtonRow>
+                    <TintButton color="secondary60" onPress={handlePressBack}>
+                      􀆉 Back
+                    </TintButton>
+                    {formIsEmpty ? (
+                      <TintButton
+                        color="secondary60"
+                        onPress={handlePressContinue}
+                      >
+                        Skip
+                      </TintButton>
+                    ) : (
+                      <SheetActionButton
+                        color={avatarColor}
+                        label="Review"
+                        onPress={handlePressContinue}
+                        size="big"
+                        weight="heavy"
+                      />
+                    )}
+                  </SheetActionButtonRow>
+                </Row>
+              </Rows>
+            </Box>
+          </Row>
+        </Rows>
+      </Box>
+    </AccentColorProvider>
   );
 }
 
