@@ -75,7 +75,7 @@ export default function ENSAssignRecordsSheet() {
                   onBlurField={onBlurField}
                   onChangeField={onChangeField}
                   selectedFields={selectedFields}
-                  values={values}
+                  values={values || []}
                 />
               </Stack>
             </Inset>

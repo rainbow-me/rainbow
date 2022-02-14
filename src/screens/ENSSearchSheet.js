@@ -26,7 +26,7 @@ import {
   useKeyboardHeight,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
-import { ensRegistrationUpdateName } from '@rainbow-me/redux/ensRegistration';
+import { startRegistration } from '@rainbow-me/redux/ensRegistration';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 import { normalizeENS } from '@rainbow-me/utils';
@@ -67,7 +67,7 @@ export default function ENSSearchSheet() {
   }, [isAvailable, isInvalid, isRegistered]);
 
   const handlePressContinue = useCallback(() => {
-    dispatch(ensRegistrationUpdateName(`${searchQuery}.eth`));
+    dispatch(startRegistration(`${searchQuery}.eth`));
     Keyboard.dismiss();
     navigate(Routes.ENS_ASSIGN_RECORDS_SHEET);
   }, [dispatch, navigate, searchQuery]);

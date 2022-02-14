@@ -1,7 +1,11 @@
 import { omit } from 'lodash';
 import { AnyAction } from 'redux';
-import { AppDispatch } from './store';
-import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
+import { AppDispatch, AppGetState } from './store';
+import {
+  ENSRegistrationState,
+  EthereumAddress,
+  Records,
+} from '@rainbow-me/entities';
 
 const ENS_REGISTRATION_UPDATE_NAME =
   'ensRegistration/ENS_REGISTRATION_UPDATE_NAME';
@@ -14,62 +18,134 @@ const ENS_REGISTRATION_UPDATE_RECORD_BY_KEY =
 const ENS_REGISTRATION_REMOVE_RECORD_BY_KEY =
   'ensRegistration/ENS_REGISTRATION_REMOVE_RECORD_BY_KEY';
 
-export type Records = { [key in keyof typeof ENS_RECORDS]: string };
-
-interface ENSRegistrationState {
-  name: string;
-  duration: number;
-  records: Records;
-}
-
 // -- Actions ---------------------------------------- //
-export const ensRegistrationUpdateName = (name: string) => async (
-  dispatch: AppDispatch
-) =>
+export const startRegistration = (
+  accountAddress: EthereumAddress,
+  name: string
+) => async (dispatch: AppDispatch, getState: AppGetState) => {
+  const { ensRegistration: registrationsData } = getState();
+
+  const lcAccountAddress = accountAddress.toLowerCase();
+  const accountRegistrations = registrationsData?.[accountAddress] || {};
+
+  const updatedEnsRegistrationManagerForAccount = {
+    [lcAccountAddress]: {
+      ...accountRegistrations,
+      [name]: { name },
+    },
+  };
   dispatch({
-    payload: name,
+    payload: updatedEnsRegistrationManagerForAccount,
     type: ENS_REGISTRATION_UPDATE_NAME,
   });
+};
 
-export const ensRegistrationUpdateDuration = (duration: number) => async (
-  dispatch: AppDispatch
-) =>
+export const updateRegistrationDuration = (
+  accountAddress: EthereumAddress,
+  name: string,
+  duration: number
+) => async (dispatch: AppDispatch, getState: AppGetState) => {
+  const { ensRegistration: registrationsData } = getState();
+
+  const lcAccountAddress = accountAddress.toLowerCase();
+  const accountRegistrations = registrationsData?.[accountAddress] || {};
+  const registration = accountRegistrations[name] || {};
+
+  const updatedEnsRegistrationManagerForAccount = {
+    [lcAccountAddress]: {
+      ...accountRegistrations,
+      [name]: { ...registration, duration },
+    },
+  };
   dispatch({
-    payload: duration,
+    payload: updatedEnsRegistrationManagerForAccount,
     type: ENS_REGISTRATION_UPDATE_DURATION,
   });
+};
 
-export const ensRegistrationUpdateRecords = (records: Records) => async (
-  dispatch: AppDispatch
-) =>
+export const updateRecords = (
+  accountAddress: EthereumAddress,
+  name: string,
+  records: Records
+) => async (dispatch: AppDispatch, getState: AppGetState) => {
+  const { ensRegistration: registrationsData } = getState();
+
+  const lcAccountAddress = accountAddress.toLowerCase();
+  const accountRegistrations = registrationsData?.[accountAddress] || {};
+  const registration = accountRegistrations[name] || {};
+
+  const updatedEnsRegistrationManagerForAccount = {
+    [lcAccountAddress]: {
+      ...accountRegistrations,
+      [name]: { ...registration, records },
+    },
+  };
   dispatch({
-    payload: records,
+    payload: updatedEnsRegistrationManagerForAccount,
     type: ENS_REGISTRATION_UPDATE_RECORDS,
   });
+};
 
-export const ensRegistrationUpdateRecordByKey = (
+export const updateRecordByKey = (
+  accountAddress: EthereumAddress,
+  name: string,
   key: string,
   value: string
-) => async (dispatch: AppDispatch) =>
-  dispatch({
-    payload: { key, value },
-    type: ENS_REGISTRATION_UPDATE_RECORD_BY_KEY,
-  });
+) => async (dispatch: AppDispatch, getState: AppGetState) => {
+  const { ensRegistration: registrationsData } = getState();
 
-export const ensRegistrationRemoveRecordByKey = (key: string) => async (
-  dispatch: AppDispatch
-) =>
+  const lcAccountAddress = accountAddress.toLowerCase();
+  const accountRegistrations = registrationsData?.[accountAddress] || {};
+  const registration = accountRegistrations[name] || {};
+  const registrationRecords = registration?.records || {};
+
+  const updatedEnsRegistrationManagerForAccount = {
+    [lcAccountAddress]: {
+      ...accountRegistrations,
+      [name]: {
+        ...registration,
+        records: { ...registrationRecords, [key]: value },
+      },
+    },
+  };
   dispatch({
-    payload: { key },
+    payload: updatedEnsRegistrationManagerForAccount,
+    type: ENS_REGISTRATION_UPDATE_RECORDS,
+  });
+};
+
+export const removeRecordByKey = (
+  accountAddress: EthereumAddress,
+  name: string,
+  key: string
+) => async (dispatch: AppDispatch, getState: AppGetState) => {
+  const { ensRegistration: registrationsData } = getState();
+
+  const lcAccountAddress = accountAddress.toLowerCase();
+  const accountRegistrations = registrationsData?.[accountAddress] || {};
+  const registration = accountRegistrations[name] || {};
+  const registrationRecords = registration?.records || {};
+
+  const newRecords = omit(registrationRecords, key) as Records;
+
+  const updatedEnsRegistrationManagerForAccount = {
+    [lcAccountAddress]: {
+      ...accountRegistrations,
+      [name]: {
+        ...registration,
+        records: newRecords,
+      },
+    },
+  };
+
+  dispatch({
+    payload: updatedEnsRegistrationManagerForAccount,
     type: ENS_REGISTRATION_REMOVE_RECORD_BY_KEY,
   });
+};
 
 // -- Reducer ----------------------------------------- //
-const INITIAL_STATE: ENSRegistrationState = {
-  duration: 0,
-  name: '',
-  records: {} as Records,
-};
+const INITIAL_STATE: ENSRegistrationState = {};
 
 export default (
   state = INITIAL_STATE,
@@ -79,36 +155,28 @@ export default (
     case ENS_REGISTRATION_UPDATE_NAME:
       return {
         ...state,
-        name: action.payload,
+        ...action.payload,
       };
     case ENS_REGISTRATION_UPDATE_DURATION:
       return {
         ...state,
-        duration: action.payload,
+        ...action.payload,
       };
     case ENS_REGISTRATION_UPDATE_RECORDS:
       return {
         ...state,
-        records: action.payload,
+        ...action.payload,
       };
-    case ENS_REGISTRATION_UPDATE_RECORD_BY_KEY: {
-      const { key, value } = action.payload;
+    case ENS_REGISTRATION_UPDATE_RECORD_BY_KEY:
       return {
         ...state,
-        records: {
-          ...state.records,
-          [key]: value,
-        },
+        ...action.payload,
       };
-    }
-    case ENS_REGISTRATION_REMOVE_RECORD_BY_KEY: {
-      const { key } = action.payload;
-      const newRecords = omit(state.records, key) as Records;
+    case ENS_REGISTRATION_REMOVE_RECORD_BY_KEY:
       return {
         ...state,
-        records: newRecords,
+        ...action.payload,
       };
-    }
     default:
       return state;
   }

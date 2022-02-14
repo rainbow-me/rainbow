@@ -66,6 +66,7 @@ export const createCommitENSRap = async (
     registerENSActionParameters
   );
   actions = concat(actions, commit);
+  // save salt
 
   // create the overall rap
   const newRap = createNewRap(actions);

@@ -287,7 +287,7 @@ const setupMulticallRecords = (
   return data.flat().filter(Boolean);
 };
 
-const generateSalt = () => {
+export const generateSalt = () => {
   const random = new Uint8Array(32);
   crypto.getRandomValues(random);
   const salt =

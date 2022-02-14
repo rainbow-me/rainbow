@@ -65,3 +65,4 @@ export type {
 } from './tokenSearch';
 export type { UniswapFavoriteTokenData } from './uniswap';
 export type { UniswapPoolData } from './dispersion';
+export type { Records, ENSRegistrationState } from './ensRegistration';

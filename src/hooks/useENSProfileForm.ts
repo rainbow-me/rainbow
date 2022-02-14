@@ -1,11 +1,12 @@
 import { isEmpty } from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useAccountSettings } from '.';
 import { textRecordFields } from '@rainbow-me/helpers/ens';
 import {
-  ensRegistrationRemoveRecordByKey,
-  ensRegistrationUpdateRecordByKey,
-  ensRegistrationUpdateRecords,
+  removeRecordByKey,
+  updateRecordByKey,
+  updateRecords,
 } from '@rainbow-me/redux/ensRegistration';
 import { AppState } from '@rainbow-me/redux/store';
 
@@ -14,11 +15,14 @@ export default function useENSProfileForm({
 }: {
   defaultFields: any[];
 }) {
-  const records = useSelector(
-    ({ ensRegistration }: AppState) => ensRegistration.records
+  const { accountAddress } = useAccountSettings();
+  // TODO
+  const name = 'esv.eth';
+  const { records } = useSelector(
+    ({ ensRegistration }: AppState) =>
+      ensRegistration?.[accountAddress]?.[name] || { records: [] }
   );
   const dispatch = useDispatch();
-
   const [selectedFields, setSelectedFields] = useState(() => {
     // If there are existing records in the global state, then we
     // populate with that.
@@ -42,32 +46,32 @@ export default function useENSProfileForm({
           [field.key]: '',
         };
       }, {});
-      dispatch(ensRegistrationUpdateRecords(records));
+      dispatch(updateRecords(accountAddress, name, records));
     }
-  }, [defaultFields, dispatch, records, selectedFields]);
+  }, [accountAddress, defaultFields, dispatch, records, selectedFields]);
 
   const onAddField = useCallback(
     (fieldToAdd, selectedFields) => {
       setSelectedFields(selectedFields);
-      dispatch(ensRegistrationUpdateRecordByKey(fieldToAdd.key, ''));
+      dispatch(updateRecordByKey(accountAddress, name, fieldToAdd.key, ''));
     },
-    [dispatch]
+    [accountAddress, dispatch]
   );
 
   const onRemoveField = useCallback(
     (fieldToRemove, selectedFields) => {
       setSelectedFields(selectedFields);
-      dispatch(ensRegistrationRemoveRecordByKey(fieldToRemove.key));
+      dispatch(removeRecordByKey(accountAddress, name, fieldToRemove.key));
       setValues(values => ({ ...values, [fieldToRemove.key]: '' }));
     },
-    [dispatch]
+    [accountAddress, dispatch]
   );
 
   const onBlurField = useCallback(
     ({ key, value }) => {
-      dispatch(ensRegistrationUpdateRecordByKey(key, value));
+      dispatch(updateRecordByKey(accountAddress, name, key, value));
     },
-    [dispatch]
+    [accountAddress, dispatch]
   );
 
   const onChangeField = useCallback(({ key, value }) => {
