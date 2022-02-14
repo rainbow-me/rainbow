@@ -1140,9 +1140,7 @@ export default function TransactionConfirmationScreen() {
                           value={accountInfo.accountSymbol}
                         />
                       )}
-                      <WalletText>
-                        12312312erjigrejgirejeii{accountInfo.accountName}
-                      </WalletText>
+                      <WalletText>{accountInfo.accountName}</WalletText>
                     </RowWithMargins>
                   </Column>
                   <Column marginLeft={16}>
