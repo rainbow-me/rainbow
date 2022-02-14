@@ -20,6 +20,7 @@ import {
   Text,
 } from '@rainbow-me/design-system';
 import {
+  useAccountSettings,
   useDebounceString,
   useENSRegistration,
   useENSRegistrationCosts,
@@ -35,6 +36,7 @@ export default function ENSSearchSheet() {
   const dispatch = useDispatch();
   const { navigate } = useNavigation();
   const keyboardHeight = useKeyboardHeight();
+  const { accountAddress } = useAccountSettings();
 
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounceString(searchQuery);
@@ -67,10 +69,10 @@ export default function ENSSearchSheet() {
   }, [isAvailable, isInvalid, isRegistered]);
 
   const handlePressContinue = useCallback(() => {
-    dispatch(startRegistration(`${searchQuery}.eth`));
+    dispatch(startRegistration(accountAddress, `${searchQuery}.eth`));
     Keyboard.dismiss();
     navigate(Routes.ENS_ASSIGN_RECORDS_SHEET);
-  }, [dispatch, navigate, searchQuery]);
+  }, [accountAddress, dispatch, navigate, searchQuery]);
 
   return (
     <Box background="body" flexGrow={1}>

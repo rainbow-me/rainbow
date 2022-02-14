@@ -1,7 +1,8 @@
-import { isEmpty } from 'lodash';
+import { isEmpty, omit } from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAccountSettings } from '.';
+import { ENSRegistrationState, Records } from '@rainbow-me/entities';
 import { textRecordFields } from '@rainbow-me/helpers/ens';
 import {
   removeRecordByKey,
@@ -16,12 +17,17 @@ export default function useENSProfileForm({
   defaultFields: any[];
 }) {
   const { accountAddress } = useAccountSettings();
-  // TODO
-  const name = 'esv.eth';
-  const { records } = useSelector(
-    ({ ensRegistration }: AppState) =>
-      ensRegistration?.[accountAddress]?.[name] || { records: [] }
-  );
+  const { records } = useSelector(({ ensRegistration }: AppState) => {
+    const {
+      currentRegistrationName,
+      registrations,
+    } = ensRegistration as ENSRegistrationState;
+    const records =
+      registrations?.[accountAddress?.toLowerCase()]?.[currentRegistrationName]
+        ?.records;
+    return { name: currentRegistrationName, records };
+  });
+
   const dispatch = useDispatch();
   const [selectedFields, setSelectedFields] = useState(() => {
     // If there are existing records in the global state, then we
@@ -38,6 +44,7 @@ export default function useENSProfileForm({
   const [values, setValues] = useState(records);
 
   // Set initial records in redux depending on user input (defaultFields)
+  // TODO: this is not working as expected when going back and changing name
   useEffect(() => {
     if (isEmpty(records)) {
       const records = defaultFields.reduce((records, field) => {
@@ -46,14 +53,14 @@ export default function useENSProfileForm({
           [field.key]: '',
         };
       }, {});
-      dispatch(updateRecords(accountAddress, name, records));
+      dispatch(updateRecords(accountAddress, records));
     }
   }, [accountAddress, defaultFields, dispatch, records, selectedFields]);
 
   const onAddField = useCallback(
     (fieldToAdd, selectedFields) => {
       setSelectedFields(selectedFields);
-      dispatch(updateRecordByKey(accountAddress, name, fieldToAdd.key, ''));
+      dispatch(updateRecordByKey(accountAddress, fieldToAdd.key, ''));
     },
     [accountAddress, dispatch]
   );
@@ -61,15 +68,15 @@ export default function useENSProfileForm({
   const onRemoveField = useCallback(
     (fieldToRemove, selectedFields) => {
       setSelectedFields(selectedFields);
-      dispatch(removeRecordByKey(accountAddress, name, fieldToRemove.key));
-      setValues(values => ({ ...values, [fieldToRemove.key]: '' }));
+      dispatch(removeRecordByKey(accountAddress, fieldToRemove.key));
+      setValues(values => omit(values, fieldToRemove.key) as Records);
     },
     [accountAddress, dispatch]
   );
 
   const onBlurField = useCallback(
     ({ key, value }) => {
-      dispatch(updateRecordByKey(accountAddress, name, key, value));
+      dispatch(updateRecordByKey(accountAddress, key, value));
     },
     [accountAddress, dispatch]
   );

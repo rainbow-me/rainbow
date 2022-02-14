@@ -6,7 +6,6 @@ import { toHex } from '@rainbow-me/handlers/web3';
 import {
   ENSRegistrationRecords,
   ENSRegistrationTransactionType,
-  generateSalt,
   getENSExecutionDetails,
 } from '@rainbow-me/helpers/ens';
 import { delay } from '@rainbow-me/helpers/utilities';
@@ -26,7 +25,7 @@ const executeCommit = async (
   nonce: number | null = null
 ) => {
   // const { dispatch } = store;
-  const salt = generateSalt();
+  // const salt = generateSalt();
   //save salt from state by account & name
 
   const { contract, methodArguments, value } = await getENSExecutionDetails({
@@ -34,7 +33,6 @@ const executeCommit = async (
     name,
     ownerAddress,
     rentPrice,
-    salt,
     type: ENSRegistrationTransactionType.COMMIT,
     wallet,
   });
