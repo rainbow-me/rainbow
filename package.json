@@ -159,6 +159,7 @@
     "mnemonist": "0.38.1",
     "nanoid": "3.2.0",
     "p-wait-for": "4.1.0",
+    "pako": "2.0.4",
     "parse-domain": "4.1.0",
     "parse-ms": "2.1.0",
     "patch-package": "6.4.7",
@@ -363,7 +364,7 @@
     "**/validator": "13.7.0",
     "**/json-schema": "0.4.0",
     "**/@ethersproject/**": "5.4.0",
-    "**/follow-redirects": "1.14.7",
+    "**/follow-redirects": "1.14.8",
     "**/markdown-it": "12.3.2",
     "**/simple-get": "4.0.1"
   },
