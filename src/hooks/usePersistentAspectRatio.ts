@@ -32,7 +32,7 @@ export default function usePersistentAspectRatio(url: string): Result {
   );
   useEffect(() => {
     if (state === State.init && nonSvgUrl) {
-      const lowResUrl = getLowResUrl(nonSvgUrl);
+      const lowResUrl = getLowResUrl(nonSvgUrl) as string;
       setState(State.loading);
       Image.getSize(
         lowResUrl,
