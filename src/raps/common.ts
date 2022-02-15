@@ -125,7 +125,7 @@ export const RapActionTypes = {
   depositCompound: 'depositCompound' as RapActionType,
   multicallENS: 'multicallENS' as RapActionType,
   registerENS: 'registerENS' as RapActionType,
-  registerSetRecordsAndName: 'setTextENS' as RapActionType,
+  registerSetRecordsAndName: 'registerSetRecordsAndName' as RapActionType,
   setNameENS: 'setNameENS' as RapActionType,
   setTextENS: 'setTextENS' as RapActionType,
   swap: 'swap' as RapActionType,

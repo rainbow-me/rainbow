@@ -195,7 +195,7 @@ export const estimateENSTransactionGasLimit = async ({
   records,
   salt,
 }: {
-  name?: string;
+  name: string;
   type: ENSRegistrationTransactionType;
   ownerAddress?: string;
   rentPrice?: string;
@@ -203,7 +203,6 @@ export const estimateENSTransactionGasLimit = async ({
   salt?: string;
   records?: ENSRegistrationRecords;
 }): Promise<string | null> => {
-  if (!name) return null;
   const { contract, methodArguments, value } = await getENSExecutionDetails({
     duration,
     name,
@@ -239,10 +238,10 @@ export const estimateENSRegistrationGasLimit = async (
     rentPrice,
     salt,
   });
-  // const setNameGasLimitPromise = estimateENSSetNameGasLimit({
-  //   name,
-  //   ownerAddress,
-  // });
+  const setNameGasLimitPromise = estimateENSSetNameGasLimit({
+    name,
+    ownerAddress,
+  });
   const multicallGasLimitPromise = estimateENSMulticallGasLimit({
     name,
     records: {
@@ -258,6 +257,7 @@ export const estimateENSRegistrationGasLimit = async (
   });
   const gasLimits = await Promise.all([
     commitGasLimitPromise,
+    setNameGasLimitPromise,
     multicallGasLimitPromise,
   ]);
   // we need to add register gas limit manually since the gas estimation will fail since the commit tx is not sent yet

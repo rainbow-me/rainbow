@@ -308,7 +308,7 @@ const getENSExecutionDetails = async ({
   records,
   wallet,
 }: {
-  name?: string;
+  name: string;
   type: ENSRegistrationTransactionType;
   ownerAddress?: string;
   rentPrice?: string;

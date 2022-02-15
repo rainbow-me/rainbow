@@ -327,9 +327,7 @@ const ensAction = async (
     maxFeePerGas,
     maxPriorityFeePerGas,
     nonce: tx?.nonce,
-    status: TransactionStatus.swapping,
     to: tx?.to,
-    type: TransactionType.trade,
     value: toHex(tx.value),
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
