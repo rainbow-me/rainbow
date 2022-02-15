@@ -1,4 +1,3 @@
-import { useRoute } from '@react-navigation/native';
 import React, { useCallback } from 'react';
 import { Keyboard, ScrollView } from 'react-native';
 import Animated, {
@@ -66,58 +65,9 @@ export default function ENSAssignRecordsSheet() {
 
   const avatarRadius = 35;
 
-  const formIsEmpty = true; // change this when ens records are merged in
+  const formIsEmpty = Object.values(values).join('');
 
   return (
-    // <<<<<<< HEAD
-    //     <AccentColorProvider color={avatarColor}>
-    //       <Box background="body" flexGrow={1}>
-    // <Box flexGrow={1}>
-    // <Box
-    //   background="accent"
-    //   height={{ custom: 125 }}
-    //   marginBottom={{ custom: 70 }}
-    // >
-    //   <Cover alignHorizontal="center">
-    //     <Box
-    //       background="swap"
-    //       borderRadius={avatarRadius}
-    //       height={{ custom: avatarRadius * 2 }}
-    //       top={{ custom: 105 }}
-    //       width={{ custom: avatarRadius * 2 }}
-    //     />
-    //   </Cover>
-    // </Box>
-    //           <Stack alignHorizontal="center" space="15px">
-    //             <Heading size="26px" weight="heavy">
-    //               {params ? params.name : ''}
-    //             </Heading>
-    //             <Text color="accent" size="16px" weight="heavy">
-    //               Create your profile
-    //             </Text>
-    //           </Stack>
-    //         </Box>
-    //         <SheetActionButtonRow>
-    //           <TintButton color="secondary60" onPress={handlePressBack}>
-    //             􀆉 Back
-    //           </TintButton>
-    //           {formIsEmpty ? (
-    //             <TintButton color="secondary60" onPress={handlePressContinue}>
-    //               Skip
-    //             </TintButton>
-    //           ) : (
-    //             <SheetActionButton
-    //               color={avatarColor}
-    //               label="Review"
-    //               onPress={handlePressContinue}
-    //               size="big"
-    //               weight="heavy"
-    //             />
-    //           )}
-    //         </SheetActionButtonRow>
-    //       </Box>
-    //     </AccentColorProvider>
-    // =======
     <AccentColorProvider color={avatarColor}>
       <Box background="body" flexGrow={1}>
         <Rows>
@@ -148,12 +98,14 @@ export default function ENSAssignRecordsSheet() {
                       Create your profile
                     </Text>
                   </Stack>
-                  <TextRecordsForm
-                    onBlurField={onBlurField}
-                    onChangeField={onChangeField}
-                    selectedFields={selectedFields}
-                    values={values}
-                  />
+                  <Box as={ScrollView} flexGrow={1}>
+                    <TextRecordsForm
+                      onBlurField={onBlurField}
+                      onChangeField={onChangeField}
+                      selectedFields={selectedFields}
+                      values={values}
+                    />
+                  </Box>
                 </Stack>
               </Inset>
             </Box>
