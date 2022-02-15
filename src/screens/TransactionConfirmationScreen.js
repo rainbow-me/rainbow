@@ -13,7 +13,6 @@ import React, {
   useState,
 } from 'react';
 import { ActivityIndicator, Alert, InteractionManager } from 'react-native';
-import { Text } from '@rainbow-me/design-system';
 import { isEmulatorSync } from 'react-native-device-info';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, {
@@ -21,7 +20,6 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-import colors from '../styles/colors';
 import { useDispatch, useSelector } from 'react-redux';
 import URL from 'url-parse';
 import Divider from '../components/Divider';
@@ -44,6 +42,8 @@ import {
   MessageSigningSection,
   TransactionConfirmationSection,
 } from '../components/transaction';
+import { lightModeThemeColors } from '../styles/colors';
+import { Text } from '@rainbow-me/design-system';
 import {
   estimateGas,
   estimateGasWithPadding,
@@ -142,29 +142,15 @@ const SwitchText = ({ children, ...props }) => {
   );
 };
 
-const LabelText = ({ children, ...props }) => {
+const WalletText = ({ balanceTooLow, children }) => {
   return (
     <Text
-      color="primary"
-      numberOfLines={1}
-      size="18px"
-      weight="bold"
-      {...props}
-    >
-      {children}
-    </Text>
-  );
-};
-
-const WalletText = ({ children, balanceTooLow }) => {
-  return (
-    <Text
-      numberOfLines={1}
       color={
         balanceTooLow
-          ? { custom: colors.lightModeThemeColors.avatarColor[7] }
+          ? { custom: lightModeThemeColors.avatarColor[7] }
           : 'secondary80'
       }
+      numberOfLines={1}
       size="18px"
       weight={balanceTooLow ? 'bold' : 'semibold'}
     >
