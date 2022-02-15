@@ -202,8 +202,8 @@ export const estimateENSTransactionGasLimit = async ({
   duration?: number;
   salt?: string;
   records?: ENSRegistrationRecords;
-}) => {
-  if (!name) return;
+}): Promise<string | null> => {
+  if (!name) return null;
   const { contract, methodArguments, value } = await getENSExecutionDetails({
     duration,
     name,
@@ -283,36 +283,36 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
   rentPrice: string;
   salt: string;
 }) => {
-  let registerGasLimitPromise = estimateENSRegisterWithConfigGasLimit({
+  const registerGasLimitPromise = estimateENSRegisterWithConfigGasLimit({
     duration,
     name,
     ownerAddress,
     rentPrice,
     salt,
   });
+  // wip
   const setReverseRecord = true;
   const setRecords = true;
-  // wip
 
-  const setNameGasLimitPromise = setReverseRecord
-    ? estimateENSSetNameGasLimit({
+  const promises = [registerGasLimitPromise];
+  if (setReverseRecord) {
+    promises.push(
+      estimateENSSetNameGasLimit({
         name,
         ownerAddress,
       })
-    : 0;
-
-  const multicallGasLimitPromise = setRecords
-    ? estimateENSMulticallGasLimit({
+    );
+  }
+  if (setRecords) {
+    promises.push(
+      estimateENSMulticallGasLimit({
         name,
         records,
       })
-    : 0;
+    );
+  }
 
-  const gasLimits = await Promise.all([
-    registerGasLimitPromise,
-    setNameGasLimitPromise,
-    multicallGasLimitPromise,
-  ]);
+  const gasLimits = await Promise.all(promises);
 
   const gasLimit = gasLimits.reduce((a, b) => add(a || 0, b || 0));
   if (!gasLimit) return '0';
