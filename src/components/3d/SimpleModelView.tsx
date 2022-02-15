@@ -14,6 +14,7 @@ import { padding, position } from '@rainbow-me/styles';
 export type ModelViewerProps = {
   readonly setLoading: (loading: boolean) => void;
   readonly loading: boolean;
+  readonly size: number;
   readonly style?: ViewStyle;
   readonly uri: string;
   readonly alt?: string;
@@ -76,6 +77,7 @@ const getSource = ({ alt, uri }: { alt?: string; uri: string }) =>
 export default function ModelViewer({
   loading,
   setLoading,
+  size,
   style,
   uri,
   alt,
@@ -133,6 +135,7 @@ export default function ModelViewer({
         style={{ opacity }}
       >
         <ImgixImage
+          size={size}
           source={{ uri: fallbackUri }}
           style={StyleSheet.absoluteFill}
         />
