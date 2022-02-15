@@ -1,10 +1,12 @@
 import { omit } from 'lodash';
 import { AnyAction } from 'redux';
+
 import { AppDispatch, AppGetState } from './store';
 import {
   ENSRegistrationState,
   EthereumAddress,
   Records,
+  RegistrationParameters,
 } from '@rainbow-me/entities';
 
 const ENS_REGISTRATION_UPDATE_DURATION =
@@ -19,21 +21,25 @@ const ENS_SET_CURRENT_REGISTRATION_NAME =
   'ensRegistration/ENS_SET_CURRENT_REGISTRATION_NAME';
 const ENS_CONTINUE_REGISTRATION = 'ensRegistration/ENS_CONTINUE_REGISTRATION';
 const ENS_START_REGISTRATION = 'ensRegistration/ENS_START_REGISTRATION';
+const ENS_SAVE_COMMIT_REGISTRATION_PARAMETERS =
+  'ensRegistration/ENS_SAVE_COMMIT_REGISTRATION_PARAMETERS';
 
 // -- Actions ---------------------------------------- //
 export const startRegistration = (
   accountAddress: EthereumAddress,
   name: string
 ) => async (dispatch: AppDispatch, getState: AppGetState) => {
-  const { ensRegistration: registrationsData } = getState();
+  const {
+    ensRegistration: { registrations },
+  } = getState();
 
   const lcAccountAddress = accountAddress.toLowerCase();
-  const accountRegistrations =
-    registrationsData?.registrations?.[lcAccountAddress] || {};
+  const accountRegistrations = registrations?.[lcAccountAddress] || {};
+
   const updatedEnsRegistrationManager = {
     currentRegistrationName: name,
     registrations: {
-      ...registrationsData?.registrations,
+      ...registrations,
       [lcAccountAddress]: {
         ...accountRegistrations,
         [name]: { name },
@@ -62,20 +68,20 @@ export const updateRegistrationDuration = (
   accountAddress: EthereumAddress,
   duration: number
 ) => async (dispatch: AppDispatch, getState: AppGetState) => {
-  const { ensRegistration: registrationsData } = getState();
+  const {
+    ensRegistration: { registrations, currentRegistrationName },
+  } = getState();
   const lcAccountAddress = accountAddress.toLowerCase();
 
-  const accountRegistrations =
-    registrationsData?.registrations?.[lcAccountAddress] || {};
-  const name = registrationsData?.currentRegistrationName;
-  const registration = accountRegistrations[name] || {};
+  const accountRegistrations = registrations?.[lcAccountAddress] || {};
+  const registration = accountRegistrations[currentRegistrationName] || {};
 
   const updatedEnsRegistrationManager = {
     registrations: {
-      ...registrationsData?.registrations,
+      ...registrations,
       [lcAccountAddress]: {
         ...accountRegistrations,
-        [name]: { ...registration, duration },
+        [currentRegistrationName]: { ...registration, duration },
       },
     },
   };
@@ -89,19 +95,19 @@ export const updateRecords = (
   accountAddress: EthereumAddress,
   records: Records
 ) => async (dispatch: AppDispatch, getState: AppGetState) => {
-  const { ensRegistration: registrationsData } = getState();
+  const {
+    ensRegistration: { registrations, currentRegistrationName },
+  } = getState();
   const lcAccountAddress = accountAddress.toLowerCase();
-  const accountRegistrations =
-    registrationsData?.registrations?.[lcAccountAddress] || {};
-  const name = registrationsData?.currentRegistrationName;
-  const registration = accountRegistrations[name] || {};
+  const accountRegistrations = registrations?.[lcAccountAddress] || {};
+  const registration = accountRegistrations[currentRegistrationName] || {};
 
   const updatedEnsRegistrationManagerForAccount = {
     registrations: {
-      ...registrationsData?.registrations,
+      ...registrations,
       [lcAccountAddress]: {
         ...accountRegistrations,
-        [name]: { ...registration, records },
+        [currentRegistrationName]: { ...registration, records },
       },
     },
   };
@@ -116,21 +122,21 @@ export const updateRecordByKey = (
   key: string,
   value: string
 ) => async (dispatch: AppDispatch, getState: AppGetState) => {
-  const { ensRegistration: registrationsData } = getState();
+  const {
+    ensRegistration: { registrations, currentRegistrationName },
+  } = getState();
   const lcAccountAddress = accountAddress.toLowerCase();
 
-  const accountRegistrations =
-    registrationsData?.registrations?.[lcAccountAddress] || {};
-  const name = registrationsData?.currentRegistrationName;
-  const registration = accountRegistrations[name] || {};
+  const accountRegistrations = registrations?.[lcAccountAddress] || {};
+  const registration = accountRegistrations[currentRegistrationName] || {};
   const registrationRecords = registration?.records || {};
 
   const updatedEnsRegistrationManagerForAccount = {
     registrations: {
-      ...registrationsData?.registrations,
+      ...registrations,
       [lcAccountAddress]: {
         ...accountRegistrations,
-        [name]: {
+        [currentRegistrationName]: {
           ...registration,
           records: { ...registrationRecords, [key]: value },
         },
@@ -147,23 +153,23 @@ export const removeRecordByKey = (
   accountAddress: EthereumAddress,
   key: string
 ) => async (dispatch: AppDispatch, getState: AppGetState) => {
-  const { ensRegistration: registrationsData } = getState();
+  const {
+    ensRegistration: { registrations, currentRegistrationName },
+  } = getState();
 
   const lcAccountAddress = accountAddress.toLowerCase();
-  const accountRegistrations =
-    registrationsData?.registrations?.[lcAccountAddress] || {};
-  const name = registrationsData?.currentRegistrationName;
-  const registration = accountRegistrations[name] || {};
+  const accountRegistrations = registrations?.[lcAccountAddress] || {};
+  const registration = accountRegistrations[currentRegistrationName] || {};
   const registrationRecords = registration?.records || {};
 
   const newRecords = omit(registrationRecords, key) as Records;
 
   const updatedEnsRegistrationManagerForAccount = {
     registrations: {
-      ...registrationsData?.registrations,
+      ...registrations,
       [lcAccountAddress]: {
         ...accountRegistrations,
-        [name]: {
+        [currentRegistrationName]: {
           ...registration,
           records: newRecords,
         },
@@ -174,6 +180,36 @@ export const removeRecordByKey = (
   dispatch({
     payload: updatedEnsRegistrationManagerForAccount,
     type: ENS_REGISTRATION_REMOVE_RECORD_BY_KEY,
+  });
+};
+
+export const saveCommitRegistrationParameters = (
+  accountAddress: EthereumAddress,
+  registrationParameters: RegistrationParameters
+) => async (dispatch: AppDispatch, getState: AppGetState) => {
+  const {
+    ensRegistration: { registrations, currentRegistrationName },
+  } = getState();
+
+  const lcAccountAddress = accountAddress.toLowerCase();
+  const accountRegistrations = registrations?.[lcAccountAddress] || {};
+  const registration = accountRegistrations[currentRegistrationName] || {};
+  const updatedEnsRegistrationManagerForAccount = {
+    registrations: {
+      ...registrations,
+      [lcAccountAddress]: {
+        ...accountRegistrations,
+        [currentRegistrationName]: {
+          ...registration,
+          ...registrationParameters,
+        },
+      },
+    },
+  };
+
+  dispatch({
+    payload: updatedEnsRegistrationManagerForAccount,
+    type: ENS_SAVE_COMMIT_REGISTRATION_PARAMETERS,
   });
 };
 
@@ -214,6 +250,11 @@ export default (
         ...action.payload,
       };
     case ENS_REGISTRATION_REMOVE_RECORD_BY_KEY:
+      return {
+        ...state,
+        ...action.payload,
+      };
+    case ENS_SAVE_COMMIT_REGISTRATION_PARAMETERS:
       return {
         ...state,
         ...action.payload,

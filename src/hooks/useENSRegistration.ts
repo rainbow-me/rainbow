@@ -1,5 +1,4 @@
 import { format } from 'date-fns';
-import { BigNumber } from 'ethers';
 import { useCallback, useMemo } from 'react';
 import { useQuery } from 'react-query';
 import { useAccountSettings } from '.';
@@ -11,6 +10,7 @@ import {
 } from '@rainbow-me/helpers/ens';
 import { Network } from '@rainbow-me/helpers/networkTypes';
 import {
+  addBuffer,
   convertAmountAndPriceToNativeDisplay,
   divide,
   fromWei,
@@ -23,12 +23,12 @@ const getRentPricePerYear = (rentPrice: string, duration: number) =>
   divide(rentPrice, duration);
 
 const formatRentPrice = (
-  rentPrice: BigNumber,
+  rentPrice: string,
   duration: number,
   nativeCurrency: any,
   nativeAssetPrice: any
 ) => {
-  const rentPriceInETH = fromWei(rentPrice.toString());
+  const rentPriceInETH = fromWei(rentPrice);
   const rentPricePerYear = getRentPricePerYear(rentPriceInETH, duration);
 
   const { amount, display } = convertAmountAndPriceToNativeDisplay(
@@ -95,8 +95,9 @@ export default function useENSRegistration({
       const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
         Network.mainnet
       );
+      const rentPriceWitBuffer = addBuffer(rentPrice.toString(), 1.1);
       const formattedRentPrice = formatRentPrice(
-        rentPrice,
+        rentPriceWitBuffer,
         duration,
         nativeCurrency,
         nativeAssetPrice

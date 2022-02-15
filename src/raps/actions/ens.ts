@@ -1,6 +1,7 @@
 import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
 import { Rap, RapActionParameters } from '../common';
+import { TransactionStatus, TransactionType } from '@rainbow-me/entities';
 import { estimateENSTransactionGasLimit } from '@rainbow-me/handlers/ens';
 import { toHex } from '@rainbow-me/handlers/web3';
 import {
@@ -18,6 +19,7 @@ const executeCommit = async (
   duration?: number,
   ownerAddress?: string,
   rentPrice?: string,
+  salt?: string,
   gasLimit?: string | null,
   maxFeePerGas?: string,
   maxPriorityFeePerGas?: string,
@@ -25,14 +27,12 @@ const executeCommit = async (
   nonce: number | null = null
 ) => {
   // const { dispatch } = store;
-  // const salt = generateSalt();
-  //save salt from state by account & name
-
   const { contract, methodArguments, value } = await getENSExecutionDetails({
     duration,
     name,
     ownerAddress,
     rentPrice,
+    salt,
     type: ENSRegistrationTransactionType.COMMIT,
     wallet,
   });
@@ -56,18 +56,19 @@ const executeRegisterWithConfig = async (
   duration?: number,
   ownerAddress?: string,
   rentPrice?: string,
+  salt?: string,
   gasLimit?: string | null,
   maxFeePerGas?: string,
   maxPriorityFeePerGas?: string,
   wallet?: Wallet,
   nonce: number | null = null
 ) => {
-  //get salt from state by account & name
   const { contract, methodArguments, value } = await getENSExecutionDetails({
     duration,
     name,
     ownerAddress,
     rentPrice,
+    salt,
     type: ENSRegistrationTransactionType.REGISTER_WITH_CONFIG,
     wallet,
   });
@@ -205,6 +206,7 @@ const ensAction = async (
     records,
     recordKey,
     recordValue,
+    salt,
   } = parameters;
 
   logger.log(`[${actionName}] rap for`, name);
@@ -216,9 +218,7 @@ const ensAction = async (
       {
         ...parameters,
       },
-      type,
-      'baseNonce',
-      baseNonce
+      type
     );
     gasLimit = await estimateENSTransactionGasLimit({
       duration,
@@ -226,6 +226,7 @@ const ensAction = async (
       ownerAddress,
       records,
       rentPrice,
+      salt,
       type,
     });
   } catch (e) {
@@ -253,6 +254,7 @@ const ensAction = async (
           duration,
           ownerAddress,
           rentPrice,
+          salt,
           gasLimit,
           maxFeePerGas,
           maxPriorityFeePerGas,
@@ -266,6 +268,7 @@ const ensAction = async (
           duration,
           ownerAddress,
           rentPrice,
+          salt,
           gasLimit,
           maxFeePerGas,
           maxPriorityFeePerGas,
@@ -324,7 +327,9 @@ const ensAction = async (
     maxFeePerGas,
     maxPriorityFeePerGas,
     nonce: tx?.nonce,
+    status: TransactionStatus.swapping,
     to: tx?.to,
+    type: TransactionType.trade,
     value: toHex(tx.value),
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);

@@ -66,6 +66,7 @@ export interface RapActionParameters {
   rentPrice?: string;
   recordKey?: string;
   recordValue?: string;
+  salt?: string;
   records?: ENSRegistrationRecords;
 }
 
@@ -90,6 +91,7 @@ export interface RegisterENSActionParameters {
   ownerAddress: string;
   recordKey: string;
   recordValue: string;
+  salt: string;
   records: ENSRegistrationRecords;
 }
 
@@ -270,14 +272,13 @@ const executeAction = async (
 export const executeRap = async (
   wallet: Wallet,
   type: string,
-  swapParameters: SwapActionParameters,
-  ensRegistrationParameters: RegisterENSActionParameters,
+  parameters: {
+    swapParameters: SwapActionParameters;
+    ensRegistrationParameters: RegisterENSActionParameters;
+  },
   callback: (success?: boolean, errorMessage?: string | null) => void
 ) => {
-  const rap: Rap = await createRapByType(type, {
-    ensRegistrationParameters,
-    swapParameters,
-  });
+  const rap: Rap = await createRapByType(type, parameters);
   const { actions } = rap;
   const rapName = getRapFullName(actions);
 
@@ -289,13 +290,16 @@ export const executeRap = async (
   logger.log('[common - executing rap]: actions', actions);
   if (actions.length) {
     const firstAction = actions[0];
+    const nonce =
+      parameters?.swapParameters?.nonce ||
+      parameters?.ensRegistrationParameters?.nonce;
     const { baseNonce, errorMessage } = await executeAction(
       firstAction,
       wallet,
       rap,
       0,
       rapName,
-      swapParameters.nonce
+      nonce
     );
     if (baseNonce) {
       for (let index = 1; index < actions.length; index++) {

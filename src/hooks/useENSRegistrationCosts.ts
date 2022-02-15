@@ -1,4 +1,3 @@
-import { BigNumber } from 'ethers';
 import { useCallback } from 'react';
 import { useQuery } from 'react-query';
 import { useAccountSettings } from '.';
@@ -69,7 +68,7 @@ export default function useENSRegistrationCosts({
 }: {
   duration: number;
   name: string;
-  rentPrice: BigNumber;
+  rentPrice: string;
 }) {
   const { nativeCurrency, accountAddress } = useAccountSettings();
 
@@ -81,7 +80,7 @@ export default function useENSRegistrationCosts({
       name,
       accountAddress,
       duration * secsInYear,
-      rentPrice.toString()
+      rentPrice
     );
 
     const { gasFeeParamsBySpeed, currentBaseFee } = await getEIP1559GasParams();
@@ -96,7 +95,7 @@ export default function useENSRegistrationCosts({
 
     const weiEstimatedTotalCost = add(
       formattedEstimatedNetworkFee.wei,
-      rentPrice.toString()
+      rentPrice
     );
     const totalRegistrationCost = formatTotalRegistrationCost(
       weiEstimatedTotalCost,
@@ -110,7 +109,7 @@ export default function useENSRegistrationCosts({
   }, [accountAddress, duration, name, nativeCurrency, rentPrice]);
 
   const { data, status } = useQuery(
-    rentPrice && [
+    !!rentPrice && [
       'getRegistrationValuesEstimations',
       duration,
       name,

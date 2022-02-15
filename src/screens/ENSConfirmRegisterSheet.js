@@ -1,5 +1,6 @@
 import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { GasSpeedButton } from '../components/gas';
 import {
   SheetActionButton,
@@ -8,7 +9,7 @@ import {
 } from '../components/sheet';
 import { executeRap, RapActionTypes } from '../raps/common';
 import { Box, Text } from '@rainbow-me/design-system';
-import { getRentPrice } from '@rainbow-me/helpers/ens';
+import { generateSalt, getRentPrice } from '@rainbow-me/helpers/ens';
 import { addBuffer } from '@rainbow-me/helpers/utilities';
 import {
   useAccountSettings,
@@ -18,6 +19,7 @@ import {
 } from '@rainbow-me/hooks';
 import { loadWallet } from '@rainbow-me/model/wallet';
 import { getRapEstimationByType } from '@rainbow-me/raps';
+import { saveCommitRegistrationParameters } from '@rainbow-me/redux/ensRegistration';
 // import Routes from '@rainbow-me/routes';
 
 export const ENSConfirmRegisterSheetHeight = 600;
@@ -48,8 +50,9 @@ const Timer = ({ seconds }) => {
 
 export default function ENSConfirmRegisterSheet() {
   // const { navigate, goBack } = useNavigation();
+  const dispatch = useDispatch();
   const { gasFeeParamsBySpeed, updateTxFee, startPollingGasFees } = useGas();
-  const { name, records } = useENSProfile();
+  const { name, records, registrationParameters } = useENSProfile();
   const { accountAddress, network } = useAccountSettings();
   const getNextNonce = useCurrentNonce(accountAddress, network);
   const [rentPrice, setRentPrice] = useState();
@@ -64,13 +67,15 @@ export default function ENSConfirmRegisterSheet() {
   }, [name]);
 
   const updateGasLimit = useCallback(async () => {
+    const salt = generateSalt();
     const gasLimit = await getRapEstimationByType(RapActionTypes.commitENS, {
       ensRegistrationParameters: {
         duration: secsInYear,
         name: name,
         ownerAddress: accountAddress,
         records,
-        rentPrice: rentPrice.toString(),
+        rentPrice,
+        salt,
       },
     });
     updateTxFee(gasLimit);
@@ -97,22 +102,32 @@ export default function ENSConfirmRegisterSheet() {
       console.log('😬😬😬 handleCommitSubmit CALLBACK ', success, errorMessage);
     };
     const nonce = await getNextNonce();
+    const salt = generateSalt();
+
     const ensRegistrationParameters = {
       duration: secsInYear,
       name,
       nonce,
       ownerAddress: accountAddress,
       records,
-      rentPrice: rentPrice.toString(),
+      rentPrice,
+      salt,
     };
+
+    await dispatch(
+      saveCommitRegistrationParameters(
+        accountAddress,
+        ensRegistrationParameters
+      )
+    );
+
     await executeRap(
       wallet,
       RapActionTypes.commitENS,
-      {},
-      ensRegistrationParameters,
+      { ensRegistrationParameters },
       callback
     );
-  }, [accountAddress, getNextNonce, name, records, rentPrice]);
+  }, [accountAddress, dispatch, getNextNonce, name, records, rentPrice]);
 
   const handleRegisterSubmit = useCallback(async () => {
     const wallet = await loadWallet();
@@ -134,16 +149,24 @@ export default function ENSConfirmRegisterSheet() {
       nonce,
       ownerAddress: accountAddress,
       records,
-      rentPrice: rentPrice.toString(),
+      rentPrice,
+      salt: registrationParameters?.salt,
     };
+
     await executeRap(
       wallet,
       RapActionTypes.registerSetRecordsAndName,
-      {},
-      ensRegistrationParameters,
+      { ensRegistrationParameters },
       callback
     );
-  }, [accountAddress, getNextNonce, name, records, rentPrice]);
+  }, [
+    accountAddress,
+    getNextNonce,
+    name,
+    records,
+    registrationParameters,
+    rentPrice,
+  ]);
 
   return (
     <SlackSheet

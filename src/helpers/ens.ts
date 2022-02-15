@@ -302,6 +302,7 @@ const getENSExecutionDetails = async ({
   name,
   type,
   ownerAddress,
+  salt,
   rentPrice,
   duration,
   records,
@@ -314,6 +315,7 @@ const getENSExecutionDetails = async ({
   duration?: number;
   records?: ENSRegistrationRecords;
   wallet?: Wallet;
+  salt?: string;
 }): Promise<{
   methodArguments: any[] | null;
   value: BigNumberish | null;
@@ -322,10 +324,10 @@ const getENSExecutionDetails = async ({
   let args: any[] | null = null;
   let value: string | null = null;
   let contract: Contract | null = null;
+
   switch (type) {
     case ENSRegistrationTransactionType.COMMIT: {
       if (!name || !ownerAddress) throw new Error('Bad arguments for commit');
-      const salt = generateSalt();
       const registrarController = getENSRegistrarControllerContract(wallet);
       const commitment = await registrarController.makeCommitmentWithConfig(
         name.replace('.eth', ''),
@@ -341,7 +343,6 @@ const getENSExecutionDetails = async ({
     case ENSRegistrationTransactionType.REGISTER_WITH_CONFIG: {
       if (!name || !ownerAddress || !duration || !rentPrice)
         throw new Error('Bad arguments for registerWithConfig');
-      const salt = generateSalt();
       value = toHex(addBuffer(rentPrice, 1.1));
       args = [
         name.replace('.eth', ''),
