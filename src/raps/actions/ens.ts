@@ -34,7 +34,7 @@ const executeCommit = async (
     type: ENSRegistrationTransactionType.COMMIT,
     wallet,
   });
-  // await dispatch(addNewRegistration(newTransaction, accountAddress, true));
+
   return (
     methodArguments &&
     contract?.commit(...methodArguments, {
