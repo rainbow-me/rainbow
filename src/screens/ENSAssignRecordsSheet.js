@@ -36,12 +36,15 @@ export default function ENSAssignRecordsSheet() {
   const keyboardHeight = useKeyboardHeight();
   const ensName = useSelector(({ ensRegistration }) => ensRegistration.name);
 
+  const avatarColor = colors.purple;
+  //   usePersistentDominantColorFromImage('TODO').result || colors.purple;   // add this when we implement avatars
+
   const handlePressBack = useCallback(() => {
     navigate(Routes.ENS_SEARCH_SHEET);
   }, [navigate]);
 
   const handlePressContinue = useCallback(() => {
-    navigate(Routes.ENS_CONFIRM_REGISTER_SHEET);
+    navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, { color: avatarColor });
   }, [navigate]);
 
   const {
@@ -59,9 +62,6 @@ export default function ENSAssignRecordsSheet() {
       textRecordFields[ENS_RECORDS.twitter],
     ],
   });
-
-  const avatarColor = colors.purple;
-  //   usePersistentDominantColorFromImage('TODO').result || colors.purple;   // add this when we implement avatars
 
   const avatarRadius = 35;
 
@@ -117,6 +117,7 @@ export default function ENSAssignRecordsSheet() {
                 <Row>
                   <Inset top="30px" horizontal="19px">
                     <SelectableAttributesButtons
+                      color={avatarColor}
                       onAddField={onAddField}
                       onRemoveField={onRemoveField}
                       selectedFields={selectedFields}
@@ -242,6 +243,7 @@ function SelectableAttributesButtons({
   selectedFields,
   onAddField,
   onRemoveField,
+  color,
 }) {
   return (
     <Inline space="10px">
@@ -251,6 +253,7 @@ function SelectableAttributesButtons({
         );
         return (
           <SelectableButton
+            color={color}
             isSelected={isSelected}
             key={i}
             onSelect={() => {

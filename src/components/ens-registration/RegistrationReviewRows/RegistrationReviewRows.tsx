@@ -19,7 +19,7 @@ function StepButton({
   return (
     // @ts-ignore
     <Box as={ButtonPressAnimation} onPress={onPress} scaleTo={0.75}>
-      <Text color="action" weight="heavy">
+      <Text color="accent" weight="heavy">
         {type === 'increment' ? '􀁍' : '􀁏'}
       </Text>
     </Box>
