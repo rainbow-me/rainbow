@@ -17,7 +17,7 @@ export interface ENSRegistrationState {
   currentRegistrationName: string;
   registrations: {
     [key: EthereumAddress]: {
-      [key: string]: RegistrationParameters;
+      [ensName: string]: RegistrationParameters;
     };
   };
 }
