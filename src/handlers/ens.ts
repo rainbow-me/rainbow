@@ -195,7 +195,7 @@ export const estimateENSTransactionGasLimit = async ({
   records,
   salt,
 }: {
-  name: string;
+  name?: string;
   type: ENSRegistrationTransactionType;
   ownerAddress?: string;
   rentPrice?: string;

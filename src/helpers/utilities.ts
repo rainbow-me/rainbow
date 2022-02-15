@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js';
+import currency from 'currency.js';
 import { get, isNil } from 'lodash';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 
@@ -150,6 +151,12 @@ export const convertStringToHex = (stringToConvert: string): string =>
 
 export const add = (numberOne: BigNumberish, numberTwo: BigNumberish): string =>
   new BigNumber(numberOne).plus(numberTwo).toFixed();
+
+export const addDisplay = (numberOne: string, numberTwo: string): string => {
+  const template = numberOne.split(/\d+\.\d+/);
+  const display = currency(numberOne, { symbol: '' }).add(numberTwo).format();
+  return template.map(item => (item === '' ? `${display}` : item)).join('');
+};
 
 export const multiply = (
   numberOne: BigNumberish,

@@ -1,26 +1,33 @@
 import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import brain from '../assets/brain.png';
+import { HoldToAuthorizeButton } from '../components/buttons';
+import { RegistrationReviewRows } from '../components/ens-registration';
 import { GasSpeedButton } from '../components/gas';
 import {
   SheetActionButton,
   SheetActionButtonRow,
   SlackSheet,
 } from '../components/sheet';
+import { useNavigation } from '../navigation/Navigation';
 import { executeRap, RapActionTypes } from '../raps/common';
-import { Box, Text } from '@rainbow-me/design-system';
+import { Box, Inline, Inset, Stack, Text } from '@rainbow-me/design-system';
 import { generateSalt, getRentPrice } from '@rainbow-me/helpers/ens';
 import { addBuffer } from '@rainbow-me/helpers/utilities';
 import {
   useAccountSettings,
   useCurrentNonce,
   useENSProfile,
+  useENSRegistration,
+  useENSRegistrationCosts,
   useGas,
 } from '@rainbow-me/hooks';
+import { ImgixImage } from '@rainbow-me/images';
 import { loadWallet } from '@rainbow-me/model/wallet';
 import { getRapEstimationByType } from '@rainbow-me/raps';
 import { saveCommitRegistrationParameters } from '@rainbow-me/redux/ensRegistration';
-// import Routes from '@rainbow-me/routes';
+import Routes from '@rainbow-me/routes';
 
 export const ENSConfirmRegisterSheetHeight = 600;
 const secsInYear = 31536000;
@@ -29,11 +36,25 @@ export default function ENSConfirmRegisterSheet() {
   // const { navigate, goBack } = useNavigation();
   const dispatch = useDispatch();
   const { gasFeeParamsBySpeed, updateTxFee, startPollingGasFees } = useGas();
-  const { name, records, registrationParameters } = useENSProfile();
+  const { name: ensName, records, registrationParameters } = useENSProfile();
   const { accountAddress, network } = useAccountSettings();
   const getNextNonce = useCurrentNonce(accountAddress, network);
   const [rentPrice, setRentPrice] = useState();
   const [gasLimit, setGasLimit] = useState();
+
+  const { navigate, goBack } = useNavigation();
+
+  const [duration, setDuration] = useState(1);
+
+  const name = ensName.replace('.eth', '');
+  const { data: registrationData } = useENSRegistration({
+    name,
+  });
+  const { data: registrationCostsData } = useENSRegistrationCosts({
+    duration,
+    name,
+    rentPrice: registrationData?.rentPrice,
+  });
 
   useEffect(() => {
     const callbackGetRentPrice = async () => {
@@ -164,7 +185,53 @@ export default function ENSConfirmRegisterSheet() {
           <Text>{rentPrice}</Text>
           <GasSpeedButton currentNetwork="mainnet" theme="light" />
         </Box>
+        <Box flexGrow={1}>
+          <Inset horizontal="30px">
+            <Stack space="34px">
+              <Inline
+                alignHorizontal="center"
+                alignVertical="center"
+                space="6px"
+                wrap={false}
+              >
+                <Box>
+                  <ImgixImage
+                    source={brain}
+                    style={{ height: 20, width: 20 }}
+                  />
+                </Box>
+                <Text color="secondary50" size="14px" weight="heavy">
+                  Buy more years now to save on fees
+                </Text>
+              </Inline>
+              <RegistrationReviewRows
+                duration={duration}
+                maxDuration={99}
+                networkFee={registrationCostsData?.estimatedNetworkFee?.display}
+                onChangeDuration={setDuration}
+                registrationFee={
+                  registrationCostsData?.estimatedRentPrice?.total?.display
+                }
+                totalCost={
+                  registrationCostsData?.estimatedTotalRegistrationCost?.display
+                }
+              />
+            </Stack>
+          </Inset>
+        </Box>
         <SheetActionButtonRow>
+          <HoldToAuthorizeButton
+            hideInnerBorder
+            label="Hold to Buy"
+            onLongPress={() => {
+              goBack();
+              setTimeout(() => {
+                navigate(Routes.PROFILE_SCREEN);
+              }, 50);
+            }}
+            parentHorizontalPadding={19}
+            showBiometryIcon
+          />
           <SheetActionButton
             label="Commit"
             onPress={handleCommitSubmit}

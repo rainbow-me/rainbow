@@ -1,7 +1,6 @@
 import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
 import { Rap, RapActionParameters } from '../common';
-import { TransactionStatus, TransactionType } from '@rainbow-me/entities';
 import { estimateENSTransactionGasLimit } from '@rainbow-me/handlers/ens';
 import { toHex } from '@rainbow-me/handlers/web3';
 import {
@@ -26,7 +25,6 @@ const executeCommit = async (
   wallet?: Wallet,
   nonce: number | null = null
 ) => {
-  // const { dispatch } = store;
   const { contract, methodArguments, value } = await getENSExecutionDetails({
     duration,
     name,
