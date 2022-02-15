@@ -12,21 +12,8 @@ export const createRegisterENSRap = async (
 ) => {
   let actions: RapAction[] = [];
 
-  // // commit rap
-  // const commit = createNewAction(
-  //   RapActionTypes.commitENS,
-  //   registerENSActionParameters
-  // );
-  // actions = concat(actions, commit);
-  // // wait 60 secs rap
-  // const wait = createNewAction(
-  //   RapActionTypes.waitENS,
-  //   registerENSActionParameters
-  // );
-  // actions = concat(actions, wait);
-  // register rap
   const register = createNewAction(
-    RapActionTypes.registerENS,
+    RapActionTypes.registerWithConfigENS,
     registerENSActionParameters
   );
   actions = concat(actions, register);
@@ -37,12 +24,6 @@ export const createRegisterENSRap = async (
     registerENSActionParameters
   );
   actions = concat(actions, multicall);
-
-  const setText = createNewAction(
-    RapActionTypes.setTextENS,
-    registerENSActionParameters
-  );
-  actions = concat(actions, setText);
 
   // ? reverse name rap
   const setName = createNewAction(

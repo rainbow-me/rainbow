@@ -86,10 +86,8 @@ export default function ENSConfirmRegisterSheet() {
       return;
     }
 
-    const callback = (success = false, errorMessage = null) => {
-      // eslint-disable-next-line no-console
-      console.log('😬😬😬 handleCommitSubmit CALLBACK ', success, errorMessage);
-    };
+    const callback = () => null;
+
     const nonce = await getNextNonce();
     const salt = generateSalt();
 

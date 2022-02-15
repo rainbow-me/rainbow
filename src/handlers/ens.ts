@@ -242,6 +242,7 @@ export const estimateENSRegistrationGasLimit = async (
     name,
     ownerAddress,
   });
+  // dummy multicall to estimmate gas
   const multicallGasLimitPromise = estimateENSMulticallGasLimit({
     name,
     records: {
@@ -304,7 +305,7 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
     rentPrice,
     salt,
   });
-  // wip
+  // WIP we need to set / unset these values from the UI
   const setReverseRecord = true;
   const setRecords = true;
 

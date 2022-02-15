@@ -125,7 +125,7 @@ export const RapActionTypes = {
   depositCompound: 'depositCompound' as RapActionType,
   multicallENS: 'multicallENS' as RapActionType,
   registerENS: 'registerENS' as RapActionType,
-  registerSetRecordsAndName: 'registerSetRecordsAndName' as RapActionType,
+  registerWithConfigENS: 'registerWithConfigENS' as RapActionType,
   setNameENS: 'setNameENS' as RapActionType,
   setTextENS: 'setTextENS' as RapActionType,
   swap: 'swap' as RapActionType,
@@ -149,7 +149,7 @@ const createRapByType = (
       return createSwapAndDepositCompoundRap(swapParameters);
     case ExchangeModalTypes.withdrawal:
       return createWithdrawFromCompoundRap(swapParameters);
-    case RapActionTypes.registerSetRecordsAndName:
+    case RapActionTypes.registerENS:
       return createRegisterENSRap(ensRegistrationParameters);
     case RapActionTypes.commitENS:
       return createCommitENSRap(ensRegistrationParameters);
