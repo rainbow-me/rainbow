@@ -1130,7 +1130,7 @@ export default function TransactionConfirmationScreen() {
                     </RowWithMargins>
                   </Column>
                   <Column marginLeft={16}>
-                    <Row marginBottom={12} justify="end">
+                    <Row justify="end" marginBottom={12}>
                       <SwitchText align="right">Balance</SwitchText>
                     </Row>
                     <WalletText align="right" balanceTooLow={balanceTooLow}>
