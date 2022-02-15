@@ -313,7 +313,7 @@ export default function WalletConnectApprovalSheet() {
           <LoadingSpinner />
         </Centered>
       ) : (
-        <Flex direction="column" height={sheetHeight}>
+        <Flex direction="column">
           <Centered
             direction="column"
             paddingBottom={5}
