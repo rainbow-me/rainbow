@@ -3,8 +3,16 @@ import { hash } from '@ensdomains/eth-ens-namehash';
 import { BigNumberish, Contract } from 'ethers';
 import { keccak_256 as sha3 } from 'js-sha3';
 import { InlineFieldProps } from '../components/inputs/InlineField';
-import { addBuffer } from './utilities';
+import {
+  add,
+  addBuffer,
+  convertAmountAndPriceToNativeDisplay,
+  divide,
+  fromWei,
+  multiply,
+} from './utilities';
 import { addHexPrefix, toHex, web3Provider } from '@rainbow-me/handlers/web3';
+import { gweiToWei } from '@rainbow-me/parsers';
 import {
   ENSBaseRegistrarImplementationABI,
   ensBaseRegistrarImplementationAddress,
@@ -381,6 +389,100 @@ const getENSExecutionDetails = async ({
 const getENSRecordKeys = () => Object.keys(ENS_RECORDS);
 const getENSRecordValues = () => Object.values(ENS_RECORDS);
 
+const formatEstimatedNetworkFee = (
+  gasLimit: string,
+  maxBaseFee: string,
+  maxPriorityFee: string,
+  nativeCurrency: any,
+  nativeAssetPrice: any
+) => {
+  const networkFeeInWei = multiply(
+    gweiToWei(add(maxBaseFee, maxPriorityFee)),
+    gasLimit
+  );
+  const networkFeeInEth = fromWei(networkFeeInWei);
+
+  const { amount, display } = convertAmountAndPriceToNativeDisplay(
+    networkFeeInEth,
+    nativeAssetPrice,
+    nativeCurrency
+  );
+
+  return {
+    amount,
+    display,
+    wei: networkFeeInWei,
+  };
+};
+
+const formatTotalRegistrationCost = (
+  wei: string,
+  nativeCurrency: any,
+  nativeAssetPrice: any,
+  skipDecimals: boolean = false
+) => {
+  const networkFeeInEth = fromWei(wei);
+
+  const { amount, display } = convertAmountAndPriceToNativeDisplay(
+    networkFeeInEth,
+    nativeAssetPrice,
+    nativeCurrency,
+    undefined,
+    skipDecimals
+  );
+
+  return {
+    amount,
+    display,
+    wei,
+  };
+};
+
+const getRentPricePerYear = (rentPrice: string, duration: number) =>
+  divide(rentPrice, duration);
+
+const formatRentPrice = (
+  rentPrice: BigNumberish,
+  duration: number,
+  nativeCurrency: any,
+  nativeAssetPrice: any
+) => {
+  const rentPriceInETH = fromWei(rentPrice.toString());
+  const rentPricePerYear = getRentPricePerYear(rentPriceInETH, duration);
+  const rentPricePerYearInWei = divide(rentPrice.toString(), duration);
+
+  const { amount, display } = convertAmountAndPriceToNativeDisplay(
+    rentPriceInETH,
+    nativeAssetPrice,
+    nativeCurrency,
+    undefined,
+    true
+  );
+  const {
+    display: displayPerYear,
+    amount: amountPerYear,
+  } = convertAmountAndPriceToNativeDisplay(
+    rentPricePerYear,
+    nativeAssetPrice,
+    nativeCurrency,
+    undefined,
+    true
+  );
+
+  return {
+    perYear: {
+      amount: amountPerYear,
+      display: displayPerYear,
+      wei: rentPricePerYearInWei,
+    },
+    total: {
+      amount,
+      display,
+    },
+    wei: rentPrice,
+  };
+};
+
 export {
   ENS_RECORDS,
   getENSRecordKeys,
@@ -396,4 +498,7 @@ export {
   getRentPrice,
   textRecordFields,
   getENSExecutionDetails,
+  formatEstimatedNetworkFee,
+  formatTotalRegistrationCost,
+  formatRentPrice,
 };

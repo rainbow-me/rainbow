@@ -49,7 +49,6 @@ export default function ENSSearchSheet() {
     isInvalid,
     isAvailable,
   } = useENSRegistration({
-    duration: 1,
     name: debouncedSearchQuery,
   });
 
@@ -59,7 +58,7 @@ export default function ENSSearchSheet() {
   } = useENSRegistrationCosts({
     duration: 1,
     name: debouncedSearchQuery,
-    rentPrice: registrationData?.rentPrice?.wei,
+    rentPrice: registrationData?.rentPrice,
   });
 
   const state = useMemo(() => {

@@ -1,66 +1,18 @@
 import { format } from 'date-fns';
-import { BigNumber } from 'ethers';
 import { useCallback, useMemo } from 'react';
 import { useQuery } from 'react-query';
 import { useAccountSettings } from '.';
 import { fetchRegistrationDate } from '@rainbow-me/handlers/ens';
 import {
+  formatRentPrice,
   getAvailable,
   getNameExpires,
   getRentPrice,
 } from '@rainbow-me/helpers/ens';
 import { Network } from '@rainbow-me/helpers/networkTypes';
-import {
-  convertAmountAndPriceToNativeDisplay,
-  divide,
-  fromWei,
-} from '@rainbow-me/helpers/utilities';
 import { ethereumUtils, validateENS } from '@rainbow-me/utils';
 
 const secsInYear = 31536000;
-
-const getRentPricePerYear = (rentPrice: string, duration: number) =>
-  divide(rentPrice, duration);
-
-const formatRentPrice = (
-  rentPrice: BigNumber,
-  duration: number,
-  nativeCurrency: any,
-  nativeAssetPrice: any
-) => {
-  const rentPriceInETH = fromWei(rentPrice.toString());
-  const rentPricePerYear = getRentPricePerYear(rentPriceInETH, duration);
-
-  const { amount, display } = convertAmountAndPriceToNativeDisplay(
-    rentPriceInETH,
-    nativeAssetPrice,
-    nativeCurrency,
-    undefined,
-    true
-  );
-  const {
-    display: displayPerYear,
-    amount: amountPerYear,
-  } = convertAmountAndPriceToNativeDisplay(
-    rentPricePerYear,
-    nativeAssetPrice,
-    nativeCurrency,
-    undefined,
-    true
-  );
-
-  return {
-    perYear: {
-      amount: amountPerYear,
-      display: displayPerYear,
-    },
-    total: {
-      amount,
-      display,
-    },
-    wei: rentPrice,
-  };
-};
 
 const formatTime = (timestamp: string, abbreviated: boolean = true) => {
   const style = abbreviated ? 'MMM d, y' : 'MMMM d, y';
@@ -68,10 +20,10 @@ const formatTime = (timestamp: string, abbreviated: boolean = true) => {
 };
 
 export default function useENSRegistration({
-  duration,
+  duration = 1,
   name,
 }: {
-  duration: number;
+  duration?: number;
   name: string;
 }) {
   const { nativeCurrency } = useAccountSettings();
@@ -122,12 +74,15 @@ export default function useENSRegistration({
         valid: true,
       };
     }
-  }, [name, duration, nativeCurrency]);
+  }, [duration, name, nativeCurrency]);
 
   const { data, status } = useQuery(
-    isValidLength && ['getRegistrationValues', name],
+    isValidLength && [
+      'getRegistrationValues',
+      [duration, name, nativeCurrency],
+    ],
     getRegistrationValues,
-    { retry: 0 }
+    { retry: 0, staleTime: Infinity }
   );
 
   const newStatus = isValidLength ? status : 'idle';
