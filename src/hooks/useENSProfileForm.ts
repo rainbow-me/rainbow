@@ -74,7 +74,10 @@ export default function useENSProfileForm({
     setValues(values => ({ ...values, [key]: value }));
   }, []);
 
+  const formIsEmpty = Object.values(values).join('');
+
   return {
+    formIsEmpty,
     onAddField,
     onBlurField,
     onChangeField,

@@ -11,7 +11,6 @@ import TintButton from '../components/buttons/TintButton';
 import { TextRecordsForm } from '../components/ens-registration';
 import SelectableButton from '../components/ens-registration/TextRecordsForm/SelectableButton';
 import { SheetActionButton, SheetActionButtonRow } from '../components/sheet';
-import { useTheme } from '../context/ThemeContext';
 import { useNavigation } from '../navigation/Navigation';
 // import { usePersistentDominantColorFromImage } from '@rainbow-me/hooks';
 import {
@@ -25,6 +24,7 @@ import {
   Rows,
   Stack,
   Text,
+  useForegroundColor,
 } from '@rainbow-me/design-system';
 import { ENS_RECORDS, textRecordFields } from '@rainbow-me/helpers/ens';
 import { useENSProfileForm, useKeyboardHeight } from '@rainbow-me/hooks';
@@ -32,11 +32,10 @@ import Routes from '@rainbow-me/routes';
 
 export default function ENSAssignRecordsSheet() {
   const { navigate } = useNavigation();
-  const { colors } = useTheme();
   const keyboardHeight = useKeyboardHeight();
   const ensName = useSelector(({ ensRegistration }) => ensRegistration.name);
 
-  const avatarColor = colors.purple;
+  const avatarColor = useForegroundColor('action');
   //   usePersistentDominantColorFromImage('TODO').result || colors.purple;   // add this when we implement avatars
 
   const handlePressBack = useCallback(() => {
@@ -48,6 +47,7 @@ export default function ENSAssignRecordsSheet() {
   }, [avatarColor, navigate]);
 
   const {
+    formIsEmpty,
     selectedFields,
     onAddField,
     onRemoveField,
@@ -64,8 +64,6 @@ export default function ENSAssignRecordsSheet() {
   });
 
   const avatarRadius = 35;
-
-  const formIsEmpty = Object.values(values).join('');
 
   return (
     <AccentColorProvider color={avatarColor}>
@@ -129,13 +127,6 @@ export default function ENSAssignRecordsSheet() {
                       􀆉 Back
                     </TintButton>
                     {formIsEmpty ? (
-                      <TintButton
-                        color="secondary60"
-                        onPress={handlePressContinue}
-                      >
-                        Skip
-                      </TintButton>
-                    ) : (
                       <SheetActionButton
                         color={avatarColor}
                         label="Review"
@@ -143,6 +134,13 @@ export default function ENSAssignRecordsSheet() {
                         size="big"
                         weight="heavy"
                       />
+                    ) : (
+                      <TintButton
+                        color="secondary60"
+                        onPress={handlePressContinue}
+                      >
+                        Skip
+                      </TintButton>
                     )}
                   </SheetActionButtonRow>
                 </Row>
