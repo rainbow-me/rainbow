@@ -193,7 +193,7 @@ const withBalanceSavingsSection = savings => {
   return savingsSection;
 };
 
-const withBriefBalanceSavingsSection = savings => {
+const withBriefBalanceSavingsSection = (savings, isLoadingAssets) => {
   let totalUnderlyingNativeValue = '0';
   for (let saving of savings) {
     const { underlyingBalanceNativeValue } = saving;
@@ -203,6 +203,7 @@ const withBriefBalanceSavingsSection = savings => {
     );
   }
   const addresses = savings?.map(asset => asset.cToken.address);
+  if (isLoadingAssets) return [];
   return [
     {
       type: 'SAVINGS_HEADER_SPACE_BEFORE',
@@ -466,7 +467,7 @@ const balanceSavingsSectionSelector = createSelector(
 );
 
 const briefBalanceSavingsSectionSelector = createSelector(
-  [savingsSelector],
+  [savingsSelector, isLoadingAssetsSelector],
   withBriefBalanceSavingsSection
 );
 
