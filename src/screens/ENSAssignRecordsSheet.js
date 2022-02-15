@@ -45,7 +45,7 @@ export default function ENSAssignRecordsSheet() {
 
   const handlePressContinue = useCallback(() => {
     navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, { color: avatarColor });
-  }, [navigate]);
+  }, [avatarColor, navigate]);
 
   const {
     selectedFields,
@@ -115,9 +115,8 @@ export default function ENSAssignRecordsSheet() {
               <Shadow />
               <Rows>
                 <Row>
-                  <Inset top="30px" horizontal="19px">
+                  <Inset horizontal="19px" top="30px">
                     <SelectableAttributesButtons
-                      color={avatarColor}
                       onAddField={onAddField}
                       onRemoveField={onRemoveField}
                       selectedFields={selectedFields}
@@ -243,7 +242,6 @@ function SelectableAttributesButtons({
   selectedFields,
   onAddField,
   onRemoveField,
-  color,
 }) {
   return (
     <Inline space="10px">
@@ -253,7 +251,6 @@ function SelectableAttributesButtons({
         );
         return (
           <SelectableButton
-            color={color}
             isSelected={isSelected}
             key={i}
             onSelect={() => {

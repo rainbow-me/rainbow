@@ -1,3 +1,4 @@
+import { useRoute } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import brain from '../assets/brain.png';
@@ -5,7 +6,6 @@ import { HoldToAuthorizeButton } from '../components/buttons';
 import { RegistrationReviewRows } from '../components/ens-registration';
 import { SheetActionButtonRow, SlackSheet } from '../components/sheet';
 import { useNavigation } from '../navigation/Navigation';
-import { useRoute } from '@react-navigation/native';
 import {
   AccentColorProvider,
   Box,
