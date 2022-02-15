@@ -8,8 +8,7 @@ import { GasSpeedButton } from '../components/gas';
 import { SheetActionButtonRow, SlackSheet } from '../components/sheet';
 import { executeRap, RapActionTypes } from '../raps/common';
 import { Box, Inline, Inset, Stack, Text } from '@rainbow-me/design-system';
-import { generateSalt, getRentPrice } from '@rainbow-me/helpers/ens';
-import { addBuffer } from '@rainbow-me/helpers/utilities';
+import { generateSalt } from '@rainbow-me/helpers/ens';
 import {
   useAccountSettings,
   useCurrentNonce,
@@ -32,7 +31,6 @@ export default function ENSConfirmRegisterSheet() {
   const { name: ensName, records } = useENSProfile();
   const { accountAddress, network } = useAccountSettings();
   const getNextNonce = useCurrentNonce(accountAddress, network);
-  const [rentPrice, setRentPrice] = useState();
   const [gasLimit, setGasLimit] = useState();
 
   const [duration, setDuration] = useState(1);
@@ -41,19 +39,12 @@ export default function ENSConfirmRegisterSheet() {
   const { data: registrationData } = useENSRegistration({
     name,
   });
+  const rentPrice = registrationData?.rentPrice;
   const { data: registrationCostsData } = useENSRegistrationCosts({
     duration,
     name,
-    rentPrice: registrationData?.rentPrice,
+    rentPrice,
   });
-
-  useEffect(() => {
-    const callbackGetRentPrice = async () => {
-      const rentPrice = await getRentPrice(name, secsInYear);
-      setRentPrice(addBuffer(rentPrice.toString(), 1.1));
-    };
-    callbackGetRentPrice();
-  }, [name]);
 
   const updateGasLimit = useCallback(async () => {
     const salt = generateSalt();

@@ -41,8 +41,6 @@ export default function useENSRegistrationCosts({
       rentPriceInWei
     );
 
-    if (!totalRegistrationGasLimit) return;
-
     const { gasFeeParamsBySpeed, currentBaseFee } = await getEIP1559GasParams();
 
     const formattedEstimatedNetworkFee = formatEstimatedNetworkFee(
