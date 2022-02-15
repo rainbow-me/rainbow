@@ -35,6 +35,7 @@ export const startRegistration = (
 
   const lcAccountAddress = accountAddress.toLowerCase();
   const accountRegistrations = registrations?.[lcAccountAddress] || {};
+  const registration = accountRegistrations[name] || {};
 
   const updatedEnsRegistrationManager = {
     currentRegistrationName: name,
@@ -42,7 +43,7 @@ export const startRegistration = (
       ...registrations,
       [lcAccountAddress]: {
         ...accountRegistrations,
-        [name]: { name },
+        [name]: { ...registration, name },
       },
     },
   };

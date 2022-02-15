@@ -17,7 +17,7 @@ export default function useENSProfileForm({
   defaultFields: any[];
 }) {
   const { accountAddress } = useAccountSettings();
-  const { records } = useSelector(({ ensRegistration }: AppState) => {
+  const { name, records } = useSelector(({ ensRegistration }: AppState) => {
     const {
       currentRegistrationName,
       registrations,
@@ -29,22 +29,23 @@ export default function useENSProfileForm({
   });
 
   const dispatch = useDispatch();
-  const [selectedFields, setSelectedFields] = useState(() => {
+
+  const [selectedFields, setSelectedFields] = useState(defaultFields);
+  useEffect(() => {
     // If there are existing records in the global state, then we
     // populate with that.
     if (!isEmpty(records)) {
       // @ts-ignore
-      return Object.keys(records).map(key => textRecordFields[key]);
+      setSelectedFields(Object.keys(records).map(key => textRecordFields[key]));
+    } else {
+      setSelectedFields(defaultFields);
     }
-
-    // Otherwise, just populate with the default fields.
-    return defaultFields;
-  });
+  }, [name]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [values, setValues] = useState(records);
+  useEffect(() => setValues(records), [name]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Set initial records in redux depending on user input (defaultFields)
-  // TODO: this is not working as expected when going back and changing name
   useEffect(() => {
     if (isEmpty(records)) {
       const records = defaultFields.reduce((records, field) => {
