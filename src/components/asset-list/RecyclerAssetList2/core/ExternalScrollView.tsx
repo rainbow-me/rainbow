@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useImperativeHandle } from 'react';
 import {
   Animated as RNAnimated,
   ScrollViewProps,
@@ -16,7 +16,8 @@ const ExternalScrollViewWithRef = React.forwardRef<
   BaseScrollView,
   ScrollViewDefaultProps & { contentContainerStyle: ViewStyle }
 >(function ExternalScrollView(
-  props: ScrollViewDefaultProps & { contentContainerStyle: ViewStyle }
+  props: ScrollViewDefaultProps & { contentContainerStyle: ViewStyle },
+  ref
 ) {
   const y = useRecyclerAssetListPosition()!;
 
@@ -39,6 +40,8 @@ const ExternalScrollViewWithRef = React.forwardRef<
       ),
     [onScroll, y]
   );
+
+  useImperativeHandle(ref, () => scrollViewRef.current!);
 
   return (
     <RNAnimated.ScrollView
