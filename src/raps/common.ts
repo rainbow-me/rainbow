@@ -177,7 +177,7 @@ export const getRapEstimationByType = (
       return estimateWithdrawFromCompound();
     case RapActionTypes.commitENS:
       return estimateENSCommitGasLimit(ensRegistrationParameters);
-    case RapActionTypes.registerSetRecordsAndName:
+    case RapActionTypes.registerENS:
       return estimateENSRegisterSetRecordsAndNameGasLimit(
         ensRegistrationParameters
       );
