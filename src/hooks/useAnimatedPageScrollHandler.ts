@@ -7,7 +7,8 @@ import { WorkletEventHandler } from 'react-native-reanimated';
 // ts wants to lint reanimated codebase but it doesn't quite work
 // so let's just assume it's any for now
 /* eslint-disable import/no-commonjs */
-const WorkletEventHandlerClass = require('react-native-reanimated/src/reanimated2/WorkletEventHandler');
+const WorkletEventHandlerClass = require('react-native-reanimated/src/reanimated2/WorkletEventHandler')
+  .default;
 const { makeRemote } = require('react-native-reanimated/src/reanimated2/core');
 /* eslint-enable import/no-commonjs */
 
