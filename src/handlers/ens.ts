@@ -260,12 +260,26 @@ export const estimateENSRegistrationGasLimit = async (
     setNameGasLimitPromise,
     multicallGasLimitPromise,
   ]);
-  // we need to add register gas limit manually since the gas estimation will fail since the commit tx is not sent yet
-  gasLimits.push(`${ethUnits.ens_register_with_config}`);
 
-  const gasLimit = gasLimits.reduce((a, b) => add(a || 0, b || 0));
-  if (!gasLimit) return '0';
-  return gasLimit;
+  let [commitGasLimit, setNameGasLimit, multicallGasLimit] = gasLimits;
+  commitGasLimit = commitGasLimit || `${ethUnits.ens_commit}`;
+  setNameGasLimit = setNameGasLimit || `${ethUnits.ens_set_name}`;
+  multicallGasLimit = multicallGasLimit || `${ethUnits.ens_set_multicall}`;
+  // we need to add register gas limit manually since the gas estimation will fail since the commit tx is not sent yet
+  const registerWithConfigGasLimit = `${ethUnits.ens_register_with_config}`;
+
+  const totalRegistrationGasLimit = [
+    ...gasLimits,
+    registerWithConfigGasLimit,
+  ].reduce((a, b) => add(a || 0, b || 0));
+
+  return {
+    commitGasLimit,
+    multicallGasLimit,
+    registerWithConfigGasLimit,
+    setNameGasLimit,
+    totalRegistrationGasLimit,
+  };
 };
 
 export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
