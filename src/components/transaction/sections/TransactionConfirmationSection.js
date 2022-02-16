@@ -50,7 +50,7 @@ const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
   })
 )({
   marginBottom: android ? -10 : 19,
-  marginTop: android ? 0 : 0,
+  marginTop: 12,
 });
 
 export default function TransactionConfirmationSection({
