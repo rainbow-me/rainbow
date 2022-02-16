@@ -54,7 +54,6 @@ const useUniswapCurrencyList = (searchQuery: string) => {
   const favoriteAddresses = useSelector(uniswapFavoritesSelector);
 
   const [loading, setLoading] = useState(true);
-  const [curatedAssets, setCuratedAssets] = useState<RT[]>([]);
   const [favoriteAssets, setFavoriteAssets] = useState<RT[]>([]);
   const [highLiquidityAssets, setHighLiquidityAssets] = useState<RT[]>([]);
   const [lowLiquidityAssets, setLowLiquidityAssets] = useState<RT[]>([]);
@@ -104,12 +103,9 @@ const useUniswapCurrencyList = (searchQuery: string) => {
         case 'favoriteAssets':
           setFavoriteAssets((await getFavorites()) || []);
           break;
-        case 'curatedAssets':
-          setCuratedAssets(getCurated());
-          break;
       }
     },
-    [getCurated, getFavorites, handleVerifiedResponse, searchQuery]
+    [getFavorites, handleVerifiedResponse, searchQuery]
   );
 
   const search = () => {
@@ -158,12 +154,14 @@ const useUniswapCurrencyList = (searchQuery: string) => {
         list.push({
           color: colors.yellowFavorite,
           data: favoriteAssets,
+          key: 'favorites',
           title: tokenSectionTypes.favoriteTokenSection,
         });
       }
       if (verifiedAssets.length) {
         list.push({
           data: verifiedAssets,
+          key: 'verified',
           title: tokenSectionTypes.verifiedTokenSection,
           useGradientText: IS_TESTING === 'true' ? false : true,
         });
@@ -171,12 +169,14 @@ const useUniswapCurrencyList = (searchQuery: string) => {
       if (highLiquidityAssets.length) {
         list.push({
           data: highLiquidityAssets,
+          key: 'highLiquidity',
           title: tokenSectionTypes.unverifiedTokenSection,
         });
       }
       if (lowLiquidityAssets?.length) {
         list.push({
           data: lowLiquidityAssets,
+          key: 'lowLiqudiity',
           title: tokenSectionTypes.lowLiquidityTokenSection,
         });
       }
@@ -185,27 +185,30 @@ const useUniswapCurrencyList = (searchQuery: string) => {
         list.push({
           color: colors.yellowFavorite,
           data: unfilteredFavorites,
+          key: 'unfilteredFavorites',
           title: tokenSectionTypes.favoriteTokenSection,
         });
-        if (curatedAssets.length) {
-          list.push({
-            data: curatedAssets,
-            title: tokenSectionTypes.verifiedTokenSection,
-            useGradientText: IS_TESTING === 'true' ? false : true,
-          });
-        }
+      }
+      const curatedAssets = getCurated();
+      if (curatedAssets.length) {
+        list.push({
+          data: curatedAssets,
+          key: 'curated',
+          title: tokenSectionTypes.verifiedTokenSection,
+          useGradientText: IS_TESTING === 'true' ? false : true,
+        });
       }
     }
     return list;
   }, [
     colors.yellowFavorite,
-    curatedAssets,
     favoriteAssets,
     highLiquidityAssets,
     lowLiquidityAssets,
     searching,
     unfilteredFavorites,
     verifiedAssets,
+    getCurated,
   ]);
 
   const updateFavorites = useCallback(
