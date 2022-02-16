@@ -32,14 +32,7 @@ import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
 
 import logger from 'logger';
 
-const {
-  commitENS,
-  waitENS,
-  registerENS,
-  multicallENS,
-  setTextENS,
-  setNameENS,
-} = ens;
+const { commitENS, registerENS, multicallENS, setTextENS, setNameENS } = ens;
 
 export enum RapActionType {
   depositCompound = 'depositCompound',
@@ -51,7 +44,6 @@ export enum RapActionType {
   multicallENS = 'multicallENS',
   setTextENS = 'setTextENS',
   setNameENS = 'setNameENS',
-  waitENS = 'waitENS',
 }
 
 export interface RapActionParameters {
@@ -130,7 +122,6 @@ export const RapActionTypes = {
   setTextENS: 'setTextENS' as RapActionType,
   swap: 'swap' as RapActionType,
   unlock: 'unlock' as RapActionType,
-  waitENS: 'waitENS' as RapActionType,
   withdrawCompound: 'withdrawCompound' as RapActionType,
 };
 
@@ -198,8 +189,6 @@ const findActionByType = (type: RapActionType) => {
       return withdrawCompound;
     case RapActionTypes.commitENS:
       return commitENS;
-    case RapActionTypes.waitENS:
-      return waitENS;
     case RapActionTypes.registerENS:
       return registerENS;
     case RapActionTypes.multicallENS:

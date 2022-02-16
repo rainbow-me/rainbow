@@ -8,7 +8,6 @@ import {
   ENSRegistrationTransactionType,
   getENSExecutionDetails,
 } from '@rainbow-me/helpers/ens';
-import { delay } from '@rainbow-me/helpers/utilities';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';
 import logger from 'logger';
@@ -426,17 +425,10 @@ const setNameENS = async (
   );
 };
 
-// WIP
-const waitENS = async () => {
-  await delay(60000);
-  return null;
-};
-
 export default {
   commitENS,
   multicallENS,
   registerENS,
   setNameENS,
   setTextENS,
-  waitENS,
 };
