@@ -169,18 +169,22 @@ export default function ENSConfirmRegisterSheet() {
               </Stack>
             </Inset>
           </Box>
-          <SheetActionButtonRow>
-            <HoldToAuthorizeButton
-              hideInnerBorder
-              isLongPressAvailableForBiometryType
-              label="Hold to Commit"
-              onLongPress={handleCommitSubmit}
-              parentHorizontalPadding={19}
-              showBiometryIcon
-            />
-          </SheetActionButtonRow>
-          <Box alignItems="center" flexGrow={1} justifyContent="center">
-            <GasSpeedButton currentNetwork="mainnet" theme="light" />
+          <Box style={{ bottom: 0 }}>
+            <Box>
+              <SheetActionButtonRow paddingBottom={5}>
+                <HoldToAuthorizeButton
+                  hideInnerBorder
+                  isLongPressAvailableForBiometryType
+                  label="Hold to Commit"
+                  onLongPress={handleCommitSubmit}
+                  parentHorizontalPadding={19}
+                  showBiometryIcon
+                />
+              </SheetActionButtonRow>
+            </Box>
+            <Box alignItems="center" justifyContent="center">
+              <GasSpeedButton currentNetwork="mainnet" theme="light" />
+            </Box>
           </Box>
         </Box>
       </AccentColorProvider>
