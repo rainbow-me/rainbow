@@ -39,7 +39,7 @@ export default function SelectableButton({
           paddingHorizontal="8px"
           style={{ borderColor: buttonColor, borderWidth: 2 }}
         >
-          <Text color={{ custom: buttonColor }} size="16px" weight="heavy">
+          <Text color="accent" size="16px" weight="heavy">
             {children}
           </Text>
         </Box>
