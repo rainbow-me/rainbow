@@ -1,15 +1,14 @@
 import { isEmpty, omit } from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useAccountSettings } from '.';
-import { ENSRegistrationState, Records } from '@rainbow-me/entities';
+import { useDispatch } from 'react-redux';
+import { useAccountSettings, useENSProfile } from '.';
+import { Records } from '@rainbow-me/entities';
 import { textRecordFields } from '@rainbow-me/helpers/ens';
 import {
   removeRecordByKey,
   updateRecordByKey,
   updateRecords,
 } from '@rainbow-me/redux/ensRegistration';
-import { AppState } from '@rainbow-me/redux/store';
 
 export default function useENSProfileForm({
   defaultFields,
@@ -17,16 +16,7 @@ export default function useENSProfileForm({
   defaultFields: any[];
 }) {
   const { accountAddress } = useAccountSettings();
-  const { name, records } = useSelector(({ ensRegistration }: AppState) => {
-    const {
-      currentRegistrationName,
-      registrations,
-    } = ensRegistration as ENSRegistrationState;
-    const records =
-      registrations?.[accountAddress?.toLowerCase()]?.[currentRegistrationName]
-        ?.records;
-    return { name: currentRegistrationName, records };
-  });
+  const { name, records } = useENSProfile();
 
   const dispatch = useDispatch();
 
@@ -86,7 +76,10 @@ export default function useENSProfileForm({
     setValues(values => ({ ...values, [key]: value }));
   }, []);
 
+  const formIsEmpty = Object.values(values).join('');
+
   return {
+    formIsEmpty,
     onAddField,
     onBlurField,
     onChangeField,

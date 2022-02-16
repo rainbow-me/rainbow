@@ -14,8 +14,8 @@ export default function useENSProfile() {
       const registrationParameters =
         registrations?.[accountAddress?.toLowerCase()]?.[
           currentRegistrationName
-        ];
-      const records = registrationParameters?.records;
+        ] || {};
+      const records = registrationParameters?.records || [];
       return { name: currentRegistrationName, records, registrationParameters };
     }
   );

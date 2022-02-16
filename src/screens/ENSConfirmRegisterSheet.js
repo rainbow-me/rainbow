@@ -1,3 +1,4 @@
+import { useRoute } from '@react-navigation/core';
 import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -7,7 +8,14 @@ import { RegistrationReviewRows } from '../components/ens-registration';
 import { GasSpeedButton } from '../components/gas';
 import { SheetActionButtonRow, SlackSheet } from '../components/sheet';
 import { executeRap, RapActionTypes } from '../raps/common';
-import { Box, Inline, Inset, Stack, Text } from '@rainbow-me/design-system';
+import {
+  AccentColorProvider,
+  Box,
+  Inline,
+  Inset,
+  Stack,
+  Text,
+} from '@rainbow-me/design-system';
 import { generateSalt } from '@rainbow-me/helpers/ens';
 import {
   useAccountSettings,
@@ -32,6 +40,7 @@ export default function ENSConfirmRegisterSheet() {
   const { accountAddress, network } = useAccountSettings();
   const getNextNonce = useCurrentNonce(accountAddress, network);
   const [gasLimit, setGasLimit] = useState();
+  const { params } = useRoute();
 
   const [duration, setDuration] = useState(1);
 
@@ -114,60 +123,65 @@ export default function ENSConfirmRegisterSheet() {
       height="100%"
       scrollEnabled={false}
     >
-      <Box
-        background="body"
-        paddingVertical="30px"
-        style={{ height: ENSConfirmRegisterSheetHeight }}
-      >
-        <Box flexGrow={1}>
-          <Inset horizontal="30px">
-            <Stack space="34px">
-              <Inline
-                alignHorizontal="center"
-                alignVertical="center"
-                space="6px"
-                wrap={false}
-              >
-                <Box>
-                  <ImgixImage
-                    source={brain}
-                    style={{ height: 20, width: 20 }}
-                  />
-                </Box>
-                <Text color="secondary50" size="14px" weight="heavy">
-                  Buy more years now to save on fees
-                </Text>
-              </Inline>
-              <RegistrationReviewRows
-                duration={duration}
-                maxDuration={99}
-                networkFee={registrationCostsData?.estimatedNetworkFee?.display}
-                onChangeDuration={setDuration}
-                registrationFee={
-                  registrationCostsData?.estimatedRentPrice?.total?.display
-                }
-                totalCost={
-                  registrationCostsData?.estimatedTotalRegistrationCost?.display
-                }
-              />
-            </Stack>
-          </Inset>
+      <AccentColorProvider color={params.color}>
+        <Box
+          background="body"
+          paddingVertical="30px"
+          style={{ height: ENSConfirmRegisterSheetHeight }}
+        >
+          <Box flexGrow={1}>
+            <Inset horizontal="30px">
+              <Stack space="34px">
+                <Inline
+                  alignHorizontal="center"
+                  alignVertical="center"
+                  space="6px"
+                  wrap={false}
+                >
+                  <Box>
+                    <ImgixImage
+                      source={brain}
+                      style={{ height: 20, width: 20 }}
+                    />
+                  </Box>
+                  <Text color="secondary50" size="14px" weight="heavy">
+                    Buy more years now to save on fees
+                  </Text>
+                </Inline>
+                <RegistrationReviewRows
+                  accentColor={params.color}
+                  duration={duration}
+                  maxDuration={99}
+                  networkFee={
+                    registrationCostsData?.estimatedNetworkFee?.display
+                  }
+                  onChangeDuration={setDuration}
+                  registrationFee={
+                    registrationCostsData?.estimatedRentPrice?.total?.display
+                  }
+                  totalCost={
+                    registrationCostsData?.estimatedTotalRegistrationCost
+                      ?.display
+                  }
+                />
+              </Stack>
+            </Inset>
+          </Box>
+          <SheetActionButtonRow>
+            <HoldToAuthorizeButton
+              hideInnerBorder
+              isLongPressAvailableForBiometryType
+              label="Hold to Commit"
+              onLongPress={handleCommitSubmit}
+              parentHorizontalPadding={19}
+              showBiometryIcon
+            />
+          </SheetActionButtonRow>
+          <Box alignItems="center" flexGrow={1} justifyContent="center">
+            <GasSpeedButton currentNetwork="mainnet" theme="light" />
+          </Box>
         </Box>
-
-        <SheetActionButtonRow>
-          <HoldToAuthorizeButton
-            hideInnerBorder
-            isLongPressAvailableForBiometryType
-            label="Hold to Commit"
-            onLongPress={handleCommitSubmit}
-            parentHorizontalPadding={19}
-            showBiometryIcon
-          />
-        </SheetActionButtonRow>
-        <Box alignItems="center" flexGrow={1} justifyContent="center">
-          <GasSpeedButton currentNetwork="mainnet" theme="light" />
-        </Box>
-      </Box>
+      </AccentColorProvider>
     </SlackSheet>
   );
 }
