@@ -6,7 +6,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
-import { atom, useRecoilState } from 'recoil';
+import { useRecoilState } from 'recoil';
 import { MiniButton } from '../components/buttons';
 import TintButton from '../components/buttons/TintButton';
 import { TextRecordsForm } from '../components/ens-registration';
@@ -27,18 +27,15 @@ import {
   Stack,
   Text,
 } from '@rainbow-me/design-system';
-import { ENS_RECORDS, textRecordFields } from '@rainbow-me/helpers/ens';
+import {
+  accentColorAtom,
+  ENS_RECORDS,
+  textRecordFields,
+} from '@rainbow-me/helpers/ens';
 import { useENSProfileForm, useKeyboardHeight } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
 
 const AnimatedBox = Animated.createAnimatedComponent(Box);
-
-// Accent color to share across ENSAssignRecordsSheet & ENSAssignRecordsSheetActions
-export const accentColorAtom = atom({
-  default: colors.appleBlue,
-  key: 'ensAssignRecords.accentColor',
-});
 
 export default function ENSAssignRecordsSheet() {
   const { colors } = useTheme();
