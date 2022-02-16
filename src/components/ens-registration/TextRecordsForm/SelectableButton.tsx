@@ -1,6 +1,11 @@
 import React, { ReactNode } from 'react';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
-import { Box, Text, useForegroundColor } from '@rainbow-me/design-system';
+import {
+  AccentColorProvider,
+  Box,
+  Text,
+  useForegroundColor,
+} from '@rainbow-me/design-system';
 
 type SelectableButtonProps = {
   children: ReactNode;
@@ -19,24 +24,26 @@ export default function SelectableButton({
   const height = 30;
 
   return (
-    <Box
-      as={ButtonPressAnimation}
-      height={`${height}px`}
-      // @ts-expect-error
-      onPress={onSelect}
-    >
+    <AccentColorProvider color={buttonColor}>
       <Box
-        alignItems="center"
-        borderRadius={12}
+        as={ButtonPressAnimation}
         height={`${height}px`}
-        justifyContent="center"
-        paddingHorizontal="8px"
-        style={{ borderColor: buttonColor, borderWidth: 2 }}
+        // @ts-expect-error
+        onPress={onSelect}
       >
-        <Text color={{ custom: buttonColor }} size="16px" weight="heavy">
-          {children}
-        </Text>
+        <Box
+          alignItems="center"
+          borderRadius={12}
+          height={`${height}px`}
+          justifyContent="center"
+          paddingHorizontal="8px"
+          style={{ borderColor: buttonColor, borderWidth: 2 }}
+        >
+          <Text color={{ custom: buttonColor }} size="16px" weight="heavy">
+            {children}
+          </Text>
+        </Box>
       </Box>
-    </Box>
+    </AccentColorProvider>
   );
 }
