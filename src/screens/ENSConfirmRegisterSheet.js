@@ -7,7 +7,7 @@ import { HoldToAuthorizeButton } from '../components/buttons';
 import { RegistrationReviewRows } from '../components/ens-registration';
 import { GasSpeedButton } from '../components/gas';
 import { SheetActionButtonRow, SlackSheet } from '../components/sheet';
-import { executeRap, RapActionTypes } from '../raps/common';
+import { RapActionTypes } from '../raps/common';
 import {
   AccentColorProvider,
   Box,
@@ -86,8 +86,6 @@ export default function ENSConfirmRegisterSheet() {
       return;
     }
 
-    const callback = () => null;
-
     const nonce = await getNextNonce();
     const salt = generateSalt();
 
@@ -107,13 +105,17 @@ export default function ENSConfirmRegisterSheet() {
         ensRegistrationParameters
       )
     );
+    return;
+    // LEAVING THIS AS WIP TO AVOID PEOPLE ON THE TEAM  SENDING THIS TX
 
-    await executeRap(
-      wallet,
-      RapActionTypes.commitENS,
-      { ensRegistrationParameters },
-      callback
-    );
+    // const callback = () => null;
+
+    // await executeRap(
+    //   wallet,
+    //   RapActionTypes.commitENS,
+    //   { ensRegistrationParameters },
+    //   callback
+    // );
   }, [accountAddress, dispatch, getNextNonce, name, records, rentPrice]);
 
   return (
