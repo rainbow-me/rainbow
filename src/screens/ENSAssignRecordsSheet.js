@@ -168,14 +168,17 @@ function HideKeyboardButton({ color }) {
   const show = useSharedValue(false);
 
   useEffect(() => {
-    const handleKeyboardWillShow = () => (show.value = true);
-    const handleKeyboardWillHide = () => (show.value = false);
+    const handleShowKeyboard = () => (show.value = true);
+    const handleHideKeyboard = () => (show.value = false);
 
-    Keyboard.addListener('keyboardWillShow', handleKeyboardWillShow);
-    Keyboard.addListener('keyboardWillHide', handleKeyboardWillHide);
+    const showListener = android ? 'keyboardDidShow' : 'keyboardWillShow';
+    const hideListener = android ? 'keyboardDidHide' : 'keyboardWillHide';
+
+    Keyboard.addListener(showListener, handleShowKeyboard);
+    Keyboard.addListener(hideListener, handleHideKeyboard);
     return () => {
-      Keyboard.removeListener('keyboardWillShow', handleKeyboardWillShow);
-      Keyboard.removeListener('keyboardWillHide', handleKeyboardWillHide);
+      Keyboard.removeListener(showListener, handleShowKeyboard);
+      Keyboard.removeListener(hideListener, handleHideKeyboard);
     };
   }, [show]);
 

@@ -37,7 +37,7 @@ export default function usePersistentDominantColorFromImage(
   );
   useEffect(() => {
     if (state === State.init && nonSvgUrl) {
-      const lowResUrl = getLowResUrl(nonSvgUrl);
+      const lowResUrl = getLowResUrl(nonSvgUrl) as string;
       setState(State.loading);
       getDominantColorFromImage(lowResUrl, colorToMeasureAgainst).then(color =>
         // @ts-ignore
