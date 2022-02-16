@@ -182,9 +182,9 @@ export default function useUniswapPools(sortField, sortDirection, token) {
     ['pools/uniswap/v2', token],
     () => getUniswapV2Pools(token),
     {
+      enabled: walletReady,
       onError: () => logger.log('🦄🦄🦄 error getting pairs data', error),
       refetchInterval: REFETCH_INTERVAL,
-      skip: !walletReady,
     }
   );
 
