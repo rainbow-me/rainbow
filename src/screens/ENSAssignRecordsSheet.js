@@ -46,8 +46,8 @@ export default function ENSAssignRecordsSheet() {
 
   const handlePressContinue = useCallback(() => {
     navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
-      color: avatarColor,
       avatarUrl,
+      color: avatarColor,
     });
   }, [avatarColor, navigate, avatarUrl]);
 
@@ -85,8 +85,8 @@ export default function ENSAssignRecordsSheet() {
                   <Box
                     background="swap"
                     borderRadius={avatarSize / 2}
-                    shadow="12px heavy accent"
                     height={{ custom: avatarSize }}
+                    shadow="12px heavy accent"
                     top={{ custom: 105 }}
                     width={{ custom: avatarSize }}
                   />

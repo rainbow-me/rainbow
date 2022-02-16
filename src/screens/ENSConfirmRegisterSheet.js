@@ -56,13 +56,13 @@ export default function ENSConfirmRegisterSheet() {
         >
           <Box flexGrow={1}>
             <Inset horizontal="30px">
-              <Stack space="15px" alignHorizontal="center">
+              <Stack alignHorizontal="center" space="15px">
                 {params.avatarUrl && (
                   <Box
                     background="swap"
-                    shadow="12px heavy accent"
                     borderRadius={avatarSize / 2}
                     height={{ custom: avatarSize }}
+                    shadow="12px heavy accent"
                     width={{ custom: avatarSize }}
                   />
                 )}
