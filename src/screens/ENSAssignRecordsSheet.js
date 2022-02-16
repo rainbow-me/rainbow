@@ -117,12 +117,11 @@ export function ENSAssignRecordsBottomActions({ visible }) {
   const [avatarColor] = useRecoilState(accentColorAtom);
 
   const {
+    isEmpty,
     selectedFields,
     onAddField,
     onRemoveField,
-    values,
   } = useENSProfileForm();
-  const formIsEmpty = Object.values(values).join('');
 
   const handlePressBack = useCallback(() => {
     navigate(Routes.ENS_SEARCH_SHEET);
@@ -161,7 +160,7 @@ export function ENSAssignRecordsBottomActions({ visible }) {
                 <TintButton color="secondary60" onPress={handlePressBack}>
                   􀆉 Back
                 </TintButton>
-                {formIsEmpty ? (
+                {isEmpty ? (
                   <TintButton color="secondary60" onPress={handlePressContinue}>
                     Skip
                   </TintButton>
