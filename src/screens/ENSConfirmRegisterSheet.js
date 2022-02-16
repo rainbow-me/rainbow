@@ -39,7 +39,7 @@ export default function ENSConfirmRegisterSheet() {
     rentPrice: registrationData?.rentPrice,
   });
 
-  const avatarRadius = 35;
+  const avatarSize = 70;
 
   return (
     <SlackSheet
@@ -57,19 +57,22 @@ export default function ENSConfirmRegisterSheet() {
           <Box flexGrow={1}>
             <Inset horizontal="30px">
               <Stack space="15px" alignHorizontal="center">
-                <Box
-                  background="swap"
-                  borderRadius={avatarRadius}
-                  height={{ custom: avatarRadius * 2 }}
-                  width={{ custom: avatarRadius * 2 }}
-                />
+                {params.avatarUrl && (
+                  <Box
+                    background="swap"
+                    shadow="12px heavy accent"
+                    borderRadius={avatarSize / 2}
+                    height={{ custom: avatarSize }}
+                    width={{ custom: avatarSize }}
+                  />
+                )}
                 <Heading size="26px">{ensName}</Heading>
                 <Text color="accent" weight="heavy">
                   Confirm purchase
                 </Text>
               </Stack>
               <Inset vertical="24px">
-                <Divider color="divider20" />
+                <Divider color="divider40" />
               </Inset>
               <Stack space="34px">
                 <Inline
@@ -104,7 +107,7 @@ export default function ENSConfirmRegisterSheet() {
                       ?.display
                   }
                 />
-                <Divider color="divider20" />
+                <Divider color="divider40" />
               </Stack>
             </Inset>
           </Box>

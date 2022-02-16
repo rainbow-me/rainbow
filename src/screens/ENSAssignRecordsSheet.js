@@ -38,13 +38,18 @@ export default function ENSAssignRecordsSheet() {
   const avatarColor = useForegroundColor('action');
   //   usePersistentDominantColorFromImage('TODO').result || colors.purple;   // add this when we implement avatars
 
+  const avatarUrl = null; // TODO
+
   const handlePressBack = useCallback(() => {
     navigate(Routes.ENS_SEARCH_SHEET);
   }, [navigate]);
 
   const handlePressContinue = useCallback(() => {
-    navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, { color: avatarColor });
-  }, [avatarColor, navigate]);
+    navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
+      color: avatarColor,
+      avatarUrl,
+    });
+  }, [avatarColor, navigate, avatarUrl]);
 
   const {
     formIsEmpty,
@@ -63,7 +68,7 @@ export default function ENSAssignRecordsSheet() {
     ],
   });
 
-  const avatarRadius = 35;
+  const avatarSize = 70;
 
   return (
     <AccentColorProvider color={avatarColor}>
@@ -79,10 +84,11 @@ export default function ENSAssignRecordsSheet() {
                 <Cover alignHorizontal="center">
                   <Box
                     background="swap"
-                    borderRadius={avatarRadius}
-                    height={{ custom: avatarRadius * 2 }}
+                    borderRadius={avatarSize / 2}
+                    shadow="12px heavy accent"
+                    height={{ custom: avatarSize }}
                     top={{ custom: 105 }}
-                    width={{ custom: avatarRadius * 2 }}
+                    width={{ custom: avatarSize }}
                   />
                 </Cover>
               </Box>
