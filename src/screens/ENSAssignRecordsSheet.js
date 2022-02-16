@@ -1,11 +1,12 @@
-import React, { useCallback } from 'react';
-import { Keyboard, ScrollView } from 'react-native';
+import React, { useCallback, useEffect } from 'react';
+import { Keyboard } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
+import { atom, useRecoilState } from 'recoil';
 import { MiniButton } from '../components/buttons';
 import TintButton from '../components/buttons/TintButton';
 import { TextRecordsForm } from '../components/ens-registration';
@@ -29,28 +30,28 @@ import {
 import { ENS_RECORDS, textRecordFields } from '@rainbow-me/helpers/ens';
 import { useENSProfileForm, useKeyboardHeight } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
+import { colors } from '@rainbow-me/styles';
+
+const AnimatedBox = Animated.createAnimatedComponent(Box);
+
+// Accent color to share across ENSAssignRecordsSheet & ENSAssignRecordsSheetActions
+export const accentColorAtom = atom({
+  default: colors.appleBlue,
+  key: 'ensAssignRecords.accentColor',
+});
 
 export default function ENSAssignRecordsSheet() {
-  const { navigate } = useNavigation();
   const { colors } = useTheme();
-  const keyboardHeight = useKeyboardHeight();
   const ensName = useSelector(({ ensRegistration }) => ensRegistration.name);
 
-  const avatarColor = colors.purple;
+  const [avatarColor, setAvatarColor] = useRecoilState(accentColorAtom);
+  useEffect(() => {
+    setAvatarColor(colors.purple);
+  }, [colors.purple, setAvatarColor]);
   //   usePersistentDominantColorFromImage('TODO').result || colors.purple;   // add this when we implement avatars
-
-  const handlePressBack = useCallback(() => {
-    navigate(Routes.ENS_SEARCH_SHEET);
-  }, [navigate]);
-
-  const handlePressContinue = useCallback(() => {
-    navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, { color: avatarColor });
-  }, [avatarColor, navigate]);
 
   const {
     selectedFields,
-    onAddField,
-    onRemoveField,
     onChangeField,
     onBlurField,
     values,
@@ -65,106 +66,127 @@ export default function ENSAssignRecordsSheet() {
 
   const avatarRadius = 35;
 
-  const formIsEmpty = Object.values(values).join('');
-
   return (
     <AccentColorProvider color={avatarColor}>
-      <Box background="body" flexGrow={1}>
-        <Rows>
-          <Row>
-            <Box as={ScrollView} flexGrow={1}>
+      <Box background="body" flexGrow={1} style={{ paddingBottom: 300 }}>
+        <Stack space="19px">
+          <Box
+            background="accent"
+            height={{ custom: 125 }}
+            marginBottom={{ custom: 50 }}
+          >
+            <Cover alignHorizontal="center">
               <Box
-                background="accent"
-                height={{ custom: 125 }}
-                marginBottom={{ custom: 70 }}
-              >
-                <Cover alignHorizontal="center">
-                  <Box
-                    background="swap"
-                    borderRadius={avatarRadius}
-                    height={{ custom: avatarRadius * 2 }}
-                    top={{ custom: 105 }}
-                    width={{ custom: avatarRadius * 2 }}
-                  />
-                </Cover>
+                background="swap"
+                borderRadius={avatarRadius}
+                height={{ custom: avatarRadius * 2 }}
+                top={{ custom: 105 }}
+                width={{ custom: avatarRadius * 2 }}
+              />
+            </Cover>
+          </Box>
+          <Inset horizontal="19px">
+            <Stack space="30px">
+              <Stack alignHorizontal="center" space="15px">
+                <Heading size="26px" weight="heavy">
+                  {ensName}
+                </Heading>
+                <Text color="accent" size="16px" weight="heavy">
+                  Create your profile
+                </Text>
+              </Stack>
+              <Box flexGrow={1}>
+                <TextRecordsForm
+                  onBlurField={onBlurField}
+                  onChangeField={onChangeField}
+                  selectedFields={selectedFields}
+                  values={values}
+                />
               </Box>
-              <Inset horizontal="19px" top="4px">
-                <Stack space="30px">
-                  <Stack alignHorizontal="center" space="15px">
-                    <Heading size="26px" weight="heavy">
-                      {ensName}
-                    </Heading>
-                    <Text color="accent" size="16px" weight="heavy">
-                      Create your profile
-                    </Text>
-                  </Stack>
-                  <Box as={ScrollView} flexGrow={1}>
-                    <TextRecordsForm
-                      onBlurField={onBlurField}
-                      onChangeField={onChangeField}
-                      selectedFields={selectedFields}
-                      values={values}
-                    />
-                  </Box>
-                </Stack>
-              </Inset>
-            </Box>
-          </Row>
-          <Row height="content">
-            <Box style={{ height: 250 }}>
-              <Shadow />
-              <Rows>
-                <Row>
-                  <Inset horizontal="19px" top="30px">
-                    <SelectableAttributesButtons
-                      onAddField={onAddField}
-                      onRemoveField={onRemoveField}
-                      selectedFields={selectedFields}
-                    />
-                  </Inset>
-                </Row>
-                <Row height="content">
-                  <SheetActionButtonRow>
-                    <TintButton color="secondary60" onPress={handlePressBack}>
-                      􀆉 Back
-                    </TintButton>
-                    {formIsEmpty ? (
-                      <TintButton
-                        color="secondary60"
-                        onPress={handlePressContinue}
-                      >
-                        Skip
-                      </TintButton>
-                    ) : (
-                      <SheetActionButton
-                        color={avatarColor}
-                        label="Review"
-                        onPress={handlePressContinue}
-                        size="big"
-                        weight="heavy"
-                      />
-                    )}
-                  </SheetActionButtonRow>
-                </Row>
-              </Rows>
-            </Box>
-          </Row>
-        </Rows>
-      </Box>
-      <Box
-        position="absolute"
-        right="0px"
-        style={{ bottom: keyboardHeight - 40 }}
-      >
-        <Inset bottom="19px" right="19px">
-          <HideKeyboardButton color={avatarColor} />
-        </Inset>
+            </Stack>
+          </Inset>
+        </Stack>
       </Box>
     </AccentColorProvider>
   );
 }
 
-const AnimatedBox = Animated.createAnimatedComponent(Box);
+export function ENSAssignRecordsBottomActions({ visible }) {
+  const { navigate } = useNavigation();
+  const keyboardHeight = useKeyboardHeight();
+  const [avatarColor] = useRecoilState(accentColorAtom);
+
+  const {
+    selectedFields,
+    onAddField,
+    onRemoveField,
+    values,
+  } = useENSProfileForm();
+  const formIsEmpty = Object.values(values).join('');
+
+  const handlePressBack = useCallback(() => {
+    navigate(Routes.ENS_SEARCH_SHEET);
+  }, [navigate]);
+
+  const handlePressContinue = useCallback(() => {
+    navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, { color: avatarColor });
+  }, [avatarColor, navigate]);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      bottom: withTiming(visible ? 0 : -keyboardHeight - 10, { duration: 100 }),
+    };
+  });
+
+  return (
+    <AnimatedBox
+      background="body"
+      style={[animatedStyle, { position: 'absolute', width: '100%' }]}
+    >
+      <AccentColorProvider color={avatarColor}>
+        <Box paddingBottom="19px" style={{ height: keyboardHeight }}>
+          <Shadow />
+          <Rows>
+            <Row>
+              <Inset horizontal="19px" top="30px">
+                <SelectableAttributesButtons
+                  onAddField={onAddField}
+                  onRemoveField={onRemoveField}
+                  selectedFields={selectedFields}
+                />
+              </Inset>
+            </Row>
+            <Row height="content">
+              <SheetActionButtonRow>
+                <TintButton color="secondary60" onPress={handlePressBack}>
+                  􀆉 Back
+                </TintButton>
+                {formIsEmpty ? (
+                  <TintButton color="secondary60" onPress={handlePressContinue}>
+                    Skip
+                  </TintButton>
+                ) : (
+                  <SheetActionButton
+                    color={avatarColor}
+                    label="Review"
+                    onPress={handlePressContinue}
+                    size="big"
+                    weight="heavy"
+                  />
+                )}
+              </SheetActionButtonRow>
+            </Row>
+          </Rows>
+        </Box>
+        <Box position="absolute" right="0px" style={{ bottom: keyboardHeight }}>
+          <Inset bottom="19px" right="19px">
+            <HideKeyboardButton color={avatarColor} />
+          </Inset>
+        </Box>
+      </AccentColorProvider>
+    </AnimatedBox>
+  );
+}
 
 function HideKeyboardButton({ color }) {
   const show = useSharedValue(false);

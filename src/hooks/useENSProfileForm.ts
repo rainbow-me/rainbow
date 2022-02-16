@@ -1,6 +1,7 @@
 import { isEmpty } from 'lodash';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { atom, useRecoilState } from 'recoil';
 import { textRecordFields } from '@rainbow-me/helpers/ens';
 import {
   ensRegistrationRemoveRecordByKey,
@@ -9,33 +10,48 @@ import {
 } from '@rainbow-me/redux/ensRegistration';
 import { AppState } from '@rainbow-me/redux/store';
 
+const selectedFieldsAtom = atom({
+  default: [],
+  key: 'ensProfileForm.selectedFields',
+});
+
+const valuesAtom = atom({
+  default: {},
+  key: 'ensProfileForm.values',
+});
+
 export default function useENSProfileForm({
   defaultFields,
 }: {
-  defaultFields: any[];
-}) {
+  defaultFields?: any[];
+} = {}) {
   const records = useSelector(
     ({ ensRegistration }: AppState) => ensRegistration.records
   );
   const dispatch = useDispatch();
 
-  const [selectedFields, setSelectedFields] = useState(() => {
+  const [selectedFields, setSelectedFields] = useRecoilState(
+    selectedFieldsAtom
+  );
+  useEffect(() => {
     // If there are existing records in the global state, then we
     // populate with that.
     if (!isEmpty(records)) {
       // @ts-ignore
-      return Object.keys(records).map(key => textRecordFields[key]);
+      setSelectedFields(Object.keys(records).map(key => textRecordFields[key]));
+    } else {
+      if (defaultFields) {
+        setSelectedFields(defaultFields as any);
+      }
     }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-    // Otherwise, just populate with the default fields.
-    return defaultFields;
-  });
-
-  const [values, setValues] = useState(records);
+  const [values, setValues] = useRecoilState(valuesAtom);
+  useEffect(() => setValues(records), [records, setValues]);
 
   // Set initial records in redux depending on user input (defaultFields)
   useEffect(() => {
-    if (isEmpty(records)) {
+    if (isEmpty(records) && defaultFields) {
       const records = defaultFields.reduce((records, field) => {
         return {
           ...records,
@@ -51,7 +67,7 @@ export default function useENSProfileForm({
       setSelectedFields(selectedFields);
       dispatch(ensRegistrationUpdateRecordByKey(fieldToAdd.key, ''));
     },
-    [dispatch]
+    [dispatch, setSelectedFields]
   );
 
   const onRemoveField = useCallback(
@@ -60,7 +76,7 @@ export default function useENSProfileForm({
       dispatch(ensRegistrationRemoveRecordByKey(fieldToRemove.key));
       setValues(values => ({ ...values, [fieldToRemove.key]: '' }));
     },
-    [dispatch]
+    [dispatch, setSelectedFields, setValues]
   );
 
   const onBlurField = useCallback(
@@ -70,9 +86,12 @@ export default function useENSProfileForm({
     [dispatch]
   );
 
-  const onChangeField = useCallback(({ key, value }) => {
-    setValues(values => ({ ...values, [key]: value }));
-  }, []);
+  const onChangeField = useCallback(
+    ({ key, value }) => {
+      setValues(values => ({ ...values, [key]: value }));
+    },
+    [setValues]
+  );
 
   return {
     onAddField,
