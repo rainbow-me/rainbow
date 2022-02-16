@@ -15,7 +15,7 @@ import { getTokenMetadata, isLowerCaseMatch } from '@rainbow-me/utils';
 /**
  * @desc parse account assets
  * @param  {Object} [data]
- * @return {Array}
+ * @return The array of parsed account assets.
  */
 export const parseAccountAssets = (data, uniqueTokens) => {
   const dedupedAssets = dedupeUniqueTokens(data, uniqueTokens);
@@ -44,7 +44,7 @@ export const parseAssetSymbol = (metadata, symbol) => {
 /**
  * @desc parse asset
  * @param  {Object} assetData
- * @return {Object}
+ * @return The parsed asset.
  */
 export const parseAsset = ({ asset_code: address, ...asset } = {}) => {
   const metadata = getTokenMetadata(asset.mainnet_address || address);

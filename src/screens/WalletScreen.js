@@ -195,6 +195,7 @@ export default function WalletScreen() {
         <AssetList
           disableRefreshControl={isLoadingAssets}
           isEmpty={isAccountEmpty || !!params?.emptyWallet}
+          isLoading={android && isLoadingAssets}
           isWalletEthZero={isWalletEthZero}
           network={network}
           scrollViewTracker={scrollViewTracker}
