@@ -21,7 +21,7 @@ const renderPager = props => (
 export default function RegisterENSNavigator() {
   const { height: deviceHeight } = useDimensions();
 
-  const extraTopPadding = android ? 10 : 0;
+  const extraTopPadding = android ? 29 : 19;
   const contentHeight =
     deviceHeight -
     SheetHandleFixedToTopHeight -
@@ -37,6 +37,7 @@ export default function RegisterENSNavigator() {
       additionalTopPadding
       contentHeight={contentHeight}
       height="100%"
+      removeTopPadding
       scrollEnabled={false}
     >
       <Box

@@ -36,6 +36,8 @@ export default function ENSSearchSheet() {
   const { navigate } = useNavigation();
   const keyboardHeight = useKeyboardHeight();
 
+  const topPadding = android ? 29 : 19;
+
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounceString(searchQuery);
 
@@ -72,7 +74,7 @@ export default function ENSSearchSheet() {
   }, [dispatch, navigate, searchQuery]);
 
   return (
-    <Box background="body" flexGrow={1}>
+    <Box background="body" flexGrow={1} paddingTop={{ custom: topPadding }}>
       <Box flexGrow={1} paddingTop="30px">
         <Stack alignHorizontal="center" space="15px">
           <Heading size="23px" weight="heavy">
@@ -140,17 +142,17 @@ export default function ENSSearchSheet() {
                   </Text>
                 ) : (
                   <Inline>
-                    {registrationCostsDataIsAvailable && (
+                    {registrationCostsDataIsAvailable ? (
                       <Text color="secondary50" size="16px" weight="bold">
                         Estimated total cost of
                         <Text color="secondary80" size="16px" weight="heavy">
-                          {' '}
-                          {
-                            registrationCostsData
-                              ?.estimatedTotalRegistrationCost?.display
-                          }{' '}
+                          {` ${registrationCostsData?.estimatedTotalRegistrationCost?.display} `}
                         </Text>
                         with current network fees
+                      </Text>
+                    ) : (
+                      <Text color="secondary50" size="16px" weight="bold">
+                        {'Loading network fees...\n'}
                       </Text>
                     )}
                   </Inline>

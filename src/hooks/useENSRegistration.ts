@@ -33,6 +33,7 @@ export default function useENSRegistration({
     const ensValidation = validateENS(`${name}.eth`, {
       includeSubdomains: false,
     });
+
     if (!ensValidation.valid) {
       return {
         code: ensValidation.code,
@@ -63,7 +64,7 @@ export default function useENSRegistration({
       // we need the expiration and registration date when is not available
       const registrationDate = await fetchRegistrationDate(name + '.eth');
       const nameExpires = await getNameExpires(name);
-      const formattedRegistrarionDate = formatTime(registrationDate);
+      const formattedRegistrarionDate = formatTime(registrationDate, false);
       const formattedExpirationDate = formatTime(nameExpires);
 
       return {

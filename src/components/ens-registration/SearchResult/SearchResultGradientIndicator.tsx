@@ -51,10 +51,10 @@ const SearchResultGradientIndicator = ({
       as={LinearGradient}
       borderRadius={46}
       colors={gradient}
-      end={{ x: 1, y: 0 }}
+      end={{ x: 0.6, y: 0 }}
       height="40px"
       justifyContent="center"
-      start={{ x: 0, y: 1 }}
+      start={{ x: 0, y: 0.6 }}
     >
       <Inset horizontal="15px">
         <AccentColorProvider
