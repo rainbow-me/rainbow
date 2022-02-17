@@ -22,10 +22,11 @@ export type InlineFieldProps = {
     allowCharacterRegex?: { match: RegExp };
     maxLength?: { value: number };
   };
-  value: string;
+  value?: string;
 };
 
 export default function InlineField({
+  defaultValue,
   label,
   onChangeText,
   placeholder,
@@ -99,6 +100,7 @@ export default function InlineField({
         </Inset>
       </Column>
       <Input
+        defaultValue={defaultValue}
         maxLength={validations?.maxLength?.value}
         onChangeText={handleChangeText}
         onContentSizeChange={handleContentSizeChange}
