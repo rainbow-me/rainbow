@@ -8,6 +8,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
 import { useRecoilState } from 'recoil';
+import ButtonPressAnimation from '../components/animations/ButtonPressAnimation';
 import { MiniButton } from '../components/buttons';
 import TintButton from '../components/buttons/TintButton';
 import { TextRecordsForm } from '../components/ens-registration';
@@ -125,23 +126,25 @@ export default function ENSAssignRecordsSheet() {
                     )}
                   </BackgroundProvider>
                 </Cover>
-                <Pressable onPress={handleChooseAvatar}>
-                  <Box
-                    alignItems="center"
-                    background="swap"
-                    borderRadius={avatarSize / 2}
-                    height={{ custom: avatarSize }}
-                    justifyContent="center"
-                    shadow="12px heavy accent"
-                    width={{ custom: avatarSize }}
-                  >
-                    <AccentColorProvider color={colors.white}>
-                      <Text color="accent" size="23px" weight="heavy">
-                        {` 􀜖 `}
-                      </Text>
-                    </AccentColorProvider>
-                  </Box>
-                </Pressable>
+                <ButtonPressAnimation onPress={handleChooseAvatar}>
+                  <AccentColorProvider color={accentColor + '10'}>
+                    <Box
+                      alignItems="center"
+                      background="accent"
+                      borderRadius={avatarSize / 2}
+                      height={{ custom: avatarSize }}
+                      justifyContent="center"
+                      shadow="12px heavy accent"
+                      width={{ custom: avatarSize }}
+                    >
+                      <AccentColorProvider color={accentColor}>
+                        <Text color="accent" size="18px" weight="heavy">
+                          {` 􀣵 `}
+                        </Text>
+                      </AccentColorProvider>
+                    </Box>
+                  </AccentColorProvider>
+                </ButtonPressAnimation>
               </Box>
             </Box>
           </Bleed>
