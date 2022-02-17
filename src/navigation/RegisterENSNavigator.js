@@ -2,6 +2,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import ConditionalWrap from 'conditional-wrap';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { StatusBar } from 'react-native';
+import { useRecoilState } from 'recoil';
 import { SheetHandleFixedToTopHeight, SlackSheet } from '../components/sheet';
 import ENSAssignRecordsSheet, {
   ENSAssignRecordsBottomActions,
@@ -10,7 +11,8 @@ import ENSSearchSheet from '../screens/ENSSearchSheet';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
 import { sharedCoolModalTopOffset } from './config';
 import { Box } from '@rainbow-me/design-system';
-import { useDimensions, useKeyboardHeight } from '@rainbow-me/hooks';
+import { accentColorAtom } from '@rainbow-me/helpers/ens';
+import { useDimensions } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { deviceUtils } from '@rainbow-me/utils';
 
@@ -43,13 +45,13 @@ export default function RegisterENSNavigator() {
 
   const { height: deviceHeight } = useDimensions();
 
-  const [currentRouteName, setCurrentRouteName] = React.useState(
-    initialRouteName
-  );
+  const [currentRouteName, setCurrentRouteName] = useState(initialRouteName);
 
   const screenOptions = useMemo(() => defaultScreenOptions[currentRouteName], [
     currentRouteName,
   ]);
+
+  const [accentColor] = useRecoilState(accentColorAtom);
 
   const [scrollEnabled, setScrollEnabled] = useState(
     screenOptions.scrollEnabled
@@ -71,10 +73,6 @@ export default function RegisterENSNavigator() {
     }
   }, [screenOptions.scrollEnabled]);
 
-  const keyboardHeight = useKeyboardHeight();
-  const bottomActionHeight = useMemo(() => (ios ? keyboardHeight : 250), [
-    keyboardHeight,
-  ]);
   const contentHeight =
     deviceHeight - SheetHandleFixedToTopHeight - sharedCoolModalTopOffset;
 
@@ -84,16 +82,14 @@ export default function RegisterENSNavigator() {
   return (
     <>
       <SlackSheet
+        backgroundColor={
+          screenOptions.useAccentAsSheetBackground ? accentColor : undefined
+        }
         contentHeight={contentHeight}
         height="100%"
         ref={sheetRef}
         removeTopPadding
         scrollEnabled={scrollEnabled}
-        style={{
-          paddingBottom: isBottomActionsVisible
-            ? bottomActionHeight
-            : undefined,
-        }}
       >
         <ConditionalWrap
           condition={!scrollEnabled}
@@ -133,10 +129,7 @@ export default function RegisterENSNavigator() {
        * The reason why is because we can't achieve fixed positioning (as per designs) within SlackSheet's
        * ScrollView, so this seems like the best workaround.
        */}
-      <ENSAssignRecordsBottomActions
-        height={bottomActionHeight}
-        visible={isBottomActionsVisible}
-      />
+      <ENSAssignRecordsBottomActions visible={isBottomActionsVisible} />
     </>
   );
 }

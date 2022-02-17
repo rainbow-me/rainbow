@@ -37,14 +37,16 @@ import Routes from '@rainbow-me/routes';
 
 const AnimatedBox = Animated.createAnimatedComponent(Box);
 
+export const bottomActionHeight = ios ? 270 : 250;
+
 export default function ENSAssignRecordsSheet() {
   const { colors } = useTheme();
   const ensName = useSelector(({ ensRegistration }) => ensRegistration.name);
 
-  const [avatarColor, setAvatarColor] = useRecoilState(accentColorAtom);
+  const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
   useEffect(() => {
-    setAvatarColor(colors.purple);
-  }, [colors.purple, setAvatarColor]);
+    setAccentColor(colors.purple);
+  }, [colors.purple, setAccentColor]);
   //   usePersistentDominantColorFromImage('TODO').result || colors.purple;   // add this when we implement avatars
 
   const {
@@ -64,8 +66,12 @@ export default function ENSAssignRecordsSheet() {
   const avatarRadius = 35;
 
   return (
-    <AccentColorProvider color={avatarColor}>
-      <Box background="body" flexGrow={1} style={{ paddingBottom: 50 }}>
+    <AccentColorProvider color={accentColor}>
+      <Box
+        background="body"
+        flexGrow={1}
+        style={{ paddingBottom: bottomActionHeight + 20 }}
+      >
         <Stack space="19px">
           <Box
             background="accent"
@@ -108,10 +114,10 @@ export default function ENSAssignRecordsSheet() {
   );
 }
 
-export function ENSAssignRecordsBottomActions({ height, visible }) {
+export function ENSAssignRecordsBottomActions({ visible }) {
   const { navigate } = useNavigation();
   const keyboardHeight = useKeyboardHeight();
-  const [avatarColor] = useRecoilState(accentColorAtom);
+  const [accentColor] = useRecoilState(accentColorAtom);
 
   const {
     isEmpty,
@@ -125,12 +131,14 @@ export function ENSAssignRecordsBottomActions({ height, visible }) {
   }, [navigate]);
 
   const handlePressContinue = useCallback(() => {
-    navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, { color: avatarColor });
-  }, [avatarColor, navigate]);
+    navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, { color: accentColor });
+  }, [accentColor, navigate]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      bottom: withTiming(visible ? 0 : -height - 10, { duration: 100 }),
+      bottom: withTiming(visible ? 0 : -bottomActionHeight - 10, {
+        duration: 100,
+      }),
     };
   });
 
@@ -139,7 +147,7 @@ export function ENSAssignRecordsBottomActions({ height, visible }) {
       {visible && (
         <Box position="absolute" right="0px" style={{ bottom: keyboardHeight }}>
           <Inset bottom="19px" right="19px">
-            <HideKeyboardButton color={avatarColor} />
+            <HideKeyboardButton color={accentColor} />
           </Inset>
         </Box>
       )}
@@ -147,8 +155,8 @@ export function ENSAssignRecordsBottomActions({ height, visible }) {
         background="body"
         style={[animatedStyle, { position: 'absolute', width: '100%' }]}
       >
-        <AccentColorProvider color={avatarColor}>
-          <Box paddingBottom="19px" style={{ height }}>
+        <AccentColorProvider color={accentColor}>
+          <Box paddingBottom="19px" style={{ height: bottomActionHeight }}>
             {ios ? <Shadow /> : null}
             <Rows>
               <Row>
@@ -181,7 +189,7 @@ export function ENSAssignRecordsBottomActions({ height, visible }) {
                     </TintButton>
                   ) : (
                     <SheetActionButton
-                      color={avatarColor}
+                      color={accentColor}
                       label="Review"
                       onPress={handlePressContinue}
                       size="big"
