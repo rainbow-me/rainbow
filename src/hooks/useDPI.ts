@@ -24,10 +24,9 @@ export default function useDPI() {
     return defiPulseData;
   }, [dispatch]);
 
-  const { data } = useQuery(
-    !isEmpty(genericAssets) && ['defiPulse'],
-    fetchDPIData
-  );
+  const { data } = useQuery(['defiPulse'], fetchDPIData, {
+    enabled: !isEmpty(genericAssets),
+  });
 
   return data;
 }

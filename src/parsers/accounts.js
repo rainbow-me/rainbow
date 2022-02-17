@@ -71,7 +71,7 @@ export const parseAsset = ({ asset_code: address, ...asset } = {}) => {
     symbol,
     type,
     uniqueId: address
-      ? asset.network
+      ? asset.network && asset.network !== networkTypes.mainnet
         ? `${address}_${asset.network}`
         : address
       : name,
