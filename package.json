@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.6.2-1",
+  "version": "1.6.6-1",
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn ds:install && yarn allow-scripts && yarn postinstall",
@@ -42,7 +42,8 @@
     "update-tokens": "yarn update-token-list && yarn update-token-metadata",
     "update-token-list": "./scripts/update-token-list.sh",
     "update-token-metadata": "./scripts/update-token-metadata.sh",
-    "check-translations": "./scripts/check-translations.sh ./src './src/languages/*.json' lang.t"
+    "check-translations": "./scripts/check-translations.sh ./src './src/languages/*.json' lang.t",
+    "codegen-translations": "node ./scripts/codegen-translations.js"
   },
   "husky": {
     "hooks": {
@@ -96,7 +97,7 @@
     "@react-navigation/native": "5.7.6",
     "@react-navigation/stack": "5.9.3",
     "@segment/analytics-react-native": "1.5.0",
-    "@sentry/react-native": "2.6.0",
+    "@sentry/react-native": "3.2.13",
     "@tradle/react-native-http": "2.0.1",
     "@types/i18n-js": "3.0.3",
     "@types/lodash": "4.14.168",
@@ -113,6 +114,7 @@
     "buffer": "4.9.2",
     "chroma-js": "2.1.0",
     "cloudinary": "1.27.1",
+    "conditional-wrap": "1.0.2",
     "console-browserify": "1.2.0",
     "constants-browserify": "1.0.0",
     "d3-scale": "4.0.2",
@@ -148,8 +150,9 @@
     "make-color-more-chill": "0.2.2",
     "match-sorter": "6.3.0",
     "mnemonist": "0.38.1",
-    "nanoid": "2.1.11",
+    "nanoid": "3.2.0",
     "p-wait-for": "4.1.0",
+    "pako": "2.0.4",
     "parse-domain": "4.1.0",
     "parse-ms": "2.1.0",
     "patch-package": "6.4.7",
@@ -169,7 +172,8 @@
     "react-native-actionsheet": "2.4.2",
     "react-native-aes-crypto": "brunobar79/react-native-aes#65c49f7e70266615b2999eaa7db654d3fe4f2e3b",
     "react-native-android-keyboard-adjust": "1.2.0",
-    "react-native-branch": "5.0.0",
+    "react-native-bootsplash": "4.1.0",
+    "react-native-branch": "5.3.1",
     "react-native-camera": "4.2.1",
     "react-native-circular-progress": "1.3.6",
     "react-native-cloud-fs": "brunobar79/react-native-cloud-fs#e7e3111fb427b6df5e97f61c700ca1e64636cad8",
@@ -177,10 +181,11 @@
     "react-native-dark-mode": "0.2.2",
     "react-native-device-info": "5.3.1",
     "react-native-dotenv": "2.4.2",
+    "react-native-drop-shadow": "0.0.4",
     "react-native-dynamic": "1.0.0",
     "react-native-exit-app": "1.1.0",
     "react-native-extra-dimensions-android": "1.2.2",
-    "react-native-fast-image": "8.3.4",
+    "react-native-fast-image": "8.5.11",
     "react-native-fs": "2.16.6",
     "react-native-gesture-handler": "1.10.3",
     "react-native-get-random-values": "1.5.0",
@@ -226,6 +231,7 @@
     "react-native-video": "5.1.1",
     "react-native-video-cache": "2.0.5",
     "react-native-webview": "11.2.3",
+    "react-native-widgetkit": "1.0.9",
     "react-navigation-backhandler": "2.0.1",
     "react-primitives": "0.8.1",
     "react-query": "1.5.10",
@@ -271,8 +277,8 @@
     "@types/d3-shape": "3.0.2",
     "@types/dedent": "0.7.0",
     "@types/jest": "26.0.14",
-    "@types/node": "16.11.6",
     "@types/mocha": "9.0.0",
+    "@types/node": "16.11.6",
     "@types/react": "16.9.52",
     "@types/react-native": "0.63.25",
     "@types/react-native-dotenv": "0.2.0",
@@ -315,7 +321,7 @@
     "typescript-coverage-report": "0.6.1"
   },
   "resolutions": {
-    "**/node-fetch": "2.6.1",
+    "**/node-fetch": "2.6.7",
     "**/web3": "1.6.1",
     "**/underscore": "1.12.1",
     "**/socket.io-parser": "3.3.1",
@@ -327,6 +333,7 @@
     "**/lodash": "4.17.21",
     "**/madge": "4.0.2",
     "**/minimist": "1.2.3",
+    "**/nanoid": "3.2.0",
     "**/netmask": "2.0.1",
     "**/postcss": "8.2.13",
     "**/resolve": "1.8.1",
@@ -350,8 +357,9 @@
     "**/validator": "13.7.0",
     "**/json-schema": "0.4.0",
     "**/@ethersproject/**": "5.4.0",
-    "**/follow-redirects": "1.14.7",
-    "**/markdown-it": "12.3.2"
+    "**/follow-redirects": "1.14.8",
+    "**/markdown-it": "12.3.2",
+    "**/simple-get": "4.0.1"
   },
   "jest": {
     "preset": "react-native",
@@ -371,8 +379,7 @@
       "simulator": {
         "type": "ios.simulator",
         "device": {
-          "type": "iPhone 11 Pro Max",
-          "os": "13.7"
+          "type": "iPhone 11"
         }
       }
     },

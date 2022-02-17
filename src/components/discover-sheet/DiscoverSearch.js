@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, {
   useCallback,
   useContext,
@@ -8,7 +9,6 @@ import React, {
 } from 'react';
 import { InteractionManager, View } from 'react-native';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components';
 import { useDebounce } from 'use-debounce/lib';
 import CurrencySelectionTypes from '../../helpers/currencySelectionTypes';
 import { emitAssetRequest } from '../../redux/explorer';
@@ -18,14 +18,19 @@ import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/Ch
 import { Row } from '../layout';
 import DiscoverSheetContext from './DiscoverSheetContext';
 import { fetchSuggestions } from '@rainbow-me/handlers/ens';
-import { usePrevious, useUniswapCurrencyList } from '@rainbow-me/hooks';
+import {
+  useHardwareBackOnFocus,
+  usePrevious,
+  useUniswapCurrencyList,
+} from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { ethereumUtils } from '@rainbow-me/utils';
 
-export const SearchContainer = styled(Row)`
-  height: 100%;
-`;
+export const SearchContainer = styled(Row)({
+  height: '100%',
+});
 
 export default function DiscoverSearch() {
   const { navigate } = useNavigation();
@@ -39,6 +44,7 @@ export default function DiscoverSearch() {
     isSearchModeEnabled,
     setIsSearchModeEnabled,
     searchInputRef,
+    cancelSearch,
   } = useContext(DiscoverSheetContext);
 
   const currencySelectionListRef = useRef();
@@ -53,6 +59,12 @@ export default function DiscoverSearch() {
     ensResults,
   ]);
   const lastSearchQuery = usePrevious(searchQueryForSearch);
+
+  useHardwareBackOnFocus(() => {
+    cancelSearch();
+    // prevent other back handlers from firing
+    return true;
+  });
 
   const handlePress = useCallback(
     item => {
@@ -102,8 +114,8 @@ export default function DiscoverSearch() {
         {
           color: '#5893ff',
           data: ensResults,
-          key: '􀏼 Ethereum Name Service',
-          title: '􀏼 Ethereum Name Service',
+          key: `􀏼 ${lang.t('discover.search.ethereum_name_service')}`,
+          title: `􀏼 ${lang.t('discover.search.ethereum_name_service')}`,
         },
       ];
     }
@@ -144,7 +156,7 @@ export default function DiscoverSearch() {
   }, [isSearchModeEnabled]);
 
   return (
-    <View style={[!android && { height: deviceUtils.dimensions.height - 140 }]}>
+    <View style={{ height: deviceUtils.dimensions.height - 140 }}>
       <SearchContainer>
         <CurrencySelectionList
           footerSpacer

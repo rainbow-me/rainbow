@@ -1,4 +1,5 @@
 import analytics from '@segment/analytics-react-native';
+import lang from 'i18n-js';
 import React, { useEffect } from 'react';
 import Animated, {
   Easing,
@@ -6,12 +7,12 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import styled from 'styled-components';
 import { Centered, Row } from '../layout';
 import ExchangeDetailsButton from './ExchangeDetailsButton';
 import PriceImpactWarning from './PriceImpactWarning';
 import { usePrevious, useSwapCurrencies } from '@rainbow-me/hooks';
 import { ETH_ADDRESS } from '@rainbow-me/references';
+import styled from '@rainbow-me/styled-components';
 import { padding, position } from '@rainbow-me/styles';
 import { ChainId, WETH } from 'rainbow-swaps';
 
@@ -21,19 +22,19 @@ const timingConfig = {
   easing: Easing.bezier(0.76, 0, 0.24, 1),
 };
 
-const Container = styled(Centered)`
-  height: 60;
-  width: 100%;
-`;
+const Container = styled(Centered)({
+  height: 60,
+  width: '100%',
+});
 
 const ExchangeDetailsButtonRow = styled(Row).attrs({
   align: 'center',
   justify: 'space-between',
-})`
-  ${padding(10)};
-  ${position.cover};
-  width: 100%;
-`;
+})({
+  ...padding.object(10),
+  ...position.coverAsObject,
+  width: '100%',
+});
 
 const AnimatedExchangeDetailsButtonRow = Animated.createAnimatedComponent(
   ExchangeDetailsButtonRow
@@ -108,7 +109,7 @@ export default function ExchangeDetailsRow({
     inputCurrency.address === ETH_ADDRESS &&
     outputCurrency.address === WETH[ChainId.mainnet];
 
-  const isUnwrapWeth =
+  const isUnwrapEth =
     inputCurrency.address === WETH[ChainId.mainnet] &&
     outputCurrency.address === ETH_ADDRESS;
 
@@ -131,15 +132,15 @@ export default function ExchangeDetailsRow({
           onPress={onFlipCurrencies}
           testID="exchange-flip-button"
         >
-          􀄬 Flip
+          􀄬 {lang.t('exchange.flip')}
         </ExchangeDetailsButton>
-        {!(isWrapEth || isUnwrapWeth) && (
+        {!(isWrapEth || isUnwrapEth) && (
           <ExchangeDetailsButton
             disabled={!showDetailsButton}
             onPress={onPressViewDetails}
             testID="exchange-details-button"
           >
-            􀕹 View Details
+            􀕹 {lang.t('exchange.view_details')}
           </ExchangeDetailsButton>
         )}
       </AnimatedExchangeDetailsButtonRow>

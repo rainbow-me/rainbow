@@ -1,6 +1,5 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import styled from 'styled-components';
 import { ColumnWithMargins } from '../../layout';
 import SwapDetailsContractRow from './SwapDetailsContractRow';
 import SwapDetailsPriceRow from './SwapDetailsPriceRow';
@@ -11,6 +10,7 @@ import SwapDetailsRow, {
 import SwapDetailsUniswapRow from './SwapDetailsUniswapRow';
 import { useSwapAdjustedAmounts, useSwapCurrencies } from '@rainbow-me/hooks';
 import { SwapModalField } from '@rainbow-me/redux/swap';
+import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 import { isETH } from '@rainbow-me/utils';
 
@@ -21,9 +21,9 @@ export const SwapDetailsContentMinHeight =
 const Container = styled(ColumnWithMargins).attrs({
   flex: 1,
   margin: contentRowMargin,
-})`
-  ${({ isHighPriceImpact }) => padding(isHighPriceImpact ? 24 : 30, 19, 30)};
-`;
+})(({ isHighPriceImpact }) =>
+  padding.object(isHighPriceImpact ? 24 : 30, 19, 30)
+);
 
 export default function SwapDetailsContent({
   isHighPriceImpact,

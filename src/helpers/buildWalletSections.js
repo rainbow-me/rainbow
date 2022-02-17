@@ -16,7 +16,6 @@ import { BalanceCoinRow } from '../components/coin-row';
 import { UniswapInvestmentRow } from '../components/investment-cards';
 import { CollectibleTokenFamily } from '../components/token-family';
 import { withNavigation } from '../navigation/Navigation';
-import { getLowResUrl } from '../utils/getLowResUrl';
 import { compose, withHandlers } from '../utils/recompactAdapters';
 import {
   buildBriefCoinsList,
@@ -26,7 +25,6 @@ import {
 } from './assets';
 import networkTypes from './networkTypes';
 import { add, convertAmountToNativeDisplay, multiply } from './utilities';
-import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
 import { ImgixImage } from '@rainbow-me/images';
 import Routes from '@rainbow-me/routes';
 
@@ -193,7 +191,7 @@ const withBalanceSavingsSection = savings => {
   return savingsSection;
 };
 
-const withBriefBalanceSavingsSection = savings => {
+const withBriefBalanceSavingsSection = (savings, isLoadingAssets) => {
   let totalUnderlyingNativeValue = '0';
   for (let saving of savings) {
     const { underlyingBalanceNativeValue } = saving;
@@ -203,6 +201,7 @@ const withBriefBalanceSavingsSection = savings => {
     );
   }
   const addresses = savings?.map(asset => asset.cToken.address);
+  if (isLoadingAssets) return [];
   return [
     {
       type: 'SAVINGS_HEADER_SPACE_BEFORE',
@@ -408,7 +407,7 @@ const buildImagesToPreloadArray = (family, index, families) => {
       return {
         id: uniqueId,
         priority,
-        uri: svgToPngIfNeeded(getLowResUrl(image_url)),
+        uri: image_url,
       };
     });
 
@@ -466,7 +465,7 @@ const balanceSavingsSectionSelector = createSelector(
 );
 
 const briefBalanceSavingsSectionSelector = createSelector(
-  [savingsSelector],
+  [savingsSelector, isLoadingAssetsSelector],
   withBriefBalanceSavingsSection
 );
 

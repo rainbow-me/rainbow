@@ -15,12 +15,13 @@ import {
 // @ts-ignore
 import Video from 'react-native-video';
 import convertToProxyURL from 'react-native-video-cache';
-import styled from 'styled-components';
 import { ImgixImage } from '@rainbow-me/images';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import logger from 'logger';
 
 export type SimpleVideoProps = {
+  readonly size: number;
   readonly style?: ViewStyle;
   readonly uri: string;
   readonly posterUri?: string;
@@ -28,33 +29,29 @@ export type SimpleVideoProps = {
   readonly setLoading: (isLoading: boolean) => void;
 };
 
-const absoluteFill = `
-  position: absolute;
-  ${position.size('100%')}
-`;
+const absoluteFill = {
+  position: 'absolute',
+  ...position.sizeAsObject('100%'),
+};
 
-const StyledBackground = styled(View)`
-  ${absoluteFill}
-  background-color: ${({ theme: { colors } }) => colors.white};
-`;
+const StyledBackground = styled(View)({
+  ...absoluteFill,
+  // @ts-ignore
+  backgroundColor: ({ theme: { colors } }) => colors.white,
+});
 
-const StyledVideo = styled(Video)`
-  ${absoluteFill}
-`;
+const StyledVideo = styled(Video)(absoluteFill);
 
-const StyledPosterContainer = styled(Animated.View)`
-  ${absoluteFill}
-`;
+const StyledPosterContainer = styled(Animated.View)(absoluteFill);
 
-const StyledImgixImage = styled(ImgixImage)`
-  ${position.size('100%')}
-`;
+const StyledImgixImage = styled(ImgixImage)(position.sizeAsObject('100%'));
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
 });
 
 export default function SimpleVideo({
+  size,
   style,
   uri,
   posterUri,
@@ -110,7 +107,7 @@ export default function SimpleVideo({
           pointerEvents={loading ? 'auto' : 'none'}
           style={{ opacity }}
         >
-          <StyledImgixImage source={{ uri: posterUri }} />
+          <StyledImgixImage size={size} source={{ uri: posterUri }} />
         </StyledPosterContainer>
       </View>
     </TouchableWithoutFeedback>

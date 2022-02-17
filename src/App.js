@@ -3,7 +3,7 @@ import messaging from '@react-native-firebase/messaging';
 import analytics from '@segment/analytics-react-native';
 import * as Sentry from '@sentry/react-native';
 import { get } from 'lodash';
-import nanoid from 'nanoid/non-secure';
+import { nanoid } from 'nanoid/non-secure';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import {
@@ -14,10 +14,9 @@ import {
   LogBox,
   NativeModules,
   StatusBar,
+  View,
 } from 'react-native';
-import branch from 'react-native-branch';
 import {
-  IS_TESTING,
   REACT_APP_SEGMENT_API_WRITE_KEY,
   SENTRY_ENDPOINT,
   SENTRY_ENVIRONMENT,
@@ -31,7 +30,6 @@ import { connect, Provider } from 'react-redux';
 import { RecoilRoot } from 'recoil';
 import PortalConsumer from './components/PortalConsumer';
 import ErrorBoundary from './components/error-boundary/ErrorBoundary';
-import { FlexItem } from './components/layout';
 import { OfflineToast } from './components/toasts';
 import {
   designSystemPlaygroundEnabled,
@@ -61,6 +59,7 @@ import store from './redux/store';
 import { uniswapPairsInit } from './redux/uniswap';
 import { walletConnectLoadState } from './redux/walletconnect';
 import { rainbowTokenList } from './references';
+import { branchListener } from './utils/branch';
 import { analyticsUserIdentifier } from './utils/keychainConstants';
 import { SharedValuesProvider } from '@rainbow-me/helpers/SharedValuesContext';
 import Routes from '@rainbow-me/routes';
@@ -80,6 +79,11 @@ if (__DEV__) {
     dsn: SENTRY_ENDPOINT,
     enableAutoSessionTracking: true,
     environment: SENTRY_ENVIRONMENT,
+    integrations: [
+      new Sentry.ReactNativeTracing({
+        tracingOrigins: ['localhost', /^\//],
+      }),
+    ],
   };
   Sentry.init(sentryOptions);
 }
@@ -87,6 +91,8 @@ if (__DEV__) {
 enableScreens();
 
 const { RNTestFlight } = NativeModules;
+
+const containerStyle = { flex: 1 };
 
 class App extends Component {
   static propTypes = {
@@ -124,27 +130,7 @@ class App extends Component {
       }
     );
 
-    this.branchListener = branch.subscribe(({ error, params, uri }) => {
-      if (error) {
-        logger.error('Error from Branch: ' + error);
-      }
-
-      if (params['+non_branch_link']) {
-        const nonBranchUrl = params['+non_branch_link'];
-        this.handleOpenLinkingURL(nonBranchUrl);
-        return;
-      } else if (!params['+clicked_branch_link']) {
-        // Indicates initialization success and some other conditions.
-        // No link was opened.
-        if (IS_TESTING === 'true') {
-          this.handleOpenLinkingURL(uri);
-        } else {
-          return;
-        }
-      } else if (uri) {
-        this.handleOpenLinkingURL(uri);
-      }
-    });
+    this.branchListener = branchListener(this.handleOpenLinkingURL);
 
     // Walletconnect uses direct deeplinks
     if (android) {
@@ -285,7 +271,7 @@ class App extends Component {
               <Provider store={store}>
                 <RecoilRoot>
                   <SharedValuesProvider>
-                    <FlexItem>
+                    <View style={containerStyle}>
                       {this.state.initialRoute && (
                         <InitialRouteContext.Provider
                           value={this.state.initialRoute}
@@ -295,7 +281,7 @@ class App extends Component {
                         </InitialRouteContext.Provider>
                       )}
                       <OfflineToast />
-                    </FlexItem>
+                    </View>
                   </SharedValuesProvider>
                 </RecoilRoot>
               </Provider>
@@ -317,5 +303,5 @@ const AppWithRedux = connect(
 const AppWithReduxStore = () => <AppWithRedux store={store} />;
 
 AppRegistry.registerComponent('Rainbow', () =>
-  designSystemPlaygroundEnabled ? Playground : AppWithReduxStore
+  designSystemPlaygroundEnabled ? Playground : Sentry.wrap(AppWithReduxStore)
 );

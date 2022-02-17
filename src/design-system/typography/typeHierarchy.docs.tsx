@@ -42,6 +42,9 @@ const docs: DocsType = {
       Example: () =>
         source(
           <Stack space="12px">
+            <Text size="23px">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit
+            </Text>
             <Text size="18px">
               Lorem ipsum dolor sit amet, consectetur adipiscing elit
             </Text>

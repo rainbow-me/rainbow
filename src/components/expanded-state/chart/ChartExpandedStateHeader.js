@@ -1,8 +1,7 @@
+import lang from 'i18n-js';
 import { invert } from 'lodash';
 import React, { useMemo } from 'react';
-import Animated from 'react-native-reanimated';
-import styled from 'styled-components';
-import { useCallbackOne } from 'use-memo-one';
+import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { CoinIcon, CoinIconGroup } from '../../coin-icon';
 import { Column, ColumnWithMargins, Row, RowWithMargins } from '../../layout';
 import ChartAddToListButton from './ChartAddToListButton';
@@ -17,33 +16,31 @@ import { useChartData } from '@rainbow-me/animated-charts';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
 import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
 import { useAccountSettings, useBooleanState } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 
-const { call, cond, onChange, useCode } = Animated;
-
-const noPriceData = 'No price data';
+const noPriceData = lang.t('expanded_state.chart.no_price_data');
 
 const Container = styled(ColumnWithMargins).attrs({
   margin: 12,
   marginTop: android ? -10 : 0,
-})`
-  ${({ showChart }) => padding(0, 19, showChart ? (android ? 15 : 30) : 0)};
-`;
+})(({ showChart }) => ({
+  ...padding.object(0, 19, showChart ? (android ? 15 : 30) : 0),
+}));
 
-function useTabularNumsWhileScrubbing(isScrubbing) {
+function useTabularNumsWhileScrubbing() {
   const [tabularNums, enable, disable] = useBooleanState();
   // Only enable tabularNums on the price label when the user is scrubbing
   // because we are obnoxiously into details
-  useCode(
-    useCallbackOne(
-      () =>
-        onChange(
-          isScrubbing,
-          cond(isScrubbing, call([], enable), call([], disable))
-        ),
-      [disable, enable, isScrubbing]
-    )
+  const { isActive } = useChartData();
+
+  useAnimatedReaction(
+    () => isActive.value,
+    useTabularNums => {
+      runOnJS(useTabularNums ? enable : disable)();
+    }
   );
+
   return tabularNums;
 }
 
@@ -54,7 +51,6 @@ export default function ChartExpandedStateHeader({
   color: givenColors,
   dateRef,
   isPool,
-  isScrubbing,
   latestChange,
   latestPrice = noPriceData,
   priceRef,
@@ -69,11 +65,15 @@ export default function ChartExpandedStateHeader({
     return isPool ? asset.tokens : [asset];
   }, [asset, isPool]);
   const { nativeCurrency } = useAccountSettings();
-  const tabularNums = useTabularNumsWhileScrubbing(isScrubbing);
+  const tabularNums = useTabularNumsWhileScrubbing();
 
   const isNoPriceData = latestPrice === noPriceData;
 
-  const title = isPool ? `${asset.tokenNames} Pool` : asset?.name;
+  const title = isPool
+    ? lang.t('expanded_state.chart.token_pool', {
+        tokenName: asset.tokenNames,
+      })
+    : asset?.name;
 
   const titleOrNoPriceData = isNoPriceData ? noPriceData : title;
 
@@ -144,7 +144,6 @@ export default function ChartExpandedStateHeader({
             defaultValue={isNoPriceData ? title : price}
             isNoPriceData={isNoPriceData}
             isPool={isPool}
-            isScrubbing={isScrubbing}
             priceRef={priceRef}
             priceValue={defaultPriceValue}
             tabularNums={tabularNums}
@@ -156,11 +155,9 @@ export default function ChartExpandedStateHeader({
               color={
                 isNoPriceData ? colors.alpha(colors.blueGreyDark, 0.8) : color
               }
-              isScrubbing={isScrubbing}
               latestChange={latestChange}
               overrideValue={overrideValue}
               ratio={ratio}
-              tabularNums={tabularNums}
             />
           )}
         </RowWithMargins>

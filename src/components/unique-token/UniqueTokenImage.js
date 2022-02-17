@@ -1,6 +1,5 @@
 import { toLower } from 'lodash';
 import React, { Fragment, useCallback, useState } from 'react';
-import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { buildUniqueTokenName } from '../../helpers/assets';
 import { ENS_NFT_CONTRACT_ADDRESS } from '../../references';
@@ -14,7 +13,9 @@ import {
   usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
+import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth, position } from '@rainbow-me/styles';
+import { getLowResUrl } from '@rainbow-me/utils/getLowResUrl';
 
 const FallbackTextColorVariants = (darkMode, colors) => ({
   dark: darkMode
@@ -29,10 +30,10 @@ const getFallbackTextColor = (bg, darkMode, colors) =>
     FallbackTextColorVariants(darkMode, colors)
   );
 
-const ImageTile = styled(ImgixImage)`
-  align-items: center;
-  justify-content: center;
-`;
+const ImageTile = styled(ImgixImage)({
+  alignItems: 'center',
+  justifyContent: 'center',
+});
 
 const ENSText = styled(Text).attrs(
   ({ isTinyPhone, small, theme: { colors } }) => ({
@@ -40,20 +41,20 @@ const ENSText = styled(Text).attrs(
     letterSpacing: 'roundedMedium',
     size: small ? 'smedium' : isTinyPhone ? 'large' : 'bigger',
   })
-)`
-  padding: 8px;
-  text-align: center;
-  ${fontWithWidth(fonts.weight.heavy)};
-`;
+)({
+  padding: 8,
+  textAlign: 'center',
+  ...fontWithWidth(fonts.weight.heavy),
+});
 
 const UniqueTokenImage = ({
   backgroundColor: givenBackgroundColor,
   imageUrl,
   item,
   isCard = false,
-  lowResUrl,
   resizeMode = ImgixImage.resizeMode.cover,
-  small,
+  size,
+  small = false,
   transformSvgs = true,
 }) => {
   const { isTinyPhone } = useDimensions();
@@ -62,6 +63,7 @@ const UniqueTokenImage = ({
   const isSVG = isSupportedUriExtension(imageUrl, ['.svg']);
   const newImageUrl = transformSvgs ? svgToPngIfNeeded(imageUrl) : imageUrl;
   const image = isENS && !isSVG ? `${item.image_url}=s1` : newImageUrl;
+  const lowResUrl = isSVG ? newImageUrl : getLowResUrl(image);
   const [error, setError] = useState(null);
   const handleError = useCallback(error => setError(error), [setError]);
   const { isDarkMode, colors } = useTheme();
@@ -77,7 +79,6 @@ const UniqueTokenImage = ({
   if (isOldENS && dominantColor) {
     backgroundColor = dominantColor;
   }
-
   return (
     <Centered backgroundColor={backgroundColor} style={position.coverAsObject}>
       {isSVG && !transformSvgs && !error ? (
@@ -102,12 +103,13 @@ const UniqueTokenImage = ({
               onError={handleError}
               onLoad={onLoad}
               resizeMode={ImgixImage.resizeMode[resizeMode]}
+              size={size}
               source={{ uri: image }}
               style={position.coverAsObject}
             />
             {!loadedImg && lowResUrl && (
               <ImageTile
-                {...(isCard && { fm: 'png' })}
+                fm="png"
                 playing={false}
                 resizeMode={ImgixImage.resizeMode[resizeMode]}
                 source={{ uri: lowResUrl }}

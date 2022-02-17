@@ -93,12 +93,12 @@ export const estimateSwapGasLimit = async ({
   const isWrapEth =
     sellTokenAddress === ETH_ADDRESS_AGGREGATORS &&
     buyTokenAddress === WETH[ChainId.mainnet];
-  const isUnwrapWeth =
+  const isUnwrapEth =
     sellTokenAddress === WETH[ChainId.mainnet] &&
     buyTokenAddress === ETH_ADDRESS_AGGREGATORS;
 
   // Wrap / Unwrap Eth
-  if (isWrapEth || isUnwrapWeth) {
+  if (isWrapEth || isUnwrapEth) {
     const default_estimate = isWrapEth
       ? ethUnits.weth_wrap
       : ethUnits.weth_unwrap;
@@ -110,7 +110,7 @@ export const estimateSwapGasLimit = async ({
         },
         geWethMethod(isWrapEth ? 'deposit' : 'withdraw', provider),
         // @ts-ignore
-        isUnwrapWeth ? [tradeDetails.buyAmount] : null,
+        isUnwrapEth ? [tradeDetails.buyAmount] : null,
         provider,
         1.002
       );

@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { constant, times } from 'lodash';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import Animated from 'react-native-reanimated';
@@ -92,7 +93,7 @@ export default function SwapDetailsUniswapRow(props) {
     );
   } else if (protocols?.length > 0) {
     return (
-      <SwapDetailsRow label="Swapping via">
+      <SwapDetailsRow label={lang.t('expanded_state.swap.swapping_via')}>
         <SwapDetailsValue color={color}>
           {protocols[0].name.replace('_', ' ')}
         </SwapDetailsValue>

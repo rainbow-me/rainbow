@@ -1,7 +1,6 @@
 import { get } from 'lodash';
 import React, { forwardRef, useEffect, useRef } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
-import styled from 'styled-components';
 import { magicMemo } from '../../utils';
 import { EmptyAssetList } from '../asset-list';
 import { Centered } from '../layout';
@@ -10,18 +9,19 @@ import { CurrencySelectModalHeaderHeight } from './CurrencySelectModalHeader';
 import ExchangeAssetList from './ExchangeAssetList';
 import { ExchangeSearchHeight } from './ExchangeSearch';
 import { usePrevious } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 
 const EmptyCurrencySelectionList = styled(EmptyAssetList).attrs({
   pointerEvents: 'none',
-})`
-  ${position.cover};
-  background-color: ${({ theme: { colors } }) => colors.white};
-`;
+})({
+  ...position.coverAsObject,
+  backgroundColor: ({ theme: { colors } }) => colors.white,
+});
 
-const NoCurrencyResults = styled(NoResults)`
-  padding-bottom: ${CurrencySelectModalHeaderHeight + ExchangeSearchHeight / 2};
-`;
+const NoCurrencyResults = styled(NoResults)({
+  paddingBottom: CurrencySelectModalHeaderHeight + ExchangeSearchHeight / 2,
+});
 
 const skeletonTransition = (
   <Transition.Sequence>
@@ -45,15 +45,16 @@ const CurrencySelectionList = (
   ref
 ) => {
   const skeletonTransitionRef = useRef();
-  const showNoResults = get(listItems, '[0].data', []).length === 0;
-  const showSkeleton = showNoResults && loading;
+  const noResults = get(listItems, '[0].data', []).length === 0;
+  const showGhost = !loading && noResults;
+  const showSkeleton = noResults && loading;
   const prevShowSkeleton = usePrevious(showSkeleton);
 
   useEffect(() => {
     if (!showSkeleton && prevShowSkeleton) {
       skeletonTransitionRef.current?.animateNextTransition();
     }
-  }, [loading, prevShowSkeleton, showSkeleton]);
+  }, [prevShowSkeleton, showSkeleton]);
 
   return (
     <Transitioning.View
@@ -62,9 +63,9 @@ const CurrencySelectionList = (
       testID={testID}
       transition={skeletonTransition}
     >
-      {showList && (
+      {showList && !showSkeleton && (
         <Centered flex={1}>
-          {showNoResults ? (
+          {showGhost ? (
             <NoCurrencyResults />
           ) : (
             <ExchangeAssetList
@@ -86,5 +87,6 @@ const CurrencySelectionList = (
 
 export default magicMemo(forwardRef(CurrencySelectionList), [
   'listItems',
+  'loading',
   'showList',
 ]);

@@ -9,7 +9,6 @@ import React, {
 } from 'react';
 import { ActivityIndicator, InteractionManager } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
-import styled from 'styled-components';
 import ChainLogo from '../components/ChainLogo';
 import Divider from '../components/Divider';
 import Spinner from '../components/Spinner';
@@ -24,7 +23,7 @@ import {
   SheetActionButton,
   SheetActionButtonRow,
 } from '../components/sheet';
-import { Text } from '../components/text';
+import { Text } from '@rainbow-me/design-system';
 import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
 import {
   getDappHostname,
@@ -40,6 +39,7 @@ import {
 import { useAccountSettings, useWallets } from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
@@ -47,7 +47,7 @@ const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
     color: colors.alpha(colors.blueGreyDark, 0.3),
     size: android ? 40 : 'large',
   })
-)``;
+)({});
 
 const DappLogo = styled(RequestVendorLogoIcon).attrs(
   ({ theme: { colors } }) => ({
@@ -56,35 +56,36 @@ const DappLogo = styled(RequestVendorLogoIcon).attrs(
     showLargeShadow: true,
     size: 60,
   })
-)`
-  margin-bottom: 24;
-`;
+)({
+  marginBottom: 24,
+});
 
-const NetworkLabelText = styled(Text).attrs(({ theme: { colors } }) => ({
-  color: colors.alpha(colors.blueGreyDark, 0.6),
-  letterSpacing: 'roundedMedium',
-  size: 'smedium',
-  weight: 'semibold',
-}))`
-  margin-bottom: 4;
-`;
+const AvatarWrapper = styled(Column)({
+  marginRight: 5,
+  marginTop: 1,
+});
 
-const LabelText = styled(Text).attrs(({ theme: { colors } }) => ({
-  color: colors.dark,
-  size: 'large',
-  weight: 'heavy',
-}))``;
+const LabelText = ({ children, ...props }) => {
+  return (
+    <Text
+      color="primary"
+      numberOfLines={1}
+      size="18px"
+      weight="bold"
+      {...props}
+    >
+      {children}
+    </Text>
+  );
+};
 
-const AvatarWrapper = styled(Column)`
-  margin-right: 5;
-  margin-top: 1;
-`;
-
-const SwitchText = styled(Text).attrs(({ theme: { colors } }) => ({
-  color: colors.dark,
-  size: 'large',
-  weight: 'heavy',
-}))``;
+const SwitchText = ({ children, ...props }) => {
+  return (
+    <Text color="secondary40" size="14px" weight="semibold" {...props}>
+      {children}
+    </Text>
+  );
+};
 
 export default function WalletConnectApprovalSheet() {
   const { colors } = useTheme();
@@ -313,7 +314,7 @@ export default function WalletConnectApprovalSheet() {
           <LoadingSpinner />
         </Centered>
       ) : (
-        <Flex direction="column" height={sheetHeight}>
+        <Flex direction="column">
           <Centered
             direction="column"
             paddingBottom={5}
@@ -326,12 +327,11 @@ export default function WalletConnectApprovalSheet() {
               <Row>
                 <Text
                   align="center"
-                  color={colors.alpha(colors.blueGreyDark, 0.6)}
-                  lineHeight={29}
-                  size="big"
-                  weight="medium"
+                  color="secondary60"
+                  size="23px"
+                  weight="semibold"
                 >
-                  <Text color="dark" size="big" weight="heavy">
+                  <Text color="primary" size="23px" weight="heavy">
                     {dappName}
                   </Text>{' '}
                   {type === WalletConnectApprovalSheetType.connect
@@ -342,13 +342,8 @@ export default function WalletConnectApprovalSheet() {
                 </Text>
               </Row>
             </Centered>
-            <Row marginBottom={30} marginTop={15}>
-              <Text
-                color="appleBlue"
-                lineHeight={29}
-                size="large"
-                weight="heavy"
-              >
+            <Row marginBottom={30} marginTop={30}>
+              <Text color="action" size="18px" weight="heavy">
                 {isAuthenticated ? `􀇻 ${formattedDappUrl}` : formattedDappUrl}
               </Text>
             </Row>
@@ -377,39 +372,46 @@ export default function WalletConnectApprovalSheet() {
             paddingBottom={21}
             paddingHorizontal={24}
           >
-            <Column>
-              <NetworkLabelText>Wallet</NetworkLabelText>
-              <ButtonPressAnimation onPress={handlePressChangeWallet}>
-                <Row align="center" marginTop={android ? -10 : 0}>
-                  <AvatarWrapper>
-                    {approvalAccountInfo.accountImage ? (
-                      <ImageAvatar
-                        image={approvalAccountInfo.accountImage}
-                        size="smaller"
-                      />
-                    ) : (
-                      <ContactAvatar
-                        color={
-                          isNaN(approvalAccountInfo.accountColor)
-                            ? colors.skeleton
-                            : approvalAccountInfo.accountColor
-                        }
-                        size="smaller"
-                        value={approvalAccountInfo.accountSymbol}
-                      />
-                    )}
-                  </AvatarWrapper>
-                  <LabelText numberOfLines={1}>
-                    {approvalAccountInfo.accountLabel}
-                  </LabelText>
-                  {type === WalletConnectApprovalSheetType.connect && (
-                    <SwitchText> 􀁰</SwitchText>
+            <Column style={{ flex: 1, marginRight: 16 }}>
+              <SwitchText>Wallet</SwitchText>
+              <ButtonPressAnimation
+                onPress={handlePressChangeWallet}
+                style={{
+                  alignItems: 'center',
+                  flexDirection: 'row',
+                  height: 38,
+                }}
+              >
+                <AvatarWrapper>
+                  {approvalAccountInfo.accountImage ? (
+                    <ImageAvatar
+                      image={approvalAccountInfo.accountImage}
+                      size="smaller"
+                    />
+                  ) : (
+                    <ContactAvatar
+                      color={
+                        isNaN(approvalAccountInfo.accountColor)
+                          ? colors.skeleton
+                          : approvalAccountInfo.accountColor
+                      }
+                      size="smaller"
+                      value={approvalAccountInfo.accountSymbol}
+                    />
                   )}
-                </Row>
+                </AvatarWrapper>
+                <Flex direction="row" flexShrink={1}>
+                  <LabelText>{approvalAccountInfo.accountLabel}</LabelText>
+                </Flex>
+                {type === WalletConnectApprovalSheetType.connect && (
+                  <LabelText> 􀁰</LabelText>
+                )}
               </ButtonPressAnimation>
             </Column>
-            <Column align="flex-end">
-              <NetworkLabelText align="right">Network</NetworkLabelText>
+            <Column>
+              <Flex justify="end">
+                <SwitchText align="right">Network</SwitchText>
+              </Flex>
               <NetworkSwitcherParent
                 activeOpacity={0}
                 isMenuPrimaryAction
@@ -422,35 +424,33 @@ export default function WalletConnectApprovalSheet() {
                 useActionSheetFallback={false}
                 wrapNativeComponent={false}
               >
-                <ButtonPressAnimation>
-                  <Row marginTop={android ? -10 : 0}>
-                    <Centered marginRight={5}>
-                      <ChainLogo
-                        network={
-                          type === WalletConnectApprovalSheetType.connect
-                            ? approvalNetworkInfo.value
-                            : ethereumUtils.getNetworkFromChainId(
-                                Number(chainId)
-                              )
-                        }
-                      />
-                    </Centered>
-                    <LabelText
-                      align="right"
-                      color={colors.dark}
-                      numberOfLines={1}
-                    >
-                      {type === WalletConnectApprovalSheetType.connect
-                        ? approvalNetworkInfo.name
-                        : ethereumUtils.getNetworkNameFromChainId(
-                            Number(chainId)
-                          )}
-                    </LabelText>
-                    {type === WalletConnectApprovalSheetType.connect &&
-                      menuItems.length > 1 && (
-                        <SwitchText align="right"> 􀁰</SwitchText>
-                      )}
-                  </Row>
+                <ButtonPressAnimation
+                  style={{
+                    alignItems: 'center',
+                    flexDirection: 'row',
+                    height: 38,
+                  }}
+                >
+                  <Centered marginRight={5}>
+                    <ChainLogo
+                      network={
+                        type === WalletConnectApprovalSheetType.connect
+                          ? approvalNetworkInfo.value
+                          : ethereumUtils.getNetworkFromChainId(Number(chainId))
+                      }
+                    />
+                  </Centered>
+                  <LabelText align="right" numberOfLines={1}>
+                    {type === WalletConnectApprovalSheetType.connect
+                      ? approvalNetworkInfo.name
+                      : ethereumUtils.getNetworkNameFromChainId(
+                          Number(chainId)
+                        )}
+                  </LabelText>
+                  {type === WalletConnectApprovalSheetType.connect &&
+                    menuItems.length > 1 && (
+                      <LabelText align="right"> 􀁰</LabelText>
+                    )}
                 </ButtonPressAnimation>
               </NetworkSwitcherParent>
             </Column>

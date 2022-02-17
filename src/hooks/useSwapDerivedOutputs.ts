@@ -107,7 +107,7 @@ const getOutputAmount = async (
   inputAmount: string | null,
   inputToken: Token,
   outputToken: Token | null,
-  outputPrice: string | null,
+  outputPrice: string | number | null | undefined,
   fromAddress: EthereumAddress,
   chainId = 1
 ) => {
