@@ -22,6 +22,7 @@ const UNISWAP_FAVORITES = 'uniswapFavorites';
 const UNISWAP_FAVORITES_METADATA = 'uniswapFavoritesMetadata';
 const uniswapLiquidityVersion = '0.2.0';
 const uniswapPositionsVersion = '0.1.0';
+const uniswapFavoritesMetadataVersion = '0.1.0';
 
 export const uniswapAccountLocalKeys = [ASSETS, LIQUIDITY, UNISWAP_POSITIONS];
 
@@ -37,11 +38,16 @@ export const saveUniswapFavorites = (favorites: any) =>
 export const getUniswapFavoritesMetadata = (
   network: Network = Network.mainnet
 ): Promise<UniswapFavoriteTokenData> =>
-  getGlobal(UNISWAP_FAVORITES_METADATA, DefaultUniswapFavoritesMeta[network]);
+  getGlobal(
+    UNISWAP_FAVORITES_METADATA,
+    DefaultUniswapFavoritesMeta[network],
+    uniswapFavoritesMetadataVersion
+  );
 
 export const saveUniswapFavoritesMetadata = (
   data: Record<EthereumAddress, RainbowToken>
-) => saveGlobal(UNISWAP_FAVORITES_METADATA, data);
+) =>
+  saveGlobal(UNISWAP_FAVORITES_METADATA, data, uniswapFavoritesMetadataVersion);
 
 export const getUniswapPositions = (accountAddress: any, network: Network) =>
   getAccountLocal(

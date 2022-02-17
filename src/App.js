@@ -26,6 +26,7 @@ import {
 import RNIOS11DeviceCheck from 'react-native-ios11-devicecheck';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
+import { QueryClientProvider } from 'react-query';
 import { connect, Provider } from 'react-redux';
 import { RecoilRoot } from 'recoil';
 import PortalConsumer from './components/PortalConsumer';
@@ -52,6 +53,7 @@ import * as keychain from './model/keychain';
 import { loadAddress } from './model/wallet';
 import { Navigation } from './navigation';
 import RoutesComponent from './navigation/Routes';
+import { queryClient } from './react-query/queryClient';
 import { explorerInitL2 } from './redux/explorer';
 import { fetchOnchainBalances } from './redux/fallbackExplorer';
 import { requestsForTopic } from './redux/requests';
@@ -268,23 +270,25 @@ class App extends Component {
         <ErrorBoundary>
           <Portal>
             <SafeAreaProvider>
-              <Provider store={store}>
-                <RecoilRoot>
-                  <SharedValuesProvider>
-                    <View style={containerStyle}>
-                      {this.state.initialRoute && (
-                        <InitialRouteContext.Provider
-                          value={this.state.initialRoute}
-                        >
-                          <RoutesComponent ref={this.handleNavigatorRef} />
-                          <PortalConsumer />
-                        </InitialRouteContext.Provider>
-                      )}
-                      <OfflineToast />
-                    </View>
-                  </SharedValuesProvider>
-                </RecoilRoot>
-              </Provider>
+              <QueryClientProvider client={queryClient}>
+                <Provider store={store}>
+                  <RecoilRoot>
+                    <SharedValuesProvider>
+                      <View style={containerStyle}>
+                        {this.state.initialRoute && (
+                          <InitialRouteContext.Provider
+                            value={this.state.initialRoute}
+                          >
+                            <RoutesComponent ref={this.handleNavigatorRef} />
+                            <PortalConsumer />
+                          </InitialRouteContext.Provider>
+                        )}
+                        <OfflineToast />
+                      </View>
+                    </SharedValuesProvider>
+                  </RecoilRoot>
+                </Provider>
+              </QueryClientProvider>
             </SafeAreaProvider>
           </Portal>
         </ErrorBoundary>

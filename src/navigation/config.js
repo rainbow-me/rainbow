@@ -139,6 +139,7 @@ export const registerENSNavigatorConfig = {
     ...buildCoolModalConfig({
       ...params,
       backgroundOpacity: 1,
+      scrollEnabled: true,
       springDamping: 1,
     }),
   }),

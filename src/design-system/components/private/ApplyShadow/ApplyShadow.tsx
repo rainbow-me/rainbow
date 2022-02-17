@@ -119,6 +119,7 @@ export const ApplyShadow = React.forwardRef(
           <AndroidShadow
             backgroundColor={backgroundColor}
             shadow={shadows.android}
+            style={childStyles}
           />
         )}
         <ConditionalWrap
