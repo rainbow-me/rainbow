@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
 import { Keyboard } from 'react-native';
+import RadialGradient from 'react-native-radial-gradient';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -36,9 +37,10 @@ import { useENSProfileForm, useKeyboardHeight } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 
 const AnimatedBox = Animated.createAnimatedComponent(Box);
-const avatarSize = 70;
 
 export const bottomActionHeight = ios ? 270 : 250;
+const avatarSize = 70;
+const alpha = '33';
 
 export default function ENSAssignRecordsSheet() {
   const { colors } = useTheme();
@@ -73,19 +75,34 @@ export default function ENSAssignRecordsSheet() {
       >
         <Stack space="19px">
           <Box
-            background="accent"
+            alignItems="center"
+            as={RadialGradient}
+            colors={[colors.whiteLabel + alpha, accentColor + alpha]}
             height={{ custom: 125 }}
+            justifyContent="center"
             marginBottom={{ custom: 50 }}
+            stops={[0.6, 0]}
           >
+            <Text color="accent" size="18px" weight="heavy">
+              􀣵 Add Cover
+            </Text>
             <Cover alignHorizontal="center">
               <Box
+                alignItems="center"
                 background="swap"
                 borderRadius={avatarSize / 2}
                 height={{ custom: avatarSize }}
+                justifyContent="center"
                 shadow="12px heavy accent"
                 top={{ custom: 105 }}
                 width={{ custom: avatarSize }}
-              />
+              >
+                <AccentColorProvider color={colors.white}>
+                  <Text color="accent" size="23px" weight="heavy">
+                    {` 􀜖 `}
+                  </Text>
+                </AccentColorProvider>
+              </Box>
             </Cover>
           </Box>
           <Inset horizontal="19px">

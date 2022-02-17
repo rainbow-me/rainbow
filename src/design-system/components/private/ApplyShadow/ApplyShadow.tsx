@@ -135,6 +135,7 @@ export const ApplyShadow = React.forwardRef(
         >
           {React.cloneElement(child, {
             style: [
+              { flex: 1 },
               childStyles,
               android && !androidShadowsV2 ? androidChildStyles : undefined,
             ],
