@@ -57,13 +57,13 @@ export default function useENSRegistrationCosts({
     };
   }, [accountAddress, duration, name, nativeCurrency, rentPriceInWei]);
 
-  const { data: estimatedFee, status } = useQuery(
-    Boolean(rentPriceInWei) && [
+  const { data: estimatedFee, status, isIdle, isLoading } = useQuery(
+    [
       'getEstimatedNetworkFee',
       [accountAddress, name, nativeCurrency, rentPriceInWei],
     ],
     getEstimatedNetworkFee,
-    { cacheTime: 0 }
+    { cacheTime: 0, enabled: Boolean(rentPriceInWei) }
   );
 
   const data = useMemo(() => {
@@ -106,11 +106,7 @@ export default function useENSRegistrationCosts({
     }
   }, [duration, estimatedFee, nativeCurrency, rentPrice?.perYear?.wei]);
 
-  const newStatus = rentPrice ? status : 'idle';
-
-  const isIdle = newStatus === 'idle';
-  const isLoading = newStatus === 'loading';
-  const isSuccess = newStatus === 'success' && !!data?.estimatedRentPrice;
+  const isSuccess = status === 'success' && !!data?.estimatedRentPrice;
 
   return {
     data,

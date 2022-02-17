@@ -76,22 +76,15 @@ export default function useENSRegistration({
     }
   }, [duration, name, nativeCurrency]);
 
-  const { data, status } = useQuery(
-    isValidLength && [
-      'getRegistrationValues',
-      [duration, name, nativeCurrency],
-    ],
+  const { data, status, isIdle, isLoading } = useQuery(
+    ['getRegistrationValues', [duration, name, nativeCurrency]],
     getRegistrationValues,
-    { retry: 0, staleTime: Infinity }
+    { enabled: isValidLength, retry: 0, staleTime: Infinity }
   );
 
-  const newStatus = isValidLength ? status : 'idle';
-
-  const isIdle = newStatus === 'idle';
-  const isLoading = newStatus === 'loading';
-  const isAvailable = newStatus === 'success' && data?.available === true;
-  const isRegistered = newStatus === 'success' && data?.available === false;
-  const isInvalid = newStatus === 'success' && !data?.valid;
+  const isAvailable = status === 'success' && data?.available === true;
+  const isRegistered = status === 'success' && data?.available === false;
+  const isInvalid = status === 'success' && !data?.valid;
 
   return {
     data,
