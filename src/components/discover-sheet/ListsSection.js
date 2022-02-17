@@ -211,14 +211,6 @@ export default function ListSection() {
     [navigate, selectedList]
   );
 
-  const itemProps = useMemo(
-    () => ({
-      showAddButton: true,
-      showBalance: false,
-    }),
-    []
-  );
-
   const renderItem = useCallback(
     ({ item: list, index }) => (
       <ListButton
@@ -287,10 +279,10 @@ export default function ListSection() {
           ) : listItems?.length ? (
             listItems.map(item => (
               <ListCoinRow
-                {...itemProps}
                 item={item}
                 key={`${selectedList}-list-item-${item.address}`}
                 onPress={() => handlePress(item)}
+                showBalance={false}
               />
             ))
           ) : (
