@@ -36,6 +36,7 @@ import { useENSProfileForm, useKeyboardHeight } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 
 const AnimatedBox = Animated.createAnimatedComponent(Box);
+const avatarSize = 70;
 
 export const bottomActionHeight = ios ? 270 : 250;
 
@@ -62,8 +63,6 @@ export default function ENSAssignRecordsSheet() {
       textRecordFields[ENS_RECORDS.twitter],
     ],
   });
-
-  const avatarSize = 70;
 
   return (
     <AccentColorProvider color={accentColor}>
