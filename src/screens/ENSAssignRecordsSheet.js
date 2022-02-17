@@ -95,7 +95,7 @@ export default function ENSAssignRecordsSheet() {
                   width={{ custom: avatarSize }}
                 >
                   <Cover alignHorizontal="center">
-                    <BackgroundProvider background="body">
+                    <BackgroundProvider color="body">
                       {({ backgroundColor }) => (
                         <Svg
                           height="32"
