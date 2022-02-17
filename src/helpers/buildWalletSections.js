@@ -16,7 +16,6 @@ import { BalanceCoinRow } from '../components/coin-row';
 import { UniswapInvestmentRow } from '../components/investment-cards';
 import { CollectibleTokenFamily } from '../components/token-family';
 import { withNavigation } from '../navigation/Navigation';
-import { getLowResUrl } from '../utils/getLowResUrl';
 import { compose, withHandlers } from '../utils/recompactAdapters';
 import {
   buildBriefCoinsList,
@@ -26,7 +25,6 @@ import {
 } from './assets';
 import networkTypes from './networkTypes';
 import { add, convertAmountToNativeDisplay, multiply } from './utilities';
-import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
 import { ImgixImage } from '@rainbow-me/images';
 import Routes from '@rainbow-me/routes';
 
@@ -142,14 +140,19 @@ const withUniswapSection = (
   };
 };
 
-const withBriefUniswapSection = (uniswap, uniswapTotal, nativeCurrency) => {
+const withBriefUniswapSection = (
+  uniswap,
+  uniswapTotal,
+  nativeCurrency,
+  isLoadingAssets
+) => {
   const pools = uniswap.map(pool => ({
     address: pool.address,
     type: 'UNISWAP_POOL',
     uid: 'pool-' + pool.address,
   }));
 
-  if (pools.length > 0) {
+  if (!isLoadingAssets && pools.length > 0) {
     return [
       {
         type: 'POOLS_HEADER',
@@ -409,7 +412,7 @@ const buildImagesToPreloadArray = (family, index, families) => {
       return {
         id: uniqueId,
         priority,
-        uri: svgToPngIfNeeded(getLowResUrl(image_url)),
+        uri: image_url,
       };
     });
 
@@ -482,7 +485,12 @@ const uniswapSectionSelector = createSelector(
 );
 
 const briefUniswapSectionSelector = createSelector(
-  [uniswapSelector, uniswapTotalSelector, nativeCurrencySelector],
+  [
+    uniswapSelector,
+    uniswapTotalSelector,
+    nativeCurrencySelector,
+    isLoadingAssetsSelector,
+  ],
   withBriefUniswapSection
 );
 
