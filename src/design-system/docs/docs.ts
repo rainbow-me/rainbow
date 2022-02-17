@@ -18,7 +18,6 @@ export * as StackDocs from '../components/Stack/Stack.docs';
 export * as TextDocs from '../components/Text/Text.docs';
 export * as TextLinkDocs from '../components/TextLink/TextLink.docs';
 export * as useForegroundColorDocs from '../color/useForegroundColor.docs';
-export * as useBackgroundColorDocs from '../color/useBackgroundColor.docs';
 export * as ColorsDocs from '../color/palettes.docs';
 export * as FontWeightDocs from '../typography/fontWeights.docs';
 export * as TypeHierarchyDocs from '../typography/typeHierarchy.docs';
