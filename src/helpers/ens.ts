@@ -2,6 +2,7 @@ import { formatsByName } from '@ensdomains/address-encoder';
 import { hash } from '@ensdomains/eth-ens-namehash';
 import { BigNumberish, Contract } from 'ethers';
 import { keccak_256 as sha3 } from 'js-sha3';
+import { atom } from 'recoil';
 import { InlineFieldProps } from '../components/inputs/InlineField';
 import {
   add,
@@ -25,6 +26,7 @@ import {
   ENSReverseRegistrarABI,
   ensReverseRegistrarAddress,
 } from '@rainbow-me/references';
+import { colors } from '@rainbow-me/styles';
 
 export enum ENSRegistrationTransactionType {
   COMMIT = 'commit',
@@ -483,6 +485,11 @@ const formatRentPrice = (
   };
 };
 
+const accentColorAtom = atom({
+  default: colors.appleBlue,
+  key: 'ens.accentColor',
+});
+
 export {
   ENS_RECORDS,
   getENSRecordKeys,
@@ -501,4 +508,5 @@ export {
   formatEstimatedNetworkFee,
   formatTotalRegistrationCost,
   formatRentPrice,
+  accentColorAtom,
 };
