@@ -128,7 +128,7 @@ export default function ENSConfirmRegisterSheet() {
       height="100%"
       scrollEnabled={false}
     >
-      <AccentColorProvider color={params.color}>
+      <AccentColorProvider color={params.accentColor}>
         <Box
           background="body"
           paddingVertical="30px"
@@ -172,7 +172,6 @@ export default function ENSConfirmRegisterSheet() {
                   </Text>
                 </Inline>
                 <RegistrationReviewRows
-                  accentColor={params.color}
                   duration={duration}
                   maxDuration={99}
                   networkFee={

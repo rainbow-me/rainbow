@@ -1,13 +1,14 @@
 import React, { useCallback, useEffect } from 'react';
-import { Keyboard } from 'react-native';
+import { Keyboard, Pressable } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { useSelector } from 'react-redux';
+import Svg, { Path } from 'react-native-svg';
 import { useRecoilState } from 'recoil';
+import ButtonPressAnimation from '../components/animations/ButtonPressAnimation';
 import { MiniButton } from '../components/buttons';
 import TintButton from '../components/buttons/TintButton';
 import { TextRecordsForm } from '../components/ens-registration';
@@ -18,6 +19,8 @@ import { useNavigation } from '../navigation/Navigation';
 // import { usePersistentDominantColorFromImage } from '@rainbow-me/hooks';
 import {
   AccentColorProvider,
+  BackgroundProvider,
+  Bleed,
   Box,
   Cover,
   Heading,
@@ -33,18 +36,22 @@ import {
   ENS_RECORDS,
   textRecordFields,
 } from '@rainbow-me/helpers/ens';
-import { useENSProfileForm, useKeyboardHeight } from '@rainbow-me/hooks';
+import {
+  useENSProfile,
+  useENSProfileForm,
+  useKeyboardHeight,
+} from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 
 const AnimatedBox = Animated.createAnimatedComponent(Box);
 
-export const bottomActionHeight = ios ? 270 : 250;
+export const BottomActionHeight = ios ? 270 : 250;
 const avatarSize = 70;
 const alpha = '33';
 
 export default function ENSAssignRecordsSheet() {
   const { colors } = useTheme();
-  const ensName = useSelector(({ ensRegistration }) => ensRegistration.name);
+  const { name } = useENSProfile();
 
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
   useEffect(() => {
@@ -66,50 +73,86 @@ export default function ENSAssignRecordsSheet() {
     ],
   });
 
+  const handleChooseCover = useCallback(() => {
+    // TODO
+  }, []);
+
+  const handleChooseAvatar = useCallback(() => {
+    // TODO
+  }, []);
+
   return (
     <AccentColorProvider color={accentColor}>
       <Box
         background="body"
         flexGrow={1}
-        style={{ paddingBottom: bottomActionHeight + 20 }}
+        style={{ paddingBottom: BottomActionHeight + 20 }}
       >
         <Stack space="19px">
-          <Box
-            alignItems="center"
-            as={RadialGradient}
-            colors={[colors.whiteLabel + alpha, accentColor + alpha]}
-            height={{ custom: 125 }}
-            justifyContent="center"
-            marginBottom={{ custom: 50 }}
-            stops={[0.6, 0]}
-          >
-            <Text color="accent" size="18px" weight="heavy">
-              􀣵 Add Cover
-            </Text>
-            <Cover alignHorizontal="center">
+          <Pressable onPress={handleChooseCover}>
+            <Box
+              alignItems="center"
+              as={RadialGradient}
+              colors={[colors.whiteLabel + alpha, accentColor + alpha]}
+              height="126px"
+              justifyContent="center"
+              stops={[0.6, 0]}
+            >
+              <Text color="accent" size="18px" weight="heavy">
+                􀣵 Add Cover
+              </Text>
+            </Box>
+          </Pressable>
+          <Bleed top={{ custom: 38 }}>
+            <Box alignItems="center">
               <Box
-                alignItems="center"
-                background="swap"
-                borderRadius={avatarSize / 2}
                 height={{ custom: avatarSize }}
-                justifyContent="center"
-                shadow="12px heavy accent"
-                top={{ custom: 105 }}
                 width={{ custom: avatarSize }}
               >
-                <AccentColorProvider color={colors.white}>
-                  <Text color="accent" size="23px" weight="heavy">
-                    {` 􀜖 `}
-                  </Text>
-                </AccentColorProvider>
+                <Cover alignHorizontal="center">
+                  <BackgroundProvider color="body">
+                    {({ backgroundColor }) => (
+                      <Svg
+                        height="32"
+                        style={{ top: -6 }}
+                        viewBox="0 0 96 29"
+                        width="96"
+                      >
+                        <Path
+                          d="M9.22449 23.5H0V28.5H96V23.5H86.7755C85.0671 23.5 83.4978 22.5584 82.6939 21.051C67.8912 -6.70409 28.1088 -6.70408 13.3061 21.051C12.5022 22.5584 10.9329 23.5 9.22449 23.5Z"
+                          fill={backgroundColor}
+                        />
+                      </Svg>
+                    )}
+                  </BackgroundProvider>
+                </Cover>
+                <ButtonPressAnimation onPress={handleChooseAvatar}>
+                  <AccentColorProvider color={accentColor + '10'}>
+                    <Box
+                      alignItems="center"
+                      background="accent"
+                      borderRadius={avatarSize / 2}
+                      height={{ custom: avatarSize }}
+                      justifyContent="center"
+                      shadow="12px heavy accent"
+                      width={{ custom: avatarSize }}
+                    >
+                      <AccentColorProvider color={accentColor}>
+                        <Text color="accent" size="18px" weight="heavy">
+                          {` 􀣵 `}
+                        </Text>
+                      </AccentColorProvider>
+                    </Box>
+                  </AccentColorProvider>
+                </ButtonPressAnimation>
               </Box>
-            </Cover>
-          </Box>
+            </Box>
+          </Bleed>
           <Inset horizontal="19px">
             <Stack space="30px">
               <Stack alignHorizontal="center" space="15px">
                 <Heading size="26px" weight="heavy">
-                  {ensName}
+                  {name}
                 </Heading>
                 <Text color="accent" size="16px" weight="heavy">
                   Create your profile
@@ -148,12 +191,15 @@ export function ENSAssignRecordsBottomActions({ visible }) {
   }, [navigate]);
 
   const handlePressContinue = useCallback(() => {
-    navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, { color: accentColor });
+    navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
+      accentColor,
+      avatarUrl: null,
+    });
   }, [accentColor, navigate]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      bottom: withTiming(visible ? 0 : -bottomActionHeight - 10, {
+      bottom: withTiming(visible ? 0 : -BottomActionHeight - 10, {
         duration: 100,
       }),
     };
@@ -173,7 +219,7 @@ export function ENSAssignRecordsBottomActions({ visible }) {
         style={[animatedStyle, { position: 'absolute', width: '100%' }]}
       >
         <AccentColorProvider color={accentColor}>
-          <Box paddingBottom="19px" style={{ height: bottomActionHeight }}>
+          <Box paddingBottom="19px" style={{ height: BottomActionHeight }}>
             {ios ? <Shadow /> : null}
             <Rows>
               <Row>

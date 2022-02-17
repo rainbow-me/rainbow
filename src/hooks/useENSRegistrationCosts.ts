@@ -68,41 +68,46 @@ export default function useENSRegistrationCosts({
 
   const data = useMemo(() => {
     const rentPricePerYearInWei = rentPrice?.perYear?.wei?.toString();
-    if (estimatedFee && rentPricePerYearInWei) {
-      const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
-        Network.mainnet
-      );
-      const rentPrice = multiply(rentPricePerYearInWei, duration);
+    const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
+      Network.mainnet
+    );
+
+    if (rentPricePerYearInWei) {
+      const rentPriceInWei = multiply(rentPricePerYearInWei, duration);
       const estimatedRentPrice = formatRentPrice(
-        rentPrice,
+        rentPriceInWei,
         duration,
         nativeCurrency,
         nativeAssetPrice
       );
 
-      const weiEstimatedTotalCost = add(
-        estimatedFee.estimatedNetworkFee.wei,
-        estimatedRentPrice.wei.toString()
-      );
-      const displayEstimatedTotalCost = addDisplay(
-        estimatedFee.estimatedNetworkFee.display,
-        estimatedRentPrice.total.display
-      );
-      const estimatedTotalRegistrationCost = formatTotalRegistrationCost(
-        weiEstimatedTotalCost,
-        nativeCurrency,
-        nativeAssetPrice
-      );
+      if (estimatedFee) {
+        const weiEstimatedTotalCost = add(
+          estimatedFee.estimatedNetworkFee.wei,
+          estimatedRentPrice.wei.toString()
+        );
+        const displayEstimatedTotalCost = addDisplay(
+          estimatedFee.estimatedNetworkFee.display,
+          estimatedRentPrice.total.display
+        );
+        const estimatedTotalRegistrationCost = formatTotalRegistrationCost(
+          weiEstimatedTotalCost,
+          nativeCurrency,
+          nativeAssetPrice
+        );
 
-      return {
-        estimatedGasLimit: estimatedFee.estimatedGasLimit,
-        estimatedNetworkFee: estimatedFee.estimatedNetworkFee,
-        estimatedRentPrice,
-        estimatedTotalRegistrationCost: {
-          ...estimatedTotalRegistrationCost,
-          display: displayEstimatedTotalCost,
-        },
-      };
+        return {
+          estimatedGasLimit: estimatedFee.estimatedGasLimit,
+          estimatedNetworkFee: estimatedFee.estimatedNetworkFee,
+          estimatedRentPrice,
+          estimatedTotalRegistrationCost: {
+            ...estimatedTotalRegistrationCost,
+            display: displayEstimatedTotalCost,
+          },
+        };
+      }
+
+      return { estimatedRentPrice };
     }
   }, [duration, estimatedFee, nativeCurrency, rentPrice?.perYear?.wei]);
 
