@@ -1,8 +1,7 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import ConditionalWrap from 'conditional-wrap';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { StatusBar } from 'react-native';
-import { useRecoilState } from 'recoil';
 import { SheetHandleFixedToTopHeight, SlackSheet } from '../components/sheet';
 import ENSAssignRecordsSheet, {
   ENSAssignRecordsBottomActions,
@@ -11,8 +10,7 @@ import ENSSearchSheet from '../screens/ENSSearchSheet';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
 import { sharedCoolModalTopOffset } from './config';
 import { Box } from '@rainbow-me/design-system';
-import { accentColorAtom } from '@rainbow-me/helpers/ens';
-import { useDimensions } from '@rainbow-me/hooks';
+import { useDimensions, useKeyboardHeight } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { deviceUtils } from '@rainbow-me/utils';
 
@@ -49,8 +47,6 @@ export default function RegisterENSNavigator() {
     initialRouteName
   );
 
-  const [accentColor] = useRecoilState(accentColorAtom);
-
   const screenOptions = useMemo(() => defaultScreenOptions[currentRouteName], [
     currentRouteName,
   ]);
@@ -75,20 +71,29 @@ export default function RegisterENSNavigator() {
     }
   }, [screenOptions.scrollEnabled]);
 
+  const keyboardHeight = useKeyboardHeight();
+  const bottomActionHeight = useMemo(() => (ios ? keyboardHeight : 250), [
+    keyboardHeight,
+  ]);
   const contentHeight =
     deviceHeight - SheetHandleFixedToTopHeight - sharedCoolModalTopOffset;
+
+  const isBottomActionsVisible =
+    currentRouteName === Routes.ENS_ASSIGN_RECORDS_SHEET;
 
   return (
     <>
       <SlackSheet
-        backgroundColor={
-          screenOptions.useAccentAsSheetBackground ? accentColor : 'white'
-        }
         contentHeight={contentHeight}
         height="100%"
         ref={sheetRef}
         removeTopPadding
         scrollEnabled={scrollEnabled}
+        style={{
+          paddingBottom: isBottomActionsVisible
+            ? bottomActionHeight
+            : undefined,
+        }}
       >
         <ConditionalWrap
           condition={!scrollEnabled}
@@ -129,7 +134,8 @@ export default function RegisterENSNavigator() {
        * ScrollView, so this seems like the best workaround.
        */}
       <ENSAssignRecordsBottomActions
-        visible={currentRouteName === Routes.ENS_ASSIGN_RECORDS_SHEET}
+        height={bottomActionHeight}
+        visible={isBottomActionsVisible}
       />
     </>
   );

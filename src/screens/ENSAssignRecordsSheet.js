@@ -65,7 +65,7 @@ export default function ENSAssignRecordsSheet() {
 
   return (
     <AccentColorProvider color={avatarColor}>
-      <Box background="body" flexGrow={1} style={{ paddingBottom: 300 }}>
+      <Box background="body" flexGrow={1} style={{ paddingBottom: 50 }}>
         <Stack space="19px">
           <Box
             background="accent"
@@ -108,7 +108,7 @@ export default function ENSAssignRecordsSheet() {
   );
 }
 
-export function ENSAssignRecordsBottomActions({ visible }) {
+export function ENSAssignRecordsBottomActions({ height, visible }) {
   const { navigate } = useNavigation();
   const keyboardHeight = useKeyboardHeight();
   const [avatarColor] = useRecoilState(accentColorAtom);
@@ -130,7 +130,7 @@ export function ENSAssignRecordsBottomActions({ visible }) {
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      bottom: withTiming(visible ? 0 : -keyboardHeight - 10, { duration: 100 }),
+      bottom: withTiming(visible ? 0 : -height - 10, { duration: 100 }),
     };
   });
 
@@ -148,8 +148,8 @@ export function ENSAssignRecordsBottomActions({ visible }) {
         style={[animatedStyle, { position: 'absolute', width: '100%' }]}
       >
         <AccentColorProvider color={avatarColor}>
-          <Box paddingBottom="19px" style={{ height: keyboardHeight }}>
-            <Shadow />
+          <Box paddingBottom="19px" style={{ height }}>
+            {ios ? <Shadow /> : null}
             <Rows>
               <Row>
                 <Inset horizontal="19px" top="30px">
@@ -161,7 +161,14 @@ export function ENSAssignRecordsBottomActions({ visible }) {
                 </Inset>
               </Row>
               <Row height="content">
-                <SheetActionButtonRow>
+                <SheetActionButtonRow
+                  {...(android
+                    ? {
+                        ignorePaddingBottom: true,
+                        paddingBottom: 8,
+                      }
+                    : {})}
+                >
                   <TintButton color="secondary60" onPress={handlePressBack}>
                     􀆉 Back
                   </TintButton>
