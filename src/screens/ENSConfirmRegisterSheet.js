@@ -1,6 +1,6 @@
-import { useRoute } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useRecoilState } from 'recoil';
 import brain from '../assets/brain.png';
 import { HoldToAuthorizeButton } from '../components/buttons';
 import { RegistrationReviewRows } from '../components/ens-registration';
@@ -14,6 +14,7 @@ import {
   Stack,
   Text,
 } from '@rainbow-me/design-system';
+import { accentColorAtom } from '@rainbow-me/helpers/ens';
 import { useENSRegistration, useENSRegistrationCosts } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import Routes from '@rainbow-me/routes';
@@ -22,8 +23,9 @@ export const ENSConfirmRegisterSheetHeight = 600;
 
 export default function ENSConfirmRegisterSheet() {
   const { navigate, goBack } = useNavigation();
-  const { params } = useRoute();
   const ensName = useSelector(({ ensRegistration }) => ensRegistration.name);
+
+  const [accentColor] = useRecoilState(accentColorAtom);
 
   const [duration, setDuration] = useState(1);
 
@@ -44,7 +46,7 @@ export default function ENSConfirmRegisterSheet() {
       height="100%"
       scrollEnabled={false}
     >
-      <AccentColorProvider color={params.color}>
+      <AccentColorProvider color={accentColor}>
         <Box
           background="body"
           paddingVertical="30px"
@@ -70,7 +72,6 @@ export default function ENSConfirmRegisterSheet() {
                   </Text>
                 </Inline>
                 <RegistrationReviewRows
-                  accentColor={params.color}
                   duration={duration}
                   maxDuration={99}
                   networkFee={
@@ -90,7 +91,7 @@ export default function ENSConfirmRegisterSheet() {
           </Box>
           <SheetActionButtonRow>
             <HoldToAuthorizeButton
-              backgroundColor={params.color}
+              backgroundColor={accentColor}
               hideInnerBorder
               label="Hold to Buy"
               onLongPress={() => {

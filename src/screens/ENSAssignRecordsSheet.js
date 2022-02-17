@@ -7,7 +7,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
 import { useSelector } from 'react-redux';
-import { atom, useRecoilState } from 'recoil';
+import { useRecoilState } from 'recoil';
 import { MiniButton } from '../components/buttons';
 import TintButton from '../components/buttons/TintButton';
 import { TextRecordsForm } from '../components/ens-registration';
@@ -30,18 +30,17 @@ import {
   Text,
   useBackgroundColor,
 } from '@rainbow-me/design-system';
-import { ENS_RECORDS, textRecordFields } from '@rainbow-me/helpers/ens';
+import {
+  accentColorAtom,
+  ENS_RECORDS,
+  textRecordFields,
+} from '@rainbow-me/helpers/ens';
 import { useENSProfileForm, useKeyboardHeight } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
 
 const AnimatedBox = Animated.createAnimatedComponent(Box);
 
-// Accent color to share across ENSAssignRecordsSheet & ENSAssignRecordsSheetActions
-export const accentColorAtom = atom({
-  default: colors.appleBlue,
-  key: 'ensAssignRecords.accentColor',
-});
+export const BottomActionHeight = ios ? 270 : 250;
 
 export default function ENSAssignRecordsSheet() {
   const { colors } = useTheme();
@@ -49,10 +48,10 @@ export default function ENSAssignRecordsSheet() {
 
   const backgroundColor = useBackgroundColor('body');
 
-  const [avatarColor, setAvatarColor] = useRecoilState(accentColorAtom);
+  const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
   useEffect(() => {
-    setAvatarColor(colors.purple);
-  }, [colors.purple, setAvatarColor]);
+    setAccentColor(colors.purple);
+  }, [colors.purple, setAccentColor]);
   //   usePersistentDominantColorFromImage('TODO').result || colors.purple;   // add this when we implement avatars
 
   const {
@@ -70,18 +69,22 @@ export default function ENSAssignRecordsSheet() {
   });
 
   const handleChooseCover = useCallback(() => {
-    console.log('cover');
+    // TODO
   }, []);
 
   const handleChooseAvatar = useCallback(() => {
-    console.log('avatar');
+    // TODO
   }, []);
 
   const avatarSize = 70;
 
   return (
-    <AccentColorProvider color={avatarColor}>
-      <Box background="body" flexGrow={1} style={{ paddingBottom: 300 }}>
+    <AccentColorProvider color={accentColor}>
+      <Box
+        background="body"
+        flexGrow={1}
+        style={{ paddingBottom: BottomActionHeight + 20 }}
+      >
         <Stack space="19px">
           <Box flexDirection="column">
             <Pressable onPress={handleChooseCover}>
@@ -148,77 +151,92 @@ export default function ENSAssignRecordsSheet() {
 export function ENSAssignRecordsBottomActions({ visible }) {
   const { navigate } = useNavigation();
   const keyboardHeight = useKeyboardHeight();
-  const [avatarColor] = useRecoilState(accentColorAtom);
+  const [accentColor] = useRecoilState(accentColorAtom);
 
   const {
+    isEmpty,
     selectedFields,
     onAddField,
     onRemoveField,
-    values,
   } = useENSProfileForm();
-  const formIsEmpty = Object.values(values).join('');
 
   const handlePressBack = useCallback(() => {
     navigate(Routes.ENS_SEARCH_SHEET);
   }, [navigate]);
 
   const handlePressContinue = useCallback(() => {
-    navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, { color: avatarColor });
-  }, [avatarColor, navigate]);
+    navigate(Routes.ENS_CONFIRM_REGISTER_SHEET);
+  }, [navigate]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      bottom: withTiming(visible ? 0 : -keyboardHeight - 10, { duration: 100 }),
+      bottom: withTiming(visible ? 0 : -BottomActionHeight - 10, {
+        duration: 100,
+      }),
     };
   });
 
   return (
-    <AnimatedBox
-      background="body"
-      style={[animatedStyle, { position: 'absolute', width: '100%' }]}
-    >
-      <AccentColorProvider color={avatarColor}>
-        <Box paddingBottom="19px" style={{ height: keyboardHeight }}>
-          <Shadow />
-          <Rows>
-            <Row>
-              <Inset horizontal="19px" top="30px">
-                <SelectableAttributesButtons
-                  onAddField={onAddField}
-                  onRemoveField={onRemoveField}
-                  selectedFields={selectedFields}
-                />
-              </Inset>
-            </Row>
-            <Row height="content">
-              <SheetActionButtonRow>
-                <TintButton color="secondary60" onPress={handlePressBack}>
-                  􀆉 Back
-                </TintButton>
-                {formIsEmpty ? (
-                  <TintButton color="secondary60" onPress={handlePressContinue}>
-                    Skip
-                  </TintButton>
-                ) : (
-                  <SheetActionButton
-                    color={avatarColor}
-                    label="Review"
-                    onPress={handlePressContinue}
-                    size="big"
-                    weight="heavy"
-                  />
-                )}
-              </SheetActionButtonRow>
-            </Row>
-          </Rows>
-        </Box>
+    <>
+      {visible && (
         <Box position="absolute" right="0px" style={{ bottom: keyboardHeight }}>
           <Inset bottom="19px" right="19px">
-            <HideKeyboardButton color={avatarColor} />
+            <HideKeyboardButton color={accentColor} />
           </Inset>
         </Box>
-      </AccentColorProvider>
-    </AnimatedBox>
+      )}
+      <AnimatedBox
+        background="body"
+        style={[animatedStyle, { position: 'absolute', width: '100%' }]}
+      >
+        <AccentColorProvider color={accentColor}>
+          <Box paddingBottom="19px" style={{ height: BottomActionHeight }}>
+            {ios ? <Shadow /> : null}
+            <Rows>
+              <Row>
+                <Inset horizontal="19px" top="30px">
+                  <SelectableAttributesButtons
+                    onAddField={onAddField}
+                    onRemoveField={onRemoveField}
+                    selectedFields={selectedFields}
+                  />
+                </Inset>
+              </Row>
+              <Row height="content">
+                <SheetActionButtonRow
+                  {...(android
+                    ? {
+                        ignorePaddingBottom: true,
+                        paddingBottom: 8,
+                      }
+                    : {})}
+                >
+                  <TintButton color="secondary60" onPress={handlePressBack}>
+                    􀆉 Back
+                  </TintButton>
+                  {isEmpty ? (
+                    <TintButton
+                      color="secondary60"
+                      onPress={handlePressContinue}
+                    >
+                      Skip
+                    </TintButton>
+                  ) : (
+                    <SheetActionButton
+                      color={accentColor}
+                      label="Review"
+                      onPress={handlePressContinue}
+                      size="big"
+                      weight="heavy"
+                    />
+                  )}
+                </SheetActionButtonRow>
+              </Row>
+            </Rows>
+          </Box>
+        </AccentColorProvider>
+      </AnimatedBox>
+    </>
   );
 }
 

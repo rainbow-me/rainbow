@@ -1,18 +1,17 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { useIsFocused } from '@react-navigation/native';
 import ConditionalWrap from 'conditional-wrap';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { StatusBar } from 'react-native';
-import { atom, useRecoilState, useSetRecoilState } from 'recoil';
+import { useRecoilState } from 'recoil';
 import { SheetHandleFixedToTopHeight, SlackSheet } from '../components/sheet';
 import ENSAssignRecordsSheet, {
-  accentColorAtom,
   ENSAssignRecordsBottomActions,
 } from '../screens/ENSAssignRecordsSheet';
 import ENSSearchSheet from '../screens/ENSSearchSheet';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
 import { sharedCoolModalTopOffset } from './config';
 import { Box } from '@rainbow-me/design-system';
+import { accentColorAtom } from '@rainbow-me/helpers/ens';
 import { useDimensions } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { deviceUtils } from '@rainbow-me/utils';
@@ -21,118 +20,116 @@ const Swipe = createMaterialTopTabNavigator();
 
 const renderTabBar = () => null;
 const renderPager = props => (
-  <ScrollPagerWrapper {...props} initialScrollPosition={1} />
+  <ScrollPagerWrapper
+    {...props}
+    initialScrollPosition={1}
+    useViewPagerAdaptor={false}
+  />
 );
 
-const scrollEnabledAtom = atom({
-  default: false,
-  key: 'ensNavigator.scrollEnabled',
-});
+const defaultScreenOptions = {
+  [Routes.ENS_ASSIGN_RECORDS_SHEET]: {
+    scrollEnabled: true,
+    useAccentAsSheetBackground: true,
+  },
+  [Routes.ENS_SEARCH_SHEET]: {
+    scrollEnabled: false,
+    useAccentAsSheetBackground: false,
+  },
+};
 
-const isAssignRecordsScreenAtom = atom({
-  default: false,
-  key: 'ensNavigator.isAssignRecordsScreen',
-});
+const initialRouteName = Routes.ENS_SEARCH_SHEET;
 
 export default function RegisterENSNavigator() {
   const sheetRef = useRef();
 
   const { height: deviceHeight } = useDimensions();
 
-  const [scrollEnabled] = useRecoilState(scrollEnabledAtom);
-  const [delayedScrollEnabled, setDelayedScrollEnabled] = useState(
-    scrollEnabled
+  const [currentRouteName, setCurrentRouteName] = useState(initialRouteName);
+
+  const screenOptions = useMemo(() => defaultScreenOptions[currentRouteName], [
+    currentRouteName,
+  ]);
+
+  const [accentColor] = useRecoilState(accentColorAtom);
+
+  const [scrollEnabled, setScrollEnabled] = useState(
+    screenOptions.scrollEnabled
   );
   useEffect(() => {
     // Wait 200ms to prevent transition lag
     setTimeout(() => {
-      setDelayedScrollEnabled(scrollEnabled);
+      setScrollEnabled(screenOptions.scrollEnabled);
     }, 200);
-  }, [scrollEnabled]);
-
-  const [isAssignRecordsScreen] = useRecoilState(isAssignRecordsScreenAtom);
-  const [accentColor] = useRecoilState(accentColorAtom);
-
-  const contentHeight =
-    deviceHeight - SheetHandleFixedToTopHeight - sharedCoolModalTopOffset;
+  }, [screenOptions.scrollEnabled]);
 
   useEffect(() => {
     StatusBar.setBarStyle('light-content');
   }, []);
 
   useEffect(() => {
-    if (!scrollEnabled) {
+    if (!screenOptions.scrollEnabled) {
       sheetRef.current.scrollTo({ animated: false, x: 0, y: 0 });
     }
-  }, [scrollEnabled, isAssignRecordsScreen]);
+  }, [screenOptions.scrollEnabled]);
+
+  const contentHeight =
+    deviceHeight - SheetHandleFixedToTopHeight - sharedCoolModalTopOffset;
+
+  const isBottomActionsVisible =
+    currentRouteName === Routes.ENS_ASSIGN_RECORDS_SHEET;
 
   return (
     <>
       <SlackSheet
-        backgroundColor={isAssignRecordsScreen ? accentColor : 'white'}
+        backgroundColor={
+          screenOptions.useAccentAsSheetBackground ? accentColor : undefined
+        }
         contentHeight={contentHeight}
         height="100%"
         ref={sheetRef}
         removeTopPadding
-        scrollEnabled={delayedScrollEnabled}
+        scrollEnabled={scrollEnabled}
       >
         <ConditionalWrap
-          condition={!delayedScrollEnabled}
+          condition={!scrollEnabled}
           wrap={children => (
             <Box style={{ height: contentHeight }}>{children}</Box>
           )}
         >
           <Swipe.Navigator
             initialLayout={deviceUtils.dimensions}
-            initialRouteName={Routes.ENS_SEARCH_SHEET}
+            initialRouteName={initialRouteName}
             pager={renderPager}
             swipeEnabled={false}
             tabBar={renderTabBar}
           >
             <Swipe.Screen
-              component={ENSSearchSheetWrapper}
+              component={ENSSearchSheet}
+              listeners={{
+                focus: () => setCurrentRouteName(Routes.ENS_SEARCH_SHEET),
+              }}
               name={Routes.ENS_SEARCH_SHEET}
             />
             <Swipe.Screen
-              component={ENSAssignRecordsSheetWrapper}
+              component={ENSAssignRecordsSheet}
+              listeners={{
+                focus: () =>
+                  setCurrentRouteName(Routes.ENS_ASSIGN_RECORDS_SHEET),
+              }}
               name={Routes.ENS_ASSIGN_RECORDS_SHEET}
             />
           </Swipe.Navigator>
         </ConditionalWrap>
       </SlackSheet>
-      <ENSAssignRecordsBottomActions visible={isAssignRecordsScreen} />
+
+      {/**
+       * The `ENSAssignRecordsBottomActions` is a component that is external from the ENS navigator and only
+       * appears when the ENSAssignRecordsSheet is active.
+       * The reason why is because we can't achieve fixed positioning (as per designs) within SlackSheet's
+       * ScrollView, so this seems like the best workaround.
+       */}
+      <ENSAssignRecordsBottomActions visible={isBottomActionsVisible} />
     </>
   );
-}
-
-function ENSSearchSheetWrapper() {
-  const setScrollEnabled = useSetRecoilState(scrollEnabledAtom);
-  const setIsAssignRecordsScreen = useSetRecoilState(isAssignRecordsScreenAtom);
-
-  const isFocused = useIsFocused();
-
-  useEffect(() => {
-    if (isFocused) {
-      setIsAssignRecordsScreen(false);
-      setScrollEnabled(false);
-    } else {
-      setScrollEnabled(true);
-    }
-  }, [isFocused, setScrollEnabled, setIsAssignRecordsScreen]);
-
-  return <ENSSearchSheet />;
-}
-
-function ENSAssignRecordsSheetWrapper() {
-  const setIsAssignRecordsScreen = useSetRecoilState(isAssignRecordsScreenAtom);
-
-  const isFocused = useIsFocused();
-
-  useEffect(() => {
-    if (isFocused) {
-      setIsAssignRecordsScreen(true);
-    }
-  }, [isFocused, setIsAssignRecordsScreen]);
-
-  return <ENSAssignRecordsSheet />;
 }

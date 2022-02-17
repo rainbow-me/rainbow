@@ -1,5 +1,5 @@
 import { isEmpty } from 'lodash';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { atom, useRecoilState } from 'recoil';
 import { textRecordFields } from '@rainbow-me/helpers/ens';
@@ -93,7 +93,10 @@ export default function useENSProfileForm({
     [setValues]
   );
 
+  const empty = useMemo(() => !Object.values(values).some(Boolean), [values]);
+
   return {
+    isEmpty: empty,
     onAddField,
     onBlurField,
     onChangeField,
