@@ -63,7 +63,7 @@ export default function ENSAssignRecordsSheet() {
     ],
   });
 
-  const avatarRadius = 35;
+  const avatarSize = 70;
 
   return (
     <AccentColorProvider color={accentColor}>
@@ -81,10 +81,11 @@ export default function ENSAssignRecordsSheet() {
             <Cover alignHorizontal="center">
               <Box
                 background="swap"
-                borderRadius={avatarRadius}
-                height={{ custom: avatarRadius * 2 }}
+                borderRadius={avatarSize / 2}
+                height={{ custom: avatarSize }}
+                shadow="12px heavy accent"
                 top={{ custom: 105 }}
-                width={{ custom: avatarRadius * 2 }}
+                width={{ custom: avatarSize }}
               />
             </Cover>
           </Box>

@@ -9,6 +9,8 @@ import { useNavigation } from '../navigation/Navigation';
 import {
   AccentColorProvider,
   Box,
+  Divider,
+  Heading,
   Inline,
   Inset,
   Stack,
@@ -37,6 +39,8 @@ export default function ENSConfirmRegisterSheet() {
     rentPrice: registrationData?.rentPrice,
   });
 
+  const avatarSize = 70;
+
   return (
     <SlackSheet
       additionalTopPadding
@@ -52,6 +56,24 @@ export default function ENSConfirmRegisterSheet() {
         >
           <Box flexGrow={1}>
             <Inset horizontal="30px">
+              <Stack alignHorizontal="center" space="15px">
+                {params.avatarUrl && (
+                  <Box
+                    background="swap"
+                    borderRadius={avatarSize / 2}
+                    height={{ custom: avatarSize }}
+                    shadow="12px heavy accent"
+                    width={{ custom: avatarSize }}
+                  />
+                )}
+                <Heading size="26px">{ensName}</Heading>
+                <Text color="accent" weight="heavy">
+                  Confirm purchase
+                </Text>
+              </Stack>
+              <Inset vertical="24px">
+                <Divider color="divider40" />
+              </Inset>
               <Stack space="34px">
                 <Inline
                   alignHorizontal="center"
@@ -85,6 +107,7 @@ export default function ENSConfirmRegisterSheet() {
                       ?.display
                   }
                 />
+                <Divider color="divider40" />
               </Stack>
             </Inset>
           </Box>
