@@ -33,7 +33,8 @@ export default function useENSRegistrationCosts({
     const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
       Network.mainnet
     );
-    const gasLimit = await estimateENSRegistrationGasLimit(
+
+    const { totalRegistrationGasLimit } = await estimateENSRegistrationGasLimit(
       name,
       accountAddress,
       duration * secsInYear,
@@ -43,17 +44,20 @@ export default function useENSRegistrationCosts({
     const { gasFeeParamsBySpeed, currentBaseFee } = await getEIP1559GasParams();
 
     const formattedEstimatedNetworkFee = formatEstimatedNetworkFee(
-      gasLimit,
+      totalRegistrationGasLimit,
       currentBaseFee.gwei,
       gasFeeParamsBySpeed.normal.maxPriorityFeePerGas.gwei,
       nativeCurrency,
       nativeAssetPrice
     );
 
-    return formattedEstimatedNetworkFee;
+    return {
+      estimatedGasLimit: totalRegistrationGasLimit,
+      estimatedNetworkFee: formattedEstimatedNetworkFee,
+    };
   }, [accountAddress, duration, name, nativeCurrency, rentPriceInWei]);
 
-  const { data: estimatedNetworkFee, status, isIdle, isLoading } = useQuery(
+  const { data: estimatedFee, status, isIdle, isLoading } = useQuery(
     [
       'getEstimatedNetworkFee',
       [accountAddress, name, nativeCurrency, rentPriceInWei],
@@ -64,7 +68,7 @@ export default function useENSRegistrationCosts({
 
   const data = useMemo(() => {
     const rentPricePerYearInWei = rentPrice?.perYear?.wei?.toString();
-    if (estimatedNetworkFee && rentPricePerYearInWei) {
+    if (estimatedFee && rentPricePerYearInWei) {
       const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
         Network.mainnet
       );
@@ -77,11 +81,11 @@ export default function useENSRegistrationCosts({
       );
 
       const weiEstimatedTotalCost = add(
-        estimatedNetworkFee.wei,
+        estimatedFee.estimatedNetworkFee.wei,
         estimatedRentPrice.wei.toString()
       );
       const displayEstimatedTotalCost = addDisplay(
-        estimatedNetworkFee.display,
+        estimatedFee.estimatedNetworkFee.display,
         estimatedRentPrice.total.display
       );
       const estimatedTotalRegistrationCost = formatTotalRegistrationCost(
@@ -91,7 +95,8 @@ export default function useENSRegistrationCosts({
       );
 
       return {
-        estimatedNetworkFee: estimatedNetworkFee,
+        estimatedGasLimit: estimatedFee.estimatedGasLimit,
+        estimatedNetworkFee: estimatedFee.estimatedNetworkFee,
         estimatedRentPrice,
         estimatedTotalRegistrationCost: {
           ...estimatedTotalRegistrationCost,
@@ -99,7 +104,7 @@ export default function useENSRegistrationCosts({
         },
       };
     }
-  }, [duration, estimatedNetworkFee, nativeCurrency, rentPrice?.perYear?.wei]);
+  }, [duration, estimatedFee, nativeCurrency, rentPrice?.perYear?.wei]);
 
   const isSuccess = status === 'success' && !!data?.estimatedRentPrice;
 

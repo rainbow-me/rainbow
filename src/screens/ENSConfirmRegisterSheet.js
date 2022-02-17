@@ -1,29 +1,49 @@
-import { useRoute } from '@react-navigation/native';
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useRoute } from '@react-navigation/core';
+import { isEmpty } from 'lodash';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import brain from '../assets/brain.png';
 import { HoldToAuthorizeButton } from '../components/buttons';
 import { RegistrationReviewRows } from '../components/ens-registration';
+import { GasSpeedButton } from '../components/gas';
 import { SheetActionButtonRow, SlackSheet } from '../components/sheet';
-import { useNavigation } from '../navigation/Navigation';
+import { RapActionTypes } from '../raps/common';
 import {
   AccentColorProvider,
   Box,
+  Divider,
+  Heading,
   Inline,
   Inset,
   Stack,
   Text,
 } from '@rainbow-me/design-system';
-import { useENSRegistration, useENSRegistrationCosts } from '@rainbow-me/hooks';
+import { generateSalt } from '@rainbow-me/helpers/ens';
+import {
+  useAccountSettings,
+  useCurrentNonce,
+  useENSProfile,
+  useENSRegistration,
+  useENSRegistrationCosts,
+  useGas,
+} from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
-import Routes from '@rainbow-me/routes';
+import { loadWallet } from '@rainbow-me/model/wallet';
+import { getRapEstimationByType } from '@rainbow-me/raps';
+import { saveCommitRegistrationParameters } from '@rainbow-me/redux/ensRegistration';
 
 export const ENSConfirmRegisterSheetHeight = 600;
+const secsInYear = 31536000;
+const avatarSize = 70;
 
 export default function ENSConfirmRegisterSheet() {
-  const { navigate, goBack } = useNavigation();
+  const dispatch = useDispatch();
+  const { gasFeeParamsBySpeed, updateTxFee, startPollingGasFees } = useGas();
+  const { name: ensName, records } = useENSProfile();
+  const { accountAddress, network } = useAccountSettings();
+  const getNextNonce = useCurrentNonce(accountAddress, network);
+  const [gasLimit, setGasLimit] = useState();
   const { params } = useRoute();
-  const ensName = useSelector(({ ensRegistration }) => ensRegistration.name);
 
   const [duration, setDuration] = useState(1);
 
@@ -31,11 +51,75 @@ export default function ENSConfirmRegisterSheet() {
   const { data: registrationData } = useENSRegistration({
     name,
   });
+  const rentPrice = registrationData?.rentPrice;
   const { data: registrationCostsData } = useENSRegistrationCosts({
     duration,
     name,
-    rentPrice: registrationData?.rentPrice,
+    rentPrice,
   });
+
+  const updateGasLimit = useCallback(async () => {
+    const salt = generateSalt();
+    const gasLimit = await getRapEstimationByType(RapActionTypes.commitENS, {
+      ensRegistrationParameters: {
+        duration: secsInYear,
+        name: name,
+        ownerAddress: accountAddress,
+        records,
+        rentPrice,
+        salt,
+      },
+    });
+    updateTxFee(gasLimit);
+    setGasLimit(gasLimit);
+  }, [accountAddress, name, records, rentPrice, updateTxFee]);
+
+  // Update gas limit
+  useEffect(() => {
+    if (!gasLimit && !isEmpty(gasFeeParamsBySpeed)) {
+      updateGasLimit();
+    }
+  }, [gasFeeParamsBySpeed, gasLimit, updateGasLimit, updateTxFee]);
+
+  useEffect(() => startPollingGasFees(), [startPollingGasFees]);
+
+  const handleCommitSubmit = useCallback(async () => {
+    const wallet = await loadWallet();
+    if (!wallet) {
+      return;
+    }
+
+    const nonce = await getNextNonce();
+    const salt = generateSalt();
+
+    const ensRegistrationParameters = {
+      duration: secsInYear,
+      name,
+      nonce,
+      ownerAddress: accountAddress,
+      records,
+      rentPrice,
+      salt,
+    };
+
+    await dispatch(
+      saveCommitRegistrationParameters(
+        accountAddress,
+        ensRegistrationParameters
+      )
+    );
+    return;
+    // LEAVING THIS AS WIP TO AVOID PEOPLE ON THE TEAM  SENDING THIS TX
+
+    // const callback = () => null;
+
+    // await executeRap(
+    //   wallet,
+    //   RapActionTypes.commitENS,
+    //   { ensRegistrationParameters },
+    //   callback
+    // );
+  }, [accountAddress, dispatch, getNextNonce, name, records, rentPrice]);
 
   return (
     <SlackSheet
@@ -52,6 +136,24 @@ export default function ENSConfirmRegisterSheet() {
         >
           <Box flexGrow={1}>
             <Inset horizontal="30px">
+              <Stack alignHorizontal="center" space="15px">
+                {params.avatarUrl && (
+                  <Box
+                    background="swap"
+                    borderRadius={avatarSize / 2}
+                    height={{ custom: avatarSize }}
+                    shadow="12px heavy accent"
+                    width={{ custom: avatarSize }}
+                  />
+                )}
+                <Heading size="26px">{ensName}</Heading>
+                <Text color="accent" weight="heavy">
+                  Confirm purchase
+                </Text>
+              </Stack>
+              <Inset vertical="24px">
+                <Divider color="divider40" />
+              </Inset>
               <Stack space="34px">
                 <Inline
                   alignHorizontal="center"
@@ -85,24 +187,27 @@ export default function ENSConfirmRegisterSheet() {
                       ?.display
                   }
                 />
+                <Divider color="divider40" />
               </Stack>
             </Inset>
           </Box>
-          <SheetActionButtonRow>
-            <HoldToAuthorizeButton
-              backgroundColor={params.color}
-              hideInnerBorder
-              label="Hold to Buy"
-              onLongPress={() => {
-                goBack();
-                setTimeout(() => {
-                  navigate(Routes.PROFILE_SCREEN);
-                }, 50);
-              }}
-              parentHorizontalPadding={19}
-              showBiometryIcon
-            />
-          </SheetActionButtonRow>
+          <Box style={{ bottom: 0 }}>
+            <Box>
+              <SheetActionButtonRow paddingBottom={5}>
+                <HoldToAuthorizeButton
+                  hideInnerBorder
+                  isLongPressAvailableForBiometryType
+                  label="Hold to Commit"
+                  onLongPress={handleCommitSubmit}
+                  parentHorizontalPadding={19}
+                  showBiometryIcon
+                />
+              </SheetActionButtonRow>
+            </Box>
+            <Box alignItems="center" justifyContent="center">
+              <GasSpeedButton currentNetwork="mainnet" theme="light" />
+            </Box>
+          </Box>
         </Box>
       </AccentColorProvider>
     </SlackSheet>

@@ -126,3 +126,4 @@ export {
 export { default as useUniswapCurrencyList } from './useUniswapCurrencyList';
 export { default as useENSRegistration } from './useENSRegistration';
 export { default as useENSRegistrationCosts } from './useENSRegistrationCosts';
+export { default as useENSProfile } from './useENSProfile';

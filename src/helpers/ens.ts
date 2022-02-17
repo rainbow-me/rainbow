@@ -1,6 +1,6 @@
 import { formatsByName } from '@ensdomains/address-encoder';
 import { hash } from '@ensdomains/eth-ens-namehash';
-import { BigNumberish, Contract } from 'ethers';
+import { BigNumberish, Contract, Wallet } from 'ethers';
 import { keccak_256 as sha3 } from 'js-sha3';
 import { atom } from 'recoil';
 import { InlineFieldProps } from '../components/inputs/InlineField';
@@ -174,34 +174,37 @@ const textRecordFields = {
   },
 } as const;
 
-const getENSRegistrarControllerContract = (registrarAddress?: string) => {
+const getENSRegistrarControllerContract = (
+  wallet?: Wallet,
+  registrarAddress?: string
+) => {
   return new Contract(
     registrarAddress || ensETHRegistrarControllerAddress,
     ENSETHRegistrarControllerABI,
-    web3Provider
+    wallet || web3Provider
   );
 };
-const getENSPublicResolverContract = () => {
+const getENSPublicResolverContract = (wallet?: Wallet) => {
   return new Contract(
     ensPublicResolverAddress,
     ENSPublicResolverABI,
-    web3Provider
+    wallet || web3Provider
   );
 };
 
-const getENSReverseRegistrarContract = () => {
+const getENSReverseRegistrarContract = (wallet?: Wallet) => {
   return new Contract(
     ensReverseRegistrarAddress,
     ENSReverseRegistrarABI,
-    web3Provider
+    wallet || web3Provider
   );
 };
 
-const getENSBaseRegistrarImplementationContract = () => {
+const getENSBaseRegistrarImplementationContract = (wallet?: Wallet) => {
   return new Contract(
     ensBaseRegistrarImplementationAddress,
     ENSBaseRegistrarImplementationABI,
-    web3Provider
+    wallet || web3Provider
   );
 };
 
@@ -294,7 +297,7 @@ const setupMulticallRecords = (
   return data.flat().filter(Boolean);
 };
 
-const generateSalt = () => {
+export const generateSalt = () => {
   const random = new Uint8Array(32);
   crypto.getRandomValues(random);
   const salt =
@@ -309,54 +312,57 @@ const getENSExecutionDetails = async ({
   name,
   type,
   ownerAddress,
+  salt,
   rentPrice,
   duration,
   records,
+  wallet,
 }: {
-  name: string;
+  name?: string;
   type: ENSRegistrationTransactionType;
   ownerAddress?: string;
   rentPrice?: string;
   duration?: number;
   records?: ENSRegistrationRecords;
+  wallet?: Wallet;
+  salt?: string;
 }): Promise<{
-  methodArguments: (string | string[] | number)[] | null;
+  methodArguments: any[] | null;
   value: BigNumberish | null;
   contract: Contract | null;
 }> => {
-  let args: (string | string[] | number)[] | null = null;
+  let args: any[] | null = null;
   let value: string | null = null;
   let contract: Contract | null = null;
+
   switch (type) {
     case ENSRegistrationTransactionType.COMMIT: {
       if (!name || !ownerAddress) throw new Error('Bad arguments for commit');
-      const salt = generateSalt();
-      const registrarController = getENSRegistrarControllerContract();
+      const registrarController = getENSRegistrarControllerContract(wallet);
       const commitment = await registrarController.makeCommitmentWithConfig(
-        name,
+        name.replace('.eth', ''),
         ownerAddress,
         salt,
         ensPublicResolverAddress,
         ownerAddress
       );
       args = [commitment];
-      contract = getENSRegistrarControllerContract();
+      contract = getENSRegistrarControllerContract(wallet);
       break;
     }
     case ENSRegistrationTransactionType.REGISTER_WITH_CONFIG: {
       if (!name || !ownerAddress || !duration || !rentPrice)
         throw new Error('Bad arguments for registerWithConfig');
-      const salt = generateSalt();
+      value = toHex(addBuffer(rentPrice, 1.1));
       args = [
-        name,
+        name.replace('.eth', ''),
         ownerAddress,
         duration,
         salt,
         ensPublicResolverAddress,
         ownerAddress,
       ];
-      contract = getENSRegistrarControllerContract();
-      value = toHex(addBuffer(rentPrice, 1.1));
+      contract = getENSRegistrarControllerContract(wallet);
       break;
     }
     case ENSRegistrationTransactionType.SET_TEXT: {
@@ -370,7 +376,7 @@ const getENSExecutionDetails = async ({
     }
     case ENSRegistrationTransactionType.MULTICALL: {
       if (!name || !records) throw new Error('Bad arguments for multicall');
-      contract = getENSPublicResolverContract();
+      contract = getENSPublicResolverContract(wallet);
       const data = setupMulticallRecords(name, records, contract) || [];
       args = [data];
       break;
@@ -378,7 +384,7 @@ const getENSExecutionDetails = async ({
     case ENSRegistrationTransactionType.SET_NAME:
       if (!name) throw new Error('Bad arguments for setName');
       args = [name];
-      contract = getENSReverseRegistrarContract();
+      contract = getENSReverseRegistrarContract(wallet);
       break;
   }
   return {
