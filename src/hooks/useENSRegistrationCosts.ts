@@ -64,40 +64,45 @@ export default function useENSRegistrationCosts({
 
   const data = useMemo(() => {
     const rentPricePerYearInWei = rentPrice?.perYear?.wei?.toString();
-    if (estimatedNetworkFee && rentPricePerYearInWei) {
-      const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
-        Network.mainnet
-      );
-      const rentPrice = multiply(rentPricePerYearInWei, duration);
+    const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
+      Network.mainnet
+    );
+
+    if (rentPricePerYearInWei) {
+      const rentPriceInWei = multiply(rentPricePerYearInWei, duration);
       const estimatedRentPrice = formatRentPrice(
-        rentPrice,
+        rentPriceInWei,
         duration,
         nativeCurrency,
         nativeAssetPrice
       );
 
-      const weiEstimatedTotalCost = add(
-        estimatedNetworkFee.wei,
-        estimatedRentPrice.wei.toString()
-      );
-      const displayEstimatedTotalCost = addDisplay(
-        estimatedNetworkFee.display,
-        estimatedRentPrice.total.display
-      );
-      const estimatedTotalRegistrationCost = formatTotalRegistrationCost(
-        weiEstimatedTotalCost,
-        nativeCurrency,
-        nativeAssetPrice
-      );
+      if (estimatedNetworkFee) {
+        const weiEstimatedTotalCost = add(
+          estimatedNetworkFee.wei,
+          estimatedRentPrice.wei.toString()
+        );
+        const displayEstimatedTotalCost = addDisplay(
+          estimatedNetworkFee.display,
+          estimatedRentPrice.total.display
+        );
+        const estimatedTotalRegistrationCost = formatTotalRegistrationCost(
+          weiEstimatedTotalCost,
+          nativeCurrency,
+          nativeAssetPrice
+        );
 
-      return {
-        estimatedNetworkFee: estimatedNetworkFee,
-        estimatedRentPrice,
-        estimatedTotalRegistrationCost: {
-          ...estimatedTotalRegistrationCost,
-          display: displayEstimatedTotalCost,
-        },
-      };
+        return {
+          estimatedNetworkFee: estimatedNetworkFee,
+          estimatedRentPrice,
+          estimatedTotalRegistrationCost: {
+            ...estimatedTotalRegistrationCost,
+            display: displayEstimatedTotalCost,
+          },
+        };
+      }
+
+      return { estimatedRentPrice };
     }
   }, [duration, estimatedNetworkFee, nativeCurrency, rentPrice?.perYear?.wei]);
 
