@@ -45,6 +45,9 @@ export default function RegisterENSNavigator() {
 
   const { height: deviceHeight } = useDimensions();
 
+  const contentHeight =
+    deviceHeight - SheetHandleFixedToTopHeight - sharedCoolModalTopOffset;
+
   const [currentRouteName, setCurrentRouteName] = useState(initialRouteName);
 
   const screenOptions = useMemo(() => defaultScreenOptions[currentRouteName], [
@@ -72,9 +75,6 @@ export default function RegisterENSNavigator() {
       sheetRef.current.scrollTo({ animated: false, x: 0, y: 0 });
     }
   }, [screenOptions.scrollEnabled]);
-
-  const contentHeight =
-    deviceHeight - SheetHandleFixedToTopHeight - sharedCoolModalTopOffset;
 
   const isBottomActionsVisible =
     currentRouteName === Routes.ENS_ASSIGN_RECORDS_SHEET;
