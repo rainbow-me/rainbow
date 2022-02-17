@@ -1,14 +1,15 @@
-import { isEmpty } from 'lodash';
+import { isEmpty, omit } from 'lodash';
 import { useCallback, useEffect, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { atom, useRecoilState } from 'recoil';
+import { useAccountSettings, useENSProfile } from '.';
+import { Records } from '@rainbow-me/entities';
 import { textRecordFields } from '@rainbow-me/helpers/ens';
 import {
-  ensRegistrationRemoveRecordByKey,
-  ensRegistrationUpdateRecordByKey,
-  ensRegistrationUpdateRecords,
+  removeRecordByKey,
+  updateRecordByKey,
+  updateRecords,
 } from '@rainbow-me/redux/ensRegistration';
-import { AppState } from '@rainbow-me/redux/store';
 
 const selectedFieldsAtom = atom({
   default: [],
@@ -25,9 +26,9 @@ export default function useENSProfileForm({
 }: {
   defaultFields?: any[];
 } = {}) {
-  const records = useSelector(
-    ({ ensRegistration }: AppState) => ensRegistration.records
-  );
+  const { accountAddress } = useAccountSettings();
+  const { name, records } = useENSProfile();
+
   const dispatch = useDispatch();
 
   const [selectedFields, setSelectedFields] = useRecoilState(
@@ -44,10 +45,10 @@ export default function useENSProfileForm({
         setSelectedFields(defaultFields as any);
       }
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [name]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [values, setValues] = useRecoilState(valuesAtom);
-  useEffect(() => setValues(records), [records, setValues]);
+  useEffect(() => setValues(records), [name]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Set initial records in redux depending on user input (defaultFields)
   useEffect(() => {
@@ -58,32 +59,32 @@ export default function useENSProfileForm({
           [field.key]: '',
         };
       }, {});
-      dispatch(ensRegistrationUpdateRecords(records));
+      dispatch(updateRecords(accountAddress, records));
     }
-  }, [defaultFields, dispatch, records, selectedFields]);
+  }, [accountAddress, defaultFields, dispatch, records, selectedFields]);
 
   const onAddField = useCallback(
     (fieldToAdd, selectedFields) => {
       setSelectedFields(selectedFields);
-      dispatch(ensRegistrationUpdateRecordByKey(fieldToAdd.key, ''));
+      dispatch(updateRecordByKey(accountAddress, fieldToAdd.key, ''));
     },
-    [dispatch, setSelectedFields]
+    [accountAddress, dispatch, setSelectedFields]
   );
 
   const onRemoveField = useCallback(
     (fieldToRemove, selectedFields) => {
       setSelectedFields(selectedFields);
-      dispatch(ensRegistrationRemoveRecordByKey(fieldToRemove.key));
-      setValues(values => ({ ...values, [fieldToRemove.key]: '' }));
+      dispatch(removeRecordByKey(accountAddress, fieldToRemove.key));
+      setValues(values => omit(values, fieldToRemove.key) as Records);
     },
-    [dispatch, setSelectedFields, setValues]
+    [accountAddress, dispatch, setSelectedFields, setValues]
   );
 
   const onBlurField = useCallback(
     ({ key, value }) => {
-      dispatch(ensRegistrationUpdateRecordByKey(key, value));
+      dispatch(updateRecordByKey(accountAddress, key, value));
     },
-    [dispatch]
+    [accountAddress, dispatch]
   );
 
   const onChangeField = useCallback(

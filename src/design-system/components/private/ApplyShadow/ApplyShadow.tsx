@@ -119,6 +119,7 @@ export const ApplyShadow = React.forwardRef(
           <AndroidShadow
             backgroundColor={backgroundColor}
             shadow={shadows.android}
+            style={childStyles}
           />
         )}
         <ConditionalWrap
@@ -134,6 +135,7 @@ export const ApplyShadow = React.forwardRef(
         >
           {React.cloneElement(child, {
             style: [
+              { flex: 1 },
               childStyles,
               android && !androidShadowsV2 ? androidChildStyles : undefined,
             ],

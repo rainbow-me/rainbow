@@ -20,13 +20,14 @@ import {
   Text,
 } from '@rainbow-me/design-system';
 import {
+  useAccountSettings,
   useDebounceString,
   useENSRegistration,
   useENSRegistrationCosts,
   useKeyboardHeight,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
-import { ensRegistrationUpdateName } from '@rainbow-me/redux/ensRegistration';
+import { startRegistration } from '@rainbow-me/redux/ensRegistration';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 import { normalizeENS } from '@rainbow-me/utils';
@@ -35,6 +36,7 @@ export default function ENSSearchSheet() {
   const dispatch = useDispatch();
   const { navigate } = useNavigation();
   const keyboardHeight = useKeyboardHeight();
+  const { accountAddress } = useAccountSettings();
 
   const topPadding = android ? 29 : 19;
 
@@ -68,10 +70,10 @@ export default function ENSSearchSheet() {
   }, [isAvailable, isInvalid, isRegistered]);
 
   const handlePressContinue = useCallback(() => {
-    dispatch(ensRegistrationUpdateName(`${searchQuery}.eth`));
+    dispatch(startRegistration(accountAddress, `${searchQuery}.eth`));
     Keyboard.dismiss();
     navigate(Routes.ENS_ASSIGN_RECORDS_SHEET);
-  }, [dispatch, navigate, searchQuery]);
+  }, [accountAddress, dispatch, navigate, searchQuery]);
 
   return (
     <Box background="body" flexGrow={1} paddingTop={{ custom: topPadding }}>
