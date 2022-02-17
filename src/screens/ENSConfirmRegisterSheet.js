@@ -11,6 +11,8 @@ import { RapActionTypes } from '../raps/common';
 import {
   AccentColorProvider,
   Box,
+  Divider,
+  Heading,
   Inline,
   Inset,
   Stack,
@@ -32,6 +34,7 @@ import { saveCommitRegistrationParameters } from '@rainbow-me/redux/ensRegistrat
 
 export const ENSConfirmRegisterSheetHeight = 600;
 const secsInYear = 31536000;
+const avatarSize = 70;
 
 export default function ENSConfirmRegisterSheet() {
   const dispatch = useDispatch();
@@ -133,6 +136,24 @@ export default function ENSConfirmRegisterSheet() {
         >
           <Box flexGrow={1}>
             <Inset horizontal="30px">
+              <Stack alignHorizontal="center" space="15px">
+                {params.avatarUrl && (
+                  <Box
+                    background="swap"
+                    borderRadius={avatarSize / 2}
+                    height={{ custom: avatarSize }}
+                    shadow="12px heavy accent"
+                    width={{ custom: avatarSize }}
+                  />
+                )}
+                <Heading size="26px">{ensName}</Heading>
+                <Text color="accent" weight="heavy">
+                  Confirm purchase
+                </Text>
+              </Stack>
+              <Inset vertical="24px">
+                <Divider color="divider40" />
+              </Inset>
               <Stack space="34px">
                 <Inline
                   alignHorizontal="center"
@@ -166,6 +187,7 @@ export default function ENSConfirmRegisterSheet() {
                       ?.display
                   }
                 />
+                <Divider color="divider40" />
               </Stack>
             </Inset>
           </Box>

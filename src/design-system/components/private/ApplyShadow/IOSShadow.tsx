@@ -6,9 +6,11 @@ import type { ShadowItem } from './ApplyShadow';
 export function IOSShadow({
   backgroundColor,
   shadows,
+  style,
 }: {
   backgroundColor: ViewStyle['backgroundColor'];
   shadows: ShadowItem[];
+  style: ViewStyle;
 }) {
   return (
     <>
@@ -17,6 +19,7 @@ export function IOSShadow({
           key={i}
           style={[
             StyleSheet.absoluteFill,
+            style,
             {
               backgroundColor,
               shadowColor: shadow.color,

@@ -35,8 +35,8 @@ import {
 import { useENSProfileForm, useKeyboardHeight } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 
-const avatarRadius = 35;
 const AnimatedBox = Animated.createAnimatedComponent(Box);
+const avatarSize = 70;
 
 export const bottomActionHeight = ios ? 270 : 250;
 
@@ -80,10 +80,11 @@ export default function ENSAssignRecordsSheet() {
             <Cover alignHorizontal="center">
               <Box
                 background="swap"
-                borderRadius={avatarRadius}
-                height={{ custom: avatarRadius * 2 }}
+                borderRadius={avatarSize / 2}
+                height={{ custom: avatarSize }}
+                shadow="12px heavy accent"
                 top={{ custom: 105 }}
-                width={{ custom: avatarRadius * 2 }}
+                width={{ custom: avatarSize }}
               />
             </Cover>
           </Box>
