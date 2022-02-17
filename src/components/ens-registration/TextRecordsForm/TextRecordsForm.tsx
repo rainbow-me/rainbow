@@ -23,6 +23,7 @@ export default function TextRecordsForm({
           <Box key={id}>
             <Divider />
             <InlineField
+              defaultValue={values[key]}
               inputProps={inputProps}
               label={label}
               onChangeText={text => onChangeField({ key, value: text })}
@@ -31,7 +32,6 @@ export default function TextRecordsForm({
               }}
               placeholder={placeholder}
               validations={validations}
-              value={values[key]}
             />
           </Box>
         )

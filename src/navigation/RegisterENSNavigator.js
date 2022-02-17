@@ -20,7 +20,11 @@ const Swipe = createMaterialTopTabNavigator();
 
 const renderTabBar = () => null;
 const renderPager = props => (
-  <ScrollPagerWrapper {...props} initialScrollPosition={1} />
+  <ScrollPagerWrapper
+    {...props}
+    initialScrollPosition={1}
+    useViewPagerAdaptor={false}
+  />
 );
 
 const defaultScreenOptions = {

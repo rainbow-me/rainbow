@@ -135,52 +135,59 @@ export function ENSAssignRecordsBottomActions({ visible }) {
   });
 
   return (
-    <AnimatedBox
-      background="body"
-      style={[animatedStyle, { position: 'absolute', width: '100%' }]}
-    >
-      <AccentColorProvider color={avatarColor}>
-        <Box paddingBottom="19px" style={{ height: keyboardHeight }}>
-          <Shadow />
-          <Rows>
-            <Row>
-              <Inset horizontal="19px" top="30px">
-                <SelectableAttributesButtons
-                  onAddField={onAddField}
-                  onRemoveField={onRemoveField}
-                  selectedFields={selectedFields}
-                />
-              </Inset>
-            </Row>
-            <Row height="content">
-              <SheetActionButtonRow>
-                <TintButton color="secondary60" onPress={handlePressBack}>
-                  􀆉 Back
-                </TintButton>
-                {isEmpty ? (
-                  <TintButton color="secondary60" onPress={handlePressContinue}>
-                    Skip
-                  </TintButton>
-                ) : (
-                  <SheetActionButton
-                    color={avatarColor}
-                    label="Review"
-                    onPress={handlePressContinue}
-                    size="big"
-                    weight="heavy"
-                  />
-                )}
-              </SheetActionButtonRow>
-            </Row>
-          </Rows>
-        </Box>
+    <>
+      {visible && (
         <Box position="absolute" right="0px" style={{ bottom: keyboardHeight }}>
           <Inset bottom="19px" right="19px">
             <HideKeyboardButton color={avatarColor} />
           </Inset>
         </Box>
-      </AccentColorProvider>
-    </AnimatedBox>
+      )}
+      <AnimatedBox
+        background="body"
+        style={[animatedStyle, { position: 'absolute', width: '100%' }]}
+      >
+        <AccentColorProvider color={avatarColor}>
+          <Box paddingBottom="19px" style={{ height: keyboardHeight }}>
+            <Shadow />
+            <Rows>
+              <Row>
+                <Inset horizontal="19px" top="30px">
+                  <SelectableAttributesButtons
+                    onAddField={onAddField}
+                    onRemoveField={onRemoveField}
+                    selectedFields={selectedFields}
+                  />
+                </Inset>
+              </Row>
+              <Row height="content">
+                <SheetActionButtonRow>
+                  <TintButton color="secondary60" onPress={handlePressBack}>
+                    􀆉 Back
+                  </TintButton>
+                  {isEmpty ? (
+                    <TintButton
+                      color="secondary60"
+                      onPress={handlePressContinue}
+                    >
+                      Skip
+                    </TintButton>
+                  ) : (
+                    <SheetActionButton
+                      color={avatarColor}
+                      label="Review"
+                      onPress={handlePressContinue}
+                      size="big"
+                      weight="heavy"
+                    />
+                  )}
+                </SheetActionButtonRow>
+              </Row>
+            </Rows>
+          </Box>
+        </AccentColorProvider>
+      </AnimatedBox>
+    </>
   );
 }
 
