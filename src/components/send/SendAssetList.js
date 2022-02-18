@@ -7,7 +7,6 @@ import {
   RecyclerListView,
 } from 'recyclerlistview';
 
-import styled from 'styled-components';
 import { buildCoinsList } from '../../helpers/assets';
 import networkTypes from '../../helpers/networkTypes';
 import { deviceUtils } from '../../utils';
@@ -23,6 +22,7 @@ import { Centered } from '../layout';
 import { SavingsListHeader } from '../savings';
 import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
 import { ImgixImage } from '@rainbow-me/images';
+import styled from '@rainbow-me/styled-components';
 
 const dividerMargin = 5;
 const dividerHeight = DividerSize + dividerMargin * 4;
@@ -31,9 +31,9 @@ const familyHeaderHeight = 49;
 const rowHeight = 59;
 const smallBalancesHeader = 42;
 
-const SendAssetRecyclerListView = styled(RecyclerListView)`
-  min-height: 1;
-`;
+const SendAssetRecyclerListView = styled(RecyclerListView)({
+  minHeight: 1,
+});
 
 const SendAssetListDivider = () => {
   const { colors } = useTheme();
@@ -61,7 +61,7 @@ export default class SendAssetList extends React.Component {
     const { assets } = buildCoinsList(
       sortedAssets,
       nativeCurrency,
-      true,
+      false,
       pinnedCoins,
       hiddenCoins
     );
@@ -82,7 +82,7 @@ export default class SendAssetList extends React.Component {
 
     this.data = assets;
 
-    if (smallBalances.assets.length > 0) {
+    if (smallBalances.assets?.length > 0) {
       this.data.push(smallBalances);
     }
 
@@ -219,8 +219,7 @@ export default class SendAssetList extends React.Component {
     LayoutAnimation.configureNext(
       LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
     );
-    openCards[index] = !openCards[index];
-    this.setState({ openCards });
+    this.setState({ openCards: { ...openCards, [index]: !openCards[index] } });
     let familiesHeight = 0;
     if (openCards[index]) {
       for (let i = 0; i < index; i++) {
@@ -413,14 +412,14 @@ export default class SendAssetList extends React.Component {
   };
 
   render() {
-    const { dataProvider, openShitcoins } = this.state;
+    const { dataProvider, openShitcoins, openCards } = this.state;
 
     return (
       <FlyInAnimation>
         <SendAssetRecyclerListView
           dataProvider={dataProvider}
           disableRecycling
-          extendedState={{ openShitcoins }}
+          extendedState={{ openCards, openShitcoins }}
           layoutProvider={this._layoutProvider}
           onScroll={this.handleScroll}
           ref={this.handleRef}

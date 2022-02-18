@@ -1,13 +1,13 @@
 import React from 'react';
-import styled from 'styled-components';
 import { magicMemo } from '../../utils';
 import { ListHeader } from '../list';
 import { Text } from '../text';
+import styled from '@rainbow-me/styled-components';
 
 const ActivityListHeaderTitle = styled(Text).attrs({
   size: 'larger',
   weight: 'bold',
-})``;
+})({});
 
 const ActivityListHeader = props => (
   <ListHeader

@@ -2,7 +2,6 @@ import { get } from 'lodash';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { View } from 'react-primitives';
-import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import useCoinListEditOptions from '../../hooks/useCoinListEditOptions';
 import { ButtonPressAnimation } from '../animations';
@@ -17,6 +16,7 @@ import { useIsCoinListEditedSharedValue } from '@rainbow-me/helpers/SharedValues
 import { buildAssetUniqueIdentifier } from '@rainbow-me/helpers/assets';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 
 const editTranslateOffset = 37;
 
@@ -31,14 +31,14 @@ const BalanceCoinRowCoinCheckButton = styled(CoinCheckButton).attrs({
 
 const PercentageText = styled(BottomRowText).attrs({
   align: 'right',
-})`
-  color: ${({ isPositive, theme: { colors } }) =>
-    isPositive ? colors.green : colors.alpha(colors.blueGreyDark, 0.5)};
-`;
+})({
+  color: ({ isPositive, theme: { colors } }) =>
+    isPositive ? colors.green : colors.alpha(colors.blueGreyDark, 0.5),
+});
 
 const BottomRowContainer = ios
   ? Fragment
-  : styled(Row).attrs({ marginBottom: 10, marginTop: -10 })``;
+  : styled(Row).attrs({ marginBottom: 10, marginTop: -10 })({});
 
 const TopRowContainer = ios
   ? Fragment
@@ -46,14 +46,14 @@ const TopRowContainer = ios
       align: 'flex-start',
       justify: 'flex-start',
       marginTop: 0,
-    })``;
+    })({});
 
 const PriceContainer = ios
   ? View
-  : styled(View)`
-      margin-top: -3;
-      margin-bottom: 3;
-    `;
+  : styled(View)({
+      marginBottom: 3,
+      marginTop: -3,
+    });
 
 const BottomRow = ({ balance, native }) => {
   const { colors } = useTheme();
@@ -176,6 +176,8 @@ const BalanceCoinRow = ({
               bottomRowRender={BottomRow}
               containerStyles={containerStyles}
               isFirstCoinRow={isFirstCoinRow}
+              isHidden={isHidden}
+              isPinned={isPinned}
               onPress={handlePress}
               topRowRender={TopRow}
               {...item}

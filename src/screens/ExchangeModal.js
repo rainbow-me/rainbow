@@ -1,7 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import { isEmpty } from 'lodash';
 import React, {
-  Fragment,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -17,7 +16,6 @@ import {
 import { useSafeArea } from 'react-native-safe-area-context';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { useDispatch, useSelector } from 'react-redux';
-import styled from 'styled-components';
 import { useMemoOne } from 'use-memo-one';
 import { dismissingScreenListener } from '../../shim';
 import {
@@ -40,6 +38,7 @@ import {
   useAccountSettings,
   useBlockPolling,
   useCurrentNonce,
+  useDimensions,
   useGas,
   usePrevious,
   usePriceImpactDetails,
@@ -56,6 +55,7 @@ import { multicallClearState } from '@rainbow-me/redux/multicall';
 import { swapClearState, updateSwapTypeDetails } from '@rainbow-me/redux/swap';
 import { ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import { useEthUSDPrice } from '@rainbow-me/utils/ethereumUtils';
 import logger from 'logger';
@@ -64,23 +64,19 @@ const FloatingPanels = ios
   ? AnimatedExchangeFloatingPanels
   : ExchangeFloatingPanels;
 
-const Wrapper = ios ? KeyboardFixedOpenLayout : Fragment;
+const Wrapper = KeyboardFixedOpenLayout;
 
 const InnerWrapper = styled(Centered).attrs({
   direction: 'column',
-})`
-  ${ios
-    ? position.sizeAsObject('100%')
-    : `
-    height: 500;
-    top: 0;
-  `};
-  background-color: ${({ theme: { colors } }) => colors.transparent};
-`;
+})(({ isSmallPhone, theme: { colors } }) => ({
+  ...position.sizeAsObject('100%'),
+  ...(ios && isSmallPhone && { maxHeight: 354 }),
+  backgroundColor: colors.transparent,
+}));
 
-const Spacer = styled.View`
-  height: 20;
-`;
+const Spacer = styled.View({
+  height: 20,
+});
 
 const getInputHeaderTitle = (type, defaultInputAsset) => {
   switch (type) {
@@ -110,6 +106,7 @@ export default function ExchangeModal({
   type,
   typeSpecificParams,
 }) {
+  const { isSmallPhone } = useDimensions();
   const dispatch = useDispatch();
   const insets = useSafeArea();
 
@@ -530,7 +527,7 @@ export default function ExchangeModal({
 
   return (
     <Wrapper>
-      <InnerWrapper>
+      <InnerWrapper isSmallPhone={isSmallPhone}>
         <FloatingPanels>
           <FloatingPanel
             overflow="visible"
@@ -542,6 +539,7 @@ export default function ExchangeModal({
             <ExchangeHeader testID={testID} title={title} />
             <ExchangeInputField
               disableInputCurrencySelection={isWithdrawal}
+              editable={!!inputCurrency}
               inputAmount={inputAmountDisplay}
               inputCurrencyAddress={inputCurrency?.address}
               inputCurrencySymbol={inputCurrency?.symbol}
@@ -558,6 +556,7 @@ export default function ExchangeModal({
             />
             {showOutputField && (
               <ExchangeOutputField
+                editable={!!outputCurrency}
                 onFocus={handleFocus}
                 onPressSelectOutputCurrency={navigateToSelectOutputCurrency}
                 outputAmount={outputAmountDisplay}

@@ -122,7 +122,7 @@ export default function useScanner(enabled, onSuccess) {
       analytics.track('Scanned broken or unsupported QR code', { qrCodeData });
 
       Alert({
-        callback: () => enableScanning(),
+        buttons: [{ onPress: enableScanning, text: lang.t('button.okay') }],
         message: lang.t('wallet.unrecognized_qrcode'),
         title: lang.t('wallet.unrecognized_qrcode_title'),
       });

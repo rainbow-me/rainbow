@@ -28,7 +28,6 @@ import {
   RecyclerListViewState,
 } from 'recyclerlistview/dist/reactnative/core/RecyclerListView';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
-import styled from 'styled-components';
 import { withThemeContext } from '../../../context/ThemeContext';
 import { CoinDivider, CoinDividerHeight } from '../../coin-divider';
 import { CoinRowHeight } from '../../coin-row';
@@ -43,8 +42,10 @@ import {
   useOpenSavings,
   useOpenSmallBalances,
   usePrevious,
+  useRefreshAccountData,
 } from '@rainbow-me/hooks';
-import { deviceUtils, logger } from '@rainbow-me/utils';
+import styled from '@rainbow-me/styled-components';
+import { deviceUtils } from '@rainbow-me/utils';
 
 const extractCollectiblesIdFromRow = (row: {
   item: {
@@ -153,19 +154,21 @@ const isEqualDataProvider = new DataProvider((r1, r2) => {
   }
 });
 
-const StyledRecyclerListView = styled(RecyclerListView)`
-  background-color: ${({ theme: { colors } }) => colors.white};
-  display: flex;
-  flex: 1;
-  min-height: 1;
-`;
+const StyledRecyclerListView = styled(RecyclerListView)({
+  // @ts-expect-error
+  backgroundColor: ({ theme: { colors } }) => colors.white,
+  display: 'flex',
+  flex: 1,
+  minHeight: 1,
+});
 
-const StyledContainer = styled(View)`
-  display: flex;
-  flex: 1;
-  background-color: ${({ theme: { colors } }) => colors.white};
-  overflow: hidden;
-`;
+const StyledContainer = styled(View)({
+  // @ts-expect-error
+  backgroundColor: ({ theme: { colors } }) => colors.white,
+  display: 'flex',
+  flex: 1,
+  overflow: 'hidden',
+});
 
 type RecyclerListViewRef = RecyclerListView<
   RecyclerListViewProps,
@@ -213,7 +216,6 @@ const NoStickyContainer = ({
 }): JSX.Element => children;
 
 export type RecyclerAssetListProps = {
-  readonly fetchData: () => Promise<unknown>;
   // TODO: This needs to be migrated into a global type.
   readonly colors: {
     readonly alpha: (color: string, alpha: number) => string;
@@ -230,7 +232,6 @@ export type RecyclerAssetListProps = {
 };
 
 function RecyclerAssetList({
-  fetchData,
   colors,
   sections,
   paddingBottom = 0,
@@ -246,6 +247,7 @@ function RecyclerAssetList({
   const {
     isInvestmentCardsOpen: openInvestmentCards,
   } = useOpenInvestmentCards();
+  const { refresh, isRefreshing } = useRefreshAccountData();
   const { isSavingsOpen: openSavings } = useOpenSavings();
   const { isSmallBalancesOpen: openSmallBalances } = useOpenSmallBalances();
   const { openFamilies: openFamilyTabs } = useOpenFamilies();
@@ -254,7 +256,6 @@ function RecyclerAssetList({
   const [globalDeviceDimensions, setGlobalDeviceDimensions] = useState<number>(
     0
   );
-  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const {
     areSmallCollectibles,
     items,
@@ -351,19 +352,6 @@ function RecyclerAssetList({
     },
     [stickyCoinDividerRef, coinDividerIndex, isCoinListEdited]
   );
-  const handleRefresh = useCallback(async () => {
-    if (isRefreshing || !fetchData) {
-      return;
-    }
-    try {
-      setIsRefreshing(true);
-      await fetchData();
-    } catch (e) {
-      logger.error(e);
-    } finally {
-      setIsRefreshing(false);
-    }
-  }, [isRefreshing, setIsRefreshing, fetchData]);
   const onLayout = useCallback(
     ({ nativeEvent }: LayoutChangeEvent) => {
       // set globalDeviceDimensions
@@ -652,14 +640,14 @@ function RecyclerAssetList({
         : {
             refreshControl: (
               <RefreshControl
-                onRefresh={handleRefresh}
+                onRefresh={refresh}
                 progressViewOffset={android ? 30 : 0}
                 refreshing={isRefreshing}
                 tintColor={colors.alpha(colors.blueGreyDark, 0.4)}
               />
             ),
           },
-    [disableRefreshControl, handleRefresh, isRefreshing, colors]
+    [disableRefreshControl, refresh, isRefreshing, colors]
   );
 
   const extendedState = useMemo(() => ({ sectionsIndices }), [sectionsIndices]);
@@ -827,7 +815,7 @@ function RecyclerAssetList({
           },
         ]}
       >
-        <CoinDivider balancesSum={0} />
+        <CoinDivider balancesSum={0} defaultToEditButton={false} />
       </View>
     </StyledContainer>
   );

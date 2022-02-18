@@ -1,37 +1,37 @@
 import { BlurView } from '@react-native-community/blur';
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
-import styled from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { useWalletConnectConnections } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 
-const LabelText = styled(Text)`
-  margin-top: ${android ? 0 : -3};
-  line-height: 46;
-`;
+const LabelText = styled(Text)({
+  lineHeight: 46,
+  marginTop: android ? 0 : -3,
+});
 
-const Overlay = styled(Centered)`
-  align-items: center;
-  height: 100;
-  justify-content: center;
-  top: 30;
-  width: 100%;
-`;
+const Overlay = styled(Centered)({
+  alignItems: 'center',
+  height: 100,
+  justifyContent: 'center',
+  top: 30,
+  width: '100%',
+});
 
 const OverlayBlur = styled(BlurView).attrs(({ isDarkMode }) => ({
   blurAmount: 100,
   blurType: isDarkMode ? 'light' : android ? 'dark' : 'ultraThinMaterialDark',
-}))`
-  border-radius: 23;
-  height: 46;
-  padding-horizontal: 15;
-  z-index: 1;
-  justify-content: center;
-`;
+}))({
+  borderRadius: 23,
+  height: 46,
+  justifyContent: 'center',
+  paddingHorizontal: 15,
+  zIndex: 1,
+});
 
 function ConnectedDapps() {
   const { navigate } = useNavigation();

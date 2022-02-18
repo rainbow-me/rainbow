@@ -1,5 +1,5 @@
+import lang from 'i18n-js';
 import React, { useMemo } from 'react';
-import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder, RowWithMargins } from '../layout';
@@ -7,6 +7,7 @@ import { Text } from '../text';
 import CaretImageSource from '@rainbow-me/assets/family-dropdown-arrow.png';
 import { useColorForAsset } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
+import styled from '@rainbow-me/styled-components';
 import { padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
@@ -16,21 +17,21 @@ const TokenSelectionButtonElevation = ios ? 0 : 8;
 const Content = styled(RowWithMargins).attrs({
   align: 'center',
   margin: 7,
-})`
-  ${padding(11.5, 14, 13.5, 16)};
-  height: ${TokenSelectionButtonHeight};
-  z-index: 1;
-`;
+})({
+  ...padding.object(11.5, 14, 13.5, 16),
+  height: TokenSelectionButtonHeight,
+  zIndex: 1,
+});
 
 const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
   resizeMode: ImgixImage.resizeMode.contain,
   source: CaretImageSource,
   tintColor: colors.whiteLabel,
-}))`
-  height: 18;
-  top: 0.5;
-  width: 8;
-`;
+}))({
+  height: 18,
+  top: 0.5,
+  width: 8,
+});
 
 export default function TokenSelectionButton({
   address,
@@ -81,7 +82,7 @@ export default function TokenSelectionButton({
           testID={testID + '-text'}
           weight="bold"
         >
-          {symbol || 'Choose Token'}
+          {symbol || lang.t('swap.choose_token')}
         </Text>
         <CaretIcon />
       </Content>

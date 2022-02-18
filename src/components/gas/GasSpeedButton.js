@@ -1,10 +1,10 @@
 import AnimateNumber from '@bankify/react-native-animate-number';
+import lang from 'i18n-js';
 import { isEmpty, isNaN, isNil, lowerCase, upperFirst } from 'lodash';
 import makeColorMoreChill from 'make-color-more-chill';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager, Keyboard } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
-import styled from 'styled-components';
 import { darkModeThemeColors } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
 import { ChainBadge, CoinIcon } from '../coin-icon';
@@ -28,6 +28,7 @@ import {
 import { useNavigation } from '@rainbow-me/navigation';
 import { ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
 import { gasUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
 
@@ -40,12 +41,13 @@ const CustomGasButton = styled(ButtonPressAnimation).attrs({
   height: 30,
   justifyContent: 'center',
   scaleTo: 0.8,
-})`
-  border-radius: 19;
-  border: ${({ borderColor, color, theme: { colors } }) =>
-    `2px solid ${borderColor || color || colors.appleBlue}`};
-  ${padding(android ? 2 : 3, 0)}
-`;
+})({
+  borderColor: ({ borderColor, color, theme: { colors } }) =>
+    borderColor || color || colors.appleBlue,
+  borderRadius: 19,
+  borderWidth: 2,
+  ...padding.object(android ? 2 : 3, 0),
+});
 
 const Symbol = styled(Text).attrs({
   align: 'center',
@@ -53,9 +55,9 @@ const Symbol = styled(Text).attrs({
   lineHeight: 'normal',
   size: 'lmedium',
   weight: 'heavy',
-})`
-  ${padding(android ? 1 : 0, 6, 0, 7)};
-`;
+})({
+  ...padding.object(android ? 1 : 0, 6, 0, 7),
+});
 
 const DoneCustomGas = styled(Text).attrs({
   align: 'center',
@@ -64,44 +66,40 @@ const DoneCustomGas = styled(Text).attrs({
   lineHeight: 'normal',
   size: 'lmedium',
   weight: 'heavy',
-})`
-  ${padding(0)}
-  ${margin(0, 10)}
-  bottom: 0.5;
-`;
+})({
+  ...padding.object(0),
+  ...margin.object(0, 10),
+  bottom: 0.5,
+});
 
 const ChainBadgeContainer = styled.View.attrs({
   hapticType: 'impactHeavy',
   scaleTo: 0.9,
-})`
-  ${padding(0)};
-  ${margin(0)};
-`;
+})({
+  ...padding.object(0),
+  ...margin.object(0),
+});
 
-const NativeCoinIconWrapper = styled(Column)`
-  ${margin(1.5, 5, 0, 0)};
-`;
+const NativeCoinIconWrapper = styled(Column)(margin.object(1.5, 5, 0, 0));
 
 const Container = styled(Column).attrs({
   alignItems: 'center',
   hapticType: 'impactHeavy',
   justifyContent: 'center',
-})`
-  ${({ marginBottom }) => margin(18, 0, marginBottom)};
-  ${({ horizontalPadding }) => padding(0, horizontalPadding)};
-  width: 100%;
-`;
+})(({ marginBottom, horizontalPadding }) => ({
+  ...margin.object(18, 0, marginBottom),
+  ...padding.object(0, horizontalPadding),
+  width: '100%',
+}));
 
 const Label = styled(Text).attrs(({ size }) => ({
   lineHeight: 'normal',
   size: size || 'lmedium',
-}))`
-  ${({ weight }) => fontWithWidth(weight || fonts.weight.semibold)}
-`;
+}))(({ weight }) => fontWithWidth(weight || fonts.weight.semibold));
 
 const GasSpeedPagerCentered = styled(Centered).attrs(() => ({
   marginRight: 8,
-}))``;
+}))({});
 
 const TransactionTimeLabel = ({ formatter, theme }) => {
   const { colors } = useTheme();
@@ -141,7 +139,6 @@ const GasSpeedButton = ({
 
   const {
     gasFeeParamsBySpeed,
-    gasFeesBySpeed,
     isSufficientGas,
     updateGasFeeOption,
     selectedGasFee,
@@ -150,8 +147,6 @@ const GasSpeedButton = ({
   } = useGas();
 
   const [gasPriceReady, setGasPriceReady] = useState(false);
-  const [estimatedTimeValue, setEstimatedTimeValue] = useState(0);
-  const [estimatedTimeUnit, setEstimatedTimeUnit] = useState('min');
   const [shouldOpenCustomGasSheet, setShouldOpenCustomGasSheet] = useState({
     focusTo: null,
     shouldOpen: false,
@@ -209,17 +204,14 @@ const GasSpeedButton = ({
     [gasPriceReady, isL2, nativeCurrencySymbol, nativeCurrency]
   );
 
-  const openCustomOptions = useCallback(focusTo => {
-    android && Keyboard.dismiss();
-    setShouldOpenCustomGasSheet({ focusTo, shouldOpen: true });
-  }, []);
+  const openCustomOptionsRef = useRef();
 
   const openCustomGasSheet = useCallback(() => {
     if (gasIsNotReady) return;
     navigate(Routes.CUSTOM_GAS_SHEET, {
       asset,
       focusTo: shouldOpenCustomGasSheet.focusTo,
-      openCustomOptions: focusTo => openCustomOptions(focusTo),
+      openCustomOptions: focusTo => openCustomOptionsRef.current(focusTo),
       speeds: speeds ?? GasSpeedOrder,
       type: 'custom_gas',
     });
@@ -229,12 +221,25 @@ const GasSpeedButton = ({
     asset,
     shouldOpenCustomGasSheet.focusTo,
     speeds,
-    openCustomOptions,
   ]);
+
+  const openCustomOptions = useCallback(
+    focusTo => {
+      if (ios) {
+        setShouldOpenCustomGasSheet({ focusTo, shouldOpen: true });
+      } else {
+        openCustomGasSheet();
+      }
+    },
+    [openCustomGasSheet]
+  );
+
+  openCustomOptionsRef.current = openCustomOptions;
 
   const renderGasPriceText = useCallback(
     animatedNumber => {
-      const priceText = animatedNumber === 0 ? 'Loading...' : animatedNumber;
+      const priceText =
+        animatedNumber === 0 ? lang.t('swap.loading') : animatedNumber;
       return (
         <Text
           color={
@@ -253,57 +258,42 @@ const GasSpeedButton = ({
     [theme, colors]
   );
 
+  // I'M SHITTY CODE BUT GOT THINGS DONE REFACTOR ME ASAP
   const handlePressSpeedOption = useCallback(
     selectedSpeed => {
-      updateGasFeeOption(selectedSpeed);
-      InteractionManager.runAfterInteractions(() => {
-        if (selectedSpeed === CUSTOM) {
-          setShouldOpenCustomGasSheet({
-            focusTo: null,
-            shouldOpen: true,
+      if (selectedSpeed === CUSTOM) {
+        if (ios) {
+          InteractionManager.runAfterInteractions(() => {
+            setShouldOpenCustomGasSheet({
+              focusTo: null,
+              shouldOpen: true,
+            });
           });
+        } else {
+          openCustomGasSheet();
+          setTimeout(() => updateGasFeeOption(selectedSpeed), 500);
+          return;
         }
-      });
+      }
+      updateGasFeeOption(selectedSpeed);
     },
-    [updateGasFeeOption]
+    [updateGasFeeOption, openCustomGasSheet]
   );
 
   const formatTransactionTime = useCallback(() => {
     if (!gasPriceReady) return '';
-    const time = parseFloat(estimatedTimeValue || 0).toFixed(0);
-    let timeSymbol = '~';
+    const estimatedTime = (selectedGasFee?.estimatedTime?.display || '').split(
+      ' '
+    );
+    const [estimatedTimeValue = 0, estimatedTimeUnit = 'min'] = estimatedTime;
+    const time = parseFloat(estimatedTimeValue).toFixed(0);
 
-    if (selectedGasFeeOption === CUSTOM) {
-      const customWei = gasFeesBySpeed?.[CUSTOM]?.estimatedFee?.value?.amount;
-      if (customWei) {
-        const normalWei = gasFeesBySpeed?.[NORMAL]?.estimatedFee?.value?.amount;
-        const urgentWei = gasFeesBySpeed?.[URGENT]?.estimatedFee?.value?.amount;
-        const minGasPriceSlow = normalWei | urgentWei;
-        const maxGasPriceFast = urgentWei;
-        if (normalWei < minGasPriceSlow) {
-          timeSymbol = '>';
-        } else if (normalWei > maxGasPriceFast) {
-          timeSymbol = '<';
-        }
-
-        return `${timeSymbol}${time} ${estimatedTimeUnit}`;
-      } else {
-        return '';
-      }
-    }
-
+    let timeSymbol = estimatedTimeUnit === 'hr' ? '>' : '~';
     if (time === '0' && estimatedTimeUnit === 'min') {
       return '';
     }
-
     return `${timeSymbol}${time} ${estimatedTimeUnit}`;
-  }, [
-    estimatedTimeUnit,
-    estimatedTimeValue,
-    gasFeesBySpeed,
-    gasPriceReady,
-    selectedGasFeeOption,
-  ]);
+  }, [gasPriceReady, selectedGasFee?.estimatedTime?.display]);
 
   const openGasHelper = useCallback(() => {
     android && Keyboard.dismiss();
@@ -492,15 +482,6 @@ const GasSpeedButton = ({
     shouldOpenCustomGasSheet.shouldOpen,
   ]);
 
-  useEffect(() => {
-    const estimatedTime = (selectedGasFee?.estimatedTime?.display || '').split(
-      ' '
-    );
-
-    setEstimatedTimeValue(estimatedTime[0] || 0);
-    setEstimatedTimeUnit(estimatedTime[1] || 'min');
-  }, [selectedGasFee, selectedGasFeeOption]);
-
   return (
     <Container
       bottom={bottom}
@@ -597,7 +578,7 @@ const GasSpeedButton = ({
                         )
                   }
                 >
-                  Done
+                  {lang.t('button.done')}
                 </DoneCustomGas>
               </CustomGasButton>
             ) : (

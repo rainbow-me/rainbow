@@ -16,7 +16,6 @@ import { BalanceCoinRow } from '../components/coin-row';
 import { UniswapInvestmentRow } from '../components/investment-cards';
 import { CollectibleTokenFamily } from '../components/token-family';
 import { withNavigation } from '../navigation/Navigation';
-import { getLowResUrl } from '../utils/getLowResUrl';
 import { compose, withHandlers } from '../utils/recompactAdapters';
 import {
   buildBriefCoinsList,
@@ -26,7 +25,6 @@ import {
 } from './assets';
 import networkTypes from './networkTypes';
 import { add, convertAmountToNativeDisplay, multiply } from './utilities';
-import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
 import { ImgixImage } from '@rainbow-me/images';
 import Routes from '@rainbow-me/routes';
 
@@ -132,7 +130,7 @@ const withUniswapSection = (
   return {
     data: uniswap,
     header: {
-      title: 'Pools',
+      title: lang.t('account.tab_investments'),
       totalItems: uniswap.length,
       totalValue: convertAmountToNativeDisplay(uniswapTotal, nativeCurrency),
     },
@@ -142,14 +140,19 @@ const withUniswapSection = (
   };
 };
 
-const withBriefUniswapSection = (uniswap, uniswapTotal, nativeCurrency) => {
+const withBriefUniswapSection = (
+  uniswap,
+  uniswapTotal,
+  nativeCurrency,
+  isLoadingAssets
+) => {
   const pools = uniswap.map(pool => ({
     address: pool.address,
     type: 'UNISWAP_POOL',
     uid: 'pool-' + pool.address,
   }));
 
-  if (pools.length > 0) {
+  if (!isLoadingAssets && pools.length > 0) {
     return [
       {
         type: 'POOLS_HEADER',
@@ -193,7 +196,7 @@ const withBalanceSavingsSection = savings => {
   return savingsSection;
 };
 
-const withBriefBalanceSavingsSection = savings => {
+const withBriefBalanceSavingsSection = (savings, isLoadingAssets) => {
   let totalUnderlyingNativeValue = '0';
   for (let saving of savings) {
     const { underlyingBalanceNativeValue } = saving;
@@ -203,6 +206,7 @@ const withBriefBalanceSavingsSection = savings => {
     );
   }
   const addresses = savings?.map(asset => asset.cToken.address);
+  if (isLoadingAssets) return [];
   return [
     {
       type: 'SAVINGS_HEADER_SPACE_BEFORE',
@@ -225,7 +229,6 @@ const coinEditContextMenu = (
   sortedAssets,
   balanceSectionData,
   isCoinListEdited,
-  currentAction,
   isLoadingAssets,
   sortedAssetsCount,
   totalValue,
@@ -239,7 +242,7 @@ const coinEditContextMenu = (
         ? {
             cancelButtonIndex: 0,
             dynamicOptions: () => {
-              return ['Cancel', 'Edit'];
+              return [lang.t('button.cancel'), lang.t('button.edit')];
             },
             onPressActionSheet: async index => {
               if (index === 1) {
@@ -409,7 +412,7 @@ const buildImagesToPreloadArray = (family, index, families) => {
       return {
         id: uniqueId,
         priority,
-        uri: svgToPngIfNeeded(getLowResUrl(image_url)),
+        uri: image_url,
       };
     });
 
@@ -467,7 +470,7 @@ const balanceSavingsSectionSelector = createSelector(
 );
 
 const briefBalanceSavingsSectionSelector = createSelector(
-  [savingsSelector],
+  [savingsSelector, isLoadingAssetsSelector],
   withBriefBalanceSavingsSection
 );
 
@@ -482,7 +485,12 @@ const uniswapSectionSelector = createSelector(
 );
 
 const briefUniswapSectionSelector = createSelector(
-  [uniswapSelector, uniswapTotalSelector, nativeCurrencySelector],
+  [
+    uniswapSelector,
+    uniswapTotalSelector,
+    nativeCurrencySelector,
+    isLoadingAssetsSelector,
+  ],
   withBriefUniswapSection
 );
 

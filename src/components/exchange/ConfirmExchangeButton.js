@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
+import lang from 'i18n-js';
 import makeColorMoreChill from 'make-color-more-chill';
 import React, { useMemo } from 'react';
-import styled from 'styled-components';
 import { darkModeThemeColors } from '../../styles/colors';
 import { HoldToAuthorizeButton } from '../buttons';
 import { Centered } from '../layout';
@@ -16,6 +16,7 @@ import {
 } from '@rainbow-me/hooks';
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { lightModeThemeColors, padding } from '@rainbow-me/styles';
 
 const paddingHorizontal = 19;
@@ -24,14 +25,14 @@ const ConfirmButton = styled(HoldToAuthorizeButton).attrs({
   hideInnerBorder: true,
   parentHorizontalPadding: paddingHorizontal,
   theme: 'dark',
-})`
-  flex: 1;
-`;
+})({
+  flex: 1,
+});
 
-const Container = styled(Centered)`
-  ${padding(5, paddingHorizontal, 0)};
-  width: 100%;
-`;
+const Container = styled(Centered)({
+  ...padding.object(5, paddingHorizontal, 0),
+  width: '100%',
+});
 
 export default function ConfirmExchangeButton({
   disabled,
@@ -52,7 +53,7 @@ export default function ConfirmExchangeButton({
   );
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
   const asset = outputCurrency ?? inputCurrency;
-  const { isSufficientGas } = useGas();
+  const { isSufficientGas, isValidGas } = useGas();
   const { name: routeName } = useRoute();
 
   const isSwapDetailsRoute = routeName === Routes.SWAP_DETAILS_SHEET;
@@ -102,25 +103,29 @@ export default function ConfirmExchangeButton({
 
   let label = '';
   if (type === ExchangeModalTypes.deposit) {
-    label = 'Hold to Deposit';
+    label = lang.t('button.confirm_exchange.deposit');
   } else if (type === ExchangeModalTypes.swap) {
-    label = 'Hold to Swap';
+    label = lang.t('button.confirm_exchange.swap');
   } else if (type === ExchangeModalTypes.withdrawal) {
-    label = 'Hold to Withdraw';
+    label = lang.t('button.confirm_exchange.withdraw');
   }
 
   if (!doneLoadingReserves) {
-    label = 'Fetching Details...';
+    label = lang.t('button.confirm_exchange.fetching_details');
   } else if (!isSufficientBalance) {
-    label = 'Insufficient Funds';
+    label = lang.t('button.confirm_exchange.insufficient_funds');
   } else if (!isSufficientLiquidity) {
-    label = 'Insufficient Liquidity';
+    label = lang.t('button.confirm_exchange.insufficient_liquidity');
   } else if (isSufficientGas != null && !isSufficientGas) {
-    label = 'Insufficient ETH';
+    label = lang.t('button.confirm_exchange.insufficient_eth');
+  } else if (!isValidGas) {
+    label = lang.t('button.confirm_exchange.invalid_fee');
   } else if (isHighPriceImpact) {
-    label = isSwapDetailsRoute ? 'Swap Anyway' : '􀕹 View Details';
+    label = isSwapDetailsRoute
+      ? lang.t('button.confirm_exchange.swap_anyway')
+      : `􀕹 ${lang.t('button.confirm_exchange.view_details')}`;
   } else if (disabled) {
-    label = 'Enter an Amount';
+    label = lang.t('button.confirm_exchange.enter_amount');
   }
 
   const isDisabled =
@@ -128,6 +133,7 @@ export default function ConfirmExchangeButton({
     !doneLoadingReserves ||
     !isSufficientBalance ||
     !isSufficientGas ||
+    !isValidGas ||
     !isSufficientLiquidity;
 
   return (

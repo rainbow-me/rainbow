@@ -6,20 +6,20 @@ import useRefreshAccountData from './useRefreshAccountData';
 
 export default function useInternetStatus() {
   const [isInternetReachable, setIsInternetReachable] = useState(true);
-  const refreshAccountData = useRefreshAccountData();
+  const { refresh } = useRefreshAccountData();
   const onChange = useCallback(
     ({ isInternetReachable: newIsInternetReachable }) => {
       if (!isNil(newIsInternetReachable)) {
         setIsInternetReachable(newIsInternetReachable);
         if (!isInternetReachable && newIsInternetReachable) {
-          refreshAccountData();
+          refresh();
           analytics.track('Reconnected after offline');
         } else {
           analytics.track('Offline / lost connection');
         }
       }
     },
-    [isInternetReachable, refreshAccountData]
+    [isInternetReachable, refresh]
   );
 
   useEffect(() => {

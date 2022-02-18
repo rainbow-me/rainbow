@@ -1,7 +1,7 @@
 import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
+import lang from 'i18n-js';
 import React, { useCallback, useRef } from 'react';
-import styled from 'styled-components';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { RainbowButton } from '../buttons';
@@ -11,9 +11,6 @@ import { Centered, Column, Row, RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
 import AvatarCircle from './AvatarCircle';
 import ProfileAction from './ProfileAction';
-import useExperimentalFlag, {
-  AVATAR_PICKER,
-} from '@rainbow-me/config/experimentalHooks';
 import showWalletErrorAlert from '@rainbow-me/helpers/support';
 import {
   useAccountProfile,
@@ -23,6 +20,7 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { abbreviations } from '@rainbow-me/utils';
 
 const dropdownArrowWidth = 21;
@@ -34,13 +32,13 @@ const FloatingEmojisRegion = styled(FloatingEmojis).attrs({
   scaleTo: 0,
   size: 50,
   wiggleFactor: 0,
-})`
-  height: 0;
-  left: 0;
-  position: absolute;
-  top: 0;
-  width: 130;
-`;
+})({
+  height: 0,
+  left: 0,
+  position: 'absolute',
+  top: 0,
+  width: 130,
+});
 
 const AccountName = styled(TruncatedText).attrs({
   align: 'left',
@@ -49,36 +47,36 @@ const AccountName = styled(TruncatedText).attrs({
   size: 'bigger',
   truncationLength: 4,
   weight: 'bold',
-})`
-  height: ${android ? '38' : '33'};
-  margin-top: ${android ? '-10' : '-1'};
-  margin-bottom: ${android ? '10' : '1'};
-  max-width: ${({ deviceWidth }) => deviceWidth - dropdownArrowWidth - 60};
-  padding-right: 6;
-`;
+})({
+  height: android ? 38 : 33,
+  marginBottom: android ? 10 : 1,
+  marginTop: android ? -10 : -1,
+  maxWidth: ({ deviceWidth }) => deviceWidth - dropdownArrowWidth - 60,
+  paddingRight: 6,
+});
 
 const AddCashButton = styled(RainbowButton).attrs({
   overflowMargin: 30,
   skipTopMargin: true,
   type: 'addCash',
-})`
-  margin-top: 16;
-`;
+})({
+  marginTop: 16,
+});
 
-const DropdownArrow = styled(Centered)`
-  height: 9;
-  margin-top: 11;
-  width: ${dropdownArrowWidth};
-`;
+const DropdownArrow = styled(Centered)({
+  height: 9,
+  marginTop: 11,
+  width: dropdownArrowWidth,
+});
 
 const ProfileMastheadDivider = styled(Divider).attrs(
   ({ theme: { colors } }) => ({
     color: colors.rowDividerLight,
   })
-)`
-  bottom: 0;
-  position: absolute;
-`;
+)({
+  bottom: 0,
+  position: 'absolute',
+});
 
 export default function ProfileMasthead({
   addCashAvailable,
@@ -100,7 +98,6 @@ export default function ProfileMasthead({
     accountName,
     accountImage,
   } = useAccountProfile();
-  const isAvatarPickerAvailable = useExperimentalFlag(AVATAR_PICKER);
 
   const { onAvatarPress } = useOnAvatarPress();
 
@@ -169,8 +166,9 @@ export default function ProfileMasthead({
         accountColor={accountColor}
         accountSymbol={accountSymbol}
         image={accountImage}
-        isAvatarPickerAvailable={isAvatarPickerAvailable}
+        isAvatarPickerAvailable
         onPress={handlePressAvatar}
+        style={android && { marginTop: 10 }}
       />
       <ButtonPressAnimation onPress={handlePressChangeWallet}>
         <Row>
@@ -186,7 +184,7 @@ export default function ProfileMasthead({
           onPress={handlePressCopyAddress}
           radiusWrapperStyle={{ marginRight: 10, width: 150 }}
           scaleTo={0.88}
-          text="Copy Address"
+          text={lang.t('wallet.settings.copy_address_capitalized')}
           width={127}
           wrapperProps={{
             containerStyle: {
@@ -202,7 +200,7 @@ export default function ProfileMasthead({
           onPress={handlePressReceive}
           radiusWrapperStyle={{ marginRight: 10, width: 104 }}
           scaleTo={0.88}
-          text="Receive"
+          text={lang.t('button.receive')}
           width={81}
           wrapperProps={{
             containerStyle: {

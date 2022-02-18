@@ -2,7 +2,6 @@ import { rankings } from 'match-sorter';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { IS_TESTING } from 'react-native-dotenv';
-import { useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTheme } from '../context/ThemeContext';
 import { AppState } from '../redux/store';
@@ -11,11 +10,9 @@ import {
   RainbowToken as RT,
   TokenSearchTokenListId,
 } from '@rainbow-me/entities';
-import { getUniswapV2Tokens } from '@rainbow-me/handlers/dispersion';
 import tokenSearch from '@rainbow-me/handlers/tokenSearch';
 import { addHexPrefix } from '@rainbow-me/handlers/web3';
 import tokenSectionTypes from '@rainbow-me/helpers/tokenSectionTypes';
-import { ETH_ADDRESS, WETH_ADDRESS } from '@rainbow-me/references';
 import { filterList } from '@rainbow-me/utils';
 
 type UniswapCurrencyListType =
@@ -25,6 +22,8 @@ type UniswapCurrencyListType =
   | 'favoriteAssets'
   | 'curatedAssets';
 const uniswapCuratedTokensSelector = (state: AppState) => state.uniswap.pairs;
+const uniswapFavoriteMetadataSelector = (state: AppState) =>
+  state.uniswap.favoritesMeta;
 const uniswapFavoritesSelector = (state: AppState): string[] =>
   state.uniswap.favorites;
 
@@ -48,34 +47,17 @@ const searchCurrencyList = async (
 const useUniswapCurrencyList = (searchQuery: string) => {
   const searching = searchQuery !== '';
   const dispatch = useDispatch();
+
+  const curatedMap = useSelector(uniswapCuratedTokensSelector);
+  const favoriteMap = useSelector(uniswapFavoriteMetadataSelector);
+  const unfilteredFavorites = Object.values(favoriteMap);
+  const favoriteAddresses = useSelector(uniswapFavoritesSelector);
+
   const [loading, setLoading] = useState(true);
-  const [curatedAssets, setCuratedAssets] = useState<RT[]>([]);
   const [favoriteAssets, setFavoriteAssets] = useState<RT[]>([]);
   const [highLiquidityAssets, setHighLiquidityAssets] = useState<RT[]>([]);
   const [lowLiquidityAssets, setLowLiquidityAssets] = useState<RT[]>([]);
-  const [unfilteredFavorites, setUnfilteredFavorites] = useState<RT[]>([]);
   const [verifiedAssets, setVerifiedAssets] = useState<RT[]>([]);
-
-  const curatedMap = useSelector(uniswapCuratedTokensSelector);
-  const favoriteAddresses = useSelector(uniswapFavoritesSelector);
-
-  const handleFavoritesResponse = (favorites: RT[]) => {
-    setUnfilteredFavorites(
-      favorites.map(favorite => {
-        const { address } = favorite;
-        if (address === WETH_ADDRESS) {
-          return {
-            ...favorite,
-            address: ETH_ADDRESS,
-            name: 'Ethereum',
-            symbol: 'ETH',
-            uniqueId: ETH_ADDRESS,
-          };
-        }
-        return favorite;
-      })
-    );
-  };
 
   const handleVerifiedResponse = useCallback(
     (tokens: RT[]) => {
@@ -83,19 +65,6 @@ const useUniswapCurrencyList = (searchQuery: string) => {
       return tokens.filter(({ address }) => !addresses.includes(address));
     },
     [favoriteAddresses]
-  );
-
-  useQuery(
-    ['tokens/uniswap/v2', favoriteAddresses],
-    () =>
-      getUniswapV2Tokens(
-        favoriteAddresses.map(address => {
-          return address === ETH_ADDRESS ? WETH_ADDRESS : address.toLowerCase();
-        })
-      ),
-    {
-      onSuccess: res => handleFavoritesResponse(res),
-    }
   );
 
   const getCurated = useCallback(() => {
@@ -134,12 +103,9 @@ const useUniswapCurrencyList = (searchQuery: string) => {
         case 'favoriteAssets':
           setFavoriteAssets((await getFavorites()) || []);
           break;
-        case 'curatedAssets':
-          setCuratedAssets(getCurated());
-          break;
       }
     },
-    [getCurated, getFavorites, handleVerifiedResponse, searchQuery]
+    [getFavorites, handleVerifiedResponse, searchQuery]
   );
 
   const search = () => {
@@ -153,8 +119,13 @@ const useUniswapCurrencyList = (searchQuery: string) => {
   };
 
   const slowSearch = useCallback(async () => {
-    await getResultsForAssetType('lowLiquidityAssets');
-    setLoading(false);
+    try {
+      await getResultsForAssetType('lowLiquidityAssets');
+      // eslint-disable-next-line no-empty
+    } catch (e) {
+    } finally {
+      setLoading(false);
+    }
   }, [getResultsForAssetType]);
 
   const clearSearch = useCallback(() => {
@@ -183,12 +154,14 @@ const useUniswapCurrencyList = (searchQuery: string) => {
         list.push({
           color: colors.yellowFavorite,
           data: favoriteAssets,
+          key: 'favorites',
           title: tokenSectionTypes.favoriteTokenSection,
         });
       }
       if (verifiedAssets.length) {
         list.push({
           data: verifiedAssets,
+          key: 'verified',
           title: tokenSectionTypes.verifiedTokenSection,
           useGradientText: IS_TESTING === 'true' ? false : true,
         });
@@ -196,12 +169,14 @@ const useUniswapCurrencyList = (searchQuery: string) => {
       if (highLiquidityAssets.length) {
         list.push({
           data: highLiquidityAssets,
+          key: 'highLiquidity',
           title: tokenSectionTypes.unverifiedTokenSection,
         });
       }
       if (lowLiquidityAssets?.length) {
         list.push({
           data: lowLiquidityAssets,
+          key: 'lowLiqudiity',
           title: tokenSectionTypes.lowLiquidityTokenSection,
         });
       }
@@ -210,27 +185,30 @@ const useUniswapCurrencyList = (searchQuery: string) => {
         list.push({
           color: colors.yellowFavorite,
           data: unfilteredFavorites,
+          key: 'unfilteredFavorites',
           title: tokenSectionTypes.favoriteTokenSection,
         });
-        if (curatedAssets.length) {
-          list.push({
-            data: curatedAssets,
-            title: tokenSectionTypes.verifiedTokenSection,
-            useGradientText: IS_TESTING === 'true' ? false : true,
-          });
-        }
+      }
+      const curatedAssets = getCurated();
+      if (curatedAssets.length) {
+        list.push({
+          data: curatedAssets,
+          key: 'curated',
+          title: tokenSectionTypes.verifiedTokenSection,
+          useGradientText: IS_TESTING === 'true' ? false : true,
+        });
       }
     }
     return list;
   }, [
     colors.yellowFavorite,
-    curatedAssets,
     favoriteAssets,
     highLiquidityAssets,
     lowLiquidityAssets,
     searching,
     unfilteredFavorites,
     verifiedAssets,
+    getCurated,
   ]);
 
   const updateFavorites = useCallback(

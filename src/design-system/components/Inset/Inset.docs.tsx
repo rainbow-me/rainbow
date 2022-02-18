@@ -11,8 +11,7 @@ const docs: DocsType = {
   meta,
   description: (
     <Docs.Text>
-      Renders a <Docs.Strong>container with equal padding</Docs.Strong> on all
-      sides.
+      Renders a <Docs.Strong>container with padding.</Docs.Strong>
     </Docs.Text>
   ),
   examples: [
@@ -33,6 +32,22 @@ const docs: DocsType = {
     },
     {
       ...examples.verticalSpace,
+      showFrame: true,
+    },
+    {
+      ...examples.topSpace,
+      showFrame: true,
+    },
+    {
+      ...examples.bottomSpace,
+      showFrame: true,
+    },
+    {
+      ...examples.leftSpace,
+      showFrame: true,
+    },
+    {
+      ...examples.rightSpace,
       showFrame: true,
     },
   ],

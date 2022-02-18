@@ -7,7 +7,6 @@ import { Alert, InteractionManager, Keyboard, StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components';
 import { GasSpeedButton } from '../components/gas';
 import { Column } from '../components/layout';
 import {
@@ -41,7 +40,6 @@ import {
   useGas,
   useMaxInputBalance,
   usePrevious,
-  useRefreshAccountData,
   useSendableUniqueTokens,
   useSendSavingsAccount,
   useSendSheetInputRefs,
@@ -55,6 +53,7 @@ import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import { parseGasParamsForTransaction } from '@rainbow-me/parsers';
 import { chainAssets, rainbowTokenList } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { borders } from '@rainbow-me/styles';
 import {
   convertAmountAndPriceToNativeDisplay,
@@ -68,28 +67,28 @@ import logger from 'logger';
 const sheetHeight = deviceUtils.dimensions.height - (android ? 30 : 10);
 const statusBarHeight = getStatusBarHeight(true);
 
-const Container = styled.View`
-  background-color: ${({ theme: { colors } }) => colors.transparent};
-  flex: 1;
-  padding-top: ${isNativeStackAvailable ? 0 : statusBarHeight};
-  width: 100%;
-`;
+const Container = styled.View({
+  backgroundColor: ({ theme: { colors } }) => colors.transparent,
+  flex: 1,
+  paddingTop: isNativeStackAvailable ? 0 : statusBarHeight,
+  width: '100%',
+});
 
 const SheetContainer = styled(Column).attrs({
   align: 'center',
   flex: 1,
-})`
-  ${borders.buildRadius('top', isNativeStackAvailable ? 0 : 16)};
-  background-color: ${({ theme: { colors } }) => colors.white};
-  height: ${isNativeStackAvailable || android ? sheetHeight : '100%'};
-  width: 100%;
-`;
+})({
+  ...borders.buildRadiusAsObject('top', isNativeStackAvailable ? 0 : 16),
+  backgroundColor: ({ theme: { colors } }) => colors.white,
+  height: isNativeStackAvailable || android ? sheetHeight : '100%',
+  width: '100%',
+});
 
-const KeyboardSizeView = styled(KeyboardArea)`
-  width: 100%;
-  background-color: ${({ showAssetForm, theme: { colors } }) =>
-    showAssetForm ? colors.lighterGrey : colors.white};
-`;
+const KeyboardSizeView = styled(KeyboardArea)({
+  backgroundColor: ({ showAssetForm, theme: { colors } }) =>
+    showAssetForm ? colors.lighterGrey : colors.white,
+  width: '100%',
+});
 
 export default function SendSheet(props) {
   const dispatch = useDispatch();
@@ -101,6 +100,7 @@ export default function SendSheet(props) {
     gasFeeParamsBySpeed,
     gasLimit,
     isSufficientGas,
+    isValidGas,
     prevSelectedGasFee,
     selectedGasFee,
     startPollingGasFees,
@@ -116,7 +116,6 @@ export default function SendSheet(props) {
   const { accountAddress, nativeCurrency, network } = useAccountSettings();
 
   const savings = useSendSavingsAccount();
-  const fetchData = useRefreshAccountData();
   const { hiddenCoins, pinnedCoins } = useCoinListEditOptions();
   const [toAddress, setToAddress] = useState();
   const [amountDetails, setAmountDetails] = useState({
@@ -437,12 +436,16 @@ export default function SendSheet(props) {
 
   const onSubmit = useCallback(async () => {
     const validTransaction =
-      isValidAddress && amountDetails.isSufficientBalance && isSufficientGas;
+      isValidAddress &&
+      amountDetails.isSufficientBalance &&
+      isSufficientGas &&
+      isValidGas;
     if (!selectedGasFee?.gasFee?.estimatedFee || !validTransaction) {
       logger.sentry('preventing tx submit for one of the following reasons:');
       logger.sentry('selectedGasFee ? ', selectedGasFee);
       logger.sentry('selectedGasFee.maxFee ? ', selectedGasFee?.maxFee);
       logger.sentry('validTransaction ? ', validTransaction);
+      logger.sentry('isValidGas ? ', isValidGas);
       captureEvent('Preventing tx submit');
       return false;
     }
@@ -544,6 +547,7 @@ export default function SendSheet(props) {
     getNextNonce,
     isSufficientGas,
     isValidAddress,
+    isValidGas,
     selected,
     selectedGasFee,
     toAddress,
@@ -625,6 +629,9 @@ export default function SendSheet(props) {
     } else if (!isZeroAssetAmount && !isSufficientGas) {
       disabled = true;
       label = `Insufficient ${nativeToken}`;
+    } else if (!isValidGas) {
+      disabled = true;
+      label = 'Invalid fee';
     } else if (!isZeroAssetAmount && !amountDetails.isSufficientBalance) {
       disabled = true;
       label = 'Insufficient Funds';
@@ -637,10 +644,11 @@ export default function SendSheet(props) {
   }, [
     amountDetails.assetAmount,
     amountDetails.isSufficientBalance,
-    gasFeeParamsBySpeed,
-    isSufficientGas,
     currentNetwork,
+    gasFeeParamsBySpeed,
     selectedGasFee,
+    isSufficientGas,
+    isValidGas,
   ]);
 
   const showConfirmationSheet = useCallback(async () => {
@@ -820,7 +828,6 @@ export default function SendSheet(props) {
         )}
         {showAssetList && (
           <SendAssetList
-            fetchData={fetchData}
             hiddenCoins={hiddenCoins}
             nativeCurrency={nativeCurrency}
             network={network}

@@ -1,7 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import styled from 'styled-components';
 import ActivityIndicator from '../components/ActivityIndicator';
 import { AssetList } from '../components/asset-list';
 import { ShowcaseContext } from '../components/showcase/ShowcaseHeader';
@@ -13,6 +12,7 @@ import { buildUniqueTokenList } from '@rainbow-me/helpers/assets';
 import { tokenFamilyItem } from '@rainbow-me/helpers/buildWalletSections';
 import { useAccountSettings, useWallets } from '@rainbow-me/hooks';
 import { fetchUniqueTokens } from '@rainbow-me/redux/uniqueTokens';
+import styled from '@rainbow-me/styled-components';
 
 async function fetchShowcaseForAddress(address) {
   const response = await rainbowFetch(`${PREFS_ENDPOINT}/address`, {
@@ -24,23 +24,25 @@ async function fetchShowcaseForAddress(address) {
   return response.data;
 }
 
-const Wrapper = styled.View`
-  background-color: ${({ theme: { colors } }) => colors.white};
-  border-top-left-radius: 15;
-  border-top-right-radius: 15;
-  height: 100%;
-  overflow: hidden;
-`;
+const Wrapper = styled.View({
+  backgroundColor: ({ theme: { colors } }) => colors.white,
+  borderTopLeftRadius: 15,
+  borderTopRightRadius: 15,
+  height: '100%',
+  overflow: 'hidden',
+});
 
-const LoadingWrapper = styled.View`
-  align-items: center;
-  height: 100%;
-  justify-content: center;
-  width: 100%;
-`;
+const LoadingWrapper = styled.View({
+  alignItems: 'center',
+  height: '100%',
+  justifyContent: 'center',
+  width: '100%',
+});
 
 export default function ShowcaseScreen() {
-  const { params: { address: addressOrDomain } = {} } = useRoute();
+  const {
+    params: { address: addressOrDomain, setIsSearchModeEnabled } = {},
+  } = useRoute();
 
   const [userData, setUserData] = useState(null);
   const [accountAddress, setAcccountAddress] = useState(null);
@@ -106,8 +108,9 @@ export default function ShowcaseScreen() {
       ...userData,
       address: accountAddress,
       addressOrDomain,
+      setIsSearchModeEnabled,
     }),
-    [addressOrDomain, accountAddress, userData]
+    [userData, accountAddress, addressOrDomain, setIsSearchModeEnabled]
   );
 
   const loading = userData === null || uniqueTokensShowcaseLoading;

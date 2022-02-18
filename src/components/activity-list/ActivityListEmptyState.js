@@ -1,19 +1,20 @@
+import lang from 'i18n-js';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-native';
-import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { deviceUtils } from '../../utils';
 import { Centered, Column } from '../layout';
 import { Text } from '../text';
+import styled from '@rainbow-me/styled-components';
 
 const verticalOffset = (deviceUtils.dimensions.height - 420) / 3;
 
-const Container = styled(Column)`
-  align-self: center;
-  margin-top: ${verticalOffset};
-  width: 200;
-`;
+const Container = styled(Column)({
+  alignSelf: 'center',
+  marginTop: verticalOffset,
+  width: 200,
+});
 
 const ActivityListEmptyState = ({ children, emoji, label }) => {
   const { colors } = useTheme();
@@ -51,7 +52,7 @@ ActivityListEmptyState.propTypes = {
 
 ActivityListEmptyState.defaultProps = {
   emoji: '🏝',
-  label: 'No transactions yet',
+  label: lang.t('activity_list.empty_state.default_label'),
 };
 
 export default ActivityListEmptyState;

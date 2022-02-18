@@ -459,7 +459,7 @@ export const getTitle = ({
   status,
   type,
 }: {
-  protocol: ProtocolType | null;
+  protocol: ProtocolType | null | undefined;
   status: TransactionStatus;
   type: TransactionType;
 }) => {
@@ -517,7 +517,7 @@ export const getTransactionLabel = ({
 }: {
   direction: TransactionDirection | null;
   pending: boolean;
-  protocol: ProtocolType;
+  protocol: ProtocolType | null | undefined;
   status: ZerionTransactionStatus | TransactionStatus;
   type: TransactionType;
 }) => {

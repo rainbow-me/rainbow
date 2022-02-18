@@ -1,5 +1,4 @@
 import React, { createContext, useCallback, useContext, useMemo } from 'react';
-import styled from 'styled-components';
 import { ColumnWithMargins } from '../layout';
 import AvatarCircle from '../profile/AvatarCircle';
 import SheetHandle from '../sheet/SheetHandle';
@@ -14,33 +13,34 @@ import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import { useImportingWallet, useWallets } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { colors, padding } from '@rainbow-me/styles';
 import { abbreviations, profileUtils } from '@rainbow-me/utils';
 
 export const ShowcaseContext = createContext();
 
-const HeaderWrapper = styled.View`
-  width: 100%;
-  padding-top: 40;
-  justify-content: center;
-  align-items: center;
-  height: ${({ height }) => height};
-`;
+const HeaderWrapper = styled.View({
+  alignItems: 'center',
+  height: ({ height }) => height,
+  justifyContent: 'center',
+  paddingTop: 40,
+  width: '100%',
+});
 
 const Footer = styled(ColumnWithMargins).attrs({
   margin: 19,
-})`
-  ${padding(19, 0, 21)};
-  width: 100%;
-`;
+})({
+  ...padding.object(19, 0, 21),
+  width: '100%',
+});
 
-const Spacer = styled.View`
-  height: 19;
-`;
+const Spacer = styled.View({
+  height: 19,
+});
 
-const ButtonSpacer = styled.View`
-  height: 0;
-`;
+const ButtonSpacer = styled.View({
+  height: 0,
+});
 
 const AddressText = styled(TruncatedAddress).attrs(({ theme: { colors } }) => ({
   align: 'center',
@@ -50,9 +50,9 @@ const AddressText = styled(TruncatedAddress).attrs(({ theme: { colors } }) => ({
   opacity: 0.6,
   size: 'large',
   weight: 'heavy',
-}))`
-  width: 100%;
-`;
+}))({
+  width: '100%',
+});
 
 const ENSAddress = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
@@ -60,9 +60,9 @@ const ENSAddress = styled(Text).attrs(({ theme: { colors } }) => ({
   lineHeight: 'loosest',
   size: 'larger',
   weight: 'heavy',
-}))`
-  width: 100%;
-`;
+}))({
+  width: '100%',
+});
 
 const avatarColor = profileUtils.emojiColorIndexes.map(
   idx => colors.avatarBackgrounds[idx]
@@ -153,19 +153,14 @@ export function Header() {
   const { handleSetSeedPhrase, handlePressImportButton } = useImportingWallet();
 
   const onWatchAddress = useCallback(() => {
+    contextValue?.setIsSearchModeEnabled(false);
     handleSetSeedPhrase(contextValue.address);
     handlePressImportButton(
       color,
       contextValue.address,
       contextValue?.data?.profile?.accountSymbol
     );
-  }, [
-    color,
-    contextValue.address,
-    handlePressImportButton,
-    handleSetSeedPhrase,
-    contextValue?.data?.profile?.accountSymbol,
-  ]);
+  }, [contextValue, handleSetSeedPhrase, handlePressImportButton, color]);
 
   const mainText =
     contextValue?.data?.reverseEns ||
@@ -182,7 +177,6 @@ export function Header() {
       <Spacer />
       <AvatarCircle
         image={null}
-        isAvatarPickerAvailable={false}
         onPress={() => {}}
         showcaseAccountColor={color}
         showcaseAccountSymbol={emoji}

@@ -21,7 +21,6 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { useDispatch, useSelector } from 'react-redux';
-import styled from 'styled-components';
 import URL from 'url-parse';
 import Divider from '../components/Divider';
 import L2Disclaimer from '../components/L2Disclaimer';
@@ -38,13 +37,14 @@ import {
   SheetKeyboardAnimation,
   SlackSheet,
 } from '../components/sheet';
-import { Text } from '../components/text';
 import {
   DefaultTransactionConfirmationSection,
   MessageSigningSection,
   TransactionConfirmationSection,
 } from '../components/transaction';
 import { walletConnectV2HandleAction } from '../model/walletConnect';
+import { lightModeThemeColors } from '../styles/colors';
+import { Text } from '@rainbow-me/design-system';
 import {
   estimateGas,
   estimateGasWithPadding,
@@ -80,6 +80,7 @@ import { parseGasParamsForTransaction } from '@rainbow-me/parsers';
 import { WC_VERSION_2 } from '@rainbow-me/redux/requests';
 import { walletConnectRemovePendingRedirect } from '@rainbow-me/redux/walletconnect';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 import {
   convertAmountToNativeDisplay,
@@ -90,16 +91,19 @@ import {
   multiply,
 } from '@rainbow-me/utilities';
 import { ethereumUtils, safeAreaInsetValues } from '@rainbow-me/utils';
+import { useNativeAssetForNetwork } from '@rainbow-me/utils/ethereumUtils';
 import { methodRegistryLookupAndParse } from '@rainbow-me/utils/methodRegistry';
 import {
   isMessageDisplayType,
   isSignFirstParamType,
   isSignSecondParamType,
+  isSignTypedData,
   isTransactionDisplayType,
   PERSONAL_SIGN,
   SEND_TRANSACTION,
   SIGN,
   SIGN_TYPED_DATA,
+  SIGN_TYPED_DATA_V4,
 } from '@rainbow-me/utils/signingMethods';
 import logger from 'logger';
 
@@ -113,7 +117,7 @@ const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
   ({ theme: { colors } }) => ({
     color: colors.alpha(colors.blueGreyDark, 0.3),
   })
-)``;
+)({});
 
 const DappLogo = styled(RequestVendorLogoIcon).attrs(
   ({ theme: { colors } }) => ({
@@ -122,37 +126,49 @@ const DappLogo = styled(RequestVendorLogoIcon).attrs(
     showLargeShadow: true,
     size: 50,
   })
-)`
-  margin-bottom: 14;
-`;
+)({
+  marginBottom: 14,
+});
 
-const Container = styled(Column)`
-  flex: 1;
-`;
+const Container = styled(Column)({
+  flex: 1,
+});
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const AnimatedSheet = Animated.createAnimatedComponent(Centered);
 
-const WalletLabel = styled(Text).attrs(({ theme: { colors } }) => ({
-  color: colors.alpha(colors.blueGreyDark, 0.5),
-  letterSpacing: 'roundedMedium',
-  size: 'smedium',
-  weight: 'semibold',
-}))`
-  margin-bottom: 3;
-`;
+const SwitchText = ({ children, ...props }) => {
+  return (
+    <Text color="secondary40" size="14px" weight="semibold" {...props}>
+      {children}
+    </Text>
+  );
+};
 
-const WalletText = styled(Text).attrs(
-  ({ balanceTooLow, theme: { colors } }) => ({
-    color: balanceTooLow
-      ? colors.avatarColor[7]
-      : colors.alpha(colors.blueGreyDark, 0.8),
-    size: 'larger',
-    weight: balanceTooLow ? 'bold' : 'semibold',
-  })
-)``;
+const WalletText = ({ balanceTooLow, children }) => {
+  return (
+    <Text
+      color={
+        balanceTooLow
+          ? { custom: lightModeThemeColors.avatarColor[7] }
+          : 'secondary80'
+      }
+      numberOfLines={1}
+      size="18px"
+      weight={balanceTooLow ? 'bold' : 'semibold'}
+    >
+      {children}
+    </Text>
+  );
+};
+
+const messageRequestContainerStyle = padding.object(24, 0);
+
+const rowStyle = padding.object(6, 24, 30);
 
 const NOOP = () => undefined;
+
+const Wrapper = ios ? SlackSheet : ({ children }) => children;
 
 export default function TransactionConfirmationScreen() {
   const { colors } = useTheme();
@@ -208,6 +224,8 @@ export default function TransactionConfirmationScreen() {
 
   const isMessageRequest = isMessageDisplayType(method);
   const [ready, setReady] = useState(isMessageRequest);
+
+  const genericNativeAsset = useNativeAssetForNetwork(currentNetwork);
 
   const isWalletConnectV2Request = useMemo(
     () => requestVersion === WC_VERSION_2,
@@ -272,6 +290,7 @@ export default function TransactionConfirmationScreen() {
   const {
     gasLimit,
     isSufficientGas,
+    isValidGas,
     startPollingGasFees,
     stopPollingGasFees,
     updateGasFeeOption,
@@ -413,42 +432,45 @@ export default function TransactionConfirmationScreen() {
     ]
   );
 
-  const onCancel = useCallback(async () => {
-    try {
-      closeScreen(true);
-      if (callback) {
-        callback({ error: 'User cancelled the request' });
+  const onCancel = useCallback(
+    async error => {
+      try {
+        closeScreen(true);
+        if (callback) {
+          callback({ error: error || 'User cancelled the request' });
+        }
+        setTimeout(async () => {
+          if (requestId) {
+            !isWalletConnectV2Request &&
+              (await dispatch(
+                walletConnectSendStatus(peerId, requestId, {
+                  error: error || 'User cancelled the request',
+                })
+              ));
+            dispatch(removeRequest(requestId));
+          }
+          const rejectionType =
+            method === SEND_TRANSACTION ? 'transaction' : 'signature';
+          analytics.track(`Rejected WalletConnect ${rejectionType} request`);
+        }, 300);
+      } catch (error) {
+        logger.log('error while handling cancel request', error);
+        closeScreen(true);
+        Alert.alert(lang.t('wallet.transaction.alert.cancelled_transaction'));
       }
-      if (requestId) {
-        !isWalletConnectV2Request &&
-          (await dispatch(
-            walletConnectSendStatus(peerId, requestId, {
-              error: 'User cancelled the request',
-            })
-          ));
-        dispatch(removeRequest(requestId));
-      }
-      analytics.track(
-        `Rejected WalletConnect ${
-          method === SEND_TRANSACTION ? 'transaction' : 'signature'
-        } request`
-      );
-    } catch (error) {
-      logger.log('error while handling cancel request', error);
-      closeScreen(true);
-      Alert.alert(lang.t('wallet.transaction.alert.cancelled_transaction'));
-    }
-  }, [
-    callback,
-    closeScreen,
-    dispatch,
-    isWalletConnectV2Request,
-    method,
-    peerId,
-    removeRequest,
-    requestId,
-    walletConnectSendStatus,
-  ]);
+    },
+    [
+      callback,
+      closeScreen,
+      dispatch,
+      isWalletConnectV2Request,
+      method,
+      peerId,
+      removeRequest,
+      requestId,
+      walletConnectSendStatus,
+    ]
+  );
 
   const onPressCancel = useCallback(() => onCancel(), [onCancel]);
 
@@ -778,6 +800,7 @@ export default function TransactionConfirmationScreen() {
       case PERSONAL_SIGN:
         response = await signPersonalMessage(message, existingWallet);
         break;
+      case SIGN_TYPED_DATA_V4:
       case SIGN_TYPED_DATA:
         response = await signTypedDataMessage(message, existingWallet);
         break;
@@ -821,13 +844,14 @@ export default function TransactionConfirmationScreen() {
     if (isMessageRequest) {
       return handleSignMessage();
     }
-    if (!isBalanceEnough) return;
+    if (!isBalanceEnough || !isValidGas) return;
     return handleConfirmTransaction();
   }, [
     handleConfirmTransaction,
     handleSignMessage,
     isBalanceEnough,
     isMessageRequest,
+    isValidGas,
   ]);
 
   const onPressSend = useCallback(async () => {
@@ -850,13 +874,17 @@ export default function TransactionConfirmationScreen() {
       ready = false;
     }
     return !isMessage &&
-      isBalanceEnough === false &&
+      (isBalanceEnough === false || !isValidGas) &&
       isSufficientGas !== null ? (
       <Column marginBottom={24} marginTop={19}>
         <SheetActionButton
           color={colors.transparent}
           disabled
-          label={`${nativeAsset?.symbol} balance too low`}
+          label={
+            !isValidGas
+              ? `Invalid fee`
+              : `${nativeAsset?.symbol} balance too low`
+          }
           onPress={onCancel}
           size="big"
           textColor={colors.avatarColor[7]}
@@ -884,31 +912,30 @@ export default function TransactionConfirmationScreen() {
       </SheetActionButtonRow>
     );
   }, [
-    colors,
-    isBalanceEnough,
     isMessageRequest,
+    isBalanceEnough,
     isSufficientGas,
+    isValidGas,
+    colors,
     nativeAsset?.symbol,
     onCancel,
-    onPressSend,
     onPressCancel,
+    onPressSend,
   ]);
 
   const renderTransactionSection = useCallback(() => {
     if (isMessageRequest) {
       return (
-        <RowWithMargins css={padding(24, 0)}>
+        <RowWithMargins style={messageRequestContainerStyle}>
           <MessageSigningSection message={request.message} method={method} />
         </RowWithMargins>
       );
     }
 
     if (isTransactionDisplayType(method) && request?.asset) {
-      const priceOfNativeAsset = ethereumUtils.getPriceOfNativeAssetForNetwork(
-        currentNetwork
-      );
       const amount = request?.value ?? '0.00';
-      const nativeAmount = multiply(priceOfNativeAsset, amount);
+      const nativeAssetPrice = genericNativeAsset?.price?.value;
+      const nativeAmount = multiply(nativeAssetPrice, amount);
       const nativeAmountDisplay = convertAmountToNativeDisplay(
         nativeAmount,
         nativeCurrency
@@ -920,7 +947,7 @@ export default function TransactionConfirmationScreen() {
           amount={amount}
           method={method}
           name={request?.asset?.name}
-          nativeAmountDisplay={nativeAmountDisplay}
+          nativeAmountDisplay={!nativeAssetPrice ? null : nativeAmountDisplay}
           symbol={request?.asset?.symbol}
         />
       );
@@ -933,7 +960,17 @@ export default function TransactionConfirmationScreen() {
         value={request?.value}
       />
     );
-  }, [isMessageRequest, method, nativeCurrency, currentNetwork, request]);
+  }, [
+    isMessageRequest,
+    method,
+    request?.asset,
+    request?.to,
+    request?.data,
+    request?.value,
+    request.message,
+    genericNativeAsset?.price?.value,
+    nativeCurrency,
+  ]);
 
   const offset = useSharedValue(0);
   const sheetOpacity = useSharedValue(1);
@@ -961,7 +998,7 @@ export default function TransactionConfirmationScreen() {
   const ShortSheetHeight = 486 + safeAreaInsetValues.bottom;
   const TallSheetHeight = 656 + safeAreaInsetValues.bottom;
   const MessageSheetHeight =
-    (method === SIGN_TYPED_DATA ? 630 : android ? 595 : 580) +
+    (isSignTypedData(method) ? 630 : android ? 595 : 580) +
     safeAreaInsetValues.bottom;
 
   const balanceTooLow = isBalanceEnough === false && isSufficientGas !== null;
@@ -1019,7 +1056,7 @@ export default function TransactionConfirmationScreen() {
       isKeyboardVisible={false}
       translateY={offset}
     >
-      <SlackSheet
+      <Wrapper
         backgroundColor={colors.transparent}
         borderRadius={0}
         height={sheetHeight}
@@ -1059,24 +1096,24 @@ export default function TransactionConfirmationScreen() {
                   network={currentNetwork}
                 />
                 <Row marginBottom={android ? -6 : 5}>
-                  <Text
-                    align="center"
-                    color={colors.alpha(colors.blueGreyDark, 0.8)}
-                    letterSpacing="roundedMedium"
-                    size="large"
-                    weight="bold"
-                  >
-                    {isAuthenticated ? dappName : formattedDappUrl}
-                  </Text>
+                  <Row marginBottom={android ? 16 : 8}>
+                    <Text
+                      align="center"
+                      color="secondary80"
+                      size="18px"
+                      weight="bold"
+                    >
+                      {isAuthenticated ? dappName : formattedDappUrl}
+                    </Text>
+                  </Row>
                   {
                     //We only show the checkmark
                     // if it's on the override list (dappNameHandler.js)
                     isAuthenticated && (
                       <Text
                         align="center"
-                        color={colors.appleBlue}
-                        letterSpacing="roundedMedium"
-                        size="large"
+                        color="action"
+                        size="18px"
                         weight="bold"
                       >
                         {' 􀇻'}
@@ -1090,9 +1127,8 @@ export default function TransactionConfirmationScreen() {
                 >
                   <Text
                     align="center"
-                    color={methodName ? 'dark' : 'white'}
-                    letterSpacing="roundedMedium"
-                    size="larger"
+                    color={methodName ? 'primary' : { custom: 'transparent' }}
+                    size="18px"
                     weight="heavy"
                   >
                     {methodName || 'Placeholder'}
@@ -1116,38 +1152,36 @@ export default function TransactionConfirmationScreen() {
                   </Column>
                 )}
                 {renderTransactionButtons()}
-                <RowWithMargins css={padding(6, 24, 30)} margin={15}>
-                  <Column>
-                    <WalletLabel>Wallet</WalletLabel>
-                    <RowWithMargins margin={5}>
-                      <Column marginTop={ios ? 2 : 8}>
-                        {accountInfo.accountImage ? (
-                          <ImageAvatar
-                            image={accountInfo.accountImage}
-                            size="smaller"
-                          />
-                        ) : (
-                          <ContactAvatar
-                            color={
-                              isNaN(accountInfo.accountColor)
-                                ? colors.skeleton
-                                : accountInfo.accountColor
-                            }
-                            size="smaller"
-                            value={accountInfo.accountSymbol}
-                          />
-                        )}
-                      </Column>
+                <RowWithMargins margin={15} style={rowStyle}>
+                  <Column flex={1}>
+                    <Row marginBottom={8}>
+                      <SwitchText>Wallet</SwitchText>
+                    </Row>
+                    <RowWithMargins margin={5} style={{ alignItems: 'center' }}>
+                      {accountInfo.accountImage ? (
+                        <ImageAvatar
+                          image={accountInfo.accountImage}
+                          size="smaller"
+                        />
+                      ) : (
+                        <ContactAvatar
+                          color={
+                            isNaN(accountInfo.accountColor)
+                              ? colors.skeleton
+                              : accountInfo.accountColor
+                          }
+                          size="smaller"
+                          value={accountInfo.accountSymbol}
+                        />
+                      )}
                       <WalletText>{accountInfo.accountName}</WalletText>
                     </RowWithMargins>
                   </Column>
-                  <Column align="flex-end" flex={1} justify="end">
-                    <WalletLabel align="right">Balance</WalletLabel>
-                    <WalletText
-                      align="right"
-                      balanceTooLow={balanceTooLow}
-                      letterSpacing="roundedTight"
-                    >
+                  <Column marginLeft={16}>
+                    <Row justify="end" marginBottom={12}>
+                      <SwitchText align="right">Balance</SwitchText>
+                    </Row>
+                    <WalletText align="right" balanceTooLow={balanceTooLow}>
                       {isBalanceEnough === false &&
                         isSufficientGas !== null &&
                         '􀇿 '}
@@ -1159,10 +1193,10 @@ export default function TransactionConfirmationScreen() {
             )}
           </AnimatedSheet>
           {!isMessageRequest && (
-            <GasSpeedButton network={currentNetwork} theme="dark" />
+            <GasSpeedButton currentNetwork={currentNetwork} theme="dark" />
           )}
         </Column>
-      </SlackSheet>
+      </Wrapper>
     </SheetKeyboardAnimation>
   );
 }

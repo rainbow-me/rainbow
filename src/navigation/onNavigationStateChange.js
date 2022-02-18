@@ -83,19 +83,6 @@ export function onNavigationStateChange(currentState) {
           );
         }
 
-        if (
-          routeName === Routes.MAIN_EXCHANGE_SCREEN ||
-          routeName === Routes.SAVINGS_WITHDRAW_MODAL ||
-          routeName === Routes.SEND_SHEET ||
-          routeName === Routes.SWAP_DETAILS_SCREEN ||
-          routeName === Routes.SWAP_DETAILS_SHEET ||
-          routeName === Routes.QR_SCANNER_SCREEN
-        ) {
-          AndroidKeyboardAdjust.setAdjustPan();
-        } else {
-          AndroidKeyboardAdjust.setAdjustResize();
-        }
-
         if ([prevRouteName, routeName].includes(Routes.BACKUP_SHEET)) {
           StatusBar.setBarStyle(
             !isOnSwipeScreen(routeName) ? 'light-content' : 'dark-content',
@@ -121,6 +108,24 @@ export function onNavigationStateChange(currentState) {
           StatusBar.setBarStyle('dark-content', true);
         }
       }
+    }
+  }
+
+  if (android) {
+    if (
+      routeName === Routes.MAIN_EXCHANGE_SCREEN ||
+      routeName === Routes.SAVINGS_WITHDRAW_MODAL ||
+      routeName === Routes.SEND_SHEET ||
+      routeName === Routes.SWAP_DETAILS_SCREEN ||
+      routeName === Routes.SWAP_DETAILS_SHEET ||
+      routeName === Routes.QR_SCANNER_SCREEN ||
+      routeName === Routes.CUSTOM_GAS_SHEET ||
+      (routeName === Routes.MODAL_SCREEN &&
+        Navigation.getActiveRoute().params?.type === 'contact_profile')
+    ) {
+      AndroidKeyboardAdjust.setAdjustPan();
+    } else {
+      AndroidKeyboardAdjust.setAdjustResize();
     }
   }
 

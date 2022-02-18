@@ -12,9 +12,9 @@ const FabSizeWithPadding =
   FloatingActionButtonSize + FabWrapperBottomPosition * 2;
 
 const AssetList = ({
-  fetchData,
   hideHeader,
   isEmpty,
+  isLoading,
   isWalletEthZero,
   network,
   scrollViewTracker,
@@ -23,17 +23,17 @@ const AssetList = ({
 }) => {
   const insets = useSafeArea();
 
-  return isEmpty ? (
+  return isEmpty || isLoading ? (
     <EmptyAssetList
       {...props}
       hideHeader={hideHeader}
+      isLoading={isLoading}
       isWalletEthZero={isWalletEthZero}
       network={network}
       title={lang.t('account.tab_balances')}
     />
   ) : props.showcase ? (
     <RecyclerAssetList
-      fetchData={fetchData}
       hideHeader={hideHeader}
       paddingBottom={
         insets.bottom + FabSizeWithPadding - ListFooter.height + (android && 60)
@@ -47,4 +47,9 @@ const AssetList = ({
   );
 };
 
-export default magicMemo(AssetList, ['isEmpty', 'isWalletEthZero', 'sections']);
+export default magicMemo(AssetList, [
+  'isEmpty',
+  'isLoading',
+  'isWalletEthZero',
+  'sections',
+]);

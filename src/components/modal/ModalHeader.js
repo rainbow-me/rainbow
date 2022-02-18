@@ -1,9 +1,10 @@
+import lang from 'i18n-js';
 import React from 'react';
-import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { Centered, Row } from '../layout';
 import { TruncatedText } from '../text';
 import ModalHeaderButton from './ModalHeaderButton';
+import styled from '@rainbow-me/styled-components';
 import { borders, position } from '@rainbow-me/styles';
 
 export const ModalHeaderHeight = 50;
@@ -12,17 +13,17 @@ const Container = styled(Row).attrs({
   align: 'center',
   justify: 'space-between',
   shrink: 0,
-})`
-  ${borders.buildRadius('top', 20)};
-  background-color: ${({ backgroundColor }) => backgroundColor};
-  height: ${ModalHeaderHeight};
-  width: 100%;
-`;
+})({
+  ...borders.buildRadiusAsObject('top', 20),
+  backgroundColor: ({ backgroundColor }) => backgroundColor,
+  height: ModalHeaderHeight,
+  width: '100%',
+});
 
-const TitleContainer = styled(Centered)`
-  ${position.cover};
-  z-index: 0;
-`;
+const TitleContainer = styled(Centered)({
+  ...position.coverAsObject,
+  zIndex: 0,
+});
 
 export default function ModalHeader({
   onPressBack,
@@ -37,7 +38,11 @@ export default function ModalHeader({
   return (
     <Container backgroundColor={colors.white} {...props}>
       {showBackButton && (
-        <ModalHeaderButton label="Settings" onPress={onPressBack} side="left" />
+        <ModalHeaderButton
+          label={lang.t('settings.label')}
+          onPress={onPressBack}
+          side="left"
+        />
       )}
       <TitleContainer>
         <TruncatedText
@@ -52,7 +57,11 @@ export default function ModalHeader({
         </TruncatedText>
       </TitleContainer>
       {showDoneButton && (
-        <ModalHeaderButton label="Done" onPress={onPressClose} side="right" />
+        <ModalHeaderButton
+          label={lang.t('settings.done')}
+          onPress={onPressClose}
+          side="right"
+        />
       )}
     </Container>
   );

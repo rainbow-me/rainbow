@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import isNativeStackAvailable from '../../../helpers/isNativeStackAvailable';
 import SheetActionButton from './SheetActionButton';
@@ -26,7 +27,7 @@ function SendActionButton({ asset, color: givenColor, ...props }) {
     <SheetActionButton
       {...props}
       color={color}
-      label="􀈠 Send"
+      label={`􀈠 ${lang.t('button.send')}`}
       onPress={handlePress}
       testID="send"
       weight="heavy"

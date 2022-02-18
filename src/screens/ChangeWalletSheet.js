@@ -1,12 +1,12 @@
 import { useRoute } from '@react-navigation/core';
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
+import lang from 'i18n-js';
 import { get, toLower } from 'lodash';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components';
 import Divider from '../components/Divider';
 import { ButtonPressAnimation } from '../components/animations';
 import WalletList from '../components/change-wallet/WalletList';
@@ -27,7 +27,6 @@ import {
   walletsSetSelected,
   walletsUpdate,
 } from '../redux/wallets';
-import { asyncSome } from '@rainbow-me/helpers/utilities';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import {
   useAccountSettings,
@@ -37,6 +36,7 @@ import {
   useWebData,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import {
   abbreviations,
   deviceUtils,
@@ -56,19 +56,20 @@ const EditButton = styled(ButtonPressAnimation).attrs(({ editMode }) => ({
   wrapperStyle: {
     width: editMode ? 70 : 58,
   },
-}))`
-  ${ios
-    ? `
-    position: absolute;
-    right: 20px;
-    top: -11px;`
-    : `
-    position: relative;
-    right: 20px;
-    top: 6px;
-    elevation: 10;
-  `}
-`;
+}))(
+  ios
+    ? {
+        position: 'absolute',
+        right: 20,
+        top: -11,
+      }
+    : {
+        elevation: 10,
+        position: 'relative',
+        right: 20,
+        top: 6,
+      }
+);
 
 const EditButtonLabel = styled(Text).attrs(
   ({ theme: { colors }, editMode }) => ({
@@ -78,16 +79,17 @@ const EditButtonLabel = styled(Text).attrs(
     size: 'large',
     weight: editMode ? 'bold' : 'semibold',
   })
-)`
-  height: 40px;
-`;
-const Whitespace = styled.View`
-  background-color: ${({ theme: { colors } }) => colors.white};
-  bottom: -400px;
-  height: 400px;
-  position: absolute;
-  width: 100%;
-`;
+)({
+  height: 40,
+});
+
+const Whitespace = styled.View({
+  backgroundColor: ({ theme: { colors } }) => colors.white,
+  bottom: -400,
+  height: 400,
+  position: 'absolute',
+  width: '100%',
+});
 
 const getWalletRowCount = wallets => {
   let count = 0;
@@ -225,35 +227,48 @@ export default function ChangeWalletSheet() {
             asset: [],
             onCloseModal: async args => {
               if (args) {
-                const newWallets = { ...wallets };
                 if ('name' in args) {
                   analytics.track('Tapped "Done" after editing wallet', {
                     wallet_label: args.name,
                   });
-                  asyncSome(
-                    newWallets[walletId].addresses,
-                    async (account, index) => {
-                      if (account.address === address) {
-                        newWallets[walletId].addresses[index].label = args.name;
-                        newWallets[walletId].addresses[index].color =
-                          args.color;
-                        if (currentSelectedWallet.id === walletId) {
-                          await setCurrentSelectedWallet(wallet);
-                          await dispatch(
-                            walletsSetSelected(newWallets[walletId])
-                          );
-                        }
-                        updateWebProfile(
-                          address,
-                          args.name,
-                          colors.avatarBackgrounds[args.color]
-                        );
-                        return true;
-                      }
-                      return false;
-                    }
+
+                  const walletAddresses = wallets[walletId].addresses;
+                  const walletAddressIndex = walletAddresses.findIndex(
+                    account => account.address === address
                   );
-                  await dispatch(walletsUpdate(newWallets));
+                  const walletAddress = walletAddresses[walletAddressIndex];
+
+                  const updatedWalletAddress = {
+                    ...walletAddress,
+                    color: args.color,
+                    label: args.name,
+                  };
+                  let updatedWalletAddresses = [...walletAddresses];
+                  updatedWalletAddresses[
+                    walletAddressIndex
+                  ] = updatedWalletAddress;
+
+                  const updatedWallet = {
+                    ...wallets[walletId],
+                    addresses: updatedWalletAddresses,
+                  };
+                  const updatedWallets = {
+                    ...wallets,
+                    [walletId]: updatedWallet,
+                  };
+
+                  if (currentSelectedWallet.id === walletId) {
+                    await setCurrentSelectedWallet(updatedWallet);
+                    await dispatch(walletsSetSelected(updatedWallet));
+                  }
+
+                  updateWebProfile(
+                    address,
+                    args.name,
+                    colors.avatarBackgrounds[args.color]
+                  );
+
+                  await dispatch(walletsUpdate(updatedWallets));
                 } else {
                   analytics.track('Tapped "Cancel" after editing wallet');
                 }
@@ -297,9 +312,9 @@ export default function ChangeWalletSheet() {
         }
       }
 
-      const buttons = ['Edit Wallet'];
-      buttons.push('Delete Wallet');
-      buttons.push('Cancel');
+      const buttons = [lang.t('wallet.action.edit')];
+      buttons.push(lang.t('wallet.action.delete'));
+      buttons.push(lang.t('button.cancel'));
 
       showActionSheetWithOptions(
         {
@@ -320,8 +335,11 @@ export default function ChangeWalletSheet() {
               {
                 cancelButtonIndex: 1,
                 destructiveButtonIndex: 0,
-                message: `Are you sure you want to delete this wallet?`,
-                options: ['Delete Wallet', 'Cancel'],
+                message: lang.t('wallet.action.delete_confirm'),
+                options: [
+                  lang.t('wallet.action.delete'),
+                  lang.t('button.cancel'),
+                ],
               },
               async buttonIndex => {
                 if (buttonIndex === 0) {
@@ -507,13 +525,13 @@ export default function ChangeWalletSheet() {
       {android && <Whitespace />}
       <Column height={headerHeight} justify="space-between">
         <Centered>
-          <SheetTitle>Wallets</SheetTitle>
+          <SheetTitle>{lang.t('wallet.label')}</SheetTitle>
 
           {!watchOnly && (
             <Row style={{ position: 'absolute', right: 0 }}>
               <EditButton editMode={editMode} onPress={onPressEditMode}>
                 <EditButtonLabel editMode={editMode}>
-                  {editMode ? 'Done' : 'Edit'}
+                  {editMode ? lang.t('button.done') : lang.t('button.edit')}
                 </EditButtonLabel>
               </EditButton>
             </Row>
@@ -523,7 +541,6 @@ export default function ChangeWalletSheet() {
           <Divider color={colors.rowDividerExtraLight} inset={[0, 15]} />
         )}
       </Column>
-
       <WalletList
         accountAddress={currentAddress}
         allWallets={walletsWithBalancesAndNames}

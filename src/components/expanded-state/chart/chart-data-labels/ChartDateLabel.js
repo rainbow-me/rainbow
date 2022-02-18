@@ -1,40 +1,41 @@
+import lang from 'i18n-js';
 import React from 'react';
 import { View } from 'react-native';
 import { useAnimatedStyle } from 'react-native-reanimated';
-import styled from 'styled-components';
 import { useRatio } from './useRatio';
-import { ChartXLabel } from '@rainbow-me/animated-charts';
+import { ChartXLabel, useChartData } from '@rainbow-me/animated-charts';
+import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth } from '@rainbow-me/styles';
 
-const Label = styled(ChartXLabel)`
-  ${fontWithWidth(fonts.weight.semibold)};
-  font-size: ${fonts.size.larger};
-  font-variant: tabular-nums;
-  letter-spacing: ${fonts.letterSpacing.roundedMedium};
-  text-align: right;
-  ${android && `margin-vertical: -20px`}
-`;
+const Label = styled(ChartXLabel)({
+  ...fontWithWidth(fonts.weight.semibold),
+  fontSize: fonts.size.larger,
+  fontVariant: ['tabular-nums'],
+  letterSpacing: fonts.letterSpacing.roundedMedium,
+  textAlign: 'right',
+  ...(android ? { marginVertical: -20 } : {}),
+});
 
 const MONTHS = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
+  lang.t('expanded_state.chart.date.months.month_00'),
+  lang.t('expanded_state.chart.date.months.month_01'),
+  lang.t('expanded_state.chart.date.months.month_02'),
+  lang.t('expanded_state.chart.date.months.month_03'),
+  lang.t('expanded_state.chart.date.months.month_04'),
+  lang.t('expanded_state.chart.date.months.month_05'),
+  lang.t('expanded_state.chart.date.months.month_06'),
+  lang.t('expanded_state.chart.date.months.month_07'),
+  lang.t('expanded_state.chart.date.months.month_08'),
+  lang.t('expanded_state.chart.date.months.month_09'),
+  lang.t('expanded_state.chart.date.months.month_10'),
+  lang.t('expanded_state.chart.date.months.month_11'),
 ];
 
-function formatDatetime(value, chartTimeSharedValue) {
+function formatDatetime(value, chartTimeDefaultValue) {
   'worklet';
   // we have to do it manually due to limitations of reanimated
   if (value === '') {
-    return chartTimeSharedValue.value;
+    return chartTimeDefaultValue;
   }
 
   const date = new Date(Number(value) * 1000);
@@ -81,27 +82,29 @@ function formatDatetime(value, chartTimeSharedValue) {
   return res;
 }
 
-export default function ChartDateLabel({ chartTimeSharedValue }) {
-  const ratio = useRatio('ChartDataLabel');
+export default function ChartDateLabel({ chartTimeDefaultValue, ratio }) {
+  const { isActive } = useChartData();
+  const sharedRatio = useRatio('ChartDataLabel');
   const { colors } = useTheme();
 
   const textStyle = useAnimatedStyle(() => {
+    const realRatio = isActive.value ? sharedRatio.value : ratio;
     return {
       color:
-        ratio.value === 1
+        realRatio === 1
           ? colors.blueGreyDark
-          : ratio.value < 1
+          : realRatio < 1
           ? colors.red
           : colors.green,
     };
-  });
+  }, [ratio]);
 
   return (
     <View style={{ overflow: 'hidden' }}>
       <Label
         format={value => {
           'worklet';
-          return formatDatetime(value, chartTimeSharedValue);
+          return formatDatetime(value, chartTimeDefaultValue);
         }}
         style={textStyle}
       />

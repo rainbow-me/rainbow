@@ -1,37 +1,38 @@
 import { addHexPrefix } from '@walletconnect/utils';
 import React from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
-import styled from 'styled-components';
-import { PERSONAL_SIGN, SIGN_TYPED_DATA } from '../../utils/signingMethods';
+import { isSignTypedData, PERSONAL_SIGN } from '../../utils/signingMethods';
 import { Row } from '../layout';
 import { Text } from '../text';
 import { isHexString } from '@rainbow-me/handlers/web3';
+import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';
 
 const deviceWidth = deviceUtils.dimensions.width;
 const horizontalPadding = 24;
 
-const Container = styled(Row)`
-  max-height: ${({ maxHeight }) => maxHeight};
-  min-height: ${({ minHeight }) => minHeight};
-`;
-const MessageWrapper = styled(ScrollView)`
-  ${padding(12, 15)}
-  border-color: ${({ theme: { colors } }) =>
-    colors.alpha(colors.blueGreyDark, 0.08)};
-  border-radius: 20;
-  border-width: 1;
-  margin-bottom: 14;
-  min-width: ${deviceWidth - horizontalPadding * 2};
-`;
+const Container = styled(Row)({
+  maxHeight: ({ maxHeight }) => maxHeight,
+  minHeight: ({ minHeight }) => minHeight,
+});
+
+const MessageWrapper = styled(ScrollView)({
+  ...padding.object(12, 15),
+  borderColor: ({ theme: { colors } }) =>
+    colors.alpha(colors.blueGreyDark, 0.08),
+  borderRadius: 20,
+  borderWidth: 1,
+  marginBottom: 14,
+  minWidth: deviceWidth - horizontalPadding * 2,
+});
 
 const TransactionMessage = ({ maxHeight = 150, message, method }) => {
   const { colors } = useTheme();
   let msg = message;
   let maximumHeight = maxHeight;
   let minimumHeight = 150;
-  if (method === SIGN_TYPED_DATA) {
+  if (isSignTypedData(method)) {
     maximumHeight = 200;
     minimumHeight = 200;
     try {

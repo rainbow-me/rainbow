@@ -2,10 +2,14 @@ import { useIsFocused, useNavigation } from '@react-navigation/core';
 import { useRoute } from '@react-navigation/native';
 import { upperFirst } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Keyboard, KeyboardAvoidingView } from 'react-native';
+import {
+  InteractionManager,
+  Keyboard,
+  KeyboardAvoidingView,
+} from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
-import styled, { useTheme } from 'styled-components';
 import { Alert } from '../../../components/alerts';
+import { useTheme } from '../../../context/ThemeContext';
 import { ButtonPressAnimation } from '../../animations';
 import { Column, ColumnWithMargins, Row } from '../../layout';
 import { Text } from '../../text';
@@ -16,7 +20,6 @@ import {
 } from '@rainbow-me/helpers/gas';
 import {
   add,
-  delay,
   greaterThan,
   isZero,
   multiply,
@@ -30,65 +33,58 @@ import {
 } from '@rainbow-me/hooks';
 import { gweiToWei, parseGasFeeParam } from '@rainbow-me/parsers';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
 import { gasUtils } from '@rainbow-me/utils';
 
-const Wrapper = styled(KeyboardAvoidingView)``;
+const Wrapper = styled(KeyboardAvoidingView)({});
 const { CUSTOM, GAS_TRENDS, NORMAL, URGENT } = gasUtils;
 
 const PanelRow = styled(Row).attrs({
   alignItems: 'center',
   justify: 'space-between',
-})``;
+})({});
 
 // GweiInputPill has a vertical padding of 10
-const MiddlePanelRow = styled(PanelRow).attrs(() => ({}))`
-  ${padding(8, 0)}
-`;
+const MiddlePanelRow = styled(PanelRow)(padding.object(8, 0));
 
 const PanelRowThin = styled(Row).attrs({
   justify: 'space-between',
   paddingBottom: 5,
-})``;
+})({});
 
 const PanelLabel = styled(Text).attrs({
   lineHeight: 'normal',
   size: 'lmedium',
   weight: 'heavy',
-})`
-  ${margin(0, 12, 0, 0)};
-`;
+})(margin.object(0, 12, 0, 0));
 
 const PanelWarning = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.yellowFavorite,
   size: 'smedium',
   weight: 'heavy',
-}))``;
+}))({});
 
 const PanelError = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.red,
   size: 'smedium',
   weight: 'heavy',
-}))``;
+}))({});
 
 const GasTrendHeader = styled(Text).attrs(({ theme: { colors }, color }) => ({
   color: color || colors.appleBlue,
   size: 'smedium',
   weight: 'heavy',
-}))`
-  ${padding(0, 12, 0, 0)};
-`;
+}))(padding.object(0, 12, 0, 0));
 
 const PanelColumn = styled(Column).attrs(() => ({
   justify: 'center',
-}))``;
+}))({});
 
 const Label = styled(Text).attrs(({ size }) => ({
   lineHeight: 'normal',
   size: size || 'lmedium',
-}))`
-  ${({ weight }) => fontWithWidth(weight || fonts.weight.semibold)}
-`;
+}))(({ weight }) => fontWithWidth(weight || fonts.weight.semibold));
 
 const GAS_FEE_INCREMENT = 3;
 const MAX_BASE_FEE_RANGE = [1, 3];
@@ -199,9 +195,8 @@ export default function FeesPanel({
   );
 
   const { maxFee, currentBaseFee, maxBaseFee, maxPriorityFee } = useMemo(() => {
-    const maxFee = selectedGasFee?.gasFee?.maxFee?.native?.value?.display || 0;
-    const currentBaseFee = currentBlockParams?.baseFeePerGas?.gwei || 0;
-
+    const maxFee = selectedGasFee?.gasFee?.maxFee?.native?.value?.display;
+    const currentBaseFee = currentBlockParams?.baseFeePerGas?.gwei;
     const maxBaseFee = selectedOptionIsCustom
       ? customMaxBaseFee
       : toFixedDecimals(
@@ -211,7 +206,7 @@ export default function FeesPanel({
 
     const maxPriorityFee = selectedOptionIsCustom
       ? customMaxPriorityFee
-      : selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.gwei || 0;
+      : selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.gwei;
 
     return { currentBaseFee, maxBaseFee, maxFee, maxPriorityFee };
   }, [
@@ -301,11 +296,11 @@ export default function FeesPanel({
         gweiToWei(newGweiMaxPriorityFeePerGas)
       );
 
-      if (newMaxPriorityFeePerGas.amount < 0) return;
+      if (greaterThan(0, newMaxPriorityFeePerGas.amount)) return;
 
       setCustomFees({
         customMaxBaseFee: selectedGasFee?.gasFeeParams?.maxFeePerGas?.gwei,
-        customMaxPriorityFee: newMaxPriorityFeePerGas?.gwei || 0,
+        customMaxPriorityFee: newMaxPriorityFeePerGas?.gwei,
       });
 
       const newGasParams = {
@@ -335,7 +330,7 @@ export default function FeesPanel({
 
       const newMaxFeePerGas = parseGasFeeParam(gweiToWei(newGweiMaxFeePerGas));
 
-      if (newMaxFeePerGas.amount < 0) return;
+      if (greaterThan(0, newMaxFeePerGas.amount)) return;
 
       setCustomFees({
         customMaxBaseFee: newMaxFeePerGas?.gwei,
@@ -374,8 +369,7 @@ export default function FeesPanel({
   }, [updateFeePerGas]);
 
   const onMaxBaseFeeChange = useCallback(
-    ({ nativeEvent: { text } }) => {
-      text = text === '.' || text === ',' ? `0${text}` : text;
+    text => {
       const maxFeePerGas = parseGasFeeParam(gweiToWei(text || 0));
 
       if (greaterThan(0, maxFeePerGas.amount)) return;
@@ -396,14 +390,11 @@ export default function FeesPanel({
   );
 
   const onMinerTipChange = useCallback(
-    ({ nativeEvent: { text } }) => {
-      text = text === '.' || text === ',' ? `0${text}` : text;
+    text => {
       const maxPriorityFeePerGas = parseGasFeeParam(gweiToWei(text || 0));
 
       if (greaterThan(0, maxPriorityFeePerGas.amount)) return;
 
-      // we don't use the round number here, if we did
-      // when users type "1." it will default to "1"
       setCustomFees({
         customMaxBaseFee: selectedGasFee?.gasFeeParams?.maxFeePerGas?.gwei,
         customMaxPriorityFee: text,
@@ -692,16 +683,14 @@ export default function FeesPanel({
 
   useEffect(() => {
     const focus = async () => {
-      await delay(200);
-      // without this focus seems like it looses the context on the first `focus()`
-      // inside the async function
-      minerTipFieldRef?.current?.focus();
       if (focusTo === FOCUS_TO_MINER_TIP) {
         setLastFocusedInputHandle(minerTipFieldRef);
       } else {
         setLastFocusedInputHandle(maxBaseFieldRef);
       }
-      triggerFocus();
+      InteractionManager.runAfterInteractions(() => {
+        triggerFocus();
+      });
     };
     focus();
   }, [
