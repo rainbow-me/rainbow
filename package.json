@@ -385,7 +385,7 @@
         "type": "ios.simulator",
         "device": {
           "type": "iPhone 11 Pro Max",
-          "os": "13.7"
+          "os": "15.0"
         }
       }
     },

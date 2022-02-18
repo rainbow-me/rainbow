@@ -84,7 +84,7 @@ export const RAINBOW_METADATA = {
 };
 
 // -- Actions ---------------------------------------- //
-const getNativeOptions = async () => {
+export const getNativeOptions = async () => {
   const language = 'en'; // TODO use lang from settings
   let token = null;
   try {

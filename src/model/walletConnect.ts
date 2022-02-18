@@ -11,7 +11,9 @@ import {
   WALLET_CONNECT_PROJECT_ID,
 } from 'react-native-dotenv';
 import { enableActionsOnReadOnlyWallet } from '../config/debug';
+import { RainbowFetchClient } from '../rainbow-fetch';
 import { isSigningMethod } from '../utils/signingMethods';
+import { getFCMToken } from './firebase';
 import { sendRpcCall } from '@rainbow-me/handlers/web3';
 import { getDappMetadata } from '@rainbow-me/helpers/dappNameHandler';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
@@ -32,8 +34,63 @@ import {
 } from '@rainbow-me/redux/walletconnect';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils, logger, watchingAlert } from '@rainbow-me/utils';
+import Logger from '@rainbow-me/utils/logger';
+
+const pushServerAPI = new RainbowFetchClient({
+  baseURL: `https://wcpush.rainbow.me`,
+  headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+  },
+  timeout: 10000,
+});
 
 const WC_RELAY_PROVIDER = 'wss://relay.walletconnect.com';
+
+interface NativeOptions {
+  clientMeta: {
+    description: string;
+    icons: string[];
+    name: string;
+    ssl: boolean;
+    url: string;
+  };
+  push:
+    | undefined
+    | {
+        language: string;
+        peerMeta: boolean;
+        token: string;
+        type: string;
+        url: string;
+      };
+}
+
+export const getNativeOptions = async (): Promise<NativeOptions> => {
+  const language = 'en'; // TODO use lang from settings
+  let token = null;
+  try {
+    token = await getFCMToken();
+  } catch (error) {
+    logger.log(
+      'Error getting FCM token, ignoring token for WC connection',
+      error
+    );
+  }
+
+  const nativeOptions: NativeOptions = {
+    clientMeta: RAINBOW_METADATA,
+    push: {
+      language,
+      peerMeta: true,
+      token,
+      type: 'fcm',
+      url: 'https://wcpush.rainbow.me',
+    },
+  };
+
+  return nativeOptions;
+};
 
 const wcTrack = (
   event: string,
@@ -84,6 +141,41 @@ export const walletConnectV2HandleAction = (type: string, scheme?: string) => {
 };
 
 let client: WalletConnectClient;
+
+const registerPushServer = async (
+  bridge: string,
+  nativeOptions: NativeOptions,
+  session: SessionTypes.Created
+) => {
+  if (!nativeOptions || !nativeOptions.push) {
+    Logger.sentry('WC register push server: Invalid or missing nativeOptions');
+    return;
+  }
+
+  const pushSubscription = {
+    bridge,
+    language: nativeOptions.push.language,
+    peerName: session.peer.metadata.name,
+    token: nativeOptions.push.token,
+    topic: session.topic,
+    type: nativeOptions.push.type,
+  };
+
+  try {
+    const response = await pushServerAPI.post(
+      '/new',
+      JSON.stringify(pushSubscription)
+    );
+
+    if (response.status !== 200) {
+      Logger.sentry(
+        'WC register push server: Failed to register in Push Server'
+      );
+    }
+  } catch (error) {
+    Logger.sentry('WC register push server: Failed to register in Push Server');
+  }
+};
 
 export const walletConnectInit = async () => {
   if (!client) {
@@ -348,6 +440,14 @@ export const walletConnectInit = async () => {
           captureException(error);
           Alert.alert(lang.t('wallet.wallet_connect.error'));
         }
+      }
+    );
+
+    client.on(
+      CLIENT_EVENTS.session.created,
+      async (session: SessionTypes.Created) => {
+        const nativeOptions = await getNativeOptions();
+        await registerPushServer(WC_RELAY_PROVIDER, nativeOptions, session);
       }
     );
   }
