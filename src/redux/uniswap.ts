@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { concat, isArray, map, omit, toLower, uniq, without } from 'lodash';
+import { concat, isArray, map, toLower, uniq, without } from 'lodash';
 import { Dispatch } from 'redux';
 import { AppGetState } from './store';
 import {
@@ -185,8 +185,8 @@ export const uniswapResetState = () => (
  */
 const getUniswapFavoritesMetadata = async (
   addresses: EthereumAddress[]
-): Promise<UniswapFavoriteTokenData | null> => {
-  let favoritesMetadata = null;
+): Promise<UniswapFavoriteTokenData> => {
+  let favoritesMetadata: UniswapFavoriteTokenData = {};
   try {
     const newFavoritesMeta = await getUniswapV2Tokens(
       addresses.map(address => {
@@ -203,9 +203,12 @@ const getUniswapFavoritesMetadata = async (
           symbol: 'ETH',
           uniqueId: ETH_ADDRESS,
         };
-        favoritesMetadata = omit(newFavoritesMeta, WETH_ADDRESS);
       }
-      favoritesMetadata = newFavoritesMeta;
+      Object.entries(newFavoritesMeta).forEach(([address, favorite]) => {
+        if (address !== WETH_ADDRESS) {
+          favoritesMetadata[address] = { ...favorite, favorite: true };
+        }
+      });
     }
   } catch (e) {
     logger.sentry(
