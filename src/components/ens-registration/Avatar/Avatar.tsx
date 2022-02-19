@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import ImagePicker from 'react-native-image-crop-picker';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import Svg, { Path } from 'react-native-svg';
@@ -11,10 +11,12 @@ import {
   Text,
   useForegroundColor,
 } from '@rainbow-me/design-system';
+import { ImgixImage } from '@rainbow-me/images';
 
 const size = 70;
 
-export default function Avatar() {
+export default function Avatar({ onChangeUrl }) {
+  const [avatarUrl, setAvatarUrl] = useState('');
   const accentColor = useForegroundColor('accent');
 
   const handleChooseAvatar = useCallback(async () => {
@@ -22,8 +24,12 @@ export default function Avatar() {
       cropperCircleOverlay: true,
       cropping: true,
     });
-    console.log('test', image);
-  }, []);
+    const imageUrl = image.path;
+    // const stringIndex = image?.path.indexOf('/tmp');
+    // const imageUrl = `~${image?.path.slice(stringIndex)}`;
+    setAvatarUrl(imageUrl);
+    onChangeUrl(imageUrl);
+  }, [onChangeUrl]);
 
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
@@ -54,10 +60,20 @@ export default function Avatar() {
           menuItems: [
             {
               actionKey: 'library',
-              actionTitle: 'Choose from Library',
+              actionTitle: 'Upload photo',
               icon: {
                 imageValue: {
                   systemName: 'photo',
+                },
+                type: 'IMAGE_SYSTEM',
+              },
+            },
+            {
+              actionKey: 'nft',
+              actionTitle: 'Choose NFT',
+              icon: {
+                imageValue: {
+                  systemName: 'cube',
                 },
                 type: 'IMAGE_SYSTEM',
               },
@@ -72,21 +88,31 @@ export default function Avatar() {
       >
         <ButtonPressAnimation>
           <AccentColorProvider color={accentColor + '10'}>
-            <Box
-              alignItems="center"
-              background="accent"
-              borderRadius={size / 2}
-              height={{ custom: size }}
-              justifyContent="center"
-              shadow="12px heavy accent"
-              width={{ custom: size }}
-            >
-              <AccentColorProvider color={accentColor}>
-                <Text color="accent" size="18px" weight="heavy">
-                  {` 􀣵 `}
-                </Text>
-              </AccentColorProvider>
-            </Box>
+            {avatarUrl ? (
+              <Box
+                as={ImgixImage}
+                borderRadius={size / 2}
+                height={{ custom: size }}
+                source={{ uri: avatarUrl }}
+                width={{ custom: size }}
+              />
+            ) : (
+              <Box
+                alignItems="center"
+                background="accent"
+                borderRadius={size / 2}
+                height={{ custom: size }}
+                justifyContent="center"
+                shadow="12px heavy accent"
+                width={{ custom: size }}
+              >
+                <AccentColorProvider color={accentColor}>
+                  <Text color="accent" size="18px" weight="heavy">
+                    {` 􀣵 `}
+                  </Text>
+                </AccentColorProvider>
+              </Box>
+            )}
           </AccentColorProvider>
         </ButtonPressAnimation>
       </ContextMenuButton>

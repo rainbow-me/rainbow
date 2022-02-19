@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Keyboard } from 'react-native';
 import Animated, {
   useAnimatedStyle,
@@ -17,7 +17,6 @@ import SelectableButton from '../components/ens-registration/TextRecordsForm/Sel
 import { SheetActionButton, SheetActionButtonRow } from '../components/sheet';
 import { useTheme } from '../context/ThemeContext';
 import { useNavigation } from '../navigation/Navigation';
-// import { usePersistentDominantColorFromImage } from '@rainbow-me/hooks';
 import {
   AccentColorProvider,
   Bleed,
@@ -40,6 +39,7 @@ import {
   useENSProfile,
   useENSProfileForm,
   useKeyboardHeight,
+  usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 
@@ -51,11 +51,19 @@ export default function ENSAssignRecordsSheet() {
   const { colors } = useTheme();
   const { name } = useENSProfile();
 
+  const [avatarUrl, setAvatarUrl] = useState();
+
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
+  const { result: dominantColor } = usePersistentDominantColorFromImage(
+    avatarUrl || ''
+  );
+  const [prevDominantColor, setPrevDominantColor] = useState(dominantColor);
   useEffect(() => {
-    setAccentColor(colors.purple);
-  }, [colors.purple, setAccentColor]);
-  //   usePersistentDominantColorFromImage('TODO').result || colors.purple;   // add this when we implement avatars
+    setAccentColor(dominantColor || prevDominantColor || colors.purple);
+    if (dominantColor) {
+      setPrevDominantColor(dominantColor);
+    }
+  }, [colors.purple, dominantColor, prevDominantColor, setAccentColor]);
 
   return (
     <AccentColorProvider color={accentColor}>
@@ -68,7 +76,7 @@ export default function ENSAssignRecordsSheet() {
           <CoverPhoto />
           <Bleed top={{ custom: 38 }}>
             <Box alignItems="center">
-              <Avatar />
+              <Avatar onChangeUrl={setAvatarUrl} />
             </Box>
           </Bleed>
           <Inset horizontal="19px">
