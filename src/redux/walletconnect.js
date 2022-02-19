@@ -650,7 +650,7 @@ export const walletConnectDisconnectAllByDappUrl = dappUrl => async (
       type: WALLETCONNECT_REMOVE_SESSION,
     });
   } catch (error) {
-    Alert.alert('Failed to disconnect all WalletConnect sessions');
+    Alert.alert(lang.t('wallet.wallet_connect.failed_to_disconnect'));
   }
 };
 
@@ -671,11 +671,15 @@ export const walletConnectSendStatus = (peerId, requestId, response) => async (
         });
       }
     } catch (error) {
-      Alert.alert('Failed to send request status to WalletConnect.');
+      Alert.alert(
+        lang.t('wallet.wallet_connect.failed_to_send_request_status')
+      );
     }
   } else {
     Alert.alert(
-      'WalletConnect session has expired while trying to send request status. Please reconnect.'
+      lang.t(
+        'wallet.wallet_connect.walletconnect_session_has_expired_while_trying_to_send'
+      )
     );
   }
 };

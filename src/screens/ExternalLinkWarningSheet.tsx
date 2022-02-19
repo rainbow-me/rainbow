@@ -1,4 +1,5 @@
 import { useRoute } from '@react-navigation/native';
+import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { Linking, StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
@@ -83,7 +84,7 @@ const ExternalLinkWarningSheet = () => {
               size="big"
               weight="heavy"
             >
-              Visit external link?
+              {lang.t('modal.external_link_warning.visit_external_link')}
             </SheetTitle>
 
             <Text
@@ -98,8 +99,9 @@ const ExternalLinkWarningSheet = () => {
                 paddingHorizontal: 23,
               }}
             >
-              You are attempting to visit a link that is not affiliated with
-              Rainbow.
+              {lang.t(
+                'modal.external_link_warning.you_are_attempting_to_visit'
+              )}
             </Text>
 
             <Column height={60}>
@@ -120,7 +122,7 @@ const ExternalLinkWarningSheet = () => {
               color={colors.blueGreyDarkLight}
               isTransparent
               // @ts-expect-error
-              label="Go back"
+              label={lang.t('modal.external_link_warning.go_back')}
               onPress={handleClose}
               // @ts-expect-error
               size="big"

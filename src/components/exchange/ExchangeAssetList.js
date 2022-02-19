@@ -154,7 +154,7 @@ const ExchangeAssetList = (
         [
           {
             onPress: () => itemProps.onPress(item),
-            text: lang.t('exchange.unverified_token.proceed_anyway'),
+            text: lang.t('button.proceed_anyway'),
           },
           {
             style: 'cancel',

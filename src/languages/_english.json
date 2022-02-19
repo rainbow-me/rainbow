@@ -155,10 +155,12 @@
           "secret_phrase_description": "Use your secret phrase from Rainbow or another crypto wallet",
           "secret_phrase_title": "Restore with a secret phrase or private key"
         },
+        "no_backups_found": "No Backups found",
         "watch_address": {
           "watch_description": "Watch a public address or ENS name",
           "watch_title": "Watch an Ethereum address"
-        }
+        },
+        "we_couldnt_find_google_drive": "We couldn't find any backup on Google Drive. Make sure you are logged in with the right account."
       },
       "secret": {
         "anyone_who_has_these": "Anyone who has these words can access your entire wallet!",
@@ -177,6 +179,7 @@
       "add_cash": "Add Cash",
       "add_to_list": "Add to List",
       "all": "All",
+      "attempt_cancellation": "Attempt Cancellation",
       "buy_more_eth": "Buy more ETH",
       "cancel": "Cancel",
       "close": "Close",
@@ -188,12 +191,18 @@
         "insufficient_eth": "Insufficient ETH",
         "insufficient_funds": "Insufficient Funds",
         "insufficient_liquidity": "Insufficient Liquidity",
+        "insufficient_token": "Insufficient %{tokenName}",
         "invalid_fee": "Invalid Fee",
+        "invalid_fee_lowercase": "Invalid fee",
+        "loading": "Loading...",
+        "review": "Review",
         "swap": "Hold to Swap",
         "swap_anyway": "Swap Anyway",
+        "symbol_balance_too_low": "%{symbol} balance too low",
         "view_details": "View Details",
         "withdraw": "Hold to Withdraw"
       },
+      "connect": "Connect",
       "connect_walletconnect": "Use WalletConnect",
       "delete": "Delete",
       "disconnect_account": "Log Out",
@@ -204,6 +213,7 @@
       "exchange_again": "Exchange Again",
       "exchange_search_uniswap": "Search Uniswap",
       "go_back": "Go Back",
+      "got_it": "Got it",
       "hide": "Hide",
       "hold_to_authorize": {
         "authorizing": "Authorizing",
@@ -224,6 +234,7 @@
       "paste_seed_phrase": "Paste",
       "pin": "Pin",
       "proceed": "Proceed",
+      "proceed_anyway": "Proceed Anyway",
       "receive": "Receive",
       "remove": "Remove",
       "save": "Save",
@@ -336,7 +347,6 @@
       "swapping_for_prefix": "Swapping for",
       "unverified_token": {
         "go_back": "Go Back",
-        "proceed_anyway": "Proceed Anyway",
         "token_not_verified": "This token has not been verified! Rainbow surfaces all tokens that exist on Uniswap. Anyone can create a token, including fake versions of existing tokens and tokens that claim to represent projects that do not have a token. Please do your own research and be careful when interacting with unverified tokens!",
         "unverified_token_title": "Unverified Token"
       },
@@ -482,7 +492,6 @@
         "text": "This is the \"gas fee\" used by the %{networkName} blockchain to securely validate your transaction.\n\nThis fee varies depending on the complexity of your transaction and how busy the network is!",
         "title": "%{networkName} network fee"
       },
-      "got_it": "Got it",
       "max_base_fee": {
         "text": "This is the maximum base fee you’re willing to pay for this transaction.\n\nSetting a higher max base fee prevents your transaction from getting stuck if fees rise.",
         "title": "Max base fee"
@@ -655,11 +664,15 @@
       "exchange_fee": "Exchange Fee",
       "exchange_max": "Exchange max",
       "exchange_title": "Exchange from %{walletName}",
+      "external_link_warning": {
+        "go_back": "Go back",
+        "visit_external_link": "Visit external link?",
+        "you_are_attempting_to_visit": "You are attempting to visit a link that is not affiliated with Rainbow."
+      },
       "gas_average": "Average",
       "gas_fast": "Fast",
       "gas_fee": "Fee",
       "gas_slow": "Slow",
-      "helper_balance": "Balance",
       "helper_max": "Max",
       "helper_min": "Min",
       "helper_price": "Price",
@@ -798,7 +811,6 @@
           "message": "You need to enter a valid amount",
           "title": "Invalid Gas Price"
         },
-        "proceed_anyway": "Proceed Anyway",
         "too_high": {
           "message": "Double check that you entered the correct amount—you’re likely paying more than you need to!",
           "title": "High gas price!"
@@ -928,11 +940,36 @@
         "backed_up_manually": "Backed up manually",
         "imported": "Imported"
       },
+      "balance_title": "Balance",
       "change_wallet": {
         "balance_eth": "%{balanceEth} ETH",
         "watching": "Watching"
       },
       "copy_address": "Copy Address",
+      "diagnostics": {
+        "authenticate_with_pin": "Authenticate with PIN",
+        "restore": {
+          "address": "Address",
+          "created_at": "Created at",
+          "heads_up_title": "Heads up!",
+          "key": "Key",
+          "label": "Label",
+          "restore": "Restore",
+          "secret": "Secret",
+          "this_action_will_completely_replace": "This action will completely replace this wallet. Are you sure?",
+          "type": "Type",
+          "yes_i_understand": "Yes, I understand"
+        },
+        "secret": {
+          "copy_secret": "Copy Secret",
+          "okay_i_understand": "Ok, I understand",
+          "reminder_title": "Reminder",
+          "these_words_are_for_your_eyes_only": "These words are for your eyes only. Your secret phrase gives access to your entire wallet. \n\n       Be very careful with it."
+        },
+        "uuid": "UUID",
+        "wallet_diagnostics_title": "Wallet Diagnostics",
+        "you_need_to_authenticate_with_your_pin": "You need to authenticate with your PIN in order to access your Wallet secrets"
+      },
       "error_displaying_address": "Error displaying address",
       "feedback": {
         "cancel": "No thanks",
@@ -960,6 +997,7 @@
         "sign": "Sign Message"
       },
       "my_account_address": "My account address:",
+      "network_title": "Network",
       "new": {
         "already_have_wallet": "I already have one",
         "create_wallet": "Create Wallet",
@@ -967,6 +1005,15 @@
         "get_new_wallet": "Get a new wallet",
         "import_wallet": "Import Wallet",
         "name_wallet": "Name your wallet"
+      },
+      "pin_authentication": {
+        "choose_your_pin": "Choose your PIN",
+        "confirm_your_pin": "Confirm your PIN",
+        "still_blocked": "Still blocked",
+        "too_many_tries": "Too many tries!",
+        "type_your_pin": "Type your PIN",
+        "you_need_to_wait_minutes_plural": "You need to wait %{minutesCount} minutes before trying again",
+        "you_still_need_to_wait": "You still need to wait ~ %{timeAmount} %{unitName} before trying again"
       },
       "push_notifications": {
         "please_enable_body": "It looks like you are using WalletConnect. Please enable push notifications to be notified of transaction requests from WalletConnect.",
@@ -991,37 +1038,69 @@
         "hide_seed_phrase": "Hide Secret Phrase",
         "show_seed_phrase": "Show Secret Phrase"
       },
+      "speed_up": {
+        "problem_while_fetching_transaction_data": "There was a problem while fetching the transaction data. Please try again...",
+        "unable_to_speed_up": "Unable to speed up transaction"
+      },
       "transaction": {
         "alert": {
           "authentication": "Authentication Failed",
           "cancelled_transaction": "Failed to send cancelled transaction to WalletConnect",
+          "connection_expired": "Connection Expired",
           "failed_sign_message": "Failed to sign message",
           "failed_transaction": "Failed to send transaction",
           "failed_transaction_status": "Failed to send failed transaction status",
+          "invalid_transaction": "Invalid transaction",
+          "please_go_back_and_reconnect": "Please go back to the dapp and reconnect it to your wallet",
           "transaction_status": "Failed to send transaction status"
+        },
+        "checkboxes": {
+          "has_a_wallet_that_supports": "The person I’m sending to has a wallet that supports %{networkName}",
+          "im_not_sending_to_an_exchange": "I’m not sending to an exchange"
         },
         "complete_checks": "Complete checks",
         "confirm": "Confirm transaction",
         "max": "Max",
+        "placeholder_title": "Placeholder",
         "request": "Transaction Request",
-        "send": "Send Transaction"
+        "send": "Send Transaction",
+        "sending_title": "Sending"
       },
       "wallet_connect": {
         "error": "Error initializing with WalletConnect",
-        "missing_fcm": "Unable to initialize WalletConnect: missing push notification token. Please try again."
-      }
+        "failed_to_disconnect": "Failed to disconnect all WalletConnect sessions",
+        "failed_to_send_request_status": "Failed to send request status to WalletConnect.",
+        "missing_fcm": "Unable to initialize WalletConnect: missing push notification token. Please try again.",
+        "walletconnect_session_has_expired_while_trying_to_send": "WalletConnect session has expired while trying to send request status. Please reconnect."
+      },
+      "wallet_title": "Wallet"
     },
     "walletconnect": {
+      "available_networks": "Available Networks",
       "change_network": "Change Network",
       "connected_apps": "Connected apps",
       "disconnect": "Disconnect",
+      "go_back_to_your_browser": "Go back to your browser",
       "paste_uri": {
         "button": "Paste session URI",
         "message": "Paste WalletConnect URI below",
         "title": "New WalletConnect Session"
       },
+      "scam": {
+        "heads_up_title": "Heads up!",
+        "ignore_this_request": "Ignore This Request",
+        "we_found_this_website_in_a_list": "We found this website in a list of malicious crypto scams.\n\n We recommend that you ignore this request and stop using this website immediately"
+      },
       "switch_network": "Switch Network",
       "switch_wallet": "Switch Wallet",
+      "titles": {
+        "connect": "You're connected!",
+        "reject": "Connection canceled",
+        "sign": "Message signed!",
+        "sign_canceled": "Transaction canceled!",
+        "transaction": "Transaction sent!",
+        "transaction_canceled": "Transaction canceled!"
+      },
       "unknown_application": "Unknown Application"
     },
     "warning": {

@@ -7,6 +7,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import lang from 'i18n-js';
 import { ActivityIndicator, InteractionManager } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import ChainLogo from '../components/ChainLogo';
@@ -123,17 +124,16 @@ export default function WalletConnectApprovalSheet() {
         Alert({
           buttons: [
             {
-              text: 'Proceed Anyway',
+              text: lang.t('button.proceed_anyway'),
             },
             {
               onPress: () => setScam(true),
               style: 'cancel',
-              text: 'Ignore This Request',
+              text: lang.t('walletconnect.scam.ignore_this_request'),
             },
           ],
-          message:
-            'We found this website in a list of malicious crypto scams.\n\n We recommend that you ignore this request and stop using this website immediately',
-          title: ' 🚨 Heads up! 🚨',
+          message: lang.t('walletconnect.scam.we_found_this_website_in_a_list'),
+          title: ` 🚨 ${lang.t('walletconnect.scam.heads_up_title')} 🚨`,
         });
       }
     },
@@ -352,7 +352,7 @@ export default function WalletConnectApprovalSheet() {
           <SheetActionButtonRow paddingBottom={android ? 20 : 30}>
             <SheetActionButton
               color={colors.white}
-              label="Cancel"
+              label={lang.t('button.cancel')}
               onPress={handleCancel}
               size="big"
               textColor={colors.alpha(colors.blueGreyDark, 0.8)}
@@ -360,7 +360,7 @@ export default function WalletConnectApprovalSheet() {
             />
             <SheetActionButton
               color={colors.appleBlue}
-              label="Connect"
+              label={lang.t('button.connect')}
               onPress={handleConnect}
               size="big"
               testID="wc-connect"
@@ -373,7 +373,7 @@ export default function WalletConnectApprovalSheet() {
             paddingHorizontal={24}
           >
             <Column style={{ flex: 1, marginRight: 16 }}>
-              <SwitchText>Wallet</SwitchText>
+              <SwitchText>{lang.t('wallet.wallet_title')}</SwitchText>
               <ButtonPressAnimation
                 onPress={handlePressChangeWallet}
                 style={{
@@ -410,7 +410,9 @@ export default function WalletConnectApprovalSheet() {
             </Column>
             <Column>
               <Flex justify="end">
-                <SwitchText align="right">Network</SwitchText>
+                <SwitchText align="right">
+                  {lang.t('wallet.network_title')}
+                </SwitchText>
               </Flex>
               <NetworkSwitcherParent
                 activeOpacity={0}
@@ -418,7 +420,7 @@ export default function WalletConnectApprovalSheet() {
                 {...(android ? { onPress: onPressAndroid } : {})}
                 menuConfig={{
                   menuItems,
-                  menuTitle: 'Available Networks',
+                  menuTitle: lang.t('walletconnect.available_networks'),
                 }}
                 onPressMenuItem={handleOnPressNetworksMenuItem}
                 useActionSheetFallback={false}

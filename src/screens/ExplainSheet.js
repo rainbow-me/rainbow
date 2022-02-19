@@ -336,7 +336,7 @@ const ExplainSheet = () => {
             <SheetActionButton
               color={colors.alpha(colors.appleBlue, 0.04)}
               isTransparent
-              label={lang.t('explain.got_it')}
+              label={lang.t('button.got_it')}
               onPress={handleClose}
               size="big"
               textColor={colors.appleBlue}

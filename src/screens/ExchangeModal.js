@@ -334,7 +334,7 @@ export default function ExchangeModal({
               onPress: () => {
                 resolve(false);
               },
-              text: lang.t('swap.warning.proceed_anyway'),
+              text: lang.t('button.proceed_anyway'),
             },
             {
               onPress: () => {

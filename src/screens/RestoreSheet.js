@@ -1,5 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
+import lang from 'i18n-js';
 import { forEach } from 'lodash';
 import React, { useCallback } from 'react';
 import { Alert, InteractionManager, StatusBar } from 'react-native';
@@ -61,8 +62,8 @@ export default function RestoreSheet() {
         } finally {
           if (!proceed) {
             Alert.alert(
-              'No Backups found',
-              "We couldn't find any backup on Google Drive. Make sure you are logged in with the right account."
+              lang.t('back_up.restore_sheet.no_backups_found'),
+              lang.t('back_up.restore_sheet.we_couldnt_find_google_drive')
             );
             await RNCloudFs.logout();
           }
