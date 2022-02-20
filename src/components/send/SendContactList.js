@@ -1,4 +1,5 @@
 import { toChecksumAddress } from 'ethereumjs-util';
+import lang from 'i18n-js';
 import { sortBy, toLower } from 'lodash';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { SectionList } from 'react-native';

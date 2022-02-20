@@ -1,5 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
+import lang from 'i18n-js';
 import React, {
   useCallback,
   useEffect,
@@ -7,7 +8,6 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import lang from 'i18n-js';
 import { ActivityIndicator, InteractionManager } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import ChainLogo from '../components/ChainLogo';

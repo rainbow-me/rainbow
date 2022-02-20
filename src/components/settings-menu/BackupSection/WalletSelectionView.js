@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { ScrollView } from 'react-native';
 import { useTheme } from '../../../context/ThemeContext';

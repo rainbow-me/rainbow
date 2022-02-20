@@ -1,5 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
+import lang from 'i18n-js';
 import React, { Fragment, useCallback, useEffect } from 'react';
 import { cloudPlatform } from '../../../utils/platform';
 import { RainbowButton } from '../../buttons';

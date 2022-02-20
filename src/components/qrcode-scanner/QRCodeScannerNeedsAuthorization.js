@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import pWaitFor from 'p-wait-for';
 import React, { useCallback } from 'react';
 import { AppState, Linking } from 'react-native';
