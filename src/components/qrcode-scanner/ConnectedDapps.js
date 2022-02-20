@@ -1,4 +1,5 @@
 import { BlurView } from '@react-native-community/blur';
+import lang from 'i18n-js';
 import React from 'react';
 import { View } from 'react-native';
 import { ButtonPressAnimation } from '../animations';
