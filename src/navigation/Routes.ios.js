@@ -22,6 +22,7 @@ import ModalScreen from '../screens/ModalScreen';
 import ReceiveModal from '../screens/ReceiveModal';
 import RestoreSheet from '../screens/RestoreSheet';
 import SavingsSheet from '../screens/SavingsSheet';
+import SelectUniqueTokenSheet from '../screens/SelectUniqueTokenSheet';
 import SendConfirmationSheet from '../screens/SendConfirmationSheet';
 import SendSheet from '../screens/SendSheet';
 import SettingsModal from '../screens/SettingsModal';
@@ -264,6 +265,11 @@ function NativeStackNavigator() {
         options={{
           customStack: true,
         }}
+      />
+      <NativeStack.Screen
+        component={SelectUniqueTokenSheet}
+        name={Routes.SELECT_UNIQUE_TOKEN_SHEET}
+        {...expandedAssetSheetConfigWithLimit}
       />
       <NativeStack.Screen
         component={ExpandedAssetSheet}

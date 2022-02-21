@@ -6,6 +6,8 @@ import {
   uploadImage,
   UploadImageReturnData,
 } from '@rainbow-me/handlers/pinata';
+import { useNavigation } from '@rainbow-me/navigation';
+import Routes from '@rainbow-me/routes';
 
 type Action = 'library' | 'nft';
 
@@ -43,7 +45,7 @@ export default function useSelectImageMenu({
 }: {
   imagePickerOptions?: Options;
   menuItems?: Action[];
-  onChangeImage?: ({ image }: { image: Image }) => void;
+  onChangeImage?: ({ asset, image }: { asset?: any; image?: Image }) => void;
   onUploading?: ({ image }: { image: Image }) => void;
   onUploadSuccess?: ({
     data,
@@ -55,6 +57,8 @@ export default function useSelectImageMenu({
   onUploadError?: ({ error, image }: { error: unknown; image: Image }) => void;
   uploadToIPFS?: boolean;
 } = {}) {
+  const { navigate } = useNavigation();
+
   const { isLoading: isUploading, mutateAsync: upload } = useMutation(
     'ensImageUpload',
     uploadImage
@@ -91,13 +95,24 @@ export default function useSelectImageMenu({
     uploadToIPFS,
   ]);
 
+  const handleSelectNFT = useCallback(() => {
+    navigate(Routes.SELECT_UNIQUE_TOKEN_SHEET, {
+      onSelect: asset => onChangeImage({ asset }),
+      springDamping: 1,
+      topOffset: 0,
+    });
+  }, [navigate, onChangeImage]);
+
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === 'library') {
         handleSelectImage();
       }
+      if (actionKey === 'nft') {
+        handleSelectNFT();
+      }
     },
-    [handleSelectImage]
+    [handleSelectImage, handleSelectNFT]
   );
 
   const ContextMenu = useCallback(

@@ -106,10 +106,17 @@ function rowRenderer(type: CellType, { uid }: { uid: string }) {
             );
           }
           case CellType.NFT: {
-            const { index, uniqueId } = data as NFTExtraData;
+            const {
+              index,
+              uniqueId,
+              onPressUniqueToken,
+            } = data as NFTExtraData & {
+              onPressUniqueToken: (asset: any) => void;
+            };
 
             return (
               <WrappedNFT
+                onPress={onPressUniqueToken}
                 placement={index % 2 === 0 ? 'left' : 'right'}
                 uniqueId={uniqueId}
               />

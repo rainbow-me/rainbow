@@ -6,9 +6,11 @@ import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 
 export default React.memo(function WrappedNFT({
+  onPress,
   uniqueId,
   placement,
 }: {
+  onPress: (asset: any) => void;
   uniqueId: string;
   placement: 'left' | 'right';
 }) {
@@ -43,7 +45,7 @@ export default React.memo(function WrappedNFT({
 
   return (
     <Box flexGrow={1} justifyContent="center" {...placementProps}>
-      <UniqueTokenCard item={asset} onPress={handleItemPress} />
+      <UniqueTokenCard item={asset} onPress={onPress || handleItemPress} />
     </Box>
   );
 });

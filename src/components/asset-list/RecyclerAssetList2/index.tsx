@@ -19,7 +19,7 @@ function RecyclerAssetList() {
 
   return (
     <RecyclerAssetListScrollPositionContext.Provider value={position}>
-      <RecyclerAssetListContext.Provider value={additionalData}>
+      <RecyclerAssetListContext.Provider value={{ additionalData }}>
         <StickyHeaderManager>
           <RawMemoRecyclerAssetList briefSectionsData={briefSectionsData} />
         </StickyHeaderManager>

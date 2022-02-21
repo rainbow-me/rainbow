@@ -35,9 +35,9 @@ export default function Avatar({
       cropping: true,
     },
     menuItems: ['library', 'nft'],
-    onChangeImage: ({ image }) => {
-      setAvatarUrl(image.path);
-      onChangeAvatarUrl(image.path);
+    onChangeImage: ({ asset, image }) => {
+      setAvatarUrl(image?.path || asset?.image_thumbnail_url);
+      onChangeAvatarUrl(image?.path || asset?.image_thumbnail_url || '');
     },
     onUploadError: () => {
       setDisabled(false);

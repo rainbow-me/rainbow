@@ -20,6 +20,7 @@ import PinAuthenticationScreen from '../screens/PinAuthenticationScreen';
 import ReceiveModal from '../screens/ReceiveModal';
 import RestoreSheet from '../screens/RestoreSheet';
 import SavingsSheet from '../screens/SavingsSheet';
+import SelectUniqueTokenSheet from '../screens/SelectUniqueTokenSheet';
 import SendConfirmationSheet from '../screens/SendConfirmationSheet';
 import SendSheet from '../screens/SendSheet';
 import SettingsModal from '../screens/SettingsModal';
@@ -287,6 +288,13 @@ function BSNavigator() {
       <BSStack.Screen
         component={ShowcaseSheet}
         name={Routes.SHOWCASE_SHEET}
+        options={{
+          height: '95%',
+        }}
+      />
+      <BSStack.Screen
+        component={SelectUniqueTokenSheet}
+        name={Routes.SELECT_UNIQUE_TOKEN_SHEET}
         options={{
           height: '95%',
         }}
