@@ -10,6 +10,6 @@ export const PROFILES = 'profiles';
 
 export const defaultConfig = {
   [LANGUAGE_SETTINGS]: false,
-  [PROFILES]: true,
+  [PROFILES]: false,
   [REVIEW_ANDROID]: false,
 };
