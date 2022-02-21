@@ -17,8 +17,6 @@ const ENS_REGISTRATION_UPDATE_RECORD_BY_KEY =
   'ensRegistration/ENS_REGISTRATION_UPDATE_RECORD_BY_KEY';
 const ENS_REGISTRATION_REMOVE_RECORD_BY_KEY =
   'ensRegistration/ENS_REGISTRATION_REMOVE_RECORD_BY_KEY';
-const ENS_SET_CURRENT_REGISTRATION_NAME =
-  'ensRegistration/ENS_SET_CURRENT_REGISTRATION_NAME';
 const ENS_CONTINUE_REGISTRATION = 'ensRegistration/ENS_CONTINUE_REGISTRATION';
 const ENS_START_REGISTRATION = 'ensRegistration/ENS_START_REGISTRATION';
 const ENS_SAVE_COMMIT_REGISTRATION_PARAMETERS =
@@ -226,11 +224,6 @@ export default (
 ): ENSRegistrationState => {
   switch (action.type) {
     case ENS_START_REGISTRATION:
-      return {
-        ...state,
-        ...action.payload,
-      };
-    case ENS_SET_CURRENT_REGISTRATION_NAME:
       return {
         ...state,
         ...action.payload,
