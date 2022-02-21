@@ -3,11 +3,13 @@ import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import brain from '../assets/brain.png';
+import ActivityIndicator from '../components/ActivityIndicator';
+import Spinner from '../components/Spinner';
 import { HoldToAuthorizeButton } from '../components/buttons';
 import { RegistrationReviewRows } from '../components/ens-registration';
 import { GasSpeedButton } from '../components/gas';
 import { SheetActionButtonRow, SlackSheet } from '../components/sheet';
-import { RapActionTypes } from '../raps/common';
+import { executeRap, RapActionTypes } from '../raps/common';
 import {
   AccentColorProvider,
   Box,
@@ -31,6 +33,15 @@ import { ImgixImage } from '@rainbow-me/images';
 import { loadWallet } from '@rainbow-me/model/wallet';
 import { getRapEstimationByType } from '@rainbow-me/raps';
 import { saveCommitRegistrationParameters } from '@rainbow-me/redux/ensRegistration';
+import styled from '@rainbow-me/styled-components';
+
+const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
+  ({ theme: { colors } }) => ({
+    color: colors.alpha(colors.blueGreyDark, 0.3),
+  })
+)({
+  marginRight: 2,
+});
 
 export const ENSConfirmRegisterSheetHeight = 600;
 const secsInYear = 31536000;
@@ -108,17 +119,15 @@ export default function ENSConfirmRegisterSheet() {
         ensRegistrationParameters
       )
     );
-    return;
-    // LEAVING THIS AS WIP TO AVOID PEOPLE ON THE TEAM  SENDING THIS TX
 
-    // const callback = () => null;
+    const callback = () => null;
 
-    // await executeRap(
-    //   wallet,
-    //   RapActionTypes.commitENS,
-    //   { ensRegistrationParameters },
-    //   callback
-    // );
+    await executeRap(
+      wallet,
+      RapActionTypes.commitENS,
+      { ensRegistrationParameters },
+      callback
+    );
   }, [accountAddress, dispatch, getNextNonce, name, records, rentPrice]);
 
   return (
@@ -190,6 +199,14 @@ export default function ENSConfirmRegisterSheet() {
                 <Divider color="divider40" />
               </Stack>
             </Inset>
+          </Box>
+          <Box>
+            <Stack space="15px">
+              <Box alignItems="center">
+                <LoadingSpinner />
+              </Box>
+              <Text align="center">Wait for 60 secs</Text>
+            </Stack>
           </Box>
           <Box style={{ bottom: 0 }}>
             <Box>
