@@ -1,4 +1,5 @@
 import React from 'react';
+// @ts-expect-error
 import { IS_TESTING } from 'react-native-dotenv';
 import SpinnerImageSource from '../assets/spinner.png';
 import { useTheme } from '../context/ThemeContext';
@@ -8,9 +9,9 @@ import { ImgixImage } from '@rainbow-me/images';
 import { position } from '@rainbow-me/styles';
 
 type SpinnerProps = {
-  color?: string,
-  duration?: number,
-  size?: 'small' | 'large' | number,
+  color?: string;
+  duration?: number;
+  size?: 'small' | 'large' | number;
 };
 
 const Spinner = ({
@@ -38,7 +39,7 @@ const Spinner = ({
       {IS_TESTING !== 'true' && (
         <SpinAnimation duration={duration}>
           <ImgixImage
-            source={SpinnerImageSource}
+            source={SpinnerImageSource as any}
             style={style}
             tintColor={color || colors.whiteLabel}
           />
