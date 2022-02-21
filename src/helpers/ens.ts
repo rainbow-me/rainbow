@@ -174,6 +174,8 @@ const textRecordFields = {
   },
 } as const;
 
+export const ENS_DOMAIN = '.eth';
+
 const getENSRegistrarControllerContract = (
   wallet?: Wallet,
   registrarAddress?: string
@@ -340,7 +342,7 @@ const getENSExecutionDetails = async ({
       if (!name || !ownerAddress) throw new Error('Bad arguments for commit');
       const registrarController = getENSRegistrarControllerContract(wallet);
       const commitment = await registrarController.makeCommitmentWithConfig(
-        name.replace('.eth', ''),
+        name.replace(ENS_DOMAIN, ''),
         ownerAddress,
         salt,
         ensPublicResolverAddress,
@@ -355,7 +357,7 @@ const getENSExecutionDetails = async ({
         throw new Error('Bad arguments for registerWithConfig');
       value = toHex(addBuffer(rentPrice, 1.1));
       args = [
-        name.replace('.eth', ''),
+        name.replace(ENS_DOMAIN, ''),
         ownerAddress,
         duration,
         salt,
