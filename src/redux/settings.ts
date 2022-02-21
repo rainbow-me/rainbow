@@ -96,7 +96,7 @@ export const settingsLoadNetwork = () => async (
   try {
     const network = await getNetwork();
     const chainId = ethereumUtils.getChainIdFromNetwork(network);
-    await web3SetHttpProvider(network);
+    await web3SetHttpProvider('http://127.0.0.1:8545');
     dispatch({
       payload: { chainId, network },
       type: SETTINGS_UPDATE_NETWORK_SUCCESS,
@@ -134,7 +134,7 @@ export const settingsUpdateNetwork = (network: Network) => async (
   dispatch: Dispatch<SettingsStateUpdateNetworkSuccessAction>
 ) => {
   const chainId = ethereumUtils.getChainIdFromNetwork(network);
-  await web3SetHttpProvider(network);
+  await web3SetHttpProvider('http://127.0.0.1:8545');
   try {
     dispatch({
       payload: { chainId, network },

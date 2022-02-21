@@ -38,7 +38,7 @@ import {
   setRpcEndpoints,
   web3SetHttpProvider,
 } from '@rainbow-me/handlers/web3';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
+// import networkTypes from '@rainbow-me/helpers/networkTypes';
 import Logger from 'logger';
 
 export interface RainbowConfig extends Record<string, any> {
@@ -109,7 +109,7 @@ const init = async () => {
     Logger.debug('CURRENT CONFIG', JSON.stringify(config, null, 2));
     // SET THE DEFAULT PROVIDER AFTER LOADING THE CONFIG
     setRpcEndpoints(config);
-    web3SetHttpProvider(networkTypes.mainnet);
+    web3SetHttpProvider('http://127.0.0.1:8545');
   }
 };
 
