@@ -3,6 +3,7 @@ import { captureException } from '@sentry/react-native';
 import { Rap, RapActionParameters } from '../common';
 import { estimateENSTransactionGasLimit } from '@rainbow-me/handlers/ens';
 import { toHex } from '@rainbow-me/handlers/web3';
+import { NetworkTypes } from '@rainbow-me/helpers';
 import {
   ENSRegistrationRecords,
   ENSRegistrationTransactionType,
@@ -10,6 +11,7 @@ import {
 } from '@rainbow-me/helpers/ens';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';
+import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const executeCommit = async (
@@ -235,8 +237,8 @@ const ensAction = async (
   let maxFeePerGas;
   let maxPriorityFeePerGas;
   try {
-    let maxFeePerGas = selectedGasFee?.gasFeeParams?.maxFeePerGas?.amount;
-    let maxPriorityFeePerGas =
+    maxFeePerGas = selectedGasFee?.gasFeeParams?.maxFeePerGas?.amount;
+    maxPriorityFeePerGas =
       selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.amount;
 
     logger.sentry(`[${actionName}] about to ${type}`, {
@@ -315,8 +317,12 @@ const ensAction = async (
 
   logger.log(`[${actionName}] response`, tx);
 
+  const nativeAsset = await ethereumUtils.getNetworkNativeAsset(
+    NetworkTypes.mainnet
+  );
   const newTransaction = {
     amount: 0,
+    asset: nativeAsset,
     data: tx.data,
     from: ownerAddress,
     gasLimit,
@@ -331,7 +337,7 @@ const ensAction = async (
   // @ts-expect-error Since src/redux/data.js is not typed yet, `accountAddress`
   // being a string conflicts with the inferred type of "null" for the second
   // parameter.
-  await dispatch(dataAddNewTransaction(newTransaction, accountAddress));
+  await dispatch(dataAddNewTransaction(newTransaction, ownerAddress, true));
   return tx?.nonce;
 };
 
