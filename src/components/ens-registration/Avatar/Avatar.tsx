@@ -1,7 +1,6 @@
-import React, { useCallback, useState } from 'react';
-import ImagePicker from 'react-native-image-crop-picker';
-import { ContextMenuButton } from 'react-native-ios-context-menu';
+import React, { useEffect, useState } from 'react';
 import Svg, { Path } from 'react-native-svg';
+import Spinner from '../../Spinner';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import {
   AccentColorProvider,
@@ -11,34 +10,48 @@ import {
   Text,
   useForegroundColor,
 } from '@rainbow-me/design-system';
+import { useENSProfileForm, useSelectImageMenu } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 
 const size = 70;
 
-export default function Avatar({ onChangeUrl }) {
-  const [avatarUrl, setAvatarUrl] = useState('');
+export default function Avatar({
+  onChangeAvatarUrl,
+}: {
+  onChangeAvatarUrl: (url: string) => void;
+}) {
+  const { values, onBlurField, setDisabled } = useENSProfileForm();
+
+  const [avatarUrl, setAvatarUrl] = useState(values?.avatar);
+  useEffect(() => {
+    setAvatarUrl(values?.avatar);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   const accentColor = useForegroundColor('accent');
 
-  const handleChooseAvatar = useCallback(async () => {
-    const image = await ImagePicker.openPicker({
+  const { ContextMenu, isUploading } = useSelectImageMenu({
+    imagePickerOptions: {
       cropperCircleOverlay: true,
       cropping: true,
-    });
-    const imageUrl = image.path;
-    // const stringIndex = image?.path.indexOf('/tmp');
-    // const imageUrl = `~${image?.path.slice(stringIndex)}`;
-    setAvatarUrl(imageUrl);
-    onChangeUrl(imageUrl);
-  }, [onChangeUrl]);
-
-  const handlePressMenuItem = useCallback(
-    ({ nativeEvent: { actionKey } }) => {
-      if (actionKey === 'library') {
-        handleChooseAvatar();
-      }
     },
-    [handleChooseAvatar]
-  );
+    menuItems: ['library', 'nft'],
+    onChangeImage: ({ image }) => {
+      setAvatarUrl(image.path);
+      onChangeAvatarUrl(image.path);
+    },
+    onUploadError: () => {
+      setDisabled(false);
+    },
+    onUploading: ({ image }) => {
+      onBlurField({ key: 'avatar', value: image.path });
+      setDisabled(true);
+    },
+    onUploadSuccess: ({ data }) => {
+      onBlurField({ key: 'avatar', value: data.url });
+      setDisabled(false);
+    },
+    uploadToIPFS: true,
+  });
 
   return (
     <Box height={{ custom: size }} width={{ custom: size }}>
@@ -54,68 +67,51 @@ export default function Avatar({ onChangeUrl }) {
           )}
         </BackgroundProvider>
       </Cover>
-      <ContextMenuButton
-        enableContextMenu
-        menuConfig={{
-          menuItems: [
-            {
-              actionKey: 'library',
-              actionTitle: 'Upload photo',
-              icon: {
-                imageValue: {
-                  systemName: 'photo',
-                },
-                type: 'IMAGE_SYSTEM',
-              },
-            },
-            {
-              actionKey: 'nft',
-              actionTitle: 'Choose NFT',
-              icon: {
-                imageValue: {
-                  systemName: 'cube',
-                },
-                type: 'IMAGE_SYSTEM',
-              },
-            },
-          ],
-          menuTitle: '',
-        }}
-        {...(android ? { onPress: () => {} } : {})}
-        isMenuPrimaryAction
-        onPressMenuItem={handlePressMenuItem}
-        useActionSheetFallback={false}
-      >
+      <ContextMenu>
         <ButtonPressAnimation>
           <AccentColorProvider color={accentColor + '10'}>
-            {avatarUrl ? (
-              <Box
-                as={ImgixImage}
-                borderRadius={size / 2}
-                height={{ custom: size }}
-                source={{ uri: avatarUrl }}
-                width={{ custom: size }}
-              />
-            ) : (
-              <Box
-                alignItems="center"
-                background="accent"
-                borderRadius={size / 2}
-                height={{ custom: size }}
-                justifyContent="center"
-                shadow="12px heavy accent"
-                width={{ custom: size }}
-              >
+            <Box
+              alignItems="center"
+              background="accent"
+              borderRadius={size / 2}
+              height={{ custom: size }}
+              justifyContent="center"
+              shadow="12px heavy accent"
+              style={{ overflow: 'hidden' }}
+              width={{ custom: size }}
+            >
+              {avatarUrl ? (
+                <>
+                  <Box
+                    as={ImgixImage}
+                    height={{ custom: size }}
+                    source={{ uri: avatarUrl }}
+                    style={{
+                      opacity: isUploading ? 0.3 : 1,
+                    }}
+                    width={{ custom: size }}
+                  />
+                  {isUploading && (
+                    <Cover alignHorizontal="center" alignVertical="center">
+                      <Spinner
+                        color={accentColor}
+                        duration={1000}
+                        size={'large' as 'large'}
+                      />
+                    </Cover>
+                  )}
+                </>
+              ) : (
                 <AccentColorProvider color={accentColor}>
                   <Text color="accent" size="18px" weight="heavy">
                     {` 􀣵 `}
                   </Text>
                 </AccentColorProvider>
-              </Box>
-            )}
+              )}
+            </Box>
           </AccentColorProvider>
         </ButtonPressAnimation>
-      </ContextMenuButton>
+      </ContextMenu>
     </Box>
   );
 }

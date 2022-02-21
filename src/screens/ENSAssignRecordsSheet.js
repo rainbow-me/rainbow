@@ -76,7 +76,7 @@ export default function ENSAssignRecordsSheet() {
           <CoverPhoto />
           <Bleed top={{ custom: 38 }}>
             <Box alignItems="center">
-              <Avatar onChangeUrl={setAvatarUrl} />
+              <Avatar onChangeAvatarUrl={setAvatarUrl} />
             </Box>
           </Bleed>
           <Inset horizontal="19px">
@@ -113,6 +113,7 @@ export function ENSAssignRecordsBottomActions({ visible }) {
   const [accentColor] = useRecoilState(accentColorAtom);
 
   const {
+    disabled,
     isEmpty,
     selectedFields,
     onAddField,
@@ -179,18 +180,22 @@ export function ENSAssignRecordsBottomActions({ visible }) {
                   {isEmpty ? (
                     <TintButton
                       color="secondary60"
+                      disabled={disabled}
                       onPress={handlePressContinue}
                     >
                       Skip
                     </TintButton>
                   ) : (
-                    <SheetActionButton
-                      color={accentColor}
-                      label="Review"
-                      onPress={handlePressContinue}
-                      size="big"
-                      weight="heavy"
-                    />
+                    <Box style={{ opacity: disabled ? 0.5 : 1 }}>
+                      <SheetActionButton
+                        color={accentColor}
+                        disabled={disabled}
+                        label="Review"
+                        onPress={handlePressContinue}
+                        size="big"
+                        weight="heavy"
+                      />
+                    </Box>
                   )}
                 </SheetActionButtonRow>
               </Row>

@@ -57,6 +57,7 @@ const SheetActionButton = ({
   isCharts = false,
   isTransparent = false,
   label = null,
+  onPress,
   nftShadows,
   scaleTo = 0.9,
   size = null,
@@ -105,9 +106,10 @@ const SheetActionButton = ({
       }}
       elevation={android ? elevation : null}
       isCharts={isCharts}
+      onPress={disabled ? () => undefined : onPress}
       overflowMargin={30}
       radiusAndroid={borderRadius}
-      scaleTo={scaleTo}
+      scaleTo={disabled ? 1 : scaleTo}
       size={size}
       testID={`${testID}-action-button`}
       {...props}

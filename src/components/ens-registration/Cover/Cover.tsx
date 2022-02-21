@@ -1,77 +1,85 @@
-import React, { useCallback, useState } from 'react';
-import ImagePicker from 'react-native-image-crop-picker';
-import { ContextMenuButton } from 'react-native-ios-context-menu';
+import React, { useEffect, useState } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
+import Spinner from '../../Spinner';
 import { useTheme } from '@rainbow-me/context';
-import { Box, Text, useForegroundColor } from '@rainbow-me/design-system';
+import {
+  Box,
+  Cover,
+  Text,
+  useForegroundColor,
+} from '@rainbow-me/design-system';
+import { useENSProfileForm, useSelectImageMenu } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 
 const alpha = '33';
 
-export default function Cover() {
+export default function CoverPhoto() {
   const { colors } = useTheme();
-  const [coverUrl, setCoverUrl] = useState('');
+  const { values, onBlurField, setDisabled } = useENSProfileForm();
+
+  const [coverUrl, setCoverUrl] = useState(values?.cover);
+  useEffect(() => {
+    setCoverUrl(values?.cover);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   const accentColor = useForegroundColor('accent');
 
-  const handleChooseCover = useCallback(async () => {
-    const image = await ImagePicker.openPicker({});
-    const stringIndex = image?.path.indexOf('/tmp');
-    setCoverUrl(`~${image?.path.slice(stringIndex)}`);
-  }, []);
-
-  const handlePressMenuItem = useCallback(
-    ({ nativeEvent: { actionKey } }) => {
-      if (actionKey === 'library') {
-        handleChooseCover();
-      }
+  const { ContextMenu, isUploading } = useSelectImageMenu({
+    menuItems: ['library'],
+    onChangeImage: ({ image }) => {
+      setCoverUrl(image.path);
     },
-    [handleChooseCover]
-  );
+    onUploadError: () => {
+      setDisabled(false);
+    },
+    onUploading: ({ image }) => {
+      onBlurField({ key: 'cover', value: image.path });
+      setDisabled(true);
+    },
+    onUploadSuccess: ({ data }) => {
+      onBlurField({ key: 'cover', value: data.url });
+      setDisabled(false);
+    },
+    uploadToIPFS: true,
+  });
 
   return (
-    <ContextMenuButton
-      enableContextMenu
-      menuConfig={{
-        menuItems: [
-          {
-            actionKey: 'library',
-            actionTitle: 'Choose from Library',
-            icon: {
-              imageValue: {
-                systemName: 'photo',
-              },
-              type: 'IMAGE_SYSTEM',
-            },
-          },
-        ],
-        menuTitle: '',
-      }}
-      {...(android ? { onPress: () => {} } : {})}
-      isMenuPrimaryAction
-      onPressMenuItem={handlePressMenuItem}
-      useActionSheetFallback={false}
-    >
-      {coverUrl ? (
-        <Box
-          as={ImgixImage}
-          height="126px"
-          source={{ uri: coverUrl }}
-          width="full"
-        />
-      ) : (
-        <Box
-          alignItems="center"
-          as={RadialGradient}
-          colors={[colors.whiteLabel + alpha, accentColor + alpha]}
-          height="126px"
-          justifyContent="center"
-          stops={[0.6, 0]}
-        >
+    <ContextMenu>
+      <Box
+        alignItems="center"
+        as={RadialGradient}
+        colors={[colors.whiteLabel + alpha, accentColor + alpha]}
+        height="126px"
+        justifyContent="center"
+        stops={[0.6, 0]}
+      >
+        {coverUrl ? (
+          <>
+            <Box
+              as={ImgixImage}
+              height="126px"
+              source={{ uri: coverUrl }}
+              style={{
+                opacity: isUploading ? 0.3 : 1,
+              }}
+              width="full"
+            />
+            {isUploading && (
+              <Cover alignHorizontal="center" alignVertical="center">
+                <Spinner
+                  color={accentColor}
+                  duration={1000}
+                  size={'large' as 'large'}
+                />
+              </Cover>
+            )}
+          </>
+        ) : (
           <Text color="accent" size="18px" weight="heavy">
             􀣵 Add Cover
           </Text>
-        </Box>
-      )}
-    </ContextMenuButton>
+        )}
+      </Box>
+    </ContextMenu>
   );
 }
