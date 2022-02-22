@@ -25,6 +25,7 @@ import {
   useCurrentNonce,
   useENSProfile,
   useENSRegistration,
+  useENSRegistrationActionHandler,
   useENSRegistrationCosts,
   useGas,
 } from '@rainbow-me/hooks';
@@ -52,7 +53,7 @@ export default function ENSConfirmRegisterSheet() {
   const getNextNonce = useCurrentNonce(accountAddress, network);
   const [gasLimit, setGasLimit] = useState();
   const { params } = useRoute();
-  // const { step } = useENSRegistrationActionHandler();
+  const { step } = useENSRegistrationActionHandler();
 
   const [duration, setDuration] = useState(1);
 
@@ -197,6 +198,7 @@ export default function ENSConfirmRegisterSheet() {
                 <LoadingSpinner />
               </Box>
               <Text align="center">Wait for 60 secs</Text>
+              <Text align="center">{step}</Text>
             </Stack>
           </Box>
           <Box style={{ bottom: 0 }}>

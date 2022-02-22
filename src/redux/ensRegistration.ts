@@ -1,6 +1,7 @@
 import { omit } from 'lodash';
 import { AppDispatch, AppGetState } from './store';
 import {
+  CommitRegistrationParameters,
   ENSRegistrationState,
   EthereumAddress,
   Records,
@@ -227,6 +228,36 @@ export const removeRecordByKey = (
 export const saveCommitRegistrationParameters = (
   accountAddress: EthereumAddress,
   registrationParameters: RegistrationParameters
+) => async (dispatch: AppDispatch, getState: AppGetState) => {
+  const {
+    ensRegistration: { registrations, currentRegistrationName },
+  } = getState();
+
+  const lcAccountAddress = accountAddress.toLowerCase();
+  const accountRegistrations = registrations?.[lcAccountAddress] || {};
+  const registration = accountRegistrations[currentRegistrationName] || {};
+  const updatedEnsRegistrationManagerForAccount = {
+    registrations: {
+      ...registrations,
+      [lcAccountAddress]: {
+        ...accountRegistrations,
+        [currentRegistrationName]: {
+          ...registration,
+          ...registrationParameters,
+        },
+      },
+    },
+  };
+
+  dispatch({
+    payload: updatedEnsRegistrationManagerForAccount,
+    type: ENS_SAVE_COMMIT_REGISTRATION_PARAMETERS,
+  });
+};
+
+export const updateCommitRegistrationParameters = (
+  accountAddress: EthereumAddress,
+  registrationParameters: CommitRegistrationParameters
 ) => async (dispatch: AppDispatch, getState: AppGetState) => {
   const {
     ensRegistration: { registrations, currentRegistrationName },

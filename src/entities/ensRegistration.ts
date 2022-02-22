@@ -3,6 +3,11 @@ import { ENS_RECORDS, ENSRegistrationRecords } from '@rainbow-me/helpers/ens';
 
 export type Records = { [key in keyof typeof ENS_RECORDS]: string };
 
+export interface CommitRegistrationParameters {
+  commitTransactionHash?: string;
+  commitTransactionConfirmedAt?: number;
+}
+
 export interface RegistrationParameters {
   name: string;
   duration: number;
