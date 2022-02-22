@@ -34,12 +34,14 @@ export default function Avatar({
       cropperCircleOverlay: true,
       cropping: true,
     },
-    menuItems: ['library', 'nft'],
+    menuItems: ['library'],
     onChangeImage: ({ image }) => {
       setAvatarUrl(image.path);
       onChangeAvatarUrl(image.path);
     },
     onUploadError: () => {
+      onBlurField({ key: 'avatar', value: '' });
+      setAvatarUrl('');
       setDisabled(false);
     },
     onUploading: ({ image }) => {
@@ -77,13 +79,13 @@ export default function Avatar({
               height={{ custom: size }}
               justifyContent="center"
               shadow="12px heavy accent"
-              style={{ overflow: 'hidden' }}
               width={{ custom: size }}
             >
               {avatarUrl ? (
                 <>
                   <Box
                     as={ImgixImage}
+                    borderRadius={size / 2}
                     height={{ custom: size }}
                     source={{ uri: avatarUrl }}
                     style={{

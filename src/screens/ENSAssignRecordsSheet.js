@@ -125,11 +125,8 @@ export function ENSAssignRecordsBottomActions({ visible }) {
   }, [navigate]);
 
   const handlePressContinue = useCallback(() => {
-    navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
-      accentColor,
-      avatarUrl: null,
-    });
-  }, [accentColor, navigate]);
+    navigate(Routes.ENS_CONFIRM_REGISTER_SHEET);
+  }, [navigate]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {

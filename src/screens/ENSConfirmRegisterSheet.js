@@ -2,6 +2,7 @@ import { useRoute } from '@react-navigation/core';
 import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { useRecoilState } from 'recoil';
 import brain from '../assets/brain.png';
 import { HoldToAuthorizeButton } from '../components/buttons';
 import { RegistrationReviewRows } from '../components/ens-registration';
@@ -18,7 +19,7 @@ import {
   Stack,
   Text,
 } from '@rainbow-me/design-system';
-import { generateSalt } from '@rainbow-me/helpers/ens';
+import { accentColorAtom, generateSalt } from '@rainbow-me/helpers/ens';
 import {
   useAccountSettings,
   useCurrentNonce,
@@ -43,7 +44,7 @@ export default function ENSConfirmRegisterSheet() {
   const { accountAddress, network } = useAccountSettings();
   const getNextNonce = useCurrentNonce(accountAddress, network);
   const [gasLimit, setGasLimit] = useState();
-  const { params } = useRoute();
+  const [accentColor] = useRecoilState(accentColorAtom);
 
   const [duration, setDuration] = useState(1);
 
@@ -128,7 +129,7 @@ export default function ENSConfirmRegisterSheet() {
       height="100%"
       scrollEnabled={false}
     >
-      <AccentColorProvider color={params.accentColor}>
+      <AccentColorProvider color={accentColor}>
         <Box
           background="body"
           paddingVertical="30px"
@@ -137,14 +138,22 @@ export default function ENSConfirmRegisterSheet() {
           <Box flexGrow={1}>
             <Inset horizontal="30px">
               <Stack alignHorizontal="center" space="15px">
-                {params.avatarUrl && (
+                {records.avatar && (
                   <Box
-                    background="swap"
+                    background="accent"
                     borderRadius={avatarSize / 2}
                     height={{ custom: avatarSize }}
                     shadow="12px heavy accent"
                     width={{ custom: avatarSize }}
-                  />
+                  >
+                    <Box
+                      as={ImgixImage}
+                      borderRadius={avatarSize / 2}
+                      height={{ custom: avatarSize }}
+                      source={{ uri: records.avatar }}
+                      width={{ custom: avatarSize }}
+                    />
+                  </Box>
                 )}
                 <Heading size="26px">{ensName}</Heading>
                 <Text color="accent" weight="heavy">
