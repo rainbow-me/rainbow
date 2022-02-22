@@ -15,7 +15,7 @@ import { ModalContext } from '../react-native-cool-modals/NativeStackView';
 import { Box } from '@rainbow-me/design-system';
 import { UniqueAsset } from '@rainbow-me/entities';
 
-export default function ShowcaseScreen() {
+export default function SelectUniqueTokenSheet() {
   const { params } = useRoute();
   const { goBack } = useNavigation();
   const { layout } = useContext(ModalContext) || {};
