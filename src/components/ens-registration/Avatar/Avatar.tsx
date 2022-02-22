@@ -38,6 +38,9 @@ export default function Avatar({
     onChangeImage: ({ asset, image }) => {
       setAvatarUrl(image?.path || asset?.image_thumbnail_url);
       onChangeAvatarUrl(image?.path || asset?.image_thumbnail_url || '');
+      if (asset) {
+        onBlurField({ key: 'avatar', value: asset.image_thumbnail_url });
+      }
     },
     onUploadError: () => {
       onBlurField({ key: 'avatar', value: '' });
