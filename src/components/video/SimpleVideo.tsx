@@ -97,6 +97,7 @@ export default function SimpleVideo({
         <StyledBackground />
         <StyledVideo
           controls={controlsEnabled}
+          mixWithOthers="mix"
           onLoad={() => setLoading(false)}
           ref={ref}
           repeat
