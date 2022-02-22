@@ -1,10 +1,6 @@
 import { differenceInSeconds } from 'date-fns';
 import { useCallback, useEffect, useMemo } from 'react';
-import {
-  RapActionTypes,
-  RegisterENSActionParameters,
-  SwapActionParameters,
-} from '../raps/common';
+import { RapActionTypes, RegisterENSActionParameters } from '../raps/common';
 import { useAccountSettings, useCurrentNonce, useENSProfile } from '.';
 import { RegistrationParameters } from '@rainbow-me/entities';
 import { web3Provider } from '@rainbow-me/handlers/web3';
@@ -116,10 +112,7 @@ export default function useENSRegistrationActionHandler() {
       await executeRap(
         wallet,
         RapActionTypes.commitENS,
-        {
-          ensRegistrationParameters: commitEnsRegistrationParameters,
-          swapParameters: {} as SwapActionParameters,
-        },
+        commitEnsRegistrationParameters,
         callback
       );
     },

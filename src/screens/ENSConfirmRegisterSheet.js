@@ -116,7 +116,7 @@ export default function ENSConfirmRegisterSheet() {
     await executeRap(
       wallet,
       RapActionTypes.commitENS,
-      { ensRegistrationParameters },
+      ensRegistrationParameters,
       callback
     );
   }, [accountAddress, getNextNonce, name, records, rentPrice]);
