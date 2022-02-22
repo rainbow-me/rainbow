@@ -1,6 +1,6 @@
 import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
-import { Rap, RapActionParameters } from '../common';
+import { Rap, RapENSActionParameters } from '../common';
 import { estimateENSTransactionGasLimit } from '@rainbow-me/handlers/ens';
 import { toHex } from '@rainbow-me/handlers/web3';
 import { NetworkTypes } from '@rainbow-me/helpers';
@@ -10,6 +10,7 @@ import {
   getENSExecutionDetails,
 } from '@rainbow-me/helpers/ens';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
+import { saveCommitRegistrationParameters } from '@rainbow-me/redux/ensRegistration';
 import store from '@rainbow-me/redux/store';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
@@ -190,7 +191,7 @@ const ensAction = async (
   wallet: Wallet,
   actionName: string,
   index: number,
-  parameters: RapActionParameters,
+  parameters: RapENSActionParameters,
   type: ENSRegistrationTransactionType,
   baseNonce?: number
 ): Promise<number | undefined> => {
@@ -338,6 +339,17 @@ const ensAction = async (
   // being a string conflicts with the inferred type of "null" for the second
   // parameter.
   await dispatch(dataAddNewTransaction(newTransaction, ownerAddress, true));
+  await dispatch(
+    saveCommitRegistrationParameters(ownerAddress, {
+      commitTransactionHash: tx?.hash,
+      duration,
+      name,
+      ownerAddress,
+      records,
+      rentPrice,
+      salt,
+    })
+  );
   return tx?.nonce;
 };
 
@@ -345,7 +357,7 @@ const commitENS = async (
   wallet: Wallet,
   currentRap: Rap,
   index: number,
-  parameters: RapActionParameters,
+  parameters: RapENSActionParameters,
   baseNonce?: number
 ): Promise<number | undefined> => {
   const actionName = 'commitENS';
@@ -363,7 +375,7 @@ const registerENS = async (
   wallet: Wallet,
   currentRap: Rap,
   index: number,
-  parameters: RapActionParameters,
+  parameters: RapENSActionParameters,
   baseNonce?: number
 ): Promise<number | undefined> => {
   const actionName = 'registerENS';
@@ -381,7 +393,7 @@ const multicallENS = async (
   wallet: Wallet,
   currentRap: Rap,
   index: number,
-  parameters: RapActionParameters,
+  parameters: RapENSActionParameters,
   baseNonce?: number
 ): Promise<number | undefined> => {
   const actionName = 'multicallENS';
@@ -399,7 +411,7 @@ const setTextENS = async (
   wallet: Wallet,
   currentRap: Rap,
   index: number,
-  parameters: RapActionParameters,
+  parameters: RapENSActionParameters,
   baseNonce?: number
 ): Promise<number | undefined> => {
   const actionName = 'setTextENS';
@@ -417,7 +429,7 @@ const setNameENS = async (
   wallet: Wallet,
   currentRap: Rap,
   index: number,
-  parameters: RapActionParameters,
+  parameters: RapENSActionParameters,
   baseNonce?: number
 ): Promise<number | undefined> => {
   const actionName = 'setNameENS';

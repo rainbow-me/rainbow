@@ -1,7 +1,6 @@
 import { useRoute } from '@react-navigation/core';
 import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import brain from '../assets/brain.png';
 import ActivityIndicator from '../components/ActivityIndicator';
 import Spinner from '../components/Spinner';
@@ -32,7 +31,6 @@ import {
 import { ImgixImage } from '@rainbow-me/images';
 import { loadWallet } from '@rainbow-me/model/wallet';
 import { getRapEstimationByType } from '@rainbow-me/raps';
-import { saveCommitRegistrationParameters } from '@rainbow-me/redux/ensRegistration';
 import styled from '@rainbow-me/styled-components';
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
@@ -48,13 +46,13 @@ const secsInYear = 31536000;
 const avatarSize = 70;
 
 export default function ENSConfirmRegisterSheet() {
-  const dispatch = useDispatch();
   const { gasFeeParamsBySpeed, updateTxFee, startPollingGasFees } = useGas();
   const { name: ensName, records } = useENSProfile();
   const { accountAddress, network } = useAccountSettings();
   const getNextNonce = useCurrentNonce(accountAddress, network);
   const [gasLimit, setGasLimit] = useState();
   const { params } = useRoute();
+  // const { step } = useENSRegistrationActionHandler();
 
   const [duration, setDuration] = useState(1);
 
@@ -113,13 +111,6 @@ export default function ENSConfirmRegisterSheet() {
       salt,
     };
 
-    await dispatch(
-      saveCommitRegistrationParameters(
-        accountAddress,
-        ensRegistrationParameters
-      )
-    );
-
     const callback = () => null;
 
     await executeRap(
@@ -128,7 +119,7 @@ export default function ENSConfirmRegisterSheet() {
       { ensRegistrationParameters },
       callback
     );
-  }, [accountAddress, dispatch, getNextNonce, name, records, rentPrice]);
+  }, [accountAddress, getNextNonce, name, records, rentPrice]);
 
   return (
     <SlackSheet

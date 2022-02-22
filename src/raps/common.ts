@@ -22,7 +22,7 @@ import {
   estimateWithdrawFromCompound,
 } from './withdrawFromCompound';
 import { createRegisterENSRap } from '.';
-import { Asset } from '@rainbow-me/entities';
+import { Asset, EthereumAddress } from '@rainbow-me/entities';
 import {
   estimateENSCommitGasLimit,
   estimateENSRegisterSetRecordsAndNameGasLimit,
@@ -53,13 +53,17 @@ export interface RapActionParameters {
   inputAmount?: string | null;
   outputAmount?: string | null;
   tradeDetails?: Trade;
-  name?: string;
-  duration?: number;
-  rentPrice?: string;
+}
+
+export interface RapENSActionParameters {
+  name: string;
+  duration: number;
+  rentPrice: string;
+  salt: string;
+  records: ENSRegistrationRecords;
+  ownerAddress: EthereumAddress;
   recordKey?: string;
   recordValue?: string;
-  salt?: string;
-  records?: ENSRegistrationRecords;
 }
 
 export interface UnlockActionParameters {
@@ -76,13 +80,11 @@ export interface SwapActionParameters {
 }
 
 export interface RegisterENSActionParameters {
-  nonce: number;
+  nonce?: number;
   name: string;
   duration: number;
   rentPrice: string;
   ownerAddress: string;
-  recordKey: string;
-  recordValue: string;
   salt: string;
   records: ENSRegistrationRecords;
 }
@@ -91,14 +93,33 @@ export interface RapActionTransaction {
   hash: string | null;
 }
 
-export interface RapAction {
+enum RAP_TYPE {
+  EXCHANGE = 'EXCHANGE',
+  ENS = 'ENS',
+}
+
+export type RapAction = RapExchangeAction | RapENSAction;
+
+export interface RapExchangeAction {
+  rapType: RAP_TYPE.EXCHANGE;
   parameters: RapActionParameters;
+  transaction: RapActionTransaction;
+  type: RapActionType;
+}
+
+export interface RapENSAction {
+  rapType: RAP_TYPE.ENS;
+  parameters: RapENSActionParameters;
   transaction: RapActionTransaction;
   type: RapActionType;
 }
 
 export interface Rap {
   actions: RapAction[];
+}
+
+export interface ENSRap {
+  actions: RapENSAction[];
 }
 
 interface RapActionResponse {
@@ -177,7 +198,7 @@ export const getRapEstimationByType = (
   }
 };
 
-const findActionByType = (type: RapActionType) => {
+const findExhangeActionByType = (type: RapActionType) => {
   switch (type) {
     case RapActionTypes.unlock:
       return unlock;
@@ -187,6 +208,13 @@ const findActionByType = (type: RapActionType) => {
       return depositCompound;
     case RapActionTypes.withdrawCompound:
       return withdrawCompound;
+    default:
+      return NOOP;
+  }
+};
+
+const findENSActionByType = (type: RapActionType) => {
+  switch (type) {
     case RapActionTypes.commitENS:
       return commitENS;
     case RapActionTypes.registerENS:
@@ -228,18 +256,31 @@ const executeAction = async (
   baseNonce?: number
 ): Promise<RapActionResponse> => {
   logger.log('[1 INNER] index', index);
-  const { parameters, type } = action;
-  const actionPromise = findActionByType(type);
-  logger.log('[2 INNER] executing type', type);
+  const { type, parameters } = action;
+  let nonce;
   try {
-    const nonce = await actionPromise(
-      wallet,
-      rap,
-      index,
-      parameters,
-      baseNonce
-    );
-    return { baseNonce: nonce, errorMessage: null };
+    logger.log('[2 INNER] executing type', type);
+    if (action.rapType === RAP_TYPE.EXCHANGE) {
+      const actionPromise = findExhangeActionByType(type);
+      nonce = await actionPromise(
+        wallet,
+        rap,
+        index,
+        parameters as RapActionParameters,
+        baseNonce
+      );
+      return { baseNonce: nonce, errorMessage: null };
+    } else {
+      const actionPromise = findENSActionByType(type);
+      nonce = await actionPromise(
+        wallet,
+        rap,
+        index,
+        parameters as RapENSActionParameters,
+        baseNonce
+      );
+      return { baseNonce: nonce, errorMessage: null };
+    }
   } catch (error: any) {
     logger.sentry('[3 INNER] error running action, code:', error?.code);
     captureException(error);
