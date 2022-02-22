@@ -6,8 +6,10 @@
 
 export const LANGUAGE_SETTINGS = 'languageSettings';
 export const REVIEW_ANDROID = 'reviewAndroid';
+export const PROFILES = 'profiles';
 
 export const defaultConfig = {
   [LANGUAGE_SETTINGS]: false,
+  [PROFILES]: false,
   [REVIEW_ANDROID]: false,
 };
