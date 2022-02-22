@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { View } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
 import Spinner from '../../Spinner';
 import { useTheme } from '@rainbow-me/context';
@@ -47,11 +48,17 @@ export default function CoverPhoto() {
     <ContextMenu>
       <Box
         alignItems="center"
-        as={RadialGradient}
-        colors={[colors.whiteLabel + alpha, accentColor + alpha]}
+        as={ios ? RadialGradient : View}
         height="126px"
         justifyContent="center"
-        stops={[0.6, 0]}
+        {...(ios
+          ? {
+              colors: [colors.whiteLabel + alpha, accentColor + alpha],
+              stops: [0.6, 0],
+            }
+          : {
+              style: { backgroundColor: accentColor + '10' },
+            })}
       >
         {coverUrl ? (
           <>

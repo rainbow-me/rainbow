@@ -40,6 +40,8 @@ export default function Avatar({
       onChangeAvatarUrl(image?.path || asset?.image_thumbnail_url || '');
     },
     onUploadError: () => {
+      onBlurField({ key: 'avatar', value: '' });
+      setAvatarUrl('');
       setDisabled(false);
     },
     onUploading: ({ image }) => {
@@ -77,13 +79,13 @@ export default function Avatar({
               height={{ custom: size }}
               justifyContent="center"
               shadow="12px heavy accent"
-              style={{ overflow: 'hidden' }}
               width={{ custom: size }}
             >
               {avatarUrl ? (
                 <>
                   <Box
                     as={ImgixImage}
+                    borderRadius={size / 2}
                     height={{ custom: size }}
                     source={{ uri: avatarUrl }}
                     style={{

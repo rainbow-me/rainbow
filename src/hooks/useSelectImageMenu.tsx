@@ -8,6 +8,7 @@ import {
 } from '@rainbow-me/handlers/pinata';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import { showActionSheetWithOptions } from '@rainbow-me/utils';
 
 type Action = 'library' | 'nft';
 
@@ -72,11 +73,11 @@ export default function useSelectImageMenu({
     });
     onChangeImage?.({ image });
 
-    if (uploadToIPFS && image.filename && image.data) {
+    if (uploadToIPFS) {
       onUploading?.({ image });
       try {
         const data = await upload({
-          filename: image.filename,
+          filename: image.filename || '',
           mime: image.mime,
           path: image.path,
         });
@@ -115,6 +116,25 @@ export default function useSelectImageMenu({
     [handleSelectImage, handleSelectNFT]
   );
 
+  const handleAndroidPress = useCallback(() => {
+    const actionSheetOptions = menuItems
+      .map(item => items[item]?.actionTitle)
+      .filter(x => x) as any;
+
+    showActionSheetWithOptions(
+      {
+        options: actionSheetOptions,
+      },
+      async (buttonIndex: Number) => {
+        if (buttonIndex === 0) {
+          handleSelectImage();
+        } else if (buttonIndex === 1) {
+          handleSelectImage();
+        }
+      }
+    );
+  }, [handleSelectImage, menuItems]);
+
   const ContextMenu = useCallback(
     ({ children }) => (
       <ContextMenuButton
@@ -123,7 +143,7 @@ export default function useSelectImageMenu({
           menuItems: menuItems.map(item => items[item]) as any,
           menuTitle: '',
         }}
-        {...(android ? { onPress: () => {} } : {})}
+        {...(android ? { onPress: handleAndroidPress } : {})}
         isMenuPrimaryAction
         onPressMenuItem={handlePressMenuItem}
         useActionSheetFallback={false}
@@ -131,7 +151,7 @@ export default function useSelectImageMenu({
         {children}
       </ContextMenuButton>
     ),
-    [handlePressMenuItem, menuItems]
+    [handleAndroidPress, handlePressMenuItem, menuItems]
   );
 
   return { ContextMenu, isUploading };
