@@ -3,7 +3,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { omit } from 'lodash';
 import React, { useContext } from 'react';
 import { StatusBar } from 'react-native';
-import { PROFILES_ENABLED } from 'react-native-dotenv';
 import { useTheme } from '../context/ThemeContext';
 import { InitialRouteContext } from '../context/initialRoute';
 import AddCashSheet from '../screens/AddCashSheet';
@@ -63,6 +62,9 @@ import { nativeStackConfig } from './nativeStackConfig';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
+import useExperimentalFlag, {
+  PROFILES,
+} from '@rainbow-me/config/experimentalHooks';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import createNativeStackNavigator from 'react-native-cool-modals/createNativeStackNavigator';
 
@@ -224,6 +226,7 @@ const MainStack = isNativeStackAvailable
 
 function NativeStackNavigator() {
   const { colors, isDarkMode } = useTheme();
+  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   return (
     <NativeStack.Navigator {...nativeStackConfig}>
@@ -391,7 +394,7 @@ function NativeStackNavigator() {
         {...expandedAssetSheetConfig}
       />
 
-      {PROFILES_ENABLED === 'YES' && (
+      {profilesEnabled && (
         <>
           <NativeStack.Screen
             component={RegisterENSNavigator}

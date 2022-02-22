@@ -1,6 +1,4 @@
 import { omit } from 'lodash';
-import { AnyAction } from 'redux';
-
 import { AppDispatch, AppGetState } from './store';
 import {
   ENSRegistrationState,
@@ -17,12 +15,54 @@ const ENS_REGISTRATION_UPDATE_RECORD_BY_KEY =
   'ensRegistration/ENS_REGISTRATION_UPDATE_RECORD_BY_KEY';
 const ENS_REGISTRATION_REMOVE_RECORD_BY_KEY =
   'ensRegistration/ENS_REGISTRATION_REMOVE_RECORD_BY_KEY';
-const ENS_SET_CURRENT_REGISTRATION_NAME =
-  'ensRegistration/ENS_SET_CURRENT_REGISTRATION_NAME';
 const ENS_CONTINUE_REGISTRATION = 'ensRegistration/ENS_CONTINUE_REGISTRATION';
 const ENS_START_REGISTRATION = 'ensRegistration/ENS_START_REGISTRATION';
 const ENS_SAVE_COMMIT_REGISTRATION_PARAMETERS =
   'ensRegistration/ENS_SAVE_COMMIT_REGISTRATION_PARAMETERS';
+
+interface EnsRegistrationUpdateDurationAction {
+  type: typeof ENS_REGISTRATION_UPDATE_DURATION;
+  payload: ENSRegistrationState;
+}
+
+interface EnsRegistrationUpdateRecordsAction {
+  type: typeof ENS_REGISTRATION_UPDATE_RECORDS;
+  payload: ENSRegistrationState;
+}
+
+interface EnsRegistrationUpdateRecordByKeyAction {
+  type: typeof ENS_REGISTRATION_UPDATE_RECORD_BY_KEY;
+  payload: ENSRegistrationState;
+}
+
+interface EnsRegistrationRemoveRecordByKeyAction {
+  type: typeof ENS_REGISTRATION_REMOVE_RECORD_BY_KEY;
+  payload: ENSRegistrationState;
+}
+
+interface EnsRegistrationContinueRegistrationAction {
+  type: typeof ENS_CONTINUE_REGISTRATION;
+  payload: ENSRegistrationState;
+}
+
+interface EnsRegistrationStartRegistrationAction {
+  type: typeof ENS_START_REGISTRATION;
+  payload: ENSRegistrationState;
+}
+
+interface EnsRegistrationSaveCommitRegistrationParametersAction {
+  type: typeof ENS_SAVE_COMMIT_REGISTRATION_PARAMETERS;
+  payload: ENSRegistrationState;
+}
+
+export type EnsRegistrationActionTypes =
+  | EnsRegistrationUpdateDurationAction
+  | EnsRegistrationUpdateRecordsAction
+  | EnsRegistrationUpdateRecordByKeyAction
+  | EnsRegistrationRemoveRecordByKeyAction
+  | EnsRegistrationContinueRegistrationAction
+  | EnsRegistrationStartRegistrationAction
+  | EnsRegistrationSaveCommitRegistrationParametersAction;
 
 // -- Actions ---------------------------------------- //
 export const startRegistration = (
@@ -222,15 +262,10 @@ const INITIAL_STATE: ENSRegistrationState = {
 
 export default (
   state = INITIAL_STATE,
-  action: AnyAction
+  action: EnsRegistrationActionTypes
 ): ENSRegistrationState => {
   switch (action.type) {
     case ENS_START_REGISTRATION:
-      return {
-        ...state,
-        ...action.payload,
-      };
-    case ENS_SET_CURRENT_REGISTRATION_NAME:
       return {
         ...state,
         ...action.payload,
