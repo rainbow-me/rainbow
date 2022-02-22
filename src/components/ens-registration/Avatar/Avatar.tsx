@@ -10,8 +10,13 @@ import {
   Text,
   useForegroundColor,
 } from '@rainbow-me/design-system';
-import { useENSProfileForm, useSelectImageMenu } from '@rainbow-me/hooks';
+import {
+  useENSProfile,
+  useENSProfileForm,
+  useSelectImageMenu,
+} from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
+import { stringifyENSNFTAvatar } from '@rainbow-me/utils';
 
 const size = 70;
 
@@ -20,11 +25,12 @@ export default function Avatar({
 }: {
   onChangeAvatarUrl: (url: string) => void;
 }) {
-  const { values, onBlurField, setDisabled } = useENSProfileForm();
+  const { avatarUrl: initialAvatarUrl } = useENSProfile();
+  const { onBlurField, setDisabled } = useENSProfileForm();
 
-  const [avatarUrl, setAvatarUrl] = useState(values?.avatar);
+  const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
   useEffect(() => {
-    setAvatarUrl(values?.avatar);
+    setAvatarUrl(initialAvatarUrl);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const accentColor = useForegroundColor('accent');
@@ -39,7 +45,17 @@ export default function Avatar({
       setAvatarUrl(image?.path || asset?.image_thumbnail_url);
       onChangeAvatarUrl(image?.path || asset?.image_thumbnail_url || '');
       if (asset) {
-        onBlurField({ key: 'avatar', value: asset.image_thumbnail_url });
+        const standard = asset.asset_contract?.schema_name;
+        const contractAddress = asset.asset_contract?.address;
+        const tokenId = asset.id;
+        onBlurField({
+          key: 'avatar',
+          value: stringifyENSNFTAvatar({
+            contractAddress,
+            standard,
+            tokenId,
+          }),
+        });
       }
     },
     onUploadError: () => {

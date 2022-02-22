@@ -3,10 +3,11 @@ import { Animated as RNAnimated } from 'react-native';
 
 import { useDeepCompareMemo } from 'use-deep-compare';
 import { CellTypes } from './ViewTypes';
+import { UniqueAsset } from '@rainbow-me/entities';
 
 export const RecyclerAssetListContext = React.createContext<{
   additionalData: Record<string, CellTypes>;
-  onPressUniqueToken?: (asset: any) => void;
+  onPressUniqueToken?: (asset: UniqueAsset) => void;
 }>({ additionalData: {}, onPressUniqueToken: undefined });
 
 export const RecyclerAssetListScrollPositionContext = React.createContext<

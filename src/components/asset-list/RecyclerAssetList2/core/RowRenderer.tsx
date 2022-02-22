@@ -21,6 +21,7 @@ import {
   SavingsHeaderExtraData,
   UniswapPoolExtraData,
 } from './ViewTypes';
+import { UniqueAsset } from '@rainbow-me/entities';
 import assertNever from '@rainbow-me/helpers/assertNever';
 
 function CellDataProvider({
@@ -111,7 +112,7 @@ function rowRenderer(type: CellType, { uid }: { uid: string }) {
               uniqueId,
               onPressUniqueToken,
             } = data as NFTExtraData & {
-              onPressUniqueToken: (asset: any) => void;
+              onPressUniqueToken: (asset: UniqueAsset) => void;
             };
 
             return (

@@ -13,6 +13,7 @@ import useMemoBriefSectionData from '../components/asset-list/RecyclerAssetList2
 import { SheetHandle } from '../components/sheet';
 import { ModalContext } from '../react-native-cool-modals/NativeStackView';
 import { Box } from '@rainbow-me/design-system';
+import { UniqueAsset } from '@rainbow-me/entities';
 
 export default function ShowcaseScreen() {
   const { params } = useRoute();
@@ -38,8 +39,7 @@ export default function ShowcaseScreen() {
   const value = useMemo(
     () => ({
       additionalData,
-      /* @ts-expect-error No types for `asset` yet */
-      onPressUniqueToken: asset => {
+      onPressUniqueToken: (asset: UniqueAsset) => {
         /* @ts-expect-error No types for `param` yet */
         params.onSelect?.(asset);
         goBack();
