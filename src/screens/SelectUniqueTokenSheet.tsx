@@ -1,5 +1,5 @@
 import { useNavigation, useRoute } from '@react-navigation/core';
-import React, { useContext, useEffect, useMemo } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Animated as RNAnimated } from 'react-native';
 import { useMemoOne } from 'use-memo-one';
 import {
@@ -8,10 +8,11 @@ import {
 } from '../components/asset-list/RecyclerAssetList2/core/Contexts';
 import RawMemoRecyclerAssetList from '../components/asset-list/RecyclerAssetList2/core/RawRecyclerList';
 import { StickyHeaderManager } from '../components/asset-list/RecyclerAssetList2/core/StickyHeaders';
+import { CellType } from '../components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import useMemoBriefSectionData from '../components/asset-list/RecyclerAssetList2/core/useMemoBriefSectionData';
 import { SheetHandle } from '../components/sheet';
 import { ModalContext } from '../react-native-cool-modals/NativeStackView';
-import { Box, Inset, Text } from '@rainbow-me/design-system';
+import { Box } from '@rainbow-me/design-system';
 
 export default function ShowcaseScreen() {
   const { params } = useRoute();
@@ -25,26 +26,19 @@ export default function ShowcaseScreen() {
   const {
     memoizedResult: briefSectionsData,
     additionalData,
-  } = useMemoBriefSectionData();
+  } = useMemoBriefSectionData({
+    filterTypes: [
+      CellType.NFT_SPACE_AFTER,
+      CellType.NFT,
+      CellType.FAMILY_HEADER,
+    ],
+  });
   const position = useMemoOne(() => new RNAnimated.Value(0), []);
-
-  const nftBriefSectionsData = useMemo(
-    () =>
-      briefSectionsData
-        .map(item =>
-          item.type === 'NFT_SPACE_AFTER' ||
-          item.type === 'NFT' ||
-          item.type === 'FAMILY_HEADER'
-            ? item
-            : undefined
-        )
-        .filter(x => x),
-    [briefSectionsData]
-  );
 
   return (
     <Box background="body" height="full" paddingTop="34px">
       <Box alignItems="center" justifyContent="center" paddingVertical="10px">
+        {/* @ts-expect-error JavaScript component */}
         <SheetHandle />
       </Box>
       <RecyclerAssetListScrollPositionContext.Provider value={position}>
@@ -52,15 +46,13 @@ export default function ShowcaseScreen() {
           value={{
             additionalData,
             onPressUniqueToken: asset => {
-              params?.onSelect?.(asset);
+              (params as any).onSelect?.(asset);
               goBack();
             },
           }}
         >
           <StickyHeaderManager>
-            <RawMemoRecyclerAssetList
-              briefSectionsData={nftBriefSectionsData}
-            />
+            <RawMemoRecyclerAssetList briefSectionsData={briefSectionsData} />
           </StickyHeaderManager>
         </RecyclerAssetListContext.Provider>
       </RecyclerAssetListScrollPositionContext.Provider>

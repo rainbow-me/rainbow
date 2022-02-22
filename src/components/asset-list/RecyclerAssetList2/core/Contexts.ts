@@ -6,7 +6,7 @@ import { CellTypes } from './ViewTypes';
 
 export const RecyclerAssetListContext = React.createContext<{
   additionalData: Record<string, CellTypes>;
-  onPressUniqueToken?: () => void;
+  onPressUniqueToken?: (asset: any) => void;
 }>({ additionalData: {}, onPressUniqueToken: undefined });
 
 export const RecyclerAssetListScrollPositionContext = React.createContext<
