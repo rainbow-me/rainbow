@@ -79,6 +79,10 @@ export default function RegisterENSNavigator() {
   const isBottomActionsVisible =
     currentRouteName === Routes.ENS_ASSIGN_RECORDS_SHEET;
 
+  const wrapperStyle = useMemo(() => ({ height: contentHeight }), [
+    contentHeight,
+  ]);
+
   return (
     <>
       <SlackSheet
@@ -93,9 +97,7 @@ export default function RegisterENSNavigator() {
       >
         <ConditionalWrap
           condition={!scrollEnabled}
-          wrap={children => (
-            <Box style={{ height: contentHeight }}>{children}</Box>
-          )}
+          wrap={children => <Box style={wrapperStyle}>{children}</Box>}
         >
           <Swipe.Navigator
             initialLayout={deviceUtils.dimensions}

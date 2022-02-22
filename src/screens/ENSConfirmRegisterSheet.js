@@ -1,6 +1,6 @@
 import { useRoute } from '@react-navigation/core';
 import { isEmpty } from 'lodash';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import brain from '../assets/brain.png';
 import { HoldToAuthorizeButton } from '../components/buttons';
@@ -132,7 +132,7 @@ export default function ENSConfirmRegisterSheet() {
         <Box
           background="body"
           paddingVertical="30px"
-          style={{ height: ENSConfirmRegisterSheetHeight }}
+          style={useMemo(() => ({ height: ENSConfirmRegisterSheetHeight }), [])}
         >
           <Box flexGrow={1}>
             <Inset horizontal="30px">
@@ -164,7 +164,7 @@ export default function ENSConfirmRegisterSheet() {
                   <Box>
                     <ImgixImage
                       source={brain}
-                      style={{ height: 20, width: 20 }}
+                      style={useMemo(() => ({ height: 20, width: 20 }), [])}
                     />
                   </Box>
                   <Text color="secondary50" size="14px" weight="heavy">
@@ -190,7 +190,7 @@ export default function ENSConfirmRegisterSheet() {
               </Stack>
             </Inset>
           </Box>
-          <Box style={{ bottom: 0 }}>
+          <Box style={useMemo(() => ({ bottom: 0 }), [])}>
             <Box>
               <SheetActionButtonRow paddingBottom={5}>
                 <HoldToAuthorizeButton
