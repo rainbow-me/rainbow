@@ -1,5 +1,5 @@
 import { useNavigation, useRoute } from '@react-navigation/core';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useMemo } from 'react';
 import { Animated as RNAnimated } from 'react-native';
 import { useMemoOne } from 'use-memo-one';
 import {
@@ -35,6 +35,19 @@ export default function ShowcaseScreen() {
   });
   const position = useMemoOne(() => new RNAnimated.Value(0), []);
 
+  const value = useMemo(
+    () => ({
+      additionalData,
+      /* @ts-expect-error No types for `asset` yet */
+      onPressUniqueToken: asset => {
+        /* @ts-expect-error No types for `param` yet */
+        params.onSelect?.(asset);
+        goBack();
+      },
+    }),
+    [additionalData, goBack, params]
+  );
+
   return (
     <Box background="body" height="full" paddingTop="34px">
       <Box alignItems="center" justifyContent="center" paddingVertical="10px">
@@ -42,15 +55,7 @@ export default function ShowcaseScreen() {
         <SheetHandle />
       </Box>
       <RecyclerAssetListScrollPositionContext.Provider value={position}>
-        <RecyclerAssetListContext.Provider
-          value={{
-            additionalData,
-            onPressUniqueToken: asset => {
-              (params as any).onSelect?.(asset);
-              goBack();
-            },
-          }}
-        >
+        <RecyclerAssetListContext.Provider value={value}>
           <StickyHeaderManager>
             <RawMemoRecyclerAssetList briefSectionsData={briefSectionsData} />
           </StickyHeaderManager>
