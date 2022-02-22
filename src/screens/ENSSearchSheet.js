@@ -19,6 +19,7 @@ import {
   Stack,
   Text,
 } from '@rainbow-me/design-system';
+import { ENS_DOMAIN } from '@rainbow-me/helpers/ens';
 import {
   useAccountSettings,
   useDebounceString,
@@ -70,7 +71,7 @@ export default function ENSSearchSheet() {
   }, [isAvailable, isInvalid, isRegistered]);
 
   const handlePressContinue = useCallback(() => {
-    dispatch(startRegistration(accountAddress, `${searchQuery}.eth`));
+    dispatch(startRegistration(accountAddress, `${searchQuery}${ENS_DOMAIN}`));
     Keyboard.dismiss();
     navigate(Routes.ENS_ASSIGN_RECORDS_SHEET);
   }, [accountAddress, dispatch, navigate, searchQuery]);
