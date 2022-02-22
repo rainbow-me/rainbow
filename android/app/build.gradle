@@ -157,13 +157,21 @@ def nativeArchitectures = project.getProperties().get("reactNativeDebugArchitect
 
 
 android {
-    def env = project.file('../../.env')
+    def envFile = project.file('../../.env')
+    def env =[:]
+    envFile.eachLine {
+        if (it.contains('=') && (!it.startsWith("#"))) {
+            def (key, value) = it.split('=')
+            env[key] = value
+        }
+    }
+
     def props = project.file('src/main/java/me/rainbow/MainApplication.java')
     def contents2 = props.getText( 'UTF-8' ).replaceAll( "//_REA ", '' ).replaceAll('/\\* REA', '//_REA /* REA')
     props.delete()
     props << contents2
 
-    if (env.getText( 'UTF-8' ).indexOf('DISABLE_REANIMATED_IN_DEV=YES') != -1) {
+    if (env.get('DISABLE_REANIMATED_IN_DEV') == 'YES') {
         def contents = props.getText( 'UTF-8' ).replaceAll( "//_REA ", '' )
         props.delete()
         props << contents
@@ -190,7 +198,7 @@ android {
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
 
         manifestPlaceholders = [
-		    BRANCH_KEY: "$System.env.BRANCH_KEY",
+		    BRANCH_KEY: env.get('BRANCH_KEY')
 	    ]
 
         ndk {
