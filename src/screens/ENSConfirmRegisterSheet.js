@@ -1,4 +1,3 @@
-import { useRoute } from '@react-navigation/core';
 import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
