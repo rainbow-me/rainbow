@@ -1,5 +1,5 @@
 import { differenceInSeconds } from 'date-fns';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { RapActionTypes, RegisterENSActionParameters } from '../raps/common';
 import { useAccountSettings, useCurrentNonce, useENSProfile } from '.';
@@ -25,18 +25,35 @@ export default function useENSRegistrationActionHandler() {
   const getNextNonce = useCurrentNonce(accountAddress, network);
   const dispatch = useDispatch();
 
+  const [
+    secondsSinceCommitConfirmed,
+    setSecondsSinceCommitConfirmed,
+  ] = useState(
+    registrationParameters?.commitTransactionConfirmedAt
+      ? differenceInSeconds(
+          Date.now(),
+          registrationParameters.commitTransactionConfirmedAt
+        )
+      : -1
+  );
+
   const watchCommitTransaction = useCallback(async () => {
     let confirmed = false;
 
     let txHash;
     let confirmedAt;
+
     const tx = await web3Provider.getTransaction(
       registrationParameters?.commitTransactionHash || ''
     );
     if (tx?.blockHash) {
       txHash = tx?.hash;
       const block = await web3Provider.getBlock(tx.blockHash || '');
+      // confirmedAt = Date.now();
       confirmedAt = block?.timestamp;
+      const now = Date.now();
+      const secs = differenceInSeconds(now, confirmedAt * 1000);
+      setSecondsSinceCommitConfirmed(secs);
     }
 
     await dispatch(
@@ -107,18 +124,12 @@ export default function useENSRegistrationActionHandler() {
       return REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION;
     }
 
-    const now = Date.now();
-    const secondsSinceConfirmation = differenceInSeconds(
-      now,
-      commitTransactionConfirmedAt
-    );
-
-    if (secondsSinceConfirmation < ENS_SECONDS_WAIT) {
+    if (secondsSinceCommitConfirmed < ENS_SECONDS_WAIT) {
       return REGISTRATION_STEPS.WAIT_ENS_COMMITMENT;
     }
 
     return REGISTRATION_STEPS.REGISTER;
-  }, [registrationParameters]);
+  }, [registrationParameters, secondsSinceCommitConfirmed]);
 
   const registrationStepAction = useMemo(() => {
     switch (registrationStep) {
@@ -138,13 +149,22 @@ export default function useENSRegistrationActionHandler() {
   }, [commit, registrationStep]);
 
   useEffect(() => {
-    if (
-      registrationStep === REGISTRATION_STEPS.WAIT_ENS_COMMITMENT ||
-      registrationStep === REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION
-    ) {
+    if (registrationStep === REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION) {
       startPollingWatchCommitTransaction();
     }
   }, [startPollingWatchCommitTransaction, registrationStep]);
+
+  useEffect(() => {
+    let interval: NodeJS.Timer;
+    const isActive =
+      secondsSinceCommitConfirmed >= 0 && secondsSinceCommitConfirmed < 60;
+    if (isActive) {
+      interval = setInterval(() => {
+        setSecondsSinceCommitConfirmed(seconds => seconds + 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [secondsSinceCommitConfirmed]);
 
   return {
     step: registrationStep,
