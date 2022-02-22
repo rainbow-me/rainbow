@@ -66,13 +66,14 @@ const MAX_IMAGE_SCALE = 4;
 const MIN_IMAGE_SCALE = 1;
 const THRESHOLD = 250;
 
+const disableAnimations = false;
+
 export const ZoomableWrapper = ({
   animationProgress: givenAnimationProgress,
   children,
   horizontalPadding,
   aspectRatio,
   borderRadius,
-  disableAnimations,
   yDisplacement: givenYDisplacement,
 }) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -397,6 +398,14 @@ export const ZoomableWrapper = ({
 
   const pinchGestureHandler = useAnimatedGestureHandler({
     onActive: (event, ctx) => {
+      console.log(event)
+      if (ctx.isNew) {
+        ctx.isNew = false
+        ctx.focalDisplacementX =
+          (containerWidthValue.value / 2 - event.focalX) * scale.value;
+        ctx.focalDisplacementY =
+          (containerHeightValue.value / 2 - event.focalY) * scale.value;
+      }
       if (!ctx.initEventScale) {
         ctx.initEventScale = event.scale;
 
@@ -439,17 +448,18 @@ export const ZoomableWrapper = ({
     onStart: (event, ctx) => {
       ctx.startScale = scale.value;
       ctx.blockExitZoom = false;
+      ctx.isNew = true
 
-      ctx.focalDisplacementX =
-        (containerWidthValue.value / 2 - event.focalX) * scale.value;
+      console.log(event.focalX, event.focalY, "XY", event)
+      ctx.focalDisplacementX = -event.focalX * scale.value
 
-      ctx.focalDisplacementY =
-        (containerHeightValue.value / 2 - event.focalY) * scale.value;
+      ctx.focalDisplacementY = event.focalY * scale.value
     },
   });
 
   const singleTapGestureHandler = useAnimatedGestureHandler({
     onActive: event => {
+      console.log('SDF');
       if (!isZoomedValue.value) {
         isZoomedValue.value = true;
         runOnJS(setIsZoomed)(true);
@@ -551,7 +561,7 @@ export const ZoomableWrapper = ({
 
   return (
     <ButtonPressAnimation
-      disabled={disableAnimations}
+      disabled
       enableHapticFeedback={false}
       onPress={() => {}}
       scaleTo={1}
@@ -563,7 +573,7 @@ export const ZoomableWrapper = ({
         minPointers={isZoomed ? 1 : 2}
         onGestureEvent={panGestureHandler}
         ref={pan}
-        simultaneousHandlers={[pinch]}
+        simultaneousHandlers={[pinch, singleTap]}
       >
         <Animated.View>
           <Animated.View>
@@ -572,7 +582,7 @@ export const ZoomableWrapper = ({
               numberOfTaps={1}
               onHandlerStateChange={singleTapGestureHandler}
               ref={singleTap}
-              waitFor={isZoomed && doubleTap}
+              simultaneousHandlers={[pinch, pan]}
             >
               <ZoomContainer height={containerHeight} width={containerWidth}>
                 <GestureBlocker
