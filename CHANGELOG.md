@@ -12,6 +12,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.6.6](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.6)
+### Changed
+* Uniswap tokens / search to backend 
+* DPI + trendling list to backend 
+* design system usage for NFT Expanded State
+* ios price widgets
+* styled components migration 
+* deeplinking improvements
+* imgix changes
+
 ## [1.6.5](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.5)
 ### Changed
 * Fix NFT Family Image Crash
