@@ -18,7 +18,11 @@ import {
   Stack,
   Text,
 } from '@rainbow-me/design-system';
-import { accentColorAtom, generateSalt } from '@rainbow-me/helpers/ens';
+import {
+  accentColorAtom,
+  ENS_DOMAIN,
+  generateSalt,
+} from '@rainbow-me/helpers/ens';
 import {
   useAccountSettings,
   useCurrentNonce,
@@ -47,7 +51,7 @@ export default function ENSConfirmRegisterSheet() {
 
   const [duration, setDuration] = useState(1);
 
-  const name = ensName.replace('.eth', '');
+  const name = ensName.replace(ENS_DOMAIN, '');
   const { data: registrationData } = useENSRegistration({
     name,
   });
