@@ -1,0 +1,23 @@
+diff --git a/node_modules/react-native-ios-context-menu/src/components/ContextMenuButton/ContextMenuButton.tsx b/node_modules/react-native-ios-context-menu/src/components/ContextMenuButton/ContextMenuButton.tsx
+index e545806..4fbb9ac 100644
+--- a/node_modules/react-native-ios-context-menu/src/components/ContextMenuButton/ContextMenuButton.tsx
++++ b/node_modules/react-native-ios-context-menu/src/components/ContextMenuButton/ContextMenuButton.tsx
+@@ -1,5 +1,6 @@
+ import React from 'react';
+-import { StyleSheet, View, TouchableOpacity, UIManager, findNodeHandle } from 'react-native';
++import { StyleSheet, View, UIManager, findNodeHandle } from 'react-native';
++import { TouchableOpacity } from 'react-native-gesture-handler'
+ 
+ import { RNIContextMenuButton, RNIContextMenuButtonBaseProps, RNIContextMenuButtonCommands } from '../../native_components/RNIContextMenuButton';
+ 
+@@ -211,7 +212,9 @@ export class ContextMenuButton extends React.PureComponent<ContextMenuButtonProp
+       ): shouldUseActionSheetFallback? (
+         // C - Use 'ActionSheet' Fallback
+         <TouchableOpacity 
+-          onLongPress={this._handleOnLongPress}
++          {...({
++            [props.isMenuPrimaryAction ? 'onPress' : 'onLongPress']:this._handleOnLongPress
++          })}
+           activeOpacity={0.8}
+           {...props.viewProps}
+         >

@@ -1,4 +1,4 @@
-import React, { ReactNode, useMemo } from 'react';
+import React, { ReactNode } from 'react';
 import { ButtonProps } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { TextColor } from '../../design-system/typography/typography';
@@ -8,10 +8,12 @@ import { Box, Cover, Text } from '@rainbow-me/design-system';
 
 const TintButton = ({
   children,
+  disabled,
   onPress,
   color = 'secondary80',
 }: {
   children: ReactNode;
+  disabled?: boolean;
   onPress: ButtonProps['onPress'];
   color: TextColor;
 }) => {
@@ -26,8 +28,9 @@ const TintButton = ({
       height={`${height}px`}
       justifyContent="center"
       // @ts-expect-error
-      onPress={onPress}
-      style={useMemo(() => ({ overflow: 'hidden' as 'hidden' }), [])}
+      onPress={disabled ? () => undefined : onPress}
+      scale={disabled ? 1 : 0.8}
+      style={{ opacity: disabled ? 0.5 : 1, overflow: 'hidden' }}
     >
       <Cover>
         <Box

@@ -2,21 +2,21 @@ import { isEmpty, omit } from 'lodash';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { atom, useRecoilState } from 'recoil';
-import { useAccountSettings, useENSProfile } from '.';
+import { useENSProfile } from '.';
 import { Records } from '@rainbow-me/entities';
 import { textRecordFields } from '@rainbow-me/helpers/ens';
-import {
-  removeRecordByKey,
-  updateRecordByKey,
-  updateRecords,
-} from '@rainbow-me/redux/ensRegistration';
+
+const disabledAtom = atom({
+  default: false,
+  key: 'ensProfileForm.disabled',
+});
 
 const selectedFieldsAtom = atom({
   default: [],
   key: 'ensProfileForm.selectedFields',
 });
 
-const valuesAtom = atom({
+const valuesAtom = atom<Partial<Records>>({
   default: {},
   key: 'ensProfileForm.values',
 });
@@ -26,10 +26,17 @@ export default function useENSProfileForm({
 }: {
   defaultFields?: any[];
 } = {}) {
-  const { accountAddress } = useAccountSettings();
-  const { name, records } = useENSProfile();
+  const {
+    name,
+    records,
+    removeRecordByKey,
+    updateRecordByKey,
+    updateRecords,
+  } = useENSProfile();
 
   const dispatch = useDispatch();
+
+  const [disabled, setDisabled] = useRecoilState(disabledAtom);
 
   const [selectedFields, setSelectedFields] = useRecoilState(
     selectedFieldsAtom
@@ -38,8 +45,13 @@ export default function useENSProfileForm({
     // If there are existing records in the global state, then we
     // populate with that.
     if (!isEmpty(records)) {
-      // @ts-ignore
-      setSelectedFields(Object.keys(records).map(key => textRecordFields[key]));
+      setSelectedFields(
+        // @ts-ignore
+        Object.keys(records)
+          // @ts-ignore
+          .map(key => textRecordFields[key])
+          .filter(x => x)
+      );
     } else {
       if (defaultFields) {
         setSelectedFields(defaultFields as any);
@@ -59,32 +71,33 @@ export default function useENSProfileForm({
           [field.key]: '',
         };
       }, {});
-      dispatch(updateRecords(accountAddress, records));
+      updateRecords(records);
     }
-  }, [accountAddress, defaultFields, dispatch, records, selectedFields]);
+  }, [defaultFields, dispatch, records, selectedFields, updateRecords]);
 
   const onAddField = useCallback(
     (fieldToAdd, selectedFields) => {
       setSelectedFields(selectedFields);
-      dispatch(updateRecordByKey(accountAddress, fieldToAdd.key, ''));
+      updateRecordByKey(fieldToAdd.key, '');
     },
-    [accountAddress, dispatch, setSelectedFields]
+    [setSelectedFields, updateRecordByKey]
   );
 
   const onRemoveField = useCallback(
     (fieldToRemove, selectedFields) => {
       setSelectedFields(selectedFields);
-      dispatch(removeRecordByKey(accountAddress, fieldToRemove.key));
+      removeRecordByKey(fieldToRemove.key);
       setValues(values => omit(values, fieldToRemove.key) as Records);
     },
-    [accountAddress, dispatch, setSelectedFields, setValues]
+    [removeRecordByKey, setSelectedFields, setValues]
   );
 
   const onBlurField = useCallback(
     ({ key, value }) => {
-      dispatch(updateRecordByKey(accountAddress, key, value));
+      setValues(values => ({ ...values, [key]: value }));
+      updateRecordByKey(key, value);
     },
-    [accountAddress, dispatch]
+    [setValues, updateRecordByKey]
   );
 
   const onChangeField = useCallback(
@@ -97,12 +110,14 @@ export default function useENSProfileForm({
   const empty = useMemo(() => !Object.values(values).some(Boolean), [values]);
 
   return {
+    disabled,
     isEmpty: empty,
     onAddField,
     onBlurField,
     onChangeField,
     onRemoveField,
     selectedFields,
+    setDisabled,
     values,
   };
 }

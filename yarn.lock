@@ -14685,9 +14685,10 @@ react-native-haptic-feedback@1.11.0:
   version "1.11.0"
   resolved "https://registry.yarnpkg.com/react-native-haptic-feedback/-/react-native-haptic-feedback-1.11.0.tgz#adfd841f3b67046532f912c6ec827aea0037d8ad"
 
-react-native-image-crop-picker@0.32.3:
-  version "0.32.3"
-  resolved "https://registry.yarnpkg.com/react-native-image-crop-picker/-/react-native-image-crop-picker-0.32.3.tgz#53aa18249485e002e3a57a8cf70447482112b86e"
+react-native-image-crop-picker@0.37.3:
+  version "0.37.3"
+  resolved "https://registry.yarnpkg.com/react-native-image-crop-picker/-/react-native-image-crop-picker-0.37.3.tgz#f260e40b6a6ba8e98f4db3dde25a8f09e0936385"
+  integrity sha512-ih+0pWWRUNEFQyaHwGbH9rqJNOb7EBYMwKJhTY0VmsKIA9E+usfwMmQXAFIfOnee7fTn0A2vOXkBCPQZwyvnQw==
 
 react-native-indicators@0.17.0:
   version "0.17.0"
@@ -14695,9 +14696,10 @@ react-native-indicators@0.17.0:
   dependencies:
     prop-types "^15.5.10"
 
-react-native-ios-context-menu@1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/react-native-ios-context-menu/-/react-native-ios-context-menu-1.3.0.tgz#b877cbe9594afccfeb2f1659ee4aae829b986fc5"
+react-native-ios-context-menu@1.7.4:
+  version "1.7.4"
+  resolved "https://registry.yarnpkg.com/react-native-ios-context-menu/-/react-native-ios-context-menu-1.7.4.tgz#37f3d32b292eef43f6126d9d708fafc471b1f442"
+  integrity sha512-qOu6VFVP2KH92HuXSzy6y86pKSfrkovJuWwXVnzc5PK6m40+H5+Ah8moUr5/yQJSD3FwlmqfKhyDMFO5MSlaBg==
 
 react-native-ios11-devicecheck@0.0.3:
   version "0.0.3"
