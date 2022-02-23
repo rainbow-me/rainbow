@@ -242,7 +242,7 @@ export const estimateENSRegistrationGasLimit = async (
     name,
     ownerAddress,
   });
-  // dummy multicall to estimmate gas
+  // dummy multicall to estimate gas
   const multicallGasLimitPromise = estimateENSMulticallGasLimit({
     name,
     records: {

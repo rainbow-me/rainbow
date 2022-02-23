@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 import ImagePicker, { Image, Options } from 'react-native-image-crop-picker';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import { useMutation } from 'react-query';
+import { UniqueAsset } from '@rainbow-me/entities';
 import {
   uploadImage,
   UploadImageReturnData,
@@ -46,7 +47,13 @@ export default function useSelectImageMenu({
 }: {
   imagePickerOptions?: Options;
   menuItems?: Action[];
-  onChangeImage?: ({ asset, image }: { asset?: any; image?: Image }) => void;
+  onChangeImage?: ({
+    asset,
+    image,
+  }: {
+    asset?: UniqueAsset;
+    image?: Image;
+  }) => void;
   onUploading?: ({ image }: { image: Image }) => void;
   onUploadSuccess?: ({
     data,
