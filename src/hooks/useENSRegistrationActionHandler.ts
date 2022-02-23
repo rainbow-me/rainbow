@@ -13,6 +13,7 @@ import { generateSalt, getRentPrice } from '@rainbow-me/helpers/ens';
 import { loadWallet } from '@rainbow-me/model/wallet';
 import { executeRap } from '@rainbow-me/raps';
 import { updateCommitRegistrationParameters } from '@rainbow-me/redux/ensRegistration';
+import { timeUnits } from '@rainbow-me/references';
 
 enum REGISTRATION_STEPS {
   COMMIT = 'COMMIT',
@@ -22,7 +23,6 @@ enum REGISTRATION_STEPS {
 }
 
 const ENS_SECONDS_WAIT = 60;
-const secsInYear = 31536000;
 
 export default function useENSRegistrationActionHandler(
   {
@@ -60,10 +60,13 @@ export default function useENSRegistrationActionHandler(
 
       const salt = generateSalt();
       const nonce = await getNextNonce();
-      const rentPrice = await getRentPrice(name, yearsDuration * secsInYear);
+      const rentPrice = await getRentPrice(
+        name,
+        yearsDuration * timeUnits.secs.year
+      );
 
       const commitEnsRegistrationParameters: RegisterENSActionParameters = {
-        duration: yearsDuration * secsInYear,
+        duration: yearsDuration * timeUnits.secs.year,
         name,
         nonce,
         ownerAddress: accountAddress,
@@ -197,11 +200,11 @@ export default function useENSRegistrationActionHandler(
       switch (step) {
         case REGISTRATION_STEPS.COMMIT: {
           const salt = generateSalt();
-          const rentPrice = await getRentPrice(name, secsInYear);
+          const rentPrice = await getRentPrice(name, timeUnits.secs.year);
           const gasLimit = await getENSRapEstimationByType(
             RapActionTypes.commitENS,
             {
-              duration: yearsDuration * secsInYear,
+              duration: yearsDuration * timeUnits.secs.year,
               name,
               ownerAddress: accountAddress,
               records,
@@ -222,7 +225,7 @@ export default function useENSRegistrationActionHandler(
           const gasLimit = await getENSRapEstimationByType(
             RapActionTypes.registerENS,
             {
-              duration: yearsDuration * secsInYear,
+              duration: yearsDuration * timeUnits.secs.year,
               name,
               ownerAddress: accountAddress,
               records,
@@ -252,7 +255,8 @@ export default function useENSRegistrationActionHandler(
   useEffect(() => {
     let interval: NodeJS.Timer;
     const isActive =
-      secondsSinceCommitConfirmed >= 0 && secondsSinceCommitConfirmed < 60;
+      secondsSinceCommitConfirmed >= 0 &&
+      secondsSinceCommitConfirmed < ENS_SECONDS_WAIT;
     if (isActive) {
       interval = setInterval(() => {
         setSecondsSinceCommitConfirmed(seconds => seconds + 1);
