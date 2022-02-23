@@ -102,7 +102,7 @@ export default function ENSConfirmRegisterSheet() {
       salt,
     };
 
-    await dispatch(
+    dispatch(
       saveCommitRegistrationParameters(
         accountAddress,
         ensRegistrationParameters
