@@ -35,9 +35,9 @@ import { ImgixImage } from '@rainbow-me/images';
 import { loadWallet } from '@rainbow-me/model/wallet';
 import { getRapEstimationByType } from '@rainbow-me/raps';
 import { saveCommitRegistrationParameters } from '@rainbow-me/redux/ensRegistration';
+import { timeUnits } from '@rainbow-me/references';
 
 export const ENSConfirmRegisterSheetHeight = 600;
-const secsInYear = 31536000;
 const avatarSize = 70;
 
 export default function ENSConfirmRegisterSheet() {
@@ -66,7 +66,7 @@ export default function ENSConfirmRegisterSheet() {
     const salt = generateSalt();
     const gasLimit = await getRapEstimationByType(RapActionTypes.commitENS, {
       ensRegistrationParameters: {
-        duration: secsInYear,
+        duration: duration * timeUnits.secs.year,
         name: name,
         ownerAddress: accountAddress,
         records,
@@ -76,7 +76,7 @@ export default function ENSConfirmRegisterSheet() {
     });
     updateTxFee(gasLimit);
     setGasLimit(gasLimit);
-  }, [accountAddress, name, records, rentPrice, updateTxFee]);
+  }, [accountAddress, duration, name, records, rentPrice, updateTxFee]);
 
   // Update gas limit
   useEffect(() => {
@@ -97,7 +97,7 @@ export default function ENSConfirmRegisterSheet() {
     const salt = generateSalt();
 
     const ensRegistrationParameters = {
-      duration: secsInYear,
+      duration: duration * timeUnits.secs.year,
       name,
       nonce,
       ownerAddress: accountAddress,
@@ -106,7 +106,7 @@ export default function ENSConfirmRegisterSheet() {
       salt,
     };
 
-    await dispatch(
+    dispatch(
       saveCommitRegistrationParameters(
         accountAddress,
         ensRegistrationParameters
@@ -123,7 +123,15 @@ export default function ENSConfirmRegisterSheet() {
     //   { ensRegistrationParameters },
     //   callback
     // );
-  }, [accountAddress, dispatch, getNextNonce, name, records, rentPrice]);
+  }, [
+    accountAddress,
+    dispatch,
+    duration,
+    getNextNonce,
+    name,
+    records,
+    rentPrice,
+  ]);
 
   return (
     <SlackSheet
