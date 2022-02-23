@@ -164,8 +164,7 @@ export default function useENSRegistrationActionHandler(
       // confirmedAt = Date.now();
       confirmedAt = block?.timestamp;
       const now = Date.now();
-      // const secs = differenceInSeconds(now, confirmedAt * 1000 + 80000);
-      const secs = differenceInSeconds(now, now);
+      const secs = differenceInSeconds(now, confirmedAt * 1000);
       setSecondsSinceCommitConfirmed(secs);
     }
 
