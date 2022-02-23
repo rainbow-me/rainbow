@@ -1,6 +1,11 @@
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useAccountSettings } from '.';
-import { ENSRegistrationState } from '@rainbow-me/entities';
+import { ENSRegistrationState, Records } from '@rainbow-me/entities';
+import {
+  removeRecordByKey,
+  updateRecordByKey,
+  updateRecords,
+} from '@rainbow-me/redux/ensRegistration';
 import { AppState } from '@rainbow-me/redux/store';
 
 export default function useENSProfile() {
@@ -15,14 +20,21 @@ export default function useENSProfile() {
         registrations?.[accountAddress?.toLowerCase()]?.[
           currentRegistrationName
         ] || {};
-      const records = registrationParameters?.records || [];
+      const records = registrationParameters?.records || {};
       return { name: currentRegistrationName, records, registrationParameters };
     }
   );
+  const dispatch = useDispatch();
 
   return {
     name,
     records,
     registrationParameters,
+    removeRecordByKey: (key: string) =>
+      dispatch(removeRecordByKey(accountAddress, key)),
+    updateRecordByKey: (key: string, value: string) =>
+      dispatch(updateRecordByKey(accountAddress, key, value)),
+    updateRecords: (records: Records) =>
+      dispatch(updateRecords(accountAddress, records)),
   };
 }

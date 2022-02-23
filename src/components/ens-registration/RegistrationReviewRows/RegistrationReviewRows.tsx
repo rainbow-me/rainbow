@@ -1,5 +1,6 @@
 import React from 'react';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
+import Skeleton, { FakeText } from '../../skeleton/Skeleton';
 import {
   Box,
   Column,
@@ -23,6 +24,16 @@ function StepButton({
         {type === 'increment' ? '􀁍' : '􀁏'}
       </Text>
     </Box>
+  );
+}
+
+function LoadingPlaceholder() {
+  return (
+    <Skeleton animated>
+      <Box alignItems="flex-end">
+        <FakeText height={16} width={80} />
+      </Box>
+    </Skeleton>
   );
 }
 
@@ -87,9 +98,13 @@ export default function RegistrationReviewRows({
             </Text>
           </Column>
           <Column width="1/3">
-            <Text align="right" color="secondary80" size="16px" weight="bold">
-              {registrationFee}
-            </Text>
+            {registrationFee ? (
+              <Text align="right" color="secondary80" size="16px" weight="bold">
+                {registrationFee}
+              </Text>
+            ) : (
+              <LoadingPlaceholder />
+            )}
           </Column>
         </Columns>
         <Columns>
@@ -99,9 +114,13 @@ export default function RegistrationReviewRows({
             </Text>
           </Column>
           <Column width="1/3">
-            <Text align="right" color="secondary80" size="16px" weight="bold">
-              {networkFee}
-            </Text>
+            {networkFee ? (
+              <Text align="right" color="secondary80" size="16px" weight="bold">
+                {networkFee}
+              </Text>
+            ) : (
+              <LoadingPlaceholder />
+            )}
           </Column>
         </Columns>
         <Columns>
@@ -111,9 +130,13 @@ export default function RegistrationReviewRows({
             </Text>
           </Column>
           <Column width="1/3">
-            <Text align="right" size="16px" weight="heavy">
-              {totalCost}
-            </Text>
+            {totalCost ? (
+              <Text align="right" size="16px" weight="heavy">
+                {totalCost}
+              </Text>
+            ) : (
+              <LoadingPlaceholder />
+            )}
           </Column>
         </Columns>
       </Stack>

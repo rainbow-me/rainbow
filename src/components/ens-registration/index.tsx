@@ -1,3 +1,5 @@
+export { default as Avatar } from './Avatar/Avatar';
+export { default as Cover } from './Cover/Cover';
 export { default as RegistrationReviewRows } from './RegistrationReviewRows/RegistrationReviewRows';
 export { default as SearchResultGradientIndicator } from './SearchResult/SearchResultGradientIndicator';
 export { default as SearchInputGradientBackground } from './SearchInput/SearchInputGradientBackground';

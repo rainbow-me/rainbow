@@ -1,6 +1,6 @@
-import { useRoute } from '@react-navigation/core';
 import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
+import { useRecoilState } from 'recoil';
 import brain from '../assets/brain.png';
 import ActivityIndicator from '../components/ActivityIndicator';
 import Spinner from '../components/Spinner';
@@ -18,7 +18,7 @@ import {
   Stack,
   Text,
 } from '@rainbow-me/design-system';
-import { ENS_DOMAIN } from '@rainbow-me/helpers/ens';
+import { accentColorAtom, ENS_DOMAIN } from '@rainbow-me/helpers/ens';
 import {
   useENSProfile,
   useENSRegistration,
@@ -45,7 +45,8 @@ export default function ENSConfirmRegisterSheet() {
   const { gasFeeParamsBySpeed, updateTxFee, startPollingGasFees } = useGas();
   const { name: ensName } = useENSProfile();
   const [gasLimit, setGasLimit] = useState();
-  const { params } = useRoute();
+  const [accentColor] = useRecoilState(accentColorAtom);
+
   const [duration, setDuration] = useState(1);
   const { step, stepGasLimit, action } = useENSRegistrationActionHandler({
     yearsDuration: duration,
@@ -57,6 +58,7 @@ export default function ENSConfirmRegisterSheet() {
     name,
   });
   const rentPrice = registrationData?.rentPrice;
+  const records = registrationData.records;
   const { data: registrationCostsData } = useENSRegistrationCosts({
     duration,
     name,
@@ -94,7 +96,7 @@ export default function ENSConfirmRegisterSheet() {
       height="100%"
       scrollEnabled={false}
     >
-      <AccentColorProvider color={params.color}>
+      <AccentColorProvider color={accentColor}>
         <Box
           background="body"
           paddingVertical="30px"
@@ -103,14 +105,22 @@ export default function ENSConfirmRegisterSheet() {
           <Box flexGrow={1}>
             <Inset horizontal="30px">
               <Stack alignHorizontal="center" space="15px">
-                {params.avatarUrl && (
+                {records.avatar && (
                   <Box
-                    background="swap"
+                    background="accent"
                     borderRadius={avatarSize / 2}
                     height={{ custom: avatarSize }}
                     shadow="12px heavy accent"
                     width={{ custom: avatarSize }}
-                  />
+                  >
+                    <Box
+                      as={ImgixImage}
+                      borderRadius={avatarSize / 2}
+                      height={{ custom: avatarSize }}
+                      source={{ uri: records.avatar }}
+                      width={{ custom: avatarSize }}
+                    />
+                  </Box>
                 )}
                 <Heading size="26px">{ensName}</Heading>
                 <Text color="accent" weight="heavy">
@@ -138,7 +148,6 @@ export default function ENSConfirmRegisterSheet() {
                   </Text>
                 </Inline>
                 <RegistrationReviewRows
-                  accentColor={params.color}
                   duration={duration}
                   maxDuration={99}
                   networkFee={

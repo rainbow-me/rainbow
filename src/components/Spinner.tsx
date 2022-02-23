@@ -1,5 +1,5 @@
-import PropTypes from 'prop-types';
 import React from 'react';
+// @ts-expect-error
 import { IS_TESTING } from 'react-native-dotenv';
 import SpinnerImageSource from '../assets/spinner.png';
 import { useTheme } from '../context/ThemeContext';
@@ -8,7 +8,18 @@ import { Centered } from './layout';
 import { ImgixImage } from '@rainbow-me/images';
 import { position } from '@rainbow-me/styles';
 
-const Spinner = ({ color = '', duration = 1500, size = 20, ...props }) => {
+type SpinnerProps = {
+  color?: string;
+  duration?: number;
+  size?: 'small' | 'large' | number;
+};
+
+const Spinner = ({
+  color = '',
+  duration = 1500,
+  size = 20,
+  ...props
+}: SpinnerProps) => {
   const { colors } = useTheme();
 
   let style;
@@ -28,7 +39,7 @@ const Spinner = ({ color = '', duration = 1500, size = 20, ...props }) => {
       {IS_TESTING !== 'true' && (
         <SpinAnimation duration={duration}>
           <ImgixImage
-            source={SpinnerImageSource}
+            source={SpinnerImageSource as any}
             style={style}
             tintColor={color || colors.whiteLabel}
           />
@@ -36,12 +47,6 @@ const Spinner = ({ color = '', duration = 1500, size = 20, ...props }) => {
       )}
     </Centered>
   );
-};
-
-Spinner.propTypes = {
-  color: PropTypes.string,
-  duration: PropTypes.number,
-  size: PropTypes.number,
 };
 
 export default React.memo(Spinner);

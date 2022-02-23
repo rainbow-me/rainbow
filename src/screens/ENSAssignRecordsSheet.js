@@ -1,23 +1,25 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Keyboard } from 'react-native';
-import RadialGradient from 'react-native-radial-gradient';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { useSelector } from 'react-redux';
 import { useRecoilState } from 'recoil';
 import { MiniButton } from '../components/buttons';
 import TintButton from '../components/buttons/TintButton';
-import { TextRecordsForm } from '../components/ens-registration';
+import {
+  Avatar,
+  Cover as CoverPhoto,
+  TextRecordsForm,
+} from '../components/ens-registration';
 import SelectableButton from '../components/ens-registration/TextRecordsForm/SelectableButton';
 import { SheetActionButton, SheetActionButtonRow } from '../components/sheet';
 import { useTheme } from '../context/ThemeContext';
 import { useNavigation } from '../navigation/Navigation';
-// import { usePersistentDominantColorFromImage } from '@rainbow-me/hooks';
 import {
   AccentColorProvider,
+  Bleed,
   Box,
   Cover,
   Heading,
@@ -33,83 +35,55 @@ import {
   ENS_RECORDS,
   textRecordFields,
 } from '@rainbow-me/helpers/ens';
-import { useENSProfileForm, useKeyboardHeight } from '@rainbow-me/hooks';
+import {
+  useENSProfile,
+  useENSProfileForm,
+  useKeyboardHeight,
+  usePersistentDominantColorFromImage,
+} from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 
 const AnimatedBox = Animated.createAnimatedComponent(Box);
 
-export const bottomActionHeight = ios ? 270 : 250;
-const avatarSize = 70;
-const alpha = '33';
+export const BottomActionHeight = ios ? 270 : 250;
 
 export default function ENSAssignRecordsSheet() {
   const { colors } = useTheme();
-  const ensName = useSelector(({ ensRegistration }) => ensRegistration.name);
+  const { name } = useENSProfile();
+
+  const [avatarUrl, setAvatarUrl] = useState();
 
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
+  const { result: dominantColor } = usePersistentDominantColorFromImage(
+    avatarUrl || ''
+  );
+  const [prevDominantColor, setPrevDominantColor] = useState(dominantColor);
   useEffect(() => {
-    setAccentColor(colors.purple);
-  }, [colors.purple, setAccentColor]);
-  //   usePersistentDominantColorFromImage('TODO').result || colors.purple;   // add this when we implement avatars
-
-  const {
-    selectedFields,
-    onChangeField,
-    onBlurField,
-    values,
-  } = useENSProfileForm({
-    defaultFields: [
-      textRecordFields[ENS_RECORDS.displayName],
-      textRecordFields[ENS_RECORDS.description],
-      textRecordFields[ENS_RECORDS.url],
-      textRecordFields[ENS_RECORDS.twitter],
-    ],
-  });
+    setAccentColor(dominantColor || prevDominantColor || colors.purple);
+    if (dominantColor) {
+      setPrevDominantColor(dominantColor);
+    }
+  }, [colors.purple, dominantColor, prevDominantColor, setAccentColor]);
 
   return (
     <AccentColorProvider color={accentColor}>
       <Box
         background="body"
         flexGrow={1}
-        style={{ paddingBottom: bottomActionHeight + 20 }}
+        style={{ paddingBottom: BottomActionHeight + 20 }}
       >
         <Stack space="19px">
-          <Box
-            alignItems="center"
-            as={RadialGradient}
-            colors={[colors.whiteLabel + alpha, accentColor + alpha]}
-            height={{ custom: 125 }}
-            justifyContent="center"
-            marginBottom={{ custom: 50 }}
-            stops={[0.6, 0]}
-          >
-            <Text color="accent" size="18px" weight="heavy">
-              􀣵 Add Cover
-            </Text>
-            <Cover alignHorizontal="center">
-              <Box
-                alignItems="center"
-                background="swap"
-                borderRadius={avatarSize / 2}
-                height={{ custom: avatarSize }}
-                justifyContent="center"
-                shadow="12px heavy accent"
-                top={{ custom: 105 }}
-                width={{ custom: avatarSize }}
-              >
-                <AccentColorProvider color={colors.white}>
-                  <Text color="accent" size="23px" weight="heavy">
-                    {` 􀜖 `}
-                  </Text>
-                </AccentColorProvider>
-              </Box>
-            </Cover>
-          </Box>
+          <CoverPhoto />
+          <Bleed top={{ custom: 38 }}>
+            <Box alignItems="center">
+              <Avatar onChangeAvatarUrl={setAvatarUrl} />
+            </Box>
+          </Bleed>
           <Inset horizontal="19px">
             <Stack space="30px">
               <Stack alignHorizontal="center" space="15px">
                 <Heading size="26px" weight="heavy">
-                  {ensName}
+                  {name}
                 </Heading>
                 <Text color="accent" size="16px" weight="heavy">
                   Create your profile
@@ -117,10 +91,12 @@ export default function ENSAssignRecordsSheet() {
               </Stack>
               <Box flexGrow={1}>
                 <TextRecordsForm
-                  onBlurField={onBlurField}
-                  onChangeField={onChangeField}
-                  selectedFields={selectedFields}
-                  values={values}
+                  defaultFields={[
+                    ENS_RECORDS.displayName,
+                    ENS_RECORDS.description,
+                    ENS_RECORDS.url,
+                    ENS_RECORDS.twitter,
+                  ]}
                 />
               </Box>
             </Stack>
@@ -137,6 +113,7 @@ export function ENSAssignRecordsBottomActions({ visible }) {
   const [accentColor] = useRecoilState(accentColorAtom);
 
   const {
+    disabled,
     isEmpty,
     selectedFields,
     onAddField,
@@ -148,12 +125,12 @@ export function ENSAssignRecordsBottomActions({ visible }) {
   }, [navigate]);
 
   const handlePressContinue = useCallback(() => {
-    navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, { color: accentColor });
-  }, [accentColor, navigate]);
+    navigate(Routes.ENS_CONFIRM_REGISTER_SHEET);
+  }, [navigate]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      bottom: withTiming(visible ? 0 : -bottomActionHeight - 10, {
+      bottom: withTiming(visible ? 0 : -BottomActionHeight - 10, {
         duration: 100,
       }),
     };
@@ -173,7 +150,7 @@ export function ENSAssignRecordsBottomActions({ visible }) {
         style={[animatedStyle, { position: 'absolute', width: '100%' }]}
       >
         <AccentColorProvider color={accentColor}>
-          <Box paddingBottom="19px" style={{ height: bottomActionHeight }}>
+          <Box paddingBottom="19px" style={{ height: BottomActionHeight }}>
             {ios ? <Shadow /> : null}
             <Rows>
               <Row>
@@ -200,18 +177,22 @@ export function ENSAssignRecordsBottomActions({ visible }) {
                   {isEmpty ? (
                     <TintButton
                       color="secondary60"
+                      disabled={disabled}
                       onPress={handlePressContinue}
                     >
                       Skip
                     </TintButton>
                   ) : (
-                    <SheetActionButton
-                      color={accentColor}
-                      label="Review"
-                      onPress={handlePressContinue}
-                      size="big"
-                      weight="heavy"
-                    />
+                    <Box style={{ opacity: disabled ? 0.5 : 1 }}>
+                      <SheetActionButton
+                        color={accentColor}
+                        disabled={disabled}
+                        label="Review"
+                        onPress={handlePressContinue}
+                        size="big"
+                        weight="heavy"
+                      />
+                    </Box>
                   )}
                 </SheetActionButtonRow>
               </Row>

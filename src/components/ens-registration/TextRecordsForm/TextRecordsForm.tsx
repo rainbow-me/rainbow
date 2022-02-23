@@ -1,21 +1,23 @@
 import React from 'react';
 import InlineField from '../../inputs/InlineField';
 import { Box, Divider } from '@rainbow-me/design-system';
-import { TextRecordField } from '@rainbow-me/helpers/ens';
-
-type TextRecordsFormProps = {
-  onBlurField: ({ key, value }: { key: string; value: string }) => void;
-  onChangeField: ({ key, value }: { key: string; value: string }) => void;
-  selectedFields: TextRecordField[];
-  values: any;
-};
+import { textRecordFields } from '@rainbow-me/helpers/ens';
+import { useENSProfileForm } from '@rainbow-me/hooks';
 
 export default function TextRecordsForm({
-  onBlurField,
-  onChangeField,
-  selectedFields,
-  values,
-}: TextRecordsFormProps) {
+  defaultFields,
+}: {
+  defaultFields: (keyof typeof textRecordFields)[];
+}) {
+  const {
+    selectedFields,
+    onChangeField,
+    onBlurField,
+    values,
+  } = useENSProfileForm({
+    defaultFields: defaultFields.map(fieldName => textRecordFields[fieldName]),
+  });
+
   return (
     <Box>
       {selectedFields.map(
