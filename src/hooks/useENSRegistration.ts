@@ -10,9 +10,8 @@ import {
   getRentPrice,
 } from '@rainbow-me/helpers/ens';
 import { Network } from '@rainbow-me/helpers/networkTypes';
+import { timeUnits } from '@rainbow-me/references';
 import { ethereumUtils, validateENS } from '@rainbow-me/utils';
-
-const secsInYear = 31536000;
 
 const formatTime = (timestamp: string, abbreviated: boolean = true) => {
   const style = abbreviated ? 'MMM d, y' : 'MMMM d, y';
@@ -44,7 +43,10 @@ export default function useENSRegistration({
 
     const isAvailable = await getAvailable(name);
     if (isAvailable) {
-      const rentPrice = await getRentPrice(name, duration * secsInYear);
+      const rentPrice = await getRentPrice(
+        name,
+        duration * timeUnits.secs.year
+      );
       const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
         Network.mainnet
       );
