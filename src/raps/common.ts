@@ -59,7 +59,7 @@ export interface RapENSActionParameters {
   duration: number;
   rentPrice: string;
   salt: string;
-  records: ENSRegistrationRecords;
+  records?: ENSRegistrationRecords;
   ownerAddress: EthereumAddress;
   recordKey?: string;
   recordValue?: string;
@@ -85,7 +85,7 @@ export interface RegisterENSActionParameters {
   rentPrice: string;
   ownerAddress: string;
   salt: string;
-  records: ENSRegistrationRecords;
+  records?: ENSRegistrationRecords;
 }
 
 export interface RapActionTransaction {
@@ -107,7 +107,6 @@ export interface RapExchangeAction {
 }
 
 export interface RapENSAction {
-  rapType: RAP_TYPE.ENS;
   parameters: RapENSActionParameters;
   transaction: RapActionTransaction;
   type: RapActionType;
@@ -391,6 +390,20 @@ export const createNewAction = (
   type: RapActionType,
   parameters: RapActionParameters
 ) => {
+  const newAction = {
+    parameters,
+    transaction: { confirmed: null, hash: null },
+    type,
+  };
+
+  logger.log('[common] Creating a new action', newAction);
+  return newAction;
+};
+
+export const createNewENSAction = (
+  type: RapActionType,
+  parameters: RegisterENSActionParameters
+): RapENSAction => {
   const newAction = {
     parameters,
     transaction: { confirmed: null, hash: null },

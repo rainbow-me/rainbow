@@ -9,15 +9,15 @@ export interface CommitRegistrationParameters {
 }
 
 export interface RegistrationParameters {
-  name: string;
-  duration: number;
-  records: ENSRegistrationRecords;
-  ownerAddress: EthereumAddress;
-  rentPrice: string;
-  salt?: string;
-  setReverseRecord?: boolean;
   commitTransactionHash?: string;
   commitTransactionConfirmedAt?: number;
+  duration: number;
+  name: string;
+  ownerAddress: EthereumAddress;
+  records?: ENSRegistrationRecords;
+  rentPrice: string;
+  salt: string;
+  setReverseRecord?: boolean;
 }
 
 export interface ENSRegistrationState {

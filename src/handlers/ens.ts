@@ -5,6 +5,7 @@ import {
   ENS_REGISTRATIONS,
   ENS_SUGGESTIONS,
 } from '../apollo/queries';
+import { RegisterENSActionParameters } from '../raps/common';
 import { estimateGasWithPadding } from './web3';
 import {
   ENSRegistrationRecords,
@@ -119,13 +120,7 @@ export const estimateENSCommitGasLimit = async ({
   duration,
   rentPrice,
   salt,
-}: {
-  name: string;
-  ownerAddress: string;
-  duration: number;
-  rentPrice: string;
-  salt: string;
-}) =>
+}: RegisterENSActionParameters) =>
   estimateENSTransactionGasLimit({
     duration,
     name,
@@ -290,14 +285,7 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
   duration,
   rentPrice,
   salt,
-}: {
-  name: string;
-  ownerAddress: string;
-  records: ENSRegistrationRecords;
-  duration: number;
-  rentPrice: string;
-  salt: string;
-}) => {
+}: RegisterENSActionParameters) => {
   const registerGasLimitPromise = estimateENSRegisterWithConfigGasLimit({
     duration,
     name,
@@ -308,7 +296,6 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
   // WIP we need to set / unset these values from the UI
   const setReverseRecord = true;
   const setRecords = true;
-
   const promises = [registerGasLimitPromise];
   if (setReverseRecord) {
     promises.push(
@@ -318,7 +305,7 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
       })
     );
   }
-  if (setRecords) {
+  if (setRecords && records) {
     promises.push(
       estimateENSMulticallGasLimit({
         name,

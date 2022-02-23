@@ -1,32 +1,32 @@
 import { concat } from 'lodash';
 import {
-  createNewAction,
+  createNewENSAction,
   createNewRap,
-  RapAction,
   RapActionTypes,
+  RapENSAction,
   RegisterENSActionParameters,
 } from './common';
 
 export const createRegisterENSRap = async (
   registerENSActionParameters: RegisterENSActionParameters
 ) => {
-  let actions: RapAction[] = [];
+  let actions: RapENSAction[] = [];
 
-  const register = createNewAction(
+  const register = createNewENSAction(
     RapActionTypes.registerWithConfigENS,
     registerENSActionParameters
   );
   actions = concat(actions, register);
 
   // ? records rap
-  const multicall = createNewAction(
+  const multicall = createNewENSAction(
     RapActionTypes.multicallENS,
     registerENSActionParameters
   );
   actions = concat(actions, multicall);
 
   // ? reverse name rap
-  const setName = createNewAction(
+  const setName = createNewENSAction(
     RapActionTypes.setNameENS,
     registerENSActionParameters
   );
@@ -40,9 +40,9 @@ export const createRegisterENSRap = async (
 export const createCommitENSRap = async (
   registerENSActionParameters: RegisterENSActionParameters
 ) => {
-  let actions: RapAction[] = [];
+  let actions: RapENSAction[] = [];
   // // commit rap
-  const commit = createNewAction(
+  const commit = createNewENSAction(
     RapActionTypes.commitENS,
     registerENSActionParameters
   );
