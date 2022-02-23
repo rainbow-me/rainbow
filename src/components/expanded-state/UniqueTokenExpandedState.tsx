@@ -332,7 +332,7 @@ const UniqueTokenExpandedState = ({
           ? { height: '100%' }
           : { additionalTopPadding: true, contentHeight: deviceHeight })}
         ref={sheetRef}
-        scrollEnabled={false}
+        scrollEnabled
         yPosition={yPosition}
       >
         <ColorModeProvider value="darkTinted">
@@ -356,173 +356,173 @@ const UniqueTokenExpandedState = ({
               textColor={textColor}
               yPosition={yPosition}
             />
-            {/*<Animated.View style={opacityStyle}>*/}
-            {/*  <Inset horizontal="24px" vertical={sectionSpace}>*/}
-            {/*    <Stack space={sectionSpace}>*/}
-            {/*      <Stack space="42px">*/}
-            {/*        <Inline alignHorizontal="justify" wrap={false}>*/}
-            {/*          <TextButton onPress={handlePressShowcase}>*/}
-            {/*            {isShowcaseAsset*/}
-            {/*              ? `􀁏 ${lang.t(*/}
-            {/*                  'expanded_state.unique_expanded.in_showcase'*/}
-            {/*                )}`*/}
-            {/*              : `􀁍 ${lang.t(*/}
-            {/*                  'expanded_state.unique_expanded.showcase'*/}
-            {/*                )}`}*/}
-            {/*          </TextButton>*/}
-            {/*          <TextButton align="right" onPress={handlePressShare}>*/}
-            {/*            􀈂 {lang.t('button.share')}*/}
-            {/*          </TextButton>*/}
-            {/*        </Inline>*/}
-            {/*        <UniqueTokenExpandedStateHeader asset={asset} />*/}
-            {/*      </Stack>*/}
-            {/*      {!isPoap ? (*/}
-            {/*        <Columns space="15px">*/}
-            {/*          <SheetActionButton*/}
-            {/*            color={imageColor}*/}
-            {/*            // @ts-expect-error JavaScript component*/}
-            {/*            label={*/}
-            {/*              hasSendButton ? '􀮶 OpenSea' : '􀮶 View on OpenSea'*/}
-            {/*            }*/}
-            {/*            nftShadows*/}
-            {/*            onPress={handlePressOpensea}*/}
-            {/*            textColor={textColor}*/}
-            {/*            weight="heavy"*/}
-            {/*          />*/}
-            {/*          {hasSendButton ? (*/}
-            {/*            <SendActionButton*/}
-            {/*              asset={asset}*/}
-            {/*              color={imageColor}*/}
-            {/*              nftShadows*/}
-            {/*              textColor={textColor}*/}
-            {/*            />*/}
-            {/*          ) : null}*/}
-            {/*        </Columns>*/}
-            {/*      ) : null}*/}
-            {/*      {asset.network === AssetTypes.polygon ? (*/}
-            {/*        // @ts-expect-error JavaScript component*/}
-            {/*        <L2Disclaimer*/}
-            {/*          assetType={AssetTypes.polygon}*/}
-            {/*          colors={colors}*/}
-            {/*          hideDivider*/}
-            {/*          isNft*/}
-            {/*          marginBottom={0}*/}
-            {/*          marginHorizontal={0}*/}
-            {/*          onPress={handleL2DisclaimerPress}*/}
-            {/*          symbol="NFT"*/}
-            {/*        />*/}
-            {/*      ) : null}*/}
-            {/*      <Stack*/}
-            {/*        separator={<Divider color="divider20" />}*/}
-            {/*        space={sectionSpace}*/}
-            {/*      >*/}
-            {/*        {!isPoap && asset.network !== AssetTypes.polygon ? (*/}
-            {/*          <Bleed // Manually crop surrounding space until TokenInfoItem uses design system components*/}
-            {/*            bottom={android ? '15px' : '6px'}*/}
-            {/*            top={android ? '10px' : '4px'}*/}
-            {/*          >*/}
-            {/*            <Columns space="19px">*/}
-            {/*              /!* @ts-expect-error JavaScript component *!/*/}
-            {/*              <TokenInfoItem*/}
-            {/*                color={*/}
-            {/*                  lastSalePrice === 'None' && !currentPrice*/}
-            {/*                    ? colors.alpha(colors.whiteLabel, 0.5)*/}
-            {/*                    : colors.whiteLabel*/}
-            {/*                }*/}
-            {/*                enableHapticFeedback={!!currentPrice}*/}
-            {/*                isNft*/}
-            {/*                onPress={toggleCurrentPriceDisplayCurrency}*/}
-            {/*                size="big"*/}
-            {/*                title={*/}
-            {/*                  currentPrice ? '􀋢 For sale' : 'Last sale price'*/}
-            {/*                }*/}
-            {/*                weight={*/}
-            {/*                  lastSalePrice === 'None' && !currentPrice*/}
-            {/*                    ? 'bold'*/}
-            {/*                    : 'heavy'*/}
-            {/*                }*/}
-            {/*              >*/}
-            {/*                {showCurrentPriceInEth ||*/}
-            {/*                nativeCurrency === 'ETH' ||*/}
-            {/*                !currentPrice*/}
-            {/*                  ? currentPrice || lastSalePrice*/}
-            {/*                  : convertAmountToNativeDisplay(*/}
-            {/*                      // @ts-expect-error currentPrice is a number?*/}
-            {/*                      parseFloat(currentPrice) * priceOfEth,*/}
-            {/*                      nativeCurrency*/}
-            {/*                    )}*/}
-            {/*              </TokenInfoItem>*/}
-            {/*              /!* @ts-expect-error JavaScript component *!/*/}
-            {/*              <TokenInfoItem*/}
-            {/*                align="right"*/}
-            {/*                color={*/}
-            {/*                  floorPrice === 'None'*/}
-            {/*                    ? colors.alpha(colors.whiteLabel, 0.5)*/}
-            {/*                    : colors.whiteLabel*/}
-            {/*                }*/}
-            {/*                enableHapticFeedback={floorPrice !== 'None'}*/}
-            {/*                isNft*/}
-            {/*                loading={!floorPrice}*/}
-            {/*                onInfoPress={handlePressCollectionFloor}*/}
-            {/*                onPress={toggleFloorDisplayCurrency}*/}
-            {/*                showInfoButton*/}
-            {/*                size="big"*/}
-            {/*                title="Floor price"*/}
-            {/*                weight={floorPrice === 'None' ? 'bold' : 'heavy'}*/}
-            {/*              >*/}
-            {/*                {showFloorInEth ||*/}
-            {/*                nativeCurrency === 'ETH' ||*/}
-            {/*                floorPrice === 'None' ||*/}
-            {/*                floorPrice === null*/}
-            {/*                  ? floorPrice*/}
-            {/*                  : convertAmountToNativeDisplay(*/}
-            {/*                      parseFloat(floorPrice) * priceOfEth,*/}
-            {/*                      nativeCurrency*/}
-            {/*                    )}*/}
-            {/*              </TokenInfoItem>*/}
-            {/*            </Columns>*/}
-            {/*          </Bleed>*/}
-            {/*        ) : null}*/}
-            {/*        {description ? (*/}
-            {/*          <Section title="Description">*/}
-            {/*            <Markdown>{description}</Markdown>*/}
-            {/*          </Section>*/}
-            {/*        ) : null}*/}
-            {/*        {traits.length ? (*/}
-            {/*          <Section title="Properties">*/}
-            {/*            <UniqueTokenAttributes*/}
-            {/*              {...asset}*/}
-            {/*              color={imageColor}*/}
-            {/*              disableMenu={isPoap}*/}
-            {/*              slug={asset.collection.slug}*/}
-            {/*            />*/}
-            {/*          </Section>*/}
-            {/*        ) : null}*/}
-            {/*        {familyDescription ? (*/}
-            {/*          <Section title={`About ${familyName}`}>*/}
-            {/*            <Stack space={sectionSpace}>*/}
-            {/*              <Markdown>{familyDescription}</Markdown>*/}
-            {/*              {familyLink ? (*/}
-            {/*                <Bleed // Manually crop surrounding space until Link uses design system components*/}
-            {/*                  bottom={android ? '15px' : undefined}*/}
-            {/*                  top="15px"*/}
-            {/*                >*/}
-            {/*                  /!* @ts-expect-error JavaScript component *!/*/}
-            {/*                  <Link*/}
-            {/*                    color={imageColor}*/}
-            {/*                    display={familyLinkDisplay}*/}
-            {/*                    url={familyLink}*/}
-            {/*                  />*/}
-            {/*                </Bleed>*/}
-            {/*              ) : null}*/}
-            {/*            </Stack>*/}
-            {/*          </Section>*/}
-            {/*        ) : null}*/}
-            {/*      </Stack>*/}
-            {/*    </Stack>*/}
-            {/*  </Inset>*/}
-            {/*  <Spacer />*/}
-            {/*</Animated.View>*/}
+            <Animated.View style={opacityStyle}>
+              <Inset horizontal="24px" vertical={sectionSpace}>
+                <Stack space={sectionSpace}>
+                  <Stack space="42px">
+                    <Inline alignHorizontal="justify" wrap={false}>
+                      <TextButton onPress={handlePressShowcase}>
+                        {isShowcaseAsset
+                          ? `􀁏 ${lang.t(
+                              'expanded_state.unique_expanded.in_showcase'
+                            )}`
+                          : `􀁍 ${lang.t(
+                              'expanded_state.unique_expanded.showcase'
+                            )}`}
+                      </TextButton>
+                      <TextButton align="right" onPress={handlePressShare}>
+                        􀈂 {lang.t('button.share')}
+                      </TextButton>
+                    </Inline>
+                    <UniqueTokenExpandedStateHeader asset={asset} />
+                  </Stack>
+                  {!isPoap ? (
+                    <Columns space="15px">
+                      <SheetActionButton
+                        color={imageColor}
+                        // @ts-expect-error JavaScript component
+                        label={
+                          hasSendButton ? '􀮶 OpenSea' : '􀮶 View on OpenSea'
+                        }
+                        nftShadows
+                        onPress={handlePressOpensea}
+                        textColor={textColor}
+                        weight="heavy"
+                      />
+                      {hasSendButton ? (
+                        <SendActionButton
+                          asset={asset}
+                          color={imageColor}
+                          nftShadows
+                          textColor={textColor}
+                        />
+                      ) : null}
+                    </Columns>
+                  ) : null}
+                  {asset.network === AssetTypes.polygon ? (
+                    // @ts-expect-error JavaScript component
+                    <L2Disclaimer
+                      assetType={AssetTypes.polygon}
+                      colors={colors}
+                      hideDivider
+                      isNft
+                      marginBottom={0}
+                      marginHorizontal={0}
+                      onPress={handleL2DisclaimerPress}
+                      symbol="NFT"
+                    />
+                  ) : null}
+                  <Stack
+                    separator={<Divider color="divider20" />}
+                    space={sectionSpace}
+                  >
+                    {!isPoap && asset.network !== AssetTypes.polygon ? (
+                      <Bleed // Manually crop surrounding space until TokenInfoItem uses design system components
+                        bottom={android ? '15px' : '6px'}
+                        top={android ? '10px' : '4px'}
+                      >
+                        <Columns space="19px">
+                          {/* @ts-expect-error JavaScript component */}
+                          <TokenInfoItem
+                            color={
+                              lastSalePrice === 'None' && !currentPrice
+                                ? colors.alpha(colors.whiteLabel, 0.5)
+                                : colors.whiteLabel
+                            }
+                            enableHapticFeedback={!!currentPrice}
+                            isNft
+                            onPress={toggleCurrentPriceDisplayCurrency}
+                            size="big"
+                            title={
+                              currentPrice ? '􀋢 For sale' : 'Last sale price'
+                            }
+                            weight={
+                              lastSalePrice === 'None' && !currentPrice
+                                ? 'bold'
+                                : 'heavy'
+                            }
+                          >
+                            {showCurrentPriceInEth ||
+                            nativeCurrency === 'ETH' ||
+                            !currentPrice
+                              ? currentPrice || lastSalePrice
+                              : convertAmountToNativeDisplay(
+                                  // @ts-expect-error currentPrice is a number?
+                                  parseFloat(currentPrice) * priceOfEth,
+                                  nativeCurrency
+                                )}
+                          </TokenInfoItem>
+                          {/* @ts-expect-error JavaScript component */}
+                          <TokenInfoItem
+                            align="right"
+                            color={
+                              floorPrice === 'None'
+                                ? colors.alpha(colors.whiteLabel, 0.5)
+                                : colors.whiteLabel
+                            }
+                            enableHapticFeedback={floorPrice !== 'None'}
+                            isNft
+                            loading={!floorPrice}
+                            onInfoPress={handlePressCollectionFloor}
+                            onPress={toggleFloorDisplayCurrency}
+                            showInfoButton
+                            size="big"
+                            title="Floor price"
+                            weight={floorPrice === 'None' ? 'bold' : 'heavy'}
+                          >
+                            {showFloorInEth ||
+                            nativeCurrency === 'ETH' ||
+                            floorPrice === 'None' ||
+                            floorPrice === null
+                              ? floorPrice
+                              : convertAmountToNativeDisplay(
+                                  parseFloat(floorPrice) * priceOfEth,
+                                  nativeCurrency
+                                )}
+                          </TokenInfoItem>
+                        </Columns>
+                      </Bleed>
+                    ) : null}
+                    {description ? (
+                      <Section title="Description">
+                        <Markdown>{description}</Markdown>
+                      </Section>
+                    ) : null}
+                    {traits.length ? (
+                      <Section title="Properties">
+                        <UniqueTokenAttributes
+                          {...asset}
+                          color={imageColor}
+                          disableMenu={isPoap}
+                          slug={asset.collection.slug}
+                        />
+                      </Section>
+                    ) : null}
+                    {familyDescription ? (
+                      <Section title={`About ${familyName}`}>
+                        <Stack space={sectionSpace}>
+                          <Markdown>{familyDescription}</Markdown>
+                          {familyLink ? (
+                            <Bleed // Manually crop surrounding space until Link uses design system components
+                              bottom={android ? '15px' : undefined}
+                              top="15px"
+                            >
+                              {/* @ts-expect-error JavaScript component */}
+                              <Link
+                                color={imageColor}
+                                display={familyLinkDisplay}
+                                url={familyLink}
+                              />
+                            </Bleed>
+                          ) : null}
+                        </Stack>
+                      </Section>
+                    ) : null}
+                  </Stack>
+                </Stack>
+              </Inset>
+              <Spacer />
+            </Animated.View>
           </AccentColorProvider>
         </ColorModeProvider>
       </SlackSheet>

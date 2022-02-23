@@ -146,9 +146,9 @@ const BottomSheetRoute = ({
         backdropComponent={renderBackdropComponent}
         backgroundComponent={null}
         containerHeight={CONTAINER_HEIGHT}
-        enableContentPanningGesture={false}
-        enableHandlePanningGesture={false}
-        enablePanDownToClose={false}
+        enableContentPanningGesture={enableContentPanningGesture}
+        enableHandlePanningGesture={enableHandlePanningGesture}
+        enablePanDownToClose
         handleComponent={null}
         index={index}
         onChange={handleOnChange}

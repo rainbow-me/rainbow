@@ -63,7 +63,7 @@ const ZoomContainer = styled(Animated.View)(({ width, height }) => ({
   width,
 }));
 
-const MAX_IMAGE_SCALE = 4;
+const MAX_IMAGE_SCALE = 100;
 const MIN_IMAGE_SCALE = 1;
 const THRESHOLD = 250;
 
@@ -166,13 +166,15 @@ export const ZoomableWrapper = ({
 
   const endGesture = useWorkletCallback((event, ctx) => {
     'worklet';
+    const fullSizeHeight = Math.min(deviceHeight, deviceWidth / aspectRatio);
+    const fullSizeWidth = Math.min(deviceWidth, deviceHeight * aspectRatio);
     const zooming = Math.pow(fullSizeHeight / containerHeightValue.value, 2);
     ctx.startVelocityX = undefined;
     ctx.startVelocityY = undefined;
     ctx.prevTranslateX = 0;
     ctx.prevTranslateY = 0;
     // if zoom state was entered by pinching, adjust targetScale to account for new image dimensions
-    let targetScale = isZoomedValue.value
+    let targetScale = true // TODO osdnk
       ? Math.min(scale.value, MAX_IMAGE_SCALE)
       : Math.min(
           scale.value * (containerWidth / fullSizeWidth),
@@ -182,10 +184,10 @@ export const ZoomableWrapper = ({
     // determine whether to snap to screen edges
     let breakingScaleX = deviceWidth / fullSizeWidth;
     let breakingScaleY = deviceHeight / fullSizeHeight;
-    if (isZoomedValue.value === false) {
-      breakingScaleX = deviceWidth / containerWidth;
-      breakingScaleY = deviceHeight / containerHeight;
-    }
+    // if (isZoomedValue.value === false) {
+    //   breakingScaleX = deviceWidth / containerWidth;
+    //   breakingScaleY = deviceHeight / containerHeight;
+    // } // TODO osdnk
 
     const maxDisplacementX =
       (deviceWidth * (Math.max(1, targetScale / breakingScaleX) - 1)) /
@@ -200,6 +202,7 @@ export const ZoomableWrapper = ({
     let targetTranslateY = translateY.value;
 
     if (scale.value > MAX_IMAGE_SCALE) {
+      console.log("XXXXX - 1")
       scale.value = withTiming(MAX_IMAGE_SCALE, adjustConfig);
       targetScale = MAX_IMAGE_SCALE;
       if (ctx.prevScale) {
@@ -226,6 +229,8 @@ export const ZoomableWrapper = ({
     ctx.prevScale = undefined;
 
     if (targetScale > breakingScaleX) {
+      console.log("XXXXX - 2")
+
       if (targetTranslateX > maxDisplacementX) {
         translateX.value = withTiming(maxDisplacementX, adjustConfig);
       }
@@ -233,10 +238,14 @@ export const ZoomableWrapper = ({
         translateX.value = withTiming(-maxDisplacementX, adjustConfig);
       }
     } else {
+      console.log("XXXXX - 3", breakingScaleX, aspectRatio, deviceHeight, deviceWidth, fullSizeWidth, isZoomedValue.value)
+
       translateX.value = withTiming(0, adjustConfig);
     }
 
     if (targetScale > breakingScaleY) {
+      console.log("XXXXX - 4")
+
       if (targetTranslateY > maxDisplacementY) {
         translateY.value = withTiming(maxDisplacementY, adjustConfig);
       }
@@ -244,10 +253,12 @@ export const ZoomableWrapper = ({
         translateY.value = withTiming(-maxDisplacementY, adjustConfig);
       }
     } else {
+      console.log("XXXXX - 5", breakingScaleY, aspectRatio, deviceHeight)
+
       translateY.value = withTiming(0, adjustConfig);
     }
 
-    if (!isZoomedValue.value) {
+    if (false) {
       // handle entering zoom state by pinching
       if (scale.value * containerWidthValue.value >= deviceWidth) {
         const adjustedScale = scale.value / (fullSizeWidth / containerWidth);
@@ -267,16 +278,20 @@ export const ZoomableWrapper = ({
           isZoomedValue.value = false;
           runOnJS(setIsZoomed)(false);
           animationProgress.value = withSpring(0, exitConfig);
+          console.log("XXX - v2")
           scale.value = withSpring(MIN_IMAGE_SCALE, exitConfig);
           translateX.value = withSpring(0, exitConfig);
           translateY.value = withSpring(0, exitConfig);
         } else {
+          console.log("XXX - v3")
           scale.value = withSpring(MIN_IMAGE_SCALE, exitConfig);
           translateX.value = withSpring(0, exitConfig);
           translateY.value = withSpring(0, exitConfig);
           targetScale = 1;
         }
       } else if (scale.value < MIN_IMAGE_SCALE) {
+        console.log("XXX - v4", scale.value)
+
         scale.value = withSpring(MIN_IMAGE_SCALE, exitConfig);
       }
 
@@ -288,8 +303,12 @@ export const ZoomableWrapper = ({
           THRESHOLD * targetScale &&
         fullSizeHeight * scale.value <= deviceHeight
       ) {
+        console.log("XXXXX - 6")
+
         isZoomedValue.value = false;
         runOnJS(setIsZoomed)(false);
+        console.log("XXX - v5")
+
         scale.value = withSpring(MIN_IMAGE_SCALE, exitConfig);
         animationProgress.value = withSpring(0, exitConfig);
         translateX.value = withSpring(0, exitConfig);
@@ -302,6 +321,8 @@ export const ZoomableWrapper = ({
       isZoomedValue.value &&
       targetScale > breakingScaleX
     ) {
+      console.log("XXXXX - 7")
+
       const projectedYCoordinate = targetTranslateY + event.velocityY / 8;
       const edgeBounceConfig = {
         damping: 60,
@@ -329,6 +350,8 @@ export const ZoomableWrapper = ({
       isZoomedValue.value &&
       targetScale > breakingScaleX
     ) {
+      console.log("XXXXX - 8")
+
       const projectedXCoordinate = targetTranslateX + event.velocityX / 8;
       const edgeBounceConfig = {
         damping: 60,
@@ -360,10 +383,11 @@ export const ZoomableWrapper = ({
         ctx.startScale <= MIN_IMAGE_SCALE &&
         event.numberOfPointers === 1
       ) {
-        scale.value =
-          ctx.startScale -
-          ((ctx.startY + Math.abs(event.translationY)) / deviceHeight / 2) *
-            ctx.startScale;
+        // scale.value =
+        //   ctx.startScale -
+        //   ((ctx.startY + Math.abs(event.translationY)) / deviceHeight / 2) *
+        //     ctx.startScale;
+        // console.log("GGGGG")
       }
       if (event.numberOfPointers === 2) {
         ctx.numberOfPointers = 2;
@@ -428,6 +452,7 @@ export const ZoomableWrapper = ({
           ctx.blockExitZoom = true;
         }
         scale.value = ctx.startScale * (event.scale / ctx.initEventScale);
+        console.log("XXX -h", scale.value)
         if (ctx.prevScale) {
           translateX.value +=
             (ctx.focalDisplacementX * (event.scale - ctx.prevScale)) /
@@ -543,7 +568,6 @@ export const ZoomableWrapper = ({
   });
 
   const animatedStyle = useAnimatedStyle(() => {
-    console.log('sdf', scale.value);
     return {
       transform: [
         {
@@ -609,18 +633,18 @@ export const ZoomableWrapper = ({
                   {/*  simultaneousHandlers={[pinch, singleTap, pan, doubleTap]}*/}
                   {/*>*/}
                   <Container style={[StyleSheet.absoluteFillObject]}>
-                    {/*<PinchGestureHandler*/}
-                    {/*  enabled={false}*/}
-                    {/*  onGestureEvent={pinchGestureHandler}*/}
-                    {/*  ref={pinch}*/}
-                    {/*  simultaneousHandlers={[pinch, singleTap, pan, doubleTap]}*/}
-                    {/*>*/}
+                    <PinchGestureHandler
+                      enabled={!disableAnimations}
+                      onGestureEvent={pinchGestureHandler}
+                      ref={pinch}
+                      simultaneousHandlers={[pinch, singleTap, pan, doubleTap]}
+                    >
                     <ImageWrapper
                       style={[cornerStyle, StyleSheet.absoluteFillObject]}
                     >
                       {children}
                     </ImageWrapper>
-                    {/*</PinchGestureHandler>*/}
+                    </PinchGestureHandler>
                   </Container>
                   {/*</TapGestureHandler>*/}
                 </Animated.View>
