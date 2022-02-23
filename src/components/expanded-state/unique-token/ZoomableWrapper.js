@@ -168,7 +168,7 @@ export const ZoomableWrapper = ({
     'worklet';
     const fullSizeHeight = Math.min(deviceHeight, deviceWidth / aspectRatio);
     const fullSizeWidth = Math.min(deviceWidth, deviceHeight * aspectRatio);
-    const zooming = Math.pow(fullSizeHeight / containerHeightValue.value, 2);
+    const zooming = fullSizeHeight / containerHeightValue.value;
     ctx.startVelocityX = undefined;
     ctx.startVelocityY = undefined;
     ctx.prevTranslateX = 0;
