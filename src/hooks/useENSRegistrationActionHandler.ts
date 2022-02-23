@@ -26,9 +26,9 @@ const secsInYear = 31536000;
 
 export default function useENSRegistrationActionHandler(
   {
-    duration,
+    yearsDuration,
   }: {
-    duration: number;
+    yearsDuration: number;
   } = {} as any
 ) {
   const { accountAddress, network } = useAccountSettings();
@@ -60,10 +60,10 @@ export default function useENSRegistrationActionHandler(
 
       const salt = generateSalt();
       const nonce = await getNextNonce();
-      const rentPrice = await getRentPrice(name, duration * secsInYear);
+      const rentPrice = await getRentPrice(name, yearsDuration * secsInYear);
 
       const commitEnsRegistrationParameters: RegisterENSActionParameters = {
-        duration: duration * secsInYear,
+        duration: yearsDuration * secsInYear,
         name,
         nonce,
         ownerAddress: accountAddress,
@@ -78,7 +78,7 @@ export default function useENSRegistrationActionHandler(
         callback
       );
     },
-    [accountAddress, duration, getNextNonce, registrationParameters]
+    [accountAddress, yearsDuration, getNextNonce, registrationParameters]
   );
 
   const register = useCallback(
@@ -95,10 +95,10 @@ export default function useENSRegistrationActionHandler(
       }
 
       const nonce = await getNextNonce();
-      const rentPrice = await getRentPrice(name, duration * secsInYear);
+      const rentPrice = await getRentPrice(name, duration);
 
       const registerEnsRegistrationParameters: RegisterENSActionParameters = {
-        duration: duration * secsInYear,
+        duration,
         name,
         nonce,
         ownerAddress: accountAddress,
@@ -202,7 +202,7 @@ export default function useENSRegistrationActionHandler(
           const gasLimit = await getENSRapEstimationByType(
             RapActionTypes.commitENS,
             {
-              duration: duration * secsInYear,
+              duration: yearsDuration * secsInYear,
               name,
               ownerAddress: accountAddress,
               records,
@@ -223,7 +223,7 @@ export default function useENSRegistrationActionHandler(
           const gasLimit = await getENSRapEstimationByType(
             RapActionTypes.registerENS,
             {
-              duration: duration * secsInYear,
+              duration: yearsDuration * secsInYear,
               name,
               ownerAddress: accountAddress,
               records,
@@ -253,7 +253,7 @@ export default function useENSRegistrationActionHandler(
   useEffect(() => {
     let interval: NodeJS.Timer;
     const isActive =
-      secondsSinceCommitConfirmed >= 0 && secondsSinceCommitConfirmed < 80;
+      secondsSinceCommitConfirmed >= 0 && secondsSinceCommitConfirmed < 60;
     if (isActive) {
       interval = setInterval(() => {
         setSecondsSinceCommitConfirmed(seconds => seconds + 1);

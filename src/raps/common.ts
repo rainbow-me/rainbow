@@ -31,7 +31,13 @@ import { ENSRegistrationRecords } from '@rainbow-me/helpers/ens';
 import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
 import logger from 'logger';
 
-const { commitENS, registerENS, multicallENS, setTextENS, setNameENS } = ens;
+const {
+  commitENS,
+  registerWithConfig,
+  multicallENS,
+  setTextENS,
+  setNameENS,
+} = ens;
 
 export enum RapActionType {
   depositCompound = 'depositCompound',
@@ -166,7 +172,6 @@ const createENSRapByType = (
     case RapActionTypes.registerENS:
       return createRegisterENSRap(ensRegistrationParameters);
     case RapActionTypes.commitENS:
-      return createCommitENSRap(ensRegistrationParameters);
     default:
       return createCommitENSRap(ensRegistrationParameters);
   }
@@ -223,8 +228,8 @@ const findENSActionByType = (type: RapActionType) => {
   switch (type) {
     case RapActionTypes.commitENS:
       return commitENS;
-    case RapActionTypes.registerENS:
-      return registerENS;
+    case RapActionTypes.registerWithConfigENS:
+      return registerWithConfig;
     case RapActionTypes.multicallENS:
       return multicallENS;
     case RapActionTypes.setTextENS:
@@ -331,6 +336,7 @@ export const executeRap = async (
   callback: (success?: boolean, errorMessage?: string | null) => void
 ) => {
   const rapType = getRapTypeFromActionType(type);
+
   let rap: Rap = { actions: [] };
   if (rapType === RAP_TYPE.EXCHANGE) {
     rap = await createRapByType(type, parameters as SwapActionParameters);

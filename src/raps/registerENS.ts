@@ -19,11 +19,12 @@ export const createRegisterENSRap = async (
   actions = concat(actions, register);
 
   // ? records rap
-  const multicall = createNewENSAction(
-    RapActionTypes.multicallENS,
-    registerENSActionParameters
-  );
-  actions = concat(actions, multicall);
+  // WIP we don't have a formatter method yet
+  // const multicall = createNewENSAction(
+  //   RapActionTypes.multicallENS,
+  //   registerENSActionParameters
+  // );
+  // actions = concat(actions, multicall);
 
   // ? reverse name rap
   const setName = createNewENSAction(

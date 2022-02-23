@@ -104,7 +104,7 @@ const executeMulticall = async (
 
   return (
     methodArguments &&
-    contract?.setText(...methodArguments, {
+    contract?.multicall(...methodArguments, {
       gasLimit: gasLimit ? toHex(gasLimit) : undefined,
       maxFeePerGas: maxFeePerGas ? toHex(maxFeePerGas) : undefined,
       maxPriorityFeePerGas: maxPriorityFeePerGas
@@ -134,7 +134,7 @@ const executeSetName = async (
 
   return (
     methodArguments &&
-    contract?.setText(...methodArguments, {
+    contract?.setName(...methodArguments, {
       gasLimit: gasLimit ? toHex(gasLimit) : undefined,
       maxFeePerGas: maxFeePerGas ? toHex(maxFeePerGas) : undefined,
       maxPriorityFeePerGas: maxPriorityFeePerGas
@@ -261,6 +261,17 @@ const ensAction = async (
           wallet,
           nonce
         );
+        await dispatch(
+          saveCommitRegistrationParameters(ownerAddress, {
+            commitTransactionHash: tx?.hash,
+            duration,
+            name,
+            ownerAddress,
+            records,
+            rentPrice,
+            salt,
+          })
+        );
         break;
       case ENSRegistrationTransactionType.REGISTER_WITH_CONFIG:
         tx = await executeRegisterWithConfig(
@@ -339,17 +350,6 @@ const ensAction = async (
   // being a string conflicts with the inferred type of "null" for the second
   // parameter.
   await dispatch(dataAddNewTransaction(newTransaction, ownerAddress, true));
-  await dispatch(
-    saveCommitRegistrationParameters(ownerAddress, {
-      commitTransactionHash: tx?.hash,
-      duration,
-      name,
-      ownerAddress,
-      records,
-      rentPrice,
-      salt,
-    })
-  );
   return tx?.nonce;
 };
 
@@ -371,14 +371,14 @@ const commitENS = async (
   );
 };
 
-const registerENS = async (
+const registerWithConfig = async (
   wallet: Wallet,
   currentRap: Rap,
   index: number,
   parameters: RapENSActionParameters,
   baseNonce?: number
 ): Promise<number | undefined> => {
-  const actionName = 'registerENS';
+  const actionName = 'registerWithConfig';
   return ensAction(
     wallet,
     actionName,
@@ -446,7 +446,7 @@ const setNameENS = async (
 export default {
   commitENS,
   multicallENS,
-  registerENS,
+  registerWithConfig,
   setNameENS,
   setTextENS,
 };

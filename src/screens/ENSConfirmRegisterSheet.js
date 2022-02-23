@@ -48,7 +48,7 @@ export default function ENSConfirmRegisterSheet() {
   const { params } = useRoute();
   const [duration, setDuration] = useState(1);
   const { step, stepGasLimit, action } = useENSRegistrationActionHandler({
-    duration,
+    yearsDuration: duration,
   });
   const prevStepGasLimit = usePrevious(stepGasLimit);
 
