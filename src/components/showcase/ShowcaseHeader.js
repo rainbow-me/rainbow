@@ -154,7 +154,7 @@ export function Header() {
 
   const onWatchAddress = useCallback(() => {
     if (contextValue?.setIsSearchModeEnabled) {
-      contextValue?.setIsSearchModeEnabled(false);
+      contextValue.setIsSearchModeEnabled(false);
     }
     handleSetSeedPhrase(contextValue.address);
     handlePressImportButton(
