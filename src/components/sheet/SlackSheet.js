@@ -175,9 +175,6 @@ export default forwardRef(function SlackSheet(
         <ContentWrapper backgroundColor={bg}>
           {renderHeader?.(yPosition)}
           <Content
-            as={
-              isInsideBottomSheet ? BottomSheetScrollView : Animated.ScrollView
-            }
             backgroundColor={bg}
             contentContainerStyle={scrollEnabled && contentContainerStyle}
             contentHeight={contentHeight}
