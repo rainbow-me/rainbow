@@ -32,9 +32,16 @@ export default function usePersistentDominantColorFromImage(
     url,
     storage
   );
+
   const [state, setState] = useState<State>(
     dominantColor ? State.loaded : State.init
   );
+  useEffect(() => {
+    if (!dominantColor) {
+      setState(State.init);
+    }
+  }, [dominantColor]);
+
   useEffect(() => {
     if (state === State.init && nonSvgUrl) {
       const lowResUrl = getLowResUrl(nonSvgUrl) as string;

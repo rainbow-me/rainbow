@@ -56,6 +56,7 @@ enum ENS_RECORDS {
   LTC = 'LTC',
   DOGE = 'DOGE',
   displayName = 'me.rainbow.displayName',
+  cover = 'me.rainbow.cover',
   content = 'content',
   email = 'email',
   url = 'url',

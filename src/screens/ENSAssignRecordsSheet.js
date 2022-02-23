@@ -1,25 +1,24 @@
-import React, { useCallback, useEffect } from 'react';
-import { Keyboard, Pressable } from 'react-native';
-import RadialGradient from 'react-native-radial-gradient';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Keyboard } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import Svg, { Path } from 'react-native-svg';
 import { useRecoilState } from 'recoil';
-import ButtonPressAnimation from '../components/animations/ButtonPressAnimation';
 import { MiniButton } from '../components/buttons';
 import TintButton from '../components/buttons/TintButton';
-import { TextRecordsForm } from '../components/ens-registration';
+import {
+  Avatar,
+  Cover as CoverPhoto,
+  TextRecordsForm,
+} from '../components/ens-registration';
 import SelectableButton from '../components/ens-registration/TextRecordsForm/SelectableButton';
 import { SheetActionButton, SheetActionButtonRow } from '../components/sheet';
 import { useTheme } from '../context/ThemeContext';
 import { useNavigation } from '../navigation/Navigation';
-// import { usePersistentDominantColorFromImage } from '@rainbow-me/hooks';
 import {
   AccentColorProvider,
-  BackgroundProvider,
   Bleed,
   Box,
   Cover,
@@ -40,46 +39,31 @@ import {
   useENSProfile,
   useENSProfileForm,
   useKeyboardHeight,
+  usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 
 const AnimatedBox = Animated.createAnimatedComponent(Box);
 
 export const BottomActionHeight = ios ? 270 : 250;
-const avatarSize = 70;
-const alpha = '33';
 
 export default function ENSAssignRecordsSheet() {
   const { colors } = useTheme();
   const { name } = useENSProfile();
 
+  const [avatarUrl, setAvatarUrl] = useState();
+
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
+  const { result: dominantColor } = usePersistentDominantColorFromImage(
+    avatarUrl || ''
+  );
+  const [prevDominantColor, setPrevDominantColor] = useState(dominantColor);
   useEffect(() => {
-    setAccentColor(colors.purple);
-  }, [colors.purple, setAccentColor]);
-  //   usePersistentDominantColorFromImage('TODO').result || colors.purple;   // add this when we implement avatars
-
-  const {
-    selectedFields,
-    onChangeField,
-    onBlurField,
-    values,
-  } = useENSProfileForm({
-    defaultFields: [
-      textRecordFields[ENS_RECORDS.displayName],
-      textRecordFields[ENS_RECORDS.description],
-      textRecordFields[ENS_RECORDS.url],
-      textRecordFields[ENS_RECORDS.twitter],
-    ],
-  });
-
-  const handleChooseCover = useCallback(() => {
-    // TODO
-  }, []);
-
-  const handleChooseAvatar = useCallback(() => {
-    // TODO
-  }, []);
+    setAccentColor(dominantColor || prevDominantColor || colors.purple);
+    if (dominantColor) {
+      setPrevDominantColor(dominantColor);
+    }
+  }, [colors.purple, dominantColor, prevDominantColor, setAccentColor]);
 
   return (
     <AccentColorProvider color={accentColor}>
@@ -89,63 +73,10 @@ export default function ENSAssignRecordsSheet() {
         style={{ paddingBottom: BottomActionHeight + 20 }}
       >
         <Stack space="19px">
-          <Pressable onPress={handleChooseCover}>
-            <Box
-              alignItems="center"
-              as={RadialGradient}
-              colors={[colors.whiteLabel + alpha, accentColor + alpha]}
-              height="126px"
-              justifyContent="center"
-              stops={[0.6, 0]}
-            >
-              <Text color="accent" size="18px" weight="heavy">
-                􀣵 Add Cover
-              </Text>
-            </Box>
-          </Pressable>
+          <CoverPhoto />
           <Bleed top={{ custom: 38 }}>
             <Box alignItems="center">
-              <Box
-                height={{ custom: avatarSize }}
-                width={{ custom: avatarSize }}
-              >
-                <Cover alignHorizontal="center">
-                  <BackgroundProvider color="body">
-                    {({ backgroundColor }) => (
-                      <Svg
-                        height="32"
-                        style={{ top: -6 }}
-                        viewBox="0 0 96 29"
-                        width="96"
-                      >
-                        <Path
-                          d="M9.22449 23.5H0V28.5H96V23.5H86.7755C85.0671 23.5 83.4978 22.5584 82.6939 21.051C67.8912 -6.70409 28.1088 -6.70408 13.3061 21.051C12.5022 22.5584 10.9329 23.5 9.22449 23.5Z"
-                          fill={backgroundColor}
-                        />
-                      </Svg>
-                    )}
-                  </BackgroundProvider>
-                </Cover>
-                <ButtonPressAnimation onPress={handleChooseAvatar}>
-                  <AccentColorProvider color={accentColor + '10'}>
-                    <Box
-                      alignItems="center"
-                      background="accent"
-                      borderRadius={avatarSize / 2}
-                      height={{ custom: avatarSize }}
-                      justifyContent="center"
-                      shadow="12px heavy accent"
-                      width={{ custom: avatarSize }}
-                    >
-                      <AccentColorProvider color={accentColor}>
-                        <Text color="accent" size="18px" weight="heavy">
-                          {` 􀣵 `}
-                        </Text>
-                      </AccentColorProvider>
-                    </Box>
-                  </AccentColorProvider>
-                </ButtonPressAnimation>
-              </Box>
+              <Avatar onChangeAvatarUrl={setAvatarUrl} />
             </Box>
           </Bleed>
           <Inset horizontal="19px">
@@ -160,10 +91,12 @@ export default function ENSAssignRecordsSheet() {
               </Stack>
               <Box flexGrow={1}>
                 <TextRecordsForm
-                  onBlurField={onBlurField}
-                  onChangeField={onChangeField}
-                  selectedFields={selectedFields}
-                  values={values}
+                  defaultFields={[
+                    ENS_RECORDS.displayName,
+                    ENS_RECORDS.description,
+                    ENS_RECORDS.url,
+                    ENS_RECORDS.twitter,
+                  ]}
                 />
               </Box>
             </Stack>
@@ -180,6 +113,7 @@ export function ENSAssignRecordsBottomActions({ visible }) {
   const [accentColor] = useRecoilState(accentColorAtom);
 
   const {
+    disabled,
     isEmpty,
     selectedFields,
     onAddField,
@@ -191,11 +125,8 @@ export function ENSAssignRecordsBottomActions({ visible }) {
   }, [navigate]);
 
   const handlePressContinue = useCallback(() => {
-    navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
-      accentColor,
-      avatarUrl: null,
-    });
-  }, [accentColor, navigate]);
+    navigate(Routes.ENS_CONFIRM_REGISTER_SHEET);
+  }, [navigate]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -246,18 +177,22 @@ export function ENSAssignRecordsBottomActions({ visible }) {
                   {isEmpty ? (
                     <TintButton
                       color="secondary60"
+                      disabled={disabled}
                       onPress={handlePressContinue}
                     >
                       Skip
                     </TintButton>
                   ) : (
-                    <SheetActionButton
-                      color={accentColor}
-                      label="Review"
-                      onPress={handlePressContinue}
-                      size="big"
-                      weight="heavy"
-                    />
+                    <Box style={{ opacity: disabled ? 0.5 : 1 }}>
+                      <SheetActionButton
+                        color={accentColor}
+                        disabled={disabled}
+                        label="Review"
+                        onPress={handlePressContinue}
+                        size="big"
+                        weight="heavy"
+                      />
+                    </Box>
                   )}
                 </SheetActionButtonRow>
               </Row>

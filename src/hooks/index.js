@@ -73,6 +73,7 @@ export { default as useRouteExistsInNavigationState } from './useRouteExistsInNa
 export { default as useSafeImageUri } from './useSafeImageUri';
 export { default as useSavingsAccount } from './useSavingsAccount';
 export { default as useScanner } from './useScanner';
+export { default as useSelectImageMenu } from './useSelectImageMenu';
 export { default as useSendSheetInputRefs } from './useSendSheetInputRefs';
 export { default as useSendableUniqueTokens } from './useSendableUniqueTokens';
 export { default as useSendFeedback } from './useSendFeedback';
