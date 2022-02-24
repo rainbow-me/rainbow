@@ -106,7 +106,6 @@ enum RAP_TYPE {
 export type RapAction = RapExchangeAction | RapENSAction;
 
 export interface RapExchangeAction {
-  rapType: RAP_TYPE.EXCHANGE;
   parameters: RapActionParameters;
   transaction: RapActionTransaction;
   type: RapActionType;
@@ -395,9 +394,10 @@ export const createNewRap = (actions: RapAction[]) => {
 export const createNewAction = (
   type: RapActionType,
   parameters: RapActionParameters
-) => {
+): RapExchangeAction => {
   const newAction = {
     parameters,
+    rapType: RAP_TYPE.EXCHANGE,
     transaction: { confirmed: null, hash: null },
     type,
   };
