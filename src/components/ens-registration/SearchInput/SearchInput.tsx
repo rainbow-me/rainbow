@@ -1,5 +1,5 @@
 import MaskedView from '@react-native-community/masked-view';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { TextInputProps } from 'react-native';
 import Spinner from '../../Spinner';
 import { Input } from '../../inputs';
@@ -49,7 +49,7 @@ const SearchInput = ({
               width="full"
             />
           }
-          style={{ height: '100%', width: '100%' }}
+          style={useMemo(() => ({ height: '100%', width: '100%' }), [])}
         >
           <SearchInputGradientBackground
             height={height}
@@ -72,7 +72,7 @@ const SearchInput = ({
               />
             </Inset>
           }
-          style={{ height: '100%', width: '100%' }}
+          style={useMemo(() => ({ height: '100%', width: '100%' }), [])}
         >
           <SearchInputGradientBackground
             height={height}
@@ -101,7 +101,7 @@ const SearchInput = ({
                     )}
                   </Box>
                 }
-                style={{ height, width: 42 }}
+                style={useMemo(() => ({ height, width: 42 }), [])}
               >
                 <SearchInputGradientBackground
                   height={height}
@@ -115,11 +115,14 @@ const SearchInput = ({
               autoFocus
               keyboardType="visible-password"
               onChangeText={onChangeText}
-              style={{
-                ...headingStyle,
-                height,
-                top: ios ? 1.5 : 8,
-              }}
+              style={useMemo(
+                () => ({
+                  ...headingStyle,
+                  height,
+                  top: ios ? 1.5 : 8,
+                }),
+                [headingStyle]
+              )}
               value={value}
             />
             <Column width="content">

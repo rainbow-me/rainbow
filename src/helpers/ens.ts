@@ -1,7 +1,7 @@
 import { formatsByName } from '@ensdomains/address-encoder';
 import { hash } from '@ensdomains/eth-ens-namehash';
 import { BigNumberish, Contract, Wallet } from 'ethers';
-import { keccak_256 as sha3 } from 'js-sha3';
+import { keccak256, toUtf8Bytes } from 'ethers/lib/utils';
 import { atom } from 'recoil';
 import { InlineFieldProps } from '../components/inputs/InlineField';
 import {
@@ -12,7 +12,7 @@ import {
   fromWei,
   multiply,
 } from './utilities';
-import { addHexPrefix, toHex, web3Provider } from '@rainbow-me/handlers/web3';
+import { toHex, web3Provider } from '@rainbow-me/handlers/web3';
 import { gweiToWei } from '@rainbow-me/parsers';
 import {
   ENSBaseRegistrarImplementationABI,
@@ -219,7 +219,7 @@ const getAvailable = async (name: string): Promise<boolean> =>
 
 const getNameExpires = async (name: string): Promise<string> =>
   getENSBaseRegistrarImplementationContract().nameExpires(
-    addHexPrefix(sha3(name))
+    keccak256(toUtf8Bytes(name))
   );
 
 const getRentPrice = async (name: string, duration: number): Promise<any> =>

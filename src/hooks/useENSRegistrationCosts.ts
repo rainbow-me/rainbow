@@ -10,9 +10,8 @@ import {
 import { Network } from '@rainbow-me/helpers/networkTypes';
 import { add, addDisplay, multiply } from '@rainbow-me/helpers/utilities';
 import { getEIP1559GasParams } from '@rainbow-me/redux/gas';
+import { timeUnits } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
-
-const secsInYear = 31536000;
 
 export default function useENSRegistrationCosts({
   duration,
@@ -37,7 +36,7 @@ export default function useENSRegistrationCosts({
     const { totalRegistrationGasLimit } = await estimateENSRegistrationGasLimit(
       name,
       accountAddress,
-      duration * secsInYear,
+      duration * timeUnits.secs.year,
       rentPriceInWei
     );
 

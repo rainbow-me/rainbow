@@ -2,6 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import { useDispatch } from 'react-redux';
+import { useDebounce } from 'use-debounce';
 import dice from '../assets/dice.png';
 import TintButton from '../components/buttons/TintButton';
 import {
@@ -22,7 +23,6 @@ import {
 import { ENS_DOMAIN } from '@rainbow-me/helpers/ens';
 import {
   useAccountSettings,
-  useDebounceString,
   useENSRegistration,
   useENSRegistrationCosts,
   useKeyboardHeight,
@@ -42,7 +42,7 @@ export default function ENSSearchSheet() {
   const topPadding = android ? 29 : 19;
 
   const [searchQuery, setSearchQuery] = useState('');
-  const debouncedSearchQuery = useDebounceString(searchQuery);
+  const [debouncedSearchQuery] = useDebounce(searchQuery, 200);
 
   const {
     data: registrationData,

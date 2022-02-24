@@ -1,6 +1,6 @@
 import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
-import { Rap, RapActionParameters } from '../common';
+import { Rap, RapActionParameters, RapActionTypes } from '../common';
 import { estimateENSTransactionGasLimit } from '@rainbow-me/handlers/ens';
 import { toHex } from '@rainbow-me/handlers/web3';
 import { NetworkTypes } from '@rainbow-me/helpers';
@@ -348,10 +348,9 @@ const commitENS = async (
   parameters: RapActionParameters,
   baseNonce?: number
 ): Promise<number | undefined> => {
-  const actionName = 'commitENS';
   return ensAction(
     wallet,
-    actionName,
+    RapActionTypes.commitENS,
     index,
     parameters,
     ENSRegistrationTransactionType.COMMIT,
@@ -366,10 +365,9 @@ const registerENS = async (
   parameters: RapActionParameters,
   baseNonce?: number
 ): Promise<number | undefined> => {
-  const actionName = 'registerENS';
   return ensAction(
     wallet,
-    actionName,
+    RapActionTypes.registerENS,
     index,
     parameters,
     ENSRegistrationTransactionType.REGISTER_WITH_CONFIG,
@@ -384,10 +382,9 @@ const multicallENS = async (
   parameters: RapActionParameters,
   baseNonce?: number
 ): Promise<number | undefined> => {
-  const actionName = 'multicallENS';
   return ensAction(
     wallet,
-    actionName,
+    RapActionTypes.multicallENS,
     index,
     parameters,
     ENSRegistrationTransactionType.MULTICALL,
@@ -402,10 +399,9 @@ const setTextENS = async (
   parameters: RapActionParameters,
   baseNonce?: number
 ): Promise<number | undefined> => {
-  const actionName = 'setTextENS';
   return ensAction(
     wallet,
-    actionName,
+    RapActionTypes.setTextENS,
     index,
     parameters,
     ENSRegistrationTransactionType.SET_TEXT,
@@ -420,10 +416,9 @@ const setNameENS = async (
   parameters: RapActionParameters,
   baseNonce?: number
 ): Promise<number | undefined> => {
-  const actionName = 'setNameENS';
   return ensAction(
     wallet,
-    actionName,
+    RapActionTypes.setNameENS,
     index,
     parameters,
     ENSRegistrationTransactionType.SET_NAME,

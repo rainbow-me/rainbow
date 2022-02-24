@@ -24,15 +24,18 @@ const RadialGradientBackground = ({
       {...props}
       center={center}
       radius={width}
-      style={[
-        style,
-        {
-          height: width,
-          position: 'absolute',
-          top: -(width - height) / 2,
-          width,
-        },
-      ]}
+      style={useMemo(
+        () => [
+          style,
+          {
+            height: width,
+            position: 'absolute',
+            top: -(width - height) / 2,
+            width,
+          },
+        ],
+        [height, style, width]
+      )}
     />
   );
 };
