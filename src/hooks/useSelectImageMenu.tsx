@@ -2,13 +2,16 @@ import React, { useCallback } from 'react';
 import ImagePicker, { Image, Options } from 'react-native-image-crop-picker';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import { useMutation } from 'react-query';
+import { UniqueAsset } from '@rainbow-me/entities';
 import {
   uploadImage,
   UploadImageReturnData,
 } from '@rainbow-me/handlers/pinata';
+import { useNavigation } from '@rainbow-me/navigation';
+import Routes from '@rainbow-me/routes';
 import { showActionSheetWithOptions } from '@rainbow-me/utils';
 
-type Action = 'library' /* | 'nft'*/;
+type Action = 'library' | 'nft';
 
 const items = {
   library: {
@@ -21,16 +24,16 @@ const items = {
       type: 'IMAGE_SYSTEM',
     },
   },
-  // nft: {
-  //   actionKey: 'nft',
-  //   actionTitle: 'Choose NFT',
-  //   icon: {
-  //     imageValue: {
-  //       systemName: 'cube',
-  //     },
-  //     type: 'IMAGE_SYSTEM',
-  //   },
-  // },
+  nft: {
+    actionKey: 'nft',
+    actionTitle: 'Choose NFT',
+    icon: {
+      imageValue: {
+        systemName: 'cube',
+      },
+      type: 'IMAGE_SYSTEM',
+    },
+  },
 };
 
 export default function useSelectImageMenu({
@@ -44,7 +47,13 @@ export default function useSelectImageMenu({
 }: {
   imagePickerOptions?: Options;
   menuItems?: Action[];
-  onChangeImage?: ({ image }: { image: Image }) => void;
+  onChangeImage?: ({
+    asset,
+    image,
+  }: {
+    asset?: UniqueAsset;
+    image?: Image;
+  }) => void;
   onUploading?: ({ image }: { image: Image }) => void;
   onUploadSuccess?: ({
     data,
@@ -56,6 +65,8 @@ export default function useSelectImageMenu({
   onUploadError?: ({ error, image }: { error: unknown; image: Image }) => void;
   uploadToIPFS?: boolean;
 } = {}) {
+  const { navigate } = useNavigation();
+
   const { isLoading: isUploading, mutateAsync: upload } = useMutation(
     'ensImageUpload',
     uploadImage
@@ -92,13 +103,24 @@ export default function useSelectImageMenu({
     uploadToIPFS,
   ]);
 
+  const handleSelectNFT = useCallback(() => {
+    navigate(Routes.SELECT_UNIQUE_TOKEN_SHEET, {
+      onSelect: (asset: any) => onChangeImage?.({ asset }),
+      springDamping: 1,
+      topOffset: 0,
+    });
+  }, [navigate, onChangeImage]);
+
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === 'library') {
         handleSelectImage();
       }
+      if (actionKey === 'nft') {
+        handleSelectNFT();
+      }
     },
-    [handleSelectImage]
+    [handleSelectImage, handleSelectNFT]
   );
 
   const handleAndroidPress = useCallback(() => {

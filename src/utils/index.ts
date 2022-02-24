@@ -20,6 +20,7 @@ export { default as getDominantColorFromImage } from './getDominantColorFromImag
 export { default as getTokenMetadata } from './getTokenMetadata';
 export { default as getUrlForTrustIconFallback } from './getUrlForTrustIconFallback';
 export { default as haptics } from './haptics';
+export { default as isENSNFTAvatar } from './isENSNFTAvatar';
 export { default as isETH } from './isETH';
 export { default as isLowerCaseMatch } from './isLowerCaseMatch';
 export { default as isNewValueForObjectPaths } from './isNewValueForObjectPaths';
@@ -29,6 +30,7 @@ export { default as magicMemo } from './magicMemo';
 export { default as measureText } from './measureText';
 export { default as neverRerender } from './neverRerender';
 export { default as normalizeENS } from './normalizeENS';
+export { default as parseENSNFTAvatar } from './parseENSNFTAvatar';
 export { default as parseObjectToUrlQueryString } from './parseObjectToUrlQueryString';
 export { default as parseQueryParams } from './parseQueryParams';
 export { default as promiseUtils } from './promise';
@@ -39,6 +41,7 @@ export { default as sentryUtils } from './sentry';
 export { default as showActionSheetWithOptions } from './actionsheet';
 export { default as simplifyChartData } from './simplifyChartData';
 export { default as statusBar } from './statusBar';
+export { default as stringifyENSNFTAvatar } from './stringifyENSNFTAvatar';
 export { filterList } from './search';
 export {
   getFirstGrapheme,
