@@ -544,6 +544,20 @@
       "deposit": "Deposit",
       "withdraw": "Withdraw"
     },
+    "profiles": {
+      "search": {
+        "header": "Find your name",
+        "description": "Search available profile names",
+        "available": "Available",
+        "taken": "Taken",
+        "taken_description": "This name was last registered on",
+        "year": "Year",
+        "until": "Til",
+        "3_char_min": "Minimum 3 characters",
+        "estimated_total_cost_1": "Estimated total cost of",
+        "estimated_total_cost_2": "with current network fees"
+      }
+    },
     "savings": {
       "deposit": "Deposit",
       "earnings": {
