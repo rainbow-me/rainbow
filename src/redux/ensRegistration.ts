@@ -67,7 +67,8 @@ export type EnsRegistrationActionTypes =
 // -- Actions ---------------------------------------- //
 export const startRegistration = (
   accountAddress: EthereumAddress,
-  name: string
+  name: string,
+  mode: 'create' | 'edit' = 'create'
 ) => async (dispatch: AppDispatch, getState: AppGetState) => {
   const {
     ensRegistration: { registrations },
@@ -83,7 +84,7 @@ export const startRegistration = (
       ...registrations,
       [lcAccountAddress]: {
         ...accountRegistrations,
-        [name]: { ...registration, name },
+        [name]: { ...registration, mode, name },
       },
     },
   };

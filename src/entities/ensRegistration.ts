@@ -4,6 +4,7 @@ import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 export type Records = { [key in keyof typeof ENS_RECORDS]: string };
 
 export interface RegistrationParameters {
+  mode: 'create' | 'edit';
   name: string;
   duration: number;
   records: Records;

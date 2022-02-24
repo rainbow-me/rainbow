@@ -1,3 +1,4 @@
+import { useRoute } from '@react-navigation/core';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import ConditionalWrap from 'conditional-wrap';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -12,7 +13,7 @@ import ScrollPagerWrapper from './ScrollPagerWrapper';
 import { sharedCoolModalTopOffset } from './config';
 import { Box } from '@rainbow-me/design-system';
 import { accentColorAtom } from '@rainbow-me/helpers/ens';
-import { useDimensions } from '@rainbow-me/hooks';
+import { useDimensions, useENSProfile } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { deviceUtils } from '@rainbow-me/utils';
 
@@ -38,9 +39,9 @@ const defaultScreenOptions = {
   },
 };
 
-const initialRouteName = Routes.ENS_SEARCH_SHEET;
-
 export default function RegisterENSNavigator() {
+  const { params } = useRoute();
+
   const sheetRef = useRef();
 
   const { height: deviceHeight } = useDimensions();
@@ -48,6 +49,16 @@ export default function RegisterENSNavigator() {
   const contentHeight =
     deviceHeight - SheetHandleFixedToTopHeight - sharedCoolModalTopOffset;
 
+  const { startRegistration } = useENSProfile();
+
+  const initialRouteName = useMemo(() => {
+    const { ensName, mode } = params || { mode: 'create' };
+    if (mode === 'edit') {
+      startRegistration(ensName, mode);
+      return Routes.ENS_ASSIGN_RECORDS_SHEET;
+    }
+    return Routes.ENS_SEARCH_SHEET;
+  }, [params, startRegistration]);
   const [currentRouteName, setCurrentRouteName] = useState(initialRouteName);
 
   const screenOptions = useMemo(() => defaultScreenOptions[currentRouteName], [
@@ -99,7 +110,7 @@ export default function RegisterENSNavigator() {
         >
           <Swipe.Navigator
             initialLayout={deviceUtils.dimensions}
-            initialRouteName={initialRouteName}
+            initialRouteName={currentRouteName}
             pager={renderPager}
             swipeEnabled={false}
             tabBar={renderTabBar}

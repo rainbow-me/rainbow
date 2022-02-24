@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
 import { KeyboardArea } from 'react-native-keyboard-area';
-import { useDispatch } from 'react-redux';
 import dice from '../assets/dice.png';
 import TintButton from '../components/buttons/TintButton';
 import {
@@ -21,28 +20,27 @@ import {
 } from '@rainbow-me/design-system';
 import { ENS_DOMAIN } from '@rainbow-me/helpers/ens';
 import {
-  useAccountSettings,
   useDebounceString,
+  useENSProfile,
   useENSRegistration,
   useENSRegistrationCosts,
   useKeyboardHeight,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
-import { startRegistration } from '@rainbow-me/redux/ensRegistration';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 import { normalizeENS } from '@rainbow-me/utils';
 
 export default function ENSSearchSheet() {
-  const dispatch = useDispatch();
   const { navigate } = useNavigation();
   const keyboardHeight = useKeyboardHeight();
-  const { accountAddress } = useAccountSettings();
 
   const topPadding = android ? 29 : 19;
 
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounceString(searchQuery);
+
+  const { startRegistration } = useENSProfile();
 
   const {
     data: registrationData,
@@ -71,10 +69,10 @@ export default function ENSSearchSheet() {
   }, [isAvailable, isInvalid, isRegistered]);
 
   const handlePressContinue = useCallback(() => {
-    dispatch(startRegistration(accountAddress, `${searchQuery}${ENS_DOMAIN}`));
+    startRegistration(`${searchQuery}${ENS_DOMAIN}`);
     Keyboard.dismiss();
     navigate(Routes.ENS_ASSIGN_RECORDS_SHEET);
-  }, [accountAddress, dispatch, navigate, searchQuery]);
+  }, [navigate, searchQuery, startRegistration]);
 
   return (
     <Box background="body" flexGrow={1} paddingTop={{ custom: topPadding }}>

@@ -49,7 +49,7 @@ export const BottomActionHeight = ios ? 270 : 250;
 
 export default function ENSAssignRecordsSheet() {
   const { colors } = useTheme();
-  const { name } = useENSProfile();
+  const { name, mode } = useENSProfile();
 
   const [avatarUrl, setAvatarUrl] = useState();
 
@@ -85,9 +85,11 @@ export default function ENSAssignRecordsSheet() {
                 <Heading size="26px" weight="heavy">
                   {name}
                 </Heading>
-                <Text color="accent" size="16px" weight="heavy">
-                  Create your profile
-                </Text>
+                {mode === 'create' && (
+                  <Text color="accent" size="16px" weight="heavy">
+                    Create your profile
+                  </Text>
+                )}
               </Stack>
               <Box flexGrow={1}>
                 <TextRecordsForm
@@ -112,6 +114,7 @@ export function ENSAssignRecordsBottomActions({ visible }) {
   const keyboardHeight = useKeyboardHeight();
   const [accentColor] = useRecoilState(accentColorAtom);
 
+  const { mode } = useENSProfile();
   const {
     disabled,
     isEmpty,
@@ -171,10 +174,12 @@ export function ENSAssignRecordsBottomActions({ visible }) {
                       }
                     : {})}
                 >
-                  <TintButton color="secondary60" onPress={handlePressBack}>
-                    􀆉 Back
-                  </TintButton>
-                  {isEmpty ? (
+                  {mode === 'create' && (
+                    <TintButton color="secondary60" onPress={handlePressBack}>
+                      􀆉 Back
+                    </TintButton>
+                  )}
+                  {isEmpty && mode === 'create' ? (
                     <TintButton
                       color="secondary60"
                       disabled={disabled}
