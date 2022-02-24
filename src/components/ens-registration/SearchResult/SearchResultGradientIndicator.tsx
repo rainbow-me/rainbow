@@ -29,19 +29,21 @@ const SearchResultGradientIndicator = ({
   switch (type) {
     case 'availability':
       if (isRegistered) {
-        text = `😭 ${lang.t('profiles.search.taken')}`;
+        text = lang.t('profiles.search.taken');
         gradient = colors.gradients.transparentToLightOrange;
       } else {
-        text = `🥳 ${lang.t('profiles.search.available')}`;
+        text = lang.t('profiles.search.available');
         gradient = colors.gradients.transparentToGreen;
       }
       break;
     case 'expiration':
-      text = `${lang.t('profiles.search.until')} ${expirationDate}`;
+      text = `${lang.t('profiles.search.expiration', {
+        content: expirationDate,
+      })}`;
       gradient = colors.gradients.transparentToLightGrey;
       break;
     case 'price':
-      text = `${price} / ${lang.t('profiles.search.year')}`;
+      text = `${lang.t('profiles.search.price', { content: price })}`;
       gradient = colors.gradients.transparentToLightGrey;
       break;
   }

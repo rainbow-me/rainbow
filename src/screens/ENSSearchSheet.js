@@ -156,9 +156,9 @@ export default function ENSSearchSheet() {
               <Inset horizontal="19px">
                 {isRegistered ? (
                   <Text color="secondary50" size="16px" weight="bold">
-                    {`${lang.t('profiles.search.registered_on')} ${
-                      registrationData?.registrationDate
-                    }`}
+                    {`${lang.t('profiles.search.registered_on', {
+                      content: registrationData?.registrationDate,
+                    })}`}
                   </Text>
                 ) : (
                   <Inline>
@@ -187,16 +187,16 @@ export default function ENSSearchSheet() {
           {isAvailable && (
             <SheetActionButton
               color={colors.green}
-              label={`${lang.t('profiles.search.continue')} 􀆊`}
+              label={lang.t('profiles.search.continue')}
               onPress={handlePressContinue}
               size="big"
               weight="heavy"
             />
           )}
           {(isRegistered || isInvalid) && (
-            <TintButton onPress={() => setSearchQuery('')}>{`􀅉 ${lang.t(
-              'profiles.search.clear'
-            )}`}</TintButton>
+            <TintButton onPress={() => setSearchQuery('')}>
+              {lang.t('profiles.search.clear')}
+            </TintButton>
           )}
         </SheetActionButtonRow>
         <KeyboardArea initialHeight={keyboardHeight} isOpen />

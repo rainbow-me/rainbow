@@ -548,17 +548,17 @@
       "search": {
         "header": "Find your name",
         "description": "Search available profile names",
-        "available": "Available",
-        "taken": "Taken",
-        "registered_on": "This name was last registered on",
-        "year": "Year",
-        "until": "Til",
+        "available": "🥳 Available",
+        "taken": "😭 Taken",
+        "registered_on": "This name was last registered on %{content}",
+        "price": "%{content} / Year",
+        "expiration": "Til %{content}",
         "3_char_min": "Minimum 3 characters",
         "estimated_total_cost_1": "Estimated total cost of",
         "estimated_total_cost_2": "with current network fees",
         "loading_fees": "Loading network fees...",
-        "clear": "Clear",
-        "continue": "Continue on"
+        "clear": "􀅉 Clear",
+        "continue": "Continue on 􀆊"
       },
       "create": {
         "description": "Create your profile",
