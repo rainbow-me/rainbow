@@ -2,9 +2,9 @@ import { concat } from 'lodash';
 import {
   createNewENSAction,
   createNewRap,
+  ENSActionParameters,
   RapActionTypes,
   RapENSAction,
-  ENSActionParameters,
 } from './common';
 
 export const createRegisterENSRap = async (
