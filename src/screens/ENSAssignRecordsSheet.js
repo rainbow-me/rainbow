@@ -5,6 +5,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import lang from 'i18n-js';
 import { useRecoilState } from 'recoil';
 import { MiniButton } from '../components/buttons';
 import TintButton from '../components/buttons/TintButton';
@@ -86,7 +87,7 @@ export default function ENSAssignRecordsSheet() {
                   {name}
                 </Heading>
                 <Text color="accent" size="16px" weight="heavy">
-                  Create your profile
+                  {lang.t('profiles.create.description')}
                 </Text>
               </Stack>
               <Box flexGrow={1}>
@@ -172,7 +173,7 @@ export function ENSAssignRecordsBottomActions({ visible }) {
                     : {})}
                 >
                   <TintButton color="secondary60" onPress={handlePressBack}>
-                    􀆉 Back
+                    {lang.t('profiles.create.back')}
                   </TintButton>
                   {isEmpty ? (
                     <TintButton
@@ -180,7 +181,7 @@ export function ENSAssignRecordsBottomActions({ visible }) {
                       disabled={disabled}
                       onPress={handlePressContinue}
                     >
-                      Skip
+                      {lang.t('profiles.create.skip')}
                     </TintButton>
                   ) : (
                     <Box style={{ opacity: disabled ? 0.5 : 1 }}>
