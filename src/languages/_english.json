@@ -559,6 +559,24 @@
         "loading_fees": "Loading network fees...",
         "clear": "Clear",
         "continue": "Continue on"
+      },
+      "create": {
+        "description": "Create your profile",
+        "add_cover": "Add Cover",
+        "name": "Name",
+        "bio": "Bio",
+        "twitter": "Twitter",
+        "website": "Website",
+        "github": "GitHub",
+        "instagram": "Instagram",
+        "snapchat": "Snapchat",
+        "discord": "Discord",
+        "back": "Back",
+        "skip": "Skip",
+        "username_placeholder": "@username",
+        "name_placeholder": "Add a display name",
+        "bio_placeholder": "Add a bio to your profile",
+        "website_placeholder": "Add your website"
       }
     },
     "savings": {
