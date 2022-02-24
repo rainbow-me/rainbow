@@ -66,7 +66,7 @@ const SearchResultGradientIndicator = ({
             size={isSmallPhone ? '18px' : '20px'}
             weight="heavy"
           >
-            {`${text}`}
+            {text}
           </Text>
         </AccentColorProvider>
       </Inset>
