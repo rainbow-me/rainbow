@@ -9,7 +9,7 @@ import { RadioListItem } from '../radio-list';
 import { deleteAllBackups } from '@rainbow-me/handlers/cloudBackup';
 import { web3SetHttpProvider } from '@rainbow-me/handlers/web3';
 import { RainbowContext } from '@rainbow-me/helpers/RainbowContext';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
+// import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { useWallets } from '@rainbow-me/hooks';
 import { wipeKeychain } from '@rainbow-me/model/keychain';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
@@ -42,7 +42,7 @@ const DevSection = () => {
       );
       logger.log('connected to hardhat', ready);
     } catch (e) {
-      await web3SetHttpProvider(networkTypes.mainnet);
+      await web3SetHttpProvider('http://127.0.0.1:8545');
       logger.log('error connecting to hardhat');
     }
     navigate(Routes.PROFILE_SCREEN);
