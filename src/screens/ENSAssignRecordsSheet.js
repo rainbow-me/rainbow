@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { Keyboard } from 'react-native';
 import Animated, {
   useAnimatedStyle,
@@ -70,7 +70,7 @@ export default function ENSAssignRecordsSheet() {
       <Box
         background="body"
         flexGrow={1}
-        style={{ paddingBottom: BottomActionHeight + 20 }}
+        style={useMemo(() => ({ paddingBottom: BottomActionHeight + 20 }), [])}
       >
         <Stack space="19px">
           <CoverPhoto />
@@ -136,10 +136,15 @@ export function ENSAssignRecordsBottomActions({ visible }) {
     };
   });
 
+  const keyboardButtonWrapperStyle = useMemo(
+    () => ({ bottom: keyboardHeight }),
+    [keyboardHeight]
+  );
+
   return (
     <>
       {visible && (
-        <Box position="absolute" right="0px" style={{ bottom: keyboardHeight }}>
+        <Box position="absolute" right="0px" style={keyboardButtonWrapperStyle}>
           <Inset bottom="19px" right="19px">
             <HideKeyboardButton color={accentColor} />
           </Inset>
@@ -150,7 +155,10 @@ export function ENSAssignRecordsBottomActions({ visible }) {
         style={[animatedStyle, { position: 'absolute', width: '100%' }]}
       >
         <AccentColorProvider color={accentColor}>
-          <Box paddingBottom="19px" style={{ height: BottomActionHeight }}>
+          <Box
+            paddingBottom="19px"
+            style={useMemo(() => ({ height: BottomActionHeight }), [])}
+          >
             {ios ? <Shadow /> : null}
             <Rows>
               <Row>
@@ -235,7 +243,7 @@ function HideKeyboardButton({ color }) {
         disablePadding
         height={30}
         onPress={() => Keyboard.dismiss()}
-        style={{ height: 30, width: 30 }}
+        style={useMemo(() => ({ height: 30, width: 30 }), [])}
         width={30}
       >
         􀆈
