@@ -1,5 +1,6 @@
 import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
+import lang from 'i18n-js';
 import { useTheme } from '@rainbow-me/context';
 import {
   AccentColorProvider,
@@ -28,19 +29,19 @@ const SearchResultGradientIndicator = ({
   switch (type) {
     case 'availability':
       if (isRegistered) {
-        text = '😭 Taken';
+        text = `😭 ${lang.t('profiles.search.taken')}`;
         gradient = colors.gradients.transparentToLightOrange;
       } else {
-        text = '🥳 Available';
+        text = `🥳 ${lang.t('profiles.search.available')}`;
         gradient = colors.gradients.transparentToGreen;
       }
       break;
     case 'expiration':
-      text = `Til ${expirationDate}`;
+      text = `${lang.t('profiles.search.until')} ${expirationDate}`;
       gradient = colors.gradients.transparentToLightGrey;
       break;
     case 'price':
-      text = `${price} / Year`;
+      text = `${price} / ${lang.t('profiles.search.year')}`;
       gradient = colors.gradients.transparentToLightGrey;
       break;
   }

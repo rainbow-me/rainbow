@@ -550,12 +550,15 @@
         "description": "Search available profile names",
         "available": "Available",
         "taken": "Taken",
-        "taken_description": "This name was last registered on",
+        "registered_on": "This name was last registered on",
         "year": "Year",
         "until": "Til",
         "3_char_min": "Minimum 3 characters",
         "estimated_total_cost_1": "Estimated total cost of",
-        "estimated_total_cost_2": "with current network fees"
+        "estimated_total_cost_2": "with current network fees",
+        "loading_fees": "Loading network fees...",
+        "clear": "Clear",
+        "continue": "Continue on"
       }
     },
     "savings": {
