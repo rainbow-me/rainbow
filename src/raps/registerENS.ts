@@ -4,17 +4,17 @@ import {
   createNewRap,
   RapActionTypes,
   RapENSAction,
-  RegisterENSActionParameters,
+  ENSActionParameters,
 } from './common';
 
 export const createRegisterENSRap = async (
-  registerENSActionParameters: RegisterENSActionParameters
+  ENSActionParameters: ENSActionParameters
 ) => {
   let actions: RapENSAction[] = [];
 
   const register = createNewENSAction(
     RapActionTypes.registerWithConfigENS,
-    registerENSActionParameters
+    ENSActionParameters
   );
   actions = concat(actions, register);
 
@@ -22,14 +22,14 @@ export const createRegisterENSRap = async (
   // WIP we don't have a formatter method yet
   // const multicall = createNewENSAction(
   //   RapActionTypes.multicallENS,
-  //   registerENSActionParameters
+  //   ENSActionParameters
   // );
   // actions = concat(actions, multicall);
 
   // ? reverse name rap
   const setName = createNewENSAction(
     RapActionTypes.setNameENS,
-    registerENSActionParameters
+    ENSActionParameters
   );
   actions = concat(actions, setName);
 
@@ -39,13 +39,13 @@ export const createRegisterENSRap = async (
 };
 
 export const createCommitENSRap = async (
-  registerENSActionParameters: RegisterENSActionParameters
+  ENSActionParameters: ENSActionParameters
 ) => {
   let actions: RapENSAction[] = [];
   // // commit rap
   const commit = createNewENSAction(
     RapActionTypes.commitENS,
-    registerENSActionParameters
+    ENSActionParameters
   );
   actions = concat(actions, commit);
 

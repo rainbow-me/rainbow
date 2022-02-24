@@ -5,7 +5,7 @@ import {
   ENS_REGISTRATIONS,
   ENS_SUGGESTIONS,
 } from '../apollo/queries';
-import { RegisterENSActionParameters } from '../raps/common';
+import { ENSActionParameters } from '../raps/common';
 import { estimateGasWithPadding } from './web3';
 import { ENSRegistrationRecords } from '@rainbow-me/entities';
 import {
@@ -120,7 +120,7 @@ export const estimateENSCommitGasLimit = async ({
   duration,
   rentPrice,
   salt,
-}: RegisterENSActionParameters) =>
+}: ENSActionParameters) =>
   estimateENSTransactionGasLimit({
     duration,
     name,
@@ -289,7 +289,7 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
   duration,
   rentPrice,
   salt,
-}: RegisterENSActionParameters) => {
+}: ENSActionParameters) => {
   const registerGasLimitPromise = estimateENSRegisterWithConfigGasLimit({
     duration,
     name,

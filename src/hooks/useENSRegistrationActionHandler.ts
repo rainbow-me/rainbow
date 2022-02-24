@@ -2,9 +2,9 @@ import { differenceInSeconds } from 'date-fns';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import {
+  ENSActionParameters,
   getENSRapEstimationByType,
   RapActionTypes,
-  RegisterENSActionParameters,
 } from '../raps/common';
 import { useAccountSettings, useCurrentNonce, useENSProfile } from '.';
 import { RegistrationParameters } from '@rainbow-me/entities';
@@ -65,7 +65,7 @@ export default function useENSRegistrationActionHandler(
         yearsDuration * timeUnits.secs.year
       );
 
-      const commitEnsRegistrationParameters: RegisterENSActionParameters = {
+      const commitEnsRegistrationParameters: ENSActionParameters = {
         duration: yearsDuration * timeUnits.secs.year,
         name,
         nonce,
@@ -100,7 +100,7 @@ export default function useENSRegistrationActionHandler(
       const nonce = await getNextNonce();
       const rentPrice = await getRentPrice(name, duration);
 
-      const registerEnsRegistrationParameters: RegisterENSActionParameters = {
+      const registerEnsRegistrationParameters: ENSActionParameters = {
         duration,
         name,
         nonce,

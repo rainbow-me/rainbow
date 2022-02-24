@@ -85,7 +85,7 @@ export interface SwapActionParameters {
   tradeDetails: Trade;
 }
 
-export interface RegisterENSActionParameters {
+export interface ENSActionParameters {
   nonce?: number;
   name: string;
   duration: number;
@@ -104,9 +104,9 @@ enum RAP_TYPE {
   ENS = 'ENS',
 }
 
-export type RapAction = RapExchangeAction | RapENSAction;
+export type RapAction = RapSwapAction | RapENSAction;
 
-export interface RapExchangeAction {
+export interface RapSwapAction {
   parameters: RapEchangeActionParameters;
   transaction: RapActionTransaction;
   type: RapActionType;
@@ -150,7 +150,7 @@ export const RapActionTypes = {
   withdrawCompound: 'withdrawCompound' as RapActionType,
 };
 
-const createRapByType = (
+const createSwapRapByType = (
   type: string,
   swapParameters: SwapActionParameters
 ) => {
@@ -166,7 +166,7 @@ const createRapByType = (
 
 const createENSRapByType = (
   type: string,
-  ensRegistrationParameters: RegisterENSActionParameters
+  ensRegistrationParameters: ENSActionParameters
 ) => {
   switch (type) {
     case RapActionTypes.registerENS:
@@ -177,7 +177,7 @@ const createENSRapByType = (
   }
 };
 
-export const getRapEstimationByType = (
+export const getSwapRapEstimationByType = (
   type: string,
   swapParameters: SwapActionParameters
 ) => {
@@ -195,7 +195,7 @@ export const getRapEstimationByType = (
 
 export const getENSRapEstimationByType = (
   type: string,
-  ensRegistrationParameters: RegisterENSActionParameters
+  ensRegistrationParameters: ENSActionParameters
 ) => {
   switch (type) {
     case RapActionTypes.commitENS:
@@ -209,7 +209,7 @@ export const getENSRapEstimationByType = (
   }
 };
 
-const findExhangeActionByType = (type: RapActionType) => {
+const findSwapActionByType = (type: RapActionType) => {
   switch (type) {
     case RapActionTypes.unlock:
       return unlock;
@@ -283,7 +283,7 @@ const executeAction = async (
       );
       return { baseNonce: nonce, errorMessage: null };
     } else {
-      const actionPromise = findExhangeActionByType(type);
+      const actionPromise = findSwapActionByType(type);
       nonce = await actionPromise(
         wallet,
         rap,
@@ -332,19 +332,16 @@ const getRapTypeFromActionType = (actionType: RapActionType) => {
 export const executeRap = async (
   wallet: Wallet,
   type: RapActionType,
-  parameters: SwapActionParameters | RegisterENSActionParameters,
+  parameters: SwapActionParameters | ENSActionParameters,
   callback: (success?: boolean, errorMessage?: string | null) => void
 ) => {
   const rapType = getRapTypeFromActionType(type);
 
   let rap: Rap = { actions: [] };
   if (rapType === RAP_TYPE.EXCHANGE) {
-    rap = await createRapByType(type, parameters as SwapActionParameters);
+    rap = await createSwapRapByType(type, parameters as SwapActionParameters);
   } else if (rapType === RAP_TYPE.ENS) {
-    rap = await createENSRapByType(
-      type,
-      parameters as RegisterENSActionParameters
-    );
+    rap = await createENSRapByType(type, parameters as ENSActionParameters);
   }
 
   const { actions } = rap;
@@ -395,7 +392,7 @@ export const createNewRap = (actions: RapAction[]) => {
 export const createNewAction = (
   type: RapActionType,
   parameters: RapEchangeActionParameters
-): RapExchangeAction => {
+): RapSwapAction => {
   const newAction = {
     parameters,
     rapType: RAP_TYPE.EXCHANGE,
@@ -409,7 +406,7 @@ export const createNewAction = (
 
 export const createNewENSAction = (
   type: RapActionType,
-  parameters: RegisterENSActionParameters
+  parameters: ENSActionParameters
 ): RapENSAction => {
   const newAction = {
     parameters,

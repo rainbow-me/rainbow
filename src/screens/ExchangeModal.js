@@ -50,7 +50,7 @@ import {
 } from '@rainbow-me/hooks';
 import { loadWallet } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
-import { executeRap, getRapEstimationByType } from '@rainbow-me/raps';
+import { executeRap, getSwapRapEstimationByType } from '@rainbow-me/raps';
 import { multicallClearState } from '@rainbow-me/redux/multicall';
 import { swapClearState, updateSwapTypeDetails } from '@rainbow-me/redux/swap';
 import { ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
@@ -256,7 +256,7 @@ export default function ExchangeModal({
         outputAmount,
         tradeDetails,
       };
-      const gasLimit = await getRapEstimationByType(type, {
+      const gasLimit = await getSwapRapEstimationByType(type, {
         swapParameters: swapParams,
       });
       if (gasLimit) {
