@@ -1,11 +1,11 @@
 import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
 import { Rap, RapActionTypes, RapENSActionParameters } from '../common';
+import { ENSRegistrationRecords } from '@rainbow-me/entities';
 import { estimateENSTransactionGasLimit } from '@rainbow-me/handlers/ens';
 import { toHex } from '@rainbow-me/handlers/web3';
 import { NetworkTypes } from '@rainbow-me/helpers';
 import {
-  ENSRegistrationRecords,
   ENSRegistrationTransactionType,
   getENSExecutionDetails,
 } from '@rainbow-me/helpers/ens';
@@ -148,8 +148,7 @@ const executeSetName = async (
 
 const executeSetText = async (
   name?: string,
-  recordKey?: string,
-  recordValue?: string,
+  records?: ENSRegistrationRecords,
   gasLimit?: string | null,
   maxFeePerGas?: string,
   maxPriorityFeePerGas?: string,
@@ -158,17 +157,7 @@ const executeSetText = async (
 ) => {
   const { contract, methodArguments, value } = await getENSExecutionDetails({
     name,
-    records: {
-      coinAddress: null,
-      contentHash: null,
-      ensAssociatedAddress: null,
-      text: [
-        {
-          key: recordKey || '',
-          value: recordValue || '',
-        },
-      ],
-    },
+    records,
     type: ENSRegistrationTransactionType.SET_TEXT,
     wallet,
   });
@@ -199,15 +188,7 @@ const ensAction = async (
   const { dispatch } = store;
   const { accountAddress: ownerAddress } = store.getState().settings;
   const { selectedGasFee } = store.getState().gas;
-  const {
-    name,
-    duration,
-    rentPrice,
-    records,
-    recordKey,
-    recordValue,
-    salt,
-  } = parameters;
+  const { name, duration, rentPrice, records, salt } = parameters;
 
   logger.log(`[${actionName}] rap for`, name);
 
@@ -290,8 +271,7 @@ const ensAction = async (
       case ENSRegistrationTransactionType.SET_TEXT:
         tx = await executeSetText(
           name,
-          recordKey,
-          recordValue,
+          records,
           gasLimit,
           maxFeePerGas,
           maxPriorityFeePerGas,

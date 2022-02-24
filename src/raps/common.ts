@@ -22,12 +22,15 @@ import {
   estimateWithdrawFromCompound,
 } from './withdrawFromCompound';
 import { createRegisterENSRap } from '.';
-import { Asset, EthereumAddress } from '@rainbow-me/entities';
+import {
+  Asset,
+  ENSRegistrationRecords,
+  EthereumAddress,
+} from '@rainbow-me/entities';
 import {
   estimateENSCommitGasLimit,
   estimateENSRegisterSetRecordsAndNameGasLimit,
 } from '@rainbow-me/handlers/ens';
-import { ENSRegistrationRecords } from '@rainbow-me/helpers/ens';
 import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
 import logger from 'logger';
 
@@ -51,7 +54,7 @@ export enum RapActionType {
   setNameENS = 'setNameENS',
 }
 
-export interface RapActionParameters {
+export interface RapEchangeActionParameters {
   amount?: string | null;
   assetToUnlock?: Asset;
   contractAddress?: string;
@@ -61,14 +64,12 @@ export interface RapActionParameters {
 }
 
 export interface RapENSActionParameters {
-  name: string;
   duration: number;
-  rentPrice: string;
-  salt: string;
-  records?: ENSRegistrationRecords;
+  name: string;
   ownerAddress: EthereumAddress;
-  recordKey?: string;
-  recordValue?: string;
+  rentPrice: string;
+  records?: ENSRegistrationRecords;
+  salt: string;
 }
 
 export interface UnlockActionParameters {
@@ -106,7 +107,7 @@ enum RAP_TYPE {
 export type RapAction = RapExchangeAction | RapENSAction;
 
 export interface RapExchangeAction {
-  parameters: RapActionParameters;
+  parameters: RapEchangeActionParameters;
   transaction: RapActionTransaction;
   type: RapActionType;
 }
@@ -287,7 +288,7 @@ const executeAction = async (
         wallet,
         rap,
         index,
-        parameters as RapActionParameters,
+        parameters as RapEchangeActionParameters,
         baseNonce
       );
       return { baseNonce: nonce, errorMessage: null };
@@ -393,7 +394,7 @@ export const createNewRap = (actions: RapAction[]) => {
 
 export const createNewAction = (
   type: RapActionType,
-  parameters: RapActionParameters
+  parameters: RapEchangeActionParameters
 ): RapExchangeAction => {
   const newAction = {
     parameters,

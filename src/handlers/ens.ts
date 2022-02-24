@@ -7,8 +7,8 @@ import {
 } from '../apollo/queries';
 import { RegisterENSActionParameters } from '../raps/common';
 import { estimateGasWithPadding } from './web3';
+import { ENSRegistrationRecords } from '@rainbow-me/entities';
 import {
-  ENSRegistrationRecords,
   ENSRegistrationTransactionType,
   generateSalt,
   getENSExecutionDetails,

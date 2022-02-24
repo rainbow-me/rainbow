@@ -105,7 +105,7 @@ export default function ENSConfirmRegisterSheet() {
           <Box flexGrow={1}>
             <Inset horizontal="30px">
               <Stack alignHorizontal="center" space="15px">
-                {records.avatar && (
+                {records?.avatar && (
                   <Box
                     background="accent"
                     borderRadius={avatarSize / 2}
@@ -117,7 +117,7 @@ export default function ENSConfirmRegisterSheet() {
                       as={ImgixImage}
                       borderRadius={avatarSize / 2}
                       height={{ custom: avatarSize }}
-                      source={{ uri: records.avatar }}
+                      source={{ uri: records?.avatar }}
                       width={{ custom: avatarSize }}
                     />
                   </Box>

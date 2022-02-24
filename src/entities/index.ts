@@ -70,4 +70,5 @@ export type {
   ENSRegistrationState,
   RegistrationParameters,
   CommitRegistrationParameters,
+  ENSRegistrationRecords,
 } from './ensRegistration';

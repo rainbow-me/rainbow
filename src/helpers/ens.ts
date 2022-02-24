@@ -12,6 +12,7 @@ import {
   fromWei,
   multiply,
 } from './utilities';
+import { ENSRegistrationRecords } from '@rainbow-me/entities';
 import { toHex, web3Provider } from '@rainbow-me/handlers/web3';
 import { gweiToWei } from '@rainbow-me/parsers';
 import {
@@ -34,13 +35,6 @@ export enum ENSRegistrationTransactionType {
   SET_TEXT = 'setText',
   SET_NAME = 'setName',
   MULTICALL = 'multicall',
-}
-
-export interface ENSRegistrationRecords {
-  coinAddress: { key: string; address: string }[] | null;
-  contentHash: string | null;
-  ensAssociatedAddress: string | null;
-  text: { key: string; value: string }[] | null;
 }
 
 const getENSRegistryContract = () => {
