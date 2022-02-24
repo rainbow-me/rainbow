@@ -196,7 +196,7 @@ export function ENSAssignRecordsBottomActions({ visible }) {
                       <SheetActionButton
                         color={accentColor}
                         disabled={disabled}
-                        label="Review"
+                        label={lang.t('profiles.create.review')}
                         onPress={handlePressContinue}
                         size="big"
                         weight="heavy"

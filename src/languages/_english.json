@@ -571,7 +571,10 @@
         "username_placeholder": "@username",
         "name_placeholder": "Add a display name",
         "bio_placeholder": "Add a bio to your profile",
-        "website_placeholder": "Add your website"
+        "website_placeholder": "Add your website",
+        "review": "Review",
+        "choose_nft": "Choose NFT",
+        "upload_photo": "Upload photo"
       }
     },
     "savings": {
