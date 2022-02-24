@@ -19,6 +19,8 @@ const ENS_CONTINUE_REGISTRATION = 'ensRegistration/ENS_CONTINUE_REGISTRATION';
 const ENS_START_REGISTRATION = 'ensRegistration/ENS_START_REGISTRATION';
 const ENS_SAVE_COMMIT_REGISTRATION_PARAMETERS =
   'ensRegistration/ENS_SAVE_COMMIT_REGISTRATION_PARAMETERS';
+const ENS_CLEAR_CURRENT_REGISTRATION_NAME =
+  'ensRegistration/CLEAR_CURRENT_REGISTRATION_NAME';
 
 interface EnsRegistrationUpdateDurationAction {
   type: typeof ENS_REGISTRATION_UPDATE_DURATION;
@@ -55,6 +57,10 @@ interface EnsRegistrationSaveCommitRegistrationParametersAction {
   payload: ENSRegistrationState;
 }
 
+interface EnsClearCurrentRegistrationNameAction {
+  type: typeof ENS_CLEAR_CURRENT_REGISTRATION_NAME;
+}
+
 export type EnsRegistrationActionTypes =
   | EnsRegistrationUpdateDurationAction
   | EnsRegistrationUpdateRecordsAction
@@ -62,7 +68,8 @@ export type EnsRegistrationActionTypes =
   | EnsRegistrationRemoveRecordByKeyAction
   | EnsRegistrationContinueRegistrationAction
   | EnsRegistrationStartRegistrationAction
-  | EnsRegistrationSaveCommitRegistrationParametersAction;
+  | EnsRegistrationSaveCommitRegistrationParametersAction
+  | EnsClearCurrentRegistrationNameAction;
 
 // -- Actions ---------------------------------------- //
 export const startRegistration = (
@@ -255,6 +262,14 @@ export const saveCommitRegistrationParameters = (
   });
 };
 
+export const clearCurrentRegistrationName = () => async (
+  dispatch: AppDispatch
+) => {
+  dispatch({
+    type: ENS_CLEAR_CURRENT_REGISTRATION_NAME,
+  });
+};
+
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE: ENSRegistrationState = {
   currentRegistrationName: '',
@@ -295,6 +310,11 @@ export default (
       return {
         ...state,
         ...action.payload,
+      };
+    case ENS_CLEAR_CURRENT_REGISTRATION_NAME:
+      return {
+        ...state,
+        currentRegistrationName: '',
       };
     default:
       return state;

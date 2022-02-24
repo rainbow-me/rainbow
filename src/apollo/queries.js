@@ -241,3 +241,13 @@ export const ENS_REGISTRATIONS = gql`
     }
   }
 `;
+
+export const ENS_RECORDS = gql`
+  query lookup($name: String!) {
+    domains(first: 1, where: { name: $name }) {
+      resolver {
+        texts
+      }
+    }
+  }
+`;

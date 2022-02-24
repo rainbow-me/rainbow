@@ -9,6 +9,7 @@ import ENSAssignRecordsSheet, {
   ENSAssignRecordsBottomActions,
 } from '../screens/ENSAssignRecordsSheet';
 import ENSSearchSheet from '../screens/ENSSearchSheet';
+import { useNavigation } from './Navigation';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
 import { sharedCoolModalTopOffset } from './config';
 import { Box } from '@rainbow-me/design-system';
@@ -41,6 +42,7 @@ const defaultScreenOptions = {
 
 export default function RegisterENSNavigator() {
   const { params } = useRoute();
+  const navigation = useNavigation();
 
   const sheetRef = useRef();
 
@@ -49,7 +51,7 @@ export default function RegisterENSNavigator() {
   const contentHeight =
     deviceHeight - SheetHandleFixedToTopHeight - sharedCoolModalTopOffset;
 
-  const { startRegistration } = useENSProfile();
+  const { startRegistration, clearCurrentRegistrationName } = useENSProfile();
 
   const initialRouteName = useMemo(() => {
     const { ensName, mode } = params || { mode: 'create' };
@@ -86,6 +88,12 @@ export default function RegisterENSNavigator() {
       sheetRef.current.scrollTo({ animated: false, x: 0, y: 0 });
     }
   }, [screenOptions.scrollEnabled]);
+
+  useEffect(() => {
+    navigation.addListener('dismiss', clearCurrentRegistrationName);
+    return () =>
+      navigation.removeListener('dismiss', clearCurrentRegistrationName);
+  });
 
   const isBottomActionsVisible =
     currentRouteName === Routes.ENS_ASSIGN_RECORDS_SHEET;

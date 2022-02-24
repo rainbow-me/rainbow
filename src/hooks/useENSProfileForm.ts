@@ -16,7 +16,7 @@ const selectedFieldsAtom = atom({
   key: 'ensProfileForm.selectedFields',
 });
 
-const valuesAtom = atom<Partial<Records>>({
+const valuesAtom = atom<{ [name: string]: Partial<Records> }>({
   default: {},
   key: 'ensProfileForm.values',
 });
@@ -29,6 +29,7 @@ export default function useENSProfileForm({
   const {
     name,
     records,
+    recordsQuery,
     removeRecordByKey,
     updateRecordByKey,
     updateRecords,
@@ -57,10 +58,15 @@ export default function useENSProfileForm({
         setSelectedFields(defaultFields as any);
       }
     }
-  }, [name]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [name, records]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const [values, setValues] = useRecoilState(valuesAtom);
-  useEffect(() => setValues(records), [name]); // eslint-disable-line react-hooks/exhaustive-deps
+  const [valuesMap, setValuesMap] = useRecoilState(valuesAtom);
+  const values = valuesMap[name] || {};
+  useEffect(() => setValuesMap(values => ({ ...values, [name]: records })), [
+    name,
+    records,
+    setValuesMap,
+  ]);
 
   // Set initial records in redux depending on user input (defaultFields)
   useEffect(() => {
@@ -87,24 +93,33 @@ export default function useENSProfileForm({
     (fieldToRemove, selectedFields) => {
       setSelectedFields(selectedFields);
       removeRecordByKey(fieldToRemove.key);
-      setValues(values => omit(values, fieldToRemove.key) as Records);
+      setValuesMap(values => ({
+        ...values,
+        [name]: omit(values?.[name] || {}, fieldToRemove.key) as Records,
+      }));
     },
-    [removeRecordByKey, setSelectedFields, setValues]
+    [name, removeRecordByKey, setSelectedFields, setValuesMap]
   );
 
   const onBlurField = useCallback(
     ({ key, value }) => {
-      setValues(values => ({ ...values, [key]: value }));
+      setValuesMap(values => ({
+        ...values,
+        [name]: { ...values?.[name], [key]: value },
+      }));
       updateRecordByKey(key, value);
     },
-    [setValues, updateRecordByKey]
+    [name, setValuesMap, updateRecordByKey]
   );
 
   const onChangeField = useCallback(
     ({ key, value }) => {
-      setValues(values => ({ ...values, [key]: value }));
+      setValuesMap(values => ({
+        ...values,
+        [name]: { ...values?.[name], [key]: value },
+      }));
     },
-    [setValues]
+    [name, setValuesMap]
   );
 
   const empty = useMemo(() => !Object.values(values).some(Boolean), [values]);
@@ -112,6 +127,7 @@ export default function useENSProfileForm({
   return {
     disabled,
     isEmpty: empty,
+    isLoading: recordsQuery.isLoading,
     onAddField,
     onBlurField,
     onChangeField,

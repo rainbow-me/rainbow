@@ -2,10 +2,11 @@ import { debounce, isEmpty, sortBy } from 'lodash';
 import { ensClient } from '../apollo/client';
 import {
   ENS_DOMAINS,
+  ENS_RECORDS,
   ENS_REGISTRATIONS,
   ENS_SUGGESTIONS,
 } from '../apollo/queries';
-import { estimateGasWithPadding } from './web3';
+import { estimateGasWithPadding, web3Provider } from './web3';
 import {
   ENSRegistrationRecords,
   ENSRegistrationTransactionType,
@@ -89,6 +90,31 @@ export const fetchRegistrationDate = async (recipient: any) => {
 
     return registrationDate;
   }
+};
+
+export const fetchRecords = async (recipient: any) => {
+  const recpt = recipient.toLowerCase();
+  const result = await ensClient.query({
+    query: ENS_RECORDS,
+    variables: {
+      name: recpt,
+    },
+  });
+
+  const resolver = await web3Provider.getResolver(recpt);
+
+  const recordKeys: string[] = result.data?.domains[0]?.resolver?.texts || [];
+  const recordValues = await Promise.all(
+    recordKeys.map((key: string) => resolver.getText(key))
+  );
+
+  const records = recordKeys.reduce((records, key, i) => {
+    return {
+      ...records,
+      [key]: recordValues[i],
+    };
+  }, {});
+  return records;
 };
 
 export const estimateENSRegisterWithConfigGasLimit = async ({
