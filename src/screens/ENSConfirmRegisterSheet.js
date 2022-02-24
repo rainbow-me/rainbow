@@ -43,7 +43,7 @@ const avatarSize = 70;
 export default function ENSConfirmRegisterSheet() {
   const dispatch = useDispatch();
   const { gasFeeParamsBySpeed, updateTxFee, startPollingGasFees } = useGas();
-  const { name: ensName, records } = useENSProfile();
+  const { avatarUrl, name: ensName, records } = useENSProfile();
   const { accountAddress, network } = useAccountSettings();
   const getNextNonce = useCurrentNonce(accountAddress, network);
   const [gasLimit, setGasLimit] = useState();
@@ -149,7 +149,7 @@ export default function ENSConfirmRegisterSheet() {
           <Box flexGrow={1}>
             <Inset horizontal="30px">
               <Stack alignHorizontal="center" space="15px">
-                {records.avatar && (
+                {avatarUrl && (
                   <Box
                     background="accent"
                     borderRadius={avatarSize / 2}
@@ -161,7 +161,7 @@ export default function ENSConfirmRegisterSheet() {
                       as={ImgixImage}
                       borderRadius={avatarSize / 2}
                       height={{ custom: avatarSize }}
-                      source={{ uri: records.avatar }}
+                      source={{ uri: avatarUrl }}
                       width={{ custom: avatarSize }}
                     />
                   </Box>

@@ -29,7 +29,7 @@ export default function CoverPhoto() {
   const { ContextMenu, isUploading } = useSelectImageMenu({
     menuItems: ['library'],
     onChangeImage: ({ image }) => {
-      setCoverUrl(image.path);
+      setCoverUrl(image?.path);
     },
     onUploadError: () => {
       setDisabled(false);

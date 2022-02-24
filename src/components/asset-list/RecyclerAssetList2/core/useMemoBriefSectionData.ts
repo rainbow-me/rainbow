@@ -10,7 +10,9 @@ import {
   useWalletSectionsData,
 } from '@rainbow-me/hooks';
 
-export default function useMemoBriefSectionData() {
+export default function useMemoBriefSectionData({
+  filterTypes,
+}: { filterTypes?: CellType[] } = {}) {
   const { briefSectionsData } = useWalletSectionsData();
   const { isSmallBalancesOpen, stagger } = useOpenSmallBalances();
   const { isSavingsOpen } = useOpenSavings();
@@ -29,6 +31,10 @@ export default function useMemoBriefSectionData() {
     let numberOfSmallBalancesAllowed = stagger ? 12 : briefSectionsData.length;
     const briefSectionsDataFiltered = briefSectionsData
       .filter((data, arrIndex, arr) => {
+        if (filterTypes && !filterTypes.includes(data.type)) {
+          return false;
+        }
+
         if (
           arr[arrIndex - 1]?.type === CellType.COIN &&
           data.type !== CellType.COIN_DIVIDER &&
