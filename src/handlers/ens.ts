@@ -278,7 +278,11 @@ export const estimateENSRegistrationGasLimit = async (
       text: [
         { key: 'key1', value: 'value1' },
         { key: 'key2', value: 'value2' },
-        { key: 'key3', value: 'value3' },
+        {
+          key: 'cover',
+          value:
+            'https://cloudflare-ipfs.com/ipfs/QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco/I/m/Vincent_van_Gogh_-_Self-Portrait_-_Google_Art_Project_(454045).jpg',
+        },
       ],
     },
   });

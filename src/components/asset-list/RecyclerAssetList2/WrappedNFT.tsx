@@ -1,14 +1,17 @@
 import React, { useCallback } from 'react';
 import { UniqueTokenCard } from '../../unique-token';
 import { Box, BoxProps } from '@rainbow-me/design-system';
+import { UniqueAsset } from '@rainbow-me/entities';
 import { useCollectible } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 
 export default React.memo(function WrappedNFT({
+  onPress,
   uniqueId,
   placement,
 }: {
+  onPress?: (asset: UniqueAsset) => void;
   uniqueId: string;
   placement: 'left' | 'right';
 }) {
@@ -43,7 +46,7 @@ export default React.memo(function WrappedNFT({
 
   return (
     <Box flexGrow={1} justifyContent="center" {...placementProps}>
-      <UniqueTokenCard item={asset} onPress={handleItemPress} />
+      <UniqueTokenCard item={asset} onPress={onPress || handleItemPress} />
     </Box>
   );
 });

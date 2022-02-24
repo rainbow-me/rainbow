@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAccountSettings } from '.';
@@ -6,6 +6,7 @@ import { ENSRegistrationState, Records } from '@rainbow-me/entities';
 import { fetchRecords } from '@rainbow-me/handlers/ens';
 import * as ensRedux from '@rainbow-me/redux/ensRegistration';
 import { AppState } from '@rainbow-me/redux/store';
+import { isENSNFTAvatar, parseENSNFTAvatar } from '@rainbow-me/utils';
 
 export default function useENSProfile() {
   const { accountAddress } = useAccountSettings();
@@ -73,7 +74,30 @@ export default function useENSProfile() {
     }
   }, [mode, recordsQuery.data, recordsQuery.isSuccess, updateRecords]);
 
+  // Since `records.avatar` is not a reliable source for an avatar URL
+  // (the avatar can be an NFT), then if the avatar is an NFT, we will
+  // parse it to obtain the URL.
+  const uniqueTokens = useSelector(
+    ({ uniqueTokens }: AppState) => uniqueTokens.uniqueTokens
+  );
+  const avatarUrl = useMemo(() => {
+    if (records.avatar) {
+      const isNFTAvatar = isENSNFTAvatar(records.avatar);
+      if (isNFTAvatar) {
+        const { contractAddress, tokenId } = parseENSNFTAvatar(records.avatar);
+        const uniqueToken = uniqueTokens.find(
+          token =>
+            token.asset_contract.address === contractAddress &&
+            token.id === tokenId
+        );
+        return uniqueToken?.image_thumbnail_url;
+      }
+    }
+    return records.avatar;
+  }, [records.avatar, uniqueTokens]);
+
   return {
+    avatarUrl,
     clearCurrentRegistrationName,
     mode,
     name,

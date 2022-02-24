@@ -1,5 +1,5 @@
 import { isEmpty } from 'lodash';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useRecoilState } from 'recoil';
 import brain from '../assets/brain.png';
@@ -35,15 +35,15 @@ import { ImgixImage } from '@rainbow-me/images';
 import { loadWallet } from '@rainbow-me/model/wallet';
 import { getRapEstimationByType } from '@rainbow-me/raps';
 import { saveCommitRegistrationParameters } from '@rainbow-me/redux/ensRegistration';
+import { timeUnits } from '@rainbow-me/references';
 
 export const ENSConfirmRegisterSheetHeight = 600;
-const secsInYear = 31536000;
 const avatarSize = 70;
 
 export default function ENSConfirmRegisterSheet() {
   const dispatch = useDispatch();
   const { gasFeeParamsBySpeed, updateTxFee, startPollingGasFees } = useGas();
-  const { name: ensName, records } = useENSProfile();
+  const { avatarUrl, name: ensName, records } = useENSProfile();
   const { accountAddress, network } = useAccountSettings();
   const getNextNonce = useCurrentNonce(accountAddress, network);
   const [gasLimit, setGasLimit] = useState();
@@ -66,7 +66,7 @@ export default function ENSConfirmRegisterSheet() {
     const salt = generateSalt();
     const gasLimit = await getRapEstimationByType(RapActionTypes.commitENS, {
       ensRegistrationParameters: {
-        duration: secsInYear,
+        duration: duration * timeUnits.secs.year,
         name: name,
         ownerAddress: accountAddress,
         records,
@@ -76,7 +76,7 @@ export default function ENSConfirmRegisterSheet() {
     });
     updateTxFee(gasLimit);
     setGasLimit(gasLimit);
-  }, [accountAddress, name, records, rentPrice, updateTxFee]);
+  }, [accountAddress, duration, name, records, rentPrice, updateTxFee]);
 
   // Update gas limit
   useEffect(() => {
@@ -97,7 +97,7 @@ export default function ENSConfirmRegisterSheet() {
     const salt = generateSalt();
 
     const ensRegistrationParameters = {
-      duration: secsInYear,
+      duration: duration * timeUnits.secs.year,
       name,
       nonce,
       ownerAddress: accountAddress,
@@ -106,7 +106,7 @@ export default function ENSConfirmRegisterSheet() {
       salt,
     };
 
-    await dispatch(
+    dispatch(
       saveCommitRegistrationParameters(
         accountAddress,
         ensRegistrationParameters
@@ -123,7 +123,15 @@ export default function ENSConfirmRegisterSheet() {
     //   { ensRegistrationParameters },
     //   callback
     // );
-  }, [accountAddress, dispatch, getNextNonce, name, records, rentPrice]);
+  }, [
+    accountAddress,
+    dispatch,
+    duration,
+    getNextNonce,
+    name,
+    records,
+    rentPrice,
+  ]);
 
   return (
     <SlackSheet
@@ -136,12 +144,12 @@ export default function ENSConfirmRegisterSheet() {
         <Box
           background="body"
           paddingVertical="30px"
-          style={{ height: ENSConfirmRegisterSheetHeight }}
+          style={useMemo(() => ({ height: ENSConfirmRegisterSheetHeight }), [])}
         >
           <Box flexGrow={1}>
             <Inset horizontal="30px">
               <Stack alignHorizontal="center" space="15px">
-                {records.avatar && (
+                {avatarUrl && (
                   <Box
                     background="accent"
                     borderRadius={avatarSize / 2}
@@ -153,7 +161,7 @@ export default function ENSConfirmRegisterSheet() {
                       as={ImgixImage}
                       borderRadius={avatarSize / 2}
                       height={{ custom: avatarSize }}
-                      source={{ uri: records.avatar }}
+                      source={{ uri: avatarUrl }}
                       width={{ custom: avatarSize }}
                     />
                   </Box>
@@ -176,7 +184,7 @@ export default function ENSConfirmRegisterSheet() {
                   <Box>
                     <ImgixImage
                       source={brain}
-                      style={{ height: 20, width: 20 }}
+                      style={useMemo(() => ({ height: 20, width: 20 }), [])}
                     />
                   </Box>
                   <Text color="secondary50" size="14px" weight="heavy">
@@ -202,7 +210,7 @@ export default function ENSConfirmRegisterSheet() {
               </Stack>
             </Inset>
           </Box>
-          <Box style={{ bottom: 0 }}>
+          <Box style={useMemo(() => ({ bottom: 0 }), [])}>
             <Box>
               <SheetActionButtonRow paddingBottom={5}>
                 <HoldToAuthorizeButton
