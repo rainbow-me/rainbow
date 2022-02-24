@@ -1,3 +1,5 @@
+// Converts an unique token/NFT to a format that is compatible with
+// ENS NFT avatars via the `avatar` record
 export default function stringifyENSNFTAvatar({
   contractAddress,
   tokenId,
