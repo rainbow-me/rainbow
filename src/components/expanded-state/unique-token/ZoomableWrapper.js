@@ -37,10 +37,10 @@ const exitConfig = {
   stiffness: 800,
 };
 const GestureBlocker = styled(View)({
-  height: ({ height }) => height,
+  height: ({ height }) => 2 * height,
   left: ({ containerWidth, width }) => -(width - containerWidth) / 2,
   position: 'absolute',
-  top: -85,
+  top: ({ height }) => -height,
   width: ({ width }) => width,
 });
 
@@ -228,7 +228,7 @@ export const ZoomableWrapper = ({
     ctx.startFocalY = undefined;
     ctx.prevScale = undefined;
 
-    if (targetScale > breakingScaleX) {
+    if (targetScale > breakingScaleX && isZoomedValue.value) {
       console.log("XXXXX - 2")
 
       if (targetTranslateX > maxDisplacementX) {
@@ -589,9 +589,9 @@ export const ZoomableWrapper = ({
   const singleTap = useRef();
 
   return (
-    <View style={{ alignItems: 'center', zIndex: 10 }}>
+    <View style={{ alignItems: 'center', zIndex: 10, backgroundColor:"red" }}>
       <Animated.View style={[containerStyle]}>
-      <Animated.View style={[animatedStyle]}>
+        <Animated.View style={[animatedStyle]}>
         <TapGestureHandler
           enabled={!disableAnimations}
           numberOfTaps={1}
@@ -601,6 +601,7 @@ export const ZoomableWrapper = ({
           waitFor={pan}
         >
           <Animated.View>
+
             <PanGestureHandler
               // activeOffsetX={[-0.01, 0.01]}
               // activeOffsetY={[-0.01, 0.01]}
@@ -612,6 +613,8 @@ export const ZoomableWrapper = ({
               simultaneousHandlers={[pinch, pan, doubleTap]}
             >
               <ZoomContainer height={containerHeight} width={containerWidth}>
+                <PanGestureHandler>
+
                 <GestureBlocker
                   containerHeight={containerHeight}
                   containerWidth={containerWidth}
@@ -619,6 +622,7 @@ export const ZoomableWrapper = ({
                   pointerEvents={isZoomed ? 'auto' : 'none'}
                   width={deviceWidth}
                 />
+                </PanGestureHandler>
                 <Animated.View style={[StyleSheet.absoluteFillObject]}>
                   {/*<TapGestureHandler*/}
                   {/*  enabled={!disableAnimations && isZoomed}*/}
@@ -644,6 +648,7 @@ export const ZoomableWrapper = ({
                     >
                       {children}
                     </ImageWrapper>
+
                     </PinchGestureHandler>
                   </Container>
                   {/*</TapGestureHandler>*/}
