@@ -27,11 +27,13 @@ export interface RegistrationParameters {
   setReverseRecord?: boolean;
 }
 
+export interface ENSRegistrations {
+  [key: EthereumAddress]: {
+    [ensName: string]: RegistrationParameters;
+  };
+}
+
 export interface ENSRegistrationState {
   currentRegistrationName: string;
-  registrations: {
-    [key: EthereumAddress]: {
-      [ensName: string]: RegistrationParameters;
-    };
-  };
+  registrations: ENSRegistrations;
 }

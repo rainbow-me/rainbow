@@ -192,13 +192,14 @@ export default function useENSRegistrationActionHandler(
   ]);
 
   const startPollingWatchCommitTransaction = useCallback(async () => {
-    if (!registrationParameters?.commitTransactionHash) return;
+    if (registrationStep.step !== REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION)
+      return;
 
     const confirmed = await watchCommitTransaction();
     if (!confirmed) {
       setTimeout(() => startPollingWatchCommitTransaction(), 10000);
     }
-  }, [registrationParameters?.commitTransactionHash, watchCommitTransaction]);
+  }, [registrationStep.step, watchCommitTransaction]);
 
   useEffect(() => {
     const estimateGasLimit = async () => {
