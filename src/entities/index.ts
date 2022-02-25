@@ -69,7 +69,7 @@ export type {
   Records,
   ENSRegistrationState,
   RegistrationParameters,
-  CommitRegistrationParameters,
+  TransactionRegistrationParameters,
   ENSRegistrationRecords,
   ENSRegistrations,
 } from './ensRegistration';

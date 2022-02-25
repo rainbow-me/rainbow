@@ -10,15 +10,14 @@ export interface ENSRegistrationRecords {
   text: { key: string; value: string }[] | null;
 }
 
-export interface CommitRegistrationParameters {
+export interface TransactionRegistrationParameters {
   commitTransactionHash?: string;
   commitTransactionConfirmedAt?: number;
+  registerTransactionHash?: number;
 }
 
-export interface RegistrationParameters {
-  commitTransactionHash?: string;
-  registerTransactionHash?: string;
-  commitTransactionConfirmedAt?: number;
+export interface RegistrationParameters
+  extends TransactionRegistrationParameters {
   duration: number;
   name: string;
   ownerAddress: EthereumAddress;

@@ -12,7 +12,7 @@ import { web3Provider } from '@rainbow-me/handlers/web3';
 import { generateSalt, getRentPrice } from '@rainbow-me/helpers/ens';
 import { loadWallet } from '@rainbow-me/model/wallet';
 import { executeRap } from '@rainbow-me/raps';
-import { updateCommitRegistrationParameters } from '@rainbow-me/redux/ensRegistration';
+import { updateTransactionRegistrationParameters } from '@rainbow-me/redux/ensRegistration';
 import { timeUnits } from '@rainbow-me/references';
 
 enum REGISTRATION_STEPS {
@@ -153,16 +153,13 @@ export default function useENSRegistrationActionHandler(
 
   const watchCommitTransaction = useCallback(async () => {
     let confirmed = false;
-    let txHash = undefined;
     let confirmedAt = undefined;
 
     const tx = await web3Provider.getTransaction(
       registrationParameters?.commitTransactionHash || ''
     );
-    txHash = tx?.hash;
 
     if (readyToConfirm.current && tx?.blockHash) {
-      txHash = tx?.hash;
       // const block = await web3Provider.getBlock(tx.blockHash || '');
       // confirmedAt = Date.now();
       // confirmedAt = block?.timestamp * 1000;
@@ -172,16 +169,14 @@ export default function useENSRegistrationActionHandler(
       const secs = differenceInSeconds(now, now);
       setSecondsSinceCommitConfirmed(secs);
       confirmed = true;
+      await dispatch(
+        updateTransactionRegistrationParameters(accountAddress, {
+          commitTransactionConfirmedAt: confirmedAt,
+        })
+      );
     } else if (!readyToConfirm.current) {
       readyToConfirm.current = true;
     }
-
-    await dispatch(
-      updateCommitRegistrationParameters(accountAddress, {
-        commitTransactionConfirmedAt: confirmedAt,
-        commitTransactionHash: txHash,
-      })
-    );
 
     return confirmed;
   }, [

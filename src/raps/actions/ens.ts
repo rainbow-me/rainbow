@@ -10,7 +10,10 @@ import {
   getENSExecutionDetails,
 } from '@rainbow-me/helpers/ens';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
-import { saveCommitRegistrationParameters } from '@rainbow-me/redux/ensRegistration';
+import {
+  saveCommitRegistrationParameters,
+  updateTransactionRegistrationParameters,
+} from '@rainbow-me/redux/ensRegistration';
 import store from '@rainbow-me/redux/store';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
@@ -266,6 +269,11 @@ const ensAction = async (
           maxPriorityFeePerGas,
           wallet,
           nonce
+        );
+        await dispatch(
+          updateTransactionRegistrationParameters(ownerAddress, {
+            registerTransactionHash: tx?.hash,
+          })
         );
         break;
       case ENSRegistrationTransactionType.SET_TEXT:
