@@ -1,5 +1,5 @@
 import { differenceInSeconds } from 'date-fns';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import {
   ENSActionParameters,
@@ -31,13 +31,11 @@ export default function useENSRegistrationActionHandler(
     yearsDuration: number;
   } = {} as any
 ) {
-  const { accountAddress, network } = useAccountSettings();
-  const { registrationParameters } = useENSProfile();
-  const getNextNonce = useCurrentNonce(accountAddress, network);
   const dispatch = useDispatch();
-
+  const { accountAddress, network } = useAccountSettings();
+  const getNextNonce = useCurrentNonce(accountAddress, network);
+  const { registrationParameters } = useENSProfile();
   const [stepGasLimit, setStepGasLimit] = useState<string | null>(null);
-
   const [
     secondsSinceCommitConfirmed,
     setSecondsSinceCommitConfirmed,
@@ -49,6 +47,8 @@ export default function useENSRegistrationActionHandler(
         )
       : -1
   );
+
+  let readyToConfirm = useRef(false);
 
   const commit = useCallback(
     async (callback: () => void) => {
@@ -160,18 +160,20 @@ export default function useENSRegistrationActionHandler(
     const tx = await web3Provider.getTransaction(
       registrationParameters?.commitTransactionHash || ''
     );
-
     txHash = tx?.hash;
 
-    if (tx?.blockHash) {
+    if (readyToConfirm.current && tx?.blockHash) {
       txHash = tx?.hash;
       const block = await web3Provider.getBlock(tx.blockHash || '');
       // confirmedAt = Date.now();
       confirmedAt = block?.timestamp;
       const now = Date.now();
-      const secs = differenceInSeconds(now, confirmedAt * 1000);
+      // const secs = differenceInSeconds(now, confirmedAt * 1000);
+      const secs = differenceInSeconds(now, now);
       setSecondsSinceCommitConfirmed(secs);
       confirmed = true;
+    } else if (!readyToConfirm.current) {
+      readyToConfirm.current = true;
     }
 
     await dispatch(
@@ -182,7 +184,12 @@ export default function useENSRegistrationActionHandler(
     );
 
     return confirmed;
-  }, [accountAddress, dispatch, registrationParameters?.commitTransactionHash]);
+  }, [
+    accountAddress,
+    dispatch,
+    registrationParameters?.commitTransactionHash,
+    readyToConfirm,
+  ]);
 
   const startPollingWatchCommitTransaction = useCallback(async () => {
     if (!registrationParameters?.commitTransactionHash) return;
