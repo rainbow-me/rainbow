@@ -1,5 +1,5 @@
 import { differenceInSeconds } from 'date-fns';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import {
   ENSActionParameters,
@@ -47,8 +47,6 @@ export default function useENSRegistrationActionHandler(
         )
       : -1
   );
-
-  let readyToConfirm = useRef(false);
 
   const commit = useCallback(
     async (callback: () => void) => {
@@ -159,32 +157,22 @@ export default function useENSRegistrationActionHandler(
       registrationParameters?.commitTransactionHash || ''
     );
 
-    if (readyToConfirm.current && tx?.blockHash) {
-      // const block = await web3Provider.getBlock(tx.blockHash || '');
-      // confirmedAt = Date.now();
-      // confirmedAt = block?.timestamp * 1000;
+    if (tx?.blockHash) {
+      const block = await web3Provider.getBlock(tx.blockHash || '');
+      confirmedAt = block?.timestamp * 1000;
       const now = Date.now();
-      confirmedAt = now;
-      // const secs = differenceInSeconds(now, confirmedAt * 1000);
-      const secs = differenceInSeconds(now, now);
+      const secs = differenceInSeconds(now, confirmedAt * 1000);
       setSecondsSinceCommitConfirmed(secs);
       confirmed = true;
-      await dispatch(
+      dispatch(
         updateTransactionRegistrationParameters(accountAddress, {
           commitTransactionConfirmedAt: confirmedAt,
         })
       );
-    } else if (!readyToConfirm.current) {
-      readyToConfirm.current = true;
     }
 
     return confirmed;
-  }, [
-    accountAddress,
-    dispatch,
-    registrationParameters?.commitTransactionHash,
-    readyToConfirm,
-  ]);
+  }, [accountAddress, dispatch, registrationParameters?.commitTransactionHash]);
 
   const startPollingWatchCommitTransaction = useCallback(async () => {
     if (registrationStep.step !== REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION)
