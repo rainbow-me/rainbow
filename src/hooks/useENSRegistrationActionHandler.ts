@@ -154,13 +154,15 @@ export default function useENSRegistrationActionHandler(
 
   const watchCommitTransaction = useCallback(async () => {
     let confirmed = false;
-
-    let txHash;
-    let confirmedAt;
+    let txHash = undefined;
+    let confirmedAt = undefined;
 
     const tx = await web3Provider.getTransaction(
       registrationParameters?.commitTransactionHash || ''
     );
+
+    txHash = tx?.hash;
+
     if (tx?.blockHash) {
       txHash = tx?.hash;
       const block = await web3Provider.getBlock(tx.blockHash || '');
@@ -169,6 +171,7 @@ export default function useENSRegistrationActionHandler(
       const now = Date.now();
       const secs = differenceInSeconds(now, confirmedAt * 1000);
       setSecondsSinceCommitConfirmed(secs);
+      confirmed = true;
     }
 
     await dispatch(
@@ -185,10 +188,10 @@ export default function useENSRegistrationActionHandler(
     if (!registrationParameters?.commitTransactionHash) return;
 
     const confirmed = await watchCommitTransaction();
-    if (confirmed) {
+    if (!confirmed) {
       setTimeout(() => startPollingWatchCommitTransaction(), 10000);
     }
-  }, [registrationParameters, watchCommitTransaction]);
+  }, [registrationParameters?.commitTransactionHash, watchCommitTransaction]);
 
   useEffect(() => {
     const estimateGasLimit = async () => {
@@ -250,13 +253,12 @@ export default function useENSRegistrationActionHandler(
     if (registrationStep.step === REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION) {
       startPollingWatchCommitTransaction();
     }
-  }, [startPollingWatchCommitTransaction, registrationStep]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [registrationStep.step]);
 
   useEffect(() => {
     let interval: NodeJS.Timer;
-    const isActive =
-      secondsSinceCommitConfirmed >= 0 &&
-      secondsSinceCommitConfirmed < ENS_SECONDS_WAIT;
+    const isActive = secondsSinceCommitConfirmed < ENS_SECONDS_WAIT;
     if (isActive) {
       interval = setInterval(() => {
         setSecondsSinceCommitConfirmed(seconds => seconds + 1);
