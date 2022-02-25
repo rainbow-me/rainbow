@@ -1,3 +1,4 @@
+import { Console } from 'console';
 import { differenceInSeconds } from 'date-fns';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -138,7 +139,6 @@ export default function useENSRegistrationActionHandler(
         step: REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION,
       };
     }
-
     if (secondsSinceCommitConfirmed < ENS_SECONDS_WAIT) {
       return {
         action: null,
@@ -164,10 +164,11 @@ export default function useENSRegistrationActionHandler(
 
     if (readyToConfirm.current && tx?.blockHash) {
       txHash = tx?.hash;
-      const block = await web3Provider.getBlock(tx.blockHash || '');
+      // const block = await web3Provider.getBlock(tx.blockHash || '');
       // confirmedAt = Date.now();
-      confirmedAt = block?.timestamp;
+      // confirmedAt = block?.timestamp * 1000;
       const now = Date.now();
+      confirmedAt = now;
       // const secs = differenceInSeconds(now, confirmedAt * 1000);
       const secs = differenceInSeconds(now, now);
       setSecondsSinceCommitConfirmed(secs);
