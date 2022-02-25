@@ -1,5 +1,5 @@
 import { isEmpty, omit } from 'lodash';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { atom, useRecoilState } from 'recoil';
 import { useENSProfile } from '.';
@@ -61,7 +61,7 @@ export default function useENSProfileForm({
   }, [name, records]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [valuesMap, setValuesMap] = useRecoilState(valuesAtom);
-  const values = valuesMap[name] || {};
+  const values = useMemo(() => valuesMap[name] || {}, [name, valuesMap]);
   useEffect(() => setValuesMap(values => ({ ...values, [name]: records })), [
     name,
     records,
@@ -122,12 +122,21 @@ export default function useENSProfileForm({
     [name, setValuesMap]
   );
 
+  const [isLoading, setIsLoading] = useState(recordsQuery.isLoading);
+  useEffect(() => {
+    if (!recordsQuery.isLoading) {
+      setTimeout(() => setIsLoading(false), 200);
+    } else {
+      setIsLoading(true);
+    }
+  }, [recordsQuery.isLoading]);
+
   const empty = useMemo(() => !Object.values(values).some(Boolean), [values]);
 
   return {
     disabled,
     isEmpty: empty,
-    isLoading: recordsQuery.isLoading,
+    isLoading,
     onAddField,
     onBlurField,
     onChangeField,

@@ -31,7 +31,7 @@ export default function Avatar({
   const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
   useEffect(() => {
     setAvatarUrl(initialAvatarUrl);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [initialAvatarUrl]);
 
   const accentColor = useForegroundColor('accent');
 

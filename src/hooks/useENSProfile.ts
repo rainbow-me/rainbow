@@ -70,31 +70,16 @@ export default function useENSProfile() {
   });
   useEffect(() => {
     if (mode === 'edit' && recordsQuery.isSuccess) {
-      updateRecords(recordsQuery.data as Records);
+      updateRecords(recordsQuery.data.records as Records);
     }
   }, [mode, recordsQuery.data, recordsQuery.isSuccess, updateRecords]);
 
   // Since `records.avatar` is not a reliable source for an avatar URL
   // (the avatar can be an NFT), then if the avatar is an NFT, we will
   // parse it to obtain the URL.
-  const uniqueTokens = useSelector(
-    ({ uniqueTokens }: AppState) => uniqueTokens.uniqueTokens
-  );
   const avatarUrl = useMemo(() => {
-    if (records.avatar) {
-      const isNFTAvatar = isENSNFTAvatar(records.avatar);
-      if (isNFTAvatar) {
-        const { contractAddress, tokenId } = parseENSNFTAvatar(records.avatar);
-        const uniqueToken = uniqueTokens.find(
-          token =>
-            token.asset_contract.address === contractAddress &&
-            token.id === tokenId
-        );
-        return uniqueToken?.image_thumbnail_url;
-      }
-    }
-    return records.avatar;
-  }, [records.avatar, uniqueTokens]);
+    return recordsQuery.data?.metadata?.avatarUrl;
+  }, [recordsQuery.data?.metadata?.avatarUrl]);
 
   return {
     avatarUrl,

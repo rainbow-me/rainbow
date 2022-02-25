@@ -1,3 +1,4 @@
+import { AvatarResolver } from 'ens-avatar';
 import { debounce, isEmpty, sortBy } from 'lodash';
 import { ensClient } from '../apollo/client';
 import {
@@ -7,6 +8,7 @@ import {
   ENS_SUGGESTIONS,
 } from '../apollo/queries';
 import { estimateGasWithPadding, web3Provider } from './web3';
+import { Records } from '@rainbow-me/entities';
 import {
   ENSRegistrationRecords,
   ENSRegistrationTransactionType,
@@ -107,14 +109,23 @@ export const fetchRecords = async (recipient: any) => {
   const recordValues = await Promise.all(
     recordKeys.map((key: string) => resolver.getText(key))
   );
-
   const records = recordKeys.reduce((records, key, i) => {
     return {
       ...records,
       [key]: recordValues[i],
     };
-  }, {});
-  return records;
+  }, {}) as Partial<Records>;
+
+  let avatarUrl;
+  try {
+    const avatarResolver = new AvatarResolver(web3Provider);
+    avatarUrl = await avatarResolver.getAvatar(recpt, {
+      allowNonOwnerNFTs: true,
+    });
+    // eslint-disable-next-line no-empty
+  } catch (err) {}
+
+  return { metadata: { avatarUrl }, records };
 };
 
 export const estimateENSRegisterWithConfigGasLimit = async ({
