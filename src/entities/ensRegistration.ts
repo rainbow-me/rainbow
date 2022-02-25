@@ -17,6 +17,7 @@ export interface CommitRegistrationParameters {
 
 export interface RegistrationParameters {
   commitTransactionHash?: string;
+  registerTransactionHash?: string;
   commitTransactionConfirmedAt?: number;
   duration: number;
   name: string;
