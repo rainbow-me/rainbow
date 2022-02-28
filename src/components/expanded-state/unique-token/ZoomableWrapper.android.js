@@ -16,9 +16,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { tap } from '../../../../e2e/helpers';
 import useReactiveSharedValue from '../../../react-native-animated-charts/src/helpers/useReactiveSharedValue';
-import { ButtonPressAnimation } from '../../animations';
 import { useDimensions } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
@@ -165,8 +163,6 @@ export const ZoomableWrapper = ({
   const state = useSharedValue(0); // 0 - started, 1 - finished
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
-  const translateXTarget = useSharedValue(0);
-  const translateYTarget = useSharedValue(0);
 
   const endGesture = useWorkletCallback((event, ctx) => {
     'worklet';
@@ -178,21 +174,11 @@ export const ZoomableWrapper = ({
     ctx.startVelocityY = undefined;
     ctx.prevTranslateX = 0;
     ctx.prevTranslateY = 0;
-    // if zoom state was entered by pinching, adjust targetScale to account for new image dimensions
-    let targetScale = true // TODO osdnk
-      ? Math.min(scale.value, MAX_IMAGE_SCALE)
-      : Math.min(
-          scale.value * (containerWidth / fullSizeWidth),
-          MAX_IMAGE_SCALE
-        );
+    let targetScale = Math.min(scale.value, MAX_IMAGE_SCALE);
 
     // determine whether to snap to screen edges
     let breakingScaleX = deviceWidth / fullSizeWidth;
     let breakingScaleY = deviceHeight / fullSizeHeight;
-    // if (isZoomedValue.value === false) {
-    //   breakingScaleX = deviceWidth / containerWidth;
-    //   breakingScaleY = deviceHeight / containerHeight;
-    // } // TODO osdnk
 
     const maxDisplacementX =
       (deviceWidth * (Math.max(1, targetScale / breakingScaleX) - 1)) /
@@ -203,8 +189,8 @@ export const ZoomableWrapper = ({
       2 /
       zooming;
 
-    let targetTranslateX = translateXTarget.value;
-    let targetTranslateY = translateYTarget.value;
+    let targetTranslateX = translateX.value;
+    let targetTranslateY = translateY.value;
 
     if (scale.value > MAX_IMAGE_SCALE) {
       scale.value = withTiming(MAX_IMAGE_SCALE, adjustConfig);
@@ -214,23 +200,16 @@ export const ZoomableWrapper = ({
           (ctx.focalDisplacementX * event.scale) / ctx.initEventScale;
         const readjustX =
           ctx.maxAllowedFocalDisplacementX - lastFocalDisplacementX;
-        targetTranslateX = translateXTarget.value + readjustX;
-        // translateX.value = withTiming(targetTranslateX, adjustConfig);
-        translateXTarget.value = targetTranslateX;
-        translateX.value = targetTranslateX;
+        targetTranslateX = translateX.value + readjustX;
+        translateX.value = withTiming(targetTranslateX, adjustConfig);
 
         const lastFocalDisplacementY =
           (ctx.focalDisplacementY * event.scale) / ctx.initEventScale;
 
         const readjustY =
           ctx.maxAllowedFocalDisplacementY - lastFocalDisplacementY;
-        targetTranslateY = translateYTarget.value + readjustY;
-        //  translateY.value = withTiming(targetTranslateY, adjustConfig);
-        translateYTarget.value = targetTranslateY;
-        translateY.value = targetTranslateY;
-        //        translateX.value = withTiming(targetTranslateX, adjustConfig);
-
-        translateYTarget.value = targetTranslateY;
+        targetTranslateY = translateY.value + readjustY;
+        translateY.value = withTiming(targetTranslateY, adjustConfig);
       } else {
         return;
       }
@@ -255,17 +234,14 @@ export const ZoomableWrapper = ({
       if (targetTranslateY > maxDisplacementY) {
         cancelAnimation(translateY.value);
         translateY.value = withTiming(maxDisplacementY, adjustConfig);
-        translateYTarget.value = maxDisplacementY;
       }
       if (targetTranslateY < -maxDisplacementY) {
         cancelAnimation(translateY.value);
         translateY.value = withTiming(-maxDisplacementY, adjustConfig);
-        translateYTarget.value = -maxDisplacementY;
       }
     } else {
       cancelAnimation(translateY.value);
       translateY.value = withTiming(0, adjustConfig);
-      translateYTarget.value = 0;
     }
 
     if (scale.value < 0.8) {
@@ -276,14 +252,10 @@ export const ZoomableWrapper = ({
         scale.value = withSpring(MIN_IMAGE_SCALE, exitConfig);
         translateX.value = withSpring(0, exitConfig);
         translateY.value = withSpring(0, exitConfig);
-        translateXTarget.value = 0;
-        translateYTarget.value = 0;
       } else {
         scale.value = withSpring(MIN_IMAGE_SCALE, exitConfig);
         translateX.value = withSpring(0, exitConfig);
         translateY.value = withSpring(0, exitConfig);
-        translateXTarget.value = 0;
-        translateYTarget.value = 0;
         targetScale = 1;
       }
     } else if (scale.value < MIN_IMAGE_SCALE) {
@@ -292,7 +264,7 @@ export const ZoomableWrapper = ({
 
     // handle dismiss gesture
     if (
-      Math.abs(translateYTarget.value) +
+      Math.abs(translateY.value) +
         (Math.abs(event?.velocityY) ?? 0) -
         (Math.abs(event?.velocityX / 2) ?? 0) >
         THRESHOLD * targetScale &&
@@ -305,8 +277,6 @@ export const ZoomableWrapper = ({
       animationProgress.value = withSpring(0, exitConfig);
       translateX.value = withSpring(0, exitConfig);
       translateY.value = withSpring(0, exitConfig);
-      translateXTarget.value = 0;
-      translateYTarget.value = 0;
     }
 
     if (
@@ -329,13 +299,10 @@ export const ZoomableWrapper = ({
       };
       if (projectedYCoordinate > maxDisplacementY) {
         translateY.value = withSpring(maxDisplacementY, edgeBounceConfig);
-        translateYTarget.value = maxDisplacementY;
       } else if (projectedYCoordinate < -maxDisplacementY) {
         translateY.value = withSpring(-maxDisplacementY, edgeBounceConfig);
-        translateYTarget.value = -maxDisplacementY;
       } else {
         translateY.value = withSpring(projectedYCoordinate, flingConfig);
-        translateYTarget.value = projectedYCoordinate;
       }
     }
 
@@ -359,13 +326,10 @@ export const ZoomableWrapper = ({
       };
       if (projectedXCoordinate > maxDisplacementX) {
         translateX.value = withSpring(maxDisplacementX, edgeBounceConfig);
-        translateXTarget.value = maxDisplacementY;
       } else if (projectedXCoordinate < -maxDisplacementX) {
         translateX.value = withSpring(-maxDisplacementX, edgeBounceConfig);
-        translateXTarget.value = -maxDisplacementY;
       } else {
         translateX.value = withSpring(projectedXCoordinate, flingConfig);
-        translateXTarget.value = projectedXCoordinate;
       }
     }
   });
@@ -376,16 +340,6 @@ export const ZoomableWrapper = ({
         return;
       }
       const zooming = Math.pow(fullSizeHeight / containerHeightValue.value, 2);
-      if (
-        isZoomedValue.value &&
-        ctx.startScale <= MIN_IMAGE_SCALE &&
-        event.numberOfPointers === 1
-      ) {
-        // scale.value =
-        //   ctx.startScale -
-        //   ((ctx.startY + Math.abs(event.translationY)) / deviceHeight / 2) *
-        //     ctx.startScale;
-      }
       if (event.numberOfPointers === 2) {
         ctx.numberOfPointers = 2;
       }
@@ -393,24 +347,12 @@ export const ZoomableWrapper = ({
         (event.translationX - (ctx.prevTranslateX ?? 0)) /
         (isZoomedValue.value ? zooming : 1);
 
-      // lock y translation on horizontal swipe
-      if (
-        true
-        // ctx.startScale <= MIN_IMAGE_SCALE ||
-        // ctx.startScale * fullSizeHeight >= deviceHeight ||
-        // ctx.numberOfPointers === 2 ||
-        // event.numberOfPointers === 2 ||
-        // !(Math.abs(ctx.startVelocityX) / Math.abs(ctx.startVelocityY) > 1)
-      ) {
-        translateY.value +=
-          (event.translationY - (ctx.prevTranslateY ?? 0)) /
-          (isZoomedValue.value ? zooming : 1);
-      }
+      translateY.value +=
+        (event.translationY - (ctx.prevTranslateY ?? 0)) /
+        (isZoomedValue.value ? zooming : 1);
 
       ctx.prevTranslateX = event.translationX;
       ctx.prevTranslateY = event.translationY;
-      translateXTarget.value = translateX.value;
-      translateYTarget.value = translateY.value;
     },
     onCancel: endGesture,
     onEnd: endGesture,
@@ -433,9 +375,6 @@ export const ZoomableWrapper = ({
           (containerWidthValue.value / 2 - event.focalX) * scale.value;
         ctx.focalDisplacementY =
           (containerHeightValue.value / 2 - event.focalY) * scale.value;
-        // ctx.focalDisplacementX = -event.focalX * scale.value;
-        //
-        // ctx.focalDisplacementY = event.focalY * scale.value;
       }
       if (!ctx.initEventScale) {
         ctx.initEventScale = event.scale;
@@ -470,8 +409,6 @@ export const ZoomableWrapper = ({
         ctx.prevTranslateX = translateX.value;
         ctx.prevTranslateY = translateY.value;
         ctx.prevScale = event.scale;
-        translateXTarget.value = translateX.value;
-        translateYTarget.value = translateY.value;
       }
     },
     onCancel: endGesture,

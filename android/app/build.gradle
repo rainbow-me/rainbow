@@ -155,6 +155,11 @@ def enableHermes = project.ext.react.get("enableHermes", false);
  */
 def nativeArchitectures = project.getProperties().get("reactNativeDebugArchitectures")
 
+exec {
+    executable "sh"
+    args "-c", "source ../../.env"
+}
+println "!!!!!!!!!!!!!!!!!" +  "$System.env"
 
 android {
     def env = project.file('../../.env')
@@ -162,12 +167,24 @@ android {
     def contents2 = props.getText( 'UTF-8' ).replaceAll( "//_REA ", '' ).replaceAll('/\\* REA', '//_REA /* REA')
     props.delete()
     props << contents2
+    println "!@#!@#@!"
+    def BK = ""
+    env.eachLine { line ->
+        if (line.contains('BRANCH_KEY')) {
+            BK = line.substring(11)
+        }
+    }
+
+    println BK
+    println "!2123123"
 
     if (env.getText( 'UTF-8' ).indexOf('DISABLE_REANIMATED_IN_DEV=YES') != -1) {
         def contents = props.getText( 'UTF-8' ).replaceAll( "//_REA ", '' )
         props.delete()
         props << contents
     }
+
+
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
@@ -189,6 +206,10 @@ android {
         testBuildType System.getProperty('testBuildType', 'debug')  // This will later be used to control the test apk build type
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
 
+        exec {
+            executable "sh"
+
+        }
         manifestPlaceholders = [
 		    BRANCH_KEY: "$System.env.BRANCH_KEY",
 	    ]
