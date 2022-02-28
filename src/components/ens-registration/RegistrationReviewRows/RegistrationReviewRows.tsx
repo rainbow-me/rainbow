@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import Skeleton, { FakeText } from '../../skeleton/Skeleton';
 import {
@@ -66,9 +66,13 @@ export default function RegistrationReviewRows({
               <Columns>
                 <Column width="content">
                   <StepButton
-                    onPress={() =>
-                      duration > 1 ? onChangeDuration(duration - 1) : undefined
-                    }
+                    onPress={useCallback(
+                      () =>
+                        duration > 1
+                          ? onChangeDuration(duration - 1)
+                          : undefined,
+                      [duration, onChangeDuration]
+                    )}
                     type="decrement"
                   />
                 </Column>
@@ -79,11 +83,13 @@ export default function RegistrationReviewRows({
                 </Box>
                 <Column width="content">
                   <StepButton
-                    onPress={() =>
-                      duration < maxDuration
-                        ? onChangeDuration(duration + 1)
-                        : undefined
-                    }
+                    onPress={useCallback(
+                      () =>
+                        duration < maxDuration
+                          ? onChangeDuration(duration + 1)
+                          : undefined,
+                      [duration, maxDuration, onChangeDuration]
+                    )}
                     type="increment"
                   />
                 </Column>
