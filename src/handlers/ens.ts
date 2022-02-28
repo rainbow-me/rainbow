@@ -1,4 +1,3 @@
-import { AvatarResolver } from 'ens-avatar';
 import { debounce, isEmpty, sortBy } from 'lodash';
 import { ensClient } from '../apollo/client';
 import {
@@ -18,6 +17,7 @@ import {
 import { add } from '@rainbow-me/helpers/utilities';
 import { ethUnits } from '@rainbow-me/references';
 import { profileUtils } from '@rainbow-me/utils';
+import { AvatarResolver } from 'ens-avatar';
 
 export const fetchSuggestions = async (
   recipient: any,

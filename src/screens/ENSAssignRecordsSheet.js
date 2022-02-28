@@ -3,6 +3,7 @@ import { Keyboard } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
+  withSpring,
   withTiming,
 } from 'react-native-reanimated';
 import { useRecoilState } from 'recoil';
@@ -49,7 +50,10 @@ export const BottomActionHeight = ios ? 270 : 250;
 
 export default function ENSAssignRecordsSheet() {
   const { colors } = useTheme();
-  const { name, mode } = useENSProfile();
+  const { name, mode } = useENSProfile({
+    setExistingRecordsWhenInEditMode: true,
+  });
+  useENSProfileForm({ createForm: true });
 
   const [avatarUrl, setAvatarUrl] = useState();
 
@@ -96,7 +100,7 @@ export default function ENSAssignRecordsSheet() {
                   defaultFields={[
                     ENS_RECORDS.displayName,
                     ENS_RECORDS.description,
-                    ENS_RECORDS.url,
+                    ENS_RECORDS.email,
                     ENS_RECORDS.twitter,
                   ]}
                 />
@@ -109,12 +113,12 @@ export default function ENSAssignRecordsSheet() {
   );
 }
 
-export function ENSAssignRecordsBottomActions({ visible }) {
+export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
   const { navigate } = useNavigation();
   const keyboardHeight = useKeyboardHeight();
   const [accentColor] = useRecoilState(accentColorAtom);
 
-  const { mode } = useENSProfile();
+  const { mode, recordsQuery } = useENSProfile();
   const {
     disabled,
     isEmpty,
@@ -131,10 +135,21 @@ export function ENSAssignRecordsBottomActions({ visible }) {
     navigate(Routes.ENS_CONFIRM_REGISTER_SHEET);
   }, [navigate]);
 
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    if (mode === 'edit') {
+      setTimeout(() => setVisible(recordsQuery.isSuccess), 200);
+    } else {
+      setVisible(defaultVisible);
+    }
+  }, [defaultVisible, mode, recordsQuery.isSuccess]);
+
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      bottom: withTiming(visible ? 0 : -BottomActionHeight - 10, {
-        duration: 100,
+      bottom: withSpring(visible ? 0 : -BottomActionHeight - 10, {
+        damping: 40,
+        mass: 1,
+        stiffness: 420,
       }),
     };
   });

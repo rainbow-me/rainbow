@@ -7,6 +7,8 @@ import {
   RegistrationParameters,
 } from '@rainbow-me/entities';
 
+const ENS_REGISTRATION_SET_EXISTING_RECORDS =
+  'ensRegistration/ENS_REGISTRATION_SET_EXISTING_RECORDS';
 const ENS_REGISTRATION_UPDATE_DURATION =
   'ensRegistration/ENS_REGISTRATION_UPDATE_DURATION';
 const ENS_REGISTRATION_UPDATE_RECORDS =
@@ -21,6 +23,11 @@ const ENS_SAVE_COMMIT_REGISTRATION_PARAMETERS =
   'ensRegistration/ENS_SAVE_COMMIT_REGISTRATION_PARAMETERS';
 const ENS_CLEAR_CURRENT_REGISTRATION_NAME =
   'ensRegistration/CLEAR_CURRENT_REGISTRATION_NAME';
+
+interface EnsRegistrationSetExistingRecordsAction {
+  type: typeof ENS_REGISTRATION_SET_EXISTING_RECORDS;
+  payload: ENSRegistrationState;
+}
 
 interface EnsRegistrationUpdateDurationAction {
   type: typeof ENS_REGISTRATION_UPDATE_DURATION;
@@ -62,6 +69,7 @@ interface EnsClearCurrentRegistrationNameAction {
 }
 
 export type EnsRegistrationActionTypes =
+  | EnsRegistrationSetExistingRecordsAction
   | EnsRegistrationUpdateDurationAction
   | EnsRegistrationUpdateRecordsAction
   | EnsRegistrationUpdateRecordByKeyAction
@@ -137,6 +145,36 @@ export const updateRegistrationDuration = (
   dispatch({
     payload: updatedEnsRegistrationManager,
     type: ENS_REGISTRATION_UPDATE_DURATION,
+  });
+};
+
+export const setExistingRecords = (
+  accountAddress: EthereumAddress,
+  records: Records
+) => async (dispatch: AppDispatch, getState: AppGetState) => {
+  const {
+    ensRegistration: { registrations, currentRegistrationName },
+  } = getState();
+  const lcAccountAddress = accountAddress.toLowerCase();
+  const accountRegistrations = registrations?.[lcAccountAddress] || {};
+  const registration = accountRegistrations[currentRegistrationName] || {};
+
+  const updatedEnsRegistrationManagerForAccount = {
+    registrations: {
+      ...registrations,
+      [lcAccountAddress]: {
+        ...accountRegistrations,
+        [currentRegistrationName]: {
+          ...registration,
+          existingRecords: records,
+          records,
+        },
+      },
+    },
+  };
+  dispatch({
+    payload: updatedEnsRegistrationManagerForAccount,
+    type: ENS_REGISTRATION_SET_EXISTING_RECORDS,
   });
 };
 
@@ -282,6 +320,11 @@ export default (
 ): ENSRegistrationState => {
   switch (action.type) {
     case ENS_START_REGISTRATION:
+      return {
+        ...state,
+        ...action.payload,
+      };
+    case ENS_REGISTRATION_SET_EXISTING_RECORDS:
       return {
         ...state,
         ...action.payload,

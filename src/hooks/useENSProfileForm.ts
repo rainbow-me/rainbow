@@ -16,61 +16,83 @@ const selectedFieldsAtom = atom({
   key: 'ensProfileForm.selectedFields',
 });
 
-const valuesAtom = atom<{ [name: string]: Partial<Records> }>({
+export const valuesAtom = atom<{ [name: string]: Partial<Records> }>({
   default: {},
   key: 'ensProfileForm.values',
 });
 
 export default function useENSProfileForm({
   defaultFields,
+  createForm,
 }: {
   defaultFields?: any[];
+  /** A flag that indicates if a new form should be initialised */
+  createForm?: boolean;
 } = {}) {
   const {
     name,
-    records,
+    mode,
+    changedRecords,
+    existingRecords,
+    records: allRecords,
     recordsQuery,
     removeRecordByKey,
     updateRecordByKey,
     updateRecords,
   } = useENSProfile();
 
+  // The initial records will be the existing records belonging to the profile in "edit mode",
+  // but will be all of the records in "create mode".
+  const initialRecords = useMemo(
+    () => (mode === 'edit' ? existingRecords : allRecords),
+    [allRecords, existingRecords, mode]
+  );
+
   const dispatch = useDispatch();
 
   const [disabled, setDisabled] = useRecoilState(disabledAtom);
+  useEffect(() => {
+    setDisabled(isEmpty(changedRecords));
+  }, [changedRecords, setDisabled]);
 
   const [selectedFields, setSelectedFields] = useRecoilState(
     selectedFieldsAtom
   );
   useEffect(() => {
-    // If there are existing records in the global state, then we
-    // populate with that.
-    if (!isEmpty(records)) {
-      setSelectedFields(
-        // @ts-ignore
-        Object.keys(records)
+    if (createForm) {
+      // If there are existing records in the global state, then we
+      // populate with that.
+      if (!isEmpty(initialRecords)) {
+        setSelectedFields(
           // @ts-ignore
-          .map(key => textRecordFields[key])
-          .filter(x => x)
-      );
-    } else {
-      if (defaultFields) {
-        setSelectedFields(defaultFields as any);
+          Object.keys(initialRecords)
+            // @ts-ignore
+            .map(key => textRecordFields[key])
+            .filter(x => x)
+        );
+      } else {
+        if (defaultFields) {
+          setSelectedFields(defaultFields as any);
+        }
       }
     }
-  }, [name, records]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [name, isEmpty(initialRecords)]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [valuesMap, setValuesMap] = useRecoilState(valuesAtom);
   const values = useMemo(() => valuesMap[name] || {}, [name, valuesMap]);
-  useEffect(() => setValuesMap(values => ({ ...values, [name]: records })), [
-    name,
-    records,
-    setValuesMap,
-  ]);
+  useEffect(
+    () => {
+      if (createForm) {
+        setValuesMap(values => ({ ...values, [name]: initialRecords }));
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [name, isEmpty(initialRecords)]
+  );
 
   // Set initial records in redux depending on user input (defaultFields)
   useEffect(() => {
-    if (isEmpty(records) && defaultFields) {
+    if (defaultFields && isEmpty(initialRecords)) {
       const records = defaultFields.reduce((records, field) => {
         return {
           ...records,
@@ -79,7 +101,15 @@ export default function useENSProfileForm({
       }, {});
       updateRecords(records);
     }
-  }, [defaultFields, dispatch, records, selectedFields, updateRecords]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    defaultFields,
+    dispatch,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    isEmpty(initialRecords),
+    selectedFields,
+    updateRecords,
+  ]);
 
   const onAddField = useCallback(
     (fieldToAdd, selectedFields) => {
@@ -122,6 +152,10 @@ export default function useENSProfileForm({
     [name, setValuesMap]
   );
 
+  const blurFields = useCallback(() => {
+    updateRecords(values);
+  }, [updateRecords, values]);
+
   const [isLoading, setIsLoading] = useState(recordsQuery.isLoading);
   useEffect(() => {
     if (!recordsQuery.isLoading) {
@@ -134,6 +168,7 @@ export default function useENSProfileForm({
   const empty = useMemo(() => !Object.values(values).some(Boolean), [values]);
 
   return {
+    blurFields,
     disabled,
     isEmpty: empty,
     isLoading,

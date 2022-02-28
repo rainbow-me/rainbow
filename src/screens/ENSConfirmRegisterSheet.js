@@ -1,3 +1,4 @@
+import { useFocusEffect } from '@react-navigation/core';
 import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -27,6 +28,7 @@ import {
   useAccountSettings,
   useCurrentNonce,
   useENSProfile,
+  useENSProfileForm,
   useENSRegistration,
   useENSRegistrationCosts,
   useGas,
@@ -43,13 +45,18 @@ const avatarSize = 70;
 export default function ENSConfirmRegisterSheet() {
   const dispatch = useDispatch();
   const { gasFeeParamsBySpeed, updateTxFee, startPollingGasFees } = useGas();
-  const { avatarUrl, name: ensName, records } = useENSProfile();
+  const { avatarUrl, name: ensName, records, changedRecords } = useENSProfile();
   const { accountAddress, network } = useAccountSettings();
   const getNextNonce = useCurrentNonce(accountAddress, network);
   const [gasLimit, setGasLimit] = useState();
   const [accentColor] = useRecoilState(accentColorAtom);
 
   const [duration, setDuration] = useState(1);
+
+  const { blurFields } = useENSProfileForm();
+  useFocusEffect(() => {
+    blurFields();
+  });
 
   const name = ensName.replace(ENS_DOMAIN, '');
   const { data: registrationData } = useENSRegistration({
@@ -69,14 +76,14 @@ export default function ENSConfirmRegisterSheet() {
         duration: duration * timeUnits.secs.year,
         name: name,
         ownerAddress: accountAddress,
-        records,
+        records: changedRecords,
         rentPrice,
         salt,
       },
     });
     updateTxFee(gasLimit);
     setGasLimit(gasLimit);
-  }, [accountAddress, duration, name, records, rentPrice, updateTxFee]);
+  }, [accountAddress, changedRecords, duration, name, rentPrice, updateTxFee]);
 
   // Update gas limit
   useEffect(() => {
@@ -112,6 +119,7 @@ export default function ENSConfirmRegisterSheet() {
         ensRegistrationParameters
       )
     );
+    console.log(changedRecords);
     return;
     // LEAVING THIS AS WIP TO AVOID PEOPLE ON THE TEAM  SENDING THIS TX
 
@@ -120,7 +128,12 @@ export default function ENSConfirmRegisterSheet() {
     // await executeRap(
     //   wallet,
     //   RapActionTypes.commitENS,
-    //   { ensRegistrationParameters },
+    //   {
+    //     ensRegistrationParameters: {
+    //       ...ensRegistrationParameters,
+    //       records: changedRecords
+    //     },
+    //   },
     //   callback
     // );
   }, [

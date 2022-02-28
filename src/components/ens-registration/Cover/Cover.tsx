@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
 import Spinner from '../../Spinner';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
+import Skeleton from '../../skeleton/Skeleton';
 import { useTheme } from '@rainbow-me/context';
 import {
   Box,
@@ -17,7 +18,7 @@ const alpha = '33';
 
 export default function CoverPhoto() {
   const { colors } = useTheme();
-  const { values, onBlurField, setDisabled } = useENSProfileForm();
+  const { isLoading, values, onBlurField, setDisabled } = useENSProfileForm();
 
   const [coverUrl, setCoverUrl] = useState(values?.cover);
   useEffect(() => {
@@ -45,6 +46,15 @@ export default function CoverPhoto() {
     uploadToIPFS: true,
   });
 
+  if (isLoading) {
+    return (
+      <Box height="126px">
+        <Skeleton animated>
+          <Box background="body" height="126px" />
+        </Skeleton>
+      </Box>
+    );
+  }
   return (
     <ContextMenu>
       <ButtonPressAnimation scaleTo={1}>
