@@ -5,7 +5,7 @@ import { AppState } from '@rainbow-me/redux/store';
 
 export default function useENSPendingRegistrations() {
   const { accountAddress } = useAccountSettings();
-  const { pendingRegistrations } = useSelector(
+  return useSelector(
     ({ ensRegistration }: AppState) => {
       const { registrations } = ensRegistration as ENSRegistrationState;
       const registrationsArray = Object.values(
