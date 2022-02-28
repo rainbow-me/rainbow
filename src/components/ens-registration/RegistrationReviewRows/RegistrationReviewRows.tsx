@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import Skeleton, { FakeText } from '../../skeleton/Skeleton';
+import lang from 'i18n-js';
 import {
   Box,
   Column,
@@ -58,7 +59,7 @@ export default function RegistrationReviewRows({
         <Columns>
           <Column width="3/5">
             <Text size="16px" weight="heavy">
-              Register name for
+              {lang.t('profiles.confirm.registration_duration')}
             </Text>
           </Column>
           <Column width="2/5">
@@ -78,7 +79,11 @@ export default function RegistrationReviewRows({
                 </Column>
                 <Box>
                   <Text align="center" size="16px" weight="heavy">
-                    {duration} year{duration > 1 ? 's' : ''}
+                    {duration > 1
+                      ? lang.t('profiles.confirm.duration_plural', {
+                          content: duration,
+                        })
+                      : lang.t('profiles.confirm.duration_singular')}
                   </Text>
                 </Box>
                 <Column width="content">
@@ -100,7 +105,7 @@ export default function RegistrationReviewRows({
         <Columns>
           <Column width="2/3">
             <Text color="secondary80" size="16px" weight="bold">
-              Registration cost
+              {lang.t('profiles.confirm.registration_cost')}
             </Text>
           </Column>
           <Column width="1/3">
@@ -116,7 +121,7 @@ export default function RegistrationReviewRows({
         <Columns>
           <Column width="2/3">
             <Text color="secondary80" size="16px" weight="bold">
-              Estimated network fee
+              {lang.t('profiles.confirm.estimated_fees')}
             </Text>
           </Column>
           <Column width="1/3">
@@ -132,7 +137,7 @@ export default function RegistrationReviewRows({
         <Columns>
           <Column width="2/3">
             <Text size="16px" weight="heavy">
-              Total cost
+              {lang.t('profiles.confirm.total_cost')}
             </Text>
           </Column>
           <Column width="1/3">

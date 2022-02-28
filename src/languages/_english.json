@@ -575,6 +575,17 @@
         "review": "Review",
         "choose_nft": "Choose NFT",
         "upload_photo": "Upload photo"
+      },
+      "confirm": {
+        "description": "Confirm purchase",
+        "suggestion": "Buy more years now to save on fees",
+        "registration_duration": "Register name for",
+        "registration_cost": "Registration cost",
+        "estimated_fees": "Estimated network fee",
+        "total_cost": "Total cost",
+        "duration_plural": "%{content} years",
+        "duration_singular": "1 year",
+        "commit_button": "Hold to Commit"
       }
     },
     "savings": {

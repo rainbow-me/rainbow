@@ -156,9 +156,9 @@ export default function ENSSearchSheet() {
               <Inset horizontal="19px">
                 {isRegistered ? (
                   <Text color="secondary50" size="16px" weight="bold">
-                    {`${lang.t('profiles.search.registered_on', {
+                    {lang.t('profiles.search.registered_on', {
                       content: registrationData?.registrationDate,
-                    })}`}
+                    })}
                   </Text>
                 ) : (
                   <Inline>
