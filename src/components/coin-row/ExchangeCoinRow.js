@@ -129,7 +129,7 @@ const ExchangeCoinRow = ({
       {showFavoriteButton && android && (
         <CoinRowFavoriteButton
           isFavorited={localFavorite}
-          onPress={() => toggleFavorite}
+          onPress={toggleFavorite}
         />
       )}
       {showAddButton && (
