@@ -86,7 +86,7 @@ export const metadataClient = new ApolloClientWithTimeout({
   ...defaultOptions,
   cache: new InMemoryCache(),
   link: new HttpLink({
-    uri: 'http://localhost:8080/v1/graph',
+    uri: 'https://metadata.p.rainbow.me/v1/graph',
     useGETForQueries: true,
   }),
 });
