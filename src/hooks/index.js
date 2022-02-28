@@ -28,7 +28,6 @@ export {
 export { default as useCollectible } from './useCollectible';
 export { default as useColorForAsset } from './useColorForAsset';
 export { default as useContacts } from './useContacts';
-export { default as useDebounceString } from './useDebounceString';
 export { default as useDimensions } from './useDimensions';
 export { default as useDPI } from './useDPI';
 export { default as useEffectDebugger } from './useEffectDebugger';

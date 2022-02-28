@@ -1,5 +1,6 @@
 import { isEmpty } from 'lodash';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { useRecoilState } from 'recoil';
 import brain from '../assets/brain.png';
 import ActivityIndicator from '../components/ActivityIndicator';
@@ -43,7 +44,9 @@ const avatarSize = 70;
 
 export default function ENSConfirmRegisterSheet() {
   const { gasFeeParamsBySpeed, updateTxFee, startPollingGasFees } = useGas();
-  const { name: ensName } = useENSProfile();
+  const { avatarUrl, name: ensName, records } = useENSProfile();
+  const { accountAddress, network } = useAccountSettings();
+  const getNextNonce = useCurrentNonce(accountAddress, network);
   const [gasLimit, setGasLimit] = useState();
   const [accentColor] = useRecoilState(accentColorAtom);
 
@@ -58,7 +61,6 @@ export default function ENSConfirmRegisterSheet() {
     name,
   });
   const rentPrice = registrationData?.rentPrice;
-  const records = registrationData.records;
   const { data: registrationCostsData } = useENSRegistrationCosts({
     duration,
     name,
@@ -100,12 +102,12 @@ export default function ENSConfirmRegisterSheet() {
         <Box
           background="body"
           paddingVertical="30px"
-          style={{ height: ENSConfirmRegisterSheetHeight }}
+          style={useMemo(() => ({ height: ENSConfirmRegisterSheetHeight }), [])}
         >
           <Box flexGrow={1}>
             <Inset horizontal="30px">
               <Stack alignHorizontal="center" space="15px">
-                {records?.avatar && (
+                {avatarUrl && (
                   <Box
                     background="accent"
                     borderRadius={avatarSize / 2}
@@ -117,7 +119,7 @@ export default function ENSConfirmRegisterSheet() {
                       as={ImgixImage}
                       borderRadius={avatarSize / 2}
                       height={{ custom: avatarSize }}
-                      source={{ uri: records?.avatar }}
+                      source={{ uri: avatarUrl }}
                       width={{ custom: avatarSize }}
                     />
                   </Box>
@@ -140,7 +142,7 @@ export default function ENSConfirmRegisterSheet() {
                   <Box>
                     <ImgixImage
                       source={brain}
-                      style={{ height: 20, width: 20 }}
+                      style={useMemo(() => ({ height: 20, width: 20 }), [])}
                     />
                   </Box>
                   <Text color="secondary50" size="14px" weight="heavy">
@@ -173,7 +175,7 @@ export default function ENSConfirmRegisterSheet() {
             </Stack>
           </Box>
           {action ? (
-            <Box style={{ bottom: 0 }}>
+            <Box style={useMemo(() => ({ bottom: 0 }), [])}>
               <Box>
                 <SheetActionButtonRow paddingBottom={5}>
                   <HoldToAuthorizeButton

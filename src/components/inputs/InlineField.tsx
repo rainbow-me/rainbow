@@ -35,6 +35,7 @@ export default function InlineField({
   onEndEditing,
   value,
 }: InlineFieldProps) {
+  const paddingVertical = 17;
   const textStyle = useTextStyle({ size: `${textSize}px`, weight: 'bold' });
 
   const [inputHeight, setInputHeight] = useState(textSize);
@@ -74,7 +75,7 @@ export default function InlineField({
   const style = useMemo(
     () => ({
       ...textStyle,
-      height: inputHeight + 34 + (android ? 2 : 0),
+      height: inputHeight + paddingVertical * 2 + (android ? 2 : 0),
       lineHeight: android ? textStyle.lineHeight : undefined,
       marginBottom: 0,
       marginTop: 0,

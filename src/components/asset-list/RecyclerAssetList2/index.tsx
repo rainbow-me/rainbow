@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Animated as RNAnimated } from 'react-native';
 import { useMemoOne } from 'use-memo-one';
 import {
@@ -17,9 +17,11 @@ function RecyclerAssetList() {
 
   const position = useMemoOne(() => new RNAnimated.Value(0), []);
 
+  const value = useMemo(() => ({ additionalData }), [additionalData]);
+
   return (
     <RecyclerAssetListScrollPositionContext.Provider value={position}>
-      <RecyclerAssetListContext.Provider value={additionalData}>
+      <RecyclerAssetListContext.Provider value={value}>
         <StickyHeaderManager>
           <RawMemoRecyclerAssetList briefSectionsData={briefSectionsData} />
         </StickyHeaderManager>
