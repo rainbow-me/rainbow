@@ -1,4 +1,4 @@
-import { useFocusEffect } from '@react-navigation/core';
+import { useFocusEffect, useRoute } from '@react-navigation/core';
 import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -16,6 +16,8 @@ import {
   Heading,
   Inline,
   Inset,
+  Row,
+  Rows,
   Stack,
   Text,
 } from '@rainbow-me/design-system';
@@ -40,12 +42,20 @@ import { saveCommitRegistrationParameters } from '@rainbow-me/redux/ensRegistrat
 import { timeUnits } from '@rainbow-me/references';
 
 export const ENSConfirmRegisterSheetHeight = 600;
+export const ENSConfirmUpdateSheetHeight = 400;
 const avatarSize = 70;
 
 export default function ENSConfirmRegisterSheet() {
+  const { params } = useRoute();
   const dispatch = useDispatch();
   const { gasFeeParamsBySpeed, updateTxFee, startPollingGasFees } = useGas();
-  const { avatarUrl, name: ensName, records, changedRecords } = useENSProfile();
+  const {
+    avatarUrl,
+    name: ensName,
+    mode,
+    records,
+    changedRecords,
+  } = useENSProfile();
   const { accountAddress, network } = useAccountSettings();
   const getNextNonce = useCurrentNonce(accountAddress, network);
   const [gasLimit, setGasLimit] = useState();
@@ -119,7 +129,6 @@ export default function ENSConfirmRegisterSheet() {
         ensRegistrationParameters
       )
     );
-    console.log(changedRecords);
     return;
     // LEAVING THIS AS WIP TO AVOID PEOPLE ON THE TEAM  SENDING THIS TX
 
@@ -149,7 +158,7 @@ export default function ENSConfirmRegisterSheet() {
   return (
     <SlackSheet
       additionalTopPadding
-      contentHeight={ENSConfirmRegisterSheetHeight}
+      contentHeight={params.longFormHeight || ENSConfirmRegisterSheetHeight}
       height="100%"
       scrollEnabled={false}
     >
@@ -157,89 +166,106 @@ export default function ENSConfirmRegisterSheet() {
         <Box
           background="body"
           paddingVertical="30px"
-          style={useMemo(() => ({ height: ENSConfirmRegisterSheetHeight }), [])}
+          style={useMemo(
+            () => ({
+              height: params.longFormHeight || ENSConfirmRegisterSheetHeight,
+            }),
+            [params.longFormHeight]
+          )}
         >
-          <Box flexGrow={1}>
-            <Inset horizontal="30px">
-              <Stack alignHorizontal="center" space="15px">
-                {avatarUrl && (
-                  <Box
-                    background="accent"
-                    borderRadius={avatarSize / 2}
-                    height={{ custom: avatarSize }}
-                    shadow="12px heavy accent"
-                    width={{ custom: avatarSize }}
-                  >
+          <Rows>
+            <Row>
+              <Inset horizontal="30px">
+                <Stack alignHorizontal="center" space="15px">
+                  {avatarUrl && (
                     <Box
-                      as={ImgixImage}
+                      background="accent"
                       borderRadius={avatarSize / 2}
                       height={{ custom: avatarSize }}
-                      source={{ uri: avatarUrl }}
+                      shadow="12px heavy accent"
                       width={{ custom: avatarSize }}
-                    />
-                  </Box>
-                )}
-                <Heading size="26px">{ensName}</Heading>
-                <Text color="accent" weight="heavy">
-                  Confirm purchase
-                </Text>
-              </Stack>
-              <Inset vertical="24px">
-                <Divider color="divider40" />
-              </Inset>
-              <Stack space="34px">
-                <Inline
-                  alignHorizontal="center"
-                  alignVertical="center"
-                  space="6px"
-                  wrap={false}
-                >
-                  <Box>
-                    <ImgixImage
-                      source={brain}
-                      style={useMemo(() => ({ height: 20, width: 20 }), [])}
-                    />
-                  </Box>
-                  <Text color="secondary50" size="14px" weight="heavy">
-                    Buy more years now to save on fees
+                    >
+                      <Box
+                        as={ImgixImage}
+                        borderRadius={avatarSize / 2}
+                        height={{ custom: avatarSize }}
+                        source={{ uri: avatarUrl }}
+                        width={{ custom: avatarSize }}
+                      />
+                    </Box>
+                  )}
+                  <Heading size="26px">{ensName}</Heading>
+                  <Text color="accent" weight="heavy">
+                    Confirm {mode === 'create' ? 'purchase' : 'update'}
                   </Text>
-                </Inline>
-                <RegistrationReviewRows
-                  duration={duration}
-                  maxDuration={99}
-                  networkFee={
-                    registrationCostsData?.estimatedNetworkFee?.display
-                  }
-                  onChangeDuration={setDuration}
-                  registrationFee={
-                    registrationCostsData?.estimatedRentPrice?.total?.display
-                  }
-                  totalCost={
-                    registrationCostsData?.estimatedTotalRegistrationCost
-                      ?.display
-                  }
+                </Stack>
+                <Inset vertical="24px">
+                  <Divider color="divider40" />
+                </Inset>
+                <Stack space="34px">
+                  {mode === 'create' && (
+                    <>
+                      <Inline
+                        alignHorizontal="center"
+                        alignVertical="center"
+                        space="6px"
+                        wrap={false}
+                      >
+                        <Box>
+                          <ImgixImage
+                            source={brain}
+                            style={{ height: 20, width: 20 }}
+                          />
+                        </Box>
+                        <Text color="secondary50" size="14px" weight="heavy">
+                          Buy more years now to save on fees
+                        </Text>
+                      </Inline>
+                      <RegistrationReviewRows
+                        duration={duration}
+                        maxDuration={99}
+                        networkFee={
+                          registrationCostsData?.estimatedNetworkFee?.display
+                        }
+                        onChangeDuration={setDuration}
+                        registrationFee={
+                          registrationCostsData?.estimatedRentPrice?.total
+                            ?.display
+                        }
+                        totalCost={
+                          registrationCostsData?.estimatedTotalRegistrationCost
+                            ?.display
+                        }
+                      />
+                      <Divider color="divider40" />
+                    </>
+                  )}
+                  {mode === 'edit' && <Text>TODO</Text>}
+                </Stack>
+              </Inset>
+            </Row>
+            <Row height="content">
+              <Box>
+                <SheetActionButtonRow paddingBottom={5}>
+                  <HoldToAuthorizeButton
+                    hideInnerBorder
+                    isLongPressAvailableForBiometryType
+                    label="Hold to Commit"
+                    onLongPress={handleCommitSubmit}
+                    parentHorizontalPadding={19}
+                    showBiometryIcon
+                  />
+                </SheetActionButtonRow>
+              </Box>
+              <Box alignItems="center" justifyContent="center">
+                <GasSpeedButton
+                  currentNetwork="mainnet"
+                  marginBottom={0}
+                  theme="light"
                 />
-                <Divider color="divider40" />
-              </Stack>
-            </Inset>
-          </Box>
-          <Box style={useMemo(() => ({ bottom: 0 }), [])}>
-            <Box>
-              <SheetActionButtonRow paddingBottom={5}>
-                <HoldToAuthorizeButton
-                  hideInnerBorder
-                  isLongPressAvailableForBiometryType
-                  label="Hold to Commit"
-                  onLongPress={handleCommitSubmit}
-                  parentHorizontalPadding={19}
-                  showBiometryIcon
-                />
-              </SheetActionButtonRow>
-            </Box>
-            <Box alignItems="center" justifyContent="center">
-              <GasSpeedButton currentNetwork="mainnet" theme="light" />
-            </Box>
-          </Box>
+              </Box>
+            </Row>
+          </Rows>
         </Box>
       </AccentColorProvider>
     </SlackSheet>

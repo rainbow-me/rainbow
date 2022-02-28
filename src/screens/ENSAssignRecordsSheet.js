@@ -43,6 +43,7 @@ import {
   usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
+import { ENSConfirmRegisterSheetHeight, ENSConfirmUpdateSheetHeight } from './ENSConfirmRegisterSheet';
 
 const AnimatedBox = Animated.createAnimatedComponent(Box);
 
@@ -132,7 +133,9 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
   }, [navigate]);
 
   const handlePressContinue = useCallback(() => {
-    navigate(Routes.ENS_CONFIRM_REGISTER_SHEET);
+    navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
+      longFormHeight: mode === 'edit' ? ENSConfirmUpdateSheetHeight : ENSConfirmRegisterSheetHeight
+    });
   }, [navigate]);
 
   const [visible, setVisible] = useState(false);
