@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.6.6-1",
+  "version": "1.6.7-1",
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn ds:install && yarn allow-scripts && yarn postinstall",
@@ -256,7 +256,7 @@
     "timers-browserify": "1.4.2",
     "tty-browserify": "0.0.0",
     "url": "0.10.3",
-    "url-parse": "1.5.3",
+    "url-parse": "1.5.7",
     "use-debounce": "5.2.0",
     "use-deep-compare": "1.1.0",
     "use-memo-one": "1.1.1",
