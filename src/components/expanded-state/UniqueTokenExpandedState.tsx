@@ -15,7 +15,6 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
-import { useDispatch } from 'react-redux';
 import URL from 'url-parse';
 import { CardSize } from '../../components/unique-token/CardSize';
 import useWallets from '../../hooks/useWallets';
@@ -56,7 +55,6 @@ import {
 import { AssetTypes, UniqueAsset } from '@rainbow-me/entities';
 import { apiGetUniqueTokenFloorPrice } from '@rainbow-me/handlers/opensea-api';
 import { buildUniqueTokenName } from '@rainbow-me/helpers/assets';
-import { ENS_DOMAIN } from '@rainbow-me/helpers/ens';
 import {
   useAccountProfile,
   useAccountSettings,
@@ -65,7 +63,6 @@ import {
   useShowcaseTokens,
 } from '@rainbow-me/hooks';
 import { useNavigation, useUntrustedUrlOpener } from '@rainbow-me/navigation';
-import { startRegistration } from '@rainbow-me/redux/ensRegistration';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
@@ -313,8 +310,8 @@ const UniqueTokenExpandedState = ({
   const yPosition = useSharedValue(0);
 
   const isActionsEnabled = !external && !isReadOnlyWallet;
-  const hasSendButton = true || (isActionsEnabled && isSendable);
-  const hasEditButton = true || (isActionsEnabled && isENS);
+  const hasSendButton = isActionsEnabled && isSendable;
+  const hasEditButton = isActionsEnabled && isENS;
 
   const familyLinkDisplay = useMemo(
     () =>

@@ -19,6 +19,10 @@ import { SheetActionButton, SheetActionButtonRow } from '../components/sheet';
 import { useTheme } from '../context/ThemeContext';
 import { useNavigation } from '../navigation/Navigation';
 import {
+  ENSConfirmRegisterSheetHeight,
+  ENSConfirmUpdateSheetHeight,
+} from './ENSConfirmRegisterSheet';
+import {
   AccentColorProvider,
   Bleed,
   Box,
@@ -43,7 +47,6 @@ import {
   usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
-import { ENSConfirmRegisterSheetHeight, ENSConfirmUpdateSheetHeight } from './ENSConfirmRegisterSheet';
 
 const AnimatedBox = Animated.createAnimatedComponent(Box);
 
@@ -134,9 +137,12 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
 
   const handlePressContinue = useCallback(() => {
     navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
-      longFormHeight: mode === 'edit' ? ENSConfirmUpdateSheetHeight : ENSConfirmRegisterSheetHeight
+      longFormHeight:
+        mode === 'edit'
+          ? ENSConfirmUpdateSheetHeight
+          : ENSConfirmRegisterSheetHeight,
     });
-  }, [navigate]);
+  }, [mode, navigate]);
 
   const [visible, setVisible] = useState(false);
   useEffect(() => {

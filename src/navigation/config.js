@@ -149,7 +149,7 @@ export const ensConfirmRegisterSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       longFormHeight: ENSConfirmRegisterSheetHeight,
-      ...params
+      ...params,
     }),
   }),
 };

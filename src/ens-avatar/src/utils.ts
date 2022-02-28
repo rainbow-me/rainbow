@@ -1,6 +1,4 @@
-import isSVG from 'is-svg';
 import { CID } from 'multiformats/cid';
-import { SvgXml } from 'react-native-svg';
 import urlJoin from 'url-join';
 
 const IPFS_SUBPATH = '/ipfs/';
@@ -129,10 +127,6 @@ export function getImageURI({ metadata, customGateway }: ImageURIOpts) {
 
   if (parsedURI.startsWith('data:') || parsedURI.startsWith('http')) {
     return parsedURI;
-  }
-  if (isSVG(parsedURI)) {
-    // svg - image_data
-    return `data:image/svg+xml;base64,${btoa(parsedURI)}`;
   }
   return null;
 }
