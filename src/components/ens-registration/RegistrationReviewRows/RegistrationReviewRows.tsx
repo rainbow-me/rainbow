@@ -1,7 +1,7 @@
+import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import Skeleton, { FakeText } from '../../skeleton/Skeleton';
-import lang from 'i18n-js';
 import {
   Box,
   Column,

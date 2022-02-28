@@ -1,9 +1,9 @@
+import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import ImagePicker, { Image, Options } from 'react-native-image-crop-picker';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import { useMutation } from 'react-query';
 import { UniqueAsset } from '@rainbow-me/entities';
-import lang from 'i18n-js';
 import {
   uploadImage,
   UploadImageReturnData,

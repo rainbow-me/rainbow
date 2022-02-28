@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
 import Animated, {
@@ -5,7 +6,6 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import lang from 'i18n-js';
 import { useRecoilState } from 'recoil';
 import { MiniButton } from '../components/buttons';
 import TintButton from '../components/buttons/TintButton';

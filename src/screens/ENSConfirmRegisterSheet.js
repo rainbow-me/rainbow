@@ -1,6 +1,6 @@
+import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import lang from 'i18n-js';
 import { useDispatch } from 'react-redux';
 import { useRecoilState } from 'recoil';
 import brain from '../assets/brain.png';

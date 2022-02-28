@@ -2,9 +2,9 @@ import { formatsByName } from '@ensdomains/address-encoder';
 import { hash } from '@ensdomains/eth-ens-namehash';
 import { BigNumberish, Contract, Wallet } from 'ethers';
 import { keccak256, toUtf8Bytes } from 'ethers/lib/utils';
+import lang from 'i18n-js';
 import { atom } from 'recoil';
 import { InlineFieldProps } from '../components/inputs/InlineField';
-import lang from 'i18n-js';
 import {
   add,
   addBuffer,

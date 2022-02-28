@@ -1,6 +1,6 @@
+import lang from 'i18n-js';
 import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import lang from 'i18n-js';
 import { useTheme } from '@rainbow-me/context';
 import {
   AccentColorProvider,
