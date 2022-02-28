@@ -1,7 +1,7 @@
 import { EthereumAddress } from '.';
 import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 
-export type Records = { [value in ENS_RECORDS]: string };
+export type Records = { [value in keyof typeof ENS_RECORDS]: string };
 
 export interface ENSRegistrationRecords {
   coinAddress: { key: string; address: string }[] | null;

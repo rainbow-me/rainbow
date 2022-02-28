@@ -329,11 +329,10 @@ export const formatRecordsForTransaction = (
   const coinAddress = [] as { key: string; address: string }[];
   const text = [] as { key: string; value: string }[];
   let contentHash = null;
-  // WIP
   const ensAssociatedAddress = null;
   records &&
-    Object.keys(records).forEach(recordKey => {
-      switch (recordKey) {
+    Object.entries(records).forEach(([key, value]) => {
+      switch (key) {
         case ENS_RECORDS.cover:
         case ENS_RECORDS.twitter:
         case ENS_RECORDS.displayName:
@@ -351,18 +350,18 @@ export const formatRecordsForTransaction = (
         case ENS_RECORDS.telegram:
         case ENS_RECORDS.ensDelegate:
           text.push({
-            key: recordKey,
-            value: records[recordKey],
+            key,
+            value: value,
           });
           return;
         case ENS_RECORDS.ETH:
         case ENS_RECORDS.BTC:
         case ENS_RECORDS.LTC:
         case ENS_RECORDS.DOGE:
-          coinAddress.push({ address: records[recordKey], key: recordKey });
+          coinAddress.push({ address: value, key });
           return;
         case ENS_RECORDS.content:
-          contentHash = records[recordKey];
+          contentHash = value;
           return;
       }
     });
