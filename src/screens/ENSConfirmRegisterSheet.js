@@ -1,6 +1,5 @@
 import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { useRecoilState } from 'recoil';
 import brain from '../assets/brain.png';
 import ActivityIndicator from '../components/ActivityIndicator';
@@ -44,9 +43,7 @@ const avatarSize = 70;
 
 export default function ENSConfirmRegisterSheet() {
   const { gasFeeParamsBySpeed, updateTxFee, startPollingGasFees } = useGas();
-  const { avatarUrl, name: ensName, records } = useENSProfile();
-  const { accountAddress, network } = useAccountSettings();
-  const getNextNonce = useCurrentNonce(accountAddress, network);
+  const { avatarUrl, name: ensName } = useENSProfile();
   const [gasLimit, setGasLimit] = useState();
   const [accentColor] = useRecoilState(accentColorAtom);
 
@@ -175,7 +172,7 @@ export default function ENSConfirmRegisterSheet() {
             </Stack>
           </Box>
           {action ? (
-            <Box style={useMemo(() => ({ bottom: 0 }), [])}>
+            <Box style={{ bottom: 0 }}>
               <Box>
                 <SheetActionButtonRow paddingBottom={5}>
                   <HoldToAuthorizeButton
