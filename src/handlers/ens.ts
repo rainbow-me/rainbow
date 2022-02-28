@@ -352,7 +352,7 @@ export const formatRecordsForTransaction = (
         case ENS_RECORDS.ensDelegate:
           text.push({
             key: recordKey,
-            value: records['displayName'],
+            value: records[recordKey],
           });
           return;
         case ENS_RECORDS.ETH:
