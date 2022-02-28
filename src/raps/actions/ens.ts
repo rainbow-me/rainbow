@@ -2,7 +2,10 @@ import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
 import { Rap, RapActionTypes, RapENSActionParameters } from '../common';
 import { ENSRegistrationRecords } from '@rainbow-me/entities';
-import { estimateENSTransactionGasLimit } from '@rainbow-me/handlers/ens';
+import {
+  estimateENSTransactionGasLimit,
+  formatRecordsForTransaction,
+} from '@rainbow-me/handlers/ens';
 import { toHex } from '@rainbow-me/handlers/web3';
 import { NetworkTypes } from '@rainbow-me/helpers';
 import {
@@ -196,6 +199,7 @@ const ensAction = async (
   logger.log(`[${actionName}] rap for`, name);
 
   let gasLimit;
+  const ensRegistrationRecords = formatRecordsForTransaction(records);
   try {
     logger.sentry(
       `[${actionName}] estimate gas`,
@@ -204,11 +208,12 @@ const ensAction = async (
       },
       type
     );
+
     gasLimit = await estimateENSTransactionGasLimit({
       duration,
       name,
       ownerAddress,
-      records,
+      records: ensRegistrationRecords,
       rentPrice,
       salt,
       type,
@@ -279,7 +284,7 @@ const ensAction = async (
       case ENSRegistrationTransactionType.SET_TEXT:
         tx = await executeSetText(
           name,
-          records,
+          ensRegistrationRecords,
           gasLimit,
           maxFeePerGas,
           maxPriorityFeePerGas,
@@ -290,7 +295,7 @@ const ensAction = async (
       case ENSRegistrationTransactionType.MULTICALL:
         tx = await executeMulticall(
           name,
-          records,
+          ensRegistrationRecords,
           gasLimit,
           maxFeePerGas,
           maxPriorityFeePerGas,

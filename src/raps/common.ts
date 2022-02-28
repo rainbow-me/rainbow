@@ -22,11 +22,7 @@ import {
   estimateWithdrawFromCompound,
 } from './withdrawFromCompound';
 import { createRegisterENSRap } from '.';
-import {
-  Asset,
-  ENSRegistrationRecords,
-  EthereumAddress,
-} from '@rainbow-me/entities';
+import { Asset, EthereumAddress, Records } from '@rainbow-me/entities';
 import {
   estimateENSCommitGasLimit,
   estimateENSRegisterSetRecordsAndNameGasLimit,
@@ -68,7 +64,7 @@ export interface RapENSActionParameters {
   name: string;
   ownerAddress: EthereumAddress;
   rentPrice: string;
-  records?: ENSRegistrationRecords;
+  records?: Records;
   salt: string;
 }
 
@@ -92,7 +88,7 @@ export interface ENSActionParameters {
   rentPrice: string;
   ownerAddress: string;
   salt: string;
-  records?: ENSRegistrationRecords;
+  records?: Records;
 }
 
 export interface RapActionTransaction {

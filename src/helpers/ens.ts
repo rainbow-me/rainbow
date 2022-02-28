@@ -37,13 +37,6 @@ export enum ENSRegistrationTransactionType {
   MULTICALL = 'multicall',
 }
 
-const getENSRegistryContract = () => {
-  return new Contract(
-    ensRegistryAddress,
-    ENSRegistryWithFallbackABI,
-    web3Provider
-  );
-};
 enum ENS_RECORDS {
   ETH = 'ETH',
   BTC = 'BTC',
@@ -202,6 +195,14 @@ const getENSBaseRegistrarImplementationContract = (wallet?: Wallet) => {
     ensBaseRegistrarImplementationAddress,
     ENSBaseRegistrarImplementationABI,
     wallet || web3Provider
+  );
+};
+
+const getENSRegistryContract = () => {
+  return new Contract(
+    ensRegistryAddress,
+    ENSRegistryWithFallbackABI,
+    web3Provider
   );
 };
 

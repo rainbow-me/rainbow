@@ -7,8 +7,9 @@ import {
 } from '../apollo/queries';
 import { ENSActionParameters } from '../raps/common';
 import { estimateGasWithPadding } from './web3';
-import { ENSRegistrationRecords } from '@rainbow-me/entities';
+import { ENSRegistrationRecords, Records } from '@rainbow-me/entities';
 import {
+  ENS_RECORDS,
   ENSRegistrationTransactionType,
   generateSalt,
   getENSExecutionDetails,
@@ -293,6 +294,7 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
     rentPrice,
     salt,
   });
+  const ensRegistrationRecords = formatRecordsForTransaction(records);
   // WIP we need to set / unset these values from the UI
   const setReverseRecord = true;
   const setRecords = true;
@@ -309,7 +311,7 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
     promises.push(
       estimateENSMulticallGasLimit({
         name,
-        records,
+        records: ensRegistrationRecords,
       })
     );
   }
@@ -319,4 +321,50 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
   const gasLimit = gasLimits.reduce((a, b) => add(a || 0, b || 0));
   if (!gasLimit) return '0';
   return gasLimit;
+};
+
+export const formatRecordsForTransaction = (
+  records?: Records
+): ENSRegistrationRecords => {
+  const coinAddress = [] as { key: string; address: string }[];
+  const text = [] as { key: string; value: string }[];
+  let contentHash = null;
+  // WIP
+  const ensAssociatedAddress = null;
+  records &&
+    Object.keys(records).forEach(recordKey => {
+      switch (recordKey) {
+        case ENS_RECORDS.cover:
+        case ENS_RECORDS.twitter:
+        case ENS_RECORDS.displayName:
+        case ENS_RECORDS.email:
+        case ENS_RECORDS.url:
+        case ENS_RECORDS.avatar:
+        case ENS_RECORDS.description:
+        case ENS_RECORDS.notice:
+        case ENS_RECORDS.keywords:
+        case ENS_RECORDS.discord:
+        case ENS_RECORDS.github:
+        case ENS_RECORDS.reddit:
+        case ENS_RECORDS.instagram:
+        case ENS_RECORDS.snapchat:
+        case ENS_RECORDS.telegram:
+        case ENS_RECORDS.ensDelegate:
+          text.push({
+            key: recordKey,
+            value: records['displayName'],
+          });
+          return;
+        case ENS_RECORDS.ETH:
+        case ENS_RECORDS.BTC:
+        case ENS_RECORDS.LTC:
+        case ENS_RECORDS.DOGE:
+          coinAddress.push({ address: records[recordKey], key: recordKey });
+          return;
+        case ENS_RECORDS.content:
+          contentHash = records[recordKey];
+          return;
+      }
+    });
+  return { coinAddress, contentHash, ensAssociatedAddress, text };
 };
