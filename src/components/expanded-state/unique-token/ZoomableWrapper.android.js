@@ -420,10 +420,6 @@ export const ZoomableWrapper = ({
       ctx.startScale = scale.value;
       ctx.blockExitZoom = false;
       ctx.isNew = true;
-
-      // ctx.focalDisplacementX = -event.focalX * scale.value;
-      //
-      // ctx.focalDisplacementY = event.focalY * scale.value;
     },
   });
 
