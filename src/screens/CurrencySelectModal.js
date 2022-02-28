@@ -186,7 +186,7 @@ export default function CurrencySelectModal() {
     [handleFavoriteAsset, handleSelectAsset, type]
   );
 
-  const handleApplyFavoritesQueue = useCallback(async () => {
+  const handleApplyFavoritesQueue = useCallback(() => {
     const addresses = Object.keys(assetsToFavoriteQueue);
     const [assetsToAdd, assetsToRemove] = addresses.reduce(
       ([add, remove], current) => {
@@ -199,8 +199,9 @@ export default function CurrencySelectModal() {
       },
       [[], []]
     );
-    await updateFavorites(assetsToAdd, true);
-    await updateFavorites(assetsToRemove, false);
+    updateFavorites(assetsToAdd, true).then(() =>
+      updateFavorites(assetsToRemove, false)
+    );
   }, [assetsToFavoriteQueue, updateFavorites]);
 
   const [startInteraction] = useInteraction();
