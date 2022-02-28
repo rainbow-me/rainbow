@@ -170,7 +170,6 @@ export const ZoomableWrapper = ({
 
   const endGesture = useWorkletCallback((event, ctx) => {
     'worklet';
-    console.log('DDDDD');
     state.value = 1;
     const fullSizeHeight = Math.min(deviceHeight, deviceWidth / aspectRatio);
     const fullSizeWidth = Math.min(deviceWidth, deviceHeight * aspectRatio);
@@ -226,7 +225,6 @@ export const ZoomableWrapper = ({
         const readjustY =
           ctx.maxAllowedFocalDisplacementY - lastFocalDisplacementY;
         targetTranslateY = translateYTarget.value + readjustY;
-        // console.log(ctx.focalDisplacementY, event.scale, ctx.initEventScale, lastFocalDisplacementY, ctx.maxAllowedFocalDisplacementY)
         //  translateY.value = withTiming(targetTranslateY, adjustConfig);
         translateYTarget.value = targetTranslateY;
         translateY.value = targetTranslateY;
@@ -242,13 +240,6 @@ export const ZoomableWrapper = ({
     ctx.startFocalY = undefined;
     ctx.prevScale = undefined;
 
-    console.log(
-      targetScale,
-      breakingScaleY,
-      maxDisplacementY,
-      targetTranslateY,
-      translateYTarget.value
-    );
     if (targetScale > breakingScaleX && isZoomedValue.value) {
       if (targetTranslateX > maxDisplacementX) {
         translateX.value = withTiming(maxDisplacementX, adjustConfig);
@@ -411,7 +402,6 @@ export const ZoomableWrapper = ({
         // event.numberOfPointers === 2 ||
         // !(Math.abs(ctx.startVelocityX) / Math.abs(ctx.startVelocityY) > 1)
       ) {
-        console.log('XXXXX - ');
         translateY.value +=
           (event.translationY - (ctx.prevTranslateY ?? 0)) /
           (isZoomedValue.value ? zooming : 1);
