@@ -22,7 +22,7 @@ export interface RegistrationParameters
   name: string;
   ownerAddress: EthereumAddress;
   rentPrice: string;
-  records?: ENSRegistrationRecords;
+  records?: Records;
   salt: string;
   setReverseRecord?: boolean;
 }
