@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/prefer-for-of */
 import React from 'react';
 import isEqual from 'react-fast-compare';
 import { css } from 'styled-components';
@@ -5,19 +6,20 @@ import { css } from 'styled-components';
 import hoist from './hoist';
 // eslint-disable-next-line import/no-commonjs
 const reactNative = require('react-native');
+// @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 0.
 const ThemeContext = React.createContext();
 
 function useTheme() {
   return React.useContext(ThemeContext);
 }
 
-export function StyleThingThemeProvider({ value, children }) {
+export function StyleThingThemeProvider({ value, children }: any) {
   return (
     <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
   );
 }
 
-function filterProps(props, shouldForwardProp) {
+function filterProps(props: any, shouldForwardProp: any) {
   if (typeof shouldForwardProp === 'function') {
     const forwardedProps = {};
     const keys = Object.keys(props);
@@ -30,6 +32,7 @@ function filterProps(props, shouldForwardProp) {
       // https://github.dev/styled-components/styled-components/blob/80cf751528f5711349dd3c27621022b4c95b4b7f/packages/styled-components/src/models/StyledNativeComponent.ts#L73-L80
 
       if (shouldForwardProp(key, () => true)) {
+        // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
         forwardedProps[key] = props[key];
       }
     }
@@ -39,7 +42,7 @@ function filterProps(props, shouldForwardProp) {
   }
 }
 
-function useResolvedAttrs(theme = {}, props, attrs = []) {
+function useResolvedAttrs(theme = {}, props: any, attrs = []) {
   // NOTE: can't memoize this
   // returns [context, resolvedAttrs]
   // where resolvedAttrs is only the things injected by the attrs themselves
@@ -49,10 +52,12 @@ function useResolvedAttrs(theme = {}, props, attrs = []) {
   for (let i = 0; i < attrs.length; i++) {
     const attrDef = attrs[i];
     let resolvedAttrDef =
+      // @ts-expect-error ts-migrate(2349) FIXME: This expression is not callable.
       typeof attrDef === 'function' ? attrDef(context) : attrDef;
     let key;
 
     for (key in resolvedAttrDef) {
+      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       context[key] = resolvedAttrs[key] = resolvedAttrDef[key];
     }
   }
@@ -60,7 +65,7 @@ function useResolvedAttrs(theme = {}, props, attrs = []) {
   return [context, resolvedAttrs];
 }
 
-function processStyles(nestedStyles, props) {
+function processStyles(nestedStyles: any, props: any) {
   let result = {};
 
   for (let i = 0; i < nestedStyles.length; i++) {
@@ -74,6 +79,7 @@ function processStyles(nestedStyles, props) {
         const key = keys[i];
         const item = styles[key];
 
+        // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
         result[key] = typeof item === 'function' ? item(props) : item;
       }
     }
@@ -82,21 +88,23 @@ function processStyles(nestedStyles, props) {
   return result;
 }
 
-export default function styled(Component) {
-  function attrs(props) {
+export default function styled(Component: any) {
+  function attrs(props: any) {
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'addedAttrs' does not exist on type '{ (s... Remove this comment to see the full error message
     StyledComponentFactory.addedAttrs = props;
     return StyledComponentFactory;
   }
 
-  function withConfig(config) {
+  function withConfig(config: any) {
     if (config?.shouldForwardProp) {
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'shouldForwardProp' does not exist on typ... Remove this comment to see the full error message
       StyledComponentFactory.shouldForwardProp = config.shouldForwardProp;
     }
 
     return StyledComponentFactory;
   }
 
-  function StyledComponentFactory(styles) {
+  function StyledComponentFactory(styles: any) {
     if (__DEV__) {
       if (Array.isArray(styles)) {
         throw new TypeError(
@@ -105,14 +113,16 @@ export default function styled(Component) {
       }
     }
 
-    let WrappedStyledComponent;
+    let WrappedStyledComponent: any;
 
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'shouldForwardProp' does not exist on typ... Remove this comment to see the full error message
     let shouldForwardProp = StyledComponentFactory.shouldForwardProp;
 
-    function StyledComponent({ style, ...props }, ref) {
+    function StyledComponent({ style, ...props }: any, ref: any) {
       const theme = useTheme() ?? {};
 
       const [context, attributes] = useResolvedAttrs(
+        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'unknown' is not assignable to pa... Remove this comment to see the full error message
         theme,
         props,
         WrappedStyledComponent.attrs
@@ -183,10 +193,13 @@ export default function styled(Component) {
       ? Component.target
       : Component;
 
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'addedAttrs' does not exist on type '{ (s... Remove this comment to see the full error message
     if (StyledComponentFactory.addedAttrs) {
       WrappedStyledComponent.attrs = Array.isArray(Component.attrs)
-        ? Component.attrs.concat(StyledComponentFactory.addedAttrs)
-        : [StyledComponentFactory.addedAttrs];
+        ? // @ts-expect-error ts-migrate(2339) FIXME: Property 'addedAttrs' does not exist on type '{ (s... Remove this comment to see the full error message
+          Component.attrs.concat(StyledComponentFactory.addedAttrs)
+        : // @ts-expect-error ts-migrate(2339) FIXME: Property 'addedAttrs' does not exist on type '{ (s... Remove this comment to see the full error message
+          [StyledComponentFactory.addedAttrs];
     } else {
       WrappedStyledComponent.attrs = Component.attrs;
     }
@@ -198,12 +211,14 @@ export default function styled(Component) {
     if (Component.isStyledComponent && Component.shouldForwardProp) {
       const shouldForwardPropFn = Component.shouldForwardProp;
 
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'shouldForwardProp' does not exist on typ... Remove this comment to see the full error message
       if (StyledComponentFactory.shouldForwardProp) {
         const passedShouldForwardPropFn =
+          // @ts-expect-error ts-migrate(2339) FIXME: Property 'shouldForwardProp' does not exist on typ... Remove this comment to see the full error message
           StyledComponentFactory.shouldForwardProp;
 
         // compose nested shouldForwardProp calls
-        shouldForwardProp = (prop, filterFn) =>
+        shouldForwardProp = (prop: any, filterFn: any) =>
           shouldForwardPropFn(prop, filterFn) &&
           passedShouldForwardPropFn(prop, filterFn);
       } else {
