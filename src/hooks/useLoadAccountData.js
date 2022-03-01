@@ -11,6 +11,7 @@ import { uniswapLiquidityLoadState } from '../redux/uniswapLiquidity';
 import { uniswapPositionsLoadState } from '../redux/usersPositions';
 import { walletConnectLoadState } from '../redux/walletconnect';
 import { promiseUtils } from '../utils';
+import { ensRegistrationsLoadState } from '@rainbow-me/redux/ensRegistration';
 import logger from 'logger';
 
 export default function useLoadAccountData() {
@@ -31,7 +32,8 @@ export default function useLoadAccountData() {
       const p6 = dispatch(addCashLoadState());
       const p7 = dispatch(uniswapLiquidityLoadState());
       const p8 = dispatch(uniswapPositionsLoadState());
-      promises.push(p3, p4, p5, p6, p7, p8);
+      const p9 = dispatch(ensRegistrationsLoadState());
+      promises.push(p3, p4, p5, p6, p7, p8, p9);
 
       return promiseUtils.PromiseAllWithFails(promises);
     },

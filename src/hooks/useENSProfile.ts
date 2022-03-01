@@ -12,7 +12,7 @@ import { isENSNFTAvatar, parseENSNFTAvatar } from '@rainbow-me/utils';
 
 export default function useENSProfile() {
   const { accountAddress } = useAccountSettings();
-  const { records, name, registrationParameters } = useSelector(
+  const { name, records, registrationParameters } = useSelector(
     ({ ensRegistration }: AppState) => {
       const {
         currentRegistrationName,
@@ -22,8 +22,11 @@ export default function useENSProfile() {
         registrations?.[accountAddress?.toLowerCase()]?.[
           currentRegistrationName
         ] || {};
-      const records = registrationParameters?.records || {};
-      return { name: currentRegistrationName, records, registrationParameters };
+      return {
+        name: currentRegistrationName,
+        records: registrationParameters.records,
+        registrationParameters,
+      };
     }
   );
   const dispatch = useDispatch();
@@ -35,10 +38,10 @@ export default function useENSProfile() {
     ({ uniqueTokens }: AppState) => uniqueTokens.uniqueTokens
   );
   const avatarUrl = useMemo(() => {
-    if (records.avatar) {
-      const isNFTAvatar = isENSNFTAvatar(records.avatar);
+    if (records?.avatar) {
+      const isNFTAvatar = isENSNFTAvatar(records?.avatar);
       if (isNFTAvatar) {
-        const { contractAddress, tokenId } = parseENSNFTAvatar(records.avatar);
+        const { contractAddress, tokenId } = parseENSNFTAvatar(records?.avatar);
         const uniqueToken = uniqueTokens.find(
           token =>
             token.asset_contract.address === contractAddress &&
@@ -47,8 +50,8 @@ export default function useENSProfile() {
         return uniqueToken?.image_thumbnail_url;
       }
     }
-    return records.avatar;
-  }, [records.avatar, uniqueTokens]);
+    return registrationParameters.records?.avatar;
+  }, [records?.avatar, registrationParameters.records?.avatar, uniqueTokens]);
 
   return {
     avatarUrl,
