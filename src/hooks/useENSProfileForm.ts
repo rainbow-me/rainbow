@@ -103,8 +103,9 @@ export default function useENSProfileForm({
   const onChangeField = useCallback(
     ({ key, value }) => {
       setValues(values => ({ ...values, [key]: value }));
+      updateRecordByKey(key, value);
     },
-    [setValues]
+    [setValues, updateRecordByKey]
   );
 
   const empty = useMemo(() => !Object.values(values).some(Boolean), [values]);
