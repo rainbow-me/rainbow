@@ -50,7 +50,7 @@ export default function ENSConfirmRegisterSheet() {
   const dispatch = useDispatch();
   const { gasFeeParamsBySpeed, updateTxFee, startPollingGasFees } = useGas();
   const {
-    avatarUrl,
+    images: { avatarUrl },
     name: ensName,
     mode,
     records,

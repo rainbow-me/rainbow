@@ -26,13 +26,15 @@ export default function Avatar({
 }: {
   onChangeAvatarUrl: (url: string) => void;
 }) {
-  const { avatarUrl: initialAvatarUrl } = useENSProfile();
-  const { isLoading, onBlurField, setDisabled } = useENSProfileForm();
+  const { images: { avatarUrl: initialAvatarUrl } = {} } = useENSProfile();
+  const { isLoading, values, onBlurField, setDisabled } = useENSProfileForm();
 
-  const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
+  const [avatarUrl, setAvatarUrl] = useState(
+    initialAvatarUrl || values?.avatar
+  );
   useEffect(() => {
-    setAvatarUrl(initialAvatarUrl);
-  }, [initialAvatarUrl]);
+    setAvatarUrl(initialAvatarUrl || values?.avatar);
+  }, [initialAvatarUrl]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const accentColor = useForegroundColor('accent');
 
@@ -43,7 +45,7 @@ export default function Avatar({
     },
     menuItems: ['library', 'nft'],
     onChangeImage: ({ asset, image }) => {
-      setAvatarUrl(image?.path || asset?.image_thumbnail_url);
+      setAvatarUrl(image?.path || asset?.image_thumbnail_url || '');
       onChangeAvatarUrl(image?.path || asset?.image_thumbnail_url || '');
       if (asset) {
         const standard = asset.asset_contract?.schema_name || '';

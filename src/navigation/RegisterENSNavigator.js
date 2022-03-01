@@ -12,7 +12,7 @@ import { useNavigation } from './Navigation';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
 import { sharedCoolModalTopOffset } from './config';
 import { Box } from '@rainbow-me/design-system';
-import { useDimensions, useENSProfile } from '@rainbow-me/hooks';
+import { useDimensions, useENSProfile, usePrevious } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { deviceUtils } from '@rainbow-me/utils';
 
@@ -60,6 +60,7 @@ export default function RegisterENSNavigator() {
     return Routes.ENS_SEARCH_SHEET;
   }, [params, startRegistration]);
   const [currentRouteName, setCurrentRouteName] = useState(initialRouteName);
+  const previousRouteName = usePrevious(currentRouteName);
 
   const screenOptions = useMemo(() => defaultScreenOptions[currentRouteName], [
     currentRouteName,
@@ -67,11 +68,15 @@ export default function RegisterENSNavigator() {
 
   const [scrollEnabled, setScrollEnabled] = useState(false);
   useEffect(() => {
-    // Wait 500ms to prevent transition lag
-    setTimeout(() => {
+    if (previousRouteName) {
+      // Wait 500ms to prevent transition lag
+      setTimeout(() => {
+        setScrollEnabled(screenOptions.scrollEnabled);
+      }, 500);
+    } else {
       setScrollEnabled(screenOptions.scrollEnabled);
-    }, 500);
-  }, [screenOptions.scrollEnabled]);
+    }
+  }, [previousRouteName, screenOptions.scrollEnabled]);
 
   useEffect(() => {
     StatusBar.setBarStyle('light-content');

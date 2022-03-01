@@ -117,15 +117,21 @@ export const fetchRecords = async (recipient: any) => {
   }, {}) as Partial<Records>;
 
   let avatarUrl;
+  let coverUrl;
   try {
     const avatarResolver = new AvatarResolver(web3Provider);
-    avatarUrl = await avatarResolver.getAvatar(recpt, {
+    avatarUrl = await avatarResolver.getImage(recpt, {
       allowNonOwnerNFTs: true,
+      type: 'avatar',
+    });
+    coverUrl = await avatarResolver.getImage(recpt, {
+      allowNonOwnerNFTs: true,
+      type: 'cover',
     });
     // eslint-disable-next-line no-empty
   } catch (err) {}
 
-  return { metadata: { avatarUrl }, records };
+  return { images: { avatarUrl, coverUrl }, records };
 };
 
 export const estimateENSRegisterWithConfigGasLimit = async ({

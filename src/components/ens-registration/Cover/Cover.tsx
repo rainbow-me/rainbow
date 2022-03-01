@@ -11,19 +11,24 @@ import {
   Text,
   useForegroundColor,
 } from '@rainbow-me/design-system';
-import { useENSProfileForm, useSelectImageMenu } from '@rainbow-me/hooks';
+import {
+  useENSProfile,
+  useENSProfileForm,
+  useSelectImageMenu,
+} from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 
 const alpha = '33';
 
 export default function CoverPhoto() {
   const { colors } = useTheme();
+  const { images: { coverUrl: initialCoverUrl } = {} } = useENSProfile();
   const { isLoading, values, onBlurField, setDisabled } = useENSProfileForm();
 
-  const [coverUrl, setCoverUrl] = useState(values?.cover);
+  const [coverUrl, setCoverUrl] = useState(initialCoverUrl || values?.cover);
   useEffect(() => {
-    setCoverUrl(values?.cover);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    setCoverUrl(initialCoverUrl || values?.cover);
+  }, [initialCoverUrl]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const accentColor = useForegroundColor('accent');
 

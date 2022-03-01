@@ -21,6 +21,7 @@ export const specs: { [key: string]: new () => Spec } = Object.freeze({
 
 export interface AvatarRequestOpts {
   allowNonOwnerNFTs?: boolean;
+  type?: 'avatar' | 'cover';
 }
 
 interface AvatarResolverOpts {
@@ -30,7 +31,7 @@ interface AvatarResolverOpts {
 export interface IAvatarResolver {
   provider: BaseProvider;
   options?: AvatarResolverOpts;
-  getAvatar(ens: string, data?: AvatarRequestOpts): Promise<string | null>;
+  getImage(ens: string, data?: AvatarRequestOpts): Promise<string | null>;
   getMetadata(ens: string, data?: AvatarRequestOpts): Promise<string | null>;
 }
 
@@ -52,7 +53,7 @@ export class AvatarResolver implements IAvatarResolver {
     if (!resolvedAddress || !resolver) return null;
 
     // retrieve 'avatar' text recored from resolver
-    const avatarURI = await resolver.getText('avatar');
+    const avatarURI = await resolver.getText(opts?.type || 'avatar');
     if (!avatarURI) return null;
 
     // test case-insensitive in case of uppercase records
@@ -90,7 +91,7 @@ export class AvatarResolver implements IAvatarResolver {
     return { host_meta, uri: ens, ...metadata };
   }
 
-  async getAvatar(
+  async getImage(
     ens: string,
     opts?: AvatarRequestOpts
   ): Promise<string | null> {
