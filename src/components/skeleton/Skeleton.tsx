@@ -30,13 +30,15 @@ export const FakeRow = styled(Row).attrs({
 })({});
 
 export const FakeText = styled(View).attrs(
-  ({ height = 10 }: { height: number }) => ({
+  ({ height = 10, width }: { height: number; width: number }) => ({
     height,
+    width,
   })
 )({
   backgroundColor: ({ theme: { colors } }: any) => colors.skeleton,
   borderRadius: ({ height }: { height: number }) => height / 2,
   height: ({ height }: { height: number }) => height,
+  width: ({ width }: { width: number }) => width,
 });
 
 const Wrapper = styled(View)({
