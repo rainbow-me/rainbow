@@ -215,9 +215,9 @@ export default function ENSConfirmRegisterSheet() {
             <Box>
               <SheetActionButtonRow paddingBottom={5}>
                 <HoldToAuthorizeButton
+                  color={accentColor}
                   hideInnerBorder
                   isLongPressAvailableForBiometryType
-                  color={accentColor}
                   label={lang.t('profiles.confirm.commit_button')}
                   onLongPress={handleCommitSubmit}
                   parentHorizontalPadding={19}

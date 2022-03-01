@@ -311,10 +311,10 @@ const HoldToAuthorizeButtonWithBiometrics = ({
   return (
     <HoldToAuthorizeButton
       {...props}
+      backgroundColor={color}
       colors={colors}
       deviceDimensions={deviceDimensions}
       enableLongPress={!disableLongPress && isLongPressAvailableForBiometryType}
-      backgroundColor={color}
       label={
         isLongPressAvailableForBiometryType
           ? label
