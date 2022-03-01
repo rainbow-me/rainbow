@@ -1,73 +1,5 @@
 import gql from 'graphql-tag';
 
-export const UNISWAP_PAIRS_ID_QUERY = gql`
-  query pairs {
-    pairs(first: 200, orderBy: trackedReserveETH, orderDirection: desc) {
-      id
-    }
-  }
-`;
-
-export const UNISWAP_PAIRS_ID_QUERY_BY_TOKEN = gql`
-  query pairs($address: String!) {
-    pairs0: pairs(
-      first: 30
-      orderBy: trackedReserveETH
-      orderDirection: desc
-      where: { token0: $address, trackedReserveETH_gt: 5 }
-    ) {
-      id
-      trackedReserveETH
-    }
-    pairs1: pairs(
-      first: 30
-      orderBy: trackedReserveETH
-      orderDirection: desc
-      where: { token1: $address, trackedReserveETH_gt: 5 }
-    ) {
-      id
-      trackedReserveETH
-    }
-  }
-`;
-
-export const UNISWAP_PAIR_DATA_QUERY = (pairAddress, block) => {
-  const queryString = `
-    fragment PairFields on Pair {
-      id
-      token0 {
-        id
-        symbol
-        name
-        totalLiquidity
-        derivedETH
-      }
-      token1 {
-        id
-        symbol
-        name
-        totalLiquidity
-        derivedETH
-      }
-      reserve0
-      reserve1
-      reserveUSD
-      totalSupply
-      trackedReserveETH
-      volumeUSD
-  }
-  query pairs {
-    pairs(${
-      block ? `block: {number: ${block}}` : ``
-    } where: { id: "${pairAddress}"} ) {
-      ...PairFields
-    }
-  }`;
-  return gql`
-    ${queryString}
-  `;
-};
-
 export const UNISWAP_PAIR_DATA_QUERY_VOLUME = (pairAddress, block) => {
   const queryString = `
     fragment PairFields on Pair {
@@ -84,67 +16,6 @@ export const UNISWAP_PAIR_DATA_QUERY_VOLUME = (pairAddress, block) => {
     ${queryString}
   `;
 };
-
-export const UNISWAP_PAIRS_BULK_QUERY = gql`
-  fragment PairFields on Pair {
-    id
-    token0 {
-      id
-      symbol
-      name
-      totalLiquidity
-      derivedETH
-    }
-    token1 {
-      id
-      symbol
-      name
-      totalLiquidity
-      derivedETH
-    }
-    reserve0
-    reserve1
-    reserveUSD
-    totalSupply
-    trackedReserveETH
-    volumeUSD
-  }
-  query pairs($allPairs: [Bytes]!) {
-    pairs(
-      where: { id_in: $allPairs }
-      orderBy: trackedReserveETH
-      orderDirection: desc
-    ) {
-      ...PairFields
-    }
-  }
-`;
-
-export const UNISWAP_PAIRS_HISTORICAL_BULK_QUERY = gql`
-  query pairs($block: Int!, $pairs: [Bytes]!) {
-    pairs(
-      first: 200
-      where: { id_in: $pairs }
-      block: { number: $block }
-      orderBy: trackedReserveETH
-      orderDirection: desc
-    ) {
-      id
-      reserveUSD
-      trackedReserveETH
-      volumeUSD
-      reserve0
-      reserve1
-      totalSupply
-      token0 {
-        derivedETH
-      }
-      token1 {
-        derivedETH
-      }
-    }
-  }
-`;
 
 export const COMPOUND_ACCOUNT_AND_MARKET_QUERY = gql`
   query account($id: ID!) {
@@ -200,65 +71,12 @@ export const UNISWAP_PRICES_QUERY = gql`
   }
 `;
 
-export const UNISWAP_ALL_TOKENS = gql`
-  query tokens($first: Int!, $lastUSDVolume: String!) {
-    tokens(
-      first: $first
-      orderBy: tradeVolumeUSD
-      orderDirection: desc
-      where: { tradeVolumeUSD_lte: $lastUSDVolume }
-    ) {
-      id
-      derivedETH
-      name
-      symbol
-      decimals
-      totalLiquidity
-      tradeVolumeUSD
-    }
-  }
-`;
-
-const TokenFields = `
-  fragment TokenFields on Token {
-    tradeVolumeUSD
-  }
-`;
-
-export const TOKEN_DATA = (tokenAddress, block) => {
-  const queryString = `
-    ${TokenFields}
-    query tokens {
-      tokens(${
-        block ? `block : {number: ${block}}` : ``
-      } where: {id:"${tokenAddress}"}) {
-        ...TokenFields
-      }
-      pairs0: pairs(where: {token0: "${tokenAddress}"}, first: 50, orderBy: reserveUSD, orderDirection: desc){
-        id
-      }
-      pairs1: pairs(where: {token1: "${tokenAddress}"}, first: 50, orderBy: reserveUSD, orderDirection: desc){
-        id
-      }
-    }
-  `;
-  return gql(queryString);
-};
-
 export const UNISWAP_ADDITIONAL_POOL_DATA = gql`
   query pairs($address: String!) {
     pairs(where: { id: $address }) {
       volumeUSD
       reserveUSD
       trackedReserveETH
-    }
-  }
-`;
-
-export const UNISWAP_ADDITIONAL_TOKEN_DATA = gql`
-  query pairs($address: String!) {
-    tokens(where: { id: $address }) {
-      tradeVolumeUSD
     }
   }
 `;
@@ -383,6 +201,43 @@ export const ENS_SUGGESTIONS = gql`
           id
         }
       }
+    }
+  }
+`;
+
+export const ENS_SEARCH = gql`
+  query lookup($name: String!, $amount: Int!) {
+    domains(first: $amount, where: { name: $name }) {
+      name
+      resolver {
+        addr {
+          id
+        }
+      }
+    }
+  }
+`;
+
+export const ENS_DOMAINS = gql`
+  query lookup($name: String!) {
+    domains(where: { name: $name }) {
+      name
+      labelhash
+      resolver {
+        addr {
+          id
+        }
+      }
+    }
+  }
+`;
+
+export const ENS_REGISTRATIONS = gql`
+  query lookup($labelHash: String!) {
+    registrations(first: 1, where: { id: $labelHash }) {
+      id
+      registrationDate
+      expiryDate
     }
   }
 `;

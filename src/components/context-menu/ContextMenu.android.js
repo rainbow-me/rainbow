@@ -1,6 +1,6 @@
 import { omit } from 'lodash';
 import React, { Fragment, useCallback } from 'react';
-import { ButtonPressAnimation } from '../animations';
+import { TouchableWithoutFeedback } from 'react-native';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 import { padding } from '@rainbow-me/styles';
@@ -16,8 +16,10 @@ const ActionSheetProps = [
   'title',
 ];
 
+const style = padding.object(12, 8);
+
 const ContextButton = props => (
-  <Centered css={padding(12, 8)} {...props}>
+  <Centered style={style} {...props}>
     <Icon name="threeDots" />
   </Centered>
 );
@@ -53,13 +55,13 @@ export default function ContextMenu({
   return (
     <Fragment>
       {onPressActionSheet && (
-        <ButtonPressAnimation
+        <TouchableWithoutFeedback
           activeOpacity={activeOpacity}
           onPress={handleShowActionSheet}
           radiusAndroid={20}
         >
           {children || <ContextButton {...omit(props, ActionSheetProps)} />}
-        </ButtonPressAnimation>
+        </TouchableWithoutFeedback>
       )}
     </Fragment>
   );

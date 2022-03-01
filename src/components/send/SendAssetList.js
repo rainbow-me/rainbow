@@ -7,7 +7,6 @@ import {
   RecyclerListView,
 } from 'recyclerlistview';
 
-import styled from 'styled-components';
 import { buildCoinsList } from '../../helpers/assets';
 import networkTypes from '../../helpers/networkTypes';
 import { deviceUtils } from '../../utils';
@@ -20,9 +19,10 @@ import {
   SendSavingsCoinRow,
 } from '../coin-row';
 import { Centered } from '../layout';
-import SavingsListHeader from '../savings/SavingsListHeader';
+import { SavingsListHeader } from '../savings';
 import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
 import { ImgixImage } from '@rainbow-me/images';
+import styled from '@rainbow-me/styled-components';
 
 const dividerMargin = 5;
 const dividerHeight = DividerSize + dividerMargin * 4;
@@ -31,15 +31,9 @@ const familyHeaderHeight = 49;
 const rowHeight = 59;
 const smallBalancesHeader = 42;
 
-const SendAssetListCoinDividerOpenButton = styled(CoinDividerOpenButton).attrs({
-  coinDividerHeight: 34,
-})`
-  margin-left: ${android ? 0 : 19};
-`;
-
-const SendAssetRecyclerListView = styled(RecyclerListView)`
-  min-height: 1;
-`;
+const SendAssetRecyclerListView = styled(RecyclerListView)({
+  minHeight: 1,
+});
 
 const SendAssetListDivider = () => {
   const { colors } = useTheme();
@@ -55,22 +49,23 @@ export default class SendAssetList extends React.Component {
     super(props);
 
     const {
-      allAssets,
       hiddenCoins,
       nativeCurrency,
       network,
       pinnedCoins,
       savings,
+      sortedAssets,
       uniqueTokens,
     } = props;
 
     const { assets } = buildCoinsList(
-      allAssets,
+      sortedAssets,
       nativeCurrency,
-      true,
+      false,
       pinnedCoins,
       hiddenCoins
     );
+
     let smallBalances = [];
     let shitcoins = [];
 
@@ -87,11 +82,7 @@ export default class SendAssetList extends React.Component {
 
     this.data = assets;
 
-    if (smallBalances.assets.length > 0) {
-      //check for placeholder ETH & remove
-      smallBalances.assets = smallBalances.assets.filter(
-        asset => !asset?.isPlaceholder
-      );
+    if (smallBalances.assets?.length > 0) {
       this.data.push(smallBalances);
     }
 
@@ -217,7 +208,7 @@ export default class SendAssetList extends React.Component {
   };
 
   changeOpenTab = index => {
-    const { allAssets, savings, uniqueTokens } = this.props;
+    const { savings, sortedAssets, uniqueTokens } = this.props;
     const {
       openCards,
       openSavings,
@@ -228,8 +219,7 @@ export default class SendAssetList extends React.Component {
     LayoutAnimation.configureNext(
       LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
     );
-    openCards[index] = !openCards[index];
-    this.setState({ openCards });
+    this.setState({ openCards: { ...openCards, [index]: !openCards[index] } });
     let familiesHeight = 0;
     if (openCards[index]) {
       for (let i = 0; i < index; i++) {
@@ -241,11 +231,11 @@ export default class SendAssetList extends React.Component {
         }
       }
       const smallBalancesheight =
-        allAssets.length === visibleAssetsLength
+        sortedAssets.length === visibleAssetsLength
           ? 0
           : smallBalancesHeader +
             (openShitcoins
-              ? (allAssets.length - visibleAssetsLength) * rowHeight
+              ? (sortedAssets.length - visibleAssetsLength) * rowHeight
               : 0);
       const savingsHeight =
         savings?.length > 0
@@ -310,6 +300,7 @@ export default class SendAssetList extends React.Component {
   balancesRenderItem = item => (
     <SendCoinRow
       {...item}
+      key={item.uniqueId}
       onPress={() => this.props.onSelectAsset(item)}
       rowHeight={rowHeight}
       testID="send-asset"
@@ -386,13 +377,18 @@ export default class SendAssetList extends React.Component {
     const { savings } = this.props;
     const { openShitcoins } = this.state;
     return (
-      <View marginTop={dividerMargin}>
-        <SendAssetListCoinDividerOpenButton
-          isSendSheet
-          isSmallBalancesOpen={openShitcoins}
-          onPress={this.changeOpenShitcoins}
-        />
-        {openShitcoins && this.mapShitcoins(item.assets)}
+      <View>
+        <View marginTop={android ? 0 : 5}>
+          <CoinDividerOpenButton
+            isSmallBalancesOpen={openShitcoins}
+            onPress={this.changeOpenShitcoins}
+          />
+        </View>
+        {openShitcoins && (
+          <View marginTop={android ? 1 : -4}>
+            {this.mapShitcoins(item.assets)}
+          </View>
+        )}
         {savings && savings.length > 0 ? null : <SendAssetListDivider />}
       </View>
     );
@@ -416,14 +412,14 @@ export default class SendAssetList extends React.Component {
   };
 
   render() {
-    const { dataProvider, openShitcoins } = this.state;
+    const { dataProvider, openShitcoins, openCards } = this.state;
 
     return (
       <FlyInAnimation>
         <SendAssetRecyclerListView
           dataProvider={dataProvider}
           disableRecycling
-          extendedState={{ openShitcoins }}
+          extendedState={{ openCards, openShitcoins }}
           layoutProvider={this._layoutProvider}
           onScroll={this.handleScroll}
           ref={this.handleRef}

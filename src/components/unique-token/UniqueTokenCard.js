@@ -1,40 +1,46 @@
 import React, { useCallback, useMemo } from 'react';
-import styled from 'styled-components';
-import { magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder } from '../layout';
+import { CardSize } from './CardSize';
 import UniqueTokenImage from './UniqueTokenImage';
+import {
+  usePersistentAspectRatio,
+  usePersistentDominantColorFromImage,
+} from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { shadow as shadowUtil } from '@rainbow-me/styles';
 
 const UniqueTokenCardBorderRadius = 20;
 const UniqueTokenCardShadowFactory = colors => [0, 2, 6, colors.shadow, 0.08];
 
-const Container = styled.View`
-  ${({ shadow }) => shadowUtil.build(...shadow)};
-`;
+const Container = styled.View(({ shadow }) =>
+  shadowUtil.buildAsObject(...shadow)
+);
 
-const Content = styled.View`
-  border-radius: ${UniqueTokenCardBorderRadius};
-  height: ${({ height }) => height};
-  overflow: hidden;
-  width: ${({ width }) => width};
-`;
+const Content = styled.View({
+  borderRadius: UniqueTokenCardBorderRadius,
+  height: ({ height }) => height || CardSize,
+  overflow: 'hidden',
+  width: ({ width }) => width || CardSize,
+});
 
 const UniqueTokenCard = ({
   borderEnabled = true,
-  disabled,
+  disabled = false,
   enableHapticFeedback = true,
-  height,
   item,
   onPress,
-  resizeMode,
+  resizeMode = undefined,
   scaleTo = 0.96,
-  shadow,
+  shadow = undefined,
+  size = CardSize,
   smallENSName = true,
-  style,
-  width,
+  style = undefined,
   ...props
 }) => {
+  usePersistentAspectRatio(item.image_url);
+  usePersistentDominantColorFromImage(item.image_url);
+
   const handlePress = useCallback(() => {
     if (onPress) {
       onPress(item);
@@ -47,8 +53,6 @@ const UniqueTokenCard = ({
     colors,
   ]);
 
-  const imageUrl =
-    item.image_preview_url || item.image_url || item.image_original_url;
   return (
     <Container
       as={ButtonPressAnimation}
@@ -58,13 +62,14 @@ const UniqueTokenCard = ({
       scaleTo={scaleTo}
       shadow={shadow || defaultShadow}
     >
-      <Content {...props} height={height} style={style} width={width}>
+      <Content {...props} height={size} style={style} width={size}>
         <UniqueTokenImage
           backgroundColor={item.background || colors.lightestGrey}
-          imageUrl={imageUrl}
+          imageUrl={item.image_url}
+          isCard
           item={item}
           resizeMode={resizeMode}
-          size={width}
+          size={size}
           small={smallENSName}
         />
         {borderEnabled && (
@@ -79,9 +84,4 @@ const UniqueTokenCard = ({
   );
 };
 
-export default magicMemo(UniqueTokenCard, [
-  'height',
-  'item.uniqueId',
-  'style',
-  'width',
-]);
+export default UniqueTokenCard;

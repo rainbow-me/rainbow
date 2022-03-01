@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js';
+import currency from 'currency.js';
 import { get, isNil } from 'lodash';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 
@@ -151,6 +152,12 @@ export const convertStringToHex = (stringToConvert: string): string =>
 export const add = (numberOne: BigNumberish, numberTwo: BigNumberish): string =>
   new BigNumber(numberOne).plus(numberTwo).toFixed();
 
+export const addDisplay = (numberOne: string, numberTwo: string): string => {
+  const template = numberOne.split(/\d+\.\d+/);
+  const display = currency(numberOne, { symbol: '' }).add(numberTwo).format();
+  return template.map(item => (item === '' ? `${display}` : item)).join('');
+};
+
 export const multiply = (
   numberOne: BigNumberish,
   numberTwo: BigNumberish
@@ -255,13 +262,15 @@ export const convertAmountAndPriceToNativeDisplay = (
   amount: BigNumberish,
   priceUnit: BigNumberish,
   nativeCurrency: string,
-  buffer?: number
+  buffer?: number,
+  skipDecimals: boolean = false
 ): { amount: string; display: string } => {
   const nativeBalanceRaw = convertAmountToNativeAmount(amount, priceUnit);
   const nativeDisplay = convertAmountToNativeDisplay(
     nativeBalanceRaw,
     nativeCurrency,
-    buffer
+    buffer,
+    skipDecimals
   );
   return {
     amount: nativeBalanceRaw,
@@ -398,18 +407,4 @@ export const fromWei = (number: BigNumberish): string =>
  */
 export const delay = (ms: number): Promise<void> => {
   return new Promise(resolve => setTimeout(resolve, ms));
-};
-
-/**
- * @desc Array.prototype.some repurposed for async iteration
- */
-export const asyncSome = async (
-  arr: any[],
-  callback: (element: any, index: number) => any
-) => {
-  if (!arr || !callback) return null;
-  for (let [index, element] of arr.entries()) {
-    if (await callback(element, index)) return true;
-  }
-  return false;
 };

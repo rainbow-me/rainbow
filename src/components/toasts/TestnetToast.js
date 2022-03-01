@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { web3Provider } from '../../handlers/web3';
 import networkInfo from '../../helpers/networkInfo';
 import networkTypes from '../../helpers/networkTypes';
 import { Icon } from '../icons';
 import { Nbsp, Text } from '../text';
 import Toast from './Toast';
-import { useAccountSettings, useInternetStatus } from '@rainbow-me/hooks';
+import { isHardHat } from '@rainbow-me/handlers/web3';
+import { useInternetStatus } from '@rainbow-me/hooks';
 
-const TestnetToast = () => {
+const TestnetToast = ({ network, web3Provider }) => {
   const isConnected = useInternetStatus();
-  const { network } = useAccountSettings();
   const providerUrl = web3Provider?.connection?.url;
   const { name, color } = networkInfo[network];
   const [visible, setVisible] = useState(!network === networkTypes.mainnet);
@@ -17,9 +16,9 @@ const TestnetToast = () => {
 
   useEffect(() => {
     if (network === networkTypes.mainnet) {
-      if (providerUrl?.startsWith('http://')) {
+      if (isHardHat(providerUrl)) {
         setVisible(true);
-        setNetworkName('Ganache');
+        setNetworkName('Hardhat');
       } else {
         setVisible(false);
       }
@@ -33,7 +32,7 @@ const TestnetToast = () => {
 
   return (
     <Toast isVisible={visible} testID={`testnet-toast-${networkName}`}>
-      <Icon color={color} marginHorizontal={5} marginTop={5} name="dot" />
+      <Icon color={color} marginHorizontal={5} marginTop={1} name="dot" />
       <Text color={colors.white} size="smedium" weight="semibold">
         <Nbsp /> {networkName} <Nbsp />
       </Text>

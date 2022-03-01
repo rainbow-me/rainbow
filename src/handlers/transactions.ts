@@ -61,7 +61,7 @@ export const getTransactionMethodName = async (
         const contract = new Contract(
           SIGNATURE_REGISTRY_ADDRESS,
           signatureRegistryABI,
-          web3Provider
+          web3Provider!
         );
         signature = await Promise.race([
           contract.entries(bytes),

@@ -5,52 +5,59 @@ import { StatusBar } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useValue } from 'react-native-redash/src/v1';
 import { useDispatch, useSelector } from 'react-redux';
-import styled from 'styled-components';
 import { OpacityToggler } from '../components/animations';
 import { AssetList } from '../components/asset-list';
-import { ExchangeFab, FabWrapper, SendFab } from '../components/fab';
+import {
+  ExchangeFab,
+  FabWrapper,
+  RegisterEnsFab,
+  SendFab,
+} from '../components/fab';
 import {
   DiscoverHeaderButton,
   Header,
   ProfileHeaderButton,
+  ScanHeaderButton,
 } from '../components/header';
-import { Page } from '../components/layout';
-import { useEth } from '../utils/ethereumUtils';
+import { Page, RowWithMargins } from '../components/layout';
+import useExperimentalFlag, {
+  PROFILES,
+} from '@rainbow-me/config/experimentalHooks';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import {
   useAccountEmptyState,
   useAccountSettings,
   useCoinListEdited,
+  useInitializeDiscoverData,
   useInitializeWallet,
+  useLoadGlobalLateData,
   usePortfolios,
-  useRefreshAccountData,
   useUserAccounts,
   useWallets,
   useWalletSectionsData,
 } from '@rainbow-me/hooks';
-import { useCoinListEditedValue } from '@rainbow-me/hooks/useCoinListEdited';
 import { useNavigation } from '@rainbow-me/navigation';
 import { updateRefetchSavings } from '@rainbow-me/redux/data';
 import {
   emitChartsRequest,
   emitPortfolioRequest,
 } from '@rainbow-me/redux/explorer';
-import { updatePositions } from '@rainbow-me/redux/usersPositions';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 
 const HeaderOpacityToggler = styled(OpacityToggler).attrs(({ isVisible }) => ({
   endingOpacity: 0.4,
   pointerEvents: isVisible ? 'none' : 'auto',
-}))`
-  padding-top: 5;
-  z-index: 1;
-  elevation: 1;
-`;
+}))({
+  elevation: 1,
+  paddingTop: 5,
+  zIndex: 1,
+});
 
-const WalletPage = styled(Page)`
-  ${position.size('100%')};
-  flex: 1;
-`;
+const WalletPage = styled(Page)({
+  ...position.sizeAsObject('100%'),
+  flex: 1,
+});
 
 export default function WalletScreen() {
   const { params } = useRoute();
@@ -59,7 +66,6 @@ export default function WalletScreen() {
   const [portfoliosFetched, setPortfoliosFetched] = useState(false);
   const [fetchedCharts, setFetchedCharts] = useState(false);
   const initializeWallet = useInitializeWallet();
-  const refreshAccountData = useRefreshAccountData();
   const { isCoinListEdited } = useCoinListEdited();
   const scrollViewTracker = useValue(0);
   const { isReadOnlyWallet } = useWallets();
@@ -67,7 +73,11 @@ export default function WalletScreen() {
   const { network } = useAccountSettings();
   const { userAccounts } = useUserAccounts();
   const { portfolios, trackPortfolios } = usePortfolios();
-
+  const loadGlobalLateData = useLoadGlobalLateData();
+  const initializeDiscoverData = useInitializeDiscoverData();
+  const walletReady = useSelector(
+    ({ appState: { walletReady } }) => walletReady
+  );
   const {
     isWalletEthZero,
     refetchSavings,
@@ -75,14 +85,8 @@ export default function WalletScreen() {
     shouldRefetchSavings,
   } = useWalletSectionsData();
 
-  const eth = useEth();
-  const numberOfPools = sections.find(({ pools }) => pools)?.data.length ?? 0;
-
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    eth?.price?.value && dispatch(updatePositions());
-  }, [dispatch, eth?.price?.value, numberOfPools]);
+  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   const { addressSocket, assetsSocket } = useSelector(
     ({ explorer: { addressSocket, assetsSocket } }) => ({
@@ -102,11 +106,15 @@ export default function WalletScreen() {
   }, [dispatch, refetchSavings, shouldRefetchSavings]);
 
   useEffect(() => {
-    if (!initialized || (params?.emptyWallet && initialized)) {
-      // We run the migrations only once on app launch
-      initializeWallet(null, null, null, !params?.emptyWallet);
+    const initializeAndSetParams = async () => {
+      await initializeWallet(null, null, null, !params?.emptyWallet);
       setInitialized(true);
       setParams({ emptyWallet: false });
+    };
+
+    if (!initialized || (params?.emptyWallet && initialized)) {
+      // We run the migrations only once on app launch
+      initializeAndSetParams();
     }
   }, [initializeWallet, initialized, params, setParams]);
 
@@ -152,6 +160,13 @@ export default function WalletScreen() {
     }
   }, [assetsSocket, dispatch, fetchedCharts, initialized, sections]);
 
+  useEffect(() => {
+    if (walletReady && assetsSocket) {
+      loadGlobalLateData();
+      initializeDiscoverData();
+    }
+  }, [assetsSocket, initializeDiscoverData, loadGlobalLateData, walletReady]);
+
   // Show the exchange fab only for supported networks
   // (mainnet & rinkeby)
   const fabs = useMemo(
@@ -159,11 +174,10 @@ export default function WalletScreen() {
       [
         !!get(networkInfo[network], 'exchange_enabled') && ExchangeFab,
         SendFab,
+        profilesEnabled ? RegisterEnsFab : null,
       ].filter(e => !!e),
-    [network]
+    [network, profilesEnabled]
   );
-
-  const isCoinListEditedValue = useCoinListEditedValue();
 
   const isLoadingAssets = useSelector(state => state.data.isLoadingAssets);
 
@@ -172,7 +186,6 @@ export default function WalletScreen() {
       {ios && <StatusBar barStyle="dark-content" />}
       {/* Line below appears to be needed for having scrollViewTracker persistent while
       reattaching of react subviews */}
-      <Animated.View style={{ opacity: isCoinListEditedValue }} />
       <Animated.Code exec={scrollViewTracker} />
       <FabWrapper
         disabled={isAccountEmpty || !!params?.emptyWallet}
@@ -183,17 +196,19 @@ export default function WalletScreen() {
         <HeaderOpacityToggler isVisible={isCoinListEdited}>
           <Header justify="space-between">
             <ProfileHeaderButton />
-            <DiscoverHeaderButton />
+            <RowWithMargins margin={10}>
+              <DiscoverHeaderButton />
+              <ScanHeaderButton />
+            </RowWithMargins>
           </Header>
         </HeaderOpacityToggler>
         <AssetList
           disableRefreshControl={isLoadingAssets}
-          fetchData={refreshAccountData}
           isEmpty={isAccountEmpty || !!params?.emptyWallet}
+          isLoading={android && isLoadingAssets}
           isWalletEthZero={isWalletEthZero}
           network={network}
           scrollViewTracker={scrollViewTracker}
-          sections={sections}
         />
       </FabWrapper>
     </WalletPage>

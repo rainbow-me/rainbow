@@ -1,6 +1,8 @@
-import { get, isNil, map, toUpper } from 'lodash';
+import { get, isNil, map, mapValues, toUpper } from 'lodash';
 import { dedupeUniqueTokens } from './uniqueTokens';
 import { AssetTypes } from '@rainbow-me/entities';
+import { isNativeAsset } from '@rainbow-me/handlers/assets';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   add,
   convertAmountAndPriceToNativeDisplay,
@@ -13,11 +15,11 @@ import { getTokenMetadata, isLowerCaseMatch } from '@rainbow-me/utils';
 /**
  * @desc parse account assets
  * @param  {Object} [data]
- * @return {Array}
+ * @return The array of parsed account assets.
  */
 export const parseAccountAssets = (data, uniqueTokens) => {
   const dedupedAssets = dedupeUniqueTokens(data, uniqueTokens);
-  return dedupedAssets.map(assetData => {
+  return mapValues(dedupedAssets, assetData => {
     const asset = parseAsset(assetData.asset);
     return {
       ...asset,
@@ -42,7 +44,7 @@ export const parseAssetSymbol = (metadata, symbol) => {
 /**
  * @desc parse asset
  * @param  {Object} assetData
- * @return {Object}
+ * @return The parsed asset.
  */
 export const parseAsset = ({ asset_code: address, ...asset } = {}) => {
   const metadata = getTokenMetadata(asset.mainnet_address || address);
@@ -61,10 +63,18 @@ export const parseAsset = ({ asset_code: address, ...asset } = {}) => {
     ...asset,
     ...metadata,
     address,
+    isNativeAsset: isNativeAsset(
+      address,
+      asset.network || networkTypes.mainnet
+    ),
     name,
     symbol,
     type,
-    uniqueId: address || name,
+    uniqueId: address
+      ? asset.network && asset.network !== networkTypes.mainnet
+        ? `${address}_${asset.network}`
+        : address
+      : name,
   };
 
   return parsedAsset;
@@ -85,33 +95,33 @@ export const parseAssetsNativeWithTotals = (assets, nativeCurrency) => {
 };
 
 export const parseAssetsNative = (assets, nativeCurrency) =>
-  map(assets, asset => {
-    const assetNativePrice = get(asset, 'price');
-    if (isNil(assetNativePrice)) {
-      return asset;
-    }
+  map(assets, asset => parseAssetNative(asset, nativeCurrency));
 
-    const priceUnit = get(assetNativePrice, 'value', 0);
-    const nativeDisplay = convertAmountAndPriceToNativeDisplay(
-      get(asset, 'balance.amount', 0),
-      priceUnit,
-      nativeCurrency
-    );
-    return {
-      ...asset,
-      native: {
-        balance: nativeDisplay,
-        change: isLowerCaseMatch(get(asset, 'symbol'), nativeCurrency)
-          ? null
-          : assetNativePrice.relative_change_24h
-          ? convertAmountToPercentageDisplay(
-              assetNativePrice.relative_change_24h
-            )
-          : '',
-        price: {
-          amount: priceUnit,
-          display: convertAmountToNativeDisplay(priceUnit, nativeCurrency),
-        },
+export const parseAssetNative = (asset, nativeCurrency) => {
+  const assetNativePrice = get(asset, 'price');
+  if (isNil(assetNativePrice)) {
+    return asset;
+  }
+
+  const priceUnit = get(assetNativePrice, 'value', 0);
+  const nativeDisplay = convertAmountAndPriceToNativeDisplay(
+    get(asset, 'balance.amount', 0),
+    priceUnit,
+    nativeCurrency
+  );
+  return {
+    ...asset,
+    native: {
+      balance: nativeDisplay,
+      change: isLowerCaseMatch(get(asset, 'symbol'), nativeCurrency)
+        ? null
+        : assetNativePrice.relative_change_24h
+        ? convertAmountToPercentageDisplay(assetNativePrice.relative_change_24h)
+        : '',
+      price: {
+        amount: priceUnit,
+        display: convertAmountToNativeDisplay(priceUnit, nativeCurrency),
       },
-    };
-  });
+    },
+  };
+};

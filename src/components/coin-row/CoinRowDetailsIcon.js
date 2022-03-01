@@ -1,22 +1,22 @@
 import React from 'react';
-import styled from 'styled-components';
 import { Centered, Column } from '../layout';
 import { Text } from '../text';
 import { CoinRowHeight } from './CoinRow';
+import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 
 const AddButtonPadding = 19;
 
-const AddButton = styled(Centered)`
-  ${padding(0, AddButtonPadding)};
-  bottom: 0;
-  flex: 0;
-  height: ${CoinRowHeight};
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 68px;
-`;
+const AddButton = styled(Centered)({
+  ...padding.object(0, AddButtonPadding),
+  bottom: 0,
+  flex: 0,
+  height: CoinRowHeight,
+  position: 'absolute',
+  right: 0,
+  top: 0,
+  width: 68,
+});
 
 const Icon = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
@@ -24,12 +24,12 @@ const Icon = styled(Text).attrs(({ theme: { colors } }) => ({
   letterSpacing: 'zero',
   size: 'larger',
   weight: 'normal',
-}))`
-  height: 100%;
-  line-height: 28px;
-  width: 100%;
-  margin-top: 28px;
-`;
+}))({
+  height: '100%',
+  lineHeight: 28,
+  marginTop: 28,
+  width: '100%',
+});
 
 const CoinRowDetailsIcon = () => (
   <AddButton as={Column}>

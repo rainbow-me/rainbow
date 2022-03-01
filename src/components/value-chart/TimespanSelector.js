@@ -1,15 +1,15 @@
 import React, { useMemo } from 'react';
-import styled from 'styled-components';
 import { JellySelector } from '../jelly-selector';
 import { Centered, Row } from '../layout';
 import { Text } from '../text';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
+import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 
-const Container = styled(Centered)`
-  padding-top: 30;
-  width: 100%;
-`;
+const Container = styled(Centered)({
+  paddingTop: 49,
+  width: '100%',
+});
 
 const TimespanItemLabel = styled(Text).attrs(
   ({ color, isSelected, theme: { colors } }) => ({
@@ -19,15 +19,15 @@ const TimespanItemLabel = styled(Text).attrs(
     size: 'smedium',
     weight: 'bold',
   })
-)`
-  ${padding(0, 9)};
-`;
+)({
+  ...padding.object(0, 9),
+});
 
 const TimespanItemRow = styled(Row).attrs({
   justify: 'space-around',
-})`
-  ${padding(0, 30)};
-`;
+})({
+  ...padding.object(0, 30),
+});
 
 const TimespanItem = ({ color, isSelected, item, ...props }) => (
   <Centered flexShrink={0} height={32} {...props}>

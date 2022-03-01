@@ -1,6 +1,6 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
-import { map, toLower } from 'lodash';
+import { toLower } from 'lodash';
 import { matchSorter } from 'match-sorter';
 import React, {
   Fragment,
@@ -11,9 +11,7 @@ import React, {
   useState,
 } from 'react';
 import { StatusBar } from 'react-native';
-import { IS_TESTING } from 'react-native-dotenv';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
-import styled from 'styled-components';
 import GestureBlocker from '../components/GestureBlocker';
 import {
   CurrencySelectionList,
@@ -24,29 +22,31 @@ import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
 import { usePagerPosition } from '../navigation/ScrollPositionContext';
 import { addHexPrefix } from '@rainbow-me/handlers/web3';
-import { CurrencySelectionTypes, TokenSectionTypes } from '@rainbow-me/helpers';
+import { CurrencySelectionTypes } from '@rainbow-me/helpers';
 import {
+  useCoinListEditOptions,
   useInteraction,
   useMagicAutofocus,
   usePrevious,
   useTimeout,
-  useUniswapAssets,
   useUniswapAssetsInWallet,
+  useUniswapCurrencyList,
 } from '@rainbow-me/hooks';
 import { delayNext } from '@rainbow-me/hooks/useMagicAutofocus';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import { filterList } from '@rainbow-me/utils';
 
-const TabTransitionAnimation = styled(Animated.View)`
-  ${position.size('100%')};
-`;
+const TabTransitionAnimation = styled(Animated.View)(
+  position.sizeAsObject('100%')
+);
 
 const headerlessSection = data => [{ data, title: '' }];
 const Wrapper = ios ? KeyboardFixedOpenLayout : Fragment;
 
-const searchCurrencyList = (searchList, query) => {
+const searchWalletCurrencyList = (searchList, query) => {
   const isAddress = query.match(/^(0x)?[0-9a-fA-F]{40}$/);
 
   if (isAddress) {
@@ -87,101 +87,37 @@ export default function CurrencySelectModal() {
   const searchQueryExists = useMemo(() => searchQuery.length > 0, [
     searchQuery,
   ]);
-
-  const { colors } = useTheme();
-  const {
-    curatedNotFavorited,
-    favorites,
-    globalHighLiquidityAssets,
-    globalLowLiquidityAssets,
-    globalVerifiedAssets,
-    loadingAllTokens,
-    updateFavorites,
-  } = useUniswapAssets();
   const uniswapAssetsInWallet = useUniswapAssetsInWallet();
+  const { hiddenCoins } = useCoinListEditOptions();
 
-  const currencyList = useMemo(() => {
-    let filteredList = [];
-    if (type === CurrencySelectionTypes.input) {
-      filteredList = headerlessSection(uniswapAssetsInWallet);
-      if (searchQueryForSearch) {
-        filteredList = searchCurrencyList(
-          uniswapAssetsInWallet,
-          searchQueryForSearch
-        );
-        filteredList = headerlessSection(filteredList);
-      }
-    } else if (type === CurrencySelectionTypes.output) {
-      if (searchQueryForSearch) {
-        const [
-          filteredFavorite,
-          filteredVerified,
-          filteredHighUnverified,
-          filteredLow,
-        ] = map(
-          [
-            favorites,
-            globalVerifiedAssets,
-            globalHighLiquidityAssets,
-            globalLowLiquidityAssets,
-          ],
-          section => searchCurrencyList(section, searchQueryForSearch)
-        );
+  const filteredUniswapAssetsInWallet = useMemo(
+    () =>
+      uniswapAssetsInWallet.filter(
+        ({ uniqueId }) => !hiddenCoins.includes(uniqueId)
+      ),
+    [uniswapAssetsInWallet, hiddenCoins]
+  );
 
-        filteredList = [];
-        filteredFavorite.length &&
-          filteredList.push({
-            color: colors.yellowFavorite,
-            data: filteredFavorite,
-            title: TokenSectionTypes.favoriteTokenSection,
-          });
-
-        filteredVerified.length &&
-          filteredList.push({
-            data: filteredVerified,
-            title: TokenSectionTypes.verifiedTokenSection,
-            useGradientText: IS_TESTING === 'true' ? false : true,
-          });
-
-        filteredHighUnverified.length &&
-          filteredList.push({
-            data: filteredHighUnverified,
-            title: TokenSectionTypes.unverifiedTokenSection,
-          });
-
-        filteredLow.length &&
-          filteredList.push({
-            data: filteredLow,
-            title: TokenSectionTypes.lowLiquidityTokenSection,
-          });
-      } else {
-        filteredList = [
-          {
-            color: colors.yellowFavorite,
-            data: favorites,
-            title: TokenSectionTypes.favoriteTokenSection,
-          },
-          {
-            data: curatedNotFavorited,
-            title: TokenSectionTypes.verifiedTokenSection,
-            useGradientText: IS_TESTING === 'true' ? false : true,
-          },
-        ];
-      }
+  const {
+    uniswapCurrencyList,
+    uniswapCurrencyListLoading,
+    updateFavorites,
+  } = useUniswapCurrencyList(searchQueryForSearch);
+  const getWalletCurrencyList = () => {
+    if (searchQueryForSearch !== '') {
+      const searchResults = searchWalletCurrencyList(
+        filteredUniswapAssetsInWallet,
+        searchQueryForSearch
+      );
+      return headerlessSection(searchResults);
+    } else {
+      return headerlessSection(filteredUniswapAssetsInWallet);
     }
-    setIsSearching(false);
-    return filteredList;
-  }, [
-    colors,
-    curatedNotFavorited,
-    favorites,
-    globalVerifiedAssets,
-    globalHighLiquidityAssets,
-    globalLowLiquidityAssets,
-    searchQueryForSearch,
-    type,
-    uniswapAssetsInWallet,
-  ]);
+  };
+  const currencyList =
+    type === CurrencySelectionTypes.input
+      ? getWalletCurrencyList()
+      : uniswapCurrencyList;
 
   const [startQueryDebounce, stopQueryDebounce] = useTimeout();
   useEffect(() => {
@@ -227,6 +163,7 @@ export default function CurrencySelectModal() {
       }
       delayNext();
       dangerouslyGetState().index = 1;
+      setSearchQuery('');
       navigate(Routes.MAIN_EXCHANGE_SCREEN);
     },
     [
@@ -270,7 +207,6 @@ export default function CurrencySelectModal() {
     // on page blur
     if (!isFocused && prevIsFocused) {
       handleApplyFavoritesQueue();
-      setSearchQuery('');
       restoreFocusOnSwapModal?.();
     }
   }, [
@@ -294,6 +230,10 @@ export default function CurrencySelectModal() {
     }
   }, [assetsToFavoriteQueue, handleApplyFavoritesQueue, searchQueryExists]);
 
+  useEffect(() => {
+    setIsSearching(uniswapCurrencyListLoading);
+  }, [uniswapCurrencyListLoading]);
+
   const style = useAnimatedStyle(() => ({
     opacity: scrollPosition.value,
     transform: [
@@ -315,9 +255,12 @@ export default function CurrencySelectModal() {
           {isFocusedAndroid && <StatusBar barStyle="dark-content" />}
           <GestureBlocker type="top" />
           <Column flex={1}>
-            <CurrencySelectModalHeader testID="currency-select-header" />
+            <CurrencySelectModalHeader
+              setSearchQuery={setSearchQuery}
+              testID="currency-select-header"
+            />
             <ExchangeSearch
-              isFetching={loadingAllTokens}
+              isFetching={uniswapCurrencyListLoading}
               isSearching={isSearching}
               onChangeText={setSearchQuery}
               onFocus={handleFocus}
@@ -329,7 +272,7 @@ export default function CurrencySelectModal() {
               <CurrencySelectionList
                 itemProps={itemProps}
                 listItems={currencyList}
-                loading={loadingAllTokens}
+                loading={uniswapCurrencyListLoading}
                 query={searchQueryForSearch}
                 showList={isFocused}
                 testID="currency-select-list"

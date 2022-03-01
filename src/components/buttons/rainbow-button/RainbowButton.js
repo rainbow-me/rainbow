@@ -1,6 +1,6 @@
 import MaskedView from '@react-native-community/masked-view';
+import lang from 'i18n-js';
 import React from 'react';
-import styled from 'styled-components';
 import AddCashIconSource from '../../../assets/addCashIcon.png';
 import { useTheme } from '../../../context/ThemeContext';
 import { ButtonPressAnimation } from '../../animations';
@@ -10,33 +10,34 @@ import RainbowButtonBackground from './RainbowButtonBackground';
 import RainbowButtonTypes from './RainbowButtonTypes';
 import { useDimensions } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
+import styled from '@rainbow-me/styled-components';
 import { position, shadow } from '@rainbow-me/styles';
 import ShadowView from 'react-native-shadow-stack/ShadowView';
 
 const AddCashIcon = styled(ImgixImage).attrs({
   resizeMode: ImgixImage.resizeMode.contain,
   source: AddCashIconSource,
-})`
-  ${position.size(45)};
-  margin-top: 7;
-`;
+})({
+  ...position.sizeAsObject(45),
+  marginTop: 7.5,
+});
 
 const ButtonContainer = styled(MaskedView).attrs({
   pointerEvents: 'none',
-})`
-  height: ${({ height }) => height};
-  width: ${({ width }) => width};
-`;
+})(({ width, height }) => ({
+  height,
+  width,
+}));
 
 const ButtonContent = styled(RowWithMargins).attrs({
   align: 'center',
   margin: -2.5,
-})`
-  align-self: center;
-  height: 100%;
-  margin-right: ${({ type }) => (type === 'addCash' ? 9 : 0)};
-  padding-bottom: 4;
-`;
+})({
+  alignSelf: 'center',
+  bottom: 2,
+  height: '100%',
+  marginRight: ({ type }) => (type === 'addCash' ? 9 : 0),
+});
 
 const ButtonLabel = styled(Text).attrs(
   ({ disabled, type, theme: { colors, isDarkMode } }) => ({
@@ -45,30 +46,46 @@ const ButtonLabel = styled(Text).attrs(
     letterSpacing:
       type === RainbowButtonTypes.addCash ? 'roundedTight' : 'rounded',
     size: type === RainbowButtonTypes.small ? 'large' : 'larger',
-    weight: 'bold',
+    weight: type === RainbowButtonTypes.small ? 'bold' : 'heavy',
   })
-)``;
+)({});
 
-const OuterButton = styled.View`
-  ${({ theme: { colors } }) => shadow.build(0, 5, 15, colors.shadow)};
-  background-color: ${({ theme: { colors } }) => colors.dark};
-  border-radius: ${({ height, strokeWidth }) => height / 2 + strokeWidth};
-  height: ${({ height }) => height};
-  shadow-opacity: ${({ disabled, isDarkMode }) =>
-    isDarkMode && disabled ? 0 : isDarkMode ? 0.1 : 0.4};
-  width: ${({ width }) => width};
-`;
+const OuterButton = styled.View(
+  ({
+    height,
+    width,
+    isDarkMode,
+    disabled,
+    strokeWidth,
+    theme: { colors },
+  }) => ({
+    ...shadow.buildAsObject(0, 5, 15, colors.shadow),
+    backgroundColor: colors.dark,
+    borderRadius: height / 2 + strokeWidth,
+    height,
+    shadowOpacity: isDarkMode && disabled ? 0 : isDarkMode ? 0.1 : 0.4,
+    width,
+  })
+);
 
-const Shadow = styled(ShadowView)`
-  ${({ theme: { colors } }) => shadow.build(0, 10, 30, colors.shadow, 1)};
-  background-color: ${({ theme: { colors } }) => colors.white};
-  border-radius: ${({ height, strokeWidth }) => height / 2 + strokeWidth};
-  height: ${({ height }) => height};
-  opacity: ${({ disabled, isDarkMode }) =>
-    isDarkMode && disabled ? 0 : android ? 1 : 0.2};
-  position: absolute;
-  width: ${({ width }) => width};
-`;
+const Shadow = styled(ShadowView)(
+  ({
+    height,
+    strokeWidth,
+    isDarkMode,
+    disabled,
+    width,
+    theme: { colors },
+  }) => ({
+    ...shadow.buildAsObject(0, 10, 30, colors.shadow, 1),
+    backgroundColor: colors.white,
+    borderRadius: height / 2 + strokeWidth,
+    height,
+    opacity: isDarkMode && disabled ? 0 : android ? 1 : 0.2,
+    position: 'absolute',
+    width,
+  })
+);
 
 const RainbowButton = ({
   disabled,
@@ -133,7 +150,9 @@ const RainbowButton = ({
         <ButtonContent type={type}>
           {type === RainbowButtonTypes.addCash && <AddCashIcon />}
           <ButtonLabel disabled={disabled} isDarkMode={isDarkMode} type={type}>
-            {type === RainbowButtonTypes.addCash ? 'Add Cash' : label}
+            {type === RainbowButtonTypes.addCash
+              ? lang.t('button.add_cash')
+              : label}
           </ButtonLabel>
         </ButtonContent>
       </ButtonContainer>

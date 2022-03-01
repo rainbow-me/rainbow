@@ -16,6 +16,8 @@ import { ThemeProvider } from 'styled-components';
 import { getTheme, saveTheme } from '../handlers/localstorage/theme';
 import { darkModeThemeColors, lightModeThemeColors } from '../styles/colors';
 import currentColors from './currentColors';
+import { DesignSystemProvider } from '@rainbow-me/design-system';
+import { StyleThingThemeProvider } from '@rainbow-me/styled-components';
 
 export const THEMES = {
   DARK: 'dark',
@@ -33,6 +35,7 @@ const { RNThemeModule } = NativeModules;
 
 export const MainThemeProvider = props => {
   const [colorScheme, setColorScheme] = useState();
+
   // looks like one works on Android and another one on iOS. good.
   const isSystemDarkModeIOS = useDarkMode();
   const isSystemDarkModeAndroid = useColorScheme() === 'dark';
@@ -120,12 +123,22 @@ export const MainThemeProvider = props => {
     [colorScheme, colorSchemeSystemAdjusted, isSystemDarkMode]
   );
 
+  if (!colorScheme) {
+    return null;
+  }
+
   return (
-    <ThemeProvider theme={currentTheme}>
-      <ThemeContext.Provider value={currentTheme}>
-        {props.children}
-      </ThemeContext.Provider>
-    </ThemeProvider>
+    <StyleThingThemeProvider value={currentTheme}>
+      <ThemeProvider theme={currentTheme}>
+        <ThemeContext.Provider value={currentTheme}>
+          <DesignSystemProvider
+            colorMode={currentTheme.isDarkMode ? 'dark' : 'light'}
+          >
+            {props.children}
+          </DesignSystemProvider>
+        </ThemeContext.Provider>
+      </ThemeProvider>
+    </StyleThingThemeProvider>
   );
 };
 

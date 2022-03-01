@@ -5,29 +5,29 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-import styled from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 import DiscoverSheetContext from './DiscoverSheetContext';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { borders, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
-const Header = styled.View`
-  flex-direction: row;
-  justify-content: space-between;
-  margin-vertical: 12;
-  position: absolute;
-  top: -12;
-  width: 100%;
-  z-index: 10;
-`;
+const Header = styled.View({
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  marginVertical: 12,
+  position: 'absolute',
+  top: -12,
+  width: '100%',
+  zIndex: 10,
+});
 
-const ChildWrapperView = styled.View`
-  position: absolute;
-`;
+const ChildWrapperView = styled.View({
+  position: 'absolute',
+});
 
 export const FloatingActionButtonShadow = colors => [
   [0, 10, android ? 0 : 30, colors.shadow, 0.5],
@@ -36,13 +36,13 @@ export const FloatingActionButtonShadow = colors => [
 
 const BackgroundFill = styled(Centered).attrs({
   ...borders.buildCircleAsObject(43),
-})`
-  ${position.cover};
-  background-color: ${({ theme: { colors, isDarkMode } }) =>
-    isDarkMode ? colors.darkModeDark : colors.blueGreyDark};
-  left: 8;
-  top: 8;
-`;
+})({
+  ...position.coverAsObject,
+  backgroundColor: ({ theme: { colors, isDarkMode } }) =>
+    isDarkMode ? colors.darkModeDark : colors.blueGreyDark,
+  left: 8,
+  top: 8,
+});
 
 const ALMOST_ZERO = 0.001;
 const springConfig = {
@@ -193,7 +193,7 @@ export default function DiscoverSheetHeader(props) {
         isWrapperVisible={isWrapperVisible}
         left={19}
         onPress={() => !isSearchModeEnabled && navigate(Routes.WALLET_SCREEN)}
-        translateX={5}
+        translateX={android ? 4 : 5}
       >
         <Icon
           color={colors.alpha(colors.blueGreyDark, 0.8)}

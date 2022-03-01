@@ -1,24 +1,51 @@
-import { filter } from 'lodash';
+import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
+import { getUniswapV2Tokens } from '@rainbow-me/handlers/dispersion';
 import { sortAssetsByNativeAmountSelector } from '@rainbow-me/helpers/assetSelectors';
 import NetworkTypes from '@rainbow-me/networkTypes';
+import { ETH_ADDRESS } from '@rainbow-me/references';
 
-const uniswapAllTokensSelector = state => state.uniswap.allTokens;
 const networkSelector = state => state.settings.network;
 
-const withUniswapAssetsInWallet = (network, assetData, uniswapAllPairs) => {
-  const { allAssets } = assetData;
-  return network === NetworkTypes.mainnet
-    ? filter(allAssets, ({ address }) => uniswapAllPairs[address])
-    : allAssets;
+const useUniswapAssetsInWallet = () => {
+  const [uniswapAssets, setUniswapAssets] = useState([]);
+  const network = useSelector(networkSelector);
+  const isMainnet = network === NetworkTypes.mainnet;
+  const { sortedAssets } = useSelector(sortAssetsByNativeAmountSelector);
+  const getUniswapAssets = useCallback(async () => {
+    let uniswapAssets;
+    if (isMainnet) {
+      const uniswapData = await getUniswapV2Tokens(
+        sortedAssets.map(({ address }) => address)
+      );
+      uniswapAssets = uniswapData ? Object.values(uniswapData) : [];
+    } else {
+      uniswapAssets = sortedAssets;
+    }
+    setUniswapAssets(uniswapAssets);
+  }, [sortedAssets, isMainnet]);
+
+  const getIsUniswapAsset = useCallback(
+    asset => {
+      return (
+        uniswapAssets.find(
+          ({ address }) => address === asset.address.toLowerCase()
+        ) || asset.address === ETH_ADDRESS
+      );
+    },
+    [uniswapAssets]
+  );
+
+  useEffect(() => {
+    getUniswapAssets();
+  }, [getUniswapAssets]);
+
+  const uniswapAssetsInWallet = useMemo(
+    () => sortedAssets.filter(getIsUniswapAsset),
+    [sortedAssets, getIsUniswapAsset]
+  );
+
+  return uniswapAssetsInWallet;
 };
 
-const withUniswapAssetsInWalletSelector = createSelector(
-  [networkSelector, sortAssetsByNativeAmountSelector, uniswapAllTokensSelector],
-  withUniswapAssetsInWallet
-);
-
-export default function useUniswapAssetsInWallet() {
-  return useSelector(withUniswapAssetsInWalletSelector);
-}
+export default useUniswapAssetsInWallet;

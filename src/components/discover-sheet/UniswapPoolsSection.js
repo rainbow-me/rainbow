@@ -1,7 +1,7 @@
+import lang from 'i18n-js';
 import { times } from 'lodash';
 import React, { Fragment, useCallback, useMemo, useRef, useState } from 'react';
 import { FlatList, LayoutAnimation } from 'react-native';
-import styled from 'styled-components';
 import { SORT_DIRECTION } from '../../hooks/useUniswapPools';
 import { ButtonPressAnimation } from '../animations';
 import { AssetListItemSkeleton } from '../asset-list';
@@ -11,6 +11,7 @@ import { Text } from '../text';
 import EdgeFade from './EdgeFade';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { useAccountSettings, useUniswapPools } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 
 const INITIAL_PAGE_AMOUNT = 15;
 
@@ -26,8 +27,14 @@ const DefaultShowMoreButton = ({ backgroundColor, color, onPress }) => (
         paddingHorizontal={12}
         paddingTop={android ? 3 : 7}
       >
-        <Text align="center" color={color} size="lmedium" weight="heavy">
-          Show more
+        <Text
+          align="center"
+          color={color}
+          lineHeight={android ? 30 : 20}
+          size="lmedium"
+          weight="heavy"
+        >
+          {lang.t('discover.uniswap.show_more')}
         </Text>
       </Row>
     </ButtonPressAnimation>
@@ -49,49 +56,45 @@ const ErrorMessage = ({ colors, children }) => (
 const PoolEmoji = styled(Text).attrs({
   size: 'large',
   weight: 'heavy',
-})`
-  margin-top: ${android ? 0 : -4};
-`;
+})({
+  marginTop: android ? 0 : -4,
+});
 
 const PoolListButton = styled(ButtonPressAnimation).attrs({
   scaleTo: 0.96,
-})`
-  margin-right: 16px;
-  ${({ selected, theme: { colors }, titleColor }) =>
-    selected
-      ? `
-        background-color: ${colors.alpha(titleColor, 0.06)};
-        border-radius: 12px;
-        height: 30px;
-        padding-horizontal: 8px;
-        padding-top: ${ios ? 6 : 4}px;
-      `
-      : `
-        padding-top: ${ios ? 6 : 4}px;
-      `}
-`;
+})(({ selected, theme: { colors }, titleColor }) => ({
+  ...(selected && {
+    backgroundColor: colors.alpha(titleColor, 0.06),
+    borderRadius: 12,
+    height: 30,
+    paddingHorizontal: 8,
+  }),
 
-const ListName = styled(Text)`
-  margin-left: 3px;
-  margin-top: ${ios ? -4.5 : 0}px;
-`;
+  marginRight: 16,
+  paddingTop: ios ? 6.5 : 4.5,
+}));
+
+const ListName = styled(Text)({
+  marginLeft: 3,
+  marginTop: ios ? -4.5 : 0,
+});
 
 const listData = [
   {
     id: 'liquidity',
-    name: 'Pool size',
+    name: lang.t('discover.uniswap.data.pool_size'),
   },
   {
     id: 'annualized_fees',
-    name: 'Annualized fees',
+    name: lang.t('discover.uniswap.data.annualized_fees'),
   },
   {
     id: 'profit30d',
-    name: '30d profit',
+    name: lang.t('discover.uniswap.data.profit_30_days'),
   },
   {
     id: 'oneDayVolumeUSD',
-    name: '24h volume',
+    name: lang.t('discover.uniswap.data.volume_24_hours'),
   },
 ];
 
@@ -255,7 +258,7 @@ export default function UniswapPools({
         <PoolEmoji>🐋</PoolEmoji>
         <Text size="larger" testID="pools-section" weight="heavy">
           {' '}
-          Uniswap Pools
+          {lang.t('discover.uniswap.title_pools')}
         </Text>
       </Row>
       <Column>
@@ -279,11 +282,11 @@ export default function UniswapPools({
       </Column>
       {error ? (
         <ErrorMessage colors={colors}>
-          There was an error loading Uniswap pool data...
+          {lang.t('discover.uniswap.error_loading_uniswap')}...
         </ErrorMessage>
       ) : network !== networkTypes.mainnet ? (
         <ErrorMessage colors={colors}>
-          Pools are disabled on Testnets
+          {lang.t('discover.uniswap.disabled_testnets')}
         </ErrorMessage>
       ) : pairsSorted?.length > 0 ? (
         <Fragment>
@@ -300,7 +303,6 @@ export default function UniswapPools({
                 backgroundColor={colors.alpha(colors.blueGreyDark, 0.06)}
                 color={colors.alpha(colors.blueGreyDark, 0.6)}
                 onPress={handleShowMorePress}
-                paddingTop={10}
               />
             )}
         </Fragment>

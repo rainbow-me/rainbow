@@ -22,4 +22,4 @@ export default {
   trash: 'trash',
   uniswap: 'uniswap',
   uniswapV2: 'uniswap-v2',
-};
+} as const;

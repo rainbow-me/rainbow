@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useCallback, useImperativeHandle, useRef } from 'react';
 import { Animated } from 'react-native';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
@@ -12,6 +13,11 @@ import { ImgixImage } from '@rainbow-me/images';
 import { margin, position } from '@rainbow-me/styles';
 
 const AnimatedCentered = Animated.createAnimatedComponent(Centered);
+
+const styles = [
+  margin.object(0, 10, android ? 0 : 3, 10),
+  position.sizeAsObject(35),
+];
 
 const RightAction = ({ onPress, progress, text, x }) => {
   const isEdit = text === 'Edit';
@@ -29,11 +35,7 @@ const RightAction = ({ onPress, progress, text, x }) => {
       style={{ transform: [{ translateX }] }}
     >
       <ButtonPressAnimation onPress={onPress} scaleTo={0.9}>
-        <ImgixImage
-          css={margin(0, 10, android ? 0 : 3, 10)}
-          source={isEdit ? EditIcon : DeleteIcon}
-          style={position.sizeAsObject(35)}
-        />
+        <ImgixImage source={isEdit ? EditIcon : DeleteIcon} style={styles} />
         <Text
           align="center"
           color={colors.alpha(colors.blueGreyDark, 0.4)}
@@ -97,13 +99,13 @@ const SwipeableContactRow = (
         <RightAction
           onPress={handleEditContact}
           progress={progress}
-          text="Edit"
+          text={lang.t('button.edit')}
           x={120}
         />
         <RightAction
           onPress={handleDeleteContact}
           progress={progress}
-          text="Delete"
+          text={lang.t('button.delete')}
           x={90}
         />
       </Row>

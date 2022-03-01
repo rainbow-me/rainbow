@@ -1,24 +1,24 @@
 import { get } from 'lodash';
 import React, { useCallback, useMemo, useState } from 'react';
-import styled from 'styled-components';
 import { formatNative } from '../expanded-state/chart/chart-data-labels/ChartPriceLabel';
 import { Text } from '../text';
 import { useChartData } from '@rainbow-me/animated-charts';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
+import styled from '@rainbow-me/styled-components';
 import { fonts } from '@rainbow-me/styles';
 
 function trim(val) {
   return Math.min(Math.max(val, 0.05), 0.95);
 }
 
-const Label = styled(Text)`
-  font-size: ${fonts.size.smedium};
-  font-weight: ${fonts.weight.bold};
-  letter-spacing: ${fonts.letterSpacing.roundedTighter};
-  position: absolute;
-  text-align: center;
-`;
+const Label = styled(Text)({
+  fontSize: fonts.size.smedium,
+  fontWeight: fonts.weight.bold,
+  letterSpacing: fonts.letterSpacing.roundedTighter,
+  position: 'absolute',
+  textAlign: 'center',
+});
 
 const CenteredLabel = ({ position, style, width, ...props }) => {
   const [componentWidth, setWidth] = useState(0);
@@ -59,7 +59,7 @@ const CenteredLabel = ({ position, style, width, ...props }) => {
   );
 };
 
-export default function Labels({ color, width }) {
+const Labels = React.memo(function Labels({ color, width }) {
   const { nativeCurrency } = useAccountSettings();
   const nativeSelected = get(supportedNativeCurrencies, `${nativeCurrency}`);
   const { greatestX, greatestY, smallestX, smallestY } = useChartData();
@@ -82,7 +82,7 @@ export default function Labels({ color, width }) {
           color={colors.alpha(color, 0.8)}
           position={positionMin}
           style={{
-            bottom: -20,
+            bottom: -40,
           }}
           width={width}
         >
@@ -103,4 +103,6 @@ export default function Labels({ color, width }) {
       ) : null}
     </>
   );
-}
+});
+
+export default Labels;

@@ -12,15 +12,15 @@ import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import {
   runOnJS,
   useAnimatedReaction,
-  useAnimatedScrollHandler,
   useSharedValue,
+  useWorkletCallback,
 } from 'react-native-reanimated';
-import styled from 'styled-components';
 import DiscoverSheetContent from './DiscoverSheetContent';
 import DiscoverSheetContext from './DiscoverSheetContext';
 import DiscoverSheetHeader from './DiscoverSheetHeader';
 import CustomBackground from './androidCustomComponents/customBackground';
 import CustomHandle from './androidCustomComponents/customHandle';
+import styled from '@rainbow-me/styled-components';
 import { deviceUtils } from '@rainbow-me/utils';
 
 function useAreHeaderButtonVisible() {
@@ -35,11 +35,15 @@ const snapPoints = [
 
 const AndroidWrapper = styled.View.attrs({
   pointerEvents: 'box-none',
-})`
-  width: 100%;
-  height: ${deviceUtils.dimensions.height};
-  position: absolute;
-`;
+})({
+  height: deviceUtils.dimensions.height,
+  position: 'absolute',
+  width: '100%',
+});
+
+let jumpToShort;
+
+export { jumpToShort };
 
 const DiscoverSheet = (_, forwardedRef) => {
   const [headerButtonsHandlers, deps] = useAreHeaderButtonVisible();
@@ -55,14 +59,14 @@ const DiscoverSheet = (_, forwardedRef) => {
       addOnCrossMagicBorderListener(listener) {
         listeners.current.push(listener);
         return () =>
-          listeners.current.splice(listeners.current.indexOf(listener), 1);
+          listeners.current.splice(listeners.current?.indexOf(listener), 1);
       },
       jumpToLong() {
-        bottomSheetModalRef.current.expand();
+        bottomSheetModalRef.current?.expand();
       },
       jumpToShort() {
         sheet.current.scrollTo({ animated: false, x: 0, y: 0 });
-        bottomSheetModalRef.current.collapse();
+        bottomSheetModalRef.current?.collapse();
       },
       onFabSearch,
       ...headerButtonsHandlers,
@@ -71,10 +75,12 @@ const DiscoverSheet = (_, forwardedRef) => {
     [deps]
   );
 
+  jumpToShort = value.jumpToShort;
+
   useImperativeHandle(forwardedRef, () => value);
 
   const yPosition = useSharedValue(0);
-  const scrollHandler = useAnimatedScrollHandler(event => {
+  const scrollHandler = useWorkletCallback(event => {
     yPosition.value = event.contentOffset.y;
   });
 
@@ -109,6 +115,9 @@ const DiscoverSheet = (_, forwardedRef) => {
           animatedPosition={sheetPosition}
           animationDuration={300}
           backgroundComponent={CustomBackground}
+          enableContentPanningGesture={
+            !headerButtonsHandlers.isSearchModeEnabled
+          }
           failOffsetX={[-10, 10]}
           handleComponent={CustomHandle}
           index={1}
@@ -122,7 +131,7 @@ const DiscoverSheet = (_, forwardedRef) => {
         >
           <DiscoverSheetHeader yPosition={yPosition} />
           <BottomSheetScrollView
-            onScroll={scrollHandler}
+            onScrollWorklet={scrollHandler}
             ref={sheet}
             removeClippedSubviews
           >

@@ -2,7 +2,6 @@ import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
 import { View } from 'react-native';
-import styled from 'styled-components';
 import { useTheme } from '../../../context/ThemeContext';
 import { cloudPlatform } from '../../../utils/platform';
 import { DelayedAlert } from '../../alerts';
@@ -20,6 +19,7 @@ import {
 } from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { fonts, padding, position, shadow } from '@rainbow-me/styles';
 
 const WalletBackupStatus = {
@@ -28,22 +28,23 @@ const WalletBackupStatus = {
   MANUAL_BACKUP: 2,
 };
 
-const CheckmarkIconContainer = styled(View)`
-  ${({ color, isDarkMode, theme: { colors } }) =>
-    shadow.build(0, 4, 6, isDarkMode ? colors.shadow : color, 0.4)};
-  ${position.size(50)};
-  background-color: ${({ color }) => color};
-  border-radius: 25;
-  margin-bottom: 19;
-  padding-top: ${ios ? 13 : 7};
-`;
+const CheckmarkIconContainer = styled(View)(
+  ({ color, isDarkMode, theme: { colors } }) => ({
+    ...shadow.buildAsObject(0, 4, 6, isDarkMode ? colors.shadow : color, 0.4),
+    ...position.sizeAsObject(50),
+    backgroundColor: color,
+    borderRadius: 25,
+    marginBottom: 19,
+    paddingTop: ios ? 13 : 7,
+  })
+);
 
 const CheckmarkIconText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.whiteLabel,
   size: 'larger',
   weight: 'bold',
-}))``;
+}))({});
 
 const CheckmarkIcon = ({ color, isDarkMode }) => (
   <CheckmarkIconContainer color={color} isDarkMode={isDarkMode}>
@@ -53,42 +54,42 @@ const CheckmarkIcon = ({ color, isDarkMode }) => (
 
 const Content = styled(Centered).attrs({
   direction: 'column',
-})`
-  ${padding(0, 19, 30)};
-  flex: 1;
-`;
+})({
+  ...padding.object(0, 19, 30),
+  flex: 1,
+});
 
 const DescriptionText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.alpha(colors.blueGreyDark, 0.5),
   lineHeight: 'loosest',
   size: 'large',
-}))`
-  margin-bottom: 42;
-  padding-horizontal: 23;
-`;
+}))({
+  marginBottom: 42,
+  paddingHorizontal: 23,
+});
 
-const Footer = styled(Centered)`
-  ${padding(0, 15, 42)};
-`;
+const Footer = styled(Centered)({
+  ...padding.object(0, 15, 42),
+});
 
 const Subtitle = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.alpha(colors.blueGreyDark, 0.5),
   size: fonts.size.smedium,
   weight: fonts.weight.medium,
-}))`
-  margin-top: -10;
-`;
+}))({
+  marginTop: -10,
+});
 
 const Title = styled(Text).attrs({
   align: 'center',
   size: 'larger',
   weight: 'bold',
-})`
-  margin-bottom: 8;
-  padding-horizontal: 11;
-`;
+})({
+  marginBottom: 8,
+  paddingHorizontal: 11,
+});
 
 const onError = error => DelayedAlert({ title: error }, 500);
 
@@ -220,7 +221,6 @@ export default function AlreadyBackedUpView() {
         </Centered>
         <Column>
           <SheetActionButton
-            androidWidth={225}
             color={colors.white}
             label={`🗝 View ${isSecretPhrase ? 'secret phrase' : 'private key'}`}
             onPress={handleViewRecoveryPhrase}

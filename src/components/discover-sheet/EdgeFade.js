@@ -1,6 +1,6 @@
 import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import styled from 'styled-components';
+import styled from '@rainbow-me/styled-components';
 
 const LeftFade = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
   colors: [
@@ -36,12 +36,12 @@ const LeftFade = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
   ],
   pointerEvents: 'none',
   start: { x: 0, y: 0.5 },
-}))`
-  height: 100%;
-  left: 0;
-  position: absolute;
-  width: 19px;
-`;
+}))({
+  height: '100%',
+  left: 0,
+  position: 'absolute',
+  width: 19,
+});
 
 const RightFade = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
   colors: [
@@ -77,12 +77,12 @@ const RightFade = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
   ],
   pointerEvents: 'none',
   start: { x: 1, y: 0.5 },
-}))`
-  height: 100%;
-  position: absolute;
-  right: 0;
-  width: 19px;
-`;
+}))({
+  height: '100%',
+  position: 'absolute',
+  right: 0,
+  width: 19,
+});
 
 export default function EdgeFade() {
   return (

@@ -1,13 +1,11 @@
 import React, { createElement, Fragment } from 'react';
 import { Share } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-import styled from 'styled-components';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import CoinDividerButtonLabel from '../coin-divider/CoinDividerButtonLabel';
 import { ContextMenu } from '../context-menu';
 import { Column, Row } from '../layout';
-import SavingsListHeader from '../savings/SavingsListHeader';
+import { SavingsListHeader } from '../savings';
 import { H1 } from '../text';
 import {
   useAccountProfile,
@@ -17,36 +15,22 @@ import {
   useWebData,
 } from '@rainbow-me/hooks';
 import { RAINBOW_PROFILES_BASE_URL } from '@rainbow-me/references';
-import { padding, position } from '@rainbow-me/styles';
+import styled from '@rainbow-me/styled-components';
+import { padding } from '@rainbow-me/styles';
 
 export const ListHeaderHeight = 50;
 
-const BackgroundGradient = styled(LinearGradient).attrs(
-  ({ theme: { colors } }) => ({
-    colors: [
-      colors.listHeaders.firstGradient,
-      colors.listHeaders.secondGradient,
-      colors.listHeaders.thirdGradient,
-    ],
-    end: { x: 0, y: 0 },
-    pointerEvents: 'none',
-    start: { x: 0, y: 0.5 },
-  })
-)`
-  ${position.cover};
-`;
-
-const ShareCollectiblesBPA = styled(ButtonPressAnimation)`
-  background-color: ${({ theme: { colors } }) =>
-    colors.alpha(colors.blueGreyDark, 0.06)};
-  border-radius: 15;
-  height: 30;
-  justify-content: center;
-  max-width: 90;
-  padding-bottom: 5;
-  padding-top: 5;
-  width: 90;
-`;
+const ShareCollectiblesBPA = styled(ButtonPressAnimation)({
+  backgroundColor: ({ theme: { colors } }) =>
+    colors.alpha(colors.blueGreyDark, 0.06),
+  borderRadius: 15,
+  height: 30,
+  justifyContent: 'center',
+  maxWidth: 90,
+  paddingBottom: 5,
+  paddingTop: 5,
+  width: 90,
+});
 
 const ShareCollectiblesButton = ({ onPress }) => (
   <ShareCollectiblesBPA onPress={onPress} scale={0.9}>
@@ -54,36 +38,34 @@ const ShareCollectiblesButton = ({ onPress }) => (
   </ShareCollectiblesBPA>
 );
 
-const Content = styled(Row).attrs({
+const Content = styled(Row).attrs(({ theme: { colors } }) => ({
   align: 'center',
+  backgroundColor: colors.white,
   justify: 'space-between',
-})`
-  ${padding(5, 19)};
-  background-color: ${({ isSticky, theme: { colors } }) =>
-    isSticky ? colors.white : colors.transparent};
-  height: ${ListHeaderHeight};
-  width: 100%;
-`;
+}))({
+  ...padding.object(5, 19),
+  height: ListHeaderHeight,
+  width: '100%',
+});
 
-const StickyBackgroundBlocker = styled.View`
-  background-color: ${({ theme: { colors } }) => colors.transparent};
-  height: ${({ isEditMode }) => (isEditMode ? ListHeaderHeight : 0)};
-  top: ${({ isEditMode }) => (isEditMode ? -40 : 0)};
-  width: ${({ deviceDimensions }) => deviceDimensions.width};
-`;
+const StickyBackgroundBlocker = styled.View({
+  backgroundColor: ({ theme: { colors } }) => colors.white,
+  height: ({ isEditMode }) => (isEditMode ? ListHeaderHeight : 0),
+  top: ({ isEditMode }) => (isEditMode ? -40 : 0),
+  width: ({ deviceDimensions }) => deviceDimensions.width,
+});
 
 export default function ListHeader({
   children,
   contextMenuOptions,
   isCoinListEdited,
-  isSticky,
   showDivider = true,
   title,
   titleRenderer = H1,
   totalValue,
 }) {
   const deviceDimensions = useDimensions();
-  const { colors } = useTheme();
+  const { colors, isDarkMode } = useTheme();
   const { isReadOnlyWallet } = useWallets();
   const { accountAddress } = useAccountSettings();
   const { accountENS } = useAccountProfile();
@@ -123,8 +105,7 @@ export default function ListHeader({
   } else {
     return (
       <Fragment>
-        <BackgroundGradient />
-        <Content isSticky={isSticky}>
+        <Content>
           {title && (
             <Row align="center">
               {createElement(titleRenderer, { children: title })}
@@ -142,13 +123,19 @@ export default function ListHeader({
           )}
           {children}
         </Content>
-        {showDivider && <Divider color={colors.rowDividerLight} />}
-        {!isSticky && title !== 'Balances' && (
-          <StickyBackgroundBlocker
-            deviceDimensions={deviceDimensions}
-            isEditMode={isCoinListEdited}
-          />
-        )}
+        {
+          /* 
+           The divider shows up as a white line in dark mode (android)
+           so we won't render it till we figure it out why
+          */
+          showDivider && !(android && isDarkMode) && (
+            <Divider color={colors.rowDividerLight} />
+          )
+        }
+        <StickyBackgroundBlocker
+          deviceDimensions={deviceDimensions}
+          isEditMode={isCoinListEdited}
+        />
       </Fragment>
     );
   }

@@ -8,7 +8,6 @@ import type {
   BottomSheetDescriptorMap,
   BottomSheetNavigationConfig,
   BottomSheetNavigationHelpers,
-  // eslint-disable-next-line import/no-unresolved
 } from '../types';
 import BottomSheetRoute from './BottomSheetRoute';
 import { useForceUpdate } from '@rainbow-me/hooks';
@@ -73,6 +72,7 @@ const BottomSheetNavigatorView = ({
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   //#endregion
   return (
     <NavigationHelpersContext.Provider value={navigation}>

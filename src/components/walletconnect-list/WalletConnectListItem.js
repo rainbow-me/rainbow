@@ -1,6 +1,5 @@
 import analytics from '@segment/analytics-react-native';
 import React, { useCallback, useMemo } from 'react';
-import styled from 'styled-components';
 import ChainLogo from '../ChainLogo';
 import NetworkPill from '../NetworkPill';
 import { RequestVendorLogoIcon } from '../coin-icon';
@@ -29,6 +28,7 @@ import {
 } from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 import { ethereumUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
 
@@ -41,9 +41,9 @@ const LabelText = styled(Text).attrs(() => ({
   align: 'center',
   size: 'lmedium',
   weight: 'heavy',
-}))`
-  margin-bottom: 1;
-`;
+}))({
+  marginBottom: 1,
+});
 
 const networksAvailable = networksMenuItems();
 
@@ -53,14 +53,23 @@ if (networksAvailable.length > 1) {
   androidContextMenuActions.splice(0, 0, 'Switch Network');
 }
 
-const AvatarWrapper = styled(Column)`
-  margin-right: 5;
-`;
+const AvatarWrapper = styled(Column)({
+  marginRight: 5,
+});
 
-const SessionRow = styled(Row)`
-  align-items: center;
-  justify-content: space-between;
-`;
+const SessionRow = styled(Row)({
+  alignItems: 'center',
+  justifyContent: 'space-between',
+});
+
+const rowStyle = padding.object(
+  ContainerPadding,
+  0,
+  ContainerPadding,
+  ContainerPadding
+);
+
+const columnStyle = padding.object(0, 19, 0, 12);
 
 export default function WalletConnectListItem({
   account,
@@ -100,7 +109,7 @@ export default function WalletConnectListItem({
   }, [wallets, walletNames, network, account]);
 
   const connectionNetworkInfo = useMemo(() => {
-    const network = ethereumUtils.getNetworkFromChainId(chainId);
+    const network = ethereumUtils.getNetworkFromChainId(Number(chainId));
     return {
       chainId,
       color: colors.networkColors[network],
@@ -203,18 +212,14 @@ export default function WalletConnectListItem({
       onPressMenuItem={handleOnPressMenuItem}
     >
       <Row align="center" height={WalletConnectListItemHeight}>
-        <Row
-          align="center"
-          css={padding(ContainerPadding, 0, ContainerPadding, ContainerPadding)}
-          flex={1}
-        >
+        <Row align="center" flex={1} style={rowStyle}>
           <RequestVendorLogoIcon
             backgroundColor={colors.white}
             dappName={dappName}
             imageUrl={overrideLogo || dappIcon}
             size={VendorLogoIconSize}
           />
-          <ColumnWithMargins css={padding(0, 19, 0, 12)} flex={1} margin={5}>
+          <ColumnWithMargins flex={1} margin={5} style={columnStyle}>
             <Row width="70%">
               <TruncatedText size="lmedium" weight="heavy">
                 {overrideName || dappName || 'Unknown Application'}{' '}

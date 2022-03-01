@@ -1,17 +1,17 @@
 import React from 'react';
-import styled from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
 import { Text } from '../text';
+import styled from '@rainbow-me/styled-components';
 import { lightModeThemeColors, padding } from '@rainbow-me/styles';
 
 const ExchangeDetailsButtonLabel = styled(Text).attrs({
   color: lightModeThemeColors.white,
   size: 'large',
-  weight: 'bold',
+  weight: 'heavy',
   ...(android && { lineHeight: 21 }),
-})`
-  ${padding(9)};
-`;
+})({
+  ...padding.object(9),
+});
 
 export default function ExchangeDetailsButton({
   children,

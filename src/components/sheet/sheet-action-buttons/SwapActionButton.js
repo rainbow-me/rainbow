@@ -1,20 +1,22 @@
+import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { Alert } from 'react-native';
 import SheetActionButton from './SheetActionButton';
 import { useExpandedStateNavigation } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 
-export default function SwapActionButton({
+function SwapActionButton({
   color: givenColor,
   inputType,
   label,
   requireVerification,
   verified,
-  weight = 'bold',
+  weight = 'heavy',
   ...props
 }) {
   const { colors } = useTheme();
   const color = givenColor || colors.swapPurple;
+
   const navigate = useExpandedStateNavigation(inputType);
   const goToSwap = useCallback(() => {
     navigate(Routes.EXCHANGE_MODAL, params => ({
@@ -50,10 +52,12 @@ export default function SwapActionButton({
     <SheetActionButton
       {...props}
       color={color}
-      label={label || '􀖅 Swap'}
+      label={label || `􀖅 ${lang.t('button.swap')}`}
       onPress={handlePress}
       testID="swap"
       weight={weight}
     />
   );
 }
+
+export default React.memo(SwapActionButton);

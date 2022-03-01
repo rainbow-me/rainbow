@@ -3,12 +3,10 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { useIsEmulator } from 'react-native-device-info';
 import { useSharedValue } from 'react-native-reanimated';
-import styled from 'styled-components';
 import { DiscoverSheet } from '../components/discover-sheet';
 import { FabWrapper, SearchFab } from '../components/fab';
 import { BackButton, Header, HeaderHeight } from '../components/header';
 import { Centered } from '../components/layout';
-
 import {
   CameraDimmer,
   EmulatorPasteUriButton,
@@ -16,29 +14,30 @@ import {
 } from '../components/qrcode-scanner';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 
-const Background = styled.View`
-  background-color: black;
-  height: 100%;
-  position: absolute;
-  width: 100%;
-`;
+const Background = styled.View({
+  backgroundColor: 'black',
+  height: '100%',
+  position: 'absolute',
+  width: '100%',
+});
 
 const ScannerContainer = styled(Centered).attrs({
   direction: 'column',
-})`
-  ${position.size('100%')};
-  overflow: hidden;
-`;
+})({
+  ...position.sizeAsObject('100%'),
+  overflow: 'hidden',
+});
 
 const ScannerHeader = styled(Header).attrs({
   justify: 'space-between',
   testID: 'scanner-header',
-})`
-  position: absolute;
-  top: 0;
-`;
+})({
+  position: 'absolute',
+  top: 0,
+});
 
 export default function QRScannerScreen() {
   const isFocused = useIsFocused();

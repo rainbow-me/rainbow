@@ -1,3 +1,5 @@
+import analytics from '@segment/analytics-react-native';
+import lang from 'i18n-js';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -54,6 +56,8 @@ const PulseIndex = () => {
       genericAssets[DPI_ADDRESS],
       nativeCurrency
     );
+
+    analytics.track('Pressed DPI Button', { category: 'discover' });
 
     navigate(Routes.TOKEN_INDEX_SHEET, {
       asset,
@@ -126,10 +130,15 @@ const PulseIndex = () => {
                 style={ios ? {} : { marginTop: -10 }}
                 weight="semibold"
               >
-                All the top DeFi tokens in one
+                {lang.t('discover.pulse.pulse_description')}
               </Text>
             </Column>
-            <Column align="end" flex={1} margin={15} marginTop={ios ? 13.5 : 6}>
+            <Column
+              align="end"
+              flex={1}
+              marginRight={15}
+              marginTop={ios ? 13.5 : 6}
+            >
               <Text
                 align="right"
                 color={colors.whiteLabel}
@@ -143,10 +152,8 @@ const PulseIndex = () => {
           </Row>
         </View>
       </ButtonPressAnimation>
-      <Row
-        as={ButtonPressAnimation}
+      <ButtonPressAnimation
         flex={1}
-        justify="space-between"
         marginBottom={30}
         marginTop={android ? 4 : 8}
         onPress={handlePress}
@@ -155,44 +162,46 @@ const PulseIndex = () => {
           marginHorizontal: 34,
         }}
       >
-        <Text
-          color={colors.dpiLight}
-          numberOfLines={1}
-          size="smedium"
-          weight="semibold"
-        >
-          Trading at{' '}
+        <Row justify="space-between">
           <Text
             color={colors.dpiLight}
-            letterSpacing="roundedMedium"
             numberOfLines={1}
-            size="smedium"
-            weight="bold"
-          >
-            {item.price}
-          </Text>
-        </Text>
-        <Text
-          align="right"
-          color={item.isPositive ? colors.green : colors.red}
-          letterSpacing="roundedMedium"
-          numberOfLines={1}
-          {...fontWithWidth(font.weight.bold)}
-          size="smedium"
-          weight="bold"
-        >
-          {item.isPositive ? `↑` : `↓`} {item.change}
-          <Text
-            align="right"
-            color={item.isPositive ? colors.green : colors.red}
             size="smedium"
             weight="semibold"
           >
-            {' '}
-            today
+            Trading at{' '}
+            <Text
+              color={colors.dpiLight}
+              letterSpacing="roundedMedium"
+              numberOfLines={1}
+              size="smedium"
+              weight="bold"
+            >
+              {item.price}
+            </Text>
           </Text>
-        </Text>
-      </Row>
+          <Text
+            align="right"
+            color={item.isPositive ? colors.green : colors.red}
+            letterSpacing="roundedMedium"
+            numberOfLines={1}
+            {...fontWithWidth(font.weight.bold)}
+            size="smedium"
+            weight="bold"
+          >
+            {item.isPositive ? `↑` : `↓`} {item.change}
+            <Text
+              align="right"
+              color={item.isPositive ? colors.green : colors.red}
+              size="smedium"
+              weight="semibold"
+            >
+              {' '}
+              {lang.t('discover.pulse.today_suffix')}
+            </Text>
+          </Text>
+        </Row>
+      </ButtonPressAnimation>
     </Fragment>
   );
 };

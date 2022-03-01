@@ -3,18 +3,25 @@ export {
   parseAssetName,
   parseAssetSymbol,
   parseAsset,
+  parseAssetNative,
   parseAssetsNativeWithTotals,
   parseAssetsNative,
 } from './accounts';
 export {
-  getFallbackGasPrices,
-  parseGasPrices,
+  parseL2GasPrices,
+  parseGasFeesBySpeed,
   defaultGasPriceFormat,
-  parseTxFees,
+  parseLegacyGasFeesBySpeed,
   gweiToWei,
   weiToGwei,
+  parseGasParamsForTransaction,
+  parseGasFeeParam,
+  parseGasFees,
+  defaultGasParamsFormat,
+  parseRainbowMeteorologyData,
 } from './gas';
 export { parseNewTransaction } from './newTransaction';
+export { parsePoaps } from './poap';
 export { getRequestDisplayDetails } from './requests';
 export {
   parseTransactions,
@@ -25,6 +32,7 @@ export {
 } from './transactions';
 export {
   parseAccountUniqueTokens,
+  parseAccountUniqueTokensPolygon,
   getFamilies,
   dedupeUniqueTokens,
   dedupeAssetsWithFamilies,

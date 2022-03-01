@@ -1,8 +1,8 @@
+import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { StatusBar } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import { KeyboardArea } from 'react-native-keyboard-area';
-import styled from 'styled-components';
 import ActivityIndicator from '../components/ActivityIndicator';
 import Spinner from '../components/Spinner';
 import { MiniButton } from '../components/buttons';
@@ -26,54 +26,56 @@ import {
   useKeyboardHeight,
 } from '@rainbow-me/hooks';
 import { sheetVerticalOffset } from '@rainbow-me/navigation/effects';
+import styled from '@rainbow-me/styled-components';
 import { borders, padding } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';
 
 const sheetBottomPadding = 19;
 
-const Container = styled.View`
-  flex: 1;
-  padding-top: ${android
-    ? 0
-    : isNativeStackAvailable
-    ? 0
-    : sheetVerticalOffset};
-  ${android ? `margin-top: ${sheetVerticalOffset};` : ''}
-  ${android
-    ? `background-color: ${({ theme: { colors } }) => colors.transparent};`
-    : ''}
-`;
+const Container = styled.View({
+  flex: 1,
+  paddingTop: android ? 0 : isNativeStackAvailable ? 0 : sheetVerticalOffset,
+
+  ...(android
+    ? {
+        backgroundColor: ({ theme: { colors } }) => colors.transparent,
+        marginTop: sheetVerticalOffset,
+      }
+    : {}),
+});
 
 const Footer = styled(Row).attrs({
   align: 'start',
   justify: 'end',
-})`
-  bottom: ${android ? 15 : 0};
-  position: ${android ? 'absolute' : 'relative'};
-  right: 0;
-  width: 100%;
-  ${android
-    ? `top: ${({ isSmallPhone }) =>
-        isSmallPhone ? sheetBottomPadding * 2 : 0};`
-    : ``}
-  ${android ? 'margin-right: 18;' : ''}
-`;
+})({
+  bottom: 0,
+  position: 'relative',
+  right: 0,
+  width: '100%',
+  ...(android
+    ? {
+        marginRight: 18,
+        top: ({ isSmallPhone }) => (isSmallPhone ? sheetBottomPadding * 2 : 0),
+      }
+    : {}),
+});
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs({
   color: 'white',
   size: 15,
-})`
-  margin-right: 5;
-  margin-top: ${android ? 0 : 2};
-`;
+})({
+  marginRight: 5,
+  marginTop: android ? 0 : 2,
+});
 
 const FooterButton = styled(MiniButton).attrs({
   testID: 'import-sheet-button',
-})``;
+})({});
 
-const KeyboardSizeView = styled(KeyboardArea)`
-  background-color: ${({ theme: { colors } }) => colors.white};
-`;
+const KeyboardSizeView = styled(KeyboardArea)({
+  backgroundColor: ({ theme: { colors } }) => colors.white,
+});
+const placeholder = lang.t('wallet.new.enter_seeds_placeholder');
 
 const SecretTextArea = styled(Input).attrs({
   align: 'center',
@@ -85,31 +87,31 @@ const SecretTextArea = styled(Input).attrs({
   lineHeight: 'looser',
   multiline: true,
   numberOfLines: 3,
-  placeholder: 'Secret phrase, private key, Ethereum address, or ENS name',
+  placeholder,
   returnKeyType: 'done',
   size: 'large',
   spellCheck: false,
   weight: 'semibold',
-})`
-  margin-bottom: ${android ? 55 : 0};
-  min-height: ${android ? 100 : 50};
-  width: 100%;
-`;
+})({
+  marginBottom: android ? 55 : 0,
+  minHeight: android ? 100 : 50,
+  width: '100%',
+});
 
-const SecretTextAreaContainer = styled(Centered)`
-  ${padding(0, 42)};
-  flex: 1;
-`;
+const SecretTextAreaContainer = styled(Centered)({
+  ...padding.object(0, 42),
+  flex: 1,
+});
 
 const Sheet = styled(Column).attrs({
   align: 'center',
   flex: 1,
-})`
-  ${borders.buildRadius('top', isNativeStackAvailable ? 0 : 16)};
-  ${padding(0, 15, sheetBottomPadding)};
-  background-color: ${({ theme: { colors } }) => colors.white};
-  z-index: 1;
-`;
+})({
+  ...borders.buildRadiusAsObject('top', isNativeStackAvailable ? 0 : 16),
+  ...padding.object(0, 15, sheetBottomPadding),
+  backgroundColor: ({ theme: { colors } }) => colors.white,
+  zIndex: 1,
+});
 
 export default function ImportSeedPhraseSheet() {
   const { isSmallPhone } = useDimensions();
@@ -160,7 +162,7 @@ export default function ImportSeedPhraseSheet() {
       <Sheet>
         <SheetHandle marginBottom={7} marginTop={6} />
         <Text size="large" weight="bold">
-          Add Wallet
+          {lang.t('wallet.action.import_wallet')}
         </Text>
         <SecretTextAreaContainer>
           <SecretTextArea
@@ -168,7 +170,7 @@ export default function ImportSeedPhraseSheet() {
             onChangeText={handleSetSeedPhrase}
             onFocus={handleFocus}
             onSubmitEditing={handlePressImportButton}
-            placeholder="Secret phrase, private key, Ethereum address or ENS name"
+            placeholder={lang.t('wallet.new.enter_seeds_placeholder')}
             placeholderTextColor={colors.alpha(colors.blueGreyDark, 0.3)}
             ref={inputRef}
             returnKeyType="done"
@@ -200,7 +202,7 @@ export default function ImportSeedPhraseSheet() {
                   testID="import-sheet-button-label"
                   weight="bold"
                 >
-                  Import
+                  {lang.t('button.import')}
                 </Text>
               </Row>
             </FooterButton>
@@ -216,7 +218,7 @@ export default function ImportSeedPhraseSheet() {
                 testID="import-sheet-button-label"
                 weight="bold"
               >
-                Paste
+                {lang.t('button.paste_seed_phrase')}
               </Text>
             </FooterButton>
           )}

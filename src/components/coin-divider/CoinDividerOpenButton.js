@@ -1,107 +1,104 @@
 import React from 'react';
 import { View } from 'react-native';
-import styled from 'styled-components';
+import Animated, {
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 import Caret from '../../assets/family-dropdown-arrow.png';
-import { useTheme } from '../../context/ThemeContext';
-import {
-  ButtonPressAnimation,
-  OpacityToggler,
-  RotationArrow,
-  RoundButtonCapSize,
-  RoundButtonSizeToggler,
-} from '../animations';
-import { Row } from '../layout';
-import CoinDividerButtonLabel from './CoinDividerButtonLabel';
+import { ButtonPressAnimation, RoundButtonCapSize } from '../animations';
+import { Text } from '../text';
 import { ImgixImage } from '@rainbow-me/images';
-import { padding } from '@rainbow-me/styles';
+import styled from '@rainbow-me/styled-components';
 import { magicMemo } from '@rainbow-me/utils';
 
-const closedWidth = 52.5;
+const AnimatedText = Animated.createAnimatedComponent(Text);
 
-const CaretContainer = styled.View`
-  opacity: 0.6;
-  padding-bottom: 1;
-`;
+const closedWidth = 52.5;
+const openWidth = 78;
 
 const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
   source: Caret,
   tintColor: colors.blueGreyDark,
-}))`
-  height: 18;
-  width: 8;
-`;
+}))({
+  height: 18,
+  width: 8,
+});
 
-const ContainerButton = styled(ButtonPressAnimation).attrs(
-  ({ isSmallBalancesOpen, isSendSheet }) => ({
-    scaleTo: 0.9,
-    wrapperStyle: {
-      marginLeft: isSendSheet && android ? 16 : 0,
-      width: isSmallBalancesOpen ? 80 - (android ? 4 : 0) : closedWidth - 4,
-    },
-  })
-)`
-  width: ${({ isSmallBalancesOpen }) =>
-    isSmallBalancesOpen ? 80 : closedWidth};
-`;
+const Content = styled(Animated.View)({
+  backgroundColor: ({ theme: { colors } }) => colors.blueGreyDarkLight,
+  borderRadius: RoundButtonCapSize / 2,
+  height: 30,
+  width: 78,
+});
 
-const Content = styled(Row).attrs({
+const LabelText = styled(AnimatedText).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  justify: 'space-between',
-})`
-  ${padding(0, 10)};
-  border-radius: ${RoundButtonCapSize / 2};
-  height: ${({ height }) => height};
-  width: ${closedWidth};
-`;
+  color: colors.alpha(colors.blueGreyDark, 0.6),
+  letterSpacing: 'roundedTight',
+  lineHeight: 30,
+  size: 'lmedium',
+  weight: 'bold',
+}))({
+  bottom: android ? 0 : 0.5,
+  left: 10,
+  position: 'absolute',
+});
 
-const CoinDividerOpenButton = ({
-  coinDividerHeight,
-  isSmallBalancesOpen,
-  isVisible,
-  onPress,
-  isSendSheet,
-  ...props
-}) => {
-  const { colors, isDarkMode } = useTheme();
+const CoinDividerOpenButton = ({ isSmallBalancesOpen, onPress }) => {
+  const isSmallBalancesOpenValue = useSharedValue(0);
+
+  isSmallBalancesOpenValue.value = isSmallBalancesOpen;
+  const animation = useDerivedValue(
+    () =>
+      withSpring(isSmallBalancesOpen ? 1 : 0, {
+        damping: 24,
+        stiffness: 320,
+      }),
+    [isSmallBalancesOpen]
+  );
+
+  const style = useAnimatedStyle(() => {
+    return {
+      height: 20,
+      marginTop: 6,
+      opacity: 0.6,
+      position: 'absolute',
+      transform: [
+        { translateX: 35 + animation.value * 22 },
+        { translateY: animation.value * -1.25 },
+        { rotate: animation.value * -90 + 'deg' },
+      ],
+    };
+  });
+
+  const allLabelStyle = useAnimatedStyle(() => ({
+    opacity: 1 - animation.value * 1,
+  }));
+
+  const lessLabelStyle = useAnimatedStyle(() => ({
+    opacity: animation.value * 1,
+  }));
+
+  const wrapperStyle = useAnimatedStyle(() => ({
+    width: closedWidth + animation.value * (openWidth - closedWidth),
+  }));
+
   return (
-    <ContainerButton
-      {...props}
-      isSendSheet={isSendSheet}
-      isSmallBalancesOpen={isSmallBalancesOpen}
-      onPress={onPress}
-      radiusAndroid={RoundButtonCapSize / 2}
-    >
-      <OpacityToggler isVisible={isVisible}>
-        <Content height={coinDividerHeight}>
-          <RoundButtonSizeToggler
-            color={colors.blueGreyDarkLight}
-            endingWidth={28}
-            isDarkMode={isDarkMode}
-            isOpen={isSmallBalancesOpen}
-            startingWidth={3}
-          />
-          <View>
-            <CoinDividerButtonLabel
-              isVisible={isSmallBalancesOpen}
-              label="All"
-            />
-            <CoinDividerButtonLabel
-              isVisible={!isSmallBalancesOpen}
-              label="Less"
-            />
-          </View>
-          <CaretContainer>
-            <RotationArrow
-              endingOffset={20}
-              endingPosition={-90}
-              isOpen={isSmallBalancesOpen}
-            >
+    <View width={isSmallBalancesOpen ? 116 : 90.5}>
+      <ButtonPressAnimation onPress={onPress} scaleTo={0.8}>
+        <View paddingHorizontal={19} paddingVertical={5}>
+          <Content style={wrapperStyle}>
+            <LabelText style={allLabelStyle}>All</LabelText>
+            <LabelText style={lessLabelStyle}>Less</LabelText>
+            <Animated.View style={style}>
               <CaretIcon />
-            </RotationArrow>
-          </CaretContainer>
-        </Content>
-      </OpacityToggler>
-    </ContainerButton>
+            </Animated.View>
+          </Content>
+        </View>
+      </ButtonPressAnimation>
+    </View>
   );
 };
 

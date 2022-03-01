@@ -4,7 +4,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import LinearGradient from 'react-native-linear-gradient';
-import styled from 'styled-components';
 import {
   SavingsSheetEmptyHeight,
   SavingsSheetHeight,
@@ -23,6 +22,7 @@ import {
 import { useDimensions } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { padding, position } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 import ShadowStack from 'react-native-shadow-stack';
@@ -57,7 +57,9 @@ const SavingsListRowShadowStack = styled(ShadowStack).attrs(
     ],
     width: deviceWidth - 38,
   })
-)``;
+)({});
+
+const rowStyle = padding.object(9, 10, 10, 11);
 
 const SavingsListRow = ({
   cTokenBalance,
@@ -158,10 +160,10 @@ const SavingsListRow = ({
           <SavingsListRowGradient colors={colors} />
           <Row
             align="center"
-            css={padding(9, 10, 10, 11)}
             justify="space-between"
             onPress={onButtonPress}
             scaleTo={0.96}
+            style={rowStyle}
           >
             {underlying.symbol && supplyBalanceUnderlying ? (
               <Centered>
@@ -178,6 +180,7 @@ const SavingsListRow = ({
               <SavingsListRowAnimatedNumber
                 initialValue={initialValue}
                 interval={ANIMATE_NUMBER_INTERVAL}
+                key={initialValue + 'savings'}
                 steps={steps}
                 symbol={underlying.symbol}
                 value={displayValue}

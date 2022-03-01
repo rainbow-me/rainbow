@@ -34,7 +34,7 @@ import {
   ZerionTransactionStatus,
 } from '@rainbow-me/entities';
 import { getTransactionMethodName } from '@rainbow-me/handlers/transactions';
-import { isL2Network, toChecksumAddress } from '@rainbow-me/handlers/web3';
+import { isL2Network } from '@rainbow-me/handlers/web3';
 import { Network } from '@rainbow-me/helpers/networkTypes';
 import { ETH_ADDRESS, savingsAssetsList } from '@rainbow-me/references';
 import {
@@ -89,6 +89,7 @@ export const parseTransactions = async (
     : dataFromLastTxHash(transactionData, existingWithoutL2);
 
   const newTransactionPromises = data.map(txn =>
+    // @ts-expect-error ts-migrate(100002) FIXME
     parseTransaction(txn, nativeCurrency, purchaseTransactionHashes, network)
   );
 
@@ -324,7 +325,7 @@ const parseTransactionWithEmptyChanges = async (
       protocol: txn.protocol,
       status: TransactionStatus.contract_interaction,
       symbol: 'contract',
-      title: `Contract interaction`,
+      title: `Contract Interaction`,
       to: txn.address_to,
       type: TransactionType.contract_interaction,
     },
@@ -394,9 +395,9 @@ const parseTransaction = async (
         });
         return {
           address:
-            toLower(updatedAsset?.address) === ETH_ADDRESS
+            toLower(updatedAsset.address) === ETH_ADDRESS
               ? ETH_ADDRESS
-              : toChecksumAddress(updatedAsset.address),
+              : updatedAsset.address,
           balance: convertRawAmountToBalance(valueUnit, updatedAsset),
           description,
           from: internalTxn.address_from ?? txn.address_from,
@@ -458,7 +459,7 @@ export const getTitle = ({
   status,
   type,
 }: {
-  protocol: ProtocolType | null;
+  protocol: ProtocolType | null | undefined;
   status: TransactionStatus;
   type: TransactionType;
 }) => {
@@ -516,7 +517,7 @@ export const getTransactionLabel = ({
 }: {
   direction: TransactionDirection | null;
   pending: boolean;
-  protocol: ProtocolType;
+  protocol: ProtocolType | null | undefined;
   status: ZerionTransactionStatus | TransactionStatus;
   type: TransactionType;
 }) => {

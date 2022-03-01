@@ -1,17 +1,21 @@
 import analytics from '@segment/analytics-react-native';
 import { isEmpty } from 'lodash';
 import React, {
-  Fragment,
   useCallback,
   useEffect,
   useLayoutEffect,
   useRef,
   useState,
 } from 'react';
-import { Alert, Keyboard, NativeModules } from 'react-native';
+import {
+  Alert,
+  InteractionManager,
+  Keyboard,
+  NativeModules,
+} from 'react-native';
+import { useSafeArea } from 'react-native-safe-area-context';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { useDispatch, useSelector } from 'react-redux';
-import styled from 'styled-components';
 import { useMemoOne } from 'use-memo-one';
 import { dismissingScreenListener } from '../../shim';
 import {
@@ -29,14 +33,12 @@ import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
 import { ExchangeModalTypes, isKeyboardOpen } from '@rainbow-me/helpers';
-import {
-  convertStringToNumber,
-  divide,
-  multiply,
-} from '@rainbow-me/helpers/utilities';
+import { divide, greaterThan, multiply } from '@rainbow-me/helpers/utilities';
 import {
   useAccountSettings,
   useBlockPolling,
+  useCurrentNonce,
+  useDimensions,
   useGas,
   usePrevious,
   usePriceImpactDetails,
@@ -53,6 +55,7 @@ import { multicallClearState } from '@rainbow-me/redux/multicall';
 import { swapClearState, updateSwapTypeDetails } from '@rainbow-me/redux/swap';
 import { ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import { useEthUSDPrice } from '@rainbow-me/utils/ethereumUtils';
 import logger from 'logger';
@@ -61,23 +64,19 @@ const FloatingPanels = ios
   ? AnimatedExchangeFloatingPanels
   : ExchangeFloatingPanels;
 
-const Wrapper = ios ? KeyboardFixedOpenLayout : Fragment;
+const Wrapper = KeyboardFixedOpenLayout;
 
 const InnerWrapper = styled(Centered).attrs({
   direction: 'column',
-})`
-  ${ios
-    ? position.sizeAsObject('100%')
-    : `
-    height: 500;
-    top: 0;
-  `};
-  background-color: ${({ theme: { colors } }) => colors.transparent};
-`;
+})(({ isSmallPhone, theme: { colors } }) => ({
+  ...position.sizeAsObject('100%'),
+  ...(ios && isSmallPhone && { maxHeight: 354 }),
+  backgroundColor: colors.transparent,
+}));
 
-const Spacer = styled.View`
-  height: 20;
-`;
+const Spacer = styled.View({
+  height: 20,
+});
 
 const getInputHeaderTitle = (type, defaultInputAsset) => {
   switch (type) {
@@ -107,7 +106,9 @@ export default function ExchangeModal({
   type,
   typeSpecificParams,
 }) {
+  const { isSmallPhone } = useDimensions();
   const dispatch = useDispatch();
+  const insets = useSafeArea();
 
   useLayoutEffect(() => {
     dispatch(updateSwapTypeDetails(type, typeSpecificParams));
@@ -138,20 +139,20 @@ export default function ExchangeModal({
     : ethUnits.basic_swap;
 
   const {
-    gasPrices,
-    selectedGasPrice,
-    startPollingGasPrices,
-    stopPollingGasPrices,
+    selectedGasFee,
+    gasFeeParamsBySpeed,
+    startPollingGasFees,
+    stopPollingGasFees,
     updateDefaultGasLimit,
     updateTxFee,
   } = useGas();
-
   const { initWeb3Listener, stopWeb3Listener } = useBlockPolling();
-  const { nativeCurrency, network } = useAccountSettings();
+  const { accountAddress, nativeCurrency, network } = useAccountSettings();
+  const getNextNonce = useCurrentNonce(accountAddress, network);
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
 
-  const prevGasPrices = usePrevious(gasPrices);
+  const prevGasFeesParamsBySpeed = usePrevious(gasFeeParamsBySpeed);
 
   useAndroidBackHandler(() => {
     navigate(Routes.WALLET_SCREEN);
@@ -255,7 +256,9 @@ export default function ExchangeModal({
         outputAmount,
         tradeDetails,
       };
-      const gasLimit = await getRapEstimationByType(type, swapParams);
+      const gasLimit = await getRapEstimationByType(type, {
+        swapParameters: swapParams,
+      });
       if (gasLimit) {
         updateTxFee(gasLimit);
       }
@@ -275,33 +278,40 @@ export default function ExchangeModal({
 
   // Set default gas limit
   useEffect(() => {
-    if (isEmpty(prevGasPrices) && !isEmpty(gasPrices)) {
+    if (isEmpty(prevGasFeesParamsBySpeed) && !isEmpty(gasFeeParamsBySpeed)) {
       updateTxFee(defaultGasLimit);
     }
-  }, [gasPrices, defaultGasLimit, updateTxFee, prevGasPrices]);
+  }, [
+    defaultGasLimit,
+    gasFeeParamsBySpeed,
+    prevGasFeesParamsBySpeed,
+    updateTxFee,
+  ]);
 
   // Update gas limit
   useEffect(() => {
-    if (!isEmpty(gasPrices)) {
+    if (!isEmpty(gasFeeParamsBySpeed)) {
       updateGasLimit();
     }
-  }, [gasPrices, updateGasLimit]);
+  }, [gasFeeParamsBySpeed, updateGasLimit]);
 
   // Liten to gas prices, Uniswap reserves updates
   useEffect(() => {
-    updateDefaultGasLimit(network, defaultGasLimit);
-    startPollingGasPrices();
+    updateDefaultGasLimit(defaultGasLimit);
+    InteractionManager.runAfterInteractions(() => {
+      startPollingGasFees();
+    });
     initWeb3Listener();
     return () => {
-      stopPollingGasPrices();
+      stopPollingGasFees();
       stopWeb3Listener();
     };
   }, [
     defaultGasLimit,
     network,
     initWeb3Listener,
-    startPollingGasPrices,
-    stopPollingGasPrices,
+    startPollingGasFees,
+    stopPollingGasFees,
     stopWeb3Listener,
     updateDefaultGasLimit,
   ]);
@@ -311,8 +321,7 @@ export default function ExchangeModal({
   }, [updateMaxInputAmount]);
 
   const checkGasVsOutput = async (gasPrice, outputPrice) => {
-    const outputValue = convertStringToNumber(outputPrice);
-    if (outputValue > 0 && convertStringToNumber(gasPrice) > outputValue) {
+    if (greaterThan(outputPrice, 0) && greaterThan(gasPrice, outputPrice)) {
       const res = new Promise(resolve => {
         Alert.alert(
           'Are you sure?',
@@ -376,8 +385,8 @@ export default function ExchangeModal({
       });
     }
 
-    const outputInUSD = outputPriceValue * outputAmount;
-    const gasPrice = selectedGasPrice?.txFee?.native?.value?.amount;
+    const outputInUSD = multiply(outputPriceValue, outputAmount);
+    const gasPrice = selectedGasFee?.gasFee?.maxFee?.native?.value?.amount;
     const cancelTransaction = await checkGasVsOutput(gasPrice, outputInUSD);
 
     if (cancelTransaction) {
@@ -403,12 +412,14 @@ export default function ExchangeModal({
         }
       };
       logger.log('[exchange - handle submit] rap');
+      const nonce = await getNextNonce();
       const swapParameters = {
         inputAmount,
+        nonce,
         outputAmount,
         tradeDetails,
       };
-      await executeRap(wallet, type, swapParameters, callback);
+      await executeRap(wallet, type, { swapParameters }, callback);
       logger.log('[exchange - handle submit] executed rap!');
       analytics.track(`Completed ${type}`, {
         amountInUSD,
@@ -428,6 +439,7 @@ export default function ExchangeModal({
   }, [
     defaultInputAsset?.symbol,
     genericAssets,
+    getNextNonce,
     inputAmount,
     inputCurrency?.address,
     isHighPriceImpact,
@@ -441,7 +453,7 @@ export default function ExchangeModal({
     outputPriceValue,
     priceImpactPercentDisplay,
     priceOfEther,
-    selectedGasPrice?.txFee?.native?.value?.amount,
+    selectedGasFee?.gasFee?.maxFee?.native?.value?.amount,
     setParams,
     tradeDetails,
     type,
@@ -517,7 +529,7 @@ export default function ExchangeModal({
 
   return (
     <Wrapper>
-      <InnerWrapper>
+      <InnerWrapper isSmallPhone={isSmallPhone}>
         <FloatingPanels>
           <FloatingPanel
             overflow="visible"
@@ -529,6 +541,7 @@ export default function ExchangeModal({
             <ExchangeHeader testID={testID} title={title} />
             <ExchangeInputField
               disableInputCurrencySelection={isWithdrawal}
+              editable={!!inputCurrency}
               inputAmount={inputAmountDisplay}
               inputCurrencyAddress={inputCurrency?.address}
               inputCurrencySymbol={inputCurrency?.symbol}
@@ -545,6 +558,7 @@ export default function ExchangeModal({
             />
             {showOutputField && (
               <ExchangeOutputField
+                editable={!!outputCurrency}
                 onFocus={handleFocus}
                 onPressSelectOutputCurrency={navigateToSelectOutputCurrency}
                 outputAmount={outputAmountDisplay}
@@ -588,15 +602,15 @@ export default function ExchangeModal({
               testID={`${testID}-confirm-button`}
             />
           )}
-          <GasSpeedButton
-            currentNetwork={network}
-            dontBlur
-            onCustomGasBlur={handleCustomGasBlur}
-            options={['normal', 'fast', 'custom']}
-            testID={`${testID}-gas`}
-            type={type}
-          />
         </FloatingPanels>
+        <GasSpeedButton
+          asset={outputCurrency}
+          bottom={insets.bottom - 7}
+          currentNetwork={network}
+          dontBlur
+          onCustomGasBlur={handleCustomGasBlur}
+          testID={`${testID}-gas`}
+        />
       </InnerWrapper>
     </Wrapper>
   );

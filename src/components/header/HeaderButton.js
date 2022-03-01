@@ -1,5 +1,5 @@
-import styled from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
+import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 
 const HeaderButton = styled(ButtonPressAnimation).attrs(
@@ -8,8 +8,8 @@ const HeaderButton = styled(ButtonPressAnimation).attrs(
     opacityTouchable,
     scaleTo,
   })
-)`
-  ${padding(10, 19, 8)};
-`;
+)(({ paddingLeft = 19, paddingRight = 19 }) =>
+  padding.object(10, paddingRight, 8, paddingLeft)
+);
 
 export default HeaderButton;

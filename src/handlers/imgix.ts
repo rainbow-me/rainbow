@@ -2,9 +2,10 @@ import ImgixClient from 'imgix-core-js';
 import LRUCache from 'mnemonist/lru-cache';
 import { PixelRatio } from 'react-native';
 import {
+  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   IMGIX_DOMAIN as domain,
+  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   IMGIX_TOKEN as secureURLToken,
-  // @ts-ignore
 } from 'react-native-dotenv';
 import { Source } from 'react-native-fast-image';
 import parse from 'url-parse';
@@ -38,12 +39,13 @@ const staticImgixClient = shouldCreateImgixClient();
 // TODO: We need to find a suitable upper limit.
 //       This might be conditional based upon either the runtime
 //       hardware or the number of unique tokens a user may have.
-const capacity = 256;
+const capacity = 512;
 export const staticSignatureLRU = new LRUCache<string, string>(capacity);
 
 interface ImgOptions {
   w?: number;
   h?: number;
+  fm?: string;
 }
 
 const shouldSignUri = (
@@ -55,12 +57,15 @@ const shouldSignUri = (
     // will not exist if the .env hasn't been configured correctly.
     if (staticImgixClient) {
       // Attempt to sign the image.
-      let updatedOptions = {};
+      let updatedOptions: ImgOptions = {};
       if (options?.w && options?.h) {
         updatedOptions = {
           h: PixelRatio.getPixelSizeForLayoutSize(options.h),
           w: PixelRatio.getPixelSizeForLayoutSize(options.w),
         };
+      }
+      if (options?.fm) {
+        updatedOptions.fm = options.fm;
       }
       const signedExternalImageUri = staticImgixClient.buildURL(
         externalImageUri,
@@ -70,8 +75,9 @@ const shouldSignUri = (
       // Check that the URL was signed as expected.
       if (typeof signedExternalImageUri === 'string') {
         // Buffer the signature into the LRU for future use.
-        !staticSignatureLRU.has(externalImageUri) &&
-          staticSignatureLRU.set(externalImageUri, signedExternalImageUri);
+        const signature = `${externalImageUri}-${options?.w}`;
+        !staticSignatureLRU.has(signature) &&
+          staticSignatureLRU.set(signature, signedExternalImageUri);
         // Return the signed image.
         return signedExternalImageUri;
       }
@@ -79,7 +85,7 @@ const shouldSignUri = (
         `Expected string signedExternalImageUri, encountered ${typeof signedExternalImageUri} (for input "${externalImageUri}").`
       );
     }
-  } catch (e) {
+  } catch (e: any) {
     logger.log(`[Imgix]: Failed to sign "${externalImageUri}"! (${e.message})`);
     // If something goes wrong, it is not safe to assume the image is valid.
     return undefined;
@@ -96,7 +102,7 @@ const isPossibleToSignUri = (externalImageUri: string | undefined): boolean => {
     try {
       const { host } = parse(externalImageUri);
       return typeof host === 'string' && !!host.length;
-    } catch (e) {
+    } catch (e: any) {
       logger.log(
         `[Imgix]: Failed to parse "${externalImageUri}"! (${e.message})`
       );
@@ -108,14 +114,17 @@ const isPossibleToSignUri = (externalImageUri: string | undefined): boolean => {
 
 export const maybeSignUri = (
   externalImageUri: string | undefined,
-  options?: {}
+  options?: ImgOptions,
+  skipCaching: boolean = false
 ): string | undefined => {
   // If the image has already been signed, return this quickly.
+  const signature = `${externalImageUri}-${options?.w}`;
   if (
     typeof externalImageUri === 'string' &&
-    staticSignatureLRU.has(externalImageUri as string)
+    staticSignatureLRU.has(signature as string) &&
+    !skipCaching
   ) {
-    return staticSignatureLRU.get(externalImageUri);
+    return staticSignatureLRU.get(signature);
   }
   if (
     typeof externalImageUri === 'string' &&
@@ -136,4 +145,8 @@ export const maybeSignSource = (source: Source, options?: {}): Source => {
     };
   }
   return source;
+};
+
+export const imageToPng = (url: string, w: number) => {
+  return maybeSignUri(url, { w });
 };

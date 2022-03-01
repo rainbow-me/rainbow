@@ -24,7 +24,6 @@ import {
   AllRainbowWallets,
   allWalletsVersion,
   createWallet,
-  publicAccessControlOptions,
   RainbowWallet,
 } from './wallet';
 
@@ -101,6 +100,7 @@ export async function addWalletToCloudBackup(
   wallet: RainbowWallet,
   filename: string
 ): Promise<null | boolean> {
+  // @ts-ignore
   const backup = await getDataFromCloud(password, filename);
 
   const now = Date.now();
@@ -155,6 +155,7 @@ export async function restoreCloudBackup(
       return false;
     }
     // 2- download that backup
+    // @ts-ignore
     const data = await getDataFromCloud(password, filename);
     if (!data) {
       throw new Error('Invalid password');
@@ -225,7 +226,7 @@ async function restoreCurrentBackupIntoKeychain(
     await Promise.all(
       Object.keys(backedUpData).map(async key => {
         const value = backedUpData[key];
-        let accessControl: Options = publicAccessControlOptions;
+        let accessControl: Options = keychain.publicAccessControlOptions;
         if (endsWith(key, seedPhraseKey) || endsWith(key, privateKeyKey)) {
           accessControl = privateAccessControlOptions;
         }

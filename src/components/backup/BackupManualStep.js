@@ -1,8 +1,8 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
+import lang from 'i18n-js';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
-import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { Column, Row } from '../layout';
 import { SecretDisplaySection } from '../secret-display';
@@ -15,64 +15,66 @@ import {
   useWallets,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
+import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 
 const Content = styled(Column).attrs({
   align: 'center',
   justify: 'start',
-})`
-  flex-grow: 1;
-  flex-shrink: 0;
-  padding-top: ${({ isTallPhone }) => (android ? 30 : isTallPhone ? 45 : 25)};
-`;
+})({
+  flexGrow: 1,
+  flexShrink: 0,
+  paddingTop: ({ isTallPhone, isSmallPhone }) =>
+    android ? 30 : isTallPhone ? 45 : isSmallPhone ? 10 : 25,
+});
 
 const Footer = styled(Column).attrs({
-  align: 'center',
   justify: 'center',
-})`
-  ${padding(0, 15, 21)};
-  width: 100%;
-  margin-bottom: ${android ? 30 : 0};
-`;
+})({
+  ...padding.object(0, 15, 21),
+
+  marginBottom: android ? 30 : 0,
+  width: '100%',
+});
 
 const Masthead = styled(Column).attrs({
   align: 'center',
   justify: 'start',
-})``;
+})({});
 
 const MastheadDescription = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.alpha(colors.blueGreyDark, 0.6),
   lineHeight: 'looser',
   size: 'lmedium',
-}))`
-  max-width: 291;
-`;
+}))({
+  maxWidth: 291,
+});
 
 const MastheadIcon = styled(Text).attrs({
   align: 'center',
   color: 'appleBlue',
   size: 21,
   weight: 'heavy',
-})``;
+})({});
 
 const MastheadTitle = styled(Text).attrs({
   align: 'center',
   size: 'larger',
   weight: 'bold',
-})`
-  ${padding(8)};
-`;
+})({
+  ...padding.object(8),
+});
 
 const MastheadTitleRow = styled(Row).attrs({
   align: 'center',
   justify: 'start',
-})`
-  padding-top: 18;
-`;
+})({
+  paddingTop: 18,
+});
 
 export default function BackupManualStep() {
-  const { isTallPhone } = useDimensions();
+  const { isTallPhone, isSmallPhone } = useDimensions();
   const { goBack } = useNavigation();
   const { selectedWallet } = useWallets();
   const { onManuallyBackupWalletId } = useWalletManualBackup();
@@ -107,34 +109,40 @@ export default function BackupManualStep() {
       <Masthead>
         <MastheadTitleRow>
           <MastheadIcon>􀉆</MastheadIcon>
-          <MastheadTitle>Your secret phrase</MastheadTitle>
+          <MastheadTitle>{lang.t('back_up.manual.label')}</MastheadTitle>
         </MastheadTitleRow>
         <MastheadDescription>
           <MastheadDescription weight="semibold">
             {type === WalletTypes.privateKey
-              ? `This is the key to your wallet!`
-              : `These words are the keys to your wallet!`}
+              ? lang.t('back_up.manual.pkey.these_keys')
+              : lang.t('back_up.manual.seed.these_keys')}
           </MastheadDescription>
           <Nbsp />
           {type === WalletTypes.privateKey
-            ? `Copy it and save it in your password manager, or in another secure spot.`
-            : `Write them down or save them in your password manager.`}
+            ? lang.t('back_up.manual.pkey.save_them')
+            : lang.t('back_up.manual.seed.save_them')}
         </MastheadDescription>
       </Masthead>
-      <Content isTallPhone={isTallPhone} paddingHorizontal={30}>
+      <Content
+        isSmallPhone={isSmallPhone}
+        isTallPhone={isTallPhone}
+        paddingHorizontal={30}
+      >
         <SecretDisplaySection
+          isSmallPhone={isSmallPhone}
           onSecretLoaded={setSecretLoaded}
           onWalletTypeIdentified={setType}
         />
       </Content>
       <Footer>
         {secretLoaded && (
-          <View marginTop={30}>
+          <View marginTop={isSmallPhone ? -20 : 30}>
             <SheetActionButton
               color={colors.appleBlue}
-              fullWidth
-              label={`􀁣 I’ve saved ${
-                type === WalletTypes.privateKey ? 'my key' : 'these words'
+              label={`􀁣  ${
+                type === WalletTypes.privateKey
+                  ? lang.t('back_up.manual.pkey.confirm_save')
+                  : lang.t('back_up.manual.seed.confirm_save')
               }`}
               onPress={onComplete}
               size="big"

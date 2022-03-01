@@ -1,6 +1,7 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import WalletConnect from '@walletconnect/client';
+import { parseWalletConnectUri } from '@walletconnect/utils';
 import lang from 'i18n-js';
 import {
   clone,
@@ -12,8 +13,9 @@ import {
   pickBy,
   values,
 } from 'lodash';
-import { Alert, InteractionManager, Linking } from 'react-native';
+import { Alert, AppState, InteractionManager, Linking } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
+import Minimizer from 'react-native-minimizer';
 import URL, { qs } from 'url-parse';
 import {
   getAllValidWalletConnectSessions,
@@ -36,8 +38,11 @@ import Routes from '@rainbow-me/routes';
 import { ethereumUtils, watchingAlert } from '@rainbow-me/utils';
 import logger from 'logger';
 
-// -- Constants --------------------------------------- //
+// -- Variables --------------------------------------- //
+let showRedirectSheetThreshold = 300;
 
+// -- Constants --------------------------------------- //
+const BIOMETRICS_ANIMATION_DELAY = 569;
 const WALLETCONNECT_ADD_REQUEST = 'walletconnect/WALLETCONNECT_ADD_REQUEST';
 const WALLETCONNECT_REMOVE_REQUEST =
   'walletconnect/WALLETCONNECT_REMOVE_REQUEST';
@@ -104,12 +109,35 @@ export const walletConnectRemovePendingRedirect = (
   dispatch({
     type: WALLETCONNECT_REMOVE_PENDING_REDIRECT,
   });
+  const lastActiveTime = new Date().getTime();
   if (scheme) {
     Linking.openURL(`${scheme}://`);
   } else if (type !== 'timedOut') {
-    return Navigation.handleAction(Routes.WALLET_CONNECT_REDIRECT_SHEET, {
-      type,
-    });
+    if (type === 'sign' || type === 'transaction') {
+      showRedirectSheetThreshold += BIOMETRICS_ANIMATION_DELAY;
+      setTimeout(() => {
+        Minimizer.goBack();
+      }, BIOMETRICS_ANIMATION_DELAY);
+    } else if (type === 'sign-canceled' || type === 'transaction-canceled') {
+      setTimeout(() => {
+        Minimizer.goBack();
+      }, 300);
+    } else {
+      Minimizer.goBack();
+    }
+    // If it's still active after showRedirectSheetThreshold
+    // We need to show the redirect sheet cause the redirect
+    // didn't work
+    setTimeout(() => {
+      const now = new Date().getTime();
+      const delta = now - lastActiveTime;
+      if (AppState.currentState === 'active' && delta < 1000) {
+        return Navigation.handleAction(Routes.WALLET_CONNECT_REDIRECT_SHEET, {
+          type,
+        });
+      }
+      return;
+    }, showRedirectSheetThreshold);
   }
 };
 
@@ -124,6 +152,20 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
   try {
     const { clientMeta, push } = await getNativeOptions();
     try {
+      // Don't initiate a new session if we have already established one using this walletconnect URI
+      const allSessions = await getAllValidWalletConnectSessions();
+      const wcUri = parseWalletConnectUri(uri);
+      const alreadyConnected = Object.values(allSessions).some(session => {
+        return (
+          session.handshakeTopic === wcUri.handshakeTopic &&
+          session.key === wcUri.key
+        );
+      });
+
+      if (alreadyConnected) {
+        return;
+      }
+
       walletConnector = new WalletConnect({ clientMeta, uri }, push);
       let meta = null;
       let navigated = false;
@@ -326,6 +368,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
                 accounts: [accountAddress],
                 chainId: numericChainId,
               });
+              dispatch(setWalletConnector(walletConnector));
               saveWalletConnectSession(
                 walletConnector.peerId,
                 walletConnector.session
@@ -519,22 +562,6 @@ export const removeWalletConnector = peerId => (dispatch, getState) => {
   dispatch({
     payload: updatedWalletConnectors,
     type: WALLETCONNECT_REMOVE_SESSION,
-  });
-};
-
-export const walletConnectUpdateSessions = () => (dispatch, getState) => {
-  const { accountAddress, chainId } = getState().settings;
-  const { walletConnectors } = getState().walletconnect;
-
-  Object.keys(walletConnectors).forEach(key => {
-    const connector = walletConnectors[key];
-    const newSessionData = {
-      accounts: [accountAddress],
-      chainId,
-    };
-    connector.updateSession(newSessionData);
-
-    saveWalletConnectSession(connector.peerId, connector.session);
   });
 };
 

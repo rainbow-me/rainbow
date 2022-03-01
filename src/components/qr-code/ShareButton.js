@@ -1,20 +1,22 @@
+import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { Share } from 'react-native';
-import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { Centered, InnerBorder } from '../layout';
 import { Text } from '../text';
+import styled from '@rainbow-me/styled-components';
 import ShadowStack from 'react-native-shadow-stack';
 
 const Label = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.whiteLabel,
+  lineHeight: 'looser',
   size: 'larger',
-  weight: 'bold',
-}))`
-  margin-bottom: 4;
-`;
+  weight: 'heavy',
+}))({
+  bottom: 2,
+});
 
 export default function ShareButton({ accountAddress, ...props }) {
   const handlePress = useCallback(() => {
@@ -49,7 +51,7 @@ export default function ShareButton({ accountAddress, ...props }) {
         width={123}
       >
         <Centered cover>
-          <Label>􀈂 Share</Label>
+          <Label>{`􀈂 ${lang.t('button.share')}`}</Label>
         </Centered>
         <InnerBorder />
       </ShadowStack>

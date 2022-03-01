@@ -9,8 +9,10 @@ import BackupSheet from '../screens/BackupSheet';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
 import ConnectedDappsSheet from '../screens/ConnectedDappsSheet';
 import DepositModal from '../screens/DepositModal';
+import ENSConfirmRegisterSheet from '../screens/ENSConfirmRegisterSheet';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ExplainSheet from '../screens/ExplainSheet';
+import ExternalLinkWarningSheet from '../screens/ExternalLinkWarningSheet';
 import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
 import ModalScreen from '../screens/ModalScreen';
 import PinAuthenticationScreen from '../screens/PinAuthenticationScreen';
@@ -29,9 +31,11 @@ import WalletDiagnosticsSheet from '../screens/WalletDiagnosticsSheet';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import WithdrawModal from '../screens/WithdrawModal';
 import WyreWebview from '../screens/WyreWebview';
+import RegisterENSNavigator from './RegisterENSNavigator';
 import { SwipeNavigator } from './SwipeNavigator';
 import { createBottomSheetNavigator } from './bottom-sheet';
 import {
+  addTokenSheetConfig,
   closeKeyboardOnClose,
   defaultScreenStackOptions,
   restoreSheetConfig,
@@ -54,9 +58,13 @@ import {
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
+import useExperimentalFlag, {
+  PROFILES,
+} from '@rainbow-me/config/experimentalHooks';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
+const AuthStack = createStackNavigator();
 const BSStack = createBottomSheetNavigator();
 
 function SendFlowNavigator() {
@@ -139,6 +147,7 @@ function MainNavigator() {
         name={Routes.CONFIRM_REQUEST}
         options={exchangePreset}
       />
+
       <Stack.Screen
         component={SpeedUpAndCancelSheet}
         name={Routes.SPEED_UP_AND_CANCEL_SHEET}
@@ -170,7 +179,7 @@ function MainNavigator() {
       <Stack.Screen
         component={AddCashSheet}
         name={Routes.ADD_CASH_SHEET}
-        options={sheetPreset}
+        options={addTokenSheetConfig}
       />
       <Stack.Screen
         component={ImportSeedPhraseSheet}
@@ -239,11 +248,6 @@ function MainOuterNavigator() {
         options={expandedPresetWithSmallGestureResponseDistance}
       />
       <OuterStack.Screen
-        component={PinAuthenticationScreen}
-        name={Routes.PIN_AUTHENTICATION_SCREEN}
-        options={{ ...sheetPreset, gestureEnabled: false }}
-      />
-      <OuterStack.Screen
         component={BackupSheet}
         name={Routes.BACKUP_SCREEN}
         options={expandedPreset}
@@ -253,6 +257,7 @@ function MainOuterNavigator() {
 }
 
 function BSNavigator() {
+  const profilesEnabled = useExperimentalFlag(PROFILES);
   return (
     <BSStack.Navigator>
       <BSStack.Screen
@@ -267,11 +272,26 @@ function BSNavigator() {
         component={ExpandedAssetSheet}
         name={Routes.TOKEN_INDEX_SHEET}
       />
+      {profilesEnabled && (
+        <>
+          <BSStack.Screen
+            component={RegisterENSNavigator}
+            name={Routes.REGISTER_ENS_NAVIGATOR}
+            options={{
+              backdropOpacity: 1,
+            }}
+          />
+          <BSStack.Screen
+            component={ENSConfirmRegisterSheet}
+            name={Routes.ENS_CONFIRM_REGISTER_SHEET}
+          />
+        </>
+      )}
       <BSStack.Screen
         component={ShowcaseSheet}
         name={Routes.SHOWCASE_SHEET}
         options={{
-          height: '90%',
+          height: '95%',
         }}
       />
       <BSStack.Screen
@@ -286,9 +306,12 @@ function BSNavigator() {
       <BSStack.Screen
         component={ExplainSheet}
         name={Routes.EXPLAIN_SHEET}
-        options={{
-          height: '100%',
-        }}
+        options={bottomSheetPreset}
+      />
+      <BSStack.Screen
+        component={ExternalLinkWarningSheet}
+        name={Routes.EXTERNAL_LINK_WARNING_SHEET}
+        options={bottomSheetPreset}
       />
       <BSStack.Screen
         component={ModalScreen}
@@ -301,6 +324,13 @@ function BSNavigator() {
         options={sheetPreset}
       />
       <BSStack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.CUSTOM_GAS_SHEET}
+        options={{
+          backdropOpacity: 1,
+        }}
+      />
+      <BSStack.Screen
         component={WalletDiagnosticsSheet}
         name={Routes.WALLET_DIAGNOSTICS_SHEET}
       />
@@ -310,9 +340,29 @@ function BSNavigator() {
   );
 }
 
+function AuthNavigator() {
+  return (
+    <AuthStack.Navigator
+      {...stackNavigationConfig}
+      initialRouteName={Routes.MAIN_NATIVE_BOTTOM_SHEET_NAVIGATOR}
+      screenOptions={defaultScreenStackOptions}
+    >
+      <AuthStack.Screen
+        component={BSNavigator}
+        name={Routes.MAIN_NATIVE_BOTTOM_SHEET_NAVIGATOR}
+      />
+      <AuthStack.Screen
+        component={PinAuthenticationScreen}
+        name={Routes.PIN_AUTHENTICATION_SCREEN}
+        options={{ ...sheetPreset, gestureEnabled: false }}
+      />
+    </AuthStack.Navigator>
+  );
+}
+
 const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
   <NavigationContainer onStateChange={onNavigationStateChange} ref={ref}>
-    <BSNavigator />
+    <AuthNavigator />
   </NavigationContainer>
 ));
 

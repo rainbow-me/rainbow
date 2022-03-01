@@ -1,4 +1,3 @@
-import { invert } from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Dimensions } from 'react-native';
 import Animated, {
@@ -9,7 +8,6 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import styled from 'styled-components';
 import Spinner from '../../assets/chartSpinner.png';
 import { nativeStackConfig } from '../../navigation/nativeStackConfig';
 import { ChartExpandedStateHeader } from '../expanded-state/chart';
@@ -20,6 +18,7 @@ import { ChartDot, ChartPath, useChartData } from '@rainbow-me/animated-charts';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 
 export const { width: WIDTH } = Dimensions.get('window');
@@ -33,54 +32,53 @@ const ChartTimespans = [
   //ChartTypes.max, todo restore after receiving proper data from zerion
 ];
 
-const ChartContainer = styled.View`
-  margin-vertical: ${({ showChart }) => (showChart ? '17px' : '0px')};
-`;
+const ChartContainer = styled.View({
+  marginVertical: ({ showChart }) => (showChart ? 17 : 0),
+});
 
 const ChartSpinner = styled(ImgixImage).attrs(({ color }) => ({
   resizeMode: ImgixImage.resizeMode.contain,
   source: Spinner,
   tintColor: color,
-}))`
-  height: 28;
-  width: 28;
-`;
+}))({
+  height: 28,
+  width: 28,
+});
 
-const Container = styled(Column)`
-  padding-bottom: 30px;
-  padding-top: ${ios ? 0 : 20}px;
-  width: 100%;
-`;
+const Container = styled(Column)({
+  paddingBottom: 30,
+  paddingTop: ios ? 0 : 20,
+  width: '100%',
+});
 
-const InnerDot = styled.View`
-  height: 10px;
-  border-radius: 5px;
-  background-color: ${({ color }) => color};
-  shadow-color: ${({ color, theme: { colors, isDarkMode } }) =>
-    isDarkMode ? colors.shadow : color};
-  shadow-offset: 0 3px;
-  shadow-opacity: 0.6;
-  shadow-radius: 4.5px;
-  width: 10px;
-`;
+const InnerDot = styled.View({
+  backgroundColor: ({ color }) => color,
+  borderRadius: 5,
+  height: 10,
+  shadowColor: ({ color, theme: { colors, isDarkMode } }) =>
+    isDarkMode ? colors.shadow : color,
+  shadowOffset: { height: 3, width: 0 },
+  shadowOpacity: 0.6,
+  shadowRadius: 4.5,
+  width: 10,
+});
 
-const Dot = styled(ChartDot)`
-  align-items: center;
-  background-color: ${({ color }) => color};
-  justify-content: center;
-`;
+const Dot = styled(ChartDot)({
+  alignItems: 'center',
+  backgroundColor: ({ color }) => color,
+  justifyContent: 'center',
+});
 
 const HEIGHT = 146.5;
 
 const Overlay = styled(Animated.View).attrs({
   pointerEvents: 'none',
-})`
-  ${position.cover};
-  align-items: center;
-  background-color: ${({ theme: { colors } }) =>
-    colors.alpha(colors.white, 0.9)};
-  justify-content: center;
-`;
+})({
+  ...position.coverAsObject,
+  alignItems: 'center',
+  backgroundColor: ({ theme: { colors } }) => colors.alpha(colors.white, 0.9),
+  justifyContent: 'center',
+});
 
 const rotationConfig = {
   duration: 500,
@@ -105,6 +103,10 @@ function useShowLoadingState(isFetching) {
   return isShow;
 }
 
+const longPressGestureHandlerProps = {
+  minDurationMs: 60,
+};
+
 export default function ChartWrapper({
   chartType,
   color,
@@ -126,7 +128,7 @@ export default function ChartWrapper({
   const { progress } = useChartData();
   const spinnerRotation = useSharedValue(0);
   const spinnerScale = useSharedValue(0);
-  const chartTimeSharedValue = useSharedValue('');
+
   const { colors } = useTheme();
 
   const { setOptions } = useNavigation();
@@ -182,26 +184,11 @@ export default function ChartWrapper({
     };
   });
 
-  const timespan = invert(ChartTypes)[chartType];
-  const formattedTimespan =
-    timespan.charAt(0).toUpperCase() + timespan.slice(1);
-
-  useEffect(() => {
-    if (chartType === ChartTypes.day) {
-      chartTimeSharedValue && (chartTimeSharedValue.value = 'Today');
-    } else if (chartType === ChartTypes.max) {
-      chartTimeSharedValue && (chartTimeSharedValue.value = 'All Time');
-    } else {
-      chartTimeSharedValue &&
-        (chartTimeSharedValue.value = `Past ${formattedTimespan}`);
-    }
-  }, [chartTimeSharedValue, chartType, formattedTimespan]);
-
   return (
     <Container>
       <ChartExpandedStateHeader
         {...props}
-        chartTimeSharedValue={chartTimeSharedValue}
+        chartType={chartType}
         color={color}
         isPool={isPool}
         overrideValue={overrideValue}
@@ -215,12 +202,10 @@ export default function ChartWrapper({
             <ChartPath
               fill="none"
               gestureEnabled={!fetchingCharts && !!throttledData}
-              hapticsEnabled
+              hapticsEnabled={ios}
               height={HEIGHT}
               hitSlop={30}
-              longPressGestureHandlerProps={{
-                minDurationMs: 60,
-              }}
+              longPressGestureHandlerProps={longPressGestureHandlerProps}
               selectedStrokeWidth={3}
               stroke={color}
               strokeLinecap="round"

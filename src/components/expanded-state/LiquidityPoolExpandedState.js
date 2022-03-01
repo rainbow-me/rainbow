@@ -1,9 +1,9 @@
 import { useRoute } from '@react-navigation/core';
+import lang from 'i18n-js';
 import { toLower } from 'lodash';
 import React, { Fragment, useEffect, useMemo } from 'react';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components';
 import { UniBalanceHeightDifference } from '../../hooks/charts/useChartThrottledPoints';
 import deviceUtils from '../../utils/deviceUtils';
 import EdgeFade from '../discover-sheet/EdgeFade';
@@ -38,17 +38,19 @@ import {
 import { emitAssetRequest } from '@rainbow-me/redux/explorer';
 
 import { ETH_ADDRESS } from '@rainbow-me/references';
+import styled from '@rainbow-me/styled-components';
 import { magicMemo, safeAreaInsetValues } from '@rainbow-me/utils';
 
-const Spacer = styled.View`
-  height: ${safeAreaInsetValues.bottom + 20};
-`;
-
+const Spacer = styled.View({
+  height: safeAreaInsetValues.bottom + 20,
+});
 export const underlyingAssetsHeight = 70;
 const heightWithoutChart = 452 + (android ? 20 - getSoftMenuBarHeight() : 0);
 const heightWithChart = heightWithoutChart + 293;
 
-export const initialLiquidityPoolExpandedStateSheetHeight = heightWithoutChart;
+export const initialLiquidityPoolExpandedStateSheetHeight = android
+  ? undefined
+  : heightWithoutChart;
 
 const formatTokenAddress = address => {
   if (!address || toLower(address) === ETH_ADDRESS) {
@@ -57,33 +59,33 @@ const formatTokenAddress = address => {
   return toChecksumAddress(address);
 };
 
-const APYWrapper = styled.View`
-  flex: 1;
-  height: 23;
-  padding-top: 3;
-`;
+const APYWrapper = styled.View({
+  flex: 1,
+  height: 23,
+  paddingTop: 3,
+});
 
-const UnderlyingAssetsWrapper = styled.View`
-  margin-horizontal: 19;
-  margin-top: 12;
-`;
+const UnderlyingAssetsWrapper = styled.View({
+  marginHorizontal: 19,
+  marginTop: 12,
+});
 
-const CarouselWrapper = styled.View`
-  margin-top: 6;
-`;
+const CarouselWrapper = styled.View({
+  marginTop: 6,
+});
 
 const Carousel = styled.ScrollView.attrs({
   contentContainerStyle: { paddingHorizontal: 7 },
   horizontal: true,
   showsHorizontalScrollIndicator: false,
-})``;
+})({});
 
 const CarouselItem = styled(TokenInfoItem).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.7),
   letterSpacing: 'roundedTighter',
-}))`
-  margin-horizontal: 12;
-`;
+}))({
+  marginHorizontal: 12,
+});
 
 const LiquidityPoolExpandedState = () => {
   const { params } = useRoute();
@@ -182,10 +184,10 @@ const LiquidityPoolExpandedState = () => {
 
   const formattedHalf0 = half0
     ? bigNumberFormat(half0, nativeCurrency, half0 >= 10000)
-    : 'Half';
+    : lang.t('expanded_state.liquidity_pool.half');
   const formattedHalf1 = half1
     ? bigNumberFormat(half1, nativeCurrency, half1 >= 10000)
-    : 'Half';
+    : lang.t('expanded_state.liquidity_pool.half');
 
   return (
     <SlackSheet
@@ -219,8 +221,15 @@ const LiquidityPoolExpandedState = () => {
           <SheetDivider />
           <TokenInfoSection>
             <TokenInfoRow>
-              <TokenInfoItem title="Pool shares">{uniBalance}</TokenInfoItem>
-              <TokenInfoItem title="Total value" weight="bold">
+              <TokenInfoItem
+                title={lang.t('expanded_state.liquidity_pool.pool_shares')}
+              >
+                {uniBalance}
+              </TokenInfoItem>
+              <TokenInfoItem
+                title={lang.t('expanded_state.liquidity_pool.total_value')}
+                weight="bold"
+              >
                 {totalNativeDisplay}
               </TokenInfoItem>
             </TokenInfoRow>
@@ -249,7 +258,6 @@ const LiquidityPoolExpandedState = () => {
       ) : (
         <SheetActionButtonRow>
           <DepositActionButton
-            fullWidth
             symbol={tokenNames}
             token1Address={tokenAddresses[0]}
             token2Address={tokenAddresses[1]}
@@ -260,7 +268,11 @@ const LiquidityPoolExpandedState = () => {
       )}
       <CarouselWrapper>
         <Carousel>
-          <CarouselItem loading={!fee} showDivider title="Annualized fees">
+          <CarouselItem
+            loading={!fee}
+            showDivider
+            title={lang.t('expanded_state.liquidity_pool.annualized_fees')}
+          >
             <APYWrapper>
               <PoolValue
                 simple
@@ -274,15 +286,22 @@ const LiquidityPoolExpandedState = () => {
             <CarouselItem
               loading={!totalFeeEarned}
               showDivider
-              title="Fees earned"
+              title={lang.t('expanded_state.liquidity_pool.fees_earned')}
             >
               {totalFeeEarned}
             </CarouselItem>
           )}
-          <CarouselItem loading={!volume} showDivider title="24h pool volume">
+          <CarouselItem
+            loading={!volume}
+            showDivider
+            title={lang.t('expanded_state.liquidity_pool.pool_volume_24h')}
+          >
             {volume}
           </CarouselItem>
-          <CarouselItem loading={!nativeLiquidity} title="Pool size">
+          <CarouselItem
+            loading={!nativeLiquidity}
+            title={lang.t('expanded_state.liquidity_pool.pool_size')}
+          >
             {nativeLiquidity}
           </CarouselItem>
         </Carousel>
@@ -299,7 +318,7 @@ const LiquidityPoolExpandedState = () => {
                 size="smedium"
                 weight="semibold"
               >
-                Underlying tokens
+                {lang.t('expanded_state.liquidity_pool.underlying_tokens')}
               </Text>
             </Column>
             <Column align="end" flex={1}>
@@ -310,7 +329,7 @@ const LiquidityPoolExpandedState = () => {
                 size="smedium"
                 weight="semibold"
               >
-                Pool makeup
+                {lang.t('expanded_state.liquidity_pool.pool_makeup')}
               </Text>
             </Column>
           </Row>

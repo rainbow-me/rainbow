@@ -2,10 +2,10 @@ import { useRoute } from '@react-navigation/native';
 import React, { createElement } from 'react';
 import { StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
-import styled from 'styled-components';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import {
   ChartExpandedState,
+  CustomGasState,
   LiquidityPoolExpandedState,
   SwapDetailsState,
   TokenIndexExpandedState,
@@ -15,9 +15,11 @@ import { Centered } from '../components/layout';
 import { useTheme } from '@rainbow-me/context';
 import { useAsset, useDimensions } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 
 const ScreenTypes = {
+  custom_gas: CustomGasState,
   swap_details: SwapDetailsState,
   token: ChartExpandedState,
   token_index: TokenIndexExpandedState,
@@ -26,12 +28,17 @@ const ScreenTypes = {
 };
 
 const Container = styled(Centered).attrs({
+  alignItems: 'flex-end',
+  bottom: 0,
   direction: 'column',
-})`
-  ${position.cover};
-  ${({ deviceHeight, height }) =>
-    height ? `height: ${height + deviceHeight}` : null};
-`;
+  flex: 1,
+  justifyContent: 'flex-end',
+})(({ deviceHeight, height }) => ({
+  ...(height && {
+    height: height + deviceHeight,
+  }),
+  ...position.coverAsObject,
+}));
 
 export default function ExpandedAssetSheet(props) {
   const { height: deviceHeight } = useDimensions();
@@ -51,10 +58,14 @@ export default function ExpandedAssetSheet(props) {
         <StatusBar barStyle="light-content" />
       )}
       {ios && <TouchableBackdrop onPress={goBack} />}
+
       {createElement(ScreenTypes[params.type], {
-        asset: selectedAsset,
         ...params,
         ...props,
+        asset: {
+          ...params.asset,
+          ...selectedAsset,
+        },
       })}
     </Container>
   );

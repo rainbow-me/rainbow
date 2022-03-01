@@ -1,6 +1,6 @@
-import { capitalize, compact, get, startCase, toLower } from 'lodash';
+import lang from 'i18n-js';
+import { compact, get, startCase, toLower } from 'lodash';
 import React, { useCallback } from 'react';
-import { css } from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { getRandomColor } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
@@ -17,10 +17,7 @@ import {
   getHumanReadableDate,
   hasAddableContact,
 } from '@rainbow-me/helpers/transactions';
-import {
-  isENSAddressFormat,
-  isUnstoppableAddressFormat,
-} from '@rainbow-me/helpers/validators';
+import { isValidDomainFormat } from '@rainbow-me/helpers/validators';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
@@ -30,9 +27,9 @@ import {
   showActionSheetWithOptions,
 } from '@rainbow-me/utils';
 
-const containerStyles = css`
-  padding-left: 19;
-`;
+const containerStyles = {
+  paddingLeft: 19,
+};
 
 const BottomRow = ({ description, native, status, type }) => {
   const { colors } = useTheme();
@@ -106,7 +103,9 @@ export default function TransactionCoinRow({ item, ...props }) {
 
     const headerInfo = {
       address: '',
-      divider: isSent ? 'to' : 'from',
+      divider: isSent
+        ? lang.t('exchange.coin_row.to_divider')
+        : lang.t('exchange.coin_row.from_divider'),
       type: status.charAt(0).toUpperCase() + status.slice(1),
     };
 
@@ -117,17 +116,15 @@ export default function TransactionCoinRow({ item, ...props }) {
       headerInfo.address = contact.nickname;
       contactColor = contact.color;
     } else {
-      headerInfo.address =
-        isENSAddressFormat(contactAddress) ||
-        isUnstoppableAddressFormat(contactAddress)
-          ? contactAddress
-          : abbreviations.address(contactAddress, 4, 10);
+      headerInfo.address = isValidDomainFormat(contactAddress)
+        ? contactAddress
+        : abbreviations.address(contactAddress, 4, 10);
       contactColor = getRandomColor();
     }
 
-    const blockExplorerAction = `View on ${startCase(
-      ethereumUtils.getBlockExplorer(network)
-    )}`;
+    const blockExplorerAction = lang.t('exchange.coin_row.view_on', {
+      blockExplorerName: startCase(ethereumUtils.getBlockExplorer(network)),
+    });
     if (hash) {
       let buttons = [
         ...(canBeResubmitted ? [TransactionActions.speedUp] : []),
@@ -184,9 +181,11 @@ export default function TransactionCoinRow({ item, ...props }) {
               break;
             case TransactionActions.close:
               return;
-            default: {
+            case blockExplorerAction:
               ethereumUtils.openTransactionInBlockExplorer(hash, network);
               break;
+            default: {
+              return;
             }
           }
         }
@@ -204,9 +203,7 @@ export default function TransactionCoinRow({ item, ...props }) {
         {...(android
           ? {
               contentStyles: {
-                height:
-                  CoinIconSize +
-                  (item.status === TransactionStatusTypes.swapped ? 0 : 14),
+                height: CoinIconSize + 14,
               },
             }
           : {})}

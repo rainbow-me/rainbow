@@ -11,9 +11,9 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import styled from 'styled-components';
 import { normalizeTransformOrigin } from './NativeButton';
 import { useLongPressEvents } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 
 const ZoomableRawButton = requireNativeComponent('RNZoomableButton');
 
@@ -31,9 +31,9 @@ const OVERFLOW_MARGIN = 5;
 
 const ScaleButtonContext = createContext(null);
 
-const Content = styled.View`
-  overflow: visible;
-`;
+const Content = styled.View({
+  overflow: 'visible',
+});
 
 // I managed to implement partially overflow in scale button (up to 5px),
 // but overflow is not visible beyond small boundaries. Hence, to make it reactive to touches
@@ -173,6 +173,9 @@ const SimpleScaleButton = ({
   duration,
   minLongPressDuration,
   onLongPress,
+  onLongPressEnded,
+  shouldLongPressHoldPress,
+  isLongPress,
   onPress,
   overflowMargin,
   scaleTo,
@@ -185,11 +188,13 @@ const SimpleScaleButton = ({
     ({ nativeEvent: { type } }) => {
       if (type === 'longPress') {
         onLongPress?.();
+      } else if (shouldLongPressHoldPress && type === 'longPressEnded') {
+        onLongPressEnded?.();
       } else {
         onPress?.();
       }
     },
-    [onLongPress, onPress]
+    [onLongPress, onLongPressEnded, onPress, shouldLongPressHoldPress]
   );
 
   return (
@@ -213,10 +218,12 @@ const SimpleScaleButton = ({
         <ZoomableButton
           duration={duration}
           hitSlop={-overflowMargin}
+          isLongPress={isLongPress}
           minLongPressDuration={minLongPressDuration}
           onPress={onNativePress}
           rippleColor={processColor('transparent')}
           scaleTo={scaleTo}
+          shouldLongPressHoldPress={shouldLongPressHoldPress}
           style={{ overflow: 'visible' }}
           transformOrigin={transformOrigin}
         >
@@ -250,6 +257,8 @@ export default function ButtonPressAnimation({
   hitSlop,
   minLongPressDuration = 500,
   onLongPress,
+  onLongPressEnded,
+  shouldLongPressHoldPress,
   onPress,
   onPressStart,
   overflowMargin = OVERFLOW_MARGIN,
@@ -277,13 +286,16 @@ export default function ButtonPressAnimation({
       contentContainerStyle={contentContainerStyle}
       duration={duration}
       hitSlop={hitSlop}
+      isLongPress={!!onLongPress}
       minLongPressDuration={minLongPressDuration}
       onLongPress={onLongPress}
+      onLongPressEnded={onLongPressEnded}
       onPress={onPress}
       onPressCancel={onPressCancel}
       onPressStart={onPressStart}
       overflowMargin={overflowMargin}
       scaleTo={scaleTo}
+      shouldLongPressHoldPress={shouldLongPressHoldPress}
       skipTopMargin={skipTopMargin}
       testID={testID}
       transformOrigin={normalizedTransformOrigin}

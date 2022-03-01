@@ -14,6 +14,7 @@ font.letterSpacing = {
   roundedMedium: 0.5,
   rounded: 0.6,
   uppercase: 0.8,
+  one: 1,
 };
 
 font.lineHeight = {
@@ -33,26 +34,26 @@ font.lineHeight = {
 };
 
 font.size = {
-  micro: '9px',
-  tiny: '11px',
-  smaller: '12px',
-  small: '13px',
-  smedium: '14px',
-  medium: '15px',
-  lmedium: '16px',
-  bmedium: '17px',
-  large: '18px',
-  larger: '20px',
-  big: '23px',
-  bigger: '26px',
-  biggest: '36px',
-  headline: '50px',
-  h1: '41px',
-  h2: '32px',
-  h3: '30px',
-  h4: '20px',
-  h5: '17px',
-  h6: '14px',
+  micro: 9,
+  tiny: 11,
+  smaller: 12,
+  small: 13,
+  smedium: 14,
+  medium: 15,
+  lmedium: 16,
+  bmedium: 17,
+  large: 18,
+  larger: 20,
+  big: 23,
+  bigger: 26,
+  biggest: 36,
+  headline: 50,
+  h1: 41,
+  h2: 32,
+  h3: 30,
+  h4: 20,
+  h5: 17,
+  h6: 14,
 };
 
 // react-native requires font weights to be defined as strings
@@ -70,4 +71,5 @@ font.weight = {
 
 export default font;
 
-export const getFontSize = key => Number(key.replace('px', ''));
+export const getFontSize = key =>
+  Number.isInteger(key) ? key : Number(key.replace('px', ''));

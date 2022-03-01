@@ -1,5 +1,4 @@
 import React, { Fragment } from 'react';
-import styled from 'styled-components';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
@@ -11,8 +10,12 @@ import { Column, RowWithMargins } from '../layout';
 import { TruncatedAddress, TruncatedENS, TruncatedText } from '../text';
 import ContactAvatar from './ContactAvatar';
 import ImageAvatar from './ImageAvatar';
-import { isENSAddressFormat } from '@rainbow-me/helpers/validators';
+import {
+  isENSAddressFormat,
+  isValidDomainFormat,
+} from '@rainbow-me/helpers/validators';
 import { useDimensions } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { margin } from '@rainbow-me/styles';
 
 const ContactAddress = styled(TruncatedAddress).attrs(
@@ -25,9 +28,9 @@ const ContactAddress = styled(TruncatedAddress).attrs(
     truncationLength: 4,
     weight: lite ? 'regular' : 'medium',
   })
-)`
-  width: 100%;
-`;
+)({
+  width: '100%',
+});
 
 const ContactENS = styled(TruncatedENS).attrs(({ theme: { colors } }) => ({
   align: 'left',
@@ -36,17 +39,19 @@ const ContactENS = styled(TruncatedENS).attrs(({ theme: { colors } }) => ({
   size: 'smedium',
   truncationLength: 18,
   weight: 'medium',
-}))`
-  width: 100%;
-`;
+}))({
+  width: '100%',
+});
 
 const ContactName = styled(TruncatedText).attrs(({ lite }) => ({
   size: 'lmedium',
   weight: lite ? 'regular' : 'medium',
-}))`
-  width: ${({ deviceWidth }) => deviceWidth - 90};
-  height: 22;
-`;
+}))({
+  height: 22,
+  width: ({ deviceWidth }) => deviceWidth - 90,
+});
+
+const css = margin.object(6, 19, 13);
 
 const ContactRow = ({ address, color, nickname, ...props }, ref) => {
   const { width: deviceWidth } = useDimensions();
@@ -100,9 +105,9 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
       onPress={handlePress}
     >
       <RowWithMargins
-        css={margin(6, 19, 13)}
         height={40}
         margin={10}
+        style={css}
         testID={`${testID}-contact-row-${
           removeFirstEmojiFromString(nickname) || ''
         }`}
@@ -126,7 +131,7 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
                 </ContactName>
               ) : (
                 <ContactName deviceWidth={deviceWidth}>
-                  {isENSAddressFormat(address)
+                  {isValidDomainFormat(address)
                     ? address
                     : abbreviations.address(address, 4, 6)}
                 </ContactName>
@@ -144,7 +149,7 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
               <ContactName deviceWidth={deviceWidth} lite={!!showcaseItem}>
                 {removeFirstEmojiFromString(nickname)}
               </ContactName>
-              {isENSAddressFormat(address) ? (
+              {isValidDomainFormat(address) ? (
                 <ContactENS ens={address} />
               ) : (
                 <ContactAddress address={address} lite={!!showcaseItem} />

@@ -1,7 +1,6 @@
 import React, { Fragment, useMemo } from 'react';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import LinearGradient from 'react-native-linear-gradient';
-import styled from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
 import { SendCoinRow } from '../coin-row';
 import CollectiblesSendRow from '../coin-row/CollectiblesSendRow';
@@ -11,7 +10,12 @@ import { Text } from '../text';
 import SendAssetFormCollectible from './SendAssetFormCollectible';
 import SendAssetFormToken from './SendAssetFormToken';
 import { AssetTypes } from '@rainbow-me/entities';
-import { useColorForAsset, useDimensions } from '@rainbow-me/hooks';
+import {
+  useColorForAsset,
+  useDimensions,
+  useKeyboardHeight,
+} from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
@@ -26,28 +30,26 @@ const AssetRowGradient = styled(LinearGradient).attrs(
     end: { x: 0.5, y: 1 },
     start: { x: 0.5, y: 0 },
   })
-)`
-  ${position.cover};
-`;
+)(position.coverAsObject);
 
-const Container = styled(Column)`
-  ${position.size('100%')};
-  background-color: ${({ theme: { colors } }) => colors.white};
-  flex: 1;
-`;
+const Container = styled(Column)({
+  ...position.sizeAsObject('100%'),
+  backgroundColor: ({ theme: { colors } }) => colors.white,
+  flex: 1,
+});
 
 const FormContainer = styled(Column).attrs({
   align: 'end',
   justify: 'space-between',
-})`
-  ${({ isNft }) => (isNft ? padding(0) : padding(0, 19))};
-  flex: 1;
-  width: 100%;
-`;
+})(({ isNft }) => ({
+  ...(isNft ? padding.object(0) : padding.object(0, 19)),
+  flex: 1,
+  width: '100%',
+}));
 
-const KeyboardSizeView = styled(KeyboardArea)`
-  background-color: ${({ theme: { colors } }) => colors.lighterGrey};
-`;
+const KeyboardSizeView = styled(KeyboardArea)({
+  backgroundColor: ({ theme: { colors } }) => colors.lighterGrey,
+});
 
 export default function SendAssetForm({
   assetAmount,
@@ -56,6 +58,9 @@ export default function SendAssetForm({
   nativeCurrency,
   onChangeAssetAmount,
   onChangeNativeAmount,
+  setLastFocusedInputHandle,
+  nativeCurrencyInputRef,
+  assetInputRef,
   onResetAssetSelection,
   selected,
   sendMaxBalance,
@@ -63,6 +68,7 @@ export default function SendAssetForm({
   ...props
 }) {
   const { isTinyPhone, width: deviceWidth } = useDimensions();
+  const keyboardHeight = useKeyboardHeight();
   const [showNativeValue, setShowNativeValue] = useState(true);
 
   const isNft = selected.type === AssetTypes.nft;
@@ -75,12 +81,14 @@ export default function SendAssetForm({
     : SendCoinRow;
 
   const onFocusAssetInput = useCallback(() => {
+    setLastFocusedInputHandle(assetInputRef);
     setShowNativeValue(false);
-  }, []);
+  }, [assetInputRef, setLastFocusedInputHandle]);
 
   const onFocusNativeInput = useCallback(() => {
+    setLastFocusedInputHandle(nativeCurrencyInputRef);
     setShowNativeValue(true);
-  }, []);
+  }, [nativeCurrencyInputRef, setLastFocusedInputHandle]);
 
   const { colors } = useTheme();
 
@@ -142,10 +150,12 @@ export default function SendAssetForm({
             <SendAssetFormToken
               {...props}
               assetAmount={assetAmount}
+              assetInputRef={assetInputRef}
               buttonRenderer={buttonRenderer}
               colorForAsset={colorForAsset}
               nativeAmount={nativeAmount}
               nativeCurrency={nativeCurrency}
+              nativeCurrencyInputRef={nativeCurrencyInputRef}
               onChangeAssetAmount={onChangeAssetAmount}
               onChangeNativeAmount={onChangeNativeAmount}
               onFocusAssetInput={onFocusAssetInput}
@@ -154,7 +164,9 @@ export default function SendAssetForm({
               sendMaxBalance={sendMaxBalance}
               txSpeedRenderer={txSpeedRenderer}
             />
-            {ios ? <KeyboardSizeView isOpen /> : null}
+            {ios ? (
+              <KeyboardSizeView initialHeight={keyboardHeight} isOpen />
+            ) : null}
           </Fragment>
         )}
       </FormContainer>

@@ -2,14 +2,12 @@ import analytics from '@segment/analytics-react-native';
 import { isValidAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
 import qs from 'qs';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import { InteractionManager } from 'react-native';
-import { PERMISSIONS, request } from 'react-native-permissions';
 import URL from 'url-parse';
 import { Alert } from '../components/alerts';
 import { checkPushNotificationPermissions } from '../model/firebase';
 import { useNavigation } from '../navigation/Navigation';
-import usePrevious from './usePrevious';
 import useWalletConnectConnections from './useWalletConnectConnections';
 import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
 import { Navigation } from '@rainbow-me/navigation';
@@ -18,70 +16,30 @@ import Routes from '@rainbow-me/routes';
 import { addressUtils, ethereumUtils, haptics } from '@rainbow-me/utils';
 import logger from 'logger';
 
-function useScannerState(enabled) {
-  const [isCameraAuthorized, setIsCameraAuthorized] = useState(true);
-  const [isScanningEnabled, setIsScanningEnabled] = useState(enabled);
-  const wasEnabled = usePrevious(enabled);
+export default function useScanner(enabled, onSuccess) {
+  const { navigate } = useNavigation();
+  const { walletConnectOnSessionRequest } = useWalletConnectConnections();
+  const enabledVar = useRef();
 
-  useEffect(() => {
-    setIsScanningEnabled(enabled);
-  }, [enabled]);
+  const enableScanning = useCallback(() => {
+    logger.log('📠✅ Enabling QR Code Scanner');
+    enabledVar.current = true;
+  }, [enabledVar]);
 
   const disableScanning = useCallback(() => {
     logger.log('📠🚫 Disabling QR Code Scanner');
-    setIsScanningEnabled(false);
-  }, []);
-
-  const enableScanning = useCallback(() => {
-    InteractionManager.runAfterInteractions(() => {
-      logger.log('📠✅ Enabling QR Code Scanner');
-      setIsScanningEnabled(enabled);
-    });
-  }, [enabled]);
+    enabledVar.current = false;
+  }, [enabledVar]);
 
   useEffect(() => {
-    if (enabled && !wasEnabled && ios) {
-      request(PERMISSIONS.IOS.CAMERA)
-        .then(permission => {
-          const result = permission === 'granted';
-          if (isCameraAuthorized !== result) {
-            setIsCameraAuthorized(result);
-          }
-        })
-        .catch(e => {
-          logger.log('ERROR REQUESTING CAM PERMISSION', e);
-        });
-
-      if (!isScanningEnabled) {
-        enableScanning();
-      }
+    if (enabled) {
+      enableScanning();
+    } else {
+      disableScanning();
     }
-  }, [
-    enabled,
-    enableScanning,
-    isCameraAuthorized,
-    isScanningEnabled,
-    wasEnabled,
-  ]);
 
-  return {
-    disableScanning,
-    enableScanning,
-    isCameraAuthorized,
-    isScanningEnabled,
-  };
-}
-
-export default function useScanner(enabled) {
-  const { navigate } = useNavigation();
-  const { walletConnectOnSessionRequest } = useWalletConnectConnections();
-
-  const {
-    disableScanning,
-    enableScanning,
-    isCameraAuthorized,
-    isScanningEnabled,
-  } = useScannerState(enabled);
+    enabledVar.current = enabled;
+  }, [enabled, disableScanning, enableScanning]);
 
   const handleScanEthereumUrl = useCallback(data => {
     ethereumUtils.parseEthereumUrl(data);
@@ -100,21 +58,22 @@ export default function useScanner(enabled) {
         Navigation.handleAction(Routes.SHOWCASE_SHEET, {
           address,
         });
-      });
 
-      setTimeout(enableScanning, 2500);
+        setTimeout(onSuccess, 500);
+      });
     },
-    [enableScanning, navigate]
+    [navigate, onSuccess]
   );
 
   const handleScanRainbowProfile = useCallback(
-    url => {
+    async url => {
       haptics.notificationSuccess();
       analytics.track('Scanned Rainbow profile url');
 
       const urlObj = new URL(url);
       const addressOrENS = urlObj.pathname?.split('/')?.[1] || '';
-      if (checkIsValidAddressOrDomain(addressOrENS)) {
+      const isValid = await checkIsValidAddressOrDomain(addressOrENS);
+      if (isValid) {
         // First navigate to wallet screen
         navigate(Routes.WALLET_SCREEN);
 
@@ -123,11 +82,12 @@ export default function useScanner(enabled) {
           Navigation.handleAction(Routes.SHOWCASE_SHEET, {
             address: addressOrENS,
           });
+
+          setTimeout(onSuccess, 500);
         });
       }
-      setTimeout(enableScanning, 2500);
     },
-    [enableScanning, navigate]
+    [navigate, onSuccess]
   );
 
   const handleScanWalletConnect = useCallback(
@@ -136,24 +96,23 @@ export default function useScanner(enabled) {
       analytics.track('Scanned WalletConnect QR code');
       await checkPushNotificationPermissions();
 
+      onSuccess();
       try {
-        await walletConnectOnSessionRequest(qrCodeData, () => {
-          setTimeout(enableScanning, 2000);
-        });
+        await walletConnectOnSessionRequest(qrCodeData, () => {});
       } catch (e) {
         logger.log('walletConnectOnSessionRequest exception', e);
-        setTimeout(enableScanning, 2000);
       }
     },
-    [enableScanning, walletConnectOnSessionRequest]
+    [walletConnectOnSessionRequest, onSuccess]
   );
 
   const handleScanInvalid = useCallback(
     qrCodeData => {
       haptics.notificationError();
       analytics.track('Scanned broken or unsupported QR code', { qrCodeData });
-      return Alert({
-        callback: enableScanning,
+
+      Alert({
+        buttons: [{ onPress: enableScanning, text: lang.t('button.okay') }],
         message: lang.t('wallet.unrecognized_qrcode'),
         title: lang.t('wallet.unrecognized_qrcode_title'),
       });
@@ -163,10 +122,14 @@ export default function useScanner(enabled) {
 
   const onScan = useCallback(
     async ({ data }) => {
-      if (!data || !isScanningEnabled) return null;
+      if (!data || !enabledVar.current) return null;
+
       disableScanning();
+
       // EIP 681 / 831
       if (data.startsWith('ethereum:')) {
+        onSuccess();
+
         return handleScanEthereumUrl(data);
       }
       const address = await addressUtils.getEthereumAddressFromQRCodeData(data);
@@ -175,7 +138,9 @@ export default function useScanner(enabled) {
         return handleScanAddress(address);
       }
       // Walletconnect QR Code
-      if (data.startsWith('wc:')) return handleScanWalletConnect(data);
+      if (data.startsWith('wc:')) {
+        return handleScanWalletConnect(data);
+      }
       // Walletconnect via universal link
       const urlObj = new URL(data);
       if (
@@ -183,17 +148,19 @@ export default function useScanner(enabled) {
         urlObj?.pathname?.split('/')?.[1] === 'wc'
       ) {
         const { uri } = qs.parse(urlObj.query.substring(1));
+        onSuccess();
         return handleScanWalletConnect(uri);
       }
       // Rainbow profile QR code
       if (data.startsWith(RAINBOW_PROFILES_BASE_URL)) {
         return handleScanRainbowProfile(data);
       }
+
       return handleScanInvalid(data);
     },
     [
-      isScanningEnabled,
       disableScanning,
+      onSuccess,
       handleScanWalletConnect,
       handleScanInvalid,
       handleScanEthereumUrl,
@@ -203,7 +170,6 @@ export default function useScanner(enabled) {
   );
 
   return {
-    isCameraAuthorized,
     onScan,
   };
 }

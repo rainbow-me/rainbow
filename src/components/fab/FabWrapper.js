@@ -1,19 +1,19 @@
 import React, { createElement } from 'react';
-import styled from 'styled-components';
 import { safeAreaInsetValues } from '../../utils';
 import { FlexItem, RowWithMargins } from '../layout';
 import ExchangeFab from './ExchangeFab';
 import SendFab from './SendFab';
+import styled from '@rainbow-me/styled-components';
 
 export const FabWrapperBottomPosition = 21 + safeAreaInsetValues.bottom;
 export const FabWrapperItemMargin = 15;
 
-const FabWrapperRow = styled(RowWithMargins).attrs({ margin: 12 })`
-  bottom: ${({ isEditMode }) => (isEditMode ? -60 : FabWrapperBottomPosition)};
-  position: absolute;
-  right: ${FabWrapperItemMargin};
-  z-index: 2;
-`;
+const FabWrapperRow = styled(RowWithMargins).attrs({ margin: 13 })({
+  bottom: ({ isEditMode }) => (isEditMode ? -60 : FabWrapperBottomPosition),
+  position: 'absolute',
+  right: FabWrapperItemMargin,
+  zIndex: 2,
+});
 
 export default function FabWrapper({
   children,

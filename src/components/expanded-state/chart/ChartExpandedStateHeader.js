@@ -1,7 +1,7 @@
-import React, { useEffect, useMemo } from 'react';
-import Animated, { useSharedValue } from 'react-native-reanimated';
-import styled from 'styled-components';
-import { useCallbackOne } from 'use-memo-one';
+import lang from 'i18n-js';
+import { invert } from 'lodash';
+import React, { useMemo } from 'react';
+import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { CoinIcon, CoinIconGroup } from '../../coin-icon';
 import { Column, ColumnWithMargins, Row, RowWithMargins } from '../../layout';
 import ChartAddToListButton from './ChartAddToListButton';
@@ -12,35 +12,35 @@ import {
   ChartPercentChangeLabel,
   ChartPriceLabel,
 } from './chart-data-labels';
+import { useChartData } from '@rainbow-me/animated-charts';
+import ChartTypes from '@rainbow-me/helpers/chartTypes';
 import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
 import { useAccountSettings, useBooleanState } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 
-const { call, cond, onChange, useCode } = Animated;
-
-const noPriceData = 'No price data';
+const noPriceData = lang.t('expanded_state.chart.no_price_data');
 
 const Container = styled(ColumnWithMargins).attrs({
   margin: 12,
   marginTop: android ? -10 : 0,
-})`
-  ${({ showChart }) => padding(0, 19, showChart ? (android ? 15 : 30) : 0)};
-`;
+})(({ showChart }) => ({
+  ...padding.object(0, 19, showChart ? (android ? 15 : 30) : 0),
+}));
 
-function useTabularNumsWhileScrubbing(isScrubbing) {
+function useTabularNumsWhileScrubbing() {
   const [tabularNums, enable, disable] = useBooleanState();
   // Only enable tabularNums on the price label when the user is scrubbing
   // because we are obnoxiously into details
-  useCode(
-    useCallbackOne(
-      () =>
-        onChange(
-          isScrubbing,
-          cond(isScrubbing, call([], enable), call([], disable))
-        ),
-      [disable, enable, isScrubbing]
-    )
+  const { isActive } = useChartData();
+
+  useAnimatedReaction(
+    () => isActive.value,
+    useTabularNums => {
+      runOnJS(useTabularNums ? enable : disable)();
+    }
   );
+
   return tabularNums;
 }
 
@@ -51,14 +51,13 @@ export default function ChartExpandedStateHeader({
   color: givenColors,
   dateRef,
   isPool,
-  isScrubbing,
   latestChange,
   latestPrice = noPriceData,
   priceRef,
-  chartTimeSharedValue,
   showChart,
   testID,
   overrideValue = false,
+  chartType,
 }) {
   const { colors } = useTheme();
   const color = givenColors || colors.dark;
@@ -66,30 +65,54 @@ export default function ChartExpandedStateHeader({
     return isPool ? asset.tokens : [asset];
   }, [asset, isPool]);
   const { nativeCurrency } = useAccountSettings();
-  const tabularNums = useTabularNumsWhileScrubbing(isScrubbing);
+  const tabularNums = useTabularNumsWhileScrubbing();
 
   const isNoPriceData = latestPrice === noPriceData;
 
-  const price = useMemo(
-    () => convertAmountToNativeDisplay(latestPrice, nativeCurrency),
-    [latestPrice, nativeCurrency]
-  );
-
-  const priceSharedValue = useSharedValue('');
-
-  useEffect(() => {
-    if (!isNoPriceData) {
-      priceSharedValue.value = price;
-    } else {
-      priceSharedValue.value = '';
-    }
-  }, [price, isNoPriceData, priceSharedValue]);
-
-  const title = isPool ? `${asset.tokenNames} Pool` : asset?.name;
+  const title = isPool
+    ? lang.t('expanded_state.chart.token_pool', {
+        tokenName: asset.tokenNames,
+      })
+    : asset?.name;
 
   const titleOrNoPriceData = isNoPriceData ? noPriceData : title;
 
   const showPriceChange = !isNoPriceData && showChart && !isNaN(latestChange);
+
+  const timespan = invert(ChartTypes)[chartType];
+
+  const formattedTimespan =
+    timespan.charAt(0).toUpperCase() + timespan.slice(1);
+
+  const { data } = useChartData();
+
+  const defaultTimeValue = useMemo(() => {
+    if (chartType === ChartTypes.day) {
+      return 'Today';
+    } else if (chartType === ChartTypes.max) {
+      return 'All Time';
+    } else {
+      return `Past ${formattedTimespan}`;
+    }
+    // we need to make sure we recreate this value only when chart's data change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
+
+  const price = useMemo(
+    () => convertAmountToNativeDisplay(latestPrice, nativeCurrency),
+    // we need to make sure we recreate this value only when chart's data change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [data, latestPrice, nativeCurrency]
+  );
+
+  const defaultPriceValue = isNoPriceData ? '' : price;
+
+  const ratio = useMemo(() => {
+    const firstValue = data?.points?.[0]?.y;
+    const lastValue = data?.points?.[data.points.length - 1]?.y;
+
+    return firstValue === Number(firstValue) ? lastValue / firstValue : 1;
+  }, [data]);
 
   return (
     <Container showChart={showChart}>
@@ -121,9 +144,8 @@ export default function ChartExpandedStateHeader({
             defaultValue={isNoPriceData ? title : price}
             isNoPriceData={isNoPriceData}
             isPool={isPool}
-            isScrubbing={isScrubbing}
             priceRef={priceRef}
-            priceSharedValue={priceSharedValue}
+            priceValue={defaultPriceValue}
             tabularNums={tabularNums}
           />
           {showPriceChange && (
@@ -133,10 +155,9 @@ export default function ChartExpandedStateHeader({
               color={
                 isNoPriceData ? colors.alpha(colors.blueGreyDark, 0.8) : color
               }
-              isScrubbing={isScrubbing}
               latestChange={latestChange}
               overrideValue={overrideValue}
-              tabularNums={tabularNums}
+              ratio={ratio}
             />
           )}
         </RowWithMargins>
@@ -158,8 +179,9 @@ export default function ChartExpandedStateHeader({
           </ChartHeaderSubtitle>
           {showPriceChange && (
             <ChartDateLabel
-              chartTimeSharedValue={chartTimeSharedValue}
+              chartTimeDefaultValue={defaultTimeValue}
               dateRef={dateRef}
+              ratio={ratio}
             />
           )}
         </RowWithMargins>

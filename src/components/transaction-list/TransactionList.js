@@ -4,12 +4,8 @@ import { pick, startCase, toLower } from 'lodash';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { requireNativeComponent } from 'react-native';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components';
 import { getRandomColor } from '../../styles/colors';
 import { FloatingEmojis } from '../floating-emojis';
-import useExperimentalFlag, {
-  AVATAR_PICKER,
-} from '@rainbow-me/config/experimentalHooks';
 import { TransactionStatusTypes } from '@rainbow-me/entities';
 import showWalletErrorAlert from '@rainbow-me/helpers/support';
 import TransactionActions from '@rainbow-me/helpers/transactionActions';
@@ -17,10 +13,7 @@ import {
   getHumanReadableDate,
   hasAddableContact,
 } from '@rainbow-me/helpers/transactions';
-import {
-  isENSAddressFormat,
-  isUnstoppableAddressFormat,
-} from '@rainbow-me/helpers/validators';
+import { isValidDomainFormat } from '@rainbow-me/helpers/validators';
 import {
   useAccountProfile,
   useOnAvatarPress,
@@ -30,6 +23,7 @@ import {
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import { removeRequest } from '@rainbow-me/redux/requests';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import {
   abbreviations,
   ethereumUtils,
@@ -38,10 +32,10 @@ import {
 
 const NativeTransactionListView = requireNativeComponent('TransactionListView');
 
-const Container = styled.View`
-  flex: 1;
-  margin-top: 0;
-`;
+const Container = styled.View({
+  flex: 1,
+  marginTop: 0,
+});
 
 const FloatingEmojisRegion = styled(FloatingEmojis).attrs({
   distance: 250,
@@ -50,13 +44,13 @@ const FloatingEmojisRegion = styled(FloatingEmojis).attrs({
   scaleTo: 0,
   size: 50,
   wiggleFactor: 0,
-})`
-  height: 0;
-  left: ${({ tapTarget }) => tapTarget[0] - 24};
-  position: absolute;
-  top: ${({ tapTarget }) => tapTarget[1] - tapTarget[3]};
-  width: ${({ tapTarget }) => tapTarget[2]};
-`;
+})({
+  height: 0,
+  left: ({ tapTarget }) => tapTarget[0] - 24,
+  position: 'absolute',
+  top: ({ tapTarget }) => tapTarget[1] - tapTarget[3],
+  width: ({ tapTarget }) => tapTarget[2],
+});
 
 export default function TransactionList({
   addCashAvailable,
@@ -158,11 +152,9 @@ export default function TransactionList({
         headerInfo.address = contact.nickname;
         contactColor = contact.color;
       } else {
-        headerInfo.address =
-          isENSAddressFormat(contactAddress) ||
-          isUnstoppableAddressFormat(contactAddress)
-            ? contactAddress
-            : abbreviations.address(contactAddress, 4, 10);
+        headerInfo.address = isValidDomainFormat(contactAddress)
+          ? contactAddress
+          : abbreviations.address(contactAddress, 4, 10);
         contactColor = getRandomColor();
       }
 
@@ -229,11 +221,11 @@ export default function TransactionList({
                   type: 'cancel',
                 });
                 break;
-              case TransactionActions.close:
-                return;
-              default: {
+              case blockExplorerAction:
                 ethereumUtils.openTransactionInBlockExplorer(hash, network);
                 break;
+              default: {
+                return;
               }
             }
           }
@@ -268,8 +260,6 @@ export default function TransactionList({
     isLoading,
     isFocused,
   ]);
-
-  const isAvatarPickerAvailable = useExperimentalFlag(AVATAR_PICKER);
 
   const safeAccountImage = useSafeImageUri(accountImage);
   const { isDarkMode, colors } = useTheme();
@@ -330,7 +320,6 @@ export default function TransactionList({
         avatarOptions={avatarOptions}
         darkMode={isDarkMode}
         data={data}
-        isAvatarPickerAvailable={isAvatarPickerAvailable}
         isLoading={loading}
         onAccountNamePress={onAccountNamePress}
         onAddCashPress={onAddCashPress}

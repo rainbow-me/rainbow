@@ -1,4 +1,8 @@
-export type { NewTransaction, RainbowTransaction } from './transaction';
+export type {
+  NewTransaction,
+  NewTransactionOrAddCashTransaction,
+  RainbowTransaction,
+} from './transaction';
 export {
   default as TransactionStatusTypes,
   TransactionStatus,
@@ -16,3 +20,4 @@ export {
   default as TransactionDirections,
   TransactionDirection,
 } from './transactionDirection';
+export { default as GasFeeTypes, GasFeeType } from './gasFeeType';

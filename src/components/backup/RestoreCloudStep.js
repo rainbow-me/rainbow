@@ -1,7 +1,7 @@
+import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, InteractionManager, Keyboard } from 'react-native';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components';
 import { isSamsungGalaxy } from '../../helpers/samsung';
 import {
   fetchBackupPassword,
@@ -34,6 +34,7 @@ import {
   walletsSetSelected,
 } from '@rainbow-me/redux/wallets';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { margin, padding } from '@rainbow-me/styles';
 import logger from 'logger';
 
@@ -42,14 +43,14 @@ const DescriptionText = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.blueGreyDark50,
   lineHeight: 'looser',
   size: 'large',
-}))``;
+}))({});
 
 const Masthead = styled(Centered).attrs({
   direction: 'column',
-})`
-  ${padding(24, 50, 39)};
-  flex-shrink: 0;
-`;
+})({
+  ...padding.object(24, 50, 39),
+  flexShrink: 0,
+});
 
 const MastheadIcon = styled(GradientText).attrs({
   align: 'center',
@@ -60,14 +61,14 @@ const MastheadIcon = styled(GradientText).attrs({
   start: { x: 1, y: 1 },
   steps: [0, 0.5, 1],
   weight: 'bold',
-})``;
+})({});
 
 const Title = styled(Text).attrs({
   size: 'big',
   weight: 'bold',
-})`
-  ${margin(15, 0, 12)};
-`;
+})({
+  ...margin.object(15, 0, 12),
+});
 
 const samsungGalaxy = (android && isSamsungGalaxy()) || false;
 
@@ -84,7 +85,9 @@ export default function RestoreCloudStep({
   const [incorrectPassword, setIncorrectPassword] = useState(false);
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const [password, setPassword] = useState('');
-  const [label, setLabel] = useState('􀎽 Confirm Backup');
+  const [label, setLabel] = useState(
+    `􀎽 ${lang.t('back_up.restore_cloud.confirm_backup')}`
+  );
   const passwordRef = useRef();
   const { userAccounts } = useUserAccounts();
   const initializeWallet = useInitializeWallet();
@@ -120,13 +123,18 @@ export default function RestoreCloudStep({
     let passwordIsValid = false;
 
     if (incorrectPassword) {
-      newLabel = 'Incorrect Password';
+      newLabel = lang.t('back_up.restore_cloud.incorrect_password');
     } else {
       if (isCloudBackupPasswordValid(password)) {
         passwordIsValid = true;
       }
 
-      newLabel = `􀑙 Restore from ${cloudPlatform}`;
+      newLabel = `􀑙 ${lang.t(
+        'back_up.restore_cloud.restore_from_cloud_platform',
+        {
+          cloudPlatformName: cloudPlatform,
+        }
+      )}`;
     }
 
     setValidPassword(passwordIsValid);
@@ -203,7 +211,7 @@ export default function RestoreCloudStep({
       }
     } catch (e) {
       setIsWalletLoading(null);
-      Alert.alert('Error while restoring backup');
+      Alert.alert(lang.t('back_up.restore_cloud.error_while_restoring'));
     }
   }, [
     backupSelected?.name,
@@ -234,9 +242,9 @@ export default function RestoreCloudStep({
         {(isTinyPhone || samsungGalaxy) && isKeyboardOpen ? null : (
           <MastheadIcon>􀙶</MastheadIcon>
         )}
-        <Title>Enter backup password</Title>
+        <Title>{lang.t('back_up.restore_cloud.enter_backup_password')}</Title>
         <DescriptionText>
-          To restore your wallet, enter the backup password you created
+          {lang.t('back_up.restore_cloud.enter_backup_password_description')}
         </DescriptionText>
       </Masthead>
       <Column align="center" flex={1}>
@@ -251,7 +259,9 @@ export default function RestoreCloudStep({
           onChange={onPasswordChange}
           onSubmitEditing={onPasswordSubmit}
           password={password}
-          placeholder="Backup Password"
+          placeholder={lang.t(
+            'back_up.restore_cloud.backup_password_placeholder'
+          )}
           ref={passwordRef}
           returnKeyType="next"
         />

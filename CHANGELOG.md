@@ -12,12 +12,131 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.6.6](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.6)
+### Changed
+* Uniswap tokens / search to backend 
+* DPI + trendling list to backend 
+* design system usage for NFT Expanded State
+* ios price widgets
+* styled components migration 
+* deeplinking improvements
+* imgix changes
+
+## [1.6.5](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.5)
+### Changed
+* Fix NFT Family Image Crash
+
+## [1.6.4](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.4)
+### Changed
+* Fix NFT fetching on failure
+
+## [1.6.3](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.3)
+### Changed
+* Improved L2 support
+* Update deprecated keychain flags
+* Asset list improvements (RLV v2)
+* More backend proxy updates
+* Performance improvements
+* Bug fixes
+
+## [1.6.2](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.2)
+### Changed
+* Fix Add Cash crash
+
+## [1.6.1](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.1)
+### Changed
+* Fix nonce manager issues
+* Fix Arbitrum gas price updates
+* Fix POAP filtering
+* Fix network switching issues with WC
+
+## [1.6.0](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.0)
+### Changed
+* Compressed images without quality loss
+* Fix send max ETH
+* Fix send sheet input focus handling
+
+## [1.5.42](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.42)
+### Added
+* EIP-1559 support
+
+## [1.5.40](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.40)
+
+### Changed
+* Fix Speed up and cancel sheet bug
+
+## [1.5.39](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.39)
+
+### Changed
+* Full fix for deeplink send bug
+
+## [1.5.37](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.37)
+
+### Added
+* Design System
+
+### Changed
+* Fixed Deeplink Send Bug
+
+## [1.5.36](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.36)
+
+### Added
+* Nonce Tracking
+* Onchain Balance Updates
+* Cloudinary SVG improvements
+
+### Changed
+* Optimism V2
+* Updated Add Cash & Search Analytics
+* Fixed Unstoppable Domain Resolution
+
+## [1.5.35](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.35)
+
+### Changed
+* RN 66
+* NFT V2 Expanded States
+* Fix Back Up Sheet Height
+
+## [1.5.34](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.34)
+
+### Changed
+* Lowered Exporer Transaction Limit
+* Polygon Contract Name handling
+* Revert Uniswap fetchng by Volume
+* Use StaticJsonRpcProvider
+
+## [1.5.33](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.33)
+
+### Changed
+* NFT family name filtering
+* Temp disable poaps
+
+## [1.5.31](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.31)
+
+### Added
+* Discover Analytics
+* Dynamic Token List
+* Remote Config
+* Poap Support
+
+### Changed
+* Fix camera permissions deeplink
+
+## [1.5.30](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.30)
+
+### Changed
+* NFT Count analytics
+
+## [1.5.29](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.29)
+
+### Changed
+* Separate out L2 explorer init
+
 ## [1.5.28](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.28)
 
 ### Changed
 * Changed source of token list
 * ENS & Unstoppable validation fixes
-* Seperate out L2 explorer init
 
 ## [1.5.27](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.27)
 

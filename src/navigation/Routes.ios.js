@@ -12,8 +12,10 @@ import BackupSheet from '../screens/BackupSheet';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
 import ConnectedDappsSheet from '../screens/ConnectedDappsSheet';
 import DepositModal from '../screens/DepositModal';
+import ENSConfirmRegisterSheet from '../screens/ENSConfirmRegisterSheet';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ExplainSheet from '../screens/ExplainSheet';
+import ExternalLinkWarningSheet from '../screens/ExternalLinkWarningSheet';
 import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
 import ModalScreen from '../screens/ModalScreen';
 import ReceiveModal from '../screens/ReceiveModal';
@@ -30,17 +32,22 @@ import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
 import WalletDiagnosticsSheet from '../screens/WalletDiagnosticsSheet';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import WithdrawModal from '../screens/WithdrawModal';
+import RegisterENSNavigator from './RegisterENSNavigator';
 import { SwipeNavigator } from './SwipeNavigator';
 import {
   addTokenSheetConfig,
   backupSheetConfig,
   basicSheetConfig,
+  customGasSheetConfig,
   defaultScreenStackOptions,
+  ensConfirmRegisterSheetConfig,
   expandedAssetSheetConfig,
   expandedAssetSheetConfigWithLimit,
   explainSheetConfig,
+  externalLinkWarningSheetConfig,
   nativeStackDefaultConfig,
   nativeStackDefaultConfigWithoutStatusBar,
+  registerENSNavigatorConfig,
   restoreSheetConfig,
   sendConfirmationSheetConfig,
   stackNavigationConfig,
@@ -55,6 +62,9 @@ import { nativeStackConfig } from './nativeStackConfig';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
+import useExperimentalFlag, {
+  PROFILES,
+} from '@rainbow-me/config/experimentalHooks';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import createNativeStackNavigator from 'react-native-cool-modals/createNativeStackNavigator';
 
@@ -216,6 +226,7 @@ const MainStack = isNativeStackAvailable
 
 function NativeStackNavigator() {
   const { colors, isDarkMode } = useTheme();
+  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   return (
     <NativeStack.Navigator {...nativeStackConfig}>
@@ -233,7 +244,6 @@ function NativeStackNavigator() {
         component={SettingsModal}
         name={Routes.SETTINGS_MODAL}
         options={{
-          backgroundColor: '#25292E',
           backgroundOpacity: 0.7,
           cornerRadius: 0,
           customStack: true,
@@ -273,7 +283,6 @@ function NativeStackNavigator() {
         name={Routes.SPEED_UP_AND_CANCEL_SHEET}
         options={{
           allowsDragToDismiss: true,
-          backgroundColor: '#25292E',
           backgroundOpacity: 0.6,
           customStack: true,
           headerHeight: 0,
@@ -297,6 +306,11 @@ function NativeStackNavigator() {
         {...explainSheetConfig}
       />
       <NativeStack.Screen
+        component={ExternalLinkWarningSheet}
+        name={Routes.EXTERNAL_LINK_WARNING_SHEET}
+        {...externalLinkWarningSheetConfig}
+      />
+      <NativeStack.Screen
         component={WalletDiagnosticsSheet}
         name={Routes.WALLET_DIAGNOSTICS_SHEET}
       />
@@ -305,7 +319,6 @@ function NativeStackNavigator() {
         name={Routes.CHANGE_WALLET_SHEET}
         options={{
           allowsDragToDismiss: true,
-          backgroundColor: '#25292E',
           backgroundOpacity: 0.7,
           customStack: true,
           springDamping: 1,
@@ -317,7 +330,6 @@ function NativeStackNavigator() {
         name={Routes.CONNECTED_DAPPS}
         options={{
           allowsDragToDismiss: true,
-          backgroundColor: '#25292E',
           backgroundOpacity: 0.7,
           customStack: true,
           springDamping: 1,
@@ -354,13 +366,17 @@ function NativeStackNavigator() {
         name={Routes.CONFIRM_REQUEST}
         options={{
           allowsDragToDismiss: true,
-          backgroundColor: '#0A0A0A',
           backgroundOpacity: 1,
           customStack: true,
           headerHeight: 0,
           isShortFormEnabled: false,
           topOffset: 0,
         }}
+      />
+      <NativeStack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.CUSTOM_GAS_SHEET}
+        {...customGasSheetConfig}
       />
       <NativeStack.Screen
         component={WithdrawModal}
@@ -377,6 +393,21 @@ function NativeStackNavigator() {
         name={Routes.SWAP_DETAILS_SHEET}
         {...expandedAssetSheetConfig}
       />
+
+      {profilesEnabled && (
+        <>
+          <NativeStack.Screen
+            component={RegisterENSNavigator}
+            name={Routes.REGISTER_ENS_NAVIGATOR}
+            {...registerENSNavigatorConfig}
+          />
+          <NativeStack.Screen
+            component={ENSConfirmRegisterSheet}
+            name={Routes.ENS_CONFIRM_REGISTER_SHEET}
+            {...ensConfirmRegisterSheetConfig}
+          />
+        </>
+      )}
       {isNativeStackAvailable ? (
         <>
           <NativeStack.Screen

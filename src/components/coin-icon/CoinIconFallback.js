@@ -1,12 +1,18 @@
 import React, { useMemo } from 'react';
-import { FallbackIcon } from 'react-coin-icon';
-import styled from 'styled-components';
+import { Image } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
 import { Centered } from '../layout';
+import EthIcon from '@rainbow-me/assets/eth-icon.png';
 import { useBooleanState, useColorForAsset } from '@rainbow-me/hooks';
 import { ImageWithCachedMetadata } from '@rainbow-me/images';
+import styled from '@rainbow-me/styled-components';
 import { borders, fonts, position, shadow } from '@rainbow-me/styles';
-import { getUrlForTrustIconFallback, magicMemo } from '@rainbow-me/utils';
+import {
+  FallbackIcon,
+  getUrlForTrustIconFallback,
+  isETH,
+  magicMemo,
+} from '@rainbow-me/utils';
 
 const fallbackTextStyles = {
   fontFamily: fonts.family.SFProRounded,
@@ -16,20 +22,25 @@ const fallbackTextStyles = {
   textAlign: 'center',
 };
 
-const FallbackImage = styled(ImageWithCachedMetadata)`
-  ${position.cover};
-  ${({
+const FallbackImage = styled(ImageWithCachedMetadata)(
+  ({
+    size,
+    theme: { colors },
     shadowColor: color,
     shadowOffset: { height: y, width: x },
     shadowOpacity: opacity,
     shadowRadius: radius,
     showImage,
-  }) => shadow.build(x, y, radius * 2, color, showImage ? opacity : 0)};
-  background-color: ${({ showImage, theme: { colors } }) =>
-    showImage ? colors.white : colors.transparent};
-  border-radius: ${({ size }) => size / 2};
-  overflow: visible;
-`;
+  }) => ({
+    height: size,
+    width: size,
+    ...position.coverAsObject,
+    ...shadow.buildAsObject(x, y, radius * 2, color, showImage ? opacity : 0),
+    backgroundColor: showImage ? colors.white : colors.transparent,
+    borderRadius: size / 2,
+    overflow: 'visible',
+  })
+);
 
 function WrappedFallbackImage({
   color,
@@ -37,6 +48,7 @@ function WrappedFallbackImage({
   shadowOpacity,
   showImage,
   size,
+  eth,
   ...props
 }) {
   const { colors } = useTheme();
@@ -50,6 +62,8 @@ function WrappedFallbackImage({
       style={{ overflow: 'hidden' }}
     >
       <FallbackImage
+        as={eth ? Image : undefined}
+        source={EthIcon}
         {...props}
         overlayColor={color || colors.dark}
         shadowOpacity={shadowOpacity}
@@ -74,6 +88,8 @@ const CoinIconFallback = fallbackProps => {
     address,
   ]);
 
+  const eth = isETH(address);
+
   return (
     <Centered height={height} width={width}>
       {!showImage && (
@@ -88,6 +104,7 @@ const CoinIconFallback = fallbackProps => {
       <FallbackImageElement
         {...fallbackProps}
         color={fallbackIconColor}
+        eth={eth}
         imageUrl={imageUrl}
         onError={hideFallbackImage}
         onLoad={showFallbackImage}

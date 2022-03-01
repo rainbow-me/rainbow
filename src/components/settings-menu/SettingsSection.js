@@ -1,11 +1,9 @@
 import AsyncStorage from '@react-native-community/async-storage';
+import lang from 'i18n-js';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { Image, Linking, NativeModules, ScrollView, Share } from 'react-native';
-import styled from 'styled-components';
-// import { REVIEW_ANDROID } from '../../config/experimental';
-// import useExperimentalFlag from '../../config/experimentalHooks';
-// import { supportedLanguages } from '../../languages';
 import { THEMES, useTheme } from '../../context/ThemeContext';
+import { supportedLanguages } from '../../languages';
 import AppVersionStamp from '../AppVersionStamp';
 import { Icon } from '../icons';
 import { Column, ColumnWithDividers } from '../layout';
@@ -22,10 +20,15 @@ import CurrencyIcon from '@rainbow-me/assets/settingsCurrency.png';
 import CurrencyIconDark from '@rainbow-me/assets/settingsCurrencyDark.png';
 import DarkModeIcon from '@rainbow-me/assets/settingsDarkMode.png';
 import DarkModeIconDark from '@rainbow-me/assets/settingsDarkModeDark.png';
+import LanguageIcon from '@rainbow-me/assets/settingsLanguage.png';
+import LanguageIconDark from '@rainbow-me/assets/settingsLanguageDark.png';
 import NetworkIcon from '@rainbow-me/assets/settingsNetwork.png';
 import NetworkIconDark from '@rainbow-me/assets/settingsNetworkDark.png';
 import PrivacyIcon from '@rainbow-me/assets/settingsPrivacy.png';
 import PrivacyIconDark from '@rainbow-me/assets/settingsPrivacyDark.png';
+import useExperimentalFlag, {
+  LANGUAGE_SETTINGS,
+} from '@rainbow-me/config/experimentalHooks';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import {
@@ -34,6 +37,7 @@ import {
   useSendFeedback,
   useWallets,
 } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import {
   AppleReviewAddress,
@@ -44,7 +48,7 @@ const { RainbowRequestReview, RNReview } = NativeModules;
 
 export const SettingsExternalURLs = {
   rainbowHomepage: 'https://rainbow.me',
-  rainbowLearn: 'https://rainbow.me/learn',
+  rainbowLearn: 'https://learn.rainbow.me',
   review:
     'itms-apps://itunes.apple.com/us/app/appName/id1457119021?mt=8&action=write-review',
   twitterDeepLink: 'twitter://user?screen_name=rainbowdotme',
@@ -53,47 +57,49 @@ export const SettingsExternalURLs = {
 
 const CheckmarkIcon = styled(Icon).attrs({
   name: 'checkmarkCircled',
-})`
-  box-shadow: 0px 4px 6px
-    ${({ theme: { colors, isDarkMode } }) =>
-      colors.alpha(isDarkMode ? colors.shadow : colors.blueGreyDark50, 0.4)};
-`;
+})({
+  shadowColor: ({ theme: { colors, isDarkMode } }) =>
+    colors.alpha(isDarkMode ? colors.shadow : colors.blueGreyDark50, 0.4),
+  shadowOffset: { height: 4, width: 0 },
+  shadowRadius: 6,
+});
 
-const Container = styled(Column).attrs({})`
-  ${position.cover};
-  background-color: ${({ backgroundColor }) => backgroundColor};
-`;
+const Container = styled(Column).attrs({})({
+  ...position.coverAsObject,
 
-const scrollContainerStyle = { flex: 1 };
+  backgroundColor: ({ backgroundColor }) => backgroundColor,
+});
+
 const ScrollContainer = styled(ScrollView).attrs({
   scrollEventThrottle: 32,
-})``;
+})({});
 
 // ⚠️ Beware: magic numbers lol
-const SettingIcon = styled(Image)`
-  ${position.size(60)};
-  margin-left: -16;
-  margin-right: -11;
-  margin-top: 8;
-`;
+const SettingIcon = styled(Image)({
+  ...position.sizeAsObject(60),
+  marginLeft: -16,
+  marginRight: -11,
+  marginTop: 8,
+});
 
 const VersionStampContainer = styled(Column).attrs({
   align: 'center',
   justify: 'end',
-})`
-  flex: 1;
-  padding-bottom: 19;
-`;
+})({
+  flex: 1,
+  paddingBottom: 19,
+});
 
 const WarningIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
   color: colors.orangeLight,
   name: 'warning',
-}))`
-  box-shadow: 0px 4px 6px
-    ${({ theme: { colors, isDarkMode } }) =>
-      isDarkMode ? colors.shadow : colors.alpha(colors.orangeLight, 0.4)};
-  margin-top: 1;
-`;
+}))({
+  marginTop: 1,
+  shadowColor: ({ theme: { colors, isDarkMode } }) =>
+    isDarkMode ? colors.shadow : colors.alpha(colors.orangeLight, 0.4),
+  shadowOffset: { height: 4, width: 0 },
+  shadowRadius: 6,
+});
 
 function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -129,15 +135,16 @@ export default function SettingsSection({
   onPressCurrency,
   onPressDev,
   onPressIcloudBackup,
-  /*onPressLanguage,*/
+  onPressLanguage,
   onPressNetwork,
   onPressPrivacy,
   onPressShowSecret,
 }) {
   const isReviewAvailable = false;
   const { wallets, isReadOnlyWallet } = useWallets();
-  const { /*language,*/ nativeCurrency, network } = useAccountSettings();
-  const { isSmallPhone } = useDimensions();
+  const { language, nativeCurrency, network } = useAccountSettings();
+  const { isNarrowPhone } = useDimensions();
+  const isLanguageSelectionEnabled = useExperimentalFlag(LANGUAGE_SETTINGS);
 
   const { colors, isDarkMode, setTheme, colorScheme } = useTheme();
 
@@ -197,10 +204,7 @@ export default function SettingsSection({
 
   return (
     <Container backgroundColor={colors.white}>
-      <ScrollContainer
-        contentContainerStyle={!isSmallPhone && scrollContainerStyle}
-        scrollEnabled={isSmallPhone}
-      >
+      <ScrollContainer>
         <ColumnWithDividers dividerRenderer={ListItemDivider} marginTop={7}>
           {canBeBackedUp && (
             <ListItem
@@ -209,7 +213,7 @@ export default function SettingsSection({
                   source={isDarkMode ? BackupIconDark : BackupIcon}
                 />
               }
-              label="Backup"
+              label={lang.t('settings.backup')}
               onPress={onPressBackup}
               onPressIcloudBackup={onPressIcloudBackup}
               onPressShowSecret={onPressShowSecret}
@@ -233,7 +237,7 @@ export default function SettingsSection({
                 source={isDarkMode ? CurrencyIconDark : CurrencyIcon}
               />
             }
-            label="Currency"
+            label={lang.t('settings.currency')}
             onPress={onPressCurrency}
             testID="currency-section"
           >
@@ -245,7 +249,7 @@ export default function SettingsSection({
                 source={isDarkMode ? NetworkIconDark : NetworkIcon}
               />
             }
-            label="Network"
+            label={lang.t('settings.network')}
             onPress={onPressNetwork}
             testID="network-section"
           >
@@ -259,11 +263,11 @@ export default function SettingsSection({
                 source={isDarkMode ? DarkModeIconDark : DarkModeIcon}
               />
             }
-            label="Theme"
+            label={lang.t('settings.theme')}
             onPress={toggleTheme}
             testID={`darkmode-section-${isDarkMode}`}
           >
-            <Column align="end" flex="1" justify="end">
+            <Column align="end" flex={1} justify="end">
               <Text
                 color={colors.alpha(colors.blueGreyDark, 0.6)}
                 size="large"
@@ -280,24 +284,28 @@ export default function SettingsSection({
                   source={isDarkMode ? PrivacyIconDark : PrivacyIcon}
                 />
               }
-              label="Privacy"
+              label={lang.t('settings.privacy')}
               onPress={onPressPrivacy}
               testID="privacy"
             >
               <ListItemArrowGroup />
             </ListItem>
           )}
-          {/*<ListItem
-        {/*  icon={*/}
-          {/*    <SettingIcon source={darkMode ? LanguageIconDark : LanguageIcon} />*/}
-          {/*  }*/}
-          {/*  label="Language"*/}
-          {/*  onPress={onPressLanguage}*/}
-          {/*>*/}
-          {/*  <ListItemArrowGroup>*/}
-          {/*    {supportedLanguages[language] || ''}*/}
-          {/*  </ListItemArrowGroup>*/}
-          {/*</ListItem>*/}
+          {isLanguageSelectionEnabled && (
+            <ListItem
+              icon={
+                <SettingIcon
+                  source={isDarkMode ? LanguageIconDark : LanguageIcon}
+                />
+              }
+              label={lang.t('settings.language')}
+              onPress={onPressLanguage}
+            >
+              <ListItemArrowGroup>
+                {supportedLanguages[language] || ''}
+              </ListItemArrowGroup>
+            </ListItem>
+          )}
         </ColumnWithDividers>
         <ListFooter />
         <ColumnWithDividers dividerRenderer={ListItemDivider}>
@@ -310,7 +318,9 @@ export default function SettingsSection({
           />
           <ListItem
             icon={<Emoji name="brain" />}
-            label="Learn about Rainbow and Ethereum"
+            label={lang.t(
+              isNarrowPhone ? 'settings.learn_short' : 'settings.learn'
+            )}
             onPress={onPressLearn}
             testID="learn-section"
             value={SettingsExternalURLs.rainbowLearn}
@@ -324,14 +334,18 @@ export default function SettingsSection({
           />
           <ListItem
             icon={<Emoji name={ios ? 'speech_balloon' : 'lady_beetle'} />}
-            label={ios ? 'Feedback and Support' : 'Feedback & Bug Reports'}
+            label={
+              ios
+                ? lang.t('settings.feedback_and_support')
+                : lang.t('settings.feedback_and_reports')
+            }
             onPress={onSendFeedback}
             testID="feedback-section"
           />
           {isReviewAvailable && (
             <ListItem
               icon={<Emoji name="red_heart" />}
-              label="Review Rainbow"
+              label={lang.t('settings.review')}
               onPress={onPressReview}
               testID="review-section"
             />
@@ -342,7 +356,7 @@ export default function SettingsSection({
             <ListFooter height={10} />
             <ListItem
               icon={<Emoji name="construction" />}
-              label="Developer Settings"
+              label={lang.t('settings.developer')}
               onPress={onPressDev}
               testID="developer-section"
             />

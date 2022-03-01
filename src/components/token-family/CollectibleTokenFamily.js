@@ -1,8 +1,7 @@
 import React, { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { setOpenFamilyTabs } from '../../redux/openStateSettings';
 import { UniqueTokenRow } from '../unique-token';
 import TokenFamilyWrap from './TokenFamilyWrap';
+import { useOpenFamilies } from '@rainbow-me/hooks';
 
 const CollectibleTokenFamily = ({
   external,
@@ -13,24 +12,15 @@ const CollectibleTokenFamily = ({
   item,
   ...props
 }) => {
-  const dispatch = useDispatch();
-
-  const isFamilyOpen = useSelector(
-    ({ openStateSettings }) =>
-      openStateSettings.openFamilyTabs[
-        familyName + (showcase ? '-showcase' : '')
-      ]
-  );
+  const { openFamilies, updateOpenFamilies } = useOpenFamilies();
+  const isFamilyOpen = openFamilies[familyName + (showcase ? '-showcase' : '')];
 
   const handleToggle = useCallback(
     () =>
-      dispatch(
-        setOpenFamilyTabs({
-          index: familyName + (showcase ? '-showcase' : ''),
-          state: !isFamilyOpen,
-        })
-      ),
-    [dispatch, familyName, isFamilyOpen, showcase]
+      updateOpenFamilies({
+        [familyName + (showcase ? '-showcase' : '')]: !isFamilyOpen,
+      }),
+    [familyName, isFamilyOpen, showcase, updateOpenFamilies]
   );
 
   const renderChild = useCallback(

@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { get } from 'lodash';
 import React, { PureComponent } from 'react';
 import {
@@ -6,7 +7,6 @@ import {
   RecyclerListView,
 } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
-import styled from 'styled-components';
 import {
   ContractInteractionCoinRow,
   RequestCoinRow,
@@ -19,6 +19,7 @@ import ActivityListHeader from './ActivityListHeader';
 import LoadingState from './LoadingState';
 import { TransactionStatusTypes } from '@rainbow-me/entities';
 import { buildTransactionUniqueIdentifier } from '@rainbow-me/helpers/transactions';
+import styled from '@rainbow-me/styled-components';
 import {
   deviceUtils,
   isNewValueForPath,
@@ -33,11 +34,11 @@ const ViewTypes = {
   SWAPPED_ROW: 4,
 };
 
-const Wrapper = styled.View`
-  flex: 1;
-  overflow: hidden;
-  width: 100%;
-`;
+const Wrapper = styled.View({
+  flex: 1,
+  overflow: 'hidden',
+  width: '100%',
+});
 
 const hasRowChanged = (r1, r2) => {
   if (
@@ -172,7 +173,9 @@ export default class RecyclerActivityList extends PureComponent {
       return this.props.isLoading ? (
         <LoadingState>{header}</LoadingState>
       ) : this.props.isEmpty ? (
-        <ActivityListEmptyState label="No transactions yet">
+        <ActivityListEmptyState
+          label={lang.t('activity_list.empty_state.recycler_label')}
+        >
           {header}
         </ActivityListEmptyState>
       ) : (

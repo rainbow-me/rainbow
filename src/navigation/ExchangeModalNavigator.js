@@ -4,7 +4,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
 import { useValue } from 'react-native-redash/src/v1';
-import styled from 'styled-components';
 import { useMemoOne } from 'use-memo-one';
 import { FlexItem } from '../components/layout';
 import CurrencySelectModal from '../screens/CurrencySelectModal';
@@ -16,6 +15,7 @@ import { exchangeTabNavigatorConfig, stackNavigationConfig } from './config';
 import { exchangeModalPreset, expandedPreset } from './effects';
 import Routes from './routesNames';
 import { useDimensions } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 
 const Stack = createStackNavigator();
@@ -23,11 +23,11 @@ const Tabs = createMaterialTopTabNavigator();
 
 const GestureBlocker = styled.View.attrs({
   pointerEvents: 'none',
-})`
-  ${position.size('100%')};
-  background-color: ${({ theme: { colors } }) => colors.transparent};
-  position: absolute;
-`;
+})({
+  ...position.sizeAsObject('100%'),
+  backgroundColor: ({ theme: { colors } }) => colors.transparent,
+  position: 'absolute',
+});
 
 function useStateCallback(initialState) {
   const [state, setState] = useState(initialState);
@@ -98,18 +98,18 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
     const handle = useRef();
 
     const enableInteractionsAfterOpeningKeyboard = useCallback(() => {
-      Keyboard.removeListener('keyboardDidShow', handle.current);
+      handle.current &&
+        Keyboard.removeListener('keyboardDidShow', handle.current);
       handle.current = () => {
         // this timeout helps to omit a visual glitch
         setTimeout(() => {
           setSwipeEnabled(true);
           handle.current = null;
         }, 200);
-        Keyboard.removeListener('keyboardDidShow', handle.current);
       };
       // fallback if was already opened
       setTimeout(() => handle.current?.(), 300);
-      Keyboard.addListener('keyboardDidShow', handle.current);
+      handle.current && Keyboard.addListener('keyboardDidShow', handle.current);
     }, [setSwipeEnabled]);
 
     const blockInteractions = useCallback(() => {
@@ -123,7 +123,8 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
           enableInteractionsAfterOpeningKeyboard();
         } else if (position === 0) {
           setSwipeEnabled(false, () => setPointerEvents(true));
-          Keyboard.removeListener('keyboardDidShow', handle.current);
+          handle.current &&
+            Keyboard.removeListener('keyboardDidShow', handle.current);
         }
       },
       [
@@ -150,7 +151,8 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
         }
 
         if (targetContentOffset === 0) {
-          Keyboard.removeListener('keyboardDidShow', handle.current);
+          handle.current &&
+            Keyboard.removeListener('keyboardDidShow', handle.current);
           setSwipeEnabled(false, () => setPointerEvents(true));
         }
       },

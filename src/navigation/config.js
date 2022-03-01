@@ -1,16 +1,20 @@
 import React from 'react';
 import { Keyboard } from 'react-native';
-import styled from 'styled-components';
 import BackButton from '../components/header/BackButton';
 import { Icon } from '../components/icons';
 import { SheetHandleFixedToTopHeight } from '../components/sheet';
 import { Text } from '../components/text';
 import { useTheme } from '../context/ThemeContext';
 import colors from '../context/currentColors';
+import { ENSConfirmRegisterSheetHeight } from '../screens/ENSConfirmRegisterSheet';
 import { explainers, ExplainSheetHeight } from '../screens/ExplainSheet';
+import { ExternalLinkWarningSheetHeight } from '../screens/ExternalLinkWarningSheet';
 import { SendConfirmationSheetHeight } from '../screens/SendConfirmationSheet';
 import { onWillPop } from './Navigation';
+import networkInfo from '@rainbow-me/helpers/networkInfo';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
+import styled from '@rainbow-me/styled-components';
 import { fonts } from '@rainbow-me/styles';
 import { deviceUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 
@@ -19,9 +23,17 @@ export const sharedCoolModalTopOffset = safeAreaInsetValues.top;
 const buildCoolModalConfig = params => ({
   allowsDragToDismiss: true,
   allowsTapToDismiss: true,
+  backgroundColor: params.backgroundColor || colors.themedColors.shadowBlack,
   backgroundOpacity: params.backgroundOpacity || 0.7,
   blocksBackgroundTouches: true,
-  cornerRadius: params.cornerRadius || 39,
+  cornerRadius:
+    params.cornerRadius === 'device'
+      ? android
+        ? 30
+        : 0.666 // 0.666 gets the screen corner radius internally
+      : params.cornerRadius === 0
+      ? 0
+      : params.cornerRadius || 39,
   customStack: true,
   disableShortFormAfterTransitionToLongForm:
     params.disableShortFormAfterTransitionToLongForm ||
@@ -35,9 +47,12 @@ const buildCoolModalConfig = params => ({
   onAppear: params.onAppear || null,
   scrollEnabled: params.scrollEnabled,
   single: params.single,
+  springDamping: params.springDamping || 0.8,
   startFromShortForm:
     params.startFromShortForm || params?.type === 'token' || false,
-  topOffset: params.topOffset || sharedCoolModalTopOffset,
+  topOffset:
+    params.topOffset === 0 ? 0 : params.topOffset || sharedCoolModalTopOffset,
+  transitionDuration: params.transitionDuration || 0.35,
 });
 
 const backupSheetSizes = {
@@ -81,6 +96,17 @@ export const backupSheetConfig = {
   },
 };
 
+export const customGasSheetConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 1,
+      springDamping: 1,
+      transitionDuration: 0.25,
+    }),
+  }),
+};
+
 export const addTokenSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
@@ -108,15 +134,45 @@ export const sendConfirmationSheetConfig = {
   },
 };
 
+export const registerENSNavigatorConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 1,
+      scrollEnabled: true,
+      springDamping: 1,
+    }),
+  }),
+};
+
+export const ensConfirmRegisterSheetConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      longFormHeight: ENSConfirmRegisterSheetHeight,
+    }),
+  }),
+};
+
 export const explainSheetConfig = {
-  options: ({ route: { params = {} } }) => {
+  options: ({
+    route: { params = { network: networkInfo[networkTypes.mainnet].name } },
+  }) => {
+    const explainerConfig = explainers(params.network)[params?.type];
     return buildCoolModalConfig({
       ...params,
       longFormHeight:
         ExplainSheetHeight +
-        (explainers[params?.type]?.extraHeight
-          ? explainers[params?.type]?.extraHeight
-          : 0),
+        (explainerConfig?.extraHeight ? explainerConfig?.extraHeight : 0),
+    });
+  },
+};
+
+export const externalLinkWarningSheetConfig = {
+  options: ({ route: { params = {} } }) => {
+    return buildCoolModalConfig({
+      ...params,
+      longFormHeight: ExternalLinkWarningSheetHeight,
     });
   },
 };
@@ -172,7 +228,6 @@ export const restoreSheetConfig = {
 
     return buildCoolModalConfig({
       ...params,
-      backgroundColor: colors.themedColors.dark,
       longFormHeight: heightForStep,
     });
   },
@@ -259,11 +314,12 @@ const BackArrow = styled(Icon).attrs({
   color: colors.themedColors.appleBlue,
   direction: 'left',
   name: 'caret',
-})`
-  margin-left: 15;
-  margin-right: 5;
-  margin-top: ${android ? 2 : 0.5};
-`;
+})({
+  marginLeft: 15,
+  marginRight: 5,
+  marginTop: android ? 2 : 0.5,
+});
+
 const BackImage = () => <BackArrow />;
 
 const headerConfigOptions = {
@@ -288,9 +344,9 @@ const headerConfigOptions = {
   },
 };
 
-const EmptyButtonPlaceholder = styled.View`
-  flex: 1;
-`;
+const EmptyButtonPlaceholder = styled.View({
+  flex: 1,
+});
 
 const SettingsTitle = ({ children }) => {
   const { colors } = useTheme();

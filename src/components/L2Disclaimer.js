@@ -6,22 +6,26 @@ import ButtonPressAnimation from './animations/ButtonPressAnimation';
 import ChainBadge from './coin-icon/ChainBadge';
 import { Column, Row } from './layout';
 import { Text } from './text';
-import { position } from '@rainbow-me/styles';
+import { padding, position } from '@rainbow-me/styles';
+import { darkModeThemeColors } from '@rainbow-me/styles/colors';
 
 const L2Disclaimer = ({
   assetType,
   colors,
   hideDivider,
+  isNft = false,
   marginBottom = 24,
+  marginHorizontal = 19,
   onPress,
   prominent,
   sending,
   symbol,
   verb,
 }) => {
+  const localColors = isNft ? darkModeThemeColors : colors;
   const radialGradientProps = {
     center: [0, 1],
-    colors: colors.gradients.lightGreyWhite,
+    colors: localColors.gradients.lightGreyWhite,
     pointerEvents: 'none',
     style: {
       ...position.coverAsObject,
@@ -35,7 +39,11 @@ const L2Disclaimer = ({
         onPress={onPress}
         scaleTo={0.95}
       >
-        <Row borderRadius={16} marginHorizontal={19} padding={10}>
+        <Row
+          borderRadius={16}
+          marginHorizontal={marginHorizontal}
+          style={padding.object(android ? 6 : 10, 10, android ? 6 : 10, 10)}
+        >
           <RadialGradient
             {...radialGradientProps}
             borderRadius={16}
@@ -52,8 +60,8 @@ const L2Disclaimer = ({
             <Text
               color={
                 prominent
-                  ? colors.alpha(colors.blueGreyDark, 0.8)
-                  : colors.alpha(colors.blueGreyDark, 0.6)
+                  ? colors.alpha(localColors.blueGreyDark, 0.8)
+                  : colors.alpha(localColors.blueGreyDark, 0.6)
               }
               numberOfLines={2}
               size="smedium"
@@ -66,7 +74,7 @@ const L2Disclaimer = ({
           <Column align="end" justify="center">
             <Text
               align="center"
-              color={colors.alpha(colors.blueGreyDark, 0.3)}
+              color={colors.alpha(localColors.blueGreyDark, 0.3)}
               size="smedium"
               weight="heavy"
             >
@@ -75,7 +83,9 @@ const L2Disclaimer = ({
           </Column>
         </Row>
       </ButtonPressAnimation>
-      {hideDivider ? null : <Divider color={colors.rowDividerExtraLight} />}
+      {hideDivider ? null : (
+        <Divider color={localColors.rowDividerExtraLight} />
+      )}
     </>
   );
 };

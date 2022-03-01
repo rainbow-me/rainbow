@@ -1,11 +1,11 @@
 import React from 'react';
 import { View } from 'react-native';
-import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { darkModeThemeColors, lightModeThemeColors } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
 import { RowWithMargins } from '../layout';
 import { Text } from '../text';
+import styled from '@rainbow-me/styled-components';
 import { padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
@@ -37,13 +37,19 @@ const shadowsDark = shadowsFactory(true);
 const Content = styled(RowWithMargins).attrs({
   align: 'center',
   margin: 5,
-})`
-  ${({ hasLeadingIcon, small }) =>
-    padding(0, small ? 8 : 10, 1, hasLeadingIcon ? 6 : small ? 8 : 10)};
-  border-radius: 15px;
-  height: ${({ small }) => (small ? 27 : 30)};
-  z-index: 1;
-`;
+})(({ hasLeadingIcon, height, small, disablePadding }) => ({
+  ...padding.object(
+    0,
+    disablePadding ? 0 : small ? 8 : 10,
+    0,
+    disablePadding ? 0 : hasLeadingIcon ? 6 : small ? 8 : 10
+  ),
+  alignItems: 'center',
+  borderRadius: 15,
+  height,
+  justifyContent: 'center',
+  zIndex: 1,
+}));
 
 export default function MiniButton({
   backgroundColor,
@@ -51,6 +57,7 @@ export default function MiniButton({
   children,
   color,
   disabled,
+  disablePadding,
   hasLeadingIcon,
   height,
   hideShadow,
@@ -104,8 +111,9 @@ export default function MiniButton({
                 : backgroundColor || colors.appleBlue
               : 'none'
           }
+          disablePadding={disablePadding}
           hasLeadingIcon={hasLeadingIcon}
-          small={small}
+          height={height ? height : small ? 27 : 30}
         >
           {typeof children === 'string' ? (
             <Text

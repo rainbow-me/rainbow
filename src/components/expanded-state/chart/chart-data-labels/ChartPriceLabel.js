@@ -1,47 +1,55 @@
 import { get } from 'lodash';
 import React from 'react';
 import { PixelRatio, Text } from 'react-native';
-import styled from 'styled-components';
+import { useWorkletCallback } from 'react-native-reanimated';
 import { Row } from '../../../layout';
 import ChartHeaderTitle from './ChartHeaderTitle';
 import { ChartYLabel } from '@rainbow-me/animated-charts';
+import { NativeCurrencyKeys } from '@rainbow-me/entities';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
+import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth } from '@rainbow-me/styles';
 
-const ChartPriceRow = styled(Row)``;
+const ChartPriceRow = styled(Row)({});
 
-const Label = styled(ChartYLabel)`
-  color: ${({ theme: { colors } }) => colors.dark};
-  ${fontWithWidth(fonts.weight.heavy)};
-  font-size: ${fonts.size.big};
-  letter-spacing: ${fonts.letterSpacing.roundedTight};
-  ${android &&
-  `margin-top: -30;
-     margin-bottom: -30;
-     width: 150px;
-     `}
-`;
+const Label = styled(ChartYLabel)({
+  color: ({ theme: { colors } }) => colors.dark,
+  ...fontWithWidth(fonts.weight.heavy),
+  fontSize: fonts.size.big,
+  fontVariant: ({ tabularNums }) => (tabularNums ? ['tabular-nums'] : []),
+  letterSpacing: fonts.letterSpacing.roundedTight,
+  ...(android
+    ? {
+        marginBottom: -30,
+        marginTop: -30,
+      }
+    : {}),
+});
 
-const AndroidCurrencySymbolLabel = styled(ChartYLabel)`
-  color: ${({ theme: { colors } }) => colors.dark};
-  ${fontWithWidth(fonts.weight.heavy)};
-  font-size: ${fonts.size.big};
-  letter-spacing: ${fonts.letterSpacing.roundedTight};
-  ${android &&
-  `margin-top: -30;
-     margin-bottom: -30;
-     `}
-  height: 69;
-  left: 5.5;
-  margin-right: 3;
-  top: ${PixelRatio.get() <= 2.625 ? 22 : 23};
-`;
+const AndroidCurrencySymbolLabel = styled(ChartYLabel)({
+  color: ({ theme: { colors } }) => colors.dark,
+  ...fontWithWidth(fonts.weight.heavy),
+  fontSize: fonts.size.big,
+  letterSpacing: fonts.letterSpacing.roundedTight,
 
-export function formatNative(value, priceSharedValue, nativeSelected) {
+  ...(android
+    ? {
+        marginBottom: -30,
+        marginTop: -30,
+      }
+    : {}),
+
+  height: 69,
+  left: 5.5,
+  marginRight: 3,
+  top: PixelRatio.get() <= 2.625 ? 22 : 23,
+});
+
+export function formatNative(value, defaultPriceValue, nativeSelected) {
   'worklet';
   if (!value) {
-    return priceSharedValue?.value || '';
+    return defaultPriceValue || '';
   }
   if (value === 'undefined') {
     return nativeSelected?.alignment === 'left'
@@ -54,7 +62,7 @@ export function formatNative(value, priceSharedValue, nativeSelected) {
       : 2;
 
   let res = `${Number(value).toFixed(decimals).toLocaleString('en-US', {
-    currency: 'USD',
+    currency: NativeCurrencyKeys.USD,
   })}`;
   res =
     nativeSelected?.alignment === 'left'
@@ -70,10 +78,24 @@ export function formatNative(value, priceSharedValue, nativeSelected) {
 export default function ChartPriceLabel({
   defaultValue,
   isNoPriceData,
-  priceSharedValue,
+  priceValue,
+  tabularNums,
 }) {
   const { nativeCurrency } = useAccountSettings();
   const nativeSelected = get(supportedNativeCurrencies, `${nativeCurrency}`);
+
+  const format = useWorkletCallback(
+    value => {
+      'worklet';
+      const formatted = formatNative(value, priceValue, nativeSelected);
+      if (android) {
+        return formatted.replace(/[^\d.,-]/g, '');
+      }
+      return formatted;
+    },
+    [nativeSelected, priceValue]
+  );
+
   return isNoPriceData ? (
     <ChartHeaderTitle>{defaultValue}</ChartHeaderTitle>
   ) : (
@@ -87,20 +109,7 @@ export default function ChartPriceLabel({
           {nativeSelected?.symbol}
         </AndroidCurrencySymbolLabel>
       )}
-      <Label
-        format={value => {
-          'worklet';
-          const formatted = formatNative(
-            value,
-            priceSharedValue,
-            nativeSelected
-          );
-          if (android) {
-            return formatted.replace(/[^\d.,-]/g, '');
-          }
-          return formatted;
-        }}
-      />
+      <Label format={format} tabularNums={tabularNums} />
     </ChartPriceRow>
   );
 }

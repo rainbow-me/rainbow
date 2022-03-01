@@ -1,26 +1,30 @@
 import { isNil } from 'lodash';
 import React, { useMemo } from 'react';
-import ReactCoinIcon from 'react-coin-icon';
 import { View } from 'react-native';
-import styled from 'styled-components';
 import ContractInteraction from '../../assets/contractInteraction.png';
 import { useTheme } from '../../context/ThemeContext';
 import ChainBadge from './ChainBadge';
 import CoinIconFallback from './CoinIconFallback';
 import { useColorForAsset } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
-import { getTokenMetadata, isETH, magicMemo } from '@rainbow-me/utils';
+import styled from '@rainbow-me/styled-components';
+import {
+  getTokenMetadata,
+  isETH,
+  magicMemo,
+  CoinIcon as ReactCoinIcon,
+} from '@rainbow-me/utils';
 
 export const CoinIconSize = 40;
 
-const ContractInteractionIcon = styled(ImgixImage)`
-  height: ${({ size }) => size};
-  width: ${({ size }) => size};
-`;
+const ContractInteractionIcon = styled(ImgixImage)(({ size }) => ({
+  height: size,
+  width: size,
+}));
 
-const StyledCoinIcon = styled(ReactCoinIcon)`
-  opacity: ${({ isHidden }) => (isHidden ? 0.4 : 1)};
-`;
+const StyledCoinIcon = styled(ReactCoinIcon)({
+  opacity: ({ isHidden }) => (isHidden ? 0.4 : 1),
+});
 
 const CoinIcon = ({
   address = 'eth',

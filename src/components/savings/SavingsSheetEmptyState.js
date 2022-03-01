@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo } from 'react';
-import styled from 'styled-components';
 import { calculateAPY } from '../../helpers/savings';
 import { useNavigation } from '../../navigation/Navigation';
 import Divider from '../Divider';
@@ -10,6 +9,7 @@ import { Br, GradientText, Text } from '../text';
 import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
 import { DAI_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 import { magicMemo, watchingAlert } from '@rainbow-me/utils';
 
@@ -17,16 +17,16 @@ const APYHeadingText = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.dark,
   size: 'big',
   weight: 'bold',
-}))``;
+}))({});
 
 const BodyText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.blueGreyDark50,
   lineHeight: 'looser',
   size: 'large',
-}))`
-  padding-bottom: 30;
-`;
+}))({
+  paddingBottom: 30,
+});
 
 const GradientAPYHeadingText = styled(GradientText).attrs({
   align: 'center',
@@ -35,7 +35,9 @@ const GradientAPYHeadingText = styled(GradientText).attrs({
   renderer: APYHeadingText,
   start: { x: 0, y: 0 },
   steps: [0, 1],
-})``;
+})({});
+
+const css = padding.object(19, 15);
 
 const SavingsSheetEmptyState = ({
   isReadOnlyWallet,
@@ -79,10 +81,9 @@ const SavingsSheetEmptyState = ({
         earns you more than ever before
       </BodyText>
       <Divider color={colors.rowDividerLight} inset={[0, 42]} />
-      <ColumnWithMargins css={padding(19, 15)} margin={19} width="100%">
+      <ColumnWithMargins margin={19} style={css} width="100%">
         <SheetActionButton
           color={colors.swapPurple}
-          fullWidth
           label="􀁍 Deposit from Wallet"
           onPress={onDeposit}
           size="big"

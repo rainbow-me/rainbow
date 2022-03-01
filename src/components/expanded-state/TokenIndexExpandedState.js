@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { sortBy, times, toLower } from 'lodash';
 import React, { Fragment, useContext, useEffect, useMemo, useRef } from 'react';
 import { useSelector } from 'react-redux';
@@ -173,16 +174,17 @@ export default function TokenIndexExpandedState({ asset }) {
         <SheetDivider />
         {needsEth ? (
           <SheetActionButtonRow>
-            <BuyActionButton color={color} fullWidth />
+            <BuyActionButton color={color} />
           </SheetActionButtonRow>
         ) : (
           <SheetActionButtonRow>
             <Column marginTop={5}>
               <SwapActionButton
                 color={color}
-                fullWidth
                 inputType={AssetInputTypes.out}
-                label={`􀖅 Get ${asset?.symbol}`}
+                label={`􀖅 ${lang.t('expanded_state.token_index.get_token', {
+                  assetSymbol: asset?.symbol,
+                })}`}
                 weight="heavy"
               />
             </Column>
@@ -197,7 +199,7 @@ export default function TokenIndexExpandedState({ asset }) {
               testID="index-underlying-assets"
               weight="semibold"
             >
-              Underlying tokens
+              {lang.t('expanded_state.token_index.underlying_tokens')}
             </Text>
           </Column>
           <Column align="end" flex={1}>
@@ -208,7 +210,9 @@ export default function TokenIndexExpandedState({ asset }) {
               size="smedium"
               weight="semibold"
             >
-              Makeup of 1 {assetWithPrice.symbol}
+              {lang.t('expanded_state.token_index.makeup_of_token', {
+                assetSymbol: assetWithPrice.symbol,
+              })}
             </Text>
           </Column>
         </Row>

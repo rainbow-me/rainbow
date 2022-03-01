@@ -8,15 +8,28 @@ import { Centered } from './layout';
 import { ImgixImage } from '@rainbow-me/images';
 import { position } from '@rainbow-me/styles';
 
-const Spinner = ({ color, duration, size, ...props }) => {
+const Spinner = ({ color = '', duration = 1500, size = 20, ...props }) => {
   const { colors } = useTheme();
+
+  let style;
+  switch (size) {
+    case 'large':
+      style = position.sizeAsObject(36);
+      break;
+    case 'small':
+      style = position.sizeAsObject(20);
+      break;
+    default:
+      style = position.sizeAsObject(size);
+  }
+
   return (
     <Centered {...props}>
       {IS_TESTING !== 'true' && (
         <SpinAnimation duration={duration}>
           <ImgixImage
             source={SpinnerImageSource}
-            style={position.sizeAsObject(size)}
+            style={style}
             tintColor={color || colors.whiteLabel}
           />
         </SpinAnimation>
@@ -29,11 +42,6 @@ Spinner.propTypes = {
   color: PropTypes.string,
   duration: PropTypes.number,
   size: PropTypes.number,
-};
-
-Spinner.defaultProps = {
-  duration: 1500,
-  size: 20,
 };
 
 export default React.memo(Spinner);

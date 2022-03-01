@@ -1,40 +1,35 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import styled from 'styled-components';
 import { OpacityToggler } from '../animations';
 import { UniqueTokenExpandedStateContent } from '../expanded-state/unique-token';
 import { Column } from '../layout';
 import { useDimensions, useImageMetadata } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { padding, position } from '@rainbow-me/styles';
 
 const defaultImageDimensions = { height: 512, width: 512 };
 
 const ButtonWrapper = styled(Column).attrs({
   margin: 0,
-})`
-  ${padding(0, 19, 15)};
-  margin-bottom: 21;
-  width: 100%;
-  z-index: 3;
-`;
+})({
+  ...padding.object(0, 19, 15),
+  marginBottom: 21,
+  width: '100%',
+  zIndex: 3,
+});
 
-const Footer = styled(Column).attrs({ justify: 'end' })`
-  width: 100%;
-`;
-
-const NFTSizer = styled.View`
-  height: ${({ height }) => height};
-  width: ${({ width }) => width};
-`;
+const Footer = styled(Column).attrs({ justify: 'end' })({
+  width: '100%',
+});
 
 const NFTWrapper = styled(Column).attrs({
   align: 'center',
   flex: 1,
   justify: 'center',
-})`
-  width: 100%;
-`;
+})({
+  width: '100%',
+});
 
 const Gradient = styled(LinearGradient).attrs(
   ({ isTallPhone, theme: { colors } }) => ({
@@ -43,16 +38,14 @@ const Gradient = styled(LinearGradient).attrs(
     pointerEvents: 'none',
     start: { x: 0.5, y: 0 },
   })
-)`
-  ${position.cover};
-  overflow: hidden;
-`;
+)({
+  ...position.coverAsObject,
+  overflow: 'hidden',
+});
 
 const GradientToggler = styled(OpacityToggler).attrs({
   tension: 500,
-})`
-  ${position.cover};
-`;
+})(position.coverAsObject);
 
 export default function SendAssetFormCollectible({
   asset,
@@ -119,17 +112,16 @@ export default function SendAssetFormCollectible({
       <Column align="end" flex={1} width="100%">
         <NFTWrapper onLayout={handleLayout}>
           {!!containerHeight && !!containerWidth && (
-            <NFTSizer height={imageHeight} width={imageWidth}>
-              <UniqueTokenExpandedStateContent
-                {...props}
-                asset={asset}
-                borderRadius={20}
-                height={imageHeight}
-                horizontalPadding={0}
-                resizeMode="cover"
-                width={imageWidth}
-              />
-            </NFTSizer>
+            <UniqueTokenExpandedStateContent
+              {...props}
+              asset={asset}
+              borderRadius={20}
+              disablePreview
+              height={imageHeight}
+              horizontalPadding={24}
+              resizeMode="cover"
+              width={imageWidth}
+            />
           )}
         </NFTWrapper>
         <Footer>
