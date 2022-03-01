@@ -252,6 +252,7 @@ export default function ENSConfirmRegisterSheet() {
               <Box>
                 <SheetActionButtonRow paddingBottom={5}>
                   <HoldToAuthorizeButton
+                    color={accentColor}
                     hideInnerBorder
                     isLongPressAvailableForBiometryType
                     label={lang.t('profiles.confirm.commit_button')}
@@ -263,6 +264,7 @@ export default function ENSConfirmRegisterSheet() {
               </Box>
               <Box alignItems="center" justifyContent="center">
                 <GasSpeedButton
+                  borderColor={accentColor}
                   currentNetwork="mainnet"
                   marginBottom={0}
                   theme="light"

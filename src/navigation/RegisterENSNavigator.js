@@ -73,15 +73,15 @@ export default function RegisterENSNavigator() {
     currentRouteName,
   ]);
 
-  const [scrollEnabled, setScrollEnabled] = useState(false);
+  const [scrollEnabled, setScrollEnabled] = useState(
+    screenOptions.scrollEnabled
+  );
   useEffect(() => {
     if (previousRouteName) {
       // Wait 500ms to prevent transition lag
       setTimeout(() => {
         setScrollEnabled(screenOptions.scrollEnabled);
       }, 500);
-    } else {
-      setScrollEnabled(screenOptions.scrollEnabled);
     }
   }, [previousRouteName, screenOptions.scrollEnabled]);
 
