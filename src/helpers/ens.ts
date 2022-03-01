@@ -229,9 +229,9 @@ const setupMulticallRecords = (
   const namehash = hash(name);
 
   const data = [];
-
   // ens associated address
   const ensAssociatedRecord = records.ensAssociatedAddress;
+
   if (
     Boolean(ensAssociatedRecord) &&
     typeof ensAssociatedRecord === 'string' &&

@@ -245,7 +245,7 @@ export const estimateENSRegistrationGasLimit = async (
     records: {
       coinAddress: null,
       contentHash: null,
-      ensAssociatedAddress: ownerAddress,
+      ensAssociatedAddress: null,
       text: [
         { key: 'key1', value: 'value1' },
         { key: 'key2', value: 'value2' },
@@ -387,9 +387,9 @@ export const recordsForTransactionAreValid = (
     text,
   } = registrationRecords;
   if (
-    !coinAddress?.length ||
-    !contentHash ||
-    !ensAssociatedAddress ||
+    !coinAddress?.length &&
+    !contentHash &&
+    !ensAssociatedAddress &&
     !text?.length
   ) {
     return false;
