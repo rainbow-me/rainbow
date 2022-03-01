@@ -104,9 +104,11 @@ export default function useENSRegistration({
   // Since `records.avatar` is not a reliable source for an avatar URL
   // (the avatar can be an NFT), then if the avatar is an NFT, we will
   // parse it to obtain the URL.
-  const avatarUrl = useMemo(() => {
-    return recordsQuery.data?.images?.avatarUrl;
-  }, [recordsQuery.data?.images?.avatarUrl]);
+  const images = useMemo(() => {
+    return (
+      recordsQuery.data?.images || { avatarUrl: undefined, coverUrl: undefined }
+    );
+  }, [recordsQuery.data?.images]);
 
   // Derive the records that should be added or removed from the profile
   // (these should be used for SET_TEXT txns instead of `records` to save
@@ -145,10 +147,10 @@ export default function useENSRegistration({
   }, [existingRecords, records]);
 
   return {
-    avatarUrl,
     changedRecords,
     clearCurrentRegistrationName,
     existingRecords,
+    images,
     mode,
     name,
     records,

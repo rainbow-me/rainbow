@@ -313,7 +313,7 @@ const UniqueTokenExpandedState = ({
 
   const isActionsEnabled = !external && !isReadOnlyWallet;
   const hasSendButton = isActionsEnabled && isSendable;
-  const hasEditButton = isActionsEnabled && isENS;
+  const hasEditButton = true;
 
   const familyLinkDisplay = useMemo(
     () =>

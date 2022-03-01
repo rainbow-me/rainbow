@@ -13,7 +13,7 @@ import { getEIP1559GasParams } from '@rainbow-me/redux/gas';
 import { timeUnits } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
 
-export default function useENSSearchCosts({
+export default function useENSRegistrationCosts({
   duration,
   name,
   rentPrice,

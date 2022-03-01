@@ -2,6 +2,7 @@ import { formatsByName } from '@ensdomains/address-encoder';
 import { hash } from '@ensdomains/eth-ens-namehash';
 import { BigNumberish, Contract, Wallet } from 'ethers';
 import { keccak256, toUtf8Bytes } from 'ethers/lib/utils';
+import lang from 'i18n-js';
 import { atom } from 'recoil';
 import { InlineFieldProps } from '../components/inputs/InlineField';
 import {
@@ -91,8 +92,8 @@ const textRecordFields = {
       maxLength: 50,
     },
     key: ENS_RECORDS.displayName,
-    label: 'Name',
-    placeholder: 'Add a display name',
+    label: lang.t('profiles.create.name'),
+    placeholder: lang.t('profiles.create.name_placeholder'),
   },
   [ENS_RECORDS.description]: {
     id: 'bio',
@@ -101,8 +102,8 @@ const textRecordFields = {
       multiline: true,
     },
     key: ENS_RECORDS.description,
-    label: 'Bio',
-    placeholder: 'Add a bio to your profile',
+    label: lang.t('profiles.create.bio'),
+    placeholder: lang.t('profiles.create.bio_placeholder'),
   },
   [ENS_RECORDS.twitter]: {
     id: 'twitter',
@@ -111,7 +112,7 @@ const textRecordFields = {
     },
     key: ENS_RECORDS.twitter,
     label: 'Twitter',
-    placeholder: '@username',
+    placeholder: lang.t('profiles.create.username_placeholder'),
     validations: {
       allowCharacterRegex: {
         match: /^@?\w*$/,
@@ -134,8 +135,8 @@ const textRecordFields = {
       maxLength: 100,
     },
     key: ENS_RECORDS.url,
-    label: 'Website',
-    placeholder: 'Add your website',
+    label: lang.t('profiles.create.website'),
+    placeholder: lang.t('profiles.create.website_placeholder'),
   },
   [ENS_RECORDS.github]: {
     id: 'github',
@@ -143,8 +144,8 @@ const textRecordFields = {
       maxLength: 20,
     },
     key: ENS_RECORDS.github,
-    label: 'GitHub',
-    placeholder: '@username',
+    label: 'Github',
+    placeholder: lang.t('profiles.create.username_placeholder'),
   },
   [ENS_RECORDS.instagram]: {
     id: 'instagram',
@@ -153,7 +154,7 @@ const textRecordFields = {
     },
     key: ENS_RECORDS.instagram,
     label: 'Instagram',
-    placeholder: '@username',
+    placeholder: lang.t('profiles.create.username_placeholder'),
     validations: {
       allowCharacterRegex: {
         match: /^@?([\w.])*$/,
@@ -167,7 +168,7 @@ const textRecordFields = {
     },
     key: ENS_RECORDS.snapchat,
     label: 'Snapchat',
-    placeholder: '@username',
+    placeholder: lang.t('profiles.create.username_placeholder'),
     validations: {
       allowCharacterRegex: {
         match: /^@?([\w.])*$/,
@@ -181,7 +182,7 @@ const textRecordFields = {
     },
     key: ENS_RECORDS.discord,
     label: 'Discord',
-    placeholder: '@username',
+    placeholder: lang.t('profiles.create.username_placeholder'),
   },
 } as const;
 

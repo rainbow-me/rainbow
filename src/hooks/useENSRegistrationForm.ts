@@ -52,8 +52,14 @@ export default function useENSRegistrationForm({
 
   const [disabled, setDisabled] = useRecoilState(disabledAtom);
   useEffect(() => {
-    setDisabled(isEmpty(changedRecords));
-  }, [changedRecords, setDisabled]);
+    // If we are in edit mode, we want to disable the "Review" button
+    // when there are no changed records.
+    // Note: We don't want to do this in create mode as we have the "Skip"
+    // button.
+    if (mode === 'edit') {
+      setDisabled(isEmpty(changedRecords));
+    }
+  }, [changedRecords, disabled, mode, setDisabled]);
 
   const [selectedFields, setSelectedFields] = useRecoilState(
     selectedFieldsAtom

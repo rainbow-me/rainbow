@@ -11,7 +11,11 @@ import {
   Text,
   useForegroundColor,
 } from '@rainbow-me/design-system';
-import { useENSRegistrationForm, useSelectImageMenu } from '@rainbow-me/hooks';
+import {
+  useENSRegistration,
+  useENSRegistrationForm,
+  useSelectImageMenu,
+} from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 
 const alpha = '33';
@@ -19,16 +23,19 @@ const alpha = '33';
 export default function CoverPhoto() {
   const { colors } = useTheme();
   const {
+    images: { coverUrl: initialCoverUrl },
+  } = useENSRegistration();
+  const {
     isLoading,
     values,
     onBlurField,
     setDisabled,
   } = useENSRegistrationForm();
 
-  const [coverUrl, setCoverUrl] = useState(values?.cover);
+  const [coverUrl, setCoverUrl] = useState(initialCoverUrl || values?.cover);
   useEffect(() => {
-    setCoverUrl(values?.cover);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    setCoverUrl(initialCoverUrl || values?.cover);
+  }, [initialCoverUrl]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const accentColor = useForegroundColor('accent');
 
