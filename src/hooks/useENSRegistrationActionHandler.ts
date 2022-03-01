@@ -174,8 +174,7 @@ export default function useENSRegistrationActionHandler(
       const block = await web3Provider.getBlock(tx.blockHash || '');
       confirmedAt = block?.timestamp * 1000;
       const now = Date.now();
-      const secs = differenceInSeconds(now, now);
-      // const secs = differenceInSeconds(now, confirmedAt * 1000);
+      const secs = differenceInSeconds(now, confirmedAt * 1000);
       setSecondsSinceCommitConfirmed(secs);
       confirmed = true;
       dispatch(
