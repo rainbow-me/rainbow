@@ -80,7 +80,7 @@ export function resolveURI(
     return { isEncoded, isOnChain: isEncoded, uri };
   }
 
-  const ipfsGateway = customGateway || 'https://ipfs.io';
+  const ipfsGateway = customGateway || 'https://cloudflare-ipfs.com/';
   const ipfsRegexpResult = uri.match(ipfsRegex);
   const matches = ipfsRegexpResult || [];
   const protocol = matches?.[1] || '';

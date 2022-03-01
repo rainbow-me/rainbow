@@ -9,7 +9,7 @@ import {
   Stack,
 } from '@rainbow-me/design-system';
 import { textRecordFields } from '@rainbow-me/helpers/ens';
-import { useENSProfileForm } from '@rainbow-me/hooks';
+import { useENSRegistrationForm } from '@rainbow-me/hooks';
 
 export default function TextRecordsForm({
   defaultFields,
@@ -22,7 +22,7 @@ export default function TextRecordsForm({
     onChangeField,
     onBlurField,
     values,
-  } = useENSProfileForm({
+  } = useENSRegistrationForm({
     defaultFields: defaultFields.map(fieldName => textRecordFields[fieldName]),
   });
 

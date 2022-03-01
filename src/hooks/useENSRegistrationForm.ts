@@ -2,7 +2,7 @@ import { isEmpty, omit } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { atom, useRecoilState } from 'recoil';
-import { useENSProfile } from '.';
+import { useENSRegistration } from '.';
 import { Records } from '@rainbow-me/entities';
 import { textRecordFields } from '@rainbow-me/helpers/ens';
 
@@ -21,7 +21,7 @@ export const valuesAtom = atom<{ [name: string]: Partial<Records> }>({
   key: 'ensProfileForm.values',
 });
 
-export default function useENSProfileForm({
+export default function useENSRegistrationForm({
   defaultFields,
   createForm,
 }: {
@@ -39,7 +39,7 @@ export default function useENSProfileForm({
     removeRecordByKey,
     updateRecordByKey,
     updateRecords,
-  } = useENSProfile();
+  } = useENSRegistration();
 
   // The initial records will be the existing records belonging to the profile in "edit mode",
   // but will be all of the records in "create mode".

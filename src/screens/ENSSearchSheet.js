@@ -21,9 +21,9 @@ import {
 } from '@rainbow-me/design-system';
 import { ENS_DOMAIN } from '@rainbow-me/helpers/ens';
 import {
-  useENSProfile,
   useENSRegistration,
-  useENSRegistrationCosts,
+  useENSSearch,
+  useENSSearchCosts,
   useKeyboardHeight,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
@@ -40,7 +40,7 @@ export default function ENSSearchSheet() {
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearchQuery] = useDebounce(searchQuery, 200);
 
-  const { startRegistration } = useENSProfile();
+  const { startRegistration } = useENSRegistration();
 
   const {
     data: registrationData,
@@ -49,14 +49,14 @@ export default function ENSSearchSheet() {
     isLoading,
     isInvalid,
     isAvailable,
-  } = useENSRegistration({
+  } = useENSSearch({
     name: debouncedSearchQuery,
   });
 
   const {
     data: registrationCostsData,
     isSuccess: registrationCostsDataIsAvailable,
-  } = useENSRegistrationCosts({
+  } = useENSSearchCosts({
     duration: 1,
     name: debouncedSearchQuery,
     rentPrice: registrationData?.rentPrice,

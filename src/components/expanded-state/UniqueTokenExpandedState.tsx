@@ -59,6 +59,7 @@ import {
   useAccountProfile,
   useAccountSettings,
   useDimensions,
+  useENSProfile,
   usePersistentDominantColorFromImage,
   useShowcaseTokens,
 } from '@rainbow-me/hooks';
@@ -203,6 +204,7 @@ const UniqueTokenExpandedState = ({
     () => familyName === 'ENS' && uniqueId !== 'Unknown ENS name',
     [familyName, uniqueId]
   );
+  const ensProfile = useENSProfile(uniqueId, { enabled: isENS });
 
   const {
     addShowcaseToken,

@@ -41,8 +41,8 @@ import {
   textRecordFields,
 } from '@rainbow-me/helpers/ens';
 import {
-  useENSProfile,
-  useENSProfileForm,
+  useENSRegistration,
+  useENSRegistrationForm,
   useKeyboardHeight,
   usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
@@ -54,10 +54,10 @@ export const BottomActionHeight = ios ? 270 : 250;
 
 export default function ENSAssignRecordsSheet() {
   const { colors } = useTheme();
-  const { name, mode } = useENSProfile({
+  const { name, mode } = useENSRegistration({
     setExistingRecordsWhenInEditMode: true,
   });
-  useENSProfileForm({ createForm: true });
+  useENSRegistrationForm({ createForm: true });
 
   const [avatarUrl, setAvatarUrl] = useState();
 
@@ -122,14 +122,14 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
   const keyboardHeight = useKeyboardHeight();
   const [accentColor] = useRecoilState(accentColorAtom);
 
-  const { mode, recordsQuery } = useENSProfile();
+  const { mode, recordsQuery } = useENSRegistration();
   const {
     disabled,
     isEmpty,
     selectedFields,
     onAddField,
     onRemoveField,
-  } = useENSProfileForm();
+  } = useENSRegistrationForm();
 
   const handlePressBack = useCallback(() => {
     navigate(Routes.ENS_SEARCH_SHEET);

@@ -29,10 +29,10 @@ import {
 import {
   useAccountSettings,
   useCurrentNonce,
-  useENSProfile,
-  useENSProfileForm,
   useENSRegistration,
-  useENSRegistrationCosts,
+  useENSRegistrationForm,
+  useENSSearch,
+  useENSSearchCosts,
   useGas,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
@@ -55,7 +55,7 @@ export default function ENSConfirmRegisterSheet() {
     mode,
     records,
     changedRecords,
-  } = useENSProfile();
+  } = useENSRegistration();
   const { accountAddress, network } = useAccountSettings();
   const getNextNonce = useCurrentNonce(accountAddress, network);
   const [gasLimit, setGasLimit] = useState();
@@ -63,17 +63,17 @@ export default function ENSConfirmRegisterSheet() {
 
   const [duration, setDuration] = useState(1);
 
-  const { blurFields } = useENSProfileForm();
+  const { blurFields } = useENSRegistrationForm();
   useFocusEffect(() => {
     blurFields();
   });
 
   const name = ensName.replace(ENS_DOMAIN, '');
-  const { data: registrationData } = useENSRegistration({
+  const { data: registrationData } = useENSSearch({
     name,
   });
   const rentPrice = registrationData?.rentPrice;
-  const { data: registrationCostsData } = useENSRegistrationCosts({
+  const { data: registrationCostsData } = useENSSearchCosts({
     duration,
     name,
     rentPrice,

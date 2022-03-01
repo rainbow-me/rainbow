@@ -11,14 +11,19 @@ import {
   Text,
   useForegroundColor,
 } from '@rainbow-me/design-system';
-import { useENSProfileForm, useSelectImageMenu } from '@rainbow-me/hooks';
+import { useENSRegistrationForm, useSelectImageMenu } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 
 const alpha = '33';
 
 export default function CoverPhoto() {
   const { colors } = useTheme();
-  const { isLoading, values, onBlurField, setDisabled } = useENSProfileForm();
+  const {
+    isLoading,
+    values,
+    onBlurField,
+    setDisabled,
+  } = useENSRegistrationForm();
 
   const [coverUrl, setCoverUrl] = useState(values?.cover);
   useEffect(() => {

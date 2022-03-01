@@ -27,6 +27,7 @@ import {
   ensReverseRegistrarAddress,
 } from '@rainbow-me/references';
 import { colors } from '@rainbow-me/styles';
+import { labelhash } from '@rainbow-me/utils';
 
 export enum ENSRegistrationTransactionType {
   COMMIT = 'commit',
@@ -227,9 +228,7 @@ const getAvailable = async (name: string): Promise<boolean> =>
   getENSRegistrarControllerContract().available(name);
 
 const getNameExpires = async (name: string): Promise<string> =>
-  getENSBaseRegistrarImplementationContract().nameExpires(
-    keccak256(toUtf8Bytes(name))
-  );
+  getENSBaseRegistrarImplementationContract().nameExpires(labelhash(name));
 
 const getRentPrice = async (name: string, duration: number): Promise<any> =>
   getENSRegistrarControllerContract().rentPrice(name, duration);

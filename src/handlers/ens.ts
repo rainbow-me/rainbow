@@ -2,21 +2,24 @@ import { debounce, isEmpty, sortBy } from 'lodash';
 import { ensClient } from '../apollo/client';
 import {
   ENS_DOMAINS,
-  ENS_RECORDS,
+  ENS_GET_OWNER,
+  ENS_GET_REGISTRANT,
   ENS_REGISTRATIONS,
   ENS_SUGGESTIONS,
+  ENS_TEXT_RECORDS,
 } from '../apollo/queries';
 import { estimateGasWithPadding, web3Provider } from './web3';
 import { Records } from '@rainbow-me/entities';
 import {
+  ENS_DOMAIN,
   ENSRegistrationRecords,
   ENSRegistrationTransactionType,
   generateSalt,
   getENSExecutionDetails,
 } from '@rainbow-me/helpers/ens';
 import { add } from '@rainbow-me/helpers/utilities';
-import { ethUnits } from '@rainbow-me/references';
-import { profileUtils } from '@rainbow-me/utils';
+import { ensPublicResolverAddress, ethUnits } from '@rainbow-me/references';
+import { labelhash, profileUtils } from '@rainbow-me/utils';
 import { AvatarResolver } from 'ens-avatar';
 
 export const fetchSuggestions = async (
@@ -94,18 +97,40 @@ export const fetchRegistrationDate = async (recipient: any) => {
   }
 };
 
-export const fetchRecords = async (recipient: any) => {
-  const recpt = recipient.toLowerCase();
-  const result = await ensClient.query({
-    query: ENS_RECORDS,
+export const fetchImages = async (ensName: string) => {
+  let avatarUrl;
+  let coverUrl;
+  try {
+    const avatarResolver = new AvatarResolver(web3Provider);
+    [avatarUrl, coverUrl] = await Promise.all([
+      avatarResolver.getImage(ensName, {
+        allowNonOwnerNFTs: true,
+        type: 'avatar',
+      }),
+      avatarResolver.getImage(ensName, {
+        allowNonOwnerNFTs: true,
+        type: 'cover',
+      }),
+    ]);
+    // eslint-disable-next-line no-empty
+  } catch (err) {}
+  return {
+    avatarUrl,
+    coverUrl,
+  };
+};
+
+export const fetchRecords = async (ensName: string) => {
+  const response = await ensClient.query({
+    query: ENS_TEXT_RECORDS,
     variables: {
-      name: recpt,
+      name: ensName,
     },
   });
+  const data = response.data?.domains[0] || {};
 
-  const resolver = await web3Provider.getResolver(recpt);
-
-  const recordKeys: string[] = result.data?.domains[0]?.resolver?.texts || [];
+  const resolver = await web3Provider.getResolver(ensName);
+  const recordKeys: string[] = data.resolver?.texts || [];
   const recordValues = await Promise.all(
     recordKeys.map((key: string) => resolver.getText(key))
   );
@@ -116,16 +141,73 @@ export const fetchRecords = async (recipient: any) => {
     };
   }, {}) as Partial<Records>;
 
-  let avatarUrl;
-  try {
-    const avatarResolver = new AvatarResolver(web3Provider);
-    avatarUrl = await avatarResolver.getAvatar(recpt, {
-      allowNonOwnerNFTs: true,
-    });
-    // eslint-disable-next-line no-empty
-  } catch (err) {}
+  return records;
+};
 
-  return { metadata: { avatarUrl }, records };
+export const fetchOwner = async (ensName: string) => {
+  const response = await ensClient.query({
+    query: ENS_GET_OWNER,
+    variables: {
+      name: ensName,
+    },
+  });
+  const data = response.data?.domains[0] || {};
+
+  let owner: { address?: string; name?: string } = {};
+  if (data.owner?.id) {
+    const name = await web3Provider.lookupAddress(data.owner.id);
+    owner = {
+      address: data.owner.id,
+      name,
+    };
+  }
+
+  return owner;
+};
+
+export const fetchRegistrant = async (ensName: string) => {
+  const response = await ensClient.query({
+    query: ENS_GET_REGISTRANT,
+    variables: {
+      name: labelhash(ensName.replace(ENS_DOMAIN, '')),
+    },
+  });
+  const data = response.data?.registration || {};
+
+  let registrant: { address?: string; name?: string } = {};
+  if (data.registrant?.id) {
+    const registrantAddress = data.registrant?.id;
+    const name = await web3Provider.lookupAddress(registrantAddress);
+    registrant = {
+      address: registrantAddress,
+      name,
+    };
+  }
+
+  return registrant;
+};
+
+export const fetchProfile = async (ensName: any) => {
+  const [resolver, records, images, owner, registrant] = await Promise.all([
+    web3Provider.getResolver(ensName),
+    fetchRecords(ensName),
+    fetchImages(ensName),
+    fetchOwner(ensName),
+    fetchRegistrant(ensName),
+  ]);
+
+  const resolverData = {
+    address: resolver.address,
+    type: resolver.address === ensPublicResolverAddress ? 'default' : 'custom',
+  };
+
+  return {
+    images,
+    owner,
+    records,
+    registrant,
+    resolver: resolverData,
+  };
 };
 
 export const estimateENSRegisterWithConfigGasLimit = async ({
