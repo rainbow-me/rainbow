@@ -8,8 +8,13 @@ import {
 } from '../raps/common';
 import { useAccountSettings, useCurrentNonce, useENSProfile } from '.';
 import { RegistrationParameters } from '@rainbow-me/entities';
-import { web3Provider } from '@rainbow-me/handlers/web3';
-import { generateSalt, getRentPrice } from '@rainbow-me/helpers/ens';
+import { toHex, web3Provider } from '@rainbow-me/handlers/web3';
+import {
+  ENS_DOMAIN,
+  generateSalt,
+  getRentPrice,
+} from '@rainbow-me/helpers/ens';
+import { addBuffer } from '@rainbow-me/helpers/utilities';
 import { loadWallet } from '@rainbow-me/model/wallet';
 import { executeRap } from '@rainbow-me/raps';
 import { updateTransactionRegistrationParameters } from '@rainbow-me/redux/ensRegistration';
@@ -62,7 +67,7 @@ export default function useENSRegistrationActionHandler(
       const salt = generateSalt();
       const nonce = await getNextNonce();
       const rentPrice = await getRentPrice(
-        name,
+        name.replace(ENS_DOMAIN, ''),
         yearsDuration * timeUnits.secs.year
       );
 
@@ -100,7 +105,10 @@ export default function useENSRegistrationActionHandler(
       }
 
       const nonce = await getNextNonce();
-      const rentPrice = await getRentPrice(name, duration);
+      const rentPrice = await getRentPrice(
+        name.replace(ENS_DOMAIN, ''),
+        duration
+      );
 
       const registerEnsRegistrationParameters: ENSActionParameters = {
         duration,
@@ -200,7 +208,12 @@ export default function useENSRegistrationActionHandler(
       switch (step) {
         case REGISTRATION_STEPS.COMMIT: {
           const salt = generateSalt();
-          const rentPrice = await getRentPrice(name, timeUnits.secs.year);
+          const rentPrice = await getRentPrice(
+            name.replace(ENS_DOMAIN, ''),
+            timeUnits.secs.year
+          );
+          const value = toHex(addBuffer(rentPrice.toString(), 1.1));
+
           const gasLimit = await getENSRapEstimationByType(
             RapActionTypes.commitENS,
             {
@@ -208,7 +221,7 @@ export default function useENSRegistrationActionHandler(
               name,
               ownerAddress: accountAddress,
               records,
-              rentPrice,
+              rentPrice: value,
               salt,
             }
           );
