@@ -96,14 +96,12 @@ export default function useENSProfileForm({
     ({ key, value }) => {
       setValues(values => ({ ...values, [key]: value }));
       updateRecordByKey(key, value);
-      console.log('⛽⛽⛽⛽ onBlurField', key, value);
     },
     [setValues, updateRecordByKey]
   );
 
   const onChangeField = useCallback(
     ({ key, value }) => {
-      console.log('⛽⛽⛽⛽ onChangeField', key, value);
       setValues(values => ({ ...values, [key]: value }));
     },
     [setValues]
