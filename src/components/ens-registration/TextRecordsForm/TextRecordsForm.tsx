@@ -29,7 +29,7 @@ export default function TextRecordsForm({
   return (
     <Box>
       {isLoading ? (
-        <Box background="accent" paddingTop="19px" style={{ height: 300 }}>
+        <Box paddingTop="19px" style={{ height: 300 }}>
           <Skeleton animated>
             <Stack space="30px">
               <FakeField />
