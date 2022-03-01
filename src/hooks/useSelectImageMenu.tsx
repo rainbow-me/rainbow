@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import ImagePicker, { Image, Options } from 'react-native-image-crop-picker';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
@@ -16,7 +17,7 @@ type Action = 'library' | 'nft';
 const items = {
   library: {
     actionKey: 'library',
-    actionTitle: 'Upload photo',
+    actionTitle: lang.t('profiles.create.upload_photo'),
     icon: {
       imageValue: {
         systemName: 'photo',
@@ -26,7 +27,7 @@ const items = {
   },
   nft: {
     actionKey: 'nft',
-    actionTitle: 'Choose NFT',
+    actionTitle: lang.t('profiles.create.choose_nft'),
     icon: {
       imageValue: {
         systemName: 'cube',
