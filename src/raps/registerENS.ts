@@ -1,34 +1,35 @@
 import { concat } from 'lodash';
 import {
-  createNewAction,
+  createNewENSAction,
   createNewRap,
-  RapAction,
+  ENSActionParameters,
   RapActionTypes,
-  RegisterENSActionParameters,
+  RapENSAction,
 } from './common';
 
 export const createRegisterENSRap = async (
-  registerENSActionParameters: RegisterENSActionParameters
+  ENSActionParameters: ENSActionParameters
 ) => {
-  let actions: RapAction[] = [];
+  let actions: RapENSAction[] = [];
 
-  const register = createNewAction(
+  const register = createNewENSAction(
     RapActionTypes.registerWithConfigENS,
-    registerENSActionParameters
+    ENSActionParameters
   );
   actions = concat(actions, register);
 
   // ? records rap
-  const multicall = createNewAction(
-    RapActionTypes.multicallENS,
-    registerENSActionParameters
-  );
-  actions = concat(actions, multicall);
+  // WIP we don't have a formatter method yet
+  // const multicall = createNewENSAction(
+  //   RapActionTypes.multicallENS,
+  //   ENSActionParameters
+  // );
+  // actions = concat(actions, multicall);
 
   // ? reverse name rap
-  const setName = createNewAction(
+  const setName = createNewENSAction(
     RapActionTypes.setNameENS,
-    registerENSActionParameters
+    ENSActionParameters
   );
   actions = concat(actions, setName);
 
@@ -38,13 +39,13 @@ export const createRegisterENSRap = async (
 };
 
 export const createCommitENSRap = async (
-  registerENSActionParameters: RegisterENSActionParameters
+  ENSActionParameters: ENSActionParameters
 ) => {
-  let actions: RapAction[] = [];
+  let actions: RapENSAction[] = [];
   // // commit rap
-  const commit = createNewAction(
+  const commit = createNewENSAction(
     RapActionTypes.commitENS,
-    registerENSActionParameters
+    ENSActionParameters
   );
   actions = concat(actions, commit);
 

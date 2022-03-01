@@ -1,23 +1,39 @@
 import { EthereumAddress } from '.';
 import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 
-export type Records = { [key in keyof typeof ENS_RECORDS]: string };
+export type Records = { [value in keyof typeof ENS_RECORDS]: string };
 
-export interface RegistrationParameters {
-  name: string;
+export interface ENSRegistrationRecords {
+  coinAddress: { key: string; address: string }[] | null;
+  contentHash: string | null;
+  ensAssociatedAddress: string | null;
+  text: { key: string; value: string }[] | null;
+}
+
+export interface TransactionRegistrationParameters {
+  commitTransactionHash?: string;
+  commitTransactionConfirmedAt?: number;
+  registerTransactionHash?: number;
+}
+
+export interface RegistrationParameters
+  extends TransactionRegistrationParameters {
   duration: number;
-  records: Records;
+  name: string;
   ownerAddress: EthereumAddress;
   rentPrice: string;
-  salt?: string;
+  records?: Records;
+  salt: string;
   setReverseRecord?: boolean;
+}
+
+export interface ENSRegistrations {
+  [key: EthereumAddress]: {
+    [ensName: string]: RegistrationParameters;
+  };
 }
 
 export interface ENSRegistrationState {
   currentRegistrationName: string;
-  registrations: {
-    [key: EthereumAddress]: {
-      [ensName: string]: RegistrationParameters;
-    };
-  };
+  registrations: ENSRegistrations;
 }

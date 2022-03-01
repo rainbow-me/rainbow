@@ -60,7 +60,7 @@ export default function useENSProfileForm({
   }, [name]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [values, setValues] = useRecoilState(valuesAtom);
-  useEffect(() => setValues(records), [name]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => records && setValues(records), [name]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Set initial records in redux depending on user input (defaultFields)
   useEffect(() => {
