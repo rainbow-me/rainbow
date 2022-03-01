@@ -2,14 +2,14 @@ import { useFocusEffect, useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { useRecoilState } from 'recoil';
 import brain from '../assets/brain.png';
+import ActivityIndicator from '../components/ActivityIndicator';
+import Spinner from '../components/Spinner';
 import { HoldToAuthorizeButton } from '../components/buttons';
 import { RegistrationReviewRows } from '../components/ens-registration';
 import { GasSpeedButton } from '../components/gas';
 import { SheetActionButtonRow, SlackSheet } from '../components/sheet';
-import { RapActionTypes } from '../raps/common';
 import {
   AccentColorProvider,
   Box,
@@ -22,25 +22,26 @@ import {
   Stack,
   Text,
 } from '@rainbow-me/design-system';
+import { accentColorAtom, ENS_DOMAIN } from '@rainbow-me/helpers/ens';
 import {
-  accentColorAtom,
-  ENS_DOMAIN,
-  generateSalt,
-} from '@rainbow-me/helpers/ens';
-import {
-  useAccountSettings,
-  useCurrentNonce,
   useENSProfile,
   useENSProfileForm,
   useENSRegistration,
+  useENSRegistrationActionHandler,
   useENSRegistrationCosts,
   useGas,
+  usePrevious,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
-import { loadWallet } from '@rainbow-me/model/wallet';
-import { getRapEstimationByType } from '@rainbow-me/raps';
-import { saveCommitRegistrationParameters } from '@rainbow-me/redux/ensRegistration';
-import { timeUnits } from '@rainbow-me/references';
+import styled from '@rainbow-me/styled-components';
+
+const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
+  ({ theme: { colors } }) => ({
+    color: colors.alpha(colors.blueGreyDark, 0.3),
+  })
+)({
+  marginRight: 2,
+});
 
 export const ENSConfirmRegisterSheetHeight = 600;
 export const ENSConfirmUpdateSheetHeight = 400;
@@ -48,27 +49,26 @@ const avatarSize = 70;
 
 export default function ENSConfirmRegisterSheet() {
   const { params } = useRoute();
-  const dispatch = useDispatch();
   const { gasFeeParamsBySpeed, updateTxFee, startPollingGasFees } = useGas();
   const {
     images: { avatarUrl: initialAvatarUrl },
     name: ensName,
     mode,
-    records,
-    changedRecords,
   } = useENSProfile();
-  const { accountAddress, network } = useAccountSettings();
-  const getNextNonce = useCurrentNonce(accountAddress, network);
   const [gasLimit, setGasLimit] = useState();
   const [accentColor] = useRecoilState(accentColorAtom);
 
   const [duration, setDuration] = useState(1);
+  const { step, stepGasLimit, action } = useENSRegistrationActionHandler({
+    yearsDuration: duration,
+  });
+  const prevStepGasLimit = usePrevious(stepGasLimit);
 
   const { blurFields, values } = useENSProfileForm();
   useFocusEffect(() => {
     blurFields();
   });
-  const avatarUrl = values.avatar || initialAvatarUrl;
+  const avatarUrl = initialAvatarUrl || values.avatar;
 
   const name = ensName.replace(ENS_DOMAIN, '');
   const { data: registrationData } = useENSRegistration({
@@ -82,80 +82,28 @@ export default function ENSConfirmRegisterSheet() {
   });
 
   const updateGasLimit = useCallback(async () => {
-    const salt = generateSalt();
-    const gasLimit = await getRapEstimationByType(RapActionTypes.commitENS, {
-      ensRegistrationParameters: {
-        duration: duration * timeUnits.secs.year,
-        name: name,
-        ownerAddress: accountAddress,
-        records: changedRecords,
-        rentPrice,
-        salt,
-      },
-    });
-    updateTxFee(gasLimit);
-    setGasLimit(gasLimit);
-  }, [accountAddress, changedRecords, duration, name, rentPrice, updateTxFee]);
+    updateTxFee(stepGasLimit);
+    setGasLimit(stepGasLimit);
+  }, [stepGasLimit, updateTxFee]);
 
   // Update gas limit
   useEffect(() => {
-    if (!gasLimit && !isEmpty(gasFeeParamsBySpeed)) {
+    if (
+      (!gasLimit && stepGasLimit && !isEmpty(gasFeeParamsBySpeed)) ||
+      prevStepGasLimit !== stepGasLimit
+    ) {
       updateGasLimit();
     }
-  }, [gasFeeParamsBySpeed, gasLimit, updateGasLimit, updateTxFee]);
+  }, [
+    gasFeeParamsBySpeed,
+    gasLimit,
+    prevStepGasLimit,
+    stepGasLimit,
+    updateGasLimit,
+    updateTxFee,
+  ]);
 
   useEffect(() => startPollingGasFees(), [startPollingGasFees]);
-
-  const handleCommitSubmit = useCallback(async () => {
-    const wallet = await loadWallet();
-    if (!wallet) {
-      return;
-    }
-
-    const nonce = await getNextNonce();
-    const salt = generateSalt();
-
-    const ensRegistrationParameters = {
-      duration: duration * timeUnits.secs.year,
-      name,
-      nonce,
-      ownerAddress: accountAddress,
-      records,
-      rentPrice,
-      salt,
-    };
-
-    dispatch(
-      saveCommitRegistrationParameters(
-        accountAddress,
-        ensRegistrationParameters
-      )
-    );
-    return;
-    // LEAVING THIS AS WIP TO AVOID PEOPLE ON THE TEAM  SENDING THIS TX
-
-    // const callback = () => null;
-
-    // await executeRap(
-    //   wallet,
-    //   RapActionTypes.commitENS,
-    //   {
-    //     ensRegistrationParameters: {
-    //       ...ensRegistrationParameters,
-    //       records: changedRecords
-    //     },
-    //   },
-    //   callback
-    // );
-  }, [
-    accountAddress,
-    dispatch,
-    duration,
-    getNextNonce,
-    name,
-    records,
-    rentPrice,
-  ]);
 
   return (
     <SlackSheet
@@ -247,29 +195,43 @@ export default function ENSConfirmRegisterSheet() {
                   {mode === 'edit' && <Text>TODO</Text>}
                 </Stack>
               </Inset>
+              <Box>
+                <Stack space="34px">
+                  <Text align="center">Step: {step}</Text>
+                  <Text align="center">Gas limit: {stepGasLimit}</Text>
+                </Stack>
+              </Box>
             </Row>
             <Row height="content">
-              <Box>
-                <SheetActionButtonRow paddingBottom={5}>
-                  <HoldToAuthorizeButton
-                    color={accentColor}
-                    hideInnerBorder
-                    isLongPressAvailableForBiometryType
-                    label={lang.t('profiles.confirm.commit_button')}
-                    onLongPress={handleCommitSubmit}
-                    parentHorizontalPadding={19}
-                    showBiometryIcon
-                  />
-                </SheetActionButtonRow>
-              </Box>
-              <Box alignItems="center" justifyContent="center">
-                <GasSpeedButton
-                  borderColor={accentColor}
-                  currentNetwork="mainnet"
-                  marginBottom={0}
-                  theme="light"
-                />
-              </Box>
+              {action ? (
+                <>
+                  <Box>
+                    <SheetActionButtonRow paddingBottom={5}>
+                      <HoldToAuthorizeButton
+                        color={accentColor}
+                        hideInnerBorder
+                        isLongPressAvailableForBiometryType
+                        label={step}
+                        onLongPress={action}
+                        parentHorizontalPadding={19}
+                        showBiometryIcon
+                      />
+                    </SheetActionButtonRow>
+                  </Box>
+                  <Box alignItems="center" justifyContent="center">
+                    <GasSpeedButton
+                      borderColor={accentColor}
+                      currentNetwork="mainnet"
+                      marginBottom={0}
+                      theme="light"
+                    />
+                  </Box>
+                </>
+              ) : (
+                <Box alignItems="center">
+                  <LoadingSpinner />
+                </Box>
+              )}
             </Row>
           </Rows>
         </Box>

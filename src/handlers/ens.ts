@@ -2,14 +2,15 @@ import { debounce, isEmpty, sortBy } from 'lodash';
 import { ensClient } from '../apollo/client';
 import {
   ENS_DOMAINS,
-  ENS_RECORDS,
+  ENS_GET_RECORDS,
   ENS_REGISTRATIONS,
   ENS_SUGGESTIONS,
 } from '../apollo/queries';
+import { ENSActionParameters } from '../raps/common';
 import { estimateGasWithPadding, web3Provider } from './web3';
-import { Records } from '@rainbow-me/entities';
+import { ENSRegistrationRecords, Records } from '@rainbow-me/entities';
 import {
-  ENSRegistrationRecords,
+  ENS_RECORDS,
   ENSRegistrationTransactionType,
   generateSalt,
   getENSExecutionDetails,
@@ -97,7 +98,7 @@ export const fetchRegistrationDate = async (recipient: any) => {
 export const fetchRecords = async (recipient: any) => {
   const recpt = recipient.toLowerCase();
   const result = await ensClient.query({
-    query: ENS_RECORDS,
+    query: ENS_GET_RECORDS,
     variables: {
       name: recpt,
     },
@@ -162,13 +163,7 @@ export const estimateENSCommitGasLimit = async ({
   duration,
   rentPrice,
   salt,
-}: {
-  name: string;
-  ownerAddress: string;
-  duration: number;
-  rentPrice: string;
-  salt: string;
-}) =>
+}: ENSActionParameters) =>
   estimateENSTransactionGasLimit({
     duration,
     name,
@@ -255,6 +250,7 @@ export const estimateENSTransactionGasLimit = async ({
     salt,
     type,
   });
+
   const txPayload = {
     ...(ownerAddress ? { from: ownerAddress } : {}),
     ...(value ? { value } : {}),
@@ -286,33 +282,28 @@ export const estimateENSRegistrationGasLimit = async (
     ownerAddress,
   });
   // dummy multicall to estimate gas
-  const multicallGasLimitPromise = estimateENSMulticallGasLimit({
-    name,
-    records: {
-      coinAddress: null,
-      contentHash: null,
-      ensAssociatedAddress: ownerAddress,
-      text: [
-        { key: 'key1', value: 'value1' },
-        { key: 'key2', value: 'value2' },
-        {
-          key: 'cover',
-          value:
-            'https://cloudflare-ipfs.com/ipfs/QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco/I/m/Vincent_van_Gogh_-_Self-Portrait_-_Google_Art_Project_(454045).jpg',
-        },
-      ],
-    },
-  });
+  // const multicallGasLimitPromise = estimateENSMulticallGasLimit({
+  //   name,
+  //   records: {
+  //     coinAddress: null,
+  //     contentHash: null,
+  //     ensAssociatedAddress: ownerAddress,
+  //     text: [
+  //       { key: 'key1', value: 'value1' },
+  //       { key: 'key2', value: 'value2' },
+  //     ],
+  //   },
+  // });
+
   const gasLimits = await Promise.all([
     commitGasLimitPromise,
     setNameGasLimitPromise,
-    multicallGasLimitPromise,
   ]);
 
-  let [commitGasLimit, setNameGasLimit, multicallGasLimit] = gasLimits;
+  let [commitGasLimit, setNameGasLimit] = gasLimits;
   commitGasLimit = commitGasLimit || `${ethUnits.ens_commit}`;
   setNameGasLimit = setNameGasLimit || `${ethUnits.ens_set_name}`;
-  multicallGasLimit = multicallGasLimit || `${ethUnits.ens_set_multicall}`;
+  const multicallGasLimit = `${ethUnits.ens_set_multicall}`;
   // we need to add register gas limit manually since the gas estimation will fail since the commit tx is not sent yet
   const registerWithConfigGasLimit = `${ethUnits.ens_register_with_config}`;
 
@@ -337,14 +328,7 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
   duration,
   rentPrice,
   salt,
-}: {
-  name: string;
-  ownerAddress: string;
-  records: ENSRegistrationRecords;
-  duration: number;
-  rentPrice: string;
-  salt: string;
-}) => {
+}: ENSActionParameters) => {
   const registerGasLimitPromise = estimateENSRegisterWithConfigGasLimit({
     duration,
     name,
@@ -352,10 +336,10 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
     rentPrice,
     salt,
   });
+  const ensRegistrationRecords = formatRecordsForTransaction(records);
   // WIP we need to set / unset these values from the UI
   const setReverseRecord = true;
   const setRecords = true;
-
   const promises = [registerGasLimitPromise];
   if (setReverseRecord) {
     promises.push(
@@ -365,11 +349,11 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
       })
     );
   }
-  if (setRecords) {
+  if (setRecords && records) {
     promises.push(
       estimateENSMulticallGasLimit({
         name,
-        records,
+        records: ensRegistrationRecords,
       })
     );
   }
@@ -379,4 +363,49 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
   const gasLimit = gasLimits.reduce((a, b) => add(a || 0, b || 0));
   if (!gasLimit) return '0';
   return gasLimit;
+};
+
+export const formatRecordsForTransaction = (
+  records?: Records
+): ENSRegistrationRecords => {
+  const coinAddress = [] as { key: string; address: string }[];
+  const text = [] as { key: string; value: string }[];
+  let contentHash = null;
+  const ensAssociatedAddress = null;
+  records &&
+    Object.entries(records).forEach(([key, value]) => {
+      switch (key) {
+        case ENS_RECORDS.cover:
+        case ENS_RECORDS.twitter:
+        case ENS_RECORDS.displayName:
+        case ENS_RECORDS.email:
+        case ENS_RECORDS.url:
+        case ENS_RECORDS.avatar:
+        case ENS_RECORDS.description:
+        case ENS_RECORDS.notice:
+        case ENS_RECORDS.keywords:
+        case ENS_RECORDS.discord:
+        case ENS_RECORDS.github:
+        case ENS_RECORDS.reddit:
+        case ENS_RECORDS.instagram:
+        case ENS_RECORDS.snapchat:
+        case ENS_RECORDS.telegram:
+        case ENS_RECORDS.ensDelegate:
+          text.push({
+            key,
+            value: value,
+          });
+          return;
+        case ENS_RECORDS.ETH:
+        case ENS_RECORDS.BTC:
+        case ENS_RECORDS.LTC:
+        case ENS_RECORDS.DOGE:
+          coinAddress.push({ address: value, key });
+          return;
+        case ENS_RECORDS.content:
+          contentHash = value;
+          return;
+      }
+    });
+  return { coinAddress, contentHash, ensAssociatedAddress, text };
 };

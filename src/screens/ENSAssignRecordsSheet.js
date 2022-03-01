@@ -56,7 +56,7 @@ export const BottomActionHeight = ios ? 270 : 250;
 export default function ENSAssignRecordsSheet() {
   const { colors } = useTheme();
   const { name, mode } = useENSProfile({
-    setExistingRecordsWhenInEditMode: true,
+    setInitialRecordsWhenInEditMode: true,
   });
   useENSProfileForm({ createForm: true });
 

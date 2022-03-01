@@ -13,6 +13,7 @@ import {
   fromWei,
   multiply,
 } from './utilities';
+import { ENSRegistrationRecords } from '@rainbow-me/entities';
 import { toHex, web3Provider } from '@rainbow-me/handlers/web3';
 import { gweiToWei } from '@rainbow-me/parsers';
 import {
@@ -37,20 +38,6 @@ export enum ENSRegistrationTransactionType {
   MULTICALL = 'multicall',
 }
 
-export interface ENSRegistrationRecords {
-  coinAddress: { key: string; address: string }[] | null;
-  contentHash: string | null;
-  ensAssociatedAddress: string | null;
-  text: { key: string; value: string }[] | null;
-}
-
-const getENSRegistryContract = () => {
-  return new Contract(
-    ensRegistryAddress,
-    ENSRegistryWithFallbackABI,
-    web3Provider
-  );
-};
 enum ENS_RECORDS {
   ETH = 'ETH',
   BTC = 'BTC',
@@ -221,6 +208,14 @@ const getENSBaseRegistrarImplementationContract = (wallet?: Wallet) => {
   );
 };
 
+const getENSRegistryContract = () => {
+  return new Contract(
+    ensRegistryAddress,
+    ENSRegistryWithFallbackABI,
+    web3Provider
+  );
+};
+
 const getResolver = async (name: string): Promise<string> =>
   getENSRegistryContract().resolver(name);
 
@@ -360,13 +355,13 @@ const getENSExecutionDetails = async ({
         ownerAddress
       );
       args = [commitment];
-      contract = getENSRegistrarControllerContract(wallet);
+      contract = registrarController;
       break;
     }
     case ENSRegistrationTransactionType.REGISTER_WITH_CONFIG: {
       if (!name || !ownerAddress || !duration || !rentPrice)
         throw new Error('Bad arguments for registerWithConfig');
-      value = toHex(addBuffer(rentPrice, 1.1));
+      value = toHex(addBuffer(rentPrice, 1.2));
       args = [
         name.replace(ENS_DOMAIN, ''),
         ownerAddress,

@@ -1,15 +1,22 @@
 import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
-import { Rap, RapActionParameters, RapActionTypes } from '../common';
-import { estimateENSTransactionGasLimit } from '@rainbow-me/handlers/ens';
+import { Rap, RapActionTypes, RapENSActionParameters } from '../common';
+import { ENSRegistrationRecords } from '@rainbow-me/entities';
+import {
+  estimateENSTransactionGasLimit,
+  formatRecordsForTransaction,
+} from '@rainbow-me/handlers/ens';
 import { toHex } from '@rainbow-me/handlers/web3';
 import { NetworkTypes } from '@rainbow-me/helpers';
 import {
-  ENSRegistrationRecords,
   ENSRegistrationTransactionType,
   getENSExecutionDetails,
 } from '@rainbow-me/helpers/ens';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
+import {
+  saveCommitRegistrationParameters,
+  updateTransactionRegistrationParameters,
+} from '@rainbow-me/redux/ensRegistration';
 import store from '@rainbow-me/redux/store';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
@@ -103,7 +110,7 @@ const executeMulticall = async (
 
   return (
     methodArguments &&
-    contract?.setText(...methodArguments, {
+    contract?.multicall(...methodArguments, {
       gasLimit: gasLimit ? toHex(gasLimit) : undefined,
       maxFeePerGas: maxFeePerGas ? toHex(maxFeePerGas) : undefined,
       maxPriorityFeePerGas: maxPriorityFeePerGas
@@ -133,7 +140,7 @@ const executeSetName = async (
 
   return (
     methodArguments &&
-    contract?.setText(...methodArguments, {
+    contract?.setName(...methodArguments, {
       gasLimit: gasLimit ? toHex(gasLimit) : undefined,
       maxFeePerGas: maxFeePerGas ? toHex(maxFeePerGas) : undefined,
       maxPriorityFeePerGas: maxPriorityFeePerGas
@@ -147,8 +154,7 @@ const executeSetName = async (
 
 const executeSetText = async (
   name?: string,
-  recordKey?: string,
-  recordValue?: string,
+  records?: ENSRegistrationRecords,
   gasLimit?: string | null,
   maxFeePerGas?: string,
   maxPriorityFeePerGas?: string,
@@ -157,17 +163,7 @@ const executeSetText = async (
 ) => {
   const { contract, methodArguments, value } = await getENSExecutionDetails({
     name,
-    records: {
-      coinAddress: null,
-      contentHash: null,
-      ensAssociatedAddress: null,
-      text: [
-        {
-          key: recordKey || '',
-          value: recordValue || '',
-        },
-      ],
-    },
+    records,
     type: ENSRegistrationTransactionType.SET_TEXT,
     wallet,
   });
@@ -190,7 +186,7 @@ const ensAction = async (
   wallet: Wallet,
   actionName: string,
   index: number,
-  parameters: RapActionParameters,
+  parameters: RapENSActionParameters,
   type: ENSRegistrationTransactionType,
   baseNonce?: number
 ): Promise<number | undefined> => {
@@ -198,19 +194,12 @@ const ensAction = async (
   const { dispatch } = store;
   const { accountAddress: ownerAddress } = store.getState().settings;
   const { selectedGasFee } = store.getState().gas;
-  const {
-    name,
-    duration,
-    rentPrice,
-    records,
-    recordKey,
-    recordValue,
-    salt,
-  } = parameters;
+  const { name, duration, rentPrice, records, salt } = parameters;
 
   logger.log(`[${actionName}] rap for`, name);
 
   let gasLimit;
+  const ensRegistrationRecords = formatRecordsForTransaction(records);
   try {
     logger.sentry(
       `[${actionName}] estimate gas`,
@@ -219,11 +208,12 @@ const ensAction = async (
       },
       type
     );
+
     gasLimit = await estimateENSTransactionGasLimit({
       duration,
       name,
       ownerAddress,
-      records,
+      records: ensRegistrationRecords,
       rentPrice,
       salt,
       type,
@@ -260,6 +250,17 @@ const ensAction = async (
           wallet,
           nonce
         );
+        await dispatch(
+          saveCommitRegistrationParameters(ownerAddress, {
+            commitTransactionHash: tx?.hash,
+            duration,
+            name,
+            ownerAddress,
+            records,
+            rentPrice,
+            salt,
+          })
+        );
         break;
       case ENSRegistrationTransactionType.REGISTER_WITH_CONFIG:
         tx = await executeRegisterWithConfig(
@@ -274,12 +275,16 @@ const ensAction = async (
           wallet,
           nonce
         );
+        await dispatch(
+          updateTransactionRegistrationParameters(ownerAddress, {
+            registerTransactionHash: tx?.hash,
+          })
+        );
         break;
       case ENSRegistrationTransactionType.SET_TEXT:
         tx = await executeSetText(
           name,
-          recordKey,
-          recordValue,
+          ensRegistrationRecords,
           gasLimit,
           maxFeePerGas,
           maxPriorityFeePerGas,
@@ -290,7 +295,7 @@ const ensAction = async (
       case ENSRegistrationTransactionType.MULTICALL:
         tx = await executeMulticall(
           name,
-          records,
+          ensRegistrationRecords,
           gasLimit,
           maxFeePerGas,
           maxPriorityFeePerGas,
@@ -345,7 +350,7 @@ const commitENS = async (
   wallet: Wallet,
   currentRap: Rap,
   index: number,
-  parameters: RapActionParameters,
+  parameters: RapENSActionParameters,
   baseNonce?: number
 ): Promise<number | undefined> => {
   return ensAction(
@@ -358,16 +363,16 @@ const commitENS = async (
   );
 };
 
-const registerENS = async (
+const registerWithConfig = async (
   wallet: Wallet,
   currentRap: Rap,
   index: number,
-  parameters: RapActionParameters,
+  parameters: RapENSActionParameters,
   baseNonce?: number
 ): Promise<number | undefined> => {
   return ensAction(
     wallet,
-    RapActionTypes.registerENS,
+    RapActionTypes.registerWithConfigENS,
     index,
     parameters,
     ENSRegistrationTransactionType.REGISTER_WITH_CONFIG,
@@ -379,7 +384,7 @@ const multicallENS = async (
   wallet: Wallet,
   currentRap: Rap,
   index: number,
-  parameters: RapActionParameters,
+  parameters: RapENSActionParameters,
   baseNonce?: number
 ): Promise<number | undefined> => {
   return ensAction(
@@ -396,7 +401,7 @@ const setTextENS = async (
   wallet: Wallet,
   currentRap: Rap,
   index: number,
-  parameters: RapActionParameters,
+  parameters: RapENSActionParameters,
   baseNonce?: number
 ): Promise<number | undefined> => {
   return ensAction(
@@ -413,7 +418,7 @@ const setNameENS = async (
   wallet: Wallet,
   currentRap: Rap,
   index: number,
-  parameters: RapActionParameters,
+  parameters: RapENSActionParameters,
   baseNonce?: number
 ): Promise<number | undefined> => {
   return ensAction(
@@ -429,7 +434,7 @@ const setNameENS = async (
 export default {
   commitENS,
   multicallENS,
-  registerENS,
+  registerWithConfig,
   setNameENS,
   setTextENS,
 };
