@@ -28,6 +28,7 @@ export { default as logger } from './logger';
 export { default as magicMemo } from './magicMemo';
 export { default as measureText } from './measureText';
 export { default as neverRerender } from './neverRerender';
+export { default as normalizeENS } from './normalizeENS';
 export { default as parseObjectToUrlQueryString } from './parseObjectToUrlQueryString';
 export { default as parseQueryParams } from './parseQueryParams';
 export { default as promiseUtils } from './promise';
@@ -45,6 +46,7 @@ export {
   removeLeadingZeros,
   sanitizeSeedPhrase,
 } from './formatters';
+export { default as validateENS } from './validateENS';
 export { default as watchingAlert } from './watchingAlert';
 export { default as withSpeed } from './withSpeed';
 export { default as CoinIcon } from './CoinIcons/CoinIcon';

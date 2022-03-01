@@ -204,3 +204,40 @@ export const ENS_SUGGESTIONS = gql`
     }
   }
 `;
+
+export const ENS_SEARCH = gql`
+  query lookup($name: String!, $amount: Int!) {
+    domains(first: $amount, where: { name: $name }) {
+      name
+      resolver {
+        addr {
+          id
+        }
+      }
+    }
+  }
+`;
+
+export const ENS_DOMAINS = gql`
+  query lookup($name: String!) {
+    domains(where: { name: $name }) {
+      name
+      labelhash
+      resolver {
+        addr {
+          id
+        }
+      }
+    }
+  }
+`;
+
+export const ENS_REGISTRATIONS = gql`
+  query lookup($labelHash: String!) {
+    registrations(first: 1, where: { id: $labelHash }) {
+      id
+      registrationDate
+      expiryDate
+    }
+  }
+`;

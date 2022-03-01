@@ -7,7 +7,12 @@ import { useValue } from 'react-native-redash/src/v1';
 import { useDispatch, useSelector } from 'react-redux';
 import { OpacityToggler } from '../components/animations';
 import { AssetList } from '../components/asset-list';
-import { ExchangeFab, FabWrapper, SendFab } from '../components/fab';
+import {
+  ExchangeFab,
+  FabWrapper,
+  RegisterEnsFab,
+  SendFab,
+} from '../components/fab';
 import {
   DiscoverHeaderButton,
   Header,
@@ -15,6 +20,9 @@ import {
   ScanHeaderButton,
 } from '../components/header';
 import { Page, RowWithMargins } from '../components/layout';
+import useExperimentalFlag, {
+  PROFILES,
+} from '@rainbow-me/config/experimentalHooks';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import {
   useAccountEmptyState,
@@ -78,6 +86,7 @@ export default function WalletScreen() {
   } = useWalletSectionsData();
 
   const dispatch = useDispatch();
+  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   const { addressSocket, assetsSocket } = useSelector(
     ({ explorer: { addressSocket, assetsSocket } }) => ({
@@ -165,8 +174,9 @@ export default function WalletScreen() {
       [
         !!get(networkInfo[network], 'exchange_enabled') && ExchangeFab,
         SendFab,
+        profilesEnabled ? RegisterEnsFab : null,
       ].filter(e => !!e),
-    [network]
+    [network, profilesEnabled]
   );
 
   const isLoadingAssets = useSelector(state => state.data.isLoadingAssets);
