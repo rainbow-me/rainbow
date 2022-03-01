@@ -296,6 +296,7 @@ class HoldToAuthorizeButton extends PureComponent {
 const HoldToAuthorizeButtonWithBiometrics = ({
   disableLongPress,
   label,
+  color,
   ...props
 }) => {
   const biometryType = useBiometryType();
@@ -313,6 +314,7 @@ const HoldToAuthorizeButtonWithBiometrics = ({
       colors={colors}
       deviceDimensions={deviceDimensions}
       enableLongPress={!disableLongPress && isLongPressAvailableForBiometryType}
+      backgroundColor={color}
       label={
         isLongPressAvailableForBiometryType
           ? label
