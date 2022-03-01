@@ -240,22 +240,28 @@ export const estimateENSRegistrationGasLimit = async (
     ownerAddress,
   });
   // dummy multicall to estimate gas
-  // const multicallGasLimitPromise = estimateENSMulticallGasLimit({
-  //   name,
-  //   records: {
-  //     coinAddress: null,
-  //     contentHash: null,
-  //     ensAssociatedAddress: ownerAddress,
-  //     text: [
-  //       { key: 'key1', value: 'value1' },
-  //       { key: 'key2', value: 'value2' },
-  //     ],
-  //   },
-  // });
+  const multicallGasLimitPromise = estimateENSMulticallGasLimit({
+    name,
+    records: {
+      coinAddress: null,
+      contentHash: null,
+      ensAssociatedAddress: ownerAddress,
+      text: [
+        { key: 'key1', value: 'value1' },
+        { key: 'key2', value: 'value2' },
+        {
+          key: 'cover',
+          value:
+            'https://cloudflare-ipfs.com/ipfs/QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco/I/m/Vincent_van_Gogh_-_Self-Portrait_-_Google_Art_Project_(454045).jpg',
+        },
+      ],
+    },
+  });
 
   const gasLimits = await Promise.all([
     commitGasLimitPromise,
     setNameGasLimitPromise,
+    multicallGasLimitPromise,
   ]);
 
   let [commitGasLimit, setNameGasLimit] = gasLimits;
