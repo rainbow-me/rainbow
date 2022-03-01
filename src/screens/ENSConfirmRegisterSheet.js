@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -168,7 +169,7 @@ export default function ENSConfirmRegisterSheet() {
                 )}
                 <Heading size="26px">{ensName}</Heading>
                 <Text color="accent" weight="heavy">
-                  Confirm purchase
+                  {lang.t('profiles.confirm.description')}
                 </Text>
               </Stack>
               <Inset vertical="24px">
@@ -188,7 +189,7 @@ export default function ENSConfirmRegisterSheet() {
                     />
                   </Box>
                   <Text color="secondary50" size="14px" weight="heavy">
-                    Buy more years now to save on fees
+                    {lang.t('profiles.confirm.suggestion')}
                   </Text>
                 </Inline>
                 <RegistrationReviewRows
@@ -216,7 +217,7 @@ export default function ENSConfirmRegisterSheet() {
                 <HoldToAuthorizeButton
                   hideInnerBorder
                   isLongPressAvailableForBiometryType
-                  label="Hold to Commit"
+                  label={lang.t('profiles.confirm.commit_button')}
                   onLongPress={handleCommitSubmit}
                   parentHorizontalPadding={19}
                   showBiometryIcon
