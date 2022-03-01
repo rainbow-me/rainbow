@@ -269,7 +269,6 @@ export default function useENSRegistrationActionHandler(
   useEffect(() => {
     let interval: NodeJS.Timer;
     const isActive = secondsSinceCommitConfirmed < ENS_SECONDS_WAIT;
-
     if (isActive) {
       interval = setInterval(() => {
         setSecondsSinceCommitConfirmed(seconds => seconds + 1);

@@ -335,7 +335,6 @@ export const executeRap = async (
   const rapType = getRapTypeFromActionType(type);
 
   let rap: Rap = { actions: [] };
-
   if (rapType === RAP_TYPE.EXCHANGE) {
     rap = await createSwapRapByType(type, parameters as SwapActionParameters);
   } else if (rapType === RAP_TYPE.ENS) {

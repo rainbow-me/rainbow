@@ -354,7 +354,7 @@ const getENSExecutionDetails = async ({
     case ENSRegistrationTransactionType.REGISTER_WITH_CONFIG: {
       if (!name || !ownerAddress || !duration || !rentPrice)
         throw new Error('Bad arguments for registerWithConfig');
-      value = toHex(addBuffer(rentPrice, 1.1));
+      value = toHex(addBuffer(rentPrice, 1.2));
       args = [
         name.replace(ENS_DOMAIN, ''),
         ownerAddress,
