@@ -371,7 +371,7 @@ const getENSExecutionDetails = async ({
       const record = records?.text[0];
       const namehash = hash(name);
       args = [namehash, record.key, record.value];
-      contract = getENSPublicResolverContract();
+      contract = getENSPublicResolverContract(wallet);
       break;
     }
     case ENSRegistrationTransactionType.MULTICALL: {

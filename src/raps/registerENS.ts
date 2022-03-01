@@ -9,6 +9,7 @@ import {
 import {
   formatRecordsForTransaction,
   recordsForTransactionAreValid,
+  shouldUseMulticallTransaction,
 } from '@rainbow-me/handlers/ens';
 
 export const createRegisterENSRap = async (
@@ -27,11 +28,16 @@ export const createRegisterENSRap = async (
   );
   const validRecords = recordsForTransactionAreValid(ensRegistrationRecords);
   if (validRecords) {
-    const multicall = createNewENSAction(
-      RapActionTypes.multicallENS,
+    const shouldUseMulticall = shouldUseMulticallTransaction(
+      ensRegistrationRecords
+    );
+    const recordsAction = createNewENSAction(
+      shouldUseMulticall
+        ? RapActionTypes.multicallENS
+        : RapActionTypes.setTextENS,
       ensActionParameters
     );
-    actions = concat(actions, multicall);
+    actions = concat(actions, recordsAction);
   }
 
   if (ensActionParameters.setReverseRecord) {

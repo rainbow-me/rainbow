@@ -291,7 +291,7 @@ const executeAction = async (
       return { baseNonce: nonce, errorMessage: null };
     }
   } catch (error: any) {
-    logger.sentry('[3 INNER] error running action, code:', error?.code);
+    logger.sentry('[3 INNER] error running action, code:', error, error?.code);
     captureException(error);
     analytics.track('Rap failed', {
       category: 'raps',
