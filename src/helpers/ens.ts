@@ -282,13 +282,15 @@ const setupMulticallRecords = (
   const textAssociatedRecord = records.text;
   if (textAssociatedRecord) {
     data.push(
-      textAssociatedRecord.map(textRecord => {
-        return resolver.encodeFunctionData('setText', [
-          namehash,
-          textRecord.key,
-          textRecord.value,
-        ]);
-      })
+      textAssociatedRecord
+        .filter(textRecord => Boolean(textRecord.value))
+        .map(textRecord => {
+          return resolver.encodeFunctionData('setText', [
+            namehash,
+            textRecord.key,
+            textRecord.value,
+          ]);
+        })
     );
   }
   // flatten textrecords and addresses and remove undefined
@@ -351,7 +353,7 @@ const getENSExecutionDetails = async ({
     case ENSRegistrationTransactionType.REGISTER_WITH_CONFIG: {
       if (!name || !ownerAddress || !duration || !rentPrice)
         throw new Error('Bad arguments for registerWithConfig');
-      value = toHex(addBuffer(rentPrice, 1.2));
+      value = toHex(addBuffer(rentPrice, 1.1));
       args = [
         name.replace(ENS_DOMAIN, ''),
         ownerAddress,

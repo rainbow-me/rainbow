@@ -292,6 +292,7 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
   duration,
   rentPrice,
   salt,
+  setReverseRecord,
 }: ENSActionParameters) => {
   const registerGasLimitPromise = estimateENSRegisterWithConfigGasLimit({
     duration,
@@ -300,11 +301,8 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
     rentPrice,
     salt,
   });
-  const ensRegistrationRecords = formatRecordsForTransaction(records);
-  // WIP we need to set / unset these values from the UI
-  const setReverseRecord = true;
-  const setRecords = true;
   const promises = [registerGasLimitPromise];
+
   if (setReverseRecord) {
     promises.push(
       estimateENSSetNameGasLimit({
@@ -313,7 +311,10 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
       })
     );
   }
-  if (setRecords && records) {
+
+  const ensRegistrationRecords = formatRecordsForTransaction(records);
+  const validRecords = recordsForTransactionAreValid(ensRegistrationRecords);
+  if (validRecords) {
     promises.push(
       estimateENSMulticallGasLimit({
         name,
@@ -323,7 +324,6 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
   }
 
   const gasLimits = await Promise.all(promises);
-
   const gasLimit = gasLimits.reduce((a, b) => add(a || 0, b || 0));
   if (!gasLimit) return '0';
   return gasLimit;
@@ -355,21 +355,44 @@ export const formatRecordsForTransaction = (
         case ENS_RECORDS.snapchat:
         case ENS_RECORDS.telegram:
         case ENS_RECORDS.ensDelegate:
-          text.push({
-            key,
-            value: value,
-          });
+          Boolean(value) &&
+            text.push({
+              key,
+              value: value,
+            });
           return;
         case ENS_RECORDS.ETH:
         case ENS_RECORDS.BTC:
         case ENS_RECORDS.LTC:
         case ENS_RECORDS.DOGE:
-          coinAddress.push({ address: value, key });
+          Boolean(value) && coinAddress.push({ address: value, key });
           return;
         case ENS_RECORDS.content:
-          contentHash = value;
+          if (value) {
+            contentHash = value;
+          }
           return;
       }
     });
   return { coinAddress, contentHash, ensAssociatedAddress, text };
+};
+
+export const recordsForTransactionAreValid = (
+  registrationRecords: ENSRegistrationRecords
+) => {
+  const {
+    coinAddress,
+    contentHash,
+    ensAssociatedAddress,
+    text,
+  } = registrationRecords;
+  if (
+    !coinAddress?.length ||
+    !contentHash ||
+    !ensAssociatedAddress ||
+    !text?.length
+  ) {
+    return false;
+  }
+  return true;
 };

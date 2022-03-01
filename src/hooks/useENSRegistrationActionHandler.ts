@@ -106,6 +106,7 @@ export default function useENSRegistrationActionHandler(
         records,
         rentPrice: rentPrice.toString(),
         salt,
+        setReverseRecord: true,
       };
 
       await executeRap(
@@ -161,7 +162,8 @@ export default function useENSRegistrationActionHandler(
       const block = await web3Provider.getBlock(tx.blockHash || '');
       confirmedAt = block?.timestamp * 1000;
       const now = Date.now();
-      const secs = differenceInSeconds(now, confirmedAt * 1000);
+      const secs = differenceInSeconds(now, now);
+      // const secs = differenceInSeconds(now, confirmedAt * 1000);
       setSecondsSinceCommitConfirmed(secs);
       confirmed = true;
       dispatch(
@@ -225,6 +227,7 @@ export default function useENSRegistrationActionHandler(
               records,
               rentPrice,
               salt,
+              setReverseRecord: true,
             }
           );
           setStepGasLimit(gasLimit);
@@ -250,6 +253,7 @@ export default function useENSRegistrationActionHandler(
   useEffect(() => {
     let interval: NodeJS.Timer;
     const isActive = secondsSinceCommitConfirmed < ENS_SECONDS_WAIT;
+
     if (isActive) {
       interval = setInterval(() => {
         setSecondsSinceCommitConfirmed(seconds => seconds + 1);

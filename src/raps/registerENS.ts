@@ -6,32 +6,41 @@ import {
   RapActionTypes,
   RapENSAction,
 } from './common';
+import {
+  formatRecordsForTransaction,
+  recordsForTransactionAreValid,
+} from '@rainbow-me/handlers/ens';
 
 export const createRegisterENSRap = async (
-  ENSActionParameters: ENSActionParameters
+  ensActionParameters: ENSActionParameters
 ) => {
   let actions: RapENSAction[] = [];
 
   const register = createNewENSAction(
     RapActionTypes.registerWithConfigENS,
-    ENSActionParameters
+    ensActionParameters
   );
   actions = concat(actions, register);
 
-  // ? records rap
-  // WIP we don't have a formatter method yet
-  // const multicall = createNewENSAction(
-  //   RapActionTypes.multicallENS,
-  //   ENSActionParameters
-  // );
-  // actions = concat(actions, multicall);
-
-  // ? reverse name rap
-  const setName = createNewENSAction(
-    RapActionTypes.setNameENS,
-    ENSActionParameters
+  const ensRegistrationRecords = formatRecordsForTransaction(
+    ensActionParameters.records
   );
-  actions = concat(actions, setName);
+  const validRecords = recordsForTransactionAreValid(ensRegistrationRecords);
+  if (validRecords) {
+    const multicall = createNewENSAction(
+      RapActionTypes.multicallENS,
+      ensActionParameters
+    );
+    actions = concat(actions, multicall);
+  }
+
+  if (ensActionParameters.setReverseRecord) {
+    const setName = createNewENSAction(
+      RapActionTypes.setNameENS,
+      ensActionParameters
+    );
+    actions = concat(actions, setName);
+  }
 
   // create the overall rap
   const newRap = createNewRap(actions);
