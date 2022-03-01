@@ -1707,7 +1707,7 @@ var calculateDeadline = /*#__PURE__*/function () {
 
 var fillQuote = /*#__PURE__*/function () {
   var _ref4 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee3(quote, transactionOptions, wallet, permit, chainId) {
-    var instance, swapTx, sellTokenAddress, buyTokenAddress, to, data, fee, value, sellAmount, feePercentageBasisPoints, deadline, permitData, _deadline, _permitData;
+    var instance, swapTx, sellTokenAddress, buyTokenAddress, to, data, fee, value, sellAmount, feePercentageBasisPoints, deadline, permitSignature, _deadline, _permitSignature;
 
     return runtime_1.wrap(function _callee3$(_context3) {
       while (1) {
@@ -1751,9 +1751,9 @@ var fillQuote = /*#__PURE__*/function () {
             return signPermit(wallet, sellTokenAddress, quote.from, instance.address, MAX_INT, deadline, chainId);
 
           case 15:
-            permitData = _context3.sent;
+            permitSignature = _context3.sent;
             _context3.next = 18;
-            return instance.fillQuoteTokenToEthWithPermit(sellTokenAddress, to, data, sellAmount, feePercentageBasisPoints, permitData, _extends({}, transactionOptions, {
+            return instance.fillQuoteTokenToEthWithPermit(sellTokenAddress, to, data, sellAmount, feePercentageBasisPoints, permitSignature, _extends({}, transactionOptions, {
               value: value
             }));
 
@@ -1790,9 +1790,9 @@ var fillQuote = /*#__PURE__*/function () {
             return signPermit(wallet, sellTokenAddress, quote.from, instance.address, MAX_INT, _deadline, chainId);
 
           case 32:
-            _permitData = _context3.sent;
+            _permitSignature = _context3.sent;
             _context3.next = 35;
-            return instance.fillQuoteTokenToTokenWithPermit(sellTokenAddress, buyTokenAddress, to, data, sellAmount, fee, _permitData, _extends({}, transactionOptions, {
+            return instance.fillQuoteTokenToTokenWithPermit(sellTokenAddress, buyTokenAddress, to, data, sellAmount, fee, _permitSignature, _extends({}, transactionOptions, {
               value: value
             }));
 
