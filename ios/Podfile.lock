@@ -369,7 +369,7 @@ PODS:
   - react-native-mmkv (1.5.2):
     - MMKV
     - React-Core
-  - react-native-netinfo (5.9.7):
+  - react-native-netinfo (6.0.4):
     - React-Core
   - react-native-palette-full (1.2.0):
     - React
@@ -1008,7 +1008,7 @@ SPEC CHECKSUMS:
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
   react-native-minimizer: b94809a769ac3825b46fd081d4f0ae2560791536
   react-native-mmkv: 27029f9f3a30dc798726cfc92775f4cbedcb7dd7
-  react-native-netinfo: 250dc0ca126512f618a8a2ca6a936577e1f66586
+  react-native-netinfo: 1c7676413ab265759c7b3da205efab163f5366ef
   react-native-palette-full: 99a6fd796d16fab6a2d3770649070e31c2602fad
   react-native-randombytes: 3638d24759d67c68f6ccba60c52a7a8a8faa6a23
   react-native-restart: 733a51ad137f15b0f8dc34c4082e55af7da00979
@@ -1077,6 +1077,6 @@ SPEC CHECKSUMS:
   ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
   Yoga: 2b4a01651f42a32f82e6cef3830a3ba48088237f
 
-PODFILE CHECKSUM: d711ded560059f2a44650df3dc65f13c99bdb226
+PODFILE CHECKSUM: 57c94b75db7f46e64a9d6be6e7513d7bcdaf6cb8
 
 COCOAPODS: 1.11.2
