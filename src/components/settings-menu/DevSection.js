@@ -42,7 +42,7 @@ const DevSection = () => {
       );
       logger.log('connected to hardhat', ready);
     } catch (e) {
-      await web3SetHttpProvider(networkTypes.mainnet);
+      await web3SetHttpProvider('http://127.0.0.1:8545');
       logger.log('error connecting to hardhat');
     }
     navigate(Routes.PROFILE_SCREEN);
