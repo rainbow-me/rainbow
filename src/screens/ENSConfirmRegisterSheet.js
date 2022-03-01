@@ -226,7 +226,11 @@ export default function ENSConfirmRegisterSheet() {
               </SheetActionButtonRow>
             </Box>
             <Box alignItems="center" justifyContent="center">
-              <GasSpeedButton currentNetwork="mainnet" theme="light" />
+              <GasSpeedButton
+                borderColor={accentColor}
+                currentNetwork="mainnet"
+                theme="light"
+              />
             </Box>
           </Box>
         </Box>
