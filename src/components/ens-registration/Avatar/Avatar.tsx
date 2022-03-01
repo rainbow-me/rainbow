@@ -26,7 +26,9 @@ export default function Avatar({
 }: {
   onChangeAvatarUrl: (url: string) => void;
 }) {
-  const { images: { avatarUrl: initialAvatarUrl } = {} } = useENSProfile();
+  const {
+    images: { avatarUrl: initialAvatarUrl },
+  } = useENSProfile();
   const { isLoading, values, onBlurField, setDisabled } = useENSProfileForm();
 
   const [avatarUrl, setAvatarUrl] = useState(

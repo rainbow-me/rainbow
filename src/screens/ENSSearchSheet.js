@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
 import { KeyboardArea } from 'react-native-keyboard-area';
@@ -79,10 +80,10 @@ export default function ENSSearchSheet() {
       <Box flexGrow={1} paddingTop="30px">
         <Stack alignHorizontal="center" space="15px">
           <Heading size="23px" weight="heavy">
-            􀠎 Find your name
+            {`􀠎 ${lang.t('profiles.search.header')}`}
           </Heading>
           <Text color="secondary50" size="18px" weight="bold">
-            Search available profile names
+            {lang.t('profiles.search.description')}
           </Text>
         </Stack>
 
@@ -112,7 +113,7 @@ export default function ENSSearchSheet() {
               <ImgixImage source={dice} style={{ height: 20, width: 20 }} />
             </Box>
             <Text color="secondary50" size="16px" weight="bold">
-              Minimum 3 characters
+              {lang.t('profiles.search.3_char_min')}
             </Text>
           </Inline>
         )}
@@ -153,22 +154,23 @@ export default function ENSSearchSheet() {
               <Inset horizontal="19px">
                 {isRegistered ? (
                   <Text color="secondary50" size="16px" weight="bold">
-                    This name was last registered on{' '}
-                    {registrationData?.registrationDate}
+                    {lang.t('profiles.search.registered_on', {
+                      content: registrationData?.registrationDate,
+                    })}
                   </Text>
                 ) : (
                   <Inline>
                     {registrationCostsDataIsAvailable ? (
                       <Text color="secondary50" size="16px" weight="bold">
-                        Estimated total cost of
+                        {lang.t('profiles.search.estimated_total_cost_1')}
                         <Text color="secondary80" size="16px" weight="heavy">
                           {` ${registrationCostsData?.estimatedTotalRegistrationCost?.display} `}
                         </Text>
-                        with current network fees
+                        {lang.t('profiles.search.estimated_total_cost_2')}
                       </Text>
                     ) : (
                       <Text color="secondary50" size="16px" weight="bold">
-                        {'Loading network fees...\n'}
+                        {`${lang.t('profiles.search.loading_fees')}\n`}
                       </Text>
                     )}
                   </Inline>
@@ -183,14 +185,16 @@ export default function ENSSearchSheet() {
           {isAvailable && (
             <SheetActionButton
               color={colors.green}
-              label="Continue on 􀆊"
+              label={lang.t('profiles.search.continue')}
               onPress={handlePressContinue}
               size="big"
               weight="heavy"
             />
           )}
           {(isRegistered || isInvalid) && (
-            <TintButton onPress={() => setSearchQuery('')}>􀅉 Clear</TintButton>
+            <TintButton onPress={() => setSearchQuery('')}>
+              {lang.t('profiles.search.clear')}
+            </TintButton>
           )}
         </SheetActionButtonRow>
         <KeyboardArea initialHeight={keyboardHeight} isOpen />

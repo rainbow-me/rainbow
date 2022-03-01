@@ -105,7 +105,9 @@ export default function useENSProfile({
   // (the avatar can be an NFT), then if the avatar is an NFT, we will
   // parse it to obtain the URL.
   const images = useMemo(() => {
-    return recordsQuery.data?.images;
+    return (
+      recordsQuery.data?.images || { avatarUrl: undefined, coverUrl: undefined }
+    );
   }, [recordsQuery.data?.images]);
 
   // Derive the records that should be added or removed from the profile

@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
 import Animated, {
@@ -95,7 +96,7 @@ export default function ENSAssignRecordsSheet() {
                 </Heading>
                 {mode === 'create' && (
                   <Text color="accent" size="16px" weight="heavy">
-                    Create your profile
+                    {lang.t('profiles.create.description')}
                   </Text>
                 )}
               </Stack>
@@ -208,7 +209,7 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
                 >
                   {mode === 'create' && (
                     <TintButton color="secondary60" onPress={handlePressBack}>
-                      􀆉 Back
+                      {lang.t('profiles.create.back')}
                     </TintButton>
                   )}
                   {isEmpty && mode === 'create' ? (
@@ -217,14 +218,14 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
                       disabled={disabled}
                       onPress={handlePressContinue}
                     >
-                      Skip
+                      {lang.t('profiles.create.skip')}
                     </TintButton>
                   ) : (
                     <Box style={{ opacity: disabled ? 0.5 : 1 }}>
                       <SheetActionButton
                         color={accentColor}
                         disabled={disabled}
-                        label="Review"
+                        label={lang.t('profiles.create.review')}
                         onPress={handlePressContinue}
                         size="big"
                         weight="heavy"

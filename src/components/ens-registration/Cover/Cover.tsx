@@ -22,7 +22,9 @@ const alpha = '33';
 
 export default function CoverPhoto() {
   const { colors } = useTheme();
-  const { images: { coverUrl: initialCoverUrl } = {} } = useENSProfile();
+  const {
+    images: { coverUrl: initialCoverUrl },
+  } = useENSProfile();
   const { isLoading, values, onBlurField, setDisabled } = useENSProfileForm();
 
   const [coverUrl, setCoverUrl] = useState(initialCoverUrl || values?.cover);

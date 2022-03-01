@@ -1,4 +1,5 @@
 import { useFocusEffect, useRoute } from '@react-navigation/core';
+import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -50,7 +51,7 @@ export default function ENSConfirmRegisterSheet() {
   const dispatch = useDispatch();
   const { gasFeeParamsBySpeed, updateTxFee, startPollingGasFees } = useGas();
   const {
-    images: { avatarUrl },
+    images: { avatarUrl: initialAvatarUrl },
     name: ensName,
     mode,
     records,
@@ -63,10 +64,11 @@ export default function ENSConfirmRegisterSheet() {
 
   const [duration, setDuration] = useState(1);
 
-  const { blurFields } = useENSProfileForm();
+  const { blurFields, values } = useENSProfileForm();
   useFocusEffect(() => {
     blurFields();
   });
+  const avatarUrl = values.avatar || initialAvatarUrl;
 
   const name = ensName.replace(ENS_DOMAIN, '');
   const { data: registrationData } = useENSRegistration({
@@ -196,7 +198,9 @@ export default function ENSConfirmRegisterSheet() {
                   )}
                   <Heading size="26px">{ensName}</Heading>
                   <Text color="accent" weight="heavy">
-                    Confirm {mode === 'create' ? 'purchase' : 'update'}
+                    {mode === 'create'
+                      ? lang.t('profiles.confirm.confirm_purchase')
+                      : lang.t('profiles.confirm.confirm_update')}
                   </Text>
                 </Stack>
                 <Inset vertical="24px">
@@ -218,7 +222,7 @@ export default function ENSConfirmRegisterSheet() {
                           />
                         </Box>
                         <Text color="secondary50" size="14px" weight="heavy">
-                          Buy more years now to save on fees
+                          {lang.t('profiles.confirm.suggestion')}
                         </Text>
                       </Inline>
                       <RegistrationReviewRows
@@ -250,7 +254,7 @@ export default function ENSConfirmRegisterSheet() {
                   <HoldToAuthorizeButton
                     hideInnerBorder
                     isLongPressAvailableForBiometryType
-                    label="Hold to Commit"
+                    label={lang.t('profiles.confirm.commit_button')}
                     onLongPress={handleCommitSubmit}
                     parentHorizontalPadding={19}
                     showBiometryIcon
