@@ -121,6 +121,7 @@ const TransactionTimeLabel = ({ formatter, theme }) => {
 
 const GasSpeedButton = ({
   asset,
+  borderColor = null,
   bottom = 0,
   currentNetwork,
   horizontalPadding = 19,
@@ -413,7 +414,7 @@ const GasSpeedButton = ({
         colorForAsset={
           gasOptionsAvailable
             ? makeColorMoreChill(
-                rawColorForAsset || colors.appleBlue,
+                borderColor || rawColorForAsset || colors.appleBlue,
                 colors.shadowBlack
               )
             : colors.alpha(colors.blueGreyDark, 0.12)
@@ -442,6 +443,7 @@ const GasSpeedButton = ({
       </ContextMenuButton>
     );
   }, [
+    borderColor,
     colors,
     currentNetwork,
     gasIsNotReady,
@@ -562,7 +564,7 @@ const GasSpeedButton = ({
             ) : showGasOptions ? (
               <CustomGasButton
                 borderColor={makeColorMoreChill(
-                  rawColorForAsset || colors.appleBlue,
+                  borderColor || rawColorForAsset || colors.appleBlue,
                   colors.shadowBlack
                 )}
                 onPress={onDonePress}
@@ -573,7 +575,7 @@ const GasSpeedButton = ({
                     theme !== 'light'
                       ? colors.whiteLabel
                       : makeColorMoreChill(
-                          rawColorForAsset || colors.appleBlue,
+                          borderColor || rawColorForAsset || colors.appleBlue,
                           colors.shadowBlack
                         )
                   }
