@@ -104,6 +104,7 @@
     "@types/i18n-js": "3.0.3",
     "@types/lodash": "4.14.168",
     "@types/react-redux": "7.1.9",
+    "@types/url-join": "4.0.1",
     "@uniswap/sdk": "3.0.3",
     "@uniswap/v2-core": "1.0.1",
     "@unstoppabledomains/resolution": "5.0.2",
@@ -156,6 +157,7 @@
     "make-color-more-chill": "0.2.2",
     "match-sorter": "6.3.0",
     "mnemonist": "0.38.1",
+    "multiformats": "9.6.2",
     "nanoid": "3.2.0",
     "p-wait-for": "4.1.0",
     "pako": "2.0.4",
@@ -260,6 +262,7 @@
     "timers-browserify": "1.4.2",
     "tty-browserify": "0.0.0",
     "url": "0.10.3",
+    "url-join": "4.0.1",
     "url-parse": "1.5.8",
     "use-debounce": "5.2.0",
     "use-deep-compare": "1.1.0",
@@ -496,7 +499,8 @@
       "bufferutil": false,
       "utf-8-validate": false,
       "postinstall-postinstall": false,
-      "core-js-pure": false
+      "core-js-pure": false,
+      "multiformats": false
     }
   },
   "typeCoverage": {
@@ -510,6 +514,7 @@
       "ios/**/*.*",
       "e2e/**/*.*",
       "rainbow-scripts/**/*.*",
+      "src/ens-avatar/**/*.*",
       "src/react-native-animated-charts/**/*.*",
       "src/react-native-cool-modals/**/*.*",
       "src/react-native-shadow-stack/**/*.*",

@@ -577,7 +577,8 @@
         "upload_photo": "Upload photo"
       },
       "confirm": {
-        "description": "Confirm purchase",
+        "confirm_purchase": "Confirm purchase",
+        "confirm_update": "Confirm update",
         "suggestion": "Buy more years now to save on fees",
         "registration_duration": "Register name for",
         "registration_cost": "Registration cost",

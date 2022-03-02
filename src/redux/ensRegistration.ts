@@ -15,6 +15,10 @@ import {
 } from '@rainbow-me/handlers/localstorage/accountLocal';
 import { NetworkTypes } from '@rainbow-me/helpers';
 
+const ENS_REGISTRATION_SET_CHANGED_RECORDS =
+  'ensRegistration/ENS_REGISTRATION_SET_CHANGED_RECORDS';
+const ENS_REGISTRATION_SET_INITIAL_RECORDS =
+  'ensRegistration/ENS_REGISTRATION_SET_INITIAL_RECORDS';
 const ENS_REGISTRATION_UPDATE_DURATION =
   'ensRegistration/ENS_REGISTRATION_UPDATE_DURATION';
 const ENS_REGISTRATION_UPDATE_RECORDS =
@@ -27,9 +31,21 @@ const ENS_CONTINUE_REGISTRATION = 'ensRegistration/ENS_CONTINUE_REGISTRATION';
 const ENS_START_REGISTRATION = 'ensRegistration/ENS_START_REGISTRATION';
 const ENS_SAVE_COMMIT_REGISTRATION_PARAMETERS =
   'ensRegistration/ENS_SAVE_COMMIT_REGISTRATION_PARAMETERS';
+const ENS_CLEAR_CURRENT_REGISTRATION_NAME =
+  'ensRegistration/CLEAR_CURRENT_REGISTRATION_NAME';
 const ENS_UPDATE_REGISTRATION_PARAMETERS =
   'ensRegistration/ENS_UPDATE_REGISTRATION_PARAMETERS';
 const ENS_LOAD_STATE = 'ensRegistration/ENS_LOAD_STATE';
+
+interface EnsRegistrationSetChangedRecordsAction {
+  type: typeof ENS_REGISTRATION_SET_CHANGED_RECORDS;
+  payload: ENSRegistrationState;
+}
+
+interface EnsRegistrationSetInitialRecordsAction {
+  type: typeof ENS_REGISTRATION_SET_INITIAL_RECORDS;
+  payload: ENSRegistrationState;
+}
 
 interface EnsRegistrationUpdateDurationAction {
   type: typeof ENS_REGISTRATION_UPDATE_DURATION;
@@ -71,12 +87,18 @@ interface EnsRegistrationLoadState {
   payload: { registrations: ENSRegistrations };
 }
 
-interface EnsupdateTransactionRegistrationParameters {
+interface EnsUpdateTransactionRegistrationParameters {
   type: typeof ENS_UPDATE_REGISTRATION_PARAMETERS;
   payload: { registrations: ENSRegistrations };
 }
 
+interface EnsClearCurrentRegistrationNameAction {
+  type: typeof ENS_CLEAR_CURRENT_REGISTRATION_NAME;
+}
+
 export type EnsRegistrationActionTypes =
+  | EnsRegistrationSetChangedRecordsAction
+  | EnsRegistrationSetInitialRecordsAction
   | EnsRegistrationUpdateDurationAction
   | EnsRegistrationUpdateRecordsAction
   | EnsRegistrationUpdateRecordByKeyAction
@@ -84,8 +106,9 @@ export type EnsRegistrationActionTypes =
   | EnsRegistrationContinueRegistrationAction
   | EnsRegistrationStartRegistrationAction
   | EnsRegistrationSaveCommitRegistrationParametersAction
+  | EnsClearCurrentRegistrationNameAction
   | EnsRegistrationLoadState
-  | EnsupdateTransactionRegistrationParameters;
+  | EnsUpdateTransactionRegistrationParameters;
 
 // -- Actions ---------------------------------------- //
 
@@ -112,7 +135,8 @@ export const ensRegistrationsLoadState = () => async (
 
 export const startRegistration = (
   accountAddress: EthereumAddress,
-  name: string
+  name: string,
+  mode: 'create' | 'edit' = 'create'
 ) => async (dispatch: AppDispatch, getState: AppGetState) => {
   const {
     ensRegistration: { registrations },
@@ -127,7 +151,7 @@ export const startRegistration = (
       ...registrations,
       [lcAccountAddress]: {
         ...accountRegistrations,
-        [name]: { ...registration, name },
+        [name]: { ...registration, mode, name },
       },
     },
   };
@@ -173,6 +197,65 @@ export const updateRegistrationDuration = (
   dispatch({
     payload: updatedEnsRegistrationManager,
     type: ENS_REGISTRATION_UPDATE_DURATION,
+  });
+};
+
+export const setInitialRecords = (
+  accountAddress: EthereumAddress,
+  records: Records
+) => async (dispatch: AppDispatch, getState: AppGetState) => {
+  const {
+    ensRegistration: { registrations, currentRegistrationName },
+  } = getState();
+  const lcAccountAddress = accountAddress.toLowerCase();
+  const accountRegistrations = registrations?.[lcAccountAddress] || {};
+  const registration = accountRegistrations[currentRegistrationName] || {};
+
+  const updatedEnsRegistrationManagerForAccount = {
+    registrations: {
+      ...registrations,
+      [lcAccountAddress]: {
+        ...accountRegistrations,
+        [currentRegistrationName]: {
+          ...registration,
+          initialRecords: records,
+          records,
+        },
+      },
+    },
+  };
+  dispatch({
+    payload: updatedEnsRegistrationManagerForAccount,
+    type: ENS_REGISTRATION_SET_INITIAL_RECORDS,
+  });
+};
+
+export const setChangedRecords = (
+  accountAddress: EthereumAddress,
+  changedRecords: Records
+) => async (dispatch: AppDispatch, getState: AppGetState) => {
+  const {
+    ensRegistration: { registrations, currentRegistrationName },
+  } = getState();
+  const lcAccountAddress = accountAddress.toLowerCase();
+  const accountRegistrations = registrations?.[lcAccountAddress] || {};
+  const registration = accountRegistrations[currentRegistrationName] || {};
+
+  const updatedEnsRegistrationManagerForAccount = {
+    registrations: {
+      ...registrations,
+      [lcAccountAddress]: {
+        ...accountRegistrations,
+        [currentRegistrationName]: {
+          ...registration,
+          changedRecords,
+        },
+      },
+    },
+  };
+  dispatch({
+    payload: updatedEnsRegistrationManagerForAccount,
+    type: ENS_REGISTRATION_SET_CHANGED_RECORDS,
   });
 };
 
@@ -304,6 +387,14 @@ export const saveCommitRegistrationParameters = (
   });
 };
 
+export const clearCurrentRegistrationName = () => async (
+  dispatch: AppDispatch
+) => {
+  dispatch({
+    type: ENS_CLEAR_CURRENT_REGISTRATION_NAME,
+  });
+};
+
 export const updateTransactionRegistrationParameters = (
   accountAddress: EthereumAddress,
   registrationParameters: TransactionRegistrationParameters
@@ -356,6 +447,16 @@ export default (
         ...state,
         ...action.payload,
       };
+    case ENS_REGISTRATION_SET_CHANGED_RECORDS:
+      return {
+        ...state,
+        ...action.payload,
+      };
+    case ENS_REGISTRATION_SET_INITIAL_RECORDS:
+      return {
+        ...state,
+        ...action.payload,
+      };
     case ENS_REGISTRATION_UPDATE_DURATION:
       return {
         ...state,
@@ -385,6 +486,11 @@ export default (
       return {
         ...state,
         ...action.payload,
+      };
+    case ENS_CLEAR_CURRENT_REGISTRATION_NAME:
+      return {
+        ...state,
+        currentRegistrationName: '',
       };
     case ENS_LOAD_STATE:
       return {
