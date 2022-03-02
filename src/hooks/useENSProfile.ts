@@ -6,9 +6,9 @@ export default function useENSProfile(
   name: string,
   config?: QueryConfig<typeof fetchProfile>
 ) {
-  const { data, error, isLoading, isSuccess, isError } = useQuery<
+  const { data, isLoading, isSuccess } = useQuery<
     UseQueryData<typeof fetchProfile>
   >(['ens-profile', name], () => fetchProfile(name), config);
 
-  return { data, error, isError, isLoading, isSuccess };
+  return { data, isLoading, isSuccess };
 }

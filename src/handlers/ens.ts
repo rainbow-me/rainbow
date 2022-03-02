@@ -3,7 +3,7 @@ import { ensClient } from '../apollo/client';
 import {
   ENS_DOMAINS,
   ENS_GET_OWNER,
-  ENS_GET_REGISTRANT,
+  ENS_GET_REGISTRATION,
   ENS_REGISTRATIONS,
   ENS_SUGGESTIONS,
   ENS_TEXT_RECORDS,
@@ -166,9 +166,9 @@ export const fetchOwner = async (ensName: string) => {
   return owner;
 };
 
-export const fetchRegistrant = async (ensName: string) => {
+export const fetchRegistration = async (ensName: string) => {
   const response = await ensClient.query({
-    query: ENS_GET_REGISTRANT,
+    query: ENS_GET_REGISTRATION,
     variables: {
       name: labelhash(ensName.replace(ENS_DOMAIN, '')),
     },
@@ -185,16 +185,39 @@ export const fetchRegistrant = async (ensName: string) => {
     };
   }
 
-  return registrant;
+  return {
+    registrant,
+    registration: {
+      expiryDate: data?.expiryDate,
+      registrationDate: data?.registrationDate,
+    },
+  };
+};
+
+export const fetchPrimary = async (ensName: string) => {
+  const address = await web3Provider.resolveName(ensName);
+  const primaryName = await web3Provider.lookupAddress(address);
+  return {
+    isPrimary: primaryName === ensName.toLowerCase(),
+    primaryName,
+  };
 };
 
 export const fetchProfile = async (ensName: any) => {
-  const [resolver, records, images, owner, registrant] = await Promise.all([
+  const [
+    resolver,
+    records,
+    images,
+    owner,
+    { registrant, registration },
+    primary,
+  ] = await Promise.all([
     web3Provider.getResolver(ensName),
     fetchRecords(ensName),
     fetchImages(ensName),
     fetchOwner(ensName),
-    fetchRegistrant(ensName),
+    fetchRegistration(ensName),
+    fetchPrimary(ensName),
   ]);
 
   const resolverData = {
@@ -205,8 +228,10 @@ export const fetchProfile = async (ensName: any) => {
   return {
     images,
     owner,
+    primary,
     records,
     registrant,
+    registration,
     resolver: resolverData,
   };
 };

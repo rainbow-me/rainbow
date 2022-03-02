@@ -242,10 +242,12 @@ export const ENS_REGISTRATIONS = gql`
   }
 `;
 
-export const ENS_GET_REGISTRANT = gql`
-  query getRegistrant($id: ID!) {
+export const ENS_GET_REGISTRATION = gql`
+  query getRegistration($id: ID!) {
     registration(id: $id) {
       id
+      registrationDate
+      expiryDate
       registrant {
         id
       }

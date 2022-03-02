@@ -35,6 +35,7 @@ import {
   UniqueTokenExpandedStateContent,
   UniqueTokenExpandedStateHeader,
 } from './unique-token';
+import NFTBriefTokenInfoRow from './unique-token/NFTBriefTokenInfoRow';
 import { useTheme } from '@rainbow-me/context';
 import {
   AccentColorProvider,
@@ -171,6 +172,12 @@ const Markdown = ({
   );
 };
 
+export enum UniqueTokenType {
+  NFT = 'NFT',
+  ENS = 'ENS',
+  POAP = 'POAP',
+}
+
 interface UniqueTokenExpandedStateProps {
   asset: UniqueAsset;
   external: boolean;
@@ -181,7 +188,6 @@ const UniqueTokenExpandedState = ({
   external,
 }: UniqueTokenExpandedStateProps) => {
   const { accountAddress, accountENS } = useAccountProfile();
-  const { nativeCurrency, network } = useAccountSettings();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { navigate } = useNavigation();
   const { colors, isDarkMode } = useTheme();
@@ -192,7 +198,6 @@ const UniqueTokenExpandedState = ({
     currentPrice,
     description,
     familyName,
-    isPoap,
     isSendable,
     lastPrice,
     traits,
@@ -200,10 +205,20 @@ const UniqueTokenExpandedState = ({
     urlSuffixForAsset,
   } = asset;
 
-  const isENS = useMemo(
-    () => familyName === 'ENS' && uniqueId !== 'Unknown ENS name',
-    [familyName, uniqueId]
-  );
+  const uniqueTokenType = useMemo(() => {
+    if (asset.isPoap) return UniqueTokenType.POAP;
+    if (familyName === 'ENS' && uniqueId !== 'Unknown ENS name') {
+      return UniqueTokenType.ENS;
+    }
+    return UniqueTokenType.NFT;
+  }, [asset.isPoap, familyName, uniqueId]);
+
+  // Create deterministic boolean flags from the `uniqueTokenType` (for easier readability).
+  const isPoap = uniqueTokenType === UniqueTokenType.POAP;
+  const isENS = uniqueTokenType === UniqueTokenType.ENS;
+  const isNFT = uniqueTokenType === UniqueTokenType.NFT;
+
+  // Fetch the ENS profile if the unique token is an ENS name.
   const ensProfile = useENSProfile(uniqueId, { enabled: isENS });
 
   const {
@@ -212,9 +227,6 @@ const UniqueTokenExpandedState = ({
     showcaseTokens,
   } = useShowcaseTokens();
 
-  const [floorPrice, setFloorPrice] = useState<string | null>(null);
-  const [showCurrentPriceInEth, setShowCurrentPriceInEth] = useState(true);
-  const [showFloorInEth, setShowFloorInEth] = useState(true);
   const animationProgress = useSharedValue(0);
   const opacityStyle = useAnimatedStyle(() => ({
     opacity: 1 - animationProgress.value,
@@ -239,9 +251,6 @@ const UniqueTokenExpandedState = ({
     usePersistentDominantColorFromImage(asset.image_url).result ||
     colors.paleBlue;
 
-  const lastSalePrice = lastPrice || 'None';
-  const priceOfEth = ethereumUtils.getEthPriceUnit() as number;
-
   const textColor = useMemo(() => {
     const contrastWithWhite = c.contrast(imageColor, colors.whiteLabel);
 
@@ -251,20 +260,6 @@ const UniqueTokenExpandedState = ({
       return colors.whiteLabel;
     }
   }, [colors.whiteLabel, imageColor]);
-
-  useEffect(() => {
-    !isPoap &&
-      asset.network !== AssetTypes.polygon &&
-      apiGetUniqueTokenFloorPrice(network, urlSuffixForAsset).then(result => {
-        setFloorPrice(result);
-      });
-  }, [asset.network, isPoap, network, urlSuffixForAsset]);
-
-  const handlePressCollectionFloor = useCallback(() => {
-    navigate(Routes.EXPLAIN_SHEET, {
-      type: 'floor_price',
-    });
-  }, [navigate]);
 
   const handlePressOpensea = useCallback(
     () => Linking.openURL(asset.permalink),
@@ -297,16 +292,6 @@ const UniqueTokenExpandedState = ({
       });
     }
   }, [isENS, navigate, uniqueId]);
-
-  const toggleCurrentPriceDisplayCurrency = useCallback(
-    () => setShowCurrentPriceInEth(!showCurrentPriceInEth),
-    [showCurrentPriceInEth, setShowCurrentPriceInEth]
-  );
-
-  const toggleFloorDisplayCurrency = useCallback(
-    () => setShowFloorInEth(!showFloorInEth),
-    [showFloorInEth, setShowFloorInEth]
-  );
 
   const sheetRef = useRef();
   const yPosition = useSharedValue(0);
@@ -394,7 +379,7 @@ const UniqueTokenExpandedState = ({
                     </Inline>
                     <UniqueTokenExpandedStateHeader asset={asset} />
                   </Stack>
-                  {!isPoap ? (
+                  {isNFT || isENS ? (
                     <Columns space="15px">
                       {hasEditButton ? (
                         <SheetActionButton
@@ -446,71 +431,20 @@ const UniqueTokenExpandedState = ({
                     separator={<Divider color="divider20" />}
                     space={sectionSpace}
                   >
-                    {!isPoap && asset.network !== AssetTypes.polygon ? (
+                    {(isNFT || isENS) &&
+                    asset.network !== AssetTypes.polygon ? (
                       <Bleed // Manually crop surrounding space until TokenInfoItem uses design system components
                         bottom={android ? '15px' : '6px'}
                         top={android ? '10px' : '4px'}
                       >
-                        <Columns space="19px">
-                          {/* @ts-expect-error JavaScript component */}
-                          <TokenInfoItem
-                            color={
-                              lastSalePrice === 'None' && !currentPrice
-                                ? colors.alpha(colors.whiteLabel, 0.5)
-                                : colors.whiteLabel
-                            }
-                            enableHapticFeedback={!!currentPrice}
-                            isNft
-                            onPress={toggleCurrentPriceDisplayCurrency}
-                            size="big"
-                            title={
-                              currentPrice ? '􀋢 For sale' : 'Last sale price'
-                            }
-                            weight={
-                              lastSalePrice === 'None' && !currentPrice
-                                ? 'bold'
-                                : 'heavy'
-                            }
-                          >
-                            {showCurrentPriceInEth ||
-                            nativeCurrency === 'ETH' ||
-                            !currentPrice
-                              ? currentPrice || lastSalePrice
-                              : convertAmountToNativeDisplay(
-                                  // @ts-expect-error currentPrice is a number?
-                                  parseFloat(currentPrice) * priceOfEth,
-                                  nativeCurrency
-                                )}
-                          </TokenInfoItem>
-                          {/* @ts-expect-error JavaScript component */}
-                          <TokenInfoItem
-                            align="right"
-                            color={
-                              floorPrice === 'None'
-                                ? colors.alpha(colors.whiteLabel, 0.5)
-                                : colors.whiteLabel
-                            }
-                            enableHapticFeedback={floorPrice !== 'None'}
-                            isNft
-                            loading={!floorPrice}
-                            onInfoPress={handlePressCollectionFloor}
-                            onPress={toggleFloorDisplayCurrency}
-                            showInfoButton
-                            size="big"
-                            title="Floor price"
-                            weight={floorPrice === 'None' ? 'bold' : 'heavy'}
-                          >
-                            {showFloorInEth ||
-                            nativeCurrency === 'ETH' ||
-                            floorPrice === 'None' ||
-                            floorPrice === null
-                              ? floorPrice
-                              : convertAmountToNativeDisplay(
-                                  parseFloat(floorPrice) * priceOfEth,
-                                  nativeCurrency
-                                )}
-                          </TokenInfoItem>
-                        </Columns>
+                        {isNFT && (
+                          <NFTBriefTokenInfoRow
+                            currentPrice={currentPrice}
+                            lastPrice={lastPrice}
+                            network={asset.network}
+                            urlSuffixForAsset={urlSuffixForAsset}
+                          />
+                        )}
                       </Bleed>
                     ) : null}
                     {description ? (
