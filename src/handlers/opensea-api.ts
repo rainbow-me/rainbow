@@ -60,6 +60,39 @@ export const apiGetAccountUniqueTokens = async (
   }
 };
 
+export const apiGetUniqueTokenImage = async (
+  contractAddress: string,
+  tokenId: string
+) => {
+  try {
+    const url = `https://${NFT_API_URL}/api/v1/asset/${contractAddress}/${tokenId}`;
+    const data = await rainbowFetch(url, {
+      headers: {
+        'Accept': 'application/json',
+        'X-Api-Key': NFT_API_KEY,
+      },
+      method: 'get',
+      timeout: 10000, // 10 secs
+    });
+    const {
+      image_url,
+      image_thumbnail_url,
+      image_original_url,
+      image_preview_url,
+    } = data?.data;
+    return {
+      image_original_url,
+      image_preview_url,
+      image_thumbnail_url,
+      image_url,
+    };
+  } catch (error) {
+    logger.sentry('Error getting unique token image', error);
+    captureException(new Error('Opensea: Error getting unique token image'));
+    throw error;
+  }
+};
+
 export const apiGetUniqueTokenFloorPrice = async (
   network: any,
   urlSuffixForAsset: any

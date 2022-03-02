@@ -105,6 +105,15 @@ const textRecordFields = {
       },
     },
   },
+  [ENS_RECORDS.email]: {
+    id: 'email',
+    inputProps: {
+      maxLength: 50,
+    },
+    key: ENS_RECORDS.email,
+    label: 'Email',
+    placeholder: 'Add your email',
+  },
   [ENS_RECORDS.url]: {
     id: 'website',
     inputProps: {
@@ -230,9 +239,9 @@ const setupMulticallRecords = (
   const namehash = hash(name);
 
   const data = [];
-
   // ens associated address
   const ensAssociatedRecord = records.ensAssociatedAddress;
+
   if (
     Boolean(ensAssociatedRecord) &&
     typeof ensAssociatedRecord === 'string' &&
@@ -283,13 +292,15 @@ const setupMulticallRecords = (
   const textAssociatedRecord = records.text;
   if (textAssociatedRecord) {
     data.push(
-      textAssociatedRecord.map(textRecord => {
-        return resolver.encodeFunctionData('setText', [
-          namehash,
-          textRecord.key,
-          textRecord.value,
-        ]);
-      })
+      textAssociatedRecord
+        .filter(textRecord => Boolean(textRecord.value))
+        .map(textRecord => {
+          return resolver.encodeFunctionData('setText', [
+            namehash,
+            textRecord.key,
+            textRecord.value,
+          ]);
+        })
     );
   }
   // flatten textrecords and addresses and remove undefined
@@ -370,7 +381,7 @@ const getENSExecutionDetails = async ({
       const record = records?.text[0];
       const namehash = hash(name);
       args = [namehash, record.key, record.value];
-      contract = getENSPublicResolverContract();
+      contract = getENSPublicResolverContract(wallet);
       break;
     }
     case ENSRegistrationTransactionType.MULTICALL: {

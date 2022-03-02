@@ -1,5 +1,5 @@
 import { isEmpty, omit } from 'lodash';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { atom, useRecoilState } from 'recoil';
 import { useENSProfile } from '.';
@@ -16,55 +16,89 @@ const selectedFieldsAtom = atom({
   key: 'ensProfileForm.selectedFields',
 });
 
-const valuesAtom = atom<Partial<Records>>({
+export const valuesAtom = atom<{ [name: string]: Partial<Records> }>({
   default: {},
   key: 'ensProfileForm.values',
 });
 
 export default function useENSProfileForm({
   defaultFields,
+  createForm,
 }: {
   defaultFields?: any[];
+  /** A flag that indicates if a new form should be initialised */
+  createForm?: boolean;
 } = {}) {
   const {
     name,
-    records,
+    mode,
+    changedRecords,
+    initialRecords,
+    records: allRecords,
+    recordsQuery,
     removeRecordByKey,
     updateRecordByKey,
     updateRecords,
   } = useENSProfile();
 
+  // The initial records will be the existing records belonging to the profile in "edit mode",
+  // but will be all of the records in "create mode".
+  const defaultRecords = useMemo(
+    () => (mode === 'edit' ? initialRecords : allRecords),
+    [allRecords, initialRecords, mode]
+  );
+
   const dispatch = useDispatch();
 
   const [disabled, setDisabled] = useRecoilState(disabledAtom);
+  useEffect(() => {
+    // If we are in edit mode, we want to disable the "Review" button
+    // when there are no changed records.
+    // Note: We don't want to do this in create mode as we have the "Skip"
+    // button.
+    if (mode === 'edit') {
+      setDisabled(isEmpty(changedRecords));
+    }
+  }, [changedRecords, disabled, mode, setDisabled]);
 
   const [selectedFields, setSelectedFields] = useRecoilState(
     selectedFieldsAtom
   );
   useEffect(() => {
-    // If there are existing records in the global state, then we
-    // populate with that.
-    if (!isEmpty(records)) {
-      setSelectedFields(
-        // @ts-ignore
-        Object.keys(records)
+    if (createForm) {
+      // If there are existing records in the global state, then we
+      // populate with that.
+      if (!isEmpty(defaultRecords)) {
+        setSelectedFields(
           // @ts-ignore
-          .map(key => textRecordFields[key])
-          .filter(x => x)
-      );
-    } else {
-      if (defaultFields) {
-        setSelectedFields(defaultFields as any);
+          Object.keys(defaultRecords)
+            // @ts-ignore
+            .map(key => textRecordFields[key])
+            .filter(x => x)
+        );
+      } else {
+        if (defaultFields) {
+          setSelectedFields(defaultFields as any);
+        }
       }
     }
-  }, [name]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [name, isEmpty(defaultRecords)]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const [values, setValues] = useRecoilState(valuesAtom);
-  useEffect(() => records && setValues(records), [name]); // eslint-disable-line react-hooks/exhaustive-deps
+  const [valuesMap, setValuesMap] = useRecoilState(valuesAtom);
+  const values = useMemo(() => valuesMap[name] || {}, [name, valuesMap]);
+  useEffect(
+    () => {
+      if (createForm) {
+        setValuesMap(values => ({ ...values, [name]: defaultRecords }));
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [name, isEmpty(defaultRecords)]
+  );
 
   // Set initial records in redux depending on user input (defaultFields)
   useEffect(() => {
-    if (isEmpty(records) && defaultFields) {
+    if (defaultFields && isEmpty(defaultRecords)) {
       const records = defaultFields.reduce((records, field) => {
         return {
           ...records,
@@ -73,7 +107,15 @@ export default function useENSProfileForm({
       }, {});
       updateRecords(records);
     }
-  }, [defaultFields, dispatch, records, selectedFields, updateRecords]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    defaultFields,
+    dispatch,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    isEmpty(defaultRecords),
+    selectedFields,
+    updateRecords,
+  ]);
 
   const onAddField = useCallback(
     (fieldToAdd, selectedFields) => {
@@ -87,32 +129,56 @@ export default function useENSProfileForm({
     (fieldToRemove, selectedFields) => {
       setSelectedFields(selectedFields);
       removeRecordByKey(fieldToRemove.key);
-      setValues(values => omit(values, fieldToRemove.key) as Records);
+      setValuesMap(values => ({
+        ...values,
+        [name]: omit(values?.[name] || {}, fieldToRemove.key) as Records,
+      }));
     },
-    [removeRecordByKey, setSelectedFields, setValues]
+    [name, removeRecordByKey, setSelectedFields, setValuesMap]
   );
 
   const onBlurField = useCallback(
     ({ key, value }) => {
-      setValues(values => ({ ...values, [key]: value }));
+      setValuesMap(values => ({
+        ...values,
+        [name]: { ...values?.[name], [key]: value },
+      }));
       updateRecordByKey(key, value);
     },
-    [setValues, updateRecordByKey]
+    [name, setValuesMap, updateRecordByKey]
   );
 
   const onChangeField = useCallback(
     ({ key, value }) => {
-      setValues(values => ({ ...values, [key]: value }));
+      setValuesMap(values => ({
+        ...values,
+        [name]: { ...values?.[name], [key]: value },
+      }));
       updateRecordByKey(key, value);
     },
-    [setValues, updateRecordByKey]
+    [name, setValuesMap, updateRecordByKey]
   );
+
+  const blurFields = useCallback(() => {
+    updateRecords(values);
+  }, [updateRecords, values]);
+
+  const [isLoading, setIsLoading] = useState(recordsQuery.isLoading);
+  useEffect(() => {
+    if (!recordsQuery.isLoading) {
+      setTimeout(() => setIsLoading(false), 200);
+    } else {
+      setIsLoading(true);
+    }
+  }, [recordsQuery.isLoading]);
 
   const empty = useMemo(() => !Object.values(values).some(Boolean), [values]);
 
   return {
+    blurFields,
     disabled,
     isEmpty: empty,
+    isLoading,
     onAddField,
     onBlurField,
     onChangeField,

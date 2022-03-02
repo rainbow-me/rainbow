@@ -2,11 +2,12 @@ import { debounce, isEmpty, sortBy } from 'lodash';
 import { ensClient } from '../apollo/client';
 import {
   ENS_DOMAINS,
+  ENS_GET_RECORDS,
   ENS_REGISTRATIONS,
   ENS_SUGGESTIONS,
 } from '../apollo/queries';
 import { ENSActionParameters } from '../raps/common';
-import { estimateGasWithPadding } from './web3';
+import { estimateGasWithPadding, web3Provider } from './web3';
 import { ENSRegistrationRecords, Records } from '@rainbow-me/entities';
 import {
   ENS_RECORDS,
@@ -17,6 +18,7 @@ import {
 import { add } from '@rainbow-me/helpers/utilities';
 import { ethUnits } from '@rainbow-me/references';
 import { profileUtils } from '@rainbow-me/utils';
+import { AvatarResolver } from 'ens-avatar';
 
 export const fetchSuggestions = async (
   recipient: any,
@@ -91,6 +93,46 @@ export const fetchRegistrationDate = async (recipient: any) => {
 
     return registrationDate;
   }
+};
+
+export const fetchRecords = async (recipient: any) => {
+  const recpt = recipient.toLowerCase();
+  const result = await ensClient.query({
+    query: ENS_GET_RECORDS,
+    variables: {
+      name: recpt,
+    },
+  });
+
+  const resolver = await web3Provider.getResolver(recpt);
+
+  const recordKeys: string[] = result.data?.domains[0]?.resolver?.texts || [];
+  const recordValues = await Promise.all(
+    recordKeys.map((key: string) => resolver.getText(key))
+  );
+  const records = recordKeys.reduce((records, key, i) => {
+    return {
+      ...records,
+      [key]: recordValues[i],
+    };
+  }, {}) as Partial<Records>;
+
+  let avatarUrl;
+  let coverUrl;
+  try {
+    const avatarResolver = new AvatarResolver(web3Provider);
+    avatarUrl = await avatarResolver.getImage(recpt, {
+      allowNonOwnerNFTs: true,
+      type: 'avatar',
+    });
+    coverUrl = await avatarResolver.getImage(recpt, {
+      allowNonOwnerNFTs: true,
+      type: 'cover',
+    });
+    // eslint-disable-next-line no-empty
+  } catch (err) {}
+
+  return { images: { avatarUrl, coverUrl }, records };
 };
 
 export const estimateENSRegisterWithConfigGasLimit = async ({
@@ -240,18 +282,23 @@ export const estimateENSRegistrationGasLimit = async (
     ownerAddress,
   });
   // dummy multicall to estimate gas
-  // const multicallGasLimitPromise = estimateENSMulticallGasLimit({
-  //   name,
-  //   records: {
-  //     coinAddress: null,
-  //     contentHash: null,
-  //     ensAssociatedAddress: ownerAddress,
-  //     text: [
-  //       { key: 'key1', value: 'value1' },
-  //       { key: 'key2', value: 'value2' },
-  //     ],
-  //   },
-  // });
+  const multicallGasLimitPromise = estimateENSMulticallGasLimit({
+    name,
+    records: {
+      coinAddress: null,
+      contentHash: null,
+      ensAssociatedAddress: null,
+      text: [
+        { key: 'key1', value: 'value1' },
+        { key: 'key2', value: 'value2' },
+        {
+          key: 'cover',
+          value:
+            'https://cloudflare-ipfs.com/ipfs/QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco/I/m/Vincent_van_Gogh_-_Self-Portrait_-_Google_Art_Project_(454045).jpg',
+        },
+      ],
+    },
+  });
 
   const gasLimits = await Promise.all([
     commitGasLimitPromise,
@@ -286,6 +333,7 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
   duration,
   rentPrice,
   salt,
+  setReverseRecord,
 }: ENSActionParameters) => {
   const registerGasLimitPromise = estimateENSRegisterWithConfigGasLimit({
     duration,
@@ -294,11 +342,8 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
     rentPrice,
     salt,
   });
-  const ensRegistrationRecords = formatRecordsForTransaction(records);
-  // WIP we need to set / unset these values from the UI
-  const setReverseRecord = true;
-  const setRecords = true;
   const promises = [registerGasLimitPromise];
+
   if (setReverseRecord) {
     promises.push(
       estimateENSSetNameGasLimit({
@@ -307,7 +352,10 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
       })
     );
   }
-  if (setRecords && records) {
+
+  const ensRegistrationRecords = formatRecordsForTransaction(records);
+  const validRecords = recordsForTransactionAreValid(ensRegistrationRecords);
+  if (validRecords) {
     promises.push(
       estimateENSMulticallGasLimit({
         name,
@@ -317,7 +365,6 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
   }
 
   const gasLimits = await Promise.all(promises);
-
   const gasLimit = gasLimits.reduce((a, b) => add(a || 0, b || 0));
   if (!gasLimit) return '0';
   return gasLimit;
@@ -349,21 +396,64 @@ export const formatRecordsForTransaction = (
         case ENS_RECORDS.snapchat:
         case ENS_RECORDS.telegram:
         case ENS_RECORDS.ensDelegate:
-          text.push({
-            key,
-            value: value,
-          });
+          Boolean(value) &&
+            text.push({
+              key,
+              value: value,
+            });
           return;
         case ENS_RECORDS.ETH:
         case ENS_RECORDS.BTC:
         case ENS_RECORDS.LTC:
         case ENS_RECORDS.DOGE:
-          coinAddress.push({ address: value, key });
+          Boolean(value) && coinAddress.push({ address: value, key });
           return;
         case ENS_RECORDS.content:
-          contentHash = value;
+          if (value) {
+            contentHash = value;
+          }
           return;
       }
     });
   return { coinAddress, contentHash, ensAssociatedAddress, text };
+};
+
+export const recordsForTransactionAreValid = (
+  registrationRecords: ENSRegistrationRecords
+) => {
+  const {
+    coinAddress,
+    contentHash,
+    ensAssociatedAddress,
+    text,
+  } = registrationRecords;
+  if (
+    !coinAddress?.length &&
+    !contentHash &&
+    !ensAssociatedAddress &&
+    !text?.length
+  ) {
+    return false;
+  }
+  return true;
+};
+
+export const shouldUseMulticallTransaction = (
+  registrationRecords: ENSRegistrationRecords
+) => {
+  const {
+    coinAddress,
+    contentHash,
+    ensAssociatedAddress,
+    text,
+  } = registrationRecords;
+  if (
+    !coinAddress?.length &&
+    !contentHash &&
+    !ensAssociatedAddress &&
+    text?.length === 1
+  ) {
+    return false;
+  }
+  return true;
 };

@@ -1,4 +1,4 @@
-import React, { ReactNode, useMemo } from 'react';
+import React, { ReactNode } from 'react';
 import { ButtonProps } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { TextColor } from '../../design-system/typography/typography';
@@ -30,10 +30,7 @@ const TintButton = ({
       // @ts-expect-error
       onPress={disabled ? () => undefined : onPress}
       scale={disabled ? 1 : 0.8}
-      style={useMemo(
-        () => ({ opacity: disabled ? 0.5 : 1, overflow: 'hidden' as 'hidden' }),
-        [disabled]
-      )}
+      style={{ opacity: disabled ? 0.5 : 1, overflow: 'hidden' }}
     >
       <Cover>
         <Box
