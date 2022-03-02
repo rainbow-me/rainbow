@@ -11,8 +11,7 @@ const ViewPagerWrapper = forwardRef((props, fref) => {
   const ref = React.useRef();
 
   useEffect(
-    () =>
-      android && ref?.current?.getNode().setPageWithoutAnimation(props.page),
+    () => android && ref?.current?.setPageWithoutAnimation(props.page),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
@@ -41,7 +40,7 @@ class ViewPagerBackend extends React.Component {
   jumpToIndex = index => {
     // If the index changed, we need to trigger a tab switch
     // this.isSwipeGesture.setValue(FALSE);
-    this.ref.current.getNode().setPage(index);
+    this.ref.current.setPage(index);
   };
 
   jumpTo = key => {

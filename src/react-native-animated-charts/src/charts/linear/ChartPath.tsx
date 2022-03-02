@@ -17,7 +17,9 @@ import Animated, {
   useSharedValue,
   useWorkletCallback,
   withDelay,
+  WithSpringConfig,
   withTiming,
+  WithTimingConfig,
 } from 'react-native-reanimated';
 import { getYForX } from 'react-native-redash';
 import Svg, { Path, PathProps } from 'react-native-svg';
@@ -87,10 +89,10 @@ interface ChartPathProps extends PathProps {
   strokeWidth?: number;
   stroke?: string;
   gestureEnabled?: boolean;
-  springConfig?: Animated.WithSpringConfig;
+  springConfig?: WithSpringConfig;
   longPressGestureHandlerProps?: LongPressGestureHandlerProperties;
-  timingFeedbackConfig?: Animated.WithTimingConfig;
-  timingAnimationConfig?: Animated.WithTimingConfig;
+  timingFeedbackConfig?: WithTimingConfig;
+  timingAnimationConfig?: WithTimingConfig;
 }
 
 function positionXWithMargin(x: number, margin: number, width: number) {
@@ -384,10 +386,10 @@ export const ChartPath = React.memo(
               viewBox={`0 0 ${width} ${height}`}
             >
               <AnimatedPath
+                // @ts-expect-error
                 animatedProps={animatedProps}
                 stroke={stroke}
                 strokeWidth={strokeWidth}
-                // @ts-expect-error
                 style={pathAnimatedStyles}
                 {...props}
               />
