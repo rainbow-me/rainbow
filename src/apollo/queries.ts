@@ -1,6 +1,9 @@
 import gql from 'graphql-tag';
 
-export const UNISWAP_PAIR_DATA_QUERY_VOLUME = (pairAddress, block) => {
+export const UNISWAP_PAIR_DATA_QUERY_VOLUME = (
+  pairAddress: string,
+  block: number
+) => {
   const queryString = `
     fragment PairFields on Pair {
       volumeUSD
@@ -45,7 +48,10 @@ export const COMPOUND_ACCOUNT_AND_MARKET_QUERY = gql`
   }
 `;
 
-export const UNISWAP_24HOUR_PRICE_QUERY = (tokenAddress, block) => {
+export const UNISWAP_24HOUR_PRICE_QUERY = (
+  tokenAddress: string,
+  block: number
+) => {
   const queryString = `
     query tokens {
       tokens(${
@@ -81,9 +87,9 @@ export const UNISWAP_ADDITIONAL_POOL_DATA = gql`
   }
 `;
 
-export const GET_BLOCKS_QUERY = timestamps => {
+export const GET_BLOCKS_QUERY = (timestamps: any) => {
   let queryString = 'query blocks {';
-  queryString += timestamps.map(timestamp => {
+  queryString += timestamps.map((timestamp: any) => {
     return `t${timestamp}:blocks(first: 1, orderBy: timestamp, orderDirection: desc, where: { timestamp_gt: ${timestamp}, timestamp_lt: ${
       timestamp + 600
     } }) {
@@ -242,6 +248,17 @@ export const ENS_REGISTRATIONS = gql`
   }
 `;
 
+export type EnsGetRegistrationData = {
+  registration: {
+    id: string;
+    registrationDate: number;
+    expiryDate: number;
+    registrant: {
+      id: string;
+    };
+  };
+};
+
 export const ENS_GET_REGISTRATION = gql`
   query getRegistration($id: ID!) {
     registration(id: $id) {
@@ -255,6 +272,14 @@ export const ENS_GET_REGISTRATION = gql`
   }
 `;
 
+export type EnsGetOwnerData = {
+  domains: {
+    owner: {
+      id: string;
+    };
+  }[];
+};
+
 export const ENS_GET_OWNER = gql`
   query lookup($name: String!) {
     domains(first: 1, where: { name: $name }) {
@@ -265,7 +290,16 @@ export const ENS_GET_OWNER = gql`
   }
 `;
 
-export const ENS_TEXT_RECORDS = gql`
+export type EnsGetRecordsData = {
+  domains: {
+    resolver: {
+      coinTypes: number[];
+      texts: string[];
+    };
+  }[];
+};
+
+export const ENS_GET_RECORDS = gql`
   query lookup($name: String!) {
     domains(first: 1, where: { name: $name }) {
       resolver {

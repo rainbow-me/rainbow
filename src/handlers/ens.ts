@@ -3,10 +3,13 @@ import { ensClient } from '../apollo/client';
 import {
   ENS_DOMAINS,
   ENS_GET_OWNER,
+  ENS_GET_RECORDS,
   ENS_GET_REGISTRATION,
   ENS_REGISTRATIONS,
   ENS_SUGGESTIONS,
-  ENS_TEXT_RECORDS,
+  EnsGetOwnerData,
+  EnsGetRecordsData,
+  EnsGetRegistrationData,
 } from '../apollo/queries';
 import { ENSActionParameters } from '../raps/common';
 import { estimateGasWithPadding, web3Provider } from './web3';
@@ -122,8 +125,8 @@ export const fetchImages = async (ensName: string) => {
 };
 
 export const fetchRecords = async (ensName: string) => {
-  const response = await ensClient.query({
-    query: ENS_TEXT_RECORDS,
+  const response = await ensClient.query<EnsGetRecordsData>({
+    query: ENS_GET_RECORDS,
     variables: {
       name: ensName,
     },
@@ -146,7 +149,7 @@ export const fetchRecords = async (ensName: string) => {
 };
 
 export const fetchOwner = async (ensName: string) => {
-  const response = await ensClient.query({
+  const response = await ensClient.query<EnsGetOwnerData>({
     query: ENS_GET_OWNER,
     variables: {
       name: ensName,
@@ -167,10 +170,10 @@ export const fetchOwner = async (ensName: string) => {
 };
 
 export const fetchRegistration = async (ensName: string) => {
-  const response = await ensClient.query({
+  const response = await ensClient.query<EnsGetRegistrationData>({
     query: ENS_GET_REGISTRATION,
     variables: {
-      name: labelhash(ensName.replace(ENS_DOMAIN, '')),
+      id: labelhash(ensName.replace(ENS_DOMAIN, '')),
     },
   });
   const data = response.data?.registration || {};

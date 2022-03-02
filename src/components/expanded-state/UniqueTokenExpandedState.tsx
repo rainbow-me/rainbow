@@ -29,12 +29,12 @@ import {
   SlackSheet,
 } from '../sheet';
 import { ToastPositionContainer, ToggleStateToast } from '../toasts';
-import { TokenInfoItem } from '../token-info';
 import { UniqueTokenAttributes, UniqueTokenImage } from '../unique-token';
 import {
   UniqueTokenExpandedStateContent,
   UniqueTokenExpandedStateHeader,
 } from './unique-token';
+import ENSBriefTokenInfoRow from './unique-token/ENSBriefTokenInfoRow';
 import NFTBriefTokenInfoRow from './unique-token/NFTBriefTokenInfoRow';
 import { useTheme } from '@rainbow-me/context';
 import {
@@ -54,11 +54,9 @@ import {
   TextProps,
 } from '@rainbow-me/design-system';
 import { AssetTypes, UniqueAsset } from '@rainbow-me/entities';
-import { apiGetUniqueTokenFloorPrice } from '@rainbow-me/handlers/opensea-api';
 import { buildUniqueTokenName } from '@rainbow-me/helpers/assets';
 import {
   useAccountProfile,
-  useAccountSettings,
   useDimensions,
   useENSProfile,
   usePersistentDominantColorFromImage,
@@ -68,10 +66,8 @@ import { useNavigation, useUntrustedUrlOpener } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
-import { convertAmountToNativeDisplay } from '@rainbow-me/utilities';
 import {
   buildRainbowUrl,
-  ethereumUtils,
   magicMemo,
   safeAreaInsetValues,
 } from '@rainbow-me/utils';
@@ -220,6 +216,7 @@ const UniqueTokenExpandedState = ({
 
   // Fetch the ENS profile if the unique token is an ENS name.
   const ensProfile = useENSProfile(uniqueId, { enabled: isENS });
+  const ensData = ensProfile.data;
 
   const {
     addShowcaseToken,
@@ -298,7 +295,7 @@ const UniqueTokenExpandedState = ({
 
   const isActionsEnabled = !external && !isReadOnlyWallet;
   const hasSendButton = isActionsEnabled && isSendable;
-  const hasEditButton = true;
+  const hasEditButton = isActionsEnabled && isENS;
 
   const familyLinkDisplay = useMemo(
     () =>
@@ -445,23 +442,48 @@ const UniqueTokenExpandedState = ({
                             urlSuffixForAsset={urlSuffixForAsset}
                           />
                         )}
+                        {isENS && (
+                          <ENSBriefTokenInfoRow
+                            expiryDate={ensData?.registration.expiryDate}
+                            registrationDate={
+                              ensData?.registration.registrationDate
+                            }
+                          />
+                        )}
                       </Bleed>
                     ) : null}
-                    {description ? (
-                      <Section title="Description">
-                        <Markdown>{description}</Markdown>
-                      </Section>
-                    ) : null}
-                    {traits.length ? (
-                      <Section title="Properties">
-                        <UniqueTokenAttributes
-                          {...asset}
-                          color={imageColor}
-                          disableMenu={isPoap}
-                          slug={asset.collection.slug}
-                        />
-                      </Section>
-                    ) : null}
+                    {(isNFT || isPoap) && (
+                      <>
+                        {description ? (
+                          <Section title="Description">
+                            <Markdown>{description}</Markdown>
+                          </Section>
+                        ) : null}
+                        {traits.length ? (
+                          <Section title="Properties">
+                            <UniqueTokenAttributes
+                              {...asset}
+                              color={imageColor}
+                              disableMenu={isPoap}
+                              slug={asset.collection.slug}
+                            />
+                          </Section>
+                        ) : null}
+                      </>
+                    )}
+                    {isENS && (
+                      <>
+                        <Section title="Profile Info">
+                          <Text>TODO</Text>
+                        </Section>
+                        <Section title="Configuration">
+                          <Text>TODO</Text>
+                        </Section>
+                        <Section title="Advanced">
+                          <Text>TODO</Text>
+                        </Section>
+                      </>
+                    )}
                     {familyDescription ? (
                       <Section title={`About ${familyName}`}>
                         <Stack space={sectionSpace}>
