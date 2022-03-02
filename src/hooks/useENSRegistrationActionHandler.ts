@@ -87,7 +87,7 @@ export default function useENSRegistrationActionHandler(
       const {
         name,
         duration,
-        records,
+        changedRecords,
         salt,
       } = registrationParameters as RegistrationParameters;
       const wallet = await loadWallet();
@@ -103,7 +103,7 @@ export default function useENSRegistrationActionHandler(
         name,
         nonce,
         ownerAddress: accountAddress,
-        records,
+        records: changedRecords,
         rentPrice: rentPrice.toString(),
         salt,
       };
