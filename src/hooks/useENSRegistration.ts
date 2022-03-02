@@ -124,6 +124,12 @@ export default function useENSRegistration({
         if (uniqueToken?.image_thumbnail_url) {
           avatarUrl = uniqueToken?.image_thumbnail_url;
         }
+      } else if (
+        records.avatar.startsWith('http') ||
+        (records.avatar.startsWith('/') &&
+          !records.avatar.match(/^\/(ipfs|ipns)/))
+      ) {
+        avatarUrl = records.avatar;
       }
     }
 
