@@ -15,6 +15,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+import vstyled from 'styled-components';
 import useReactiveSharedValue from '../../../react-native-animated-charts/src/helpers/useReactiveSharedValue';
 import { ButtonPressAnimation } from '../../animations';
 import { useDimensions } from '@rainbow-me/hooks';
@@ -43,13 +44,14 @@ const GestureBlocker = styled(View)({
   width: ({ width }) => width,
 });
 
-const Container = styled(Animated.View)({
-  alignSelf: 'center',
-  shadowColor: ({ theme: { colors } }) => colors.shadowBlack,
-  shadowOffset: { height: 20, width: 0 },
-  shadowOpacity: 0.4,
-  shadowRadius: 30,
-});
+// TODO osdnk
+const Container = vstyled(Animated.View)`
+  align-self: center;
+  shadow-color: ${({ theme: { colors } }) => colors.shadowBlack};
+  shadow-offset: 0 20px;
+  shadow-opacity: 0.4;
+  shadow-radius: 30px;
+`;
 
 const ImageWrapper = styled(Animated.View)({
   ...position.sizeAsObject('100%'),
