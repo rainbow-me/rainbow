@@ -1,6 +1,6 @@
+import { Buffer } from 'buffer';
 import { Contract } from '@ethersproject/contracts';
 import { BaseProvider } from '@ethersproject/providers';
-import { Buffer } from 'buffer/';
 import { AvatarRequestOpts } from '..';
 import { resolveURI } from '../utils';
 import { apiGetUniqueTokenImage } from '@rainbow-me/handlers/opensea-api';

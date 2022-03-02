@@ -195,14 +195,14 @@ export default function ENSConfirmRegisterSheet() {
                   {mode === 'edit' && <Text>TODO</Text>}
                 </Stack>
               </Inset>
+            </Row>
+            <Row height="content">
               <Box>
                 <Stack space="34px">
                   <Text align="center">Step: {step}</Text>
                   <Text align="center">Gas limit: {stepGasLimit}</Text>
                 </Stack>
               </Box>
-            </Row>
-            <Row height="content">
               {action ? (
                 <>
                   <Box>

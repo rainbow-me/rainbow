@@ -107,7 +107,6 @@ const executeMulticall = async (
     type: ENSRegistrationTransactionType.MULTICALL,
     wallet,
   });
-
   return (
     methodArguments &&
     contract?.multicall(...methodArguments, {

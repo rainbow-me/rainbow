@@ -6,11 +6,15 @@ import {
   getENSRapEstimationByType,
   RapActionTypes,
 } from '../raps/common';
-import useENSRegistration from './useENSRegistration';
-import { useAccountSettings, useCurrentNonce } from '.';
+import { useAccountSettings, useCurrentNonce, useENSRegistration } from '.';
 import { RegistrationParameters } from '@rainbow-me/entities';
-import { web3Provider } from '@rainbow-me/handlers/web3';
-import { generateSalt, getRentPrice } from '@rainbow-me/helpers/ens';
+import { toHex, web3Provider } from '@rainbow-me/handlers/web3';
+import {
+  ENS_DOMAIN,
+  generateSalt,
+  getRentPrice,
+} from '@rainbow-me/helpers/ens';
+import { addBuffer } from '@rainbow-me/helpers/utilities';
 import { loadWallet } from '@rainbow-me/model/wallet';
 import { executeRap } from '@rainbow-me/raps';
 import { updateTransactionRegistrationParameters } from '@rainbow-me/redux/ensRegistration';
@@ -51,7 +55,10 @@ export default function useENSRegistrationActionHandler(
 
   const commit = useCallback(
     async (callback: () => void) => {
-      const { name } = registrationParameters as RegistrationParameters;
+      const {
+        name,
+        changedRecords,
+      } = registrationParameters as RegistrationParameters;
       const wallet = await loadWallet();
       if (!wallet) {
         return;
@@ -60,7 +67,7 @@ export default function useENSRegistrationActionHandler(
       const salt = generateSalt();
       const nonce = await getNextNonce();
       const rentPrice = await getRentPrice(
-        name,
+        name.replace(ENS_DOMAIN, ''),
         yearsDuration * timeUnits.secs.year
       );
 
@@ -69,6 +76,7 @@ export default function useENSRegistrationActionHandler(
         name,
         nonce,
         ownerAddress: accountAddress,
+        records: changedRecords,
         rentPrice: rentPrice.toString(),
         salt,
       };
@@ -97,7 +105,10 @@ export default function useENSRegistrationActionHandler(
       }
 
       const nonce = await getNextNonce();
-      const rentPrice = await getRentPrice(name, duration);
+      const rentPrice = await getRentPrice(
+        name.replace(ENS_DOMAIN, ''),
+        duration
+      );
 
       const registerEnsRegistrationParameters: ENSActionParameters = {
         duration,
@@ -107,6 +118,7 @@ export default function useENSRegistrationActionHandler(
         records: changedRecords,
         rentPrice: rentPrice.toString(),
         salt,
+        setReverseRecord: true,
       };
 
       await executeRap(
@@ -162,7 +174,7 @@ export default function useENSRegistrationActionHandler(
       const block = await web3Provider.getBlock(tx.blockHash || '');
       confirmedAt = block?.timestamp * 1000;
       const now = Date.now();
-      const secs = differenceInSeconds(now, confirmedAt * 1000);
+      const secs = differenceInSeconds(now, confirmedAt);
       setSecondsSinceCommitConfirmed(secs);
       confirmed = true;
       dispatch(
@@ -195,7 +207,12 @@ export default function useENSRegistrationActionHandler(
       switch (step) {
         case REGISTRATION_STEPS.COMMIT: {
           const salt = generateSalt();
-          const rentPrice = await getRentPrice(name, timeUnits.secs.year);
+          const rentPrice = await getRentPrice(
+            name.replace(ENS_DOMAIN, ''),
+            timeUnits.secs.year
+          );
+          const value = toHex(addBuffer(rentPrice.toString(), 1.1));
+
           const gasLimit = await getENSRapEstimationByType(
             RapActionTypes.commitENS,
             {
@@ -203,7 +220,7 @@ export default function useENSRegistrationActionHandler(
               name,
               ownerAddress: accountAddress,
               records,
-              rentPrice,
+              rentPrice: value,
               salt,
             }
           );
@@ -226,6 +243,7 @@ export default function useENSRegistrationActionHandler(
               records,
               rentPrice,
               salt,
+              setReverseRecord: true,
             }
           );
           setStepGasLimit(gasLimit);

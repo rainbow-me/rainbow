@@ -5,10 +5,8 @@ import React, {
   Fragment,
   ReactNode,
   useCallback,
-  useEffect,
   useMemo,
   useRef,
-  useState,
 } from 'react';
 import { Linking, Share, View } from 'react-native';
 import Animated, {

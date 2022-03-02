@@ -32,6 +32,7 @@ export { default as useDimensions } from './useDimensions';
 export { default as useDPI } from './useDPI';
 export { default as useEffectDebugger } from './useEffectDebugger';
 export { default as useEmailRainbow } from './useEmailRainbow';
+export { default as useENSPendingRegistrations } from './useENSPendingRegistrations';
 export { default as useENSProfile } from './useENSProfile';
 export { default as useENSRegistration } from './useENSRegistration';
 export { default as useENSRegistrationActionHandler } from './useENSRegistrationActionHandler';
