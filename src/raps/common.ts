@@ -89,6 +89,7 @@ export interface ENSActionParameters {
   ownerAddress: string;
   salt: string;
   records?: Records;
+  setReverseRecord?: boolean;
 }
 
 export interface RapActionTransaction {
