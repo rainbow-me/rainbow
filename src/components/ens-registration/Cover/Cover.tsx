@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
 import Spinner from '../../Spinner';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
+import Skeleton from '../../skeleton/Skeleton';
 import { useTheme } from '@rainbow-me/context';
 import {
   Box,
@@ -10,19 +11,26 @@ import {
   Text,
   useForegroundColor,
 } from '@rainbow-me/design-system';
-import { useENSProfileForm, useSelectImageMenu } from '@rainbow-me/hooks';
+import {
+  useENSProfile,
+  useENSProfileForm,
+  useSelectImageMenu,
+} from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 
 const alpha = '33';
 
 export default function CoverPhoto() {
   const { colors } = useTheme();
-  const { values, onBlurField, setDisabled } = useENSProfileForm();
+  const {
+    images: { coverUrl: initialCoverUrl },
+  } = useENSProfile();
+  const { isLoading, values, onBlurField, setDisabled } = useENSProfileForm();
 
-  const [coverUrl, setCoverUrl] = useState(values?.cover);
+  const [coverUrl, setCoverUrl] = useState(initialCoverUrl || values?.cover);
   useEffect(() => {
-    setCoverUrl(values?.cover);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    setCoverUrl(initialCoverUrl || values?.cover);
+  }, [initialCoverUrl]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const accentColor = useForegroundColor('accent');
 
@@ -45,6 +53,15 @@ export default function CoverPhoto() {
     uploadToIPFS: true,
   });
 
+  if (isLoading) {
+    return (
+      <Box height="126px">
+        <Skeleton animated>
+          <Box background="body" height="126px" />
+        </Skeleton>
+      </Box>
+    );
+  }
   return (
     <ContextMenu>
       <ButtonPressAnimation scaleTo={1}>

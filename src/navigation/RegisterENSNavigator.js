@@ -1,18 +1,18 @@
+import { useRoute } from '@react-navigation/core';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import ConditionalWrap from 'conditional-wrap';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { StatusBar } from 'react-native';
-import { useRecoilState } from 'recoil';
 import { SheetHandleFixedToTopHeight, SlackSheet } from '../components/sheet';
 import ENSAssignRecordsSheet, {
   ENSAssignRecordsBottomActions,
 } from '../screens/ENSAssignRecordsSheet';
 import ENSSearchSheet from '../screens/ENSSearchSheet';
+import { useNavigation } from './Navigation';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
 import { sharedCoolModalTopOffset } from './config';
 import { Box } from '@rainbow-me/design-system';
-import { accentColorAtom } from '@rainbow-me/helpers/ens';
-import { useDimensions } from '@rainbow-me/hooks';
+import { useDimensions, useENSProfile, usePrevious } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { deviceUtils } from '@rainbow-me/utils';
 
@@ -38,9 +38,10 @@ const defaultScreenOptions = {
   },
 };
 
-const initialRouteName = Routes.ENS_SEARCH_SHEET;
-
 export default function RegisterENSNavigator() {
+  const { params } = useRoute();
+  const navigation = useNavigation();
+
   const sheetRef = useRef();
 
   const { height: deviceHeight } = useDimensions();
@@ -48,23 +49,34 @@ export default function RegisterENSNavigator() {
   const contentHeight =
     deviceHeight - SheetHandleFixedToTopHeight - sharedCoolModalTopOffset;
 
+  const { startRegistration, clearCurrentRegistrationName } = useENSProfile();
+
+  const initialRouteName = useMemo(() => {
+    const { ensName, mode } = params || { mode: 'create' };
+    if (mode === 'edit') {
+      startRegistration(ensName, mode);
+      return Routes.ENS_ASSIGN_RECORDS_SHEET;
+    }
+    return Routes.ENS_SEARCH_SHEET;
+  }, [params, startRegistration]);
   const [currentRouteName, setCurrentRouteName] = useState(initialRouteName);
+  const previousRouteName = usePrevious(currentRouteName);
 
   const screenOptions = useMemo(() => defaultScreenOptions[currentRouteName], [
     currentRouteName,
   ]);
 
-  const [accentColor] = useRecoilState(accentColorAtom);
-
   const [scrollEnabled, setScrollEnabled] = useState(
     screenOptions.scrollEnabled
   );
   useEffect(() => {
-    // Wait 200ms to prevent transition lag
-    setTimeout(() => {
-      setScrollEnabled(screenOptions.scrollEnabled);
-    }, 200);
-  }, [screenOptions.scrollEnabled]);
+    if (previousRouteName) {
+      // Wait 500ms to prevent transition lag
+      setTimeout(() => {
+        setScrollEnabled(screenOptions.scrollEnabled);
+      }, 500);
+    }
+  }, [previousRouteName, screenOptions.scrollEnabled]);
 
   useEffect(() => {
     StatusBar.setBarStyle('light-content');
@@ -76,6 +88,12 @@ export default function RegisterENSNavigator() {
     }
   }, [screenOptions.scrollEnabled]);
 
+  useEffect(() => {
+    navigation.addListener('dismiss', clearCurrentRegistrationName);
+    return () =>
+      navigation.removeListener('dismiss', clearCurrentRegistrationName);
+  });
+
   const isBottomActionsVisible =
     currentRouteName === Routes.ENS_ASSIGN_RECORDS_SHEET;
 
@@ -86,9 +104,6 @@ export default function RegisterENSNavigator() {
   return (
     <>
       <SlackSheet
-        backgroundColor={
-          screenOptions.useAccentAsSheetBackground ? accentColor : undefined
-        }
         contentHeight={contentHeight}
         height="100%"
         ref={sheetRef}
@@ -101,7 +116,7 @@ export default function RegisterENSNavigator() {
         >
           <Swipe.Navigator
             initialLayout={deviceUtils.dimensions}
-            initialRouteName={initialRouteName}
+            initialRouteName={currentRouteName}
             pager={renderPager}
             swipeEnabled={false}
             tabBar={renderTabBar}

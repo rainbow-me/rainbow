@@ -199,6 +199,11 @@ const UniqueTokenExpandedState = ({
     urlSuffixForAsset,
   } = asset;
 
+  const isENS = useMemo(
+    () => familyName === 'ENS' && uniqueId !== 'Unknown ENS name',
+    [familyName, uniqueId]
+  );
+
   const {
     addShowcaseToken,
     removeShowcaseToken,
@@ -282,6 +287,15 @@ const UniqueTokenExpandedState = ({
     });
   }, [accountAddress, accountENS, asset]);
 
+  const handlePressEdit = useCallback(() => {
+    if (isENS) {
+      navigate(Routes.REGISTER_ENS_NAVIGATOR, {
+        ensName: uniqueId,
+        mode: 'edit',
+      });
+    }
+  }, [isENS, navigate, uniqueId]);
+
   const toggleCurrentPriceDisplayCurrency = useCallback(
     () => setShowCurrentPriceInEth(!showCurrentPriceInEth),
     [showCurrentPriceInEth, setShowCurrentPriceInEth]
@@ -295,7 +309,9 @@ const UniqueTokenExpandedState = ({
   const sheetRef = useRef();
   const yPosition = useSharedValue(0);
 
-  const hasSendButton = !external && !isReadOnlyWallet && isSendable;
+  const isActionsEnabled = !external && !isReadOnlyWallet;
+  const hasSendButton = isActionsEnabled && isSendable;
+  const hasEditButton = isActionsEnabled && isENS;
 
   const familyLinkDisplay = useMemo(
     () =>
@@ -378,17 +394,29 @@ const UniqueTokenExpandedState = ({
                   </Stack>
                   {!isPoap ? (
                     <Columns space="15px">
-                      <SheetActionButton
-                        color={imageColor}
-                        // @ts-expect-error JavaScript component
-                        label={
-                          hasSendButton ? '􀮶 OpenSea' : '􀮶 View on OpenSea'
-                        }
-                        nftShadows
-                        onPress={handlePressOpensea}
-                        textColor={textColor}
-                        weight="heavy"
-                      />
+                      {hasEditButton ? (
+                        <SheetActionButton
+                          color={imageColor}
+                          // @ts-expect-error JavaScript component
+                          label="􀉮 Edit"
+                          nftShadows
+                          onPress={handlePressEdit}
+                          textColor={textColor}
+                          weight="heavy"
+                        />
+                      ) : (
+                        <SheetActionButton
+                          color={imageColor}
+                          // @ts-expect-error JavaScript component
+                          label={
+                            hasSendButton ? '􀮶 OpenSea' : '􀮶 View on OpenSea'
+                          }
+                          nftShadows
+                          onPress={handlePressOpensea}
+                          textColor={textColor}
+                          weight="heavy"
+                        />
+                      )}
                       {hasSendButton ? (
                         <SendActionButton
                           asset={asset}

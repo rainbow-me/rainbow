@@ -4,6 +4,7 @@ import { Keyboard } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
+  withSpring,
   withTiming,
 } from 'react-native-reanimated';
 import { useRecoilState } from 'recoil';
@@ -18,6 +19,10 @@ import SelectableButton from '../components/ens-registration/TextRecordsForm/Sel
 import { SheetActionButton, SheetActionButtonRow } from '../components/sheet';
 import { useTheme } from '../context/ThemeContext';
 import { useNavigation } from '../navigation/Navigation';
+import {
+  ENSConfirmRegisterSheetHeight,
+  ENSConfirmUpdateSheetHeight,
+} from './ENSConfirmRegisterSheet';
 import {
   AccentColorProvider,
   Bleed,
@@ -50,7 +55,10 @@ export const BottomActionHeight = ios ? 270 : 250;
 
 export default function ENSAssignRecordsSheet() {
   const { colors } = useTheme();
-  const { name } = useENSProfile();
+  const { name, mode } = useENSProfile({
+    setInitialRecordsWhenInEditMode: true,
+  });
+  useENSProfileForm({ createForm: true });
 
   const [avatarUrl, setAvatarUrl] = useState();
 
@@ -86,16 +94,18 @@ export default function ENSAssignRecordsSheet() {
                 <Heading size="26px" weight="heavy">
                   {name}
                 </Heading>
-                <Text color="accent" size="16px" weight="heavy">
-                  {lang.t('profiles.create.description')}
-                </Text>
+                {mode === 'create' && (
+                  <Text color="accent" size="16px" weight="heavy">
+                    {lang.t('profiles.create.description')}
+                  </Text>
+                )}
               </Stack>
               <Box flexGrow={1}>
                 <TextRecordsForm
                   defaultFields={[
                     ENS_RECORDS.displayName,
                     ENS_RECORDS.description,
-                    ENS_RECORDS.url,
+                    ENS_RECORDS.email,
                     ENS_RECORDS.twitter,
                   ]}
                 />
@@ -108,11 +118,12 @@ export default function ENSAssignRecordsSheet() {
   );
 }
 
-export function ENSAssignRecordsBottomActions({ visible }) {
+export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
   const { navigate } = useNavigation();
   const keyboardHeight = useKeyboardHeight();
   const [accentColor] = useRecoilState(accentColorAtom);
 
+  const { mode, recordsQuery } = useENSProfile();
   const {
     disabled,
     isEmpty,
@@ -126,13 +137,29 @@ export function ENSAssignRecordsBottomActions({ visible }) {
   }, [navigate]);
 
   const handlePressContinue = useCallback(() => {
-    navigate(Routes.ENS_CONFIRM_REGISTER_SHEET);
-  }, [navigate]);
+    navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
+      longFormHeight:
+        mode === 'edit'
+          ? ENSConfirmUpdateSheetHeight
+          : ENSConfirmRegisterSheetHeight,
+    });
+  }, [mode, navigate]);
+
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    if (mode === 'edit') {
+      setTimeout(() => setVisible(recordsQuery.isSuccess), 200);
+    } else {
+      setVisible(defaultVisible);
+    }
+  }, [defaultVisible, mode, recordsQuery.isSuccess]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      bottom: withTiming(visible ? 0 : -BottomActionHeight - 10, {
-        duration: 100,
+      bottom: withSpring(visible ? 0 : -BottomActionHeight - 10, {
+        damping: 40,
+        mass: 1,
+        stiffness: 420,
       }),
     };
   });
@@ -180,10 +207,12 @@ export function ENSAssignRecordsBottomActions({ visible }) {
                       }
                     : {})}
                 >
-                  <TintButton color="secondary60" onPress={handlePressBack}>
-                    {lang.t('profiles.create.back')}
-                  </TintButton>
-                  {isEmpty ? (
+                  {mode === 'create' && (
+                    <TintButton color="secondary60" onPress={handlePressBack}>
+                      {lang.t('profiles.create.back')}
+                    </TintButton>
+                  )}
+                  {isEmpty && mode === 'create' ? (
                     <TintButton
                       color="secondary60"
                       disabled={disabled}

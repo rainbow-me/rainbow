@@ -105,6 +105,15 @@ const textRecordFields = {
       },
     },
   },
+  [ENS_RECORDS.email]: {
+    id: 'email',
+    inputProps: {
+      maxLength: 50,
+    },
+    key: ENS_RECORDS.email,
+    label: 'Email',
+    placeholder: 'Add your email',
+  },
   [ENS_RECORDS.url]: {
     id: 'website',
     inputProps: {
