@@ -42,9 +42,14 @@ export default function InlineField({
   const handleContentSizeChange = useCallback(
     ({ nativeEvent }) => {
       if (inputProps?.multiline) {
-        const contentHeight = nativeEvent.contentSize.height;
+        const contentHeight = ios
+          ? nativeEvent.contentSize.height
+          : nativeEvent.contentSize.height - 32.8571421305;
+        // the contentSize.height on android has an initial value ~32.85
+        // greater than ios, even though they increment by the same amount
+        // for each new line of the text input box
         if (contentHeight > 30) {
-          setInputHeight(nativeEvent.contentSize.height);
+          setInputHeight(contentHeight);
         } else {
           setInputHeight(textSize);
         }
