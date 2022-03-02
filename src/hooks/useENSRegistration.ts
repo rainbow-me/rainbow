@@ -4,6 +4,7 @@ import { useQuery } from 'react-query';
 import { useAccountSettings } from '.';
 import { fetchRegistrationDate } from '@rainbow-me/handlers/ens';
 import {
+  ENS_DOMAIN,
   formatRentPrice,
   getAvailable,
   getNameExpires,
@@ -44,7 +45,7 @@ export default function useENSRegistration({
     const isAvailable = await getAvailable(name);
     if (isAvailable) {
       const rentPrice = await getRentPrice(
-        name,
+        name.replace(ENS_DOMAIN, ''),
         duration * timeUnits.secs.year
       );
       const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
