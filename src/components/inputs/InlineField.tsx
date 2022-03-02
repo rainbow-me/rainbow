@@ -84,12 +84,13 @@ export default function InlineField({
       lineHeight: android ? textStyle.lineHeight : undefined,
       marginBottom: 0,
       marginTop: 0,
+      paddingBottom: 0,
       paddingTop: inputProps?.multiline
         ? android
           ? 11
           : 15
         : android
-        ? 15
+        ? 11
         : 0,
       textAlignVertical: 'top',
     }),
