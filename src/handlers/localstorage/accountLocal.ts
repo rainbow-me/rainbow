@@ -1,5 +1,6 @@
 import { MMKV } from 'react-native-mmkv';
 import { getAccountLocal, getKey, saveAccountLocal } from './common';
+import { ENSRegistrations } from '@rainbow-me/entities';
 
 const accountAssetsDataVersion = '0.1.0';
 const assetPricesFromUniswapVersion = '0.1.0';
@@ -22,6 +23,7 @@ const UNIQUE_TOKENS = 'uniquetokens';
 const PINNED_COINS = 'pinnedCoins';
 const HIDDEN_COINS = 'hiddenCoins';
 const WEB_DATA_ENABLED = 'webDataEnabled';
+const ENS_REGISTRATIONS = 'ensRegistrations';
 
 const storage = new MMKV({
   id: 'ACCOUNT',
@@ -32,6 +34,7 @@ export const accountLocalKeys = [
   ACCOUNT_INFO,
   ASSET_PRICES_FROM_UNISWAP,
   ASSETS,
+  ENS_REGISTRATIONS,
   PURCHASE_TRANSACTIONS,
   SAVINGS,
   SHOWCASE_TOKENS,
@@ -226,6 +229,36 @@ export const saveLocalTransactions = (
     accountAddress,
     network,
     transactionsVersion
+  );
+
+/**
+ * @desc get ENS registrations
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Object}
+ */
+export const getLocalENSRegistrations = (
+  accountAddress: any,
+  network: any
+): Promise<ENSRegistrations> =>
+  getAccountLocal(ENS_REGISTRATIONS, accountAddress, network);
+
+/**
+ * @desc save ENS registrations
+ * @param  {String}   [address]
+ * @param  {Array}    [assets]
+ * @param  {String}   [network]
+ */
+export const saveLocalENSRegistrations = (
+  ensRegistrations: ENSRegistrations,
+  accountAddress: any,
+  network: any
+) =>
+  saveAccountLocal(
+    ENS_REGISTRATIONS,
+    ensRegistrations,
+    accountAddress,
+    network
   );
 
 /**

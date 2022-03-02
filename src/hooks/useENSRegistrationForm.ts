@@ -33,7 +33,7 @@ export default function useENSRegistrationForm({
     name,
     mode,
     changedRecords,
-    existingRecords,
+    initialRecords,
     records: allRecords,
     recordsQuery,
     removeRecordByKey,
@@ -43,9 +43,9 @@ export default function useENSRegistrationForm({
 
   // The initial records will be the existing records belonging to the profile in "edit mode",
   // but will be all of the records in "create mode".
-  const initialRecords = useMemo(
-    () => (mode === 'edit' ? existingRecords : allRecords),
-    [allRecords, existingRecords, mode]
+  const defaultRecords = useMemo(
+    () => (mode === 'edit' ? initialRecords : allRecords),
+    [allRecords, initialRecords, mode]
   );
 
   const dispatch = useDispatch();
@@ -68,10 +68,10 @@ export default function useENSRegistrationForm({
     if (createForm) {
       // If there are existing records in the global state, then we
       // populate with that.
-      if (!isEmpty(initialRecords)) {
+      if (!isEmpty(defaultRecords)) {
         setSelectedFields(
           // @ts-ignore
-          Object.keys(initialRecords)
+          Object.keys(defaultRecords)
             // @ts-ignore
             .map(key => textRecordFields[key])
             .filter(x => x)
@@ -82,23 +82,23 @@ export default function useENSRegistrationForm({
         }
       }
     }
-  }, [name, isEmpty(initialRecords)]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [name, isEmpty(defaultRecords)]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [valuesMap, setValuesMap] = useRecoilState(valuesAtom);
   const values = useMemo(() => valuesMap[name] || {}, [name, valuesMap]);
   useEffect(
     () => {
       if (createForm) {
-        setValuesMap(values => ({ ...values, [name]: initialRecords }));
+        setValuesMap(values => ({ ...values, [name]: defaultRecords }));
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [name, isEmpty(initialRecords)]
+    [name, isEmpty(defaultRecords)]
   );
 
   // Set initial records in redux depending on user input (defaultFields)
   useEffect(() => {
-    if (defaultFields && isEmpty(initialRecords)) {
+    if (defaultFields && isEmpty(defaultRecords)) {
       const records = defaultFields.reduce((records, field) => {
         return {
           ...records,
@@ -112,7 +112,7 @@ export default function useENSRegistrationForm({
     defaultFields,
     dispatch,
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    isEmpty(initialRecords),
+    isEmpty(defaultRecords),
     selectedFields,
     updateRecords,
   ]);
@@ -154,8 +154,9 @@ export default function useENSRegistrationForm({
         ...values,
         [name]: { ...values?.[name], [key]: value },
       }));
+      updateRecordByKey(key, value);
     },
-    [name, setValuesMap]
+    [name, setValuesMap, updateRecordByKey]
   );
 
   const blurFields = useCallback(() => {

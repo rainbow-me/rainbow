@@ -7,20 +7,21 @@ import { ENSRegistrationState, Records } from '@rainbow-me/entities';
 import { fetchProfile } from '@rainbow-me/handlers/ens';
 import * as ensRedux from '@rainbow-me/redux/ensRegistration';
 import { AppState } from '@rainbow-me/redux/store';
+import { isENSNFTAvatar, parseENSNFTAvatar } from '@rainbow-me/utils';
 
 export default function useENSRegistration({
-  setExistingRecordsWhenInEditMode = false,
+  setInitialRecordsWhenInEditMode = false,
 }: {
-  /** When true, an update to `existingRecords` will be triggered when the flow is in "edit mode". */
-  setExistingRecordsWhenInEditMode?: boolean;
+  /** When true, an update to `initialRecords` will be triggered when the flow is in "edit mode". */
+  setInitialRecordsWhenInEditMode?: boolean;
 } = {}) {
   const { accountAddress } = useAccountSettings();
 
   const {
     mode,
-    existingRecords,
-    records,
     name,
+    initialRecords,
+    records,
     registrationParameters,
   } = useSelector(({ ensRegistration }: AppState) => {
     const {
@@ -31,11 +32,11 @@ export default function useENSRegistration({
       registrations?.[accountAddress?.toLowerCase()]?.[
         currentRegistrationName
       ] || {};
-    const existingRecords = registrationParameters?.existingRecords || {};
+    const initialRecords = registrationParameters?.initialRecords || {};
     const records = registrationParameters?.records || {};
     const mode = registrationParameters?.mode || {};
     return {
-      existingRecords,
+      initialRecords,
       mode,
       name: currentRegistrationName,
       records,
@@ -81,12 +82,12 @@ export default function useENSRegistration({
   });
   useEffect(() => {
     if (
-      setExistingRecordsWhenInEditMode &&
+      setInitialRecordsWhenInEditMode &&
       mode === 'edit' &&
       recordsQuery.isSuccess
     ) {
       dispatch(
-        ensRedux.setExistingRecords(
+        ensRedux.setInitialRecords(
           accountAddress,
           recordsQuery.data.records as Records
         )
@@ -98,17 +99,44 @@ export default function useENSRegistration({
     mode,
     recordsQuery.data?.records,
     recordsQuery.isSuccess,
-    setExistingRecordsWhenInEditMode,
+    setInitialRecordsWhenInEditMode,
   ]);
 
   // Since `records.avatar` is not a reliable source for an avatar URL
   // (the avatar can be an NFT), then if the avatar is an NFT, we will
   // parse it to obtain the URL.
+  const uniqueTokens = useSelector(
+    ({ uniqueTokens }: AppState) => uniqueTokens.uniqueTokens
+  );
   const images = useMemo(() => {
-    return (
-      recordsQuery.data?.images || { avatarUrl: undefined, coverUrl: undefined }
-    );
-  }, [recordsQuery.data?.images]);
+    let avatarUrl = recordsQuery.data?.images?.avatarUrl;
+    let coverUrl = recordsQuery.data?.images?.coverUrl;
+
+    if (records.avatar) {
+      const isNFTAvatar = isENSNFTAvatar(records.avatar);
+      if (isNFTAvatar) {
+        const { contractAddress, tokenId } = parseENSNFTAvatar(records?.avatar);
+        const uniqueToken = uniqueTokens.find(
+          token =>
+            token.asset_contract.address === contractAddress &&
+            token.id === tokenId
+        );
+        if (uniqueToken?.image_thumbnail_url) {
+          avatarUrl = uniqueToken?.image_thumbnail_url;
+        }
+      }
+    }
+
+    return {
+      avatarUrl,
+      coverUrl,
+    };
+  }, [
+    records.avatar,
+    recordsQuery.data?.images?.avatarUrl,
+    recordsQuery.data?.images?.coverUrl,
+    uniqueTokens,
+  ]);
 
   // Derive the records that should be added or removed from the profile
   // (these should be used for SET_TEXT txns instead of `records` to save
@@ -116,7 +144,7 @@ export default function useENSRegistration({
   const changedRecords = useMemo(() => {
     const entriesToChange = differenceWith(
       Object.entries(records),
-      Object.entries(existingRecords),
+      Object.entries(initialRecords),
       isEqual
     ) as [keyof Records, string][];
     const changedRecords = entriesToChange.reduce(
@@ -128,7 +156,7 @@ export default function useENSRegistration({
     );
 
     const keysToRemove = differenceWith(
-      Object.keys(existingRecords),
+      Object.keys(initialRecords),
       Object.keys(records),
       isEqual
     ) as (keyof Records)[];
@@ -144,13 +172,16 @@ export default function useENSRegistration({
       ...changedRecords,
       ...removedRecords,
     };
-  }, [existingRecords, records]);
+  }, [initialRecords, records]);
+  useEffect(() => {
+    dispatch(ensRedux.setChangedRecords(accountAddress, changedRecords));
+  }, [accountAddress, changedRecords, dispatch]);
 
   return {
     changedRecords,
     clearCurrentRegistrationName,
-    existingRecords,
     images,
+    initialRecords,
     mode,
     name,
     records,

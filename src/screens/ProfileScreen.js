@@ -39,6 +39,7 @@ export default function ProfileScreen({ navigation }) {
     activityListInitialized,
     isFocused
   );
+
   const {
     isLoadingTransactions: isLoading,
     sections,
