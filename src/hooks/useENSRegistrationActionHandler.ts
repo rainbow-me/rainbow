@@ -67,10 +67,6 @@ export default function useENSRegistrationActionHandler(
 
       const salt = generateSalt();
       const nonce = await getNextNonce();
-      const rentPrice = await getRentPrice(
-        name.replace(ENS_DOMAIN, ''),
-        yearsDuration * timeUnits.secs.year
-      );
 
       const commitEnsRegistrationParameters: ENSActionParameters = {
         duration: yearsDuration * timeUnits.secs.year,
@@ -78,7 +74,7 @@ export default function useENSRegistrationActionHandler(
         nonce,
         ownerAddress: accountAddress,
         records: changedRecords,
-        rentPrice: rentPrice.toString(),
+        rentPrice: '',
         salt,
       };
 
@@ -143,20 +139,21 @@ export default function useENSRegistrationActionHandler(
       commitTransactionHash,
       commitTransactionConfirmedAt,
     } = registrationParameters as RegistrationParameters;
-    if (mode !== 'edit' && !commitTransactionHash) {
+
+    if (!commitTransactionHash) {
       return {
         action: commit,
         step: REGISTRATION_STEPS.COMMIT,
       };
     }
 
-    if (mode !== 'edit' && !commitTransactionConfirmedAt) {
+    if (!commitTransactionConfirmedAt) {
       return {
         action: null,
         step: REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION,
       };
     }
-    if (mode !== 'edit' && secondsSinceCommitConfirmed < ENS_SECONDS_WAIT) {
+    if (secondsSinceCommitConfirmed < ENS_SECONDS_WAIT) {
       return {
         action: null,
         step: REGISTRATION_STEPS.WAIT_ENS_COMMITMENT,
@@ -177,26 +174,27 @@ export default function useENSRegistrationActionHandler(
 
   const watchCommitTransaction = useCallback(async () => {
     let confirmed = false;
-    let confirmedAt = undefined;
-
-    const tx = await web3Provider.getTransaction(
-      registrationParameters?.commitTransactionHash || ''
-    );
-
-    if (tx?.blockHash) {
-      const block = await web3Provider.getBlock(tx.blockHash || '');
-      confirmedAt = block?.timestamp * 1000;
-      const now = Date.now();
-      const secs = differenceInSeconds(now, confirmedAt);
-      setSecondsSinceCommitConfirmed(secs);
-      confirmed = true;
-      dispatch(
-        updateTransactionRegistrationParameters(accountAddress, {
-          commitTransactionConfirmedAt: confirmedAt,
-        })
+    try {
+      const tx = await web3Provider.getTransaction(
+        registrationParameters?.commitTransactionHash || ''
       );
+      const block = await web3Provider.getBlock(tx.blockHash || '');
+      const blockTimestamp = block?.timestamp;
+      if (blockTimestamp) {
+        const commitTransactionConfirmedAt = blockTimestamp * 1000;
+        const now = Date.now();
+        const secs = differenceInSeconds(now, commitTransactionConfirmedAt);
+        setSecondsSinceCommitConfirmed(secs);
+        dispatch(
+          updateTransactionRegistrationParameters(accountAddress, {
+            commitTransactionConfirmedAt,
+          })
+        );
+        confirmed = true;
+      }
+    } catch (e) {
+      //
     }
-
     return confirmed;
   }, [accountAddress, dispatch, registrationParameters?.commitTransactionHash]);
 
@@ -217,6 +215,7 @@ export default function useENSRegistrationActionHandler(
         name,
         records,
       } = registrationParameters as RegistrationParameters;
+
       switch (step) {
         case REGISTRATION_STEPS.COMMIT: {
           const salt = generateSalt();
@@ -278,13 +277,11 @@ export default function useENSRegistrationActionHandler(
               records,
               rentPrice,
               salt,
-              setReverseRecord: false,
             }
           );
           setStepGasLimit(gasLimit);
           break;
         }
-
         case REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION:
         case REGISTRATION_STEPS.WAIT_ENS_COMMITMENT:
         default:

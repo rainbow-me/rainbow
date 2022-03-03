@@ -83,9 +83,9 @@ export interface SwapActionParameters {
 }
 
 export interface ENSActionParameters {
+  duration: number;
   nonce?: number;
   name: string;
-  duration: number;
   rentPrice: string;
   ownerAddress: string;
   salt: string;
