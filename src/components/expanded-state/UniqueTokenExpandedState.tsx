@@ -20,6 +20,7 @@ import { lightModeThemeColors } from '../../styles/colors';
 import L2Disclaimer from '../L2Disclaimer';
 import Link from '../Link';
 import { ButtonPressAnimation } from '../animations';
+import ImgixImage from '../images/ImgixImage';
 import {
   SendActionButton,
   SheetActionButton,
@@ -28,6 +29,7 @@ import {
 } from '../sheet';
 import { ToastPositionContainer, ToggleStateToast } from '../toasts';
 import { UniqueTokenAttributes, UniqueTokenImage } from '../unique-token';
+import ProfileInfoSection from './ens/ProfileInfoSection';
 import {
   UniqueTokenExpandedStateContent,
   UniqueTokenExpandedStateHeader,
@@ -38,6 +40,7 @@ import { useTheme } from '@rainbow-me/context';
 import {
   AccentColorProvider,
   Bleed,
+  Box,
   ColorModeProvider,
   Columns,
   Divider,
@@ -135,13 +138,39 @@ const listSpace: Space = '19px';
 
 const Section = ({
   title,
+  titleEmoji,
+  titleImageUrl,
   children,
 }: {
   title: string;
+  titleEmoji?: string;
+  titleImageUrl?: string | null;
   children: ReactNode;
 }) => (
   <Stack space={paragraphSpace}>
-    <Heading size={textSize}>{title}</Heading>
+    <Inline alignVertical="center" space="8px">
+      <Box width={{ custom: 24 }}>
+        {titleImageUrl && (
+          <Bleed vertical="8px">
+            <Box
+              as={ImgixImage}
+              borderRadius={24}
+              height={{ custom: 24 }}
+              source={{ uri: titleImageUrl }}
+              width={{ custom: 24 }}
+            />
+          </Bleed>
+        )}
+        {titleEmoji && (
+          <Bleed right="1px">
+            <Heading containsEmoji size="23px">
+              {titleEmoji}
+            </Heading>
+          </Bleed>
+        )}
+      </Box>
+      <Heading size={textSize}>{title}</Heading>
+    </Inline>
     {children}
   </Stack>
 );
@@ -191,6 +220,7 @@ const UniqueTokenExpandedState = ({
     collection: { description: familyDescription, external_url: familyLink },
     currentPrice,
     description,
+    familyImage,
     familyName,
     isSendable,
     lastPrice,
@@ -453,12 +483,12 @@ const UniqueTokenExpandedState = ({
                     {(isNFT || isPoap) && (
                       <>
                         {description ? (
-                          <Section title="Description">
+                          <Section title="Description" titleEmoji="📖">
                             <Markdown>{description}</Markdown>
                           </Section>
                         ) : null}
                         {traits.length ? (
-                          <Section title="Properties">
+                          <Section title="Properties" titleEmoji="🎨">
                             <UniqueTokenAttributes
                               {...asset}
                               color={imageColor}
@@ -471,19 +501,27 @@ const UniqueTokenExpandedState = ({
                     )}
                     {isENS && (
                       <>
-                        <Section title="Profile Info">
+                        {ensData?.records && (
+                          <Section title="Profile Info" titleEmoji="🤿">
+                            <ProfileInfoSection
+                              images={ensData?.images}
+                              records={ensData?.records}
+                            />
+                          </Section>
+                        )}
+                        <Section title="Configuration" titleEmoji="⚙️">
                           <Text>TODO</Text>
                         </Section>
-                        <Section title="Configuration">
-                          <Text>TODO</Text>
-                        </Section>
-                        <Section title="Advanced">
+                        <Section title="Advanced" titleEmoji="👽">
                           <Text>TODO</Text>
                         </Section>
                       </>
                     )}
                     {familyDescription ? (
-                      <Section title={`About ${familyName}`}>
+                      <Section
+                        title={`About ${familyName}`}
+                        titleImageUrl={familyImage}
+                      >
                         <Stack space={sectionSpace}>
                           <Markdown>{familyDescription}</Markdown>
                           {familyLink ? (
