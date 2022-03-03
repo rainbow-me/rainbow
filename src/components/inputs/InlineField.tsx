@@ -71,7 +71,6 @@ export default function InlineField({
   const style = useMemo(
     () => ({
       ...textStyle,
-      flex: 1,
       lineHeight: android ? textStyle.lineHeight : undefined,
       marginBottom: 0,
       marginTop: 0,
