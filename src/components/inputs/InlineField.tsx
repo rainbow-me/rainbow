@@ -39,24 +39,15 @@ export default function InlineField({
   const textStyle = useTextStyle({ size: `${textSize}px`, weight: 'bold' });
 
   const [inputHeight, setInputHeight] = useState(textSize);
-  const handleContentSizeChange = useCallback(
-    ({ nativeEvent }) => {
-      if (inputProps?.multiline) {
-        const contentHeight = ios
-          ? nativeEvent.contentSize.height
-          : nativeEvent.contentSize.height - 32.8571421305;
-        // the contentSize.height on android has an initial value ~32.85
-        // greater than ios, even though they increment by the same amount
-        // for each new line of the text input box
-        if (contentHeight > 30) {
-          setInputHeight(contentHeight);
-        } else {
-          setInputHeight(textSize);
-        }
-      }
-    },
-    [inputProps?.multiline]
-  );
+  const handleContentSizeChange = useCallback(({ nativeEvent }) => {
+    const contentHeight =
+      nativeEvent.contentSize.height - textSize - paddingVertical;
+    if (contentHeight > 30) {
+      setInputHeight(contentHeight);
+    } else {
+      setInputHeight(textSize);
+    }
+  }, []);
 
   const handleChangeText = useCallback(
     text => {
@@ -80,11 +71,12 @@ export default function InlineField({
   const style = useMemo(
     () => ({
       ...textStyle,
-      height: inputHeight + paddingVertical * 2 + (android ? 2 : 0),
+      flex: 1,
       lineHeight: android ? textStyle.lineHeight : undefined,
       marginBottom: 0,
       marginTop: 0,
-      paddingBottom: 0,
+      minHeight: inputHeight + paddingVertical * 2 + (android ? 2 : 0),
+      paddingBottom: inputProps?.multiline ? (ios ? 15 : 7) : 0,
       paddingTop: inputProps?.multiline
         ? android
           ? 11
@@ -110,7 +102,9 @@ export default function InlineField({
         defaultValue={defaultValue}
         maxLength={validations?.maxLength?.value}
         onChangeText={handleChangeText}
-        onContentSizeChange={handleContentSizeChange}
+        onContentSizeChange={
+          android && inputProps?.multiline ? handleContentSizeChange : undefined
+        }
         onEndEditing={onEndEditing}
         placeholder={placeholder}
         style={style}
