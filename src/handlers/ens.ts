@@ -175,15 +175,18 @@ export const estimateENSCommitGasLimit = async ({
 
 export const estimateENSSetTextGasLimit = async ({
   name,
+  ownerAddress,
   recordKey,
   recordValue,
 }: {
   name: string;
+  ownerAddress: string;
   recordKey: string;
   recordValue: string;
 }) =>
   estimateENSTransactionGasLimit({
     name,
+    ownerAddress,
     records: {
       coinAddress: null,
       contentHash: null,
@@ -212,14 +215,17 @@ export const estimateENSSetNameGasLimit = async ({
   });
 
 export const estimateENSMulticallGasLimit = async ({
+  ownerAddress,
   name,
   records,
 }: {
+  ownerAddress: string;
   name: string;
   records: ENSRegistrationRecords;
 }) =>
   estimateENSTransactionGasLimit({
     name,
+    ownerAddress,
     records,
     type: ENSRegistrationTransactionType.MULTICALL,
   });
@@ -283,22 +289,20 @@ export const estimateENSRegistrationGasLimit = async (
   });
   // dummy multicall to estimate gas
   const multicallGasLimitPromise = estimateENSMulticallGasLimit({
-    name,
+    name: name + '.eth',
+    ownerAddress,
     records: {
-      coinAddress: null,
+      coinAddress: [],
       contentHash: null,
       ensAssociatedAddress: null,
       text: [
-        { key: 'key1', value: 'value1' },
-        { key: 'key2', value: 'value2' },
-        {
-          key: 'cover',
-          value:
-            'https://cloudflare-ipfs.com/ipfs/QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco/I/m/Vincent_van_Gogh_-_Self-Portrait_-_Google_Art_Project_(454045).jpg',
-        },
+        { key: 'me.rainbow.displayName', value: 'fgbfgb' },
+        { key: 'description', value: 'bfgbfg' },
       ],
     },
   });
+
+  // LOG  ⛽⛽⛽ estimateENSTransactionGasLimit 0x5B570F0F8E2a29B7bCBbfC000f9C7b78D45b7C35 estebanmino.eth {"coinAddress": [], "contentHash": null, "ensAssociatedAddress": null, "text": [{"key": "me.rainbow.displayName", "value": "fgbfgb"}, {"key": "description", "value": "bfgbfg"}]}
 
   const gasLimits = await Promise.all([
     commitGasLimitPromise,
@@ -360,6 +364,7 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
     promises.push(
       estimateENSMulticallGasLimit({
         name,
+        ownerAddress,
         records: ensRegistrationRecords,
       })
     );

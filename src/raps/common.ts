@@ -205,6 +205,7 @@ export const getENSRapEstimationByType = (
       );
       return estimateENSMulticallGasLimit({
         name: ensRegistrationParameters.name,
+        ownerAddress: ensRegistrationParameters.ownerAddress,
         records: ensRegistrationRecords,
       });
     }
