@@ -211,14 +211,13 @@ export const estimateENSMulticallGasLimit = async ({
   ownerAddress?: string;
   name: string;
   records: ENSRegistrationRecords;
-}) => {
-  return estimateENSTransactionGasLimit({
+}) =>
+  estimateENSTransactionGasLimit({
     name,
     ownerAddress,
     records,
     type: ENSRegistrationTransactionType.MULTICALL,
   });
-};
 
 export const estimateENSTransactionGasLimit = async ({
   name,
@@ -285,8 +284,8 @@ export const estimateENSRegistrationGasLimit = async (
       contentHash: null,
       ensAssociatedAddress: null,
       text: [
-        { key: 'me.rainbow.displayName', value: 'fgbfgb' },
-        { key: 'description', value: 'bfgbfg' },
+        { key: 'me.rainbow.displayName', value: 'name' },
+        { key: 'description', value: 'description' },
         {
           key: 'cover',
           value:

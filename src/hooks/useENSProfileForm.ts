@@ -43,9 +43,10 @@ export default function useENSProfileForm({
 
   // The initial records will be the existing records belonging to the profile in "edit mode",
   // but will be all of the records in "create mode".
-  const defaultRecords = useMemo(() => {
-    return mode === 'edit' ? initialRecords : allRecords;
-  }, [allRecords, initialRecords, mode]);
+  const defaultRecords = useMemo(
+    () => (mode === 'edit' ? initialRecords : allRecords),
+    [allRecords, initialRecords, mode]
+  );
 
   const dispatch = useDispatch();
 
