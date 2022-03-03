@@ -56,10 +56,6 @@ export default function useENSRegistrationActionHandler(
 
   const setRecords = useCallback(
     async (callback: () => void) => {
-      const {
-        name,
-        changedRecords,
-      } = registrationParameters as RegistrationParameters;
       const wallet = await loadWallet();
       if (!wallet) {
         return;
@@ -67,20 +63,17 @@ export default function useENSRegistrationActionHandler(
 
       const nonce = await getNextNonce();
 
-      const commitEnsRegistrationParameters: ENSActionParameters = {
-        duration: 1,
-        name,
+      const setRecordsEnsRegistrationParameters: ENSActionParameters = {
+        ...registrationParameters,
         nonce,
         ownerAddress: accountAddress,
-        records: changedRecords,
-        rentPrice: '',
-        salt: '',
+        records: registrationParameters.changedRecords,
       };
 
       await executeRap(
         wallet,
         RapActionTypes.setRecordsENS,
-        commitEnsRegistrationParameters,
+        setRecordsEnsRegistrationParameters,
         callback
       );
     },
@@ -89,25 +82,19 @@ export default function useENSRegistrationActionHandler(
 
   const commit = useCallback(
     async (callback: () => void) => {
-      const {
-        name,
-        changedRecords,
-      } = registrationParameters as RegistrationParameters;
       const wallet = await loadWallet();
       if (!wallet) {
         return;
       }
-
-      const salt = generateSalt();
       const nonce = await getNextNonce();
+      const salt = generateSalt();
 
       const commitEnsRegistrationParameters: ENSActionParameters = {
+        ...registrationParameters,
         duration: yearsDuration * timeUnits.secs.year,
-        name,
         nonce,
         ownerAddress: accountAddress,
-        records: changedRecords,
-        rentPrice: '',
+        records: registrationParameters.changedRecords,
         salt,
       };
 
@@ -127,7 +114,6 @@ export default function useENSRegistrationActionHandler(
         name,
         duration,
         changedRecords,
-        salt,
       } = registrationParameters as RegistrationParameters;
       const wallet = await loadWallet();
       if (!wallet) {
@@ -141,13 +127,11 @@ export default function useENSRegistrationActionHandler(
       );
 
       const registerEnsRegistrationParameters: ENSActionParameters = {
-        duration,
-        name,
+        ...registrationParameters,
         nonce,
         ownerAddress: accountAddress,
         records: changedRecords,
         rentPrice: rentPrice.toString(),
-        salt,
         setReverseRecord: true,
       };
 
@@ -244,13 +228,12 @@ export default function useENSRegistrationActionHandler(
 
   useEffect(() => {
     const estimateGasLimit = async () => {
-      const step = registrationStep.step;
       const {
         name,
         records,
       } = registrationParameters as RegistrationParameters;
 
-      switch (step) {
+      switch (registrationStep.step) {
         case REGISTRATION_STEPS.COMMIT: {
           const salt = generateSalt();
           const rentPrice = await getRentPrice(
