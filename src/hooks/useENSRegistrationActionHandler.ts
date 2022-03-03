@@ -54,6 +54,39 @@ export default function useENSRegistrationActionHandler(
       : -1
   );
 
+  const setRecords = useCallback(
+    async (callback: () => void) => {
+      const {
+        name,
+        changedRecords,
+      } = registrationParameters as RegistrationParameters;
+      const wallet = await loadWallet();
+      if (!wallet) {
+        return;
+      }
+
+      const nonce = await getNextNonce();
+
+      const commitEnsRegistrationParameters: ENSActionParameters = {
+        duration: 1,
+        name,
+        nonce,
+        ownerAddress: accountAddress,
+        records: changedRecords,
+        rentPrice: '',
+        salt: '',
+      };
+
+      await executeRap(
+        wallet,
+        RapActionTypes.setRecordsENS,
+        commitEnsRegistrationParameters,
+        callback
+      );
+    },
+    [accountAddress, getNextNonce, registrationParameters]
+  );
+
   const commit = useCallback(
     async (callback: () => void) => {
       const {
@@ -131,7 +164,7 @@ export default function useENSRegistrationActionHandler(
   const registrationStep = useMemo(() => {
     if (mode === 'edit') {
       return {
-        action: () => null,
+        action: setRecords,
         step: REGISTRATION_STEPS.EDIT,
       };
     }
@@ -170,6 +203,7 @@ export default function useENSRegistrationActionHandler(
     register,
     registrationParameters,
     secondsSinceCommitConfirmed,
+    setRecords,
   ]);
 
   const watchCommitTransaction = useCallback(async () => {

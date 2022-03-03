@@ -11,7 +11,6 @@ import {
   unlock,
   withdrawCompound,
 } from './actions';
-import { createCommitENSRap } from './registerENS';
 import {
   createSwapAndDepositCompoundRap,
   estimateSwapAndDepositCompound,
@@ -21,7 +20,11 @@ import {
   createWithdrawFromCompoundRap,
   estimateWithdrawFromCompound,
 } from './withdrawFromCompound';
-import { createRegisterENSRap } from '.';
+import {
+  createCommitENSRap,
+  createRegisterENSRap,
+  createSetRecordsENSRap,
+} from '.';
 import { Asset, EthereumAddress, Records } from '@rainbow-me/entities';
 import {
   estimateENSCommitGasLimit,
@@ -170,6 +173,8 @@ const createENSRapByType = (
   switch (type) {
     case RapActionTypes.registerENS:
       return createRegisterENSRap(ensRegistrationParameters);
+    case RapActionTypes.setRecordsENS:
+      return createSetRecordsENSRap(ensRegistrationParameters);
     case RapActionTypes.commitENS:
     default:
       return createCommitENSRap(ensRegistrationParameters);
@@ -327,6 +332,7 @@ const getRapTypeFromActionType = (actionType: RapActionType) => {
     case RapActionTypes.multicallENS:
     case RapActionTypes.setNameENS:
     case RapActionTypes.setTextENS:
+    case RapActionTypes.setRecordsENS:
       return RAP_TYPE.ENS;
   }
   return '';
