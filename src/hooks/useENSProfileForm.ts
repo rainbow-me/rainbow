@@ -43,10 +43,9 @@ export default function useENSProfileForm({
 
   // The initial records will be the existing records belonging to the profile in "edit mode",
   // but will be all of the records in "create mode".
-  const defaultRecords = useMemo(
-    () => (mode === 'edit' ? initialRecords : allRecords),
-    [allRecords, initialRecords, mode]
-  );
+  const defaultRecords = useMemo(() => {
+    return mode === 'edit' ? initialRecords : allRecords;
+  }, [allRecords, initialRecords, mode]);
 
   const dispatch = useDispatch();
 
@@ -98,7 +97,7 @@ export default function useENSProfileForm({
 
   // Set initial records in redux depending on user input (defaultFields)
   useEffect(() => {
-    if (defaultFields && isEmpty(defaultRecords)) {
+    if (defaultFields && !isEmpty(defaultRecords)) {
       const records = defaultFields.reduce((records, field) => {
         return {
           ...records,
@@ -107,15 +106,7 @@ export default function useENSProfileForm({
       }, {});
       updateRecords(records);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    defaultFields,
-    dispatch,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    isEmpty(defaultRecords),
-    selectedFields,
-    updateRecords,
-  ]);
+  }, [defaultFields, dispatch, defaultRecords, selectedFields, updateRecords]);
 
   const onAddField = useCallback(
     (fieldToAdd, selectedFields) => {
@@ -154,7 +145,6 @@ export default function useENSProfileForm({
         ...values,
         [name]: { ...values?.[name], [key]: value },
       }));
-      console.log('updateRecordByKey UOOOOOOOOOO');
       updateRecordByKey(key, value);
     },
     [name, setValuesMap, updateRecordByKey]

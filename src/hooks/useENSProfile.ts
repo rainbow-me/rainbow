@@ -32,6 +32,12 @@ export default function useENSProfile({
       registrations?.[accountAddress?.toLowerCase()]?.[
         currentRegistrationName
       ] || {};
+
+    // console.log(
+    //   '👹👹👹👹👹👹 USE ENS PROFILE',
+    //   registrations?.[accountAddress?.toLowerCase()]?.[currentRegistrationName]
+    // );
+
     const initialRecords = registrationParameters?.initialRecords || {};
     const records = registrationParameters?.records || {};
     const mode = registrationParameters?.mode || {};
@@ -50,24 +56,26 @@ export default function useENSProfile({
     [accountAddress, dispatch]
   );
   const startRegistration = useCallback(
-    (name: string, mode: 'create' | 'edit') =>
-      dispatch(ensRedux.startRegistration(accountAddress, name, mode)),
+    (name: string, mode: 'create' | 'edit') => {
+      dispatch(ensRedux.startRegistration(accountAddress, name, mode));
+    },
     [accountAddress, dispatch]
   );
   const updateRecordByKey = useCallback(
-    (key: string, value: string) =>
-      dispatch(ensRedux.updateRecordByKey(accountAddress, key, value)),
+    (key: string, value: string) => {
+      dispatch(ensRedux.updateRecordByKey(accountAddress, key, value));
+    },
     [accountAddress, dispatch]
   );
   const updateRecords = useCallback(
-    (records: Records) =>
-      dispatch(ensRedux.updateRecords(accountAddress, records)),
+    (records: Records) => {
+      dispatch(ensRedux.updateRecords(accountAddress, records));
+    },
     [accountAddress, dispatch]
   );
-  const clearCurrentRegistrationName = useCallback(
-    () => dispatch(ensRedux.clearCurrentRegistrationName()),
-    [dispatch]
-  );
+  const clearCurrentRegistrationName = useCallback(() => {
+    dispatch(ensRedux.clearCurrentRegistrationName());
+  }, [dispatch]);
 
   const recordsQuery = useQuery(['records', name], () => fetchRecords(name), {
     enabled: mode === 'edit',

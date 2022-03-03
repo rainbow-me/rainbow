@@ -22,12 +22,7 @@ import {
   estimateWithdrawFromCompound,
 } from './withdrawFromCompound';
 import { createRegisterENSRap } from '.';
-import {
-  Asset,
-  ENSRegistrationRecords,
-  EthereumAddress,
-  Records,
-} from '@rainbow-me/entities';
+import { Asset, EthereumAddress, Records } from '@rainbow-me/entities';
 import {
   estimateENSCommitGasLimit,
   estimateENSMulticallGasLimit,

@@ -278,7 +278,7 @@ export default function useENSRegistrationActionHandler(
               records,
               rentPrice,
               salt,
-              setReverseRecord: true,
+              setReverseRecord: false,
             }
           );
           setStepGasLimit(gasLimit);

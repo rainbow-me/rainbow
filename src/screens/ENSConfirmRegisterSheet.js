@@ -1,4 +1,4 @@
-import { useFocusEffect, useRoute } from '@react-navigation/core';
+import { useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -63,11 +63,7 @@ export default function ENSConfirmRegisterSheet() {
     yearsDuration: duration,
   });
   const prevStepGasLimit = usePrevious(stepGasLimit);
-
-  const { blurFields, values } = useENSProfileForm();
-  useFocusEffect(() => {
-    blurFields();
-  });
+  const { values } = useENSProfileForm();
   const avatarUrl = initialAvatarUrl || values.avatar;
 
   const name = ensName.replace(ENS_DOMAIN, '');
