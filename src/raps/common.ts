@@ -22,10 +22,17 @@ import {
   estimateWithdrawFromCompound,
 } from './withdrawFromCompound';
 import { createRegisterENSRap } from '.';
-import { Asset, EthereumAddress, Records } from '@rainbow-me/entities';
+import {
+  Asset,
+  ENSRegistrationRecords,
+  EthereumAddress,
+  Records,
+} from '@rainbow-me/entities';
 import {
   estimateENSCommitGasLimit,
+  estimateENSMulticallGasLimit,
   estimateENSRegisterSetRecordsAndNameGasLimit,
+  formatRecordsForTransaction,
 } from '@rainbow-me/handlers/ens';
 import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
 import logger from 'logger';
@@ -197,6 +204,15 @@ export const getENSRapEstimationByType = (
   switch (type) {
     case RapActionTypes.commitENS:
       return estimateENSCommitGasLimit(ensRegistrationParameters);
+    case RapActionTypes.multicallENS: {
+      const ensRegistrationRecords = formatRecordsForTransaction(
+        ensRegistrationParameters?.records || {}
+      );
+      return estimateENSMulticallGasLimit({
+        name: ensRegistrationParameters.name,
+        records: ensRegistrationRecords,
+      });
+    }
     case RapActionTypes.registerENS:
       return estimateENSRegisterSetRecordsAndNameGasLimit(
         ensRegistrationParameters

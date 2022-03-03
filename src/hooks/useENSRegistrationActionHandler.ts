@@ -25,6 +25,7 @@ enum REGISTRATION_STEPS {
   WAIT_COMMIT_CONFIRMATION = 'WAIT_COMMIT_CONFIRMATION',
   WAIT_ENS_COMMITMENT = 'WAIT_ENS_COMMITMENT',
   REGISTER = 'REGISTER',
+  EDIT = 'EDIT',
 }
 
 const ENS_SECONDS_WAIT = 60;
@@ -39,7 +40,7 @@ export default function useENSRegistrationActionHandler(
   const dispatch = useDispatch();
   const { accountAddress, network } = useAccountSettings();
   const getNextNonce = useCurrentNonce(accountAddress, network);
-  const { registrationParameters } = useENSProfile();
+  const { registrationParameters, mode } = useENSProfile();
   const [stepGasLimit, setStepGasLimit] = useState<string | null>(null);
   const [
     secondsSinceCommitConfirmed,
@@ -132,24 +133,30 @@ export default function useENSRegistrationActionHandler(
   );
 
   const registrationStep = useMemo(() => {
+    if (mode === 'edit') {
+      return {
+        action: () => null,
+        step: REGISTRATION_STEPS.EDIT,
+      };
+    }
     const {
       commitTransactionHash,
       commitTransactionConfirmedAt,
     } = registrationParameters as RegistrationParameters;
-    if (!commitTransactionHash) {
+    if (mode !== 'edit' && !commitTransactionHash) {
       return {
         action: commit,
         step: REGISTRATION_STEPS.COMMIT,
       };
     }
 
-    if (!commitTransactionConfirmedAt) {
+    if (mode !== 'edit' && !commitTransactionConfirmedAt) {
       return {
         action: null,
         step: REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION,
       };
     }
-    if (secondsSinceCommitConfirmed < ENS_SECONDS_WAIT) {
+    if (mode !== 'edit' && secondsSinceCommitConfirmed < ENS_SECONDS_WAIT) {
       return {
         action: null,
         step: REGISTRATION_STEPS.WAIT_ENS_COMMITMENT,
@@ -160,7 +167,13 @@ export default function useENSRegistrationActionHandler(
       action: register,
       step: REGISTRATION_STEPS.REGISTER,
     };
-  }, [commit, register, registrationParameters, secondsSinceCommitConfirmed]);
+  }, [
+    commit,
+    mode,
+    register,
+    registrationParameters,
+    secondsSinceCommitConfirmed,
+  ]);
 
   const watchCommitTransaction = useCallback(async () => {
     let confirmed = false;
@@ -249,6 +262,29 @@ export default function useENSRegistrationActionHandler(
           setStepGasLimit(gasLimit);
           break;
         }
+        case REGISTRATION_STEPS.EDIT: {
+          const {
+            name,
+            records,
+            salt,
+            rentPrice,
+          } = registrationParameters as RegistrationParameters;
+          const gasLimit = await getENSRapEstimationByType(
+            RapActionTypes.multicallENS,
+            {
+              duration: 1,
+              name,
+              ownerAddress: accountAddress,
+              records,
+              rentPrice,
+              salt,
+              setReverseRecord: true,
+            }
+          );
+          setStepGasLimit(gasLimit);
+          break;
+        }
+
         case REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION:
         case REGISTRATION_STEPS.WAIT_ENS_COMMITMENT:
         default:

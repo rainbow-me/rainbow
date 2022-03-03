@@ -154,6 +154,7 @@ export default function useENSProfileForm({
         ...values,
         [name]: { ...values?.[name], [key]: value },
       }));
+      console.log('updateRecordByKey UOOOOOOOOOO');
       updateRecordByKey(key, value);
     },
     [name, setValuesMap, updateRecordByKey]
