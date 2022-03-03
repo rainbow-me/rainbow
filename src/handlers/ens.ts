@@ -10,6 +10,7 @@ import { ENSActionParameters } from '../raps/common';
 import { estimateGasWithPadding, web3Provider } from './web3';
 import { ENSRegistrationRecords, Records } from '@rainbow-me/entities';
 import {
+  ENS_DOMAIN,
   ENS_RECORDS,
   ENSRegistrationTransactionType,
   generateSalt,
@@ -176,28 +177,16 @@ export const estimateENSCommitGasLimit = async ({
 export const estimateENSSetTextGasLimit = async ({
   name,
   ownerAddress,
-  recordKey,
-  recordValue,
+  records,
 }: {
   name: string;
   ownerAddress: string;
-  recordKey: string;
-  recordValue: string;
+  records: ENSRegistrationRecords;
 }) =>
   estimateENSTransactionGasLimit({
     name,
     ownerAddress,
-    records: {
-      coinAddress: null,
-      contentHash: null,
-      ensAssociatedAddress: null,
-      text: [
-        {
-          key: recordKey,
-          value: recordValue,
-        },
-      ],
-    },
+    records,
     type: ENSRegistrationTransactionType.SET_TEXT,
   });
 
@@ -219,16 +208,17 @@ export const estimateENSMulticallGasLimit = async ({
   name,
   records,
 }: {
-  ownerAddress: string;
+  ownerAddress?: string;
   name: string;
   records: ENSRegistrationRecords;
-}) =>
-  estimateENSTransactionGasLimit({
+}) => {
+  return estimateENSTransactionGasLimit({
     name,
     ownerAddress,
     records,
     type: ENSRegistrationTransactionType.MULTICALL,
   });
+};
 
 export const estimateENSTransactionGasLimit = async ({
   name,
@@ -289,8 +279,7 @@ export const estimateENSRegistrationGasLimit = async (
   });
   // dummy multicall to estimate gas
   const multicallGasLimitPromise = estimateENSMulticallGasLimit({
-    name: name + '.eth',
-    ownerAddress,
+    name: name + ENS_DOMAIN,
     records: {
       coinAddress: [],
       contentHash: null,
@@ -298,11 +287,14 @@ export const estimateENSRegistrationGasLimit = async (
       text: [
         { key: 'me.rainbow.displayName', value: 'fgbfgb' },
         { key: 'description', value: 'bfgbfg' },
+        {
+          key: 'cover',
+          value:
+            'https://cloudflare-ipfs.com/ipfs/QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco/I/m/Vincent_van_Gogh_-_Self-Portrait_-_Google_Art_Project_(454045).jpg',
+        },
       ],
     },
   });
-
-  // LOG  ⛽⛽⛽ estimateENSTransactionGasLimit 0x5B570F0F8E2a29B7bCBbfC000f9C7b78D45b7C35 estebanmino.eth {"coinAddress": [], "contentHash": null, "ensAssociatedAddress": null, "text": [{"key": "me.rainbow.displayName", "value": "fgbfgb"}, {"key": "description", "value": "bfgbfg"}]}
 
   const gasLimits = await Promise.all([
     commitGasLimitPromise,
@@ -373,6 +365,29 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
   const gasLimits = await Promise.all(promises);
   const gasLimit = gasLimits.reduce((a, b) => add(a || 0, b || 0));
   if (!gasLimit) return '0';
+  return gasLimit;
+};
+
+export const estimateENSRegisterSetRecords = async ({
+  name,
+  ownerAddress,
+  records,
+}: ENSActionParameters) => {
+  let gasLimit = null;
+  const ensRegistrationRecords = formatRecordsForTransaction(records);
+  const validRecords = recordsForTransactionAreValid(ensRegistrationRecords);
+  if (validRecords) {
+    const shouldUseMulticall = shouldUseMulticallTransaction(
+      ensRegistrationRecords
+    );
+    gasLimit = await (shouldUseMulticall
+      ? estimateENSMulticallGasLimit
+      : estimateENSSetTextGasLimit)({
+      name,
+      ownerAddress,
+      records: ensRegistrationRecords,
+    });
+  }
   return gasLimit;
 };
 

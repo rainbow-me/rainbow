@@ -25,9 +25,8 @@ import { createRegisterENSRap } from '.';
 import { Asset, EthereumAddress, Records } from '@rainbow-me/entities';
 import {
   estimateENSCommitGasLimit,
-  estimateENSMulticallGasLimit,
+  estimateENSRegisterSetRecords,
   estimateENSRegisterSetRecordsAndNameGasLimit,
-  formatRecordsForTransaction,
 } from '@rainbow-me/handlers/ens';
 import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
 import logger from 'logger';
@@ -143,6 +142,7 @@ export const RapActionTypes = {
   registerENS: 'registerENS' as RapActionType,
   registerWithConfigENS: 'registerWithConfigENS' as RapActionType,
   setNameENS: 'setNameENS' as RapActionType,
+  setRecordsENS: 'setRecordsENS' as RapActionType,
   setTextENS: 'setTextENS' as RapActionType,
   swap: 'swap' as RapActionType,
   unlock: 'unlock' as RapActionType,
@@ -199,16 +199,8 @@ export const getENSRapEstimationByType = (
   switch (type) {
     case RapActionTypes.commitENS:
       return estimateENSCommitGasLimit(ensRegistrationParameters);
-    case RapActionTypes.multicallENS: {
-      const ensRegistrationRecords = formatRecordsForTransaction(
-        ensRegistrationParameters?.records || {}
-      );
-      return estimateENSMulticallGasLimit({
-        name: ensRegistrationParameters.name,
-        ownerAddress: ensRegistrationParameters.ownerAddress,
-        records: ensRegistrationRecords,
-      });
-    }
+    case RapActionTypes.setRecordsENS:
+      return estimateENSRegisterSetRecords(ensRegistrationParameters);
     case RapActionTypes.registerENS:
       return estimateENSRegisterSetRecordsAndNameGasLimit(
         ensRegistrationParameters
@@ -244,6 +236,8 @@ const findENSActionByType = (type: RapActionType) => {
     case RapActionTypes.setTextENS:
       return setTextENS;
     case RapActionTypes.setNameENS:
+      return setNameENS;
+    case RapActionTypes.setRecordsENS:
       return setNameENS;
     default:
       return NOOP;

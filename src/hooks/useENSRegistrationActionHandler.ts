@@ -270,7 +270,7 @@ export default function useENSRegistrationActionHandler(
             rentPrice,
           } = registrationParameters as RegistrationParameters;
           const gasLimit = await getENSRapEstimationByType(
-            RapActionTypes.multicallENS,
+            RapActionTypes.setRecordsENS,
             {
               duration: 1,
               name,
