@@ -58,7 +58,15 @@ export default function ENSAssignRecordsSheet() {
   const { name, mode } = useENSProfile({
     setInitialRecordsWhenInEditMode: true,
   });
-  useENSProfileForm({ createForm: true });
+  useENSProfileForm({
+    createForm: true,
+    defaultFields: [
+      ENS_RECORDS.displayName,
+      ENS_RECORDS.description,
+      ENS_RECORDS.email,
+      ENS_RECORDS.twitter,
+    ].map(fieldName => textRecordFields[fieldName]),
+  });
 
   const [avatarUrl, setAvatarUrl] = useState();
 
@@ -101,14 +109,7 @@ export default function ENSAssignRecordsSheet() {
                 )}
               </Stack>
               <Box flexGrow={1}>
-                <TextRecordsForm
-                  defaultFields={[
-                    ENS_RECORDS.displayName,
-                    ENS_RECORDS.description,
-                    ENS_RECORDS.email,
-                    ENS_RECORDS.twitter,
-                  ]}
-                />
+                <TextRecordsForm />
               </Box>
             </Stack>
           </Inset>
