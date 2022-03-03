@@ -15,6 +15,7 @@ import {
 import { ImgixImage } from '@rainbow-me/images';
 import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth, position } from '@rainbow-me/styles';
+import { getLowResUrl } from '@rainbow-me/utils/getLowResUrl';
 
 const FallbackTextColorVariants = (darkMode, colors) => ({
   dark: darkMode
@@ -51,9 +52,9 @@ const UniqueTokenImage = ({
   imageUrl,
   item,
   isCard = false,
-  lowResUrl,
   resizeMode = ImgixImage.resizeMode.cover,
-  small,
+  size,
+  small = false,
   transformSvgs = true,
 }) => {
   const { isTinyPhone } = useDimensions();
@@ -62,6 +63,7 @@ const UniqueTokenImage = ({
   const isSVG = isSupportedUriExtension(imageUrl, ['.svg']);
   const newImageUrl = transformSvgs ? svgToPngIfNeeded(imageUrl) : imageUrl;
   const image = isENS && !isSVG ? `${item.image_url}=s1` : newImageUrl;
+  const lowResUrl = isSVG ? newImageUrl : getLowResUrl(image);
   const [error, setError] = useState(null);
   const handleError = useCallback(error => setError(error), [setError]);
   const { isDarkMode, colors } = useTheme();
@@ -77,7 +79,6 @@ const UniqueTokenImage = ({
   if (isOldENS && dominantColor) {
     backgroundColor = dominantColor;
   }
-
   return (
     <Centered backgroundColor={backgroundColor} style={position.coverAsObject}>
       {isSVG && !transformSvgs && !error ? (
@@ -102,12 +103,13 @@ const UniqueTokenImage = ({
               onError={handleError}
               onLoad={onLoad}
               resizeMode={ImgixImage.resizeMode[resizeMode]}
+              size={size}
               source={{ uri: image }}
               style={position.coverAsObject}
             />
             {!loadedImg && lowResUrl && (
               <ImageTile
-                {...(isCard && { fm: 'png' })}
+                fm="png"
                 playing={false}
                 resizeMode={ImgixImage.resizeMode[resizeMode]}
                 source={{ uri: lowResUrl }}

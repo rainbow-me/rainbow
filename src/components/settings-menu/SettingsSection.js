@@ -70,7 +70,6 @@ const Container = styled(Column).attrs({})({
   backgroundColor: ({ backgroundColor }) => backgroundColor,
 });
 
-const scrollContainerStyle = { flex: 1 };
 const ScrollContainer = styled(ScrollView).attrs({
   scrollEventThrottle: 32,
 })({});
@@ -149,7 +148,7 @@ export default function SettingsSection({
     network,
     testnetsEnabled,
   } = useAccountSettings();
-  const { isSmallPhone } = useDimensions();
+  const { isNarrowPhone } = useDimensions();
   const isLanguageSelectionEnabled = useExperimentalFlag(LANGUAGE_SETTINGS);
 
   const { colors, isDarkMode, setTheme, colorScheme } = useTheme();
@@ -210,10 +209,7 @@ export default function SettingsSection({
 
   return (
     <Container backgroundColor={colors.white}>
-      <ScrollContainer
-        contentContainerStyle={!isSmallPhone && scrollContainerStyle}
-        scrollEnabled={isSmallPhone}
-      >
+      <ScrollContainer>
         <ColumnWithDividers dividerRenderer={ListItemDivider} marginTop={7}>
           {canBeBackedUp && (
             <ListItem
@@ -329,7 +325,9 @@ export default function SettingsSection({
           />
           <ListItem
             icon={<Emoji name="brain" />}
-            label={lang.t('settings.learn')}
+            label={lang.t(
+              isNarrowPhone ? 'settings.learn_short' : 'settings.learn'
+            )}
             onPress={onPressLearn}
             testID="learn-section"
             value={SettingsExternalURLs.rainbowLearn}

@@ -9,6 +9,7 @@ import BackupSheet from '../screens/BackupSheet';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
 import ConnectedDappsSheet from '../screens/ConnectedDappsSheet';
 import DepositModal from '../screens/DepositModal';
+import ENSConfirmRegisterSheet from '../screens/ENSConfirmRegisterSheet';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ExplainSheet from '../screens/ExplainSheet';
 import ExternalLinkWarningSheet from '../screens/ExternalLinkWarningSheet';
@@ -30,6 +31,7 @@ import WalletDiagnosticsSheet from '../screens/WalletDiagnosticsSheet';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import WithdrawModal from '../screens/WithdrawModal';
 import WyreWebview from '../screens/WyreWebview';
+import RegisterENSNavigator from './RegisterENSNavigator';
 import { SwipeNavigator } from './SwipeNavigator';
 import { createBottomSheetNavigator } from './bottom-sheet';
 import {
@@ -56,6 +58,9 @@ import {
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
+import useExperimentalFlag, {
+  PROFILES,
+} from '@rainbow-me/config/experimentalHooks';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -252,6 +257,7 @@ function MainOuterNavigator() {
 }
 
 function BSNavigator() {
+  const profilesEnabled = useExperimentalFlag(PROFILES);
   return (
     <BSStack.Navigator>
       <BSStack.Screen
@@ -266,6 +272,21 @@ function BSNavigator() {
         component={ExpandedAssetSheet}
         name={Routes.TOKEN_INDEX_SHEET}
       />
+      {profilesEnabled && (
+        <>
+          <BSStack.Screen
+            component={RegisterENSNavigator}
+            name={Routes.REGISTER_ENS_NAVIGATOR}
+            options={{
+              backdropOpacity: 1,
+            }}
+          />
+          <BSStack.Screen
+            component={ENSConfirmRegisterSheet}
+            name={Routes.ENS_CONFIRM_REGISTER_SHEET}
+          />
+        </>
+      )}
       <BSStack.Screen
         component={ShowcaseSheet}
         name={Routes.SHOWCASE_SHEET}

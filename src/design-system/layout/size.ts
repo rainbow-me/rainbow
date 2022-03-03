@@ -19,6 +19,8 @@ export const heights = {
   '1/3': fraction(1, 3),
   '1/4': fraction(1, 4),
   '1/5': fraction(1, 5),
+  '104px': 104,
+  '126px': 126,
   '2/3': fraction(2, 3),
   '2/5': fraction(2, 5),
   '3/4': fraction(3, 4),
@@ -29,6 +31,7 @@ export const heights = {
   '46px': 46,
   '56px': 56,
   '64px': 64,
+  '68px': 68,
   'full': '100%',
 } as const;
 

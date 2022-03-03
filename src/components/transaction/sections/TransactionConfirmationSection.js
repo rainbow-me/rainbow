@@ -1,5 +1,7 @@
 import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
+import ActivityIndicator from '../../../components/ActivityIndicator';
+import Spinner from '../../../components/Spinner';
 import { CoinIcon } from '../../coin-icon';
 import { Centered, Column, RowWithMargins } from '../../layout';
 import { Text, TruncatedText } from '../../text';
@@ -41,18 +43,33 @@ const NativeAmount = styled(Text).attrs(({ theme: { colors } }) => ({
   marginTop: android ? 0 : 19,
 });
 
+const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
+  ({ theme: { colors } }) => ({
+    color: colors.alpha(colors.blueGreyDark, 0.3),
+    size: 50,
+  })
+)({
+  marginBottom: android ? -10 : 19,
+  marginTop: 12,
+});
+
 export default function TransactionConfirmationSection({
   address,
   amount,
-  nativeAmountDisplay,
+  nativeAmountDisplay = '',
   symbol,
   method,
 }) {
   return (
     <TransactionSheet method={method}>
       <Centered>
-        <NativeAmount>{nativeAmountDisplay}</NativeAmount>
+        {!nativeAmountDisplay ? (
+          <LoadingSpinner />
+        ) : (
+          <NativeAmount>{nativeAmountDisplay}</NativeAmount>
+        )}
       </Centered>
+      <Centered />
       <AmountRow>
         <Column>
           <RowWithMargins align="center" margin={5}>

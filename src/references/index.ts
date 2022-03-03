@@ -48,6 +48,19 @@ export {
   WYRE_SUPPORTED_COUNTRIES_ISO,
 } from './wyre';
 
+export {
+  ENSRegistryWithFallbackABI,
+  ENSETHRegistrarControllerABI,
+  ENSReverseRegistrarABI,
+  ENSBaseRegistrarImplementationABI,
+  ENSPublicResolverABI,
+  ensRegistryAddress,
+  ensETHRegistrarControllerAddress,
+  ensBaseRegistrarImplementationAddress,
+  ensReverseRegistrarAddress,
+  ensPublicResolverAddress,
+} from './ens';
+
 export const OVM_GAS_PRICE_ORACLE =
   '0x420000000000000000000000000000000000000F';
 
@@ -173,6 +186,7 @@ export const DefaultUniswapFavoritesMeta: Record<
       address: DAI_ADDRESS,
       color: '#F0B340',
       decimals: 18,
+      favorite: true,
       highLiquidity: true,
       isRainbowCurated: true,
       isVerified: true,
@@ -184,6 +198,7 @@ export const DefaultUniswapFavoritesMeta: Record<
       address: ETH_ADDRESS,
       color: '#25292E',
       decimals: 18,
+      favorite: true,
       highLiquidity: true,
       isVerified: true,
       name: 'Ethereum',
@@ -194,6 +209,7 @@ export const DefaultUniswapFavoritesMeta: Record<
       address: SOCKS_ADDRESS,
       color: '#E15EE5',
       decimals: 18,
+      favorite: true,
       highLiquidity: true,
       isRainbowCurated: true,
       isVerified: true,
@@ -205,6 +221,7 @@ export const DefaultUniswapFavoritesMeta: Record<
       address: WBTC_ADDRESS,
       color: '#FF9900',
       decimals: 8,
+      favorite: true,
       highLiquidity: true,
       isRainbowCurated: true,
       isVerified: true,

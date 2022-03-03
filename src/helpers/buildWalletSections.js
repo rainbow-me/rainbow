@@ -16,7 +16,6 @@ import { BalanceCoinRow } from '../components/coin-row';
 import { UniswapInvestmentRow } from '../components/investment-cards';
 import { CollectibleTokenFamily } from '../components/token-family';
 import { withNavigation } from '../navigation/Navigation';
-import { getLowResUrl } from '../utils/getLowResUrl';
 import { compose, withHandlers } from '../utils/recompactAdapters';
 import {
   buildBriefCoinsList,
@@ -27,7 +26,6 @@ import {
 import networkTypes from './networkTypes';
 import { add, convertAmountToNativeDisplay, multiply } from './utilities';
 import { Network } from '.';
-import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
 import { ImgixImage } from '@rainbow-me/images';
 import Routes from '@rainbow-me/routes';
 
@@ -151,7 +149,8 @@ const withBriefUniswapSection = (
   uniswap,
   uniswapTotal,
   nativeCurrency,
-  network
+  network,
+  isLoadingAssets
 ) => {
   const pools = uniswap.map(pool => ({
     address: pool.address,
@@ -159,7 +158,7 @@ const withBriefUniswapSection = (
     uid: 'pool-' + pool.address,
   }));
 
-  if (pools.length > 0 && network === Network.mainnet) {
+  if (pools.length > 0 && network === Network.mainnet && !isLoadingAssets) {
     return [
       {
         type: 'POOLS_HEADER',
@@ -207,7 +206,7 @@ const withBalanceSavingsSection = (savings, network) => {
   return savingsSection;
 };
 
-const withBriefBalanceSavingsSection = (savings, network) => {
+const withBriefBalanceSavingsSection = (savings, isLoadingAssets, network) => {
   let totalUnderlyingNativeValue = '0';
   for (let saving of savings) {
     const { underlyingBalanceNativeValue } = saving;
@@ -222,6 +221,7 @@ const withBriefBalanceSavingsSection = (savings, network) => {
     return [];
   }
 
+  if (isLoadingAssets) return [];
   return [
     {
       type: 'SAVINGS_HEADER_SPACE_BEFORE',
@@ -427,7 +427,7 @@ const buildImagesToPreloadArray = (family, index, families) => {
       return {
         id: uniqueId,
         priority,
-        uri: svgToPngIfNeeded(getLowResUrl(image_url)),
+        uri: image_url,
       };
     });
 
@@ -485,7 +485,7 @@ const balanceSavingsSectionSelector = createSelector(
 );
 
 const briefBalanceSavingsSectionSelector = createSelector(
-  [savingsSelector, networkSelector],
+  [savingsSelector, isLoadingAssetsSelector, networkSelector],
   withBriefBalanceSavingsSection
 );
 
@@ -506,6 +506,7 @@ const briefUniswapSectionSelector = createSelector(
     uniswapTotalSelector,
     nativeCurrencySelector,
     networkSelector,
+    isLoadingAssetsSelector,
   ],
   withBriefUniswapSection
 );

@@ -27,6 +27,24 @@ export const typeHierarchy = {
         ios: -0.3,
       },
     },
+    '26px': {
+      fontSize: 26,
+      letterSpacing: 0.6,
+      lineHeight: 30,
+      marginCorrection: {
+        android: -0.3,
+        ios: -0.3,
+      },
+    },
+    '30px': {
+      fontSize: 30,
+      letterSpacing: 0.6,
+      lineHeight: 34,
+      marginCorrection: {
+        android: 0,
+        ios: 0.5,
+      },
+    },
   },
 
   text: {
@@ -51,7 +69,7 @@ export const typeHierarchy = {
     '16px': {
       fontSize: 16,
       letterSpacing: 0.5,
-      lineHeight: 24,
+      lineHeight: 22,
       marginCorrection: {
         android: 2.4,
         ios: -0.5,
@@ -64,6 +82,15 @@ export const typeHierarchy = {
       marginCorrection: {
         android: 2.4,
         ios: -0.3,
+      },
+    },
+    '20px': {
+      fontSize: 20,
+      letterSpacing: 0.6,
+      lineHeight: 24,
+      marginCorrection: {
+        android: 0,
+        ios: -0.5,
       },
     },
     '23px': {
