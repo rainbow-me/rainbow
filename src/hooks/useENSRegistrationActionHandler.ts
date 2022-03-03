@@ -58,7 +58,7 @@ export default function useENSRegistrationActionHandler(
     async (callback: () => void) => {
       const {
         name,
-        records,
+        changedRecords,
       } = registrationParameters as RegistrationParameters;
       const wallet = await loadWallet();
       if (!wallet) {
@@ -77,7 +77,7 @@ export default function useENSRegistrationActionHandler(
         name,
         nonce,
         ownerAddress: accountAddress,
-        records,
+        records: changedRecords,
         rentPrice: rentPrice.toString(),
         salt,
       };

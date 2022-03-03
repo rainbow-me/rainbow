@@ -5,8 +5,9 @@ import { useNavigation } from '../../navigation/Navigation';
 import { lightModeThemeColors } from '../../styles/colors';
 import { Text } from '../text';
 import FloatingActionButton from './FloatingActionButton';
+import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
 import Routes from '@rainbow-me/routes';
-import { magicMemo } from '@rainbow-me/utils';
+import { magicMemo, watchingAlert } from '@rainbow-me/utils';
 
 const FabShadow = [
   [0, 10, 30, lightModeThemeColors.shadow, 0.8],
@@ -21,13 +22,17 @@ const FabIcon = styled(Text).attrs(({ theme: { colors } }) => ({
   weight: 'semibold',
 }))``;
 
-const RegisterEnsFab = ({ disabled, ...props }) => {
+const RegisterEnsFab = ({ disabled, isReadOnlyWallet, ...props }) => {
   const { navigate } = useNavigation();
   const { colors } = useTheme();
 
   const handlePress = useCallback(() => {
-    navigate(Routes.REGISTER_ENS_NAVIGATOR);
-  }, [navigate]);
+    if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
+      navigate(Routes.REGISTER_ENS_NAVIGATOR);
+    } else {
+      watchingAlert();
+    }
+  }, [navigate, isReadOnlyWallet]);
 
   return (
     <FloatingActionButton
