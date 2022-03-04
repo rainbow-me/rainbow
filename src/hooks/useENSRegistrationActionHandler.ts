@@ -228,27 +228,20 @@ export default function useENSRegistrationActionHandler(
 
   useEffect(() => {
     const estimateGasLimit = async () => {
-      const {
-        name,
-        records,
-      } = registrationParameters as RegistrationParameters;
-
       switch (registrationStep.step) {
         case REGISTRATION_STEPS.COMMIT: {
           const salt = generateSalt();
           const rentPrice = await getRentPrice(
-            name.replace(ENS_DOMAIN, ''),
+            registrationParameters.name.replace(ENS_DOMAIN, ''),
             timeUnits.secs.year
           );
           const value = toHex(addBuffer(rentPrice.toString(), 1.1));
-
           const gasLimit = await getENSRapEstimationByType(
             RapActionTypes.commitENS,
             {
+              ...registrationParameters,
               duration: yearsDuration * timeUnits.secs.year,
-              name,
               ownerAddress: accountAddress,
-              records,
               rentPrice: value,
               salt,
             }
@@ -257,21 +250,12 @@ export default function useENSRegistrationActionHandler(
           break;
         }
         case REGISTRATION_STEPS.REGISTER: {
-          const {
-            name,
-            records,
-            salt,
-            rentPrice,
-          } = registrationParameters as RegistrationParameters;
           const gasLimit = await getENSRapEstimationByType(
             RapActionTypes.registerENS,
             {
+              ...registrationParameters,
               duration: yearsDuration * timeUnits.secs.year,
-              name,
               ownerAddress: accountAddress,
-              records,
-              rentPrice,
-              salt,
               setReverseRecord: true,
             }
           );
@@ -279,21 +263,11 @@ export default function useENSRegistrationActionHandler(
           break;
         }
         case REGISTRATION_STEPS.EDIT: {
-          const {
-            name,
-            records,
-            salt,
-            rentPrice,
-          } = registrationParameters as RegistrationParameters;
           const gasLimit = await getENSRapEstimationByType(
             RapActionTypes.setRecordsENS,
             {
-              duration: 1,
-              name,
+              ...registrationParameters,
               ownerAddress: accountAddress,
-              records,
-              rentPrice,
-              salt,
             }
           );
           setStepGasLimit(gasLimit);
