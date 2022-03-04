@@ -8,13 +8,12 @@ import {
 } from '../raps/common';
 import { useAccountSettings, useCurrentNonce, useENSProfile } from '.';
 import { RegistrationParameters } from '@rainbow-me/entities';
-import { toHex, web3Provider } from '@rainbow-me/handlers/web3';
+import { web3Provider } from '@rainbow-me/handlers/web3';
 import {
   ENS_DOMAIN,
   generateSalt,
   getRentPrice,
 } from '@rainbow-me/helpers/ens';
-import { addBuffer } from '@rainbow-me/helpers/utilities';
 import { loadWallet } from '@rainbow-me/model/wallet';
 import { executeRap } from '@rainbow-me/raps';
 import { updateTransactionRegistrationParameters } from '@rainbow-me/redux/ensRegistration';
@@ -54,32 +53,7 @@ export default function useENSRegistrationActionHandler(
       : -1
   );
 
-  const setRecords = useCallback(
-    async (callback: () => void) => {
-      const wallet = await loadWallet();
-      if (!wallet) {
-        return;
-      }
-      const nonce = await getNextNonce();
-
-      const setRecordsEnsRegistrationParameters: ENSActionParameters = {
-        ...registrationParameters,
-        nonce,
-        ownerAddress: accountAddress,
-        records: registrationParameters.changedRecords,
-      };
-
-      await executeRap(
-        wallet,
-        RapActionTypes.setRecordsENS,
-        setRecordsEnsRegistrationParameters,
-        callback
-      );
-    },
-    [accountAddress, getNextNonce, registrationParameters]
-  );
-
-  const commit = useCallback(
+  const commitAction = useCallback(
     async (callback: () => void) => {
       const wallet = await loadWallet();
       if (!wallet) {
@@ -107,7 +81,7 @@ export default function useENSRegistrationActionHandler(
     [accountAddress, yearsDuration, getNextNonce, registrationParameters]
   );
 
-  const register = useCallback(
+  const registerAction = useCallback(
     async (callback: () => void) => {
       const {
         name,
@@ -144,6 +118,72 @@ export default function useENSRegistrationActionHandler(
     [accountAddress, getNextNonce, registrationParameters]
   );
 
+  const setRecordsAction = useCallback(
+    async (callback: () => void) => {
+      const wallet = await loadWallet();
+      if (!wallet) {
+        return;
+      }
+      const nonce = await getNextNonce();
+
+      const setRecordsEnsRegistrationParameters: ENSActionParameters = {
+        ...registrationParameters,
+        nonce,
+        ownerAddress: accountAddress,
+        records: registrationParameters.changedRecords,
+      };
+
+      await executeRap(
+        wallet,
+        RapActionTypes.setRecordsENS,
+        setRecordsEnsRegistrationParameters,
+        callback
+      );
+    },
+    [accountAddress, getNextNonce, registrationParameters]
+  );
+
+  const commitEstimateGasLimit = useCallback(async () => {
+    const salt = generateSalt();
+    const duration = yearsDuration * timeUnits.secs.year;
+    const rentPrice = await getRentPrice(
+      registrationParameters.name.replace(ENS_DOMAIN, ''),
+      duration
+    );
+    const gasLimit = await getENSRapEstimationByType(RapActionTypes.commitENS, {
+      ...registrationParameters,
+      duration,
+      ownerAddress: accountAddress,
+      rentPrice: rentPrice.toString(),
+      salt,
+    });
+    return gasLimit;
+  }, [accountAddress, registrationParameters, yearsDuration]);
+
+  const registerEstimateGasLimit = useCallback(async () => {
+    const gasLimit = await getENSRapEstimationByType(
+      RapActionTypes.registerENS,
+      {
+        ...registrationParameters,
+        duration: yearsDuration * timeUnits.secs.year,
+        ownerAddress: accountAddress,
+        setReverseRecord: true,
+      }
+    );
+    return gasLimit;
+  }, [accountAddress, registrationParameters, yearsDuration]);
+
+  const setRecordsEstimateGasLimit = useCallback(async () => {
+    const gasLimit = await getENSRapEstimationByType(
+      RapActionTypes.setRecordsENS,
+      {
+        ...registrationParameters,
+        ownerAddress: accountAddress,
+      }
+    );
+    return gasLimit;
+  }, [accountAddress, registrationParameters]);
+
   const registrationStep = useMemo(() => {
     if (mode === 'edit') return REGISTRATION_STEPS.EDIT;
     // still waiting for the COMMIT tx to be sent
@@ -159,64 +199,31 @@ export default function useENSRegistrationActionHandler(
     return REGISTRATION_STEPS.REGISTER;
   }, [mode, registrationParameters, secondsSinceCommitConfirmed]);
 
-  const actions = useMemo(() => {
-    return {
-      [REGISTRATION_STEPS.COMMIT]: commit,
-      [REGISTRATION_STEPS.EDIT]: setRecords,
-      [REGISTRATION_STEPS.REGISTER]: register,
+  const actions = useMemo(
+    () => ({
+      [REGISTRATION_STEPS.COMMIT]: commitAction,
+      [REGISTRATION_STEPS.EDIT]: setRecordsAction,
+      [REGISTRATION_STEPS.REGISTER]: registerAction,
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: () => null,
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: () => null,
-    };
-  }, [commit, register, setRecords]);
+    }),
+    [commitAction, registerAction, setRecordsAction]
+  );
 
-  const estimateGasLimitActions = useMemo(() => {
-    return {
-      [REGISTRATION_STEPS.COMMIT]: async () => {
-        const salt = generateSalt();
-        const duration = yearsDuration * timeUnits.secs.year;
-        const rentPrice = await getRentPrice(
-          registrationParameters.name.replace(ENS_DOMAIN, ''),
-          duration
-        );
-        const value = toHex(addBuffer(rentPrice.toString(), 1.1));
-        const gasLimit = await getENSRapEstimationByType(
-          RapActionTypes.commitENS,
-          {
-            ...registrationParameters,
-            duration,
-            ownerAddress: accountAddress,
-            rentPrice: value,
-            salt,
-          }
-        );
-        return gasLimit;
-      },
-      [REGISTRATION_STEPS.REGISTER]: async () => {
-        const gasLimit = await getENSRapEstimationByType(
-          RapActionTypes.registerENS,
-          {
-            ...registrationParameters,
-            duration: yearsDuration * timeUnits.secs.year,
-            ownerAddress: accountAddress,
-            setReverseRecord: true,
-          }
-        );
-        return gasLimit;
-      },
-      [REGISTRATION_STEPS.EDIT]: async () => {
-        const gasLimit = await getENSRapEstimationByType(
-          RapActionTypes.setRecordsENS,
-          {
-            ...registrationParameters,
-            ownerAddress: accountAddress,
-          }
-        );
-        return gasLimit;
-      },
-      [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: null,
+  const estimateGasLimitActions = useMemo(
+    () => ({
+      [REGISTRATION_STEPS.COMMIT]: commitEstimateGasLimit,
+      [REGISTRATION_STEPS.REGISTER]: registerEstimateGasLimit,
+      [REGISTRATION_STEPS.EDIT]: setRecordsEstimateGasLimit,
+      [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: () => null,
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: () => null,
-    };
-  }, [accountAddress, registrationParameters, yearsDuration]);
+    }),
+    [
+      commitEstimateGasLimit,
+      registerEstimateGasLimit,
+      setRecordsEstimateGasLimit,
+    ]
+  );
 
   const watchCommitTransaction = useCallback(async () => {
     let confirmed = false;
@@ -272,14 +279,13 @@ export default function useENSRegistrationActionHandler(
 
   useEffect(() => {
     let interval: NodeJS.Timer;
-    const isActive = secondsSinceCommitConfirmed < ENS_SECONDS_WAIT;
-    if (isActive) {
+    if (registrationStep === REGISTRATION_STEPS.WAIT_ENS_COMMITMENT) {
       interval = setInterval(() => {
         setSecondsSinceCommitConfirmed(seconds => seconds + 1);
       }, 1000);
     }
     return () => clearInterval(interval);
-  }, [secondsSinceCommitConfirmed]);
+  }, [registrationStep, secondsSinceCommitConfirmed]);
 
   return {
     action: actions[registrationStep],
