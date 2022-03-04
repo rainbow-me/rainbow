@@ -25,6 +25,7 @@ import {
 } from './assets';
 import networkTypes from './networkTypes';
 import { add, convertAmountToNativeDisplay, multiply } from './utilities';
+import { Network } from '.';
 import { ImgixImage } from '@rainbow-me/images';
 import Routes from '@rainbow-me/routes';
 
@@ -125,8 +126,12 @@ const withUniswapSection = (
   language,
   nativeCurrency,
   uniswap,
-  uniswapTotal
+  uniswapTotal,
+  network
 ) => {
+  if (network !== Network.mainnet) {
+    return [];
+  }
   return {
     data: uniswap,
     header: {
@@ -144,6 +149,7 @@ const withBriefUniswapSection = (
   uniswap,
   uniswapTotal,
   nativeCurrency,
+  network,
   isLoadingAssets
 ) => {
   const pools = uniswap.map(pool => ({
@@ -152,7 +158,7 @@ const withBriefUniswapSection = (
     uid: 'pool-' + pool.address,
   }));
 
-  if (!isLoadingAssets && pools.length > 0) {
+  if (pools.length > 0 && network === Network.mainnet && !isLoadingAssets) {
     return [
       {
         type: 'POOLS_HEADER',
@@ -165,7 +171,7 @@ const withBriefUniswapSection = (
   return [];
 };
 
-const withBalanceSavingsSection = savings => {
+const withBalanceSavingsSection = (savings, network) => {
   let totalUnderlyingNativeValue = '0';
   const savingsAssets = map(savings, asset => {
     const {
@@ -180,6 +186,10 @@ const withBalanceSavingsSection = savings => {
     const lifetimeSupplyInterestAccruedNative = lifetimeSupplyInterestAccrued
       ? multiply(lifetimeSupplyInterestAccrued, underlyingPrice)
       : 0;
+
+    if (network !== Network.mainnet) {
+      return [];
+    }
 
     return {
       ...asset,
@@ -196,7 +206,7 @@ const withBalanceSavingsSection = savings => {
   return savingsSection;
 };
 
-const withBriefBalanceSavingsSection = (savings, isLoadingAssets) => {
+const withBriefBalanceSavingsSection = (savings, isLoadingAssets, network) => {
   let totalUnderlyingNativeValue = '0';
   for (let saving of savings) {
     const { underlyingBalanceNativeValue } = saving;
@@ -206,6 +216,11 @@ const withBriefBalanceSavingsSection = (savings, isLoadingAssets) => {
     );
   }
   const addresses = savings?.map(asset => asset.cToken.address);
+
+  if (network !== Network.mainnet) {
+    return [];
+  }
+
   if (isLoadingAssets) return [];
   return [
     {
@@ -465,12 +480,12 @@ const briefUniqueTokenDataSelector = createSelector(
 );
 
 const balanceSavingsSectionSelector = createSelector(
-  [savingsSelector],
+  [savingsSelector, networkSelector],
   withBalanceSavingsSection
 );
 
 const briefBalanceSavingsSectionSelector = createSelector(
-  [savingsSelector, isLoadingAssetsSelector],
+  [savingsSelector, isLoadingAssetsSelector, networkSelector],
   withBriefBalanceSavingsSection
 );
 
@@ -480,6 +495,7 @@ const uniswapSectionSelector = createSelector(
     nativeCurrencySelector,
     uniswapSelector,
     uniswapTotalSelector,
+    networkSelector,
   ],
   withUniswapSection
 );
@@ -489,6 +505,7 @@ const briefUniswapSectionSelector = createSelector(
     uniswapSelector,
     uniswapTotalSelector,
     nativeCurrencySelector,
+    networkSelector,
     isLoadingAssetsSelector,
   ],
   withBriefUniswapSection

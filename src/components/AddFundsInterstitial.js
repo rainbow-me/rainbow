@@ -121,10 +121,8 @@ const AmountButtonWrapper = styled(Row).attrs({
   ...(android && { width: 100 }),
 });
 
-const onAddFromFaucet = network => {
-  const faucetUrl = get(networkInfo[network], 'faucet_url');
-  Linking.openURL(faucetUrl);
-};
+const onAddFromFaucet = accountAddress =>
+  Linking.openURL(`https://faucet.paradigm.xyz/?addr=${accountAddress}`);
 
 const InnerBPA = android ? ButtonPressAnimation : ({ children }) => children;
 
@@ -215,6 +213,11 @@ const AddFundsInterstitial = ({ network }) => {
     [isDamaged, navigate, accountAddress]
   );
 
+  const addFundsToAccountAddress = useCallback(
+    () => onAddFromFaucet(accountAddress),
+    [accountAddress]
+  );
+
   const handlePressCopyAddress = useCallback(() => {
     if (isDamaged) {
       showWalletErrorAlert();
@@ -279,7 +282,7 @@ const AddFundsInterstitial = ({ network }) => {
             faucet
           </Title>
           <Row marginTop={30}>
-            <InterstitialButton onPress={() => onAddFromFaucet(network)}>
+            <InterstitialButton onPress={addFundsToAccountAddress}>
               <Text
                 align="center"
                 color={colors.alpha(colors.blueGreyDark, 0.6)}

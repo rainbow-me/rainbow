@@ -86,7 +86,7 @@
       },
       {
         "asset": {
-          "asset_code": "0xF22e3F33768354c9805d046af3C0926f27741B43",
+          "asset_code": "0xf22e3f33768354c9805d046af3c0926f27741b43",
           "coingecko_id": "0x",
           "decimals": 18,
           "icon_url": "https://s3.amazonaws.com/icons.assets/ZRX.png",
@@ -102,7 +102,7 @@
       },
       {
         "asset": {
-          "asset_code": "0xDA5B056Cfb861282B4b59d29c9B395bcC238D29B",
+          "asset_code": "0xda5b056cfb861282b4b59d29c9b395bcc238d29b",
           "coingecko_id": "basic-attention-token",
           "decimals": 18,
           "icon_url": "https://s3.amazonaws.com/icons.assets/BAT.png",
@@ -118,7 +118,7 @@
       },
       {
         "asset": {
-          "asset_code": "0xF9bA5210F91D0474bd1e1DcDAeC4C58E359AaD85",
+          "asset_code": "0xf9ba5210f91d0474bd1e1dcdaec4c58e359aad85",
           "coingecko_id": "maker",
           "decimals": 18,
           "icon_url": "https://s3.amazonaws.com/icons.assets/MKR.png",
