@@ -29,6 +29,8 @@ import {
 } from '../sheet';
 import { ToastPositionContainer, ToggleStateToast } from '../toasts';
 import { UniqueTokenAttributes, UniqueTokenImage } from '../unique-token';
+import AdvancedSection from './ens/AdvancedSection';
+import ConfigurationSection from './ens/ConfigurationSection';
 import ProfileInfoSection from './ens/ProfileInfoSection';
 import {
   UniqueTokenExpandedStateContent,
@@ -147,7 +149,7 @@ const Section = ({
   titleImageUrl,
   children,
 }: {
-  addonComponent?: React.ReactElement<any>;
+  addonComponent?: React.ReactNode;
   title: string;
   titleEmoji?: string;
   titleImageUrl?: string | null;
@@ -513,14 +515,16 @@ const UniqueTokenExpandedState = ({
                         {ensData?.records && (
                           <Section
                             addonComponent={
-                              <TextButton
-                                align="right"
-                                onPress={handlePressEdit}
-                                size="18px"
-                                weight="bold"
-                              >
-                                Edit
-                              </TextButton>
+                              hasEditButton && (
+                                <TextButton
+                                  align="right"
+                                  onPress={handlePressEdit}
+                                  size="18px"
+                                  weight="bold"
+                                >
+                                  Edit
+                                </TextButton>
+                              )
                             }
                             title="Profile Info"
                             titleEmoji="🤿"
@@ -533,10 +537,13 @@ const UniqueTokenExpandedState = ({
                           </Section>
                         )}
                         <Section title="Configuration" titleEmoji="⚙️">
-                          <Text>TODO</Text>
+                          <ConfigurationSection
+                            owner={ensData?.owner}
+                            registrant={ensData?.registrant}
+                          />
                         </Section>
                         <Section title="Advanced" titleEmoji="👽">
-                          <Text>TODO</Text>
+                          <AdvancedSection resolver={ensData?.resolver} />
                         </Section>
                       </>
                     )}
