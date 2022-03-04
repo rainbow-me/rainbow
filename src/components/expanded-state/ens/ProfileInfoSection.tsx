@@ -18,6 +18,7 @@ import {
 import { Records } from '@rainbow-me/entities';
 import { ENS_RECORDS, textRecordFields } from '@rainbow-me/helpers/ens';
 import { ImgixImage } from '@rainbow-me/images';
+import { formatAddressForDisplay } from '@rainbow-me/utils/abbreviations';
 
 const omitRecordKeys = [ENS_RECORDS.avatar];
 const topRecordKeys = [ENS_RECORDS.cover, 'cover', ENS_RECORDS.description];
@@ -39,12 +40,14 @@ const icons = {
 };
 
 export default function ProfileInfoSection({
+  coinAddresses: coinAddressMap,
   images,
   records,
 }: {
+  coinAddresses: { [key: string]: string };
   images: {
-    avatarUrl?: string;
-    coverUrl?: string;
+    avatarUrl?: string | null;
+    coverUrl?: string | null;
   };
   records: Partial<Records>;
 }) {
@@ -59,6 +62,7 @@ export default function ProfileInfoSection({
         ),
     [images, records]
   );
+
   const [topRecords, otherRecords] = useMemo(() => {
     const [topRecords, otherRecords] = partition(recordsArray, ([key]) =>
       topRecordKeys.includes(key)
@@ -68,6 +72,10 @@ export default function ProfileInfoSection({
       .filter(Boolean) as [ENS_RECORDS, string][];
     return [orderedTopRecords, otherRecords];
   }, [recordsArray]);
+  const coinAddresses = useMemo(() => Object.entries(coinAddressMap), [
+    coinAddressMap,
+  ]);
+
   return (
     <Stack space="15px">
       {topRecords.map(([recordKey, recordValue]) =>
@@ -76,6 +84,17 @@ export default function ProfileInfoSection({
             key={recordKey}
             recordKey={recordKey}
             recordValue={recordValue}
+            type="record"
+          />
+        ) : null
+      )}
+      {coinAddresses.map(([recordKey, recordValue]) =>
+        recordValue ? (
+          <ProfileInfoRow
+            key={recordKey}
+            recordKey={recordKey}
+            recordValue={recordValue}
+            type="address"
           />
         ) : null
       )}
@@ -85,6 +104,7 @@ export default function ProfileInfoSection({
             key={recordKey}
             recordKey={recordKey}
             recordValue={recordValue}
+            type="record"
           />
         ) : null
       )}
@@ -95,9 +115,11 @@ export default function ProfileInfoSection({
 function ProfileInfoRow({
   recordKey,
   recordValue,
+  type,
 }: {
   recordKey: string;
   recordValue: string;
+  type: 'address' | 'record';
 }) {
   const { colors } = useTheme();
 
@@ -128,6 +150,18 @@ function ProfileInfoRow({
     return icons[recordKey];
   }, [recordKey]);
 
+  const label = useMemo(() => {
+    // @ts-expect-error
+    if (textRecordFields[recordKey]?.label) {
+      // @ts-expect-error
+      return textRecordFields[recordKey].label;
+    }
+    if (recordKey.includes('.')) {
+      return recordKey;
+    }
+    return `${upperFirst(recordKey)}${type === 'address' ? ' address' : ''}`;
+  }, [recordKey, type]);
+
   const value = useMemo(() => {
     if (isUrlValue && url) {
       const displayUrl = new URL(url).hostname.replace(/^www\./, '');
@@ -136,17 +170,18 @@ function ProfileInfoRow({
     if (recordKey === ENS_RECORDS.email) {
       return `􀍕 ${recordValue}`;
     }
+    if (type === 'address') {
+      return formatAddressForDisplay(recordValue, 4, 4) || '';
+    }
     return recordValue;
-  }, [isUrlValue, recordKey, recordValue, url]);
+  }, [isUrlValue, recordKey, recordValue, type, url]);
 
   return (
     <Inline alignHorizontal="justify" horizontalSpace="24px" wrap={false}>
       <Box style={{ minWidth: 60, opacity: show ? 1 : 0 }}>
         <Inset top={isMultiline ? '15px' : '10px'}>
           <Text color="secondary60" size="16px" weight="bold">
-            {/* @ts-expect-error */}
-            {textRecordFields[recordKey]?.label ||
-              (recordKey.includes('.') ? recordKey : upperFirst(recordKey))}
+            {label}
           </Text>
         </Inset>
       </Box>

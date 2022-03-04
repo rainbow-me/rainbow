@@ -293,7 +293,6 @@ export const ENS_GET_OWNER = gql`
 export type EnsGetRecordsData = {
   domains: {
     resolver: {
-      coinTypes: number[];
       texts: string[];
     };
   }[];
@@ -303,8 +302,25 @@ export const ENS_GET_RECORDS = gql`
   query lookup($name: String!) {
     domains(first: 1, where: { name: $name }) {
       resolver {
-        coinTypes
         texts
+      }
+    }
+  }
+`;
+
+export type EnsGetCoinTypesData = {
+  domains: {
+    resolver: {
+      coinTypes: number[];
+    };
+  }[];
+};
+
+export const ENS_GET_COIN_TYPES = gql`
+  query lookup($name: String!) {
+    domains(first: 1, where: { name: $name }) {
+      resolver {
+        coinTypes
       }
     }
   }

@@ -1,12 +1,15 @@
+import { formatsByCoinType } from '@ensdomains/address-encoder';
 import { debounce, isEmpty, sortBy } from 'lodash';
 import { ensClient } from '../apollo/client';
 import {
   ENS_DOMAINS,
+  ENS_GET_COIN_TYPES,
   ENS_GET_OWNER,
   ENS_GET_RECORDS,
   ENS_GET_REGISTRATION,
   ENS_REGISTRATIONS,
   ENS_SUGGESTIONS,
+  EnsGetCoinTypesData,
   EnsGetOwnerData,
   EnsGetRecordsData,
   EnsGetRegistrationData,
@@ -148,6 +151,37 @@ export const fetchRecords = async (ensName: string) => {
   return records;
 };
 
+export const fetchCoinAddresses = async (ensName: string) => {
+  const response = await ensClient.query<EnsGetCoinTypesData>({
+    query: ENS_GET_COIN_TYPES,
+    variables: {
+      name: ensName,
+    },
+  });
+  const data = response.data?.domains[0] || {};
+
+  const resolver = await web3Provider.getResolver(ensName);
+  const coinTypes: number[] = data.resolver?.coinTypes || [];
+  const coinAddressValues = await Promise.all(
+    coinTypes
+      .map(async (coinType: number) => {
+        try {
+          return await resolver.getAddress(coinType);
+        } catch (err) {
+          return undefined;
+        }
+      })
+      .filter(x => x)
+  );
+  const coinAddresses = coinTypes.reduce((coinAddresses, coinType, i) => {
+    return {
+      ...coinAddresses,
+      [formatsByCoinType[coinType].name]: coinAddressValues[i],
+    };
+  }, {});
+  return coinAddresses;
+};
+
 export const fetchOwner = async (ensName: string) => {
   const response = await ensClient.query<EnsGetOwnerData>({
     query: ENS_GET_OWNER,
@@ -210,6 +244,7 @@ export const fetchProfile = async (ensName: any) => {
   const [
     resolver,
     records,
+    coinAddresses,
     images,
     owner,
     { registrant, registration },
@@ -217,6 +252,7 @@ export const fetchProfile = async (ensName: any) => {
   ] = await Promise.all([
     web3Provider.getResolver(ensName),
     fetchRecords(ensName),
+    fetchCoinAddresses(ensName),
     fetchImages(ensName),
     fetchOwner(ensName),
     fetchRegistration(ensName),
@@ -229,6 +265,7 @@ export const fetchProfile = async (ensName: any) => {
   };
 
   return {
+    coinAddresses,
     images,
     owner,
     primary,

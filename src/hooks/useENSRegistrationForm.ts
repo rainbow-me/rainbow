@@ -35,7 +35,7 @@ export default function useENSRegistrationForm({
     changedRecords,
     initialRecords,
     records: allRecords,
-    recordsQuery,
+    profileQuery,
     removeRecordByKey,
     updateRecordByKey,
     updateRecords,
@@ -163,14 +163,14 @@ export default function useENSRegistrationForm({
     updateRecords(values);
   }, [updateRecords, values]);
 
-  const [isLoading, setIsLoading] = useState(recordsQuery.isLoading);
+  const [isLoading, setIsLoading] = useState(profileQuery.isLoading);
   useEffect(() => {
-    if (!recordsQuery.isLoading) {
+    if (!profileQuery.isLoading) {
       setTimeout(() => setIsLoading(false), 200);
     } else {
       setIsLoading(true);
     }
-  }, [recordsQuery.isLoading]);
+  }, [profileQuery.isLoading]);
 
   const empty = useMemo(() => !Object.values(values).some(Boolean), [values]);
 

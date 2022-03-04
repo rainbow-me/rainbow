@@ -1,10 +1,8 @@
 import { differenceWith, isEqual } from 'lodash';
 import { useCallback, useEffect, useMemo } from 'react';
-import { useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
-import { useAccountSettings } from '.';
+import { useAccountSettings, useENSProfile } from '.';
 import { ENSRegistrationState, Records } from '@rainbow-me/entities';
-import { fetchProfile } from '@rainbow-me/handlers/ens';
 import * as ensRedux from '@rainbow-me/redux/ensRegistration';
 import { AppState } from '@rainbow-me/redux/store';
 import { isENSNFTAvatar, parseENSNFTAvatar } from '@rainbow-me/utils';
@@ -69,27 +67,17 @@ export default function useENSRegistration({
     [dispatch]
   );
 
-  const recordsQuery = useQuery(['records', name], () => fetchProfile(name), {
-    enabled: mode === 'edit',
-    notifyOnChangeProps: [
-      'data',
-      'error',
-      'isIdle',
-      'isLoading',
-      'isSuccess',
-      'isError',
-    ],
-  });
+  const profileQuery = useENSProfile(name, { enabled: mode === 'edit' });
   useEffect(() => {
     if (
       setInitialRecordsWhenInEditMode &&
       mode === 'edit' &&
-      recordsQuery.isSuccess
+      profileQuery.isSuccess
     ) {
       dispatch(
         ensRedux.setInitialRecords(
           accountAddress,
-          recordsQuery.data.records as Records
+          profileQuery.data?.records as Records
         )
       );
     }
@@ -97,8 +85,8 @@ export default function useENSRegistration({
     accountAddress,
     dispatch,
     mode,
-    recordsQuery.data?.records,
-    recordsQuery.isSuccess,
+    profileQuery.data?.records,
+    profileQuery.isSuccess,
     setInitialRecordsWhenInEditMode,
   ]);
 
@@ -109,8 +97,8 @@ export default function useENSRegistration({
     ({ uniqueTokens }: AppState) => uniqueTokens.uniqueTokens
   );
   const images = useMemo(() => {
-    let avatarUrl = recordsQuery.data?.images?.avatarUrl;
-    let coverUrl = recordsQuery.data?.images?.coverUrl;
+    let avatarUrl = profileQuery.data?.images?.avatarUrl;
+    let coverUrl = profileQuery.data?.images?.coverUrl;
 
     if (records.avatar) {
       const isNFTAvatar = isENSNFTAvatar(records.avatar);
@@ -139,8 +127,8 @@ export default function useENSRegistration({
     };
   }, [
     records.avatar,
-    recordsQuery.data?.images?.avatarUrl,
-    recordsQuery.data?.images?.coverUrl,
+    profileQuery.data?.images?.avatarUrl,
+    profileQuery.data?.images?.coverUrl,
     uniqueTokens,
   ]);
 
@@ -190,8 +178,8 @@ export default function useENSRegistration({
     initialRecords,
     mode,
     name,
+    profileQuery,
     records,
-    recordsQuery,
     registrationParameters,
     removeRecordByKey,
     startRegistration,

@@ -123,7 +123,7 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
   const keyboardHeight = useKeyboardHeight();
   const [accentColor] = useRecoilState(accentColorAtom);
 
-  const { mode, recordsQuery } = useENSRegistration();
+  const { mode, profileQuery } = useENSRegistration();
   const {
     disabled,
     isEmpty,
@@ -148,11 +148,11 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
   const [visible, setVisible] = useState(false);
   useEffect(() => {
     if (mode === 'edit') {
-      setTimeout(() => setVisible(recordsQuery.isSuccess), 200);
+      setTimeout(() => setVisible(profileQuery.isSuccess), 200);
     } else {
       setVisible(defaultVisible);
     }
-  }, [defaultVisible, mode, recordsQuery.isSuccess]);
+  }, [defaultVisible, mode, profileQuery.isSuccess]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {

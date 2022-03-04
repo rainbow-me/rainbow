@@ -110,10 +110,14 @@ const TextButton = ({
   onPress,
   children,
   align,
+  size = '16px',
+  weight = 'heavy',
 }: {
   onPress: () => void;
   children: ReactNode;
   align?: TextProps['align'];
+  size?: TextProps['size'];
+  weight?: TextProps['weight'];
 }) => {
   const hitSlop: Space = '19px';
 
@@ -121,7 +125,7 @@ const TextButton = ({
     <Bleed space={hitSlop}>
       <ButtonPressAnimation onPress={onPress} scaleTo={0.88}>
         <Inset space={hitSlop}>
-          <Text align={align} color="accent" size="16px" weight="heavy">
+          <Text align={align} color="accent" size={size} weight={weight}>
             {children}
           </Text>
         </Inset>
@@ -137,39 +141,44 @@ const paragraphSpace: Space = '24px';
 const listSpace: Space = '19px';
 
 const Section = ({
+  addonComponent,
   title,
   titleEmoji,
   titleImageUrl,
   children,
 }: {
+  addonComponent?: React.ReactElement<any>;
   title: string;
   titleEmoji?: string;
   titleImageUrl?: string | null;
   children: ReactNode;
 }) => (
   <Stack space={paragraphSpace}>
-    <Inline alignVertical="center" space="8px">
-      <Box width={{ custom: 24 }}>
-        {titleImageUrl && (
-          <Bleed vertical="8px">
-            <Box
-              as={ImgixImage}
-              borderRadius={24}
-              height={{ custom: 24 }}
-              source={{ uri: titleImageUrl }}
-              width={{ custom: 24 }}
-            />
-          </Bleed>
-        )}
-        {titleEmoji && (
-          <Bleed right="1px">
-            <Heading containsEmoji size="23px">
-              {titleEmoji}
-            </Heading>
-          </Bleed>
-        )}
-      </Box>
-      <Heading size={textSize}>{title}</Heading>
+    <Inline alignHorizontal="justify" alignVertical="center" wrap={false}>
+      <Inline alignVertical="center" space="8px">
+        <Box width={{ custom: 24 }}>
+          {titleImageUrl && (
+            <Bleed vertical="8px">
+              <Box
+                as={ImgixImage}
+                borderRadius={24}
+                height={{ custom: 24 }}
+                source={{ uri: titleImageUrl }}
+                width={{ custom: 24 }}
+              />
+            </Bleed>
+          )}
+          {titleEmoji && (
+            <Bleed right="1px">
+              <Heading containsEmoji size="23px">
+                {titleEmoji}
+              </Heading>
+            </Bleed>
+          )}
+        </Box>
+        <Heading size={textSize}>{title}</Heading>
+      </Inline>
+      {addonComponent}
     </Inline>
     {children}
   </Stack>
@@ -502,8 +511,22 @@ const UniqueTokenExpandedState = ({
                     {isENS && (
                       <>
                         {ensData?.records && (
-                          <Section title="Profile Info" titleEmoji="🤿">
+                          <Section
+                            addonComponent={
+                              <TextButton
+                                align="right"
+                                onPress={handlePressEdit}
+                                size="18px"
+                                weight="bold"
+                              >
+                                Edit
+                              </TextButton>
+                            }
+                            title="Profile Info"
+                            titleEmoji="🤿"
+                          >
                             <ProfileInfoSection
+                              coinAddresses={ensData?.coinAddresses}
                               images={ensData?.images}
                               records={ensData?.records}
                             />
