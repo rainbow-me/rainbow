@@ -7,7 +7,7 @@ const size = (Math.ceil(CardSize) * PixelRatio.get()) / 5;
 
 export const getLowResUrl = (url: string) => {
   if (url?.startsWith?.(GOOGLE_USER_CONTENT_URL)) {
-    return `${url}?w=${size}`;
+    return `${url}=w${size}`;
   }
   return imageToPng(url, size);
 };
