@@ -8,23 +8,16 @@ import {
   Divider,
   Stack,
 } from '@rainbow-me/design-system';
-import { textRecordFields } from '@rainbow-me/helpers/ens';
 import { useENSRegistrationForm } from '@rainbow-me/hooks';
 
-export default function TextRecordsForm({
-  defaultFields,
-}: {
-  defaultFields: (keyof typeof textRecordFields)[];
-}) {
+export default function TextRecordsForm() {
   const {
     isLoading,
     selectedFields,
     onChangeField,
     onBlurField,
     values,
-  } = useENSRegistrationForm({
-    defaultFields: defaultFields.map(fieldName => textRecordFields[fieldName]),
-  });
+  } = useENSRegistrationForm();
 
   return (
     <Box>

@@ -108,14 +108,7 @@ export default function useENSRegistrationForm({
       updateRecords(records);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    defaultFields,
-    dispatch,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    isEmpty(defaultRecords),
-    selectedFields,
-    updateRecords,
-  ]);
+  }, [isEmpty(defaultRecords), dispatch, selectedFields, updateRecords]);
 
   const onAddField = useCallback(
     (fieldToAdd, selectedFields) => {
@@ -163,7 +156,7 @@ export default function useENSRegistrationForm({
     updateRecords(values);
   }, [updateRecords, values]);
 
-  const [isLoading, setIsLoading] = useState(profileQuery.isLoading);
+  const [isLoading, setIsLoading] = useState(mode === 'edit');
   useEffect(() => {
     if (!profileQuery.isLoading) {
       setTimeout(() => setIsLoading(false), 200);
