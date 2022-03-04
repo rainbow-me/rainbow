@@ -55,6 +55,7 @@ import {
 import { AssetTypes, UniqueAsset } from '@rainbow-me/entities';
 import { apiGetUniqueTokenFloorPrice } from '@rainbow-me/handlers/opensea-api';
 import { buildUniqueTokenName } from '@rainbow-me/helpers/assets';
+import { getNameOwner } from '@rainbow-me/helpers/ens';
 import {
   useAccountProfile,
   useAccountSettings,
@@ -211,6 +212,7 @@ const UniqueTokenExpandedState = ({
   } = useShowcaseTokens();
 
   const [floorPrice, setFloorPrice] = useState<string | null>(null);
+  const [isENSOwner, setIsENSOwner] = useState<boolean | null>(null);
   const [showCurrentPriceInEth, setShowCurrentPriceInEth] = useState(true);
   const [showFloorInEth, setShowFloorInEth] = useState(true);
   const animationProgress = useSharedValue(0);
@@ -257,6 +259,15 @@ const UniqueTokenExpandedState = ({
         setFloorPrice(result);
       });
   }, [asset.network, isPoap, network, urlSuffixForAsset]);
+
+  useEffect(() => {
+    const getIsOwner = async () => {
+      const owner = await getNameOwner(asset.name);
+      const isOwner = owner?.toLowerCase() === accountAddress?.toLowerCase();
+      setIsENSOwner(isOwner);
+    };
+    isENS && getIsOwner();
+  }, [accountAddress, asset.name, isENS, network, urlSuffixForAsset]);
 
   const handlePressCollectionFloor = useCallback(() => {
     navigate(Routes.EXPLAIN_SHEET, {
@@ -311,7 +322,7 @@ const UniqueTokenExpandedState = ({
 
   const isActionsEnabled = !external && !isReadOnlyWallet;
   const hasSendButton = isActionsEnabled && isSendable;
-  const hasEditButton = isActionsEnabled && isENS;
+  const hasEditButton = isActionsEnabled && isENS && isENSOwner;
 
   const familyLinkDisplay = useMemo(
     () =>

@@ -227,6 +227,9 @@ const getNameExpires = async (name: string): Promise<string> =>
     keccak256(toUtf8Bytes(name))
   );
 
+const getNameOwner = async (name: string): Promise<string> =>
+  getENSRegistryContract().owner(hash(name));
+
 const getRentPrice = async (name: string, duration: number): Promise<any> =>
   getENSRegistrarControllerContract().rentPrice(name, duration);
 
@@ -516,6 +519,7 @@ export {
   getENSPublicResolverContract,
   getENSReverseRegistrarContract,
   getResolver,
+  getNameOwner,
   getAvailable,
   getNameExpires,
   getRentPrice,
