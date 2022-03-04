@@ -368,7 +368,7 @@ const UniqueTokenExpandedStateHeader = ({
         } else if (isPhotoDownloadAvailable ? idx === 3 : idx === 2) {
           setClipboard(asset.id);
         } else if (idx === 2) {
-          saveToCameraRoll(asset.image_url);
+          saveToCameraRoll(getFullResUrl(asset.image_url));
         }
       }
     );
