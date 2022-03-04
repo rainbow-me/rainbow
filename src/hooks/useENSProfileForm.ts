@@ -107,7 +107,8 @@ export default function useENSProfileForm({
       }, {});
       updateRecords(records);
     }
-  }, [defaultFields, dispatch, defaultRecords, selectedFields, updateRecords]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEmpty(defaultRecords), dispatch, selectedFields, updateRecords]);
 
   const onAddField = useCallback(
     (fieldToAdd, selectedFields) => {
