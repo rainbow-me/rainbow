@@ -29,6 +29,20 @@ enum REGISTRATION_STEPS {
 
 const ENS_SECONDS_WAIT = 60;
 
+const formatENSActionParams = (
+  registrationParameters: RegistrationParameters
+): ENSActionParameters => {
+  return {
+    duration: registrationParameters?.duration,
+    name: registrationParameters?.name,
+    ownerAddress: registrationParameters?.ownerAddress,
+    records: registrationParameters?.records,
+    rentPrice: registrationParameters?.rentPrice,
+    salt: registrationParameters?.salt,
+    setReverseRecord: registrationParameters?.setReverseRecord,
+  };
+};
+
 export default function useENSRegistrationActionHandler(
   {
     yearsDuration,
@@ -61,13 +75,19 @@ export default function useENSRegistrationActionHandler(
       }
       const nonce = await getNextNonce();
       const salt = generateSalt();
+      const duration = yearsDuration * timeUnits.secs.year;
+      const rentPrice = await getRentPrice(
+        registrationParameters.name.replace(ENS_DOMAIN, ''),
+        duration
+      );
 
       const commitEnsRegistrationParameters: ENSActionParameters = {
-        ...registrationParameters,
-        duration: yearsDuration * timeUnits.secs.year,
+        ...formatENSActionParams(registrationParameters),
+        duration,
         nonce,
         ownerAddress: accountAddress,
         records: registrationParameters.changedRecords,
+        rentPrice: rentPrice.toString(),
         salt,
       };
 
@@ -100,7 +120,7 @@ export default function useENSRegistrationActionHandler(
       );
 
       const registerEnsRegistrationParameters: ENSActionParameters = {
-        ...registrationParameters,
+        ...formatENSActionParams(registrationParameters),
         nonce,
         ownerAddress: accountAddress,
         records: changedRecords,
@@ -127,7 +147,7 @@ export default function useENSRegistrationActionHandler(
       const nonce = await getNextNonce();
 
       const setRecordsEnsRegistrationParameters: ENSActionParameters = {
-        ...registrationParameters,
+        ...formatENSActionParams(registrationParameters),
         nonce,
         ownerAddress: accountAddress,
         records: registrationParameters.changedRecords,
@@ -151,7 +171,7 @@ export default function useENSRegistrationActionHandler(
       duration
     );
     const gasLimit = await getENSRapEstimationByType(RapActionTypes.commitENS, {
-      ...registrationParameters,
+      ...formatENSActionParams(registrationParameters),
       duration,
       ownerAddress: accountAddress,
       rentPrice: rentPrice.toString(),
@@ -164,7 +184,7 @@ export default function useENSRegistrationActionHandler(
     const gasLimit = await getENSRapEstimationByType(
       RapActionTypes.registerENS,
       {
-        ...registrationParameters,
+        ...formatENSActionParams(registrationParameters),
         duration: yearsDuration * timeUnits.secs.year,
         ownerAddress: accountAddress,
         setReverseRecord: true,
@@ -177,7 +197,7 @@ export default function useENSRegistrationActionHandler(
     const gasLimit = await getENSRapEstimationByType(
       RapActionTypes.setRecordsENS,
       {
-        ...registrationParameters,
+        ...formatENSActionParams(registrationParameters),
         ownerAddress: accountAddress,
       }
     );
@@ -268,7 +288,8 @@ export default function useENSRegistrationActionHandler(
       setStepGasLimit(gasLimit);
     };
     estimateGasLimit();
-  }, [estimateGasLimitActions, registrationStep]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [registrationStep]);
 
   useEffect(() => {
     if (registrationStep === REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION) {
