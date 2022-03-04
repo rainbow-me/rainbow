@@ -60,7 +60,6 @@ export default function useENSRegistrationActionHandler(
       if (!wallet) {
         return;
       }
-
       const nonce = await getNextNonce();
 
       const setRecordsEnsRegistrationParameters: ENSActionParameters = {
@@ -146,49 +145,78 @@ export default function useENSRegistrationActionHandler(
   );
 
   const registrationStep = useMemo(() => {
-    if (mode === 'edit') {
-      return {
-        action: setRecords,
-        step: REGISTRATION_STEPS.EDIT,
-      };
-    }
-    const {
-      commitTransactionHash,
-      commitTransactionConfirmedAt,
-    } = registrationParameters as RegistrationParameters;
+    if (mode === 'edit') return REGISTRATION_STEPS.EDIT;
+    // still waiting for the COMMIT tx to be sent
+    if (!registrationParameters.commitTransactionHash)
+      return REGISTRATION_STEPS.COMMIT;
+    // COMMIT tx sent, but not confirmed yet
+    if (!registrationParameters.commitTransactionConfirmedAt)
+      return REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION;
+    // COMMIT tx was confirmed but 60 secs haven't passed yet
+    if (secondsSinceCommitConfirmed < ENS_SECONDS_WAIT)
+      return REGISTRATION_STEPS.WAIT_ENS_COMMITMENT;
 
-    if (!commitTransactionHash) {
-      return {
-        action: commit,
-        step: REGISTRATION_STEPS.COMMIT,
-      };
-    }
+    return REGISTRATION_STEPS.REGISTER;
+  }, [mode, registrationParameters, secondsSinceCommitConfirmed]);
 
-    if (!commitTransactionConfirmedAt) {
-      return {
-        action: null,
-        step: REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION,
-      };
-    }
-    if (secondsSinceCommitConfirmed < ENS_SECONDS_WAIT) {
-      return {
-        action: null,
-        step: REGISTRATION_STEPS.WAIT_ENS_COMMITMENT,
-      };
-    }
-
+  const actions = useMemo(() => {
     return {
-      action: register,
-      step: REGISTRATION_STEPS.REGISTER,
+      [REGISTRATION_STEPS.COMMIT]: commit,
+      [REGISTRATION_STEPS.EDIT]: setRecords,
+      [REGISTRATION_STEPS.REGISTER]: register,
+      [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: () => null,
+      [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: () => null,
     };
-  }, [
-    commit,
-    mode,
-    register,
-    registrationParameters,
-    secondsSinceCommitConfirmed,
-    setRecords,
-  ]);
+  }, [commit, register, setRecords]);
+
+  const estimateGasLimitActions = useMemo(() => {
+    return {
+      [REGISTRATION_STEPS.COMMIT]: async () => {
+        const salt = generateSalt();
+        const duration = yearsDuration * timeUnits.secs.year;
+        const rentPrice = await getRentPrice(
+          registrationParameters.name.replace(ENS_DOMAIN, ''),
+          duration
+        );
+        const value = toHex(addBuffer(rentPrice.toString(), 1.1));
+        const gasLimit = await getENSRapEstimationByType(
+          RapActionTypes.commitENS,
+          {
+            ...registrationParameters,
+            duration,
+            ownerAddress: accountAddress,
+            rentPrice: value,
+            salt,
+          }
+        );
+        return gasLimit;
+      },
+      [REGISTRATION_STEPS.REGISTER]: async () => {
+        const gasLimit = await getENSRapEstimationByType(
+          RapActionTypes.registerENS,
+          {
+            ...registrationParameters,
+            duration: yearsDuration * timeUnits.secs.year,
+            ownerAddress: accountAddress,
+            setReverseRecord: true,
+          }
+        );
+        return gasLimit;
+      },
+      [REGISTRATION_STEPS.EDIT]: async () => {
+        const gasLimit = await getENSRapEstimationByType(
+          RapActionTypes.setRecordsENS,
+          {
+            ...registrationParameters,
+            ownerAddress: accountAddress,
+          }
+        );
+        return gasLimit;
+      },
+      [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: null,
+      [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: () => null,
+    };
+  }, [accountAddress, registrationParameters, yearsDuration]);
 
   const watchCommitTransaction = useCallback(async () => {
     let confirmed = false;
@@ -217,78 +245,30 @@ export default function useENSRegistrationActionHandler(
   }, [accountAddress, dispatch, registrationParameters?.commitTransactionHash]);
 
   const startPollingWatchCommitTransaction = useCallback(async () => {
-    if (registrationStep.step !== REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION)
+    if (registrationStep !== REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION)
       return;
 
     const confirmed = await watchCommitTransaction();
     if (!confirmed) {
       setTimeout(() => startPollingWatchCommitTransaction(), 10000);
     }
-  }, [registrationStep.step, watchCommitTransaction]);
+  }, [registrationStep, watchCommitTransaction]);
 
   useEffect(() => {
     const estimateGasLimit = async () => {
-      switch (registrationStep.step) {
-        case REGISTRATION_STEPS.COMMIT: {
-          const salt = generateSalt();
-          const rentPrice = await getRentPrice(
-            registrationParameters.name.replace(ENS_DOMAIN, ''),
-            timeUnits.secs.year
-          );
-          const value = toHex(addBuffer(rentPrice.toString(), 1.1));
-          const gasLimit = await getENSRapEstimationByType(
-            RapActionTypes.commitENS,
-            {
-              ...registrationParameters,
-              duration: yearsDuration * timeUnits.secs.year,
-              ownerAddress: accountAddress,
-              rentPrice: value,
-              salt,
-            }
-          );
-          setStepGasLimit(gasLimit);
-          break;
-        }
-        case REGISTRATION_STEPS.REGISTER: {
-          const gasLimit = await getENSRapEstimationByType(
-            RapActionTypes.registerENS,
-            {
-              ...registrationParameters,
-              duration: yearsDuration * timeUnits.secs.year,
-              ownerAddress: accountAddress,
-              setReverseRecord: true,
-            }
-          );
-          setStepGasLimit(gasLimit);
-          break;
-        }
-        case REGISTRATION_STEPS.EDIT: {
-          const gasLimit = await getENSRapEstimationByType(
-            RapActionTypes.setRecordsENS,
-            {
-              ...registrationParameters,
-              ownerAddress: accountAddress,
-            }
-          );
-          setStepGasLimit(gasLimit);
-          break;
-        }
-        case REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION:
-        case REGISTRATION_STEPS.WAIT_ENS_COMMITMENT:
-        default:
-          setStepGasLimit(null);
-      }
+      const estimate = estimateGasLimitActions[registrationStep];
+      const gasLimit = (await estimate?.()) || null;
+      setStepGasLimit(gasLimit);
     };
     estimateGasLimit();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [registrationStep.step]);
+  }, [estimateGasLimitActions, registrationStep]);
 
   useEffect(() => {
-    if (registrationStep.step === REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION) {
+    if (registrationStep === REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION) {
       startPollingWatchCommitTransaction();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [registrationStep.step]);
+  }, [registrationStep]);
 
   useEffect(() => {
     let interval: NodeJS.Timer;
@@ -302,7 +282,8 @@ export default function useENSRegistrationActionHandler(
   }, [secondsSinceCommitConfirmed]);
 
   return {
-    ...registrationStep,
+    action: actions[registrationStep],
+    step: registrationStep,
     stepGasLimit,
   };
 }
