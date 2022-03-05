@@ -906,7 +906,7 @@ var WethAbi = [
 			},
 			{
 				internalType: "uint256",
-				name: "value",
+				name: "amount",
 				type: "uint256"
 			}
 		],
@@ -925,7 +925,7 @@ var WethAbi = [
 		inputs: [
 			{
 				internalType: "address",
-				name: "owner",
+				name: "account",
 				type: "address"
 			}
 		],
@@ -1009,12 +1009,12 @@ var WethAbi = [
 		inputs: [
 			{
 				internalType: "address",
-				name: "to",
+				name: "recipient",
 				type: "address"
 			},
 			{
 				internalType: "uint256",
-				name: "value",
+				name: "amount",
 				type: "uint256"
 			}
 		],
@@ -1033,17 +1033,17 @@ var WethAbi = [
 		inputs: [
 			{
 				internalType: "address",
-				name: "from",
+				name: "sender",
 				type: "address"
 			},
 			{
 				internalType: "address",
-				name: "to",
+				name: "recipient",
 				type: "address"
 			},
 			{
 				internalType: "uint256",
-				name: "value",
+				name: "amount",
 				type: "uint256"
 			}
 		],
@@ -1093,7 +1093,7 @@ var WethAbi = [
 var _WETH;
 var ETH_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 var API_BASE_URL = 'https://swap-aggregator.api.p.rainbow.me';
-var RAINBOW_ROUTER_CONTRACT_ADDRESS = '0x8364b06ebf273039ca452b1f86895f7082546245';
+var RAINBOW_ROUTER_CONTRACT_ADDRESS = '0x00000000009726632680fb29d3f7a9734e3010e2';
 var WETH = (_WETH = {}, _WETH["" + exports.ChainId.mainnet] = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', _WETH);
 var DAI_ADDRESS = '0x6b175474e89094c44da98b954eedeac495271d0f';
 var USDC_ADDRESS = '0x111111111117dc0aa78b770fa6a738034120c302';
@@ -1221,28 +1221,93 @@ var RainbowRouterABI = [
 		type: "constructor"
 	},
 	{
+		anonymous: false,
 		inputs: [
 			{
+				indexed: true,
 				internalType: "address",
-				name: "token",
+				name: "target",
 				type: "address"
 			},
 			{
-				internalType: "address",
-				name: "spender",
-				type: "address"
-			},
-			{
+				indexed: false,
 				internalType: "uint256",
 				name: "amount",
 				type: "uint256"
 			}
 		],
-		name: "approveToken",
-		outputs: [
+		name: "EthWithdrawn",
+		type: "event"
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: true,
+				internalType: "address",
+				name: "newOwner",
+				type: "address"
+			},
+			{
+				indexed: true,
+				internalType: "address",
+				name: "oldOwner",
+				type: "address"
+			}
 		],
-		stateMutability: "nonpayable",
-		type: "function"
+		name: "OwnerChanged",
+		type: "event"
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: true,
+				internalType: "address",
+				name: "target",
+				type: "address"
+			}
+		],
+		name: "SwapTargetAdded",
+		type: "event"
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: true,
+				internalType: "address",
+				name: "target",
+				type: "address"
+			}
+		],
+		name: "SwapTargetRemoved",
+		type: "event"
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: true,
+				internalType: "address",
+				name: "token",
+				type: "address"
+			},
+			{
+				indexed: true,
+				internalType: "address",
+				name: "target",
+				type: "address"
+			},
+			{
+				indexed: false,
+				internalType: "uint256",
+				name: "amount",
+				type: "uint256"
+			}
+		],
+		name: "TokenWithdrawn",
+		type: "event"
 	},
 	{
 		inputs: [
@@ -1253,7 +1318,7 @@ var RainbowRouterABI = [
 			},
 			{
 				internalType: "address payable",
-				name: "swapTarget",
+				name: "target",
 				type: "address"
 			},
 			{
@@ -1282,7 +1347,7 @@ var RainbowRouterABI = [
 			},
 			{
 				internalType: "address payable",
-				name: "swapTarget",
+				name: "target",
 				type: "address"
 			},
 			{
@@ -1316,7 +1381,7 @@ var RainbowRouterABI = [
 			},
 			{
 				internalType: "address payable",
-				name: "swapTarget",
+				name: "target",
 				type: "address"
 			},
 			{
@@ -1352,6 +1417,11 @@ var RainbowRouterABI = [
 						type: "uint256"
 					},
 					{
+						internalType: "bool",
+						name: "isDaiStylePermit",
+						type: "bool"
+					},
+					{
 						internalType: "uint8",
 						name: "v",
 						type: "uint8"
@@ -1367,8 +1437,8 @@ var RainbowRouterABI = [
 						type: "bytes32"
 					}
 				],
-				internalType: "struct TransferHelper.Permit",
-				name: "permitSignature",
+				internalType: "struct PermitHelper.Permit",
+				name: "permitData",
 				type: "tuple"
 			}
 		],
@@ -1392,7 +1462,7 @@ var RainbowRouterABI = [
 			},
 			{
 				internalType: "address payable",
-				name: "swapTarget",
+				name: "target",
 				type: "address"
 			},
 			{
@@ -1431,7 +1501,7 @@ var RainbowRouterABI = [
 			},
 			{
 				internalType: "address payable",
-				name: "swapTarget",
+				name: "target",
 				type: "address"
 			},
 			{
@@ -1467,6 +1537,11 @@ var RainbowRouterABI = [
 						type: "uint256"
 					},
 					{
+						internalType: "bool",
+						name: "isDaiStylePermit",
+						type: "bool"
+					},
+					{
 						internalType: "uint8",
 						name: "v",
 						type: "uint8"
@@ -1482,8 +1557,8 @@ var RainbowRouterABI = [
 						type: "bytes32"
 					}
 				],
-				internalType: "struct TransferHelper.Permit",
-				name: "permitSignature",
+				internalType: "struct PermitHelper.Permit",
+				name: "permitData",
 				type: "tuple"
 			}
 		],
@@ -1511,11 +1586,49 @@ var RainbowRouterABI = [
 		inputs: [
 			{
 				internalType: "address",
+				name: "",
+				type: "address"
+			}
+		],
+		name: "swapTargets",
+		outputs: [
+			{
+				internalType: "bool",
+				name: "",
+				type: "bool"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
 				name: "newOwner",
 				type: "address"
 			}
 		],
 		name: "transferOwnership",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "target",
+				type: "address"
+			},
+			{
+				internalType: "bool",
+				name: "add",
+				type: "bool"
+			}
+		],
+		name: "updateSwapTargets",
 		outputs: [
 		],
 		stateMutability: "nonpayable",
@@ -1534,7 +1647,7 @@ var RainbowRouterABI = [
 				type: "uint256"
 			}
 		],
-		name: "withdrawEthFees",
+		name: "withdrawEth",
 		outputs: [
 		],
 		stateMutability: "nonpayable",
@@ -1558,7 +1671,7 @@ var RainbowRouterABI = [
 				type: "uint256"
 			}
 		],
-		name: "withdrawTokenFees",
+		name: "withdrawToken",
 		outputs: [
 		],
 		stateMutability: "nonpayable",
@@ -1975,7 +2088,7 @@ var DAIAbi = [
 			},
 			{
 				internalType: "uint256",
-				name: "value",
+				name: "amount",
 				type: "uint256"
 			}
 		],
@@ -1994,7 +2107,7 @@ var DAIAbi = [
 		inputs: [
 			{
 				internalType: "address",
-				name: "owner",
+				name: "account",
 				type: "address"
 			}
 		],
@@ -2137,12 +2250,12 @@ var DAIAbi = [
 		inputs: [
 			{
 				internalType: "address",
-				name: "to",
+				name: "recipient",
 				type: "address"
 			},
 			{
 				internalType: "uint256",
-				name: "value",
+				name: "amount",
 				type: "uint256"
 			}
 		],
@@ -2161,17 +2274,17 @@ var DAIAbi = [
 		inputs: [
 			{
 				internalType: "address",
-				name: "from",
+				name: "sender",
 				type: "address"
 			},
 			{
 				internalType: "address",
-				name: "to",
+				name: "recipient",
 				type: "address"
 			},
 			{
 				internalType: "uint256",
-				name: "value",
+				name: "amount",
 				type: "uint256"
 			}
 		],
@@ -2319,7 +2432,7 @@ var IERC2612Abi = [
 			},
 			{
 				internalType: "uint256",
-				name: "value",
+				name: "amount",
 				type: "uint256"
 			}
 		],
@@ -2338,7 +2451,7 @@ var IERC2612Abi = [
 		inputs: [
 			{
 				internalType: "address",
-				name: "owner",
+				name: "account",
 				type: "address"
 			}
 		],
@@ -2414,7 +2527,7 @@ var IERC2612Abi = [
 			},
 			{
 				internalType: "uint256",
-				name: "amount",
+				name: "value",
 				type: "uint256"
 			},
 			{
@@ -2476,12 +2589,12 @@ var IERC2612Abi = [
 		inputs: [
 			{
 				internalType: "address",
-				name: "to",
+				name: "recipient",
 				type: "address"
 			},
 			{
 				internalType: "uint256",
-				name: "value",
+				name: "amount",
 				type: "uint256"
 			}
 		],
@@ -2500,17 +2613,17 @@ var IERC2612Abi = [
 		inputs: [
 			{
 				internalType: "address",
-				name: "from",
+				name: "sender",
 				type: "address"
 			},
 			{
 				internalType: "address",
-				name: "to",
+				name: "recipient",
 				type: "address"
 			},
 			{
 				internalType: "uint256",
-				name: "value",
+				name: "amount",
 				type: "uint256"
 			}
 		],
