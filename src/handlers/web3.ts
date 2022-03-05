@@ -102,6 +102,7 @@ export const setRpcEndpoints = (config: RainbowConfig): void => {
   rpcEndpoints[Network.mainnet] = config.ethereum_mainnet_rpc;
   rpcEndpoints[Network.ropsten] = config.ethereum_ropsten_rpc;
   rpcEndpoints[Network.kovan] = config.ethereum_kovan_rpc;
+  rpcEndpoints[Network.goerli] = config.ethereum_goerli_rpc;
   rpcEndpoints[Network.rinkeby] = config.ethereum_rinkeby_rpc;
   rpcEndpoints[Network.optimism] = config.optimism_mainnet_rpc;
   rpcEndpoints[Network.arbitrum] = config.arbitrum_mainnet_rpc;
@@ -161,11 +162,11 @@ export const isHardHat = (providerUrl: string): boolean => {
 };
 
 /**
- * @desc Checjs if the given network is a testnet.
+ * @desc Checks if the given network is a testnet.
  * @param network The network to check.
  * @return Whether or not the network is a testnet.
  */
-export const isTestnet = (network: Network): boolean => {
+export const isTestnetNetwork = (network: Network): boolean => {
   switch (network) {
     case Network.goerli:
     case Network.kovan:
@@ -517,15 +518,15 @@ export const resolveUnstoppableDomain = async (
  * @return The address, or undefined if one could not be resolved.
  */
 export const resolveNameOrAddress = async (
-  nameOrAddress: string,
-  provider: StaticJsonRpcProvider | null = null
+  nameOrAddress: string
 ): Promise<string | void> => {
   if (!isHexString(nameOrAddress)) {
     if (isUnstoppableAddressFormat(nameOrAddress)) {
       return resolveUnstoppableDomain(nameOrAddress);
     }
-    const p = provider || web3Provider;
-    return p?.resolveName(nameOrAddress);
+    const p = await getProviderForNetwork(Network.mainnet);
+    const name = p?.resolveName(nameOrAddress);
+    return name;
   }
   return nameOrAddress;
 };
@@ -740,10 +741,7 @@ export const buildTransaction = async (
       ? convertAmountToRawAmount(amount, asset.decimals)
       : estimateAssetBalancePortion(asset);
   const value = _amount.toString();
-  const _recipient = (await resolveNameOrAddress(
-    recipient,
-    provider
-  )) as string;
+  const _recipient = (await resolveNameOrAddress(recipient)) as string;
   let txData: TransactionRequest = {
     data: '0x',
     from: address,

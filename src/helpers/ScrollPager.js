@@ -83,7 +83,7 @@ class ScrollPager extends React.Component {
 
   scrollTo = (x, animated = true) => {
     if (this.scrollViewRef.current) {
-      this.scrollViewRef.current.getNode().scrollTo({
+      this.scrollViewRef.current.scrollTo({
         animated: animated,
         x,
       });

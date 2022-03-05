@@ -197,13 +197,23 @@ export default function CurrencySelectModal() {
     [handleFavoriteAsset, handleSelectAsset, type]
   );
 
-  const handleApplyFavoritesQueue = useCallback(
-    () =>
-      Object.keys(assetsToFavoriteQueue).map(assetToFavorite =>
-        updateFavorites(assetToFavorite, assetsToFavoriteQueue[assetToFavorite])
-      ),
-    [assetsToFavoriteQueue, updateFavorites]
-  );
+  const handleApplyFavoritesQueue = useCallback(() => {
+    const addresses = Object.keys(assetsToFavoriteQueue);
+    const [assetsToAdd, assetsToRemove] = addresses.reduce(
+      ([add, remove], current) => {
+        if (assetsToFavoriteQueue[current]) {
+          add.push(current);
+        } else {
+          remove.push(current);
+        }
+        return [add, remove];
+      },
+      [[], []]
+    );
+    updateFavorites(assetsToAdd, true).then(() =>
+      updateFavorites(assetsToRemove, false)
+    );
+  }, [assetsToFavoriteQueue, updateFavorites]);
 
   const [startInteraction] = useInteraction();
   useEffect(() => {
