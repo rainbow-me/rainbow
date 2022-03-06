@@ -3,13 +3,14 @@ import { ViewProps } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   withSpring,
+  WithSpringConfig,
 } from 'react-native-reanimated';
 import { useChartData } from '../../helpers/useChartData';
 import { FIX_CLIPPED_PATH_MAGIC_NUMBER } from './ChartPath';
 
 interface ChartDotProps extends ViewProps {
   size?: number;
-  springConfig?: Animated.WithSpringConfig;
+  springConfig?: WithSpringConfig;
 }
 
 const springDefaultConfig = {

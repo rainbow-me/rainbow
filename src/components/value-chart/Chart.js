@@ -3,9 +3,9 @@ import { Dimensions } from 'react-native';
 import Animated, {
   cancelAnimation,
   Easing,
-  repeat,
   useAnimatedStyle,
   useSharedValue,
+  withRepeat,
   withTiming,
 } from 'react-native-reanimated';
 import Spinner from '../../assets/chartSpinner.png';
@@ -152,7 +152,7 @@ export default function ChartWrapper({
     if (showLoadingState) {
       clearTimeout(spinnerTimeout.current);
       spinnerRotation.value = 0;
-      spinnerRotation.value = repeat(
+      spinnerRotation.value = withRepeat(
         withTiming(360, rotationConfig),
         -1,
         false

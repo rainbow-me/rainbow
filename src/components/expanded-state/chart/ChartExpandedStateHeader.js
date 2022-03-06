@@ -13,6 +13,7 @@ import {
   ChartPriceLabel,
 } from './chart-data-labels';
 import { useChartData } from '@rainbow-me/animated-charts';
+import { Network } from '@rainbow-me/helpers';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
 import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
 import { useAccountSettings, useBooleanState } from '@rainbow-me/hooks';
@@ -64,7 +65,7 @@ export default function ChartExpandedStateHeader({
   const tokens = useMemo(() => {
     return isPool ? asset.tokens : [asset];
   }, [asset, isPool]);
-  const { nativeCurrency } = useAccountSettings();
+  const { nativeCurrency, network: currentNetwork } = useAccountSettings();
   const tabularNums = useTabularNumsWhileScrubbing();
 
   const isNoPriceData = latestPrice === noPriceData;
@@ -130,7 +131,9 @@ export default function ChartExpandedStateHeader({
         )}
 
         <Row>
-          <ChartAddToListButton asset={asset} />
+          {currentNetwork === Network.mainnet && (
+            <ChartAddToListButton asset={asset} />
+          )}
           <ChartContextButton asset={asset} color={color} />
         </Row>
       </Row>
