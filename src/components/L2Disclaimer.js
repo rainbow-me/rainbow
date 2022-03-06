@@ -3,9 +3,12 @@ import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import Divider from './Divider';
 import ButtonPressAnimation from './animations/ButtonPressAnimation';
+import { CoinIcon } from './coin-icon';
 import ChainBadge from './coin-icon/ChainBadge';
 import { Column, Row } from './layout';
 import { Text } from './text';
+import { isL2Asset } from '@rainbow-me/handlers/assets';
+import { ETH_ADDRESS, ETH_SYMBOL } from '@rainbow-me/references';
 import { padding, position } from '@rainbow-me/styles';
 import { darkModeThemeColors } from '@rainbow-me/styles/colors';
 
@@ -32,6 +35,9 @@ const L2Disclaimer = ({
       overflow: 'hidden',
     },
   };
+
+  const isL2 = isL2Asset(assetType);
+
   return (
     <>
       <ButtonPressAnimation
@@ -50,11 +56,15 @@ const L2Disclaimer = ({
             radius={600}
           />
           <Column justify="center">
-            <ChainBadge
-              assetType={assetType}
-              position="relative"
-              size="small"
-            />
+            {isL2 ? (
+              <ChainBadge
+                assetType={assetType}
+                position="relative"
+                size="small"
+              />
+            ) : (
+              <CoinIcon address={ETH_ADDRESS} size={20} symbol={ETH_SYMBOL} />
+            )}
           </Column>
           <Column flex={1} justify="center" marginHorizontal={8}>
             <Text
