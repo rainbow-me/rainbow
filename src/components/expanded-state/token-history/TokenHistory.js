@@ -1,10 +1,8 @@
 import { Contract } from '@ethersproject/contracts';
 import MaskedView from '@react-native-community/masked-view';
 import React, { useCallback, useEffect, useState } from 'react';
-import { FlatList, View } from 'react-native';
-import styled from 'styled-components';
+import { FlatList } from 'react-native';
 import { ButtonPressAnimation } from '../../animations';
-import { Column, Row } from '../../layout';
 import { Text as IconText } from '../../../components/text';
 import TokenHistoryEdgeFade from './TokenHistoryEdgeFade';
 import { useTheme } from '@rainbow-me/context/ThemeContext';
@@ -14,7 +12,7 @@ import {
 } from '@rainbow-me/handlers/opensea-api';
 import { web3Provider } from '@rainbow-me/handlers/web3';
 import { formatAssetForDisplay } from '@rainbow-me/helpers';
-import { getHumanReadableDateWithoutOn } from '@rainbow-me/helpers/transactions';
+import { getHumanReadableDate } from '@rainbow-me/helpers/transactions';
 import { useAccountProfile, useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import NetworkTypes from '@rainbow-me/networkTypes';
@@ -241,8 +239,9 @@ const TokenHistory = ({ contract, token, color }) => {
     let isLast = index === tokenHistory.length - 1;
     let isShort = tokenHistory.length <= 2;
 
-    const date = getHumanReadableDateWithoutOn(
-      new Date(item.createdDate).getTime() / 1000
+    const date = getHumanReadableDate(
+      new Date(item.createdDate).getTime() / 1000,
+      false
     );
 
     return (

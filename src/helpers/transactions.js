@@ -38,7 +38,7 @@ export let yesterdayTimestamp = calculateTimestampOfYesterday();
 export let thisMonthTimestamp = calculateTimestampOfThisMonth();
 export let thisYearTimestamp = calculateTimestampOfThisYear();
 
-export function getHumanReadableDate(date) {
+export function getHumanReadableDate(date, on = true) {
   const timestamp = new Date(date * 1000);
 
   return format(
@@ -47,20 +47,9 @@ export function getHumanReadableDate(date) {
       ? `'Today'`
       : timestamp > yesterdayTimestamp
       ? `'Yesterday'`
-      : `'on' MMM d${timestamp > thisYearTimestamp ? '' : ' yyyy'}`
-  );
-}
-
-export function getHumanReadableDateWithoutOn(date) {
-  const timestamp = new Date(date * 1000);
-
-  return format(
-    timestamp,
-    timestamp > todayTimestamp
-      ? `'Today'`
-      : timestamp > yesterdayTimestamp
-      ? `'Yesterday'`
-      : `MMM d${timestamp > thisYearTimestamp ? '' : ' yyyy'}`
+      : `${on ? `'on' ` : ``}MMM d${
+          timestamp > thisYearTimestamp ? '' : ' yyyy'
+        }`
   );
 }
 
