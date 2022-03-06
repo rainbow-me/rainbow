@@ -3,7 +3,9 @@
   "package-manager": "auto",
   "allowlist": [
     1007507,
-    1007549
+    1007549,
+    1028407,
+    1028449
   ],
   "registry": "https://registry.npmjs.org"
 }
