@@ -36,16 +36,6 @@ import {
   Text,
 } from '@rainbow-me/design-system';
 
-const Timeline = styled(View)`
-  height: 3;
-  background-color: ${({ color }) => color};
-  opacity: 0.3;
-  border-radius: 1.5;
-  position: absolute;
-  top: 3.5;
-  left: 16;
-  right: -13;
-`;
 const TokenHistory = ({ contract, token, color }) => {
   const [tokenHistory, setTokenHistory] = useState([]);
   const { colors } = useTheme();
@@ -260,29 +250,26 @@ const TokenHistory = ({ contract, token, color }) => {
       <Box>
         <AccentColorProvider color={color}>
           <Stack>
-            {tokenHistory.length > 1 && (
-              <Inline>
+            {((!isShort && !isFirst) || (isShort && !isLast)) && (
+              <Inset left={{ custom: 16 }} right="6px">
                 <Box
+                  opacity={0.6}
                   background="accent"
-                  borderRadius={5}
-                  height={{ custom: 10 }}
-                  width={{ custom: 10 }}
+                  position="absolute"
+                  top={{ custom: 3.5 }}
+                  borderRadius={1.5}
+                  height={{ custom: 3 }}
+                  width="full"
                 />
-                {((!isShort && !isFirst) || (isShort && !isLast)) && (
-                  <Inset top={{ custom: 3.5 }} horizontal="6px">
-                    <Box
-                      opacity={0.6}
-                      background="accent"
-                      position="absolute"
-                      borderRadius={1.5}
-                      height={{ custom: 3 }}
-                      left="auto"
-                      right="auto"
-                      width={{ custom: 100 }}
-                    />
-                  </Inset>
-                )}
-              </Inline>
+              </Inset>
+            )}
+            {tokenHistory.length > 1 && (
+              <Box
+                background="accent"
+                borderRadius={5}
+                height={{ custom: 10 }}
+                width={{ custom: 10 }}
+              />
             )}
             <Inset top={{ custom: 8 }}>
               <Text weight="heavy" size="14px" color="accent">
