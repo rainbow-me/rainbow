@@ -7,6 +7,7 @@ import charts from './charts';
 import contacts from './contacts';
 import data from './data';
 import editOptions from './editOptions';
+import ensRegistration from './ensRegistration';
 import explorer from './explorer';
 import fallbackExplorer from './fallbackExplorer';
 import gas from './gas';
@@ -37,6 +38,7 @@ export default combineReducers({
   contacts,
   data,
   editOptions,
+  ensRegistration,
   explorer,
   fallbackExplorer,
   gas,

@@ -52,6 +52,19 @@ export {
   WYRE_SUPPORTED_COUNTRIES_ISO,
 } from './wyre';
 
+export {
+  ENSRegistryWithFallbackABI,
+  ENSETHRegistrarControllerABI,
+  ENSReverseRegistrarABI,
+  ENSBaseRegistrarImplementationABI,
+  ENSPublicResolverABI,
+  ensRegistryAddress,
+  ensETHRegistrarControllerAddress,
+  ensBaseRegistrarImplementationAddress,
+  ensReverseRegistrarAddress,
+  ensPublicResolverAddress,
+} from './ens';
+
 export const OVM_GAS_PRICE_ORACLE =
   '0x420000000000000000000000000000000000000F';
 
@@ -71,6 +84,7 @@ export const RAINBOW_PROFILES_BASE_URL = 'https://rainbow.me';
 
 export const ETH_COINGECKO_ID = 'ethereum';
 export const ETH_ADDRESS = 'eth';
+export const ETH_SYMBOL = 'ETH';
 export const ARBITRUM_ETH_ADDRESS =
   '0x0000000000000000000000000000000000000000';
 export const OPTIMISM_ETH_ADDRESS =
@@ -176,6 +190,7 @@ export const DefaultUniswapFavoritesMeta: Record<
       address: DAI_ADDRESS,
       color: '#F0B340',
       decimals: 18,
+      favorite: true,
       highLiquidity: true,
       isRainbowCurated: true,
       isVerified: true,
@@ -187,6 +202,7 @@ export const DefaultUniswapFavoritesMeta: Record<
       address: ETH_ADDRESS,
       color: '#25292E',
       decimals: 18,
+      favorite: true,
       highLiquidity: true,
       isVerified: true,
       name: 'Ethereum',
@@ -197,6 +213,7 @@ export const DefaultUniswapFavoritesMeta: Record<
       address: SOCKS_ADDRESS,
       color: '#E15EE5',
       decimals: 18,
+      favorite: true,
       highLiquidity: true,
       isRainbowCurated: true,
       isVerified: true,
@@ -208,6 +225,7 @@ export const DefaultUniswapFavoritesMeta: Record<
       address: WBTC_ADDRESS,
       color: '#FF9900',
       decimals: 8,
+      favorite: true,
       highLiquidity: true,
       isRainbowCurated: true,
       isVerified: true,

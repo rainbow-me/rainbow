@@ -1,6 +1,6 @@
 import { getDescription, getTitle } from './transactions';
 import {
-  NewTransaction,
+  NewTransactionOrAddCashTransaction,
   RainbowTransaction,
   TransactionStatus,
   TransactionType,
@@ -19,7 +19,7 @@ import { ethereumUtils } from '@rainbow-me/utils';
  * @return {String}
  */
 export const parseNewTransaction = async (
-  txDetails: NewTransaction,
+  txDetails: NewTransactionOrAddCashTransaction,
   nativeCurrency: string = ''
 ): Promise<RainbowTransaction> => {
   let balance = null;

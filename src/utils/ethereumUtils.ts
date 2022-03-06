@@ -36,7 +36,7 @@ import {
 import { getOnchainAssetBalance } from '@rainbow-me/handlers/assets';
 import {
   getProviderForNetwork,
-  isTestnet,
+  isTestnetNetwork,
   toHex,
 } from '@rainbow-me/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
@@ -114,7 +114,7 @@ const getNativeAssetForNetwork = async (
   let nativeAsset = (!differentWallet && networkNativeAsset) || undefined;
 
   // If the asset is on a different wallet, or not available in this wallet
-  if (differentWallet || !nativeAsset) {
+  if (differentWallet || !nativeAsset || isTestnetNetwork(network)) {
     const mainnetAddress =
       network === Network.polygon ? MATIC_MAINNET_ADDRESS : ETH_ADDRESS;
     nativeAsset = store.getState().data?.genericAssets?.[mainnetAddress];
@@ -174,6 +174,21 @@ export const useEth = (): ParsedAddressAsset => {
       // @ts-expect-error ts-migrate(2339) FIXME: Property 'data' does not exist on type 'DefaultRoo... Remove this comment to see the full error message
       data: {
         genericAssets: { [ETH_ADDRESS]: asset },
+      },
+    }) => asset
+  );
+};
+
+export const useNativeAssetForNetwork = (
+  network: Network
+): ParsedAddressAsset => {
+  const address =
+    network === Network.polygon ? MATIC_MAINNET_ADDRESS : ETH_ADDRESS;
+  return useSelector(
+    ({
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'data' does not exist on type 'DefaultRoo... Remove this comment to see the full error message
+      data: {
+        genericAssets: { [address]: asset },
       },
     }) => asset
   );
@@ -319,7 +334,7 @@ function getEtherscanHostForNetwork(network: Network): string {
     return POLYGON_BLOCK_EXPLORER_URL;
   } else if (network === Network.arbitrum) {
     return ARBITRUM_BLOCK_EXPLORER_URL;
-  } else if (isTestnet(network)) {
+  } else if (isTestnetNetwork(network)) {
     return `${network}.${base_host}`;
   } else {
     return base_host;

@@ -14,11 +14,12 @@ import { formatURLForDisplay } from '@rainbow-me/utils';
 
 export const ExternalLinkWarningSheetHeight = 380 + (android ? 20 : 0);
 
-const Container = styled(Centered).attrs({ direction: 'column' })`
-  ${position.cover};
-  ${({ deviceHeight, height }) =>
-    height ? `height: ${height + deviceHeight}` : null};
-`;
+const Container = styled(Centered).attrs({ direction: 'column' })(
+  ({ deviceHeight, height }) => ({
+    ...position.coverAsObject,
+    ...(height ? { height: height + deviceHeight } : {}),
+  })
+);
 
 const ExternalLinkWarningSheet = () => {
   const { height: deviceHeight } = useDimensions();

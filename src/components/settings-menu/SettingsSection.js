@@ -70,7 +70,6 @@ const Container = styled(Column).attrs({})({
   backgroundColor: ({ backgroundColor }) => backgroundColor,
 });
 
-const scrollContainerStyle = { flex: 1 };
 const ScrollContainer = styled(ScrollView).attrs({
   scrollEventThrottle: 32,
 })({});
@@ -143,8 +142,13 @@ export default function SettingsSection({
 }) {
   const isReviewAvailable = false;
   const { wallets, isReadOnlyWallet } = useWallets();
-  const { language, nativeCurrency, network } = useAccountSettings();
-  const { isSmallPhone } = useDimensions();
+  const {
+    language,
+    nativeCurrency,
+    network,
+    testnetsEnabled,
+  } = useAccountSettings();
+  const { isNarrowPhone } = useDimensions();
   const isLanguageSelectionEnabled = useExperimentalFlag(LANGUAGE_SETTINGS);
 
   const { colors, isDarkMode, setTheme, colorScheme } = useTheme();
@@ -205,10 +209,7 @@ export default function SettingsSection({
 
   return (
     <Container backgroundColor={colors.white}>
-      <ScrollContainer
-        contentContainerStyle={!isSmallPhone && scrollContainerStyle}
-        scrollEnabled={isSmallPhone}
-      >
+      <ScrollContainer>
         <ColumnWithDividers dividerRenderer={ListItemDivider} marginTop={7}>
           {canBeBackedUp && (
             <ListItem
@@ -247,20 +248,22 @@ export default function SettingsSection({
           >
             <ListItemArrowGroup>{nativeCurrency || ''}</ListItemArrowGroup>
           </ListItem>
-          <ListItem
-            icon={
-              <SettingIcon
-                source={isDarkMode ? NetworkIconDark : NetworkIcon}
-              />
-            }
-            label={lang.t('settings.network')}
-            onPress={onPressNetwork}
-            testID="network-section"
-          >
-            <ListItemArrowGroup>
-              {networkInfo?.[network]?.name}
-            </ListItemArrowGroup>
-          </ListItem>
+          {(testnetsEnabled || IS_DEV) && (
+            <ListItem
+              icon={
+                <SettingIcon
+                  source={isDarkMode ? NetworkIconDark : NetworkIcon}
+                />
+              }
+              label={lang.t('settings.network')}
+              onPress={onPressNetwork}
+              testID="network-section"
+            >
+              <ListItemArrowGroup>
+                {networkInfo?.[network]?.name}
+              </ListItemArrowGroup>
+            </ListItem>
+          )}
           <ListItem
             icon={
               <SettingIcon
@@ -322,7 +325,9 @@ export default function SettingsSection({
           />
           <ListItem
             icon={<Emoji name="brain" />}
-            label={lang.t('settings.learn')}
+            label={lang.t(
+              isNarrowPhone ? 'settings.learn_short' : 'settings.learn'
+            )}
             onPress={onPressLearn}
             testID="learn-section"
             value={SettingsExternalURLs.rainbowLearn}

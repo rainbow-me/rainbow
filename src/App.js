@@ -16,9 +16,7 @@ import {
   StatusBar,
   View,
 } from 'react-native';
-import branch from 'react-native-branch';
 import {
-  IS_TESTING,
   REACT_APP_SEGMENT_API_WRITE_KEY,
   SENTRY_ENDPOINT,
   SENTRY_ENVIRONMENT,
@@ -28,6 +26,7 @@ import {
 import RNIOS11DeviceCheck from 'react-native-ios11-devicecheck';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
+import { QueryClientProvider } from 'react-query';
 import { connect, Provider } from 'react-redux';
 import { RecoilRoot } from 'recoil';
 import PortalConsumer from './components/PortalConsumer';
@@ -54,6 +53,7 @@ import * as keychain from './model/keychain';
 import { loadAddress } from './model/wallet';
 import { Navigation } from './navigation';
 import RoutesComponent from './navigation/Routes';
+import { queryClient } from './react-query/queryClient';
 import { explorerInitL2 } from './redux/explorer';
 import { fetchOnchainBalances } from './redux/fallbackExplorer';
 import { requestsForTopic } from './redux/requests';
@@ -61,6 +61,7 @@ import store from './redux/store';
 import { uniswapPairsInit } from './redux/uniswap';
 import { walletConnectLoadState } from './redux/walletconnect';
 import { rainbowTokenList } from './references';
+import { branchListener } from './utils/branch';
 import { analyticsUserIdentifier } from './utils/keychainConstants';
 import { SharedValuesProvider } from '@rainbow-me/helpers/SharedValuesContext';
 import Routes from '@rainbow-me/routes';
@@ -131,27 +132,7 @@ class App extends Component {
       }
     );
 
-    this.branchListener = branch.subscribe(({ error, params, uri }) => {
-      if (error) {
-        logger.error('Error from Branch: ' + error);
-      }
-
-      if (params['+non_branch_link']) {
-        const nonBranchUrl = params['+non_branch_link'];
-        this.handleOpenLinkingURL(nonBranchUrl);
-        return;
-      } else if (!params['+clicked_branch_link']) {
-        // Indicates initialization success and some other conditions.
-        // No link was opened.
-        if (IS_TESTING === 'true') {
-          this.handleOpenLinkingURL(uri);
-        } else {
-          return;
-        }
-      } else if (uri) {
-        this.handleOpenLinkingURL(uri);
-      }
-    });
+    this.branchListener = branchListener(this.handleOpenLinkingURL);
 
     // Walletconnect uses direct deeplinks
     if (android) {
@@ -289,23 +270,25 @@ class App extends Component {
         <ErrorBoundary>
           <Portal>
             <SafeAreaProvider>
-              <Provider store={store}>
-                <RecoilRoot>
-                  <SharedValuesProvider>
-                    <View style={containerStyle}>
-                      {this.state.initialRoute && (
-                        <InitialRouteContext.Provider
-                          value={this.state.initialRoute}
-                        >
-                          <RoutesComponent ref={this.handleNavigatorRef} />
-                          <PortalConsumer />
-                        </InitialRouteContext.Provider>
-                      )}
-                      <OfflineToast />
-                    </View>
-                  </SharedValuesProvider>
-                </RecoilRoot>
-              </Provider>
+              <QueryClientProvider client={queryClient}>
+                <Provider store={store}>
+                  <RecoilRoot>
+                    <SharedValuesProvider>
+                      <View style={containerStyle}>
+                        {this.state.initialRoute && (
+                          <InitialRouteContext.Provider
+                            value={this.state.initialRoute}
+                          >
+                            <RoutesComponent ref={this.handleNavigatorRef} />
+                            <PortalConsumer />
+                          </InitialRouteContext.Provider>
+                        )}
+                        <OfflineToast />
+                      </View>
+                    </SharedValuesProvider>
+                  </RecoilRoot>
+                </Provider>
+              </QueryClientProvider>
             </SafeAreaProvider>
           </Portal>
         </ErrorBoundary>

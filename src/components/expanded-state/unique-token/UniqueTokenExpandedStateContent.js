@@ -3,7 +3,6 @@ import React, { useMemo } from 'react';
 import { ActivityIndicator, PixelRatio, StyleSheet, View } from 'react-native';
 import { ENS_NFT_CONTRACT_ADDRESS } from '../../../references';
 import { magicMemo } from '../../../utils';
-import { getLowResUrl } from '../../../utils/getLowResUrl';
 import { SimpleModelView } from '../../3d';
 import { AudioPlayer } from '../../audio';
 import { UniqueTokenImage } from '../../unique-token';
@@ -66,11 +65,8 @@ const UniqueTokenExpandedStateContent = ({
     return asset.image_url;
   }, [asset.animation_url, asset.image_url, asset.isPoap, size]);
 
-  const lowResUrl = isENS ? url : getLowResUrl(asset.image_url);
   const { supports3d, supportsVideo, supportsAudio } = useUniqueToken(asset);
 
-  const supportsAnythingExceptImage =
-    supports3d || supportsVideo || supportsAudio;
   const aspectRatio = usePersistentAspectRatio(asset.image_url);
   const aspectRatioWithFallback =
     supports3d || supportsAudio ? 0.88 : aspectRatio.result || 1;
@@ -83,7 +79,7 @@ const UniqueTokenExpandedStateContent = ({
       animationProgress={animationProgress}
       aspectRatio={aspectRatioWithFallback}
       borderRadius={borderRadius}
-      disableAnimations={disablePreview || supportsAnythingExceptImage}
+      disableAnimations={disablePreview || supportsVideo}
       horizontalPadding={horizontalPadding}
       isENS={isENS}
       yDisplacement={yPosition}
@@ -94,6 +90,7 @@ const UniqueTokenExpandedStateContent = ({
             loading={loading}
             posterUri={imageUrl}
             setLoading={setLoading}
+            size={maxImageWidth}
             style={StyleSheet.absoluteFill}
             uri={asset.animation_url || imageUrl}
           />
@@ -102,6 +99,7 @@ const UniqueTokenExpandedStateContent = ({
             fallbackUri={imageUrl}
             loading={loading}
             setLoading={setLoading}
+            size={maxImageWidth}
             uri={asset.animation_url || imageUrl}
           />
         ) : supportsAudio ? (
@@ -115,7 +113,6 @@ const UniqueTokenExpandedStateContent = ({
             backgroundColor={asset.background}
             imageUrl={isSVG ? asset.image_url : url}
             item={asset}
-            lowResUrl={lowResUrl}
             resizeMode={resizeMode}
             size={maxImageWidth}
             transformSvgs={false}

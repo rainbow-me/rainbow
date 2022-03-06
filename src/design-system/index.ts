@@ -17,6 +17,7 @@ export { Rows, Row } from './components/Rows/Rows';
 export { Stack } from './components/Stack/Stack';
 export { Text } from './components/Text/Text';
 export { TextLink } from './components/TextLink/TextLink';
+export { useColorMode } from './color/ColorMode';
 export { useForegroundColor } from './color/useForegroundColor';
 export { useHeadingStyle } from './components/Heading/useHeadingStyle';
 export { useTextStyle } from './components/Text/useTextStyle';

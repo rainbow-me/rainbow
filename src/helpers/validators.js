@@ -1,11 +1,12 @@
 import { isValidAddress } from 'ethereumjs-util';
 import { parseDomain, ParseResultType } from 'parse-domain';
 import { memoFn } from '../utils/memoFn';
+import { Network } from '.';
 import {
+  getProviderForNetwork,
   isHexStringIgnorePrefix,
   isValidMnemonic,
   resolveUnstoppableDomain,
-  web3Provider,
 } from '@rainbow-me/handlers/web3';
 import { sanitizeSeedPhrase } from '@rainbow-me/utils';
 
@@ -65,9 +66,10 @@ export const isUnstoppableAddressFormat = memoFn(address => {
  * @return {Boolean}
  */
 export const checkIsValidAddressOrDomain = async address => {
+  const provider = await getProviderForNetwork(Network.mainnet);
   if (isENSAddressFormat(address)) {
     try {
-      const resolvedAddress = await web3Provider.resolveName(address);
+      const resolvedAddress = await provider.resolveName(address);
       return !!resolvedAddress;
     } catch (error) {
       return false;

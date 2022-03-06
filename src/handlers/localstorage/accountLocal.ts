@@ -1,7 +1,7 @@
-import { getAccountLocal, saveAccountLocal } from './common';
+import { MMKV } from 'react-native-mmkv';
+import { getAccountLocal, getKey, saveAccountLocal } from './common';
 
 const accountAssetsDataVersion = '0.1.0';
-const accountEmptyVersion = '0.1.0';
 const assetPricesFromUniswapVersion = '0.1.0';
 const assetsVersion = '0.2.0';
 const purchaseTransactionsVersion = '0.2.0';
@@ -22,6 +22,10 @@ const UNIQUE_TOKENS = 'uniquetokens';
 const PINNED_COINS = 'pinnedCoins';
 const HIDDEN_COINS = 'hiddenCoins';
 const WEB_DATA_ENABLED = 'webDataEnabled';
+
+const storage = new MMKV({
+  id: 'ACCOUNT',
+});
 
 export const accountLocalKeys = [
   ACCOUNT_ASSETS_DATA,
@@ -64,14 +68,7 @@ export const saveSavings = (savings: any, accountAddress: any, network: any) =>
  * @return {Boolean}
  */
 export const getAccountEmptyState = (accountAddress: any, network: any) =>
-  getAccountLocal(
-    ACCOUNT_EMPTY,
-    accountAddress,
-    network,
-    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'false' is not assignable to para... Remove this comment to see the full error message
-    false,
-    accountEmptyVersion
-  );
+  storage.getBoolean(getKey(ACCOUNT_EMPTY, accountAddress, network));
 
 /**
  * @desc save account empty state
@@ -83,14 +80,7 @@ export const saveAccountEmptyState = (
   val: any,
   accountAddress: any,
   network: any
-) =>
-  saveAccountLocal(
-    ACCOUNT_EMPTY,
-    val,
-    accountAddress,
-    network,
-    accountEmptyVersion
-  );
+) => storage.set(getKey(ACCOUNT_EMPTY, accountAddress, network), val);
 
 /**
  * @desc get assets

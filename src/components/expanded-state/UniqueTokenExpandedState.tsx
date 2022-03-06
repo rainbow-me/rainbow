@@ -16,6 +16,7 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import URL from 'url-parse';
+import { CardSize } from '../../components/unique-token/CardSize';
 import useWallets from '../../hooks/useWallets';
 import { lightModeThemeColors } from '../../styles/colors';
 import L2Disclaimer from '../L2Disclaimer';
@@ -55,7 +56,6 @@ import {
 import { AssetTypes, UniqueAsset } from '@rainbow-me/entities';
 import { apiGetUniqueTokenFloorPrice } from '@rainbow-me/handlers/opensea-api';
 import { buildUniqueTokenName } from '@rainbow-me/helpers/assets';
-import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
 import {
   useAccountProfile,
   useAccountSettings,
@@ -63,7 +63,6 @@ import {
   usePersistentDominantColorFromImage,
   useShowcaseTokens,
 } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation, useUntrustedUrlOpener } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
@@ -175,13 +174,11 @@ const Markdown = ({
 interface UniqueTokenExpandedStateProps {
   asset: UniqueAsset;
   external: boolean;
-  lowResUrl: string;
 }
 
 const UniqueTokenExpandedState = ({
   asset,
   external,
-  lowResUrl,
 }: UniqueTokenExpandedStateProps) => {
   const { accountAddress, accountENS } = useAccountProfile();
   const { nativeCurrency, network } = useAccountSettings();
@@ -230,8 +227,6 @@ const UniqueTokenExpandedState = ({
     () => showcaseTokens.includes(uniqueId) as boolean,
     [showcaseTokens, uniqueId]
   );
-
-  const isSVG = isSupportedUriExtension(lowResUrl, ['.svg']);
 
   const imageColor =
     // @ts-expect-error image_url could be null or undefined?
@@ -318,20 +313,13 @@ const UniqueTokenExpandedState = ({
       {ios && (
         <BlurWrapper height={deviceHeight} width={deviceWidth}>
           <BackgroundImage>
-            {isSVG ? (
-              // @ts-expect-error JavaScript component
-              <UniqueTokenImage
-                backgroundColor={asset.background}
-                imageUrl={lowResUrl}
-                item={asset}
-              />
-            ) : (
-              <ImgixImage
-                resizeMode="cover"
-                source={{ uri: lowResUrl }}
-                style={{ height: deviceHeight, width: deviceWidth }}
-              />
-            )}
+            <UniqueTokenImage
+              backgroundColor={asset.background}
+              imageUrl={asset.image_url}
+              item={asset}
+              resizeMode="cover"
+              size={CardSize}
+            />
             <BackgroundBlur />
           </BackgroundImage>
         </BlurWrapper>
@@ -368,7 +356,7 @@ const UniqueTokenExpandedState = ({
               horizontalPadding={24}
               imageColor={imageColor}
               // @ts-expect-error JavaScript component
-              lowResUrl={lowResUrl}
+
               sheetRef={sheetRef}
               textColor={textColor}
               yPosition={yPosition}

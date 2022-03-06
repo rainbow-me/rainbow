@@ -16,6 +16,7 @@ const Container = styled(Column)(position.sizeAsObject('100%'));
 
 const EmptyAssetList = ({
   descendingOpacity,
+  isLoading,
   isWalletEthZero,
   network,
   skeletonCount = 5,
@@ -34,9 +35,11 @@ const EmptyAssetList = ({
 
   const { refresh, isRefreshing } = useRefreshAccountData();
 
+  const showAddFunds = !isLoading && isWalletEthZero;
+
   return (
     <ConditionalWrap
-      condition={isWalletEthZero}
+      condition={showAddFunds}
       wrap={children => (
         <ScrollView
           contentContainerStyle={{ height: '100%' }}
@@ -50,7 +53,7 @@ const EmptyAssetList = ({
     >
       <Container {...props}>
         <Centered flex={1}>
-          {isWalletEthZero ? (
+          {showAddFunds ? (
             <AddFundsInterstitial
               network={network}
               offsetY={interstitialOffset}
