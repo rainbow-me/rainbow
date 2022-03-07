@@ -3,7 +3,6 @@ import MaskedView from '@react-native-community/masked-view';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FlatList } from 'react-native';
 import { ButtonPressAnimation } from '../../animations';
-import { Text as IconText } from '../../../components/text';
 import TokenHistoryEdgeFade from './TokenHistoryEdgeFade';
 import { useTheme } from '@rainbow-me/context/ThemeContext';
 import {
@@ -285,7 +284,7 @@ const TokenHistory = ({ contract, token, color }) => {
             >
               <Inset top="6px" right="19px">
                 <Inline alignVertical="center">
-                  <IconText color={color}>{`${icon}`}</IconText>
+                  <Text size="19px" color="accent">{`${icon}`}</Text>
                   <Text
                     weight="heavy"
                     size="14px"
