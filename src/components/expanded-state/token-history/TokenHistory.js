@@ -33,7 +33,7 @@ import {
   Text,
 } from '@rainbow-me/design-system';
 
-const TokenHistory = ({ contract, token, color }) => {
+const TokenHistory = ({ contractAddress, tokenID, accentColor }) => {
   const [tokenHistory, setTokenHistory] = useState([]);
   const { colors } = useTheme();
   const { accountAddress } = useAccountProfile();
@@ -46,8 +46,8 @@ const TokenHistory = ({ contract, token, color }) => {
     async function fetchTransactionHistory() {
       const semiFungible = await apiGetNftSemiFungibility(
         networkPrefix,
-        contract,
-        token
+        contractAddress,
+        tokenID
       );
 
       const [rawTransferEvents, rawSaleEvents] = await Promise.all([
@@ -55,28 +55,28 @@ const TokenHistory = ({ contract, token, color }) => {
           networkPrefix,
           semiFungible,
           accountAddress,
-          contract,
-          token,
+          contractAddress,
+          tokenID,
           EventTypes.TRANSFER.type
         ),
         apiGetNftTransactionHistoryForEventType(
           networkPrefix,
           semiFungible,
           accountAddress,
-          contract,
-          token,
+          contractAddress,
+          tokenID,
           EventTypes.SALE.type
         ),
       ]);
 
       const rawEvents = rawTransferEvents.concat(rawSaleEvents);
-      const txHistory = await processRawEvents(contract, rawEvents);
+      const txHistory = await processRawEvents(contractAddress, rawEvents);
 
       setTokenHistory(txHistory);
     }
     fetchTransactionHistory();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accountAddress, contract, networkPrefix, token]);
+  }, [accountAddress, contractAddress, networkPrefix, tokenID]);
 
   const EMPTY_ADDRESS = '0x0000000000000000000000000000000000000000';
 
@@ -246,7 +246,7 @@ const TokenHistory = ({ contract, token, color }) => {
     return (
       // when the token history isShort, invert the horizontal scroll so the history is pinned to the left instead of right
       <Box>
-        <AccentColorProvider color={color}>
+        <AccentColorProvider color={accentColor}>
           <Stack>
             {((!isShort && !isFirst) || (isShort && !isLast)) && (
               <Inset left={{ custom: 16 }} right="6px">

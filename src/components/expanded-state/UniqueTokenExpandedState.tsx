@@ -490,9 +490,9 @@ const UniqueTokenExpandedState = ({
                         </Bleed>
                         <Section title="History">
                           <TokenHistory
-                            color={imageColor}
-                            contract={contractAddress}
-                            token={tokenID}
+                            accentColor={imageColor}
+                            contractAddress={contractAddress}
+                            tokenID={tokenID}
                           />
                         </Section>
                       </>
