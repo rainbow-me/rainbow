@@ -15,12 +15,14 @@ export default function InfoRow({
   icon = undefined,
   isImage = false,
   label,
+  wrapValue = children => children,
   value = undefined,
   useAccentColor,
 }: {
   icon?: string;
   isImage?: boolean;
   label: string;
+  wrapValue?: (children: React.ReactNode) => React.ReactNode;
   value?: string;
   useAccentColor?: boolean;
 }) {
@@ -39,52 +41,61 @@ export default function InfoRow({
           </Text>
         </Inset>
       </Box>
-      {isImage ? (
-        <Box
-          as={ImgixImage}
-          borderRadius={16}
-          flexShrink={1}
-          height="64px"
-          source={{ uri: value }}
-          width="full"
-        />
-      ) : (
-        <Box
-          borderRadius={16}
-          flexShrink={1}
-          onLayout={({
-            nativeEvent: {
-              layout: { height },
-            },
-          }) => {
-            setIsMultiline(height > 40);
-            setShow(true);
-          }}
-          padding={isMultiline ? '15px' : '10px'}
-          style={{
-            backgroundColor: useAccentColor
-              ? accentColor + '10'
-              : 'rgba(255, 255, 255, 0.08)',
-            opacity: show ? 1 : 0,
-          }}
-        >
-          <Inline alignVertical="center" space="6px">
-            {icon && (
-              <Bleed vertical="2px">
-                <Icon color={colors.white} height="18" name={icon} width="18" />
-              </Bleed>
-            )}
-            {value && (
-              <Text
-                color={useAccentColor ? 'accent' : undefined}
-                containsEmoji
-                weight="semibold"
-              >
-                {value}
-              </Text>
-            )}
-          </Inline>
-        </Box>
+      {wrapValue(
+        <>
+          {isImage ? (
+            <Box
+              as={ImgixImage}
+              borderRadius={16}
+              flexShrink={1}
+              height="64px"
+              source={{ uri: value }}
+              width="full"
+            />
+          ) : (
+            <Box
+              borderRadius={16}
+              flexShrink={1}
+              onLayout={({
+                nativeEvent: {
+                  layout: { height },
+                },
+              }) => {
+                setIsMultiline(height > 40);
+                setShow(true);
+              }}
+              padding={isMultiline ? '15px' : '10px'}
+              style={{
+                backgroundColor: useAccentColor
+                  ? accentColor + '10'
+                  : 'rgba(255, 255, 255, 0.08)',
+                opacity: show ? 1 : 0,
+              }}
+            >
+              <Inline alignVertical="center" space="6px">
+                {icon && (
+                  <Bleed vertical="2px">
+                    <Icon
+                      color={colors.white}
+                      height="18"
+                      name={icon}
+                      width="18"
+                    />
+                  </Bleed>
+                )}
+                {value && (
+                  <Text
+                    color={useAccentColor ? 'accent' : undefined}
+                    containsEmoji
+                    weight="semibold"
+                  >
+                    {value}
+                  </Text>
+                )}
+              </Inline>
+            </Box>
+          )}
+        </>
       )}
     </Inline>
   );

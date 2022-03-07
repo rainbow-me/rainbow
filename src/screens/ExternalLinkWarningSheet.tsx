@@ -67,11 +67,11 @@ const ExternalLinkWarningSheet = () => {
               width: '100%',
             }}
           >
-            {/* @ts-expect-error JavaScript component */}
             <Emoji
               align="center"
               size="h1"
               style={{ ...fontWithWidth(fonts.weight.bold) }}
+              // @ts-expect-error JavaScript component
             >
               🧭
             </Emoji>

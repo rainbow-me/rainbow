@@ -1,3 +1,4 @@
+import { useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
@@ -54,6 +55,7 @@ const AnimatedBox = Animated.createAnimatedComponent(Box);
 export const BottomActionHeight = ios ? 270 : 250;
 
 export default function ENSAssignRecordsSheet() {
+  const { params } = useRoute();
   const { colors } = useTheme();
   const { name, mode } = useENSRegistration({
     setInitialRecordsWhenInEditMode: true,
@@ -82,6 +84,17 @@ export default function ENSAssignRecordsSheet() {
     }
   }, [colors.purple, dominantColor, prevDominantColor, setAccentColor]);
 
+  const handleAutoFocusLayout = useCallback(
+    ({
+      nativeEvent: {
+        layout: { y },
+      },
+    }) => {
+      params?.sheetRef.current.scrollTo({ y });
+    },
+    [params?.sheetRef]
+  );
+
   return (
     <AccentColorProvider color={accentColor}>
       <Box
@@ -109,7 +122,10 @@ export default function ENSAssignRecordsSheet() {
                 )}
               </Stack>
               <Box flexGrow={1}>
-                <TextRecordsForm />
+                <TextRecordsForm
+                  autoFocusKey={params?.autoFocusKey}
+                  onAutoFocusLayout={handleAutoFocusLayout}
+                />
               </Box>
             </Stack>
           </Inset>

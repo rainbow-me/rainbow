@@ -12,6 +12,7 @@ import {
 const textSize = 16;
 
 export type InlineFieldProps = {
+  autoFocus?: TextInputProps['autoFocus'];
   defaultValue?: string;
   label: string;
   placeholder?: string;
@@ -26,6 +27,7 @@ export type InlineFieldProps = {
 };
 
 export default function InlineField({
+  autoFocus,
   defaultValue,
   label,
   onChangeText,
@@ -98,6 +100,7 @@ export default function InlineField({
         </Inset>
       </Column>
       <Input
+        autoFocus={autoFocus}
         defaultValue={defaultValue}
         maxLength={validations?.maxLength?.value}
         onChangeText={handleChangeText}

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ViewProps } from 'react-native';
 import InlineField, { InlineFieldProps } from '../../inputs/InlineField';
 import Skeleton, { FakeText } from '../../skeleton/Skeleton';
 import {
@@ -10,7 +11,13 @@ import {
 } from '@rainbow-me/design-system';
 import { useENSRegistrationForm } from '@rainbow-me/hooks';
 
-export default function TextRecordsForm() {
+export default function TextRecordsForm({
+  autoFocusKey,
+  onAutoFocusLayout,
+}: {
+  autoFocusKey?: boolean;
+  onAutoFocusLayout?: ViewProps['onLayout'];
+}) {
   const {
     isLoading,
     selectedFields,
@@ -37,8 +44,12 @@ export default function TextRecordsForm() {
         <>
           {selectedFields.map(
             ({ label, inputProps, placeholder, validations, id, key }) => (
-              <Box key={id}>
+              <Box
+                key={id}
+                onLayout={autoFocusKey === key ? onAutoFocusLayout : undefined}
+              >
                 <Field
+                  autoFocus={autoFocusKey === key}
                   defaultValue={values[key]}
                   inputProps={inputProps}
                   label={label}

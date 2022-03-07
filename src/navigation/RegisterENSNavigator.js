@@ -137,6 +137,10 @@ export default function RegisterENSNavigator() {
             />
             <Swipe.Screen
               component={ENSAssignRecordsSheet}
+              initialParams={{
+                autoFocusKey: params.autoFocusKey,
+                sheetRef,
+              }}
               listeners={{
                 focus: () =>
                   setCurrentRouteName(Routes.ENS_ASSIGN_RECORDS_SHEET),

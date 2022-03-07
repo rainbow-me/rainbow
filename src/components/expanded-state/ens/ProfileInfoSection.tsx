@@ -1,10 +1,17 @@
 import { partition, upperFirst } from 'lodash';
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
+import { Linking } from 'react-native';
+import { ContextMenuButton } from 'react-native-ios-context-menu';
 import URL from 'url-parse';
+import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import InfoRow from './InfoRow';
 import { Stack } from '@rainbow-me/design-system';
 import { Records } from '@rainbow-me/entities';
 import { ENS_RECORDS, textRecordFields } from '@rainbow-me/helpers/ens';
+import { useClipboard } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
+import Routes from '@rainbow-me/routes';
+import { showActionSheetWithOptions } from '@rainbow-me/utils';
 import { formatAddressForDisplay } from '@rainbow-me/utils/abbreviations';
 
 const omitRecordKeys = [ENS_RECORDS.avatar];
@@ -13,7 +20,6 @@ const topRecordKeys = [ENS_RECORDS.cover, 'cover', ENS_RECORDS.description];
 const imageKeyMap = {
   [ENS_RECORDS.avatar]: 'avatarUrl',
   [ENS_RECORDS.cover]: 'coverUrl',
-  cover: 'coverUrl',
 } as {
   [key: string]: 'avatarUrl' | 'coverUrl';
 };
@@ -26,11 +32,23 @@ const icons = {
   [ENS_RECORDS.discord]: 'discord',
 } as { [key: string]: string };
 
+const links = {
+  [ENS_RECORDS.twitter]: 'https://twitter.com/',
+  [ENS_RECORDS.github]: 'https://github.com/',
+  [ENS_RECORDS.instagram]: 'https://intagram.com/',
+  [ENS_RECORDS.reddit]: 'https://reddit.com/',
+  [ENS_RECORDS.telegram]: 'https://telegram.com/',
+} as { [key: string]: string };
+
 export default function ProfileInfoSection({
+  allowEdit,
+  ensName,
   coinAddresses: coinAddressMap,
   images,
   records,
 }: {
+  allowEdit?: boolean;
+  ensName: string;
   coinAddresses: { [key: string]: string };
   images: {
     avatarUrl?: string | null;
@@ -68,6 +86,8 @@ export default function ProfileInfoSection({
       {topRecords.map(([recordKey, recordValue]) =>
         recordValue ? (
           <ProfileInfoRow
+            allowEdit={allowEdit}
+            ensName={ensName}
             key={recordKey}
             recordKey={recordKey}
             recordValue={recordValue}
@@ -78,6 +98,8 @@ export default function ProfileInfoSection({
       {coinAddresses.map(([recordKey, recordValue]) =>
         recordValue ? (
           <ProfileInfoRow
+            allowEdit={allowEdit}
+            ensName={ensName}
             key={recordKey}
             recordKey={recordKey}
             recordValue={recordValue}
@@ -88,6 +110,8 @@ export default function ProfileInfoSection({
       {otherRecords.map(([recordKey, recordValue]) =>
         recordValue ? (
           <ProfileInfoRow
+            allowEdit={allowEdit}
+            ensName={ensName}
             key={recordKey}
             recordKey={recordKey}
             recordValue={recordValue}
@@ -100,10 +124,14 @@ export default function ProfileInfoSection({
 }
 
 function ProfileInfoRow({
+  allowEdit,
+  ensName,
   recordKey,
   recordValue,
   type,
 }: {
+  allowEdit?: boolean;
+  ensName: string;
   recordKey: string;
   recordValue: string;
   type: 'address' | 'record';
@@ -125,7 +153,15 @@ function ProfileInfoRow({
         ? recordValue
         : `https://${recordValue}`;
     }
-  }, [isUrlValue, recordValue]);
+    if (links[recordKey]) {
+      return `${links[recordKey]}${recordValue.replace('@', '')}`;
+    }
+  }, [isUrlValue, recordKey, recordValue]);
+
+  const displayUrl = useMemo(
+    () => (url ? new URL(url).hostname.replace(/^www\./, '') : undefined),
+    [url]
+  );
 
   const label = useMemo(() => {
     // @ts-expect-error
@@ -140,8 +176,7 @@ function ProfileInfoRow({
   }, [recordKey, type]);
 
   const value = useMemo(() => {
-    if (isUrlValue && url) {
-      const displayUrl = new URL(url).hostname.replace(/^www\./, '');
+    if (isUrlValue && displayUrl) {
       return `􀤆 ${displayUrl}`;
     }
     if (recordKey === ENS_RECORDS.email) {
@@ -151,7 +186,81 @@ function ProfileInfoRow({
       return formatAddressForDisplay(recordValue, 4, 4) || '';
     }
     return recordValue;
-  }, [isUrlValue, recordKey, recordValue, type, url]);
+  }, [displayUrl, isUrlValue, recordKey, recordValue, type]);
+
+  const menuItems = useMemo(() => {
+    return [
+      allowEdit &&
+      type === 'record' &&
+      Object.values(ENS_RECORDS).includes(recordKey as ENS_RECORDS)
+        ? {
+            actionKey: 'edit',
+            actionTitle: 'Edit',
+            icon: {
+              iconType: 'SYSTEM',
+              iconValue: 'square.and.pencil',
+            },
+          }
+        : undefined,
+      {
+        actionKey: 'copy',
+        actionTitle: 'Copy',
+        discoverabilityTitle: displayUrl || recordValue,
+        icon: {
+          iconType: 'SYSTEM',
+          iconValue: 'doc.on.doc',
+        },
+      },
+      url
+        ? {
+            actionKey: 'open-url',
+            actionTitle: 'View on Web',
+            discoverabilityTitle: displayUrl,
+            icon: {
+              iconType: 'SYSTEM',
+              iconValue: 'safari.fill',
+            },
+          }
+        : undefined,
+    ].filter(x => x);
+  }, [allowEdit, displayUrl, recordKey, recordValue, type, url]);
+
+  const { navigate } = useNavigation();
+  const { setClipboard } = useClipboard();
+  const handlePressMenuItem = useCallback(
+    ({ nativeEvent: { actionKey } }) => {
+      if (actionKey === 'open-url' && url) {
+        Linking.openURL(url);
+      }
+      if (actionKey === 'copy') {
+        setClipboard(recordValue);
+      }
+      if (actionKey === 'edit') {
+        navigate(Routes.REGISTER_ENS_NAVIGATOR, {
+          autoFocusKey: recordKey,
+          ensName,
+          mode: 'edit',
+        });
+      }
+    },
+    [ensName, navigate, recordKey, recordValue, setClipboard, url]
+  );
+
+  const handleAndroidPress = useCallback(() => {
+    const actionSheetOptions = menuItems
+      .map(item => item?.actionTitle)
+      .filter(x => x) as any;
+
+    showActionSheetWithOptions(
+      {
+        options: actionSheetOptions,
+      },
+      async (buttonIndex: number) => {
+        const actionKey = menuItems[buttonIndex]?.actionKey;
+        handlePressMenuItem({ nativeEvent: { actionKey } });
+      }
+    );
+  }, [handlePressMenuItem, menuItems]);
 
   return (
     <InfoRow
@@ -159,6 +268,20 @@ function ProfileInfoRow({
       isImage={isImageValue}
       label={label}
       value={isImageValue ? url : value}
+      wrapValue={children => (
+        <ContextMenuButton
+          enableContextMenu
+          // @ts-expect-error
+          menuConfig={{ menuItems, menuTitle: '' }}
+          {...(android ? { onPress: handleAndroidPress } : {})}
+          isMenuPrimaryAction
+          onPressMenuItem={handlePressMenuItem}
+          style={{ flexGrow: isImageValue ? 1 : 0, flexShrink: 1 }}
+          useActionSheetFallback={false}
+        >
+          <ButtonPressAnimation scaleTo={0.9}>{children}</ButtonPressAnimation>
+        </ContextMenuButton>
+      )}
     />
   );
 }

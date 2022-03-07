@@ -172,7 +172,7 @@ const Section = ({
           )}
           {titleEmoji && (
             <Bleed right="1px">
-              <Heading containsEmoji size="23px">
+              <Heading containsEmoji size={ios ? '23px' : '20px'}>
                 {titleEmoji}
               </Heading>
             </Bleed>
@@ -530,7 +530,9 @@ const UniqueTokenExpandedState = ({
                             titleEmoji="🤿"
                           >
                             <ProfileInfoSection
+                              allowEdit={hasEditButton}
                               coinAddresses={ensData?.coinAddresses}
+                              ensName={uniqueId}
                               images={ensData?.images}
                               records={ensData?.records}
                             />
