@@ -4,7 +4,7 @@ import { Linking } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import URL from 'url-parse';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
-import InfoRow from './InfoRow';
+import InfoRow, { InfoRowSkeleton } from './InfoRow';
 import { Stack } from '@rainbow-me/design-system';
 import { Records } from '@rainbow-me/entities';
 import { ENS_RECORDS, textRecordFields } from '@rainbow-me/helpers/ens';
@@ -42,26 +42,28 @@ const links = {
 
 export default function ProfileInfoSection({
   allowEdit,
-  ensName,
   coinAddresses: coinAddressMap,
+  ensName,
   images,
+  isLoading,
   records,
 }: {
   allowEdit?: boolean;
-  ensName: string;
-  coinAddresses: { [key: string]: string };
-  images: {
+  coinAddresses?: { [key: string]: string };
+  ensName?: string;
+  images?: {
     avatarUrl?: string | null;
     coverUrl?: string | null;
   };
-  records: Partial<Records>;
+  isLoading?: boolean;
+  records?: Partial<Records>;
 }) {
   const recordsArray = useMemo(
     () =>
-      Object.entries(records)
+      Object.entries(records || {})
         .filter(([key]) => !omitRecordKeys.includes(key as ENS_RECORDS))
         .map(([key, value]) =>
-          images[imageKeyMap[key]]
+          images?.[imageKeyMap[key]]
             ? [key, images[imageKeyMap[key]] as string]
             : [key, value]
         ),
@@ -69,55 +71,67 @@ export default function ProfileInfoSection({
   );
 
   const [topRecords, otherRecords] = useMemo(() => {
-    const [topRecords, otherRecords] = partition(recordsArray, ([key]) =>
-      topRecordKeys.includes(key)
+    const [topRecords, otherRecords] = partition(
+      recordsArray,
+      ([key]: [ENS_RECORDS]) => topRecordKeys.includes(key)
     );
     const orderedTopRecords = topRecordKeys
-      .map(key => topRecords.find(([k]) => k === key))
+      .map(key => topRecords.find(([k]: any) => k === key))
       .filter(Boolean) as [ENS_RECORDS, string][];
     return [orderedTopRecords, otherRecords];
   }, [recordsArray]);
-  const coinAddresses = useMemo(() => Object.entries(coinAddressMap), [
+  const coinAddresses = useMemo(() => Object.entries(coinAddressMap || {}), [
     coinAddressMap,
   ]);
 
   return (
     <Stack space="15px">
-      {topRecords.map(([recordKey, recordValue]) =>
-        recordValue ? (
-          <ProfileInfoRow
-            allowEdit={allowEdit}
-            ensName={ensName}
-            key={recordKey}
-            recordKey={recordKey}
-            recordValue={recordValue}
-            type="record"
-          />
-        ) : null
-      )}
-      {coinAddresses.map(([recordKey, recordValue]) =>
-        recordValue ? (
-          <ProfileInfoRow
-            allowEdit={allowEdit}
-            ensName={ensName}
-            key={recordKey}
-            recordKey={recordKey}
-            recordValue={recordValue}
-            type="address"
-          />
-        ) : null
-      )}
-      {otherRecords.map(([recordKey, recordValue]) =>
-        recordValue ? (
-          <ProfileInfoRow
-            allowEdit={allowEdit}
-            ensName={ensName}
-            key={recordKey}
-            recordKey={recordKey}
-            recordValue={recordValue}
-            type="record"
-          />
-        ) : null
+      {isLoading ? (
+        <>
+          <InfoRowSkeleton />
+          <InfoRowSkeleton />
+          <InfoRowSkeleton />
+          <InfoRowSkeleton />
+        </>
+      ) : (
+        <>
+          {topRecords.map(([recordKey, recordValue]) =>
+            recordValue ? (
+              <ProfileInfoRow
+                allowEdit={allowEdit}
+                ensName={ensName}
+                key={recordKey}
+                recordKey={recordKey}
+                recordValue={recordValue}
+                type="record"
+              />
+            ) : null
+          )}
+          {coinAddresses.map(([recordKey, recordValue]) =>
+            recordValue ? (
+              <ProfileInfoRow
+                allowEdit={allowEdit}
+                ensName={ensName}
+                key={recordKey}
+                recordKey={recordKey}
+                recordValue={recordValue}
+                type="address"
+              />
+            ) : null
+          )}
+          {otherRecords.map(([recordKey, recordValue]) =>
+            recordValue ? (
+              <ProfileInfoRow
+                allowEdit={allowEdit}
+                ensName={ensName}
+                key={recordKey}
+                recordKey={recordKey}
+                recordValue={recordValue}
+                type="record"
+              />
+            ) : null
+          )}
+        </>
       )}
     </Stack>
   );
@@ -131,7 +145,7 @@ function ProfileInfoRow({
   type,
 }: {
   allowEdit?: boolean;
-  ensName: string;
+  ensName?: string;
   recordKey: string;
   recordValue: string;
   type: 'address' | 'record';

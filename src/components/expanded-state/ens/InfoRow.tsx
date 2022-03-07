@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTheme } from '../../../context/ThemeContext';
+import { ShimmerAnimation } from '../../animations';
 import { Icon } from '../../icons';
 import {
   Bleed,
@@ -10,6 +11,46 @@ import {
   useForegroundColor,
 } from '@rainbow-me/design-system';
 import { ImgixImage } from '@rainbow-me/images';
+
+export function InfoRowSkeleton() {
+  const { colors } = useTheme();
+  return (
+    <Inline alignHorizontal="justify" horizontalSpace="24px" wrap={false}>
+      <Box
+        style={{
+          backgroundColor: colors.alpha(colors.blueGreyDark, 0.04),
+          borderRadius: 12,
+          height: 24,
+          overflow: 'hidden',
+          width: 100,
+        }}
+      >
+        <ShimmerAnimation
+          color={colors.alpha(colors.blueGreyDark, 0.06)}
+          enabled
+          gradientColor={colors.alpha(colors.blueGreyDark, 0.06)}
+          width={100}
+        />
+      </Box>
+      <Box
+        style={{
+          backgroundColor: colors.alpha(colors.blueGreyDark, 0.04),
+          borderRadius: 12,
+          height: 24,
+          overflow: 'hidden',
+          width: 150,
+        }}
+      >
+        <ShimmerAnimation
+          color={colors.alpha(colors.blueGreyDark, 0.06)}
+          enabled
+          gradientColor={colors.alpha(colors.blueGreyDark, 0.06)}
+          width={150}
+        />
+      </Box>
+    </Inline>
+  );
+}
 
 export default function InfoRow({
   icon = undefined,

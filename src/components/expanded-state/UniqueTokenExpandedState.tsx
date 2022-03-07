@@ -512,34 +512,34 @@ const UniqueTokenExpandedState = ({
                     )}
                     {isENS && (
                       <>
-                        {ensData?.records && (
-                          <Section
-                            addonComponent={
-                              hasEditButton && (
-                                <TextButton
-                                  align="right"
-                                  onPress={handlePressEdit}
-                                  size="18px"
-                                  weight="bold"
-                                >
-                                  Edit
-                                </TextButton>
-                              )
-                            }
-                            title="Profile Info"
-                            titleEmoji="🤿"
-                          >
-                            <ProfileInfoSection
-                              allowEdit={hasEditButton}
-                              coinAddresses={ensData?.coinAddresses}
-                              ensName={uniqueId}
-                              images={ensData?.images}
-                              records={ensData?.records}
-                            />
-                          </Section>
-                        )}
+                        <Section
+                          addonComponent={
+                            hasEditButton && (
+                              <TextButton
+                                align="right"
+                                onPress={handlePressEdit}
+                                size="18px"
+                                weight="bold"
+                              >
+                                Edit
+                              </TextButton>
+                            )
+                          }
+                          title="Profile Info"
+                          titleEmoji="🤿"
+                        >
+                          <ProfileInfoSection
+                            allowEdit={hasEditButton}
+                            coinAddresses={ensData?.coinAddresses}
+                            ensName={uniqueId}
+                            images={ensData?.images}
+                            isLoading={ensProfile.isLoading}
+                            records={ensData?.records}
+                          />
+                        </Section>
                         <Section title="Configuration" titleEmoji="⚙️">
                           <ConfigurationSection
+                            isLoading={ensProfile.isLoading}
                             owner={ensData?.owner}
                             registrant={ensData?.registrant}
                           />
