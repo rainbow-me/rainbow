@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { upperFirst } from 'lodash';
 import React from 'react';
 import InfoRow, { InfoRowSkeleton } from './InfoRow';
@@ -20,7 +21,7 @@ export default function AdvancedSection({
         <>
           {resolver && (
             <InfoRow
-              label="Resolver"
+              label={lang.t('expanded_state.unique_expanded.resolver')}
               useAccentColor
               value={upperFirst(resolver.type)}
             />

@@ -421,7 +421,9 @@ const UniqueTokenExpandedState = ({
                         <SheetActionButton
                           color={imageColor}
                           // @ts-expect-error JavaScript component
-                          label="􀉮 Edit"
+                          label={`􀉮 ${lang.t(
+                            'expanded_state.unique_expanded.edit'
+                          )}`}
                           nftShadows
                           onPress={handlePressEdit}
                           textColor={textColor}
@@ -432,7 +434,13 @@ const UniqueTokenExpandedState = ({
                           color={imageColor}
                           // @ts-expect-error JavaScript component
                           label={
-                            hasSendButton ? '􀮶 OpenSea' : '􀮶 View on OpenSea'
+                            hasSendButton
+                              ? `􀮶 ${lang.t(
+                                  'expanded_state.unique_expanded.opensea'
+                                )}`
+                              : `􀮶 ${lang.t(
+                                  'expanded_state.unique_expanded.view_on_opensea'
+                                )}`
                           }
                           nftShadows
                           onPress={handlePressOpensea}
@@ -494,12 +502,22 @@ const UniqueTokenExpandedState = ({
                     {(isNFT || isPoap) && (
                       <>
                         {description ? (
-                          <Section title="Description" titleEmoji="📖">
+                          <Section
+                            title={`${lang.t(
+                              'expanded_state.unique_expanded.description'
+                            )}`}
+                            titleEmoji="📖"
+                          >
                             <Markdown>{description}</Markdown>
                           </Section>
                         ) : null}
                         {traits.length ? (
-                          <Section title="Properties" titleEmoji="🎨">
+                          <Section
+                            title={`${lang.t(
+                              'expanded_state.unique_expanded.properties'
+                            )}`}
+                            titleEmoji="🎨"
+                          >
                             <UniqueTokenAttributes
                               {...asset}
                               color={imageColor}
@@ -525,7 +543,9 @@ const UniqueTokenExpandedState = ({
                               </TextButton>
                             )
                           }
-                          title="Profile Info"
+                          title={`${lang.t(
+                            'expanded_state.unique_expanded.profile_info'
+                          )}`}
                           titleEmoji="🤿"
                         >
                           <ProfileInfoSection
@@ -537,21 +557,34 @@ const UniqueTokenExpandedState = ({
                             records={ensData?.records}
                           />
                         </Section>
-                        <Section title="Configuration" titleEmoji="⚙️">
+                        <Section
+                          title={`${lang.t(
+                            'expanded_state.unique_expanded.configuration'
+                          )}`}
+                          titleEmoji="⚙️"
+                        >
                           <ConfigurationSection
                             isLoading={ensProfile.isLoading}
                             owner={ensData?.owner}
                             registrant={ensData?.registrant}
                           />
                         </Section>
-                        <Section title="Advanced" titleEmoji="👽">
+                        <Section
+                          title={`${lang.t(
+                            'expanded_state.unique_expanded.advanced'
+                          )}`}
+                          titleEmoji="👽"
+                        >
                           <AdvancedSection resolver={ensData?.resolver} />
                         </Section>
                       </>
                     )}
                     {familyDescription ? (
                       <Section
-                        title={`About ${familyName}`}
+                        title={`${lang.t(
+                          'expanded_state.unique_expanded.about',
+                          { assetFamilyName: familyName }
+                        )}`}
                         titleImageUrl={familyImage}
                       >
                         <Stack space={sectionSpace}>

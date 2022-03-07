@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React from 'react';
 import InfoRow, { InfoRowSkeleton } from './InfoRow';
 import { Stack } from '@rainbow-me/design-system';
@@ -23,7 +24,7 @@ export default function ConfigurationSection({
         <>
           {owner && (
             <InfoRow
-              label="Owner"
+              label={lang.t('expanded_state.unique_expanded.owner')}
               useAccentColor
               value={
                 owner.name ||
@@ -34,7 +35,7 @@ export default function ConfigurationSection({
           )}
           {registrant && (
             <InfoRow
-              label="Registrant"
+              label={lang.t('expanded_state.unique_expanded.registrant')}
               useAccentColor
               value={
                 registrant.name ||

@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { partition, upperFirst } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import { Linking } from 'react-native';
@@ -78,7 +79,7 @@ export default function ProfileInfoSection({
     const orderedTopRecords = topRecordKeys
       .map(key => topRecords.find(([k]: any) => k === key))
       .filter(Boolean) as [ENS_RECORDS, string][];
-    return [orderedTopRecords, otherRecords];
+    return [orderedTopRecords, otherRecords as [ENS_RECORDS, string][]];
   }, [recordsArray]);
   const coinAddresses = useMemo(() => Object.entries(coinAddressMap || {}), [
     coinAddressMap,
@@ -209,7 +210,7 @@ function ProfileInfoRow({
       Object.values(ENS_RECORDS).includes(recordKey as ENS_RECORDS)
         ? {
             actionKey: 'edit',
-            actionTitle: 'Edit',
+            actionTitle: lang.t('expanded_state.unique_expanded.edit'),
             icon: {
               iconType: 'SYSTEM',
               iconValue: 'square.and.pencil',
@@ -218,7 +219,7 @@ function ProfileInfoRow({
         : undefined,
       {
         actionKey: 'copy',
-        actionTitle: 'Copy',
+        actionTitle: lang.t('expanded_state.unique_expanded.copy'),
         discoverabilityTitle: displayUrl || recordValue,
         icon: {
           iconType: 'SYSTEM',
@@ -228,7 +229,7 @@ function ProfileInfoRow({
       url
         ? {
             actionKey: 'open-url',
-            actionTitle: 'View on Web',
+            actionTitle: lang.t('expanded_state.unique_expanded.view_on_web'),
             discoverabilityTitle: displayUrl,
             icon: {
               iconType: 'SYSTEM',
