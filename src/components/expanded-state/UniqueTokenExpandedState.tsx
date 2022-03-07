@@ -539,7 +539,7 @@ const UniqueTokenExpandedState = ({
                                 size="18px"
                                 weight="bold"
                               >
-                                Edit
+                                {lang.t('expanded_state.unique_expanded.edit')}
                               </TextButton>
                             )
                           }
