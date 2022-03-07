@@ -21,6 +21,7 @@ export default function AdvancedSection({
         <>
           {resolver && (
             <InfoRow
+              explainSheetType="ens_resolver"
               label={lang.t('expanded_state.unique_expanded.resolver')}
               useAccentColor
               value={upperFirst(resolver.type)}

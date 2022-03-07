@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useTheme } from '../../../context/ThemeContext';
+import { useNavigation } from '../../../navigation/Navigation';
 import { ShimmerAnimation } from '../../animations';
+import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { Icon } from '../../icons';
 import {
   Bleed,
@@ -11,6 +13,7 @@ import {
   useForegroundColor,
 } from '@rainbow-me/design-system';
 import { ImgixImage } from '@rainbow-me/images';
+import Routes from '@rainbow-me/routes';
 
 export function InfoRowSkeleton() {
   const { colors } = useTheme();
@@ -53,6 +56,7 @@ export function InfoRowSkeleton() {
 }
 
 export default function InfoRow({
+  explainSheetType,
   icon = undefined,
   isImage = false,
   label,
@@ -60,6 +64,7 @@ export default function InfoRow({
   value = undefined,
   useAccentColor,
 }: {
+  explainSheetType?: string;
   icon?: string;
   isImage?: boolean;
   label: string;
@@ -73,13 +78,27 @@ export default function InfoRow({
   const [show, setShow] = useState(isImage);
   const [isMultiline, setIsMultiline] = useState(false);
 
+  const { navigate } = useNavigation();
+  const handlePressExplain = useCallback(() => {
+    navigate(Routes.EXPLAIN_SHEET, { type: explainSheetType });
+  }, [explainSheetType, navigate]);
+
   return (
     <Inline alignHorizontal="justify" horizontalSpace="24px" wrap={false}>
       <Box style={{ minWidth: 60, opacity: show ? 1 : 0 }}>
         <Inset top={isMultiline ? '15px' : '10px'}>
-          <Text color="secondary60" size="16px" weight="bold">
-            {label}
-          </Text>
+          <Inline space="4px">
+            <Text color="secondary60" size="16px" weight="bold">
+              {label}
+            </Text>
+            {explainSheetType && (
+              <ButtonPressAnimation onPress={handlePressExplain}>
+                <Text color="secondary20" size="16px" weight="bold">
+                  􀅵
+                </Text>
+              </ButtonPressAnimation>
+            )}
+          </Inline>
         </Inset>
       </Box>
       {wrapValue(
