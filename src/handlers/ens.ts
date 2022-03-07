@@ -4,13 +4,11 @@ import { ensClient } from '../apollo/client';
 import {
   ENS_DOMAINS,
   ENS_GET_COIN_TYPES,
-  ENS_GET_OWNER,
   ENS_GET_RECORDS,
   ENS_GET_REGISTRATION,
   ENS_REGISTRATIONS,
   ENS_SUGGESTIONS,
   EnsGetCoinTypesData,
-  EnsGetOwnerData,
   EnsGetRecordsData,
   EnsGetRegistrationData,
 } from '../apollo/queries';
@@ -23,6 +21,7 @@ import {
   ENSRegistrationTransactionType,
   generateSalt,
   getENSExecutionDetails,
+  getNameOwner,
 } from '@rainbow-me/helpers/ens';
 import { add } from '@rainbow-me/helpers/utilities';
 import { ensPublicResolverAddress, ethUnits } from '@rainbow-me/references';
@@ -183,19 +182,13 @@ export const fetchCoinAddresses = async (ensName: string) => {
 };
 
 export const fetchOwner = async (ensName: string) => {
-  const response = await ensClient.query<EnsGetOwnerData>({
-    query: ENS_GET_OWNER,
-    variables: {
-      name: ensName,
-    },
-  });
-  const data = response.data?.domains[0] || {};
+  const ownerAddress = await getNameOwner(ensName);
 
   let owner: { address?: string; name?: string } = {};
-  if (data.owner?.id) {
-    const name = await web3Provider.lookupAddress(data.owner.id);
+  if (ownerAddress) {
+    const name = await web3Provider.lookupAddress(ownerAddress);
     owner = {
-      address: data.owner.id,
+      address: ownerAddress,
       name,
     };
   }

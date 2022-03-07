@@ -15,7 +15,7 @@ import { showActionSheetWithOptions } from '@rainbow-me/utils';
 import { formatAddressForDisplay } from '@rainbow-me/utils/abbreviations';
 
 const omitRecordKeys = [ENS_RECORDS.avatar];
-const topRecordKeys = [ENS_RECORDS.cover, 'cover', ENS_RECORDS.description];
+const topRecordKeys = [ENS_RECORDS.cover, ENS_RECORDS.description];
 
 const imageKeyMap = {
   [ENS_RECORDS.avatar]: 'avatarUrl',

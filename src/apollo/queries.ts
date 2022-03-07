@@ -272,24 +272,6 @@ export const ENS_GET_REGISTRATION = gql`
   }
 `;
 
-export type EnsGetOwnerData = {
-  domains: {
-    owner: {
-      id: string;
-    };
-  }[];
-};
-
-export const ENS_GET_OWNER = gql`
-  query lookup($name: String!) {
-    domains(first: 1, where: { name: $name }) {
-      owner {
-        id
-      }
-    }
-  }
-`;
-
 export type EnsGetRecordsData = {
   domains: {
     resolver: {
