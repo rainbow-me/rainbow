@@ -169,12 +169,10 @@ const TokenHistory = ({ contractAddress, tokenID, accentColor }) => {
       }
     });
 
-    if (events.length <= 2) {
-      events.reverse();
-    }
-
     return events;
   };
+
+  const shouldInvertScroll = tokenHistory.length > 2;
 
   const handlePress = useCallback(
     (address, ens) => {
@@ -234,9 +232,11 @@ const TokenHistory = ({ contractAddress, tokenID, accentColor }) => {
     label,
     clickableIcon,
   }) {
-    let isFirst = index === 0;
-    let isLast = index === tokenHistory.length - 1;
-    let isShort = tokenHistory.length <= 2;
+    const shouldRenderTimeline = shouldInvertScroll
+      ? index > 0
+      : index < tokenHistory.length - 1;
+
+    const shouldRenderPin = tokenHistory.length > 1;
 
     const date = getHumanReadableDate(
       new Date(item.createdDate).getTime() / 1000,
@@ -248,7 +248,7 @@ const TokenHistory = ({ contractAddress, tokenID, accentColor }) => {
       <Box>
         <AccentColorProvider color={accentColor}>
           <Stack>
-            {((!isShort && !isFirst) || (isShort && !isLast)) && (
+            {shouldRenderTimeline && (
               <Inset left={{ custom: 16 }} right="6px">
                 <Box
                   opacity={0.6}
@@ -261,7 +261,7 @@ const TokenHistory = ({ contractAddress, tokenID, accentColor }) => {
                 />
               </Inset>
             )}
-            {tokenHistory.length > 1 && (
+            {shouldRenderPin && (
               <Box
                 background="accent"
                 borderRadius={5}
@@ -269,7 +269,7 @@ const TokenHistory = ({ contractAddress, tokenID, accentColor }) => {
                 width={{ custom: 10 }}
               />
             )}
-            <Inset top={{ custom: tokenHistory.length > 1 ? 8 : 0 }}>
+            <Inset top={{ custom: shouldRenderPin ? 8 : 0 }}>
               <Text weight="heavy" size="14px" color="accent">
                 {date}
               </Text>
@@ -309,12 +309,14 @@ const TokenHistory = ({ contractAddress, tokenID, accentColor }) => {
     >
       <FlatList
         contentContainerStyle={{
-          paddingRight: tokenHistory.length > 2 ? 24 : undefined,
-          paddingLeft: tokenHistory.length <= 2 ? 24 : undefined,
+          paddingRight: shouldInvertScroll ? 24 : undefined,
+          paddingLeft: !shouldInvertScroll ? 24 : undefined,
         }}
-        data={tokenHistory}
+        data={
+          shouldInvertScroll ? tokenHistory : tokenHistory.slice().reverse()
+        }
         horizontal
-        inverted={tokenHistory.length > 2}
+        inverted={shouldInvertScroll}
         renderItem={({ item, index }) => renderItem({ index, item })}
         showsHorizontalScrollIndicator={false}
       />
