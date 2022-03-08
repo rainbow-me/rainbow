@@ -172,11 +172,11 @@ export function Header() {
     <HeaderWrapper height={350} testID="showcase-header-wrapper">
       <SheetHandle style={{ marginTop: secondaryText ? 24 : -4 }} />
       <AvatarCircle
-        style={{ marginTop: 36 }}
         image={null}
         onPress={() => {}}
         showcaseAccountColor={color}
         showcaseAccountSymbol={emoji}
+        style={{ marginTop: 36 }}
       />
       <ENSAddress
         address={mainText}

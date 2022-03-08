@@ -1,8 +1,8 @@
 import React from 'react';
 import { View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { useDimensions } from '@rainbow-me/hooks';
 import { Box } from '@rainbow-me/design-system';
+import { useDimensions } from '@rainbow-me/hooks';
 
 const Fade = ({ alignment }) => {
   const { colors } = useTheme();
@@ -15,11 +15,11 @@ const Fade = ({ alignment }) => {
           : colors.gradients.fadeOut
       }
       end={{ x: 1, y: 0.5 }}
-      start={{ x: 0, y: 0.5 }}
       height="full"
-      position="absolute"
       left={alignment === 'left' ? '0px' : undefined}
+      position="absolute"
       right={alignment === 'right' ? '0px' : undefined}
+      start={{ x: 0, y: 0.5 }}
       width={{ custom: 24 }}
     />
   );
@@ -31,10 +31,10 @@ export default function TokenHistoryEdgeFade() {
     <View>
       <Fade alignment="left" />
       <Box
-        width={{ custom: width - 48 }}
-        height="full"
         background="accent"
+        height="full"
         left={{ custom: 24 }}
+        width={{ custom: width - 48 }}
       />
       <Fade alignment="right" />
     </View>

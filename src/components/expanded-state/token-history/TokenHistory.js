@@ -6,6 +6,14 @@ import { ButtonPressAnimation } from '../../animations';
 import TokenHistoryEdgeFade from './TokenHistoryEdgeFade';
 import { useTheme } from '@rainbow-me/context/ThemeContext';
 import {
+  AccentColorProvider,
+  Box,
+  Inline,
+  Inset,
+  Stack,
+  Text,
+} from '@rainbow-me/design-system';
+import {
   apiGetNftSemiFungibility,
   apiGetNftTransactionHistoryForEventType,
 } from '@rainbow-me/handlers/opensea-api';
@@ -24,15 +32,6 @@ import Routes from '@rainbow-me/routes';
 import { handleSignificantDecimals } from '@rainbow-me/utilities';
 import { abbreviations } from '@rainbow-me/utils';
 import { EventTypes, PaymentTokens } from '@rainbow-me/utils/tokenHistoryUtils';
-import {
-  AccentColorProvider,
-  Box,
-  Cover,
-  Inline,
-  Inset,
-  Stack,
-  Text,
-} from '@rainbow-me/design-system';
 
 const TokenHistory = ({ contractAddress, tokenID, accentColor }) => {
   const [tokenHistory, setTokenHistory] = useState([]);
@@ -252,12 +251,12 @@ const TokenHistory = ({ contractAddress, tokenID, accentColor }) => {
             {shouldRenderTimeline && (
               <Inset left={{ custom: 16 }} right="6px">
                 <Box
-                  opacity={0.6}
                   background="accent"
-                  position="absolute"
-                  top={{ custom: 3.5 }}
                   borderRadius={1.5}
                   height={{ custom: 3 }}
+                  opacity={0.6}
+                  position="absolute"
+                  top={{ custom: 3.5 }}
                   width="full"
                 />
               </Inset>
@@ -271,7 +270,7 @@ const TokenHistory = ({ contractAddress, tokenID, accentColor }) => {
               />
             )}
             <Inset top={{ custom: shouldRenderPin ? 8 : 0.5 }}>
-              <Text weight="heavy" size="14px" color="accent">
+              <Text color="accent" size="14px" weight="heavy">
                 {date}
               </Text>
             </Inset>
@@ -283,14 +282,14 @@ const TokenHistory = ({ contractAddress, tokenID, accentColor }) => {
               }
               scaleTo={0.92}
             >
-              <Inset top="6px" right="19px">
+              <Inset right="19px" top="6px">
                 <Inline alignVertical="center">
-                  <Text size="19px" color="accent">{`${icon}`}</Text>
+                  <Text color="accent" size="19px">{`${icon}`}</Text>
                   <Text
-                    weight="heavy"
-                    size="14px"
                     color={{ custom: colors.whiteLabel }}
                     containsEmoji
+                    size="14px"
+                    weight="heavy"
                   >
                     {` ${label} ${isClickable ? clickableIcon : ''}`}
                   </Text>
@@ -305,13 +304,13 @@ const TokenHistory = ({ contractAddress, tokenID, accentColor }) => {
 
   return (
     <MaskedView
-      style={{ marginLeft: -24, marginRight: -24 }}
       maskElement={<TokenHistoryEdgeFade />}
+      style={{ marginLeft: -24, marginRight: -24 }}
     >
       <FlatList
         contentContainerStyle={{
-          paddingRight: shouldInvertScroll ? 24 : undefined,
           paddingLeft: !shouldInvertScroll ? 24 : undefined,
+          paddingRight: shouldInvertScroll ? 24 : undefined,
         }}
         data={
           shouldInvertScroll ? tokenHistory : tokenHistory.slice().reverse()
