@@ -358,18 +358,15 @@ export default function SettingsSection({
             />
           )}
         </ColumnWithDividers>
-        {IS_DEV && (
-          <Fragment>
-            <ListFooter height={10} />
-            <ListItem
-              icon={<Emoji name="construction" />}
-              label={lang.t('settings.developer')}
-              onPress={onPressDev}
-              testID="developer-section"
-            />
-          </Fragment>
-        )}
-
+        <Fragment>
+          <ListFooter height={10} />
+          <ListItem
+            icon={<Emoji name="construction" />}
+            label={lang.t('settings.developer')}
+            onPress={onPressDev}
+            testID="developer-section"
+          />
+        </Fragment>
         <VersionStampContainer>
           <AppVersionStamp />
         </VersionStampContainer>
