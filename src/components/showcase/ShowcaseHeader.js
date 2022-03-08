@@ -23,7 +23,6 @@ const HeaderWrapper = styled.View({
   alignItems: 'center',
   height: ({ height }) => height,
   justifyContent: 'center',
-  paddingTop: 40,
   width: '100%',
 });
 
@@ -32,10 +31,6 @@ const Footer = styled(ColumnWithMargins).attrs({
 })({
   ...padding.object(19, 0, 21),
   width: '100%',
-});
-
-const Spacer = styled.View({
-  height: 19,
 });
 
 const ButtonSpacer = styled.View({
@@ -175,9 +170,9 @@ export function Header() {
 
   return (
     <HeaderWrapper height={350} testID="showcase-header-wrapper">
-      <SheetHandle style={{ marginTop: secondaryText ? -28 : -58 }} />
-      <Spacer />
+      <SheetHandle style={{ marginTop: secondaryText ? 24 : -4 }} />
       <AvatarCircle
+        style={{ marginTop: 36 }}
         image={null}
         onPress={() => {}}
         showcaseAccountColor={color}
