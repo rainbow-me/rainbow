@@ -21,6 +21,11 @@ const selectedFieldsAtom = atom({
   key: 'ensProfileForm.selectedFields',
 });
 
+const submittingAtom = atom({
+  default: false,
+  key: 'ensProfileForm.submitting',
+});
+
 export const valuesAtom = atom<{ [name: string]: Partial<Records> }>({
   default: {},
   key: 'ensProfileForm.values',
@@ -56,6 +61,7 @@ export default function useENSRegistrationForm({
   const dispatch = useDispatch();
 
   const [errors, setErrors] = useRecoilState(errorsAtom);
+  const [submitting, setSubmitting] = useRecoilState(submittingAtom);
 
   const [disabled, setDisabled] = useRecoilState(disabledAtom);
   useEffect(() => {
@@ -182,7 +188,7 @@ export default function useENSRegistrationForm({
   const empty = useMemo(() => !Object.values(values).some(Boolean), [values]);
 
   const submit = useCallback(
-    cb => {
+    async submitFn => {
       const errors = Object.entries(textRecordFields).reduce(
         (currentErrors, [key, { validations }]) => {
           const { value: regex, message } = validations?.onSubmit?.match || {};
@@ -199,11 +205,18 @@ export default function useENSRegistrationForm({
       );
       setErrors(errors);
 
+      setSubmitting(true);
       if (isEmpty(errors)) {
-        cb();
+        try {
+          await submitFn();
+          // eslint-disable-next-line no-empty
+        } catch (err) {}
       }
+      setTimeout(() => {
+        setSubmitting(false);
+      }, 100);
     },
-    [setErrors, values]
+    [setErrors, setSubmitting, values]
   );
 
   return {
@@ -219,6 +232,7 @@ export default function useENSRegistrationForm({
     selectedFields,
     setDisabled,
     submit,
+    submitting,
     values,
   };
 }

@@ -27,6 +27,7 @@ export default function TextRecordsForm({
     selectedFields,
     onChangeField,
     onBlurField,
+    submitting,
     values,
   } = useENSRegistrationForm();
 
@@ -38,7 +39,7 @@ export default function TextRecordsForm({
       onError?.({ yOffset: yOffsets[firstErrorKey] || 0 });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [...Object.keys(errors), onError, yOffsets]);
+  }, [...Object.keys(errors), onError, yOffsets, submitting]);
 
   const handleLayout = useCallback(
     (e, key) => {
