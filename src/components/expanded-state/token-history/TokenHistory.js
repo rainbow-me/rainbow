@@ -201,7 +201,9 @@ const TokenHistory = ({ contractAddress, tokenID, accentColor }) => {
         break;
 
       case EventTypes.SALE.type:
-        label = `Sold for ${item.saleAmount} ${item.paymentToken}`;
+        label = `Sold for ${Number(
+          parseFloat(item.saleAmount).toPrecision(2)
+        )} ${item.paymentToken}`;
         icon = EventTypes.SALE.icon;
         break;
 
