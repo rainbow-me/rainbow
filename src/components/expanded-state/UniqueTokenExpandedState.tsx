@@ -58,7 +58,6 @@ import {
 } from '@rainbow-me/design-system';
 import { AssetTypes, UniqueAsset } from '@rainbow-me/entities';
 import { buildUniqueTokenName } from '@rainbow-me/helpers/assets';
-import { getNameOwner } from '@rainbow-me/helpers/ens';
 import {
   useAccountProfile,
   useDimensions,
