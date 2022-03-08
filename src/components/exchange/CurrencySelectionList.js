@@ -39,26 +39,26 @@ const CurrencySelectionList = (
   const showSkeleton = noResults && loading;
 
   return (
-      <>
-        {showList && !showSkeleton && (
-          <Centered flex={1}>
-            {showGhost ? (
-              <NoCurrencyResults />
-            ) : (
-              <ExchangeAssetList
-                footerSpacer={footerSpacer}
-                itemProps={itemProps}
-                items={listItems}
-                keyboardDismissMode={keyboardDismissMode}
-                query={query}
-                ref={ref}
-                testID={testID}
-              />
-            )}
-          </Centered>
-        )}
+    <>
+      {showList && !showSkeleton && (
+        <Centered flex={1}>
+          {showGhost ? (
+            <NoCurrencyResults />
+          ) : (
+            <ExchangeAssetList
+              footerSpacer={footerSpacer}
+              itemProps={itemProps}
+              items={listItems}
+              keyboardDismissMode={keyboardDismissMode}
+              query={query}
+              ref={ref}
+              testID={testID}
+            />
+          )}
+        </Centered>
+      )}
       {(showSkeleton || !showList) && <EmptyCurrencySelectionList />}
-      </>
+    </>
   );
 };
 
