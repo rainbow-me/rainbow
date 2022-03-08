@@ -1,9 +1,13 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { TextInputProps } from 'react-native';
+import { Alert, TextInputProps } from 'react-native';
+import { useTheme } from '../../context/ThemeContext';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import Input from './Input';
 import {
+  Bleed,
   Column,
   Columns,
+  Inline,
   Inset,
   Text,
   useTextStyle,
@@ -14,14 +18,16 @@ const textSize = 16;
 export type InlineFieldProps = {
   autoFocus?: TextInputProps['autoFocus'];
   defaultValue?: string;
+  errorMessage?: string;
   label: string;
   placeholder?: string;
   inputProps?: Partial<TextInputProps>;
   onChangeText: (text: string) => void;
   onEndEditing?: TextInputProps['onEndEditing'];
   validations?: {
-    allowCharacterRegex?: { match: RegExp };
-    maxLength?: { value: number };
+    onChange?: {
+      match?: RegExp;
+    };
   };
   value?: string;
 };
@@ -29,6 +35,7 @@ export type InlineFieldProps = {
 export default function InlineField({
   autoFocus,
   defaultValue,
+  errorMessage,
   label,
   onChangeText,
   placeholder,
@@ -37,6 +44,8 @@ export default function InlineField({
   onEndEditing,
   value,
 }: InlineFieldProps) {
+  const { colors } = useTheme();
+
   const paddingVertical = 17;
   const textStyle = useTextStyle({ size: `${textSize}px`, weight: 'bold' });
 
@@ -53,8 +62,8 @@ export default function InlineField({
 
   const handleChangeText = useCallback(
     text => {
-      const { allowCharacterRegex } = validations || {};
-      if (!allowCharacterRegex) {
+      const { onChange: { match = null } = {} } = validations || {};
+      if (!match) {
         onChangeText(text);
         return;
       }
@@ -62,7 +71,7 @@ export default function InlineField({
         onChangeText(text);
         return;
       }
-      if (allowCharacterRegex?.match.test(text)) {
+      if (match?.test(text)) {
         onChangeText(text);
         return;
       }
@@ -94,15 +103,37 @@ export default function InlineField({
     <Columns>
       <Column width="1/3">
         <Inset top="19px">
-          <Text size={`${textSize}px`} weight="heavy">
-            {label}
-          </Text>
+          <Inline space="4px">
+            <Text
+              {...(errorMessage && {
+                color: { custom: colors.red },
+              })}
+              size={`${textSize}px`}
+              weight="heavy"
+            >
+              {label}
+            </Text>
+            {errorMessage && (
+              <Bleed space="10px">
+                <ButtonPressAnimation onPress={() => Alert.alert(errorMessage)}>
+                  <Inset space="10px">
+                    <Text
+                      color={{ custom: colors.red }}
+                      size={`${textSize}px`}
+                      weight="heavy"
+                    >
+                      􀇿
+                    </Text>
+                  </Inset>
+                </ButtonPressAnimation>
+              </Bleed>
+            )}
+          </Inline>
         </Inset>
       </Column>
       <Input
         autoFocus={autoFocus}
         defaultValue={defaultValue}
-        maxLength={validations?.maxLength?.value}
         onChangeText={handleChangeText}
         onContentSizeChange={
           android && inputProps?.multiline ? handleContentSizeChange : undefined

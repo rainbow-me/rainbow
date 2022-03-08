@@ -4,11 +4,16 @@ import { useDispatch } from 'react-redux';
 import { atom, useRecoilState } from 'recoil';
 import { useENSRegistration } from '.';
 import { Records } from '@rainbow-me/entities';
-import { textRecordFields } from '@rainbow-me/helpers/ens';
+import { ENS_RECORDS, textRecordFields } from '@rainbow-me/helpers/ens';
 
 const disabledAtom = atom({
   default: false,
   key: 'ensProfileForm.disabled',
+});
+
+const errorsAtom = atom<{ [name: string]: string }>({
+  default: {},
+  key: 'ensProfileForm.errors',
 });
 
 const selectedFieldsAtom = atom({
@@ -49,6 +54,8 @@ export default function useENSRegistrationForm({
   );
 
   const dispatch = useDispatch();
+
+  const [errors, setErrors] = useRecoilState(errorsAtom);
 
   const [disabled, setDisabled] = useRecoilState(disabledAtom);
   useEffect(() => {
@@ -143,13 +150,20 @@ export default function useENSRegistrationForm({
 
   const onChangeField = useCallback(
     ({ key, value }) => {
+      if (!isEmpty(errors)) {
+        setErrors(errors => {
+          const newErrors = omit(errors, key);
+          return newErrors;
+        });
+      }
+
       setValuesMap(values => ({
         ...values,
         [name]: { ...values?.[name], [key]: value },
       }));
       updateRecordByKey(key, value);
     },
-    [name, setValuesMap, updateRecordByKey]
+    [errors, name, setErrors, setValuesMap, updateRecordByKey]
   );
 
   const blurFields = useCallback(() => {
@@ -167,9 +181,35 @@ export default function useENSRegistrationForm({
 
   const empty = useMemo(() => !Object.values(values).some(Boolean), [values]);
 
+  const submit = useCallback(
+    cb => {
+      const errors = Object.entries(textRecordFields).reduce(
+        (currentErrors, [key, { validations }]) => {
+          const { value: regex, message } = validations?.onSubmit?.match || {};
+          const value = values[key as ENS_RECORDS];
+          if (regex && value && !value.match(regex)) {
+            return {
+              ...currentErrors,
+              [key]: message,
+            };
+          }
+          return currentErrors;
+        },
+        {}
+      );
+      setErrors(errors);
+
+      if (isEmpty(errors)) {
+        cb();
+      }
+    },
+    [setErrors, values]
+  );
+
   return {
     blurFields,
     disabled,
+    errors,
     isEmpty: empty,
     isLoading,
     onAddField,
@@ -178,6 +218,7 @@ export default function useENSRegistrationForm({
     onRemoveField,
     selectedFields,
     setDisabled,
+    submit,
     values,
   };
 }

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { isEmpty } from 'lodash';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ViewProps } from 'react-native';
 import InlineField, { InlineFieldProps } from '../../inputs/InlineField';
 import Skeleton, { FakeText } from '../../skeleton/Skeleton';
@@ -14,17 +15,44 @@ import { useENSRegistrationForm } from '@rainbow-me/hooks';
 export default function TextRecordsForm({
   autoFocusKey,
   onAutoFocusLayout,
+  onError,
 }: {
   autoFocusKey?: boolean;
   onAutoFocusLayout?: ViewProps['onLayout'];
+  onError?: ({ yOffset }: { yOffset: number }) => void;
 }) {
   const {
+    errors,
     isLoading,
     selectedFields,
     onChangeField,
     onBlurField,
     values,
   } = useENSRegistrationForm();
+
+  const [yOffsets, setYOffsets] = useState<{ [key: string]: number }>({});
+
+  useEffect(() => {
+    if (!isEmpty(errors)) {
+      const firstErrorKey = Object.keys(errors)[0];
+      onError?.({ yOffset: yOffsets[firstErrorKey] || 0 });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [...Object.keys(errors), onError, yOffsets]);
+
+  const handleLayout = useCallback(
+    (e, key) => {
+      const yOffset = e.nativeEvent?.layout.y;
+      setYOffsets(yOffsets => ({
+        ...yOffsets,
+        [key]: yOffset,
+      }));
+      if (autoFocusKey === key) {
+        onAutoFocusLayout?.(e);
+      }
+    },
+    [autoFocusKey, onAutoFocusLayout]
+  );
 
   return (
     <Box>
@@ -44,13 +72,11 @@ export default function TextRecordsForm({
         <>
           {selectedFields.map(
             ({ label, inputProps, placeholder, validations, id, key }) => (
-              <Box
-                key={id}
-                onLayout={autoFocusKey === key ? onAutoFocusLayout : undefined}
-              >
+              <Box key={id} onLayout={e => handleLayout(e, key)}>
                 <Field
                   autoFocus={autoFocusKey === key}
                   defaultValue={values[key]}
+                  errorMessage={errors[key]}
                   inputProps={inputProps}
                   label={label}
                   onChangeText={text => onChangeField({ key, value: text })}
