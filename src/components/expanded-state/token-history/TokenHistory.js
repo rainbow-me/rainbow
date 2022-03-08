@@ -269,7 +269,7 @@ const TokenHistory = ({ contractAddress, tokenID, accentColor }) => {
                 width={{ custom: 10 }}
               />
             )}
-            <Inset top={{ custom: 8 }}>
+            <Inset top={{ custom: tokenHistory.length > 1 ? 8 : 0 }}>
               <Text weight="heavy" size="14px" color="accent">
                 {date}
               </Text>
@@ -304,13 +304,13 @@ const TokenHistory = ({ contractAddress, tokenID, accentColor }) => {
 
   return (
     <MaskedView
-      style={{ marginLeft: -19, marginRight: -19 }}
+      style={{ marginLeft: -24, marginRight: -24 }}
       maskElement={<TokenHistoryEdgeFade />}
     >
       <FlatList
         contentContainerStyle={{
-          paddingLeft: 19,
-          paddingRight: 19,
+          paddingRight: tokenHistory.length > 2 ? 24 : undefined,
+          paddingLeft: tokenHistory.length <= 2 ? 24 : undefined,
         }}
         data={tokenHistory}
         horizontal
