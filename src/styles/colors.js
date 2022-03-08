@@ -168,6 +168,7 @@ const getColorsByTheme = darkMode => {
   };
 
   let gradients = {
+    fadeOut: ['transparent', base.black],
     lighterGrey: [buildRgba('#ECF1F5', 0.15), buildRgba('#DFE4EB', 0.5)],
     lightestGrey: ['#FFFFFF', '#F2F4F7'],
     lightestGreyReverse: ['#F2F4F7', '#FFFFFF'],
@@ -266,6 +267,7 @@ const getColorsByTheme = darkMode => {
     };
 
     gradients = {
+      fadeOut: ['transparent', base.black],
       lighterGrey: [buildRgba('#1F222A', 0.8), buildRgba('#1F222A', 0.6)],
       lightestGrey: [buildRgba('#1F222A', 0.8), buildRgba('#1F222A', 0.3)],
       lightestGreyReverse: [

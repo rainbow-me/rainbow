@@ -27,6 +27,7 @@ import { EventTypes, PaymentTokens } from '@rainbow-me/utils/tokenHistoryUtils';
 import {
   AccentColorProvider,
   Box,
+  Cover,
   Inline,
   Inset,
   Stack,
@@ -269,7 +270,7 @@ const TokenHistory = ({ contractAddress, tokenID, accentColor }) => {
                 width={{ custom: 10 }}
               />
             )}
-            <Inset top={{ custom: shouldRenderPin ? 8 : 0 }}>
+            <Inset top={{ custom: shouldRenderPin ? 8 : 0.5 }}>
               <Text weight="heavy" size="14px" color="accent">
                 {date}
               </Text>
