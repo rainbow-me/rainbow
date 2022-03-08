@@ -23,7 +23,7 @@ function getEmoji(name) {
 }
 
 export default function Emoji({
-  children,
+  children = undefined,
   letterSpacing = 'zero',
   lineHeight = 'none',
   name,

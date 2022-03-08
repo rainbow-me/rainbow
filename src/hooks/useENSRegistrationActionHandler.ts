@@ -6,7 +6,7 @@ import {
   getENSRapEstimationByType,
   RapActionTypes,
 } from '../raps/common';
-import { useAccountSettings, useCurrentNonce, useENSProfile } from '.';
+import { useAccountSettings, useCurrentNonce, useENSRegistration } from '.';
 import { RegistrationParameters } from '@rainbow-me/entities';
 import { toHex, web3Provider } from '@rainbow-me/handlers/web3';
 import {
@@ -39,7 +39,7 @@ export default function useENSRegistrationActionHandler(
   const dispatch = useDispatch();
   const { accountAddress, network } = useAccountSettings();
   const getNextNonce = useCurrentNonce(accountAddress, network);
-  const { registrationParameters } = useENSProfile();
+  const { registrationParameters } = useENSRegistration();
   const [stepGasLimit, setStepGasLimit] = useState<string | null>(null);
   const [
     secondsSinceCommitConfirmed,

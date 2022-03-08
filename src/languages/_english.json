@@ -350,12 +350,24 @@
       },
       "unique_expanded": {
         "about": "About %{assetFamilyName}",
+        "advanced": "Advanced",
         "attributes": "Attributes",
+        "configuration": "Configuration",
+        "copy": "Copy",
         "description": "Description",
+        "edit": "Edit",
         "in_showcase": "In Showcase",
+        "opensea": "Opensea",
+        "owner": "Owner",
+        "profile_info": "Profile Info",
+        "properties": "Properties",
+        "registrant": "Registrant",
+        "resolver": "Resolver",
         "showcase": "Showcase",
         "toast_added_to_showcase": "Added to showcase",
-        "toast_removed_from_showcase": "Removed from showcase"
+        "toast_removed_from_showcase": "Removed from showcase",
+        "view_on_opensea": "View on Opensea",
+        "view_on_web": "View on Web"
       }
     },
     "fields": {
