@@ -175,7 +175,7 @@ export function Header() {
 
   return (
     <HeaderWrapper height={350} testID="showcase-header-wrapper">
-      <SheetHandle />
+      <SheetHandle style={{ marginTop: secondaryText ? -28 : -58 }} />
       <Spacer />
       <AvatarCircle
         image={null}
