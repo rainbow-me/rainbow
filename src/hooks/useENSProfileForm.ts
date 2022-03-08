@@ -98,7 +98,7 @@ export default function useENSProfileForm({
 
   // Set initial records in redux depending on user input (defaultFields)
   useEffect(() => {
-    if (defaultFields && !isEmpty(defaultRecords)) {
+    if (defaultFields && isEmpty(defaultRecords)) {
       const records = defaultFields.reduce((records, field) => {
         return {
           ...records,
