@@ -1,17 +1,28 @@
 import { useRoute } from '@react-navigation/core';
 import ConditionalWrap from 'conditional-wrap';
 import React, { useMemo } from 'react';
-import { View } from 'react-native';
-import RadialGradient from 'react-native-radial-gradient';
 import Spinner from '../components/Spinner';
+import Avatar from '../components/ens-profile/Avatar/Avatar';
+import CoverPhoto from '../components/ens-profile/Cover/Cover';
 import { SheetHandleFixedToTopHeight, SlackSheet } from '../components/sheet';
 import { sharedCoolModalTopOffset } from '../navigation/config';
 import { useTheme } from '@rainbow-me/context';
-import { BackgroundProvider, Box } from '@rainbow-me/design-system';
-import { useDimensions, useENSProfile } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
+import {
+  AccentColorProvider,
+  BackgroundProvider,
+  Bleed,
+  Box,
+  Inset,
+  Stack,
+  Text,
+} from '@rainbow-me/design-system';
+import {
+  useDimensions,
+  useENSProfile,
+  usePersistentDominantColorFromImage,
+} from '@rainbow-me/hooks';
 
-export default function RegisterENSNavigator() {
+export default function ProfileSheet() {
   const { params } = useRoute<any>();
   const { colors } = useTheme();
 
@@ -20,66 +31,60 @@ export default function RegisterENSNavigator() {
     deviceHeight - SheetHandleFixedToTopHeight - sharedCoolModalTopOffset;
 
   const profile = useENSProfile(params?.address);
+  const avatarUrl = profile.data?.images.avatarUrl;
+  const coverUrl = profile.data?.images.coverUrl;
+
+  const { result: dominantColor } = usePersistentDominantColorFromImage(
+    avatarUrl || ''
+  );
 
   const wrapperStyle = useMemo(() => ({ height: contentHeight }), [
     contentHeight,
   ]);
 
-  const accentColor = colors.appleBlue;
-
-  const coverUrl = profile.data?.images.coverUrl;
+  const accentColor = dominantColor || colors.appleBlue;
 
   return (
-    <BackgroundProvider color="body">
-      {({ backgroundColor }) => (
-        // @ts-expect-error JavaScript component
-        <SlackSheet
-          backgroundColor={backgroundColor}
-          contentHeight={contentHeight}
-          height="100%"
-          removeTopPadding
-          scrollEnabled
-        >
-          <ConditionalWrap
-            condition={profile.isLoading}
-            wrap={children => <Box style={wrapperStyle}>{children}</Box>}
+    <AccentColorProvider color={accentColor}>
+      <BackgroundProvider color="body">
+        {({ backgroundColor }) => (
+          // @ts-expect-error JavaScript component
+          <SlackSheet
+            backgroundColor={backgroundColor}
+            contentHeight={contentHeight}
+            height="100%"
+            removeTopPadding
+            scrollEnabled
           >
-            <>
-              {profile.isLoading ? (
-                <Box alignItems="center" height="full" justifyContent="center">
-                  <Spinner color={colors.appleBlue} size="large" />
-                </Box>
-              ) : (
-                <Box>
+            <ConditionalWrap
+              condition={profile.isLoading}
+              wrap={children => <Box style={wrapperStyle}>{children}</Box>}
+            >
+              <>
+                {profile.isLoading ? (
                   <Box
                     alignItems="center"
-                    as={ios ? RadialGradient : View}
-                    height="126px"
+                    height="full"
                     justifyContent="center"
-                    {...(ios
-                      ? {
-                          center: [80, 100],
-                          colors: [accentColor + '33', accentColor + '10'],
-                        }
-                      : {
-                          style: { backgroundColor: accentColor + '10' },
-                        })}
                   >
-                    {coverUrl && (
-                      <Box
-                        as={ImgixImage}
-                        height="126px"
-                        source={{ uri: coverUrl }}
-                        width="full"
-                      />
-                    )}
+                    <Spinner color={colors.appleBlue} size="large" />
                   </Box>
-                </Box>
-              )}
-            </>
-          </ConditionalWrap>
-        </SlackSheet>
-      )}
-    </BackgroundProvider>
+                ) : (
+                  <Stack space="19px">
+                    <CoverPhoto coverUrl={coverUrl} />
+                    <Bleed top={{ custom: 38 }}>
+                      <Inset left="19px">
+                        <Avatar avatarUrl={avatarUrl} />
+                      </Inset>
+                    </Bleed>
+                    <Text color="accent">test</Text>
+                  </Stack>
+                )}
+              </>
+            </ConditionalWrap>
+          </SlackSheet>
+        )}
+      </BackgroundProvider>
+    </AccentColorProvider>
   );
 }
