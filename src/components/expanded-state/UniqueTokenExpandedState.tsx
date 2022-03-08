@@ -333,7 +333,10 @@ const UniqueTokenExpandedState = ({
   const sheetRef = useRef();
   const yPosition = useSharedValue(0);
 
-  const isENSOwner = false;
+  const isENSOwner = useMemo(
+    () => isENS && ensProfile.data?.owner?.address === accountAddress,
+    [accountAddress, ensProfile.data?.owner?.address, isENS]
+  );
   const isActionsEnabled = !external && !isReadOnlyWallet;
   const hasSendButton = isActionsEnabled && isSendable;
   const hasEditButton = isActionsEnabled && isENS && isENSOwner;
