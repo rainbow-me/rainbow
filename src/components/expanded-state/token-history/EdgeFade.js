@@ -11,8 +11,8 @@ const Fade = ({ alignment }) => {
       as={LinearGradient}
       colors={
         alignment === 'right'
-          ? colors.gradients.fadeOut.splice().reverse()
-          : colors.gradients.fadeOut
+          ? colors.gradients.fadeOut
+          : colors.gradients.fadeIn
       }
       end={{ x: 1, y: 0.5 }}
       height="full"
@@ -25,7 +25,7 @@ const Fade = ({ alignment }) => {
   );
 };
 
-export default function TokenHistoryEdgeFade() {
+export default function EdgeFade() {
   const { width } = useDimensions();
   return (
     <View>

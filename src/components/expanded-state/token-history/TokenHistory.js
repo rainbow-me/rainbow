@@ -3,7 +3,7 @@ import MaskedView from '@react-native-community/masked-view';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FlatList } from 'react-native';
 import { ButtonPressAnimation } from '../../animations';
-import TokenHistoryEdgeFade from './TokenHistoryEdgeFade';
+import EdgeFade from './EdgeFade';
 import { useTheme } from '@rainbow-me/context/ThemeContext';
 import {
   AccentColorProvider,
@@ -304,7 +304,7 @@ const TokenHistory = ({ contractAddress, tokenID, accentColor }) => {
 
   return (
     <MaskedView
-      maskElement={<TokenHistoryEdgeFade />}
+      maskElement={<EdgeFade />}
       style={{ marginLeft: -24, marginRight: -24 }}
     >
       <FlatList
