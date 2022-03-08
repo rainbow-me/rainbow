@@ -298,7 +298,6 @@ export const updateRecordByKey = (
   const accountRegistrations = registrations?.[lcAccountAddress] || {};
   const registration = accountRegistrations[currentRegistrationName] || {};
   const registrationRecords = registration?.records || {};
-
   const updatedEnsRegistrationManagerForAccount = {
     registrations: {
       ...registrations,

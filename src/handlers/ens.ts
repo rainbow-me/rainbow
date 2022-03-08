@@ -309,26 +309,17 @@ export const estimateENSCommitGasLimit = async ({
 
 export const estimateENSSetTextGasLimit = async ({
   name,
-  recordKey,
-  recordValue,
+  ownerAddress,
+  records,
 }: {
   name: string;
-  recordKey: string;
-  recordValue: string;
+  ownerAddress: string;
+  records: ENSRegistrationRecords;
 }) =>
   estimateENSTransactionGasLimit({
     name,
-    records: {
-      coinAddress: null,
-      contentHash: null,
-      ensAssociatedAddress: null,
-      text: [
-        {
-          key: recordKey,
-          value: recordValue,
-        },
-      ],
-    },
+    ownerAddress,
+    records,
     type: ENSRegistrationTransactionType.SET_TEXT,
   });
 
@@ -346,14 +337,17 @@ export const estimateENSSetNameGasLimit = async ({
   });
 
 export const estimateENSMulticallGasLimit = async ({
+  ownerAddress,
   name,
   records,
 }: {
+  ownerAddress?: string;
   name: string;
   records: ENSRegistrationRecords;
 }) =>
   estimateENSTransactionGasLimit({
     name,
+    ownerAddress,
     records,
     type: ENSRegistrationTransactionType.MULTICALL,
   });
@@ -417,14 +411,14 @@ export const estimateENSRegistrationGasLimit = async (
   });
   // dummy multicall to estimate gas
   const multicallGasLimitPromise = estimateENSMulticallGasLimit({
-    name,
+    name: name + ENS_DOMAIN,
     records: {
-      coinAddress: null,
+      coinAddress: [],
       contentHash: null,
       ensAssociatedAddress: null,
       text: [
-        { key: 'key1', value: 'value1' },
-        { key: 'key2', value: 'value2' },
+        { key: 'me.rainbow.displayName', value: 'name' },
+        { key: 'description', value: 'description' },
         {
           key: 'cover',
           value:
@@ -493,6 +487,7 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
     promises.push(
       estimateENSMulticallGasLimit({
         name,
+        ownerAddress,
         records: ensRegistrationRecords,
       })
     );
@@ -501,6 +496,29 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
   const gasLimits = await Promise.all(promises);
   const gasLimit = gasLimits.reduce((a, b) => add(a || 0, b || 0));
   if (!gasLimit) return '0';
+  return gasLimit;
+};
+
+export const estimateENSRegisterSetRecords = async ({
+  name,
+  ownerAddress,
+  records,
+}: ENSActionParameters) => {
+  let gasLimit = null;
+  const ensRegistrationRecords = formatRecordsForTransaction(records);
+  const validRecords = recordsForTransactionAreValid(ensRegistrationRecords);
+  if (validRecords) {
+    const shouldUseMulticall = shouldUseMulticallTransaction(
+      ensRegistrationRecords
+    );
+    gasLimit = await (shouldUseMulticall
+      ? estimateENSMulticallGasLimit
+      : estimateENSSetTextGasLimit)({
+      name,
+      ownerAddress,
+      records: ensRegistrationRecords,
+    });
+  }
   return gasLimit;
 };
 

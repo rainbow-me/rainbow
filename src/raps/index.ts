@@ -8,4 +8,8 @@ export {
   createWithdrawFromCompoundRap,
 } from './withdrawFromCompound';
 export { executeRap, getSwapRapEstimationByType } from './common';
-export { createRegisterENSRap } from './registerENS';
+export {
+  createRegisterENSRap,
+  createCommitENSRap,
+  createSetRecordsENSRap,
+} from './registerENS';
