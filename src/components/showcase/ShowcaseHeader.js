@@ -170,7 +170,11 @@ export function Header() {
 
   return (
     <HeaderWrapper height={350} testID="showcase-header-wrapper">
-      <SheetHandle style={{ marginTop: secondaryText ? 24 : -4 }} />
+      <SheetHandle
+        style={{
+          marginTop: ios ? (secondaryText ? 24 : -4) : secondaryText ? 46 : 18,
+        }}
+      />
       <AvatarCircle
         image={null}
         onPress={() => {}}
