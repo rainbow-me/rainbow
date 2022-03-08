@@ -12,6 +12,33 @@ import {
   shouldUseMulticallTransaction,
 } from '@rainbow-me/handlers/ens';
 
+export const createSetRecordsENSRap = async (
+  ensActionParameters: ENSActionParameters
+) => {
+  let actions: RapENSAction[] = [];
+
+  const ensRegistrationRecords = formatRecordsForTransaction(
+    ensActionParameters.records
+  );
+  const validRecords = recordsForTransactionAreValid(ensRegistrationRecords);
+  if (validRecords) {
+    const shouldUseMulticall = shouldUseMulticallTransaction(
+      ensRegistrationRecords
+    );
+    const recordsAction = createNewENSAction(
+      shouldUseMulticall
+        ? RapActionTypes.multicallENS
+        : RapActionTypes.setTextENS,
+      ensActionParameters
+    );
+    actions = concat(actions, recordsAction);
+  }
+
+  // create the overall rap
+  const newRap = createNewRap(actions);
+  return newRap;
+};
+
 export const createRegisterENSRap = async (
   ensActionParameters: ENSActionParameters
 ) => {

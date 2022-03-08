@@ -65,9 +65,6 @@ export default function ENSConfirmRegisterSheet() {
   const prevStepGasLimit = usePrevious(stepGasLimit);
 
   const { blurFields, values } = useENSRegistrationForm();
-  useFocusEffect(() => {
-    blurFields();
-  });
   const avatarUrl = initialAvatarUrl || values.avatar;
 
   const name = ensName.replace(ENS_DOMAIN, '');
@@ -104,6 +101,10 @@ export default function ENSConfirmRegisterSheet() {
   ]);
 
   useEffect(() => startPollingGasFees(), [startPollingGasFees]);
+
+  useFocusEffect(() => {
+    blurFields();
+  });
 
   return (
     <SlackSheet
