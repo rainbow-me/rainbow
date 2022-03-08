@@ -5,7 +5,6 @@ import {
 } from '../helpers/emojiHandler';
 import { address } from '../utils/abbreviations';
 import { addressHashedEmoji } from '../utils/profileUtils';
-import networkTypes from './networkTypes';
 
 export function getAccountProfileInfo(
   selectedWallet,
@@ -39,11 +38,7 @@ export function getAccountProfileInfo(
   const labelWithoutEmoji = label && removeFirstEmojiFromString(label);
 
   const accountName =
-    network === networkTypes.mainnet
-      ? labelWithoutEmoji || accountENS || address(accountAddress, 4, 4)
-      : labelWithoutEmoji === accountENS
-      ? address(accountAddress, 4, 4)
-      : labelWithoutEmoji || address(accountAddress, 4, 4);
+    labelWithoutEmoji || accountENS || address(accountAddress, 4, 4);
 
   const emojiAvatar = returnStringFirstEmoji(label);
 

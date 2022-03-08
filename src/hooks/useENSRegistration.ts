@@ -1,100 +1,189 @@
-import { format } from 'date-fns';
-import { useCallback, useMemo } from 'react';
-import { useQuery } from 'react-query';
-import { useAccountSettings } from '.';
-import { fetchRegistrationDate } from '@rainbow-me/handlers/ens';
-import {
-  ENS_DOMAIN,
-  formatRentPrice,
-  getAvailable,
-  getNameExpires,
-  getRentPrice,
-} from '@rainbow-me/helpers/ens';
-import { Network } from '@rainbow-me/helpers/networkTypes';
-import { timeUnits } from '@rainbow-me/references';
-import { ethereumUtils, validateENS } from '@rainbow-me/utils';
-
-const formatTime = (timestamp: string, abbreviated: boolean = true) => {
-  const style = abbreviated ? 'MMM d, y' : 'MMMM d, y';
-  return format(new Date(Number(timestamp) * 1000), style);
-};
+import { differenceWith, isEqual } from 'lodash';
+import { useCallback, useEffect, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useAccountSettings, useENSProfile } from '.';
+import { ENSRegistrationState, Records } from '@rainbow-me/entities';
+import * as ensRedux from '@rainbow-me/redux/ensRegistration';
+import { AppState } from '@rainbow-me/redux/store';
+import { isENSNFTAvatar, parseENSNFTAvatar } from '@rainbow-me/utils';
 
 export default function useENSRegistration({
-  duration = 1,
-  name,
+  setInitialRecordsWhenInEditMode = false,
 }: {
-  duration?: number;
-  name: string;
-}) {
-  const { nativeCurrency } = useAccountSettings();
-  const isValidLength = useMemo(() => name.length > 2, [name.length]);
+  /** When true, an update to `initialRecords` will be triggered when the flow is in "edit mode". */
+  setInitialRecordsWhenInEditMode?: boolean;
+} = {}) {
+  const { accountAddress } = useAccountSettings();
 
-  const getRegistrationValues = useCallback(async () => {
-    const ensValidation = validateENS(`${name}.eth`, {
-      includeSubdomains: false,
-    });
+  const {
+    mode,
+    name,
+    initialRecords,
+    records,
+    registrationParameters,
+  } = useSelector(({ ensRegistration }: AppState) => {
+    const {
+      currentRegistrationName,
+      registrations,
+    } = ensRegistration as ENSRegistrationState;
+    const registrationParameters =
+      registrations?.[accountAddress?.toLowerCase()]?.[
+        currentRegistrationName
+      ] || {};
+    const initialRecords = registrationParameters?.initialRecords || {};
+    const records = registrationParameters?.records || {};
+    const mode = registrationParameters?.mode || {};
+    return {
+      initialRecords,
+      mode,
+      name: currentRegistrationName,
+      records,
+      registrationParameters,
+    };
+  });
 
-    if (!ensValidation.valid) {
-      return {
-        code: ensValidation.code,
-        hint: ensValidation.hint,
-        valid: false,
-      };
-    }
-
-    const isAvailable = await getAvailable(name);
-    if (isAvailable) {
-      const rentPrice = await getRentPrice(
-        name.replace(ENS_DOMAIN, ''),
-        duration * timeUnits.secs.year
-      );
-      const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
-        Network.mainnet
-      );
-      const formattedRentPrice = formatRentPrice(
-        rentPrice,
-        duration,
-        nativeCurrency,
-        nativeAssetPrice
-      );
-
-      return {
-        available: isAvailable,
-        rentPrice: formattedRentPrice,
-        valid: true,
-      };
-    } else {
-      // we need the expiration and registration date when is not available
-      const registrationDate = await fetchRegistrationDate(name + '.eth');
-      const nameExpires = await getNameExpires(name);
-      const formattedRegistrarionDate = formatTime(registrationDate, false);
-      const formattedExpirationDate = formatTime(nameExpires);
-
-      return {
-        available: isAvailable,
-        expirationDate: formattedExpirationDate,
-        registrationDate: formattedRegistrarionDate,
-        valid: true,
-      };
-    }
-  }, [duration, name, nativeCurrency]);
-
-  const { data, status, isIdle, isLoading } = useQuery(
-    ['getRegistrationValues', [duration, name, nativeCurrency]],
-    getRegistrationValues,
-    { enabled: isValidLength, retry: 0, staleTime: Infinity }
+  const dispatch = useDispatch();
+  const removeRecordByKey = useCallback(
+    (key: string) => dispatch(ensRedux.removeRecordByKey(accountAddress, key)),
+    [accountAddress, dispatch]
+  );
+  const startRegistration = useCallback(
+    (name: string, mode: 'create' | 'edit') =>
+      dispatch(ensRedux.startRegistration(accountAddress, name, mode)),
+    [accountAddress, dispatch]
+  );
+  const updateRecordByKey = useCallback(
+    (key: string, value: string) =>
+      dispatch(ensRedux.updateRecordByKey(accountAddress, key, value)),
+    [accountAddress, dispatch]
+  );
+  const updateRecords = useCallback(
+    (records: Records) =>
+      dispatch(ensRedux.updateRecords(accountAddress, records)),
+    [accountAddress, dispatch]
+  );
+  const clearCurrentRegistrationName = useCallback(
+    () => dispatch(ensRedux.clearCurrentRegistrationName()),
+    [dispatch]
   );
 
-  const isAvailable = status === 'success' && data?.available === true;
-  const isRegistered = status === 'success' && data?.available === false;
-  const isInvalid = status === 'success' && !data?.valid;
+  const profileQuery = useENSProfile(name, { enabled: mode === 'edit' });
+  useEffect(() => {
+    if (
+      setInitialRecordsWhenInEditMode &&
+      mode === 'edit' &&
+      profileQuery.isSuccess
+    ) {
+      dispatch(
+        ensRedux.setInitialRecords(
+          accountAddress,
+          profileQuery.data?.records as Records
+        )
+      );
+    }
+  }, [
+    accountAddress,
+    dispatch,
+    mode,
+    profileQuery.data?.records,
+    profileQuery.isSuccess,
+    setInitialRecordsWhenInEditMode,
+  ]);
+
+  // Since `records.avatar` is not a reliable source for an avatar URL
+  // (the avatar can be an NFT), then if the avatar is an NFT, we will
+  // parse it to obtain the URL.
+  const uniqueTokens = useSelector(
+    ({ uniqueTokens }: AppState) => uniqueTokens.uniqueTokens
+  );
+  const images = useMemo(() => {
+    let avatarUrl = profileQuery.data?.images?.avatarUrl;
+    let coverUrl = profileQuery.data?.images?.coverUrl;
+
+    if (records.avatar) {
+      const isNFTAvatar = isENSNFTAvatar(records.avatar);
+      if (isNFTAvatar) {
+        const { contractAddress, tokenId } = parseENSNFTAvatar(records?.avatar);
+        const uniqueToken = uniqueTokens.find(
+          token =>
+            token.asset_contract.address === contractAddress &&
+            token.id === tokenId
+        );
+        if (uniqueToken?.image_thumbnail_url) {
+          avatarUrl = uniqueToken?.image_thumbnail_url;
+        }
+      } else if (
+        records.avatar.startsWith('http') ||
+        (records.avatar.startsWith('/') &&
+          !records.avatar.match(/^\/(ipfs|ipns)/))
+      ) {
+        avatarUrl = records.avatar;
+      }
+    }
+
+    return {
+      avatarUrl,
+      coverUrl,
+    };
+  }, [
+    records.avatar,
+    profileQuery.data?.images?.avatarUrl,
+    profileQuery.data?.images?.coverUrl,
+    uniqueTokens,
+  ]);
+
+  // Derive the records that should be added or removed from the profile
+  // (these should be used for SET_TEXT txns instead of `records` to save
+  // gas).
+  const changedRecords = useMemo(() => {
+    const entriesToChange = differenceWith(
+      Object.entries(records),
+      Object.entries(initialRecords),
+      isEqual
+    ) as [keyof Records, string][];
+    const changedRecords = entriesToChange.reduce(
+      (recordsToAdd: Partial<Records>, [key, value]) => ({
+        ...recordsToAdd,
+        [key]: value,
+      }),
+      {}
+    );
+
+    const keysToRemove = differenceWith(
+      Object.keys(initialRecords),
+      Object.keys(records),
+      isEqual
+    ) as (keyof Records)[];
+    const removedRecords = keysToRemove.reduce(
+      (recordsToAdd: Partial<Records>, key) => ({
+        ...recordsToAdd,
+        [key]: '',
+      }),
+      {}
+    );
+
+    return {
+      ...changedRecords,
+      ...removedRecords,
+    };
+  }, [initialRecords, records]);
+  useEffect(() => {
+    dispatch(ensRedux.setChangedRecords(accountAddress, changedRecords));
+  }, [accountAddress, changedRecords, dispatch]);
 
   return {
-    data,
-    isAvailable,
-    isIdle,
-    isInvalid,
-    isLoading,
-    isRegistered,
+    changedRecords,
+    clearCurrentRegistrationName,
+    images,
+    initialRecords,
+    mode,
+    name,
+    profileQuery,
+    records,
+    registrationParameters,
+    removeRecordByKey,
+    startRegistration,
+    updateRecordByKey,
+    updateRecords,
   };
 }

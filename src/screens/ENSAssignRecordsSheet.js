@@ -1,3 +1,4 @@
+import { useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
@@ -42,8 +43,8 @@ import {
   textRecordFields,
 } from '@rainbow-me/helpers/ens';
 import {
-  useENSProfile,
-  useENSProfileForm,
+  useENSRegistration,
+  useENSRegistrationForm,
   useKeyboardHeight,
   usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
@@ -54,11 +55,12 @@ const AnimatedBox = Animated.createAnimatedComponent(Box);
 export const BottomActionHeight = ios ? 270 : 250;
 
 export default function ENSAssignRecordsSheet() {
+  const { params } = useRoute();
   const { colors } = useTheme();
-  const { name, mode } = useENSProfile({
+  const { name, mode } = useENSRegistration({
     setInitialRecordsWhenInEditMode: true,
   });
-  useENSProfileForm({
+  useENSRegistrationForm({
     createForm: true,
     defaultFields: [
       ENS_RECORDS.displayName,
@@ -81,6 +83,17 @@ export default function ENSAssignRecordsSheet() {
       setPrevDominantColor(dominantColor);
     }
   }, [colors.purple, dominantColor, prevDominantColor, setAccentColor]);
+
+  const handleAutoFocusLayout = useCallback(
+    ({
+      nativeEvent: {
+        layout: { y },
+      },
+    }) => {
+      params?.sheetRef.current.scrollTo({ y });
+    },
+    [params?.sheetRef]
+  );
 
   return (
     <AccentColorProvider color={accentColor}>
@@ -109,7 +122,10 @@ export default function ENSAssignRecordsSheet() {
                 )}
               </Stack>
               <Box flexGrow={1}>
-                <TextRecordsForm />
+                <TextRecordsForm
+                  autoFocusKey={params?.autoFocusKey}
+                  onAutoFocusLayout={handleAutoFocusLayout}
+                />
               </Box>
             </Stack>
           </Inset>
@@ -124,14 +140,14 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
   const keyboardHeight = useKeyboardHeight();
   const [accentColor] = useRecoilState(accentColorAtom);
 
-  const { mode, recordsQuery } = useENSProfile();
+  const { mode, profileQuery } = useENSRegistration();
   const {
     disabled,
     isEmpty,
     selectedFields,
     onAddField,
     onRemoveField,
-  } = useENSProfileForm();
+  } = useENSRegistrationForm();
 
   const handlePressBack = useCallback(() => {
     navigate(Routes.ENS_SEARCH_SHEET);
@@ -149,11 +165,11 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
   const [visible, setVisible] = useState(false);
   useEffect(() => {
     if (mode === 'edit') {
-      setTimeout(() => setVisible(recordsQuery.isSuccess), 200);
+      setTimeout(() => setVisible(profileQuery.isSuccess), 200);
     } else {
       setVisible(defaultVisible);
     }
-  }, [defaultVisible, mode, recordsQuery.isSuccess]);
+  }, [defaultVisible, mode, profileQuery.isSuccess]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {

@@ -142,7 +142,12 @@ export default function SettingsSection({
 }) {
   const isReviewAvailable = false;
   const { wallets, isReadOnlyWallet } = useWallets();
-  const { language, nativeCurrency, network } = useAccountSettings();
+  const {
+    language,
+    nativeCurrency,
+    network,
+    testnetsEnabled,
+  } = useAccountSettings();
   const { isNarrowPhone } = useDimensions();
   const isLanguageSelectionEnabled = useExperimentalFlag(LANGUAGE_SETTINGS);
 
@@ -243,20 +248,22 @@ export default function SettingsSection({
           >
             <ListItemArrowGroup>{nativeCurrency || ''}</ListItemArrowGroup>
           </ListItem>
-          <ListItem
-            icon={
-              <SettingIcon
-                source={isDarkMode ? NetworkIconDark : NetworkIcon}
-              />
-            }
-            label={lang.t('settings.network')}
-            onPress={onPressNetwork}
-            testID="network-section"
-          >
-            <ListItemArrowGroup>
-              {networkInfo?.[network]?.name}
-            </ListItemArrowGroup>
-          </ListItem>
+          {(testnetsEnabled || IS_DEV) && (
+            <ListItem
+              icon={
+                <SettingIcon
+                  source={isDarkMode ? NetworkIconDark : NetworkIcon}
+                />
+              }
+              label={lang.t('settings.network')}
+              onPress={onPressNetwork}
+              testID="network-section"
+            >
+              <ListItemArrowGroup>
+                {networkInfo?.[network]?.name}
+              </ListItemArrowGroup>
+            </ListItem>
+          )}
           <ListItem
             icon={
               <SettingIcon
@@ -351,18 +358,15 @@ export default function SettingsSection({
             />
           )}
         </ColumnWithDividers>
-        {IS_DEV && (
-          <Fragment>
-            <ListFooter height={10} />
-            <ListItem
-              icon={<Emoji name="construction" />}
-              label={lang.t('settings.developer')}
-              onPress={onPressDev}
-              testID="developer-section"
-            />
-          </Fragment>
-        )}
-
+        <Fragment>
+          <ListFooter height={10} />
+          <ListItem
+            icon={<Emoji name="construction" />}
+            label={lang.t('settings.developer')}
+            onPress={onPressDev}
+            testID="developer-section"
+          />
+        </Fragment>
         <VersionStampContainer>
           <AppVersionStamp />
         </VersionStampContainer>

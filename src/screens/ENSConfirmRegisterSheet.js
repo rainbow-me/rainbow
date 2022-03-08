@@ -24,11 +24,11 @@ import {
 } from '@rainbow-me/design-system';
 import { accentColorAtom, ENS_DOMAIN } from '@rainbow-me/helpers/ens';
 import {
-  useENSProfile,
-  useENSProfileForm,
   useENSRegistration,
   useENSRegistrationActionHandler,
   useENSRegistrationCosts,
+  useENSRegistrationForm,
+  useENSSearch,
   useGas,
   usePrevious,
 } from '@rainbow-me/hooks';
@@ -54,7 +54,7 @@ export default function ENSConfirmRegisterSheet() {
     images: { avatarUrl: initialAvatarUrl },
     name: ensName,
     mode,
-  } = useENSProfile();
+  } = useENSRegistration();
   const [gasLimit, setGasLimit] = useState();
   const [accentColor] = useRecoilState(accentColorAtom);
 
@@ -64,14 +64,14 @@ export default function ENSConfirmRegisterSheet() {
   });
   const prevStepGasLimit = usePrevious(stepGasLimit);
 
-  const { blurFields, values } = useENSProfileForm();
+  const { blurFields, values } = useENSRegistrationForm();
   useFocusEffect(() => {
     blurFields();
   });
   const avatarUrl = initialAvatarUrl || values.avatar;
 
   const name = ensName.replace(ENS_DOMAIN, '');
-  const { data: registrationData } = useENSRegistration({
+  const { data: registrationData } = useENSSearch({
     name,
   });
   const rentPrice = registrationData?.rentPrice;

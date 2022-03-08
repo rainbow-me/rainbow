@@ -73,6 +73,18 @@ const CURRENT_BASE_FEE_EXPLAINER_RISING = `\n\nFees are rising right now! It’s
 
 const CURRENT_BASE_FEE_EXPLAINER_SURGING = `\n\nFees are unusually high right now! Unless your transaction is urgent, it’s best to wait for fees to drop.`;
 
+const ENS_OWNER_TITLE = `Who is the .eth owner?`;
+
+const ENS_OWNER_EXPLAINER = `The owner of a .eth name is the entity referenced in the ENS (Ethereum Name Service) registry's owner field. An owner may transfer ownership, update profile records, as well as create or reassign subdomains`;
+
+const ENS_REGISTRANT_TITLE = `Who is the .eth registrant?`;
+
+const ENS_REGISTRANT_EXPLAINER = `The occupier of a .eth name registration. The registrant may transfer the registration or reclaim ownership of the name in the registry if required.`;
+
+const ENS_RESOLVER_TITLE = `What is a .eth resolver?`;
+
+const ENS_RESOLVER_EXPLAINER = `A resolver is a contract that maps from name to the resource (e.g., cryptocurrency addresses, content hash, etc). Resolvers are pointed to by the resolver field of the registry.`;
+
 const MAX_BASE_FEE_EXPLAINER = `This is the maximum base fee you’re willing to pay for this transaction.
 
 Setting a higher max base fee prevents your transaction from getting stuck if fees rise.`;
@@ -113,6 +125,24 @@ export const explainers = network => ({
     extraHeight: 2,
     text: gasExplainer(network),
     title: `${network} network fee`,
+  },
+  ens_owner: {
+    extraHeight: -40,
+    emoji: '❓',
+    text: ENS_OWNER_EXPLAINER,
+    title: ENS_OWNER_TITLE,
+  },
+  ens_registrant: {
+    extraHeight: -60,
+    emoji: '❓',
+    text: ENS_REGISTRANT_EXPLAINER,
+    title: ENS_REGISTRANT_TITLE,
+  },
+  ens_resolver: {
+    extraHeight: -60,
+    emoji: '❓',
+    text: ENS_RESOLVER_EXPLAINER,
+    title: ENS_RESOLVER_TITLE,
   },
   currentBaseFeeStable: {
     emoji: '🌞',
