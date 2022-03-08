@@ -5,9 +5,9 @@ import React, { useCallback, useContext, useEffect, useRef } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import Animated, {
   Easing,
-  repeat,
   useAnimatedStyle,
   useSharedValue,
+  withRepeat,
   withTiming,
 } from 'react-native-reanimated';
 import Spinner from '../../assets/chartSpinner.png';
@@ -143,7 +143,7 @@ const ExchangeSearch = (
     if ((isFetching || isSearching) && !isEmpty(searchQuery)) {
       clearTimeout(spinnerTimeout.current);
       spinnerRotation.value = 0;
-      spinnerRotation.value = repeat(
+      spinnerRotation.value = withRepeat(
         withTiming(360, rotationConfig),
         -1,
         false

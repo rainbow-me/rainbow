@@ -7,15 +7,16 @@ import { Modal } from '../components/modal';
 import ModalHeaderButton from '../components/modal/ModalHeaderButton';
 import {
   CurrencySection,
+  DevSection,
   LanguageSection,
   NetworkSection,
   PrivacySection,
   SettingsSection,
+  UserDevSection,
 } from '../components/settings-menu';
 import SettingsBackupView from '../components/settings-menu/BackupSection/SettingsBackupView';
 import ShowSecretView from '../components/settings-menu/BackupSection/ShowSecretView';
 import WalletSelectionView from '../components/settings-menu/BackupSection/WalletSelectionView';
-import DevSection from '../components/settings-menu/DevSection';
 import { useTheme } from '../context/ThemeContext';
 import WalletTypes from '../helpers/walletTypes';
 import { settingsOptions } from '../navigation/config';
@@ -74,7 +75,7 @@ const SettingsPages = {
     key: 'SettingsSection',
   },
   dev: {
-    component: IS_DEV ? DevSection : null,
+    component: IS_DEV ? DevSection : UserDevSection,
     getTitle: () => lang.t('settings.dev'),
     key: 'DevSection',
   },

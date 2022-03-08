@@ -36,6 +36,7 @@ import {
   magicMemo,
   showActionSheetWithOptions,
 } from '@rainbow-me/utils';
+import { getFullResUrl } from '@rainbow-me/utils/getFullResUrl';
 
 const AssetActionsEnum = {
   copyTokenID: 'copyTokenID',
@@ -259,7 +260,7 @@ const UniqueTokenExpandedStateHeader = ({
       } else if (actionKey === AssetActionsEnum.copyTokenID) {
         setClipboard(asset.id);
       } else if (actionKey === AssetActionsEnum.download) {
-        saveToCameraRoll(asset.image_url);
+        saveToCameraRoll(getFullResUrl(asset.image_url));
       }
     },
     [accountAddress, accountENS, asset, setClipboard]
@@ -367,7 +368,7 @@ const UniqueTokenExpandedStateHeader = ({
         } else if (isPhotoDownloadAvailable ? idx === 3 : idx === 2) {
           setClipboard(asset.id);
         } else if (idx === 2) {
-          saveToCameraRoll(asset.image_url);
+          saveToCameraRoll(getFullResUrl(asset.image_url));
         }
       }
     );

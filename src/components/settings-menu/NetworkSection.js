@@ -16,7 +16,7 @@ import {
 const networks = values(networkInfo).filter(network => !network.layer2);
 
 const NetworkSection = () => {
-  const { network } = useAccountSettings();
+  const { network, testnetsEnabled } = useAccountSettings();
   const resetAccountState = useResetAccountState();
   const loadAccountData = useLoadAccountData();
   const initializeAccountData = useInitializeAccountData();
@@ -38,8 +38,8 @@ const NetworkSection = () => {
   return (
     <RadioList
       extraData={network}
-      items={networks.map(({ disabled, name, value }) => ({
-        disabled,
+      items={networks.map(({ disabled, name, value, testnet }) => ({
+        disabled: (!testnetsEnabled && testnet) || disabled,
         key: value,
         label: name,
         selected: toLower(network) === toLower(value),
