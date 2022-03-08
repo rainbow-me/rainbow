@@ -260,7 +260,7 @@
     "timers-browserify": "1.4.2",
     "tty-browserify": "0.0.0",
     "url": "0.10.3",
-    "url-parse": "1.5.8",
+    "url-parse": "1.5.9",
     "use-debounce": "5.2.0",
     "use-deep-compare": "1.1.0",
     "use-memo-one": "1.1.1",
@@ -330,7 +330,7 @@
     "**/node-fetch": "2.6.7",
     "**/web3": "1.6.1",
     "**/underscore": "1.12.1",
-    "**/socket.io-parser": "3.3.1",
+    "**/socket.io-parser": "3.3.2",
     "**/bl": "2.2.1",
     "**/browserslist": "4.17.6",
     "**/elliptic": "6.5.4",
@@ -365,7 +365,8 @@
     "**/@ethersproject/**": "5.4.0",
     "**/follow-redirects": "1.14.8",
     "**/markdown-it": "12.3.2",
-    "**/simple-get": "4.0.1"
+    "**/simple-get": "4.0.1",
+    "**/ws": "6.2.2"
   },
   "jest": {
     "preset": "react-native",
