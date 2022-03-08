@@ -1,3 +1,4 @@
+import { captureException } from '@sentry/react-native';
 import { toLower } from 'lodash';
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'qs'.... Remove this comment to see the full error message
 import qs from 'qs';
@@ -21,6 +22,7 @@ import {
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils } from '@rainbow-me/utils';
+import logger from 'logger';
 
 export default async function handleDeeplink(
   url: any,
@@ -97,6 +99,9 @@ export default async function handleDeeplink(
               address: addressOrENS,
             });
           } else {
+            logger.sentry('Failed to handle url', url);
+            const error = new Error('Invalid deeplink');
+            captureException(error);
             Alert.alert('Uh oh! We couldn’t recognize this URL!');
           }
         }
