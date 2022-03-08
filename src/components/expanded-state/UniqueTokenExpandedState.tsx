@@ -233,7 +233,7 @@ const UniqueTokenExpandedState = ({
     colors.paleBlue;
 
   const lastSalePrice = lastPrice
-    ? `${parseFloat(lastPrice.split(' ')[0]).toPrecision(2)} ${
+    ? `${Number(parseFloat(lastPrice.split(' ')[0]).toPrecision(2))} ${
         lastPrice.split(' ')[1]
       }`
     : 'None';
