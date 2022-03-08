@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { find } from 'lodash';
+import { find, get } from 'lodash';
 import React, {
   useCallback,
   useContext,
@@ -38,6 +38,7 @@ import SocialLinks from './SocialLinks';
 import { ChartPathProvider } from '@rainbow-me/animated-charts';
 import { isL2Network } from '@rainbow-me/handlers/web3';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
+import networkInfo from '@rainbow-me/helpers/networkInfo';
 import {
   useAccountSettings,
   useAdditionalAssetData,
@@ -184,7 +185,7 @@ export default function ChartExpandedState({ asset }) {
   const genericAsset = useGenericAsset(asset?.address);
 
   const [carouselHeight, setCarouselHeight] = useState(defaultCarouselHeight);
-  const { nativeCurrency } = useAccountSettings();
+  const { nativeCurrency, network: currentNetwork } = useAccountSettings();
   const [additionalContentHeight, setAdditionalContentHeight] = useState(0);
 
   // If we don't have a balance for this asset
@@ -271,8 +272,10 @@ export default function ChartExpandedState({ asset }) {
   const uniswapAssetsInWallet = useUniswapAssetsInWallet();
   const showSwapButton = useMemo(
     () =>
-      !isL2 && find(uniswapAssetsInWallet, ['address', assetWithPrice.address]),
-    [assetWithPrice.address, isL2, uniswapAssetsInWallet]
+      !!get(networkInfo[currentNetwork], 'exchange_enabled') &&
+      !isL2 &&
+      find(uniswapAssetsInWallet, ['address', assetWithPrice.address]),
+    [assetWithPrice.address, currentNetwork, isL2, uniswapAssetsInWallet]
   );
 
   const needsEth =

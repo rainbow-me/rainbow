@@ -32,7 +32,13 @@ export { default as useDimensions } from './useDimensions';
 export { default as useDPI } from './useDPI';
 export { default as useEffectDebugger } from './useEffectDebugger';
 export { default as useEmailRainbow } from './useEmailRainbow';
-export { default as useENSProfileForm } from './useENSProfileForm';
+export { default as useENSPendingRegistrations } from './useENSPendingRegistrations';
+export { default as useENSProfile } from './useENSProfile';
+export { default as useENSRegistration } from './useENSRegistration';
+export { default as useENSRegistrationActionHandler } from './useENSRegistrationActionHandler';
+export { default as useENSRegistrationCosts } from './useENSRegistrationCosts';
+export { default as useENSRegistrationForm } from './useENSRegistrationForm';
+export { default as useENSSearch } from './useENSSearch';
 export { default as useExpandedStateNavigation } from './useExpandedStateNavigation';
 export { default as useGas } from './useGas';
 export { default as useGenericAsset } from './useGenericAsset';
@@ -124,8 +130,3 @@ export {
   useHardwareBackOnFocus,
 } from './useHardwareBack';
 export { default as useUniswapCurrencyList } from './useUniswapCurrencyList';
-export { default as useENSRegistration } from './useENSRegistration';
-export { default as useENSRegistrationCosts } from './useENSRegistrationCosts';
-export { default as useENSProfile } from './useENSProfile';
-export { default as useENSRegistrationActionHandler } from './useENSRegistrationActionHandler';
-export { default as useENSPendingRegistrations } from './useENSPendingRegistrations';

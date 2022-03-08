@@ -12,7 +12,11 @@ import { useNavigation } from './Navigation';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
 import { sharedCoolModalTopOffset } from './config';
 import { Box } from '@rainbow-me/design-system';
-import { useDimensions, useENSProfile, usePrevious } from '@rainbow-me/hooks';
+import {
+  useDimensions,
+  useENSRegistration,
+  usePrevious,
+} from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { deviceUtils } from '@rainbow-me/utils';
 
@@ -49,7 +53,10 @@ export default function RegisterENSNavigator() {
   const contentHeight =
     deviceHeight - SheetHandleFixedToTopHeight - sharedCoolModalTopOffset;
 
-  const { startRegistration, clearCurrentRegistrationName } = useENSProfile();
+  const {
+    startRegistration,
+    clearCurrentRegistrationName,
+  } = useENSRegistration();
 
   const initialRouteName = useMemo(() => {
     const { ensName, mode } = params || { mode: 'create' };
@@ -130,6 +137,10 @@ export default function RegisterENSNavigator() {
             />
             <Swipe.Screen
               component={ENSAssignRecordsSheet}
+              initialParams={{
+                autoFocusKey: params?.autoFocusKey,
+                sheetRef,
+              }}
               listeners={{
                 focus: () =>
                   setCurrentRouteName(Routes.ENS_ASSIGN_RECORDS_SHEET),

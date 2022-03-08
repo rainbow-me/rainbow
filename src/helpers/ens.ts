@@ -1,8 +1,8 @@
 import { formatsByName } from '@ensdomains/address-encoder';
 import { hash } from '@ensdomains/eth-ens-namehash';
 import { BigNumberish, Contract, Wallet } from 'ethers';
-import { keccak256, toUtf8Bytes } from 'ethers/lib/utils';
 import lang from 'i18n-js';
+import { TextInputProps } from 'react-native';
 import { atom } from 'recoil';
 import { InlineFieldProps } from '../components/inputs/InlineField';
 import {
@@ -29,6 +29,7 @@ import {
   ensReverseRegistrarAddress,
 } from '@rainbow-me/references';
 import { colors } from '@rainbow-me/styles';
+import { labelhash } from '@rainbow-me/utils';
 
 export enum ENSRegistrationTransactionType {
   COMMIT = 'commit',
@@ -38,16 +39,17 @@ export enum ENSRegistrationTransactionType {
   MULTICALL = 'multicall',
 }
 
-enum ENS_RECORDS {
+export enum ENS_RECORDS {
   ETH = 'ETH',
   BTC = 'BTC',
   LTC = 'LTC',
   DOGE = 'DOGE',
   displayName = 'me.rainbow.displayName',
-  cover = 'me.rainbow.cover',
+  cover = 'cover',
   content = 'content',
   email = 'email',
   url = 'url',
+  website = 'website',
   avatar = 'avatar',
   description = 'description',
   notice = 'notice',
@@ -71,7 +73,7 @@ export type TextRecordField = {
   validations?: InlineFieldProps['validations'];
 };
 
-const textRecordFields = {
+export const textRecordFields = {
   [ENS_RECORDS.displayName]: {
     id: 'name',
     inputProps: {
@@ -130,7 +132,7 @@ const textRecordFields = {
       maxLength: 20,
     },
     key: ENS_RECORDS.github,
-    label: 'Github',
+    label: 'GitHub',
     placeholder: lang.t('profiles.create.username_placeholder'),
   },
   [ENS_RECORDS.instagram]: {
@@ -170,7 +172,15 @@ const textRecordFields = {
     label: 'Discord',
     placeholder: lang.t('profiles.create.username_placeholder'),
   },
-} as const;
+} as {
+  [key in ENS_RECORDS]?: {
+    id: string;
+    inputProps: TextInputProps;
+    key: string;
+    label: string;
+    placeholder: string;
+  };
+};
 
 export const ENS_DOMAIN = '.eth';
 
@@ -223,9 +233,10 @@ const getAvailable = async (name: string): Promise<boolean> =>
   getENSRegistrarControllerContract().available(name);
 
 const getNameExpires = async (name: string): Promise<string> =>
-  getENSBaseRegistrarImplementationContract().nameExpires(
-    keccak256(toUtf8Bytes(name))
-  );
+  getENSBaseRegistrarImplementationContract().nameExpires(labelhash(name));
+
+const getNameOwner = async (name: string): Promise<string> =>
+  getENSRegistryContract().owner(hash(name));
 
 const getRentPrice = async (name: string, duration: number): Promise<any> =>
   getENSRegistrarControllerContract().rentPrice(name, duration);
@@ -507,7 +518,6 @@ const accentColorAtom = atom({
 });
 
 export {
-  ENS_RECORDS,
   getENSRecordKeys,
   getENSRecordValues,
   getENSRegistryContract,
@@ -518,8 +528,8 @@ export {
   getResolver,
   getAvailable,
   getNameExpires,
+  getNameOwner,
   getRentPrice,
-  textRecordFields,
   getENSExecutionDetails,
   formatEstimatedNetworkFee,
   formatTotalRegistrationCost,

@@ -29,7 +29,7 @@ import {
   web3Provider,
 } from '@rainbow-me/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
+import Network from '@rainbow-me/helpers/networkTypes';
 import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
 import {
   useAccountSettings,
@@ -298,16 +298,16 @@ export default function SendSheet(props) {
         let provider = web3Provider;
         switch (selected.type) {
           case AssetTypes.polygon:
-            setCurrentNetwork(networkTypes.polygon);
-            provider = await getProviderForNetwork(networkTypes.polygon);
+            setCurrentNetwork(Network.polygon);
+            provider = await getProviderForNetwork(Network.polygon);
             break;
           case AssetTypes.arbitrum:
-            setCurrentNetwork(networkTypes.arbitrum);
-            provider = await getProviderForNetwork(networkTypes.arbitrum);
+            setCurrentNetwork(Network.arbitrum);
+            provider = await getProviderForNetwork(Network.arbitrum);
             break;
           case AssetTypes.optimism:
-            setCurrentNetwork(networkTypes.optimism);
-            provider = await getProviderForNetwork(networkTypes.optimism);
+            setCurrentNetwork(Network.optimism);
+            provider = await getProviderForNetwork(Network.optimism);
             break;
           default:
             setCurrentNetwork(network);
@@ -470,7 +470,7 @@ export default function SendSheet(props) {
         );
 
         if (!lessThan(updatedGasLimit, gasLimit)) {
-          if (currentNetwork === networkTypes.optimism) {
+          if (currentNetwork === Network.optimism) {
             updateTxFeeForOptimism(updatedGasLimit);
           } else {
             updateTxFee(updatedGasLimit, null);
@@ -616,7 +616,7 @@ export default function SendSheet(props) {
     let label = 'Enter an Amount';
 
     let nativeToken = 'ETH';
-    if (currentNetwork === networkTypes.polygon) {
+    if (currentNetwork === Network.polygon) {
       nativeToken = 'MATIC';
     }
     if (
@@ -732,7 +732,7 @@ export default function SendSheet(props) {
 
   const [ensSuggestions, setEnsSuggestions] = useState([]);
   useEffect(() => {
-    if (network === networkTypes.mainnet && !recipientOverride) {
+    if (network === Network.mainnet && !recipientOverride) {
       debouncedFetchSuggestions(recipient, setEnsSuggestions);
     } else {
       setEnsSuggestions([]);
@@ -773,7 +773,7 @@ export default function SendSheet(props) {
         currentNetwork
       )
         .then(async gasLimit => {
-          if (currentNetwork === networkTypes.optimism) {
+          if (currentNetwork === Network.optimism) {
             updateTxFeeForOptimism(gasLimit);
           } else {
             updateTxFee(gasLimit, null);

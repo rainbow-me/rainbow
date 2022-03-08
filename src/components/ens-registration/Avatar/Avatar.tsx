@@ -12,8 +12,8 @@ import {
   useForegroundColor,
 } from '@rainbow-me/design-system';
 import {
-  useENSProfile,
-  useENSProfileForm,
+  useENSRegistration,
+  useENSRegistrationForm,
   useSelectImageMenu,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
@@ -28,8 +28,13 @@ export default function Avatar({
 }) {
   const {
     images: { avatarUrl: initialAvatarUrl },
-  } = useENSProfile();
-  const { isLoading, values, onBlurField, setDisabled } = useENSProfileForm();
+  } = useENSRegistration();
+  const {
+    isLoading,
+    values,
+    onBlurField,
+    setDisabled,
+  } = useENSRegistrationForm();
 
   const [avatarUrl, setAvatarUrl] = useState(
     initialAvatarUrl || values?.avatar

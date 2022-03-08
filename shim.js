@@ -8,6 +8,8 @@ import Storage from 'react-native-storage';
 import toLocaleStringPolyfill from '@rainbow-me/helpers/toLocaleStringPolyfill';
 import logger from 'logger';
 
+if (typeof BigInt === 'undefined') global.BigInt = require('big-integer');
+
 if (typeof btoa === 'undefined') {
   global.btoa = function (str) {
     return new Buffer(str, 'binary').toString('base64');

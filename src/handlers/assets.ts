@@ -22,6 +22,7 @@ const nativeAssetsPerNetwork = {
   [networkTypes.optimism]: OPTIMISM_ETH_ADDRESS,
   [networkTypes.polygon]: MATIC_POLYGON_ADDRESS,
   [networkTypes.ropsten]: ETH_ADDRESS,
+  [networkTypes.rinkeby]: ETH_ADDRESS,
 };
 
 export function isL2Asset(type: any) {
