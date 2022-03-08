@@ -5,10 +5,8 @@ import React, {
   Fragment,
   ReactNode,
   useCallback,
-  useEffect,
   useMemo,
   useRef,
-  useState,
 } from 'react';
 import { Linking, Share, View } from 'react-native';
 import Animated, {
@@ -22,6 +20,7 @@ import { lightModeThemeColors } from '../../styles/colors';
 import L2Disclaimer from '../L2Disclaimer';
 import Link from '../Link';
 import { ButtonPressAnimation } from '../animations';
+import ImgixImage from '../images/ImgixImage';
 import {
   SendActionButton,
   SheetActionButton,
@@ -29,16 +28,21 @@ import {
   SlackSheet,
 } from '../sheet';
 import { ToastPositionContainer, ToggleStateToast } from '../toasts';
-import { TokenInfoItem } from '../token-info';
 import { UniqueTokenAttributes, UniqueTokenImage } from '../unique-token';
+import AdvancedSection from './ens/AdvancedSection';
+import ConfigurationSection from './ens/ConfigurationSection';
+import ProfileInfoSection from './ens/ProfileInfoSection';
 import {
   UniqueTokenExpandedStateContent,
   UniqueTokenExpandedStateHeader,
 } from './unique-token';
+import ENSBriefTokenInfoRow from './unique-token/ENSBriefTokenInfoRow';
+import NFTBriefTokenInfoRow from './unique-token/NFTBriefTokenInfoRow';
 import { useTheme } from '@rainbow-me/context';
 import {
   AccentColorProvider,
   Bleed,
+  Box,
   ColorModeProvider,
   Columns,
   Divider,
@@ -53,12 +57,11 @@ import {
   TextProps,
 } from '@rainbow-me/design-system';
 import { AssetTypes, UniqueAsset } from '@rainbow-me/entities';
-import { apiGetUniqueTokenFloorPrice } from '@rainbow-me/handlers/opensea-api';
 import { buildUniqueTokenName } from '@rainbow-me/helpers/assets';
 import {
   useAccountProfile,
-  useAccountSettings,
   useDimensions,
+  useENSProfile,
   usePersistentDominantColorFromImage,
   useShowcaseTokens,
 } from '@rainbow-me/hooks';
@@ -66,10 +69,8 @@ import { useNavigation, useUntrustedUrlOpener } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
-import { convertAmountToNativeDisplay } from '@rainbow-me/utilities';
 import {
   buildRainbowUrl,
-  ethereumUtils,
   magicMemo,
   safeAreaInsetValues,
 } from '@rainbow-me/utils';
@@ -111,10 +112,14 @@ const TextButton = ({
   onPress,
   children,
   align,
+  size = '16px',
+  weight = 'heavy',
 }: {
   onPress: () => void;
   children: ReactNode;
   align?: TextProps['align'];
+  size?: TextProps['size'];
+  weight?: TextProps['weight'];
 }) => {
   const hitSlop: Space = '19px';
 
@@ -122,7 +127,7 @@ const TextButton = ({
     <Bleed space={hitSlop}>
       <ButtonPressAnimation onPress={onPress} scaleTo={0.88}>
         <Inset space={hitSlop}>
-          <Text align={align} color="accent" size="16px" weight="heavy">
+          <Text align={align} color="accent" size={size} weight={weight}>
             {children}
           </Text>
         </Inset>
@@ -138,14 +143,45 @@ const paragraphSpace: Space = '24px';
 const listSpace: Space = '19px';
 
 const Section = ({
+  addonComponent,
   title,
+  titleEmoji,
+  titleImageUrl,
   children,
 }: {
+  addonComponent?: React.ReactNode;
   title: string;
+  titleEmoji?: string;
+  titleImageUrl?: string | null;
   children: ReactNode;
 }) => (
   <Stack space={paragraphSpace}>
-    <Heading size={textSize}>{title}</Heading>
+    <Inline alignHorizontal="justify" alignVertical="center" wrap={false}>
+      <Inline alignVertical="center" space="8px">
+        <Box width={{ custom: 24 }}>
+          {titleImageUrl && (
+            <Bleed vertical="8px">
+              <Box
+                as={ImgixImage}
+                borderRadius={24}
+                height={{ custom: 24 }}
+                source={{ uri: titleImageUrl }}
+                width={{ custom: 24 }}
+              />
+            </Bleed>
+          )}
+          {titleEmoji && (
+            <Bleed right="1px">
+              <Heading containsEmoji size={ios ? '23px' : '20px'}>
+                {titleEmoji}
+              </Heading>
+            </Bleed>
+          )}
+        </Box>
+        <Heading size={textSize}>{title}</Heading>
+      </Inline>
+      {addonComponent}
+    </Inline>
     {children}
   </Stack>
 );
@@ -170,6 +206,12 @@ const Markdown = ({
   );
 };
 
+export enum UniqueTokenType {
+  NFT = 'NFT',
+  ENS = 'ENS',
+  POAP = 'POAP',
+}
+
 interface UniqueTokenExpandedStateProps {
   asset: UniqueAsset;
   external: boolean;
@@ -180,7 +222,6 @@ const UniqueTokenExpandedState = ({
   external,
 }: UniqueTokenExpandedStateProps) => {
   const { accountAddress, accountENS } = useAccountProfile();
-  const { nativeCurrency, network } = useAccountSettings();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { navigate } = useNavigation();
   const { colors, isDarkMode } = useTheme();
@@ -190,8 +231,8 @@ const UniqueTokenExpandedState = ({
     collection: { description: familyDescription, external_url: familyLink },
     currentPrice,
     description,
+    familyImage,
     familyName,
-    isPoap,
     isSendable,
     lastPrice,
     traits,
@@ -199,10 +240,22 @@ const UniqueTokenExpandedState = ({
     urlSuffixForAsset,
   } = asset;
 
-  const isENS = useMemo(
-    () => familyName === 'ENS' && uniqueId !== 'Unknown ENS name',
-    [familyName, uniqueId]
-  );
+  const uniqueTokenType = useMemo(() => {
+    if (asset.isPoap) return UniqueTokenType.POAP;
+    if (familyName === 'ENS' && uniqueId !== 'Unknown ENS name') {
+      return UniqueTokenType.ENS;
+    }
+    return UniqueTokenType.NFT;
+  }, [asset.isPoap, familyName, uniqueId]);
+
+  // Create deterministic boolean flags from the `uniqueTokenType` (for easier readability).
+  const isPoap = uniqueTokenType === UniqueTokenType.POAP;
+  const isENS = uniqueTokenType === UniqueTokenType.ENS;
+  const isNFT = uniqueTokenType === UniqueTokenType.NFT;
+
+  // Fetch the ENS profile if the unique token is an ENS name.
+  const ensProfile = useENSProfile(uniqueId, { enabled: isENS });
+  const ensData = ensProfile.data;
 
   const {
     addShowcaseToken,
@@ -210,9 +263,6 @@ const UniqueTokenExpandedState = ({
     showcaseTokens,
   } = useShowcaseTokens();
 
-  const [floorPrice, setFloorPrice] = useState<string | null>(null);
-  const [showCurrentPriceInEth, setShowCurrentPriceInEth] = useState(true);
-  const [showFloorInEth, setShowFloorInEth] = useState(true);
   const animationProgress = useSharedValue(0);
   const opacityStyle = useAnimatedStyle(() => ({
     opacity: 1 - animationProgress.value,
@@ -237,9 +287,6 @@ const UniqueTokenExpandedState = ({
     usePersistentDominantColorFromImage(asset.image_url).result ||
     colors.paleBlue;
 
-  const lastSalePrice = lastPrice || 'None';
-  const priceOfEth = ethereumUtils.getEthPriceUnit() as number;
-
   const textColor = useMemo(() => {
     const contrastWithWhite = c.contrast(imageColor, colors.whiteLabel);
 
@@ -249,20 +296,6 @@ const UniqueTokenExpandedState = ({
       return colors.whiteLabel;
     }
   }, [colors.whiteLabel, imageColor]);
-
-  useEffect(() => {
-    !isPoap &&
-      asset.network !== AssetTypes.polygon &&
-      apiGetUniqueTokenFloorPrice(network, urlSuffixForAsset).then(result => {
-        setFloorPrice(result);
-      });
-  }, [asset.network, isPoap, network, urlSuffixForAsset]);
-
-  const handlePressCollectionFloor = useCallback(() => {
-    navigate(Routes.EXPLAIN_SHEET, {
-      type: 'floor_price',
-    });
-  }, [navigate]);
 
   const handlePressOpensea = useCallback(
     () => Linking.openURL(asset.permalink),
@@ -295,16 +328,6 @@ const UniqueTokenExpandedState = ({
       });
     }
   }, [isENS, navigate, uniqueId]);
-
-  const toggleCurrentPriceDisplayCurrency = useCallback(
-    () => setShowCurrentPriceInEth(!showCurrentPriceInEth),
-    [showCurrentPriceInEth, setShowCurrentPriceInEth]
-  );
-
-  const toggleFloorDisplayCurrency = useCallback(
-    () => setShowFloorInEth(!showFloorInEth),
-    [showFloorInEth, setShowFloorInEth]
-  );
 
   const sheetRef = useRef();
   const yPosition = useSharedValue(0);
@@ -392,13 +415,15 @@ const UniqueTokenExpandedState = ({
                     </Inline>
                     <UniqueTokenExpandedStateHeader asset={asset} />
                   </Stack>
-                  {!isPoap ? (
+                  {isNFT || isENS ? (
                     <Columns space="15px">
                       {hasEditButton ? (
                         <SheetActionButton
                           color={imageColor}
                           // @ts-expect-error JavaScript component
-                          label="􀉮 Edit"
+                          label={`􀉮 ${lang.t(
+                            'expanded_state.unique_expanded.edit'
+                          )}`}
                           nftShadows
                           onPress={handlePressEdit}
                           textColor={textColor}
@@ -409,7 +434,13 @@ const UniqueTokenExpandedState = ({
                           color={imageColor}
                           // @ts-expect-error JavaScript component
                           label={
-                            hasSendButton ? '􀮶 OpenSea' : '􀮶 View on OpenSea'
+                            hasSendButton
+                              ? `􀮶 ${lang.t(
+                                  'expanded_state.unique_expanded.opensea'
+                                )}`
+                              : `􀮶 ${lang.t(
+                                  'expanded_state.unique_expanded.view_on_opensea'
+                                )}`
                           }
                           nftShadows
                           onPress={handlePressOpensea}
@@ -444,90 +475,118 @@ const UniqueTokenExpandedState = ({
                     separator={<Divider color="divider20" />}
                     space={sectionSpace}
                   >
-                    {!isPoap && asset.network !== AssetTypes.polygon ? (
+                    {(isNFT || isENS) &&
+                    asset.network !== AssetTypes.polygon ? (
                       <Bleed // Manually crop surrounding space until TokenInfoItem uses design system components
                         bottom={android ? '15px' : '6px'}
                         top={android ? '10px' : '4px'}
                       >
-                        <Columns space="19px">
-                          {/* @ts-expect-error JavaScript component */}
-                          <TokenInfoItem
-                            color={
-                              lastSalePrice === 'None' && !currentPrice
-                                ? colors.alpha(colors.whiteLabel, 0.5)
-                                : colors.whiteLabel
+                        {isNFT && (
+                          <NFTBriefTokenInfoRow
+                            currentPrice={currentPrice}
+                            lastPrice={lastPrice}
+                            network={asset.network}
+                            urlSuffixForAsset={urlSuffixForAsset}
+                          />
+                        )}
+                        {isENS && (
+                          <ENSBriefTokenInfoRow
+                            expiryDate={ensData?.registration.expiryDate}
+                            registrationDate={
+                              ensData?.registration.registrationDate
                             }
-                            enableHapticFeedback={!!currentPrice}
-                            isNft
-                            onPress={toggleCurrentPriceDisplayCurrency}
-                            size="big"
-                            title={
-                              currentPrice ? '􀋢 For sale' : 'Last sale price'
-                            }
-                            weight={
-                              lastSalePrice === 'None' && !currentPrice
-                                ? 'bold'
-                                : 'heavy'
-                            }
-                          >
-                            {showCurrentPriceInEth ||
-                            nativeCurrency === 'ETH' ||
-                            !currentPrice
-                              ? currentPrice || lastSalePrice
-                              : convertAmountToNativeDisplay(
-                                  // @ts-expect-error currentPrice is a number?
-                                  parseFloat(currentPrice) * priceOfEth,
-                                  nativeCurrency
-                                )}
-                          </TokenInfoItem>
-                          {/* @ts-expect-error JavaScript component */}
-                          <TokenInfoItem
-                            align="right"
-                            color={
-                              floorPrice === 'None'
-                                ? colors.alpha(colors.whiteLabel, 0.5)
-                                : colors.whiteLabel
-                            }
-                            enableHapticFeedback={floorPrice !== 'None'}
-                            isNft
-                            loading={!floorPrice}
-                            onInfoPress={handlePressCollectionFloor}
-                            onPress={toggleFloorDisplayCurrency}
-                            showInfoButton
-                            size="big"
-                            title="Floor price"
-                            weight={floorPrice === 'None' ? 'bold' : 'heavy'}
-                          >
-                            {showFloorInEth ||
-                            nativeCurrency === 'ETH' ||
-                            floorPrice === 'None' ||
-                            floorPrice === null
-                              ? floorPrice
-                              : convertAmountToNativeDisplay(
-                                  parseFloat(floorPrice) * priceOfEth,
-                                  nativeCurrency
-                                )}
-                          </TokenInfoItem>
-                        </Columns>
+                          />
+                        )}
                       </Bleed>
                     ) : null}
-                    {description ? (
-                      <Section title="Description">
-                        <Markdown>{description}</Markdown>
-                      </Section>
-                    ) : null}
-                    {traits.length ? (
-                      <Section title="Properties">
-                        <UniqueTokenAttributes
-                          {...asset}
-                          color={imageColor}
-                          disableMenu={isPoap}
-                          slug={asset.collection.slug}
-                        />
-                      </Section>
-                    ) : null}
+                    {(isNFT || isPoap) && (
+                      <>
+                        {description ? (
+                          <Section
+                            title={`${lang.t(
+                              'expanded_state.unique_expanded.description'
+                            )}`}
+                            titleEmoji="📖"
+                          >
+                            <Markdown>{description}</Markdown>
+                          </Section>
+                        ) : null}
+                        {traits.length ? (
+                          <Section
+                            title={`${lang.t(
+                              'expanded_state.unique_expanded.properties'
+                            )}`}
+                            titleEmoji="🎨"
+                          >
+                            <UniqueTokenAttributes
+                              {...asset}
+                              color={imageColor}
+                              disableMenu={isPoap}
+                              slug={asset.collection.slug}
+                            />
+                          </Section>
+                        ) : null}
+                      </>
+                    )}
+                    {isENS && (
+                      <>
+                        <Section
+                          addonComponent={
+                            hasEditButton && (
+                              <TextButton
+                                align="right"
+                                onPress={handlePressEdit}
+                                size="18px"
+                                weight="bold"
+                              >
+                                {lang.t('expanded_state.unique_expanded.edit')}
+                              </TextButton>
+                            )
+                          }
+                          title={`${lang.t(
+                            'expanded_state.unique_expanded.profile_info'
+                          )}`}
+                          titleEmoji="🤿"
+                        >
+                          <ProfileInfoSection
+                            allowEdit={hasEditButton}
+                            coinAddresses={ensData?.coinAddresses}
+                            ensName={uniqueId}
+                            images={ensData?.images}
+                            isLoading={ensProfile.isLoading}
+                            records={ensData?.records}
+                          />
+                        </Section>
+                        <Section
+                          title={`${lang.t(
+                            'expanded_state.unique_expanded.configuration'
+                          )}`}
+                          titleEmoji="⚙️"
+                        >
+                          <ConfigurationSection
+                            isLoading={ensProfile.isLoading}
+                            owner={ensData?.owner}
+                            registrant={ensData?.registrant}
+                          />
+                        </Section>
+                        <Section
+                          title={`${lang.t(
+                            'expanded_state.unique_expanded.advanced'
+                          )}`}
+                          titleEmoji="👽"
+                        >
+                          <AdvancedSection resolver={ensData?.resolver} />
+                        </Section>
+                      </>
+                    )}
                     {familyDescription ? (
-                      <Section title={`About ${familyName}`}>
+                      <Section
+                        title={`${lang.t(
+                          'expanded_state.unique_expanded.about',
+                          { assetFamilyName: familyName }
+                        )}`}
+                        titleImageUrl={familyImage}
+                      >
                         <Stack space={sectionSpace}>
                           <Markdown>{familyDescription}</Markdown>
                           {familyLink ? (

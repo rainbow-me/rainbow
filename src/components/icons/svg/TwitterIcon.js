@@ -2,7 +2,11 @@ import React from 'react';
 import { Path } from 'react-native-svg';
 import Svg from '../Svg';
 
-const TwitterIcon = ({ colors, color = colors.black, ...props }) => {
+const TwitterIcon = ({
+  colors = undefined,
+  color = colors.black,
+  ...props
+}) => {
   return (
     <Svg height="21" viewBox="0 -2 16 21" width="21" {...props}>
       <Path
