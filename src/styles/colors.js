@@ -32,6 +32,7 @@ const darkModeColors = {
   lightOrange: '#FFA64D',
   offWhite: '#1F222A',
   offWhite80: '#1C1F27',
+  placeholder: 'rgba(224, 232, 255, 0.4)',
   rowDivider: 'rgba(60, 66, 82, 0.075)',
   rowDividerExtraLight: 'rgba(60, 66, 82, 0.0375)',
   rowDividerFaint: 'rgba(60, 66, 82, 0.025)',
