@@ -62,6 +62,8 @@ const messages = {
     APPENDED: 'appended address transactions',
     CHANGED: 'changed address transactions',
     RECEIVED: 'received address transactions',
+    RECEIVED_ARBITRUM: 'received address arbitrum-transactions',
+    RECEIVED_POLYGON: 'received address polygon-transactions',
     REMOVED: 'removed address transactions',
   },
   ASSET_CHARTS: {
