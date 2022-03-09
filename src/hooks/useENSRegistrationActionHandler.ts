@@ -1,5 +1,5 @@
 import { differenceInSeconds } from 'date-fns';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import {
   ENSActionParameters,
@@ -61,6 +61,8 @@ export default function useENSRegistrationActionHandler(
         )
       : -1
   );
+
+  const timedPolled = useRef(0);
 
   const commitAction = useCallback(
     async (callback: () => void) => {
@@ -258,10 +260,10 @@ export default function useENSRegistrationActionHandler(
       );
       const block = await web3Provider.getBlock(tx.blockHash || '');
       const blockTimestamp = block?.timestamp;
-      if (blockTimestamp) {
+      if (timedPolled.current > 1 && blockTimestamp) {
         const commitTransactionConfirmedAt = blockTimestamp * 1000;
         const now = Date.now();
-        const secs = differenceInSeconds(now, commitTransactionConfirmedAt);
+        const secs = differenceInSeconds(now, now);
         setSecondsSinceCommitConfirmed(secs);
         dispatch(
           updateTransactionRegistrationParameters(accountAddress, {
@@ -269,6 +271,8 @@ export default function useENSRegistrationActionHandler(
           })
         );
         confirmed = true;
+      } else {
+        timedPolled.current += 1;
       }
     } catch (e) {
       //
