@@ -516,6 +516,11 @@ const listenOnAddressMessages = socket => dispatch => {
     dispatch(transactionsReceived(message));
   });
 
+  socket.on(messages.ADDRESS_TRANSACTIONS.RECEIVED_ARBITRUM, message => {
+    // logger.log('txns received', message?.payload?.transactions);
+    dispatch(transactionsReceived(message));
+  });
+
   socket.on(messages.ADDRESS_TRANSACTIONS.APPENDED, message => {
     logger.log('txns appended', message?.payload?.transactions);
     dispatch(transactionsReceived(message, true));
