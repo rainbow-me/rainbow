@@ -51,46 +51,6 @@ export const ENSConfirmRegisterSheetHeight = 600;
 export const ENSConfirmUpdateSheetHeight = 400;
 const avatarSize = 70;
 
-const CostsPanel = ({ mode, registrationCostsData, duration, setDuration }) => {
-  return (
-    <Stack space="34px">
-      {mode === 'create' && (
-        <>
-          <Inline
-            alignHorizontal="center"
-            alignVertical="center"
-            space="6px"
-            wrap={false}
-          >
-            <Box>
-              <ImgixImage source={brain} style={{ height: 20, width: 20 }} />
-            </Box>
-            <Text color="secondary50" size="14px" weight="heavy">
-              {lang.t('profiles.confirm.suggestion')}
-            </Text>
-          </Inline>
-          <RegistrationReviewRows
-            duration={duration}
-            estimatedCostETH={
-              registrationCostsData?.estimatedTotalRegistrationCost?.eth
-            }
-            maxDuration={99}
-            networkFee={registrationCostsData?.estimatedNetworkFee?.display}
-            onChangeDuration={setDuration}
-            registrationFee={
-              registrationCostsData?.estimatedRentPrice?.total?.display
-            }
-            totalCost={
-              registrationCostsData?.estimatedTotalRegistrationCost?.display
-            }
-          />
-          <Divider color="divider40" />
-        </>
-      )}
-      {mode === 'edit' && <Text>TODO</Text>}
-    </Stack>
-  );
-};
 export default function ENSConfirmRegisterSheet() {
   const { params } = useRoute();
   const { gasFeeParamsBySpeed, updateTxFee, startPollingGasFees } = useGas();
@@ -209,47 +169,78 @@ export default function ENSConfirmRegisterSheet() {
                 </Inset>
               </Box>
             </Row>
+
             <Row>
               <Inset horizontal="30px">
-                <CostsPanel
-                  duration={duration}
-                  mode={mode}
-                  registrationCostsData={registrationCostsData}
-                  setDuration={setDuration}
-                />
+                <Stack space="34px">
+                  {mode === 'create' && (
+                    <>
+                      <Inline
+                        alignHorizontal="center"
+                        alignVertical="center"
+                        space="6px"
+                        wrap={false}
+                      >
+                        <Box>
+                          <ImgixImage
+                            source={brain}
+                            style={{ height: 20, width: 20 }}
+                          />
+                        </Box>
+                        <Text color="secondary50" size="14px" weight="heavy">
+                          {lang.t('profiles.confirm.suggestion')}
+                        </Text>
+                      </Inline>
+                      <RegistrationReviewRows
+                        duration={duration}
+                        estimatedCostETH={
+                          registrationCostsData?.estimatedTotalRegistrationCost
+                            ?.eth
+                        }
+                        maxDuration={99}
+                        networkFee={
+                          registrationCostsData?.estimatedNetworkFee?.display
+                        }
+                        onChangeDuration={setDuration}
+                        registrationFee={
+                          registrationCostsData?.estimatedRentPrice?.total
+                            ?.display
+                        }
+                        totalCost={
+                          registrationCostsData?.estimatedTotalRegistrationCost
+                            ?.display
+                        }
+                      />
+                      <Divider color="divider40" />
+                    </>
+                  )}
+                  {mode === 'edit' && <Text>TODO</Text>}
+                </Stack>
               </Inset>
             </Row>
 
             <Row height="content">
-              {action ? (
-                <>
-                  <Box>
-                    <SheetActionButtonRow paddingBottom={5}>
-                      <HoldToAuthorizeButton
-                        color={accentColor}
-                        hideInnerBorder
-                        isLongPressAvailableForBiometryType
-                        label={step}
-                        onLongPress={action}
-                        parentHorizontalPadding={19}
-                        showBiometryIcon
-                      />
-                    </SheetActionButtonRow>
-                  </Box>
-                  <Box alignItems="center" justifyContent="center">
-                    <GasSpeedButton
-                      borderColor={accentColor}
-                      currentNetwork="mainnet"
-                      marginBottom={0}
-                      theme="light"
-                    />
-                  </Box>
-                </>
-              ) : (
-                <Box alignItems="center">
-                  <LoadingSpinner />
-                </Box>
-              )}
+              <Box>
+                <SheetActionButtonRow paddingBottom={5}>
+                  <HoldToAuthorizeButton
+                    color={accentColor}
+                    hideInnerBorder
+                    isLongPressAvailableForBiometryType
+                    label={step}
+                    onLongPress={action}
+                    parentHorizontalPadding={19}
+                    showBiometryIcon
+                  />
+                </SheetActionButtonRow>
+              </Box>
+              <Box alignItems="center" justifyContent="center">
+                <GasSpeedButton
+                  borderColor={accentColor}
+                  currentNetwork="mainnet"
+                  marginBottom={0}
+                  theme="light"
+                />
+              </Box>
             </Row>
           </Rows>
         </Box>
