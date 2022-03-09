@@ -4,7 +4,6 @@ import RadialGradient from 'react-native-radial-gradient';
 import Spinner from '../../Spinner';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import Skeleton from '../../skeleton/Skeleton';
-import { useTheme } from '@rainbow-me/context';
 import {
   Box,
   Cover,
@@ -18,10 +17,7 @@ import {
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 
-const alpha = '33';
-
 export default function CoverPhoto() {
-  const { colors } = useTheme();
   const {
     images: { coverUrl: initialCoverUrl },
   } = useENSRegistration();
@@ -77,7 +73,7 @@ export default function CoverPhoto() {
           justifyContent="center"
           {...(ios
             ? {
-                colors: [colors.whiteLabel + alpha, accentColor + alpha],
+                colors: [accentColor + '10', accentColor + '33'],
                 stops: [0.6, 0],
               }
             : {
