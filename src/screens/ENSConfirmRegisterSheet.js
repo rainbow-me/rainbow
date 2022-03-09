@@ -37,18 +37,9 @@ import {
   usePrevious,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
-import styled from '@rainbow-me/styled-components';
-
-const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
-  ({ theme: { colors } }) => ({
-    color: colors.alpha(colors.blueGreyDark, 0.3),
-  })
-)({
-  marginRight: 2,
-});
 
 export const ENSConfirmRegisterSheetHeight = 600;
-export const ENSConfirmUpdateSheetHeight = 400;
+export const ENSConfirmUpdateSheetHeight = 600;
 const avatarSize = 70;
 
 export default function ENSConfirmRegisterSheet() {
@@ -173,48 +164,41 @@ export default function ENSConfirmRegisterSheet() {
             <Row>
               <Inset horizontal="30px">
                 <Stack space="34px">
-                  {mode === 'create' && (
-                    <>
-                      <Inline
-                        alignHorizontal="center"
-                        alignVertical="center"
-                        space="6px"
-                        wrap={false}
-                      >
-                        <Box>
-                          <ImgixImage
-                            source={brain}
-                            style={{ height: 20, width: 20 }}
-                          />
-                        </Box>
-                        <Text color="secondary50" size="14px" weight="heavy">
-                          {lang.t('profiles.confirm.suggestion')}
-                        </Text>
-                      </Inline>
-                      <RegistrationReviewRows
-                        duration={duration}
-                        estimatedCostETH={
-                          registrationCostsData?.estimatedTotalRegistrationCost
-                            ?.eth
-                        }
-                        maxDuration={99}
-                        networkFee={
-                          registrationCostsData?.estimatedNetworkFee?.display
-                        }
-                        onChangeDuration={setDuration}
-                        registrationFee={
-                          registrationCostsData?.estimatedRentPrice?.total
-                            ?.display
-                        }
-                        totalCost={
-                          registrationCostsData?.estimatedTotalRegistrationCost
-                            ?.display
-                        }
+                  <Inline
+                    alignHorizontal="center"
+                    alignVertical="center"
+                    space="6px"
+                    wrap={false}
+                  >
+                    <Box>
+                      <ImgixImage
+                        source={brain}
+                        style={{ height: 20, width: 20 }}
                       />
-                      <Divider color="divider40" />
-                    </>
-                  )}
-                  {mode === 'edit' && <Text>TODO</Text>}
+                    </Box>
+                    <Text color="secondary50" size="14px" weight="heavy">
+                      {lang.t('profiles.confirm.suggestion')}
+                    </Text>
+                  </Inline>
+                  <RegistrationReviewRows
+                    duration={duration}
+                    estimatedCostETH={
+                      registrationCostsData?.estimatedTotalRegistrationCost?.eth
+                    }
+                    maxDuration={99}
+                    networkFee={
+                      registrationCostsData?.estimatedNetworkFee?.display
+                    }
+                    onChangeDuration={setDuration}
+                    registrationFee={
+                      registrationCostsData?.estimatedRentPrice?.total?.display
+                    }
+                    totalCost={
+                      registrationCostsData?.estimatedTotalRegistrationCost
+                        ?.display
+                    }
+                  />
+                  <Divider color="divider40" />
                 </Stack>
               </Inset>
             </Row>
