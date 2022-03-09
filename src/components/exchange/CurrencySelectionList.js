@@ -1,5 +1,6 @@
 import { get } from 'lodash';
 import React, { forwardRef } from 'react';
+import Animated, { FadeIn } from 'react-native-reanimated';
 import { magicMemo } from '../../utils';
 import { EmptyAssetList } from '../asset-list';
 import { Centered } from '../layout';
@@ -9,6 +10,7 @@ import ExchangeAssetList from './ExchangeAssetList';
 import { ExchangeSearchHeight } from './ExchangeSearch';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
+import { View } from 'react-native';
 
 const EmptyCurrencySelectionList = styled(EmptyAssetList).attrs({
   pointerEvents: 'none',
@@ -39,9 +41,12 @@ const CurrencySelectionList = (
   const showSkeleton = noResults && loading;
 
   return (
-    <>
+    <Centered flex={1}>
       {showList && !showSkeleton && (
-        <Centered flex={1}>
+        <Animated.View
+          entering={FadeIn.duration(100)}
+          flex={1}
+        >
           {showGhost ? (
             <NoCurrencyResults />
           ) : (
@@ -55,10 +60,10 @@ const CurrencySelectionList = (
               testID={testID}
             />
           )}
-        </Centered>
+        </Animated.View>
       )}
       {(showSkeleton || !showList) && <EmptyCurrencySelectionList />}
-    </>
+    </Centered>
   );
 };
 
