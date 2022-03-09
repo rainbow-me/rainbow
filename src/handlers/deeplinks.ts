@@ -99,8 +99,7 @@ export default async function handleDeeplink(
               address: addressOrENS,
             });
           } else {
-            logger.sentry('Failed to handle url', url);
-            const error = new Error('Invalid deeplink');
+            const error = new Error('Invalid deeplink: ' + url);
             captureException(error);
             Alert.alert('Uh oh! We couldn’t recognize this URL!');
           }
