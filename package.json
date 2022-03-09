@@ -365,8 +365,7 @@
     "**/@ethersproject/**": "5.4.0",
     "**/follow-redirects": "1.14.8",
     "**/markdown-it": "12.3.2",
-    "**/simple-get": "4.0.1",
-    "**/ws": "6.2.2"
+    "**/simple-get": "4.0.1"
   },
   "jest": {
     "preset": "react-native",
