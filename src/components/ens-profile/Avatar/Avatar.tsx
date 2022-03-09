@@ -1,19 +1,18 @@
 import React from 'react';
+import { Text as NativeText } from 'react-native';
 import AvatarCoverPhotoMaskSvg from '../../svg/AvatarCoverPhotoMaskSvg';
-import {
-  AccentColorProvider,
-  BackgroundProvider,
-  Box,
-  Cover,
-  useForegroundColor,
-} from '@rainbow-me/design-system';
+import { BackgroundProvider, Box, Cover } from '@rainbow-me/design-system';
 import { ImgixImage } from '@rainbow-me/images';
 
 const size = 70;
 
-export default function Avatar({ avatarUrl }: { avatarUrl?: string | null }) {
-  const accentColor = useForegroundColor('accent');
-
+export default function Avatar({
+  accountSymbol,
+  avatarUrl,
+}: {
+  accountSymbol?: string | null;
+  avatarUrl?: string | null;
+}) {
   return (
     <Box height={{ custom: size }} width={{ custom: size }}>
       <Cover alignHorizontal="center">
@@ -23,27 +22,29 @@ export default function Avatar({ avatarUrl }: { avatarUrl?: string | null }) {
           )}
         </BackgroundProvider>
       </Cover>
-      <AccentColorProvider color={accentColor + '10'}>
-        <Box
-          alignItems="center"
-          background="accent"
-          borderRadius={size / 2}
-          height={{ custom: size }}
-          justifyContent="center"
-          shadow="12px heavy accent"
-          width={{ custom: size }}
-        >
-          {avatarUrl && (
-            <Box
-              as={ImgixImage}
-              borderRadius={size / 2}
-              height={{ custom: size }}
-              source={{ uri: avatarUrl }}
-              width={{ custom: size }}
-            />
-          )}
-        </Box>
-      </AccentColorProvider>
+      <Box
+        alignItems="center"
+        background="accent"
+        borderRadius={size / 2}
+        height={{ custom: size }}
+        justifyContent="center"
+        shadow="12px heavy accent"
+        width={{ custom: size }}
+      >
+        {avatarUrl ? (
+          <Box
+            as={ImgixImage}
+            borderRadius={size / 2}
+            height={{ custom: size }}
+            source={{ uri: avatarUrl }}
+            width={{ custom: size }}
+          />
+        ) : (
+          <NativeText style={{ fontSize: 38 }}>
+            {accountSymbol || ''}
+          </NativeText>
+        )}
+      </Box>
     </Box>
   );
 }

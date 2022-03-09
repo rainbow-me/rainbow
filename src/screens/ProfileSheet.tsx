@@ -4,6 +4,9 @@ import React, { useMemo } from 'react';
 import Spinner from '../components/Spinner';
 import Avatar from '../components/ens-profile/Avatar/Avatar';
 import CoverPhoto from '../components/ens-profile/Cover/Cover';
+import GradientOutlineButton from '../components/ens-profile/GradientOutlineButton/GradientOutlineButton';
+import MoreButton from '../components/ens-profile/MoreButton/MoreButton';
+import RecordTags from '../components/ens-profile/RecordTags/RecordTags';
 import { SheetHandleFixedToTopHeight, SlackSheet } from '../components/sheet';
 import { sharedCoolModalTopOffset } from '../navigation/config';
 import { useTheme } from '@rainbow-me/context';
@@ -12,11 +15,18 @@ import {
   BackgroundProvider,
   Bleed,
   Box,
+  ColorModeProvider,
+  Column,
+  Columns,
+  Heading,
+  Inline,
   Inset,
   Stack,
   Text,
 } from '@rainbow-me/design-system';
+import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 import {
+  useAccountProfile,
   useDimensions,
   useENSProfile,
   usePersistentDominantColorFromImage,
@@ -30,9 +40,12 @@ export default function ProfileSheet() {
   const contentHeight =
     deviceHeight - SheetHandleFixedToTopHeight - sharedCoolModalTopOffset;
 
-  const profile = useENSProfile(params?.address);
-  const avatarUrl = profile.data?.images.avatarUrl;
-  const coverUrl = profile.data?.images.coverUrl;
+  const ensName = params?.address;
+  const { isLoading, data: profile } = useENSProfile(ensName);
+  const avatarUrl = profile?.images.avatarUrl;
+  const coverUrl = profile?.images.coverUrl;
+
+  const { accountColor, accountSymbol } = useAccountProfile();
 
   const { result: dominantColor } = usePersistentDominantColorFromImage(
     avatarUrl || ''
@@ -42,7 +55,10 @@ export default function ProfileSheet() {
     contentHeight,
   ]);
 
-  const accentColor = dominantColor || colors.appleBlue;
+  const accentColor =
+    dominantColor ||
+    colors.avatarBackgrounds[accountColor || 0] ||
+    colors.appleBlue;
 
   return (
     <AccentColorProvider color={accentColor}>
@@ -57,11 +73,11 @@ export default function ProfileSheet() {
             scrollEnabled
           >
             <ConditionalWrap
-              condition={profile.isLoading}
+              condition={isLoading}
               wrap={children => <Box style={wrapperStyle}>{children}</Box>}
             >
               <>
-                {profile.isLoading ? (
+                {isLoading ? (
                   <Box
                     alignItems="center"
                     height="full"
@@ -73,11 +89,63 @@ export default function ProfileSheet() {
                   <Stack space="19px">
                     <CoverPhoto coverUrl={coverUrl} />
                     <Bleed top={{ custom: 38 }}>
-                      <Inset left="19px">
-                        <Avatar avatarUrl={avatarUrl} />
+                      <Inset horizontal="19px">
+                        <Columns>
+                          <Column width="content">
+                            <Avatar
+                              accountSymbol={accountSymbol as string}
+                              avatarUrl={avatarUrl}
+                            />
+                          </Column>
+                          <Inset top="30px">
+                            <Inline alignHorizontal="right" space="10px">
+                              <MoreButton />
+                              <ColorModeProvider value="darkTinted">
+                                <GradientOutlineButton
+                                  gradient={colors.gradients.blueToGreen}
+                                >
+                                  􀨭 Watch
+                                </GradientOutlineButton>
+                              </ColorModeProvider>
+                              <ColorModeProvider value="darkTinted">
+                                <GradientOutlineButton
+                                  gradient={colors.gradients.blueToGreen}
+                                  variant="circular"
+                                >
+                                  􀈠
+                                </GradientOutlineButton>
+                              </ColorModeProvider>
+                            </Inline>
+                          </Inset>
+                        </Columns>
                       </Inset>
                     </Bleed>
-                    <Text color="accent">test</Text>
+                    <Inset horizontal="19px">
+                      <Stack space="19px">
+                        <Heading size="23px">{ensName}</Heading>
+                        {profile?.records.description && (
+                          <Text weight="medium">
+                            {profile?.records.description}
+                          </Text>
+                        )}
+                        {profile?.records && (
+                          <RecordTags
+                            records={profile?.records}
+                            show={[
+                              ENS_RECORDS.twitter,
+                              ENS_RECORDS.website,
+                              ENS_RECORDS.url,
+                              ENS_RECORDS.email,
+                              ENS_RECORDS.github,
+                              ENS_RECORDS.instagram,
+                              ENS_RECORDS.reddit,
+                              ENS_RECORDS.snapchat,
+                              ENS_RECORDS.telegram,
+                            ]}
+                          />
+                        )}
+                      </Stack>
+                    </Inset>
                   </Stack>
                 )}
               </>

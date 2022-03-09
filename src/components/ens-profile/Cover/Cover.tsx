@@ -14,8 +14,9 @@ export default function Cover({ coverUrl }: { coverUrl?: string | null }) {
       justifyContent="center"
       {...(ios
         ? {
-            center: [80, 100],
-            colors: [accentColor + '33', accentColor + '10'],
+            center: [0, 200],
+            colors: [accentColor, accentColor + '50'],
+            stops: [0, 1],
           }
         : {
             style: { backgroundColor: accentColor + '10' },
