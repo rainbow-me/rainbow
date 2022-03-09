@@ -598,8 +598,9 @@
         "suggestion": "Buy more years now to save on fees",
         "registration_duration": "Register name for",
         "registration_cost": "Registration cost",
-        "estimated_fees": "Estimated network fee",
-        "total_cost": "Total cost",
+        "current_fees": "Current network fee",
+        "estimated_total_eth": "Estimated total in ETH",
+        "estimated_total": "Estimated total",
         "duration_plural": "%{content} years",
         "duration_singular": "1 year",
         "commit_button": "Hold to Commit"

@@ -11,6 +11,7 @@ import {
   convertAmountAndPriceToNativeDisplay,
   divide,
   fromWei,
+  handleSignificantDecimals,
   multiply,
 } from './utilities';
 import { ENSRegistrationRecords } from '@rainbow-me/entities';
@@ -459,6 +460,7 @@ const formatTotalRegistrationCost = (
   skipDecimals: boolean = false
 ) => {
   const networkFeeInEth = fromWei(wei);
+  const eth = handleSignificantDecimals(networkFeeInEth, 3);
 
   const { amount, display } = convertAmountAndPriceToNativeDisplay(
     networkFeeInEth,
@@ -471,6 +473,7 @@ const formatTotalRegistrationCost = (
   return {
     amount,
     display,
+    eth,
     wei,
   };
 };

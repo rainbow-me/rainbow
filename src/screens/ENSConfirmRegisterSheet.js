@@ -71,6 +71,9 @@ const CostsPanel = ({ mode, registrationCostsData, duration, setDuration }) => {
           </Inline>
           <RegistrationReviewRows
             duration={duration}
+            estimatedCostETH={
+              registrationCostsData?.estimatedTotalRegistrationCost?.eth
+            }
             maxDuration={99}
             networkFee={registrationCostsData?.estimatedNetworkFee?.display}
             onChangeDuration={setDuration}
