@@ -610,3 +610,6 @@ export const shouldUseMulticallTransaction = (
   }
   return true;
 };
+
+export const fetchReverseRecord = async (address: string) =>
+  (await web3Provider.lookupAddress(address)) || '';
