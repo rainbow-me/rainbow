@@ -13,19 +13,12 @@ import {
   ENS_DOMAIN,
   generateSalt,
   getRentPrice,
+  REGISTRATION_STEPS,
 } from '@rainbow-me/helpers/ens';
 import { loadWallet } from '@rainbow-me/model/wallet';
 import { executeRap } from '@rainbow-me/raps';
 import { updateTransactionRegistrationParameters } from '@rainbow-me/redux/ensRegistration';
 import { timeUnits } from '@rainbow-me/references';
-
-enum REGISTRATION_STEPS {
-  COMMIT = 'COMMIT',
-  WAIT_COMMIT_CONFIRMATION = 'WAIT_COMMIT_CONFIRMATION',
-  WAIT_ENS_COMMITMENT = 'WAIT_ENS_COMMITMENT',
-  REGISTER = 'REGISTER',
-  EDIT = 'EDIT',
-}
 
 const ENS_SECONDS_WAIT = 60;
 

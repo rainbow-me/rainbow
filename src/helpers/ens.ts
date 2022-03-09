@@ -64,6 +64,14 @@ export enum ENS_RECORDS {
   ensDelegate = 'eth.ens.delegate',
 }
 
+export enum REGISTRATION_STEPS {
+  COMMIT = 'COMMIT',
+  WAIT_COMMIT_CONFIRMATION = 'WAIT_COMMIT_CONFIRMATION',
+  WAIT_ENS_COMMITMENT = 'WAIT_ENS_COMMITMENT',
+  REGISTER = 'REGISTER',
+  EDIT = 'EDIT',
+}
+
 export type TextRecordField = {
   id: string;
   key: string;

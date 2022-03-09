@@ -22,7 +22,11 @@ import {
   Stack,
   Text,
 } from '@rainbow-me/design-system';
-import { accentColorAtom, ENS_DOMAIN } from '@rainbow-me/helpers/ens';
+import {
+  accentColorAtom,
+  ENS_DOMAIN,
+  REGISTRATION_STEPS,
+} from '@rainbow-me/helpers/ens';
 import {
   useENSRegistration,
   useENSRegistrationActionHandler,
@@ -47,6 +51,43 @@ export const ENSConfirmRegisterSheetHeight = 600;
 export const ENSConfirmUpdateSheetHeight = 400;
 const avatarSize = 70;
 
+const CostsPanel = ({ mode, registrationCostsData, duration, setDuration }) => {
+  return (
+    <Stack space="34px">
+      {mode === 'create' && (
+        <>
+          <Inline
+            alignHorizontal="center"
+            alignVertical="center"
+            space="6px"
+            wrap={false}
+          >
+            <Box>
+              <ImgixImage source={brain} style={{ height: 20, width: 20 }} />
+            </Box>
+            <Text color="secondary50" size="14px" weight="heavy">
+              {lang.t('profiles.confirm.suggestion')}
+            </Text>
+          </Inline>
+          <RegistrationReviewRows
+            duration={duration}
+            maxDuration={99}
+            networkFee={registrationCostsData?.estimatedNetworkFee?.display}
+            onChangeDuration={setDuration}
+            registrationFee={
+              registrationCostsData?.estimatedRentPrice?.total?.display
+            }
+            totalCost={
+              registrationCostsData?.estimatedTotalRegistrationCost?.display
+            }
+          />
+          <Divider color="divider40" />
+        </>
+      )}
+      {mode === 'edit' && <Text>TODO</Text>}
+    </Stack>
+  );
+};
 export default function ENSConfirmRegisterSheet() {
   const { params } = useRoute();
   const { gasFeeParamsBySpeed, updateTxFee, startPollingGasFees } = useGas();
@@ -83,6 +124,25 @@ export default function ENSConfirmRegisterSheet() {
     setGasLimit(stepGasLimit);
   }, [stepGasLimit, updateTxFee]);
 
+  const boxStyle = useMemo(
+    () => ({
+      height: params.longFormHeight || ENSConfirmRegisterSheetHeight,
+    }),
+    [params.longFormHeight]
+  );
+
+  const stepLabel = useMemo(() => {
+    if (mode === 'edit') return lang.t('profiles.confirm.confirm_update');
+    if (step === REGISTRATION_STEPS.COMMIT)
+      return lang.t('profiles.confirm.registration_details');
+    if (step === REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION)
+      return lang.t('profiles.confirm.requesting_register');
+    if (step === REGISTRATION_STEPS.WAIT_ENS_COMMITMENT)
+      return lang.t('profiles.confirm.reserving_name');
+    if (step === REGISTRATION_STEPS.REGISTER)
+      return lang.t('profiles.confirm.confirm_registration');
+  }, [mode, step]);
+
   // Update gas limit
   useEffect(() => {
     if (
@@ -114,19 +174,10 @@ export default function ENSConfirmRegisterSheet() {
       scrollEnabled={false}
     >
       <AccentColorProvider color={accentColor}>
-        <Box
-          background="body"
-          paddingVertical="30px"
-          style={useMemo(
-            () => ({
-              height: params.longFormHeight || ENSConfirmRegisterSheetHeight,
-            }),
-            [params.longFormHeight]
-          )}
-        >
+        <Box background="body" paddingVertical="30px" style={boxStyle}>
           <Rows>
             <Row>
-              <Inset horizontal="30px">
+              <Box horizontal="30px">
                 <Stack alignHorizontal="center" space="15px">
                   {avatarUrl && (
                     <Box
@@ -147,63 +198,26 @@ export default function ENSConfirmRegisterSheet() {
                   )}
                   <Heading size="26px">{ensName}</Heading>
                   <Text color="accent" weight="heavy">
-                    {mode === 'create'
-                      ? lang.t('profiles.confirm.confirm_purchase')
-                      : lang.t('profiles.confirm.confirm_update')}
+                    {stepLabel}
                   </Text>
                 </Stack>
                 <Inset vertical="24px">
                   <Divider color="divider40" />
                 </Inset>
-                <Stack space="34px">
-                  {mode === 'create' && (
-                    <>
-                      <Inline
-                        alignHorizontal="center"
-                        alignVertical="center"
-                        space="6px"
-                        wrap={false}
-                      >
-                        <Box>
-                          <ImgixImage
-                            source={brain}
-                            style={{ height: 20, width: 20 }}
-                          />
-                        </Box>
-                        <Text color="secondary50" size="14px" weight="heavy">
-                          {lang.t('profiles.confirm.suggestion')}
-                        </Text>
-                      </Inline>
-                      <RegistrationReviewRows
-                        duration={duration}
-                        maxDuration={99}
-                        networkFee={
-                          registrationCostsData?.estimatedNetworkFee?.display
-                        }
-                        onChangeDuration={setDuration}
-                        registrationFee={
-                          registrationCostsData?.estimatedRentPrice?.total
-                            ?.display
-                        }
-                        totalCost={
-                          registrationCostsData?.estimatedTotalRegistrationCost
-                            ?.display
-                        }
-                      />
-                      <Divider color="divider40" />
-                    </>
-                  )}
-                  {mode === 'edit' && <Text>TODO</Text>}
-                </Stack>
+              </Box>
+            </Row>
+            <Row>
+              <Inset horizontal="30px">
+                <CostsPanel
+                  duration={duration}
+                  mode={mode}
+                  registrationCostsData={registrationCostsData}
+                  setDuration={setDuration}
+                />
               </Inset>
             </Row>
+
             <Row height="content">
-              <Box>
-                <Stack space="34px">
-                  <Text align="center">Step: {step}</Text>
-                  <Text align="center">Gas limit: {stepGasLimit}</Text>
-                </Stack>
-              </Box>
               {action ? (
                 <>
                   <Box>
