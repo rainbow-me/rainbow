@@ -45,6 +45,34 @@ const avatarSize = 70;
 
 const LoadingSpinner = android ? Spinner : ActivityIndicator;
 
+function TransactionActionRow({ action, accentColor, label }) {
+  return (
+    <Box>
+      <Box>
+        <SheetActionButtonRow paddingBottom={5}>
+          <HoldToAuthorizeButton
+            color={accentColor}
+            hideInnerBorder
+            isLongPressAvailableForBiometryType
+            label={label}
+            onLongPress={action}
+            parentHorizontalPadding={19}
+            showBiometryIcon
+          />
+        </SheetActionButtonRow>
+      </Box>
+      <Box alignItems="center" justifyContent="center">
+        <GasSpeedButton
+          borderColor={accentColor}
+          currentNetwork="mainnet"
+          marginBottom={0}
+          theme="light"
+        />
+      </Box>
+    </Box>
+  );
+}
+
 export default function ENSConfirmRegisterSheet() {
   const { params } = useRoute();
   const { gasFeeParamsBySpeed, updateTxFee, startPollingGasFees } = useGas();
@@ -131,44 +159,39 @@ export default function ENSConfirmRegisterSheet() {
         </Centered>
       ),
       [REGISTRATION_STEPS.COMMIT]: (
-        <Row height="content">
-          <Inset horizontal="30px">
-            <Stack space="34px">
-              <Inline
-                alignHorizontal="center"
-                alignVertical="center"
-                space="6px"
-                wrap={false}
-              >
-                <Box>
-                  <ImgixImage
-                    source={brain}
-                    style={{ height: 20, width: 20 }}
-                  />
-                </Box>
-                <Text color="secondary50" size="14px" weight="heavy">
-                  {lang.t('profiles.confirm.suggestion')}
-                </Text>
-              </Inline>
-              <RegistrationReviewRows
-                duration={duration}
-                estimatedCostETH={
-                  registrationCostsData?.estimatedTotalRegistrationCost?.eth
-                }
-                maxDuration={99}
-                networkFee={registrationCostsData?.estimatedNetworkFee?.display}
-                onChangeDuration={setDuration}
-                registrationFee={
-                  registrationCostsData?.estimatedRentPrice?.total?.display
-                }
-                totalCost={
-                  registrationCostsData?.estimatedTotalRegistrationCost?.display
-                }
-              />
-              <Divider color="divider40" />
-            </Stack>
-          </Inset>
-        </Row>
+        <Inset horizontal="30px">
+          <Stack space="34px">
+            <Inline
+              alignHorizontal="center"
+              alignVertical="center"
+              space="6px"
+              wrap={false}
+            >
+              <Box>
+                <ImgixImage source={brain} style={{ height: 20, width: 20 }} />
+              </Box>
+              <Text color="secondary50" size="14px" weight="heavy">
+                {lang.t('profiles.confirm.suggestion')}
+              </Text>
+            </Inline>
+            <RegistrationReviewRows
+              duration={duration}
+              estimatedCostETH={
+                registrationCostsData?.estimatedTotalRegistrationCost?.eth
+              }
+              maxDuration={99}
+              networkFee={registrationCostsData?.estimatedNetworkFee?.display}
+              onChangeDuration={setDuration}
+              registrationFee={
+                registrationCostsData?.estimatedRentPrice?.total?.display
+              }
+              totalCost={
+                registrationCostsData?.estimatedTotalRegistrationCost?.display
+              }
+            />
+            <Divider color="divider40" />
+          </Stack>
+        </Inset>
       ),
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: (
         <Centered>
@@ -191,62 +214,26 @@ export default function ENSConfirmRegisterSheet() {
   );
   const actions = useMemo(
     () => ({
-      [REGISTRATION_STEPS.REGISTER]: (
-        <Row height="content">
-          <Box>
-            <SheetActionButtonRow paddingBottom={5}>
-              <HoldToAuthorizeButton
-                color={accentColor}
-                hideInnerBorder
-                isLongPressAvailableForBiometryType
-                label="Confirm Registration"
-                onLongPress={action}
-                parentHorizontalPadding={19}
-                showBiometryIcon
-              />
-            </SheetActionButtonRow>
-          </Box>
-          <Box alignItems="center" justifyContent="center">
-            <GasSpeedButton
-              borderColor={accentColor}
-              currentNetwork="mainnet"
-              marginBottom={0}
-              theme="light"
-            />
-          </Box>
-        </Row>
-      ),
       [REGISTRATION_STEPS.COMMIT]: (
-        <Row height="content">
-          <Box>
-            <SheetActionButtonRow paddingBottom={5}>
-              <HoldToAuthorizeButton
-                color={accentColor}
-                hideInnerBorder
-                isLongPressAvailableForBiometryType
-                label="Start Registration"
-                onLongPress={action}
-                parentHorizontalPadding={19}
-                showBiometryIcon
-              />
-            </SheetActionButtonRow>
-          </Box>
-          <Box alignItems="center" justifyContent="center">
-            <GasSpeedButton
-              borderColor={accentColor}
-              currentNetwork="mainnet"
-              marginBottom={0}
-              theme="light"
-            />
-          </Box>
-        </Row>
+        <TransactionActionRow
+          accentColor={accentColor}
+          action={action}
+          label="Start Registration"
+        />
+      ),
+      [REGISTRATION_STEPS.REGISTER]: (
+        <TransactionActionRow
+          accentColor={accentColor}
+          action={action}
+          label="Confirm Registration"
+        />
       ),
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: null,
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: null,
     }),
     [accentColor, action]
   );
-
+  console.log('{actions[step]}', actions[step]);
   return (
     <SlackSheet
       additionalTopPadding
@@ -287,8 +274,8 @@ export default function ENSConfirmRegisterSheet() {
                 </Inset>
               </Box>
             </Row>
-            {content[step]}
-            {actions[step]}
+            <Row>{content[step]}</Row>
+            <Row height="content">{actions[step]}</Row>
           </Rows>
         </Box>
       </AccentColorProvider>
