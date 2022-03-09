@@ -133,6 +133,12 @@ export default function useENSRegistrationForm({
 
   const onRemoveField = useCallback(
     (fieldToRemove, selectedFields) => {
+      if (!isEmpty(errors)) {
+        setErrors(errors => {
+          const newErrors = omit(errors, fieldToRemove.key);
+          return newErrors;
+        });
+      }
       setSelectedFields(selectedFields);
       removeRecordByKey(fieldToRemove.key);
       setValuesMap(values => ({
@@ -140,7 +146,14 @@ export default function useENSRegistrationForm({
         [name]: omit(values?.[name] || {}, fieldToRemove.key) as Records,
       }));
     },
-    [name, removeRecordByKey, setSelectedFields, setValuesMap]
+    [
+      errors,
+      name,
+      removeRecordByKey,
+      setErrors,
+      setSelectedFields,
+      setValuesMap,
+    ]
   );
 
   const onBlurField = useCallback(
