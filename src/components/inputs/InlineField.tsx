@@ -24,6 +24,7 @@ export type InlineFieldProps = {
   inputProps?: Partial<TextInputProps>;
   onChangeText: (text: string) => void;
   onEndEditing?: TextInputProps['onEndEditing'];
+  startsWith?: string;
   validations?: {
     onChange?: {
       match?: RegExp;
@@ -42,6 +43,7 @@ export default function InlineField({
   inputProps,
   validations,
   onEndEditing,
+  startsWith,
   value,
 }: InlineFieldProps) {
   const { colors } = useTheme();
@@ -131,20 +133,35 @@ export default function InlineField({
           </Inline>
         </Inset>
       </Column>
-      <Input
-        autoFocus={autoFocus}
-        defaultValue={defaultValue}
-        onChangeText={handleChangeText}
-        onContentSizeChange={
-          android && inputProps?.multiline ? handleContentSizeChange : undefined
-        }
-        onEndEditing={onEndEditing}
-        placeholder={placeholder}
-        style={style}
-        value={value}
-        {...inputProps}
-        keyboardType={android ? 'visible-password' : inputProps?.keyboardType}
-      />
+      <Column>
+        <Inline alignVertical="center" space="2px">
+          {startsWith && (
+            <Inset top="2px">
+              <Text color="secondary30" weight="heavy">
+                {startsWith}
+              </Text>
+            </Inset>
+          )}
+          <Input
+            autoFocus={autoFocus}
+            defaultValue={defaultValue}
+            onChangeText={handleChangeText}
+            onContentSizeChange={
+              android && inputProps?.multiline
+                ? handleContentSizeChange
+                : undefined
+            }
+            onEndEditing={onEndEditing}
+            placeholder={placeholder}
+            style={style}
+            value={value}
+            {...inputProps}
+            keyboardType={
+              android ? 'visible-password' : inputProps?.keyboardType
+            }
+          />
+        </Inline>
+      </Column>
     </Columns>
   );
 }

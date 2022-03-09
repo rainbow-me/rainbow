@@ -72,7 +72,15 @@ export default function TextRecordsForm({
       ) : (
         <>
           {selectedFields.map(
-            ({ label, inputProps, placeholder, validations, id, key }) => (
+            ({
+              label,
+              inputProps,
+              placeholder,
+              startsWith,
+              validations,
+              id,
+              key,
+            }) => (
               <Box key={id} onLayout={e => handleLayout(e, key)}>
                 <Field
                   autoFocus={autoFocusKey === key}
@@ -85,6 +93,7 @@ export default function TextRecordsForm({
                     onBlurField({ key, value: nativeEvent.text });
                   }}
                   placeholder={placeholder}
+                  startsWith={startsWith}
                   validations={validations}
                 />
               </Box>

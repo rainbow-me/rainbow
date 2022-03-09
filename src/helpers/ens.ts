@@ -101,9 +101,10 @@ export const textRecordFields = {
     key: ENS_RECORDS.twitter,
     label: 'Twitter',
     placeholder: lang.t('profiles.create.username_placeholder'),
+    startsWith: '@',
     validations: {
       onChange: {
-        match: /^@?\w*$/,
+        match: /^\w*$/,
       },
     },
   },
@@ -159,9 +160,10 @@ export const textRecordFields = {
     key: ENS_RECORDS.instagram,
     label: 'Instagram',
     placeholder: lang.t('profiles.create.username_placeholder'),
+    startsWith: '@',
     validations: {
       onChange: {
-        match: /^@?([\w.])*$/,
+        match: /^([\w.])*$/,
       },
     },
   },
@@ -173,9 +175,10 @@ export const textRecordFields = {
     key: ENS_RECORDS.snapchat,
     label: 'Snapchat',
     placeholder: lang.t('profiles.create.username_placeholder'),
+    startsWith: '@',
     validations: {
       onChange: {
-        match: /^@?([\w.])*$/,
+        match: /^([\w.])*$/,
       },
     },
   },
