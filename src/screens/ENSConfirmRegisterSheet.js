@@ -10,7 +10,6 @@ import Spinner from '../components/Spinner';
 import { HoldToAuthorizeButton } from '../components/buttons';
 import { RegistrationReviewRows } from '../components/ens-registration';
 import { GasSpeedButton } from '../components/gas';
-import { Centered } from '../components/layout';
 import { SheetActionButtonRow, SlackSheet } from '../components/sheet';
 import {
   AccentColorProvider,
@@ -161,7 +160,6 @@ export default function ENSConfirmRegisterSheet() {
     name: ensName,
     mode,
   } = useENSRegistration();
-  const [gasLimit, setGasLimit] = useState(null);
   const [accentColor] = useRecoilState(accentColorAtom);
 
   const [duration, setDuration] = useState(1);
@@ -235,14 +233,14 @@ export default function ENSConfirmRegisterSheet() {
         </Inset>
       ),
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: (
-        <Centered>
+        <Box alignItems="center">
           <LoadingSpinner />
-        </Centered>
+        </Box>
       ),
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: (
-        <Centered>
+        <Box alignItems="center">
           <LoadingSpinner />
-        </Centered>
+        </Box>
       ),
     }),
     [accentColor, duration, registrationCostsData, sendReverseRecord]
@@ -290,7 +288,6 @@ export default function ENSConfirmRegisterSheet() {
     }
   }, [
     gasFeeParamsBySpeed,
-    gasLimit,
     prevStepGasLimit,
     stepGasLimit,
     updateGasLimit,
