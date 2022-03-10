@@ -173,7 +173,7 @@
     "react-coin-icon": "0.1.43",
     "react-fast-compare": "2.0.4",
     "react-flatten-children": "1.1.2",
-    "react-native": "0.66.1",
+    "react-native": "0.66.4",
     "react-native-action-sheet": "2.2.0",
     "react-native-actionsheet": "2.4.2",
     "react-native-aes-crypto": "brunobar79/react-native-aes#65c49f7e70266615b2999eaa7db654d3fe4f2e3b",
@@ -303,7 +303,7 @@
     "babel-plugin-styled-components": "1.11.1",
     "babel-plugin-transform-remove-console": "6.9.4",
     "chai": "4.2.0",
-    "detox": "19.0.0",
+    "detox": "19.5.3",
     "dotenv": "8.2.0",
     "eslint": "7.32.0",
     "eslint-config-rainbow": "2.0.0",
@@ -385,8 +385,7 @@
       "simulator": {
         "type": "ios.simulator",
         "device": {
-          "type": "iPhone 11 Pro Max",
-          "os": "13.7"
+          "type": "iPhone 11 Pro Max"
         }
       }
     },
