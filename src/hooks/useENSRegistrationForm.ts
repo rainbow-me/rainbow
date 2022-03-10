@@ -4,16 +4,26 @@ import { useDispatch } from 'react-redux';
 import { atom, useRecoilState } from 'recoil';
 import { useENSRegistration } from '.';
 import { Records } from '@rainbow-me/entities';
-import { textRecordFields } from '@rainbow-me/helpers/ens';
+import { ENS_RECORDS, textRecordFields } from '@rainbow-me/helpers/ens';
 
 const disabledAtom = atom({
   default: false,
   key: 'ensProfileForm.disabled',
 });
 
+const errorsAtom = atom<{ [name: string]: string }>({
+  default: {},
+  key: 'ensProfileForm.errors',
+});
+
 const selectedFieldsAtom = atom({
   default: [],
   key: 'ensProfileForm.selectedFields',
+});
+
+const submittingAtom = atom({
+  default: false,
+  key: 'ensProfileForm.submitting',
 });
 
 export const valuesAtom = atom<{ [name: string]: Partial<Records> }>({
@@ -49,6 +59,9 @@ export default function useENSRegistrationForm({
   );
 
   const dispatch = useDispatch();
+
+  const [errors, setErrors] = useRecoilState(errorsAtom);
+  const [submitting, setSubmitting] = useRecoilState(submittingAtom);
 
   const [disabled, setDisabled] = useRecoilState(disabledAtom);
   useEffect(() => {
@@ -120,6 +133,12 @@ export default function useENSRegistrationForm({
 
   const onRemoveField = useCallback(
     (fieldToRemove, selectedFields) => {
+      if (!isEmpty(errors)) {
+        setErrors(errors => {
+          const newErrors = omit(errors, fieldToRemove.key);
+          return newErrors;
+        });
+      }
       setSelectedFields(selectedFields);
       removeRecordByKey(fieldToRemove.key);
       setValuesMap(values => ({
@@ -127,7 +146,14 @@ export default function useENSRegistrationForm({
         [name]: omit(values?.[name] || {}, fieldToRemove.key) as Records,
       }));
     },
-    [name, removeRecordByKey, setSelectedFields, setValuesMap]
+    [
+      errors,
+      name,
+      removeRecordByKey,
+      setErrors,
+      setSelectedFields,
+      setValuesMap,
+    ]
   );
 
   const onBlurField = useCallback(
@@ -143,13 +169,20 @@ export default function useENSRegistrationForm({
 
   const onChangeField = useCallback(
     ({ key, value }) => {
+      if (!isEmpty(errors)) {
+        setErrors(errors => {
+          const newErrors = omit(errors, key);
+          return newErrors;
+        });
+      }
+
       setValuesMap(values => ({
         ...values,
         [name]: { ...values?.[name], [key]: value },
       }));
       updateRecordByKey(key, value);
     },
-    [name, setValuesMap, updateRecordByKey]
+    [errors, name, setErrors, setValuesMap, updateRecordByKey]
   );
 
   const blurFields = useCallback(() => {
@@ -167,9 +200,42 @@ export default function useENSRegistrationForm({
 
   const empty = useMemo(() => !Object.values(values).some(Boolean), [values]);
 
+  const submit = useCallback(
+    async submitFn => {
+      const errors = Object.entries(textRecordFields).reduce(
+        (currentErrors, [key, { validations }]) => {
+          const { value: regex, message } = validations?.onSubmit?.match || {};
+          const value = values[key as ENS_RECORDS];
+          if (regex && value && !value.match(regex)) {
+            return {
+              ...currentErrors,
+              [key]: message,
+            };
+          }
+          return currentErrors;
+        },
+        {}
+      );
+      setErrors(errors);
+
+      setSubmitting(true);
+      if (isEmpty(errors)) {
+        try {
+          await submitFn();
+          // eslint-disable-next-line no-empty
+        } catch (err) {}
+      }
+      setTimeout(() => {
+        setSubmitting(false);
+      }, 100);
+    },
+    [setErrors, setSubmitting, values]
+  );
+
   return {
     blurFields,
     disabled,
+    errors,
     isEmpty: empty,
     isLoading,
     onAddField,
@@ -178,6 +244,8 @@ export default function useENSRegistrationForm({
     onRemoveField,
     selectedFields,
     setDisabled,
+    submit,
+    submitting,
     values,
   };
 }
