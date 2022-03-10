@@ -8,6 +8,7 @@ import {
 } from '../raps/common';
 import { useAccountSettings, useCurrentNonce, useENSRegistration } from '.';
 import { RegistrationParameters } from '@rainbow-me/entities';
+import { fetchResolver } from '@rainbow-me/handlers/ens';
 import { web3Provider } from '@rainbow-me/handlers/web3';
 import {
   ENS_DOMAIN,
@@ -145,12 +146,13 @@ export default function useENSRegistrationActionHandler(
         return;
       }
       const nonce = await getNextNonce();
-
+      const resolver = await fetchResolver(registrationParameters.name);
       const setRecordsEnsRegistrationParameters: ENSActionParameters = {
         ...formatENSActionParams(registrationParameters),
         nonce,
         ownerAddress: accountAddress,
         records: registrationParameters.changedRecords,
+        resolverAddress: resolver.address,
       };
 
       await executeRap(
