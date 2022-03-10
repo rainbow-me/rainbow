@@ -11,6 +11,7 @@ import {
   convertAmountAndPriceToNativeDisplay,
   divide,
   fromWei,
+  handleSignificantDecimals,
   multiply,
 } from './utilities';
 import { ENSRegistrationRecords } from '@rainbow-me/entities';
@@ -62,6 +63,14 @@ export enum ENS_RECORDS {
   twitter = 'com.twitter',
   telegram = 'com.telegram',
   ensDelegate = 'eth.ens.delegate',
+}
+
+export enum REGISTRATION_STEPS {
+  COMMIT = 'COMMIT',
+  WAIT_COMMIT_CONFIRMATION = 'WAIT_COMMIT_CONFIRMATION',
+  WAIT_ENS_COMMITMENT = 'WAIT_ENS_COMMITMENT',
+  REGISTER = 'REGISTER',
+  EDIT = 'EDIT',
 }
 
 export type TextRecordField = {
@@ -481,6 +490,7 @@ const formatTotalRegistrationCost = (
   skipDecimals: boolean = false
 ) => {
   const networkFeeInEth = fromWei(wei);
+  const eth = handleSignificantDecimals(networkFeeInEth, 3);
 
   const { amount, display } = convertAmountAndPriceToNativeDisplay(
     networkFeeInEth,
@@ -493,6 +503,7 @@ const formatTotalRegistrationCost = (
   return {
     amount,
     display,
+    eth,
     wei,
   };
 };

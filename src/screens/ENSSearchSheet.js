@@ -61,6 +61,7 @@ export default function ENSSearchSheet() {
     duration: 1,
     name: debouncedSearchQuery,
     rentPrice: registrationData?.rentPrice,
+    sendReverseRecord: true,
   });
 
   const state = useMemo(() => {
