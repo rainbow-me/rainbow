@@ -3,10 +3,9 @@ import ConditionalWrap from 'conditional-wrap';
 import React, { useMemo } from 'react';
 import { useQuery } from 'react-query';
 import Spinner from '../components/Spinner';
+import ActionButtons from '../components/ens-profile/ActionButtons/ActionButtons';
 import Avatar from '../components/ens-profile/Avatar/Avatar';
 import CoverPhoto from '../components/ens-profile/Cover/Cover';
-import GradientOutlineButton from '../components/ens-profile/GradientOutlineButton/GradientOutlineButton';
-import MoreButton from '../components/ens-profile/MoreButton/MoreButton';
 import RecordTags from '../components/ens-profile/RecordTags/RecordTags';
 import { SheetHandleFixedToTopHeight, SlackSheet } from '../components/sheet';
 import { sharedCoolModalTopOffset } from '../navigation/config';
@@ -16,11 +15,9 @@ import {
   BackgroundProvider,
   Bleed,
   Box,
-  ColorModeProvider,
   Column,
   Columns,
   Heading,
-  Inline,
   Inset,
   Stack,
   Text,
@@ -112,24 +109,10 @@ export default function ProfileSheet() {
                             />
                           </Column>
                           <Inset top="30px">
-                            <Inline alignHorizontal="right" space="10px">
-                              <MoreButton />
-                              <ColorModeProvider value="darkTinted">
-                                <GradientOutlineButton
-                                  gradient={colors.gradients.blueToGreen}
-                                >
-                                  􀨭 Watch
-                                </GradientOutlineButton>
-                              </ColorModeProvider>
-                              <ColorModeProvider value="darkTinted">
-                                <GradientOutlineButton
-                                  gradient={colors.gradients.blueToGreen}
-                                  variant="circular"
-                                >
-                                  􀈠
-                                </GradientOutlineButton>
-                              </ColorModeProvider>
-                            </Inline>
+                            <ActionButtons
+                              address={profile?.primary.address}
+                              ensName={ensName}
+                            />
                           </Inset>
                         </Columns>
                       </Inset>

@@ -228,6 +228,7 @@ export const fetchPrimary = async (ensName: string) => {
   const address = await web3Provider.resolveName(ensName);
   const primaryName = await web3Provider.lookupAddress(address);
   return {
+    address,
     isPrimary: primaryName === ensName.toLowerCase(),
     primaryName,
   };

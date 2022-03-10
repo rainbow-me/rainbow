@@ -1,4 +1,5 @@
 import React from 'react';
+import { PressableProps } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { Box, Cover, Inset, Text } from '@rainbow-me/design-system';
@@ -6,10 +7,12 @@ import { Box, Cover, Inset, Text } from '@rainbow-me/design-system';
 export default function GradientOutlineButton({
   gradient,
   children,
+  onPress,
   variant,
 }: {
   gradient: string[];
-  children: string;
+  children: React.ReactNode;
+  onPress: PressableProps['onPress'];
   variant?: 'circular';
 }) {
   return (
@@ -18,6 +21,8 @@ export default function GradientOutlineButton({
       as={ButtonPressAnimation}
       height="40px"
       justifyContent="center"
+      // @ts-expect-error JavaScript component
+      onPress={onPress}
       style={{
         overflow: 'hidden',
         ...(variant === 'circular' && {
