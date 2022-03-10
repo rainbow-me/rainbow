@@ -101,9 +101,10 @@ export const textRecordFields = {
     key: ENS_RECORDS.twitter,
     label: 'Twitter',
     placeholder: lang.t('profiles.create.username_placeholder'),
+    startsWith: '@',
     validations: {
-      allowCharacterRegex: {
-        match: /^@?\w*$/,
+      onChange: {
+        match: /^\w*$/,
       },
     },
   },
@@ -115,6 +116,14 @@ export const textRecordFields = {
     key: ENS_RECORDS.email,
     label: 'Email',
     placeholder: 'Add your email',
+    validations: {
+      onSubmit: {
+        match: {
+          message: 'Please enter a valid email',
+          value: /^\S+@\S+\.\S+$/,
+        },
+      },
+    },
   },
   [ENS_RECORDS.url]: {
     id: 'website',
@@ -125,6 +134,14 @@ export const textRecordFields = {
     key: ENS_RECORDS.url,
     label: lang.t('profiles.create.website'),
     placeholder: lang.t('profiles.create.website_placeholder'),
+    validations: {
+      onSubmit: {
+        match: {
+          message: 'Please enter a valid website URL',
+          value: /[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/,
+        },
+      },
+    },
   },
   [ENS_RECORDS.github]: {
     id: 'github',
@@ -143,9 +160,10 @@ export const textRecordFields = {
     key: ENS_RECORDS.instagram,
     label: 'Instagram',
     placeholder: lang.t('profiles.create.username_placeholder'),
+    startsWith: '@',
     validations: {
-      allowCharacterRegex: {
-        match: /^@?([\w.])*$/,
+      onChange: {
+        match: /^([\w.])*$/,
       },
     },
   },
@@ -157,9 +175,10 @@ export const textRecordFields = {
     key: ENS_RECORDS.snapchat,
     label: 'Snapchat',
     placeholder: lang.t('profiles.create.username_placeholder'),
+    startsWith: '@',
     validations: {
-      allowCharacterRegex: {
-        match: /^@?([\w.])*$/,
+      onChange: {
+        match: /^([\w.])*$/,
       },
     },
   },
@@ -179,6 +198,17 @@ export const textRecordFields = {
     key: string;
     label: string;
     placeholder: string;
+    validations?: {
+      onChange?: {
+        match?: RegExp;
+      };
+      onSubmit?: {
+        match?: {
+          value: RegExp;
+          message: string;
+        };
+      };
+    };
   };
 };
 
