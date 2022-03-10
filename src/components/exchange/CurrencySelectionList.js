@@ -1,6 +1,6 @@
 import { get } from 'lodash';
-import React, { forwardRef } from 'react';
-import Animated, { FadeIn } from 'react-native-reanimated';
+import React, { forwardRef, useEffect, useRef } from 'react';
+import { Transition, Transitioning } from 'react-native-reanimated';
 import { magicMemo } from '../../utils';
 import { EmptyAssetList } from '../asset-list';
 import { Centered } from '../layout';
@@ -8,9 +8,9 @@ import { NoResults } from '../list';
 import { CurrencySelectModalHeaderHeight } from './CurrencySelectModalHeader';
 import ExchangeAssetList from './ExchangeAssetList';
 import { ExchangeSearchHeight } from './ExchangeSearch';
+import { usePrevious } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
-import { View } from 'react-native';
 
 const EmptyCurrencySelectionList = styled(EmptyAssetList).attrs({
   pointerEvents: 'none',
@@ -22,6 +22,14 @@ const EmptyCurrencySelectionList = styled(EmptyAssetList).attrs({
 const NoCurrencyResults = styled(NoResults)({
   paddingBottom: CurrencySelectModalHeaderHeight + ExchangeSearchHeight / 2,
 });
+
+const skeletonTransition = (
+  <Transition.Sequence>
+    <Transition.Out interpolation="easeOut" type="fade" />
+    <Transition.Change durationMs={0.001} interpolation="easeOut" />
+    <Transition.In durationMs={0.001} interpolation="easeOut" type="fade" />
+  </Transition.Sequence>
+);
 
 const CurrencySelectionList = (
   {
@@ -36,17 +44,27 @@ const CurrencySelectionList = (
   },
   ref
 ) => {
+  const skeletonTransitionRef = useRef();
   const noResults = get(listItems, '[0].data', []).length === 0;
   const showGhost = !loading && noResults;
   const showSkeleton = noResults && loading;
+  const prevShowSkeleton = usePrevious(showSkeleton);
+
+  useEffect(() => {
+    if (!showSkeleton && prevShowSkeleton && ios) {
+      skeletonTransitionRef.current?.animateNextTransition();
+    }
+  }, [prevShowSkeleton, showSkeleton]);
 
   return (
-    <Centered flex={1}>
+    <Transitioning.View
+      flex={1}
+      ref={skeletonTransitionRef}
+      testID={testID}
+      transition={skeletonTransition}
+    >
       {showList && !showSkeleton && (
-        <Animated.View
-          entering={FadeIn.duration(100)}
-          flex={1}
-        >
+        <Centered flex={1}>
           {showGhost ? (
             <NoCurrencyResults />
           ) : (
@@ -60,10 +78,10 @@ const CurrencySelectionList = (
               testID={testID}
             />
           )}
-        </Animated.View>
+        </Centered>
       )}
       {(showSkeleton || !showList) && <EmptyCurrencySelectionList />}
-    </Centered>
+    </Transitioning.View>
   );
 };
 
