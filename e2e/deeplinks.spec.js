@@ -43,7 +43,6 @@ describe('Deeplinks spec', () => {
   });
 
   it('Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
-    await Helpers.disableSynchronization();
     await Helpers.checkIfVisible('wallet-info-input');
     await Helpers.waitAndTap('wallet-info-submit-button');
     if (device.getPlatform() === 'android') {
@@ -54,7 +53,6 @@ describe('Deeplinks spec', () => {
       await Helpers.authenticatePin('1234');
     }
     await Helpers.checkIfVisible('wallet-screen', 40000);
-    await Helpers.enableSynchronization();
     // Waiting 10s for MATIC assets to show up
     await Helpers.delay(20000);
   });

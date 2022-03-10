@@ -112,7 +112,6 @@ describe('Hardhat Transaction Flow', () => {
   });
 
   it('Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
-    await Helpers.disableSynchronization();
     await Helpers.waitAndTap('wallet-info-submit-button');
     if (device.getPlatform() === 'android') {
       await Helpers.checkIfVisible('pin-authentication-screen');
@@ -122,7 +121,6 @@ describe('Hardhat Transaction Flow', () => {
       await Helpers.authenticatePin('1234');
     }
     await Helpers.checkIfVisible('wallet-screen', 80000);
-    await Helpers.enableSynchronization();
   });
 
   it('Should navigate to the Profile screen after swiping right', async () => {
@@ -319,9 +317,7 @@ describe('Hardhat Transaction Flow', () => {
     const encodedUri = encodeURIComponent(uri);
     const fullUrl = `${baseUrl}/wc?uri=${encodedUri}`;
 
-    await Helpers.disableSynchronization();
     await device.sendToHome();
-    await Helpers.enableSynchronization();
 
     await Helpers.delay(2000);
 

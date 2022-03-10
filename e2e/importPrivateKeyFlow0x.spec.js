@@ -28,7 +28,6 @@ describe('Import from private key flow', () => {
   });
 
   it('with 0x - Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
-    await Helpers.disableSynchronization();
     await Helpers.checkIfVisible('wallet-info-input');
     await Helpers.typeText('wallet-info-input', 'PKEY', false);
     await Helpers.waitAndTap('wallet-info-submit-button');
@@ -40,7 +39,6 @@ describe('Import from private key flow', () => {
       await Helpers.authenticatePin('1234');
     }
     await Helpers.checkIfVisible('wallet-screen', 40000);
-    await Helpers.enableSynchronization();
   });
 
   // Saving for now in case we want to test iCloud back up sheet
