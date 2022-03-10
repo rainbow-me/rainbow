@@ -24,7 +24,6 @@ export default function GradientOutlineButton({
       // @ts-expect-error JavaScript component
       onPress={onPress}
       style={{
-        overflow: 'hidden',
         ...(variant === 'circular' && {
           width: 40,
         }),
@@ -33,10 +32,34 @@ export default function GradientOutlineButton({
       <Cover>
         <Box
           as={LinearGradient}
+          background="body"
           borderRadius={23}
           colors={gradient}
           end={{ x: 1, y: 0 }}
           height="full"
+          shadow={{
+            custom: {
+              android: {
+                color: { custom: 'rgb(52, 163, 180)' },
+                elevation: 30,
+                opacity: 0.3,
+              },
+              ios: [
+                {
+                  blur: 15,
+                  color: { custom: 'rgb(52, 163, 180)' },
+                  offset: { x: 0, y: 5 },
+                  opacity: 0.3,
+                },
+                {
+                  blur: 30,
+                  color: { custom: 'rgb(37, 41, 46)' },
+                  offset: { x: 0, y: 10 },
+                  opacity: 0.15,
+                },
+              ],
+            },
+          }}
           start={{ x: 0, y: 0 }}
           width="full"
         />

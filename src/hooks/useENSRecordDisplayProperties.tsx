@@ -139,7 +139,16 @@ export default function useENSRecordDisplayProperties({
         },
       },
     ].filter(x => x);
-  }, [allowEdit, displayUrl, recordKey, recordValue, type, url]);
+  }, [
+    allowEdit,
+    displayUrl,
+    isUrlValue,
+    label,
+    recordKey,
+    recordValue,
+    type,
+    url,
+  ]);
 
   const { navigate } = useNavigation();
   const { setClipboard } = useClipboard();
