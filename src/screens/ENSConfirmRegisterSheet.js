@@ -91,6 +91,7 @@ export default function ENSConfirmRegisterSheet() {
   const [duration, setDuration] = useState(1);
   const [sendReverseRecord, setSendReverseRecord] = useState(true);
   const { step, stepGasLimit, action } = useENSRegistrationActionHandler({
+    sendReverseRecord,
     yearsDuration: duration,
   });
   const prevStepGasLimit = usePrevious(stepGasLimit);
