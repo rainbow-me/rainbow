@@ -2,6 +2,7 @@ import { useFocusEffect, useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Switch } from 'react-native-gesture-handler';
 import { useRecoilState } from 'recoil';
 import brain from '../assets/brain.png';
 import ActivityIndicator from '../components/ActivityIndicator';
@@ -14,6 +15,8 @@ import { SheetActionButtonRow, SlackSheet } from '../components/sheet';
 import {
   AccentColorProvider,
   Box,
+  Column,
+  Columns,
   Divider,
   Heading,
   Inline,
@@ -38,6 +41,7 @@ import {
   usePrevious,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
+import { colors } from '@rainbow-me/styles';
 
 export const ENSConfirmRegisterSheetHeight = 600;
 export const ENSConfirmUpdateSheetHeight = 600;
@@ -85,6 +89,7 @@ export default function ENSConfirmRegisterSheet() {
   const [accentColor] = useRecoilState(accentColorAtom);
 
   const [duration, setDuration] = useState(1);
+  const [sendReverseRecord, setSendReverseRecord] = useState(true);
   const { step, stepGasLimit, action } = useENSRegistrationActionHandler({
     yearsDuration: duration,
   });
@@ -154,9 +159,33 @@ export default function ENSConfirmRegisterSheet() {
   const content = useMemo(
     () => ({
       [REGISTRATION_STEPS.REGISTER]: (
-        <Centered>
-          <LoadingSpinner />
-        </Centered>
+        <Inset horizontal="30px">
+          <Columns>
+            <Column width="2/3">
+              <Text
+                color="secondary80"
+                lineHeight="loose"
+                size="16px"
+                weight="bold"
+              >
+                Set as my ENS name 􀅵
+              </Text>
+            </Column>
+            <Column width="1/3">
+              <Box alignItems="flex-end">
+                <Switch
+                  onValueChange={() =>
+                    setSendReverseRecord(
+                      sendReverseRecord => !sendReverseRecord
+                    )
+                  }
+                  trackColor={{ false: colors.white, true: accentColor }}
+                  value={sendReverseRecord}
+                />
+              </Box>
+            </Column>
+          </Columns>
+        </Inset>
       ),
       [REGISTRATION_STEPS.COMMIT]: (
         <Inset horizontal="30px">
@@ -205,11 +234,13 @@ export default function ENSConfirmRegisterSheet() {
       ),
     }),
     [
+      accentColor,
       duration,
       registrationCostsData?.estimatedNetworkFee?.display,
       registrationCostsData?.estimatedRentPrice?.total?.display,
       registrationCostsData?.estimatedTotalRegistrationCost?.display,
       registrationCostsData?.estimatedTotalRegistrationCost?.eth,
+      sendReverseRecord,
     ]
   );
   const actions = useMemo(
@@ -218,14 +249,14 @@ export default function ENSConfirmRegisterSheet() {
         <TransactionActionRow
           accentColor={accentColor}
           action={action}
-          label="Start Registration"
+          label={lang.t('profiles.confirm.start_registration')}
         />
       ),
       [REGISTRATION_STEPS.REGISTER]: (
         <TransactionActionRow
           accentColor={accentColor}
           action={action}
-          label="Confirm Registration"
+          label={lang.t('profiles.confirm.confirm_registration')}
         />
       ),
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: null,
@@ -233,7 +264,7 @@ export default function ENSConfirmRegisterSheet() {
     }),
     [accentColor, action]
   );
-  console.log('{actions[step]}', actions[step]);
+
   return (
     <SlackSheet
       additionalTopPadding
