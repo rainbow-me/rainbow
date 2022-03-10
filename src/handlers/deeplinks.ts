@@ -22,7 +22,6 @@ import {
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils } from '@rainbow-me/utils';
-import logger from 'logger';
 
 export default async function handleDeeplink(
   url: any,
