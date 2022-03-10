@@ -123,13 +123,14 @@ function CommitContent({ registrationCostsData, setDuration, duration }) {
   );
 }
 
-function TransactionActionRow({ action, accentColor, label }) {
+function TransactionActionRow({ action, accentColor, label, disabled }) {
   return (
     <Box>
       <Box>
         <SheetActionButtonRow paddingBottom={5}>
           <HoldToAuthorizeButton
             color={accentColor}
+            disabled={disabled}
             hideInnerBorder
             isLongPressAvailableForBiometryType
             label={label}
@@ -160,7 +161,7 @@ export default function ENSConfirmRegisterSheet() {
     name: ensName,
     mode,
   } = useENSRegistration();
-  const [gasLimit, setGasLimit] = useState();
+  const [gasLimit, setGasLimit] = useState(null);
   const [accentColor] = useRecoilState(accentColorAtom);
 
   const [duration, setDuration] = useState(1);
@@ -188,7 +189,6 @@ export default function ENSConfirmRegisterSheet() {
 
   const updateGasLimit = useCallback(async () => {
     updateTxFee(stepGasLimit);
-    setGasLimit(stepGasLimit);
   }, [stepGasLimit, updateTxFee]);
 
   const boxStyle = useMemo(
@@ -254,6 +254,7 @@ export default function ENSConfirmRegisterSheet() {
         <TransactionActionRow
           accentColor={accentColor}
           action={action}
+          disabled={!stepGasLimit}
           label={lang.t('profiles.confirm.start_registration')}
         />
       ),
@@ -261,6 +262,7 @@ export default function ENSConfirmRegisterSheet() {
         <TransactionActionRow
           accentColor={accentColor}
           action={action}
+          disabled={!stepGasLimit}
           label={lang.t('profiles.confirm.confirm_registration')}
         />
       ),
@@ -268,19 +270,20 @@ export default function ENSConfirmRegisterSheet() {
         <TransactionActionRow
           accentColor={accentColor}
           action={action}
+          disabled={!stepGasLimit}
           label={lang.t('profiles.confirm.confirm_update')}
         />
       ),
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: null,
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: null,
     }),
-    [accentColor, action]
+    [accentColor, action, stepGasLimit]
   );
 
   // Update gas limit
   useEffect(() => {
     if (
-      (!gasLimit && stepGasLimit && !isEmpty(gasFeeParamsBySpeed)) ||
+      (stepGasLimit && !isEmpty(gasFeeParamsBySpeed)) ||
       prevStepGasLimit !== stepGasLimit
     ) {
       updateGasLimit();
