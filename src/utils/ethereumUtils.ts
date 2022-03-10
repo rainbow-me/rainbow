@@ -405,6 +405,21 @@ const hasPreviousTransactions = (
   });
 };
 
+/**
+ * @desc Fetches the address' first transaction timestamp (in ms)
+ * @param  {String} address
+ * @return {Promise<number>}
+ */
+export const getFirstTransactionTimestamp = async (
+  address: EthereumAddress
+): Promise<number | undefined> => {
+  const url = `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&sort=asc&page=1&offset=1&apikey=${ETHERSCAN_API_KEY}`;
+  const response = await fetch(url);
+  const parsedResponse = await response.json();
+  const timestamp = parsedResponse.result[0]?.timeStamp;
+  return timestamp ? timestamp * 1000 : undefined;
+};
+
 const checkIfUrlIsAScam = async (url: string) => {
   try {
     const { hostname } = new URL(url);

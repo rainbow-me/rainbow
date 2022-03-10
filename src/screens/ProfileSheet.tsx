@@ -1,6 +1,7 @@
 import { useRoute } from '@react-navigation/core';
 import ConditionalWrap from 'conditional-wrap';
 import React, { useMemo } from 'react';
+import { useQuery } from 'react-query';
 import Spinner from '../components/Spinner';
 import Avatar from '../components/ens-profile/Avatar/Avatar';
 import CoverPhoto from '../components/ens-profile/Cover/Cover';
@@ -31,19 +32,32 @@ import {
   useENSProfile,
   usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
+import { getFirstTransactionTimestamp } from '@rainbow-me/utils/ethereumUtils';
 
 export default function ProfileSheet() {
   const { params } = useRoute<any>();
   const { colors } = useTheme();
 
+  const { accountAddress } = useAccountProfile();
+
   const { height: deviceHeight } = useDimensions();
   const contentHeight =
     deviceHeight - SheetHandleFixedToTopHeight - sharedCoolModalTopOffset;
 
-  const ensName = params?.address;
+  const ensName = params?.address || 'moxey.eth';
   const { isLoading, data: profile } = useENSProfile(ensName);
   const avatarUrl = profile?.images.avatarUrl;
   const coverUrl = profile?.images.coverUrl;
+
+  const { data: firstTransactionTimestamp } = useQuery(
+    ['first-transaction-timestamp', accountAddress],
+    async () => {
+      return getFirstTransactionTimestamp(accountAddress);
+    },
+    {
+      enabled: Boolean(accountAddress),
+    }
+  );
 
   const { accountColor, accountSymbol } = useAccountProfile();
 
@@ -124,12 +138,15 @@ export default function ProfileSheet() {
                       <Stack space="19px">
                         <Heading size="23px">{ensName}</Heading>
                         {profile?.records.description && (
-                          <Text weight="medium">
+                          <Text containsEmoji weight="medium">
                             {profile?.records.description}
                           </Text>
                         )}
                         {profile?.records && (
                           <RecordTags
+                            firstTransactionTimestamp={
+                              firstTransactionTimestamp
+                            }
                             records={profile?.records}
                             show={[
                               ENS_RECORDS.twitter,
