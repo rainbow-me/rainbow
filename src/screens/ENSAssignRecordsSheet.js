@@ -339,6 +339,12 @@ function SelectableAttributesButtons({
   onAddField,
   onRemoveField,
 }) {
+  const { navigate } = useNavigation();
+
+  const handlePressAdditionalRecords = useCallback(() => {
+    navigate(Routes.ENS_ADDITIONAL_RECORDS_SHEET);
+  }, [navigate]);
+
   return (
     <Inline space="10px">
       {Object.values(textRecordFields).map((textRecordField, i) => {
@@ -368,6 +374,13 @@ function SelectableAttributesButtons({
           </SelectableButton>
         );
       })}
+      <SelectableButton
+        isSelected={false}
+        // key={i}
+        onSelect={handlePressAdditionalRecords}
+      >
+        ...
+      </SelectableButton>
     </Inline>
   );
 }
