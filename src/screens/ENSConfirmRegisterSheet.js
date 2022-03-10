@@ -49,6 +49,78 @@ const avatarSize = 70;
 
 const LoadingSpinner = android ? Spinner : ActivityIndicator;
 
+function RegisterContent({
+  setSendReverseRecord,
+  accentColor,
+  sendReverseRecord,
+}) {
+  return (
+    <Inset horizontal="30px">
+      <Columns>
+        <Column width="2/3">
+          <Text
+            color="secondary80"
+            lineHeight="loose"
+            size="16px"
+            weight="bold"
+          >
+            {lang.t('profiles.confirm.set_ens_name')} 􀅵
+          </Text>
+        </Column>
+        <Column width="1/3">
+          <Box alignItems="flex-end">
+            <Switch
+              onValueChange={() =>
+                setSendReverseRecord(sendReverseRecord => !sendReverseRecord)
+              }
+              trackColor={{ false: colors.white, true: accentColor }}
+              value={sendReverseRecord}
+            />
+          </Box>
+        </Column>
+      </Columns>
+    </Inset>
+  );
+}
+
+function CommitContent({ registrationCostsData, setDuration, duration }) {
+  return (
+    <Inset horizontal="30px">
+      <Stack space="34px">
+        <Inline
+          alignHorizontal="center"
+          alignVertical="center"
+          space="6px"
+          wrap={false}
+        >
+          <Box>
+            <ImgixImage source={brain} style={{ height: 20, width: 20 }} />
+          </Box>
+          <Text color="secondary50" size="14px" weight="heavy">
+            {lang.t('profiles.confirm.suggestion')}
+          </Text>
+        </Inline>
+        <RegistrationReviewRows
+          duration={duration}
+          estimatedCostETH={
+            registrationCostsData?.estimatedTotalRegistrationCost?.eth
+          }
+          maxDuration={99}
+          networkFee={registrationCostsData?.estimatedNetworkFee?.display}
+          onChangeDuration={setDuration}
+          registrationFee={
+            registrationCostsData?.estimatedRentPrice?.total?.display
+          }
+          totalCost={
+            registrationCostsData?.estimatedTotalRegistrationCost?.display
+          }
+        />
+        <Divider color="divider40" />
+      </Stack>
+    </Inset>
+  );
+}
+
 function TransactionActionRow({ action, accentColor, label }) {
   return (
     <Box>
@@ -108,6 +180,7 @@ export default function ENSConfirmRegisterSheet() {
     duration,
     name,
     rentPrice,
+    sendReverseRecord,
   });
 
   const updateGasLimit = useCallback(async () => {
@@ -137,68 +210,18 @@ export default function ENSConfirmRegisterSheet() {
   const stepContent = useMemo(
     () => ({
       [REGISTRATION_STEPS.REGISTER]: (
-        <Inset horizontal="30px">
-          <Columns>
-            <Column width="2/3">
-              <Text
-                color="secondary80"
-                lineHeight="loose"
-                size="16px"
-                weight="bold"
-              >
-                Set as my ENS name 􀅵
-              </Text>
-            </Column>
-            <Column width="1/3">
-              <Box alignItems="flex-end">
-                <Switch
-                  onValueChange={() =>
-                    setSendReverseRecord(
-                      sendReverseRecord => !sendReverseRecord
-                    )
-                  }
-                  trackColor={{ false: colors.white, true: accentColor }}
-                  value={sendReverseRecord}
-                />
-              </Box>
-            </Column>
-          </Columns>
-        </Inset>
+        <RegisterContent
+          accentColor={accentColor}
+          sendReverseRecord={sendReverseRecord}
+          setSendReverseRecord={setSendReverseRecord}
+        />
       ),
       [REGISTRATION_STEPS.COMMIT]: (
-        <Inset horizontal="30px">
-          <Stack space="34px">
-            <Inline
-              alignHorizontal="center"
-              alignVertical="center"
-              space="6px"
-              wrap={false}
-            >
-              <Box>
-                <ImgixImage source={brain} style={{ height: 20, width: 20 }} />
-              </Box>
-              <Text color="secondary50" size="14px" weight="heavy">
-                {lang.t('profiles.confirm.suggestion')}
-              </Text>
-            </Inline>
-            <RegistrationReviewRows
-              duration={duration}
-              estimatedCostETH={
-                registrationCostsData?.estimatedTotalRegistrationCost?.eth
-              }
-              maxDuration={99}
-              networkFee={registrationCostsData?.estimatedNetworkFee?.display}
-              onChangeDuration={setDuration}
-              registrationFee={
-                registrationCostsData?.estimatedRentPrice?.total?.display
-              }
-              totalCost={
-                registrationCostsData?.estimatedTotalRegistrationCost?.display
-              }
-            />
-            <Divider color="divider40" />
-          </Stack>
-        </Inset>
+        <CommitContent
+          duration={duration}
+          registrationCostsData={registrationCostsData}
+          setDuration={setDuration}
+        />
       ),
       [REGISTRATION_STEPS.EDIT]: (
         <Inset horizontal="30px">
@@ -219,15 +242,7 @@ export default function ENSConfirmRegisterSheet() {
         </Centered>
       ),
     }),
-    [
-      accentColor,
-      duration,
-      registrationCostsData?.estimatedNetworkFee?.display,
-      registrationCostsData?.estimatedRentPrice?.total?.display,
-      registrationCostsData?.estimatedTotalRegistrationCost?.display,
-      registrationCostsData?.estimatedTotalRegistrationCost?.eth,
-      sendReverseRecord,
-    ]
+    [accentColor, duration, registrationCostsData, sendReverseRecord]
   );
 
   const stepActions = useMemo(

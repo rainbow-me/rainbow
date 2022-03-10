@@ -597,6 +597,7 @@
         "start_registration": "Start Registration",
         "confirm_update": "Confirm update",
         "suggestion": "Buy more years now to save on fees",
+        "set_ens_name": "Set as my ENS name",
         "registration_duration": "Register name for",
         "registration_cost": "Registration cost",
         "current_fees": "Current network fee",
