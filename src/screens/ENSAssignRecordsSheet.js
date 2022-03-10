@@ -95,6 +95,13 @@ export default function ENSAssignRecordsSheet() {
     [params?.sheetRef]
   );
 
+  const handleError = useCallback(
+    ({ yOffset }) => {
+      params?.sheetRef.current.scrollTo({ y: yOffset });
+    },
+    [params?.sheetRef]
+  );
+
   return (
     <AccentColorProvider color={accentColor}>
       <Box
@@ -125,6 +132,7 @@ export default function ENSAssignRecordsSheet() {
                 <TextRecordsForm
                   autoFocusKey={params?.autoFocusKey}
                   onAutoFocusLayout={handleAutoFocusLayout}
+                  onError={handleError}
                 />
               </Box>
             </Stack>
@@ -147,6 +155,7 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
     selectedFields,
     onAddField,
     onRemoveField,
+    submit,
   } = useENSRegistrationForm();
 
   const handlePressBack = useCallback(() => {
@@ -154,13 +163,15 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
   }, [navigate]);
 
   const handlePressContinue = useCallback(() => {
-    navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
-      longFormHeight:
-        mode === 'edit'
-          ? ENSConfirmUpdateSheetHeight
-          : ENSConfirmRegisterSheetHeight,
+    submit(() => {
+      navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
+        longFormHeight:
+          mode === 'edit'
+            ? ENSConfirmUpdateSheetHeight
+            : ENSConfirmRegisterSheetHeight,
+      });
     });
-  }, [mode, navigate]);
+  }, [mode, navigate, submit]);
 
   const [visible, setVisible] = useState(false);
   useEffect(() => {
