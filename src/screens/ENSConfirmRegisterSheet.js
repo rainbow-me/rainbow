@@ -200,6 +200,14 @@ export default function ENSConfirmRegisterSheet() {
           </Stack>
         </Inset>
       ),
+      [REGISTRATION_STEPS.EDIT]: (
+        <Inset horizontal="30px">
+          <Divider color="divider40" />
+          <Text color="secondary50" size="14px" weight="heavy">
+            TODO
+          </Text>
+        </Inset>
+      ),
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: (
         <Centered>
           <LoadingSpinner />
@@ -236,6 +244,13 @@ export default function ENSConfirmRegisterSheet() {
           accentColor={accentColor}
           action={action}
           label={lang.t('profiles.confirm.confirm_registration')}
+        />
+      ),
+      [REGISTRATION_STEPS.EDIT]: (
+        <TransactionActionRow
+          accentColor={accentColor}
+          action={action}
+          label={lang.t('profiles.confirm.confirm_update')}
         />
       ),
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: null,
