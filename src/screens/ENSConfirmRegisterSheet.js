@@ -26,12 +26,14 @@ import {
   Stack,
   Text,
 } from '@rainbow-me/design-system';
+import { fetchReverseRecord } from '@rainbow-me/handlers/ens';
 import {
   accentColorAtom,
   ENS_DOMAIN,
   REGISTRATION_STEPS,
 } from '@rainbow-me/helpers/ens';
 import {
+  useAccountSettings,
   useENSRegistration,
   useENSRegistrationActionHandler,
   useENSRegistrationCosts,
@@ -151,6 +153,7 @@ function TransactionActionRow({ action, accentColor, label }) {
 
 export default function ENSConfirmRegisterSheet() {
   const { params } = useRoute();
+  const { accountAddress } = useAccountSettings();
   const { gasFeeParamsBySpeed, updateTxFee, startPollingGasFees } = useGas();
   const {
     images: { avatarUrl: initialAvatarUrl },
@@ -292,6 +295,15 @@ export default function ENSConfirmRegisterSheet() {
   ]);
 
   useEffect(() => startPollingGasFees(), [startPollingGasFees]);
+
+  useEffect(() => {
+    // if reverse record is set, we don't want to send the reverse record tx by default
+    const getReverseRecord = async () => {
+      const reverseRecord = await fetchReverseRecord(accountAddress);
+      if (reverseRecord) setSendReverseRecord(false);
+    };
+    getReverseRecord();
+  }, [accountAddress]);
 
   useFocusEffect(() => {
     blurFields();
