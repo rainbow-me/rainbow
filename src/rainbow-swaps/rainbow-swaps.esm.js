@@ -1113,7 +1113,7 @@ var ALLOWS_PERMIT = {
   '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984': true,
   // RAD
   '0x31c8eacbffdd875c74b94b077895bd78cf1e64a3': true,
-  // DAI
+  // // DAI
   '0x6b175474e89094c44da98b954eedeac495271d0f': true,
   // LQTY
   '0x6dea81c8171d0ba574754ef6f8b412f2ed88c54d': true,
@@ -2863,22 +2863,22 @@ function signPermit(_x11, _x12, _x13, _x14, _x15, _x16, _x17) {
 }
 
 function _signPermit() {
-  _signPermit = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee4(wallet, tokenAddress, holder, spender, amount, deadline, chainId) {
-    var token, isPermitAllowedType, name, _yield$Promise$all, nonce, version, message, domain, types, data, privateKeyBuffer, signature, _splitSignature, v, r, s;
+  _signPermit = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee4(wallet, tokenAddress, owner, spender, value, deadline, chainId) {
+    var isDaiStylePermit, token, name, _yield$Promise$all, nonce, version, message, domain, types, data, privateKeyBuffer, signature, _splitSignature, v, r, s;
 
     return runtime_1.wrap(function _callee4$(_context4) {
       while (1) {
         switch (_context4.prev = _context4.next) {
           case 0:
-            token = new Contract(tokenAddress, tokenAddress.toLowerCase() === DAI_ADDRESS ? DAIAbi : IERC2612Abi, wallet);
-            isPermitAllowedType = token.address.toLowerCase() === DAI_ADDRESS.toLowerCase();
+            isDaiStylePermit = tokenAddress.toLowerCase() === DAI_ADDRESS.toLowerCase();
+            token = new Contract(tokenAddress, isDaiStylePermit ? DAIAbi : IERC2612Abi, wallet);
             _context4.next = 4;
             return token.name();
 
           case 4:
             name = _context4.sent;
             _context4.next = 7;
-            return Promise.all([getNonces(token, holder), getPermitVersion(token, name, chainId, token.address)]);
+            return Promise.all([getNonces(token, owner), getPermitVersion(token, name, chainId, token.address)]);
 
           case 7:
             _yield$Promise$all = _context4.sent;
@@ -2889,14 +2889,14 @@ function _signPermit() {
               spender: spender
             };
 
-            if (isPermitAllowedType) {
-              message.holder = holder;
+            if (isDaiStylePermit) {
+              message.holder = owner;
               message.allowed = true;
               message.expiry = Number(deadline.toString());
             } else {
-              message.value = BigNumber.from(amount).toHexString();
+              message.value = BigNumber.from(value).toHexString();
               message.deadline = Number(deadline.toString());
-              message.owner = holder;
+              message.owner = owner;
             }
 
             domain = {
@@ -2911,7 +2911,7 @@ function _signPermit() {
 
             types = {
               EIP712Domain: version !== null ? EIP712_DOMAIN_TYPE : EIP712_DOMAIN_TYPE_NO_VERSION,
-              Permit: isPermitAllowedType ? PERMIT_ALLOWED_TYPE : EIP2612_TYPE
+              Permit: isDaiStylePermit ? PERMIT_ALLOWED_TYPE : EIP2612_TYPE
             };
             data = {
               domain: domain,
@@ -2928,6 +2928,7 @@ function _signPermit() {
             _splitSignature = splitSignature(signature), v = _splitSignature.v, r = _splitSignature.r, s = _splitSignature.s;
             return _context4.abrupt("return", {
               deadline: deadline,
+              isDaiStylePermit: isDaiStylePermit,
               nonce: nonce,
               r: r,
               s: s,

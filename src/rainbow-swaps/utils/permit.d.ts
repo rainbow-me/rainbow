@@ -17,4 +17,4 @@ export interface DomainParam {
     verifyingContract: EthereumAddress;
     version?: string;
 }
-export declare function signPermit(wallet: Wallet, tokenAddress: EthereumAddress, holder: EthereumAddress, spender: EthereumAddress, amount: string, deadline: number, chainId: number): Promise<any>;
+export declare function signPermit(wallet: Wallet, tokenAddress: EthereumAddress, owner: EthereumAddress, spender: EthereumAddress, value: BigNumberish, deadline: BigNumberish, chainId: number): Promise<any>;

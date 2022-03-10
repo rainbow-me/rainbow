@@ -83,7 +83,8 @@ const swap = async (
       methodName,
     });
     const nonce = baseNonce ? baseNonce + index : undefined;
-    swap = await executeSwap({
+
+    const swapParams = {
       chainId,
       gasLimit,
       maxFeePerGas,
@@ -92,7 +93,11 @@ const swap = async (
       permit: !!permit,
       tradeDetails,
       wallet,
-    });
+    };
+
+    logger.debug('ABOUT TO EXECUTE SWAP', JSON.stringify(swapParams, null, 2));
+
+    swap = await executeSwap(swapParams);
 
     if (permit) {
       // Clear the allowance
