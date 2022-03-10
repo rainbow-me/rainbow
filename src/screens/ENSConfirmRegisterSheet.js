@@ -134,30 +134,7 @@ export default function ENSConfirmRegisterSheet() {
       return lang.t('profiles.confirm.confirm_registration');
   }, [mode, step]);
 
-  // Update gas limit
-  useEffect(() => {
-    if (
-      (!gasLimit && stepGasLimit && !isEmpty(gasFeeParamsBySpeed)) ||
-      prevStepGasLimit !== stepGasLimit
-    ) {
-      updateGasLimit();
-    }
-  }, [
-    gasFeeParamsBySpeed,
-    gasLimit,
-    prevStepGasLimit,
-    stepGasLimit,
-    updateGasLimit,
-    updateTxFee,
-  ]);
-
-  useEffect(() => startPollingGasFees(), [startPollingGasFees]);
-
-  useFocusEffect(() => {
-    blurFields();
-  });
-
-  const content = useMemo(
+  const stepContent = useMemo(
     () => ({
       [REGISTRATION_STEPS.REGISTER]: (
         <Inset horizontal="30px">
@@ -244,7 +221,8 @@ export default function ENSConfirmRegisterSheet() {
       sendReverseRecord,
     ]
   );
-  const actions = useMemo(
+
+  const stepActions = useMemo(
     () => ({
       [REGISTRATION_STEPS.COMMIT]: (
         <TransactionActionRow
@@ -265,6 +243,29 @@ export default function ENSConfirmRegisterSheet() {
     }),
     [accentColor, action]
   );
+
+  // Update gas limit
+  useEffect(() => {
+    if (
+      (!gasLimit && stepGasLimit && !isEmpty(gasFeeParamsBySpeed)) ||
+      prevStepGasLimit !== stepGasLimit
+    ) {
+      updateGasLimit();
+    }
+  }, [
+    gasFeeParamsBySpeed,
+    gasLimit,
+    prevStepGasLimit,
+    stepGasLimit,
+    updateGasLimit,
+    updateTxFee,
+  ]);
+
+  useEffect(() => startPollingGasFees(), [startPollingGasFees]);
+
+  useFocusEffect(() => {
+    blurFields();
+  });
 
   return (
     <SlackSheet
@@ -306,8 +307,8 @@ export default function ENSConfirmRegisterSheet() {
                 </Inset>
               </Box>
             </Row>
-            <Row>{content[step]}</Row>
-            <Row height="content">{actions[step]}</Row>
+            <Row>{stepContent[step]}</Row>
+            <Row height="content">{stepActions[step]}</Row>
           </Rows>
         </Box>
       </AccentColorProvider>
