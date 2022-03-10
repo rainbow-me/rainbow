@@ -290,6 +290,10 @@ const overrideTradeRefund = (txn: ZerionTransaction): ZerionTransaction => {
   };
 };
 
+const overrideAssetName = (name: string): string => {
+  return name.replace('Stablecoin', '').trim();
+};
+
 const parseTransactionWithEmptyChanges = async (
   txn: ZerionTransaction,
   nativeCurrency: string,
@@ -359,7 +363,7 @@ const parseTransaction = async (
         const updatedAsset = {
           address,
           decimals: internalTxn?.asset?.decimals,
-          name: internalTxn?.asset?.name,
+          name: overrideAssetName(internalTxn?.asset?.name),
           symbol: toUpper(internalTxn?.asset?.symbol ?? ''),
           ...metadata,
         };
