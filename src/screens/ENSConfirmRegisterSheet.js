@@ -49,6 +49,7 @@ const avatarSize = 70;
 
 export default function ENSConfirmRegisterSheet() {
   const { params } = useRoute();
+  const { theme } = useTheme();
   const { gasFeeParamsBySpeed, updateTxFee, startPollingGasFees } = useGas();
   const {
     images: { avatarUrl: initialAvatarUrl },
@@ -221,10 +222,10 @@ export default function ENSConfirmRegisterSheet() {
                   </Box>
                   <Box alignItems="center" justifyContent="center">
                     <GasSpeedButton
-                      borderColor={accentColor}
+                      asset={{ color: accentColor }}
                       currentNetwork="mainnet"
                       marginBottom={0}
-                      theme="light"
+                      theme={theme}
                     />
                   </Box>
                 </>
