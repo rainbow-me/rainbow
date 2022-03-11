@@ -157,6 +157,7 @@
     "match-sorter": "6.3.0",
     "mnemonist": "0.38.1",
     "nanoid": "3.2.0",
+    "openmct": "1.7.0",
     "p-wait-for": "4.1.0",
     "pako": "2.0.4",
     "parse-domain": "4.1.0",

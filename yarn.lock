@@ -13516,6 +13516,11 @@ opencollective@^1.0.3:
     node-fetch "1.6.3"
     opn "4.0.2"
 
+openmct@1.7.0:
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/openmct/-/openmct-1.7.0.tgz#5bfc87e1f3681463c18e4ad6b3877a4227de0c51"
+  integrity sha512-+GVLErPMIO/HGopI5MC40npsO0A/b+/2lFyRJVD4k93z5LqctolN0SzWSEqgxXebWzTNOek3c0+w8jbjOJ07Pg==
+
 opn@4.0.2:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/opn/-/opn-4.0.2.tgz#7abc22e644dff63b0a96d5ab7f2790c0f01abc95"
