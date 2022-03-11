@@ -25,6 +25,7 @@ import { useNavigation } from '@rainbow-me/navigation';
 import NetworkTypes from '@rainbow-me/networkTypes';
 import {
   ENS_NFT_CONTRACT_ADDRESS,
+  NULL_ETH_ADDRESS,
   REVERSE_RECORDS_MAINNET_ADDRESS,
   reverseRecordsABI,
 } from '@rainbow-me/references';
@@ -43,6 +44,95 @@ const TokenHistory = ({ contractAddress, tokenID, accentColor }) => {
   const networkPrefix = network === NetworkTypes.mainnet ? '' : `${network}-`;
 
   useEffect(() => {
+    const processRawEvents = async (contractAddress, rawEvents) => {
+      rawEvents.sort((event1, event2) =>
+        event2.created_date?.localeCompare(event1.created_date)
+      );
+      const addressArray = [];
+      const sales = [];
+      const events = await rawEvents.map((event, index) => {
+        switch (event.event_type) {
+          case EventTypes.TRANSFER.type:
+            addressArray.push(event.to_account?.address);
+            if (event.from_account?.address === NULL_ETH_ADDRESS) {
+              event.event_type =
+                contractAddress === ENS_NFT_CONTRACT_ADDRESS
+                  ? EventTypes.ENS.type
+                  : EventTypes.MINT.type;
+            }
+            break;
+
+          case EventTypes.SALE.type: {
+            sales.push(index);
+            event.payment_token =
+              event.payment_token?.symbol === PaymentTokens.WETH
+                ? PaymentTokens.ETH
+                : event.payment_token?.symbol;
+
+            const exactSaleAmount = formatAssetForDisplay({
+              amount: parseInt(event.total_price).toString(),
+              token: event.payment_token,
+            });
+
+            event.total_price = handleSignificantDecimals(exactSaleAmount, 5);
+            break;
+          }
+
+          default:
+            break;
+        }
+
+        event.created_date = getHumanReadableDate(
+          new Date(event.created_date).getTime() / 1000,
+          false
+        );
+
+        return {
+          createdDate: event.created_date,
+          eventType: event.event_type,
+          paymentToken: event.payment_token,
+          recipientAddress: event.to_account?.address,
+          recipientDisplay: null,
+          saleAmount: event.total_price,
+        };
+      });
+
+      // swap the order of every sale/transfer tx pair so sale is displayed before transfer
+      sales.forEach(saleIndex => {
+        if (events.length !== saleIndex + 1) {
+          [events[saleIndex], events[saleIndex + 1]] = [
+            events[saleIndex + 1],
+            events[saleIndex],
+          ];
+        }
+      });
+
+      const reverseRecordContract = new Contract(
+        REVERSE_RECORDS_MAINNET_ADDRESS,
+        reverseRecordsABI,
+        web3Provider
+      );
+
+      const ensArray = await reverseRecordContract.getNames(addressArray);
+
+      const ensMap = ensArray.reduce((tempMap, ens, index) => {
+        tempMap[addressArray[index]] = ens;
+        return tempMap;
+      }, {});
+
+      events.forEach(event => {
+        const address = event.recipientAddress;
+        if (address) {
+          const ens = ensMap[address];
+          event.recipientDisplay = ens
+            ? abbreviations.abbreviateEnsForDisplay(ens)
+            : abbreviations.address(address, 2);
+        }
+      });
+
+      return events;
+    };
+
     async function fetchTransactionHistory() {
       const semiFungible = await apiGetNftSemiFungibility(
         networkPrefix,
@@ -75,102 +165,7 @@ const TokenHistory = ({ contractAddress, tokenID, accentColor }) => {
       setTokenHistory(txHistory);
     }
     fetchTransactionHistory();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accountAddress, contractAddress, networkPrefix, tokenID]);
-
-  const EMPTY_ADDRESS = '0x0000000000000000000000000000000000000000';
-
-  const reverseRecordContract = new Contract(
-    REVERSE_RECORDS_MAINNET_ADDRESS,
-    reverseRecordsABI,
-    web3Provider
-  );
-
-  const processRawEvents = async (contractAddress, rawEvents) => {
-    rawEvents.sort((event1, event2) =>
-      event2.created_date.localeCompare(event1.created_date)
-    );
-    let addressArray = [];
-    let sales = [];
-    const events = await rawEvents.map((event, index) => {
-      let eventType = event.event_type;
-      let createdDate = event.created_date;
-      let saleAmount, paymentToken, toAccount, toAccountEthAddress;
-
-      switch (eventType) {
-        case EventTypes.TRANSFER.type:
-          toAccountEthAddress = event.to_account?.address;
-          if (event.from_account?.address === EMPTY_ADDRESS) {
-            eventType =
-              contractAddress === ENS_NFT_CONTRACT_ADDRESS
-                ? EventTypes.ENS.type
-                : EventTypes.MINT.type;
-          }
-          break;
-
-        case EventTypes.SALE.type: {
-          sales.push(index);
-          paymentToken =
-            event.payment_token?.symbol === PaymentTokens.WETH
-              ? PaymentTokens.ETH
-              : event.payment_token?.symbol;
-
-          const exactSaleAmount = formatAssetForDisplay({
-            amount: parseInt(event.total_price).toString(),
-            token: paymentToken,
-          });
-
-          saleAmount = handleSignificantDecimals(exactSaleAmount, 5);
-          break;
-        }
-
-        default:
-          break;
-      }
-
-      if (toAccountEthAddress) {
-        addressArray.push(toAccountEthAddress);
-      }
-
-      return {
-        createdDate,
-        eventType,
-        paymentToken,
-        saleAmount,
-        toAccount,
-        toAccountEthAddress,
-      };
-    });
-
-    // swap the order of every sale/transfer tx pair so sale is displayed before transfer
-    sales.forEach(saleIndex => {
-      if (events.length !== saleIndex + 1) {
-        [events[saleIndex], events[saleIndex + 1]] = [
-          events[saleIndex + 1],
-          events[saleIndex],
-        ];
-      }
-    });
-
-    let ensArray = await reverseRecordContract.getNames(addressArray);
-
-    const ensMap = ensArray.reduce(function (tempMap, ens, index) {
-      tempMap[addressArray[index]] = ens;
-      return tempMap;
-    }, {});
-
-    events.forEach(event => {
-      const address = event.toAccountEthAddress;
-      if (address) {
-        const ens = ensMap[address];
-        event.toAccount = ens
-          ? abbreviations.abbreviateEnsForDisplay(ens)
-          : abbreviations.address(address, 2);
-      }
-    });
-
-    return events;
-  };
 
   const shouldInvertScroll = tokenHistory.length > 2;
 
@@ -184,8 +179,6 @@ const TokenHistory = ({ contractAddress, tokenID, accentColor }) => {
   );
 
   const renderItem = ({ item, index }) => {
-    let clickableIcon = `􀆊`;
-    let isClickable = false;
     let label, icon;
 
     switch (item?.eventType) {
@@ -195,8 +188,7 @@ const TokenHistory = ({ contractAddress, tokenID, accentColor }) => {
         break;
 
       case EventTypes.MINT.type:
-        isClickable = accountAddress.toLowerCase() !== item.toAccountEthAddress;
-        label = `Minted by ${item.toAccount}`;
+        label = `Minted by ${item.recipientDisplay}`;
         icon = EventTypes.MINT.icon;
         break;
 
@@ -208,42 +200,34 @@ const TokenHistory = ({ contractAddress, tokenID, accentColor }) => {
         break;
 
       case EventTypes.TRANSFER.type:
-        isClickable = accountAddress.toLowerCase() !== item.toAccountEthAddress;
-        label = `Sent to ${item.toAccount}`;
+        label = `Sent to ${item.recipientDisplay}`;
         icon = EventTypes.TRANSFER.icon;
         break;
 
       default:
+        label = '';
+        icon = '';
         break;
     }
     return renderHistoryDescription({
-      clickableIcon,
       icon,
       index,
-      isClickable,
       item,
       label,
     });
   };
 
-  function renderHistoryDescription({
-    icon,
-    isClickable,
-    index,
-    item,
-    label,
-    clickableIcon,
-  }) {
+  function renderHistoryDescription({ icon, index, item, label }) {
     const shouldRenderTimeline = shouldInvertScroll
       ? index > 0
       : index < tokenHistory.length - 1;
 
     const shouldRenderPin = tokenHistory.length > 1;
 
-    const date = getHumanReadableDate(
-      new Date(item.createdDate).getTime() / 1000,
-      false
-    );
+    const isClickable =
+      (item.eventType === EventTypes.MINT.type ||
+        item.eventType === EventTypes.TRANSFER.type) &&
+      accountAddress.toLowerCase() !== item.recipientAddress;
 
     return (
       // when the token history isShort, invert the horizontal scroll so the history is pinned to the left instead of right
@@ -273,14 +257,14 @@ const TokenHistory = ({ contractAddress, tokenID, accentColor }) => {
             )}
             <Inset top={{ custom: shouldRenderPin ? 8 : 0.5 }}>
               <Text color="accent" size="14px" weight="heavy">
-                {date}
+                {item.createdDate}
               </Text>
             </Inset>
             <ButtonPressAnimation
               disabled={!isClickable}
               hapticType="selection"
               onPress={() =>
-                handlePress(item.toAccountEthAddress, item.toAccount)
+                handlePress(item.recipientAddress, item.recipientDisplay)
               }
               scaleTo={0.92}
             >
@@ -293,7 +277,7 @@ const TokenHistory = ({ contractAddress, tokenID, accentColor }) => {
                     size="14px"
                     weight="heavy"
                   >
-                    {` ${label} ${isClickable ? clickableIcon : ''}`}
+                    {` ${label} ${isClickable ? '􀆊' : ''}`}
                   </Text>
                 </Inline>
               </Inset>

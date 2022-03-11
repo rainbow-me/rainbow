@@ -142,8 +142,8 @@ export const apiGetNftTransactionHistoryForEventType = async (
 ) => {
   try {
     let array: any[] = [];
-    let cursor = null;
-    while (true) {
+    let cursor = '';
+    while (cursor != null) {
       const requestURL: string = semiFungible
         ? `https://${networkPrefix}${NFT_API_URL}/api/v1/events?account_address=${accountAddress}&asset_contract_address=${contractAddress}&token_id=${tokenID}&event_type=${eventType}&only_opensea=false${
             cursor ? `&cursor=${cursor}` : ''
@@ -161,9 +161,6 @@ export const apiGetNftTransactionHistoryForEventType = async (
       });
       array = array.concat(currentPage?.data?.asset_events || []);
       cursor = currentPage?.data?.next;
-      if (!cursor) {
-        break;
-      }
     }
     return array;
   } catch (error) {

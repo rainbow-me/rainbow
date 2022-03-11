@@ -265,9 +265,9 @@ const UniqueTokenExpandedState = ({
     [asset.permalink]
   );
 
-  const [contractAddress, tokenID] = !isPoap
-    ? urlSuffixForAsset.split('/')
-    : [null, null];
+  const [contractAddress, tokenID] = isPoap
+    ? [null, null]
+    : urlSuffixForAsset.split('/');
 
   const handlePressShowcase = useCallback(() => {
     if (isShowcaseAsset) {
