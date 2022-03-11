@@ -110,7 +110,7 @@ export const apiGetNftSemiFungibility = async (
   tokenID: string
 ) => {
   try {
-    const requestURL = `https://${networkPrefix}${NFT_API_URL}/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=0&limit=1`;
+    const requestURL = `https://${networkPrefix}${NFT_API_URL}/api/v1/events?only_opensea=false&token_id=${tokenID}&asset_contract_address=${contractAddress}`;
 
     const fungibility = await rainbowFetch(requestURL, {
       headers: {
@@ -141,15 +141,17 @@ export const apiGetNftTransactionHistoryForEventType = async (
   eventType: string
 ) => {
   try {
-    let offset = 0;
     let array: any[] = [];
-    let nextPage = true;
-    while (nextPage) {
-      const requestURL = semiFungible
-        ? `https://${networkPrefix}${NFT_API_URL}/api/v1/events?account_address=${accountAddress}&asset_contract_address=${contractAddress}&token_id=${tokenID}&event_type=${eventType}&only_opensea=false&offset=${offset}&limit=300`
-        : `https://${networkPrefix}${NFT_API_URL}/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&event_type=${eventType}&only_opensea=false&offset=${offset}&limit=300`;
-
-      let currentPage = await rainbowFetch(requestURL, {
+    let cursor = null;
+    while (true) {
+      const requestURL: string = semiFungible
+        ? `https://${networkPrefix}${NFT_API_URL}/api/v1/events?account_address=${accountAddress}&asset_contract_address=${contractAddress}&token_id=${tokenID}&event_type=${eventType}&only_opensea=false${
+            cursor ? `&cursor=${cursor}` : ''
+          }`
+        : `https://${networkPrefix}${NFT_API_URL}/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&event_type=${eventType}&only_opensea=false${
+            cursor ? `&cursor=${cursor}` : ''
+          }`;
+      const currentPage = await rainbowFetch(requestURL, {
         headers: {
           'Accept': 'application/json',
           'X-Api-Key': NFT_API_KEY,
@@ -158,8 +160,10 @@ export const apiGetNftTransactionHistoryForEventType = async (
         timeout: 10000, // 10 secs
       });
       array = array.concat(currentPage?.data?.asset_events || []);
-      offset = array.length + 1;
-      nextPage = currentPage?.data?.asset_events?.length === 300;
+      cursor = currentPage?.data?.next;
+      if (!cursor) {
+        break;
+      }
     }
     return array;
   } catch (error) {
