@@ -252,7 +252,7 @@ export default function useENSRegistrationActionHandler(
   const registrationStep = useMemo(() => {
     if (mode === 'edit') return REGISTRATION_STEPS.EDIT;
     // still waiting for the COMMIT tx to be sent
-    if (!registrationParameters.commitTransactionHashes?.length)
+    if (!registrationParameters.commitTransactionHash)
       return REGISTRATION_STEPS.COMMIT;
     // COMMIT tx sent, but not confirmed yet
     if (!registrationParameters.commitTransactionConfirmedAt)
@@ -265,7 +265,7 @@ export default function useENSRegistrationActionHandler(
   }, [
     mode,
     registrationParameters.commitTransactionConfirmedAt,
-    registrationParameters.commitTransactionHashes,
+    registrationParameters.commitTransactionHash,
     secondsSinceCommitConfirmed,
   ]);
 
@@ -298,19 +298,13 @@ export default function useENSRegistrationActionHandler(
   const watchCommitTransaction = useCallback(async () => {
     let confirmed = false;
     try {
-      // watch initial and speed up txs, if any
-      const txsPromises = registrationParameters?.commitTransactionHashes?.map(
-        async hash => await web3Provider.getTransaction(hash || '')
+      const tx = await web3Provider.getTransaction(
+        registrationParameters?.commitTransactionHash || ''
       );
-      const txs = txsPromises && (await Promise.all(txsPromises));
-      const blockPromises = txs?.map(tx =>
-        web3Provider.getBlock(tx?.blockHash || '')
-      );
-      const blocks = blockPromises && (await Promise.all(blockPromises));
-      const block = blocks?.find(block => Boolean(block?.timestamp));
-
-      if (timedPolled.current > 1 && block?.timestamp) {
-        const commitTransactionConfirmedAt = block?.timestamp * 1000;
+      const block = await web3Provider.getBlock(tx.blockHash || '');
+      const blockTimestamp = block?.timestamp;
+      if (timedPolled.current > 1 && blockTimestamp) {
+        const commitTransactionConfirmedAt = blockTimestamp * 1000;
         const now = Date.now();
         const secs = differenceInSeconds(now, now);
         setSecondsSinceCommitConfirmed(secs);
@@ -327,11 +321,7 @@ export default function useENSRegistrationActionHandler(
       //
     }
     return confirmed;
-  }, [
-    accountAddress,
-    dispatch,
-    registrationParameters?.commitTransactionHashes,
-  ]);
+  }, [accountAddress, dispatch, registrationParameters?.commitTransactionHash]);
 
   const startPollingWatchCommitTransaction = useCallback(async () => {
     if (registrationStep !== REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION)
