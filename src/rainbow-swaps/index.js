@@ -2,7 +2,7 @@
 'use strict'
 
 if (process.env.NODE_ENV === 'production') {
-  module.exports = require('./rainbow-swaps.cjs.production.min.js')
+  module.exports = require('./swaps.cjs.production.min.js')
 } else {
-  module.exports = require('./rainbow-swaps.cjs.development.js')
+  module.exports = require('./swaps.cjs.development.js')
 }

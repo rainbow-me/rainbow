@@ -1090,12 +1090,12 @@ var Source;
   Source["Aggregotor1inch"] = "1inch";
 })(Source || (Source = {}));
 
-var _WETH;
+var _WETH, _DAI;
 var ETH_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 var API_BASE_URL = 'https://swap-aggregator.api.p.rainbow.me';
 var RAINBOW_ROUTER_CONTRACT_ADDRESS = '0x00000000009726632680fb29d3f7a9734e3010e2';
 var WETH = (_WETH = {}, _WETH["" + ChainId.mainnet] = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', _WETH);
-var DAI_ADDRESS = '0x6b175474e89094c44da98b954eedeac495271d0f';
+var DAI = (_DAI = {}, _DAI["" + ChainId.mainnet] = '0x6b175474e89094c44da98b954eedeac495271d0f', _DAI);
 var USDC_ADDRESS = '0x111111111117dc0aa78b770fa6a738034120c302';
 var TORN_ADDRESS = '0x77777feddddffc19ff86db637967013e6c6a116c';
 var WNXM_ADDRESS = '0x0d438f3b5175bebc262bf23753c1e53d03432bde';
@@ -1113,7 +1113,7 @@ var ALLOWS_PERMIT = {
   '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984': true,
   // RAD
   '0x31c8eacbffdd875c74b94b077895bd78cf1e64a3': true,
-  // // DAI
+  // DAI
   '0x6b175474e89094c44da98b954eedeac495271d0f': true,
   // LQTY
   '0x6dea81c8171d0ba574754ef6f8b412f2ed88c54d': true,
@@ -1139,25 +1139,28 @@ var ALLOWS_PERMIT = {
 
 /**
  * Function to wrap a specific amount of ether for the specified wallet
- * (MAINNET ONLY!)
  * @param {BigNumberish} amount
  * @param {Wallet} wallet
  * @returns {Promise<Transaction>}
  */
 
 var wrapEth = /*#__PURE__*/function () {
-  var _ref = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee(amount, wallet) {
+  var _ref = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee(amount, wallet, chainId) {
     var instance;
     return runtime_1.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            instance = new Contract(WETH[ChainId.mainnet], JSON.stringify(WethAbi), wallet);
+            if (chainId === void 0) {
+              chainId = ChainId.mainnet;
+            }
+
+            instance = new Contract(WETH[chainId], JSON.stringify(WethAbi), wallet);
             return _context.abrupt("return", instance.deposit({
               value: amount
             }));
 
-          case 2:
+          case 3:
           case "end":
             return _context.stop();
         }
@@ -1165,7 +1168,7 @@ var wrapEth = /*#__PURE__*/function () {
     }, _callee);
   }));
 
-  return function wrapEth(_x, _x2) {
+  return function wrapEth(_x, _x2, _x3) {
     return _ref.apply(this, arguments);
   };
 }();
@@ -1178,16 +1181,20 @@ var wrapEth = /*#__PURE__*/function () {
  */
 
 var unwrapWeth = /*#__PURE__*/function () {
-  var _ref2 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee2(amount, wallet) {
+  var _ref2 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee2(amount, wallet, chainId) {
     var instance;
     return runtime_1.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            instance = new Contract(WETH[ChainId.mainnet], JSON.stringify(WethAbi), wallet);
+            if (chainId === void 0) {
+              chainId = ChainId.mainnet;
+            }
+
+            instance = new Contract(WETH[chainId], JSON.stringify(WethAbi), wallet);
             return _context2.abrupt("return", instance.withdraw(amount));
 
-          case 2:
+          case 3:
           case "end":
             return _context2.stop();
         }
@@ -1195,7 +1202,7 @@ var unwrapWeth = /*#__PURE__*/function () {
     }, _callee2);
   }));
 
-  return function unwrapWeth(_x3, _x4) {
+  return function unwrapWeth(_x4, _x5, _x6) {
     return _ref2.apply(this, arguments);
   };
 }();
@@ -1208,8 +1215,12 @@ var unwrapWeth = /*#__PURE__*/function () {
  * @returns {Promise<Transaction>}
  */
 
-var geWethMethod = function geWethMethod(name, provider) {
-  var instance = new Contract(WETH[ChainId.mainnet], JSON.stringify(WethAbi), provider);
+var geWethMethod = function geWethMethod(name, provider, chainId) {
+  if (chainId === void 0) {
+    chainId = ChainId.mainnet;
+  }
+
+  var instance = new Contract(WETH[chainId], JSON.stringify(WethAbi), provider);
   return instance.estimateGas[name];
 };
 
@@ -1700,16 +1711,25 @@ var RainbowRouterABI = [
 
 var getQuote = /*#__PURE__*/function () {
   var _ref2 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee(_ref) {
-    var source, _ref$chainId, chainId, fromAddress, sellTokenAddress, buyTokenAddress, sellAmount, buyAmount, slippage, url, response, quote;
+    var _WETH$chainId;
+
+    var source, _ref$chainId, chainId, fromAddress, sellTokenAddress, buyTokenAddress, sellAmount, buyAmount, slippage, sellTokenAddressLowercase, buyTokenAddressLowercase, ethAddressLowerCase, wethAddressLowerCase, url, response, quote;
 
     return runtime_1.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
             source = _ref.source, _ref$chainId = _ref.chainId, chainId = _ref$chainId === void 0 ? ChainId.mainnet : _ref$chainId, fromAddress = _ref.fromAddress, sellTokenAddress = _ref.sellTokenAddress, buyTokenAddress = _ref.buyTokenAddress, sellAmount = _ref.sellAmount, buyAmount = _ref.buyAmount, slippage = _ref.slippage;
+            // When wrapping or unwrapping ETH, the quote is always 1:1
+            // so we don't need to call our backend.
+            // NOTE: we only support mainnet
+            sellTokenAddressLowercase = sellTokenAddress.toLowerCase();
+            buyTokenAddressLowercase = buyTokenAddress.toLowerCase();
+            ethAddressLowerCase = ETH_ADDRESS.toLowerCase();
+            wethAddressLowerCase = (_WETH$chainId = WETH[chainId]) == null ? void 0 : _WETH$chainId.toLowerCase();
 
-            if (!(sellTokenAddress === ETH_ADDRESS && buyTokenAddress === WETH[ChainId.mainnet] || sellTokenAddress === WETH[ChainId.mainnet] && buyTokenAddress === ETH_ADDRESS)) {
-              _context.next = 3;
+            if (!(sellTokenAddressLowercase === ethAddressLowerCase && buyTokenAddressLowercase === wethAddressLowerCase || sellTokenAddressLowercase === wethAddressLowerCase && buyTokenAddressLowercase === ethAddressLowerCase)) {
+              _context.next = 7;
               break;
             }
 
@@ -1726,7 +1746,7 @@ var getQuote = /*#__PURE__*/function () {
               sellTokenAddress: sellTokenAddress
             });
 
-          case 3:
+          case 7:
             url = API_BASE_URL + "/quote?chainId=" + chainId + "&fromAddress=" + fromAddress + "&buyToken=" + buyTokenAddress + "&sellToken=" + sellTokenAddress + "&slippage=" + slippage;
 
             if (source) {
@@ -1740,32 +1760,32 @@ var getQuote = /*#__PURE__*/function () {
             }
 
             if (!(isNaN(Number(sellAmount)) && isNaN(Number(buyAmount)))) {
-              _context.next = 8;
+              _context.next = 12;
               break;
             }
 
             return _context.abrupt("return", null);
 
-          case 8:
+          case 12:
             // When buying ETH, we need to tell the aggregator
             // to return the funds to the contract if we need to take a fee
             if (buyTokenAddress === ETH_ADDRESS) {
               url += "&destReceiver=" + RAINBOW_ROUTER_CONTRACT_ADDRESS;
             }
 
-            _context.next = 11;
+            _context.next = 15;
             return fetch(url);
 
-          case 11:
+          case 15:
             response = _context.sent;
-            _context.next = 14;
+            _context.next = 18;
             return response.json();
 
-          case 14:
+          case 18:
             quote = _context.sent;
             return _context.abrupt("return", quote);
 
-          case 16:
+          case 20:
           case "end":
             return _context.stop();
         }
@@ -1820,7 +1840,7 @@ var calculateDeadline = /*#__PURE__*/function () {
 
 var fillQuote = /*#__PURE__*/function () {
   var _ref4 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee3(quote, transactionOptions, wallet, permit, chainId) {
-    var instance, swapTx, sellTokenAddress, buyTokenAddress, to, data, fee, value, sellAmount, feePercentageBasisPoints, deadline, permitSignature, _deadline, _permitSignature;
+    var instance, swapTx, sellTokenAddress, buyTokenAddress, to, data, fee, value, sellAmount, feePercentageBasisPoints, ethAddressLowerCase, deadline, permitSignature, _deadline, _permitSignature;
 
     return runtime_1.wrap(function _callee3$(_context3) {
       while (1) {
@@ -1828,105 +1848,106 @@ var fillQuote = /*#__PURE__*/function () {
           case 0:
             instance = new Contract(RAINBOW_ROUTER_CONTRACT_ADDRESS, RainbowRouterABI, wallet);
             sellTokenAddress = quote.sellTokenAddress, buyTokenAddress = quote.buyTokenAddress, to = quote.to, data = quote.data, fee = quote.fee, value = quote.value, sellAmount = quote.sellAmount, feePercentageBasisPoints = quote.feePercentageBasisPoints;
+            ethAddressLowerCase = ETH_ADDRESS.toLowerCase();
 
-            if (!((sellTokenAddress == null ? void 0 : sellTokenAddress.toLowerCase()) === ETH_ADDRESS.toLowerCase())) {
-              _context3.next = 8;
+            if (!((sellTokenAddress == null ? void 0 : sellTokenAddress.toLowerCase()) === ethAddressLowerCase)) {
+              _context3.next = 9;
               break;
             }
 
-            _context3.next = 5;
+            _context3.next = 6;
             return instance.fillQuoteEthToToken(buyTokenAddress, to, data, fee, _extends({}, transactionOptions, {
               value: value
             }));
 
-          case 5:
+          case 6:
             swapTx = _context3.sent;
-            _context3.next = 41;
+            _context3.next = 42;
             break;
 
-          case 8:
-            if (!((buyTokenAddress == null ? void 0 : buyTokenAddress.toLowerCase()) === ETH_ADDRESS.toLowerCase())) {
-              _context3.next = 26;
+          case 9:
+            if (!((buyTokenAddress == null ? void 0 : buyTokenAddress.toLowerCase()) === ethAddressLowerCase)) {
+              _context3.next = 27;
               break;
             }
 
             if (!permit) {
-              _context3.next = 21;
+              _context3.next = 22;
               break;
             }
 
-            _context3.next = 12;
+            _context3.next = 13;
             return calculateDeadline(wallet);
 
-          case 12:
+          case 13:
             deadline = _context3.sent;
-            _context3.next = 15;
+            _context3.next = 16;
             return signPermit(wallet, sellTokenAddress, quote.from, instance.address, MAX_INT, deadline, chainId);
 
-          case 15:
+          case 16:
             permitSignature = _context3.sent;
-            _context3.next = 18;
+            _context3.next = 19;
             return instance.fillQuoteTokenToEthWithPermit(sellTokenAddress, to, data, sellAmount, feePercentageBasisPoints, permitSignature, _extends({}, transactionOptions, {
               value: value
             }));
 
-          case 18:
+          case 19:
             swapTx = _context3.sent;
-            _context3.next = 24;
+            _context3.next = 25;
             break;
 
-          case 21:
-            _context3.next = 23;
+          case 22:
+            _context3.next = 24;
             return instance.fillQuoteTokenToEth(sellTokenAddress, to, data, sellAmount, feePercentageBasisPoints, _extends({}, transactionOptions, {
               value: value
             }));
 
-          case 23:
+          case 24:
             swapTx = _context3.sent;
 
-          case 24:
-            _context3.next = 41;
+          case 25:
+            _context3.next = 42;
             break;
 
-          case 26:
+          case 27:
             if (!permit) {
-              _context3.next = 38;
+              _context3.next = 39;
               break;
             }
 
-            _context3.next = 29;
+            _context3.next = 30;
             return calculateDeadline(wallet);
 
-          case 29:
+          case 30:
             _deadline = _context3.sent;
-            _context3.next = 32;
+            _context3.next = 33;
             return signPermit(wallet, sellTokenAddress, quote.from, instance.address, MAX_INT, _deadline, chainId);
 
-          case 32:
+          case 33:
             _permitSignature = _context3.sent;
-            _context3.next = 35;
+            _context3.next = 36;
             return instance.fillQuoteTokenToTokenWithPermit(sellTokenAddress, buyTokenAddress, to, data, sellAmount, fee, _permitSignature, _extends({}, transactionOptions, {
               value: value
             }));
 
-          case 35:
+          case 36:
             swapTx = _context3.sent;
-            _context3.next = 41;
+            _context3.next = 42;
             break;
 
-          case 38:
-            _context3.next = 40;
+          case 39:
+            _context3.next = 41;
             return instance.fillQuoteTokenToToken(sellTokenAddress, buyTokenAddress, to, data, sellAmount, fee, _extends({}, transactionOptions, {
               value: value
             }));
 
-          case 40:
+          case 41:
             swapTx = _context3.sent;
 
-          case 41:
+          case 42:
             return _context3.abrupt("return", swapTx);
 
-          case 42:
+          case 43:
           case "end":
             return _context3.stop();
         }
@@ -1948,8 +1969,9 @@ var getQuoteExecutionDetails = function getQuoteExecutionDetails(quote, transact
       value = quote.value,
       sellAmount = quote.sellAmount,
       feePercentageBasisPoints = quote.feePercentageBasisPoints;
+  var ethAddressLowerCase = ETH_ADDRESS.toLowerCase();
 
-  if ((sellTokenAddress == null ? void 0 : sellTokenAddress.toLowerCase()) === ETH_ADDRESS.toLowerCase()) {
+  if ((sellTokenAddress == null ? void 0 : sellTokenAddress.toLowerCase()) === ethAddressLowerCase) {
     return {
       method: instance.estimateGas['fillQuoteEthToToken'],
       methodArgs: [buyTokenAddress, to, data, fee],
@@ -1957,7 +1979,7 @@ var getQuoteExecutionDetails = function getQuoteExecutionDetails(quote, transact
         value: value
       })
     };
-  } else if ((buyTokenAddress == null ? void 0 : buyTokenAddress.toLowerCase()) === ETH_ADDRESS.toLowerCase()) {
+  } else if ((buyTokenAddress == null ? void 0 : buyTokenAddress.toLowerCase()) === ethAddressLowerCase) {
     return {
       method: instance.estimateGas['fillQuoteTokenToEth'],
       methodArgs: [sellTokenAddress, to, data, sellAmount, feePercentageBasisPoints],
@@ -2743,7 +2765,7 @@ var getPermitVersion = /*#__PURE__*/function () {
             _context2.prev = 21;
             _context2.t1 = _context2["catch"](10);
 
-            if (!([TORN_ADDRESS, WNXM_ADDRESS, VSP_ADDRESS].map(function (t) {
+            if (!(chainId === 1 && [TORN_ADDRESS, WNXM_ADDRESS, VSP_ADDRESS].map(function (t) {
               return t.toLowerCase();
             }).indexOf(token.address.toLowerCase()) !== -1)) {
               _context2.next = 25;
@@ -2864,13 +2886,15 @@ function signPermit(_x11, _x12, _x13, _x14, _x15, _x16, _x17) {
 
 function _signPermit() {
   _signPermit = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee4(wallet, tokenAddress, owner, spender, value, deadline, chainId) {
+    var _DAI$chainId;
+
     var isDaiStylePermit, token, name, _yield$Promise$all, nonce, version, message, domain, types, data, privateKeyBuffer, signature, _splitSignature, v, r, s;
 
     return runtime_1.wrap(function _callee4$(_context4) {
       while (1) {
         switch (_context4.prev = _context4.next) {
           case 0:
-            isDaiStylePermit = tokenAddress.toLowerCase() === DAI_ADDRESS.toLowerCase();
+            isDaiStylePermit = tokenAddress.toLowerCase() === ((_DAI$chainId = DAI[chainId]) == null ? void 0 : _DAI$chainId.toLowerCase());
             token = new Contract(tokenAddress, isDaiStylePermit ? DAIAbi : IERC2612Abi, wallet);
             _context4.next = 4;
             return token.name();
@@ -2946,5 +2970,5 @@ function _signPermit() {
   return _signPermit.apply(this, arguments);
 }
 
-export { ALLOWS_PERMIT, API_BASE_URL, ChainId, DAI_ADDRESS, ETH_ADDRESS, MAX_INT, PERMIT_EXPIRATION_TS, RAINBOW_ROUTER_CONTRACT_ADDRESS, Source, TORN_ADDRESS, USDC_ADDRESS, VSP_ADDRESS, WETH, WNXM_ADDRESS, fillQuote, geWethMethod, getQuote, getQuoteExecutionDetails, signPermit, unwrapWeth, wrapEth };
-//# sourceMappingURL=rainbow-swaps.esm.js.map
+export { ALLOWS_PERMIT, API_BASE_URL, ChainId, DAI, ETH_ADDRESS, MAX_INT, PERMIT_EXPIRATION_TS, RAINBOW_ROUTER_CONTRACT_ADDRESS, Source, TORN_ADDRESS, USDC_ADDRESS, VSP_ADDRESS, WETH, WNXM_ADDRESS, fillQuote, geWethMethod, getQuote, getQuoteExecutionDetails, signPermit, unwrapWeth, wrapEth };
+//# sourceMappingURL=swaps.esm.js.map
