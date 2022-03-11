@@ -14,7 +14,7 @@ export default function useENSPendingRegistrations() {
       .filter(
         registration =>
           !registration?.registerTransactionHash &&
-          registration?.commitTransactionHash
+          registration?.commitTransactionHashes?.length
       )
       .sort(
         (a, b) =>

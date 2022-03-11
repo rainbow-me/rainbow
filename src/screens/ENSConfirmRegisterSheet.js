@@ -135,14 +135,16 @@ function WaitCommitmentConfirmationContent({ accentColor }) {
     () =>
       navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
         accentColor,
-        tx: getTransactionByHash(registrationParameters?.commitTransactionHash),
+        tx: getTransactionByHash(
+          registrationParameters?.commitTransactionHashes?.[0]
+        ),
         type: 'speed_up',
       }),
     [
       accentColor,
       getTransactionByHash,
       navigate,
-      registrationParameters?.commitTransactionHash,
+      registrationParameters?.commitTransactionHashes,
     ]
   );
 

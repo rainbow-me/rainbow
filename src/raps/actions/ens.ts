@@ -251,7 +251,7 @@ const ensAction = async (
         );
         await dispatch(
           saveCommitRegistrationParameters(ownerAddress, {
-            commitTransactionHash: tx?.hash,
+            commitTransactionHashes: [tx?.hash],
             duration,
             name,
             ownerAddress,
