@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/core';
 import { differenceInSeconds } from 'date-fns';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -6,6 +7,7 @@ import {
   getENSRapEstimationByType,
   RapActionTypes,
 } from '../raps/common';
+import useTransactions from './useTransactions';
 import { useAccountSettings, useCurrentNonce, useENSRegistration } from '.';
 import { RegistrationParameters } from '@rainbow-me/entities';
 import { web3Provider } from '@rainbow-me/handlers/web3';
@@ -17,8 +19,12 @@ import {
 } from '@rainbow-me/helpers/ens';
 import { loadWallet } from '@rainbow-me/model/wallet';
 import { executeRap } from '@rainbow-me/raps';
-import { updateTransactionRegistrationParameters } from '@rainbow-me/redux/ensRegistration';
+import {
+  saveCommitRegistrationParameters,
+  updateTransactionRegistrationParameters,
+} from '@rainbow-me/redux/ensRegistration';
 import { timeUnits } from '@rainbow-me/references';
+import Routes from '@rainbow-me/routes';
 
 const ENS_SECONDS_WAIT = 60;
 
@@ -49,6 +55,8 @@ export default function useENSRegistrationActionHandler(
   const { accountAddress, network } = useAccountSettings();
   const getNextNonce = useCurrentNonce(accountAddress, network);
   const { registrationParameters, mode } = useENSRegistration();
+  const { navigate } = useNavigation();
+  const { getTransactionByHash } = useTransactions();
   const [stepGasLimit, setStepGasLimit] = useState<string | null>(null);
   const [
     secondsSinceCommitConfirmed,
@@ -96,6 +104,41 @@ export default function useENSRegistrationActionHandler(
       );
     },
     [accountAddress, yearsDuration, getNextNonce, registrationParameters]
+  );
+
+  const speedUpCommitAction = useCallback(
+    async (accentColor: string) => {
+      // we want to speed up the last commit tx sent
+      const commitTransactionHashes =
+        registrationParameters?.commitTransactionHashes;
+      const saveCommitTransactionHash = (hash: string) => {
+        const newCommitTransactionHashes = commitTransactionHashes?.concat(
+          hash
+        );
+        dispatch(
+          saveCommitRegistrationParameters(accountAddress, {
+            commitTransactionHashes: newCommitTransactionHashes,
+          })
+        );
+      };
+      const tx = getTransactionByHash(
+        commitTransactionHashes?.[commitTransactionHashes?.length - 1] || ''
+      );
+
+      navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
+        accentColor,
+        onSendTransactionCallback: saveCommitTransactionHash,
+        tx,
+        type: 'speed_up',
+      });
+    },
+    [
+      accountAddress,
+      dispatch,
+      getTransactionByHash,
+      navigate,
+      registrationParameters?.commitTransactionHashes,
+    ]
   );
 
   const registerAction = useCallback(
@@ -231,10 +274,10 @@ export default function useENSRegistrationActionHandler(
       [REGISTRATION_STEPS.COMMIT]: commitAction,
       [REGISTRATION_STEPS.EDIT]: setRecordsAction,
       [REGISTRATION_STEPS.REGISTER]: registerAction,
-      [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: () => null,
+      [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: speedUpCommitAction,
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: () => null,
     }),
-    [commitAction, registerAction, setRecordsAction]
+    [commitAction, registerAction, setRecordsAction, speedUpCommitAction]
   );
 
   const estimateGasLimitActions = useMemo(

@@ -127,7 +127,7 @@ export default function SpeedUpAndCancelSheet() {
   const calculatingGasLimit = useRef(false);
   const speedUrgentSelected = useRef(false);
   const {
-    params: { type, tx, accentColor },
+    params: { type, tx, accentColor, onSendTransactionCallback },
   } = useRoute();
   const [ready, setReady] = useState(false);
   const [txType, setTxType] = useState();
@@ -243,6 +243,7 @@ export default function SpeedUpAndCancelSheet() {
         provider: currentProvider,
         transaction: fasterTxPayload,
       });
+      onSendTransactionCallback?.(hash);
       const updatedTx = { ...tx };
       // Update the hash on the copy of the original tx
       updatedTx.hash = hash;
@@ -267,6 +268,7 @@ export default function SpeedUpAndCancelSheet() {
     getNewTransactionGasParams,
     goBack,
     nonce,
+    onSendTransactionCallback,
     to,
     tx,
     value,

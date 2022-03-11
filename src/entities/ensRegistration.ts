@@ -30,6 +30,10 @@ export interface RegistrationParameters
   setReverseRecord?: boolean;
 }
 
+export interface RegistrationSpeedUpParameters {
+  commitTransactionHashes?: string[];
+}
+
 export interface ENSRegistrations {
   [key: EthereumAddress]: {
     [ensName: string]: RegistrationParameters;

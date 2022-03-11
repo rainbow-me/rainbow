@@ -1,7 +1,7 @@
 import { useFocusEffect, useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Switch } from 'react-native-gesture-handler';
 import { useRecoilState } from 'recoil';
 import brain from '../assets/brain.png';
@@ -40,12 +40,8 @@ import {
   useENSRegistrationForm,
   useENSSearch,
   useGas,
-  usePrevious,
-  useTransactions,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
-import { useNavigation } from '@rainbow-me/navigation/Navigation';
-import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 
 export const ENSConfirmRegisterSheetHeight = 600;
@@ -126,32 +122,11 @@ function RegisterContent({
   );
 }
 
-function WaitCommitmentConfirmationContent({ accentColor }) {
-  const { navigate } = useNavigation();
-  const { getTransactionByHash } = useTransactions();
-  const { registrationParameters } = useENSRegistration();
-
-  const onSpeedUp = useCallback(
-    () =>
-      navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
-        accentColor,
-        tx: getTransactionByHash(
-          registrationParameters?.commitTransactionHashes?.[0]
-        ),
-        type: 'speed_up',
-      }),
-    [
-      accentColor,
-      getTransactionByHash,
-      navigate,
-      registrationParameters?.commitTransactionHashes,
-    ]
-  );
-
+function WaitCommitmentConfirmationContent({ accentColor, action }) {
   return (
     <Box alignItems="center" height="full">
       <LoadingSpinner />
-      <ButtonPressAnimation onPress={onSpeedUp}>
+      <ButtonPressAnimation onPress={() => action(accentColor)}>
         <Text
           color={{ custom: accentColor }}
           containsEmoji
@@ -206,12 +181,12 @@ export default function ENSConfirmRegisterSheet() {
   const [accentColor] = useRecoilState(accentColorAtom);
 
   const [duration, setDuration] = useState(1);
+  const [gasLimit, setGasLimit] = useState(null);
   const [sendReverseRecord, setSendReverseRecord] = useState(true);
   const { step, stepGasLimit, action } = useENSRegistrationActionHandler({
     sendReverseRecord,
     yearsDuration: duration,
   });
-  const prevStepGasLimit = usePrevious(stepGasLimit);
 
   const { blurFields, values } = useENSRegistrationForm();
   const avatarUrl = initialAvatarUrl || values.avatar;
@@ -227,10 +202,6 @@ export default function ENSConfirmRegisterSheet() {
     rentPrice: registrationData?.rentPrice,
     sendReverseRecord,
   });
-
-  const updateGasLimit = useCallback(async () => {
-    updateTxFee(stepGasLimit);
-  }, [stepGasLimit, updateTxFee]);
 
   const boxStyle = useMemo(
     () => ({
@@ -253,7 +224,7 @@ export default function ENSConfirmRegisterSheet() {
 
   const stepContent = useMemo(
     () => ({
-      [REGISTRATION_STEPS.REGISTER]: (
+      [REGISTRATION_STEPS.COMMIT]: (
         <CommitContent
           duration={duration}
           registrationCostsData={registrationCostsData}
@@ -276,7 +247,10 @@ export default function ENSConfirmRegisterSheet() {
         </Inset>
       ),
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: (
-        <WaitCommitmentConfirmationContent accentColor={accentColor} />
+        <WaitCommitmentConfirmationContent
+          accentColor={accentColor}
+          action={action}
+        />
       ),
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: (
         <Box alignItems="center">
@@ -284,7 +258,7 @@ export default function ENSConfirmRegisterSheet() {
         </Box>
       ),
     }),
-    [accentColor, duration, registrationCostsData, sendReverseRecord]
+    [accentColor, action, duration, registrationCostsData, sendReverseRecord]
   );
 
   const stepActions = useMemo(
@@ -322,20 +296,23 @@ export default function ENSConfirmRegisterSheet() {
   // Update gas limit
   useEffect(() => {
     if (
-      (stepGasLimit && !isEmpty(gasFeeParamsBySpeed)) ||
-      prevStepGasLimit !== stepGasLimit
+      stepGasLimit &&
+      !isEmpty(gasFeeParamsBySpeed) &&
+      gasLimit !== stepGasLimit
     ) {
-      updateGasLimit();
+      updateTxFee(stepGasLimit);
+      setGasLimit(stepGasLimit);
     }
-  }, [
-    gasFeeParamsBySpeed,
-    prevStepGasLimit,
-    stepGasLimit,
-    updateGasLimit,
-    updateTxFee,
-  ]);
+  }, [gasFeeParamsBySpeed, gasLimit, stepGasLimit, updateTxFee]);
 
-  useEffect(() => startPollingGasFees(), [startPollingGasFees]);
+  useEffect(() => {
+    if (
+      step === REGISTRATION_STEPS.COMMIT ||
+      step === REGISTRATION_STEPS.REGISTER ||
+      step === REGISTRATION_STEPS.EDIT
+    )
+      startPollingGasFees();
+  }, [startPollingGasFees, step]);
 
   useEffect(() => {
     // if reverse record is set, we don't want to send the reverse record tx by default
