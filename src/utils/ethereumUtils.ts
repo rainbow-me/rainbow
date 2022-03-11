@@ -413,7 +413,7 @@ const hasPreviousTransactions = (
 export const getFirstTransactionTimestamp = async (
   address: EthereumAddress
 ): Promise<number | undefined> => {
-  const url = `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&sort=asc&page=1&offset=1&apikey=${ETHERSCAN_API_KEY}`;
+  const url = `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=asc&page=1&offset=1&apikey=${ETHERSCAN_API_KEY}`;
   const response = await fetch(url);
   const parsedResponse = await response.json();
   const timestamp = parsedResponse.result[0]?.timeStamp;

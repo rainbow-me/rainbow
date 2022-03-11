@@ -17,25 +17,28 @@ import {
   Box,
   Column,
   Columns,
+  Divider,
   Heading,
   Inset,
   Stack,
   Text,
 } from '@rainbow-me/design-system';
+import { web3Provider } from '@rainbow-me/handlers/web3';
 import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 import {
-  useAccountProfile,
   useDimensions,
   useENSProfile,
   usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
 import { getFirstTransactionTimestamp } from '@rainbow-me/utils/ethereumUtils';
+import {
+  addressHashedColorIndex,
+  addressHashedEmoji,
+} from '@rainbow-me/utils/profileUtils';
 
 export default function ProfileSheet() {
   const { params } = useRoute<any>();
   const { colors } = useTheme();
-
-  const { accountAddress } = useAccountProfile();
 
   const { height: deviceHeight } = useDimensions();
   const contentHeight =
@@ -45,18 +48,30 @@ export default function ProfileSheet() {
   const { isLoading, data: profile } = useENSProfile(ensName);
   const avatarUrl = profile?.images.avatarUrl;
   const coverUrl = profile?.images.coverUrl;
+  const profileAddress = profile?.primary.address;
 
-  const { data: firstTransactionTimestamp } = useQuery(
-    ['first-transaction-timestamp', accountAddress],
+  const {
+    data: firstTransactionTimestamp,
+    isLoading: isFirstTxnLoading,
+  } = useQuery(
+    ['first-transaction-timestamp', ensName],
     async () => {
-      return getFirstTransactionTimestamp(accountAddress);
+      const address = await web3Provider.resolveName(ensName);
+      return getFirstTransactionTimestamp(address);
     },
     {
-      enabled: Boolean(accountAddress),
+      enabled: Boolean(ensName),
     }
   );
 
-  const { accountColor, accountSymbol } = useAccountProfile();
+  const colorIndex = useMemo(
+    () => (profileAddress ? addressHashedColorIndex(profileAddress) : 0),
+    [profileAddress]
+  );
+  const emoji = useMemo(
+    () => (profileAddress ? addressHashedEmoji(profileAddress) : ''),
+    [profileAddress]
+  );
 
   const { result: dominantColor } = usePersistentDominantColorFromImage(
     avatarUrl || ''
@@ -68,7 +83,7 @@ export default function ProfileSheet() {
 
   const accentColor =
     dominantColor ||
-    colors.avatarBackgrounds[accountColor || 0] ||
+    colors.avatarBackgrounds[colorIndex || 0] ||
     colors.appleBlue;
 
   return (
@@ -84,11 +99,11 @@ export default function ProfileSheet() {
             scrollEnabled
           >
             <ConditionalWrap
-              condition={isLoading}
+              condition={isLoading || isFirstTxnLoading}
               wrap={children => <Box style={wrapperStyle}>{children}</Box>}
             >
               <>
-                {isLoading ? (
+                {isLoading || isFirstTxnLoading ? (
                   <Box
                     alignItems="center"
                     height="full"
@@ -104,13 +119,13 @@ export default function ProfileSheet() {
                         <Columns>
                           <Column width="content">
                             <Avatar
-                              accountSymbol={accountSymbol as string}
+                              accountSymbol={emoji as string}
                               avatarUrl={avatarUrl}
                             />
                           </Column>
                           <Inset top="30px">
                             <ActionButtons
-                              address={profile?.primary.address}
+                              address={profileAddress}
                               ensName={ensName}
                             />
                           </Inset>
@@ -144,6 +159,8 @@ export default function ProfileSheet() {
                             ]}
                           />
                         )}
+                        <Divider />
+                        <Text>INSERT DA ASSET LIST HERE</Text>
                       </Stack>
                     </Inset>
                   </Stack>

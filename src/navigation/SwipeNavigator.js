@@ -6,7 +6,6 @@ import { web3Provider } from '../handlers/web3';
 import ProfileScreen from '../screens/ProfileScreen';
 import QRScannerScreen from '../screens/QRScannerScreen';
 import WalletScreen from '../screens/WalletScreen';
-import ProfileSheet from '../screens/ProfileSheet';
 import { deviceUtils } from '../utils';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
 import Routes from './routesNames';
@@ -38,7 +37,7 @@ export function SwipeNavigator() {
         <Swipe.Screen component={ProfileScreen} name={Routes.PROFILE_SCREEN} />
         <Swipe.Screen component={WalletScreen} name={Routes.WALLET_SCREEN} />
         <Swipe.Screen
-          component={ProfileSheet}
+          component={QRScannerScreen}
           initialParams={params}
           name={Routes.QR_SCANNER_SCREEN}
         />
