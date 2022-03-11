@@ -54,40 +54,6 @@ const avatarSize = 70;
 
 const LoadingSpinner = android ? Spinner : ActivityIndicator;
 
-function RegisterContent({
-  setSendReverseRecord,
-  accentColor,
-  sendReverseRecord,
-}) {
-  return (
-    <Inset horizontal="30px">
-      <Columns>
-        <Column width="2/3">
-          <Text
-            color="secondary80"
-            lineHeight="loose"
-            size="16px"
-            weight="bold"
-          >
-            {lang.t('profiles.confirm.set_ens_name')} 􀅵
-          </Text>
-        </Column>
-        <Column width="1/3">
-          <Box alignItems="flex-end">
-            <Switch
-              onValueChange={() =>
-                setSendReverseRecord(sendReverseRecord => !sendReverseRecord)
-              }
-              trackColor={{ false: colors.white, true: accentColor }}
-              value={sendReverseRecord}
-            />
-          </Box>
-        </Column>
-      </Columns>
-    </Inset>
-  );
-}
-
 function CommitContent({ registrationCostsData, setDuration, duration }) {
   return (
     <Inset horizontal="30px">
@@ -126,6 +92,77 @@ function CommitContent({ registrationCostsData, setDuration, duration }) {
   );
 }
 
+function RegisterContent({
+  setSendReverseRecord,
+  accentColor,
+  sendReverseRecord,
+}) {
+  return (
+    <Inset horizontal="30px">
+      <Columns>
+        <Column width="2/3">
+          <Text
+            color="secondary80"
+            lineHeight="loose"
+            size="16px"
+            weight="bold"
+          >
+            {lang.t('profiles.confirm.set_ens_name')} 􀅵
+          </Text>
+        </Column>
+        <Column width="1/3">
+          <Box alignItems="flex-end">
+            <Switch
+              onValueChange={() =>
+                setSendReverseRecord(sendReverseRecord => !sendReverseRecord)
+              }
+              trackColor={{ false: colors.white, true: accentColor }}
+              value={sendReverseRecord}
+            />
+          </Box>
+        </Column>
+      </Columns>
+    </Inset>
+  );
+}
+
+function WaitCommitmentConfirmationContent({ accentColor }) {
+  const { navigate } = useNavigation();
+  const { getTransactionByHash } = useTransactions();
+  const { registrationParameters } = useENSRegistration();
+
+  const onSpeedUp = useCallback(
+    () =>
+      navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
+        accentColor,
+        tx: getTransactionByHash(registrationParameters?.commitTransactionHash),
+        type: 'speed_up',
+      }),
+    [
+      accentColor,
+      getTransactionByHash,
+      navigate,
+      registrationParameters?.commitTransactionHash,
+    ]
+  );
+
+  return (
+    <Box alignItems="center" height="full">
+      <LoadingSpinner />
+      <ButtonPressAnimation onPress={onSpeedUp}>
+        <Text
+          color={{ custom: accentColor }}
+          containsEmoji
+          size="16px"
+          weight="heavy"
+        >
+          🚀 Speed Up
+        </Text>
+      </ButtonPressAnimation>
+    </Box>
+  );
+}
+
 function TransactionActionRow({ action, accentColor, label, disabled }) {
   return (
     <Box>
@@ -158,12 +195,10 @@ function TransactionActionRow({ action, accentColor, label, disabled }) {
 export default function ENSConfirmRegisterSheet() {
   const { params } = useRoute();
   const { accountAddress } = useAccountSettings();
-  const { navigate } = useNavigation();
   const { gasFeeParamsBySpeed, updateTxFee, startPollingGasFees } = useGas();
   const {
     images: { avatarUrl: initialAvatarUrl },
     name: ensName,
-    registrationParameters,
     mode,
   } = useENSRegistration();
   const [accentColor] = useRecoilState(accentColorAtom);
@@ -191,7 +226,6 @@ export default function ENSConfirmRegisterSheet() {
     sendReverseRecord,
   });
 
-  const { getTransactionByHash } = useTransactions();
   const updateGasLimit = useCallback(async () => {
     updateTxFee(stepGasLimit);
   }, [stepGasLimit, updateTxFee]);
@@ -218,17 +252,17 @@ export default function ENSConfirmRegisterSheet() {
   const stepContent = useMemo(
     () => ({
       [REGISTRATION_STEPS.REGISTER]: (
-        <RegisterContent
-          accentColor={accentColor}
-          sendReverseRecord={sendReverseRecord}
-          setSendReverseRecord={setSendReverseRecord}
-        />
-      ),
-      [REGISTRATION_STEPS.COMMIT]: (
         <CommitContent
           duration={duration}
           registrationCostsData={registrationCostsData}
           setDuration={setDuration}
+        />
+      ),
+      [REGISTRATION_STEPS.REGISTER]: (
+        <RegisterContent
+          accentColor={accentColor}
+          sendReverseRecord={sendReverseRecord}
+          setSendReverseRecord={setSendReverseRecord}
         />
       ),
       [REGISTRATION_STEPS.EDIT]: (
@@ -240,28 +274,7 @@ export default function ENSConfirmRegisterSheet() {
         </Inset>
       ),
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: (
-        <Box alignItems="center">
-          <LoadingSpinner />
-          <ButtonPressAnimation
-            onPress={() => {
-              navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
-                tx: getTransactionByHash(
-                  registrationParameters?.commitTransactionHash
-                ),
-                type: 'speed_up',
-              });
-            }}
-          >
-            <Text
-              color={{ custom: accentColor }}
-              containsEmoji
-              size="16px"
-              weight="heavy"
-            >
-              🚀 Speed Up
-            </Text>
-          </ButtonPressAnimation>
-        </Box>
+        <WaitCommitmentConfirmationContent accentColor={accentColor} />
       ),
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: (
         <Box alignItems="center">
@@ -269,15 +282,7 @@ export default function ENSConfirmRegisterSheet() {
         </Box>
       ),
     }),
-    [
-      accentColor,
-      duration,
-      getTransactionByHash,
-      navigate,
-      registrationCostsData,
-      registrationParameters?.commitTransactionHash,
-      sendReverseRecord,
-    ]
+    [accentColor, duration, registrationCostsData, sendReverseRecord]
   );
 
   const stepActions = useMemo(

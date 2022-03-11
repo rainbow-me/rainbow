@@ -127,7 +127,7 @@ export default function SpeedUpAndCancelSheet() {
   const calculatingGasLimit = useRef(false);
   const speedUrgentSelected = useRef(false);
   const {
-    params: { type, tx },
+    params: { type, tx, accentColor },
   } = useRoute();
   const [ready, setReady] = useState(false);
   const [txType, setTxType] = useState();
@@ -545,7 +545,7 @@ export default function SpeedUpAndCancelSheet() {
                         weight="bold"
                       />
                       <SheetActionButton
-                        color={colors.appleBlue}
+                        color={accentColor || colors.appleBlue}
                         label="􀎽 Confirm"
                         onPress={handleSpeedUp}
                         size="big"
@@ -555,6 +555,7 @@ export default function SpeedUpAndCancelSheet() {
                   )}
                   <GasSpeedButtonContainer>
                     <GasSpeedButton
+                      asset={{ color: accentColor }}
                       currentNetwork={currentNetwork}
                       speeds={[URGENT, CUSTOM]}
                       theme={isDarkMode ? 'dark' : 'light'}
