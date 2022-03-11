@@ -1,7 +1,10 @@
 import { useCallback, useMemo } from 'react';
 import { useQuery } from 'react-query';
 import { useAccountSettings } from '.';
-import { estimateENSRegistrationGasLimit } from '@rainbow-me/handlers/ens';
+import {
+  estimateENSRegistrationGasLimit,
+  fetchReverseRecord,
+} from '@rainbow-me/handlers/ens';
 import {
   formatEstimatedNetworkFee,
   formatRentPrice,
@@ -10,16 +13,18 @@ import {
 import { Network } from '@rainbow-me/helpers/networkTypes';
 import { add, addDisplay, multiply } from '@rainbow-me/helpers/utilities';
 import { getEIP1559GasParams } from '@rainbow-me/redux/gas';
-import { timeUnits } from '@rainbow-me/references';
+import { ethUnits, timeUnits } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 export default function useENSRegistrationCosts({
   duration,
   name,
   rentPrice,
+  sendReverseRecord,
 }: {
   duration: number;
   name: string;
+  sendReverseRecord: boolean;
   rentPrice?: { wei: number; perYear: { wei: number } };
 }) {
   const { nativeCurrency, accountAddress } = useAccountSettings();
@@ -33,12 +38,28 @@ export default function useENSRegistrationCosts({
       Network.mainnet
     );
 
-    const { totalRegistrationGasLimit } = await estimateENSRegistrationGasLimit(
+    const reverseRecord =
+      sendReverseRecord || (await fetchReverseRecord(accountAddress));
+
+    const {
+      commitGasLimit,
+      multicallGasLimit,
+      registerWithConfigGasLimit,
+      setNameGasLimit,
+    } = await estimateENSRegistrationGasLimit(
       name,
       accountAddress,
       duration * timeUnits.secs.year,
       rentPriceInWei
     );
+
+    const totalRegistrationGasLimit =
+      [
+        commitGasLimit,
+        multicallGasLimit,
+        registerWithConfigGasLimit,
+        !reverseRecord && setNameGasLimit,
+      ].reduce((a, b) => add(a || 0, b || 0)) || `${ethUnits.ens_registration}`;
 
     const { gasFeeParamsBySpeed, currentBaseFee } = await getEIP1559GasParams();
 
@@ -54,7 +75,14 @@ export default function useENSRegistrationCosts({
       estimatedGasLimit: totalRegistrationGasLimit,
       estimatedNetworkFee: formattedEstimatedNetworkFee,
     };
-  }, [accountAddress, duration, name, nativeCurrency, rentPriceInWei]);
+  }, [
+    accountAddress,
+    duration,
+    name,
+    nativeCurrency,
+    rentPriceInWei,
+    sendReverseRecord,
+  ]);
 
   const { data: estimatedFee, status, isIdle, isLoading } = useQuery(
     [
