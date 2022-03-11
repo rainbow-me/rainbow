@@ -7,6 +7,7 @@ import { useRecoilState } from 'recoil';
 import brain from '../assets/brain.png';
 import ActivityIndicator from '../components/ActivityIndicator';
 import Spinner from '../components/Spinner';
+import { ButtonPressAnimation } from '../components/animations';
 import { HoldToAuthorizeButton } from '../components/buttons';
 import { RegistrationReviewRows } from '../components/ens-registration';
 import { GasSpeedButton } from '../components/gas';
@@ -40,8 +41,11 @@ import {
   useENSSearch,
   useGas,
   usePrevious,
+  useTransactions,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
+import { useNavigation } from '@rainbow-me/navigation/Navigation';
+import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 
 export const ENSConfirmRegisterSheetHeight = 600;
@@ -154,10 +158,12 @@ function TransactionActionRow({ action, accentColor, label, disabled }) {
 export default function ENSConfirmRegisterSheet() {
   const { params } = useRoute();
   const { accountAddress } = useAccountSettings();
+  const { navigate } = useNavigation();
   const { gasFeeParamsBySpeed, updateTxFee, startPollingGasFees } = useGas();
   const {
     images: { avatarUrl: initialAvatarUrl },
     name: ensName,
+    registrationParameters,
     mode,
   } = useENSRegistration();
   const [accentColor] = useRecoilState(accentColorAtom);
@@ -177,14 +183,15 @@ export default function ENSConfirmRegisterSheet() {
   const { data: registrationData } = useENSSearch({
     name,
   });
-  const rentPrice = registrationData?.rentPrice;
+
   const { data: registrationCostsData } = useENSRegistrationCosts({
     duration,
     name,
-    rentPrice,
+    rentPrice: registrationData?.rentPrice,
     sendReverseRecord,
   });
 
+  const { getTransactionByHash } = useTransactions();
   const updateGasLimit = useCallback(async () => {
     updateTxFee(stepGasLimit);
   }, [stepGasLimit, updateTxFee]);
@@ -235,6 +242,25 @@ export default function ENSConfirmRegisterSheet() {
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: (
         <Box alignItems="center">
           <LoadingSpinner />
+          <ButtonPressAnimation
+            onPress={() => {
+              navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
+                tx: getTransactionByHash(
+                  registrationParameters?.commitTransactionHash
+                ),
+                type: 'speed_up',
+              });
+            }}
+          >
+            <Text
+              color={{ custom: accentColor }}
+              containsEmoji
+              size="16px"
+              weight="heavy"
+            >
+              🚀 Speed Up
+            </Text>
+          </ButtonPressAnimation>
         </Box>
       ),
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: (
@@ -243,7 +269,15 @@ export default function ENSConfirmRegisterSheet() {
         </Box>
       ),
     }),
-    [accentColor, duration, registrationCostsData, sendReverseRecord]
+    [
+      accentColor,
+      duration,
+      getTransactionByHash,
+      navigate,
+      registrationCostsData,
+      registrationParameters?.commitTransactionHash,
+      sendReverseRecord,
+    ]
   );
 
   const stepActions = useMemo(
