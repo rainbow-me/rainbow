@@ -1,3 +1,4 @@
+import { Contract, ethers } from 'ethers';
 import { rankings } from 'match-sorter';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
@@ -11,16 +12,18 @@ import {
   TokenSearchTokenListId,
 } from '@rainbow-me/entities';
 import tokenSearch from '@rainbow-me/handlers/tokenSearch';
-import { addHexPrefix } from '@rainbow-me/handlers/web3';
+import { addHexPrefix, web3Provider } from '@rainbow-me/handlers/web3';
 import tokenSectionTypes from '@rainbow-me/helpers/tokenSectionTypes';
-import { filterList } from '@rainbow-me/utils';
+import { erc20ABI } from '@rainbow-me/references';
+import { filterList, logger } from '@rainbow-me/utils';
 
 type UniswapCurrencyListType =
   | 'verifiedAssets'
   | 'highLiquidityAssets'
   | 'lowLiquidityAssets'
   | 'favoriteAssets'
-  | 'curatedAssets';
+  | 'curatedAssets'
+  | 'importedAssets';
 const uniswapCuratedTokensSelector = (state: AppState) => state.uniswap.pairs;
 const uniswapFavoriteMetadataSelector = (state: AppState) =>
   state.uniswap.favoritesMeta;
@@ -55,6 +58,7 @@ const useUniswapCurrencyList = (searchQuery: string) => {
 
   const [loading, setLoading] = useState(true);
   const [favoriteAssets, setFavoriteAssets] = useState<RT[]>([]);
+  const [importedAssets, setimportedAssets] = useState<RT[]>([]);
   const [highLiquidityAssets, setHighLiquidityAssets] = useState<RT[]>([]);
   const [lowLiquidityAssets, setLowLiquidityAssets] = useState<RT[]>([]);
   const [verifiedAssets, setVerifiedAssets] = useState<RT[]>([]);
@@ -80,6 +84,43 @@ const useUniswapCurrencyList = (searchQuery: string) => {
       : unfilteredFavorites;
   }, [searchQuery, searching, unfilteredFavorites]);
 
+  const getimportedAsset = useCallback(
+    async searchQuery => {
+      if (searching) {
+        const tokenContract = new Contract(searchQuery, erc20ABI, web3Provider);
+        try {
+          const [name, symbol, decimals, address] = await Promise.all([
+            tokenContract.name(),
+            tokenContract.symbol(),
+            tokenContract.decimals(),
+            ethers.utils.getAddress(searchQuery),
+          ]);
+
+          return [
+            {
+              address,
+              decimals,
+              favorite: false,
+              highLiquidity: false,
+              isRainbowCurated: false,
+              isVerified: false,
+              name,
+              symbol,
+              totalLiquidity: 0,
+              uniqueId: address,
+            },
+          ];
+        } catch (e) {
+          logger.log('error getting token data');
+          logger.log(e);
+          return null;
+        }
+      }
+      return null;
+    },
+    [searching]
+  );
+
   const getResultsForAssetType = useCallback(
     async (assetType: UniswapCurrencyListType) => {
       switch (assetType) {
@@ -103,9 +144,12 @@ const useUniswapCurrencyList = (searchQuery: string) => {
         case 'favoriteAssets':
           setFavoriteAssets((await getFavorites()) || []);
           break;
+        case 'importedAssets':
+          setimportedAssets((await getimportedAsset(searchQuery)) || []);
+          break;
       }
     },
-    [getFavorites, handleVerifiedResponse, searchQuery]
+    [getFavorites, getimportedAsset, handleVerifiedResponse, searchQuery]
   );
 
   const search = () => {
@@ -113,6 +157,7 @@ const useUniswapCurrencyList = (searchQuery: string) => {
       'favoriteAssets',
       'highLiquidityAssets',
       'verifiedAssets',
+      'importedAssets',
     ];
     setLoading(true);
     categories.forEach(assetType => getResultsForAssetType(assetType));
@@ -150,6 +195,13 @@ const useUniswapCurrencyList = (searchQuery: string) => {
   const currencyList = useMemo(() => {
     const list = [];
     if (searching) {
+      if (importedAssets.length) {
+        list.push({
+          data: importedAssets,
+          key: 'imported',
+          title: tokenSectionTypes.importedTokenSection,
+        });
+      }
       if (favoriteAssets.length) {
         list.push({
           color: colors.yellowFavorite,
@@ -201,13 +253,14 @@ const useUniswapCurrencyList = (searchQuery: string) => {
     }
     return list;
   }, [
-    colors.yellowFavorite,
+    searching,
+    importedAssets,
     favoriteAssets,
+    verifiedAssets,
     highLiquidityAssets,
     lowLiquidityAssets,
-    searching,
+    colors.yellowFavorite,
     unfilteredFavorites,
-    verifiedAssets,
     getCurated,
   ]);
 
