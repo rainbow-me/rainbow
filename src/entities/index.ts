@@ -71,6 +71,5 @@ export type {
   ENSRegistrationState,
   Records,
   RegistrationParameters,
-  RegistrationSpeedUpParameters,
   TransactionRegistrationParameters,
 } from './ensRegistration';

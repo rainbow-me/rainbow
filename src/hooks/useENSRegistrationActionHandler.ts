@@ -109,35 +109,29 @@ export default function useENSRegistrationActionHandler(
   const speedUpCommitAction = useCallback(
     async (accentColor: string) => {
       // we want to speed up the last commit tx sent
-      const commitTransactionHashes =
-        registrationParameters?.commitTransactionHashes;
+      const commitTransactionHash =
+        registrationParameters?.commitTransactionHash;
       const saveCommitTransactionHash = (hash: string) => {
-        const newCommitTransactionHashes = commitTransactionHashes?.concat(
-          hash
-        );
         dispatch(
           saveCommitRegistrationParameters(accountAddress, {
-            commitTransactionHashes: newCommitTransactionHashes,
+            commitTransactionHash: hash,
           })
         );
       };
-      const tx = getTransactionByHash(
-        commitTransactionHashes?.[commitTransactionHashes?.length - 1] || ''
-      );
-
-      navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
-        accentColor,
-        onSendTransactionCallback: saveCommitTransactionHash,
-        tx,
-        type: 'speed_up',
-      });
+      commitTransactionHash &&
+        navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
+          accentColor,
+          onSendTransactionCallback: saveCommitTransactionHash,
+          tx: getTransactionByHash(commitTransactionHash),
+          type: 'speed_up',
+        });
     },
     [
       accountAddress,
       dispatch,
       getTransactionByHash,
       navigate,
-      registrationParameters?.commitTransactionHashes,
+      registrationParameters?.commitTransactionHash,
     ]
   );
 

@@ -7,7 +7,6 @@ import {
   EthereumAddress,
   Records,
   RegistrationParameters,
-  RegistrationSpeedUpParameters,
   TransactionRegistrationParameters,
 } from '@rainbow-me/entities';
 import {
@@ -353,7 +352,9 @@ export const removeRecordByKey = (
 
 export const saveCommitRegistrationParameters = (
   accountAddress: EthereumAddress,
-  registrationParameters: RegistrationParameters | RegistrationSpeedUpParameters
+  registrationParameters:
+    | RegistrationParameters
+    | TransactionRegistrationParameters
 ) => async (dispatch: AppDispatch, getState: AppGetState) => {
   const {
     ensRegistration: { registrations, currentRegistrationName },
