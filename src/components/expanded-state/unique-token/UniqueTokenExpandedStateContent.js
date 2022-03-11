@@ -81,7 +81,10 @@ const UniqueTokenExpandedStateContent = ({
       animationProgress={animationProgress}
       aspectRatio={aspectRatioWithFallback}
       borderRadius={borderRadius}
-      disableAnimations={disablePreview || supportsAnythingExceptImageAnd3d}
+      disableAnimations={
+        disablePreview ||
+        (ios ? supportsVideo : supportsAnythingExceptImageAnd3d)
+      }
       horizontalPadding={horizontalPadding}
       isENS={isENS}
       yDisplacement={yPosition}
