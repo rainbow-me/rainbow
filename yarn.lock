@@ -14369,9 +14369,10 @@ qs@6.7.0:
   version "6.7.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.7.0.tgz#41dc1a015e3d581f1621776be31afb2876a9b1bc"
 
-qs@6.9.4:
-  version "6.9.4"
-  resolved "https://registry.yarnpkg.com/qs/-/qs-6.9.4.tgz#9090b290d1f91728d3c22e54843ca44aea5ab687"
+qs@6.9.5:
+  version "6.9.5"
+  resolved "https://registry.yarnpkg.com/qs/-/qs-6.9.5.tgz#45859f731392198fbd3f91ea4290e7c4e25232fa"
+  integrity sha512-T0SnbxGiMcB09qd3bFcPt8rufxPs7T7TjePk33r1WsJNt12/rWsK/ofKqRHQ0rY/iMGE0mVdkc6Yg9CuL/ty0Q==
 
 qs@^6.5.2, qs@^6.7.0:
   version "6.10.1"
