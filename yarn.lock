@@ -8942,7 +8942,7 @@ extend-shallow@^3.0.0, extend-shallow@^3.0.2:
     assign-symbols "^1.0.0"
     is-extendable "^1.0.1"
 
-extend@~3.0.2:
+extend@^3.0.2, extend@~3.0.2:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/extend/-/extend-3.0.2.tgz#f8b1136b4071fbd8eb140aff858b1019ec2915fa"
 
@@ -13516,11 +13516,6 @@ opencollective@^1.0.3:
     node-fetch "1.6.3"
     opn "4.0.2"
 
-openmct@1.7.0:
-  version "1.7.0"
-  resolved "https://registry.yarnpkg.com/openmct/-/openmct-1.7.0.tgz#5bfc87e1f3681463c18e4ad6b3877a4227de0c51"
-  integrity sha512-+GVLErPMIO/HGopI5MC40npsO0A/b+/2lFyRJVD4k93z5LqctolN0SzWSEqgxXebWzTNOek3c0+w8jbjOJ07Pg==
-
 opn@4.0.2:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/opn/-/opn-4.0.2.tgz#7abc22e644dff63b0a96d5ab7f2790c0f01abc95"
@@ -15391,6 +15386,14 @@ request@^2.79.0, request@^2.85.0, request@^2.88.2:
     tough-cookie "~2.5.0"
     tunnel-agent "^0.6.0"
     uuid "^3.3.2"
+
+requestretry@6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/requestretry/-/requestretry-6.0.0.tgz#a213b2133ee3b18f74c2bbc0f4e094e561b57335"
+  integrity sha512-X7O+BMlfHgzetfSDtgQIMinLn1BuT+95W12iffDzyOS+HLoBEIQqCZv++UTChUWVjOu+pudbocD76+4j+jK9ww==
+  dependencies:
+    extend "^3.0.2"
+    lodash "^4.17.15"
 
 require-directory@^2.1.1:
   version "2.1.1"
