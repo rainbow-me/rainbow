@@ -141,7 +141,7 @@ function TransactionActionRow({ action, accentColor, label, disabled }) {
       </Box>
       <Box alignItems="center" justifyContent="center">
         <GasSpeedButton
-          borderColor={accentColor}
+          asset={{ color: accentColor }}
           currentNetwork="mainnet"
           marginBottom={0}
           theme="light"
