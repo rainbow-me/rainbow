@@ -98,6 +98,7 @@ export { default as useSwapDerivedOutputs } from './useSwapDerivedOutputs';
 export { default as useTimeout } from './useTimeout';
 export { default as useTopMovers } from './useTopMovers';
 export { default as useTransactionConfirmation } from './useTransactionConfirmation';
+export { default as useTransactions } from './useTransactions';
 export { default as useTransformOrigin } from './useTransformOrigin';
 export { default as useUniswapAssetsInWallet } from './useUniswapAssetsInWallet';
 export { default as useUniswapCalls } from './useUniswapCalls';
