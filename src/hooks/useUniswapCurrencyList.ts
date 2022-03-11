@@ -1,3 +1,4 @@
+import { isAddress } from '@ethersproject/address';
 import { Contract, ethers } from 'ethers';
 import { rankings } from 'match-sorter';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -87,33 +88,39 @@ const useUniswapCurrencyList = (searchQuery: string) => {
   const getimportedAsset = useCallback(
     async searchQuery => {
       if (searching) {
-        const tokenContract = new Contract(searchQuery, erc20ABI, web3Provider);
-        try {
-          const [name, symbol, decimals, address] = await Promise.all([
-            tokenContract.name(),
-            tokenContract.symbol(),
-            tokenContract.decimals(),
-            ethers.utils.getAddress(searchQuery),
-          ]);
+        if (isAddress(searchQuery)) {
+          const tokenContract = new Contract(
+            searchQuery,
+            erc20ABI,
+            web3Provider
+          );
+          try {
+            const [name, symbol, decimals, address] = await Promise.all([
+              tokenContract.name(),
+              tokenContract.symbol(),
+              tokenContract.decimals(),
+              ethers.utils.getAddress(searchQuery),
+            ]);
 
-          return [
-            {
-              address,
-              decimals,
-              favorite: false,
-              highLiquidity: false,
-              isRainbowCurated: false,
-              isVerified: false,
-              name,
-              symbol,
-              totalLiquidity: 0,
-              uniqueId: address,
-            },
-          ];
-        } catch (e) {
-          logger.log('error getting token data');
-          logger.log(e);
-          return null;
+            return [
+              {
+                address,
+                decimals,
+                favorite: false,
+                highLiquidity: false,
+                isRainbowCurated: false,
+                isVerified: false,
+                name,
+                symbol,
+                totalLiquidity: 0,
+                uniqueId: address,
+              },
+            ];
+          } catch (e) {
+            logger.log('error getting token data');
+            logger.log(e);
+            return null;
+          }
         }
       }
       return null;

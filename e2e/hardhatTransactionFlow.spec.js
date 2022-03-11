@@ -95,6 +95,17 @@ const acceptAlertIfGasPriceIsHigh = async () => {
   } catch (e) {}
 };
 
+const acceptAlertIfTokenNotVerified = async () => {
+  // Depending on current gas prices, we might get an alert
+  // saying that the fees are higher than the swap amount
+  try {
+    if (await Helpers.checkIfElementByTextIsVisible('Proceed Anyway')) {
+      await Helpers.tapAlertWithButton('Proceed Anyway');
+    }
+    // eslint-disable-next-line no-empty
+  } catch (e) {}
+};
+
 // eslint-disable-next-line no-unused-vars
 const checkIfSwapCompleted = async (assetName, amount) => {
   // Disabling this because there's a view blocking (The portal)
@@ -174,6 +185,23 @@ describe('Hardhat Transaction Flow', () => {
 
     await Helpers.waitAndTap('hardhat-section');
     await Helpers.checkIfVisible('testnet-toast-Hardhat');
+    await Helpers.swipe('profile-screen', 'left', 'slow');
+  });
+
+  it('Should be able to search random tokens (like SWYF) via address and swap them', async () => {
+    await Helpers.tap('exchange-fab');
+    await Helpers.typeText('exchange-modal-input', '0.001', true);
+    await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.typeText(
+      'currency-select-search-input',
+      '0xefa6903aa49cd539c079ac4b0a090db432615822',
+      true
+    );
+    await Helpers.tap('currency-select-list-exchange-coin-row-SWYF');
+    await acceptAlertIfTokenNotVerified();
+    await Helpers.tapAndLongPress('exchange-modal-confirm-button');
+    await acceptAlertIfGasPriceIsHigh();
+    await checkIfSwapCompleted('Ethereum', '0.001 ETH');
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
@@ -569,7 +597,7 @@ describe('Hardhat Transaction Flow', () => {
 
   afterAll(async () => {
     // Reset the app state
-    await connector.killSession();
+    await connector?.killSession();
     connector = null;
     await device.clearKeychain();
     await exec('kill $(lsof -t -i:8545)');
