@@ -15,7 +15,7 @@ import { padding } from '@rainbow-me/styles';
 const Footer = styled(ColumnWithMargins).attrs({
   margin: 19,
 })({
-  ...padding.object(19, 15, 21),
+  ...padding.object(19, 15, 32),
   width: '100%',
 });
 

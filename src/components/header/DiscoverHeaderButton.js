@@ -37,6 +37,7 @@ const DiscoverButtonContent = styled(RowWithMargins).attrs({
   alignItems: 'center',
   justifyContent: 'center',
   ...padding.object(2, 10, 7.5),
+  ...(android && { paddingRight: 12 }),
   height: 34,
   zIndex: 2,
 });
@@ -74,7 +75,7 @@ export default function DiscoverHeaderButton() {
           shadows={shadows}
           {...(android && {
             height: 34,
-            width: 120,
+            width: 126,
           })}
         >
           <BackgroundFill />
