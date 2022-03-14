@@ -59,11 +59,6 @@ export const getMinimalTimeUnitStringForMs = (
   return `${highestResolutionValue} ${label}`;
 };
 
-/**
- * @desc get time in microseconds and return a timestamp string
- * @param {String} [handshake='']
- * @return {String}
- */
 export const connectionTimestamp = handshake => {
   const ms = Number(handshake) / 1000000; // convert from microseconds to milliseconds
   const timestamp = format(fromUnixTime(ms), 'MMM d, yyyy · h:mm a');
