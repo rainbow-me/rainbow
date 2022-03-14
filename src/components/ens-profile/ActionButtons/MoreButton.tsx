@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import More from '../MoreButton/MoreButton';
@@ -6,6 +7,12 @@ import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils } from '@rainbow-me/utils';
 import { formatAddressForDisplay } from '@rainbow-me/utils/abbreviations';
+
+const ACTIONS = {
+  ADD_CONTACT: 'add-contact',
+  COPY_ADDRESS: 'copy-address',
+  ETHERSCAN: 'etherscan',
+};
 
 export default function MoreButton({ address }: { address?: string }) {
   const { navigate } = useNavigation();
@@ -25,16 +32,16 @@ export default function MoreButton({ address }: { address?: string }) {
   const menuItems = useMemo(() => {
     return [
       {
-        actionKey: 'add-contact',
-        actionTitle: 'Add to Contacts',
+        actionKey: ACTIONS.ADD_CONTACT,
+        actionTitle: lang.t('profiles.search.add_to_contacts'),
         icon: {
           iconType: 'SYSTEM',
           iconValue: 'person.text.rectangle',
         },
       },
       {
-        actionKey: 'copy-address',
-        actionTitle: 'Copy Address',
+        actionKey: ACTIONS.COPY_ADDRESS,
+        actionTitle: lang.t('profiles.search.copy_address'),
         discoverabilityTitle: formattedAddress,
         icon: {
           iconType: 'SYSTEM',
@@ -42,8 +49,8 @@ export default function MoreButton({ address }: { address?: string }) {
         },
       },
       {
-        actionKey: 'etherscan',
-        actionTitle: 'View on Etherscan',
+        actionKey: ACTIONS.ETHERSCAN,
+        actionTitle: lang.t('profiles.search.view_on_etherscan'),
         icon: {
           iconType: 'SYSTEM',
           iconValue: 'safari.fill',
@@ -54,13 +61,13 @@ export default function MoreButton({ address }: { address?: string }) {
 
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
-      if (actionKey === 'copy-address') {
+      if (actionKey === ACTIONS.COPY_ADDRESS) {
         setClipboard(address);
       }
-      if (address && actionKey === 'etherscan') {
+      if (address && actionKey === ACTIONS.ETHERSCAN) {
         ethereumUtils.openAddressInBlockExplorer(address);
       }
-      if (actionKey === 'add-contact') {
+      if (actionKey === ACTIONS.ADD_CONTACT) {
         navigate(Routes.MODAL_SCREEN, {
           address,
           color: contact?.color,

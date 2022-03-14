@@ -4,7 +4,11 @@ import RadialGradient from 'react-native-radial-gradient';
 import { Box, useForegroundColor } from '@rainbow-me/design-system';
 import { ImgixImage } from '@rainbow-me/images';
 
-export default function Cover({ coverUrl }: { coverUrl?: string | null }) {
+export default function ProfileCover({
+  coverUrl,
+}: {
+  coverUrl?: string | null;
+}) {
   const accentColor = useForegroundColor('accent');
   return (
     <Box

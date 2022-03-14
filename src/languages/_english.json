@@ -557,6 +557,11 @@
       "withdraw": "Withdraw"
     },
     "profiles": {
+      "details": {
+        "add_to_contacts": "Add to Contacts",
+        "copy_address": "Copy Address",
+        "view_on_etherscan": "View on Etherscan"
+      },
       "search": {
         "header": "Find your name",
         "description": "Search available profile names",

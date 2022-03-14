@@ -28,6 +28,7 @@ export {
 export { default as useCollectible } from './useCollectible';
 export { default as useColorForAsset } from './useColorForAsset';
 export { default as useContacts } from './useContacts';
+export { default as useDeleteWallet } from './useDeleteWallet';
 export { default as useDimensions } from './useDimensions';
 export { default as useDPI } from './useDPI';
 export { default as useEffectDebugger } from './useEffectDebugger';
@@ -113,6 +114,7 @@ export { default as useWalletManualBackup } from './useWalletManualBackup';
 export { default as useWallets } from './useWallets';
 export { default as useWalletSectionsData } from './useWalletSectionsData';
 export { default as useWalletsWithBalancesAndNames } from './useWalletsWithBalancesAndNames';
+export { default as useWatchWallet } from './useWatchWallet';
 export { default as useWebData } from './useWebData';
 export { default as useWyreApplePay } from './useWyreApplePay';
 export { default as useForceUpdate } from './useForceUpdate';

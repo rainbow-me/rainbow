@@ -4,8 +4,8 @@ import React, { useMemo } from 'react';
 import { useQuery } from 'react-query';
 import Spinner from '../components/Spinner';
 import ActionButtons from '../components/ens-profile/ActionButtons/ActionButtons';
-import Avatar from '../components/ens-profile/Avatar/Avatar';
-import CoverPhoto from '../components/ens-profile/Cover/Cover';
+import ProfileAvatar from '../components/ens-profile/ProfileAvatar/ProfileAvatar';
+import ProfileCover from '../components/ens-profile/ProfileCover/ProfileCover';
 import RecordTags from '../components/ens-profile/RecordTags/RecordTags';
 import { SheetHandleFixedToTopHeight, SlackSheet } from '../components/sheet';
 import { sharedCoolModalTopOffset } from '../navigation/config';
@@ -113,12 +113,12 @@ export default function ProfileSheet() {
                   </Box>
                 ) : (
                   <Stack space="19px">
-                    <CoverPhoto coverUrl={coverUrl} />
+                    <ProfileCover coverUrl={coverUrl} />
                     <Bleed top={{ custom: 38 }}>
                       <Inset horizontal="19px">
                         <Columns>
                           <Column width="content">
-                            <Avatar
+                            <ProfileAvatar
                               accountSymbol={emoji as string}
                               avatarUrl={avatarUrl}
                             />

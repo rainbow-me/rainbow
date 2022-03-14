@@ -6,7 +6,7 @@ import { ImgixImage } from '@rainbow-me/images';
 
 const size = 70;
 
-export default function Avatar({
+export default function ProfileAvatar({
   accountSymbol,
   avatarUrl,
 }: {
