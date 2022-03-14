@@ -31,11 +31,12 @@ import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 import { ethereumUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
+import { connectionTimestamp } from '@rainbow-me/helpers/time';
 
 const ContainerPadding = 15;
 const VendorLogoIconSize = 50;
 export const WalletConnectListItemHeight =
-  VendorLogoIconSize + ContainerPadding * 2;
+  VendorLogoIconSize + ContainerPadding * 2.5;
 
 const LabelText = styled(Text).attrs(() => ({
   align: 'center',
@@ -65,7 +66,7 @@ const SessionRow = styled(Row)({
 const rowStyle = padding.object(
   ContainerPadding,
   0,
-  ContainerPadding,
+  ContainerPadding + 10,
   ContainerPadding
 );
 
@@ -77,6 +78,7 @@ export default function WalletConnectListItem({
   dappIcon,
   dappName,
   dappUrl,
+  handshakeId,
 }) {
   const {
     walletConnectDisconnectAllByDappUrl,
@@ -219,10 +221,20 @@ export default function WalletConnectListItem({
             imageUrl={overrideLogo || dappIcon}
             size={VendorLogoIconSize}
           />
-          <ColumnWithMargins flex={1} margin={5} style={columnStyle}>
+          <ColumnWithMargins flex={1} margin={-2} style={columnStyle}>
             <Row width="70%">
               <TruncatedText size="lmedium" weight="heavy">
-                {overrideName || dappName || 'Unknown Application'}{' '}
+                {overrideName || dappName || 'Unknown Application'}
+              </TruncatedText>
+            </Row>
+
+            <Row width="85%" marginTop={-5}>
+              <TruncatedText
+                size="small"
+                weight="medium"
+                style={{ color: colors.alpha(colors.blueGreyDark, 0.6) }}
+              >
+                {connectionTimestamp(handshakeId)}
               </TruncatedText>
             </Row>
 
@@ -263,17 +275,22 @@ export default function WalletConnectListItem({
             onPressMenuItem={handleOnPressMenuItem}
           >
             <NetworkPill mainnet={connectionNetworkInfo.value === 'mainnet'}>
-              <ChainLogo network={connectionNetworkInfo.value} />
-              <LabelText
-                color={
-                  connectionNetworkInfo.value === 'mainnet'
-                    ? colors.alpha(colors.blueGreyDark, 0.5)
-                    : colors.alpha(colors.blueGreyDark, 0.8)
-                }
-                numberOfLines={1}
-              >
-                {connectionNetworkInfo.name}
-              </LabelText>
+              <Row align="center">
+                <ChainLogo
+                  network={connectionNetworkInfo.value}
+                  marginRight={5}
+                />
+                <LabelText
+                  color={
+                    connectionNetworkInfo.value === 'mainnet'
+                      ? colors.alpha(colors.blueGreyDark, 0.5)
+                      : colors.alpha(colors.blueGreyDark, 0.8)
+                  }
+                  numberOfLines={1}
+                >
+                  {connectionNetworkInfo.name}
+                </LabelText>
+              </Row>
             </NetworkPill>
           </ContextMenuButton>
         </Row>
