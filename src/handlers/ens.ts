@@ -244,7 +244,7 @@ export const fetchProfile = async (ensName: any) => {
     { registrant, registration },
     primary,
   ] = await Promise.all([
-    web3Provider.getResolver(ensName),
+    fetchResolver(ensName),
     fetchRecords(ensName),
     fetchCoinAddresses(ensName),
     fetchImages(ensName),
@@ -614,3 +614,6 @@ export const shouldUseMulticallTransaction = (
 
 export const fetchReverseRecord = async (address: string) =>
   (await web3Provider.lookupAddress(address)) || '';
+
+export const fetchResolver = async (ensName: string) =>
+  web3Provider.getResolver(ensName);

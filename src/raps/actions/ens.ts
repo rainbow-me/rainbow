@@ -249,7 +249,8 @@ const ensAction = async (
           wallet,
           nonce
         );
-        await dispatch(
+        dispatch(
+          // @ts-ignore
           saveCommitRegistrationParameters(ownerAddress, {
             commitTransactionHash: tx?.hash,
             duration,
@@ -274,7 +275,8 @@ const ensAction = async (
           wallet,
           nonce
         );
-        await dispatch(
+        dispatch(
+          // @ts-ignore
           updateTransactionRegistrationParameters(ownerAddress, {
             registerTransactionHash: tx?.hash,
           })

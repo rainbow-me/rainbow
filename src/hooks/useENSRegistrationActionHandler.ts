@@ -8,24 +8,18 @@ import {
 } from '../raps/common';
 import { useAccountSettings, useCurrentNonce, useENSRegistration } from '.';
 import { RegistrationParameters } from '@rainbow-me/entities';
+import { fetchResolver } from '@rainbow-me/handlers/ens';
 import { web3Provider } from '@rainbow-me/handlers/web3';
 import {
   ENS_DOMAIN,
   generateSalt,
   getRentPrice,
+  REGISTRATION_STEPS,
 } from '@rainbow-me/helpers/ens';
 import { loadWallet } from '@rainbow-me/model/wallet';
 import { executeRap } from '@rainbow-me/raps';
 import { updateTransactionRegistrationParameters } from '@rainbow-me/redux/ensRegistration';
 import { timeUnits } from '@rainbow-me/references';
-
-enum REGISTRATION_STEPS {
-  COMMIT = 'COMMIT',
-  WAIT_COMMIT_CONFIRMATION = 'WAIT_COMMIT_CONFIRMATION',
-  WAIT_ENS_COMMITMENT = 'WAIT_ENS_COMMITMENT',
-  REGISTER = 'REGISTER',
-  EDIT = 'EDIT',
-}
 
 const ENS_SECONDS_WAIT = 60;
 
@@ -45,9 +39,11 @@ const formatENSActionParams = (
 
 export default function useENSRegistrationActionHandler(
   {
+    sendReverseRecord,
     yearsDuration,
   }: {
     yearsDuration: number;
+    sendReverseRecord: boolean;
   } = {} as any
 ) {
   const dispatch = useDispatch();
@@ -125,7 +121,7 @@ export default function useENSRegistrationActionHandler(
         ownerAddress: accountAddress,
         records: changedRecords,
         rentPrice: rentPrice.toString(),
-        setReverseRecord: true,
+        setReverseRecord: sendReverseRecord,
       };
 
       await executeRap(
@@ -135,7 +131,7 @@ export default function useENSRegistrationActionHandler(
         callback
       );
     },
-    [accountAddress, getNextNonce, registrationParameters]
+    [accountAddress, getNextNonce, registrationParameters, sendReverseRecord]
   );
 
   const setRecordsAction = useCallback(
@@ -145,12 +141,13 @@ export default function useENSRegistrationActionHandler(
         return;
       }
       const nonce = await getNextNonce();
-
+      const resolver = await fetchResolver(registrationParameters.name);
       const setRecordsEnsRegistrationParameters: ENSActionParameters = {
         ...formatENSActionParams(registrationParameters),
         nonce,
         ownerAddress: accountAddress,
         records: registrationParameters.changedRecords,
+        resolverAddress: resolver.address,
       };
 
       await executeRap(
@@ -187,11 +184,16 @@ export default function useENSRegistrationActionHandler(
         ...formatENSActionParams(registrationParameters),
         duration: yearsDuration * timeUnits.secs.year,
         ownerAddress: accountAddress,
-        setReverseRecord: true,
+        setReverseRecord: sendReverseRecord,
       }
     );
     return gasLimit;
-  }, [accountAddress, registrationParameters, yearsDuration]);
+  }, [
+    accountAddress,
+    registrationParameters,
+    sendReverseRecord,
+    yearsDuration,
+  ]);
 
   const setRecordsEstimateGasLimit = useCallback(async () => {
     const gasLimit = await getENSRapEstimationByType(
@@ -294,7 +296,7 @@ export default function useENSRegistrationActionHandler(
     };
     estimateGasLimit();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [registrationStep]);
+  }, [registrationStep, sendReverseRecord]);
 
   useEffect(() => {
     if (registrationStep === REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION) {
