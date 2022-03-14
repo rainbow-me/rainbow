@@ -66,13 +66,13 @@ export default function useENSRegistration({
       // we need the expiration and registration date when is not available
       const registrationDate = await fetchRegistrationDate(name + '.eth');
       const nameExpires = await getNameExpires(name);
-      const formattedRegistrarionDate = formatTime(registrationDate, false);
+      const formattedRegistrationDate = formatTime(registrationDate, false);
       const formattedExpirationDate = formatTime(nameExpires);
 
       return {
         available: isAvailable,
         expirationDate: formattedExpirationDate,
-        registrationDate: formattedRegistrarionDate,
+        registrationDate: formattedRegistrationDate,
         valid: true,
       };
     }
