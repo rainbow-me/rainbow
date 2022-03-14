@@ -23,7 +23,7 @@ export default function ProfileCover({
             stops: [0, 1],
           }
         : {
-            style: { backgroundColor: accentColor + '10' },
+            style: { backgroundColor: accentColor },
           })}
     >
       {coverUrl && (

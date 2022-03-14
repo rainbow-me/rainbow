@@ -16,6 +16,7 @@ import ExternalLinkWarningSheet from '../screens/ExternalLinkWarningSheet';
 import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
 import ModalScreen from '../screens/ModalScreen';
 import PinAuthenticationScreen from '../screens/PinAuthenticationScreen';
+import ProfileSheet from '../screens/ProfileSheet';
 import ReceiveModal from '../screens/ReceiveModal';
 import RestoreSheet from '../screens/RestoreSheet';
 import SavingsSheet from '../screens/SavingsSheet';
@@ -285,6 +286,13 @@ function BSNavigator() {
           <BSStack.Screen
             component={ENSConfirmRegisterSheet}
             name={Routes.ENS_CONFIRM_REGISTER_SHEET}
+          />
+          <BSStack.Screen
+            component={ProfileSheet}
+            name={Routes.PROFILE_SHEET}
+            options={{
+              height: '95%',
+            }}
           />
         </>
       )}

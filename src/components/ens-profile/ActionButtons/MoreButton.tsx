@@ -1,11 +1,14 @@
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
-import { ContextMenuButton } from 'react-native-ios-context-menu';
+import {
+  ContextMenuButton,
+  MenuActionConfig,
+} from 'react-native-ios-context-menu';
 import More from '../MoreButton/MoreButton';
 import { useClipboard, useContacts } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
 import { formatAddressForDisplay } from '@rainbow-me/utils/abbreviations';
 
 const ACTIONS = {
@@ -33,7 +36,7 @@ export default function MoreButton({ address }: { address?: string }) {
     return [
       {
         actionKey: ACTIONS.ADD_CONTACT,
-        actionTitle: lang.t('profiles.search.add_to_contacts'),
+        actionTitle: lang.t('profiles.details.add_to_contacts'),
         icon: {
           iconType: 'SYSTEM',
           iconValue: 'person.text.rectangle',
@@ -41,7 +44,7 @@ export default function MoreButton({ address }: { address?: string }) {
       },
       {
         actionKey: ACTIONS.COPY_ADDRESS,
-        actionTitle: lang.t('profiles.search.copy_address'),
+        actionTitle: lang.t('profiles.details.copy_address'),
         discoverabilityTitle: formattedAddress,
         icon: {
           iconType: 'SYSTEM',
@@ -50,13 +53,13 @@ export default function MoreButton({ address }: { address?: string }) {
       },
       {
         actionKey: ACTIONS.ETHERSCAN,
-        actionTitle: lang.t('profiles.search.view_on_etherscan'),
+        actionTitle: lang.t('profiles.details.view_on_etherscan'),
         icon: {
           iconType: 'SYSTEM',
           iconValue: 'safari.fill',
         },
       },
-    ] as any;
+    ] as MenuActionConfig[];
   }, [formattedAddress]);
 
   const handlePressMenuItem = useCallback(
@@ -79,11 +82,27 @@ export default function MoreButton({ address }: { address?: string }) {
     [address, contact, navigate, setClipboard]
   );
 
+  const handleAndroidPress = useCallback(() => {
+    const actionSheetOptions = menuItems
+      .map(item => item?.actionTitle)
+      .filter(x => x) as any;
+
+    showActionSheetWithOptions(
+      {
+        options: actionSheetOptions,
+      },
+      async (buttonIndex: number) => {
+        const actionKey = menuItems[buttonIndex]?.actionKey;
+        handlePressMenuItem({ nativeEvent: { actionKey } });
+      }
+    );
+  }, [handlePressMenuItem, menuItems]);
+
   return (
     <ContextMenuButton
       enableContextMenu
       menuConfig={{ menuItems, menuTitle: '' }}
-      {...(android ? { onPress: () => {} } : {})}
+      {...(android ? { onPress: handleAndroidPress } : {})}
       isMenuPrimaryAction
       onPressMenuItem={handlePressMenuItem}
       useActionSheetFallback={false}

@@ -61,6 +61,7 @@ export default function GradientOutlineButton({
             },
           }}
           start={{ x: 0, y: 0 }}
+          style={{ zIndex: 0 }}
           width="full"
         />
       </Cover>
