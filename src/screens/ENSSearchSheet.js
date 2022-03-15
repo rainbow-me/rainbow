@@ -154,6 +154,7 @@ export default function ENSSearchSheet() {
                 ) : (
                   <SearchResultGradientIndicator
                     price={registrationData?.rentPrice?.perYear?.display}
+                    testID="ens-registration-price"
                     type="price"
                   />
                 )}
@@ -171,7 +172,7 @@ export default function ENSSearchSheet() {
                       <Text
                         color="secondary50"
                         size="16px"
-                        testID="ens-registration-fees-text"
+                        testID="ens-registration-fees"
                         weight="bold"
                       >
                         {lang.t('profiles.search.estimated_total_cost_1')}

@@ -156,15 +156,18 @@ describe('Register ENS Flow', () => {
     await Helpers.waitAndTap('ens-search-clear-button');
   });
 
-  it('Should be able to type a name that is available', async () => {
+  it('Should be able to type a name that is available and wait for fees', async () => {
     await Helpers.checkIfVisible('ens-search-input');
     await Helpers.typeText('ens-search-input', 'somerandomname321', false);
-    await Helpers.delay(3000);
-    await Helpers.checkIfVisible('ens-registration-fees-text');
+  });
+
+  it('Should be able to see network fees and name rent price', async () => {
+    await Helpers.checkIfVisible('ens-search-input');
+    await Helpers.checkIfVisible('ens-registration-fees');
+    await Helpers.checkIfVisible('ens-registration-price');
     await Helpers.waitAndTap('ens-search-continue-action-button');
   });
 
-  it.todo('Should be able to see network fees and name rent price');
   it.todo('Should go to view to set records and skip it');
   it.todo('Should go to come back to records view and add some');
   it.todo('Should go to review registration and start it');
