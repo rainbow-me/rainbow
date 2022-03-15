@@ -367,7 +367,7 @@
         "toast_added_to_showcase": "Added to showcase",
         "toast_removed_from_showcase": "Removed from showcase",
         "view_on_opensea": "View on Opensea",
-        "view_on_web": "View on Web"
+        "view_on_platform": "View on %{platform}"
       }
     },
     "fields": {
@@ -561,6 +561,11 @@
         "register_name": "Register a .eth Name",
         "and_create_ens_profile": "& create your ENS profile"
       },
+      "details": {
+        "add_to_contacts": "Add to Contacts",
+        "copy_address": "Copy Address",
+        "view_on_etherscan": "View on Etherscan"
+      },
       "search": {
         "header": "Find your name",
         "description": "Search available profile names",
@@ -594,12 +599,19 @@
       },
       "confirm": {
         "confirm_purchase": "Confirm purchase",
+        "registration_details": "Registration Details",
+        "requesting_register": "Requesting to Register",
+        "reserving_name": "Reserving Your Name",
+        "confirm_registration": "Confirm Registration",
+        "start_registration": "Start Registration",
         "confirm_update": "Confirm update",
         "suggestion": "Buy more years now to save on fees",
+        "set_ens_name": "Set as my ENS name",
         "registration_duration": "Register name for",
         "registration_cost": "Registration cost",
-        "estimated_fees": "Estimated network fee",
-        "total_cost": "Total cost",
+        "current_fees": "Current network fee",
+        "estimated_total_eth": "Estimated total in ETH",
+        "estimated_total": "Estimated total",
         "duration_plural": "%{content} years",
         "duration_singular": "1 year",
         "commit_button": "Hold to Commit"

@@ -1,6 +1,8 @@
 import { Contract } from '@ethersproject/contracts';
-import { RainbowFetchClient } from '../rainbow-fetch';
+import { isEmpty } from 'lodash';
 import { web3Provider } from './web3';
+import { metadataClient } from '@rainbow-me/apollo/client';
+import { CONTRACT_FUNCTION } from '@rainbow-me/apollo/queries';
 import { ZerionTransaction } from '@rainbow-me/entities';
 import store from '@rainbow-me/redux/store';
 import { transactionSignaturesDataAddNewSignature } from '@rainbow-me/redux/transactionSignatures';
@@ -24,15 +26,6 @@ const parseSignatureToTitle = (signature: string) => {
   return parsedName;
 };
 
-const fourByteApi = new RainbowFetchClient({
-  baseURL: 'https://www.4byte.directory/api/v1/signatures',
-  headers: {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json',
-  },
-  timeout: 800,
-});
-
 const timeoutPromise = new Promise((_, reject) => {
   setTimeout(reject, 800);
 });
@@ -48,12 +41,19 @@ export const getTransactionMethodName = async (
     let signature = signatures[bytes] || '';
     if (signature) return signature;
     try {
-      const response = await fourByteApi.get(`/?hex_signature=${bytes}`);
-      const responseData: any = response?.data;
-      const bestResult = responseData?.results.sort(
-        (a: { id: number }, b: { id: number }) => (a.id < b.id ? -1 : 1)
-      )?.[0];
-      signature = bestResult.text_signature;
+      const response = await metadataClient.queryWithTimeout(
+        {
+          query: CONTRACT_FUNCTION,
+          variables: {
+            chainID: 1,
+            hex: bytes,
+          },
+        },
+        800
+      );
+      if (!isEmpty(response?.data?.contractFunction?.text)) {
+        signature = response.data.contractFunction.text;
+      }
       // eslint-disable-next-line no-empty
     } catch (e) {}
     if (!signature) {

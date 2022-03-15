@@ -16,6 +16,9 @@ import { CurrencySelectionList } from '../exchange';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/ChartExpandedState';
 import { Row } from '../layout';
 import DiscoverSheetContext from './DiscoverSheetContext';
+import useExperimentalFlag, {
+  PROFILES,
+} from '@rainbow-me/config/experimentalHooks';
 import { fetchSuggestions } from '@rainbow-me/handlers/ens';
 import {
   useHardwareBackOnFocus,
@@ -44,6 +47,7 @@ export default function DiscoverSearch() {
     searchInputRef,
     cancelSearch,
   } = useContext(DiscoverSheetContext);
+  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   const currencySelectionListRef = useRef();
   const [searchQueryForSearch, setSearchQueryForSearch] = useState('');
@@ -70,10 +74,13 @@ export default function DiscoverSearch() {
         // navigate to Showcase sheet
         searchInputRef?.current?.blur();
         InteractionManager.runAfterInteractions(() => {
-          navigate(Routes.SHOWCASE_SHEET, {
-            address: item.nickname,
-            setIsSearchModeEnabled,
-          });
+          navigate(
+            profilesEnabled ? Routes.PROFILE_SHEET : Routes.SHOWCASE_SHEET,
+            {
+              address: item.nickname,
+              setIsSearchModeEnabled,
+            }
+          );
         });
       } else {
         const asset = ethereumUtils.getAccountAsset(item.uniqueId);

@@ -45,12 +45,14 @@ export default function RegistrationReviewRows({
   networkFee,
   totalCost,
   registrationFee,
+  estimatedCostETH,
 }: {
   maxDuration: number;
   duration: number;
   onChangeDuration: (duration: number) => void;
   networkFee: string;
   totalCost: string;
+  estimatedCostETH: string;
   registrationFee: string;
 }) {
   return (
@@ -121,7 +123,7 @@ export default function RegistrationReviewRows({
         <Columns>
           <Column width="2/3">
             <Text color="secondary80" size="16px" weight="bold">
-              {lang.t('profiles.confirm.estimated_fees')}
+              {lang.t('profiles.confirm.current_fees')}
             </Text>
           </Column>
           <Column width="1/3">
@@ -136,8 +138,24 @@ export default function RegistrationReviewRows({
         </Columns>
         <Columns>
           <Column width="2/3">
+            <Text color="secondary80" size="16px" weight="bold">
+              {lang.t('profiles.confirm.estimated_total_eth')}
+            </Text>
+          </Column>
+          <Column width="1/3">
+            {networkFee ? (
+              <Text align="right" color="secondary80" size="16px" weight="bold">
+                {estimatedCostETH} ETH
+              </Text>
+            ) : (
+              <LoadingPlaceholder />
+            )}
+          </Column>
+        </Columns>
+        <Columns>
+          <Column width="2/3">
             <Text size="16px" weight="heavy">
-              {lang.t('profiles.confirm.total_cost')}
+              {lang.t('profiles.confirm.estimated_total')}
             </Text>
           </Column>
           <Column width="1/3">

@@ -21,7 +21,7 @@ import { stringifyENSNFTAvatar } from '@rainbow-me/utils';
 
 const size = 70;
 
-export default function Avatar({
+export default function RegistrationAvatar({
   onChangeAvatarUrl,
 }: {
   onChangeAvatarUrl: (url: string) => void;

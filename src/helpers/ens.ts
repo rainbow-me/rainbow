@@ -11,9 +11,10 @@ import {
   convertAmountAndPriceToNativeDisplay,
   divide,
   fromWei,
+  handleSignificantDecimals,
   multiply,
 } from './utilities';
-import { ENSRegistrationRecords } from '@rainbow-me/entities';
+import { ENSRegistrationRecords, EthereumAddress } from '@rainbow-me/entities';
 import { toHex, web3Provider } from '@rainbow-me/handlers/web3';
 import { gweiToWei } from '@rainbow-me/parsers';
 import {
@@ -62,6 +63,14 @@ export enum ENS_RECORDS {
   twitter = 'com.twitter',
   telegram = 'com.telegram',
   ensDelegate = 'eth.ens.delegate',
+}
+
+export enum REGISTRATION_STEPS {
+  COMMIT = 'COMMIT',
+  WAIT_COMMIT_CONFIRMATION = 'WAIT_COMMIT_CONFIRMATION',
+  WAIT_ENS_COMMITMENT = 'WAIT_ENS_COMMITMENT',
+  REGISTER = 'REGISTER',
+  EDIT = 'EDIT',
 }
 
 export type TextRecordField = {
@@ -224,9 +233,12 @@ const getENSRegistrarControllerContract = (
     wallet || web3Provider
   );
 };
-const getENSPublicResolverContract = (wallet?: Wallet) => {
+const getENSPublicResolverContract = (
+  wallet?: Wallet,
+  resolverAddress?: EthereumAddress
+) => {
   return new Contract(
-    ensPublicResolverAddress,
+    resolverAddress || ensPublicResolverAddress,
     ENSPublicResolverABI,
     wallet || web3Provider
   );
@@ -368,6 +380,7 @@ const getENSExecutionDetails = async ({
   duration,
   records,
   wallet,
+  resolverAddress,
 }: {
   name?: string;
   type: ENSRegistrationTransactionType;
@@ -377,6 +390,7 @@ const getENSExecutionDetails = async ({
   records?: ENSRegistrationRecords;
   wallet?: Wallet;
   salt?: string;
+  resolverAddress?: EthereumAddress;
 }): Promise<{
   methodArguments: any[] | null;
   value: BigNumberish | null;
@@ -422,12 +436,12 @@ const getENSExecutionDetails = async ({
       const record = records?.text[0];
       const namehash = hash(name);
       args = [namehash, record.key, record.value];
-      contract = getENSPublicResolverContract(wallet);
+      contract = getENSPublicResolverContract(wallet, resolverAddress);
       break;
     }
     case ENSRegistrationTransactionType.MULTICALL: {
       if (!name || !records) throw new Error('Bad arguments for multicall');
-      contract = getENSPublicResolverContract(wallet);
+      contract = getENSPublicResolverContract(wallet, resolverAddress);
       const data = setupMulticallRecords(name, records, contract) || [];
       args = [data];
       break;
@@ -481,6 +495,7 @@ const formatTotalRegistrationCost = (
   skipDecimals: boolean = false
 ) => {
   const networkFeeInEth = fromWei(wei);
+  const eth = handleSignificantDecimals(networkFeeInEth, 3);
 
   const { amount, display } = convertAmountAndPriceToNativeDisplay(
     networkFeeInEth,
@@ -493,6 +508,7 @@ const formatTotalRegistrationCost = (
   return {
     amount,
     display,
+    eth,
     wei,
   };
 };
