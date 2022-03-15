@@ -20,7 +20,6 @@ import {
   Stack,
   Text,
 } from '@rainbow-me/design-system';
-import { web3Provider } from '@rainbow-me/handlers/web3';
 import { ENS_DOMAIN } from '@rainbow-me/helpers/ens';
 import {
   useENSRegistration,

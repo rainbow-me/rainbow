@@ -184,15 +184,41 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should go to review registration and start it', async () => {
+    await Helpers.disableSynchronization();
     await Helpers.waitAndTap('ens-assign-records-review-action-button');
     await Helpers.checkIfVisible(`ens-transaction-action-COMMIT`);
     await Helpers.waitAndTap(`ens-transaction-action-COMMIT`);
-
-    await Helpers.delay(60000);
+    await Helpers.checkIfVisible(
+      `ens-confirm-register-label-WAIT_COMMIT_CONFIRMATION`
+    );
+    await Helpers.delay(10000);
+    await Helpers.checkIfVisible(
+      `ens-confirm-register-label-WAIT_ENS_COMMITMENT`
+    );
     await Helpers.checkIfVisible(`ens-transaction-action-REGISTER`);
+    await Helpers.enableSynchronization();
   });
 
-  it.todo('Should check COMMIT transaction');
+  //   it('Should see requesting to register screen', async () => {
+  //     await Helpers.checkIfVisible(
+  //       `ens-confirm-register-label-WAIT_COMMIT_CONFIRMATION`
+  //     );
+  //     await Helpers.delay(10000);
+  //   });
+
+  //   it('Should see reserving name screen', async () => {
+  //     await Helpers.checkIfVisible(
+  //       `ens-confirm-register-label-WAIT_ENS_COMMITMENT`
+  //     );
+  //   });
+
+  //   it('Should see confirm registration screen', async () => {
+  //     await Helpers.enableSynchronization();
+  //     // await Helpers.delay(60000);
+  //     // await Helpers.checkIfVisible(`ens-transaction-label-REGISTER`);
+  //     await Helpers.checkIfVisible(`ens-transaction-action-REGISTER`);
+  //   });
+
   it.todo('Should wait for a minute going out of the flow and coming back');
   it.todo('Should be able to set or unset sending reverse record');
   it.todo(

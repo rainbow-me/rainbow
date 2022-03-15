@@ -1,5 +1,6 @@
 import { differenceInSeconds } from 'date-fns';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+// @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { IS_TESTING } from 'react-native-dotenv';
 import { useDispatch } from 'react-redux';
 import {
@@ -63,6 +64,13 @@ export default function useENSRegistrationActionHandler(
         )
       : -1
   );
+
+  const isTesting = useMemo(
+    () => IS_TESTING === 'true' && isHardHat(web3Provider.connection.url),
+    []
+  );
+  // flag to wait 10 secs before we get the tx block, to be able to simulate not confirmed tx when testing
+  const shouldLoopForConfirmation = useRef(isTesting);
 
   const commitAction = useCallback(
     async (callback: () => void) => {
@@ -261,15 +269,12 @@ export default function useENSRegistrationActionHandler(
       );
       const block = await web3Provider.getBlock(tx.blockHash || '');
       const blockTimestamp = block?.timestamp;
-      if (blockTimestamp) {
-        // hardhat block timestamp is usually behind
-        const timeDifference =
-          IS_TESTING === 'true' && isHardHat(web3Provider.connection.url)
-            ? Date.now() - blockTimestamp * 1000
-            : 0;
-        const commitTransactionConfirmedAt =
-          blockTimestamp * 1000 + timeDifference;
+      if (!shouldLoopForConfirmation.current && blockTimestamp) {
         const now = Date.now();
+        const msBlockTimestamp = blockTimestamp * 1000;
+        // hardhat block timestamp is behind
+        const timeDifference = isTesting ? now - msBlockTimestamp : 0;
+        const commitTransactionConfirmedAt = msBlockTimestamp + timeDifference;
         const secs = differenceInSeconds(now, commitTransactionConfirmedAt);
         setSecondsSinceCommitConfirmed(secs);
         dispatch(
@@ -278,12 +283,19 @@ export default function useENSRegistrationActionHandler(
           })
         );
         confirmed = true;
+      } else if (shouldLoopForConfirmation.current) {
+        shouldLoopForConfirmation.current = false;
       }
     } catch (e) {
       //
     }
     return confirmed;
-  }, [accountAddress, dispatch, registrationParameters?.commitTransactionHash]);
+  }, [
+    accountAddress,
+    dispatch,
+    isTesting,
+    registrationParameters?.commitTransactionHash,
+  ]);
 
   const startPollingWatchCommitTransaction = useCallback(async () => {
     if (registrationStep !== REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION)
