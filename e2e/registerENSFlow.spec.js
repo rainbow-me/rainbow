@@ -181,10 +181,14 @@ describe('Register ENS Flow', () => {
     await Helpers.waitAndTap('ens-selectable-attribute-twitter');
     await Helpers.typeText('ens-text-record-name', RANDOM_NAME);
     await Helpers.typeText('ens-text-record-bio', 'this is my bio');
-    await Helpers.waitAndTap('ens-assign-records-review-action-button');
   });
 
-  it.todo('Should go to review registration and start it');
+  it('Should go to review registration and start it', async () => {
+    await Helpers.waitAndTap('ens-assign-records-review-action-button');
+    await Helpers.checkIfVisible(`ens-transaction-action-COMMIT`);
+    await Helpers.waitAndTap(`ens-transaction-action-COMMIT`);
+  });
+
   it.todo('Should check COMMIT transaction');
   it.todo('Should wait for a minute going out of the flow and coming back');
   it.todo('Should be able to set or unset sending reverse record');

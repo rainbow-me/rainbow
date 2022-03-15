@@ -122,7 +122,13 @@ function CommitContent({ registrationCostsData, setDuration, duration }) {
   );
 }
 
-function TransactionActionRow({ action, accentColor, label, disabled }) {
+function TransactionActionRow({
+  action,
+  accentColor,
+  label,
+  disabled,
+  testID,
+}) {
   return (
     <Box>
       <Box>
@@ -136,6 +142,7 @@ function TransactionActionRow({ action, accentColor, label, disabled }) {
             onLongPress={action}
             parentHorizontalPadding={19}
             showBiometryIcon
+            testID={`ens-transaction-action-${testID}`}
           />
         </SheetActionButtonRow>
       </Box>
@@ -254,6 +261,7 @@ export default function ENSConfirmRegisterSheet() {
           action={action}
           disabled={!stepGasLimit}
           label={lang.t('profiles.confirm.start_registration')}
+          testID={step}
         />
       ),
       [REGISTRATION_STEPS.REGISTER]: (
@@ -262,6 +270,7 @@ export default function ENSConfirmRegisterSheet() {
           action={action}
           disabled={!stepGasLimit}
           label={lang.t('profiles.confirm.confirm_registration')}
+          testID={step}
         />
       ),
       [REGISTRATION_STEPS.EDIT]: (
@@ -270,12 +279,13 @@ export default function ENSConfirmRegisterSheet() {
           action={action}
           disabled={!stepGasLimit}
           label={lang.t('profiles.confirm.confirm_update')}
+          testID={step}
         />
       ),
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: null,
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: null,
     }),
-    [accentColor, action, stepGasLimit]
+    [accentColor, action, step, stepGasLimit]
   );
 
   // Update gas limit
