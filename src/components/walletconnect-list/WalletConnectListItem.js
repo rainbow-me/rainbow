@@ -31,7 +31,6 @@ import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 import { ethereumUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
-import { connectionTimestamp } from '@rainbow-me/helpers/time';
 
 const ContainerPadding = 15;
 const VendorLogoIconSize = 50;
