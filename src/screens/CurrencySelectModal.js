@@ -10,7 +10,6 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { StatusBar } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import GestureBlocker from '../components/GestureBlocker';
 import {
@@ -228,8 +227,6 @@ export default function CurrencySelectModal() {
     toggleGestureEnabled,
   ]);
 
-  const isFocusedAndroid = useIsFocused() && android;
-
   const shouldUpdateFavoritesRef = useRef(false);
   useEffect(() => {
     if (!searchQueryExists && shouldUpdateFavoritesRef.current) {
@@ -262,7 +259,6 @@ export default function CurrencySelectModal() {
           overflow="hidden"
           radius={30}
         >
-          {isFocusedAndroid && <StatusBar barStyle="dark-content" />}
           <GestureBlocker type="top" />
           <Column flex={1}>
             <CurrencySelectModalHeader

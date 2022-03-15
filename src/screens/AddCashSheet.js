@@ -1,6 +1,5 @@
 import lang from 'i18n-js';
 import React, { useCallback, useMemo, useState } from 'react';
-import { StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { AddCashForm, AddCashStatus } from '../components/add-cash';
@@ -89,7 +88,6 @@ export default function AddCashSheet() {
 
   return (
     <SheetContainer colors={colors}>
-      <StatusBar barStyle="light-content" />
       <Column
         align="center"
         height={isNativeStackAvailable ? sheetHeight : '100%'}

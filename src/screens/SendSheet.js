@@ -3,7 +3,7 @@ import analytics from '@segment/analytics-react-native';
 import { captureEvent, captureException } from '@sentry/react-native';
 import { isEmpty, isEqual, isString, toLower } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, InteractionManager, Keyboard, StatusBar } from 'react-native';
+import { Alert, InteractionManager, Keyboard } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import { useDispatch } from 'react-redux';
@@ -800,7 +800,6 @@ export default function SendSheet(props) {
 
   return (
     <Container>
-      {ios && <StatusBar barStyle="light-content" />}
       <SheetContainer>
         <SendHeader
           contacts={contacts}

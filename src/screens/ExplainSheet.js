@@ -2,7 +2,7 @@
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
-import { Linking, StatusBar } from 'react-native';
+import { Linking } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { ChainBadge } from '../components/coin-icon';
 import { Centered, Column, ColumnWithMargins } from '../components/layout';
@@ -274,8 +274,6 @@ const ExplainSheet = () => {
 
   return (
     <Container deviceHeight={deviceHeight} height={sheetHeight} insets={insets}>
-      {ios && <StatusBar barStyle="light-content" />}
-
       <SlackSheet
         additionalTopPadding={android}
         contentHeight={sheetHeight}

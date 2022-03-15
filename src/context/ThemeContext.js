@@ -14,9 +14,11 @@ import {
 import { useDarkMode } from 'react-native-dark-mode';
 import { ThemeProvider } from 'styled-components';
 import { getTheme, saveTheme } from '../handlers/localstorage/theme';
+import { getActiveRoute } from '../navigation/Navigation';
 import { darkModeThemeColors, lightModeThemeColors } from '../styles/colors';
 import currentColors from './currentColors';
 import { DesignSystemProvider } from '@rainbow-me/design-system';
+import { onNavigationStateChange } from '@rainbow-me/navigation/onNavigationStateChange';
 import { StyleThingThemeProvider } from '@rainbow-me/styled-components';
 
 export const THEMES = {
@@ -40,7 +42,7 @@ export const MainThemeProvider = props => {
   const isSystemDarkModeIOS = useDarkMode();
   const isSystemDarkModeAndroid = useColorScheme() === 'dark';
   const isSystemDarkMode = ios ? isSystemDarkModeIOS : isSystemDarkModeAndroid;
-
+  const currentRoute = getActiveRoute()?.name;
   const colorSchemeSystemAdjusted =
     colorScheme === THEMES.SYSTEM
       ? isSystemDarkMode
@@ -61,18 +63,17 @@ export const MainThemeProvider = props => {
             ? 'dark'
             : 'light'
           : userPref;
-      StatusBar.setBarStyle(
-        userPrefSystemAdjusted === THEMES.DARK
-          ? 'light-content'
-          : 'dark-content',
-        true
-      );
+
       currentColors.theme = userPrefSystemAdjusted;
       currentColors.themedColors =
         userPrefSystemAdjusted === THEMES.DARK
           ? darkModeThemeColors
           : lightModeThemeColors;
       setColorScheme(userPref);
+
+      if (currentRoute) {
+        onNavigationStateChange(true);
+      }
     };
     loadUserPref();
   }, [isSystemDarkMode]);
@@ -104,12 +105,7 @@ export const MainThemeProvider = props => {
               : 'light'
             : scheme;
         currentColors.theme = schemeSystemAdjusted;
-        StatusBar.setBarStyle(
-          schemeSystemAdjusted === THEMES.DARK
-            ? 'light-content'
-            : 'dark-content',
-          true
-        );
+        StatusBar.setBarStyle('light-content', true);
         currentColors.themedColors =
           schemeSystemAdjusted === THEMES.DARK
             ? darkModeThemeColors

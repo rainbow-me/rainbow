@@ -172,7 +172,6 @@ export default function SettingsModal() {
       onCloseModal={goBack}
       radius={18}
       showDoneButton={ios}
-      skipStatusBar={android}
       testID="settings-modal"
     >
       <Container>
