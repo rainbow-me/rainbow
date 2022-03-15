@@ -11,11 +11,13 @@ const TintButton = ({
   disabled,
   onPress,
   color = 'secondary80',
+  testID,
 }: {
   children: ReactNode;
   disabled?: boolean;
   onPress: ButtonProps['onPress'];
   color: TextColor;
+  testID: string;
 }) => {
   const { colors } = useTheme();
 
@@ -34,6 +36,7 @@ const TintButton = ({
         () => ({ opacity: disabled ? 0.5 : 1, overflow: 'hidden' as 'hidden' }),
         [disabled]
       )}
+      testID={testID}
     >
       <Cover>
         <Box

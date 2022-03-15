@@ -41,7 +41,7 @@ const RegisterEnsFab = ({ disabled, isReadOnlyWallet, ...props }) => {
       disabled={disabled}
       onPress={handlePress}
       shadows={FabShadow}
-      testID="send-fab"
+      testID="register-ens-fab"
     >
       <FabIcon color={colors.whiteLabel}>ENS</FabIcon>
     </FloatingActionButton>

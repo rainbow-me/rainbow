@@ -21,6 +21,7 @@ export type SearchInputProps = {
   value: TextInputProps['value'];
   variant: 'rainbow';
   state?: 'success' | 'warning';
+  testID: string;
 };
 
 const SearchInput = ({
@@ -29,6 +30,7 @@ const SearchInput = ({
   value,
   variant = 'rainbow',
   state,
+  testID,
 }: SearchInputProps) => {
   const { width: deviceWidth } = useDimensions();
   const headingStyle = useHeadingStyle({ size: '30px', weight: 'heavy' });
@@ -123,6 +125,7 @@ const SearchInput = ({
                 }),
                 [headingStyle]
               )}
+              testID={testID}
               value={value}
             />
             <Column width="content">

@@ -77,7 +77,12 @@ export default function ENSSearchSheet() {
   }, [navigate, searchQuery, startRegistration]);
 
   return (
-    <Box background="body" flexGrow={1} paddingTop={{ custom: topPadding }}>
+    <Box
+      background="body"
+      flexGrow={1}
+      paddingTop={{ custom: topPadding }}
+      testID="ens-search-sheet"
+    >
       <Box flexGrow={1} paddingTop="30px">
         <Stack alignHorizontal="center" space="15px">
           <Heading size="23px" weight="heavy">
@@ -100,6 +105,7 @@ export default function ENSSearchSheet() {
             onChangeText={value => setSearchQuery(normalizeENS(value))}
             placeholder="Input placeholder"
             state={state}
+            testID="ens-search-input"
             value={searchQuery}
           />
         </Box>
@@ -193,7 +199,10 @@ export default function ENSSearchSheet() {
             />
           )}
           {(isRegistered || isInvalid) && (
-            <TintButton onPress={() => setSearchQuery('')}>
+            <TintButton
+              onPress={() => setSearchQuery('')}
+              testID="ens-search-clear-button"
+            >
               {lang.t('profiles.search.clear')}
             </TintButton>
           )}
