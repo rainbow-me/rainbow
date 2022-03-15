@@ -17,7 +17,7 @@ import {
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 
-export default function CoverPhoto() {
+export default function RegistrationCover() {
   const {
     images: { coverUrl: initialCoverUrl },
   } = useENSRegistration();

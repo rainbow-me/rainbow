@@ -367,7 +367,7 @@
         "toast_added_to_showcase": "Added to showcase",
         "toast_removed_from_showcase": "Removed from showcase",
         "view_on_opensea": "View on Opensea",
-        "view_on_web": "View on Web"
+        "view_on_platform": "View on %{platform}"
       }
     },
     "fields": {
@@ -557,6 +557,11 @@
       "withdraw": "Withdraw"
     },
     "profiles": {
+      "details": {
+        "add_to_contacts": "Add to Contacts",
+        "copy_address": "Copy Address",
+        "view_on_etherscan": "View on Etherscan"
+      },
       "search": {
         "header": "Find your name",
         "description": "Search available profile names",

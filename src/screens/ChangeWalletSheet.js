@@ -40,6 +40,7 @@ import styled from '@rainbow-me/styled-components';
 import {
   abbreviations,
   deviceUtils,
+  doesWalletsContainAddress,
   showActionSheetWithOptions,
 } from '@rainbow-me/utils';
 
@@ -354,18 +355,13 @@ export default function ChangeWalletSheet() {
                     // If we're deleting the selected wallet
                     // we need to switch to another one
                     if (address === currentAddress) {
-                      for (let i = 0; i < Object.keys(wallets).length; i++) {
-                        const key = Object.keys(wallets)[i];
-                        const someWallet = wallets[key];
-                        const found = someWallet.addresses.find(
-                          account =>
-                            account.visible && account.address !== address
-                        );
-
-                        if (found) {
-                          await onChangeAccount(key, found.address, true);
-                          break;
-                        }
+                      const { wallet: foundWallet, key } =
+                        doesWalletsContainAddress({
+                          address: address,
+                          wallets,
+                        }) || {};
+                      if (foundWallet) {
+                        await onChangeAccount(key, foundWallet.address, true);
                       }
                     }
                   }

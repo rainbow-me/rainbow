@@ -35,6 +35,7 @@ const Routes = {
   NATIVE_STACK: 'NativeStack',
   PIN_AUTHENTICATION_SCREEN: 'PinAuthenticationScreen',
   PROFILE_SCREEN: 'ProfileScreen',
+  PROFILE_SHEET: 'ProfileSheet',
   QR_SCANNER_SCREEN: 'QRScannerScreen',
   RECEIVE_MODAL: 'ReceiveModal',
   REGISTER_ENS_NAVIGATOR: 'RegisterEnsNavigator',

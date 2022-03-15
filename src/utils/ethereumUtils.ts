@@ -326,7 +326,7 @@ const getChainIdFromNetwork = (network: Network): number => {
  * @desc get etherscan host from network string
  * @param  {String} network
  */
-function getEtherscanHostForNetwork(network: Network): string {
+function getEtherscanHostForNetwork(network?: Network): string {
   const base_host = 'etherscan.io';
   if (network === Network.optimism) {
     return OPTIMISM_BLOCK_EXPLORER_URL;
@@ -334,7 +334,7 @@ function getEtherscanHostForNetwork(network: Network): string {
     return POLYGON_BLOCK_EXPLORER_URL;
   } else if (network === Network.arbitrum) {
     return ARBITRUM_BLOCK_EXPLORER_URL;
-  } else if (isTestnetNetwork(network)) {
+  } else if (network && isTestnetNetwork(network)) {
     return `${network}.${base_host}`;
   } else {
     return base_host;
@@ -403,6 +403,21 @@ const hasPreviousTransactions = (
       resolve(false);
     }
   });
+};
+
+/**
+ * @desc Fetches the address' first transaction timestamp (in ms)
+ * @param  {String} address
+ * @return {Promise<number>}
+ */
+export const getFirstTransactionTimestamp = async (
+  address: EthereumAddress
+): Promise<number | undefined> => {
+  const url = `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=asc&page=1&offset=1&apikey=${ETHERSCAN_API_KEY}`;
+  const response = await fetch(url);
+  const parsedResponse = await response.json();
+  const timestamp = parsedResponse.result[0]?.timeStamp;
+  return timestamp ? timestamp * 1000 : undefined;
 };
 
 const checkIfUrlIsAScam = async (url: string) => {
@@ -496,7 +511,7 @@ function getBlockExplorer(network: Network) {
 
 function openAddressInBlockExplorer(
   address: EthereumAddress,
-  network: Network
+  network?: Network
 ) {
   const etherscanHost = getEtherscanHostForNetwork(network);
   Linking.openURL(`https://${etherscanHost}/address/${address}`);

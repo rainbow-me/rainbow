@@ -369,7 +369,7 @@
         "toast_added_to_showcase": "Added to showcase :)",
         "toast_removed_from_showcase": "Removed from showcase :)",
         "view_on_opensea": "View on Opensea :)",
-        "view_on_web": "View on Web :)"
+        "view_on_platform": "View on %{platform} :)"
       }
     },
     "fields": {

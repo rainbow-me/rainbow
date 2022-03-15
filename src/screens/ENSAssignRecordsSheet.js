@@ -12,8 +12,8 @@ import { useRecoilState } from 'recoil';
 import { MiniButton } from '../components/buttons';
 import TintButton from '../components/buttons/TintButton';
 import {
-  Avatar,
-  Cover as CoverPhoto,
+  RegistrationAvatar,
+  RegistrationCover,
   TextRecordsForm,
 } from '../components/ens-registration';
 import SelectableButton from '../components/ens-registration/TextRecordsForm/SelectableButton';
@@ -110,10 +110,10 @@ export default function ENSAssignRecordsSheet() {
         style={useMemo(() => ({ paddingBottom: BottomActionHeight + 20 }), [])}
       >
         <Stack space="19px">
-          <CoverPhoto />
+          <RegistrationCover />
           <Bleed top={{ custom: 38 }}>
             <Box alignItems="center">
-              <Avatar onChangeAvatarUrl={setAvatarUrl} />
+              <RegistrationAvatar onChangeAvatarUrl={setAvatarUrl} />
             </Box>
           </Bleed>
           <Inset horizontal="19px">

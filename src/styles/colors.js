@@ -169,6 +169,7 @@ const getColorsByTheme = darkMode => {
   };
 
   let gradients = {
+    blueToGreen: ['#4764F7', '#23D67F'],
     lighterGrey: [buildRgba('#ECF1F5', 0.15), buildRgba('#DFE4EB', 0.5)],
     lightestGrey: ['#FFFFFF', '#F2F4F7'],
     lightestGreyReverse: ['#F2F4F7', '#FFFFFF'],
@@ -185,10 +186,17 @@ const getColorsByTheme = darkMode => {
     sendBackground: ['#FAFAFA00', '#FAFAFAFF'],
     success: ['#FAFF00', '#2CCC00'],
     successTint: ['#FFFFF0', '#FCFEFB'],
-    transparentToGreen: ['transparent', buildRgba(base.green, 0.06)],
-    transparentToLightGrey: ['transparent', buildRgba(base.blueGreyDark, 0.06)],
+    transparentToAppleBlue: [
+      buildRgba(base.appleBlue, 0.02),
+      buildRgba(base.appleBlue, 0.06),
+    ],
+    transparentToGreen: [buildRgba(base.green, 0), buildRgba(base.green, 0.06)],
+    transparentToLightGrey: [
+      buildRgba(base.blueGreyDark, 0),
+      buildRgba(base.blueGreyDark, 0.06),
+    ],
     transparentToLightOrange: [
-      'transparent',
+      buildRgba(base.lightOrange, 0),
       buildRgba(base.lightOrange, 0.06),
     ],
     vividRainbow: ['#FFB114', '#FF54BB', '#00F0FF'],
@@ -267,6 +275,7 @@ const getColorsByTheme = darkMode => {
     };
 
     gradients = {
+      blueToGreen: ['#4764F7', '#23D67F'],
       lighterGrey: [buildRgba('#1F222A', 0.8), buildRgba('#1F222A', 0.6)],
       lightestGrey: [buildRgba('#1F222A', 0.8), buildRgba('#1F222A', 0.3)],
       lightestGreyReverse: [
@@ -286,13 +295,20 @@ const getColorsByTheme = darkMode => {
       sendBackground: ['#12131A00', '#12131AFF'],
       success: ['#FAFF00', '#2CCC00'],
       successTint: ['#202118', '#141E18'],
-      transparentToGreen: ['transparent', buildRgba(base.green, 0.06)],
+      transparentToAppleBlue: [
+        buildRgba(base.appleBlue, 0.02),
+        buildRgba(base.appleBlue, 0.06),
+      ],
+      transparentToGreen: [
+        buildRgba(base.green, 0),
+        buildRgba(base.green, 0.06),
+      ],
       transparentToLightGrey: [
-        'transparent',
+        buildRgba(base.blueGreyDark, 0),
         buildRgba(base.blueGreyDark, 0.06),
       ],
       transparentToLightOrange: [
-        'transparent',
+        buildRgba(base.lightOrange, 0),
         buildRgba(base.lightOrange, 0.06),
       ],
       vividRainbow: ['#FFB114', '#FF54BB', '#00F0FF'],
