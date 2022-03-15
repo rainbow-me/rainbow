@@ -9,8 +9,6 @@ import * as Helpers from './helpers';
 import kittiesABI from '@rainbow-me/references/cryptokitties-abi.json';
 import erc20ABI from '@rainbow-me/references/erc20-abi.json';
 
-let connector = null;
-
 const RAINBOW_WALLET_DOT_ETH = '0x7a3d05c70581bD345fe117c06e45f9669205384f';
 const TESTING_WALLET = '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
 
@@ -129,24 +127,10 @@ describe('Register ENS Flow', () => {
     await Helpers.checkIfVisible('settings-modal');
   });
 
-  it('Should toggle Dark Mode on and off', async () => {
-    await Helpers.waitAndTap('darkmode-section-false');
-    await Helpers.waitAndTap('darkmode-section-true');
-  });
-
   it('Should navigate to Developer Settings after tapping Developer Section', async () => {
     await Helpers.waitAndTap('developer-section');
     await Helpers.checkIfVisible('developer-settings-modal');
   });
-
-  if (device.getPlatform() === 'ios') {
-    it('Should show Applied alert after pressing Alert', async () => {
-      await Helpers.waitAndTap('alert-section');
-      await Helpers.checkIfElementByTextIsVisible('APPLIED');
-      await Helpers.tapAlertWithButton('OK');
-      await Helpers.checkIfVisible('developer-settings-modal');
-    });
-  }
 
   it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
     await sendETHtoTestWallet();
@@ -161,14 +145,25 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should go to ENS flow', async () => {
-    await sendETHtoTestWallet();
-
     await Helpers.waitAndTap('register-ens-fab');
     await Helpers.checkIfVisible('ens-search-sheet');
   });
 
-  it.todo('Should be able to type a name that is not available');
-  it.todo('Should be able to type a name that is available');
+  it('Should be able to type a name that is not available', async () => {
+    await Helpers.checkIfVisible('ens-search-input');
+    await Helpers.typeText('ens-search-input', 'rainbowwallet', false);
+    await Helpers.delay(3000);
+    await Helpers.waitAndTap('ens-search-clear-button');
+  });
+
+  it('Should be able to type a name that is available', async () => {
+    await Helpers.checkIfVisible('ens-search-input');
+    await Helpers.typeText('ens-search-input', 'somerandomname321', false);
+    await Helpers.delay(3000);
+    await Helpers.checkIfVisible('ens-registration-fees-text');
+    await Helpers.waitAndTap('ens-search-continue-action-button');
+  });
+
   it.todo('Should be able to see network fees and name rent price');
   it.todo('Should go to view to set records and skip it');
   it.todo('Should go to come back to records view and add some');
@@ -185,8 +180,6 @@ describe('Register ENS Flow', () => {
 
   afterAll(async () => {
     // Reset the app state
-    await connector.killSession();
-    connector = null;
     await device.clearKeychain();
     await exec('kill $(lsof -t -i:8545)');
     await Helpers.delay(2000);

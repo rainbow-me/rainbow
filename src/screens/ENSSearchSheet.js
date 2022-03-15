@@ -168,7 +168,12 @@ export default function ENSSearchSheet() {
                 ) : (
                   <Inline>
                     {registrationCostsDataIsAvailable ? (
-                      <Text color="secondary50" size="16px" weight="bold">
+                      <Text
+                        color="secondary50"
+                        size="16px"
+                        testID="ens-registration-fees-text"
+                        weight="bold"
+                      >
                         {lang.t('profiles.search.estimated_total_cost_1')}
                         <Text color="secondary80" size="16px" weight="heavy">
                           {` ${registrationCostsData?.estimatedTotalRegistrationCost?.display} `}
@@ -195,6 +200,7 @@ export default function ENSSearchSheet() {
               label={lang.t('profiles.search.continue')}
               onPress={handlePressContinue}
               size="big"
+              testID="ens-search-continue"
               weight="heavy"
             />
           )}
