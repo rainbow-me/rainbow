@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import Spinner from '../../Spinner';
+import { Image } from 'react-native-image-crop-picker';
+import { atom, useSetRecoilState } from 'recoil';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import Skeleton from '../../skeleton/Skeleton';
 import AvatarCoverPhotoMaskSvg from '../../svg/AvatarCoverPhotoMaskSvg';
@@ -19,6 +20,11 @@ import {
 import { ImgixImage } from '@rainbow-me/images';
 import { stringifyENSNFTAvatar } from '@rainbow-me/utils';
 
+export const avatarMetadataAtom = atom<Image | undefined>({
+  default: undefined,
+  key: 'ens.avatarMetadata',
+});
+
 const size = 70;
 
 export default function RegistrationAvatar({
@@ -29,12 +35,7 @@ export default function RegistrationAvatar({
   const {
     images: { avatarUrl: initialAvatarUrl },
   } = useENSRegistration();
-  const {
-    isLoading,
-    values,
-    onBlurField,
-    setDisabled,
-  } = useENSRegistrationForm();
+  const { isLoading, values, onBlurField } = useENSRegistrationForm();
 
   const [avatarUrl, setAvatarUrl] = useState(
     initialAvatarUrl || values?.avatar
@@ -43,17 +44,20 @@ export default function RegistrationAvatar({
     setAvatarUrl(initialAvatarUrl || values?.avatar);
   }, [initialAvatarUrl]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const setAvatarMetadata = useSetRecoilState(avatarMetadataAtom);
+
   const accentColor = useForegroundColor('accent');
 
-  const { ContextMenu, isUploading } = useSelectImageMenu({
+  const { ContextMenu } = useSelectImageMenu({
     imagePickerOptions: {
       cropperCircleOverlay: true,
       cropping: true,
     },
     menuItems: ['library', 'nft'],
     onChangeImage: ({ asset, image }) => {
-      setAvatarUrl(image?.path || asset?.image_thumbnail_url || '');
-      onChangeAvatarUrl(image?.path || asset?.image_thumbnail_url || '');
+      setAvatarMetadata(image);
+      setAvatarUrl(image?.tmpPath || asset?.image_thumbnail_url || '');
+      onChangeAvatarUrl(image?.tmpPath || asset?.image_thumbnail_url || '');
       if (asset) {
         const standard = asset.asset_contract?.schema_name || '';
         const contractAddress = asset.asset_contract?.address || '';
@@ -66,20 +70,19 @@ export default function RegistrationAvatar({
             tokenId,
           }),
         });
+      } else if (image?.tmpPath) {
+        onBlurField({
+          key: 'avatar',
+          value: image.tmpPath,
+        });
       }
     },
     onUploadError: () => {
       onBlurField({ key: 'avatar', value: '' });
       setAvatarUrl('');
-      setDisabled(false);
-    },
-    onUploading: ({ image }) => {
-      onBlurField({ key: 'avatar', value: image.path });
-      setDisabled(true);
     },
     onUploadSuccess: ({ data }) => {
       onBlurField({ key: 'avatar', value: data.url });
-      setDisabled(false);
     },
     uploadToIPFS: true,
   });
@@ -116,27 +119,13 @@ export default function RegistrationAvatar({
                 width={{ custom: size }}
               >
                 {avatarUrl ? (
-                  <>
-                    <Box
-                      as={ImgixImage}
-                      borderRadius={size / 2}
-                      height={{ custom: size }}
-                      source={{ uri: avatarUrl }}
-                      style={{
-                        opacity: isUploading ? 0.3 : 1,
-                      }}
-                      width={{ custom: size }}
-                    />
-                    {isUploading && (
-                      <Cover alignHorizontal="center" alignVertical="center">
-                        <Spinner
-                          color={accentColor}
-                          duration={1000}
-                          size={'large' as 'large'}
-                        />
-                      </Cover>
-                    )}
-                  </>
+                  <Box
+                    as={ImgixImage}
+                    borderRadius={size / 2}
+                    height={{ custom: size }}
+                    source={{ uri: avatarUrl }}
+                    width={{ custom: size }}
+                  />
                 ) : (
                   <AccentColorProvider color={accentColor}>
                     <Text color="accent" size="18px" weight="heavy">
