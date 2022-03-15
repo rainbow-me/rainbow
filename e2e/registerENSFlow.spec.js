@@ -172,10 +172,18 @@ describe('Register ENS Flow', () => {
     await Helpers.waitAndTap('ens-search-continue-action-button');
     await Helpers.waitAndTap('ens-assign-records-skip');
     await Helpers.checkIfVisible('ens-confirm-register-sheet');
-    await Helpers.swipe('ens-confirm-register-sheet', 'down', 'slow');
   });
 
-  it.todo('Should go to come back to records view and add some');
+  it('Should go to come back to records view and add some', async () => {
+    await Helpers.checkIfVisible('ens-confirm-register-sheet');
+    await Helpers.swipe('ens-confirm-register-sheet', 'down', 'slow');
+    await Helpers.waitAndTap('ens-selectable-attribute-email');
+    await Helpers.waitAndTap('ens-selectable-attribute-twitter');
+    await Helpers.typeText('ens-text-record-name', RANDOM_NAME);
+    await Helpers.typeText('ens-text-record-bio', 'this is my bio');
+    await Helpers.waitAndTap('ens-assign-records-review-action-button');
+  });
+
   it.todo('Should go to review registration and start it');
   it.todo('Should check COMMIT transaction');
   it.todo('Should wait for a minute going out of the flow and coming back');

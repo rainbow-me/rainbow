@@ -94,6 +94,7 @@ export default function TextRecordsForm({
                   }}
                   placeholder={placeholder}
                   startsWith={startsWith}
+                  testID={`ens-text-record-${id}`}
                   validations={validations}
                 />
               </Box>

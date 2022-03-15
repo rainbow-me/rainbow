@@ -376,6 +376,7 @@ function SelectableAttributesButtons({
                 onAddField(fieldToAdd, [...selectedFields, fieldToAdd]);
               }
             }}
+            testID={`ens-selectable-attribute-${textRecordField.id}`}
           >
             {textRecordField.label}
           </SelectableButton>
