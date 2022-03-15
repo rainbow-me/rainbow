@@ -21,7 +21,7 @@ import { erc20ABI, ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
 import { convertAmountToRawAmount, greaterThan } from '@rainbow-me/utilities';
 import { AllowancesCache, ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
-import { ALLOWS_PERMIT, PermitSupportedTokenList } from 'rainbow-swaps';
+import { ALLOWS_PERMIT, PermitSupportedTokenList } from '@rainbow-me/swaps';
 
 export const estimateApprove = async (
   owner: string,

@@ -25,7 +25,7 @@ import {
   multiply,
 } from '@rainbow-me/utilities';
 import { getTokenMetadata } from '@rainbow-me/utils';
-import { ChainId, WETH } from 'rainbow-swaps';
+import { ChainId, WETH } from '@rainbow-me/swaps';
 
 const accountAddressSelector = (state: AppState) =>
   state.settings.accountAddress;

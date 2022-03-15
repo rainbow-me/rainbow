@@ -34,7 +34,7 @@ import {
   unwrapWeth,
   WETH,
   wrapEth,
-} from 'rainbow-swaps';
+} from '@rainbow-me/swaps';
 
 export enum Field {
   INPUT = 'INPUT',

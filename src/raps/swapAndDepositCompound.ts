@@ -20,7 +20,7 @@ import {
 } from '@rainbow-me/references';
 import { add } from '@rainbow-me/utilities';
 import logger from 'logger';
-import { RAINBOW_ROUTER_CONTRACT_ADDRESS } from 'rainbow-swaps';
+import { RAINBOW_ROUTER_CONTRACT_ADDRESS } from '@rainbow-me/swaps';
 
 export const estimateSwapAndDepositCompound = async (
   swapParameters: SwapActionParameters

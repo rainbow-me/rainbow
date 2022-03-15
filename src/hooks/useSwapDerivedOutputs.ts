@@ -19,7 +19,7 @@ import { ethereumUtils } from '@rainbow-me/utils';
 import {
   ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
   getQuote,
-} from 'rainbow-swaps';
+} from '@rainbow-me/swaps';
 
 enum DisplayValue {
   input = 'inputAmountDisplay',

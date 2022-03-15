@@ -14,7 +14,7 @@ import { usePrevious, useSwapCurrencies } from '@rainbow-me/hooks';
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import styled from '@rainbow-me/styled-components';
 import { padding, position } from '@rainbow-me/styles';
-import { ChainId, WETH } from 'rainbow-swaps';
+import { ChainId, WETH } from '@rainbow-me/swaps';
 
 const defaultPriceImpactScale = 1.15;
 const timingConfig = {

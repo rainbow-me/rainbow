@@ -17,7 +17,7 @@ import {
   PermitSupportedTokenList,
   RAINBOW_ROUTER_CONTRACT_ADDRESS,
   WETH,
-} from 'rainbow-swaps';
+} from '@rainbow-me/swaps';
 
 export const estimateUnlockAndSwap = async (
   swapParameters: SwapActionParameters

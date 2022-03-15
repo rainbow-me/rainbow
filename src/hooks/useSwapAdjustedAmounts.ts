@@ -6,7 +6,7 @@ import {
 import { AppState } from '@rainbow-me/redux/store';
 import { SwapModalField } from '@rainbow-me/redux/swap';
 import { updatePrecisionToDisplay } from '@rainbow-me/utilities';
-import { Quote } from 'rainbow-swaps';
+import { Quote } from '@rainbow-me/swaps';
 
 export default function useSwapAdjustedAmounts(tradeDetails: Quote) {
   const genericAssets = useSelector(

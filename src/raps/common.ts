@@ -30,7 +30,7 @@ import { ENSRegistrationRecords } from '@rainbow-me/helpers/ens';
 import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
 
 import logger from 'logger';
-import { Quote } from 'rainbow-swaps';
+import { Quote } from '@rainbow-me/swaps';
 
 const { commitENS, registerENS, multicallENS, setTextENS, setNameENS } = ens;
 
