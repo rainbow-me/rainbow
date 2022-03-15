@@ -72,13 +72,6 @@ export default function useENSRegistrationActionHandler(
   const coverMetadata = useRecoilValue(coverMetadataAtom);
   const commitAction = useCallback(
     async (callback: () => void) => {
-      const changedRecords = await uploadRecordImages(
-        registrationParameters.changedRecords,
-        {
-          avatar: avatarMetadata,
-          cover: coverMetadata,
-        }
-      );
       const wallet = await loadWallet();
       if (!wallet) {
         return;
@@ -96,7 +89,7 @@ export default function useENSRegistrationActionHandler(
         duration,
         nonce,
         ownerAddress: accountAddress,
-        records: changedRecords,
+        records: registrationParameters.changedRecords,
         rentPrice: rentPrice.toString(),
         salt,
       };
@@ -108,14 +101,7 @@ export default function useENSRegistrationActionHandler(
         callback
       );
     },
-    [
-      registrationParameters,
-      avatarMetadata,
-      coverMetadata,
-      getNextNonce,
-      yearsDuration,
-      accountAddress,
-    ]
+    [registrationParameters, getNextNonce, yearsDuration, accountAddress]
   );
 
   const registerAction = useCallback(
@@ -123,8 +109,14 @@ export default function useENSRegistrationActionHandler(
       const {
         name,
         duration,
-        changedRecords,
       } = registrationParameters as RegistrationParameters;
+      const changedRecords = await uploadRecordImages(
+        registrationParameters.changedRecords,
+        {
+          avatar: avatarMetadata,
+          cover: coverMetadata,
+        }
+      );
       const wallet = await loadWallet();
       if (!wallet) {
         return;
