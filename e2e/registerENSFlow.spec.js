@@ -156,6 +156,23 @@ describe('Register ENS Flow', () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
+  it.todo('Should go to ENS flow');
+  it.todo('Should be able to type a name that is not available');
+  it.todo('Should be able to type a name that is available');
+  it.todo('Should be able to see network fees and name rent price');
+  it.todo('Should go to view to set records and skip it');
+  it.todo('Should go to come back to records view and add some');
+  it.todo('Should go to review registration and start it');
+  it.todo('Should check COMMIT transaction');
+  it.todo('Should wait for a minute going out of the flow and coming back');
+  it.todo('Should be able to set or unset sending reverse record');
+  it.todo(
+    'Should be able finish registration and check the txs went through correctly'
+  );
+  it.todo(
+    'Should be able to go to the register flow and check for the name again'
+  );
+
   afterAll(async () => {
     // Reset the app state
     await connector.killSession();
