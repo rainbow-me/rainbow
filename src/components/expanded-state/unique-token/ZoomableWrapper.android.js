@@ -511,11 +511,7 @@ export const ZoomableWrapper = ({
                         ]}
                       >
                         <ImageWrapper
-                          style={[
-                            cornerStyle,
-                            StyleSheet.absoluteFillObject,
-                            { backgroundColor: 'blue' },
-                          ]}
+                          style={[cornerStyle, StyleSheet.absoluteFillObject]}
                         >
                           {children}
                         </ImageWrapper>
