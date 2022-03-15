@@ -9,7 +9,6 @@ import Routes from './routesNames';
 import { Navigation } from './index';
 
 let memRouteName;
-let memState;
 
 let action = null;
 
@@ -28,86 +27,34 @@ export function triggerOnSwipeLayout(newAction) {
   }
 }
 
-export function onNavigationStateChange(currentState) {
-  const prevState = memState;
-  memState = currentState;
+export function onNavigationStateChange(updateStatusBarOnSameRoute) {
   const { name: routeName } = Navigation.getActiveRoute();
+
   if (isOnSwipeScreen(routeName)) {
     action?.();
     action = undefined;
   }
+
   const prevRouteName = memRouteName;
   memRouteName = routeName;
 
-  if (routeName === Routes.QR_SCANNER_SCREEN) {
-    StatusBar.setBarStyle('light-content', true);
-  }
-
   if (
-    prevRouteName === Routes.QR_SCANNER_SCREEN &&
-    routeName === Routes.WALLET_SCREEN
+    currentColors.theme === 'dark' ||
+    (routeName === Routes.CURRENCY_SELECT_SCREEN && ios)
   ) {
-    StatusBar.setBarStyle('dark-content', true);
-  }
+    StatusBar.setBarStyle('light-content', true);
+  } else if (routeName !== prevRouteName || updateStatusBarOnSameRoute) {
+    switch (routeName) {
+      case Routes.PROFILE_SCREEN:
+      case Routes.WALLET_SCREEN:
+      case Routes.CURRENCY_SELECT_SCREEN:
+      case Routes.WYRE_WEBVIEW:
+      case Routes.SAVINGS_SHEET:
+        StatusBar.setBarStyle('dark-content', true);
+        break;
 
-  if (currentColors.theme === 'dark') {
-    StatusBar.setBarStyle('light-content');
-  } else {
-    if (ios) {
-      const oldBottomSheetStackRoute = prevState?.routes[prevState.index].name;
-      const newBottomSheetStackRoute =
-        currentState?.routes[currentState.index].name;
-
-      const wasCustomSlackOpen =
-        oldBottomSheetStackRoute === Routes.CONFIRM_REQUEST ||
-        oldBottomSheetStackRoute === Routes.RECEIVE_MODAL ||
-        oldBottomSheetStackRoute === Routes.SETTINGS_MODAL;
-      const isCustomSlackOpen =
-        newBottomSheetStackRoute === Routes.CONFIRM_REQUEST ||
-        newBottomSheetStackRoute === Routes.RECEIVE_MODAL ||
-        newBottomSheetStackRoute === Routes.SETTINGS_MODAL;
-
-      if (wasCustomSlackOpen !== isCustomSlackOpen) {
-        StatusBar.setBarStyle(
-          wasCustomSlackOpen ? 'dark-content' : 'light-content'
-        );
-      }
-    } else {
-      if (routeName !== prevRouteName) {
-        if ([prevRouteName, routeName].includes(Routes.RECEIVE_MODAL)) {
-          StatusBar.setBarStyle(
-            routeName === Routes.RECEIVE_MODAL
-              ? 'light-content'
-              : 'dark-content',
-            true
-          );
-        }
-
-        if ([prevRouteName, routeName].includes(Routes.BACKUP_SHEET)) {
-          StatusBar.setBarStyle(
-            !isOnSwipeScreen(routeName) ? 'light-content' : 'dark-content',
-            true
-          );
-        }
-
-        if ([prevRouteName, routeName].includes(Routes.SAVINGS_SHEET)) {
-          StatusBar.setBarStyle(
-            !isOnSwipeScreen(routeName) ? 'light-content' : 'dark-content',
-            true
-          );
-        }
-
-        if (
-          routeName === Routes.EXPANDED_ASSET_SHEET &&
-          Navigation.getActiveRoute().params.type === 'uniswap'
-        ) {
-          StatusBar.setBarStyle('light-content', true);
-        }
-
-        if (prevRouteName === Routes.EXPANDED_ASSET_SHEET) {
-          StatusBar.setBarStyle('dark-content', true);
-        }
-      }
+      default:
+        StatusBar.setBarStyle('light-content', true);
     }
   }
 
