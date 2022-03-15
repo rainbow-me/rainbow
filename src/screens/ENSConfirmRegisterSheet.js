@@ -26,6 +26,7 @@ import {
   Text,
 } from '@rainbow-me/design-system';
 import { fetchReverseRecord } from '@rainbow-me/handlers/ens';
+import { web3Provider } from '@rainbow-me/handlers/web3';
 import {
   accentColorAtom,
   ENS_DOMAIN,
@@ -175,6 +176,7 @@ export default function ENSConfirmRegisterSheet() {
     sendReverseRecord,
     yearsDuration: duration,
   });
+  console.log('wwww', web3Provider.network);
   const prevStepGasLimit = usePrevious(stepGasLimit);
 
   const { blurFields, values } = useENSRegistrationForm();

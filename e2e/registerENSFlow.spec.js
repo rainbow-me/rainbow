@@ -187,6 +187,9 @@ describe('Register ENS Flow', () => {
     await Helpers.waitAndTap('ens-assign-records-review-action-button');
     await Helpers.checkIfVisible(`ens-transaction-action-COMMIT`);
     await Helpers.waitAndTap(`ens-transaction-action-COMMIT`);
+
+    await Helpers.delay(60000);
+    await Helpers.checkIfVisible(`ens-transaction-action-REGISTER`);
   });
 
   it.todo('Should check COMMIT transaction');

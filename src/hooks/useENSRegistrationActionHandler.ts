@@ -1,5 +1,6 @@
 import { differenceInSeconds } from 'date-fns';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { IS_TESTING } from 'react-native-dotenv';
 import { useDispatch } from 'react-redux';
 import {
   ENSActionParameters,
@@ -9,7 +10,7 @@ import {
 import { useAccountSettings, useCurrentNonce, useENSRegistration } from '.';
 import { RegistrationParameters } from '@rainbow-me/entities';
 import { fetchResolver } from '@rainbow-me/handlers/ens';
-import { web3Provider } from '@rainbow-me/handlers/web3';
+import { isHardHat, web3Provider } from '@rainbow-me/handlers/web3';
 import {
   ENS_DOMAIN,
   generateSalt,
@@ -261,7 +262,13 @@ export default function useENSRegistrationActionHandler(
       const block = await web3Provider.getBlock(tx.blockHash || '');
       const blockTimestamp = block?.timestamp;
       if (blockTimestamp) {
-        const commitTransactionConfirmedAt = blockTimestamp * 1000;
+        // hardhat block timestamp is usually behind
+        const timeDifference =
+          IS_TESTING === 'true' && isHardHat(web3Provider.connection.url)
+            ? Date.now() - blockTimestamp * 1000
+            : 0;
+        const commitTransactionConfirmedAt =
+          blockTimestamp * 1000 + timeDifference;
         const now = Date.now();
         const secs = differenceInSeconds(now, commitTransactionConfirmedAt);
         setSecondsSinceCommitConfirmed(secs);
