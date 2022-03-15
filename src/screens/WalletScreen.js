@@ -7,12 +7,7 @@ import { useValue } from 'react-native-redash/src/v1';
 import { useDispatch, useSelector } from 'react-redux';
 import { OpacityToggler } from '../components/animations';
 import { AssetList } from '../components/asset-list';
-import {
-  ExchangeFab,
-  FabWrapper,
-  RegisterEnsFab,
-  SendFab,
-} from '../components/fab';
+import { ExchangeFab, FabWrapper, SendFab } from '../components/fab';
 import {
   DiscoverHeaderButton,
   Header,
@@ -174,9 +169,8 @@ export default function WalletScreen() {
       [
         !!get(networkInfo[network], 'exchange_enabled') && ExchangeFab,
         SendFab,
-        profilesEnabled ? RegisterEnsFab : null,
       ].filter(e => !!e),
-    [network, profilesEnabled]
+    [network]
   );
 
   const isLoadingAssets = useSelector(state => state.data.isLoadingAssets);

@@ -1,4 +1,5 @@
 import React from 'react';
+import useExperimentalFlag, { PROFILES } from '../../config/experimentalHooks';
 import BottomSpacer from './BottomSpacer';
 import Lists from './ListsSection';
 import PulseIndex from './PulseIndexSection';
@@ -10,10 +11,11 @@ import { useAccountSettings } from '@rainbow-me/hooks';
 
 export default function DiscoverHome() {
   const { accountAddress } = useAccountSettings();
+  const profilesEnabled = useExperimentalFlag(PROFILES);
   return (
     <React.Fragment>
       <TopMoversSection />
-      <RegisterENS />
+      {profilesEnabled && <RegisterENS />}
       <PulseIndex />
       <Lists />
       {/* <Strategies /> */}

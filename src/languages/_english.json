@@ -557,6 +557,10 @@
       "withdraw": "Withdraw"
     },
     "profiles": {
+      "banner": {
+        "register_name": "Register a .eth Name",
+        "and_create_ens_profile": "& create your ENS profile"
+      },
       "search": {
         "header": "Find your name",
         "description": "Search available profile names",

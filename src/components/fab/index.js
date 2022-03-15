@@ -7,4 +7,3 @@ export {
 } from './FloatingActionButton';
 export { default as SearchFab } from './SearchFab';
 export { default as SendFab } from './SendFab';
-export { default as RegisterEnsFab } from './RegisterEnsFab';
