@@ -36,7 +36,7 @@ import { connectionTimestamp } from '@rainbow-me/helpers/time';
 const ContainerPadding = 15;
 const VendorLogoIconSize = 50;
 export const WalletConnectListItemHeight =
-  VendorLogoIconSize + ContainerPadding * 2.5;
+  VendorLogoIconSize + ContainerPadding * 2;
 
 const LabelText = styled(Text).attrs(() => ({
   align: 'center',
@@ -78,7 +78,6 @@ export default function WalletConnectListItem({
   dappIcon,
   dappName,
   dappUrl,
-  handshakeId,
 }) {
   const {
     walletConnectDisconnectAllByDappUrl,
@@ -221,20 +220,10 @@ export default function WalletConnectListItem({
             imageUrl={overrideLogo || dappIcon}
             size={VendorLogoIconSize}
           />
-          <ColumnWithMargins flex={1} margin={-2} style={columnStyle}>
+          <ColumnWithMargins flex={1} margin={-4} style={columnStyle}>
             <Row width="70%">
               <TruncatedText size="lmedium" weight="heavy">
                 {overrideName || dappName || 'Unknown Application'}
-              </TruncatedText>
-            </Row>
-
-            <Row width="85%" marginTop={-5}>
-              <TruncatedText
-                size="small"
-                weight="medium"
-                style={{ color: colors.alpha(colors.blueGreyDark, 0.6) }}
-              >
-                {connectionTimestamp(handshakeId)}
               </TruncatedText>
             </Row>
 

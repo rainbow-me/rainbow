@@ -1,7 +1,6 @@
 import lang from 'i18n-js';
 import { findKey, isObjectLike, isString, omitBy, pick } from 'lodash';
 import parseMilliseconds from 'parse-ms';
-import { format, fromUnixTime } from 'date-fns';
 import { convertStringToNumber } from './utilities';
 
 const MinimalTimeUnitWhitelist = ['days', 'hours', 'minutes', 'seconds'];
@@ -57,11 +56,4 @@ export const getMinimalTimeUnitStringForMs = (
   });
 
   return `${highestResolutionValue} ${label}`;
-};
-
-export const connectionTimestamp = handshake => {
-  const ms = Number(handshake) / 1000000; // convert from microseconds to milliseconds
-  const timestamp = format(fromUnixTime(ms), 'MMM d, yyyy · h:mm a');
-
-  return timestamp;
 };
