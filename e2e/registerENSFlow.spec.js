@@ -153,10 +153,20 @@ describe('Register ENS Flow', () => {
 
     await Helpers.waitAndTap('hardhat-section');
     await Helpers.checkIfVisible('testnet-toast-Hardhat');
-    await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
-  it.todo('Should go to ENS flow');
+  it('Should navigate to the Wallet screen after swiping left', async () => {
+    await Helpers.swipe('profile-screen', 'left', 'slow');
+    await Helpers.checkIfVisible('wallet-screen');
+  });
+
+  it('Should go to ENS flow', async () => {
+    await sendETHtoTestWallet();
+
+    await Helpers.waitAndTap('register-ens-fab');
+    await Helpers.checkIfVisible('ens-search-sheet');
+  });
+
   it.todo('Should be able to type a name that is not available');
   it.todo('Should be able to type a name that is available');
   it.todo('Should be able to see network fees and name rent price');
