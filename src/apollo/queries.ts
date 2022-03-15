@@ -307,3 +307,11 @@ export const ENS_GET_COIN_TYPES = gql`
     }
   }
 `;
+
+export const CONTRACT_FUNCTION = gql`
+  query contractFunction($chainID: Int!, $hex: String!) {
+    contractFunction(chainID: $chainID, hex: $hex) {
+      text
+    }
+  }
+`;
