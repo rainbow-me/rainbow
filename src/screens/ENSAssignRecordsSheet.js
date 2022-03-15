@@ -245,6 +245,7 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
                       color="secondary60"
                       disabled={disabled}
                       onPress={handlePressContinue}
+                      testID="ens-assign-records-skip"
                     >
                       {lang.t('profiles.create.skip')}
                     </TintButton>
@@ -256,6 +257,7 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
                         label={lang.t('profiles.create.review')}
                         onPress={handlePressContinue}
                         size="big"
+                        testID="ens-assign-records-review"
                         weight="heavy"
                       />
                     </Box>

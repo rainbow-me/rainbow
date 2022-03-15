@@ -17,7 +17,7 @@ const TintButton = ({
   disabled?: boolean;
   onPress: ButtonProps['onPress'];
   color: TextColor;
-  testID: string;
+  testID?: string;
 }) => {
   const { colors } = useTheme();
 

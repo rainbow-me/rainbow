@@ -14,6 +14,7 @@ const TESTING_WALLET = '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
 
 const ETH_ADDRESS = 'eth';
 const CRYPTOKITTIES_ADDRESS = '0x06012c8cf97BEaD5deAe237070F9587f8E7A266d';
+const RANDOM_NAME = 'somerandomname321';
 
 const getProvider = () => {
   if (!getProvider._instance) {
@@ -158,17 +159,22 @@ describe('Register ENS Flow', () => {
 
   it('Should be able to type a name that is available and wait for fees', async () => {
     await Helpers.checkIfVisible('ens-search-input');
-    await Helpers.typeText('ens-search-input', 'somerandomname321', false);
+    await Helpers.typeText('ens-search-input', RANDOM_NAME, false);
   });
 
   it('Should be able to see network fees and name rent price', async () => {
     await Helpers.checkIfVisible('ens-search-input');
     await Helpers.checkIfVisible('ens-registration-fees');
     await Helpers.checkIfVisible('ens-registration-price');
-    await Helpers.waitAndTap('ens-search-continue-action-button');
   });
 
-  it.todo('Should go to view to set records and skip it');
+  it('Should go to view to set records and skip it', async () => {
+    await Helpers.waitAndTap('ens-search-continue-action-button');
+    await Helpers.waitAndTap('ens-assign-records-skip');
+    await Helpers.checkIfVisible('ens-confirm-register-sheet');
+    await Helpers.swipe('ens-confirm-register-sheet', 'down', 'slow');
+  });
+
   it.todo('Should go to come back to records view and add some');
   it.todo('Should go to review registration and start it');
   it.todo('Should check COMMIT transaction');

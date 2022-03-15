@@ -317,7 +317,12 @@ export default function ENSConfirmRegisterSheet() {
       scrollEnabled={false}
     >
       <AccentColorProvider color={accentColor}>
-        <Box background="body" paddingVertical="30px" style={boxStyle}>
+        <Box
+          background="body"
+          paddingVertical="30px"
+          style={boxStyle}
+          testID="ens-confirm-register-sheet"
+        >
           <Rows>
             <Row height="content">
               <Box horizontal="30px">
