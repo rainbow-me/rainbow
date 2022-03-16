@@ -63,8 +63,6 @@ function rowRenderer(type: CellType, { uid }: { uid: string }) {
                 totalValue={(data as AssetsHeaderExtraData).value}
               />
             );
-          case CellType.ASSETS_HEADER_SHOWCASE:
-            return <ProfileSheetHeader />;
           case CellType.COIN:
             return (
               <WrapperBalanceCoinRow

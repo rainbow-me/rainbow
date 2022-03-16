@@ -42,6 +42,7 @@ export { default as useENSRegistrationCosts } from './useENSRegistrationCosts';
 export { default as useENSRegistrationForm } from './useENSRegistrationForm';
 export { default as useENSSearch } from './useENSSearch';
 export { default as useExpandedStateNavigation } from './useExpandedStateNavigation';
+export { default as useFirstTransactionTimestamp } from './useFirstTransactionTimestamp';
 export { default as useGas } from './useGas';
 export { default as useGenericAsset } from './useGenericAsset';
 export { default as useHeight } from './useHeight';

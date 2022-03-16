@@ -50,9 +50,10 @@ export default function DiscoverHeaderButton() {
     navigate,
   ]);
 
-  const onLongPress = useCallback(() => navigate(Routes.PROFILE_SHEET, { address: 'mikedemarais.eth' }), [
-    navigate,
-  ]);
+  const onLongPress = useCallback(
+    () => navigate(Routes.PROFILE_SHEET, { address: 'moxey.eth' }),
+    [navigate]
+  );
 
   const shadows = useMemo(() => DiscoverButtonShadowsFactory(colors), [colors]);
 

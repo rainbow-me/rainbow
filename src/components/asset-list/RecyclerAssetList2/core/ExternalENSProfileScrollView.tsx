@@ -11,14 +11,21 @@ import { runOnJS, useWorkletCallback } from 'react-native-reanimated';
 import BaseScrollView, {
   ScrollViewDefaultProps,
 } from 'recyclerlistview/dist/reactnative/core/scrollcomponent/BaseScrollView';
+import ProfileSheetHeader from '../../../ens-profile/ProfileSheetHeader';
 import { StickyHeaderContext } from './StickyHeaders';
 
 const extraPadding = { paddingBottom: 144 };
-const ExternalShowcaseScrollViewWithRef = React.forwardRef<
+const ExternalENSProfileScrollViewWithRef = React.forwardRef<
   BaseScrollView,
-  ScrollViewDefaultProps & { contentContainerStyle: ViewStyle }
+  ScrollViewDefaultProps & {
+    children: React.ReactNode;
+    contentContainerStyle: ViewStyle;
+  }
 >(function ExternalScrollView(
-  props: ScrollViewDefaultProps & { contentContainerStyle: ViewStyle },
+  props: ScrollViewDefaultProps & {
+    children: React.ReactNode;
+    contentContainerStyle: ViewStyle;
+  },
   ref
 ) {
   const isInsideBottomSheet = !!useContext(BottomSheetContext);
@@ -42,7 +49,10 @@ const ExternalShowcaseScrollViewWithRef = React.forwardRef<
       contentContainerStyle={[extraPadding, rest.contentContainerStyle]}
       onScroll={onScrollWrapped}
       ref={scrollViewRef as RefObject<any>}
-    />
+    >
+      <ProfileSheetHeader />
+      {props.children}
+    </ScrollView>
   );
 });
-export default ExternalShowcaseScrollViewWithRef;
+export default ExternalENSProfileScrollViewWithRef;

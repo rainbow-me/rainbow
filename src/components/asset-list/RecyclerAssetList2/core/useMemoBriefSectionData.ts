@@ -1,4 +1,5 @@
 import { useDeepCompareMemo } from 'use-deep-compare';
+import { AssetListType } from '..';
 import { CellType, CoinExtraData, NFTFamilyExtraData } from './ViewTypes';
 import {
   useCoinListEdited,
@@ -12,8 +13,8 @@ import {
 
 export default function useMemoBriefSectionData({
   filterTypes: givenFilterTypes,
-  showcase,
-}: { filterTypes?: CellType[]; showcase?: boolean } = {}) {
+  type,
+}: { filterTypes?: CellType[]; type?: AssetListType } = {}) {
   const { briefSectionsData } = useWalletSectionsData();
   const { isSmallBalancesOpen, stagger } = useOpenSmallBalances();
   const { isSavingsOpen } = useOpenSavings();
@@ -32,13 +33,8 @@ export default function useMemoBriefSectionData({
     let numberOfSmallBalancesAllowed = stagger ? 12 : briefSectionsData.length;
     const filterTypes = [
       ...(givenFilterTypes || []),
-      ...(showcase
-        ? [
-            CellType.NFT_SPACE_AFTER,
-            CellType.NFT,
-            CellType.FAMILY_HEADER,
-            CellType.ASSETS_HEADER,
-          ]
+      ...(type === 'ens-profile'
+        ? [CellType.NFT_SPACE_AFTER, CellType.NFT, CellType.FAMILY_HEADER]
         : []),
     ];
     const briefSectionsDataFiltered = briefSectionsData
@@ -127,11 +123,8 @@ export default function useMemoBriefSectionData({
         index++;
         return true;
       })
-      .map(({ uid, type }) => {
-        if (type === CellType.ASSETS_HEADER && showcase) {
-          return { type: CellType.ASSETS_HEADER_SHOWCASE, uid };
-        }
-        return { type, uid };
+      .map(({ uid, type: cellType }) => {
+        return { type: cellType, uid };
       });
     return briefSectionsDataFiltered;
   }, [

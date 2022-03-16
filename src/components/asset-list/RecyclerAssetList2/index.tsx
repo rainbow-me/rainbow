@@ -9,11 +9,13 @@ import RawMemoRecyclerAssetList from './core/RawRecyclerList';
 import { StickyHeaderManager } from './core/StickyHeaders';
 import useMemoBriefSectionData from './core/useMemoBriefSectionData';
 
-function RecyclerAssetList({ showcase = false }: { showcase?: boolean }) {
+export type AssetListType = 'wallet' | 'ens-profile';
+
+function RecyclerAssetList({ type = 'wallet' }: { type?: AssetListType }) {
   const {
     memoizedResult: briefSectionsData,
     additionalData,
-  } = useMemoBriefSectionData({ showcase });
+  } = useMemoBriefSectionData({ type });
 
   const position = useMemoOne(() => new RNAnimated.Value(0), []);
 
@@ -25,7 +27,7 @@ function RecyclerAssetList({ showcase = false }: { showcase?: boolean }) {
         <StickyHeaderManager>
           <RawMemoRecyclerAssetList
             briefSectionsData={briefSectionsData}
-            showcase={showcase}
+            type={type}
           />
         </StickyHeaderManager>
       </RecyclerAssetListContext.Provider>
