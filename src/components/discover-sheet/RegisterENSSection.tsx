@@ -32,7 +32,11 @@ export default function RegisterENSSection() {
   }, [isReadOnlyWallet, navigate]);
 
   return (
-    <ButtonPressAnimation onPress={handlePress} scaleTo={0.92}>
+    <ButtonPressAnimation
+      onPress={handlePress}
+      scaleTo={0.92}
+      testID="ens-register-name-banner"
+    >
       <AccentColorProvider color={colors.gradients.ens[1]}>
         <Inset bottom="19px" horizontal="19px">
           <Box

@@ -127,8 +127,13 @@ describe('Register ENS Flow', () => {
     await Helpers.checkIfVisible('wallet-screen');
   });
 
-  it('Should go to ENS flow', async () => {
-    await Helpers.waitAndTap('register-ens-fab');
+  it('Should navigate to the Discover sheet screen after tapping Discover Button', async () => {
+    await Helpers.waitAndTap('discover-button');
+    await Helpers.checkIfVisible('discover-header');
+  });
+
+  it('Should go to ENS flow pressing the ENS banner', async () => {
+    await Helpers.waitAndTap('ens-register-name-banner');
     await Helpers.checkIfVisible('ens-search-sheet');
   });
 
