@@ -42,7 +42,28 @@ describe('Discover Sheet Flow', () => {
     await Helpers.enableSynchronization();
   });
 
+  it('Should navigate to the Profile screen after swiping right', async () => {
+    await Helpers.swipe('wallet-screen', 'right', 'slow');
+    await Helpers.checkIfVisible('profile-screen');
+  });
+
+  it('Should navigate to Settings Modal after tapping Settings Button', async () => {
+    await Helpers.waitAndTap('settings-button');
+    await Helpers.checkIfVisible('settings-modal');
+  });
+
+  it('Should navigate to Developer Settings after tapping Developer Section', async () => {
+    await Helpers.waitAndTap('developer-section');
+    await Helpers.checkIfVisible('developer-settings-modal');
+  });
+
+  it('Should disable Profiles flow', async () => {
+    await Helpers.tapByText('profiles');
+    await Helpers.tapByText('Done');
+  });
+
   it('Should navigate to Discover screen after tapping Discover Button', async () => {
+    await Helpers.swipe('profile-screen', 'left', 'slow');
     await Helpers.waitAndTap('discover-button');
     await Helpers.checkIfVisible('discover-header');
   });
