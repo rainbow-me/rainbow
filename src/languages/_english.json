@@ -557,6 +557,10 @@
       "withdraw": "Withdraw"
     },
     "profiles": {
+      "banner": {
+        "register_name": "Register a .eth Name",
+        "and_create_ens_profile": "& create your ENS profile"
+      },
       "details": {
         "add_to_contacts": "Add to Contacts",
         "copy_address": "Copy Address",
