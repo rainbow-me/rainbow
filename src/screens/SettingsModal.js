@@ -63,8 +63,9 @@ function cardStyleInterpolator({
   };
 }
 
-const { RNTestFlight } = NativeModules;
-const { isTestFlight } = RNTestFlight.getConstants();
+let isTestFlight = ios
+  ? NativeModules.RNTestFlight.getConstants().isTestFlight
+  : false;
 
 const SettingsPages = {
   backup: {
