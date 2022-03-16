@@ -12,6 +12,7 @@ import {
   Text,
   useTextStyle,
 } from '@rainbow-me/design-system';
+import { useDimensions } from '@rainbow-me/hooks';
 
 const textSize = 16;
 
@@ -47,6 +48,9 @@ export default function InlineField({
   value,
 }: InlineFieldProps) {
   const { colors } = useTheme();
+  const { width } = useDimensions();
+
+  console.log(width);
 
   const paddingVertical = 17;
   const textStyle = useTextStyle({ size: `${textSize}px`, weight: 'bold' });
@@ -96,6 +100,7 @@ export default function InlineField({
         : android
         ? 11
         : 0,
+      width: startsWith ? 0.55 * width : 0.6 * width,
       textAlignVertical: 'top',
     }),
     [textStyle, inputHeight, inputProps?.multiline]
