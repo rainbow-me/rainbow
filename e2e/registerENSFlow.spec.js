@@ -133,7 +133,9 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should go to ENS flow pressing the ENS banner', async () => {
+    await Helpers.delay(5000);
     await Helpers.waitAndTap('ens-register-name-banner');
+    await Helpers.delay(5000);
     await Helpers.checkIfVisible('ens-search-sheet');
   });
 
