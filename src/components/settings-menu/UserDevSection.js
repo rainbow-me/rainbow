@@ -46,7 +46,7 @@ const UserDevSection = props => {
   ]);
 
   return (
-    <ScrollView {...props} testID="developer-settings-modal">
+    <ScrollView {...props}>
       <ListItem
         label="🕹️ Enable Testnets"
         onPress={toggleTestnetsEnabled}
