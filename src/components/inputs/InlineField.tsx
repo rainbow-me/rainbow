@@ -50,8 +50,6 @@ export default function InlineField({
   const { colors } = useTheme();
   const { width } = useDimensions();
 
-  console.log(width);
-
   const paddingVertical = 17;
   const textStyle = useTextStyle({ size: `${textSize}px`, weight: 'bold' });
 
@@ -160,6 +158,7 @@ export default function InlineField({
             placeholder={placeholder}
             style={style}
             value={value}
+            scrollEnabled={false}
             {...inputProps}
             keyboardType={
               android ? 'visible-password' : inputProps?.keyboardType
