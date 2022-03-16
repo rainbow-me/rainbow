@@ -50,7 +50,7 @@ export default function DiscoverHeaderButton() {
     navigate,
   ]);
 
-  const onLongPress = useCallback(() => navigate(Routes.CONNECTED_DAPPS), [
+  const onLongPress = useCallback(() => navigate(Routes.PROFILE_SHEET, { address: 'mikedemarais.eth' }), [
     navigate,
   ]);
 

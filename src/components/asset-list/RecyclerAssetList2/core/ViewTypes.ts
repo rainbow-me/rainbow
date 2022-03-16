@@ -3,6 +3,7 @@ import { RecyclerListViewState } from 'recyclerlistview/dist/reactnative/core/Re
 
 export enum CellType {
   ASSETS_HEADER = 'ASSETS_HEADER',
+  ASSETS_HEADER_SHOWCASE = 'ASSETS_HEADER_SHOWCASE',
   ASSETS_HEADER_SPACE_AFTER = 'ASSETS_HEADER_SPACE_AFTER',
   COIN = 'COIN',
   COIN_DIVIDER = 'COIN_DIVIDER',

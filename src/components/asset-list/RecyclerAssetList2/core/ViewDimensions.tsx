@@ -14,6 +14,7 @@ type Dim = {
 };
 const ViewDimensions: Record<CellType, Dim> = {
   [CellType.ASSETS_HEADER]: { height: AssetListHeaderHeight },
+  [CellType.ASSETS_HEADER_SHOWCASE]: { height: 100 }, // TODO
   [CellType.ASSETS_HEADER_SPACE_AFTER]: { height: 6 },
   [CellType.COIN]: { height: CoinRowHeight },
   [CellType.COIN_DIVIDER]: { height: CoinDividerContainerHeight },

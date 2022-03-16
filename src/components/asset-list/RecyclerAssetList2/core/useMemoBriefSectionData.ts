@@ -11,8 +11,9 @@ import {
 } from '@rainbow-me/hooks';
 
 export default function useMemoBriefSectionData({
-  filterTypes,
-}: { filterTypes?: CellType[] } = {}) {
+  filterTypes: givenFilterTypes,
+  showcase,
+}: { filterTypes?: CellType[]; showcase?: boolean } = {}) {
   const { briefSectionsData } = useWalletSectionsData();
   const { isSmallBalancesOpen, stagger } = useOpenSmallBalances();
   const { isSavingsOpen } = useOpenSavings();
@@ -29,9 +30,20 @@ export default function useMemoBriefSectionData({
     let afterCoins = false;
     // load firstly 12, then the rest after 1 sec
     let numberOfSmallBalancesAllowed = stagger ? 12 : briefSectionsData.length;
+    const filterTypes = [
+      ...(givenFilterTypes || []),
+      ...(showcase
+        ? [
+            CellType.NFT_SPACE_AFTER,
+            CellType.NFT,
+            CellType.FAMILY_HEADER,
+            CellType.ASSETS_HEADER,
+          ]
+        : []),
+    ];
     const briefSectionsDataFiltered = briefSectionsData
       .filter((data, arrIndex, arr) => {
-        if (filterTypes && !filterTypes.includes(data.type)) {
+        if (filterTypes.length !== 0 && !filterTypes.includes(data.type)) {
           return false;
         }
 
@@ -115,7 +127,12 @@ export default function useMemoBriefSectionData({
         index++;
         return true;
       })
-      .map(({ uid, type }) => ({ type, uid }));
+      .map(({ uid, type }) => {
+        if (type === CellType.ASSETS_HEADER && showcase) {
+          return { type: CellType.ASSETS_HEADER_SHOWCASE, uid };
+        }
+        return { type, uid };
+      });
     return briefSectionsDataFiltered;
   }, [
     briefSectionsData,

@@ -9,11 +9,11 @@ import RawMemoRecyclerAssetList from './core/RawRecyclerList';
 import { StickyHeaderManager } from './core/StickyHeaders';
 import useMemoBriefSectionData from './core/useMemoBriefSectionData';
 
-function RecyclerAssetList() {
+function RecyclerAssetList({ showcase = false }: { showcase?: boolean }) {
   const {
     memoizedResult: briefSectionsData,
     additionalData,
-  } = useMemoBriefSectionData();
+  } = useMemoBriefSectionData({ showcase });
 
   const position = useMemoOne(() => new RNAnimated.Value(0), []);
 
@@ -23,7 +23,10 @@ function RecyclerAssetList() {
     <RecyclerAssetListScrollPositionContext.Provider value={position}>
       <RecyclerAssetListContext.Provider value={value}>
         <StickyHeaderManager>
-          <RawMemoRecyclerAssetList briefSectionsData={briefSectionsData} />
+          <RawMemoRecyclerAssetList
+            briefSectionsData={briefSectionsData}
+            showcase={showcase}
+          />
         </StickyHeaderManager>
       </RecyclerAssetListContext.Provider>
     </RecyclerAssetListScrollPositionContext.Provider>

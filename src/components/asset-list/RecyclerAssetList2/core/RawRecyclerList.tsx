@@ -5,6 +5,7 @@ import { useMemoOne } from 'use-memo-one';
 import useAccountSettings from '../../../../hooks/useAccountSettings';
 import { useRecyclerAssetListPosition } from './Contexts';
 import ExternalScrollViewWithRef from './ExternalScrollView';
+import ExternalShowcaseScrollViewWithRef from './ExternalShowcaseScrollView';
 import RefreshControl from './RefreshControl';
 import rowRenderer from './RowRenderer';
 import { BaseCellType, RecyclerListViewRef } from './ViewTypes';
@@ -18,8 +19,10 @@ const dataProvider = new DataProvider((r1, r2) => {
 
 const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   briefSectionsData,
+  showcase = false,
 }: {
   briefSectionsData: BaseCellType[];
+  showcase?: boolean;
 }) {
   const currentDataProvider = useMemoOne(
     () => dataProvider.cloneWithRows(briefSectionsData),
@@ -78,7 +81,9 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
     <RecyclerListView
       dataProvider={currentDataProvider}
       // @ts-ignore
-      externalScrollView={ExternalScrollViewWithRef}
+      externalScrollView={
+        showcase ? ExternalShowcaseScrollViewWithRef : ExternalScrollViewWithRef
+      }
       itemAnimator={layoutItemAnimator}
       layoutProvider={layoutProvider}
       onLayout={onLayout}
