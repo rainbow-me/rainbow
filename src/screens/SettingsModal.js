@@ -2,7 +2,12 @@ import { useRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { Animated, InteractionManager, View } from 'react-native';
+import {
+  Animated,
+  InteractionManager,
+  NativeModules,
+  View,
+} from 'react-native';
 import { Modal } from '../components/modal';
 import ModalHeaderButton from '../components/modal/ModalHeaderButton';
 import {
@@ -58,6 +63,9 @@ function cardStyleInterpolator({
   };
 }
 
+const { RNTestFlight } = NativeModules;
+const { isTestFlight } = RNTestFlight.getConstants();
+
 const SettingsPages = {
   backup: {
     component: View,
@@ -75,7 +83,7 @@ const SettingsPages = {
     key: 'SettingsSection',
   },
   dev: {
-    component: IS_DEV ? DevSection : UserDevSection,
+    component: IS_DEV || isTestFlight ? DevSection : UserDevSection,
     getTitle: () => lang.t('settings.dev'),
     key: 'DevSection',
   },

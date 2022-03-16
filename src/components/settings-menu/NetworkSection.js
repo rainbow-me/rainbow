@@ -15,7 +15,7 @@ import {
 
 const networks = values(networkInfo).filter(network => !network.layer2);
 
-const NetworkSection = () => {
+const NetworkSection = props => {
   const { network, testnetsEnabled } = useAccountSettings();
   const resetAccountState = useResetAccountState();
   const loadAccountData = useLoadAccountData();
@@ -50,6 +50,7 @@ const NetworkSection = () => {
       onChange={onNetworkChange}
       renderItem={RadioListItem}
       value={network}
+      {...props}
     />
   );
 };
