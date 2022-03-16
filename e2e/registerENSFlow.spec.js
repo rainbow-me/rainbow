@@ -6,15 +6,13 @@ import { JsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import { ethers } from 'ethers';
 import * as Helpers from './helpers';
-import kittiesABI from '@rainbow-me/references/cryptokitties-abi.json';
-import erc20ABI from '@rainbow-me/references/erc20-abi.json';
+import registratABI from '@rainbow-me/references/ens/ENSETHRegistrarController.json';
 
-const RAINBOW_WALLET_DOT_ETH = '0x7a3d05c70581bD345fe117c06e45f9669205384f';
 const TESTING_WALLET = '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
 
-const ETH_ADDRESS = 'eth';
-const CRYPTOKITTIES_ADDRESS = '0x06012c8cf97BEaD5deAe237070F9587f8E7A266d';
 const RANDOM_NAME = 'somerandomname321';
+const ensETHRegistrarControllerAddress =
+  '0x283Af0B28c62C092C9727F1Ee09c02CA627EB7F5';
 
 const getProvider = () => {
   if (!getProvider._instance) {
@@ -28,31 +26,15 @@ const getProvider = () => {
   return getProvider._instance;
 };
 
-const isNFTOwner = async address => {
+const isAvailable = async name => {
   const provider = getProvider();
-  const kittiesContract = new Contract(
-    CRYPTOKITTIES_ADDRESS,
-    kittiesABI,
+  const registrarContract = new Contract(
+    ensETHRegistrarControllerAddress,
+    registratABI,
     provider
   );
-  const ownerAddress = await kittiesContract.ownerOf('1368227');
-  return ownerAddress === address;
-};
-
-const getOnchainBalance = async (address, tokenContractAddress) => {
-  const provider = getProvider();
-  if (tokenContractAddress === ETH_ADDRESS) {
-    const balance = await provider.getBalance(RAINBOW_WALLET_DOT_ETH);
-    return balance;
-  } else {
-    const tokenContract = new Contract(
-      tokenContractAddress,
-      erc20ABI,
-      provider
-    );
-    const balance = await tokenContract.balanceOf(address);
-    return balance;
-  }
+  const isAvailable = await registrarContract.available(name);
+  return !!isAvailable;
 };
 
 const sendETHtoTestWallet = async () => {
@@ -179,6 +161,8 @@ describe('Register ENS Flow', () => {
     await Helpers.swipe('ens-confirm-register-sheet', 'down', 'slow');
     await Helpers.waitAndTap('ens-selectable-attribute-email');
     await Helpers.waitAndTap('ens-selectable-attribute-twitter');
+    const ensAvailable = await isAvailable(RANDOM_NAME);
+    if (!ensAvailable) throw new Error('ENS name not available');
     await Helpers.typeText('ens-text-record-name', RANDOM_NAME);
     await Helpers.typeText('ens-text-record-bio', 'this is my bio');
   });
@@ -208,19 +192,9 @@ describe('Register ENS Flow', () => {
     await Helpers.waitAndTap(`ens-transaction-action-REGISTER`);
   });
 
-  it('Should go to ENS flow again', async () => {
-    await Helpers.delay(120000);
-    await Helpers.swipe('profile-screen', 'left', 'slow');
-    await Helpers.checkIfVisible('wallet-screen');
-    await Helpers.waitAndTap('register-ens-fab');
-    await Helpers.checkIfVisible('ens-search-sheet');
-  });
-
-  it('Should be able to type the name that is not available anymore', async () => {
-    await Helpers.checkIfVisible('ens-search-input');
-    await Helpers.typeText('ens-search-input', RANDOM_NAME, false);
-    await Helpers.delay(3000);
-    await Helpers.waitAndTap('ens-search-clear-button');
+  it('Should confirm that the name is not available anymore', async () => {
+    const ensAvailable = await isAvailable(RANDOM_NAME);
+    if (ensAvailable) throw new Error('ENS name is available');
   });
 
   afterAll(async () => {

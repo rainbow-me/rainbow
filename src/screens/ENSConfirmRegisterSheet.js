@@ -302,7 +302,7 @@ export default function ENSConfirmRegisterSheet() {
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: null,
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: null,
     }),
-    [accentColor, action, step, stepGasLimit]
+    [accentColor, action, goToProfileScreen, step, stepGasLimit]
   );
 
   // Update gas limit
