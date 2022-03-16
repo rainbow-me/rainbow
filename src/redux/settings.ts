@@ -16,6 +16,7 @@ import {
 import { web3SetHttpProvider } from '@rainbow-me/handlers/web3';
 import { Network } from '@rainbow-me/helpers/networkTypes';
 import { dataResetState } from '@rainbow-me/redux/data';
+import { saveString } from '../model/keychain';
 import { explorerClearState, explorerInit } from '@rainbow-me/redux/explorer';
 import { AppState } from '@rainbow-me/redux/store';
 import { ethereumUtils } from '@rainbow-me/utils';
@@ -214,6 +215,10 @@ export const settingsChangeNativeCurrency = (nativeCurrency: string) => async (
     });
     dispatch(explorerInit());
     saveNativeCurrency(nativeCurrency);
+    saveString('nativeCurrency', nativeCurrency, {
+      accessGroup: 'group.rainbow.me',
+      service: 'rainbow.me.currency',
+    });
     analytics.identify(null, { currency: nativeCurrency });
   } catch (error) {
     logger.log('Error changing native currency', error);
