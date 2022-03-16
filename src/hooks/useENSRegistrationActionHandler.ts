@@ -1,16 +1,23 @@
+import { useNavigation } from '@react-navigation/core';
 import { differenceInSeconds } from 'date-fns';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { IS_TESTING } from 'react-native-dotenv';
+import { Image } from 'react-native-image-crop-picker';
 import { useDispatch } from 'react-redux';
+import { useRecoilValue } from 'recoil';
+import { avatarMetadataAtom } from '../components/ens-registration/RegistrationAvatar/RegistrationAvatar';
+import { coverMetadataAtom } from '../components/ens-registration/RegistrationCover/RegistrationCover';
 import {
   ENSActionParameters,
   getENSRapEstimationByType,
   RapActionTypes,
 } from '../raps/common';
+import useTransactions from './useTransactions';
 import { useAccountSettings, useCurrentNonce, useENSRegistration } from '.';
-import { RegistrationParameters } from '@rainbow-me/entities';
+import { Records, RegistrationParameters } from '@rainbow-me/entities';
 import { fetchResolver } from '@rainbow-me/handlers/ens';
+import { uploadImage } from '@rainbow-me/handlers/pinata';
 import { isHardHat, web3Provider } from '@rainbow-me/handlers/web3';
 import {
   ENS_DOMAIN,
@@ -20,8 +27,12 @@ import {
 } from '@rainbow-me/helpers/ens';
 import { loadWallet } from '@rainbow-me/model/wallet';
 import { executeRap } from '@rainbow-me/raps';
-import { updateTransactionRegistrationParameters } from '@rainbow-me/redux/ensRegistration';
+import {
+  saveCommitRegistrationParameters,
+  updateTransactionRegistrationParameters,
+} from '@rainbow-me/redux/ensRegistration';
 import { timeUnits } from '@rainbow-me/references';
+import Routes from '@rainbow-me/routes';
 
 const ENS_SECONDS_WAIT = 60;
 
@@ -52,6 +63,8 @@ export default function useENSRegistrationActionHandler(
   const { accountAddress, network } = useAccountSettings();
   const getNextNonce = useCurrentNonce(accountAddress, network);
   const { registrationParameters, mode } = useENSRegistration();
+  const { navigate } = useNavigation();
+  const { getTransactionByHash } = useTransactions();
   const [stepGasLimit, setStepGasLimit] = useState<string | null>(null);
 
   const [
@@ -73,6 +86,8 @@ export default function useENSRegistrationActionHandler(
   // flag to wait 10 secs before we get the tx block, to be able to simulate not confirmed tx when testing
   const shouldLoopForConfirmation = useRef(isTesting);
 
+  const avatarMetadata = useRecoilValue(avatarMetadataAtom);
+  const coverMetadata = useRecoilValue(coverMetadataAtom);
   const commitAction = useCallback(
     async (callback: () => void) => {
       const wallet = await loadWallet();
@@ -104,7 +119,36 @@ export default function useENSRegistrationActionHandler(
         callback
       );
     },
-    [accountAddress, yearsDuration, getNextNonce, registrationParameters]
+    [registrationParameters, getNextNonce, yearsDuration, accountAddress]
+  );
+
+  const speedUpCommitAction = useCallback(
+    async (accentColor: string) => {
+      // we want to speed up the last commit tx sent
+      const commitTransactionHash =
+        registrationParameters?.commitTransactionHash;
+      const saveCommitTransactionHash = (hash: string) => {
+        dispatch(
+          saveCommitRegistrationParameters(accountAddress, {
+            commitTransactionHash: hash,
+          })
+        );
+      };
+      commitTransactionHash &&
+        navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
+          accentColor,
+          onSendTransactionCallback: saveCommitTransactionHash,
+          tx: getTransactionByHash(commitTransactionHash),
+          type: 'speed_up',
+        });
+    },
+    [
+      accountAddress,
+      dispatch,
+      getTransactionByHash,
+      navigate,
+      registrationParameters?.commitTransactionHash,
+    ]
   );
 
   const registerAction = useCallback(
@@ -112,8 +156,14 @@ export default function useENSRegistrationActionHandler(
       const {
         name,
         duration,
-        changedRecords,
       } = registrationParameters as RegistrationParameters;
+      const changedRecords = await uploadRecordImages(
+        registrationParameters.changedRecords,
+        {
+          avatar: avatarMetadata,
+          cover: coverMetadata,
+        }
+      );
       const wallet = await loadWallet();
       if (!wallet) {
         return;
@@ -141,7 +191,14 @@ export default function useENSRegistrationActionHandler(
         callback
       );
     },
-    [accountAddress, getNextNonce, registrationParameters, sendReverseRecord]
+    [
+      accountAddress,
+      avatarMetadata,
+      coverMetadata,
+      getNextNonce,
+      registrationParameters,
+      sendReverseRecord,
+    ]
   );
 
   const setRecordsAction = useCallback(
@@ -241,10 +298,10 @@ export default function useENSRegistrationActionHandler(
       [REGISTRATION_STEPS.COMMIT]: commitAction,
       [REGISTRATION_STEPS.EDIT]: setRecordsAction,
       [REGISTRATION_STEPS.REGISTER]: registerAction,
-      [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: () => null,
+      [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: speedUpCommitAction,
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: () => null,
     }),
-    [commitAction, registerAction, setRecordsAction]
+    [commitAction, registerAction, setRecordsAction, speedUpCommitAction]
   );
 
   const estimateGasLimitActions = useMemo(
@@ -339,5 +396,33 @@ export default function useENSRegistrationActionHandler(
     action: actions[registrationStep],
     step: registrationStep,
     stepGasLimit,
+  };
+}
+
+async function uploadRecordImages(
+  records: Partial<Records> | undefined,
+  imageMetadata: { avatar?: Image; cover?: Image }
+) {
+  const uploadRecordImage = async (key: 'avatar' | 'cover') => {
+    if (records?.[key]?.startsWith('~') && imageMetadata[key]) {
+      const { url } = await uploadImage({
+        filename: imageMetadata[key]?.filename || '',
+        mime: imageMetadata[key]?.mime || '',
+        path: imageMetadata[key]?.path || '',
+      });
+      return url;
+    }
+    return records?.[key];
+  };
+
+  const [avatar, cover] = await Promise.all([
+    uploadRecordImage('avatar'),
+    uploadRecordImage('cover'),
+  ]);
+
+  return {
+    ...records,
+    avatar,
+    cover,
   };
 }

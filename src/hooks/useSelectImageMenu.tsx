@@ -53,7 +53,7 @@ export default function useSelectImageMenu({
     image,
   }: {
     asset?: UniqueAsset;
-    image?: Image;
+    image?: Image & { tmpPath?: string };
   }) => void;
   onUploading?: ({ image }: { image: Image }) => void;
   onUploadSuccess?: ({
@@ -79,7 +79,10 @@ export default function useSelectImageMenu({
       includeBase64: true,
       mediaType: 'photo',
     });
-    onChangeImage?.({ image });
+    const stringIndex = image?.path.indexOf('/tmp');
+    const tmpPath = `~${image?.path.slice(stringIndex)}`;
+
+    onChangeImage?.({ image: { ...image, tmpPath } });
 
     if (uploadToIPFS) {
       onUploading?.({ image });

@@ -8,6 +8,7 @@ import { useRecoilState } from 'recoil';
 import brain from '../assets/brain.png';
 import ActivityIndicator from '../components/ActivityIndicator';
 import Spinner from '../components/Spinner';
+import { ButtonPressAnimation } from '../components/animations';
 import { HoldToAuthorizeButton } from '../components/buttons';
 import { RegistrationReviewRows } from '../components/ens-registration';
 import { GasSpeedButton } from '../components/gas';
@@ -40,7 +41,6 @@ import {
   useENSRegistrationForm,
   useENSSearch,
   useGas,
-  usePrevious,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
@@ -52,41 +52,6 @@ export const ENSConfirmUpdateSheetHeight = 600;
 const avatarSize = 70;
 
 const LoadingSpinner = android ? Spinner : ActivityIndicator;
-
-function RegisterContent({
-  setSendReverseRecord,
-  accentColor,
-  sendReverseRecord,
-}) {
-  return (
-    <Inset horizontal="30px">
-      <Columns>
-        <Column width="2/3">
-          <Text
-            color="secondary80"
-            lineHeight="loose"
-            size="16px"
-            weight="bold"
-          >
-            {lang.t('profiles.confirm.set_ens_name')} 􀅵
-          </Text>
-        </Column>
-        <Column width="1/3">
-          <Box alignItems="flex-end">
-            <Switch
-              onValueChange={() =>
-                setSendReverseRecord(sendReverseRecord => !sendReverseRecord)
-              }
-              testID="ens-reverse-record-switch"
-              trackColor={{ false: colors.white, true: accentColor }}
-              value={sendReverseRecord}
-            />
-          </Box>
-        </Column>
-      </Columns>
-    </Inset>
-  );
-}
 
 function CommitContent({ registrationCostsData, setDuration, duration }) {
   return (
@@ -123,6 +88,59 @@ function CommitContent({ registrationCostsData, setDuration, duration }) {
         <Divider color="divider40" />
       </Stack>
     </Inset>
+  );
+}
+
+function RegisterContent({
+  setSendReverseRecord,
+  accentColor,
+  sendReverseRecord,
+}) {
+  return (
+    <Inset horizontal="30px">
+      <Columns>
+        <Column width="2/3">
+          <Text
+            color="secondary80"
+            lineHeight="loose"
+            size="16px"
+            weight="bold"
+          >
+            {lang.t('profiles.confirm.set_ens_name')} 􀅵
+          </Text>
+        </Column>
+        <Column width="1/3">
+          <Box alignItems="flex-end">
+            <Switch
+              onValueChange={() =>
+                setSendReverseRecord(sendReverseRecord => !sendReverseRecord)
+              }
+              testID="ens-reverse-record-switch"
+              trackColor={{ false: colors.white, true: accentColor }}
+              value={sendReverseRecord}
+            />
+          </Box>
+        </Column>
+      </Columns>
+    </Inset>
+  );
+}
+
+function WaitCommitmentConfirmationContent({ accentColor, action }) {
+  return (
+    <Box alignItems="center" height="full">
+      <LoadingSpinner />
+      <ButtonPressAnimation onPress={() => action(accentColor)}>
+        <Text
+          color={{ custom: accentColor }}
+          containsEmoji
+          size="16px"
+          weight="heavy"
+        >
+          🚀 Speed Up
+        </Text>
+      </ButtonPressAnimation>
+    </Box>
   );
 }
 
@@ -174,12 +192,12 @@ export default function ENSConfirmRegisterSheet() {
   const [accentColor] = useRecoilState(accentColorAtom);
 
   const [duration, setDuration] = useState(1);
+  const [gasLimit, setGasLimit] = useState(null);
   const [sendReverseRecord, setSendReverseRecord] = useState(true);
   const { step, stepGasLimit, action } = useENSRegistrationActionHandler({
     sendReverseRecord,
     yearsDuration: duration,
   });
-  const prevStepGasLimit = usePrevious(stepGasLimit);
   const { navigate, goBack } = useNavigation();
 
   const { blurFields, values } = useENSRegistrationForm();
@@ -189,17 +207,13 @@ export default function ENSConfirmRegisterSheet() {
   const { data: registrationData } = useENSSearch({
     name,
   });
-  const rentPrice = registrationData?.rentPrice;
+
   const { data: registrationCostsData } = useENSRegistrationCosts({
     duration,
     name,
-    rentPrice,
+    rentPrice: registrationData?.rentPrice,
     sendReverseRecord,
   });
-
-  const updateGasLimit = useCallback(async () => {
-    updateTxFee(stepGasLimit);
-  }, [stepGasLimit, updateTxFee]);
 
   const goToProfileScreen = useCallback(() => {
     goBack();
@@ -231,18 +245,18 @@ export default function ENSConfirmRegisterSheet() {
 
   const stepContent = useMemo(
     () => ({
-      [REGISTRATION_STEPS.REGISTER]: (
-        <RegisterContent
-          accentColor={accentColor}
-          sendReverseRecord={sendReverseRecord}
-          setSendReverseRecord={setSendReverseRecord}
-        />
-      ),
       [REGISTRATION_STEPS.COMMIT]: (
         <CommitContent
           duration={duration}
           registrationCostsData={registrationCostsData}
           setDuration={setDuration}
+        />
+      ),
+      [REGISTRATION_STEPS.REGISTER]: (
+        <RegisterContent
+          accentColor={accentColor}
+          sendReverseRecord={sendReverseRecord}
+          setSendReverseRecord={setSendReverseRecord}
         />
       ),
       [REGISTRATION_STEPS.EDIT]: (
@@ -254,9 +268,10 @@ export default function ENSConfirmRegisterSheet() {
         </Inset>
       ),
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: (
-        <Box alignItems="center">
-          <LoadingSpinner />
-        </Box>
+        <WaitCommitmentConfirmationContent
+          accentColor={accentColor}
+          action={action}
+        />
       ),
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: (
         <Box alignItems="center">
@@ -264,7 +279,7 @@ export default function ENSConfirmRegisterSheet() {
         </Box>
       ),
     }),
-    [accentColor, duration, registrationCostsData, sendReverseRecord]
+    [accentColor, action, duration, registrationCostsData, sendReverseRecord]
   );
 
   const stepActions = useMemo(
@@ -308,20 +323,23 @@ export default function ENSConfirmRegisterSheet() {
   // Update gas limit
   useEffect(() => {
     if (
-      (stepGasLimit && !isEmpty(gasFeeParamsBySpeed)) ||
-      prevStepGasLimit !== stepGasLimit
+      stepGasLimit &&
+      !isEmpty(gasFeeParamsBySpeed) &&
+      gasLimit !== stepGasLimit
     ) {
-      updateGasLimit();
+      updateTxFee(stepGasLimit);
+      setGasLimit(stepGasLimit);
     }
-  }, [
-    gasFeeParamsBySpeed,
-    prevStepGasLimit,
-    stepGasLimit,
-    updateGasLimit,
-    updateTxFee,
-  ]);
+  }, [gasFeeParamsBySpeed, gasLimit, stepGasLimit, updateTxFee]);
 
-  useEffect(() => startPollingGasFees(), [startPollingGasFees]);
+  useEffect(() => {
+    if (
+      step === REGISTRATION_STEPS.COMMIT ||
+      step === REGISTRATION_STEPS.REGISTER ||
+      step === REGISTRATION_STEPS.EDIT
+    )
+      startPollingGasFees();
+  }, [startPollingGasFees, step]);
 
   useEffect(() => {
     // if reverse record is set, we don't want to send the reverse record tx by default
