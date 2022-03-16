@@ -2,6 +2,7 @@ import { useFocusEffect, useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { InteractionManager } from 'react-native';
 import { Switch } from 'react-native-gesture-handler';
 import { useRecoilState } from 'recoil';
 import brain from '../assets/brain.png';
@@ -42,6 +43,8 @@ import {
   usePrevious,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
+import { useNavigation } from '@rainbow-me/navigation';
+import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 
 export const ENSConfirmRegisterSheetHeight = 600;
@@ -74,6 +77,7 @@ function RegisterContent({
               onValueChange={() =>
                 setSendReverseRecord(sendReverseRecord => !sendReverseRecord)
               }
+              testID="ens-reverse-record-switch"
               trackColor={{ false: colors.white, true: accentColor }}
               value={sendReverseRecord}
             />
@@ -176,6 +180,7 @@ export default function ENSConfirmRegisterSheet() {
     yearsDuration: duration,
   });
   const prevStepGasLimit = usePrevious(stepGasLimit);
+  const { navigate, goBack } = useNavigation();
 
   const { blurFields, values } = useENSRegistrationForm();
   const avatarUrl = initialAvatarUrl || values.avatar;
@@ -195,6 +200,15 @@ export default function ENSConfirmRegisterSheet() {
   const updateGasLimit = useCallback(async () => {
     updateTxFee(stepGasLimit);
   }, [stepGasLimit, updateTxFee]);
+
+  const goToProfileScreen = useCallback(() => {
+    goBack();
+    setTimeout(() => {
+      InteractionManager.runAfterInteractions(() => {
+        navigate(Routes.PROFILE_SCREEN);
+      });
+    }, 100);
+  }, [goBack, navigate]);
 
   const boxStyle = useMemo(
     () => ({
@@ -267,7 +281,10 @@ export default function ENSConfirmRegisterSheet() {
       [REGISTRATION_STEPS.REGISTER]: (
         <TransactionActionRow
           accentColor={accentColor}
-          action={action}
+          action={() => {
+            action();
+            goToProfileScreen();
+          }}
           disabled={!stepGasLimit}
           label={lang.t('profiles.confirm.confirm_registration')}
           testID={step}

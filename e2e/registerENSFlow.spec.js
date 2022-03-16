@@ -184,10 +184,11 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should go to review registration and start it', async () => {
-    await Helpers.disableSynchronization();
     await Helpers.waitAndTap('ens-assign-records-review-action-button');
     await Helpers.checkIfVisible(`ens-transaction-action-COMMIT`);
+    await Helpers.disableSynchronization();
     await Helpers.waitAndTap(`ens-transaction-action-COMMIT`);
+    await Helpers.delay(2000);
     await Helpers.checkIfVisible(
       `ens-confirm-register-label-WAIT_COMMIT_CONFIRMATION`
     );
@@ -195,38 +196,32 @@ describe('Register ENS Flow', () => {
     await Helpers.checkIfVisible(
       `ens-confirm-register-label-WAIT_ENS_COMMITMENT`
     );
-    await Helpers.checkIfVisible(`ens-transaction-action-REGISTER`);
+    await Helpers.delay(60000);
     await Helpers.enableSynchronization();
   });
 
-  //   it('Should see requesting to register screen', async () => {
-  //     await Helpers.checkIfVisible(
-  //       `ens-confirm-register-label-WAIT_COMMIT_CONFIRMATION`
-  //     );
-  //     await Helpers.delay(10000);
-  //   });
+  it('Should see confirm registration screen and set reverse records', async () => {
+    await Helpers.checkIfVisible(`ens-reverse-record-switch`);
+    await Helpers.waitAndTap('ens-reverse-record-switch');
+    await Helpers.waitAndTap('ens-reverse-record-switch');
+    await Helpers.checkIfVisible(`ens-transaction-action-REGISTER`);
+    await Helpers.waitAndTap(`ens-transaction-action-REGISTER`);
+  });
 
-  //   it('Should see reserving name screen', async () => {
-  //     await Helpers.checkIfVisible(
-  //       `ens-confirm-register-label-WAIT_ENS_COMMITMENT`
-  //     );
-  //   });
+  it('Should go to ENS flow again', async () => {
+    await Helpers.delay(120000);
+    await Helpers.swipe('profile-screen', 'left', 'slow');
+    await Helpers.checkIfVisible('wallet-screen');
+    await Helpers.waitAndTap('register-ens-fab');
+    await Helpers.checkIfVisible('ens-search-sheet');
+  });
 
-  //   it('Should see confirm registration screen', async () => {
-  //     await Helpers.enableSynchronization();
-  //     // await Helpers.delay(60000);
-  //     // await Helpers.checkIfVisible(`ens-transaction-label-REGISTER`);
-  //     await Helpers.checkIfVisible(`ens-transaction-action-REGISTER`);
-  //   });
-
-  it.todo('Should wait for a minute going out of the flow and coming back');
-  it.todo('Should be able to set or unset sending reverse record');
-  it.todo(
-    'Should be able finish registration and check the txs went through correctly'
-  );
-  it.todo(
-    'Should be able to go to the register flow and check for the name again'
-  );
+  it('Should be able to type the name that is not available anymore', async () => {
+    await Helpers.checkIfVisible('ens-search-input');
+    await Helpers.typeText('ens-search-input', RANDOM_NAME, false);
+    await Helpers.delay(3000);
+    await Helpers.waitAndTap('ens-search-clear-button');
+  });
 
   afterAll(async () => {
     // Reset the app state

@@ -53,6 +53,7 @@ export default function useENSRegistrationActionHandler(
   const getNextNonce = useCurrentNonce(accountAddress, network);
   const { registrationParameters, mode } = useENSRegistration();
   const [stepGasLimit, setStepGasLimit] = useState<string | null>(null);
+
   const [
     secondsSinceCommitConfirmed,
     setSecondsSinceCommitConfirmed,
