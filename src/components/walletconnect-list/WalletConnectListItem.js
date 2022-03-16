@@ -6,7 +6,7 @@ import { RequestVendorLogoIcon } from '../coin-icon';
 import { ContactAvatar } from '../contacts';
 import ImageAvatar from '../contacts/ImageAvatar';
 import { ContextMenuButton } from '../context-menu';
-import { Centered, Column, ColumnWithMargins, Row } from '../layout';
+import { Centered, ColumnWithMargins, Row } from '../layout';
 import { Text, TruncatedText } from '../text';
 import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
 import {
@@ -252,9 +252,9 @@ export default function WalletConnectListItem({
                   size="medium"
                   style={{
                     color: colors.alpha(colors.blueGreyDark, 0.6),
-                    width: '100%',
                     paddingLeft: 5,
                     paddingRight: 19,
+                    width: '100%',
                   }}
                   weight="bold"
                 >
@@ -272,8 +272,8 @@ export default function WalletConnectListItem({
             <NetworkPill mainnet={connectionNetworkInfo.value === 'mainnet'}>
               <Row align="center">
                 <ChainLogo
-                  network={connectionNetworkInfo.value}
                   marginRight={5}
+                  network={connectionNetworkInfo.value}
                 />
                 <LabelText
                   color={
