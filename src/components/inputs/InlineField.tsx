@@ -98,7 +98,13 @@ export default function InlineField({
         : android
         ? 11
         : 0,
-      width: startsWith ? 0.55 * width : 0.6 * width,
+      width: startsWith
+        ? ios
+          ? 0.55 * width
+          : 0.56 * width
+        : ios
+        ? 0.6 * width
+        : 0.61 * width,
       textAlignVertical: 'top',
     }),
     [textStyle, inputHeight, inputProps?.multiline]
@@ -139,7 +145,7 @@ export default function InlineField({
       <Column>
         <Inline alignVertical="center" space="2px">
           {startsWith && (
-            <Inset top="2px">
+            <Inset top={ios ? '2px' : undefined}>
               <Text color="secondary30" weight="heavy">
                 {startsWith}
               </Text>
