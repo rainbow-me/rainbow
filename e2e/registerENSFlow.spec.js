@@ -157,10 +157,10 @@ describe('Register ENS Flow', () => {
   // it('Should go to view to set records and skip it', async () => {
   //   // eslint-disable-next-line no-console
   //   console.log('⛽⛽⛽⛽⛽⛽⛽⛽⛽ 1');
-  //   await Helpers.checkIfVisible('ens-search-continue-action-button');
+    await Helpers.checkIfVisible('ens-search-continue-action-button');
   //   // eslint-disable-next-line no-console
   //   console.log('⛽⛽⛽⛽⛽⛽⛽⛽⛽ 2');
-  //   await Helpers.waitAndTap('ens-search-continue-action-button');
+    await Helpers.waitAndTap('ens-search-continue-action-button');
   //   // eslint-disable-next-line no-console
   //   console.log('⛽⛽⛽⛽⛽⛽⛽⛽⛽ 3');
   //   await Helpers.checkIfVisible('ens-assign-records-skip');
