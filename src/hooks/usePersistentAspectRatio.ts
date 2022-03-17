@@ -4,11 +4,10 @@ import { MMKV, useMMKVNumber } from 'react-native-mmkv';
 import { getLowResUrl } from '../utils/getLowResUrl';
 import { imageToPng } from '@rainbow-me/handlers/imgix';
 import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
-
-const id = 'ASPECT_RATIO';
+import { STORAGE_IDS } from '@rainbow-me/model/mmkv';
 
 const storage = new MMKV({
-  id,
+  id: STORAGE_IDS.ASPECT_RATIO,
 });
 
 enum State {
