@@ -1,0 +1,17 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+  <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <!-- Allow drawing under the system bars background -->
+    <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+    <item name="android:fitsSystemWindows">false</item>
+
+    <!-- Set system bars background transparent -->
+    <item name="android:statusBarColor">@android:color/transparent</item>
+    <item name="android:navigationBarColor">@android:color/transparent</item>
+
+    <!-- Disable auto contrasted system bars background (on Android 10+) -->
+    <item name="android:enforceStatusBarContrast" tools:targetApi="q">false</item>
+    <item name="android:enforceNavigationBarContrast" tools:targetApi="q">false</item>
+  </style>
+
+</resources>
