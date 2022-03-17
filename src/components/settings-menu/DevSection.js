@@ -4,8 +4,10 @@ import { Alert, ScrollView } from 'react-native';
 import { HARDHAT_URL_ANDROID, HARDHAT_URL_IOS } from 'react-native-dotenv';
 import Restart from 'react-native-restart';
 import { useDispatch } from 'react-redux';
+import { defaultConfig } from '../../config/experimental';
 import { ListFooter, ListItem } from '../list';
 import { RadioListItem } from '../radio-list';
+import UserDevSection from './UserDevSection';
 import { deleteAllBackups } from '@rainbow-me/handlers/cloudBackup';
 import { web3SetHttpProvider } from '@rainbow-me/handlers/web3';
 import { RainbowContext } from '@rainbow-me/helpers/RainbowContext';
@@ -116,9 +118,10 @@ const DevSection = () => {
         testID="hardhat-section"
       />
       <ListItem label="‍🏖️ Alert" onPress={checkAlert} testID="alert-section" />
-      <ListFooter />
+      <UserDevSection scrollEnabled={false} />
       {Object.keys(config)
         .sort()
+        .filter(key => defaultConfig[key].settings)
         .map(key => (
           <RadioListItem
             key={key}
@@ -127,6 +130,7 @@ const DevSection = () => {
             selected={!!config[key]}
           />
         ))}
+      <ListFooter />
     </ScrollView>
   );
 };
