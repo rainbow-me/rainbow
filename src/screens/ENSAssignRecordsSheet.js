@@ -137,7 +137,6 @@ export default function ENSAssignRecordsSheet() {
               </Box>
             </Stack>
           </Inset>
-          <ENSAssignRecordsBottomActions visible />
         </Stack>
       </Box>
     </AccentColorProvider>
