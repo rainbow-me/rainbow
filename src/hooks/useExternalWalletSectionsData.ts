@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from 'react-query';
 import useAccountSettings from './useAccountSettings';
 import {
@@ -14,15 +14,20 @@ export default function useExternalWalletSectionsData({
 }: {
   address?: string;
 }) {
+  const [shouldFetchMore, setShouldFetchMore] = useState(false);
   const { network } = useAccountSettings();
-  const { data: uniqueTokens, isFetched, isSuccess } = useQuery(
+  const { data: uniqueTokens, isFetched } = useQuery(
     ['unique-tokens', address],
     async () => {
       if (!address) return;
       const uniqueTokens = await apiGetAccountUniqueTokens(network, address, 0);
+      setShouldFetchMore(true);
       return uniqueTokens;
     },
-    { enabled: Boolean(address), staleTime: 10000 }
+    {
+      enabled: Boolean(address),
+      staleTime: Infinity,
+    }
   );
 
   const queryClient = useQueryClient();
@@ -39,7 +44,7 @@ export default function useExternalWalletSectionsData({
       page?: number;
     }) {
       if (
-        uniqueTokens.length === page * UNIQUE_TOKENS_LIMIT_PER_PAGE &&
+        uniqueTokens.length >= page * UNIQUE_TOKENS_LIMIT_PER_PAGE &&
         uniqueTokens.length < UNIQUE_TOKENS_LIMIT_TOTAL
       ) {
         const moreUniqueTokens = await apiGetAccountUniqueTokens(
@@ -58,14 +63,18 @@ export default function useExternalWalletSectionsData({
         });
       }
     }
-    if (isSuccess) {
-      // Fetch more Ethereum tokens until all have fetched
-      fetchMore({ network, page: 1, uniqueTokens });
 
-      // Fetch Polygon tokens until all have fetched
-      fetchMore({ network: Network.polygon });
+    if (shouldFetchMore && uniqueTokens?.length > 0) {
+      setShouldFetchMore(false);
+      (async () => {
+        // Fetch more Ethereum tokens until all have fetched
+        await fetchMore({ network, page: 1, uniqueTokens });
+
+        // Fetch Polygon tokens until all have fetched
+        await fetchMore({ network: Network.polygon });
+      })();
     }
-  });
+  }, [address, shouldFetchMore, network, uniqueTokens, queryClient]);
 
   const tokenList = uniqueTokens
     ? buildBriefUniqueTokenList(uniqueTokens, [])

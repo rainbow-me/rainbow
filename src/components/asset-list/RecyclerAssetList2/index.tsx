@@ -30,7 +30,6 @@ function RecyclerAssetList({
     address,
   ]);
 
-  if (briefSectionsData.length === 0) return null;
   return (
     <RecyclerAssetListScrollPositionContext.Provider value={position}>
       <RecyclerAssetListContext.Provider value={value}>
