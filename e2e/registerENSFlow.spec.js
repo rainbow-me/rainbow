@@ -158,18 +158,19 @@ describe('Register ENS Flow', () => {
     await Helpers.checkIfVisible('ens-search-continue-action-button');
     await Helpers.waitAndTap('ens-search-continue-action-button');
     await Helpers.checkIfVisible('ens-assign-records-skip');
-    await Helpers.tapByText('Skip');
+    await Helpers.waitAndTap('ens-assign-records-skip');
   });
 
   it('Should go to come back to records view and add some', async () => {
-    // await Helpers.checkIfVisible('ens-confirm-register-sheet');
-    // await Helpers.swipe('ens-confirm-register-sheet', 'down', 'slow');
-    // await Helpers.waitAndTap('ens-selectable-attribute-email');
-    // await Helpers.waitAndTap('ens-selectable-attribute-twitter');
+    await Helpers.checkIfVisible('ens-confirm-register-sheet');
+    await Helpers.swipe('ens-confirm-register-sheet', 'down', 'slow');
+    await Helpers.tapByText('Email');
+    await Helpers.tapByText('Twitter');
     const ensAvailable = await isAvailable(RANDOM_NAME);
     if (!ensAvailable) throw new Error('ENS name not available');
-    // await Helpers.typeText('ens-text-record-name', RANDOM_NAME);
-    // await Helpers.typeText('ens-text-record-bio', 'this is my bio');
+    await Helpers.typeText('ens-text-record-name', RANDOM_NAME);
+    await Helpers.typeText('ens-text-record-bio', 'this is my bio');
+    await Helpers.waitAndTap('ens-assign-records-review-action-button');
   });
 
   it('Should go to review registration and start it', async () => {
