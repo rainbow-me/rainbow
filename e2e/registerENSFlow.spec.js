@@ -155,9 +155,10 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should go to view to set records and skip it', async () => {
+    await Helpers.checkIfVisible('ens-search-continue-action-button');
     await Helpers.waitAndTap('ens-search-continue-action-button');
+    await Helpers.checkIfVisible('ens-assign-records-skip');
     await Helpers.waitAndTap('ens-assign-records-skip');
-    await Helpers.checkIfVisible('ens-confirm-register-sheet');
   });
 
   it('Should go to come back to records view and add some', async () => {
