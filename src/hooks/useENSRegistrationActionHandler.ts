@@ -66,6 +66,7 @@ export default function useENSRegistrationActionHandler(
   const { navigate } = useNavigation();
   const { getTransactionByHash } = useTransactions();
   const [stepGasLimit, setStepGasLimit] = useState<string | null>(null);
+  const timeout = useRef<NodeJS.Timeout>();
 
   const [
     secondsSinceCommitConfirmed,
@@ -356,12 +357,15 @@ export default function useENSRegistrationActionHandler(
   ]);
 
   const startPollingWatchCommitTransaction = useCallback(async () => {
+    timeout.current && clearTimeout(timeout.current);
     if (registrationStep !== REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION)
       return;
-
     const confirmed = await watchCommitTransaction();
     if (!confirmed) {
-      setTimeout(() => startPollingWatchCommitTransaction(), 10000);
+      timeout.current = setTimeout(
+        () => startPollingWatchCommitTransaction(),
+        10000
+      );
     }
   }, [registrationStep, watchCommitTransaction]);
 
@@ -391,6 +395,8 @@ export default function useENSRegistrationActionHandler(
     }
     return () => clearInterval(interval);
   }, [registrationStep, secondsSinceCommitConfirmed]);
+
+  useEffect(() => () => timeout.current && clearTimeout(timeout.current), []);
 
   return {
     action: actions[registrationStep],
