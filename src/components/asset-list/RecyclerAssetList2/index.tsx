@@ -11,16 +11,26 @@ import useMemoBriefSectionData from './core/useMemoBriefSectionData';
 
 export type AssetListType = 'wallet' | 'ens-profile';
 
-function RecyclerAssetList({ type = 'wallet' }: { type?: AssetListType }) {
+function RecyclerAssetList({
+  address,
+  type = 'wallet',
+}: {
+  address?: string;
+  type?: AssetListType;
+}) {
   const {
     memoizedResult: briefSectionsData,
     additionalData,
-  } = useMemoBriefSectionData({ type });
+  } = useMemoBriefSectionData({ address, type });
 
   const position = useMemoOne(() => new RNAnimated.Value(0), []);
 
-  const value = useMemo(() => ({ additionalData }), [additionalData]);
+  const value = useMemo(() => ({ additionalData, address }), [
+    additionalData,
+    address,
+  ]);
 
+  if (briefSectionsData.length === 0) return null;
   return (
     <RecyclerAssetListScrollPositionContext.Provider value={position}>
       <RecyclerAssetListContext.Provider value={value}>

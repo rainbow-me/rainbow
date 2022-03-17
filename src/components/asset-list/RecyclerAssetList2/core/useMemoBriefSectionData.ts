@@ -4,6 +4,7 @@ import { CellType, CoinExtraData, NFTFamilyExtraData } from './ViewTypes';
 import {
   useCoinListEdited,
   useCoinListEditOptions,
+  useExternalWalletSectionsData,
   useOpenFamilies,
   useOpenInvestmentCards,
   useOpenSavings,
@@ -12,10 +13,15 @@ import {
 } from '@rainbow-me/hooks';
 
 export default function useMemoBriefSectionData({
+  address,
   filterTypes: givenFilterTypes,
   type,
-}: { filterTypes?: CellType[]; type?: AssetListType } = {}) {
-  const { briefSectionsData } = useWalletSectionsData();
+}: { address?: string; filterTypes?: CellType[]; type?: AssetListType } = {}) {
+  const { briefSectionsData } = address
+    ? // eslint-disable-next-line react-hooks/rules-of-hooks
+      useExternalWalletSectionsData({ address })
+    : // eslint-disable-next-line react-hooks/rules-of-hooks
+      useWalletSectionsData();
   const { isSmallBalancesOpen, stagger } = useOpenSmallBalances();
   const { isSavingsOpen } = useOpenSavings();
   const { isInvestmentCardsOpen } = useOpenInvestmentCards();

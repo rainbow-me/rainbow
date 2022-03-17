@@ -8,7 +8,11 @@ export default function useENSProfile(
 ) {
   const { data, isLoading, isSuccess } = useQuery<
     UseQueryData<typeof fetchProfile>
-  >(['ens-profile', name], () => fetchProfile(name), config);
+  >(['ens-profile', name], () => fetchProfile(name), {
+    ...config,
+    // Data will be stale for 10s to avoid dupe queries
+    staleTime: 10000,
+  });
 
   return { data, isLoading, isSuccess };
 }

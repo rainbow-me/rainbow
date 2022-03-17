@@ -8,6 +8,7 @@ import { AccentColorProvider, Box } from '@rainbow-me/design-system';
 import {
   useDimensions,
   useENSProfile,
+  useExternalWalletSectionsData,
   useFirstTransactionTimestamp,
   usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
@@ -21,15 +22,16 @@ export default function ProfileSheet() {
   const contentHeight = deviceHeight - SheetHandleFixedToTopHeight;
 
   const ensName = params?.address || 'moxey.eth';
-  const { isLoading, data: profile } = useENSProfile(ensName, {
-    // Data will be stale for 10s (so we don't fetch again in `ProfileSheetHeader` component)
-    staleTime: 10000,
-  });
+  const { isLoading, data: profile } = useENSProfile(ensName);
   const avatarUrl = profile?.images.avatarUrl;
   const profileAddress = profile?.primary.address;
 
   // Prefetch first transaction timestamp
   useFirstTransactionTimestamp({ ensName });
+
+  const { isFetched: hasListFetched } = useExternalWalletSectionsData({
+    address: profileAddress,
+  });
 
   const colorIndex = useMemo(
     () => (profileAddress ? addressHashedColorIndex(profileAddress) : 0),
@@ -53,12 +55,12 @@ export default function ProfileSheet() {
     <AccentColorProvider color={accentColor}>
       <Box background="body">
         <Box style={wrapperStyle}>
-          {isLoading ? (
+          {isLoading || !hasListFetched ? (
             <Box alignItems="center" height="full" justifyContent="center">
               <Spinner color={colors.appleBlue} size="large" />
             </Box>
           ) : (
-            <RecyclerAssetList2 type="ens-profile" />
+            <RecyclerAssetList2 address={profileAddress} type="ens-profile" />
           )}
         </Box>
       </Box>

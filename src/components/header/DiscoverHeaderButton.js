@@ -51,7 +51,7 @@ export default function DiscoverHeaderButton() {
   ]);
 
   const onLongPress = useCallback(
-    () => navigate(Routes.PROFILE_SHEET, { address: 'moxey.eth' }),
+    () => navigate(Routes.PROFILE_SHEET, { address: 'mikedemarais.eth' }),
     [navigate]
   );
 
