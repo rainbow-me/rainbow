@@ -33,14 +33,14 @@ workflows:
             fi
     before_run: 
     after_run: 
-  lint:
-    before_run: []
-    after_run: []
-    steps:
-    - yarn@0.1.1:
-        inputs:
-        - command: lint
-        title: Linting for Errors
+  # lint:
+  #   before_run: []
+  #   after_run: []
+  #   steps:
+  #   - yarn@0.1.1:
+  #       inputs:
+  #       - command: lint
+  #       title: Linting for Errors
   detox_tests:
     before_run: []
     after_run: []
