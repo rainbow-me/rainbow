@@ -1,5 +1,6 @@
 import { Logger } from '@ethersproject/logger';
 import { Wallet } from '@ethersproject/wallet';
+import { Quote } from '@rainbow-me/swaps';
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import { join, map } from 'lodash';
@@ -30,7 +31,6 @@ import { ENSRegistrationRecords } from '@rainbow-me/helpers/ens';
 import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
 
 import logger from 'logger';
-import { Quote } from '@rainbow-me/swaps';
 
 const { commitENS, registerENS, multicallENS, setTextENS, setNameENS } = ens;
 

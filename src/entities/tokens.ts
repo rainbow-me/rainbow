@@ -1,6 +1,6 @@
+import { ChainId } from '@rainbow-me/swaps';
 import { AssetType } from './assetTypes';
 import { EthereumAddress } from '.';
-import { ChainId } from '@rainbow-me/swaps';
 
 interface ZerionAssetPrice {
   value: number;

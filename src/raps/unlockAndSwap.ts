@@ -1,3 +1,10 @@
+import {
+  ALLOWS_PERMIT,
+  ChainId,
+  PermitSupportedTokenList,
+  RAINBOW_ROUTER_CONTRACT_ADDRESS,
+  WETH,
+} from '@rainbow-me/swaps';
 import { concat, reduce, toLower } from 'lodash';
 import { assetNeedsUnlocking, estimateApprove } from './actions';
 import {
@@ -11,13 +18,6 @@ import { estimateSwapGasLimit } from '@rainbow-me/handlers/uniswap';
 import store from '@rainbow-me/redux/store';
 import { ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
 import { add } from '@rainbow-me/utilities';
-import {
-  ALLOWS_PERMIT,
-  ChainId,
-  PermitSupportedTokenList,
-  RAINBOW_ROUTER_CONTRACT_ADDRESS,
-  WETH,
-} from '@rainbow-me/swaps';
 
 export const estimateUnlockAndSwap = async (
   swapParameters: SwapActionParameters

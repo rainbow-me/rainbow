@@ -1,10 +1,10 @@
+import { Quote } from '@rainbow-me/swaps';
 import { AnyAction } from 'redux';
 import { fetchAssetPrices } from './explorer';
 import { UniswapCurrency } from '@rainbow-me/entities';
 import { ExchangeModalTypes } from '@rainbow-me/helpers';
 import { AppDispatch, AppGetState } from '@rainbow-me/redux/store';
 import { convertAmountFromNativeValue } from '@rainbow-me/utilities';
-import { Quote } from '@rainbow-me/swaps';
 
 export interface SwapAmount {
   display: string | null;

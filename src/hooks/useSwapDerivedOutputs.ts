@@ -1,4 +1,10 @@
+import {
+  ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
+  getQuote,
+} from '@rainbow-me/swaps';
 import { useCallback, useMemo, useState } from 'react';
+// @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
+import { IS_TESTING } from 'react-native-dotenv';
 import { useDispatch, useSelector } from 'react-redux';
 import { Token } from '../entities/tokens';
 import useAccountSettings from './useAccountSettings';
@@ -16,10 +22,6 @@ import {
   updatePrecisionToDisplay,
 } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
-import {
-  ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
-  getQuote,
-} from '@rainbow-me/swaps';
 
 enum DisplayValue {
   input = 'inputAmountDisplay',
@@ -63,7 +65,7 @@ const getInputAmount = async (
       chainId: Number(chainId),
       fromAddress,
       sellTokenAddress,
-      slippage: 1,
+      slippage: IS_TESTING !== 'true' ? 1 : 5, // Add 5% slippage for testing to prevent flaky tests
     };
     const quote = await getQuote(quoteParams);
     if (!quote) {
@@ -141,7 +143,7 @@ const getOutputAmount = async (
       fromAddress,
       sellAmount,
       sellTokenAddress,
-      slippage: 1,
+      slippage: IS_TESTING !== 'true' ? 1 : 5, // Add 5% slippage for testing to prevent flaky tests
     };
     const quote = await getQuote(quoteParams);
     if (!quote) {

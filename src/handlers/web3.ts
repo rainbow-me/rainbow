@@ -518,7 +518,9 @@ export const resolveNameOrAddress = async (
     }
     const p = await getProviderForNetwork(Network.mainnet);
     const name = p?.resolveName(nameOrAddress);
-    return name;
+    if (name !== null) {
+      return (name as unknown) as string;
+    }
   }
   return nameOrAddress;
 };

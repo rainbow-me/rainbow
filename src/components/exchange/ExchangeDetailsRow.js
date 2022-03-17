@@ -1,3 +1,4 @@
+import { ChainId, WETH } from '@rainbow-me/swaps';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useEffect } from 'react';
@@ -14,7 +15,6 @@ import { usePrevious, useSwapCurrencies } from '@rainbow-me/hooks';
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import styled from '@rainbow-me/styled-components';
 import { padding, position } from '@rainbow-me/styles';
-import { ChainId, WETH } from '@rainbow-me/swaps';
 
 const defaultPriceImpactScale = 1.15;
 const timingConfig = {
