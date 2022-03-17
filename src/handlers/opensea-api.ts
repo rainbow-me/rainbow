@@ -1,6 +1,8 @@
 import { captureException } from '@sentry/react-native';
 import {
   // @ts-ignore
+  IS_TESTING,
+  // @ts-ignore
   NFT_API_KEY,
   // @ts-ignore
   NFT_API_URL,
@@ -56,7 +58,9 @@ export const apiGetAccountUniqueTokens = async (
   } catch (error) {
     logger.sentry('Error getting unique tokens', error);
     captureException(new Error('Opensea: Error getting unique tokens'));
-    throw error;
+    if (IS_TESTING !== 'true') {
+      throw error;
+    }
   }
 };
 
