@@ -155,25 +155,13 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should go to view to set records and skip it', async () => {
-    //   // eslint-disable-next-line no-console
-    //   console.log('⛽⛽⛽⛽⛽⛽⛽⛽⛽ 1');
     await Helpers.checkIfVisible('ens-search-continue-action-button');
-    //   // eslint-disable-next-line no-console
-    //   console.log('⛽⛽⛽⛽⛽⛽⛽⛽⛽ 2');
     await Helpers.waitAndTap('ens-search-continue-action-button');
-    //   // eslint-disable-next-line no-console
-    //   console.log('⛽⛽⛽⛽⛽⛽⛽⛽⛽ 3');
-    //   await Helpers.checkIfVisible('ens-assign-records-skip');
-    //   // eslint-disable-next-line no-console
-    //   console.log('⛽⛽⛽⛽⛽⛽⛽⛽⛽ 4');
-    //   await Helpers.waitAndTap('ens-assign-records-skip');
-    //   // eslint-disable-next-line no-console
-    //   console.log('⛽⛽⛽⛽⛽⛽⛽⛽⛽ 5');
+    await Helpers.checkIfVisible('ens-assign-records-skip');
+    await Helpers.waitAndTap('ens-assign-records-skip');
   });
 
   it('Should go to come back to records view and add some', async () => {
-    // eslint-disable-next-line no-console
-    console.log('⛽⛽⛽⛽⛽⛽⛽⛽⛽ view and add some');
     // await Helpers.checkIfVisible('ens-confirm-register-sheet');
     // await Helpers.swipe('ens-confirm-register-sheet', 'down', 'slow');
     // await Helpers.waitAndTap('ens-selectable-attribute-email');
@@ -184,25 +172,21 @@ describe('Register ENS Flow', () => {
     // await Helpers.typeText('ens-text-record-bio', 'this is my bio');
   });
 
-  it('Should check review button', async () => {
-    await Helpers.checkIfVisible('ens-assign-records-skip');
-  });
   it('Should go to review registration and start it', async () => {
-    await Helpers.waitAndTap('ens-assign-records-skip');
     await Helpers.checkIfVisible(`ens-transaction-action-COMMIT`);
-    // await Helpers.disableSynchronization();
-    // await Helpers.delay(5000);
+    await Helpers.disableSynchronization();
+    await Helpers.delay(5000);
     await Helpers.waitAndTap(`ens-transaction-action-COMMIT`);
-    // await Helpers.delay(2000);
-    // await Helpers.checkIfVisible(
-    //   `ens-confirm-register-label-WAIT_COMMIT_CONFIRMATION`
-    // );
-    // await Helpers.delay(10000);
-    // await Helpers.checkIfVisible(
-    //   `ens-confirm-register-label-WAIT_ENS_COMMITMENT`
-    // );
-    // await Helpers.delay(60000);
-    // await Helpers.enableSynchronization();
+    await Helpers.delay(2000);
+    await Helpers.checkIfVisible(
+      `ens-confirm-register-label-WAIT_COMMIT_CONFIRMATION`
+    );
+    await Helpers.delay(10000);
+    await Helpers.checkIfVisible(
+      `ens-confirm-register-label-WAIT_ENS_COMMITMENT`
+    );
+    await Helpers.delay(60000);
+    await Helpers.enableSynchronization();
   });
 
   it('Should see confirm registration screen and set reverse records', async () => {
