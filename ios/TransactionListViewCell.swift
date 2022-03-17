@@ -157,8 +157,8 @@ class TransactionListViewCell: TransactionListBaseCell {
       transactionIcon.image = UIImage.init(named: "self")
     }
     
-    // Failed Overrides
-    if transaction.status == "failed" {
+    // Failed and Dropped Overrides
+    if transaction.status == "failed"  || transaction.status == "dropped" {
       statusFrame = CGRect(x: 85, y: 9, width: 206, height: 16)
     }
     

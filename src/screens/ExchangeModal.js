@@ -13,6 +13,7 @@ import {
   Keyboard,
   NativeModules,
 } from 'react-native';
+
 import { useSafeArea } from 'react-native-safe-area-context';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { useDispatch, useSelector } from 'react-redux';
@@ -35,6 +36,7 @@ import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
 import { FLASHBOTS } from '../config/experimental';
 import useExperimentalFlag from '../config/experimentalHooks';
 import { ExchangeModalTypes, isKeyboardOpen } from '@rainbow-me/helpers';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { divide, greaterThan, multiply } from '@rainbow-me/helpers/utilities';
 import {
   useAccountSettings,
@@ -208,7 +210,8 @@ export default function ExchangeModal({
     priceImpactPercentDisplay,
   } = usePriceImpactDetails(inputAmount, outputAmount);
 
-  const flashbots = useExperimentalFlag(FLASHBOTS);
+  const flashbotsEnabled = useExperimentalFlag(FLASHBOTS);
+  const flashbots = network === networkTypes.mainnet && flashbotsEnabled;
 
   const isDismissing = useRef(false);
   useEffect(() => {

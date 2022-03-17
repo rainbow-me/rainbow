@@ -121,6 +121,7 @@ const swap = async (
     amount: inputAmount,
     asset: inputCurrency,
     data: swap?.data,
+    flashbots: parameters.flashbots,
     from: accountAddress,
     gasLimit,
     hash: swap?.hash,

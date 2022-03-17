@@ -35,6 +35,11 @@ const StatusProps = {
   [TransactionStatusTypes.speeding_up]: {
     marginRight: 4,
   },
+  [TransactionStatusTypes.dropped]: {
+    marginRight: 4,
+    name: 'closeCircled',
+    style: position.maxSizeAsObject(12),
+  },
   [TransactionStatusTypes.failed]: {
     marginRight: 4,
     name: 'closeCircled',

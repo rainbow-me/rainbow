@@ -216,7 +216,7 @@ export const executeSwap = async ({
     maxFeePerGas: toHex(maxFeePerGas) || undefined,
     // Flashbots recommends a priority fee of 3-5
     // See https://docs.flashbots.net/flashbots-protect/rpc/quick-start#choosing-the-right-gas-price
-    maxPriorityFeePerGas: flashbotsEnabled
+    maxPriorityFeePerGas: flashbots
       ? toHex(gweiToWei('5'))
       : toHex(maxPriorityFeePerGas) || undefined,
     nonce: nonce ? toHex(nonce) : undefined,

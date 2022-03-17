@@ -1,4 +1,5 @@
 export enum TransactionStatus {
+  dropped = 'dropped',
   approved = 'approved',
   approving = 'approving',
   cancelled = 'cancelled',
@@ -30,6 +31,7 @@ export default {
   contract_interaction: 'contract interaction',
   deposited: 'deposited',
   depositing: 'depositing',
+  dropped: 'dropped',
   failed: 'failed',
   purchased: 'purchased',
   purchasing: 'purchasing',

@@ -1077,6 +1077,7 @@ export const addressAssetsReceived = (
   const isL2 = assetsNetwork && isL2Network(assetsNetwork);
   if (!isL2 && !assetsNetwork) {
     dispatch(
+      // @ts-ignore
       uniswapUpdateLiquidityTokens(liquidityTokens, append || change || removed)
     );
   }
@@ -1548,6 +1549,27 @@ export const dataWatchPendingTransactions = (
             updatedPending.title = title;
             updatedPending.pending = false;
             updatedPending.minedAt = minedAt;
+          } else {
+            if (tx.flashbots) {
+              const fbStatus = await fetch(
+                `https://protect.flashbots.net/tx/${txHash}`
+              );
+              const fbResponse = await fbStatus.json();
+              // Make sure it wasn't dropped after 25 blocks or never made it
+              if (
+                fbResponse.status === 'FAILED' ||
+                fbResponse.status === 'UNKNOWN'
+              ) {
+                updatedPending.status = TransactionStatus.dropped;
+                const title = getTitle({
+                  protocol: tx.protocol,
+                  status: updatedPending.status,
+                  type: tx.type,
+                });
+                updatedPending.title = title;
+                updatedPending.pending = false;
+              }
+            }
           }
         } catch (error) {
           logger.log('Error watching pending txn', error);
