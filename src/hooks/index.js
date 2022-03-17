@@ -43,6 +43,7 @@ export { default as useENSRegistrationForm } from './useENSRegistrationForm';
 export { default as useENSSearch } from './useENSSearch';
 export { default as useExpandedStateNavigation } from './useExpandedStateNavigation';
 export { default as useExternalWalletSectionsData } from './useExternalWalletSectionsData';
+export { default as useFetchUniqueTokens } from './useFetchUniqueTokens';
 export { default as useFirstTransactionTimestamp } from './useFirstTransactionTimestamp';
 export { default as useGas } from './useGas';
 export { default as useGenericAsset } from './useGenericAsset';

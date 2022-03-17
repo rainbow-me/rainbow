@@ -40,7 +40,9 @@ export default function ProfileSheetHeader() {
   );
 
   return (
-    <Box {...(ios && { onLayout: layout })}>
+    <Box
+      {...(ios && { onLayout: (e: any) => setTimeout(() => layout(e), 500) })}
+    >
       <Stack space="19px">
         <ProfileCover coverUrl={coverUrl} />
         <Bleed top={{ custom: 38 }}>

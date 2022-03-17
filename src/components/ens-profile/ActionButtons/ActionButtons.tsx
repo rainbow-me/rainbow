@@ -24,7 +24,7 @@ export default function ActionButtons({
 
   return (
     <Inline alignHorizontal="right" space="10px">
-      {/*<MoreButton address={primaryAddress} />*/}
+      <MoreButton address={primaryAddress} />
       {!isOwner && (
         <>
           <WatchButton address={primaryAddress} ensName={ensName} />
