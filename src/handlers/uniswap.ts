@@ -1,5 +1,18 @@
 import { BigNumberish } from '@ethersproject/bignumber';
 import { Wallet } from '@ethersproject/wallet';
+import {
+  ALLOWS_PERMIT,
+  ChainId,
+  ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
+  fillQuote,
+  getQuoteExecutionDetails,
+  geWethMethod,
+  PermitSupportedTokenList,
+  Quote,
+  unwrapWeth,
+  WETH,
+  wrapEth,
+} from '@rainbow-me/swaps';
 import { get, mapKeys, mapValues, toLower } from 'lodash';
 import { flashbotsEnabled } from '../config/debug';
 import { Token } from '../entities/tokens';
@@ -22,19 +35,6 @@ import { Network } from '@rainbow-me/networkTypes';
 import { gweiToWei } from '@rainbow-me/parsers';
 import { ethUnits, UNISWAP_TESTNET_TOKEN_LIST } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
-import {
-  ALLOWS_PERMIT,
-  ChainId,
-  ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
-  fillQuote,
-  getQuoteExecutionDetails,
-  geWethMethod,
-  PermitSupportedTokenList,
-  Quote,
-  unwrapWeth,
-  WETH,
-  wrapEth,
-} from '@rainbow-me/swaps';
 
 export enum Field {
   INPUT = 'INPUT',
