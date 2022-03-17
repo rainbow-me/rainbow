@@ -5,12 +5,8 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import {
-  LayoutAnimation,
-  NativeModules,
-  StatusBar,
-  useColorScheme,
-} from 'react-native';
+import { LayoutAnimation, NativeModules, useColorScheme } from 'react-native';
+import { StatusBar } from 'react-native-bars';
 import { useDarkMode } from 'react-native-dark-mode';
 import { ThemeProvider } from 'styled-components';
 import { getTheme, saveTheme } from '../handlers/localstorage/theme';
@@ -105,7 +101,10 @@ export const MainThemeProvider = props => {
               : 'light'
             : scheme;
         currentColors.theme = schemeSystemAdjusted;
-        StatusBar.setBarStyle('light-content', true);
+        StatusBar.pushStackEntry({
+          animated: true,
+          barStyle: 'light-content',
+        });
         currentColors.themedColors =
           schemeSystemAdjusted === THEMES.DARK
             ? darkModeThemeColors

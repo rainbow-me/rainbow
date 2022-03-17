@@ -1,8 +1,8 @@
 import analytics from '@segment/analytics-react-native';
 import { get } from 'lodash';
-import { StatusBar } from 'react-native';
 // eslint-disable-next-line import/default
 import AndroidKeyboardAdjust from 'react-native-android-keyboard-adjust';
+import { StatusBar } from 'react-native-bars';
 import currentColors from '../context/currentColors';
 import { sentryUtils } from '../utils';
 import Routes from './routesNames';
@@ -42,7 +42,10 @@ export function onNavigationStateChange(updateStatusBarOnSameRoute) {
     currentColors.theme === 'dark' ||
     (routeName === Routes.CURRENCY_SELECT_SCREEN && ios)
   ) {
-    StatusBar.setBarStyle('light-content', true);
+    StatusBar.pushStackEntry({
+      animated: true,
+      barStyle: 'light-content',
+    });
   } else if (routeName !== prevRouteName || updateStatusBarOnSameRoute) {
     switch (routeName) {
       case Routes.PROFILE_SCREEN:
@@ -50,11 +53,18 @@ export function onNavigationStateChange(updateStatusBarOnSameRoute) {
       case Routes.CURRENCY_SELECT_SCREEN:
       case Routes.WYRE_WEBVIEW:
       case Routes.SAVINGS_SHEET:
-        StatusBar.setBarStyle('dark-content', true);
+      case Routes.WELCOME_SCREEN:
+        StatusBar.pushStackEntry({
+          animated: true,
+          barStyle: 'dark-content',
+        });
         break;
 
       default:
-        StatusBar.setBarStyle('light-content', true);
+        StatusBar.pushStackEntry({
+          animated: true,
+          barStyle: 'light-content',
+        });
     }
   }
 

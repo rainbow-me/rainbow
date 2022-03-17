@@ -2,7 +2,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { omit } from 'lodash';
 import React, { useContext } from 'react';
-import { StatusBar } from 'react-native';
+import { StatusBar } from 'react-native-bars';
 import { useTheme } from '../context/ThemeContext';
 import { InitialRouteContext } from '../context/initialRoute';
 import AddCashSheet from '../screens/AddCashSheet';
@@ -182,7 +182,10 @@ function NativeStackFallbackNavigator() {
         options={{
           ...sheetPreset,
           onTransitionStart: () => {
-            StatusBar.setBarStyle('light-content');
+            StatusBar.pushStackEntry({
+              animated: true,
+              barStyle: 'light-content',
+            });
           },
         }}
       />
@@ -202,7 +205,10 @@ function NativeStackFallbackNavigator() {
         options={{
           ...omit(sheetPreset, 'gestureResponseDistance'),
           onTransitionStart: () => {
-            StatusBar.setBarStyle('light-content');
+            StatusBar.pushStackEntry({
+              animated: true,
+              barStyle: 'light-content',
+            });
           },
         }}
       />

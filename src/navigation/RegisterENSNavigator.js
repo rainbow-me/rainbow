@@ -1,7 +1,7 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import ConditionalWrap from 'conditional-wrap';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { StatusBar } from 'react-native';
+import { StatusBar } from 'react-native-bars';
 import { useRecoilState } from 'recoil';
 import { SheetHandleFixedToTopHeight, SlackSheet } from '../components/sheet';
 import ENSAssignRecordsSheet, {
@@ -67,7 +67,10 @@ export default function RegisterENSNavigator() {
   }, [screenOptions.scrollEnabled]);
 
   useEffect(() => {
-    StatusBar.setBarStyle('light-content');
+    StatusBar.pushStackEntry({
+      animated: true,
+      barStyle: 'light-content',
+    });
   }, []);
 
   useEffect(() => {
