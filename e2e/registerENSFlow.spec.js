@@ -184,7 +184,11 @@ describe('Register ENS Flow', () => {
     await Helpers.typeText('ens-text-record-bio', 'this is my bio');
   });
 
+  it('Should check review button', async () => {
+    await Helpers.checkIfVisible('ens-assign-records-review-action-button');
+  });
   it('Should go to review registration and start it', async () => {
+    await Helpers.waitAndTap('ens-assign-records-review-action-button');
     await Helpers.waitAndTap('ens-assign-records-review-action-button');
     await Helpers.checkIfVisible(`ens-transaction-action-COMMIT`);
     // await Helpers.disableSynchronization();
