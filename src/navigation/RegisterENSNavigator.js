@@ -157,9 +157,7 @@ export default function RegisterENSNavigator() {
        * The reason why is because we can't achieve fixed positioning (as per designs) within SlackSheet's
        * ScrollView, so this seems like the best workaround.
        */}
-      {currentRouteName === Routes.ENS_ASSIGN_RECORDS_SHEET && (
-        <ENSAssignRecordsBottomActions visible />
-      )}
+      <ENSAssignRecordsBottomActions visible />
     </>
   );
 }
