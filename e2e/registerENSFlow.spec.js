@@ -183,11 +183,12 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should go to review registration and start it', async () => {
-    await Helpers.disableSynchronization();
     await Helpers.waitAndTap('ens-assign-records-review-action-button');
     console.log('😬😬😬 1');
     await Helpers.checkIfVisible(`ens-transaction-action-COMMIT`);
     console.log('😬😬😬 2');
+    await Helpers.disableSynchronization();
+    await Helpers.delay(5000);
     await Helpers.waitAndTap(`ens-transaction-action-COMMIT`);
     console.log('😬😬😬 3');
     await Helpers.delay(2000);
