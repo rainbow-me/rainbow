@@ -164,30 +164,46 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should go to come back to records view and add some', async () => {
+    console.log('⛽⛽⛽ 1');
     await Helpers.checkIfVisible('ens-confirm-register-sheet');
+    console.log('⛽⛽⛽ 2');
     await Helpers.swipe('ens-confirm-register-sheet', 'down', 'slow');
+    console.log('⛽⛽⛽ 3');
     await Helpers.waitAndTap('ens-selectable-attribute-email');
+    console.log('⛽⛽⛽ 4');
     await Helpers.waitAndTap('ens-selectable-attribute-twitter');
+    console.log('⛽⛽⛽ 5');
     const ensAvailable = await isAvailable(RANDOM_NAME);
+    console.log('⛽⛽⛽ 6', ensAvailable);
     if (!ensAvailable) throw new Error('ENS name not available');
+    console.log('⛽⛽⛽ 7');
     await Helpers.typeText('ens-text-record-name', RANDOM_NAME);
+    console.log('⛽⛽⛽ 8');
     await Helpers.typeText('ens-text-record-bio', 'this is my bio');
   });
 
   it('Should go to review registration and start it', async () => {
-    await Helpers.waitAndTap('ens-assign-records-review-action-button');
-    await Helpers.checkIfVisible(`ens-transaction-action-COMMIT`);
     await Helpers.disableSynchronization();
+    await Helpers.waitAndTap('ens-assign-records-review-action-button');
+    console.log('😬😬😬 1');
+    await Helpers.checkIfVisible(`ens-transaction-action-COMMIT`);
+    console.log('😬😬😬 2');
     await Helpers.waitAndTap(`ens-transaction-action-COMMIT`);
+    console.log('😬😬😬 3');
     await Helpers.delay(2000);
+    console.log('😬😬😬 4');
     await Helpers.checkIfVisible(
       `ens-confirm-register-label-WAIT_COMMIT_CONFIRMATION`
     );
+    console.log('😬😬😬 5');
     await Helpers.delay(10000);
+    console.log('😬😬😬 6');
     await Helpers.checkIfVisible(
       `ens-confirm-register-label-WAIT_ENS_COMMITMENT`
     );
+    console.log('😬😬😬 7');
     await Helpers.delay(60000);
+    console.log('😬😬😬 8');
     await Helpers.enableSynchronization();
   });
 
