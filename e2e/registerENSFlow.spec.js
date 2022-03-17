@@ -154,28 +154,28 @@ describe('Register ENS Flow', () => {
     await Helpers.checkIfVisible('ens-registration-price');
   });
 
-  it('Should go to view to set records and skip it', async () => {
-    // eslint-disable-next-line no-console
-    console.log('⛽⛽⛽⛽⛽⛽⛽⛽⛽ 1');
-    await Helpers.checkIfVisible('ens-search-continue-action-button');
-    // eslint-disable-next-line no-console
-    console.log('⛽⛽⛽⛽⛽⛽⛽⛽⛽ 2');
-    await Helpers.waitAndTap('ens-search-continue-action-button');
-    // eslint-disable-next-line no-console
-    console.log('⛽⛽⛽⛽⛽⛽⛽⛽⛽ 3');
-    await Helpers.checkIfVisible('ens-assign-records-skip');
-    // eslint-disable-next-line no-console
-    console.log('⛽⛽⛽⛽⛽⛽⛽⛽⛽ 4');
-    await Helpers.waitAndTap('ens-assign-records-skip');
-    // eslint-disable-next-line no-console
-    console.log('⛽⛽⛽⛽⛽⛽⛽⛽⛽ 5');
-  });
+  // it('Should go to view to set records and skip it', async () => {
+  //   // eslint-disable-next-line no-console
+  //   console.log('⛽⛽⛽⛽⛽⛽⛽⛽⛽ 1');
+  //   await Helpers.checkIfVisible('ens-search-continue-action-button');
+  //   // eslint-disable-next-line no-console
+  //   console.log('⛽⛽⛽⛽⛽⛽⛽⛽⛽ 2');
+  //   await Helpers.waitAndTap('ens-search-continue-action-button');
+  //   // eslint-disable-next-line no-console
+  //   console.log('⛽⛽⛽⛽⛽⛽⛽⛽⛽ 3');
+  //   await Helpers.checkIfVisible('ens-assign-records-skip');
+  //   // eslint-disable-next-line no-console
+  //   console.log('⛽⛽⛽⛽⛽⛽⛽⛽⛽ 4');
+  //   await Helpers.waitAndTap('ens-assign-records-skip');
+  //   // eslint-disable-next-line no-console
+  //   console.log('⛽⛽⛽⛽⛽⛽⛽⛽⛽ 5');
+  // });
 
   it('Should go to come back to records view and add some', async () => {
     // eslint-disable-next-line no-console
     console.log('⛽⛽⛽⛽⛽⛽⛽⛽⛽ view and add some');
-    await Helpers.checkIfVisible('ens-confirm-register-sheet');
-    await Helpers.swipe('ens-confirm-register-sheet', 'down', 'slow');
+    // await Helpers.checkIfVisible('ens-confirm-register-sheet');
+    // await Helpers.swipe('ens-confirm-register-sheet', 'down', 'slow');
     await Helpers.waitAndTap('ens-selectable-attribute-email');
     await Helpers.waitAndTap('ens-selectable-attribute-twitter');
     const ensAvailable = await isAvailable(RANDOM_NAME);
