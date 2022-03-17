@@ -154,7 +154,6 @@ workflows:
     before_run:
     - generate_dot_env_testing
     - build_setup
-    - lint
     - pods_setup
     - detox_setup
     - detox_tests
