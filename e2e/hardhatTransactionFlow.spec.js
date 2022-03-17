@@ -276,10 +276,10 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.typeText('currency-select-search-input', 'USDC', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-USDC');
-    await Helpers.typeText('exchange-modal-input', '0.0005', true);
+    await Helpers.typeText('exchange-modal-input', '0.005', true);
     await Helpers.tapAndLongPress('exchange-modal-confirm-button');
     await acceptAlertIfGasPriceIsHigh();
-    await checkIfSwapCompleted('Ethereum', '0.0005 ETH');
+    await checkIfSwapCompleted('Ethereum', '0.005 ETH');
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
@@ -293,7 +293,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.typeText('exchange-modal-input', '14', true);
     await Helpers.tapAndLongPress('exchange-modal-confirm-button');
     await acceptAlertIfGasPriceIsHigh();
-    await checkIfSwapCompleted('USD Coin', '14 USDC');
+    await checkIfSwapCompleted('USD Coin', '25 USDC');
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
@@ -305,7 +305,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH');
     await Helpers.typeText('exchange-modal-input', '10', true);
     await Helpers.tapAndLongPress('exchange-modal-confirm-button');
-    await checkIfSwapCompleted('USD Coin', '10 USDC');
+    await checkIfSwapCompleted('USD Coin', '20 USDC');
     await acceptAlertIfGasPriceIsHigh();
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
