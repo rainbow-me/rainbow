@@ -14,7 +14,6 @@ import {
   wrapEth,
 } from '@rainbow-me/swaps';
 import { get, mapKeys, mapValues, toLower } from 'lodash';
-import { flashbotsEnabled } from '../config/debug';
 import { Token } from '../entities/tokens';
 import { loadWallet } from '../model/wallet';
 import {
@@ -181,6 +180,7 @@ export const executeSwap = async ({
   tradeDetails,
   wallet,
   permit = false,
+  flashbots = false,
 }: {
   chainId: ChainId;
   gasLimit: string | number;
@@ -190,13 +190,14 @@ export const executeSwap = async ({
   tradeDetails: Quote | null;
   wallet: Wallet | null;
   permit: boolean;
+  flashbots: boolean;
 }) => {
   let walletToUse = wallet;
   const network = ethereumUtils.getNetworkFromChainId(chainId);
   let provider = await getProviderForNetwork(network);
 
   // Switch to the flashbots provider if enabled
-  if (flashbotsEnabled) {
+  if (flashbots) {
     provider = await getFlashbotsProvider();
   }
 

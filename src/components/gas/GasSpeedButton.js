@@ -32,15 +32,7 @@ import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
 import { gasUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
 
-const {
-  GAS_ICONS,
-  GasSpeedOrder,
-  CUSTOM,
-  URGENT,
-  NORMAL,
-  FAST,
-  FLASHBOTS,
-} = gasUtils;
+const { GAS_ICONS, GasSpeedOrder, CUSTOM, URGENT, NORMAL, FAST } = gasUtils;
 
 const CustomGasButton = styled(ButtonPressAnimation).attrs({
   align: 'center',
@@ -131,7 +123,6 @@ const GasSpeedButton = ({
   asset,
   bottom = 0,
   currentNetwork,
-  flashbotsEnabled = false,
   horizontalPadding = 19,
   marginBottom = 20,
   speeds = null,
@@ -385,10 +376,9 @@ const GasSpeedButton = ({
     speedOptions,
   ]);
 
-  const gasOptionsAvailable = useMemo(
-    () => !flashbotsEnabled && speedOptions.length > 1,
-    [flashbotsEnabled, speedOptions.length]
-  );
+  const gasOptionsAvailable = useMemo(() => speedOptions.length > 1, [
+    speedOptions.length,
+  ]);
 
   const onDonePress = useCallback(() => {
     if (canGoBack) {
@@ -418,7 +408,7 @@ const GasSpeedButton = ({
 
   const renderGasSpeedPager = useMemo(() => {
     if (showGasOptions) return;
-    const label = flashbotsEnabled ? FLASHBOTS : selectedGasFeeOption ?? NORMAL;
+    const label = selectedGasFeeOption ?? NORMAL;
     const pager = (
       <GasSpeedLabelPager
         colorForAsset={
@@ -455,7 +445,6 @@ const GasSpeedButton = ({
   }, [
     colors,
     currentNetwork,
-    flashbotsEnabled,
     gasIsNotReady,
     gasOptionsAvailable,
     handlePressMenuItem,

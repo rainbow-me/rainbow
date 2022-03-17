@@ -32,7 +32,8 @@ import {
 import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
-import { flashbotsEnabled } from '../config/debug';
+import { FLASHBOTS } from '../config/experimental';
+import useExperimentalFlag from '../config/experimentalHooks';
 import { ExchangeModalTypes, isKeyboardOpen } from '@rainbow-me/helpers';
 import { divide, greaterThan, multiply } from '@rainbow-me/helpers/utilities';
 import {
@@ -206,6 +207,8 @@ export default function ExchangeModal({
     priceImpactNativeAmount,
     priceImpactPercentDisplay,
   } = usePriceImpactDetails(inputAmount, outputAmount);
+
+  const flashbots = useExperimentalFlag(FLASHBOTS);
 
   const isDismissing = useRef(false);
   useEffect(() => {
@@ -413,6 +416,7 @@ export default function ExchangeModal({
       logger.log('[exchange - handle submit] rap');
       const nonce = await getNextNonce();
       const swapParameters = {
+        flashbots,
         inputAmount,
         nonce,
         outputAmount,
@@ -607,9 +611,6 @@ export default function ExchangeModal({
           bottom={insets.bottom - 7}
           currentNetwork={network}
           dontBlur
-          flashbotsEnabled={
-            flashbotsEnabled && type === ExchangeModalTypes.swap
-          }
           onCustomGasBlur={handleCustomGasBlur}
           testID={`${testID}-gas`}
         />

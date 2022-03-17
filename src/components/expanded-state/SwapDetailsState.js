@@ -3,7 +3,6 @@ import lang from 'i18n-js';
 import React, { useCallback, useEffect, useState } from 'react';
 import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
-import { flashbotsEnabled } from '../../config/debug';
 import { ConfirmExchangeButton } from '../exchange';
 import { GasSpeedButton } from '../gas';
 import { Column } from '../layout';
@@ -188,7 +187,6 @@ export default function SwapDetailsState({
           <GasSpeedButton
             asset={outputCurrency}
             currentNetwork={network}
-            flashbotsEnabled={flashbotsEnabled}
             testID="swap-details-gas"
             theme="light"
           />

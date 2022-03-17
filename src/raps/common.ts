@@ -54,6 +54,7 @@ export interface RapActionParameters {
   outputAmount?: string | null;
   tradeDetails?: Quote;
   permit?: boolean;
+  flashbots?: boolean;
   name?: string;
   duration?: number;
   rentPrice?: string;

@@ -86,6 +86,7 @@ const swap = async (
 
     const swapParams = {
       chainId,
+      flashbots: !!parameters.flashbots,
       gasLimit,
       maxFeePerGas,
       maxPriorityFeePerGas,
