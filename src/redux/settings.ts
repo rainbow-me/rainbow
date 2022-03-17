@@ -2,6 +2,7 @@ import analytics from '@segment/analytics-react-native';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { updateLanguageLocale } from '../languages';
+import { saveString } from '../model/keychain';
 import { NativeCurrencyKeys } from '@rainbow-me/entities';
 import {
   getLanguage,
@@ -16,7 +17,6 @@ import {
 import { web3SetHttpProvider } from '@rainbow-me/handlers/web3';
 import { Network } from '@rainbow-me/helpers/networkTypes';
 import { dataResetState } from '@rainbow-me/redux/data';
-import { saveString } from '../model/keychain';
 import { explorerClearState, explorerInit } from '@rainbow-me/redux/explorer';
 import { AppState } from '@rainbow-me/redux/store';
 import { ethereumUtils } from '@rainbow-me/utils';
