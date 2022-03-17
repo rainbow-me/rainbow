@@ -101,8 +101,8 @@ export default function RegisterENSNavigator() {
       navigation.removeListener('dismiss', clearCurrentRegistrationName);
   });
 
-  const isBottomActionsVisible =
-    currentRouteName === Routes.ENS_ASSIGN_RECORDS_SHEET;
+  // const isBottomActionsVisible =
+  //   currentRouteName === Routes.ENS_ASSIGN_RECORDS_SHEET;
 
   const wrapperStyle = useMemo(() => ({ height: contentHeight }), [
     contentHeight,
@@ -157,7 +157,9 @@ export default function RegisterENSNavigator() {
        * The reason why is because we can't achieve fixed positioning (as per designs) within SlackSheet's
        * ScrollView, so this seems like the best workaround.
        */}
-      <ENSAssignRecordsBottomActions visible={isBottomActionsVisible} />
+      {currentRouteName === Routes.ENS_ASSIGN_RECORDS_SHEET && (
+        <ENSAssignRecordsBottomActions visible />
+      )}
     </>
   );
 }
