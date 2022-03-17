@@ -176,8 +176,8 @@ describe('Register ENS Flow', () => {
     console.log('⛽⛽⛽⛽⛽⛽⛽⛽⛽ view and add some');
     // await Helpers.checkIfVisible('ens-confirm-register-sheet');
     // await Helpers.swipe('ens-confirm-register-sheet', 'down', 'slow');
-    await Helpers.waitAndTap('ens-selectable-attribute-email');
-    await Helpers.waitAndTap('ens-selectable-attribute-twitter');
+    // await Helpers.waitAndTap('ens-selectable-attribute-email');
+    // await Helpers.waitAndTap('ens-selectable-attribute-twitter');
     const ensAvailable = await isAvailable(RANDOM_NAME);
     if (!ensAvailable) throw new Error('ENS name not available');
     await Helpers.typeText('ens-text-record-name', RANDOM_NAME);
