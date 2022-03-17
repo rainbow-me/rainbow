@@ -11,7 +11,7 @@ import {
   TransactionResponse,
 } from '@ethersproject/providers';
 import { parseEther } from '@ethersproject/units';
-import UnstoppableResolution from '@unstoppabledomains/resolution';
+import Resolution from '@unstoppabledomains/resolution';
 import { startsWith } from 'lodash';
 import { RainbowConfig } from '../model/config';
 import {
@@ -492,15 +492,7 @@ export const resolveUnstoppableDomain = async (
   // This parameter doesn't line up with the `Resolution` type declaration,
   // but it can be casted to `any` as it does match the documentation here:
   // https://unstoppabledomains.github.io/resolution/v2.2.0/classes/resolution.html.
-  const resolution = new UnstoppableResolution({
-    blockchain: {
-      cns: {
-        network: 'mainnet',
-        url: rpcEndpoints[Network.mainnet],
-      },
-    },
-  } as any);
-
+  const resolution = new Resolution();
   const res = resolution
     .addr(domain, 'ETH')
     .then(address => {
