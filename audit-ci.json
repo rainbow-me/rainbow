@@ -2,7 +2,12 @@
   "low": true,
   "package-manager": "auto",
   "allowlist": [
-    "ws"
+    1049360,
+    1054548,
+    1054590,
+    1059820,
+    1059778,
+    1065064
   ],
   "registry": "https://registry.npmjs.org"
 }
