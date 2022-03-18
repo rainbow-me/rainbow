@@ -136,6 +136,7 @@ export default function ENSAssignRecordsSheet() {
                   onError={handleError}
                 />
               </Box>
+              <ENSAssignRecordsBottomActions visible />
             </Stack>
           </Inset>
         </Stack>
