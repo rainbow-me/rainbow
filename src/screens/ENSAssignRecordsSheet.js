@@ -186,14 +186,11 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      bottom: withSpring(
-        visible ? (IS_TESTING === 'true' ? 200 : 0) : -BottomActionHeight - 10,
-        {
-          damping: 40,
-          mass: 1,
-          stiffness: 420,
-        }
-      ),
+      bottom: withSpring(visible ? 0 : -BottomActionHeight - 10, {
+        damping: 40,
+        mass: 1,
+        stiffness: 420,
+      }),
     };
   });
 
