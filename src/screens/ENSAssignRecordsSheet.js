@@ -186,11 +186,14 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      bottom: withSpring(visible ? 0 : -BottomActionHeight - 10, {
-        damping: 40,
-        mass: 1,
-        stiffness: 420,
-      }),
+      bottom: withSpring(
+        visible ? (IS_TESTING === 'true' ? 200 : 0) : -BottomActionHeight - 10,
+        {
+          damping: 40,
+          mass: 1,
+          stiffness: 420,
+        }
+      ),
     };
   });
 
@@ -210,7 +213,10 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
       )}
       <AnimatedBox
         background="body"
-        style={[animatedStyle, { position: 'absolute', width: '100%' }]}
+        style={[
+          animatedStyle,
+          IS_TESTING === 'true' ? {} : { position: 'absolute', width: '100%' },
+        ]}
       >
         <AccentColorProvider color={accentColor}>
           <Box
