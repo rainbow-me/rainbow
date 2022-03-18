@@ -40,6 +40,7 @@ export { default as useENSRegistration } from './useENSRegistration';
 export { default as useENSRegistrationActionHandler } from './useENSRegistrationActionHandler';
 export { default as useENSRegistrationCosts } from './useENSRegistrationCosts';
 export { default as useENSRegistrationForm } from './useENSRegistrationForm';
+export { default as useENSResolveName } from './useENSResolveName';
 export { default as useENSSearch } from './useENSSearch';
 export { default as useExpandedStateNavigation } from './useExpandedStateNavigation';
 export { default as useExternalWalletSectionsData } from './useExternalWalletSectionsData';

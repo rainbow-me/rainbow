@@ -3,11 +3,12 @@ import React, { useMemo } from 'react';
 import Spinner from '../components/Spinner';
 import RecyclerAssetList2 from '../components/asset-list/RecyclerAssetList2';
 import { SheetHandleFixedToTopHeight } from '../components/sheet';
+import useENSProfile from '../hooks/useENSProfile';
 import { useTheme } from '@rainbow-me/context';
 import { AccentColorProvider, Box } from '@rainbow-me/design-system';
 import {
   useDimensions,
-  useENSProfile,
+  useENSResolveName,
   useExternalWalletSectionsData,
   useFirstTransactionTimestamp,
   usePersistentDominantColorFromImage,
@@ -23,16 +24,20 @@ export default function ProfileSheet() {
 
   const ensName = params?.address || 'moxey.eth';
   const { isLoading, data: profile } = useENSProfile(ensName);
-  const avatarUrl = profile?.images.avatarUrl;
-  const profileAddress = profile?.primary.address;
+  const avatarUrl = profile?.images?.avatarUrl;
+
+  const {
+    data: profileAddress,
+    isLoading: isLoadingProfileAddress,
+  } = useENSResolveName(ensName);
 
   // Prefetch first transaction timestamp
-  useFirstTransactionTimestamp({ ensName });
+  useFirstTransactionTimestamp({
+    ensName,
+  });
 
   // Prefetch asset list
-  useExternalWalletSectionsData({
-    address: profileAddress,
-  });
+  useExternalWalletSectionsData({ address: profileAddress });
 
   const colorIndex = useMemo(
     () => (profileAddress ? addressHashedColorIndex(profileAddress) : 0),
