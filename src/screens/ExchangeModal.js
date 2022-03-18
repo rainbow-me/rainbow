@@ -13,7 +13,6 @@ import {
   Keyboard,
   NativeModules,
 } from 'react-native';
-
 import { useSafeArea } from 'react-native-safe-area-context';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { useDispatch, useSelector } from 'react-redux';
@@ -604,10 +603,13 @@ export default function ExchangeModal({
               type={type}
             />
           )}
+
           {isWithdrawal && <Spacer />}
+
           {showConfirmButton && (
             <ConfirmExchangeButton
               {...confirmButtonProps}
+              flashbots={flashbots}
               onPressViewDetails={navigateToSwapDetailsModal}
               testID={`${testID}-confirm-button`}
             />

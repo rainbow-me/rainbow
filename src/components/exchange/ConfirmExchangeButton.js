@@ -4,8 +4,10 @@ import makeColorMoreChill from 'make-color-more-chill';
 import React, { useMemo } from 'react';
 import { darkModeThemeColors } from '../../styles/colors';
 import { HoldToAuthorizeButton } from '../buttons';
+import ImgixImage from '../images/ImgixImage';
 import { Centered } from '../layout';
 import { useTheme } from '@rainbow-me/context';
+import { Column, Columns, Row, Rows, Text } from '@rainbow-me/design-system';
 import { ExchangeModalTypes } from '@rainbow-me/helpers';
 import {
   useColorForAsset,
@@ -42,6 +44,7 @@ export default function ConfirmExchangeButton({
   onSubmit,
   testID,
   tradeDetails,
+  flashbots,
   type = ExchangeModalTypes.swap,
   ...props
 }) {
@@ -131,30 +134,70 @@ export default function ConfirmExchangeButton({
 
   return (
     <Container>
-      <ConfirmButton
-        backgroundColor={buttonColor}
-        disableLongPress={shouldOpenSwapDetails}
-        disabled={isDisabled}
-        disabledBackgroundColor={
-          isSwapDetailsRoute
-            ? isDarkMode
-              ? darkModeThemeColors.blueGreyDark04
-              : lightModeThemeColors.blueGreyDark50
-            : darkModeThemeColors.blueGreyDark04
-        }
-        label={label}
-        onLongPress={shouldOpenSwapDetails ? onPressViewDetails : onSubmit}
-        shadows={
-          isSwapDetailsRoute
-            ? isDisabled
-              ? shadows.disabled
-              : shadowsForAsset
-            : shadows.default
-        }
-        showBiometryIcon={!isDisabled && !isHighPriceImpact}
-        testID={testID}
-        {...props}
-      />
+      <Rows backgroundColor={colors.appleBlue} height="content">
+        {flashbots && (
+          <Row
+            alignHorizontal="center"
+            alignVertical="center"
+            backgroundColor={colors.appleBlue}
+            height="content"
+            width="content"
+          >
+            <Columns
+              alignHorizontal="center"
+              backgroundColor={colors.appleBlue}
+              height="content"
+            >
+              <Column
+                backgroundColor={colors.appleBlue}
+                height="content"
+                width="content"
+              >
+                <ImgixImage
+                  source={{
+                    uri: 'https://docs.flashbots.net/img/logo.png',
+                  }}
+                  style={{ height: 24, marginTop: -7, width: 24 }}
+                />
+              </Column>
+              <Column
+                backgroundColor={colors.appleBlue}
+                height="content"
+                width="content"
+              >
+                <Text> Flashbots Protect enabled 􀅵</Text>
+              </Column>
+            </Columns>
+          </Row>
+        )}
+        <Row>
+          <ConfirmButton
+            marginTop={15}
+            backgroundColor={buttonColor}
+            disableLongPress={shouldOpenSwapDetails}
+            disabled={isDisabled}
+            disabledBackgroundColor={
+              isSwapDetailsRoute
+                ? isDarkMode
+                  ? darkModeThemeColors.blueGreyDark04
+                  : lightModeThemeColors.blueGreyDark50
+                : darkModeThemeColors.blueGreyDark04
+            }
+            label={label}
+            onLongPress={shouldOpenSwapDetails ? onPressViewDetails : onSubmit}
+            shadows={
+              isSwapDetailsRoute
+                ? isDisabled
+                  ? shadows.disabled
+                  : shadowsForAsset
+                : shadows.default
+            }
+            showBiometryIcon={!isDisabled && !isHighPriceImpact}
+            testID={testID}
+            {...props}
+          />
+        </Row>
+      </Rows>
     </Container>
   );
 }
