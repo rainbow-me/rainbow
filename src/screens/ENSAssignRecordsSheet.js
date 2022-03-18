@@ -140,6 +140,7 @@ export default function ENSAssignRecordsSheet() {
           </Inset>
         </Stack>
       </Box>
+      {IS_TESTING === 'true' && <ENSAssignRecordsBottomActions visible />}
     </AccentColorProvider>
   );
 }
