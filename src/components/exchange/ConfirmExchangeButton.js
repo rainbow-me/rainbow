@@ -172,7 +172,6 @@ export default function ConfirmExchangeButton({
         )}
         <Row>
           <ConfirmButton
-            marginTop={15}
             backgroundColor={buttonColor}
             disableLongPress={shouldOpenSwapDetails}
             disabled={isDisabled}
@@ -184,6 +183,7 @@ export default function ConfirmExchangeButton({
                 : darkModeThemeColors.blueGreyDark04
             }
             label={label}
+            marginTop={15}
             onLongPress={shouldOpenSwapDetails ? onPressViewDetails : onSubmit}
             shadows={
               isSwapDetailsRoute
