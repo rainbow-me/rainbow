@@ -3,7 +3,6 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import ConditionalWrap from 'conditional-wrap';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { StatusBar } from 'react-native';
-import { IS_TESTING } from 'react-native-dotenv';
 import { SheetHandleFixedToTopHeight, SlackSheet } from '../components/sheet';
 import ENSAssignRecordsSheet, {
   ENSAssignRecordsBottomActions,
@@ -158,9 +157,7 @@ export default function RegisterENSNavigator() {
        * The reason why is because we can't achieve fixed positioning (as per designs) within SlackSheet's
        * ScrollView, so this seems like the best workaround.
        */}
-      {IS_TESTING !== 'true' && (
-        <ENSAssignRecordsBottomActions visible={isBottomActionsVisible} />
-      )}
+      <ENSAssignRecordsBottomActions visible={isBottomActionsVisible} />
     </>
   );
 }

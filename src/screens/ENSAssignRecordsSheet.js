@@ -140,7 +140,6 @@ export default function ENSAssignRecordsSheet() {
           </Inset>
         </Stack>
       </Box>
-      {IS_TESTING === 'true' && <ENSAssignRecordsBottomActions visible />}
     </AccentColorProvider>
   );
 }
@@ -213,10 +212,7 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
       )}
       <AnimatedBox
         background="body"
-        style={[
-          animatedStyle,
-          IS_TESTING === 'true' ? {} : { position: 'absolute', width: '100%' },
-        ]}
+        style={[animatedStyle, { position: 'absolute', width: '100%' }]}
       >
         <AccentColorProvider color={accentColor}>
           <Box
