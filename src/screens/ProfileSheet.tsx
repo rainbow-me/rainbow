@@ -29,7 +29,8 @@ export default function ProfileSheet() {
   // Prefetch first transaction timestamp
   useFirstTransactionTimestamp({ ensName });
 
-  const { isFetched: hasListFetched } = useExternalWalletSectionsData({
+  // Prefetch asset list
+  useExternalWalletSectionsData({
     address: profileAddress,
   });
 
@@ -55,7 +56,7 @@ export default function ProfileSheet() {
     <AccentColorProvider color={accentColor}>
       <Box background="body">
         <Box style={wrapperStyle}>
-          {isLoading || !hasListFetched ? (
+          {isLoading ? (
             <Box alignItems="center" height="full" justifyContent="center">
               <Spinner color={colors.appleBlue} size="large" />
             </Box>

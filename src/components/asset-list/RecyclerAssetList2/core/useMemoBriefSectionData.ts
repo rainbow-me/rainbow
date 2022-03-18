@@ -17,8 +17,9 @@ export default function useMemoBriefSectionData({
   filterTypes: givenFilterTypes,
   type,
 }: { address?: string; filterTypes?: CellType[]; type?: AssetListType } = {}) {
-  const { briefSectionsData } = address
-    ? // eslint-disable-next-line react-hooks/rules-of-hooks
+  const { briefSectionsData }: { briefSectionsData: any[] } = address
+    ? // `address` is a static prop, so hooks will always execute in order.
+      // eslint-disable-next-line react-hooks/rules-of-hooks
       useExternalWalletSectionsData({ address })
     : // eslint-disable-next-line react-hooks/rules-of-hooks
       useWalletSectionsData();

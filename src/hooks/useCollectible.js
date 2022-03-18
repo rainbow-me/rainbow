@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { useQueryClient } from 'react-query';
 import { useSelector } from 'react-redux';
 import { useAdditionalRecyclerAssetListData } from '../components/asset-list/RecyclerAssetList2/core/Contexts';
+import { uniqueTokensQueryKey } from './useFetchUniqueTokens';
 
 export default function useCollectible(asset) {
   // Retrieve the unique tokens belonging to the current account address.
@@ -16,7 +17,7 @@ export default function useCollectible(asset) {
   const { address } = useAdditionalRecyclerAssetListData(0);
   const queryClient = useQueryClient();
   const externalUniqueTokens = useMemo(() => {
-    return queryClient.getQueryData(['unique-tokens', address]) || [];
+    return queryClient.getQueryData(uniqueTokensQueryKey({ address })) || [];
   }, [queryClient, address]);
 
   // Use the appropriate tokens based on if the user is viewing the

@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from 'react-query';
 import useAccountSettings from './useAccountSettings';
-import { getUniqueTokens } from '@rainbow-me/handlers/localstorage/accountLocal';
+import { UniqueAsset } from '@rainbow-me/entities';
+import {
+  getUniqueTokens,
+  saveUniqueTokens,
+} from '@rainbow-me/handlers/localstorage/accountLocal';
 import {
   apiGetAccountUniqueTokens,
   UNIQUE_TOKENS_LIMIT_PER_PAGE,
@@ -9,31 +13,49 @@ import {
 } from '@rainbow-me/handlers/opensea-api';
 import { Network } from '@rainbow-me/helpers/networkTypes';
 
+export const uniqueTokensQueryKey = ({ address }: { address?: string }) => [
+  'unique-tokens',
+  address,
+];
+
 export default function useFetchUniqueTokens({
   address,
 }: {
   address?: string;
 }) {
-  const [shouldFetchMore, setShouldFetchMore] = useState(false);
-  const [hasStoredTokens, setHasStoredTokens] = useState(false);
-
   const { network } = useAccountSettings();
-  const uniqueTokensQuery = useQuery(
-    ['unique-tokens', address],
+
+  const [shouldFetchMore, setShouldFetchMore] = useState(false);
+
+  // Get unique tokens from device storage
+  const [hasStoredTokens, setHasStoredTokens] = useState(false);
+  useEffect(() => {
+    (async () => {
+      const { hasStoredTokens } = await getStoredUniqueTokens({
+        address,
+        network,
+      });
+      setHasStoredTokens(hasStoredTokens);
+    })();
+  }, [address, network]);
+
+  // Make the first query to retrive the unique tokens.
+  const uniqueTokensQuery = useQuery<UniqueAsset[]>(
+    uniqueTokensQueryKey({ address }),
     async () => {
       if (!address) return;
 
-      let storageTokens = await getUniqueTokens(address, network);
+      const { storedTokens, hasStoredTokens } = await getStoredUniqueTokens({
+        address,
+        network,
+      });
 
-      const hasStoredTokens = storageTokens && storageTokens.length > 0;
-
-      let uniqueTokens = storageTokens;
+      let uniqueTokens = storedTokens;
       if (!hasStoredTokens) {
         uniqueTokens = await apiGetAccountUniqueTokens(network, address, 0);
       }
 
       setShouldFetchMore(true);
-      setHasStoredTokens(hasStoredTokens);
 
       return uniqueTokens;
     },
@@ -54,9 +76,9 @@ export default function useFetchUniqueTokens({
       page = 0,
     }: {
       network: Network;
-      uniqueTokens?: any;
+      uniqueTokens?: UniqueAsset[];
       page?: number;
-    }): Promise<any> {
+    }): Promise<UniqueAsset[]> {
       if (
         uniqueTokens?.length >= page * UNIQUE_TOKENS_LIMIT_PER_PAGE &&
         uniqueTokens?.length < UNIQUE_TOKENS_LIMIT_TOTAL
@@ -66,22 +88,24 @@ export default function useFetchUniqueTokens({
           address as string,
           page
         );
-        const concatUniqueTokens = [...uniqueTokens, ...moreUniqueTokens];
         if (!hasStoredTokens) {
-          queryClient.setQueryData<any[]>(['unique-tokens', address], tokens =>
-            tokens ? [...tokens, ...moreUniqueTokens] : moreUniqueTokens
+          queryClient.setQueryData<UniqueAsset[]>(
+            uniqueTokensQueryKey({ address }),
+            tokens =>
+              tokens ? [...tokens, ...moreUniqueTokens] : moreUniqueTokens
           );
         }
         return fetchMore({
           network,
           page: page + 1,
-          uniqueTokens: concatUniqueTokens,
+          uniqueTokens: [...uniqueTokens, ...moreUniqueTokens],
         });
       }
       return uniqueTokens;
     }
 
-    if (shouldFetchMore && uniqueTokens?.length > 0) {
+    // We have already fetched the first page of results – so let's fetch more!
+    if (shouldFetchMore && uniqueTokens && uniqueTokens.length > 0) {
       setShouldFetchMore(false);
       (async () => {
         // Fetch more Ethereum tokens until all have fetched
@@ -97,11 +121,13 @@ export default function useFetchUniqueTokens({
         const polygonTokens = await fetchMore({ network: Network.polygon });
 
         if (hasStoredTokens) {
-          queryClient.setQueryData<any>(
-            ['unique-tokens', address],
+          queryClient.setQueryData<UniqueAsset[]>(
+            uniqueTokensQueryKey({ address }),
             [...tokens, ...polygonTokens]
           );
         }
+
+        await saveUniqueTokens([...tokens, ...polygonTokens], address, network);
       })();
     }
   }, [
@@ -114,4 +140,19 @@ export default function useFetchUniqueTokens({
   ]);
 
   return uniqueTokensQuery;
+}
+
+async function getStoredUniqueTokens({
+  address,
+  network,
+}: {
+  address?: string;
+  network: Network;
+}) {
+  const storedTokens = await getUniqueTokens(address, network);
+  const hasStoredTokens = storedTokens && storedTokens.length > 0;
+  return {
+    hasStoredTokens,
+    storedTokens,
+  };
 }
