@@ -326,6 +326,7 @@
     "typescript-coverage-report": "0.6.1"
   },
   "resolutions": {
+    "**/simple-git": "3.3.0",
     "**/node-fetch": "2.6.7",
     "**/web3": "1.6.1",
     "**/underscore": "1.12.1",
