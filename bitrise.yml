@@ -33,14 +33,14 @@ workflows:
             fi
     before_run: 
     after_run: 
-  # lint:
-  #   before_run: []
-  #   after_run: []
-  #   steps:
-  #   - yarn@0.1.1:
-  #       inputs:
-  #       - command: lint
-  #       title: Linting for Errors
+  lint:
+    before_run: []
+    after_run: []
+    steps:
+    - yarn@0.1.1:
+        inputs:
+        - command: lint
+        title: Linting for Errors
   detox_tests:
     before_run: []
     after_run: []
@@ -88,6 +88,7 @@ workflows:
     before_run:
     - generate_dot_env_testflight
     - build_setup
+    - lint
     - pods_setup
     steps:
     - certificate-and-profile-installer@1.10.3: {}
