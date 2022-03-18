@@ -136,7 +136,9 @@ export default function ENSAssignRecordsSheet() {
                   onError={handleError}
                 />
               </Box>
-              <ENSAssignRecordsBottomActions visible />
+              {IS_TESTING === 'true' && (
+                <ENSAssignRecordsBottomActions visible />
+              )}
             </Stack>
           </Inset>
         </Stack>

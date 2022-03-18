@@ -3,8 +3,11 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import ConditionalWrap from 'conditional-wrap';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { StatusBar } from 'react-native';
+import { IS_TESTING } from 'react-native-dotenv';
 import { SheetHandleFixedToTopHeight, SlackSheet } from '../components/sheet';
-import ENSAssignRecordsSheet from '../screens/ENSAssignRecordsSheet';
+import ENSAssignRecordsSheet, {
+  ENSAssignRecordsBottomActions,
+} from '../screens/ENSAssignRecordsSheet';
 import ENSSearchSheet from '../screens/ENSSearchSheet';
 import { useNavigation } from './Navigation';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
@@ -99,8 +102,8 @@ export default function RegisterENSNavigator() {
       navigation.removeListener('dismiss', clearCurrentRegistrationName);
   });
 
-  // const isBottomActionsVisible =
-  //   currentRouteName === Routes.ENS_ASSIGN_RECORDS_SHEET;
+  const isBottomActionsVisible =
+    currentRouteName === Routes.ENS_ASSIGN_RECORDS_SHEET;
 
   const wrapperStyle = useMemo(() => ({ height: contentHeight }), [
     contentHeight,
@@ -155,6 +158,9 @@ export default function RegisterENSNavigator() {
        * The reason why is because we can't achieve fixed positioning (as per designs) within SlackSheet's
        * ScrollView, so this seems like the best workaround.
        */}
+      {IS_TESTING !== 'true' && (
+        <ENSAssignRecordsBottomActions visible={isBottomActionsVisible} />
+      )}
     </>
   );
 }
