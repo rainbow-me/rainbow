@@ -158,9 +158,7 @@ export default function RegisterENSNavigator() {
        * The reason why is because we can't achieve fixed positioning (as per designs) within SlackSheet's
        * ScrollView, so this seems like the best workaround.
        */}
-      {IS_TESTING !== 'true' && (
-        <ENSAssignRecordsBottomActions visible={isBottomActionsVisible} />
-      )}
+      <ENSAssignRecordsBottomActions visible={isBottomActionsVisible} />
     </>
   );
 }

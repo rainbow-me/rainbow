@@ -2,7 +2,6 @@ import { useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
-import { IS_TESTING } from 'react-native-dotenv';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -136,9 +135,6 @@ export default function ENSAssignRecordsSheet() {
                   onError={handleError}
                 />
               </Box>
-              {IS_TESTING === 'true' && (
-                <ENSAssignRecordsBottomActions visible />
-              )}
             </Stack>
           </Inset>
         </Stack>
