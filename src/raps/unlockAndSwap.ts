@@ -71,7 +71,7 @@ export const createUnlockAndSwapRap = async (
 ) => {
   let actions: RapAction[] = [];
 
-  const { inputAmount, tradeDetails } = swapParameters;
+  const { inputAmount, tradeDetails, flashbots } = swapParameters;
   const { inputCurrency, outputCurrency } = store.getState().swap;
   const { accountAddress, chainId } = store.getState().settings;
   const isWethUnwrapping =
@@ -105,6 +105,7 @@ export const createUnlockAndSwapRap = async (
 
   // create a swap rap
   const swap = createNewAction(RapActionTypes.swap, {
+    flashbots,
     inputAmount,
     permit: swapAssetNeedsUnlocking && allowsPermit,
     tradeDetails,

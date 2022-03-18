@@ -33,7 +33,7 @@ import {
 import { Network } from '@rainbow-me/networkTypes';
 import { gweiToWei } from '@rainbow-me/parsers';
 import { ethUnits, UNISWAP_TESTNET_TOKEN_LIST } from '@rainbow-me/references';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils, logger } from '@rainbow-me/utils';
 
 export enum Field {
   INPUT = 'INPUT',
@@ -194,11 +194,16 @@ export const executeSwap = async ({
 }) => {
   let walletToUse = wallet;
   const network = ethereumUtils.getNetworkFromChainId(chainId);
-  let provider = await getProviderForNetwork(network);
+  let provider;
+  logger.debug('executing swap', { chainId, flashbots, network });
 
   // Switch to the flashbots provider if enabled
-  if (flashbots) {
+  if (flashbots && network === Network.mainnet) {
+    logger.debug('flashbots provider being set');
     provider = await getFlashbotsProvider();
+  } else {
+    logger.debug('normal provider being set');
+    provider = await getProviderForNetwork(network);
   }
 
   if (!walletToUse) {
@@ -235,6 +240,14 @@ export const executeSwap = async ({
     return unwrapWeth(tradeDetails.sellAmount, walletToUse);
     // Swap
   } else {
+    logger.debug(
+      'FILLQUOTE',
+      tradeDetails,
+      transactionParams,
+      walletToUse,
+      permit,
+      chainId
+    );
     return fillQuote(
       tradeDetails,
       transactionParams,

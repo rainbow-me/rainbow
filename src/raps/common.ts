@@ -76,6 +76,7 @@ export interface SwapActionParameters {
   outputAmount: string;
   tradeDetails: Quote;
   permit?: boolean;
+  flashbots?: boolean;
 }
 
 export interface RegisterENSActionParameters {

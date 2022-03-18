@@ -1555,6 +1555,7 @@ export const dataWatchPendingTransactions = (
                 `https://protect.flashbots.net/tx/${txHash}`
               );
               const fbResponse = await fbStatus.json();
+              logger.debug('Flashbots response', fbResponse);
               // Make sure it wasn't dropped after 25 blocks or never made it
               if (
                 fbResponse.status === 'FAILED' ||

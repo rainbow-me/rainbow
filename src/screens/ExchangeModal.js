@@ -35,8 +35,11 @@ import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
 import { FLASHBOTS } from '../config/experimental';
 import useExperimentalFlag from '../config/experimentalHooks';
-import { ExchangeModalTypes, isKeyboardOpen } from '@rainbow-me/helpers';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
+import {
+  ExchangeModalTypes,
+  isKeyboardOpen,
+  Network,
+} from '@rainbow-me/helpers';
 import { divide, greaterThan, multiply } from '@rainbow-me/helpers/utilities';
 import {
   useAccountSettings,
@@ -211,7 +214,7 @@ export default function ExchangeModal({
   } = usePriceImpactDetails(inputAmount, outputAmount);
 
   const flashbotsEnabled = useExperimentalFlag(FLASHBOTS);
-  const flashbots = network === networkTypes.mainnet && flashbotsEnabled;
+  const flashbots = network === Network.mainnet && flashbotsEnabled;
 
   const isDismissing = useRef(false);
   useEffect(() => {
@@ -444,6 +447,7 @@ export default function ExchangeModal({
     }
   }, [
     defaultInputAsset?.symbol,
+    flashbots,
     genericAssets,
     getNextNonce,
     inputAmount,

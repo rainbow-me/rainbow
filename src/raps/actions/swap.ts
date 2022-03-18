@@ -96,8 +96,6 @@ const swap = async (
       wallet,
     };
 
-    logger.debug('ABOUT TO EXECUTE SWAP', JSON.stringify(swapParams, null, 2));
-
     swap = await executeSwap(swapParams);
 
     if (permit) {
