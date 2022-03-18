@@ -3,7 +3,6 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import ConditionalWrap from 'conditional-wrap';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { StatusBar } from 'react-native';
-import { IS_TESTING } from 'react-native-dotenv';
 import { SheetHandleFixedToTopHeight, SlackSheet } from '../components/sheet';
 import ENSAssignRecordsSheet, {
   ENSAssignRecordsBottomActions,

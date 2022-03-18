@@ -2,6 +2,7 @@ import { useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
+import { IS_TESTING } from 'react-native-dotenv';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
