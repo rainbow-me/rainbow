@@ -1,7 +1,2 @@
-import experimental from './experimental';
-import useExperimentalFlag from './experimentalHooks';
-
-export default {
-  experimental,
-  useExperimentalFlag,
-};
+export * from './experimental';
+export { default as experimentalHooks } from './experimentalHooks';
