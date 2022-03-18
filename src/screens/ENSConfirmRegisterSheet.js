@@ -1,4 +1,5 @@
 import { useFocusEffect, useRoute } from '@react-navigation/core';
+import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -266,7 +267,16 @@ export default function ENSConfirmRegisterSheet() {
       [REGISTRATION_STEPS.COMMIT]: (
         <TransactionActionRow
           accentColor={accentColor}
-          action={action}
+          action={() => {
+            analytics.track('Initiated ENS registration', {
+              category: 'profiles',
+              registrantAddress: accountAddress,
+              totalCostEth:
+                registrationCostsData?.estimatedTotalRegistrationCost.eth,
+              ens: ensName,
+            });
+            action();
+          }}
           disabled={!stepGasLimit}
           label={lang.t('profiles.confirm.start_registration')}
         />
@@ -274,7 +284,24 @@ export default function ENSConfirmRegisterSheet() {
       [REGISTRATION_STEPS.REGISTER]: (
         <TransactionActionRow
           accentColor={accentColor}
-          action={action}
+          action={() => {
+            analytics.track('Completed ENS registration', {
+              category: 'profiles',
+              registrantAddress: accountAddress,
+              totalCostEth:
+                registrationCostsData?.estimatedTotalRegistrationCost.eth,
+              ens: ensName,
+              etherscanUrl: TODO,
+            });
+            if (sendReverseRecord) {
+              analytics.track('Created ENS profile', {
+                category: 'profiles',
+                walletAddress: accountAddress,
+                ens: ensName,
+              });
+            }
+            action();
+          }}
           disabled={!stepGasLimit}
           label={lang.t('profiles.confirm.confirm_registration')}
         />
