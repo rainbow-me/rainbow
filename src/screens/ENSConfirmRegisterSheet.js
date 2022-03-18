@@ -237,6 +237,7 @@ export default function ENSConfirmRegisterSheet() {
     duration,
     editing: mode === 'edit',
     name,
+    records: values,
     rentPrice: registrationData?.rentPrice,
     sendReverseRecord,
   });

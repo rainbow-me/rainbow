@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { useQuery } from 'react-query';
 import { useAccountSettings } from '.';
+import { Records } from '@rainbow-me/entities';
 import {
   estimateENSRegistrationGasLimit,
   fetchReverseRecord,
@@ -22,12 +23,14 @@ export default function useENSRegistrationCosts({
   rentPrice,
   sendReverseRecord,
   editing,
+  records,
 }: {
   duration: number;
   editing: boolean;
   name: string;
   sendReverseRecord: boolean;
   rentPrice?: { wei: number; perYear: { wei: number } };
+  records?: Records;
 }) {
   const { nativeCurrency, accountAddress } = useAccountSettings();
 
@@ -52,7 +55,8 @@ export default function useENSRegistrationCosts({
       name,
       accountAddress,
       duration * timeUnits.secs.year,
-      rentPriceInWei
+      rentPriceInWei,
+      records
     );
 
     const totalRegistrationGasLimit =
@@ -83,6 +87,7 @@ export default function useENSRegistrationCosts({
     editing,
     name,
     nativeCurrency,
+    records,
     rentPriceInWei,
     sendReverseRecord,
   ]);
