@@ -417,7 +417,6 @@ export const estimateENSRegistrationGasLimit = async (
 
   const setRecordsGasLimitPromise = estimateENSRegisterSetRecords({
     name: name + ENS_DOMAIN,
-    ownerAddress,
     records,
   });
 
@@ -500,10 +499,7 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
 export const estimateENSRegisterSetRecords = async ({
   name,
   records,
-  ownerAddress,
-}:
-  | { name: string; records: Records; ownerAddress: string }
-  | ENSActionParameters) => {
+}: { name: string; records: Records } | ENSActionParameters) => {
   let gasLimit: string | null = '0';
   const ensRegistrationRecords = formatRecordsForTransaction(records);
   const validRecords = recordsForTransactionAreValid(ensRegistrationRecords);
@@ -515,7 +511,6 @@ export const estimateENSRegisterSetRecords = async ({
       ? estimateENSMulticallGasLimit
       : estimateENSSetTextGasLimit)({
       name,
-      ownerAddress,
       records: ensRegistrationRecords,
     });
   }
