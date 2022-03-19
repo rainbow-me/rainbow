@@ -5,6 +5,7 @@ import { FlatList } from 'react-native';
 import { ButtonPressAnimation } from '../../animations';
 import EdgeFade from './EdgeFade';
 import { useTheme } from '@rainbow-me/context/ThemeContext';
+import logger from 'logger';
 import {
   AccentColorProvider,
   Box,
@@ -44,6 +45,11 @@ const TokenHistory = ({ contractAddress, tokenID, accentColor }) => {
   const networkPrefix = network === NetworkTypes.mainnet ? '' : `${network}-`;
 
   useEffect(() => {
+    if (!accountAddress) {
+      logger.sentry('NFT transaction history: wallet address not found');
+      setTokenHistory(null);
+      return;
+    }
     const processRawEvents = async (contractAddress, rawEvents) => {
       rawEvents.sort((event1, event2) =>
         event2.created_date?.localeCompare(event1.created_date)
@@ -134,40 +140,56 @@ const TokenHistory = ({ contractAddress, tokenID, accentColor }) => {
     };
 
     async function fetchTransactionHistory() {
-      const semiFungible = await apiGetNftSemiFungibility(
-        networkPrefix,
-        contractAddress,
-        tokenID
-      );
-
-      const [rawTransferEvents, rawSaleEvents] = await Promise.all([
-        apiGetNftTransactionHistoryForEventType(
+      try {
+        const semiFungible = await apiGetNftSemiFungibility(
           networkPrefix,
-          semiFungible,
-          accountAddress,
           contractAddress,
-          tokenID,
-          EventTypes.TRANSFER.type
-        ),
-        apiGetNftTransactionHistoryForEventType(
-          networkPrefix,
-          semiFungible,
-          accountAddress,
-          contractAddress,
-          tokenID,
-          EventTypes.SALE.type
-        ),
-      ]);
+          tokenID
+        );
+        console.log('OK');
 
-      const rawEvents = rawTransferEvents.concat(rawSaleEvents);
-      const txHistory = await processRawEvents(contractAddress, rawEvents);
+        const [rawTransferEvents, rawSaleEvents] = await Promise.all([
+          apiGetNftTransactionHistoryForEventType(
+            networkPrefix,
+            semiFungible,
+            accountAddress,
+            contractAddress,
+            tokenID,
+            EventTypes.TRANSFER.type
+          ),
+          apiGetNftTransactionHistoryForEventType(
+            networkPrefix,
+            semiFungible,
+            accountAddress,
+            contractAddress,
+            tokenID,
+            EventTypes.SALE.type
+          ),
+        ]);
+        console.log('NOT OKAY');
+        if (
+          (!rawTransferEvents || rawTransferEvents.length == 0) &&
+          (!rawSaleEvents || rawSaleEvents.length == 0)
+        ) {
+          setTokenHistory(null);
+          logger.sentry('NFT transaction history: OpenSea returned no data');
+          return;
+        }
 
-      setTokenHistory(txHistory);
+        const rawEvents = rawTransferEvents.concat(rawSaleEvents);
+        const txHistory = await processRawEvents(contractAddress, rawEvents);
+
+        setTokenHistory(txHistory);
+      } catch {
+        logger.sentry('NFT transaction history: OpenSea API error');
+        setTokenHistory(null);
+        return;
+      }
     }
     fetchTransactionHistory();
   }, [accountAddress, contractAddress, networkPrefix, tokenID]);
 
-  const shouldInvertScroll = tokenHistory.length > 2;
+  const shouldInvertScroll = tokenHistory?.length > 2;
 
   const handlePress = useCallback(
     (address, ens) => {
@@ -227,7 +249,7 @@ const TokenHistory = ({ contractAddress, tokenID, accentColor }) => {
     const isClickable =
       (item.eventType === EventTypes.MINT.type ||
         item.eventType === EventTypes.TRANSFER.type) &&
-      accountAddress.toLowerCase() !== item.recipientAddress;
+      accountAddress?.toLowerCase() !== item.recipientAddress;
 
     return (
       // when the token history isShort, invert the horizontal scroll so the history is pinned to the left instead of right
@@ -289,24 +311,32 @@ const TokenHistory = ({ contractAddress, tokenID, accentColor }) => {
   }
 
   return (
-    <MaskedView
-      maskElement={<EdgeFade />}
-      style={{ marginLeft: -24, marginRight: -24 }}
-    >
-      <FlatList
-        contentContainerStyle={{
-          paddingLeft: !shouldInvertScroll ? 24 : undefined,
-          paddingRight: shouldInvertScroll ? 24 : undefined,
-        }}
-        data={
-          shouldInvertScroll ? tokenHistory : tokenHistory.slice().reverse()
-        }
-        horizontal
-        inverted={shouldInvertScroll}
-        renderItem={({ item, index }) => renderItem({ index, item })}
-        showsHorizontalScrollIndicator={false}
-      />
-    </MaskedView>
+    <>
+      {tokenHistory ? (
+        <MaskedView
+          maskElement={<EdgeFade />}
+          style={{ marginLeft: -24, marginRight: -24 }}
+        >
+          <FlatList
+            contentContainerStyle={{
+              paddingLeft: !shouldInvertScroll ? 24 : undefined,
+              paddingRight: shouldInvertScroll ? 24 : undefined,
+            }}
+            data={
+              shouldInvertScroll ? tokenHistory : tokenHistory.slice().reverse()
+            }
+            horizontal
+            inverted={shouldInvertScroll}
+            renderItem={({ item, index }) => renderItem({ index, item })}
+            showsHorizontalScrollIndicator={false}
+          />
+        </MaskedView>
+      ) : (
+        <Text weight="bold" size="23px" color="secondary50">
+          Unavailable
+        </Text>
+      )}
+    </>
   );
 };
 

@@ -220,14 +220,14 @@ export default function useImportingWallet() {
             if (success) {
               goBack();
               InteractionManager.runAfterInteractions(async () => {
-                if (previousWalletCount === 0) {
-                  replace(Routes.SWIPE_LAYOUT, {
-                    params: { initialized: true },
-                    screen: Routes.WALLET_SCREEN,
-                  });
-                } else {
-                  navigate(Routes.WALLET_SCREEN, { initialized: true });
-                }
+                // if (previousWalletCount === 0) {
+                //   replace(Routes.SWIPE_LAYOUT, {
+                //     params: { initialized: true },
+                //     screen: Routes.WALLET_SCREEN,
+                //   });
+                // } else {
+                //   navigate(Routes.WALLET_SCREEN, { initialized: true });
+                // }
 
                 setTimeout(() => {
                   // If it's not read only, show the backup sheet
