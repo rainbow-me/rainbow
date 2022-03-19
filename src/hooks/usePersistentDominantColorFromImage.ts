@@ -3,9 +3,9 @@ import { MMKV, useMMKVString } from 'react-native-mmkv';
 import { getLowResUrl } from '../utils/getLowResUrl';
 import { imageToPng } from '@rainbow-me/handlers/imgix';
 import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
+import { STORAGE_IDS } from '@rainbow-me/model/mmkv';
 import { getDominantColorFromImage } from '@rainbow-me/utils';
 
-const id = 'DOMINANT_COLOR';
 enum State {
   init,
   loading,
@@ -14,7 +14,7 @@ enum State {
 }
 
 const storage = new MMKV({
-  id,
+  id: STORAGE_IDS.DOMINANT_COLOR,
 });
 
 type Result = {
