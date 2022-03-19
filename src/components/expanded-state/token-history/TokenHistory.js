@@ -5,7 +5,6 @@ import { FlatList } from 'react-native';
 import { ButtonPressAnimation } from '../../animations';
 import EdgeFade from './EdgeFade';
 import { useTheme } from '@rainbow-me/context/ThemeContext';
-import logger from 'logger';
 import {
   AccentColorProvider,
   Box,
@@ -34,6 +33,7 @@ import Routes from '@rainbow-me/routes';
 import { handleSignificantDecimals } from '@rainbow-me/utilities';
 import { abbreviations } from '@rainbow-me/utils';
 import { EventTypes, PaymentTokens } from '@rainbow-me/utils/tokenHistoryUtils';
+import logger from 'logger';
 
 const TokenHistory = ({ contractAddress, tokenID, accentColor }) => {
   const [tokenHistory, setTokenHistory] = useState([]);
@@ -146,7 +146,6 @@ const TokenHistory = ({ contractAddress, tokenID, accentColor }) => {
           contractAddress,
           tokenID
         );
-        console.log('OK');
 
         const [rawTransferEvents, rawSaleEvents] = await Promise.all([
           apiGetNftTransactionHistoryForEventType(
@@ -166,10 +165,10 @@ const TokenHistory = ({ contractAddress, tokenID, accentColor }) => {
             EventTypes.SALE.type
           ),
         ]);
-        console.log('NOT OKAY');
+
         if (
-          (!rawTransferEvents || rawTransferEvents.length == 0) &&
-          (!rawSaleEvents || rawSaleEvents.length == 0)
+          (!rawTransferEvents || rawTransferEvents.length === 0) &&
+          (!rawSaleEvents || rawSaleEvents.length === 0)
         ) {
           setTokenHistory(null);
           logger.sentry('NFT transaction history: OpenSea returned no data');
@@ -332,7 +331,7 @@ const TokenHistory = ({ contractAddress, tokenID, accentColor }) => {
           />
         </MaskedView>
       ) : (
-        <Text weight="bold" size="23px" color="secondary50">
+        <Text color="secondary50" size="23px" weight="bold">
           Unavailable
         </Text>
       )}

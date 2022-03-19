@@ -151,6 +151,7 @@ export const apiGetNftTransactionHistoryForEventType = async (
         : `https://${networkPrefix}${NFT_API_URL}/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&event_type=${eventType}&only_opensea=false${
             cursor ? `&cursor=${cursor}` : ''
           }`;
+
       const currentPage = await rainbowFetch(requestURL, {
         headers: {
           'Accept': 'application/json',
