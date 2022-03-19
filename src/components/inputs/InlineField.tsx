@@ -98,6 +98,7 @@ export default function InlineField({
         : android
         ? 11
         : 0,
+      textAlignVertical: 'top',
       width: startsWith
         ? ios
           ? 0.55 * width
@@ -105,9 +106,8 @@ export default function InlineField({
         : ios
         ? 0.6 * width
         : 0.61 * width,
-      textAlignVertical: 'top',
     }),
-    [textStyle, inputHeight, inputProps?.multiline]
+    [textStyle, inputHeight, inputProps?.multiline, startsWith, width]
   );
 
   return (
@@ -162,9 +162,9 @@ export default function InlineField({
             }
             onEndEditing={onEndEditing}
             placeholder={placeholder}
+            scrollEnabled={false}
             style={style}
             value={value}
-            scrollEnabled={false}
             {...inputProps}
             keyboardType={
               android ? 'visible-password' : inputProps?.keyboardType
