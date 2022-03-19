@@ -22,11 +22,9 @@ export default function useENSRegistrationCosts({
   name,
   rentPrice,
   sendReverseRecord,
-  editing,
   records,
 }: {
   duration: number;
-  editing: boolean;
   name: string;
   sendReverseRecord: boolean;
   rentPrice?: { wei: number; perYear: { wei: number } };
@@ -44,7 +42,7 @@ export default function useENSRegistrationCosts({
     );
 
     const reverseRecord =
-      sendReverseRecord || (await fetchReverseRecord(accountAddress));
+      sendReverseRecord && (await fetchReverseRecord(accountAddress));
 
     const {
       commitGasLimit,
@@ -61,9 +59,9 @@ export default function useENSRegistrationCosts({
 
     const totalRegistrationGasLimit =
       [
-        !editing && commitGasLimit,
+        commitGasLimit,
         multicallGasLimit,
-        !editing && registerWithConfigGasLimit,
+        registerWithConfigGasLimit,
         !reverseRecord && setNameGasLimit,
       ].reduce((a, b) => add(a || 0, b || 0)) || `${ethUnits.ens_registration}`;
 
@@ -84,7 +82,6 @@ export default function useENSRegistrationCosts({
   }, [
     accountAddress,
     duration,
-    editing,
     name,
     nativeCurrency,
     records,

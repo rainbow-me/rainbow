@@ -122,43 +122,6 @@ function RegisterContent({
   );
 }
 
-function EditContent({ registrationCostsData, setDuration, duration }) {
-  return (
-    <Inset horizontal="30px">
-      <Stack space="34px">
-        <Inline
-          alignHorizontal="center"
-          alignVertical="center"
-          space="6px"
-          wrap={false}
-        >
-          <Box>
-            <ImgixImage source={brain} style={{ height: 20, width: 20 }} />
-          </Box>
-          <Text color="secondary50" size="14px" weight="heavy">
-            {lang.t('profiles.confirm.suggestion')}
-          </Text>
-        </Inline>
-        <RegistrationReviewRows
-          duration={duration}
-          estimatedCostETH={
-            registrationCostsData?.estimatedTotalRegistrationCost?.eth
-          }
-          maxDuration={99}
-          networkFee={registrationCostsData?.estimatedNetworkFee?.display}
-          onChangeDuration={setDuration}
-          registrationFee={
-            registrationCostsData?.estimatedRentPrice?.total?.display
-          }
-          totalCost={
-            registrationCostsData?.estimatedTotalRegistrationCost?.display
-          }
-        />
-        <Divider color="divider40" />
-      </Stack>
-    </Inset>
-  );
-}
 function WaitCommitmentConfirmationContent({ accentColor, action }) {
   return (
     <Box alignItems="center" height="full">
@@ -235,7 +198,6 @@ export default function ENSConfirmRegisterSheet() {
 
   const { data: registrationCostsData } = useENSRegistrationCosts({
     duration,
-    editing: mode === 'edit',
     name,
     records: values,
     rentPrice: registrationData?.rentPrice,
@@ -278,11 +240,9 @@ export default function ENSConfirmRegisterSheet() {
         />
       ),
       [REGISTRATION_STEPS.EDIT]: (
-        <EditContent
-          duration={duration}
-          registrationCostsData={registrationCostsData}
-          setDuration={setDuration}
-        />
+        <Inset horizontal="30px">
+          <Text>TODO</Text>
+        </Inset>
       ),
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: (
         <WaitCommitmentConfirmationContent
