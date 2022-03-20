@@ -26,12 +26,15 @@ export default function usePersistentAspectRatio(url: string): Result {
   if (url === null) url = 'default';
   const isSVG = isSupportedUriExtension(url, ['.svg']);
   const nonSvgUrl = isSVG ? imageToPng(url, 200) : url;
-  const [ratio, setAspectRatio] = useMMKVNumber(nonSvgUrl as string, storage);
+  const [ratio, setAspectRatio] = useMMKVNumber(
+    (nonSvgUrl || '') as string,
+    storage
+  );
   const [state, setState] = useState<State>(
     ratio !== 0 ? State.loaded : State.init
   );
   useEffect(() => {
-    if (state === State.init && nonSvgUrl && url !== 'default') {
+    if (state === State.init && nonSvgUrl && url) {
       const lowResUrl = getLowResUrl(nonSvgUrl) as string;
       setState(State.loading);
       Image.getSize(

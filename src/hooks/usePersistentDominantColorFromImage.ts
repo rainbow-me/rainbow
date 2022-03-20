@@ -27,18 +27,18 @@ export default function usePersistentDominantColorFromImage(
   url: string,
   colorToMeasureAgainst: string = '#333333'
 ): Result {
-  if (url === null) url = 'default';
+  //if (url === null) url = 'default';
   const isSVG = isSupportedUriExtension(url, ['.svg']);
   const nonSvgUrl = isSVG ? imageToPng(url, 200) : url;
   const [dominantColor, setPersistentDominantColor] = useMMKVString(
-    url,
+    url || '',
     storage
   );
   const [state, setState] = useState<State>(
     dominantColor ? State.loaded : State.init
   );
   useEffect(() => {
-    if (state === State.init && nonSvgUrl && url !== 'default') {
+    if (state === State.init && nonSvgUrl && url) {
       const lowResUrl = getLowResUrl(nonSvgUrl) as string;
       setState(State.loading);
       getDominantColorFromImage(lowResUrl, colorToMeasureAgainst).then(color =>
