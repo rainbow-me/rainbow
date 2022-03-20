@@ -23,7 +23,6 @@ type Result = {
 };
 
 export default function usePersistentAspectRatio(url: string): Result {
-  if (url === null) url = 'default';
   const isSVG = isSupportedUriExtension(url, ['.svg']);
   const nonSvgUrl = isSVG ? imageToPng(url, 200) : url;
   const [ratio, setAspectRatio] = useMMKVNumber(
