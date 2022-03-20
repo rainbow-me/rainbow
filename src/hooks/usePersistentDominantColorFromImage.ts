@@ -46,7 +46,7 @@ export default function usePersistentDominantColorFromImage(
         setPersistentDominantColor(color)
       );
     } else {
-      setPersistentDominantColor(colors.appleBlue);
+      setPersistentDominantColor(colors.paleBlue);
     }
   }, [
     colorToMeasureAgainst,
