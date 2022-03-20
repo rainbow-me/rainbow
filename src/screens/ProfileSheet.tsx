@@ -32,7 +32,7 @@ export default function ProfileSheet() {
   const contentHeight = deviceHeight - SheetHandleFixedToTopHeight;
 
   const ensName = params?.address || 'moxey.eth';
-  const { data: profile } = useENSProfile(ensName);
+  const { data: profile, isSuccess } = useENSProfile(ensName);
   const avatarUrl = profile?.images?.avatarUrl;
 
   const { data: profileAddress } = useENSResolveName(ensName);
@@ -69,7 +69,7 @@ export default function ProfileSheet() {
     <AccentColorProvider color={accentColor}>
       <Box background="body">
         <Box style={wrapperStyle}>
-          {!hasListFetched ? (
+          {!isSuccess || !hasListFetched ? (
             <Stack space="19px">
               <ProfileSheetHeader isLoading />
               <PlaceholderList />

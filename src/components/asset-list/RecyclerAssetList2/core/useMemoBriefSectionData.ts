@@ -12,9 +12,17 @@ import {
   useWalletSectionsData,
 } from '@rainbow-me/hooks';
 
+const FILTER_TYPES = {
+  'ens-profile': [
+    CellType.NFT_SPACE_AFTER,
+    CellType.NFT,
+    CellType.FAMILY_HEADER,
+  ],
+} as { [key in AssetListType]: CellType[] };
+
 export default function useMemoBriefSectionData({
   address,
-  filterTypes: givenFilterTypes,
+  filterTypes: overrideFilterTypes,
   type,
 }: { address?: string; filterTypes?: CellType[]; type?: AssetListType } = {}) {
   const { briefSectionsData }: { briefSectionsData: any[] } = address
@@ -38,15 +46,15 @@ export default function useMemoBriefSectionData({
     let afterCoins = false;
     // load firstly 12, then the rest after 1 sec
     let numberOfSmallBalancesAllowed = stagger ? 12 : briefSectionsData.length;
-    const filterTypes = [
-      ...(givenFilterTypes || []),
-      ...(type === 'ens-profile'
-        ? [CellType.NFT_SPACE_AFTER, CellType.NFT, CellType.FAMILY_HEADER]
-        : []),
-    ];
+    const filterTypes =
+      overrideFilterTypes || type ? FILTER_TYPES[type as AssetListType] : [];
     const briefSectionsDataFiltered = briefSectionsData
       .filter((data, arrIndex, arr) => {
-        if (filterTypes.length !== 0 && !filterTypes.includes(data.type)) {
+        if (
+          filterTypes &&
+          filterTypes.length !== 0 &&
+          !filterTypes.includes(data.type)
+        ) {
           return false;
         }
 
