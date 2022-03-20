@@ -27,7 +27,6 @@ export default function usePersistentDominantColorFromImage(
   url: string,
   colorToMeasureAgainst: string = '#333333'
 ): Result {
-  //if (url === null) url = 'default';
   const isSVG = isSupportedUriExtension(url, ['.svg']);
   const nonSvgUrl = isSVG ? imageToPng(url, 200) : url;
   const [dominantColor, setPersistentDominantColor] = useMMKVString(
