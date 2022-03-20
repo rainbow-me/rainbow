@@ -11,11 +11,9 @@ export default function useExternalWalletSectionsData({
   const {
     data: uniqueTokens,
     isLoading: isUniqueTokensLoading,
+    isSuccess: isUniqueTokensSuccess,
   } = useFetchUniqueTokens({ address });
-  const {
-    data: showcaseTokens,
-    isLoading: isShowcaseTokensLoading,
-  } = useFetchShowcaseTokens({ address });
+  const { data: showcaseTokens } = useFetchShowcaseTokens({ address });
 
   const sellingTokens = useMemo(
     () => uniqueTokens?.filter(token => token.currentPrice) || [],
@@ -24,7 +22,7 @@ export default function useExternalWalletSectionsData({
 
   const briefSectionsData = useMemo(
     () =>
-      uniqueTokens && showcaseTokens
+      uniqueTokens
         ? buildBriefUniqueTokenList(uniqueTokens, showcaseTokens, sellingTokens)
         : [],
     [uniqueTokens, showcaseTokens, sellingTokens]
@@ -32,6 +30,7 @@ export default function useExternalWalletSectionsData({
 
   return {
     briefSectionsData,
-    isLoading: isUniqueTokensLoading || isShowcaseTokensLoading,
+    isLoading: isUniqueTokensLoading,
+    isSuccess: isUniqueTokensSuccess,
   };
 }

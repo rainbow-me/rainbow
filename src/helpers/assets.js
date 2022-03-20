@@ -333,7 +333,7 @@ export const buildBriefUniqueTokenList = (
   sellingTokens = []
 ) => {
   const uniqueTokensInShowcase = uniqueTokens
-    .filter(({ uniqueId }) => selectedShowcaseTokens.includes(uniqueId))
+    .filter(({ uniqueId }) => selectedShowcaseTokens?.includes(uniqueId))
     .map(({ uniqueId }) => uniqueId);
   const grouped2 = groupBy(uniqueTokens, token => token.familyName);
   const families2 = sortBy(Object.keys(grouped2), row =>
