@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef } from 'react';
-import { StatusBar } from 'react-native';
+import { StatusBarService } from '../services';
 import { useNavigation } from './Navigation';
 
 export default function useStatusBarManaging() {
@@ -10,9 +10,9 @@ export default function useStatusBarManaging() {
       'transitionStart',
       ({ data: { closing } }) => {
         if (closing) {
-          StatusBar.popStackEntry(ref.current);
+          StatusBarService.popStackEntry(ref.current);
         } else {
-          ref.current = StatusBar.pushStackEntry({
+          ref.current = StatusBarService.pushStackEntry({
             animated: true,
             barStyle: 'light-content',
           });

@@ -2,13 +2,14 @@ import analytics from '@segment/analytics-react-native';
 import { get } from 'lodash';
 // eslint-disable-next-line import/default
 import AndroidKeyboardAdjust from 'react-native-android-keyboard-adjust';
-import { StatusBar } from 'react-native-bars';
 import currentColors from '../context/currentColors';
+import { StatusBarService } from '../services';
 import { sentryUtils } from '../utils';
 import Routes from './routesNames';
 import { Navigation } from './index';
 
 let memRouteName;
+let memPrevRouteName;
 
 let action = null;
 
@@ -27,46 +28,45 @@ export function triggerOnSwipeLayout(newAction) {
   }
 }
 
-export function onNavigationStateChange(updateStatusBarOnSameRoute) {
-  const { name: routeName } = Navigation.getActiveRoute();
+export function onHandleStatusBar() {
+  StatusBarService.setHidden(false);
+  const routeName = Navigation.getActiveRouteName();
+
+  if (currentColors.theme === 'dark') {
+    StatusBarService.setLightContent();
+    return;
+  }
+
+  switch (routeName) {
+    case Routes.PROFILE_SCREEN:
+    case Routes.WALLET_SCREEN:
+    case Routes.WYRE_WEBVIEW:
+    case Routes.SAVINGS_SHEET:
+    case Routes.WELCOME_SCREEN:
+      StatusBarService.setDarkContent();
+      break;
+    case Routes.CURRENCY_SELECT_SCREEN:
+      StatusBarService.pushStackEntry({
+        animated: true,
+        barStyle: ios ? 'light-content' : 'dark-content',
+      });
+      break;
+
+    default:
+      StatusBarService.setLightContent();
+  }
+}
+
+export function onNavigationStateChange() {
+  const routeName = Navigation.getActiveRouteName();
 
   if (isOnSwipeScreen(routeName)) {
     action?.();
     action = undefined;
   }
 
-  const prevRouteName = memRouteName;
+  memPrevRouteName = memRouteName;
   memRouteName = routeName;
-
-  if (
-    currentColors.theme === 'dark' ||
-    (routeName === Routes.CURRENCY_SELECT_SCREEN && ios)
-  ) {
-    StatusBar.pushStackEntry({
-      animated: true,
-      barStyle: 'light-content',
-    });
-  } else if (routeName !== prevRouteName || updateStatusBarOnSameRoute) {
-    switch (routeName) {
-      case Routes.PROFILE_SCREEN:
-      case Routes.WALLET_SCREEN:
-      case Routes.CURRENCY_SELECT_SCREEN:
-      case Routes.WYRE_WEBVIEW:
-      case Routes.SAVINGS_SHEET:
-      case Routes.WELCOME_SCREEN:
-        StatusBar.pushStackEntry({
-          animated: true,
-          barStyle: 'dark-content',
-        });
-        break;
-
-      default:
-        StatusBar.pushStackEntry({
-          animated: true,
-          barStyle: 'light-content',
-        });
-    }
-  }
 
   if (android) {
     if (
@@ -88,7 +88,15 @@ export function onNavigationStateChange(updateStatusBarOnSameRoute) {
     }
   }
 
-  if (routeName !== prevRouteName) {
+  if (!ios && !memPrevRouteName) {
+    setTimeout(() => {
+      onHandleStatusBar(); //first app launch
+    }, 100);
+  } else {
+    onHandleStatusBar();
+  }
+
+  if (routeName !== memPrevRouteName) {
     let paramsToTrack = null;
 
     if (routeName === Routes.EXPANDED_ASSET_SHEET) {
@@ -102,7 +110,8 @@ export function onNavigationStateChange(updateStatusBarOnSameRoute) {
       };
     }
 
-    sentryUtils.addNavBreadcrumb(prevRouteName, routeName, paramsToTrack);
+    sentryUtils.addNavBreadcrumb(memPrevRouteName, routeName, paramsToTrack);
+
     return android
       ? paramsToTrack && analytics.screen(routeName, paramsToTrack)
       : analytics.screen(routeName, paramsToTrack);

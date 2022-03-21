@@ -1,10 +1,10 @@
 import { useRoute } from '@react-navigation/core';
 import React, { useEffect, useState } from 'react';
-import { StatusBar } from 'react-native';
 import { WebView } from 'react-native-webview';
 import Spinner from '../components/Spinner';
 import { Centered, FlexItem } from '../components/layout';
 import { reserveWyreOrder } from '../handlers/wyre';
+import { StatusBarService } from '../services';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 
@@ -22,9 +22,9 @@ export default function WyreWebview() {
   const { accountAddress, network } = useAccountSettings();
 
   useEffect(() => {
-    StatusBar.setBackgroundColor('transparent', false);
-    StatusBar.setTranslucent(true);
-    StatusBar.setBarStyle('dark-content', true);
+    StatusBarService.setBackgroundColor('transparent', false);
+    StatusBarService.setTranslucent(true);
+    StatusBarService.setDarkContent();
   }, []);
 
   useEffect(() => {

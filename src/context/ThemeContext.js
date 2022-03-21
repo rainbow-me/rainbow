@@ -6,15 +6,15 @@ import React, {
   useState,
 } from 'react';
 import { LayoutAnimation, NativeModules, useColorScheme } from 'react-native';
-import { StatusBar } from 'react-native-bars';
 import { useDarkMode } from 'react-native-dark-mode';
 import { ThemeProvider } from 'styled-components';
 import { getTheme, saveTheme } from '../handlers/localstorage/theme';
 import { getActiveRoute } from '../navigation/Navigation';
+import { StatusBarService } from '../services';
 import { darkModeThemeColors, lightModeThemeColors } from '../styles/colors';
 import currentColors from './currentColors';
 import { DesignSystemProvider } from '@rainbow-me/design-system';
-import { onNavigationStateChange } from '@rainbow-me/navigation/onNavigationStateChange';
+import { onHandleStatusBar } from '@rainbow-me/navigation/onNavigationStateChange';
 import { StyleThingThemeProvider } from '@rainbow-me/styled-components';
 
 export const THEMES = {
@@ -68,7 +68,7 @@ export const MainThemeProvider = props => {
       setColorScheme(userPref);
 
       if (currentRoute) {
-        onNavigationStateChange(true);
+        onHandleStatusBar();
       }
     };
     loadUserPref();
@@ -101,10 +101,7 @@ export const MainThemeProvider = props => {
               : 'light'
             : scheme;
         currentColors.theme = schemeSystemAdjusted;
-        StatusBar.pushStackEntry({
-          animated: true,
-          barStyle: 'light-content',
-        });
+        StatusBarService.setLightContent();
         currentColors.themedColors =
           schemeSystemAdjusted === THEMES.DARK
             ? darkModeThemeColors

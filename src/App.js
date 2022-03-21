@@ -13,7 +13,6 @@ import {
   Linking,
   LogBox,
   NativeModules,
-  StatusBar,
   View,
 } from 'react-native';
 import {
@@ -70,7 +69,6 @@ import { Portal } from 'react-native-cool-modals/Portal';
 
 const WALLETCONNECT_SYNC_DELAY = 500;
 
-StatusBar.pushStackEntry({ animated: true, barStyle: 'dark-content' });
 
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();

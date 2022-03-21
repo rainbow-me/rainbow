@@ -336,8 +336,6 @@ const WalletDiagnosticsSheet = () => {
         : { additionalTopPadding: true, contentHeight: deviceHeight - 40 })}
       scrollEnabled
     >
-      {ios && <StatusBar barStyle="light-content" />}
-
       <ColumnWithMargins
         margin={15}
         style={{

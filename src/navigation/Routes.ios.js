@@ -2,7 +2,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { omit } from 'lodash';
 import React, { useContext } from 'react';
-import { StatusBar } from 'react-native-bars';
 import { useTheme } from '../context/ThemeContext';
 import { InitialRouteContext } from '../context/initialRoute';
 import AddCashSheet from '../screens/AddCashSheet';
@@ -32,6 +31,7 @@ import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
 import WalletDiagnosticsSheet from '../screens/WalletDiagnosticsSheet';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import WithdrawModal from '../screens/WithdrawModal';
+import { StatusBarService } from '../services';
 import RegisterENSNavigator from './RegisterENSNavigator';
 import { SwipeNavigator } from './SwipeNavigator';
 import {
@@ -181,12 +181,7 @@ function NativeStackFallbackNavigator() {
         name={Routes.IMPORT_SEED_PHRASE_SHEET}
         options={{
           ...sheetPreset,
-          onTransitionStart: () => {
-            StatusBar.pushStackEntry({
-              animated: true,
-              barStyle: 'light-content',
-            });
-          },
+          onTransitionStart: StatusBarService.setLightContent,
         }}
       />
       <Stack.Screen
@@ -204,12 +199,7 @@ function NativeStackFallbackNavigator() {
         name={Routes.SEND_SHEET}
         options={{
           ...omit(sheetPreset, 'gestureResponseDistance'),
-          onTransitionStart: () => {
-            StatusBar.pushStackEntry({
-              animated: true,
-              barStyle: 'light-content',
-            });
-          },
+          onTransitionStart: StatusBarService.setLightContent,
         }}
       />
       <Stack.Screen

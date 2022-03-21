@@ -349,7 +349,6 @@ export default function SendConfirmationSheet() {
       height={contentHeight}
       insets={insets}
     >
-      {ios && <StatusBar barStyle="light-content" />}
       {ios && <TouchableBackdrop onPress={goBack} />}
 
       <SlackSheet

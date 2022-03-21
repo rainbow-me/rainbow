@@ -1,8 +1,9 @@
+// import { StatusBarService } from '@rainbow-me/services';
 import MaskedView from '@react-native-community/masked-view';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Animated, Easing } from 'react-native';
+import { Animated, Easing, InteractionManager } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import Reanimated, {
   Clock,
@@ -28,6 +29,7 @@ import {
   isCloudBackupAvailable,
   syncCloud,
 } from '../handlers/cloudBackup';
+import { StatusBarService } from '../services';
 import { cloudPlatform } from '../utils/platform';
 
 import { useHideSplashScreen } from '@rainbow-me/hooks';
@@ -423,6 +425,12 @@ export default function WelcomeScreen() {
       contentAnimation.current.setValue(1);
     };
   }, [contentAnimation, hideSplashScreen, createWalletButtonAnimation]);
+
+  useEffect(() => {
+    InteractionManager.runAfterInteractions(() => {
+      StatusBarService.setDarkContent();
+    });
+  }, []);
 
   const buttonStyle = useMemoOne(
     () => ({

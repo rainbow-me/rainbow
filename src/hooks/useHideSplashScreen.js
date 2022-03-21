@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
-import { InteractionManager, NativeModules, StatusBar } from 'react-native';
+import { InteractionManager, NativeModules } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
+import { StatusBarService } from '../services';
 
 const { RainbowSplashScreen, RNBootSplash } = NativeModules;
 
@@ -16,14 +17,13 @@ export default function useHideSplashScreen() {
       }
     }
     if (android) {
-      StatusBar.setBackgroundColor('transparent', false);
-      StatusBar.setTranslucent(true);
-      StatusBar.setBarStyle('dark-content', true);
+      StatusBarService.setBackgroundColor('transparent', false);
+      StatusBarService.setTranslucent(true);
     }
     // show the StatusBar
-    (ios && StatusBar.setHidden(false, 'fade')) ||
+    (ios && StatusBarService.setHidden(false, 'fade')) ||
       InteractionManager.runAfterInteractions(() => {
-        StatusBar.setHidden(false, 'fade');
+        StatusBarService.setHidden(false, 'fade');
       });
   }, []);
 }
