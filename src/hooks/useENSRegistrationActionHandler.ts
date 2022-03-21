@@ -1,7 +1,11 @@
 import { useNavigation } from '@react-navigation/core';
 import { differenceInSeconds } from 'date-fns';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Image } from 'react-native-image-crop-picker';
 import { useDispatch } from 'react-redux';
+import { useRecoilValue } from 'recoil';
+import { avatarMetadataAtom } from '../components/ens-registration/RegistrationAvatar/RegistrationAvatar';
+import { coverMetadataAtom } from '../components/ens-registration/RegistrationCover/RegistrationCover';
 import {
   ENSActionParameters,
   getENSRapEstimationByType,
@@ -9,8 +13,9 @@ import {
 } from '../raps/common';
 import useTransactions from './useTransactions';
 import { useAccountSettings, useCurrentNonce, useENSRegistration } from '.';
-import { RegistrationParameters } from '@rainbow-me/entities';
+import { Records, RegistrationParameters } from '@rainbow-me/entities';
 import { fetchResolver } from '@rainbow-me/handlers/ens';
+import { uploadImage } from '@rainbow-me/handlers/pinata';
 import { web3Provider } from '@rainbow-me/handlers/web3';
 import {
   ENS_DOMAIN,
@@ -71,6 +76,8 @@ export default function useENSRegistrationActionHandler(
       : -1
   );
 
+  const avatarMetadata = useRecoilValue(avatarMetadataAtom);
+  const coverMetadata = useRecoilValue(coverMetadataAtom);
   const commitAction = useCallback(
     async (callback: () => void) => {
       const wallet = await loadWallet();
@@ -102,7 +109,7 @@ export default function useENSRegistrationActionHandler(
         callback
       );
     },
-    [accountAddress, yearsDuration, getNextNonce, registrationParameters]
+    [registrationParameters, getNextNonce, yearsDuration, accountAddress]
   );
 
   const speedUpCommitAction = useCallback(
@@ -139,8 +146,14 @@ export default function useENSRegistrationActionHandler(
       const {
         name,
         duration,
-        changedRecords,
       } = registrationParameters as RegistrationParameters;
+      const changedRecords = await uploadRecordImages(
+        registrationParameters.changedRecords,
+        {
+          avatar: avatarMetadata,
+          cover: coverMetadata,
+        }
+      );
       const wallet = await loadWallet();
       if (!wallet) {
         return;
@@ -356,5 +369,33 @@ export default function useENSRegistrationActionHandler(
     action: actions[registrationStep],
     step: registrationStep,
     stepGasLimit,
+  };
+}
+
+async function uploadRecordImages(
+  records: Partial<Records> | undefined,
+  imageMetadata: { avatar?: Image; cover?: Image }
+) {
+  const uploadRecordImage = async (key: 'avatar' | 'cover') => {
+    if (records?.[key]?.startsWith('~') && imageMetadata[key]) {
+      const { url } = await uploadImage({
+        filename: imageMetadata[key]?.filename || '',
+        mime: imageMetadata[key]?.mime || '',
+        path: imageMetadata[key]?.path || '',
+      });
+      return url;
+    }
+    return records?.[key];
+  };
+
+  const [avatar, cover] = await Promise.all([
+    uploadRecordImage('avatar'),
+    uploadRecordImage('cover'),
+  ]);
+
+  return {
+    ...records,
+    avatar,
+    cover,
   };
 }
