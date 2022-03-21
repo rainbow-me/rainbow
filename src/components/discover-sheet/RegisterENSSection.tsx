@@ -4,7 +4,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '../../navigation/Navigation';
 import { ButtonPressAnimation } from '../animations';
 import ENSIcon from '../icons/svg/ENSIcon';
-import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
+import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config';
 import { useTheme } from '@rainbow-me/context';
 import {
   AccentColorProvider,

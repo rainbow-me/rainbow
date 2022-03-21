@@ -181,7 +181,14 @@ export default function useENSRegistrationActionHandler(
         callback
       );
     },
-    [accountAddress, getNextNonce, registrationParameters, sendReverseRecord]
+    [
+      accountAddress,
+      avatarMetadata,
+      coverMetadata,
+      getNextNonce,
+      registrationParameters,
+      sendReverseRecord,
+    ]
   );
 
   const setRecordsAction = useCallback(
