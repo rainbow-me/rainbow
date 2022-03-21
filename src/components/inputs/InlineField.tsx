@@ -12,6 +12,7 @@ import {
   Text,
   useTextStyle,
 } from '@rainbow-me/design-system';
+import { useDimensions } from '@rainbow-me/hooks';
 
 const textSize = 16;
 
@@ -47,6 +48,7 @@ export default function InlineField({
   value,
 }: InlineFieldProps) {
   const { colors } = useTheme();
+  const { width } = useDimensions();
 
   const paddingVertical = 17;
   const textStyle = useTextStyle({ size: `${textSize}px`, weight: 'bold' });
@@ -96,6 +98,13 @@ export default function InlineField({
         : android
         ? 11
         : 0,
+      width: startsWith
+        ? ios
+          ? 0.55 * width
+          : 0.56 * width
+        : ios
+        ? 0.6 * width
+        : 0.61 * width,
       textAlignVertical: 'top',
     }),
     [textStyle, inputHeight, inputProps?.multiline]
@@ -136,7 +145,7 @@ export default function InlineField({
       <Column>
         <Inline alignVertical="center" space="2px">
           {startsWith && (
-            <Inset top="2px">
+            <Inset top={ios ? '2px' : undefined}>
               <Text color="secondary30" weight="heavy">
                 {startsWith}
               </Text>
@@ -155,6 +164,7 @@ export default function InlineField({
             placeholder={placeholder}
             style={style}
             value={value}
+            scrollEnabled={false}
             {...inputProps}
             keyboardType={
               android ? 'visible-password' : inputProps?.keyboardType
