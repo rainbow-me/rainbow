@@ -25,12 +25,15 @@ type Result = {
 export default function usePersistentAspectRatio(url: string): Result {
   const isSVG = isSupportedUriExtension(url, ['.svg']);
   const nonSvgUrl = isSVG ? imageToPng(url, 200) : url;
-  const [ratio, setAspectRatio] = useMMKVNumber(nonSvgUrl as string, storage);
+  const [ratio, setAspectRatio] = useMMKVNumber(
+    (nonSvgUrl || '') as string,
+    storage
+  );
   const [state, setState] = useState<State>(
     ratio !== 0 ? State.loaded : State.init
   );
   useEffect(() => {
-    if (state === State.init && nonSvgUrl) {
+    if (state === State.init && nonSvgUrl && url) {
       const lowResUrl = getLowResUrl(nonSvgUrl) as string;
       setState(State.loading);
       Image.getSize(
@@ -41,8 +44,11 @@ export default function usePersistentAspectRatio(url: string): Result {
         },
         () => setState(State.failed)
       );
+    } else {
+      setAspectRatio(1);
+      setState(State.loaded);
     }
-  }, [setAspectRatio, state, nonSvgUrl]);
+  }, [setAspectRatio, state, nonSvgUrl, url]);
   return {
     result: ratio,
     state,
