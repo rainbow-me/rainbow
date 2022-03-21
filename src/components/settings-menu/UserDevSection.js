@@ -14,7 +14,7 @@ import {
   useResetAccountState,
 } from '@rainbow-me/hooks';
 
-const UserDevSection = () => {
+const UserDevSection = props => {
   const dispatch = useDispatch();
 
   const {
@@ -46,7 +46,7 @@ const UserDevSection = () => {
   ]);
 
   return (
-    <ScrollView testID="developer-settings-modal">
+    <ScrollView {...props}>
       <ListItem
         label="🕹️ Enable Testnets"
         onPress={toggleTestnetsEnabled}
@@ -59,7 +59,7 @@ const UserDevSection = () => {
           />
         </Column>
       </ListItem>
-      {testnetsEnabled && <NetworkSection />}
+      {testnetsEnabled && <NetworkSection {...props} />}
       <ListFooter />
     </ScrollView>
   );
