@@ -5,13 +5,21 @@ import {
   estimateENSRegistrationGasLimit,
   fetchReverseRecord,
 } from '@rainbow-me/handlers/ens';
+import { NetworkTypes } from '@rainbow-me/helpers';
 import {
   formatEstimatedNetworkFee,
   formatRentPrice,
   formatTotalRegistrationCost,
 } from '@rainbow-me/helpers/ens';
 import { Network } from '@rainbow-me/helpers/networkTypes';
-import { add, addDisplay, multiply } from '@rainbow-me/helpers/utilities';
+import {
+  add,
+  addBuffer,
+  addDisplay,
+  fromWei,
+  greaterThanOrEqualTo,
+  multiply,
+} from '@rainbow-me/helpers/utilities';
 import { getEIP1559GasParams } from '@rainbow-me/redux/gas';
 import { ethUnits, timeUnits } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
@@ -28,6 +36,16 @@ export default function useENSRegistrationCosts({
   rentPrice?: { wei: number; perYear: { wei: number } };
 }) {
   const { nativeCurrency, accountAddress } = useAccountSettings();
+
+  const checkIfSufficientEth = useCallback((wei: string) => {
+    const nativeAsset = ethereumUtils.getNetworkNativeAsset(
+      NetworkTypes.mainnet
+    );
+    const balanceAmount = nativeAsset?.balance?.amount || 0;
+    const txFeeAmount = fromWei(wei);
+    const isSufficientGas = greaterThanOrEqualTo(balanceAmount, txFeeAmount);
+    return isSufficientGas;
+  }, []);
 
   const rentPriceInWei = rentPrice?.wei?.toString();
 
@@ -123,6 +141,16 @@ export default function useENSRegistrationCosts({
           nativeAssetPrice
         );
 
+        const isSufficientGasForRegistration = checkIfSufficientEth(
+          addBuffer(
+            add(
+              estimatedFee?.estimatedNetworkFee?.wei,
+              estimatedRentPrice?.wei?.toString()
+            ),
+            1.1
+          )
+        );
+
         return {
           estimatedGasLimit: estimatedFee.estimatedGasLimit,
           estimatedNetworkFee: estimatedFee.estimatedNetworkFee,
@@ -131,12 +159,19 @@ export default function useENSRegistrationCosts({
             ...estimatedTotalRegistrationCost,
             display: displayEstimatedTotalCost,
           },
+          isSufficientGasForRegistration,
         };
       }
 
       return { estimatedRentPrice };
     }
-  }, [duration, estimatedFee, nativeCurrency, rentPrice?.perYear?.wei]);
+  }, [
+    checkIfSufficientEth,
+    duration,
+    estimatedFee,
+    nativeCurrency,
+    rentPrice?.perYear?.wei,
+  ]);
 
   const isSuccess = status === 'success' && !!data?.estimatedRentPrice;
 

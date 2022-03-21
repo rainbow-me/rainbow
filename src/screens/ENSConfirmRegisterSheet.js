@@ -172,7 +172,12 @@ function TransactionActionRow({ action, accentColor, label, disabled }) {
 export default function ENSConfirmRegisterSheet() {
   const { params } = useRoute();
   const { accountAddress } = useAccountSettings();
-  const { gasFeeParamsBySpeed, updateTxFee, startPollingGasFees } = useGas();
+  const {
+    gasFeeParamsBySpeed,
+    updateTxFee,
+    startPollingGasFees,
+    isSufficientGas,
+  } = useGas();
   const {
     images: { avatarUrl: initialAvatarUrl },
     name: ensName,
@@ -222,6 +227,10 @@ export default function ENSConfirmRegisterSheet() {
       return lang.t('profiles.confirm.confirm_registration');
   }, [mode, step]);
 
+  const isSufficientGasForStep = useMemo(() => {
+    return stepGasLimit && isSufficientGas;
+  }, [isSufficientGas, stepGasLimit]);
+
   const stepContent = useMemo(
     () => ({
       [REGISTRATION_STEPS.COMMIT]: (
@@ -267,7 +276,10 @@ export default function ENSConfirmRegisterSheet() {
         <TransactionActionRow
           accentColor={accentColor}
           action={action}
-          disabled={!stepGasLimit}
+          disabled={
+            !registrationCostsData?.isSufficientGasForRegistration ||
+            !isSufficientGasForStep
+          }
           label={lang.t('profiles.confirm.start_registration')}
         />
       ),
@@ -275,7 +287,7 @@ export default function ENSConfirmRegisterSheet() {
         <TransactionActionRow
           accentColor={accentColor}
           action={action}
-          disabled={!stepGasLimit}
+          disabled={!isSufficientGasForStep}
           label={lang.t('profiles.confirm.confirm_registration')}
         />
       ),
@@ -283,14 +295,19 @@ export default function ENSConfirmRegisterSheet() {
         <TransactionActionRow
           accentColor={accentColor}
           action={action}
-          disabled={!stepGasLimit}
+          disabled={!isSufficientGasForStep}
           label={lang.t('profiles.confirm.confirm_update')}
         />
       ),
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: null,
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: null,
     }),
-    [accentColor, action, stepGasLimit]
+    [
+      accentColor,
+      action,
+      isSufficientGasForStep,
+      registrationCostsData?.isSufficientGasForRegistration,
+    ]
   );
 
   // Update gas limit
