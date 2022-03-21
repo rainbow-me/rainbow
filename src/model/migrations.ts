@@ -67,11 +67,11 @@ export default async function runMigrations() {
   const currentVersion = Number(await getMigrationVersion());
   const migrations = [];
   const mmkv = new MMKV();
-  const storageAR = new MMKV({
+  const storageAspectRatio = new MMKV({
     id: STORAGE_IDS.ASPECT_RATIO,
   });
 
-  const storageDC = new MMKV({
+  const storageDominantColor = new MMKV({
     id: STORAGE_IDS.DOMINANT_COLOR,
   });
 
@@ -613,8 +613,8 @@ export default async function runMigrations() {
    * https://linear.app/rainbow/issue/RNBW-2885
    */
   const v16 = async () => {
-    storageAR.clearAll();
-    storageDC.clearAll();
+    storageAspectRatio.clearAll();
+    storageDominantColor.clearAll();
   };
 
   migrations.push(v16);
