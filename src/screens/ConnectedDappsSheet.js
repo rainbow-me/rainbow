@@ -24,16 +24,16 @@ const SheetTitleWithPadding = styled(SheetTitle)({
 });
 
 export default function ConnectedDappsSheet() {
-  const { walletConnectorsByDappName } = useWalletConnectConnections();
+  const { mostRecentWalletConnectors } = useWalletConnectConnections();
   const { goBack } = useNavigation();
   const insets = useSafeArea();
   const { colors } = useTheme();
 
   useEffect(() => {
-    if (walletConnectorsByDappName.length === 0) {
+    if (mostRecentWalletConnectors.length === 0) {
       goBack();
     }
-  }, [goBack, walletConnectorsByDappName.length]);
+  }, [goBack, mostRecentWalletConnectors.length]);
 
   return (
     <Sheet
@@ -48,9 +48,9 @@ export default function ConnectedDappsSheet() {
         {lang.t('walletconnect.connected_apps')}
       </SheetTitleWithPadding>
       <Divider color={colors.rowDividerExtraLight} inset={[0, 19]} />
-      <ScrollableItems length={walletConnectorsByDappName.length}>
+      <ScrollableItems length={mostRecentWalletConnectors.length}>
         <Row height={4} />
-        {walletConnectorsByDappName.map(
+        {mostRecentWalletConnectors.map(
           ({ account, chainId, dappIcon, dappName, dappUrl, peerId }) => (
             <WalletConnectListItem
               account={account}
