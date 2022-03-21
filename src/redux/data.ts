@@ -1039,7 +1039,9 @@ export const addressAssetsReceived = (
 ) => {
   const isValidMeta = dispatch(checkMeta(message));
   if (!isValidMeta) return;
-  const { accountAddress, network } = getState().settings;
+  const { settings } = getState();
+  const { network } = settings;
+  const accountAddress = message?.meta?.address || settings.accountAddress;
   const { uniqueTokens } = getState().uniqueTokens;
   const newAssets = message?.payload?.assets ?? {};
   let updatedAssets = pickBy(
