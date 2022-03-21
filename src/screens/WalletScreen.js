@@ -81,7 +81,6 @@ export default function WalletScreen() {
   } = useWalletSectionsData();
 
   const dispatch = useDispatch();
-  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   const { addressSocket, assetsSocket } = useSelector(
     ({ explorer: { addressSocket, assetsSocket } }) => ({

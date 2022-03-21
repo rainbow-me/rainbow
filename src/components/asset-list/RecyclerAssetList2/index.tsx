@@ -9,7 +9,7 @@ import RawMemoRecyclerAssetList from './core/RawRecyclerList';
 import { StickyHeaderManager } from './core/StickyHeaders';
 import useMemoBriefSectionData from './core/useMemoBriefSectionData';
 
-export type AssetListType = 'wallet' | 'ens-profile';
+export type AssetListType = 'wallet' | 'ens-profile' | 'select-nft';
 
 function RecyclerAssetList({
   address,

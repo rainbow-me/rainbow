@@ -18,13 +18,17 @@ const FILTER_TYPES = {
     CellType.NFT,
     CellType.FAMILY_HEADER,
   ],
+  'select-nft': [
+    CellType.NFT_SPACE_AFTER,
+    CellType.NFT,
+    CellType.FAMILY_HEADER,
+  ],
 } as { [key in AssetListType]: CellType[] };
 
 export default function useMemoBriefSectionData({
   address,
-  filterTypes: overrideFilterTypes,
   type,
-}: { address?: string; filterTypes?: CellType[]; type?: AssetListType } = {}) {
+}: { address?: string; type?: AssetListType } = {}) {
   const { briefSectionsData }: { briefSectionsData: any[] } = address
     ? // `address` is a static prop, so hooks will always execute in order.
       // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -46,8 +50,7 @@ export default function useMemoBriefSectionData({
     let afterCoins = false;
     // load firstly 12, then the rest after 1 sec
     let numberOfSmallBalancesAllowed = stagger ? 12 : briefSectionsData.length;
-    const filterTypes =
-      overrideFilterTypes || type ? FILTER_TYPES[type as AssetListType] : [];
+    const filterTypes = type ? FILTER_TYPES[type as AssetListType] : [];
     const briefSectionsDataFiltered = briefSectionsData
       .filter((data, arrIndex, arr) => {
         if (
