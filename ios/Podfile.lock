@@ -488,8 +488,6 @@ PODS:
     - React
   - RNDeviceInfo (5.3.1):
     - React
-  - RNDominantColor (1.7.0):
-    - React
   - RNExitApp (1.1.0):
     - React
   - RNFastImage (8.5.11):
@@ -676,7 +674,6 @@ DEPENDENCIES:
   - "RNCClipboard (from `../node_modules/@react-native-community/clipboard`)"
   - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
-  - RNDominantColor (from `../node_modules/rn-dominant-color`)
   - RNExitApp (from `../node_modules/react-native-exit-app`)
   - RNFastImage (from `../node_modules/react-native-fast-image`)
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
@@ -885,8 +882,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/masked-view"
   RNDeviceInfo:
     :path: "../node_modules/react-native-device-info"
-  RNDominantColor:
-    :path: "../node_modules/rn-dominant-color"
   RNExitApp:
     :path: "../node_modules/react-native-exit-app"
   RNFastImage:
@@ -1042,7 +1037,6 @@ SPEC CHECKSUMS:
   RNCClipboard: 48eaf27bea3de7c9a265529725434268d47a2ee9
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
   RNDeviceInfo: 6f20764111df002b4484f90cbe0a861be29bcc6c
-  RNDominantColor: 72126cb96ffedf4bcd564ed00e2e578f5b93e0d6
   RNExitApp: c4e052df2568b43bec8a37c7cd61194d4cfee2c3
   RNFastImage: 1f2cab428712a4baaf78d6169eaec7f622556dd7
   RNFBApp: 729c0666395b1953198dc4a1ec6deb8fbe1c302e
