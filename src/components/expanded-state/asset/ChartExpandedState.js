@@ -358,7 +358,6 @@ export default function ChartExpandedState({ asset }) {
               <TokenInfoBalanceValue asset={asset} />
             </TokenInfoItem>
             <TokenInfoItem
-              enableHapticFeedback={false}
               title={
                 asset?.native?.balance.display
                   ? lang.t('expanded_state.asset.value')
@@ -413,7 +412,6 @@ export default function ChartExpandedState({ asset }) {
         >
           <Carousel>
             <CarouselItem
-              enableHapticFeedback={false}
               loading={additionalAssetDataLoading}
               showDivider
               title={lang.t('expanded_state.asset.volume_24_hours')}
@@ -422,7 +420,6 @@ export default function ChartExpandedState({ asset }) {
               {totalVolume}
             </CarouselItem>
             <CarouselItem
-              enableHapticFeedback={false}
               loading={additionalAssetDataLoading}
               showDivider
               title={lang.t('expanded_state.asset.uniswap_liquidity')}
@@ -431,7 +428,6 @@ export default function ChartExpandedState({ asset }) {
               {totalLiquidity}
             </CarouselItem>
             <CarouselItem
-              enableHapticFeedback={false}
               loading={additionalAssetDataLoading}
               title={lang.t('expanded_state.asset.market_cap')}
               weight="bold"
