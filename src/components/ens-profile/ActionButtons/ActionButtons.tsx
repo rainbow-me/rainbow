@@ -8,9 +8,11 @@ import { useWallets } from '@rainbow-me/hooks';
 export default function ActionButtons({
   address: primaryAddress,
   ensName,
+  avatarUrl,
 }: {
   address?: string;
   ensName?: string;
+  avatarUrl?: string | null;
 }) {
   const { wallets } = useWallets();
 
@@ -27,7 +29,11 @@ export default function ActionButtons({
       <MoreButton address={primaryAddress} />
       {!isOwner && (
         <>
-          <WatchButton address={primaryAddress} ensName={ensName} />
+          <WatchButton
+            address={primaryAddress}
+            avatarUrl={avatarUrl}
+            ensName={ensName}
+          />
           <SendButton ensName={ensName} />
         </>
       )}

@@ -75,7 +75,7 @@ export default function useImportingWallet() {
   );
 
   const showWalletProfileModal = useCallback(
-    (name, forceColor, address = null) => {
+    (name, forceColor, address = null, avatarUrl) => {
       android && Keyboard.dismiss();
       navigate(Routes.MODAL_SCREEN, {
         actionType: 'Import',
@@ -91,7 +91,7 @@ export default function useImportingWallet() {
             handleSetImporting(true);
           });
         },
-        profile: { name },
+        profile: { image: avatarUrl, name },
         type: 'wallet_profile',
         withoutStatusBar: true,
       });
@@ -100,7 +100,7 @@ export default function useImportingWallet() {
   );
 
   const handlePressImportButton = useCallback(
-    async (forceColor, forceAddress, forceEmoji = null) => {
+    async (forceColor, forceAddress, forceEmoji = null, avatarUrl) => {
       analytics.track('Tapped "Import" button');
       // guard against pressEvent coming in as forceColor if
       // handlePressImportButton is used as onClick handler
@@ -121,7 +121,7 @@ export default function useImportingWallet() {
           }
           setResolvedAddress(address);
           name = forceEmoji ? `${forceEmoji} ${input}` : input;
-          showWalletProfileModal(name, guardedForceColor, address);
+          showWalletProfileModal(name, guardedForceColor, address, avatarUrl);
           analytics.track('Show wallet profile modal for ENS address', {
             address,
             input,

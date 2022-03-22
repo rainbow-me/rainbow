@@ -126,6 +126,7 @@ export default function ProfileSheet() {
                           <Inset top="30px">
                             <ActionButtons
                               address={profileAddress}
+                              avatarUrl={avatarUrl}
                               ensName={ensName}
                             />
                           </Inset>

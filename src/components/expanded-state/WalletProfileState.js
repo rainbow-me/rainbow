@@ -17,7 +17,6 @@ import {
   returnStringFirstEmoji,
 } from '@rainbow-me/helpers/emojiHandler';
 
-import { useAccountProfile } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
@@ -87,8 +86,6 @@ export default function WalletProfileState({
         profileUtils.addressHashedEmoji(address);
 
   const { goBack, navigate } = useNavigation();
-  const { accountImage } = useAccountProfile();
-
   const { colors } = useTheme();
 
   const indexOfForceColor = colors.avatarBackgrounds.indexOf(forceColor);
@@ -106,7 +103,7 @@ export default function WalletProfileState({
   );
   const inputRef = useRef(null);
 
-  const profileImage = accountImage || profile.image;
+  const profileImage = profile.image;
 
   const handleCancel = useCallback(() => {
     goBack();
