@@ -45,7 +45,7 @@ export default function usePersistentAspectRatio(url: string): Result {
         () => setState(State.failed)
       );
     }
-  }, [setAspectRatio, state, nonSvgUrl, url]);
+  }, [setAspectRatio, state, nonSvgUrl]);
   return {
     result: ratio,
     state,

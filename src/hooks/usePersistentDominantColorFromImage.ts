@@ -44,13 +44,7 @@ export default function usePersistentDominantColorFromImage(
         setPersistentDominantColor(color)
       );
     }
-  }, [
-    colorToMeasureAgainst,
-    setPersistentDominantColor,
-    state,
-    nonSvgUrl,
-    url,
-  ]);
+  }, [colorToMeasureAgainst, setPersistentDominantColor, state, nonSvgUrl]);
 
   return {
     result: dominantColor,
