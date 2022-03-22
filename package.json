@@ -152,7 +152,7 @@
     "lint-staged": "10.4.0",
     "lodash": "4.17.21",
     "lottie-ios": "3.2.3",
-    "lottie-react-native": "5.0.1",
+    "lottie-react-native": "4.0.2",
     "make-color-more-chill": "0.2.2",
     "match-sorter": "6.3.0",
     "mnemonist": "0.38.1",

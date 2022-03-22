@@ -12131,10 +12131,10 @@ lottie-ios@3.2.3:
   version "3.2.3"
   resolved "https://registry.yarnpkg.com/lottie-ios/-/lottie-ios-3.2.3.tgz#d5a029ccce611603d178ea7ba725c1446f2310b4"
 
-lottie-react-native@5.0.1:
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/lottie-react-native/-/lottie-react-native-5.0.1.tgz#218a9e9cf0e25b2d30360958b00b85a4068a76b8"
-  integrity sha512-V+ODPqiHOSRzEWg8VsfrJBicgc2k0ZPlCjk3J7ULUkh94smL1nrsF/n4OGukj4MLZwonpv+frVK7pPh5U7t3rQ==
+lottie-react-native@4.0.2:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/lottie-react-native/-/lottie-react-native-4.0.2.tgz#d0b7a479995b4bfdf5402671e096f15b7ef2a7d8"
+  integrity sha512-8X5SV8X+es5dJwUGYcSyRIbHIPeWIcUH6PiRaReUEy+6s1d+NLBp3rj4+9I75F1ZN0nbFGNkrgypnGsXOAXBTw==
   dependencies:
     invariant "^2.2.2"
     prop-types "^15.5.10"
