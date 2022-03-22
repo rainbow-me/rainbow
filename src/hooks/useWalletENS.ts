@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { fetchImages } from '@rainbow-me/handlers/ens';
 import { useWallets } from '@rainbow-me/hooks';
 import { RainbowAccount } from '@rainbow-me/model/wallet';
-import { walletsUpdate } from '@rainbow-me/redux/wallets';
+import { walletsSetSelected, walletsUpdate } from '@rainbow-me/redux/wallets';
 
 export default function useWalletENS() {
   const dispatch = useDispatch();
@@ -25,7 +25,7 @@ export default function useWalletENS() {
           if (images?.avatarUrl) {
             const addresses = wallets[key].addresses.map(
               (acc: RainbowAccount) => ({
-                ...account,
+                ...acc,
                 image:
                   account.address === acc.address
                     ? images.avatarUrl
@@ -43,8 +43,10 @@ export default function useWalletENS() {
         }
       }
     }
+    updatedWallets &&
+      dispatch(walletsSetSelected(updatedWallets[selectedWallet.id]));
     updatedWallets && dispatch(walletsUpdate(updatedWallets));
-  }, [dispatch, walletNames, wallets]);
+  }, [dispatch, selectedWallet.id, walletNames, wallets]);
 
   return { updateWalletENSAvatars };
 }
