@@ -232,7 +232,11 @@ const UniqueTokenExpandedState = ({
     usePersistentDominantColorFromImage(asset.image_url).result ||
     colors.paleBlue;
 
-  const lastSalePrice = lastPrice || 'None';
+  const lastSalePrice = lastPrice
+    ? `${Number(parseFloat(lastPrice.split(' ')[0]).toPrecision(2))} ${
+        lastPrice.split(' ')[1]
+      }`
+    : 'None';
   const priceOfEth = ethereumUtils.getEthPriceUnit() as number;
 
   const textColor = useMemo(() => {

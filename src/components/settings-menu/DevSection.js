@@ -14,6 +14,7 @@ import { RainbowContext } from '@rainbow-me/helpers/RainbowContext';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { useWallets } from '@rainbow-me/hooks';
 import { wipeKeychain } from '@rainbow-me/model/keychain';
+import { clearAllStorages } from '@rainbow-me/model/mmkv';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import { explorerInit } from '@rainbow-me/redux/explorer';
 import { clearImageMetadataCache } from '@rainbow-me/redux/imageMetadata';
@@ -91,6 +92,10 @@ const DevSection = () => {
   return (
     <ScrollView testID="developer-settings-modal">
       <ListItem label="💥 Clear async storage" onPress={AsyncStorage.clear} />
+      <ListItem
+        label="💥 Clear MMKV storages"
+        onPress={() => clearAllStorages()}
+      />
       <ListItem
         label="📷️ Clear Image Metadata Cache"
         onPress={clearImageMetadataCache}
