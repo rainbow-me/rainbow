@@ -11,9 +11,10 @@ import useWallets from './useWallets';
 import { walletsSetSelected, walletsUpdate } from '@rainbow-me/redux/wallets';
 import Routes from '@rainbow-me/routes';
 import { buildRainbowUrl, showActionSheetWithOptions } from '@rainbow-me/utils';
+import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config';
 
 export default () => {
-  const { wallets, selectedWallet } = useWallets();
+  const { isReadOnlyWallet, wallets, selectedWallet } = useWallets();
   const dispatch = useDispatch();
   const { navigate } = useNavigation();
   const {
@@ -73,6 +74,10 @@ export default () => {
     });
   }, [accountColor, accountName, navigate]);
 
+  const onAvatarCreateProfile = useCallback(() => {
+    navigate(Routes.REGISTER_ENS_NAVIGATOR);
+  }, [navigate]);
+
   const onAvatarChooseImage = useCallback(() => {
     ImagePicker.openPicker({
       cropperCircleOverlay: true,
@@ -98,6 +103,9 @@ export default () => {
       'Choose from Library',
       ...(!accountImage ? ['Pick an Emoji'] : []),
       ...(accountImage ? ['Remove Photo'] : []),
+      ...(!isReadOnlyWallet || enableActionsOnReadOnlyWallet
+        ? ['Create your Profile']
+        : []),
       ...(ios ? ['Cancel'] : []),
     ];
 
@@ -119,6 +127,8 @@ export default () => {
           if (accountImage) {
             onAvatarRemovePhoto();
           }
+        } else if (buttonIndex === 2) {
+          onAvatarCreateProfile();
         }
       }
     );
@@ -126,6 +136,7 @@ export default () => {
     setNextEmoji,
     accountImage,
     onAvatarChooseImage,
+    onAvatarCreateProfile,
     onAvatarPickEmoji,
     onAvatarRemovePhoto,
     setNextEmoji,
@@ -168,6 +179,7 @@ export default () => {
   return {
     avatarOptions,
     onAvatarChooseImage,
+    onAvatarCreateProfile,
     onAvatarPickEmoji,
     onAvatarPress,
     onAvatarRemovePhoto,
