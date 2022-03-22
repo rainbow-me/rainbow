@@ -118,6 +118,7 @@ export default function WalletProfileState({
     onCloseModal({
       color:
         typeof color === 'string' ? profileUtils.colorHexToIndex(color) : color,
+      image: profileImage,
       name: nameEmoji ? `${nameEmoji} ${value}` : value,
     });
     goBack();
@@ -132,6 +133,7 @@ export default function WalletProfileState({
     nameEmoji,
     navigate,
     onCloseModal,
+    profileImage,
     value,
   ]);
 

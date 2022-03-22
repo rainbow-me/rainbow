@@ -39,6 +39,7 @@ export default function useImportingWallet() {
   const [seedPhrase, setSeedPhrase] = useState('');
   const [color, setColor] = useState(null);
   const [name, setName] = useState(null);
+  const [image, setImage] = useState(null);
   const [busy, setBusy] = useState(false);
   const [checkedWallet, setCheckedWallet] = useState(null);
   const [resolvedAddress, setResolvedAddress] = useState(null);
@@ -86,10 +87,11 @@ export default function useImportingWallet() {
         asset: [],
         forceColor,
         isNewProfile: true,
-        onCloseModal: ({ color, name }) => {
+        onCloseModal: ({ color, name, image }) => {
           InteractionManager.runAfterInteractions(() => {
             if (color !== null) setColor(color);
             if (name) setName(name);
+            if (image) setImage(image);
             handleSetImporting(true);
           });
         },
@@ -185,7 +187,8 @@ export default function useImportingWallet() {
             showWalletProfileModal(
               name,
               guardedForceColor,
-              walletResult.address
+              walletResult.address,
+              avatarUrl
             );
             analytics.track('Show wallet profile modal for imported wallet', {
               address: walletResult.address,
@@ -215,7 +218,9 @@ export default function useImportingWallet() {
           name ? name : '',
           false,
           false,
-          checkedWallet
+          checkedWallet,
+          undefined,
+          image
         )
           .then(success => {
             handleSetImporting(false);
@@ -289,6 +294,7 @@ export default function useImportingWallet() {
     wallets,
     wasImporting,
     updateWalletENSAvatars,
+    image,
   ]);
 
   useEffect(() => {

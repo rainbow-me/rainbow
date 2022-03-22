@@ -19,6 +19,7 @@ import useLoadAccountData from './useLoadAccountData';
 import useLoadGlobalEarlyData from './useLoadGlobalEarlyData';
 import useOpenSmallBalances from './useOpenSmallBalances';
 import useResetAccountState from './useResetAccountState';
+// import useWalletENS from './useWalletENS';
 import { runKeychainIntegrityChecks } from '@rainbow-me/handlers/walletReadyEvents';
 import { additionalDataCoingeckoIds } from '@rainbow-me/redux/additionalAssetsData';
 import { checkPendingTransactionsOnInitialize } from '@rainbow-me/redux/data';
@@ -33,6 +34,7 @@ export default function useInitializeWallet() {
   const { network } = useAccountSettings();
   const hideSplashScreen = useHideSplashScreen();
   const { setIsSmallBalancesOpen } = useOpenSmallBalances();
+  // const { updateWalletENSAvatars } = useWalletENS();
 
   const initializeWallet = useCallback(
     async (
@@ -42,11 +44,11 @@ export default function useInitializeWallet() {
       shouldRunMigrations = false,
       overwrite = false,
       checkedWallet = null,
-      switching
+      switching,
+      image
     ) => {
       try {
         logger.sentry('Start wallet setup');
-
         await resetAccountState();
         logger.sentry('resetAccountState ran ok');
 
@@ -72,7 +74,8 @@ export default function useInitializeWallet() {
           name,
           overwrite,
           checkedWallet,
-          network
+          network,
+          image
         );
 
         logger.sentry('walletInit returned ', {

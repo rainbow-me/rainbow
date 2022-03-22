@@ -161,7 +161,7 @@ export default function WalletScreen() {
   }, [assetsSocket, initializeDiscoverData, loadGlobalLateData, walletReady]);
 
   useEffect(() => {
-    walletReady && updateWalletENSAvatars();
+    if (walletReady) updateWalletENSAvatars();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [walletReady]);
 
