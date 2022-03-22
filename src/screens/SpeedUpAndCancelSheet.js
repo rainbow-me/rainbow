@@ -26,10 +26,12 @@ import {
 import { Emoji, Text } from '../components/text';
 import { GasFeeTypes, TransactionStatusTypes } from '@rainbow-me/entities';
 import {
+  getFlashbotsProvider,
   getProviderForNetwork,
   isL2Network,
   toHex,
 } from '@rainbow-me/handlers/web3';
+import { Network } from '@rainbow-me/helpers';
 import { greaterThan } from '@rainbow-me/helpers/utilities';
 import { useAccountSettings, useDimensions, useGas } from '@rainbow-me/hooks';
 import { sendTransaction } from '@rainbow-me/model/wallet';
@@ -282,7 +284,12 @@ export default function SpeedUpAndCancelSheet() {
     if (currentNetwork) {
       startPollingGasFees(currentNetwork);
       const updateProvider = async () => {
-        const provider = await getProviderForNetwork(currentNetwork);
+        let provider;
+        if (currentNetwork.type === Network.mainnet && tx.flashbots) {
+          provider = await getFlashbotsProvider();
+        } else {
+          provider = await getProviderForNetwork(currentNetwork);
+        }
         setCurrentProvider(provider);
       };
 
@@ -292,7 +299,7 @@ export default function SpeedUpAndCancelSheet() {
         stopPollingGasFees();
       };
     }
-  }, [currentNetwork, startPollingGasFees, stopPollingGasFees]);
+  }, [currentNetwork, startPollingGasFees, stopPollingGasFees, tx.flashbots]);
 
   // Update gas limit
   useEffect(() => {
