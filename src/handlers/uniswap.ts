@@ -31,7 +31,6 @@ import {
   subtract,
 } from '@rainbow-me/helpers/utilities';
 import { Network } from '@rainbow-me/networkTypes';
-import { gweiToWei } from '@rainbow-me/parsers';
 import { ethUnits, UNISWAP_TESTNET_TOKEN_LIST } from '@rainbow-me/references';
 import { ethereumUtils, logger } from '@rainbow-me/utils';
 
@@ -219,11 +218,7 @@ export const executeSwap = async ({
   const transactionParams = {
     gasLimit: toHex(gasLimit) || undefined,
     maxFeePerGas: toHex(maxFeePerGas) || undefined,
-    // Flashbots recommends a priority fee of 3-5
-    // See https://docs.flashbots.net/flashbots-protect/rpc/quick-start#choosing-the-right-gas-price
-    maxPriorityFeePerGas: flashbots
-      ? toHex(gweiToWei('5'))
-      : toHex(maxPriorityFeePerGas) || undefined,
+    maxPriorityFeePerGas: toHex(maxPriorityFeePerGas) || undefined,
     nonce: nonce ? toHex(nonce) : undefined,
   };
   // Wrap Eth

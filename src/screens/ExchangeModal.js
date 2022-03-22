@@ -306,7 +306,7 @@ export default function ExchangeModal({
   useEffect(() => {
     updateDefaultGasLimit(defaultGasLimit);
     InteractionManager.runAfterInteractions(() => {
-      startPollingGasFees();
+      startPollingGasFees(network, flashbots);
     });
     initWeb3Listener();
     return () => {
@@ -321,6 +321,7 @@ export default function ExchangeModal({
     stopPollingGasFees,
     stopWeb3Listener,
     updateDefaultGasLimit,
+    flashbots,
   ]);
 
   const handlePressMaxBalance = useCallback(async () => {

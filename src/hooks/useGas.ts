@@ -44,8 +44,8 @@ export default function useGas() {
   const prevSelectedGasFee = usePrevious(gasData?.selectedGasFee);
 
   const startPollingGasFees = useCallback(
-    (network = networkTypes.mainnet) =>
-      dispatch(gasPricesStartPolling(network)),
+    (network = networkTypes.mainnet, flashbots = false) =>
+      dispatch(gasPricesStartPolling(network, flashbots)),
     [dispatch]
   );
   const stopPollingGasFees = useCallback(
