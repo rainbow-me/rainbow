@@ -3,8 +3,11 @@ import {
   getQuote,
 } from '@rainbow-me/swaps';
 import { useCallback, useMemo, useState } from 'react';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { NativeModules } from 'react-native';
 // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
-import { IS_TESTING } from 'react-native-dotenv';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { IS_APK_BUILD, IS_TESTING } from 'react-native-dotenv';
 import { useDispatch, useSelector } from 'react-redux';
 import { Token } from '../entities/tokens';
 import useAccountSettings from './useAccountSettings';
@@ -67,6 +70,9 @@ const getInputAmount = async (
       sellTokenAddress,
       slippage: IS_TESTING !== 'true' ? 1 : 5, // Add 5% slippage for testing to prevent flaky tests
     };
+
+    // @ts-ignore About to get quote
+
     const quote = await getQuote(quoteParams);
     if (!quote) {
       return {
