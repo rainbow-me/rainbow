@@ -26,7 +26,6 @@ export default () => {
     accountENS,
   } = useAccountProfile();
   const profilesEnabled = useExperimentalFlag(PROFILES);
-
   const ensProfile = useENSProfile(accountENS, {
     enabled: Boolean(!isReadOnlyWallet && accountENS),
   });
