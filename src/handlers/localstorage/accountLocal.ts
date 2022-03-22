@@ -1,6 +1,7 @@
 import { MMKV } from 'react-native-mmkv';
 import { getAccountLocal, getKey, saveAccountLocal } from './common';
 import { ENSRegistrations } from '@rainbow-me/entities';
+import { STORAGE_IDS } from '@rainbow-me/model/mmkv';
 
 const accountAssetsDataVersion = '0.1.0';
 const assetPricesFromUniswapVersion = '0.1.0';
@@ -26,7 +27,7 @@ const WEB_DATA_ENABLED = 'webDataEnabled';
 const ENS_REGISTRATIONS = 'ensRegistrations';
 
 const storage = new MMKV({
-  id: 'ACCOUNT',
+  id: STORAGE_IDS.ACCOUNT,
 });
 
 export const accountLocalKeys = [

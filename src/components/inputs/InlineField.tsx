@@ -106,6 +106,13 @@ export default function InlineField({
         ? 0.6 * width
         : 0.61 * width,
       textAlignVertical: 'top',
+      width: startsWith
+        ? ios
+          ? 0.55 * width
+          : 0.56 * width
+        : ios
+        ? 0.6 * width
+        : 0.61 * width,
     }),
     [textStyle, inputHeight, inputProps?.multiline]
   );
@@ -162,6 +169,7 @@ export default function InlineField({
             }
             onEndEditing={onEndEditing}
             placeholder={placeholder}
+            scrollEnabled={false}
             style={style}
             value={value}
             scrollEnabled={false}

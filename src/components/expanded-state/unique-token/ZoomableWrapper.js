@@ -172,7 +172,7 @@ export const ZoomableWrapper = ({
     ctx.prevTranslateX = 0;
     ctx.prevTranslateY = 0;
     // if zoom state was entered by pinching, adjust targetScale to account for new image dimensions
-    let targetScale = isZoomed
+    let targetScale = isZoomedValue.value
       ? Math.min(scale.value, MAX_IMAGE_SCALE)
       : Math.min(
           scale.value * (containerWidth / fullSizeWidth),
@@ -186,6 +186,7 @@ export const ZoomableWrapper = ({
       breakingScaleX = deviceWidth / containerWidth;
       breakingScaleY = deviceHeight / containerHeight;
     }
+    const zooming = fullSizeHeight / containerHeightValue.value;
 
     const maxDisplacementX =
       (deviceWidth * (Math.max(1, targetScale / breakingScaleX) - 1)) /
