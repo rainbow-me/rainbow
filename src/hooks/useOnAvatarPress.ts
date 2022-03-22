@@ -6,14 +6,16 @@ import { useDispatch } from 'react-redux';
 import { RainbowAccount } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import useAccountProfile from './useAccountProfile';
+import useENSProfile from './useENSProfile';
 import useUpdateEmoji from './useUpdateEmoji';
 import useWallets from './useWallets';
+import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import { walletsSetSelected, walletsUpdate } from '@rainbow-me/redux/wallets';
 import Routes from '@rainbow-me/routes';
 import { buildRainbowUrl, showActionSheetWithOptions } from '@rainbow-me/utils';
 
 export default () => {
-  const { wallets, selectedWallet } = useWallets();
+  const { wallets, selectedWallet, isReadOnlyWallet } = useWallets();
   const dispatch = useDispatch();
   const { navigate } = useNavigation();
   const {
@@ -23,6 +25,11 @@ export default () => {
     accountImage,
     accountENS,
   } = useAccountProfile();
+  const profilesEnabled = useExperimentalFlag(PROFILES);
+
+  const ensProfile = useENSProfile(accountENS, {
+    enabled: Boolean(!isReadOnlyWallet && accountENS),
+  });
 
   const onAvatarRemovePhoto = useCallback(async () => {
     const newWallets = {
@@ -94,22 +101,33 @@ export default () => {
       setNextEmoji();
       return;
     }
-    const avatarActionSheetOptions = [
-      'Choose from Library',
-      ...(!accountImage ? ['Pick an Emoji'] : []),
-      ...(accountImage ? ['Remove Photo'] : []),
-      ...(ios ? ['Cancel'] : []),
-    ];
 
-    showActionSheetWithOptions(
-      {
-        cancelButtonIndex: avatarActionSheetOptions.length - 1,
-        destructiveButtonIndex: accountImage
-          ? avatarActionSheetOptions.length - 2
-          : undefined,
-        options: avatarActionSheetOptions,
-      },
-      async (buttonIndex: Number) => {
+    const editableENSProfile =
+      profilesEnabled &&
+      ensProfile?.data?.owner?.address?.toLowerCase() ===
+        accountAddress?.toLowerCase();
+
+    const avatarActionSheetOptions = (editableENSProfile
+      ? ['View Profile', 'Edit Profile']
+      : [
+          ...(!accountImage ? ['Pick an Emoji'] : []),
+          ...(accountImage ? ['Remove Photo'] : []),
+        ]
+    ).concat(ios ? ['Cancel'] : []);
+
+    const callback = async (buttonIndex: Number) => {
+      if (editableENSProfile) {
+        if (buttonIndex === 1) {
+          navigate(Routes.REGISTER_ENS_NAVIGATOR, {
+            ensName: accountENS,
+            mode: 'edit',
+          });
+        } else if (buttonIndex === 0) {
+          navigate(Routes.PROFILE_SHEET, {
+            address: accountENS,
+          });
+        }
+      } else {
         if (buttonIndex === 0) {
           onAvatarChooseImage();
         } else if (buttonIndex === 1) {
@@ -121,14 +139,28 @@ export default () => {
           }
         }
       }
+    };
+    showActionSheetWithOptions(
+      {
+        cancelButtonIndex: avatarActionSheetOptions.length - 1,
+        destructiveButtonIndex: accountImage
+          ? avatarActionSheetOptions.length - 2
+          : undefined,
+        options: avatarActionSheetOptions,
+      },
+      (buttonIndex: Number) => callback(buttonIndex)
     );
   }, [
-    setNextEmoji,
+    ensProfile,
+    profilesEnabled,
+    accountAddress,
     accountImage,
+    setNextEmoji,
+    navigate,
+    accountENS,
     onAvatarChooseImage,
     onAvatarPickEmoji,
     onAvatarRemovePhoto,
-    setNextEmoji,
   ]);
 
   const avatarOptions = useMemo(
