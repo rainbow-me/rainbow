@@ -55,8 +55,7 @@ export default function ConfirmExchangeButton({
   const { name: routeName } = useRoute();
 
   const isSwapDetailsRoute = routeName === Routes.SWAP_DETAILS_SHEET;
-  const shouldOpenSwapDetails =
-    tradeDetails && isHighPriceImpact && !isSwapDetailsRoute;
+  const shouldOpenSwapDetails = tradeDetails && !isSwapDetailsRoute;
 
   const { colors, isDarkMode } = useTheme();
 
