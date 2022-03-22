@@ -90,10 +90,9 @@ import {
   ethereumUtils,
   getBlocksFromTimestamps,
   isLowerCaseMatch,
+  logger,
   TokensListenedCache,
 } from '@rainbow-me/utils';
-import logger from 'logger';
-
 const storage = new MMKV();
 
 /**
@@ -1565,6 +1564,7 @@ export const dataWatchPendingTransactions = (
                 fbResponse.status === 'FAILED' ||
                 fbResponse.status === 'UNKNOWN'
               ) {
+                txStatusesDidChange = true;
                 updatedPending.status = TransactionStatus.dropped;
                 const title = getTitle({
                   protocol: tx.protocol,
@@ -1582,8 +1582,10 @@ export const dataWatchPendingTransactions = (
         return updatedPending;
       })
     );
+    logger.log('Done watching pending txs');
 
     if (txStatusesDidChange) {
+      logger.log('txStatusesDidChange!!!');
       const filteredPendingTransactions = updatedPendingTransactions?.filter(
         ({ status }) => status !== TransactionStatus.unknown
       );
@@ -1604,6 +1606,7 @@ export const dataWatchPendingTransactions = (
         return true;
       }
     }
+    logger.log('txStatusesDidChange is false, returning false');
     return false;
   });
 
