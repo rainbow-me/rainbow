@@ -3514,10 +3514,6 @@
   version "1.2.3"
   resolved "git+https://github.com/brunobar79/clipboard#01d1c1344723d0a4cee94e1fbc199c2e2169905c"
 
-"@react-native-community/masked-view@0.1.10":
-  version "0.1.10"
-  resolved "https://registry.yarnpkg.com/@react-native-community/masked-view/-/masked-view-0.1.10.tgz#5dda643e19e587793bc2034dd9bf7398ad43d401"
-
 "@react-native-community/netinfo@5.9.7":
   version "5.9.7"
   resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-5.9.7.tgz#769c6b306ea6bbaa1c4a3fffdd183d0cfc30ed7e"
@@ -3552,6 +3548,11 @@
   version "14.5.1"
   resolved "https://registry.yarnpkg.com/@react-native-firebase/remote-config/-/remote-config-14.5.1.tgz#736c7fba785dccf66595ae3851ade065a11d04db"
   integrity sha512-3EH5qAtnDiPEOys7Vm21ylFb7rRASsBVE1i55qKkMIVVwXajuract+xC7us0Ys3aVTbdn+X6rHajmgutdjKaqA==
+
+"@react-native-masked-view/masked-view@0.2.6":
+  version "0.2.6"
+  resolved "https://registry.yarnpkg.com/@react-native-masked-view/masked-view/-/masked-view-0.2.6.tgz#b26c52d5db3ad0926b13deea79c69620966a9221"
+  integrity sha512-303CxmetUmgiX9NSUxatZkNh9qTYYdiM8xkGf9I3Uj20U3eGY3M78ljeNQ4UVCJA+FNGS5nC1dtS9GjIqvB4dg==
 
 "@react-native/assets@1.0.0":
   version "1.0.0"

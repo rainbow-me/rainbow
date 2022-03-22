@@ -55,7 +55,6 @@ import {
 } from '@rainbow-me/handlers/localstorage/userLists';
 import { resolveNameOrAddress } from '@rainbow-me/handlers/web3';
 import { returnStringFirstEmoji } from '@rainbow-me/helpers/emojiHandler';
-import { STORAGE_IDS } from '@rainbow-me/model/mmkv';
 import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
 import { DefaultTokenLists } from '@rainbow-me/references';
 import { ethereumUtils, profileUtils } from '@rainbow-me/utils';
@@ -67,13 +66,6 @@ export default async function runMigrations() {
   const currentVersion = Number(await getMigrationVersion());
   const migrations = [];
   const mmkv = new MMKV();
-  const storageAspectRatio = new MMKV({
-    id: STORAGE_IDS.ASPECT_RATIO,
-  });
-
-  const storageDominantColor = new MMKV({
-    id: STORAGE_IDS.DOMINANT_COLOR,
-  });
 
   /*
    *************** Migration v0 ******************
@@ -606,18 +598,6 @@ export default async function runMigrations() {
   };
 
   migrations.push(v15);
-
-  /*
-   *************** Migration v16 ******************
-   * clean mmkv ration / dominant color
-   * https://linear.app/rainbow/issue/RNBW-2885
-   */
-  const v16 = async () => {
-    storageAspectRatio.clearAll();
-    storageDominantColor.clearAll();
-  };
-
-  migrations.push(v16);
 
   logger.sentry(
     `Migrations: ready to run migrations starting on number ${currentVersion}`
