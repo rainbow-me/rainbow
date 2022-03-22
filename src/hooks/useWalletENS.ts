@@ -23,21 +23,27 @@ export default function useWalletENS() {
         if (ens) {
           const images = await fetchImages(ens);
           if (images?.avatarUrl) {
-            const addresses = wallet.addresses.map((acc: RainbowAccount) => ({
-              ...acc,
-              image:
-                account.address.toLowerCase() === acc.address.toLowerCase()
-                  ? images.avatarUrl
-                  : acc.image,
-            }));
-
-            updatedWallets = {
-              ...wallets,
-              [key]: {
-                ...wallets[key],
-                addresses,
-              },
-            };
+            let avatarChanged = false;
+            const addresses = wallet.addresses.map((acc: RainbowAccount) => {
+              avatarChanged = account.image !== acc.image;
+              return {
+                ...acc,
+                image:
+                  account.address === acc.address && account.image !== acc.image
+                    ? images.avatarUrl
+                    : acc.image,
+              };
+            });
+            // don't update wallets if nothing changed
+            if (avatarChanged) {
+              updatedWallets = {
+                ...wallets,
+                [key]: {
+                  ...wallets[key],
+                  addresses,
+                },
+              };
+            }
           }
         }
       }
