@@ -27,7 +27,7 @@ export default () => {
   } = useAccountProfile();
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const ensProfile = useENSProfile(accountENS, {
-    enabled: Boolean(!isReadOnlyWallet && accountENS),
+    enabled: Boolean(accountENS),
   });
 
   const onAvatarRemovePhoto = useCallback(async () => {
@@ -101,13 +101,13 @@ export default () => {
       return;
     }
 
-    const editableENSProfile =
+    const isENSProfile =
       profilesEnabled &&
       ensProfile?.data?.owner?.address?.toLowerCase() ===
         accountAddress?.toLowerCase();
 
-    const avatarActionSheetOptions = (editableENSProfile
-      ? ['View Profile', 'Edit Profile']
+    const avatarActionSheetOptions = (isENSProfile
+      ? ['View Profile', ...(!isReadOnlyWallet ? ['Edit Profile'] : [])]
       : [
           'Choose from Library',
           ...(!accountImage ? ['Pick an Emoji'] : []),
@@ -116,7 +116,7 @@ export default () => {
     ).concat(ios ? ['Cancel'] : []);
 
     const callback = async (buttonIndex: Number) => {
-      if (editableENSProfile) {
+      if (isENSProfile) {
         if (buttonIndex === 1) {
           navigate(Routes.REGISTER_ENS_NAVIGATOR, {
             ensName: accountENS,
@@ -144,7 +144,7 @@ export default () => {
       {
         cancelButtonIndex: avatarActionSheetOptions.length - 1,
         destructiveButtonIndex:
-          !editableENSProfile && accountImage
+          !isENSProfile && accountImage
             ? avatarActionSheetOptions.length - 2
             : undefined,
         options: avatarActionSheetOptions,
@@ -152,9 +152,10 @@ export default () => {
       (buttonIndex: Number) => callback(buttonIndex)
     );
   }, [
-    ensProfile,
     profilesEnabled,
+    ensProfile?.data?.owner?.address,
     accountAddress,
+    isReadOnlyWallet,
     accountImage,
     setNextEmoji,
     navigate,
