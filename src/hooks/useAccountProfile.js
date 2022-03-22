@@ -1,8 +1,6 @@
 import { useMemo } from 'react';
 import useAccountSettings from './useAccountSettings';
-import useENSProfile from './useENSProfile';
 import useWallets from './useWallets';
-import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
 
 export default function useAccountProfile() {
@@ -27,17 +25,12 @@ export default function useAccountProfile() {
     accountsettingsAddress
   );
 
-  const profilesEnabled = useExperimentalFlag(PROFILES);
-  const ensProfile = useENSProfile(accountName, {
-    enabled: Boolean(profilesEnabled && accountName),
-  });
-
   return useMemo(
     () => ({
       accountAddress,
       accountColor,
       accountENS,
-      accountImage: ensProfile?.data?.images?.avatarUrl ?? accountImage,
+      accountImage,
       accountName,
       accountSymbol,
     }),
@@ -45,7 +38,6 @@ export default function useAccountProfile() {
       accountAddress,
       accountColor,
       accountENS,
-      ensProfile?.data?.images?.avatarUrl,
       accountImage,
       accountName,
       accountSymbol,
