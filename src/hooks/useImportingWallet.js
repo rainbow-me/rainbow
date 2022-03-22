@@ -10,6 +10,7 @@ import useIsWalletEthZero from './useIsWalletEthZero';
 import useMagicAutofocus from './useMagicAutofocus';
 import usePrevious from './usePrevious';
 import useTimeout from './useTimeout';
+import useWalletENS from './useWalletENS';
 import useWallets from './useWallets';
 import {
   resolveUnstoppableDomain,
@@ -43,6 +44,7 @@ export default function useImportingWallet() {
   const [resolvedAddress, setResolvedAddress] = useState(null);
   const [startAnalyticsTimeout] = useTimeout();
   const wasImporting = usePrevious(isImporting);
+  const { updateWalletENSAvatars } = useWalletENS();
 
   const inputRef = useRef(null);
 
@@ -245,6 +247,7 @@ export default function useImportingWallet() {
                       });
                   }
                 }, 1000);
+
                 analytics.track('Imported seed phrase', {
                   isWalletEthZero,
                 });
@@ -285,6 +288,7 @@ export default function useImportingWallet() {
     startAnalyticsTimeout,
     wallets,
     wasImporting,
+    updateWalletENSAvatars,
   ]);
 
   useEffect(() => {

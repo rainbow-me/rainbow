@@ -26,10 +26,11 @@ export default function useWalletENS() {
             const addresses = wallet.addresses.map((acc: RainbowAccount) => ({
               ...acc,
               image:
-                account.address === acc.address
+                account.address.toLowerCase() === acc.address.toLowerCase()
                   ? images.avatarUrl
-                  : account.image,
+                  : acc.image,
             }));
+
             updatedWallets = {
               ...wallets,
               [key]: {

@@ -109,6 +109,7 @@ export default () => {
     const avatarActionSheetOptions = (editableENSProfile
       ? ['View Profile', 'Edit Profile']
       : [
+          'Choose from Library',
           ...(!accountImage ? ['Pick an Emoji'] : []),
           ...(accountImage ? ['Remove Photo'] : []),
         ]
@@ -142,9 +143,10 @@ export default () => {
     showActionSheetWithOptions(
       {
         cancelButtonIndex: avatarActionSheetOptions.length - 1,
-        destructiveButtonIndex: accountImage
-          ? avatarActionSheetOptions.length - 2
-          : undefined,
+        destructiveButtonIndex:
+          !editableENSProfile && accountImage
+            ? avatarActionSheetOptions.length - 2
+            : undefined,
         options: avatarActionSheetOptions,
       },
       (buttonIndex: Number) => callback(buttonIndex)
