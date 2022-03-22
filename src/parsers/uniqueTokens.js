@@ -89,7 +89,7 @@ export const parseAccountUniqueTokens = data => {
           asset_contract.schema_name === 'ERC1155',
         lastPrice: asset.last_sale
           ? Number(
-              (asset.last_sale?.total_price / 1000000000000000000).toFixed(4)
+              (asset.last_sale?.total_price / 1000000000000000000).toFixed(6)
             ) + ` ${asset.last_sale.payment_token?.symbol}`
           : null,
         lastPriceUsd: asset.last_sale
@@ -158,7 +158,7 @@ export const parseAccountUniqueTokensPolygon = async data => {
       isSendable: false,
       lastPrice: asset.last_sale
         ? Number(
-            (asset.last_sale?.total_price / 1000000000000000000).toFixed(4)
+            (asset.last_sale?.total_price / 1000000000000000000).toFixed(6)
           ) + ` ${asset.last_sale.payment_token?.symbol}`
         : null,
       lastPriceUsd: asset.last_sale
