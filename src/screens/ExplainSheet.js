@@ -74,7 +74,7 @@ const CURRENT_BASE_FEE_EXPLAINER_RISING = `\n\nFees are rising right now! It’s
 const CURRENT_BASE_FEE_EXPLAINER_SURGING = `\n\nFees are unusually high right now! Unless your transaction is urgent, it’s best to wait for fees to drop.`;
 
 const ENS_ON_CHAIN_DATA_WARNING_EXPLAINER =
-  'The data you provide here will be stored on the blockchain – a global database visible to the public and accessible by anyone. Do not share any data you are uncomfortable with publicizing.';
+  'The data you provide here will be stored on the Ethereum blockchain – meaning it will be visible to everyone and accessible by anyone. Do not share any data you are uncomfortable with publicizing.';
 
 const ENS_ON_CHAIN_DATA_WARNING_TITLE = 'Heads up!';
 
