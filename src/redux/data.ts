@@ -1039,88 +1039,93 @@ export const addressAssetsReceived = (
 ) => {
   const isValidMeta = dispatch(checkMeta(message));
   if (!isValidMeta) return;
-  const { settings } = getState();
-  const { network } = settings;
-  const accountAddress = message?.meta?.address || settings.accountAddress;
-  const { uniqueTokens } = getState().uniqueTokens;
-  const newAssets = message?.payload?.assets ?? {};
-  let updatedAssets = pickBy(
-    newAssets,
-    asset =>
-      asset?.asset?.type !== AssetTypes.compound &&
-      asset?.asset?.type !== AssetTypes.trash &&
-      !shitcoins.includes(toLower(asset?.asset?.asset_code))
-  );
-
-  if (removed) {
-    updatedAssets = mapValues(newAssets, asset => {
-      return {
-        ...asset,
-        quantity: 0,
-      };
-    });
-  }
-
-  let parsedAssets = parseAccountAssets(updatedAssets, uniqueTokens) as {
-    [id: string]: ParsedAddressAsset;
-  };
-
-  const liquidityTokens = filter(
-    parsedAssets,
-    asset => asset?.type === AssetTypes.uniswapV2
-  );
-
-  // remove V2 LP tokens
-  parsedAssets = pickBy(
-    parsedAssets,
-    asset => asset?.type !== AssetTypes.uniswapV2
-  );
-
-  const isL2 = assetsNetwork && isL2Network(assetsNetwork);
-  if (!isL2 && !assetsNetwork) {
-    dispatch(
-      uniswapUpdateLiquidityTokens(liquidityTokens, append || change || removed)
+  const { accountAddress, network } = getState().settings;
+  const responseAddress = message?.meta?.address;
+  const addressMatch = accountAddress === responseAddress;
+  if (addressMatch) {
+    const { uniqueTokens } = getState().uniqueTokens;
+    const newAssets = message?.payload?.assets ?? {};
+    let updatedAssets = pickBy(
+      newAssets,
+      asset =>
+        asset?.asset?.type !== AssetTypes.compound &&
+        asset?.asset?.type !== AssetTypes.trash &&
+        !shitcoins.includes(toLower(asset?.asset?.asset_code))
     );
-  }
 
-  const { accountAssetsData: existingAccountAssetsData } = getState().data;
-  parsedAssets = {
-    ...existingAccountAssetsData,
-    ...parsedAssets,
-  };
+    if (removed) {
+      updatedAssets = mapValues(newAssets, asset => {
+        return {
+          ...asset,
+          quantity: 0,
+        };
+      });
+    }
 
-  parsedAssets = pickBy(
-    parsedAssets,
-    asset => !!Number(asset?.balance?.amount)
-  );
+    let parsedAssets = parseAccountAssets(updatedAssets, uniqueTokens) as {
+      [id: string]: ParsedAddressAsset;
+    };
 
-  saveAccountAssetsData(parsedAssets, accountAddress, network);
-  if (!isEmpty(parsedAssets)) {
-    // Change the state since the account isn't empty anymore
-    saveAccountEmptyState(false, accountAddress, network);
-  }
-
-  dispatch({
-    payload: parsedAssets,
-    type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
-  });
-  if (!change) {
-    const missingPriceAssetAddresses: string[] = map(
-      filter(parsedAssets, asset => isNil(asset?.price)),
-      property('address')
-    );
-    dispatch(subscribeToMissingPrices(missingPriceAssetAddresses));
-  }
-
-  //Hide tokens with a url as their token name
-  const assetsWithScamURL: string[] = map(
-    filter(
+    const liquidityTokens = filter(
       parsedAssets,
-      asset => isValidDomain(asset.name) && !asset.isVerified
-    ),
-    property('uniqueId')
-  );
-  addHiddenCoins(assetsWithScamURL, dispatch, accountAddress);
+      asset => asset?.type === AssetTypes.uniswapV2
+    );
+
+    // remove V2 LP tokens
+    parsedAssets = pickBy(
+      parsedAssets,
+      asset => asset?.type !== AssetTypes.uniswapV2
+    );
+
+    const isL2 = assetsNetwork && isL2Network(assetsNetwork);
+    if (!isL2 && !assetsNetwork) {
+      dispatch(
+        uniswapUpdateLiquidityTokens(
+          liquidityTokens,
+          append || change || removed
+        )
+      );
+    }
+
+    const { accountAssetsData: existingAccountAssetsData } = getState().data;
+    parsedAssets = {
+      ...existingAccountAssetsData,
+      ...parsedAssets,
+    };
+
+    parsedAssets = pickBy(
+      parsedAssets,
+      asset => !!Number(asset?.balance?.amount)
+    );
+
+    saveAccountAssetsData(parsedAssets, accountAddress, network);
+    if (!isEmpty(parsedAssets)) {
+      // Change the state since the account isn't empty anymore
+      saveAccountEmptyState(false, accountAddress, network);
+    }
+
+    dispatch({
+      payload: parsedAssets,
+      type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
+    });
+    if (!change) {
+      const missingPriceAssetAddresses: string[] = map(
+        filter(parsedAssets, asset => isNil(asset?.price)),
+        property('address')
+      );
+      dispatch(subscribeToMissingPrices(missingPriceAssetAddresses));
+    }
+
+    //Hide tokens with a url as their token name
+    const assetsWithScamURL: string[] = map(
+      filter(
+        parsedAssets,
+        asset => isValidDomain(asset.name) && !asset.isVerified
+      ),
+      property('uniqueId')
+    );
+    addHiddenCoins(assetsWithScamURL, dispatch, accountAddress);
+  }
 };
 
 /**
