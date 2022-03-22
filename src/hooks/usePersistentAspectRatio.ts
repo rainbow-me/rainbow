@@ -33,7 +33,7 @@ export default function usePersistentAspectRatio(url: string): Result {
     ratio !== 0 ? State.loaded : State.init
   );
   useEffect(() => {
-    if (state === State.init && nonSvgUrl && url) {
+    if (state === State.init && nonSvgUrl) {
       const lowResUrl = getLowResUrl(nonSvgUrl) as string;
       setState(State.loading);
       Image.getSize(
@@ -44,9 +44,6 @@ export default function usePersistentAspectRatio(url: string): Result {
         },
         () => setState(State.failed)
       );
-    } else {
-      setAspectRatio(1);
-      setState(State.loaded);
     }
   }, [setAspectRatio, state, nonSvgUrl, url]);
   return {
