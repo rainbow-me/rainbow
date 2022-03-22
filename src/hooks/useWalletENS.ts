@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
+import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import { fetchImages } from '@rainbow-me/handlers/ens';
 import { useWallets } from '@rainbow-me/hooks';
 import { RainbowAccount } from '@rainbow-me/model/wallet';
@@ -7,31 +8,28 @@ import { walletsSetSelected, walletsUpdate } from '@rainbow-me/redux/wallets';
 
 export default function useWalletENS() {
   const dispatch = useDispatch();
+  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   const { wallets, walletNames, selectedWallet } = useWallets();
 
   const updateWalletENSAvatars = useCallback(async () => {
+    if (!profilesEnabled) return;
     const walletKeys = Object.keys(wallets);
     let updatedWallets;
-    for (const i in walletKeys) {
-      const key = walletKeys[i];
+    for (const key of walletKeys) {
       const wallet = wallets[key];
-      const accounts = wallet?.addresses;
-      for (const j in accounts) {
-        const account = accounts[j];
+      for (const account of wallet?.addresses) {
         const ens = walletNames[account.address];
         if (ens) {
           const images = await fetchImages(ens);
           if (images?.avatarUrl) {
-            const addresses = wallets[key].addresses.map(
-              (acc: RainbowAccount) => ({
-                ...acc,
-                image:
-                  account.address === acc.address
-                    ? images.avatarUrl
-                    : account.image,
-              })
-            );
+            const addresses = wallet.addresses.map((acc: RainbowAccount) => ({
+              ...acc,
+              image:
+                account.address === acc.address
+                  ? images.avatarUrl
+                  : account.image,
+            }));
             updatedWallets = {
               ...wallets,
               [key]: {
@@ -43,10 +41,11 @@ export default function useWalletENS() {
         }
       }
     }
-    updatedWallets &&
+    if (updatedWallets) {
       dispatch(walletsSetSelected(updatedWallets[selectedWallet.id]));
-    updatedWallets && dispatch(walletsUpdate(updatedWallets));
-  }, [dispatch, selectedWallet.id, walletNames, wallets]);
+      dispatch(walletsUpdate(updatedWallets));
+    }
+  }, [dispatch, profilesEnabled, selectedWallet.id, walletNames, wallets]);
 
   return { updateWalletENSAvatars };
 }
