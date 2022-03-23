@@ -10,7 +10,7 @@ import useIsWalletEthZero from './useIsWalletEthZero';
 import useMagicAutofocus from './useMagicAutofocus';
 import usePrevious from './usePrevious';
 import useTimeout from './useTimeout';
-import useWalletENS from './useWalletENS';
+import useWalletENSAvatar from './useWalletENSAvatar';
 import useWallets from './useWallets';
 import {
   resolveUnstoppableDomain,
@@ -45,7 +45,7 @@ export default function useImportingWallet() {
   const [resolvedAddress, setResolvedAddress] = useState(null);
   const [startAnalyticsTimeout] = useTimeout();
   const wasImporting = usePrevious(isImporting);
-  const { updateWalletENSAvatars } = useWalletENS();
+  const { updateWalletENSAvatars } = useWalletENSAvatar();
 
   const inputRef = useRef(null);
 

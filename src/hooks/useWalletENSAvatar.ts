@@ -6,7 +6,7 @@ import { useWallets } from '@rainbow-me/hooks';
 import { RainbowAccount } from '@rainbow-me/model/wallet';
 import { walletsSetSelected, walletsUpdate } from '@rainbow-me/redux/wallets';
 
-export default function useWalletENS() {
+export default function useWalletENSAvatar() {
   const dispatch = useDispatch();
   const profilesEnabled = useExperimentalFlag(PROFILES);
 

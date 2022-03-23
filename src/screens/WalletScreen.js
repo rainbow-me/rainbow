@@ -25,7 +25,7 @@ import {
   useLoadGlobalLateData,
   usePortfolios,
   useUserAccounts,
-  useWalletENS,
+  useWalletENSAvatar,
   useWallets,
   useWalletSectionsData,
 } from '@rainbow-me/hooks';
@@ -68,7 +68,7 @@ export default function WalletScreen() {
   const { portfolios, trackPortfolios } = usePortfolios();
   const loadGlobalLateData = useLoadGlobalLateData();
   const initializeDiscoverData = useInitializeDiscoverData();
-  const { updateWalletENSAvatars } = useWalletENS();
+  const { updateWalletENSAvatars } = useWalletENSAvatar();
   const walletReady = useSelector(
     ({ appState: { walletReady } }) => walletReady
   );
