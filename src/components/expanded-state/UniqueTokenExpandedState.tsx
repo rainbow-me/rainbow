@@ -333,16 +333,12 @@ const UniqueTokenExpandedState = ({
   const sheetRef = useRef();
   const yPosition = useSharedValue(0);
 
-  const isENSOwner = useMemo(
-    () => isENS && ensProfile.data?.owner?.address === accountAddress,
-    [accountAddress, ensProfile.data?.owner?.address, isENS]
-  );
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const isActionsEnabled = !external && !isReadOnlyWallet;
   const hasSendButton = isActionsEnabled && isSendable;
 
   const hasEditButton =
-    isActionsEnabled && profilesEnabled && isENS && isENSOwner;
+    isActionsEnabled && profilesEnabled && isENS && ensProfile.isOwner;
 
   const familyLinkDisplay = useMemo(
     () =>

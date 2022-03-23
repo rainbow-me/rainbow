@@ -101,10 +101,7 @@ export default () => {
       return;
     }
 
-    const isENSProfile =
-      profilesEnabled &&
-      ensProfile?.data?.owner?.address?.toLowerCase() ===
-        accountAddress?.toLowerCase();
+    const isENSProfile = profilesEnabled && ensProfile?.isOwner;
 
     const avatarActionSheetOptions = (isENSProfile
       ? ['View Profile', ...(!isReadOnlyWallet ? ['Edit Profile'] : [])]
@@ -153,8 +150,7 @@ export default () => {
     );
   }, [
     profilesEnabled,
-    ensProfile?.data?.owner?.address,
-    accountAddress,
+    ensProfile?.isOwner,
     isReadOnlyWallet,
     accountImage,
     setNextEmoji,
