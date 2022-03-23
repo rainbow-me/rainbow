@@ -2,6 +2,7 @@ import { useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
+import { IS_TESTING } from 'react-native-dotenv';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -154,6 +155,9 @@ export default function ENSAssignRecordsSheet() {
                   onFocus={handleFocus}
                 />
               </Box>
+              {IS_TESTING === 'true' && (
+                <ENSAssignRecordsBottomActions visible />
+              )}
             </Stack>
           </Inset>
         </Stack>
@@ -218,7 +222,7 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
 
   return (
     <>
-      {visible && (
+      {visible && IS_TESTING !== 'true' && (
         <Box position="absolute" right="0px" style={keyboardButtonWrapperStyle}>
           <Inset bottom="19px" right="19px">
             <HideKeyboardButton color={accentColor} />
@@ -234,7 +238,7 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
             paddingBottom="19px"
             style={useMemo(() => ({ height: BottomActionHeight }), [])}
           >
-            {ios ? <Shadow /> : null}
+            {ios && IS_TESTING !== 'true' ? <Shadow /> : null}
             <Rows>
               <Row>
                 <Inset horizontal="19px" top="30px">
@@ -264,6 +268,7 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
                       color="secondary60"
                       disabled={disabled}
                       onPress={handlePressContinue}
+                      testID="ens-assign-records-skip"
                     >
                       {lang.t('profiles.create.skip')}
                     </TintButton>
@@ -275,6 +280,7 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
                         label={lang.t('profiles.create.review')}
                         onPress={handlePressContinue}
                         size="big"
+                        testID="ens-assign-records-review"
                         weight="heavy"
                       />
                     </Box>
@@ -393,6 +399,7 @@ function SelectableAttributesButtons({
                 onAddField(fieldToAdd, [...selectedFields, fieldToAdd]);
               }
             }}
+            testID={`ens-selectable-attribute-${textRecordField.id}`}
           >
             {textRecordField.label}
           </SelectableButton>

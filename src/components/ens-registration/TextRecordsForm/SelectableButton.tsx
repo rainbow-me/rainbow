@@ -11,12 +11,14 @@ type SelectableButtonProps = {
   children: ReactNode;
   onSelect: () => void;
   isSelected: boolean;
+  testID?: string;
 };
 
 export default function SelectableButton({
   children,
   onSelect,
   isSelected,
+  testID,
 }: SelectableButtonProps) {
   const secondary30 = useForegroundColor('secondary30');
   const accent = useForegroundColor('accent');
@@ -30,6 +32,7 @@ export default function SelectableButton({
         height={`${height}px`}
         // @ts-expect-error
         onPress={onSelect}
+        testID={testID}
       >
         <Box
           alignItems="center"

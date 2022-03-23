@@ -77,7 +77,12 @@ export default function ENSSearchSheet() {
   }, [navigate, searchQuery, startRegistration]);
 
   return (
-    <Box background="body" flexGrow={1} paddingTop={{ custom: topPadding }}>
+    <Box
+      background="body"
+      flexGrow={1}
+      paddingTop={{ custom: topPadding }}
+      testID="ens-search-sheet"
+    >
       <Box flexGrow={1} paddingTop="30px">
         <Stack alignHorizontal="center" space="15px">
           <Heading size="23px" weight="heavy">
@@ -100,6 +105,7 @@ export default function ENSSearchSheet() {
             onChangeText={value => setSearchQuery(normalizeENS(value))}
             placeholder="Input placeholder"
             state={state}
+            testID="ens-search-input"
             value={searchQuery}
           />
         </Box>
@@ -148,6 +154,7 @@ export default function ENSSearchSheet() {
                 ) : (
                   <SearchResultGradientIndicator
                     price={registrationData?.rentPrice?.perYear?.display}
+                    testID="ens-registration-price"
                     type="price"
                   />
                 )}
@@ -162,7 +169,12 @@ export default function ENSSearchSheet() {
                 ) : (
                   <Inline>
                     {registrationCostsDataIsAvailable ? (
-                      <Text color="secondary50" size="16px" weight="bold">
+                      <Text
+                        color="secondary50"
+                        size="16px"
+                        testID="ens-registration-fees"
+                        weight="bold"
+                      >
                         {lang.t('profiles.search.estimated_total_cost_1')}
                         <Text color="secondary80" size="16px" weight="heavy">
                           {` ${registrationCostsData?.estimatedTotalRegistrationCost?.display} `}
@@ -189,11 +201,15 @@ export default function ENSSearchSheet() {
               label={lang.t('profiles.search.continue')}
               onPress={handlePressContinue}
               size="big"
+              testID="ens-search-continue"
               weight="heavy"
             />
           )}
           {(isRegistered || isInvalid) && (
-            <TintButton onPress={() => setSearchQuery('')}>
+            <TintButton
+              onPress={() => setSearchQuery('')}
+              testID="ens-search-clear-button"
+            >
               {lang.t('profiles.search.clear')}
             </TintButton>
           )}

@@ -42,7 +42,13 @@ describe('Discover Sheet Flow', () => {
     await Helpers.enableSynchronization();
   });
 
+  it('Should navigate to the Profile screen after swiping right', async () => {
+    await Helpers.swipe('wallet-screen', 'right', 'slow');
+    await Helpers.checkIfVisible('profile-screen');
+  });
+
   it('Should navigate to Discover screen after tapping Discover Button', async () => {
+    await Helpers.swipe('profile-screen', 'left', 'slow');
     await Helpers.waitAndTap('discover-button');
     await Helpers.checkIfVisible('discover-header');
   });

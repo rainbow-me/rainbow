@@ -1,6 +1,5 @@
 import React from 'react';
 import { CoinDivider } from '../../../coin-divider';
-import ProfileSheetHeader from '../../../ens-profile/ProfileSheetHeader';
 import { AssetListHeader, AssetListItemSkeleton } from '../../index';
 import WrappedNFT from '../WrappedNFT';
 import WrappedPoolRow from '../WrappedPoolRow';

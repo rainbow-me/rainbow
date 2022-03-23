@@ -1,13 +1,17 @@
 import { useFocusEffect, useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { InteractionManager } from 'react-native';
 import { Switch } from 'react-native-gesture-handler';
 import { useRecoilState } from 'recoil';
 import brain from '../assets/brain.png';
 import ActivityIndicator from '../components/ActivityIndicator';
 import Spinner from '../components/Spinner';
-import { ButtonPressAnimation } from '../components/animations';
+import {
+  ButtonPressAnimation,
+  HourglassAnimation,
+} from '../components/animations';
 import { HoldToAuthorizeButton } from '../components/buttons';
 import { RegistrationReviewRows } from '../components/ens-registration';
 import { GasSpeedButton } from '../components/gas';
@@ -42,6 +46,8 @@ import {
   useGas,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
+import { useNavigation } from '@rainbow-me/navigation';
+import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 
 export const ENSConfirmRegisterSheetHeight = 600;
@@ -112,6 +118,7 @@ function RegisterContent({
               onValueChange={() =>
                 setSendReverseRecord(sendReverseRecord => !sendReverseRecord)
               }
+              testID="ens-reverse-record-switch"
               trackColor={{ false: colors.white, true: accentColor }}
               value={sendReverseRecord}
             />
@@ -125,7 +132,7 @@ function RegisterContent({
 function WaitCommitmentConfirmationContent({ accentColor, action }) {
   return (
     <Box alignItems="center" height="full">
-      <LoadingSpinner />
+      <HourglassAnimation />
       <ButtonPressAnimation onPress={() => action(accentColor)}>
         <Text
           color={{ custom: accentColor }}
@@ -140,7 +147,14 @@ function WaitCommitmentConfirmationContent({ accentColor, action }) {
   );
 }
 
-function TransactionActionRow({ action, accentColor, label, disabled, ready }) {
+function TransactionActionRow({
+  action,
+  accentColor,
+  label,
+  disabled,
+  testID,
+  ready,
+}) {
   return (
     <Box>
       <Box>
@@ -158,6 +172,7 @@ function TransactionActionRow({ action, accentColor, label, disabled, ready }) {
             onLongPress={action}
             parentHorizontalPadding={19}
             showBiometryIcon={!ready || !disabled}
+            testID={`ens-transaction-action-${testID}`}
           />
         </SheetActionButtonRow>
       </Box>
@@ -197,6 +212,7 @@ export default function ENSConfirmRegisterSheet() {
     sendReverseRecord,
     yearsDuration: duration,
   });
+  const { navigate, goBack } = useNavigation();
 
   const { blurFields, values } = useENSRegistrationForm();
   const avatarUrl = initialAvatarUrl || values.avatar;
@@ -213,6 +229,15 @@ export default function ENSConfirmRegisterSheet() {
     rentPrice: registrationData?.rentPrice,
     sendReverseRecord,
   });
+
+  const goToProfileScreen = useCallback(() => {
+    goBack();
+    setTimeout(() => {
+      InteractionManager.runAfterInteractions(() => {
+        navigate(Routes.PROFILE_SCREEN);
+      });
+    }, 100);
+  }, [goBack, navigate]);
 
   const boxStyle = useMemo(
     () => ({
@@ -266,7 +291,7 @@ export default function ENSConfirmRegisterSheet() {
       ),
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: (
         <Box alignItems="center">
-          <LoadingSpinner />
+          <HourglassAnimation />
         </Box>
       ),
     }),
@@ -285,15 +310,20 @@ export default function ENSConfirmRegisterSheet() {
           }
           label={lang.t('profiles.confirm.start_registration')}
           ready={Boolean(gasLimit)}
+          testID={step}
         />
       ),
       [REGISTRATION_STEPS.REGISTER]: (
         <TransactionActionRow
           accentColor={accentColor}
-          action={action}
-          disabled={!isSufficientGasForStep}
+          action={() => {
+            action();
+            goToProfileScreen();
+          }}
+          disabled={!stepGasLimit}
           label={lang.t('profiles.confirm.confirm_registration')}
           ready={Boolean(gasLimit)}
+          testID={step}
         />
       ),
       [REGISTRATION_STEPS.EDIT]: (
@@ -303,6 +333,7 @@ export default function ENSConfirmRegisterSheet() {
           disabled={!isSufficientGasForStep}
           label={lang.t('profiles.confirm.confirm_update')}
           ready={Boolean(gasLimit)}
+          testID={step}
         />
       ),
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: null,
@@ -312,8 +343,11 @@ export default function ENSConfirmRegisterSheet() {
       accentColor,
       action,
       gasLimit,
+      goToProfileScreen,
       isSufficientGasForStep,
       registrationCostsData?.isSufficientGasForRegistration,
+      step,
+      stepGasLimit,
     ]
   );
 
@@ -359,7 +393,12 @@ export default function ENSConfirmRegisterSheet() {
       scrollEnabled={false}
     >
       <AccentColorProvider color={accentColor}>
-        <Box background="body" paddingVertical="30px" style={boxStyle}>
+        <Box
+          background="body"
+          paddingVertical="30px"
+          style={boxStyle}
+          testID="ens-confirm-register-sheet"
+        >
           <Rows>
             <Row height="content">
               <Box horizontal="30px">
@@ -382,7 +421,11 @@ export default function ENSConfirmRegisterSheet() {
                     </Box>
                   )}
                   <Heading size="26px">{ensName}</Heading>
-                  <Text color="accent" weight="heavy">
+                  <Text
+                    color="accent"
+                    testID={`ens-confirm-register-label-${step}`}
+                    weight="heavy"
+                  >
                     {stepLabel}
                   </Text>
                 </Stack>

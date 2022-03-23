@@ -33,6 +33,7 @@ export type InlineFieldProps = {
     };
   };
   value?: string;
+  testID?: string;
 };
 
 export default function InlineField({
@@ -48,6 +49,7 @@ export default function InlineField({
   onEndEditing,
   startsWith,
   value,
+  testID,
 }: InlineFieldProps) {
   const { colors } = useTheme();
   const { width } = useDimensions();
@@ -172,6 +174,7 @@ export default function InlineField({
             keyboardType={
               android ? 'visible-password' : inputProps?.keyboardType
             }
+            testID={testID}
           />
         </Inline>
       </Column>
