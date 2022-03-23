@@ -88,7 +88,11 @@ export const parseAccountUniqueTokens = data => {
           asset_contract.nft_version === '3.0' ||
           asset_contract.schema_name === 'ERC1155',
         lastPrice: asset.last_sale
-          ? Math.round((0 + Number.EPSILON) * 1000) / 1000
+          ? Math.round(
+              (asset.last_sale?.total_price / 1000000000000000000 +
+                Number.EPSILON) *
+                1000
+            ) / 1000
           : null,
         lastPriceUsd: asset.last_sale
           ? asset.last_sale?.payment_token?.usd_price
