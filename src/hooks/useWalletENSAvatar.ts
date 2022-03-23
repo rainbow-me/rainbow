@@ -25,11 +25,12 @@ export default function useWalletENSAvatar() {
           if (images?.avatarUrl) {
             let avatarChanged = false;
             const addresses = wallet.addresses.map((acc: RainbowAccount) => {
-              avatarChanged = account.image !== acc.image;
+              avatarChanged = avatarChanged || images.avatarUrl !== acc.image;
               return {
                 ...acc,
                 image:
-                  account.address === acc.address && account.image !== acc.image
+                  account.address === acc.address &&
+                  images.avatarUrl !== acc.image
                     ? images.avatarUrl
                     : acc.image,
               };
