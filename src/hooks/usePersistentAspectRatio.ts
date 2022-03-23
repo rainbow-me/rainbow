@@ -25,7 +25,10 @@ type Result = {
 export default function usePersistentAspectRatio(url: string): Result {
   const isSVG = isSupportedUriExtension(url, ['.svg']);
   const nonSvgUrl = isSVG ? imageToPng(url, 200) : url;
-  const [ratio, setAspectRatio] = useMMKVNumber(nonSvgUrl as string, storage);
+  const [ratio, setAspectRatio] = useMMKVNumber(
+    (nonSvgUrl || '') as string,
+    storage
+  );
   const [state, setState] = useState<State>(
     ratio !== 0 ? State.loaded : State.init
   );

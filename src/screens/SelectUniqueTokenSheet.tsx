@@ -8,7 +8,6 @@ import {
 } from '../components/asset-list/RecyclerAssetList2/core/Contexts';
 import RawMemoRecyclerAssetList from '../components/asset-list/RecyclerAssetList2/core/RawRecyclerList';
 import { StickyHeaderManager } from '../components/asset-list/RecyclerAssetList2/core/StickyHeaders';
-import { CellType } from '../components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import useMemoBriefSectionData from '../components/asset-list/RecyclerAssetList2/core/useMemoBriefSectionData';
 import { SheetHandle } from '../components/sheet';
 import { ModalContext } from '../react-native-cool-modals/NativeStackView';
@@ -27,13 +26,7 @@ export default function SelectUniqueTokenSheet() {
   const {
     memoizedResult: briefSectionsData,
     additionalData,
-  } = useMemoBriefSectionData({
-    filterTypes: [
-      CellType.NFT_SPACE_AFTER,
-      CellType.NFT,
-      CellType.FAMILY_HEADER,
-    ],
-  });
+  } = useMemoBriefSectionData({ type: 'select-nft' });
   const position = useMemoOne(() => new RNAnimated.Value(0), []);
 
   const value = useMemo(

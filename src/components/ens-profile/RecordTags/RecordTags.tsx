@@ -4,6 +4,7 @@ import { ScrollView } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { Icon } from '../../icons';
+import Skeleton from '../../skeleton/Skeleton';
 import { useTheme } from '@rainbow-me/context';
 import {
   Bleed,
@@ -42,28 +43,26 @@ export default function RecordTags({
   );
 
   return (
-    <Bleed horizontal="19px">
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        <Inset horizontal="19px">
-          <Inline space="10px">
-            {recordsToShow?.map(({ key: recordKey, value: recordValue }) =>
-              recordValue ? (
-                <RecordTag
-                  key={recordKey}
-                  recordKey={recordKey}
-                  recordValue={recordValue}
-                />
-              ) : null
-            )}
-            {firstTransactionTimestamp && (
-              <Tag color="grey" symbol="􀉉">
-                Since {format(firstTransactionTimestamp, 'MMM yyyy')}
-              </Tag>
-            )}
-          </Inline>
-        </Inset>
-      </ScrollView>
-    </Bleed>
+    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+      <Inset horizontal="19px">
+        <Inline space="10px">
+          {recordsToShow?.map(({ key: recordKey, value: recordValue }) =>
+            recordValue ? (
+              <RecordTag
+                key={recordKey}
+                recordKey={recordKey}
+                recordValue={recordValue}
+              />
+            ) : null
+          )}
+          {firstTransactionTimestamp && (
+            <Tag color="grey" symbol="􀉉">
+              Since {format(firstTransactionTimestamp, 'MMM yyyy')}
+            </Tag>
+          )}
+        </Inline>
+      </Inset>
+    </ScrollView>
   );
 }
 
@@ -150,5 +149,33 @@ function RecordTag({
         </Tag>
       </ButtonPressAnimation>
     </ContextMenuButton>
+  );
+}
+
+export function Placeholder() {
+  return (
+    <Box height={{ custom: 30 }}>
+      <Skeleton animated>
+        <Inset horizontal="19px">
+          <Inline space="8px" wrap={false}>
+            <PlaceholderItem />
+            <PlaceholderItem />
+            <PlaceholderItem />
+            <PlaceholderItem />
+          </Inline>
+        </Inset>
+      </Skeleton>
+    </Box>
+  );
+}
+
+export function PlaceholderItem() {
+  return (
+    <Box
+      background="body"
+      borderRadius={30}
+      height={{ custom: 30 }}
+      width={{ custom: 140 }}
+    />
   );
 }
