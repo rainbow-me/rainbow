@@ -1,4 +1,4 @@
-import MaskedView from '@react-native-community/masked-view';
+import MaskedView from '@react-native-masked-view/masked-view';
 import PropTypes from 'prop-types';
 import React, { createElement } from 'react';
 import { View } from 'react-native';

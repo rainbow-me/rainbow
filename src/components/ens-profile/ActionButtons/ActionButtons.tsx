@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import EditButton from './EditButton';
 import MoreButton from './MoreButton';
 import SendButton from './SendButton';
 import WatchButton from './WatchButton';
@@ -27,7 +28,9 @@ export default function ActionButtons({
   return (
     <Inline alignHorizontal="right" space="10px">
       <MoreButton address={primaryAddress} />
-      {!isOwner && (
+      {isOwner ? (
+        <EditButton ensName={ensName} />
+      ) : (
         <>
           <WatchButton
             address={primaryAddress}

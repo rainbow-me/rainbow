@@ -34,6 +34,11 @@ export default function RegistrationCover() {
   const setCoverMetadata = useSetRecoilState(coverMetadataAtom);
 
   const { ContextMenu } = useSelectImageMenu({
+    imagePickerOptions: {
+      cropping: true,
+      height: 500,
+      width: 1500,
+    },
     menuItems: ['library'],
     onChangeImage: ({ image }) => {
       setCoverMetadata(image);
