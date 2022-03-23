@@ -1,4 +1,4 @@
-import MaskedView from '@react-native-community/masked-view';
+import MaskedView from '@react-native-masked-view/masked-view';
 import React, { useMemo } from 'react';
 import { TextInputProps } from 'react-native';
 import Spinner from '../../Spinner';
