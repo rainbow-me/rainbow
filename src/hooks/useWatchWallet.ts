@@ -16,9 +16,11 @@ import { doesWalletsContainAddress, logger } from '@rainbow-me/utils';
 export default function useWatchWallet({
   address: primaryAddress,
   ensName,
+  avatarUrl,
 }: {
   address?: string;
   ensName?: string;
+  avatarUrl?: string | null;
 }) {
   const dispatch = useDispatch();
 
@@ -55,7 +57,7 @@ export default function useWatchWallet({
   const watchWallet = useCallback(async () => {
     if (!isWatching) {
       handleSetSeedPhrase(ensName);
-      handlePressImportButton(null, ensName);
+      handlePressImportButton(null, ensName, null, avatarUrl);
     } else {
       deleteWallet();
       // If we're deleting the selected wallet
@@ -76,6 +78,7 @@ export default function useWatchWallet({
     handleSetSeedPhrase,
     ensName,
     handlePressImportButton,
+    avatarUrl,
     deleteWallet,
     primaryAddress,
     accountAddress,

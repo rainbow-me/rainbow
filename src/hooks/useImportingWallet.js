@@ -10,7 +10,10 @@ import useIsWalletEthZero from './useIsWalletEthZero';
 import useMagicAutofocus from './useMagicAutofocus';
 import usePrevious from './usePrevious';
 import useTimeout from './useTimeout';
+import useWalletENSAvatar from './useWalletENSAvatar';
 import useWallets from './useWallets';
+import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
+import { fetchImages } from '@rainbow-me/handlers/ens';
 import {
   resolveUnstoppableDomain,
   web3Provider,
@@ -44,6 +47,8 @@ export default function useImportingWallet() {
   const [resolvedAddress, setResolvedAddress] = useState(null);
   const [startAnalyticsTimeout] = useTimeout();
   const wasImporting = usePrevious(isImporting);
+  const { updateWalletENSAvatars } = useWalletENSAvatar();
+  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   const inputRef = useRef(null);
 
@@ -116,13 +121,17 @@ export default function useImportingWallet() {
       // Validate ENS
       if (isENSAddressFormat(input)) {
         try {
-          const address = await web3Provider.resolveName(input);
+          const [address, images] = await Promise.all([
+            web3Provider.resolveName(input),
+            !avatarUrl && profilesEnabled && fetchImages(input),
+          ]);
           if (!address) {
             Alert.alert('This is not a valid ENS name');
             return;
           }
           setResolvedAddress(address);
           name = forceEmoji ? `${forceEmoji} ${input}` : input;
+          avatarUrl = avatarUrl || images?.avatarUrl;
           showWalletProfileModal(name, guardedForceColor, address, avatarUrl);
           analytics.track('Show wallet profile modal for ENS address', {
             address,
@@ -160,6 +169,10 @@ export default function useImportingWallet() {
           const ens = await web3Provider.lookupAddress(input);
           if (ens && ens !== input) {
             name = forceEmoji ? `${forceEmoji} ${ens}` : ens;
+            if (!avatarUrl && profilesEnabled) {
+              const images = await fetchImages(name);
+              avatarUrl = images?.avatarUrl;
+            }
           }
           analytics.track('Show wallet profile modal for read only wallet', {
             ens,
@@ -180,6 +193,10 @@ export default function useImportingWallet() {
             const ens = await web3Provider.lookupAddress(walletResult.address);
             if (ens && ens !== input) {
               name = forceEmoji ? `${forceEmoji} ${ens}` : ens;
+              if (!avatarUrl && profilesEnabled) {
+                const images = await fetchImages(name);
+                avatarUrl = images?.avatarUrl;
+              }
             }
             setBusy(false);
             showWalletProfileModal(
@@ -199,7 +216,7 @@ export default function useImportingWallet() {
         }
       }
     },
-    [isSecretValid, seedPhrase, showWalletProfileModal]
+    [isSecretValid, profilesEnabled, seedPhrase, showWalletProfileModal]
   );
 
   useEffect(() => {
@@ -291,6 +308,7 @@ export default function useImportingWallet() {
     startAnalyticsTimeout,
     wallets,
     wasImporting,
+    updateWalletENSAvatars,
     image,
   ]);
 
