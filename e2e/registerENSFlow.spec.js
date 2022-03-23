@@ -115,6 +115,10 @@ describe('Register ENS Flow', () => {
     await Helpers.checkIfVisible('developer-settings-modal');
   });
 
+  it('Should make ENS Profiles available', async () => {
+    await Helpers.tapByText('ENS Profiles');
+  });
+
   it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
     await sendETHtoTestWallet();
 
