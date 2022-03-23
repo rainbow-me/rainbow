@@ -46,6 +46,7 @@ import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
+import { HourglassAnimation } from '../components/animations';
 
 export const ENSConfirmRegisterSheetHeight = 600;
 export const ENSConfirmUpdateSheetHeight = 600;
@@ -129,7 +130,7 @@ function RegisterContent({
 function WaitCommitmentConfirmationContent({ accentColor, action }) {
   return (
     <Box alignItems="center" height="full">
-      <LoadingSpinner />
+      <HourglassAnimation />
       <ButtonPressAnimation onPress={() => action(accentColor)}>
         <Text
           color={{ custom: accentColor }}
@@ -275,7 +276,7 @@ export default function ENSConfirmRegisterSheet() {
       ),
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: (
         <Box alignItems="center">
-          <LoadingSpinner />
+          <HourglassAnimation />
         </Box>
       ),
     }),
