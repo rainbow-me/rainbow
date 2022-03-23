@@ -117,14 +117,14 @@ export default () => {
 
     const callback = async (buttonIndex: Number) => {
       if (isENSProfile) {
-        if (buttonIndex === 1) {
+        if (buttonIndex === 0) {
+          navigate(Routes.PROFILE_SHEET, {
+            address: accountENS,
+          });
+        } else if (buttonIndex === 1 && !isReadOnlyWallet) {
           navigate(Routes.REGISTER_ENS_NAVIGATOR, {
             ensName: accountENS,
             mode: 'edit',
-          });
-        } else if (buttonIndex === 0) {
-          navigate(Routes.PROFILE_SHEET, {
-            address: accountENS,
           });
         }
       } else {
