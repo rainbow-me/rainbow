@@ -99,6 +99,10 @@ const DevSection = () => {
   return (
     <ScrollView testID="developer-settings-modal">
       <ListItem
+        label={`💥 ${lang.t('developer_settings.clear_async_storage')}`}
+        onPress={AsyncStorage.clear}
+      />
+      <ListItem
         label={`💥 ${lang.t('developer_settings.clear_mmkv_storage')}`}
         onPress={clearAllStorages}
       />
