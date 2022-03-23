@@ -92,7 +92,13 @@ export default function DiscoverSearch() {
         });
       }
     },
-    [dispatch, navigate, searchInputRef, setIsSearchModeEnabled]
+    [
+      dispatch,
+      navigate,
+      profilesEnabled,
+      searchInputRef,
+      setIsSearchModeEnabled,
+    ]
   );
 
   const handleActionAsset = useCallback(

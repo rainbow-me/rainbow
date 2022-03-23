@@ -1,4 +1,6 @@
+import { useMemo } from 'react';
 import { useQuery, useQueryClient } from 'react-query';
+import useAccountSettings from './useAccountSettings';
 import { fetchProfile } from '@rainbow-me/handlers/ens';
 import { getProfile, saveProfile } from '@rainbow-me/handlers/localstorage/ens';
 import { QueryConfig, UseQueryData } from '@rainbow-me/react-query/types';
@@ -10,6 +12,7 @@ export default function useENSProfile(
   config?: QueryConfig<typeof fetchProfile>
 ) {
   const queryClient = useQueryClient();
+  const { accountAddress } = useAccountSettings();
   const { data, isLoading, isSuccess } = useQuery<
     UseQueryData<typeof fetchProfile>
   >(
@@ -31,5 +34,10 @@ export default function useENSProfile(
     }
   );
 
-  return { data, isLoading, isSuccess };
+  const isOwner = useMemo(() => data?.owner?.address === accountAddress, [
+    accountAddress,
+    data?.owner?.address,
+  ]);
+
+  return { data, isLoading, isOwner, isSuccess };
 }

@@ -103,6 +103,17 @@ export default function ENSAssignRecordsSheet() {
     [params?.sheetRef]
   );
 
+  const [hasSeenExplainSheet, setHasSeenExplainSheet] = useState(false);
+  const { navigate } = useNavigation();
+  const handleFocus = useCallback(() => {
+    if (!hasSeenExplainSheet) {
+      navigate(Routes.EXPLAIN_SHEET, {
+        type: 'ensOnChainDataWarning',
+      });
+      setHasSeenExplainSheet(true);
+    }
+  }, [hasSeenExplainSheet, navigate, setHasSeenExplainSheet]);
+
   return (
     <AccentColorProvider color={accentColor}>
       <Box
@@ -111,10 +122,17 @@ export default function ENSAssignRecordsSheet() {
         style={useMemo(() => ({ paddingBottom: BottomActionHeight + 20 }), [])}
       >
         <Stack space="19px">
-          <RegistrationCover />
+          <RegistrationCover
+            hasSeenExplainSheet={hasSeenExplainSheet}
+            onShowExplainSheet={handleFocus}
+          />
           <Bleed top={{ custom: 38 }}>
             <Box alignItems="center">
-              <RegistrationAvatar onChangeAvatarUrl={setAvatarUrl} />
+              <RegistrationAvatar
+                hasSeenExplainSheet={hasSeenExplainSheet}
+                onChangeAvatarUrl={setAvatarUrl}
+                onShowExplainSheet={handleFocus}
+              />
             </Box>
           </Bleed>
           <Inset horizontal="19px">
@@ -134,6 +152,7 @@ export default function ENSAssignRecordsSheet() {
                   autoFocusKey={params?.autoFocusKey}
                   onAutoFocusLayout={handleAutoFocusLayout}
                   onError={handleError}
+                  onFocus={handleFocus}
                 />
               </Box>
               {IS_TESTING === 'true' && (

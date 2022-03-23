@@ -1,6 +1,6 @@
 import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
-import { ViewProps } from 'react-native';
+import { TextInputProps, ViewProps } from 'react-native';
 import InlineField, { InlineFieldProps } from '../../inputs/InlineField';
 import Skeleton, { FakeText } from '../../skeleton/Skeleton';
 import {
@@ -15,10 +15,12 @@ import { useENSRegistrationForm } from '@rainbow-me/hooks';
 export default function TextRecordsForm({
   autoFocusKey,
   onAutoFocusLayout,
+  onFocus,
   onError,
 }: {
   autoFocusKey?: boolean;
   onAutoFocusLayout?: ViewProps['onLayout'];
+  onFocus?: TextInputProps['onFocus'];
   onError?: ({ yOffset }: { yOffset: number }) => void;
 }) {
   const {
@@ -92,6 +94,7 @@ export default function TextRecordsForm({
                   onEndEditing={({ nativeEvent }) => {
                     onBlurField({ key, value: nativeEvent.text });
                   }}
+                  onFocus={onFocus}
                   placeholder={placeholder}
                   startsWith={startsWith}
                   testID={`ens-text-record-${id}`}

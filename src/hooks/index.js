@@ -138,3 +138,4 @@ export {
   useHardwareBackOnFocus,
 } from './useHardwareBack';
 export { default as useUniswapCurrencyList } from './useUniswapCurrencyList';
+export { default as useWalletENSAvatar } from './useWalletENSAvatar';

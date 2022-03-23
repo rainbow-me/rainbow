@@ -8,7 +8,10 @@ import { useRecoilState } from 'recoil';
 import brain from '../assets/brain.png';
 import ActivityIndicator from '../components/ActivityIndicator';
 import Spinner from '../components/Spinner';
-import { ButtonPressAnimation } from '../components/animations';
+import {
+  ButtonPressAnimation,
+  HourglassAnimation,
+} from '../components/animations';
 import { HoldToAuthorizeButton } from '../components/buttons';
 import { RegistrationReviewRows } from '../components/ens-registration';
 import { GasSpeedButton } from '../components/gas';
@@ -46,7 +49,6 @@ import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
-import { HourglassAnimation } from '../components/animations';
 
 export const ENSConfirmRegisterSheetHeight = 600;
 export const ENSConfirmUpdateSheetHeight = 600;
@@ -151,6 +153,7 @@ function TransactionActionRow({
   label,
   disabled,
   testID,
+  ready,
 }) {
   return (
     <Box>
@@ -161,10 +164,14 @@ function TransactionActionRow({
             disabled={disabled}
             hideInnerBorder
             isLongPressAvailableForBiometryType
-            label={label}
+            label={
+              ready && disabled
+                ? lang.t('profiles.confirm.insufficient_eth')
+                : label
+            }
             onLongPress={action}
             parentHorizontalPadding={19}
-            showBiometryIcon
+            showBiometryIcon={!ready || !disabled}
             testID={`ens-transaction-action-${testID}`}
           />
         </SheetActionButtonRow>
@@ -184,7 +191,13 @@ function TransactionActionRow({
 export default function ENSConfirmRegisterSheet() {
   const { params } = useRoute();
   const { accountAddress } = useAccountSettings();
-  const { gasFeeParamsBySpeed, updateTxFee, startPollingGasFees } = useGas();
+  const {
+    gasFeeParamsBySpeed,
+    updateTxFee,
+    startPollingGasFees,
+    isSufficientGas,
+    isValidGas,
+  } = useGas();
   const {
     images: { avatarUrl: initialAvatarUrl },
     name: ensName,
@@ -212,6 +225,7 @@ export default function ENSConfirmRegisterSheet() {
   const { data: registrationCostsData } = useENSRegistrationCosts({
     duration,
     name,
+    records: values,
     rentPrice: registrationData?.rentPrice,
     sendReverseRecord,
   });
@@ -244,6 +258,10 @@ export default function ENSConfirmRegisterSheet() {
       return lang.t('profiles.confirm.confirm_registration');
   }, [mode, step]);
 
+  const isSufficientGasForStep = useMemo(() => {
+    return stepGasLimit && isSufficientGas && isValidGas;
+  }, [isSufficientGas, stepGasLimit, isValidGas]);
+
   const stepContent = useMemo(
     () => ({
       [REGISTRATION_STEPS.COMMIT]: (
@@ -262,10 +280,7 @@ export default function ENSConfirmRegisterSheet() {
       ),
       [REGISTRATION_STEPS.EDIT]: (
         <Inset horizontal="30px">
-          <Divider color="divider40" />
-          <Text color="secondary50" size="14px" weight="heavy">
-            TODO
-          </Text>
+          <Text>TODO</Text>
         </Inset>
       ),
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: (
@@ -289,8 +304,12 @@ export default function ENSConfirmRegisterSheet() {
         <TransactionActionRow
           accentColor={accentColor}
           action={action}
-          disabled={!stepGasLimit}
+          disabled={
+            !registrationCostsData?.isSufficientGasForRegistration ||
+            !isSufficientGasForStep
+          }
           label={lang.t('profiles.confirm.start_registration')}
+          ready={Boolean(gasLimit)}
           testID={step}
         />
       ),
@@ -303,6 +322,7 @@ export default function ENSConfirmRegisterSheet() {
           }}
           disabled={!stepGasLimit}
           label={lang.t('profiles.confirm.confirm_registration')}
+          ready={Boolean(gasLimit)}
           testID={step}
         />
       ),
@@ -310,15 +330,25 @@ export default function ENSConfirmRegisterSheet() {
         <TransactionActionRow
           accentColor={accentColor}
           action={action}
-          disabled={!stepGasLimit}
+          disabled={!isSufficientGasForStep}
           label={lang.t('profiles.confirm.confirm_update')}
+          ready={Boolean(gasLimit)}
           testID={step}
         />
       ),
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: null,
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: null,
     }),
-    [accentColor, action, goToProfileScreen, step, stepGasLimit]
+    [
+      accentColor,
+      action,
+      gasLimit,
+      goToProfileScreen,
+      isSufficientGasForStep,
+      registrationCostsData?.isSufficientGasForRegistration,
+      step,
+      stepGasLimit,
+    ]
   );
 
   // Update gas limit
