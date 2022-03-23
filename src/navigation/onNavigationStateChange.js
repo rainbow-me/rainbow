@@ -88,13 +88,7 @@ export function onNavigationStateChange() {
     }
   }
 
-  if (!ios && !memPrevRouteName) {
-    setTimeout(() => {
-      onHandleStatusBar(); //first app launch
-    }, 100);
-  } else {
-    onHandleStatusBar();
-  }
+  onHandleStatusBar();
 
   if (routeName !== memPrevRouteName) {
     let paramsToTrack = null;
