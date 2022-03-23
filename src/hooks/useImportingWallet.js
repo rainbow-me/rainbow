@@ -12,6 +12,7 @@ import usePrevious from './usePrevious';
 import useTimeout from './useTimeout';
 import useWalletENSAvatar from './useWalletENSAvatar';
 import useWallets from './useWallets';
+import { fetchImages } from '@rainbow-me/handlers/ens';
 import {
   resolveUnstoppableDomain,
   web3Provider,
@@ -118,13 +119,17 @@ export default function useImportingWallet() {
       // Validate ENS
       if (isENSAddressFormat(input)) {
         try {
-          const address = await web3Provider.resolveName(input);
+          const [address, images] = await Promise.all([
+            web3Provider.resolveName(input),
+            !avatarUrl && fetchImages(input),
+          ]);
           if (!address) {
             Alert.alert('This is not a valid ENS name');
             return;
           }
           setResolvedAddress(address);
           name = forceEmoji ? `${forceEmoji} ${input}` : input;
+          avatarUrl = avatarUrl || images?.avatarUrl;
           showWalletProfileModal(name, guardedForceColor, address, avatarUrl);
           analytics.track('Show wallet profile modal for ENS address', {
             address,
@@ -162,6 +167,10 @@ export default function useImportingWallet() {
           const ens = await web3Provider.lookupAddress(input);
           if (ens && ens !== input) {
             name = forceEmoji ? `${forceEmoji} ${ens}` : ens;
+            if (!avatarUrl) {
+              const images = await fetchImages(name);
+              avatarUrl = images?.avatarUrl;
+            }
           }
           analytics.track('Show wallet profile modal for read only wallet', {
             ens,
@@ -182,6 +191,10 @@ export default function useImportingWallet() {
             const ens = await web3Provider.lookupAddress(walletResult.address);
             if (ens && ens !== input) {
               name = forceEmoji ? `${forceEmoji} ${ens}` : ens;
+              if (!avatarUrl) {
+                const images = await fetchImages(name);
+                avatarUrl = images?.avatarUrl;
+              }
             }
             setBusy(false);
             showWalletProfileModal(
