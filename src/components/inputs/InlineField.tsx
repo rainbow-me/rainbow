@@ -24,6 +24,7 @@ export type InlineFieldProps = {
   placeholder?: string;
   inputProps?: Partial<TextInputProps>;
   onChangeText: (text: string) => void;
+  onFocus?: TextInputProps['onFocus'];
   onEndEditing?: TextInputProps['onEndEditing'];
   startsWith?: string;
   validations?: {
@@ -40,6 +41,7 @@ export default function InlineField({
   errorMessage,
   label,
   onChangeText,
+  onFocus,
   placeholder,
   inputProps,
   validations,
@@ -107,7 +109,7 @@ export default function InlineField({
         ? 0.6 * width
         : 0.61 * width,
     }),
-    [textStyle, inputHeight, inputProps?.multiline]
+    [textStyle, inputHeight, inputProps?.multiline, startsWith, width]
   );
 
   return (
@@ -161,6 +163,7 @@ export default function InlineField({
                 : undefined
             }
             onEndEditing={onEndEditing}
+            onFocus={onFocus}
             placeholder={placeholder}
             scrollEnabled={false}
             style={style}

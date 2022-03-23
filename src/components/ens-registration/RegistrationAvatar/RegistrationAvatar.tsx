@@ -1,3 +1,4 @@
+import ConditionalWrap from 'conditional-wrap';
 import React, { useEffect, useState } from 'react';
 import { Image } from 'react-native-image-crop-picker';
 import { atom, useSetRecoilState } from 'recoil';
@@ -28,9 +29,13 @@ export const avatarMetadataAtom = atom<Image | undefined>({
 const size = 70;
 
 export default function RegistrationAvatar({
+  hasSeenExplainSheet,
   onChangeAvatarUrl,
+  onShowExplainSheet,
 }: {
+  hasSeenExplainSheet: boolean;
   onChangeAvatarUrl: (url: string) => void;
+  onShowExplainSheet: () => void;
 }) {
   const {
     images: { avatarUrl: initialAvatarUrl },
@@ -106,8 +111,13 @@ export default function RegistrationAvatar({
           />
         </Skeleton>
       ) : (
-        <ContextMenu>
-          <ButtonPressAnimation>
+        <ConditionalWrap
+          condition={hasSeenExplainSheet}
+          wrap={children => <ContextMenu>{children}</ContextMenu>}
+        >
+          <ButtonPressAnimation
+            onPress={!hasSeenExplainSheet ? onShowExplainSheet : undefined}
+          >
             <AccentColorProvider color={accentColor + '10'}>
               <Box
                 alignItems="center"
@@ -136,7 +146,7 @@ export default function RegistrationAvatar({
               </Box>
             </AccentColorProvider>
           </ButtonPressAnimation>
-        </ContextMenu>
+        </ConditionalWrap>
       )}
     </Box>
   );
