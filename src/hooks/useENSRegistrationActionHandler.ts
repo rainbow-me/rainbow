@@ -147,13 +147,7 @@ export default function useENSRegistrationActionHandler(
         name,
         duration,
       } = registrationParameters as RegistrationParameters;
-      const changedRecords = await uploadRecordImages(
-        registrationParameters.changedRecords,
-        {
-          avatar: avatarMetadata,
-          cover: coverMetadata,
-        }
-      );
+
       const wallet = await loadWallet();
       if (!wallet) {
         return;
@@ -163,6 +157,13 @@ export default function useENSRegistrationActionHandler(
       const rentPrice = await getRentPrice(
         name.replace(ENS_DOMAIN, ''),
         duration
+      );
+      const changedRecords = await uploadRecordImages(
+        registrationParameters.changedRecords,
+        {
+          avatar: avatarMetadata,
+          cover: coverMetadata,
+        }
       );
 
       const registerEnsRegistrationParameters: ENSActionParameters = {
@@ -191,19 +192,26 @@ export default function useENSRegistrationActionHandler(
     ]
   );
 
-  const setRecordsAction = useCallback(
+  const editAction = useCallback(
     async (callback: () => void) => {
       const wallet = await loadWallet();
       if (!wallet) {
         return;
       }
+      const changedRecords = await uploadRecordImages(
+        registrationParameters.changedRecords,
+        {
+          avatar: avatarMetadata,
+          cover: coverMetadata,
+        }
+      );
       const nonce = await getNextNonce();
       const resolver = await fetchResolver(registrationParameters.name);
       const setRecordsEnsRegistrationParameters: ENSActionParameters = {
         ...formatENSActionParams(registrationParameters),
         nonce,
         ownerAddress: accountAddress,
-        records: registrationParameters.changedRecords,
+        records: changedRecords,
         resolverAddress: resolver.address,
       };
 
@@ -214,7 +222,13 @@ export default function useENSRegistrationActionHandler(
         callback
       );
     },
-    [accountAddress, getNextNonce, registrationParameters]
+    [
+      accountAddress,
+      avatarMetadata,
+      coverMetadata,
+      getNextNonce,
+      registrationParameters,
+    ]
   );
 
   const commitEstimateGasLimit = useCallback(async () => {
@@ -286,12 +300,12 @@ export default function useENSRegistrationActionHandler(
   const actions = useMemo(
     () => ({
       [REGISTRATION_STEPS.COMMIT]: commitAction,
-      [REGISTRATION_STEPS.EDIT]: setRecordsAction,
+      [REGISTRATION_STEPS.EDIT]: editAction,
       [REGISTRATION_STEPS.REGISTER]: registerAction,
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: speedUpCommitAction,
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: () => null,
     }),
-    [commitAction, registerAction, setRecordsAction, speedUpCommitAction]
+    [commitAction, registerAction, editAction, speedUpCommitAction]
   );
 
   const estimateGasLimitActions = useMemo(

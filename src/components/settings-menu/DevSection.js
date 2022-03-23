@@ -128,7 +128,7 @@ const DevSection = () => {
 
       {Object.keys(config)
         .sort()
-        .filter(key => defaultConfig[key].settings)
+        .filter(key => defaultConfig[key]?.settings)
         .map(key => (
           <RadioListItem
             key={key}

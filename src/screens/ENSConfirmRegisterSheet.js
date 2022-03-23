@@ -199,6 +199,7 @@ export default function ENSConfirmRegisterSheet() {
   const { data: registrationCostsData } = useENSRegistrationCosts({
     duration,
     name,
+    records: values,
     rentPrice: registrationData?.rentPrice,
     sendReverseRecord,
   });
@@ -240,10 +241,7 @@ export default function ENSConfirmRegisterSheet() {
       ),
       [REGISTRATION_STEPS.EDIT]: (
         <Inset horizontal="30px">
-          <Divider color="divider40" />
-          <Text color="secondary50" size="14px" weight="heavy">
-            TODO
-          </Text>
+          <Text>TODO</Text>
         </Inset>
       ),
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: (

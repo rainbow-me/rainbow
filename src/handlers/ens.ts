@@ -28,6 +28,13 @@ import { ensPublicResolverAddress, ethUnits } from '@rainbow-me/references';
 import { labelhash, profileUtils } from '@rainbow-me/utils';
 import { AvatarResolver } from 'ens-avatar';
 
+const DUMMY_RECORDS = {
+  'cover':
+    'https://cloudflare-ipfs.com/ipfs/QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco/I/m/Vincent_van_Gogh_-_Self-Portrait_-_Google_Art_Project_(454045).jpg',
+  'description': 'description',
+  'me.rainbow.displayName': 'name',
+};
+
 export const fetchSuggestions = async (
   recipient: any,
   setSuggestions: any,
@@ -314,7 +321,7 @@ export const estimateENSSetTextGasLimit = async ({
   records,
 }: {
   name: string;
-  ownerAddress: string;
+  ownerAddress?: string;
   records: ENSRegistrationRecords;
 }) =>
   estimateENSTransactionGasLimit({
@@ -396,7 +403,8 @@ export const estimateENSRegistrationGasLimit = async (
   name: string,
   ownerAddress: string,
   duration: number,
-  rentPrice: string
+  rentPrice: string,
+  records: Records = DUMMY_RECORDS
 ) => {
   const salt = generateSalt();
   const commitGasLimitPromise = estimateENSCommitGasLimit({
@@ -406,39 +414,27 @@ export const estimateENSRegistrationGasLimit = async (
     rentPrice,
     salt,
   });
+
+  const setRecordsGasLimitPromise = estimateENSRegisterSetRecords({
+    name: name + ENS_DOMAIN,
+    records,
+  });
+
   const setNameGasLimitPromise = estimateENSSetNameGasLimit({
     name,
     ownerAddress,
   });
-  // dummy multicall to estimate gas
-  const multicallGasLimitPromise = estimateENSMulticallGasLimit({
-    name: name + ENS_DOMAIN,
-    records: {
-      coinAddress: [],
-      contentHash: null,
-      ensAssociatedAddress: null,
-      text: [
-        { key: 'me.rainbow.displayName', value: 'name' },
-        { key: 'description', value: 'description' },
-        {
-          key: 'cover',
-          value:
-            'https://cloudflare-ipfs.com/ipfs/QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco/I/m/Vincent_van_Gogh_-_Self-Portrait_-_Google_Art_Project_(454045).jpg',
-        },
-      ],
-    },
-  });
 
   const gasLimits = await Promise.all([
     commitGasLimitPromise,
+    setRecordsGasLimitPromise,
     setNameGasLimitPromise,
-    multicallGasLimitPromise,
   ]);
 
-  let [commitGasLimit, setNameGasLimit, multicallGasLimit] = gasLimits;
+  let [commitGasLimit, multicallGasLimit, setNameGasLimit] = gasLimits;
   commitGasLimit = commitGasLimit || `${ethUnits.ens_commit}`;
-  setNameGasLimit = setNameGasLimit || `${ethUnits.ens_set_name}`;
   multicallGasLimit = multicallGasLimit || `${ethUnits.ens_set_multicall}`;
+  setNameGasLimit = setNameGasLimit || `${ethUnits.ens_set_name}`;
   // we need to add register gas limit manually since the gas estimation will fail since the commit tx is not sent yet
   const registerWithConfigGasLimit = `${ethUnits.ens_register_with_config}`;
 
@@ -489,7 +485,6 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
     promises.push(
       estimateENSMulticallGasLimit({
         name,
-        ownerAddress,
         records: ensRegistrationRecords,
       })
     );
@@ -503,10 +498,9 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
 
 export const estimateENSRegisterSetRecords = async ({
   name,
-  ownerAddress,
   records,
-}: ENSActionParameters) => {
-  let gasLimit = null;
+}: { name: string; records: Records } | ENSActionParameters) => {
+  let gasLimit: string | null = '0';
   const ensRegistrationRecords = formatRecordsForTransaction(records);
   const validRecords = recordsForTransactionAreValid(ensRegistrationRecords);
   if (validRecords) {
@@ -517,7 +511,6 @@ export const estimateENSRegisterSetRecords = async ({
       ? estimateENSMulticallGasLimit
       : estimateENSSetTextGasLimit)({
       name,
-      ownerAddress,
       records: ensRegistrationRecords,
     });
   }
