@@ -7,13 +7,19 @@ import { useWatchWallet } from '@rainbow-me/hooks';
 export default function WatchButton({
   address,
   ensName,
+  avatarUrl,
 }: {
   address?: string;
   ensName?: string;
+  avatarUrl?: string | null;
 }) {
   const { colors } = useTheme();
 
-  const { isWatching, watchWallet } = useWatchWallet({ address, ensName });
+  const { isWatching, watchWallet } = useWatchWallet({
+    address,
+    avatarUrl,
+    ensName,
+  });
 
   return (
     <ColorModeProvider value="darkTinted">
