@@ -614,7 +614,8 @@
         "estimated_total": "Estimated total",
         "duration_plural": "%{content} years",
         "duration_singular": "1 year",
-        "commit_button": "Hold to Commit"
+        "commit_button": "Hold to Commit",
+        "insufficient_eth": "Insufficient ETH"
       }
     },
     "savings": {

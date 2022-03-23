@@ -140,7 +140,7 @@ function WaitCommitmentConfirmationContent({ accentColor, action }) {
   );
 }
 
-function TransactionActionRow({ action, accentColor, label, disabled }) {
+function TransactionActionRow({ action, accentColor, label, disabled, ready }) {
   return (
     <Box>
       <Box>
@@ -150,10 +150,14 @@ function TransactionActionRow({ action, accentColor, label, disabled }) {
             disabled={disabled}
             hideInnerBorder
             isLongPressAvailableForBiometryType
-            label={label}
+            label={
+              ready && disabled
+                ? lang.t('profiles.confirm.insufficient_eth')
+                : label
+            }
             onLongPress={action}
             parentHorizontalPadding={19}
-            showBiometryIcon
+            showBiometryIcon={!ready || !disabled}
           />
         </SheetActionButtonRow>
       </Box>
@@ -172,7 +176,13 @@ function TransactionActionRow({ action, accentColor, label, disabled }) {
 export default function ENSConfirmRegisterSheet() {
   const { params } = useRoute();
   const { accountAddress } = useAccountSettings();
-  const { gasFeeParamsBySpeed, updateTxFee, startPollingGasFees } = useGas();
+  const {
+    gasFeeParamsBySpeed,
+    updateTxFee,
+    startPollingGasFees,
+    isSufficientGas,
+    isValidGas,
+  } = useGas();
   const {
     images: { avatarUrl: initialAvatarUrl },
     name: ensName,
@@ -223,6 +233,10 @@ export default function ENSConfirmRegisterSheet() {
       return lang.t('profiles.confirm.confirm_registration');
   }, [mode, step]);
 
+  const isSufficientGasForStep = useMemo(() => {
+    return stepGasLimit && isSufficientGas && isValidGas;
+  }, [isSufficientGas, stepGasLimit, isValidGas]);
+
   const stepContent = useMemo(
     () => ({
       [REGISTRATION_STEPS.COMMIT]: (
@@ -265,30 +279,42 @@ export default function ENSConfirmRegisterSheet() {
         <TransactionActionRow
           accentColor={accentColor}
           action={action}
-          disabled={!stepGasLimit}
+          disabled={
+            !registrationCostsData?.isSufficientGasForRegistration ||
+            !isSufficientGasForStep
+          }
           label={lang.t('profiles.confirm.start_registration')}
+          ready={Boolean(gasLimit)}
         />
       ),
       [REGISTRATION_STEPS.REGISTER]: (
         <TransactionActionRow
           accentColor={accentColor}
           action={action}
-          disabled={!stepGasLimit}
+          disabled={!isSufficientGasForStep}
           label={lang.t('profiles.confirm.confirm_registration')}
+          ready={Boolean(gasLimit)}
         />
       ),
       [REGISTRATION_STEPS.EDIT]: (
         <TransactionActionRow
           accentColor={accentColor}
           action={action}
-          disabled={!stepGasLimit}
+          disabled={!isSufficientGasForStep}
           label={lang.t('profiles.confirm.confirm_update')}
+          ready={Boolean(gasLimit)}
         />
       ),
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: null,
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: null,
     }),
-    [accentColor, action, stepGasLimit]
+    [
+      accentColor,
+      action,
+      gasLimit,
+      isSufficientGasForStep,
+      registrationCostsData?.isSufficientGasForRegistration,
+    ]
   );
 
   // Update gas limit
