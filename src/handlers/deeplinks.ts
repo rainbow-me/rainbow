@@ -45,6 +45,12 @@ export default async function handleDeeplink(
         handleWalletConnect(uri);
         break;
       }
+      case 'wc-test': {
+        // @ts-expect-error ts-migrate(2722) FIXME: Cannot invoke an object which is possibly 'undefin... Remove this comment to see the full error message
+        const { uri } = qs.parse(urlObj.query.substring(1));
+        handleWalletConnect(uri);
+        break;
+      }
       case 'token': {
         const { dispatch } = store;
         // @ts-expect-error ts-migrate(2722) FIXME: Cannot invoke an object which is possibly 'undefin... Remove this comment to see the full error message
