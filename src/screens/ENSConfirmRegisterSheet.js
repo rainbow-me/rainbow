@@ -148,7 +148,6 @@ function TransactionActionRow({ action, accentColor, label, disabled, ready }) {
           <HoldToAuthorizeButton
             color={accentColor}
             disabled={disabled}
-            disabledBackgroundColor={accentColor}
             hideInnerBorder
             isLongPressAvailableForBiometryType
             label={
