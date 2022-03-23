@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux';
 import { RainbowAccount } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import useAccountProfile from './useAccountProfile';
+import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config';
 import useENSProfile from './useENSProfile';
 import useUpdateEmoji from './useUpdateEmoji';
 import useWallets from './useWallets';
@@ -86,6 +87,10 @@ export default () => {
     }).then(processPhoto);
   }, [processPhoto]);
 
+  const onAvatarCreateProfile = useCallback(() => {
+    navigate(Routes.REGISTER_ENS_NAVIGATOR);
+  }, [navigate]);
+
   const onAvatarWebProfile = useCallback(() => {
     const rainbowURL = buildRainbowUrl(null, accountENS, accountAddress);
     if (rainbowURL) {
@@ -104,11 +109,19 @@ export default () => {
     const isENSProfile = profilesEnabled && ensProfile?.isOwner;
 
     const avatarActionSheetOptions = (isENSProfile
-      ? ['View Profile', ...(!isReadOnlyWallet ? ['Edit Profile'] : [])]
+      ? [
+          'View Profile',
+          ...(!isReadOnlyWallet || enableActionsOnReadOnlyWallet
+            ? ['Edit Profile']
+            : []),
+        ]
       : [
           'Choose from Library',
           ...(!accountImage ? ['Pick an Emoji'] : []),
           ...(accountImage ? ['Remove Photo'] : []),
+          ...(!isReadOnlyWallet || enableActionsOnReadOnlyWallet
+            ? ['Create your Profile']
+            : []),
         ]
     ).concat(ios ? ['Cancel'] : []);
 
@@ -134,6 +147,8 @@ export default () => {
           if (accountImage) {
             onAvatarRemovePhoto();
           }
+        } else if (buttonIndex === 2) {
+          onAvatarCreateProfile();
         }
       }
     };
@@ -157,6 +172,7 @@ export default () => {
     navigate,
     accountENS,
     onAvatarChooseImage,
+    onAvatarCreateProfile,
     onAvatarPickEmoji,
     onAvatarRemovePhoto,
   ]);
@@ -198,6 +214,7 @@ export default () => {
   return {
     avatarOptions,
     onAvatarChooseImage,
+    onAvatarCreateProfile,
     onAvatarPickEmoji,
     onAvatarPress,
     onAvatarRemovePhoto,
