@@ -38,6 +38,7 @@ export default function useImportingWallet() {
   const [seedPhrase, setSeedPhrase] = useState('');
   const [color, setColor] = useState(null);
   const [name, setName] = useState(null);
+  const [image, setImage] = useState(null);
   const [busy, setBusy] = useState(false);
   const [checkedWallet, setCheckedWallet] = useState(null);
   const [resolvedAddress, setResolvedAddress] = useState(null);
@@ -75,7 +76,7 @@ export default function useImportingWallet() {
   );
 
   const showWalletProfileModal = useCallback(
-    (name, forceColor, address = null) => {
+    (name, forceColor, address = null, avatarUrl) => {
       android && Keyboard.dismiss();
       navigate(Routes.MODAL_SCREEN, {
         actionType: 'Import',
@@ -84,14 +85,15 @@ export default function useImportingWallet() {
         asset: [],
         forceColor,
         isNewProfile: true,
-        onCloseModal: ({ color, name }) => {
+        onCloseModal: ({ color, name, image }) => {
           InteractionManager.runAfterInteractions(() => {
             if (color !== null) setColor(color);
             if (name) setName(name);
+            if (image) setImage(image);
             handleSetImporting(true);
           });
         },
-        profile: { name },
+        profile: { image: avatarUrl, name },
         type: 'wallet_profile',
         withoutStatusBar: true,
       });
@@ -100,7 +102,7 @@ export default function useImportingWallet() {
   );
 
   const handlePressImportButton = useCallback(
-    async (forceColor, forceAddress, forceEmoji = null) => {
+    async (forceColor, forceAddress, forceEmoji = null, avatarUrl) => {
       analytics.track('Tapped "Import" button');
       // guard against pressEvent coming in as forceColor if
       // handlePressImportButton is used as onClick handler
@@ -121,7 +123,7 @@ export default function useImportingWallet() {
           }
           setResolvedAddress(address);
           name = forceEmoji ? `${forceEmoji} ${input}` : input;
-          showWalletProfileModal(name, guardedForceColor, address);
+          showWalletProfileModal(name, guardedForceColor, address, avatarUrl);
           analytics.track('Show wallet profile modal for ENS address', {
             address,
             input,
@@ -183,7 +185,8 @@ export default function useImportingWallet() {
             showWalletProfileModal(
               name,
               guardedForceColor,
-              walletResult.address
+              walletResult.address,
+              avatarUrl
             );
             analytics.track('Show wallet profile modal for imported wallet', {
               address: walletResult.address,
@@ -213,7 +216,9 @@ export default function useImportingWallet() {
           name ? name : '',
           false,
           false,
-          checkedWallet
+          checkedWallet,
+          undefined,
+          image
         )
           .then(success => {
             handleSetImporting(false);
@@ -245,6 +250,7 @@ export default function useImportingWallet() {
                       });
                   }
                 }, 1000);
+
                 analytics.track('Imported seed phrase', {
                   isWalletEthZero,
                 });
@@ -285,6 +291,7 @@ export default function useImportingWallet() {
     startAnalyticsTimeout,
     wallets,
     wasImporting,
+    image,
   ]);
 
   useEffect(() => {
