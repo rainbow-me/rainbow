@@ -32,6 +32,7 @@ export function onNavigationStateChange(currentState) {
   const prevState = memState;
   memState = currentState;
   const { name: routeName } = Navigation.getActiveRoute();
+
   if (isOnSwipeScreen(routeName)) {
     action?.();
     action = undefined;

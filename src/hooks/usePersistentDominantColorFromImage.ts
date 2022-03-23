@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { MMKV, useMMKVString } from 'react-native-mmkv';
-import colors from '../styles/colors';
 import { getLowResUrl } from '../utils/getLowResUrl';
 import { imageToPng } from '@rainbow-me/handlers/imgix';
 import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
@@ -51,8 +50,6 @@ export default function usePersistentDominantColorFromImage(
         // @ts-ignore
         setPersistentDominantColor(color)
       );
-    } else {
-      setPersistentDominantColor(colors.paleBlue);
     }
   }, [
     colorToMeasureAgainst,
