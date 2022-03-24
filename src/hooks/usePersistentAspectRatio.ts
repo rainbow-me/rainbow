@@ -36,8 +36,9 @@ export default function usePersistentAspectRatio(url: string): Result {
     if (state === State.init && nonSvgUrl) {
       const lowResUrl = getLowResUrl(nonSvgUrl) as string;
       setState(State.loading);
-      Image.getSize(
+      Image.getSizeWithHeaders(
         lowResUrl,
+        { cache: 'reload' },
         (width, height) => {
           setAspectRatio(width / height);
           setState(State.loaded);
