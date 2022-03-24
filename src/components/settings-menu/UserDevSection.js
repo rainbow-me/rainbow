@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-community/async-storage';
 import React, { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
 import { ScrollView, Switch } from 'react-native-gesture-handler';
@@ -60,6 +61,8 @@ const UserDevSection = props => {
         </Column>
       </ListItem>
       {testnetsEnabled && <NetworkSection {...props} />}
+      <ListItem label="💥 Clear local storage" onPress={AsyncStorage.clear} />
+
       <ListFooter />
     </ScrollView>
   );
