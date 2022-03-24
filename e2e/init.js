@@ -11,5 +11,6 @@ beforeAll(async () => {
     '.*api.coingecko.com.*',
     '.*rainbow.imgix.net.*',
     '.*infura.io.*',
+    '.*firebaselogging-pa.googleapis.com.*',
   ]);
 });
