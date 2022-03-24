@@ -442,7 +442,7 @@
       "recipient_address": "Recipient Address"
     },
     "image_picker": {
-      "title": "Allow to access your photos",
+      "title": "Rainbow would like to access your photos",
       "message": "This allows Rainbow to use your photos from your library",
       "confirm": "Enable library access",
       "cancel": "Cancel"
