@@ -337,7 +337,6 @@
     "**/logkitty": "0.7.1",
     "**/lodash": "4.17.21",
     "**/madge": "4.0.2",
-    "**/minimist": "1.2.3",
     "**/nanoid": "3.2.0",
     "**/netmask": "2.0.1",
     "**/postcss": "8.2.13",
@@ -364,7 +363,9 @@
     "**/@ethersproject/**": "5.4.0",
     "**/follow-redirects": "1.14.8",
     "**/markdown-it": "12.3.2",
-    "**/simple-get": "4.0.1"
+    "**/simple-get": "4.0.1",
+    "**/plist": "3.0.5",
+    "**/minimist": "1.2.6"
   },
   "jest": {
     "preset": "react-native",
