@@ -1,6 +1,8 @@
 import { useNavigation } from '@react-navigation/core';
 import { differenceInSeconds } from 'date-fns';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+// @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
+import { IS_TESTING } from 'react-native-dotenv';
 import { Image } from 'react-native-image-crop-picker';
 import { useDispatch } from 'react-redux';
 import { useRecoilValue } from 'recoil';
@@ -16,7 +18,7 @@ import { useAccountSettings, useCurrentNonce, useENSRegistration } from '.';
 import { Records, RegistrationParameters } from '@rainbow-me/entities';
 import { fetchResolver } from '@rainbow-me/handlers/ens';
 import { uploadImage } from '@rainbow-me/handlers/pinata';
-import { web3Provider } from '@rainbow-me/handlers/web3';
+import { isHardHat, web3Provider } from '@rainbow-me/handlers/web3';
 import {
   ENS_DOMAIN,
   generateSalt,
@@ -64,6 +66,8 @@ export default function useENSRegistrationActionHandler(
   const { navigate } = useNavigation();
   const { getTransactionByHash } = useTransactions();
   const [stepGasLimit, setStepGasLimit] = useState<string | null>(null);
+  const timeout = useRef<NodeJS.Timeout>();
+
   const [
     secondsSinceCommitConfirmed,
     setSecondsSinceCommitConfirmed,
@@ -75,6 +79,13 @@ export default function useENSRegistrationActionHandler(
         )
       : -1
   );
+
+  const isTesting = useMemo(
+    () => IS_TESTING === 'true' && isHardHat(web3Provider.connection.url),
+    []
+  );
+  // flag to wait 10 secs before we get the tx block, to be able to simulate not confirmed tx when testing
+  const shouldLoopForConfirmation = useRef(isTesting);
 
   const avatarMetadata = useRecoilValue(avatarMetadataAtom);
   const coverMetadata = useRecoilValue(coverMetadataAtom);
@@ -331,9 +342,12 @@ export default function useENSRegistrationActionHandler(
       );
       const block = await web3Provider.getBlock(tx.blockHash || '');
       const blockTimestamp = block?.timestamp;
-      if (blockTimestamp) {
-        const commitTransactionConfirmedAt = blockTimestamp * 1000;
+      if (!shouldLoopForConfirmation.current && blockTimestamp) {
         const now = Date.now();
+        const msBlockTimestamp = blockTimestamp * 1000;
+        // hardhat block timestamp is behind
+        const timeDifference = isTesting ? now - msBlockTimestamp : 0;
+        const commitTransactionConfirmedAt = msBlockTimestamp + timeDifference;
         const secs = differenceInSeconds(now, commitTransactionConfirmedAt);
         setSecondsSinceCommitConfirmed(secs);
         dispatch(
@@ -342,20 +356,30 @@ export default function useENSRegistrationActionHandler(
           })
         );
         confirmed = true;
+      } else if (shouldLoopForConfirmation.current) {
+        shouldLoopForConfirmation.current = false;
       }
     } catch (e) {
       //
     }
     return confirmed;
-  }, [accountAddress, dispatch, registrationParameters?.commitTransactionHash]);
+  }, [
+    accountAddress,
+    dispatch,
+    isTesting,
+    registrationParameters?.commitTransactionHash,
+  ]);
 
   const startPollingWatchCommitTransaction = useCallback(async () => {
+    timeout.current && clearTimeout(timeout.current);
     if (registrationStep !== REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION)
       return;
-
     const confirmed = await watchCommitTransaction();
     if (!confirmed) {
-      setTimeout(() => startPollingWatchCommitTransaction(), 10000);
+      timeout.current = setTimeout(
+        () => startPollingWatchCommitTransaction(),
+        10000
+      );
     }
   }, [registrationStep, watchCommitTransaction]);
 
@@ -385,6 +409,8 @@ export default function useENSRegistrationActionHandler(
     }
     return () => clearInterval(interval);
   }, [registrationStep, secondsSinceCommitConfirmed]);
+
+  useEffect(() => () => timeout.current && clearTimeout(timeout.current), []);
 
   return {
     action: actions[registrationStep],

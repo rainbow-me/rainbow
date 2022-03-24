@@ -15,6 +15,7 @@ type Props = {
   isRegistered?: boolean;
   price?: string;
   expirationDate?: string;
+  testID?: string;
 };
 
 const SearchResultGradientIndicator = ({
@@ -22,6 +23,7 @@ const SearchResultGradientIndicator = ({
   isRegistered = false,
   price,
   expirationDate,
+  testID,
 }: Props) => {
   const { colors } = useTheme();
   const { isSmallPhone } = useDimensions();
@@ -67,6 +69,7 @@ const SearchResultGradientIndicator = ({
             color={type === 'availability' ? 'accent' : 'secondary80'}
             containsEmoji
             size={isSmallPhone ? '18px' : '20px'}
+            testID={testID}
             weight="heavy"
           >
             {text}

@@ -23,3 +23,5 @@ export { default as ScaleInAnimation } from './ScaleInAnimation';
 export { default as ShimmerAnimation } from './ShimmerAnimation';
 export { default as SizeToggler } from './SizeToggler';
 export { default as SpinAnimation } from './SpinAnimation';
+export { default as HourglassAnimation } from './HourglassAnimation';
+export { default as CheckmarkAnimation } from './CheckmarkAnimation';

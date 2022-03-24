@@ -97,6 +97,7 @@ export default function TextRecordsForm({
                   onFocus={onFocus}
                   placeholder={placeholder}
                   startsWith={startsWith}
+                  testID={`ens-text-record-${id}`}
                   validations={validations}
                 />
               </Box>
