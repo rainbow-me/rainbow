@@ -62,7 +62,6 @@ const UserDevSection = props => {
       </ListItem>
       {testnetsEnabled && <NetworkSection {...props} />}
       <ListItem label="💥 Clear local storage" onPress={AsyncStorage.clear} />
-
       <ListFooter />
     </ScrollView>
   );
