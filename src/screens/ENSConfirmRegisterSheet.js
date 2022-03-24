@@ -127,18 +127,22 @@ function RegisterContent({
 
 function WaitCommitmentConfirmationContent({ accentColor, action }) {
   return (
-    <Box alignItems="center" height="full">
-      <HourglassAnimation />
-      <ButtonPressAnimation onPress={() => action(accentColor)}>
-        <Text
-          color={{ custom: accentColor }}
-          containsEmoji
-          size="16px"
-          weight="heavy"
-        >
-          🚀 Speed Up
-        </Text>
-      </ButtonPressAnimation>
+    <Box height="full">
+      <Box height="full">
+        <HourglassAnimation />
+      </Box>
+      <Box alignItems="center" paddingBottom={5}>
+        <ButtonPressAnimation onPress={() => action(accentColor)}>
+          <Text
+            color={{ custom: accentColor }}
+            containsEmoji
+            size="16px"
+            weight="heavy"
+          >
+            {`🚀 ${lang.t('profiles.confirm.speed_up')}`}
+          </Text>
+        </ButtonPressAnimation>
+      </Box>
     </Box>
   );
 }

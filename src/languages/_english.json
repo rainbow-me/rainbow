@@ -615,7 +615,8 @@
         "duration_plural": "%{content} years",
         "duration_singular": "1 year",
         "commit_button": "Hold to Commit",
-        "insufficient_eth": "Insufficient ETH"
+        "insufficient_eth": "Insufficient ETH",
+        "speed_up": "Speed Up"
       }
     },
     "savings": {
