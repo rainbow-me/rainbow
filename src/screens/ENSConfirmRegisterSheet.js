@@ -6,8 +6,6 @@ import { InteractionManager } from 'react-native';
 import { Switch } from 'react-native-gesture-handler';
 import { useRecoilState } from 'recoil';
 import brain from '../assets/brain.png';
-import ActivityIndicator from '../components/ActivityIndicator';
-import Spinner from '../components/Spinner';
 import {
   ButtonPressAnimation,
   HourglassAnimation,
@@ -53,8 +51,6 @@ import { colors } from '@rainbow-me/styles';
 export const ENSConfirmRegisterSheetHeight = 600;
 export const ENSConfirmUpdateSheetHeight = 600;
 const avatarSize = 70;
-
-const LoadingSpinner = android ? Spinner : ActivityIndicator;
 
 function CommitContent({ registrationCostsData, setDuration, duration }) {
   return (
