@@ -6,11 +6,14 @@ import { useDispatch } from 'react-redux';
 import { RainbowAccount } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import useAccountProfile from './useAccountProfile';
-import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config';
 import useENSProfile from './useENSProfile';
 import useUpdateEmoji from './useUpdateEmoji';
 import useWallets from './useWallets';
-import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
+import {
+  enableActionsOnReadOnlyWallet,
+  PROFILES,
+  useExperimentalFlag,
+} from '@rainbow-me/config';
 import { walletsSetSelected, walletsUpdate } from '@rainbow-me/redux/wallets';
 import Routes from '@rainbow-me/routes';
 import { buildRainbowUrl, showActionSheetWithOptions } from '@rainbow-me/utils';

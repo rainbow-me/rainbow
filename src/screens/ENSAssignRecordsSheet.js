@@ -198,7 +198,7 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
             : ENSConfirmRegisterSheetHeight + (avatarUrl ? 70 : 0),
       });
     });
-  }, [mode, navigate, submit]);
+  }, [avatarUrl, mode, navigate, submit]);
 
   const [visible, setVisible] = useState(false);
   useEffect(() => {
