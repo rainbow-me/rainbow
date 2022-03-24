@@ -441,6 +441,12 @@
       "private_key": "Private Key",
       "recipient_address": "Recipient Address"
     },
+    "image_picker": {
+      "title": "Allow to access your photos",
+      "message": "This allows Rainbow to use your photos from your library",
+      "confirm": "Enable library access",
+      "cancel": "Cancel"
+    },
     "message": {
       "click_to_copy_to_clipboard": "Click to copy to clipboard",
       "coming_soon": "Coming soon...",
