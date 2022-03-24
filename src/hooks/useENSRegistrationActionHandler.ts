@@ -34,7 +34,8 @@ import {
 import { timeUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 
-const ENS_SECONDS_WAIT = 60;
+// add waiting buffer
+const ENS_SECONDS_WAIT = 70;
 
 const formatENSActionParams = (
   registrationParameters: RegistrationParameters
