@@ -167,7 +167,11 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
   const keyboardHeight = useKeyboardHeight();
   const [accentColor] = useRecoilState(accentColorAtom);
 
-  const { mode, profileQuery } = useENSRegistration();
+  const {
+    mode,
+    profileQuery,
+    images: { avatarUrl },
+  } = useENSRegistration();
   const {
     disabled,
     isEmpty,
@@ -187,7 +191,7 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
         longFormHeight:
           mode === 'edit'
             ? ENSConfirmUpdateSheetHeight
-            : ENSConfirmRegisterSheetHeight,
+            : ENSConfirmRegisterSheetHeight + (avatarUrl ? 70 : 0),
       });
     });
   }, [mode, navigate, submit]);

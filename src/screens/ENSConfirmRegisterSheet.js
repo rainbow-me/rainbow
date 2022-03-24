@@ -45,7 +45,7 @@ import { ImgixImage } from '@rainbow-me/images';
 import { colors } from '@rainbow-me/styles';
 
 export const ENSConfirmRegisterSheetHeight = 600;
-export const ENSConfirmUpdateSheetHeight = 600;
+export const ENSConfirmUpdateSheetHeight = 400;
 const avatarSize = 70;
 
 const LoadingSpinner = android ? Spinner : ActivityIndicator;
@@ -261,11 +261,7 @@ export default function ENSConfirmRegisterSheet() {
           setSendReverseRecord={setSendReverseRecord}
         />
       ),
-      [REGISTRATION_STEPS.EDIT]: (
-        <Inset horizontal="30px">
-          <Text>TODO</Text>
-        </Inset>
-      ),
+      [REGISTRATION_STEPS.EDIT]: null,
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: (
         <WaitCommitmentConfirmationContent
           accentColor={accentColor}
