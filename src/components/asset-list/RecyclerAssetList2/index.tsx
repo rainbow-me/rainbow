@@ -9,21 +9,35 @@ import RawMemoRecyclerAssetList from './core/RawRecyclerList';
 import { StickyHeaderManager } from './core/StickyHeaders';
 import useMemoBriefSectionData from './core/useMemoBriefSectionData';
 
-function RecyclerAssetList() {
+export type AssetListType = 'wallet' | 'ens-profile' | 'select-nft';
+
+function RecyclerAssetList({
+  address,
+  type = 'wallet',
+}: {
+  address?: string;
+  type?: AssetListType;
+}) {
   const {
     memoizedResult: briefSectionsData,
     additionalData,
-  } = useMemoBriefSectionData();
+  } = useMemoBriefSectionData({ address, type });
 
   const position = useMemoOne(() => new RNAnimated.Value(0), []);
 
-  const value = useMemo(() => ({ additionalData }), [additionalData]);
+  const value = useMemo(() => ({ additionalData, address }), [
+    additionalData,
+    address,
+  ]);
 
   return (
     <RecyclerAssetListScrollPositionContext.Provider value={position}>
       <RecyclerAssetListContext.Provider value={value}>
         <StickyHeaderManager>
-          <RawMemoRecyclerAssetList briefSectionsData={briefSectionsData} />
+          <RawMemoRecyclerAssetList
+            briefSectionsData={briefSectionsData}
+            type={type}
+          />
         </StickyHeaderManager>
       </RecyclerAssetListContext.Provider>
     </RecyclerAssetListScrollPositionContext.Provider>

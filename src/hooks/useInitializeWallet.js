@@ -42,11 +42,11 @@ export default function useInitializeWallet() {
       shouldRunMigrations = false,
       overwrite = false,
       checkedWallet = null,
-      switching
+      switching,
+      image
     ) => {
       try {
         logger.sentry('Start wallet setup');
-
         await resetAccountState();
         logger.sentry('resetAccountState ran ok');
 
@@ -72,7 +72,8 @@ export default function useInitializeWallet() {
           name,
           overwrite,
           checkedWallet,
-          network
+          network,
+          image
         );
 
         logger.sentry('walletInit returned ', {

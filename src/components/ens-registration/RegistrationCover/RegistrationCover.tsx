@@ -1,3 +1,4 @@
+import ConditionalWrap from 'conditional-wrap';
 import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { Image } from 'react-native-image-crop-picker';
@@ -18,7 +19,13 @@ export const coverMetadataAtom = atom<Image | undefined>({
   key: 'ens.coverMetadata',
 });
 
-export default function RegistrationCover() {
+export default function RegistrationCover({
+  hasSeenExplainSheet,
+  onShowExplainSheet,
+}: {
+  hasSeenExplainSheet: boolean;
+  onShowExplainSheet: () => void;
+}) {
   const {
     images: { coverUrl: initialCoverUrl },
   } = useENSRegistration();
@@ -34,6 +41,11 @@ export default function RegistrationCover() {
   const setCoverMetadata = useSetRecoilState(coverMetadataAtom);
 
   const { ContextMenu } = useSelectImageMenu({
+    imagePickerOptions: {
+      cropping: true,
+      height: 500,
+      width: 1500,
+    },
     menuItems: ['library'],
     onChangeImage: ({ image }) => {
       setCoverMetadata(image);
@@ -58,8 +70,14 @@ export default function RegistrationCover() {
     );
   }
   return (
-    <ContextMenu>
-      <ButtonPressAnimation scaleTo={1}>
+    <ConditionalWrap
+      condition={hasSeenExplainSheet}
+      wrap={children => <ContextMenu>{children}</ContextMenu>}
+    >
+      <ButtonPressAnimation
+        onPress={!hasSeenExplainSheet ? onShowExplainSheet : undefined}
+        scaleTo={1}
+      >
         <Box
           alignItems="center"
           as={ios ? RadialGradient : View}
@@ -88,6 +106,6 @@ export default function RegistrationCover() {
           )}
         </Box>
       </ButtonPressAnimation>
-    </ContextMenu>
+    </ConditionalWrap>
   );
 }

@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import EditButton from './EditButton';
 import MoreButton from './MoreButton';
 import SendButton from './SendButton';
 import WatchButton from './WatchButton';
@@ -8,9 +9,11 @@ import { useWallets } from '@rainbow-me/hooks';
 export default function ActionButtons({
   address: primaryAddress,
   ensName,
+  avatarUrl,
 }: {
   address?: string;
   ensName?: string;
+  avatarUrl?: string | null;
 }) {
   const { wallets } = useWallets();
 
@@ -25,9 +28,15 @@ export default function ActionButtons({
   return (
     <Inline alignHorizontal="right" space="10px">
       <MoreButton address={primaryAddress} />
-      {!isOwner && (
+      {isOwner ? (
+        <EditButton ensName={ensName} />
+      ) : (
         <>
-          <WatchButton address={primaryAddress} ensName={ensName} />
+          <WatchButton
+            address={primaryAddress}
+            avatarUrl={avatarUrl}
+            ensName={ensName}
+          />
           <SendButton ensName={ensName} />
         </>
       )}

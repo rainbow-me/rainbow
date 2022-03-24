@@ -191,7 +191,8 @@ export const walletInit = async (
   name = null,
   overwrite = false,
   checkedWallet = null,
-  network: string
+  network: string,
+  image = null
 ): Promise<WalletInitialized> => {
   let walletAddress = null;
 
@@ -206,7 +207,8 @@ export const walletInit = async (
       color,
       name,
       overwrite,
-      checkedWallet
+      checkedWallet,
+      image
     );
     walletAddress = wallet?.address;
     return { isNew, walletAddress };
@@ -535,7 +537,8 @@ export const createWallet = async (
   color: null | number = null,
   name: null | string = null,
   overwrite: boolean = false,
-  checkedWallet: null | EthereumWalletFromSeed = null
+  checkedWallet: null | EthereumWalletFromSeed = null,
+  image: null | string = null
 ): Promise<null | EthereumWallet> => {
   const isImported = !!seed;
   logger.sentry('Creating wallet, isImported?', isImported);
@@ -686,7 +689,7 @@ export const createWallet = async (
       address: walletAddress,
       avatar: null,
       color: colorIndexForWallet,
-      image: null,
+      image,
       index: 0,
       label: name || '',
       visible: true,

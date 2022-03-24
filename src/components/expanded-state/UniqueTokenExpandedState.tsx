@@ -38,6 +38,7 @@ import {
 } from './unique-token';
 import ENSBriefTokenInfoRow from './unique-token/ENSBriefTokenInfoRow';
 import NFTBriefTokenInfoRow from './unique-token/NFTBriefTokenInfoRow';
+import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import { useTheme } from '@rainbow-me/context';
 import {
   AccentColorProvider,
@@ -332,13 +333,12 @@ const UniqueTokenExpandedState = ({
   const sheetRef = useRef();
   const yPosition = useSharedValue(0);
 
-  const isENSOwner = useMemo(
-    () => isENS && ensProfile.data?.owner?.address === accountAddress,
-    [accountAddress, ensProfile.data?.owner?.address, isENS]
-  );
+  const profilesEnabled = useExperimentalFlag(PROFILES);
   const isActionsEnabled = !external && !isReadOnlyWallet;
   const hasSendButton = isActionsEnabled && isSendable;
-  const hasEditButton = isActionsEnabled && isENS && isENSOwner;
+
+  const hasEditButton =
+    isActionsEnabled && profilesEnabled && isENS && ensProfile.isOwner;
 
   const familyLinkDisplay = useMemo(
     () =>

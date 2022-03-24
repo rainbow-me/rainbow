@@ -24,6 +24,7 @@ export type InlineFieldProps = {
   placeholder?: string;
   inputProps?: Partial<TextInputProps>;
   onChangeText: (text: string) => void;
+  onFocus?: TextInputProps['onFocus'];
   onEndEditing?: TextInputProps['onEndEditing'];
   startsWith?: string;
   validations?: {
@@ -32,6 +33,7 @@ export type InlineFieldProps = {
     };
   };
   value?: string;
+  testID?: string;
 };
 
 export default function InlineField({
@@ -40,12 +42,14 @@ export default function InlineField({
   errorMessage,
   label,
   onChangeText,
+  onFocus,
   placeholder,
   inputProps,
   validations,
   onEndEditing,
   startsWith,
   value,
+  testID,
 }: InlineFieldProps) {
   const { colors } = useTheme();
   const { width } = useDimensions();
@@ -106,8 +110,15 @@ export default function InlineField({
         ? 0.6 * width
         : 0.61 * width,
       textAlignVertical: 'top',
+      width: startsWith
+        ? ios
+          ? 0.55 * width
+          : 0.56 * width
+        : ios
+        ? 0.6 * width
+        : 0.61 * width,
     }),
-    [textStyle, inputHeight, inputProps?.multiline]
+    [textStyle, inputHeight, inputProps?.multiline, startsWith, width]
   );
 
   return (
@@ -161,7 +172,9 @@ export default function InlineField({
                 : undefined
             }
             onEndEditing={onEndEditing}
+            onFocus={onFocus}
             placeholder={placeholder}
+            scrollEnabled={false}
             style={style}
             value={value}
             scrollEnabled={false}
@@ -169,6 +182,7 @@ export default function InlineField({
             keyboardType={
               android ? 'visible-password' : inputProps?.keyboardType
             }
+            testID={testID}
           />
         </Inline>
       </Column>

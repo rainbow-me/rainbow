@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '../../navigation/Navigation';
+import analytics from '@segment/analytics-react-native';
 import { Row, RowWithMargins } from '../layout';
 import { Text } from '../text';
 import HeaderButton from './HeaderButton';
@@ -50,9 +51,14 @@ export default function DiscoverHeaderButton() {
     navigate,
   ]);
 
-  const onLongPress = useCallback(() => navigate(Routes.CONNECTED_DAPPS), [
-    navigate,
-  ]);
+  const onLongPress = useCallback(() => {
+    navigate(Routes.PROFILE_SHEET, { address: 'mikedemarais.eth' });
+    analytics.track('Viewed ENS profile', {
+      category: 'profiles',
+      ens: 'mikedemarais.eth',
+      from: 'Discover button',
+    });
+  }, [navigate]);
 
   const shadows = useMemo(() => DiscoverButtonShadowsFactory(colors), [colors]);
 

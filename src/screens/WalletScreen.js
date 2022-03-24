@@ -15,9 +15,6 @@ import {
   ScanHeaderButton,
 } from '../components/header';
 import { Page, RowWithMargins } from '../components/layout';
-import useExperimentalFlag, {
-  PROFILES,
-} from '@rainbow-me/config/experimentalHooks';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import {
   useAccountEmptyState,
@@ -28,6 +25,7 @@ import {
   useLoadGlobalLateData,
   usePortfolios,
   useUserAccounts,
+  useWalletENSAvatar,
   useWallets,
   useWalletSectionsData,
 } from '@rainbow-me/hooks';
@@ -70,6 +68,7 @@ export default function WalletScreen() {
   const { portfolios, trackPortfolios } = usePortfolios();
   const loadGlobalLateData = useLoadGlobalLateData();
   const initializeDiscoverData = useInitializeDiscoverData();
+  const { updateWalletENSAvatars } = useWalletENSAvatar();
   const walletReady = useSelector(
     ({ appState: { walletReady } }) => walletReady
   );
@@ -81,7 +80,6 @@ export default function WalletScreen() {
   } = useWalletSectionsData();
 
   const dispatch = useDispatch();
-  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   const { addressSocket, assetsSocket } = useSelector(
     ({ explorer: { addressSocket, assetsSocket } }) => ({
@@ -161,6 +159,11 @@ export default function WalletScreen() {
       initializeDiscoverData();
     }
   }, [assetsSocket, initializeDiscoverData, loadGlobalLateData, walletReady]);
+
+  useEffect(() => {
+    if (walletReady) updateWalletENSAvatars();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [walletReady]);
 
   // Show the exchange fab only for supported networks
   // (mainnet & rinkeby)

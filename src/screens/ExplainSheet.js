@@ -73,6 +73,11 @@ const CURRENT_BASE_FEE_EXPLAINER_RISING = `\n\nFees are rising right now! It’s
 
 const CURRENT_BASE_FEE_EXPLAINER_SURGING = `\n\nFees are unusually high right now! Unless your transaction is urgent, it’s best to wait for fees to drop.`;
 
+const ENS_ON_CHAIN_DATA_WARNING_EXPLAINER =
+  'The data you provide here will be stored on the Ethereum blockchain – meaning it will be visible to everyone and accessible by anyone. Do not share any data you are uncomfortable with publicizing.';
+
+const ENS_ON_CHAIN_DATA_WARNING_TITLE = 'Heads up!';
+
 const ENS_OWNER_TITLE = `Who is the .eth owner?`;
 
 const ENS_OWNER_EXPLAINER = `The owner of a .eth name is the entity referenced in the ENS (Ethereum Name Service) registry's owner field. An owner may transfer ownership, update profile records, as well as create or reassign subdomains`;
@@ -143,6 +148,12 @@ export const explainers = network => ({
     emoji: '❓',
     text: ENS_RESOLVER_EXPLAINER,
     title: ENS_RESOLVER_TITLE,
+  },
+  ensOnChainDataWarning: {
+    extraHeight: -30,
+    emoji: '✋',
+    text: ENS_ON_CHAIN_DATA_WARNING_EXPLAINER,
+    title: ENS_ON_CHAIN_DATA_WARNING_TITLE,
   },
   currentBaseFeeStable: {
     emoji: '🌞',

@@ -8,6 +8,7 @@ import React, {
   useState,
 } from 'react';
 import { InteractionManager, View } from 'react-native';
+import analytics from '@segment/analytics-react-native';
 import { useDispatch } from 'react-redux';
 import CurrencySelectionTypes from '../../helpers/currencySelectionTypes';
 import { emitAssetRequest } from '../../redux/explorer';
@@ -81,6 +82,13 @@ export default function DiscoverSearch() {
               setIsSearchModeEnabled,
             }
           );
+          if (profilesEnabled) {
+            analytics.track('Viewed ENS profile', {
+              category: 'profiles',
+              ens: item.nickname,
+              from: 'Discover search',
+            });
+          }
         });
       } else {
         const asset = ethereumUtils.getAccountAsset(item.uniqueId);
@@ -92,7 +100,13 @@ export default function DiscoverSearch() {
         });
       }
     },
-    [dispatch, navigate, searchInputRef, setIsSearchModeEnabled]
+    [
+      dispatch,
+      navigate,
+      profilesEnabled,
+      searchInputRef,
+      setIsSearchModeEnabled,
+    ]
   );
 
   const handleActionAsset = useCallback(
