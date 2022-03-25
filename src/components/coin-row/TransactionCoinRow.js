@@ -1,6 +1,7 @@
 import lang from 'i18n-js';
 import { compact, get, startCase, toLower } from 'lodash';
 import React, { useCallback } from 'react';
+import { useSelector } from 'react-redux';
 import { useTheme } from '../../context/ThemeContext';
 import { getRandomColor } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
@@ -11,20 +12,15 @@ import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
-import {
-  AssetType,
-  TransactionStatusTypes,
-  TransactionTypes,
-} from '@rainbow-me/entities';
+import { TransactionStatusTypes, TransactionTypes } from '@rainbow-me/entities';
 import TransactionActions from '@rainbow-me/helpers/transactionActions';
 import {
   getHumanReadableDate,
   hasAddableContact,
 } from '@rainbow-me/helpers/transactions';
 import { isValidDomainFormat } from '@rainbow-me/helpers/validators';
-import { useAccountSettings, useAsset } from '@rainbow-me/hooks';
+import { useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import { Network } from '@rainbow-me/networkTypes';
 import Routes from '@rainbow-me/routes';
 import {
   abbreviations,
@@ -198,20 +194,18 @@ export default function TransactionCoinRow({ item, ...props }) {
     }
   }, [accountAddress, contact, item, navigate]);
 
-  const asset = useAsset({
-    ...item,
-    ...(item.network !== Network.mainnet && {
-      uniqueId: `${item.address}_${item.network}`,
-    }),
-    type: AssetType.token,
-  });
+  const mainnetAddress = useSelector(
+    state =>
+      state.data.accountAssetsData?.[`${item.address}_${item.network}`]
+        ?.mainnet_address
+  );
 
   return (
     <ButtonPressAnimation onPress={onPressTransaction} scaleTo={0.96}>
       <CoinRow
         {...item}
         {...props}
-        address={asset.mainnet_address || item.address}
+        address={mainnetAddress || item.address}
         bottomRowRender={BottomRow}
         containerStyles={containerStyles}
         {...(android
