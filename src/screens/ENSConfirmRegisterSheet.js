@@ -49,7 +49,7 @@ import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 
 export const ENSConfirmRegisterSheetHeight = 600;
-export const ENSConfirmUpdateSheetHeight = 600;
+export const ENSConfirmUpdateSheetHeight = 400;
 const avatarSize = 70;
 
 function CommitContent({ registrationCostsData, setDuration, duration }) {
@@ -127,18 +127,22 @@ function RegisterContent({
 
 function WaitCommitmentConfirmationContent({ accentColor, action }) {
   return (
-    <Box alignItems="center" height="full">
-      <HourglassAnimation />
-      <ButtonPressAnimation onPress={() => action(accentColor)}>
-        <Text
-          color={{ custom: accentColor }}
-          containsEmoji
-          size="16px"
-          weight="heavy"
-        >
-          🚀 Speed Up
-        </Text>
-      </ButtonPressAnimation>
+    <Box height="full">
+      <Box height="full">
+        <HourglassAnimation />
+      </Box>
+      <Box alignItems="center" paddingBottom={5}>
+        <ButtonPressAnimation onPress={() => action(accentColor)}>
+          <Text
+            color={{ custom: accentColor }}
+            containsEmoji
+            size="16px"
+            weight="heavy"
+          >
+            {`🚀 ${lang.t('profiles.confirm.speed_up')}`}
+          </Text>
+        </ButtonPressAnimation>
+      </Box>
     </Box>
   );
 }
@@ -147,27 +151,28 @@ function TransactionActionRow({
   action,
   accentColor,
   label,
-  disabled,
+  isValidGas,
+  isSufficientGas,
   testID,
-  ready,
 }) {
+  const insufficientEth = !isSufficientGas && isValidGas;
   return (
     <Box>
       <Box>
         <SheetActionButtonRow paddingBottom={5}>
           <HoldToAuthorizeButton
             color={accentColor}
-            disabled={disabled}
+            disabled={!isSufficientGas || !isValidGas}
             hideInnerBorder
             isLongPressAvailableForBiometryType
             label={
-              ready && disabled
+              insufficientEth
                 ? lang.t('profiles.confirm.insufficient_eth')
                 : label
             }
             onLongPress={action}
             parentHorizontalPadding={19}
-            showBiometryIcon={!ready || !disabled}
+            showBiometryIcon={!insufficientEth}
             testID={`ens-transaction-action-${testID}`}
           />
         </SheetActionButtonRow>
@@ -254,9 +259,10 @@ export default function ENSConfirmRegisterSheet() {
       return lang.t('profiles.confirm.confirm_registration');
   }, [mode, step]);
 
-  const isSufficientGasForStep = useMemo(() => {
-    return stepGasLimit && isSufficientGas && isValidGas;
-  }, [isSufficientGas, stepGasLimit, isValidGas]);
+  const isSufficientGasForStep = useMemo(
+    () => stepGasLimit && isSufficientGas && isValidGas,
+    [isSufficientGas, stepGasLimit, isValidGas]
+  );
 
   const stepContent = useMemo(
     () => ({
@@ -274,11 +280,7 @@ export default function ENSConfirmRegisterSheet() {
           setSendReverseRecord={setSendReverseRecord}
         />
       ),
-      [REGISTRATION_STEPS.EDIT]: (
-        <Inset horizontal="30px">
-          <Text>TODO</Text>
-        </Inset>
-      ),
+      [REGISTRATION_STEPS.EDIT]: null,
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: (
         <WaitCommitmentConfirmationContent
           accentColor={accentColor}
@@ -300,12 +302,16 @@ export default function ENSConfirmRegisterSheet() {
         <TransactionActionRow
           accentColor={accentColor}
           action={action}
-          disabled={
-            !registrationCostsData?.isSufficientGasForRegistration ||
-            !isSufficientGasForStep
+          isSufficientGas={
+            registrationCostsData?.isSufficientGasForRegistration &&
+            isSufficientGasForStep
+          }
+          isValidGas={
+            isValidGas &&
+            Boolean(gasLimit) &&
+            Boolean(registrationCostsData?.isSufficientGasForRegistration)
           }
           label={lang.t('profiles.confirm.start_registration')}
-          ready={Boolean(gasLimit)}
           testID={step}
         />
       ),
@@ -316,9 +322,9 @@ export default function ENSConfirmRegisterSheet() {
             action();
             goToProfileScreen();
           }}
-          disabled={!stepGasLimit}
+          isSufficientGas={isSufficientGasForStep}
+          isValidGas={isValidGas && Boolean(gasLimit)}
           label={lang.t('profiles.confirm.confirm_registration')}
-          ready={Boolean(gasLimit)}
           testID={step}
         />
       ),
@@ -326,9 +332,9 @@ export default function ENSConfirmRegisterSheet() {
         <TransactionActionRow
           accentColor={accentColor}
           action={action}
-          disabled={!isSufficientGasForStep}
+          isSufficientGas={isSufficientGasForStep}
+          isValidGas={isValidGas && Boolean(gasLimit)}
           label={lang.t('profiles.confirm.confirm_update')}
-          ready={Boolean(gasLimit)}
           testID={step}
         />
       ),
@@ -341,9 +347,9 @@ export default function ENSConfirmRegisterSheet() {
       gasLimit,
       goToProfileScreen,
       isSufficientGasForStep,
+      isValidGas,
       registrationCostsData?.isSufficientGasForRegistration,
       step,
-      stepGasLimit,
     ]
   );
 

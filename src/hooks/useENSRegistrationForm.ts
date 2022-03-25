@@ -69,9 +69,7 @@ export default function useENSRegistrationForm({
     // when there are no changed records.
     // Note: We don't want to do this in create mode as we have the "Skip"
     // button.
-    if (mode === 'edit') {
-      setDisabled(isEmpty(changedRecords));
-    }
+    setDisabled(mode === 'edit' ? isEmpty(changedRecords) : false);
   }, [changedRecords, disabled, mode, setDisabled]);
 
   const [selectedFields, setSelectedFields] = useRecoilState(
