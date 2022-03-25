@@ -198,11 +198,8 @@ export default function ENSConfirmRegisterSheet() {
     images: { avatarUrl: initialAvatarUrl },
     name: ensName,
     mode,
-    registrationParameters,
   } = useENSRegistration();
   const [accentColor] = useRecoilState(accentColorAtom);
-
-  // console.log(registrationParameters.changedRecords);
 
   const [duration, setDuration] = useState(1);
   const [gasLimit, setGasLimit] = useState(null);
