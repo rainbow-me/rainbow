@@ -1,5 +1,4 @@
 import { useFocusEffect, useRoute } from '@react-navigation/core';
-import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -199,8 +198,11 @@ export default function ENSConfirmRegisterSheet() {
     images: { avatarUrl: initialAvatarUrl },
     name: ensName,
     mode,
+    registrationParameters,
   } = useENSRegistration();
   const [accentColor] = useRecoilState(accentColorAtom);
+
+  // console.log(registrationParameters.changedRecords);
 
   const [duration, setDuration] = useState(1);
   const [gasLimit, setGasLimit] = useState(null);
@@ -300,16 +302,7 @@ export default function ENSConfirmRegisterSheet() {
       [REGISTRATION_STEPS.COMMIT]: (
         <TransactionActionRow
           accentColor={accentColor}
-          action={() => {
-            action();
-            analytics.track('Initiated ENS registration', {
-              category: 'profiles',
-              walletAddress: accountAddress,
-              totalCostEth:
-                registrationCostsData?.estimatedTotalRegistrationCost.eth,
-              ens: ensName,
-            });
-          }}
+          action={action}
           disabled={
             !registrationCostsData?.isSufficientGasForRegistration ||
             !isSufficientGasForStep
@@ -324,21 +317,6 @@ export default function ENSConfirmRegisterSheet() {
           accentColor={accentColor}
           action={() => {
             action();
-            if (sendReverseRecord) {
-              analytics.track('Created ENS profile', {
-                category: 'profiles',
-                walletAddress: accountAddress,
-                ens: ensName,
-              });
-            }
-            analytics.track('Completed ENS registration', {
-              category: 'profiles',
-              walletAddress: accountAddress,
-              totalCostEth:
-                registrationCostsData?.estimatedTotalRegistrationCost.eth,
-              ens: ensName,
-              etherscanUrl: 'TODO',
-            });
             goToProfileScreen();
           }}
           disabled={!stepGasLimit}
@@ -350,15 +328,7 @@ export default function ENSConfirmRegisterSheet() {
       [REGISTRATION_STEPS.EDIT]: (
         <TransactionActionRow
           accentColor={accentColor}
-          action={() => {
-            action();
-            analytics.track('Edited ENS profile', {
-              category: 'profiles',
-              walletAddress: accountAddress,
-              ens: ensName,
-              metadataTypes: Object.keys(values),
-            });
-          }}
+          action={action}
           disabled={!isSufficientGasForStep}
           label={lang.t('profiles.confirm.confirm_update')}
           ready={Boolean(gasLimit)}

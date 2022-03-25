@@ -119,6 +119,10 @@ export default function useENSRegistrationActionHandler(
         commitEnsRegistrationParameters,
         callback
       );
+
+      console.log(commitEnsRegistrationParameters);
+      console.log('bye');
+      console.log(registrationParameters);
     },
     [registrationParameters, getNextNonce, yearsDuration, accountAddress]
   );
