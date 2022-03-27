@@ -2666,13 +2666,15 @@
     "@ethersproject/properties" "^5.5.0"
     "@ethersproject/strings" "^5.5.0"
 
-"@expo/config-plugins@^4.0.3":
-  version "4.0.4"
-  resolved "https://registry.yarnpkg.com/@expo/config-plugins/-/config-plugins-4.0.4.tgz#2c8b06e92507ccea4be24b0347a0aa013747eb58"
+"@expo/config-plugins@^4.0.18":
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/@expo/config-plugins/-/config-plugins-4.1.0.tgz#0365e2e51e2e3e3b4e7db1fbbada5be661798be6"
+  integrity sha512-+Uq7kzi1StUZZZivnnqNV6+v8b+SMF6MDgH+cEZxCoM9uwLXOK0rTAURzBGtl+C6EEbKnoZmnKGuzABBGPRP7A==
   dependencies:
-    "@expo/config-types" "^43.0.0"
-    "@expo/json-file" "8.2.33"
-    "@expo/plist" "0.0.15"
+    "@expo/config-types" "^44.0.0"
+    "@expo/json-file" "8.2.34"
+    "@expo/plist" "0.0.17"
+    "@expo/sdk-runtime-versions" "^1.0.0"
     "@react-native/normalize-color" "^2.0.0"
     chalk "^4.1.2"
     debug "^4.3.1"
@@ -2686,25 +2688,33 @@
     xcode "^3.0.1"
     xml2js "0.4.23"
 
-"@expo/config-types@^43.0.0":
-  version "43.0.1"
-  resolved "https://registry.yarnpkg.com/@expo/config-types/-/config-types-43.0.1.tgz#3e047dccb371741a540980eaff26fb0c95039c30"
+"@expo/config-types@^44.0.0":
+  version "44.0.0"
+  resolved "https://registry.yarnpkg.com/@expo/config-types/-/config-types-44.0.0.tgz#d3480fe2c99f9e895dae4ebba58b74ed72d03e26"
+  integrity sha512-d+gpdKOAhqaD5RmcMzGgKzNtvE1w+GCqpFQNSXLliYlXjj+Tv0eL8EPeAdPtvke0vowpPFwd5McXLA90dgY6Jg==
 
-"@expo/json-file@8.2.33":
-  version "8.2.33"
-  resolved "https://registry.yarnpkg.com/@expo/json-file/-/json-file-8.2.33.tgz#78f56f33a2cfb807b23c81e00237a33159aa1f32"
+"@expo/json-file@8.2.34":
+  version "8.2.34"
+  resolved "https://registry.yarnpkg.com/@expo/json-file/-/json-file-8.2.34.tgz#2f24e90a677195f7a81e167115460eb2902c3130"
+  integrity sha512-ZxtBodAZGxdLtgKzmsC+8ViUxt1mhFW642Clu2OuG3f6PAyAFsU/SqEGag9wKFaD3x3Wt8VhL+3y5fMJmUFgPw==
   dependencies:
     "@babel/code-frame" "~7.10.4"
     json5 "^1.0.1"
     write-file-atomic "^2.3.0"
 
-"@expo/plist@0.0.15":
-  version "0.0.15"
-  resolved "https://registry.yarnpkg.com/@expo/plist/-/plist-0.0.15.tgz#41ef37b7bbe6b81c48bf4a5c359661c766bb9e90"
+"@expo/plist@0.0.17":
+  version "0.0.17"
+  resolved "https://registry.yarnpkg.com/@expo/plist/-/plist-0.0.17.tgz#0f6c594e116f45a28f5ed20998dadb5f3429f88b"
+  integrity sha512-5Ul3d/YOYE6mfum0jCE25XUnkKHZ5vGlU/X2275ZmCtGrpRn1Fl8Nq+jQKSaks3NqTfxdyXROi/TgH8Zxeg2wg==
   dependencies:
     "@xmldom/xmldom" "~0.7.0"
     base64-js "^1.2.3"
     xmlbuilder "^14.0.0"
+
+"@expo/sdk-runtime-versions@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@expo/sdk-runtime-versions/-/sdk-runtime-versions-1.0.0.tgz#d7ebd21b19f1c6b0395e50d78da4416941c57f7c"
+  integrity sha512-Doz2bfiPndXYFPMRwPyGa1k5QaKDVpY806UJj570epIiMzWaYyCtobasyfC++qfIXVb5Ocy7r3tP9d62hAQ7IQ==
 
 "@gorhom/bottom-sheet@4.1.5":
   version "4.1.5"
@@ -3479,28 +3489,32 @@
   version "5.0.5"
   resolved "https://registry.yarnpkg.com/@react-native-community/viewpager/-/viewpager-5.0.5.tgz#e9455535b4aaa77924fb7055be9c6d1c1cb3313a"
 
-"@react-native-firebase/app@12.9.3":
-  version "12.9.3"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/app/-/app-12.9.3.tgz#7f0f8ee8598557e3d8997d5a7e820f89d2a3479d"
+"@react-native-firebase/app@14.7.0":
+  version "14.7.0"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/app/-/app-14.7.0.tgz#a12f120c2c6a437284a30391cb16670422d48a7e"
+  integrity sha512-/TdFv0L4AOEdKbAqmUu0yDXWq0Viw9sEX5mprPQDQbnctEJVwDLWehJkKx2CMiGeZox7VU2cshBLD0AC82XTtQ==
   dependencies:
-    "@expo/config-plugins" "^4.0.3"
+    "@expo/config-plugins" "^4.0.18"
     opencollective-postinstall "^2.0.1"
     superstruct "^0.6.2"
 
-"@react-native-firebase/crashlytics@12.9.3":
-  version "12.9.3"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/crashlytics/-/crashlytics-12.9.3.tgz#3cf9486992c26a1faa61a7ddd589dfdd3007b1bf"
+"@react-native-firebase/crashlytics@14.7.0":
+  version "14.7.0"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/crashlytics/-/crashlytics-14.7.0.tgz#87488c465dd6a97fa5e9d949fcf42fa340efa75d"
+  integrity sha512-okE/GFORwU8Nvj8B031EedDCqQoTPghgYlLE7vRKyNQnsaKQNtbIw9952YPmmtOyJe4uRHbR7pMOMh6SO+Q8TA==
   dependencies:
-    "@expo/config-plugins" "^4.0.3"
+    "@expo/config-plugins" "^4.0.18"
     stacktrace-js "^2.0.0"
 
-"@react-native-firebase/messaging@12.9.3":
-  version "12.9.3"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/messaging/-/messaging-12.9.3.tgz#d89cb95c1e90ccdf6eeac8a9b7e895bee2aa9a36"
+"@react-native-firebase/messaging@14.7.0":
+  version "14.7.0"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/messaging/-/messaging-14.7.0.tgz#9ab30860f140dec1dce49f012fd56526e5b3707a"
+  integrity sha512-G0GmmbmmAvhEltK7Rr1A3Mz6vH4qsX6OaqYNzbhgHvP2jvTIuchLcWozjTGcH/0OsXZz15fRe0WjQ3aMS2TTpg==
 
-"@react-native-firebase/remote-config@12.9.3":
-  version "12.9.3"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/remote-config/-/remote-config-12.9.3.tgz#bd9cb78f3dac37090aea7dbfbf395e17b50a0207"
+"@react-native-firebase/remote-config@14.7.0":
+  version "14.7.0"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/remote-config/-/remote-config-14.7.0.tgz#dbdf8596b1a75799adcced7e14a22bbe87208021"
+  integrity sha512-oOsrZek82Vm9zZnv1VGKH1nZiglvPl1pXA3mKJVNxMWHW9PytPFPFAlzrIKgG1aNFpkb9+KsIabyhGxy5Os6Zg==
 
 "@react-native-masked-view/masked-view@0.2.6":
   version "0.2.6"
@@ -4235,7 +4249,7 @@
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/@types/react-native-dotenv/-/react-native-dotenv-0.2.0.tgz#32c58422a422c1adf68acce363ed791314d5a8e7"
 
-"@types/react-native@*", "@types/react-native@>=0.62.0":
+"@types/react-native@*":
   version "0.66.1"
   resolved "https://registry.yarnpkg.com/@types/react-native/-/react-native-0.66.1.tgz#093b4a2a9fce2335548d35be3c8900bf3ebb9373"
   dependencies:
@@ -4704,6 +4718,7 @@ absolute-path@^0.0.0:
 abstract-leveldown@2.6.1:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/abstract-leveldown/-/abstract-leveldown-2.6.1.tgz#f9014a5669b746418e145168dea49a044ae15900"
+  integrity sha1-+QFKVmm3RkGOFFFo3qSaBErhWQA=
   dependencies:
     xtend "~4.0.0"
 
@@ -4829,6 +4844,16 @@ ajv@^6.10.0, ajv@^6.12.3, ajv@^6.12.4:
 ajv@^8.0.1:
   version "8.6.3"
   resolved "https://registry.yarnpkg.com/ajv/-/ajv-8.6.3.tgz#11a66527761dc3e9a3845ea775d2d3c0414e8764"
+  dependencies:
+    fast-deep-equal "^3.1.1"
+    json-schema-traverse "^1.0.0"
+    require-from-string "^2.0.2"
+    uri-js "^4.2.2"
+
+ajv@^8.6.3:
+  version "8.11.0"
+  resolved "https://registry.yarnpkg.com/ajv/-/ajv-8.11.0.tgz#977e91dd96ca669f54a11e23e378e33b884a565f"
+  integrity sha512-wGgprdCvMalC0BztXvitD2hC04YffAvtsUn93JbGXYLAtCUO4xd17mCCZQxUOItiBwZvJScWo8NIvQMQ71rdpg==
   dependencies:
     fast-deep-equal "^3.1.1"
     json-schema-traverse "^1.0.0"
@@ -4965,6 +4990,7 @@ argparse@^2.0.1:
 argsarray@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/argsarray/-/argsarray-0.0.1.tgz#6e7207b4ecdb39b0af88303fa5ae22bda8df61cb"
+  integrity sha1-bnIHtOzbObCviDA/pa4ivajfYcs=
 
 arr-diff@^4.0.0:
   version "4.0.0"
@@ -5162,6 +5188,7 @@ asynckit@^0.4.0:
 asyncstorage-down@4.2.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/asyncstorage-down/-/asyncstorage-down-4.2.0.tgz#6d126f42e6e4db0a25113e118ff618f2d4534046"
+  integrity sha512-xTljBjicpnxsoA7yEs6duXFXWEZC0V1Q/PeKcUM7Cd2k2W1XPGfyBY1kPXBxTqR++u6ZuDa5egnU8/E/WkJv4Q==
   dependencies:
     abstract-leveldown "2.6.1"
     argsarray "0.0.1"
@@ -6285,11 +6312,12 @@ bufferutil@^4.0.1:
   dependencies:
     node-gyp-build "^4.3.0"
 
-bunyan-debug-stream@^1.1.0:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/bunyan-debug-stream/-/bunyan-debug-stream-1.1.1.tgz#4740a00b7d5c2d9d1b714925ab0802516040813e"
+bunyan-debug-stream@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/bunyan-debug-stream/-/bunyan-debug-stream-2.0.1.tgz#9bd7c7e30c7b2cf711317e9d37529b0464c3b164"
+  integrity sha512-MCEoqggU7NMt7f2O+PU8VkqfSkoQoa4lmN/OWhaRfqFRBF1Se2TOXQyLF6NxC+EtfrdthnquQe8jOe83fpEoGA==
   dependencies:
-    colors "^1.0.3"
+    colors "1.4.0"
     exception-formatter "^1.0.4"
 
 bunyan@^1.8.12:
@@ -6770,7 +6798,7 @@ colorette@^1.0.7, colorette@^1.2.2:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/colorette/-/colorette-1.4.0.tgz#5190fbb87276259a86ad700bff2c6d6faa3fca40"
 
-colors@^1.0.3, colors@^1.1.2, colors@^1.4.0:
+colors@1.4.0, colors@^1.0.3, colors@^1.1.2, colors@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/colors/-/colors-1.4.0.tgz#c50491479d4c1bdaed2c9ced32cf7c7dc2360f78"
 
@@ -7255,6 +7283,7 @@ d3-shape@3.0.1:
 d64@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/d64/-/d64-1.0.0.tgz#4002a87e850cbfc9f9d9706b60fca613a3336e90"
+  integrity sha1-QAKofoUMv8n52XBrYPymE6MzbpA=
 
 d@1, d@^1.0.1:
   version "1.0.1"
@@ -7625,18 +7654,19 @@ detective-typescript@^7.0.0:
     node-source-walk "^4.2.0"
     typescript "^3.9.7"
 
-detox@19.0.0:
-  version "19.0.0"
-  resolved "https://registry.yarnpkg.com/detox/-/detox-19.0.0.tgz#3ac43f3843062f359ed1808e4c675095a50f32e7"
+detox@19.5.7:
+  version "19.5.7"
+  resolved "https://registry.yarnpkg.com/detox/-/detox-19.5.7.tgz#81179f3d1f75088c2eb9bf52d7e21fa72a1c2c3a"
+  integrity sha512-vLd5eySM/zjaWLJGgbtx4g7qA3JZLCZHVz4n/AphNFFW3T3qiyh7HfIYeoBoZanjjyC1k3iuw2UshpBRlHZuGA==
   dependencies:
+    ajv "^8.6.3"
     bunyan "^1.8.12"
-    bunyan-debug-stream "^1.1.0"
+    bunyan-debug-stream "^2.0.1"
     chalk "^2.4.2"
     child-process-promise "^2.2.0"
     find-up "^4.1.0"
     fs-extra "^4.0.2"
     funpermaproxy "^1.0.1"
-    get-port "^2.1.0"
     ini "^1.3.4"
     lodash "^4.17.5"
     minimist "^1.2.0"
@@ -9473,12 +9503,6 @@ get-own-enumerable-property-symbols@^3.0.0:
 get-package-type@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/get-package-type/-/get-package-type-0.1.0.tgz#8de2d803cff44df3bc6c456e6668b36c3926e11a"
-
-get-port@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/get-port/-/get-port-2.1.0.tgz#8783f9dcebd1eea495a334e1a6a251e78887ab1a"
-  dependencies:
-    pinkie-promise "^2.0.0"
 
 get-stdin@^7.0.0:
   version "7.0.0"
@@ -12683,9 +12707,10 @@ minimalistic-crypto-utils@^1.0.1:
   dependencies:
     brace-expansion "^1.1.7"
 
-minimist@1.2.0, minimist@1.2.3, minimist@^1.1.1, minimist@^1.1.2, minimist@^1.2.0, minimist@^1.2.5, minimist@~1.2.5:
-  version "1.2.3"
-  resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.3.tgz#3db5c0765545ab8637be71f333a104a965a9ca3f"
+minimist@1.2.0, minimist@1.2.6, minimist@^1.1.1, minimist@^1.1.2, minimist@^1.2.0, minimist@^1.2.5, minimist@~1.2.5:
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.6.tgz#8637a5b759ea0d6e98702cfb3a9283323c93af44"
+  integrity sha512-Jsjnk4bw3YJqYzbdyBiNsPWHPfO++UGG749Cxs6peCu5Xg4nrena6OVxOYxrQTqww0Jmwt+Ref8rggumkTLz9Q==
 
 minipass@^3.0.0:
   version "3.1.5"
@@ -13874,9 +13899,10 @@ please-upgrade-node@^3.1.1, please-upgrade-node@^3.2.0:
   dependencies:
     semver-compare "^1.0.0"
 
-plist@^3.0.2, plist@^3.0.4:
-  version "3.0.4"
-  resolved "https://registry.yarnpkg.com/plist/-/plist-3.0.4.tgz#a62df837e3aed2bb3b735899d510c4f186019cbe"
+plist@3.0.5, plist@^3.0.2, plist@^3.0.4:
+  version "3.0.5"
+  resolved "https://registry.yarnpkg.com/plist/-/plist-3.0.5.tgz#2cbeb52d10e3cdccccf0c11a63a85d830970a987"
+  integrity sha512-83vX4eYdQp3vP9SxuYgEM/G/pJQqLUz/V/xzPrzruLs7fz7jxGQ1msZ/mg1nwZxUSuOp4sb+/bEIbRrbzZRxDA==
   dependencies:
     base64-js "^1.5.1"
     xmlbuilder "^9.0.7"
@@ -14191,6 +14217,7 @@ punycode@1.3.2:
 punycode@1.4.1:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-1.4.1.tgz#c0d5a63b2718800ad8e1eb0fa5269c84dd41845e"
+  integrity sha1-wNWmOycYgArY4esPpSachN1BhF4=
 
 punycode@2.1.0:
   version "2.1.0"
@@ -14204,7 +14231,7 @@ q@^1.1.2, q@^1.5.1:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/q/-/q-1.5.1.tgz#7e32f75b41381291d04611f1bf14109ac00651d7"
 
-qrcode@1.4.4, qrcode@^1.2.0:
+qrcode@1.4.4:
   version "1.4.4"
   resolved "https://registry.yarnpkg.com/qrcode/-/qrcode-1.4.4.tgz#f0c43568a7e7510a55efc3b88d9602f71963ea83"
   dependencies:
@@ -14480,14 +14507,6 @@ react-native-drop-shadow@0.0.4:
   dependencies:
     logkitty "^0.7.1"
 
-react-native-dynamic@1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/react-native-dynamic/-/react-native-dynamic-1.0.0.tgz#d971618fd278cf66acb0add46536aa7a68fd8d4f"
-  dependencies:
-    "@types/react" "*"
-    "@types/react-native" ">=0.62.0"
-    toolkit.ts "^0.0.2"
-
 react-native-exit-app@1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/react-native-exit-app/-/react-native-exit-app-1.1.0.tgz#5ec082152974240e2d6a93f1608efb49a4385f21"
@@ -14620,13 +14639,6 @@ react-native-palette-full@1.2.0:
 react-native-permissions@3.0.5:
   version "3.0.5"
   resolved "https://registry.yarnpkg.com/react-native-permissions/-/react-native-permissions-3.0.5.tgz#94542a343abdac801fa0a4593ea2c751cb45c41f"
-
-react-native-qrcode-svg@mikedemarais/react-native-qrcode-svg#c0302a698ea4fa0bb9b506a11ef39905674f2221:
-  version "5.1.3"
-  resolved "https://codeload.github.com/mikedemarais/react-native-qrcode-svg/tar.gz/c0302a698ea4fa0bb9b506a11ef39905674f2221"
-  dependencies:
-    prop-types "^15.5.10"
-    qrcode "^1.2.0"
 
 react-native-radial-gradient@rainbow-me/react-native-radial-gradient#1266cd8f6ac3321bcf27357f8771bd088f9f27ef:
   version "1.0.9"
@@ -14783,9 +14795,10 @@ react-native-widgetkit@1.0.9:
   resolved "https://registry.yarnpkg.com/react-native-widgetkit/-/react-native-widgetkit-1.0.9.tgz#aded1c12f7c7cfd18912b947228aac433c05ddc2"
   integrity sha512-WBwdUbcOzyL0LiqhRyd7gS9A1D0X5A/m2h0fAKTbxUAbp3r2D2pdjyPnVW/6q0otpq7RIyZFo6Ln1EDJ9gfhEg==
 
-react-native@0.66.1:
-  version "0.66.1"
-  resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.66.1.tgz#96defaf60579406321340ebe1dcea76a3c942806"
+react-native@0.66.4:
+  version "0.66.4"
+  resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.66.4.tgz#bf89a5fb18bd23046d889fb4de4ea2822a4d7805"
+  integrity sha512-9vx5dlSfQlKbbDtr8+xMon6qsmSu7jvjdXWZpEKh3XVKpUidbbODv7048gwVKX8YAel1egeR7hN8vzSeI6ssTw==
   dependencies:
     "@jest/create-cache-key-function" "^27.0.1"
     "@react-native-community/cli" "^6.0.0"
@@ -15388,10 +15401,6 @@ rlp@^2.0.0, rlp@^2.2.1, rlp@^2.2.2, rlp@^2.2.3, rlp@^2.2.4:
   resolved "https://registry.yarnpkg.com/rlp/-/rlp-2.2.7.tgz#33f31c4afac81124ac4b283e2bd4d9720b30beaf"
   dependencies:
     bn.js "^5.2.0"
-
-rn-dominant-color@1.7.0:
-  version "1.7.0"
-  resolved "https://registry.yarnpkg.com/rn-dominant-color/-/rn-dominant-color-1.7.0.tgz#99b86847dec671c3c0cf84f990a6ef8eb95a19d8"
 
 rn-fetch-blob@0.12.0:
   version "0.12.0"
@@ -16589,6 +16598,7 @@ tiny-invariant@^1.1.0:
 tiny-queue@0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/tiny-queue/-/tiny-queue-0.2.0.tgz#c49fcb5c87555be1b4a5df7eb87101d5b78bc9dc"
+  integrity sha1-xJ/LXIdVW+G0pd9+uHEB1beLydw=
 
 tiny-warning@^1.0.3:
   version "1.0.3"
