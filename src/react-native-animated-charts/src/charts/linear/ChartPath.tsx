@@ -107,15 +107,17 @@ function positionXWithMargin(x: number, margin: number, width: number) {
 }
 
 const ChartPathInner = ({
+  hitSlop = 0,
+  stroke = 'black',
+  selectedStrokeWidth = 1,
+  strokeWidth = 1,
+  gestureEnabled = true,
+  selectedOpacity = 0.7,
   hapticsEnabled,
-  hitSlop,
+
   width,
   height,
-  stroke,
-  selectedStrokeWidth,
-  strokeWidth,
-  gestureEnabled,
-  selectedOpacity,
+
   timingFeedbackConfig,
   timingAnimationConfig,
   longPressGestureHandlerProps,
@@ -395,14 +397,14 @@ const ChartPathInner = ({
 export const ChartPath = React.memo(
   ({
     hapticsEnabled,
-    hitSlop = 0,
     width,
     height,
-    stroke = 'black',
-    selectedStrokeWidth = 1,
-    strokeWidth = 1,
-    gestureEnabled = true,
-    selectedOpacity = 0.7,
+    hitSlop,
+    stroke,
+    selectedStrokeWidth,
+    strokeWidth,
+    gestureEnabled,
+    selectedOpacity,
     timingFeedbackConfig,
     timingAnimationConfig,
     longPressGestureHandlerProps = {},
