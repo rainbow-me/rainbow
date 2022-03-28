@@ -508,6 +508,7 @@ interface MessageMeta {
   address?: string;
   currency?: string;
   status?: string;
+  chain_id?: Network; // L2
 }
 
 /**
@@ -854,7 +855,9 @@ const checkForUpdatedNonce = (transactionData: ZerionTransaction[]) => (
   // @ts-expect-error `ZerionTransaction` doesn't have a `network` field, but
   // the undefined network is defaulted to mainnet later.
   const { address_from, network, nonce } = latestTx;
-  dispatch(incrementNonce(address_from!, nonce!, network));
+  if (nonce) {
+    dispatch(incrementNonce(address_from!, nonce, network));
+  }
 };
 
 /**
@@ -925,11 +928,15 @@ export const transactionsReceived = (
     }
     await dispatch(checkForUpdatedNonce(transactionData));
 
-    const { accountAddress, nativeCurrency, network } = getState().settings;
+    const { accountAddress, nativeCurrency } = getState().settings;
     const { purchaseTransactions } = getState().addCash;
     const { transactions } = getState().data;
     const { selected } = getState().wallets;
 
+    let { network } = getState().settings;
+    if (network === Network.mainnet && message?.meta?.chain_id) {
+      network = message?.meta?.chain_id;
+    }
     const {
       parsedTransactions,
       potentialNftTransaction,
