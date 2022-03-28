@@ -184,12 +184,18 @@ export default forwardRef(function SlackSheet(
             deviceHeight={deviceHeight}
             limitScrollViewContent={limitScrollViewContent}
             onContentSizeChange={onContentSizeChange}
-            onScroll={scrollHandler}
             ref={sheet}
             removeClippedSubviews={removeClippedSubviews}
             removeTopPadding={removeTopPadding}
             scrollEnabled={scrollEnabled}
             scrollIndicatorInsets={scrollIndicatorInsets}
+            {...(isInsideBottomSheet && android
+              ? {
+                  onScrollWorklet: scrollHandler,
+                }
+              : {
+                  onScroll: scrollHandler,
+                })}
           >
             {children}
             {!scrollEnabled && (
