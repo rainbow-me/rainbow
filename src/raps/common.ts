@@ -14,6 +14,8 @@ import {
 import {
   createCommitENSRap,
   createRegisterENSRap,
+  createRenewENSRap,
+  createSetNameENSRap,
   createSetRecordsENSRap,
 } from './registerENS';
 import {
@@ -40,6 +42,7 @@ const {
   multicallENS,
   setTextENS,
   setNameENS,
+  renewENS,
 } = ens;
 
 export enum RapActionType {
@@ -50,6 +53,7 @@ export enum RapActionType {
   commitENS = 'commitENS',
   registerENS = 'registerENS',
   multicallENS = 'multicallENS',
+  renewENS = 'renewENS',
   setTextENS = 'setTextENS',
   setNameENS = 'setNameENS',
 }
@@ -145,6 +149,7 @@ export const RapActionTypes = {
   multicallENS: 'multicallENS' as RapActionType,
   registerENS: 'registerENS' as RapActionType,
   registerWithConfigENS: 'registerWithConfigENS' as RapActionType,
+  renewENS: 'renewENS' as RapActionType,
   setNameENS: 'setNameENS' as RapActionType,
   setRecordsENS: 'setRecordsENS' as RapActionType,
   setTextENS: 'setTextENS' as RapActionType,
@@ -174,6 +179,10 @@ const createENSRapByType = (
   switch (type) {
     case RapActionTypes.registerENS:
       return createRegisterENSRap(ensRegistrationParameters);
+    case RapActionTypes.renewENS:
+      return createRenewENSRap(ensRegistrationParameters);
+    case RapActionTypes.setNameENS:
+      return createSetNameENSRap(ensRegistrationParameters);
     case RapActionTypes.setRecordsENS:
       return createSetRecordsENSRap(ensRegistrationParameters);
     case RapActionTypes.commitENS:
@@ -243,6 +252,8 @@ const findENSActionByType = (type: RapActionType) => {
       return setTextENS;
     case RapActionTypes.setNameENS:
       return setNameENS;
+    case RapActionTypes.renewENS:
+      return renewENS;
     case RapActionTypes.setRecordsENS:
       return setNameENS;
     default:
@@ -331,6 +342,7 @@ const getRapTypeFromActionType = (actionType: RapActionType) => {
     case RapActionTypes.registerENS:
     case RapActionTypes.registerWithConfigENS:
     case RapActionTypes.multicallENS:
+    case RapActionTypes.renewENS:
     case RapActionTypes.setNameENS:
     case RapActionTypes.setTextENS:
     case RapActionTypes.setRecordsENS:

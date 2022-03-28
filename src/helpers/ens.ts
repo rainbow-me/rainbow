@@ -35,6 +35,7 @@ import { labelhash } from '@rainbow-me/utils';
 export enum ENSRegistrationTransactionType {
   COMMIT = 'commit',
   REGISTER_WITH_CONFIG = 'registerWithConfig',
+  RENEW = 'renew',
   SET_TEXT = 'setText',
   SET_NAME = 'setName',
   MULTICALL = 'multicall',
@@ -427,6 +428,14 @@ const getENSExecutionDetails = async ({
         ensPublicResolverAddress,
         ownerAddress,
       ];
+      contract = getENSRegistrarControllerContract(wallet);
+      break;
+    }
+    case ENSRegistrationTransactionType.RENEW: {
+      if (!value || !name || !duration || !duration || !rentPrice)
+        throw new Error('Bad arguments for renew');
+      value = toHex(addBuffer(rentPrice, 1.1));
+      args = [value, name.replace(ENS_DOMAIN, ''), duration];
       contract = getENSRegistrarControllerContract(wallet);
       break;
     }

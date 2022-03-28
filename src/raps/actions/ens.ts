@@ -121,6 +121,40 @@ const executeMulticall = async (
   );
 };
 
+const executeRenew = async (
+  name?: string,
+  duration?: number,
+  ownerAddress?: string,
+  rentPrice?: string,
+  gasLimit?: string | null,
+  maxFeePerGas?: string,
+  maxPriorityFeePerGas?: string,
+  wallet?: Wallet,
+  nonce: number | null = null
+) => {
+  const { contract, methodArguments, value } = await getENSExecutionDetails({
+    duration,
+    name,
+    ownerAddress,
+    rentPrice,
+    type: ENSRegistrationTransactionType.RENEW,
+    wallet,
+  });
+
+  return (
+    methodArguments &&
+    contract?.renew(...methodArguments, {
+      gasLimit: gasLimit ? toHex(gasLimit) : undefined,
+      maxFeePerGas: maxFeePerGas ? toHex(maxFeePerGas) : undefined,
+      maxPriorityFeePerGas: maxPriorityFeePerGas
+        ? toHex(maxPriorityFeePerGas)
+        : undefined,
+      nonce: nonce ? toHex(nonce) : undefined,
+      ...(value ? { value } : {}),
+    })
+  );
+};
+
 const executeSetName = async (
   name?: string,
   ownerAddress?: string,
@@ -282,6 +316,19 @@ const ensAction = async (
           })
         );
         break;
+      case ENSRegistrationTransactionType.RENEW:
+        tx = await executeRenew(
+          name,
+          duration,
+          ownerAddress,
+          rentPrice,
+          gasLimit,
+          maxFeePerGas,
+          maxPriorityFeePerGas,
+          wallet,
+          nonce
+        );
+        break;
       case ENSRegistrationTransactionType.SET_TEXT:
         tx = await executeSetText(
           name,
@@ -398,6 +445,23 @@ const multicallENS = async (
   );
 };
 
+const renewENS = async (
+  wallet: Wallet,
+  currentRap: Rap,
+  index: number,
+  parameters: RapENSActionParameters,
+  baseNonce?: number
+): Promise<number | undefined> => {
+  return ensAction(
+    wallet,
+    RapActionTypes.renewENS,
+    index,
+    parameters,
+    ENSRegistrationTransactionType.RENEW,
+    baseNonce
+  );
+};
+
 const setTextENS = async (
   wallet: Wallet,
   currentRap: Rap,
@@ -436,6 +500,7 @@ export default {
   commitENS,
   multicallENS,
   registerWithConfig,
+  renewENS,
   setNameENS,
   setTextENS,
 };
