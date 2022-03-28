@@ -90,6 +90,7 @@ export default function useENSRegistrationActionHandler(
 
   const avatarMetadata = useRecoilValue(avatarMetadataAtom);
   const coverMetadata = useRecoilValue(coverMetadataAtom);
+
   const commitAction = useCallback(
     async (callback: () => void) => {
       const wallet = await loadWallet();

@@ -411,23 +411,6 @@ const commitENS = async (
   );
 };
 
-const registerWithConfig = async (
-  wallet: Wallet,
-  currentRap: Rap,
-  index: number,
-  parameters: RapENSActionParameters,
-  baseNonce?: number
-): Promise<number | undefined> => {
-  return ensAction(
-    wallet,
-    RapActionTypes.registerWithConfigENS,
-    index,
-    parameters,
-    ENSRegistrationTransactionType.REGISTER_WITH_CONFIG,
-    baseNonce
-  );
-};
-
 const multicallENS = async (
   wallet: Wallet,
   currentRap: Rap,
@@ -441,6 +424,23 @@ const multicallENS = async (
     index,
     parameters,
     ENSRegistrationTransactionType.MULTICALL,
+    baseNonce
+  );
+};
+
+const registerWithConfig = async (
+  wallet: Wallet,
+  currentRap: Rap,
+  index: number,
+  parameters: RapENSActionParameters,
+  baseNonce?: number
+): Promise<number | undefined> => {
+  return ensAction(
+    wallet,
+    RapActionTypes.registerWithConfigENS,
+    index,
+    parameters,
+    ENSRegistrationTransactionType.REGISTER_WITH_CONFIG,
     baseNonce
   );
 };
@@ -462,23 +462,6 @@ const renewENS = async (
   );
 };
 
-const setTextENS = async (
-  wallet: Wallet,
-  currentRap: Rap,
-  index: number,
-  parameters: RapENSActionParameters,
-  baseNonce?: number
-): Promise<number | undefined> => {
-  return ensAction(
-    wallet,
-    RapActionTypes.setTextENS,
-    index,
-    parameters,
-    ENSRegistrationTransactionType.SET_TEXT,
-    baseNonce
-  );
-};
-
 const setNameENS = async (
   wallet: Wallet,
   currentRap: Rap,
@@ -492,6 +475,23 @@ const setNameENS = async (
     index,
     parameters,
     ENSRegistrationTransactionType.SET_NAME,
+    baseNonce
+  );
+};
+
+const setTextENS = async (
+  wallet: Wallet,
+  currentRap: Rap,
+  index: number,
+  parameters: RapENSActionParameters,
+  baseNonce?: number
+): Promise<number | undefined> => {
+  return ensAction(
+    wallet,
+    RapActionTypes.setTextENS,
+    index,
+    parameters,
+    ENSRegistrationTransactionType.SET_TEXT,
     baseNonce
   );
 };

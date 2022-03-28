@@ -32,6 +32,8 @@ import {
   estimateENSCommitGasLimit,
   estimateENSRegisterSetRecords,
   estimateENSRegisterSetRecordsAndNameGasLimit,
+  estimateENSRenewGasLimit,
+  estimateENSSetNameGasLimit,
 } from '@rainbow-me/handlers/ens';
 import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
 import logger from 'logger';
@@ -214,12 +216,16 @@ export const getENSRapEstimationByType = (
   switch (type) {
     case RapActionTypes.commitENS:
       return estimateENSCommitGasLimit(ensRegistrationParameters);
-    case RapActionTypes.setRecordsENS:
-      return estimateENSRegisterSetRecords(ensRegistrationParameters);
     case RapActionTypes.registerENS:
       return estimateENSRegisterSetRecordsAndNameGasLimit(
         ensRegistrationParameters
       );
+    case RapActionTypes.renewENS:
+      return estimateENSRenewGasLimit(ensRegistrationParameters);
+    case RapActionTypes.setNameENS:
+      return estimateENSSetNameGasLimit(ensRegistrationParameters);
+    case RapActionTypes.setRecordsENS:
+      return estimateENSRegisterSetRecords(ensRegistrationParameters);
     default:
       return null;
   }
@@ -254,8 +260,6 @@ const findENSActionByType = (type: RapActionType) => {
       return setNameENS;
     case RapActionTypes.renewENS:
       return renewENS;
-    case RapActionTypes.setRecordsENS:
-      return setNameENS;
     default:
       return NOOP;
   }

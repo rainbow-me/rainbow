@@ -416,6 +416,13 @@ const getENSExecutionDetails = async ({
       contract = registrarController;
       break;
     }
+    case ENSRegistrationTransactionType.MULTICALL: {
+      if (!name || !records) throw new Error('Bad arguments for multicall');
+      contract = getENSPublicResolverContract(wallet, resolverAddress);
+      const data = setupMulticallRecords(name, records, contract) || [];
+      args = [data];
+      break;
+    }
     case ENSRegistrationTransactionType.REGISTER_WITH_CONFIG: {
       if (!name || !ownerAddress || !duration || !rentPrice)
         throw new Error('Bad arguments for registerWithConfig');
@@ -439,6 +446,11 @@ const getENSExecutionDetails = async ({
       contract = getENSRegistrarControllerContract(wallet);
       break;
     }
+    case ENSRegistrationTransactionType.SET_NAME:
+      if (!name) throw new Error('Bad arguments for setName');
+      args = [name];
+      contract = getENSReverseRegistrarContract(wallet);
+      break;
     case ENSRegistrationTransactionType.SET_TEXT: {
       if (!name || !records || !records?.text?.[0])
         throw new Error('Bad arguments for setText');
@@ -448,18 +460,6 @@ const getENSExecutionDetails = async ({
       contract = getENSPublicResolverContract(wallet, resolverAddress);
       break;
     }
-    case ENSRegistrationTransactionType.MULTICALL: {
-      if (!name || !records) throw new Error('Bad arguments for multicall');
-      contract = getENSPublicResolverContract(wallet, resolverAddress);
-      const data = setupMulticallRecords(name, records, contract) || [];
-      args = [data];
-      break;
-    }
-    case ENSRegistrationTransactionType.SET_NAME:
-      if (!name) throw new Error('Bad arguments for setName');
-      args = [name];
-      contract = getENSReverseRegistrarContract(wallet);
-      break;
   }
   return {
     contract,
