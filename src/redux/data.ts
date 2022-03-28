@@ -1041,7 +1041,8 @@ export const addressAssetsReceived = (
   if (!isValidMeta) return;
   const { accountAddress, network } = getState().settings;
   const responseAddress = message?.meta?.address;
-  const addressMatch = accountAddress?.toLowerCase() === responseAddress?.toLowerCase();
+  const addressMatch =
+    accountAddress?.toLowerCase() === responseAddress?.toLowerCase();
   if (!addressMatch) return;
 
   const { uniqueTokens } = getState().uniqueTokens;
