@@ -50,7 +50,9 @@ export default function WyreWebview() {
       {url ? (
         <StyledWebView
           injectedJavaScript={`
-            document.getElementsByClassName('CloseBtn')[0].style.display = 'none';
+            setInterval(() => {
+              document.getElementsByClassName('CloseBtn')[0].style.display = 'none';          
+            }, 10);
             setTimeout(() => {
               document.getElementById('amount').style.width = '${defaultInputWidth}px';
               document.getElementsByName('termsAndConditions')[0].click();
