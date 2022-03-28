@@ -300,6 +300,7 @@ export default function useENSRegistrationActionHandler(
     if (!registrationParameters.commitTransactionConfirmedAt)
       return REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION;
     // COMMIT tx was confirmed but 60 secs haven't passed yet
+    // or current block is not 60 secs ahead of COMMIT tx block
     if (secondsSinceCommitConfirmed < ENS_SECONDS_WAIT || !readyToRegister)
       return REGISTRATION_STEPS.WAIT_ENS_COMMITMENT;
     return REGISTRATION_STEPS.REGISTER;
@@ -429,7 +430,7 @@ export default function useENSRegistrationActionHandler(
         //
       }
     };
-    if (secondsSinceCommitConfirmed >= ENS_SECONDS_WAIT && !isTesting) {
+    if (secondsSinceCommitConfirmed >= ENS_SECONDS_WAIT) {
       checkRegisterBlockTimestamp();
     }
   }, [
