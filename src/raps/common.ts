@@ -30,10 +30,10 @@ import {
 import { Asset, EthereumAddress, Records } from '@rainbow-me/entities';
 import {
   estimateENSCommitGasLimit,
-  estimateENSRegisterSetRecords,
   estimateENSRegisterSetRecordsAndNameGasLimit,
   estimateENSRenewGasLimit,
   estimateENSSetNameGasLimit,
+  estimateENSSetRecordsGasLimit,
 } from '@rainbow-me/handlers/ens';
 import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
 import logger from 'logger';
@@ -225,7 +225,7 @@ export const getENSRapEstimationByType = (
     case RapActionTypes.setNameENS:
       return estimateENSSetNameGasLimit(ensRegistrationParameters);
     case RapActionTypes.setRecordsENS:
-      return estimateENSRegisterSetRecords(ensRegistrationParameters);
+      return estimateENSSetRecordsGasLimit(ensRegistrationParameters);
     default:
       return null;
   }

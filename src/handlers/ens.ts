@@ -431,7 +431,7 @@ export const estimateENSRegistrationGasLimit = async (
     salt,
   });
 
-  const setRecordsGasLimitPromise = estimateENSRegisterSetRecords({
+  const setRecordsGasLimitPromise = estimateENSSetRecordsGasLimit({
     name: name + ENS_DOMAIN,
     records,
   });
@@ -512,7 +512,7 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
   return gasLimit;
 };
 
-export const estimateENSRegisterSetRecords = async ({
+export const estimateENSSetRecordsGasLimit = async ({
   name,
   records,
   ownerAddress,
