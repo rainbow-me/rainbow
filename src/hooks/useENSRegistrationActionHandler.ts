@@ -67,6 +67,7 @@ export default function useENSRegistrationActionHandler(
   const { navigate } = useNavigation();
   const { getTransactionByHash } = useTransactions();
   const [stepGasLimit, setStepGasLimit] = useState<string | null>(null);
+  const [readyToRegister, setReadyToRegister] = useState<boolean>(false);
   const timeout = useRef<NodeJS.Timeout>();
 
   const [
@@ -298,15 +299,15 @@ export default function useENSRegistrationActionHandler(
     if (!registrationParameters.commitTransactionConfirmedAt)
       return REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION;
     // COMMIT tx was confirmed but 60 secs haven't passed yet
-    if (secondsSinceCommitConfirmed < ENS_SECONDS_WAIT)
+    if (secondsSinceCommitConfirmed < ENS_SECONDS_WAIT || !readyToRegister)
       return REGISTRATION_STEPS.WAIT_ENS_COMMITMENT;
-
     return REGISTRATION_STEPS.REGISTER;
   }, [
     mode,
     registrationParameters.commitTransactionConfirmedAt,
     registrationParameters.commitTransactionHash,
     secondsSinceCommitConfirmed,
+    readyToRegister,
   ]);
 
   const actions = useMemo(
@@ -410,6 +411,35 @@ export default function useENSRegistrationActionHandler(
     }
     return () => clearInterval(interval);
   }, [registrationStep, secondsSinceCommitConfirmed]);
+
+  useEffect(() => {
+    // we need to check from blocks if the time has passed or not
+    const checkBlockTimestamp = async () => {
+      const block = await web3Provider.getBlock('latest');
+      const msBlockTimestamp = block?.timestamp * 1000;
+      const commitTransactionConfirmedAt =
+        registrationParameters?.commitTransactionConfirmedAt;
+      if (!commitTransactionConfirmedAt) return;
+      const secs = differenceInSeconds(
+        msBlockTimestamp,
+        commitTransactionConfirmedAt
+      );
+      if (secs > ENS_SECONDS_WAIT) {
+        setReadyToRegister(true);
+      }
+    };
+    if (secondsSinceCommitConfirmed >= ENS_SECONDS_WAIT) {
+      try {
+        checkBlockTimestamp();
+      } catch (e) {
+        //
+      }
+    }
+  }, [
+    registrationParameters?.commitTransactionConfirmedAt,
+    registrationStep,
+    secondsSinceCommitConfirmed,
+  ]);
 
   useEffect(() => () => timeout.current && clearTimeout(timeout.current), []);
 
