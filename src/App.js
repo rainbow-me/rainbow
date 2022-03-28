@@ -16,6 +16,8 @@ import {
   StatusBar,
   View,
 } from 'react-native';
+// eslint-disable-next-line import/default
+import codePush from 'react-native-code-push';
 import {
   REACT_APP_SEGMENT_API_WRITE_KEY,
   SENTRY_ENDPOINT,
@@ -306,6 +308,10 @@ const AppWithRedux = connect(
 
 const AppWithReduxStore = () => <AppWithRedux store={store} />;
 
+const AppWithSentry = Sentry.wrap(AppWithReduxStore);
+
+const AppWithCodePush = codePush(AppWithSentry);
+
 AppRegistry.registerComponent('Rainbow', () =>
-  designSystemPlaygroundEnabled ? Playground : Sentry.wrap(AppWithReduxStore)
+  designSystemPlaygroundEnabled ? Playground : AppWithCodePush
 );
