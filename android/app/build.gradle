@@ -185,7 +185,9 @@ android {
     }
 
     defaultConfig {
+        // https://github.com/microsoft/react-native-code-push/issues/1961#issuecomment-710698621
         resValue 'string', "CODE_PUSH_APK_BUILD_TIME", String.format("\"%d\"", System.currentTimeMillis())
+        resValue 'string', "CodePushDeploymentKey", env.get('CODE_PUSH_DEPLOYMENT_KEY_ANDROID')
         applicationId "me.rainbow"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
