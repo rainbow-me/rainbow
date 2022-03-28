@@ -67,7 +67,9 @@ export default function useENSRegistrationActionHandler(
   const { navigate } = useNavigation();
   const { getTransactionByHash } = useTransactions();
   const [stepGasLimit, setStepGasLimit] = useState<string | null>(null);
-  const [readyToRegister, setReadyToRegister] = useState<boolean>(false);
+  const [readyToRegister, setReadyToRegister] = useState<boolean>(
+    IS_TESTING ? true : false
+  );
   const timeout = useRef<NodeJS.Timeout>();
 
   const [
