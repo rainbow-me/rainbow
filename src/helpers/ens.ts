@@ -72,6 +72,8 @@ export enum REGISTRATION_STEPS {
   WAIT_ENS_COMMITMENT = 'WAIT_ENS_COMMITMENT',
   REGISTER = 'REGISTER',
   EDIT = 'EDIT',
+  RENEW = 'RENEW',
+  SET_NAME = 'SET_NAME',
 }
 
 export type TextRecordField = {

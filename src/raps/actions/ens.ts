@@ -296,6 +296,17 @@ const ensAction = async (
           })
         );
         break;
+      case ENSRegistrationTransactionType.MULTICALL:
+        tx = await executeMulticall(
+          name,
+          ensRegistrationRecords,
+          gasLimit,
+          maxFeePerGas,
+          maxPriorityFeePerGas,
+          wallet,
+          nonce
+        );
+        break;
       case ENSRegistrationTransactionType.REGISTER_WITH_CONFIG:
         tx = await executeRegisterWithConfig(
           name,
@@ -331,17 +342,6 @@ const ensAction = async (
         break;
       case ENSRegistrationTransactionType.SET_TEXT:
         tx = await executeSetText(
-          name,
-          ensRegistrationRecords,
-          gasLimit,
-          maxFeePerGas,
-          maxPriorityFeePerGas,
-          wallet,
-          nonce
-        );
-        break;
-      case ENSRegistrationTransactionType.MULTICALL:
-        tx = await executeMulticall(
           name,
           ensRegistrationRecords,
           gasLimit,

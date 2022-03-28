@@ -91,6 +91,7 @@ export default function useENSRegistrationActionHandler(
   const avatarMetadata = useRecoilValue(avatarMetadataAtom);
   const coverMetadata = useRecoilValue(coverMetadataAtom);
 
+  // actions
   const commitAction = useCallback(
     async (callback: () => void) => {
       const wallet = await loadWallet();
@@ -181,6 +182,7 @@ export default function useENSRegistrationActionHandler(
 
       const registerEnsRegistrationParameters: ENSActionParameters = {
         ...formatENSActionParams(registrationParameters),
+        duration,
         nonce,
         ownerAddress: accountAddress,
         records: changedRecords,
@@ -205,7 +207,70 @@ export default function useENSRegistrationActionHandler(
     ]
   );
 
-  const editAction = useCallback(
+  const renewAction = useCallback(
+    async (callback: () => void) => {
+      const {
+        name,
+        duration,
+      } = registrationParameters as RegistrationParameters;
+
+      const wallet = await loadWallet();
+      if (!wallet) {
+        return;
+      }
+
+      const nonce = await getNextNonce();
+      const rentPrice = await getRentPrice(
+        name.replace(ENS_DOMAIN, ''),
+        duration
+      );
+
+      const registerEnsRegistrationParameters: ENSActionParameters = {
+        ...formatENSActionParams(registrationParameters),
+        duration,
+        nonce,
+        rentPrice: rentPrice.toString(),
+      };
+
+      await executeRap(
+        wallet,
+        RapActionTypes.renewENS,
+        registerEnsRegistrationParameters,
+        callback
+      );
+    },
+    [getNextNonce, registrationParameters]
+  );
+
+  const setNameAction = useCallback(
+    async (callback: () => void) => {
+      const { name } = registrationParameters as RegistrationParameters;
+
+      const wallet = await loadWallet();
+      if (!wallet) {
+        return;
+      }
+
+      const nonce = await getNextNonce();
+
+      const registerEnsRegistrationParameters: ENSActionParameters = {
+        ...formatENSActionParams(registrationParameters),
+        name,
+        nonce,
+        ownerAddress: accountAddress,
+      };
+
+      await executeRap(
+        wallet,
+        RapActionTypes.setNameENS,
+        registerEnsRegistrationParameters,
+        callback
+      );
+    },
+    [accountAddress, getNextNonce, registrationParameters]
+  );
+
+  const setRecordsAction = useCallback(
     async (callback: () => void) => {
       const wallet = await loadWallet();
       if (!wallet) {
@@ -244,6 +309,7 @@ export default function useENSRegistrationActionHandler(
     ]
   );
 
+  // gas limit estimations
   const commitEstimateGasLimit = useCallback(async () => {
     const salt = generateSalt();
     const duration = yearsDuration * timeUnits.secs.year;
@@ -290,8 +356,36 @@ export default function useENSRegistrationActionHandler(
     return gasLimit;
   }, [accountAddress, registrationParameters]);
 
+  const renewEstimateGasLimit = useCallback(async () => {
+    const duration = yearsDuration * timeUnits.secs.year;
+    const rentPrice = await getRentPrice(
+      registrationParameters.name.replace(ENS_DOMAIN, ''),
+      duration
+    );
+    const gasLimit = await getENSRapEstimationByType(RapActionTypes.renewENS, {
+      ...formatENSActionParams(registrationParameters),
+      duration,
+      ownerAddress: accountAddress,
+      rentPrice,
+    });
+    return gasLimit;
+  }, [accountAddress, registrationParameters, yearsDuration]);
+
+  const setNameEstimateGasLimit = useCallback(async () => {
+    const gasLimit = await getENSRapEstimationByType(
+      RapActionTypes.setNameENS,
+      {
+        ...formatENSActionParams(registrationParameters),
+        ownerAddress: accountAddress,
+      }
+    );
+    return gasLimit;
+  }, [accountAddress, registrationParameters]);
+
   const registrationStep = useMemo(() => {
     if (mode === 'edit') return REGISTRATION_STEPS.EDIT;
+    if (mode === 'renew') return REGISTRATION_STEPS.RENEW;
+    if (mode === 'setName') return REGISTRATION_STEPS.SET_NAME;
     // still waiting for the COMMIT tx to be sent
     if (!registrationParameters.commitTransactionHash)
       return REGISTRATION_STEPS.COMMIT;
@@ -313,25 +407,38 @@ export default function useENSRegistrationActionHandler(
   const actions = useMemo(
     () => ({
       [REGISTRATION_STEPS.COMMIT]: commitAction,
-      [REGISTRATION_STEPS.EDIT]: editAction,
+      [REGISTRATION_STEPS.EDIT]: setRecordsAction,
       [REGISTRATION_STEPS.REGISTER]: registerAction,
+      [REGISTRATION_STEPS.RENEW]: renewAction,
+      [REGISTRATION_STEPS.SET_NAME]: setNameAction,
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: speedUpCommitAction,
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: () => null,
     }),
-    [commitAction, registerAction, editAction, speedUpCommitAction]
+    [
+      commitAction,
+      registerAction,
+      renewAction,
+      setNameAction,
+      setRecordsAction,
+      speedUpCommitAction,
+    ]
   );
 
   const estimateGasLimitActions = useMemo(
     () => ({
       [REGISTRATION_STEPS.COMMIT]: commitEstimateGasLimit,
-      [REGISTRATION_STEPS.REGISTER]: registerEstimateGasLimit,
       [REGISTRATION_STEPS.EDIT]: setRecordsEstimateGasLimit,
+      [REGISTRATION_STEPS.REGISTER]: registerEstimateGasLimit,
+      [REGISTRATION_STEPS.RENEW]: renewEstimateGasLimit,
+      [REGISTRATION_STEPS.SET_NAME]: setNameEstimateGasLimit,
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: () => null,
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: () => null,
     }),
     [
       commitEstimateGasLimit,
       registerEstimateGasLimit,
+      renewEstimateGasLimit,
+      setNameEstimateGasLimit,
       setRecordsEstimateGasLimit,
     ]
   );
