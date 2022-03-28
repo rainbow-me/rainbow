@@ -1,8 +1,9 @@
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
-import ImagePicker, { Image, Options } from 'react-native-image-crop-picker';
+import { Image, Options } from 'react-native-image-crop-picker';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import { useMutation } from 'react-query';
+import { useImagePicker } from '.';
 import { UniqueAsset } from '@rainbow-me/entities';
 import {
   uploadImage,
@@ -67,18 +68,19 @@ export default function useSelectImageMenu({
   uploadToIPFS?: boolean;
 } = {}) {
   const { navigate } = useNavigation();
-
+  const { openPicker } = useImagePicker();
   const { isLoading: isUploading, mutateAsync: upload } = useMutation(
     'ensImageUpload',
     uploadImage
   );
 
   const handleSelectImage = useCallback(async () => {
-    const image = await ImagePicker.openPicker({
+    const image = await openPicker({
       ...imagePickerOptions,
       includeBase64: true,
       mediaType: 'photo',
     });
+    if (!image) return;
     const stringIndex = image?.path.indexOf('/tmp');
     const tmpPath = `~${image?.path.slice(stringIndex)}`;
 
@@ -103,6 +105,7 @@ export default function useSelectImageMenu({
     onUploadError,
     onUploadSuccess,
     onUploading,
+    openPicker,
     upload,
     uploadToIPFS,
   ]);
