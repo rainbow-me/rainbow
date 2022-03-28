@@ -67,9 +67,7 @@ export default function useENSRegistrationActionHandler(
   const { navigate } = useNavigation();
   const { getTransactionByHash } = useTransactions();
   const [stepGasLimit, setStepGasLimit] = useState<string | null>(null);
-  const [readyToRegister, setReadyToRegister] = useState<boolean>(
-    IS_TESTING ? true : false
-  );
+
   const timeout = useRef<NodeJS.Timeout>();
 
   const [
@@ -88,6 +86,7 @@ export default function useENSRegistrationActionHandler(
     () => IS_TESTING === 'true' && isHardHat(web3Provider.connection.url),
     []
   );
+  const [readyToRegister, setReadyToRegister] = useState<boolean>(isTesting);
   // flag to wait 10 secs before we get the tx block, to be able to simulate not confirmed tx when testing
   const shouldLoopForConfirmation = useRef(isTesting);
 
@@ -430,10 +429,11 @@ export default function useENSRegistrationActionHandler(
         //
       }
     };
-    if (secondsSinceCommitConfirmed >= ENS_SECONDS_WAIT) {
+    if (secondsSinceCommitConfirmed >= ENS_SECONDS_WAIT && !isTesting) {
       checkRegisterBlockTimestamp();
     }
   }, [
+    isTesting,
     registrationParameters?.commitTransactionConfirmedAt,
     registrationStep,
     secondsSinceCommitConfirmed,
