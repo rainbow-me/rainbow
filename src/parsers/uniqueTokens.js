@@ -17,6 +17,13 @@ import {
   polygonAllowList,
 } from '@rainbow-me/references';
 
+const parseLastSalePrice = lastSale =>
+  lastSale
+    ? Math.round(
+        (lastSale?.total_price / 1000000000000000000 + Number.EPSILON) * 1000
+      ) / 1000
+    : null;
+
 /**
  * @desc parse unique tokens from opensea
  * @param  {Object}
@@ -87,13 +94,7 @@ export const parseAccountUniqueTokens = data => {
           asset_contract.nft_version === '1.0' ||
           asset_contract.nft_version === '3.0' ||
           asset_contract.schema_name === 'ERC1155',
-        lastPrice: asset.last_sale
-          ? Math.round(
-              (asset.last_sale?.total_price / 1000000000000000000 +
-                Number.EPSILON) *
-                1000
-            ) / 1000
-          : null,
+        lastPrice: parseLastSalePrice(asset.last_sale),
         lastPriceUsd: asset.last_sale
           ? asset.last_sale?.payment_token?.usd_price
           : null,
@@ -161,13 +162,7 @@ export const parseAccountUniqueTokensPolygon = async data => {
           : collection.name,
       id: token_id,
       isSendable: false,
-      lastPrice: asset.last_sale
-        ? Math.round(
-            (asset.last_sale?.total_price / 1000000000000000000 +
-              Number.EPSILON) *
-              1000
-          ) / 1000
-        : null,
+      lastPrice: parseLastSalePrice(asset.last_sale),
       lastPriceUsd: asset.last_sale
         ? asset.last_sale?.payment_token?.usd_price
         : null,
