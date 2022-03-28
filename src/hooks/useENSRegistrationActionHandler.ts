@@ -414,26 +414,22 @@ export default function useENSRegistrationActionHandler(
 
   useEffect(() => {
     // we need to check from blocks if the time has passed or not
-    const checkBlockTimestamp = async () => {
-      const block = await web3Provider.getBlock('latest');
-      const msBlockTimestamp = block?.timestamp * 1000;
-      const commitTransactionConfirmedAt =
-        registrationParameters?.commitTransactionConfirmedAt;
-      if (!commitTransactionConfirmedAt) return;
-      const secs = differenceInSeconds(
-        msBlockTimestamp,
-        commitTransactionConfirmedAt
-      );
-      if (secs > ENS_SECONDS_WAIT) {
-        setReadyToRegister(true);
-      }
-    };
-    if (secondsSinceCommitConfirmed >= ENS_SECONDS_WAIT) {
+    const checkRegisterBlockTimestamp = async () => {
       try {
-        checkBlockTimestamp();
+        const block = await web3Provider.getBlock('latest');
+        const msBlockTimestamp = block?.timestamp * 1000;
+        const secs = differenceInSeconds(
+          msBlockTimestamp,
+          registrationParameters?.commitTransactionConfirmedAt ||
+            msBlockTimestamp
+        );
+        if (secs > ENS_SECONDS_WAIT) setReadyToRegister(true);
       } catch (e) {
         //
       }
+    };
+    if (secondsSinceCommitConfirmed >= ENS_SECONDS_WAIT) {
+      checkRegisterBlockTimestamp();
     }
   }, [
     registrationParameters?.commitTransactionConfirmedAt,
