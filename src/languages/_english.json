@@ -146,6 +146,7 @@
         "insufficient_funds": "Insufficient Funds",
         "insufficient_liquidity": "Insufficient Liquidity",
         "invalid_fee": "Invalid Fee",
+        "review": "Review",
         "swap": "Hold to Swap",
         "swap_anyway": "Swap Anyway",
         "view_details": "View Details",

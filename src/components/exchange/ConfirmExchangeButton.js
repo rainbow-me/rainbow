@@ -102,7 +102,7 @@ export default function ConfirmExchangeButton({
   if (type === ExchangeModalTypes.deposit) {
     label = lang.t('button.confirm_exchange.deposit');
   } else if (type === ExchangeModalTypes.swap) {
-    label = lang.t('button.confirm_exchange.swap');
+    label = `􀕹 ${lang.t('button.confirm_exchange.review')}`;
   } else if (type === ExchangeModalTypes.withdrawal) {
     label = lang.t('button.confirm_exchange.withdraw');
   }
@@ -115,10 +115,10 @@ export default function ConfirmExchangeButton({
     label = lang.t('button.confirm_exchange.insufficient_eth');
   } else if (!isValidGas) {
     label = lang.t('button.confirm_exchange.invalid_fee');
-  } else if (isHighPriceImpact) {
-    label = isSwapDetailsRoute
+  } else if (isSwapDetailsRoute) {
+    label = isHighPriceImpact
       ? lang.t('button.confirm_exchange.swap_anyway')
-      : `􀕹 ${lang.t('button.confirm_exchange.view_details')}`;
+      : `${lang.t('button.confirm_exchange.swap')}`;
   } else if (disabled) {
     label = lang.t('button.confirm_exchange.enter_amount');
   }
@@ -191,7 +191,7 @@ export default function ConfirmExchangeButton({
                   : shadowsForAsset
                 : shadows.default
             }
-            showBiometryIcon={!isDisabled && !isHighPriceImpact}
+            showBiometryIcon={isSwapDetailsRoute}
             testID={testID}
             {...props}
           />
