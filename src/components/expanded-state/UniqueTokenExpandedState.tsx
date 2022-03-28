@@ -194,6 +194,7 @@ const UniqueTokenExpandedState = ({
     isPoap,
     isSendable,
     lastPrice,
+    lastSalePaymentToken,
     traits,
     uniqueId,
     urlSuffixForAsset,
@@ -232,7 +233,12 @@ const UniqueTokenExpandedState = ({
     usePersistentDominantColorFromImage(asset.image_url).result ||
     colors.paleBlue;
 
-  const lastSalePrice = lastPrice || 'None';
+  const lastSalePrice =
+    lastPrice != null
+      ? lastPrice === 0
+        ? `< 0.001 ${lastSalePaymentToken}`
+        : `${lastPrice} ${lastSalePaymentToken}`
+      : 'None';
   const priceOfEth = ethereumUtils.getEthPriceUnit() as number;
 
   const textColor = useMemo(() => {

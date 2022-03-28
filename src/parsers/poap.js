@@ -39,6 +39,7 @@ export const parsePoaps = data => {
       isPoap: true,
       isSendable: false,
       lastPrice: null,
+      lastSalePaymentToken: null,
       name: event.name,
       permalink: event.event_url,
       traits: [
