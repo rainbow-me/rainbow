@@ -203,6 +203,7 @@ export const ENS_SUGGESTIONS = gql`
     ) {
       name
       resolver {
+        texts
         addr {
           id
         }

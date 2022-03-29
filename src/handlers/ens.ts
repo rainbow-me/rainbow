@@ -41,7 +41,15 @@ export const fetchSuggestions = async (
   setIsFetching = (_unused: any) => {}
 ) => {
   if (recipient.length > 2) {
-    let suggestions = [];
+    let suggestions: {
+      address: any;
+      color: number | null;
+      ens: boolean;
+      image: any;
+      network: string;
+      nickname: any;
+      uniqueId: any;
+    }[] = [];
     setIsFetching(true);
     const recpt = recipient.toLowerCase();
     let result = await ensClient.query({
@@ -51,29 +59,47 @@ export const fetchSuggestions = async (
         name: recpt,
       },
     });
-
     if (!isEmpty(result?.data?.domains)) {
-      const ensSuggestions = result.data.domains
-        .map((ensDomain: any) => ({
-          address: ensDomain?.resolver?.addr?.id || ensDomain?.name,
+      const domains = await Promise.all(
+        result?.data?.domains.map(
+          async (domain: { name: string; resolver: { texts: string[] } }) => {
+            const hasAvatar = domain?.resolver?.texts?.find(
+              text => text === 'avatar'
+            );
+            if (hasAvatar) {
+              try {
+                const images = await fetchImages(domain.name);
+                return { ...domain, avatar: images.avatarUrl };
+                // eslint-disable-next-line no-empty
+              } catch (e) {}
+            }
+            return domain;
+          }
+        )
+      );
+      const ensSuggestions = domains
+        .map((ensDomain: any) => {
+          return {
+            address: ensDomain?.resolver?.addr?.id || ensDomain?.name,
 
-          color: profileUtils.addressHashedColorIndex(
-            ensDomain?.resolver?.addr?.id || ensDomain.name
-          ),
-
-          ens: true,
-          network: 'mainnet',
-          nickname: ensDomain?.name,
-          uniqueId: ensDomain?.resolver?.addr?.id || ensDomain.name,
-        }))
+            color: profileUtils.addressHashedColorIndex(
+              ensDomain?.resolver?.addr?.id || ensDomain.name
+            ),
+            ens: true,
+            image: ensDomain?.avatar,
+            network: 'mainnet',
+            nickname: ensDomain?.name,
+            uniqueId: ensDomain?.resolver?.addr?.id || ensDomain.name,
+          };
+        })
         .filter((domain: any) => !domain?.nickname?.includes?.('['));
+
       const sortedEnsSuggestions = sortBy(
         ensSuggestions,
         domain => domain.nickname.length,
         ['asc']
       );
-
-      suggestions = sortedEnsSuggestions.slice(0, 3);
+      suggestions = sortedEnsSuggestions.slice(0, 5);
     }
 
     setSuggestions(suggestions);
