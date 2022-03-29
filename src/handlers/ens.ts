@@ -1,5 +1,6 @@
 import { formatsByCoinType } from '@ensdomains/address-encoder';
 import { debounce, isEmpty, sortBy } from 'lodash';
+import { PROFILES, useExperimentalFlag } from '../../config/experimentalHooks';
 import { ensClient } from '../apollo/client';
 import {
   ENS_DOMAINS,
@@ -66,7 +67,8 @@ export const fetchSuggestions = async (
             const hasAvatar = domain?.resolver?.texts?.find(
               text => text === ENS_RECORDS.avatar
             );
-            if (hasAvatar) {
+            const profilesEnabled = useExperimentalFlag(PROFILES);
+            if (hasAvatar && profilesEnabled) {
               try {
                 const images = await fetchImages(domain.name);
                 return { ...domain, avatar: images.avatarUrl };
