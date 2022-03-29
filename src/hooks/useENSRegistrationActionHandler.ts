@@ -349,10 +349,9 @@ export default function useENSRegistrationActionHandler(
         registrationParameters?.commitTransactionHash || ''
       );
       const block = await web3Provider.getBlock(tx.blockHash || '');
-      const blockTimestamp = block?.timestamp;
-      if (!shouldLoopForConfirmation.current && blockTimestamp) {
+      if (!shouldLoopForConfirmation.current && block?.timestamp) {
         const now = Date.now();
-        const msBlockTimestamp = blockTimestamp * 1000;
+        const msBlockTimestamp = getBlockMsTimestamp(block);
         // hardhat block timestamp is behind
         const timeDifference = isTesting ? now - msBlockTimestamp : 0;
         const commitTransactionConfirmedAt = msBlockTimestamp + timeDifference;
@@ -423,16 +422,15 @@ export default function useENSRegistrationActionHandler(
     const checkRegisterBlockTimestamp = async () => {
       try {
         const block = await web3Provider.getBlock('latest');
-        const msBlockTimestamp = block?.timestamp * 1000;
+        const msBlockTimestamp = getBlockMsTimestamp(block);
         const secs = differenceInSeconds(
           msBlockTimestamp,
           registrationParameters?.commitTransactionConfirmedAt ||
             msBlockTimestamp
         );
         if (secs > ENS_SECONDS_WAIT) setReadyToRegister(true);
-      } catch (e) {
-        //
-      }
+        // eslint-disable-next-line no-empty
+      } catch (e) {}
     };
     if (secondsSinceCommitConfirmed >= ENS_SECONDS_WAIT) {
       checkRegisterBlockTimestamp();
