@@ -37,6 +37,9 @@ import Routes from '@rainbow-me/routes';
 // add waiting buffer
 const ENS_SECONDS_WAIT = 60;
 
+const getBlockMsTimestamp = (block: { timestamp: number }) =>
+  block.timestamp * 1000;
+
 const formatENSActionParams = (
   registrationParameters: RegistrationParameters
 ): ENSActionParameters => {
@@ -86,25 +89,29 @@ export default function useENSRegistrationActionHandler(
     () => IS_TESTING === 'true' && isHardHat(web3Provider.connection.url),
     []
   );
+
   const [readyToRegister, setReadyToRegister] = useState<boolean>(isTesting);
   // flag to wait 10 secs before we get the tx block, to be able to simulate not confirmed tx when testing
   const shouldLoopForConfirmation = useRef(isTesting);
-
   const avatarMetadata = useRecoilValue(avatarMetadataAtom);
   const coverMetadata = useRecoilValue(coverMetadataAtom);
+
   const commitAction = useCallback(
     async (callback: () => void) => {
       const wallet = await loadWallet();
       if (!wallet) {
         return;
       }
-      const nonce = await getNextNonce();
-      const salt = generateSalt();
       const duration = yearsDuration * timeUnits.secs.year;
-      const rentPrice = await getRentPrice(
-        registrationParameters.name.replace(ENS_DOMAIN, ''),
-        duration
-      );
+      const salt = generateSalt();
+
+      const [nonce, rentPrice] = await Promise.all([
+        getNextNonce(),
+        getRentPrice(
+          registrationParameters.name.replace(ENS_DOMAIN, ''),
+          duration
+        ),
+      ]);
 
       const commitEnsRegistrationParameters: ENSActionParameters = {
         ...formatENSActionParams(registrationParameters),
@@ -167,18 +174,14 @@ export default function useENSRegistrationActionHandler(
         return;
       }
 
-      const nonce = await getNextNonce();
-      const rentPrice = await getRentPrice(
-        name.replace(ENS_DOMAIN, ''),
-        duration
-      );
-      const changedRecords = await uploadRecordImages(
-        registrationParameters.changedRecords,
-        {
+      const [nonce, rentPrice, changedRecords] = await Promise.all([
+        getNextNonce(),
+        getRentPrice(name.replace(ENS_DOMAIN, ''), duration),
+        uploadRecordImages(registrationParameters.changedRecords, {
           avatar: avatarMetadata,
           cover: coverMetadata,
-        }
-      );
+        }),
+      ]);
 
       const registerEnsRegistrationParameters: ENSActionParameters = {
         ...formatENSActionParams(registrationParameters),
@@ -212,15 +215,16 @@ export default function useENSRegistrationActionHandler(
       if (!wallet) {
         return;
       }
-      const changedRecords = await uploadRecordImages(
-        registrationParameters.changedRecords,
-        {
+
+      const [nonce, changedRecords, resolver] = await Promise.all([
+        getNextNonce(),
+        uploadRecordImages(registrationParameters.changedRecords, {
           avatar: avatarMetadata,
           cover: coverMetadata,
-        }
-      );
-      const nonce = await getNextNonce();
-      const resolver = await fetchResolver(registrationParameters.name);
+        }),
+        fetchResolver(registrationParameters.name),
+      ]);
+
       const setRecordsEnsRegistrationParameters: ENSActionParameters = {
         ...formatENSActionParams(registrationParameters),
         nonce,
