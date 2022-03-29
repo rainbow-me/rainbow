@@ -36,7 +36,7 @@ export async function savePIN(pin: any) {
   }
 }
 
-export async function authenticateWithPIN(shouldSavePin: boolean = false) {
+export async function authenticateWithPIN(shouldSavePin: boolean = true) {
   let validPin: any;
   try {
     validPin = await getExistingPIN();
