@@ -7,7 +7,6 @@ import { useNavigation } from '../navigation/Navigation';
 import useAccountProfile from './useAccountProfile';
 import useENSProfile from './useENSProfile';
 import useImagePicker from './useImagePicker';
-import useUpdateEmoji from './useUpdateEmoji';
 import useWallets from './useWallets';
 import {
   enableActionsOnReadOnlyWallet,
@@ -103,14 +102,7 @@ export default () => {
     }
   }, [accountAddress, accountENS]);
 
-  const { setNextEmoji } = useUpdateEmoji();
-
   const onAvatarPress = useCallback(() => {
-    if (android) {
-      setNextEmoji();
-      return;
-    }
-
     const isENSProfile = profilesEnabled && ensProfile?.isOwner;
 
     const avatarActionSheetOptions = (isENSProfile
@@ -173,7 +165,6 @@ export default () => {
     ensProfile?.isOwner,
     isReadOnlyWallet,
     accountImage,
-    setNextEmoji,
     navigate,
     accountENS,
     onAvatarChooseImage,
