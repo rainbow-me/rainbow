@@ -17,6 +17,13 @@ import {
   polygonAllowList,
 } from '@rainbow-me/references';
 
+const parseLastSalePrice = lastSale =>
+  lastSale
+    ? Math.round(
+        (lastSale?.total_price / 1000000000000000000 + Number.EPSILON) * 1000
+      ) / 1000
+    : null;
+
 /**
  * @desc parse unique tokens from opensea
  * @param  {Object}
@@ -87,14 +94,14 @@ export const parseAccountUniqueTokens = data => {
           asset_contract.nft_version === '1.0' ||
           asset_contract.nft_version === '3.0' ||
           asset_contract.schema_name === 'ERC1155',
-        lastPrice: asset.last_sale
-          ? Number(asset.last_sale?.total_price / 1000000000000000000) +
-            ` ${asset.last_sale.payment_token?.symbol}`
-          : null,
+        lastPrice: parseLastSalePrice(asset.last_sale),
         lastPriceUsd: asset.last_sale
           ? asset.last_sale?.payment_token?.usd_price
           : null,
         lastSale: asset.last_sale,
+        lastSalePaymentToken: asset.last_sale
+          ? asset.last_sale.payment_token?.symbol
+          : null,
         type: AssetTypes.nft,
         uniqueId:
           asset_contract.address === ENS_NFT_CONTRACT_ADDRESS
@@ -155,14 +162,14 @@ export const parseAccountUniqueTokensPolygon = async data => {
           : collection.name,
       id: token_id,
       isSendable: false,
-      lastPrice: asset.last_sale
-        ? Number(asset.last_sale?.total_price / 1000000000000000000) +
-          ` ${asset.last_sale.payment_token?.symbol}`
-        : null,
+      lastPrice: parseLastSalePrice(asset.last_sale),
       lastPriceUsd: asset.last_sale
         ? asset.last_sale?.payment_token?.usd_price
         : null,
       lastSale: asset.last_sale,
+      lastSalePaymentToken: asset.last_sale
+        ? asset.last_sale.payment_token?.symbol
+        : null,
       network: Network.polygon,
       permalink: asset.permalink,
       type: AssetTypes.nft,
