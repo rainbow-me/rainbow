@@ -190,7 +190,7 @@ describe('Register ENS Flow', () => {
     await Helpers.checkIfVisible(
       `ens-confirm-register-label-WAIT_ENS_COMMITMENT`
     );
-    await Helpers.delay(60000);
+    await Helpers.delay(70000);
     await Helpers.enableSynchronization();
   });
 
@@ -203,6 +203,7 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should confirm that the name is not available anymore', async () => {
+    await Helpers.delay(2000);
     const ensAvailable = await isAvailable(RANDOM_NAME);
     if (ensAvailable) throw new Error('ENS name is available');
   });
