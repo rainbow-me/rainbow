@@ -148,11 +148,17 @@ function ProfileInfoRow({
       isImage={isImageValue}
       label={label}
       value={isImageValue ? url : value}
-      wrapValue={children => (
-        <ContextMenuButton>
-          <ButtonPressAnimation scaleTo={0.9}>{children}</ButtonPressAnimation>
-        </ContextMenuButton>
-      )}
+      wrapValue={children =>
+        !isImageValue ? (
+          <ContextMenuButton>
+            <ButtonPressAnimation scaleTo={0.9}>
+              {children}
+            </ButtonPressAnimation>
+          </ContextMenuButton>
+        ) : (
+          children
+        )
+      }
     />
   );
 }

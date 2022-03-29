@@ -36,10 +36,10 @@ const exitConfig = {
   stiffness: 800,
 };
 const GestureBlocker = styled(View)({
-  height: ({ height }) => 2 * height,
-  left: ({ containerWidth, width }) => -(width - containerWidth) / 2,
+  height: ({ height }) => height * 3,
+  left: ({ xOffset }) => -xOffset,
   position: 'absolute',
-  top: ({ height }) => -height,
+  top: ({ yOffset }) => -yOffset,
   width: ({ width }) => width,
 });
 
@@ -73,7 +73,12 @@ export const ZoomableWrapper = ({
   aspectRatio,
   borderRadius,
   disableAnimations,
+  opacity,
+  yOffset = 85,
+  xOffset: givenXOffset = 0,
   yDisplacement: givenYDisplacement,
+  width,
+  height,
 }) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const animationProgress = givenAnimationProgress || useSharedValue(0);
@@ -82,8 +87,8 @@ export const ZoomableWrapper = ({
 
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
 
-  const maxImageWidth = deviceWidth - horizontalPadding * 2;
-  const maxImageHeight = deviceHeight / 2;
+  const maxImageWidth = width || deviceWidth - horizontalPadding * 2;
+  const maxImageHeight = height || deviceHeight / 2;
   const [
     containerWidth = maxImageWidth,
     containerHeight = maxImageWidth,
@@ -129,8 +134,16 @@ export const ZoomableWrapper = ({
   const fullSizeHeight = Math.min(deviceHeight, deviceWidth / aspectRatio);
   const fullSizeWidth = Math.min(deviceWidth, deviceHeight * aspectRatio);
 
-  const containerStyle = useAnimatedStyle(
-    () => ({
+  const xOffset = givenXOffset || (width - containerWidth) / 2 || 0;
+
+  const containerStyle = useAnimatedStyle(() => {
+    const scale =
+      1 +
+      animationProgress.value *
+        (fullSizeHeight / (containerHeightValue.value ?? 1) - 1);
+
+    return {
+      opacity: opacity.value,
       transform: [
         {
           translateY:
@@ -143,16 +156,21 @@ export const ZoomableWrapper = ({
               (fullSizeHeight - containerHeightValue.value)) /
             2,
         },
+        ...(givenXOffset
+          ? [
+              {
+                translateX:
+                  -animationProgress.value *
+                  (givenXOffset - givenXOffset / scale + 5),
+              },
+            ]
+          : []),
         {
-          scale:
-            1 +
-            animationProgress.value *
-              (fullSizeHeight / (containerHeightValue.value ?? 1) - 1),
+          scale,
         },
       ],
-    }),
-    [fullSizeHeight, fullSizeWidth]
-  );
+    };
+  }, [fullSizeHeight, fullSizeWidth]);
 
   const cornerStyle = useAnimatedStyle(() => ({
     borderRadius: (1 - animationProgress.value) * (borderRadius ?? 16),
@@ -489,11 +507,11 @@ export const ZoomableWrapper = ({
                 <ZoomContainer height={containerHeight} width={containerWidth}>
                   <PanGestureHandler>
                     <GestureBlocker
-                      containerHeight={containerHeight}
-                      containerWidth={containerWidth}
                       height={deviceHeight}
                       pointerEvents={isZoomed ? 'auto' : 'none'}
                       width={deviceWidth}
+                      xOffset={xOffset}
+                      yOffset={yOffset}
                     />
                   </PanGestureHandler>
                   <Animated.View style={[StyleSheet.absoluteFillObject]}>

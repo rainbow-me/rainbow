@@ -1,16 +1,11 @@
 import { BlurView } from '@react-native-community/blur';
 import c from 'chroma-js';
 import lang from 'i18n-js';
-import React, {
-  Fragment,
-  ReactNode,
-  useCallback,
-  useMemo,
-  useRef,
-} from 'react';
+import React, { ReactNode, useCallback, useMemo, useRef } from 'react';
 import { Linking, Share, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
+  useDerivedValue,
   useSharedValue,
 } from 'react-native-reanimated';
 import URL from 'url-parse';
@@ -20,6 +15,7 @@ import { lightModeThemeColors } from '../../styles/colors';
 import L2Disclaimer from '../L2Disclaimer';
 import Link from '../Link';
 import { ButtonPressAnimation } from '../animations';
+import ImagePreviewOverlay from '../images/ImagePreviewOverlay';
 import ImgixImage from '../images/ImgixImage';
 import {
   SendActionButton,
@@ -265,12 +261,21 @@ const UniqueTokenExpandedState = ({
   } = useShowcaseTokens();
 
   const animationProgress = useSharedValue(0);
+  const ensCoverAnimationProgress = useSharedValue(0);
+  // TODO(jxom): This is temporary until `ZoomableWrapper` refactor
   const opacityStyle = useAnimatedStyle(() => ({
-    opacity: 1 - animationProgress.value,
+    opacity: 1 - (animationProgress.value || ensCoverAnimationProgress.value),
   }));
+  // TODO(jxom): This is temporary until `ZoomableWrapper` refactor
   const sheetHandleStyle = useAnimatedStyle(() => ({
-    opacity: 1 - animationProgress.value,
+    opacity: 1 - (animationProgress.value || ensCoverAnimationProgress.value),
   }));
+  // TODO(jxom): This is temporary until `ZoomableWrapper` refactor
+  const contentOpacity = useDerivedValue(
+    () => 1 - ensCoverAnimationProgress.value
+  );
+  // TODO(jxom): This is temporary until `ZoomableWrapper` refactor
+  const ensCoverOpacity = useDerivedValue(() => 1 - animationProgress.value);
 
   const handleL2DisclaimerPress = useCallback(() => {
     navigate(Routes.EXPLAIN_SHEET, {
@@ -347,7 +352,7 @@ const UniqueTokenExpandedState = ({
   );
 
   return (
-    <Fragment>
+    <>
       {ios && (
         <BlurWrapper height={deviceHeight} width={deviceWidth}>
           <BackgroundImage>
@@ -378,244 +383,254 @@ const UniqueTokenExpandedState = ({
         scrollEnabled
         yPosition={yPosition}
       >
-        <ColorModeProvider value="darkTinted">
-          <AccentColorProvider color={imageColor}>
-            <Inset bottom={sectionSpace} top={{ custom: 33 }}>
-              <Stack alignHorizontal="center">
-                <Animated.View style={sheetHandleStyle}>
-                  {/* @ts-expect-error JavaScript component */}
-                  <SheetHandle color={colors.alpha(colors.whiteLabel, 0.24)} />
-                </Animated.View>
-              </Stack>
-            </Inset>
-            <UniqueTokenExpandedStateContent
-              animationProgress={animationProgress}
-              asset={asset}
-              horizontalPadding={24}
-              imageColor={imageColor}
-              // @ts-expect-error JavaScript component
-
-              sheetRef={sheetRef}
-              textColor={textColor}
-              yPosition={yPosition}
-            />
-            <Animated.View style={opacityStyle}>
-              <Inset horizontal="24px" vertical={sectionSpace}>
-                <Stack space={sectionSpace}>
-                  <Stack space="42px">
-                    <Inline alignHorizontal="justify" wrap={false}>
-                      <TextButton onPress={handlePressShowcase}>
-                        {isShowcaseAsset
-                          ? `􀁏 ${lang.t(
-                              'expanded_state.unique_expanded.in_showcase'
-                            )}`
-                          : `􀁍 ${lang.t(
-                              'expanded_state.unique_expanded.showcase'
-                            )}`}
-                      </TextButton>
-                      <TextButton align="right" onPress={handlePressShare}>
-                        􀈂 {lang.t('button.share')}
-                      </TextButton>
-                    </Inline>
-                    <UniqueTokenExpandedStateHeader asset={asset} />
-                  </Stack>
-                  {isNFT || isENS ? (
-                    <Columns space="15px">
-                      {hasEditButton ? (
-                        <SheetActionButton
-                          color={imageColor}
-                          // @ts-expect-error JavaScript component
-                          label={`􀉮 ${lang.t(
-                            'expanded_state.unique_expanded.edit'
-                          )}`}
-                          nftShadows
-                          onPress={handlePressEdit}
-                          textColor={textColor}
-                          weight="heavy"
-                        />
-                      ) : (
-                        <SheetActionButton
-                          color={imageColor}
-                          // @ts-expect-error JavaScript component
-                          label={
-                            hasSendButton
-                              ? `􀮶 ${lang.t(
-                                  'expanded_state.unique_expanded.opensea'
-                                )}`
-                              : `􀮶 ${lang.t(
-                                  'expanded_state.unique_expanded.view_on_opensea'
-                                )}`
-                          }
-                          nftShadows
-                          onPress={handlePressOpensea}
-                          textColor={textColor}
-                          weight="heavy"
-                        />
-                      )}
-                      {hasSendButton ? (
-                        <SendActionButton
-                          asset={asset}
-                          color={imageColor}
-                          nftShadows
-                          textColor={textColor}
-                        />
-                      ) : null}
-                    </Columns>
-                  ) : null}
-                  {asset.network === AssetTypes.polygon ? (
-                    // @ts-expect-error JavaScript component
-                    <L2Disclaimer
-                      assetType={AssetTypes.polygon}
-                      colors={colors}
-                      hideDivider
-                      isNft
-                      marginBottom={0}
-                      marginHorizontal={0}
-                      onPress={handleL2DisclaimerPress}
-                      symbol="NFT"
+        <ImagePreviewOverlay
+          animationProgress={ensCoverAnimationProgress}
+          opacity={ensCoverOpacity}
+          yPosition={yPosition}
+        >
+          <ColorModeProvider value="darkTinted">
+            <AccentColorProvider color={imageColor}>
+              <Inset bottom={sectionSpace} top={{ custom: 33 }}>
+                <Stack alignHorizontal="center">
+                  <Animated.View style={sheetHandleStyle}>
+                    {/* @ts-expect-error JavaScript component */}
+                    <SheetHandle
+                      color={colors.alpha(colors.whiteLabel, 0.24)}
                     />
-                  ) : null}
-                  <Stack
-                    separator={<Divider color="divider20" />}
-                    space={sectionSpace}
-                  >
-                    {(isNFT || isENS) &&
-                    asset.network !== AssetTypes.polygon ? (
-                      <Bleed // Manually crop surrounding space until TokenInfoItem uses design system components
-                        bottom={android ? '15px' : '6px'}
-                        top={android ? '10px' : '4px'}
-                      >
-                        {isNFT && (
-                          <NFTBriefTokenInfoRow
-                            currentPrice={currentPrice}
-                            lastPrice={lastPrice}
-                            network={asset.network}
-                            urlSuffixForAsset={urlSuffixForAsset}
-                          />
-                        )}
-                        {isENS && (
-                          <ENSBriefTokenInfoRow
-                            expiryDate={ensData?.registration.expiryDate}
-                            registrationDate={
-                              ensData?.registration.registrationDate
-                            }
-                          />
-                        )}
-                      </Bleed>
-                    ) : null}
-                    {(isNFT || isPoap) && (
-                      <>
-                        {description ? (
-                          <Section
-                            title={`${lang.t(
-                              'expanded_state.unique_expanded.description'
-                            )}`}
-                            titleEmoji="📖"
-                          >
-                            <Markdown>{description}</Markdown>
-                          </Section>
-                        ) : null}
-                        {traits.length ? (
-                          <Section
-                            title={`${lang.t(
-                              'expanded_state.unique_expanded.properties'
-                            )}`}
-                            titleEmoji="🎨"
-                          >
-                            <UniqueTokenAttributes
-                              {...asset}
-                              color={imageColor}
-                              disableMenu={isPoap}
-                              slug={asset.collection.slug}
-                            />
-                          </Section>
-                        ) : null}
-                      </>
-                    )}
-                    {isENS && (
-                      <>
-                        <Section
-                          addonComponent={
-                            hasEditButton && (
-                              <TextButton
-                                align="right"
-                                onPress={handlePressEdit}
-                                size="18px"
-                                weight="bold"
-                              >
-                                {lang.t('expanded_state.unique_expanded.edit')}
-                              </TextButton>
-                            )
-                          }
-                          title={`${lang.t(
-                            'expanded_state.unique_expanded.profile_info'
-                          )}`}
-                          titleEmoji="🤿"
-                        >
-                          <ProfileInfoSection
-                            allowEdit={hasEditButton}
-                            coinAddresses={ensData?.coinAddresses}
-                            ensName={uniqueId}
-                            images={ensData?.images}
-                            isLoading={ensProfile.isLoading}
-                            records={ensData?.records}
-                          />
-                        </Section>
-                        <Section
-                          title={`${lang.t(
-                            'expanded_state.unique_expanded.configuration'
-                          )}`}
-                          titleEmoji="⚙️"
-                        >
-                          <ConfigurationSection
-                            isLoading={ensProfile.isLoading}
-                            owner={ensData?.owner}
-                            registrant={ensData?.registrant}
-                          />
-                        </Section>
-                        <Section
-                          title={`${lang.t(
-                            'expanded_state.unique_expanded.advanced'
-                          )}`}
-                          titleEmoji="👽"
-                        >
-                          <AdvancedSection resolver={ensData?.resolver} />
-                        </Section>
-                      </>
-                    )}
-                    {familyDescription ? (
-                      <Section
-                        title={`${lang.t(
-                          'expanded_state.unique_expanded.about',
-                          { assetFamilyName: familyName }
-                        )}`}
-                        titleImageUrl={familyImage}
-                      >
-                        <Stack space={sectionSpace}>
-                          <Markdown>{familyDescription}</Markdown>
-                          {familyLink ? (
-                            <Bleed // Manually crop surrounding space until Link uses design system components
-                              bottom={android ? '15px' : undefined}
-                              top="15px"
-                            >
-                              {/* @ts-expect-error JavaScript component */}
-                              <Link
-                                color={imageColor}
-                                display={familyLinkDisplay}
-                                url={familyLink}
-                              />
-                            </Bleed>
-                          ) : null}
-                        </Stack>
-                      </Section>
-                    ) : null}
-                  </Stack>
+                  </Animated.View>
                 </Stack>
               </Inset>
-              <Spacer />
-            </Animated.View>
-          </AccentColorProvider>
-        </ColorModeProvider>
+              <UniqueTokenExpandedStateContent
+                animationProgress={animationProgress}
+                asset={asset}
+                horizontalPadding={24}
+                imageColor={imageColor}
+                opacity={contentOpacity}
+                // @ts-expect-error JavaScript component
+                sheetRef={sheetRef}
+                textColor={textColor}
+                yPosition={yPosition}
+              />
+              <Animated.View style={opacityStyle}>
+                <Inset horizontal="24px" vertical={sectionSpace}>
+                  <Stack space={sectionSpace}>
+                    <Stack space="42px">
+                      <Inline alignHorizontal="justify" wrap={false}>
+                        <TextButton onPress={handlePressShowcase}>
+                          {isShowcaseAsset
+                            ? `􀁏 ${lang.t(
+                                'expanded_state.unique_expanded.in_showcase'
+                              )}`
+                            : `􀁍 ${lang.t(
+                                'expanded_state.unique_expanded.showcase'
+                              )}`}
+                        </TextButton>
+                        <TextButton align="right" onPress={handlePressShare}>
+                          􀈂 {lang.t('button.share')}
+                        </TextButton>
+                      </Inline>
+                      <UniqueTokenExpandedStateHeader asset={asset} />
+                    </Stack>
+                    {isNFT || isENS ? (
+                      <Columns space="15px">
+                        {hasEditButton ? (
+                          <SheetActionButton
+                            color={imageColor}
+                            // @ts-expect-error JavaScript component
+                            label={`􀉮 ${lang.t(
+                              'expanded_state.unique_expanded.edit'
+                            )}`}
+                            nftShadows
+                            onPress={handlePressEdit}
+                            textColor={textColor}
+                            weight="heavy"
+                          />
+                        ) : (
+                          <SheetActionButton
+                            color={imageColor}
+                            // @ts-expect-error JavaScript component
+                            label={
+                              hasSendButton
+                                ? `􀮶 ${lang.t(
+                                    'expanded_state.unique_expanded.opensea'
+                                  )}`
+                                : `􀮶 ${lang.t(
+                                    'expanded_state.unique_expanded.view_on_opensea'
+                                  )}`
+                            }
+                            nftShadows
+                            onPress={handlePressOpensea}
+                            textColor={textColor}
+                            weight="heavy"
+                          />
+                        )}
+                        {hasSendButton ? (
+                          <SendActionButton
+                            asset={asset}
+                            color={imageColor}
+                            nftShadows
+                            textColor={textColor}
+                          />
+                        ) : null}
+                      </Columns>
+                    ) : null}
+                    {asset.network === AssetTypes.polygon ? (
+                      // @ts-expect-error JavaScript component
+                      <L2Disclaimer
+                        assetType={AssetTypes.polygon}
+                        colors={colors}
+                        hideDivider
+                        isNft
+                        marginBottom={0}
+                        marginHorizontal={0}
+                        onPress={handleL2DisclaimerPress}
+                        symbol="NFT"
+                      />
+                    ) : null}
+                    <Stack
+                      separator={<Divider color="divider20" />}
+                      space={sectionSpace}
+                    >
+                      {(isNFT || isENS) &&
+                      asset.network !== AssetTypes.polygon ? (
+                        <Bleed // Manually crop surrounding space until TokenInfoItem uses design system components
+                          bottom={android ? '15px' : '6px'}
+                          top={android ? '10px' : '4px'}
+                        >
+                          {isNFT && (
+                            <NFTBriefTokenInfoRow
+                              currentPrice={currentPrice}
+                              lastPrice={lastPrice}
+                              network={asset.network}
+                              urlSuffixForAsset={urlSuffixForAsset}
+                            />
+                          )}
+                          {isENS && (
+                            <ENSBriefTokenInfoRow
+                              expiryDate={ensData?.registration.expiryDate}
+                              registrationDate={
+                                ensData?.registration.registrationDate
+                              }
+                            />
+                          )}
+                        </Bleed>
+                      ) : null}
+                      {(isNFT || isPoap) && (
+                        <>
+                          {description ? (
+                            <Section
+                              title={`${lang.t(
+                                'expanded_state.unique_expanded.description'
+                              )}`}
+                              titleEmoji="📖"
+                            >
+                              <Markdown>{description}</Markdown>
+                            </Section>
+                          ) : null}
+                          {traits.length ? (
+                            <Section
+                              title={`${lang.t(
+                                'expanded_state.unique_expanded.properties'
+                              )}`}
+                              titleEmoji="🎨"
+                            >
+                              <UniqueTokenAttributes
+                                {...asset}
+                                color={imageColor}
+                                disableMenu={isPoap}
+                                slug={asset.collection.slug}
+                              />
+                            </Section>
+                          ) : null}
+                        </>
+                      )}
+                      {isENS && (
+                        <>
+                          <Section
+                            addonComponent={
+                              hasEditButton && (
+                                <TextButton
+                                  align="right"
+                                  onPress={handlePressEdit}
+                                  size="18px"
+                                  weight="bold"
+                                >
+                                  {lang.t(
+                                    'expanded_state.unique_expanded.edit'
+                                  )}
+                                </TextButton>
+                              )
+                            }
+                            title={`${lang.t(
+                              'expanded_state.unique_expanded.profile_info'
+                            )}`}
+                            titleEmoji="🤿"
+                          >
+                            <ProfileInfoSection
+                              allowEdit={hasEditButton}
+                              coinAddresses={ensData?.coinAddresses}
+                              ensName={uniqueId}
+                              images={ensData?.images}
+                              isLoading={ensProfile.isLoading}
+                              records={ensData?.records}
+                            />
+                          </Section>
+                          <Section
+                            title={`${lang.t(
+                              'expanded_state.unique_expanded.configuration'
+                            )}`}
+                            titleEmoji="⚙️"
+                          >
+                            <ConfigurationSection
+                              isLoading={ensProfile.isLoading}
+                              owner={ensData?.owner}
+                              registrant={ensData?.registrant}
+                            />
+                          </Section>
+                          <Section
+                            title={`${lang.t(
+                              'expanded_state.unique_expanded.advanced'
+                            )}`}
+                            titleEmoji="👽"
+                          >
+                            <AdvancedSection resolver={ensData?.resolver} />
+                          </Section>
+                        </>
+                      )}
+                      {familyDescription ? (
+                        <Section
+                          title={`${lang.t(
+                            'expanded_state.unique_expanded.about',
+                            { assetFamilyName: familyName }
+                          )}`}
+                          titleImageUrl={familyImage}
+                        >
+                          <Stack space={sectionSpace}>
+                            <Markdown>{familyDescription}</Markdown>
+                            {familyLink ? (
+                              <Bleed // Manually crop surrounding space until Link uses design system components
+                                bottom={android ? '15px' : undefined}
+                                top="15px"
+                              >
+                                {/* @ts-expect-error JavaScript component */}
+                                <Link
+                                  color={imageColor}
+                                  display={familyLinkDisplay}
+                                  url={familyLink}
+                                />
+                              </Bleed>
+                            ) : null}
+                          </Stack>
+                        </Section>
+                      ) : null}
+                    </Stack>
+                  </Stack>
+                </Inset>
+                <Spacer />
+              </Animated.View>
+            </AccentColorProvider>
+          </ColorModeProvider>
+        </ImagePreviewOverlay>
       </SlackSheet>
       <ToastPositionContainer>
         <ToggleStateToast
@@ -628,7 +643,7 @@ const UniqueTokenExpandedState = ({
           )}
         />
       </ToastPositionContainer>
-    </Fragment>
+    </>
   );
 };
 
