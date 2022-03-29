@@ -4956,20 +4956,6 @@ app-root-path@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/app-root-path/-/app-root-path-3.0.0.tgz#210b6f43873227e18a4b810a032283311555d5ad"
 
-appcenter-analytics@4.4.3:
-  version "4.4.3"
-  resolved "https://registry.yarnpkg.com/appcenter-analytics/-/appcenter-analytics-4.4.3.tgz#a49d8e50fed6df6de8b06a8a9a9e54adf35df54c"
-  integrity sha512-fcVuxl/swf5LMmt95AlDdP2gMyvHTUGZODrl1FFpWYo8Np5mWBvTEQr0mEIOilDToCa4NljQHID+3PeBK+Asqg==
-  dependencies:
-    appcenter "4.4.3"
-
-appcenter-crashes@4.4.3:
-  version "4.4.3"
-  resolved "https://registry.yarnpkg.com/appcenter-crashes/-/appcenter-crashes-4.4.3.tgz#f5f7e0dfbae4a19ae5560575fe1a5b77a3d9b5a6"
-  integrity sha512-vroN9XvsEzkVXsidO9F0h+lALR5+YIVrt2TqbeTTAUHEQBemJMp3V1wudw/3xPKRm7D+UaOrEf1t0xoQZi52SA==
-  dependencies:
-    appcenter "4.4.3"
-
 appcenter-file-upload-client@0.0.24:
   version "0.0.24"
   resolved "https://registry.yarnpkg.com/appcenter-file-upload-client/-/appcenter-file-upload-client-0.0.24.tgz#ba1fb3c0f0073d56168a1853f5e9e9cf38a5114c"

@@ -1,21 +1,9 @@
 PODS:
   - Analytics (4.1.6)
-  - appcenter-analytics (4.4.3):
-    - AppCenter/Analytics (~> 4.0)
-    - AppCenterReactNativeShared (~> 4.0)
-    - React-Core
   - appcenter-core (4.4.3):
     - AppCenterReactNativeShared (~> 4.0)
     - React-Core
-  - appcenter-crashes (4.4.3):
-    - AppCenter/Crashes (~> 4.0)
-    - AppCenterReactNativeShared (~> 4.0)
-    - React-Core
-  - AppCenter/Analytics (4.4.1):
-    - AppCenter/Core
   - AppCenter/Core (4.4.1)
-  - AppCenter/Crashes (4.4.1):
-    - AppCenter/Core
   - AppCenterReactNativeShared (4.4.3):
     - AppCenter/Core (= 4.4.1)
   - Base64 (1.1.2)
@@ -623,9 +611,7 @@ PODS:
   - Yoga (1.14.0)
 
 DEPENDENCIES:
-  - appcenter-analytics (from `../node_modules/appcenter-analytics/ios`)
   - appcenter-core (from `../node_modules/appcenter/ios`)
-  - appcenter-crashes (from `../node_modules/appcenter-crashes/ios`)
   - boost (from `../node_modules/react-native/third-party-podspecs/boost.podspec`)
   - BVLinearGradient (from `../node_modules/react-native-linear-gradient`)
   - CodePush (from `../node_modules/react-native-code-push`)
@@ -773,12 +759,8 @@ SPEC REPOS:
     - TOCropViewController
 
 EXTERNAL SOURCES:
-  appcenter-analytics:
-    :path: "../node_modules/appcenter-analytics/ios"
   appcenter-core:
     :path: "../node_modules/appcenter/ios"
-  appcenter-crashes:
-    :path: "../node_modules/appcenter-crashes/ios"
   boost:
     :podspec: "../node_modules/react-native/third-party-podspecs/boost.podspec"
   BVLinearGradient:
@@ -987,9 +969,7 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   Analytics: eefe524436f904b8bb3f8c8c3425280e43b34efc
   AppCenter: b0b6f1190215b5f983c42934db718f3b46fff3c0
-  appcenter-analytics: 1b32062da2e250c5e1396c678df8c6011ccbcf5a
   appcenter-core: 6ea4754df4a3d8917a5803e2681a58179d7f7a21
-  appcenter-crashes: b079913ac0f0059e6cf39b7a805135223e508666
   AppCenterReactNativeShared: ac6961204492735ce2507df0a14ce59b13e9c1c5
   Base64: cecfb41a004124895a7bcee567a89bae5a89d49b
   boost: a7c83b31436843459a1961bfd74b96033dc77234
@@ -1125,4 +1105,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 57c94b75db7f46e64a9d6be6e7513d7bcdaf6cb8
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.11.2
