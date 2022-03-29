@@ -37,7 +37,7 @@ function feedbackEmailOptions(appVersion, codePushVersion) {
     recipients: [FeedbackEmailAddress],
     subject: `🌈️ Rainbow Feedback - ${
       ios ? 'iOS' : 'Android'
-    } ${appVersion} (CP: ${codePushVersion})`,
+    } ${appVersion} (Update: ${codePushVersion})`,
   };
 }
 
