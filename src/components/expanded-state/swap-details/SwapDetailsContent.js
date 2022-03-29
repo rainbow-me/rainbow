@@ -1,28 +1,27 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { ColumnWithMargins } from '../../layout';
+import { ButtonPressAnimation } from '../../animations';
 import SwapDetailsContractRow from './SwapDetailsContractRow';
+import SwapDetailsFeeRow from './SwapDetailsFeeRow';
 import SwapDetailsPriceRow from './SwapDetailsPriceRow';
-import SwapDetailsRow, {
-  SwapDetailsRowHeight,
-  SwapDetailsValue,
-} from './SwapDetailsRow';
+
+import SwapDetailsRow, { SwapDetailsValue } from './SwapDetailsRow';
 import SwapDetailsUniswapRow from './SwapDetailsUniswapRow';
-import { useSwapAdjustedAmounts, useSwapCurrencies } from '@rainbow-me/hooks';
+import { AccentColorProvider, Box, Rows } from '@rainbow-me/design-system';
+import {
+  useColorForAsset,
+  useSwapAdjustedAmounts,
+  useSwapCurrencies,
+} from '@rainbow-me/hooks';
 import { SwapModalField } from '@rainbow-me/redux/swap';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 import { isETH } from '@rainbow-me/utils';
 
-const contentRowMargin = 24;
-export const SwapDetailsContentMinHeight =
-  (SwapDetailsRowHeight + contentRowMargin) * 4;
-
-const Container = styled(ColumnWithMargins).attrs({
+const Container = styled(Box).attrs({
   flex: 1,
-  margin: contentRowMargin,
 })(({ isHighPriceImpact }) =>
-  padding.object(isHighPriceImpact ? 24 : 30, 19, 30)
+  padding.object(isHighPriceImpact ? 24 : 30, 19, 0)
 );
 
 export default function SwapDetailsContent({
@@ -46,42 +45,77 @@ export default function SwapDetailsContent({
     (!isHighPriceImpact || priceImpactNativeAmount) &&
     priceImpactPercentDisplay;
 
+  const rainbowFee = '0.85%';
+
+  const [areDetailsExpanded, setAreDetailsExpanded] = useState(false);
+
+  const colorForAsset = useColorForAsset(outputCurrency, undefined, true, true);
+
   return (
-    <Container
-      isHighPriceImpact={isHighPriceImpact}
-      testID="swap-details-state"
-      {...props}
-    >
-      {showPriceImpact && (
-        <SwapDetailsRow label="Price impact">
-          <SwapDetailsValue
-            color={priceImpactColor}
-            letterSpacing="roundedTight"
+    <AccentColorProvider color={colorForAsset}>
+      <Container
+        isHighPriceImpact={isHighPriceImpact}
+        testID="swap-details-state"
+        {...props}
+      >
+        <Rows space="24px">
+          <SwapDetailsFeeRow fee={rainbowFee} />
+          <SwapDetailsPriceRow tradeDetails={tradeDetails} />
+          <ButtonPressAnimation
+            onPress={() => setAreDetailsExpanded(!areDetailsExpanded)}
+            scaleTo={1.05}
           >
-            {priceImpactPercentDisplay}
-          </SwapDetailsValue>
-        </SwapDetailsRow>
-      )}
-      <SwapDetailsRow label={receivedSoldLabel}>
-        <SwapDetailsValue letterSpacing="roundedTight">
-          {amountReceivedSold}{' '}
-          {inputAsExact ? outputCurrency.symbol : inputCurrency.symbol}
-        </SwapDetailsValue>
-      </SwapDetailsRow>
-      <SwapDetailsPriceRow tradeDetails={tradeDetails} />
-      {!isETH(inputCurrency?.address) && (
-        <SwapDetailsContractRow
-          asset={inputCurrency}
-          onCopySwapDetailsText={onCopySwapDetailsText}
-        />
-      )}
-      {!isETH(outputCurrency?.address) && (
-        <SwapDetailsContractRow
-          asset={outputCurrency}
-          onCopySwapDetailsText={onCopySwapDetailsText}
-        />
-      )}
-      <SwapDetailsUniswapRow protocols={tradeDetails?.protocols} />
-    </Container>
+            <SwapDetailsRow
+              label={areDetailsExpanded ? 'Hide Details' : 'Show Details'}
+              labelColor="accent"
+            >
+              <SwapDetailsValue color="accent">
+                {areDetailsExpanded ? '􀁰' : '􀯼'}
+              </SwapDetailsValue>
+            </SwapDetailsRow>
+          </ButtonPressAnimation>
+          <Box>
+            {areDetailsExpanded && (
+              <Rows space="24px">
+                <SwapDetailsUniswapRow protocols={tradeDetails?.protocols} />
+                {showPriceImpact && (
+                  <AccentColorProvider color={priceImpactColor}>
+                    <SwapDetailsRow label="Price impact">
+                      <SwapDetailsValue
+                        color="accent"
+                        letterSpacing="roundedTight"
+                      >
+                        {priceImpactPercentDisplay}
+                      </SwapDetailsValue>
+                    </SwapDetailsRow>
+                  </AccentColorProvider>
+                )}
+                <SwapDetailsRow label={receivedSoldLabel}>
+                  <SwapDetailsValue letterSpacing="roundedTight">
+                    {amountReceivedSold}{' '}
+                    {inputAsExact
+                      ? outputCurrency.symbol
+                      : inputCurrency.symbol}
+                  </SwapDetailsValue>
+                </SwapDetailsRow>
+
+                {!isETH(inputCurrency?.address) && (
+                  <SwapDetailsContractRow
+                    asset={inputCurrency}
+                    onCopySwapDetailsText={onCopySwapDetailsText}
+                  />
+                )}
+                {!isETH(outputCurrency?.address) && (
+                  <SwapDetailsContractRow
+                    asset={outputCurrency}
+                    onCopySwapDetailsText={onCopySwapDetailsText}
+                  />
+                )}
+              </Rows>
+            )}
+          </Box>
+        </Rows>
+      </Container>
+    </AccentColorProvider>
   );
 }
