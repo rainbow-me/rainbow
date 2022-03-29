@@ -267,7 +267,7 @@ const ensAction = async (
           walletAddress: ownerAddress,
           rentPrice: rentPrice,
           ens: name,
-          records: Object.keys(ensRegistrationRecords),
+          records: Object.keys(records || {}),
           etherscanLink: `https://etherscan.io/tx/${tx?.hash}`,
         });
         break;
@@ -295,8 +295,13 @@ const ensAction = async (
           walletAddress: ownerAddress,
           rentPrice: rentPrice,
           ens: name,
-          records: Object.keys(ensRegistrationRecords),
+          records: Object.keys(records || {}),
           etherscanLink: `https://etherscan.io/tx/${tx?.hash}`,
+        });
+        analytics.identify(name, {
+          owner: ownerAddress,
+          metadata: JSON.stringify(records),
+          profileCreatedInRainbow: true,
         });
         break;
       case ENSRegistrationTransactionType.SET_TEXT:
@@ -313,7 +318,7 @@ const ensAction = async (
           category: 'profiles',
           walletAddress: ownerAddress,
           ens: name,
-          records: Object.keys(ensRegistrationRecords),
+          records: Object.keys(records || {}),
           etherscanLink: `https://etherscan.io/tx/${tx?.hash}`,
         });
         break;
@@ -331,7 +336,7 @@ const ensAction = async (
           category: 'profiles',
           walletAddress: ownerAddress,
           ens: name,
-          records: Object.keys(ensRegistrationRecords),
+          records: Object.keys(records || {}),
           etherscanLink: `https://etherscan.io/tx/${tx?.hash}`,
         });
         break;
