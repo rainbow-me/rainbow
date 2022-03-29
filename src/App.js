@@ -93,6 +93,7 @@ if (__DEV__) {
         }),
       ],
       ...(metadata && {
+        dist: metadata.label,
         release: `${metadata.appVersion} (${VersionNumber.buildVersion}) (CP ${metadata.label})`,
       }),
     };
