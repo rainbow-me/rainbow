@@ -55,7 +55,7 @@ export const fetchSuggestions = async (
     let result = await ensClient.query({
       query: ENS_SUGGESTIONS,
       variables: {
-        amount: 75,
+        amount: 8,
         name: recpt,
       },
     });
@@ -94,12 +94,9 @@ export const fetchSuggestions = async (
         })
         .filter((domain: any) => !domain?.nickname?.includes?.('['));
 
-      const sortedEnsSuggestions = sortBy(
-        ensSuggestions,
-        domain => domain.nickname.length,
-        ['asc']
-      );
-      suggestions = sortedEnsSuggestions.slice(0, 5);
+      suggestions = sortBy(ensSuggestions, domain => domain.nickname.length, [
+        'asc',
+      ]);
     }
 
     setSuggestions(suggestions);
