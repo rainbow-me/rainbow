@@ -1,6 +1,8 @@
 import {
   ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
   getQuote,
+  Quote,
+  QuoteError,
 } from '@rainbow-me/swaps';
 import { useCallback, useMemo, useState } from 'react';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -25,6 +27,7 @@ import {
   updatePrecisionToDisplay,
 } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
+import Logger from '@rainbow-me/utils/logger';
 
 enum DisplayValue {
   input = 'inputAmountDisplay',
@@ -73,8 +76,16 @@ const getInputAmount = async (
 
     // @ts-ignore About to get quote
 
-    const quote = await getQuote(quoteParams);
-    if (!quote) {
+    const quote: Quote = await getQuote(quoteParams);
+
+    if (!quote || !quote.sellAmount) {
+      const quoteError = (quote as unknown) as QuoteError;
+      if (quoteError.error) {
+        Logger.log('Quote Error', {
+          code: quoteError.error_code,
+          msg: quoteError.message,
+        });
+      }
       return {
         inputAmount: null,
         inputAmountDisplay: null,
@@ -151,15 +162,25 @@ const getOutputAmount = async (
       sellTokenAddress,
       slippage: IS_TESTING !== 'true' ? 1 : 5, // Add 5% slippage for testing to prevent flaky tests
     };
-    const quote = await getQuote(quoteParams);
-    if (!quote) {
+
+    // @ts-ignore About to get quote
+
+    const quote: Quote = await getQuote(quoteParams);
+
+    if (!quote || !quote.buyAmount) {
+      const quoteError = (quote as unknown) as QuoteError;
+      if (quoteError.error) {
+        Logger.log('Quote Error', {
+          code: quoteError.error_code,
+          msg: quoteError.message,
+        });
+      }
       return {
         outputAmount: null,
         outputAmountDisplay: null,
         tradeDetails: null,
       };
     }
-
     const outputAmount = convertRawAmountToDecimalFormat(
       quote.buyAmount.toString(),
       outputToken.decimals

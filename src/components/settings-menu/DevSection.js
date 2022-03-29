@@ -29,7 +29,7 @@ const DevSection = () => {
   const { wallets } = useWallets();
   const dispatch = useDispatch();
 
-  const onNetworkChange = useCallback(
+  const onSettingChanged = useCallback(
     value => {
       setConfig({ ...config, [value]: !config[value] });
     },
@@ -131,7 +131,7 @@ const DevSection = () => {
           <RadioListItem
             key={key}
             label={key}
-            onPress={() => onNetworkChange(key)}
+            onPress={() => onSettingChanged(key)}
             selected={!!config[key]}
           />
         ))}
