@@ -1,3 +1,5 @@
+// eslint-disable-next-line import/default
+import codePush from 'react-native-code-push';
 import VersionNumber from 'react-native-version-number';
 
 function formatAppVersion(appVersion = VersionNumber.appVersion, update) {
@@ -9,7 +11,13 @@ function formatAppVersion(appVersion = VersionNumber.appVersion, update) {
 }
 const defaultAppVersion = formatAppVersion();
 
+let codepushLabel = 'None';
+
+codePush.getUpdateMetadata().then(update => {
+  codepushLabel = update.label;
+});
+
 export default function useAppVersion() {
   const [version] = useState(defaultAppVersion);
-  return version;
+  return [version, codepushLabel];
 }
