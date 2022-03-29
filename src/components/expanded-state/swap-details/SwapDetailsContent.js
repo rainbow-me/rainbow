@@ -85,7 +85,7 @@ export default function SwapDetailsContent({
                         color="accent"
                         letterSpacing="roundedTight"
                       >
-                        {priceImpactPercentDisplay}
+                        {`-${priceImpactPercentDisplay}`}
                       </SwapDetailsValue>
                     </SwapDetailsRow>
                   </AccentColorProvider>
