@@ -1,12 +1,12 @@
 import { toLower } from 'lodash';
 import { useCallback, useMemo } from 'react';
 import { Linking } from 'react-native';
-import ImagePicker from 'react-native-image-crop-picker';
 import { useDispatch } from 'react-redux';
 import { RainbowAccount } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import useAccountProfile from './useAccountProfile';
 import useENSProfile from './useENSProfile';
+import useImagePicker from './useImagePicker';
 import useUpdateEmoji from './useUpdateEmoji';
 import useWallets from './useWallets';
 import {
@@ -33,6 +33,7 @@ export default () => {
   const ensProfile = useENSProfile(accountENS, {
     enabled: Boolean(accountENS),
   });
+  const { openPicker } = useImagePicker();
 
   const onAvatarRemovePhoto = useCallback(async () => {
     const newWallets = {
@@ -83,12 +84,13 @@ export default () => {
     });
   }, [accountColor, accountName, navigate]);
 
-  const onAvatarChooseImage = useCallback(() => {
-    ImagePicker.openPicker({
+  const onAvatarChooseImage = useCallback(async () => {
+    const image = await openPicker({
       cropperCircleOverlay: true,
       cropping: true,
-    }).then(processPhoto);
-  }, [processPhoto]);
+    });
+    processPhoto(image);
+  }, [openPicker, processPhoto]);
 
   const onAvatarCreateProfile = useCallback(() => {
     navigate(Routes.REGISTER_ENS_NAVIGATOR);
