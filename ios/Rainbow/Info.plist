@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>CodePushDeploymentKey</key>
-	<string>Pz43cwILK6DtSP38dCGPyBEofColSPrxfOgL7</string>
+	<string>$(CODE_PUSH_DEPLOYMENT_KEY_IOS)</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
