@@ -5,6 +5,7 @@ import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import {
   identifyWalletType,
   loadSeedPhraseAndMigrateIfNeeded,
+  LoadSeedType,
 } from '../../model/wallet';
 import ActivityIndicator from '../ActivityIndicator';
 import Spinner from '../Spinner';
@@ -92,12 +93,15 @@ export default function SecretDisplaySection({
   const walletId = params?.walletId || selectedWallet.id;
   const currentWallet = wallets[walletId];
   const [visible, setVisible] = useState(true);
+  const [isHideRecoveryPhrase, setHideRecoveryPhrase] = useState(false);
   const [seed, setSeed] = useState(null);
   const [type, setType] = useState(currentWallet?.type);
 
   const loadSeed = useCallback(async () => {
     try {
-      const s = await loadSeedPhraseAndMigrateIfNeeded(walletId);
+      const { seed: s, actionStatus } = await loadSeedPhraseAndMigrateIfNeeded(
+        walletId
+      );
       if (s) {
         const walletType = identifyWalletType(s);
         setType(walletType);
@@ -106,6 +110,9 @@ export default function SecretDisplaySection({
       }
       setVisible(!!s);
       onSecretLoaded?.(!!s);
+      setHideRecoveryPhrase(
+        actionStatus === LoadSeedType.CreatedWithBiometricError
+      );
     } catch (e) {
       logger.sentry('Error while trying to reveal secret', e);
       captureException(e);
@@ -128,6 +135,34 @@ export default function SecretDisplaySection({
   const typeLabel = type === WalletTypes.privateKey ? 'key' : 'phrase';
 
   const { colors } = useTheme();
+
+  const renderStep = useCallback(() => {
+    if (isHideRecoveryPhrase) {
+      return (
+        <ColumnWithMargins align="center" justify="center">
+          <AuthenticationText>
+            Your account has been created with biometric data. To see the
+            recovery phrase, turn on the biometrics on your phone.
+          </AuthenticationText>
+        </ColumnWithMargins>
+      );
+    } else {
+      return (
+        <ColumnWithMargins align="center" justify="center">
+          <AuthenticationText>
+            {`You need to authenticate in order to access your recovery ${typeLabel}`}
+          </AuthenticationText>
+          <ToggleSecretButton onPress={loadSeed}>
+            <BiometricButtonContent
+              color={colors.white}
+              label={`Show Recovery ${upperFirst(typeLabel)}`}
+              showIcon={!seed}
+            />
+          </ToggleSecretButton>
+        </ColumnWithMargins>
+      );
+    }
+  }, [isHideRecoveryPhrase, loadSeed, typeLabel, seed]);
   return (
     <>
       {visible ? (
@@ -162,18 +197,7 @@ export default function SecretDisplaySection({
           )}
         </ColumnWithMargins>
       ) : (
-        <ColumnWithMargins align="center" justify="center">
-          <AuthenticationText>
-            {`You need to authenticate in order to access your recovery ${typeLabel}`}
-          </AuthenticationText>
-          <ToggleSecretButton onPress={loadSeed}>
-            <BiometricButtonContent
-              color={colors.white}
-              label={`Show Recovery ${upperFirst(typeLabel)}`}
-              showIcon={!seed}
-            />
-          </ToggleSecretButton>
-        </ColumnWithMargins>
+        renderStep()
       )}
     </>
   );

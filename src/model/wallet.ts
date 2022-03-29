@@ -174,6 +174,9 @@ export enum WalletLibraryType {
   ethers = 'ethers',
   bip39 = 'bip39',
 }
+export enum LoadSeedType {
+  CreatedWithBiometricError = 'createdWithBiometricError',
+}
 
 const privateKeyVersion = 1.0;
 const seedPhraseVersion = 1.0;
@@ -483,7 +486,7 @@ const loadPrivateKey = async (
         // Fallback to custom PIN
         if (!hasBiometricsEnabled) {
           try {
-            userPIN = await authenticateWithPIN();
+            userPIN = await authenticateWithPIN(false);
           } catch (e) {
             return null;
           }
@@ -630,7 +633,7 @@ export const createWallet = async (
           if (!userPIN) {
             // We gotta dismiss the modal before showing the PIN screen
             dispatch(setIsWalletLoading(null));
-            userPIN = await authenticateWithPIN();
+            userPIN = await authenticateWithPIN(true);
             dispatch(
               setIsWalletLoading(
                 seed
@@ -1041,7 +1044,7 @@ export const generateAccount = async (
           const { dispatch } = store;
           // Hide the loading overlay while showing the pin auth screen
           dispatch(setIsWalletLoading(null));
-          userPIN = await authenticateWithPIN();
+          userPIN = await authenticateWithPIN(true);
           dispatch(setIsWalletLoading(WalletLoadingStates.CREATING_WALLET));
         } catch (e) {
           return null;
@@ -1236,7 +1239,10 @@ export const cleanUpWalletKeys = async (): Promise<boolean> => {
 
 export const loadSeedPhraseAndMigrateIfNeeded = async (
   id: RainbowWallet['id']
-): Promise<null | EthereumWalletSeed> => {
+): Promise<{
+  seed: null | EthereumWalletSeed;
+  actionStatus?: null | string;
+}> => {
   try {
     let seedPhrase = null;
     // First we need to check if that key already exists
@@ -1265,18 +1271,29 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (
       let userPIN = null;
       if (android) {
         const hasBiometricsEnabled = await getSupportedBiometryType();
+        if (!seedData && !seedPhrase) {
+          logger.sentry('wallet was created with biometric');
+          return {
+            actionStatus: LoadSeedType.CreatedWithBiometricError,
+            seed: null,
+          };
+        }
         // Fallback to custom PIN
-        if (!hasBiometricsEnabled) {
+        if (
+          !hasBiometricsEnabled ||
+          (seedPhrase?.includes('cipher') && hasBiometricsEnabled)
+        ) {
+          // hasn't biometric or created with PIN
           try {
-            userPIN = await authenticateWithPIN();
+            userPIN = await authenticateWithPIN(false);
             if (userPIN) {
               // Dencrypt with the PIN
               seedPhrase = await encryptor.decrypt(userPIN, seedPhrase);
             } else {
-              return null;
+              return { seed: null };
             }
           } catch (e) {
-            return null;
+            return { seed: null };
           }
         }
       }
@@ -1290,10 +1307,10 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (
       }
     }
 
-    return seedPhrase;
+    return { seed: seedPhrase };
   } catch (error) {
     logger.sentry('Error in loadSeedPhraseAndMigrateIfNeeded');
     captureException(error);
-    return null;
+    return { seed: null };
   }
 };

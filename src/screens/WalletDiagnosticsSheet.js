@@ -314,7 +314,7 @@ const WalletDiagnosticsSheet = () => {
 
   const handleAuthenticateWithPIN = useCallback(async () => {
     try {
-      const pin = await authenticateWithPIN();
+      const pin = await authenticateWithPIN(false);
       setUserPin(pin);
       // This is a hack because we currently don't
       // support showing the PIN screen on top of certain sheets
