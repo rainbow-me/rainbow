@@ -39,7 +39,7 @@ const GestureBlocker = styled(View)({
   height: ({ height }) => height * 3,
   left: ({ xOffset }) => -xOffset,
   position: 'absolute',
-  top: ({ yOffset }) => -yOffset,
+  top: ({ yOffset }) => -yOffset * 2,
   width: ({ width }) => width,
 });
 
