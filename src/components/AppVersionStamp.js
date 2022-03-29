@@ -50,7 +50,7 @@ export default function AppVersionStamp() {
       onPressOut={() => setTimeout(() => setShowCodePushVersion(false), 500)}
     >
       <StampText>
-        {showCodePushVersion ? `CP: ${codePushVersion}` : appVersion}
+        {showCodePushVersion ? `Update: ${codePushVersion}` : appVersion}
       </StampText>
     </StyledButton>
   );
