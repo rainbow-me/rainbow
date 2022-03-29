@@ -1,17 +1,23 @@
 import React, { ElementRef, forwardRef, ReactNode, useMemo } from 'react';
 import { Text as NativeText } from 'react-native';
 
+import { CustomColor } from '../../color/useForegroundColor';
 import { createLineHeightFixNode } from '../../typography/createLineHeightFixNode';
 import {
   nodeHasEmoji,
   nodeIsString,
   renderStringWithEmoji,
 } from '../../typography/renderStringWithEmoji';
-import { headingSizes, headingWeights } from '../../typography/typography';
+import {
+  headingSizes,
+  headingWeights,
+  TextColor,
+} from '../../typography/typography';
 import { useHeadingStyle } from './useHeadingStyle';
 
 export type HeadingProps = {
   align?: 'center' | 'left' | 'right';
+  color?: TextColor | CustomColor;
   size?: keyof typeof headingSizes;
   weight?: keyof typeof headingWeights;
   numberOfLines?: number;
@@ -31,6 +37,7 @@ export const Heading = forwardRef<ElementRef<typeof NativeText>, HeadingProps>(
   function Heading(
     {
       align,
+      color,
       numberOfLines,
       containsEmoji: containsEmojiProp = false,
       children,
@@ -54,7 +61,7 @@ export const Heading = forwardRef<ElementRef<typeof NativeText>, HeadingProps>(
       }
     }
 
-    const headingStyle = useHeadingStyle({ align, size, weight });
+    const headingStyle = useHeadingStyle({ align, color, size, weight });
 
     const lineHeightFixNode = useMemo(
       () => createLineHeightFixNode(headingStyle.lineHeight),

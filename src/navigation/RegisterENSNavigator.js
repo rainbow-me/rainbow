@@ -8,6 +8,7 @@ import { SheetHandleFixedToTopHeight, SlackSheet } from '../components/sheet';
 import ENSAssignRecordsSheet, {
   ENSAssignRecordsBottomActions,
 } from '../screens/ENSAssignRecordsSheet';
+import ENSIntroSheet from '../screens/ENSIntroSheet';
 import ENSSearchSheet from '../screens/ENSSearchSheet';
 import { useNavigation } from './Navigation';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
@@ -37,6 +38,10 @@ const defaultScreenOptions = {
     scrollEnabled: true,
     useAccentAsSheetBackground: true,
   },
+  [Routes.ENS_INTRO_SHEET]: {
+    scrollEnabled: false,
+    useAccentAsSheetBackground: false,
+  },
   [Routes.ENS_SEARCH_SHEET]: {
     scrollEnabled: false,
     useAccentAsSheetBackground: false,
@@ -65,7 +70,7 @@ export default function RegisterENSNavigator() {
       startRegistration(ensName, mode);
       return Routes.ENS_ASSIGN_RECORDS_SHEET;
     }
-    return Routes.ENS_SEARCH_SHEET;
+    return Routes.ENS_INTRO_SHEET;
   }, [params, startRegistration]);
   const [currentRouteName, setCurrentRouteName] = useState(initialRouteName);
   const previousRouteName = usePrevious(currentRouteName);
@@ -129,6 +134,13 @@ export default function RegisterENSNavigator() {
             swipeEnabled={false}
             tabBar={renderTabBar}
           >
+            <Swipe.Screen
+              component={ENSIntroSheet}
+              listeners={{
+                focus: () => setCurrentRouteName(Routes.ENS_INTRO_SHEET),
+              }}
+              name={Routes.ENS_INTRO_SHEET}
+            />
             <Swipe.Screen
               component={ENSSearchSheet}
               listeners={{

@@ -24,11 +24,11 @@ export default function RegisterENSSection() {
   const { isReadOnlyWallet } = useWallets();
 
   const handlePress = useCallback(() => {
-    if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
-      navigate(Routes.REGISTER_ENS_NAVIGATOR);
-    } else {
-      watchingAlert();
-    }
+    navigate(Routes.REGISTER_ENS_NAVIGATOR);
+    // if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
+    // } else {
+    //   watchingAlert();
+    // }
   }, [isReadOnlyWallet, navigate]);
 
   return (

@@ -15,6 +15,7 @@ const Routes = {
   CUSTOM_GAS_SHEET: 'CustomGasSheet',
   ENS_ASSIGN_RECORDS_SHEET: 'ENSAssignRecordsSheet',
   ENS_CONFIRM_REGISTER_SHEET: 'ENSConfirmRegisterSheet',
+  ENS_INTRO_SHEET: 'ENSIntroSheet',
   ENS_SEARCH_SHEET: 'ENSSearchSheet',
   EXAMPLE_SCREEN: 'ExampleScreen',
   EXCHANGE_MODAL: 'ExchangeModal',
