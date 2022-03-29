@@ -2,11 +2,10 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { ButtonPressAnimation } from '../../animations';
 import SwapDetailsContractRow from './SwapDetailsContractRow';
+import SwapDetailsExchangeRow from './SwapDetailsExchangeRow';
 import SwapDetailsFeeRow from './SwapDetailsFeeRow';
 import SwapDetailsPriceRow from './SwapDetailsPriceRow';
-
 import SwapDetailsRow, { SwapDetailsValue } from './SwapDetailsRow';
-import SwapDetailsUniswapRow from './SwapDetailsUniswapRow';
 import { AccentColorProvider, Box, Rows } from '@rainbow-me/design-system';
 import {
   useColorForAsset,
@@ -77,7 +76,7 @@ export default function SwapDetailsContent({
           <Box>
             {areDetailsExpanded && (
               <Rows space="24px">
-                <SwapDetailsUniswapRow protocols={tradeDetails?.protocols} />
+                <SwapDetailsExchangeRow protocols={tradeDetails?.protocols} />
                 {showPriceImpact && (
                   <AccentColorProvider color={priceImpactColor}>
                     <SwapDetailsRow label="Price impact">
