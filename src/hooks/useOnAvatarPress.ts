@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { toLower } from 'lodash';
 import { useCallback, useMemo } from 'react';
 import { Linking } from 'react-native';
@@ -8,11 +9,7 @@ import useAccountProfile from './useAccountProfile';
 import useENSProfile from './useENSProfile';
 import useImagePicker from './useImagePicker';
 import useWallets from './useWallets';
-import {
-  enableActionsOnReadOnlyWallet,
-  PROFILES,
-  useExperimentalFlag,
-} from '@rainbow-me/config';
+import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import { walletsSetSelected, walletsUpdate } from '@rainbow-me/redux/wallets';
 import Routes from '@rainbow-me/routes';
 import { buildRainbowUrl, showActionSheetWithOptions } from '@rainbow-me/utils';
@@ -104,16 +101,22 @@ export default () => {
 
   const onAvatarPress = useCallback(() => {
     const isENSProfile = profilesEnabled && ensProfile?.isOwner;
-
     const avatarActionSheetOptions = (isENSProfile
-      ? ['View Profile', !isReadOnlyWallet ?? 'Edit Profile']
+      ? [
+          lang.t('profiles.profile_avatar.view_profile'),
+          !isReadOnlyWallet && lang.t('profiles.profile_avatar.edit_profile'),
+        ]
       : [
-          'Choose from Library',
-          accountImage ? 'Remove Photo' : 'Pick an Emoji',
-          !isReadOnlyWallet ?? 'Create your Profile',
+          lang.t('profiles.profile_avatar.choose_from_library'),
+          lang.t(
+            `profiles.profile_avatar.${
+              accountImage ? 'remove_photo' : 'pick_emoji'
+            }`
+          ),
+          !isReadOnlyWallet && lang.t('profiles.profile_avatar.create_profile'),
         ]
     )
-      .concat(ios ?? ['Cancel'])
+      .concat(ios && ['Cancel'])
       .filter(element => Boolean(element));
 
     const callback = async (buttonIndex: Number) => {
