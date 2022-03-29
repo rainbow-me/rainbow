@@ -216,7 +216,7 @@ export const ENS_SUGGESTIONS = gql`
 
 export const ENS_SEARCH = gql`
   query lookup($name: String!, $amount: Int!) {
-    domains(first: $amount, where: { name: $name }, first: 8) {
+    domains(first: $amount, where: { name: $name }) {
       name
       resolver {
         addr {

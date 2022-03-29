@@ -64,7 +64,7 @@ export const fetchSuggestions = async (
         result?.data?.domains.map(
           async (domain: { name: string; resolver: { texts: string[] } }) => {
             const hasAvatar = domain?.resolver?.texts?.find(
-              text => text === 'avatar'
+              text => text === ENS_RECORDS.avatar
             );
             if (hasAvatar) {
               try {
