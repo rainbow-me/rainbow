@@ -14,7 +14,9 @@ const defaultAppVersion = formatAppVersion();
 let codepushLabel = 'None';
 
 codePush.getUpdateMetadata().then(update => {
-  codepushLabel = update.label;
+  if (update) {
+    codepushLabel = update.label;
+  }
 });
 
 export default function useAppVersion() {
