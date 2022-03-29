@@ -106,21 +106,15 @@ export default () => {
     const isENSProfile = profilesEnabled && ensProfile?.isOwner;
 
     const avatarActionSheetOptions = (isENSProfile
-      ? [
-          'View Profile',
-          ...(!isReadOnlyWallet || enableActionsOnReadOnlyWallet
-            ? ['Edit Profile']
-            : []),
-        ]
+      ? ['View Profile', !isReadOnlyWallet ?? 'Edit Profile']
       : [
           'Choose from Library',
-          ...(!accountImage ? ['Pick an Emoji'] : []),
-          ...(accountImage ? ['Remove Photo'] : []),
-          ...(!isReadOnlyWallet || enableActionsOnReadOnlyWallet
-            ? ['Create your Profile']
-            : []),
+          accountImage ? 'Remove Photo' : 'Pick an Emoji',
+          !isReadOnlyWallet ?? 'Create your Profile',
         ]
-    ).concat(ios ? ['Cancel'] : []);
+    )
+      .concat(ios ?? ['Cancel'])
+      .filter(element => Boolean(element));
 
     const callback = async (buttonIndex: Number) => {
       if (isENSProfile) {
@@ -138,17 +132,17 @@ export default () => {
         if (buttonIndex === 0) {
           onAvatarChooseImage();
         } else if (buttonIndex === 1) {
-          if (!accountImage) {
-            onAvatarPickEmoji();
-          }
           if (accountImage) {
             onAvatarRemovePhoto();
+          } else {
+            onAvatarPickEmoji();
           }
         } else if (buttonIndex === 2) {
           onAvatarCreateProfile();
         }
       }
     };
+
     showActionSheetWithOptions(
       {
         cancelButtonIndex: avatarActionSheetOptions.length - 1,
