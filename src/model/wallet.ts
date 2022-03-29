@@ -174,9 +174,6 @@ export enum WalletLibraryType {
   ethers = 'ethers',
   bip39 = 'bip39',
 }
-export enum LoadSeedType {
-  CreatedWithBiometricError = 'createdWithBiometricError',
-}
 
 const privateKeyVersion = 1.0;
 const seedPhraseVersion = 1.0;
@@ -1239,10 +1236,7 @@ export const cleanUpWalletKeys = async (): Promise<boolean> => {
 
 export const loadSeedPhraseAndMigrateIfNeeded = async (
   id: RainbowWallet['id']
-): Promise<{
-  seed: null | EthereumWalletSeed;
-  actionStatus?: null | string;
-}> => {
+): Promise<null | EthereumWalletSeed> => {
   try {
     let seedPhrase = null;
     // First we need to check if that key already exists
@@ -1273,10 +1267,7 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (
         const hasBiometricsEnabled = await getSupportedBiometryType();
         if (!seedData && !seedPhrase) {
           logger.sentry('wallet was created with biometric');
-          return {
-            actionStatus: LoadSeedType.CreatedWithBiometricError,
-            seed: null,
-          };
+          throw new Error('createdWithBiometricError');
         }
         // Fallback to custom PIN
         if (
@@ -1290,10 +1281,10 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (
               // Dencrypt with the PIN
               seedPhrase = await encryptor.decrypt(userPIN, seedPhrase);
             } else {
-              return { seed: null };
+              return null;
             }
           } catch (e) {
-            return { seed: null };
+            return null;
           }
         }
       }
@@ -1307,10 +1298,10 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (
       }
     }
 
-    return { seed: seedPhrase };
+    return seedPhrase;
   } catch (error) {
     logger.sentry('Error in loadSeedPhraseAndMigrateIfNeeded');
     captureException(error);
-    return { seed: null };
+    throw error;
   }
 };

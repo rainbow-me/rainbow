@@ -36,7 +36,7 @@ export async function savePIN(pin: any) {
   }
 }
 
-export async function authenticateWithPIN(safeIfNeed: boolean = false) {
+export async function authenticateWithPIN(shouldSavePin: boolean = false) {
   let validPin: any;
   try {
     validPin = await getExistingPIN();
@@ -47,7 +47,7 @@ export async function authenticateWithPIN(safeIfNeed: boolean = false) {
       onCancel: () => reject(),
       onSuccess: async (pin: any) => {
         // If we didn't have a PIN we need to encrypt it and store it
-        if (!validPin && safeIfNeed) {
+        if (!validPin && shouldSavePin) {
           try {
             await savePIN(pin);
           } catch (e) {

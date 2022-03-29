@@ -5,7 +5,6 @@ import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import {
   identifyWalletType,
   loadSeedPhraseAndMigrateIfNeeded,
-  LoadSeedType,
 } from '../../model/wallet';
 import ActivityIndicator from '../ActivityIndicator';
 import Spinner from '../Spinner';
@@ -93,15 +92,13 @@ export default function SecretDisplaySection({
   const walletId = params?.walletId || selectedWallet.id;
   const currentWallet = wallets[walletId];
   const [visible, setVisible] = useState(true);
-  const [isHideRecoveryPhrase, setHideRecoveryPhrase] = useState(false);
+  const [isRecoveryPhraseVisible, setRecoveryPhraseVisible] = useState(false);
   const [seed, setSeed] = useState(null);
   const [type, setType] = useState(currentWallet?.type);
 
   const loadSeed = useCallback(async () => {
     try {
-      const { seed: s, actionStatus } = await loadSeedPhraseAndMigrateIfNeeded(
-        walletId
-      );
+      const s = await loadSeedPhraseAndMigrateIfNeeded(walletId);
       if (s) {
         const walletType = identifyWalletType(s);
         setType(walletType);
@@ -110,11 +107,12 @@ export default function SecretDisplaySection({
       }
       setVisible(!!s);
       onSecretLoaded?.(!!s);
-      setHideRecoveryPhrase(
-        actionStatus === LoadSeedType.CreatedWithBiometricError
-      );
+      setRecoveryPhraseVisible(!!s);
     } catch (e) {
       logger.sentry('Error while trying to reveal secret', e);
+      if (e?.message === 'createdWithBiometricError') {
+        setRecoveryPhraseVisible(false);
+      }
       captureException(e);
       setVisible(false);
       onSecretLoaded?.(false);
@@ -137,16 +135,7 @@ export default function SecretDisplaySection({
   const { colors } = useTheme();
 
   const renderStep = useCallback(() => {
-    if (isHideRecoveryPhrase) {
-      return (
-        <ColumnWithMargins align="center" justify="center">
-          <AuthenticationText>
-            Your account has been created with biometric data. To see the
-            recovery phrase, turn on the biometrics on your phone.
-          </AuthenticationText>
-        </ColumnWithMargins>
-      );
-    } else {
+    if (isRecoveryPhraseVisible) {
       return (
         <ColumnWithMargins align="center" justify="center">
           <AuthenticationText>
@@ -161,8 +150,17 @@ export default function SecretDisplaySection({
           </ToggleSecretButton>
         </ColumnWithMargins>
       );
+    } else {
+      return (
+        <ColumnWithMargins align="center" justify="center">
+          <AuthenticationText>
+            Your account has been created with biometric data. To see the
+            recovery phrase, turn on the biometrics on your phone.
+          </AuthenticationText>
+        </ColumnWithMargins>
+      );
     }
-  }, [isHideRecoveryPhrase, loadSeed, typeLabel, seed]);
+  }, [isRecoveryPhraseVisible, loadSeed, typeLabel, seed]);
   return (
     <>
       {visible ? (
