@@ -1,6 +1,5 @@
 import { formatsByCoinType } from '@ensdomains/address-encoder';
 import { debounce, isEmpty, sortBy } from 'lodash';
-import { PROFILES, useExperimentalFlag } from '../../config/experimentalHooks';
 import { ensClient } from '../apollo/client';
 import {
   ENS_DOMAINS,
@@ -39,7 +38,8 @@ const DUMMY_RECORDS = {
 export const fetchSuggestions = async (
   recipient: any,
   setSuggestions: any,
-  setIsFetching = (_unused: any) => {}
+  setIsFetching = (_unused: any) => {},
+  profilesEnabled = false
 ) => {
   if (recipient.length > 2) {
     let suggestions: {
@@ -67,7 +67,6 @@ export const fetchSuggestions = async (
             const hasAvatar = domain?.resolver?.texts?.find(
               text => text === ENS_RECORDS.avatar
             );
-            const profilesEnabled = useExperimentalFlag(PROFILES);
             if (hasAvatar && profilesEnabled) {
               try {
                 const images = await fetchImages(domain.name);
@@ -80,27 +79,22 @@ export const fetchSuggestions = async (
         )
       );
       const ensSuggestions = domains
-        .map((ensDomain: any) => {
-          return {
-            address: ensDomain?.resolver?.addr?.id || ensDomain?.name,
-
-            color: profileUtils.addressHashedColorIndex(
-              ensDomain?.resolver?.addr?.id || ensDomain.name
-            ),
-            ens: true,
-            image: ensDomain?.avatar,
-            network: 'mainnet',
-            nickname: ensDomain?.name,
-            uniqueId: ensDomain?.resolver?.addr?.id || ensDomain.name,
-          };
-        })
+        .map((ensDomain: any) => ({
+          address: ensDomain?.resolver?.addr?.id || ensDomain?.name,
+          color: profileUtils.addressHashedColorIndex(
+            ensDomain?.resolver?.addr?.id || ensDomain.name
+          ),
+          ens: true,
+          image: ensDomain?.avatar,
+          network: 'mainnet',
+          nickname: ensDomain?.name,
+          uniqueId: ensDomain?.resolver?.addr?.id || ensDomain.name,
+        }))
         .filter((domain: any) => !domain?.nickname?.includes?.('['));
-
       suggestions = sortBy(ensSuggestions, domain => domain.nickname.length, [
         'asc',
       ]);
     }
-
     setSuggestions(suggestions);
     setIsFetching(false);
 
