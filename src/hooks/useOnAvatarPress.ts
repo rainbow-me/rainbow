@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { toLower } from 'lodash';
 import { useCallback, useMemo } from 'react';
 import { Linking } from 'react-native';
@@ -8,13 +9,8 @@ import { useNavigation } from '../navigation/Navigation';
 import useAccountProfile from './useAccountProfile';
 import useENSProfile from './useENSProfile';
 import useImagePicker from './useImagePicker';
-import useUpdateEmoji from './useUpdateEmoji';
 import useWallets from './useWallets';
-import {
-  enableActionsOnReadOnlyWallet,
-  PROFILES,
-  useExperimentalFlag,
-} from '@rainbow-me/config';
+import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import { walletsSetSelected, walletsUpdate } from '@rainbow-me/redux/wallets';
 import Routes from '@rainbow-me/routes';
 import { buildRainbowUrl, showActionSheetWithOptions } from '@rainbow-me/utils';
@@ -104,32 +100,25 @@ export default () => {
     }
   }, [accountAddress, accountENS]);
 
-  const { setNextEmoji } = useUpdateEmoji();
-
   const onAvatarPress = useCallback(() => {
-    if (android) {
-      setNextEmoji();
-      return;
-    }
-
     const isENSProfile = profilesEnabled && ensProfile?.isOwner;
-
     const avatarActionSheetOptions = (isENSProfile
       ? [
-          'View Profile',
-          ...(!isReadOnlyWallet || enableActionsOnReadOnlyWallet
-            ? ['Edit Profile']
-            : []),
+          lang.t('profiles.profile_avatar.view_profile'),
+          !isReadOnlyWallet && lang.t('profiles.profile_avatar.edit_profile'),
         ]
       : [
-          'Choose from Library',
-          ...(!accountImage ? ['Pick an Emoji'] : []),
-          ...(accountImage ? ['Remove Photo'] : []),
-          ...(!isReadOnlyWallet || enableActionsOnReadOnlyWallet
-            ? ['Create your Profile']
-            : []),
+          lang.t('profiles.profile_avatar.choose_from_library'),
+          lang.t(
+            `profiles.profile_avatar.${
+              accountImage ? 'remove_photo' : 'pick_emoji'
+            }`
+          ),
+          !isReadOnlyWallet && lang.t('profiles.profile_avatar.create_profile'),
         ]
-    ).concat(ios ? ['Cancel'] : []);
+    )
+      .concat(ios && ['Cancel'])
+      .filter(element => Boolean(element));
 
     const callback = async (buttonIndex: Number) => {
       if (isENSProfile) {
@@ -152,17 +141,17 @@ export default () => {
         if (buttonIndex === 0) {
           onAvatarChooseImage();
         } else if (buttonIndex === 1) {
-          if (!accountImage) {
-            onAvatarPickEmoji();
-          }
           if (accountImage) {
             onAvatarRemovePhoto();
+          } else {
+            onAvatarPickEmoji();
           }
         } else if (buttonIndex === 2) {
           onAvatarCreateProfile();
         }
       }
     };
+
     showActionSheetWithOptions(
       {
         cancelButtonIndex: avatarActionSheetOptions.length - 1,
@@ -179,7 +168,6 @@ export default () => {
     ensProfile?.isOwner,
     isReadOnlyWallet,
     accountImage,
-    setNextEmoji,
     navigate,
     accountENS,
     onAvatarChooseImage,
