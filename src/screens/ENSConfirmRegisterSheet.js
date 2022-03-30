@@ -3,25 +3,21 @@ import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
-import { Switch } from 'react-native-gesture-handler';
 import { useRecoilState } from 'recoil';
-import brain from '../assets/brain.png';
-import {
-  ButtonPressAnimation,
-  HourglassAnimation,
-} from '../components/animations';
+import { HourglassAnimation } from '../components/animations';
 import { HoldToAuthorizeButton } from '../components/buttons';
-import { RegistrationReviewRows } from '../components/ens-registration';
+import {
+  CommitContent,
+  RegisterContent,
+  WaitCommitmentConfirmationContent,
+} from '../components/ens-registration';
 import { GasSpeedButton } from '../components/gas';
 import { SheetActionButtonRow, SlackSheet } from '../components/sheet';
 import {
   AccentColorProvider,
   Box,
-  Column,
-  Columns,
   Divider,
   Heading,
-  Inline,
   Inset,
   Row,
   Rows,
@@ -46,106 +42,10 @@ import {
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
 
 export const ENSConfirmRegisterSheetHeight = 600;
 export const ENSConfirmUpdateSheetHeight = 400;
 const avatarSize = 70;
-
-function CommitContent({ registrationCostsData, setDuration, duration }) {
-  return (
-    <Inset horizontal="30px">
-      <Stack space="34px">
-        <Inline
-          alignHorizontal="center"
-          alignVertical="center"
-          space="6px"
-          wrap={false}
-        >
-          <Box>
-            <ImgixImage source={brain} style={{ height: 20, width: 20 }} />
-          </Box>
-          <Text color="secondary50" size="14px" weight="heavy">
-            {lang.t('profiles.confirm.suggestion')}
-          </Text>
-        </Inline>
-        <RegistrationReviewRows
-          duration={duration}
-          estimatedCostETH={
-            registrationCostsData?.estimatedTotalRegistrationCost?.eth
-          }
-          maxDuration={99}
-          networkFee={registrationCostsData?.estimatedNetworkFee?.display}
-          onChangeDuration={setDuration}
-          registrationFee={
-            registrationCostsData?.estimatedRentPrice?.total?.display
-          }
-          totalCost={
-            registrationCostsData?.estimatedTotalRegistrationCost?.display
-          }
-        />
-        <Divider color="divider40" />
-      </Stack>
-    </Inset>
-  );
-}
-
-function RegisterContent({
-  setSendReverseRecord,
-  accentColor,
-  sendReverseRecord,
-}) {
-  return (
-    <Inset horizontal="30px">
-      <Columns>
-        <Column width="2/3">
-          <Text
-            color="secondary80"
-            lineHeight="loose"
-            size="16px"
-            weight="bold"
-          >
-            {lang.t('profiles.confirm.set_ens_name')} 􀅵
-          </Text>
-        </Column>
-        <Column width="1/3">
-          <Box alignItems="flex-end">
-            <Switch
-              onValueChange={() =>
-                setSendReverseRecord(sendReverseRecord => !sendReverseRecord)
-              }
-              testID="ens-reverse-record-switch"
-              trackColor={{ false: colors.white, true: accentColor }}
-              value={sendReverseRecord}
-            />
-          </Box>
-        </Column>
-      </Columns>
-    </Inset>
-  );
-}
-
-function WaitCommitmentConfirmationContent({ accentColor, action }) {
-  return (
-    <Box height="full">
-      <Box height="full">
-        <HourglassAnimation />
-      </Box>
-      <Box alignItems="center" paddingBottom={5}>
-        <ButtonPressAnimation onPress={() => action(accentColor)}>
-          <Text
-            color={{ custom: accentColor }}
-            containsEmoji
-            size="16px"
-            weight="heavy"
-          >
-            {`🚀 ${lang.t('profiles.confirm.speed_up')}`}
-          </Text>
-        </ButtonPressAnimation>
-      </Box>
-    </Box>
-  );
-}
 
 function TransactionActionRow({
   action,
