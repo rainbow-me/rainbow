@@ -36,13 +36,13 @@ const RenewContent = ({
             registrationCostsData?.estimatedTotalRegistrationCost?.eth
           }
           maxDuration={99}
+          mode={REGISTRATION_MODES.RENEW}
           networkFee={registrationCostsData?.estimatedNetworkFee?.display}
           newExpiryDate={newExpiryDateFormatted}
           onChangeDuration={setDuration}
           registrationFee={
             registrationCostsData?.estimatedRentPrice?.total?.display
           }
-          mode={REGISTRATION_MODES.RENEW}
           totalCost={
             registrationCostsData?.estimatedTotalRegistrationCost?.display
           }
