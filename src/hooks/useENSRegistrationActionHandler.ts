@@ -81,10 +81,7 @@ export default function useENSRegistrationActionHandler(
       : -1
   );
 
-  const isTesting = useMemo(
-    () => IS_TESTING === 'true' && isHardHat(web3Provider.connection.url),
-    []
-  );
+  const isTesting = useMemo(() => isHardHat(web3Provider.connection.url), []);
   // flag to wait 10 secs before we get the tx block, to be able to simulate not confirmed tx when testing
   const shouldLoopForConfirmation = useRef(isTesting);
 

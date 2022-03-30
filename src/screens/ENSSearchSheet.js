@@ -6,6 +6,7 @@ import { useDebounce } from 'use-debounce';
 import dice from '../assets/dice.png';
 import TintButton from '../components/buttons/TintButton';
 import {
+  PendingRegistrations,
   SearchInput,
   SearchResultGradientIndicator,
 } from '../components/ens-registration';
@@ -109,6 +110,7 @@ export default function ENSSearchSheet() {
             value={searchQuery}
           />
         </Box>
+
         {isIdle && (
           <Inline
             alignHorizontal="center"
@@ -216,6 +218,11 @@ export default function ENSSearchSheet() {
         </SheetActionButtonRow>
         <KeyboardArea initialHeight={keyboardHeight} isOpen />
       </Box>
+      {isIdle && (
+        <Box>
+          <PendingRegistrations />
+        </Box>
+      )}
     </Box>
   );
 }
