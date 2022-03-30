@@ -25,22 +25,22 @@ src/apollo @brunobar79 @jinchung @derHowie
 src/assets @skylarbarrera @christianbaroni
 
 # COMPONENTS
-src/components @osdnk
+src/components @osdnk @terrysahaidak
 
 # APP CONFIG
-src/config @osdnk
+src/config @osdnk @brunobar79 @skylarbarrera
 
 # REACT CONTEXT
-src/context @osdnk
+src/context @osdnk @terrysahaidak
 
 # NETWORK DEBUGGING
-src/debuging @brunobar79
+src/debugging @brunobar79
 
 # DESIGN SYSTEM
-src/design-system @markdalgleish
+src/design-system @markdalgleish @jxom
 
 # Typescript
-src/entities @jinchung
+src/entities @jinchung  @markdalgliesh @marco
 
 # Handlers
 src/handlers @jinchung @brunobar79
@@ -136,7 +136,7 @@ src/styled-thing @terrysahaidak @osdnk @markdalgleish
 src/utils @brunobar79 @jinchung
 
 # App
-src/App.ts @brunobar79 @osdnk
+src/App.ts @brunobar79 @jinchung
 
 # types
 eth-contract-metadata.d.ts
@@ -166,7 +166,7 @@ app.json @jinchung
 audit-ci.json @brunobar79
 
 # APP INFRA
-bable.config.json @brunobar79 @osdnk
+bable.config.js @brunobar79 @osdnk
 bitrise.yml @brunobar79
 CHANGELOG.md
 CODEOWNERS @brunobar79 @jinchung @skylarbarrera
@@ -184,8 +184,8 @@ index.js @brunobar79 @jinchung
 LICENSE @jinchung
 
 # SECURITY / APP INFRA
-metro.config @brunobar79 @osdnk
-metro.transform @brunobar79 @osdnk
+metro.config.js @brunobar79 @osdnk
+metro.transform.js @brunobar79 @osdnk
 package.json @brunobar79 @jinchung
 
 # APP INFRA
