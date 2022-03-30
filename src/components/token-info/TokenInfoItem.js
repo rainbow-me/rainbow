@@ -90,13 +90,13 @@ export default function TokenInfoItem({
           <TokenInfoBalanceValue align={align} asset={asset} isNft={isNft} />
         ) : (
           <>
-            <ButtonPressAnimation
-              enableHapticFeedback={!!onPress && enableHapticFeedback}
-              onPress={onPress}
-              scaleTo={1}
-            >
-              <Columns alignHorizontal="left">
-                <Column alignHorizontal="left">
+            <Columns alignHorizontal="left">
+              <Column alignHorizontal="left">
+                <ButtonPressAnimation
+                  enableHapticFeedback={!!onPress && enableHapticFeedback}
+                  onPress={onPress}
+                  scaleTo={1}
+                >
                   <TokenInfoValue
                     activeOpacity={0}
                     align={align}
@@ -108,30 +108,30 @@ export default function TokenInfoItem({
                   >
                     {!loading && children}
                   </TokenInfoValue>
-                </Column>
-                {showEditButton && (
-                  <Column alignHorizontal="left" width="content">
-                    <ButtonPressAnimation
-                      enableHapticFeedback={!!onPress && enableHapticFeedback}
-                      onPress={onPressEditButton}
-                      scaleTo={1}
+                </ButtonPressAnimation>
+              </Column>
+              {showEditButton && (
+                <Column alignHorizontal="left" width="content">
+                  <ButtonPressAnimation
+                    enableHapticFeedback={!!onPress && enableHapticFeedback}
+                    onPress={onPressEditButton}
+                    scaleTo={1}
+                  >
+                    <TokenInfoValue
+                      activeOpacity={0}
+                      align={align}
+                      color={color}
+                      isNft={isNft}
+                      lineHeight={lineHeight}
+                      size={size}
+                      weight={weight}
                     >
-                      <TokenInfoValue
-                        activeOpacity={0}
-                        align={align}
-                        color={color}
-                        isNft={isNft}
-                        lineHeight={lineHeight}
-                        size={size}
-                        weight={weight}
-                      >
-                        {' 􀌆'}
-                      </TokenInfoValue>
-                    </ButtonPressAnimation>
-                  </Column>
-                )}
-              </Columns>
-            </ButtonPressAnimation>
+                      {' 􀌆'}
+                    </TokenInfoValue>
+                  </ButtonPressAnimation>
+                </Column>
+              )}
+            </Columns>
           </>
         )}
         {loading && (
