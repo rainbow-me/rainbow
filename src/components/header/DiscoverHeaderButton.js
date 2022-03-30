@@ -51,14 +51,10 @@ export default function DiscoverHeaderButton() {
     navigate,
   ]);
 
-  const onLongPress = useCallback(() => {
-    navigate(Routes.PROFILE_SHEET, { address: 'mikedemarais.eth' });
-    analytics.track('Viewed ENS profile', {
-      category: 'profiles',
-      ens: 'mikedemarais.eth',
-      from: 'Discover button',
-    });
-  }, [navigate]);
+  const onLongPress = useCallback(
+    () => navigate(Routes.PROFILE_SHEET, { address: 'mikedemarais.eth' }),
+    [navigate]
+  );
 
   const shadows = useMemo(() => DiscoverButtonShadowsFactory(colors), [colors]);
 
