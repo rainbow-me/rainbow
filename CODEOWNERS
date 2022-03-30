@@ -40,7 +40,7 @@ src/debugging @brunobar79
 src/design-system @markdalgleish @jxom
 
 # Typescript
-src/entities @jinchung  @markdalgleish @marco
+src/entities @jinchung @markdalgleish @marco
 
 # Handlers
 src/handlers @jinchung @brunobar79
