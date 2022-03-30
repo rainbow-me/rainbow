@@ -22,6 +22,7 @@ import ProfileSheet from '../screens/ProfileSheet';
 import ReceiveModal from '../screens/ReceiveModal';
 import RestoreSheet from '../screens/RestoreSheet';
 import SavingsSheet from '../screens/SavingsSheet';
+import SelectENSSheet from '../screens/SelectENSSheet';
 import SelectUniqueTokenSheet from '../screens/SelectUniqueTokenSheet';
 import SendConfirmationSheet from '../screens/SendConfirmationSheet';
 import SendSheet from '../screens/SendSheet';
@@ -51,6 +52,7 @@ import {
   nativeStackDefaultConfigWithoutStatusBar,
   registerENSNavigatorConfig,
   restoreSheetConfig,
+  selectEnsSheetConfig,
   sendConfirmationSheetConfig,
   stackNavigationConfig,
 } from './config';
@@ -417,6 +419,11 @@ function NativeStackNavigator() {
             component={ProfileSheet}
             name={Routes.PROFILE_SHEET}
             {...registerENSNavigatorConfig}
+          />
+          <NativeStack.Screen
+            component={SelectENSSheet}
+            name={Routes.SELECT_ENS_SHEET}
+            {...selectEnsSheetConfig}
           />
         </>
       )}

@@ -44,6 +44,7 @@ const Routes = {
   SAVINGS_DEPOSIT_MODAL: 'SavingsDepositModal',
   SAVINGS_SHEET: 'SavingsSheet',
   SAVINGS_WITHDRAW_MODAL: 'SavingsWithdrawModal',
+  SELECT_ENS_SHEET: 'SelectENSSheet',
   SELECT_UNIQUE_TOKEN_SHEET: 'SelectUniqueTokenSheet',
   SEND_CONFIRMATION_SHEET: 'SendConfirmationSheet',
   SEND_SHEET: 'SendSheet',

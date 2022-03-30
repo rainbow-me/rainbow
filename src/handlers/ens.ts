@@ -2,12 +2,14 @@ import { formatsByCoinType } from '@ensdomains/address-encoder';
 import { debounce, isEmpty, sortBy } from 'lodash';
 import { ensClient } from '../apollo/client';
 import {
+  ENS_ACCOUNT_REGISTRATIONS,
   ENS_DOMAINS,
   ENS_GET_COIN_TYPES,
   ENS_GET_RECORDS,
   ENS_GET_REGISTRATION,
   ENS_REGISTRATIONS,
   ENS_SUGGESTIONS,
+  EnsAccountRegistratonsData,
   EnsGetCoinTypesData,
   EnsGetRecordsData,
   EnsGetRegistrationData,
@@ -108,6 +110,16 @@ export const fetchRegistrationDate = async (recipient: any) => {
 
     return registrationDate;
   }
+};
+
+export const fetchAccountRegistrations = async (address: string) => {
+  const registrations = await ensClient.query<EnsAccountRegistratonsData>({
+    query: ENS_ACCOUNT_REGISTRATIONS,
+    variables: {
+      address: address.toLowerCase(),
+    },
+  });
+  return registrations;
 };
 
 export const fetchImages = async (ensName: string) => {

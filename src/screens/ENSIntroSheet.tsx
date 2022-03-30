@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useCallback } from 'react';
+import ActivityIndicator from '../components/ActivityIndicator';
 import Button from '../components/buttons/Button';
+import { useNavigation } from '../navigation/Navigation';
 import { useTheme } from '@rainbow-me/context';
 import {
   Bleed,
@@ -15,11 +17,27 @@ import {
   Rows,
   Stack,
   Text,
+  useColorMode,
 } from '@rainbow-me/design-system';
+import { useAccountENSDomains } from '@rainbow-me/hooks';
+import Routes from '@rainbow-me/routes';
 
 export default function ENSIntroSheet() {
-  const topPadding = android ? 29 : 19;
   const { colors } = useTheme();
+  const { colorMode } = useColorMode();
+
+  const topPadding = android ? 29 : 19;
+
+  const { data: domains, isLoading, isSuccess } = useAccountENSDomains();
+
+  const { navigate } = useNavigation();
+  const handleNavigateToSearch = useCallback(() => {
+    navigate(Routes.ENS_SEARCH_SHEET);
+  }, [navigate]);
+
+  const handleSelectExistingName = useCallback(() => {
+    navigate(Routes.SELECT_ENS_SHEET);
+  }, [navigate]);
 
   return (
     <Box
@@ -28,7 +46,9 @@ export default function ENSIntroSheet() {
       paddingTop={{ custom: topPadding }}
       testID="ens-search-sheet"
     >
-      <ColorModeProvider value="lightTinted">
+      <ColorModeProvider
+        value={colorMode === 'light' ? 'lightTinted' : 'darkTinted'}
+      >
         <Inset top="34px">
           <Box height="full">
             <Rows>
@@ -79,7 +99,9 @@ export default function ENSIntroSheet() {
                         </Column>
                         <Bleed top="4px">
                           <Stack space="12px">
-                            <Text weight="bold">A portable username</Text>
+                            <Text weight="bold">
+                              A portable digital identity
+                            </Text>
                             <Text
                               color="secondary60"
                               size="14px"
@@ -106,7 +128,7 @@ export default function ENSIntroSheet() {
                               weight="medium"
                             >
                               Your name and profile are stored on Ethereum and
-                              owned entirely by you.
+                              owned by you.
                             </Text>
                           </Stack>
                         </Bleed>
@@ -117,12 +139,52 @@ export default function ENSIntroSheet() {
               </Row>
               <Row height="content">
                 <Inset space="24px">
-                  <Button
-                    backgroundColor={colors.appleBlue}
-                    textProps={{ weight: 'heavy' }}
-                  >
-                    􀠎 Find your name
-                  </Button>
+                  {isLoading && (
+                    <Box alignItems="center" paddingBottom="15px">
+                      <ActivityIndicator />
+                    </Box>
+                  )}
+                  {isSuccess && (
+                    <>
+                      {domains?.length === 0 ? (
+                        <Button
+                          backgroundColor={colors.appleBlue}
+                          onPress={handleNavigateToSearch}
+                          textProps={{ weight: 'heavy' }}
+                        >
+                          􀠎 Find your name
+                        </Button>
+                      ) : (
+                        <Stack space="15px">
+                          {domains?.length === 1 ? (
+                            <Button
+                              backgroundColor={colors.appleBlue}
+                              onPress={handleSelectExistingName}
+                              textProps={{ weight: 'heavy' }}
+                            >
+                              Use {domains[0].name}
+                            </Button>
+                          ) : (
+                            <Button
+                              backgroundColor={colors.appleBlue}
+                              onPress={handleSelectExistingName}
+                              textProps={{ weight: 'heavy' }}
+                            >
+                              Use an existing ENS name
+                            </Button>
+                          )}
+                          <Button
+                            backgroundColor={colors.transparent}
+                            color={colors.appleBlue}
+                            onPress={handleNavigateToSearch}
+                            textProps={{ size: 'lmedium', weight: 'heavy' }}
+                          >
+                            Search for a new ENS name
+                          </Button>
+                        </Stack>
+                      )}
+                    </>
+                  )}
                 </Inset>
               </Row>
             </Rows>
