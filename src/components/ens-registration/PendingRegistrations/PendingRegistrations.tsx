@@ -34,30 +34,31 @@ const PendingRegistration = ({
         )}
         <Column>
           <Box>
-            <Text color="primary" numberOfLines={1} size="16px" weight="bold">
+            <Text color="primary" numberOfLines={1} size="16px" weight="heavy">
               {registration.name}
             </Text>
           </Box>
         </Column>
         <Column width="content">
-          <Box
-            alignItems="center"
-            as={LinearGradient}
-            borderRadius={16}
-            colors={colors.gradients.transparentToAppleBlue}
-            end={{ x: 0.6, y: 0 }}
-            height="30px"
-            justifyContent="center"
-            paddingRight="15px"
-            start={{ x: 0, y: 0.6 }}
-          >
-            <Inset horizontal="10px">
-              <AccentColorProvider color={colors.appleBlue}>
-                <Text color="accent" size="16px" weight="heavy">
-                  Finish
-                </Text>
-              </AccentColorProvider>
-            </Inset>
+          <Box paddingRight="15px">
+            <Box
+              alignItems="center"
+              as={LinearGradient}
+              borderRadius={16}
+              colors={colors.gradients.transparentToAppleBlue}
+              end={{ x: 0.6, y: 0 }}
+              height="30px"
+              justifyContent="center"
+              start={{ x: 0, y: 0.6 }}
+            >
+              <Inset horizontal="10px">
+                <AccentColorProvider color={colors.appleBlue}>
+                  <Text color="accent" size="16px" weight="heavy">
+                    Finish
+                  </Text>
+                </AccentColorProvider>
+              </Inset>
+            </Box>
           </Box>
         </Column>
         <Column width="content">
@@ -76,6 +77,9 @@ const PendingRegistrations = () => {
   return (
     <Box paddingHorizontal="19px">
       <Stack space="19px">
+        <Text color="secondary50" size="14px" weight="bold">
+          􀺉 In progress
+        </Text>
         {pendingRegistrations.map(registration => (
           <PendingRegistration
             key={registration.name}

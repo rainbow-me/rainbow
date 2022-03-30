@@ -126,6 +126,16 @@ export default function ENSSearchSheet() {
             </Text>
           </Inline>
         )}
+        {isIdle && (
+          <>
+            <Inset vertical="24px">
+              <Divider />
+            </Inset>
+            <Box>
+              <PendingRegistrations />
+            </Box>
+          </>
+        )}
         {isInvalid && (
           <Inset horizontal="30px">
             <Text align="center" color="secondary50" size="16px" weight="bold">
@@ -218,11 +228,6 @@ export default function ENSSearchSheet() {
         </SheetActionButtonRow>
         <KeyboardArea initialHeight={keyboardHeight} isOpen />
       </Box>
-      {isIdle && (
-        <Box>
-          <PendingRegistrations />
-        </Box>
-      )}
     </Box>
   );
 }
