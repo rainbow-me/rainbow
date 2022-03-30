@@ -7,12 +7,12 @@ export default function buildRainbowUrl(
   accountAddress: EthereumAddress
 ): string {
   const address = accountENS || accountAddress;
-  const family = asset?.familyName;
+  const slug = asset?.collection.slug;
   const assetId = asset?.uniqueId;
 
-  const familyString = family ? `?family=${family}` : '';
+  const familyString = slug ? `?family=${slug}` : '';
   const assetString =
-    family && assetId?.toString() ? `&nft=${assetId?.toString()}` : '';
+    slug && assetId?.toString() ? `&nft=${assetId?.toString()}` : '';
 
   const url = `${RAINBOW_PROFILES_BASE_URL}/${address}${familyString}${assetString}`;
   return url;
