@@ -40,15 +40,15 @@ src/debugging @brunobar79
 src/design-system @markdalgleish @jxom
 
 # Typescript
-src/entities @jinchung  @markdalgliesh @marco
+src/entities @jinchung  @markdalgleish @marco
 
 # Handlers
 src/handlers @jinchung @brunobar79
-src/handlers/aesEncryption.ts @brunobar79
-src/handlers/appEvents.ts @brunobar79
-src/handlers/assets.ts @jinchung
+src/handlers/aesEncryption.ts @brunobar79 @estebanmino
+src/handlers/appEvents.ts @brunobar79 @derHowie
+src/handlers/assets.ts @jinchung @marco @derHowie
 src/handlers/authentication.ts @jinchung @brunobar79
-src/handlers/cloudBackup.ts @brunobar79
+src/handlers/cloudBackup.ts @brunobar79 @skylarbarrera
 src/handlers/covalent.ts @brunobar79 @derHowie
 src/handlers/deeplinks.ts @brunobar79 @tchayen
 src/handlers/dispersion.ts @brunobar79 @derHowie @jinchung
@@ -56,8 +56,8 @@ src/handlers/ens.ts @estebanmino @skylarbarrera @jxom
 src/handlers/gasFees.ts @estebanmino @brunobar79 @jinchung
 src/handlers/imgix.ts @brunobar79 @osdnk @skylarbarrera
 src/handlers/opensea-api.ts @jinchung @skylarbarrera
-src/handlers/poap.ts @skylarbarrera
-src/handlers/svgs.ts @skylarbarrera
+src/handlers/poap.ts @skylarbarrera @osdnk
+src/handlers/svgs.ts @skylarbarrera @osdnk
 src/handlers/tokenSearch.ts @brunobar79 @jinchung @derHowie
 src/handlers/transactions.ts @brunobar79 @osdnk @jinchung
 src/handlers/uniswap.ts @brunobar79 @jinchung
@@ -83,26 +83,26 @@ src/languages @skylarbarrera @marco
 
 # Model 
 src/model @brunobar79 @jinchung
-src/model/mmkv @osdnk
+src/model/mmkv @osdnk @terrysahaidak
 
 # Navigation 
-src/navigation @osdnk
+src/navigation @osdnk @terrysahaidak
 
 # Parsers 
 src/parsers @brunobar79 @jinchung
 
 # rainbow fetch 
-src/rainbow-fetch @brunobar79
+src/rainbow-fetch @brunobar79 @skylarbarrera
 
 # raps
 src/raps @brunobar79 @jinchung
 src/raps/registerENS.ts @estebanmino @jxom
 
 # charts, shadow stack, cool modals, sheets
-src/react-native-animated-charts @osdnk
-src/react-native-cool-modals @osdnk
-src/react-native-shadow-stack @osdnk
-src/react-native-yet-another-bottom-sheet @osdnk
+src/react-native-animated-charts @osdnk @terrysahaidak
+src/react-native-cool-modals @osdnk @terrysahaidak
+src/react-native-shadow-stack @osdnk @terrysahaidak
+src/react-native-yet-another-bottom-sheet @osdnk @terrysahaidak
 
 # react query
 src/react-query @jinchung @derHowie
@@ -113,7 +113,7 @@ src/redux/charts.ts @osdnk @terrysahaidak
 src/redux/ensRegistration.ts @estebanmino @jxom
 src/redux/imageMetadata.ts @osdnk @skylarbarrera
 src/redux/gas.ts @brunobar79 @estebanmino
-src/redux/keyboardHeight.ts @osdnk
+src/redux/keyboardHeight.ts @osdnk @skylarbarrera
 src/redux/nonceManager.ts @derHowie @brunobar79
 src/redux/showcaseTokens.ts @osdnk @skylarbarrera
 src/redux/transactionSignatures.ts @brunobar79 @estebanmino
@@ -136,15 +136,15 @@ src/styled-thing @terrysahaidak @osdnk @markdalgleish
 src/utils @brunobar79 @jinchung
 
 # App
-src/App.ts @brunobar79 @jinchung
+src/App.ts @brunobar79 @jinchung 
 
 # types
-eth-contract-metadata.d.ts
-eth-ens-namehash.d.ts
+eth-contract-metadata.d.ts @markdalgleish @jxom
+eth-ens-namehash.d.ts @markdalgleish @jxom
 
 
 # TYPESCRIPT
-types/ @jinchung
+types/ @markdalgleish @marco @jinchung
 
 # APP INFRA
 .eslintignore @brunobar79 @osdnk
@@ -152,36 +152,36 @@ types/ @jinchung
 .flowconfig @brunobar79 @osdnk
 .gitattributes @brunobar79 @jinchung
 .gitignore @brunobar79 @jinchung
-.nvmrc @brunobar79
-.prettierrc.js @brunobar79
-.watchmanconfig @brunobar79
+.nvmrc @brunobar79 @osdnk
+.prettierrc.js @brunobar79 @osdnk
+.watchmanconfig @brunobar79 @osdnk
 # SECURITY / APP INFRA
 
 .yarnrc @brunobar79
 
 # APP INFRA
-app.json @jinchung
+app.json @jinchung @brunobar79
 
 # SECURITY / APP INFRA
-audit-ci.json @brunobar79
+audit-ci.json @brunobar79 @skylarbarrera  
 
 # APP INFRA
-bable.config.js @brunobar79 @osdnk
-bitrise.yml @brunobar79
+babel.config.js @brunobar79 @osdnk
+bitrise.yml @brunobar79 @skylarbarrera
 CHANGELOG.md
 CODEOWNERS @brunobar79 @jinchung @skylarbarrera
-cspell.json @brunobar79
+cspell.json
 globals.d.ts @brunobar79 @osdnk
 globalVariables.js @brunobar79 @osdnk
 
 # HARDHAT
-hardhat.config.js @brunobar79
+hardhat.config.js @brunobar79 @estebanmino
 
 # APP CORE
 index.js @brunobar79 @jinchung
 
 # LEGAL
-LICENSE @jinchung
+LICENSE @jinchung @brunobar79
 
 # SECURITY / APP INFRA
 metro.config.js @brunobar79 @osdnk
