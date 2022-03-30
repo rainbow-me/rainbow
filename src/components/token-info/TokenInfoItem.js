@@ -6,6 +6,7 @@ import TokenInfoBalanceValue from './TokenInfoBalanceValue';
 import TokenInfoHeading from './TokenInfoHeading';
 import TokenInfoValue from './TokenInfoValue';
 import { useTheme } from '@rainbow-me/context';
+import { Column, Columns } from '@rainbow-me/design-system';
 import { useDelayedValueWithLayoutAnimation } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 
@@ -37,6 +38,7 @@ export default function TokenInfoItem({
   onInfoPress,
   onPress,
   showDivider,
+  showEditButton,
   showInfoButton,
   size,
   title,
@@ -86,23 +88,50 @@ export default function TokenInfoItem({
         {asset ? (
           <TokenInfoBalanceValue align={align} asset={asset} isNft={isNft} />
         ) : (
-          <ButtonPressAnimation
-            enableHapticFeedback={!!onPress && enableHapticFeedback}
-            onPress={onPress}
-            scaleTo={1}
-          >
-            <TokenInfoValue
-              activeOpacity={0}
-              align={align}
-              color={color}
-              isNft={isNft}
-              lineHeight={lineHeight}
-              size={size}
-              weight={weight}
+          <>
+            <ButtonPressAnimation
+              enableHapticFeedback={!!onPress && enableHapticFeedback}
+              onPress={onPress}
+              scaleTo={1}
             >
-              {!loading && children}
-            </TokenInfoValue>
-          </ButtonPressAnimation>
+              <Columns alignHorizontal="left">
+                <Column alignHorizontal="left">
+                  <TokenInfoValue
+                    activeOpacity={0}
+                    align={align}
+                    color={color}
+                    isNft={isNft}
+                    lineHeight={lineHeight}
+                    size={size}
+                    weight={weight}
+                  >
+                    {!loading && children}
+                  </TokenInfoValue>
+                </Column>
+                {showEditButton && (
+                  <Column alignHorizontal="left" width="content">
+                    <ButtonPressAnimation
+                      enableHapticFeedback={!!onPress && enableHapticFeedback}
+                      onPress={onPress}
+                      scaleTo={1}
+                    >
+                      <TokenInfoValue
+                        activeOpacity={0}
+                        align={align}
+                        color={color}
+                        isNft={isNft}
+                        lineHeight={lineHeight}
+                        size={size}
+                        weight={weight}
+                      >
+                        {' 􀌆'}
+                      </TokenInfoValue>
+                    </ButtonPressAnimation>
+                  </Column>
+                )}
+              </Columns>
+            </ButtonPressAnimation>
+          </>
         )}
         {loading && (
           <WrapperView

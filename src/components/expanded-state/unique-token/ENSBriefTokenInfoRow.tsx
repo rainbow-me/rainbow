@@ -3,14 +3,16 @@ import React, { useCallback, useState } from 'react';
 
 import { TokenInfoItem } from '../../token-info';
 import { useTheme } from '@rainbow-me/context';
-import { Columns } from '@rainbow-me/design-system';
+import { Box, Columns } from '@rainbow-me/design-system';
 
 export default function ENSBriefTokenInfoRow({
   expiryDate,
   registrationDate,
+  showEditButton,
 }: {
   expiryDate?: number;
   registrationDate?: number;
+  showEditButton?: boolean;
 }) {
   const { colors } = useTheme();
 
@@ -42,6 +44,7 @@ export default function ENSBriefTokenInfoRow({
         isNft
         loading={!expiryDate}
         onPress={handlePressExpiryDate}
+        showEditButton={showEditButton}
         size="big"
         title="Expires in"
         weight="heavy"

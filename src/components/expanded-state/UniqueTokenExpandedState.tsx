@@ -500,6 +500,7 @@ const UniqueTokenExpandedState = ({
                             registrationDate={
                               ensData?.registration.registrationDate
                             }
+                            showEditButton={hasEditButton}
                           />
                         )}
                       </Bleed>
