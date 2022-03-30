@@ -496,6 +496,7 @@ const UniqueTokenExpandedState = ({
                         )}
                         {isENS && (
                           <ENSBriefTokenInfoRow
+                            ensName={uniqueId}
                             expiryDate={ensData?.registration.expiryDate}
                             registrationDate={
                               ensData?.registration.registrationDate

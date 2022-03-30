@@ -1,25 +1,35 @@
+import { useNavigation } from '@react-navigation/core';
 import { format, formatDistanceStrict } from 'date-fns';
 import React, { useCallback, useState } from 'react';
-
 import { TokenInfoItem } from '../../token-info';
 import { useTheme } from '@rainbow-me/context';
-import { Box, Columns } from '@rainbow-me/design-system';
+import { Columns } from '@rainbow-me/design-system';
+import Routes from '@rainbow-me/routes';
 
 export default function ENSBriefTokenInfoRow({
   expiryDate,
   registrationDate,
   showEditButton,
+  ensName,
 }: {
   expiryDate?: number;
   registrationDate?: number;
+  ensName?: string;
   showEditButton?: boolean;
 }) {
   const { colors } = useTheme();
+  const { navigate } = useNavigation();
 
   const [showExpiryDistance, setShowExpiryDistance] = useState(true);
   const handlePressExpiryDate = useCallback(() => {
     setShowExpiryDistance(x => !x);
   }, []);
+
+  const handlePressEditExpiryDate = useCallback(() => {
+    navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
+      ensName,
+    });
+  }, [navigate, ensName]);
 
   return (
     <Columns space="19px">
@@ -44,6 +54,7 @@ export default function ENSBriefTokenInfoRow({
         isNft
         loading={!expiryDate}
         onPress={handlePressExpiryDate}
+        onPressEditButton={handlePressEditExpiryDate}
         showEditButton={showEditButton}
         size="big"
         title="Expires in"

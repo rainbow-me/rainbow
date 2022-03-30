@@ -37,6 +37,7 @@ export default function TokenInfoItem({
   isNft,
   onInfoPress,
   onPress,
+  onPressEditButton,
   showDivider,
   showEditButton,
   showInfoButton,
@@ -112,7 +113,7 @@ export default function TokenInfoItem({
                   <Column alignHorizontal="left" width="content">
                     <ButtonPressAnimation
                       enableHapticFeedback={!!onPress && enableHapticFeedback}
-                      onPress={onPress}
+                      onPress={onPressEditButton}
                       scaleTo={1}
                     >
                       <TokenInfoValue
