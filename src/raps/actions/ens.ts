@@ -298,11 +298,6 @@ const ensAction = async (
           rentPrice: rentPrice,
           walletAddress: ownerAddress,
         });
-        analytics.identify(name, {
-          metadata: JSON.stringify(records),
-          owner: ownerAddress,
-          profileCreatedInRainbow: true,
-        });
         break;
       case ENSRegistrationTransactionType.SET_TEXT:
         tx = await executeSetText(
