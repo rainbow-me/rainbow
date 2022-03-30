@@ -1,11 +1,11 @@
-import useAccountSettings from './useAccountSettings';
-import { fetchProfile } from '@rainbow-me/handlers/ens';
 import analytics from '@segment/analytics-react-native';
-import { useSelector } from 'react-redux';
-import { ENSRegistrationState } from '@rainbow-me/entities';
-import { AppState } from '@rainbow-me/redux/store';
-import useWallets from './useWallets';
 import { useCallback } from 'react';
+import { useSelector } from 'react-redux';
+import useAccountSettings from './useAccountSettings';
+import useWallets from './useWallets';
+import { ENSRegistrationState } from '@rainbow-me/entities';
+import { fetchProfile } from '@rainbow-me/handlers/ens';
+import { AppState } from '@rainbow-me/redux/store';
 
 export default function useTrackENSProfile() {
   const { accountAddress } = useAccountSettings();
@@ -24,25 +24,14 @@ export default function useTrackENSProfile() {
   });
 
   const trackENSProfile = useCallback(async () => {
-    console.log('is it working');
-
     const profile = await fetchProfile(ens);
-
-    console.log({
-      createdInRainbow: createdInRainbow,
-      ownerAddress: accountAddress,
-      name: ens,
-      data: JSON.stringify(profile),
-    });
-    analytics.identify(null, {
-      ensProfile: {
-        createdInRainbow: createdInRainbow,
-        ownerAddress: accountAddress,
-        name: ens,
-        data: JSON.stringify(profile),
-      },
-    });
-  }, [accountAddress, createdInRainbow, walletNames]);
+    const data = JSON.parse(
+      JSON.stringify({
+        ensProfile: { ...{ createdInRainbow: createdInRainbow }, ...profile },
+      })
+    );
+    analytics.identify(null, data);
+  }, [createdInRainbow, ens]);
 
   return { trackENSProfile };
 }

@@ -264,11 +264,11 @@ const ensAction = async (
         );
         analytics.track('Initiated ENS registration', {
           category: 'profiles',
-          walletAddress: ownerAddress,
-          rentPrice: rentPrice,
           ens: name,
-          records: Object.keys(records || {}),
           etherscanLink: `https://etherscan.io/tx/${tx?.hash}`,
+          records: Object.keys(records || {}),
+          rentPrice: rentPrice,
+          walletAddress: ownerAddress,
         });
         break;
       case ENSRegistrationTransactionType.REGISTER_WITH_CONFIG:
@@ -292,15 +292,15 @@ const ensAction = async (
         );
         analytics.track('Completed ENS registration', {
           category: 'profiles',
-          walletAddress: ownerAddress,
-          rentPrice: rentPrice,
           ens: name,
-          records: Object.keys(records || {}),
           etherscanLink: `https://etherscan.io/tx/${tx?.hash}`,
+          records: Object.keys(records || {}),
+          rentPrice: rentPrice,
+          walletAddress: ownerAddress,
         });
         analytics.identify(name, {
-          owner: ownerAddress,
           metadata: JSON.stringify(records),
+          owner: ownerAddress,
           profileCreatedInRainbow: true,
         });
         break;
@@ -316,10 +316,10 @@ const ensAction = async (
         );
         analytics.track('Edited ENS records', {
           category: 'profiles',
-          walletAddress: ownerAddress,
           ens: name,
-          records: Object.keys(records || {}),
           etherscanLink: `https://etherscan.io/tx/${tx?.hash}`,
+          records: Object.keys(records || {}),
+          walletAddress: ownerAddress,
         });
         break;
       case ENSRegistrationTransactionType.MULTICALL:
@@ -334,10 +334,10 @@ const ensAction = async (
         );
         analytics.track('Edited ENS records', {
           category: 'profiles',
-          walletAddress: ownerAddress,
           ens: name,
-          records: Object.keys(records || {}),
           etherscanLink: `https://etherscan.io/tx/${tx?.hash}`,
+          records: Object.keys(records || {}),
+          walletAddress: ownerAddress,
         });
         break;
       case ENSRegistrationTransactionType.SET_NAME:
@@ -352,9 +352,9 @@ const ensAction = async (
         );
         analytics.track('Set primary ENS', {
           category: 'profiles',
-          walletAddress: ownerAddress,
           ens: name,
           etherscanLink: `https://etherscan.io/tx/${tx?.hash}`,
+          walletAddress: ownerAddress,
         });
     }
   } catch (e) {

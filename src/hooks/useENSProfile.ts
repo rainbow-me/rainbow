@@ -2,13 +2,8 @@ import { useMemo } from 'react';
 import { useQuery, useQueryClient } from 'react-query';
 import useAccountSettings from './useAccountSettings';
 import { fetchProfile } from '@rainbow-me/handlers/ens';
-import analytics from '@segment/analytics-react-native';
 import { getProfile, saveProfile } from '@rainbow-me/handlers/localstorage/ens';
 import { QueryConfig, UseQueryData } from '@rainbow-me/react-query/types';
-import { useSelector } from 'react-redux';
-import { ENSRegistrationState } from '@rainbow-me/entities';
-import { AppState } from '@rainbow-me/redux/store';
-import useWallets from './useWallets';
 
 const queryKey = (name: string) => ['ens-profile', name];
 

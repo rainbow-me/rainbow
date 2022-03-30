@@ -1,3 +1,4 @@
+import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, {
   useCallback,
@@ -8,7 +9,6 @@ import React, {
   useState,
 } from 'react';
 import { InteractionManager, View } from 'react-native';
-import analytics from '@segment/analytics-react-native';
 import { useDispatch } from 'react-redux';
 import CurrencySelectionTypes from '../../helpers/currencySelectionTypes';
 import { emitAssetRequest } from '../../redux/explorer';

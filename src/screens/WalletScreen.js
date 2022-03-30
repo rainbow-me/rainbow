@@ -8,9 +8,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { OpacityToggler } from '../components/animations';
 import { AssetList } from '../components/asset-list';
 import { ExchangeFab, FabWrapper, SendFab } from '../components/fab';
-import useExperimentalFlag, {
-  PROFILES,
-} from '@rainbow-me/config/experimentalHooks';
 import {
   DiscoverHeaderButton,
   Header,
@@ -18,16 +15,19 @@ import {
   ScanHeaderButton,
 } from '../components/header';
 import { Page, RowWithMargins } from '../components/layout';
+import useExperimentalFlag, {
+  PROFILES,
+} from '@rainbow-me/config/experimentalHooks';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import {
   useAccountEmptyState,
   useAccountSettings,
   useCoinListEdited,
-  useTrackENSProfile,
   useInitializeDiscoverData,
   useInitializeWallet,
   useLoadGlobalLateData,
   usePortfolios,
+  useTrackENSProfile,
   useUserAccounts,
   useWalletENSAvatar,
   useWallets,

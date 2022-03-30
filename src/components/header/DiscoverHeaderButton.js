@@ -1,7 +1,7 @@
+import analytics from '@segment/analytics-react-native';
 import React, { useCallback, useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '../../navigation/Navigation';
-import analytics from '@segment/analytics-react-native';
 import { Row, RowWithMargins } from '../layout';
 import { Text } from '../text';
 import HeaderButton from './HeaderButton';

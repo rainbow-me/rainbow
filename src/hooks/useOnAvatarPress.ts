@@ -1,8 +1,8 @@
+import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import { toLower } from 'lodash';
 import { useCallback, useMemo } from 'react';
 import { Linking } from 'react-native';
-import analytics from '@segment/analytics-react-native';
 import { useDispatch } from 'react-redux';
 import { RainbowAccount } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
