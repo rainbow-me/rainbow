@@ -19,15 +19,15 @@ const formatTime = (timestamp: string, abbreviated: boolean = true) => {
 };
 
 export default function useENSSearch({
-  duration = 1,
+  yearsDuration = 1,
   name,
 }: {
-  duration?: number;
+  yearsDuration?: number;
   name: string;
 }) {
   const { nativeCurrency } = useAccountSettings();
   const isValidLength = useMemo(() => name.length > 2, [name.length]);
-
+  const duration = yearsDuration * timeUnits.secs.year;
   const getRegistrationValues = useCallback(async () => {
     const ensValidation = validateENS(`${name}.eth`, {
       includeSubdomains: false,
@@ -42,7 +42,7 @@ export default function useENSSearch({
     }
 
     const isAvailable = await getAvailable(name);
-    const rentPrice = await getRentPrice(name, duration * timeUnits.secs.year);
+    const rentPrice = await getRentPrice(name, duration);
     const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
       Network.mainnet
     );

@@ -125,12 +125,12 @@ export default function ENSConfirmRegisterSheet() {
   });
 
   const { data: registrationCostsData } = useENSRegistrationCosts({
-    duration,
     name,
     records: values,
     rentPrice: registrationData?.rentPrice,
     sendReverseRecord,
     step,
+    yearsDuration: duration,
   });
 
   const goToProfileScreen = useCallback(() => {

@@ -91,6 +91,8 @@ export default function useENSRegistrationActionHandler(
   const avatarMetadata = useRecoilValue(avatarMetadataAtom);
   const coverMetadata = useRecoilValue(coverMetadataAtom);
 
+  const duration = yearsDuration * timeUnits.secs.year;
+
   // actions
   const commitAction = useCallback(
     async (callback: () => void) => {
@@ -100,7 +102,6 @@ export default function useENSRegistrationActionHandler(
       }
       const nonce = await getNextNonce();
       const salt = generateSalt();
-      const duration = yearsDuration * timeUnits.secs.year;
       const rentPrice = await getRentPrice(
         registrationParameters.name.replace(ENS_DOMAIN, ''),
         duration
@@ -123,7 +124,7 @@ export default function useENSRegistrationActionHandler(
         callback
       );
     },
-    [registrationParameters, getNextNonce, yearsDuration, accountAddress]
+    [getNextNonce, registrationParameters, duration, accountAddress]
   );
 
   const speedUpCommitAction = useCallback(
@@ -312,7 +313,6 @@ export default function useENSRegistrationActionHandler(
   // gas limit estimations
   const commitEstimateGasLimit = useCallback(async () => {
     const salt = generateSalt();
-    const duration = yearsDuration * timeUnits.secs.year;
     const rentPrice = await getRentPrice(
       registrationParameters.name.replace(ENS_DOMAIN, ''),
       duration
@@ -325,25 +325,20 @@ export default function useENSRegistrationActionHandler(
       salt,
     });
     return gasLimit;
-  }, [accountAddress, registrationParameters, yearsDuration]);
+  }, [accountAddress, duration, registrationParameters]);
 
   const registerEstimateGasLimit = useCallback(async () => {
     const gasLimit = await getENSRapEstimationByType(
       RapActionTypes.registerENS,
       {
         ...formatENSActionParams(registrationParameters),
-        duration: yearsDuration * timeUnits.secs.year,
+        duration,
         ownerAddress: accountAddress,
         setReverseRecord: sendReverseRecord,
       }
     );
     return gasLimit;
-  }, [
-    accountAddress,
-    registrationParameters,
-    sendReverseRecord,
-    yearsDuration,
-  ]);
+  }, [accountAddress, duration, registrationParameters, sendReverseRecord]);
 
   const setRecordsEstimateGasLimit = useCallback(async () => {
     const gasLimit = await getENSRapEstimationByType(
@@ -357,7 +352,6 @@ export default function useENSRegistrationActionHandler(
   }, [accountAddress, registrationParameters]);
 
   const renewEstimateGasLimit = useCallback(async () => {
-    const duration = yearsDuration * timeUnits.secs.year;
     const rentPrice = await getRentPrice(
       registrationParameters.name.replace(ENS_DOMAIN, ''),
       duration
@@ -369,7 +363,7 @@ export default function useENSRegistrationActionHandler(
       rentPrice: rentPrice?.toString(),
     });
     return gasLimit;
-  }, [accountAddress, registrationParameters, yearsDuration]);
+  }, [accountAddress, duration, registrationParameters]);
 
   const setNameEstimateGasLimit = useCallback(async () => {
     const gasLimit = await getENSRapEstimationByType(

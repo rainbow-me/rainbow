@@ -58,10 +58,10 @@ export default function ENSSearchSheet() {
     data: registrationCostsData,
     isSuccess: registrationCostsDataIsAvailable,
   } = useENSRegistrationCosts({
-    duration: 1,
     name: debouncedSearchQuery,
     rentPrice: registrationData?.rentPrice,
     sendReverseRecord: true,
+    yearsDuration: 1,
   });
 
   const state = useMemo(() => {

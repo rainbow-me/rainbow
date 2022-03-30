@@ -28,21 +28,22 @@ import { ethUnits, timeUnits } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 export default function useENSRegistrationCosts({
-  duration,
+  yearsDuration,
   name,
   rentPrice,
   sendReverseRecord,
   records,
   step,
 }: {
-  duration: number;
+  yearsDuration: number;
   name: string;
-  step: string;
+  step: keyof typeof REGISTRATION_STEPS;
   sendReverseRecord: boolean;
   rentPrice?: { wei: number; perYear: { wei: number } };
   records?: Records;
 }) {
   const { nativeCurrency, accountAddress } = useAccountSettings();
+  const duration = yearsDuration * timeUnits.secs.year;
 
   const checkIfSufficientEth = useCallback((wei: string) => {
     const nativeAsset = ethereumUtils.getNetworkNativeAsset(
@@ -69,7 +70,7 @@ export default function useENSRegistrationCosts({
       } = await estimateENSRegistrationGasLimit(
         name,
         accountAddress,
-        duration * timeUnits.secs.year,
+        duration,
         rentPriceInWei,
         records
       );
@@ -91,7 +92,7 @@ export default function useENSRegistrationCosts({
     async (rentPriceInWei: string) => {
       const gasLimit =
         (await estimateENSRenewGasLimit({
-          duration: duration * timeUnits.secs.year,
+          duration,
           name,
           rentPrice: rentPriceInWei,
         })) || '';
@@ -99,6 +100,19 @@ export default function useENSRegistrationCosts({
       return gasLimit;
     },
     [duration, name]
+  );
+
+  const estimateGasLimit = useMemo(
+    () => ({
+      [REGISTRATION_STEPS.COMMIT]: estimateTotalRegistrationGasLimit,
+      [REGISTRATION_STEPS.RENEW]: estimateRenewRegistrationGasLimit,
+      [REGISTRATION_STEPS.EDIT]: null,
+      [REGISTRATION_STEPS.REGISTER]: null,
+      [REGISTRATION_STEPS.SET_NAME]: null,
+      [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: null,
+      [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: null,
+    }),
+    [estimateRenewRegistrationGasLimit, estimateTotalRegistrationGasLimit]
   );
 
   const getEstimatedNetworkFee = useCallback(async () => {
@@ -110,9 +124,8 @@ export default function useENSRegistrationCosts({
 
     const { gasFeeParamsBySpeed, currentBaseFee } = await getEIP1559GasParams();
 
-    const estimatedGasLimit = await (step === REGISTRATION_STEPS.RENEW
-      ? estimateRenewRegistrationGasLimit
-      : estimateTotalRegistrationGasLimit)(rentPriceInWei);
+    const estimatedGasLimit =
+      (await estimateGasLimit?.[step]?.(rentPriceInWei)) || '';
 
     const formattedEstimatedNetworkFee = formatEstimatedNetworkFee(
       estimatedGasLimit,
@@ -126,13 +139,7 @@ export default function useENSRegistrationCosts({
       estimatedGasLimit,
       estimatedNetworkFee: formattedEstimatedNetworkFee,
     };
-  }, [
-    rentPriceInWei,
-    step,
-    estimateRenewRegistrationGasLimit,
-    estimateTotalRegistrationGasLimit,
-    nativeCurrency,
-  ]);
+  }, [rentPriceInWei, estimateGasLimit, step, nativeCurrency]);
 
   const { data: estimatedFee, status, isIdle, isLoading } = useQuery(
     [
