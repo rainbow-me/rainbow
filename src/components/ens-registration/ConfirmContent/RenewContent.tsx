@@ -42,7 +42,7 @@ const RenewContent = ({
           registrationFee={
             registrationCostsData?.estimatedRentPrice?.total?.display
           }
-          step={REGISTRATION_STEPS.RENEW}
+          mode={'renew'}
           totalCost={
             registrationCostsData?.estimatedTotalRegistrationCost?.display
           }

@@ -47,6 +47,7 @@ const CommitContent = ({
             registrationCostsData?.estimatedTotalRegistrationCost?.eth
           }
           maxDuration={99}
+          mode="create"
           networkFee={registrationCostsData?.estimatedNetworkFee?.display}
           onChangeDuration={setDuration}
           registrationFee={

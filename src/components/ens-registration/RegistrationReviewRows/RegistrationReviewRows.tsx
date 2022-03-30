@@ -10,7 +10,6 @@ import {
   Stack,
   Text,
 } from '@rainbow-me/design-system';
-import { REGISTRATION_STEPS } from '@rainbow-me/helpers/ens';
 
 function StepButton({
   onPress,
@@ -47,7 +46,7 @@ export default function RegistrationReviewRows({
   totalCost,
   registrationFee,
   estimatedCostETH,
-  step,
+  mode,
   newExpiryDate,
 }: {
   maxDuration: number;
@@ -58,7 +57,7 @@ export default function RegistrationReviewRows({
   estimatedCostETH: string;
   registrationFee: string;
   newExpiryDate?: string;
-  step: REGISTRATION_STEPS.RENEW | REGISTRATION_STEPS.COMMIT;
+  mode: 'create' | 'renew';
 }) {
   return (
     <Box>
@@ -68,9 +67,7 @@ export default function RegistrationReviewRows({
             <Text size="16px" weight="heavy">
               {lang.t(
                 `profiles.confirm.${
-                  step === REGISTRATION_STEPS.COMMIT
-                    ? 'registration_duration'
-                    : 'extend_by'
+                  mode === 'create' ? 'registration_duration' : 'extend_by'
                 }`
               )}
             </Text>
@@ -116,7 +113,7 @@ export default function RegistrationReviewRows({
           </Column>
         </Columns>
 
-        {step === REGISTRATION_STEPS.RENEW && (
+        {mode === 'renew' && (
           <Columns>
             <Column width="2/3">
               <Text color="secondary80" size="16px" weight="bold">
@@ -165,7 +162,7 @@ export default function RegistrationReviewRows({
           </Column>
         </Columns>
 
-        {step !== REGISTRATION_STEPS.RENEW && (
+        {mode === 'create' && (
           <Columns>
             <Column width="2/3">
               <Text color="secondary80" size="16px" weight="bold">
