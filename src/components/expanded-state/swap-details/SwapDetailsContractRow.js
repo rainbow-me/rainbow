@@ -89,7 +89,11 @@ function SwapDetailsContractRowContent({
   return (
     <Animated.View style={{ transform: [{ scale }] }}>
       <ButtonPressAnimation scaleTo={scaleTo} {...props}>
-        <SwapDetailsRow label={`${asset?.symbol} contract`}>
+        <SwapDetailsRow
+          label={lang.t('expanded_state.swap_details.token_contract', {
+            token: asset?.symbol,
+          })}
+        >
           <SwapDetailsValue
             address={asset?.address}
             as={AnimatedTruncatedAddress}

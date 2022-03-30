@@ -1,4 +1,5 @@
 import { Quote } from '@rainbow-me/swaps';
+import lang from 'i18n-js';
 import { useSelector } from 'react-redux';
 import {
   computeSlippageAdjustedAmounts,
@@ -24,7 +25,9 @@ export default function useSwapAdjustedAmounts(tradeDetails: Quote) {
   const slippageInBips = useSelector(
     (state: AppState) => state.swap.slippageInBips
   );
-  const receivedSoldLabel = inputAsExact ? 'Minimum received' : 'Maximum sold';
+  const receivedSoldLabel = inputAsExact
+    ? lang.t('expanded_state.swap_details.minimum_received')
+    : lang.t('expanded_state.swap_details.maximum_sold');
   const adjustedAmounts = computeSlippageAdjustedAmounts(
     tradeDetails,
     slippageInBips

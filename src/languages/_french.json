@@ -343,7 +343,14 @@
       "swap_details": {
         "exchange_rate": "Exchange rate :)",
         "rainbow_fee": "Rainbow fee :)",
-        "review": "Review :)"
+        "review": "Review :)",
+        "show_details": "Show details :)",
+        "hide_details": "Hide details :)",
+        "price_impact": "Price impact :)",
+        "minimum_received": "Minimum received :)",
+        "maximum_sold": "Maximum sold :)",
+        "token_contract": "%{token} contract :)",
+        "number_of_exchanges": "%{number} Exchanges :)"
       },
       "token_index": {
         "get_token": "Get %{assetSymbol} :)",

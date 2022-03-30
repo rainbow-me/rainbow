@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { ButtonPressAnimation } from '../../animations';
@@ -62,10 +63,14 @@ export default function SwapDetailsContent({
           <SwapDetailsPriceRow tradeDetails={tradeDetails} />
           <ButtonPressAnimation
             onPress={() => setAreDetailsExpanded(!areDetailsExpanded)}
-            scaleTo={1.05}
+            scaleTo={1.06}
           >
             <SwapDetailsRow
-              label={areDetailsExpanded ? 'Hide Details' : 'Show Details'}
+              label={
+                areDetailsExpanded
+                  ? lang.t('expanded_state.swap_details.hide_details')
+                  : lang.t('expanded_state.swap_details.show_details')
+              }
               labelColor="accent"
             >
               <SwapDetailsValue color="accent">
@@ -79,7 +84,9 @@ export default function SwapDetailsContent({
                 <SwapDetailsExchangeRow protocols={tradeDetails?.protocols} />
                 {showPriceImpact && (
                   <AccentColorProvider color={priceImpactColor}>
-                    <SwapDetailsRow label="Price impact">
+                    <SwapDetailsRow
+                      label={lang.t('expanded_state.swap_details.price_impact')}
+                    >
                       <SwapDetailsValue
                         color="accent"
                         letterSpacing="roundedTight"

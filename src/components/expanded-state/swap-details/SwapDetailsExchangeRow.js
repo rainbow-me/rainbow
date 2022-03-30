@@ -14,7 +14,9 @@ export default function SwapDetailsExchangeRow(props) {
     const sortedProtocols = protocols?.sort((a, b) => b.part - a.part);
     const defaultCase = {
       icons: sortedProtocols.map(({ name }) => name),
-      label: `${sortedProtocols?.length} Exchanges`,
+      label: lang.t('expanded_state.swap_details.number_of_exchanges', {
+        number: sortedProtocols?.length,
+      }),
     };
     const mappedExchanges = sortedProtocols.map(protocol => {
       return {
