@@ -269,6 +269,7 @@
         "losing_prefix": "Losing :)",
         "small_market": "Small Market :)"
       },
+      "settings": "Settings :)",
       "swapping_for_prefix": "Swapping for :)",
       "unverified_token": {
         "token_not_verified": "This token has not been verified! Rainbow surfaces all tokens that exist on Uniswap. Anyone can create a token, including fake versions of existing tokens and tokens that claim to represent projects that do not have a token. Please do your own research and be careful when interacting with unverified tokens! :)",

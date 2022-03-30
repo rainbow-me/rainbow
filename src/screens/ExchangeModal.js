@@ -492,6 +492,38 @@ export default function ExchangeModal({
     ]
   );
 
+  const navigateToSwapSettingsSheet = useCallback(() => {
+    android && Keyboard.dismiss();
+    const lastFocusedInputHandleTemporary = lastFocusedInputHandle.current;
+    android && (lastFocusedInputHandle.current = null);
+    inputFieldRef?.current?.blur();
+    outputFieldRef?.current?.blur();
+    nativeFieldRef?.current?.blur();
+    const internalNavigate = () => {
+      android && Keyboard.removeListener('keyboardDidHide', internalNavigate);
+      setParams({ focused: false });
+      navigate(Routes.SWAP_SETTINGS_SHEET, {
+        restoreFocusOnSwapModal: () => {
+          android &&
+            (lastFocusedInputHandle.current = lastFocusedInputHandleTemporary);
+          setParams({ focused: true });
+        },
+        type: 'swap_settings',
+      });
+      analytics.track('Opened Swap Settings');
+    };
+    ios || !isKeyboardOpen()
+      ? internalNavigate()
+      : Keyboard.addListener('keyboardDidHide', internalNavigate);
+  }, [
+    inputFieldRef,
+    lastFocusedInputHandle,
+    nativeFieldRef,
+    navigate,
+    outputFieldRef,
+    setParams,
+  ]);
+
   const navigateToSwapDetailsModal = useCallback(() => {
     android && Keyboard.dismiss();
     const lastFocusedInputHandleTemporary = lastFocusedInputHandle.current;
@@ -596,7 +628,7 @@ export default function ExchangeModal({
             <ExchangeDetailsRow
               isHighPriceImpact={isHighPriceImpact}
               onFlipCurrencies={flipCurrencies}
-              onPressViewDetails={navigateToSwapDetailsModal}
+              onPressViewDetails={navigateToSwapSettingsSheet}
               priceImpactColor={priceImpactColor}
               priceImpactNativeAmount={priceImpactNativeAmount}
               priceImpactPercentDisplay={priceImpactPercentDisplay}

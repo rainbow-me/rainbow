@@ -140,7 +140,7 @@ export default function ExchangeDetailsRow({
             onPress={onPressViewDetails}
             testID="exchange-details-button"
           >
-            􀕹 {lang.t('exchange.view_details')}
+            􀣋 {lang.t('exchange.settings')}
           </ExchangeDetailsButton>
         )}
       </AnimatedExchangeDetailsButtonRow>
