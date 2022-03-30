@@ -48,7 +48,7 @@ export default function useENSSearch({
     );
     const formattedRentPrice = formatRentPrice(
       rentPrice,
-      duration,
+      yearsDuration,
       nativeCurrency,
       nativeAssetPrice
     );
@@ -73,7 +73,7 @@ export default function useENSSearch({
         valid: true,
       };
     }
-  }, [duration, name, nativeCurrency]);
+  }, [duration, name, nativeCurrency, yearsDuration]);
 
   const { data, status, isIdle, isLoading } = useQuery(
     ['getRegistrationValues', [duration, name, nativeCurrency]],

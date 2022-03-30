@@ -204,7 +204,14 @@ export default function ENSConfirmRegisterSheet() {
         </Box>
       ),
     }),
-    [accentColor, action, duration, registrationCostsData, sendReverseRecord]
+    [
+      accentColor,
+      action,
+      duration,
+      name,
+      registrationCostsData,
+      sendReverseRecord,
+    ]
   );
 
   const stepActions = useMemo(

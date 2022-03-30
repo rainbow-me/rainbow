@@ -157,7 +157,7 @@ export default function useENSRegistrationCosts({
     );
 
     if (rentPricePerYearInWei) {
-      const rentPriceInWei = multiply(rentPricePerYearInWei, duration);
+      const rentPriceInWei = multiply(rentPricePerYearInWei, yearsDuration);
       const estimatedRentPrice = formatRentPrice(
         rentPriceInWei,
         duration,
@@ -210,6 +210,7 @@ export default function useENSRegistrationCosts({
     estimatedFee,
     nativeCurrency,
     rentPrice?.perYear?.wei,
+    yearsDuration,
   ]);
 
   const isSuccess = status === 'success' && !!data?.estimatedRentPrice;
