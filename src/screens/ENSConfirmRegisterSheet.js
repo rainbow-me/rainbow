@@ -130,6 +130,7 @@ export default function ENSConfirmRegisterSheet() {
     records: values,
     rentPrice: registrationData?.rentPrice,
     sendReverseRecord,
+    step,
   });
 
   const goToProfileScreen = useCallback(() => {

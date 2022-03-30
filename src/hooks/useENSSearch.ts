@@ -42,21 +42,17 @@ export default function useENSSearch({
     }
 
     const isAvailable = await getAvailable(name);
+    const rentPrice = await getRentPrice(name, duration * timeUnits.secs.year);
+    const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
+      Network.mainnet
+    );
+    const formattedRentPrice = formatRentPrice(
+      rentPrice,
+      duration,
+      nativeCurrency,
+      nativeAssetPrice
+    );
     if (isAvailable) {
-      const rentPrice = await getRentPrice(
-        name,
-        duration * timeUnits.secs.year
-      );
-      const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
-        Network.mainnet
-      );
-      const formattedRentPrice = formatRentPrice(
-        rentPrice,
-        duration,
-        nativeCurrency,
-        nativeAssetPrice
-      );
-
       return {
         available: isAvailable,
         rentPrice: formattedRentPrice,
@@ -73,6 +69,7 @@ export default function useENSSearch({
         available: isAvailable,
         expirationDate: formattedExpirationDate,
         registrationDate: formattedRegistrarionDate,
+        rentPrice: formattedRentPrice,
         valid: true,
       };
     }

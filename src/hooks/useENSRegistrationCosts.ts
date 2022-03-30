@@ -4,6 +4,7 @@ import { useAccountSettings } from '.';
 import { Records } from '@rainbow-me/entities';
 import {
   estimateENSRegistrationGasLimit,
+  estimateENSRenewGasLimit,
   fetchReverseRecord,
 } from '@rainbow-me/handlers/ens';
 import { NetworkTypes } from '@rainbow-me/helpers';
@@ -11,6 +12,7 @@ import {
   formatEstimatedNetworkFee,
   formatRentPrice,
   formatTotalRegistrationCost,
+  REGISTRATION_STEPS,
 } from '@rainbow-me/helpers/ens';
 import { Network } from '@rainbow-me/helpers/networkTypes';
 import {
@@ -31,6 +33,7 @@ export default function useENSRegistrationCosts({
   rentPrice,
   sendReverseRecord,
   records,
+  step,
 }: {
   duration: number;
   name: string;
@@ -53,6 +56,51 @@ export default function useENSRegistrationCosts({
 
   const rentPriceInWei = rentPrice?.wei?.toString();
 
+  const estimateTotalRegistrationGasLimit = useCallback(
+    async (rentPriceInWei: string) => {
+      const reverseRecord =
+        sendReverseRecord && (await fetchReverseRecord(accountAddress));
+
+      const {
+        commitGasLimit,
+        multicallGasLimit,
+        registerWithConfigGasLimit,
+        setNameGasLimit,
+      } = await estimateENSRegistrationGasLimit(
+        name,
+        accountAddress,
+        duration * timeUnits.secs.year,
+        rentPriceInWei,
+        records
+      );
+
+      const totalRegistrationGasLimit =
+        [
+          commitGasLimit,
+          multicallGasLimit,
+          registerWithConfigGasLimit,
+          !reverseRecord && setNameGasLimit,
+        ].reduce((a, b) => add(a || 0, b || 0)) ||
+        `${ethUnits.ens_registration}`;
+      return totalRegistrationGasLimit;
+    },
+    [accountAddress, duration, name, records, sendReverseRecord]
+  );
+
+  const estimateRenewRegistrationGasLimit = useCallback(
+    async (rentPriceInWei: string) => {
+      const gasLimit =
+        (await estimateENSRenewGasLimit({
+          duration: duration * timeUnits.secs.year,
+          name,
+          rentPrice: rentPriceInWei,
+        })) || '';
+
+      return gasLimit;
+    },
+    [duration, name]
+  );
+
   const getEstimatedNetworkFee = useCallback(async () => {
     if (!rentPriceInWei) return;
 
@@ -60,34 +108,14 @@ export default function useENSRegistrationCosts({
       Network.mainnet
     );
 
-    const reverseRecord =
-      sendReverseRecord && (await fetchReverseRecord(accountAddress));
-
-    const {
-      commitGasLimit,
-      multicallGasLimit,
-      registerWithConfigGasLimit,
-      setNameGasLimit,
-    } = await estimateENSRegistrationGasLimit(
-      name,
-      accountAddress,
-      duration * timeUnits.secs.year,
-      rentPriceInWei,
-      records
-    );
-
-    const totalRegistrationGasLimit =
-      [
-        commitGasLimit,
-        multicallGasLimit,
-        registerWithConfigGasLimit,
-        !reverseRecord && setNameGasLimit,
-      ].reduce((a, b) => add(a || 0, b || 0)) || `${ethUnits.ens_registration}`;
-
     const { gasFeeParamsBySpeed, currentBaseFee } = await getEIP1559GasParams();
 
+    const estimatedGasLimit = await (step === REGISTRATION_STEPS.RENEW
+      ? estimateRenewRegistrationGasLimit
+      : estimateTotalRegistrationGasLimit)(rentPriceInWei);
+
     const formattedEstimatedNetworkFee = formatEstimatedNetworkFee(
-      totalRegistrationGasLimit,
+      estimatedGasLimit,
       currentBaseFee.gwei,
       gasFeeParamsBySpeed.normal.maxPriorityFeePerGas.gwei,
       nativeCurrency,
@@ -95,17 +123,15 @@ export default function useENSRegistrationCosts({
     );
 
     return {
-      estimatedGasLimit: totalRegistrationGasLimit,
+      estimatedGasLimit,
       estimatedNetworkFee: formattedEstimatedNetworkFee,
     };
   }, [
-    accountAddress,
-    duration,
-    name,
-    nativeCurrency,
-    records,
     rentPriceInWei,
-    sendReverseRecord,
+    step,
+    estimateRenewRegistrationGasLimit,
+    estimateTotalRegistrationGasLimit,
+    nativeCurrency,
   ]);
 
   const { data: estimatedFee, status, isIdle, isLoading } = useQuery(
