@@ -46,37 +46,3 @@ export default function useENSProfile(
 
   return { data, isLoading, isOwner, isSuccess };
 }
-
-export async function trackProfile() {
-  const { accountAddress } = useAccountSettings();
-  const { walletNames } = useWallets();
-
-  const ens = walletNames[accountAddress];
-
-  const profile = await fetchProfile(ens);
-
-  const createdInRainbow = useSelector(({ ensRegistration }: AppState) => {
-    const { registrations } = ensRegistration as ENSRegistrationState;
-    const currentRegistration =
-      registrations?.[accountAddress.toLowerCase()]?.[ens];
-    return Boolean(
-      currentRegistration.commitTransactionHash &&
-        currentRegistration.registerTransactionHash
-    );
-  });
-
-  console.log({
-    createdInRainbow: createdInRainbow,
-    ownerAddress: accountAddress,
-    name: ens,
-    data: JSON.stringify(profile),
-  });
-  analytics.identify(null, {
-    ensProfile: {
-      createdInRainbow: createdInRainbow,
-      ownerAddress: accountAddress,
-      name: ens,
-      data: JSON.stringify(profile),
-    },
-  });
-}

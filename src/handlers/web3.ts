@@ -132,7 +132,7 @@ const isNetworkEnum = (network: Network | string): network is Network => {
 export const web3SetHttpProvider = async (
   network: Network | string
 ): Promise<EthersNetwork> => {
-  web3Provider = await getProviderForNetwork(network);
+  web3Provider = await getProviderForNetwork('http://127.0.0.1:8545');
   return web3Provider.ready;
 };
 
