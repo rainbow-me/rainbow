@@ -48,7 +48,7 @@ export default function useENSRegistration({
     [accountAddress, dispatch]
   );
   const startRegistration = useCallback(
-    (name: string, mode: 'create' | 'edit') =>
+    (name: string, mode: 'create' | 'edit' | 'renew') =>
       dispatch(ensRedux.startRegistration(accountAddress, name, mode)),
     [accountAddress, dispatch]
   );

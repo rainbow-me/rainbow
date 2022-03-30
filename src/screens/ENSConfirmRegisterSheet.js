@@ -9,6 +9,7 @@ import { HoldToAuthorizeButton } from '../components/buttons';
 import {
   CommitContent,
   RegisterContent,
+  RenewContent,
   WaitCommitmentConfirmationContent,
 } from '../components/ens-registration';
 import { GasSpeedButton } from '../components/gas';
@@ -149,6 +150,7 @@ export default function ENSConfirmRegisterSheet() {
 
   const stepLabel = useMemo(() => {
     if (mode === 'edit') return lang.t('profiles.confirm.confirm_update');
+    if (mode === 'renew') return lang.t('profiles.confirm.extend_registration');
     if (step === REGISTRATION_STEPS.COMMIT)
       return lang.t('profiles.confirm.registration_details');
     if (step === REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION)
@@ -181,6 +183,13 @@ export default function ENSConfirmRegisterSheet() {
         />
       ),
       [REGISTRATION_STEPS.EDIT]: null,
+      [REGISTRATION_STEPS.RENEW]: (
+        <RenewContent
+          duration={duration}
+          registrationCostsData={registrationCostsData}
+          setDuration={setDuration}
+        />
+      ),
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: (
         <WaitCommitmentConfirmationContent
           accentColor={accentColor}

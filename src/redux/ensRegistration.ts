@@ -136,7 +136,7 @@ export const ensRegistrationsLoadState = () => async (
 export const startRegistration = (
   accountAddress: EthereumAddress,
   name: string,
-  mode: 'create' | 'edit' = 'create'
+  mode: 'create' | 'edit' | 'renew' = 'create'
 ) => async (dispatch: AppDispatch, getState: AppGetState) => {
   const {
     ensRegistration: { registrations },

@@ -622,7 +622,8 @@
         "duration_singular": "1 year",
         "commit_button": "Hold to Commit",
         "insufficient_eth": "Insufficient ETH",
-        "speed_up": "Speed Up"
+        "speed_up": "Speed Up",
+        "extend_registration": "Extend Registration"
       },
       "profile_avatar": {
         "choose_from_library": "Choose from Library",

@@ -8,3 +8,4 @@ export { default as TextRecordsForm } from './TextRecordsForm/TextRecordsForm';
 export { default as WaitCommitmentConfirmationContent } from './ConfirmContent/WaitCommitmentConfirmationContent';
 export { default as RegisterContent } from './ConfirmContent/RegisterContent';
 export { default as CommitContent } from './ConfirmContent/CommitContent';
+export { default as RenewContent } from './ConfirmContent/RenewContent';

@@ -4,6 +4,7 @@ import React, { useCallback, useState } from 'react';
 import { TokenInfoItem } from '../../token-info';
 import { useTheme } from '@rainbow-me/context';
 import { Columns } from '@rainbow-me/design-system';
+import { useENSRegistration } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 
 export default function ENSBriefTokenInfoRow({
@@ -14,22 +15,24 @@ export default function ENSBriefTokenInfoRow({
 }: {
   expiryDate?: number;
   registrationDate?: number;
-  ensName?: string;
+  ensName: string;
   showEditButton?: boolean;
 }) {
   const { colors } = useTheme();
   const { navigate } = useNavigation();
-
+  const { startRegistration } = useENSRegistration();
   const [showExpiryDistance, setShowExpiryDistance] = useState(true);
   const handlePressExpiryDate = useCallback(() => {
     setShowExpiryDistance(x => !x);
   }, []);
 
   const handlePressEditExpiryDate = useCallback(() => {
+    startRegistration(ensName, 'renew');
     navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
       ensName,
+      mode: 'renew',
     });
-  }, [navigate, ensName]);
+  }, [startRegistration, ensName, navigate]);
 
   return (
     <Columns space="19px">
