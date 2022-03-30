@@ -1,5 +1,6 @@
 import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
+import ImageAvatar from '../../../components/contacts/ImageAvatar';
 import {
   AccentColorProvider,
   Box,
@@ -22,16 +23,21 @@ const PendingRegistration = ({
     <Box>
       <Columns alignVertical="center">
         {registration.changedRecords?.avatar && (
-          <Column>
-            <Text color="secondary50" size="18px" weight="bold">
-              {registration.name}
-            </Text>
+          <Column width="content">
+            <Box paddingRight="10px">
+              <ImageAvatar
+                image={registration.changedRecords?.avatar}
+                size="small"
+              />
+            </Box>
           </Column>
         )}
         <Column>
-          <Text color="primary" size="16px" weight="bold">
-            {registration.name}
-          </Text>
+          <Box>
+            <Text color="primary" numberOfLines={1} size="16px" weight="bold">
+              {registration.name}
+            </Text>
+          </Box>
         </Column>
         <Column width="content">
           <Box
@@ -42,6 +48,7 @@ const PendingRegistration = ({
             end={{ x: 0.6, y: 0 }}
             height="30px"
             justifyContent="center"
+            paddingRight="15px"
             start={{ x: 0, y: 0.6 }}
           >
             <Inset horizontal="10px">
