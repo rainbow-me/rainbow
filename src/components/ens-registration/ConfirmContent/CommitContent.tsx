@@ -11,6 +11,7 @@ import {
   Stack,
   Text,
 } from '@rainbow-me/design-system';
+import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import { ImgixImage } from '@rainbow-me/images';
 
 const CommitContent = ({
@@ -47,7 +48,7 @@ const CommitContent = ({
             registrationCostsData?.estimatedTotalRegistrationCost?.eth
           }
           maxDuration={99}
-          mode="create"
+          mode={REGISTRATION_MODES.CREATE}
           networkFee={registrationCostsData?.estimatedNetworkFee?.display}
           onChangeDuration={setDuration}
           registrationFee={

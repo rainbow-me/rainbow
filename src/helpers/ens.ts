@@ -76,6 +76,13 @@ export enum REGISTRATION_STEPS {
   WAIT_ENS_COMMITMENT = 'WAIT_ENS_COMMITMENT',
 }
 
+export enum REGISTRATION_MODES {
+  CREATE = 'CREATE',
+  EDIT = 'EDIT',
+  RENEW = 'RENEW',
+  SET_NAME = 'SET_NAME',
+}
+
 export type TextRecordField = {
   id: string;
   key: string;

@@ -2,7 +2,7 @@ import { format } from 'date-fns';
 import React from 'react';
 import { RegistrationReviewRows } from '../../../components/ens-registration';
 import { Divider, Inset, Stack } from '@rainbow-me/design-system';
-import { ENS_DOMAIN, REGISTRATION_STEPS } from '@rainbow-me/helpers/ens';
+import { ENS_DOMAIN, REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import { useENSProfile } from '@rainbow-me/hooks';
 import { timeUnits } from '@rainbow-me/references';
 
@@ -42,7 +42,7 @@ const RenewContent = ({
           registrationFee={
             registrationCostsData?.estimatedRentPrice?.total?.display
           }
-          mode={'renew'}
+          mode={REGISTRATION_MODES.RENEW}
           totalCost={
             registrationCostsData?.estimatedTotalRegistrationCost?.display
           }

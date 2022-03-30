@@ -23,6 +23,7 @@ import {
   ENS_DOMAIN,
   generateSalt,
   getRentPrice,
+  REGISTRATION_MODES,
   REGISTRATION_STEPS,
 } from '@rainbow-me/helpers/ens';
 import { loadWallet } from '@rainbow-me/model/wallet';
@@ -377,9 +378,10 @@ export default function useENSRegistrationActionHandler(
   }, [accountAddress, registrationParameters]);
 
   const registrationStep = useMemo(() => {
-    if (mode === 'edit') return REGISTRATION_STEPS.EDIT;
-    if (mode === 'renew') return REGISTRATION_STEPS.RENEW;
-    if (mode === 'setName') return REGISTRATION_STEPS.SET_NAME;
+    if (mode === REGISTRATION_MODES.EDIT) return REGISTRATION_STEPS.EDIT;
+    if (mode === REGISTRATION_MODES.RENEW) return REGISTRATION_STEPS.RENEW;
+    if (mode === REGISTRATION_MODES.SET_NAME)
+      return REGISTRATION_STEPS.SET_NAME;
     // still waiting for the COMMIT tx to be sent
     if (!registrationParameters.commitTransactionHash)
       return REGISTRATION_STEPS.COMMIT;

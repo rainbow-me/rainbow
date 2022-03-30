@@ -29,6 +29,7 @@ import { fetchReverseRecord } from '@rainbow-me/handlers/ens';
 import {
   accentColorAtom,
   ENS_DOMAIN,
+  REGISTRATION_MODES,
   REGISTRATION_STEPS,
 } from '@rainbow-me/helpers/ens';
 import {
@@ -150,8 +151,10 @@ export default function ENSConfirmRegisterSheet() {
   );
 
   const stepLabel = useMemo(() => {
-    if (mode === 'edit') return lang.t('profiles.confirm.confirm_update');
-    if (mode === 'renew') return lang.t('profiles.confirm.extend_registration');
+    if (mode === REGISTRATION_MODES.EDIT)
+      return lang.t('profiles.confirm.confirm_update');
+    if (mode === REGISTRATION_MODES.RENEW)
+      return lang.t('profiles.confirm.extend_registration');
     if (step === REGISTRATION_STEPS.COMMIT)
       return lang.t('profiles.confirm.registration_details');
     if (step === REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION)

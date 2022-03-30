@@ -4,6 +4,7 @@ import React, { useCallback, useState } from 'react';
 import { TokenInfoItem } from '../../token-info';
 import { useTheme } from '@rainbow-me/context';
 import { Columns } from '@rainbow-me/design-system';
+import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import { useENSRegistration } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 
@@ -27,10 +28,10 @@ export default function ENSBriefTokenInfoRow({
   }, []);
 
   const handlePressEditExpiryDate = useCallback(() => {
-    startRegistration(ensName, 'renew');
+    startRegistration(ensName, REGISTRATION_MODES.RENEW);
     navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
       ensName,
-      mode: 'renew',
+      mode: REGISTRATION_MODES.RENEW,
     });
   }, [startRegistration, ensName, navigate]);
 
