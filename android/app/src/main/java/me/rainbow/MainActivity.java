@@ -11,7 +11,6 @@ import me.rainbow.NativeModules.RNBackHandler.RNBackHandlerPackage;
 import me.rainbow.NativeModules.Internals.*;
 import android.webkit.WebView;
 import com.facebook.react.ReactActivityDelegate;
-import com.zoontek.rnbars.RNBars;
 import com.zoontek.rnbootsplash.RNBootSplash;
 
 import android.content.Intent;
@@ -69,7 +68,6 @@ public class MainActivity extends ReactActivity {
       protected void loadApp(String appKey) {
           RNBootSplash.init(MainActivity.this);
           super.loadApp(appKey);
-          RNBars.init(MainActivity.this, "dark-content");
       }
     };
   }
