@@ -20,6 +20,7 @@ import {
   useAccountEmptyState,
   useAccountSettings,
   useCoinListEdited,
+  trackProfile,
   useInitializeDiscoverData,
   useInitializeWallet,
   useLoadGlobalLateData,
@@ -131,6 +132,11 @@ export default function WalletScreen() {
     portfoliosFetched,
     userAccounts,
   ]);
+
+  useEffect(() => {
+    console.log('HELLLOOOO');
+    trackProfile();
+  }, [trackProfile]);
 
   useEffect(() => {
     if (

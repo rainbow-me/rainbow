@@ -2,8 +2,13 @@ import { useMemo } from 'react';
 import { useQuery, useQueryClient } from 'react-query';
 import useAccountSettings from './useAccountSettings';
 import { fetchProfile } from '@rainbow-me/handlers/ens';
+import analytics from '@segment/analytics-react-native';
 import { getProfile, saveProfile } from '@rainbow-me/handlers/localstorage/ens';
 import { QueryConfig, UseQueryData } from '@rainbow-me/react-query/types';
+import { useSelector } from 'react-redux';
+import { ENSRegistrationState } from '@rainbow-me/entities';
+import { AppState } from '@rainbow-me/redux/store';
+import useWallets from './useWallets';
 
 const queryKey = (name: string) => ['ens-profile', name];
 
@@ -40,4 +45,38 @@ export default function useENSProfile(
   ]);
 
   return { data, isLoading, isOwner, isSuccess };
+}
+
+export async function trackProfile() {
+  const { accountAddress } = useAccountSettings();
+  const { walletNames } = useWallets();
+
+  const ens = walletNames[accountAddress];
+
+  const profile = await fetchProfile(ens);
+
+  const createdInRainbow = useSelector(({ ensRegistration }: AppState) => {
+    const { registrations } = ensRegistration as ENSRegistrationState;
+    const currentRegistration =
+      registrations?.[accountAddress.toLowerCase()]?.[ens];
+    return Boolean(
+      currentRegistration.commitTransactionHash &&
+        currentRegistration.registerTransactionHash
+    );
+  });
+
+  console.log({
+    createdInRainbow: createdInRainbow,
+    ownerAddress: accountAddress,
+    name: ens,
+    data: JSON.stringify(profile),
+  });
+  analytics.identify(null, {
+    ensProfile: {
+      createdInRainbow: createdInRainbow,
+      ownerAddress: accountAddress,
+      name: ens,
+      data: JSON.stringify(profile),
+    },
+  });
 }
