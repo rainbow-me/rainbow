@@ -10,6 +10,7 @@ import {
   Stack,
   Text,
 } from '@rainbow-me/design-system';
+import { REGISTRATION_STEPS } from '@rainbow-me/helpers/ens';
 
 function StepButton({
   onPress,
@@ -46,6 +47,8 @@ export default function RegistrationReviewRows({
   totalCost,
   registrationFee,
   estimatedCostETH,
+  step,
+  newExpiryDate,
 }: {
   maxDuration: number;
   duration: number;
@@ -54,6 +57,8 @@ export default function RegistrationReviewRows({
   totalCost: string;
   estimatedCostETH: string;
   registrationFee: string;
+  newExpiryDate?: string;
+  step: REGISTRATION_STEPS.RENEW | REGISTRATION_STEPS.COMMIT;
 }) {
   return (
     <Box>
@@ -61,7 +66,13 @@ export default function RegistrationReviewRows({
         <Columns>
           <Column width="3/5">
             <Text size="16px" weight="heavy">
-              {lang.t('profiles.confirm.registration_duration')}
+              {lang.t(
+                `profiles.confirm.${
+                  step === REGISTRATION_STEPS.COMMIT
+                    ? 'registration_duration'
+                    : 'extend_by'
+                }`
+              )}
             </Text>
           </Column>
           <Column width="2/5">
@@ -104,6 +115,22 @@ export default function RegistrationReviewRows({
             </Inset>
           </Column>
         </Columns>
+
+        {step === REGISTRATION_STEPS.RENEW && (
+          <Columns>
+            <Column width="2/3">
+              <Text color="secondary80" size="16px" weight="bold">
+                {lang.t('profiles.confirm.new_expiration_date')}
+              </Text>
+            </Column>
+            <Column width="1/3">
+              <Text align="right" color="secondary80" size="16px" weight="bold">
+                {newExpiryDate}
+              </Text>
+            </Column>
+          </Columns>
+        )}
+
         <Columns>
           <Column width="2/3">
             <Text color="secondary80" size="16px" weight="bold">
@@ -120,6 +147,7 @@ export default function RegistrationReviewRows({
             )}
           </Column>
         </Columns>
+
         <Columns>
           <Column width="2/3">
             <Text color="secondary80" size="16px" weight="bold">
@@ -136,22 +164,31 @@ export default function RegistrationReviewRows({
             )}
           </Column>
         </Columns>
-        <Columns>
-          <Column width="2/3">
-            <Text color="secondary80" size="16px" weight="bold">
-              {lang.t('profiles.confirm.estimated_total_eth')}
-            </Text>
-          </Column>
-          <Column width="1/3">
-            {networkFee ? (
-              <Text align="right" color="secondary80" size="16px" weight="bold">
-                {estimatedCostETH} ETH
+
+        {step !== REGISTRATION_STEPS.RENEW && (
+          <Columns>
+            <Column width="2/3">
+              <Text color="secondary80" size="16px" weight="bold">
+                {lang.t('profiles.confirm.estimated_total_eth')}
               </Text>
-            ) : (
-              <LoadingPlaceholder />
-            )}
-          </Column>
-        </Columns>
+            </Column>
+            <Column width="1/3">
+              {networkFee ? (
+                <Text
+                  align="right"
+                  color="secondary80"
+                  size="16px"
+                  weight="bold"
+                >
+                  {estimatedCostETH} ETH
+                </Text>
+              ) : (
+                <LoadingPlaceholder />
+              )}
+            </Column>
+          </Columns>
+        )}
+
         <Columns>
           <Column width="2/3">
             <Text size="16px" weight="heavy">

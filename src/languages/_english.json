@@ -615,6 +615,8 @@
         "suggestion": "Buy more years now to save on fees",
         "set_ens_name": "Set as my ENS name",
         "registration_duration": "Register name for",
+        "new_expiration_date": "New expiration date",
+        "extend_by": "Extend by",
         "registration_cost": "Registration cost",
         "current_fees": "Current network fee",
         "estimated_total_eth": "Estimated total in ETH",

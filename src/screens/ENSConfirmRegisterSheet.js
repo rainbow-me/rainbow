@@ -186,9 +186,10 @@ export default function ENSConfirmRegisterSheet() {
       [REGISTRATION_STEPS.EDIT]: null,
       [REGISTRATION_STEPS.RENEW]: (
         <RenewContent
-          duration={duration}
+          name={name}
           registrationCostsData={registrationCostsData}
           setDuration={setDuration}
+          yearsDuration={duration}
         />
       ),
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: (
