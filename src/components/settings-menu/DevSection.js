@@ -55,6 +55,26 @@ const DevSection = () => {
     dispatch(explorerInit());
   }, [dispatch, navigate]);
 
+  const syncCodepush = useCallback(async () => {
+    const isUpdate = !!(await codePush.checkForUpdate());
+    if (!isUpdate) {
+      Alert.alert('No update');
+    } else {
+      // dismissing not to fuck up native nav structure
+      navigate(Routes.PROFILE_SCREEN);
+      Alert.alert('Installing update');
+
+      const result = await codePush.sync({
+        installMode: codePush.InstallMode.IMMEDIATE,
+      });
+
+      const resultString = Object.entries(codePush.syncStatus).find(
+        e => e[1] === result
+      )[0];
+      Alert.alert(resultString);
+    }
+  }, [navigate]);
+
   const checkAlert = useCallback(async () => {
     try {
       const request = await fetch(
@@ -133,25 +153,7 @@ const DevSection = () => {
 
       <ListItem
         label={`‍⏩ Sync codepush, current: ${codePushVersion}`}
-        onPress={async () => {
-          const isUpdate = !!(await codePush.checkForUpdate());
-          if (!isUpdate) {
-            Alert.alert('No update');
-          } else {
-            // dismissing not to fuck up native nav structure
-            navigate(Routes.PROFILE_SCREEN);
-            Alert.alert('Installing update');
-
-            const result = await codePush.sync({
-              installMode: codePush.InstallMode.IMMEDIATE,
-            });
-
-            const resultString = Object.entries(codePush.syncStatus).find(
-              e => e[1] === result
-            )[0];
-            Alert.alert(resultString);
-          }
-        }}
+        onPress={syncCodepush}
       />
 
       {Object.keys(config)
