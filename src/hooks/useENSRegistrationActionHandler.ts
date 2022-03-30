@@ -366,7 +366,7 @@ export default function useENSRegistrationActionHandler(
       ...formatENSActionParams(registrationParameters),
       duration,
       ownerAddress: accountAddress,
-      rentPrice,
+      rentPrice: rentPrice?.toString(),
     });
     return gasLimit;
   }, [accountAddress, registrationParameters, yearsDuration]);

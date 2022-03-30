@@ -34,6 +34,7 @@ export default function useENSRegistrationCosts({
 }: {
   duration: number;
   name: string;
+  step: string;
   sendReverseRecord: boolean;
   rentPrice?: { wei: number; perYear: { wei: number } };
   records?: Records;

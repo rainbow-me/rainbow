@@ -611,6 +611,7 @@
         "confirm_registration": "Confirm Registration",
         "start_registration": "Start Registration",
         "confirm_update": "Confirm Update",
+        "confirm_renew": "Hold to Extend",
         "suggestion": "Buy more years now to save on fees",
         "set_ens_name": "Set as my ENS name",
         "registration_duration": "Register name for",

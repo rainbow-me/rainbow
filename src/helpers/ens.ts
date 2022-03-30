@@ -441,10 +441,10 @@ const getENSExecutionDetails = async ({
       break;
     }
     case ENSRegistrationTransactionType.RENEW: {
-      if (!value || !name || !duration || !duration || !rentPrice)
+      if (!name || !duration || !rentPrice)
         throw new Error('Bad arguments for renew');
       value = toHex(addBuffer(rentPrice, 1.1));
-      args = [value, name.replace(ENS_DOMAIN, ''), duration];
+      args = [name.replace(ENS_DOMAIN, ''), duration];
       contract = getENSRegistrarControllerContract(wallet);
       break;
     }

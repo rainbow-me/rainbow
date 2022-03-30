@@ -237,6 +237,19 @@ export default function ENSConfirmRegisterSheet() {
           testID={step}
         />
       ),
+      [REGISTRATION_STEPS.RENEW]: (
+        <TransactionActionRow
+          accentColor={accentColor}
+          action={() => {
+            action();
+            goToProfileScreen();
+          }}
+          isSufficientGas={isSufficientGasForStep}
+          isValidGas={isValidGas && Boolean(gasLimit)}
+          label={lang.t('profiles.confirm.confirm_renew')}
+          testID={step}
+        />
+      ),
       [REGISTRATION_STEPS.EDIT]: (
         <TransactionActionRow
           accentColor={accentColor}
@@ -278,7 +291,8 @@ export default function ENSConfirmRegisterSheet() {
     if (
       step === REGISTRATION_STEPS.COMMIT ||
       step === REGISTRATION_STEPS.REGISTER ||
-      step === REGISTRATION_STEPS.EDIT
+      step === REGISTRATION_STEPS.EDIT ||
+      step === REGISTRATION_STEPS.RENEW
     )
       startPollingGasFees();
   }, [startPollingGasFees, step]);
