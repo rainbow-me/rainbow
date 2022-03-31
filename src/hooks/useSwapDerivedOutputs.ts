@@ -62,7 +62,7 @@ const getInputAmount = async (
 
     const buyAmount = convertAmountToRawAmount(
       convertNumberToString(outputAmount),
-      inputToken.decimals
+      outputToken.decimals
     );
 
     const quoteParams = {
@@ -75,7 +75,6 @@ const getInputAmount = async (
     };
 
     // @ts-ignore About to get quote
-
     const quote: Quote = await getQuote(quoteParams);
 
     if (!quote || !quote.sellAmount) {
@@ -164,7 +163,6 @@ const getOutputAmount = async (
     };
 
     // @ts-ignore About to get quote
-
     const quote: Quote = await getQuote(quoteParams);
 
     if (!quote || !quote.buyAmount) {

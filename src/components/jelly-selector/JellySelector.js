@@ -81,7 +81,7 @@ const JellySelector = ({
       setSelectorVisible(true);
 
       positions[index] = Math.floor(itemX) - Math.floor(itemWidth / 2);
-      widths[index] = Math.floor(itemWidth);
+      widths[index] = Math.ceil(itemWidth);
       calculatedItemWidths++;
 
       if (items.length === calculatedItemWidths) {

@@ -52,9 +52,10 @@ export interface UniqueAsset {
   familyName: string | null | undefined;
   id: string;
   isSendable: boolean;
-  lastPrice: string | null;
+  lastPrice: number | null;
   lastPriceUsd: string | undefined | null;
   lastSale: UniqueAssetLastSale | undefined;
+  lastSalePaymentToken: string | undefined | null;
   type: AssetType;
   uniqueId: string;
   urlSuffixForAsset: string;

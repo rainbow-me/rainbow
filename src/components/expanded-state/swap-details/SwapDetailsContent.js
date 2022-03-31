@@ -1,3 +1,4 @@
+import { ETH_ADDRESS } from '@rainbow-me/swaps';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { ColumnWithMargins } from '../../layout';
@@ -8,11 +9,21 @@ import SwapDetailsRow, {
   SwapDetailsValue,
 } from './SwapDetailsRow';
 import SwapDetailsUniswapRow from './SwapDetailsUniswapRow';
-import { useSwapAdjustedAmounts, useSwapCurrencies } from '@rainbow-me/hooks';
+import {
+  convertRawAmountToDecimalFormat,
+  divide,
+  multiply,
+  subtract,
+} from '@rainbow-me/helpers/utilities';
+import {
+  useAccountSettings,
+  useSwapAdjustedAmounts,
+  useSwapCurrencies,
+} from '@rainbow-me/hooks';
 import { SwapModalField } from '@rainbow-me/redux/swap';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
-import { isETH } from '@rainbow-me/utils';
+import { ethereumUtils, isETH } from '@rainbow-me/utils';
 
 const contentRowMargin = 24;
 export const SwapDetailsContentMinHeight =
@@ -46,6 +57,62 @@ export default function SwapDetailsContent({
     (!isHighPriceImpact || priceImpactNativeAmount) &&
     priceImpactPercentDisplay;
 
+  const { nativeCurrencySymbol } = useAccountSettings();
+
+  const feeNativeCurrency = useMemo(() => {
+    // token to ETH
+    if (inputCurrency?.price && tradeDetails.sellAmount) {
+      if (
+        tradeDetails.buyTokenAddress.toLowerCase() === ETH_ADDRESS.toLowerCase()
+      ) {
+        const feeInOutputTokensRawAmount = divide(
+          multiply(
+            tradeDetails.buyAmount,
+            tradeDetails.feePercentageBasisPoints
+          ),
+          '1e18'
+        );
+
+        const feeInOutputToken = convertRawAmountToDecimalFormat(
+          feeInOutputTokensRawAmount,
+          18
+        );
+
+        const priceOfEth = ethereumUtils.getEthPriceUnit();
+
+        return Number(feeInOutputToken) * priceOfEth;
+        // eth to token or token to token
+      } else {
+        const feeInInputTokensRawAmount = subtract(
+          tradeDetails.sellAmount,
+          tradeDetails.sellAmountMinusFees
+        );
+
+        const feeInInputToken = convertRawAmountToDecimalFormat(
+          feeInInputTokensRawAmount,
+          inputCurrency.decimals
+        );
+
+        return (
+          Number(feeInInputToken) * Number(inputCurrency.price.value)
+        ).toFixed(2);
+      }
+    }
+    return null;
+  }, [
+    inputCurrency,
+    tradeDetails.buyAmount,
+    tradeDetails.buyTokenAddress,
+    tradeDetails.feePercentageBasisPoints,
+    tradeDetails.sellAmount,
+    tradeDetails.sellAmountMinusFees,
+  ]);
+
+  // logger.debug('tradeDetails', JSON.stringify(tradeDetails, null, 2));
+  // logger.debug('fee in native currency', feeNativeCurrency);
+  // logger.debug('inputCurrency', inputCurrency);
+  // logger.debug('outputCurrency', outputCurrency);
+
   return (
     <Container
       isHighPriceImpact={isHighPriceImpact}
@@ -62,6 +129,12 @@ export default function SwapDetailsContent({
           </SwapDetailsValue>
         </SwapDetailsRow>
       )}
+      <SwapDetailsRow label="Rainbow fee">
+        <SwapDetailsValue letterSpacing="roundedTight">
+          {nativeCurrencySymbol}
+          {feeNativeCurrency}
+        </SwapDetailsValue>
+      </SwapDetailsRow>
       <SwapDetailsRow label={receivedSoldLabel}>
         <SwapDetailsValue letterSpacing="roundedTight">
           {amountReceivedSold}{' '}

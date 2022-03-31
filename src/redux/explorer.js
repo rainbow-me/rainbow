@@ -1,5 +1,6 @@
 import { concat, isEmpty, isNil, keyBy, keys, toLower } from 'lodash';
 import io from 'socket.io-client';
+import { defaultConfig, L2_TXS } from '../config/experimental';
 import config from '../model/config';
 import { assetChartsReceived, DEFAULT_CHART_TYPE } from './charts';
 import {
@@ -62,6 +63,8 @@ const messages = {
     APPENDED: 'appended address transactions',
     CHANGED: 'changed address transactions',
     RECEIVED: 'received address transactions',
+    RECEIVED_ARBITRUM: 'received address arbitrum-transactions',
+    RECEIVED_POLYGON: 'received address polygon-transactions',
     REMOVED: 'removed address transactions',
   },
   ASSET_CHARTS: {
@@ -513,6 +516,13 @@ const listenOnAddressMessages = socket => dispatch => {
     // logger.log('txns received', message?.payload?.transactions);
     dispatch(transactionsReceived(message));
   });
+
+  if (defaultConfig[L2_TXS].value) {
+    socket.on(messages.ADDRESS_TRANSACTIONS.RECEIVED_ARBITRUM, message => {
+      // logger.log('txns received', message?.payload?.transactions);
+      dispatch(transactionsReceived(message));
+    });
+  }
 
   socket.on(messages.ADDRESS_TRANSACTIONS.APPENDED, message => {
     logger.log('txns appended', message?.payload?.transactions);
