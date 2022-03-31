@@ -117,8 +117,9 @@ function RegisterContent({
             {lang.t('profiles.confirm.set_ens_name')} 􀅵
           </Text>
           <Switch
+            disabled={!setSendReverseRecord}
             onValueChange={() =>
-              setSendReverseRecord(sendReverseRecord => !sendReverseRecord)
+              setSendReverseRecord?.(sendReverseRecord => !sendReverseRecord)
             }
             testID="ens-reverse-record-switch"
             trackColor={{ false: colors.white, true: accentColor }}
@@ -282,7 +283,9 @@ export default function ENSConfirmRegisterSheet() {
         <RegisterContent
           accentColor={accentColor}
           sendReverseRecord={sendReverseRecord}
-          setSendReverseRecord={setSendReverseRecord}
+          setSendReverseRecord={
+            isSufficientGasForStep ? setSendReverseRecord : null
+          }
         />
       ),
       [REGISTRATION_STEPS.EDIT]: null,
@@ -298,7 +301,14 @@ export default function ENSConfirmRegisterSheet() {
         </Box>
       ),
     }),
-    [accentColor, action, duration, registrationCostsData, sendReverseRecord]
+    [
+      accentColor,
+      action,
+      duration,
+      isSufficientGasForStep,
+      registrationCostsData,
+      sendReverseRecord,
+    ]
   );
 
   const stepActions = useMemo(
