@@ -11,6 +11,8 @@ import {
   walletConnectRemovePendingRedirect,
   walletConnectSetPendingRedirect,
 } from '../redux/walletconnect';
+import { defaultConfig } from '@rainbow-me/config/experimental';
+import { PROFILES } from '@rainbow-me/config/experimentalHooks';
 import { delay } from '@rainbow-me/helpers/utilities';
 import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
 import { Navigation } from '@rainbow-me/navigation';
@@ -94,9 +96,14 @@ export default async function handleDeeplink(
         if (addressOrENS) {
           const isValid = await checkIsValidAddressOrDomain(addressOrENS);
           if (isValid) {
-            return Navigation.handleAction(Routes.PROFILE_SHEET, {
-              address: addressOrENS,
-            });
+            return Navigation.handleAction(
+              defaultConfig[PROFILES]
+                ? Routes.PROFILE_SHEET
+                : Routes.SHOWCASE_SHEET,
+              {
+                address: addressOrENS,
+              }
+            );
           } else {
             const error = new Error('Invalid deeplink: ' + url);
             captureException(error);
