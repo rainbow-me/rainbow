@@ -200,16 +200,22 @@ function InfoRow({
       <Column width="1/5">
         <MaskedView
           maskElement={
-            <Heading align="center" color="action" size="30px">
-              {icon}
-            </Heading>
+            <Box
+              {...(android && {
+                paddingTop: '6px',
+              })}
+            >
+              <Heading align="center" color="action" size="30px">
+                {icon}
+              </Heading>
+            </Box>
           }
         >
           <Box
             as={LinearGradient}
             colors={colors.gradients.appleBlueTintToAppleBlue}
             end={{ x: 0.5, y: 1 }}
-            height={{ custom: 40 }}
+            height={{ custom: android ? 50 : 40 }}
             marginTop="-10px"
             start={{ x: 0, y: 0 }}
             width="full"

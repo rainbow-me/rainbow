@@ -109,6 +109,8 @@ export default function RegisterENSNavigator() {
       navigation.removeListener('dismiss', clearCurrentRegistrationName);
   });
 
+  const enableAssignRecordsBottomActions =
+    IS_TESTING !== 'true' && currentRouteName !== Routes.ENS_INTRO_SHEET;
   const isBottomActionsVisible =
     currentRouteName === Routes.ENS_ASSIGN_RECORDS_SHEET;
 
@@ -132,6 +134,7 @@ export default function RegisterENSNavigator() {
           <Swipe.Navigator
             initialLayout={deviceUtils.dimensions}
             initialRouteName={currentRouteName}
+            lazy={android}
             pager={renderPager}
             swipeEnabled={false}
             tabBar={renderTabBar}
@@ -177,7 +180,7 @@ export default function RegisterENSNavigator() {
        * The reason why is because we can't achieve fixed positioning (as per designs) within SlackSheet's
        * ScrollView, so this seems like the best workaround.
        */}
-      {IS_TESTING !== 'true' && (
+      {enableAssignRecordsBottomActions && (
         <ENSAssignRecordsBottomActions visible={isBottomActionsVisible} />
       )}
     </>
