@@ -55,7 +55,7 @@ const NumberInput = styled(TextInputMask).attrs(
 const Label = styled(Text).attrs(() => ({
   align: 'center',
   pointerEvents: 'none',
-  size: 'lmedium',
+  size: 'large',
   weight: 'heavy',
 }))({
   ...margin.object(
@@ -64,7 +64,7 @@ const Label = styled(Text).attrs(() => ({
     android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
     0
   ),
-  ...(ios ? { right: 40, top: 11 } : {}),
+  ...(ios ? { right: 40, top: 9 } : {}),
 });
 
 function InputPill(
