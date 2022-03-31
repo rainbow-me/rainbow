@@ -8,6 +8,7 @@ PLATFORM=$(uname -s)
 GLOBAL_NPM_SCRIPTS=( "patch-package" "rn-nodeify" )
 GLOBAL_NPM_MISSING=()
 
+
 # For each package, add it to the GLOBAL_NPM_MISSING array if it is not globally
 # available using the canonical cross-platform method.
 for script in ${GLOBAL_NPM_SCRIPTS[@]}
@@ -32,22 +33,25 @@ if [ -e .env ]; then
 
 source .env
 
+  function rewrite_xcode_configs {
+    VALUE=$( cat .env | { grep "$1" || true; } )
+    if [ -n "$VALUE" ]; then
+      echo $VALUE | sed 's/=/ = /g' >> ./ios/debug.xcconfig
+      echo $VALUE | sed 's/=/ = /g' >> ./ios/release.xcconfig
+      echo $VALUE | sed 's/=/ = /g' >> ./ios/localrelease.xcconfig
+      echo $VALUE | sed 's/=/ = /g' >> ./ios/staging.xcconfig
+    else
+      echo "$1 not found in .env";
+      exit 1;
+    fi
+  }
+
   # For MacOS, copy xconfig files.
   if [ $PLATFORM == "Darwin" ]; then
-    cat .env | grep "BRANCH" | sed 's/=/ = /g' > ./ios/debug.xcconfig
-    cat .env | grep "BRANCH" | sed 's/=/ = /g' > ./ios/release.xcconfig
-    cat .env | grep "BRANCH" | sed 's/=/ = /g' > ./ios/localrelease.xcconfig
-    cat .env | grep "BRANCH" | sed 's/=/ = /g' > ./ios/staging.xcconfig
 
-    cat .env | grep "GOOGLE" | sed 's/=/ = /g' >> ./ios/debug.xcconfig
-    cat .env | grep "GOOGLE" | sed 's/=/ = /g' >> ./ios/release.xcconfig
-    cat .env | grep "GOOGLE" | sed 's/=/ = /g' >> ./ios/localrelease.xcconfig
-    cat .env | grep "GOOGLE" | sed 's/=/ = /g' >> ./ios/staging.xcconfig
-
-    cat .env | grep "CODE_PUSH_DEPLOYMENT_KEY_IOS" | sed 's/=/ = /g' >> ./ios/debug.xcconfig
-    cat .env | grep "CODE_PUSH_DEPLOYMENT_KEY_IOS" | sed 's/=/ = /g' >> ./ios/release.xcconfig
-    cat .env | grep "CODE_PUSH_DEPLOYMENT_KEY_IOS" | sed 's/=/ = /g' >> ./ios/localrelease.xcconfig
-    cat .env | grep "CODE_PUSH_DEPLOYMENT_KEY_IOS" | sed 's/=/ = /g' >> ./ios/staging.xcconfig
+    rewrite_xcode_configs "BRANCH"
+    rewrite_xcode_configs "GOOGLE"
+    rewrite_xcode_configs "CODE_PUSH_DEPLOYMENT_KEY_IOS"
 
     # Override Google Services API Key
     if [ -n "$GOOGLE_SERVICE_API_KEY" ]; then
