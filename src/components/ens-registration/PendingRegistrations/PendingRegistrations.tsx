@@ -29,9 +29,11 @@ const PendingRegistration = ({
   const { startRegistration } = useENSRegistration();
 
   const onFinish = useCallback(
-    (name: string) => {
+    async (name: string) => {
       startRegistration(name, 'create');
-      navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {});
+      setTimeout(() => {
+        navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {});
+      }, 100);
     },
     [navigate, startRegistration]
   );
@@ -101,7 +103,7 @@ const PendingRegistrations = () => {
   return (
     <Box paddingHorizontal="19px">
       <Stack space="19px">
-        <Text color="secondary50" size="14px" weight="bold">
+        <Text color="secondary50" containsEmoji size="14px" weight="bold">
           􀺉 In progress
         </Text>
         {pendingRegistrations.map(registration => (
