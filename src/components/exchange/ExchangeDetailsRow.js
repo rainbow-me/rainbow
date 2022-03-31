@@ -1,4 +1,3 @@
-import { ChainId, WETH } from '@rainbow-me/swaps';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useEffect } from 'react';
@@ -12,7 +11,6 @@ import { Centered, Row } from '../layout';
 import ExchangeDetailsButton from './ExchangeDetailsButton';
 import PriceImpactWarning from './PriceImpactWarning';
 import { usePrevious, useSwapCurrencies } from '@rainbow-me/hooks';
-import { ETH_ADDRESS } from '@rainbow-me/references';
 import styled from '@rainbow-me/styled-components';
 import { padding, position } from '@rainbow-me/styles';
 
@@ -47,14 +45,13 @@ export default function ExchangeDetailsRow({
   priceImpactColor,
   priceImpactNativeAmount,
   priceImpactPercentDisplay,
-  showDetailsButton,
   type,
   ...props
 }) {
   const detailsRowOpacity = useSharedValue(1);
   const priceImpactOpacity = useSharedValue(0);
   const priceImpactScale = useSharedValue(defaultPriceImpactScale);
-  const { inputCurrency, outputCurrency } = useSwapCurrencies();
+  const { outputCurrency } = useSwapCurrencies();
 
   const detailsRowAnimatedStyle = useAnimatedStyle(() => ({
     opacity: detailsRowOpacity.value,
@@ -105,14 +102,6 @@ export default function ExchangeDetailsRow({
     priceImpactScale,
   ]);
 
-  const isWrapEth =
-    inputCurrency.address === ETH_ADDRESS &&
-    outputCurrency.address === WETH[ChainId.mainnet];
-
-  const isUnwrapEth =
-    inputCurrency.address === WETH[ChainId.mainnet] &&
-    outputCurrency.address === ETH_ADDRESS;
-
   return (
     <Container {...props}>
       <PriceImpactWarning
@@ -134,15 +123,12 @@ export default function ExchangeDetailsRow({
         >
           􀄬 {lang.t('exchange.flip')}
         </ExchangeDetailsButton>
-        {!(isWrapEth || isUnwrapEth) && (
-          <ExchangeDetailsButton
-            disabled={!showDetailsButton}
-            onPress={onPressViewDetails}
-            testID="exchange-details-button"
-          >
-            􀣋 {lang.t('exchange.settings')}
-          </ExchangeDetailsButton>
-        )}
+        <ExchangeDetailsButton
+          onPress={onPressViewDetails}
+          testID="exchange-details-button"
+        >
+          􀣋 {lang.t('exchange.settings')}
+        </ExchangeDetailsButton>
       </AnimatedExchangeDetailsButtonRow>
     </Container>
   );
