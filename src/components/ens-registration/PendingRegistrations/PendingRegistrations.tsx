@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
+import { Alert } from '../../../components/alerts';
 import ButtonPressAnimation from '../../../components/animations/ButtonPressAnimation';
 import ImageAvatar from '../../../components/contacts/ImageAvatar';
 import {
@@ -112,8 +113,27 @@ const PendingRegistration = ({
 const PendingRegistrations = () => {
   const {
     pendingRegistrations,
-    removeRegistration,
+    removeRegistrationByName,
   } = useENSPendingRegistrations();
+
+  const removeRegistration = useCallback(
+    (name: string) => {
+      Alert({
+        buttons: [
+          { style: 'cancel', text: 'Cancel' },
+          {
+            onPress: () => {
+              removeRegistrationByName(name);
+            },
+            text: 'Proceed Anyway',
+          },
+        ],
+        message: `You are about to stop the registration process.\n  You'd need to start it again which means you'll need to send an additional transaction.`,
+        title: 'Are you sure?',
+      });
+    },
+    [removeRegistrationByName]
+  );
 
   return (
     <Box paddingHorizontal="19px">

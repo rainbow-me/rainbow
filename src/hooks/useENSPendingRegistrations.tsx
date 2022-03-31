@@ -36,5 +36,9 @@ export default function useENSPendingRegistrations() {
     [removeRegistrationByName]
   );
 
-  return { accountRegistrations, pendingRegistrations, removeRegistration };
+  return {
+    accountRegistrations,
+    pendingRegistrations,
+    removeRegistrationByName: removeRegistration,
+  };
 }

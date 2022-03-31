@@ -35,6 +35,8 @@ const ENS_CLEAR_CURRENT_REGISTRATION_NAME =
   'ensRegistration/CLEAR_CURRENT_REGISTRATION_NAME';
 const ENS_UPDATE_REGISTRATION_PARAMETERS =
   'ensRegistration/ENS_UPDATE_REGISTRATION_PARAMETERS';
+const ENS_REMOVE_REGISTRATION_BY_NAME =
+  'ensRegistration/ENS_REMOVE_REGISTRATION_BY_NAME';
 const ENS_LOAD_STATE = 'ensRegistration/ENS_LOAD_STATE';
 
 interface EnsRegistrationSetChangedRecordsAction {
@@ -64,6 +66,11 @@ interface EnsRegistrationUpdateRecordByKeyAction {
 
 interface EnsRegistrationRemoveRecordByKeyAction {
   type: typeof ENS_REGISTRATION_REMOVE_RECORD_BY_KEY;
+  payload: { registrations: ENSRegistrations };
+}
+
+interface EnsRegistrationRemoveRegistrationByName {
+  type: typeof ENS_REMOVE_REGISTRATION_BY_NAME;
   payload: { registrations: ENSRegistrations };
 }
 
@@ -103,6 +110,7 @@ export type EnsRegistrationActionTypes =
   | EnsRegistrationUpdateRecordsAction
   | EnsRegistrationUpdateRecordByKeyAction
   | EnsRegistrationRemoveRecordByKeyAction
+  | EnsRegistrationRemoveRegistrationByName
   | EnsRegistrationContinueRegistrationAction
   | EnsRegistrationStartRegistrationAction
   | EnsRegistrationSaveCommitRegistrationParametersAction
@@ -516,6 +524,11 @@ export default (
         ...action.payload,
       };
     case ENS_UPDATE_REGISTRATION_PARAMETERS:
+      return {
+        ...state,
+        ...action.payload,
+      };
+    case ENS_REMOVE_REGISTRATION_BY_NAME:
       return {
         ...state,
         ...action.payload,
