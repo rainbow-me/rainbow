@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import { Alert } from '../../../components/alerts';
 import ButtonPressAnimation from '../../../components/animations/ButtonPressAnimation';
@@ -13,7 +13,6 @@ import {
   Text,
 } from '@rainbow-me/design-system';
 import { RegistrationParameters } from '@rainbow-me/entities';
-import { fetchImages } from '@rainbow-me/handlers/ens';
 import {
   useENSPendingRegistrations,
   useENSRegistration,
@@ -25,17 +24,14 @@ import { colors } from '@rainbow-me/styles';
 const PendingRegistration = ({
   registration,
   removeRegistration,
+  avatarUrl,
 }: {
+  avatarUrl?: string;
   registration: RegistrationParameters;
   removeRegistration: (name: string) => void;
 }) => {
   const { navigate } = useNavigation();
   const { startRegistration } = useENSRegistration();
-
-  const avatar = registration.changedRecords?.avatar;
-  const [avatarUrl, setAvatarUrl] = useState(
-    avatar?.match(/^http/) ? avatar : null
-  );
 
   const onFinish = useCallback(
     async (name: string) => {
@@ -53,16 +49,6 @@ const PendingRegistration = ({
     },
     [removeRegistration]
   );
-
-  useEffect(() => {
-    const getImages = async () => {
-      const images = await fetchImages(registration.name);
-      setAvatarUrl(images?.avatarUrl || null);
-    };
-    if (!avatarUrl && avatar) {
-      getImages();
-    }
-  }, [avatar, avatarUrl, registration.name]);
 
   return (
     <Box>
@@ -127,6 +113,7 @@ const PendingRegistrations = () => {
   const {
     pendingRegistrations,
     removeRegistrationByName,
+    registrationImages,
   } = useENSPendingRegistrations();
 
   const removeRegistration = useCallback(
@@ -156,6 +143,7 @@ const PendingRegistrations = () => {
         </Text>
         {pendingRegistrations.map(registration => (
           <PendingRegistration
+            avatarUrl={registrationImages?.[registration.name]}
             key={registration.name}
             registration={registration}
             removeRegistration={removeRegistration}
