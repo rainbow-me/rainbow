@@ -29,15 +29,15 @@ fi
 
 # Set up the environment.
 if [ -e .env ]; then
+  source .env
 
-source .env
   function rewrite_xcode_configs {
     VALUE=$( cat .env | { grep "$1" || true; } )
     if [ -n "$VALUE" ]; then
-      echo $VALUE | sed 's/=/ = /g' >> ./ios/debug.xcconfig
-      echo $VALUE | sed 's/=/ = /g' >> ./ios/release.xcconfig
-      echo $VALUE | sed 's/=/ = /g' >> ./ios/localrelease.xcconfig
-      echo $VALUE | sed 's/=/ = /g' >> ./ios/staging.xcconfig
+      echo "$VALUE" | sed 's/=/ = /g' >> ./ios/debug.xcconfig
+      echo "$VALUE" | sed 's/=/ = /g' >> ./ios/release.xcconfig
+      echo "$VALUE" | sed 's/=/ = /g' >> ./ios/localrelease.xcconfig
+      echo "$VALUE" | sed 's/=/ = /g' >> ./ios/staging.xcconfig
     else
       echo "$1 not found in .env";
       exit 1;
