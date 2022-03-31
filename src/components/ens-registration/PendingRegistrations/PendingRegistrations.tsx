@@ -22,8 +22,10 @@ import { colors } from '@rainbow-me/styles';
 
 const PendingRegistration = ({
   registration,
+  removeRegistration,
 }: {
   registration: RegistrationParameters;
+  removeRegistration: (name: string) => void;
 }) => {
   const { navigate } = useNavigation();
   const { startRegistration } = useENSRegistration();
@@ -36,6 +38,13 @@ const PendingRegistration = ({
       }, 100);
     },
     [navigate, startRegistration]
+  );
+
+  const onRemove = useCallback(
+    async (name: string) => {
+      removeRegistration(name);
+    },
+    [removeRegistration]
   );
 
   return (
@@ -86,7 +95,10 @@ const PendingRegistration = ({
           </Box>
         </Column>
         <Column width="content">
-          <ButtonPressAnimation onPress={() => null} scaleTo={0.9}>
+          <ButtonPressAnimation
+            onPress={() => onRemove(registration.name)}
+            scaleTo={0.9}
+          >
             <Text color="secondary50" size="18px" weight="bold">
               􀈒
             </Text>
@@ -98,7 +110,10 @@ const PendingRegistration = ({
 };
 
 const PendingRegistrations = () => {
-  const { pendingRegistrations } = useENSPendingRegistrations();
+  const {
+    pendingRegistrations,
+    removeRegistration,
+  } = useENSPendingRegistrations();
 
   return (
     <Box paddingHorizontal="19px">
@@ -110,6 +125,7 @@ const PendingRegistrations = () => {
           <PendingRegistration
             key={registration.name}
             registration={registration}
+            removeRegistration={removeRegistration}
           />
         ))}
       </Stack>

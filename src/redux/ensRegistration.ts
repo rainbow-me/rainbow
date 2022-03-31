@@ -432,6 +432,38 @@ export const updateTransactionRegistrationParameters = (
   });
 };
 
+export const removeRegistrationByName = (
+  accountAddress: EthereumAddress,
+  name: string
+) => async (dispatch: AppDispatch, getState: AppGetState) => {
+  const {
+    ensRegistration: { registrations },
+  } = getState();
+
+  const lcAccountAddress = accountAddress.toLowerCase();
+  const accountRegistrations = registrations?.[lcAccountAddress] || {};
+  delete accountRegistrations?.[name];
+  const updatedEnsRegistrationManager = {
+    registrations: {
+      ...registrations,
+      [lcAccountAddress]: {
+        ...accountRegistrations,
+      },
+    },
+  };
+
+  saveLocalENSRegistrations(
+    updatedEnsRegistrationManager.registrations,
+    accountAddress,
+    NetworkTypes.mainnet
+  );
+
+  dispatch({
+    payload: updatedEnsRegistrationManager,
+    type: ENS_UPDATE_REGISTRATION_PARAMETERS,
+  });
+};
+
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE: ENSRegistrationState = {
   currentRegistrationName: '',

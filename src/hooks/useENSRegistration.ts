@@ -67,6 +67,12 @@ export default function useENSRegistration({
     [dispatch]
   );
 
+  const removeRegistrationByName = useCallback(
+    (name: string) =>
+      dispatch(ensRedux.removeRegistrationByName(accountAddress, name)),
+    [accountAddress, dispatch]
+  );
+
   const profileQuery = useENSProfile(name, { enabled: mode === 'edit' });
   useEffect(() => {
     if (
@@ -182,6 +188,7 @@ export default function useENSRegistration({
     records,
     registrationParameters,
     removeRecordByKey,
+    removeRegistrationByName,
     startRegistration,
     updateRecordByKey,
     updateRecords,

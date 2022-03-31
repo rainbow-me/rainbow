@@ -107,7 +107,7 @@ function RegisterContent({
           >
             One last step 💈
           </Text>
-          <Text align="center" color="secondary80" size="16px" weight="bold">
+          <Text align="center" color="secondary60" size="16px" weight="bold">
             Confirm below to register your name and configure your profile
           </Text>
         </Stack>
