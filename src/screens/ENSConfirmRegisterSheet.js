@@ -17,8 +17,6 @@ import { SheetActionButtonRow, SlackSheet } from '../components/sheet';
 import {
   AccentColorProvider,
   Box,
-  Column,
-  Columns,
   Divider,
   Heading,
   Inline,
@@ -96,32 +94,39 @@ function RegisterContent({
   sendReverseRecord,
 }) {
   return (
-    <Inset horizontal="30px">
-      <Columns>
-        <Column width="2/3">
+    <Box paddingHorizontal="30px">
+      <Box height="4/5">
+        <Stack space="12px">
           <Text
-            color="secondary80"
-            lineHeight="loose"
-            size="16px"
+            align="center"
+            color="primary"
+            containsEmoji
+            size="23px"
             weight="bold"
           >
+            One last step 💈
+          </Text>
+          <Text align="center" color="secondary80" size="16px" weight="bold">
+            Confirm below to register your name and configure your profile
+          </Text>
+        </Stack>
+      </Box>
+      <Box height="1/5">
+        <Inline alignHorizontal="justify" alignVertical="center">
+          <Text color="secondary80" size="16px" weight="bold">
             {lang.t('profiles.confirm.set_ens_name')} 􀅵
           </Text>
-        </Column>
-        <Column width="1/3">
-          <Box alignItems="flex-end">
-            <Switch
-              onValueChange={() =>
-                setSendReverseRecord(sendReverseRecord => !sendReverseRecord)
-              }
-              testID="ens-reverse-record-switch"
-              trackColor={{ false: colors.white, true: accentColor }}
-              value={sendReverseRecord}
-            />
-          </Box>
-        </Column>
-      </Columns>
-    </Inset>
+          <Switch
+            onValueChange={() =>
+              setSendReverseRecord(sendReverseRecord => !sendReverseRecord)
+            }
+            testID="ens-reverse-record-switch"
+            trackColor={{ false: colors.white, true: accentColor }}
+            value={sendReverseRecord}
+          />
+        </Inline>
+      </Box>
+    </Box>
   );
 }
 
@@ -436,8 +441,10 @@ export default function ENSConfirmRegisterSheet() {
                 </Inset>
               </Box>
             </Row>
-            <Row>{stepContent[step]}</Row>
-            <Row height="content">{stepActions[step]}</Row>
+            <Row>{stepContent[REGISTRATION_STEPS.REGISTER]}</Row>
+            <Row height="content">
+              {stepActions[REGISTRATION_STEPS.REGISTER]}
+            </Row>
           </Rows>
         </Box>
       </AccentColorProvider>
