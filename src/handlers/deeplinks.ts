@@ -94,7 +94,7 @@ export default async function handleDeeplink(
         if (addressOrENS) {
           const isValid = await checkIsValidAddressOrDomain(addressOrENS);
           if (isValid) {
-            return Navigation.handleAction(Routes.SHOWCASE_SHEET, {
+            return Navigation.handleAction(Routes.PROFILE_SHEET, {
               address: addressOrENS,
             });
           } else {
