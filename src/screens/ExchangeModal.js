@@ -32,8 +32,10 @@ import {
 import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
-import { FLASHBOTS } from '../config/experimental';
-import useExperimentalFlag from '../config/experimentalHooks';
+/*
+  import { FLASHBOTS } from '../config/experimental';
+  import useExperimentalFlag from '../config/experimentalHooks';
+*/
 import {
   ExchangeModalTypes,
   isKeyboardOpen,
@@ -152,7 +154,12 @@ export default function ExchangeModal({
     updateTxFee,
   } = useGas();
   const { initWeb3Listener, stopWeb3Listener } = useBlockPolling();
-  const { accountAddress, nativeCurrency, network } = useAccountSettings();
+  const {
+    accountAddress,
+    flashbotsEnabled,
+    nativeCurrency,
+    network,
+  } = useAccountSettings();
   const getNextNonce = useCurrentNonce(accountAddress, network);
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
@@ -212,7 +219,6 @@ export default function ExchangeModal({
     priceImpactPercentDisplay,
   } = usePriceImpactDetails(inputAmount, outputAmount);
 
-  const flashbotsEnabled = useExperimentalFlag(FLASHBOTS);
   const flashbots = network === Network.mainnet && flashbotsEnabled;
 
   const isDismissing = useRef(false);
@@ -503,6 +509,7 @@ export default function ExchangeModal({
       android && Keyboard.removeListener('keyboardDidHide', internalNavigate);
       setParams({ focused: false });
       navigate(Routes.SWAP_SETTINGS_SHEET, {
+        asset: outputCurrency,
         restoreFocusOnSwapModal: () => {
           android &&
             (lastFocusedInputHandle.current = lastFocusedInputHandleTemporary);
@@ -520,6 +527,7 @@ export default function ExchangeModal({
     lastFocusedInputHandle,
     nativeFieldRef,
     navigate,
+    outputCurrency,
     outputFieldRef,
     setParams,
   ]);
@@ -632,7 +640,6 @@ export default function ExchangeModal({
               priceImpactColor={priceImpactColor}
               priceImpactNativeAmount={priceImpactNativeAmount}
               priceImpactPercentDisplay={priceImpactPercentDisplay}
-              showDetailsButton={!!tradeDetails}
               type={type}
             />
           )}
