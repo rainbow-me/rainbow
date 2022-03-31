@@ -136,7 +136,7 @@ src/styled-thing @terrysahaidak @osdnk @markdalgleish
 src/utils @brunobar79 @jinchung
 
 # App
-src/App.ts @brunobar79 @jinchung 
+src/App.js @brunobar79 @jinchung @osdnk 
 
 # types
 eth-contract-metadata.d.ts @markdalgleish @jxom
