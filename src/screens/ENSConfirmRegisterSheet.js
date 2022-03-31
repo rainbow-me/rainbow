@@ -40,6 +40,7 @@ import {
   useENSRegistrationForm,
   useENSSearch,
   useGas,
+  usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
@@ -210,7 +211,17 @@ export default function ENSConfirmRegisterSheet() {
     name: ensName,
     mode,
   } = useENSRegistration();
-  const [accentColor] = useRecoilState(accentColorAtom);
+  const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
+  const { result: dominantColor } = usePersistentDominantColorFromImage(
+    initialAvatarUrl || ''
+  );
+  const [prevDominantColor, setPrevDominantColor] = useState(dominantColor);
+  useEffect(() => {
+    setAccentColor(dominantColor || prevDominantColor || colors.purple);
+    if (dominantColor) {
+      setPrevDominantColor(dominantColor);
+    }
+  }, [dominantColor, prevDominantColor, setAccentColor]);
 
   const [duration, setDuration] = useState(1);
   const [gasLimit, setGasLimit] = useState(null);
