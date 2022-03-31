@@ -37,9 +37,8 @@ export default function TokenInfoItem({
   isNft,
   onInfoPress,
   onPress,
-  onPressEditButton,
   showDivider,
-  showEditButton,
+  addonComponent,
   showInfoButton,
   size,
   title,
@@ -110,27 +109,7 @@ export default function TokenInfoItem({
                   </TokenInfoValue>
                 </ButtonPressAnimation>
               </Column>
-              {showEditButton && (
-                <Column alignHorizontal="left" width="content">
-                  <ButtonPressAnimation
-                    enableHapticFeedback={!!onPress && enableHapticFeedback}
-                    onPress={onPressEditButton}
-                    scaleTo={1}
-                  >
-                    <TokenInfoValue
-                      activeOpacity={0}
-                      align={align}
-                      color={color}
-                      isNft={isNft}
-                      lineHeight={lineHeight}
-                      size={size}
-                      weight={weight}
-                    >
-                      {' 􀌆'}
-                    </TokenInfoValue>
-                  </ButtonPressAnimation>
-                </Column>
-              )}
+              {addonComponent}
             </Columns>
           </>
         )}
