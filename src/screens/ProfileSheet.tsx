@@ -74,8 +74,10 @@ export default function ProfileSheet() {
               <ProfileSheetHeader isLoading />
               <PlaceholderList />
             </Stack>
-          ) : (
+          ) : !params.isPreview ? (
             <RecyclerAssetList2 address={profileAddress} type="ens-profile" />
+          ) : (
+            <ProfileSheetHeader ensName={params?.ensName} isPreview />
           )}
         </Box>
       </Box>

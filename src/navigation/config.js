@@ -146,19 +146,19 @@ export const registerENSNavigatorConfig = {
   }),
 };
 
-export const ensConfirmRegisterSheetConfig = {
+export const profilePreviewConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
-      longFormHeight: ENSConfirmRegisterSheetHeight,
+      longFormHeight: 280,
       ...params,
     }),
   }),
 };
 
-export const selectEnsSheetConfig = {
+export const ensConfirmRegisterSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
-      longFormHeight: SelectENSSheetHeight,
+      longFormHeight: ENSConfirmRegisterSheetHeight,
       ...params,
     }),
   }),

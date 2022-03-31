@@ -50,9 +50,9 @@ import {
   externalLinkWarningSheetConfig,
   nativeStackDefaultConfig,
   nativeStackDefaultConfigWithoutStatusBar,
+  profilePreviewConfig,
   registerENSNavigatorConfig,
   restoreSheetConfig,
-  selectEnsSheetConfig,
   sendConfirmationSheetConfig,
   stackNavigationConfig,
 } from './config';
@@ -421,9 +421,23 @@ function NativeStackNavigator() {
             {...registerENSNavigatorConfig}
           />
           <NativeStack.Screen
+            component={ProfileSheet}
+            initialParams={{
+              isPreview: true,
+            }}
+            name={Routes.PROFILE_PREVIEW_SHEET}
+            {...profilePreviewConfig}
+          />
+          <NativeStack.Screen
             component={SelectENSSheet}
             name={Routes.SELECT_ENS_SHEET}
-            {...selectEnsSheetConfig}
+            options={{
+              allowsDragToDismiss: true,
+              backgroundOpacity: 0.7,
+              customStack: true,
+              springDamping: 1,
+              transitionDuration: 0.25,
+            }}
           />
         </>
       )}
