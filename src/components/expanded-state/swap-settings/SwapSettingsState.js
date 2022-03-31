@@ -1,5 +1,8 @@
+import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useEffect } from 'react';
+import { InteractionManager, Keyboard } from 'react-native';
 import { Switch } from 'react-native-gesture-handler';
+import { useDispatch } from 'react-redux';
 import { ButtonPressAnimation } from '../../animations';
 import { ExchangeHeader } from '../../exchange';
 import { FloatingPanel } from '../../floating-panels';
@@ -13,27 +16,65 @@ import {
   Inset,
   Stack,
   Text,
-  useForegroundColor,
 } from '@rainbow-me/design-system';
+import {
+  add,
+  greaterThan,
+  toFixedDecimals,
+} from '@rainbow-me/helpers/utilities';
+
 import {
   useAccountSettings,
   useColorForAsset,
-  useDimensions,
   useKeyboardHeight,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { deviceUtils } from '@rainbow-me/utils';
 
-export default function SwapSettingsState({ asset }) {
-  const { network } = useAccountSettings();
-  const { colors } = useTheme();
-  const { height: deviceHeight } = useDimensions();
-  const { setParams } = useNavigation();
-  const keyboardHeight = useKeyboardHeight();
-  const colorForAsset = useColorForAsset(asset || {}, null, false, true);
-  const secondary50 = useForegroundColor('secondary50');
+function useAndroidDisableGesturesOnFocus() {
+  const { params } = useRoute();
+  const isFocused = useIsFocused();
+  useEffect(() => {
+    android && params?.toggleGestureEnabled?.(!isFocused);
+  }, [isFocused, params]);
+}
 
-  const sheetHeightWithoutKeyboard = 300;
+export default function SwapSettingsState({ asset }) {
+  const {
+    flashbotsEnabled,
+    settingsChangeFlashbotsEnabled,
+  } = useAccountSettings();
+  const { colors } = useTheme();
+  const { setParams, goBack } = useNavigation();
+  useAndroidDisableGesturesOnFocus();
+  const dispatch = useDispatch();
+
+  const toggleFlashbotsEnabled = useCallback(async () => {
+    await dispatch(settingsChangeFlashbotsEnabled(!flashbotsEnabled));
+  }, [dispatch, flashbotsEnabled, settingsChangeFlashbotsEnabled]);
+
+  const keyboardHeight = useKeyboardHeight();
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(true);
+
+  useEffect(() => {
+    const keyboardDidShow = () => {
+      setIsKeyboardOpen(true);
+    };
+
+    const keyboardDidHide = () => {
+      setIsKeyboardOpen(false);
+    };
+    android && Keyboard.addListener('keyboardDidShow', keyboardDidShow);
+    android && Keyboard.addListener('keyboardDidHide', keyboardDidHide);
+    return () => {
+      Keyboard.removeListener('keyboardDidShow', keyboardDidShow);
+      Keyboard.removeListener('keyboardDidHide', keyboardDidHide);
+    };
+  }, []);
+
+  const colorForAsset = useColorForAsset(asset || {}, null, false, true);
+
+  const sheetHeightWithoutKeyboard = 185;
 
   const sheetHeightWithKeyboard =
     sheetHeightWithoutKeyboard +
@@ -44,40 +85,97 @@ export default function SwapSettingsState({ asset }) {
     setParams({ longFormHeight: sheetHeightWithKeyboard });
   }, [sheetHeightWithKeyboard, setParams]);
 
+  const [slippageValue, setSlippageValue] = useState(0.1);
+
+  const slippageRef = useRef(null);
+
+  useEffect(() => {
+    InteractionManager.runAfterInteractions(() => {
+      setTimeout(() => {
+        slippageRef?.current.focus();
+      }, 200);
+    });
+  }, []);
+
+  const handleSlippagePress = useCallback(() => slippageRef?.current?.focus(), [
+    slippageRef,
+  ]);
+
+  const onSlippageChange = value => {
+    setSlippageValue(value);
+  };
+
+  const updateSlippage = useCallback(
+    increment => {
+      //setLastFocusedInputHandle(maxBaseFieldRef)
+      const newSlippageValue = toFixedDecimals(
+        add(slippageValue, increment),
+        2
+      );
+      if (greaterThan(0, newSlippageValue)) return;
+
+      setSlippageValue(newSlippageValue);
+    },
+    [slippageValue]
+  );
+
+  const SLIPPAGE_INCREMENT = 0.1;
+  const addSlippage = useCallback(() => {
+    updateSlippage(SLIPPAGE_INCREMENT);
+  }, [updateSlippage]);
+
+  const minusSlippage = useCallback(() => {
+    updateSlippage(-SLIPPAGE_INCREMENT);
+  }, [updateSlippage]);
+
   return (
     <SlackSheet
       additionalTopPadding
       backgroundColor={colors.transparent}
-      contentHeight={sheetHeightWithoutKeyboard}
+      contentHeight={
+        isKeyboardOpen ? sheetHeightWithKeyboard : sheetHeightWithoutKeyboard
+      }
       hideHandle
       radius={0}
       scrollEnabled={false}
     >
-      <ColorModeProvider value="light">
-        <FloatingPanel radius={android ? 30 : 39}>
-          <Inset bottom="24px" horizontal="24px">
-            <ExchangeHeader testID="swap-settings" title="Swap Settings" />
-            <Stack backgroundColor="green" space="10px">
-              <Columns alignVertical="center">
-                <Text size="18px" weight="bold">
-                  Slippage Tolerance
-                </Text>
-                <Column width="content">
-                  <StepButtonInput buttonColor={colors.black} inputLabel="%" />
-                </Column>
-              </Columns>
-              <Columns alignHorizontal="justify" alignVertical="center">
-                <Text color="primary" size="18px" weight="bold">
-                  Use Flashbots
-                </Text>
-                <Column width="content">
-                  <Switch ios_backgroundColor={colors.black} />
-                </Column>
-              </Columns>
-            </Stack>
-          </Inset>
-        </FloatingPanel>
-      </ColorModeProvider>
+      <FloatingPanel radius={android ? 30 : 39}>
+        <ExchangeHeader testID="swap-settings" />
+        <Inset bottom="24px" horizontal="24px" top="10px">
+          <Stack backgroundColor="green" space="10px">
+            <Columns alignVertical="center">
+              <Text size="18px" weight="bold">
+                Slippage Tolerance
+              </Text>
+              <Column width="content">
+                <StepButtonInput
+                  buttonColor={colorForAsset}
+                  inputLabel="%"
+                  inputRef={slippageRef}
+                  minusAction={minusSlippage}
+                  onChange={onSlippageChange}
+                  onPress={handleSlippagePress}
+                  plusAction={addSlippage}
+                  testID="swap-slippage-input"
+                  value={slippageValue}
+                />
+              </Column>
+            </Columns>
+            <Columns alignHorizontal="justify" alignVertical="center">
+              <Text color="primary" size="18px" weight="bold">
+                Use Flashbots
+              </Text>
+              <Column width="content">
+                <Switch
+                  onValueChange={toggleFlashbotsEnabled}
+                  trackColor={{ false: '#767577', true: colorForAsset }}
+                  value={flashbotsEnabled}
+                />
+              </Column>
+            </Columns>
+          </Stack>
+        </Inset>
+      </FloatingPanel>
       <ColorModeProvider value="dark">
         <Inset horizontal="24px" top="24px">
           <Columns alignHorizontal="justify">
@@ -85,7 +183,7 @@ export default function SwapSettingsState({ asset }) {
               <ButtonPressAnimation>
                 <Box
                   borderRadius={20}
-                  style={{ borderColor: secondary50, borderWidth: 1 }}
+                  style={{ borderColor: colorForAsset, borderWidth: 2 }}
                 >
                   <Inset space="8px">
                     <Text color="primary" weight="bold">
@@ -96,10 +194,15 @@ export default function SwapSettingsState({ asset }) {
               </ButtonPressAnimation>
             </Column>
             <Column width="content">
-              <ButtonPressAnimation>
+              <ButtonPressAnimation
+                onPress={() => {
+                  slippageRef?.current?.blur();
+                  goBack();
+                }}
+              >
                 <Box
                   borderRadius={20}
-                  style={{ borderColor: secondary50, borderWidth: 1 }}
+                  style={{ borderColor: colorForAsset, borderWidth: 2 }}
                 >
                   <Inset space="8px">
                     <Text color="primary" weight="bold">
