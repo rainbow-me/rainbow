@@ -8,7 +8,6 @@ PLATFORM=$(uname -s)
 GLOBAL_NPM_SCRIPTS=( "patch-package" "rn-nodeify" )
 GLOBAL_NPM_MISSING=()
 
-
 # For each package, add it to the GLOBAL_NPM_MISSING array if it is not globally
 # available using the canonical cross-platform method.
 for script in ${GLOBAL_NPM_SCRIPTS[@]}
@@ -32,7 +31,6 @@ fi
 if [ -e .env ]; then
 
 source .env
-
   function rewrite_xcode_configs {
     VALUE=$( cat .env | { grep "$1" || true; } )
     if [ -n "$VALUE" ]; then
