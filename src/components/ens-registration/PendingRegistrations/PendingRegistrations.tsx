@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import { Alert } from '../../../components/alerts';
 import ButtonPressAnimation from '../../../components/animations/ButtonPressAnimation';
@@ -13,6 +13,7 @@ import {
   Text,
 } from '@rainbow-me/design-system';
 import { RegistrationParameters } from '@rainbow-me/entities';
+import { fetchImages } from '@rainbow-me/handlers/ens';
 import {
   useENSPendingRegistrations,
   useENSRegistration,
@@ -31,6 +32,11 @@ const PendingRegistration = ({
   const { navigate } = useNavigation();
   const { startRegistration } = useENSRegistration();
 
+  const avatar = registration.changedRecords?.avatar;
+  const [avatarUrl, setAvatarUrl] = useState(
+    avatar?.match(/^http/) ? avatar : null
+  );
+
   const onFinish = useCallback(
     async (name: string) => {
       startRegistration(name, 'create');
@@ -48,16 +54,23 @@ const PendingRegistration = ({
     [removeRegistration]
   );
 
+  useEffect(() => {
+    const getImages = async () => {
+      const images = await fetchImages(registration.name);
+      setAvatarUrl(images?.avatarUrl || null);
+    };
+    if (!avatarUrl && avatar) {
+      getImages();
+    }
+  }, [avatar, avatarUrl, registration.name]);
+
   return (
     <Box>
       <Columns alignVertical="center">
-        {registration.changedRecords?.avatar && (
+        {avatarUrl && (
           <Column width="content">
             <Box paddingRight="10px">
-              <ImageAvatar
-                image={registration.changedRecords?.avatar}
-                size="small"
-              />
+              <ImageAvatar image={avatarUrl} size="small" />
             </Box>
           </Column>
         )}

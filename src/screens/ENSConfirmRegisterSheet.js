@@ -462,10 +462,8 @@ export default function ENSConfirmRegisterSheet() {
                 </Inset>
               </Box>
             </Row>
-            <Row>{stepContent[REGISTRATION_STEPS.REGISTER]}</Row>
-            <Row height="content">
-              {stepActions[REGISTRATION_STEPS.REGISTER]}
-            </Row>
+            <Row>{stepContent[step]}</Row>
+            <Row height="content">{stepActions[step]}</Row>
           </Rows>
         </Box>
       </AccentColorProvider>
