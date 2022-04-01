@@ -19,14 +19,8 @@ class StatusBarService {
     RNStatusBar.setHidden(hidden, animation);
   }
 
-  pushStackEntry(
-    props: RNStatusBarProps & StatusBarProps
-  ): RNStatusBarProps | StatusBarProps {
-    if (ios) {
-      return RNStatusBar.pushStackEntry(props);
-    } else {
-      return StatusBar.pushStackEntry(props);
-    }
+  pushStackEntry(props: StatusBarProps): StatusBarProps {
+    return StatusBar.pushStackEntry(props);
   }
 
   popStackEntry(props: RNStatusBarProps): void {
@@ -34,25 +28,17 @@ class StatusBarService {
   }
 
   setLightContent(isAnimated = true) {
-    if (ios) {
-      RNStatusBar.setBarStyle('light-content', isAnimated);
-    } else {
-      StatusBar.pushStackEntry({
-        animated: isAnimated,
-        barStyle: 'light-content',
-      });
-    }
+    StatusBar.pushStackEntry({
+      animated: isAnimated,
+      barStyle: 'light-content',
+    });
   }
 
   setDarkContent(isAnimated = true) {
-    if (ios) {
-      RNStatusBar.setBarStyle('dark-content', isAnimated);
-    } else {
-      StatusBar.pushStackEntry({
-        animated: isAnimated,
-        barStyle: 'dark-content',
-      });
-    }
+    StatusBar.pushStackEntry({
+      animated: isAnimated,
+      barStyle: 'dark-content',
+    });
   }
 }
 

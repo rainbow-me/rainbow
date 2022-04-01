@@ -1,5 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import { get } from 'lodash';
+import { Platform } from 'react-native';
 // eslint-disable-next-line import/default
 import AndroidKeyboardAdjust from 'react-native-android-keyboard-adjust';
 import currentColors from '../context/currentColors';
@@ -28,11 +29,22 @@ export function triggerOnSwipeLayout(newAction) {
   }
 }
 
-export function onHandleStatusBar() {
+export function onHandleStatusBar(isColdAuthorizedLaunch) {
   StatusBarService.setHidden(false);
   const routeName = Navigation.getActiveRouteName();
 
-  if (currentColors.theme === 'dark') {
+  if (
+    isColdAuthorizedLaunch &&
+    android &&
+    currentColors.theme === 'dark' &&
+    Platform.constants['Release'] >= 12
+  ) {
+    StatusBarService.setDarkContent();
+    setTimeout(() => {
+      StatusBarService.setLightContent();
+    }, 370);
+    return;
+  } else if (currentColors.theme === 'dark') {
     StatusBarService.setLightContent();
     return;
   }
@@ -65,6 +77,12 @@ export function onNavigationStateChange() {
     action = undefined;
   }
 
+  onHandleStatusBar(
+    memPrevRouteName === Routes.PROFILE_SCREEN &&
+      memRouteName === Routes.WALLET_SCREEN &&
+      routeName === Routes.WALLET_SCREEN
+  );
+
   memPrevRouteName = memRouteName;
   memRouteName = routeName;
 
@@ -87,8 +105,6 @@ export function onNavigationStateChange() {
       AndroidKeyboardAdjust.setAdjustResize();
     }
   }
-
-  onHandleStatusBar();
 
   if (routeName !== memPrevRouteName) {
     let paramsToTrack = null;
