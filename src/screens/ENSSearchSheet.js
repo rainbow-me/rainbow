@@ -127,11 +127,7 @@ export default function ENSSearchSheet() {
             </Text>
           </Inline>
         )}
-        {isIdle && (
-          <>
-            <PendingRegistrations />
-          </>
-        )}
+        {isIdle && <PendingRegistrations />}
         {isInvalid && (
           <Inset horizontal="30px">
             <Text align="center" color="secondary50" size="16px" weight="bold">

@@ -24,10 +24,10 @@ const RegisterContent = ({
             size="23px"
             weight="bold"
           >
-            One last step 💈
+            {lang.t('profiles.confirm.last_step')} 💈
           </Text>
           <Text align="center" color="secondary60" size="16px" weight="bold">
-            Confirm below to register your name and configure your profile
+            {lang.t('profiles.confirm.last_step_description')}
           </Text>
         </Stack>
       </Box>

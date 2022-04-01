@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import { Alert } from '../../../components/alerts';
@@ -8,6 +9,7 @@ import {
   Box,
   Column,
   Columns,
+  Divider,
   Inset,
   Stack,
   Text,
@@ -121,16 +123,19 @@ const PendingRegistrations = () => {
     (name: string) => {
       Alert({
         buttons: [
-          { style: 'cancel', text: 'Cancel' },
+          {
+            style: 'cancel',
+            text: lang.t('profiles.pending_registrations.alert_cancel'),
+          },
           {
             onPress: () => {
               removeRegistrationByName(name);
             },
-            text: 'Proceed Anyway',
+            text: lang.t('profiles.pending_registrations.alert_confirm'),
           },
         ],
-        message: `You are about to stop the registration process.\n  You'd need to start it again which means you'll need to send an additional transaction.`,
-        title: 'Are you sure?',
+        message: lang.t('profiles.pending_registrations.alert_message'),
+        title: lang.t('profiles.pending_registrations.alert_title'),
       });
     },
     [removeRegistrationByName]
@@ -138,13 +143,13 @@ const PendingRegistrations = () => {
 
   return pendingRegistrations?.length ? (
     <>
-      {/* <Inset vertical="24px">
+      <Inset vertical="24px">
         <Divider />
-      </Inset> */}
+      </Inset>
       <Box paddingHorizontal="19px">
         <Stack space="19px">
           <Text color="secondary50" containsEmoji size="14px" weight="bold">
-            {' 􀺉 In progress '}
+            {lang.t('profiles.pending_registrations.in_progress')}
           </Text>
           {pendingRegistrations.map(registration => (
             <PendingRegistration
