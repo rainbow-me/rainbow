@@ -1,5 +1,5 @@
 import { EthereumAddress } from '.';
-import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
+import { ENS_RECORDS, REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 
 export type Records = { [key in ENS_RECORDS]?: string };
 
@@ -19,7 +19,7 @@ export interface TransactionRegistrationParameters {
 export interface RegistrationParameters
   extends TransactionRegistrationParameters {
   duration: number;
-  mode?: 'create' | 'edit';
+  mode?: keyof typeof REGISTRATION_MODES;
   name: string;
   ownerAddress: EthereumAddress;
   rentPrice: string;

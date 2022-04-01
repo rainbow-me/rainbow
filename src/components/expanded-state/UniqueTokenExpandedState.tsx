@@ -59,6 +59,7 @@ import {
 } from '@rainbow-me/design-system';
 import { AssetTypes, UniqueAsset } from '@rainbow-me/entities';
 import { buildUniqueTokenName } from '@rainbow-me/helpers/assets';
+import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import {
   useAccountProfile,
   useDimensions,
@@ -326,7 +327,7 @@ const UniqueTokenExpandedState = ({
     if (isENS) {
       navigate(Routes.REGISTER_ENS_NAVIGATOR, {
         ensName: uniqueId,
-        mode: 'edit',
+        mode: REGISTRATION_MODES.EDIT,
       });
     }
   }, [isENS, navigate, uniqueId]);
@@ -496,10 +497,12 @@ const UniqueTokenExpandedState = ({
                         )}
                         {isENS && (
                           <ENSBriefTokenInfoRow
+                            ensName={uniqueId}
                             expiryDate={ensData?.registration.expiryDate}
                             registrationDate={
                               ensData?.registration.registrationDate
                             }
+                            showEditButton={hasEditButton}
                           />
                         )}
                       </Bleed>
