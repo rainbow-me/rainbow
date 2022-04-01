@@ -45,8 +45,6 @@ export default function SwapDetailsContent({
     (!isHighPriceImpact || priceImpactNativeAmount) &&
     priceImpactPercentDisplay;
 
-  const rainbowFee = '0.85%';
-
   const [areDetailsExpanded, setAreDetailsExpanded] = useState(false);
 
   const colorForAsset = useColorForAsset(outputCurrency, undefined, true, true);
@@ -59,7 +57,7 @@ export default function SwapDetailsContent({
         {...props}
       >
         <Rows space="24px">
-          <SwapDetailsFeeRow fee={rainbowFee} />
+          <SwapDetailsFeeRow tradeDetails={tradeDetails} />
           <SwapDetailsPriceRow tradeDetails={tradeDetails} />
           <ButtonPressAnimation
             onPress={() => setAreDetailsExpanded(!areDetailsExpanded)}
