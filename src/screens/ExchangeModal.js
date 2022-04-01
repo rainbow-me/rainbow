@@ -210,7 +210,12 @@ export default function ExchangeModal({
     priceImpactColor,
     priceImpactNativeAmount,
     priceImpactPercentDisplay,
-  } = usePriceImpactDetails(inputAmount, outputAmount);
+  } = usePriceImpactDetails(
+    inputAmount,
+    outputAmount,
+    inputCurrency,
+    outputCurrency
+  );
 
   const flashbotsEnabled = useExperimentalFlag(FLASHBOTS);
   const flashbots = network === Network.mainnet && flashbotsEnabled;

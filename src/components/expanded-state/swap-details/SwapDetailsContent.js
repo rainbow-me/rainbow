@@ -80,7 +80,7 @@ export default function SwapDetailsContent({
 
         const priceOfEth = ethereumUtils.getEthPriceUnit();
 
-        return Number(feeInOutputToken) * priceOfEth;
+        return (Number(feeInOutputToken) * priceOfEth).toFixed(2);
         // eth to token or token to token
       } else {
         const feeInInputTokensRawAmount = subtract(

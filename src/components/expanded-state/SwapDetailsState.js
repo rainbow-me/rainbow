@@ -91,7 +91,7 @@ export default function SwapDetailsState({
   const { network } = useAccountSettings();
   const { setParams } = useNavigation();
   const { params: { longFormHeight } = {} } = useRoute();
-  const { outputCurrency } = useSwapCurrencies();
+  const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
   const {
     derivedValues: { inputAmount, outputAmount },
@@ -106,7 +106,12 @@ export default function SwapDetailsState({
     priceImpactColor,
     priceImpactNativeAmount,
     priceImpactPercentDisplay,
-  } = usePriceImpactDetails(inputAmount, outputAmount);
+  } = usePriceImpactDetails(
+    inputAmount,
+    outputAmount,
+    inputCurrency,
+    outputCurrency
+  );
 
   const {
     copiedText,
