@@ -468,7 +468,7 @@ export default function ChartExpandedState({ asset }) {
               assetName: asset?.name,
             })}
           >
-            <Description text={delayedDescriptions} />
+            <Description text={description || delayedDescriptions} />
           </ExpandedStateSection>
         )}
         <SocialLinks
