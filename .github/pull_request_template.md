@@ -11,3 +11,4 @@ Fixes RNBW-####
 - [ ] Assigned individual reviewers?
 - [ ] Added labels?
 - [ ] Added e2e tests? if not please specify why
+- [ ] If you added new files, did you update the CODEOWNERS file?
