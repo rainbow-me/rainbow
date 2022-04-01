@@ -36,7 +36,10 @@ import { timeUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 
 // add waiting buffer
-const ENS_SECONDS_WAIT = 70;
+const ENS_SECONDS_WAIT = 60;
+
+const getBlockMsTimestamp = (block: { timestamp: number }) =>
+  block.timestamp * 1000;
 
 const formatENSActionParams = (
   registrationParameters: RegistrationParameters
@@ -68,6 +71,7 @@ export default function useENSRegistrationActionHandler(
   const { navigate } = useNavigation();
   const { getTransactionByHash } = useTransactions();
   const [stepGasLimit, setStepGasLimit] = useState<string | null>(null);
+
   const timeout = useRef<NodeJS.Timeout>();
 
   const [
@@ -86,9 +90,10 @@ export default function useENSRegistrationActionHandler(
     () => IS_TESTING === 'true' && isHardHat(web3Provider.connection.url),
     []
   );
+
+  const [readyToRegister, setReadyToRegister] = useState<boolean>(isTesting);
   // flag to wait 10 secs before we get the tx block, to be able to simulate not confirmed tx when testing
   const shouldLoopForConfirmation = useRef(isTesting);
-
   const avatarMetadata = useRecoilValue(avatarMetadataAtom);
   const coverMetadata = useRecoilValue(coverMetadataAtom);
 
@@ -101,12 +106,15 @@ export default function useENSRegistrationActionHandler(
       if (!wallet) {
         return;
       }
-      const nonce = await getNextNonce();
       const salt = generateSalt();
-      const rentPrice = await getRentPrice(
-        registrationParameters.name.replace(ENS_DOMAIN, ''),
-        duration
-      );
+
+      const [nonce, rentPrice] = await Promise.all([
+        getNextNonce(),
+        getRentPrice(
+          registrationParameters.name.replace(ENS_DOMAIN, ''),
+          duration
+        ),
+      ]);
 
       const commitEnsRegistrationParameters: ENSActionParameters = {
         ...formatENSActionParams(registrationParameters),
@@ -169,18 +177,14 @@ export default function useENSRegistrationActionHandler(
         return;
       }
 
-      const nonce = await getNextNonce();
-      const rentPrice = await getRentPrice(
-        name.replace(ENS_DOMAIN, ''),
-        duration
-      );
-      const changedRecords = await uploadRecordImages(
-        registrationParameters.changedRecords,
-        {
+      const [nonce, rentPrice, changedRecords] = await Promise.all([
+        getNextNonce(),
+        getRentPrice(name.replace(ENS_DOMAIN, ''), duration),
+        uploadRecordImages(registrationParameters.changedRecords, {
           avatar: avatarMetadata,
           cover: coverMetadata,
-        }
-      );
+        }),
+      ]);
 
       const registerEnsRegistrationParameters: ENSActionParameters = {
         ...formatENSActionParams(registrationParameters),
@@ -278,15 +282,16 @@ export default function useENSRegistrationActionHandler(
       if (!wallet) {
         return;
       }
-      const changedRecords = await uploadRecordImages(
-        registrationParameters.changedRecords,
-        {
+
+      const [nonce, changedRecords, resolver] = await Promise.all([
+        getNextNonce(),
+        uploadRecordImages(registrationParameters.changedRecords, {
           avatar: avatarMetadata,
           cover: coverMetadata,
-        }
-      );
-      const nonce = await getNextNonce();
-      const resolver = await fetchResolver(registrationParameters.name);
+        }),
+        fetchResolver(registrationParameters.name),
+      ]);
+
       const setRecordsEnsRegistrationParameters: ENSActionParameters = {
         ...formatENSActionParams(registrationParameters),
         nonce,
@@ -389,15 +394,16 @@ export default function useENSRegistrationActionHandler(
     if (!registrationParameters.commitTransactionConfirmedAt)
       return REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION;
     // COMMIT tx was confirmed but 60 secs haven't passed yet
-    if (secondsSinceCommitConfirmed < ENS_SECONDS_WAIT)
+    // or current block is not 60 secs ahead of COMMIT tx block
+    if (secondsSinceCommitConfirmed < ENS_SECONDS_WAIT || !readyToRegister)
       return REGISTRATION_STEPS.WAIT_ENS_COMMITMENT;
-
     return REGISTRATION_STEPS.REGISTER;
   }, [
     mode,
     registrationParameters.commitTransactionConfirmedAt,
     registrationParameters.commitTransactionHash,
     secondsSinceCommitConfirmed,
+    readyToRegister,
   ]);
 
   const actions = useMemo(
@@ -446,10 +452,9 @@ export default function useENSRegistrationActionHandler(
         registrationParameters?.commitTransactionHash || ''
       );
       const block = await web3Provider.getBlock(tx.blockHash || '');
-      const blockTimestamp = block?.timestamp;
-      if (!shouldLoopForConfirmation.current && blockTimestamp) {
+      if (!shouldLoopForConfirmation.current && block?.timestamp) {
         const now = Date.now();
-        const msBlockTimestamp = blockTimestamp * 1000;
+        const msBlockTimestamp = getBlockMsTimestamp(block);
         // hardhat block timestamp is behind
         const timeDifference = isTesting ? now - msBlockTimestamp : 0;
         const commitTransactionConfirmedAt = msBlockTimestamp + timeDifference;
@@ -514,6 +519,31 @@ export default function useENSRegistrationActionHandler(
     }
     return () => clearInterval(interval);
   }, [registrationStep, secondsSinceCommitConfirmed]);
+
+  useEffect(() => {
+    // we need to check from blocks if the time has passed or not
+    const checkRegisterBlockTimestamp = async () => {
+      try {
+        const block = await web3Provider.getBlock('latest');
+        const msBlockTimestamp = getBlockMsTimestamp(block);
+        const secs = differenceInSeconds(
+          msBlockTimestamp,
+          registrationParameters?.commitTransactionConfirmedAt ||
+            msBlockTimestamp
+        );
+        if (secs > ENS_SECONDS_WAIT) setReadyToRegister(true);
+        // eslint-disable-next-line no-empty
+      } catch (e) {}
+    };
+    if (secondsSinceCommitConfirmed >= ENS_SECONDS_WAIT) {
+      checkRegisterBlockTimestamp();
+    }
+  }, [
+    isTesting,
+    registrationParameters?.commitTransactionConfirmedAt,
+    registrationStep,
+    secondsSinceCommitConfirmed,
+  ]);
 
   useEffect(() => () => timeout.current && clearTimeout(timeout.current), []);
 
