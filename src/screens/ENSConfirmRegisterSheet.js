@@ -3,15 +3,15 @@ import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
-import { Switch } from 'react-native-gesture-handler';
 import { useRecoilState } from 'recoil';
-import brain from '../assets/brain.png';
-import {
-  ButtonPressAnimation,
-  HourglassAnimation,
-} from '../components/animations';
+import { HourglassAnimation } from '../components/animations';
 import { HoldToAuthorizeButton } from '../components/buttons';
-import { RegistrationReviewRows } from '../components/ens-registration';
+import {
+  CommitContent,
+  RegisterContent,
+  RenewContent,
+  WaitCommitmentConfirmationContent,
+} from '../components/ens-registration';
 import { GasSpeedButton } from '../components/gas';
 import { SheetActionButtonRow, SlackSheet } from '../components/sheet';
 import {
@@ -19,7 +19,6 @@ import {
   Box,
   Divider,
   Heading,
-  Inline,
   Inset,
   Row,
   Rows,
@@ -30,6 +29,7 @@ import { fetchReverseRecord } from '@rainbow-me/handlers/ens';
 import {
   accentColorAtom,
   ENS_DOMAIN,
+  REGISTRATION_MODES,
   REGISTRATION_STEPS,
 } from '@rainbow-me/helpers/ens';
 import {
@@ -50,109 +50,6 @@ import { colors } from '@rainbow-me/styles';
 export const ENSConfirmRegisterSheetHeight = 600;
 export const ENSConfirmUpdateSheetHeight = 400;
 const avatarSize = 70;
-
-function CommitContent({ registrationCostsData, setDuration, duration }) {
-  return (
-    <Inset horizontal="30px">
-      <Stack space="34px">
-        <Inline
-          alignHorizontal="center"
-          alignVertical="center"
-          space="6px"
-          wrap={false}
-        >
-          <Box>
-            <ImgixImage source={brain} style={{ height: 20, width: 20 }} />
-          </Box>
-          <Text color="secondary50" size="14px" weight="heavy">
-            {lang.t('profiles.confirm.suggestion')}
-          </Text>
-        </Inline>
-        <RegistrationReviewRows
-          duration={duration}
-          estimatedCostETH={
-            registrationCostsData?.estimatedTotalRegistrationCost?.eth
-          }
-          maxDuration={99}
-          networkFee={registrationCostsData?.estimatedNetworkFee?.display}
-          onChangeDuration={setDuration}
-          registrationFee={
-            registrationCostsData?.estimatedRentPrice?.total?.display
-          }
-          totalCost={
-            registrationCostsData?.estimatedTotalRegistrationCost?.display
-          }
-        />
-        <Divider color="divider40" />
-      </Stack>
-    </Inset>
-  );
-}
-
-function RegisterContent({
-  setSendReverseRecord,
-  accentColor,
-  sendReverseRecord,
-}) {
-  return (
-    <Box paddingHorizontal="30px">
-      <Box height="4/5">
-        <Stack space="12px">
-          <Text
-            align="center"
-            color="primary"
-            containsEmoji
-            size="23px"
-            weight="bold"
-          >
-            One last step 💈
-          </Text>
-          <Text align="center" color="secondary60" size="16px" weight="bold">
-            Confirm below to register your name and configure your profile
-          </Text>
-        </Stack>
-      </Box>
-      <Box height="1/5">
-        <Inline alignHorizontal="justify" alignVertical="center">
-          <Text color="secondary80" size="16px" weight="bold">
-            {lang.t('profiles.confirm.set_ens_name')} 􀅵
-          </Text>
-          <Switch
-            disabled={!setSendReverseRecord}
-            onValueChange={() =>
-              setSendReverseRecord?.(sendReverseRecord => !sendReverseRecord)
-            }
-            testID="ens-reverse-record-switch"
-            trackColor={{ false: colors.white, true: accentColor }}
-            value={sendReverseRecord}
-          />
-        </Inline>
-      </Box>
-    </Box>
-  );
-}
-
-function WaitCommitmentConfirmationContent({ accentColor, action }) {
-  return (
-    <Box height="full">
-      <Box height="full">
-        <HourglassAnimation />
-      </Box>
-      <Box alignItems="center" paddingBottom={5}>
-        <ButtonPressAnimation onPress={() => action(accentColor)}>
-          <Text
-            color={{ custom: accentColor }}
-            containsEmoji
-            size="16px"
-            weight="heavy"
-          >
-            {`🚀 ${lang.t('profiles.confirm.speed_up')}`}
-          </Text>
-        </ButtonPressAnimation>
-      </Box>
-    </Box>
-  );
-}
 
 function TransactionActionRow({
   action,
@@ -241,11 +138,12 @@ export default function ENSConfirmRegisterSheet() {
   });
 
   const { data: registrationCostsData } = useENSRegistrationCosts({
-    duration,
     name,
     records: values,
     rentPrice: registrationData?.rentPrice,
     sendReverseRecord,
+    step,
+    yearsDuration: duration,
   });
 
   const goToProfileScreen = useCallback(() => {
@@ -265,7 +163,10 @@ export default function ENSConfirmRegisterSheet() {
   );
 
   const stepLabel = useMemo(() => {
-    if (mode === 'edit') return lang.t('profiles.confirm.confirm_update');
+    if (mode === REGISTRATION_MODES.EDIT)
+      return lang.t('profiles.confirm.confirm_update');
+    if (mode === REGISTRATION_MODES.RENEW)
+      return lang.t('profiles.confirm.extend_registration');
     if (step === REGISTRATION_STEPS.COMMIT)
       return lang.t('profiles.confirm.registration_details');
     if (step === REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION)
@@ -300,6 +201,14 @@ export default function ENSConfirmRegisterSheet() {
         />
       ),
       [REGISTRATION_STEPS.EDIT]: null,
+      [REGISTRATION_STEPS.RENEW]: (
+        <RenewContent
+          name={name}
+          registrationCostsData={registrationCostsData}
+          setDuration={setDuration}
+          yearsDuration={duration}
+        />
+      ),
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: (
         <WaitCommitmentConfirmationContent
           accentColor={accentColor}
@@ -317,6 +226,7 @@ export default function ENSConfirmRegisterSheet() {
       action,
       duration,
       isSufficientGasForStep,
+      name,
       registrationCostsData,
       sendReverseRecord,
     ]
@@ -351,6 +261,19 @@ export default function ENSConfirmRegisterSheet() {
           isSufficientGas={isSufficientGasForStep}
           isValidGas={isValidGas && Boolean(gasLimit)}
           label={lang.t('profiles.confirm.confirm_registration')}
+          testID={step}
+        />
+      ),
+      [REGISTRATION_STEPS.RENEW]: (
+        <TransactionActionRow
+          accentColor={accentColor}
+          action={() => {
+            action();
+            goToProfileScreen();
+          }}
+          isSufficientGas={isSufficientGasForStep}
+          isValidGas={isValidGas && Boolean(gasLimit)}
+          label={lang.t('profiles.confirm.confirm_renew')}
           testID={step}
         />
       ),
@@ -395,7 +318,8 @@ export default function ENSConfirmRegisterSheet() {
     if (
       step === REGISTRATION_STEPS.COMMIT ||
       step === REGISTRATION_STEPS.REGISTER ||
-      step === REGISTRATION_STEPS.EDIT
+      step === REGISTRATION_STEPS.EDIT ||
+      step === REGISTRATION_STEPS.RENEW
     )
       startPollingGasFees();
   }, [startPollingGasFees, step]);

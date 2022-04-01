@@ -10,6 +10,7 @@ import useENSProfile from './useENSProfile';
 import useImagePicker from './useImagePicker';
 import useWallets from './useWallets';
 import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
+import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import { walletsSetSelected, walletsUpdate } from '@rainbow-me/redux/wallets';
 import Routes from '@rainbow-me/routes';
 import { buildRainbowUrl, showActionSheetWithOptions } from '@rainbow-me/utils';
@@ -128,7 +129,7 @@ export default () => {
         } else if (buttonIndex === 1 && !isReadOnlyWallet) {
           navigate(Routes.REGISTER_ENS_NAVIGATOR, {
             ensName: accountENS,
-            mode: 'edit',
+            mode: REGISTRATION_MODES.EDIT,
           });
         }
       } else {

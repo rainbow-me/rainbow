@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAccountSettings, useENSProfile } from '.';
 import { ENSRegistrationState, Records } from '@rainbow-me/entities';
+import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import * as ensRedux from '@rainbow-me/redux/ensRegistration';
 import { AppState } from '@rainbow-me/redux/store';
 import getENSNFTAvatarUrl from '@rainbow-me/utils/getENSNFTAvatarUrl';
@@ -48,7 +49,7 @@ export default function useENSRegistration({
     [accountAddress, dispatch]
   );
   const startRegistration = useCallback(
-    (name: string, mode: 'create' | 'edit') =>
+    (name: string, mode: keyof typeof REGISTRATION_MODES) =>
       dispatch(ensRedux.startRegistration(accountAddress, name, mode)),
     [accountAddress, dispatch]
   );
@@ -73,11 +74,13 @@ export default function useENSRegistration({
     [accountAddress, dispatch]
   );
 
-  const profileQuery = useENSProfile(name, { enabled: mode === 'edit' });
+  const profileQuery = useENSProfile(name, {
+    enabled: mode === REGISTRATION_MODES.EDIT,
+  });
   useEffect(() => {
     if (
       setInitialRecordsWhenInEditMode &&
-      mode === 'edit' &&
+      mode === REGISTRATION_MODES.EDIT &&
       profileQuery.isSuccess
     ) {
       dispatch(

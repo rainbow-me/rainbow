@@ -14,6 +14,7 @@ import {
   saveLocalENSRegistrations,
 } from '@rainbow-me/handlers/localstorage/accountLocal';
 import { NetworkTypes } from '@rainbow-me/helpers';
+import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 
 const ENS_REGISTRATION_SET_CHANGED_RECORDS =
   'ensRegistration/ENS_REGISTRATION_SET_CHANGED_RECORDS';
@@ -144,7 +145,7 @@ export const ensRegistrationsLoadState = () => async (
 export const startRegistration = (
   accountAddress: EthereumAddress,
   name: string,
-  mode: 'create' | 'edit' = 'create'
+  mode: keyof typeof REGISTRATION_MODES = REGISTRATION_MODES.CREATE
 ) => async (dispatch: AppDispatch, getState: AppGetState) => {
   const {
     ensRegistration: { registrations },
