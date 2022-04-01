@@ -36,7 +36,7 @@ export async function savePIN(pin: any) {
   }
 }
 
-export async function authenticateWithPIN(shouldSavePin: boolean = true) {
+export async function authenticateWithPINAndCreateIfNeeded() {
   let validPin: any;
   try {
     validPin = await getExistingPIN();
@@ -47,13 +47,30 @@ export async function authenticateWithPIN(shouldSavePin: boolean = true) {
       onCancel: () => reject(),
       onSuccess: async (pin: any) => {
         // If we didn't have a PIN we need to encrypt it and store it
-        if (!validPin && shouldSavePin) {
+        if (!validPin) {
           try {
             await savePIN(pin);
           } catch (e) {
             reject();
           }
         }
+        resolve(pin);
+      },
+      validPin,
+    });
+  });
+}
+
+export async function authenticateWithPIN() {
+  let validPin: any;
+  try {
+    validPin = await getExistingPIN();
+    // eslint-disable-next-line no-empty
+  } catch (e) {}
+  return new Promise((resolve, reject) => {
+    return Navigation.handleAction(Routes.PIN_AUTHENTICATION_SCREEN, {
+      onCancel: () => reject(),
+      onSuccess: async (pin: any) => {
         resolve(pin);
       },
       validPin,

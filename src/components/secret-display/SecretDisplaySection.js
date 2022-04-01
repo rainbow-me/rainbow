@@ -3,6 +3,7 @@ import { captureException } from '@sentry/react-native';
 import { upperFirst } from 'lodash';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import {
+  createdWithBiometricError,
   identifyWalletType,
   loadSeedPhraseAndMigrateIfNeeded,
 } from '../../model/wallet';
@@ -92,7 +93,7 @@ export default function SecretDisplaySection({
   const walletId = params?.walletId || selectedWallet.id;
   const currentWallet = wallets[walletId];
   const [visible, setVisible] = useState(true);
-  const [isRecoveryPhraseVisible, setRecoveryPhraseVisible] = useState(false);
+  const [isRecoveryPhraseVisible, setIsRecoveryPhraseVisible] = useState(false);
   const [seed, setSeed] = useState(null);
   const [type, setType] = useState(currentWallet?.type);
 
@@ -107,11 +108,11 @@ export default function SecretDisplaySection({
       }
       setVisible(!!s);
       onSecretLoaded?.(!!s);
-      setRecoveryPhraseVisible(!!s);
+      setIsRecoveryPhraseVisible(!!s);
     } catch (e) {
       logger.sentry('Error while trying to reveal secret', e);
-      if (e?.message === 'createdWithBiometricError') {
-        setRecoveryPhraseVisible(false);
+      if (e?.message === createdWithBiometricError) {
+        setIsRecoveryPhraseVisible(false);
       }
       captureException(e);
       setVisible(false);
@@ -134,7 +135,7 @@ export default function SecretDisplaySection({
 
   const { colors } = useTheme();
 
-  const renderStep = useCallback(() => {
+  const renderStepNoSeeds = useCallback(() => {
     if (isRecoveryPhraseVisible) {
       return (
         <ColumnWithMargins align="center" justify="center">
@@ -160,7 +161,7 @@ export default function SecretDisplaySection({
         </ColumnWithMargins>
       );
     }
-  }, [isRecoveryPhraseVisible, loadSeed, typeLabel, seed]);
+  }, [isRecoveryPhraseVisible, typeLabel, loadSeed, colors.white, seed]);
   return (
     <>
       {visible ? (
@@ -195,7 +196,7 @@ export default function SecretDisplaySection({
           )}
         </ColumnWithMargins>
       ) : (
-        renderStep()
+        renderStepNoSeeds()
       )}
     </>
   );
