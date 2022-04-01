@@ -44,6 +44,11 @@ source .env
     cat .env | grep "GOOGLE" | sed 's/=/ = /g' >> ./ios/localrelease.xcconfig
     cat .env | grep "GOOGLE" | sed 's/=/ = /g' >> ./ios/staging.xcconfig
 
+    cat .env | grep "CODE_PUSH_DEPLOYMENT_KEY_IOS" | sed 's/=/ = /g' >> ./ios/debug.xcconfig
+    cat .env | grep "CODE_PUSH_DEPLOYMENT_KEY_IOS" | sed 's/=/ = /g' >> ./ios/release.xcconfig
+    cat .env | grep "CODE_PUSH_DEPLOYMENT_KEY_IOS" | sed 's/=/ = /g' >> ./ios/localrelease.xcconfig
+    cat .env | grep "CODE_PUSH_DEPLOYMENT_KEY_IOS" | sed 's/=/ = /g' >> ./ios/staging.xcconfig
+
     # Override Google Services API Key
     if [ -n "$GOOGLE_SERVICE_API_KEY" ]; then
       sed -i''-e "s/\$(GOOGLE_SERVICE_API_KEY)/$GOOGLE_SERVICE_API_KEY/" ./ios/Frameworks/GoogleService-Info.plist

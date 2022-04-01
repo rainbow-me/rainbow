@@ -51,7 +51,7 @@ const CurrencySelectionList = (
   const prevShowSkeleton = usePrevious(showSkeleton);
 
   useEffect(() => {
-    if (!showSkeleton && prevShowSkeleton) {
+    if (!showSkeleton && prevShowSkeleton && ios) {
       skeletonTransitionRef.current?.animateNextTransition();
     }
   }, [prevShowSkeleton, showSkeleton]);

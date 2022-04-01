@@ -227,7 +227,9 @@ export default function ChartExpandedState({ asset }) {
     links,
   } = useAdditionalAssetData(asset?.address, assetWithPrice?.price?.value);
 
-  const delayedDescriptions = useDelayedValueWithLayoutAnimation(description);
+  const delayedDescriptions = useDelayedValueWithLayoutAnimation(
+    description?.replace(/\s+/g, '')
+  );
 
   const scrollableContentHeight =
     !!totalVolume || !!marketCap || !!totalLiquidity ? 68 : 0;
