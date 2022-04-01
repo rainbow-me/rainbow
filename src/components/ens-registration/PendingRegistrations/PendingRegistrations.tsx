@@ -139,7 +139,7 @@ const PendingRegistrations = () => {
     <Box paddingHorizontal="19px">
       <Stack space="19px">
         <Text color="secondary50" containsEmoji size="14px" weight="bold">
-          􀺉 In progress
+          {' 􀺉 In progress '}
         </Text>
         {pendingRegistrations.map(registration => (
           <PendingRegistration
