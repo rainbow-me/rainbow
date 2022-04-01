@@ -91,7 +91,9 @@ export default function useENSRegistrationActionHandler(
     []
   );
 
-  const [readyToRegister, setReadyToRegister] = useState<boolean>(isTesting);
+  const [readyToRegister, setReadyToRegister] = useState<boolean>(
+    isTesting || secondsSinceCommitConfirmed > 60
+  );
   // flag to wait 10 secs before we get the tx block, to be able to simulate not confirmed tx when testing
   const shouldLoopForConfirmation = useRef(isTesting);
   const avatarMetadata = useRecoilValue(avatarMetadataAtom);
@@ -546,7 +548,6 @@ export default function useENSRegistrationActionHandler(
   ]);
 
   useEffect(() => () => timeout.current && clearTimeout(timeout.current), []);
-
   return {
     action: actions[registrationStep],
     step: registrationStep,
