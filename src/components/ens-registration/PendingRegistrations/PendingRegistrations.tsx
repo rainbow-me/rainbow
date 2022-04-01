@@ -8,7 +8,6 @@ import {
   Box,
   Column,
   Columns,
-  Divider,
   Inset,
   Stack,
   Text,
@@ -139,9 +138,9 @@ const PendingRegistrations = () => {
 
   return pendingRegistrations?.length ? (
     <>
-      <Inset vertical="24px">
+      {/* <Inset vertical="24px">
         <Divider />
-      </Inset>
+      </Inset> */}
       <Box paddingHorizontal="19px">
         <Stack space="19px">
           <Text color="secondary50" containsEmoji size="14px" weight="bold">

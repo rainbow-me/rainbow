@@ -13,7 +13,7 @@ export default function useENSPendingRegistrations() {
     ({ ensRegistration }: AppState) => {
       const { registrations } = ensRegistration as ENSRegistrationState;
       const accountRegistrations =
-        registrations?.[accountAddress.toLowerCase()];
+        registrations?.[accountAddress.toLowerCase()] || [];
       const registrationsArray = Object.values(accountRegistrations);
 
       const pendingRegistrations = registrationsArray
@@ -36,7 +36,7 @@ export default function useENSPendingRegistrations() {
     ({ uniqueTokens }: AppState) => uniqueTokens.uniqueTokens
   );
   const registrationImages = useMemo(() => {
-    const registrationImagesArray = pendingRegistrations.map(
+    const registrationImagesArray = pendingRegistrations?.map(
       ({ name, records }) => {
         const avatarUrl = getENSNFTAvatarUrl(uniqueTokens, records?.avatar);
         return {
