@@ -100,12 +100,12 @@ src/raps/registerENS.ts @estebanmino @jxom
 
 # charts, shadow stack, cool modals, sheets
 src/react-native-animated-charts @osdnk @terrysahaidak
-src/react-native-cool-modals @osdnk @terrysahaidak
+src/react-native-cool-modals @osdnk @brunobar79
 src/react-native-shadow-stack @osdnk @terrysahaidak
 src/react-native-yet-another-bottom-sheet @osdnk @terrysahaidak
 
 # react query
-src/react-query @jinchung @derHowie
+src/react-query @jinchung @derHowie @jxom
 
 # redux
 src/redux @jinchung @brunobar79
