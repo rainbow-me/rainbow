@@ -8,6 +8,7 @@ import {
   Box,
   Column,
   Columns,
+  Divider,
   Inset,
   Stack,
   Text,
@@ -136,23 +137,28 @@ const PendingRegistrations = () => {
     [removeRegistrationByName]
   );
 
-  return (
-    <Box paddingHorizontal="19px">
-      <Stack space="19px">
-        <Text color="secondary50" containsEmoji size="14px" weight="bold">
-          {' 􀺉 In progress '}
-        </Text>
-        {pendingRegistrations.map(registration => (
-          <PendingRegistration
-            avatarUrl={registrationImages?.[registration.name]}
-            key={registration.name}
-            registration={registration}
-            removeRegistration={removeRegistration}
-          />
-        ))}
-      </Stack>
-    </Box>
-  );
+  return pendingRegistrations?.length ? (
+    <>
+      <Inset vertical="24px">
+        <Divider />
+      </Inset>
+      <Box paddingHorizontal="19px">
+        <Stack space="19px">
+          <Text color="secondary50" containsEmoji size="14px" weight="bold">
+            {' 􀺉 In progress '}
+          </Text>
+          {pendingRegistrations.map(registration => (
+            <PendingRegistration
+              avatarUrl={registrationImages?.[registration.name]}
+              key={registration.name}
+              registration={registration}
+              removeRegistration={removeRegistration}
+            />
+          ))}
+        </Stack>
+      </Box>
+    </>
+  ) : null;
 };
 
 export default PendingRegistrations;

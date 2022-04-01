@@ -129,12 +129,7 @@ export default function ENSSearchSheet() {
         )}
         {isIdle && (
           <>
-            <Inset vertical="24px">
-              <Divider />
-            </Inset>
-            <Box>
-              <PendingRegistrations />
-            </Box>
+            <PendingRegistrations />
           </>
         )}
         {isInvalid && (
