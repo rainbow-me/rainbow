@@ -1268,16 +1268,15 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (
       let userPIN = null;
       if (android) {
         const hasBiometricsEnabled = await getSupportedBiometryType();
-        if (!seedData && !seedPhrase) {
-          logger.sentry('wallet was created with biometric');
+        if (!seedData && !seedPhrase && !hasBiometricsEnabled) {
+          logger.sentry(
+            'Wallet is created with biometric data, there is no access to the seed'
+          );
           throw new Error(createdWithBiometricError);
         }
-        // Fallback to custom PIN
-        if (
-          !hasBiometricsEnabled ||
-          (seedPhrase?.includes('cipher') && hasBiometricsEnabled)
-        ) {
-          // hasn't biometric or created with PIN
+        // Fallback to check PIN
+        const isSeedHasPIN = seedPhrase?.includes('cipher');
+        if (isSeedHasPIN) {
           try {
             userPIN = await authenticateWithPIN();
             if (userPIN) {
