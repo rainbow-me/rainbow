@@ -13,6 +13,7 @@ import {
   Text,
 } from '@rainbow-me/design-system';
 import { RegistrationParameters } from '@rainbow-me/entities';
+import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import {
   useENSPendingRegistrations,
   useENSRegistration,
@@ -35,7 +36,7 @@ const PendingRegistration = ({
 
   const onFinish = useCallback(
     async (name: string) => {
-      startRegistration(name, 'create');
+      startRegistration(name, REGISTRATION_MODES.CREATE);
       setTimeout(() => {
         navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {});
       }, 100);
