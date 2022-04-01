@@ -1275,8 +1275,8 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (
           throw new Error(createdWithBiometricError);
         }
         // Fallback to check PIN
-        const isSeedHasPIN = seedPhrase?.includes('cipher');
-        if (isSeedHasPIN) {
+        const isSeedHasPINInfo = seedPhrase?.includes('cipher');
+        if (isSeedHasPINInfo) {
           try {
             userPIN = await authenticateWithPIN();
             if (userPIN) {
