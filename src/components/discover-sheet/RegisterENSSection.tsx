@@ -1,9 +1,11 @@
 import lang from 'i18n-js';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '../../navigation/Navigation';
 import { ButtonPressAnimation } from '../animations';
+import { ensAvatarUrl } from '../ens-registration/IntroMarquee/IntroMarquee';
 import ENSIcon from '../icons/svg/ENSIcon';
+import ImgixImage from '../images/ImgixImage';
 import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config';
 import { useTheme } from '@rainbow-me/context';
 import {
@@ -15,6 +17,7 @@ import {
   Text,
 } from '@rainbow-me/design-system';
 import { useWallets } from '@rainbow-me/hooks';
+import { ensIntroMarqueeNames } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { watchingAlert } from '@rainbow-me/utils';
 
@@ -30,6 +33,13 @@ export default function RegisterENSSection() {
       watchingAlert();
     }
   }, [isReadOnlyWallet, navigate]);
+
+  useEffect(() => {
+    // Preload intro screen preview marquee ENS images
+    ImgixImage.preload(
+      ensIntroMarqueeNames.map(name => ({ uri: ensAvatarUrl(name) }))
+    );
+  }, []);
 
   return (
     <ButtonPressAnimation

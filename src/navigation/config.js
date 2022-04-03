@@ -9,7 +9,6 @@ import colors from '../context/currentColors';
 import { ENSConfirmRegisterSheetHeight } from '../screens/ENSConfirmRegisterSheet';
 import { explainers, ExplainSheetHeight } from '../screens/ExplainSheet';
 import { ExternalLinkWarningSheetHeight } from '../screens/ExternalLinkWarningSheet';
-import { SelectENSSheetHeight } from '../screens/SelectENSSheet';
 import { SendConfirmationSheetHeight } from '../screens/SendConfirmationSheet';
 import { onWillPop } from './Navigation';
 import networkInfo from '@rainbow-me/helpers/networkInfo';

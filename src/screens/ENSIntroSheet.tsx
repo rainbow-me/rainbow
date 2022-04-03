@@ -140,7 +140,7 @@ export default function ENSIntroSheet() {
                           onPress={handleNavigateToSearch}
                           textProps={{ weight: 'heavy' }}
                         >
-                          􀠎 Find your name
+                          􀠎 {lang.t('profiles.intro.find_your_name')}
                         </Button>
                       ) : (
                         <Stack space="15px">
@@ -150,7 +150,9 @@ export default function ENSIntroSheet() {
                               onPress={handleSelectExistingName}
                               textProps={{ weight: 'heavy' }}
                             >
-                              Use {domains[0].name}
+                              {lang.t('profiles.intro.use_name', {
+                                name: domains[0].name,
+                              })}
                             </Button>
                           ) : (
                             <Button
@@ -158,7 +160,7 @@ export default function ENSIntroSheet() {
                               onPress={handleSelectExistingName}
                               textProps={{ weight: 'heavy' }}
                             >
-                              Use an existing ENS name
+                              {lang.t('profiles.intro.use_existing_name')}
                             </Button>
                           )}
                           <Button
@@ -168,7 +170,7 @@ export default function ENSIntroSheet() {
                             onPress={handleNavigateToSearch}
                             textProps={{ size: 'lmedium', weight: 'heavy' }}
                           >
-                            Search for a new ENS name
+                            {lang.t('profiles.intro.search_new_name')}
                           </Button>
                         </Stack>
                       )}

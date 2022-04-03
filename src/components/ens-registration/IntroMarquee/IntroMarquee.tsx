@@ -8,7 +8,7 @@ import { useNavigation } from '@rainbow-me/navigation';
 import { ensIntroMarqueeNames } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 
-const ensAvatarUrl = (ensName: string) =>
+export const ensAvatarUrl = (ensName: string) =>
   `https://metadata.ens.domains/mainnet/avatar/${ensName}?v=1.0`;
 
 export default function IntroMarquee() {
@@ -68,6 +68,7 @@ function ENSAvatarPlaceholder({
   return (
     <ButtonPressAnimation
       onCancel={({ nativeEvent: { state, close } }: any) => {
+        // Ensure the press has been triggered
         if (state === 5 && close) {
           ReactNativeHapticFeedback.trigger('selection');
           onPress();

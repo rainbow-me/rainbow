@@ -586,8 +586,13 @@
         "stored_on_blockchain_info": {
           "title": "Stored on the blockchain",
           "description": "Your name and profile are stored on Ethereum and owned by you."
-        }
+        },
+        "find_your_name": "Find your name",
+        "use_name": "Use %{name}",
+        "use_existing_name": "Use an existing ENS name",
+        "search_new_name": "Search for a new ENS name"
       },
+      "select_ens_name": "Select ENS Name",
       "search": {
         "header": "Find your name",
         "description": "Search available profile names",

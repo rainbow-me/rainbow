@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from 'react-query';
+import { useQuery } from 'react-query';
 
 import useAccountSettings from './useAccountSettings';
 import { EnsAccountRegistratonsData } from '@rainbow-me/apollo/queries';

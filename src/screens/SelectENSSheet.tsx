@@ -1,4 +1,5 @@
 import { useRoute } from '@react-navigation/core';
+import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { FlatList } from 'react-native-gesture-handler';
 import ButtonPressAnimation from '../components/animations/ButtonPressAnimation';
@@ -105,7 +106,7 @@ export default function SelectENSSheet() {
       <Inset horizontal="19px" top="10px">
         <Stack space="15px">
           <Heading align="center" size="18px">
-            Select ENS Name
+            {lang.t('profiles.select_ens_name')}
           </Heading>
           {isSuccess && (
             <Bleed bottom="30px">

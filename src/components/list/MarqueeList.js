@@ -16,7 +16,6 @@ import Animated, {
   Value,
   withDecay,
 } from 'react-native-reanimated';
-import { TopMoverCoinRow } from '../coin-row';
 import { withSpeed } from '@rainbow-me/utils';
 
 const DECCELERATION = 0.998;
