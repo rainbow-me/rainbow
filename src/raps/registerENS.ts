@@ -80,6 +80,38 @@ export const createRegisterENSRap = async (
   return newRap;
 };
 
+export const createRenewENSRap = async (
+  ENSActionParameters: ENSActionParameters
+) => {
+  let actions: RapENSAction[] = [];
+  // // commit rap
+  const commit = createNewENSAction(
+    RapActionTypes.renewENS,
+    ENSActionParameters
+  );
+  actions = concat(actions, commit);
+
+  // create the overall rap
+  const newRap = createNewRap(actions);
+  return newRap;
+};
+
+export const createSetNameENSRap = async (
+  ENSActionParameters: ENSActionParameters
+) => {
+  let actions: RapENSAction[] = [];
+  // // commit rap
+  const commit = createNewENSAction(
+    RapActionTypes.setNameENS,
+    ENSActionParameters
+  );
+  actions = concat(actions, commit);
+
+  // create the overall rap
+  const newRap = createNewRap(actions);
+  return newRap;
+};
+
 export const createCommitENSRap = async (
   ENSActionParameters: ENSActionParameters
 ) => {

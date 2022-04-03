@@ -41,6 +41,7 @@ import {
 import {
   accentColorAtom,
   ENS_RECORDS,
+  REGISTRATION_MODES,
   textRecordFields,
 } from '@rainbow-me/helpers/ens';
 import {
@@ -142,7 +143,7 @@ export default function ENSAssignRecordsSheet() {
                 <Heading size="26px" weight="heavy">
                   {name}
                 </Heading>
-                {mode === 'create' && (
+                {mode === REGISTRATION_MODES.CREATE && (
                   <Text color="accent" size="16px" weight="heavy">
                     {lang.t('profiles.create.description')}
                   </Text>
@@ -194,7 +195,7 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
     submit(() => {
       navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
         longFormHeight:
-          mode === 'edit'
+          mode === REGISTRATION_MODES.EDIT
             ? ENSConfirmUpdateSheetHeight
             : ENSConfirmRegisterSheetHeight + (avatarUrl ? 70 : 0),
       });
@@ -203,7 +204,7 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
 
   const [visible, setVisible] = useState(false);
   useEffect(() => {
-    if (mode === 'edit') {
+    if (mode === REGISTRATION_MODES.EDIT) {
       setTimeout(() => setVisible(profileQuery.isSuccess), 200);
     } else {
       setVisible(defaultVisible);
@@ -263,12 +264,12 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
                       }
                     : {})}
                 >
-                  {mode === 'create' && (
+                  {mode === REGISTRATION_MODES.CREATE && (
                     <TintButton color="secondary60" onPress={handlePressBack}>
                       {lang.t('profiles.create.back')}
                     </TintButton>
                   )}
-                  {isEmpty && mode === 'create' ? (
+                  {isEmpty && mode === REGISTRATION_MODES.CREATE ? (
                     <TintButton
                       color="secondary60"
                       disabled={disabled}

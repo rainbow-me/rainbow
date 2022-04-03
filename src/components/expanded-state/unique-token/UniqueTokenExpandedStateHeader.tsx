@@ -408,7 +408,7 @@ const UniqueTokenExpandedStateHeader = ({
   return (
     <Stack space="15px">
       <Columns space="24px">
-        <Heading size="23px" weight="heavy">
+        <Heading containsEmoji size="23px" weight="heavy">
           {buildUniqueTokenName(asset)}
         </Heading>
         <Column width="content">
