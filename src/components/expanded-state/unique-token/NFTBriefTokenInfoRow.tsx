@@ -14,11 +14,13 @@ import { ethereumUtils } from '@rainbow-me/utils';
 export default function NFTBriefTokenInfoRow({
   currentPrice,
   lastPrice,
+  lastSalePaymentToken,
   network: assetNetwork,
   urlSuffixForAsset,
 }: {
   currentPrice?: number | null;
-  lastPrice?: string | null;
+  lastPrice?: number | null;
+  lastSalePaymentToken?: string | null;
   network?: string;
   urlSuffixForAsset: string;
 }) {
@@ -54,9 +56,13 @@ export default function NFTBriefTokenInfoRow({
     });
   }, [navigate]);
 
+  const lastSalePrice =
+    lastPrice != null
+      ? lastPrice === 0
+        ? `< 0.001 ${lastSalePaymentToken}`
+        : `${lastPrice} ${lastSalePaymentToken}`
+      : 'None';
   const priceOfEth = ethereumUtils.getEthPriceUnit() as number;
-
-  const lastSalePrice = lastPrice || 'None';
 
   return (
     <Columns space="19px">

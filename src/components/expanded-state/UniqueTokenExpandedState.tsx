@@ -236,6 +236,7 @@ const UniqueTokenExpandedState = ({
     familyName,
     isSendable,
     lastPrice,
+    lastSalePaymentToken,
     traits,
     uniqueId,
     urlSuffixForAsset,
@@ -489,6 +490,7 @@ const UniqueTokenExpandedState = ({
                           <NFTBriefTokenInfoRow
                             currentPrice={currentPrice}
                             lastPrice={lastPrice}
+                            lastSalePaymentToken={lastSalePaymentToken}
                             network={asset.network}
                             urlSuffixForAsset={urlSuffixForAsset}
                           />
