@@ -364,7 +364,8 @@
     "**/markdown-it": "12.3.2",
     "**/simple-get": "4.0.1",
     "**/plist": "3.0.5",
-    "**/minimist": "1.2.6"
+    "**/minimist": "1.2.6",
+    "react-native/react-devtools-core": "4.24.0"
   },
   "jest": {
     "preset": "react-native",
