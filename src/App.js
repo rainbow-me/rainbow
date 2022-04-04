@@ -14,6 +14,7 @@ import {
   LogBox,
   NativeModules,
   StatusBar,
+  Text,
   View,
 } from 'react-native';
 // eslint-disable-next-line import/default
@@ -70,6 +71,15 @@ import { SharedValuesProvider } from '@rainbow-me/helpers/SharedValuesContext';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 import { Portal } from 'react-native-cool-modals/Portal';
+import { logToServer } from './logToServer';
+import {
+  ACCESSIBLE,
+  ACCESS_CONTROL,
+  getGenericPassword,
+  getInternetCredentials,
+  setGenericPassword,
+  setInternetCredentials,
+} from 'react-native-keychain';
 
 const WALLETCONNECT_SYNC_DELAY = 500;
 
@@ -116,6 +126,20 @@ class App extends Component {
   state = { appState: AppState.currentState, initialRoute: null };
 
   async componentDidMount() {
+    getGenericPassword({
+      service: 'test_generic_password',
+    }).then(genericPassword => {
+      this.setState(state => ({ ...state, genericPassword }));
+
+      setTimeout(() => {
+        getInternetCredentials('test_internet_credentials').then(
+          internetCredentials => {
+            this.setState(state => ({ ...state, internetCredentials }));
+          }
+        );
+      }, 5000);
+    });
+
     if (!__DEV__ && RNTestFlight) {
       const { isTestFlight } = RNTestFlight.getConstants();
       logger.sentry(`Test flight usage - ${isTestFlight}`);
@@ -277,36 +301,42 @@ class App extends Component {
   };
 
   render = () => (
-    <MainThemeProvider>
-      <RainbowContextWrapper>
-        <ErrorBoundary>
-          <Portal>
-            <SafeAreaProvider>
-              <QueryClientProvider client={queryClient}>
-                <Provider store={store}>
-                  <RecoilRoot>
-                    <SharedValuesProvider>
-                      <View style={containerStyle}>
-                        {this.state.initialRoute && (
-                          <InitialRouteContext.Provider
-                            value={this.state.initialRoute}
-                          >
-                            <RoutesComponent ref={this.handleNavigatorRef} />
-                            <PortalConsumer />
-                          </InitialRouteContext.Provider>
-                        )}
-                        <OfflineToast />
-                      </View>
-                    </SharedValuesProvider>
-                  </RecoilRoot>
-                </Provider>
-              </QueryClientProvider>
-            </SafeAreaProvider>
-          </Portal>
-        </ErrorBoundary>
-      </RainbowContextWrapper>
-    </MainThemeProvider>
+    <View style={{ marginTop: 100 }}>
+      <Text>hello {JSON.stringify(this.state.genericPassword)}</Text>
+      <Text>2: {JSON.stringify(this.state.internetCredentials)}</Text>
+    </View>
   );
+  // render = () => (
+  //   <MainThemeProvider>
+  //     <RainbowContextWrapper>
+  //       <ErrorBoundary>
+  //         <Portal>
+  //           <SafeAreaProvider>
+  //             <QueryClientProvider client={queryClient}>
+  //               <Provider store={store}>
+  //                 <RecoilRoot>
+  //                   <SharedValuesProvider>
+  //                     <View style={containerStyle}>
+  //                       {this.state.initialRoute && (
+  //                         <InitialRouteContext.Provider
+  //                           value={this.state.initialRoute}
+  //                         >
+  //                           <RoutesComponent ref={this.handleNavigatorRef} />
+  //                           <PortalConsumer />
+  //                         </InitialRouteContext.Provider>
+  //                       )}
+  //                       <OfflineToast />
+  //                     </View>
+  //                   </SharedValuesProvider>
+  //                 </RecoilRoot>
+  //               </Provider>
+  //             </QueryClientProvider>
+  //           </SafeAreaProvider>
+  //         </Portal>
+  //       </ErrorBoundary>
+  //     </RainbowContextWrapper>
+  //   </MainThemeProvider>
+  // );
 }
 
 const AppWithRedux = connect(
