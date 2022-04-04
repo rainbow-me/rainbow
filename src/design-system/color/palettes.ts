@@ -133,7 +133,7 @@ export const foregroundColors: Record<
   primary: {
     dark: colors.sky,
     darkTinted: colors.white,
-    light: colors.grey,
+    light: colors.greyDark,
     lightTinted: colors.greyDark,
   },
   secondary: {
