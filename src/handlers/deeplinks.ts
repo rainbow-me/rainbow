@@ -1,3 +1,4 @@
+import { captureException } from '@sentry/react-native';
 import { toLower } from 'lodash';
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'qs'.... Remove this comment to see the full error message
 import qs from 'qs';
@@ -97,6 +98,8 @@ export default async function handleDeeplink(
               address: addressOrENS,
             });
           } else {
+            const error = new Error('Invalid deeplink: ' + url);
+            captureException(error);
             Alert.alert('Uh oh! We couldn’t recognize this URL!');
           }
         }
