@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-community/async-storage';
 import React, { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
 import { ScrollView, Switch } from 'react-native-gesture-handler';
@@ -13,6 +14,7 @@ import {
   useLoadAccountData,
   useResetAccountState,
 } from '@rainbow-me/hooks';
+import { clearAllStorages } from '@rainbow-me/model/mmkv';
 
 const UserDevSection = props => {
   const dispatch = useDispatch();
@@ -45,6 +47,11 @@ const UserDevSection = props => {
     testnetsEnabled,
   ]);
 
+  const clearLocalStorage = useCallback(async () => {
+    await AsyncStorage.clear();
+    clearAllStorages();
+  }, []);
+
   return (
     <ScrollView {...props}>
       <ListItem
@@ -60,6 +67,7 @@ const UserDevSection = props => {
         </Column>
       </ListItem>
       {testnetsEnabled && <NetworkSection {...props} />}
+      <ListItem label="💥 Clear local storage" onPress={clearLocalStorage} />
       <ListFooter />
     </ScrollView>
   );

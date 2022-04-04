@@ -284,7 +284,8 @@
       "reset_keychain": "Reset Keychain :)",
       "restart_app": "Restart app :)",
       "restore_default_experimental_config": "Restore default experimental config :)",
-      "status": "Status :)"
+      "status": "Status :)",
+      "sync_codepush": "Sync codepush, current: %{codePushVersion} :)"
     },
     "discover": {
       "lists": {

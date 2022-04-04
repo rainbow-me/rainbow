@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Rainbow</string>
+    <string name="appCenterCrashes_whenToSendCrashes" moduleConfig="true" translatable="false">DONT_SEND</string>
+    <string name="appCenterAnalytics_whenToEnableAnalytics" moduleConfig="true" translatable="false">DONT_SEND</string>
 </resources>

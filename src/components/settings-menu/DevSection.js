@@ -2,10 +2,13 @@ import AsyncStorage from '@react-native-community/async-storage';
 import lang from 'i18n-js';
 import React, { useCallback, useContext } from 'react';
 import { Alert, ScrollView } from 'react-native';
+// eslint-disable-next-line import/default
+import codePush from 'react-native-code-push';
 import { HARDHAT_URL_ANDROID, HARDHAT_URL_IOS } from 'react-native-dotenv';
 import Restart from 'react-native-restart';
 import { useDispatch } from 'react-redux';
 import { defaultConfig } from '../../config/experimental';
+import useAppVersion from '../../hooks/useAppVersion';
 import { ListFooter, ListItem } from '../list';
 import { RadioListItem } from '../radio-list';
 import UserDevSection from './UserDevSection';
@@ -53,6 +56,26 @@ const DevSection = () => {
     dispatch(explorerInit());
   }, [dispatch, navigate]);
 
+  const syncCodepush = useCallback(async () => {
+    const isUpdate = !!(await codePush.checkForUpdate());
+    if (!isUpdate) {
+      Alert.alert('No update');
+    } else {
+      // dismissing not to fuck up native nav structure
+      navigate(Routes.PROFILE_SCREEN);
+      Alert.alert('Installing update');
+
+      const result = await codePush.sync({
+        installMode: codePush.InstallMode.IMMEDIATE,
+      });
+
+      const resultString = Object.entries(codePush.syncStatus).find(
+        e => e[1] === result
+      )[0];
+      Alert.alert(resultString);
+    }
+  }, [navigate]);
+
   const checkAlert = useCallback(async () => {
     try {
       const request = await fetch(
@@ -95,6 +118,8 @@ const DevSection = () => {
   const throwRenderError = () => {
     setErrorObj({ error: 'this throws render error' });
   };
+
+  const codePushVersion = useAppVersion()[1];
 
   return (
     <ScrollView testID="developer-settings-modal">
@@ -146,6 +171,12 @@ const DevSection = () => {
         testID="alert-section"
       />
       <UserDevSection scrollEnabled={false} />
+      <ListItem
+        label={`‍⏩ ${lang.t('developer_settings.sync_codepush', {
+          codePushVersion: codePushVersion,
+        })}`}
+        onPress={syncCodepush}
+      />
       {Object.keys(config)
         .sort()
         .filter(key => defaultConfig[key].settings)

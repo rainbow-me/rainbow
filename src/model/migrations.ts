@@ -25,7 +25,6 @@ import {
 } from '../utils/keychainConstants';
 import {
   hasKey,
-  loadAllKeysOnly,
   loadString,
   publicAccessControlOptions,
   saveString,
@@ -528,7 +527,6 @@ export default async function runMigrations() {
    */
   const v13 = async () => {
     try {
-      const keys = await loadAllKeysOnly();
       const keysToMigrate = [
         analyticsUserIdentifier,
         allWalletsKey,
@@ -538,13 +536,17 @@ export default async function runMigrations() {
         signingWallet,
         signingWalletAddress,
       ];
-      // add existing signatures
+
+      // Add existing signatures
       // which look like'signature_0x...'
-      keys?.forEach(key => {
-        if (key.startsWith('signature_')) {
-          keysToMigrate.push(key);
+      const { wallets } = store.getState().wallets;
+      if (Object.keys(wallets).length > 0) {
+        for (let wallet of Object.values(wallets)) {
+          for (let account of (wallet as RainbowWallet).addresses) {
+            keysToMigrate.push(`signature_${account.address}`);
+          }
         }
-      });
+      }
 
       for (const key of keysToMigrate) {
         try {
@@ -577,12 +579,18 @@ export default async function runMigrations() {
     const { wallets } = store.getState().wallets;
     if (!wallets) return;
     for (let wallet of Object.values(wallets)) {
-      for (let address of (wallet as RainbowWallet).addresses) {
-        const hiddenCoins = await getHiddenCoins(address, network);
-        const pinnedCoins = await getPinnedCoins(address, network);
+      for (let account of (wallet as RainbowWallet).addresses) {
+        const hiddenCoins = await getHiddenCoins(account.address, network);
+        const pinnedCoins = await getPinnedCoins(account.address, network);
 
-        mmkv.set('pinned-coins-' + address, JSON.stringify(pinnedCoins));
-        mmkv.set('hidden-coins-' + address, JSON.stringify(hiddenCoins));
+        mmkv.set(
+          'pinned-coins-' + account.address,
+          JSON.stringify(pinnedCoins)
+        );
+        mmkv.set(
+          'hidden-coins-' + account.address,
+          JSON.stringify(hiddenCoins)
+        );
       }
     }
   };

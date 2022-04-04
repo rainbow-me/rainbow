@@ -168,6 +168,7 @@ const SimpleScaleButton = ({
   onLongPressEnded,
   shouldLongPressHoldPress,
   isLongPress,
+  onLayout,
   onPress,
   overflowMargin,
   scaleTo,
@@ -190,6 +191,7 @@ const SimpleScaleButton = ({
 
   return (
     <View
+      onLayout={onLayout}
       style={[
         {
           backgroundColor,
@@ -246,6 +248,7 @@ export default function ButtonPressAnimation({
   duration = 160,
   hitSlop,
   minLongPressDuration = 500,
+  onLayout,
   onLongPress,
   onLongPressEnded,
   shouldLongPressHoldPress,
@@ -268,7 +271,9 @@ export default function ButtonPressAnimation({
 
   const ButtonElement = reanimatedButton ? ScaleButton : SimpleScaleButton;
   return disabled ? (
-    <Content style={style}>{children}</Content>
+    <Content onLayout={onLayout} style={style}>
+      {children}
+    </Content>
   ) : (
     <ButtonElement
       backgroundColor={backgroundColor}
@@ -278,6 +283,7 @@ export default function ButtonPressAnimation({
       hitSlop={hitSlop}
       isLongPress={!!onLongPress}
       minLongPressDuration={minLongPressDuration}
+      onLayout={onLayout}
       onLongPress={onLongPress}
       onLongPressEnded={onLongPressEnded}
       onPress={onPress}
