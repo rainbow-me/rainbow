@@ -107,6 +107,7 @@ export default function ENSAssignRecordsSheet() {
   const { navigate } = useNavigation();
   const handleFocus = useCallback(() => {
     if (!hasSeenExplainSheet) {
+      android && Keyboard.dismiss();
       navigate(Routes.EXPLAIN_SHEET, {
         type: 'ensOnChainDataWarning',
       });
