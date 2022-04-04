@@ -347,7 +347,7 @@ const UniqueTokenExpandedStateHeader = ({
   const onPressAndroidAsset = useCallback(() => {
     const androidContractActions = [
       lang.t('expanded_state.unique_expanded.view_on_web'),
-      lang.t('view_on_block_explorer', {
+      lang.t('expanded_state.unique_expanded.view_on_block_explorer', {
         blockExplorerName: startCase(
           // @ts-expect-error network could be undefined?
           ethereumUtils.getBlockExplorer(asset?.network)

@@ -103,7 +103,9 @@ export const explainers = network => ({
     emoji: '⛽️',
     extraHeight: 2,
     text: gasExplainer(network),
-    title: lang.t('explain.gas.title'),
+    title: lang.t('explain.gas.title', {
+      networkName: network,
+    }),
   },
   currentBaseFeeStable: {
     emoji: '🌞',

@@ -61,7 +61,7 @@
         "send_test_eth_from_another_source": "Send test ETH from another %{testnetName} wallet—or ask a friend! :)"
       },
       "to_get_started_ios": "To get started, buy some ETH with Apple Pay :)",
-      "to_get_started_non_ios": "To get started, buy some ETH :)",
+      "to_get_started_android": "To get started, buy some ETH :)",
       "weekly_limit_reached": "Weekly limit reached :)",
       "yearly_limit_reached": "Yearly limit reached :)"
     },
@@ -79,6 +79,7 @@
     },
     "back_up": {
       "cloud": {
+        "back_up_to_platform": "Back up to %{cloudPlatformName}",
         "manage_platform_backups": "Manage %{cloudPlatformName} Backups :)",
         "password": {
           "a_password_youll_remember": "Please use a password you'll remember. :)",
@@ -1098,7 +1099,7 @@
         "reject": "Connection canceled :)",
         "sign": "Message signed! :)",
         "sign_canceled": "Transaction canceled! :)",
-        "transaction": "Transaction sent! :)",
+        "transaction_sent": "Transaction sent! :)",
         "transaction_canceled": "Transaction canceled! :)"
       },
       "unknown_application": "Unknown Application :)"

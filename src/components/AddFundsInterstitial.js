@@ -233,7 +233,7 @@ const AddFundsInterstitial = ({ network }) => {
           <Title>
             {ios
               ? lang.t('add_funds.to_get_started_ios')
-              : lang.t('add_funds.to_get_started_non_ios')}
+              : lang.t('add_funds.to_get_started_android')}
           </Title>
           <Row justify="space-between" marginVertical={30}>
             <AmountButton

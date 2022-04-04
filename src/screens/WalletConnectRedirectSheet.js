@@ -32,7 +32,7 @@ const titlesMap = {
   'reject': lang.t('walletconnect.titles.reject'),
   'sign': lang.t('walletconnect.titles.sign'),
   'sign-canceled': lang.t('walletconnect.titles.sign_canceled'),
-  'transaction': lang.t('walletconnect.titles.transaction'),
+  'transaction': lang.t('walletconnect.titles.transaction_sent'),
   'transaction-canceled': lang.t('walletconnect.titles.transaction_canceled'),
 };
 
