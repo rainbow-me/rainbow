@@ -69,6 +69,7 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should make ENS Profiles available', async () => {
+    await Helpers.swipe('developer-settings-modal', 'up', 'slow');
     await Helpers.tapByText('ENS Profiles');
   });
 
