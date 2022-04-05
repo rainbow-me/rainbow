@@ -4,11 +4,11 @@ import { useQueryClient } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAdditionalRecyclerAssetListData } from '../components/asset-list/RecyclerAssetList2/core/Contexts';
 import { uniqueTokensQueryKey } from './useFetchUniqueTokens';
-import { fetchUniqueToken } from '@rainbow-me/redux/uniqueTokens';
+import { revalidateUniqueToken } from '@rainbow-me/redux/uniqueTokens';
 
 export default function useCollectible(
   initialAsset,
-  { forceUpdate = false } = {}
+  { revalidateInBackground = false } = {}
 ) {
   // Retrieve the unique tokens belonging to the current account address.
   const selfUniqueTokens = useSelector(
@@ -40,21 +40,25 @@ export default function useCollectible(
     return matched || asset;
   }, [initialAsset, uniqueTokens]);
 
-  useForceUpdateInBackground({ asset, forceUpdate, isExternal });
+  useRevalidateInBackground({
+    asset,
+    enabled: revalidateInBackground,
+    isExternal,
+  });
 
   return asset;
 }
 
-function useForceUpdateInBackground({ asset, isExternal, forceUpdate }) {
+function useRevalidateInBackground({ asset, isExternal, enabled }) {
   const dispatch = useDispatch();
   useEffect(() => {
     // If `forceUpdate` is truthy, we want to force refresh the metadata from OpenSea &
     // update in the background. Useful for refreshing ENS metadata to resolve "Unknown ENS name".
-    if (asset?.asset_contract?.address && !isExternal && forceUpdate) {
-      // Fetch for the updated asset & update the `uniqueTokens` cache.
+    if (asset?.asset_contract?.address && !isExternal && enabled) {
+      // Revalidate the updated asset in the background & update the `uniqueTokens` cache.
       dispatch(
-        fetchUniqueToken(asset?.asset_contract?.address, asset?.id, {
-          forceUpdate,
+        revalidateUniqueToken(asset?.asset_contract?.address, asset?.id, {
+          forceUpdate: true,
         })
       );
     }
@@ -62,7 +66,7 @@ function useForceUpdateInBackground({ asset, isExternal, forceUpdate }) {
     asset?.asset_contract?.address,
     asset?.id,
     dispatch,
-    forceUpdate,
+    enabled,
     isExternal,
   ]);
 }

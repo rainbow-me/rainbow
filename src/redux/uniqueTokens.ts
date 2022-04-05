@@ -371,7 +371,18 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
   }
 };
 
-export const fetchUniqueToken = (
+/**
+ * Revalidates a unique token via OpenSea API, updates state, and saves to local storage.
+ *
+ * Note:  it is intentional that there are no loading states dispatched in this action. This
+ *        is for _revalidation_ purposes only.
+ *
+ * @param contractAddress - The contract address of the NFT
+ * @param tokenId - The tokenId of the NFT
+ * @param {Object} config - Optional configuration
+ * @param {boolean} config.forceUpdate - Trigger a force update of metadata (equivalent to refreshing metadata in OpenSea)
+ */
+export const revalidateUniqueToken = (
   contractAddress: string,
   tokenId: string,
   { forceUpdate = false }: { forceUpdate?: boolean } = {}

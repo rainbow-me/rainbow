@@ -7,13 +7,13 @@ import { AssetTypes } from '@rainbow-me/entities';
 // generic assets, and uniqueTokens
 export default function useAsset(
   asset,
-  { forceUpdateCollectible = false } = {}
+  { revalidateCollectibleInBackground = false } = {}
 ) {
   const accountAsset = useAccountAsset(
     asset?.uniqueId || asset?.mainnet_address || asset?.address
   );
   const uniqueToken = useCollectible(asset, {
-    forceUpdate: forceUpdateCollectible,
+    revalidateInBackground: revalidateCollectibleInBackground,
   });
   return useMemo(() => {
     if (!asset) return null;
