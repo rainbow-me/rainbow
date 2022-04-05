@@ -1,15 +1,15 @@
 diff --git a/node_modules/react-native-keychain/RNKeychainManager/RNKeychainManager.m b/node_modules/react-native-keychain/RNKeychainManager/RNKeychainManager.m
-index 1e7021c..464f13c 100644
+index 1e7021c..75f737b 100644
 --- a/node_modules/react-native-keychain/RNKeychainManager/RNKeychainManager.m
 +++ b/node_modules/react-native-keychain/RNKeychainManager/RNKeychainManager.m
 @@ -271,6 +271,93 @@ - (OSStatus)deleteCredentialsForServer:(NSString *)server
    return SecItemDelete((__bridge CFDictionaryRef) query);
  }
  
-+RCT_EXPORT_METHOD(getAllInternetCredentialsForServer:(NSDictionary *)options resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
++RCT_EXPORT_METHOD(getAllGenericPasswords:(NSDictionary *)options resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 +{
 +  NSDictionary *query = @{
-+    (__bridge NSString *)kSecClass: (__bridge id)(kSecClassInternetPassword),
++    (__bridge NSString *)kSecClass: (__bridge id)(kSecClassGenericPassword),
 +    (__bridge NSString *)kSecReturnAttributes: (__bridge id)kCFBooleanTrue,
 +    (__bridge NSString *)kSecReturnData: (__bridge id)kCFBooleanTrue,
 +    (__bridge NSString *)kSecMatchLimit: (__bridge NSString *)kSecMatchLimitAll
@@ -96,6 +96,55 @@ index 1e7021c..464f13c 100644
  -(NSArray<NSString*>*)getAllServicesForSecurityClasses:(NSArray *)secItemClasses
  {
    NSMutableDictionary *query = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+@@ -598,4 +685,48 @@ - (OSStatus)deleteCredentialsForServer:(NSString *)server
+   }
+ }
+ 
++
++RCT_EXPORT_METHOD(getAllGenericPasswordServicesAndValues:(NSDictionary *)options resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
++{
++  NSDictionary *query = @{
++    (__bridge NSString *)kSecClass: (__bridge id)(kSecClassGenericPassword),
++    (__bridge NSString *)kSecReturnAttributes: (__bridge id)kCFBooleanTrue,
++    (__bridge NSString *)kSecReturnData: (__bridge id)kCFBooleanTrue,
++    (__bridge NSString *)kSecMatchLimit: (__bridge NSString *)kSecMatchLimitAll
++  };
++
++  NSArray *found = nil;
++  CFTypeRef foundTypeRef = NULL;
++  OSStatus osStatus = SecItemCopyMatching((__bridge CFDictionaryRef) query, (CFTypeRef*)&foundTypeRef);
++
++  if (osStatus != noErr && osStatus != errSecItemNotFound) {
++    NSError *error = [NSError errorWithDomain:NSOSStatusErrorDomain code:osStatus userInfo:nil];
++    return rejectWithError(reject, error);
++  }
++
++  found = (__bridge NSArray*)(foundTypeRef);
++  if (!found) {
++    return resolve(@(NO));
++  }
++
++  NSMutableArray *results = [@[] mutableCopy];
++
++
++    for(int i=0; i< found.count; i++){
++        NSDictionary *item  = found[i];
++        NSString *username = (NSString *) [item objectForKey:(__bridge id)(kSecAttrAccount)];
++        NSString *password = [[NSString alloc] initWithData:[item objectForKey:(__bridge id)(kSecValueData)] encoding:NSUTF8StringEncoding];
++
++        [results addObject:@{@"username": username, @"password":password}];
++  }
++
++
++  CFRelease(foundTypeRef);
++
++  return resolve(@{
++    @"results": results
++  });
++
++}
++
+ @end
 diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.java b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.java
 index 6ca68cb..72426ca 100644
 --- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.java
@@ -197,7 +246,7 @@ index b7ecd51..9bfa595 100644
 +   }
  }
 diff --git a/node_modules/react-native-keychain/index.js b/node_modules/react-native-keychain/index.js
-index 75c0d5c..e99d235 100644
+index 75c0d5c..a618d67 100644
 --- a/node_modules/react-native-keychain/index.js
 +++ b/node_modules/react-native-keychain/index.js
 @@ -108,6 +108,14 @@ export type Result = {|
@@ -215,7 +264,7 @@ index 75c0d5c..e99d235 100644
  export type UserCredentials = {|
    +username: string,
    +password: string,
-@@ -201,6 +209,32 @@ export function getGenericPassword(
+@@ -201,6 +209,19 @@ export function getGenericPassword(
    return RNKeychainManager.getGenericPasswordForOptions(options);
  }
  
@@ -224,32 +273,27 @@ index 75c0d5c..e99d235 100644
 +* @param {object} options Keychain options, iOS only
 +* @return {Promise} Resolves to `[{ server, username, password }, ...]` when successful
 +*/
-+export function getAllInternetCredentials(
++export function getAllGenericPasswordServicesAndValues(
 +   options?: Options
 +  ): Promise<false | AllCredentials> {
-+   return RNKeychainManager.getAllInternetCredentialsForServer(
++   return RNKeychainManager.getAllGenericPasswordServicesAndValues(
 +     normalizeOptions(options)
 +   );
 +  }
 +  
-+  /**
-+  * Fetches all the keychain entries for the app
-+  * @param {object} options Keychain options, iOS only
-+  * @return {Promise} Resolves to `[username]` when successful
-+  */
-+  export function getAllInternetCredentialsKeys(
-+   options?: Options
-+  ): Promise<false | AllCredentialsKeys> {
-+   return RNKeychainManager.getAllInternetCredentialsKeys(
-+     normalizeOptions(options)
-+   );
-+  }
-+
  /**
   * Deletes all generic password keychain entries for `service`.
   * @param {object} options An Keychain options object.
+@@ -388,6 +409,7 @@ export default {
+   setGenericPassword,
+   getGenericPassword,
+   getAllGenericPasswordServices,
++  getAllGenericPasswordServicesAndValues,
+   resetGenericPassword,
+   requestSharedWebCredentials,
+   setSharedWebCredentials,
 diff --git a/node_modules/react-native-keychain/typings/react-native-keychain.d.ts b/node_modules/react-native-keychain/typings/react-native-keychain.d.ts
-index af2eb56..fd11459 100644
+index af2eb56..21f06ba 100644
 --- a/node_modules/react-native-keychain/typings/react-native-keychain.d.ts
 +++ b/node_modules/react-native-keychain/typings/react-native-keychain.d.ts
 @@ -9,6 +9,14 @@ declare module 'react-native-keychain' {
@@ -267,14 +311,11 @@ index af2eb56..fd11459 100644
    export interface SharedWebCredentials extends UserCredentials {
      server: string;
    }
-@@ -111,6 +119,10 @@ declare module 'react-native-keychain' {
-     options?: Options
-   ): Promise<false | SharedWebCredentials>;
+@@ -96,6 +104,7 @@ declare module 'react-native-keychain' {
+   function resetGenericPassword(options?: Options): Promise<boolean>;
  
-+  function getAllInternetCredentials(): Promise<false | AllCredentials>;
-+
-+  function getAllInternetCredentialsKeys(): Promise<false | AllCredentialsKeys>;
-+
-   function resetInternetCredentials(
-     server: string,
-     options?: Options
+   function getAllGenericPasswordServices(): Promise<string[]>;
++  function getAllGenericPasswordServicesAndValues(): Promise<false | AllCredentials>;
+ 
+   function hasInternetCredentials(server: string): Promise<false | Result>;
+ 

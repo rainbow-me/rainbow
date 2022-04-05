@@ -6,11 +6,10 @@ import {
   ACCESSIBLE,
   AUTHENTICATION_TYPE,
   canImplyAuthentication,
-  getAllInternetCredentials,
-  getAllInternetCredentialsKeys,
+  getAllGenericPasswordServices,
+  getAllGenericPasswordServicesAndValues,
   getGenericPassword,
   getSupportedBiometryType,
-  hasInternetCredentials,
   Options,
   resetGenericPassword,
   Result,
@@ -170,9 +169,9 @@ export async function remove(key: string): Promise<void> {
 
 export async function loadAllKeys(): Promise<null | UserCredentials[]> {
   try {
-    const response = await getAllInternetCredentials();
-    if (response) {
-      return response.results;
+    const response = await getAllGenericPasswordServicesAndValues();
+    if (response?.length) {
+      return response;
     }
   } catch (err) {
     logger.sentry(`Keychain: failed to loadAllKeys error: ${err}`);
@@ -196,9 +195,9 @@ export async function getAllKeysAnonymized(): Promise<null | AnonymousKeyData> {
 
 export async function loadAllKeysOnly(): Promise<null | string[]> {
   try {
-    const response = await getAllInternetCredentialsKeys();
-    if (response) {
-      return response.results;
+    const response = await getAllGenericPasswordServices();
+    if (response?.length) {
+      return response;
     }
   } catch (err) {
     logger.log(`Keychain: failed to loadAllKeys error: ${err}`);
@@ -209,7 +208,7 @@ export async function loadAllKeysOnly(): Promise<null | string[]> {
 
 export async function hasKey(key: string): Promise<boolean | Result> {
   try {
-    const result = await hasInternetCredentials(key);
+    const result = await getGenericPassword({ service: key });
     return result;
   } catch (err) {
     logger.sentry(
