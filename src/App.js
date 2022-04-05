@@ -89,7 +89,12 @@ if (__DEV__) {
   // eslint-disable-next-line no-inner-declarations
   async function initSentry() {
     const metadata = await codePush.getUpdateMetadata();
-    if (metadata.deploymentKey !== CODE_PUSH_DEPLOYMENT_KEY) {
+    if (!metadata || metadata.deploymentKey === CODE_PUSH_DEPLOYMENT_KEY) {
+      codePush.sync({
+        deploymentKey: CODE_PUSH_DEPLOYMENT_KEY,
+        installMode: codePush.InstallMode.ON_NEXT_RESTART,
+      });
+    } else {
       isCustomBuild = true;
       setTimeout(() => TopHatToastRef?.show(), 300);
     }
@@ -332,7 +337,9 @@ const AppWithReduxStore = () => <AppWithRedux store={store} />;
 
 const AppWithSentry = Sentry.wrap(AppWithReduxStore);
 
-const AppWithCodePush = codePush(AppWithSentry);
+const codePushOptions = { checkFrequency: codePush.CheckFrequency.MANUAL };
+
+const AppWithCodePush = codePush(codePushOptions)(AppWithSentry);
 
 AppRegistry.registerComponent('Rainbow', () =>
   designSystemPlaygroundEnabled ? Playground : AppWithCodePush

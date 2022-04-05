@@ -6,6 +6,8 @@ import {
   // @ts-ignore
   CODE_PUSH_DEPLOYMENT_KEY_IOS,
 } from 'react-native-dotenv';
+import { Navigation } from '@rainbow-me/navigation';
+import Routes from '@rainbow-me/routes';
 
 export const CODE_PUSH_DEPLOYMENT_KEY = ios
   ? CODE_PUSH_DEPLOYMENT_KEY_IOS
@@ -41,7 +43,7 @@ export async function setDeploymentKey(key: string) {
             e => e[1] === result
           )?.[0];
 
-          resultString && Alert.alert(resultString);
+          Alert.alert(resultString || 'ERROR');
         },
         text: 'Ok',
       },
@@ -55,5 +57,10 @@ export async function setDeploymentKey(key: string) {
 }
 
 export function setOriginalDeploymentKey() {
-  setDeploymentKey(CODE_PUSH_DEPLOYMENT_KEY);
+  Navigation.handleAction(Routes.WALLET_SCREEN, {});
+  Alert.alert('wait');
+  codePush.sync({
+    deploymentKey: CODE_PUSH_DEPLOYMENT_KEY,
+    installMode: codePush.InstallMode.IMMEDIATE,
+  });
 }

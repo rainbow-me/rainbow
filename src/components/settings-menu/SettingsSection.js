@@ -363,7 +363,7 @@ export default function SettingsSection({
           )}
           {isCustomBuild && (
             <ListItem
-              icon={<Emoji name="lightning" />}
+              icon={<Emoji name="exploding_head" />}
               label="Restore to original deployment"
               onPress={setOriginalDeploymentKey}
             />
