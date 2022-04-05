@@ -58,6 +58,7 @@ import { buildUniqueTokenName } from '@rainbow-me/helpers/assets';
 import {
   useAccountProfile,
   useAccountSettings,
+  useBooleanState,
   useDimensions,
   usePersistentDominantColorFromImage,
   useShowcaseTokens,
@@ -209,7 +210,11 @@ const UniqueTokenExpandedState = ({
   const [floorPrice, setFloorPrice] = useState<string | null>(null);
   const [showCurrentPriceInEth, setShowCurrentPriceInEth] = useState(true);
   const [showFloorInEth, setShowFloorInEth] = useState(true);
-  const [contentFocused, setContentFocused] = useState(false);
+  const [
+    contentFocused,
+    handleContentFocus,
+    handleContentBlur,
+  ] = useBooleanState();
   const animationProgress = useSharedValue(0);
   const opacityStyle = useAnimatedStyle(() => ({
     opacity: 1 - animationProgress.value,
@@ -288,14 +293,6 @@ const UniqueTokenExpandedState = ({
       url: buildRainbowUrl(asset, accountENS, accountAddress),
     });
   }, [accountAddress, accountENS, asset]);
-
-  const handleContentFocus = useCallback(() => {
-    setContentFocused(true);
-  }, []);
-
-  const handleContentBlur = useCallback(() => {
-    setContentFocused(false);
-  }, []);
 
   const toggleCurrentPriceDisplayCurrency = useCallback(
     () => setShowCurrentPriceInEth(!showCurrentPriceInEth),
