@@ -63,6 +63,7 @@ import {
   useAccountProfile,
   useDimensions,
   useENSProfile,
+  useENSRegistration,
   usePersistentDominantColorFromImage,
   useShowcaseTokens,
 } from '@rainbow-me/hooks';
@@ -322,14 +323,16 @@ const UniqueTokenExpandedState = ({
     });
   }, [accountAddress, accountENS, asset]);
 
+  const { startRegistration } = useENSRegistration();
   const handlePressEdit = useCallback(() => {
     if (isENS) {
+      startRegistration(uniqueId, 'edit');
       navigate(Routes.REGISTER_ENS_NAVIGATOR, {
         ensName: uniqueId,
         mode: 'edit',
       });
     }
-  }, [isENS, navigate, uniqueId]);
+  }, [isENS, navigate, startRegistration, uniqueId]);
 
   const sheetRef = useRef();
   const yPosition = useSharedValue(0);

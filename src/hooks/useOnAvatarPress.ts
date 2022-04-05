@@ -6,6 +6,7 @@ import { RainbowAccount } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import useAccountProfile from './useAccountProfile';
 import useENSProfile from './useENSProfile';
+import useENSRegistration from './useENSRegistration';
 import useImagePicker from './useImagePicker';
 import useUpdateEmoji from './useUpdateEmoji';
 import useWallets from './useWallets';
@@ -105,6 +106,8 @@ export default () => {
 
   const { setNextEmoji } = useUpdateEmoji();
 
+  const { startRegistration } = useENSRegistration();
+
   const onAvatarPress = useCallback(() => {
     if (android) {
       setNextEmoji();
@@ -137,6 +140,7 @@ export default () => {
             address: accountENS,
           });
         } else if (buttonIndex === 1 && !isReadOnlyWallet) {
+          startRegistration(accountENS, 'edit');
           navigate(Routes.REGISTER_ENS_NAVIGATOR, {
             ensName: accountENS,
             mode: 'edit',
