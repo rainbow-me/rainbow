@@ -231,23 +231,11 @@ export default function ENSConfirmRegisterSheet() {
     sendReverseRecord,
   });
 
-  const fromRegisterToProfileScreen = useCallback(() => {
+  const goToProfileScreen = useCallback(() => {
     InteractionManager.runAfterInteractions(() => {
       goBack();
       setTimeout(() => {
         navigate(Routes.PROFILE_SCREEN);
-      }, 100);
-    });
-  }, [goBack, navigate]);
-
-  const fromEditToProfileScreen = useCallback(() => {
-    InteractionManager.runAfterInteractions(() => {
-      goBack();
-      setTimeout(() => {
-        goBack();
-        setTimeout(() => {
-          navigate(Routes.PROFILE_SCREEN);
-        }, 100);
       }, 100);
     });
   }, [goBack, navigate]);
@@ -330,7 +318,7 @@ export default function ENSConfirmRegisterSheet() {
       [REGISTRATION_STEPS.REGISTER]: (
         <TransactionActionRow
           accentColor={accentColor}
-          action={() => action(fromRegisterToProfileScreen)}
+          action={() => action(goToProfileScreen)}
           isSufficientGas={isSufficientGasForStep}
           isValidGas={isValidGas && Boolean(gasLimit)}
           label={lang.t('profiles.confirm.confirm_registration')}
@@ -340,7 +328,7 @@ export default function ENSConfirmRegisterSheet() {
       [REGISTRATION_STEPS.EDIT]: (
         <TransactionActionRow
           accentColor={accentColor}
-          action={() => action(fromEditToProfileScreen)}
+          action={() => action(goToProfileScreen)}
           isSufficientGas={isSufficientGasForStep}
           isValidGas={isValidGas && Boolean(gasLimit)}
           label={lang.t('profiles.confirm.confirm_update')}
@@ -354,12 +342,11 @@ export default function ENSConfirmRegisterSheet() {
       accentColor,
       action,
       gasLimit,
-      fromRegisterToProfileScreen,
+      goToProfileScreen,
       isSufficientGasForStep,
       isValidGas,
       registrationCostsData?.isSufficientGasForRegistration,
       step,
-      fromEditToProfileScreen,
     ]
   );
 
