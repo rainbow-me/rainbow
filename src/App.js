@@ -87,7 +87,7 @@ if (__DEV__) {
 } else {
   // eslint-disable-next-line no-inner-declarations
   async function initSentry() {
-    const config = await codePush.getConfiguration();
+    const config = await codePush.getCurrentPackage();
     if (config.deploymentKey === CODE_PUSH_DEPLOYMENT_KEY) {
       codePush.sync({
         deploymentKey: CODE_PUSH_DEPLOYMENT_KEY,
