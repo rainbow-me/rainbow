@@ -170,8 +170,8 @@ export async function remove(key: string): Promise<void> {
 export async function loadAllKeys(): Promise<null | UserCredentials[]> {
   try {
     const response = await getAllGenericPasswordServicesAndValues();
-    if (response?.length) {
-      return response;
+    if (response !== false && response?.results) {
+      return response.results;
     }
   } catch (err) {
     logger.sentry(`Keychain: failed to loadAllKeys error: ${err}`);
