@@ -11,6 +11,7 @@ import {
   walletConnectRemovePendingRedirect,
   walletConnectSetPendingRedirect,
 } from '../redux/walletconnect';
+import { setDeploymentKey } from '@rainbow-me/handlers/tophat';
 import { delay } from '@rainbow-me/helpers/utilities';
 import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
 import { Navigation } from '@rainbow-me/navigation';
@@ -89,6 +90,25 @@ export default async function handleDeeplink(
         }
         break;
       }
+      case 'update-ios': {
+        const code = urlObj.pathname.split('/')[2];
+        if (android) {
+          Alert.alert('Tried to use Android bundle');
+        }
+        setDeploymentKey(code);
+
+        break;
+      }
+
+      case 'update-android': {
+        const code = urlObj.pathname.split('/')[2];
+        if (android) {
+          Alert.alert('Tried to use iOS bundle');
+        }
+        setDeploymentKey(code);
+        break;
+      }
+
       default: {
         const addressOrENS = urlObj.pathname?.split('/')?.[1];
         if (addressOrENS) {

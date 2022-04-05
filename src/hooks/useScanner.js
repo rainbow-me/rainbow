@@ -9,12 +9,16 @@ import { Alert } from '../components/alerts';
 import { checkPushNotificationPermissions } from '../model/firebase';
 import { useNavigation } from '../navigation/Navigation';
 import useWalletConnectConnections from './useWalletConnectConnections';
+import { setDeploymentKey } from '@rainbow-me/handlers/tophat';
 import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
 import { Navigation } from '@rainbow-me/navigation';
 import { RAINBOW_PROFILES_BASE_URL } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { addressUtils, ethereumUtils, haptics } from '@rainbow-me/utils';
 import logger from 'logger';
+
+const COPEPUSH_IOS_PREFFIX = 'update-ios-';
+const COPEPUSH_ANDROID_PREFFIX = 'update-android-';
 
 export default function useScanner(enabled, onSuccess) {
   const { navigate } = useNavigation();
@@ -154,6 +158,16 @@ export default function useScanner(enabled, onSuccess) {
       // Rainbow profile QR code
       if (data.startsWith(RAINBOW_PROFILES_BASE_URL)) {
         return handleScanRainbowProfile(data);
+      }
+
+      if (data.startsWith(COPEPUSH_IOS_PREFFIX)) {
+        setDeploymentKey(data.substring(COPEPUSH_IOS_PREFFIX.length));
+        return;
+      }
+
+      if (data.startsWith(COPEPUSH_ANDROID_PREFFIX)) {
+        setDeploymentKey(data.substring(COPEPUSH_ANDROID_PREFFIX.length));
+        return;
       }
 
       return handleScanInvalid(data);
