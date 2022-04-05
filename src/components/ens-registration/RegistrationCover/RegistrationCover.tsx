@@ -1,4 +1,5 @@
 import ConditionalWrap from 'conditional-wrap';
+import lang from 'i18n-js';
 import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { Image } from 'react-native-image-crop-picker';
@@ -101,7 +102,7 @@ export default function RegistrationCover({
             />
           ) : (
             <Text color="accent" size="18px" weight="heavy">
-              􀣵 Add Cover
+              􀣵 {lang.t('profiles.create.add_cover')}
             </Text>
           )}
         </Box>
