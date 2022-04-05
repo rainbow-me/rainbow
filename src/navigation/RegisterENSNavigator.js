@@ -54,19 +54,15 @@ export default function RegisterENSNavigator() {
   const contentHeight =
     deviceHeight - SheetHandleFixedToTopHeight - sharedCoolModalTopOffset;
 
-  const {
-    startRegistration,
-    clearCurrentRegistrationName,
-  } = useENSRegistration();
+  const { clearCurrentRegistrationName } = useENSRegistration();
 
   const initialRouteName = useMemo(() => {
-    const { ensName, mode } = params || { mode: 'create' };
+    const { mode } = params || { mode: 'create' };
     if (mode === 'edit') {
-      startRegistration(ensName, mode);
       return Routes.ENS_ASSIGN_RECORDS_SHEET;
     }
     return Routes.ENS_SEARCH_SHEET;
-  }, [params, startRegistration]);
+  }, [params]);
   const [currentRouteName, setCurrentRouteName] = useState(initialRouteName);
   const previousRouteName = usePrevious(currentRouteName);
 
@@ -125,6 +121,7 @@ export default function RegisterENSNavigator() {
           <Swipe.Navigator
             initialLayout={deviceUtils.dimensions}
             initialRouteName={currentRouteName}
+            lazy={android}
             pager={renderPager}
             swipeEnabled={false}
             tabBar={renderTabBar}

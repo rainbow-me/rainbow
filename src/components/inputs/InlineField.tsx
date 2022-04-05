@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Alert, TextInputProps } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
@@ -87,6 +87,7 @@ export default function InlineField({
     [onChangeText, validations]
   );
 
+  const valueRef = useRef(value);
   const style = useMemo(
     () => ({
       ...textStyle,
@@ -100,7 +101,9 @@ export default function InlineField({
           ? 11
           : 15
         : android
-        ? 11
+        ? valueRef.current
+          ? 16
+          : 11
         : 0,
       textAlignVertical: 'top',
       width: startsWith
@@ -147,7 +150,7 @@ export default function InlineField({
         </Inset>
       </Column>
       <Column>
-        <Inline alignVertical="center" space="2px">
+        <Inline alignVertical="center" space="2px" wrap={false}>
           {startsWith && (
             <Inset top={ios ? '2px' : undefined}>
               <Text color="secondary30" weight="heavy">

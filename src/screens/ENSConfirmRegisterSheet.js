@@ -155,7 +155,7 @@ function TransactionActionRow({
   isSufficientGas,
   testID,
 }) {
-  const insufficientEth = !isSufficientGas && isValidGas;
+  const insufficientEth = isSufficientGas === false && isValidGas;
   return (
     <Box>
       <Box>

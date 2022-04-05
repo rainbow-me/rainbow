@@ -119,7 +119,7 @@ export default function useENSRegistrationForm({
       updateRecords(records);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isEmpty(defaultRecords), dispatch, selectedFields, updateRecords]);
+  }, [isEmpty(defaultRecords), updateRecords]);
 
   const onAddField = useCallback(
     (fieldToAdd, selectedFields) => {
