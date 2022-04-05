@@ -569,7 +569,8 @@
     "profiles": {
       "actions": {
         "watching": "Watching",
-        "watch": "Watch"
+        "watch": "Watch",
+        "edit_profile": "Edit profile"
       },
       "banner": {
         "register_name": "Register a .eth Name",
