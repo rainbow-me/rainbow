@@ -231,13 +231,25 @@ export default function ENSConfirmRegisterSheet() {
     sendReverseRecord,
   });
 
-  const goToProfileScreen = useCallback(() => {
-    goBack();
-    setTimeout(() => {
-      InteractionManager.runAfterInteractions(() => {
+  const fromRegisterToProfileScreen = useCallback(() => {
+    InteractionManager.runAfterInteractions(() => {
+      goBack();
+      setTimeout(() => {
         navigate(Routes.PROFILE_SCREEN);
-      });
-    }, 100);
+      }, 100);
+    });
+  }, [goBack, navigate]);
+
+  const fromEditToProfileScreen = useCallback(() => {
+    InteractionManager.runAfterInteractions(() => {
+      goBack();
+      setTimeout(() => {
+        goBack();
+        setTimeout(() => {
+          navigate(Routes.PROFILE_SCREEN);
+        }, 100);
+      }, 100);
+    });
   }, [goBack, navigate]);
 
   const boxStyle = useMemo(
@@ -318,10 +330,7 @@ export default function ENSConfirmRegisterSheet() {
       [REGISTRATION_STEPS.REGISTER]: (
         <TransactionActionRow
           accentColor={accentColor}
-          action={() => {
-            action();
-            goToProfileScreen();
-          }}
+          action={() => action(fromRegisterToProfileScreen)}
           isSufficientGas={isSufficientGasForStep}
           isValidGas={isValidGas && Boolean(gasLimit)}
           label={lang.t('profiles.confirm.confirm_registration')}
@@ -331,7 +340,7 @@ export default function ENSConfirmRegisterSheet() {
       [REGISTRATION_STEPS.EDIT]: (
         <TransactionActionRow
           accentColor={accentColor}
-          action={action}
+          action={() => action(fromEditToProfileScreen)}
           isSufficientGas={isSufficientGasForStep}
           isValidGas={isValidGas && Boolean(gasLimit)}
           label={lang.t('profiles.confirm.confirm_update')}
@@ -345,11 +354,12 @@ export default function ENSConfirmRegisterSheet() {
       accentColor,
       action,
       gasLimit,
-      goToProfileScreen,
+      fromRegisterToProfileScreen,
       isSufficientGasForStep,
       isValidGas,
       registrationCostsData?.isSufficientGasForRegistration,
       step,
+      fromEditToProfileScreen,
     ]
   );
 
