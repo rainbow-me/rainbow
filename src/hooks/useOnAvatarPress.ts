@@ -1,3 +1,4 @@
+import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import { toLower } from 'lodash';
 import { useCallback, useMemo } from 'react';
@@ -125,6 +126,11 @@ export default () => {
         if (buttonIndex === 0) {
           navigate(Routes.PROFILE_SHEET, {
             address: accountENS,
+          });
+          analytics.track('Viewed ENS profile', {
+            category: 'profiles',
+            ens: accountENS,
+            from: 'Transaction list',
           });
         } else if (buttonIndex === 1 && !isReadOnlyWallet) {
           navigate(Routes.REGISTER_ENS_NAVIGATOR, {

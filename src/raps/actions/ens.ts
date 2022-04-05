@@ -1,4 +1,5 @@
 import { Wallet } from '@ethersproject/wallet';
+import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import { Rap, RapActionTypes, RapENSActionParameters } from '../common';
 import { ENSRegistrationRecords } from '@rainbow-me/entities';
@@ -295,6 +296,14 @@ const ensAction = async (
             salt,
           })
         );
+        analytics.track('Initiated ENS registration', {
+          category: 'profiles',
+          ens: name,
+          etherscanLink: `https://etherscan.io/tx/${tx?.hash}`,
+          records: Object.keys(records || {}),
+          rentPrice: rentPrice,
+          walletAddress: ownerAddress,
+        });
         break;
       case ENSRegistrationTransactionType.MULTICALL:
         tx = await executeMulticall(
@@ -326,6 +335,14 @@ const ensAction = async (
             registerTransactionHash: tx?.hash,
           })
         );
+        analytics.track('Completed ENS registration', {
+          category: 'profiles',
+          ens: name,
+          etherscanLink: `https://etherscan.io/tx/${tx?.hash}`,
+          records: Object.keys(records || {}),
+          rentPrice: rentPrice,
+          walletAddress: ownerAddress,
+        });
         break;
       case ENSRegistrationTransactionType.RENEW:
         tx = await executeRenew(
@@ -339,6 +356,13 @@ const ensAction = async (
           wallet,
           nonce
         );
+        analytics.track('Edited ENS records', {
+          category: 'profiles',
+          ens: name,
+          etherscanLink: `https://etherscan.io/tx/${tx?.hash}`,
+          records: Object.keys(records || {}),
+          walletAddress: ownerAddress,
+        });
         break;
       case ENSRegistrationTransactionType.SET_TEXT:
         tx = await executeSetText(
@@ -350,6 +374,13 @@ const ensAction = async (
           wallet,
           nonce
         );
+        analytics.track('Edited ENS records', {
+          category: 'profiles',
+          ens: name,
+          etherscanLink: `https://etherscan.io/tx/${tx?.hash}`,
+          records: Object.keys(records || {}),
+          walletAddress: ownerAddress,
+        });
         break;
       case ENSRegistrationTransactionType.SET_NAME:
         tx = await executeSetName(
@@ -361,6 +392,12 @@ const ensAction = async (
           wallet,
           nonce
         );
+        analytics.track('Set primary ENS', {
+          category: 'profiles',
+          ens: name,
+          etherscanLink: `https://etherscan.io/tx/${tx?.hash}`,
+          walletAddress: ownerAddress,
+        });
     }
   } catch (e) {
     logger.sentry(`[${actionName}] Error executing`);
