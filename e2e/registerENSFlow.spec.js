@@ -73,7 +73,7 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
-    await sendETHtoTestWallet();
+    await Helpers.sendETHtoTestWallet();
 
     await Helpers.waitAndTap('hardhat-section');
     await Helpers.checkIfVisible('testnet-toast-Hardhat');
