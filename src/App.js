@@ -88,7 +88,7 @@ if (__DEV__) {
   // eslint-disable-next-line no-inner-declarations
   async function initSentry() {
     const config = await codePush.getCurrentPackage();
-    if (config.deploymentKey === CODE_PUSH_DEPLOYMENT_KEY) {
+    if (!config || config.deploymentKey === CODE_PUSH_DEPLOYMENT_KEY) {
       codePush.sync({
         deploymentKey: CODE_PUSH_DEPLOYMENT_KEY,
         installMode: codePush.InstallMode.ON_NEXT_RESTART,
