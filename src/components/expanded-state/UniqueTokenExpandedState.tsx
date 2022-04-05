@@ -209,6 +209,7 @@ const UniqueTokenExpandedState = ({
   const [floorPrice, setFloorPrice] = useState<string | null>(null);
   const [showCurrentPriceInEth, setShowCurrentPriceInEth] = useState(true);
   const [showFloorInEth, setShowFloorInEth] = useState(true);
+  const [contentFocused, setContentFocused] = useState(false);
   const animationProgress = useSharedValue(0);
   const opacityStyle = useAnimatedStyle(() => ({
     opacity: 1 - animationProgress.value,
@@ -288,6 +289,14 @@ const UniqueTokenExpandedState = ({
     });
   }, [accountAddress, accountENS, asset]);
 
+  const handleContentFocus = useCallback(() => {
+    setContentFocused(true);
+  }, []);
+
+  const handleContentBlur = useCallback(() => {
+    setContentFocused(false);
+  }, []);
+
   const toggleCurrentPriceDisplayCurrency = useCallback(
     () => setShowCurrentPriceInEth(!showCurrentPriceInEth),
     [showCurrentPriceInEth, setShowCurrentPriceInEth]
@@ -338,7 +347,8 @@ const UniqueTokenExpandedState = ({
           ? { height: '100%' }
           : { additionalTopPadding: true, contentHeight: deviceHeight })}
         ref={sheetRef}
-        scrollEnabled
+        scrollEnabled={!contentFocused}
+        showsVerticalScrollIndicator={!contentFocused}
         yPosition={yPosition}
       >
         <ColorModeProvider value="darkTinted">
@@ -356,8 +366,9 @@ const UniqueTokenExpandedState = ({
               asset={asset}
               horizontalPadding={24}
               imageColor={imageColor}
+              onContentBlur={handleContentBlur}
+              onContentFocus={handleContentFocus}
               // @ts-expect-error JavaScript component
-
               sheetRef={sheetRef}
               textColor={textColor}
               yPosition={yPosition}
