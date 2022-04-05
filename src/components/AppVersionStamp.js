@@ -24,7 +24,7 @@ const StampText = styled(Text).attrs(({ theme: { colors } }) => ({
 }))({});
 
 export default function AppVersionStamp() {
-  const [appVersion, codePushVersion] = useAppVersion();
+  const appVersion = useAppVersion();
   const [numberOfTaps, setNumberOfTaps] = useState(0);
   const [startTimeout, stopTimeout] = useTimeout();
   const { navigate } = useNavigation();
@@ -41,17 +41,10 @@ export default function AppVersionStamp() {
     }
     startTimeout(() => setNumberOfTaps(0), 3000);
   }, [navigate, numberOfTaps, startTimeout, stopTimeout]);
-  const [showCodePushVersion, setShowCodePushVersion] = useState(false);
 
   return (
-    <StyledButton
-      onLongPress={() => setShowCodePushVersion(true)}
-      onPress={handleVersionPress}
-      onPressOut={() => setTimeout(() => setShowCodePushVersion(false), 500)}
-    >
-      <StampText>
-        {showCodePushVersion ? `Update: ${codePushVersion}` : appVersion}
-      </StampText>
+    <StyledButton onPress={handleVersionPress}>
+      <StampText>{appVersion}</StampText>
     </StyledButton>
   );
 }

@@ -32,24 +32,18 @@ const handleMailError = debounce(
   250
 );
 
-function feedbackEmailOptions(appVersion, codePushVersion) {
+function feedbackEmailOptions(appVersion) {
   return {
     recipients: [FeedbackEmailAddress],
-    subject: `🌈️ Rainbow Feedback - ${
-      ios ? 'iOS' : 'Android'
-    } ${appVersion} (Update: ${codePushVersion})`,
+    subject: `🌈️ Rainbow Feedback - ${ios ? 'iOS' : 'Android'} ${appVersion}`,
   };
 }
 
 export default function useSendFeedback() {
-  const [appVersion, codePushVersion] = useAppVersion();
+  const appVersion = useAppVersion();
   const onSendFeedback = useCallback(
-    () =>
-      Mailer.mail(
-        feedbackEmailOptions(appVersion, codePushVersion),
-        handleMailError
-      ),
-    [appVersion, codePushVersion]
+    () => Mailer.mail(feedbackEmailOptions(appVersion), handleMailError),
+    [appVersion]
   );
   return onSendFeedback;
 }
