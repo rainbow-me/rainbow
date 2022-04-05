@@ -8,13 +8,13 @@ import {
   canImplyAuthentication,
   getAllInternetCredentials,
   getAllInternetCredentialsKeys,
-  getInternetCredentials,
+  getGenericPassword,
   getSupportedBiometryType,
   hasInternetCredentials,
   Options,
-  resetInternetCredentials,
+  resetGenericPassword,
   Result,
-  setInternetCredentials,
+  setGenericPassword,
   UserCredentials,
 } from 'react-native-keychain';
 import { delay } from '../helpers/utilities';
@@ -37,7 +37,10 @@ export async function saveString(
 ): Promise<void> {
   return new Promise(async (resolve, reject) => {
     try {
-      await setInternetCredentials(key, key, value, accessControlOptions);
+      await setGenericPassword(key, value, {
+        ...accessControlOptions,
+        service: key,
+      });
       logger.sentry(`Keychain: saved string for key: ${key}`);
       resolve();
     } catch (e) {
@@ -45,7 +48,10 @@ export async function saveString(
       captureMessage('Keychain write first attempt failed');
       await delay(1000);
       try {
-        await setInternetCredentials(key, key, value, accessControlOptions);
+        await setGenericPassword(key, value, {
+          ...accessControlOptions,
+          service: key,
+        });
         logger.sentry(
           `Keychain: saved string for key: ${key} on second attempt`
         );
@@ -64,7 +70,7 @@ export async function loadString(
   options?: Options
 ): Promise<null | string | -1 | -2> {
   try {
-    const credentials = await getInternetCredentials(key, options);
+    const credentials = await getGenericPassword({ ...options, service: key });
     if (credentials) {
       logger.log(`Keychain: loaded string for key: ${key}`);
       return credentials.password;
@@ -85,7 +91,10 @@ export async function loadString(
       captureMessage('Keychain read first attempt failed');
       await delay(1000);
       try {
-        const credentials = await getInternetCredentials(key, options);
+        const credentials = await getGenericPassword({
+          ...options,
+          service: key,
+        });
         if (credentials) {
           logger.log(
             `Keychain: loaded string for key on second attempt: ${key}`
@@ -149,7 +158,7 @@ export async function loadObject(
 
 export async function remove(key: string): Promise<void> {
   try {
-    await resetInternetCredentials(key);
+    await resetGenericPassword({ service: key });
     logger.log(`Keychain: removed value for key: ${key}`);
   } catch (err) {
     logger.log(
@@ -216,7 +225,9 @@ export async function wipeKeychain(): Promise<void> {
     const results = await loadAllKeys();
     if (results) {
       await Promise.all(
-        results?.map(result => resetInternetCredentials(result.username))
+        results?.map(result =>
+          resetGenericPassword({ service: result.username })
+        )
       );
       logger.log('keychain wiped!');
     }
