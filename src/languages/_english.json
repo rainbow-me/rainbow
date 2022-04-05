@@ -623,6 +623,14 @@
         "commit_button": "Hold to Commit",
         "insufficient_eth": "Insufficient ETH",
         "speed_up": "Speed Up"
+      },
+      "profile_avatar": {
+        "choose_from_library": "Choose from Library",
+        "create_profile": "Create your Profile",
+        "edit_profile": "Edit Profile",
+        "pick_emoji": "Pick an Emoji",
+        "remove_photo": "Remove Photo",
+        "view_profile": "View Profile"
       }
     },
     "savings": {
