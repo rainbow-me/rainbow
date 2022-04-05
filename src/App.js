@@ -126,19 +126,34 @@ class App extends Component {
   state = { appState: AppState.currentState, initialRoute: null };
 
   async componentDidMount() {
-    getGenericPassword({
-      service: 'test_generic_password',
-    }).then(genericPassword => {
-      this.setState(state => ({ ...state, genericPassword }));
+    // getGenericPassword({
+    //   service: 'test_generic_password',
+    // }).then(genericPassword => {
+    //   this.setState(state => ({ ...state, genericPassword }));
 
-      setTimeout(() => {
-        getInternetCredentials('test_internet_credentials').then(
-          internetCredentials => {
-            this.setState(state => ({ ...state, internetCredentials }));
-          }
-        );
-      }, 5000);
+    //   setTimeout(() => {
+    //     getInternetCredentials('test_internet_credentials').then(
+    //       internetCredentials => {
+    //         this.setState(state => ({ ...state, internetCredentials }));
+    //       }
+    //     );
+    //   }, 5000);
+    // });
+
+    await setGenericPassword('test_generic_password', 'test123', {
+      accessControl: ACCESS_CONTROL.USER_PRESENCE,
+      accessible: ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
+      service: 'test_generic_password',
     });
+    await setInternetCredentials(
+      'test_internet_credentials',
+      'test_internet_credentials',
+      'test123',
+      {
+        accessControl: ACCESS_CONTROL.USER_PRESENCE,
+        accessible: ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
+      }
+    );
 
     if (!__DEV__ && RNTestFlight) {
       const { isTestFlight } = RNTestFlight.getConstants();
