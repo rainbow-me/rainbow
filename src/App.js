@@ -16,6 +16,8 @@ import {
   StatusBar,
   View,
 } from 'react-native';
+// eslint-disable-next-line import/default
+import codePush from 'react-native-code-push';
 import {
   REACT_APP_SEGMENT_API_WRITE_KEY,
   SENTRY_ENDPOINT,
@@ -26,6 +28,7 @@ import {
 import RNIOS11DeviceCheck from 'react-native-ios11-devicecheck';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
+import VersionNumber from 'react-native-version-number';
 import { QueryClientProvider } from 'react-query';
 import { connect, Provider } from 'react-redux';
 import { RecoilRoot } from 'recoil';
@@ -77,17 +80,26 @@ if (__DEV__) {
   (showNetworkRequests || showNetworkResponses) &&
     monitorNetwork(showNetworkRequests, showNetworkResponses);
 } else {
-  let sentryOptions = {
-    dsn: SENTRY_ENDPOINT,
-    enableAutoSessionTracking: true,
-    environment: SENTRY_ENVIRONMENT,
-    integrations: [
-      new Sentry.ReactNativeTracing({
-        tracingOrigins: ['localhost', /^\//],
+  // eslint-disable-next-line no-inner-declarations
+  async function initSentry() {
+    const metadata = await codePush.getUpdateMetadata();
+    const sentryOptions = {
+      dsn: SENTRY_ENDPOINT,
+      enableAutoSessionTracking: true,
+      environment: SENTRY_ENVIRONMENT,
+      integrations: [
+        new Sentry.ReactNativeTracing({
+          tracingOrigins: ['localhost', /^\//],
+        }),
+      ],
+      ...(metadata && {
+        dist: metadata.label,
+        release: `${metadata.appVersion} (${VersionNumber.buildVersion}) (CP ${metadata.label})`,
       }),
-    ],
-  };
-  Sentry.init(sentryOptions);
+    };
+    Sentry.init(sentryOptions);
+  }
+  initSentry();
 }
 
 enableScreens();
@@ -306,6 +318,10 @@ const AppWithRedux = connect(
 
 const AppWithReduxStore = () => <AppWithRedux store={store} />;
 
+const AppWithSentry = Sentry.wrap(AppWithReduxStore);
+
+const AppWithCodePush = codePush(AppWithSentry);
+
 AppRegistry.registerComponent('Rainbow', () =>
-  designSystemPlaygroundEnabled ? Playground : Sentry.wrap(AppWithReduxStore)
+  designSystemPlaygroundEnabled ? Playground : AppWithCodePush
 );
