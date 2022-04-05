@@ -68,7 +68,6 @@ import { branchListener } from './utils/branch';
 import { analyticsUserIdentifier } from './utils/keychainConstants';
 import {
   CODE_PUSH_DEPLOYMENT_KEY,
-  // eslint-disable-next-line no-unused-vars
   isCustomBuild,
 } from '@rainbow-me/handlers/tophat';
 import { SharedValuesProvider } from '@rainbow-me/helpers/SharedValuesContext';
@@ -95,7 +94,7 @@ if (__DEV__) {
         installMode: codePush.InstallMode.ON_NEXT_RESTART,
       });
     } else {
-      isCustomBuild = true;
+      isCustomBuild.value = true;
       setTimeout(() => TopHatToastRef?.show(), 300);
     }
 
