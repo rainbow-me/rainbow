@@ -1,4 +1,5 @@
 import { formatsByCoinType } from '@ensdomains/address-encoder';
+import { captureException } from '@sentry/react-native';
 import { debounce, isEmpty, sortBy } from 'lodash';
 import { ensClient } from '../apollo/client';
 import {
@@ -12,6 +13,7 @@ import {
   EnsGetRecordsData,
   EnsGetRegistrationData,
 } from '../apollo/queries';
+import { rainbowFetch } from '../rainbow-fetch';
 import { ENSActionParameters } from '../raps/common';
 import { estimateGasWithPadding, web3Provider } from './web3';
 import { ENSRegistrationRecords, Records } from '@rainbow-me/entities';
@@ -24,8 +26,12 @@ import {
   getNameOwner,
 } from '@rainbow-me/helpers/ens';
 import { add } from '@rainbow-me/helpers/utilities';
-import { ensPublicResolverAddress, ethUnits } from '@rainbow-me/references';
-import { labelhash, profileUtils } from '@rainbow-me/utils';
+import {
+  ENS_NFT_CONTRACT_ADDRESS,
+  ensPublicResolverAddress,
+  ethUnits,
+} from '@rainbow-me/references';
+import { labelhash, logger, profileUtils } from '@rainbow-me/utils';
 import { AvatarResolver } from 'ens-avatar';
 
 const DUMMY_RECORDS = {
@@ -33,6 +39,29 @@ const DUMMY_RECORDS = {
     'https://cloudflare-ipfs.com/ipfs/QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco/I/m/Vincent_van_Gogh_-_Self-Portrait_-_Google_Art_Project_(454045).jpg',
   'description': 'description',
   'me.rainbow.displayName': 'name',
+};
+
+export const fetchMetadata = async ({
+  contractAddress = ENS_NFT_CONTRACT_ADDRESS,
+  tokenId,
+}: {
+  contractAddress?: string;
+  tokenId: string;
+}) => {
+  try {
+    const url = `https://metadata.ens.domains/mainnet/${contractAddress}/${tokenId}`;
+    const { data } = await rainbowFetch(url, {
+      headers: {
+        Accept: 'application/json',
+      },
+      method: 'get',
+    });
+    return data;
+  } catch (error) {
+    logger.sentry('ENS: Error getting ENS metadata', error);
+    captureException(new Error('ENS: Error getting ENS metadata'));
+    throw error;
+  }
 };
 
 export const fetchSuggestions = async (
