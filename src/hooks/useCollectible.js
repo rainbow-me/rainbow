@@ -41,32 +41,32 @@ export default function useCollectible(
   }, [initialAsset, uniqueTokens]);
 
   useRevalidateInBackground({
-    asset,
-    enabled: revalidateInBackground,
+    contractAddress: asset?.asset_contract?.address,
+    enabled: revalidateInBackground && !isExternal,
     isExternal,
+    tokenId: asset?.id,
   });
 
   return asset;
 }
 
-function useRevalidateInBackground({ asset, isExternal, enabled }) {
+function useRevalidateInBackground({
+  contractAddress,
+  tokenId,
+  isExternal,
+  enabled,
+}) {
   const dispatch = useDispatch();
   useEffect(() => {
     // If `forceUpdate` is truthy, we want to force refresh the metadata from OpenSea &
     // update in the background. Useful for refreshing ENS metadata to resolve "Unknown ENS name".
-    if (asset?.asset_contract?.address && !isExternal && enabled) {
+    if (enabled && contractAddress) {
       // Revalidate the updated asset in the background & update the `uniqueTokens` cache.
       dispatch(
-        revalidateUniqueToken(asset?.asset_contract?.address, asset?.id, {
+        revalidateUniqueToken(contractAddress, tokenId, {
           forceUpdate: true,
         })
       );
     }
-  }, [
-    asset?.asset_contract?.address,
-    asset?.id,
-    dispatch,
-    enabled,
-    isExternal,
-  ]);
+  }, [contractAddress, dispatch, enabled, isExternal, tokenId]);
 }
