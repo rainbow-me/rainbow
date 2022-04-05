@@ -1,56 +1,9 @@
 /* eslint-disable no-undef */
 /* eslint-disable jest/expect-expect */
 import { exec } from 'child_process';
-import { Contract } from '@ethersproject/contracts';
-import { JsonRpcProvider } from '@ethersproject/providers';
-import { Wallet } from '@ethersproject/wallet';
-import { ethers } from 'ethers';
 import * as Helpers from './helpers';
-import registratABI from '@rainbow-me/references/ens/ENSETHRegistrarController.json';
-
-const TESTING_WALLET = '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
 
 const RANDOM_NAME = 'somerandomname321';
-const ensETHRegistrarControllerAddress =
-  '0x283Af0B28c62C092C9727F1Ee09c02CA627EB7F5';
-
-const getProvider = () => {
-  if (!getProvider._instance) {
-    getProvider._instance = new JsonRpcProvider(
-      device.getPlatform() === 'ios'
-        ? process.env.HARDHAT_URL_IOS
-        : process.env.HARDHAT_URL_ANDROID,
-      'any'
-    );
-  }
-  return getProvider._instance;
-};
-
-const isAvailable = async name => {
-  const provider = getProvider();
-  const registrarContract = new Contract(
-    ensETHRegistrarControllerAddress,
-    registratABI,
-    provider
-  );
-  const isAvailable = await registrarContract.available(name);
-  return !!isAvailable;
-};
-
-const sendETHtoTestWallet = async () => {
-  const provider = getProvider();
-  // Hardhat account 0 that has 10000 ETH
-  const wallet = new Wallet(
-    '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80',
-    provider
-  );
-  // Sending 20 ETH so we have enough to pay the tx fees even when the gas is too high
-  await wallet.sendTransaction({
-    to: TESTING_WALLET,
-    value: ethers.utils.parseEther('20'),
-  });
-  return true;
-};
 
 beforeAll(async () => {
   // Connect to hardhat
