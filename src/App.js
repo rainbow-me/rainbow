@@ -87,8 +87,8 @@ if (__DEV__) {
 } else {
   // eslint-disable-next-line no-inner-declarations
   async function initSentry() {
-    const metadata = await codePush.getUpdateMetadata();
-    if (!metadata || metadata.deploymentKey === CODE_PUSH_DEPLOYMENT_KEY) {
+    const config = await codePush.getConfiguration();
+    if (config.deploymentKey === CODE_PUSH_DEPLOYMENT_KEY) {
       codePush.sync({
         deploymentKey: CODE_PUSH_DEPLOYMENT_KEY,
         installMode: codePush.InstallMode.ON_NEXT_RESTART,
@@ -97,6 +97,8 @@ if (__DEV__) {
       isCustomBuild.value = true;
       setTimeout(() => TopHatToastRef?.show(), 300);
     }
+
+    const metadata = await codePush.getUpdateMetadata();
 
     const sentryOptions = {
       dsn: SENTRY_ENDPOINT,
