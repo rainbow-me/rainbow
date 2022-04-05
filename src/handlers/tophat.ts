@@ -13,7 +13,7 @@ export const CODE_PUSH_DEPLOYMENT_KEY = ios
   ? CODE_PUSH_DEPLOYMENT_KEY_IOS
   : CODE_PUSH_DEPLOYMENT_KEY_ANDROID;
 
-export let isCustomBuild = false;
+export const isCustomBuild = { value: false };
 
 export async function setDeploymentKey(key: string) {
   if (!key) {

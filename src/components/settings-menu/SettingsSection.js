@@ -361,7 +361,7 @@ export default function SettingsSection({
               testID="review-section"
             />
           )}
-          {isCustomBuild && (
+          {isCustomBuild.value && (
             <ListItem
               icon={<Emoji name="exploding_head" />}
               label="Restore to original deployment"
