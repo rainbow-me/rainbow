@@ -567,6 +567,10 @@
       "withdraw": "Withdraw"
     },
     "profiles": {
+      "actions": {
+        "watching": "Watching",
+        "watch": "Watch"
+      },
       "banner": {
         "register_name": "Register a .eth Name",
         "and_create_ens_profile": "& create your ENS profile"
