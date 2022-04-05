@@ -121,6 +121,40 @@ const executeMulticall = async (
   );
 };
 
+const executeRenew = async (
+  name?: string,
+  duration?: number,
+  ownerAddress?: string,
+  rentPrice?: string,
+  gasLimit?: string | null,
+  maxFeePerGas?: string,
+  maxPriorityFeePerGas?: string,
+  wallet?: Wallet,
+  nonce: number | null = null
+) => {
+  const { contract, methodArguments, value } = await getENSExecutionDetails({
+    duration,
+    name,
+    ownerAddress,
+    rentPrice,
+    type: ENSRegistrationTransactionType.RENEW,
+    wallet,
+  });
+
+  return (
+    methodArguments &&
+    contract?.renew(...methodArguments, {
+      gasLimit: gasLimit ? toHex(gasLimit) : undefined,
+      maxFeePerGas: maxFeePerGas ? toHex(maxFeePerGas) : undefined,
+      maxPriorityFeePerGas: maxPriorityFeePerGas
+        ? toHex(maxPriorityFeePerGas)
+        : undefined,
+      nonce: nonce ? toHex(nonce) : undefined,
+      ...(value ? { value } : {}),
+    })
+  );
+};
+
 const executeSetName = async (
   name?: string,
   ownerAddress?: string,
@@ -262,6 +296,17 @@ const ensAction = async (
           })
         );
         break;
+      case ENSRegistrationTransactionType.MULTICALL:
+        tx = await executeMulticall(
+          name,
+          ensRegistrationRecords,
+          gasLimit,
+          maxFeePerGas,
+          maxPriorityFeePerGas,
+          wallet,
+          nonce
+        );
+        break;
       case ENSRegistrationTransactionType.REGISTER_WITH_CONFIG:
         tx = await executeRegisterWithConfig(
           name,
@@ -282,10 +327,12 @@ const ensAction = async (
           })
         );
         break;
-      case ENSRegistrationTransactionType.SET_TEXT:
-        tx = await executeSetText(
+      case ENSRegistrationTransactionType.RENEW:
+        tx = await executeRenew(
           name,
-          ensRegistrationRecords,
+          duration,
+          ownerAddress,
+          rentPrice,
           gasLimit,
           maxFeePerGas,
           maxPriorityFeePerGas,
@@ -293,8 +340,8 @@ const ensAction = async (
           nonce
         );
         break;
-      case ENSRegistrationTransactionType.MULTICALL:
-        tx = await executeMulticall(
+      case ENSRegistrationTransactionType.SET_TEXT:
+        tx = await executeSetText(
           name,
           ensRegistrationRecords,
           gasLimit,
@@ -364,23 +411,6 @@ const commitENS = async (
   );
 };
 
-const registerWithConfig = async (
-  wallet: Wallet,
-  currentRap: Rap,
-  index: number,
-  parameters: RapENSActionParameters,
-  baseNonce?: number
-): Promise<number | undefined> => {
-  return ensAction(
-    wallet,
-    RapActionTypes.registerWithConfigENS,
-    index,
-    parameters,
-    ENSRegistrationTransactionType.REGISTER_WITH_CONFIG,
-    baseNonce
-  );
-};
-
 const multicallENS = async (
   wallet: Wallet,
   currentRap: Rap,
@@ -398,7 +428,7 @@ const multicallENS = async (
   );
 };
 
-const setTextENS = async (
+const registerWithConfig = async (
   wallet: Wallet,
   currentRap: Rap,
   index: number,
@@ -407,10 +437,27 @@ const setTextENS = async (
 ): Promise<number | undefined> => {
   return ensAction(
     wallet,
-    RapActionTypes.setTextENS,
+    RapActionTypes.registerWithConfigENS,
     index,
     parameters,
-    ENSRegistrationTransactionType.SET_TEXT,
+    ENSRegistrationTransactionType.REGISTER_WITH_CONFIG,
+    baseNonce
+  );
+};
+
+const renewENS = async (
+  wallet: Wallet,
+  currentRap: Rap,
+  index: number,
+  parameters: RapENSActionParameters,
+  baseNonce?: number
+): Promise<number | undefined> => {
+  return ensAction(
+    wallet,
+    RapActionTypes.renewENS,
+    index,
+    parameters,
+    ENSRegistrationTransactionType.RENEW,
     baseNonce
   );
 };
@@ -432,10 +479,28 @@ const setNameENS = async (
   );
 };
 
+const setTextENS = async (
+  wallet: Wallet,
+  currentRap: Rap,
+  index: number,
+  parameters: RapENSActionParameters,
+  baseNonce?: number
+): Promise<number | undefined> => {
+  return ensAction(
+    wallet,
+    RapActionTypes.setTextENS,
+    index,
+    parameters,
+    ENSRegistrationTransactionType.SET_TEXT,
+    baseNonce
+  );
+};
+
 export default {
   commitENS,
   multicallENS,
   registerWithConfig,
+  renewENS,
   setNameENS,
   setTextENS,
 };

@@ -13,6 +13,7 @@ import { useNavigation } from './Navigation';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
 import { sharedCoolModalTopOffset } from './config';
 import { Box } from '@rainbow-me/design-system';
+import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import {
   useDimensions,
   useENSRegistration,
@@ -60,8 +61,8 @@ export default function RegisterENSNavigator() {
   } = useENSRegistration();
 
   const initialRouteName = useMemo(() => {
-    const { ensName, mode } = params || { mode: 'create' };
-    if (mode === 'edit') {
+    const { ensName, mode } = params || { mode: REGISTRATION_MODES.CREATE };
+    if (mode === REGISTRATION_MODES.EDIT) {
       startRegistration(ensName, mode);
       return Routes.ENS_ASSIGN_RECORDS_SHEET;
     }

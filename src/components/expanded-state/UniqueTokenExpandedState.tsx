@@ -59,6 +59,7 @@ import {
 } from '@rainbow-me/design-system';
 import { AssetTypes, UniqueAsset } from '@rainbow-me/entities';
 import { buildUniqueTokenName } from '@rainbow-me/helpers/assets';
+import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import {
   useAccountProfile,
   useDimensions,
@@ -256,7 +257,8 @@ const UniqueTokenExpandedState = ({
   const isNFT = uniqueTokenType === UniqueTokenType.NFT;
 
   // Fetch the ENS profile if the unique token is an ENS name.
-  const ensProfile = useENSProfile(uniqueId, { enabled: isENS });
+  const cleanENSName = isENS ? uniqueId.split(' ')?.[0] : uniqueId;
+  const ensProfile = useENSProfile(cleanENSName, { enabled: isENS });
   const ensData = ensProfile.data;
 
   const {
@@ -326,7 +328,7 @@ const UniqueTokenExpandedState = ({
     if (isENS) {
       navigate(Routes.REGISTER_ENS_NAVIGATOR, {
         ensName: uniqueId,
-        mode: 'edit',
+        mode: REGISTRATION_MODES.EDIT,
       });
     }
   }, [isENS, navigate, uniqueId]);
@@ -497,10 +499,12 @@ const UniqueTokenExpandedState = ({
                         )}
                         {isENS && (
                           <ENSBriefTokenInfoRow
+                            ensName={uniqueId}
                             expiryDate={ensData?.registration.expiryDate}
                             registrationDate={
                               ensData?.registration.registrationDate
                             }
+                            showEditButton={hasEditButton}
                           />
                         )}
                       </Bleed>
