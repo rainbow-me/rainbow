@@ -119,12 +119,6 @@ describe('Register ENS Flow', () => {
     await Helpers.waitAndTap('ens-assign-records-skip');
   });
 
-  it('Should go to come back to records view and add some', async () => {
-    await Helpers.checkIfVisible('ens-confirm-register-sheet');
-    const ensAvailable = await isAvailable(RANDOM_NAME);
-    if (!ensAvailable) throw new Error('ENS name not available');
-  });
-
   it('Should go to review registration and start it', async () => {
     await Helpers.checkIfVisible(`ens-transaction-action-COMMIT`);
     await Helpers.disableSynchronization();
