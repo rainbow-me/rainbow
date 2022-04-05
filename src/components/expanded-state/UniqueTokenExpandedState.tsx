@@ -347,7 +347,7 @@ const UniqueTokenExpandedState = ({
           ? { height: '100%' }
           : { additionalTopPadding: true, contentHeight: deviceHeight })}
         ref={sheetRef}
-        scrollEnabled={!contentFocused}
+        scrollEnabled
         showsVerticalScrollIndicator={!contentFocused}
         yPosition={yPosition}
       >
