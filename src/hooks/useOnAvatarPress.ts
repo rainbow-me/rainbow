@@ -120,23 +120,20 @@ export default () => {
     const avatarActionSheetOptions = (isENSProfile
       ? [
           lang.t('profiles.profile_avatar.view_profile'),
-          ...(!isReadOnlyWallet || enableActionsOnReadOnlyWallet
-            ? [lang.t('profiles.profile_avatar.edit_profile')]
-            : []),
+          (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) &&
+            lang.t('profiles.profile_avatar.edit_profile'),
         ]
       : [
-          lang.t('profiles.profile_avatar.choose_from_library'),
-          ...(!accountImage
-            ? [lang.t(`profiles.profile_avatar.pick_emoji`)]
-            : []),
-          ...(accountImage
-            ? [lang.t(`profiles.profile_avatar.remove_photo`)]
-            : []),
-          ...(!isReadOnlyWallet || enableActionsOnReadOnlyWallet
-            ? [lang.t('profiles.profile_avatar.create_profile')]
-            : []),
+          !accountImage &&
+            lang.t('profiles.profile_avatar.choose_from_library'),
+          !accountImage && lang.t(`profiles.profile_avatar.pick_emoji`),
+          (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) &&
+            lang.t('profiles.profile_avatar.create_profile'),
+          !!accountImage && lang.t(`profiles.profile_avatar.remove_photo`),
         ]
-    ).concat(ios ? ['Cancel'] : []);
+    )
+      .filter(option => Boolean(option))
+      .concat(ios ? ['Cancel'] : []);
 
     const callback = async (buttonIndex: Number) => {
       if (isENSProfile) {
@@ -166,6 +163,7 @@ export default () => {
         }
       }
     };
+
     showActionSheetWithOptions(
       {
         cancelButtonIndex: avatarActionSheetOptions.length - 1,
