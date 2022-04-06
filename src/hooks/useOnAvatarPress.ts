@@ -124,8 +124,7 @@ export default () => {
             lang.t('profiles.profile_avatar.edit_profile'),
         ]
       : [
-          !accountImage &&
-            lang.t('profiles.profile_avatar.choose_from_library'),
+          lang.t('profiles.profile_avatar.choose_from_library'),
           !accountImage && lang.t(`profiles.profile_avatar.pick_emoji`),
           (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) &&
             lang.t('profiles.profile_avatar.create_profile'),
@@ -156,10 +155,10 @@ export default () => {
             onAvatarPickEmoji();
           }
           if (accountImage) {
-            onAvatarRemovePhoto();
+            onAvatarCreateProfile();
           }
         } else if (buttonIndex === 2) {
-          onAvatarCreateProfile();
+          onAvatarRemovePhoto();
         }
       }
     };
