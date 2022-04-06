@@ -238,8 +238,10 @@ export const additionalTextRecordFields = {
       maxLength: 42,
     },
     key: ENS_RECORDS.ETH,
-    label: lang.t('profiles.create.name'),
-    placeholder: lang.t('profiles.create.name_placeholder'),
+    label: lang.t('profiles.create.eth'),
+    placeholder: lang.t('profiles.create.wallet_placeholder', {
+      coin: lang.t('profiles.create.eth'),
+    }),
   },
   [ENS_RECORDS.BTC]: {
     id: 'btc',
@@ -248,8 +250,10 @@ export const additionalTextRecordFields = {
       multiline: true,
     },
     key: ENS_RECORDS.BTC,
-    label: lang.t('profiles.create.bio'),
-    placeholder: lang.t('profiles.create.bio_placeholder'),
+    label: lang.t('profiles.create.btc'),
+    placeholder: lang.t('profiles.create.wallet_placeholder', {
+      coin: lang.t('profiles.create.btc'),
+    }),
   },
   [ENS_RECORDS.LTC]: {
     id: 'ltc',
@@ -257,8 +261,10 @@ export const additionalTextRecordFields = {
       maxLength: 35,
     },
     key: ENS_RECORDS.LTC,
-    label: 'Twitter',
-    placeholder: lang.t('profiles.create.username_placeholder'),
+    label: lang.t('profiles.create.ltc'),
+    placeholder: lang.t('profiles.create.wallet_placeholder', {
+      coin: lang.t('profiles.create.ltc'),
+    }),
     startsWith: '@',
     validations: {
       onChange: {
@@ -272,8 +278,10 @@ export const additionalTextRecordFields = {
       maxLength: 34,
     },
     key: ENS_RECORDS.DOGE,
-    label: 'Email',
-    placeholder: 'Add your email',
+    label: lang.t('profiles.create.doge'),
+    placeholder: lang.t('profiles.create.wallet_placeholder', {
+      coin: lang.t('profiles.create.doge'),
+    }),
     validations: {
       onSubmit: {
         match: {
@@ -285,12 +293,10 @@ export const additionalTextRecordFields = {
   },
   [ENS_RECORDS.content]: {
     id: 'content',
-    inputProps: {
-      maxLength: 100,
-    },
+    inputProps: {},
     key: ENS_RECORDS.content,
-    label: lang.t('profiles.create.website'),
-    placeholder: lang.t('profiles.create.website_placeholder'),
+    label: lang.t('profiles.create.content'),
+    placeholder: lang.t('profiles.create.content_placeholder'),
     validations: {
       onSubmit: {
         match: {
@@ -306,8 +312,8 @@ export const additionalTextRecordFields = {
       keyboardType: 'url',
     },
     key: ENS_RECORDS.website,
-    label: 'GitHub',
-    placeholder: lang.t('profiles.create.username_placeholder'),
+    label: lang.t('profiles.create.website'),
+    placeholder: lang.t('profiles.create.website_placeholder'),
   },
   [ENS_RECORDS.notice]: {
     id: 'notice',
@@ -315,8 +321,8 @@ export const additionalTextRecordFields = {
       maxLength: 100,
     },
     key: ENS_RECORDS.notice,
-    label: 'Instagram',
-    placeholder: lang.t('profiles.create.username_placeholder'),
+    label: lang.t('profiles.create.notice'),
+    placeholder: lang.t('profiles.create.notice_placeholder'),
     validations: {
       onChange: {
         match: /^([\w.])*$/,
@@ -329,8 +335,8 @@ export const additionalTextRecordFields = {
       maxLength: 100,
     },
     key: ENS_RECORDS.keywords,
-    label: 'Snapchat',
-    placeholder: lang.t('profiles.create.username_placeholder'),
+    label: lang.t('profiles.create.keyworkds'),
+    placeholder: lang.t('profiles.create.keyworkds_placeholder'),
     validations: {
       onChange: {
         match: /^([\w.])*$/,
@@ -340,20 +346,20 @@ export const additionalTextRecordFields = {
   [ENS_RECORDS.reddit]: {
     id: 'reddit',
     inputProps: {
-      maxLength: 50,
+      maxLength: 30,
     },
     key: ENS_RECORDS.reddit,
-    label: 'Discord',
+    label: lang.t('profiles.create.reddit'),
     placeholder: lang.t('profiles.create.username_placeholder'),
     startsWith: '@',
   },
   [ENS_RECORDS.telegram]: {
     id: 'telegram',
     inputProps: {
-      maxLength: 50,
+      maxLength: 30,
     },
     key: ENS_RECORDS.telegram,
-    label: 'Discord',
+    label: lang.t('profiles.create.telegram'),
     placeholder: lang.t('profiles.create.username_placeholder'),
     startsWith: '@',
   },

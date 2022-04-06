@@ -610,7 +610,20 @@
         "website_placeholder": "Add your website",
         "review": "Review",
         "choose_nft": "Choose NFT",
-        "upload_photo": "Upload photo"
+        "upload_photo": "Upload photo",
+        "eth": "ETH",
+        "btc": "BTC",
+        "ltc": "LTC",
+        "doge": "DOGE",
+        "wallet_placeholder": "Add a %{coin} address",
+        "content": "Content",
+        "content_placeholder": "Enter a content hash",
+        "notice": "Notice",
+        "notice_placeholder": "Enter a notice",
+        "keyworkds": "Keywords",
+        "keyworkds_placeholder": "Enter keywords",
+        "reddit": "Reddit",
+        "telegram": "Telegram"
       },
       "confirm": {
         "confirm_purchase": "Confirm purchase",
