@@ -581,6 +581,27 @@
         "copy_address": "Copy Address",
         "view_on_etherscan": "View on Etherscan"
       },
+      "intro": {
+        "create_your": "Create Your",
+        "ens_profile": "ENS Profile",
+        "wallet_address_info": {
+          "title": "A better wallet address",
+          "description": "Send to ENS names instead of hard-to-remember wallet addresses."
+        },
+        "portable_identity_info": {
+          "title": "A portable digital identity",
+          "description": "Carry your ENS name and profile between websites. No more signups."
+        },
+        "stored_on_blockchain_info": {
+          "title": "Stored on the blockchain",
+          "description": "Your name and profile are stored on Ethereum and owned by you."
+        },
+        "find_your_name": "Find your name",
+        "use_name": "Use %{name}",
+        "use_existing_name": "Use an existing ENS name",
+        "search_new_name": "Search for a new ENS name"
+      },
+      "select_ens_name": "Select ENS Name",
       "search": {
         "header": "Find your name",
         "description": "Search available profile names",

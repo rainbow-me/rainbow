@@ -190,14 +190,18 @@ export default function useENSRegistrationForm({
     updateRecords(values);
   }, [updateRecords, values]);
 
-  const [isLoading, setIsLoading] = useState(mode === REGISTRATION_MODES.EDIT);
+  const [isLoading, setIsLoading] = useState(
+    mode === REGISTRATION_MODES.EDIT && isEmpty(values)
+  );
   useEffect(() => {
-    if (!profileQuery.isLoading) {
-      setTimeout(() => setIsLoading(false), 200);
-    } else {
-      setIsLoading(true);
+    if (mode === 'edit') {
+      if (profileQuery.isSuccess || !isEmpty(values)) {
+        setTimeout(() => setIsLoading(false), 200);
+      } else {
+        setIsLoading(true);
+      }
     }
-  }, [profileQuery.isLoading]);
+  }, [mode, profileQuery.isSuccess, values]);
 
   const empty = useMemo(() => !Object.values(values).some(Boolean), [values]);
 
