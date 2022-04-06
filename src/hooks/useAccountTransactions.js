@@ -8,23 +8,30 @@ import useRequests from './useRequests';
 export const NOE_PAGE = 30;
 
 export default function useAccountTransactions(initialized, isFocused) {
-  const { isLoadingTransactions, network, transactions } = useSelector(
+  const {
+    isLoadingTransactions,
+    network,
+    pendingTransactions,
+    transactions,
+  } = useSelector(
     ({
-      data: { isLoadingTransactions, transactions },
+      data: { isLoadingTransactions, pendingTransactions, transactions },
       settings: { network },
     }) => ({
       isLoadingTransactions,
       network,
+      pendingTransactions,
       transactions,
     })
   );
 
+  const allTransactions = pendingTransactions.concat(transactions);
   const [page, setPage] = useState(1);
   const nextPage = useCallback(() => setPage(page => page + 1), []);
 
   const slicedTransaction = useMemo(
-    () => transactions.slice(0, page * NOE_PAGE),
-    [transactions, page]
+    () => allTransactions.slice(0, page * NOE_PAGE),
+    [allTransactions, page]
   );
 
   const transactionsCount = useMemo(() => {

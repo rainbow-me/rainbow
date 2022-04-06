@@ -4,7 +4,6 @@ import { Mutex } from 'async-mutex';
 import { getUnixTime, startOfMinute, sub } from 'date-fns';
 import isValidDomain from 'is-valid-domain';
 import {
-  concat,
   filter,
   find,
   get,
@@ -53,10 +52,12 @@ import appEvents from '@rainbow-me/handlers/appEvents';
 import {
   getAccountAssetsData,
   getAssetPricesFromUniswap,
+  getLocalPendingTransactions,
   getLocalTransactions,
   saveAccountAssetsData,
   saveAccountEmptyState,
   saveAssetPricesFromUniswap,
+  saveLocalPendingTransactions,
   saveLocalTransactions,
 } from '@rainbow-me/handlers/localstorage/accountLocal';
 import {
@@ -204,6 +205,11 @@ interface DataState {
    * Whether or not transactions are currently being loaded.
    */
   isLoadingTransactions: boolean;
+
+  /**
+   * Pending transactions for this account.
+   */
+  pendingTransactions: RainbowTransaction[];
 
   /**
    * Zerion portfolio information keyed by account address.
@@ -538,6 +544,7 @@ export const dataLoadState = () => async (
     | DataLoadTransactionSuccessAction
     | DataLoadTransactionsRequestAction
     | DataLoadTransactionsFailureAction
+    | DataAddNewTransactionSuccessAction
   >,
   getState: AppGetState
 ) =>
@@ -573,6 +580,14 @@ export const dataLoadState = () => async (
     try {
       dispatch({ type: DATA_LOAD_TRANSACTIONS_REQUEST });
       const transactions = await getLocalTransactions(accountAddress, network);
+      const pendingTransactions = await getLocalPendingTransactions(
+        accountAddress,
+        network
+      );
+      dispatch({
+        payload: pendingTransactions,
+        type: DATA_ADD_NEW_TRANSACTION_SUCCESS,
+      });
       dispatch({
         payload: transactions,
         type: DATA_LOAD_TRANSACTIONS_SUCCESS,
@@ -916,7 +931,11 @@ export const transactionsReceived = (
   message: TransactionsReceivedMessage | undefined,
   appended = false
 ) => async (
-  dispatch: ThunkDispatch<AppState, unknown, DataLoadTransactionSuccessAction>,
+  dispatch: ThunkDispatch<
+    AppState,
+    unknown,
+    DataLoadTransactionSuccessAction | DataAddNewTransactionSuccessAction
+  >,
   getState: AppGetState
 ) =>
   withRunExclusive(async () => {
@@ -930,7 +949,7 @@ export const transactionsReceived = (
 
     const { accountAddress, nativeCurrency } = getState().settings;
     const { purchaseTransactions } = getState().addCash;
-    const { transactions } = getState().data;
+    const { pendingTransactions, transactions } = getState().data;
     const { selected } = getState().wallets;
 
     let { network } = getState().settings;
@@ -954,12 +973,25 @@ export const transactionsReceived = (
         dispatch(uniqueTokensRefreshState());
       }, 60000);
     }
+    const txHashes = parsedTransactions.map(({ hash }) => hash);
+    const updatedPendingTransactions = pendingTransactions.filter(
+      ({ hash }) => !txHashes.includes(hash)
+    );
+    dispatch({
+      payload: updatedPendingTransactions,
+      type: DATA_ADD_NEW_TRANSACTION_SUCCESS,
+    });
     dispatch({
       payload: parsedTransactions,
       type: DATA_LOAD_TRANSACTIONS_SUCCESS,
     });
     dispatch(updatePurchases(parsedTransactions));
     saveLocalTransactions(parsedTransactions, accountAddress, network);
+    saveLocalPendingTransactions(
+      updatedPendingTransactions,
+      accountAddress,
+      network
+    );
 
     if (appended && parsedTransactions.length) {
       if (
@@ -1405,7 +1437,7 @@ export const dataAddNewTransaction = (
 ) =>
   withRunExclusive(
     async (): Promise<RainbowTransaction | undefined> => {
-      const { transactions } = getState().data;
+      const { pendingTransactions } = getState().data;
       const { accountAddress, nativeCurrency, network } = getState().settings;
       if (
         accountAddressToUpdate &&
@@ -1417,12 +1449,19 @@ export const dataAddNewTransaction = (
           txDetails,
           nativeCurrency
         );
-        const _transactions = [parsedTransaction, ...transactions];
+        const _pendingTransactions = [
+          parsedTransaction,
+          ...pendingTransactions,
+        ];
         dispatch({
-          payload: _transactions,
+          payload: _pendingTransactions,
           type: DATA_ADD_NEW_TRANSACTION_SUCCESS,
         });
-        saveLocalTransactions(_transactions, accountAddress, network);
+        saveLocalPendingTransactions(
+          _pendingTransactions,
+          accountAddress,
+          network
+        );
         if (parsedTransaction.from && parsedTransaction.nonce) {
           await dispatch(
             incrementNonce(
@@ -1492,17 +1531,16 @@ export const dataWatchPendingTransactions = (
   provider: StaticJsonRpcProvider | null = null,
   currentNonce: number = -1
 ) => async (
-  dispatch: ThunkDispatch<AppState, unknown, DataLoadTransactionSuccessAction>,
+  dispatch: ThunkDispatch<
+    AppState,
+    unknown,
+    DataLoadTransactionSuccessAction | DataAddNewTransactionSuccessAction
+  >,
   getState: AppGetState
 ) =>
   withRunExclusive(async () => {
-    const { transactions } = getState().data;
-    if (!transactions.length) return true;
-
-    const [pending, remainingTransactions] = partition(
-      transactions,
-      txn => txn.pending
-    );
+    const { pendingTransactions: pending } = getState().data;
+    if (!pending.length) return true;
 
     if (isEmpty(pending)) {
       return true;
@@ -1569,23 +1607,31 @@ export const dataWatchPendingTransactions = (
     );
 
     if (txStatusesDidChange) {
-      const filteredPendingTransactions = updatedPendingTransactions?.filter(
+      const { accountAddress, network } = getState().settings;
+      const [newDataTransactions, pendingTransactions] = partition(
+        updatedPendingTransactions,
         ({ status }) => status !== TransactionStatus.unknown
       );
-      const updatedTransactions = concat(
-        filteredPendingTransactions,
-        remainingTransactions
+      dispatch({
+        payload: pendingTransactions,
+        type: DATA_ADD_NEW_TRANSACTION_SUCCESS,
+      });
+      saveLocalPendingTransactions(
+        pendingTransactions,
+        accountAddress,
+        network
       );
-      dispatch(updatePurchases(updatedTransactions));
-      const { accountAddress, network } = getState().settings;
+
+      const { transactions } = getState().data;
+      const updatedTransactions = newDataTransactions.concat(transactions);
       dispatch({
         payload: updatedTransactions,
         type: DATA_LOAD_TRANSACTIONS_SUCCESS,
       });
       saveLocalTransactions(updatedTransactions, accountAddress, network);
+      dispatch(updatePurchases(updatedTransactions));
 
-      const pendingTx = updatedTransactions.find(tx => tx.pending);
-      if (!pendingTx) {
+      if (!pendingTransactions?.length) {
         return true;
       }
     }
@@ -1608,21 +1654,25 @@ export const dataUpdateTransaction = (
   watch: boolean,
   provider: StaticJsonRpcProvider | null = null
 ) => async (
-  dispatch: ThunkDispatch<AppState, unknown, DataLoadTransactionSuccessAction>,
+  dispatch: ThunkDispatch<
+    AppState,
+    unknown,
+    DataAddNewTransactionSuccessAction
+  >,
   getState: AppGetState
 ) =>
   withRunExclusive(async () => {
-    const { transactions } = getState().data;
+    const { pendingTransactions } = getState().data;
 
-    const allOtherTx = transactions.filter(tx => tx.hash !== txHash);
+    const allOtherTx = pendingTransactions.filter(tx => tx.hash !== txHash);
     const updatedTransactions = [txObj].concat(allOtherTx);
 
     dispatch({
       payload: updatedTransactions,
-      type: DATA_LOAD_TRANSACTIONS_SUCCESS,
+      type: DATA_ADD_NEW_TRANSACTION_SUCCESS,
     });
     const { accountAddress, network } = getState().settings;
-    saveLocalTransactions(updatedTransactions, accountAddress, network);
+    saveLocalPendingTransactions(updatedTransactions, accountAddress, network);
     // Always watch cancellation and speed up
     if (watch) {
       dispatch(
@@ -1739,6 +1789,7 @@ const INITIAL_STATE: DataState = {
   genericAssets: {},
   isLoadingAssets: true,
   isLoadingTransactions: true,
+  pendingTransactions: [],
   portfolios: {},
   shouldRefetchSavings: false,
   transactions: [],
@@ -1808,7 +1859,7 @@ export default (state: DataState = INITIAL_STATE, action: DataAction) => {
     case DATA_ADD_NEW_TRANSACTION_SUCCESS:
       return {
         ...state,
-        transactions: action.payload,
+        pendingTransactions: action.payload,
       };
     case DATA_CLEAR_STATE:
       return {
