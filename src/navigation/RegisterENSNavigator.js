@@ -126,6 +126,7 @@ export default function RegisterENSNavigator() {
           <Swipe.Navigator
             initialLayout={deviceUtils.dimensions}
             initialRouteName={currentRouteName}
+            lazy
             pager={renderPager}
             swipeEnabled={false}
             tabBar={renderTabBar}
