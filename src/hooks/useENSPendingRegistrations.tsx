@@ -16,11 +16,17 @@ export default function useENSPendingRegistrations() {
         registrations?.[accountAddress.toLowerCase()] || [];
       const registrationsArray = Object.values(accountRegistrations);
 
+      const sevenDaysAgoMs = new Date(
+        Date.now() - 7 * 24 * 60 * 60 * 1000
+      ).getTime();
+
       const pendingRegistrations = registrationsArray
         .filter(
           registration =>
             !registration?.registerTransactionHash &&
-            registration?.commitTransactionHash
+            registration?.commitTransactionHash &&
+            registration?.commitTransactionConfirmedAt &&
+            registration?.commitTransactionConfirmedAt >= sevenDaysAgoMs
         )
         .sort(
           (a, b) =>
