@@ -132,17 +132,26 @@ const Tag = ({
 
   const textWithUpdatedCase = keepTextLowerCase ? text : upperFirst(text);
 
+  const ButtonWrapper = ({ children }) =>
+    disableMenu ? (
+      children
+    ) : (
+      <ContextMenuButton
+        activeOpacity={0}
+        menuConfig={menuConfig}
+        {...(android ? { onPress: onPressAndroid } : {})}
+        enableContextMenu
+        isMenuPrimaryAction
+        onPressMenuItem={handlePressMenuItem}
+        useActionSheetFallback={false}
+        wrapNativeComponent={false}
+      >
+        {children}
+      </ContextMenuButton>
+    );
+
   return (
-    <ContextMenuButton
-      activeOpacity={0}
-      enableContextMenu={!disableMenu}
-      menuConfig={menuConfig}
-      {...(android ? { onPress: onPressAndroid } : {})}
-      isMenuPrimaryAction={!disableMenu}
-      onPressMenuItem={handlePressMenuItem}
-      useActionSheetFallback={false}
-      wrapNativeComponent={false}
-    >
+    <ButtonWrapper>
       <ButtonPressAnimation>
         <OuterBorder {...props} color={color}>
           <Container>
@@ -161,7 +170,7 @@ const Tag = ({
           </Container>
         </OuterBorder>
       </ButtonPressAnimation>
-    </ContextMenuButton>
+    </ButtonWrapper>
   );
 };
 
