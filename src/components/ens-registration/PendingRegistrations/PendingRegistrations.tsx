@@ -5,7 +5,6 @@ import { Alert } from '../../../components/alerts';
 import ButtonPressAnimation from '../../../components/animations/ButtonPressAnimation';
 import ImageAvatar from '../../../components/contacts/ImageAvatar';
 import {
-  AccentColorProvider,
   Box,
   Column,
   Columns,
@@ -85,11 +84,9 @@ const PendingRegistration = ({
                 start={{ x: 0, y: 0.6 }}
               >
                 <Inset horizontal="10px">
-                  <AccentColorProvider color={colors.appleBlue}>
-                    <Text color="accent" size="16px" weight="heavy">
-                      {lang.t('profiles.pending_registrations.finish')}
-                    </Text>
-                  </AccentColorProvider>
+                  <Text color="action" size="16px" weight="heavy">
+                    {lang.t('profiles.pending_registrations.finish')}
+                  </Text>
                 </Inset>
               </Box>
             </ButtonPressAnimation>
