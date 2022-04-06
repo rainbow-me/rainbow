@@ -115,6 +115,10 @@ export function isEthAddress(address: string | null) {
   return address?.match(/^(0x)?[0-9a-fA-F]{40}$/);
 }
 
+export function isValidImagePath(path: string | null) {
+  return path !== '~undefined';
+}
+
 export default {
   avatars,
   addressHashedIndex,
@@ -128,4 +132,5 @@ export default {
   hashCode,
   popularEmojis,
   isEthAddress,
+  isValidImagePath,
 };
