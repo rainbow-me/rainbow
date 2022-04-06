@@ -136,7 +136,7 @@ const PendingRegistrations = () => {
     [removeRegistrationByName]
   );
 
-  return pendingRegistrations?.length ? (
+  return pendingRegistrations?.length > 0 ? (
     <>
       <Inset vertical="24px">
         <Divider />
