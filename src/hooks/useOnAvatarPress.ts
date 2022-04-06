@@ -185,10 +185,11 @@ export default () => {
     setNextEmoji,
     navigate,
     accountENS,
+    startRegistration,
     onAvatarChooseImage,
-    onAvatarCreateProfile,
     onAvatarPickEmoji,
     onAvatarRemovePhoto,
+    onAvatarCreateProfile,
   ]);
 
   const avatarOptions = useMemo(

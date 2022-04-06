@@ -333,7 +333,7 @@ const UniqueTokenExpandedState = ({
         mode: 'edit',
       });
     }
-  }, [isENS, navigate, startRegistration, uniqueId]);
+  }, [goBack, isENS, navigate, startRegistration, uniqueId]);
 
   const sheetRef = useRef();
   const yPosition = useSharedValue(0);
