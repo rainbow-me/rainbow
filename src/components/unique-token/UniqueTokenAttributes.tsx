@@ -42,11 +42,12 @@ const renderAttributeItem = ({
   }
 
   const textValue = formatTextValue(value, displayType);
+  const shouldDisableMenu = disableMenu || displayType === 'date';
 
   return (
     <Tag
       color={color}
-      disableMenu={disableMenu}
+      disableMenu={shouldDisableMenu}
       key={`${type}${value}`}
       maxValue={maxValue}
       slug={slug}
