@@ -6,7 +6,11 @@ import { ContextMenuButton } from 'react-native-ios-context-menu';
 import URL from 'url-parse';
 import useClipboard from './useClipboard';
 import useENSRegistration from './useENSRegistration';
-import { ENS_RECORDS, textRecordFields } from '@rainbow-me/helpers/ens';
+import {
+  ENS_RECORDS,
+  REGISTRATION_MODES,
+  textRecordFields,
+} from '@rainbow-me/helpers/ens';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { showActionSheetWithOptions } from '@rainbow-me/utils';
@@ -163,11 +167,11 @@ export default function useENSRecordDisplayProperties({
         setClipboard(recordValue);
       }
       if (actionKey === 'edit' && ensName) {
-        startRegistration(ensName, 'edit');
+        startRegistration(ensName, REGISTRATION_MODES.EDIT);
         navigate(Routes.REGISTER_ENS_NAVIGATOR, {
           autoFocusKey: recordKey,
           ensName,
-          mode: 'edit',
+          mode: REGISTRATION_MODES.EDIT,
         });
       }
     },

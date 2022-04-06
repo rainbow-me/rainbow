@@ -148,7 +148,7 @@ describe('Register ENS Flow', () => {
     await Helpers.checkIfVisible(
       `ens-confirm-register-label-WAIT_ENS_COMMITMENT`
     );
-    await Helpers.delay(70000);
+    await Helpers.delay(60000);
     await Helpers.enableSynchronization();
   });
 

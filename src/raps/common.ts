@@ -14,6 +14,8 @@ import {
 import {
   createCommitENSRap,
   createRegisterENSRap,
+  createRenewENSRap,
+  createSetNameENSRap,
   createSetRecordsENSRap,
 } from './registerENS';
 import {
@@ -28,8 +30,10 @@ import {
 import { Asset, EthereumAddress, Records } from '@rainbow-me/entities';
 import {
   estimateENSCommitGasLimit,
-  estimateENSRegisterSetRecords,
   estimateENSRegisterSetRecordsAndNameGasLimit,
+  estimateENSRenewGasLimit,
+  estimateENSSetNameGasLimit,
+  estimateENSSetRecordsGasLimit,
 } from '@rainbow-me/handlers/ens';
 import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
 import logger from 'logger';
@@ -40,6 +44,7 @@ const {
   multicallENS,
   setTextENS,
   setNameENS,
+  renewENS,
 } = ens;
 
 export enum RapActionType {
@@ -50,6 +55,7 @@ export enum RapActionType {
   commitENS = 'commitENS',
   registerENS = 'registerENS',
   multicallENS = 'multicallENS',
+  renewENS = 'renewENS',
   setTextENS = 'setTextENS',
   setNameENS = 'setNameENS',
 }
@@ -145,6 +151,7 @@ export const RapActionTypes = {
   multicallENS: 'multicallENS' as RapActionType,
   registerENS: 'registerENS' as RapActionType,
   registerWithConfigENS: 'registerWithConfigENS' as RapActionType,
+  renewENS: 'renewENS' as RapActionType,
   setNameENS: 'setNameENS' as RapActionType,
   setRecordsENS: 'setRecordsENS' as RapActionType,
   setTextENS: 'setTextENS' as RapActionType,
@@ -174,6 +181,10 @@ const createENSRapByType = (
   switch (type) {
     case RapActionTypes.registerENS:
       return createRegisterENSRap(ensRegistrationParameters);
+    case RapActionTypes.renewENS:
+      return createRenewENSRap(ensRegistrationParameters);
+    case RapActionTypes.setNameENS:
+      return createSetNameENSRap(ensRegistrationParameters);
     case RapActionTypes.setRecordsENS:
       return createSetRecordsENSRap(ensRegistrationParameters);
     case RapActionTypes.commitENS:
@@ -205,12 +216,16 @@ export const getENSRapEstimationByType = (
   switch (type) {
     case RapActionTypes.commitENS:
       return estimateENSCommitGasLimit(ensRegistrationParameters);
-    case RapActionTypes.setRecordsENS:
-      return estimateENSRegisterSetRecords(ensRegistrationParameters);
     case RapActionTypes.registerENS:
       return estimateENSRegisterSetRecordsAndNameGasLimit(
         ensRegistrationParameters
       );
+    case RapActionTypes.renewENS:
+      return estimateENSRenewGasLimit(ensRegistrationParameters);
+    case RapActionTypes.setNameENS:
+      return estimateENSSetNameGasLimit(ensRegistrationParameters);
+    case RapActionTypes.setRecordsENS:
+      return estimateENSSetRecordsGasLimit(ensRegistrationParameters);
     default:
       return null;
   }
@@ -243,8 +258,8 @@ const findENSActionByType = (type: RapActionType) => {
       return setTextENS;
     case RapActionTypes.setNameENS:
       return setNameENS;
-    case RapActionTypes.setRecordsENS:
-      return setNameENS;
+    case RapActionTypes.renewENS:
+      return renewENS;
     default:
       return NOOP;
   }
@@ -331,6 +346,7 @@ const getRapTypeFromActionType = (actionType: RapActionType) => {
     case RapActionTypes.registerENS:
     case RapActionTypes.registerWithConfigENS:
     case RapActionTypes.multicallENS:
+    case RapActionTypes.renewENS:
     case RapActionTypes.setNameENS:
     case RapActionTypes.setTextENS:
     case RapActionTypes.setRecordsENS:

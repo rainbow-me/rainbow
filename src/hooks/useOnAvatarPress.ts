@@ -1,3 +1,4 @@
+import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import { toLower } from 'lodash';
 import { useCallback, useMemo } from 'react';
@@ -9,13 +10,13 @@ import useAccountProfile from './useAccountProfile';
 import useENSProfile from './useENSProfile';
 import useENSRegistration from './useENSRegistration';
 import useImagePicker from './useImagePicker';
-import useUpdateEmoji from './useUpdateEmoji';
 import useWallets from './useWallets';
 import {
   enableActionsOnReadOnlyWallet,
   PROFILES,
   useExperimentalFlag,
 } from '@rainbow-me/config';
+import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import { walletsSetSelected, walletsUpdate } from '@rainbow-me/redux/wallets';
 import Routes from '@rainbow-me/routes';
 import { buildRainbowUrl, showActionSheetWithOptions } from '@rainbow-me/utils';
@@ -105,18 +106,10 @@ export default () => {
     }
   }, [accountAddress, accountENS]);
 
-  const { setNextEmoji } = useUpdateEmoji();
-
   const { startRegistration } = useENSRegistration();
 
   const onAvatarPress = useCallback(() => {
-    if (android) {
-      setNextEmoji();
-      return;
-    }
-
     const isENSProfile = profilesEnabled && ensProfile?.isOwner;
-
     const avatarActionSheetOptions = (isENSProfile
       ? [
           lang.t('profiles.profile_avatar.view_profile'),
@@ -140,22 +133,26 @@ export default () => {
           navigate(Routes.PROFILE_SHEET, {
             address: accountENS,
           });
+          analytics.track('Viewed ENS profile', {
+            category: 'profiles',
+            ens: accountENS,
+            from: 'Transaction list',
+          });
         } else if (buttonIndex === 1 && !isReadOnlyWallet) {
-          startRegistration(accountENS, 'edit');
+          startRegistration(accountENS, REGISTRATION_MODES.EDIT);
           navigate(Routes.REGISTER_ENS_NAVIGATOR, {
             ensName: accountENS,
-            mode: 'edit',
+            mode: REGISTRATION_MODES.EDIT,
           });
         }
       } else {
         if (buttonIndex === 0) {
           onAvatarChooseImage();
         } else if (buttonIndex === 1) {
-          if (!accountImage) {
-            onAvatarPickEmoji();
-          }
           if (accountImage) {
-            onAvatarCreateProfile();
+            onAvatarRemovePhoto();
+          } else {
+            onAvatarPickEmoji();
           }
         } else if (buttonIndex === 2) {
           if (accountImage) {
@@ -183,7 +180,6 @@ export default () => {
     ensProfile?.isOwner,
     isReadOnlyWallet,
     accountImage,
-    setNextEmoji,
     navigate,
     accountENS,
     startRegistration,
