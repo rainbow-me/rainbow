@@ -38,10 +38,10 @@ export default function ENSSearchSheet() {
 
   const topPadding = android ? 29 : 19;
 
-  const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedSearchQuery] = useDebounce(searchQuery, 200);
+  const { startRegistration, name } = useENSRegistration();
 
-  const { startRegistration } = useENSRegistration();
+  const [searchQuery, setSearchQuery] = useState(name.replace('.eth', ''));
+  const [debouncedSearchQuery] = useDebounce(searchQuery, 200);
 
   const {
     data: registrationData,
