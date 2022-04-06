@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { toLower } from 'lodash';
 import { useCallback, useMemo } from 'react';
 import { Linking } from 'react-native';
@@ -6,6 +7,7 @@ import { RainbowAccount } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import useAccountProfile from './useAccountProfile';
 import useENSProfile from './useENSProfile';
+import useENSRegistration from './useENSRegistration';
 import useImagePicker from './useImagePicker';
 import useUpdateEmoji from './useUpdateEmoji';
 import useWallets from './useWallets';
@@ -105,6 +107,8 @@ export default () => {
 
   const { setNextEmoji } = useUpdateEmoji();
 
+  const { startRegistration } = useENSRegistration();
+
   const onAvatarPress = useCallback(() => {
     if (android) {
       setNextEmoji();
@@ -115,17 +119,21 @@ export default () => {
 
     const avatarActionSheetOptions = (isENSProfile
       ? [
-          'View Profile',
+          lang.t('profiles.profile_avatar.view_profile'),
           ...(!isReadOnlyWallet || enableActionsOnReadOnlyWallet
-            ? ['Edit Profile']
+            ? [lang.t('profiles.profile_avatar.edit_profile')]
             : []),
         ]
       : [
-          'Choose from Library',
-          ...(!accountImage ? ['Pick an Emoji'] : []),
-          ...(accountImage ? ['Remove Photo'] : []),
+          lang.t('profiles.profile_avatar.choose_from_library'),
+          ...(!accountImage
+            ? [lang.t(`profiles.profile_avatar.pick_emoji`)]
+            : []),
+          ...(accountImage
+            ? [lang.t(`profiles.profile_avatar.remove_photo`)]
+            : []),
           ...(!isReadOnlyWallet || enableActionsOnReadOnlyWallet
-            ? ['Create your Profile']
+            ? [lang.t('profiles.profile_avatar.create_profile')]
             : []),
         ]
     ).concat(ios ? ['Cancel'] : []);
@@ -137,6 +145,7 @@ export default () => {
             address: accountENS,
           });
         } else if (buttonIndex === 1 && !isReadOnlyWallet) {
+          startRegistration(accountENS, 'edit');
           navigate(Routes.REGISTER_ENS_NAVIGATOR, {
             ensName: accountENS,
             mode: 'edit',

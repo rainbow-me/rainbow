@@ -5,6 +5,7 @@ import { Linking } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import URL from 'url-parse';
 import useClipboard from './useClipboard';
+import useENSRegistration from './useENSRegistration';
 import { ENS_RECORDS, textRecordFields } from '@rainbow-me/helpers/ens';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
@@ -152,6 +153,7 @@ export default function useENSRecordDisplayProperties({
 
   const { navigate } = useNavigation();
   const { setClipboard } = useClipboard();
+  const { startRegistration } = useENSRegistration();
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === 'open-url' && url) {
@@ -160,7 +162,8 @@ export default function useENSRecordDisplayProperties({
       if (actionKey === 'copy') {
         setClipboard(recordValue);
       }
-      if (actionKey === 'edit') {
+      if (actionKey === 'edit' && ensName) {
+        startRegistration(ensName, 'edit');
         navigate(Routes.REGISTER_ENS_NAVIGATOR, {
           autoFocusKey: recordKey,
           ensName,
@@ -168,7 +171,15 @@ export default function useENSRecordDisplayProperties({
         });
       }
     },
-    [ensName, navigate, recordKey, recordValue, setClipboard, url]
+    [
+      ensName,
+      navigate,
+      recordKey,
+      recordValue,
+      setClipboard,
+      startRegistration,
+      url,
+    ]
   );
 
   const handleAndroidPress = useCallback(() => {
