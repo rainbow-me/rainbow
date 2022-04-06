@@ -3,7 +3,7 @@ import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
 import {
   Rap,
-  RapEchangeActionParameters,
+  RapExchangeActionParameters,
   SwapActionParameters,
 } from '../common';
 import {
@@ -37,7 +37,7 @@ const depositCompound = async (
   wallet: Wallet,
   currentRap: Rap,
   index: number,
-  parameters: RapEchangeActionParameters,
+  parameters: RapExchangeActionParameters,
   baseNonce?: number
 ): Promise<number | undefined> => {
   logger.log(`[${actionName}] base nonce`, baseNonce, 'index:', index);

@@ -56,8 +56,8 @@ export default function RegisterENSNavigator() {
     deviceHeight - SheetHandleFixedToTopHeight - sharedCoolModalTopOffset;
 
   const {
-    startRegistration,
     clearCurrentRegistrationName,
+    startRegistration,
   } = useENSRegistration();
 
   const initialRouteName = useMemo(() => {
@@ -126,6 +126,7 @@ export default function RegisterENSNavigator() {
           <Swipe.Navigator
             initialLayout={deviceUtils.dimensions}
             initialRouteName={currentRouteName}
+            lazy={android}
             pager={renderPager}
             swipeEnabled={false}
             tabBar={renderTabBar}

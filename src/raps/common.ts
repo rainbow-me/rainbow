@@ -60,7 +60,7 @@ export enum RapActionType {
   setNameENS = 'setNameENS',
 }
 
-export interface RapEchangeActionParameters {
+export interface RapExchangeActionParameters {
   amount?: string | null;
   assetToUnlock?: Asset;
   contractAddress?: string;
@@ -115,7 +115,7 @@ enum RAP_TYPE {
 export type RapAction = RapSwapAction | RapENSAction;
 
 export interface RapSwapAction {
-  parameters: RapEchangeActionParameters;
+  parameters: RapExchangeActionParameters;
   transaction: RapActionTransaction;
   type: RapActionType;
 }
@@ -312,7 +312,7 @@ const executeAction = async (
         wallet,
         rap,
         index,
-        parameters as RapEchangeActionParameters,
+        parameters as RapExchangeActionParameters,
         baseNonce
       );
       return { baseNonce: nonce, errorMessage: null };
@@ -417,7 +417,7 @@ export const createNewRap = (actions: RapAction[]) => {
 
 export const createNewAction = (
   type: RapActionType,
-  parameters: RapEchangeActionParameters
+  parameters: RapExchangeActionParameters
 ): RapSwapAction => {
   const newAction = {
     parameters,

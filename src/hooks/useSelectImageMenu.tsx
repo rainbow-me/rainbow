@@ -82,17 +82,20 @@ export default function useSelectImageMenu({
     });
     if (!image) return;
     const stringIndex = image?.path.indexOf('/tmp');
-    const tmpPath = `~${image?.path.slice(stringIndex)}`;
+    const tmpPath = ios ? `~${image?.path.slice(stringIndex)}` : image?.path;
 
     onChangeImage?.({ image: { ...image, tmpPath } });
 
     if (uploadToIPFS) {
       onUploading?.({ image });
       try {
+        const splitPath = image.path.split('/');
+        const filename =
+          image.filename || splitPath[splitPath.length - 1] || '';
         const data = await upload({
-          filename: image.filename || '',
+          filename,
           mime: image.mime,
-          path: image.path,
+          path: image.path.replace('file://', ''),
         });
         onUploadSuccess?.({ data, image });
       } catch (err) {

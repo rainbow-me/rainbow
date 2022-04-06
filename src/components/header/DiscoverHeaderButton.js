@@ -1,4 +1,3 @@
-import analytics from '@segment/analytics-react-native';
 import React, { useCallback, useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '../../navigation/Navigation';
