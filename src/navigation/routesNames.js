@@ -13,6 +13,7 @@ const Routes = {
   CONNECTED_DAPPS: 'ConnectedDapps',
   CURRENCY_SELECT_SCREEN: 'CurrencySelectScreen',
   CUSTOM_GAS_SHEET: 'CustomGasSheet',
+  ENS_ADDITIONAL_RECORDS_SHEET: 'ENSAdditionalRecordsSheet',
   ENS_ASSIGN_RECORDS_SHEET: 'ENSAssignRecordsSheet',
   ENS_CONFIRM_REGISTER_SHEET: 'ENSConfirmRegisterSheet',
   ENS_SEARCH_SHEET: 'ENSSearchSheet',

@@ -231,6 +231,153 @@ export const textRecordFields = {
   };
 };
 
+export const additionalTextRecordFields = {
+  [ENS_RECORDS.ETH]: {
+    id: 'eth',
+    inputProps: {
+      maxLength: 42,
+    },
+    key: ENS_RECORDS.ETH,
+    label: lang.t('profiles.create.name'),
+    placeholder: lang.t('profiles.create.name_placeholder'),
+  },
+  [ENS_RECORDS.BTC]: {
+    id: 'btc',
+    inputProps: {
+      maxLength: 34,
+      multiline: true,
+    },
+    key: ENS_RECORDS.BTC,
+    label: lang.t('profiles.create.bio'),
+    placeholder: lang.t('profiles.create.bio_placeholder'),
+  },
+  [ENS_RECORDS.LTC]: {
+    id: 'ltc',
+    inputProps: {
+      maxLength: 35,
+    },
+    key: ENS_RECORDS.LTC,
+    label: 'Twitter',
+    placeholder: lang.t('profiles.create.username_placeholder'),
+    startsWith: '@',
+    validations: {
+      onChange: {
+        match: /^\w*$/,
+      },
+    },
+  },
+  [ENS_RECORDS.DOGE]: {
+    id: 'doge',
+    inputProps: {
+      maxLength: 34,
+    },
+    key: ENS_RECORDS.DOGE,
+    label: 'Email',
+    placeholder: 'Add your email',
+    validations: {
+      onSubmit: {
+        match: {
+          message: 'Please enter a valid email',
+          value: /^\S+@\S+\.\S+$/,
+        },
+      },
+    },
+  },
+  [ENS_RECORDS.content]: {
+    id: 'content',
+    inputProps: {
+      maxLength: 100,
+    },
+    key: ENS_RECORDS.content,
+    label: lang.t('profiles.create.website'),
+    placeholder: lang.t('profiles.create.website_placeholder'),
+    validations: {
+      onSubmit: {
+        match: {
+          message: 'Please enter a valid website URL',
+          value: /[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/,
+        },
+      },
+    },
+  },
+  [ENS_RECORDS.website]: {
+    id: 'website',
+    inputProps: {
+      keyboardType: 'url',
+    },
+    key: ENS_RECORDS.website,
+    label: 'GitHub',
+    placeholder: lang.t('profiles.create.username_placeholder'),
+  },
+  [ENS_RECORDS.notice]: {
+    id: 'notice',
+    inputProps: {
+      maxLength: 100,
+    },
+    key: ENS_RECORDS.notice,
+    label: 'Instagram',
+    placeholder: lang.t('profiles.create.username_placeholder'),
+    validations: {
+      onChange: {
+        match: /^([\w.])*$/,
+      },
+    },
+  },
+  [ENS_RECORDS.keywords]: {
+    id: 'keywords',
+    inputProps: {
+      maxLength: 100,
+    },
+    key: ENS_RECORDS.keywords,
+    label: 'Snapchat',
+    placeholder: lang.t('profiles.create.username_placeholder'),
+    validations: {
+      onChange: {
+        match: /^([\w.])*$/,
+      },
+    },
+  },
+  [ENS_RECORDS.reddit]: {
+    id: 'reddit',
+    inputProps: {
+      maxLength: 50,
+    },
+    key: ENS_RECORDS.reddit,
+    label: 'Discord',
+    placeholder: lang.t('profiles.create.username_placeholder'),
+    startsWith: '@',
+  },
+  [ENS_RECORDS.telegram]: {
+    id: 'telegram',
+    inputProps: {
+      maxLength: 50,
+    },
+    key: ENS_RECORDS.telegram,
+    label: 'Discord',
+    placeholder: lang.t('profiles.create.username_placeholder'),
+    startsWith: '@',
+  },
+} as {
+  [key in ENS_RECORDS]?: {
+    id: string;
+    inputProps: TextInputProps;
+    key: string;
+    label: string;
+    placeholder: string;
+    validations?: {
+      onChange?: {
+        match?: RegExp;
+      };
+      onSubmit?: {
+        match?: {
+          value: RegExp;
+          message: string;
+        };
+      };
+    };
+  };
+};
+
 export const ENS_DOMAIN = '.eth';
 
 const getENSRegistrarControllerContract = (

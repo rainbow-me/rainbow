@@ -202,6 +202,11 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
     });
   }, [avatarUrl, mode, navigate, submit]);
 
+  const navigateToAdditionalRecords = useCallback(() => {
+    android && Keyboard.dismiss();
+    navigate(Routes.ENS_ADDITIONAL_RECORDS_SHEET, {});
+  }, [navigate]);
+
   const [visible, setVisible] = useState(false);
   useEffect(() => {
     if (mode === REGISTRATION_MODES.EDIT) {
@@ -249,6 +254,7 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
               <Row>
                 <Inset horizontal="19px" top="30px">
                   <SelectableAttributesButtons
+                    navigateToAdditionalRecords={navigateToAdditionalRecords}
                     onAddField={onAddField}
                     onRemoveField={onRemoveField}
                     selectedFields={selectedFields}
@@ -380,6 +386,7 @@ function SelectableAttributesButtons({
   selectedFields,
   onAddField,
   onRemoveField,
+  navigateToAdditionalRecords,
 }) {
   return (
     <Inline space="10px">
@@ -411,6 +418,13 @@ function SelectableAttributesButtons({
           </SelectableButton>
         );
       })}
+      <SelectableButton
+        isSelected={false}
+        onSelect={navigateToAdditionalRecords}
+        testID="ens-selectable-attribute-dots"
+      >
+        ...
+      </SelectableButton>
     </Inline>
   );
 }
