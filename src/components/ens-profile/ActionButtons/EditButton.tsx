@@ -1,4 +1,5 @@
 import { useNavigation } from '@react-navigation/core';
+import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import GradientOutlineButton from '../GradientOutlineButton/GradientOutlineButton';
 import { useTheme } from '@rainbow-me/context';
@@ -27,7 +28,7 @@ export default function WatchButton({ ensName }: { ensName?: string }) {
         gradient={colors.gradients.blueToGreen}
         onPress={handlePressEdit}
       >
-        􀈎 Edit profile
+        􀈎 {lang.t(`profiles.actions.edit_profile`)}
       </GradientOutlineButton>
     </ColorModeProvider>
   );

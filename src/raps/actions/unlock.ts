@@ -6,7 +6,7 @@ import { isNull, toLower } from 'lodash';
 import { alwaysRequireApprove } from '../../config/debug';
 import {
   Rap,
-  RapEchangeActionParameters,
+  RapExchangeActionParameters,
   UnlockActionParameters,
 } from '../common';
 import {
@@ -86,7 +86,7 @@ const unlock = async (
   wallet: Wallet,
   currentRap: Rap,
   index: number,
-  parameters: RapEchangeActionParameters,
+  parameters: RapExchangeActionParameters,
   baseNonce?: number
 ): Promise<number | undefined> => {
   logger.log(`[${actionName}] base nonce`, baseNonce, 'index:', index);

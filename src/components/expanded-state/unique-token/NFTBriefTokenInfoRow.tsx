@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useCallback, useEffect, useState } from 'react';
 
 import assetTypes from '../../../entities/assetTypes';
@@ -77,7 +78,11 @@ export default function NFTBriefTokenInfoRow({
         isNft
         onPress={toggleCurrentPriceDisplayCurrency}
         size="big"
-        title={currentPrice ? '􀋢 For sale' : 'Last sale price'}
+        title={
+          currentPrice
+            ? `􀋢 ${lang.t('expanded_state.nft_brief_token_info.for_sale')}`
+            : lang.t('expanded_state.nft_brief_token_info.last_sale')
+        }
         weight={lastSalePrice === 'None' && !currentPrice ? 'bold' : 'heavy'}
       >
         {showCurrentPriceInEth || nativeCurrency === 'ETH' || !currentPrice
