@@ -1,9 +1,25 @@
 /* eslint-disable no-undef */
 /* eslint-disable jest/expect-expect */
 import { exec } from 'child_process';
+import { Contract } from '@ethersproject/contracts';
 import * as Helpers from './helpers';
+import registratABI from '@rainbow-me/references/ens/ENSETHRegistrarController.json';
+
+const ensETHRegistrarControllerAddress =
+  '0x283Af0B28c62C092C9727F1Ee09c02CA627EB7F5';
 
 const RANDOM_NAME = 'somerandomname321';
+
+const nameIsAvailable = async name => {
+  const provider = Helpers.getProvider();
+  const registrarContract = new Contract(
+    ensETHRegistrarControllerAddress,
+    registratABI,
+    provider
+  );
+  const nameIsAvailable = await registrarContract.available(name);
+  return !!nameIsAvailable;
+};
 
 beforeAll(async () => {
   // Connect to hardhat
@@ -146,7 +162,7 @@ describe('Register ENS Flow', () => {
 
   it('Should confirm that the name is not available anymore', async () => {
     await Helpers.delay(2000);
-    const ensAvailable = await isAvailable(RANDOM_NAME);
+    const ensAvailable = await nameIsAvailable(RANDOM_NAME);
     if (ensAvailable) throw new Error('ENS name is available');
   });
 
