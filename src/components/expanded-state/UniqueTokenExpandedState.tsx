@@ -412,8 +412,8 @@ const UniqueTokenExpandedState = ({
                 asset={asset}
                 horizontalPadding={24}
                 imageColor={imageColor}
-                // @ts-expect-error JavaScript component
                 opacity={contentOpacity}
+                // @ts-expect-error JavaScript component
                 sheetRef={sheetRef}
                 textColor={textColor}
                 yPosition={yPosition}
