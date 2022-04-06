@@ -16,7 +16,6 @@ import Animated, {
   Value,
   withDecay,
 } from 'react-native-reanimated';
-import { TopMoverCoinRow } from '../coin-row';
 import { withSpeed } from '@rainbow-me/utils';
 
 const DECCELERATION = 0.998;
@@ -240,28 +239,15 @@ const SwipeableList = ({ components, speed, testID }) => {
   );
 };
 
-const MarqueeList = ({ items = [], speed, testID }) => {
-  const renderItemCallback = useCallback(
-    ({ item, index, onPressCancel, onPressStart, testID }) => (
-      <TopMoverCoinRow
-        {...item}
-        key={`topmovercoinrow-${item?.address}`}
-        onPressCancel={onPressCancel}
-        onPressStart={onPressStart}
-        testID={`${testID}-coin-row-${index}`}
-      />
-    ),
-    []
-  );
-
+const MarqueeList = ({ items = [], renderItem, speed, testID }) => {
   return (
     <>
       <SwipeableList
         components={items.map((item, index) => ({
           view: ios
-            ? ({ testID }) => renderItemCallback({ index, item, testID })
+            ? ({ testID }) => renderItem({ index, item, testID })
             : ({ onPressCancel, onPressStart, testID }) =>
-                renderItemCallback({
+                renderItem({
                   index,
                   item,
                   onPressCancel,

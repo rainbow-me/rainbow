@@ -559,7 +559,10 @@ async function uploadRecordImages(
   imageMetadata: { avatar?: Image; cover?: Image }
 ) {
   const uploadRecordImage = async (key: 'avatar' | 'cover') => {
-    if (records?.[key]?.startsWith('~') && imageMetadata[key]) {
+    if (
+      (records?.[key]?.startsWith('~') || records?.[key]?.startsWith('file')) &&
+      imageMetadata[key]
+    ) {
       const { url } = await uploadImage({
         filename: imageMetadata[key]?.filename || '',
         mime: imageMetadata[key]?.mime || '',

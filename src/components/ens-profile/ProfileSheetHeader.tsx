@@ -24,14 +24,18 @@ import { useENSProfile, useFirstTransactionTimestamp } from '@rainbow-me/hooks';
 import { addressHashedEmoji } from '@rainbow-me/utils/profileUtils';
 
 export default function ProfileSheetHeader({
+  ensName: defaultEnsName,
   isLoading,
+  isPreview,
 }: {
+  ensName?: string;
   isLoading?: boolean;
+  isPreview?: boolean;
 }) {
   const { params } = useRoute<any>();
   const { layout } = useContext(ModalContext) || {};
 
-  const ensName = params?.address;
+  const ensName = defaultEnsName || params?.address;
   const { data: profile } = useENSProfile(ensName);
   const avatarUrl = profile?.images.avatarUrl;
   const coverUrl = profile?.images.coverUrl;
@@ -73,14 +77,18 @@ export default function ProfileSheetHeader({
         <Inset horizontal="19px">
           <Stack space="19px">
             <Heading size="23px">{ensName}</Heading>
-            {isLoading ? (
-              <DescriptionPlaceholder />
-            ) : (
+            {!isPreview && (
               <>
-                {profile?.records.description && (
-                  <Text containsEmoji weight="medium">
-                    {profile?.records.description}
-                  </Text>
+                {isLoading ? (
+                  <DescriptionPlaceholder />
+                ) : (
+                  <>
+                    {profile?.records.description && (
+                      <Text containsEmoji weight="medium">
+                        {profile?.records.description}
+                      </Text>
+                    )}
+                  </>
                 )}
               </>
             )}
@@ -109,7 +117,7 @@ export default function ProfileSheetHeader({
                 </>
               )}
             </Bleed>
-            <Divider />
+            {!isPreview && <Divider />}
           </Stack>
         </Inset>
       </Stack>

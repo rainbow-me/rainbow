@@ -117,6 +117,7 @@ export default function useENSRegistration({
         }
       } else if (
         records.avatar.startsWith('http') ||
+        records.avatar.startsWith('file') ||
         (records.avatar.startsWith('/') &&
           !records.avatar.match(/^\/(ipfs|ipns)/))
       ) {
