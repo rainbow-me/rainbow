@@ -601,7 +601,8 @@
         "website_placeholder": "Add your website",
         "review": "Review",
         "choose_nft": "Choose NFT",
-        "upload_photo": "Upload photo"
+        "upload_photo": "Upload photo",
+        "remove": "Remove"
       },
       "confirm": {
         "confirm_purchase": "Confirm purchase",
