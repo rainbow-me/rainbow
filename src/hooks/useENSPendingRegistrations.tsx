@@ -2,12 +2,15 @@ import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useAccountSettings, useENSRegistration } from '.';
 import { ENSRegistrationState } from '@rainbow-me/entities';
+import { removeExpiredRegistrations } from '@rainbow-me/redux/ensRegistration';
 import { AppState } from '@rainbow-me/redux/store';
 import getENSNFTAvatarUrl from '@rainbow-me/utils/getENSNFTAvatarUrl';
 
 export default function useENSPendingRegistrations() {
   const { accountAddress } = useAccountSettings();
   const { removeRegistrationByName } = useENSRegistration();
+
+  removeExpiredRegistrations(accountAddress);
 
   const { pendingRegistrations, accountRegistrations } = useSelector(
     ({ ensRegistration }: AppState) => {
@@ -16,17 +19,11 @@ export default function useENSPendingRegistrations() {
         registrations?.[accountAddress.toLowerCase()] || [];
       const registrationsArray = Object.values(accountRegistrations);
 
-      const sevenDaysAgoMs = new Date(
-        Date.now() - 7 * 24 * 60 * 60 * 1000
-      ).getTime();
-
       const pendingRegistrations = registrationsArray
         .filter(
           registration =>
             !registration?.registerTransactionHash &&
-            registration?.commitTransactionHash &&
-            registration?.commitTransactionConfirmedAt &&
-            registration?.commitTransactionConfirmedAt >= sevenDaysAgoMs
+            registration?.commitTransactionHash
         )
         .sort(
           (a, b) =>
