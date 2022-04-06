@@ -283,16 +283,20 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
             token?.asset_contract?.address?.toLowerCase() ===
             ENS_NFT_CONTRACT_ADDRESS.toLowerCase();
           if (isENS && !token.uniqueId.includes('.eth')) {
-            const { name, image_url } = await fetchMetadata({
-              tokenId: token.id,
-            });
-            return {
-              ...token,
-              image_preview_url: image_url,
-              image_url,
-              name,
-              uniqueId: name,
-            };
+            try {
+              const { name, image_url } = await fetchMetadata({
+                tokenId: token.id,
+              });
+              return {
+                ...token,
+                image_preview_url: image_url,
+                image_url,
+                name,
+                uniqueId: name,
+              };
+            } catch {
+              return token;
+            }
           }
           return token;
         })
@@ -411,16 +415,20 @@ export const revalidateUniqueToken = (
     token?.asset_contract?.address?.toLowerCase() ===
     ENS_NFT_CONTRACT_ADDRESS.toLowerCase();
   if (isENS && !token.uniqueId.includes('.eth')) {
-    const { name, image_url } = await fetchMetadata({
-      tokenId: token.id,
-    });
-    token = {
-      ...token,
-      image_preview_url: image_url,
-      image_url,
-      name,
-      uniqueId: name,
-    };
+    try {
+      const { name, image_url } = await fetchMetadata({
+        tokenId: token.id,
+      });
+      token = {
+        ...token,
+        image_preview_url: image_url,
+        image_url,
+        name,
+        uniqueId: name,
+      };
+    } catch (error) {
+      captureException(error);
+    }
   }
 
   const uniqueTokens = existingUniqueTokens.map(existingToken =>
