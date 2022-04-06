@@ -43,6 +43,8 @@ const UniqueTokenExpandedStateContent = ({
   textColor,
   disablePreview,
   yPosition,
+  onContentFocus,
+  onContentBlur,
 }) => {
   const { width: deviceWidth } = useDimensions();
 
@@ -87,6 +89,8 @@ const UniqueTokenExpandedStateContent = ({
       }
       horizontalPadding={horizontalPadding}
       isENS={isENS}
+      onZoomIn={onContentFocus}
+      onZoomOut={onContentBlur}
       yDisplacement={yPosition}
     >
       <View style={StyleSheet.absoluteFill}>
