@@ -13,6 +13,7 @@ import {
 import { HoldToAuthorizeButton } from '../components/buttons';
 import { RegistrationReviewRows } from '../components/ens-registration';
 import { GasSpeedButton } from '../components/gas';
+import { LargeCountdownClock } from '../components/large-countdown-clock';
 import { SheetActionButtonRow, SlackSheet } from '../components/sheet';
 import {
   AccentColorProvider,
@@ -289,7 +290,7 @@ export default function ENSConfirmRegisterSheet() {
       ),
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: (
         <Box alignItems="center">
-          <HourglassAnimation />
+          <LargeCountdownClock minutes={1} onFinished={() => {}} seconds={15} />
         </Box>
       ),
     }),
