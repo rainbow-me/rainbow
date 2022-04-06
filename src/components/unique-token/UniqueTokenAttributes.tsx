@@ -1,3 +1,4 @@
+import { format } from 'date-fns';
 import React from 'react';
 import { sortList } from '../../helpers/sortList';
 import { magicMemo } from '../../utils';
@@ -7,12 +8,25 @@ import { UniqueAsset } from '@rainbow-me/entities';
 
 interface AttributeItemProps {
   color: string;
-  disableMenu?: boolean;
-  trait_type: string;
+  display_type: string;
   slug: string;
+  trait_type: string;
   value: string | number;
+  disableMenu?: boolean;
   max_value?: string | number;
 }
+
+const formatTextValue = (value: string | number, displayType: string) => {
+  switch (displayType) {
+    case 'date':
+      // the value is in seconds, formatted like Jan 29th, 2022
+      return typeof value === 'number'
+        ? format(value * 1000, 'MMM do, y')
+        : value;
+    default:
+      return value;
+  }
+};
 
 const renderAttributeItem = ({
   color,
@@ -21,18 +35,26 @@ const renderAttributeItem = ({
   slug,
   value,
   max_value: maxValue,
-}: AttributeItemProps) =>
-  type && value ? (
+  display_type: displayType,
+}: AttributeItemProps) => {
+  if (!type || !value) {
+    return null;
+  }
+
+  const textValue = formatTextValue(value, displayType);
+
+  return (
     <Tag
       color={color}
       disableMenu={disableMenu}
       key={`${type}${value}`}
       maxValue={maxValue}
       slug={slug}
-      text={value}
+      text={textValue}
       title={type}
     />
-  ) : null;
+  );
+};
 
 interface UniqueTokenAttributesProps {
   color: string;
