@@ -93,7 +93,7 @@ export default async function handleDeeplink(
       case 'update-ios': {
         const code = urlObj.pathname.split('/')[2];
         if (android) {
-          Alert.alert('Tried to use Android bundle');
+          Alert.alert('Tried to use iOS bundle');
         } else {
           setDeploymentKey(code);
         }
@@ -104,7 +104,7 @@ export default async function handleDeeplink(
       case 'update-android': {
         const code = urlObj.pathname.split('/')[2];
         if (ios) {
-          Alert.alert('Tried to use iOS bundle');
+          Alert.alert('Tried to use Android bundle');
         } else {
           setDeploymentKey(code);
         }
