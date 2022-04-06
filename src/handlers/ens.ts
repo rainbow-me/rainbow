@@ -2,12 +2,14 @@ import { formatsByCoinType } from '@ensdomains/address-encoder';
 import { debounce, isEmpty, sortBy } from 'lodash';
 import { ensClient } from '../apollo/client';
 import {
+  ENS_ACCOUNT_REGISTRATIONS,
   ENS_DOMAINS,
   ENS_GET_COIN_TYPES,
   ENS_GET_RECORDS,
   ENS_GET_REGISTRATION,
   ENS_REGISTRATIONS,
   ENS_SUGGESTIONS,
+  EnsAccountRegistratonsData,
   EnsGetCoinTypesData,
   EnsGetRecordsData,
   EnsGetRegistrationData,
@@ -108,6 +110,16 @@ export const fetchRegistrationDate = async (recipient: any) => {
 
     return registrationDate;
   }
+};
+
+export const fetchAccountRegistrations = async (address: string) => {
+  const registrations = await ensClient.query<EnsAccountRegistratonsData>({
+    query: ENS_ACCOUNT_REGISTRATIONS,
+    variables: {
+      address: address.toLowerCase(),
+    },
+  });
+  return registrations;
 };
 
 export const fetchImages = async (ensName: string) => {
@@ -277,6 +289,38 @@ export const fetchProfile = async (ensName: any) => {
   };
 };
 
+export const estimateENSCommitGasLimit = async ({
+  name,
+  ownerAddress,
+  duration,
+  rentPrice,
+  salt,
+}: ENSActionParameters) =>
+  estimateENSTransactionGasLimit({
+    duration,
+    name,
+    ownerAddress,
+    rentPrice,
+    salt,
+    type: ENSRegistrationTransactionType.COMMIT,
+  });
+
+export const estimateENSMulticallGasLimit = async ({
+  ownerAddress,
+  name,
+  records,
+}: {
+  ownerAddress?: string;
+  name: string;
+  records: ENSRegistrationRecords;
+}) =>
+  estimateENSTransactionGasLimit({
+    name,
+    ownerAddress,
+    records,
+    type: ENSRegistrationTransactionType.MULTICALL,
+  });
+
 export const estimateENSRegisterWithConfigGasLimit = async ({
   name,
   ownerAddress,
@@ -299,20 +343,33 @@ export const estimateENSRegisterWithConfigGasLimit = async ({
     type: ENSRegistrationTransactionType.REGISTER_WITH_CONFIG,
   });
 
-export const estimateENSCommitGasLimit = async ({
+export const estimateENSRenewGasLimit = async ({
   name,
-  ownerAddress,
   duration,
   rentPrice,
-  salt,
-}: ENSActionParameters) =>
+}: {
+  name: string;
+  duration: number;
+  rentPrice: string;
+}) =>
   estimateENSTransactionGasLimit({
     duration,
     name,
-    ownerAddress,
     rentPrice,
-    salt,
-    type: ENSRegistrationTransactionType.COMMIT,
+    type: ENSRegistrationTransactionType.RENEW,
+  });
+
+export const estimateENSSetNameGasLimit = async ({
+  name,
+  ownerAddress,
+}: {
+  name: string;
+  ownerAddress: string;
+}) =>
+  estimateENSTransactionGasLimit({
+    name,
+    ownerAddress,
+    type: ENSRegistrationTransactionType.SET_NAME,
   });
 
 export const estimateENSSetTextGasLimit = async ({
@@ -329,35 +386,6 @@ export const estimateENSSetTextGasLimit = async ({
     ownerAddress,
     records,
     type: ENSRegistrationTransactionType.SET_TEXT,
-  });
-
-export const estimateENSSetNameGasLimit = async ({
-  name,
-  ownerAddress,
-}: {
-  name: string;
-  ownerAddress: string;
-}) =>
-  estimateENSTransactionGasLimit({
-    name,
-    ownerAddress,
-    type: ENSRegistrationTransactionType.SET_NAME,
-  });
-
-export const estimateENSMulticallGasLimit = async ({
-  ownerAddress,
-  name,
-  records,
-}: {
-  ownerAddress?: string;
-  name: string;
-  records: ENSRegistrationRecords;
-}) =>
-  estimateENSTransactionGasLimit({
-    name,
-    ownerAddress,
-    records,
-    type: ENSRegistrationTransactionType.MULTICALL,
   });
 
 export const estimateENSTransactionGasLimit = async ({
@@ -415,7 +443,7 @@ export const estimateENSRegistrationGasLimit = async (
     salt,
   });
 
-  const setRecordsGasLimitPromise = estimateENSRegisterSetRecords({
+  const setRecordsGasLimitPromise = estimateENSSetRecordsGasLimit({
     name: name + ENS_DOMAIN,
     records,
   });
@@ -496,7 +524,7 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
   return gasLimit;
 };
 
-export const estimateENSRegisterSetRecords = async ({
+export const estimateENSSetRecordsGasLimit = async ({
   name,
   records,
   ownerAddress,

@@ -1,6 +1,7 @@
 import lang from 'i18n-js';
 import { compact, get, startCase, toLower } from 'lodash';
 import React, { useCallback } from 'react';
+import { useSelector } from 'react-redux';
 import { useTheme } from '../../context/ThemeContext';
 import { getRandomColor } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
@@ -193,11 +194,18 @@ export default function TransactionCoinRow({ item, ...props }) {
     }
   }, [accountAddress, contact, item, navigate]);
 
+  const mainnetAddress = useSelector(
+    state =>
+      state.data.accountAssetsData?.[`${item.address}_${item.network}`]
+        ?.mainnet_address
+  );
+
   return (
     <ButtonPressAnimation onPress={onPressTransaction} scaleTo={0.96}>
       <CoinRow
         {...item}
         {...props}
+        address={mainnetAddress || item.address}
         bottomRowRender={BottomRow}
         containerStyles={containerStyles}
         {...(android
@@ -208,6 +216,7 @@ export default function TransactionCoinRow({ item, ...props }) {
             }
           : {})}
         topRowRender={TopRow}
+        type={item.network}
       />
     </ButtonPressAnimation>
   );

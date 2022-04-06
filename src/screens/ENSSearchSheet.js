@@ -20,7 +20,7 @@ import {
   Stack,
   Text,
 } from '@rainbow-me/design-system';
-import { ENS_DOMAIN } from '@rainbow-me/helpers/ens';
+import { ENS_DOMAIN, REGISTRATION_STEPS } from '@rainbow-me/helpers/ens';
 import {
   useENSRegistration,
   useENSRegistrationCosts,
@@ -38,10 +38,10 @@ export default function ENSSearchSheet() {
 
   const topPadding = android ? 29 : 19;
 
-  const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedSearchQuery] = useDebounce(searchQuery, 200);
+  const { startRegistration, name } = useENSRegistration();
 
-  const { startRegistration } = useENSRegistration();
+  const [searchQuery, setSearchQuery] = useState(name.replace(ENS_DOMAIN, ''));
+  const [debouncedSearchQuery] = useDebounce(searchQuery, 200);
 
   const {
     data: registrationData,
@@ -58,10 +58,11 @@ export default function ENSSearchSheet() {
     data: registrationCostsData,
     isSuccess: registrationCostsDataIsAvailable,
   } = useENSRegistrationCosts({
-    duration: 1,
     name: debouncedSearchQuery,
     rentPrice: registrationData?.rentPrice,
     sendReverseRecord: true,
+    step: REGISTRATION_STEPS.COMMIT,
+    yearsDuration: 1,
   });
 
   const state = useMemo(() => {

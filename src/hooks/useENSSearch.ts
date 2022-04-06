@@ -19,15 +19,15 @@ const formatTime = (timestamp: string, abbreviated: boolean = true) => {
 };
 
 export default function useENSSearch({
-  duration = 1,
+  yearsDuration = 1,
   name,
 }: {
-  duration?: number;
+  yearsDuration?: number;
   name: string;
 }) {
   const { nativeCurrency } = useAccountSettings();
   const isValidLength = useMemo(() => name.length > 2, [name.length]);
-
+  const duration = yearsDuration * timeUnits.secs.year;
   const getRegistrationValues = useCallback(async () => {
     const ensValidation = validateENS(`${name}.eth`, {
       includeSubdomains: false,
@@ -42,21 +42,17 @@ export default function useENSSearch({
     }
 
     const isAvailable = await getAvailable(name);
+    const rentPrice = await getRentPrice(name, duration);
+    const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
+      Network.mainnet
+    );
+    const formattedRentPrice = formatRentPrice(
+      rentPrice,
+      yearsDuration,
+      nativeCurrency,
+      nativeAssetPrice
+    );
     if (isAvailable) {
-      const rentPrice = await getRentPrice(
-        name,
-        duration * timeUnits.secs.year
-      );
-      const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
-        Network.mainnet
-      );
-      const formattedRentPrice = formatRentPrice(
-        rentPrice,
-        duration,
-        nativeCurrency,
-        nativeAssetPrice
-      );
-
       return {
         available: isAvailable,
         rentPrice: formattedRentPrice,
@@ -73,10 +69,11 @@ export default function useENSSearch({
         available: isAvailable,
         expirationDate: formattedExpirationDate,
         registrationDate: formattedRegistrarionDate,
+        rentPrice: formattedRentPrice,
         valid: true,
       };
     }
-  }, [duration, name, nativeCurrency]);
+  }, [duration, name, nativeCurrency, yearsDuration]);
 
   const { data, status, isIdle, isLoading } = useQuery(
     ['getRegistrationValues', [duration, name, nativeCurrency]],

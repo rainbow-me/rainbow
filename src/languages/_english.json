@@ -324,6 +324,10 @@
         "total_value": "Total value",
         "underlying_tokens": "Underlying tokens"
       },
+      "nft_brief_token_info": {
+        "for_sale": "For sale",
+        "last_sale": "Last sale price"
+      },
       "supported_countries": {
         "supported_countries": "Supported Countries",
         "us_except": "United States (except Texas and New York)"
@@ -563,6 +567,11 @@
       "withdraw": "Withdraw"
     },
     "profiles": {
+      "actions": {
+        "watching": "Watching",
+        "watch": "Watch",
+        "edit_profile": "Edit profile"
+      },
       "banner": {
         "register_name": "Register a .eth Name",
         "and_create_ens_profile": "& create your ENS profile"
@@ -572,6 +581,27 @@
         "copy_address": "Copy Address",
         "view_on_etherscan": "View on Etherscan"
       },
+      "intro": {
+        "create_your": "Create Your",
+        "ens_profile": "ENS Profile",
+        "wallet_address_info": {
+          "title": "A better wallet address",
+          "description": "Send to ENS names instead of hard-to-remember wallet addresses."
+        },
+        "portable_identity_info": {
+          "title": "A portable digital identity",
+          "description": "Carry your ENS name and profile between websites. No more signups."
+        },
+        "stored_on_blockchain_info": {
+          "title": "Stored on the blockchain",
+          "description": "Your name and profile are stored on Ethereum and owned by you."
+        },
+        "find_your_name": "Find your name",
+        "use_name": "Use %{name}",
+        "use_existing_name": "Use an existing ENS name",
+        "search_new_name": "Search for a new ENS name"
+      },
+      "select_ens_name": "Select ENS Name",
       "search": {
         "header": "Find your name",
         "description": "Search available profile names",
@@ -611,9 +641,12 @@
         "confirm_registration": "Confirm Registration",
         "start_registration": "Start Registration",
         "confirm_update": "Confirm Update",
+        "confirm_renew": "Hold to Extend",
         "suggestion": "Buy more years now to save on fees",
         "set_ens_name": "Set as my ENS name",
         "registration_duration": "Register name for",
+        "new_expiration_date": "New expiration date",
+        "extend_by": "Extend by",
         "registration_cost": "Registration cost",
         "current_fees": "Current network fee",
         "estimated_total_eth": "Estimated total in ETH",
@@ -622,7 +655,16 @@
         "duration_singular": "1 year",
         "commit_button": "Hold to Commit",
         "insufficient_eth": "Insufficient ETH",
-        "speed_up": "Speed Up"
+        "speed_up": "Speed Up",
+        "extend_registration": "Extend Registration"
+      },
+      "profile_avatar": {
+        "choose_from_library": "Choose from Library",
+        "create_profile": "Create your Profile",
+        "edit_profile": "Edit Profile",
+        "pick_emoji": "Pick an Emoji",
+        "remove_photo": "Remove Photo",
+        "view_profile": "View Profile"
       }
     },
     "savings": {

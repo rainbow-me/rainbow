@@ -1,4 +1,5 @@
 import { Wallet } from '@ethersproject/wallet';
+import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import { Rap, RapActionTypes, RapENSActionParameters } from '../common';
 import { ENSRegistrationRecords } from '@rainbow-me/entities';
@@ -110,6 +111,40 @@ const executeMulticall = async (
   return (
     methodArguments &&
     contract?.multicall(...methodArguments, {
+      gasLimit: gasLimit ? toHex(gasLimit) : undefined,
+      maxFeePerGas: maxFeePerGas ? toHex(maxFeePerGas) : undefined,
+      maxPriorityFeePerGas: maxPriorityFeePerGas
+        ? toHex(maxPriorityFeePerGas)
+        : undefined,
+      nonce: nonce ? toHex(nonce) : undefined,
+      ...(value ? { value } : {}),
+    })
+  );
+};
+
+const executeRenew = async (
+  name?: string,
+  duration?: number,
+  ownerAddress?: string,
+  rentPrice?: string,
+  gasLimit?: string | null,
+  maxFeePerGas?: string,
+  maxPriorityFeePerGas?: string,
+  wallet?: Wallet,
+  nonce: number | null = null
+) => {
+  const { contract, methodArguments, value } = await getENSExecutionDetails({
+    duration,
+    name,
+    ownerAddress,
+    rentPrice,
+    type: ENSRegistrationTransactionType.RENEW,
+    wallet,
+  });
+
+  return (
+    methodArguments &&
+    contract?.renew(...methodArguments, {
       gasLimit: gasLimit ? toHex(gasLimit) : undefined,
       maxFeePerGas: maxFeePerGas ? toHex(maxFeePerGas) : undefined,
       maxPriorityFeePerGas: maxPriorityFeePerGas
@@ -261,6 +296,25 @@ const ensAction = async (
             salt,
           })
         );
+        analytics.track('Initiated ENS registration', {
+          category: 'profiles',
+          ens: name,
+          etherscanLink: `https://etherscan.io/tx/${tx?.hash}`,
+          records: Object.keys(records || {}),
+          rentPrice: rentPrice,
+          walletAddress: ownerAddress,
+        });
+        break;
+      case ENSRegistrationTransactionType.MULTICALL:
+        tx = await executeMulticall(
+          name,
+          ensRegistrationRecords,
+          gasLimit,
+          maxFeePerGas,
+          maxPriorityFeePerGas,
+          wallet,
+          nonce
+        );
         break;
       case ENSRegistrationTransactionType.REGISTER_WITH_CONFIG:
         tx = await executeRegisterWithConfig(
@@ -281,6 +335,34 @@ const ensAction = async (
             registerTransactionHash: tx?.hash,
           })
         );
+        analytics.track('Completed ENS registration', {
+          category: 'profiles',
+          ens: name,
+          etherscanLink: `https://etherscan.io/tx/${tx?.hash}`,
+          records: Object.keys(records || {}),
+          rentPrice: rentPrice,
+          walletAddress: ownerAddress,
+        });
+        break;
+      case ENSRegistrationTransactionType.RENEW:
+        tx = await executeRenew(
+          name,
+          duration,
+          ownerAddress,
+          rentPrice,
+          gasLimit,
+          maxFeePerGas,
+          maxPriorityFeePerGas,
+          wallet,
+          nonce
+        );
+        analytics.track('Edited ENS records', {
+          category: 'profiles',
+          ens: name,
+          etherscanLink: `https://etherscan.io/tx/${tx?.hash}`,
+          records: Object.keys(records || {}),
+          walletAddress: ownerAddress,
+        });
         break;
       case ENSRegistrationTransactionType.SET_TEXT:
         tx = await executeSetText(
@@ -292,17 +374,13 @@ const ensAction = async (
           wallet,
           nonce
         );
-        break;
-      case ENSRegistrationTransactionType.MULTICALL:
-        tx = await executeMulticall(
-          name,
-          ensRegistrationRecords,
-          gasLimit,
-          maxFeePerGas,
-          maxPriorityFeePerGas,
-          wallet,
-          nonce
-        );
+        analytics.track('Edited ENS records', {
+          category: 'profiles',
+          ens: name,
+          etherscanLink: `https://etherscan.io/tx/${tx?.hash}`,
+          records: Object.keys(records || {}),
+          walletAddress: ownerAddress,
+        });
         break;
       case ENSRegistrationTransactionType.SET_NAME:
         tx = await executeSetName(
@@ -314,6 +392,12 @@ const ensAction = async (
           wallet,
           nonce
         );
+        analytics.track('Set primary ENS', {
+          category: 'profiles',
+          ens: name,
+          etherscanLink: `https://etherscan.io/tx/${tx?.hash}`,
+          walletAddress: ownerAddress,
+        });
     }
   } catch (e) {
     logger.sentry(`[${actionName}] Error executing`);
@@ -364,23 +448,6 @@ const commitENS = async (
   );
 };
 
-const registerWithConfig = async (
-  wallet: Wallet,
-  currentRap: Rap,
-  index: number,
-  parameters: RapENSActionParameters,
-  baseNonce?: number
-): Promise<number | undefined> => {
-  return ensAction(
-    wallet,
-    RapActionTypes.registerWithConfigENS,
-    index,
-    parameters,
-    ENSRegistrationTransactionType.REGISTER_WITH_CONFIG,
-    baseNonce
-  );
-};
-
 const multicallENS = async (
   wallet: Wallet,
   currentRap: Rap,
@@ -398,7 +465,7 @@ const multicallENS = async (
   );
 };
 
-const setTextENS = async (
+const registerWithConfig = async (
   wallet: Wallet,
   currentRap: Rap,
   index: number,
@@ -407,10 +474,27 @@ const setTextENS = async (
 ): Promise<number | undefined> => {
   return ensAction(
     wallet,
-    RapActionTypes.setTextENS,
+    RapActionTypes.registerWithConfigENS,
     index,
     parameters,
-    ENSRegistrationTransactionType.SET_TEXT,
+    ENSRegistrationTransactionType.REGISTER_WITH_CONFIG,
+    baseNonce
+  );
+};
+
+const renewENS = async (
+  wallet: Wallet,
+  currentRap: Rap,
+  index: number,
+  parameters: RapENSActionParameters,
+  baseNonce?: number
+): Promise<number | undefined> => {
+  return ensAction(
+    wallet,
+    RapActionTypes.renewENS,
+    index,
+    parameters,
+    ENSRegistrationTransactionType.RENEW,
     baseNonce
   );
 };
@@ -432,10 +516,28 @@ const setNameENS = async (
   );
 };
 
+const setTextENS = async (
+  wallet: Wallet,
+  currentRap: Rap,
+  index: number,
+  parameters: RapENSActionParameters,
+  baseNonce?: number
+): Promise<number | undefined> => {
+  return ensAction(
+    wallet,
+    RapActionTypes.setTextENS,
+    index,
+    parameters,
+    ENSRegistrationTransactionType.SET_TEXT,
+    baseNonce
+  );
+};
+
 export default {
   commitENS,
   multicallENS,
   registerWithConfig,
+  renewENS,
   setNameENS,
   setTextENS,
 };

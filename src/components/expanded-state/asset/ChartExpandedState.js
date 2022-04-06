@@ -135,10 +135,10 @@ const Spacer = styled.View({
 
 // truncate after the first paragraph or 4th dot
 function truncate(text) {
-  const firstParagraph = text?.split('\n')[0];
-  const first4Sentences = text?.split('.').slice(0, 4).join('.') + '.';
+  const firstParagraph = text.split('\n')[0];
+  const first4Sentences = text.split('.').slice(0, 4).join('.') + '.';
   const shorterOne =
-    first4Sentences?.length < firstParagraph?.length
+    first4Sentences.length < firstParagraph?.length
       ? first4Sentences
       : firstParagraph;
   // If there is not much to expand, return the whole text
@@ -149,7 +149,7 @@ function truncate(text) {
   return shorterOne;
 }
 
-function Description({ text }) {
+function Description({ text = '' }) {
   const truncatedText = truncate(text);
   const needToTruncate = truncatedText.length !== text.length;
   const [truncated, setTruncated] = useState(true);
@@ -468,7 +468,7 @@ export default function ChartExpandedState({ asset }) {
               assetName: asset?.name,
             })}
           >
-            <Description text={description} />
+            <Description text={description || delayedDescriptions} />
           </ExpandedStateSection>
         )}
         <SocialLinks

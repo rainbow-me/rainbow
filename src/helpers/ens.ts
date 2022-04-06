@@ -35,6 +35,7 @@ import { labelhash } from '@rainbow-me/utils';
 export enum ENSRegistrationTransactionType {
   COMMIT = 'commit',
   REGISTER_WITH_CONFIG = 'registerWithConfig',
+  RENEW = 'renew',
   SET_TEXT = 'setText',
   SET_NAME = 'setName',
   MULTICALL = 'multicall',
@@ -67,10 +68,19 @@ export enum ENS_RECORDS {
 
 export enum REGISTRATION_STEPS {
   COMMIT = 'COMMIT',
+  EDIT = 'EDIT',
+  REGISTER = 'REGISTER',
+  RENEW = 'RENEW',
+  SET_NAME = 'SET_NAME',
   WAIT_COMMIT_CONFIRMATION = 'WAIT_COMMIT_CONFIRMATION',
   WAIT_ENS_COMMITMENT = 'WAIT_ENS_COMMITMENT',
-  REGISTER = 'REGISTER',
+}
+
+export enum REGISTRATION_MODES {
+  CREATE = 'CREATE',
   EDIT = 'EDIT',
+  RENEW = 'RENEW',
+  SET_NAME = 'SET_NAME',
 }
 
 export type TextRecordField = {
@@ -415,6 +425,13 @@ const getENSExecutionDetails = async ({
       contract = registrarController;
       break;
     }
+    case ENSRegistrationTransactionType.MULTICALL: {
+      if (!name || !records) throw new Error('Bad arguments for multicall');
+      contract = getENSPublicResolverContract(wallet, resolverAddress);
+      const data = setupMulticallRecords(name, records, contract) || [];
+      args = [data];
+      break;
+    }
     case ENSRegistrationTransactionType.REGISTER_WITH_CONFIG: {
       if (!name || !ownerAddress || !duration || !rentPrice)
         throw new Error('Bad arguments for registerWithConfig');
@@ -430,6 +447,19 @@ const getENSExecutionDetails = async ({
       contract = getENSRegistrarControllerContract(wallet);
       break;
     }
+    case ENSRegistrationTransactionType.RENEW: {
+      if (!name || !duration || !rentPrice)
+        throw new Error('Bad arguments for renew');
+      value = toHex(addBuffer(rentPrice, 1.1));
+      args = [name.replace(ENS_DOMAIN, ''), duration];
+      contract = getENSRegistrarControllerContract(wallet);
+      break;
+    }
+    case ENSRegistrationTransactionType.SET_NAME:
+      if (!name) throw new Error('Bad arguments for setName');
+      args = [name];
+      contract = getENSReverseRegistrarContract(wallet);
+      break;
     case ENSRegistrationTransactionType.SET_TEXT: {
       if (!name || !records || !records?.text?.[0])
         throw new Error('Bad arguments for setText');
@@ -439,18 +469,6 @@ const getENSExecutionDetails = async ({
       contract = getENSPublicResolverContract(wallet, resolverAddress);
       break;
     }
-    case ENSRegistrationTransactionType.MULTICALL: {
-      if (!name || !records) throw new Error('Bad arguments for multicall');
-      contract = getENSPublicResolverContract(wallet, resolverAddress);
-      const data = setupMulticallRecords(name, records, contract) || [];
-      args = [data];
-      break;
-    }
-    case ENSRegistrationTransactionType.SET_NAME:
-      if (!name) throw new Error('Bad arguments for setName');
-      args = [name];
-      contract = getENSReverseRegistrarContract(wallet);
-      break;
   }
   return {
     contract,

@@ -55,10 +55,12 @@ import {
 } from '@rainbow-me/design-system';
 import { AssetTypes, UniqueAsset } from '@rainbow-me/entities';
 import { buildUniqueTokenName } from '@rainbow-me/helpers/assets';
+import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import {
   useAccountProfile,
   useDimensions,
   useENSProfile,
+  useENSRegistration,
   usePersistentDominantColorFromImage,
   useShowcaseTokens,
 } from '@rainbow-me/hooks';
@@ -220,7 +222,7 @@ const UniqueTokenExpandedState = ({
 }: UniqueTokenExpandedStateProps) => {
   const { accountAddress, accountENS } = useAccountProfile();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
-  const { navigate } = useNavigation();
+  const { navigate, goBack } = useNavigation();
   const { colors, isDarkMode } = useTheme();
   const { isReadOnlyWallet } = useWallets();
 
@@ -232,6 +234,7 @@ const UniqueTokenExpandedState = ({
     familyName,
     isSendable,
     lastPrice,
+    lastSalePaymentToken,
     traits,
     uniqueId,
     urlSuffixForAsset,
@@ -251,7 +254,8 @@ const UniqueTokenExpandedState = ({
   const isNFT = uniqueTokenType === UniqueTokenType.NFT;
 
   // Fetch the ENS profile if the unique token is an ENS name.
-  const ensProfile = useENSProfile(uniqueId, { enabled: isENS });
+  const cleanENSName = isENS ? uniqueId.split(' ')?.[0] : uniqueId;
+  const ensProfile = useENSProfile(cleanENSName, { enabled: isENS });
   const ensData = ensProfile.data;
 
   const {
@@ -326,14 +330,17 @@ const UniqueTokenExpandedState = ({
     });
   }, [accountAddress, accountENS, asset]);
 
+  const { startRegistration } = useENSRegistration();
   const handlePressEdit = useCallback(() => {
     if (isENS) {
+      goBack();
+      startRegistration(uniqueId, REGISTRATION_MODES.EDIT);
       navigate(Routes.REGISTER_ENS_NAVIGATOR, {
         ensName: uniqueId,
-        mode: 'edit',
+        mode: REGISTRATION_MODES.EDIT,
       });
     }
-  }, [isENS, navigate, uniqueId]);
+  }, [goBack, isENS, navigate, startRegistration, uniqueId]);
 
   const sheetRef = useRef();
   const yPosition = useSharedValue(0);
@@ -405,8 +412,8 @@ const UniqueTokenExpandedState = ({
                 asset={asset}
                 horizontalPadding={24}
                 imageColor={imageColor}
-                opacity={contentOpacity}
                 // @ts-expect-error JavaScript component
+                opacity={contentOpacity}
                 sheetRef={sheetRef}
                 textColor={textColor}
                 yPosition={yPosition}
@@ -501,16 +508,19 @@ const UniqueTokenExpandedState = ({
                             <NFTBriefTokenInfoRow
                               currentPrice={currentPrice}
                               lastPrice={lastPrice}
+                              lastSalePaymentToken={lastSalePaymentToken}
                               network={asset.network}
                               urlSuffixForAsset={urlSuffixForAsset}
                             />
                           )}
                           {isENS && (
                             <ENSBriefTokenInfoRow
+                              ensName={uniqueId}
                               expiryDate={ensData?.registration.expiryDate}
                               registrationDate={
                                 ensData?.registration.registrationDate
                               }
+                              showEditButton={hasEditButton}
                             />
                           )}
                         </Bleed>

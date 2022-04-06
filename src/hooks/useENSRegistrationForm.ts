@@ -1,10 +1,13 @@
 import { isEmpty, omit } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { atom, useRecoilState } from 'recoil';
 import { useENSRegistration } from '.';
 import { Records } from '@rainbow-me/entities';
-import { ENS_RECORDS, textRecordFields } from '@rainbow-me/helpers/ens';
+import {
+  ENS_RECORDS,
+  REGISTRATION_MODES,
+  textRecordFields,
+} from '@rainbow-me/helpers/ens';
 
 const disabledAtom = atom({
   default: false,
@@ -54,11 +57,9 @@ export default function useENSRegistrationForm({
   // The initial records will be the existing records belonging to the profile in "edit mode",
   // but will be all of the records in "create mode".
   const defaultRecords = useMemo(
-    () => (mode === 'edit' ? initialRecords : allRecords),
+    () => (mode === REGISTRATION_MODES.EDIT ? initialRecords : allRecords),
     [allRecords, initialRecords, mode]
   );
-
-  const dispatch = useDispatch();
 
   const [errors, setErrors] = useRecoilState(errorsAtom);
   const [submitting, setSubmitting] = useRecoilState(submittingAtom);
@@ -69,7 +70,9 @@ export default function useENSRegistrationForm({
     // when there are no changed records.
     // Note: We don't want to do this in create mode as we have the "Skip"
     // button.
-    setDisabled(mode === 'edit' ? isEmpty(changedRecords) : false);
+    setDisabled(
+      mode === REGISTRATION_MODES.EDIT ? isEmpty(changedRecords) : false
+    );
   }, [changedRecords, disabled, mode, setDisabled]);
 
   const [selectedFields, setSelectedFields] = useRecoilState(
@@ -119,7 +122,7 @@ export default function useENSRegistrationForm({
       updateRecords(records);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isEmpty(defaultRecords), dispatch, selectedFields, updateRecords]);
+  }, [isEmpty(defaultRecords), updateRecords]);
 
   const onAddField = useCallback(
     (fieldToAdd, selectedFields) => {
@@ -187,14 +190,18 @@ export default function useENSRegistrationForm({
     updateRecords(values);
   }, [updateRecords, values]);
 
-  const [isLoading, setIsLoading] = useState(mode === 'edit');
+  const [isLoading, setIsLoading] = useState(
+    mode === REGISTRATION_MODES.EDIT && isEmpty(values)
+  );
   useEffect(() => {
-    if (!profileQuery.isLoading) {
-      setTimeout(() => setIsLoading(false), 200);
-    } else {
-      setIsLoading(true);
+    if (mode === 'edit') {
+      if (profileQuery.isSuccess || !isEmpty(values)) {
+        setTimeout(() => setIsLoading(false), 200);
+      } else {
+        setIsLoading(true);
+      }
     }
-  }, [profileQuery.isLoading]);
+  }, [mode, profileQuery.isSuccess, values]);
 
   const empty = useMemo(() => !Object.values(values).some(Boolean), [values]);
 
