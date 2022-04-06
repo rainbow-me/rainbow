@@ -52,15 +52,15 @@ export default function useAccountTransactions(initialized, isFocused) {
   const { sections } = buildTransactionsSectionsSelector(accountState);
 
   const remainingItemsLabel = useMemo(() => {
-    const remainingLength = transactions.length - slicedTransaction.length;
+    const remainingLength = allTransactions.length - slicedTransaction.length;
     if (remainingLength === 0) {
       return null;
     }
-    if (transactions.length - slicedTransaction.length <= NOE_PAGE) {
+    if (allTransactions.length - slicedTransaction.length <= NOE_PAGE) {
       return `Show last ${remainingLength} transactions.`;
     }
     return `Show ${NOE_PAGE} more transactions...`;
-  }, [slicedTransaction.length, transactions.length]);
+  }, [slicedTransaction.length, allTransactions.length]);
 
   return {
     isLoadingTransactions:
@@ -68,7 +68,7 @@ export default function useAccountTransactions(initialized, isFocused) {
     nextPage,
     remainingItemsLabel,
     sections,
-    transactions: ios ? transactions : slicedTransaction,
+    transactions: ios ? allTransactions : slicedTransaction,
     transactionsCount,
   };
 }
