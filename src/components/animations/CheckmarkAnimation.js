@@ -25,7 +25,7 @@ const Circle = styled(Animated.createAnimatedComponent(Flex))({
   width: 120,
 });
 
-export default function CheckmarkAnimation() {
+export function CheckmarkAnimation() {
   const circleEntering = () => {
     'worklet';
     const animations = {
