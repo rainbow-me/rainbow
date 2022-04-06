@@ -27,11 +27,7 @@ export interface UniqueAsset {
       symbol: string;
     };
   }[];
-  traits: {
-    trait_type: string;
-    value: string | number;
-    display_type: string;
-  }[];
+  traits: UniqueAssetTrait[];
   asset_contract: AssetContract;
   background: string | null;
   collection: {
@@ -62,4 +58,10 @@ export interface UniqueAsset {
   urlSuffixForAsset: string;
   isPoap?: boolean;
   network?: Network;
+}
+
+export interface UniqueAssetTrait {
+  trait_type: string;
+  value: string | number;
+  display_type: string;
 }
