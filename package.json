@@ -30,6 +30,7 @@
     "lint:js": "eslint --cache --ext '.ts,.tsx,.js,.jsx' .",
     "lint:ts": "yarn tsc --skipLibCheck --noEmit",
     "postinstall": "./scripts/postinstall.sh",
+    "preview": "git reset && git commit -m \"/preview\" --allow-empty",
     "start": "react-native start",
     "start:clean": "watchman watch-del-all && rm -rf $TMPDIR/react-* && rm -rf $TMPDIR/metro-* && rm -rf $TMPDIR/haste-map-* && react-native start -- --reset-cache",
     "test": "jest test.js",
