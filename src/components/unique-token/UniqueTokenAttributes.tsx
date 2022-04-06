@@ -5,6 +5,7 @@ import UniqueTokenAttributeItem from './UniqueTokenAttributeItem';
 import { Inline } from '@rainbow-me/design-system';
 import { UniqueAsset } from '@rainbow-me/entities';
 import transformUniqueAssetTraitsForPresentation from '@rainbow-me/helpers/transformUniqueAssetTraitsForPresentation';
+import uniqueAssetTraitDisplayTypeCompareFunction from '@rainbow-me/helpers/uniqueAssetTraitDisplayTypeCompareFunction';
 
 interface UniqueTokenAttributesProps {
   color: string;
@@ -20,6 +21,7 @@ const UniqueTokenAttributes = ({
   traits,
 }: UniqueTokenAttributesProps) => {
   const sortedTraits = (sortList(traits, 'trait_type', 'asc') as typeof traits)
+    .sort(uniqueAssetTraitDisplayTypeCompareFunction)
     .map(transformUniqueAssetTraitsForPresentation)
     .map(trait => ({
       ...trait,
