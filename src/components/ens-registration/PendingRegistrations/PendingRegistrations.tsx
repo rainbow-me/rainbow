@@ -87,7 +87,7 @@ const PendingRegistration = ({
                 <Inset horizontal="10px">
                   <AccentColorProvider color={colors.appleBlue}>
                     <Text color="accent" size="16px" weight="heavy">
-                      Finish
+                      {lang.t('profiles.pending_registrations.finish')}
                     </Text>
                   </AccentColorProvider>
                 </Inset>

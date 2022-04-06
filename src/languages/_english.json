@@ -643,7 +643,8 @@
         "alert_message": "`You are about to stop the registration process.\n  You'd need to start it again which means you'll need to send an additional transaction.`",
         "alert_confirm": "Proceed Anyway",
         "alert_cancel": "Cancel",
-        "in_progress": "In progress"
+        "in_progress": "In progress",
+        "finish": "Finish"
       }
     },
     "savings": {
