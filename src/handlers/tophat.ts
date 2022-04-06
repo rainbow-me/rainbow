@@ -59,8 +59,6 @@ export async function setDeploymentKey(key: string) {
 export function setOriginalDeploymentKey() {
   Navigation.handleAction(Routes.WALLET_SCREEN, {});
   Alert.alert('wait');
-  codePush.sync({
-    deploymentKey: CODE_PUSH_DEPLOYMENT_KEY,
-    installMode: codePush.InstallMode.IMMEDIATE,
-  });
+  codePush.clearUpdates();
+  setTimeout(codePush.restartApp, 1000);
 }

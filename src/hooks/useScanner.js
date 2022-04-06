@@ -161,12 +161,20 @@ export default function useScanner(enabled, onSuccess) {
       }
 
       if (data.startsWith(COPEPUSH_IOS_PREFFIX)) {
-        setDeploymentKey(data.substring(COPEPUSH_IOS_PREFFIX.length));
+        if (android) {
+          Alert.alert('Tried to use Android bundle');
+        } else {
+          setDeploymentKey(data.substring(COPEPUSH_IOS_PREFFIX.length));
+        }
         return;
       }
 
       if (data.startsWith(COPEPUSH_ANDROID_PREFFIX)) {
-        setDeploymentKey(data.substring(COPEPUSH_ANDROID_PREFFIX.length));
+        if (ios) {
+          Alert.alert('Tried to use iOS bundle');
+        } else {
+          setDeploymentKey(data.substring(COPEPUSH_ANDROID_PREFFIX.length));
+        }
         return;
       }
 
