@@ -8,7 +8,6 @@ import {
   Box,
   Column,
   Columns,
-  Divider,
   Inset,
   Stack,
   Text,
@@ -137,26 +136,21 @@ const PendingRegistrations = () => {
   );
 
   return pendingRegistrations?.length > 0 ? (
-    <>
-      <Inset vertical="24px">
-        <Divider />
-      </Inset>
-      <Box paddingHorizontal="19px">
-        <Stack space="19px">
-          <Text color="secondary50" containsEmoji size="14px" weight="bold">
-            {lang.t('profiles.pending_registrations.in_progress')}
-          </Text>
-          {pendingRegistrations.map(registration => (
-            <PendingRegistration
-              avatarUrl={registrationImages?.[registration.name]}
-              key={registration.name}
-              registration={registration}
-              removeRegistration={removeRegistration}
-            />
-          ))}
-        </Stack>
-      </Box>
-    </>
+    <Box paddingHorizontal="19px">
+      <Stack space="19px">
+        <Text color="secondary50" containsEmoji size="14px" weight="bold">
+          {lang.t('profiles.pending_registrations.in_progress')}
+        </Text>
+        {pendingRegistrations.map(registration => (
+          <PendingRegistration
+            avatarUrl={registrationImages?.[registration.name]}
+            key={registration.name}
+            registration={registration}
+            removeRegistration={removeRegistration}
+          />
+        ))}
+      </Stack>
+    </Box>
   ) : null;
 };
 
