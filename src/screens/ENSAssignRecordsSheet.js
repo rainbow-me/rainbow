@@ -390,34 +390,36 @@ function SelectableAttributesButtons({
 }) {
   return (
     <Inline space="10px">
-      {Object.values(textRecordFields).map((textRecordField, i) => {
-        const isSelected = selectedFields.some(
-          field => field.id === textRecordField.id
-        );
-        return (
-          <SelectableButton
-            isSelected={isSelected}
-            key={i}
-            onSelect={() => {
-              if (isSelected) {
-                const index = selectedFields.findIndex(
-                  ({ id }) => textRecordField.id === id
-                );
-                const fieldToRemove = selectedFields[index];
-                let newFields = [...selectedFields];
-                newFields.splice(index, 1);
-                onRemoveField(fieldToRemove, newFields);
-              } else {
-                const fieldToAdd = textRecordField;
-                onAddField(fieldToAdd, [...selectedFields, fieldToAdd]);
-              }
-            }}
-            testID={`ens-selectable-attribute-${textRecordField.id}`}
-          >
-            {textRecordField.label}
-          </SelectableButton>
-        );
-      })}
+      {Object.values(textRecordFields)
+        .filter(record => record.defaultRecord)
+        .map((textRecordField, i) => {
+          const isSelected = selectedFields.some(
+            field => field.id === textRecordField.id
+          );
+          return (
+            <SelectableButton
+              isSelected={isSelected}
+              key={i}
+              onSelect={() => {
+                if (isSelected) {
+                  const index = selectedFields.findIndex(
+                    ({ id }) => textRecordField.id === id
+                  );
+                  const fieldToRemove = selectedFields[index];
+                  let newFields = [...selectedFields];
+                  newFields.splice(index, 1);
+                  onRemoveField(fieldToRemove, newFields);
+                } else {
+                  const fieldToAdd = textRecordField;
+                  onAddField(fieldToAdd, [...selectedFields, fieldToAdd]);
+                }
+              }}
+              testID={`ens-selectable-attribute-${textRecordField.id}`}
+            >
+              {textRecordField.label}
+            </SelectableButton>
+          );
+        })}
       <SelectableButton
         isSelected={false}
         onSelect={navigateToAdditionalRecords}

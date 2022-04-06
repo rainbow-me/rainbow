@@ -12,11 +12,11 @@ import {
 import {
   accentColorAtom,
   additionalTextRecordFields,
+  textRecordFields,
 } from '@rainbow-me/helpers/ens';
 import { useENSRegistrationForm } from '@rainbow-me/hooks';
 
-export const ENSConfirmRegisterSheetHeight = 600;
-export const ENSConfirmUpdateSheetHeight = 400;
+export const ENSAdditionalRecordsSheetHeight = 250;
 
 export default function ENSAdditionalRecordsSheet() {
   const { params } = useRoute();
@@ -29,7 +29,7 @@ export default function ENSAdditionalRecordsSheet() {
 
   const boxStyle = useMemo(
     () => ({
-      height: params.longFormHeight || ENSConfirmRegisterSheetHeight,
+      height: params.longFormHeight || ENSAdditionalRecordsSheetHeight,
     }),
     [params.longFormHeight]
   );
@@ -37,7 +37,6 @@ export default function ENSAdditionalRecordsSheet() {
   return (
     <SlackSheet
       additionalTopPadding
-      contentHeight={params.longFormHeight || ENSConfirmRegisterSheetHeight}
       height="100%"
       scrollEnabled={false}
     >
@@ -45,12 +44,12 @@ export default function ENSAdditionalRecordsSheet() {
         <Box
           background="body"
           paddingVertical="30px"
+          paddingHorizontal="19px"
           style={boxStyle}
           testID="ens-confirm-register-sheet"
         >
-          <Text>aaaaaa</Text>
           <Inline space="10px">
-            {Object.values(additionalTextRecordFields).map(
+            {Object.values(textRecordFields).map(
               (textRecordField, i) => {
                 const isSelected = selectedFields.some(
                   field => field.id === textRecordField.id
@@ -66,7 +65,7 @@ export default function ENSAdditionalRecordsSheet() {
                         );
                         const fieldToRemove = selectedFields[index];
                         let newFields = [...selectedFields];
-                        // newFields.splice(index, 1);
+                        newFields.splice(index, 1);
                         onRemoveField(fieldToRemove, newFields);
                       } else {
                         const fieldToAdd = textRecordField;

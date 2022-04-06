@@ -43,6 +43,7 @@ import {
   basicSheetConfig,
   customGasSheetConfig,
   defaultScreenStackOptions,
+  ensAdditionalRecordsSheetConfig,
   ensConfirmRegisterSheetConfig,
   expandedAssetSheetConfig,
   expandedAssetSheetConfigWithLimit,
@@ -417,7 +418,7 @@ function NativeStackNavigator() {
           <NativeStack.Screen
             component={ENSAdditionalRecordsSheet}
             name={Routes.ENS_ADDITIONAL_RECORDS_SHEET}
-            {...ensConfirmRegisterSheetConfig}
+            {...ensAdditionalRecordsSheetConfig}
           />
           <NativeStack.Screen
             component={ProfileSheet}

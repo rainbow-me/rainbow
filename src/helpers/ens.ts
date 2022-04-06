@@ -94,6 +94,7 @@ export type TextRecordField = {
 
 export const textRecordFields = {
   [ENS_RECORDS.displayName]: {
+    defaultRecord: true,
     id: 'name',
     inputProps: {
       maxLength: 50,
@@ -103,6 +104,7 @@ export const textRecordFields = {
     placeholder: lang.t('profiles.create.name_placeholder'),
   },
   [ENS_RECORDS.description]: {
+    defaultRecord: true,
     id: 'bio',
     inputProps: {
       maxLength: 100,
@@ -113,6 +115,7 @@ export const textRecordFields = {
     placeholder: lang.t('profiles.create.bio_placeholder'),
   },
   [ENS_RECORDS.twitter]: {
+    defaultRecord: true,
     id: 'twitter',
     inputProps: {
       maxLength: 16,
@@ -128,6 +131,7 @@ export const textRecordFields = {
     },
   },
   [ENS_RECORDS.email]: {
+    defaultRecord: true,
     id: 'email',
     inputProps: {
       maxLength: 50,
@@ -145,6 +149,7 @@ export const textRecordFields = {
     },
   },
   [ENS_RECORDS.url]: {
+    defaultRecord: true,
     id: 'website',
     inputProps: {
       keyboardType: 'url',
@@ -163,6 +168,7 @@ export const textRecordFields = {
     },
   },
   [ENS_RECORDS.github]: {
+    defaultRecord: true,
     id: 'github',
     inputProps: {
       maxLength: 20,
@@ -172,6 +178,7 @@ export const textRecordFields = {
     placeholder: lang.t('profiles.create.username_placeholder'),
   },
   [ENS_RECORDS.instagram]: {
+    defaultRecord: true,
     id: 'instagram',
     inputProps: {
       maxLength: 30,
@@ -187,6 +194,7 @@ export const textRecordFields = {
     },
   },
   [ENS_RECORDS.snapchat]: {
+    defaultRecord: true,
     id: 'snapchat',
     inputProps: {
       maxLength: 16,
@@ -202,6 +210,7 @@ export const textRecordFields = {
     },
   },
   [ENS_RECORDS.discord]: {
+    defaultRecord: true,
     id: 'discord',
     inputProps: {
       maxLength: 50,
@@ -210,28 +219,6 @@ export const textRecordFields = {
     label: 'Discord',
     placeholder: lang.t('profiles.create.username_placeholder'),
   },
-} as {
-  [key in ENS_RECORDS]?: {
-    id: string;
-    inputProps: TextInputProps;
-    key: string;
-    label: string;
-    placeholder: string;
-    validations?: {
-      onChange?: {
-        match?: RegExp;
-      };
-      onSubmit?: {
-        match?: {
-          value: RegExp;
-          message: string;
-        };
-      };
-    };
-  };
-};
-
-export const additionalTextRecordFields = {
   [ENS_RECORDS.ETH]: {
     id: 'eth',
     inputProps: {
@@ -265,7 +252,6 @@ export const additionalTextRecordFields = {
     placeholder: lang.t('profiles.create.wallet_placeholder', {
       coin: lang.t('profiles.create.ltc'),
     }),
-    startsWith: '@',
     validations: {
       onChange: {
         match: /^\w*$/,
