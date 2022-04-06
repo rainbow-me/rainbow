@@ -23,6 +23,7 @@ import {
   Text,
   useColorMode,
 } from '@rainbow-me/design-system';
+import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import { useAccountENSDomains, useENSRegistration } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 
@@ -47,7 +48,7 @@ export default function ENSIntroSheet() {
   const handleSelectExistingName = useCallback(() => {
     const navigateToAssignRecords = (ensName: string) => {
       params?.onSelectExistingName?.();
-      startRegistration(ensName, 'edit');
+      startRegistration(ensName, REGISTRATION_MODES.EDIT);
       setTimeout(() => {
         navigate(Routes.ENS_ASSIGN_RECORDS_SHEET);
       }, 0);
