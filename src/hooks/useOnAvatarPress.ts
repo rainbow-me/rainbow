@@ -158,7 +158,11 @@ export default () => {
             onAvatarCreateProfile();
           }
         } else if (buttonIndex === 2) {
-          onAvatarRemovePhoto();
+          if (accountImage) {
+            onAvatarRemovePhoto();
+          } else {
+            onAvatarCreateProfile();
+          }
         }
       }
     };
