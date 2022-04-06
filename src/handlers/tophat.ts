@@ -64,4 +64,5 @@ export function setOriginalDeploymentKey() {
     deploymentKey: CODE_PUSH_DEPLOYMENT_KEY,
     installMode: codePush.InstallMode.IMMEDIATE,
   });
+  setTimeout(codePush.restartApp, 1000);
 }
