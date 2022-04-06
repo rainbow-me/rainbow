@@ -23,6 +23,7 @@ const UniqueTokenAttributes = ({
   const sortedTraits = useMemo(
     () =>
       (sortList(traits, 'trait_type', 'asc') as typeof traits)
+        .filter(trait => trait.value && trait.trait_type)
         .sort(uniqueAssetTraitDisplayTypeCompareFunction)
         .map(transformUniqueAssetTraitsForPresentation)
         .map(trait => ({
@@ -38,7 +39,7 @@ const UniqueTokenAttributes = ({
     <Inline space="10px">
       {sortedTraits.map(item => (
         <UniqueTokenAttributeItem
-          key={`${item.trait_type}${item.value}`}
+          key={`${item.trait_type}${item.originalValue}`}
           {...item}
         />
       ))}

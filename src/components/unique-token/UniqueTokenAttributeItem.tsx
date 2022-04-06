@@ -20,23 +20,17 @@ const UniqueTokenAttributeItem: React.FC<AttributeItemProps> = ({
   max_value: maxValue,
   keepLowerCase,
   originalValue,
-}) => {
-  if (!type || !value) {
-    return null;
-  }
-
-  return (
-    <Tag
-      color={color}
-      disableMenu={disableMenu}
-      keepTextLowerCase={keepLowerCase}
-      maxValue={maxValue}
-      slug={slug}
-      text={value}
-      title={type}
-      value={originalValue}
-    />
-  );
-};
+}) => (
+  <Tag
+    color={color}
+    disableMenu={disableMenu}
+    keepTextLowerCase={keepLowerCase}
+    maxValue={maxValue}
+    slug={slug}
+    text={value}
+    title={type}
+    value={originalValue}
+  />
+);
 
 export default magicMemo(UniqueTokenAttributeItem, ['slug', 'color', 'value']);
