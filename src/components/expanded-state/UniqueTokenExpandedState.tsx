@@ -225,7 +225,7 @@ const UniqueTokenExpandedState = ({
 }: UniqueTokenExpandedStateProps) => {
   const { accountAddress, accountENS } = useAccountProfile();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
-  const { navigate } = useNavigation();
+  const { navigate, goBack } = useNavigation();
   const { colors, isDarkMode } = useTheme();
   const { isReadOnlyWallet } = useWallets();
 
@@ -326,6 +326,7 @@ const UniqueTokenExpandedState = ({
   const { startRegistration } = useENSRegistration();
   const handlePressEdit = useCallback(() => {
     if (isENS) {
+      goBack();
       startRegistration(uniqueId, 'edit');
       navigate(Routes.REGISTER_ENS_NAVIGATOR, {
         ensName: uniqueId,

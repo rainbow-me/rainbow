@@ -232,12 +232,12 @@ export default function ENSConfirmRegisterSheet() {
   });
 
   const goToProfileScreen = useCallback(() => {
-    goBack();
-    setTimeout(() => {
-      InteractionManager.runAfterInteractions(() => {
+    InteractionManager.runAfterInteractions(() => {
+      goBack();
+      setTimeout(() => {
         navigate(Routes.PROFILE_SCREEN);
-      });
-    }, 100);
+      }, 100);
+    });
   }, [goBack, navigate]);
 
   const boxStyle = useMemo(
@@ -318,10 +318,7 @@ export default function ENSConfirmRegisterSheet() {
       [REGISTRATION_STEPS.REGISTER]: (
         <TransactionActionRow
           accentColor={accentColor}
-          action={() => {
-            action();
-            goToProfileScreen();
-          }}
+          action={() => action(goToProfileScreen)}
           isSufficientGas={isSufficientGasForStep}
           isValidGas={isValidGas && Boolean(gasLimit)}
           label={lang.t('profiles.confirm.confirm_registration')}
@@ -331,7 +328,7 @@ export default function ENSConfirmRegisterSheet() {
       [REGISTRATION_STEPS.EDIT]: (
         <TransactionActionRow
           accentColor={accentColor}
-          action={action}
+          action={() => action(goToProfileScreen)}
           isSufficientGas={isSufficientGasForStep}
           isValidGas={isValidGas && Boolean(gasLimit)}
           label={lang.t('profiles.confirm.confirm_update')}
