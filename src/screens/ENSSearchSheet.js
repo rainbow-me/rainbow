@@ -40,7 +40,7 @@ export default function ENSSearchSheet() {
 
   const { startRegistration, name } = useENSRegistration();
 
-  const [searchQuery, setSearchQuery] = useState(name.replace('.eth', ''));
+  const [searchQuery, setSearchQuery] = useState(name.replace(ENS_DOMAIN, ''));
   const [debouncedSearchQuery] = useDebounce(searchQuery, 200);
 
   const {
