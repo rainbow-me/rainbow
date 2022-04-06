@@ -155,8 +155,9 @@ export default function SecretDisplaySection({
       return (
         <ColumnWithMargins align="center" justify="center">
           <AuthenticationText>
-            Your account has been created with biometric data. To see the
-            recovery phrase, turn on the biometrics on your phone.
+            Your account has been secured with biometric data, like fingerprint
+            or face identification. To see your recovery phrase, turn on
+            biometrics in your phone’s settings.
           </AuthenticationText>
         </ColumnWithMargins>
       );
