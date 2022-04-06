@@ -1,6 +1,10 @@
 import { format } from 'date-fns';
 import { UniqueAsset } from '@rainbow-me/entities';
 
+/**
+ * Mapper function that converts various NFT trait values according to their
+ * data type and other qualities. Like if it's a link it is shortening it.
+ */
 export default function transformUniqueAssetTraitsForPresentation(
   trait: UniqueAsset['traits'][number]
 ): UniqueAsset['traits'][number] {
