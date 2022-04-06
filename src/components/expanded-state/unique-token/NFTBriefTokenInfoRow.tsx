@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useCallback, useEffect, useState } from 'react';
 
 import assetTypes from '../../../entities/assetTypes';
@@ -14,11 +15,13 @@ import { ethereumUtils } from '@rainbow-me/utils';
 export default function NFTBriefTokenInfoRow({
   currentPrice,
   lastPrice,
+  lastSalePaymentToken,
   network: assetNetwork,
   urlSuffixForAsset,
 }: {
   currentPrice?: number | null;
-  lastPrice?: string | null;
+  lastPrice?: number | null;
+  lastSalePaymentToken?: string | null;
   network?: string;
   urlSuffixForAsset: string;
 }) {
@@ -54,9 +57,13 @@ export default function NFTBriefTokenInfoRow({
     });
   }, [navigate]);
 
+  const lastSalePrice =
+    lastPrice != null
+      ? lastPrice === 0
+        ? `< 0.001 ${lastSalePaymentToken}`
+        : `${lastPrice} ${lastSalePaymentToken}`
+      : 'None';
   const priceOfEth = ethereumUtils.getEthPriceUnit() as number;
-
-  const lastSalePrice = lastPrice || 'None';
 
   return (
     <Columns space="19px">
@@ -71,7 +78,11 @@ export default function NFTBriefTokenInfoRow({
         isNft
         onPress={toggleCurrentPriceDisplayCurrency}
         size="big"
-        title={currentPrice ? '􀋢 For sale' : 'Last sale price'}
+        title={
+          currentPrice
+            ? `􀋢 ${lang.t('expanded_state.nft_brief_token_info.for_sale')}`
+            : lang.t('expanded_state.nft_brief_token_info.last_sale')
+        }
         weight={lastSalePrice === 'None' && !currentPrice ? 'bold' : 'heavy'}
       >
         {showCurrentPriceInEth || nativeCurrency === 'ETH' || !currentPrice

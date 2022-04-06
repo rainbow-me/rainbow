@@ -64,6 +64,7 @@ import {
   useAccountProfile,
   useDimensions,
   useENSProfile,
+  useENSRegistration,
   usePersistentDominantColorFromImage,
   useShowcaseTokens,
 } from '@rainbow-me/hooks';
@@ -225,7 +226,7 @@ const UniqueTokenExpandedState = ({
 }: UniqueTokenExpandedStateProps) => {
   const { accountAddress, accountENS } = useAccountProfile();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
-  const { navigate } = useNavigation();
+  const { navigate, goBack } = useNavigation();
   const { colors, isDarkMode } = useTheme();
   const { isReadOnlyWallet } = useWallets();
 
@@ -237,6 +238,7 @@ const UniqueTokenExpandedState = ({
     familyName,
     isSendable,
     lastPrice,
+    lastSalePaymentToken,
     traits,
     uniqueId,
     urlSuffixForAsset,
@@ -323,14 +325,17 @@ const UniqueTokenExpandedState = ({
     });
   }, [accountAddress, accountENS, asset]);
 
+  const { startRegistration } = useENSRegistration();
   const handlePressEdit = useCallback(() => {
     if (isENS) {
+      goBack();
+      startRegistration(uniqueId, REGISTRATION_MODES.EDIT);
       navigate(Routes.REGISTER_ENS_NAVIGATOR, {
         ensName: uniqueId,
         mode: REGISTRATION_MODES.EDIT,
       });
     }
-  }, [isENS, navigate, uniqueId]);
+  }, [goBack, isENS, navigate, startRegistration, uniqueId]);
 
   const sheetRef = useRef();
   const yPosition = useSharedValue(0);
@@ -491,6 +496,7 @@ const UniqueTokenExpandedState = ({
                           <NFTBriefTokenInfoRow
                             currentPrice={currentPrice}
                             lastPrice={lastPrice}
+                            lastSalePaymentToken={lastSalePaymentToken}
                             network={asset.network}
                             urlSuffixForAsset={urlSuffixForAsset}
                           />

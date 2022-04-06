@@ -120,7 +120,7 @@ function Field({ defaultValue, ...props }: InlineFieldProps) {
           props.onChangeText(text);
           setValue(text);
         }}
-        value={value}
+        value={value || defaultValue}
       />
     </>
   );

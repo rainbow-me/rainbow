@@ -3,11 +3,7 @@
 /* eslint-disable jest/expect-expect */
 import { exec } from 'child_process';
 import { Contract } from '@ethersproject/contracts';
-import { JsonRpcProvider } from '@ethersproject/providers';
-import { Wallet } from '@ethersproject/wallet';
 import WalletConnect from '@walletconnect/client';
-import { convertUtf8ToHex } from '@walletconnect/utils';
-import { ethers } from 'ethers';
 import * as Helpers from './helpers';
 import kittiesABI from '@rainbow-me/references/cryptokitties-abi.json';
 import erc20ABI from '@rainbow-me/references/erc20-abi.json';
@@ -17,26 +13,13 @@ let uri = null;
 let account = null;
 
 const RAINBOW_WALLET_DOT_ETH = '0x7a3d05c70581bD345fe117c06e45f9669205384f';
-const TESTING_WALLET = '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
 
+const CRYPTOKITTIES_ADDRESS = '0x06012c8cf97BEaD5deAe237070F9587f8E7A266d';
 const ETH_ADDRESS = 'eth';
 const BAT_TOKEN_ADDRESS = '0x0d8775f648430679a709e98d2b0cb6250d2887ef';
-const CRYPTOKITTIES_ADDRESS = '0x06012c8cf97BEaD5deAe237070F9587f8E7A266d';
-
-const getProvider = () => {
-  if (!getProvider._instance) {
-    getProvider._instance = new JsonRpcProvider(
-      device.getPlatform() === 'ios'
-        ? process.env.HARDHAT_URL_IOS
-        : process.env.HARDHAT_URL_ANDROID,
-      'any'
-    );
-  }
-  return getProvider._instance;
-};
 
 const isNFTOwner = async address => {
-  const provider = getProvider();
+  const provider = Helpers.getProvider();
   const kittiesContract = new Contract(
     CRYPTOKITTIES_ADDRESS,
     kittiesABI,
@@ -47,7 +30,7 @@ const isNFTOwner = async address => {
 };
 
 const getOnchainBalance = async (address, tokenContractAddress) => {
-  const provider = getProvider();
+  const provider = Helpers.getProvider();
   if (tokenContractAddress === ETH_ADDRESS) {
     const balance = await provider.getBalance(RAINBOW_WALLET_DOT_ETH);
     return balance;
@@ -60,21 +43,6 @@ const getOnchainBalance = async (address, tokenContractAddress) => {
     const balance = await tokenContract.balanceOf(address);
     return balance;
   }
-};
-
-const sendETHtoTestWallet = async () => {
-  const provider = getProvider();
-  // Hardhat account 0 that has 10000 ETH
-  const wallet = new Wallet(
-    '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80',
-    provider
-  );
-  // Sending 20 ETH so we have enough to pay the tx fees even when the gas is too high
-  await wallet.sendTransaction({
-    to: TESTING_WALLET,
-    value: ethers.utils.parseEther('20'),
-  });
-  return true;
 };
 
 beforeAll(async () => {
@@ -155,7 +123,7 @@ describe('Hardhat Transaction Flow', () => {
   }
 
   it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
-    await sendETHtoTestWallet();
+    await Helpers.sendETHtoTestWallet();
 
     await Helpers.waitAndTap('hardhat-section');
     await Helpers.checkIfVisible('testnet-toast-Hardhat');

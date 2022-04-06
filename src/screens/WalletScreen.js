@@ -15,6 +15,9 @@ import {
   ScanHeaderButton,
 } from '../components/header';
 import { Page, RowWithMargins } from '../components/layout';
+import useExperimentalFlag, {
+  PROFILES,
+} from '@rainbow-me/config/experimentalHooks';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import {
   useAccountEmptyState,
@@ -24,6 +27,7 @@ import {
   useInitializeWallet,
   useLoadGlobalLateData,
   usePortfolios,
+  useTrackENSProfile,
   useUserAccounts,
   useWalletENSAvatar,
   useWallets,
@@ -63,6 +67,7 @@ export default function WalletScreen() {
   const scrollViewTracker = useValue(0);
   const { isReadOnlyWallet } = useWallets();
   const { isEmpty: isAccountEmpty } = useAccountEmptyState();
+  const { trackENSProfile } = useTrackENSProfile();
   const { network } = useAccountSettings();
   const { userAccounts } = useUserAccounts();
   const { portfolios, trackPortfolios } = usePortfolios();
@@ -87,6 +92,8 @@ export default function WalletScreen() {
       assetsSocket,
     })
   );
+
+  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   useEffect(() => {
     const fetchAndResetFetchSavings = async () => {
@@ -131,6 +138,12 @@ export default function WalletScreen() {
     portfoliosFetched,
     userAccounts,
   ]);
+
+  useEffect(() => {
+    if (profilesEnabled) {
+      trackENSProfile();
+    }
+  }, [profilesEnabled, trackENSProfile]);
 
   useEffect(() => {
     if (

@@ -6,6 +6,7 @@ import { ENSRegistrationState, Records } from '@rainbow-me/entities';
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import * as ensRedux from '@rainbow-me/redux/ensRegistration';
 import { AppState } from '@rainbow-me/redux/store';
+import { isENSNFTAvatar, parseENSNFTAvatar } from '@rainbow-me/utils';
 import getENSNFTAvatarUrl from '@rainbow-me/utils/getENSNFTAvatarUrl';
 
 export default function useENSRegistration({
@@ -110,6 +111,28 @@ export default function useENSRegistration({
       getENSNFTAvatarUrl(uniqueTokens, records?.avatar) ||
       profileQuery.data?.images?.avatarUrl;
     let coverUrl = profileQuery.data?.images?.coverUrl;
+
+    if (records.avatar) {
+      const isNFTAvatar = isENSNFTAvatar(records.avatar);
+      if (isNFTAvatar) {
+        const { contractAddress, tokenId } = parseENSNFTAvatar(records?.avatar);
+        const uniqueToken = uniqueTokens.find(
+          token =>
+            token.asset_contract.address === contractAddress &&
+            token.id === tokenId
+        );
+        if (uniqueToken?.image_thumbnail_url) {
+          avatarUrl = uniqueToken?.image_thumbnail_url;
+        }
+      } else if (
+        records.avatar.startsWith('http') ||
+        records.avatar.startsWith('file') ||
+        (records.avatar.startsWith('/') &&
+          !records.avatar.match(/^\/(ipfs|ipns)/))
+      ) {
+        avatarUrl = records.avatar;
+      }
+    }
 
     return {
       avatarUrl,

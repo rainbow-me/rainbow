@@ -1,3 +1,4 @@
+import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, {
   useCallback,
@@ -80,6 +81,13 @@ export default function DiscoverSearch() {
               setIsSearchModeEnabled,
             }
           );
+          if (profilesEnabled) {
+            analytics.track('Viewed ENS profile', {
+              category: 'profiles',
+              ens: item.nickname,
+              from: 'Discover search',
+            });
+          }
         });
       } else {
         const asset = ethereumUtils.getAccountAsset(item.uniqueId);

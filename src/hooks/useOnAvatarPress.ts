@@ -1,3 +1,4 @@
+import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import { toLower } from 'lodash';
 import { useCallback, useMemo } from 'react';
@@ -7,6 +8,7 @@ import { RainbowAccount } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import useAccountProfile from './useAccountProfile';
 import useENSProfile from './useENSProfile';
+import useENSRegistration from './useENSRegistration';
 import useImagePicker from './useImagePicker';
 import useWallets from './useWallets';
 import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
@@ -100,6 +102,8 @@ export default () => {
     }
   }, [accountAddress, accountENS]);
 
+  const { startRegistration } = useENSRegistration();
+
   const onAvatarPress = useCallback(() => {
     const isENSProfile = profilesEnabled && ensProfile?.isOwner;
     const avatarActionSheetOptions = (isENSProfile
@@ -126,7 +130,13 @@ export default () => {
           navigate(Routes.PROFILE_SHEET, {
             address: accountENS,
           });
+          analytics.track('Viewed ENS profile', {
+            category: 'profiles',
+            ens: accountENS,
+            from: 'Transaction list',
+          });
         } else if (buttonIndex === 1 && !isReadOnlyWallet) {
+          startRegistration(accountENS, REGISTRATION_MODES.EDIT);
           navigate(Routes.REGISTER_ENS_NAVIGATOR, {
             ensName: accountENS,
             mode: REGISTRATION_MODES.EDIT,
@@ -165,10 +175,11 @@ export default () => {
     accountImage,
     navigate,
     accountENS,
+    startRegistration,
     onAvatarChooseImage,
-    onAvatarCreateProfile,
     onAvatarPickEmoji,
     onAvatarRemovePhoto,
+    onAvatarCreateProfile,
   ]);
 
   const avatarOptions = useMemo(

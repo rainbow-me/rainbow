@@ -324,6 +324,10 @@
         "total_value": "Total value",
         "underlying_tokens": "Underlying tokens"
       },
+      "nft_brief_token_info": {
+        "for_sale": "For sale",
+        "last_sale": "Last sale price"
+      },
       "supported_countries": {
         "supported_countries": "Supported Countries",
         "us_except": "United States (except Texas and New York)"
@@ -563,6 +567,11 @@
       "withdraw": "Withdraw"
     },
     "profiles": {
+      "actions": {
+        "watching": "Watching",
+        "watch": "Watch",
+        "edit_profile": "Edit profile"
+      },
       "banner": {
         "register_name": "Register a .eth Name",
         "and_create_ens_profile": "& create your ENS profile"
