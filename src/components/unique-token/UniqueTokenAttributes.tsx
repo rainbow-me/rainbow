@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { sortList } from '../../helpers/sortList';
 import { magicMemo } from '../../utils';
 import UniqueTokenAttributeItem from './UniqueTokenAttributeItem';
@@ -20,15 +20,19 @@ const UniqueTokenAttributes = ({
   slug,
   traits,
 }: UniqueTokenAttributesProps) => {
-  const sortedTraits = (sortList(traits, 'trait_type', 'asc') as typeof traits)
-    .sort(uniqueAssetTraitDisplayTypeCompareFunction)
-    .map(transformUniqueAssetTraitsForPresentation)
-    .map(trait => ({
-      ...trait,
-      color,
-      disableMenu,
-      slug,
-    }));
+  const sortedTraits = useMemo(
+    () =>
+      (sortList(traits, 'trait_type', 'asc') as typeof traits)
+        .sort(uniqueAssetTraitDisplayTypeCompareFunction)
+        .map(transformUniqueAssetTraitsForPresentation)
+        .map(trait => ({
+          ...trait,
+          color,
+          disableInteraction: disableMenu || trait.disableMenu,
+          slug,
+        })),
+    [traits, color, disableMenu, slug]
+  );
 
   return (
     <Inline space="10px">

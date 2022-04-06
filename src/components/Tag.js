@@ -64,7 +64,17 @@ const Title = styled(TextElement).attrs(({ color, theme: { colors } }) => ({
   marginBottom: 1,
 });
 
-const Tag = ({ color, disableMenu, slug, text, title, maxValue, ...props }) => {
+const Tag = ({
+  color,
+  disableMenu,
+  slug,
+  text,
+  title,
+  maxValue,
+  value,
+  keepTextLowerCase,
+  ...props
+}) => {
   const { colors } = useTheme();
 
   const handlePressMenuItem = useCallback(
@@ -76,11 +86,11 @@ const Tag = ({ color, disableMenu, slug, text, title, maxValue, ...props }) => {
             '?search[stringTraits][0][name]=' +
             title +
             '&search[stringTraits][0][values][0]=' +
-            text
+            value ?? text
         );
       }
     },
-    [slug, text, title]
+    [slug, text, value, title]
   );
 
   const menuConfig = useMemo(() => {
@@ -113,12 +123,14 @@ const Tag = ({ color, disableMenu, slug, text, title, maxValue, ...props }) => {
               '?search[stringTraits][0][name]=' +
               title +
               '&search[stringTraits][0][values][0]=' +
-              text
+              value ?? text
           );
         }
       }
     );
-  }, [slug, text, title]);
+  }, [slug, text, value, title]);
+
+  const textWithUpdatedCase = keepTextLowerCase ? text : upperFirst(text);
 
   return (
     <ContextMenuButton
@@ -136,7 +148,7 @@ const Tag = ({ color, disableMenu, slug, text, title, maxValue, ...props }) => {
           <Container>
             <Title color={color}>{upperCase(title)}</Title>
             <Inline wrap={false}>
-              <Text>{upperFirst(text)}</Text>
+              <Text>{textWithUpdatedCase}</Text>
               {maxValue && (
                 <Text>
                   <Text color={colors.alpha(colors.whiteLabel, 0.8)}>

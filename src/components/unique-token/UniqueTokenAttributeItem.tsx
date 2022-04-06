@@ -1,16 +1,15 @@
 import React from 'react';
+import { UniqueAssetTrait } from '../../entities/uniqueAssets';
 import Tag from '../Tag';
+import transformUniqueAssetTraitsForPresentation from '@rainbow-me/helpers/transformUniqueAssetTraitsForPresentation';
 import { magicMemo } from '@rainbow-me/utils';
 
-interface AttributeItemProps {
-  color: string;
-  display_type: string;
-  slug: string;
-  trait_type: string;
-  value: string | number;
-  disableMenu?: boolean;
-  max_value?: string | number;
-}
+type AttributeItemProps = UniqueAssetTrait &
+  ReturnType<typeof transformUniqueAssetTraitsForPresentation> & {
+    color: string;
+    slug: string;
+    max_value?: string | number;
+  };
 
 const UniqueTokenAttributeItem: React.FC<AttributeItemProps> = ({
   color,
@@ -19,22 +18,23 @@ const UniqueTokenAttributeItem: React.FC<AttributeItemProps> = ({
   slug,
   value,
   max_value: maxValue,
-  display_type: displayType,
+  keepLowerCase,
+  originalValue,
 }) => {
   if (!type || !value) {
     return null;
   }
 
-  const shouldDisableMenu = disableMenu || displayType === 'date';
-
   return (
     <Tag
       color={color}
-      disableMenu={shouldDisableMenu}
+      disableMenu={disableMenu}
+      keepTextLowerCase={keepLowerCase}
       maxValue={maxValue}
       slug={slug}
       text={value}
       title={type}
+      value={originalValue}
     />
   );
 };
