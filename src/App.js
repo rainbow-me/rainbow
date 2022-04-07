@@ -86,7 +86,7 @@ if (__DEV__) {
     monitorNetwork(showNetworkRequests, showNetworkResponses);
 } else {
   // eslint-disable-next-line no-inner-declarations
-  async function initSentry() {
+  async function initSentryAndCheckForTophat() {
     const config = await codePush.getCurrentPackage();
     if (!config || config.deploymentKey === CODE_PUSH_DEPLOYMENT_KEY) {
       codePush.sync({
@@ -116,7 +116,7 @@ if (__DEV__) {
     };
     Sentry.init(sentryOptions);
   }
-  initSentry();
+  initSentryAndCheckForTophat();
 }
 
 enableScreens();
