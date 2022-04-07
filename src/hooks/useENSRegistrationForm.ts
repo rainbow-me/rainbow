@@ -120,6 +120,8 @@ export default function useENSRegistrationForm({
         };
       }, {});
       updateRecords(records);
+    } else if (mode === 'edit' && !isEmpty(defaultRecords)) {
+      updateRecords(defaultRecords);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEmpty(defaultRecords), updateRecords]);
@@ -133,14 +135,16 @@ export default function useENSRegistrationForm({
   );
 
   const onRemoveField = useCallback(
-    (fieldToRemove, selectedFields) => {
+    (fieldToRemove, selectedFields = undefined) => {
       if (!isEmpty(errors)) {
         setErrors(errors => {
           const newErrors = omit(errors, fieldToRemove.key);
           return newErrors;
         });
       }
-      setSelectedFields(selectedFields);
+      if (selectedFields) {
+        setSelectedFields(selectedFields);
+      }
       removeRecordByKey(fieldToRemove.key);
       setValuesMap(values => ({
         ...values,
