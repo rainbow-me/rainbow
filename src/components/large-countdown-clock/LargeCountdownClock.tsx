@@ -9,19 +9,29 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { Circle, Defs, G, RadialGradient, Stop, Svg } from 'react-native-svg';
-import CheckmarkAnimation from '../animations/CheckmarkAnimation';
-import { Flex } from '../layout';
+import { CheckmarkAnimation } from '../animations/CheckmarkAnimation';
 import { Text } from '../text';
 import { SeparatorDots } from './SeparatorDots';
 import { useVariableFont } from './useVariableFont';
+import { Box } from '@rainbow-me/design-system';
 import styled from '@rainbow-me/styled-components';
+
+type LargeCountdownClockProps = {
+  minutes?: number;
+  seconds: number;
+  onFinished: () => void;
+};
 
 const PROGRESS_RADIUS = 60;
 const PROGRESS_STROKE_WIDTH = 8;
 const PROGRESS_CENTER_COORDINATE = PROGRESS_RADIUS + PROGRESS_STROKE_WIDTH / 2;
 const PROGRESS_STROKE_FULL_LENGTH = Math.round(2 * Math.PI * PROGRESS_RADIUS);
 
-export default function LargeCountdownClock({ minutes, seconds, onFinished }) {
+export default function LargeCountdownClock({
+  minutes,
+  seconds,
+  onFinished,
+}: LargeCountdownClockProps) {
   const [completed, setCompleted] = useState(false);
   const countdown = useCountdown({
     format: 'm:ss',
@@ -38,14 +48,14 @@ export default function LargeCountdownClock({ minutes, seconds, onFinished }) {
   const {
     displayMinutes,
     displaySeconds,
-    size,
+    fontSize,
     minuteEndsWithOne,
     lineHeight,
     separatorSize,
   } = useVariableFont(countdown.minutes, countdown.seconds);
 
   // convert clock time to seconds
-  const totalSeconds = minutes * 60 + seconds;
+  const totalSeconds = minutes ? minutes * 60 + seconds : seconds;
   // convert remaining clock time to seconds
   const timeRemaining = countdown.minutes * 60 + countdown.seconds;
   // save full stroke value to use in animation
@@ -128,21 +138,45 @@ export default function LargeCountdownClock({ minutes, seconds, onFinished }) {
   };
 
   return (
-    <Scene entering={entering}>
+    <Box
+      alignItems="center"
+      as={Animated.View}
+      entering={entering}
+      height={{ custom: 132 }}
+      justifyContent="center"
+      width="full"
+    >
       {completed ? (
         <CheckmarkAnimation />
       ) : (
-        <CountdownContainer exiting={clockExiting}>
+        <Box
+          alignItems="center"
+          as={Animated.View}
+          exiting={clockExiting}
+          height={{ custom: 132 }}
+          justifyContent="center"
+          style={{
+            position: 'absolute',
+          }}
+          width={{ custom: 132 }}
+        >
           {displayMinutes ? (
-            <Clock
+            <Box
+              alignItems="center"
+              as={Animated.View}
               exiting={minutesExiting}
+              flexDirection="row"
+              justifyContent="center"
               key="withMinutes"
-              uglyDigitOffset={displayMinutes === 1}
+              style={{
+                paddingRight: displayMinutes === 1 ? 3 : 0,
+                position: 'absolute',
+              }}
             >
               <ClockMinutes
                 allowFontScaling={false}
                 lineHeight={lineHeight}
-                size={size}
+                size={fontSize}
               >
                 {displayMinutes}
               </ClockMinutes>
@@ -153,21 +187,29 @@ export default function LargeCountdownClock({ minutes, seconds, onFinished }) {
               <ClockSeconds
                 allowFontScaling={false}
                 lineHeight={lineHeight}
-                size={size}
+                size={fontSize}
               >
                 {displaySeconds}
               </ClockSeconds>
-            </Clock>
+            </Box>
           ) : (
-            <Clock
+            <Box
+              alignItems="center"
+              as={Animated.View}
               entering={entering}
+              flexDirection="row"
+              justifyContent="center"
               key="onlySeconds"
-              uglyDigitOffset={displaySeconds >= 10 && displaySeconds < 20}
+              style={{
+                paddingRight:
+                  displaySeconds >= 10 && displaySeconds < 20 ? 3 : 0,
+                position: 'absolute',
+              }}
             >
               <ClockSeconds allowFontScaling={false} lineHeight={57} size={50}>
                 {displaySeconds}
               </ClockSeconds>
-            </Clock>
+            </Box>
           )}
           <Svg height="132" viewBox="0 0 130 130" width="132">
             <Defs>
@@ -206,36 +248,11 @@ export default function LargeCountdownClock({ minutes, seconds, onFinished }) {
               />
             </G>
           </Svg>
-        </CountdownContainer>
+        </Box>
       )}
-    </Scene>
+    </Box>
   );
 }
-
-const Scene = styled(Animated.createAnimatedComponent(Flex))({
-  alignItems: 'center',
-  height: 132,
-  justifyContent: 'center',
-  marginBottom: 40,
-  width: 132,
-});
-
-const CountdownContainer = styled(Animated.createAnimatedComponent(Flex))({
-  alignItems: 'center',
-  height: 132,
-  justifyContent: 'center',
-  position: 'absolute',
-  width: 132,
-});
-
-const Clock = styled(Animated.createAnimatedComponent(Flex))(
-  ({ uglyDigitOffset }) => ({
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingRight: uglyDigitOffset ? 3 : 0,
-    position: 'absolute',
-  })
-);
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 const AnimatedClockDisplay = Animated.createAnimatedComponent(Text);

@@ -6,24 +6,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { LargeCheckmarkIcon } from '../icons/svg/LargeCheckmarkIcon';
-import { Flex } from '../layout';
-import styled from '@rainbow-me/styled-components';
-
-const Container = styled(Flex)({
-  alignItems: 'center',
-  height: 132,
-  justifyContent: 'center',
-  width: '100%',
-});
-
-const Circle = styled(Animated.createAnimatedComponent(Flex))({
-  alignItems: 'center',
-  borderRadius: 200,
-  height: 120,
-  justifyContent: 'center',
-  overflow: 'hidden',
-  width: 120,
-});
+import { Box } from '@rainbow-me/design-system';
 
 export function CheckmarkAnimation() {
   const circleEntering = () => {
@@ -91,8 +74,24 @@ export function CheckmarkAnimation() {
   };
 
   return (
-    <Container>
-      <Circle entering={circleEntering}>
+    <Box
+      alignItems="center"
+      height={{ custom: 132 }}
+      justifyContent="center"
+      width="full"
+    >
+      <Box
+        alignItems="center"
+        as={Animated.View}
+        borderRadius={200}
+        entering={circleEntering}
+        height={{ custom: 120 }}
+        justifyContent="center"
+        style={{
+          overflow: 'hidden',
+        }}
+        width={{ custom: 120 }}
+      >
         <RadialGradient
           center={[60, 60]}
           colors={
@@ -112,7 +111,7 @@ export function CheckmarkAnimation() {
         <Animated.View entering={checkEntering}>
           <LargeCheckmarkIcon />
         </Animated.View>
-      </Circle>
-    </Container>
+      </Box>
+    </Box>
   );
 }

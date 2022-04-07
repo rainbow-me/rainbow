@@ -289,8 +289,8 @@ export default function ENSConfirmRegisterSheet() {
         />
       ),
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: (
-        <Box alignItems="center">
-          <LargeCountdownClock minutes={1} onFinished={() => {}} seconds={15} />
+        <Box alignItems="center" height="full">
+          <LargeCountdownClock minutes={1} onFinished={() => {}} seconds={10} />
         </Box>
       ),
     }),
