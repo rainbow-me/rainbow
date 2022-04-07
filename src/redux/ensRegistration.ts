@@ -224,7 +224,8 @@ export const removeExpiredRegistrations = (
     ensRegistration: { registrations },
   } = getState();
 
-  const accountRegistrations = registrations?.[accountAddress] || {};
+  const accountRegistrations =
+    registrations?.[accountAddress.toLowerCase()] || [];
 
   const registrationsArray = Object.values(accountRegistrations);
 

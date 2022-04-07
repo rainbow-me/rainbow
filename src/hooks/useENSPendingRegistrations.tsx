@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useAccountSettings, useENSRegistration } from '.';
 import { ENSRegistrationState } from '@rainbow-me/entities';
 import { removeExpiredRegistrations } from '@rainbow-me/redux/ensRegistration';
@@ -9,8 +9,9 @@ import getENSNFTAvatarUrl from '@rainbow-me/utils/getENSNFTAvatarUrl';
 export default function useENSPendingRegistrations() {
   const { accountAddress } = useAccountSettings();
   const { removeRegistrationByName } = useENSRegistration();
+  const dispatch = useDispatch();
 
-  removeExpiredRegistrations(accountAddress);
+  dispatch(removeExpiredRegistrations(accountAddress));
 
   const { pendingRegistrations, accountRegistrations } = useSelector(
     ({ ensRegistration }: AppState) => {
