@@ -2,12 +2,43 @@ import { Alert } from 'react-native';
 import codePush from 'react-native-code-push';
 import {
   // @ts-ignore
+  APP_CENTER_READ_ONLY_TOKEN_ANDROID,
+  // @ts-ignore
+  APP_CENTER_READ_ONLY_TOKEN_IOS,
+  // @ts-ignore
   CODE_PUSH_DEPLOYMENT_KEY_ANDROID,
   // @ts-ignore
   CODE_PUSH_DEPLOYMENT_KEY_IOS,
 } from 'react-native-dotenv';
+import { rainbowFetch } from '../rainbow-fetch';
 import { Navigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+
+const APP_CENTER_READ_ONLY_TOKEN = ios
+  ? APP_CENTER_READ_ONLY_TOKEN_IOS
+  : APP_CENTER_READ_ONLY_TOKEN_ANDROID;
+
+async function checkIfRainbowRelease(deploymentKey: string): Promise<boolean> {
+  try {
+    const response = await rainbowFetch(
+      `https://api.appcenter.ms/v0.1/apps/osdnk/rainbow-ios-codepush/deployments`,
+      {
+        headers: {
+          'X-API-Token': APP_CENTER_READ_ONLY_TOKEN,
+        },
+        method: 'get',
+      }
+    );
+    if (
+      response?.data?.find(({ key }: { key: string }) => key === deploymentKey)
+    ) {
+      return true;
+    }
+    return false;
+  } catch (e) {
+    return false;
+  }
+}
 
 export const CODE_PUSH_DEPLOYMENT_KEY = ios
   ? CODE_PUSH_DEPLOYMENT_KEY_IOS
@@ -23,6 +54,15 @@ export async function setDeploymentKey(key: string) {
 
   if (metadata?.deploymentKey === key) {
     return;
+  }
+
+  const isRainbowRelease = await checkIfRainbowRelease(key);
+
+  if (!isRainbowRelease) {
+    Alert.alert(
+      'Tophat',
+      'Cannot verify the bundle! This might be a scam. Installation blocked.'
+    );
   }
 
   Alert.alert(
