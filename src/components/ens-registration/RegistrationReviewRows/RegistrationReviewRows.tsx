@@ -11,17 +11,33 @@ import {
   Text,
 } from '@rainbow-me/design-system';
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
+import { useInterval } from '@rainbow-me/hooks';
+
+const MIN_LONG_PRESS_DURATION = 200;
+const LONG_PRESS_INTERVAL = 69;
 
 function StepButton({
+  onLongPress,
+  onLongPressEnded,
   onPress,
   type,
 }: {
   onPress: () => void;
+  onLongPress: () => void;
+  onLongPressEnded: () => void;
   type: 'increment' | 'decrement';
 }) {
   return (
-    // @ts-ignore
-    <Box as={ButtonPressAnimation} onPress={onPress} scaleTo={0.75}>
+    <Box
+      as={ButtonPressAnimation}
+      // @ts-expect-error JavaScript component
+      minLongPressDuration={MIN_LONG_PRESS_DURATION}
+      onLongPress={onLongPress}
+      onLongPressEnded={onLongPressEnded}
+      onPress={onPress}
+      scaleTo={0.75}
+      shouldLongPressHoldPress
+    >
       <Text color="accent" weight="heavy">
         {type === 'increment' ? '􀁍' : '􀁏'}
       </Text>
@@ -52,7 +68,7 @@ export default function RegistrationReviewRows({
 }: {
   maxDuration: number;
   duration: number;
-  onChangeDuration: (duration: number) => void;
+  onChangeDuration: (callback: (duration: number) => number) => void;
   networkFee: string;
   totalCost: string;
   estimatedCostETH: string;
@@ -60,6 +76,30 @@ export default function RegistrationReviewRows({
   newExpiryDate?: string;
   mode: REGISTRATION_MODES.CREATE | REGISTRATION_MODES.RENEW;
 }) {
+  const [startLongPress, endLongPress] = useInterval();
+
+  const handlePressDecrement = useCallback(
+    () =>
+      onChangeDuration(duration => (duration > 1 ? duration - 1 : duration)),
+    [onChangeDuration]
+  );
+
+  const handleLongPressDecrement = useCallback(() => {
+    startLongPress(handlePressDecrement, LONG_PRESS_INTERVAL);
+  }, [handlePressDecrement, startLongPress]);
+
+  const handlePressIncrement = useCallback(
+    () =>
+      onChangeDuration(duration =>
+        duration < maxDuration ? duration + 1 : duration
+      ),
+    [maxDuration, onChangeDuration]
+  );
+
+  const handleLongPressIncrement = useCallback(() => {
+    startLongPress(() => handlePressIncrement(), LONG_PRESS_INTERVAL);
+  }, [handlePressIncrement, startLongPress]);
+
   return (
     <Box>
       <Stack space="34px">
@@ -80,13 +120,9 @@ export default function RegistrationReviewRows({
               <Columns>
                 <Column width="content">
                   <StepButton
-                    onPress={useCallback(
-                      () =>
-                        duration > 1
-                          ? onChangeDuration(duration - 1)
-                          : undefined,
-                      [duration, onChangeDuration]
-                    )}
+                    onLongPress={handleLongPressDecrement}
+                    onLongPressEnded={endLongPress}
+                    onPress={handlePressDecrement}
                     type="decrement"
                   />
                 </Column>
@@ -101,13 +137,9 @@ export default function RegistrationReviewRows({
                 </Box>
                 <Column width="content">
                   <StepButton
-                    onPress={useCallback(
-                      () =>
-                        duration < maxDuration
-                          ? onChangeDuration(duration + 1)
-                          : undefined,
-                      [duration, maxDuration, onChangeDuration]
-                    )}
+                    onLongPress={handleLongPressIncrement}
+                    onLongPressEnded={endLongPress}
+                    onPress={handlePressIncrement}
                     type="increment"
                   />
                 </Column>
