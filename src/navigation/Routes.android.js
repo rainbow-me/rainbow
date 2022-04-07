@@ -291,6 +291,9 @@ function BSNavigator() {
           <BSStack.Screen
             component={ENSAdditionalRecordsSheet}
             name={Routes.ENS_ADDITIONAL_RECORDS_SHEET}
+            options={{
+              height: '50%',
+            }}
           />
           <BSStack.Screen
             component={ProfileSheet}

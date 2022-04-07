@@ -7,7 +7,7 @@ import { AccentColorProvider, Box, Inline } from '@rainbow-me/design-system';
 import { accentColorAtom, textRecordFields } from '@rainbow-me/helpers/ens';
 import { useENSRegistrationForm } from '@rainbow-me/hooks';
 
-export const ENSAdditionalRecordsSheetHeight = 280;
+export const ENSAdditionalRecordsSheetHeight = 260;
 
 export default function ENSAdditionalRecordsSheet() {
   const { params } = useRoute();
