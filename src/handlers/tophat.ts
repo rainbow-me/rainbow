@@ -63,6 +63,7 @@ export async function setDeploymentKey(key: string) {
       'Tophat',
       'Cannot verify the bundle! This might be a scam. Installation blocked.'
     );
+    return;
   }
 
   Alert.alert(
