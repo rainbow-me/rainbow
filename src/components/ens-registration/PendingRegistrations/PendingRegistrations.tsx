@@ -135,29 +135,6 @@ const PendingRegistrations = () => {
     [removeRegistrationByName]
   );
 
-<<<<<<< HEAD
-  return pendingRegistrations?.length ? (
-    <>
-      <Inset vertical="24px">
-        <Divider />
-      </Inset>
-      <Box paddingHorizontal="19px">
-        <Stack space="19px">
-          <Text color="secondary50" containsEmoji size="14px" weight="bold">
-            {lang.t('profiles.pending_registrations.in_progress')}
-          </Text>
-          {pendingRegistrations.map(registration => (
-            <PendingRegistration
-              avatarUrl={registrationImages?.[registration.name]}
-              key={registration.name}
-              registration={registration}
-              removeRegistration={removeRegistration}
-            />
-          ))}
-        </Stack>
-      </Box>
-    </>
-=======
   return pendingRegistrations?.length > 0 ? (
     <Box paddingHorizontal="19px">
       <Stack space="19px">
@@ -174,7 +151,6 @@ const PendingRegistrations = () => {
         ))}
       </Stack>
     </Box>
->>>>>>> 0baf9c29ebfa502faa9200d41c58f7d8e5e34717
   ) : null;
 };
 
