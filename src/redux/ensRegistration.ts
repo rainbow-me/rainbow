@@ -1,3 +1,4 @@
+import { subDays } from 'date-fns';
 import { omit } from 'lodash';
 import { Dispatch } from 'react';
 import { AppDispatch, AppGetState } from './store';
@@ -229,9 +230,7 @@ export const removeExpiredRegistrations = (
 
   const registrationsArray = Object.values(accountRegistrations);
 
-  const sevenDaysAgoMs = new Date(
-    Date.now() - 7 * 24 * 60 * 60 * 1000
-  ).getTime();
+  const sevenDaysAgoMs = subDays(new Date(), 7).getTime();
 
   const activeRegistrations = registrationsArray.filter(registration =>
     registration?.commitTransactionConfirmedAt
