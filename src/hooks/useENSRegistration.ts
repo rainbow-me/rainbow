@@ -6,6 +6,10 @@ import { ENSRegistrationState, Records } from '@rainbow-me/entities';
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import * as ensRedux from '@rainbow-me/redux/ensRegistration';
 import { AppState } from '@rainbow-me/redux/store';
+<<<<<<< HEAD
+=======
+import { isENSNFTAvatar, parseENSNFTAvatar } from '@rainbow-me/utils';
+>>>>>>> 0baf9c29ebfa502faa9200d41c58f7d8e5e34717
 import getENSNFTAvatarUrl from '@rainbow-me/utils/getENSNFTAvatarUrl';
 
 export default function useENSRegistration({
@@ -99,29 +103,6 @@ export default function useENSRegistration({
     setInitialRecordsWhenInEditMode,
   ]);
 
-  // Since `records.avatar` is not a reliable source for an avatar URL
-  // (the avatar can be an NFT), then if the avatar is an NFT, we will
-  // parse it to obtain the URL.
-  const uniqueTokens = useSelector(
-    ({ uniqueTokens }: AppState) => uniqueTokens.uniqueTokens
-  );
-  const images = useMemo(() => {
-    let avatarUrl =
-      getENSNFTAvatarUrl(uniqueTokens, records?.avatar) ||
-      profileQuery.data?.images?.avatarUrl;
-    let coverUrl = profileQuery.data?.images?.coverUrl;
-
-    return {
-      avatarUrl,
-      coverUrl,
-    };
-  }, [
-    records.avatar,
-    profileQuery.data?.images?.avatarUrl,
-    profileQuery.data?.images?.coverUrl,
-    uniqueTokens,
-  ]);
-
   // Derive the records that should be added or removed from the profile
   // (these should be used for SET_TEXT txns instead of `records` to save
   // gas).
@@ -160,6 +141,55 @@ export default function useENSRegistration({
   useEffect(() => {
     dispatch(ensRedux.setChangedRecords(accountAddress, changedRecords));
   }, [accountAddress, changedRecords, dispatch]);
+
+  // Since `records.avatar` is not a reliable source for an avatar URL
+  // (the avatar can be an NFT), then if the avatar is an NFT, we will
+  // parse it to obtain the URL.
+  const uniqueTokens = useSelector(
+    ({ uniqueTokens }: AppState) => uniqueTokens.uniqueTokens
+  );
+  const images = useMemo(() => {
+    let avatarUrl =
+      getENSNFTAvatarUrl(uniqueTokens, records?.avatar) ||
+      profileQuery.data?.images?.avatarUrl;
+    let coverUrl = profileQuery.data?.images?.coverUrl;
+
+    if (changedRecords.avatar === '') {
+      // If the avatar has been removed, update accordingly.
+      avatarUrl = '';
+    } else if (records.avatar) {
+      const isNFTAvatar = isENSNFTAvatar(records.avatar);
+      if (isNFTAvatar) {
+        const { contractAddress, tokenId } = parseENSNFTAvatar(records?.avatar);
+        const uniqueToken = uniqueTokens.find(
+          token =>
+            token.asset_contract.address === contractAddress &&
+            token.id === tokenId
+        );
+        if (uniqueToken?.image_thumbnail_url) {
+          avatarUrl = uniqueToken?.image_thumbnail_url;
+        }
+      } else if (
+        records.avatar.startsWith('http') ||
+        records.avatar.startsWith('file') ||
+        (records.avatar.startsWith('/') &&
+          !records.avatar.match(/^\/(ipfs|ipns)/))
+      ) {
+        avatarUrl = records.avatar;
+      }
+    }
+
+    return {
+      avatarUrl,
+      coverUrl,
+    };
+  }, [
+    profileQuery.data?.images?.avatarUrl,
+    profileQuery.data?.images?.coverUrl,
+    changedRecords,
+    records.avatar,
+    uniqueTokens,
+  ]);
 
   return {
     changedRecords,

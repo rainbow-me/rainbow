@@ -1,3 +1,4 @@
+import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, {
   useCallback,
@@ -16,9 +17,7 @@ import { CurrencySelectionList } from '../exchange';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/ChartExpandedState';
 import { Row } from '../layout';
 import DiscoverSheetContext from './DiscoverSheetContext';
-import useExperimentalFlag, {
-  PROFILES,
-} from '@rainbow-me/config/experimentalHooks';
+import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import { fetchSuggestions } from '@rainbow-me/handlers/ens';
 import {
   useHardwareBackOnFocus,
@@ -57,6 +56,7 @@ export default function DiscoverSearch() {
     uniswapCurrencyList,
     uniswapCurrencyListLoading,
   } = useUniswapCurrencyList(searchQueryForSearch);
+
   const currencyList = useMemo(() => [...uniswapCurrencyList, ...ensResults], [
     uniswapCurrencyList,
     ensResults,
@@ -81,6 +81,13 @@ export default function DiscoverSearch() {
               setIsSearchModeEnabled,
             }
           );
+          if (profilesEnabled) {
+            analytics.track('Viewed ENS profile', {
+              category: 'profiles',
+              ens: item.nickname,
+              from: 'Discover search',
+            });
+          }
         });
       } else {
         const asset = ethereumUtils.getAccountAsset(item.uniqueId);
@@ -143,7 +150,12 @@ export default function DiscoverSearch() {
       () => {
         setIsSearching(true);
         setSearchQueryForSearch(searchQuery);
-        fetchSuggestions(searchQuery, addEnsResults, setIsFetchingEns);
+        fetchSuggestions(
+          searchQuery,
+          addEnsResults,
+          setIsFetchingEns,
+          profilesEnabled
+        );
       },
       searchQuery === '' ? 1 : 500
     );

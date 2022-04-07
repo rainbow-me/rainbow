@@ -1,4 +1,5 @@
 import ConditionalWrap from 'conditional-wrap';
+import lang from 'i18n-js';
 import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { Image } from 'react-native-image-crop-picker';
@@ -29,7 +30,12 @@ export default function RegistrationCover({
   const {
     images: { coverUrl: initialCoverUrl },
   } = useENSRegistration();
-  const { isLoading, onBlurField, values } = useENSRegistrationForm();
+  const {
+    isLoading,
+    onBlurField,
+    onRemoveField,
+    values,
+  } = useENSRegistrationForm();
 
   const [coverUrl, setCoverUrl] = useState(initialCoverUrl || values?.cover);
   useEffect(() => {
@@ -53,6 +59,11 @@ export default function RegistrationCover({
       if (image?.tmpPath) {
         onBlurField({ key: 'cover', value: image.tmpPath });
       }
+    },
+    onRemoveImage: () => {
+      onRemoveField({ key: 'cover' });
+      setCoverUrl('');
+      setCoverMetadata(undefined);
     },
     onUploadSuccess: ({ data }) => {
       onBlurField({ key: 'cover', value: data.url });
@@ -101,7 +112,7 @@ export default function RegistrationCover({
             />
           ) : (
             <Text color="accent" size="18px" weight="heavy">
-              􀣵 Add Cover
+              􀣵 {lang.t('profiles.create.add_cover')}
             </Text>
           )}
         </Box>

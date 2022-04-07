@@ -42,6 +42,7 @@ const UniqueTokenExpandedStateContent = ({
   resizeMode = 'cover',
   textColor,
   disablePreview,
+  opacity,
   yPosition,
 }) => {
   const { width: deviceWidth } = useDimensions();
@@ -87,6 +88,7 @@ const UniqueTokenExpandedStateContent = ({
       }
       horizontalPadding={horizontalPadding}
       isENS={isENS}
+      opacity={opacity}
       yDisplacement={yPosition}
     >
       <View style={StyleSheet.absoluteFill}>

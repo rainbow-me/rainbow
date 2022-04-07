@@ -5,11 +5,9 @@ import { Alert } from '../../../components/alerts';
 import ButtonPressAnimation from '../../../components/animations/ButtonPressAnimation';
 import ImageAvatar from '../../../components/contacts/ImageAvatar';
 import {
-  AccentColorProvider,
   Box,
   Column,
   Columns,
-  Divider,
   Inset,
   Stack,
   Text,
@@ -85,11 +83,17 @@ const PendingRegistration = ({
                 start={{ x: 0, y: 0.6 }}
               >
                 <Inset horizontal="10px">
+<<<<<<< HEAD
                   <AccentColorProvider color={colors.appleBlue}>
                     <Text color="accent" size="16px" weight="heavy">
                       Finish
                     </Text>
                   </AccentColorProvider>
+=======
+                  <Text color="action" size="16px" weight="heavy">
+                    {lang.t('profiles.pending_registrations.finish')}
+                  </Text>
+>>>>>>> 0baf9c29ebfa502faa9200d41c58f7d8e5e34717
                 </Inset>
               </Box>
             </ButtonPressAnimation>
@@ -139,6 +143,7 @@ const PendingRegistrations = () => {
     [removeRegistrationByName]
   );
 
+<<<<<<< HEAD
   return pendingRegistrations?.length ? (
     <>
       <Inset vertical="24px">
@@ -160,6 +165,24 @@ const PendingRegistrations = () => {
         </Stack>
       </Box>
     </>
+=======
+  return pendingRegistrations?.length > 0 ? (
+    <Box paddingHorizontal="19px">
+      <Stack space="19px">
+        <Text color="secondary50" containsEmoji size="14px" weight="bold">
+          {lang.t('profiles.pending_registrations.in_progress')}
+        </Text>
+        {pendingRegistrations.map(registration => (
+          <PendingRegistration
+            avatarUrl={registrationImages?.[registration.name]}
+            key={registration.name}
+            registration={registration}
+            removeRegistration={removeRegistration}
+          />
+        ))}
+      </Stack>
+    </Box>
+>>>>>>> 0baf9c29ebfa502faa9200d41c58f7d8e5e34717
   ) : null;
 };
 

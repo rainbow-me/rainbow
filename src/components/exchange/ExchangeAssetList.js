@@ -202,6 +202,7 @@ const ExchangeAssetList = (
           accountType="contact"
           address={item.address}
           color={item.color}
+          image={item.image}
           nickname={item.nickname}
           onPress={itemProps.onPress}
           showcaseItem={item}

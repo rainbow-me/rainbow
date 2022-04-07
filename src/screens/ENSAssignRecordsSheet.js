@@ -59,7 +59,11 @@ export const BottomActionHeight = ios ? 270 : 250;
 export default function ENSAssignRecordsSheet() {
   const { params } = useRoute();
   const { colors } = useTheme();
-  const { name, mode } = useENSRegistration({
+  const {
+    name,
+    mode,
+    images: { avatarUrl: initialAvatarUrl },
+  } = useENSRegistration({
     setInitialRecordsWhenInEditMode: true,
   });
   useENSRegistrationForm({
@@ -72,7 +76,7 @@ export default function ENSAssignRecordsSheet() {
     ].map(fieldName => textRecordFields[fieldName]),
   });
 
-  const [avatarUrl, setAvatarUrl] = useState();
+  const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
 
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
   const { result: dominantColor } = usePersistentDominantColorFromImage(
@@ -108,6 +112,7 @@ export default function ENSAssignRecordsSheet() {
   const { navigate } = useNavigation();
   const handleFocus = useCallback(() => {
     if (!hasSeenExplainSheet) {
+      android && Keyboard.dismiss();
       navigate(Routes.EXPLAIN_SHEET, {
         type: 'ensOnChainDataWarning',
       });

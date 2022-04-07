@@ -1,3 +1,4 @@
+import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import { toLower } from 'lodash';
 import { useCallback, useMemo } from 'react';
@@ -7,9 +8,14 @@ import { RainbowAccount } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import useAccountProfile from './useAccountProfile';
 import useENSProfile from './useENSProfile';
+import useENSRegistration from './useENSRegistration';
 import useImagePicker from './useImagePicker';
 import useWallets from './useWallets';
-import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
+import {
+  enableActionsOnReadOnlyWallet,
+  PROFILES,
+  useExperimentalFlag,
+} from '@rainbow-me/config';
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import { walletsSetSelected, walletsUpdate } from '@rainbow-me/redux/wallets';
 import Routes from '@rainbow-me/routes';
@@ -100,25 +106,26 @@ export default () => {
     }
   }, [accountAddress, accountENS]);
 
+  const { startRegistration } = useENSRegistration();
+
   const onAvatarPress = useCallback(() => {
     const isENSProfile = profilesEnabled && ensProfile?.isOwner;
     const avatarActionSheetOptions = (isENSProfile
       ? [
           lang.t('profiles.profile_avatar.view_profile'),
-          !isReadOnlyWallet && lang.t('profiles.profile_avatar.edit_profile'),
+          (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) &&
+            lang.t('profiles.profile_avatar.edit_profile'),
         ]
       : [
           lang.t('profiles.profile_avatar.choose_from_library'),
-          lang.t(
-            `profiles.profile_avatar.${
-              accountImage ? 'remove_photo' : 'pick_emoji'
-            }`
-          ),
-          !isReadOnlyWallet && lang.t('profiles.profile_avatar.create_profile'),
+          !accountImage && lang.t(`profiles.profile_avatar.pick_emoji`),
+          (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) &&
+            lang.t('profiles.profile_avatar.create_profile'),
+          !!accountImage && lang.t(`profiles.profile_avatar.remove_photo`),
         ]
     )
-      .concat(ios && ['Cancel'])
-      .filter(element => Boolean(element));
+      .filter(option => Boolean(option))
+      .concat(ios ? ['Cancel'] : []);
 
     const callback = async (buttonIndex: Number) => {
       if (isENSProfile) {
@@ -126,7 +133,13 @@ export default () => {
           navigate(Routes.PROFILE_SHEET, {
             address: accountENS,
           });
+          analytics.track('Viewed ENS profile', {
+            category: 'profiles',
+            ens: accountENS,
+            from: 'Transaction list',
+          });
         } else if (buttonIndex === 1 && !isReadOnlyWallet) {
+          startRegistration(accountENS, REGISTRATION_MODES.EDIT);
           navigate(Routes.REGISTER_ENS_NAVIGATOR, {
             ensName: accountENS,
             mode: REGISTRATION_MODES.EDIT,
@@ -142,7 +155,11 @@ export default () => {
             onAvatarPickEmoji();
           }
         } else if (buttonIndex === 2) {
-          onAvatarCreateProfile();
+          if (accountImage) {
+            onAvatarRemovePhoto();
+          } else {
+            onAvatarCreateProfile();
+          }
         }
       }
     };
@@ -165,10 +182,11 @@ export default () => {
     accountImage,
     navigate,
     accountENS,
+    startRegistration,
     onAvatarChooseImage,
-    onAvatarCreateProfile,
     onAvatarPickEmoji,
     onAvatarRemovePhoto,
+    onAvatarCreateProfile,
   ]);
 
   const avatarOptions = useMemo(

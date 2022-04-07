@@ -39,10 +39,10 @@ export default function ENSSearchSheet() {
 
   const topPadding = android ? 29 : 19;
 
-  const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedSearchQuery] = useDebounce(searchQuery, 200);
+  const { startRegistration, name } = useENSRegistration();
 
-  const { startRegistration } = useENSRegistration();
+  const [searchQuery, setSearchQuery] = useState(name.replace(ENS_DOMAIN, ''));
+  const [debouncedSearchQuery] = useDebounce(searchQuery, 200);
 
   const {
     data: registrationData,
@@ -127,7 +127,18 @@ export default function ENSSearchSheet() {
             </Text>
           </Inline>
         )}
+<<<<<<< HEAD
         {isIdle && <PendingRegistrations />}
+=======
+        {isIdle && (
+          <>
+            <Inset vertical="24px">
+              <Divider />
+            </Inset>
+            <PendingRegistrations />
+          </>
+        )}
+>>>>>>> 0baf9c29ebfa502faa9200d41c58f7d8e5e34717
         {isInvalid && (
           <Inset horizontal="30px">
             <Text align="center" color="secondary50" size="16px" weight="bold">

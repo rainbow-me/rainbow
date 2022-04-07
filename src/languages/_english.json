@@ -324,6 +324,10 @@
         "total_value": "Total value",
         "underlying_tokens": "Underlying tokens"
       },
+      "nft_brief_token_info": {
+        "for_sale": "For sale",
+        "last_sale": "Last sale price"
+      },
       "supported_countries": {
         "supported_countries": "Supported Countries",
         "us_except": "United States (except Texas and New York)"
@@ -563,6 +567,11 @@
       "withdraw": "Withdraw"
     },
     "profiles": {
+      "actions": {
+        "watching": "Watching",
+        "watch": "Watch",
+        "edit_profile": "Edit profile"
+      },
       "banner": {
         "register_name": "Register a .eth Name",
         "and_create_ens_profile": "& create your ENS profile"
@@ -572,6 +581,27 @@
         "copy_address": "Copy Address",
         "view_on_etherscan": "View on Etherscan"
       },
+      "intro": {
+        "create_your": "Create Your",
+        "ens_profile": "ENS Profile",
+        "wallet_address_info": {
+          "title": "A better wallet address",
+          "description": "Send to ENS names instead of hard-to-remember wallet addresses."
+        },
+        "portable_identity_info": {
+          "title": "A portable digital identity",
+          "description": "Carry your ENS name and profile between websites. No more signups."
+        },
+        "stored_on_blockchain_info": {
+          "title": "Stored on the blockchain",
+          "description": "Your name and profile are stored on Ethereum and owned by you."
+        },
+        "find_your_name": "Find your name",
+        "use_name": "Use %{name}",
+        "use_existing_name": "Use an existing ENS name",
+        "search_new_name": "Search for a new ENS name"
+      },
+      "select_ens_name": "Select ENS Name",
       "search": {
         "header": "Find your name",
         "description": "Search available profile names",
@@ -601,7 +631,8 @@
         "website_placeholder": "Add your website",
         "review": "Review",
         "choose_nft": "Choose NFT",
-        "upload_photo": "Upload photo"
+        "upload_photo": "Upload photo",
+        "remove": "Remove"
       },
       "confirm": {
         "confirm_purchase": "Confirm purchase",
@@ -643,7 +674,12 @@
         "alert_message": "`You are about to stop the registration process.\n  You'd need to start it again which means you'll need to send an additional transaction.`",
         "alert_confirm": "Proceed Anyway",
         "alert_cancel": "Cancel",
+<<<<<<< HEAD
         "in_progress": "In progress"
+=======
+        "in_progress": "In progress",
+        "finish": "Finish"
+>>>>>>> 0baf9c29ebfa502faa9200d41c58f7d8e5e34717
       }
     },
     "savings": {

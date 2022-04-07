@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React from 'react';
 import GradientOutlineButton from '../GradientOutlineButton/GradientOutlineButton';
 import { useTheme } from '@rainbow-me/context';
@@ -27,7 +28,7 @@ export default function WatchButton({
         gradient={colors.gradients.blueToGreen}
         onPress={watchWallet}
       >
-        􀨭 {isWatching ? 'Watching' : 'Watch'}
+        􀨭 {lang.t(`profiles.actions.${isWatching ? 'watching' : 'watch'}`)}
       </GradientOutlineButton>
     </ColorModeProvider>
   );
