@@ -39,13 +39,8 @@ const defaultScreenOptions = {
     scrollEnabled: true,
     useAccentAsSheetBackground: true,
   },
-<<<<<<< HEAD
-  [Routes.ENS_SEARCH_SHEET]: {
-    scrollEnabled: true,
-=======
   [Routes.ENS_INTRO_SHEET]: {
     scrollEnabled: false,
->>>>>>> 0baf9c29ebfa502faa9200d41c58f7d8e5e34717
     useAccentAsSheetBackground: false,
   },
   [Routes.ENS_SEARCH_SHEET]: {

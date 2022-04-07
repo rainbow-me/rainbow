@@ -83,17 +83,9 @@ const PendingRegistration = ({
                 start={{ x: 0, y: 0.6 }}
               >
                 <Inset horizontal="10px">
-<<<<<<< HEAD
-                  <AccentColorProvider color={colors.appleBlue}>
-                    <Text color="accent" size="16px" weight="heavy">
-                      Finish
-                    </Text>
-                  </AccentColorProvider>
-=======
                   <Text color="action" size="16px" weight="heavy">
                     {lang.t('profiles.pending_registrations.finish')}
                   </Text>
->>>>>>> 0baf9c29ebfa502faa9200d41c58f7d8e5e34717
                 </Inset>
               </Box>
             </ButtonPressAnimation>

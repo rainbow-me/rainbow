@@ -6,10 +6,7 @@ import { ENSRegistrationState, Records } from '@rainbow-me/entities';
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import * as ensRedux from '@rainbow-me/redux/ensRegistration';
 import { AppState } from '@rainbow-me/redux/store';
-<<<<<<< HEAD
-=======
 import { isENSNFTAvatar, parseENSNFTAvatar } from '@rainbow-me/utils';
->>>>>>> 0baf9c29ebfa502faa9200d41c58f7d8e5e34717
 import getENSNFTAvatarUrl from '@rainbow-me/utils/getENSNFTAvatarUrl';
 
 export default function useENSRegistration({
