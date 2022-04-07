@@ -14,7 +14,7 @@ import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import { useInterval } from '@rainbow-me/hooks';
 
 const MIN_LONG_PRESS_DURATION = 200;
-const LONG_PRESS_INTERVAL = 100;
+const LONG_PRESS_INTERVAL = 69;
 
 function StepButton({
   onLongPress,
