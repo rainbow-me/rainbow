@@ -36,6 +36,7 @@ import {
 } from '@rainbow-me/helpers/ens';
 import {
   useAccountSettings,
+  useDimensions,
   useENSRegistration,
   useENSRegistrationActionHandler,
   useENSRegistrationCosts,
@@ -53,9 +54,10 @@ export const ENSConfirmUpdateSheetHeight = 400;
 const avatarSize = 70;
 
 function CommitContent({ registrationCostsData, setDuration, duration }) {
+  const { isSmallPhone } = useDimensions();
   return (
     <Inset horizontal="30px">
-      <Stack space="34px">
+      <Stack space={isSmallPhone ? '19px' : '34px'}>
         <Inline
           alignHorizontal="center"
           alignVertical="center"
@@ -205,6 +207,7 @@ export default function ENSConfirmRegisterSheet() {
     mode,
   } = useENSRegistration();
   const [accentColor] = useRecoilState(accentColorAtom);
+  const { isSmallPhone } = useDimensions();
 
   const [duration, setDuration] = useState(1);
   const [gasLimit, setGasLimit] = useState(null);
@@ -428,7 +431,7 @@ export default function ENSConfirmRegisterSheet() {
                     {stepLabel}
                   </Text>
                 </Stack>
-                <Inset vertical="24px">
+                <Inset vertical={isSmallPhone ? '12px' : ' 24px'}>
                   <Divider color="divider40" />
                 </Inset>
               </Box>
