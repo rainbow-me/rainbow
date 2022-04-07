@@ -121,7 +121,7 @@ export default function RegistrationReviewRows({
                 <Column width="content">
                   <StepButton
                     onLongPress={handleLongPressDecrement}
-                    onLongPressEnded={() => endLongPress()}
+                    onLongPressEnded={endLongPress}
                     onPress={handlePressDecrement}
                     type="decrement"
                   />
