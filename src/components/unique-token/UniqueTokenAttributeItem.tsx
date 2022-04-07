@@ -11,25 +11,25 @@ type AttributeItemProps = UniqueAssetTrait &
     max_value?: string | number;
   };
 
-const UniqueTokenAttributeItem: React.FC<AttributeItemProps> = ({
+const UniqueTokenAttributeItem = ({
   color,
   disableMenu,
   trait_type: type,
   slug,
   value,
   max_value: maxValue,
-  keepLowerCase,
+  lowercase,
   originalValue,
-}) => (
+}: AttributeItemProps) => (
   <Tag
     color={color}
     disableMenu={disableMenu}
-    keepTextLowerCase={keepLowerCase}
+    lowercase={lowercase}
     maxValue={maxValue}
+    originalValue={originalValue}
     slug={slug}
     text={value}
     title={type}
-    value={originalValue}
   />
 );
 

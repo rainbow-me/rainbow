@@ -71,8 +71,8 @@ const Tag = ({
   text,
   title,
   maxValue,
-  value,
-  keepTextLowerCase,
+  originalValue,
+  lowercase,
   ...props
 }) => {
   const { colors } = useTheme();
@@ -86,11 +86,11 @@ const Tag = ({
             '?search[stringTraits][0][name]=' +
             title +
             '&search[stringTraits][0][values][0]=' +
-            value ?? text
+            originalValue ?? text
         );
       }
     },
-    [slug, text, value, title]
+    [slug, text, originalValue, title]
   );
 
   const menuConfig = useMemo(() => {
@@ -123,14 +123,14 @@ const Tag = ({
               '?search[stringTraits][0][name]=' +
               title +
               '&search[stringTraits][0][values][0]=' +
-              value ?? text
+              originalValue ?? text
           );
         }
       }
     );
-  }, [slug, text, value, title]);
+  }, [slug, text, originalValue, title]);
 
-  const textWithUpdatedCase = keepTextLowerCase ? text : upperFirst(text);
+  const textWithUpdatedCase = lowercase ? text : upperFirst(text);
 
   const ButtonWrapper = ({ children }) =>
     disableMenu ? (
@@ -146,30 +146,28 @@ const Tag = ({
         useActionSheetFallback={false}
         wrapNativeComponent={false}
       >
-        {children}
+        <ButtonPressAnimation>{children}</ButtonPressAnimation>
       </ContextMenuButton>
     );
 
   return (
     <ButtonWrapper>
-      <ButtonPressAnimation>
-        <OuterBorder {...props} color={color}>
-          <Container>
-            <Title color={color}>{upperCase(title)}</Title>
-            <Inline wrap={false}>
-              <Text>{textWithUpdatedCase}</Text>
-              {maxValue && (
-                <Text>
-                  <Text color={colors.alpha(colors.whiteLabel, 0.8)}>
-                    {HairlineSpace}/{HairlineSpace}
-                  </Text>
-                  {maxValue}
+      <OuterBorder {...props} color={color}>
+        <Container>
+          <Title color={color}>{upperCase(title)}</Title>
+          <Inline wrap={false}>
+            <Text>{textWithUpdatedCase}</Text>
+            {maxValue && (
+              <Text>
+                <Text color={colors.alpha(colors.whiteLabel, 0.8)}>
+                  {HairlineSpace}/{HairlineSpace}
                 </Text>
-              )}
-            </Inline>
-          </Container>
-        </OuterBorder>
-      </ButtonPressAnimation>
+                {maxValue}
+              </Text>
+            )}
+          </Inline>
+        </Container>
+      </OuterBorder>
     </ButtonWrapper>
   );
 };

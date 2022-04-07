@@ -2,8 +2,8 @@ import { format } from 'date-fns';
 import { UniqueAssetTrait } from '../entities/uniqueAssets';
 
 type MappedTrait = UniqueAssetTrait & {
-  originalValue: string | number;
-  keepLowerCase?: boolean;
+  originalValue: string | number | null | undefined;
+  lowercase?: boolean;
   disableMenu?: boolean;
 };
 
@@ -17,7 +17,8 @@ export default function transformUniqueAssetTraitsForPresentation(
   const { display_type, value } = trait;
 
   if (display_type === 'date') {
-    // the value is in seconds, formatted like Jan 29th, 2022
+    // the value is in seconds with milliseconds in the decimal part
+    // formatted like Jan 29th, 2022
     const newValue =
       typeof value === 'number' ? format(value * 1000, 'MMM do, y') : value;
 
@@ -37,15 +38,12 @@ export default function transformUniqueAssetTraitsForPresentation(
     return { ...trait, originalValue: value, value: `+${value}` };
   }
 
-  if (
-    typeof value === 'string' &&
-    value.toLocaleLowerCase().startsWith('https://')
-  ) {
+  if (typeof value === 'string' && value.toLowerCase().startsWith('https://')) {
     const newValue = value.toLowerCase().replace('https://', '');
 
     return {
       ...trait,
-      keepLowerCase: true,
+      lowercase: true,
       originalValue: value,
       value: newValue,
     };
