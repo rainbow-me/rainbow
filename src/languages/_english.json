@@ -623,9 +623,20 @@
         "keyworkds": "Keywords",
         "keyworkds_placeholder": "Add keywords",
         "reddit": "Reddit",
+        "twitter": "Twitter",
         "telegram": "Telegram",
         "pronouns": "Pronouns",
-        "pronouns_placeholder": "Add pronouns"
+        "pronouns_placeholder": "Add pronouns",
+        "email": "Email",
+        "github": "GitHub",
+        "instagram": "Instagram",
+        "snapchat": "Snapchat",
+        "discord": "Discord",
+        "email_placeholder": "Add your email",
+        "email_submit_message": "Please enter a valid email",
+        "website_submit_message": "Please enter a valid email",
+        "invalid_asset": "Invalid %{coin} address",
+        "invalid_content_hash": "Invalid content hash"
       },
       "confirm": {
         "confirm_purchase": "Confirm purchase",

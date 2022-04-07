@@ -205,13 +205,25 @@ export default function useENSRegistrationForm({
     async submitFn => {
       const errors = Object.entries(textRecordFields).reduce(
         (currentErrors, [key, { validations }]) => {
-          const { value: regex, message } = validations?.onSubmit?.match || {};
           const value = values[key as ENS_RECORDS];
-          if (regex && value && !value.match(regex)) {
-            return {
-              ...currentErrors,
-              [key]: message,
-            };
+          if (validations?.onSubmit?.match) {
+            const { value: regex, message } =
+              validations?.onSubmit?.match || {};
+            if (regex && value && !value.match(regex)) {
+              return {
+                ...currentErrors,
+                [key]: message,
+              };
+            }
+          }
+          if (validations?.onSubmit?.validate) {
+            const { callback, message } = validations?.onSubmit?.validate || {};
+            if (value && !callback(value)) {
+              return {
+                ...currentErrors,
+                [key]: message,
+              };
+            }
           }
           return currentErrors;
         },
