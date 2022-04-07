@@ -64,6 +64,7 @@ export enum ENS_RECORDS {
   twitter = 'com.twitter',
   telegram = 'com.telegram',
   ensDelegate = 'eth.ens.delegate',
+  pronouns = 'pronouns',
 }
 
 export enum REGISTRATION_STEPS {
@@ -114,6 +115,15 @@ export const textRecordFields = {
     label: lang.t('profiles.create.bio'),
     placeholder: lang.t('profiles.create.bio_placeholder'),
   },
+  [ENS_RECORDS.pronouns]: {
+    id: 'pronouns',
+    inputProps: {
+      maxLength: 42,
+    },
+    key: ENS_RECORDS.pronouns,
+    label: lang.t('profiles.create.pronouns'),
+    placeholder: lang.t('profiles.create.pronouns_placeholder'),
+  },
   [ENS_RECORDS.twitter]: {
     defaultRecord: true,
     id: 'twitter',
@@ -122,7 +132,7 @@ export const textRecordFields = {
     },
     key: ENS_RECORDS.twitter,
     label: 'Twitter',
-    placeholder: lang.t('profiles.create.username_placeholder'),
+    placeholder: lang.t('profiles.create.usernamewfwefe_placeholder'),
     startsWith: '@',
     validations: {
       onChange: {
@@ -218,17 +228,46 @@ export const textRecordFields = {
     key: ENS_RECORDS.discord,
     label: 'Discord',
     placeholder: lang.t('profiles.create.username_placeholder'),
+    startsWith: '@',
   },
-  [ENS_RECORDS.ETH]: {
-    id: 'eth',
+  [ENS_RECORDS.reddit]: {
+    id: 'reddit',
     inputProps: {
-      maxLength: 42,
+      maxLength: 30,
     },
-    key: ENS_RECORDS.ETH,
-    label: lang.t('profiles.create.eth'),
-    placeholder: lang.t('profiles.create.wallet_placeholder', {
-      coin: lang.t('profiles.create.eth'),
-    }),
+    key: ENS_RECORDS.reddit,
+    label: lang.t('profiles.create.reddit'),
+    placeholder: lang.t('profiles.create.username_placeholder'),
+    startsWith: '@',
+  },
+  [ENS_RECORDS.telegram]: {
+    id: 'telegram',
+    inputProps: {
+      maxLength: 30,
+    },
+    key: ENS_RECORDS.telegram,
+    label: lang.t('profiles.create.telegram'),
+    placeholder: lang.t('profiles.create.username_placeholder'),
+    startsWith: '@',
+  },
+
+  [ENS_RECORDS.notice]: {
+    id: 'notice',
+    inputProps: {
+      maxLength: 100,
+    },
+    key: ENS_RECORDS.notice,
+    label: lang.t('profiles.create.notice'),
+    placeholder: lang.t('profiles.create.notice_placeholder'),
+  },
+  [ENS_RECORDS.keywords]: {
+    id: 'keywords',
+    inputProps: {
+      maxLength: 100,
+    },
+    key: ENS_RECORDS.keywords,
+    label: lang.t('profiles.create.keyworkds'),
+    placeholder: lang.t('profiles.create.keyworkds_placeholder'),
   },
   [ENS_RECORDS.BTC]: {
     id: 'btc',
@@ -252,11 +291,6 @@ export const textRecordFields = {
     placeholder: lang.t('profiles.create.wallet_placeholder', {
       coin: lang.t('profiles.create.ltc'),
     }),
-    validations: {
-      onChange: {
-        match: /^\w*$/,
-      },
-    },
   },
   [ENS_RECORDS.DOGE]: {
     id: 'doge',
@@ -268,14 +302,6 @@ export const textRecordFields = {
     placeholder: lang.t('profiles.create.wallet_placeholder', {
       coin: lang.t('profiles.create.doge'),
     }),
-    validations: {
-      onSubmit: {
-        match: {
-          message: 'Please enter a valid email',
-          value: /^\S+@\S+\.\S+$/,
-        },
-      },
-    },
   },
   [ENS_RECORDS.content]: {
     id: 'content',
@@ -283,71 +309,6 @@ export const textRecordFields = {
     key: ENS_RECORDS.content,
     label: lang.t('profiles.create.content'),
     placeholder: lang.t('profiles.create.content_placeholder'),
-    validations: {
-      onSubmit: {
-        match: {
-          message: 'Please enter a valid website URL',
-          value: /[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/,
-        },
-      },
-    },
-  },
-  [ENS_RECORDS.website]: {
-    id: 'website',
-    inputProps: {
-      keyboardType: 'url',
-    },
-    key: ENS_RECORDS.website,
-    label: lang.t('profiles.create.website'),
-    placeholder: lang.t('profiles.create.website_placeholder'),
-  },
-  [ENS_RECORDS.notice]: {
-    id: 'notice',
-    inputProps: {
-      maxLength: 100,
-    },
-    key: ENS_RECORDS.notice,
-    label: lang.t('profiles.create.notice'),
-    placeholder: lang.t('profiles.create.notice_placeholder'),
-    validations: {
-      onChange: {
-        match: /^([\w.])*$/,
-      },
-    },
-  },
-  [ENS_RECORDS.keywords]: {
-    id: 'keywords',
-    inputProps: {
-      maxLength: 100,
-    },
-    key: ENS_RECORDS.keywords,
-    label: lang.t('profiles.create.keyworkds'),
-    placeholder: lang.t('profiles.create.keyworkds_placeholder'),
-    validations: {
-      onChange: {
-        match: /^([\w.])*$/,
-      },
-    },
-  },
-  [ENS_RECORDS.reddit]: {
-    id: 'reddit',
-    inputProps: {
-      maxLength: 30,
-    },
-    key: ENS_RECORDS.reddit,
-    label: lang.t('profiles.create.reddit'),
-    placeholder: lang.t('profiles.create.username_placeholder'),
-    startsWith: '@',
-  },
-  [ENS_RECORDS.telegram]: {
-    id: 'telegram',
-    inputProps: {
-      maxLength: 30,
-    },
-    key: ENS_RECORDS.telegram,
-    label: lang.t('profiles.create.telegram'),
-    placeholder: lang.t('profiles.create.username_placeholder'),
-    startsWith: '@',
   },
 } as {
   [key in ENS_RECORDS]?: {
