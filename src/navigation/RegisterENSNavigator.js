@@ -44,7 +44,7 @@ const defaultScreenOptions = {
     useAccentAsSheetBackground: false,
   },
   [Routes.ENS_SEARCH_SHEET]: {
-    scrollEnabled: false,
+    scrollEnabled: true,
     useAccentAsSheetBackground: false,
   },
 };

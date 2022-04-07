@@ -7,6 +7,7 @@ import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import * as ensRedux from '@rainbow-me/redux/ensRegistration';
 import { AppState } from '@rainbow-me/redux/store';
 import { isENSNFTAvatar, parseENSNFTAvatar } from '@rainbow-me/utils';
+import getENSNFTAvatarUrl from '@rainbow-me/utils/getENSNFTAvatarUrl';
 
 export default function useENSRegistration({
   setInitialRecordsWhenInEditMode = false,
@@ -66,6 +67,12 @@ export default function useENSRegistration({
   const clearCurrentRegistrationName = useCallback(
     () => dispatch(ensRedux.clearCurrentRegistrationName()),
     [dispatch]
+  );
+
+  const removeRegistrationByName = useCallback(
+    (name: string) =>
+      dispatch(ensRedux.removeRegistrationByName(accountAddress, name)),
+    [accountAddress, dispatch]
   );
 
   const profileQuery = useENSProfile(name, {
@@ -139,7 +146,9 @@ export default function useENSRegistration({
     ({ uniqueTokens }: AppState) => uniqueTokens.uniqueTokens
   );
   const images = useMemo(() => {
-    let avatarUrl = profileQuery.data?.images?.avatarUrl;
+    let avatarUrl =
+      getENSNFTAvatarUrl(uniqueTokens, records?.avatar) ||
+      profileQuery.data?.images?.avatarUrl;
     let coverUrl = profileQuery.data?.images?.coverUrl;
 
     if (changedRecords.avatar === '') {
@@ -190,6 +199,7 @@ export default function useENSRegistration({
     records,
     registrationParameters,
     removeRecordByKey,
+    removeRegistrationByName,
     startRegistration,
     updateRecordByKey,
     updateRecords,

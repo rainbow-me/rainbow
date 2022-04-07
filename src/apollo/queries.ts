@@ -199,10 +199,13 @@ export const ENS_SUGGESTIONS = gql`
   query lookup($name: String!, $amount: Int!) {
     domains(
       first: $amount
-      where: { name_contains: $name, resolvedAddress_not: null }
+      where: { name_starts_with: $name, resolvedAddress_not: null }
+      orderBy: name
+      orderDirection: asc
     ) {
       name
       resolver {
+        texts
         addr {
           id
         }
