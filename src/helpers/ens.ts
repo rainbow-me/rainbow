@@ -287,14 +287,7 @@ export const textRecordFields = {
     validations: {
       onSubmit: {
         validate: {
-          callback: value => {
-            try {
-              formatsByName[ENS_RECORDS.BTC].decoder(value);
-              return true;
-            } catch (e) {
-              return false;
-            }
-          },
+          callback: value => validateCoinRecordValue(value, ENS_RECORDS.BTC),
           message: lang.t('profiles.create.invalid_asset', {
             coin: ENS_RECORDS.BTC,
           }),
@@ -305,7 +298,7 @@ export const textRecordFields = {
   [ENS_RECORDS.LTC]: {
     id: 'ltc',
     inputProps: {
-      maxLength: 34,
+      maxLength: 35,
     },
     key: ENS_RECORDS.LTC,
     label: lang.t('profiles.create.ltc'),
@@ -315,14 +308,7 @@ export const textRecordFields = {
     validations: {
       onSubmit: {
         validate: {
-          callback: value => {
-            try {
-              formatsByName[ENS_RECORDS.LTC].decoder(value);
-              return true;
-            } catch (e) {
-              return false;
-            }
-          },
+          callback: value => validateCoinRecordValue(value, ENS_RECORDS.LTC),
           message: lang.t('profiles.create.invalid_asset', {
             coin: ENS_RECORDS.LTC,
           }),
@@ -343,14 +329,7 @@ export const textRecordFields = {
     validations: {
       onSubmit: {
         validate: {
-          callback: (value: string) => {
-            try {
-              formatsByName[ENS_RECORDS.DOGE].decoder(value);
-              return true;
-            } catch (e) {
-              return false;
-            }
-          },
+          callback: value => validateCoinRecordValue(value, ENS_RECORDS.DOGE),
           message: lang.t('profiles.create.invalid_asset', {
             coin: ENS_RECORDS.DOGE,
           }),
@@ -367,14 +346,7 @@ export const textRecordFields = {
     validations: {
       onSubmit: {
         validate: {
-          callback: (value: string) => {
-            const { encoded, error: encodeError } = encodeContenthash(value);
-            if (!encodeError && encoded) {
-              return isValidContenthash(encoded);
-            } else {
-              return false;
-            }
-          },
+          callback: value => validateContentHashRecordValue(value),
           message: lang.t('profiles.create.invalid_content_hash'),
         },
       },
@@ -703,6 +675,24 @@ const formatTotalRegistrationCost = (
     eth,
     wei,
   };
+};
+
+const validateCoinRecordValue = (value: string, coin: string) => {
+  try {
+    formatsByName[coin].decoder(value);
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
+
+const validateContentHashRecordValue = (value: string) => {
+  const { encoded, error: encodeError } = encodeContenthash(value);
+  if (!encodeError && encoded) {
+    return isValidContenthash(encoded);
+  } else {
+    return false;
+  }
 };
 
 const getRentPricePerYear = (rentPrice: string, duration: number) =>
