@@ -2,7 +2,7 @@ import React, { forwardRef, useImperativeHandle, useState } from 'react';
 import Toast from './Toast';
 
 // eslint-disable-next-line react/display-name
-const TophatToast = forwardRef((_, ref) => {
+const FedoraToast = forwardRef((_, ref) => {
   const [visible, setVisible] = useState(false);
   useImperativeHandle(ref, () => ({
     show: () => setVisible(true),
@@ -11,4 +11,4 @@ const TophatToast = forwardRef((_, ref) => {
   return <Toast isVisible={visible} text="Custom bundle" />;
 });
 
-export default TophatToast;
+export default FedoraToast;

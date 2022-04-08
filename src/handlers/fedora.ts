@@ -60,14 +60,14 @@ export async function setDeploymentKey(key: string) {
 
   if (!isRainbowRelease) {
     Alert.alert(
-      'Tophat',
+      'Fedora',
       'Cannot verify the bundle! This might be a scam. Installation blocked.'
     );
     return;
   }
 
   Alert.alert(
-    'Tophat',
+    'Fedora',
     `This will override you bundle. Be careful. Are you Rainbow employee?`,
     [
       {

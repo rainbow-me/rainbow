@@ -34,7 +34,7 @@ import { connect, Provider } from 'react-redux';
 import { RecoilRoot } from 'recoil';
 import PortalConsumer from './components/PortalConsumer';
 import ErrorBoundary from './components/error-boundary/ErrorBoundary';
-import { OfflineToast, TophatToast } from './components/toasts';
+import { FedoraToast, OfflineToast } from './components/toasts';
 import {
   designSystemPlaygroundEnabled,
   reactNativeDisableYellowBox,
@@ -69,14 +69,14 @@ import { analyticsUserIdentifier } from './utils/keychainConstants';
 import {
   CODE_PUSH_DEPLOYMENT_KEY,
   isCustomBuild,
-} from '@rainbow-me/handlers/tophat';
+} from '@rainbow-me/handlers/fedora';
 import { SharedValuesProvider } from '@rainbow-me/helpers/SharedValuesContext';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 import { Portal } from 'react-native-cool-modals/Portal';
 const WALLETCONNECT_SYNC_DELAY = 500;
 
-let TopHatToastRef;
+let FedoraToastRef;
 
 StatusBar.pushStackEntry({ animated: true, barStyle: 'dark-content' });
 
@@ -86,7 +86,7 @@ if (__DEV__) {
     monitorNetwork(showNetworkRequests, showNetworkResponses);
 } else {
   // eslint-disable-next-line no-inner-declarations
-  async function initSentryAndCheckForTophat() {
+  async function initSentryAndCheckForFedoraMode() {
     const config = await codePush.getCurrentPackage();
     if (!config || config.deploymentKey === CODE_PUSH_DEPLOYMENT_KEY) {
       codePush.sync({
@@ -95,7 +95,7 @@ if (__DEV__) {
       });
     } else {
       isCustomBuild.value = true;
-      setTimeout(() => TopHatToastRef?.show(), 300);
+      setTimeout(() => FedoraToastRef?.show(), 300);
     }
 
     const metadata = await codePush.getUpdateMetadata();
@@ -116,7 +116,7 @@ if (__DEV__) {
     };
     Sentry.init(sentryOptions);
   }
-  initSentryAndCheckForTophat();
+  initSentryAndCheckForFedoraMode();
 }
 
 enableScreens();
@@ -313,7 +313,7 @@ class App extends Component {
                           </InitialRouteContext.Provider>
                         )}
                         <OfflineToast />
-                        <TophatToast ref={ref => (TopHatToastRef = ref)} />
+                        <FedoraToast ref={ref => (FedoraToastRef = ref)} />
                       </View>
                     </SharedValuesProvider>
                   </RecoilRoot>

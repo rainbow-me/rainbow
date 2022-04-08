@@ -32,7 +32,7 @@ import useExperimentalFlag, {
 import {
   isCustomBuild,
   setOriginalDeploymentKey,
-} from '@rainbow-me/handlers/tophat';
+} from '@rainbow-me/handlers/fedora';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import {

@@ -11,7 +11,7 @@ import {
   walletConnectRemovePendingRedirect,
   walletConnectSetPendingRedirect,
 } from '../redux/walletconnect';
-import { setDeploymentKey } from '@rainbow-me/handlers/tophat';
+import { setDeploymentKey } from '@rainbow-me/handlers/fedora';
 import { delay } from '@rainbow-me/helpers/utilities';
 import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
 import { Navigation } from '@rainbow-me/navigation';

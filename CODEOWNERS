@@ -64,7 +64,7 @@ src/handlers/uniswap.ts @brunobar79 @jinchung
 src/handlers/walletReadyEvents.ts @brunobar79 @jinchung
 src/handlers/web3.ts @brunobar79 @jinchung @estebanmino
 src/handlers/wyre.ts @jinchung @skylarbarrera
-src/handlers/tophat.ts @osdnk
+src/handlers/fedora.ts @osdnk
 
 # Helpers
 src/helpers @brunobar79 @jinchung
