@@ -942,6 +942,7 @@ export const transactionsReceived = (
     const isValidMeta = dispatch(checkMeta(message));
     if (!isValidMeta) return;
     const transactionData = message?.payload?.transactions ?? [];
+    logger.debug('TRANSACTIONS RECEIVED TRANSACTION DATA: ', transactionData);
     if (appended) {
       dispatch(checkForConfirmedSavingsActions(transactionData));
     }
@@ -950,6 +951,8 @@ export const transactionsReceived = (
     const { accountAddress, nativeCurrency } = getState().settings;
     const { purchaseTransactions } = getState().addCash;
     const { pendingTransactions, transactions } = getState().data;
+    logger.debug('TRANSACTIONS RECEIVED PENDING: ', pendingTransactions);
+    // logger.debug('TRANSACTIONS RECEIVED TRANSACTIONS: ', transactions);
     const { selected } = getState().wallets;
 
     let { network } = getState().settings;
@@ -968,6 +971,10 @@ export const transactionsReceived = (
       network,
       appended
     );
+    // logger.debug(
+    //   'TRANSACTIONS RECEIVED PARSED TRANSACTIONS: ',
+    //   parsedTransactions
+    // );
     if (appended && potentialNftTransaction) {
       setTimeout(() => {
         dispatch(uniqueTokensRefreshState());
@@ -1546,6 +1553,7 @@ export const dataWatchPendingTransactions = (
       return true;
     }
     let txStatusesDidChange = false;
+    logger.debug('DATA WATCH PENDING TRANSACTIONS: ', pending);
     const updatedPendingTransactions = await Promise.all(
       pending.map(async tx => {
         const updatedPending = { ...tx };
@@ -1602,6 +1610,7 @@ export const dataWatchPendingTransactions = (
         } catch (error) {
           logger.log('Error watching pending txn', error);
         }
+        logger.debug('UPDATED PENDING: ', updatedPending);
         return updatedPending;
       })
     );
