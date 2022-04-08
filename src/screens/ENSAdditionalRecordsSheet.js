@@ -6,8 +6,18 @@ import { SlackSheet } from '../components/sheet';
 import { AccentColorProvider, Box, Inline } from '@rainbow-me/design-system';
 import { accentColorAtom, textRecordFields } from '@rainbow-me/helpers/ens';
 import { useENSRegistrationForm } from '@rainbow-me/hooks';
+import { deviceUtils } from '@rainbow-me/utils';
 
 export const ENSAdditionalRecordsSheetHeight = 260;
+const recordLineHeight = 30;
+
+export const getENSAdditionalRecordsSheetHeight = () => {
+  const deviceWidth = deviceUtils.dimensions.width;
+  if (deviceWidth > 400) return ENSAdditionalRecordsSheetHeight;
+  if (deviceWidth > 380)
+    return ENSAdditionalRecordsSheetHeight + recordLineHeight;
+  return ENSAdditionalRecordsSheetHeight + 2 * recordLineHeight;
+};
 
 export default function ENSAdditionalRecordsSheet() {
   const { params } = useRoute();
@@ -17,7 +27,6 @@ export default function ENSAdditionalRecordsSheet() {
     onAddField,
     onRemoveField,
   } = useENSRegistrationForm();
-
   const boxStyle = useMemo(
     () => ({
       height: params.longFormHeight || ENSAdditionalRecordsSheetHeight,

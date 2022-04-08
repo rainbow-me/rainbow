@@ -119,6 +119,24 @@ export const textRecordFields = {
     label: lang.t('profiles.create.bio'),
     placeholder: lang.t('profiles.create.bio_placeholder'),
   },
+  [ENS_RECORDS.email]: {
+    id: 'email',
+    inputProps: {
+      maxLength: 50,
+    },
+    isPrimaryDisplayRecord: true,
+    key: ENS_RECORDS.email,
+    label: lang.t('profiles.create.email'),
+    placeholder: lang.t('profiles.create.email_placeholder'),
+    validations: {
+      onSubmit: {
+        match: {
+          message: lang.t('profiles.create.email_submit_message'),
+          value: /^\S+@\S+\.\S+$/,
+        },
+      },
+    },
+  },
   [ENS_RECORDS.pronouns]: {
     id: 'pronouns',
     inputProps: {
@@ -141,24 +159,6 @@ export const textRecordFields = {
     validations: {
       onChange: {
         match: /^\w*$/,
-      },
-    },
-  },
-  [ENS_RECORDS.email]: {
-    id: 'email',
-    inputProps: {
-      maxLength: 50,
-    },
-    isPrimaryDisplayRecord: true,
-    key: ENS_RECORDS.email,
-    label: lang.t('profiles.create.email'),
-    placeholder: lang.t('profiles.create.email_placeholder'),
-    validations: {
-      onSubmit: {
-        match: {
-          message: lang.t('profiles.create.email_submit_message'),
-          value: /^\S+@\S+\.\S+$/,
-        },
       },
     },
   },
