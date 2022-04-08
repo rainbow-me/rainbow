@@ -8,6 +8,7 @@ import { SheetHandleFixedToTopHeight, SlackSheet } from '../components/sheet';
 import ENSAssignRecordsSheet, {
   ENSAssignRecordsBottomActions,
 } from '../screens/ENSAssignRecordsSheet';
+import ENSIntroSheet from '../screens/ENSIntroSheet';
 import ENSSearchSheet from '../screens/ENSSearchSheet';
 import { useNavigation } from './Navigation';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
@@ -38,8 +39,12 @@ const defaultScreenOptions = {
     scrollEnabled: true,
     useAccentAsSheetBackground: true,
   },
-  [Routes.ENS_SEARCH_SHEET]: {
+  [Routes.ENS_INTRO_SHEET]: {
     scrollEnabled: false,
+    useAccentAsSheetBackground: false,
+  },
+  [Routes.ENS_SEARCH_SHEET]: {
+    scrollEnabled: true,
     useAccentAsSheetBackground: false,
   },
 };
@@ -55,6 +60,8 @@ export default function RegisterENSNavigator() {
   const contentHeight =
     deviceHeight - SheetHandleFixedToTopHeight - sharedCoolModalTopOffset;
 
+  const [isSearchEnabled, setIsSearchEnabled] = useState(true);
+
   const {
     clearCurrentRegistrationName,
     startRegistration,
@@ -66,7 +73,7 @@ export default function RegisterENSNavigator() {
       startRegistration(ensName, mode);
       return Routes.ENS_ASSIGN_RECORDS_SHEET;
     }
-    return Routes.ENS_SEARCH_SHEET;
+    return Routes.ENS_INTRO_SHEET;
   }, [params, startRegistration]);
   const [currentRouteName, setCurrentRouteName] = useState(initialRouteName);
   const previousRouteName = usePrevious(currentRouteName);
@@ -103,6 +110,8 @@ export default function RegisterENSNavigator() {
       navigation.removeListener('dismiss', clearCurrentRegistrationName);
   });
 
+  const enableAssignRecordsBottomActions =
+    IS_TESTING !== 'true' && currentRouteName !== Routes.ENS_INTRO_SHEET;
   const isBottomActionsVisible =
     currentRouteName === Routes.ENS_ASSIGN_RECORDS_SHEET;
 
@@ -126,18 +135,30 @@ export default function RegisterENSNavigator() {
           <Swipe.Navigator
             initialLayout={deviceUtils.dimensions}
             initialRouteName={currentRouteName}
-            lazy={android}
+            lazy
             pager={renderPager}
             swipeEnabled={false}
             tabBar={renderTabBar}
           >
             <Swipe.Screen
-              component={ENSSearchSheet}
-              listeners={{
-                focus: () => setCurrentRouteName(Routes.ENS_SEARCH_SHEET),
+              component={ENSIntroSheet}
+              initialParams={{
+                onSelectExistingName: () => setIsSearchEnabled(false),
               }}
-              name={Routes.ENS_SEARCH_SHEET}
+              listeners={{
+                focus: () => setCurrentRouteName(Routes.ENS_INTRO_SHEET),
+              }}
+              name={Routes.ENS_INTRO_SHEET}
             />
+            {isSearchEnabled && (
+              <Swipe.Screen
+                component={ENSSearchSheet}
+                listeners={{
+                  focus: () => setCurrentRouteName(Routes.ENS_SEARCH_SHEET),
+                }}
+                name={Routes.ENS_SEARCH_SHEET}
+              />
+            )}
             <Swipe.Screen
               component={ENSAssignRecordsSheet}
               initialParams={{
@@ -160,7 +181,7 @@ export default function RegisterENSNavigator() {
        * The reason why is because we can't achieve fixed positioning (as per designs) within SlackSheet's
        * ScrollView, so this seems like the best workaround.
        */}
-      {IS_TESTING !== 'true' && (
+      {enableAssignRecordsBottomActions && (
         <ENSAssignRecordsBottomActions visible={isBottomActionsVisible} />
       )}
     </>

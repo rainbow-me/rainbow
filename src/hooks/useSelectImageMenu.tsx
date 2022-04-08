@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Image, Options } from 'react-native-image-crop-picker';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import { useMutation } from 'react-query';
@@ -36,12 +36,24 @@ const items = {
       type: 'IMAGE_SYSTEM',
     },
   },
+  remove: {
+    actionKey: 'remove',
+    actionTitle: lang.t('profiles.create.remove'),
+    icon: {
+      imageValue: {
+        systemName: 'trash',
+      },
+      type: 'IMAGE_SYSTEM',
+    },
+    menuAttributes: ['destructive'],
+  },
 };
 
 export default function useSelectImageMenu({
   imagePickerOptions,
-  menuItems = ['library'],
+  menuItems: initialMenuItems = ['library'],
   onChangeImage,
+  onRemoveImage,
   onUploading,
   onUploadSuccess,
   onUploadError,
@@ -56,6 +68,7 @@ export default function useSelectImageMenu({
     asset?: UniqueAsset;
     image?: Image & { tmpPath?: string };
   }) => void;
+  onRemoveImage?: () => void;
   onUploading?: ({ image }: { image: Image }) => void;
   onUploadSuccess?: ({
     data,
@@ -73,6 +86,10 @@ export default function useSelectImageMenu({
     'ensImageUpload',
     uploadImage
   );
+
+  const menuItems = useMemo(() => [...initialMenuItems, 'remove'] as const, [
+    initialMenuItems,
+  ]);
 
   const handleSelectImage = useCallback(async () => {
     const image = await openPicker({
@@ -129,8 +146,11 @@ export default function useSelectImageMenu({
       if (actionKey === 'nft') {
         handleSelectNFT();
       }
+      if (actionKey === 'remove') {
+        onRemoveImage?.();
+      }
     },
-    [handleSelectImage, handleSelectNFT]
+    [handleSelectImage, handleSelectNFT, onRemoveImage]
   );
 
   const handleAndroidPress = useCallback(() => {

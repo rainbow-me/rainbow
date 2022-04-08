@@ -4,6 +4,7 @@ import { useNavigation } from '../../../navigation/Navigation';
 import { ShimmerAnimation } from '../../animations';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { Icon } from '../../icons';
+import { ImagePreviewOverlayTarget } from '../../images/ImagePreviewOverlay';
 import {
   Bleed,
   Box,
@@ -12,7 +13,6 @@ import {
   Text,
   useForegroundColor,
 } from '@rainbow-me/design-system';
-import { ImgixImage } from '@rainbow-me/images';
 import Routes from '@rainbow-me/routes';
 
 export function InfoRowSkeleton() {
@@ -104,14 +104,7 @@ export default function InfoRow({
       {wrapValue(
         <>
           {isImage ? (
-            <Box
-              as={ImgixImage}
-              borderRadius={16}
-              flexShrink={1}
-              height="64px"
-              source={{ uri: value }}
-              width="full"
-            />
+            <>{value && <ImagePreviewOverlayTarget uri={value} />}</>
           ) : (
             <Box
               borderRadius={16}

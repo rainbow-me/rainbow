@@ -189,7 +189,7 @@ export default forwardRef(function SlackSheet(
             removeTopPadding={removeTopPadding}
             scrollEnabled={scrollEnabled}
             scrollIndicatorInsets={scrollIndicatorInsets}
-            {...(isInsideBottomSheet && android
+            {...(isInsideBottomSheet
               ? {
                   onScrollWorklet: scrollHandler,
                 }

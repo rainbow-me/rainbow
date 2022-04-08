@@ -199,10 +199,13 @@ export const ENS_SUGGESTIONS = gql`
   query lookup($name: String!, $amount: Int!) {
     domains(
       first: $amount
-      where: { name_contains: $name, resolvedAddress_not: null }
+      where: { name_starts_with: $name, resolvedAddress_not: null }
+      orderBy: name
+      orderDirection: asc
     ) {
       name
       resolver {
+        texts
         addr {
           id
         }
@@ -244,6 +247,28 @@ export const ENS_REGISTRATIONS = gql`
       id
       registrationDate
       expiryDate
+    }
+  }
+`;
+
+export type EnsAccountRegistratonsData = {
+  account: {
+    registrations: {
+      domain: {
+        name: string;
+      };
+    }[];
+  };
+};
+
+export const ENS_ACCOUNT_REGISTRATIONS = gql`
+  query getAccountRegistrations($address: String!) {
+    account(id: $address) {
+      registrations(first: 99, orderBy: registrationDate) {
+        domain {
+          name
+        }
+      }
     }
   }
 `;

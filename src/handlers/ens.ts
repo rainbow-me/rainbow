@@ -2,12 +2,14 @@ import { formatsByCoinType } from '@ensdomains/address-encoder';
 import { debounce, isEmpty, sortBy } from 'lodash';
 import { ensClient } from '../apollo/client';
 import {
+  ENS_ACCOUNT_REGISTRATIONS,
   ENS_DOMAINS,
   ENS_GET_COIN_TYPES,
   ENS_GET_RECORDS,
   ENS_GET_REGISTRATION,
   ENS_REGISTRATIONS,
   ENS_SUGGESTIONS,
+  EnsAccountRegistratonsData,
   EnsGetCoinTypesData,
   EnsGetRecordsData,
   EnsGetRegistrationData,
@@ -38,44 +40,63 @@ const DUMMY_RECORDS = {
 export const fetchSuggestions = async (
   recipient: any,
   setSuggestions: any,
-  setIsFetching = (_unused: any) => {}
+  setIsFetching = (_unused: any) => {},
+  profilesEnabled = false
 ) => {
   if (recipient.length > 2) {
-    let suggestions = [];
+    let suggestions: {
+      address: any;
+      color: number | null;
+      ens: boolean;
+      image: any;
+      network: string;
+      nickname: any;
+      uniqueId: any;
+    }[] = [];
     setIsFetching(true);
     const recpt = recipient.toLowerCase();
     let result = await ensClient.query({
       query: ENS_SUGGESTIONS,
       variables: {
-        amount: 75,
+        amount: 8,
         name: recpt,
       },
     });
-
     if (!isEmpty(result?.data?.domains)) {
-      const ensSuggestions = result.data.domains
+      const domains = await Promise.all(
+        result?.data?.domains.map(
+          async (domain: { name: string; resolver: { texts: string[] } }) => {
+            const hasAvatar = domain?.resolver?.texts?.find(
+              text => text === ENS_RECORDS.avatar
+            );
+            if (hasAvatar && profilesEnabled) {
+              try {
+                const images = await fetchImages(domain.name);
+                return { ...domain, avatar: images.avatarUrl };
+                // eslint-disable-next-line no-empty
+              } catch (e) {}
+            }
+            return domain;
+          }
+        )
+      );
+      const ensSuggestions = domains
         .map((ensDomain: any) => ({
           address: ensDomain?.resolver?.addr?.id || ensDomain?.name,
-
           color: profileUtils.addressHashedColorIndex(
             ensDomain?.resolver?.addr?.id || ensDomain.name
           ),
-
           ens: true,
+          image: ensDomain?.avatar,
           network: 'mainnet',
           nickname: ensDomain?.name,
           uniqueId: ensDomain?.resolver?.addr?.id || ensDomain.name,
         }))
         .filter((domain: any) => !domain?.nickname?.includes?.('['));
-      const sortedEnsSuggestions = sortBy(
-        ensSuggestions,
-        domain => domain.nickname.length,
-        ['asc']
-      );
-
-      suggestions = sortedEnsSuggestions.slice(0, 3);
+      suggestions = sortBy(ensSuggestions, domain => domain.nickname.length, [
+        'asc',
+      ]);
     }
-
     setSuggestions(suggestions);
     setIsFetching(false);
 
@@ -108,6 +129,16 @@ export const fetchRegistrationDate = async (recipient: any) => {
 
     return registrationDate;
   }
+};
+
+export const fetchAccountRegistrations = async (address: string) => {
+  const registrations = await ensClient.query<EnsAccountRegistratonsData>({
+    query: ENS_ACCOUNT_REGISTRATIONS,
+    variables: {
+      address: address.toLowerCase(),
+    },
+  });
+  return registrations;
 };
 
 export const fetchImages = async (ensName: string) => {

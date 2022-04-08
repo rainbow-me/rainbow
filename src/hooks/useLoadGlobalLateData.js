@@ -1,5 +1,7 @@
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { prefetchAccountENSDomains } from './useAccountENSDomains';
+import useAccountSettings from './useAccountSettings';
 import {
   getWalletBalances,
   WALLET_BALANCES_FROM_STORAGE,
@@ -19,6 +21,8 @@ export default function useLoadGlobalLateData() {
     ({ appState: { walletReady } }) => walletReady
   );
 
+  const { accountAddress } = useAccountSettings();
+
   const loadGlobalData = useCallback(async () => {
     if (!walletReady) {
       return false;
@@ -27,10 +31,11 @@ export default function useLoadGlobalLateData() {
     const promises = [];
     const p1 = loadWalletBalanceNamesToCache();
     const p2 = dispatch(nonceManagerLoadState());
-    promises.push(p1, p2);
+    const p3 = prefetchAccountENSDomains({ accountAddress });
+    promises.push(p1, p2, p3);
 
     return promiseUtils.PromiseAllWithFails(promises);
-  }, [dispatch, walletReady]);
+  }, [accountAddress, dispatch, walletReady]);
 
   return loadGlobalData;
 }

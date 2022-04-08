@@ -21,6 +21,7 @@ import ProfileSheet from '../screens/ProfileSheet';
 import ReceiveModal from '../screens/ReceiveModal';
 import RestoreSheet from '../screens/RestoreSheet';
 import SavingsSheet from '../screens/SavingsSheet';
+import SelectENSSheet from '../screens/SelectENSSheet';
 import SelectUniqueTokenSheet from '../screens/SelectUniqueTokenSheet';
 import SendConfirmationSheet from '../screens/SendConfirmationSheet';
 import SendSheet from '../screens/SendSheet';
@@ -300,6 +301,27 @@ function BSNavigator() {
             name={Routes.PROFILE_SHEET}
             options={{
               height: '95%',
+            }}
+          />
+          <BSStack.Screen
+            component={ProfileSheet}
+            initialParams={{
+              isPreview: true,
+            }}
+            name={Routes.PROFILE_PREVIEW_SHEET}
+            options={{
+              height: 280,
+            }}
+          />
+          <BSStack.Screen
+            component={SelectENSSheet}
+            name={Routes.SELECT_ENS_SHEET}
+            options={{
+              allowsDragToDismiss: true,
+              backgroundOpacity: 0.7,
+              customStack: true,
+              springDamping: 1,
+              transitionDuration: 0.25,
             }}
           />
         </>
