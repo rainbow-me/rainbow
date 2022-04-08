@@ -21,7 +21,7 @@ export const saveResolveName = (key: string, value: string) =>
   saveGlobal(ensResolveNameKey(key), value);
 
 export const getSeenOnchainDataDisclaimer = () =>
-  getGlobal(ensResolveNameKey(ensSeenOnchainDataDisclaimerKey), null);
+  getGlobal(ensResolveNameKey(ensSeenOnchainDataDisclaimerKey), false);
 
 export const saveSeenOnchainDataDisclaimer = (value: boolean) =>
   saveGlobal(ensResolveNameKey(ensSeenOnchainDataDisclaimerKey), value);

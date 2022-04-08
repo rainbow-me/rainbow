@@ -128,7 +128,7 @@ export default function ENSAssignRecordsSheet() {
         type: 'ensOnChainDataWarning',
       });
       setHasSeenExplainSheet(true);
-      await saveSeenOnchainDataDisclaimer(true);
+      saveSeenOnchainDataDisclaimer(true);
     }
   }, [hasSeenExplainSheet, navigate, setHasSeenExplainSheet]);
 
