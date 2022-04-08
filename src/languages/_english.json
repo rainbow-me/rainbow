@@ -640,7 +640,9 @@
         "duration_singular": "1 year",
         "commit_button": "Hold to Commit",
         "insufficient_eth": "Insufficient ETH",
-        "speed_up": "Speed Up"
+        "speed_up": "Speed Up",
+        "last_step": "One last step",
+        "last_step_description": "Confirm below to register your name and configure your profile"
       },
       "profile_avatar": {
         "choose_from_library": "Choose from Library",
