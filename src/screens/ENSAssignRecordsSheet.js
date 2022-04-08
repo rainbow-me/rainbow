@@ -388,6 +388,16 @@ function SelectableAttributesButtons({
   onRemoveField,
   navigateToAdditionalRecords,
 }) {
+  const dotsButtonIsSelected = useMemo(() => {
+    const nonPrimaryRecordsIds = Object.values(textRecordFields)
+      .filter(({ isPrimaryDisplayRecord }) => !isPrimaryDisplayRecord)
+      .map(({ id }) => id);
+    const dotsSelected = selectedFields.some(field =>
+      nonPrimaryRecordsIds.includes(field.id)
+    );
+    return dotsSelected;
+  }, [selectedFields]);
+
   return (
     <Inline space="10px">
       {Object.values(textRecordFields)
@@ -421,7 +431,7 @@ function SelectableAttributesButtons({
           );
         })}
       <SelectableButton
-        isSelected={false}
+        isSelected={dotsButtonIsSelected}
         onSelect={navigateToAdditionalRecords}
         testID="ens-selectable-attribute-dots"
       >
