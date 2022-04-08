@@ -20,6 +20,7 @@ import {
 import SelectableButton from '../components/ens-registration/TextRecordsForm/SelectableButton';
 import { SheetActionButton, SheetActionButtonRow } from '../components/sheet';
 import { useTheme } from '../context/ThemeContext';
+import { delayNext } from '../hooks/useMagicAutofocus';
 import { useNavigation } from '../navigation/Navigation';
 import {
   ENSConfirmRegisterSheetHeight,
@@ -192,6 +193,7 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
   } = useENSRegistrationForm();
 
   const handlePressBack = useCallback(() => {
+    delayNext();
     navigate(Routes.ENS_SEARCH_SHEET);
   }, [navigate]);
 

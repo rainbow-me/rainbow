@@ -39,9 +39,10 @@ const SearchInput = ({
   const { handleFocus } = useMagicAutofocus(
     inputRef,
     undefined,
-    undefined,
-    // Set a timeout to defer keyboard display until interactions finished (screen transition)
-    true
+    // On Android, should show keyboard upon navigation focus.
+    true,
+    // On iOS, defer keyboard display until interactions finished (screen transition).
+    ios
   );
 
   const height = 64;
@@ -123,6 +124,7 @@ const SearchInput = ({
               </MaskedView>
             </Column>
             <Input
+              autoCorrect={false}
               keyboardType="visible-password"
               onChangeText={onChangeText}
               onFocus={handleFocus}
