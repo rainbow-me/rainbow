@@ -270,8 +270,8 @@ export const textRecordFields = {
       maxLength: 100,
     },
     key: ENS_RECORDS.keywords,
-    label: lang.t('profiles.create.keyworkds'),
-    placeholder: lang.t('profiles.create.keyworkds_placeholder'),
+    label: lang.t('profiles.create.keywords'),
+    placeholder: lang.t('profiles.create.keywords_placeholder'),
   },
   [ENS_RECORDS.BTC]: {
     id: 'btc',
