@@ -1,4 +1,4 @@
-import { format } from 'date-fns';
+import { format, parse } from 'date-fns';
 import { UniqueAssetTrait } from '../entities/uniqueAssets';
 
 type MappedTrait = UniqueAssetTrait & {
@@ -6,6 +6,10 @@ type MappedTrait = UniqueAssetTrait & {
   lowercase?: boolean;
   disableMenu?: boolean;
 };
+
+const poapDateRegex = /\d\d-(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-\d\d\d\d/;
+const poapDateFormatString = 'dd-MMM-y';
+const targetDateFormatString = 'MMM do, y';
 
 /**
  * Mapper function that converts various NFT trait values according to their
@@ -21,8 +25,15 @@ export default function transformUniqueAssetTraitsForPresentation(
     // the value is in seconds with milliseconds in the decimal part
     // formatted like Jan 29th, 2022
     mappedTrait.value =
-      typeof value === 'number' ? format(value * 1000, 'MMM do, y') : value;
+      typeof value === 'number'
+        ? format(value * 1000, targetDateFormatString)
+        : value;
     mappedTrait.disableMenu = true;
+    // Checking whether the string value is a POAP date format to convert to our date format
+  } else if (typeof value === 'string' && poapDateRegex.test(value)) {
+    const poapDate = parse(value, poapDateFormatString, new Date());
+
+    mappedTrait.value = format(poapDate, targetDateFormatString);
   } else if (display_type === 'boost_percentage') {
     mappedTrait.value = `+${value}%`;
   } else if (display_type === 'boost_number') {
