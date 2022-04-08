@@ -103,7 +103,10 @@ export default function useENSRegistrationForm({
   useEffect(
     () => {
       if (createForm) {
-        setValuesMap(values => ({ ...values, [name]: isPrimaryDisplayRecords }));
+        setValuesMap(values => ({
+          ...values,
+          [name]: isPrimaryDisplayRecords,
+        }));
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
