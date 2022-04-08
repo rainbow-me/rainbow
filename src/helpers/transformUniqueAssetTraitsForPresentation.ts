@@ -15,39 +15,25 @@ export default function transformUniqueAssetTraitsForPresentation(
   trait: UniqueAssetTrait
 ): MappedTrait {
   const { display_type, value } = trait;
+  const mappedTrait: MappedTrait = { ...trait, originalValue: value };
 
   if (display_type === 'date') {
     // the value is in seconds with milliseconds in the decimal part
     // formatted like Jan 29th, 2022
-    const newValue =
+    mappedTrait.value =
       typeof value === 'number' ? format(value * 1000, 'MMM do, y') : value;
-
-    return {
-      ...trait,
-      disableMenu: true,
-      originalValue: value,
-      value: newValue,
-    };
+    mappedTrait.disableMenu = true;
+  } else if (display_type === 'boost_percentage') {
+    mappedTrait.value = `+${value}%`;
+  } else if (display_type === 'boost_number') {
+    mappedTrait.value = `+${value}`;
+  } else if (
+    typeof value === 'string' &&
+    value.toLowerCase().startsWith('https://')
+  ) {
+    mappedTrait.value = value.toLowerCase().replace('https://', '');
+    mappedTrait.lowercase = true;
   }
 
-  if (display_type === 'boost_percentage') {
-    return { ...trait, originalValue: value, value: `+${value}%` };
-  }
-
-  if (display_type === 'boost_number') {
-    return { ...trait, originalValue: value, value: `+${value}` };
-  }
-
-  if (typeof value === 'string' && value.toLowerCase().startsWith('https://')) {
-    const newValue = value.toLowerCase().replace('https://', '');
-
-    return {
-      ...trait,
-      lowercase: true,
-      originalValue: value,
-      value: newValue,
-    };
-  }
-
-  return { ...trait, originalValue: value };
+  return mappedTrait;
 }
