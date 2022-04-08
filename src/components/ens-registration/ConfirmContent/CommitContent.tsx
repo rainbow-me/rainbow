@@ -21,7 +21,7 @@ const CommitContent = ({
 }: {
   duration: number;
   registrationCostsData: any;
-  setDuration: (duration: number) => void;
+  setDuration: (callback: (duration: number) => number) => void;
 }) => {
   return (
     <Inset horizontal="30px">

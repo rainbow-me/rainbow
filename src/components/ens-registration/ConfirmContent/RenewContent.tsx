@@ -14,7 +14,7 @@ const RenewContent = ({
 }: {
   yearsDuration: number;
   registrationCostsData: any;
-  setDuration: (duration: number) => void;
+  setDuration: (callback: (duration: number) => number) => void;
   name: string;
 }) => {
   const ensProfile = useENSProfile(name + ENS_DOMAIN, { enabled: true });
