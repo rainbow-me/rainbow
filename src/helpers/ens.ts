@@ -291,7 +291,7 @@ const getNameOwner = async (name: string): Promise<string> => {
 };
 
 const getRentPrice = async (name: string, duration: number): Promise<any> => {
-  const contract = await getENSRegistryContract();
+  const contract = await getENSRegistrarControllerContract();
   return contract.rentPrice(name, duration);
 };
 
