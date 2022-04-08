@@ -99,22 +99,22 @@ export type TextRecordField = {
 
 export const textRecordFields = {
   [ENS_RECORDS.displayName]: {
-    defaultRecord: true,
     id: 'name',
     inputProps: {
       maxLength: 50,
     },
+    isPrimaryDisplayRecord: true,
     key: ENS_RECORDS.displayName,
     label: lang.t('profiles.create.name'),
     placeholder: lang.t('profiles.create.name_placeholder'),
   },
   [ENS_RECORDS.description]: {
-    defaultRecord: true,
     id: 'bio',
     inputProps: {
       maxLength: 100,
       multiline: true,
     },
+    isPrimaryDisplayRecord: true,
     key: ENS_RECORDS.description,
     label: lang.t('profiles.create.bio'),
     placeholder: lang.t('profiles.create.bio_placeholder'),
@@ -129,11 +129,11 @@ export const textRecordFields = {
     placeholder: lang.t('profiles.create.pronouns_placeholder'),
   },
   [ENS_RECORDS.twitter]: {
-    defaultRecord: true,
     id: 'twitter',
     inputProps: {
       maxLength: 16,
     },
+    isPrimaryDisplayRecord: true,
     key: ENS_RECORDS.twitter,
     label: lang.t('profiles.create.twitter'),
     placeholder: lang.t('profiles.create.username_placeholder'),
@@ -145,11 +145,11 @@ export const textRecordFields = {
     },
   },
   [ENS_RECORDS.email]: {
-    defaultRecord: true,
     id: 'email',
     inputProps: {
       maxLength: 50,
     },
+    isPrimaryDisplayRecord: true,
     key: ENS_RECORDS.email,
     label: lang.t('profiles.create.email'),
     placeholder: lang.t('profiles.create.email_placeholder'),
@@ -163,12 +163,12 @@ export const textRecordFields = {
     },
   },
   [ENS_RECORDS.url]: {
-    defaultRecord: true,
     id: 'website',
     inputProps: {
       keyboardType: 'url',
       maxLength: 100,
     },
+    isPrimaryDisplayRecord: true,
     key: ENS_RECORDS.url,
     label: lang.t('profiles.create.website'),
     placeholder: lang.t('profiles.create.website_placeholder'),
@@ -182,21 +182,21 @@ export const textRecordFields = {
     },
   },
   [ENS_RECORDS.github]: {
-    defaultRecord: true,
     id: 'github',
     inputProps: {
       maxLength: 20,
     },
+    isPrimaryDisplayRecord: true,
     key: ENS_RECORDS.github,
     label: lang.t('profiles.create.github'),
     placeholder: lang.t('profiles.create.username_placeholder'),
   },
   [ENS_RECORDS.instagram]: {
-    defaultRecord: true,
     id: 'instagram',
     inputProps: {
       maxLength: 30,
     },
+    isPrimaryDisplayRecord: true,
     key: ENS_RECORDS.instagram,
     label: lang.t('profiles.create.instagram'),
     placeholder: lang.t('profiles.create.username_placeholder'),
@@ -208,11 +208,11 @@ export const textRecordFields = {
     },
   },
   [ENS_RECORDS.snapchat]: {
-    defaultRecord: true,
     id: 'snapchat',
     inputProps: {
       maxLength: 16,
     },
+    isPrimaryDisplayRecord: true,
     key: ENS_RECORDS.snapchat,
     label: lang.t('profiles.create.snapchat'),
     placeholder: lang.t('profiles.create.username_placeholder'),
@@ -224,11 +224,11 @@ export const textRecordFields = {
     },
   },
   [ENS_RECORDS.discord]: {
-    defaultRecord: true,
     id: 'discord',
     inputProps: {
       maxLength: 50,
     },
+    isPrimaryDisplayRecord: true,
     key: ENS_RECORDS.discord,
     label: lang.t('profiles.create.discord'),
     placeholder: lang.t('profiles.create.username_placeholder'),

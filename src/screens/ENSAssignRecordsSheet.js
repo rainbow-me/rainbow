@@ -391,7 +391,7 @@ function SelectableAttributesButtons({
   return (
     <Inline space="10px">
       {Object.values(textRecordFields)
-        .filter(record => record.defaultRecord)
+        .filter(record => record.isPrimaryDisplayRecord)
         .map((textRecordField, i) => {
           const isSelected = selectedFields.some(
             field => field.id === textRecordField.id

@@ -56,7 +56,7 @@ export default function useENSRegistrationForm({
 
   // The initial records will be the existing records belonging to the profile in "edit mode",
   // but will be all of the records in "create mode".
-  const defaultRecords = useMemo(
+  const isPrimaryDisplayRecords = useMemo(
     () => (mode === REGISTRATION_MODES.EDIT ? initialRecords : allRecords),
     [allRecords, initialRecords, mode]
   );
@@ -82,10 +82,10 @@ export default function useENSRegistrationForm({
     if (createForm) {
       // If there are existing records in the global state, then we
       // populate with that.
-      if (!isEmpty(defaultRecords)) {
+      if (!isEmpty(isPrimaryDisplayRecords)) {
         setSelectedFields(
           // @ts-ignore
-          Object.keys(defaultRecords)
+          Object.keys(isPrimaryDisplayRecords)
             // @ts-ignore
             .map(key => textRecordFields[key])
             .filter(x => x)
@@ -96,23 +96,23 @@ export default function useENSRegistrationForm({
         }
       }
     }
-  }, [name, isEmpty(defaultRecords)]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [name, isEmpty(isPrimaryDisplayRecords)]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [valuesMap, setValuesMap] = useRecoilState(valuesAtom);
   const values = useMemo(() => valuesMap[name] || {}, [name, valuesMap]);
   useEffect(
     () => {
       if (createForm) {
-        setValuesMap(values => ({ ...values, [name]: defaultRecords }));
+        setValuesMap(values => ({ ...values, [name]: isPrimaryDisplayRecords }));
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [name, isEmpty(defaultRecords)]
+    [name, isEmpty(isPrimaryDisplayRecords)]
   );
 
   // Set initial records in redux depending on user input (defaultFields)
   useEffect(() => {
-    if (defaultFields && isEmpty(defaultRecords)) {
+    if (defaultFields && isEmpty(isPrimaryDisplayRecords)) {
       const records = defaultFields.reduce((records, field) => {
         return {
           ...records,
@@ -122,7 +122,7 @@ export default function useENSRegistrationForm({
       updateRecords(records);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isEmpty(defaultRecords), updateRecords]);
+  }, [isEmpty(isPrimaryDisplayRecords), updateRecords]);
 
   const onAddField = useCallback(
     (fieldToAdd, selectedFields) => {
