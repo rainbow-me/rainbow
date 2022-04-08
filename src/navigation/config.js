@@ -146,6 +146,15 @@ export const registerENSNavigatorConfig = {
   }),
 };
 
+export const profilePreviewConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      longFormHeight: 280,
+      ...params,
+    }),
+  }),
+};
+
 export const ensConfirmRegisterSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({

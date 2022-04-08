@@ -5,6 +5,7 @@ export { default as SearchResultGradientIndicator } from './SearchResult/SearchR
 export { default as SearchInputGradientBackground } from './SearchInput/SearchInputGradientBackground';
 export { default as SearchInput } from './SearchInput/SearchInput';
 export { default as TextRecordsForm } from './TextRecordsForm/TextRecordsForm';
+export { default as PendingRegistrations } from './PendingRegistrations/PendingRegistrations';
 export { default as WaitCommitmentConfirmationContent } from './ConfirmContent/WaitCommitmentConfirmationContent';
 export { default as RegisterContent } from './ConfirmContent/RegisterContent';
 export { default as CommitContent } from './ConfirmContent/CommitContent';

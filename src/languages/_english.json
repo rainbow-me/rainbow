@@ -581,6 +581,27 @@
         "copy_address": "Copy Address",
         "view_on_etherscan": "View on Etherscan"
       },
+      "intro": {
+        "create_your": "Create Your",
+        "ens_profile": "ENS Profile",
+        "wallet_address_info": {
+          "title": "A better wallet address",
+          "description": "Send to ENS names instead of hard-to-remember wallet addresses."
+        },
+        "portable_identity_info": {
+          "title": "A portable digital identity",
+          "description": "Carry your ENS name and profile between websites. No more signups."
+        },
+        "stored_on_blockchain_info": {
+          "title": "Stored on the blockchain",
+          "description": "Your name and profile are stored on Ethereum and owned by you."
+        },
+        "find_your_name": "Find your name",
+        "use_name": "Use %{name}",
+        "use_existing_name": "Use an existing ENS name",
+        "search_new_name": "Search for a new ENS name"
+      },
+      "select_ens_name": "Select ENS Name",
       "search": {
         "header": "Find your name",
         "description": "Search available profile names",
@@ -636,7 +657,8 @@
         "email_submit_message": "Please enter a valid email",
         "website_submit_message": "Please enter a valid email",
         "invalid_asset": "Invalid %{coin} address",
-        "invalid_content_hash": "Invalid content hash"
+        "invalid_content_hash": "Invalid content hash",
+        "remove": "Remove"
       },
       "confirm": {
         "confirm_purchase": "Confirm purchase",
@@ -661,7 +683,9 @@
         "commit_button": "Hold to Commit",
         "insufficient_eth": "Insufficient ETH",
         "speed_up": "Speed Up",
-        "extend_registration": "Extend Registration"
+        "extend_registration": "Extend Registration",
+        "last_step": "One last step",
+        "last_step_description": "Confirm below to register your name and configure your profile"
       },
       "profile_avatar": {
         "choose_from_library": "Choose from Library",
@@ -670,6 +694,14 @@
         "pick_emoji": "Pick an Emoji",
         "remove_photo": "Remove Photo",
         "view_profile": "View Profile"
+      },
+      "pending_registrations": {
+        "alert_title": "Are you sure?",
+        "alert_message": "`You are about to stop the registration process.\n  You'd need to start it again which means you'll need to send an additional transaction.`",
+        "alert_confirm": "Proceed Anyway",
+        "alert_cancel": "Cancel",
+        "in_progress": "In progress",
+        "finish": "Finish"
       }
     },
     "savings": {

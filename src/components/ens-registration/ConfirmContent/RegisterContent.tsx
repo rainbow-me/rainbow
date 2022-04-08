@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
 import React from 'react';
 import { Switch } from 'react-native-gesture-handler';
-import { Box, Column, Columns, Inset, Text } from '@rainbow-me/design-system';
+import { Box, Inline, Stack, Text } from '@rainbow-me/design-system';
 import { colors } from '@rainbow-me/styles';
 
 const RegisterContent = ({
@@ -14,27 +14,40 @@ const RegisterContent = ({
   setSendReverseRecord: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   return (
-    <Inset horizontal="30px">
-      <Columns>
-        <Column width="2/3">
+    <Box paddingHorizontal="30px">
+      <Box height="4/5">
+        <Stack space="12px">
+          <Text
+            align="center"
+            color="primary"
+            containsEmoji
+            size="23px"
+            weight="bold"
+          >
+            {lang.t('profiles.confirm.last_step')} 💈
+          </Text>
+          <Text align="center" color="secondary60" size="16px" weight="bold">
+            {lang.t('profiles.confirm.last_step_description')}
+          </Text>
+        </Stack>
+      </Box>
+      <Box height="1/5">
+        <Inline alignHorizontal="justify" alignVertical="center">
           <Text color="secondary80" size="16px" weight="bold">
             {lang.t('profiles.confirm.set_ens_name')} 􀅵
           </Text>
-        </Column>
-        <Column width="1/3">
-          <Box alignItems="flex-end">
-            <Switch
-              onValueChange={() =>
-                setSendReverseRecord(sendReverseRecord => !sendReverseRecord)
-              }
-              testID="ens-reverse-record-switch"
-              trackColor={{ false: colors.white, true: accentColor }}
-              value={sendReverseRecord}
-            />
-          </Box>
-        </Column>
-      </Columns>
-    </Inset>
+          <Switch
+            disabled={!setSendReverseRecord}
+            onValueChange={() =>
+              setSendReverseRecord?.(sendReverseRecord => !sendReverseRecord)
+            }
+            testID="ens-reverse-record-switch"
+            trackColor={{ false: colors.white, true: accentColor }}
+            value={sendReverseRecord}
+          />
+        </Inline>
+      </Box>
+    </Box>
   );
 };
 

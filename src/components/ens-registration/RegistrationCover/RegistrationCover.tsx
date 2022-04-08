@@ -30,7 +30,12 @@ export default function RegistrationCover({
   const {
     images: { coverUrl: initialCoverUrl },
   } = useENSRegistration();
-  const { isLoading, onBlurField, values } = useENSRegistrationForm();
+  const {
+    isLoading,
+    onBlurField,
+    onRemoveField,
+    values,
+  } = useENSRegistrationForm();
 
   const [coverUrl, setCoverUrl] = useState(initialCoverUrl || values?.cover);
   useEffect(() => {
@@ -54,6 +59,11 @@ export default function RegistrationCover({
       if (image?.tmpPath) {
         onBlurField({ key: 'cover', value: image.tmpPath });
       }
+    },
+    onRemoveImage: () => {
+      onRemoveField({ key: 'cover' });
+      setCoverUrl('');
+      setCoverMetadata(undefined);
     },
     onUploadSuccess: ({ data }) => {
       onBlurField({ key: 'cover', value: data.url });

@@ -31,11 +31,14 @@ export default function useFetchUniqueTokens({
   const [hasStoredTokens, setHasStoredTokens] = useState(false);
   useEffect(() => {
     (async () => {
-      const { hasStoredTokens } = await getStoredUniqueTokens({
-        address,
-        network,
-      });
-      setHasStoredTokens(hasStoredTokens);
+      try {
+        const { hasStoredTokens } = await getStoredUniqueTokens({
+          address,
+          network,
+        });
+        setHasStoredTokens(hasStoredTokens);
+        // eslint-disable-next-line no-empty
+      } catch (e) {}
     })();
   }, [address, network]);
 
