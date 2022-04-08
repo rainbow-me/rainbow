@@ -40,13 +40,20 @@ export default function RegistrationAvatar({
   const {
     images: { avatarUrl: initialAvatarUrl },
   } = useENSRegistration();
-  const { isLoading, values, onBlurField } = useENSRegistrationForm();
+  const {
+    isLoading,
+    values,
+    onBlurField,
+    onRemoveField,
+  } = useENSRegistrationForm();
 
   const [avatarUrl, setAvatarUrl] = useState(
     initialAvatarUrl || values?.avatar
   );
   useEffect(() => {
-    setAvatarUrl(initialAvatarUrl || values?.avatar);
+    setAvatarUrl(
+      typeof initialAvatarUrl === 'string' ? initialAvatarUrl : values?.avatar
+    );
   }, [initialAvatarUrl]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const setAvatarMetadata = useSetRecoilState(avatarMetadataAtom);
@@ -81,6 +88,12 @@ export default function RegistrationAvatar({
           value: image.tmpPath,
         });
       }
+    },
+    onRemoveImage: () => {
+      onRemoveField({ key: 'avatar' });
+      setAvatarUrl('');
+      onChangeAvatarUrl('');
+      setAvatarMetadata(undefined);
     },
     onUploadError: () => {
       onBlurField({ key: 'avatar', value: '' });

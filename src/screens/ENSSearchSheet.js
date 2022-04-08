@@ -5,6 +5,7 @@ import { useDebounce } from 'use-debounce';
 import dice from '../assets/dice.png';
 import TintButton from '../components/buttons/TintButton';
 import {
+  PendingRegistrations,
   SearchInput,
   SearchResultGradientIndicator,
 } from '../components/ens-registration';
@@ -122,6 +123,14 @@ export default function ENSSearchSheet() {
                 {lang.t('profiles.search.3_char_min')}
               </Text>
             </Inline>
+          )}
+          {isIdle && (
+            <>
+              <Inset vertical="24px">
+                <Divider />
+              </Inset>
+              <PendingRegistrations />
+            </>
           )}
           {isInvalid && (
             <Inset horizontal="30px">

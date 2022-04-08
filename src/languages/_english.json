@@ -631,7 +631,8 @@
         "website_placeholder": "Add your website",
         "review": "Review",
         "choose_nft": "Choose NFT",
-        "upload_photo": "Upload photo"
+        "upload_photo": "Upload photo",
+        "remove": "Remove"
       },
       "confirm": {
         "confirm_purchase": "Confirm purchase",
@@ -656,7 +657,9 @@
         "commit_button": "Hold to Commit",
         "insufficient_eth": "Insufficient ETH",
         "speed_up": "Speed Up",
-        "extend_registration": "Extend Registration"
+        "extend_registration": "Extend Registration",
+        "last_step": "One last step",
+        "last_step_description": "Confirm below to register your name and configure your profile"
       },
       "profile_avatar": {
         "choose_from_library": "Choose from Library",
@@ -665,6 +668,14 @@
         "pick_emoji": "Pick an Emoji",
         "remove_photo": "Remove Photo",
         "view_profile": "View Profile"
+      },
+      "pending_registrations": {
+        "alert_title": "Are you sure?",
+        "alert_message": "`You are about to stop the registration process.\n  You'd need to start it again which means you'll need to send an additional transaction.`",
+        "alert_confirm": "Proceed Anyway",
+        "alert_cancel": "Cancel",
+        "in_progress": "In progress",
+        "finish": "Finish"
       }
     },
     "savings": {
