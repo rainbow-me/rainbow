@@ -21,7 +21,9 @@ const APP_CENTER_READ_ONLY_TOKEN = ios
 async function checkIfRainbowRelease(deploymentKey: string): Promise<boolean> {
   try {
     const response = await rainbowFetch(
-      `https://api.appcenter.ms/v0.1/apps/osdnk/rainbow-ios-codepush/deployments`,
+      `https://api.appcenter.ms/v0.1/apps/osdnk/rainbow-${
+        ios ? 'ios' : 'android'
+      }-codepush/deployments`,
       {
         headers: {
           'X-API-Token': APP_CENTER_READ_ONLY_TOKEN,
