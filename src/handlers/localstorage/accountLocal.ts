@@ -242,7 +242,8 @@ export const getLocalENSRegistrations = (
   accountAddress: any,
   network: any
 ): Promise<ENSRegistrations> =>
-  getAccountLocal(ENS_REGISTRATIONS, accountAddress, network);
+  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{}' is not assignable to paramet... Remove this comment to see the full error message
+  getAccountLocal(ENS_REGISTRATIONS, accountAddress, network, {});
 
 /**
  * @desc save ENS registrations
