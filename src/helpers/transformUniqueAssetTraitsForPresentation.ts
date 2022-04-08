@@ -33,6 +33,12 @@ export default function transformUniqueAssetTraitsForPresentation(
   ) {
     mappedTrait.value = value.toLowerCase().replace('https://', '');
     mappedTrait.lowercase = true;
+  } else if (
+    typeof value === 'string' &&
+    value.toLowerCase().startsWith('http://')
+  ) {
+    mappedTrait.value = value.toLowerCase().replace('http://', '');
+    mappedTrait.lowercase = true;
   }
 
   return mappedTrait;
