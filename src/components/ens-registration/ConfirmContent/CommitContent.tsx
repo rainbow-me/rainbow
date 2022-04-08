@@ -21,7 +21,7 @@ const CommitContent = ({
 }: {
   duration: number;
   registrationCostsData: any;
-  setDuration: (duration: number) => void;
+  setDuration: React.Dispatch<React.SetStateAction<number>>;
 }) => {
   return (
     <Inset horizontal="30px">
