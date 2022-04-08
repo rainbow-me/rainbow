@@ -610,7 +610,16 @@
         "website_placeholder": "Add your website",
         "review": "Review",
         "choose_nft": "Choose NFT",
-        "upload_photo": "Upload photo"
+        "upload_photo": "Upload photo",
+        "twitter": "Twitter",
+        "email": "Email",
+        "email_placeholder": "Add your email",
+        "email_message": "Please enter a valid email",
+        "website_message": "Please enter a valid website URL",
+        "github": "Github",
+        "instagram": "Instagram",
+        "snapchat": "Snapchat",
+        "discord": "Discord"
       },
       "confirm": {
         "confirm_purchase": "Confirm purchase",

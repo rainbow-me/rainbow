@@ -108,7 +108,7 @@ export const textRecordFields = {
       maxLength: 16,
     },
     key: ENS_RECORDS.twitter,
-    label: 'Twitter',
+    label: lang.t('profiles.create.twitter'),
     placeholder: lang.t('profiles.create.username_placeholder'),
     startsWith: '@',
     validations: {
@@ -123,12 +123,12 @@ export const textRecordFields = {
       maxLength: 50,
     },
     key: ENS_RECORDS.email,
-    label: 'Email',
-    placeholder: 'Add your email',
+    label: lang.t('profiles.create.email'),
+    placeholder: lang.t('profiles.create.email_placeholder'),
     validations: {
       onSubmit: {
         match: {
-          message: 'Please enter a valid email',
+          message: lang.t('profiles.create.email_message'),
           value: /^\S+@\S+\.\S+$/,
         },
       },
@@ -146,7 +146,7 @@ export const textRecordFields = {
     validations: {
       onSubmit: {
         match: {
-          message: 'Please enter a valid website URL',
+          message: lang.t('profiles.create.website_message'),
           value: /[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/,
         },
       },
@@ -158,7 +158,7 @@ export const textRecordFields = {
       maxLength: 20,
     },
     key: ENS_RECORDS.github,
-    label: 'GitHub',
+    label: lang.t('profiles.create.github'),
     placeholder: lang.t('profiles.create.username_placeholder'),
   },
   [ENS_RECORDS.instagram]: {
@@ -167,7 +167,7 @@ export const textRecordFields = {
       maxLength: 30,
     },
     key: ENS_RECORDS.instagram,
-    label: 'Instagram',
+    label: lang.t('profiles.create.instagram'),
     placeholder: lang.t('profiles.create.username_placeholder'),
     startsWith: '@',
     validations: {
@@ -182,7 +182,7 @@ export const textRecordFields = {
       maxLength: 16,
     },
     key: ENS_RECORDS.snapchat,
-    label: 'Snapchat',
+    label: lang.t('profiles.create.snapchat'),
     placeholder: lang.t('profiles.create.username_placeholder'),
     startsWith: '@',
     validations: {
@@ -197,7 +197,7 @@ export const textRecordFields = {
       maxLength: 50,
     },
     key: ENS_RECORDS.discord,
-    label: 'Discord',
+    label: lang.t('profiles.create.discord'),
     placeholder: lang.t('profiles.create.username_placeholder'),
   },
 } as {
