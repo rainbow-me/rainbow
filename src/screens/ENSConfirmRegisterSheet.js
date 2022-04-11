@@ -18,8 +18,6 @@ import { SheetActionButtonRow, SlackSheet } from '../components/sheet';
 import {
   AccentColorProvider,
   Box,
-  Column,
-  Columns,
   Divider,
   Heading,
   Inline,
@@ -94,44 +92,52 @@ function CommitContent({ registrationCostsData, setDuration, duration }) {
 }
 
 function RegisterContent({
-  setSendReverseRecord,
   accentColor,
   sendReverseRecord,
+  setSendReverseRecord,
 }) {
   return (
-    <Inset horizontal="30px">
-      <Columns>
-        <Column width="2/3">
+    <Box paddingHorizontal="30px" paddingTop="76px">
+      <Box height="4/5">
+        <Stack space="12px">
           <Text
-            color="secondary80"
-            lineHeight="loose"
-            size="16px"
+            align="center"
+            color="primary"
+            containsEmoji
+            size="23px"
             weight="bold"
           >
+            {lang.t('profiles.confirm.last_step')} 💈
+          </Text>
+          <Text align="center" color="secondary60" size="16px" weight="bold">
+            {lang.t('profiles.confirm.last_step_description')}
+          </Text>
+        </Stack>
+      </Box>
+      <Box height="1/5">
+        <Inline alignHorizontal="justify" alignVertical="center">
+          <Text color="secondary80" size="16px" weight="bold">
             {lang.t('profiles.confirm.set_ens_name')} 􀅵
           </Text>
-        </Column>
-        <Column width="1/3">
-          <Box alignItems="flex-end">
-            <Switch
-              onValueChange={() =>
-                setSendReverseRecord(sendReverseRecord => !sendReverseRecord)
-              }
-              testID="ens-reverse-record-switch"
-              trackColor={{ false: colors.white, true: accentColor }}
-              value={sendReverseRecord}
-            />
-          </Box>
-        </Column>
-      </Columns>
-    </Inset>
+          <Switch
+            disabled={!setSendReverseRecord}
+            onValueChange={() =>
+              setSendReverseRecord?.(sendReverseRecord => !sendReverseRecord)
+            }
+            testID="ens-reverse-record-switch"
+            trackColor={{ false: colors.white, true: accentColor }}
+            value={sendReverseRecord}
+          />
+        </Inline>
+      </Box>
+    </Box>
   );
 }
 
 function WaitCommitmentConfirmationContent({ accentColor, action }) {
   return (
     <Box height="full">
-      <Box height="full">
+      <Box height="full" paddingTop="76px">
         <HourglassAnimation />
       </Box>
       <Box alignItems="center" paddingBottom={5}>
@@ -292,8 +298,8 @@ export default function ENSConfirmRegisterSheet() {
         />
       ),
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: (
-        <Box alignItems="center" height="full">
-          <LargeCountdownClock minutes={1} onFinished={() => {}} seconds={10} />
+        <Box alignItems="center" height="full" paddingTop="76px">
+          <LargeCountdownClock minutes={1} onFinished={() => {}} seconds={0} />
         </Box>
       ),
     }),

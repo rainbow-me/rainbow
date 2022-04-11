@@ -610,7 +610,16 @@
         "website_placeholder": "Add your website",
         "review": "Review",
         "choose_nft": "Choose NFT",
-        "upload_photo": "Upload photo"
+        "upload_photo": "Upload photo",
+        "twitter": "Twitter",
+        "email": "Email",
+        "email_placeholder": "Add your email",
+        "email_message": "Please enter a valid email",
+        "website_message": "Please enter a valid website URL",
+        "github": "Github",
+        "instagram": "Instagram",
+        "snapchat": "Snapchat",
+        "discord": "Discord"
       },
       "confirm": {
         "confirm_purchase": "Confirm purchase",
@@ -631,7 +640,9 @@
         "duration_singular": "1 year",
         "commit_button": "Hold to Commit",
         "insufficient_eth": "Insufficient ETH",
-        "speed_up": "Speed Up"
+        "speed_up": "Speed Up",
+        "last_step": "One last step",
+        "last_step_description": "Confirm below to register your name and configure your profile"
       },
       "profile_avatar": {
         "choose_from_library": "Choose from Library",
