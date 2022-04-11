@@ -270,11 +270,6 @@ const getENSRegistryContract = async () => {
   return new Contract(ensRegistryAddress, ENSRegistryWithFallbackABI, provider);
 };
 
-const getResolver = async (name: string): Promise<string> => {
-  const contract = await getENSRegistryContract();
-  return contract.resolver(name);
-};
-
 const getAvailable = async (name: string): Promise<boolean> => {
   const contract = await getENSRegistrarControllerContract();
   return contract.available(name);
@@ -372,7 +367,7 @@ const setupMulticallRecords = (
   return data.flat().filter(Boolean);
 };
 
-export const generateSalt = () => {
+const generateSalt = () => {
   const random = new Uint8Array(32);
   crypto.getRandomValues(random);
   const salt =
@@ -578,6 +573,7 @@ const accentColorAtom = atom({
 });
 
 export {
+  generateSalt,
   getENSRecordKeys,
   getENSRecordValues,
   getENSRegistryContract,
@@ -585,7 +581,6 @@ export {
   getENSBaseRegistrarImplementationContract,
   getENSPublicResolverContract,
   getENSReverseRegistrarContract,
-  getResolver,
   getAvailable,
   getNameExpires,
   getNameOwner,
