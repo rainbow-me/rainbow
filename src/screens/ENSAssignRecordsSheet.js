@@ -40,6 +40,10 @@ import {
   Text,
 } from '@rainbow-me/design-system';
 import {
+  getSeenOnchainDataDisclaimer,
+  saveSeenOnchainDataDisclaimer,
+} from '@rainbow-me/handlers/localstorage/ens';
+import {
   accentColorAtom,
   ENS_RECORDS,
   REGISTRATION_MODES,
@@ -110,14 +114,22 @@ export default function ENSAssignRecordsSheet() {
   );
 
   const [hasSeenExplainSheet, setHasSeenExplainSheet] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      setHasSeenExplainSheet(Boolean(await getSeenOnchainDataDisclaimer()));
+    })();
+  }, []);
+
   const { navigate } = useNavigation();
-  const handleFocus = useCallback(() => {
+  const handleFocus = useCallback(async () => {
     if (!hasSeenExplainSheet) {
       android && Keyboard.dismiss();
       navigate(Routes.EXPLAIN_SHEET, {
         type: 'ensOnChainDataWarning',
       });
       setHasSeenExplainSheet(true);
+      saveSeenOnchainDataDisclaimer(true);
     }
   }, [hasSeenExplainSheet, navigate, setHasSeenExplainSheet]);
 
