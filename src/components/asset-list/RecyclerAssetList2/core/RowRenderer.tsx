@@ -93,7 +93,7 @@ function rowRenderer(type: CellType, { uid }: { uid: string }) {
           case CellType.NFTS_HEADER:
             return (
               // @ts-expect-error JavaScript component
-              <AssetListHeader title="Collectibles" />
+              <AssetListHeader title="NFTs" />
             );
           case CellType.FAMILY_HEADER: {
             const { name, image, total } = data as NFTFamilyExtraData;
