@@ -68,7 +68,7 @@ export default function RegistrationReviewRows({
 }: {
   maxDuration: number;
   duration: number;
-  onChangeDuration: (callback: (duration: number) => number) => void;
+  onChangeDuration: React.Dispatch<React.SetStateAction<number>>;
   networkFee: string;
   totalCost: string;
   estimatedCostETH: string;

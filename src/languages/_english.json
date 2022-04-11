@@ -632,7 +632,16 @@
         "review": "Review",
         "choose_nft": "Choose NFT",
         "upload_photo": "Upload photo",
-        "remove": "Remove"
+        "remove": "Remove",
+        "twitter": "Twitter",
+        "email": "Email",
+        "email_placeholder": "Add your email",
+        "email_message": "Please enter a valid email",
+        "website_message": "Please enter a valid website URL",
+        "github": "Github",
+        "instagram": "Instagram",
+        "snapchat": "Snapchat",
+        "discord": "Discord"
       },
       "confirm": {
         "confirm_purchase": "Confirm purchase",
@@ -713,7 +722,7 @@
       "label": "Settings",
       "language": "Language",
       "learn": "Learn about Rainbow and Ethereum",
-      "learn_short": "Learn about Rainbow :)",
+      "learn_short": "Learn about Rainbow",
       "network": "Network",
       "privacy": "Privacy",
       "review": "Review Rainbow",
