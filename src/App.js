@@ -5,7 +5,7 @@ import * as Sentry from '@sentry/react-native';
 import { get } from 'lodash';
 import { nanoid } from 'nanoid/non-secure';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { Component, createRef } from 'react';
 import {
   AppRegistry,
   AppState,
@@ -76,7 +76,7 @@ import logger from 'logger';
 import { Portal } from 'react-native-cool-modals/Portal';
 const WALLETCONNECT_SYNC_DELAY = 500;
 
-let FedoraToastRef;
+const FedoraToastRef = createRef();
 
 StatusBar.pushStackEntry({ animated: true, barStyle: 'dark-content' });
 
@@ -95,7 +95,7 @@ if (__DEV__) {
       });
     } else {
       isCustomBuild.value = true;
-      setTimeout(() => FedoraToastRef?.show(), 300);
+      setTimeout(() => FedoraToastRef?.current?.show(), 300);
     }
 
     const metadata = await codePush.getUpdateMetadata();
@@ -313,7 +313,7 @@ class App extends Component {
                           </InitialRouteContext.Provider>
                         )}
                         <OfflineToast />
-                        <FedoraToast ref={ref => (FedoraToastRef = ref)} />
+                        <FedoraToast ref={FedoraToastRef} />
                       </View>
                     </SharedValuesProvider>
                   </RecoilRoot>

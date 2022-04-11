@@ -105,3 +105,29 @@ export function setOriginalDeploymentKey() {
   codePush.clearUpdates();
   setTimeout(codePush.restartApp, 1000);
 }
+
+const COPEPUSH_IOS_PREFFIX = 'update-ios-';
+const COPEPUSH_ANDROID_PREFFIX = 'update-android-';
+
+export function handleQRScanner(data: string): boolean {
+  if (data.startsWith(COPEPUSH_IOS_PREFFIX)) {
+    if (android) {
+      Alert.alert('Tried to use Android bundle');
+      return false;
+    } else {
+      setDeploymentKey(data.substring(COPEPUSH_IOS_PREFFIX.length));
+      return true;
+    }
+  }
+
+  if (data.startsWith(COPEPUSH_ANDROID_PREFFIX)) {
+    if (ios) {
+      Alert.alert('Tried to use iOS bundle');
+      return false;
+    } else {
+      setDeploymentKey(data.substring(COPEPUSH_ANDROID_PREFFIX.length));
+      return true;
+    }
+  }
+  return false;
+}
