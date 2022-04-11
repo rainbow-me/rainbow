@@ -4,6 +4,7 @@ import { magicMemo } from '../../utils';
 import Tag from './Tag';
 import { Inline } from '@rainbow-me/design-system';
 import { UniqueAsset } from '@rainbow-me/entities';
+import isHttpUrl from '@rainbow-me/helpers/isHttpUrl';
 import transformUniqueAssetTraitsForPresentation from '@rainbow-me/helpers/transformUniqueAssetTraitsForPresentation';
 import uniqueAssetTraitDisplayTypeCompareFunction from '@rainbow-me/helpers/uniqueAssetTraitDisplayTypeCompareFunction';
 
@@ -23,6 +24,7 @@ const UniqueTokenAttributes = ({
   const sortedTraits = useMemo(
     () =>
       (sortList(traits, 'trait_type', 'asc') as typeof traits)
+        .filter(trait => !isHttpUrl(trait.value))
         .filter(trait => trait.value && trait.trait_type)
         .sort(uniqueAssetTraitDisplayTypeCompareFunction)
         .map(transformUniqueAssetTraitsForPresentation)
