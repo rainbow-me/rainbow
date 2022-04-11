@@ -78,6 +78,10 @@ export default function useMagicAutofocus(
             delay = false;
           }, 200);
         });
+      } else if (!isNativeStackAvailable) {
+        // We need to do this in order to assure that the input gets focused
+        // when using fallback stacks.
+        InteractionManager.runAfterInteractions(fallbackRefocusLastInput);
       } else {
         if (showAfterInteractions) {
           InteractionManager.runAfterInteractions(() => {
@@ -86,12 +90,6 @@ export default function useMagicAutofocus(
         } else {
           triggerFocus();
         }
-      }
-
-      // We need to do this in order to assure that the input gets focused
-      // when using fallback stacks.
-      if (!isNativeStackAvailable) {
-        InteractionManager.runAfterInteractions(fallbackRefocusLastInput);
       }
 
       return () => {
