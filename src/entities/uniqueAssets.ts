@@ -64,4 +64,5 @@ export interface UniqueAssetTrait {
   trait_type: string;
   value: string | number | null | undefined;
   display_type: string;
+  max_value: string | number | null | undefined;
 }

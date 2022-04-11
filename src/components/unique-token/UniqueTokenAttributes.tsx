@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { sortList } from '../../helpers/sortList';
 import { magicMemo } from '../../utils';
-import UniqueTokenAttributeItem from './UniqueTokenAttributeItem';
+import Tag from './Tag';
 import { Inline } from '@rainbow-me/design-system';
 import { UniqueAsset } from '@rainbow-me/entities';
 import transformUniqueAssetTraitsForPresentation from '@rainbow-me/helpers/transformUniqueAssetTraitsForPresentation';
@@ -37,12 +37,29 @@ const UniqueTokenAttributes = ({
 
   return (
     <Inline space="10px">
-      {sortedTraits.map(item => (
-        <UniqueTokenAttributeItem
-          key={`${item.trait_type}${item.originalValue}`}
-          {...item}
-        />
-      ))}
+      {sortedTraits.map(
+        ({
+          color,
+          disableMenu,
+          lowercase,
+          value,
+          originalValue,
+          trait_type: type,
+          max_value: maxValue,
+        }) => (
+          <Tag
+            color={color}
+            disableMenu={disableMenu}
+            key={`${type}${originalValue}`}
+            lowercase={lowercase}
+            maxValue={maxValue}
+            originalValue={originalValue}
+            slug={slug}
+            text={value}
+            title={type}
+          />
+        )
+      )}
     </Inline>
   );
 };

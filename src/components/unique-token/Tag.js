@@ -4,14 +4,13 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Linking } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
-import { magicMemo, showActionSheetWithOptions } from '../utils';
-import { Alert } from './alerts';
-import { ButtonPressAnimation } from './animations';
-import { Centered, Column } from './layout';
-import { Text as TextElement } from './text';
+import { ButtonPressAnimation } from '../animations';
+import { Centered, Column } from '../layout';
+import { Text as TextElement } from '../text';
 import { Inline } from '@rainbow-me/design-system';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
+import { magicMemo, showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const HairlineSpace = '\u200a';
 
@@ -75,24 +74,6 @@ const Title = styled(TextElement).attrs(({ color, theme: { colors } }) => ({
   marginBottom: 1,
 });
 
-const openUrlWithWarningAlert = url => {
-  Alert({
-    buttons: [
-      {
-        onPress: () => Linking.openURL(url),
-        text: 'Open',
-      },
-      { style: 'cancel', text: 'Cancel' },
-    ],
-    message:
-      'In a moment you will be redirected to\n' +
-      url +
-      '\n' +
-      'Make sure this address is safe, if in doubt do not open it.',
-    title: 'Warning',
-  });
-};
-
 const Tag = ({
   color,
   disableMenu,
@@ -118,14 +99,13 @@ const Tag = ({
             '?search[stringTraits][0][name]=' +
             title +
             '&search[stringTraits][0][values][0]=' +
-            originalValue ?? text
+            originalValue
         );
       } else if (actionKey === PropertyActionsEnum.openURL) {
-        const url = originalValue ?? text;
-        openUrlWithWarningAlert(url);
+        Linking.openURL(originalValue);
       }
     },
-    [slug, text, originalValue, title]
+    [slug, originalValue, title]
   );
 
   const onPressAndroid = useCallback(() => {
@@ -151,15 +131,14 @@ const Tag = ({
               '?search[stringTraits][0][name]=' +
               title +
               '&search[stringTraits][0][values][0]=' +
-              originalValue ?? text
+              originalValue
           );
         } else if (idx === 1) {
-          const url = originalValue ?? text;
-          openUrlWithWarningAlert(url);
+          Linking.openURL(originalValue);
         }
       }
     );
-  }, [slug, text, originalValue, title]);
+  }, [slug, originalValue, title]);
 
   const menuConfig = useMemo(() => {
     const menuItems = [viewTraitOnOpenseaAction];
