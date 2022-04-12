@@ -78,6 +78,8 @@ export const ZoomableWrapper = ({
   opacity,
   yOffset = 85,
   xOffset: givenXOffset = 0,
+  onZoomIn,
+  onZoomOut,
   yDisplacement: givenYDisplacement,
   width,
   height,
@@ -128,10 +130,12 @@ export const ZoomableWrapper = ({
   useEffect(() => {
     if (isZoomed) {
       StatusBar.setHidden(true);
+      onZoomIn?.();
     } else {
       StatusBar.setHidden(false);
+      onZoomOut?.();
     }
-  }, [isZoomed]);
+  }, [isZoomed, onZoomIn, onZoomOut]);
 
   const fullSizeHeight = Math.min(deviceHeight, deviceWidth / aspectRatio);
   const fullSizeWidth = Math.min(deviceWidth, deviceHeight * aspectRatio);
