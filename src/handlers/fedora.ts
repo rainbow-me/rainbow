@@ -70,7 +70,7 @@ export async function setDeploymentKey(key: string) {
 
   Alert.alert(
     'Fedora',
-    `This will override you bundle. Be careful. Are you Rainbow employee?`,
+    `This will override your bundle. Be careful. Are you a Rainbow employee?`,
     [
       {
         onPress: async () => {
