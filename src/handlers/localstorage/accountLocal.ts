@@ -208,7 +208,7 @@ export const getLocalPendingTransactions = (
   network: any
 ) =>
   getAccountLocal(
-    TRANSACTIONS,
+    PENDING_TRANSACTIONS,
     accountAddress,
     network,
     [],
@@ -242,7 +242,7 @@ export const saveLocalPendingTransactions = (
  */
 export const getLocalTransactions = (accountAddress: any, network: any) =>
   getAccountLocal(
-    PENDING_TRANSACTIONS,
+    TRANSACTIONS,
     accountAddress,
     network,
     [],
