@@ -1,10 +1,19 @@
-import { useCallback, useMemo } from 'react';
-import { useQuery } from 'react-query';
+import { useCallback, useEffect, useMemo } from 'react';
+import { useQueries, useQuery } from 'react-query';
+import { atom, useRecoilState } from 'recoil';
+import useGas from './useGas';
 import { useAccountSettings } from '.';
-import { Records } from '@rainbow-me/entities';
 import {
-  estimateENSRegistrationGasLimit,
+  GasFeeParam,
+  GasFeeParams,
+  GasFeeParamsBySpeed,
+  Records,
+} from '@rainbow-me/entities';
+import {
+  estimateENSCommitGasLimit,
   estimateENSRenewGasLimit,
+  estimateENSSetNameGasLimit,
+  estimateENSSetRecordsGasLimit,
   fetchReverseRecord,
   getENSRegistrationGasLimit,
 } from '@rainbow-me/handlers/ens';
@@ -13,6 +22,7 @@ import {
   formatEstimatedNetworkFee,
   formatRentPrice,
   formatTotalRegistrationCost,
+  generateSalt,
   REGISTRATION_STEPS,
 } from '@rainbow-me/helpers/ens';
 import { Network } from '@rainbow-me/helpers/networkTypes';
@@ -28,6 +38,39 @@ import { getEIP1559GasParams } from '@rainbow-me/redux/gas';
 import { ethUnits, timeUnits } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
 
+const commitGasLimitAtom = atom({
+  default: '',
+  key: 'ens.commitGasLimit',
+});
+
+const setRecordsGasLimitAtom = atom({
+  default: '',
+  key: 'ens.setRecordsGasLimitAtom',
+});
+
+// const registerGasLimitAtom = atom({
+//   default: '',
+//   key: 'ens.registerGasLimitAtom',
+// });
+
+const setNameGasLimitAtom = atom({
+  default: '',
+  key: 'ens.setNameGasLimitAtom',
+});
+
+const hasReverseRecordAtom = atom({
+  default: false,
+  key: 'ens.hasReverseRecordAtom',
+});
+
+const gasFeeParamsAtom = atom({
+  default: {
+    currentBaseFee: {} as GasFeeParam,
+    gasFeeParamsBySpeed: {} as GasFeeParamsBySpeed,
+  },
+  key: 'ens.gasFeeParams',
+});
+
 export default function useENSRegistrationCosts({
   yearsDuration,
   name,
@@ -40,11 +83,37 @@ export default function useENSRegistrationCosts({
   name: string;
   step: keyof typeof REGISTRATION_STEPS;
   sendReverseRecord: boolean;
-  rentPrice?: { wei: number; perYear: { wei: number } };
+  rentPrice: { wei: number; perYear: { wei: number } };
   records?: Records;
 }) {
   const { nativeCurrency, accountAddress } = useAccountSettings();
   const duration = yearsDuration * timeUnits.secs.year;
+
+  const {
+    gasFeeParamsBySpeed,
+    currentBlockParams,
+    startPollingGasFees,
+  } = useGas();
+
+  const [commitGasLimit, setCommitGasLimit] = useRecoilState(
+    commitGasLimitAtom
+  );
+  const [setRecordsGasLimit, setSetRecordsGasLimit] = useRecoilState(
+    setRecordsGasLimitAtom
+  );
+  // const [registerGasLimit, setRegisterGasLimit] = useRecoilState(
+  //   registerGasLimitAtom
+  // );
+  const [setNameGasLimit, setSetNameGasLimit] = useRecoilState(
+    setNameGasLimitAtom
+  );
+  const [hasReverseRecord, setHasReverseRecord] = useRecoilState(
+    hasReverseRecordAtom
+  );
+
+  const [gasFeeParams, setGasFeeParams] = useRecoilState(gasFeeParamsAtom);
+
+  const rentPriceInWei = rentPrice?.wei?.toString();
 
   const checkIfSufficientEth = useCallback((wei: string) => {
     const nativeAsset = ethereumUtils.getNetworkNativeAsset(
@@ -56,29 +125,89 @@ export default function useENSRegistrationCosts({
     return isSufficientGas;
   }, []);
 
-  const rentPriceInWei = rentPrice?.wei?.toString();
+  const getCommitGasLimit = useCallback(async () => {
+    if (commitGasLimit !== '') return commitGasLimit;
+    if (name?.length < 3) return;
+    const salt = generateSalt();
+    const newCommitGasLimit =
+      (await estimateENSCommitGasLimit({
+        duration,
+        name,
+        ownerAddress: accountAddress,
+        rentPrice: rentPriceInWei,
+        salt,
+      })) || '0';
+    setCommitGasLimit(newCommitGasLimit);
+    return commitGasLimit;
+  }, [
+    accountAddress,
+    commitGasLimit,
+    duration,
+    name,
+    rentPriceInWei,
+    setCommitGasLimit,
+  ]);
+
+  const getSetRecordsGasLimit = useCallback(async () => {
+    if (name?.length < 3 || !records) return;
+    console.log(
+      '⛽⛽⛽⛽⛽⛽⛽⛽⛽⛽⛽⛽⛽⛽⛽⛽⛽⛽⛽⛽⛽⛽⛽⛽⛽⛽⛽ getSetRecordsGasLimit',
+      name,
+      accountAddress,
+      records
+    );
+    const newSetRecordsGasLimit =
+      (await estimateENSSetRecordsGasLimit({
+        name,
+        records,
+      })) || '0';
+    setSetRecordsGasLimit(newSetRecordsGasLimit);
+    return setRecordsGasLimit;
+  }, [
+    accountAddress,
+    name,
+    records,
+    setRecordsGasLimit,
+    setSetRecordsGasLimit,
+  ]);
+
+  const getSetNameGasLimit = useCallback(async () => {
+    if (setNameGasLimit !== '') return setNameGasLimit;
+    if (name?.length < 3) return;
+    const newSetNameGasLimit =
+      (await estimateENSSetNameGasLimit({
+        name,
+        ownerAddress: accountAddress,
+      })) || '0';
+    setSetNameGasLimit(newSetNameGasLimit);
+    return setNameGasLimit;
+  }, [accountAddress, name, setNameGasLimit, setSetNameGasLimit]);
+
+  const getReverseRecord = useCallback(async () => {
+    const reverseRecord = await fetchReverseRecord(accountAddress);
+    setHasReverseRecord(Boolean(reverseRecord));
+    return reverseRecord;
+  }, [accountAddress, setHasReverseRecord]);
 
   const estimateTotalRegistrationGasLimit = useCallback(async () => {
-    const reverseRecord =
-      sendReverseRecord && (await fetchReverseRecord(accountAddress));
-
-    const {
-      commitGasLimit,
-      multicallGasLimit,
-      registerWithConfigGasLimit,
-      setNameGasLimit,
-    } = await getENSRegistrationGasLimit();
-
+    const reverseRecord = sendReverseRecord && hasReverseRecord;
+    const { registerWithConfigGasLimit } = await getENSRegistrationGasLimit();
     const totalRegistrationGasLimit =
       [
         commitGasLimit,
-        multicallGasLimit,
+        setRecordsGasLimit,
         registerWithConfigGasLimit,
         !reverseRecord && setNameGasLimit,
       ].reduce((a, b) => add(a || 0, b || 0)) || `${ethUnits.ens_registration}`;
 
     return totalRegistrationGasLimit;
-  }, [accountAddress, sendReverseRecord]);
+  }, [
+    commitGasLimit,
+    hasReverseRecord,
+    sendReverseRecord,
+    setNameGasLimit,
+    setRecordsGasLimit,
+  ]);
 
   const estimateRenewRegistrationGasLimit = useCallback(
     async (rentPriceInWei: string) => {
@@ -107,14 +236,19 @@ export default function useENSRegistrationCosts({
     [estimateRenewRegistrationGasLimit, estimateTotalRegistrationGasLimit]
   );
 
-  const getEstimatedNetworkFee = useCallback(async () => {
-    if (!rentPriceInWei) return;
+  const fetchEIP1559GasParams = useCallback(async () => {
+    const { currentBaseFee } = await getEIP1559GasParams();
+    currentBlockParams;
+    setGasFeeParams({ currentBaseFee, gasFeeParamsBySpeed });
+    return { currentBaseFee, gasFeeParamsBySpeed };
+  }, [setGasFeeParams, gasFeeParamsBySpeed, currentBlockParams]);
 
+  const getEstimatedNetworkFee = useCallback(async () => {
     const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
       Network.mainnet
     );
 
-    const { gasFeeParamsBySpeed, currentBaseFee } = await getEIP1559GasParams();
+    const { gasFeeParamsBySpeed, currentBaseFee } = gasFeeParams;
 
     const estimatedGasLimit =
       (await estimateGasLimit?.[step]?.(rentPriceInWei)) || '';
@@ -131,16 +265,48 @@ export default function useENSRegistrationCosts({
       estimatedGasLimit,
       estimatedNetworkFee: formattedEstimatedNetworkFee,
     };
-  }, [rentPriceInWei, estimateGasLimit, step, nativeCurrency]);
+  }, [gasFeeParams, estimateGasLimit, step, rentPriceInWei, nativeCurrency]);
 
-  const { data: estimatedFee, status, isIdle, isLoading } = useQuery(
-    [
-      'getEstimatedNetworkFee',
-      [accountAddress, name, nativeCurrency, rentPriceInWei],
-    ],
+  const { data: estimatedFee } = useQuery(
+    ['getEstimatedNetworkFee', [name]],
     getEstimatedNetworkFee,
     { cacheTime: 0, enabled: Boolean(rentPriceInWei) }
   );
+
+  const queries = useQueries([
+    {
+      enabled: name.length > 2,
+      queryFn: getCommitGasLimit,
+      queryKey: ['getCommitGasLimit', name],
+    },
+    {
+      enabled: name.length > 2,
+      queryFn: getSetRecordsGasLimit,
+      queryKey: ['getSetRecordsGasLimit', name, records],
+    },
+    {
+      enabled: name.length > 2,
+      queryFn: getSetNameGasLimit,
+      queryKey: ['getSetNameGasLimit', name],
+    },
+    {
+      queryFn: getReverseRecord,
+      queryKey: ['getReverseRecord', name],
+    },
+    {
+      queryFn: fetchEIP1559GasParams,
+      queryKey: ['fetchEIP1559GasParams'],
+    },
+  ]);
+
+  useEffect(() => {
+    startPollingGasFees();
+  }, [startPollingGasFees]);
+
+  console.log('⛽⛽⛽ commitGasLimit', commitGasLimit);
+  console.log('⛽⛽⛽ setRecordsGasLimit', setRecordsGasLimit);
+  console.log('⛽⛽⛽ setNameGasLimit', setNameGasLimit);
+  console.log('⛽⛽⛽ gasFeeParams', gasFeeParams);
 
   const data = useMemo(() => {
     const rentPricePerYearInWei = rentPrice?.perYear?.wei?.toString();
@@ -190,7 +356,9 @@ export default function useENSRegistrationCosts({
             ...estimatedTotalRegistrationCost,
             display: displayEstimatedTotalCost,
           },
+          gasFeeParamsBySpeed: gasFeeParams.gasFeeParamsBySpeed,
           isSufficientGasForRegistration,
+          stepGasLimit: commitGasLimit,
         };
       }
 
@@ -198,15 +366,28 @@ export default function useENSRegistrationCosts({
     }
   }, [
     checkIfSufficientEth,
+    commitGasLimit,
     duration,
     estimatedFee,
+    gasFeeParams.gasFeeParamsBySpeed,
     nativeCurrency,
     rentPrice?.perYear?.wei,
     yearsDuration,
   ]);
 
-  const isSuccess = status === 'success' && !!data?.estimatedRentPrice;
+  const isSuccess =
+    !queries.map(({ status }) => status).some(a => a !== 'success') &&
+    !!data?.estimatedRentPrice;
+  const isLoading = queries
+    .map(({ isLoading }) => isLoading)
+    .reduce((a, b) => a || b);
+  const isIdle = queries.map(({ isIdle }) => isIdle).reduce((a, b) => a && b);
 
+  console.log('✅ isSuccess', isSuccess);
+  console.log('✅ isLoading', isLoading);
+  console.log('✅ isIdle', isIdle);
+
+  queries.map(({ status }) => console.log('😬😬 status', status));
   return {
     data,
     isIdle,

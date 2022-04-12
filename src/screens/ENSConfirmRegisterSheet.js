@@ -302,14 +302,21 @@ export default function ENSConfirmRegisterSheet() {
   // Update gas limit
   useEffect(() => {
     if (
-      stepGasLimit &&
-      !isEmpty(gasFeeParamsBySpeed) &&
-      gasLimit !== stepGasLimit
+      registrationData?.stepGasLimit &&
+      !isEmpty(registrationData?.gasFeeParamsBySpeed) &&
+      gasLimit !== registrationData?.stepGasLimit
     ) {
-      updateTxFee(stepGasLimit);
-      setGasLimit(stepGasLimit);
+      updateTxFee(registrationData?.stepGasLimit);
+      setGasLimit(registrationData?.stepGasLimit);
     }
-  }, [gasFeeParamsBySpeed, gasLimit, stepGasLimit, updateTxFee]);
+  }, [
+    gasFeeParamsBySpeed,
+    gasLimit,
+    registrationData?.gasFeeParamsBySpeed,
+    registrationData?.stepGasLimit,
+    stepGasLimit,
+    updateTxFee,
+  ]);
 
   useEffect(() => {
     if (

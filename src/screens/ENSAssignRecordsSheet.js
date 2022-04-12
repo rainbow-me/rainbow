@@ -42,11 +42,14 @@ import {
   accentColorAtom,
   ENS_RECORDS,
   REGISTRATION_MODES,
+  REGISTRATION_STEPS,
   textRecordFields,
 } from '@rainbow-me/helpers/ens';
 import {
   useENSRegistration,
+  useENSRegistrationCosts,
   useENSRegistrationForm,
+  useENSSearch,
   useKeyboardHeight,
   usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
@@ -63,6 +66,7 @@ export default function ENSAssignRecordsSheet() {
     name,
     mode,
     images: { avatarUrl: initialAvatarUrl },
+    changedRecords,
   } = useENSRegistration({
     setInitialRecordsWhenInEditMode: true,
   });
@@ -74,6 +78,18 @@ export default function ENSAssignRecordsSheet() {
       ENS_RECORDS.email,
       ENS_RECORDS.twitter,
     ].map(fieldName => textRecordFields[fieldName]),
+  });
+
+  const { data: registrationData } = useENSSearch({
+    name,
+  });
+
+  useENSRegistrationCosts({
+    name,
+    records: changedRecords,
+    rentPrice: registrationData?.rentPrice,
+    step: REGISTRATION_STEPS.COMMIT,
+    yearsDuration: 1,
   });
 
   const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
