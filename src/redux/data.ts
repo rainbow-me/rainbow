@@ -149,8 +149,6 @@ const DATA_LOAD_ACCOUNT_ASSETS_DATA_FAILURE =
 const DATA_LOAD_ACCOUNT_ASSETS_DATA_FINALIZED =
   'data/DATA_LOAD_ACCOUNT_ASSETS_DATA_FINALIZED';
 
-const DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_RECEIVED =
-  'data/DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_RECEIVED';
 const DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_SUCCESS =
   'data/DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_SUCCESS';
 
@@ -256,7 +254,6 @@ type DataAction =
   | DataLoadTransactionSuccessAction
   | DataLoadTransactionsFailureAction
   | DataLoadAccountAssetsDataRequestAction
-  | DataLoadAssetPricesFromUniswapReceivedAction
   | DataLoadAssetPricesFromUniswapSuccessAction
   | DataLoadAccountAssetsDataReceivedAction
   | DataLoadAccountAssetsDataSuccessAction
@@ -345,15 +342,6 @@ interface DataLoadAccountAssetsDataRequestAction {
 interface DataLoadAccountAssetsDataReceivedAction {
   type: typeof DATA_LOAD_ACCOUNT_ASSETS_DATA_RECEIVED;
   payload: DataState['accountAssetsData'];
-}
-
-/**
- * The action to update `assetPricesFromUniswap` and indicated data has been
- * received.
- */
-interface DataLoadAssetPricesFromUniswapReceivedAction {
-  type: typeof DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_RECEIVED;
-  payload: DataState['assetPricesFromUniswap'];
 }
 
 /**
@@ -567,7 +555,6 @@ export const dataLoadState = () => async (
   dispatch: ThunkDispatch<
     AppState,
     unknown,
-    | DataLoadAssetPricesFromUniswapReceivedAction
     | DataLoadAssetPricesFromUniswapSuccessAction
     | DataLoadAccountAssetsDataRequestAction
     | DataLoadAccountAssetsDataSuccessAction
@@ -1179,7 +1166,6 @@ export const addressAssetsReceived = (
 const subscribeToMissingPrices = (addresses: string[]) => (
   dispatch: Dispatch<
     | DataLoadAssetPricesFromUniswapSuccessAction
-    | DataLoadAssetPricesFromUniswapReceivedAction
     | DataUpdateUniswapPricesSubscriptionAction
   >,
   getState: AppGetState
@@ -1270,7 +1256,7 @@ const subscribeToMissingPrices = (addresses: string[]) => (
             );
             dispatch({
               payload: tokenPricingInfo,
-              type: DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_RECEIVED,
+              type: DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_SUCCESS,
             });
           }
         } catch (error) {
@@ -1827,16 +1813,10 @@ export default (state: DataState = INITIAL_STATE, action: DataAction) => {
         ...state,
         isLoadingAssets: true,
       };
-    case DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_RECEIVED:
-      return {
-        ...state,
-        assetPricesFromUniswap: action.payload,
-      };
     case DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_SUCCESS:
       return {
         ...state,
         assetPricesFromUniswap: action.payload,
-        isLoadingAssets: false,
       };
     case DATA_LOAD_ACCOUNT_ASSETS_DATA_RECEIVED: {
       return {
