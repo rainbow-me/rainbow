@@ -8,73 +8,70 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { Path, Svg } from 'react-native-svg';
-import { Flex } from '../layout';
-import { useColorMode } from '@rainbow-me/design-system';
-import styled from '@rainbow-me/styled-components';
+import { Box, useColorMode } from '@rainbow-me/design-system';
 
-const Container = styled(Flex)({
-  justifyContent: 'center',
-  width: '100%',
-});
+type AnimationConfigOptions = {
+  duration: number;
+  easing: Animated.EasingFunction;
+};
 
-const AnimatedPath = Animated.createAnimatedComponent(Path);
-
-const rotationConfig = {
+const rotationConfig: AnimationConfigOptions = {
   duration: 1200,
   easing: Easing.elastic(1),
 };
 
-const sandConfig = {
+const sandConfig: AnimationConfigOptions = {
   duration: 1200,
-  easing: Easing.bezier(1, 0.2, 0.47, 0.97),
+  easing: Easing.bezierFn(1, 0.2, 0.47, 0.97),
 };
+
+const AnimatedPath = Animated.createAnimatedComponent(Path);
 
 export default function HourglassAnimation() {
   const { colorMode } = useColorMode();
   const darkMode = colorMode !== 'light';
-  const rotateHourglass = useDerivedValue(() => {
-    return withRepeat(
+  const rotateHourglass = useDerivedValue(() =>
+    withRepeat(
       withSequence(
         withTiming(180, rotationConfig),
         withTiming(0, rotationConfig),
         withTiming(-180, rotationConfig)
       ),
-      Infinity,
-      false
-    );
-  });
+      -1
+    )
+  );
 
-  const offsetSandMask = useDerivedValue(() => {
-    return withRepeat(
+  const offsetSandMask = useDerivedValue(() =>
+    withRepeat(
       withSequence(
         withTiming(0, sandConfig),
         withTiming(34, sandConfig),
         withTiming(0, sandConfig)
       ),
-      Infinity,
-      false
-    );
-  });
+      -1
+    )
+  );
 
-  const animatedRotationStyles = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {
-          rotateZ: `${rotateHourglass.value}deg`,
-        },
-      ],
-    };
-  });
+  const animatedRotationStyles = useAnimatedStyle(() => ({
+    transform: [
+      {
+        rotateZ: `${rotateHourglass.value}deg`,
+      },
+    ],
+  }));
 
-  const animatedSandStyles = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateY: `${offsetSandMask.value}` }],
-    };
-  });
+  const animatedSandStyles = useAnimatedStyle(() => ({
+    transform: [{ translateY: offsetSandMask.value }],
+  }));
 
   return (
-    <Container>
-      <Animated.View style={animatedRotationStyles}>
+    <Box alignItems="center" justifyContent="center" width="full">
+      <Box
+        alignItems="center"
+        as={Animated.View}
+        justifyContent="center"
+        style={[animatedRotationStyles]}
+      >
         <Svg height="120" viewBox="0 0 120 120" width="120">
           <Path
             d="M50.200197,83.363281 L70.707967,83.363281 C73.906267,83.363281 75.908167,81.410181 75.908167,78.114281 L75.908167,77.723681 C75.908167,71.253881 69.340867,64.857381 66.826167,62.342781 C65.190467,60.707081 65.214867,58.558581 66.826167,56.947281 C69.340867,54.432581 75.908167,48.060581 75.908167,41.566401 L75.908167,41.224611 C75.908167,37.953121 73.906267,36 70.707967,36 L50.200197,36 C46.977537,36 45,37.953121 45,41.224611 L45,41.566401 C45,48.060581 51.567387,54.432581 54.082027,56.947281 C55.693367,58.558581 55.717767,60.707081 54.082027,62.342781 C51.567387,64.857381 45,71.253881 45,77.723681 L45,78.114281 C45,81.410181 46.977537,83.363281 50.200197,83.363281 Z"
@@ -105,7 +102,7 @@ export default function HourglassAnimation() {
             id="hourglass-outline"
           />
         </Svg>
-      </Animated.View>
-    </Container>
+      </Box>
+    </Box>
   );
 }

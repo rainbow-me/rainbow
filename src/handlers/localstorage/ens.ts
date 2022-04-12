@@ -4,6 +4,7 @@ const ensProfileVersion = '0.1.0';
 
 const ensProfileKey = (key: string) => `ensProfile.${key}`;
 const ensResolveNameKey = (key: string) => `ensResolveName.${key}`;
+const ensSeenOnchainDataDisclaimerKey = 'ensProfile.seenOnchainDisclaimer';
 
 export const getProfile = async (key: string) => {
   const profile = await getGlobal(ensProfileKey(key), null, ensProfileVersion);
@@ -18,3 +19,9 @@ export const getResolveName = (key: string) =>
 
 export const saveResolveName = (key: string, value: string) =>
   saveGlobal(ensResolveNameKey(key), value);
+
+export const getSeenOnchainDataDisclaimer = () =>
+  getGlobal(ensResolveNameKey(ensSeenOnchainDataDisclaimerKey), false);
+
+export const saveSeenOnchainDataDisclaimer = (value: boolean) =>
+  saveGlobal(ensResolveNameKey(ensSeenOnchainDataDisclaimerKey), value);

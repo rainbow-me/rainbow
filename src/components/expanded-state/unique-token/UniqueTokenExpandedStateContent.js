@@ -44,6 +44,8 @@ const UniqueTokenExpandedStateContent = ({
   disablePreview,
   opacity,
   yPosition,
+  onContentFocus,
+  onContentBlur,
 }) => {
   const { width: deviceWidth } = useDimensions();
 
@@ -88,6 +90,8 @@ const UniqueTokenExpandedStateContent = ({
       }
       horizontalPadding={horizontalPadding}
       isENS={isENS}
+      onZoomIn={onContentFocus}
+      onZoomOut={onContentBlur}
       opacity={opacity}
       yDisplacement={yPosition}
     >

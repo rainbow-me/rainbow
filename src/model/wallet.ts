@@ -561,6 +561,7 @@ export const createWallet = async (
     } =
       checkedWallet ||
       (await ethereumUtils.deriveAccountFromWalletInput(walletSeed));
+    const isReadOnlyType = type === EthereumWalletType.readOnly;
     let pkey = walletSeed;
     if (!walletResult) return null;
     const walletAddress = address;
@@ -603,8 +604,7 @@ export const createWallet = async (
       if (
         !overwrite &&
         alreadyExistingWallet &&
-        (type === EthereumWalletType.readOnly ||
-          isPrivateKeyOverwritingSeedMnemonic)
+        (isReadOnlyType || isPrivateKeyOverwritingSeedMnemonic)
       ) {
         setTimeout(
           () =>
@@ -624,7 +624,7 @@ export const createWallet = async (
 
     // Android users without biometrics need to secure their keys with a PIN
     let userPIN = null;
-    if (android) {
+    if (android && !isReadOnlyType) {
       const hasBiometricsEnabled = await getSupportedBiometryType();
       // Fallback to custom PIN
       if (!hasBiometricsEnabled) {
