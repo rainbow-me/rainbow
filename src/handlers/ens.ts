@@ -573,7 +573,6 @@ export const estimateENSSetRecordsGasLimit = async ({
     const shouldUseMulticall = shouldUseMulticallTransaction(
       ensRegistrationRecords
     );
-    console.log('✅ ✅ ✅ ✅ ✅  shouldUseMulticall', shouldUseMulticall);
     gasLimit = await (shouldUseMulticall
       ? estimateENSMulticallGasLimit
       : estimateENSSetTextGasLimit)({

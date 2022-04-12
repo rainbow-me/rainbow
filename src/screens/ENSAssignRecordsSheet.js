@@ -85,6 +85,7 @@ export default function ENSAssignRecordsSheet() {
   });
 
   const { step } = useENSRegistrationActionHandler();
+
   useENSRegistrationCosts({
     name,
     records: changedRecords,
@@ -127,6 +128,7 @@ export default function ENSAssignRecordsSheet() {
 
   const [hasSeenExplainSheet, setHasSeenExplainSheet] = useState(false);
   const { navigate } = useNavigation();
+
   const handleFocus = useCallback(() => {
     if (!hasSeenExplainSheet) {
       android && Keyboard.dismiss();
