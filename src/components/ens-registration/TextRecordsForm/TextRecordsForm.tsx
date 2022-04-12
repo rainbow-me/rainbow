@@ -110,7 +110,7 @@ export default function TextRecordsForm({
 }
 
 function Field({ defaultValue, ...props }: InlineFieldProps) {
-  const [value, setValue] = useState({});
+  const [value, setValue] = useState({} as { [name: string]: string });
   const { name } = useENSRegistration({
     setInitialRecordsWhenInEditMode: true,
   });
