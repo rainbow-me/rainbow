@@ -88,6 +88,11 @@ const gasFeeParamsAtom = atom({
   key: 'ens.gasFeeParams',
 });
 
+const currentStepGasLimitAtom = atom({
+  default: '',
+  key: 'ens.currentStepGasLimitAtom',
+});
+
 export default function useENSRegistrationCosts({
   yearsDuration,
   name,
@@ -104,6 +109,7 @@ export default function useENSRegistrationCosts({
   records?: Records;
 }) {
   const { nativeCurrency, accountAddress } = useAccountSettings();
+  const { registrationParameters } = useENSRegistration();
   const duration = yearsDuration * timeUnits.secs.year;
 
   const {
@@ -114,7 +120,9 @@ export default function useENSRegistrationCosts({
     isValidGas: useGasIsValidGas,
   } = useGas();
 
-  const { registrationParameters } = useENSRegistration();
+  const nameUpdated = useMemo(() => {
+    return registrationParameters?.name !== name && name.length > 2;
+  }, [name, registrationParameters?.name]);
 
   const [commitGasLimit, setCommitGasLimit] = useRecoilState(
     commitGasLimitAtom
@@ -132,11 +140,34 @@ export default function useENSRegistrationCosts({
   const [hasReverseRecord, setHasReverseRecord] = useRecoilState(
     hasReverseRecordAtom
   );
+  const [currentStepGasLimit, setCurrentStepGasLimit] = useRecoilState(
+    currentStepGasLimitAtom
+  );
   const [gasFeeParams, setGasFeeParams] = useRecoilState(gasFeeParamsAtom);
   const [isValidGas, setIsValidGas] = useRecoilState(isValidGasAtom);
   const [isSufficientGas, setIsSufficientGas] = useRecoilState(
     isSufficientGasAtom
   );
+
+  const stepGasLimit = useMemo(
+    () => ({
+      [REGISTRATION_STEPS.COMMIT]: commitGasLimit,
+      [REGISTRATION_STEPS.RENEW]: renewGasLimit,
+      [REGISTRATION_STEPS.EDIT]: setRecordsGasLimit,
+      [REGISTRATION_STEPS.REGISTER]: registerGasLimit,
+      [REGISTRATION_STEPS.SET_NAME]: setNameGasLimit,
+      [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: null,
+      [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: null,
+    }),
+    [
+      commitGasLimit,
+      registerGasLimit,
+      renewGasLimit,
+      setNameGasLimit,
+      setRecordsGasLimit,
+    ]
+  );
+
   const prevIsSufficientGas = usePrevious(isSufficientGas);
   const prevIsValidGas = usePrevious(isValidGas);
 
@@ -187,7 +218,7 @@ export default function useENSRegistrationCosts({
     setCommitGasLimit,
   ]);
 
-  const getRegisterGasLimit = useCallback(async () => {
+  const getRegisterWithConfigGasLimit = useCallback(async () => {
     const newRegisterGasLimit = await estimateENSRegisterWithConfigGasLimit({
       duration,
       name,
@@ -243,25 +274,6 @@ export default function useENSRegistrationCosts({
     return reverseRecord;
   }, [accountAddress, setHasReverseRecord]);
 
-  const stepGasLimit = useMemo(
-    () => ({
-      [REGISTRATION_STEPS.COMMIT]: commitGasLimit,
-      [REGISTRATION_STEPS.RENEW]: renewGasLimit,
-      [REGISTRATION_STEPS.EDIT]: setRecordsGasLimit,
-      [REGISTRATION_STEPS.REGISTER]: registerGasLimit,
-      [REGISTRATION_STEPS.SET_NAME]: setNameGasLimit,
-      [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: null,
-      [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: null,
-    }),
-    [
-      commitGasLimit,
-      registerGasLimit,
-      renewGasLimit,
-      setNameGasLimit,
-      setRecordsGasLimit,
-    ]
-  );
-
   const fetchEIP1559GasParams = useCallback(async () => {
     const { currentBaseFee } = await getEIP1559GasParams();
     setGasFeeParams({ currentBaseFee, gasFeeParamsBySpeed });
@@ -307,17 +319,17 @@ export default function useENSRegistrationCosts({
 
   const queries = useQueries([
     {
-      enabled: name.length > 2,
+      enabled: nameUpdated,
       queryFn: getCommitGasLimit,
       queryKey: ['getCommitGasLimit', name],
     },
     {
-      enabled: name.length > 2 && !!records,
+      enabled: !!records && nameUpdated,
       queryFn: getSetRecordsGasLimit,
       queryKey: ['getSetRecordsGasLimit', name, records],
     },
     {
-      enabled: name.length > 2,
+      enabled: nameUpdated,
       queryFn: getSetNameGasLimit,
       queryKey: ['getSetNameGasLimit', name],
     },
@@ -328,28 +340,42 @@ export default function useENSRegistrationCosts({
     },
     {
       enabled: step === REGISTRATION_STEPS.REGISTER,
-      queryFn: getRegisterGasLimit,
-      queryKey: ['getRegisterGasLimit'],
+      queryFn: getRegisterWithConfigGasLimit,
+      queryKey: ['getRegisterWithConfigGasLimit'],
     },
     {
+      enabled: nameUpdated,
       queryFn: getReverseRecord,
       queryKey: ['getReverseRecord', name],
     },
     {
+      enabled: nameUpdated,
       queryFn: fetchEIP1559GasParams,
       queryKey: ['fetchEIP1559GasParams'],
     },
   ]);
 
   useEffect(() => {
-    startPollingGasFees();
-  }, [startPollingGasFees, step]);
+    if (!currentStepGasLimit) startPollingGasFees();
+  }, [currentStepGasLimit, startPollingGasFees, step]);
 
   useEffect(() => {
-    if (stepGasLimit[step] && !isEmpty(gasFeeParamsBySpeed)) {
-      updateTxFee(stepGasLimit[step], false);
+    if (
+      stepGasLimit[step] &&
+      currentStepGasLimit !== stepGasLimit[step] &&
+      !isEmpty(gasFeeParamsBySpeed)
+    ) {
+      updateTxFee(stepGasLimit[step], null);
+      setCurrentStepGasLimit(stepGasLimit?.[step] || '');
     }
-  }, [gasFeeParamsBySpeed, step, stepGasLimit, updateTxFee]);
+  }, [
+    gasFeeParamsBySpeed,
+    currentStepGasLimit,
+    step,
+    stepGasLimit,
+    updateTxFee,
+    setCurrentStepGasLimit,
+  ]);
 
   const data = useMemo(() => {
     const rentPricePerYearInWei = rentPrice?.perYear?.wei?.toString();

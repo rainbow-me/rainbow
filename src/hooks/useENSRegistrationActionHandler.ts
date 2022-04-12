@@ -8,11 +8,7 @@ import { useDispatch } from 'react-redux';
 import { useRecoilValue } from 'recoil';
 import { avatarMetadataAtom } from '../components/ens-registration/RegistrationAvatar/RegistrationAvatar';
 import { coverMetadataAtom } from '../components/ens-registration/RegistrationCover/RegistrationCover';
-import {
-  ENSActionParameters,
-  getENSRapEstimationByType,
-  RapActionTypes,
-} from '../raps/common';
+import { ENSActionParameters, RapActionTypes } from '../raps/common';
 import useTransactions from './useTransactions';
 import { useAccountSettings, useCurrentNonce, useENSRegistration } from '.';
 import { Records, RegistrationParameters } from '@rainbow-me/entities';
@@ -70,7 +66,6 @@ export default function useENSRegistrationActionHandler(
   const { registrationParameters, mode } = useENSRegistration();
   const { navigate } = useNavigation();
   const { getTransactionByHash } = useTransactions();
-  const [stepGasLimit, setStepGasLimit] = useState<string | null>(null);
 
   const timeout = useRef<NodeJS.Timeout>();
 
@@ -318,71 +313,18 @@ export default function useENSRegistrationActionHandler(
     ]
   );
 
-  // gas limit estimations
-  const commitEstimateGasLimit = useCallback(async () => {
-    const salt = generateSalt();
-    const rentPrice = await getRentPrice(
-      registrationParameters.name.replace(ENS_DOMAIN, ''),
-      duration
-    );
-    const gasLimit = await getENSRapEstimationByType(RapActionTypes.commitENS, {
-      ...formatENSActionParams(registrationParameters),
-      duration,
-      ownerAddress: accountAddress,
-      rentPrice: rentPrice.toString(),
-      salt,
-    });
-    return gasLimit;
-  }, [accountAddress, duration, registrationParameters]);
-
-  const registerEstimateGasLimit = useCallback(async () => {
-    const gasLimit = await getENSRapEstimationByType(
-      RapActionTypes.registerENS,
-      {
-        ...formatENSActionParams(registrationParameters),
-        duration,
-        ownerAddress: accountAddress,
-        setReverseRecord: sendReverseRecord,
-      }
-    );
-    return gasLimit;
-  }, [accountAddress, duration, registrationParameters, sendReverseRecord]);
-
-  const setRecordsEstimateGasLimit = useCallback(async () => {
-    const gasLimit = await getENSRapEstimationByType(
-      RapActionTypes.setRecordsENS,
-      {
-        ...formatENSActionParams(registrationParameters),
-        ownerAddress: accountAddress,
-      }
-    );
-    return gasLimit;
-  }, [accountAddress, registrationParameters]);
-
-  const renewEstimateGasLimit = useCallback(async () => {
-    const rentPrice = await getRentPrice(
-      registrationParameters.name.replace(ENS_DOMAIN, ''),
-      duration
-    );
-    const gasLimit = await getENSRapEstimationByType(RapActionTypes.renewENS, {
-      ...formatENSActionParams(registrationParameters),
-      duration,
-      ownerAddress: accountAddress,
-      rentPrice: rentPrice?.toString(),
-    });
-    return gasLimit;
-  }, [accountAddress, duration, registrationParameters]);
-
-  const setNameEstimateGasLimit = useCallback(async () => {
-    const gasLimit = await getENSRapEstimationByType(
-      RapActionTypes.setNameENS,
-      {
-        ...formatENSActionParams(registrationParameters),
-        ownerAddress: accountAddress,
-      }
-    );
-    return gasLimit;
-  }, [accountAddress, registrationParameters]);
+  // const registerEstimateGasLimit = useCallback(async () => {
+  //   const gasLimit = await getENSRapEstimationByType(
+  //     RapActionTypes.registerENS,
+  //     {
+  //       ...formatENSActionParams(registrationParameters),
+  //       duration,
+  //       ownerAddress: accountAddress,
+  //       setReverseRecord: sendReverseRecord,
+  //     }
+  //   );
+  //   return gasLimit;
+  // }, [accountAddress, duration, registrationParameters, sendReverseRecord]);
 
   const registrationStep = useMemo(() => {
     if (mode === REGISTRATION_MODES.EDIT) return REGISTRATION_STEPS.EDIT;
@@ -425,25 +367,6 @@ export default function useENSRegistrationActionHandler(
       setNameAction,
       setRecordsAction,
       speedUpCommitAction,
-    ]
-  );
-
-  const estimateGasLimitActions = useMemo(
-    () => ({
-      [REGISTRATION_STEPS.COMMIT]: commitEstimateGasLimit,
-      [REGISTRATION_STEPS.EDIT]: setRecordsEstimateGasLimit,
-      [REGISTRATION_STEPS.REGISTER]: registerEstimateGasLimit,
-      [REGISTRATION_STEPS.RENEW]: renewEstimateGasLimit,
-      [REGISTRATION_STEPS.SET_NAME]: setNameEstimateGasLimit,
-      [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: () => null,
-      [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: () => null,
-    }),
-    [
-      commitEstimateGasLimit,
-      registerEstimateGasLimit,
-      renewEstimateGasLimit,
-      setNameEstimateGasLimit,
-      setRecordsEstimateGasLimit,
     ]
   );
 
@@ -496,16 +419,6 @@ export default function useENSRegistrationActionHandler(
   }, [registrationStep, watchCommitTransaction]);
 
   useEffect(() => {
-    const estimateGasLimit = async () => {
-      const estimate = estimateGasLimitActions[registrationStep];
-      const gasLimit = (await estimate?.()) || null;
-      setStepGasLimit(gasLimit);
-    };
-    estimateGasLimit();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [registrationStep, sendReverseRecord]);
-
-  useEffect(() => {
     if (registrationStep === REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION) {
       startPollingWatchCommitTransaction();
     }
@@ -551,7 +464,6 @@ export default function useENSRegistrationActionHandler(
   return {
     action: actions[registrationStep],
     step: registrationStep,
-    stepGasLimit,
   };
 }
 
