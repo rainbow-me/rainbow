@@ -4,7 +4,7 @@ import {
   Quote,
   QuoteError,
 } from '@rainbow-me/swaps';
-import { useCallback, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { NativeModules } from 'react-native';
 // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
@@ -208,25 +208,27 @@ const getOutputAmount = async (
   }
 };
 
+const derivedValues: { [key in SwapModalField]: string | null } = {
+  [SwapModalField.input]: null,
+  [SwapModalField.native]: null,
+  [SwapModalField.output]: null,
+};
+
+const displayValues: { [key in DisplayValue]: string | null } = {
+  [DisplayValue.input]: null,
+  [DisplayValue.output]: null,
+};
+
 export default function useSwapDerivedOutputs() {
-  const derivedValues: { [key in SwapModalField]: string | null } = {
-    [SwapModalField.input]: null,
-    [SwapModalField.native]: null,
-    [SwapModalField.output]: null,
-  };
-
-  const displayValues: { [key in DisplayValue]: string | null } = {
-    [DisplayValue.input]: null,
-    [DisplayValue.output]: null,
-  };
-
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+
   const [result, setResult] = useState({
     derivedValues,
     displayValues,
-    doneLoadingReserves: false,
     tradeDetails: null,
   });
+
   const independentField = useSelector(
     (state: AppState) => state.swap.independentField
   );
@@ -248,26 +250,18 @@ export default function useSwapDerivedOutputs() {
 
   const { chainId, accountAddress } = useAccountSettings();
 
-  const getTradeDetails = useCallback(
-    async (
-      accountAddress,
-      chainId,
-      independentField,
-      independentValue,
-      inputCurrency,
-      inputPrice,
-      outputCurrency,
-      outputPrice
-    ) => {
+  useEffect(() => {
+    const getTradeDetails = async () => {
       let tradeDetails = null;
       if (!independentValue || !inputCurrency) {
-        return {
+        setResult({
           derivedValues,
           displayValues,
-          doneLoadingReserves: true,
           tradeDetails,
-        };
+        });
+        return;
       }
+      setLoading(true);
       const inputToken = inputCurrency;
       const outputToken = outputCurrency;
 
@@ -331,12 +325,13 @@ export default function useSwapDerivedOutputs() {
           outputAmountDisplay?.toString() || null;
       } else {
         if (!outputToken || !inputToken) {
-          return {
+          setLoading(false);
+          setResult({
             derivedValues,
             displayValues,
-            doneLoadingReserves: true,
             tradeDetails,
-          };
+          });
+          return;
         }
         derivedValues[SwapModalField.output] = independentValue;
         displayValues[DisplayValue.output] = independentValue;
@@ -349,7 +344,7 @@ export default function useSwapDerivedOutputs() {
           independentValue,
           inputToken,
           outputToken,
-          inputPrice,
+          inputPrice.toString(),
           accountAddress,
           chainId
         );
@@ -365,42 +360,31 @@ export default function useSwapDerivedOutputs() {
 
         derivedValues[SwapModalField.native] = nativeValue;
       }
-      return {
+
+      const data = {
         derivedValues,
         displayValues,
         doneLoadingReserves: true,
         tradeDetails,
       };
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  );
 
-  useMemo(async () => {
-    const data = await getTradeDetails(
-      accountAddress,
-      chainId,
-      independentField,
-      independentValue,
-      inputCurrency,
-      inputPrice,
-      outputCurrency,
-      outputPrice
-    );
-    dispatch(
-      updateSwapQuote({
-        derivedValues: data.derivedValues,
-        displayValues: data.displayValues,
-        tradeDetails: data.tradeDetails,
-      })
-    );
-    // @ts-ignore next-line
-    setResult(data);
+      dispatch(
+        updateSwapQuote({
+          derivedValues: data.derivedValues,
+          displayValues: data.displayValues,
+          tradeDetails: data.tradeDetails,
+        })
+      );
+      // @ts-ignore next-line
+      setResult(data);
+      setLoading(false);
+    };
+
+    getTradeDetails();
   }, [
-    dispatch,
-    getTradeDetails,
     accountAddress,
     chainId,
+    dispatch,
     independentField,
     independentValue,
     inputCurrency,
@@ -409,5 +393,8 @@ export default function useSwapDerivedOutputs() {
     outputPrice,
   ]);
 
-  return result;
+  return {
+    loading,
+    result,
+  };
 }

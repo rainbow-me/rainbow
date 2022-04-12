@@ -198,10 +198,12 @@ export default function ExchangeModal({
   });
 
   const {
-    derivedValues: { inputAmount, nativeAmount, outputAmount },
-    displayValues: { inputAmountDisplay, outputAmountDisplay },
-    doneLoadingReserves,
-    tradeDetails,
+    result: {
+      derivedValues: { inputAmount, nativeAmount, outputAmount },
+      displayValues: { inputAmountDisplay, outputAmountDisplay },
+      tradeDetails,
+    },
+    loading,
   } = useSwapDerivedOutputs();
 
   const {
@@ -214,7 +216,8 @@ export default function ExchangeModal({
     inputAmount,
     outputAmount,
     inputCurrency,
-    outputCurrency
+    outputCurrency,
+    loading
   );
 
   const flashbotsEnabled = useExperimentalFlag(FLASHBOTS);
@@ -477,16 +480,16 @@ export default function ExchangeModal({
   const confirmButtonProps = useMemoOne(
     () => ({
       disabled: !Number(inputAmount),
-      doneLoadingReserves,
       inputAmount,
       isAuthorizing,
       isHighPriceImpact,
+      loading,
       onSubmit: handleSubmit,
       tradeDetails,
       type,
     }),
     [
-      doneLoadingReserves,
+      loading,
       handleSubmit,
       inputAmount,
       isAuthorizing,

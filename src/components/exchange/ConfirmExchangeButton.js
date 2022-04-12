@@ -37,7 +37,7 @@ const Container = styled(Centered)({
 
 export default function ConfirmExchangeButton({
   disabled,
-  doneLoadingReserves,
+  loading,
   inputAmount,
   isHighPriceImpact,
   onPressViewDetails,
@@ -107,7 +107,7 @@ export default function ConfirmExchangeButton({
     label = lang.t('button.confirm_exchange.withdraw');
   }
 
-  if (!doneLoadingReserves) {
+  if (loading) {
     label = lang.t('button.confirm_exchange.fetching_details');
   } else if (!isSufficientBalance) {
     label = lang.t('button.confirm_exchange.insufficient_funds');
@@ -125,7 +125,7 @@ export default function ConfirmExchangeButton({
 
   const isDisabled =
     disabled ||
-    !doneLoadingReserves ||
+    loading ||
     !isSufficientBalance ||
     !isSufficientGas ||
     !isValidGas ||

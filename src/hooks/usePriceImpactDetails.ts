@@ -22,7 +22,8 @@ export default function usePriceImpactDetails(
   inputAmount: string | null,
   outputAmount: string | null,
   inputCurrency: UniswapCurrency | null,
-  outputCurrency: UniswapCurrency | null
+  outputCurrency: UniswapCurrency | null,
+  loading = false
 ) {
   const { nativeCurrency } = useAccountSettings();
   const { colors } = useTheme();
@@ -87,26 +88,13 @@ export default function usePriceImpactDetails(
   }
 
   const isHighPriceImpact =
-    !!impact && greaterThanOrEqualTo(impact, PriceImpactWarningThreshold);
+    !loading &&
+    !!impact &&
+    greaterThanOrEqualTo(impact, PriceImpactWarningThreshold);
   const isSeverePriceImpact =
-    !!impact && greaterThanOrEqualTo(impact, SeverePriceImpactThreshold);
-
-  if (isHighPriceImpact) {
-    // logger.debug(
-    //   JSON.stringify(
-    //     {
-    //       inputAmount,
-    //       inputC: inputCurrency.symbol,
-    //       inputNativeAmount,
-    //       outputAmount,
-    //       outputC: outputCurrency.symbol,
-    //       outputNativeAmount,
-    //     },
-    //     null,
-    //     2
-    //   )
-    // );
-  }
+    !loading &&
+    !!impact &&
+    greaterThanOrEqualTo(impact, SeverePriceImpactThreshold);
 
   const priceImpactColor = isSeverePriceImpact
     ? colors.red

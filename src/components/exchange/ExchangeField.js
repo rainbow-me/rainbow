@@ -66,7 +66,7 @@ const ExchangeField = (
   const { colors } = useTheme();
 
   const [value, setValue] = useState(amount);
-  const [debouncedValue] = useDebounce(value, 350);
+  const [debouncedValue] = useDebounce(value, 300);
 
   useEffect(() => {
     setAmount(debouncedValue);
@@ -92,7 +92,7 @@ const ExchangeField = (
               symbol ? undefined : colors.alpha(colors.blueGreyDark, 0.1)
             }
             ref={ref}
-            testID={amount ? `${testID}-${amount}` : testID}
+            testID={testID}
             useCustomAndroidMask={useCustomAndroidMask}
             value={amount}
           />
