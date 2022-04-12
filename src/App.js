@@ -87,19 +87,23 @@ if (__DEV__) {
 } else {
   // eslint-disable-next-line no-inner-declarations
   async function initSentryAndCheckForFedoraMode() {
-    const config = await codePush.getCurrentPackage();
-    if (!config || config.deploymentKey === CODE_PUSH_DEPLOYMENT_KEY) {
-      codePush.sync({
-        deploymentKey: CODE_PUSH_DEPLOYMENT_KEY,
-        installMode: codePush.InstallMode.ON_NEXT_RESTART,
-      });
-    } else {
-      isCustomBuild.value = true;
-      setTimeout(() => FedoraToastRef?.current?.show(), 300);
+    let metadata;
+    try {
+      const config = await codePush.getCurrentPackage();
+      if (!config || config.deploymentKey === CODE_PUSH_DEPLOYMENT_KEY) {
+        codePush.sync({
+          deploymentKey: CODE_PUSH_DEPLOYMENT_KEY,
+          installMode: codePush.InstallMode.ON_NEXT_RESTART,
+        });
+      } else {
+        isCustomBuild.value = true;
+        setTimeout(() => FedoraToastRef?.current?.show(), 300);
+      }
+
+      metadata = await codePush.getUpdateMetadata();
+    } catch (e) {
+      logger.log('error initiating codepush settings', e);
     }
-
-    const metadata = await codePush.getUpdateMetadata();
-
     const sentryOptions = {
       dsn: SENTRY_ENDPOINT,
       enableAutoSessionTracking: true,
