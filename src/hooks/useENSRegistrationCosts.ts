@@ -2,6 +2,7 @@ import { isEmpty } from 'lodash';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useQueries } from 'react-query';
 import { atom, useRecoilState } from 'recoil';
+import { useDebounce } from 'use-debounce';
 import useENSRegistration from './useENSRegistration';
 import useGas from './useGas';
 import usePrevious from './usePrevious';
@@ -51,7 +52,7 @@ const renewGasLimitAtom = atom({
 });
 
 const setRecordsGasLimitAtom = atom({
-  default: `${ethUnits.ens_set_multicall}`,
+  default: ``,
   key: 'ens.setRecordsGasLimitAtom',
 });
 
@@ -123,6 +124,14 @@ export default function useENSRegistrationCosts({
   const nameUpdated = useMemo(() => {
     return registrationParameters?.name !== name && name.length > 2;
   }, [name, registrationParameters?.name]);
+
+  const [debouncedChangedRecords] = useDebounce(
+    registrationParameters?.changedRecords || {},
+    500
+  );
+  const recordsUpdated = useMemo(() => {
+    return JSON.stringify(debouncedChangedRecords) !== JSON.stringify(records);
+  }, [records, debouncedChangedRecords]);
 
   const [commitGasLimit, setCommitGasLimit] = useRecoilState(
     commitGasLimitAtom
@@ -323,9 +332,9 @@ export default function useENSRegistrationCosts({
       queryKey: ['getCommitGasLimit', name],
     },
     {
-      enabled: !!records && nameUpdated,
+      enabled: recordsUpdated || nameUpdated,
       queryFn: getSetRecordsGasLimit,
-      queryKey: ['getSetRecordsGasLimit', name, records],
+      queryKey: ['getSetRecordsGasLimit', name, debouncedChangedRecords],
     },
     {
       enabled: nameUpdated,
