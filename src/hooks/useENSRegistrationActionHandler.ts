@@ -313,19 +313,6 @@ export default function useENSRegistrationActionHandler(
     ]
   );
 
-  // const registerEstimateGasLimit = useCallback(async () => {
-  //   const gasLimit = await getENSRapEstimationByType(
-  //     RapActionTypes.registerENS,
-  //     {
-  //       ...formatENSActionParams(registrationParameters),
-  //       duration,
-  //       ownerAddress: accountAddress,
-  //       setReverseRecord: sendReverseRecord,
-  //     }
-  //   );
-  //   return gasLimit;
-  // }, [accountAddress, duration, registrationParameters, sendReverseRecord]);
-
   const registrationStep = useMemo(() => {
     if (mode === REGISTRATION_MODES.EDIT) return REGISTRATION_STEPS.EDIT;
     if (mode === REGISTRATION_MODES.RENEW) return REGISTRATION_STEPS.RENEW;

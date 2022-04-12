@@ -14,7 +14,7 @@ import {
 } from '@rainbow-me/entities';
 import {
   estimateENSCommitGasLimit,
-  estimateENSRegisterWithConfigGasLimit,
+  estimateENSRegisterSetRecordsAndNameGasLimit,
   estimateENSRenewGasLimit,
   estimateENSSetNameGasLimit,
   estimateENSSetRecordsGasLimit,
@@ -56,9 +56,9 @@ const setRecordsGasLimitAtom = atom({
   key: 'ens.setRecordsGasLimitAtom',
 });
 
-const registerGasLimitAtom = atom({
-  default: `${ethUnits.ens_register_with_config}`,
-  key: 'ens.registerGasLimitAtom',
+const registerRapGasLimitAtom = atom({
+  default: ``,
+  key: 'ens.registerRapGasLimitAtom',
 });
 
 const setNameGasLimitAtom = atom({
@@ -139,9 +139,10 @@ export default function useENSRegistrationCosts({
   const [setRecordsGasLimit, setSetRecordsGasLimit] = useRecoilState(
     setRecordsGasLimitAtom
   );
-  const [registerGasLimit, setRegisterGasLimit] = useRecoilState(
-    registerGasLimitAtom
+  const [registerRapGasLimit, setRegisterRapGasLimit] = useRecoilState(
+    registerRapGasLimitAtom
   );
+
   const [setNameGasLimit, setSetNameGasLimit] = useRecoilState(
     setNameGasLimitAtom
   );
@@ -163,14 +164,14 @@ export default function useENSRegistrationCosts({
       [REGISTRATION_STEPS.COMMIT]: commitGasLimit,
       [REGISTRATION_STEPS.RENEW]: renewGasLimit,
       [REGISTRATION_STEPS.EDIT]: setRecordsGasLimit,
-      [REGISTRATION_STEPS.REGISTER]: registerGasLimit,
+      [REGISTRATION_STEPS.REGISTER]: registerRapGasLimit,
       [REGISTRATION_STEPS.SET_NAME]: setNameGasLimit,
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: null,
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: null,
     }),
     [
       commitGasLimit,
-      registerGasLimit,
+      registerRapGasLimit,
       renewGasLimit,
       setNameGasLimit,
       setRecordsGasLimit,
@@ -227,24 +228,28 @@ export default function useENSRegistrationCosts({
     setCommitGasLimit,
   ]);
 
-  const getRegisterWithConfigGasLimit = useCallback(async () => {
-    const newRegisterGasLimit = await estimateENSRegisterWithConfigGasLimit({
-      duration,
-      name,
-      ownerAddress: accountAddress,
-      rentPrice: rentPriceInWei,
-      salt: registrationParameters?.salt,
-    });
-    newRegisterGasLimit && setRegisterGasLimit(newRegisterGasLimit);
+  const getRegisterRapGasLimit = useCallback(async () => {
+    const newRegisterRapGasLimit = await estimateENSRegisterSetRecordsAndNameGasLimit(
+      {
+        duration,
+        name,
+        ownerAddress: accountAddress,
+        rentPrice: registrationParameters?.rentPrice,
+        salt: registrationParameters?.salt,
+        setReverseRecord: sendReverseRecord,
+      }
+    );
+    newRegisterRapGasLimit && setRegisterRapGasLimit(newRegisterRapGasLimit);
     return commitGasLimit;
   }, [
     accountAddress,
     commitGasLimit,
     duration,
     name,
+    registrationParameters?.rentPrice,
     registrationParameters?.salt,
-    rentPriceInWei,
-    setRegisterGasLimit,
+    sendReverseRecord,
+    setRegisterRapGasLimit,
   ]);
 
   const getSetRecordsGasLimit = useCallback(async () => {
@@ -272,7 +277,6 @@ export default function useENSRegistrationCosts({
       name,
       rentPrice: rentPriceInWei,
     });
-
     newRenewGasLimit && setRenewGasLimit(newRenewGasLimit);
     return setNameGasLimit;
   }, [duration, name, rentPriceInWei, setNameGasLimit, setRenewGasLimit]);
@@ -299,7 +303,7 @@ export default function useENSRegistrationCosts({
       [
         commitGasLimit,
         setRecordsGasLimit,
-        registerGasLimit,
+        `${ethUnits.ens_register_with_config}`,
         !hasReverseRecord && setNameGasLimit,
       ].reduce((a, b) => add(a || 0, b || 0)) || `${ethUnits.ens_registration}`;
 
@@ -320,7 +324,6 @@ export default function useENSRegistrationCosts({
     gasFeeParams,
     hasReverseRecord,
     nativeCurrency,
-    registerGasLimit,
     setNameGasLimit,
     setRecordsGasLimit,
   ]);
@@ -342,14 +345,14 @@ export default function useENSRegistrationCosts({
       queryKey: ['getSetNameGasLimit', name],
     },
     {
+      enabled: nameUpdated,
+      queryFn: fetchEIP1559GasParams,
+      queryKey: ['fetchEIP1559GasParams'],
+    },
+    {
       enabled: step === REGISTRATION_STEPS.RENEW,
       queryFn: getRenewGasLimit,
       queryKey: ['getRenewGasLimit'],
-    },
-    {
-      enabled: step === REGISTRATION_STEPS.REGISTER,
-      queryFn: getRegisterWithConfigGasLimit,
-      queryKey: ['getRegisterWithConfigGasLimit'],
     },
     {
       enabled: nameUpdated,
@@ -357,9 +360,9 @@ export default function useENSRegistrationCosts({
       queryKey: ['getReverseRecord', name],
     },
     {
-      enabled: nameUpdated,
-      queryFn: fetchEIP1559GasParams,
-      queryKey: ['fetchEIP1559GasParams'],
+      enabled: step === REGISTRATION_STEPS.REGISTER,
+      queryFn: getRegisterRapGasLimit,
+      queryKey: ['getRegisterRapGasLimit', sendReverseRecord],
     },
   ]);
 
@@ -459,13 +462,14 @@ export default function useENSRegistrationCosts({
     yearsDuration,
   ]);
 
+  const statusQueries = queries.slice(0, 4);
   const isSuccess =
-    !queries.map(({ status }) => status).some(a => a !== 'success') &&
+    !statusQueries.some(a => a.status !== 'success') &&
     !!data?.estimatedRentPrice;
-  const isLoading = queries
+  const isLoading = statusQueries
     .map(({ isLoading }) => isLoading)
     .reduce((a, b) => a || b);
-  const isIdle = queries
+  const isIdle = statusQueries
     .map(({ isIdle }) => ({ isIdle }))
     .reduce((a, b) => a && b);
 
