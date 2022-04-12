@@ -3,7 +3,6 @@ import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import { useRecoilState } from 'recoil';
-import { HourglassAnimation } from '../components/animations';
 import { HoldToAuthorizeButton } from '../components/buttons';
 import {
   CommitContent,
@@ -12,6 +11,7 @@ import {
   WaitCommitmentConfirmationContent,
 } from '../components/ens-registration';
 import { GasSpeedButton } from '../components/gas';
+import { LargeCountdownClock } from '../components/large-countdown-clock';
 import { SheetActionButtonRow, SlackSheet } from '../components/sheet';
 import {
   AccentColorProvider,
@@ -33,6 +33,7 @@ import {
 } from '@rainbow-me/helpers/ens';
 import {
   useAccountSettings,
+  useDimensions,
   useENSRegistration,
   useENSRegistrationActionHandler,
   useENSRegistrationCosts,
@@ -99,17 +100,13 @@ export default function ENSConfirmRegisterSheet() {
     name: ensName,
     mode,
   } = useENSRegistration();
+
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
   const { result: dominantColor } = usePersistentDominantColorFromImage(
     initialAvatarUrl || ''
   );
   const [prevDominantColor, setPrevDominantColor] = useState(dominantColor);
-  useEffect(() => {
-    setAccentColor(dominantColor || prevDominantColor || colors.purple);
-    if (dominantColor) {
-      setPrevDominantColor(dominantColor);
-    }
-  }, [dominantColor, prevDominantColor, setAccentColor]);
+  const { isSmallPhone } = useDimensions();
 
   const [duration, setDuration] = useState(1);
   const [sendReverseRecord, setSendReverseRecord] = useState(true);
@@ -203,8 +200,8 @@ export default function ENSConfirmRegisterSheet() {
         />
       ),
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: (
-        <Box alignItems="center">
-          <HourglassAnimation />
+        <Box alignItems="center" height="full" paddingTop="76px">
+          <LargeCountdownClock minutes={1} onFinished={() => {}} seconds={0} />
         </Box>
       ),
     }),
@@ -303,6 +300,13 @@ export default function ENSConfirmRegisterSheet() {
     getReverseRecord();
   }, [accountAddress]);
 
+  useEffect(() => {
+    setAccentColor(dominantColor || prevDominantColor || colors.purple);
+    if (dominantColor) {
+      setPrevDominantColor(dominantColor);
+    }
+  }, [dominantColor, prevDominantColor, setAccentColor]);
+
   useFocusEffect(() => {
     blurFields();
   });
@@ -351,7 +355,7 @@ export default function ENSConfirmRegisterSheet() {
                     {stepLabel}
                   </Text>
                 </Stack>
-                <Inset vertical="24px">
+                <Inset vertical={isSmallPhone ? '12px' : ' 24px'}>
                   <Divider color="divider40" />
                 </Inset>
               </Box>

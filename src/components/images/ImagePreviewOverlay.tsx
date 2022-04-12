@@ -144,6 +144,8 @@ function ImagePreview({
         disableAnimations={false}
         height={height}
         horizontalPadding={0}
+        onZoomIn={undefined}
+        onZoomOut={undefined}
         opacity={opacity}
         width={width}
         xOffset={xOffset}

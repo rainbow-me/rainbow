@@ -12,6 +12,7 @@ import {
   Text,
 } from '@rainbow-me/design-system';
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
+import { useDimensions } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 
 const CommitContent = ({
@@ -21,11 +22,13 @@ const CommitContent = ({
 }: {
   duration: number;
   registrationCostsData: any;
-  setDuration: (duration: number) => void;
+  setDuration: React.Dispatch<React.SetStateAction<number>>;
 }) => {
+  const { isSmallPhone } = useDimensions();
+
   return (
     <Inset horizontal="30px">
-      <Stack space="34px">
+      <Stack space={isSmallPhone ? '19px' : '34px'}>
         <Inline
           alignHorizontal="center"
           alignVertical="center"

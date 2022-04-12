@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/core';
 import { differenceInSeconds } from 'date-fns';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-// @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
+// @ts-expect-error
 import { IS_TESTING } from 'react-native-dotenv';
 import { Image } from 'react-native-image-crop-picker';
 import { useDispatch } from 'react-redux';
@@ -30,6 +30,7 @@ import {
 } from '@rainbow-me/redux/ensRegistration';
 import { timeUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
+import { logger } from '@rainbow-me/utils';
 
 // add waiting buffer
 const ENS_SECONDS_WAIT = 60;
@@ -463,12 +464,17 @@ async function uploadRecordImages(
       (records?.[key]?.startsWith('~') || records?.[key]?.startsWith('file')) &&
       imageMetadata[key]
     ) {
-      const { url } = await uploadImage({
-        filename: imageMetadata[key]?.filename || '',
-        mime: imageMetadata[key]?.mime || '',
-        path: imageMetadata[key]?.path || '',
-      });
-      return url;
+      try {
+        const { url } = await uploadImage({
+          filename: imageMetadata[key]?.filename || '',
+          mime: imageMetadata[key]?.mime || '',
+          path: imageMetadata[key]?.path || '',
+        });
+        return url;
+      } catch (error) {
+        logger.sentry('[uploadRecordImages] Failed to upload image.', error);
+        return undefined;
+      }
     }
     return records?.[key];
   };
