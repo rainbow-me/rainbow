@@ -80,6 +80,8 @@ const FedoraToastRef = createRef();
 
 StatusBar.pushStackEntry({ animated: true, barStyle: 'dark-content' });
 
+const routingInstrumentation = new Sentry.ReactNavigationInstrumentation();
+
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
   (showNetworkRequests || showNetworkResponses) &&
@@ -110,9 +112,11 @@ if (__DEV__) {
       environment: SENTRY_ENVIRONMENT,
       integrations: [
         new Sentry.ReactNativeTracing({
+          routingInstrumentation,
           tracingOrigins: ['localhost', /^\//],
         }),
       ],
+      tracesSampleRate: 0.2,
       ...(metadata && {
         dist: metadata.label,
         release: `${metadata.appVersion} (${VersionNumber.buildVersion}) (CP ${metadata.label})`,
@@ -274,8 +278,10 @@ class App extends Component {
     });
   };
 
-  handleNavigatorRef = navigatorRef =>
+  handleNavigatorRef = navigatorRef => {
+    this.navigatorRef = navigatorRef;
     Navigation.setTopLevelNavigator(navigatorRef);
+  };
 
   handleTransactionConfirmed = tx => {
     const network = tx.network || networkTypes.mainnet;
@@ -312,7 +318,14 @@ class App extends Component {
                           <InitialRouteContext.Provider
                             value={this.state.initialRoute}
                           >
-                            <RoutesComponent ref={this.handleNavigatorRef} />
+                            <RoutesComponent
+                              onReady={() => {
+                                routingInstrumentation.registerNavigationContainer(
+                                  this.navigatorRef
+                                );
+                              }}
+                              ref={this.handleNavigatorRef}
+                            />
                             <PortalConsumer />
                           </InitialRouteContext.Provider>
                         )}
