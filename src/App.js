@@ -117,7 +117,7 @@ if (__DEV__) {
           tracingOrigins: ['localhost', /^\//],
         }),
       ],
-      tracesSampleRate: 1.0,
+      tracesSampleRate: 0.2,
       ...(metadata && {
         dist: metadata.label,
         release: `${metadata.appVersion} (${VersionNumber.buildVersion}) (CP ${metadata.label})`,
