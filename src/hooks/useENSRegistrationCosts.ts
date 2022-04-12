@@ -22,10 +22,12 @@ import {
 } from '@rainbow-me/handlers/ens';
 import { NetworkTypes } from '@rainbow-me/helpers';
 import {
+  ENS_DOMAIN,
   formatEstimatedNetworkFee,
   formatRentPrice,
   formatTotalRegistrationCost,
   generateSalt,
+  getRentPrice,
   REGISTRATION_STEPS,
 } from '@rainbow-me/helpers/ens';
 import { Network } from '@rainbow-me/helpers/networkTypes';
@@ -282,14 +284,18 @@ export default function useENSRegistrationCosts({
   }, [accountAddress, name, setNameGasLimit, setSetNameGasLimit]);
 
   const getRenewGasLimit = useCallback(async () => {
+    const rentPrice = await getRentPrice(
+      name.replace(ENS_DOMAIN, ''),
+      duration
+    );
     const newRenewGasLimit = await estimateENSRenewGasLimit({
       duration,
       name,
-      rentPrice: rentPriceInWei,
+      rentPrice: rentPrice?.toString(),
     });
     newRenewGasLimit && setRenewGasLimit(newRenewGasLimit);
     return setNameGasLimit;
-  }, [duration, name, rentPriceInWei, setNameGasLimit, setRenewGasLimit]);
+  }, [duration, name, setNameGasLimit, setRenewGasLimit]);
 
   const getReverseRecord = useCallback(async () => {
     const reverseRecord = await fetchReverseRecord(accountAddress);
@@ -310,12 +316,17 @@ export default function useENSRegistrationCosts({
     const { gasFeeParamsBySpeed, currentBaseFee } = gasFeeParams;
 
     const estimatedGasLimit =
-      [
-        commitGasLimit,
-        setRecordsGasLimit,
-        `${ethUnits.ens_register_with_config}`,
-        !hasReverseRecord && setNameGasLimit,
-      ].reduce((a, b) => add(a || 0, b || 0)) || `${ethUnits.ens_registration}`;
+      step === REGISTRATION_STEPS.COMMIT
+        ? [
+            commitGasLimit,
+            setRecordsGasLimit,
+            `${ethUnits.ens_register_with_config}`,
+            !hasReverseRecord && setNameGasLimit,
+          ].reduce((a, b) => add(a || 0, b || 0)) ||
+          `${ethUnits.ens_registration}`
+        : step === REGISTRATION_STEPS.RENEW
+        ? renewGasLimit
+        : '';
 
     const formattedEstimatedNetworkFee = formatEstimatedNetworkFee(
       estimatedGasLimit,
@@ -334,8 +345,10 @@ export default function useENSRegistrationCosts({
     gasFeeParams,
     hasReverseRecord,
     nativeCurrency,
+    renewGasLimit,
     setNameGasLimit,
     setRecordsGasLimit,
+    step,
   ]);
 
   const queries = useQueries([
