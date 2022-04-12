@@ -291,7 +291,7 @@ export default function useENSRegistrationCosts({
         commitGasLimit,
         setRecordsGasLimit,
         registerGasLimit,
-        (!hasReverseRecord || sendReverseRecord) && setNameGasLimit,
+        !hasReverseRecord && setNameGasLimit,
       ].reduce((a, b) => add(a || 0, b || 0)) || `${ethUnits.ens_registration}`;
 
     const formattedEstimatedNetworkFee = formatEstimatedNetworkFee(
@@ -312,7 +312,6 @@ export default function useENSRegistrationCosts({
     hasReverseRecord,
     nativeCurrency,
     registerGasLimit,
-    sendReverseRecord,
     setNameGasLimit,
     setRecordsGasLimit,
   ]);
