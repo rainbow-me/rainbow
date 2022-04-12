@@ -1,8 +1,6 @@
 import { useNavigation } from '@react-navigation/core';
 import { differenceInSeconds } from 'date-fns';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-// @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
-import { IS_TESTING } from 'react-native-dotenv';
 import { Image } from 'react-native-image-crop-picker';
 import { useDispatch } from 'react-redux';
 import { useRecoilValue } from 'recoil';
