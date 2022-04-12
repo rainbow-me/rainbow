@@ -72,6 +72,7 @@ import {
 } from '@rainbow-me/handlers/fedora';
 import { SharedValuesProvider } from '@rainbow-me/helpers/SharedValuesContext';
 import Routes from '@rainbow-me/routes';
+import { startMeasuringTimeToInteractive } from '@rainbow-me/utils/ttiTransaction';
 import logger from 'logger';
 import { Portal } from 'react-native-cool-modals/Portal';
 const WALLETCONNECT_SYNC_DELAY = 500;
@@ -116,7 +117,7 @@ if (__DEV__) {
           tracingOrigins: ['localhost', /^\//],
         }),
       ],
-      tracesSampleRate: 0.2,
+      tracesSampleRate: 1.0,
       ...(metadata && {
         dist: metadata.label,
         release: `${metadata.appVersion} (${VersionNumber.buildVersion}) (CP ${metadata.label})`,
@@ -124,7 +125,7 @@ if (__DEV__) {
     };
     Sentry.init(sentryOptions);
   }
-  initSentryAndCheckForFedoraMode();
+  initSentryAndCheckForFedoraMode().then(startMeasuringTimeToInteractive);
 }
 
 enableScreens();

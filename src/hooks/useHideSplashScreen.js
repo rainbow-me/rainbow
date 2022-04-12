@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { InteractionManager, NativeModules, StatusBar } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
+import { finishMeasuringTimeToInteractive } from '@rainbow-me/utils/ttiTransaction';
 
 const { RainbowSplashScreen, RNBootSplash } = NativeModules;
 
@@ -25,5 +26,8 @@ export default function useHideSplashScreen() {
       InteractionManager.runAfterInteractions(() => {
         StatusBar.setHidden(false, 'fade');
       });
+    if (!__DEV__) {
+      finishMeasuringTimeToInteractive();
+    }
   }, []);
 }
