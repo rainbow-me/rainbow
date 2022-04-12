@@ -23,8 +23,9 @@ import {
   toUpper,
   uniqBy,
 } from 'lodash';
+import debounce from 'lodash/debounce';
 import { MMKV } from 'react-native-mmkv';
-import { Dispatch } from 'redux';
+import { AnyAction, Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { uniswapClient } from '../apollo/client';
 import {
@@ -139,11 +140,17 @@ const DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION =
 
 const DATA_LOAD_ACCOUNT_ASSETS_DATA_REQUEST =
   'data/DATA_LOAD_ACCOUNT_ASSETS_DATA_REQUEST';
+const DATA_LOAD_ACCOUNT_ASSETS_DATA_RECEIVED =
+  'data/DATA_LOAD_ACCOUNT_ASSETS_DATA_RECEIVED';
 const DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS =
   'data/DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS';
 const DATA_LOAD_ACCOUNT_ASSETS_DATA_FAILURE =
   'data/DATA_LOAD_ACCOUNT_ASSETS_DATA_FAILURE';
+const DATA_LOAD_ACCOUNT_ASSETS_DATA_FINALIZED =
+  'data/DATA_LOAD_ACCOUNT_ASSETS_DATA_FINALIZED';
 
+const DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_RECEIVED =
+  'data/DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_RECEIVED';
 const DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_SUCCESS =
   'data/DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_SUCCESS';
 
@@ -249,9 +256,12 @@ type DataAction =
   | DataLoadTransactionSuccessAction
   | DataLoadTransactionsFailureAction
   | DataLoadAccountAssetsDataRequestAction
+  | DataLoadAssetPricesFromUniswapReceivedAction
   | DataLoadAssetPricesFromUniswapSuccessAction
+  | DataLoadAccountAssetsDataReceivedAction
   | DataLoadAccountAssetsDataSuccessAction
   | DataLoadAccountAssetsDataFailureAction
+  | DataLoadAccountAssetsDataFinalizedAction
   | DataAddNewTransactionSuccessAction
   | DataClearStateAction;
 
@@ -329,7 +339,26 @@ interface DataLoadAccountAssetsDataRequestAction {
 }
 
 /**
- * The action to update `assetPricesFromUniswap`.
+ * The action to update `accountAssetsData` and indicate that data has been
+ * received.
+ */
+interface DataLoadAccountAssetsDataReceivedAction {
+  type: typeof DATA_LOAD_ACCOUNT_ASSETS_DATA_RECEIVED;
+  payload: DataState['accountAssetsData'];
+}
+
+/**
+ * The action to update `assetPricesFromUniswap` and indicated data has been
+ * received.
+ */
+interface DataLoadAssetPricesFromUniswapReceivedAction {
+  type: typeof DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_RECEIVED;
+  payload: DataState['assetPricesFromUniswap'];
+}
+
+/**
+ * The action to update `assetPricesFromUniswap` and indicate data has been
+ * fetched successfully.
  */
 interface DataLoadAssetPricesFromUniswapSuccessAction {
   type: typeof DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_SUCCESS;
@@ -350,6 +379,13 @@ interface DataLoadAccountAssetsDataSuccessAction {
  */
 interface DataLoadAccountAssetsDataFailureAction {
   type: typeof DATA_LOAD_ACCOUNT_ASSETS_DATA_FAILURE;
+}
+
+/**
+ * The action used to incidate that loading *all* account assets is finished.
+ */
+interface DataLoadAccountAssetsDataFinalizedAction {
+  type: typeof DATA_LOAD_ACCOUNT_ASSETS_DATA_FINALIZED;
 }
 
 /**
@@ -531,6 +567,7 @@ export const dataLoadState = () => async (
   dispatch: ThunkDispatch<
     AppState,
     unknown,
+    | DataLoadAssetPricesFromUniswapReceivedAction
     | DataLoadAssetPricesFromUniswapSuccessAction
     | DataLoadAccountAssetsDataRequestAction
     | DataLoadAccountAssetsDataSuccessAction
@@ -1040,7 +1077,7 @@ export const addressAssetsReceived = (
   dispatch: ThunkDispatch<
     AppState,
     unknown,
-    DataLoadAccountAssetsDataSuccessAction
+    DataLoadAccountAssetsDataReceivedAction
   >,
   getState: AppGetState
 ) => {
@@ -1112,7 +1149,7 @@ export const addressAssetsReceived = (
 
   dispatch({
     payload: parsedAssets,
-    type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
+    type: DATA_LOAD_ACCOUNT_ASSETS_DATA_RECEIVED,
   });
   if (!change) {
     const missingPriceAssetAddresses: string[] = map(
@@ -1142,6 +1179,7 @@ export const addressAssetsReceived = (
 const subscribeToMissingPrices = (addresses: string[]) => (
   dispatch: Dispatch<
     | DataLoadAssetPricesFromUniswapSuccessAction
+    | DataLoadAssetPricesFromUniswapReceivedAction
     | DataUpdateUniswapPricesSubscriptionAction
   >,
   getState: AppGetState
@@ -1232,7 +1270,7 @@ const subscribeToMissingPrices = (addresses: string[]) => (
             );
             dispatch({
               payload: tokenPricingInfo,
-              type: DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_SUCCESS,
+              type: DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_RECEIVED,
             });
           }
         } catch (error) {
@@ -1789,22 +1827,41 @@ export default (state: DataState = INITIAL_STATE, action: DataAction) => {
         ...state,
         isLoadingAssets: true,
       };
-    case DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_SUCCESS:
+    case DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_RECEIVED:
       return {
         ...state,
         assetPricesFromUniswap: action.payload,
       };
-    case DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS:
+    case DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_SUCCESS:
+      return {
+        ...state,
+        assetPricesFromUniswap: action.payload,
+        isLoadingAssets: false,
+      };
+    case DATA_LOAD_ACCOUNT_ASSETS_DATA_RECEIVED: {
+      return {
+        ...state,
+        accountAssetsData: action.payload,
+      };
+    }
+    case DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS: {
       return {
         ...state,
         accountAssetsData: action.payload,
         isLoadingAssets: false,
       };
+    }
     case DATA_LOAD_ACCOUNT_ASSETS_DATA_FAILURE:
       return {
         ...state,
         isLoadingAssets: false,
       };
+    case DATA_LOAD_ACCOUNT_ASSETS_DATA_FINALIZED: {
+      return {
+        ...state,
+        isLoadingAssets: false,
+      };
+    }
     case DATA_ADD_NEW_TRANSACTION_SUCCESS:
       return {
         ...state,
@@ -1820,3 +1877,49 @@ export default (state: DataState = INITIAL_STATE, action: DataAction) => {
       return state;
   }
 };
+
+// -- Middlewares ---------------------------------------- //
+
+const FETCHING_TIMEOUT = 10000;
+const WAIT_FOR_WEBSOCKET_DATA_TIMEOUT = 3000;
+
+/**
+ * Waits until data has finished streaming from the websockets. When finished,
+ * the assets loading state will be marked as finalized.
+ */
+export function loadingAssetsMiddleware({
+  dispatch,
+}: {
+  dispatch: Dispatch<DataLoadAccountAssetsDataFinalizedAction>;
+}) {
+  let accountAssetsDataFetchingTimeout: NodeJS.Timeout;
+
+  const setLoadingFinished = () => {
+    clearTimeout(accountAssetsDataFetchingTimeout);
+    dispatch({ type: DATA_LOAD_ACCOUNT_ASSETS_DATA_FINALIZED });
+  };
+  const debouncedSetLoadingFinished = debounce(
+    setLoadingFinished,
+    WAIT_FOR_WEBSOCKET_DATA_TIMEOUT
+  );
+
+  return (next: Dispatch<AnyAction>) => (action: any) => {
+    // If we have received data from the websockets, we want to debounce
+    // the finalize state as there could be another event streaming in
+    // shortly after.
+    if (action.type === DATA_LOAD_ACCOUNT_ASSETS_DATA_RECEIVED) {
+      debouncedSetLoadingFinished();
+    }
+
+    // On the rare occasion that we can't receive any events from the
+    // websocket, we want to set the loading states back to falsy
+    // after the timeout has elapsed.
+    if (action.type === DATA_LOAD_ACCOUNT_ASSETS_DATA_REQUEST) {
+      accountAssetsDataFetchingTimeout = setTimeout(() => {
+        setLoadingFinished();
+      }, FETCHING_TIMEOUT);
+    }
+
+    return next(action);
+  };
+}
