@@ -1,0 +1,202 @@
+# Rainbow CODEOWNERS file
+
+# ANDROID
+android/ @brunobar79 @osdnk @terrysahaidak
+
+# E2E
+config/ @brunobar79 @skylarbarrera @osdnk
+e2e/ @brunobar79 @ibrahimtaveras00 @skylarbarrera
+
+# IOS
+ios/ @brunobar79 @osdnk
+
+# SECURITY / APP INFRA
+patches/ @brunobar79 @osdnk
+scripts/ @brunobar79 @osdnk
+
+# i18N
+scripts/check-translations.sh @jinchung @marco
+scripts/codegen-translations.js @jinchung @marco
+
+# APOLLO
+src/apollo @brunobar79 @jinchung @derHowie
+
+# ASSETS
+src/assets @skylarbarrera @christianbaroni
+
+# COMPONENTS
+src/components @osdnk @terrysahaidak
+
+# APP CONFIG
+src/config @osdnk @brunobar79 @skylarbarrera
+
+# REACT CONTEXT
+src/context @osdnk @terrysahaidak
+
+# NETWORK DEBUGGING
+src/debugging @brunobar79
+
+# DESIGN SYSTEM
+src/design-system @markdalgleish @jxom
+
+# Typescript
+src/entities @jinchung @markdalgleish @marco
+
+# Handlers
+src/handlers @jinchung @brunobar79
+src/handlers/aesEncryption.ts @brunobar79 @estebanmino
+src/handlers/appEvents.ts @brunobar79 @derHowie
+src/handlers/assets.ts @jinchung @marco @derHowie
+src/handlers/authentication.ts @jinchung @brunobar79
+src/handlers/cloudBackup.ts @brunobar79 @skylarbarrera
+src/handlers/covalent.ts @brunobar79 @derHowie
+src/handlers/deeplinks.ts @brunobar79 @tchayen
+src/handlers/dispersion.ts @brunobar79 @derHowie @jinchung
+src/handlers/ens.ts @estebanmino @skylarbarrera @jxom
+src/handlers/gasFees.ts @estebanmino @brunobar79 @jinchung
+src/handlers/imgix.ts @brunobar79 @osdnk @skylarbarrera
+src/handlers/opensea-api.ts @jinchung @skylarbarrera
+src/handlers/poap.ts @skylarbarrera @osdnk
+src/handlers/svgs.ts @skylarbarrera @osdnk
+src/handlers/tokenSearch.ts @brunobar79 @jinchung @derHowie
+src/handlers/transactions.ts @brunobar79 @osdnk @jinchung
+src/handlers/uniswap.ts @brunobar79 @jinchung
+src/handlers/walletReadyEvents.ts @brunobar79 @jinchung
+src/handlers/web3.ts @brunobar79 @jinchung @estebanmino
+src/handlers/wyre.ts @jinchung @skylarbarrera
+src/handlers/fedora.ts @osdnk
+
+# Helpers
+src/helpers @brunobar79 @jinchung
+
+
+# Hooks
+src/hooks @jinchung @osdnk
+src/hooks/useENSProfile.ts @estebanmino @jxom
+src/hooks/useENSProfileForm.ts @estebanmino @jxom
+src/hooks/useENSRegistration.ts @estebanmino @jxom
+src/hooks/useENSRegistrationCosts.ts @estebanmino @jxom
+src/hooks/useGas.ts @estebanmino @brunobar79 @jinchung
+
+# Languages
+src/languages @skylarbarrera @marco
+
+
+# Model
+src/model @brunobar79 @jinchung
+src/model/mmkv @osdnk @terrysahaidak
+
+# Navigation
+src/navigation @osdnk @terrysahaidak
+
+# Parsers
+src/parsers @brunobar79 @jinchung
+
+# rainbow fetch
+src/rainbow-fetch @brunobar79 @skylarbarrera
+
+# raps
+src/raps @brunobar79 @jinchung
+src/raps/registerENS.ts @estebanmino @jxom
+
+# charts, shadow stack, cool modals, sheets
+src/react-native-animated-charts @osdnk @terrysahaidak
+src/react-native-cool-modals @osdnk @brunobar79
+src/react-native-shadow-stack @osdnk @terrysahaidak
+src/react-native-yet-another-bottom-sheet @osdnk @terrysahaidak
+
+# react query
+src/react-query @jinchung @derHowie @jxom
+
+# redux
+src/redux @jinchung @brunobar79
+src/redux/charts.ts @osdnk @terrysahaidak
+src/redux/ensRegistration.ts @estebanmino @jxom
+src/redux/imageMetadata.ts @osdnk @skylarbarrera
+src/redux/gas.ts @brunobar79 @estebanmino
+src/redux/keyboardHeight.ts @osdnk @skylarbarrera
+src/redux/nonceManager.ts @derHowie @brunobar79
+src/redux/showcaseTokens.ts @osdnk @skylarbarrera
+src/redux/transactionSignatures.ts @brunobar79 @estebanmino
+src/redux/uniqueTokens.ts @jinchung @skylarbarrera
+src/redux/walletconnect.js @brunobar79 @estebanmino
+
+# references
+src/references @jinchung @brunobar79 @skylarbarrera
+
+# screens
+src/screens @osdnk @skylarbarrera
+
+# styled-thing
+src/styled-thing @terrysahaidak @osdnk
+
+# styles
+src/styled-thing @terrysahaidak @osdnk @markdalgleish
+
+# utils
+src/utils @brunobar79 @jinchung
+
+# App
+src/App.js @brunobar79 @jinchung @osdnk
+
+# types
+eth-contract-metadata.d.ts @markdalgleish @jxom
+eth-ens-namehash.d.ts @markdalgleish @jxom
+
+
+# TYPESCRIPT
+types/ @markdalgleish @marco @jinchung
+
+# APP INFRA
+.eslintignore @brunobar79 @osdnk
+.eslintrc.js @brunobar79 @osdnk
+.flowconfig @brunobar79 @osdnk
+.gitattributes @brunobar79 @jinchung
+.gitignore @brunobar79 @jinchung
+.nvmrc @brunobar79 @osdnk
+.prettierrc.js @brunobar79 @osdnk
+.watchmanconfig @brunobar79 @osdnk
+# SECURITY / APP INFRA
+
+.yarnrc @brunobar79
+
+# APP INFRA
+app.json @jinchung @brunobar79
+
+# SECURITY / APP INFRA
+audit-ci.json @brunobar79 @skylarbarrera
+
+# APP INFRA
+babel.config.js @brunobar79 @osdnk
+bitrise.yml @brunobar79 @skylarbarrera
+CHANGELOG.md
+CODEOWNERS @brunobar79 @jinchung @skylarbarrera
+cspell.json
+globals.d.ts @brunobar79 @osdnk
+globalVariables.js @brunobar79 @osdnk
+
+# HARDHAT
+hardhat.config.js @brunobar79 @estebanmino
+
+# APP CORE
+index.js @brunobar79 @jinchung
+
+# LEGAL
+LICENSE @jinchung @brunobar79
+
+# SECURITY / APP INFRA
+metro.config.js @brunobar79 @osdnk
+metro.transform.js @brunobar79 @osdnk
+package.json @brunobar79 @jinchung
+
+# APP INFRA
+react-native.config.js @brunobar79 @jinchung
+README.md @jinchung @skylarbarrera
+shim.js @brunobar79 @osdnk
+tsconfig.json @brunobar79 @osdnk
+
+# SECURITY / APP INFRA
+yarn.lock @brunobar79 @jinchung
+
+
+
