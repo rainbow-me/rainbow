@@ -4,6 +4,7 @@ import { useQueries } from 'react-query';
 import { atom, useRecoilState } from 'recoil';
 import useENSRegistration from './useENSRegistration';
 import useGas from './useGas';
+import usePrevious from './usePrevious';
 import { useAccountSettings } from '.';
 import {
   GasFeeParam,
@@ -69,6 +70,16 @@ const hasReverseRecordAtom = atom({
   key: 'ens.hasReverseRecordAtom',
 });
 
+const isSufficientGasAtom = atom({
+  default: false,
+  key: 'ens.iseSufficientGasAtom',
+});
+
+const isValidGasAtom = atom({
+  default: false,
+  key: 'ens.isValidGasAtom',
+});
+
 const gasFeeParamsAtom = atom({
   default: {
     currentBaseFee: {} as GasFeeParam,
@@ -99,9 +110,10 @@ export default function useENSRegistrationCosts({
     gasFeeParamsBySpeed,
     updateTxFee,
     startPollingGasFees,
-    isSufficientGas,
-    isValidGas,
+    isSufficientGas: useGasIsSufficientGas,
+    isValidGas: useGasIsValidGas,
   } = useGas();
+
   const { registrationParameters } = useENSRegistration();
 
   const [commitGasLimit, setCommitGasLimit] = useRecoilState(
@@ -116,14 +128,32 @@ export default function useENSRegistrationCosts({
   const [setNameGasLimit, setSetNameGasLimit] = useRecoilState(
     setNameGasLimitAtom
   );
-
   const [renewGasLimit, setRenewGasLimit] = useRecoilState(renewGasLimitAtom);
-
   const [hasReverseRecord, setHasReverseRecord] = useRecoilState(
     hasReverseRecordAtom
   );
-
   const [gasFeeParams, setGasFeeParams] = useRecoilState(gasFeeParamsAtom);
+  const [isValidGas, setIsValidGas] = useRecoilState(isValidGasAtom);
+  const [isSufficientGas, setIsSufficientGas] = useRecoilState(
+    isSufficientGasAtom
+  );
+  const prevIsSufficientGas = usePrevious(isSufficientGas);
+  const prevIsValidGas = usePrevious(isValidGas);
+
+  useEffect(() => {
+    if (
+      useGasIsSufficientGas !== null &&
+      useGasIsSufficientGas !== prevIsSufficientGas
+    ) {
+      setIsSufficientGas(useGasIsSufficientGas);
+    }
+  }, [prevIsSufficientGas, setIsSufficientGas, useGasIsSufficientGas]);
+
+  useEffect(() => {
+    if (useGasIsValidGas !== null && useGasIsValidGas !== prevIsValidGas) {
+      setIsValidGas(useGasIsValidGas);
+    }
+  }, [prevIsSufficientGas, prevIsValidGas, setIsValidGas, useGasIsValidGas]);
 
   const rentPriceInWei = rentPrice?.wei?.toString();
 
