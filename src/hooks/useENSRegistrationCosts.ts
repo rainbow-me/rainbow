@@ -253,14 +253,24 @@ export default function useENSRegistrationCosts({
   ]);
 
   const getSetRecordsGasLimit = useCallback(async () => {
-    if (name?.length < 3 || !records) return;
+    if (name?.length < 3 || !debouncedChangedRecords) return;
     const newSetRecordsGasLimit = await estimateENSSetRecordsGasLimit({
+      ...(step === REGISTRATION_STEPS.EDIT
+        ? { ownerAddress: accountAddress }
+        : {}),
       name,
-      records,
+      records: debouncedChangedRecords,
     });
     newSetRecordsGasLimit && setSetRecordsGasLimit(newSetRecordsGasLimit);
     return setRecordsGasLimit;
-  }, [name, records, setRecordsGasLimit, setSetRecordsGasLimit]);
+  }, [
+    accountAddress,
+    debouncedChangedRecords,
+    name,
+    setRecordsGasLimit,
+    setSetRecordsGasLimit,
+    step,
+  ]);
 
   const getSetNameGasLimit = useCallback(async () => {
     const newSetNameGasLimit = await estimateENSSetNameGasLimit({

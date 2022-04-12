@@ -42,11 +42,11 @@ import {
   accentColorAtom,
   ENS_RECORDS,
   REGISTRATION_MODES,
-  REGISTRATION_STEPS,
   textRecordFields,
 } from '@rainbow-me/helpers/ens';
 import {
   useENSRegistration,
+  useENSRegistrationActionHandler,
   useENSRegistrationCosts,
   useENSRegistrationForm,
   useENSSearch,
@@ -84,11 +84,12 @@ export default function ENSAssignRecordsSheet() {
     name,
   });
 
+  const { step } = useENSRegistrationActionHandler();
   useENSRegistrationCosts({
     name,
     records: changedRecords,
     rentPrice: registrationData?.rentPrice,
-    step: REGISTRATION_STEPS.COMMIT,
+    step,
     yearsDuration: 1,
   });
 
