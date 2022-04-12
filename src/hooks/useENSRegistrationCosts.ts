@@ -2,6 +2,7 @@ import { isEmpty } from 'lodash';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useQueries } from 'react-query';
 import { atom, useRecoilState } from 'recoil';
+import useENSRegistration from './useENSRegistration';
 import useGas from './useGas';
 import { useAccountSettings } from '.';
 import {
@@ -11,6 +12,7 @@ import {
 } from '@rainbow-me/entities';
 import {
   estimateENSCommitGasLimit,
+  estimateENSRegisterWithConfigGasLimit,
   estimateENSRenewGasLimit,
   estimateENSSetNameGasLimit,
   estimateENSSetRecordsGasLimit,
@@ -48,7 +50,7 @@ const renewGasLimitAtom = atom({
 });
 
 const setRecordsGasLimitAtom = atom({
-  default: '',
+  default: `${ethUnits.ens_set_multicall}`,
   key: 'ens.setRecordsGasLimitAtom',
 });
 
@@ -100,6 +102,7 @@ export default function useENSRegistrationCosts({
     isSufficientGas,
     isValidGas,
   } = useGas();
+  const { registrationParameters } = useENSRegistration();
 
   const [commitGasLimit, setCommitGasLimit] = useRecoilState(
     commitGasLimitAtom
@@ -135,18 +138,15 @@ export default function useENSRegistrationCosts({
   }, []);
 
   const getCommitGasLimit = useCallback(async () => {
-    if (commitGasLimit !== '') return commitGasLimit;
-    if (name?.length < 3) return;
     const salt = generateSalt();
-    const newCommitGasLimit =
-      (await estimateENSCommitGasLimit({
-        duration,
-        name,
-        ownerAddress: accountAddress,
-        rentPrice: rentPriceInWei,
-        salt,
-      })) || '0';
-    setCommitGasLimit(newCommitGasLimit);
+    const newCommitGasLimit = await estimateENSCommitGasLimit({
+      duration,
+      name,
+      ownerAddress: accountAddress,
+      rentPrice: rentPriceInWei,
+      salt,
+    });
+    newCommitGasLimit && setCommitGasLimit(newCommitGasLimit);
     return commitGasLimit;
   }, [
     accountAddress,
@@ -157,49 +157,55 @@ export default function useENSRegistrationCosts({
     setCommitGasLimit,
   ]);
 
+  const getRegisterGasLimit = useCallback(async () => {
+    const newRegisterGasLimit = await estimateENSRegisterWithConfigGasLimit({
+      duration,
+      name,
+      ownerAddress: accountAddress,
+      rentPrice: rentPriceInWei,
+      salt: registrationParameters?.salt,
+    });
+    newRegisterGasLimit && setRegisterGasLimit(newRegisterGasLimit);
+    return commitGasLimit;
+  }, [
+    accountAddress,
+    commitGasLimit,
+    duration,
+    name,
+    registrationParameters?.salt,
+    rentPriceInWei,
+    setRegisterGasLimit,
+  ]);
+
   const getSetRecordsGasLimit = useCallback(async () => {
     if (name?.length < 3 || !records) return;
-    const newSetRecordsGasLimit =
-      (await estimateENSSetRecordsGasLimit({
-        name,
-        records,
-      })) || '0';
-    setSetRecordsGasLimit(newSetRecordsGasLimit);
+    const newSetRecordsGasLimit = await estimateENSSetRecordsGasLimit({
+      name,
+      records,
+    });
+    newSetRecordsGasLimit && setSetRecordsGasLimit(newSetRecordsGasLimit);
     return setRecordsGasLimit;
   }, [name, records, setRecordsGasLimit, setSetRecordsGasLimit]);
 
   const getSetNameGasLimit = useCallback(async () => {
-    if (setNameGasLimit !== '') return setNameGasLimit;
-    if (name?.length < 3) return;
-    const newSetNameGasLimit =
-      (await estimateENSSetNameGasLimit({
-        name,
-        ownerAddress: accountAddress,
-      })) || '0';
-    setSetNameGasLimit(newSetNameGasLimit);
+    const newSetNameGasLimit = await estimateENSSetNameGasLimit({
+      name,
+      ownerAddress: accountAddress,
+    });
+    newSetNameGasLimit && setSetNameGasLimit(newSetNameGasLimit);
     return setNameGasLimit;
   }, [accountAddress, name, setNameGasLimit, setSetNameGasLimit]);
 
   const getRenewGasLimit = useCallback(async () => {
-    if (renewGasLimit !== '') return renewGasLimit;
-    if (name?.length < 3) return;
-    const newRenewGasLimit =
-      (await estimateENSRenewGasLimit({
-        duration,
-        name,
-        rentPrice: rentPriceInWei,
-      })) || '';
+    const newRenewGasLimit = await estimateENSRenewGasLimit({
+      duration,
+      name,
+      rentPrice: rentPriceInWei,
+    });
 
-    setRenewGasLimit(newRenewGasLimit);
+    newRenewGasLimit && setRenewGasLimit(newRenewGasLimit);
     return setNameGasLimit;
-  }, [
-    duration,
-    name,
-    renewGasLimit,
-    rentPriceInWei,
-    setNameGasLimit,
-    setRenewGasLimit,
-  ]);
+  }, [duration, name, rentPriceInWei, setNameGasLimit, setRenewGasLimit]);
 
   const getReverseRecord = useCallback(async () => {
     const reverseRecord = await fetchReverseRecord(accountAddress);
@@ -237,12 +243,13 @@ export default function useENSRegistrationCosts({
       Network.mainnet
     );
     const { gasFeeParamsBySpeed, currentBaseFee } = gasFeeParams;
+
     const estimatedGasLimit =
       [
         commitGasLimit,
         setRecordsGasLimit,
         registerGasLimit,
-        !hasReverseRecord && setNameGasLimit,
+        (!hasReverseRecord || sendReverseRecord) && setNameGasLimit,
       ].reduce((a, b) => add(a || 0, b || 0)) || `${ethUnits.ens_registration}`;
 
     const formattedEstimatedNetworkFee = formatEstimatedNetworkFee(
@@ -263,6 +270,7 @@ export default function useENSRegistrationCosts({
     hasReverseRecord,
     nativeCurrency,
     registerGasLimit,
+    sendReverseRecord,
     setNameGasLimit,
     setRecordsGasLimit,
   ]);
@@ -274,7 +282,7 @@ export default function useENSRegistrationCosts({
       queryKey: ['getCommitGasLimit', name],
     },
     {
-      enabled: name.length > 2,
+      enabled: name.length > 2 && !!records,
       queryFn: getSetRecordsGasLimit,
       queryKey: ['getSetRecordsGasLimit', name, records],
     },
@@ -289,6 +297,11 @@ export default function useENSRegistrationCosts({
       queryKey: ['getRenewGasLimit'],
     },
     {
+      enabled: step === REGISTRATION_STEPS.REGISTER,
+      queryFn: getRegisterGasLimit,
+      queryKey: ['getRegisterGasLimit'],
+    },
+    {
       queryFn: getReverseRecord,
       queryKey: ['getReverseRecord', name],
     },
@@ -299,13 +312,7 @@ export default function useENSRegistrationCosts({
   ]);
 
   useEffect(() => {
-    if (
-      step === REGISTRATION_STEPS.COMMIT ||
-      step === REGISTRATION_STEPS.REGISTER ||
-      step === REGISTRATION_STEPS.EDIT ||
-      step === REGISTRATION_STEPS.RENEW
-    )
-      startPollingGasFees();
+    startPollingGasFees();
   }, [startPollingGasFees, step]);
 
   useEffect(() => {
@@ -394,7 +401,9 @@ export default function useENSRegistrationCosts({
   const isLoading = queries
     .map(({ isLoading }) => isLoading)
     .reduce((a, b) => a || b);
-  const isIdle = queries.map(({ isIdle }) => isIdle).reduce((a, b) => a && b);
+  const isIdle = queries
+    .map(({ isIdle }) => ({ isIdle }))
+    .reduce((a, b) => a && b);
 
   return {
     data,
