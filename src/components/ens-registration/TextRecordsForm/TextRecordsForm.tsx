@@ -10,7 +10,7 @@ import {
   Divider,
   Stack,
 } from '@rainbow-me/design-system';
-import { useENSRegistrationForm } from '@rainbow-me/hooks';
+import { useENSRegistration, useENSRegistrationForm } from '@rainbow-me/hooks';
 
 export default function TextRecordsForm({
   autoFocusKey,
@@ -110,7 +110,10 @@ export default function TextRecordsForm({
 }
 
 function Field({ defaultValue, ...props }: InlineFieldProps) {
-  const [value, setValue] = useState(defaultValue);
+  const [value, setValue] = useState({});
+  const { name } = useENSRegistration({
+    setInitialRecordsWhenInEditMode: true,
+  });
   return (
     <>
       <Divider />
@@ -118,9 +121,9 @@ function Field({ defaultValue, ...props }: InlineFieldProps) {
         {...props}
         onChangeText={text => {
           props.onChangeText(text);
-          setValue(text);
+          setValue({ ...value, name: text });
         }}
-        value={value || defaultValue}
+        value={value[name] || defaultValue}
       />
     </>
   );
