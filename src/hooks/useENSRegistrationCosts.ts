@@ -1,11 +1,10 @@
 import { useCallback, useMemo } from 'react';
 import { useQuery } from 'react-query';
 import { useAccountSettings } from '.';
-import { Records } from '@rainbow-me/entities';
 import {
-  estimateENSRegistrationGasLimit,
   estimateENSRenewGasLimit,
   fetchReverseRecord,
+  getENSRegistrationGasLimit,
 } from '@rainbow-me/handlers/ens';
 import { NetworkTypes } from '@rainbow-me/helpers';
 import {
@@ -32,7 +31,6 @@ export default function useENSRegistrationCosts({
   name,
   rentPrice,
   sendReverseRecord,
-  records,
   step,
 }: {
   yearsDuration: number;
@@ -40,7 +38,6 @@ export default function useENSRegistrationCosts({
   step: keyof typeof REGISTRATION_STEPS;
   sendReverseRecord: boolean;
   rentPrice?: { wei: number; perYear: { wei: number } };
-  records?: Records;
 }) {
   const { nativeCurrency, accountAddress } = useAccountSettings();
   const duration = yearsDuration * timeUnits.secs.year;
@@ -57,36 +54,27 @@ export default function useENSRegistrationCosts({
 
   const rentPriceInWei = rentPrice?.wei?.toString();
 
-  const estimateTotalRegistrationGasLimit = useCallback(
-    async (rentPriceInWei: string) => {
-      const reverseRecord =
-        sendReverseRecord && (await fetchReverseRecord(accountAddress));
+  const estimateTotalRegistrationGasLimit = useCallback(async () => {
+    const reverseRecord =
+      sendReverseRecord && (await fetchReverseRecord(accountAddress));
 
-      const {
+    const {
+      commitGasLimit,
+      multicallGasLimit,
+      registerWithConfigGasLimit,
+      setNameGasLimit,
+    } = await getENSRegistrationGasLimit();
+
+    const totalRegistrationGasLimit =
+      [
         commitGasLimit,
         multicallGasLimit,
         registerWithConfigGasLimit,
-        setNameGasLimit,
-      } = await estimateENSRegistrationGasLimit(
-        name,
-        accountAddress,
-        duration,
-        rentPriceInWei,
-        records
-      );
+        !reverseRecord && setNameGasLimit,
+      ].reduce((a, b) => add(a || 0, b || 0)) || `${ethUnits.ens_registration}`;
 
-      const totalRegistrationGasLimit =
-        [
-          commitGasLimit,
-          multicallGasLimit,
-          registerWithConfigGasLimit,
-          !reverseRecord && setNameGasLimit,
-        ].reduce((a, b) => add(a || 0, b || 0)) ||
-        `${ethUnits.ens_registration}`;
-      return totalRegistrationGasLimit;
-    },
-    [accountAddress, duration, name, records, sendReverseRecord]
-  );
+    return totalRegistrationGasLimit;
+  }, [accountAddress, sendReverseRecord]);
 
   const estimateRenewRegistrationGasLimit = useCallback(
     async (rentPriceInWei: string) => {

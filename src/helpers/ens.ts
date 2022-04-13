@@ -15,7 +15,7 @@ import {
   multiply,
 } from './utilities';
 import { ENSRegistrationRecords, EthereumAddress } from '@rainbow-me/entities';
-import { toHex, web3Provider } from '@rainbow-me/handlers/web3';
+import { getProviderForNetwork, toHex } from '@rainbow-me/handlers/web3';
 import { gweiToWei } from '@rainbow-me/parsers';
 import {
   ENSBaseRegistrarImplementationABI,
@@ -379,65 +379,72 @@ export const textRecordFields = {
 
 export const ENS_DOMAIN = '.eth';
 
-const getENSRegistrarControllerContract = (
+const getENSRegistrarControllerContract = async (
   wallet?: Wallet,
   registrarAddress?: string
 ) => {
+  const signerOrProvider = wallet || (await getProviderForNetwork());
   return new Contract(
     registrarAddress || ensETHRegistrarControllerAddress,
     ENSETHRegistrarControllerABI,
-    wallet || web3Provider
+    signerOrProvider
   );
 };
-const getENSPublicResolverContract = (
+
+const getENSPublicResolverContract = async (
   wallet?: Wallet,
   resolverAddress?: EthereumAddress
 ) => {
+  const signerOrProvider = wallet || (await getProviderForNetwork());
   return new Contract(
     resolverAddress || ensPublicResolverAddress,
     ENSPublicResolverABI,
-    wallet || web3Provider
+    signerOrProvider
   );
 };
 
-const getENSReverseRegistrarContract = (wallet?: Wallet) => {
+const getENSReverseRegistrarContract = async (wallet?: Wallet) => {
+  const signerOrProvider = wallet || (await getProviderForNetwork());
   return new Contract(
     ensReverseRegistrarAddress,
     ENSReverseRegistrarABI,
-    wallet || web3Provider
+    signerOrProvider
   );
 };
 
-const getENSBaseRegistrarImplementationContract = (wallet?: Wallet) => {
+const getENSBaseRegistrarImplementationContract = async (wallet?: Wallet) => {
+  const signerOrProvider = wallet || (await getProviderForNetwork());
   return new Contract(
     ensBaseRegistrarImplementationAddress,
     ENSBaseRegistrarImplementationABI,
-    wallet || web3Provider
+    signerOrProvider
   );
 };
 
-const getENSRegistryContract = () => {
-  return new Contract(
-    ensRegistryAddress,
-    ENSRegistryWithFallbackABI,
-    web3Provider
-  );
+const getENSRegistryContract = async () => {
+  const provider = await getProviderForNetwork();
+  return new Contract(ensRegistryAddress, ENSRegistryWithFallbackABI, provider);
 };
 
-const getResolver = async (name: string): Promise<string> =>
-  getENSRegistryContract().resolver(name);
+const getAvailable = async (name: string): Promise<boolean> => {
+  const contract = await getENSRegistrarControllerContract();
+  return contract.available(name);
+};
 
-const getAvailable = async (name: string): Promise<boolean> =>
-  getENSRegistrarControllerContract().available(name);
+const getNameExpires = async (name: string): Promise<string> => {
+  const contract = await getENSBaseRegistrarImplementationContract();
+  return contract.nameExpires(labelhash(name));
+};
 
-const getNameExpires = async (name: string): Promise<string> =>
-  getENSBaseRegistrarImplementationContract().nameExpires(labelhash(name));
+const getNameOwner = async (name: string): Promise<string> => {
+  const contract = await getENSRegistryContract();
+  return contract.owner(hash(name));
+};
 
-const getNameOwner = async (name: string): Promise<string> =>
-  getENSRegistryContract().owner(hash(name));
-
-const getRentPrice = async (name: string, duration: number): Promise<any> =>
-  getENSRegistrarControllerContract().rentPrice(name, duration);
+const getRentPrice = async (name: string, duration: number): Promise<any> => {
+  const contract = await getENSRegistrarControllerContract();
+  return contract.rentPrice(name, duration);
+};
 
 const setupMulticallRecords = (
   name: string,
@@ -516,7 +523,7 @@ const setupMulticallRecords = (
   return data.flat().filter(Boolean);
 };
 
-export const generateSalt = () => {
+const generateSalt = () => {
   const random = new Uint8Array(32);
   crypto.getRandomValues(random);
   const salt =
@@ -559,7 +566,9 @@ const getENSExecutionDetails = async ({
   switch (type) {
     case ENSRegistrationTransactionType.COMMIT: {
       if (!name || !ownerAddress) throw new Error('Bad arguments for commit');
-      const registrarController = getENSRegistrarControllerContract(wallet);
+      const registrarController = await getENSRegistrarControllerContract(
+        wallet
+      );
       const commitment = await registrarController.makeCommitmentWithConfig(
         name.replace(ENS_DOMAIN, ''),
         ownerAddress,
@@ -573,7 +582,7 @@ const getENSExecutionDetails = async ({
     }
     case ENSRegistrationTransactionType.MULTICALL: {
       if (!name || !records) throw new Error('Bad arguments for multicall');
-      contract = getENSPublicResolverContract(wallet, resolverAddress);
+      contract = await getENSPublicResolverContract(wallet, resolverAddress);
       const data = setupMulticallRecords(name, records, contract) || [];
       args = [data];
       break;
@@ -590,7 +599,7 @@ const getENSExecutionDetails = async ({
         ensPublicResolverAddress,
         ownerAddress,
       ];
-      contract = getENSRegistrarControllerContract(wallet);
+      contract = await getENSRegistrarControllerContract(wallet);
       break;
     }
     case ENSRegistrationTransactionType.RENEW: {
@@ -598,13 +607,13 @@ const getENSExecutionDetails = async ({
         throw new Error('Bad arguments for renew');
       value = toHex(addBuffer(rentPrice, 1.1));
       args = [name.replace(ENS_DOMAIN, ''), duration];
-      contract = getENSRegistrarControllerContract(wallet);
+      contract = await getENSRegistrarControllerContract(wallet);
       break;
     }
     case ENSRegistrationTransactionType.SET_NAME:
       if (!name) throw new Error('Bad arguments for setName');
       args = [name];
-      contract = getENSReverseRegistrarContract(wallet);
+      contract = await getENSReverseRegistrarContract(wallet);
       break;
     case ENSRegistrationTransactionType.SET_TEXT: {
       if (!name || !records || !records?.text?.[0])
@@ -612,7 +621,7 @@ const getENSExecutionDetails = async ({
       const record = records?.text[0];
       const namehash = hash(name);
       args = [namehash, record.key, record.value];
-      contract = getENSPublicResolverContract(wallet, resolverAddress);
+      contract = await getENSPublicResolverContract(wallet, resolverAddress);
       break;
     }
   }
@@ -746,6 +755,7 @@ const accentColorAtom = atom({
 });
 
 export {
+  generateSalt,
   getENSRecordKeys,
   getENSRecordValues,
   getENSRegistryContract,
@@ -753,7 +763,6 @@ export {
   getENSBaseRegistrarImplementationContract,
   getENSPublicResolverContract,
   getENSReverseRegistrarContract,
-  getResolver,
   getAvailable,
   getNameExpires,
   getNameOwner,
