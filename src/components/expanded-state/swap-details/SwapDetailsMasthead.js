@@ -31,7 +31,7 @@ export default function SwapDetailsMasthead({
   ...props
 }) {
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
-  const { colors } = useTheme();
+  const { colors, isDarkMode } = useTheme();
 
   return (
     <Container {...props}>
@@ -44,15 +44,22 @@ export default function SwapDetailsMasthead({
       />
       <Bleed space="15px">
         <Box
-          background="body"
           borderRadius={36}
-          padding="12px"
-          shadow="30px heavy body"
+          height={{ custom: 40 }}
+          shadow="21px heavy"
+          style={{
+            alignItems: 'center',
+            backgroundColor: isDarkMode ? colors.darkGrey : colors.white,
+            justifyContent: 'center',
+          }}
+          width={{ custom: 40 }}
         >
-          <Icon color={colors.blueGreyDark} name="doubleChevron" />
+          <Icon
+            color={isDarkMode ? colors.dark : colors.blueGreyDark}
+            name="doubleChevron"
+          />
         </Box>
       </Bleed>
-
       <CurrencyTile
         amount={outputAmount}
         amountDisplay={outputAmountDisplay}
