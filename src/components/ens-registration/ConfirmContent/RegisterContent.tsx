@@ -1,7 +1,10 @@
 import lang from 'i18n-js';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Switch } from 'react-native-gesture-handler';
+import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { Box, Inline, Stack, Text } from '@rainbow-me/design-system';
+import { useNavigation } from '@rainbow-me/navigation';
+import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 
 const RegisterContent = ({
@@ -13,6 +16,11 @@ const RegisterContent = ({
   sendReverseRecord: boolean;
   setSendReverseRecord: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
+  const { navigate } = useNavigation();
+  const openPrimaryENSNameHelper = useCallback(() => {
+    navigate(Routes.EXPLAIN_SHEET, { type: 'ens_primary_name' });
+  }, [navigate]);
+
   return (
     <Box paddingHorizontal="30px">
       <Box height="4/5">
@@ -33,9 +41,14 @@ const RegisterContent = ({
       </Box>
       <Box height="1/5">
         <Inline alignHorizontal="justify" alignVertical="center">
-          <Text color="secondary80" size="16px" weight="bold">
-            {lang.t('profiles.confirm.set_ens_name')} 􀅵
-          </Text>
+          <ButtonPressAnimation
+            onPress={openPrimaryENSNameHelper}
+            scaleTo={0.9}
+          >
+            <Text color="secondary80" size="16px" weight="bold">
+              {lang.t('profiles.confirm.set_ens_name')} 􀅵
+            </Text>
+          </ButtonPressAnimation>
           <Switch
             disabled={!setSendReverseRecord}
             onValueChange={() =>
