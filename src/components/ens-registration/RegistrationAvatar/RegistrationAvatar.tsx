@@ -47,13 +47,16 @@ export default function RegistrationAvatar({
     onRemoveField,
   } = useENSRegistrationForm();
 
+  const [avatarUpdateAllowed, setAvatarUpdateAllowed] = useState(true);
   const [avatarUrl, setAvatarUrl] = useState(
     initialAvatarUrl || values?.avatar
   );
   useEffect(() => {
-    setAvatarUrl(
-      typeof initialAvatarUrl === 'string' ? initialAvatarUrl : values?.avatar
-    );
+    if (avatarUpdateAllowed) {
+      setAvatarUrl(
+        typeof initialAvatarUrl === 'string' ? initialAvatarUrl : values?.avatar
+      );
+    }
   }, [initialAvatarUrl]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const setAvatarMetadata = useSetRecoilState(avatarMetadataAtom);
@@ -69,7 +72,8 @@ export default function RegistrationAvatar({
     onChangeImage: ({ asset, image }) => {
       setAvatarMetadata(image);
       setAvatarUrl(image?.tmpPath || asset?.image_thumbnail_url || '');
-      onChangeAvatarUrl(image?.tmpPath || asset?.image_thumbnail_url || '');
+      setAvatarUpdateAllowed(false);
+      onChangeAvatarUrl(image?.path || asset?.image_thumbnail_url || '');
       if (asset) {
         const standard = asset.asset_contract?.schema_name || '';
         const contractAddress = asset.asset_contract?.address || '';

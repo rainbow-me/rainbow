@@ -1,6 +1,7 @@
 import { useNavigation } from '@react-navigation/core';
 import { format, formatDistanceStrict } from 'date-fns';
 import React, { useCallback, useState } from 'react';
+import { ENSConfirmRenewSheetHeight } from '../../../screens/ENSConfirmRegisterSheet';
 import { ButtonPressAnimation } from '../../animations';
 import { TokenInfoItem, TokenInfoValue } from '../../token-info';
 import { useTheme } from '@rainbow-me/context';
@@ -32,6 +33,8 @@ export default function ENSBriefTokenInfoRow({
     startRegistration(ensName, REGISTRATION_MODES.RENEW);
     navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
       ensName,
+      hideAvatar: true,
+      longFormHeight: ENSConfirmRenewSheetHeight,
       mode: REGISTRATION_MODES.RENEW,
     });
   }, [startRegistration, ensName, navigate]);

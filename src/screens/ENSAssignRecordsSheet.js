@@ -188,13 +188,11 @@ export default function ENSAssignRecordsSheet() {
 export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
   const { navigate } = useNavigation();
   const keyboardHeight = useKeyboardHeight();
-  const [accentColor] = useRecoilState(accentColorAtom);
+  const { colors } = useTheme();
 
-  const {
-    mode,
-    profileQuery,
-    images: { avatarUrl },
-  } = useENSRegistration();
+  const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
+
+  const { mode, profileQuery } = useENSRegistration();
   const {
     disabled,
     isEmpty,
@@ -202,12 +200,14 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
     onAddField,
     onRemoveField,
     submit,
+    values,
   } = useENSRegistrationForm();
 
   const handlePressBack = useCallback(() => {
     delayNext();
     navigate(Routes.ENS_SEARCH_SHEET);
-  }, [navigate]);
+    setAccentColor(colors.purple);
+  }, [colors.purple, navigate, setAccentColor]);
 
   const handlePressContinue = useCallback(() => {
     submit(() => {
@@ -215,10 +215,10 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
         longFormHeight:
           mode === REGISTRATION_MODES.EDIT
             ? ENSConfirmUpdateSheetHeight
-            : ENSConfirmRegisterSheetHeight + (avatarUrl ? 70 : 0),
+            : ENSConfirmRegisterSheetHeight + (values.avatar ? 70 : 0),
       });
     });
-  }, [avatarUrl, mode, navigate, submit]);
+  }, [mode, navigate, submit, values.avatar]);
 
   const [visible, setVisible] = useState(false);
   useEffect(() => {

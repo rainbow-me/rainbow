@@ -18,6 +18,7 @@ import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import {
   useDimensions,
   useENSRegistration,
+  useENSRegistrationForm,
   usePrevious,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
@@ -62,6 +63,8 @@ export default function RegisterENSNavigator() {
 
   const [isSearchEnabled, setIsSearchEnabled] = useState(true);
 
+  const { clearValues } = useENSRegistrationForm();
+
   const {
     clearCurrentRegistrationName,
     startRegistration,
@@ -105,9 +108,12 @@ export default function RegisterENSNavigator() {
   }, [screenOptions.scrollEnabled]);
 
   useEffect(() => {
-    navigation.addListener('dismiss', clearCurrentRegistrationName);
-    return () =>
-      navigation.removeListener('dismiss', clearCurrentRegistrationName);
+    const dismiss = () => {
+      clearCurrentRegistrationName();
+      clearValues();
+    };
+    navigation.addListener('dismiss', dismiss);
+    return () => navigation.removeListener('dismiss', dismiss);
   });
 
   const enableAssignRecordsBottomActions =

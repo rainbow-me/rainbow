@@ -577,7 +577,7 @@ const formatRentPrice = (
 };
 
 const accentColorAtom = atom({
-  default: colors.appleBlue,
+  default: colors.purple,
   key: 'ens.accentColor',
 });
 

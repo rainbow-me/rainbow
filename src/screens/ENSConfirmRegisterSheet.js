@@ -3,7 +3,7 @@ import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
-import { useRecoilState } from 'recoil';
+import { useRecoilValue } from 'recoil';
 import { HourglassAnimation } from '../components/animations';
 import { HoldToAuthorizeButton } from '../components/buttons';
 import {
@@ -48,6 +48,7 @@ import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 
 export const ENSConfirmRegisterSheetHeight = 600;
+export const ENSConfirmRenewSheetHeight = 500;
 export const ENSConfirmUpdateSheetHeight = 400;
 const avatarSize = 70;
 
@@ -108,17 +109,8 @@ export default function ENSConfirmRegisterSheet() {
     name: ensName,
     mode,
   } = useENSRegistration();
-  const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
-  const { result: dominantColor } = usePersistentDominantColorFromImage(
-    initialAvatarUrl || ''
-  );
-  const [prevDominantColor, setPrevDominantColor] = useState(dominantColor);
-  useEffect(() => {
-    setAccentColor(dominantColor || prevDominantColor || colors.purple);
-    if (dominantColor) {
-      setPrevDominantColor(dominantColor);
-    }
-  }, [dominantColor, prevDominantColor, setAccentColor]);
+
+  const accentColor = useRecoilValue(accentColorAtom);
 
   const [duration, setDuration] = useState(1);
   const [gasLimit, setGasLimit] = useState(null);
@@ -352,7 +344,7 @@ export default function ENSConfirmRegisterSheet() {
             <Row height="content">
               <Box horizontal="30px">
                 <Stack alignHorizontal="center" space="15px">
-                  {avatarUrl && (
+                  {avatarUrl && !params.hideAvatar && (
                     <AccentColorProvider color={accentColor + '10'}>
                       <Box
                         background="accent"

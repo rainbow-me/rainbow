@@ -207,6 +207,10 @@ export default function useENSRegistrationForm({
     }
   }, [mode, profileQuery.isSuccess, values]);
 
+  const clearValues = useCallback(() => {
+    setValuesMap({});
+  }, [setValuesMap]);
+
   const empty = useMemo(() => !Object.values(values).some(Boolean), [values]);
 
   const submit = useCallback(
@@ -243,6 +247,7 @@ export default function useENSRegistrationForm({
 
   return {
     blurFields,
+    clearValues,
     disabled,
     errors,
     isEmpty: empty,
