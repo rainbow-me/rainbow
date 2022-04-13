@@ -58,15 +58,19 @@ const shouldSignUri = (
     if (staticImgixClient) {
       // Attempt to sign the image.
       let updatedOptions: ImgOptions = {};
-      if (options?.w && options?.h) {
-        updatedOptions = {
-          h: PixelRatio.getPixelSizeForLayoutSize(options.h),
+
+      updatedOptions = {
+        ...(options?.w && {
           w: PixelRatio.getPixelSizeForLayoutSize(options.w),
-        };
-      }
-      if (options?.fm) {
-        updatedOptions.fm = options.fm;
-      }
+        }),
+        ...(options?.h && {
+          h: PixelRatio.getPixelSizeForLayoutSize(options.h),
+        }),
+        ...(options?.fm && {
+          fm: options.fm,
+        }),
+      };
+
       const signedExternalImageUri = staticImgixClient.buildURL(
         externalImageUri,
         updatedOptions
@@ -148,5 +152,5 @@ export const maybeSignSource = (source: Source, options?: {}): Source => {
 };
 
 export const imageToPng = (url: string, w: number) => {
-  return maybeSignUri(url, { w });
+  return maybeSignUri(url, { fm: 'png', w });
 };
