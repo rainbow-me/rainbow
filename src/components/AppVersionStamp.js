@@ -23,6 +23,7 @@ const StampText = styled(Text).attrs(({ theme: { colors } }) => ({
   weight: 'bold',
 }))({});
 
+// On CI this will be modified if the app is in Fedora mode
 const FEDORA_BRANCH = '';
 
 export default function AppVersionStamp() {
