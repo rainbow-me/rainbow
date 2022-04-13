@@ -57,6 +57,8 @@ export default function ExpandedAssetSheet(props) {
       {ios && !isDarkMode && !params.fromDiscover && (
         <StatusBar barStyle="light-content" />
       )}
+      {ios && <TouchableBackdrop onPress={goBack} />}
+
       {createElement(ScreenTypes[params.type], {
         ...params,
         ...props,
