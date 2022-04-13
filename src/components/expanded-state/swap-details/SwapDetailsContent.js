@@ -7,7 +7,12 @@ import SwapDetailsExchangeRow from './SwapDetailsExchangeRow';
 import SwapDetailsFeeRow from './SwapDetailsFeeRow';
 import SwapDetailsPriceRow from './SwapDetailsPriceRow';
 import SwapDetailsRow, { SwapDetailsValue } from './SwapDetailsRow';
-import { AccentColorProvider, Box, Rows } from '@rainbow-me/design-system';
+import {
+  AccentColorProvider,
+  Box,
+  Divider,
+  Rows,
+} from '@rainbow-me/design-system';
 import {
   useColorForAsset,
   useSwapAdjustedAmounts,
@@ -57,52 +62,50 @@ export default function SwapDetailsContent({
         {...props}
       >
         <Rows space="24px">
+          {showPriceImpact && (
+            <AccentColorProvider color={priceImpactColor}>
+              <SwapDetailsRow
+                label={lang.t('expanded_state.swap_details.price_impact')}
+              >
+                <SwapDetailsValue color="accent" letterSpacing="roundedTight">
+                  {`-${priceImpactPercentDisplay}`}
+                </SwapDetailsValue>
+              </SwapDetailsRow>
+            </AccentColorProvider>
+          )}
+          <SwapDetailsRow label={receivedSoldLabel}>
+            <SwapDetailsValue letterSpacing="roundedTight">
+              {amountReceivedSold}{' '}
+              {inputAsExact ? outputCurrency.symbol : inputCurrency.symbol}
+            </SwapDetailsValue>
+          </SwapDetailsRow>
+          <SwapDetailsExchangeRow protocols={tradeDetails?.protocols} />
           <SwapDetailsFeeRow tradeDetails={tradeDetails} />
-          <SwapDetailsPriceRow tradeDetails={tradeDetails} />
-          <ButtonPressAnimation
-            onPress={() => setAreDetailsExpanded(!areDetailsExpanded)}
-            scaleTo={1.06}
-          >
-            <SwapDetailsRow
-              label={
-                areDetailsExpanded
-                  ? lang.t('expanded_state.swap_details.hide_details')
-                  : lang.t('expanded_state.swap_details.show_details')
-              }
-              labelColor="accent"
+          {!areDetailsExpanded ? (
+            <ButtonPressAnimation
+              onPress={() => setAreDetailsExpanded(!areDetailsExpanded)}
+              scaleTo={1.06}
             >
-              <SwapDetailsValue color="accent">
-                {areDetailsExpanded ? '􀁰' : '􀯼'}
-              </SwapDetailsValue>
-            </SwapDetailsRow>
-          </ButtonPressAnimation>
+              <SwapDetailsRow
+                label={
+                  areDetailsExpanded
+                    ? lang.t('expanded_state.swap_details.hide_details')
+                    : lang.t('expanded_state.swap_details.show_details')
+                }
+                labelColor="accent"
+              >
+                <SwapDetailsValue color="accent">
+                  {areDetailsExpanded ? '􀁰' : '􀯼'}
+                </SwapDetailsValue>
+              </SwapDetailsRow>
+            </ButtonPressAnimation>
+          ) : (
+            <Divider />
+          )}
           <Box>
             {areDetailsExpanded && (
               <Rows space="24px">
-                <SwapDetailsExchangeRow protocols={tradeDetails?.protocols} />
-                {showPriceImpact && (
-                  <AccentColorProvider color={priceImpactColor}>
-                    <SwapDetailsRow
-                      label={lang.t('expanded_state.swap_details.price_impact')}
-                    >
-                      <SwapDetailsValue
-                        color="accent"
-                        letterSpacing="roundedTight"
-                      >
-                        {`-${priceImpactPercentDisplay}`}
-                      </SwapDetailsValue>
-                    </SwapDetailsRow>
-                  </AccentColorProvider>
-                )}
-                <SwapDetailsRow label={receivedSoldLabel}>
-                  <SwapDetailsValue letterSpacing="roundedTight">
-                    {amountReceivedSold}{' '}
-                    {inputAsExact
-                      ? outputCurrency.symbol
-                      : inputCurrency.symbol}
-                  </SwapDetailsValue>
-                </SwapDetailsRow>
-
+                <SwapDetailsPriceRow tradeDetails={tradeDetails} />
                 {!isETH(inputCurrency?.address) && (
                   <SwapDetailsContractRow
                     asset={inputCurrency}
