@@ -60,7 +60,6 @@ import {
   useAccountSettings,
   useCurrentNonce,
   useDimensions,
-  useEffectDebugger,
   useGas,
   useKeyboardHeight,
   useTransactionConfirmation,
@@ -441,7 +440,7 @@ export default function TransactionConfirmationScreen() {
 
   const onPressCancel = useCallback(() => onCancel(), [onCancel]);
 
-  useEffectDebugger(() => {
+  useEffect(() => {
     if (!peerId || !walletConnector) {
       Alert.alert(
         'Connection Expired',
