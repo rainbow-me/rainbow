@@ -10,31 +10,35 @@ import uniqueAssetTraitDisplayTypeCompareFunction from '@rainbow-me/helpers/uniq
 
 interface UniqueTokenAttributesProps {
   color: string;
-  disableMenu?: boolean;
+  isPoap?: boolean;
   slug: string;
   traits: UniqueAsset['traits'];
 }
 
 const UniqueTokenAttributes = ({
   color,
-  disableMenu,
+  isPoap,
   slug,
   traits,
 }: UniqueTokenAttributesProps) => {
   const sortedTraits = useMemo(
     () =>
       (sortList(traits, 'trait_type', 'asc') as typeof traits)
-        .filter(trait => !isHttpUrl(trait.value))
-        .filter(trait => trait.value && trait.trait_type)
+        .filter(
+          trait => trait.value && trait.trait_type && !isHttpUrl(trait.value)
+        )
         .sort(uniqueAssetTraitDisplayTypeCompareFunction)
-        .map(transformUniqueAssetTraitsForPresentation)
-        .map(trait => ({
-          ...trait,
-          color,
-          disableInteraction: disableMenu || trait.disableMenu,
-          slug,
-        })),
-    [traits, color, disableMenu, slug]
+        .map(trait => {
+          return transformUniqueAssetTraitsForPresentation(
+            trait,
+            {
+              color,
+              slug,
+            },
+            isPoap
+          );
+        }),
+    [traits, color, isPoap, slug]
   );
 
   return (
@@ -52,6 +56,7 @@ const UniqueTokenAttributes = ({
           <Tag
             color={color}
             disableMenu={disableMenu}
+            hideOpenSeaAction={isPoap}
             key={`${type}${originalValue}`}
             lowercase={lowercase}
             maxValue={maxValue}

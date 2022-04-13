@@ -1,11 +1,16 @@
 import { format, parse } from 'date-fns';
 import { UniqueAssetTrait } from '../entities/uniqueAssets';
 
+interface AdditionalProperties {
+  color: string;
+  slug: string;
+}
+
 type MappedTrait = UniqueAssetTrait & {
   originalValue: string | number | null | undefined;
   lowercase?: boolean;
   disableMenu?: boolean;
-};
+} & AdditionalProperties;
 
 const poapDateRegex = /\d\d-(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-\d\d\d\d/;
 const poapDateFormatString = 'dd-MMM-y';
@@ -16,10 +21,17 @@ const targetDateFormatString = 'MMM do, y';
  * data type and other qualities. Like if it's a link it is shortening it.
  */
 export default function transformUniqueAssetTraitsForPresentation(
-  trait: UniqueAssetTrait
+  trait: UniqueAssetTrait,
+  additionalProperties: AdditionalProperties,
+  isPoap?: boolean
 ): MappedTrait {
   const { display_type, value } = trait;
-  const mappedTrait: MappedTrait = { ...trait, originalValue: value };
+  const mappedTrait: MappedTrait = {
+    ...trait,
+    ...additionalProperties,
+    disableMenu: !!isPoap,
+    originalValue: value,
+  };
 
   if (display_type === 'date') {
     // the value is in seconds with milliseconds in the decimal part
@@ -30,7 +42,7 @@ export default function transformUniqueAssetTraitsForPresentation(
         : value;
     mappedTrait.disableMenu = true;
     // Checking whether the string value is a POAP date format to convert to our date format
-  } else if (typeof value === 'string' && poapDateRegex.test(value)) {
+  } else if (isPoap && typeof value === 'string' && poapDateRegex.test(value)) {
     const poapDate = parse(value, poapDateFormatString, new Date());
 
     mappedTrait.value = format(poapDate, targetDateFormatString);
@@ -44,6 +56,9 @@ export default function transformUniqueAssetTraitsForPresentation(
   ) {
     mappedTrait.value = value.toLowerCase().replace('https://', '');
     mappedTrait.lowercase = true;
+    if (isPoap) {
+      mappedTrait.disableMenu = false;
+    }
   }
 
   return mappedTrait;

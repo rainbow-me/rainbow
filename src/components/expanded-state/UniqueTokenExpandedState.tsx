@@ -507,7 +507,7 @@ const UniqueTokenExpandedState = ({
                         <UniqueTokenAttributes
                           {...asset}
                           color={imageColor}
-                          disableMenu={isPoap}
+                          isPoap={isPoap}
                           slug={asset.collection.slug}
                         />
                       </Section>
