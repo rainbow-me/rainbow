@@ -166,6 +166,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
       }
 
       walletConnector = new WalletConnect({ clientMeta, uri }, push);
+      let meta = false;
       let navigated = false;
       let timedOut = false;
       let routeParams = {
@@ -238,7 +239,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
           dappUrl,
         });
 
-        const meta = {
+        meta = {
           chainId,
           dappName,
           dappScheme,
@@ -276,7 +277,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
         // We need to add a timeout in case the bridge is down
         // to explain the user what's happening
         timeout = setTimeout(() => {
-          const meta = Navigation.getActiveRoute().params.meta;
+          meta = android ? Navigation.getActiveRoute().params.meta : meta;
           if (meta) return;
           timedOut = true;
           routeParams = { ...routeParams, timedOut };
@@ -287,7 +288,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
         }, 20000);
 
         // If we have the meta, send it
-        const meta = Navigation.getActiveRoute()?.params?.meta;
+        meta = android ? Navigation.getActiveRoute()?.params?.meta : meta;
         if (meta) {
           routeParams = { ...routeParams, meta };
         }
