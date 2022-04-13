@@ -81,12 +81,13 @@ export default function ENSAssignRecordsSheet() {
   });
 
   const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
-
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
+
   const { result: dominantColor } = usePersistentDominantColorFromImage(
-    avatarUrl || ''
+    avatarUrl
   );
   const [prevDominantColor, setPrevDominantColor] = useState(dominantColor);
+
   useEffect(() => {
     setAccentColor(dominantColor || prevDominantColor || colors.purple);
     if (dominantColor) {

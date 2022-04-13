@@ -109,10 +109,11 @@ export default function useENSRegistration({
       Object.entries(initialRecords),
       isEqual
     ) as [keyof Records, string][];
+
     const changedRecords = entriesToChange.reduce(
       (recordsToAdd: Partial<Records>, [key, value]) => ({
         ...recordsToAdd,
-        [key]: value,
+        ...(value ? { [key]: value } : {}),
       }),
       {}
     );
@@ -122,6 +123,7 @@ export default function useENSRegistration({
       Object.keys(records),
       isEqual
     ) as (keyof Records)[];
+
     const removedRecords = keysToRemove.reduce(
       (recordsToAdd: Partial<Records>, key) => ({
         ...recordsToAdd,
@@ -135,6 +137,7 @@ export default function useENSRegistration({
       ...removedRecords,
     };
   }, [initialRecords, records]);
+
   useEffect(() => {
     dispatch(ensRedux.setChangedRecords(accountAddress, changedRecords));
   }, [accountAddress, changedRecords, dispatch]);
@@ -163,7 +166,9 @@ export default function useENSRegistration({
             token.asset_contract.address === contractAddress &&
             token.id === tokenId
         );
-        if (uniqueToken?.image_thumbnail_url) {
+        if (uniqueToken?.image_url) {
+          avatarUrl = uniqueToken?.image_url;
+        } else if (uniqueToken?.image_thumbnail_url) {
           avatarUrl = uniqueToken?.image_thumbnail_url;
         }
       } else if (

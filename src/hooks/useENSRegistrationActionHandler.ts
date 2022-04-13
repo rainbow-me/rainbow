@@ -1,6 +1,10 @@
 import { useNavigation } from '@react-navigation/core';
 import { differenceInSeconds } from 'date-fns';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  // @ts-ignore
+  IS_TESTING,
+} from 'react-native-dotenv';
 import { Image } from 'react-native-image-crop-picker';
 import { useDispatch } from 'react-redux';
 import { useRecoilValue } from 'recoil';
@@ -86,7 +90,7 @@ export default function useENSRegistrationActionHandler(
   );
 
   const isTesting = useMemo(
-    () => IS_TESTING && isHardHat(web3Provider.connection.url),
+    () => IS_TESTING === 'true' && isHardHat(web3Provider.connection.url),
     []
   );
 
