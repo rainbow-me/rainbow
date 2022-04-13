@@ -341,11 +341,11 @@
       },
       "swap_details": {
         "exchange_rate": "Exchange rate",
-        "rainbow_fee": "Rainbow fee",
+        "rainbow_fee": "Included Rainbow fee",
         "review": "Review",
         "show_details": "Show details",
         "hide_details": "Hide details",
-        "price_impact": "Price impact",
+        "price_impact": "Difference in value",
         "minimum_received": "Minimum received",
         "maximum_sold": "Maximum sold",
         "token_contract": "%{token} contract",
