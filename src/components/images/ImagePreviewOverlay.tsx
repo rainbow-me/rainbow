@@ -1,183 +1,397 @@
-/**
- * TODO(jxom): Create a more reusable & composable `ImagePreviewOverlay`.
- * This component is very specific to ENS cover photos in the
- * UniqueTokenExpandedState
- */
-
+import { BlurView } from '@react-native-community/blur';
+import { uniqueId } from 'lodash';
 import React, {
-  createContext,
-  Dispatch,
-  SetStateAction,
   useCallback,
-  useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
+import { InteractionManager, StyleSheet } from 'react-native';
 import Animated, {
   SharedValue,
+  useAnimatedStyle,
   useDerivedValue,
+  useSharedValue,
+  withSpring,
 } from 'react-native-reanimated';
+import {
+  atom,
+  atomFamily,
+  RecoilRoot,
+  useRecoilState,
+  useRecoilValue,
+  useSetRecoilState,
+} from 'recoil';
 import { ZoomableWrapper } from '../expanded-state/unique-token/ZoomableWrapper';
-import { Box } from '@rainbow-me/design-system';
+import AvatarCoverPhotoMaskSvg from '../svg/AvatarCoverPhotoMaskSvg';
+import {
+  BackgroundProvider,
+  Box,
+  BoxProps,
+  Cover,
+  useColorMode,
+} from '@rainbow-me/design-system';
 import { usePersistentAspectRatio } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
 
-const ImagePreviewOverlayContext = createContext<{
-  height: number;
-  opacity?: SharedValue<number>;
-  width: number;
-  uri?: string;
-  xOffset: number;
-  yOffset: number;
-  setUri: Dispatch<SetStateAction<string>>;
-  setHeight: Dispatch<SetStateAction<number>>;
-  setWidth: Dispatch<SetStateAction<number>>;
-  setXOffset: Dispatch<SetStateAction<number>>;
-  setYOffset: Dispatch<SetStateAction<number>>;
-}>({
-  height: 0,
-  opacity: undefined,
-  setHeight: () => undefined,
-  setUri: () => undefined,
-  setWidth: () => undefined,
-  setXOffset: () => undefined,
-  setYOffset: () => undefined,
-  uri: undefined,
-  width: 0,
-  xOffset: 0,
-  yOffset: 0,
+const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
+
+const idsAtom = atom<string[]>({
+  default: [],
+  key: 'imagePreviewOverlay.ids',
 });
 
+const aspectRatioAtom = atomFamily<number | null, string>({
+  default: null,
+  key: 'imagePreviewOverlay.aspectRatio',
+});
+const backgroundMaskAtom = atomFamily<string | null, string>({
+  default: null,
+  key: 'imagePreviewOverlay.backgroundMaskAtom',
+});
+const borderRadiusAtom = atomFamily({
+  default: 16,
+  key: 'imagePreviewOverlay.borderRadius',
+});
+const hasShadowAtom = atomFamily({
+  default: false,
+  key: 'imagePreviewOverlay.hasShadow',
+});
+const heightAtom = atomFamily({
+  default: 0,
+  key: 'imagePreviewOverlay.height',
+});
+const hostComponentAtom = atomFamily<React.ReactElement, string>({
+  default: <Box />,
+  key: 'imagePreviewOverlay.hostComponent',
+});
+const widthAtom = atomFamily({
+  default: 0,
+  key: 'imagePreviewOverlay.width',
+});
+const xOffsetAtom = atomFamily({
+  default: -1,
+  key: 'imagePreviewOverlay.xOffset',
+});
+const yOffsetAtom = atomFamily({
+  default: 0,
+  key: 'imagePreviewOverlay.yOffset',
+});
+
+const enterConfig = {
+  damping: 40,
+  mass: 1.5,
+  stiffness: 600,
+};
+const exitConfig = {
+  damping: 68,
+  mass: 2,
+  stiffness: 800,
+};
+
 type ImagePreviewOverlayProps = {
-  animationProgress: SharedValue<number>;
+  backgroundOverlay?: React.ReactElement;
   children: React.ReactNode;
-  opacity: SharedValue<number>;
-  yPosition: SharedValue<number>;
+  opacity?: SharedValue<number>;
+  useBackgroundOverlay?: boolean;
+  yPosition?: SharedValue<number>;
 };
 
 export default function ImagePreviewOverlay({
-  animationProgress, // TODO(jxom): `animationProgress` to be inside this component
+  backgroundOverlay,
   children,
   opacity,
-  yPosition, // TODO(jxom): `yPosition` to be inside this component
+  useBackgroundOverlay = true,
+  yPosition: givenYPosition,
 }: ImagePreviewOverlayProps) {
-  const [uri, setUri] = useState('');
-  const [xOffset, setXOffset] = useState(0);
-  const [yOffset, setYOffset] = useState(0);
-  const [height, setHeight] = useState(0);
-  const [width, setWidth] = useState(0);
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const yPosition = givenYPosition || useSharedValue(0);
 
   return (
-    <ImagePreviewOverlayContext.Provider
-      value={{
-        height,
-        opacity,
-        setHeight,
-        setUri,
-        setWidth,
-        setXOffset,
-        setYOffset,
-        uri,
-        width,
-        xOffset,
-        yOffset,
-      }}
-    >
-      {uri ? (
+    <RecoilRoot>
+      {children}
+      <ImagePreviews
+        backgroundOverlay={backgroundOverlay}
+        opacity={opacity}
+        useBackgroundOverlay={useBackgroundOverlay}
+        yPosition={yPosition}
+      />
+    </RecoilRoot>
+  );
+}
+
+type ImagePreviewsProps = {
+  backgroundOverlay?: React.ReactElement;
+  opacity?: SharedValue<number>;
+  useBackgroundOverlay: boolean;
+  yPosition: SharedValue<number>;
+};
+
+function ImagePreviews({
+  backgroundOverlay,
+  opacity,
+  useBackgroundOverlay,
+  yPosition,
+}: ImagePreviewsProps) {
+  const ids = useRecoilValue(idsAtom);
+  return (
+    <>
+      {ids.map((id, index) => (
         <ImagePreview
-          animationProgress={animationProgress}
-          uri={uri}
+          backgroundOverlay={backgroundOverlay}
+          id={id}
+          index={index}
+          key={index}
+          opacity={opacity}
+          useBackgroundOverlay={useBackgroundOverlay}
           yPosition={yPosition}
         />
-      ) : null}
-      {children}
-    </ImagePreviewOverlayContext.Provider>
+      ))}
+    </>
   );
 }
 
 type ImagePreviewProps = {
-  animationProgress: ImagePreviewOverlayProps['animationProgress'];
-  yPosition: ImagePreviewOverlayProps['yPosition'];
-  uri: string;
+  backgroundOverlay?: React.ReactElement;
+  index: number;
+  id: string;
+  opacity?: SharedValue<number>;
+  useBackgroundOverlay: boolean;
+  yPosition: SharedValue<number>;
 };
 
 function ImagePreview({
-  animationProgress,
-  uri,
+  backgroundOverlay,
+  index,
+  id,
+  opacity: givenOpacity,
   yPosition,
+  useBackgroundOverlay,
 }: ImagePreviewProps) {
-  const { height, width, xOffset, yOffset, setHeight, opacity } = useContext(
-    ImagePreviewOverlayContext
-  );
+  const aspectRatio = useRecoilValue(aspectRatioAtom(id));
+  const backgroundMask = useRecoilValue(backgroundMaskAtom(id));
+  const borderRadius = useRecoilValue(borderRadiusAtom(id));
+  const hasShadow = useRecoilValue(hasShadowAtom(id));
+  const height = useRecoilValue(heightAtom(id));
+  const hostComponent = useRecoilValue(hostComponentAtom(id));
+  const width = useRecoilValue(widthAtom(id));
+  const xOffset = useRecoilValue(xOffsetAtom(id));
+  const yOffset = useRecoilValue(yOffsetAtom(id));
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const opacity = givenOpacity || useSharedValue(1);
 
-  const aspectRatio = usePersistentAspectRatio(uri);
+  const { colorMode } = useColorMode();
 
-  useEffect(() => {
-    if (aspectRatio.state === 2 && width) {
-      setHeight(width / aspectRatio.result);
-    }
-  }, [aspectRatio.result, aspectRatio.state, setHeight, width]);
+  const progress = useSharedValue(0);
 
   const yDisplacement = useDerivedValue(() => {
     return yPosition.value - yOffset;
   });
 
-  const ready =
-    uri && height > 0 && width > 0 && xOffset > 0 && aspectRatio.state === 2;
+  const handleBlur = useCallback(() => {
+    'worklet';
+    progress.value = withSpring(0, exitConfig);
+  }, [progress]);
+
+  const handleFocus = useCallback(() => {
+    'worklet';
+    progress.value = withSpring(1, enterConfig);
+  }, [progress]);
+
+  const backgroundMaskStyle = useAnimatedStyle(() => ({
+    zIndex: progress.value > 0 ? index + 1 : index,
+  }));
+  const blurStyle = useAnimatedStyle(() => ({
+    opacity: progress.value,
+    zIndex: progress.value > 0 ? index + 2 : -1,
+  }));
+  const overlayStyle = useAnimatedStyle(() => ({
+    opacity: 1 * progress.value,
+    zIndex: progress.value > 0 ? index + 2 : -1,
+  }));
+  const containerStyle = useAnimatedStyle(() => ({
+    zIndex: progress.value > 0 ? index + 10 : index,
+  }));
+
+  const ready = id && height > 0 && width > 0 && xOffset >= 0 && aspectRatio;
 
   if (!ready) return null;
   return (
-    <Box
-      as={Animated.View}
-      style={{
-        left: xOffset,
-        position: 'absolute',
-        top: yOffset + 68,
-        zIndex: 1,
-      }}
-    >
-      <ZoomableWrapper
-        animationProgress={animationProgress}
-        aspectRatio={aspectRatio.result}
-        borderRadius={16}
-        disableAnimations={false}
-        height={height}
-        horizontalPadding={0}
-        opacity={opacity}
-        width={width}
-        xOffset={xOffset}
-        yDisplacement={yDisplacement}
-        yOffset={yOffset}
-      >
+    <>
+      {backgroundMask === 'avatar' && (
         <Box
-          as={ImgixImage}
-          flexShrink={1}
-          height={{ custom: height }}
-          source={{ uri }}
-          width={{ custom: width }}
-        />
-      </ZoomableWrapper>
-    </Box>
+          as={Animated.View}
+          style={[
+            {
+              left: xOffset + 35,
+              position: 'absolute',
+              top: yOffset + 68,
+              // zIndex: 1,
+            },
+            backgroundMaskStyle,
+          ]}
+        >
+          <Cover alignHorizontal="center">
+            <BackgroundProvider color="body">
+              {({ backgroundColor }) => (
+                <AvatarCoverPhotoMaskSvg
+                  backgroundColor={backgroundColor as any}
+                />
+              )}
+            </BackgroundProvider>
+          </Cover>
+        </Box>
+      )}
+      {useBackgroundOverlay && (
+        <>
+          {backgroundOverlay ? (
+            <Box
+              as={Animated.View}
+              style={[overlayStyle, StyleSheet.absoluteFillObject]}
+            >
+              {backgroundOverlay}
+            </Box>
+          ) : (
+            <>
+              <Box
+                as={AnimatedBlurView}
+                blurType={colorMode === 'light' ? 'light' : 'dark'}
+                style={[blurStyle, StyleSheet.absoluteFillObject]}
+              />
+              <Box
+                as={Animated.View}
+                style={[overlayStyle, StyleSheet.absoluteFillObject]}
+              >
+                <Box
+                  background="body"
+                  height="full"
+                  style={{ opacity: colorMode === 'light' ? 0.7 : 0.3 }}
+                  width="full"
+                />
+              </Box>
+            </>
+          )}
+        </>
+      )}
+      <Box
+        as={Animated.View}
+        style={[
+          {
+            left: xOffset,
+            position: 'absolute',
+            top: yOffset + 68,
+            // zIndex: 2,
+          },
+          containerStyle,
+        ]}
+      >
+        <ZoomableWrapper
+          aspectRatio={aspectRatio}
+          borderRadius={borderRadius}
+          disableAnimations={false}
+          hasShadow={hasShadow}
+          height={height}
+          horizontalPadding={0}
+          onBlurWorklet={handleBlur}
+          onFocusWorklet={handleFocus}
+          opacity={opacity}
+          width={width}
+          xOffset={xOffset}
+          yDisplacement={yDisplacement}
+          yOffset={yOffset}
+        >
+          <Box flexBasis={0} flexGrow={1} flexShrink={1}>
+            {hostComponent}
+          </Box>
+        </ZoomableWrapper>
+      </Box>
+    </>
   );
 }
 
+const ASPECT_RATIOS = {
+  avatar: 1,
+  cover: 3,
+};
+
 export function ImagePreviewOverlayTarget({
+  aspectRatioType,
+  backgroundMask,
+  borderRadius = 16,
+  children,
+  hasShadow = false,
+  height: initialHeight,
   topOffset = 85,
   uri,
 }: {
+  backgroundMask?: 'avatar';
+  borderRadius?: number;
+  children: React.ReactElement;
+  hasShadow?: boolean;
+  height?: BoxProps['height'];
   topOffset?: number;
-  uri: string;
-}) {
-  const { height, setUri, setWidth, setXOffset, setYOffset } = useContext(
-    ImagePreviewOverlayContext
-  );
+} & (
+  | {
+      aspectRatioType?: never;
+      uri: string;
+    }
+  | {
+      aspectRatioType: 'avatar' | 'cover';
+      uri?: never;
+    }
+)) {
+  const id = useMemo(() => uniqueId(), []);
+
+  const [height, setHeight] = useRecoilState(heightAtom(id));
+  const [width, setWidth] = useRecoilState(widthAtom(id));
+
+  const setIds = useSetRecoilState(idsAtom);
+  const setHostComponent = useSetRecoilState(hostComponentAtom(id));
+
+  const setAspectRatio = useSetRecoilState(aspectRatioAtom(id));
+  const setBackgroundMask = useSetRecoilState(backgroundMaskAtom(id));
+  const setBorderRadius = useSetRecoilState(borderRadiusAtom(id));
+  const setHasShadow = useSetRecoilState(hasShadowAtom(id));
+  const setXOffset = useSetRecoilState(xOffsetAtom(id));
+  const setYOffset = useSetRecoilState(yOffsetAtom(id));
 
   useEffect(() => {
-    setUri(uri);
-  }, [setUri, uri]);
+    if (backgroundMask) {
+      setBackgroundMask(backgroundMask);
+    }
+    setBorderRadius(borderRadius);
+    setHasShadow(hasShadow);
+    setIds(ids => [...ids, id]);
+  }, [
+    backgroundMask,
+    borderRadius,
+    hasShadow,
+    id,
+    setBackgroundMask,
+    setBorderRadius,
+    setHasShadow,
+    setIds,
+  ]);
 
-  const aspectRatio = usePersistentAspectRatio(uri);
+  // If we are not given an `aspectRatioType`, then we will need to
+  // calculate it from the uri.
+  const calculatedAspectRatio = usePersistentAspectRatio(uri || '');
+
+  const aspectRatio = useMemo(
+    () =>
+      aspectRatioType
+        ? ASPECT_RATIOS[aspectRatioType]
+        : calculatedAspectRatio.result,
+    [aspectRatioType, calculatedAspectRatio]
+  );
+  useEffect(() => {
+    if (aspectRatio) {
+      setAspectRatio(aspectRatio);
+      if (width) {
+        setHeight(width / aspectRatio);
+      }
+    }
+  }, [aspectRatio, width, setAspectRatio, setHeight]);
 
   const zoomableWrapperRef = useRef<any>();
 
@@ -186,36 +400,52 @@ export function ImagePreviewOverlayTarget({
       const {
         layout: { width },
       } = nativeEvent;
-      if (width && aspectRatio.state === 2) {
+      if (width && aspectRatio) {
         setWidth(width);
       }
+      setTimeout(
+        () => {
+          if (zoomableWrapperRef.current) {
+            zoomableWrapperRef.current?.measure((...args: any) => {
+              const xOffset = args[4];
+              const yOffset = args[5];
+              typeof xOffset === 'number' && setXOffset(xOffset);
+              typeof yOffset === 'number' && setYOffset(yOffset - topOffset);
+            });
+          }
+        },
+        android ? 500 : 0
+      );
     },
-    [aspectRatio.state, setWidth]
+    [aspectRatio, setWidth, setXOffset, setYOffset, topOffset]
   );
 
   useEffect(() => {
-    setTimeout(
-      () => {
-        if (zoomableWrapperRef.current) {
-          zoomableWrapperRef.current?.measure((...args: any) => {
-            const xOffset = args[4];
-            const yOffset = args[5];
-            xOffset && setXOffset(xOffset);
-            yOffset && setYOffset(yOffset - topOffset);
-          });
-        }
-      },
-      android ? 500 : 0
-    );
-  }, [setXOffset, setYOffset, topOffset]);
+    setHostComponent(children);
+  }, [children, setHostComponent, uri]);
+
+  const [renderPlaceholder, setRenderPlaceholder] = useState(true);
+  useEffect(() => {
+    if (width) {
+      InteractionManager.runAfterInteractions(() => {
+        setTimeout(() => setRenderPlaceholder(false), 500);
+      });
+    }
+  }, [width]);
 
   return (
-    <Box
-      flexShrink={1}
-      height={{ custom: height || 0 }}
-      onLayout={handleLayout}
-      ref={zoomableWrapperRef}
-      width="full"
-    />
+    <Box flexShrink={1} width="full">
+      <Box
+        borderRadius={borderRadius}
+        flexShrink={1}
+        height={height ? { custom: height } : initialHeight || { custom: 0 }}
+        onLayout={handleLayout}
+        ref={zoomableWrapperRef}
+        style={{ overflow: 'hidden' }}
+        width="full"
+      >
+        {renderPlaceholder && children}
+      </Box>
+    </Box>
   );
 }

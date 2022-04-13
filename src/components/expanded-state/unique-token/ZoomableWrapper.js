@@ -47,10 +47,15 @@ const GestureBlocker = styled(View)({
 // TODO osdnk
 const Container = vstyled(Animated.View)`
   align-self: center;
-  shadow-color: ${({ theme: { colors } }) => colors.shadowBlack};
-  shadow-offset: 0 20px;
-  shadow-opacity: 0.4;
-  shadow-radius: 30px;
+  ${({ hasShadow, theme: { colors } }) =>
+    hasShadow
+      ? `
+    shadow-color: ${colors.shadowBlack};
+    shadow-offset: 0 20px;
+    shadow-opacity: 0.4;
+    shadow-radius: 30px;
+  `
+      : ''}
 `;
 
 const ImageWrapper = styled(Animated.View)({
@@ -71,10 +76,13 @@ const THRESHOLD = 250;
 export const ZoomableWrapper = ({
   animationProgress: givenAnimationProgress,
   children,
+  hasShadow = true,
   horizontalPadding,
   aspectRatio,
   borderRadius,
   disableAnimations,
+  onFocusWorklet,
+  onBlurWorklet,
   opacity,
   yOffset = 85,
   xOffset: givenXOffset = 0,
@@ -83,7 +91,8 @@ export const ZoomableWrapper = ({
   height,
 }) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const animationProgress = givenAnimationProgress || useSharedValue(0);
+  const globalAnimationProgress = givenAnimationProgress || useSharedValue(0);
+  const animationProgress = useSharedValue(0);
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const yDisplacement = givenYDisplacement || useSharedValue(0);
 
@@ -144,6 +153,8 @@ export const ZoomableWrapper = ({
       1 +
       animationProgress.value *
         (fullSizeHeight / (containerHeightValue.value ?? 1) - 1);
+
+    const maxWidth = (deviceWidth - containerWidth) / 2;
     return {
       opacity: opacity.value,
       transform: [
@@ -162,8 +173,7 @@ export const ZoomableWrapper = ({
           ? [
               {
                 translateX:
-                  -animationProgress.value *
-                  (givenXOffset - givenXOffset / scale + 5),
+                  -animationProgress.value * (-maxWidth + givenXOffset),
               },
             ]
           : []),
@@ -271,20 +281,25 @@ export const ZoomableWrapper = ({
         const adjustedScale = scale.value / (fullSizeWidth / containerWidth);
         isZoomedValue.value = true;
         runOnJS(setIsZoomed)(true);
+        onFocusWorklet?.();
         animationProgress.value = withTiming(1, adjustConfig);
+        globalAnimationProgress.value = withTiming(1, adjustConfig);
         scale.value = withTiming(adjustedScale, adjustConfig);
       } else {
         scale.value = withSpring(MIN_IMAGE_SCALE, exitConfig);
         translateX.value = withSpring(0, exitConfig);
         translateY.value = withSpring(0, exitConfig);
         animationProgress.value = withSpring(0, exitConfig);
+        globalAnimationProgress.value = withSpring(0, exitConfig);
       }
     } else {
       if (scale.value < MIN_IMAGE_SCALE) {
         if (ctx.startScale <= MIN_IMAGE_SCALE && !ctx.blockExitZoom) {
           isZoomedValue.value = false;
           runOnJS(setIsZoomed)(false);
+          onBlurWorklet?.();
           animationProgress.value = withSpring(0, exitConfig);
+          globalAnimationProgress.value = withSpring(0, exitConfig);
           scale.value = withSpring(MIN_IMAGE_SCALE, exitConfig);
           translateX.value = withSpring(0, exitConfig);
           translateY.value = withSpring(0, exitConfig);
@@ -306,8 +321,10 @@ export const ZoomableWrapper = ({
       ) {
         isZoomedValue.value = false;
         runOnJS(setIsZoomed)(false);
+        onBlurWorklet?.();
         scale.value = withSpring(MIN_IMAGE_SCALE, exitConfig);
         animationProgress.value = withSpring(0, exitConfig);
+        globalAnimationProgress.value = withSpring(0, exitConfig);
         translateX.value = withSpring(0, exitConfig);
         translateY.value = withSpring(0, exitConfig);
       }
@@ -473,7 +490,9 @@ export const ZoomableWrapper = ({
       if (!isZoomedValue.value) {
         isZoomedValue.value = true;
         runOnJS(setIsZoomed)(true);
+        onFocusWorklet?.();
         animationProgress.value = withSpring(1, enterConfig);
+        globalAnimationProgress.value = withSpring(1, enterConfig);
       } else if (
         scale.value === MIN_IMAGE_SCALE &&
         ((event.absoluteY > 0 &&
@@ -485,7 +504,9 @@ export const ZoomableWrapper = ({
         // dismiss if tap was outside image bounds
         isZoomedValue.value = false;
         runOnJS(setIsZoomed)(false);
+        onBlurWorklet?.();
         animationProgress.value = withSpring(0, exitConfig);
+        globalAnimationProgress.value = withSpring(0, exitConfig);
       }
     },
   });
@@ -575,7 +596,7 @@ export const ZoomableWrapper = ({
       enableHapticFeedback={false}
       onPress={() => {}}
       scaleTo={1}
-      style={{ alignItems: 'center', zIndex: 10 }}
+      style={{ alignItems: 'center', zIndex: 1 }}
     >
       <PanGestureHandler
         enabled={!disableAnimations}
@@ -615,6 +636,7 @@ export const ZoomableWrapper = ({
                     waitFor={pinch}
                   >
                     <Container
+                      hasShadow={hasShadow}
                       style={[containerStyle, StyleSheet.absoluteFillObject]}
                     >
                       <PinchGestureHandler
