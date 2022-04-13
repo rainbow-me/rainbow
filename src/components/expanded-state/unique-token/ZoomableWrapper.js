@@ -74,15 +74,17 @@ const MIN_IMAGE_SCALE = 1;
 const THRESHOLD = 250;
 
 export const ZoomableWrapper = ({
-  animationProgress: givenAnimationProgress,
+  animationProgress: givenAnimationProgress = undefined,
   children,
   hasShadow = true,
   horizontalPadding,
   aspectRatio,
   borderRadius,
   disableAnimations,
-  onFocusWorklet,
-  onBlurWorklet,
+  onZoomIn = () => {},
+  onZoomInWorklet = () => {},
+  onZoomOut = () => {},
+  onZoomOutWorklet = () => {},
   opacity,
   yOffset = 85,
   xOffset: givenXOffset = 0,
@@ -137,10 +139,12 @@ export const ZoomableWrapper = ({
   useEffect(() => {
     if (isZoomed) {
       StatusBar.setHidden(true);
+      onZoomIn?.();
     } else {
       StatusBar.setHidden(false);
+      onZoomOut?.();
     }
-  }, [isZoomed]);
+  }, [isZoomed, onZoomIn, onZoomOut]);
 
   const fullSizeHeight = Math.min(deviceHeight, deviceWidth / aspectRatio);
   const fullSizeWidth = Math.min(deviceWidth, deviceHeight * aspectRatio);
@@ -281,7 +285,7 @@ export const ZoomableWrapper = ({
         const adjustedScale = scale.value / (fullSizeWidth / containerWidth);
         isZoomedValue.value = true;
         runOnJS(setIsZoomed)(true);
-        onFocusWorklet?.();
+        onZoomInWorklet?.();
         animationProgress.value = withTiming(1, adjustConfig);
         globalAnimationProgress.value = withTiming(1, adjustConfig);
         scale.value = withTiming(adjustedScale, adjustConfig);
@@ -297,7 +301,7 @@ export const ZoomableWrapper = ({
         if (ctx.startScale <= MIN_IMAGE_SCALE && !ctx.blockExitZoom) {
           isZoomedValue.value = false;
           runOnJS(setIsZoomed)(false);
-          onBlurWorklet?.();
+          onZoomOutWorklet?.();
           animationProgress.value = withSpring(0, exitConfig);
           globalAnimationProgress.value = withSpring(0, exitConfig);
           scale.value = withSpring(MIN_IMAGE_SCALE, exitConfig);
@@ -321,7 +325,7 @@ export const ZoomableWrapper = ({
       ) {
         isZoomedValue.value = false;
         runOnJS(setIsZoomed)(false);
-        onBlurWorklet?.();
+        onZoomOutWorklet?.();
         scale.value = withSpring(MIN_IMAGE_SCALE, exitConfig);
         animationProgress.value = withSpring(0, exitConfig);
         globalAnimationProgress.value = withSpring(0, exitConfig);
@@ -490,7 +494,7 @@ export const ZoomableWrapper = ({
       if (!isZoomedValue.value) {
         isZoomedValue.value = true;
         runOnJS(setIsZoomed)(true);
-        onFocusWorklet?.();
+        onZoomInWorklet?.();
         animationProgress.value = withSpring(1, enterConfig);
         globalAnimationProgress.value = withSpring(1, enterConfig);
       } else if (
@@ -504,7 +508,7 @@ export const ZoomableWrapper = ({
         // dismiss if tap was outside image bounds
         isZoomedValue.value = false;
         runOnJS(setIsZoomed)(false);
-        onBlurWorklet?.();
+        onZoomOutWorklet?.();
         animationProgress.value = withSpring(0, exitConfig);
         globalAnimationProgress.value = withSpring(0, exitConfig);
       }

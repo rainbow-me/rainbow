@@ -58,6 +58,7 @@ import { buildUniqueTokenName } from '@rainbow-me/helpers/assets';
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import {
   useAccountProfile,
+  useBooleanState,
   useDimensions,
   useENSProfile,
   useENSRegistration,
@@ -264,6 +265,11 @@ const UniqueTokenExpandedState = ({
     showcaseTokens,
   } = useShowcaseTokens();
 
+  const [
+    contentFocused,
+    handleContentFocus,
+    handleContentBlur,
+  ] = useBooleanState();
   const animationProgress = useSharedValue(0);
   const ensCoverAnimationProgress = useSharedValue(0);
   // TODO(jxom): This is temporary until `ZoomableWrapper` refactor
@@ -389,6 +395,7 @@ const UniqueTokenExpandedState = ({
           : { additionalTopPadding: true, contentHeight: deviceHeight })}
         ref={sheetRef}
         scrollEnabled
+        showsVerticalScrollIndicator={!contentFocused}
         yPosition={yPosition}
       >
         <ColorModeProvider value="darkTinted">
@@ -445,6 +452,8 @@ const UniqueTokenExpandedState = ({
                 asset={asset}
                 horizontalPadding={24}
                 imageColor={imageColor}
+                onContentBlur={handleContentBlur}
+                onContentFocus={handleContentFocus}
                 opacity={contentOpacity}
                 // @ts-expect-error JavaScript component
                 sheetRef={sheetRef}

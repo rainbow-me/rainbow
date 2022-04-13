@@ -188,12 +188,12 @@ function ImagePreview({
     return yPosition.value - yOffset;
   });
 
-  const handleBlur = useCallback(() => {
+  const handleZoomOut = useCallback(() => {
     'worklet';
     progress.value = withSpring(0, exitConfig);
   }, [progress]);
 
-  const handleFocus = useCallback(() => {
+  const handleZoomIn = useCallback(() => {
     'worklet';
     progress.value = withSpring(1, enterConfig);
   }, [progress]);
@@ -280,7 +280,6 @@ function ImagePreview({
             left: xOffset,
             position: 'absolute',
             top: yOffset + 68,
-            // zIndex: 2,
           },
           containerStyle,
         ]}
@@ -292,8 +291,8 @@ function ImagePreview({
           hasShadow={hasShadow}
           height={height}
           horizontalPadding={0}
-          onBlurWorklet={handleBlur}
-          onFocusWorklet={handleFocus}
+          onZoomInWorklet={handleZoomIn}
+          onZoomOutWorklet={handleZoomOut}
           opacity={opacity}
           width={width}
           xOffset={xOffset}
