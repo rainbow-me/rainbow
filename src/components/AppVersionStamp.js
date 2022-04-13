@@ -23,6 +23,8 @@ const StampText = styled(Text).attrs(({ theme: { colors } }) => ({
   weight: 'bold',
 }))({});
 
+const FEDORA_BRANCH = '';
+
 export default function AppVersionStamp() {
   const [appVersion, codePushVersion] = useAppVersion();
   const [numberOfTaps, setNumberOfTaps] = useState(0);
@@ -50,7 +52,11 @@ export default function AppVersionStamp() {
       onPressOut={() => setTimeout(() => setShowCodePushVersion(false), 500)}
     >
       <StampText>
-        {showCodePushVersion ? `Update: ${codePushVersion}` : appVersion}
+        {FEDORA_BRANCH
+          ? FEDORA_BRANCH
+          : showCodePushVersion
+          ? `Update: ${codePushVersion}`
+          : appVersion}
       </StampText>
     </StyledButton>
   );
