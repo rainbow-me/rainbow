@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from 'react';
+import { Switch } from 'react-native-gesture-handler';
 import { useTheme } from '../../../context/ThemeContext';
 import { useNavigation } from '../../../navigation/Navigation';
 import { ShimmerAnimation } from '../../animations';
@@ -10,6 +11,7 @@ import {
   Box,
   Inline,
   Inset,
+  Space,
   Text,
   useForegroundColor,
 } from '@rainbow-me/design-system';
@@ -62,6 +64,8 @@ export default function InfoRow({
   label,
   wrapValue = children => children,
   value = undefined,
+  booleanValue,
+  booleanDisabled,
   useAccentColor,
 }: {
   explainSheetType?: string;
@@ -70,6 +74,8 @@ export default function InfoRow({
   label: string;
   wrapValue?: (children: React.ReactNode) => React.ReactNode;
   value?: string;
+  booleanValue?: boolean;
+  booleanDisabled?: boolean;
   useAccentColor?: boolean;
 }) {
   const { colors } = useTheme();
@@ -77,6 +83,7 @@ export default function InfoRow({
 
   const [show, setShow] = useState(isImage);
   const [isMultiline, setIsMultiline] = useState(false);
+  const isBooleanValue = booleanValue !== undefined;
 
   const { navigate } = useNavigation();
   const handlePressExplain = useCallback(() => {
@@ -117,7 +124,13 @@ export default function InfoRow({
                 setIsMultiline(height > 40);
                 setShow(true);
               }}
-              padding={isMultiline ? '15px' : '10px'}
+              padding={
+                (isBooleanValue
+                  ? '0px'
+                  : isMultiline
+                  ? '15px'
+                  : '10px') as Space
+              }
               style={{
                 backgroundColor: useAccentColor
                   ? accentColor + '10'
@@ -144,6 +157,15 @@ export default function InfoRow({
                   >
                     {value}
                   </Text>
+                )}
+                {isBooleanValue && (
+                  <Switch
+                    disabled={booleanDisabled || booleanValue}
+                    onValueChange={() => null}
+                    testID="ens-reverse-record-switch"
+                    trackColor={{ false: colors.white, true: accentColor }}
+                    value={booleanValue}
+                  />
                 )}
               </Inline>
             </Box>
