@@ -58,6 +58,14 @@ export default function DiscoverSearch() {
     ensResults,
   ]);
 
+  const currencyListDataLength = useMemo(
+    () =>
+      uniswapCurrencyList?.[0]?.data?.length ||
+      0 + ensResults?.[0]?.data?.length ||
+      0,
+    [ensResults, uniswapCurrencyList]
+  );
+
   useHardwareBackOnFocus(() => {
     cancelSearch();
     // prevent other back handlers from firing
@@ -154,7 +162,10 @@ export default function DiscoverSearch() {
   }, [isSearchModeEnabled]);
 
   return (
-    <View style={{ height: deviceUtils.dimensions.height - 140 }}>
+    <View
+      key={currencyListDataLength}
+      style={{ height: deviceUtils.dimensions.height - 140 }}
+    >
       <SearchContainer>
         <CurrencySelectionList
           footerSpacer
