@@ -31,7 +31,7 @@ export default function ProfileSheet() {
   const { height: deviceHeight } = useDimensions();
   const contentHeight = deviceHeight - SheetHandleFixedToTopHeight;
 
-  const ensName = params?.address || 'moxey.eth';
+  const ensName = params?.address;
   const { data: profile, isSuccess } = useENSProfile(ensName);
   const avatarUrl = profile?.images?.avatarUrl;
 
