@@ -56,7 +56,7 @@ export default function useAccountTransactions(initialized, isFocused) {
     if (remainingLength === 0) {
       return null;
     }
-    if (allTransactions.length - slicedTransaction.length <= NOE_PAGE) {
+    if (remainingLength <= NOE_PAGE) {
       return `Show last ${remainingLength} transactions.`;
     }
     return `Show ${NOE_PAGE} more transactions...`;
