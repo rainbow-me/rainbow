@@ -93,6 +93,7 @@ export const parseAccountUniqueTokens = data => {
         isSendable:
           asset_contract.nft_version === '1.0' ||
           asset_contract.nft_version === '3.0' ||
+          asset_contract.schema_name === 'ERC721' ||
           asset_contract.schema_name === 'ERC1155',
         lastPrice: parseLastSalePrice(asset.last_sale),
         lastPriceUsd: asset.last_sale
