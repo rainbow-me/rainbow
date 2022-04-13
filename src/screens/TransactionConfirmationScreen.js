@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
-import BigNumber from 'bignumber.js';
+import { BigNumber } from 'ethers';
 import lang from 'i18n-js';
 import { isEmpty, isNil, omit, toLower } from 'lodash';
 import React, {
@@ -557,7 +557,7 @@ export default function TransactionConfirmationScreen() {
     const value = txPayload?.value ?? 0;
 
     // Check that there's enough ETH to pay for everything!
-    const totalAmount = BigNumber(fromWei(value)).plus(txFeeAmount);
+    const totalAmount = BigNumber.from(fromWei(value)).add(txFeeAmount);
     const isEnough = greaterThanOrEqualTo(balanceAmount, totalAmount);
 
     setIsBalanceEnough(isEnough);

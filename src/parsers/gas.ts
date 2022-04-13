@@ -1,4 +1,4 @@
-import BigNumber from 'bignumber.js';
+import { BigNumber, BigNumberish } from 'ethers';
 import { map, zipObject } from 'lodash';
 import { gasUtils } from '../utils';
 import {
@@ -30,8 +30,6 @@ import {
   multiply,
   toFixedDecimals,
 } from '@rainbow-me/utilities';
-
-type BigNumberish = number | string | BigNumber;
 
 const { CUSTOM, FAST, GasSpeedOrder, NORMAL, URGENT } = gasUtils;
 
@@ -131,11 +129,11 @@ export const parseRainbowMeteorologyData = (
       maxPriorityFeeSuggestions[speed as keyof MaxPriorityFeeSuggestions];
     // next version of the package will send only 2 decimals
     const cleanMaxPriorityFee = gweiToWei(
-      new BigNumber(weiToGwei(maxPriorityFee)).toFixed(2)
+      BigNumber.from(weiToGwei(maxPriorityFee)).toNumber().toFixed(2)
     );
     // clean max base fee to only parser int gwei
     const cleanMaxBaseFee = gweiToWei(
-      new BigNumber(weiToGwei(speedMaxBaseFee)).toFixed(0)
+      BigNumber.from(weiToGwei(speedMaxBaseFee)).toNumber().toFixed(2)
     );
     parsedFees[speed] = {
       estimatedTime: parseGasDataConfirmationTime(
@@ -241,7 +239,7 @@ export const parseLegacyGasFeesBySpeed = (
   gasLimit: BigNumberish,
   priceUnit: BigNumberish,
   nativeCurrency: string,
-  l1GasFeeOptimism: BigNumber | null = null
+  l1GasFeeOptimism: BigNumberish | null = null
 ): LegacyGasFeesBySpeed => {
   const gasFeesBySpeed = map(GasSpeedOrder, speed => {
     const gasPrice = legacyGasFees?.[speed]?.gasPrice?.amount || 0;
@@ -321,9 +319,9 @@ const getTxFee = (
   gasLimit: BigNumberish,
   priceUnit: BigNumberish,
   nativeCurrency: string,
-  l1GasFeeOptimism: BigNumber | null = null
+  l1GasFeeOptimism: BigNumberish | null = null
 ) => {
-  let amount = multiply(gasPrice, gasLimit);
+  let amount = multiply(gasPrice.toString(), gasLimit.toString());
   if (l1GasFeeOptimism && greaterThan(l1GasFeeOptimism.toString(), '0')) {
     amount = add(amount, l1GasFeeOptimism.toString());
   }
@@ -333,7 +331,7 @@ const getTxFee = (
       value: convertRawAmountToNativeDisplay(
         amount,
         18,
-        priceUnit,
+        priceUnit.toString(),
         nativeCurrency
       ),
     },
@@ -363,11 +361,11 @@ export const parseGasParamsForTransaction = (
 };
 
 export const gweiToWei = (gweiAmount: BigNumberish) => {
-  const weiAmount = multiply(gweiAmount, ethUnits.gwei);
+  const weiAmount = multiply(gweiAmount.toString(), ethUnits.gwei);
   return weiAmount;
 };
 
 export const weiToGwei = (weiAmount: BigNumberish) => {
-  const gweiAmount = divide(weiAmount, ethUnits.gwei);
+  const gweiAmount = divide(weiAmount.toString(), ethUnits.gwei);
   return gweiAmount;
 };

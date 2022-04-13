@@ -6,7 +6,6 @@ import { CoinIcon } from '../../coin-icon';
 import { Centered, Column, RowWithMargins } from '../../layout';
 import { Text, TruncatedText } from '../../text';
 import TransactionSheet from '../TransactionSheet';
-import { formatFixedDecimals } from '@rainbow-me/helpers/utilities';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 
@@ -75,7 +74,7 @@ export default function TransactionConfirmationSection({
           <RowWithMargins align="center" margin={5}>
             <CoinIcon address={address} size={20} symbol={symbol} />
             <Amount>
-              {formatFixedDecimals(amount, 10)} {symbol}
+              {Number(amount).toPrecision(10)} {symbol}
             </Amount>
           </RowWithMargins>
         </Column>

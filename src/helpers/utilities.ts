@@ -1,87 +1,80 @@
-import BigNumber from 'bignumber.js';
 import currency from 'currency.js';
+import { BigNumber, BigNumberish, ethers, FixedNumber } from 'ethers';
 import { get, isNil } from 'lodash';
+import { of } from 'zen-observable';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 
-type BigNumberish = number | string | BigNumber;
+const toFixed = (value: BigNumberish, decimals: number = 0) => {
+  return value.toString();
+  return Number(value.toString()).toFixed(decimals);
+};
 
-export const abs = (value: BigNumberish): string =>
-  new BigNumber(value).abs().toFixed();
-
-export const isPositive = (value: BigNumberish): boolean =>
-  new BigNumber(value).isPositive();
+export const add = (numberOne: BigNumberish, numberTwo: BigNumberish): string =>
+  toFixed(parseFloat(numberOne.toString()) + parseFloat(numberTwo.toString()));
 
 export const subtract = (
   numberOne: BigNumberish,
   numberTwo: BigNumberish
-): string => new BigNumber(numberOne).minus(new BigNumber(numberTwo)).toFixed();
+): string =>
+  toFixed(parseFloat(numberOne.toString()) - parseFloat(numberTwo.toString()));
+
+export const multiply = (
+  numberOne: BigNumberish,
+  numberTwo: BigNumberish
+): string =>
+  toFixed(parseFloat(numberOne.toString()) * parseFloat(numberTwo.toString()));
+
+export const divide = (
+  numberOne: BigNumberish,
+  numberTwo: BigNumberish
+): string => {
+  if (!(numberOne || numberTwo)) return '0';
+  return toFixed(
+    parseFloat(numberOne.toString()) / parseFloat(numberTwo.toString())
+  );
+};
 
 export const convertAmountToRawAmount = (
   value: BigNumberish,
   decimals: number | string
-): string =>
-  new BigNumber(value).times(new BigNumber(10).pow(decimals)).toFixed();
+): string => ethers.utils.formatUnits(value.toString(), decimals);
 
 export const isZero = (value: BigNumberish): boolean =>
-  new BigNumber(value).isZero();
+  value.toString() === '0';
 
 export const toFixedDecimals = (
   value: BigNumberish,
   decimals: number
-): string => new BigNumber(value).toFixed(decimals);
-
-export const convertNumberToString = (value: BigNumberish): string =>
-  new BigNumber(value).toFixed();
+): string =>
+  value ? Number(value.toString()).toFixed(decimals) : (0).toFixed(2);
 
 export const greaterThan = (
   numberOne: BigNumberish,
   numberTwo: BigNumberish
-): boolean => new BigNumber(numberOne).gt(numberTwo);
+): boolean => Number(numberOne?.toString()) > Number(numberTwo?.toString());
 
 export const greaterThanOrEqualTo = (
   numberOne: BigNumberish,
   numberTwo: BigNumberish
-): boolean => new BigNumber(numberOne).gte(numberTwo);
+): boolean => Number(numberOne?.toString()) >= Number(numberTwo?.toString());
 
 export const isEqual = (
   numberOne: BigNumberish,
   numberTwo: BigNumberish
-): boolean => new BigNumber(numberOne).eq(numberTwo);
-
-export const formatFixedDecimals = (
-  value: BigNumberish,
-  decimals: number
-): string => {
-  const _value = convertNumberToString(value);
-  const _decimals = convertStringToNumber(decimals);
-  return new BigNumber(new BigNumber(_value).toFixed(_decimals)).toFixed();
-};
+): boolean => Number(numberOne?.toString()) === Number(numberTwo?.toString());
 
 export const mod = (numberOne: BigNumberish, numberTwo: BigNumberish): string =>
-  new BigNumber(numberOne).mod(new BigNumber(numberTwo)).toFixed();
-
-/**
- * @desc real floor divides two numbers
- * @param  {Number}   numberOne
- * @param  {Number}   numberTwo
- * @return {String}
- */
-export const floorDivide = (
-  numberOne: BigNumberish,
-  numberTwo: BigNumberish
-): string =>
-  new BigNumber(numberOne)
-    .dividedToIntegerBy(new BigNumber(numberTwo))
-    .toFixed();
+  toFixed(BigNumber.from(numberOne).mod(BigNumber.from(numberTwo)));
 
 /**
  * @desc count value's number of decimals places
  * @param  {String}   value
  * @return {String}
  */
-export const countDecimalPlaces = (value: BigNumberish): number =>
-  new BigNumber(value).dp();
-
+export const countDecimalPlaces = (value: BigNumberish): number => {
+  const decimals = value.toString().split('.')[1];
+  return decimals ? decimals.length : 0;
+};
 /**
  * @desc update the amount to display precision
  * equivalent to ~0.01 of the native price
@@ -95,27 +88,31 @@ export const countDecimalPlaces = (value: BigNumberish): number =>
 export const updatePrecisionToDisplay = (
   amount: BigNumberish | null,
   nativePrice?: BigNumberish | null,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   roundUp: boolean = false
 ): string => {
   if (!amount) return '0';
-  if (!nativePrice) return new BigNumber(amount).toFixed();
-  const roundingMode = roundUp ? BigNumber.ROUND_UP : BigNumber.ROUND_DOWN;
-  const bnAmount = new BigNumber(amount);
-  const significantDigitsOfNativePriceInteger = new BigNumber(nativePrice)
-    .decimalPlaces(0, BigNumber.ROUND_DOWN)
-    .sd(true);
-  const truncatedPrecision = new BigNumber(
-    significantDigitsOfNativePriceInteger
-  )
-    .plus(2, 10)
-    .toNumber();
-  const truncatedAmount = bnAmount.decimalPlaces(
-    truncatedPrecision,
-    BigNumber.ROUND_DOWN
-  );
-  return truncatedAmount.isZero()
-    ? new BigNumber(bnAmount.toPrecision(1, roundingMode)).toFixed()
-    : bnAmount.decimalPlaces(truncatedPrecision, roundingMode).toFixed();
+  if (!nativePrice) return toFixed(amount);
+
+  return Number(amount).toPrecision();
+
+  //   const roundingMode = roundUp ? BigNumber.ROUND_UP : BigNumber.ROUND_DOWN;
+  //   const bnAmount = new BigNumber(amount);
+  //   const significantDigitsOfNativePriceInteger = new BigNumber(nativePrice)
+  //     .decimalPlaces(0, BigNumber.ROUND_DOWN)
+  //     .sd(true);
+  //   const truncatedPrecision = new BigNumber(
+  //     significantDigitsOfNativePriceInteger
+  //   )
+  //     .plus(2, 10)
+  //     .toNumber();
+  //   const truncatedAmount = bnAmount.decimalPlaces(
+  //     truncatedPrecision,
+  //     BigNumber.ROUND_DOWN
+  //   );
+  //   return truncatedAmount.isZero()
+  //     ? new BigNumber(bnAmount.toPrecision(1, roundingMode)).toFixed()
+  //     : bnAmount.decimalPlaces(truncatedPrecision, roundingMode).toFixed();
 };
 
 /**
@@ -132,10 +129,9 @@ export const formatInputDecimals = (
   const _nativeAmountDecimalPlaces = countDecimalPlaces(inputTwo);
   const decimals =
     _nativeAmountDecimalPlaces > 8 ? _nativeAmountDecimalPlaces : 8;
-  const result = new BigNumber(formatFixedDecimals(inputOne, decimals))
-    .toFormat()
+  return Number(Number(inputOne.toString()).toFixed(decimals))
+    .toLocaleString()
     .replace(/,/g, '');
-  return result;
 };
 
 /**
@@ -144,13 +140,10 @@ export const formatInputDecimals = (
  * @return {String}
  */
 export const convertHexToString = (hex: BigNumberish): string =>
-  new BigNumber(hex).toFixed();
+  toFixed(BigNumber.from(hex.toString()));
 
 export const convertStringToHex = (stringToConvert: string): string =>
-  new BigNumber(stringToConvert).toString(16);
-
-export const add = (numberOne: BigNumberish, numberTwo: BigNumberish): string =>
-  new BigNumber(numberOne).plus(numberTwo).toFixed();
+  FixedNumber.from(stringToConvert).toHexString();
 
 export const addDisplay = (numberOne: string, numberTwo: string): string => {
   const template = numberOne.split(/\d+\.\d+/);
@@ -158,23 +151,10 @@ export const addDisplay = (numberOne: string, numberTwo: string): string => {
   return template.map(item => (item === '' ? `${display}` : item)).join('');
 };
 
-export const multiply = (
-  numberOne: BigNumberish,
-  numberTwo: BigNumberish
-): string => new BigNumber(numberOne).times(numberTwo).toFixed();
-
 export const addBuffer = (
   numberOne: BigNumberish,
   buffer: BigNumberish = '1.2'
-): string => new BigNumber(numberOne).times(buffer).toFixed(0);
-
-export const divide = (
-  numberOne: BigNumberish,
-  numberTwo: BigNumberish
-): string => {
-  if (!(numberOne || numberTwo)) return '0';
-  return new BigNumber(numberOne).dividedBy(numberTwo).toFixed();
-};
+): string => multiply(numberOne, buffer);
 
 export const fraction = (
   target: BigNumberish,
@@ -182,10 +162,15 @@ export const fraction = (
   denominator: BigNumberish
 ): string => {
   if (!target || !numerator || !denominator) return '0';
-  return new BigNumber(target)
-    .times(numerator)
-    .dividedBy(denominator)
-    .toFixed(0);
+
+  const targetFixedNum = FixedNumber.from(target.toString());
+  const numeratorFixedNum = FixedNumber.from(numerator.toString());
+  const denominatorFixedNum = FixedNumber.from(denominator.toString());
+
+  return targetFixedNum
+    .mulUnsafe(numeratorFixedNum)
+    .divUnsafe(denominatorFixedNum)
+    .toString();
 };
 
 /**
@@ -201,20 +186,23 @@ export const convertAmountFromNativeValue = (
   decimals: number = 18
 ): string => {
   if (isNil(priceUnit) || isZero(priceUnit)) return '0';
-  return new BigNumber(
-    new BigNumber(value)
-      .dividedBy(priceUnit)
-      .toFixed(decimals, BigNumber.ROUND_DOWN)
-  ).toFixed();
+  return toFixed(
+    BigNumber.from(priceUnit.toString()).div(decimals).toNumber(),
+    decimals
+  );
+  // return FixedNumber.from(value.toString())
+  //   .divUnsafe(FixedNumber.from(priceUnit.toString()))
+  //   .round(decimals)
+  //   .toString();
 };
 
 export const convertStringToNumber = (value: BigNumberish) =>
-  new BigNumber(value).toNumber();
+  parseFloat(value.toString());
 
 export const lessThan = (
   numberOne: BigNumberish,
   numberTwo: BigNumberish
-): boolean => new BigNumber(numberOne).lt(numberTwo);
+): boolean => Number(numberOne?.toString()) < Number(numberTwo?.toString());
 
 export const handleSignificantDecimalsWithThreshold = (
   value: BigNumberish,
@@ -232,19 +220,30 @@ export const handleSignificantDecimals = (
   buffer: number = 3,
   skipDecimals = false
 ): string => {
-  if (lessThan(new BigNumber(value).abs(), 1)) {
-    decimals = new BigNumber(value).toFixed().slice(2).search(/[^0]/g) + buffer;
+  if (Math.abs(Number(value.toString())) < 1) {
+    decimals =
+      Number(value.toString()).toFixed().slice(2).search(/[^0]/g) + buffer;
     decimals = Math.min(decimals, 8);
   } else {
     decimals = Math.min(decimals, buffer);
   }
-  const result = new BigNumber(
-    new BigNumber(value).toFixed(decimals)
-  ).toFixed();
-  const resultBN = new BigNumber(result);
-  return resultBN.dp() <= 2
-    ? resultBN.toFormat(skipDecimals ? 0 : 2)
-    : resultBN.toFormat();
+  const result = Number(value.toString()).toFixed(decimals);
+  const numberOfDecimals = countDecimalPlaces(result);
+  const ret =
+    numberOfDecimals <= 2
+      ? formatLocale(Number(result).toFixed(skipDecimals ? 0 : 2))
+      : formatLocale(result).toLocaleString();
+  return ret;
+};
+
+const formatLocale = (value: string) => {
+  const parts = value.split('.');
+  if (parts.length > 1) {
+    const decimals = parts[1];
+    const integers = Number(parts[0]).toLocaleString();
+    return `${integers}.${decimals}`;
+  }
+  return value;
 };
 
 /**
@@ -326,8 +325,10 @@ export const convertAmountToBalanceDisplay = (
   buffer?: number
 ) => {
   const decimals = get(asset, 'decimals', 18);
+  const symbol = get(asset, 'symbol', '');
   const display = handleSignificantDecimals(value, decimals, buffer);
-  return `${display} ${get(asset, 'symbol', '')}`;
+  const ret = `${display} ${symbol}`;
+  return ret;
 };
 
 /**
@@ -354,18 +355,13 @@ export const convertAmountToPercentageDisplayWithThreshold = (
   if (lessThan(value, threshold)) {
     return '< 0.01%';
   } else {
-    const display = new BigNumber(value).times(100).toFixed(decimals);
+    const display = FixedNumber.from(value.toString())
+      .mulUnsafe(FixedNumber.from('100'))
+      .round(decimals)
+      .toString();
     return `${display}%`;
   }
 };
-
-/**
- * @desc convert from bips amount to percentage format
- */
-export const convertBipsToPercentage = (
-  value: BigNumberish,
-  decimals: number = 2
-): string => new BigNumber(value || 0).shiftedBy(-2).toFixed(decimals);
 
 /**
  * @desc convert from amount value to display formatted string
@@ -384,6 +380,7 @@ export const convertAmountToNativeDisplay = (
     buffer,
     skipDecimals
   );
+
   if (nativeSelected.alignment === 'left') {
     return `${nativeSelected.symbol}${display}`;
   }
@@ -396,8 +393,7 @@ export const convertAmountToNativeDisplay = (
 export const convertRawAmountToDecimalFormat = (
   value: BigNumberish,
   decimals: number = 18
-): string =>
-  new BigNumber(value).dividedBy(new BigNumber(10).pow(decimals)).toFixed();
+): string => ethers.utils.formatUnits(value, decimals);
 
 export const fromWei = (number: BigNumberish): string =>
   convertRawAmountToDecimalFormat(number, 18);

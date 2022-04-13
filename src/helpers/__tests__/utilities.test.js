@@ -1,7 +1,6 @@
 import {
   addDisplay,
   convertAmountFromNativeValue,
-  convertBipsToPercentage,
   handleSignificantDecimals,
   updatePrecisionToDisplay,
 } from '../utilities';
@@ -39,31 +38,6 @@ it('handleSignificantDecimals less than 1 and few decimals', () => {
 it('handleSignificantDecimals less than 1 and many decimals', () => {
   const result = handleSignificantDecimals('0.00000000123', 18);
   expect(result).toBe('0.00');
-});
-
-it('convertBipsToPercentage, 2 decimal places', () => {
-  const result = convertBipsToPercentage('1', 2);
-  expect(result).toBe('0.01');
-});
-
-it('convertBipsToPercentage, 1 decimal place', () => {
-  const result = convertBipsToPercentage('1', 1);
-  expect(result).toBe('0.0');
-});
-
-it('convertBipsToPercentage, 10 bips to 1 decimal', () => {
-  const result = convertBipsToPercentage('10', 1);
-  expect(result).toBe('0.1');
-});
-
-it('convertBipsToPercentage, returns 0 when given nullish value', () => {
-  const result = convertBipsToPercentage(null, 1);
-  expect(result).toBe('0');
-});
-
-it('convertBipsToPercentage', () => {
-  const result = convertBipsToPercentage('12.34567', 2);
-  expect(result).toBe('0.12');
 });
 
 it('updatePrecisionToDisplay1', () => {

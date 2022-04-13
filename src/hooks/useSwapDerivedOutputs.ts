@@ -11,7 +11,6 @@ import {
   convertAmountFromNativeValue,
   convertAmountToNativeAmount,
   convertAmountToRawAmount,
-  convertNumberToString,
   isZero,
   updatePrecisionToDisplay,
 } from '@rainbow-me/utilities';
@@ -43,7 +42,7 @@ const getOutputAmount = (
     };
   }
   const rawInputAmount = convertAmountToRawAmount(
-    convertNumberToString(inputAmount),
+    inputAmount.toString(),
     inputToken.decimals
   );
   const amountIn = new TokenAmount(inputToken, rawInputAmount);
@@ -182,7 +181,7 @@ export default function useSwapDerivedOutputs() {
 
       if (!isZero(independentValue)) {
         const outputRawAmount = convertAmountToRawAmount(
-          convertNumberToString(independentValue),
+          independentValue.toString(),
           outputToken.decimals
         );
         const amountOut = new TokenAmount(outputToken, outputRawAmount);
