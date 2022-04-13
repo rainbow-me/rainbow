@@ -353,21 +353,23 @@ export default function ENSConfirmRegisterSheet() {
               <Box horizontal="30px">
                 <Stack alignHorizontal="center" space="15px">
                   {avatarUrl && (
-                    <Box
-                      background="accent"
-                      borderRadius={avatarSize / 2}
-                      height={{ custom: avatarSize }}
-                      shadow="12px heavy accent"
-                      width={{ custom: avatarSize }}
-                    >
+                    <AccentColorProvider color={accentColor + '10'}>
                       <Box
-                        as={ImgixImage}
+                        background="accent"
                         borderRadius={avatarSize / 2}
                         height={{ custom: avatarSize }}
-                        source={{ uri: avatarUrl }}
+                        shadow="12px heavy accent"
                         width={{ custom: avatarSize }}
-                      />
-                    </Box>
+                      >
+                        <Box
+                          as={ImgixImage}
+                          borderRadius={avatarSize / 2}
+                          height={{ custom: avatarSize }}
+                          source={{ uri: avatarUrl }}
+                          width={{ custom: avatarSize }}
+                        />
+                      </Box>
+                    </AccentColorProvider>
                   )}
                   <Heading size="26px">{ensName}</Heading>
                   <Text
