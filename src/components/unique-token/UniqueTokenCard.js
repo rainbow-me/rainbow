@@ -3,6 +3,7 @@ import { ButtonPressAnimation } from '../animations';
 import { InnerBorder } from '../layout';
 import { CardSize } from './CardSize';
 import UniqueTokenImage from './UniqueTokenImage';
+import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
 import {
   usePersistentAspectRatio,
   usePersistentDominantColorFromImage,
@@ -41,6 +42,8 @@ const UniqueTokenCard = ({
   usePersistentAspectRatio(item.image_url);
   usePersistentDominantColorFromImage(item.image_url);
 
+  const isSVG = isSupportedUriExtension(item.image_url, ['.svg']);
+
   const handlePress = useCallback(() => {
     if (onPress) {
       onPress(item);
@@ -65,7 +68,7 @@ const UniqueTokenCard = ({
       <Content {...props} height={size} style={style} width={size}>
         <UniqueTokenImage
           backgroundColor={item.background || colors.lightestGrey}
-          imageUrl={item.image_url}
+          imageUrl={isSVG ? item.lowResUrl : item.image_url}
           isCard
           item={item}
           resizeMode={resizeMode}
