@@ -71,7 +71,7 @@ export default function ProfileSheet() {
         <Box style={wrapperStyle}>
           {!isSuccess || !hasListFetched ? (
             <Stack space="19px">
-              <ProfileSheetHeader isLoading />
+              <ProfileSheetHeader isLoading isPreview={params.isPreview} />
               <PlaceholderList />
             </Stack>
           ) : !params.isPreview ? (

@@ -4,7 +4,15 @@ import {
   ButtonPressAnimation,
   HourglassAnimation,
 } from '../../../components/animations';
-import { Box, Text } from '@rainbow-me/design-system';
+import {
+  Box,
+  Heading,
+  Inset,
+  Row,
+  Rows,
+  Stack,
+  Text,
+} from '@rainbow-me/design-system';
 
 const WaitCommitmentConfirmationContent = ({
   accentColor,
@@ -14,22 +22,38 @@ const WaitCommitmentConfirmationContent = ({
   action: () => void;
 }) => {
   return (
-    <Box height="full">
-      <Box height="full">
-        <HourglassAnimation />
-      </Box>
-      <Box alignItems="center" paddingBottom="5px">
-        <ButtonPressAnimation onPress={action}>
-          <Text
-            color={{ custom: accentColor }}
-            containsEmoji
-            size="16px"
-            weight="heavy"
-          >
-            {`🚀 ${lang.t('profiles.confirm.speed_up')}`}
-          </Text>
-        </ButtonPressAnimation>
-      </Box>
+    <Box flexGrow={1}>
+      <Rows alignHorizontal="center">
+        <Row>
+          <Box flexGrow={1} justifyContent="center">
+            <Inset horizontal="42px">
+              <Stack space="34px">
+                <HourglassAnimation />
+                <Stack alignHorizontal="center" space="19px">
+                  <Heading size="23px">
+                    {lang.t('profiles.confirm.transaction_pending')}
+                  </Heading>
+                  <Text align="center" color="secondary60" weight="semibold">
+                    {lang.t('profiles.confirm.transaction_pending_description')}
+                  </Text>
+                </Stack>
+              </Stack>
+            </Inset>
+          </Box>
+        </Row>
+        <Row height="content">
+          <ButtonPressAnimation onPress={action}>
+            <Text
+              color={{ custom: accentColor }}
+              containsEmoji
+              size="16px"
+              weight="heavy"
+            >
+              {`🚀 ${lang.t('profiles.confirm.speed_up')}`}
+            </Text>
+          </ButtonPressAnimation>
+        </Row>
+      </Rows>
     </Box>
   );
 };
