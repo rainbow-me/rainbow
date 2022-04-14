@@ -1,7 +1,7 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import { Mutex } from 'async-mutex';
-import BigNumber from 'bignumber.js';
+import { BigNumber } from 'ethers';
 import { isEmpty } from 'lodash';
 import {
   // @ts-ignore

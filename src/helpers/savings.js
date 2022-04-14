@@ -1,4 +1,3 @@
-import BigNumber from 'bignumber.js';
 import { memoFn } from '../utils/memoFn';
 
 const STABLECOINS = ['DAI', 'USDC', 'USDT'];
@@ -28,8 +27,7 @@ const calculateCompoundInterestInDays = memoFn((principal, apr, days) => {
 });
 
 const formatSavingsAmount = memoFn(amount => {
-  const amountBN = BigNumber(amount);
-  return amountBN.toFixed(MAX_DECIMALS_TO_SHOW);
+  return Number(amount.toString()).toFixed(MAX_DECIMALS_TO_SHOW);
 });
 
 const isSymbolStablecoin = memoFn(symbol => STABLECOINS.indexOf(symbol) !== -1);
