@@ -4,6 +4,7 @@ import ConditionalWrap from 'conditional-wrap';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { StatusBar } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
+import { useSetRecoilState } from 'recoil';
 import { SheetHandleFixedToTopHeight, SlackSheet } from '../components/sheet';
 import ENSAssignRecordsSheet, {
   ENSAssignRecordsBottomActions,
@@ -13,8 +14,9 @@ import ENSSearchSheet from '../screens/ENSSearchSheet';
 import { useNavigation } from './Navigation';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
 import { sharedCoolModalTopOffset } from './config';
+import { useTheme } from '@rainbow-me/context';
 import { Box } from '@rainbow-me/design-system';
-import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
+import { accentColorAtom, REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import {
   useDimensions,
   useENSRegistration,
@@ -58,6 +60,10 @@ export default function RegisterENSNavigator() {
 
   const { height: deviceHeight } = useDimensions();
 
+  const setAccentColor = useSetRecoilState(accentColorAtom);
+
+  const { colors } = useTheme();
+
   const contentHeight =
     deviceHeight - SheetHandleFixedToTopHeight - sharedCoolModalTopOffset;
 
@@ -66,6 +72,7 @@ export default function RegisterENSNavigator() {
   const { clearValues } = useENSRegistrationForm();
 
   const {
+    removeRecordByKey,
     clearCurrentRegistrationName,
     startRegistration,
   } = useENSRegistration();
@@ -109,8 +116,11 @@ export default function RegisterENSNavigator() {
 
   useEffect(() => {
     const dismiss = () => {
-      clearCurrentRegistrationName();
+      // Remove avatar record on dismissal to prevent accent color inconsistencies.
+      removeRecordByKey('avatar');
+      setAccentColor(colors.purple);
       clearValues();
+      clearCurrentRegistrationName();
     };
     navigation.addListener('dismiss', dismiss);
     return () => navigation.removeListener('dismiss', dismiss);

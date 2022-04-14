@@ -85,7 +85,7 @@ export default function ENSAssignRecordsSheet() {
 
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
   const { result: dominantColor } = usePersistentDominantColorFromImage(
-    avatarUrl || ''
+    avatarUrl || initialAvatarUrl || ''
   );
   const [prevDominantColor, setPrevDominantColor] = useState(dominantColor);
   useEffect(() => {
