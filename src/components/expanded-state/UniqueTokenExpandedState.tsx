@@ -321,8 +321,8 @@ const UniqueTokenExpandedState = ({
         <BlurWrapper height={deviceHeight} width={deviceWidth}>
           <BackgroundImage>
             <UniqueTokenImage
-              backgroundColor={asset.background}
-              imageUrl={asset.image_url}
+              backgroundColor={asset.background || imageColor}
+              imageUrl={asset.lowResUrl}
               item={asset}
               resizeMode="cover"
               size={CardSize}
