@@ -85,8 +85,7 @@ export const ZoomableWrapper = ({
   height,
 }) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const globalAnimationProgress = givenAnimationProgress || useSharedValue(0);
-  const animationProgress = useSharedValue(0);
+  const animationProgress = givenAnimationProgress || useSharedValue(0);
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const yDisplacement = givenYDisplacement || useSharedValue(0);
 
@@ -274,7 +273,6 @@ export const ZoomableWrapper = ({
         runOnJS(setIsZoomed)(false);
         onBlurWorklet?.();
         animationProgress.value = withSpring(0, exitConfig);
-        globalAnimationProgress.value = withTiming(0, exitConfig);
         scale.value = withSpring(MIN_IMAGE_SCALE, exitConfig);
         translateX.value = withSpring(0, exitConfig);
         translateY.value = withSpring(0, exitConfig);
@@ -302,7 +300,6 @@ export const ZoomableWrapper = ({
 
       scale.value = withSpring(MIN_IMAGE_SCALE, exitConfig);
       animationProgress.value = withSpring(0, exitConfig);
-      globalAnimationProgress.value = withTiming(0, exitConfig);
       translateX.value = withSpring(0, exitConfig);
       translateY.value = withSpring(0, exitConfig);
     }
@@ -458,7 +455,6 @@ export const ZoomableWrapper = ({
         runOnJS(setIsZoomed)(true);
         onFocusWorklet?.();
         animationProgress.value = withSpring(1, enterConfig);
-        globalAnimationProgress.value = withTiming(1, enterConfig);
       } else if (
         scale.value === MIN_IMAGE_SCALE &&
         ((event.absoluteY > 0 &&
@@ -472,7 +468,6 @@ export const ZoomableWrapper = ({
         runOnJS(setIsZoomed)(false);
         onBlurWorklet?.();
         animationProgress.value = withSpring(0, exitConfig);
-        globalAnimationProgress.value = withTiming(0, exitConfig);
       }
     },
   });
