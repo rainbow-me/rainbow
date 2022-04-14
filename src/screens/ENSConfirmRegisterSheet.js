@@ -172,6 +172,8 @@ export default function ENSConfirmRegisterSheet() {
       return lang.t('profiles.confirm.reserving_name');
     if (step === REGISTRATION_STEPS.REGISTER)
       return lang.t('profiles.confirm.confirm_registration');
+    if (step === REGISTRATION_STEPS.SET_NAME)
+      return lang.t('profiles.confirm.set_name_registration');
   }, [mode, step]);
 
   const isSufficientGasForStep = useMemo(
@@ -198,6 +200,7 @@ export default function ENSConfirmRegisterSheet() {
         />
       ),
       [REGISTRATION_STEPS.EDIT]: null,
+      [REGISTRATION_STEPS.SET_NAME]: null,
       [REGISTRATION_STEPS.RENEW]: (
         <RenewContent
           name={name}
@@ -281,6 +284,16 @@ export default function ENSConfirmRegisterSheet() {
           testID={step}
         />
       ),
+      [REGISTRATION_STEPS.SET_NAME]: (
+        <TransactionActionRow
+          accentColor={accentColor}
+          action={() => action(goToProfileScreen)}
+          isSufficientGas={isSufficientGasForStep}
+          isValidGas={isValidGas && Boolean(gasLimit)}
+          label={lang.t('profiles.confirm.confirm_set_name')}
+          testID={step}
+        />
+      ),
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: null,
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: null,
     }),
@@ -313,6 +326,7 @@ export default function ENSConfirmRegisterSheet() {
       step === REGISTRATION_STEPS.COMMIT ||
       step === REGISTRATION_STEPS.REGISTER ||
       step === REGISTRATION_STEPS.EDIT ||
+      step === REGISTRATION_STEPS.SET_NAME ||
       step === REGISTRATION_STEPS.RENEW
     )
       startPollingGasFees();

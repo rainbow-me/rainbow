@@ -64,9 +64,10 @@ export default function InfoRow({
   label,
   wrapValue = children => children,
   value = undefined,
-  booleanValue,
-  booleanDisabled,
+  switchValue,
+  switchDisabled,
   useAccentColor,
+  onSwitchChange,
 }: {
   explainSheetType?: string;
   icon?: string;
@@ -74,16 +75,16 @@ export default function InfoRow({
   label: string;
   wrapValue?: (children: React.ReactNode) => React.ReactNode;
   value?: string;
-  booleanValue?: boolean;
-  booleanDisabled?: boolean;
+  switchValue?: boolean;
+  switchDisabled?: boolean;
   useAccentColor?: boolean;
+  onSwitchChange?: () => void;
 }) {
   const { colors } = useTheme();
   const accentColor = useForegroundColor('accent');
 
   const [show, setShow] = useState(isImage);
   const [isMultiline, setIsMultiline] = useState(false);
-  const isBooleanValue = booleanValue !== undefined;
 
   const { navigate } = useNavigation();
   const handlePressExplain = useCallback(() => {
@@ -125,7 +126,7 @@ export default function InfoRow({
                 setShow(true);
               }}
               padding={
-                (isBooleanValue
+                (switchValue !== undefined
                   ? '0px'
                   : isMultiline
                   ? '15px'
@@ -158,13 +159,13 @@ export default function InfoRow({
                     {value}
                   </Text>
                 )}
-                {isBooleanValue && (
+                {switchValue !== undefined && (
                   <Switch
-                    disabled={booleanDisabled || booleanValue}
-                    onValueChange={() => null}
+                    disabled={switchDisabled || switchValue}
+                    onValueChange={onSwitchChange}
                     testID="ens-reverse-record-switch"
                     trackColor={{ false: colors.white, true: accentColor }}
-                    value={booleanValue}
+                    value={switchValue}
                   />
                 )}
               </Inline>

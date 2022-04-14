@@ -257,7 +257,7 @@ const UniqueTokenExpandedState = ({
   const isNFT = uniqueTokenType === UniqueTokenType.NFT;
 
   // Fetch the ENS profile if the unique token is an ENS name.
-  const cleanENSName = isENS ? uniqueId.split(' ')?.[0] : uniqueId;
+  const cleanENSName = isENS ? uniqueId?.split(' ')?.[0] : uniqueId;
   const ensProfile = useENSProfile(cleanENSName, { enabled: isENS });
   const ensData = ensProfile.data;
 
@@ -608,6 +608,7 @@ const UniqueTokenExpandedState = ({
                               isLoading={ensProfile.isLoading}
                               isOwner={ensProfile?.isOwner}
                               isPrimary={ensData?.primary?.isPrimary}
+                              name={cleanENSName}
                               owner={ensData?.owner}
                               registrant={ensData?.registrant}
                             />

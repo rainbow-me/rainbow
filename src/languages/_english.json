@@ -650,6 +650,8 @@
         "requesting_register": "Requesting to Register",
         "reserving_name": "Reserving Your Name",
         "confirm_registration": "Confirm Registration",
+        "set_name_registration": "Set as Primary Name",
+        "confirm_set_name": "Confirm Set Primary Name",
         "start_registration": "Start Registration",
         "confirm_update": "Confirm Update",
         "confirm_renew": "Hold to Extend",
