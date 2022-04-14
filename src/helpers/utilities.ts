@@ -44,7 +44,7 @@ export const divide = (
 export const convertAmountToRawAmount = (
   value: BigNumberish,
   decimals: number | string
-): string => ethers.utils.formatUnits(value.toString(), decimals);
+): string => FixedNumber.from(value, decimals).toString();
 
 export const isZero = (value: BigNumberish): boolean =>
   value.toString() === '0';
@@ -121,9 +121,7 @@ export const formatInputDecimals = (
   const _nativeAmountDecimalPlaces = countDecimalPlaces(inputTwo);
   const decimals =
     _nativeAmountDecimalPlaces > 8 ? _nativeAmountDecimalPlaces : 8;
-  return Number(Number(inputOne?.toString()).toFixed(decimals))
-    .toLocaleString()
-    .replace(/,/g, '');
+  return Number(inputOne?.toString()).toFixed(decimals);
 };
 
 /**
@@ -178,7 +176,11 @@ export const convertAmountFromNativeValue = (
   decimals: number = 18
 ): string => {
   if (isNil(priceUnit) || isZero(priceUnit)) return '0';
-  return ethers.utils.parseUnits(priceUnit.toString(), decimals).toString();
+  return FixedNumber.from(value.toString())
+    .divUnsafe(FixedNumber.from(priceUnit.toString()))
+    .round(decimals)
+    .toUnsafeFloat()
+    .toString();
 };
 
 export const convertStringToNumber = (value: BigNumberish) =>
