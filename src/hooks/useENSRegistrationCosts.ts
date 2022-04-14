@@ -1,6 +1,6 @@
 import { isEmpty } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useQueries, useQueryClient } from 'react-query';
+import { QueryCache, useQueries } from 'react-query';
 import { useDebounce } from 'use-debounce';
 import useENSRegistration from './useENSRegistration';
 import useGas from './useGas';
@@ -38,6 +38,7 @@ import {
   greaterThanOrEqualTo,
   multiply,
 } from '@rainbow-me/helpers/utilities';
+import { queryClient } from '@rainbow-me/react-query/queryClient';
 import { getEIP1559GasParams } from '@rainbow-me/redux/gas';
 import { ethUnits, timeUnits } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
@@ -77,6 +78,8 @@ export default function useENSRegistrationCosts({
   );
 
   const {
+    gasFeeParamsBySpeed,
+    currentBlockParams,
     updateTxFee,
     startPollingGasFees,
     isSufficientGas: useGasIsSufficientGas,
@@ -88,7 +91,6 @@ export default function useENSRegistrationCosts({
 
   const prevIsSufficientGas = usePrevious(isSufficientGas);
   const prevIsValidGas = usePrevious(isValidGas);
-  const queryClient = useQueryClient();
 
   const duration = useMemo(() => yearsDuration * timeUnits.secs.year, [
     yearsDuration,
@@ -122,7 +124,7 @@ export default function useENSRegistrationCosts({
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: null,
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: null,
     }),
-    [queryClient]
+    []
   );
 
   useEffect(() => {
@@ -230,11 +232,12 @@ export default function useENSRegistrationCosts({
     const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
       Network.mainnet
     );
-    const { gasFeeParamsBySpeed, currentBaseFee } =
-      (queryClient.getQueryData(QUERY_KEYS.GET_GAS_PARAMS) as {
-        gasFeeParamsBySpeed: GasFeeParamsBySpeed;
-        currentBaseFee: GasFeeParam;
-      }) || {};
+    const { gasFeeParamsBySpeed, currentBaseFee } = queryClient.getQueryData(
+      QUERY_KEYS.GET_GAS_PARAMS
+    ) as {
+      gasFeeParamsBySpeed: GasFeeParamsBySpeed;
+      currentBaseFee: GasFeeParam;
+    };
 
     let estimatedGasLimit = '';
     if (step === REGISTRATION_STEPS.COMMIT) {
@@ -274,7 +277,7 @@ export default function useENSRegistrationCosts({
       estimatedGasLimit,
       estimatedNetworkFee: formattedEstimatedNetworkFee,
     };
-  }, [queryClient, step, nativeCurrency]);
+  }, [step, nativeCurrency]);
 
   const queries = useQueries([
     {
@@ -322,11 +325,6 @@ export default function useENSRegistrationCosts({
   }, [currentStepGasLimit, startPollingGasFees, step]);
 
   useEffect(() => {
-    const { gasFeeParamsBySpeed } =
-      (queryClient.getQueryData(QUERY_KEYS.GET_GAS_PARAMS) as {
-        gasFeeParamsBySpeed: GasFeeParamsBySpeed;
-        currentBaseFee: GasFeeParam;
-      }) || {};
     if (
       stepGasLimit[step] &&
       currentStepGasLimit !== stepGasLimit[step] &&
@@ -336,12 +334,12 @@ export default function useENSRegistrationCosts({
       setCurrentStepGasLimit(stepGasLimit?.[step] || '');
     }
   }, [
+    gasFeeParamsBySpeed,
     currentStepGasLimit,
     step,
     stepGasLimit,
     updateTxFee,
     setCurrentStepGasLimit,
-    queryClient,
   ]);
 
   const data = useMemo(() => {
@@ -350,11 +348,10 @@ export default function useENSRegistrationCosts({
       Network.mainnet
     );
 
-    const { gasFeeParamsBySpeed } =
-      (queryClient.getQueryData(QUERY_KEYS.GET_GAS_PARAMS) as {
-        gasFeeParamsBySpeed: GasFeeParamsBySpeed;
-        currentBaseFee: GasFeeParam;
-      }) || {};
+    const gasFeeParams = {
+      currentBaseFee: currentBlockParams?.baseFeePerGas,
+      gasFeeParamsBySpeed,
+    };
 
     if (rentPricePerYearInWei) {
       const rentPriceInWei = multiply(rentPricePerYearInWei, yearsDuration);
@@ -398,7 +395,7 @@ export default function useENSRegistrationCosts({
             ...estimatedTotalRegistrationCost,
             display: displayEstimatedTotalCost,
           },
-          gasFeeParamsBySpeed: gasFeeParamsBySpeed,
+          gasFeeParamsBySpeed: gasFeeParams.gasFeeParamsBySpeed,
           isSufficientGas,
           isSufficientGasForRegistration,
           isSufficientGasForStep:
@@ -412,12 +409,13 @@ export default function useENSRegistrationCosts({
     }
   }, [
     checkIfSufficientEth,
+    currentBlockParams?.baseFeePerGas,
     duration,
     estimatedFee,
+    gasFeeParamsBySpeed,
     isSufficientGas,
     isValidGas,
     nativeCurrency,
-    queryClient,
     rentPrice?.perYear?.wei,
     step,
     stepGasLimit,
