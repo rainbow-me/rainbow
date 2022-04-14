@@ -29,9 +29,10 @@ export default function ENSBriefTokenInfoRow({
   }, []);
 
   const handlePressEditExpiryDate = useCallback(() => {
-    startRegistration(ensName, REGISTRATION_MODES.RENEW);
+    const cleanENSName = ensName?.split(' ')?.[0] ?? ensName;
+    startRegistration(cleanENSName, REGISTRATION_MODES.RENEW);
     navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
-      ensName,
+      ensName: cleanENSName,
       mode: REGISTRATION_MODES.RENEW,
     });
   }, [startRegistration, ensName, navigate]);
