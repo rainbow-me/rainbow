@@ -60,6 +60,42 @@ export const apiGetAccountUniqueTokens = async (
   }
 };
 
+export const apiGetAccountUniqueToken = async (
+  network: Network,
+  contractAddress: string,
+  tokenId: string,
+  // The `forceUpdate` param triggers an NFT metadata refresh
+  { forceUpdate = false }: { forceUpdate?: boolean } = {}
+) => {
+  try {
+    const isPolygon = network === NetworkTypes.polygon;
+    const networkPrefix = network === NetworkTypes.mainnet ? '' : `${network}-`;
+    const url = `https://${networkPrefix}${NFT_API_URL}/api/v1/asset/${contractAddress}/${tokenId}${
+      forceUpdate ? '?force_update=true' : ''
+    }`;
+    const urlV2 = `https://${NFT_API_URL}/api/v2/beta/asset/${contractAddress}/${tokenId}${
+      forceUpdate ? '?force_update=true' : ''
+    }`;
+    const { data } = await rainbowFetch(isPolygon ? urlV2 : url, {
+      headers: {
+        'Accept': 'application/json',
+        'X-Api-Key': NFT_API_KEY,
+      },
+      method: 'get',
+      timeout: 10000, // 10 secs
+    });
+    return isPolygon
+      ? parseAccountUniqueTokensPolygon({
+          data: { results: [data] },
+        })?.[0]
+      : parseAccountUniqueTokens({ data: { assets: [data] } })?.[0];
+  } catch (error) {
+    logger.sentry('Error getting unique token', error);
+    captureException(new Error('Opensea: Error getting unique token'));
+    throw error;
+  }
+};
+
 export const apiGetUniqueTokenImage = async (
   contractAddress: string,
   tokenId: string
