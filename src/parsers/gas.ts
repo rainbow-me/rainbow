@@ -1,4 +1,4 @@
-import { BigNumber, BigNumberish } from 'ethers';
+import { BigNumber, BigNumberish, ethers } from 'ethers';
 import { map, zipObject } from 'lodash';
 import { gasUtils } from '../utils';
 import {
@@ -129,11 +129,11 @@ export const parseRainbowMeteorologyData = (
       maxPriorityFeeSuggestions[speed as keyof MaxPriorityFeeSuggestions];
     // next version of the package will send only 2 decimals
     const cleanMaxPriorityFee = gweiToWei(
-      BigNumber.from(weiToGwei(maxPriorityFee)).toNumber().toFixed(2)
+      Number(weiToGwei(maxPriorityFee)).toFixed(2)
     );
     // clean max base fee to only parser int gwei
     const cleanMaxBaseFee = gweiToWei(
-      BigNumber.from(weiToGwei(speedMaxBaseFee)).toNumber().toFixed(2)
+      Number(weiToGwei(speedMaxBaseFee)).toFixed(2)
     );
     parsedFees[speed] = {
       estimatedTime: parseGasDataConfirmationTime(
@@ -361,11 +361,9 @@ export const parseGasParamsForTransaction = (
 };
 
 export const gweiToWei = (gweiAmount: BigNumberish) => {
-  const weiAmount = multiply(gweiAmount.toString(), ethUnits.gwei);
-  return weiAmount;
+  return ethers.utils.parseUnits(gweiAmount.toString(), 'gwei').toString();
 };
 
 export const weiToGwei = (weiAmount: BigNumberish) => {
-  const gweiAmount = divide(weiAmount.toString(), ethUnits.gwei);
-  return gweiAmount;
+  return ethers.utils.formatUnits(weiAmount.toString(), 'gwei');
 };

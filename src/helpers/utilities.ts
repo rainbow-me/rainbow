@@ -8,19 +8,28 @@ const toFixed = (value: BigNumberish) => {
 };
 
 export const add = (numberOne: BigNumberish, numberTwo: BigNumberish): string =>
-  toFixed(parseFloat(numberOne.toString()) + parseFloat(numberTwo.toString()));
+  toFixed(
+    parseFloat(numberOne?.toString() || '0') +
+      parseFloat(numberTwo?.toString() || '0')
+  );
 
 export const subtract = (
   numberOne: BigNumberish,
   numberTwo: BigNumberish
 ): string =>
-  toFixed(parseFloat(numberOne.toString()) - parseFloat(numberTwo.toString()));
+  toFixed(
+    parseFloat(numberOne?.toString() || '0') -
+      parseFloat(numberTwo?.toString() || '0')
+  );
 
 export const multiply = (
   numberOne: BigNumberish,
   numberTwo: BigNumberish
 ): string =>
-  toFixed(parseFloat(numberOne.toString()) * parseFloat(numberTwo.toString()));
+  toFixed(
+    parseFloat(numberOne?.toString() || '0') *
+      parseFloat(numberTwo?.toString() || '0')
+  );
 
 export const divide = (
   numberOne: BigNumberish,
@@ -43,22 +52,27 @@ export const isZero = (value: BigNumberish): boolean =>
 export const toFixedDecimals = (
   value: BigNumberish,
   decimals: number
-): string => Number(value.toString()).toFixed(decimals);
+): string => {
+  return Number(value?.toString() || '0').toFixed(decimals);
+};
 
 export const greaterThan = (
   numberOne: BigNumberish,
   numberTwo: BigNumberish
-): boolean => Number(numberOne?.toString()) > Number(numberTwo?.toString());
+): boolean =>
+  Number(numberOne?.toString() || '0') > Number(numberTwo?.toString() || '0');
 
 export const greaterThanOrEqualTo = (
   numberOne: BigNumberish,
   numberTwo: BigNumberish
-): boolean => Number(numberOne?.toString()) >= Number(numberTwo?.toString());
+): boolean =>
+  Number(numberOne?.toString() || '0') >= Number(numberTwo?.toString() || '0');
 
 export const isEqual = (
   numberOne: BigNumberish,
   numberTwo: BigNumberish
-): boolean => Number(numberOne?.toString()) === Number(numberTwo?.toString());
+): boolean =>
+  Number(numberOne?.toString() || '0') === Number(numberTwo?.toString() || '0');
 
 export const mod = (numberOne: BigNumberish, numberTwo: BigNumberish): string =>
   toFixed(BigNumber.from(numberOne).mod(BigNumber.from(numberTwo)));
@@ -69,7 +83,7 @@ export const mod = (numberOne: BigNumberish, numberTwo: BigNumberish): string =>
  * @return {String}
  */
 export const countDecimalPlaces = (value: BigNumberish): number => {
-  const decimals = value.toString().split('.')[1];
+  const decimals = value?.toString().split('.')[1];
   return decimals ? decimals.length : 0;
 };
 /**
@@ -107,7 +121,7 @@ export const formatInputDecimals = (
   const _nativeAmountDecimalPlaces = countDecimalPlaces(inputTwo);
   const decimals =
     _nativeAmountDecimalPlaces > 8 ? _nativeAmountDecimalPlaces : 8;
-  return Number(Number(inputOne.toString()).toFixed(decimals))
+  return Number(Number(inputOne?.toString()).toFixed(decimals))
     .toLocaleString()
     .replace(/,/g, '');
 };
@@ -164,7 +178,7 @@ export const convertAmountFromNativeValue = (
   decimals: number = 18
 ): string => {
   if (isNil(priceUnit) || isZero(priceUnit)) return '0';
-  return toFixed(BigNumber.from(priceUnit.toString()).div(decimals).toNumber());
+  return ethers.utils.parseUnits(priceUnit.toString(), decimals).toString();
 };
 
 export const convertStringToNumber = (value: BigNumberish) =>
@@ -173,7 +187,8 @@ export const convertStringToNumber = (value: BigNumberish) =>
 export const lessThan = (
   numberOne: BigNumberish,
   numberTwo: BigNumberish
-): boolean => Number(numberOne?.toString()) < Number(numberTwo?.toString());
+): boolean =>
+  Number(numberOne?.toString() || '0') < Number(numberTwo?.toString() || '0');
 
 export const handleSignificantDecimalsWithThreshold = (
   value: BigNumberish,
@@ -369,7 +384,7 @@ export const convertRawAmountToDecimalFormat = (
 ): string => ethers.utils.formatUnits(value, decimals);
 
 export const fromWei = (number: BigNumberish): string =>
-  convertRawAmountToDecimalFormat(number, 18);
+  ethers.utils.formatEther(number.toString());
 
 /**
  * @desc Promise that will resolve after the ms interval
