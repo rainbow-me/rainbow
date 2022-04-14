@@ -236,7 +236,7 @@ const UniqueTokenExpandedState = ({
 
   const imageColor =
     // @ts-expect-error image_url could be null or undefined?
-    usePersistentDominantColorFromImage(asset.image_url).result ||
+    usePersistentDominantColorFromImage(asset.lowResUrl).result ||
     colors.paleBlue;
 
   const lastSalePrice =

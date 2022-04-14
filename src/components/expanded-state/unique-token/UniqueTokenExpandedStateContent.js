@@ -47,7 +47,7 @@ const UniqueTokenExpandedStateContent = ({
 
   const supportsAnythingExceptImageAnd3d = supportsVideo || supportsAudio;
 
-  const aspectRatio = usePersistentAspectRatio(asset.image_url);
+  const aspectRatio = usePersistentAspectRatio(asset.lowResUrl);
   const aspectRatioWithFallback =
     supports3d || supportsAudio ? 0.88 : aspectRatio.result || 1;
 
