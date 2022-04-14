@@ -351,7 +351,9 @@ export async function estimateGasWithPadding(
 
     logger.sentry('⛽ Calculating safer gas limit for last block');
     // 3 - If it is a contract, call the RPC method `estimateGas` with a safe value
-    const saferGasLimit = fraction(gasLimit.toString(), 19, 20);
+    const saferGasLimit = Math.ceil(
+      Number(fraction(gasLimit.toString(), 19, 20))
+    ).toString();
     logger.sentry('⛽ safer gas limit for last block is', saferGasLimit);
 
     txPayloadToEstimate[contractCallEstimateGas ? 'gasLimit' : 'gas'] = toHex(
@@ -361,7 +363,6 @@ export async function estimateGasWithPadding(
     const estimatedGas = await (contractCallEstimateGas
       ? contractCallEstimateGas(...(callArguments ?? []), txPayloadToEstimate)
       : p.estimateGas(txPayloadToEstimate));
-
     const lastBlockGasLimit = addBuffer(gasLimit.toString(), 0.9);
     const paddedGas = addBuffer(
       estimatedGas.toString(),

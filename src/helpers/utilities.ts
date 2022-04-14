@@ -44,7 +44,12 @@ export const divide = (
 export const convertAmountToRawAmount = (
   value: BigNumberish,
   decimals: number | string
-): string => FixedNumber.from(value, decimals).toString();
+): string => {
+  if (Number(value.toString()) === 0) return '0';
+  return ethers.utils.parseUnits(value.toString(), decimals).toString();
+  // const ret = FixedNumber.from(value, decimals).toString();
+  // return Number(ret) === 0 ? '0' : ret;
+};
 
 export const isZero = (value: BigNumberish): boolean =>
   value.toString() === '0';
@@ -345,10 +350,7 @@ export const convertAmountToPercentageDisplayWithThreshold = (
   if (lessThan(value, threshold)) {
     return '< 0.01%';
   } else {
-    const display = FixedNumber.from(value.toString())
-      .mulUnsafe(FixedNumber.from('100'))
-      .round(decimals)
-      .toString();
+    const display = (Number(value.toString()) * 100).toFixed(decimals);
     return `${display}%`;
   }
 };
