@@ -1,4 +1,4 @@
-import { BigNumber, BigNumberish, ethers } from 'ethers';
+import { BigNumberish, ethers } from 'ethers';
 import { map, zipObject } from 'lodash';
 import { gasUtils } from '../utils';
 import {
