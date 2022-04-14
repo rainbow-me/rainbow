@@ -4,7 +4,6 @@ import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import { useRecoilValue } from 'recoil';
-import { HourglassAnimation } from '../components/animations';
 import { HoldToAuthorizeButton } from '../components/buttons';
 import {
   CommitContent,
@@ -13,6 +12,7 @@ import {
   WaitCommitmentConfirmationContent,
 } from '../components/ens-registration';
 import { GasSpeedButton } from '../components/gas';
+import { LargeCountdownClock } from '../components/large-countdown-clock';
 import { SheetActionButtonRow, SlackSheet } from '../components/sheet';
 import {
   AccentColorProvider,
@@ -34,18 +34,17 @@ import {
 } from '@rainbow-me/helpers/ens';
 import {
   useAccountSettings,
+  useDimensions,
   useENSRegistration,
   useENSRegistrationActionHandler,
   useENSRegistrationCosts,
   useENSRegistrationForm,
   useENSSearch,
   useGas,
-  usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
 
 export const ENSConfirmRegisterSheetHeight = 600;
 export const ENSConfirmRenewSheetHeight = 500;
@@ -111,6 +110,7 @@ export default function ENSConfirmRegisterSheet() {
   } = useENSRegistration();
 
   const accentColor = useRecoilValue(accentColorAtom);
+  const { isSmallPhone } = useDimensions();
 
   const [duration, setDuration] = useState(1);
   const [gasLimit, setGasLimit] = useState(null);
@@ -208,8 +208,8 @@ export default function ENSConfirmRegisterSheet() {
         />
       ),
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: (
-        <Box alignItems="center">
-          <HourglassAnimation />
+        <Box alignItems="center" height="full" paddingTop="76px">
+          <LargeCountdownClock minutes={1} onFinished={() => {}} seconds={0} />
         </Box>
       ),
     }),
@@ -372,7 +372,7 @@ export default function ENSConfirmRegisterSheet() {
                     {stepLabel}
                   </Text>
                 </Stack>
-                <Inset vertical="24px">
+                <Inset vertical={isSmallPhone ? '12px' : ' 24px'}>
                   <Divider color="divider40" />
                 </Inset>
               </Box>
