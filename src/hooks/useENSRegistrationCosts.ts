@@ -116,7 +116,8 @@ export default function useENSRegistrationCosts({
   const duration = yearsDuration * timeUnits.secs.year;
 
   const {
-    gasFeeParamsBySpeed,
+    gasFeeParamsBySpeed: useGasGasFeeParamsBySpeed,
+    currentBlockParams: useGasCurrentBlockParams,
     updateTxFee,
     startPollingGasFees,
     isSufficientGas: useGasIsSufficientGas,
@@ -220,15 +221,8 @@ export default function useENSRegistrationCosts({
       salt,
     });
     newCommitGasLimit && setCommitGasLimit(newCommitGasLimit);
-    return commitGasLimit;
-  }, [
-    accountAddress,
-    commitGasLimit,
-    duration,
-    name,
-    rentPriceInWei,
-    setCommitGasLimit,
-  ]);
+    return newCommitGasLimit;
+  }, [accountAddress, duration, name, rentPriceInWei, setCommitGasLimit]);
 
   const getRegisterRapGasLimit = useCallback(async () => {
     const newRegisterRapGasLimit = await estimateENSRegisterSetRecordsAndNameGasLimit(
@@ -242,10 +236,9 @@ export default function useENSRegistrationCosts({
       }
     );
     newRegisterRapGasLimit && setRegisterRapGasLimit(newRegisterRapGasLimit);
-    return commitGasLimit;
+    return newRegisterRapGasLimit;
   }, [
     accountAddress,
-    commitGasLimit,
     duration,
     name,
     registrationParameters?.rentPrice,
@@ -264,12 +257,11 @@ export default function useENSRegistrationCosts({
       records: debouncedChangedRecords,
     });
     newSetRecordsGasLimit && setSetRecordsGasLimit(newSetRecordsGasLimit);
-    return setRecordsGasLimit;
+    return newSetRecordsGasLimit;
   }, [
     accountAddress,
     debouncedChangedRecords,
     name,
-    setRecordsGasLimit,
     setSetRecordsGasLimit,
     step,
   ]);
@@ -294,8 +286,8 @@ export default function useENSRegistrationCosts({
       rentPrice: rentPrice?.toString(),
     });
     newRenewGasLimit && setRenewGasLimit(newRenewGasLimit);
-    return setNameGasLimit;
-  }, [duration, name, setNameGasLimit, setRenewGasLimit]);
+    return newRenewGasLimit;
+  }, [duration, name, setRenewGasLimit]);
 
   const getReverseRecord = useCallback(async () => {
     const reverseRecord = await fetchReverseRecord(accountAddress);
@@ -303,11 +295,11 @@ export default function useENSRegistrationCosts({
     return reverseRecord;
   }, [accountAddress, setHasReverseRecord]);
 
-  const fetchEIP1559GasParams = useCallback(async () => {
-    const { currentBaseFee } = await getEIP1559GasParams();
+  const getGasParams = useCallback(async () => {
+    const { gasFeeParamsBySpeed, currentBaseFee } = await getEIP1559GasParams();
     setGasFeeParams({ currentBaseFee, gasFeeParamsBySpeed });
     return { currentBaseFee, gasFeeParamsBySpeed };
-  }, [setGasFeeParams, gasFeeParamsBySpeed]);
+  }, [setGasFeeParams]);
 
   const estimatedFee = useMemo(() => {
     const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
@@ -368,9 +360,8 @@ export default function useENSRegistrationCosts({
       queryKey: ['getSetNameGasLimit', name],
     },
     {
-      enabled: nameUpdated,
-      queryFn: fetchEIP1559GasParams,
-      queryKey: ['fetchEIP1559GasParams'],
+      queryFn: getGasParams,
+      queryKey: ['getGasParams'],
     },
     {
       enabled: step === REGISTRATION_STEPS.RENEW,
@@ -395,20 +386,40 @@ export default function useENSRegistrationCosts({
 
   useEffect(() => {
     if (
+      !isEmpty(useGasGasFeeParamsBySpeed) &&
+      gasFeeParams.gasFeeParamsBySpeed !== useGasGasFeeParamsBySpeed &&
+      gasFeeParams.currentBaseFee !== useGasCurrentBlockParams.baseFeePerGas &&
+      useGasCurrentBlockParams.baseFeePerGas
+    ) {
+      setGasFeeParams({
+        currentBaseFee: useGasCurrentBlockParams.baseFeePerGas,
+        gasFeeParamsBySpeed: useGasGasFeeParamsBySpeed,
+      });
+    }
+  }, [
+    gasFeeParams.currentBaseFee,
+    gasFeeParams.gasFeeParamsBySpeed,
+    setGasFeeParams,
+    useGasCurrentBlockParams,
+    useGasGasFeeParamsBySpeed,
+  ]);
+
+  useEffect(() => {
+    if (
       stepGasLimit[step] &&
       currentStepGasLimit !== stepGasLimit[step] &&
-      !isEmpty(gasFeeParamsBySpeed)
+      !isEmpty(gasFeeParams?.gasFeeParamsBySpeed)
     ) {
       updateTxFee(stepGasLimit[step], null);
       setCurrentStepGasLimit(stepGasLimit?.[step] || '');
     }
   }, [
-    gasFeeParamsBySpeed,
     currentStepGasLimit,
     step,
     stepGasLimit,
     updateTxFee,
     setCurrentStepGasLimit,
+    gasFeeParams.gasFeeParamsBySpeed,
   ]);
 
   const data = useMemo(() => {
