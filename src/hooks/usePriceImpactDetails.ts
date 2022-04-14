@@ -10,7 +10,6 @@ import {
   convertAmountToPercentageDisplayWithThreshold,
   divide,
   greaterThanOrEqualTo,
-  isPositive,
   subtract,
 } from '@rainbow-me/utilities';
 
