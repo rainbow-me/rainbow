@@ -20,6 +20,7 @@ import {
 import SelectableButton from '../components/ens-registration/TextRecordsForm/SelectableButton';
 import { SheetActionButton, SheetActionButtonRow } from '../components/sheet';
 import { useTheme } from '../context/ThemeContext';
+import { delayNext } from '../hooks/useMagicAutofocus';
 import { useNavigation } from '../navigation/Navigation';
 import {
   ENSConfirmRegisterSheetHeight,
@@ -38,6 +39,10 @@ import {
   Stack,
   Text,
 } from '@rainbow-me/design-system';
+import {
+  getSeenOnchainDataDisclaimer,
+  saveSeenOnchainDataDisclaimer,
+} from '@rainbow-me/handlers/localstorage/ens';
 import {
   accentColorAtom,
   ENS_RECORDS,
@@ -109,14 +114,22 @@ export default function ENSAssignRecordsSheet() {
   );
 
   const [hasSeenExplainSheet, setHasSeenExplainSheet] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      setHasSeenExplainSheet(Boolean(await getSeenOnchainDataDisclaimer()));
+    })();
+  }, []);
+
   const { navigate } = useNavigation();
-  const handleFocus = useCallback(() => {
+  const handleFocus = useCallback(async () => {
     if (!hasSeenExplainSheet) {
       android && Keyboard.dismiss();
       navigate(Routes.EXPLAIN_SHEET, {
         type: 'ensOnChainDataWarning',
       });
       setHasSeenExplainSheet(true);
+      saveSeenOnchainDataDisclaimer(true);
     }
   }, [hasSeenExplainSheet, navigate, setHasSeenExplainSheet]);
 
@@ -192,6 +205,7 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
   } = useENSRegistrationForm();
 
   const handlePressBack = useCallback(() => {
+    delayNext();
     navigate(Routes.ENS_SEARCH_SHEET);
   }, [navigate]);
 

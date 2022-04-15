@@ -26,6 +26,7 @@ src/assets @skylarbarrera @christianbaroni
 
 # COMPONENTS
 src/components @osdnk @terrysahaidak
+src/components/large-countdown-clock @pugson
 
 # APP CONFIG
 src/config @osdnk @brunobar79 @skylarbarrera
@@ -196,6 +197,3 @@ tsconfig.json @brunobar79 @osdnk
 
 # SECURITY / APP INFRA
 yarn.lock @brunobar79 @jinchung
-
-
-

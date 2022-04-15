@@ -1,5 +1,5 @@
 import MaskedView from '@react-native-masked-view/masked-view';
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { TextInputProps } from 'react-native';
 import Spinner from '../../Spinner';
 import { Input } from '../../inputs';
@@ -13,7 +13,7 @@ import {
   Inset,
   useHeadingStyle,
 } from '@rainbow-me/design-system';
-import { useDimensions } from '@rainbow-me/hooks';
+import { useDimensions, useMagicAutofocus } from '@rainbow-me/hooks';
 
 export type SearchInputProps = {
   isLoading?: boolean;
@@ -34,6 +34,16 @@ const SearchInput = ({
 }: SearchInputProps) => {
   const { width: deviceWidth } = useDimensions();
   const headingStyle = useHeadingStyle({ size: '30px', weight: 'heavy' });
+
+  const inputRef = useRef();
+  const { handleFocus } = useMagicAutofocus(
+    inputRef,
+    undefined,
+    // On Android, should show keyboard upon navigation focus.
+    true,
+    // On iOS, defer keyboard display until interactions finished (screen transition).
+    ios
+  );
 
   const height = 64;
   const strokeWidth = 3;
@@ -114,9 +124,11 @@ const SearchInput = ({
               </MaskedView>
             </Column>
             <Input
-              autoFocus
+              autoCorrect={false}
               keyboardType="visible-password"
               onChangeText={onChangeText}
+              onFocus={handleFocus}
+              ref={inputRef}
               style={useMemo(
                 () => ({
                   ...headingStyle,

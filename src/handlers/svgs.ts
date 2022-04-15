@@ -11,8 +11,8 @@ import {
   // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   CLOUDINARY_CLOUD_NAME as cloudName,
 } from 'react-native-dotenv';
-import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
 import { deviceUtils } from '@rainbow-me/utils';
+import isSVGImage from '@rainbow-me/utils/isSVG';
 
 cloudinaryConfig({
   api_key: apiKey,
@@ -45,6 +45,6 @@ function svgToPng(url: any, big = false) {
 }
 
 export default function svgToPngIfNeeded(url: any, big: any) {
-  const isSVG = isSupportedUriExtension(url, ['.svg']);
+  const isSVG = isSVGImage(url);
   return isSVG ? svgToPng(url, big) : url;
 }
