@@ -3,7 +3,7 @@
 import { exec } from 'child_process';
 import { Contract } from '@ethersproject/contracts';
 import * as Helpers from './helpers';
-import registratABI from '@rainbow-me/references/ens/ENSETHRegistrarController.json';
+import registrarABI from '@rainbow-me/references/ens/ENSETHRegistrarController.json';
 
 const ensETHRegistrarControllerAddress =
   '0x283Af0B28c62C092C9727F1Ee09c02CA627EB7F5';
@@ -14,7 +14,7 @@ const nameIsAvailable = async name => {
   const provider = Helpers.getProvider();
   const registrarContract = new Contract(
     ensETHRegistrarControllerAddress,
-    registratABI,
+    registrarABI,
     provider
   );
   const nameIsAvailable = await registrarContract.available(name);

@@ -6,11 +6,13 @@ import { ThunkDispatch } from 'redux-thunk';
 import { dataUpdateAssets } from './data';
 import { AppGetState, AppState } from './store';
 import { UniqueAsset } from '@rainbow-me/entities';
+import { fetchMetadata } from '@rainbow-me/handlers/ens';
 import {
   getUniqueTokens,
   saveUniqueTokens,
 } from '@rainbow-me/handlers/localstorage/accountLocal';
 import {
+  apiGetAccountUniqueToken,
   apiGetAccountUniqueTokens,
   UNIQUE_TOKENS_LIMIT_PER_PAGE,
   UNIQUE_TOKENS_LIMIT_TOTAL,
@@ -18,6 +20,7 @@ import {
 import { fetchPoaps } from '@rainbow-me/handlers/poap';
 import { Network } from '@rainbow-me/helpers/networkTypes';
 import { dedupeAssetsWithFamilies, getFamilies } from '@rainbow-me/parsers';
+import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
 
 // -- Constants ------------------------------------------------------------- //
 
@@ -266,11 +269,39 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
   const fetchPage = async (page: number, network: Network) => {
     let shouldStopFetching = false;
     try {
-      const newPageResults = await apiGetAccountUniqueTokens(
+      let newPageResults = await apiGetAccountUniqueTokens(
         network,
         accountAddress,
         page
       );
+
+      // If there are any "unknown" ENS names, fallback to the ENS
+      // metadata service.
+      newPageResults = await Promise.all(
+        newPageResults.map(async (token: UniqueAsset) => {
+          const isENS =
+            token?.asset_contract?.address?.toLowerCase() ===
+            ENS_NFT_CONTRACT_ADDRESS.toLowerCase();
+          if (isENS && !token.uniqueId.includes('.eth')) {
+            try {
+              const { name, image_url } = await fetchMetadata({
+                tokenId: token.id,
+              });
+              return {
+                ...token,
+                image_preview_url: image_url,
+                image_url,
+                name,
+                uniqueId: name,
+              };
+            } catch {
+              return token;
+            }
+          }
+          return token;
+        })
+      );
+
       uniqueTokens = concat(uniqueTokens, newPageResults);
       shouldStopFetching =
         newPageResults.length < UNIQUE_TOKENS_LIMIT_PER_PAGE ||
@@ -342,6 +373,76 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
       type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,
     });
   }
+};
+
+/**
+ * Revalidates a unique token via OpenSea API, updates state, and saves to local storage.
+ *
+ * Note:  it is intentional that there are no loading states dispatched in this action. This
+ *        is for _revalidation_ purposes only.
+ *
+ * @param contractAddress - The contract address of the NFT
+ * @param tokenId - The tokenId of the NFT
+ * @param {Object} config - Optional configuration
+ * @param {boolean} config.forceUpdate - Trigger a force update of metadata (equivalent to refreshing metadata in OpenSea)
+ */
+export const revalidateUniqueToken = (
+  contractAddress: string,
+  tokenId: string,
+  { forceUpdate = false }: { forceUpdate?: boolean } = {}
+) => async (
+  dispatch: ThunkDispatch<
+    AppState,
+    unknown,
+    UniqueTokensGetAction | UniqueTokensClearStateShowcaseAction
+  >,
+  getState: AppGetState
+) => {
+  const { network: currentNetwork } = getState().settings;
+  const { uniqueTokens: existingUniqueTokens } = getState().uniqueTokens;
+  const accountAddress = getState().settings.accountAddress;
+
+  let token = await apiGetAccountUniqueToken(
+    currentNetwork,
+    contractAddress,
+    tokenId,
+    { forceUpdate }
+  );
+
+  // If the token is an "unknown" ENS name, fallback to the ENS
+  // metadata service.
+  const isENS =
+    token?.asset_contract?.address?.toLowerCase() ===
+    ENS_NFT_CONTRACT_ADDRESS.toLowerCase();
+  if (isENS && !token.uniqueId.includes('.eth')) {
+    try {
+      const { name, image_url } = await fetchMetadata({
+        tokenId: token.id,
+      });
+      token = {
+        ...token,
+        image_preview_url: image_url,
+        image_url,
+        name,
+        uniqueId: name,
+      };
+    } catch (error) {
+      captureException(error);
+    }
+  }
+
+  const uniqueTokens = existingUniqueTokens.map(existingToken =>
+    existingToken.id === tokenId ? token : existingToken
+  );
+
+  saveUniqueTokens(uniqueTokens, accountAddress, currentNetwork);
+  dispatch({
+    payload: uniqueTokens,
+    showcase: false,
+    type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,
+  });
+
+  return token;
 };
 
 // -- Reducer --------------------------------------------------------------- //
