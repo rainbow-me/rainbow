@@ -21,7 +21,6 @@ import { position } from '@rainbow-me/styles';
 import logger from 'logger';
 
 export type SimpleVideoProps = {
-  readonly size: number;
   readonly style?: ViewStyle;
   readonly uri: string;
   readonly posterUri?: string;
@@ -51,7 +50,6 @@ const styles = StyleSheet.create({
 });
 
 export default function SimpleVideo({
-  size,
   style,
   uri,
   posterUri,
@@ -107,7 +105,7 @@ export default function SimpleVideo({
           pointerEvents={loading ? 'auto' : 'none'}
           style={{ opacity }}
         >
-          <StyledImgixImage size={size} source={{ uri: posterUri }} />
+          <StyledImgixImage source={{ uri: posterUri }} />
         </StyledPosterContainer>
       </View>
     </TouchableWithoutFeedback>
