@@ -1,6 +1,25 @@
 import analytics from '@segment/analytics-react-native';
+// @ts-ignore
+import { SENTRY_ENVIRONMENT } from 'react-native-dotenv';
 import PerformanceMetric from './types/PerformanceMetric';
 import { PerformanceMetricData } from './types/PerformanceMetricData';
+
+const shouldLogToConsole = __DEV__ || SENTRY_ENVIRONMENT === 'LocalRelease';
+const logTag = '[PERFORMANCE]: ';
+
+function logDurationIfAppropriate(
+  metric: PerformanceMetric,
+  durationInMs: number,
+  ...additionalArgs: any[]
+) {
+  if (shouldLogToConsole) {
+    global.console.log(
+      logTag,
+      `${metric}, duration: ${durationInMs}ms`,
+      ...additionalArgs
+    );
+  }
+}
 
 const currentlyTrackedMetrics = new Map<
   PerformanceMetric,
@@ -49,6 +68,7 @@ function finishMeasuring(
     ...savedEntry.additionalParams,
     ...additionalParams,
   });
+  logDurationIfAppropriate(metric, durationInMs);
   currentlyTrackedMetrics.delete(metric);
 }
 
