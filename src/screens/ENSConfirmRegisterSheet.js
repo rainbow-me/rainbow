@@ -24,7 +24,6 @@ import {
   Stack,
   Text,
 } from '@rainbow-me/design-system';
-import { fetchReverseRecord } from '@rainbow-me/handlers/ens';
 import {
   accentColorAtom,
   ENS_DOMAIN,
@@ -32,7 +31,6 @@ import {
   REGISTRATION_STEPS,
 } from '@rainbow-me/helpers/ens';
 import {
-  useAccountSettings,
   useDimensions,
   useENSRegistration,
   useENSRegistrationActionHandler,
@@ -75,7 +73,7 @@ function TransactionActionRow({
             }
             onLongPress={action}
             parentHorizontalPadding={19}
-            showBiometryIcon={!insufficientEth}
+            showBiometryIcon
             testID={`ens-transaction-action-${testID}`}
           />
         </SheetActionButtonRow>
@@ -94,7 +92,6 @@ function TransactionActionRow({
 
 export default function ENSConfirmRegisterSheet() {
   const { params } = useRoute();
-  const { accountAddress } = useAccountSettings();
   const {
     images: { avatarUrl: initialAvatarUrl },
     name: ensName,
@@ -109,11 +106,7 @@ export default function ENSConfirmRegisterSheet() {
   const { isSmallPhone } = useDimensions();
 
   const [duration, setDuration] = useState(1);
-  const [sendReverseRecord, setSendReverseRecord] = useState(true);
-  const { step, action } = useENSRegistrationActionHandler({
-    sendReverseRecord,
-    yearsDuration: duration,
-  });
+
   const { navigate, goBack } = useNavigation();
 
   const { blurFields, values } = useENSRegistrationForm();
@@ -122,6 +115,12 @@ export default function ENSConfirmRegisterSheet() {
   const name = ensName.replace(ENS_DOMAIN, '');
   const { data: registrationData } = useENSSearch({
     name,
+  });
+
+  const [sendReverseRecord, setSendReverseRecord] = useState(false);
+  const { step, action } = useENSRegistrationActionHandler({
+    sendReverseRecord,
+    yearsDuration: duration,
   });
 
   const { data: registrationCostsData } = useENSRegistrationCosts({
@@ -291,13 +290,9 @@ export default function ENSConfirmRegisterSheet() {
   );
 
   useEffect(() => {
-    // if reverse record is set, we don't want to send the reverse record tx by default
-    const getReverseRecord = async () => {
-      const reverseRecord = await fetchReverseRecord(accountAddress);
-      if (reverseRecord) setSendReverseRecord(false);
-    };
-    getReverseRecord();
-  }, [accountAddress]);
+    registrationCostsData?.hasReverseRecord !== undefined &&
+      setSendReverseRecord(!registrationCostsData?.hasReverseRecord);
+  }, [registrationCostsData?.hasReverseRecord]);
 
   useEffect(() => {
     setAccentColor(dominantColor || prevDominantColor || colors.purple);

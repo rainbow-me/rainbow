@@ -83,6 +83,7 @@ export default function useENSRegistrationCosts({
     startPollingGasFees,
     isSufficientGas: useGasIsSufficientGas,
     isValidGas: useGasIsValidGas,
+    gasLimit: useGasGasLimit,
   } = useGas();
 
   const [gasFeeParams, setGasFeeParams] = useState({
@@ -242,7 +243,6 @@ export default function useENSRegistrationCosts({
       staleTime: Infinity,
     },
     {
-      enabled: step === REGISTRATION_STEPS.REGISTER,
       queryFn: getRegisterRapGasLimit,
       queryKey: [QUERY_KEYS.GET_REGISTER_RAP_GAS_LIMIT, sendReverseRecord],
       staleTime: Infinity,
@@ -374,7 +374,7 @@ export default function useENSRegistrationCosts({
   useEffect(() => {
     if (
       stepGasLimit[step] &&
-      currentStepGasLimit !== stepGasLimit[step] &&
+      (!useGasGasLimit || currentStepGasLimit !== stepGasLimit[step]) &&
       !isEmpty(useGasGasFeeParamsBySpeed)
     ) {
       updateTxFee(stepGasLimit[step], null);
@@ -387,6 +387,7 @@ export default function useENSRegistrationCosts({
     updateTxFee,
     setCurrentStepGasLimit,
     useGasGasFeeParamsBySpeed,
+    useGasGasLimit,
   ]);
 
   const data = useMemo(() => {
@@ -438,6 +439,7 @@ export default function useENSRegistrationCosts({
             display: displayEstimatedTotalCost,
           },
           gasFeeParamsBySpeed: useGasGasFeeParamsBySpeed,
+          hasReverseRecord,
           isSufficientGas,
           isSufficientGasForRegistration,
           isSufficientGasForStep:
@@ -461,6 +463,7 @@ export default function useENSRegistrationCosts({
     step,
     stepGasLimit,
     yearsDuration,
+    hasReverseRecord,
   ]);
 
   const gasFeeReady = useMemo(
