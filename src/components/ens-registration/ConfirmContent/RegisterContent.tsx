@@ -41,14 +41,19 @@ const RegisterContent = ({
       </Box>
       <Box height="1/5">
         <Inline alignHorizontal="justify" alignVertical="center">
-          <ButtonPressAnimation
-            onPress={openPrimaryENSNameHelper}
-            scaleTo={0.9}
-          >
+          <Inline>
             <Text color="secondary80" size="16px" weight="bold">
-              {lang.t('profiles.confirm.set_ens_name')} 􀅵
+              {`${lang.t('profiles.confirm.set_ens_name')} `}
             </Text>
-          </ButtonPressAnimation>
+            <ButtonPressAnimation
+              onPress={openPrimaryENSNameHelper}
+              scaleTo={0.9}
+            >
+              <Text color="secondary80" size="16px" weight="bold">
+                􀅵
+              </Text>
+            </ButtonPressAnimation>
+          </Inline>
           <Switch
             disabled={!setSendReverseRecord}
             onValueChange={() =>
