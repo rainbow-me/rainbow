@@ -73,7 +73,7 @@ function TransactionActionRow({
             }
             onLongPress={action}
             parentHorizontalPadding={19}
-            showBiometryIcon
+            showBiometryIcon={!insufficientEth}
             testID={`ens-transaction-action-${testID}`}
           />
         </SheetActionButtonRow>

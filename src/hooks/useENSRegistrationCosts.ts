@@ -1,7 +1,6 @@
 import { isEmpty } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQueries } from 'react-query';
-import { atom, useRecoilState } from 'recoil';
 import { useDebounce } from 'use-debounce';
 import useENSRegistration from './useENSRegistration';
 import useGas from './useGas';
@@ -46,16 +45,6 @@ enum QUERY_KEYS {
   GET_SET_NAME_GAS_LIMIT = 'GET_SET_NAME_GAS_LIMIT',
   GET_SET_RECORDS_GAS_LIMIT = 'GET_SET_RECORDS_GAS_LIMIT',
 }
-
-const isSufficientGasAtom = atom({
-  default: false,
-  key: 'ens.iseSufficientGasAtom',
-});
-
-const isValidGasAtom = atom({
-  default: false,
-  key: 'ens.isValidGasAtom',
-});
 
 export default function useENSRegistrationCosts({
   yearsDuration,
@@ -105,28 +94,11 @@ export default function useENSRegistrationCosts({
 
   const [currentStepGasLimit, setCurrentStepGasLimit] = useState('');
 
-  const [isValidGas, setIsValidGas] = useRecoilState(isValidGasAtom);
-  const [isSufficientGas, setIsSufficientGas] = useRecoilState(
-    isSufficientGasAtom
-  );
+  const [isValidGas, setIsValidGas] = useState(false);
+  const [isSufficientGas, setIsSufficientGas] = useState(false);
 
   const prevIsSufficientGas = usePrevious(isSufficientGas);
   const prevIsValidGas = usePrevious(isValidGas);
-
-  useEffect(() => {
-    if (
-      useGasIsSufficientGas !== null &&
-      useGasIsSufficientGas !== prevIsSufficientGas
-    ) {
-      setIsSufficientGas(useGasIsSufficientGas);
-    }
-  }, [prevIsSufficientGas, setIsSufficientGas, useGasIsSufficientGas]);
-
-  useEffect(() => {
-    if (useGasIsValidGas !== null && useGasIsValidGas !== prevIsValidGas) {
-      setIsValidGas(useGasIsValidGas);
-    }
-  }, [prevIsSufficientGas, prevIsValidGas, setIsValidGas, useGasIsValidGas]);
 
   const rentPriceInWei = rentPrice?.wei?.toString();
 
@@ -346,6 +318,21 @@ export default function useENSRegistrationCosts({
     setRecordsGasLimit,
     step,
   ]);
+
+  useEffect(() => {
+    if (
+      useGasIsSufficientGas !== null &&
+      useGasIsSufficientGas !== prevIsSufficientGas
+    ) {
+      setIsSufficientGas(useGasIsSufficientGas);
+    }
+  }, [prevIsSufficientGas, setIsSufficientGas, useGasIsSufficientGas]);
+
+  useEffect(() => {
+    if (useGasIsValidGas !== null && useGasIsValidGas !== prevIsValidGas) {
+      setIsValidGas(useGasIsValidGas);
+    }
+  }, [prevIsSufficientGas, prevIsValidGas, setIsValidGas, useGasIsValidGas]);
 
   useEffect(() => {
     if (!currentStepGasLimit) startPollingGasFees();
