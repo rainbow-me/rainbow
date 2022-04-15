@@ -227,8 +227,7 @@ export default function ENSConfirmRegisterSheet() {
           }
           isValidGas={
             registrationCostsData?.isValidGas &&
-            Boolean(registrationCostsData?.stepGasLimit) &&
-            Boolean(registrationCostsData?.isSufficientGasForRegistration)
+            Boolean(registrationCostsData?.stepGasLimit)
           }
           label={lang.t('profiles.confirm.start_registration')}
           testID={step}

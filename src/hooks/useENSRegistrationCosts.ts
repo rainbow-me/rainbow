@@ -327,18 +327,18 @@ export default function useENSRegistrationCosts({
     );
     const { gasFeeParamsBySpeed, currentBaseFee } = gasFeeParams;
 
-    const estimatedGasLimit =
-      step === REGISTRATION_STEPS.COMMIT
-        ? [
-            commitGasLimit,
-            setRecordsGasLimit,
-            `${ethUnits.ens_register_with_config}`,
-            !hasReverseRecord && setNameGasLimit,
-          ].reduce((a, b) => add(a || 0, b || 0)) ||
-          `${ethUnits.ens_registration}`
-        : step === REGISTRATION_STEPS.RENEW
-        ? renewGasLimit
-        : '';
+    let estimatedGasLimit = '';
+    if (step === REGISTRATION_STEPS.COMMIT) {
+      estimatedGasLimit = [
+        commitGasLimit,
+        setRecordsGasLimit,
+        // gas limit estimat for registerWithConfig fails if there's no commit tx sent first
+        `${ethUnits.ens_register_with_config}`,
+        !hasReverseRecord ? setNameGasLimit : '',
+      ].reduce((a, b) => add(a || 0, b || 0));
+    } else if (step === REGISTRATION_STEPS.RENEW) {
+      estimatedGasLimit = renewGasLimit;
+    }
 
     const formattedEstimatedNetworkFee = formatEstimatedNetworkFee(
       estimatedGasLimit,
