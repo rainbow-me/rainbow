@@ -1,6 +1,23 @@
-import 'react-native-gesture-handler';
-import './shim';
-import './src/model/config';
+/* eslint-disable import/no-commonjs */
 
-// eslint-disable-next-line no-unused-vars,import/default
-import App from './src/App';
+/*
+It needs to be an import statement because otherwise it doesn't load properly
+likely because of typescript.
+*/
+import PerformanceTracking, {
+  PerformanceMetric,
+} from './src/performance-tracking';
+
+PerformanceTracking.startMeasuring(PerformanceMetric.loadRootAppComponent);
+PerformanceTracking.startMeasuring(PerformanceMetric.timeToInteractive);
+
+/*
+We need to use require calls in order to stop babel from moving imports
+to the top of the file above all other calls. We want Performance tracking
+to start before all of the imports.
+ */
+require('react-native-gesture-handler');
+require('./shim');
+require('./src/model/config');
+
+require('./src/App');
