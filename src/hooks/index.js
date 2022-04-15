@@ -35,7 +35,6 @@ export { default as useDPI } from './useDPI';
 export { default as useEffectDebugger } from './useEffectDebugger';
 export { default as useEmailRainbow } from './useEmailRainbow';
 export { default as useENSPendingRegistrations } from './useENSPendingRegistrations';
-export { default as useENSRefreshRegistrations } from './useENSRefreshRegistrations';
 export { default as useENSProfile } from './useENSProfile';
 export { default as useTrackENSProfile } from './useTrackENSProfile';
 export { default as useENSRecordDisplayProperties } from './useENSRecordDisplayProperties';
