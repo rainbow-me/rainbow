@@ -1,8 +1,6 @@
 import lang from 'i18n-js';
 import React from 'react';
-import GradientOutlineButton from '../GradientOutlineButton/GradientOutlineButton';
-import { useTheme } from '@rainbow-me/context';
-import { ColorModeProvider } from '@rainbow-me/design-system';
+import ActionButton from './ActionButton';
 import { useWatchWallet } from '@rainbow-me/hooks';
 
 export default function WatchButton({
@@ -14,8 +12,6 @@ export default function WatchButton({
   ensName?: string;
   avatarUrl?: string | null;
 }) {
-  const { colors } = useTheme();
-
   const { isWatching, watchWallet } = useWatchWallet({
     address,
     avatarUrl,
@@ -23,13 +19,13 @@ export default function WatchButton({
   });
 
   return (
-    <ColorModeProvider value="darkTinted">
-      <GradientOutlineButton
-        gradient={colors.gradients.blueToGreen}
-        onPress={watchWallet}
-      >
-        􀨭 {lang.t(`profiles.actions.${isWatching ? 'watching' : 'watch'}`)}
-      </GradientOutlineButton>
-    </ColorModeProvider>
+    <ActionButton
+      color="action"
+      icon={!isWatching ? '􀨭' : ''}
+      onPress={watchWallet}
+      variant={!isWatching ? 'solid' : 'outlined'}
+    >
+      {lang.t(`profiles.actions.${isWatching ? 'watching' : 'watch'}`)}
+    </ActionButton>
   );
 }

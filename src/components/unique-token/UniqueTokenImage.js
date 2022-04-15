@@ -7,7 +7,6 @@ import { Centered } from '../layout';
 import RemoteSvg from '../svg/RemoteSvg';
 import { Monospace, Text } from '../text';
 import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
-import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
 import {
   useDimensions,
   usePersistentDominantColorFromImage,
@@ -16,6 +15,7 @@ import { ImgixImage } from '@rainbow-me/images';
 import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth, position } from '@rainbow-me/styles';
 import { getLowResUrl } from '@rainbow-me/utils/getLowResUrl';
+import isSVGImage from '@rainbow-me/utils/isSVG';
 
 const FallbackTextColorVariants = (darkMode, colors) => ({
   dark: darkMode
@@ -60,7 +60,7 @@ const UniqueTokenImage = ({
   const { isTinyPhone } = useDimensions();
   const isENS =
     toLower(item.asset_contract.address) === toLower(ENS_NFT_CONTRACT_ADDRESS);
-  const isSVG = isSupportedUriExtension(imageUrl, ['.svg']);
+  const isSVG = isSVGImage(imageUrl);
   const newImageUrl = transformSvgs ? svgToPngIfNeeded(imageUrl) : imageUrl;
   const image = isENS && !isSVG ? `${item.image_url}=s1` : newImageUrl;
   const lowResUrl = isSVG ? newImageUrl : getLowResUrl(image);
