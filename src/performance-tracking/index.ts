@@ -15,7 +15,7 @@ function logDurationIfAppropriate(
   if (shouldLogToConsole) {
     global.console.log(
       logTag,
-      `${metric}, duration: ${durationInMs}ms`,
+      `${metric}, duration: ${durationInMs.toFixed(2)}ms`,
       ...additionalArgs
     );
   }
