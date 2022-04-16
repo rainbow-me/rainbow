@@ -1,4 +1,5 @@
-import { get, isNil, map, mapValues, toUpper } from 'lodash';
+import isNil from 'lodash/isNil';
+import toUpper from 'lodash/toUpper';
 import { dedupeUniqueTokens } from './uniqueTokens';
 import { AssetTypes } from '@rainbow-me/entities';
 import { isNativeAsset } from '@rainbow-me/handlers/assets';
@@ -11,6 +12,7 @@ import {
   convertRawAmountToBalance,
 } from '@rainbow-me/utilities';
 import { getTokenMetadata, isLowerCaseMatch } from '@rainbow-me/utils';
+import { memoFn } from '@rainbow-me/utils/memoFn';
 
 /**
  * @desc parse account assets
@@ -19,17 +21,24 @@ import { getTokenMetadata, isLowerCaseMatch } from '@rainbow-me/utils';
  */
 export const parseAccountAssets = (data, uniqueTokens) => {
   const dedupedAssets = dedupeUniqueTokens(data, uniqueTokens);
-  return mapValues(dedupedAssets, assetData => {
+
+  const accountAssets = {};
+  for (const assetKey in dedupedAssets) {
+    const assetData = dedupedAssets[assetKey];
+
     const asset = parseAsset(assetData.asset);
-    return {
+
+    accountAssets[assetKey] = {
       ...asset,
       balance: convertRawAmountToBalance(assetData.quantity, asset),
     };
-  });
+  }
+
+  return accountAssets;
 };
 
 // eslint-disable-next-line no-useless-escape
-const sanitize = s => s.replace(/[^a-z0-9áéíóúñü \.,_@:-]/gim, '');
+const sanitize = memoFn(s => s.replace(/[^a-z0-9áéíóúñü \.,_@:-]/gim, ''));
 
 export const parseAssetName = (metadata, name) => {
   if (metadata?.name) return metadata?.name;
@@ -82,10 +91,12 @@ export const parseAsset = ({ asset_code: address, ...asset } = {}) => {
 
 export const parseAssetsNativeWithTotals = (assets, nativeCurrency) => {
   const assetsNative = parseAssetsNative(assets, nativeCurrency);
-  const totalAmount = assetsNative.reduce(
-    (total, asset) => add(total, get(asset, 'native.balance.amount', 0)),
-    0
-  );
+
+  let totalAmount = 0;
+  for (const asset of assetsNative) {
+    totalAmount = add(totalAmount, asset.native?.balance?.amount ?? 0);
+  }
+
   const totalDisplay = convertAmountToNativeDisplay(
     totalAmount,
     nativeCurrency
@@ -94,18 +105,25 @@ export const parseAssetsNativeWithTotals = (assets, nativeCurrency) => {
   return { assetsNativePrices: assetsNative, total };
 };
 
-export const parseAssetsNative = (assets, nativeCurrency) =>
-  map(assets, asset => parseAssetNative(asset, nativeCurrency));
+export const parseAssetsNative = (assets, nativeCurrency) => {
+  const res = [];
+
+  for (const asset of assets) {
+    res.push(parseAssetNative(asset, nativeCurrency));
+  }
+
+  return res;
+};
 
 export const parseAssetNative = (asset, nativeCurrency) => {
-  const assetNativePrice = get(asset, 'price');
+  const assetNativePrice = asset?.price;
   if (isNil(assetNativePrice)) {
     return asset;
   }
 
-  const priceUnit = get(assetNativePrice, 'value', 0);
+  const priceUnit = assetNativePrice?.value ?? 0;
   const nativeDisplay = convertAmountAndPriceToNativeDisplay(
-    get(asset, 'balance.amount', 0),
+    asset?.balance?.amount ?? 0,
     priceUnit,
     nativeCurrency
   );
@@ -113,7 +131,7 @@ export const parseAssetNative = (asset, nativeCurrency) => {
     ...asset,
     native: {
       balance: nativeDisplay,
-      change: isLowerCaseMatch(get(asset, 'symbol'), nativeCurrency)
+      change: isLowerCaseMatch(asset.symbol, nativeCurrency)
         ? null
         : assetNativePrice.relative_change_24h
         ? convertAmountToPercentageDisplay(assetNativePrice.relative_change_24h)
