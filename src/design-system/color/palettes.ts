@@ -17,7 +17,7 @@ export const colors = {
   greyDark: '#25292E',
   paleBlue: '#579DFF',
   sky: 'rgb(224, 232, 255)',
-  sky06: 'rgb(224, 232, 255, 0.06)',
+  sky06: 'rgba(224, 232, 255, 0.06)',
   sky10: 'rgba(224, 232, 255, 0.1)',
   sky20: 'rgba(224, 232, 255, 0.2)',
   sky30: 'rgba(224, 232, 255, 0.3)',
