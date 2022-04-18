@@ -344,7 +344,7 @@ export default function ENSConfirmRegisterSheet() {
             <Row height="content">
               <Box horizontal="30px">
                 <Stack alignHorizontal="center" space="15px">
-                  {avatarUrl && !params.hideAvatar && (
+                  {avatarUrl && (
                     <AccentColorProvider color={accentColor + '10'}>
                       <Box
                         background="accent"

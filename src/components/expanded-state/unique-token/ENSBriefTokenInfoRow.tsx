@@ -7,7 +7,7 @@ import { TokenInfoItem, TokenInfoValue } from '../../token-info';
 import { useTheme } from '@rainbow-me/context';
 import { Column, Columns } from '@rainbow-me/design-system';
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
-import { useENSRegistration } from '@rainbow-me/hooks';
+import { useENSProfile, useENSRegistration } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 
 export default function ENSBriefTokenInfoRow({
@@ -24,6 +24,7 @@ export default function ENSBriefTokenInfoRow({
   const { colors } = useTheme();
   const { navigate } = useNavigation();
   const { startRegistration } = useENSRegistration();
+  const { data } = useENSProfile(ensName);
   const [showExpiryDistance, setShowExpiryDistance] = useState(true);
   const handlePressExpiryDate = useCallback(() => {
     setShowExpiryDistance(x => !x);
@@ -33,11 +34,11 @@ export default function ENSBriefTokenInfoRow({
     startRegistration(ensName, REGISTRATION_MODES.RENEW);
     navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
       ensName,
-      hideAvatar: true,
-      longFormHeight: ENSConfirmRenewSheetHeight,
+      longFormHeight:
+        ENSConfirmRenewSheetHeight + (data?.images?.avatarUrl ? 70 : 0),
       mode: REGISTRATION_MODES.RENEW,
     });
-  }, [startRegistration, ensName, navigate]);
+  }, [startRegistration, ensName, navigate, data?.images?.avatarUrl]);
 
   return (
     <Columns space="19px">
