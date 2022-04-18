@@ -118,9 +118,15 @@ export default function useENSRegistration({
       {}
     );
 
+    const recordKeysWithValue = (Object.keys(
+      records
+    ) as (keyof Records)[]).filter((key: keyof Records) => {
+      return Boolean(records[key]);
+    });
+
     const keysToRemove = differenceWith(
       Object.keys(initialRecords),
-      Object.keys(records),
+      recordKeysWithValue,
       isEqual
     ) as (keyof Records)[];
 
