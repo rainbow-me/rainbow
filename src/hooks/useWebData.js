@@ -104,14 +104,10 @@ export default function useWebData() {
     [accountColor, accountSymbol, wallets, webDataEnabled]
   );
 
-  const getWebProfile = useCallback(
-    async address => {
-      if (!webDataEnabled) return;
-      const response = await getPreference('profile', address);
-      return response?.profile;
-    },
-    [webDataEnabled]
-  );
+  const getWebProfile = useCallback(async address => {
+    const response = address && (await getPreference('profile', address));
+    return response?.profile;
+  }, []);
 
   const updateWebShowcase = useCallback(
     async assetIds => {

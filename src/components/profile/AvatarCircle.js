@@ -53,7 +53,7 @@ export default function AvatarCircle({
         ? showcaseAccountColor
         : colors.avatarBackgrounds[showcaseAccountColor]
       : colors.avatarBackgrounds[
-          (!externalProfile && profileAccountColor) || 0
+          (!externalProfile && profileAccountColor) || 10
         ];
   const shadows = useMemo(
     () => ({

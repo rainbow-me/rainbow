@@ -95,26 +95,37 @@ export default function WalletProfileState({
   const { getWebProfile } = useUpdateEmoji();
 
   const nameEmoji = useMemo(() => {
-    if (webProfile) {
-      if (webProfile?.accountSymbol) return webProfile?.accountSymbol;
-      const addressHashedEmoji = profileUtils.addressHashedEmoji(address);
-      return isNewProfile && !forceColor
-        ? addressHashedEmoji
-        : returnStringFirstEmoji(profile?.name) || addressHashedEmoji;
-    }
-    return null;
+    if (!webProfile) return null;
+    if (webProfile?.accountSymbol) return webProfile?.accountSymbol;
+    const addressHashedEmoji = profileUtils.addressHashedEmoji(address);
+    return isNewProfile && !forceColor
+      ? addressHashedEmoji
+      : returnStringFirstEmoji(profile?.name) || addressHashedEmoji;
   }, [address, forceColor, isNewProfile, profile?.name, webProfile]);
 
-  const indexOfForceColor = colors.avatarBackgrounds.indexOf(forceColor);
-  const color = forceColor
-    ? forceColor
-    : isNewProfile && address
-    ? profileUtils.addressHashedColorIndex(address)
-    : profile.color !== null
-    ? profile.color
-    : isNewProfile
-    ? null
-    : (indexOfForceColor !== -1 && indexOfForceColor) || getRandomColor();
+  const nameColor = useMemo(() => {
+    if (!webProfile) return;
+    if (webProfile?.accountColor) return webProfile?.accountColor;
+
+    const indexOfForceColor = colors.avatarBackgrounds.indexOf(forceColor);
+    return forceColor
+      ? forceColor
+      : isNewProfile && address
+      ? profileUtils.addressHashedColorIndex(address)
+      : profile.color !== null
+      ? profile.color
+      : isNewProfile
+      ? null
+      : (indexOfForceColor !== -1 && indexOfForceColor) || getRandomColor();
+  }, [
+    address,
+    colors.avatarBackgrounds,
+    forceColor,
+    isNewProfile,
+    profile.color,
+    webProfile,
+  ]);
+
   const [value, setValue] = useState(
     profile?.name ? removeFirstEmojiFromString(profile.name) : ''
   );
@@ -134,7 +145,9 @@ export default function WalletProfileState({
     analytics.track('Tapped "Submit" on Wallet Profile modal');
     onCloseModal({
       color:
-        typeof color === 'string' ? profileUtils.colorHexToIndex(color) : color,
+        typeof nameColor === 'string'
+          ? profileUtils.colorHexToIndex(nameColor)
+          : nameColor,
       name: nameEmoji ? `${nameEmoji} ${value}` : value,
     });
     goBack();
@@ -143,7 +156,7 @@ export default function WalletProfileState({
     }
   }, [
     actionType,
-    color,
+    nameColor,
     goBack,
     isNewProfile,
     nameEmoji,
@@ -177,10 +190,11 @@ export default function WalletProfileState({
         ) : (
           // hide avatar if creating new wallet since we
           // don't know what emoji / color it will be (determined by address)
+          // and wait for web profile to be loaded, if any
           (!isNewProfile || address) && (
             <AvatarCircle
               externalProfile={!!address}
-              showcaseAccountColor={color}
+              showcaseAccountColor={nameColor}
               showcaseAccountSymbol={nameEmoji}
             />
           )
@@ -191,7 +205,7 @@ export default function WalletProfileState({
           onSubmitEditing={handleSubmit}
           placeholder={lang.t('wallet.new.name_wallet')}
           ref={inputRef}
-          selectionColor={colors.avatarBackgrounds[color]}
+          selectionColor={colors.avatarBackgrounds[nameColor]}
           testID="wallet-info-input"
           value={value}
         />
