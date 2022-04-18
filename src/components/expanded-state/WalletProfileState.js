@@ -1,6 +1,13 @@
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
-import React, { useCallback, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import useUpdateEmoji from '../../../src/hooks/useUpdateEmoji';
 import { useTheme } from '../../context/ThemeContext';
 import { getRandomColor } from '../../styles/colors';
 import Divider from '../Divider';
@@ -79,14 +86,21 @@ export default function WalletProfileState({
   profile,
   forceColor,
 }) {
-  const nameEmoji =
-    isNewProfile && !forceColor
-      ? profileUtils.addressHashedEmoji(address)
-      : returnStringFirstEmoji(profile?.name) ||
-        profileUtils.addressHashedEmoji(address);
-
+  const [webProfile, setWebProfile] = useState(null);
   const { goBack, navigate } = useNavigation();
   const { colors } = useTheme();
+  const { getWebProfile } = useUpdateEmoji();
+
+  const nameEmoji = useMemo(() => {
+    if (webProfile) {
+      if (webProfile?.accountSymbol) return webProfile?.accountSymbol;
+      const addressHashedEmoji = profileUtils.addressHashedEmoji(address);
+      return isNewProfile && !forceColor
+        ? addressHashedEmoji
+        : returnStringFirstEmoji(profile?.name) || addressHashedEmoji;
+    }
+    return null;
+  }, [address, forceColor, isNewProfile, profile?.name, webProfile]);
 
   const indexOfForceColor = colors.avatarBackgrounds.indexOf(forceColor);
   const color = forceColor
@@ -103,8 +117,6 @@ export default function WalletProfileState({
   );
   const inputRef = useRef(null);
 
-  const profileImage = profile.image;
-
   const handleCancel = useCallback(() => {
     goBack();
     analytics.track('Tapped "Cancel" on Wallet Profile modal');
@@ -118,7 +130,7 @@ export default function WalletProfileState({
     onCloseModal({
       color:
         typeof color === 'string' ? profileUtils.colorHexToIndex(color) : color,
-      image: profileImage,
+      image: profile.image,
       name: nameEmoji ? `${nameEmoji} ${value}` : value,
     });
     goBack();
@@ -133,13 +145,21 @@ export default function WalletProfileState({
     nameEmoji,
     navigate,
     onCloseModal,
-    profileImage,
+    profile.image,
     value,
   ]);
 
   const handleTriggerFocusInput = useCallback(() => inputRef.current?.focus(), [
     inputRef,
   ]);
+
+  useEffect(() => {
+    const getProfile = async () => {
+      const profile = await getWebProfile(address);
+      setWebProfile(profile || {});
+    };
+    getProfile();
+  }, [address, getWebProfile]);
 
   return (
     <WalletProfileModal>
@@ -149,13 +169,14 @@ export default function WalletProfileState({
         testID="wallet-info-modal"
         width="100%"
       >
-        {profileImage ? (
-          <ProfileImage image={profileImage} size="large" />
+        {profile.image ? (
+          <ProfileImage image={profile.image} size="large" />
         ) : (
           // hide avatar if creating new wallet since we
           // don't know what emoji / color it will be (determined by address)
           (!isNewProfile || address) && (
             <AvatarCircle
+              externalProfile={!!address}
               showcaseAccountColor={color}
               showcaseAccountSymbol={nameEmoji}
             />
