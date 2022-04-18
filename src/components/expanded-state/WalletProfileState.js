@@ -1,6 +1,13 @@
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
-import React, { useCallback, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import useUpdateEmoji from '../../../src/hooks/useUpdateEmoji';
 import { useTheme } from '../../context/ThemeContext';
 import { getRandomColor } from '../../styles/colors';
 import Divider from '../Divider';
@@ -80,16 +87,23 @@ export default function WalletProfileState({
   profile,
   forceColor,
 }) {
-  const nameEmoji =
-    isNewProfile && !forceColor
-      ? profileUtils.addressHashedEmoji(address)
-      : returnStringFirstEmoji(profile?.name) ||
-        profileUtils.addressHashedEmoji(address);
-
+  const [webProfile, setWebProfile] = useState(null);
   const { goBack, navigate } = useNavigation();
   const { accountImage } = useAccountProfile();
 
   const { colors } = useTheme();
+  const { getWebProfile } = useUpdateEmoji();
+
+  const nameEmoji = useMemo(() => {
+    if (webProfile) {
+      if (webProfile?.accountSymbol) return webProfile?.accountSymbol;
+      const addressHashedEmoji = profileUtils.addressHashedEmoji(address);
+      return isNewProfile && !forceColor
+        ? addressHashedEmoji
+        : returnStringFirstEmoji(profile?.name) || addressHashedEmoji;
+    }
+    return null;
+  }, [address, forceColor, isNewProfile, profile?.name, webProfile]);
 
   const indexOfForceColor = colors.avatarBackgrounds.indexOf(forceColor);
   const color = forceColor
@@ -142,6 +156,14 @@ export default function WalletProfileState({
     inputRef,
   ]);
 
+  useEffect(() => {
+    const getProfile = async () => {
+      const profile = await getWebProfile(address);
+      setWebProfile(profile || {});
+    };
+    getProfile();
+  }, [address, getWebProfile]);
+
   return (
     <WalletProfileModal>
       <Centered
@@ -157,6 +179,7 @@ export default function WalletProfileState({
           // don't know what emoji / color it will be (determined by address)
           (!isNewProfile || address) && (
             <AvatarCircle
+              externalProfile={!!address}
               showcaseAccountColor={color}
               showcaseAccountSymbol={nameEmoji}
             />
