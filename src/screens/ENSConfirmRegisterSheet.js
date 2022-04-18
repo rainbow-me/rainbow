@@ -3,7 +3,7 @@ import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
-import { useRecoilState } from 'recoil';
+import { useRecoilValue } from 'recoil';
 import { HoldToAuthorizeButton } from '../components/buttons';
 import {
   CommitContent,
@@ -38,14 +38,13 @@ import {
   useENSRegistrationForm,
   useENSSearch,
   useGas,
-  usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
 
 export const ENSConfirmRegisterSheetHeight = 600;
+export const ENSConfirmRenewSheetHeight = 500;
 export const ENSConfirmUpdateSheetHeight = 400;
 const avatarSize = 60;
 
@@ -107,11 +106,8 @@ export default function ENSConfirmRegisterSheet() {
     mode,
   } = useENSRegistration();
 
-  const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
-  const { result: dominantColor } = usePersistentDominantColorFromImage(
-    initialAvatarUrl || ''
-  );
-  const [prevDominantColor, setPrevDominantColor] = useState(dominantColor);
+  const accentColor = useRecoilValue(accentColorAtom);
+  const { isSmallPhone } = useDimensions();
 
   const [duration, setDuration] = useState(1);
   const [gasLimit, setGasLimit] = useState(null);
@@ -319,13 +315,6 @@ export default function ENSConfirmRegisterSheet() {
     getReverseRecord();
   }, [accountAddress]);
 
-  useEffect(() => {
-    setAccentColor(dominantColor || prevDominantColor || colors.purple);
-    if (dominantColor) {
-      setPrevDominantColor(dominantColor);
-    }
-  }, [dominantColor, prevDominantColor, setAccentColor]);
-
   useFocusEffect(() => {
     blurFields();
   });
@@ -350,21 +339,23 @@ export default function ENSConfirmRegisterSheet() {
               <Box horizontal="30px">
                 <Stack alignHorizontal="center" space="15px">
                   {avatarUrl && (
-                    <Box
-                      background="accent"
-                      borderRadius={avatarSize / 2}
-                      height={{ custom: avatarSize }}
-                      shadow="12px heavy accent"
-                      width={{ custom: avatarSize }}
-                    >
+                    <AccentColorProvider color={accentColor + '10'}>
                       <Box
-                        as={ImgixImage}
+                        background="accent"
                         borderRadius={avatarSize / 2}
                         height={{ custom: avatarSize }}
-                        source={{ uri: avatarUrl }}
+                        shadow="12px heavy accent"
                         width={{ custom: avatarSize }}
-                      />
-                    </Box>
+                      >
+                        <Box
+                          as={ImgixImage}
+                          borderRadius={avatarSize / 2}
+                          height={{ custom: avatarSize }}
+                          source={{ uri: avatarUrl }}
+                          width={{ custom: avatarSize }}
+                        />
+                      </Box>
+                    </AccentColorProvider>
                   )}
                   <Heading size="26px">{ensName}</Heading>
                   <Text

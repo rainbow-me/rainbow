@@ -120,7 +120,7 @@ export default function useENSRegistrationForm({
         };
       }, {});
       updateRecords(records);
-    } else if (mode === 'edit' && !isEmpty(defaultRecords)) {
+    } else if (mode === REGISTRATION_MODES.EDIT && !isEmpty(defaultRecords)) {
       updateRecords(defaultRecords);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -198,7 +198,7 @@ export default function useENSRegistrationForm({
     mode === REGISTRATION_MODES.EDIT && isEmpty(values)
   );
   useEffect(() => {
-    if (mode === 'edit') {
+    if (mode === REGISTRATION_MODES.EDIT) {
       if (profileQuery.isSuccess || !isEmpty(values)) {
         setTimeout(() => setIsLoading(false), 200);
       } else {
@@ -206,6 +206,10 @@ export default function useENSRegistrationForm({
       }
     }
   }, [mode, profileQuery.isSuccess, values]);
+
+  const clearValues = useCallback(() => {
+    setValuesMap({});
+  }, [setValuesMap]);
 
   const empty = useMemo(() => !Object.values(values).some(Boolean), [values]);
 
@@ -243,6 +247,7 @@ export default function useENSRegistrationForm({
 
   return {
     blurFields,
+    clearValues,
     disabled,
     errors,
     isEmpty: empty,

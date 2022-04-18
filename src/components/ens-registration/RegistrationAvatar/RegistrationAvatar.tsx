@@ -1,5 +1,6 @@
+import { useFocusEffect } from '@react-navigation/core';
 import ConditionalWrap from 'conditional-wrap';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Image } from 'react-native-image-crop-picker';
 import { atom, useSetRecoilState } from 'recoil';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
@@ -47,14 +48,20 @@ export default function RegistrationAvatar({
     onRemoveField,
   } = useENSRegistrationForm();
 
+  const [avatarUpdateAllowed, setAvatarUpdateAllowed] = useState(true);
   const [avatarUrl, setAvatarUrl] = useState(
     initialAvatarUrl || values?.avatar
   );
   useEffect(() => {
-    setAvatarUrl(
-      typeof initialAvatarUrl === 'string' ? initialAvatarUrl : values?.avatar
-    );
-  }, [initialAvatarUrl]); // eslint-disable-line react-hooks/exhaustive-deps
+    if (avatarUpdateAllowed) {
+      setAvatarUrl(
+        typeof initialAvatarUrl === 'string' ? initialAvatarUrl : values?.avatar
+      );
+    }
+  }, [initialAvatarUrl, avatarUpdateAllowed]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // We want to allow avatar state update when the screen is first focussed.
+  useFocusEffect(useCallback(() => setAvatarUpdateAllowed(true), []));
 
   const setAvatarMetadata = useSetRecoilState(avatarMetadataAtom);
 
@@ -69,7 +76,10 @@ export default function RegistrationAvatar({
     onChangeImage: ({ asset, image }) => {
       setAvatarMetadata(image);
       setAvatarUrl(image?.tmpPath || asset?.image_thumbnail_url || '');
-      onChangeAvatarUrl(image?.tmpPath || asset?.image_thumbnail_url || '');
+      // We want to disallow future avatar state changes (i.e. when upload successful)
+      // to avoid avatar flashing (from temp URL to uploaded URL).
+      setAvatarUpdateAllowed(false);
+      onChangeAvatarUrl(image?.path || asset?.image_thumbnail_url || '');
       if (asset) {
         const standard = asset.asset_contract?.schema_name || '';
         const contractAddress = asset.asset_contract?.address || '';
