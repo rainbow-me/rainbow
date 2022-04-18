@@ -355,8 +355,9 @@ const UniqueTokenExpandedState = ({
   const isActionsEnabled = !external && !isReadOnlyWallet;
   const hasSendButton = isActionsEnabled && isSendable;
 
-  const isENSActionsEnabled = isActionsEnabled && profilesEnabled && isENS;
-  const hasEditButton = isENSActionsEnabled && ensProfile.isOwner;
+  const hasEditButton =
+    isActionsEnabled && profilesEnabled && isENS && ensProfile.isOwner;
+  const hasExtendDurationButton = isActionsEnabled && profilesEnabled && isENS;
 
   const familyLinkDisplay = useMemo(
     () =>
@@ -529,7 +530,7 @@ const UniqueTokenExpandedState = ({
                               registrationDate={
                                 ensData?.registration.registrationDate
                               }
-                              showEditButton={isENSActionsEnabled}
+                              showExtendDuration={hasExtendDurationButton}
                             />
                           )}
                         </Bleed>

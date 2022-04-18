@@ -12,13 +12,13 @@ import Routes from '@rainbow-me/routes';
 export default function ENSBriefTokenInfoRow({
   expiryDate,
   registrationDate,
-  showEditButton,
+  showExtendDuration,
   ensName,
 }: {
   expiryDate?: number;
   registrationDate?: number;
   ensName: string;
-  showEditButton?: boolean;
+  showExtendDuration?: boolean;
 }) {
   const { colors } = useTheme();
   const { navigate } = useNavigation();
@@ -55,7 +55,7 @@ export default function ENSBriefTokenInfoRow({
       {/* @ts-expect-error JavaScript component */}
       <TokenInfoItem
         addonComponent={
-          showEditButton && (
+          showExtendDuration && (
             <Column width="content">
               <ButtonPressAnimation
                 enableHapticFeedback
