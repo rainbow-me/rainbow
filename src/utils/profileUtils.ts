@@ -127,6 +127,7 @@ export async function lookupAddressWithRetry(
       // eslint-disable-next-line no-empty
     } catch {}
   }
+  return null;
 }
 
 export default {
