@@ -1,5 +1,5 @@
 import useCountdown from '@bradgarropy/use-countdown';
-import React, { useState } from 'react';
+import React, { ReactNode, useState } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, {
   Easing,
@@ -10,11 +10,13 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Circle, Defs, G, RadialGradient, Stop, Svg } from 'react-native-svg';
 import { CheckmarkAnimation } from '../animations/CheckmarkAnimation';
-import { Text } from '../text';
 import { SeparatorDots } from './SeparatorDots';
 import { useVariableFont } from './useVariableFont';
-import { Box } from '@rainbow-me/design-system';
-import styled from '@rainbow-me/styled-components';
+import {
+  Box,
+  useForegroundColor,
+  useTextStyle,
+} from '@rainbow-me/design-system';
 
 type LargeCountdownClockProps = {
   minutes?: number;
@@ -53,6 +55,8 @@ export default function LargeCountdownClock({
     lineHeight,
     separatorSize,
   } = useVariableFont(countdown.minutes, countdown.seconds);
+
+  const accentColor = useForegroundColor('accent');
 
   // convert clock time to seconds
   const totalSeconds = minutes ? minutes * 60 + seconds : seconds;
@@ -173,24 +177,16 @@ export default function LargeCountdownClock({
                 position: 'absolute',
               }}
             >
-              <ClockMinutes
-                allowFontScaling={false}
-                lineHeight={lineHeight}
-                size={fontSize}
-              >
+              <ClockText fontSize={fontSize} lineHeight={lineHeight}>
                 {displayMinutes}
-              </ClockMinutes>
+              </ClockText>
               <SeparatorDots
                 minuteEndsWithOne={minuteEndsWithOne}
                 size={separatorSize}
               />
-              <ClockSeconds
-                allowFontScaling={false}
-                lineHeight={lineHeight}
-                size={fontSize}
-              >
+              <ClockText fontSize={fontSize} lineHeight={lineHeight}>
                 {displaySeconds}
-              </ClockSeconds>
+              </ClockText>
             </Box>
           ) : (
             <Box
@@ -206,9 +202,9 @@ export default function LargeCountdownClock({
                 position: 'absolute',
               }}
             >
-              <ClockSeconds allowFontScaling={false} lineHeight={57} size={50}>
+              <ClockText fontSize={50} lineHeight={57}>
                 {displaySeconds}
-              </ClockSeconds>
+              </ClockText>
             </Box>
           )}
           <Svg height="132" viewBox="0 0 130 130" width="132">
@@ -221,8 +217,12 @@ export default function LargeCountdownClock({
                 id="large-countdown-clock-fill"
                 r="50%"
               >
-                <Stop offset="0%" stopColor="#9875D7" stopOpacity="0" />
-                <Stop offset="100%" stopColor="#9875D7" stopOpacity="0.06" />
+                <Stop offset="0%" stopColor={accentColor} stopOpacity="0" />
+                <Stop
+                  offset="100%"
+                  stopColor={accentColor}
+                  stopOpacity="0.06"
+                />
               </RadialGradient>
             </Defs>
             <G>
@@ -239,7 +239,7 @@ export default function LargeCountdownClock({
                 cy={PROGRESS_CENTER_COORDINATE}
                 id="large-countdown-clock-progress-bar"
                 r={PROGRESS_RADIUS}
-                stroke="#9875D7"
+                stroke={accentColor}
                 strokeDasharray={PROGRESS_STROKE_FULL_LENGTH}
                 strokeDashoffset={0}
                 strokeLinecap="round"
@@ -255,17 +255,33 @@ export default function LargeCountdownClock({
 }
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
-const AnimatedClockDisplay = Animated.createAnimatedComponent(Text);
-const clockFontStyles = {
-  align: 'center',
-  color: '#9875D7',
-  weight: 'heavy',
+
+const ClockText = ({
+  children,
+  fontSize,
+  lineHeight,
+}: {
+  children: ReactNode;
+  fontSize: number;
+  lineHeight: number;
+}) => {
+  const textStyles = useTextStyle({
+    align: 'center',
+    color: 'accent',
+    tabularNumbers: true,
+    weight: 'heavy',
+  });
+  return (
+    <Box
+      allowFontScaling={false}
+      as={Animated.Text}
+      style={{
+        ...textStyles,
+        fontSize,
+        lineHeight,
+      }}
+    >
+      {children}
+    </Box>
+  );
 };
-
-const ClockMinutes = styled(AnimatedClockDisplay).attrs(clockFontStyles)({
-  fontVariant: ['tabular-nums'],
-});
-
-const ClockSeconds = styled(AnimatedClockDisplay).attrs(clockFontStyles)({
-  fontVariant: ['tabular-nums'],
-});

@@ -668,7 +668,11 @@
         "speed_up": "Speed Up",
         "extend_registration": "Extend Registration",
         "last_step": "One last step",
-        "last_step_description": "Confirm below to register your name and configure your profile"
+        "last_step_description": "Confirm below to register your name and configure your profile",
+        "transaction_pending": "Transaction pending",
+        "transaction_pending_description": "You’ll be taken to the next step automatically when this transaction confirms on the blockchain",
+        "wait_one_minute": "Wait for one minute",
+        "wait_one_minute_description": "This waiting period ensures that another person can’t register this name before you do"
       },
       "profile_avatar": {
         "choose_from_library": "Choose from Library",
