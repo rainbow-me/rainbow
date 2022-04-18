@@ -121,16 +121,12 @@ export async function lookupAddressWithRetry(
   web3Provider: Provider,
   address: EthereumAddress
 ) {
-  let count = 0;
-  while (count < 3) {
+  for (let i = 0; i < 3; i++) {
     try {
-      const ens = await web3Provider.lookupAddress(address);
-      return ens;
-    } catch (e) {
-      count += 1;
-    }
+      return await web3Provider.lookupAddress(address);
+      // eslint-disable-next-line no-empty
+    } catch {}
   }
-  return null;
 }
 
 export default {
