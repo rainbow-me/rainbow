@@ -103,7 +103,10 @@ export default function useENSRegistrationForm({
   useEffect(
     () => {
       if (createForm) {
-        setValuesMap(values => ({ ...values, [name]: defaultRecords }));
+        setValuesMap(values => ({
+          ...values,
+          [name]: defaultRecords,
+        }));
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -120,7 +123,7 @@ export default function useENSRegistrationForm({
         };
       }, {});
       updateRecords(records);
-    } else if (mode === 'edit' && !isEmpty(defaultRecords)) {
+    } else if (mode === REGISTRATION_MODES.EDIT && !isEmpty(defaultRecords)) {
       updateRecords(defaultRecords);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -198,7 +201,7 @@ export default function useENSRegistrationForm({
     mode === REGISTRATION_MODES.EDIT && isEmpty(values)
   );
   useEffect(() => {
-    if (mode === 'edit') {
+    if (mode === REGISTRATION_MODES.EDIT) {
       if (profileQuery.isSuccess || !isEmpty(values)) {
         setTimeout(() => setIsLoading(false), 200);
       } else {
@@ -207,19 +210,35 @@ export default function useENSRegistrationForm({
     }
   }, [mode, profileQuery.isSuccess, values]);
 
+  const clearValues = useCallback(() => {
+    setValuesMap({});
+  }, [setValuesMap]);
+
   const empty = useMemo(() => !Object.values(values).some(Boolean), [values]);
 
   const submit = useCallback(
     async submitFn => {
       const errors = Object.entries(textRecordFields).reduce(
         (currentErrors, [key, { validations }]) => {
-          const { value: regex, message } = validations?.onSubmit?.match || {};
           const value = values[key as ENS_RECORDS];
-          if (regex && value && !value.match(regex)) {
-            return {
-              ...currentErrors,
-              [key]: message,
-            };
+          if (validations?.onSubmit?.match) {
+            const { value: regex, message } =
+              validations?.onSubmit?.match || {};
+            if (regex && value && !value.match(regex)) {
+              return {
+                ...currentErrors,
+                [key]: message,
+              };
+            }
+          }
+          if (validations?.onSubmit?.validate) {
+            const { callback, message } = validations?.onSubmit?.validate || {};
+            if (value && !callback(value)) {
+              return {
+                ...currentErrors,
+                [key]: message,
+              };
+            }
           }
           return currentErrors;
         },
@@ -243,6 +262,7 @@ export default function useENSRegistrationForm({
 
   return {
     blurFields,
+    clearValues,
     disabled,
     errors,
     isEmpty: empty,

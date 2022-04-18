@@ -27,8 +27,9 @@ const CommitContent = ({
   const { isSmallPhone } = useDimensions();
 
   return (
-    <Inset horizontal="30px">
-      <Stack space={isSmallPhone ? '19px' : '34px'}>
+    <Inset horizontal="30px" vertical={isSmallPhone ? '12px' : '30px'}>
+      <Stack space={isSmallPhone ? '19px' : '30px'}>
+        <Divider color="divider40" />
         <Inline
           alignHorizontal="center"
           alignVertical="center"
@@ -41,7 +42,7 @@ const CommitContent = ({
               style={{ height: 20, width: 20 }}
             />
           </Box>
-          <Text color="secondary50" size="14px" weight="heavy">
+          <Text color="secondary50" size="14px" weight="bold">
             {lang.t('profiles.confirm.suggestion')}
           </Text>
         </Inline>

@@ -113,7 +113,7 @@ export const parseAccountUniqueTokens = data => {
     .filter(token => !!token.familyName);
 };
 
-export const parseAccountUniqueTokensPolygon = async data => {
+export const parseAccountUniqueTokensPolygon = data => {
   let erc721s = data?.data?.results;
   if (isNil(erc721s)) throw new Error('Invalid data from OpenSea Polygon');
   erc721s = erc721s

@@ -1,7 +1,6 @@
 import lang from 'i18n-js';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
-import { KeyboardArea } from 'react-native-keyboard-area';
 import { useDebounce } from 'use-debounce';
 import dice from '../assets/dice.png';
 import TintButton from '../components/buttons/TintButton';
@@ -26,7 +25,6 @@ import {
   useENSRegistration,
   useENSRegistrationCosts,
   useENSSearch,
-  useKeyboardHeight,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import Routes from '@rainbow-me/routes';
@@ -35,7 +33,6 @@ import { normalizeENS } from '@rainbow-me/utils';
 
 export default function ENSSearchSheet() {
   const { navigate } = useNavigation();
-  const keyboardHeight = useKeyboardHeight();
 
   const topPadding = android ? 29 : 19;
 
@@ -85,126 +82,130 @@ export default function ENSSearchSheet() {
       paddingTop={{ custom: topPadding }}
       testID="ens-search-sheet"
     >
-      <Box flexGrow={1} paddingTop="30px">
-        <Stack alignHorizontal="center" space="15px">
-          <Heading size="23px" weight="heavy">
-            {`􀠎 ${lang.t('profiles.search.header')}`}
-          </Heading>
-          <Text color="secondary50" size="18px" weight="bold">
-            {lang.t('profiles.search.description')}
-          </Text>
-        </Stack>
+      <Stack space="15px">
+        <Box flexGrow={1} paddingTop="30px">
+          <Stack alignHorizontal="center" space="15px">
+            <Heading size="23px" weight="heavy">
+              {`􀠎 ${lang.t('profiles.search.header')}`}
+            </Heading>
+            <Text color="secondary50" size="18px" weight="bold">
+              {lang.t('profiles.search.description')}
+            </Text>
+          </Stack>
 
-        <Box
-          alignItems="center"
-          paddingBottom="24px"
-          paddingHorizontal="19px"
-          paddingTop="42px"
-        >
-          <SearchInput
-            contextMenuHidden
-            isLoading={isLoading}
-            onChangeText={value => setSearchQuery(normalizeENS(value))}
-            placeholder="Input placeholder"
-            state={state}
-            testID="ens-search-input"
-            value={searchQuery}
-          />
-        </Box>
-
-        {isIdle && (
-          <Inline
-            alignHorizontal="center"
-            alignVertical="center"
-            space="6px"
-            wrap={false}
+          <Box
+            alignItems="center"
+            paddingBottom="24px"
+            paddingHorizontal="19px"
+            paddingTop="42px"
           >
-            <Box>
-              <ImgixImage source={dice} style={{ height: 20, width: 20 }} />
-            </Box>
-            <Text color="secondary50" size="16px" weight="bold">
-              {lang.t('profiles.search.3_char_min')}
-            </Text>
-          </Inline>
-        )}
-        {isIdle && (
-          <>
-            <Inset vertical="24px">
-              <Divider />
-            </Inset>
-            <PendingRegistrations />
-          </>
-        )}
-        {isInvalid && (
-          <Inset horizontal="30px">
-            <Text align="center" color="secondary50" size="16px" weight="bold">
-              {registrationData?.hint}
-            </Text>
-          </Inset>
-        )}
-        {(isAvailable || isRegistered) && (
-          <Inset horizontal="19px">
-            <Stack
-              separator={
-                <Inset horizontal="19px">
-                  <Divider />
-                </Inset>
-              }
-              space="19px"
+            <SearchInput
+              contextMenuHidden
+              isLoading={isLoading}
+              onChangeText={value => setSearchQuery(normalizeENS(value))}
+              placeholder="Input placeholder"
+              state={state}
+              testID="ens-search-input"
+              value={searchQuery}
+            />
+          </Box>
+          {isIdle && (
+            <Inline
+              alignHorizontal="center"
+              alignVertical="center"
+              space="6px"
+              wrap={false}
             >
-              <Inline alignHorizontal="justify" wrap={false}>
-                <SearchResultGradientIndicator
-                  isRegistered={isRegistered}
-                  type="availability"
-                />
-                {isRegistered ? (
-                  <SearchResultGradientIndicator
-                    expirationDate={registrationData?.expirationDate}
-                    type="expiration"
-                  />
-                ) : (
-                  <SearchResultGradientIndicator
-                    price={registrationData?.rentPrice?.perYear?.display}
-                    testID="ens-registration-price"
-                    type="price"
-                  />
-                )}
-              </Inline>
-              <Inset horizontal="19px">
-                {isRegistered ? (
-                  <Text color="secondary50" size="16px" weight="bold">
-                    {lang.t('profiles.search.registered_on', {
-                      content: registrationData?.registrationDate,
-                    })}
-                  </Text>
-                ) : (
-                  <Inline>
-                    {registrationCostsDataIsAvailable ? (
-                      <Text
-                        color="secondary50"
-                        size="16px"
-                        testID="ens-registration-fees"
-                        weight="bold"
-                      >
-                        {lang.t('profiles.search.estimated_total_cost_1')}
-                        <Text color="secondary80" size="16px" weight="heavy">
-                          {` ${registrationCostsData?.estimatedTotalRegistrationCost?.display} `}
-                        </Text>
-                        {lang.t('profiles.search.estimated_total_cost_2')}
-                      </Text>
-                    ) : (
-                      <Text color="secondary50" size="16px" weight="bold">
-                        {`${lang.t('profiles.search.loading_fees')}\n`}
-                      </Text>
-                    )}
-                  </Inline>
-                )}
+              <Box>
+                <ImgixImage source={dice} style={{ height: 20, width: 20 }} />
+              </Box>
+              <Text color="secondary50" size="16px" weight="bold">
+                {lang.t('profiles.search.3_char_min')}
+              </Text>
+            </Inline>
+          )}
+          {isIdle && (
+            <>
+              <Inset vertical="24px">
+                <Divider />
               </Inset>
-            </Stack>
-          </Inset>
-        )}
-      </Box>
-      <Box>
+              <PendingRegistrations />
+            </>
+          )}
+          {isInvalid && (
+            <Inset horizontal="30px">
+              <Text
+                align="center"
+                color="secondary50"
+                size="16px"
+                weight="bold"
+              >
+                {registrationData?.hint}
+              </Text>
+            </Inset>
+          )}
+          {(isAvailable || isRegistered) && (
+            <Inset horizontal="19px">
+              <Stack
+                separator={
+                  <Inset horizontal="19px">
+                    <Divider />
+                  </Inset>
+                }
+                space="19px"
+              >
+                <Inline alignHorizontal="justify" wrap={false}>
+                  <SearchResultGradientIndicator
+                    isRegistered={isRegistered}
+                    type="availability"
+                  />
+                  {isRegistered ? (
+                    <SearchResultGradientIndicator
+                      expirationDate={registrationData?.expirationDate}
+                      type="expiration"
+                    />
+                  ) : (
+                    <SearchResultGradientIndicator
+                      price={registrationData?.rentPrice?.perYear?.display}
+                      testID="ens-registration-price"
+                      type="price"
+                    />
+                  )}
+                </Inline>
+                <Inset horizontal="19px">
+                  {isRegistered ? (
+                    <Text color="secondary50" size="16px" weight="bold">
+                      {lang.t('profiles.search.registered_on', {
+                        content: registrationData?.registrationDate,
+                      })}
+                    </Text>
+                  ) : (
+                    <Inline>
+                      {registrationCostsDataIsAvailable ? (
+                        <Text
+                          color="secondary50"
+                          size="16px"
+                          testID="ens-registration-fees"
+                          weight="bold"
+                        >
+                          {lang.t('profiles.search.estimated_total_cost_1')}
+                          <Text color="secondary80" size="16px" weight="heavy">
+                            {` ${registrationCostsData?.estimatedTotalRegistrationCost?.display} `}
+                          </Text>
+                          {lang.t('profiles.search.estimated_total_cost_2')}
+                        </Text>
+                      ) : (
+                        <Text color="secondary50" size="16px" weight="bold">
+                          {`${lang.t('profiles.search.loading_fees')}\n`}
+                        </Text>
+                      )}
+                    </Inline>
+                  )}
+                </Inset>
+              </Stack>
+            </Inset>
+          )}
+        </Box>
         <SheetActionButtonRow>
           {isAvailable && (
             <SheetActionButton
@@ -225,8 +226,7 @@ export default function ENSSearchSheet() {
             </TintButton>
           )}
         </SheetActionButtonRow>
-        <KeyboardArea initialHeight={keyboardHeight} isOpen />
-      </Box>
+      </Stack>
     </Box>
   );
 }
