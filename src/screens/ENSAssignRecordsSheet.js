@@ -220,6 +220,11 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
     });
   }, [mode, navigate, submit, values.avatar]);
 
+  const navigateToAdditionalRecords = useCallback(() => {
+    android && Keyboard.dismiss();
+    navigate(Routes.ENS_ADDITIONAL_RECORDS_SHEET, {});
+  }, [navigate]);
+
   const [visible, setVisible] = useState(false);
   useEffect(() => {
     if (mode === REGISTRATION_MODES.EDIT) {
@@ -267,6 +272,7 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
               <Row>
                 <Inset horizontal="19px" top="30px">
                   <SelectableAttributesButtons
+                    navigateToAdditionalRecords={navigateToAdditionalRecords}
                     onAddField={onAddField}
                     onRemoveField={onRemoveField}
                     selectedFields={selectedFields}
@@ -398,37 +404,57 @@ function SelectableAttributesButtons({
   selectedFields,
   onAddField,
   onRemoveField,
+  navigateToAdditionalRecords,
 }) {
+  const dotsButtonIsSelected = useMemo(() => {
+    const nonPrimaryRecordsIds = Object.values(textRecordFields)
+      .filter(({ isPrimaryDisplayRecord }) => !isPrimaryDisplayRecord)
+      .map(({ id }) => id);
+    const dotsSelected = selectedFields.some(field =>
+      nonPrimaryRecordsIds.includes(field.id)
+    );
+    return dotsSelected;
+  }, [selectedFields]);
+
   return (
     <Inline space="10px">
-      {Object.values(textRecordFields).map((textRecordField, i) => {
-        const isSelected = selectedFields.some(
-          field => field.id === textRecordField.id
-        );
-        return (
-          <SelectableButton
-            isSelected={isSelected}
-            key={i}
-            onSelect={() => {
-              if (isSelected) {
-                const index = selectedFields.findIndex(
-                  ({ id }) => textRecordField.id === id
-                );
-                const fieldToRemove = selectedFields[index];
-                let newFields = [...selectedFields];
-                newFields.splice(index, 1);
-                onRemoveField(fieldToRemove, newFields);
-              } else {
-                const fieldToAdd = textRecordField;
-                onAddField(fieldToAdd, [...selectedFields, fieldToAdd]);
-              }
-            }}
-            testID={`ens-selectable-attribute-${textRecordField.id}`}
-          >
-            {textRecordField.label}
-          </SelectableButton>
-        );
-      })}
+      {Object.values(textRecordFields)
+        .filter(record => record.isPrimaryDisplayRecord)
+        .map((textRecordField, i) => {
+          const isSelected = selectedFields.some(
+            field => field.id === textRecordField.id
+          );
+          return (
+            <SelectableButton
+              isSelected={isSelected}
+              key={i}
+              onSelect={() => {
+                if (isSelected) {
+                  const index = selectedFields.findIndex(
+                    ({ id }) => textRecordField.id === id
+                  );
+                  const fieldToRemove = selectedFields[index];
+                  let newFields = [...selectedFields];
+                  newFields.splice(index, 1);
+                  onRemoveField(fieldToRemove, newFields);
+                } else {
+                  const fieldToAdd = textRecordField;
+                  onAddField(fieldToAdd, [...selectedFields, fieldToAdd]);
+                }
+              }}
+              testID={`ens-selectable-attribute-${textRecordField.id}`}
+            >
+              {textRecordField.label}
+            </SelectableButton>
+          );
+        })}
+      <SelectableButton
+        isSelected={dotsButtonIsSelected}
+        onSelect={navigateToAdditionalRecords}
+        testID="ens-selectable-attribute-dots"
+      >
+        ...
+      </SelectableButton>
     </Inline>
   );
 }
