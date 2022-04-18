@@ -8,7 +8,6 @@ import { AudioPlayer } from '../../audio';
 import { UniqueTokenImage } from '../../unique-token';
 import { SimpleVideo } from '../../video';
 import { ZoomableWrapper } from './ZoomableWrapper';
-import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
 import {
   useDimensions,
   usePersistentAspectRatio,
@@ -16,6 +15,7 @@ import {
 } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
+import isSVGImage from '@rainbow-me/utils/isSVG';
 
 const pixelRatio = PixelRatio.get();
 
@@ -52,7 +52,7 @@ const UniqueTokenExpandedStateContent = ({
   const maxImageWidth = deviceWidth - horizontalPadding * 2;
   const isENS =
     toLower(asset.asset_contract.address) === toLower(ENS_NFT_CONTRACT_ADDRESS);
-  const isSVG = isSupportedUriExtension(asset.image_url, ['.svg']);
+  const isSVG = isSVGImage(asset.image_url);
   const imageUrl = isSVG
     ? asset.image_preview_url
     : asset.image_url ||

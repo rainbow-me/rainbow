@@ -21,7 +21,8 @@ export function delayNext() {
 export default function useMagicAutofocus(
   defaultAutofocusInputRef,
   customTriggerFocusCallback,
-  shouldFocusOnNavigateOnAndroid = false
+  shouldFocusOnNavigateOnAndroid = false,
+  showAfterInteractions = false
 ) {
   const isScreenFocused = useIsFocused();
   const lastFocusedInputHandle = useRef(null);
@@ -77,20 +78,29 @@ export default function useMagicAutofocus(
             delay = false;
           }, 200);
         });
-      } else {
-        triggerFocus();
-      }
-
-      // We need to do this in order to assure that the input gets focused
-      // when using fallback stacks.
-      if (!isNativeStackAvailable) {
+      } else if (!isNativeStackAvailable) {
+        // We need to do this in order to assure that the input gets focused
+        // when using fallback stacks.
         InteractionManager.runAfterInteractions(fallbackRefocusLastInput);
+      } else {
+        if (showAfterInteractions) {
+          InteractionManager.runAfterInteractions(() => {
+            triggerFocus();
+          });
+        } else {
+          triggerFocus();
+        }
       }
 
       return () => {
         setListener(null);
       };
-    }, [fallbackRefocusLastInput, shouldFocusOnNavigateOnAndroid, triggerFocus])
+    }, [
+      fallbackRefocusLastInput,
+      shouldFocusOnNavigateOnAndroid,
+      showAfterInteractions,
+      triggerFocus,
+    ])
   );
 
   return {

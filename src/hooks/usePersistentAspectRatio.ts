@@ -3,8 +3,8 @@ import { Image } from 'react-native';
 import { MMKV, useMMKVNumber } from 'react-native-mmkv';
 import { getLowResUrl } from '../utils/getLowResUrl';
 import { imageToPng } from '@rainbow-me/handlers/imgix';
-import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
 import { STORAGE_IDS } from '@rainbow-me/model/mmkv';
+import isSVGImage from '@rainbow-me/utils/isSVG';
 
 const storage = new MMKV({
   id: STORAGE_IDS.ASPECT_RATIO,
@@ -23,7 +23,7 @@ type Result = {
 };
 
 export default function usePersistentAspectRatio(url: string): Result {
-  const isSVG = isSupportedUriExtension(url, ['.svg']);
+  const isSVG = isSVGImage(url);
   const nonSvgUrl = isSVG ? imageToPng(url, 200) : url;
   const [ratio, setAspectRatio] = useMMKVNumber(
     (nonSvgUrl || '') as string,

@@ -28,7 +28,7 @@ const RenewContent = ({
   );
 
   return (
-    <Inset horizontal="30px">
+    <Inset horizontal="30px" top="30px">
       <Stack space="34px">
         <RegistrationReviewRows
           duration={yearsDuration}

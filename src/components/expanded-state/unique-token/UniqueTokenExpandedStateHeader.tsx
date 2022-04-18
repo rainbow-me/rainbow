@@ -19,7 +19,6 @@ import {
 } from '@rainbow-me/design-system';
 import { UniqueAsset } from '@rainbow-me/entities';
 import { Network } from '@rainbow-me/helpers';
-import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
 import {
   useAccountProfile,
   useClipboard,
@@ -36,6 +35,7 @@ import {
   showActionSheetWithOptions,
 } from '@rainbow-me/utils';
 import { getFullResUrl } from '@rainbow-me/utils/getFullResUrl';
+import isSVGImage from '@rainbow-me/utils/isSVG';
 
 const AssetActionsEnum = {
   copyTokenID: 'copyTokenID',
@@ -209,7 +209,7 @@ const UniqueTokenExpandedStateHeader = ({
   ]);
 
   // @ts-expect-error image_url could be null or undefined?
-  const isSVG = isSupportedUriExtension(asset.image_url, ['.svg']);
+  const isSVG = isSVGImage(asset.image_url);
   const isENS =
     toLower(asset.asset_contract.address) === toLower(ENS_NFT_CONTRACT_ADDRESS);
 

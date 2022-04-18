@@ -1,5 +1,6 @@
+import { useFocusEffect } from '@react-navigation/native';
 import lang from 'i18n-js';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { Image, Options } from 'react-native-image-crop-picker';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import { useMutation } from 'react-query';
@@ -80,11 +81,29 @@ export default function useSelectImageMenu({
   onUploadError?: ({ error, image }: { error: unknown; image: Image }) => void;
   uploadToIPFS?: boolean;
 } = {}) {
-  const { navigate } = useNavigation();
+  const { navigate, dangerouslyGetParent } = useNavigation();
   const { openPicker } = useImagePicker();
   const { isLoading: isUploading, mutateAsync: upload } = useMutation(
     'ensImageUpload',
     uploadImage
+  );
+
+  // When this hook is inside a nested navigator, the child
+  // navigator will still think it is focused. Here, we are
+  // also checking if the parent has not been dismissed too.
+  const isFocused = useRef<boolean>();
+  useFocusEffect(
+    useCallback(() => {
+      isFocused.current = true;
+      const dismiss = () => (isFocused.current = false);
+      // @ts-expect-error `dismiss` is valid event
+      dangerouslyGetParent()?.addListener('dismiss', dismiss);
+      return () => {
+        isFocused.current = false;
+        // @ts-expect-error `dismiss` is valid event
+        dangerouslyGetParent()?.removeListener('dismiss', dismiss);
+      };
+    }, [dangerouslyGetParent])
   );
 
   const menuItems = useMemo(() => [...initialMenuItems, 'remove'] as const, [
@@ -114,8 +133,10 @@ export default function useSelectImageMenu({
           mime: image.mime,
           path: image.path.replace('file://', ''),
         });
+        if (!isFocused.current) return;
         onUploadSuccess?.({ data, image });
       } catch (err) {
+        if (!isFocused.current) return;
         onUploadError?.({ error: err, image });
       }
     }
