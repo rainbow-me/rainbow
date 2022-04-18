@@ -36,6 +36,8 @@ import {
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { margin, padding } from '@rainbow-me/styles';
+import match from '@rainbow-me/utils/match';
+import { matchError } from '@rainbow-me/utils/matchError';
 import logger from 'logger';
 
 const DescriptionText = styled(Text).attrs(({ theme: { colors } }) => ({
@@ -152,66 +154,75 @@ export default function RestoreCloudStep({
   const onSubmit = useCallback(async () => {
     try {
       setIsWalletLoading(WalletLoadingStates.RESTORING_WALLET);
-      const success = await restoreCloudBackup(
-        password,
-        userData,
-        backupSelected?.name
-      );
-      if (success) {
-        // Store it in the keychain in case it was missing
-        await saveBackupPassword(password);
+      await restoreCloudBackup(password, userData, backupSelected?.name);
+      // Store it in the keychain in case it was missing
+      await saveBackupPassword(password);
 
-        // Get rid of the old wallets
-        for (let i = 0; i < userAccounts.length; i++) {
-          const account = userAccounts[i];
-          await removeWalletData(account.address);
-        }
-
-        goBack();
-
-        InteractionManager.runAfterInteractions(async () => {
-          const wallets = await dispatch(walletsLoadState());
-          if (!userData && backupSelected?.name) {
-            goBack();
-            logger.log('updating backup state of wallets');
-            await Promise.all(
-              Object.keys(wallets).map(walletId => {
-                logger.log('updating backup state of wallet', walletId);
-                logger.log('backupSelected?.name', backupSelected?.name);
-                // Mark the wallet as backed up
-                return dispatch(
-                  setWalletBackedUp(
-                    walletId,
-                    walletBackupTypes.cloud,
-                    backupSelected?.name
-                  )
-                );
-              })
-            );
-            logger.log('done updating backup state');
-          }
-          const firstWallet = wallets[Object.keys(wallets)[0]];
-          const firstAddress = firstWallet.addresses[0].address;
-          const p1 = dispatch(walletsSetSelected(firstWallet));
-          const p2 = dispatch(addressSetSelected(firstAddress));
-          await Promise.all([p1, p2]);
-          await initializeWallet(null, null, null, false, false, null, true);
-          if (fromSettings) {
-            logger.log('navigating to wallet');
-            navigate(Routes.WALLET_SCREEN);
-            logger.log('initializing wallet');
-          } else {
-            replace(Routes.SWIPE_LAYOUT);
-          }
-          setIsWalletLoading(null);
-        });
-      } else {
-        setIncorrectPassword(true);
-        setIsWalletLoading(null);
+      // Get rid of the old wallets
+      for (let i = 0; i < userAccounts.length; i++) {
+        const account = userAccounts[i];
+        await removeWalletData(account.address);
       }
+
+      goBack();
+
+      InteractionManager.runAfterInteractions(async () => {
+        const wallets = await dispatch(walletsLoadState());
+        if (!userData && backupSelected?.name) {
+          goBack();
+          logger.log('updating backup state of wallets');
+          await Promise.all(
+            Object.keys(wallets).map(walletId => {
+              logger.log('updating backup state of wallet', walletId);
+              logger.log('backupSelected?.name', backupSelected?.name);
+              // Mark the wallet as backed up
+              return dispatch(
+                setWalletBackedUp(
+                  walletId,
+                  walletBackupTypes.cloud,
+                  backupSelected?.name
+                )
+              );
+            })
+          );
+          logger.log('done updating backup state');
+        }
+        const firstWallet = wallets[Object.keys(wallets)[0]];
+        const firstAddress = firstWallet.addresses[0].address;
+        const p1 = dispatch(walletsSetSelected(firstWallet));
+        const p2 = dispatch(addressSetSelected(firstAddress));
+        await Promise.all([p1, p2]);
+        await initializeWallet(null, null, null, false, false, null, true);
+        if (fromSettings) {
+          logger.log('navigating to wallet');
+          navigate(Routes.WALLET_SCREEN);
+          logger.log('initializing wallet');
+        } else {
+          replace(Routes.SWIPE_LAYOUT);
+        }
+        setIsWalletLoading(null);
+      });
     } catch (e) {
+      setIncorrectPassword(true);
       setIsWalletLoading(null);
-      Alert.alert(lang.t('back_up.restore_cloud.error_while_restoring'));
+
+      const matched = matchError(e);
+      const errMessage = match(
+        'Title',
+        [
+          matched.CREATED_WITH_BIOMETRY_ERROR,
+          lang.t('back_up.restore_cloud.error_while_restoring'),
+        ],
+        [
+          matched.DECRYPT_ANDROID_PIN_ERROR,
+          lang.t('back_up.restore_cloud.error_while_restoring'),
+        ]
+      );
+
+      Alert.alert(
+        lang.t('back_up.restore_cloud.error_while_restoring'),
+        errMessage
+      );
     }
   }, [
     backupSelected?.name,

@@ -90,6 +90,8 @@ import {
 } from '@rainbow-me/utilities';
 import { ethereumUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 import { useNativeAssetForNetwork } from '@rainbow-me/utils/ethereumUtils';
+import match from '@rainbow-me/utils/match';
+import { matchError } from '@rainbow-me/utils/matchError';
 import { methodRegistryLookupAndParse } from '@rainbow-me/utils/methodRegistry';
 import {
   isMessageDisplayType,
@@ -651,6 +653,23 @@ export default function TransactionConfirmationScreen() {
         `Error while ${sendInsteadOfSign ? 'sending' : 'signing'} transaction`,
         e
       );
+
+      const matched = matchError(e);
+      const textForAlert = match(
+        'Some default message',
+        [
+          matched.CAN_NOT_ADD_ENS,
+          'Sorry, we cannot add this ENS name at this time. Please try again later!',
+        ],
+        [
+          matched.CAN_ADD_UNSTOPPABLE_NAME,
+          'Sorry, we cannot add this Unstoppable name at this time. Please try again later!',
+        ],
+        [matched.SOME_ANOTHER_ERROR, 'Sorry']
+      );
+      //TODO: handle error
+
+      Alert.alert(textForAlert);
     }
 
     const { result, error } = response;
@@ -759,38 +778,42 @@ export default function TransactionConfirmationScreen() {
     } else if (isSignSecondParamType(method)) {
       message = params?.[1];
     }
-    const existingWallet = await loadWallet(
-      accountInfo.address,
-      true,
-      provider
-    );
-    switch (method) {
-      case SIGN:
-        response = await signMessage(message, existingWallet);
-        break;
-      case PERSONAL_SIGN:
-        response = await signPersonalMessage(message, existingWallet);
-        break;
-      case SIGN_TYPED_DATA_V4:
-      case SIGN_TYPED_DATA:
-        response = await signTypedDataMessage(message, existingWallet);
-        break;
-      default:
-        break;
-    }
-    const { result, error } = response;
-    if (result) {
-      analytics.track('Approved WalletConnect signature request');
-      if (requestId) {
-        dispatch(removeRequest(requestId));
-        await dispatch(walletConnectSendStatus(peerId, requestId, response));
+    try {
+      const existingWallet = await loadWallet(
+        accountInfo.address,
+        true,
+        provider
+      );
+      switch (method) {
+        case SIGN:
+          response = await signMessage(message, existingWallet);
+          break;
+        case PERSONAL_SIGN:
+          response = await signPersonalMessage(message, existingWallet);
+          break;
+        case SIGN_TYPED_DATA_V4:
+        case SIGN_TYPED_DATA:
+          response = await signTypedDataMessage(message, existingWallet);
+          break;
+        default:
+          break;
       }
-      if (callback) {
-        callback({ sig: result });
+      const { result, error } = response;
+      if (result) {
+        analytics.track('Approved WalletConnect signature request');
+        if (requestId) {
+          dispatch(removeRequest(requestId));
+          await dispatch(walletConnectSendStatus(peerId, requestId, response));
+        }
+        if (callback) {
+          callback({ sig: result });
+        }
+        closeScreen(false);
+      } else {
+        await onCancel(error);
       }
-      closeScreen(false);
-    } else {
-      await onCancel(error);
+    } catch (error) {
+      //TODO: handle error
     }
   }, [
     accountInfo.address,

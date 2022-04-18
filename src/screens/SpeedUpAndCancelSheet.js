@@ -211,6 +211,7 @@ export default function SpeedUpAndCancelSheet() {
         dataUpdateTransaction(originalHash, updatedTx, true, currentProvider)
       );
     } catch (e) {
+      //TODO: handle error
       logger.log('Error submitting cancel tx', e);
     } finally {
       goBack();
@@ -255,6 +256,7 @@ export default function SpeedUpAndCancelSheet() {
         dataUpdateTransaction(originalHash, updatedTx, true, currentProvider)
       );
     } catch (e) {
+      //TODO: handle error
       logger.log('Error submitting speed up tx', e);
     } finally {
       goBack();

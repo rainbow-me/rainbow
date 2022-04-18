@@ -27,6 +27,7 @@ import {
   RainbowWallet,
 } from './wallet';
 
+import { errorsCode } from '@rainbow-me/utils/matchError';
 import logger from 'logger';
 
 type BackupPassword = string;
@@ -143,7 +144,7 @@ export async function restoreCloudBackup(
   password: BackupPassword,
   userData: BackupUserData | null,
   backupSelected: string | null
-): Promise<boolean> {
+) {
   // We support two flows
   // Restoring from the welcome screen, which uses the userData to rebuild the wallet
   // Restoring a specific backup from settings => Backup, which uses only the keys stored.
@@ -185,20 +186,18 @@ export async function restoreCloudBackup(
         version: allWalletsVersion,
         wallets: walletsToRestore,
       };
-      return restoreCurrentBackupIntoKeychain(dataToRestore);
+      restoreCurrentBackupIntoKeychain(dataToRestore);
     } else {
-      return restoreSpecificBackupIntoKeychain(dataToRestore);
+      restoreSpecificBackupIntoKeychain(dataToRestore);
     }
   } catch (e) {
     logger.sentry('Error while restoring back up');
     captureException(e);
-    return false;
+    throw e;
   }
 }
 
-async function restoreSpecificBackupIntoKeychain(
-  backedUpData: BackedUpData
-): Promise<boolean> {
+async function restoreSpecificBackupIntoKeychain(backedUpData: BackedUpData) {
   try {
     // Re-import all the seeds (and / or pkeys) one by one
     for (const key of Object.keys(backedUpData)) {
@@ -208,17 +207,14 @@ async function restoreSpecificBackupIntoKeychain(
         await createWallet(seedphrase, null, null, true);
       }
     }
-    return true;
   } catch (e) {
     logger.sentry('error in restoreSpecificBackupIntoKeychain');
     captureException(e);
-    return false;
+    throw new Error(errorsCode.ERROR_IN_RESTORE_SPECIFIC_BACKUP_INTO_KEYCHAIN);
   }
 }
 
-async function restoreCurrentBackupIntoKeychain(
-  backedUpData: BackedUpData
-): Promise<boolean> {
+async function restoreCurrentBackupIntoKeychain(backedUpData: BackedUpData) {
   try {
     // Access control config per each type of key
     const privateAccessControlOptions = await keychain.getPrivateAccessControlOptions();
@@ -237,12 +233,10 @@ async function restoreCurrentBackupIntoKeychain(
         }
       })
     );
-
-    return true;
   } catch (e) {
     logger.sentry('error in restoreBackupIntoKeychain');
     captureException(e);
-    return false;
+    throw new Error(errorsCode.ERROR_IN_RESTORE_BACKUP_INTO_KEYCHAIN);
   }
 }
 
