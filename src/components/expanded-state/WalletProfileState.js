@@ -104,7 +104,7 @@ export default function WalletProfileState({
   }, [address, forceColor, isNewProfile, profile?.name, webProfile]);
 
   const nameColor = useMemo(() => {
-    if (!webProfile) return;
+    if (!webProfile) return null;
     if (webProfile?.accountColor) return webProfile?.accountColor;
 
     const indexOfForceColor = colors.avatarBackgrounds.indexOf(forceColor);
