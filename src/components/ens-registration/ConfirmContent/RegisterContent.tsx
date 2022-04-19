@@ -1,6 +1,7 @@
 import lang from 'i18n-js';
 import React from 'react';
 import { Switch } from 'react-native-gesture-handler';
+import { StepIndicator } from '../../../components/step-indicator';
 import {
   Box,
   Divider,
@@ -23,6 +24,7 @@ const RegisterContent = ({
 }) => {
   return (
     <Box flexGrow={1} paddingHorizontal="30px">
+      <StepIndicator currentStep={3} steps={3} />
       <Rows>
         <Row>
           <Box flexGrow={1} justifyContent="center" paddingHorizontal="24px">

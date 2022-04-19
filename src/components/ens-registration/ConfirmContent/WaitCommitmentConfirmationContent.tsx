@@ -4,6 +4,7 @@ import {
   ButtonPressAnimation,
   HourglassAnimation,
 } from '../../../components/animations';
+import { StepIndicator } from '../../../components/step-indicator';
 import {
   Box,
   Heading,
@@ -23,6 +24,7 @@ const WaitCommitmentConfirmationContent = ({
 }) => {
   return (
     <Box flexGrow={1}>
+      <StepIndicator currentStep={1} steps={3} />
       <Rows alignHorizontal="center">
         <Row>
           <Box flexGrow={1} justifyContent="center">
