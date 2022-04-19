@@ -77,7 +77,6 @@ const getSource = ({ alt, uri }: { alt?: string; uri: string }) =>
 export default function ModelViewer({
   loading,
   setLoading,
-  size,
   style,
   uri,
   alt,
@@ -135,7 +134,6 @@ export default function ModelViewer({
         style={{ opacity }}
       >
         <ImgixImage
-          size={size}
           source={{ uri: fallbackUri }}
           style={StyleSheet.absoluteFill}
         />
