@@ -446,7 +446,7 @@ function NativeStackNavigator() {
 
 const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
   <NavigationContainer
-    onReady={props?.onReady}
+    onReady={props.onReady}
     onStateChange={onNavigationStateChange}
     ref={ref}
   >

@@ -74,6 +74,7 @@ import { SharedValuesProvider } from '@rainbow-me/helpers/SharedValuesContext';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 import { Portal } from 'react-native-cool-modals/Portal';
+
 const WALLETCONNECT_SYNC_DELAY = 500;
 
 const FedoraToastRef = createRef();
@@ -124,6 +125,7 @@ if (__DEV__) {
     };
     Sentry.init(sentryOptions);
   }
+
   initSentryAndCheckForFedoraMode();
 }
 
@@ -303,6 +305,10 @@ class App extends Component {
     updateBalancesAfter(isL2 ? 10000 : 5000, isL2, network);
   };
 
+  handleSentryNavigationIntegration = () => {
+    routingInstrumentation.registerNavigationContainer(this.navigatorRef);
+  };
+
   render = () => (
     <MainThemeProvider>
       <RainbowContextWrapper>
@@ -319,11 +325,7 @@ class App extends Component {
                             value={this.state.initialRoute}
                           >
                             <RoutesComponent
-                              onReady={() => {
-                                routingInstrumentation.registerNavigationContainer(
-                                  this.navigatorRef
-                                );
-                              }}
+                              onReady={this.handleSentryNavigationIntegration}
                               ref={this.handleNavigatorRef}
                             />
                             <PortalConsumer />
