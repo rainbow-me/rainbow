@@ -55,9 +55,10 @@ export default function ProfileSheetHeader({
   );
 
   const handleDescription = useCallback(() => {
-    const ensNames = profile?.records?.description?.match(ENS_REGEX);
-    const text = profile?.records?.description?.split(ENS_REGEX);
-
+    const recordsDescription = profile?.records?.description;
+    if (!recordsDescription) return null;
+    const ensNames = recordsDescription?.match(ENS_REGEX);
+    const text = recordsDescription?.split(ENS_REGEX);
     return (
       <Inline alignVertical="center">
         {text?.map((t, i) => (
