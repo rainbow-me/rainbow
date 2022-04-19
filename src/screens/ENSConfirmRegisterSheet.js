@@ -1,6 +1,5 @@
 import { useFocusEffect, useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
-import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import { useRecoilValue } from 'recoil';
@@ -23,7 +22,6 @@ import {
   Stack,
   Text,
 } from '@rainbow-me/design-system';
-import { fetchReverseRecord } from '@rainbow-me/handlers/ens';
 import {
   accentColorAtom,
   ENS_DOMAIN,
@@ -31,13 +29,11 @@ import {
   REGISTRATION_STEPS,
 } from '@rainbow-me/helpers/ens';
 import {
-  useAccountSettings,
   useENSRegistration,
   useENSRegistrationActionHandler,
   useENSRegistrationCosts,
   useENSRegistrationForm,
   useENSSearch,
-  useGas,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
@@ -92,14 +88,6 @@ function TransactionActionRow({
 
 export default function ENSConfirmRegisterSheet() {
   const { params } = useRoute();
-  const { accountAddress } = useAccountSettings();
-  const {
-    gasFeeParamsBySpeed,
-    updateTxFee,
-    startPollingGasFees,
-    isSufficientGas,
-    isValidGas,
-  } = useGas();
   const {
     images: { avatarUrl: initialAvatarUrl },
     name: ensName,
@@ -107,15 +95,9 @@ export default function ENSConfirmRegisterSheet() {
   } = useENSRegistration();
 
   const accentColor = useRecoilValue(accentColorAtom);
-  const { isSmallPhone } = useDimensions();
 
   const [duration, setDuration] = useState(1);
-  const [gasLimit, setGasLimit] = useState(null);
-  const [sendReverseRecord, setSendReverseRecord] = useState(true);
-  const { step, stepGasLimit, action } = useENSRegistrationActionHandler({
-    sendReverseRecord,
-    yearsDuration: duration,
-  });
+
   const { navigate, goBack } = useNavigation();
 
   const { blurFields, values } = useENSRegistrationForm();
@@ -126,8 +108,14 @@ export default function ENSConfirmRegisterSheet() {
     name,
   });
 
+  const [sendReverseRecord, setSendReverseRecord] = useState(false);
+  const { step, action } = useENSRegistrationActionHandler({
+    sendReverseRecord,
+    yearsDuration: duration,
+  });
+
   const { data: registrationCostsData } = useENSRegistrationCosts({
-    name,
+    name: ensName,
     records: values,
     rentPrice: registrationData?.rentPrice,
     sendReverseRecord,
@@ -166,11 +154,6 @@ export default function ENSConfirmRegisterSheet() {
       return lang.t('profiles.confirm.confirm_registration');
   }, [mode, step]);
 
-  const isSufficientGasForStep = useMemo(
-    () => stepGasLimit && isSufficientGas && isValidGas,
-    [isSufficientGas, stepGasLimit, isValidGas]
-  );
-
   const stepContent = useMemo(
     () => ({
       [REGISTRATION_STEPS.COMMIT]: (
@@ -185,7 +168,9 @@ export default function ENSConfirmRegisterSheet() {
           accentColor={accentColor}
           sendReverseRecord={sendReverseRecord}
           setSendReverseRecord={
-            isSufficientGasForStep ? setSendReverseRecord : null
+            registrationCostsData?.isSufficientGasForStep
+              ? setSendReverseRecord
+              : null
           }
         />
       ),
@@ -210,7 +195,6 @@ export default function ENSConfirmRegisterSheet() {
       accentColor,
       action,
       duration,
-      isSufficientGasForStep,
       name,
       registrationCostsData,
       sendReverseRecord,
@@ -225,12 +209,11 @@ export default function ENSConfirmRegisterSheet() {
           action={action}
           isSufficientGas={
             registrationCostsData?.isSufficientGasForRegistration &&
-            isSufficientGasForStep
+            registrationCostsData?.isSufficientGasForStep
           }
           isValidGas={
-            isValidGas &&
-            Boolean(gasLimit) &&
-            Boolean(registrationCostsData?.isSufficientGasForRegistration)
+            registrationCostsData?.isValidGas &&
+            Boolean(registrationCostsData?.stepGasLimit)
           }
           label={lang.t('profiles.confirm.start_registration')}
           testID={step}
@@ -240,8 +223,11 @@ export default function ENSConfirmRegisterSheet() {
         <TransactionActionRow
           accentColor={accentColor}
           action={() => action(goToProfileScreen)}
-          isSufficientGas={isSufficientGasForStep}
-          isValidGas={isValidGas && Boolean(gasLimit)}
+          isSufficientGas={registrationCostsData?.isSufficientGasForStep}
+          isValidGas={
+            registrationCostsData?.isValidGas &&
+            Boolean(registrationCostsData?.stepGasLimit)
+          }
           label={lang.t('profiles.confirm.confirm_registration')}
           testID={step}
         />
@@ -253,8 +239,11 @@ export default function ENSConfirmRegisterSheet() {
             action();
             goToProfileScreen();
           }}
-          isSufficientGas={isSufficientGasForStep}
-          isValidGas={isValidGas && Boolean(gasLimit)}
+          isSufficientGas={registrationCostsData?.isSufficientGasForStep}
+          isValidGas={
+            registrationCostsData?.isValidGas &&
+            Boolean(registrationCostsData?.stepGasLimit)
+          }
           label={lang.t('profiles.confirm.confirm_renew')}
           testID={step}
         />
@@ -263,8 +252,11 @@ export default function ENSConfirmRegisterSheet() {
         <TransactionActionRow
           accentColor={accentColor}
           action={() => action(goToProfileScreen)}
-          isSufficientGas={isSufficientGasForStep}
-          isValidGas={isValidGas && Boolean(gasLimit)}
+          isSufficientGas={registrationCostsData?.isSufficientGasForStep}
+          isValidGas={
+            registrationCostsData?.isValidGas &&
+            Boolean(registrationCostsData?.stepGasLimit)
+          }
           label={lang.t('profiles.confirm.confirm_update')}
           testID={step}
         />
@@ -275,45 +267,19 @@ export default function ENSConfirmRegisterSheet() {
     [
       accentColor,
       action,
-      gasLimit,
-      goToProfileScreen,
-      isSufficientGasForStep,
-      isValidGas,
       registrationCostsData?.isSufficientGasForRegistration,
+      registrationCostsData?.isSufficientGasForStep,
+      registrationCostsData?.isValidGas,
+      registrationCostsData?.stepGasLimit,
       step,
+      goToProfileScreen,
     ]
   );
 
-  // Update gas limit
   useEffect(() => {
-    if (
-      stepGasLimit &&
-      !isEmpty(gasFeeParamsBySpeed) &&
-      gasLimit !== stepGasLimit
-    ) {
-      updateTxFee(stepGasLimit);
-      setGasLimit(stepGasLimit);
-    }
-  }, [gasFeeParamsBySpeed, gasLimit, stepGasLimit, updateTxFee]);
-
-  useEffect(() => {
-    if (
-      step === REGISTRATION_STEPS.COMMIT ||
-      step === REGISTRATION_STEPS.REGISTER ||
-      step === REGISTRATION_STEPS.EDIT ||
-      step === REGISTRATION_STEPS.RENEW
-    )
-      startPollingGasFees();
-  }, [startPollingGasFees, step]);
-
-  useEffect(() => {
-    // if reverse record is set, we don't want to send the reverse record tx by default
-    const getReverseRecord = async () => {
-      const reverseRecord = await fetchReverseRecord(accountAddress);
-      if (reverseRecord) setSendReverseRecord(false);
-    };
-    getReverseRecord();
-  }, [accountAddress]);
+    registrationCostsData?.hasReverseRecord !== undefined &&
+      setSendReverseRecord(!registrationCostsData?.hasReverseRecord);
+  }, [registrationCostsData?.hasReverseRecord]);
 
   useFocusEffect(() => {
     blurFields();

@@ -51,7 +51,10 @@ import {
 } from '@rainbow-me/helpers/ens';
 import {
   useENSRegistration,
+  useENSRegistrationActionHandler,
+  useENSRegistrationCosts,
   useENSRegistrationForm,
+  useENSSearch,
   useKeyboardHeight,
   usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
@@ -68,6 +71,7 @@ export default function ENSAssignRecordsSheet() {
     name,
     mode,
     images: { avatarUrl: initialAvatarUrl },
+    changedRecords,
   } = useENSRegistration({
     setInitialRecordsWhenInEditMode: true,
   });
@@ -79,6 +83,20 @@ export default function ENSAssignRecordsSheet() {
       ENS_RECORDS.email,
       ENS_RECORDS.twitter,
     ].map(fieldName => textRecordFields[fieldName]),
+  });
+
+  const { data: registrationData } = useENSSearch({
+    name,
+  });
+
+  const { step } = useENSRegistrationActionHandler();
+
+  useENSRegistrationCosts({
+    name,
+    records: changedRecords,
+    rentPrice: registrationData?.rentPrice,
+    step,
+    yearsDuration: 1,
   });
 
   const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
@@ -123,7 +141,8 @@ export default function ENSAssignRecordsSheet() {
   }, []);
 
   const { navigate } = useNavigation();
-  const handleFocus = useCallback(async () => {
+
+  const handleFocus = useCallback(() => {
     if (!hasSeenExplainSheet) {
       android && Keyboard.dismiss();
       navigate(Routes.EXPLAIN_SHEET, {
