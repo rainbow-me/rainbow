@@ -1,6 +1,6 @@
 import { toLower } from 'lodash';
 import React, { useMemo } from 'react';
-import { ActivityIndicator, PixelRatio, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { ENS_NFT_CONTRACT_ADDRESS } from '../../../references';
 import { magicMemo } from '../../../utils';
 import { SimpleModelView } from '../../3d';
@@ -8,19 +8,9 @@ import { AudioPlayer } from '../../audio';
 import { UniqueTokenImage } from '../../unique-token';
 import { SimpleVideo } from '../../video';
 import { ZoomableWrapper } from './ZoomableWrapper';
-import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
-import {
-  useDimensions,
-  usePersistentAspectRatio,
-  useUniqueToken,
-} from '@rainbow-me/hooks';
+import { usePersistentAspectRatio, useUniqueToken } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
-
-const pixelRatio = PixelRatio.get();
-
-const GOOGLE_USER_CONTENT_URL = 'https://lh3.googleusercontent.com/';
-const MAX_IMAGE_SCALE = 4;
 
 const ModelView = styled(SimpleModelView)(position.sizeAsObject('100%'));
 
@@ -46,32 +36,18 @@ const UniqueTokenExpandedStateContent = ({
   onContentFocus,
   onContentBlur,
 }) => {
-  const { width: deviceWidth } = useDimensions();
-
-  const maxImageWidth = deviceWidth - horizontalPadding * 2;
   const isENS =
     toLower(asset.asset_contract.address) === toLower(ENS_NFT_CONTRACT_ADDRESS);
-  const isSVG = isSupportedUriExtension(asset.image_url, ['.svg']);
-  const imageUrl = isSVG
-    ? asset.image_preview_url
-    : asset.image_url ||
-      asset.image_original_url ||
-      asset.image_preview_url ||
-      asset.image_thumbnail_url;
-  const size = deviceWidth * pixelRatio;
   const url = useMemo(() => {
-    if (asset.image_url?.startsWith?.(GOOGLE_USER_CONTENT_URL) && size > 0) {
-      return `${asset.image_url}=w${size * MAX_IMAGE_SCALE}`;
-    }
     if (asset.isPoap) return asset.animation_url;
     return asset.image_url;
-  }, [asset.animation_url, asset.image_url, asset.isPoap, size]);
+  }, [asset.animation_url, asset.image_url, asset.isPoap]);
 
   const { supports3d, supportsVideo, supportsAudio } = useUniqueToken(asset);
 
   const supportsAnythingExceptImageAnd3d = supportsVideo || supportsAudio;
 
-  const aspectRatio = usePersistentAspectRatio(asset.image_url);
+  const aspectRatio = usePersistentAspectRatio(asset.lowResUrl);
   const aspectRatioWithFallback =
     supports3d || supportsAudio ? 0.88 : aspectRatio.result || 1;
 
@@ -97,33 +73,30 @@ const UniqueTokenExpandedStateContent = ({
         {supportsVideo ? (
           <SimpleVideo
             loading={loading}
-            posterUri={imageUrl}
+            posterUri={url}
             setLoading={setLoading}
-            size={maxImageWidth}
             style={StyleSheet.absoluteFill}
-            uri={asset.animation_url || imageUrl}
+            uri={asset.animation_url || url}
           />
         ) : supports3d ? (
           <ModelView
-            fallbackUri={imageUrl}
+            fallbackUri={url}
             loading={loading}
             setLoading={setLoading}
-            size={maxImageWidth}
-            uri={asset.animation_url || imageUrl}
+            uri={asset.animation_url || url}
           />
         ) : supportsAudio ? (
           <AudioPlayer
             fontColor={textColor}
             imageColor={imageColor}
-            uri={asset.animation_url || imageUrl}
+            uri={asset.animation_url || url}
           />
         ) : (
           <UniqueTokenImage
             backgroundColor={asset.background}
-            imageUrl={isSVG ? asset.image_url : url}
+            imageUrl={url}
             item={asset}
             resizeMode={resizeMode}
-            size={maxImageWidth}
             transformSvgs={false}
           />
         )}
