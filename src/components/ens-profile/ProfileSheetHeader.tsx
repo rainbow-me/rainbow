@@ -1,11 +1,12 @@
 import { useRoute } from '@react-navigation/core';
-import React, { useContext, useMemo } from 'react';
+import React, { useCallback, useContext, useMemo } from 'react';
 import { ModalContext } from '../../react-native-cool-modals/NativeStackView';
 import Skeleton from '../skeleton/Skeleton';
 import ActionButtons from './ActionButtons/ActionButtons';
 import ProfileAvatar from './ProfileAvatar/ProfileAvatar';
 import ProfileCover from './ProfileCover/ProfileCover';
 import RecordTags, {
+  Hyperlink,
   Placeholder as RecordTagsPlaceholder,
 } from './RecordTags/RecordTags';
 import {
@@ -15,6 +16,7 @@ import {
   Columns,
   Divider,
   Heading,
+  Inline,
   Inset,
   Stack,
   Text,
@@ -22,6 +24,8 @@ import {
 import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 import { useENSProfile, useFirstTransactionTimestamp } from '@rainbow-me/hooks';
 import { addressHashedEmoji } from '@rainbow-me/utils/profileUtils';
+
+const ENS_REGEX = /[^\s]+.eth/g;
 
 export default function ProfileSheetHeader({
   ensName: defaultEnsName,
@@ -49,6 +53,24 @@ export default function ProfileSheetHeader({
     () => (profileAddress ? addressHashedEmoji(profileAddress) : ''),
     [profileAddress]
   );
+
+  const handleDescription = useCallback(() => {
+    const ensNames = profile?.records?.description?.match(ENS_REGEX);
+    const text = profile?.records?.description?.split(ENS_REGEX);
+
+    return (
+      <Inline alignVertical="center">
+        {text?.map((t, i) => (
+          <>
+            <Text containsEmoji key={i} weight="medium">
+              {t}
+            </Text>
+            {ensNames?.[i] && <Hyperlink value={ensNames?.[i]} />}
+          </>
+        ))}
+      </Inline>
+    );
+  }, [profile?.records.description]);
 
   return (
     <Box
@@ -79,17 +101,7 @@ export default function ProfileSheetHeader({
             <Heading size="23px">{ensName}</Heading>
             {!isPreview && (
               <>
-                {isLoading ? (
-                  <DescriptionPlaceholder />
-                ) : (
-                  <>
-                    {profile?.records.description && (
-                      <Text containsEmoji weight="medium">
-                        {profile?.records.description}
-                      </Text>
-                    )}
-                  </>
-                )}
+                {isLoading ? <DescriptionPlaceholder /> : handleDescription()}
               </>
             )}
             <Bleed horizontal="19px">
