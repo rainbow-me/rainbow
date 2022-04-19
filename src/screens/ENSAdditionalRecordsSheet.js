@@ -64,7 +64,9 @@ export default function ENSAdditionalRecordsSheet() {
                       onRemoveField(fieldToRemove, newFields);
                     } else {
                       const fieldToAdd = textRecordField;
-                      onAddField(fieldToAdd, [...selectedFields, fieldToAdd]);
+                      const newSelectedFields = [...selectedFields];
+                      newSelectedFields.splice(i, 0, fieldToAdd);
+                      onAddField(fieldToAdd, newSelectedFields);
                     }
                   }}
                   testID={`ens-selectable-attribute-${textRecordField.id}`}

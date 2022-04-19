@@ -103,7 +103,6 @@ export const textRecordFields = {
     inputProps: {
       maxLength: 50,
     },
-    isPrimaryDisplayRecord: true,
     key: ENS_RECORDS.displayName,
     label: lang.t('profiles.create.name'),
     placeholder: lang.t('profiles.create.name_placeholder'),
@@ -114,26 +113,22 @@ export const textRecordFields = {
       maxLength: 100,
       multiline: true,
     },
-    isPrimaryDisplayRecord: true,
     key: ENS_RECORDS.description,
     label: lang.t('profiles.create.bio'),
     placeholder: lang.t('profiles.create.bio_placeholder'),
   },
-  [ENS_RECORDS.email]: {
-    id: 'email',
+  [ENS_RECORDS.twitter]: {
+    id: 'twitter',
     inputProps: {
-      maxLength: 50,
+      maxLength: 16,
     },
-    isPrimaryDisplayRecord: true,
-    key: ENS_RECORDS.email,
-    label: lang.t('profiles.create.email'),
-    placeholder: lang.t('profiles.create.email_placeholder'),
+    key: ENS_RECORDS.twitter,
+    label: lang.t('profiles.create.twitter'),
+    placeholder: lang.t('profiles.create.username_placeholder'),
+    startsWith: '@',
     validations: {
-      onSubmit: {
-        match: {
-          message: lang.t('profiles.create.email_submit_message'),
-          value: /^\S+@\S+\.\S+$/,
-        },
+      onChange: {
+        match: /^\w*$/,
       },
     },
   },
@@ -146,19 +141,20 @@ export const textRecordFields = {
     label: lang.t('profiles.create.pronouns'),
     placeholder: lang.t('profiles.create.pronouns_placeholder'),
   },
-  [ENS_RECORDS.twitter]: {
-    id: 'twitter',
+  [ENS_RECORDS.email]: {
+    id: 'email',
     inputProps: {
-      maxLength: 16,
+      maxLength: 50,
     },
-    isPrimaryDisplayRecord: true,
-    key: ENS_RECORDS.twitter,
-    label: lang.t('profiles.create.twitter'),
-    placeholder: lang.t('profiles.create.username_placeholder'),
-    startsWith: '@',
+    key: ENS_RECORDS.email,
+    label: lang.t('profiles.create.email'),
+    placeholder: lang.t('profiles.create.email_placeholder'),
     validations: {
-      onChange: {
-        match: /^\w*$/,
+      onSubmit: {
+        match: {
+          message: lang.t('profiles.create.email_submit_message'),
+          value: /^\S+@\S+\.\S+$/,
+        },
       },
     },
   },
@@ -168,7 +164,6 @@ export const textRecordFields = {
       keyboardType: 'url',
       maxLength: 100,
     },
-    isPrimaryDisplayRecord: true,
     key: ENS_RECORDS.url,
     label: lang.t('profiles.create.website'),
     placeholder: lang.t('profiles.create.website_placeholder'),
@@ -186,7 +181,6 @@ export const textRecordFields = {
     inputProps: {
       maxLength: 20,
     },
-    isPrimaryDisplayRecord: true,
     key: ENS_RECORDS.github,
     label: lang.t('profiles.create.github'),
     placeholder: lang.t('profiles.create.username_placeholder'),
@@ -196,7 +190,6 @@ export const textRecordFields = {
     inputProps: {
       maxLength: 30,
     },
-    isPrimaryDisplayRecord: true,
     key: ENS_RECORDS.instagram,
     label: lang.t('profiles.create.instagram'),
     placeholder: lang.t('profiles.create.username_placeholder'),
@@ -212,7 +205,6 @@ export const textRecordFields = {
     inputProps: {
       maxLength: 16,
     },
-    isPrimaryDisplayRecord: true,
     key: ENS_RECORDS.snapchat,
     label: lang.t('profiles.create.snapchat'),
     placeholder: lang.t('profiles.create.username_placeholder'),
@@ -228,7 +220,6 @@ export const textRecordFields = {
     inputProps: {
       maxLength: 50,
     },
-    isPrimaryDisplayRecord: true,
     key: ENS_RECORDS.discord,
     label: lang.t('profiles.create.discord'),
     placeholder: lang.t('profiles.create.username_placeholder'),

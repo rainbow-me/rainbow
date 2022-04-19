@@ -40,17 +40,22 @@ const GestureBlocker = styled(View)({
   height: ({ height }) => height * 3,
   left: ({ xOffset }) => -xOffset,
   position: 'absolute',
-  top: ({ yOffset }) => -yOffset,
+  top: ({ yOffset }) => -yOffset * 3,
   width: ({ width }) => width,
 });
 
 // TODO osdnk
 const Container = vstyled(Animated.View)`
   align-self: center;
-  shadow-color: ${({ theme: { colors } }) => colors.shadowBlack};
-  shadow-offset: 0 20px;
-  shadow-opacity: 0.4;
-  shadow-radius: 30px;
+  ${({ hasShadow, theme: { colors } }) =>
+    hasShadow
+      ? `
+    shadow-color: ${colors.shadowBlack};
+    shadow-offset: 0 20px;
+    shadow-opacity: 0.4;
+    shadow-radius: 30px;
+  `
+      : ''}
 `;
 
 const ImageWrapper = styled(Animated.View)({
@@ -69,17 +74,20 @@ const MIN_IMAGE_SCALE = 1;
 const THRESHOLD = 250;
 
 export const ZoomableWrapper = ({
-  animationProgress: givenAnimationProgress,
+  animationProgress: givenAnimationProgress = undefined,
   children,
+  hasShadow = true,
   horizontalPadding,
   aspectRatio,
   borderRadius,
   disableAnimations,
+  onZoomIn = () => {},
+  onZoomInWorklet = () => {},
+  onZoomOut = () => {},
+  onZoomOutWorklet = () => {},
   opacity,
   yOffset = 85,
   xOffset: givenXOffset = 0,
-  onZoomIn,
-  onZoomOut,
   yDisplacement: givenYDisplacement,
   width,
   height,
@@ -148,6 +156,8 @@ export const ZoomableWrapper = ({
       1 +
       animationProgress.value *
         (fullSizeHeight / (containerHeightValue.value ?? 1) - 1);
+
+    const maxWidth = (deviceWidth - containerWidth) / 2;
     return {
       opacity: opacity.value,
       transform: [
@@ -166,8 +176,7 @@ export const ZoomableWrapper = ({
           ? [
               {
                 translateX:
-                  -animationProgress.value *
-                  (givenXOffset - givenXOffset / scale + 5),
+                  -animationProgress.value * (-maxWidth + givenXOffset),
               },
             ]
           : []),
@@ -275,6 +284,7 @@ export const ZoomableWrapper = ({
         const adjustedScale = scale.value / (fullSizeWidth / containerWidth);
         isZoomedValue.value = true;
         runOnJS(setIsZoomed)(true);
+        onZoomInWorklet?.();
         animationProgress.value = withTiming(1, adjustConfig);
         scale.value = withTiming(adjustedScale, adjustConfig);
       } else {
@@ -288,6 +298,7 @@ export const ZoomableWrapper = ({
         if (ctx.startScale <= MIN_IMAGE_SCALE && !ctx.blockExitZoom) {
           isZoomedValue.value = false;
           runOnJS(setIsZoomed)(false);
+          onZoomOutWorklet?.();
           animationProgress.value = withSpring(0, exitConfig);
           scale.value = withSpring(MIN_IMAGE_SCALE, exitConfig);
           translateX.value = withSpring(0, exitConfig);
@@ -310,6 +321,7 @@ export const ZoomableWrapper = ({
       ) {
         isZoomedValue.value = false;
         runOnJS(setIsZoomed)(false);
+        onZoomOutWorklet?.();
         scale.value = withSpring(MIN_IMAGE_SCALE, exitConfig);
         animationProgress.value = withSpring(0, exitConfig);
         translateX.value = withSpring(0, exitConfig);
@@ -477,6 +489,7 @@ export const ZoomableWrapper = ({
       if (!isZoomedValue.value) {
         isZoomedValue.value = true;
         runOnJS(setIsZoomed)(true);
+        onZoomInWorklet?.();
         animationProgress.value = withSpring(1, enterConfig);
       } else if (
         scale.value === MIN_IMAGE_SCALE &&
@@ -489,6 +502,7 @@ export const ZoomableWrapper = ({
         // dismiss if tap was outside image bounds
         isZoomedValue.value = false;
         runOnJS(setIsZoomed)(false);
+        onZoomOutWorklet?.();
         animationProgress.value = withSpring(0, exitConfig);
       }
     },
@@ -579,7 +593,7 @@ export const ZoomableWrapper = ({
       enableHapticFeedback={false}
       onPress={() => {}}
       scaleTo={1}
-      style={{ alignItems: 'center', zIndex: 10 }}
+      style={{ alignItems: 'center', zIndex: 1 }}
     >
       <PanGestureHandler
         enabled={!disableAnimations}
@@ -619,6 +633,7 @@ export const ZoomableWrapper = ({
                     waitFor={pinch}
                   >
                     <Container
+                      hasShadow={hasShadow}
                       style={[containerStyle, StyleSheet.absoluteFillObject]}
                     >
                       <PinchGestureHandler

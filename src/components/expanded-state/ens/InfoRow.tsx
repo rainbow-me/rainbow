@@ -15,6 +15,7 @@ import {
   Text,
   useForegroundColor,
 } from '@rainbow-me/design-system';
+import { ImgixImage } from '@rainbow-me/images';
 import Routes from '@rainbow-me/routes';
 
 export function InfoRowSkeleton() {
@@ -112,7 +113,13 @@ export default function InfoRow({
       {wrapValue(
         <>
           {isImage ? (
-            <>{value && <ImagePreviewOverlayTarget uri={value} />}</>
+            <>
+              {value && (
+                <ImagePreviewOverlayTarget aspectRatioType="cover">
+                  <Box as={ImgixImage} height="full" source={{ uri: value }} />
+                </ImagePreviewOverlayTarget>
+              )}
+            </>
           ) : (
             <Box
               borderRadius={16}
