@@ -2,6 +2,10 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import { useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
+import {
+  ContextMenuButton,
+  MenuActionConfig,
+} from 'react-native-ios-context-menu';
 import LinearGradient from 'react-native-linear-gradient';
 import ActivityIndicator from '../components/ActivityIndicator';
 import Button from '../components/buttons/Button';
@@ -31,7 +35,12 @@ import {
   useENSRegistration,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
+import { showActionSheetWithOptions } from '@rainbow-me/utils';
 
+enum AnotherENSEnum {
+  search = 'search',
+  my_ens = 'my_ens',
+}
 const topPadding = android ? 29 : 19;
 
 export default function ENSIntroSheet() {
@@ -42,50 +51,114 @@ export default function ENSIntroSheet() {
   const { data: domains, isLoading, isSuccess } = useAccountENSDomains();
   const { accountENS } = useAccountProfile();
 
-  const { ownedDomains, primaryDomain } = useMemo(
-    () => ({
-      ownedDomains: domains?.filter(
-        ({ owner }) => owner.id?.toLowerCase() === accountAddress.toLowerCase()
-      ),
-      primaryDomain: domains?.find(({ name }) => accountENS === name),
-    }),
-    [accountAddress, accountENS, domains]
-  );
+  const { ownedDomains, primaryDomain, nonPrimaryDomains } = useMemo(() => {
+    const ownedDomains = domains?.filter(
+      ({ owner }) => owner.id?.toLowerCase() === accountAddress.toLowerCase()
+    );
+    return {
+      nonPrimaryDomains:
+        ownedDomains?.filter(({ name }) => accountENS !== name) || [],
+      ownedDomains,
+      primaryDomain: ownedDomains?.find(({ name }) => accountENS === name),
+    };
+  }, [accountAddress, accountENS, domains]);
 
   const uniqueDomain = useMemo(() => {
     return primaryDomain
       ? primaryDomain
-      : ownedDomains?.length === 1
-      ? ownedDomains?.[0]
+      : nonPrimaryDomains?.length === 1
+      ? nonPrimaryDomains?.[0]
       : null;
-  }, [ownedDomains, primaryDomain]);
+  }, [nonPrimaryDomains, primaryDomain]);
 
   const { navigate } = useNavigation();
-  const handleNavigateToSearch = useCallback(() => {
-    navigate(Routes.ENS_SEARCH_SHEET);
-  }, [navigate]);
-
   const { startRegistration } = useENSRegistration();
 
-  const handleSelectExistingName = useCallback(() => {
-    const navigateToAssignRecords = (ensName: string) => {
+  const handleNavigateToSearch = useCallback(() => {
+    startRegistration('', REGISTRATION_MODES.CREATE);
+    navigate(Routes.ENS_SEARCH_SHEET);
+  }, [navigate, startRegistration]);
+
+  const navigateToAssignRecords = useCallback(
+    (ensName: string) => {
       params?.onSelectExistingName?.();
       startRegistration(ensName, REGISTRATION_MODES.EDIT);
       setTimeout(() => {
         navigate(Routes.ENS_ASSIGN_RECORDS_SHEET);
       }, 0);
-    };
+    },
+    [navigate, params, startRegistration]
+  );
 
-    if (uniqueDomain) {
-      navigateToAssignRecords(uniqueDomain.name);
-    } else {
-      navigate(Routes.SELECT_ENS_SHEET, {
-        onSelectENS: (ensName: string) => {
-          navigateToAssignRecords(ensName);
+  const handleSelectUniqueDomain = useCallback(() => {
+    !!uniqueDomain && navigateToAssignRecords(uniqueDomain?.name);
+  }, [navigateToAssignRecords, uniqueDomain]);
+
+  const handleSelectExistingName = useCallback(() => {
+    navigate(Routes.SELECT_ENS_SHEET, {
+      onSelectENS: (ensName: string) => {
+        navigateToAssignRecords(ensName);
+      },
+    });
+  }, [navigate, navigateToAssignRecords]);
+
+  const menuConfig = useMemo(() => {
+    return {
+      menuItems: [
+        {
+          actionKey: AnotherENSEnum.my_ens,
+          actionTitle: 'My ENS names',
+          icon: {
+            iconType: 'SYSTEM',
+            iconValue: 'rectangle.stack.person.crop',
+          },
         },
-      });
-    }
-  }, [uniqueDomain, params, startRegistration, navigate]);
+        {
+          actionKey: AnotherENSEnum.search,
+          actionTitle: 'Search for a New ENS name',
+          icon: {
+            iconType: 'SYSTEM',
+            iconValue: 'magnifyingglass.circle.fill',
+          },
+        },
+      ] as MenuActionConfig[],
+      menuTitle: '',
+    };
+  }, []);
+
+  const onPressAndroidActions = useCallback(() => {
+    const androidActions = [
+      'My ENS names',
+      'Search for a New ENS name',
+    ] as const;
+
+    showActionSheetWithOptions(
+      {
+        options: androidActions,
+        showSeparators: true,
+        title: '',
+      },
+      (idx: number) => {
+        console.log('idx', idx);
+        if (idx === 0) {
+          handleSelectExistingName();
+        } else if (idx === 1) {
+          handleNavigateToSearch();
+        }
+      }
+    );
+  }, [handleNavigateToSearch, handleSelectExistingName]);
+
+  const handlePressMenuItem = useCallback(
+    ({ nativeEvent: { actionKey } }) => {
+      if (actionKey === AnotherENSEnum.my_ens) {
+        handleSelectExistingName();
+      } else if (actionKey === AnotherENSEnum.search) {
+        handleNavigateToSearch();
+      }
+    },
+    [handleNavigateToSearch, handleSelectExistingName]
+  );
 
   return (
     <Box
@@ -170,7 +243,7 @@ export default function ENSIntroSheet() {
                           {uniqueDomain ? (
                             <Button
                               backgroundColor={colors.appleBlue}
-                              onPress={handleSelectExistingName}
+                              onPress={handleSelectUniqueDomain}
                               textProps={{ weight: 'heavy' }}
                             >
                               {lang.t('profiles.intro.use_name', {
@@ -186,15 +259,36 @@ export default function ENSIntroSheet() {
                               {lang.t('profiles.intro.use_existing_name')}
                             </Button>
                           )}
-                          <Button
-                            backgroundColor={colors.transparent}
-                            borderColor={colors.transparent}
-                            color={colors.appleBlue}
-                            onPress={handleNavigateToSearch}
-                            textProps={{ size: 'lmedium', weight: 'heavy' }}
-                          >
-                            {lang.t('profiles.intro.search_new_name')}
-                          </Button>
+                          {nonPrimaryDomains?.length > 0 ? (
+                            <ContextMenuButton
+                              menuConfig={menuConfig}
+                              {...(android
+                                ? { onPress: onPressAndroidActions }
+                                : {})}
+                              isMenuPrimaryAction
+                              onPressMenuItem={handlePressMenuItem}
+                              useActionSheetFallback={false}
+                            >
+                              <Button
+                                backgroundColor={colors.transparent}
+                                borderColor={colors.transparent}
+                                color={colors.appleBlue}
+                                textProps={{ size: 'lmedium', weight: 'heavy' }}
+                              >
+                                {lang.t('profiles.intro.choose_another_name')}
+                              </Button>
+                            </ContextMenuButton>
+                          ) : (
+                            <Button
+                              backgroundColor={colors.transparent}
+                              borderColor={colors.transparent}
+                              color={colors.appleBlue}
+                              onPress={handleNavigateToSearch}
+                              textProps={{ size: 'lmedium', weight: 'heavy' }}
+                            >
+                              {lang.t('profiles.intro.search_new_name')}
+                            </Button>
+                          )}
                         </Stack>
                       )}
                     </>

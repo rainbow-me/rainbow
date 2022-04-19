@@ -1,6 +1,6 @@
 import { useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { FlatList } from 'react-native-gesture-handler';
 import ButtonPressAnimation from '../components/animations/ButtonPressAnimation';
 import { Sheet } from '../components/sheet';
@@ -15,7 +15,11 @@ import {
   Text,
   useForegroundColor,
 } from '@rainbow-me/design-system';
-import { useAccountENSDomains } from '@rainbow-me/hooks';
+import {
+  useAccountENSDomains,
+  useAccountProfile,
+  useAccountSettings,
+} from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import { deviceUtils } from '@rainbow-me/utils';
@@ -28,7 +32,8 @@ const maxListHeight = deviceHeight - 220;
 
 export default function SelectENSSheet() {
   const { data: domains, isSuccess } = useAccountENSDomains();
-
+  const { accountAddress } = useAccountSettings();
+  const { accountENS } = useAccountProfile();
   const accentColor = useForegroundColor('action');
 
   const { goBack } = useNavigation();
@@ -42,7 +47,14 @@ export default function SelectENSSheet() {
     [goBack, params]
   );
 
-  let listHeight = (rowHeight + 30) * (domains?.length || 0);
+  const nonPrimaryDomains = useMemo(() => {
+    const ownedDomains = domains?.filter(
+      ({ owner }) => owner.id?.toLowerCase() === accountAddress.toLowerCase()
+    );
+    return ownedDomains?.filter(({ name }) => accountENS !== name) || [];
+  }, [accountAddress, accountENS, domains]);
+
+  let listHeight = (rowHeight + 40) * (nonPrimaryDomains?.length || 0);
   let scrollEnabled = false;
   if (listHeight > maxListHeight) {
     listHeight = maxListHeight;
@@ -114,7 +126,7 @@ export default function SelectENSSheet() {
                 ItemSeparatorComponent={() => <Box height={{ custom: 15 }} />}
                 as={FlatList}
                 contentContainerStyle={{ paddingBottom: 40, paddingTop: 15 }}
-                data={domains}
+                data={nonPrimaryDomains}
                 height={{ custom: listHeight }}
                 keyExtractor={({ domain }: { domain: string }) => domain}
                 renderItem={renderItem}
