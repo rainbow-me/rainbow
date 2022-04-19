@@ -65,6 +65,8 @@ function generateDerivedData(tokenListData: TokenListData) {
   return derivedData;
 }
 
+
+
 async function readRNFSJsonData<T>(filename: string): Promise<T | null> {
   try {
     const data = await RNFS.readFile(
