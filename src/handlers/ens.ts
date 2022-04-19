@@ -1,16 +1,20 @@
 import { formatsByCoinType } from '@ensdomains/address-encoder';
+import { captureException } from '@sentry/react-native';
+import { BigNumber } from 'ethers';
 import { debounce, isEmpty, sortBy } from 'lodash';
 import { ensClient } from '../apollo/client';
 import {
   ENS_ACCOUNT_REGISTRATIONS,
   ENS_DOMAINS,
   ENS_GET_COIN_TYPES,
+  ENS_GET_NAME_FROM_LABELHASH,
   ENS_GET_RECORDS,
   ENS_GET_REGISTRATION,
   ENS_REGISTRATIONS,
   ENS_SUGGESTIONS,
   EnsAccountRegistratonsData,
   EnsGetCoinTypesData,
+  EnsGetNameFromLabelhash,
   EnsGetRecordsData,
   EnsGetRegistrationData,
 } from '../apollo/queries';
@@ -26,8 +30,12 @@ import {
   getNameOwner,
 } from '@rainbow-me/helpers/ens';
 import { add } from '@rainbow-me/helpers/utilities';
-import { ensPublicResolverAddress, ethUnits } from '@rainbow-me/references';
-import { labelhash, profileUtils } from '@rainbow-me/utils';
+import {
+  ENS_NFT_CONTRACT_ADDRESS,
+  ensPublicResolverAddress,
+  ethUnits,
+} from '@rainbow-me/references';
+import { labelhash, logger, profileUtils } from '@rainbow-me/utils';
 import { AvatarResolver } from 'ens-avatar';
 
 const DUMMY_RECORDS = {
@@ -35,6 +43,30 @@ const DUMMY_RECORDS = {
     'https://cloudflare-ipfs.com/ipfs/QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco/I/m/Vincent_van_Gogh_-_Self-Portrait_-_Google_Art_Project_(454045).jpg',
   'description': 'description',
   'me.rainbow.displayName': 'name',
+};
+
+export const fetchMetadata = async ({
+  contractAddress = ENS_NFT_CONTRACT_ADDRESS,
+  tokenId,
+}: {
+  contractAddress?: string;
+  tokenId: string;
+}) => {
+  try {
+    const { data } = await ensClient.query<EnsGetNameFromLabelhash>({
+      query: ENS_GET_NAME_FROM_LABELHASH,
+      variables: {
+        labelhash: BigNumber.from(tokenId).toHexString(),
+      },
+    });
+    const name = data.domains[0].labelName;
+    const image_url = `https://metadata.ens.domains/mainnet/${contractAddress}/${tokenId}/image`;
+    return { image_url, name: `${name}.eth` };
+  } catch (error) {
+    logger.sentry('ENS: Error getting ENS metadata', error);
+    captureException(new Error('ENS: Error getting ENS metadata'));
+    throw error;
+  }
 };
 
 export const fetchSuggestions = async (
@@ -489,6 +521,22 @@ export const estimateENSRegistrationGasLimit = async (
     [...gasLimits, registerWithConfigGasLimit].reduce((a, b) =>
       add(a || 0, b || 0)
     ) || `${ethUnits.ens_registration}`;
+
+  return {
+    commitGasLimit,
+    multicallGasLimit,
+    registerWithConfigGasLimit,
+    setNameGasLimit,
+    totalRegistrationGasLimit,
+  };
+};
+
+export const getENSRegistrationGasLimit = () => {
+  const commitGasLimit = `${ethUnits.ens_commit}`;
+  const multicallGasLimit = `${ethUnits.ens_set_multicall}`;
+  const setNameGasLimit = `${ethUnits.ens_set_name}`;
+  const registerWithConfigGasLimit = `${ethUnits.ens_register_with_config}`;
+  const totalRegistrationGasLimit = `${ethUnits.ens_registration}`;
 
   return {
     commitGasLimit,

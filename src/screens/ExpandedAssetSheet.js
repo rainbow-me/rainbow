@@ -46,7 +46,12 @@ export default function ExpandedAssetSheet(props) {
   const { goBack } = useNavigation();
   const { params } = useRoute();
   const { isDarkMode } = useTheme();
-  const selectedAsset = useAsset(params.asset);
+
+  // We want to revalidate (ie. refresh OpenSea metadata) collectibles
+  // to ensure the user can get the latest metadata of their collectible.
+  const selectedAsset = useAsset(params.asset, {
+    revalidateCollectibleInBackground: true,
+  });
 
   return (
     <Container
