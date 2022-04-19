@@ -1,7 +1,9 @@
 import { BlurView } from '@react-native-community/blur';
 import { uniqueId } from 'lodash';
 import React, {
+  createContext,
   useCallback,
+  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -78,6 +80,13 @@ const yOffsetAtom = atomFamily({
   key: 'imagePreviewOverlay.yOffset',
 });
 
+const ImageOverlayConfigContext = createContext<{
+  enableZoom: boolean;
+  useBackgroundOverlay: boolean;
+}>({
+  enableZoom: true,
+});
+
 const enterConfig = {
   damping: 40,
   mass: 1.5,
@@ -92,6 +101,7 @@ const exitConfig = {
 type ImagePreviewOverlayProps = {
   backgroundOverlay?: React.ReactElement;
   children: React.ReactNode;
+  enableZoom?: boolean;
   opacity?: SharedValue<number>;
   useBackgroundOverlay?: boolean;
   yPosition?: SharedValue<number>;
@@ -100,6 +110,7 @@ type ImagePreviewOverlayProps = {
 export default function ImagePreviewOverlay({
   backgroundOverlay,
   children,
+  enableZoom = true,
   opacity,
   useBackgroundOverlay = true,
   yPosition: givenYPosition,
@@ -109,13 +120,18 @@ export default function ImagePreviewOverlay({
 
   return (
     <RecoilRoot>
-      {children}
-      <ImagePreviews
-        backgroundOverlay={backgroundOverlay}
-        opacity={opacity}
-        useBackgroundOverlay={useBackgroundOverlay}
-        yPosition={yPosition}
-      />
+      <ImageOverlayConfigContext.Provider
+        value={{ enableZoom, useBackgroundOverlay }}
+      >
+        {children}
+        {enableZoom && (
+          <ImagePreviews
+            backgroundOverlay={backgroundOverlay}
+            opacity={opacity}
+            yPosition={yPosition}
+          />
+        )}
+      </ImageOverlayConfigContext.Provider>
     </RecoilRoot>
   );
 }
@@ -123,14 +139,12 @@ export default function ImagePreviewOverlay({
 type ImagePreviewsProps = {
   backgroundOverlay?: React.ReactElement;
   opacity?: SharedValue<number>;
-  useBackgroundOverlay: boolean;
   yPosition: SharedValue<number>;
 };
 
 function ImagePreviews({
   backgroundOverlay,
   opacity,
-  useBackgroundOverlay,
   yPosition,
 }: ImagePreviewsProps) {
   const ids = useRecoilValue(idsAtom);
@@ -143,7 +157,6 @@ function ImagePreviews({
           index={index}
           key={index}
           opacity={opacity}
-          useBackgroundOverlay={useBackgroundOverlay}
           yPosition={yPosition}
         />
       ))}
@@ -156,7 +169,6 @@ type ImagePreviewProps = {
   index: number;
   id: string;
   opacity?: SharedValue<number>;
-  useBackgroundOverlay: boolean;
   yPosition: SharedValue<number>;
 };
 
@@ -166,8 +178,9 @@ function ImagePreview({
   id,
   opacity: givenOpacity,
   yPosition,
-  useBackgroundOverlay,
 }: ImagePreviewProps) {
+  const { useBackgroundOverlay } = useContext(ImageOverlayConfigContext);
+
   const aspectRatio = useRecoilValue(aspectRatioAtom(id));
   const backgroundMask = useRecoilValue(backgroundMaskAtom(id));
   const borderRadius = useRecoilValue(borderRadiusAtom(id));
@@ -350,6 +363,8 @@ export function ImagePreviewOverlayTarget({
       uri?: never;
     }
 )) {
+  const { enableZoom } = useContext(ImageOverlayConfigContext);
+
   const id = useMemo(() => uniqueId(), []);
 
   const [height, setHeight] = useRecoilState(heightAtom(id));
@@ -433,17 +448,19 @@ export function ImagePreviewOverlayTarget({
   );
 
   useEffect(() => {
+    if (!enableZoom) return;
     setHostComponent(children);
-  }, [children, setHostComponent, uri]);
+  }, [children, enableZoom, setHostComponent, uri]);
 
   const [renderPlaceholder, setRenderPlaceholder] = useState(true);
   useEffect(() => {
+    if (!enableZoom) return;
     if (width) {
       InteractionManager.runAfterInteractions(() => {
         setTimeout(() => setRenderPlaceholder(false), 500);
       });
     }
-  }, [width]);
+  }, [enableZoom, width]);
 
   return (
     <Box flexShrink={1} width="full">

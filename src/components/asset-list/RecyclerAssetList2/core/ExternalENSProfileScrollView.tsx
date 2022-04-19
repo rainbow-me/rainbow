@@ -73,7 +73,7 @@ const ExternalENSProfileScrollViewWithRef = React.forwardRef<
             onScroll: scrollHandler,
           })}
     >
-      <ImagePreviewOverlay yPosition={yPosition}>
+      <ImagePreviewOverlay enableZoom={ios} yPosition={yPosition}>
         <ProfileSheetHeader />
         {props.children}
       </ImagePreviewOverlay>
