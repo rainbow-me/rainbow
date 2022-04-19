@@ -37,7 +37,7 @@ export default function ConfigurationSection({
       ) : (
         <>
           <InfoRow
-            explainSheetType="ens_owner"
+            explainSheetType="ens_primary_name"
             label={lang.t('expanded_state.unique_expanded.set_primary_name')}
             onSwitchChange={() => {
               startRegistration(name, REGISTRATION_MODES.SET_NAME);

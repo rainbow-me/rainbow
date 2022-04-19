@@ -82,7 +82,7 @@ const yOffsetAtom = atomFamily({
 
 const ImageOverlayConfigContext = createContext<{
   enableZoom: boolean;
-  useBackgroundOverlay: boolean;
+  useBackgroundOverlay?: boolean;
 }>({
   enableZoom: true,
 });

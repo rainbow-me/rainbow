@@ -103,7 +103,7 @@ export default function ENSConfirmRegisterSheet() {
   const { blurFields, values } = useENSRegistrationForm();
   const avatarUrl = initialAvatarUrl || values.avatar;
 
-  const name = ensName.replace(ENS_DOMAIN, '');
+  const name = ensName?.replace(ENS_DOMAIN, '');
   const { data: registrationData } = useENSSearch({
     name,
   });
@@ -273,6 +273,7 @@ export default function ENSConfirmRegisterSheet() {
             registrationCostsData?.isValidGas &&
             Boolean(registrationCostsData?.stepGasLimit)
           }
+          label={lang.t('profiles.confirm.confirm_set_name')}
         />
       ),
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: null,
