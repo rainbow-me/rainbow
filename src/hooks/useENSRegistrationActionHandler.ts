@@ -84,10 +84,7 @@ export default function useENSRegistrationActionHandler(
       : -1
   );
 
-  const isTesting = useMemo(
-    () => IS_TESTING === 'true' && isHardHat(web3Provider.connection.url),
-    []
-  );
+  const isTesting = useMemo(() => isHardHat(web3Provider.connection.url), []);
 
   const [readyToRegister, setReadyToRegister] = useState<boolean>(
     isTesting || secondsSinceCommitConfirmed > 60

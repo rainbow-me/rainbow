@@ -54,7 +54,7 @@ const PendingRegistration = ({
   return (
     <Box>
       <Columns alignVertical="center">
-        {avatarUrl ?? (
+        {avatarUrl && (
           <Column width="content">
             <Box paddingRight="10px">
               <ImageAvatar image={avatarUrl} size="small" />
