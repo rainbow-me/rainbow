@@ -6,6 +6,7 @@ import { SheetHandleFixedToTopHeight } from '../components/sheet';
 import { Text } from '../components/text';
 import { useTheme } from '../context/ThemeContext';
 import colors from '../context/currentColors';
+import { getENSAdditionalRecordsSheetHeight } from '../screens/ENSAdditionalRecordsSheet';
 import { ENSConfirmRegisterSheetHeight } from '../screens/ENSConfirmRegisterSheet';
 import { explainers, ExplainSheetHeight } from '../screens/ExplainSheet';
 import { ExternalLinkWarningSheetHeight } from '../screens/ExternalLinkWarningSheet';
@@ -158,6 +159,15 @@ export const ensConfirmRegisterSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       longFormHeight: ENSConfirmRegisterSheetHeight,
+      ...params,
+    }),
+  }),
+};
+
+export const ensAdditionalRecordsSheetConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      longFormHeight: getENSAdditionalRecordsSheetHeight(),
       ...params,
     }),
   }),

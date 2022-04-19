@@ -1,3 +1,4 @@
+import { subDays } from 'date-fns';
 import { omit } from 'lodash';
 import { Dispatch } from 'react';
 import { AppDispatch, AppGetState } from './store';
@@ -28,6 +29,8 @@ const ENS_REGISTRATION_UPDATE_RECORD_BY_KEY =
   'ensRegistration/ENS_REGISTRATION_UPDATE_RECORD_BY_KEY';
 const ENS_REGISTRATION_REMOVE_RECORD_BY_KEY =
   'ensRegistration/ENS_REGISTRATION_REMOVE_RECORD_BY_KEY';
+const ENS_REMOVE_EXPIRED_REGISTRATIONS =
+  'ensRegistration/ENS_REMOVE_EXPIRED_REGISTRATIONS';
 const ENS_CONTINUE_REGISTRATION = 'ensRegistration/ENS_CONTINUE_REGISTRATION';
 const ENS_START_REGISTRATION = 'ensRegistration/ENS_START_REGISTRATION';
 const ENS_SAVE_COMMIT_REGISTRATION_PARAMETERS =
@@ -95,6 +98,11 @@ interface EnsRegistrationLoadState {
   payload: { registrations: ENSRegistrations };
 }
 
+interface EnsRemoveExpiredRegistrationsAction {
+  type: typeof ENS_REMOVE_EXPIRED_REGISTRATIONS;
+  payload: { registrations: ENSRegistrations };
+}
+
 interface EnsUpdateTransactionRegistrationParameters {
   type: typeof ENS_UPDATE_REGISTRATION_PARAMETERS;
   payload: { registrations: ENSRegistrations };
@@ -117,6 +125,7 @@ export type EnsRegistrationActionTypes =
   | EnsRegistrationSaveCommitRegistrationParametersAction
   | EnsClearCurrentRegistrationNameAction
   | EnsRegistrationLoadState
+  | EnsRemoveExpiredRegistrationsAction
   | EnsUpdateTransactionRegistrationParameters;
 
 // -- Actions ---------------------------------------- //
@@ -206,6 +215,32 @@ export const updateRegistrationDuration = (
   dispatch({
     payload: updatedEnsRegistrationManager,
     type: ENS_REGISTRATION_UPDATE_DURATION,
+  });
+};
+
+export const removeExpiredRegistrations = (
+  accountAddress: EthereumAddress
+) => async (dispatch: AppDispatch, getState: AppGetState) => {
+  const {
+    ensRegistration: { registrations },
+  } = getState();
+
+  const accountRegistrations =
+    registrations?.[accountAddress.toLowerCase()] || [];
+
+  const registrationsArray = Object.values(accountRegistrations);
+
+  const sevenDaysAgoMs = subDays(new Date(), 7).getTime();
+
+  const activeRegistrations = registrationsArray.filter(registration =>
+    registration?.commitTransactionConfirmedAt
+      ? registration?.commitTransactionConfirmedAt >= sevenDaysAgoMs
+      : true
+  );
+
+  dispatch({
+    payload: activeRegistrations,
+    type: ENS_REMOVE_EXPIRED_REGISTRATIONS,
   });
 };
 
@@ -515,6 +550,11 @@ export default (
         ...action.payload,
       };
     case ENS_REGISTRATION_REMOVE_RECORD_BY_KEY:
+      return {
+        ...state,
+        ...action.payload,
+      };
+    case ENS_REMOVE_EXPIRED_REGISTRATIONS:
       return {
         ...state,
         ...action.payload,

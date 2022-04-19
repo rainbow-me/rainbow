@@ -31,6 +31,10 @@ import {
 } from '@rainbow-me/references';
 import { colors } from '@rainbow-me/styles';
 import { labelhash } from '@rainbow-me/utils';
+import {
+  encodeContenthash,
+  isValidContenthash,
+} from '@rainbow-me/utils/contenthash';
 
 export enum ENSRegistrationTransactionType {
   COMMIT = 'commit',
@@ -64,6 +68,7 @@ export enum ENS_RECORDS {
   twitter = 'com.twitter',
   telegram = 'com.telegram',
   ensDelegate = 'eth.ens.delegate',
+  pronouns = 'pronouns',
 }
 
 export enum REGISTRATION_STEPS {
@@ -98,6 +103,7 @@ export const textRecordFields = {
     inputProps: {
       maxLength: 50,
     },
+    isPrimaryDisplayRecord: true,
     key: ENS_RECORDS.displayName,
     label: lang.t('profiles.create.name'),
     placeholder: lang.t('profiles.create.name_placeholder'),
@@ -108,15 +114,44 @@ export const textRecordFields = {
       maxLength: 100,
       multiline: true,
     },
+    isPrimaryDisplayRecord: true,
     key: ENS_RECORDS.description,
     label: lang.t('profiles.create.bio'),
     placeholder: lang.t('profiles.create.bio_placeholder'),
+  },
+  [ENS_RECORDS.email]: {
+    id: 'email',
+    inputProps: {
+      maxLength: 50,
+    },
+    isPrimaryDisplayRecord: true,
+    key: ENS_RECORDS.email,
+    label: lang.t('profiles.create.email'),
+    placeholder: lang.t('profiles.create.email_placeholder'),
+    validations: {
+      onSubmit: {
+        match: {
+          message: lang.t('profiles.create.email_submit_message'),
+          value: /^\S+@\S+\.\S+$/,
+        },
+      },
+    },
+  },
+  [ENS_RECORDS.pronouns]: {
+    id: 'pronouns',
+    inputProps: {
+      maxLength: 42,
+    },
+    key: ENS_RECORDS.pronouns,
+    label: lang.t('profiles.create.pronouns'),
+    placeholder: lang.t('profiles.create.pronouns_placeholder'),
   },
   [ENS_RECORDS.twitter]: {
     id: 'twitter',
     inputProps: {
       maxLength: 16,
     },
+    isPrimaryDisplayRecord: true,
     key: ENS_RECORDS.twitter,
     label: lang.t('profiles.create.twitter'),
     placeholder: lang.t('profiles.create.username_placeholder'),
@@ -127,36 +162,20 @@ export const textRecordFields = {
       },
     },
   },
-  [ENS_RECORDS.email]: {
-    id: 'email',
-    inputProps: {
-      maxLength: 50,
-    },
-    key: ENS_RECORDS.email,
-    label: lang.t('profiles.create.email'),
-    placeholder: lang.t('profiles.create.email_placeholder'),
-    validations: {
-      onSubmit: {
-        match: {
-          message: lang.t('profiles.create.email_message'),
-          value: /^\S+@\S+\.\S+$/,
-        },
-      },
-    },
-  },
   [ENS_RECORDS.url]: {
     id: 'website',
     inputProps: {
       keyboardType: 'url',
       maxLength: 100,
     },
+    isPrimaryDisplayRecord: true,
     key: ENS_RECORDS.url,
     label: lang.t('profiles.create.website'),
     placeholder: lang.t('profiles.create.website_placeholder'),
     validations: {
       onSubmit: {
         match: {
-          message: lang.t('profiles.create.website_message'),
+          message: lang.t('profiles.create.website_submit_message'),
           value: /[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/,
         },
       },
@@ -167,6 +186,7 @@ export const textRecordFields = {
     inputProps: {
       maxLength: 20,
     },
+    isPrimaryDisplayRecord: true,
     key: ENS_RECORDS.github,
     label: lang.t('profiles.create.github'),
     placeholder: lang.t('profiles.create.username_placeholder'),
@@ -176,6 +196,7 @@ export const textRecordFields = {
     inputProps: {
       maxLength: 30,
     },
+    isPrimaryDisplayRecord: true,
     key: ENS_RECORDS.instagram,
     label: lang.t('profiles.create.instagram'),
     placeholder: lang.t('profiles.create.username_placeholder'),
@@ -191,6 +212,7 @@ export const textRecordFields = {
     inputProps: {
       maxLength: 16,
     },
+    isPrimaryDisplayRecord: true,
     key: ENS_RECORDS.snapchat,
     label: lang.t('profiles.create.snapchat'),
     placeholder: lang.t('profiles.create.username_placeholder'),
@@ -206,9 +228,129 @@ export const textRecordFields = {
     inputProps: {
       maxLength: 50,
     },
+    isPrimaryDisplayRecord: true,
     key: ENS_RECORDS.discord,
     label: lang.t('profiles.create.discord'),
     placeholder: lang.t('profiles.create.username_placeholder'),
+    startsWith: '@',
+  },
+  [ENS_RECORDS.reddit]: {
+    id: 'reddit',
+    inputProps: {
+      maxLength: 30,
+    },
+    key: ENS_RECORDS.reddit,
+    label: lang.t('profiles.create.reddit'),
+    placeholder: lang.t('profiles.create.username_placeholder'),
+    startsWith: '@',
+  },
+  [ENS_RECORDS.telegram]: {
+    id: 'telegram',
+    inputProps: {
+      maxLength: 30,
+    },
+    key: ENS_RECORDS.telegram,
+    label: lang.t('profiles.create.telegram'),
+    placeholder: lang.t('profiles.create.username_placeholder'),
+    startsWith: '@',
+  },
+
+  [ENS_RECORDS.notice]: {
+    id: 'notice',
+    inputProps: {
+      maxLength: 100,
+    },
+    key: ENS_RECORDS.notice,
+    label: lang.t('profiles.create.notice'),
+    placeholder: lang.t('profiles.create.notice_placeholder'),
+  },
+  [ENS_RECORDS.keywords]: {
+    id: 'keywords',
+    inputProps: {
+      maxLength: 100,
+    },
+    key: ENS_RECORDS.keywords,
+    label: lang.t('profiles.create.keywords'),
+    placeholder: lang.t('profiles.create.keywords_placeholder'),
+  },
+  [ENS_RECORDS.BTC]: {
+    id: 'btc',
+    inputProps: {
+      maxLength: 34,
+      multiline: true,
+    },
+    key: ENS_RECORDS.BTC,
+    label: lang.t('profiles.create.btc'),
+    placeholder: lang.t('profiles.create.wallet_placeholder', {
+      coin: lang.t('profiles.create.btc'),
+    }),
+    validations: {
+      onSubmit: {
+        validate: {
+          callback: value => validateCoinRecordValue(value, ENS_RECORDS.BTC),
+          message: lang.t('profiles.create.invalid_asset', {
+            coin: ENS_RECORDS.BTC,
+          }),
+        },
+      },
+    },
+  },
+  [ENS_RECORDS.LTC]: {
+    id: 'ltc',
+    inputProps: {
+      maxLength: 35,
+    },
+    key: ENS_RECORDS.LTC,
+    label: lang.t('profiles.create.ltc'),
+    placeholder: lang.t('profiles.create.wallet_placeholder', {
+      coin: lang.t('profiles.create.ltc'),
+    }),
+    validations: {
+      onSubmit: {
+        validate: {
+          callback: value => validateCoinRecordValue(value, ENS_RECORDS.LTC),
+          message: lang.t('profiles.create.invalid_asset', {
+            coin: ENS_RECORDS.LTC,
+          }),
+        },
+      },
+    },
+  },
+  [ENS_RECORDS.DOGE]: {
+    id: 'doge',
+    inputProps: {
+      maxLength: 34,
+    },
+    key: ENS_RECORDS.DOGE,
+    label: lang.t('profiles.create.doge'),
+    placeholder: lang.t('profiles.create.wallet_placeholder', {
+      coin: lang.t('profiles.create.doge'),
+    }),
+    validations: {
+      onSubmit: {
+        validate: {
+          callback: value => validateCoinRecordValue(value, ENS_RECORDS.DOGE),
+          message: lang.t('profiles.create.invalid_asset', {
+            coin: ENS_RECORDS.DOGE,
+          }),
+        },
+      },
+    },
+  },
+  [ENS_RECORDS.content]: {
+    id: 'content',
+    inputProps: {},
+    key: ENS_RECORDS.content,
+    label: lang.t('profiles.create.content'),
+    placeholder: lang.t('profiles.create.content_placeholder'),
+    validations: {
+      onSubmit: {
+        validate: {
+          callback: value => validateContentHashRecordValue(value),
+          message: lang.t('profiles.create.invalid_content_hash'),
+        },
+      },
+    },
   },
 } as {
   [key in ENS_RECORDS]?: {
@@ -224,6 +366,10 @@ export const textRecordFields = {
       onSubmit?: {
         match?: {
           value: RegExp;
+          message: string;
+        };
+        validate?: {
+          callback: (value: string) => boolean;
           message: string;
         };
       };
@@ -540,6 +686,24 @@ const formatTotalRegistrationCost = (
   };
 };
 
+const validateCoinRecordValue = (value: string, coin: string) => {
+  try {
+    formatsByName[coin].decoder(value);
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
+
+const validateContentHashRecordValue = (value: string) => {
+  const { encoded, error: encodeError } = encodeContenthash(value);
+  if (!encodeError && encoded) {
+    return isValidContenthash(encoded);
+  } else {
+    return false;
+  }
+};
+
 const getRentPricePerYear = (rentPrice: string, duration: number) =>
   divide(rentPrice, duration);
 
@@ -586,7 +750,7 @@ const formatRentPrice = (
 };
 
 const accentColorAtom = atom({
-  default: colors.appleBlue,
+  default: colors.purple,
   key: 'ens.accentColor',
 });
 

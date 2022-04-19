@@ -21,11 +21,13 @@ function StepButton({
   onLongPressEnded,
   onPress,
   type,
+  disabled,
 }: {
   onPress: () => void;
   onLongPress: () => void;
   onLongPressEnded: () => void;
   type: 'increment' | 'decrement';
+  disabled: boolean;
 }) {
   return (
     <Box
@@ -35,10 +37,10 @@ function StepButton({
       onLongPress={onLongPress}
       onLongPressEnded={onLongPressEnded}
       onPress={onPress}
-      scaleTo={0.75}
+      scaleTo={disabled ? 1 : 0.75}
       shouldLongPressHoldPress
     >
-      <Text color="accent" weight="heavy">
+      <Text color={disabled ? 'secondary10' : 'accent'} weight="heavy">
         {type === 'increment' ? '􀁍' : '􀁏'}
       </Text>
     </Box>
@@ -120,6 +122,7 @@ export default function RegistrationReviewRows({
               <Columns>
                 <Column width="content">
                   <StepButton
+                    disabled={duration === 1}
                     onLongPress={handleLongPressDecrement}
                     onLongPressEnded={endLongPress}
                     onPress={handlePressDecrement}
@@ -137,6 +140,7 @@ export default function RegistrationReviewRows({
                 </Box>
                 <Column width="content">
                   <StepButton
+                    disabled={false}
                     onLongPress={handleLongPressIncrement}
                     onLongPressEnded={endLongPress}
                     onPress={handlePressIncrement}

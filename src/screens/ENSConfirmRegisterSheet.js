@@ -3,23 +3,21 @@ import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
-import { useRecoilState } from 'recoil';
+import { useRecoilValue } from 'recoil';
 import { HoldToAuthorizeButton } from '../components/buttons';
 import {
   CommitContent,
   RegisterContent,
   RenewContent,
   WaitCommitmentConfirmationContent,
+  WaitENSConfirmationContent,
 } from '../components/ens-registration';
 import { GasSpeedButton } from '../components/gas';
-import { LargeCountdownClock } from '../components/large-countdown-clock';
 import { SheetActionButtonRow, SlackSheet } from '../components/sheet';
 import {
   AccentColorProvider,
   Box,
-  Divider,
   Heading,
-  Inset,
   Row,
   Rows,
   Stack,
@@ -34,23 +32,21 @@ import {
 } from '@rainbow-me/helpers/ens';
 import {
   useAccountSettings,
-  useDimensions,
   useENSRegistration,
   useENSRegistrationActionHandler,
   useENSRegistrationCosts,
   useENSRegistrationForm,
   useENSSearch,
   useGas,
-  usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
 
 export const ENSConfirmRegisterSheetHeight = 600;
+export const ENSConfirmRenewSheetHeight = 500;
 export const ENSConfirmUpdateSheetHeight = 400;
-const avatarSize = 70;
+const avatarSize = 60;
 
 function TransactionActionRow({
   action,
@@ -110,11 +106,7 @@ export default function ENSConfirmRegisterSheet() {
     mode,
   } = useENSRegistration();
 
-  const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
-  const { result: dominantColor } = usePersistentDominantColorFromImage(
-    initialAvatarUrl || ''
-  );
-  const [prevDominantColor, setPrevDominantColor] = useState(dominantColor);
+  const accentColor = useRecoilValue(accentColorAtom);
   const { isSmallPhone } = useDimensions();
 
   const [duration, setDuration] = useState(1);
@@ -212,11 +204,7 @@ export default function ENSConfirmRegisterSheet() {
           action={action}
         />
       ),
-      [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: (
-        <Box alignItems="center" height="full" paddingTop="76px">
-          <LargeCountdownClock minutes={1} onFinished={() => {}} seconds={0} />
-        </Box>
-      ),
+      [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: <WaitENSConfirmationContent />,
     }),
     [
       accentColor,
@@ -327,13 +315,6 @@ export default function ENSConfirmRegisterSheet() {
     getReverseRecord();
   }, [accountAddress]);
 
-  useEffect(() => {
-    setAccentColor(dominantColor || prevDominantColor || colors.purple);
-    if (dominantColor) {
-      setPrevDominantColor(dominantColor);
-    }
-  }, [dominantColor, prevDominantColor, setAccentColor]);
-
   useFocusEffect(() => {
     blurFields();
   });
@@ -348,6 +329,7 @@ export default function ENSConfirmRegisterSheet() {
       <AccentColorProvider color={accentColor}>
         <Box
           background="body"
+          paddingTop="19px"
           paddingVertical="30px"
           style={boxStyle}
           testID="ens-confirm-register-sheet"
@@ -357,21 +339,23 @@ export default function ENSConfirmRegisterSheet() {
               <Box horizontal="30px">
                 <Stack alignHorizontal="center" space="15px">
                   {avatarUrl && (
-                    <Box
-                      background="accent"
-                      borderRadius={avatarSize / 2}
-                      height={{ custom: avatarSize }}
-                      shadow="12px heavy accent"
-                      width={{ custom: avatarSize }}
-                    >
+                    <AccentColorProvider color={accentColor + '10'}>
                       <Box
-                        as={ImgixImage}
+                        background="accent"
                         borderRadius={avatarSize / 2}
                         height={{ custom: avatarSize }}
-                        source={{ uri: avatarUrl }}
+                        shadow="12px heavy accent"
                         width={{ custom: avatarSize }}
-                      />
-                    </Box>
+                      >
+                        <Box
+                          as={ImgixImage}
+                          borderRadius={avatarSize / 2}
+                          height={{ custom: avatarSize }}
+                          source={{ uri: avatarUrl }}
+                          width={{ custom: avatarSize }}
+                        />
+                      </Box>
+                    </AccentColorProvider>
                   )}
                   <Heading size="26px">{ensName}</Heading>
                   <Text
@@ -382,9 +366,6 @@ export default function ENSConfirmRegisterSheet() {
                     {stepLabel}
                   </Text>
                 </Stack>
-                <Inset vertical={isSmallPhone ? '12px' : ' 24px'}>
-                  <Divider color="divider40" />
-                </Inset>
               </Box>
             </Row>
             <Row>{stepContent[step]}</Row>

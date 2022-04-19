@@ -82,12 +82,13 @@ export default function ENSAssignRecordsSheet() {
   });
 
   const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
-
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
+
   const { result: dominantColor } = usePersistentDominantColorFromImage(
-    avatarUrl || ''
+    avatarUrl || initialAvatarUrl || ''
   );
   const [prevDominantColor, setPrevDominantColor] = useState(dominantColor);
+
   useEffect(() => {
     setAccentColor(dominantColor || prevDominantColor || colors.purple);
     if (dominantColor) {
@@ -186,15 +187,13 @@ export default function ENSAssignRecordsSheet() {
 }
 
 export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
-  const { navigate } = useNavigation();
+  const { navigate, goBack } = useNavigation();
   const keyboardHeight = useKeyboardHeight();
-  const [accentColor] = useRecoilState(accentColorAtom);
+  const { colors } = useTheme();
 
-  const {
-    mode,
-    profileQuery,
-    images: { avatarUrl },
-  } = useENSRegistration();
+  const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
+
+  const { mode, profileQuery } = useENSRegistration();
   const {
     disabled,
     isEmpty,
@@ -202,12 +201,14 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
     onAddField,
     onRemoveField,
     submit,
+    values,
   } = useENSRegistrationForm();
 
   const handlePressBack = useCallback(() => {
     delayNext();
     navigate(Routes.ENS_SEARCH_SHEET);
-  }, [navigate]);
+    setAccentColor(colors.purple);
+  }, [colors.purple, navigate, setAccentColor]);
 
   const handlePressContinue = useCallback(() => {
     submit(() => {
@@ -215,10 +216,15 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
         longFormHeight:
           mode === REGISTRATION_MODES.EDIT
             ? ENSConfirmUpdateSheetHeight
-            : ENSConfirmRegisterSheetHeight + (avatarUrl ? 70 : 0),
+            : ENSConfirmRegisterSheetHeight + (values.avatar ? 70 : 0),
       });
     });
-  }, [avatarUrl, mode, navigate, submit]);
+  }, [mode, navigate, submit, values.avatar]);
+
+  const navigateToAdditionalRecords = useCallback(() => {
+    android && Keyboard.dismiss();
+    navigate(Routes.ENS_ADDITIONAL_RECORDS_SHEET, {});
+  }, [navigate]);
 
   const [visible, setVisible] = useState(false);
   useEffect(() => {
@@ -267,6 +273,7 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
               <Row>
                 <Inset horizontal="19px" top="30px">
                   <SelectableAttributesButtons
+                    navigateToAdditionalRecords={navigateToAdditionalRecords}
                     onAddField={onAddField}
                     onRemoveField={onRemoveField}
                     selectedFields={selectedFields}
@@ -297,16 +304,25 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
                       {lang.t('profiles.create.skip')}
                     </TintButton>
                   ) : (
-                    <Box style={{ opacity: disabled ? 0.5 : 1 }}>
-                      <SheetActionButton
-                        color={accentColor}
-                        disabled={disabled}
-                        label={lang.t('profiles.create.review')}
-                        onPress={handlePressContinue}
-                        size="big"
-                        testID="ens-assign-records-review"
-                        weight="heavy"
-                      />
+                    <Box>
+                      {!disabled ? (
+                        <SheetActionButton
+                          color={accentColor}
+                          label={lang.t('profiles.create.review')}
+                          onPress={handlePressContinue}
+                          size="big"
+                          testID="ens-assign-records-review"
+                          weight="heavy"
+                        />
+                      ) : (
+                        <TintButton
+                          color="secondary60"
+                          onPress={goBack}
+                          testID="ens-assign-records-cancel"
+                        >
+                          {lang.t(`profiles.create.cancel`)}
+                        </TintButton>
+                      )}
                     </Box>
                   )}
                 </SheetActionButtonRow>
@@ -398,37 +414,57 @@ function SelectableAttributesButtons({
   selectedFields,
   onAddField,
   onRemoveField,
+  navigateToAdditionalRecords,
 }) {
+  const dotsButtonIsSelected = useMemo(() => {
+    const nonPrimaryRecordsIds = Object.values(textRecordFields)
+      .filter(({ isPrimaryDisplayRecord }) => !isPrimaryDisplayRecord)
+      .map(({ id }) => id);
+    const dotsSelected = selectedFields.some(field =>
+      nonPrimaryRecordsIds.includes(field.id)
+    );
+    return dotsSelected;
+  }, [selectedFields]);
+
   return (
     <Inline space="10px">
-      {Object.values(textRecordFields).map((textRecordField, i) => {
-        const isSelected = selectedFields.some(
-          field => field.id === textRecordField.id
-        );
-        return (
-          <SelectableButton
-            isSelected={isSelected}
-            key={i}
-            onSelect={() => {
-              if (isSelected) {
-                const index = selectedFields.findIndex(
-                  ({ id }) => textRecordField.id === id
-                );
-                const fieldToRemove = selectedFields[index];
-                let newFields = [...selectedFields];
-                newFields.splice(index, 1);
-                onRemoveField(fieldToRemove, newFields);
-              } else {
-                const fieldToAdd = textRecordField;
-                onAddField(fieldToAdd, [...selectedFields, fieldToAdd]);
-              }
-            }}
-            testID={`ens-selectable-attribute-${textRecordField.id}`}
-          >
-            {textRecordField.label}
-          </SelectableButton>
-        );
-      })}
+      {Object.values(textRecordFields)
+        .filter(record => record.isPrimaryDisplayRecord)
+        .map((textRecordField, i) => {
+          const isSelected = selectedFields.some(
+            field => field.id === textRecordField.id
+          );
+          return (
+            <SelectableButton
+              isSelected={isSelected}
+              key={i}
+              onSelect={() => {
+                if (isSelected) {
+                  const index = selectedFields.findIndex(
+                    ({ id }) => textRecordField.id === id
+                  );
+                  const fieldToRemove = selectedFields[index];
+                  let newFields = [...selectedFields];
+                  newFields.splice(index, 1);
+                  onRemoveField(fieldToRemove, newFields);
+                } else {
+                  const fieldToAdd = textRecordField;
+                  onAddField(fieldToAdd, [...selectedFields, fieldToAdd]);
+                }
+              }}
+              testID={`ens-selectable-attribute-${textRecordField.id}`}
+            >
+              {textRecordField.label}
+            </SelectableButton>
+          );
+        })}
+      <SelectableButton
+        isSelected={dotsButtonIsSelected}
+        onSelect={navigateToAdditionalRecords}
+        testID="ens-selectable-attribute-dots"
+      >
+        ...
+      </SelectableButton>
     </Inline>
   );
 }

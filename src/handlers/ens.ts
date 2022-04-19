@@ -528,6 +528,22 @@ export const estimateENSRegistrationGasLimit = async (
   };
 };
 
+export const getENSRegistrationGasLimit = () => {
+  const commitGasLimit = `${ethUnits.ens_commit}`;
+  const multicallGasLimit = `${ethUnits.ens_set_multicall}`;
+  const setNameGasLimit = `${ethUnits.ens_set_name}`;
+  const registerWithConfigGasLimit = `${ethUnits.ens_register_with_config}`;
+  const totalRegistrationGasLimit = `${ethUnits.ens_registration}`;
+
+  return {
+    commitGasLimit,
+    multicallGasLimit,
+    registerWithConfigGasLimit,
+    setNameGasLimit,
+    totalRegistrationGasLimit,
+  };
+};
+
 export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
   name,
   ownerAddress,

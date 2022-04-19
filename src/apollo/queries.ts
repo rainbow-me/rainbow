@@ -256,6 +256,9 @@ export type EnsAccountRegistratonsData = {
     registrations: {
       domain: {
         name: string;
+        owner: {
+          id: string;
+        };
       };
     }[];
   };
@@ -267,6 +270,9 @@ export const ENS_ACCOUNT_REGISTRATIONS = gql`
       registrations(first: 99, orderBy: registrationDate) {
         domain {
           name
+          owner {
+            id
+          }
         }
       }
     }
