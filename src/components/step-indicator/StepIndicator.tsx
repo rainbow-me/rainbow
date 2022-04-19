@@ -7,7 +7,7 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
-import { Box, Columns } from '@rainbow-me/design-system';
+import { Box, Columns, useForegroundColor } from '@rainbow-me/design-system';
 
 const PULSE_STEP_DURATION = 1000;
 
@@ -20,6 +20,9 @@ export default function StepIndicator({
   steps,
   currentStep,
 }: StepIndicatorProps) {
+  const accentColor = useForegroundColor('accent');
+  const accentColorTint = accentColor + '25';
+
   const pulseStepOpacity = useDerivedValue(() =>
     withRepeat(
       withSequence(
@@ -74,7 +77,7 @@ export default function StepIndicator({
               height={{ custom: 4 }}
               key={index}
               style={{
-                backgroundColor: 'hsla(261, 55%, 65%, 0.1)',
+                backgroundColor: accentColorTint,
                 overflow: 'hidden',
               }}
               width="full"
@@ -86,7 +89,7 @@ export default function StepIndicator({
                   height={{ custom: 4 }}
                   style={[
                     {
-                      backgroundColor: 'hsla(261, 55%, 65%, 1)',
+                      backgroundColor: accentColor,
                       position: 'absolute',
                       width: '100%',
                     },
@@ -100,7 +103,7 @@ export default function StepIndicator({
                   height={{ custom: 4 }}
                   style={[
                     {
-                      backgroundColor: 'hsla(261, 55%, 65%, 1)',
+                      backgroundColor: accentColor,
                       position: 'absolute',
                       width: isFinished ? '100%' : '0%',
                     },
