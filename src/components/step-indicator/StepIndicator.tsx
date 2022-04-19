@@ -69,7 +69,7 @@ export default function StepIndicator({
           const isCurrentStep = stepIndex === currentStep;
           const isFinished = currentStep > stepIndex;
           const isPulsing = isCurrentStep && !isFinished;
-          const isAnimatingFill = stepIndex === currentStep - 1 && isFinished;
+          const isAnimatingFill = stepIndex === currentStep && isFinished;
 
           return (
             <Box
