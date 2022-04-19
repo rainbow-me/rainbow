@@ -58,11 +58,9 @@ export default function DiscoverSearch() {
     ensResults,
   ]);
 
-  const currencyListDataLength = useMemo(
+  const currencyListDataKey = useMemo(
     () =>
-      uniswapCurrencyList?.[0]?.data?.length ||
-      0 + ensResults?.[0]?.data?.length ||
-      0,
+      `${uniswapCurrencyList?.[0]?.data?.length}_${ensResults?.[0]?.data?.length}`,
     [ensResults, uniswapCurrencyList]
   );
 
@@ -163,7 +161,7 @@ export default function DiscoverSearch() {
 
   return (
     <View
-      key={currencyListDataLength}
+      key={currencyListDataKey}
       style={{ height: deviceUtils.dimensions.height - 140 }}
     >
       <SearchContainer>
