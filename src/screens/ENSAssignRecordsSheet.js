@@ -82,12 +82,13 @@ export default function ENSAssignRecordsSheet() {
   });
 
   const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
-
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
+
   const { result: dominantColor } = usePersistentDominantColorFromImage(
     avatarUrl || initialAvatarUrl || ''
   );
   const [prevDominantColor, setPrevDominantColor] = useState(dominantColor);
+
   useEffect(() => {
     setAccentColor(dominantColor || prevDominantColor || colors.purple);
     if (dominantColor) {
@@ -186,7 +187,7 @@ export default function ENSAssignRecordsSheet() {
 }
 
 export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
-  const { navigate } = useNavigation();
+  const { navigate, goBack } = useNavigation();
   const keyboardHeight = useKeyboardHeight();
   const { colors } = useTheme();
 
@@ -303,16 +304,25 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
                       {lang.t('profiles.create.skip')}
                     </TintButton>
                   ) : (
-                    <Box style={{ opacity: disabled ? 0.5 : 1 }}>
-                      <SheetActionButton
-                        color={accentColor}
-                        disabled={disabled}
-                        label={lang.t('profiles.create.review')}
-                        onPress={handlePressContinue}
-                        size="big"
-                        testID="ens-assign-records-review"
-                        weight="heavy"
-                      />
+                    <Box>
+                      {!disabled ? (
+                        <SheetActionButton
+                          color={accentColor}
+                          label={lang.t('profiles.create.review')}
+                          onPress={handlePressContinue}
+                          size="big"
+                          testID="ens-assign-records-review"
+                          weight="heavy"
+                        />
+                      ) : (
+                        <TintButton
+                          color="secondary60"
+                          onPress={goBack}
+                          testID="ens-assign-records-cancel"
+                        >
+                          {lang.t(`profiles.create.cancel`)}
+                        </TintButton>
+                      )}
                     </Box>
                   )}
                 </SheetActionButtonRow>

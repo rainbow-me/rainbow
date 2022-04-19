@@ -17,7 +17,9 @@ export default function getENSNFTAvatarUrl(
           token.asset_contract.address === contractAddress &&
           token.id === tokenId
       );
-      if (uniqueToken?.image_thumbnail_url) {
+      if (uniqueToken?.image_url) {
+        avatarUrl = uniqueToken?.image_url;
+      } else if (uniqueToken?.image_thumbnail_url) {
         avatarUrl = uniqueToken?.image_thumbnail_url;
       }
     } else if (

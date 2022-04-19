@@ -255,7 +255,7 @@ const UniqueTokenExpandedState = ({
   const isNFT = uniqueTokenType === UniqueTokenType.NFT;
 
   // Fetch the ENS profile if the unique token is an ENS name.
-  const cleanENSName = isENS ? uniqueId.split(' ')?.[0] : uniqueId;
+  const cleanENSName = isENS && uniqueId ? uniqueId?.split(' ')?.[0] : uniqueId;
   const ensProfile = useENSProfile(cleanENSName, { enabled: isENS });
   const ensData = ensProfile.data;
 
@@ -357,6 +357,7 @@ const UniqueTokenExpandedState = ({
 
   const hasEditButton =
     isActionsEnabled && profilesEnabled && isENS && ensProfile.isOwner;
+  const hasExtendDurationButton = isActionsEnabled && profilesEnabled && isENS;
 
   const familyLinkDisplay = useMemo(
     () =>
@@ -529,7 +530,7 @@ const UniqueTokenExpandedState = ({
                               registrationDate={
                                 ensData?.registration.registrationDate
                               }
-                              showEditButton={hasEditButton}
+                              showExtendDuration={hasExtendDurationButton}
                             />
                           )}
                         </Bleed>

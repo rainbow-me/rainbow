@@ -1,8 +1,10 @@
 import { useNavigation } from '@react-navigation/core';
 import { differenceInSeconds } from 'date-fns';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-// @ts-expect-error
-import { IS_TESTING } from 'react-native-dotenv';
+import {
+  // @ts-ignore
+  IS_TESTING,
+} from 'react-native-dotenv';
 import { Image } from 'react-native-image-crop-picker';
 import { useDispatch } from 'react-redux';
 import { useRecoilValue } from 'recoil';

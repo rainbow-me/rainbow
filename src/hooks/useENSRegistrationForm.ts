@@ -200,6 +200,7 @@ export default function useENSRegistrationForm({
   const [isLoading, setIsLoading] = useState(
     mode === REGISTRATION_MODES.EDIT && isEmpty(values)
   );
+
   useEffect(() => {
     if (mode === REGISTRATION_MODES.EDIT) {
       if (profileQuery.isSuccess || !isEmpty(values)) {
