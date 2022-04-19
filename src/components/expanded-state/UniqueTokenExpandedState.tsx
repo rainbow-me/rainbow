@@ -236,7 +236,7 @@ const UniqueTokenExpandedState = ({
 
   const imageColor =
     // @ts-expect-error image_url could be null or undefined?
-    usePersistentDominantColorFromImage(asset.image_url).result ||
+    usePersistentDominantColorFromImage(asset.lowResUrl).result ||
     colors.paleBlue;
 
   const lastSalePrice =
@@ -321,8 +321,8 @@ const UniqueTokenExpandedState = ({
         <BlurWrapper height={deviceHeight} width={deviceWidth}>
           <BackgroundImage>
             <UniqueTokenImage
-              backgroundColor={asset.background}
-              imageUrl={asset.image_url}
+              backgroundColor={asset.background || imageColor}
+              imageUrl={asset.lowResUrl}
               item={asset}
               resizeMode="cover"
               size={CardSize}
