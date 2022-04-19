@@ -1,4 +1,5 @@
 export interface PerformanceMetricData {
-  startTimestamp: number;
+  startTimestamp?: number;
+  finishTimestamp?: number;
   additionalParams?: object;
 }
