@@ -107,7 +107,7 @@ export default function ENSIntroSheet() {
       menuItems: [
         {
           actionKey: AnotherENSEnum.my_ens,
-          actionTitle: 'My ENS names',
+          actionTitle: lang.t('profiles.intro.my_ens_names'),
           icon: {
             iconType: 'SYSTEM',
             iconValue: 'rectangle.stack.person.crop',
@@ -115,7 +115,7 @@ export default function ENSIntroSheet() {
         },
         {
           actionKey: AnotherENSEnum.search,
-          actionTitle: 'Search for a New ENS name',
+          actionTitle: lang.t('profiles.intro.search_new_ens'),
           icon: {
             iconType: 'SYSTEM',
             iconValue: 'magnifyingglass.circle.fill',
@@ -128,8 +128,8 @@ export default function ENSIntroSheet() {
 
   const onPressAndroidActions = useCallback(() => {
     const androidActions = [
-      'My ENS names',
-      'Search for a New ENS name',
+      lang.t('profiles.intro.my_ens_names'),
+      lang.t('profiles.intro.search_new_ens'),
     ] as const;
 
     showActionSheetWithOptions(
@@ -139,7 +139,6 @@ export default function ENSIntroSheet() {
         title: '',
       },
       (idx: number) => {
-        console.log('idx', idx);
         if (idx === 0) {
           handleSelectExistingName();
         } else if (idx === 1) {
