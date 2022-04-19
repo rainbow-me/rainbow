@@ -24,7 +24,9 @@ const WaitCommitmentConfirmationContent = ({
 }) => {
   return (
     <Box flexGrow={1}>
-      <StepIndicator currentStep={1} steps={3} />
+      <Box paddingTop="24px">
+        <StepIndicator currentStep={1} steps={3} />
+      </Box>
       <Rows alignHorizontal="center">
         <Row>
           <Box flexGrow={1} justifyContent="center">
