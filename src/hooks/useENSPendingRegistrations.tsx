@@ -1,13 +1,15 @@
 import { useCallback, useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useAccountSettings, useENSRegistration } from '.';
 import { ENSRegistrationState } from '@rainbow-me/entities';
+import { removeExpiredRegistrations } from '@rainbow-me/redux/ensRegistration';
 import { AppState } from '@rainbow-me/redux/store';
 import getENSNFTAvatarUrl from '@rainbow-me/utils/getENSNFTAvatarUrl';
 
 export default function useENSPendingRegistrations() {
   const { accountAddress } = useAccountSettings();
   const { removeRegistrationByName } = useENSRegistration();
+  const dispatch = useDispatch();
 
   const { pendingRegistrations, accountRegistrations } = useSelector(
     ({ ensRegistration }: AppState) => {
@@ -57,10 +59,15 @@ export default function useENSPendingRegistrations() {
     [removeRegistrationByName]
   );
 
+  const refreshRegistrations = useCallback(() => {
+    dispatch(removeExpiredRegistrations(accountAddress));
+  }, [accountAddress, dispatch]);
+
   return {
     accountRegistrations,
     pendingRegistrations,
     registrationImages,
+    removeExpiredRegistrations: refreshRegistrations,
     removeRegistrationByName: removeRegistration,
   };
 }

@@ -58,7 +58,7 @@ export default function TextRecordsForm({
   );
 
   return (
-    <Box>
+    <Box key={Object.keys(values).length}>
       {isLoading ? (
         <Box paddingTop="19px" style={{ height: 300 }}>
           <Skeleton animated>

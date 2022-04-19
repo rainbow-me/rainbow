@@ -3,7 +3,7 @@ import React from 'react';
 import { RegistrationReviewRows } from '../../../components/ens-registration';
 import { Divider, Inset, Stack } from '@rainbow-me/design-system';
 import { ENS_DOMAIN, REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
-import { useENSProfile } from '@rainbow-me/hooks';
+import { useDimensions, useENSProfile } from '@rainbow-me/hooks';
 import { timeUnits } from '@rainbow-me/references';
 
 const RenewContent = ({
@@ -17,6 +17,8 @@ const RenewContent = ({
   setDuration: React.Dispatch<React.SetStateAction<number>>;
   name: string;
 }) => {
+  const { isSmallPhone } = useDimensions();
+
   const ensProfile = useENSProfile(name + ENS_DOMAIN, { enabled: true });
   const expiryDate = ensProfile?.data?.registration?.expiryDate || 0;
 
@@ -28,8 +30,9 @@ const RenewContent = ({
   );
 
   return (
-    <Inset horizontal="30px">
-      <Stack space="34px">
+    <Inset horizontal="30px" vertical={isSmallPhone ? '12px' : '30px'}>
+      <Stack space={isSmallPhone ? '19px' : '30px'}>
+        <Divider color="divider40" />
         <RegistrationReviewRows
           duration={yearsDuration}
           estimatedCostETH={

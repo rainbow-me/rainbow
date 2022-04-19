@@ -2,7 +2,7 @@ import { BlurView } from '@react-native-community/blur';
 import c from 'chroma-js';
 import lang from 'i18n-js';
 import React, { ReactNode, useCallback, useMemo, useRef } from 'react';
-import { Linking, Share, View } from 'react-native';
+import { InteractionManager, Linking, Share, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useDerivedValue,
@@ -255,7 +255,7 @@ const UniqueTokenExpandedState = ({
   const isNFT = uniqueTokenType === UniqueTokenType.NFT;
 
   // Fetch the ENS profile if the unique token is an ENS name.
-  const cleanENSName = isENS ? uniqueId.split(' ')?.[0] : uniqueId;
+  const cleanENSName = isENS && uniqueId ? uniqueId?.split(' ')?.[0] : uniqueId;
   const ensProfile = useENSProfile(cleanENSName, { enabled: isENS });
   const ensData = ensProfile.data;
 
@@ -339,11 +339,13 @@ const UniqueTokenExpandedState = ({
   const { startRegistration } = useENSRegistration();
   const handlePressEdit = useCallback(() => {
     if (isENS) {
-      goBack();
-      startRegistration(uniqueId, REGISTRATION_MODES.EDIT);
-      navigate(Routes.REGISTER_ENS_NAVIGATOR, {
-        ensName: uniqueId,
-        mode: REGISTRATION_MODES.EDIT,
+      InteractionManager.runAfterInteractions(() => {
+        startRegistration(uniqueId, REGISTRATION_MODES.EDIT);
+        goBack();
+        navigate(Routes.REGISTER_ENS_NAVIGATOR, {
+          ensName: uniqueId,
+          mode: REGISTRATION_MODES.EDIT,
+        });
       });
     }
   }, [goBack, isENS, navigate, startRegistration, uniqueId]);
@@ -357,6 +359,7 @@ const UniqueTokenExpandedState = ({
 
   const hasEditButton =
     isActionsEnabled && profilesEnabled && isENS && ensProfile.isOwner;
+  const hasExtendDurationButton = isActionsEnabled && profilesEnabled && isENS;
 
   const familyLinkDisplay = useMemo(
     () =>
@@ -529,7 +532,7 @@ const UniqueTokenExpandedState = ({
                               registrationDate={
                                 ensData?.registration.registrationDate
                               }
-                              showEditButton={hasEditButton}
+                              showExtendDuration={hasExtendDurationButton}
                             />
                           )}
                         </Bleed>

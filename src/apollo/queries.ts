@@ -256,6 +256,9 @@ export type EnsAccountRegistratonsData = {
     registrations: {
       domain: {
         name: string;
+        owner: {
+          id: string;
+        };
       };
     }[];
   };
@@ -267,6 +270,9 @@ export const ENS_ACCOUNT_REGISTRATIONS = gql`
       registrations(first: 99, orderBy: registrationDate) {
         domain {
           name
+          owner {
+            id
+          }
         }
       }
     }
@@ -337,6 +343,20 @@ export const CONTRACT_FUNCTION = gql`
   query contractFunction($chainID: Int!, $hex: String!) {
     contractFunction(chainID: $chainID, hex: $hex) {
       text
+    }
+  }
+`;
+
+export type EnsGetNameFromLabelhash = {
+  domains: {
+    labelName: string;
+  }[];
+};
+
+export const ENS_GET_NAME_FROM_LABELHASH = gql`
+  query lookup($labelhash: String!) {
+    domains(first: 1, where: { labelhash: $labelhash }) {
+      labelName
     }
   }
 `;

@@ -4,6 +4,7 @@ import ConditionalWrap from 'conditional-wrap';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { StatusBar } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
+import { useSetRecoilState } from 'recoil';
 import { SheetHandleFixedToTopHeight, SlackSheet } from '../components/sheet';
 import ENSAssignRecordsSheet, {
   ENSAssignRecordsBottomActions,
@@ -13,11 +14,13 @@ import ENSSearchSheet from '../screens/ENSSearchSheet';
 import { useNavigation } from './Navigation';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
 import { sharedCoolModalTopOffset } from './config';
+import { useTheme } from '@rainbow-me/context';
 import { Box } from '@rainbow-me/design-system';
-import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
+import { accentColorAtom, REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import {
   useDimensions,
   useENSRegistration,
+  useENSRegistrationForm,
   usePrevious,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
@@ -57,12 +60,20 @@ export default function RegisterENSNavigator() {
 
   const { height: deviceHeight } = useDimensions();
 
+  const setAccentColor = useSetRecoilState(accentColorAtom);
+
+  const { colors } = useTheme();
+
   const contentHeight =
     deviceHeight - SheetHandleFixedToTopHeight - sharedCoolModalTopOffset;
 
   const [isSearchEnabled, setIsSearchEnabled] = useState(true);
+  const [swipeEnabled, setSwipeEnabled] = useState(false);
+
+  const { clearValues } = useENSRegistrationForm();
 
   const {
+    removeRecordByKey,
     clearCurrentRegistrationName,
     startRegistration,
   } = useENSRegistration();
@@ -85,6 +96,7 @@ export default function RegisterENSNavigator() {
   const [scrollEnabled, setScrollEnabled] = useState(
     screenOptions.scrollEnabled
   );
+
   useEffect(() => {
     if (previousRouteName) {
       // Wait 500ms to prevent transition lag
@@ -105,9 +117,15 @@ export default function RegisterENSNavigator() {
   }, [screenOptions.scrollEnabled]);
 
   useEffect(() => {
-    navigation.addListener('dismiss', clearCurrentRegistrationName);
-    return () =>
-      navigation.removeListener('dismiss', clearCurrentRegistrationName);
+    const dismiss = () => {
+      // Remove avatar record on dismissal to prevent accent color inconsistencies.
+      removeRecordByKey('avatar');
+      setAccentColor(colors.purple);
+      clearValues();
+      clearCurrentRegistrationName();
+    };
+    navigation.addListener('dismiss', dismiss);
+    return () => navigation.removeListener('dismiss', dismiss);
   });
 
   const enableAssignRecordsBottomActions =
@@ -136,7 +154,7 @@ export default function RegisterENSNavigator() {
             initialLayout={deviceUtils.dimensions}
             initialRouteName={currentRouteName}
             pager={renderPager}
-            swipeEnabled={false}
+            swipeEnabled={swipeEnabled}
             tabBar={renderTabBar}
           >
             <Swipe.Screen
@@ -152,6 +170,9 @@ export default function RegisterENSNavigator() {
             {isSearchEnabled && (
               <Swipe.Screen
                 component={ENSSearchSheet}
+                initialParams={{
+                  onNameAvailable: isAvailable => setSwipeEnabled(isAvailable),
+                }}
                 listeners={{
                   focus: () => setCurrentRouteName(Routes.ENS_SEARCH_SHEET),
                 }}
