@@ -1,40 +1,45 @@
 import { useNavigation } from '@react-navigation/core';
 import { format, formatDistanceStrict } from 'date-fns';
 import React, { useCallback, useState } from 'react';
+import { ENSConfirmRenewSheetHeight } from '../../../screens/ENSConfirmRegisterSheet';
 import { ButtonPressAnimation } from '../../animations';
 import { TokenInfoItem, TokenInfoValue } from '../../token-info';
 import { useTheme } from '@rainbow-me/context';
 import { Column, Columns } from '@rainbow-me/design-system';
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
-import { useENSRegistration } from '@rainbow-me/hooks';
+import { useENSProfile, useENSRegistration } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 
 export default function ENSBriefTokenInfoRow({
   expiryDate,
   registrationDate,
-  showEditButton,
+  showExtendDuration,
   ensName,
 }: {
   expiryDate?: number;
   registrationDate?: number;
   ensName: string;
-  showEditButton?: boolean;
+  showExtendDuration?: boolean;
 }) {
   const { colors } = useTheme();
   const { navigate } = useNavigation();
   const { startRegistration } = useENSRegistration();
+  const { data } = useENSProfile(ensName);
   const [showExpiryDistance, setShowExpiryDistance] = useState(true);
   const handlePressExpiryDate = useCallback(() => {
     setShowExpiryDistance(x => !x);
   }, []);
 
   const handlePressEditExpiryDate = useCallback(() => {
-    startRegistration(ensName, REGISTRATION_MODES.RENEW);
+    const cleanENSName = ensName?.split(' ')?.[0] ?? ensName;
+    startRegistration(cleanENSName, REGISTRATION_MODES.RENEW);
     navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
-      ensName,
+      ensName: cleanENSName,
+      longFormHeight:
+        ENSConfirmRenewSheetHeight + (data?.images?.avatarUrl ? 70 : 0),
       mode: REGISTRATION_MODES.RENEW,
     });
-  }, [startRegistration, ensName, navigate]);
+  }, [startRegistration, ensName, navigate, data?.images?.avatarUrl]);
 
   return (
     <Columns space="19px">
@@ -54,7 +59,7 @@ export default function ENSBriefTokenInfoRow({
       {/* @ts-expect-error JavaScript component */}
       <TokenInfoItem
         addonComponent={
-          showEditButton && (
+          showExtendDuration && (
             <Column width="content">
               <ButtonPressAnimation
                 enableHapticFeedback

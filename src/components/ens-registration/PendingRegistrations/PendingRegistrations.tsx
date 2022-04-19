@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import { Alert } from '../../../components/alerts';
 import ButtonPressAnimation from '../../../components/animations/ButtonPressAnimation';
@@ -54,11 +54,13 @@ const PendingRegistration = ({
   return (
     <Box>
       <Columns alignVertical="center">
-        <Column width="content">
-          <Box paddingRight="10px">
-            <ImageAvatar image={avatarUrl || ''} size="small" />
-          </Box>
-        </Column>
+        {avatarUrl ?? (
+          <Column width="content">
+            <Box paddingRight="10px">
+              <ImageAvatar image={avatarUrl} size="small" />
+            </Box>
+          </Column>
+        )}
         <Column>
           <Box>
             <Text color="primary" numberOfLines={1} size="16px" weight="heavy">
@@ -111,7 +113,12 @@ const PendingRegistrations = () => {
     pendingRegistrations,
     removeRegistrationByName,
     registrationImages,
+    removeExpiredRegistrations,
   } = useENSPendingRegistrations();
+
+  useEffect(() => {
+    removeExpiredRegistrations();
+  }, [removeExpiredRegistrations]);
 
   const removeRegistration = useCallback(
     (name: string) => {

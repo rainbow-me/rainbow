@@ -47,19 +47,19 @@ enum QUERY_KEYS {
 }
 
 export default function useENSRegistrationCosts({
-  yearsDuration,
   name: inputName,
+  records,
   rentPrice,
   sendReverseRecord,
-  records,
   step,
+  yearsDuration,
 }: {
-  yearsDuration: number;
   name: string;
-  step: keyof typeof REGISTRATION_STEPS;
-  sendReverseRecord: boolean;
-  rentPrice: { wei: number; perYear: { wei: number } };
   records?: Records;
+  rentPrice: { wei: number; perYear: { wei: number } };
+  sendReverseRecord: boolean;
+  step: keyof typeof REGISTRATION_STEPS;
+  yearsDuration: number;
 }) {
   const { nativeCurrency, accountAddress } = useAccountSettings();
   const { registrationParameters } = useENSRegistration();

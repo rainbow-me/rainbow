@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box } from '@rainbow-me/design-system';
+import { Box, useForegroundColor } from '@rainbow-me/design-system';
 
 type SeparatorDotsProps = {
   minuteEndsWithOne: boolean;
@@ -7,6 +7,7 @@ type SeparatorDotsProps = {
 };
 
 export function SeparatorDots({ size, minuteEndsWithOne }: SeparatorDotsProps) {
+  const accentColor = useForegroundColor('accent');
   return (
     <Box
       alignItems="center"
@@ -25,7 +26,7 @@ export function SeparatorDots({ size, minuteEndsWithOne }: SeparatorDotsProps) {
         marginBottom={{ custom: size / 2 }}
         marginTop={{ custom: size / 2 }}
         style={{
-          backgroundColor: '#9875D7',
+          backgroundColor: accentColor,
         }}
         width={{ custom: size }}
       />
@@ -35,7 +36,7 @@ export function SeparatorDots({ size, minuteEndsWithOne }: SeparatorDotsProps) {
         marginBottom={{ custom: size / 2 }}
         marginTop={{ custom: size / 2 }}
         style={{
-          backgroundColor: '#9875D7',
+          backgroundColor: accentColor,
         }}
         width={{ custom: size }}
       />
