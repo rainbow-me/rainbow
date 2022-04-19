@@ -76,8 +76,8 @@ export default function ENSAssignRecordsSheet() {
     defaultFields: [
       ENS_RECORDS.displayName,
       ENS_RECORDS.description,
-      ENS_RECORDS.email,
       ENS_RECORDS.twitter,
+      ENS_RECORDS.pronouns,
     ].map(fieldName => textRecordFields[fieldName]),
   });
 
@@ -400,6 +400,8 @@ function Shadow() {
   );
 }
 
+const MAX_DISPLAY_BUTTONS = 9;
+
 function SelectableAttributesButtons({
   selectedFields,
   onAddField,
@@ -408,7 +410,7 @@ function SelectableAttributesButtons({
 }) {
   const dotsButtonIsSelected = useMemo(() => {
     const nonPrimaryRecordsIds = Object.values(textRecordFields)
-      .filter(({ isPrimaryDisplayRecord }) => !isPrimaryDisplayRecord)
+      .slice(MAX_DISPLAY_BUTTONS)
       .map(({ id }) => id);
     const dotsSelected = selectedFields.some(field =>
       nonPrimaryRecordsIds.includes(field.id)
@@ -419,7 +421,7 @@ function SelectableAttributesButtons({
   return (
     <Inline space="10px">
       {Object.values(textRecordFields)
-        .filter(record => record.isPrimaryDisplayRecord)
+        .slice(0, MAX_DISPLAY_BUTTONS)
         .map((textRecordField, i) => {
           const isSelected = selectedFields.some(
             field => field.id === textRecordField.id
@@ -439,7 +441,9 @@ function SelectableAttributesButtons({
                   onRemoveField(fieldToRemove, newFields);
                 } else {
                   const fieldToAdd = textRecordField;
-                  onAddField(fieldToAdd, [...selectedFields, fieldToAdd]);
+                  const newSelectedFields = [...selectedFields];
+                  newSelectedFields.splice(i, 0, fieldToAdd);
+                  onAddField(fieldToAdd, newSelectedFields);
                 }
               }}
               testID={`ens-selectable-attribute-${textRecordField.id}`}
