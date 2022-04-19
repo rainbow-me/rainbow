@@ -10,16 +10,14 @@ import {
   RegisterContent,
   RenewContent,
   WaitCommitmentConfirmationContent,
+  WaitENSConfirmationContent,
 } from '../components/ens-registration';
 import { GasSpeedButton } from '../components/gas';
-import { LargeCountdownClock } from '../components/large-countdown-clock';
 import { SheetActionButtonRow, SlackSheet } from '../components/sheet';
 import {
   AccentColorProvider,
   Box,
-  Divider,
   Heading,
-  Inset,
   Row,
   Rows,
   Stack,
@@ -34,7 +32,6 @@ import {
 } from '@rainbow-me/helpers/ens';
 import {
   useAccountSettings,
-  useDimensions,
   useENSRegistration,
   useENSRegistrationActionHandler,
   useENSRegistrationCosts,
@@ -49,7 +46,7 @@ import Routes from '@rainbow-me/routes';
 export const ENSConfirmRegisterSheetHeight = 600;
 export const ENSConfirmRenewSheetHeight = 500;
 export const ENSConfirmUpdateSheetHeight = 400;
-const avatarSize = 70;
+const avatarSize = 60;
 
 function TransactionActionRow({
   action,
@@ -207,11 +204,7 @@ export default function ENSConfirmRegisterSheet() {
           action={action}
         />
       ),
-      [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: (
-        <Box alignItems="center" height="full" paddingTop="76px">
-          <LargeCountdownClock minutes={1} onFinished={() => {}} seconds={0} />
-        </Box>
-      ),
+      [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: <WaitENSConfirmationContent />,
     }),
     [
       accentColor,
@@ -336,6 +329,7 @@ export default function ENSConfirmRegisterSheet() {
       <AccentColorProvider color={accentColor}>
         <Box
           background="body"
+          paddingTop="19px"
           paddingVertical="30px"
           style={boxStyle}
           testID="ens-confirm-register-sheet"
@@ -372,9 +366,6 @@ export default function ENSConfirmRegisterSheet() {
                     {stepLabel}
                   </Text>
                 </Stack>
-                <Inset vertical={isSmallPhone ? '12px' : ' 24px'}>
-                  <Divider color="divider40" />
-                </Inset>
               </Box>
             </Row>
             <Row>{stepContent[step]}</Row>

@@ -9,6 +9,7 @@ import BackupSheet from '../screens/BackupSheet';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
 import ConnectedDappsSheet from '../screens/ConnectedDappsSheet';
 import DepositModal from '../screens/DepositModal';
+import ENSAdditionalRecordsSheet from '../screens/ENSAdditionalRecordsSheet';
 import ENSConfirmRegisterSheet from '../screens/ENSConfirmRegisterSheet';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ExplainSheet from '../screens/ExplainSheet';
@@ -287,6 +288,13 @@ function BSNavigator() {
           <BSStack.Screen
             component={ENSConfirmRegisterSheet}
             name={Routes.ENS_CONFIRM_REGISTER_SHEET}
+          />
+          <BSStack.Screen
+            component={ENSAdditionalRecordsSheet}
+            name={Routes.ENS_ADDITIONAL_RECORDS_SHEET}
+            options={{
+              height: '45%',
+            }}
           />
           <BSStack.Screen
             component={ProfileSheet}

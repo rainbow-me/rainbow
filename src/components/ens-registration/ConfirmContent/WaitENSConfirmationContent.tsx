@@ -1,0 +1,44 @@
+import lang from 'i18n-js';
+import React from 'react';
+import { LargeCountdownClock } from '../../../components/large-countdown-clock';
+import {
+  Box,
+  Heading,
+  Inset,
+  Row,
+  Rows,
+  Stack,
+  Text,
+} from '@rainbow-me/design-system';
+
+const WaitENSConfirmationContent = () => {
+  return (
+    <Box flexGrow={1}>
+      <Rows alignHorizontal="center">
+        <Row>
+          <Box flexGrow={1} justifyContent="center">
+            <Inset horizontal="42px">
+              <Stack space="34px">
+                <LargeCountdownClock
+                  minutes={1}
+                  onFinished={() => {}}
+                  seconds={10}
+                />
+                <Stack alignHorizontal="center" space="19px">
+                  <Heading size="23px">
+                    {lang.t('profiles.confirm.wait_one_minute')}
+                  </Heading>
+                  <Text align="center" color="secondary60" weight="semibold">
+                    {lang.t('profiles.confirm.wait_one_minute_description')}
+                  </Text>
+                </Stack>
+              </Stack>
+            </Inset>
+          </Box>
+        </Row>
+      </Rows>
+    </Box>
+  );
+};
+
+export default WaitENSConfirmationContent;

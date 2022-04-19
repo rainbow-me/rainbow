@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import { Alert } from '../../../components/alerts';
 import ButtonPressAnimation from '../../../components/animations/ButtonPressAnimation';
@@ -113,7 +113,12 @@ const PendingRegistrations = () => {
     pendingRegistrations,
     removeRegistrationByName,
     registrationImages,
+    removeExpiredRegistrations,
   } = useENSPendingRegistrations();
+
+  useEffect(() => {
+    removeExpiredRegistrations();
+  }, [removeExpiredRegistrations]);
 
   const removeRegistration = useCallback(
     (name: string) => {
