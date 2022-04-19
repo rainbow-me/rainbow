@@ -340,3 +340,17 @@ export const CONTRACT_FUNCTION = gql`
     }
   }
 `;
+
+export type EnsGetNameFromLabelhash = {
+  domains: {
+    labelName: string;
+  }[];
+};
+
+export const ENS_GET_NAME_FROM_LABELHASH = gql`
+  query lookup($labelhash: String!) {
+    domains(first: 1, where: { labelhash: $labelhash }) {
+      labelName
+    }
+  }
+`;

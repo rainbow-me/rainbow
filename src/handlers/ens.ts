@@ -1,21 +1,23 @@
 import { formatsByCoinType } from '@ensdomains/address-encoder';
 import { captureException } from '@sentry/react-native';
+import { BigNumber } from 'ethers';
 import { debounce, isEmpty, sortBy } from 'lodash';
 import { ensClient } from '../apollo/client';
 import {
   ENS_ACCOUNT_REGISTRATIONS,
   ENS_DOMAINS,
   ENS_GET_COIN_TYPES,
+  ENS_GET_NAME_FROM_LABELHASH,
   ENS_GET_RECORDS,
   ENS_GET_REGISTRATION,
   ENS_REGISTRATIONS,
   ENS_SUGGESTIONS,
   EnsAccountRegistratonsData,
   EnsGetCoinTypesData,
+  EnsGetNameFromLabelhash,
   EnsGetRecordsData,
   EnsGetRegistrationData,
 } from '../apollo/queries';
-import { rainbowFetch } from '../rainbow-fetch';
 import { ENSActionParameters } from '../raps/common';
 import { estimateGasWithPadding, web3Provider } from './web3';
 import { ENSRegistrationRecords, Records } from '@rainbow-me/entities';
@@ -51,14 +53,15 @@ export const fetchMetadata = async ({
   tokenId: string;
 }) => {
   try {
-    const url = `https://metadata.ens.domains/mainnet/${contractAddress}/${tokenId}`;
-    const { data } = await rainbowFetch(url, {
-      headers: {
-        Accept: 'application/json',
+    const { data } = await ensClient.query<EnsGetNameFromLabelhash>({
+      query: ENS_GET_NAME_FROM_LABELHASH,
+      variables: {
+        labelhash: BigNumber.from(tokenId).toHexString(),
       },
-      method: 'get',
     });
-    return data;
+    const name = data.domains[0].labelName;
+    const image_url = `https://metadata.ens.domains/mainnet/${contractAddress}/${tokenId}/image`;
+    return { image_url, name: `${name}.eth` };
   } catch (error) {
     logger.sentry('ENS: Error getting ENS metadata', error);
     captureException(new Error('ENS: Error getting ENS metadata'));
