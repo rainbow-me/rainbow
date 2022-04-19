@@ -54,11 +54,13 @@ const PendingRegistration = ({
   return (
     <Box>
       <Columns alignVertical="center">
-        <Column width="content">
-          <Box paddingRight="10px">
-            <ImageAvatar image={avatarUrl || ''} size="small" />
-          </Box>
-        </Column>
+        {avatarUrl && (
+          <Column width="content">
+            <Box paddingRight="10px">
+              <ImageAvatar image={avatarUrl} size="small" />
+            </Box>
+          </Column>
+        )}
         <Column>
           <Box>
             <Text color="primary" numberOfLines={1} size="16px" weight="heavy">

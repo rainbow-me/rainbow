@@ -68,6 +68,7 @@ export default function RegisterENSNavigator() {
     deviceHeight - SheetHandleFixedToTopHeight - sharedCoolModalTopOffset;
 
   const [isSearchEnabled, setIsSearchEnabled] = useState(true);
+  const [swipeEnabled, setSwipeEnabled] = useState(false);
 
   const { clearValues } = useENSRegistrationForm();
 
@@ -95,6 +96,7 @@ export default function RegisterENSNavigator() {
   const [scrollEnabled, setScrollEnabled] = useState(
     screenOptions.scrollEnabled
   );
+
   useEffect(() => {
     if (previousRouteName) {
       // Wait 500ms to prevent transition lag
@@ -152,7 +154,7 @@ export default function RegisterENSNavigator() {
             initialLayout={deviceUtils.dimensions}
             initialRouteName={currentRouteName}
             pager={renderPager}
-            swipeEnabled={false}
+            swipeEnabled={swipeEnabled}
             tabBar={renderTabBar}
           >
             <Swipe.Screen
@@ -168,6 +170,9 @@ export default function RegisterENSNavigator() {
             {isSearchEnabled && (
               <Swipe.Screen
                 component={ENSSearchSheet}
+                initialParams={{
+                  onNameAvailable: isAvailable => setSwipeEnabled(isAvailable),
+                }}
                 listeners={{
                   focus: () => setCurrentRouteName(Routes.ENS_SEARCH_SHEET),
                 }}

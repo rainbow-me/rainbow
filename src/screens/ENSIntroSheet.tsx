@@ -1,7 +1,7 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import { useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import ActivityIndicator from '../components/ActivityIndicator';
 import Button from '../components/buttons/Button';
@@ -24,20 +24,29 @@ import {
   useColorMode,
 } from '@rainbow-me/design-system';
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
-import { useAccountENSDomains, useENSRegistration } from '@rainbow-me/hooks';
+import {
+  useAccountENSDomains,
+  useAccountSettings,
+  useENSRegistration,
+} from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
+
+const topPadding = android ? 29 : 19;
 
 export default function ENSIntroSheet() {
   const { colors } = useTheme();
-
   const { colorMode } = useColorMode();
-
   const { params } = useRoute<any>();
-
-  const topPadding = android ? 29 : 19;
-
+  const { accountAddress } = useAccountSettings();
   const { data: domains, isLoading, isSuccess } = useAccountENSDomains();
 
+  const ownedDomains = useMemo(
+    () =>
+      domains?.filter(
+        ({ owner }) => owner.id?.toLowerCase() === accountAddress.toLowerCase()
+      ),
+    [accountAddress, domains]
+  );
   const { navigate } = useNavigation();
   const handleNavigateToSearch = useCallback(() => {
     navigate(Routes.ENS_SEARCH_SHEET);
@@ -54,8 +63,8 @@ export default function ENSIntroSheet() {
       }, 0);
     };
 
-    if (domains?.length === 1) {
-      navigateToAssignRecords(domains[0].name);
+    if (ownedDomains?.length === 1) {
+      navigateToAssignRecords(ownedDomains[0].name);
     } else {
       navigate(Routes.SELECT_ENS_SHEET, {
         onSelectENS: (ensName: string) => {
@@ -63,7 +72,7 @@ export default function ENSIntroSheet() {
         },
       });
     }
-  }, [domains, navigate, params, startRegistration]);
+  }, [ownedDomains, navigate, params, startRegistration]);
 
   return (
     <Box
@@ -135,7 +144,7 @@ export default function ENSIntroSheet() {
                   )}
                   {isSuccess && (
                     <>
-                      {domains?.length === 0 ? (
+                      {ownedDomains?.length === 0 ? (
                         <Button
                           backgroundColor={colors.appleBlue}
                           onPress={handleNavigateToSearch}
@@ -145,14 +154,14 @@ export default function ENSIntroSheet() {
                         </Button>
                       ) : (
                         <Stack space="15px">
-                          {domains?.length === 1 ? (
+                          {ownedDomains?.length === 1 ? (
                             <Button
                               backgroundColor={colors.appleBlue}
                               onPress={handleSelectExistingName}
                               textProps={{ weight: 'heavy' }}
                             >
                               {lang.t('profiles.intro.use_name', {
-                                name: domains[0].name,
+                                name: ownedDomains[0].name,
                               })}
                             </Button>
                           ) : (

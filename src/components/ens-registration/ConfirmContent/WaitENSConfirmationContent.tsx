@@ -21,11 +21,7 @@ const WaitENSConfirmationContent = () => {
           <Box flexGrow={1} justifyContent="center">
             <Inset horizontal="42px">
               <Stack space="34px">
-                <LargeCountdownClock
-                  minutes={1}
-                  onFinished={() => {}}
-                  seconds={10}
-                />
+                <LargeCountdownClock onFinished={() => {}} seconds={60} />
                 <Stack alignHorizontal="center" space="19px">
                   <Heading size="23px">
                     {lang.t('profiles.confirm.wait_one_minute')}

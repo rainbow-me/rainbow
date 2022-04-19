@@ -2,7 +2,7 @@ import { BlurView } from '@react-native-community/blur';
 import c from 'chroma-js';
 import lang from 'i18n-js';
 import React, { ReactNode, useCallback, useMemo, useRef } from 'react';
-import { Linking, Share, View } from 'react-native';
+import { InteractionManager, Linking, Share, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useDerivedValue,
@@ -255,7 +255,7 @@ const UniqueTokenExpandedState = ({
   const isNFT = uniqueTokenType === UniqueTokenType.NFT;
 
   // Fetch the ENS profile if the unique token is an ENS name.
-  const cleanENSName = isENS ? uniqueId.split(' ')?.[0] : uniqueId;
+  const cleanENSName = isENS && uniqueId ? uniqueId?.split(' ')?.[0] : uniqueId;
   const ensProfile = useENSProfile(cleanENSName, { enabled: isENS });
   const ensData = ensProfile.data;
 
@@ -275,6 +275,7 @@ const UniqueTokenExpandedState = ({
   // TODO(jxom): This is temporary until `ZoomableWrapper` refactor
   const opacityStyle = useAnimatedStyle(() => ({
     opacity: 1 - (animationProgress.value || ensCoverAnimationProgress.value),
+    zIndex: -1,
   }));
   // TODO(jxom): This is temporary until `ZoomableWrapper` refactor
   const sheetHandleStyle = useAnimatedStyle(() => ({
@@ -339,11 +340,13 @@ const UniqueTokenExpandedState = ({
   const { startRegistration } = useENSRegistration();
   const handlePressEdit = useCallback(() => {
     if (isENS) {
-      goBack();
-      startRegistration(uniqueId, REGISTRATION_MODES.EDIT);
-      navigate(Routes.REGISTER_ENS_NAVIGATOR, {
-        ensName: uniqueId,
-        mode: REGISTRATION_MODES.EDIT,
+      InteractionManager.runAfterInteractions(() => {
+        startRegistration(uniqueId, REGISTRATION_MODES.EDIT);
+        goBack();
+        navigate(Routes.REGISTER_ENS_NAVIGATOR, {
+          ensName: uniqueId,
+          mode: REGISTRATION_MODES.EDIT,
+        });
       });
     }
   }, [goBack, isENS, navigate, startRegistration, uniqueId]);
@@ -357,6 +360,7 @@ const UniqueTokenExpandedState = ({
 
   const hasEditButton =
     isActionsEnabled && profilesEnabled && isENS && ensProfile.isOwner;
+  const hasExtendDurationButton = isActionsEnabled && profilesEnabled && isENS;
 
   const familyLinkDisplay = useMemo(
     () =>
@@ -397,13 +401,45 @@ const UniqueTokenExpandedState = ({
         showsVerticalScrollIndicator={!contentFocused}
         yPosition={yPosition}
       >
-        <ImagePreviewOverlay
-          animationProgress={ensCoverAnimationProgress}
-          opacity={ensCoverOpacity}
-          yPosition={yPosition}
-        >
-          <ColorModeProvider value="darkTinted">
-            <AccentColorProvider color={imageColor}>
+        <ColorModeProvider value="darkTinted">
+          <AccentColorProvider color={imageColor}>
+            <ImagePreviewOverlay
+              backgroundOverlay={
+                <Box height="full" width="full">
+                  {ios && (
+                    <Box
+                      as={View}
+                      height="full"
+                      position="absolute"
+                      shouldRasterizeIOS
+                      width="full"
+                    >
+                      <BackgroundImage>
+                        <UniqueTokenImage
+                          backgroundColor={asset.background}
+                          imageUrl={asset.image_url}
+                          item={asset}
+                          resizeMode="cover"
+                          size={CardSize}
+                        />
+                        <BackgroundBlur />
+                      </BackgroundImage>
+                    </Box>
+                  )}
+                  <Box
+                    height="full"
+                    style={{
+                      backgroundColor: isDarkMode
+                        ? `rgba(22, 22, 22, ${ios ? 0.8 : 1})`
+                        : `rgba(26, 26, 26, ${ios ? 0.8 : 1})`,
+                    }}
+                    width="full"
+                  />
+                </Box>
+              }
+              opacity={ensCoverOpacity}
+              yPosition={yPosition}
+            >
               <Inset bottom={sectionSpace} top={{ custom: 33 }}>
                 <Stack alignHorizontal="center">
                   <Animated.View style={sheetHandleStyle}>
@@ -529,7 +565,7 @@ const UniqueTokenExpandedState = ({
                               registrationDate={
                                 ensData?.registration.registrationDate
                               }
-                              showEditButton={hasEditButton}
+                              showExtendDuration={hasExtendDurationButton}
                             />
                           )}
                         </Bleed>
@@ -647,9 +683,9 @@ const UniqueTokenExpandedState = ({
                 </Inset>
                 <Spacer />
               </Animated.View>
-            </AccentColorProvider>
-          </ColorModeProvider>
-        </ImagePreviewOverlay>
+            </ImagePreviewOverlay>
+          </AccentColorProvider>
+        </ColorModeProvider>
       </SlackSheet>
       <ToastPositionContainer>
         <ToggleStateToast

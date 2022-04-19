@@ -56,15 +56,16 @@ export default function useENSRecordDisplayProperties({
     () => Object.keys(imageKeyMap).includes(recordKey),
     [recordKey]
   );
-  const isUrlValue = useMemo(
+
+  const isUrlRecord = useMemo(
     () =>
-      recordValue.match(/^http/) ||
       [ENS_RECORDS.url, ENS_RECORDS.website].includes(recordKey as ENS_RECORDS),
-    [recordKey, recordValue]
+    [recordKey]
   );
+  const isUrlValue = useMemo(() => recordValue.match(/^http/), [recordValue]);
 
   const url = useMemo(() => {
-    if (isUrlValue) {
+    if (isUrlValue || isUrlRecord) {
       return recordValue.match(/^http/)
         ? recordValue
         : `https://${recordValue}`;
@@ -72,12 +73,15 @@ export default function useENSRecordDisplayProperties({
     if (links[recordKey]) {
       return `${links[recordKey]}${recordValue.replace('@', '')}`;
     }
-  }, [isUrlValue, recordKey, recordValue]);
+  }, [isUrlRecord, isUrlValue, recordKey, recordValue]);
 
-  const displayUrl = useMemo(
-    () => (url ? new URL(url).hostname.replace(/^www\./, '') : undefined),
-    [url]
-  );
+  const { displayUrl, displayUrlUsername } = useMemo(() => {
+    const urlObj = url ? new URL(url) : { hostname: '', pathname: '' };
+    return {
+      displayUrl: urlObj?.hostname?.replace(/^www\./, ''),
+      displayUrlUsername: urlObj?.pathname?.replace('/', ''),
+    };
+  }, [url]);
 
   const label = useMemo(() => {
     // @ts-expect-error
@@ -92,8 +96,11 @@ export default function useENSRecordDisplayProperties({
   }, [recordKey, type]);
 
   const value = useMemo(() => {
-    if (isUrlValue && displayUrl) {
+    if (isUrlRecord && displayUrl) {
       return `􀤆 ${displayUrl}`;
+    }
+    if (isUrlValue && displayUrlUsername) {
+      return displayUrlUsername;
     }
     if (recordKey === ENS_RECORDS.email) {
       return `􀍕 ${recordValue}`;
@@ -102,7 +109,15 @@ export default function useENSRecordDisplayProperties({
       return formatAddressForDisplay(recordValue, 4, 4) || '';
     }
     return recordValue;
-  }, [displayUrl, isUrlValue, recordKey, recordValue, type]);
+  }, [
+    displayUrl,
+    displayUrlUsername,
+    isUrlRecord,
+    isUrlValue,
+    recordKey,
+    recordValue,
+    type,
+  ]);
 
   const icon = useMemo(() => icons[recordKey], [recordKey]);
 

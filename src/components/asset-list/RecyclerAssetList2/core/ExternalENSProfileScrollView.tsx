@@ -1,17 +1,23 @@
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
-import React, { RefObject, useContext, useImperativeHandle } from 'react';
-import {
-  Animated as RNAnimated,
-  ScrollViewProps,
-  ViewStyle,
-} from 'react-native';
-import { runOnJS, useWorkletCallback } from 'react-native-reanimated';
+import React, {
+  RefObject,
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useState,
+} from 'react';
+import { ScrollViewProps, ViewStyle } from 'react-native';
+import Animated, {
+  useAnimatedScrollHandler,
+  useSharedValue,
+} from 'react-native-reanimated';
 
 import BaseScrollView, {
   ScrollViewDefaultProps,
 } from 'recyclerlistview/dist/reactnative/core/scrollcomponent/BaseScrollView';
 import ProfileSheetHeader from '../../../ens-profile/ProfileSheetHeader';
+import ImagePreviewOverlay from '../../../images/ImagePreviewOverlay';
 import { StickyHeaderContext } from './StickyHeaders';
 
 const extraPadding = { paddingBottom: 144 };
@@ -30,28 +36,47 @@ const ExternalENSProfileScrollViewWithRef = React.forwardRef<
 ) {
   const isInsideBottomSheet = !!useContext(BottomSheetContext);
 
-  const { onScroll, ...rest } = props;
+  const { ...rest } = props;
   const { scrollViewRef } = useContext(StickyHeaderContext)!;
-  const onScrollWrapped = useWorkletCallback(args => {
-    runOnJS(onScroll)(args);
-  }, []);
+
+  const [scrollEnabled, setScrollEnabled] = useState(ios);
+  useEffect(() => {
+    // For Android, delay scroll until sheet has been mounted (to avoid
+    // ImagePreviewOverlay mounting issues).
+    if (android) {
+      setTimeout(() => setScrollEnabled(true), 500);
+    }
+  });
+
+  const yPosition = useSharedValue(0);
+  const scrollHandler = useAnimatedScrollHandler(event => {
+    yPosition.value = event.contentOffset.y;
+  });
 
   useImperativeHandle(ref, () => scrollViewRef.current!);
 
   const ScrollView = isInsideBottomSheet
     ? BottomSheetScrollView
-    : RNAnimated.ScrollView;
+    : Animated.ScrollView;
 
   return (
-    // @ts-ignore
     <ScrollView
       {...(rest as ScrollViewProps)}
       contentContainerStyle={[extraPadding, rest.contentContainerStyle]}
-      onScroll={onScrollWrapped}
       ref={scrollViewRef as RefObject<any>}
+      scrollEnabled={scrollEnabled}
+      {...(isInsideBottomSheet
+        ? {
+            onScrollWorklet: scrollHandler,
+          }
+        : {
+            onScroll: scrollHandler,
+          })}
     >
-      <ProfileSheetHeader />
-      {props.children}
+      <ImagePreviewOverlay enableZoom={ios} yPosition={yPosition}>
+        <ProfileSheetHeader />
+        {props.children}
+      </ImagePreviewOverlay>
     </ScrollView>
   );
 });
