@@ -2,7 +2,7 @@ import { useFocusEffect, useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState } from 'recoil';
 import { HoldToAuthorizeButton } from '../components/buttons';
 import {
   CommitContent,
@@ -34,10 +34,12 @@ import {
   useENSRegistrationCosts,
   useENSRegistrationForm,
   useENSSearch,
+  usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import { colors } from '@rainbow-me/styles';
 
 export const ENSConfirmRegisterSheetHeight = 600;
 export const ENSConfirmRenewSheetHeight = 500;
@@ -94,7 +96,14 @@ export default function ENSConfirmRegisterSheet() {
     mode,
   } = useENSRegistration();
 
-  const accentColor = useRecoilValue(accentColorAtom);
+  const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
+
+  const { result: dominantColor } = usePersistentDominantColorFromImage(
+    initialAvatarUrl || ''
+  );
+  useEffect(() => {
+    setAccentColor(dominantColor || colors.purple);
+  }, [dominantColor, setAccentColor]);
 
   const [duration, setDuration] = useState(1);
 
@@ -177,6 +186,7 @@ export default function ENSConfirmRegisterSheet() {
       [REGISTRATION_STEPS.EDIT]: null,
       [REGISTRATION_STEPS.RENEW]: (
         <RenewContent
+          accentColor={accentColor}
           name={name}
           registrationCostsData={registrationCostsData}
           setDuration={setDuration}
