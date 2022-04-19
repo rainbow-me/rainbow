@@ -253,11 +253,13 @@ function ImagePreview({
             </Box>
           ) : (
             <>
-              <Box
-                as={AnimatedBlurView}
-                blurType={colorMode === 'light' ? 'light' : 'dark'}
-                style={[blurStyle, StyleSheet.absoluteFillObject]}
-              />
+              {ios && (
+                <Box
+                  as={AnimatedBlurView}
+                  blurType={colorMode === 'light' ? 'light' : 'dark'}
+                  style={[blurStyle, StyleSheet.absoluteFillObject]}
+                />
+              )}
               <Box
                 as={Animated.View}
                 style={[overlayStyle, StyleSheet.absoluteFillObject]}
@@ -265,7 +267,16 @@ function ImagePreview({
                 <Box
                   background="body"
                   height="full"
-                  style={{ opacity: colorMode === 'light' ? 0.7 : 0.3 }}
+                  style={{
+                    opacity:
+                      colorMode === 'light'
+                        ? ios
+                          ? 0.7
+                          : 0.9
+                        : ios
+                        ? 0.3
+                        : 0.5,
+                  }}
                   width="full"
                 />
               </Box>
@@ -393,6 +404,7 @@ export function ImagePreviewOverlayTarget({
   }, [aspectRatio, width, setAspectRatio, setHeight]);
 
   const zoomableWrapperRef = useRef<any>();
+  const hasMounted = useRef<any>(false);
 
   const handleLayout = useCallback(
     ({ nativeEvent }) => {
@@ -404,12 +416,13 @@ export function ImagePreviewOverlayTarget({
       }
       setTimeout(
         () => {
-          if (zoomableWrapperRef.current) {
+          if (zoomableWrapperRef.current && !hasMounted.current) {
             zoomableWrapperRef.current?.measure((...args: any) => {
               const xOffset = args[4];
               const yOffset = args[5];
               typeof xOffset === 'number' && setXOffset(xOffset);
               typeof yOffset === 'number' && setYOffset(yOffset - topOffset);
+              hasMounted.current = true;
             });
           }
         },

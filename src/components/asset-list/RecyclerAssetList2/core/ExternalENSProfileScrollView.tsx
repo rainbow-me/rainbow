@@ -1,6 +1,12 @@
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
-import React, { RefObject, useContext, useImperativeHandle } from 'react';
+import React, {
+  RefObject,
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useState,
+} from 'react';
 import { ScrollViewProps, ViewStyle } from 'react-native';
 import Animated, {
   useAnimatedScrollHandler,
@@ -33,6 +39,15 @@ const ExternalENSProfileScrollViewWithRef = React.forwardRef<
   const { ...rest } = props;
   const { scrollViewRef } = useContext(StickyHeaderContext)!;
 
+  const [scrollEnabled, setScrollEnabled] = useState(ios);
+  useEffect(() => {
+    // For Android, delay scroll until sheet has been mounted (to avoid
+    // ImagePreviewOverlay mounting issues).
+    if (android) {
+      setTimeout(() => setScrollEnabled(true), 500);
+    }
+  });
+
   const yPosition = useSharedValue(0);
   const scrollHandler = useAnimatedScrollHandler(event => {
     yPosition.value = event.contentOffset.y;
@@ -45,11 +60,11 @@ const ExternalENSProfileScrollViewWithRef = React.forwardRef<
     : Animated.ScrollView;
 
   return (
-    // @ts-ignore
     <ScrollView
       {...(rest as ScrollViewProps)}
       contentContainerStyle={[extraPadding, rest.contentContainerStyle]}
       ref={scrollViewRef as RefObject<any>}
+      scrollEnabled={scrollEnabled}
       {...(isInsideBottomSheet
         ? {
             onScrollWorklet: scrollHandler,
