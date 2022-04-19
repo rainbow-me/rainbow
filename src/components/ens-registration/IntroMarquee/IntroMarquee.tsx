@@ -16,7 +16,9 @@ export default function IntroMarquee() {
 
   const handlePressENS = useCallback(
     (ensName: string) => {
-      navigate(Routes.PROFILE_PREVIEW_SHEET, { address: ensName });
+      navigate(Routes.PROFILE_PREVIEW_SHEET, {
+        address: ensName,
+      });
     },
     [navigate]
   );
@@ -78,7 +80,7 @@ function ENSAvatarPlaceholder({
       onPressCancel={onPressCancel}
       onPressStart={onPressStart}
       reanimatedButton={false}
-      scaleTo={0.8}
+      scaleTo={0.95}
     >
       <Box paddingHorizontal="8px">
         <Stack alignHorizontal="center" space="15px">

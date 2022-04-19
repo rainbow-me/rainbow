@@ -146,11 +146,26 @@ export const registerENSNavigatorConfig = {
   }),
 };
 
+export const profileConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 1,
+      scrollEnabled: true,
+      springDamping: 1,
+    }),
+  }),
+};
+
 export const profilePreviewConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
-      longFormHeight: 280,
       ...params,
+      backgroundOpacity: 0,
+      isShortFormEnabled: true,
+      scrollEnabled: true,
+      springDamping: 1,
+      startFromShortForm: true,
     }),
   }),
 };
