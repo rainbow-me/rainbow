@@ -26,6 +26,7 @@ import {
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import {
   useAccountENSDomains,
+  useAccountProfile,
   useAccountSettings,
   useENSRegistration,
 } from '@rainbow-me/hooks';
@@ -39,14 +40,26 @@ export default function ENSIntroSheet() {
   const { params } = useRoute<any>();
   const { accountAddress } = useAccountSettings();
   const { data: domains, isLoading, isSuccess } = useAccountENSDomains();
+  const { accountENS } = useAccountProfile();
 
-  const ownedDomains = useMemo(
-    () =>
-      domains?.filter(
+  const { ownedDomains, primaryDomain } = useMemo(
+    () => ({
+      ownedDomains: domains?.filter(
         ({ owner }) => owner.id?.toLowerCase() === accountAddress.toLowerCase()
       ),
-    [accountAddress, domains]
+      primaryDomain: domains?.find(({ name }) => accountENS === name),
+    }),
+    [accountAddress, accountENS, domains]
   );
+
+  const uniqueDomain = useMemo(() => {
+    return primaryDomain
+      ? primaryDomain
+      : ownedDomains?.length === 1
+      ? ownedDomains?.[0]
+      : null;
+  }, [ownedDomains, primaryDomain]);
+
   const { navigate } = useNavigation();
   const handleNavigateToSearch = useCallback(() => {
     navigate(Routes.ENS_SEARCH_SHEET);
@@ -63,8 +76,8 @@ export default function ENSIntroSheet() {
       }, 0);
     };
 
-    if (ownedDomains?.length === 1) {
-      navigateToAssignRecords(ownedDomains[0].name);
+    if (uniqueDomain) {
+      navigateToAssignRecords(uniqueDomain.name);
     } else {
       navigate(Routes.SELECT_ENS_SHEET, {
         onSelectENS: (ensName: string) => {
@@ -72,7 +85,7 @@ export default function ENSIntroSheet() {
         },
       });
     }
-  }, [ownedDomains, navigate, params, startRegistration]);
+  }, [uniqueDomain, params, startRegistration, navigate]);
 
   return (
     <Box
@@ -154,14 +167,14 @@ export default function ENSIntroSheet() {
                         </Button>
                       ) : (
                         <Stack space="15px">
-                          {ownedDomains?.length === 1 ? (
+                          {uniqueDomain ? (
                             <Button
                               backgroundColor={colors.appleBlue}
                               onPress={handleSelectExistingName}
                               textProps={{ weight: 'heavy' }}
                             >
                               {lang.t('profiles.intro.use_name', {
-                                name: ownedDomains[0].name,
+                                name: uniqueDomain?.name,
                               })}
                             </Button>
                           ) : (
