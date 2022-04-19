@@ -52,7 +52,7 @@ export default function ProfileAvatar({
               backgroundMask="avatar"
               borderRadius={size / 2}
               height={{ custom: size }}
-              topOffset={ios ? 112 : 110}
+              topOffset={ios ? 112 : 107}
             >
               <Box
                 as={ImgixImage}
