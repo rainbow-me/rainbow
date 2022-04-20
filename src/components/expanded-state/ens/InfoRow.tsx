@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from 'react';
+import { Switch } from 'react-native-gesture-handler';
 import { useTheme } from '../../../context/ThemeContext';
 import { useNavigation } from '../../../navigation/Navigation';
 import { ShimmerAnimation } from '../../animations';
@@ -10,6 +11,7 @@ import {
   Box,
   Inline,
   Inset,
+  Space,
   Text,
   useForegroundColor,
 } from '@rainbow-me/design-system';
@@ -63,7 +65,10 @@ export default function InfoRow({
   label,
   wrapValue = children => children,
   value = undefined,
+  switchValue,
+  switchDisabled,
   useAccentColor,
+  onSwitchChange,
 }: {
   explainSheetType?: string;
   icon?: string;
@@ -71,7 +76,10 @@ export default function InfoRow({
   label: string;
   wrapValue?: (children: React.ReactNode) => React.ReactNode;
   value?: string;
+  switchValue?: boolean;
+  switchDisabled?: boolean;
   useAccentColor?: boolean;
+  onSwitchChange?: () => void;
 }) {
   const { colors } = useTheme();
   const accentColor = useForegroundColor('accent');
@@ -124,7 +132,13 @@ export default function InfoRow({
                 setIsMultiline(height > 40);
                 setShow(true);
               }}
-              padding={isMultiline ? '15px' : '10px'}
+              padding={
+                (switchValue !== undefined
+                  ? '0px'
+                  : isMultiline
+                  ? '15px'
+                  : '10px') as Space
+              }
               style={{
                 backgroundColor: useAccentColor
                   ? accentColor + '10'
@@ -151,6 +165,15 @@ export default function InfoRow({
                   >
                     {value}
                   </Text>
+                )}
+                {switchValue !== undefined && (
+                  <Switch
+                    disabled={switchDisabled || switchValue}
+                    onValueChange={onSwitchChange}
+                    testID="ens-reverse-record-switch"
+                    trackColor={{ false: colors.white, true: accentColor }}
+                    value={switchValue}
+                  />
                 )}
               </Inline>
             </Box>

@@ -112,7 +112,7 @@ export default function ENSConfirmRegisterSheet() {
   const { blurFields, values } = useENSRegistrationForm();
   const avatarUrl = initialAvatarUrl || values.avatar;
 
-  const name = ensName.replace(ENS_DOMAIN, '');
+  const name = ensName?.replace(ENS_DOMAIN, '');
   const { data: registrationData } = useENSSearch({
     name,
   });
@@ -161,6 +161,8 @@ export default function ENSConfirmRegisterSheet() {
       return lang.t('profiles.confirm.reserving_name');
     if (step === REGISTRATION_STEPS.REGISTER)
       return lang.t('profiles.confirm.confirm_registration');
+    if (step === REGISTRATION_STEPS.SET_NAME)
+      return lang.t('profiles.confirm.set_name_registration');
   }, [mode, step]);
 
   const stepContent = useMemo(
@@ -184,6 +186,7 @@ export default function ENSConfirmRegisterSheet() {
         />
       ),
       [REGISTRATION_STEPS.EDIT]: null,
+      [REGISTRATION_STEPS.SET_NAME]: null,
       [REGISTRATION_STEPS.RENEW]: (
         <RenewContent
           accentColor={accentColor}
@@ -269,6 +272,18 @@ export default function ENSConfirmRegisterSheet() {
           }
           label={lang.t('profiles.confirm.confirm_update')}
           testID={step}
+        />
+      ),
+      [REGISTRATION_STEPS.SET_NAME]: (
+        <TransactionActionRow
+          accentColor={accentColor}
+          action={() => action(goToProfileScreen)}
+          isSufficientGas={registrationCostsData?.isSufficientGasForStep}
+          isValidGas={
+            registrationCostsData?.isValidGas &&
+            Boolean(registrationCostsData?.stepGasLimit)
+          }
+          label={lang.t('profiles.confirm.confirm_set_name')}
         />
       ),
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: null,

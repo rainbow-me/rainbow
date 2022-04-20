@@ -84,6 +84,10 @@ export default function RegisterENSNavigator() {
       startRegistration(ensName, mode);
       return Routes.ENS_ASSIGN_RECORDS_SHEET;
     }
+    if (mode === REGISTRATION_MODES.SET_NAME) {
+      startRegistration(ensName, mode);
+      return Routes.ENS_CONFIRM_REGISTER_SHEET;
+    }
     return Routes.ENS_INTRO_SHEET;
   }, [params, startRegistration]);
   const [currentRouteName, setCurrentRouteName] = useState(initialRouteName);
