@@ -4,7 +4,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { buildUniqueTokenName } from '../../helpers/assets';
 import { Centered } from '../layout';
 import RemoteSvg from '../svg/RemoteSvg';
-import { Monospace } from '../text';
+import { Monospace, Text } from '../text';
 import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
 import {
   useDimensions,
