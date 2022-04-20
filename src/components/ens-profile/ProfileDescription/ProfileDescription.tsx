@@ -2,20 +2,22 @@ import React from 'react';
 import RecordHyperlink from '../RecordHyperlink/RecordHyperlink';
 import { Inline, Text } from '@rainbow-me/design-system';
 
-const ENS_REGEX = /[^\s]+.eth/g;
+const LINK_REGEX = /[^\s]+.(eth|com|net|xyz|org|co|us|me)/g;
+const DIVIDER = 'ㅤㅤㅤㅤ';
 
 const ProfileDescription = ({ description }: { description?: string }) => {
   if (!description) return null;
-  const ensNames = description.match(ENS_REGEX);
-  const text = description.split(ENS_REGEX);
+  const hyperlinks = description.match(LINK_REGEX);
+  const text = description.replace(LINK_REGEX, DIVIDER).split(DIVIDER);
+
   return (
-    <Inline alignVertical="center">
+    <Inline alignVertical="center" verticalSpace="10px">
       {text?.map((t, i) => (
         <>
-          <Text containsEmoji key={i} weight="medium">
+          <Text containsEmoji key={i} weight="regular">
             {t}
           </Text>
-          {ensNames?.[i] && <RecordHyperlink value={ensNames?.[i]} />}
+          {hyperlinks?.[i] && <RecordHyperlink value={hyperlinks?.[i]} />}
         </>
       ))}
     </Inline>
