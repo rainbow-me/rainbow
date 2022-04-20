@@ -1,8 +1,6 @@
-import { UniqueAsset } from '@rainbow-me/entities';
-
-type Trait = UniqueAsset['traits'][number];
-
 // lower number = higher precedence
+import { UniqueAssetTrait } from '../entities/uniqueAssets';
+
 const displayTypeRanks: Record<string, number> = {
   boost_number: 1,
   boost_percentage: 2,
@@ -14,8 +12,8 @@ const displayTypeRanks: Record<string, number> = {
  * This sorting mimics how OpenSea displays traits separated by display type
  */
 export default function uniqueAssetTraitDisplayTypeCompareFunction(
-  a: Trait,
-  b: Trait
+  a: UniqueAssetTrait,
+  b: UniqueAssetTrait
 ): number {
   const aTypeRank = displayTypeRanks?.[a.display_type] ?? 0;
   const bTypeRank = displayTypeRanks?.[b.display_type] ?? 0;

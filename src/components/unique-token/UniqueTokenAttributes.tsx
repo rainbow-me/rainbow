@@ -25,7 +25,11 @@ const UniqueTokenAttributes = ({
     () =>
       (sortList(traits, 'trait_type', 'asc') as typeof traits)
         .filter(
-          trait => trait.value && trait.trait_type && !isHttpUrl(trait.value)
+          trait =>
+            trait.value !== undefined &&
+            trait.value !== null &&
+            trait.trait_type &&
+            !isHttpUrl(trait.value)
         )
         .sort(uniqueAssetTraitDisplayTypeCompareFunction)
         .map(trait => {
