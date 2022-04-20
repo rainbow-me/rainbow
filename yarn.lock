@@ -14933,6 +14933,12 @@ react-native-permissions@3.0.5:
   version "3.0.5"
   resolved "https://registry.yarnpkg.com/react-native-permissions/-/react-native-permissions-3.0.5.tgz#94542a343abdac801fa0a4593ea2c751cb45c41f"
 
+"react-native-quick-md5@https://github.com/craftzdog/react-native-quick-md5":
+  version "3.0.3"
+  resolved "https://github.com/craftzdog/react-native-quick-md5#878ca7b0e290aec5b02983e75ac1eb36f954b4be"
+  dependencies:
+    spark-md5 "^3.0.2"
+
 react-native-radial-gradient@rainbow-me/react-native-radial-gradient#1266cd8f6ac3321bcf27357f8771bd088f9f27ef:
   version "1.0.9"
   resolved "https://codeload.github.com/rainbow-me/react-native-radial-gradient/tar.gz/1266cd8f6ac3321bcf27357f8771bd088f9f27ef"
@@ -16309,6 +16315,11 @@ source-map@^0.7.3, source-map@~0.7.2:
   version "0.7.3"
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.7.3.tgz#5302f8169031735226544092e64981f751750383"
   integrity sha512-CkCj6giN3S+n9qrYiBTX5gystlENnRW5jZeNLHpe6aue+SrHcG5VYwujhW9s4dY31mEGsxBDrHR6oI69fTXsaQ==
+
+spark-md5@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/spark-md5/-/spark-md5-3.0.2.tgz#7952c4a30784347abcee73268e473b9c0167e3fc"
+  integrity sha512-wcFzz9cDfbuqe0FZzfi2or1sgyIrsDwmPwfZC4hiNidPdPINjeUwNfv5kldczoEAcjl9Y1L3SM7Uz2PUEQzxQw==
 
 spawn-wrap@^2.0.0:
   version "2.0.0"
