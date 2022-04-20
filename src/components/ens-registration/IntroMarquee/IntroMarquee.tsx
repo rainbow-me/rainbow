@@ -1,8 +1,9 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { MarqueeList } from '../../list';
 import { Box, Stack, Text } from '@rainbow-me/design-system';
+import { fetchProfile } from '@rainbow-me/handlers/ens';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import { ensIntroMarqueeNames } from '@rainbow-me/references';
@@ -11,14 +12,27 @@ import Routes from '@rainbow-me/routes';
 export const ensAvatarUrl = (ensName: string) =>
   `https://metadata.ens.domains/mainnet/avatar/${ensName}?v=1.0`;
 
+const lineHeight = 30;
+const estimateDescriptionProfilePreviewHeight = (description?: string) => {
+  return description ? (description.length / 50) * lineHeight : 0;
+};
+
 export default function IntroMarquee() {
   const { navigate } = useNavigation();
+  const [introMarqueeProfiles, setIntroMarqueeProfiles] = useState<{
+    [name: string]: string | undefined;
+  }>({});
 
   const handlePressENS = useCallback(
     (ensName: string) => {
-      navigate(Routes.PROFILE_PREVIEW_SHEET, { address: ensName });
+      navigate(Routes.PROFILE_PREVIEW_SHEET, {
+        address: ensName,
+        descriptionProfilePreviewHeight: estimateDescriptionProfilePreviewHeight(
+          introMarqueeProfiles[ensName]
+        ),
+      });
     },
-    [navigate]
+    [introMarqueeProfiles, navigate]
   );
 
   const renderItem = useCallback(
@@ -32,6 +46,20 @@ export default function IntroMarquee() {
     ),
     []
   );
+
+  useEffect(() => {
+    const getProfiles = async () => {
+      const profiles: { [name: string]: string | undefined } = {};
+      await Promise.all(
+        ensIntroMarqueeNames.map(async name => {
+          const profile = await fetchProfile(name);
+          profiles[name] = profile?.records?.description;
+        })
+      );
+      setIntroMarqueeProfiles(profiles);
+    };
+    getProfiles();
+  }, []);
 
   const items = useMemo(
     () =>

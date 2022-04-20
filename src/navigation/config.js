@@ -149,7 +149,7 @@ export const registerENSNavigatorConfig = {
 export const profilePreviewConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
-      longFormHeight: 280,
+      longFormHeight: 280 + params.descriptionProfilePreviewHeight,
       ...params,
     }),
   }),
