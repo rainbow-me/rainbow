@@ -8,6 +8,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { Box, Columns, useForegroundColor } from '@rainbow-me/design-system';
+import { magicMemo } from '@rainbow-me/utils';
 
 const PULSE_STEP_DURATION = 1000;
 
@@ -16,10 +17,10 @@ type StepIndicatorProps = {
   currentStep: number; // set higher than `steps` to complete the animation
 };
 
-export default function StepIndicator({
+const StepIndicator = ({
   steps,
   currentStep,
-}: StepIndicatorProps) {
+}: StepIndicatorProps) => {
   const accentColor = useForegroundColor('accent');
   const accentColorTint = accentColor + '25';
 
@@ -118,3 +119,5 @@ export default function StepIndicator({
     </Box>
   );
 }
+
+export default magicMemo(StepIndicator, ['steps' , 'currentStep']);
