@@ -1,6 +1,7 @@
 import lang from 'i18n-js';
 import { capitalize } from 'lodash';
 import React, { useMemo } from 'react';
+import { convertAmountToPercentageDisplay } from '../../../helpers/utilities';
 import Pill from '../../Pill';
 import { ButtonPressAnimation } from '../../animations';
 import SwapDetailsRow, { SwapDetailsValue } from './SwapDetailsRow';
@@ -38,7 +39,7 @@ const ExchangeIcon = ({ index, protocol }) => {
 const ExchangeIconStack = ({ protocols }) => {
   return (
     <Inline>
-      {protocols.map((protocol, index) => (
+      {protocols?.map((protocol, index) => (
         <Box
           key={protocol}
           marginLeft={{ custom: -4 }}
@@ -62,11 +63,21 @@ export default function SwapDetailsExchangeRow(props) {
         number: sortedProtocols?.length,
       }),
     };
+    if (sortedProtocols.length === 1) {
+      const protocol = sortedProtocols[0];
+      return [
+        {
+          icons: [protocol.name],
+          label: capitalize(protocol.name.replace('_', ' ')),
+          part: convertAmountToPercentageDisplay(protocol.part),
+        },
+      ];
+    }
     const mappedExchanges = sortedProtocols.map(protocol => {
       return {
         icons: [protocol.name],
         label: capitalize(protocol.name.replace('_', ' ')),
-        part: protocol.part,
+        part: convertAmountToPercentageDisplay(protocol.part),
       };
     });
     return [defaultCase, ...mappedExchanges];
@@ -82,20 +93,20 @@ export default function SwapDetailsExchangeRow(props) {
           label={lang.t('expanded_state.swap.swapping_via')}
           truncated={false}
         >
-          <Columns alignVertical="center" space="4px">
+          <Columns alignHorizontal="right" alignVertical="center" space="4px">
             <Column width="content">
               <ExchangeIconStack protocols={steps[step].icons} />
             </Column>
             <Column width="content">
               <SwapDetailsValue>{steps[step].label}</SwapDetailsValue>
             </Column>
-            <Column width="content">
-              {steps[step].part && (
+            {steps[step].part && (
+              <Column width="content">
                 <Bleed style={{ marginLeft: 10 }}>
-                  <Pill textColor={defaultColor}>{`${steps[step].part}%`}</Pill>
+                  <Pill textColor={defaultColor}>{steps[step].part}</Pill>
                 </Bleed>
-              )}
-            </Column>
+              </Column>
+            )}
           </Columns>
         </SwapDetailsRow>
       </ButtonPressAnimation>
@@ -108,9 +119,7 @@ export default function SwapDetailsExchangeRow(props) {
             <ExchangeIcon />
           </Column>
           <Column width="content">
-            <SwapDetailsValue>
-              {`${capitalize(protocols[0].name.replace('_', ' '))}`}
-            </SwapDetailsValue>
+            <SwapDetailsValue>{steps[step].label}</SwapDetailsValue>
           </Column>
 
           <Column width="content">
