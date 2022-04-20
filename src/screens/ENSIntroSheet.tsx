@@ -2,6 +2,10 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import { useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
+import {
+  ContextMenuButton,
+  MenuActionConfig,
+} from 'react-native-ios-context-menu';
 import LinearGradient from 'react-native-linear-gradient';
 import ActivityIndicator from '../components/ActivityIndicator';
 import Button from '../components/buttons/Button';
@@ -26,11 +30,17 @@ import {
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import {
   useAccountENSDomains,
+  useAccountProfile,
   useAccountSettings,
   useENSRegistration,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
+import { showActionSheetWithOptions } from '@rainbow-me/utils';
 
+enum AnotherENSEnum {
+  search = 'search',
+  my_ens = 'my_ens',
+}
 const topPadding = android ? 29 : 19;
 
 export default function ENSIntroSheet() {
@@ -39,40 +49,115 @@ export default function ENSIntroSheet() {
   const { params } = useRoute<any>();
   const { accountAddress } = useAccountSettings();
   const { data: domains, isLoading, isSuccess } = useAccountENSDomains();
+  const { accountENS } = useAccountProfile();
 
-  const ownedDomains = useMemo(
-    () =>
-      domains?.filter(
-        ({ owner }) => owner.id?.toLowerCase() === accountAddress.toLowerCase()
-      ),
-    [accountAddress, domains]
-  );
+  const { ownedDomains, primaryDomain, nonPrimaryDomains } = useMemo(() => {
+    const ownedDomains = domains?.filter(
+      ({ owner }) => owner.id?.toLowerCase() === accountAddress.toLowerCase()
+    );
+    return {
+      nonPrimaryDomains:
+        ownedDomains?.filter(({ name }) => accountENS !== name) || [],
+      ownedDomains,
+      primaryDomain: ownedDomains?.find(({ name }) => accountENS === name),
+    };
+  }, [accountAddress, accountENS, domains]);
+
+  const uniqueDomain = useMemo(() => {
+    return primaryDomain
+      ? primaryDomain
+      : nonPrimaryDomains?.length === 1
+      ? nonPrimaryDomains?.[0]
+      : null;
+  }, [nonPrimaryDomains, primaryDomain]);
+
   const { navigate } = useNavigation();
-  const handleNavigateToSearch = useCallback(() => {
-    navigate(Routes.ENS_SEARCH_SHEET);
-  }, [navigate]);
-
   const { startRegistration } = useENSRegistration();
 
-  const handleSelectExistingName = useCallback(() => {
-    const navigateToAssignRecords = (ensName: string) => {
+  const handleNavigateToSearch = useCallback(() => {
+    startRegistration('', REGISTRATION_MODES.CREATE);
+    navigate(Routes.ENS_SEARCH_SHEET);
+  }, [navigate, startRegistration]);
+
+  const navigateToAssignRecords = useCallback(
+    (ensName: string) => {
       params?.onSelectExistingName?.();
       startRegistration(ensName, REGISTRATION_MODES.EDIT);
       setTimeout(() => {
         navigate(Routes.ENS_ASSIGN_RECORDS_SHEET);
       }, 0);
-    };
+    },
+    [navigate, params, startRegistration]
+  );
 
-    if (ownedDomains?.length === 1) {
-      navigateToAssignRecords(ownedDomains[0].name);
-    } else {
-      navigate(Routes.SELECT_ENS_SHEET, {
-        onSelectENS: (ensName: string) => {
-          navigateToAssignRecords(ensName);
+  const handleSelectUniqueDomain = useCallback(() => {
+    !!uniqueDomain && navigateToAssignRecords(uniqueDomain?.name);
+  }, [navigateToAssignRecords, uniqueDomain]);
+
+  const handleSelectExistingName = useCallback(() => {
+    navigate(Routes.SELECT_ENS_SHEET, {
+      onSelectENS: (ensName: string) => {
+        navigateToAssignRecords(ensName);
+      },
+    });
+  }, [navigate, navigateToAssignRecords]);
+
+  const menuConfig = useMemo(() => {
+    return {
+      menuItems: [
+        {
+          actionKey: AnotherENSEnum.my_ens,
+          actionTitle: lang.t('profiles.intro.my_ens_names'),
+          icon: {
+            iconType: 'SYSTEM',
+            iconValue: 'rectangle.stack.person.crop',
+          },
         },
-      });
-    }
-  }, [ownedDomains, navigate, params, startRegistration]);
+        {
+          actionKey: AnotherENSEnum.search,
+          actionTitle: lang.t('profiles.intro.search_new_ens'),
+          icon: {
+            iconType: 'SYSTEM',
+            iconValue: 'magnifyingglass.circle',
+          },
+        },
+      ] as MenuActionConfig[],
+      menuTitle: '',
+    };
+  }, []);
+
+  const onPressAndroidActions = useCallback(() => {
+    const androidActions = [
+      lang.t('profiles.intro.my_ens_names'),
+      lang.t('profiles.intro.search_new_ens'),
+    ] as const;
+
+    showActionSheetWithOptions(
+      {
+        options: androidActions,
+        showSeparators: true,
+        title: '',
+      },
+      (idx: number) => {
+        if (idx === 0) {
+          handleSelectExistingName();
+        } else if (idx === 1) {
+          handleNavigateToSearch();
+        }
+      }
+    );
+  }, [handleNavigateToSearch, handleSelectExistingName]);
+
+  const handlePressMenuItem = useCallback(
+    ({ nativeEvent: { actionKey } }) => {
+      if (actionKey === AnotherENSEnum.my_ens) {
+        handleSelectExistingName();
+      } else if (actionKey === AnotherENSEnum.search) {
+        handleNavigateToSearch();
+      }
+    },
+    [handleNavigateToSearch, handleSelectExistingName]
+  );
 
   return (
     <Box
@@ -154,14 +239,14 @@ export default function ENSIntroSheet() {
                         </Button>
                       ) : (
                         <Stack space="15px">
-                          {ownedDomains?.length === 1 ? (
+                          {uniqueDomain ? (
                             <Button
                               backgroundColor={colors.appleBlue}
-                              onPress={handleSelectExistingName}
+                              onPress={handleSelectUniqueDomain}
                               textProps={{ weight: 'heavy' }}
                             >
                               {lang.t('profiles.intro.use_name', {
-                                name: ownedDomains[0].name,
+                                name: uniqueDomain?.name,
                               })}
                             </Button>
                           ) : (
@@ -173,15 +258,36 @@ export default function ENSIntroSheet() {
                               {lang.t('profiles.intro.use_existing_name')}
                             </Button>
                           )}
-                          <Button
-                            backgroundColor={colors.transparent}
-                            borderColor={colors.transparent}
-                            color={colors.appleBlue}
-                            onPress={handleNavigateToSearch}
-                            textProps={{ size: 'lmedium', weight: 'heavy' }}
-                          >
-                            {lang.t('profiles.intro.search_new_name')}
-                          </Button>
+                          {nonPrimaryDomains?.length > 0 ? (
+                            <ContextMenuButton
+                              menuConfig={menuConfig}
+                              {...(android
+                                ? { onPress: onPressAndroidActions }
+                                : {})}
+                              isMenuPrimaryAction
+                              onPressMenuItem={handlePressMenuItem}
+                              useActionSheetFallback={false}
+                            >
+                              <Button
+                                backgroundColor={colors.transparent}
+                                borderColor={colors.transparent}
+                                color={colors.appleBlue}
+                                textProps={{ size: 'lmedium', weight: 'heavy' }}
+                              >
+                                {lang.t('profiles.intro.choose_another_name')}
+                              </Button>
+                            </ContextMenuButton>
+                          ) : (
+                            <Button
+                              backgroundColor={colors.transparent}
+                              borderColor={colors.transparent}
+                              color={colors.appleBlue}
+                              onPress={handleNavigateToSearch}
+                              textProps={{ size: 'lmedium', weight: 'heavy' }}
+                            >
+                              {lang.t('profiles.intro.search_new_name')}
+                            </Button>
+                          )}
                         </Stack>
                       )}
                     </>
