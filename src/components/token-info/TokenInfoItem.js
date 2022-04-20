@@ -1,3 +1,4 @@
+import ConditionalWrap from 'conditional-wrap';
 import React from 'react';
 import { View } from 'react-native';
 import { ButtonPressAnimation, ShimmerAnimation } from '../animations';
@@ -87,47 +88,34 @@ export default function TokenInfoItem({
         </ButtonPressAnimation>
         {asset ? (
           <TokenInfoBalanceValue align={align} asset={asset} isNft={isNft} />
-        ) : addonComponent ? (
-          <Columns alignHorizontal="left">
-            <Column alignHorizontal="left">
-              <ButtonPressAnimation
-                enableHapticFeedback={!!onPress && enableHapticFeedback}
-                onPress={onPress}
-                scaleTo={1}
-              >
-                <TokenInfoValue
-                  activeOpacity={0}
-                  align={align}
-                  color={color}
-                  isNft={isNft}
-                  lineHeight={lineHeight}
-                  size={size}
-                  weight={weight}
-                >
-                  {!loading && children}
-                </TokenInfoValue>
-              </ButtonPressAnimation>
-            </Column>
-            {addonComponent}
-          </Columns>
         ) : (
-          <ButtonPressAnimation
-            enableHapticFeedback={!!onPress && enableHapticFeedback}
-            onPress={onPress}
-            scaleTo={1}
+          <ConditionalWrap
+            condition={addonComponent}
+            wrap={children => (
+              <Columns alignHorizontal="left">
+                <Column alignHorizontal="left">{children}</Column>
+                {addonComponent}
+              </Columns>
+            )}
           >
-            <TokenInfoValue
-              activeOpacity={0}
-              align={align}
-              color={color}
-              isNft={isNft}
-              lineHeight={lineHeight}
-              size={size}
-              weight={weight}
+            <ButtonPressAnimation
+              enableHapticFeedback={!!onPress && enableHapticFeedback}
+              onPress={onPress}
+              scaleTo={1}
             >
-              {!loading && children}
-            </TokenInfoValue>
-          </ButtonPressAnimation>
+              <TokenInfoValue
+                activeOpacity={0}
+                align={align}
+                color={color}
+                isNft={isNft}
+                lineHeight={lineHeight}
+                size={size}
+                weight={weight}
+              >
+                {!loading && children}
+              </TokenInfoValue>
+            </ButtonPressAnimation>
+          </ConditionalWrap>
         )}
         {loading && (
           <WrapperView
