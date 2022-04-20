@@ -61,6 +61,7 @@ const WALLETCONNECT_SET_PENDING_REDIRECT =
   'walletconnect/WALLETCONNECT_SET_PENDING_REDIRECT';
 const WALLETCONNECT_REMOVE_PENDING_REDIRECT =
   'walletconnect/WALLETCONNECT_REMOVE_PENDING_REDIRECT';
+const WALLETCONNECT_ADD_URI = 'walletconnect/WALLETCONNECT_ADD_URI';
 
 // -- Actions ---------------------------------------- //
 const getNativeOptions = async () => {
@@ -145,8 +146,14 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
   dispatch,
   getState
 ) => {
+  // branch and linking are triggering this twice
+  // also branch trigger this when the app is coming back from background
+  // so this is a way to handle this case without persisting anything
+  const { walletConnectUris } = getState().walletconnect;
+  if (walletConnectUris.includes(uri)) return;
+  dispatch(saveWalletConnectUri(uri));
+
   let timeout = null;
-  getState().appState;
   let walletConnector = null;
   const receivedTimestamp = Date.now();
   try {
@@ -155,6 +162,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
       // Don't initiate a new session if we have already established one using this walletconnect URI
       const allSessions = await getAllValidWalletConnectSessions();
       const wcUri = parseWalletConnectUri(uri);
+
       const alreadyConnected = Object.values(allSessions).some(session => {
         return (
           session.handshakeTopic === wcUri.handshakeTopic &&
@@ -167,7 +175,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
       }
 
       walletConnector = new WalletConnect({ clientMeta, uri }, push);
-      let meta = null;
+      let meta = false;
       let navigated = false;
       let timedOut = false;
       let routeParams = {
@@ -278,6 +286,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
         // We need to add a timeout in case the bridge is down
         // to explain the user what's happening
         timeout = setTimeout(() => {
+          meta = android ? Navigation.getActiveRoute()?.params?.meta : meta;
           if (meta) return;
           timedOut = true;
           routeParams = { ...routeParams, timedOut };
@@ -288,6 +297,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
         }, 20000);
 
         // If we have the meta, send it
+        meta = android ? Navigation.getActiveRoute()?.params?.meta : meta;
         if (meta) {
           routeParams = { ...routeParams, meta };
         }
@@ -680,11 +690,21 @@ export const walletConnectSendStatus = (peerId, requestId, response) => async (
   }
 };
 
+export const saveWalletConnectUri = uri => async (dispatch, getState) => {
+  const { walletConnectUris } = getState().walletconnect;
+  const newWalletConnectUris = [...walletConnectUris, uri];
+  dispatch({
+    payload: newWalletConnectUris,
+    type: WALLETCONNECT_ADD_URI,
+  });
+};
+
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
   pendingRedirect: false,
   pendingRequests: {},
   walletConnectors: {},
+  walletConnectUris: [],
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -707,6 +727,8 @@ export default (state = INITIAL_STATE, action) => {
       return { ...state, pendingRedirect: true };
     case WALLETCONNECT_REMOVE_PENDING_REDIRECT:
       return { ...state, pendingRedirect: false };
+    case WALLETCONNECT_ADD_URI:
+      return { ...state, walletConnectUris: action.payload };
     default:
       return state;
   }
