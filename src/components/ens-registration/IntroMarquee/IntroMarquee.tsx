@@ -56,7 +56,7 @@ export default function IntroMarquee() {
           profiles[name] = profile?.records?.description;
         })
       );
-      setIntroMarqueeProfiles(profiles);
+      setIntroMarqueeProfiles(profiles as any);
     };
     getProfiles();
   }, []);

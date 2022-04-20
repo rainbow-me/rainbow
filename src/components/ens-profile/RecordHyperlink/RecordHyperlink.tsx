@@ -21,7 +21,7 @@ export default function RecordHyperlink({ value }: { value: string }) {
 
   return (
     <ButtonPressAnimation onPress={navigateToProfile}>
-      <Text color="action" size="16px" weight="bold">
+      <Text color="action" size="16px" weight="regular">
         {value}
       </Text>
     </ButtonPressAnimation>
