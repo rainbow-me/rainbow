@@ -46,7 +46,6 @@ const handleAndSignImages = (
     w: CardSize,
   };
   const isSVG = isSupportedUriExtension(imageUrl, ['.svg']);
-
   const image = imageUrl || originalUrl || previewUrl;
   const isENS = toLower(contractAddress) === toLower(ENS_NFT_CONTRACT_ADDRESS);
   const fullImage = isENS

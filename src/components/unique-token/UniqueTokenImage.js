@@ -53,10 +53,8 @@ const UniqueTokenImage = ({
   isCard = false,
   resizeMode = ImgixImage.resizeMode.cover,
   size,
-  small = false,
   transformSvgs = true,
 }) => {
-  const { isTinyPhone } = useDimensions();
   const isENS =
     toLower(item.asset_contract.address) === toLower(ENS_NFT_CONTRACT_ADDRESS);
   const isSVG = isSVGImage(imageUrl);
@@ -66,13 +64,6 @@ const UniqueTokenImage = ({
   const [loadedImg, setLoadedImg] = useState(false);
   const onLoad = useCallback(() => setLoadedImg(true), [setLoadedImg]);
   let backgroundColor = givenBackgroundColor;
-  const { result: dominantColor } = usePersistentDominantColorFromImage(
-    item.image_url
-  );
-  const isOldENS = isENS && !isSVG;
-  if (isOldENS && dominantColor) {
-    backgroundColor = dominantColor;
-  }
 
   return (
     <Centered backgroundColor={backgroundColor} style={position.coverAsObject}>
@@ -87,32 +78,26 @@ const UniqueTokenImage = ({
           uri={item.image_url}
         />
       ) : imageUrl && !error ? (
-        isOldENS ? (
-          <ENSText isTinyPhone={isTinyPhone} small={small}>
-            {item.name}
-          </ENSText>
-        ) : (
-          <Fragment>
+        <Fragment>
+          <ImageTile
+            {...(isCard && { fm: 'png' })}
+            onError={handleError}
+            onLoad={onLoad}
+            resizeMode={ImgixImage.resizeMode[resizeMode]}
+            size={size}
+            source={{ uri: imageUrl }}
+            style={position.coverAsObject}
+          />
+          {!loadedImg && (
             <ImageTile
-              {...(isCard && { fm: 'png' })}
-              onError={handleError}
-              onLoad={onLoad}
+              fm="png"
+              playing={false}
               resizeMode={ImgixImage.resizeMode[resizeMode]}
-              size={size}
-              source={{ uri: imageUrl }}
+              source={{ uri: item.lowResUrl }}
               style={position.coverAsObject}
             />
-            {!loadedImg && (
-              <ImageTile
-                fm="png"
-                playing={false}
-                resizeMode={ImgixImage.resizeMode[resizeMode]}
-                source={{ uri: item.lowResUrl }}
-                style={position.coverAsObject}
-              />
-            )}
-          </Fragment>
-        )
+          )}
+        </Fragment>
       ) : (
         <Monospace
           align="center"
