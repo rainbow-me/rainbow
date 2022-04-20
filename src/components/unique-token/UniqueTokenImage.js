@@ -4,16 +4,13 @@ import { useTheme } from '../../context/ThemeContext';
 import { buildUniqueTokenName } from '../../helpers/assets';
 import { Centered } from '../layout';
 import RemoteSvg from '../svg/RemoteSvg';
-import { Monospace, Text } from '../text';
+import { Monospace } from '../text';
 import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
-import {
-  useDimensions,
-  usePersistentDominantColorFromImage,
-} from '@rainbow-me/hooks';
+
 import { ImgixImage } from '@rainbow-me/images';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
 import styled from '@rainbow-me/styled-components';
-import { fonts, fontWithWidth, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 import isSVGImage from '@rainbow-me/utils/isSVG';
 
 const FallbackTextColorVariants = (darkMode, colors) => ({
@@ -32,18 +29,6 @@ const getFallbackTextColor = (bg, darkMode, colors) =>
 const ImageTile = styled(ImgixImage)({
   alignItems: 'center',
   justifyContent: 'center',
-});
-
-const ENSText = styled(Text).attrs(
-  ({ isTinyPhone, small, theme: { colors } }) => ({
-    color: colors.whiteLabel,
-    letterSpacing: 'roundedMedium',
-    size: small ? 'smedium' : isTinyPhone ? 'large' : 'bigger',
-  })
-)({
-  padding: 8,
-  textAlign: 'center',
-  ...fontWithWidth(fonts.weight.heavy),
 });
 
 const UniqueTokenImage = ({
