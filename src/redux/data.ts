@@ -965,9 +965,9 @@ export const transactionsReceived = (
       dispatch(uniqueTokensRefreshState());
     }, 60000);
   }
-  const txHashes = parsedTransactions.map(({ hash }) => hash);
+  const txHashes = parsedTransactions.map(tx => ethereumUtils.getHash(tx));
   const updatedPendingTransactions = pendingTransactions.filter(
-    ({ hash }) => !txHashes.includes(hash)
+    tx => !txHashes.includes(ethereumUtils.getHash(tx))
   );
   dispatch({
     payload: updatedPendingTransactions,
