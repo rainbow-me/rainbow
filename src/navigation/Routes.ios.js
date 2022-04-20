@@ -52,6 +52,7 @@ import {
   externalLinkWarningSheetConfig,
   nativeStackDefaultConfig,
   nativeStackDefaultConfigWithoutStatusBar,
+  profileConfig,
   profilePreviewConfig,
   registerENSNavigatorConfig,
   restoreSheetConfig,
@@ -425,13 +426,10 @@ function NativeStackNavigator() {
           <NativeStack.Screen
             component={ProfileSheet}
             name={Routes.PROFILE_SHEET}
-            {...registerENSNavigatorConfig}
+            {...profileConfig}
           />
           <NativeStack.Screen
             component={ProfileSheet}
-            initialParams={{
-              isPreview: true,
-            }}
             name={Routes.PROFILE_PREVIEW_SHEET}
             {...profilePreviewConfig}
           />

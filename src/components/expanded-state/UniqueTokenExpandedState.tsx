@@ -275,6 +275,7 @@ const UniqueTokenExpandedState = ({
   // TODO(jxom): This is temporary until `ZoomableWrapper` refactor
   const opacityStyle = useAnimatedStyle(() => ({
     opacity: 1 - (animationProgress.value || ensCoverAnimationProgress.value),
+    zIndex: -1,
   }));
   // TODO(jxom): This is temporary until `ZoomableWrapper` refactor
   const sheetHandleStyle = useAnimatedStyle(() => ({
@@ -400,13 +401,45 @@ const UniqueTokenExpandedState = ({
         showsVerticalScrollIndicator={!contentFocused}
         yPosition={yPosition}
       >
-        <ImagePreviewOverlay
-          animationProgress={ensCoverAnimationProgress}
-          opacity={ensCoverOpacity}
-          yPosition={yPosition}
-        >
-          <ColorModeProvider value="darkTinted">
-            <AccentColorProvider color={imageColor}>
+        <ColorModeProvider value="darkTinted">
+          <AccentColorProvider color={imageColor}>
+            <ImagePreviewOverlay
+              backgroundOverlay={
+                <Box height="full" width="full">
+                  {ios && (
+                    <Box
+                      as={View}
+                      height="full"
+                      position="absolute"
+                      shouldRasterizeIOS
+                      width="full"
+                    >
+                      <BackgroundImage>
+                        <UniqueTokenImage
+                          backgroundColor={asset.background}
+                          imageUrl={asset.image_url}
+                          item={asset}
+                          resizeMode="cover"
+                          size={CardSize}
+                        />
+                        <BackgroundBlur />
+                      </BackgroundImage>
+                    </Box>
+                  )}
+                  <Box
+                    height="full"
+                    style={{
+                      backgroundColor: isDarkMode
+                        ? `rgba(22, 22, 22, ${ios ? 0.8 : 1})`
+                        : `rgba(26, 26, 26, ${ios ? 0.8 : 1})`,
+                    }}
+                    width="full"
+                  />
+                </Box>
+              }
+              opacity={ensCoverOpacity}
+              yPosition={yPosition}
+            >
               <Inset bottom={sectionSpace} top={{ custom: 33 }}>
                 <Stack alignHorizontal="center">
                   <Animated.View style={sheetHandleStyle}>
@@ -650,9 +683,9 @@ const UniqueTokenExpandedState = ({
                 </Inset>
                 <Spacer />
               </Animated.View>
-            </AccentColorProvider>
-          </ColorModeProvider>
-        </ImagePreviewOverlay>
+            </ImagePreviewOverlay>
+          </AccentColorProvider>
+        </ColorModeProvider>
       </SlackSheet>
       <ToastPositionContainer>
         <ToggleStateToast

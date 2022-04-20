@@ -1,6 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
+import { ImagePreviewOverlayTarget } from '../../images/ImagePreviewOverlay';
 import Skeleton from '../../skeleton/Skeleton';
 import { Box, useForegroundColor } from '@rainbow-me/design-system';
 import { ImgixImage } from '@rainbow-me/images';
@@ -26,7 +27,7 @@ export default function ProfileCover({
   return (
     <Box
       alignItems="center"
-      as={ios ? RadialGradient : View}
+      as={ios && !coverUrl ? RadialGradient : View}
       height="126px"
       justifyContent="center"
       {...(ios
@@ -36,16 +37,24 @@ export default function ProfileCover({
             stops: [0, 1],
           }
         : {
-            style: { backgroundColor: accentColor },
+            ...(coverUrl
+              ? {
+                  background: 'body',
+                }
+              : {
+                  style: { backgroundColor: accentColor },
+                }),
           })}
     >
       {coverUrl && (
-        <Box
-          as={ImgixImage}
+        <ImagePreviewOverlayTarget
+          aspectRatioType="cover"
+          borderRadius={0}
           height="126px"
-          source={{ uri: coverUrl }}
-          width="full"
-        />
+          topOffset={ios ? 112 : 107}
+        >
+          <Box as={ImgixImage} height="126px" source={{ uri: coverUrl }} />
+        </ImagePreviewOverlayTarget>
       )}
     </Box>
   );

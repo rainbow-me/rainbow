@@ -1,5 +1,6 @@
 import React from 'react';
 import { Text as NativeText } from 'react-native';
+import { ImagePreviewOverlayTarget } from '../../images/ImagePreviewOverlay';
 import Skeleton from '../../skeleton/Skeleton';
 import AvatarCoverPhotoMaskSvg from '../../svg/AvatarCoverPhotoMaskSvg';
 import { BackgroundProvider, Box, Cover } from '@rainbow-me/design-system';
@@ -39,21 +40,26 @@ export default function ProfileAvatar({
       ) : (
         <Box
           alignItems="center"
-          background="accent"
+          background={avatarUrl ? 'body' : 'accent'}
           borderRadius={size / 2}
           height={{ custom: size }}
           justifyContent="center"
-          shadow="12px heavy accent"
           width={{ custom: size }}
         >
           {avatarUrl ? (
-            <Box
-              as={ImgixImage}
+            <ImagePreviewOverlayTarget
+              aspectRatioType="avatar"
+              backgroundMask="avatar"
               borderRadius={size / 2}
               height={{ custom: size }}
-              source={{ uri: avatarUrl }}
-              width={{ custom: size }}
-            />
+              topOffset={ios ? 112 : 107}
+            >
+              <Box
+                as={ImgixImage}
+                height={{ custom: size }}
+                source={{ uri: avatarUrl }}
+              />
+            </ImagePreviewOverlayTarget>
           ) : (
             <NativeText style={{ fontSize: 38 }}>
               {accountSymbol || ''}

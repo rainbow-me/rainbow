@@ -14,7 +14,7 @@ export const ensAvatarUrl = (ensName: string) =>
 
 const lineHeight = 30;
 const estimateDescriptionProfilePreviewHeight = (description?: string) => {
-  return description ? (description.length / 50) * lineHeight : 0;
+  return description ? Math.ceil(description.length / 50) * lineHeight : 0;
 };
 
 export default function IntroMarquee() {
@@ -106,7 +106,7 @@ function ENSAvatarPlaceholder({
       onPressCancel={onPressCancel}
       onPressStart={onPressStart}
       reanimatedButton={false}
-      scaleTo={0.8}
+      scaleTo={0.95}
     >
       <Box paddingHorizontal="8px">
         <Stack alignHorizontal="center" space="15px">
