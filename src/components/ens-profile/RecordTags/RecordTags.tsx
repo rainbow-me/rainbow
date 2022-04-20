@@ -1,6 +1,5 @@
-import { useNavigation } from '@react-navigation/core';
 import { format } from 'date-fns';
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { ScrollView } from 'react-native';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { Icon } from '../../icons';
@@ -16,7 +15,6 @@ import {
 import { Records } from '@rainbow-me/entities';
 import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 import { useENSRecordDisplayProperties } from '@rainbow-me/hooks';
-import Routes from '@rainbow-me/routes';
 
 export default function RecordTags({
   firstTransactionTimestamp,
@@ -133,23 +131,6 @@ function RecordTag({
         </Tag>
       </ButtonPressAnimation>
     </ContextMenuButton>
-  );
-}
-
-export function Hyperlink({ value }: { value: string }) {
-  const { goBack, navigate } = useNavigation();
-
-  const navigateToProfile = useCallback(() => {
-    goBack();
-    navigate(Routes.PROFILE_SHEET, { address: value });
-  }, [navigate, value, goBack]);
-
-  return (
-    <ButtonPressAnimation onPress={navigateToProfile}>
-      <Tag color="appleBlue" size="16px">
-        {value}
-      </Tag>
-    </ButtonPressAnimation>
   );
 }
 

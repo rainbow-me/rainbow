@@ -1,12 +1,12 @@
 import { useRoute } from '@react-navigation/core';
-import React, { useCallback, useContext, useMemo } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { ModalContext } from '../../react-native-cool-modals/NativeStackView';
 import Skeleton from '../skeleton/Skeleton';
 import ActionButtons from './ActionButtons/ActionButtons';
 import ProfileAvatar from './ProfileAvatar/ProfileAvatar';
 import ProfileCover from './ProfileCover/ProfileCover';
+import ProfileDescription from './ProfileDescription/ProfileDescription';
 import RecordTags, {
-  Hyperlink,
   Placeholder as RecordTagsPlaceholder,
 } from './RecordTags/RecordTags';
 import {
@@ -16,16 +16,12 @@ import {
   Columns,
   Divider,
   Heading,
-  Inline,
   Inset,
   Stack,
-  Text,
 } from '@rainbow-me/design-system';
 import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 import { useENSProfile, useFirstTransactionTimestamp } from '@rainbow-me/hooks';
 import { addressHashedEmoji } from '@rainbow-me/utils/profileUtils';
-
-const ENS_REGEX = /[^\s]+.eth/g;
 
 export default function ProfileSheetHeader({
   ensName: defaultEnsName,
@@ -54,25 +50,6 @@ export default function ProfileSheetHeader({
     [profileAddress]
   );
 
-  const handleDescription = useCallback(() => {
-    const recordsDescription = profile?.records?.description;
-    if (!recordsDescription) return null;
-    const ensNames = recordsDescription?.match(ENS_REGEX);
-    const text = recordsDescription?.split(ENS_REGEX);
-    return (
-      <Inline alignVertical="center">
-        {text?.map((t, i) => (
-          <>
-            <Text containsEmoji key={i} weight="medium">
-              {t}
-            </Text>
-            {ensNames?.[i] && <Hyperlink value={ensNames?.[i]} />}
-          </>
-        ))}
-      </Inline>
-    );
-  }, [profile?.records.description]);
-
   return (
     <Box
       {...(ios && { onLayout: (e: any) => setTimeout(() => layout(e), 500) })}
@@ -100,11 +77,15 @@ export default function ProfileSheetHeader({
         <Inset horizontal="19px">
           <Stack space="19px">
             <Heading size="23px">{ensName}</Heading>
-            {!isPreview && (
-              <>
-                {isLoading ? <DescriptionPlaceholder /> : handleDescription()}
-              </>
-            )}
+            <>
+              {isLoading ? (
+                <DescriptionPlaceholder />
+              ) : (
+                <ProfileDescription
+                  description={profile?.records?.description}
+                />
+              )}
+            </>
             <Bleed horizontal="19px">
               {isLoading ? (
                 <RecordTagsPlaceholder />
