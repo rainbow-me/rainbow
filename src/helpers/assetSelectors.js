@@ -17,39 +17,27 @@ const sortAssetsByNativeAmount = (
   isLoadingAssets,
   nativeCurrency
 ) => {
-  let updatedAssets = accountAssetsData;
+  let assetsNativePrices = Object.values(accountAssetsData);
 
   if (!isEmpty(assetPricesFromUniswap)) {
-    updatedAssets = {};
-
-    for (const assetKey in accountAssetsData) {
-      const asset = accountAssetsData[assetKey];
-
+    assetsNativePrices = assetsNativePrices.map(asset => {
       if (isNil(asset.price)) {
         const assetPrice = assetPricesFromUniswap[asset.address]?.price;
 
         const relativePriceChange =
           assetPricesFromUniswap[asset.address]?.relativePriceChange;
         if (assetPrice) {
-          updatedAssets[assetKey] = {
+          return {
             ...asset,
             price: {
               relative_change_24h: relativePriceChange,
               value: assetPrice,
             },
           };
-          continue;
         }
       }
-
-      updatedAssets[assetKey] = asset;
-    }
-  }
-
-  // let assetsNativePrices = values(updatedAssets);
-  let assetsNativePrices = [];
-  for (const updatedAssetsKey in updatedAssets) {
-    assetsNativePrices.push(updatedAssets[updatedAssetsKey]);
+      return asset;
+    });
   }
 
   let total = null;
@@ -91,22 +79,22 @@ const sortAssetsByNativeAmount = (
   };
 };
 
-const groupAssetsByMarketValue = assets => {
-  const res = {
-    hasValue: [],
-    noValue: [],
-  };
+const groupAssetsByMarketValue = assets =>
+  assets.reduce(
+    (acc, asset) => {
+      if (isNil(asset.native)) {
+        acc.noValue.push(asset);
+      } else {
+        acc.hasValue.push(asset);
+      }
 
-  for (const asset of assets) {
-    if (isNil(asset.native)) {
-      res.noValue.push(asset);
-    } else {
-      res.hasValue.push(asset);
+      return acc;
+    },
+    {
+      hasValue: [],
+      noValue: [],
     }
-  }
-
-  return res;
-};
+  );
 
 export const sortAssetsByNativeAmountSelector = createSelector(
   [

@@ -105,15 +105,8 @@ export const parseAssetsNativeWithTotals = (assets, nativeCurrency) => {
   return { assetsNativePrices: assetsNative, total };
 };
 
-export const parseAssetsNative = (assets, nativeCurrency) => {
-  const res = [];
-
-  for (const asset of assets) {
-    res.push(parseAssetNative(asset, nativeCurrency));
-  }
-
-  return res;
-};
+export const parseAssetsNative = (assets, nativeCurrency) =>
+  assets.map(asset => parseAssetNative(asset, nativeCurrency));
 
 export const parseAssetNative = (asset, nativeCurrency) => {
   const assetNativePrice = asset?.price;
