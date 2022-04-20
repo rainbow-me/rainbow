@@ -301,7 +301,7 @@ const UniqueTokenExpandedState = ({
 
   const imageColor =
     // @ts-expect-error image_url could be null or undefined?
-    usePersistentDominantColorFromImage(asset.imageUrl).result ||
+    usePersistentDominantColorFromImage(asset.lowResUrl).result ||
     colors.paleBlue;
 
   const textColor = useMemo(() => {
