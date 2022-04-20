@@ -231,7 +231,6 @@ export const handleSignificantDecimals = (
     decimals = Math.min(decimals, buffer);
   }
   const result = Number(value.toString()).toFixed(decimals);
-
   const numberOfDecimals = countDecimalPlaces(result);
 
   const ret =
@@ -244,7 +243,14 @@ export const handleSignificantDecimals = (
 const formatLocale = (value: string) => {
   const parts = value.split('.');
   if (parts.length > 1) {
-    const decimals = parts[1] === '000' ? '00' : parts[1];
+    // remove trailing zeros
+    let decimals = parts[1] === '000' ? '00' : parts[1];
+    if (
+      decimals.length > 2 &&
+      decimals.substring(decimals.length - 1) === '0'
+    ) {
+      decimals = decimals.substring(0, decimals.length - 1);
+    }
     const integers = Number(parts[0]).toLocaleString();
     return `${integers}.${decimals}`;
   }

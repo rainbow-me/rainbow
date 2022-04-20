@@ -50,7 +50,7 @@ export const parseNewTransaction = async (
   if (amount && asset) {
     balance = {
       amount,
-      display: convertAmountToBalanceDisplay(amount, asset),
+      display: convertAmountToBalanceDisplay(amount, asset, 2),
     };
   }
 
