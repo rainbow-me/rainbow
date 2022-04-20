@@ -97,6 +97,8 @@ const POLYGON_EXPLAINER = `Polygon is a sidechain, a distinct network that runs 
 
 It allows for cheaper and faster transactions, but unlike Layer 2 networks, Polygon has its own security and consensus mechanisms that differ from Ethereum.`;
 
+const RAINBOW_FEE_EXPLAINER = `The Rainbow fee is the fee charged by the Rainbow network to make $$$.`;
+
 const BACKUP_EXPLAINER = lang.t('back_up.explainers.backup', {
   cloudPlatformName: cloudPlatformAccountName,
 });
@@ -227,6 +229,12 @@ export const explainers = network => ({
     extraHeight: 20,
     text: BACKUP_EXPLAINER,
     title: 'Important',
+  },
+  rainbow_fee: {
+    emoji: '🔐',
+    extraHeight: -50,
+    text: RAINBOW_FEE_EXPLAINER,
+    title: 'Rainbow Fee',
   },
 });
 
