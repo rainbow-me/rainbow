@@ -163,6 +163,7 @@ export const profilePreviewConfig = {
       ...params,
       backgroundOpacity: 0,
       isShortFormEnabled: true,
+      longFormHeight: 280 + params.descriptionProfilePreviewHeight,
       scrollEnabled: true,
       springDamping: 1,
       startFromShortForm: true,

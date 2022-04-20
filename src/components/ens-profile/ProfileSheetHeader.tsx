@@ -5,6 +5,7 @@ import Skeleton from '../skeleton/Skeleton';
 import ActionButtons from './ActionButtons/ActionButtons';
 import ProfileAvatar from './ProfileAvatar/ProfileAvatar';
 import ProfileCover from './ProfileCover/ProfileCover';
+import ProfileDescription from './ProfileDescription/ProfileDescription';
 import RecordTags, {
   Placeholder as RecordTagsPlaceholder,
 } from './RecordTags/RecordTags';
@@ -17,7 +18,6 @@ import {
   Heading,
   Inset,
   Stack,
-  Text,
 } from '@rainbow-me/design-system';
 import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 import { useENSProfile, useFirstTransactionTimestamp } from '@rainbow-me/hooks';
@@ -77,21 +77,15 @@ export default function ProfileSheetHeader({
         <Inset horizontal="19px">
           <Stack space="19px">
             <Heading size="23px">{ensName}</Heading>
-            {!isPreview && (
-              <>
-                {isLoading ? (
-                  <DescriptionPlaceholder />
-                ) : (
-                  <>
-                    {profile?.records.description && (
-                      <Text containsEmoji weight="medium">
-                        {profile?.records.description}
-                      </Text>
-                    )}
-                  </>
-                )}
-              </>
-            )}
+            <>
+              {isLoading ? (
+                <DescriptionPlaceholder />
+              ) : (
+                <ProfileDescription
+                  description={profile?.records?.description}
+                />
+              )}
+            </>
             <Bleed horizontal="19px">
               {isLoading ? (
                 <RecordTagsPlaceholder />

@@ -69,11 +69,13 @@ function Tag({
   children,
   icon,
   symbol,
+  size = '14px',
 }: {
   color: 'appleBlue' | 'grey';
   children: React.ReactNode;
   icon?: string;
   symbol?: string;
+  size?: '14px' | '16px';
 }) {
   const action = useForegroundColor('action');
   const secondary80 = useForegroundColor('secondary80');
@@ -100,7 +102,7 @@ function Tag({
             />
           </Bleed>
         )}
-        <Text color={textColors[color]} size="14px" weight="bold">
+        <Text color={textColors[color]} size={size} weight="bold">
           {symbol ? `${symbol} ` : ''}
           {children}
         </Text>
