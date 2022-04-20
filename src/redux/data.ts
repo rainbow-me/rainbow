@@ -1438,7 +1438,7 @@ export const dataAddNewTransaction = (
       txDetails,
       nativeCurrency
     );
-    const _pendingTransactions = [...pendingTransactions, parsedTransaction];
+    const _pendingTransactions = [parsedTransaction, ...pendingTransactions];
     dispatch({
       payload: _pendingTransactions,
       type: DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS,
@@ -1584,8 +1584,10 @@ export const dataWatchPendingTransactions = (
   if (txStatusesDidChange) {
     const { accountAddress, network } = getState().settings;
     const [newDataTransactions, pendingTransactions] = partition(
-      updatedPendingTransactions,
-      ({ status }) => status !== TransactionStatus.unknown
+      updatedPendingTransactions.filter(
+        ({ status }) => status !== TransactionStatus.unknown
+      ),
+      tx => !tx.pending
     );
     dispatch({
       payload: pendingTransactions,
