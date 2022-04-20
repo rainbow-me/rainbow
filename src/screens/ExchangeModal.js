@@ -205,10 +205,12 @@ export default function ExchangeModal({
   });
 
   const {
-    derivedValues: { inputAmount, nativeAmount, outputAmount },
-    displayValues: { inputAmountDisplay, outputAmountDisplay },
-    doneLoadingReserves,
-    tradeDetails,
+    result: {
+      derivedValues: { inputAmount, nativeAmount, outputAmount },
+      displayValues: { inputAmountDisplay, outputAmountDisplay },
+      tradeDetails,
+    },
+    loading,
   } = useSwapDerivedOutputs();
 
   const {
@@ -217,7 +219,13 @@ export default function ExchangeModal({
     priceImpactColor,
     priceImpactNativeAmount,
     priceImpactPercentDisplay,
-  } = usePriceImpactDetails(inputAmount, outputAmount);
+  } = usePriceImpactDetails(
+    inputAmount,
+    outputAmount,
+    inputCurrency,
+    outputCurrency,
+    loading
+  );
 
   const flashbots = network === Network.mainnet && flashbotsEnabled;
 
@@ -478,16 +486,16 @@ export default function ExchangeModal({
   const confirmButtonProps = useMemoOne(
     () => ({
       disabled: !Number(inputAmount),
-      doneLoadingReserves,
       inputAmount,
       isAuthorizing,
       isHighPriceImpact,
+      loading,
       onSubmit: handleSubmit,
       tradeDetails,
       type,
     }),
     [
-      doneLoadingReserves,
+      loading,
       handleSubmit,
       inputAmount,
       isAuthorizing,

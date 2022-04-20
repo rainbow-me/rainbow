@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
+import { useDebounce } from 'use-debounce';
 import { Row } from '../layout';
 import { Text } from '../text';
 import ExchangeInput from './ExchangeInput';
@@ -67,6 +68,12 @@ const ExchangeNativeField = (
     return colors.alpha(color, opacity);
   }, [colors, isFocused, nativeAmount]);
 
+  const [debouncedValue] = useDebounce(nativeAmount, 300);
+
+  useEffect(() => {
+    setNativeAmount(debouncedValue);
+  }, [debouncedValue, setNativeAmount]);
+
   return (
     <TouchableWithoutFeedback onPress={handleFocusNativeField}>
       <Row align="center" flex={1} height={height}>
@@ -84,8 +91,8 @@ const ExchangeNativeField = (
           placeholder={placeholder}
           ref={ref}
           selectionColor={colorForAsset}
-          testID={nativeAmount ? `${testID}-${nativeAmount}` : testID}
-          value={nativeAmount}
+          testID={testID}
+          value={debouncedValue}
         />
       </Row>
     </TouchableWithoutFeedback>
