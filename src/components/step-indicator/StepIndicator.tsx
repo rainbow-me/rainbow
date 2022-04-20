@@ -17,10 +17,7 @@ type StepIndicatorProps = {
   currentStep: number; // set higher than `steps` to complete the animation
 };
 
-const StepIndicator = ({
-  steps,
-  currentStep,
-}: StepIndicatorProps) => {
+const StepIndicator = ({ steps, currentStep }: StepIndicatorProps) => {
   const accentColor = useForegroundColor('accent');
   const accentColorTint = accentColor + '25';
 
@@ -118,6 +115,6 @@ const StepIndicator = ({
       </Columns>
     </Box>
   );
-}
+};
 
-export default magicMemo(StepIndicator, ['steps' , 'currentStep']);
+export default magicMemo(StepIndicator, ['steps', 'currentStep']);

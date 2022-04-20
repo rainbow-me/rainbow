@@ -75,7 +75,7 @@ export default function ENSSearchSheet() {
   }, [isAvailable, isInvalid, isRegistered]);
 
   const handlePressContinue = useCallback(() => {
-    startRegistration(`${searchQuery}${ENS_DOMAIN}`);
+    startRegistration(`${normalizeENS(searchQuery)}${ENS_DOMAIN}`);
     Keyboard.dismiss();
     navigate(Routes.ENS_ASSIGN_RECORDS_SHEET);
   }, [navigate, searchQuery, startRegistration]);
@@ -113,7 +113,7 @@ export default function ENSSearchSheet() {
             <SearchInput
               contextMenuHidden
               isLoading={isLoading}
-              onChangeText={value => setSearchQuery(normalizeENS(value))}
+              onChangeText={value => setSearchQuery(value)}
               placeholder="Input placeholder"
               state={state}
               testID="ens-search-input"
