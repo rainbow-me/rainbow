@@ -17,11 +17,12 @@ import {
   RainbowMeteorologyData,
   SelectedGasFee,
 } from '@rainbow-me/entities';
-import { toHex } from '@rainbow-me/handlers/web3';
+import { isHexString, toHex } from '@rainbow-me/handlers/web3';
 import { getMinimalTimeUnitStringForMs } from '@rainbow-me/helpers/time';
 import { ethUnits, timeUnits } from '@rainbow-me/references';
 import {
   add,
+  convertHexToString,
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
   divide,
@@ -321,7 +322,11 @@ const getTxFee = (
   nativeCurrency: string,
   l1GasFeeOptimism: BigNumberish | null = null
 ) => {
-  let amount = multiply(gasPrice.toString(), gasLimit.toString());
+  const normalizedGasLimit = isHexString(gasLimit.toString())
+    ? convertHexToString(gasLimit)
+    : gasLimit;
+
+  let amount = multiply(gasPrice.toString(), normalizedGasLimit.toString());
   if (l1GasFeeOptimism && greaterThan(l1GasFeeOptimism.toString(), '0')) {
     amount = add(amount, l1GasFeeOptimism.toString());
   }

@@ -1089,6 +1089,7 @@ export const addressAssetsReceived = (
   const isL2 = assetsNetwork && isL2Network(assetsNetwork);
   if (!isL2 && !assetsNetwork) {
     dispatch(
+      // @ts-ignore
       uniswapUpdateLiquidityTokens(liquidityTokens, append || change || removed)
     );
   }

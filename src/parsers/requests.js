@@ -2,6 +2,7 @@ import { convertHexToUtf8 } from '@walletconnect/utils';
 import { BigNumber } from 'ethers';
 import { get, isNil } from 'lodash';
 import { isHexString } from '@rainbow-me/handlers/web3';
+import { Network } from '@rainbow-me/helpers';
 import { ethUnits, smartContractMethods } from '@rainbow-me/references';
 import {
   convertAmountAndPriceToNativeDisplay,
@@ -111,12 +112,22 @@ const getTransactionDisplayDetails = (
       priceUnit,
       nativeCurrency
     );
+
+    const defaultGasLimit =
+      dappNetwork === Network.arbitrum
+        ? ethUnits.arbitrum_basic_tx
+        : ethUnits.basic_tx;
+
+    const gasLimit = BigNumber.from(transaction.gasLimit || defaultGasLimit);
+    const gasPrice = transaction.gasPrice
+      ? BigNumber.from(transaction.gasPrice)
+      : undefined;
     return {
       request: {
         asset: nativeAsset,
         from: transaction.from,
-        gasLimit: BigNumber.from(transaction.gasLimit),
-        gasPrice: BigNumber.from(transaction.gasPrice),
+        gasLimit,
+        gasPrice,
         nativeAmount: amount,
         nativeAmountDisplay: display,
         to: transaction.to,
