@@ -118,7 +118,7 @@ export default function ENSIntroSheet() {
           actionTitle: lang.t('profiles.intro.search_new_ens'),
           icon: {
             iconType: 'SYSTEM',
-            iconValue: 'magnifyingglass.circle.fill',
+            iconValue: 'magnifyingglass.circle',
           },
         },
       ] as MenuActionConfig[],
