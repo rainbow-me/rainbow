@@ -79,8 +79,12 @@ export default function SwapDetailsContent({
               {inputAsExact ? outputCurrency.symbol : inputCurrency.symbol}
             </SwapDetailsValue>
           </SwapDetailsRow>
-          <SwapDetailsExchangeRow protocols={tradeDetails?.protocols} />
-          <SwapDetailsFeeRow tradeDetails={tradeDetails} />
+          {tradeDetails?.protocols && (
+            <SwapDetailsExchangeRow protocols={tradeDetails?.protocols} />
+          )}
+          {tradeDetails.feePercentageBasisPoints !== 0 && (
+            <SwapDetailsFeeRow tradeDetails={tradeDetails} />
+          )}
           {!areDetailsExpanded ? (
             <ButtonPressAnimation
               onPress={() => setAreDetailsExpanded(!areDetailsExpanded)}
