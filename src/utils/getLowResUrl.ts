@@ -3,7 +3,7 @@ import { CardSize } from '../components/unique-token/CardSize';
 import { imageToPng } from '@rainbow-me/handlers/imgix';
 
 export const GOOGLE_USER_CONTENT_URL = 'https://lh3.googleusercontent.com/';
-const size = Math.floor((Math.ceil(CardSize) * PixelRatio.get()) / 5);
+const size = Math.floor((Math.ceil(CardSize) * PixelRatio.get()) / 3);
 
 export const getLowResUrl = (url: string) => {
   if (url?.startsWith?.(GOOGLE_USER_CONTENT_URL)) {

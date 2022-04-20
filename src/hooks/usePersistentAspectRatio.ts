@@ -1,9 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Image } from 'react-native';
 import { MMKV, useMMKVNumber } from 'react-native-mmkv';
-import { getLowResUrl } from '../utils/getLowResUrl';
-import { imageToPng } from '@rainbow-me/handlers/imgix';
-import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
 import { STORAGE_IDS } from '@rainbow-me/model/mmkv';
 
 const storage = new MMKV({
@@ -23,21 +20,15 @@ type Result = {
 };
 
 export default function usePersistentAspectRatio(url: string): Result {
-  const isSVG = isSupportedUriExtension(url, ['.svg']);
-  const nonSvgUrl = isSVG ? imageToPng(url, 200) : url;
-  const [ratio, setAspectRatio] = useMMKVNumber(
-    (nonSvgUrl || '') as string,
-    storage
-  );
+  const [ratio, setAspectRatio] = useMMKVNumber((url || '') as string, storage);
   const [state, setState] = useState<State>(
     ratio !== 0 ? State.loaded : State.init
   );
   useEffect(() => {
-    if (state === State.init && nonSvgUrl) {
-      const lowResUrl = getLowResUrl(nonSvgUrl) as string;
+    if (state === State.init && url) {
       setState(State.loading);
       Image.getSize(
-        lowResUrl,
+        url,
         (width, height) => {
           setAspectRatio(width / height);
           setState(State.loaded);
@@ -45,7 +36,7 @@ export default function usePersistentAspectRatio(url: string): Result {
         () => setState(State.failed)
       );
     }
-  }, [setAspectRatio, state, nonSvgUrl]);
+  }, [setAspectRatio, state, url]);
   return {
     result: ratio,
     state,
