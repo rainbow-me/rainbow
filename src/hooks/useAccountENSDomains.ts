@@ -49,7 +49,9 @@ export default function useAccountENSDomains() {
   const { accountAddress } = useAccountSettings();
   return useQuery<
     EnsAccountRegistratonsData['account']['registrations'][number]['domain'][]
-  >(queryKey({ accountAddress }), async () =>
-    fetchAccountENSDomains({ accountAddress })
+  >(
+    queryKey({ accountAddress }),
+    async () => fetchAccountENSDomains({ accountAddress }),
+    { staleTime: 60000 }
   );
 }
