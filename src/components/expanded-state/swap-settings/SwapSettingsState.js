@@ -27,6 +27,7 @@ import {
   useAccountSettings,
   useColorForAsset,
   useKeyboardHeight,
+  useSwapSlippage,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { deviceUtils } from '@rainbow-me/utils';
@@ -55,6 +56,8 @@ export default function SwapSettingsState({ asset }) {
 
   const keyboardHeight = useKeyboardHeight();
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(true);
+
+  const { slippageInBips, updateSwapSlippage } = useSwapSlippage();
 
   useEffect(() => {
     const keyboardDidShow = () => {
@@ -85,7 +88,12 @@ export default function SwapSettingsState({ asset }) {
     setParams({ longFormHeight: sheetHeightWithKeyboard });
   }, [sheetHeightWithKeyboard, setParams]);
 
-  const [slippageValue, setSlippageValue] = useState(0.1);
+  const convertBipsToPercent = bips => bips / 1000;
+  const convertPercentToBips = percent => percent * 1000;
+
+  const [slippageValue, setSlippageValue] = useState(
+    convertBipsToPercent(slippageInBips)
+  );
 
   const slippageRef = useRef(null);
 
@@ -102,6 +110,7 @@ export default function SwapSettingsState({ asset }) {
   ]);
 
   const onSlippageChange = value => {
+    updateSwapSlippage(convertPercentToBips(value));
     setSlippageValue(value);
   };
 
@@ -114,9 +123,10 @@ export default function SwapSettingsState({ asset }) {
       );
       if (greaterThan(0, newSlippageValue)) return;
 
+      updateSwapSlippage(convertPercentToBips(newSlippageValue));
       setSlippageValue(newSlippageValue);
     },
-    [slippageValue]
+    [slippageValue, updateSwapSlippage]
   );
 
   const SLIPPAGE_INCREMENT = 0.1;

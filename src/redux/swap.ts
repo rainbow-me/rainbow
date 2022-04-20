@@ -200,7 +200,7 @@ const INITIAL_STATE: SwapState = {
   independentValue: null,
   inputCurrency: null,
   outputCurrency: null,
-  slippageInBips: 50,
+  slippageInBips: 1000,
   tradeDetails: null,
   type: ExchangeModalTypes.swap,
   typeSpecificParameters: null,
