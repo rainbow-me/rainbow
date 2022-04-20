@@ -69,6 +69,9 @@ export const fetchMetadata = async ({
   }
 };
 
+export const isUnknownOpenSeaENSDescription = (description?: string) =>
+  description?.includes('This is an unknown ENS name with the hash') || false;
+
 export const fetchSuggestions = async (
   recipient: any,
   setSuggestions: any,
