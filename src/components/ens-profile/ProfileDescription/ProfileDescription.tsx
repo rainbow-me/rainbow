@@ -2,7 +2,7 @@ import React from 'react';
 import RecordHyperlink from '../RecordHyperlink/RecordHyperlink';
 import { Inline, Text } from '@rainbow-me/design-system';
 
-const LINK_REGEX = /[^\s]+.(eth|com|net|xyz|org|co|us|me)/g;
+const LINK_REGEX = /[^\s]+\.(eth|com|net|xyz|org|co|us|me)/g;
 const DIVIDER = 'ㅤㅤㅤㅤ';
 
 const ProfileDescription = ({ description }: { description?: string }) => {
