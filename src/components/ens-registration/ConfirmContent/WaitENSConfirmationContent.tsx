@@ -1,6 +1,7 @@
 import lang from 'i18n-js';
 import React from 'react';
 import { LargeCountdownClock } from '../../../components/large-countdown-clock';
+import { StepIndicator } from '../../../components/step-indicator';
 import {
   Box,
   Heading,
@@ -13,7 +14,10 @@ import {
 
 const WaitENSConfirmationContent = () => {
   return (
-    <Box flexGrow={1}>
+    <Box flexGrow={1} paddingHorizontal="30px">
+      <Box paddingTop="24px">
+        <StepIndicator currentStep={2} steps={3} />
+      </Box>
       <Rows alignHorizontal="center">
         <Row>
           <Box flexGrow={1} justifyContent="center">

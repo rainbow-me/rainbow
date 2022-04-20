@@ -1,6 +1,7 @@
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { Switch } from 'react-native-gesture-handler';
+import { StepIndicator } from '../../../components/step-indicator';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import {
   Box,
@@ -31,6 +32,9 @@ const RegisterContent = ({
 
   return (
     <Box flexGrow={1} paddingHorizontal="30px">
+      <Box paddingTop="24px">
+        <StepIndicator currentStep={3} steps={3} />
+      </Box>
       <Rows>
         <Row>
           <Box flexGrow={1} justifyContent="center" paddingHorizontal="24px">
