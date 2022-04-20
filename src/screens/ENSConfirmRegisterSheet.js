@@ -334,7 +334,7 @@ export default function ENSConfirmRegisterSheet() {
                 </Stack>
               </Box>
             </Row>
-            <Row>{stepContent[REGISTRATION_STEPS.REGISTER]}</Row>
+            <Row>{stepContent[step]}</Row>
             <Row height="content">{stepActions[step]}</Row>
           </Rows>
         </Box>
