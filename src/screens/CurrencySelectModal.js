@@ -208,10 +208,7 @@ export default function CurrencySelectModal() {
   useEffect(() => {
     // on new focus state
     if (isFocused !== prevIsFocused) {
-      android && toggleGestureEnabled(!isFocused);
-      startInteraction(() => {
-        ios && toggleGestureEnabled(!isFocused);
-      });
+      toggleGestureEnabled(!isFocused);
     }
 
     // on page blur
