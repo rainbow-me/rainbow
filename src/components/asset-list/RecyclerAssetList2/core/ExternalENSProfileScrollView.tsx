@@ -16,6 +16,7 @@ import Animated, {
 import BaseScrollView, {
   ScrollViewDefaultProps,
 } from 'recyclerlistview/dist/reactnative/core/scrollcomponent/BaseScrollView';
+import { ProfileSheetConfigContext } from '../../../../screens/ProfileSheet';
 import ProfileSheetHeader from '../../../ens-profile/ProfileSheetHeader';
 import ImagePreviewOverlay from '../../../images/ImagePreviewOverlay';
 import { StickyHeaderContext } from './StickyHeaders';
@@ -35,6 +36,7 @@ const ExternalENSProfileScrollViewWithRef = React.forwardRef<
   ref
 ) {
   const isInsideBottomSheet = !!useContext(BottomSheetContext);
+  const { enableZoomableImages } = useContext(ProfileSheetConfigContext);
 
   const { ...rest } = props;
   const { scrollViewRef } = useContext(StickyHeaderContext)!;
@@ -73,7 +75,10 @@ const ExternalENSProfileScrollViewWithRef = React.forwardRef<
             onScroll: scrollHandler,
           })}
     >
-      <ImagePreviewOverlay enableZoom={ios} yPosition={yPosition}>
+      <ImagePreviewOverlay
+        enableZoom={ios && enableZoomableImages}
+        yPosition={yPosition}
+      >
         <ProfileSheetHeader />
         {props.children}
       </ImagePreviewOverlay>
