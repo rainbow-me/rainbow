@@ -42,6 +42,7 @@ export default function ENSSearchSheet() {
   const { startRegistration, name } = useENSRegistration();
 
   const [searchQuery, setSearchQuery] = useState(name.replace(ENS_DOMAIN, ''));
+  const [inputValue, setInputValue] = useState(name.replace(ENS_DOMAIN, ''));
   const [debouncedSearchQuery] = useDebounce(searchQuery, 200);
 
   const {
@@ -75,7 +76,7 @@ export default function ENSSearchSheet() {
   }, [isAvailable, isInvalid, isRegistered]);
 
   const handlePressContinue = useCallback(() => {
-    startRegistration(`${normalizeENS(searchQuery)}${ENS_DOMAIN}`);
+    startRegistration(`${searchQuery}${ENS_DOMAIN}`);
     Keyboard.dismiss();
     navigate(Routes.ENS_ASSIGN_RECORDS_SHEET);
   }, [navigate, searchQuery, startRegistration]);
@@ -113,11 +114,14 @@ export default function ENSSearchSheet() {
             <SearchInput
               contextMenuHidden
               isLoading={isLoading}
-              onChangeText={value => setSearchQuery(value)}
+              onChangeText={value => {
+                setSearchQuery(normalizeENS(value));
+                setInputValue(value);
+              }}
               placeholder="Input placeholder"
               state={state}
               testID="ens-search-input"
-              value={searchQuery}
+              value={inputValue}
             />
           </Box>
           {isIdle && (
