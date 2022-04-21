@@ -4,8 +4,9 @@
 It needs to be an import statement because otherwise it doesn't load properly
 likely because of typescript.
 */
-import PerformanceTracking, {
+import {
   PerformanceMetric,
+  PerformanceTracking,
 } from './src/performance-tracking';
 
 PerformanceTracking.startMeasuring(PerformanceMetric.loadRootAppComponent);

@@ -178,7 +178,7 @@ function finishMeasuring(
   return true;
 }
 
-const PerformanceTracking = {
+export const PerformanceTracking = {
   commitMeasurement,
   finishMeasuring,
   logDirectly,
@@ -188,4 +188,3 @@ const PerformanceTracking = {
 };
 
 export { default as PerformanceMetric } from './types/PerformanceMetric';
-export default PerformanceTracking;

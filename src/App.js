@@ -57,7 +57,7 @@ import * as keychain from './model/keychain';
 import { loadAddress } from './model/wallet';
 import { Navigation } from './navigation';
 import RoutesComponent from './navigation/Routes';
-import PerformanceTracking, { PerformanceMetric } from './performance-tracking';
+import { PerformanceMetric, PerformanceTracking } from './performance-tracking';
 import { queryClient } from './react-query/queryClient';
 import { explorerInitL2 } from './redux/explorer';
 import { fetchOnchainBalances } from './redux/fallbackExplorer';

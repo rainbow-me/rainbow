@@ -1,8 +1,10 @@
 import { useCallback } from 'react';
 import { InteractionManager, NativeModules, StatusBar } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
-import PerformanceTracking from '../performance-tracking';
-import PerformanceMetric from '../performance-tracking/types/PerformanceMetric';
+import {
+  PerformanceMetric,
+  PerformanceTracking,
+} from '../performance-tracking';
 
 const { RainbowSplashScreen, RNBootSplash } = NativeModules;
 
