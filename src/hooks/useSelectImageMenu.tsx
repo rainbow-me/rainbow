@@ -48,7 +48,7 @@ const items = {
     },
     menuAttributes: ['destructive'],
   },
-};
+} as const;
 
 export default function useSelectImageMenu({
   imagePickerOptions,
@@ -58,6 +58,7 @@ export default function useSelectImageMenu({
   onUploading,
   onUploadSuccess,
   onUploadError,
+  showRemove = false,
   uploadToIPFS = false,
 }: {
   imagePickerOptions?: Options;
@@ -79,6 +80,7 @@ export default function useSelectImageMenu({
     image: Image;
   }) => void;
   onUploadError?: ({ error, image }: { error: unknown; image: Image }) => void;
+  showRemove?: boolean;
   uploadToIPFS?: boolean;
 } = {}) {
   const { navigate, dangerouslyGetParent } = useNavigation();
@@ -106,9 +108,13 @@ export default function useSelectImageMenu({
     }, [dangerouslyGetParent])
   );
 
-  const menuItems = useMemo(() => [...initialMenuItems, 'remove'] as const, [
-    initialMenuItems,
-  ]);
+  const menuItems = useMemo(
+    () =>
+      [...initialMenuItems, showRemove ? 'remove' : undefined].filter(
+        Boolean
+      ) as (Action | 'remove')[],
+    [initialMenuItems, showRemove]
+  );
 
   const handleSelectImage = useCallback(async () => {
     const image = await openPicker({
@@ -187,11 +193,13 @@ export default function useSelectImageMenu({
         if (buttonIndex === 0) {
           handleSelectImage();
         } else if (buttonIndex === 1) {
-          handleSelectImage();
+          handleSelectNFT();
+        } else if (buttonIndex === 2) {
+          onRemoveImage?.();
         }
       }
     );
-  }, [handleSelectImage, menuItems]);
+  }, [handleSelectImage, handleSelectNFT, menuItems, onRemoveImage]);
 
   const ContextMenu = useCallback(
     ({ children }) => (

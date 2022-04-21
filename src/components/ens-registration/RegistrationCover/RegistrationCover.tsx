@@ -14,6 +14,7 @@ import {
   useSelectImageMenu,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
+import { stringifyENSNFTRecord } from '@rainbow-me/utils';
 
 export const coverMetadataAtom = atom<Image | undefined>({
   default: undefined,
@@ -52,12 +53,27 @@ export default function RegistrationCover({
       height: 500,
       width: 1500,
     },
-    menuItems: ['library'],
-    onChangeImage: ({ image }) => {
+    menuItems: ['library', 'nft'],
+    onChangeImage: ({ asset, image }) => {
       setCoverMetadata(image);
       setCoverUrl(image?.tmpPath);
-      if (image?.tmpPath) {
-        onBlurField({ key: 'cover', value: image.tmpPath });
+      if (asset) {
+        const standard = asset.asset_contract?.schema_name || '';
+        const contractAddress = asset.asset_contract?.address || '';
+        const tokenId = asset.id;
+        onBlurField({
+          key: 'cover',
+          value: stringifyENSNFTRecord({
+            contractAddress,
+            standard,
+            tokenId,
+          }),
+        });
+      } else if (image?.tmpPath) {
+        onBlurField({
+          key: 'cover',
+          value: image.tmpPath,
+        });
       }
     },
     onRemoveImage: () => {
@@ -68,6 +84,7 @@ export default function RegistrationCover({
     onUploadSuccess: ({ data }) => {
       onBlurField({ key: 'cover', value: data.url });
     },
+    showRemove: Boolean(coverUrl),
     uploadToIPFS: true,
   });
 

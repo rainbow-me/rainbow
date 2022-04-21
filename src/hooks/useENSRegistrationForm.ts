@@ -1,3 +1,4 @@
+import { useFocusEffect } from '@react-navigation/core';
 import { isEmpty, omit } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { atom, useRecoilState } from 'recoil';
@@ -36,11 +37,11 @@ export const valuesAtom = atom<{ [name: string]: Partial<Records> }>({
 
 export default function useENSRegistrationForm({
   defaultFields,
-  createForm,
+  initializeForm,
 }: {
   defaultFields?: any[];
   /** A flag that indicates if a new form should be initialised */
-  createForm?: boolean;
+  initializeForm?: boolean;
 } = {}) {
   const {
     name,
@@ -78,8 +79,9 @@ export default function useENSRegistrationForm({
   const [selectedFields, setSelectedFields] = useRecoilState(
     selectedFieldsAtom
   );
-  useEffect(() => {
-    if (createForm) {
+  useFocusEffect(
+    useCallback(() => {
+      if (!initializeForm) return;
       // If there are existing records in the global state, then we
       // populate with that.
       if (!isEmpty(defaultRecords)) {
@@ -95,39 +97,44 @@ export default function useENSRegistrationForm({
           setSelectedFields(defaultFields as any);
         }
       }
-    }
-  }, [name, isEmpty(defaultRecords)]); // eslint-disable-line react-hooks/exhaustive-deps
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [name, isEmpty(defaultRecords)])
+  );
 
   const [valuesMap, setValuesMap] = useRecoilState(valuesAtom);
   const values = useMemo(() => valuesMap[name] || {}, [name, valuesMap]);
-  useEffect(
-    () => {
-      if (createForm) {
+  useFocusEffect(
+    useCallback(
+      () => {
+        if (!initializeForm) return;
         setValuesMap(values => ({
           ...values,
           [name]: defaultRecords,
         }));
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [name, isEmpty(defaultRecords)]
+      },
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [name, isEmpty(defaultRecords)]
+    )
   );
 
   // Set initial records in redux depending on user input (defaultFields)
-  useEffect(() => {
-    if (defaultFields && isEmpty(defaultRecords)) {
-      const records = defaultFields.reduce((records, field) => {
-        return {
-          ...records,
-          [field.key]: '',
-        };
-      }, {});
-      updateRecords(records);
-    } else if (mode === REGISTRATION_MODES.EDIT && !isEmpty(defaultRecords)) {
-      updateRecords(defaultRecords);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isEmpty(defaultRecords), updateRecords]);
+  useFocusEffect(
+    useCallback(() => {
+      if (!initializeForm) return;
+      if (defaultFields && isEmpty(defaultRecords)) {
+        const records = defaultFields.reduce((records, field) => {
+          return {
+            ...records,
+            [field.key]: '',
+          };
+        }, {});
+        updateRecords(records);
+      } else if (mode === REGISTRATION_MODES.EDIT && !isEmpty(defaultRecords)) {
+        updateRecords(defaultRecords);
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isEmpty(defaultRecords), updateRecords])
+  );
 
   const onAddField = useCallback(
     (fieldToAdd, selectedFields) => {
