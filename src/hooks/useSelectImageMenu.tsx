@@ -193,11 +193,13 @@ export default function useSelectImageMenu({
         if (buttonIndex === 0) {
           handleSelectImage();
         } else if (buttonIndex === 1) {
-          handleSelectImage();
+          handleSelectNFT();
+        } else if (buttonIndex === 2) {
+          onRemoveImage?.();
         }
       }
     );
-  }, [handleSelectImage, menuItems]);
+  }, [handleSelectImage, handleSelectNFT, menuItems, onRemoveImage]);
 
   const ContextMenu = useCallback(
     ({ children }) => (
