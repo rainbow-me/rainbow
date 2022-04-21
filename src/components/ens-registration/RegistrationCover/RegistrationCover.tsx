@@ -14,19 +14,20 @@ import {
   useSelectImageMenu,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
+import { magicMemo } from '@rainbow-me/utils';
 
 export const coverMetadataAtom = atom<Image | undefined>({
   default: undefined,
   key: 'ens.coverMetadata',
 });
 
-export default function RegistrationCover({
+const RegistrationCover = ({
   hasSeenExplainSheet,
   onShowExplainSheet,
 }: {
   hasSeenExplainSheet: boolean;
   onShowExplainSheet: () => void;
-}) {
+}) => {
   const {
     images: { coverUrl: initialCoverUrl },
   } = useENSRegistration();
@@ -119,4 +120,9 @@ export default function RegistrationCover({
       </ButtonPressAnimation>
     </ConditionalWrap>
   );
-}
+};
+
+export default magicMemo(RegistrationCover, [
+  'hasSeenExplainSheet',
+  'onShowExplainSheet',
+]);

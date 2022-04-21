@@ -446,15 +446,15 @@ export default function useENSRegistrationCosts({
     checkIfSufficientEth,
     duration,
     estimatedFee,
-    useGasGasFeeParamsBySpeed,
+    hasReverseRecord,
     isSufficientGas,
     isValidGas,
     nativeCurrency,
     rentPrice?.perYear?.wei,
     step,
     stepGasLimit,
+    useGasGasFeeParamsBySpeed,
     yearsDuration,
-    hasReverseRecord,
   ]);
 
   const gasFeeReady = useMemo(
@@ -463,17 +463,21 @@ export default function useENSRegistrationCosts({
     [useGasCurrentBlockParams, useGasGasFeeParamsBySpeed]
   );
 
-  const statusQueries = queries.slice(0, 2);
-  const isSuccess =
-    !statusQueries.some(a => a.status !== 'success') &&
-    !!data?.estimatedRentPrice &&
-    gasFeeReady;
-  const isLoading =
-    statusQueries.map(({ isLoading }) => isLoading).reduce((a, b) => a || b) &&
-    !gasFeeReady;
-  const isIdle = statusQueries
-    .map(({ isIdle }) => ({ isIdle }))
-    .reduce((a, b) => a && b);
+  const { isSuccess, isLoading, isIdle } = useMemo(() => {
+    const statusQueries = queries.slice(0, 2);
+    const isSuccess =
+      !statusQueries.some(a => a.status !== 'success') &&
+      !!data?.estimatedRentPrice &&
+      gasFeeReady;
+    const isLoading =
+      statusQueries
+        .map(({ isLoading }) => isLoading)
+        .reduce((a, b) => a || b) && !gasFeeReady;
+    const isIdle = statusQueries
+      .map(({ isIdle }) => ({ isIdle }))
+      .reduce((a, b) => a && b);
+    return { isIdle, isLoading, isSuccess };
+  }, [data?.estimatedRentPrice, gasFeeReady, queries]);
 
   return {
     data,

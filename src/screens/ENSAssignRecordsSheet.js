@@ -158,7 +158,7 @@ export default function ENSAssignRecordsSheet() {
       <Box
         background="body"
         flexGrow={1}
-        style={useMemo(() => ({ paddingBottom: BottomActionHeight + 20 }), [])}
+        style={{ paddingBottom: BottomActionHeight + 20 }}
       >
         <Stack space="19px">
           <RegistrationCover

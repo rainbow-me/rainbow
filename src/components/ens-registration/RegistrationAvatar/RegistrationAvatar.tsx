@@ -20,7 +20,7 @@ import {
   useSelectImageMenu,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
-import { stringifyENSNFTAvatar } from '@rainbow-me/utils';
+import { magicMemo, stringifyENSNFTAvatar } from '@rainbow-me/utils';
 
 export const avatarMetadataAtom = atom<Image | undefined>({
   default: undefined,
@@ -29,7 +29,7 @@ export const avatarMetadataAtom = atom<Image | undefined>({
 
 const size = 70;
 
-export default function RegistrationAvatar({
+const RegistrationAvatar = ({
   hasSeenExplainSheet,
   onChangeAvatarUrl,
   onShowExplainSheet,
@@ -37,7 +37,7 @@ export default function RegistrationAvatar({
   hasSeenExplainSheet: boolean;
   onChangeAvatarUrl: (url: string) => void;
   onShowExplainSheet: () => void;
-}) {
+}) => {
   const {
     images: { avatarUrl: initialAvatarUrl },
   } = useENSRegistration();
@@ -173,4 +173,10 @@ export default function RegistrationAvatar({
       )}
     </Box>
   );
-}
+};
+
+export default magicMemo(RegistrationAvatar, [
+  'hasSeenExplainSheet',
+  'onChangeAvatarUrl',
+  'onShowExplainSheet',
+]);
