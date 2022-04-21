@@ -5,11 +5,17 @@ import { keyBy } from 'lodash';
 // @ts-ignore
 import { RAINBOW_TOKEN_LIST_URL } from 'react-native-dotenv';
 import RNFS from 'react-native-fs';
+import { MMKV } from 'react-native-mmkv';
 import { rainbowFetch } from '../../rainbow-fetch';
 import { ETH_ADDRESS } from '../index';
 import RAINBOW_TOKEN_LIST_DATA from './rainbow-token-list.json';
 import { RainbowToken } from '@rainbow-me/entities';
 import logger from 'logger';
+
+export const storage = new MMKV({
+  id: 'tokenList',
+  path: `${RNFS.CachesDirectoryPath}/storage`,
+});
 
 const RB_TOKEN_LIST_CACHE = 'rb-token-list.json';
 const RB_TOKEN_LIST_ETAG = 'rb-token-list-etag.json';
@@ -65,14 +71,21 @@ function generateDerivedData(tokenListData: TokenListData) {
   return derivedData;
 }
 
-async function readRNFSJsonData<T>(filename: string): Promise<T | null> {
+async function readMMKVJsonData<T>(filename: string): Promise<T | null> {
   try {
-    const data = await RNFS.readFile(
-      path.join(RNFS.CachesDirectoryPath, filename),
-      'utf8'
-    );
+    let data = await Promise.resolve(storage.getString(filename));
 
-    return JSON.parse(data);
+    if (!data) {
+      // backward compatibility
+      data = await RNFS.readFile(
+        path.join(RNFS.CachesDirectoryPath, filename),
+        'utf8'
+      );
+    }
+
+    const json = JSON.parse(data);
+
+    return json;
   } catch (error) {
     // @ts-ignore: Skip missing file errors.
     if (error?.code !== 'ENOENT') {
@@ -84,13 +97,9 @@ async function readRNFSJsonData<T>(filename: string): Promise<T | null> {
   }
 }
 
-async function writeRNFSJsonData<T>(filename: string, data: T) {
+async function writeMMKVJsonData<T>(filename: string, data: T) {
   try {
-    await RNFS.writeFile(
-      path.join(RNFS.CachesDirectoryPath, filename),
-      JSON.stringify(data),
-      'utf8'
-    );
+    await Promise.resolve(storage.set(filename, JSON.stringify(data)));
   } catch (error) {
     logger.sentry(`Token List: Error saving ${filename}`);
     logger.error(error);
@@ -104,7 +113,7 @@ async function getTokenListUpdate(
   newTokenList?: TokenListData;
   status?: Response['status'];
 }> {
-  const etagData = await readRNFSJsonData<ETagData>(RB_TOKEN_LIST_ETAG);
+  const etagData = await readMMKVJsonData<ETagData>(RB_TOKEN_LIST_ETAG);
   const etag = etagData?.etag;
   const commonHeaders = {
     Accept: 'application/json',
@@ -124,7 +133,7 @@ async function getTokenListUpdate(
     const freshDate = new Date((data as TokenListData)?.timestamp);
     if (freshDate > currentDate) {
       const work = [
-        writeRNFSJsonData<TokenListData>(
+        writeMMKVJsonData<TokenListData>(
           RB_TOKEN_LIST_CACHE,
           data as TokenListData
         ),
@@ -132,7 +141,7 @@ async function getTokenListUpdate(
 
       if ((headers as Headers).get('etag')) {
         work.push(
-          writeRNFSJsonData<ETagData>(RB_TOKEN_LIST_ETAG, {
+          writeMMKVJsonData<ETagData>(RB_TOKEN_LIST_ETAG, {
             etag: (headers as Headers).get('etag'),
           })
         );
@@ -167,7 +176,7 @@ class RainbowTokenList extends EventEmitter {
   constructor() {
     super();
 
-    readRNFSJsonData<TokenListData>(RB_TOKEN_LIST_CACHE)
+    readMMKVJsonData<TokenListData>(RB_TOKEN_LIST_CACHE)
       .then(cachedData => {
         if (cachedData?.timestamp) {
           const bundledDate = new Date(this._tokenListData?.timestamp);
