@@ -19,6 +19,7 @@ import {
 // eslint-disable-next-line import/default
 import codePush from 'react-native-code-push';
 import {
+  IS_TESTING,
   REACT_APP_SEGMENT_API_WRITE_KEY,
   SENTRY_ENDPOINT,
   SENTRY_ENVIRONMENT,
@@ -81,7 +82,12 @@ const FedoraToastRef = createRef();
 
 StatusBar.pushStackEntry({ animated: true, barStyle: 'dark-content' });
 
-const routingInstrumentation = new Sentry.ReactNavigationInstrumentation();
+// We need to disable React Navigation instrumentation for E2E tests
+// because detox doesn't like setTimeout calls that are used inside
+// When enabled detox hangs and timeouts on all test cases
+const routingInstrumentation = IS_TESTING
+  ? undefined
+  : new Sentry.ReactNavigationInstrumentation();
 
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -306,7 +312,7 @@ class App extends Component {
   };
 
   handleSentryNavigationIntegration = () => {
-    routingInstrumentation.registerNavigationContainer(this.navigatorRef);
+    routingInstrumentation?.registerNavigationContainer(this.navigatorRef);
   };
 
   render = () => (
