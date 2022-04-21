@@ -20,14 +20,14 @@ public class RNStartTimeModule extends ReactContextBaseJavaModule {
 
     @Override
     public String getName() {
-        return "StartTimeModule";
+        return NAME;
     }
 
 
     @Override
     public Map<String, Object> getConstants() {
         final Map<String, Object> constants = new HashMap<>();
-        constants.put("START_TIMESTAMP", START_MARK);
+        constants.put("START_TIME", START_MARK);
         return constants;
     }
 }
