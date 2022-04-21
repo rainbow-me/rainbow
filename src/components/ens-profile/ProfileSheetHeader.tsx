@@ -80,11 +80,11 @@ export default function ProfileSheetHeader({
             <>
               {isLoading ? (
                 <DescriptionPlaceholder />
-              ) : (
+              ) : profile?.records?.description ? (
                 <ProfileDescription
                   description={profile?.records?.description}
                 />
-              )}
+              ) : null}
             </>
             <Bleed horizontal="19px">
               {isLoading ? (
@@ -111,7 +111,11 @@ export default function ProfileSheetHeader({
                 </>
               )}
             </Bleed>
-            {!isPreview && <Divider />}
+            {!isPreview && (
+              <Inset bottom="15px">
+                <Divider />
+              </Inset>
+            )}
           </Stack>
         </Inset>
       </Stack>
