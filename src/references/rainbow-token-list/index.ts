@@ -83,9 +83,7 @@ async function readMMKVJsonData<T>(filename: string): Promise<T | null> {
       );
     }
 
-    const json = JSON.parse(data);
-
-    return json;
+    return JSON.parse(data);
   } catch (error) {
     // @ts-ignore: Skip missing file errors.
     if (error?.code !== 'ENOENT') {
