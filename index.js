@@ -8,7 +8,12 @@ import {
   PerformanceMetric,
   PerformanceTracking,
 } from './src/performance-tracking';
+import { StartTime } from './src/performance-tracking/start-time';
 
+PerformanceTracking.logDirectly(
+  PerformanceMetric.loadJSBundle,
+  Date.now() - StartTime.START_TIME
+);
 PerformanceTracking.startMeasuring(PerformanceMetric.loadRootAppComponent);
 PerformanceTracking.startMeasuring(PerformanceMetric.timeToInteractive);
 
