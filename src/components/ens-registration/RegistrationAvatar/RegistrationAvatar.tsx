@@ -72,6 +72,7 @@ export default function RegistrationAvatar({
       cropperCircleOverlay: true,
       cropping: true,
     },
+    menuItems: ['library', 'nft'],
     onChangeImage: ({ asset, image }) => {
       setAvatarMetadata(image);
       setAvatarUrl(image?.tmpPath || asset?.image_thumbnail_url || '');
