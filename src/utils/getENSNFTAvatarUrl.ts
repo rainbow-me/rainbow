@@ -1,5 +1,5 @@
-import isENSNFTAvatar from './isENSNFTAvatar';
-import parseENSNFTAvatar from './parseENSNFTAvatar';
+import isENSNFTRecord from './isENSNFTRecord';
+import parseENSNFTRecord from './parseENSNFTRecord';
 import { UniqueAsset } from '@rainbow-me/entities';
 
 // Gets the ENS NFT `avatarUrl` from the record `avatar`
@@ -9,9 +9,9 @@ export default function getENSNFTAvatarUrl(
 ) {
   let avatarUrl;
   if (avatar) {
-    const isNFTAvatar = isENSNFTAvatar(avatar);
+    const isNFTAvatar = isENSNFTRecord(avatar);
     if (isNFTAvatar) {
-      const { contractAddress, tokenId } = parseENSNFTAvatar(avatar);
+      const { contractAddress, tokenId } = parseENSNFTRecord(avatar);
       const uniqueToken = uniqueTokens.find(
         token =>
           token.asset_contract.address === contractAddress &&
