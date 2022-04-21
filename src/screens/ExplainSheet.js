@@ -232,7 +232,7 @@ export const explainers = network => ({
   },
   rainbow_fee: {
     emoji: '🔐',
-    extraHeight: -50,
+    extraHeight: -100,
     text: RAINBOW_FEE_EXPLAINER,
     title: 'Rainbow Fee',
   },
