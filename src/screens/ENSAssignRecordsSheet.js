@@ -85,19 +85,19 @@ export default function ENSAssignRecordsSheet() {
     ].map(fieldName => textRecordFields[fieldName]),
   });
 
-  // const { data: registrationData } = useENSSearch({
-  //   name,
-  // });
+  const { data: registrationData } = useENSSearch({
+    name,
+  });
 
-  // const { step } = useENSRegistrationActionHandler();
+  const { step } = useENSRegistrationActionHandler();
 
-  // useENSRegistrationCosts({
-  //   name,
-  //   records: changedRecords,
-  //   rentPrice: registrationData?.rentPrice,
-  //   step,
-  //   yearsDuration: 1,
-  // });
+  useENSRegistrationCosts({
+    name,
+    records: changedRecords,
+    rentPrice: registrationData?.rentPrice,
+    step,
+    yearsDuration: 1,
+  });
 
   const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
