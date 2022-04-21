@@ -4,6 +4,7 @@ import { useQuery } from 'react-query';
 import { useAccountSettings } from '.';
 import { fetchRegistrationDate } from '@rainbow-me/handlers/ens';
 import {
+  ENS_DOMAIN,
   formatRentPrice,
   getAvailable,
   getNameExpires,
@@ -60,7 +61,7 @@ export default function useENSSearch({
       };
     } else {
       // we need the expiration and registration date when is not available
-      const registrationDate = await fetchRegistrationDate(name + '.eth');
+      const registrationDate = await fetchRegistrationDate(name + ENS_DOMAIN);
       const nameExpires = await getNameExpires(name);
       const formattedRegistrarionDate = formatTime(registrationDate, false);
       const formattedExpirationDate = formatTime(nameExpires);

@@ -93,7 +93,7 @@ export default function ENSAssignRecordsSheet() {
 
   useENSRegistrationCosts({
     name,
-    records: changedRecords,
+    records: changedRecords || {},
     rentPrice: registrationData?.rentPrice,
     step,
     yearsDuration: 1,

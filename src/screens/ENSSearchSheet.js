@@ -39,7 +39,7 @@ export default function ENSSearchSheet() {
   const topPadding = android ? 29 : 19;
   const { params } = useRoute();
 
-  const { startRegistration, name } = useENSRegistration();
+  const { startRegistration, name, changedRecords } = useENSRegistration();
 
   const [searchQuery, setSearchQuery] = useState(name.replace(ENS_DOMAIN, ''));
   const [debouncedSearchQuery] = useDebounce(searchQuery, 200);
@@ -59,7 +59,8 @@ export default function ENSSearchSheet() {
     data: registrationCostsData,
     isSuccess: registrationCostsDataIsAvailable,
   } = useENSRegistrationCosts({
-    name: debouncedSearchQuery,
+    name: debouncedSearchQuery + ENS_DOMAIN,
+    records: changedRecords || {},
     rentPrice: registrationData?.rentPrice,
     sendReverseRecord: true,
     step: REGISTRATION_STEPS.COMMIT,
