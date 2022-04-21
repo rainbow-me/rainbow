@@ -44,7 +44,7 @@ export { default as sentryUtils } from './sentry';
 export { default as showActionSheetWithOptions } from './actionsheet';
 export { default as simplifyChartData } from './simplifyChartData';
 export { default as statusBar } from './statusBar';
-export { default as stringifyENSNFTAvatar } from './stringifyENSNFTAvatar';
+export { default as stringifyENSNFTRecord } from './stringifyENSNFTRecord';
 export { filterList } from './search';
 export {
   getFirstGrapheme,

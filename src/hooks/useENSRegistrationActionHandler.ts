@@ -116,6 +116,8 @@ export default function useENSRegistrationActionHandler(
         ),
       ]);
 
+      console.log(registrationParameters.changedRecords);
+
       const commitEnsRegistrationParameters: ENSActionParameters = {
         ...formatENSActionParams(registrationParameters),
         duration,

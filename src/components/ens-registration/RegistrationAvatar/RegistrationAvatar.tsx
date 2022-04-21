@@ -20,7 +20,7 @@ import {
   useSelectImageMenu,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
-import { stringifyENSNFTAvatar } from '@rainbow-me/utils';
+import { stringifyENSNFTRecord } from '@rainbow-me/utils';
 
 export const avatarMetadataAtom = atom<Image | undefined>({
   default: undefined,
@@ -72,7 +72,6 @@ export default function RegistrationAvatar({
       cropperCircleOverlay: true,
       cropping: true,
     },
-    menuItems: ['library', 'nft'],
     onChangeImage: ({ asset, image }) => {
       setAvatarMetadata(image);
       setAvatarUrl(image?.tmpPath || asset?.image_thumbnail_url || '');
@@ -86,7 +85,7 @@ export default function RegistrationAvatar({
         const tokenId = asset.id;
         onBlurField({
           key: 'avatar',
-          value: stringifyENSNFTAvatar({
+          value: stringifyENSNFTRecord({
             contractAddress,
             standard,
             tokenId,
@@ -112,6 +111,7 @@ export default function RegistrationAvatar({
     onUploadSuccess: ({ data }) => {
       onBlurField({ key: 'avatar', value: data.url });
     },
+    showRemove: Boolean(avatarUrl),
     uploadToIPFS: true,
   });
 

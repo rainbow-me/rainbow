@@ -14,7 +14,7 @@ import {
   useSelectImageMenu,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
-import { stringifyENSNFTAvatar } from '@rainbow-me/utils';
+import { stringifyENSNFTRecord } from '@rainbow-me/utils';
 
 export const coverMetadataAtom = atom<Image | undefined>({
   default: undefined,
@@ -62,8 +62,8 @@ export default function RegistrationCover({
         const contractAddress = asset.asset_contract?.address || '';
         const tokenId = asset.id;
         onBlurField({
-          key: 'avatar',
-          value: stringifyENSNFTAvatar({
+          key: 'cover',
+          value: stringifyENSNFTRecord({
             contractAddress,
             standard,
             tokenId,
@@ -84,6 +84,7 @@ export default function RegistrationCover({
     onUploadSuccess: ({ data }) => {
       onBlurField({ key: 'cover', value: data.url });
     },
+    showRemove: Boolean(coverUrl),
     uploadToIPFS: true,
   });
 

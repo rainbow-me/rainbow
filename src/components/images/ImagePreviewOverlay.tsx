@@ -220,7 +220,7 @@ function ImagePreview({
   }));
   const overlayStyle = useAnimatedStyle(() => ({
     opacity: 1 * progress.value,
-    zIndex: progress.value > 0 ? index + 2 : -1,
+    zIndex: progress.value > 0 ? index + 2 : -2,
   }));
   const containerStyle = useAnimatedStyle(() => ({
     zIndex: progress.value > 0 ? index + 10 : index,
@@ -239,7 +239,6 @@ function ImagePreview({
               left: xOffset + 35,
               position: 'absolute',
               top: yOffset + 68,
-              // zIndex: 1,
             },
             backgroundMaskStyle,
           ]}
