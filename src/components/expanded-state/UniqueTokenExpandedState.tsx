@@ -54,10 +54,8 @@ import {
   TextProps,
 } from '@rainbow-me/design-system';
 import { AssetTypes, UniqueAsset } from '@rainbow-me/entities';
-import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
 import { buildUniqueTokenName } from '@rainbow-me/helpers/assets';
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
-import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
 import {
   useAccountProfile,
   useBooleanState,
@@ -301,12 +299,10 @@ const UniqueTokenExpandedState = ({
     [showcaseTokens, uniqueId]
   );
 
-  const isSVG = isSupportedUriExtension(asset.image_url || '', ['.svg']);
-  const newImageUrl = svgToPngIfNeeded(asset.image_url, false);
-  const image = isENS && !isSVG ? `${asset.image_url}=s1` : newImageUrl;
-
   const imageColor =
-    usePersistentDominantColorFromImage(image).result || colors.paleBlue;
+    // @ts-expect-error image_url could be null or undefined?
+    usePersistentDominantColorFromImage(asset.lowResUrl).result ||
+    colors.paleBlue;
 
   const textColor = useMemo(() => {
     const contrastWithWhite = c.contrast(imageColor, colors.whiteLabel);
@@ -378,7 +374,7 @@ const UniqueTokenExpandedState = ({
         <BlurWrapper height={deviceHeight} width={deviceWidth}>
           <BackgroundImage>
             <UniqueTokenImage
-              backgroundColor={asset.background}
+              backgroundColor={asset.background || imageColor}
               imageUrl={asset.image_url}
               item={asset}
               resizeMode="cover"

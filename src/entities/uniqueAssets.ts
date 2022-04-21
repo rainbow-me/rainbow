@@ -56,6 +56,7 @@ export interface UniqueAsset {
   lastPriceUsd: string | undefined | null;
   lastSale: UniqueAssetLastSale | undefined;
   lastSalePaymentToken: string | undefined | null;
+  lowResUrl: string | null;
   type: AssetType;
   uniqueId: string;
   urlSuffixForAsset: string;

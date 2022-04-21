@@ -3,10 +3,13 @@ import { captureException } from '@sentry/react-native';
 import { concat, isEmpty, without } from 'lodash';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
+import {
+  applyENSMetadataFallbackToToken,
+  applyENSMetadataFallbackToTokens,
+} from '../parsers/uniqueTokens';
 import { dataUpdateAssets } from './data';
 import { AppGetState, AppState } from './store';
 import { UniqueAsset } from '@rainbow-me/entities';
-import { fetchMetadata } from '@rainbow-me/handlers/ens';
 import {
   getUniqueTokens,
   saveUniqueTokens,
@@ -20,7 +23,6 @@ import {
 import { fetchPoaps } from '@rainbow-me/handlers/poap';
 import { Network } from '@rainbow-me/helpers/networkTypes';
 import { dedupeAssetsWithFamilies, getFamilies } from '@rainbow-me/parsers';
-import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
 
 // -- Constants ------------------------------------------------------------- //
 
@@ -277,30 +279,7 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
 
       // If there are any "unknown" ENS names, fallback to the ENS
       // metadata service.
-      newPageResults = await Promise.all(
-        newPageResults.map(async (token: UniqueAsset) => {
-          const isENS =
-            token?.asset_contract?.address?.toLowerCase() ===
-            ENS_NFT_CONTRACT_ADDRESS.toLowerCase();
-          if (isENS && !token.uniqueId.includes('.eth')) {
-            try {
-              const { name, image_url } = await fetchMetadata({
-                tokenId: token.id,
-              });
-              return {
-                ...token,
-                image_preview_url: image_url,
-                image_url,
-                name,
-                uniqueId: name,
-              };
-            } catch {
-              return token;
-            }
-          }
-          return token;
-        })
-      );
+      newPageResults = await applyENSMetadataFallbackToTokens(newPageResults);
 
       uniqueTokens = concat(uniqueTokens, newPageResults);
       shouldStopFetching =
@@ -411,24 +390,10 @@ export const revalidateUniqueToken = (
 
   // If the token is an "unknown" ENS name, fallback to the ENS
   // metadata service.
-  const isENS =
-    token?.asset_contract?.address?.toLowerCase() ===
-    ENS_NFT_CONTRACT_ADDRESS.toLowerCase();
-  if (isENS && !token.uniqueId.includes('.eth')) {
-    try {
-      const { name, image_url } = await fetchMetadata({
-        tokenId: token.id,
-      });
-      token = {
-        ...token,
-        image_preview_url: image_url,
-        image_url,
-        name,
-        uniqueId: name,
-      };
-    } catch (error) {
-      captureException(error);
-    }
+  try {
+    token = await applyENSMetadataFallbackToToken(token);
+  } catch (error) {
+    captureException(error);
   }
 
   const uniqueTokens = existingUniqueTokens.map(existingToken =>

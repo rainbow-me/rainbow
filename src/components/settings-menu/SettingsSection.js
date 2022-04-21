@@ -29,6 +29,10 @@ import PrivacyIconDark from '@rainbow-me/assets/settingsPrivacyDark.png';
 import useExperimentalFlag, {
   LANGUAGE_SETTINGS,
 } from '@rainbow-me/config/experimentalHooks';
+import {
+  isCustomBuild,
+  setOriginalDeploymentKey,
+} from '@rainbow-me/handlers/fedora';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import {
@@ -355,6 +359,13 @@ export default function SettingsSection({
               label={lang.t('settings.review')}
               onPress={onPressReview}
               testID="review-section"
+            />
+          )}
+          {isCustomBuild.value && (
+            <ListItem
+              icon={<Emoji name="exploding_head" />}
+              label="Restore to original deployment"
+              onPress={setOriginalDeploymentKey}
             />
           )}
         </ColumnWithDividers>
