@@ -27,88 +27,6 @@ const currentlyTrackedMetrics = new Map<
 >();
 
 /**
- * Function that allows marking the start of a performance measurement.
- * This is useful when you want to mark start time of something
- * that started before we could use startMeasurement function.
- *
- * CAUTION: Remember to use the same timestamp format for start and finish,
- * otherwise you'll end up with skewed measurements.
- *
- * @param metric What you're measuring
- * @param startTimestamp When it started
- * @param additionalParams Any additional context you want to add to your log
- */
-function markStartTime(
-  metric: PerformanceMetric,
-  startTimestamp: number,
-  additionalParams?: object
-) {
-  const current = currentlyTrackedMetrics.get(metric);
-  if (current) {
-    current.startTimestamp = startTimestamp;
-    current.additionalParams = {
-      ...current.additionalParams,
-      ...additionalParams,
-    };
-  } else {
-    currentlyTrackedMetrics.set(metric, { additionalParams, startTimestamp });
-  }
-}
-
-/**
- * Function that allows marking the finish of a performance measurement.
- * This is useful when you want to mark finish time of something
- * that already finished, but you don't want to retrieve the start time immediately.
- *
- * CAUTION: Remember to use the same timestamp format for start and finish,
- * otherwise you'll end up with skewed measurements.
- *
- * @param metric What you're measuring
- * @param finishTimestamp When it finished
- * @param additionalParams Any additional context you want to add to your log
- */
-function markFinishTime(
-  metric: PerformanceMetric,
-  finishTimestamp: number,
-  additionalParams?: object
-) {
-  const current = currentlyTrackedMetrics.get(metric);
-  if (current) {
-    current.finishTimestamp = finishTimestamp;
-    current.additionalParams = {
-      ...current.additionalParams,
-      ...additionalParams,
-    };
-  } else {
-    currentlyTrackedMetrics.set(metric, { additionalParams, finishTimestamp });
-  }
-}
-
-/**
- * Function that allows commiting a measurement we already have complete data for.
- *
- * @param metric The metric which you want to commit
- * @returns True if we have the complete metric data, false if we don't
- */
-function commitMeasurement(metric: PerformanceMetric): boolean {
-  const current = currentlyTrackedMetrics.get(metric);
-  if (
-    current?.startTimestamp !== undefined &&
-    current?.finishTimestamp !== undefined
-  ) {
-    const durationInMs = current.finishTimestamp - current.startTimestamp;
-    analytics.track(metric, {
-      durationInMs,
-      ...current.additionalParams,
-    });
-    logDurationIfAppropriate(metric, durationInMs);
-    currentlyTrackedMetrics.delete(metric);
-    return true;
-  }
-  return false;
-}
-
-/**
  * Function that allows directly commiting performance events.
  * Useful when we already have duration of something and just want to log it.
  *
@@ -121,6 +39,7 @@ function logDirectly(
   durationInMs: number,
   additionalParams?: object
 ) {
+  logDurationIfAppropriate(metric, durationInMs);
   analytics.track(metric, {
     durationInMs,
     ...additionalParams,
@@ -179,11 +98,8 @@ function finishMeasuring(
 }
 
 export const PerformanceTracking = {
-  commitMeasurement,
   finishMeasuring,
   logDirectly,
-  markFinishTime,
-  markStartTime,
   startMeasuring,
 };
 
