@@ -187,7 +187,7 @@ const UniqueTokenExpandedStateHeader = ({
   }, [asset, formattedCollectionUrl]);
 
   // @ts-expect-error image_url could be null or undefined?
-  const isSVG = isSupportedUriExtension(asset.image_url, ['.svg']);
+  const isSVG = isSupportedUriExtension(asset.image_original_url, ['.svg']);
   const isENS =
     toLower(asset.asset_contract.address) === toLower(ENS_NFT_CONTRACT_ADDRESS);
 
