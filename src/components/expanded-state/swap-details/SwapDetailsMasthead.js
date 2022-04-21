@@ -1,8 +1,7 @@
 import React from 'react';
-import { Icon } from '../../icons';
 import { RowWithMargins } from '../../layout';
 import CurrencyTile, { CurrencyTileHeight } from './CurrencyTile';
-import { Bleed, Box } from '@rainbow-me/design-system';
+import { Bleed, Box, Cover, Text } from '@rainbow-me/design-system';
 import { useSwapCurrencies } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
@@ -18,6 +17,21 @@ const Container = styled(RowWithMargins).attrs({
   ...padding.object(containerPaddingTop, 24, 0),
   width: '100%',
 });
+
+const DoubleChevron = () => (
+  <Cover alignHorizontal="center" alignVertical="center">
+    <RowWithMargins>
+      <Text color="secondary60" weight="semibold">
+        􀯻
+      </Text>
+      <Bleed left="6px">
+        <Text color="secondary40" weight="semibold">
+          􀯻
+        </Text>
+      </Bleed>
+    </RowWithMargins>
+  </Cover>
+);
 
 export default function SwapDetailsMasthead({
   inputAmount,
@@ -42,22 +56,19 @@ export default function SwapDetailsMasthead({
         priceValue={inputPriceValue}
         type="input"
       />
-      <Bleed space="15px">
+      <Bleed shadow="21px heavy" space="15px">
         <Box
-          borderRadius={36}
-          height={{ custom: 40 }}
+          borderRadius={16}
+          height={{ custom: 32 }}
           shadow="21px heavy"
           style={{
             alignItems: 'center',
             backgroundColor: isDarkMode ? colors.darkGrey : colors.white,
             justifyContent: 'center',
           }}
-          width={{ custom: 40 }}
+          width={{ custom: 32 }}
         >
-          <Icon
-            color={isDarkMode ? colors.dark : colors.blueGreyDark}
-            name="doubleChevron"
-          />
+          <DoubleChevron />
         </Box>
       </Bleed>
       <CurrencyTile
