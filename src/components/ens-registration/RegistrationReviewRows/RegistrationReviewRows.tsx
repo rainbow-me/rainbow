@@ -187,7 +187,7 @@ export default function RegistrationReviewRows({
         <Columns>
           <Column width="2/3">
             <Text color="secondary80" size="16px" weight="bold">
-              {lang.t('profiles.confirm.current_fees')}
+              {lang.t('profiles.confirm.estimated_fees')}
             </Text>
           </Column>
           <Column width="1/3">

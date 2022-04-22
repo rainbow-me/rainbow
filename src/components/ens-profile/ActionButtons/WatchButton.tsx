@@ -25,7 +25,7 @@ export default function WatchButton({
       onPress={watchWallet}
       variant={!isWatching ? 'solid' : 'outlined'}
     >
-      {lang.t(`profiles.actions.${isWatching ? 'watching' : 'watch'}`)}
+      {(isWatching ? '' : '􀨭 ') + lang.t(`profiles.actions.${isWatching ? 'watching' : 'watch'}`)}
     </ActionButton>
   );
 }
