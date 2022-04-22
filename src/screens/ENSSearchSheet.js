@@ -24,6 +24,7 @@ import {
 import { ENS_DOMAIN, REGISTRATION_STEPS } from '@rainbow-me/helpers/ens';
 import {
   useENSRegistration,
+  useENSRegistrationActionHandler,
   useENSRegistrationCosts,
   useENSSearch,
   usePrevious,
@@ -55,6 +56,7 @@ export default function ENSSearchSheet() {
     name: debouncedSearchQuery,
   });
 
+  const { step } = useENSRegistrationActionHandler();
   const {
     data: registrationCostsData,
     isSuccess: registrationCostsDataIsAvailable,
@@ -62,7 +64,7 @@ export default function ENSSearchSheet() {
     name: debouncedSearchQuery,
     rentPrice: registrationData?.rentPrice,
     sendReverseRecord: true,
-    step: REGISTRATION_STEPS.COMMIT,
+    step,
     yearsDuration: 1,
   });
 
