@@ -19,6 +19,7 @@ import {
 // eslint-disable-next-line import/default
 import codePush from 'react-native-code-push';
 import {
+  IS_TESTING,
   REACT_APP_SEGMENT_API_WRITE_KEY,
   SENTRY_ENDPOINT,
   SENTRY_ENVIRONMENT,
@@ -74,11 +75,19 @@ import { SharedValuesProvider } from '@rainbow-me/helpers/SharedValuesContext';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 import { Portal } from 'react-native-cool-modals/Portal';
+
 const WALLETCONNECT_SYNC_DELAY = 500;
 
 const FedoraToastRef = createRef();
 
 StatusBar.pushStackEntry({ animated: true, barStyle: 'dark-content' });
+
+// We need to disable React Navigation instrumentation for E2E tests
+// because detox doesn't like setTimeout calls that are used inside
+// When enabled detox hangs and timeouts on all test cases
+const routingInstrumentation = IS_TESTING
+  ? undefined
+  : new Sentry.ReactNavigationInstrumentation();
 
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -110,9 +119,11 @@ if (__DEV__) {
       environment: SENTRY_ENVIRONMENT,
       integrations: [
         new Sentry.ReactNativeTracing({
+          routingInstrumentation,
           tracingOrigins: ['localhost', /^\//],
         }),
       ],
+      tracesSampleRate: 0.2,
       ...(metadata && {
         dist: metadata.label,
         release: `${metadata.appVersion} (${VersionNumber.buildVersion}) (CP ${metadata.label})`,
@@ -120,6 +131,7 @@ if (__DEV__) {
     };
     Sentry.init(sentryOptions);
   }
+
   initSentryAndCheckForFedoraMode();
 }
 
@@ -274,8 +286,10 @@ class App extends Component {
     });
   };
 
-  handleNavigatorRef = navigatorRef =>
+  handleNavigatorRef = navigatorRef => {
+    this.navigatorRef = navigatorRef;
     Navigation.setTopLevelNavigator(navigatorRef);
+  };
 
   handleTransactionConfirmed = tx => {
     const network = tx.network || networkTypes.mainnet;
@@ -297,6 +311,10 @@ class App extends Component {
     updateBalancesAfter(isL2 ? 10000 : 5000, isL2, network);
   };
 
+  handleSentryNavigationIntegration = () => {
+    routingInstrumentation?.registerNavigationContainer(this.navigatorRef);
+  };
+
   render = () => (
     <MainThemeProvider>
       <RainbowContextWrapper>
@@ -312,7 +330,10 @@ class App extends Component {
                           <InitialRouteContext.Provider
                             value={this.state.initialRoute}
                           >
-                            <RoutesComponent ref={this.handleNavigatorRef} />
+                            <RoutesComponent
+                              onReady={this.handleSentryNavigationIntegration}
+                              ref={this.handleNavigatorRef}
+                            />
                             <PortalConsumer />
                           </InitialRouteContext.Provider>
                         )}
