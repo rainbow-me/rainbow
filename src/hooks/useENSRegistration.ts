@@ -6,7 +6,7 @@ import { ENSRegistrationState, Records } from '@rainbow-me/entities';
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import * as ensRedux from '@rainbow-me/redux/ensRegistration';
 import { AppState } from '@rainbow-me/redux/store';
-import { isENSNFTAvatar, parseENSNFTAvatar } from '@rainbow-me/utils';
+import { isENSNFTRecord, parseENSNFTRecord } from '@rainbow-me/utils';
 import getENSNFTAvatarUrl from '@rainbow-me/utils/getENSNFTAvatarUrl';
 
 export default function useENSRegistration({
@@ -146,7 +146,8 @@ export default function useENSRegistration({
 
   useEffect(() => {
     dispatch(ensRedux.setChangedRecords(accountAddress, changedRecords));
-  }, [accountAddress, changedRecords, dispatch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accountAddress, JSON.stringify(changedRecords), dispatch]);
 
   // Since `records.avatar` is not a reliable source for an avatar URL
   // (the avatar can be an NFT), then if the avatar is an NFT, we will
@@ -155,48 +156,61 @@ export default function useENSRegistration({
     ({ uniqueTokens }: AppState) => uniqueTokens.uniqueTokens
   );
   const images = useMemo(() => {
-    let avatarUrl =
-      getENSNFTAvatarUrl(uniqueTokens, records?.avatar) ||
-      profileQuery.data?.images?.avatarUrl;
-    let coverUrl = profileQuery.data?.images?.coverUrl;
+    const getImageUrl = (
+      key: 'avatar' | 'cover',
+      defaultValue?: string | null
+    ) => {
+      const recordValue = records?.[key];
+      let imageUrl =
+        getENSNFTAvatarUrl(uniqueTokens, records?.[key]) || defaultValue;
 
-    if (changedRecords.avatar === '') {
-      // If the avatar has been removed, update accordingly.
-      avatarUrl = '';
-    } else if (records.avatar) {
-      const isNFTAvatar = isENSNFTAvatar(records.avatar);
-      if (isNFTAvatar) {
-        const { contractAddress, tokenId } = parseENSNFTAvatar(records?.avatar);
-        const uniqueToken = uniqueTokens.find(
-          token =>
-            token.asset_contract.address === contractAddress &&
-            token.id === tokenId
-        );
-        if (uniqueToken?.image_url) {
-          avatarUrl = uniqueToken?.image_url;
-        } else if (uniqueToken?.image_thumbnail_url) {
-          avatarUrl = uniqueToken?.image_thumbnail_url;
+      if (changedRecords[key] === '') {
+        // If the image has been removed, update accordingly.
+        imageUrl = '';
+      } else if (recordValue) {
+        const isNFT = isENSNFTRecord(recordValue);
+        if (isNFT) {
+          const { contractAddress, tokenId } = parseENSNFTRecord(
+            records?.[key] || ''
+          );
+          const uniqueToken = uniqueTokens.find(
+            token =>
+              token.asset_contract.address === contractAddress &&
+              token.id === tokenId
+          );
+          if (uniqueToken?.image_url) {
+            imageUrl = uniqueToken?.image_url;
+          } else if (uniqueToken?.image_thumbnail_url) {
+            imageUrl = uniqueToken?.image_thumbnail_url;
+          }
+        } else if (
+          recordValue?.startsWith('http') ||
+          recordValue?.startsWith('file') ||
+          ((recordValue?.startsWith('/') || recordValue?.startsWith('~')) &&
+            !recordValue?.match(/^\/(ipfs|ipns)/))
+        ) {
+          imageUrl = recordValue;
         }
-      } else if (
-        records.avatar.startsWith('http') ||
-        records.avatar.startsWith('file') ||
-        ((records.avatar.startsWith('/') || records.avatar.startsWith('~')) &&
-          !records.avatar.match(/^\/(ipfs|ipns)/))
-      ) {
-        avatarUrl = records.avatar;
       }
-    }
+      return imageUrl;
+    };
+
+    const avatarUrl = getImageUrl(
+      'avatar',
+      profileQuery.data?.images.avatarUrl
+    );
+    const coverUrl = getImageUrl('cover', profileQuery.data?.images.coverUrl);
 
     return {
       avatarUrl,
       coverUrl,
     };
   }, [
-    profileQuery.data?.images?.avatarUrl,
-    profileQuery.data?.images?.coverUrl,
-    changedRecords,
-    records.avatar,
+    profileQuery.data?.images.avatarUrl,
+    profileQuery.data?.images.coverUrl,
+    records,
     uniqueTokens,
+    changedRecords,
   ]);
 
   return {

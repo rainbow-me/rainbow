@@ -47,6 +47,7 @@ enum QUERY_KEYS {
 
 export default function useENSRegistrationCosts({
   name,
+  records,
   rentPrice,
   sendReverseRecord,
   step,
@@ -81,11 +82,11 @@ export default function useENSRegistrationCosts({
     return registrationParameters?.name !== name && name?.length > 2;
   }, [name, registrationParameters?.name]);
 
-  const [debouncedChangedRecords] = useDebounce(
-    registrationParameters?.changedRecords || {},
-    500
+  const changedRecords = useMemo(
+    () => registrationParameters?.changedRecords || {},
+    [registrationParameters?.changedRecords]
   );
-
+  const [debouncedChangedRecords] = useDebounce(changedRecords, 500);
   const [currentStepGasLimit, setCurrentStepGasLimit] = useState('');
 
   const [isValidGas, setIsValidGas] = useState(false);

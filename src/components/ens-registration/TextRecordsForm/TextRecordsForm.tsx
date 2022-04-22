@@ -1,4 +1,5 @@
-import { isEmpty } from 'lodash';
+import { useFocusEffect } from '@react-navigation/core';
+import { debounce, isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import { TextInputProps, ViewProps } from 'react-native';
 import InlineField, { InlineFieldProps } from '../../inputs/InlineField';
@@ -58,7 +59,7 @@ export default function TextRecordsForm({
   );
 
   return (
-    <Box key={Object.keys(values).length}>
+    <Box>
       {isLoading ? (
         <Box paddingTop="19px" style={{ height: 300 }}>
           <Skeleton animated>
@@ -90,7 +91,10 @@ export default function TextRecordsForm({
                   errorMessage={errors[key]}
                   inputProps={inputProps}
                   label={label}
-                  onChangeText={text => onChangeField({ key, value: text })}
+                  onChangeText={debounce(
+                    text => onChangeField({ key, value: text }),
+                    300
+                  )}
                   onEndEditing={({ nativeEvent }) => {
                     onBlurField({ key, value: nativeEvent.text });
                   }}
@@ -111,6 +115,16 @@ export default function TextRecordsForm({
 
 function Field({ defaultValue, ...props }: InlineFieldProps) {
   const [value, setValue] = useState(defaultValue);
+
+  // Set / clear values when the screen comes to focus / unfocus.
+  useFocusEffect(
+    useCallback(() => {
+      setValue(defaultValue);
+      return () => setValue('');
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+  );
+
   return (
     <>
       <Divider />

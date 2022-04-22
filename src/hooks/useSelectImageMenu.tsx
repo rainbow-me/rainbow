@@ -48,7 +48,7 @@ const items = {
     },
     menuAttributes: ['destructive'],
   },
-};
+} as const;
 
 export default function useSelectImageMenu({
   imagePickerOptions,
@@ -58,6 +58,7 @@ export default function useSelectImageMenu({
   onUploading,
   onUploadSuccess,
   onUploadError,
+  showRemove = false,
   uploadToIPFS = false,
 }: {
   imagePickerOptions?: Options;
@@ -79,6 +80,7 @@ export default function useSelectImageMenu({
     image: Image;
   }) => void;
   onUploadError?: ({ error, image }: { error: unknown; image: Image }) => void;
+  showRemove?: boolean;
   uploadToIPFS?: boolean;
 } = {}) {
   const { navigate, dangerouslyGetParent } = useNavigation();
@@ -87,6 +89,10 @@ export default function useSelectImageMenu({
     'ensImageUpload',
     uploadImage
   );
+
+  // If the image is removed while uploading, we don't want to
+  // call `onUploadSuccess` when the upload has finished.
+  const isRemoved = useRef<boolean>(false);
 
   // When this hook is inside a nested navigator, the child
   // navigator will still think it is focused. Here, we are
@@ -106,9 +112,13 @@ export default function useSelectImageMenu({
     }, [dangerouslyGetParent])
   );
 
-  const menuItems = useMemo(() => [...initialMenuItems, 'remove'] as const, [
-    initialMenuItems,
-  ]);
+  const menuItems = useMemo(
+    () =>
+      [...initialMenuItems, showRemove ? 'remove' : undefined].filter(
+        Boolean
+      ) as (Action | 'remove')[],
+    [initialMenuItems, showRemove]
+  );
 
   const handleSelectImage = useCallback(async () => {
     const image = await openPicker({
@@ -133,15 +143,16 @@ export default function useSelectImageMenu({
           mime: image.mime,
           path: image.path.replace('file://', ''),
         });
-        if (!isFocused.current) return;
+        if (!isFocused.current || isRemoved.current) return;
         onUploadSuccess?.({ data, image });
       } catch (err) {
-        if (!isFocused.current) return;
+        if (!isFocused.current || isRemoved.current) return;
         onUploadError?.({ error: err, image });
       }
     }
   }, [
     imagePickerOptions,
+    isRemoved,
     onChangeImage,
     onUploadError,
     onUploadSuccess,
@@ -168,6 +179,7 @@ export default function useSelectImageMenu({
         handleSelectNFT();
       }
       if (actionKey === 'remove') {
+        isRemoved.current = true;
         onRemoveImage?.();
       }
     },
@@ -187,11 +199,14 @@ export default function useSelectImageMenu({
         if (buttonIndex === 0) {
           handleSelectImage();
         } else if (buttonIndex === 1) {
-          handleSelectImage();
+          handleSelectNFT();
+        } else if (buttonIndex === 2) {
+          isRemoved.current = true;
+          onRemoveImage?.();
         }
       }
     );
-  }, [handleSelectImage, menuItems]);
+  }, [handleSelectImage, handleSelectNFT, menuItems, onRemoveImage]);
 
   const ContextMenu = useCallback(
     ({ children }) => (

@@ -306,9 +306,11 @@ export default function ENSConfirmRegisterSheet() {
       setSendReverseRecord(!registrationCostsData?.hasReverseRecord);
   }, [registrationCostsData?.hasReverseRecord]);
 
-  useFocusEffect(() => {
-    blurFields();
-  });
+  useFocusEffect(
+    useCallback(() => {
+      blurFields();
+    }, [blurFields])
+  );
 
   return (
     <SlackSheet

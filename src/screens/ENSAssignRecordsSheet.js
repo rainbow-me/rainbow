@@ -76,13 +76,13 @@ export default function ENSAssignRecordsSheet() {
     setInitialRecordsWhenInEditMode: true,
   });
   useENSRegistrationForm({
-    createForm: true,
     defaultFields: [
       ENS_RECORDS.displayName,
       ENS_RECORDS.description,
       ENS_RECORDS.twitter,
       ENS_RECORDS.pronouns,
     ].map(fieldName => textRecordFields[fieldName]),
+    initializeForm: true,
   });
 
   const { data: registrationData } = useENSSearch({

@@ -1,5 +1,5 @@
 import { useRoute } from '@react-navigation/core';
-import React, { useMemo } from 'react';
+import React, { createContext, useMemo } from 'react';
 import RecyclerAssetList2 from '../components/asset-list/RecyclerAssetList2';
 import ProfileSheetHeader from '../components/ens-profile/ProfileSheetHeader';
 import { SheetHandleFixedToTopHeight } from '../components/sheet';
@@ -22,10 +22,17 @@ import {
   useFirstTransactionTimestamp,
   usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
+import Routes from '@rainbow-me/routes';
 import { addressHashedColorIndex } from '@rainbow-me/utils/profileUtils';
 
+export const ProfileSheetConfigContext = createContext<{
+  enableZoomableImages: boolean;
+}>({
+  enableZoomableImages: false,
+});
+
 export default function ProfileSheet() {
-  const { params } = useRoute<any>();
+  const { params, name } = useRoute<any>();
   const { colors } = useTheme();
 
   const { height: deviceHeight } = useDimensions();
@@ -65,23 +72,28 @@ export default function ProfileSheet() {
     colors.avatarBackgrounds[colorIndex || 0] ||
     colors.appleBlue;
 
+  const enableZoomableImages =
+    !params.isPreview && name !== Routes.PROFILE_PREVIEW_SHEET;
+
   return (
-    <AccentColorProvider color={accentColor}>
-      <Box background="body">
-        <Box style={wrapperStyle}>
-          {!isSuccess || !hasListFetched ? (
-            <Stack space="19px">
-              <ProfileSheetHeader isLoading isPreview={params.isPreview} />
-              <PlaceholderList />
-            </Stack>
-          ) : !params.isPreview ? (
-            <RecyclerAssetList2 address={profileAddress} type="ens-profile" />
-          ) : (
-            <ProfileSheetHeader ensName={params?.ensName} isPreview />
-          )}
+    <ProfileSheetConfigContext.Provider value={{ enableZoomableImages }}>
+      <AccentColorProvider color={accentColor}>
+        <Box background="body">
+          <Box style={wrapperStyle}>
+            {!isSuccess || !hasListFetched ? (
+              <Stack space="19px">
+                <ProfileSheetHeader isLoading isPreview={params.isPreview} />
+                <PlaceholderList />
+              </Stack>
+            ) : !params.isPreview ? (
+              <RecyclerAssetList2 address={profileAddress} type="ens-profile" />
+            ) : (
+              <ProfileSheetHeader ensName={params?.ensName} isPreview />
+            )}
+          </Box>
         </Box>
-      </Box>
-    </AccentColorProvider>
+      </AccentColorProvider>
+    </ProfileSheetConfigContext.Provider>
   );
 }
 
