@@ -1,4 +1,3 @@
-import { useFocusEffect } from '@react-navigation/core';
 import { isEmpty, omit } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { atom, useRecoilState } from 'recoil';
@@ -79,62 +78,56 @@ export default function useENSRegistrationForm({
   const [selectedFields, setSelectedFields] = useRecoilState(
     selectedFieldsAtom
   );
-  useFocusEffect(
-    useCallback(() => {
-      if (!initializeForm) return;
-      // If there are existing records in the global state, then we
-      // populate with that.
-      if (!isEmpty(defaultRecords)) {
-        setSelectedFields(
+  useEffect(() => {
+    if (!initializeForm) return;
+    // If there are existing records in the global state, then we
+    // populate with that.
+    if (!isEmpty(defaultRecords)) {
+      setSelectedFields(
+        // @ts-ignore
+        Object.keys(defaultRecords)
           // @ts-ignore
-          Object.keys(defaultRecords)
-            // @ts-ignore
-            .map(key => textRecordFields[key])
-            .filter(x => x)
-        );
-      } else {
-        if (defaultFields) {
-          setSelectedFields(defaultFields as any);
-        }
+          .map(key => textRecordFields[key])
+          .filter(x => x)
+      );
+    } else {
+      if (defaultFields) {
+        setSelectedFields(defaultFields as any);
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [name, isEmpty(defaultRecords)])
-  );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [name, isEmpty(defaultRecords)]);
 
   const [valuesMap, setValuesMap] = useRecoilState(valuesAtom);
   const values = useMemo(() => valuesMap[name] || {}, [name, valuesMap]);
-  useFocusEffect(
-    useCallback(
-      () => {
-        if (!initializeForm) return;
-        setValuesMap(values => ({
-          ...values,
-          [name]: defaultRecords,
-        }));
-      },
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      [name, isEmpty(defaultRecords)]
-    )
+  useEffect(
+    () => {
+      if (!initializeForm) return;
+      setValuesMap(values => ({
+        ...values,
+        [name]: defaultRecords,
+      }));
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [name, isEmpty(defaultRecords)]
   );
 
   // Set initial records in redux depending on user input (defaultFields)
-  useFocusEffect(
-    useCallback(() => {
-      if (!initializeForm) return;
-      if (defaultFields && isEmpty(defaultRecords)) {
-        const records = defaultFields.reduce((records, field) => {
-          return {
-            ...records,
-            [field.key]: '',
-          };
-        }, {});
-        updateRecords(records);
-      } else if (mode === REGISTRATION_MODES.EDIT && !isEmpty(defaultRecords)) {
-        updateRecords(defaultRecords);
-      }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isEmpty(defaultRecords), updateRecords])
-  );
+  useEffect(() => {
+    if (!initializeForm) return;
+    if (defaultFields && isEmpty(defaultRecords)) {
+      const records = defaultFields.reduce((records, field) => {
+        return {
+          ...records,
+          [field.key]: '',
+        };
+      }, {});
+      updateRecords(records);
+    } else if (mode === REGISTRATION_MODES.EDIT && !isEmpty(defaultRecords)) {
+      updateRecords(defaultRecords);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEmpty(defaultRecords), updateRecords]);
 
   const onAddField = useCallback(
     (fieldToAdd, selectedFields) => {

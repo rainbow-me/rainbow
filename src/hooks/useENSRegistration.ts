@@ -146,7 +146,8 @@ export default function useENSRegistration({
 
   useEffect(() => {
     dispatch(ensRedux.setChangedRecords(accountAddress, changedRecords));
-  }, [accountAddress, changedRecords, dispatch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accountAddress, JSON.stringify(changedRecords), dispatch]);
 
   // Since `records.avatar` is not a reliable source for an avatar URL
   // (the avatar can be an NFT), then if the avatar is an NFT, we will

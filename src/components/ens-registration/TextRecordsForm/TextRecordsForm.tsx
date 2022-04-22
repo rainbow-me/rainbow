@@ -116,8 +116,14 @@ export default function TextRecordsForm({
 function Field({ defaultValue, ...props }: InlineFieldProps) {
   const [value, setValue] = useState(defaultValue);
 
-  // Clear value when the screen is out of focus.
-  useFocusEffect(useCallback(() => () => setValue(''), []));
+  // Set / clear values when the screen comes to focus / unfocus.
+  useFocusEffect(
+    useCallback(() => {
+      setValue(defaultValue);
+      return () => setValue('');
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+  );
 
   return (
     <>
