@@ -120,7 +120,7 @@ export default function WalletProfileState({
   const handleSubmit = useCallback(async () => {
     analytics.track('Tapped "Submit" on Wallet Profile modal');
     goBack();
-    android && (await delay(100)); //goBack conflicting with checking biometry
+    android && (await delay(200)); //goBack conflicting with checking biometry
     onCloseModal({
       color:
         typeof color === 'string' ? profileUtils.colorHexToIndex(color) : color,
