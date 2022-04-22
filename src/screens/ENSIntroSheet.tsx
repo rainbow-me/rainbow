@@ -164,7 +164,7 @@ export default function ENSIntroSheet() {
       background="body"
       flexGrow={1}
       paddingTop={{ custom: topPadding }}
-      testID="ens-search-sheet"
+      testID="ens-intro-sheet"
     >
       <ColorModeProvider
         value={colorMode === 'light' ? 'lightTinted' : 'darkTinted'}
@@ -233,6 +233,7 @@ export default function ENSIntroSheet() {
                         <Button
                           backgroundColor={colors.appleBlue}
                           onPress={handleNavigateToSearch}
+                          testID="ens-intro-sheet-find-your-name-button"
                           textProps={{ weight: 'heavy' }}
                         >
                           􀠎 {lang.t('profiles.intro.find_your_name')}
@@ -283,6 +284,7 @@ export default function ENSIntroSheet() {
                               borderColor={colors.transparent}
                               color={colors.appleBlue}
                               onPress={handleNavigateToSearch}
+                              testID="ens-intro-sheet-search-new-name-button"
                               textProps={{ size: 'lmedium', weight: 'heavy' }}
                             >
                               {lang.t('profiles.intro.search_new_name')}

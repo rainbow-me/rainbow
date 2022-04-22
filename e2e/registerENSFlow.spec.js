@@ -110,6 +110,11 @@ describe('Register ENS Flow', () => {
     await Helpers.waitAndTap('ens-register-name-banner');
   });
 
+  it('Should be able to search for a new ENS name', async () => {
+    // await Helpers.checkIfVisible('ens-intro-sheet');
+    await Helpers.waitAndTap('ens-intro-sheet-search-new-name-button');
+  });
+
   it('Should be able to type a name that is not available', async () => {
     await Helpers.checkIfVisible('ens-search-input');
     await Helpers.typeText('ens-search-input', 'rainbowwallet', false);
