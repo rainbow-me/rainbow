@@ -217,6 +217,8 @@ class App extends Component {
 
     if (brokenState) {
       await keychain.wipeKeychain();
+      // We add a dummy entry to prevent the logic from recognizing broken
+      // keychain in case of sudden app restart.
       await AsyncStorage.setItem('keychain-wiped', 'true');
 
       this.setState({ initialRoute: Routes.WELCOME_SCREEN });
