@@ -36,7 +36,7 @@ function CellDataProvider({
 
 function rowRenderer(type: CellType, { uid }: { uid: string }) {
   return (
-    <CellDataProvider uid={uid}>
+    <CellDataProvider key={uid} uid={uid}>
       {data => {
         switch (type) {
           case CellType.ASSETS_HEADER_SPACE_AFTER:

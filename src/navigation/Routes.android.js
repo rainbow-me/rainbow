@@ -377,7 +377,11 @@ function AuthNavigator() {
 }
 
 const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
-  <NavigationContainer onStateChange={onNavigationStateChange} ref={ref}>
+  <NavigationContainer
+    onReady={props.onReady}
+    onStateChange={onNavigationStateChange}
+    ref={ref}
+  >
     <AuthNavigator />
   </NavigationContainer>
 ));
