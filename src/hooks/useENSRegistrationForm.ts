@@ -198,7 +198,7 @@ export default function useENSRegistrationForm({
   }, [updateRecords, values]);
 
   const [isLoading, setIsLoading] = useState(
-    mode === REGISTRATION_MODES.EDIT && isEmpty(values)
+    mode === REGISTRATION_MODES.EDIT && !profileQuery.isSuccess
   );
 
   useEffect(() => {
