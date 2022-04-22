@@ -1,9 +1,11 @@
 import { format } from 'date-fns';
 import React, { useMemo } from 'react';
 import { ScrollView } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { Icon } from '../../icons';
 import Skeleton from '../../skeleton/Skeleton';
+import { useTheme } from '@rainbow-me/context';
 import {
   Bleed,
   Box,
@@ -43,7 +45,7 @@ export default function RecordTags({
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
       <Inset horizontal="19px">
-        <Inline space="19px">
+        <Inline space="10px">
           {recordsToShow?.map(({ key: recordKey, value: recordValue }) =>
             recordValue ? (
               <RecordTag
@@ -65,18 +67,25 @@ export default function RecordTags({
 }
 
 function Tag({
-  color,
   children,
+  color,
   icon,
-  symbol,
   size = '14px',
+  symbol,
 }: {
-  color: 'appleBlue' | 'grey';
   children: React.ReactNode;
+  color: 'appleBlue' | 'grey';
   icon?: string;
-  symbol?: string;
   size?: '14px' | '16px';
+  symbol?: string;
 }) {
+  const { colors } = useTheme();
+
+  const gradients = {
+    appleBlue: colors.gradients.transparentToAppleBlue,
+    grey: colors.gradients.lightGreyTransparent,
+  };
+
   const action = useForegroundColor('action');
   const secondary80 = useForegroundColor('secondary80');
   const iconColors = {
@@ -90,23 +99,34 @@ function Tag({
   } as const;
 
   return (
-    <Box alignItems="center" height={{ custom: 20 }} justifyContent="center">
-      <Inline alignVertical="center" space="6px">
-        {icon && (
-          <Bleed vertical="2px">
-            <Icon
-              color={iconColors[color]}
-              height="16"
-              name={icon}
-              width="16"
-            />
-          </Bleed>
-        )}
-        <Text color={textColors[color]} size={size} weight="bold">
-          {symbol ? `${symbol} ` : ''}
-          {children}
-        </Text>
-      </Inline>
+    <Box
+      alignItems="center"
+      as={LinearGradient}
+      borderRadius={46}
+      colors={gradients[color]}
+      end={{ x: 1, y: 0 }}
+      height="30px"
+      justifyContent="center"
+      start={{ x: 0, y: 0 }}
+    >
+      <Inset horizontal="10px">
+        <Inline alignVertical="center" space="6px">
+          {icon && (
+            <Bleed vertical="2px">
+              <Icon
+                color={iconColors[color]}
+                height="17"
+                name={icon}
+                width="17"
+              />
+            </Bleed>
+          )}
+          <Text align="center" color={textColors[color]} size={size} weight="bold">
+            {symbol ? `${symbol} ` : ''}
+            {children}
+          </Text>
+        </Inline>
+      </Inset>
     </Box>
   );
 }

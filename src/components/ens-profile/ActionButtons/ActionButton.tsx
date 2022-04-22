@@ -3,6 +3,7 @@ import { ButtonProps } from 'react-native';
 import { BackgroundColor } from '../../../design-system/color/palettes';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import {
+  AccentColorProvider,
   Box,
   Inset,
   Text,
@@ -20,50 +21,62 @@ type ActionButtonProps = {
 export default function ActionButton({
   children,
   icon,
+  isWatching,
   onPress,
   variant = 'solid',
 }: ActionButtonProps) {
-  const secondary10 = useForegroundColor('secondary10');
+  const appleBlue = useForegroundColor('action');
+  const divider100 = useForegroundColor('divider100');
+  const shadow = useForegroundColor('shadow');
+  
+  const shadowColor = useForegroundColor({
+    custom: {
+      dark: shadow,
+      light: appleBlue,
+    },
+  });
 
   const isIconOnly = Boolean(icon && !children);
   return (
     <ButtonPressAnimation onPress={onPress}>
-      <Box
-        alignItems="center"
-        background="action"
-        borderRadius={23}
-        height="40px"
-        justifyContent="center"
-        {...(variant === 'solid' && {
-          shadow: '30px medium action',
-        })}
-        {...(variant === 'outlined' && {
-          background: 'body',
-          shadow: undefined,
-          style: {
-            borderColor: secondary10,
-            borderStyle: 'solid',
-            borderWidth: 1.5,
-          },
-        })}
-        {...(isIconOnly && {
-          width: { custom: 40 },
-        })}
-      >
-        <Inset horizontal={!isIconOnly ? '10px' : undefined}>
-          {typeof icon !== 'string' && icon}
-          {(typeof icon === 'string' || children) && (
-            <Text
-              color={variant === 'outlined' ? 'secondary80' : 'primary'}
-              size="16px"
-              weight="heavy"
-            >
-              {typeof icon === 'string' ? icon : ''}
-              {children ? ` ${children}` : ''}
-            </Text>
-          )}
-        </Inset>
-      </Box>
+      <AccentColorProvider color={shadowColor}>
+        <Box
+          alignItems="center"
+          background="action"
+          borderRadius={18}
+          height="36px"
+          justifyContent="center"
+          {...(variant === 'solid' && {
+            shadow: '30px light accent',
+          })}
+          {...(variant === 'outlined' && {
+            background: 'body',
+            shadow: undefined,
+            style: {
+              borderColor: divider100,
+              borderStyle: 'solid',
+              borderWidth: 1.5,
+            },
+          })}
+          {...(isIconOnly && {
+            width: { custom: 36 },
+          })}
+        >
+          <Inset horizontal={!isIconOnly ? isWatching ? { custom: 11.25 } : '12px' : undefined}>
+            {typeof icon !== 'string' && icon}
+            {(typeof icon === 'string' || children) && (
+              <Text
+                align="center"
+                color={variant === 'outlined' ? 'secondary80' : 'primary'}
+                size="15px"
+                weight="heavy"
+              >
+                {icon || children}
+              </Text>
+            )}
+          </Inset>
+        </Box>
+      </AccentColorProvider>
     </ButtonPressAnimation>
   );
 }

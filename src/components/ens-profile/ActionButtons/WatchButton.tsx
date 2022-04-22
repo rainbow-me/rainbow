@@ -21,7 +21,7 @@ export default function WatchButton({
   return (
     <ActionButton
       color="action"
-      icon={!isWatching ? '􀨭' : ''}
+      isWatching={isWatching}
       onPress={watchWallet}
       variant={!isWatching ? 'solid' : 'outlined'}
     >

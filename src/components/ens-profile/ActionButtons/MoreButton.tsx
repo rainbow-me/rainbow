@@ -35,20 +35,20 @@ export default function MoreButton({ address }: { address?: string }) {
   const menuItems = useMemo(() => {
     return [
       {
-        actionKey: ACTIONS.ADD_CONTACT,
-        actionTitle: lang.t('profiles.details.add_to_contacts'),
-        icon: {
-          iconType: 'SYSTEM',
-          iconValue: 'person.text.rectangle',
-        },
-      },
-      {
         actionKey: ACTIONS.COPY_ADDRESS,
         actionTitle: lang.t('profiles.details.copy_address'),
         discoverabilityTitle: formattedAddress,
         icon: {
           iconType: 'SYSTEM',
-          iconValue: 'doc.on.doc',
+          iconValue: 'square.on.square',
+        },
+      },
+      {
+        actionKey: ACTIONS.ADD_CONTACT,
+        actionTitle: lang.t('profiles.details.add_to_contacts'),
+        icon: {
+          iconType: 'SYSTEM',
+          iconValue: 'person.crop.circle.badge.plus',
         },
       },
       {
@@ -56,7 +56,7 @@ export default function MoreButton({ address }: { address?: string }) {
         actionTitle: lang.t('profiles.details.view_on_etherscan'),
         icon: {
           iconType: 'SYSTEM',
-          iconValue: 'safari.fill',
+          iconValue: 'link',
         },
       },
     ] as MenuActionConfig[];
