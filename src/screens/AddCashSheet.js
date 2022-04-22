@@ -3,7 +3,6 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { useSafeArea } from 'react-native-safe-area-context';
-import styled from 'styled-components';
 import { AddCashForm, AddCashStatus } from '../components/add-cash';
 import { Column, ColumnWithMargins, FlexItem } from '../components/layout';
 import {
@@ -21,6 +20,7 @@ import {
   useTimeout,
   useWyreApplePay,
 } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { borders } from '@rainbow-me/styles';
 
 const deviceHeight = deviceUtils.dimensions.height;
@@ -30,13 +30,13 @@ const sheetHeight =
   statusBarHeight -
   (isNativeStackAvailable ? (deviceHeight >= 812 ? 10 : 20) : 0);
 
-const SheetContainer = styled(Column)`
-  ${borders.buildRadius('top', isNativeStackAvailable ? 0 : 16)};
-  background-color: ${({ colors }) => colors.white};
-  height: ${isNativeStackAvailable ? deviceHeight : sheetHeight};
-  top: ${isNativeStackAvailable ? 0 : statusBarHeight};
-  width: 100%;
-`;
+const SheetContainer = styled(Column)({
+  ...borders.buildRadiusAsObject('top', isNativeStackAvailable ? 0 : 16),
+  backgroundColor: ({ colors }) => colors.white,
+  height: isNativeStackAvailable ? deviceHeight : sheetHeight,
+  top: isNativeStackAvailable ? 0 : statusBarHeight,
+  width: '100%',
+});
 
 const SubtitleInterval = 3000;
 

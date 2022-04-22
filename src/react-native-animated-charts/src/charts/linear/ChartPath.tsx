@@ -17,11 +17,13 @@ import Animated, {
   useSharedValue,
   useWorkletCallback,
   withDelay,
+  WithSpringConfig,
   withTiming,
+  WithTimingConfig,
 } from 'react-native-reanimated';
 import { getYForX } from 'react-native-redash';
 import Svg, { Path, PathProps } from 'react-native-svg';
-import { PathData } from '../../helpers/ChartContext';
+import { ChartData, PathData } from '../../helpers/ChartContext';
 import {
   requireOnWorklet,
   useWorkletValue,
@@ -87,10 +89,10 @@ interface ChartPathProps extends PathProps {
   strokeWidth?: number;
   stroke?: string;
   gestureEnabled?: boolean;
-  springConfig?: Animated.WithSpringConfig;
+  springConfig?: WithSpringConfig;
   longPressGestureHandlerProps?: LongPressGestureHandlerProperties;
-  timingFeedbackConfig?: Animated.WithTimingConfig;
-  timingAnimationConfig?: Animated.WithTimingConfig;
+  timingFeedbackConfig?: WithTimingConfig;
+  timingAnimationConfig?: WithTimingConfig;
 }
 
 function positionXWithMargin(x: number, margin: number, width: number) {
@@ -104,35 +106,32 @@ function positionXWithMargin(x: number, margin: number, width: number) {
   }
 }
 
-export const ChartPath = React.memo(
+const ChartPathInner = React.memo(
   ({
-    hapticsEnabled,
     hitSlop = 0,
-    width,
-    height,
     stroke = 'black',
     selectedStrokeWidth = 1,
     strokeWidth = 1,
     gestureEnabled = true,
     selectedOpacity = 0.7,
+    hapticsEnabled,
+    width,
+    height,
     timingFeedbackConfig,
     timingAnimationConfig,
-    longPressGestureHandlerProps = {},
+    longPressGestureHandlerProps,
+    positionX,
+    positionY,
+    originalX,
+    originalY,
+    state,
+    isActive,
+    progress,
+    pathOpacity,
+    currentPath,
+    previousPath,
     ...props
-  }: ChartPathProps) => {
-    const {
-      positionX,
-      positionY,
-      originalX,
-      originalY,
-      state,
-      isActive,
-      progress,
-      pathOpacity,
-      currentPath,
-      previousPath,
-    } = useChartData();
-
+  }: ChartPathProps & Omit<ChartData, 'data' | 'dotScale'>) => {
     const interpolatorWorklet = useWorkletValue();
 
     const translationX = useSharedValue<number | null>(null);
@@ -159,6 +158,7 @@ export const ChartPath = React.memo(
     const resetGestureState = useWorkletCallback(() => {
       originalX.value = '';
       originalY.value = '';
+      positionY.value = -1;
       isActive.value = false;
       pathOpacity.value = withTiming(
         1,
@@ -360,40 +360,112 @@ export const ChartPath = React.memo(
       [width, height, hapticsEnabled, hitSlop, timingFeedbackConfig]
     );
 
-    const pathAnimatedStyles = useAnimatedStyle(() => ({
-      opacity: pathOpacity.value * (1 - selectedOpacity) + selectedOpacity,
-    }));
+    const pathAnimatedStyles = useAnimatedStyle(() => {
+      return {
+        opacity: pathOpacity.value * (1 - selectedOpacity) + selectedOpacity,
+      };
+    });
 
     return (
-      <View style={{ height, width }}>
-        <LongPressGestureHandler
-          enabled={gestureEnabled}
-          maxDist={100000}
-          minDurationMs={0}
-          onGestureEvent={onGestureEvent}
-          shouldCancelWhenOutside={false}
-          {...longPressGestureHandlerProps}
-        >
-          <Animated.View>
-            <Svg
-              style={{
-                height: height + FIX_CLIPPED_PATH_MAGIC_NUMBER,
-                width,
-              }}
-              viewBox={`0 0 ${width} ${height}`}
-            >
-              <AnimatedPath
-                animatedProps={animatedProps}
-                stroke={stroke}
-                strokeWidth={strokeWidth}
-                // @ts-expect-error
-                style={pathAnimatedStyles}
-                {...props}
-              />
-            </Svg>
-          </Animated.View>
-        </LongPressGestureHandler>
-      </View>
+      <LongPressGestureHandler
+        enabled={gestureEnabled}
+        maxDist={100000}
+        minDurationMs={0}
+        onGestureEvent={onGestureEvent}
+        shouldCancelWhenOutside={false}
+        {...longPressGestureHandlerProps}
+      >
+        <Animated.View>
+          <Svg
+            style={{
+              height: height + FIX_CLIPPED_PATH_MAGIC_NUMBER,
+              width,
+            }}
+            viewBox={`0 0 ${width} ${height}`}
+          >
+            <AnimatedPath
+              // @ts-expect-error
+              animatedProps={animatedProps}
+              stroke={stroke}
+              strokeWidth={strokeWidth}
+              style={pathAnimatedStyles}
+              {...props}
+            />
+          </Svg>
+        </Animated.View>
+      </LongPressGestureHandler>
     );
   }
 );
+
+export const ChartPath = React.memo(
+  ({
+    hapticsEnabled,
+    width,
+    height,
+    hitSlop,
+    stroke,
+    selectedStrokeWidth,
+    strokeWidth,
+    gestureEnabled,
+    selectedOpacity,
+    timingFeedbackConfig,
+    timingAnimationConfig,
+    longPressGestureHandlerProps = {},
+    ...props
+  }: ChartPathProps) => {
+    const {
+      positionX,
+      positionY,
+      originalX,
+      originalY,
+      state,
+      isActive,
+      progress,
+      pathOpacity,
+      currentPath,
+      previousPath,
+    } = useChartData();
+
+    let renderPath = null;
+
+    // this is workaround to avoid unnecessary rerenders of the path component
+    // and sometimes blank SvgPath the currentPath's path string is empty
+    // due to some broken logic in the Rainbow app
+    if (currentPath?.path) {
+      renderPath = (
+        <ChartPathInner
+          {...{
+            ...props,
+            currentPath,
+            gestureEnabled,
+            hapticsEnabled,
+            height,
+            hitSlop,
+            isActive,
+            longPressGestureHandlerProps,
+            originalX,
+            originalY,
+            pathOpacity,
+            positionX,
+            positionY,
+            previousPath,
+            progress,
+            selectedOpacity,
+            selectedStrokeWidth,
+            state,
+            stroke,
+            strokeWidth,
+            timingAnimationConfig,
+            timingFeedbackConfig,
+            width,
+          }}
+        />
+      );
+    }
+
+    return <View style={{ height, width }}>{renderPath}</View>;
+  }
+);
+
+ChartPath.displayName = 'ChartPath';

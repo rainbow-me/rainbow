@@ -7,7 +7,6 @@ import { Alert, InteractionManager, Keyboard, StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components';
 import { GasSpeedButton } from '../components/gas';
 import { Column } from '../components/layout';
 import {
@@ -30,7 +29,7 @@ import {
   web3Provider,
 } from '@rainbow-me/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
+import Network from '@rainbow-me/helpers/networkTypes';
 import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
 import {
   useAccountSettings,
@@ -54,6 +53,7 @@ import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import { parseGasParamsForTransaction } from '@rainbow-me/parsers';
 import { chainAssets, rainbowTokenList } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { borders } from '@rainbow-me/styles';
 import {
   convertAmountAndPriceToNativeDisplay,
@@ -67,28 +67,28 @@ import logger from 'logger';
 const sheetHeight = deviceUtils.dimensions.height - (android ? 30 : 10);
 const statusBarHeight = getStatusBarHeight(true);
 
-const Container = styled.View`
-  background-color: ${({ theme: { colors } }) => colors.transparent};
-  flex: 1;
-  padding-top: ${isNativeStackAvailable ? 0 : statusBarHeight};
-  width: 100%;
-`;
+const Container = styled.View({
+  backgroundColor: ({ theme: { colors } }) => colors.transparent,
+  flex: 1,
+  paddingTop: isNativeStackAvailable ? 0 : statusBarHeight,
+  width: '100%',
+});
 
 const SheetContainer = styled(Column).attrs({
   align: 'center',
   flex: 1,
-})`
-  ${borders.buildRadius('top', isNativeStackAvailable ? 0 : 16)};
-  background-color: ${({ theme: { colors } }) => colors.white};
-  height: ${isNativeStackAvailable || android ? sheetHeight : '100%'};
-  width: 100%;
-`;
+})({
+  ...borders.buildRadiusAsObject('top', isNativeStackAvailable ? 0 : 16),
+  backgroundColor: ({ theme: { colors } }) => colors.white,
+  height: isNativeStackAvailable || android ? sheetHeight : '100%',
+  width: '100%',
+});
 
-const KeyboardSizeView = styled(KeyboardArea)`
-  width: 100%;
-  background-color: ${({ showAssetForm, theme: { colors } }) =>
-    showAssetForm ? colors.lighterGrey : colors.white};
-`;
+const KeyboardSizeView = styled(KeyboardArea)({
+  backgroundColor: ({ showAssetForm, theme: { colors } }) =>
+    showAssetForm ? colors.lighterGrey : colors.white,
+  width: '100%',
+});
 
 export default function SendSheet(props) {
   const dispatch = useDispatch();
@@ -298,16 +298,16 @@ export default function SendSheet(props) {
         let provider = web3Provider;
         switch (selected.type) {
           case AssetTypes.polygon:
-            setCurrentNetwork(networkTypes.polygon);
-            provider = await getProviderForNetwork(networkTypes.polygon);
+            setCurrentNetwork(Network.polygon);
+            provider = await getProviderForNetwork(Network.polygon);
             break;
           case AssetTypes.arbitrum:
-            setCurrentNetwork(networkTypes.arbitrum);
-            provider = await getProviderForNetwork(networkTypes.arbitrum);
+            setCurrentNetwork(Network.arbitrum);
+            provider = await getProviderForNetwork(Network.arbitrum);
             break;
           case AssetTypes.optimism:
-            setCurrentNetwork(networkTypes.optimism);
-            provider = await getProviderForNetwork(networkTypes.optimism);
+            setCurrentNetwork(Network.optimism);
+            provider = await getProviderForNetwork(Network.optimism);
             break;
           default:
             setCurrentNetwork(network);
@@ -470,7 +470,7 @@ export default function SendSheet(props) {
         );
 
         if (!lessThan(updatedGasLimit, gasLimit)) {
-          if (currentNetwork === networkTypes.optimism) {
+          if (currentNetwork === Network.optimism) {
             updateTxFeeForOptimism(updatedGasLimit);
           } else {
             updateTxFee(updatedGasLimit, null);
@@ -616,7 +616,7 @@ export default function SendSheet(props) {
     let label = 'Enter an Amount';
 
     let nativeToken = 'ETH';
-    if (currentNetwork === networkTypes.polygon) {
+    if (currentNetwork === Network.polygon) {
       nativeToken = 'MATIC';
     }
     if (
@@ -732,7 +732,7 @@ export default function SendSheet(props) {
 
   const [ensSuggestions, setEnsSuggestions] = useState([]);
   useEffect(() => {
-    if (network === networkTypes.mainnet && !recipientOverride) {
+    if (network === Network.mainnet && !recipientOverride) {
       debouncedFetchSuggestions(recipient, setEnsSuggestions);
     } else {
       setEnsSuggestions([]);
@@ -773,7 +773,7 @@ export default function SendSheet(props) {
         currentNetwork
       )
         .then(async gasLimit => {
-          if (currentNetwork === networkTypes.optimism) {
+          if (currentNetwork === Network.optimism) {
             updateTxFeeForOptimism(gasLimit);
           } else {
             updateTxFee(gasLimit, null);

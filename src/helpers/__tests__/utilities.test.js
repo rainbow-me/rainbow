@@ -1,4 +1,5 @@
 import {
+  addDisplay,
   convertAmountFromNativeValue,
   convertBipsToPercentage,
   handleSignificantDecimals,
@@ -134,4 +135,19 @@ it('updatePrecisionToDisplay6', () => {
 it('updatePrecisionToDisplay6RoundUp', () => {
   const result = updatePrecisionToDisplay('0.123456789', '1320.0112', true);
   expect(result).toBe('0.123457');
+});
+
+it('addDisplay', () => {
+  const result = addDisplay('$150.50', '$912.21');
+  expect(result).toBe('$1,062.71');
+});
+
+it('addDisplay with left-aligned currency', () => {
+  const result = addDisplay('A$150.50', 'A$912.21');
+  expect(result).toBe('A$1,062.71');
+});
+
+it('addDisplay with right-aligned currency', () => {
+  const result = addDisplay('150.50₽', '912.21₽');
+  expect(result).toBe('1,062.71₽');
 });

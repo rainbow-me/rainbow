@@ -24,4 +24,5 @@ export default {
   useRef,
   useState,
   useTheme,
+  web: Platform.OS === 'web',
 };

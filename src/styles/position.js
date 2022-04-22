@@ -1,20 +1,21 @@
 import { upperFirst } from 'lodash';
 import { StyleSheet } from 'react-native';
 import buildLayoutStyles from './buildLayoutStyles';
+import { memoFn } from '@rainbow-me/utils/memoFn';
 
 const position = {};
 
 position.cover = `
-  bottom: 0;
+  bottom: 0,
   left: 0;
-  position: absolute;
+  position: 'absolute',
   right: 0;
   top: 0;
 `;
 
 position.centered = `
-  align-items: center;
-  justify-content: center;
+  alignItems: 'center',
+  justifyContent: 'center',
 `;
 
 position.centeredAsObject = {
@@ -33,10 +34,10 @@ position.size = (size, prefix = '') => `
   ${prefix}${buildSizeKey(prefix, 'width')}: ${size};
 `;
 
-position.sizeAsObject = (size, prefix = '') => ({
+position.sizeAsObject = memoFn((size, prefix = '') => ({
   [`${prefix}${buildSizeKey(prefix, 'height')}`]: size,
   [`${prefix}${buildSizeKey(prefix, 'width')}`]: size,
-});
+}));
 
 position.maxSize = size => position.size(size, 'max');
 position.minSize = size => position.size(size, 'min');

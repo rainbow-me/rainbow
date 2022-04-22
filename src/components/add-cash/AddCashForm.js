@@ -197,9 +197,9 @@ const AddCashForm = ({
       <Centered flex={1}>
         <ColumnWithMargins
           align="center"
-          css={padding(0, 24, isNarrowPhone ? 12 : 24)}
           justify="center"
           margin={isSmallPhone ? 0 : 8}
+          style={padding.object(0, 24, isNarrowPhone ? 12 : 24)}
           width="100%"
         >
           <NumpadValue scale={scaleAnim} translateX={shakeAnim} value={value} />

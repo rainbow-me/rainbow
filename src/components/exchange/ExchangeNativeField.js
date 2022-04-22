@@ -1,11 +1,11 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
-import styled from 'styled-components';
 import { Row } from '../layout';
 import { Text } from '../text';
 import ExchangeInput from './ExchangeInput';
 import { useColorForAsset } from '@rainbow-me/hooks';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
+import styled from '@rainbow-me/styled-components';
 import { fonts } from '@rainbow-me/styles';
 
 const CurrencySymbol = styled(Text).attrs(({ height, color }) => ({
@@ -14,17 +14,15 @@ const CurrencySymbol = styled(Text).attrs(({ height, color }) => ({
   lineHeight: height,
   size: 'larger',
   weight: 'regular',
-}))`
-  ${android ? 'margin-bottom: 1.5;' : ''};
-`;
+}))(android ? { marginBottom: 1.5 } : {});
 
 const NativeInput = styled(ExchangeInput).attrs({
   letterSpacing: fonts.letterSpacing.roundedTight,
   size: fonts.size.larger,
   weight: fonts.weight.regular,
-})`
-  height: ${({ height }) => height};
-`;
+})({
+  height: ({ height }) => height,
+});
 
 const ExchangeNativeField = (
   {

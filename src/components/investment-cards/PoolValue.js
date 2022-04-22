@@ -1,16 +1,18 @@
 import React from 'react';
-import styled from 'styled-components';
 import { Row } from '../layout';
 import { Text } from '../text';
 import { bigNumberFormat } from '@rainbow-me/helpers/bigNumberFormat';
 import { useAccountSettings } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 
-const PoolValueWrapper = styled(Row)`
-  border-radius: ${({ simple }) => (simple ? 0 : 15)};
-  ${({ simple }) => (simple ? undefined : 'height: 30')};
-  ${({ simple }) => (simple ? undefined : padding(2, 9, 0))};
-`;
+const PoolValueWrapper = styled(Row)(({ simple }) => ({
+  borderRadius: simple ? 0 : 15,
+  ...(!simple && {
+    height: 30,
+    ...padding.object(2, 9, 0),
+  }),
+}));
 
 const PoolValueText = styled(Text).attrs(({ simple, size }) => ({
   align: simple ? 'left' : 'center',
@@ -18,9 +20,7 @@ const PoolValueText = styled(Text).attrs(({ simple, size }) => ({
   lineHeight: simple ? undefined : 'paragraphSmall',
   size: size || 'lmedium',
   weight: simple ? 'semibold' : 'bold',
-}))`
-  ${android && 'line-height: 28px; height: 30px;'}
-`;
+}))(android ? { height: 30, lineHeight: 28 } : {});
 
 export const PoolValue = ({ type, value, simple, ...props }) => {
   let formattedValue = value;

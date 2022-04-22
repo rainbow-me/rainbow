@@ -2,7 +2,6 @@ import lang from 'i18n-js';
 import { forEach } from 'lodash';
 import React, { useEffect, useMemo } from 'react';
 import { IS_TESTING } from 'react-native-dotenv';
-import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { cloudPlatform } from '../../utils/platform';
 import Divider from '../Divider';
@@ -12,33 +11,34 @@ import { Column, Row, RowWithMargins } from '../layout';
 import { GradientText, Text } from '../text';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import { useNavigation } from '@rainbow-me/navigation';
+import styled from '@rainbow-me/styled-components';
 import { deviceUtils } from '@rainbow-me/utils';
 
 const deviceWidth = deviceUtils.dimensions.width;
 
-const Container = styled(Column)`
-  margin-top: -8;
-`;
+const Container = styled(Column)({
+  marginTop: -8,
+});
 
 const CaretIcon = styled(Icon).attrs({
   name: 'caret',
-})`
-  margin-bottom: 5.25;
-`;
+})({
+  marginBottom: 5.25,
+});
 
 const SheetRow = styled(Row).attrs({
   scaleTo: 0.975,
-})`
-  padding-horizontal: 30;
-  padding-top: 11;
-  width: 100%;
-`;
+})({
+  paddingHorizontal: 30,
+  paddingTop: 11,
+  width: '100%',
+});
 
-const TitleRow = styled(RowWithMargins)`
-  align-items: center;
-  justify-content: space-between;
-  width: ${deviceWidth - 60};
-`;
+const TitleRow = styled(RowWithMargins)({
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  width: deviceWidth - 60,
+});
 
 const RainbowText =
   android && IS_TESTING === 'true'
@@ -49,26 +49,26 @@ const RainbowText =
         end: { x: 0, y: 0.5 },
         start: { x: 1, y: 0.5 },
         steps: [0, 0.774321, 1],
-      }))``;
+      }))({});
 
 const TextIcon = styled(Text).attrs({
   size: 29,
   weight: 'medium',
-})`
-  height: ${android ? 45 : 35};
-  margin-bottom: 7;
-  margin-top: 8;
-`;
+})({
+  height: android ? 45 : 35,
+  marginBottom: 7,
+  marginTop: 8,
+});
 
 const Title = styled(Text).attrs({
   letterSpacing: 'roundedMedium',
   lineHeight: 27,
   size: 'larger',
   weight: 'bold',
-})`
-  margin-bottom: 6;
-  max-width: 276;
-`;
+})({
+  marginBottom: 6,
+  maxWidth: 276,
+});
 
 const DescriptionText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'left',
@@ -76,10 +76,10 @@ const DescriptionText = styled(Text).attrs(({ theme: { colors } }) => ({
   lineHeight: 22,
   size: 'smedium',
   weight: 'medium',
-}))`
-  max-width: 276;
-  padding-bottom: 24;
-`;
+}))({
+  maxWidth: 276,
+  paddingBottom: 24,
+});
 
 export default function RestoreSheetFirstStep({
   onCloudRestore,
@@ -118,16 +118,36 @@ export default function RestoreSheetFirstStep({
               </Row>
               <TitleRow>
                 <RainbowText colors={colors}>
-                  <Title>Restore from {cloudPlatform}</Title>
+                  <Title>
+                    {lang.t(
+                      'back_up.restore_sheet.from_backup.restore_from_cloud_platform',
+                      { cloudPlatformName: cloudPlatform }
+                    )}
+                  </Title>
                 </RainbowText>
                 <CaretIcon />
               </TitleRow>
               <DescriptionText>
                 {ios
-                  ? `You have ${walletsBackedUp} ${
-                      walletsBackedUp > 1 ? 'wallets' : 'wallet'
-                    } backed up`
-                  : `If you previously backed up your wallet on ${cloudPlatform} tap here to restore it.`}
+                  ? // It is not possible for the user to be on iOS and have
+                    // no backups at this point, since `enableCloudRestore`
+                    // would be false in that case.
+                    walletsBackedUp > 1
+                    ? lang.t(
+                        'back_up.restore_sheet.from_backup.ios.you_have_multiple_wallets',
+                        {
+                          walletsBackedUpCount: walletsBackedUp,
+                        }
+                      )
+                    : lang.t(
+                        'back_up.restore_sheet.from_backup.ios.you_have_1_wallet'
+                      )
+                  : lang.t(
+                      'back_up.restore_sheet.from_backup.non_ios.if_you_previously_backed_up',
+                      {
+                        cloudPlatformName: cloudPlatform,
+                      }
+                    )}
               </DescriptionText>
             </Column>
           </SheetRow>
@@ -143,11 +163,13 @@ export default function RestoreSheetFirstStep({
         <Column>
           <TextIcon color={colors.purple}>􀑚</TextIcon>
           <TitleRow justify="space-between" width="100%">
-            <Title>{lang.t('wallet.restore.phrase_key.label')}</Title>
+            <Title>
+              {lang.t('back_up.restore_sheet.from_key.secret_phrase_title')}
+            </Title>
             <CaretIcon />
           </TitleRow>
           <DescriptionText>
-            {lang.t('wallet.restore.phrase_key.description')}
+            {lang.t('back_up.restore_sheet.from_key.secret_phrase_description')}
           </DescriptionText>
         </Column>
       </SheetRow>
@@ -162,11 +184,13 @@ export default function RestoreSheetFirstStep({
         <Column>
           <TextIcon color={colors.mintDark}>􀒒</TextIcon>
           <TitleRow justify="space-between" width="100%">
-            <Title>{lang.t('wallet.restore.watch.label')}</Title>
+            <Title>
+              {lang.t('back_up.restore_sheet.watch_address.watch_title')}
+            </Title>
             <CaretIcon />
           </TitleRow>
           <DescriptionText>
-            {lang.t('wallet.restore.watch.description')}
+            {lang.t('back_up.restore_sheet.watch_address.watch_description')}
           </DescriptionText>
         </Column>
       </SheetRow>

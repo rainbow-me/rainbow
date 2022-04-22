@@ -3,13 +3,14 @@ import { ViewProps } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   withSpring,
+  WithSpringConfig,
 } from 'react-native-reanimated';
 import { useChartData } from '../../helpers/useChartData';
 import { FIX_CLIPPED_PATH_MAGIC_NUMBER } from './ChartPath';
 
 interface ChartDotProps extends ViewProps {
   size?: number;
-  springConfig?: Animated.WithSpringConfig;
+  springConfig?: WithSpringConfig;
 }
 
 const springDefaultConfig = {
@@ -31,7 +32,7 @@ const ChartDot = React.memo(
       );
 
       return {
-        opacity: animation,
+        opacity: positionY.value === -1 ? 0 : animation,
         transform: [
           { translateX },
           { translateY },

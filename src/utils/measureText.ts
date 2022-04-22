@@ -3,7 +3,7 @@ import { fonts } from '../styles';
 
 const defaultTextStyles = {
   fontFamily: fonts.family.SFProRounded,
-  fontSize: parseFloat(fonts.size.medium),
+  fontSize: fonts.size.medium,
   fontWeight: fonts.weight.regular,
   letterSpacing: fonts.letterSpacing.rounded,
 };

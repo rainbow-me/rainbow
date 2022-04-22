@@ -1,47 +1,47 @@
 import React, { useCallback } from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
-import styled from 'styled-components';
 import { TokenSelectionButton } from '../buttons';
 import { CoinIcon, CoinIconSize } from '../coin-icon';
 import { Row, RowWithMargins } from '../layout';
 import { EnDash } from '../text';
 import ExchangeInput from './ExchangeInput';
 import { useColorForAsset } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { borders } from '@rainbow-me/styles';
 
 const ExchangeFieldHeight = android ? 64 : 38;
 const ExchangeFieldPadding = android ? 15 : 19;
 
-const CoinIconSkeleton = styled.View`
-  ${borders.buildCircle(CoinIconSize)};
-  background-color: ${({ theme: { colors } }) =>
-    colors.alpha(colors.blueGreyDark, 0.1)};
-`;
+const CoinIconSkeleton = styled.View({
+  ...borders.buildCircleAsObject(CoinIconSize),
+  backgroundColor: ({ theme: { colors } }) =>
+    colors.alpha(colors.blueGreyDark, 0.1),
+});
 
 const Container = styled(Row).attrs({
   align: 'center',
   justify: 'flex-end',
-})`
-  width: 100%;
-  padding-right: ${ExchangeFieldPadding};
-`;
+})({
+  paddingRight: ExchangeFieldPadding,
+  width: '100%',
+});
 
 const FieldRow = styled(RowWithMargins).attrs({
   align: 'center',
   margin: 10,
-})`
-  flex: 1;
-  padding-left: ${ExchangeFieldPadding};
-  padding-right: ${({ disableCurrencySelection }) =>
-    disableCurrencySelection ? ExchangeFieldPadding : 0};
-`;
+})({
+  flex: 1,
+  paddingLeft: ExchangeFieldPadding,
+  paddingRight: ({ disableCurrencySelection }) =>
+    disableCurrencySelection ? ExchangeFieldPadding : 0,
+});
 
 const Input = styled(ExchangeInput).attrs({
   letterSpacing: 'roundedTightest',
-})`
-  margin-vertical: -10;
-  height: ${ExchangeFieldHeight + (android ? 20 : 0)};
-`;
+})({
+  height: ExchangeFieldHeight + (android ? 20 : 0),
+  marginVertical: -10,
+});
 
 const ExchangeField = (
   {

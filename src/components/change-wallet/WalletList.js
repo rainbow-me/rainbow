@@ -9,7 +9,6 @@ import React, {
 } from 'react';
 import { FlatList } from 'react-native-gesture-handler';
 import { Transition, Transitioning } from 'react-native-reanimated';
-import styled from 'styled-components';
 import networkTypes from '../../helpers/networkTypes';
 import WalletTypes from '../../helpers/walletTypes';
 import { address } from '../../utils/abbreviations';
@@ -19,6 +18,7 @@ import { Column } from '../layout';
 import AddressRow from './AddressRow';
 import WalletOption from './WalletOption';
 import { useAccountSettings } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 
 const listTopPadding = 7.5;
@@ -48,19 +48,19 @@ const skeletonTransition = (
   </Transition.Sequence>
 );
 
-const Container = styled(Transitioning.View)`
-  height: ${({ height }) => height};
-  margin-top: -2;
-`;
+const Container = styled(Transitioning.View)({
+  height: ({ height }) => height,
+  marginTop: -2,
+});
 
 const EmptyWalletList = styled(EmptyAssetList).attrs({
   descendingOpacity: true,
   pointerEvents: 'none',
-})`
-  ${position.cover};
-  background-color: ${({ theme: { colors } }) => colors.white};
-  padding-top: ${listTopPadding};
-`;
+})({
+  ...position.coverAsObject,
+  backgroundColor: ({ theme: { colors } }) => colors.white,
+  paddingTop: listTopPadding,
+});
 
 const WalletFlatList = styled(FlatList).attrs(({ showDividers }) => ({
   contentContainerStyle: {
@@ -70,23 +70,23 @@ const WalletFlatList = styled(FlatList).attrs(({ showDividers }) => ({
   getItemLayout,
   keyExtractor,
   removeClippedSubviews: true,
-}))`
-  flex: 1;
-  min-height: 1;
-`;
+}))({
+  flex: 1,
+  minHeight: 1,
+});
 
 const WalletListDivider = styled(Divider).attrs(({ theme: { colors } }) => ({
   color: colors.rowDividerExtraLight,
   inset: [0, 15],
-}))`
-  margin-bottom: 1;
-  margin-top: -1;
-`;
+}))({
+  marginBottom: 1,
+  marginTop: -1,
+});
 
-const WalletListFooter = styled(Column)`
-  padding-bottom: 6;
-  padding-top: 4;
-`;
+const WalletListFooter = styled(Column)({
+  paddingBottom: 6,
+  paddingTop: 4,
+});
 
 export default function WalletList({
   accountAddress,

@@ -1,7 +1,6 @@
 import React from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import styled, { css } from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { deviceUtils } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
@@ -9,22 +8,27 @@ import { Text } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import { useColorForAsset } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 
 const isSmallPhone = android || deviceUtils.dimensions.height <= 667;
 const isTinyPhone = deviceUtils.dimensions.height <= 568;
 const selectedHeight = isTinyPhone ? 50 : android || isSmallPhone ? 64 : 70;
 
-const containerStyles = css`
-  padding-bottom: 18;
-  padding-left: 19;
-  padding-top: 0;
-`;
+const containerStyles = {
+  paddingBottom: 18,
+  paddingLeft: 19,
+  paddingTop: 0,
+};
 
-const containerSelectedStyles = css`
-  ${isTinyPhone ? padding(10, 0, 0) : isSmallPhone ? padding(12) : padding(15)};
-  height: ${selectedHeight};
-`;
+const containerSelectedStyles = {
+  height: selectedHeight,
+  ...(isTinyPhone
+    ? padding.object(10, 0, 0)
+    : isSmallPhone
+    ? padding.object(12)
+    : padding.object(15)),
+};
 
 const NativeAmountBubble = styled(LinearGradient).attrs(
   ({ theme: { colors } }) => ({
@@ -32,10 +36,10 @@ const NativeAmountBubble = styled(LinearGradient).attrs(
     end: { x: 0.5, y: 1 },
     start: { x: 0, y: 0 },
   })
-)`
-  border-radius: 15;
-  height: 30;
-`;
+)({
+  borderRadius: 15,
+  height: 30,
+});
 
 const NativeAmountBubbleText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
@@ -43,9 +47,7 @@ const NativeAmountBubbleText = styled(Text).attrs(({ theme: { colors } }) => ({
   letterSpacing: 'roundedTight',
   size: 'lmedium',
   weight: 'bold',
-}))`
-  ${android ? padding(0, 10) : padding(4.5, 10, 6.5)};
-`;
+}))(android ? padding.object(0, 10) : padding.object(4.5, 10, 6.5));
 
 const BottomRow = ({
   balance: { display: balanceDisplay },

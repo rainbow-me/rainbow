@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React from 'react';
 import { View } from 'react-native';
 import { Column } from '../layout';
@@ -16,10 +17,10 @@ export default function Strategies() {
   return (
     <Column paddingHorizontal={12}>
       <Text size="larger" weight="bold">
-        🧠 Strategies
+        🧠 {lang.t('discover.strategies.strategies_title')}
       </Text>
       <Text color={colors.grey} size="medium" weight="bold">
-        Smart yield strategies from yearn.finance
+        {lang.t('discover.strategies.yearn_finance_description')}
       </Text>
       <View style={{ height: 100, marginTop: 12, width: 100 }}>
         <ShadowStack

@@ -8,7 +8,7 @@ export const Placeholder = ({
   flexGrow,
 }: {
   flexGrow?: number;
-  height?: number;
+  height?: number | '100%';
   width?: number | '100%';
 }) => {
   const backgroundColor = useForegroundColor('secondary10');

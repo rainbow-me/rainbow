@@ -1,13 +1,12 @@
 import analytics from '@segment/analytics-react-native';
 import React, { useCallback, useMemo } from 'react';
-import styled from 'styled-components';
 import ChainLogo from '../ChainLogo';
 import NetworkPill from '../NetworkPill';
 import { RequestVendorLogoIcon } from '../coin-icon';
 import { ContactAvatar } from '../contacts';
 import ImageAvatar from '../contacts/ImageAvatar';
 import { ContextMenuButton } from '../context-menu';
-import { Centered, Column, ColumnWithMargins, Row } from '../layout';
+import { Centered, ColumnWithMargins, Row } from '../layout';
 import { Text, TruncatedText } from '../text';
 import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
 import {
@@ -29,6 +28,7 @@ import {
 } from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 import { ethereumUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
 
@@ -41,9 +41,9 @@ const LabelText = styled(Text).attrs(() => ({
   align: 'center',
   size: 'lmedium',
   weight: 'heavy',
-}))`
-  margin-bottom: 1;
-`;
+}))({
+  marginBottom: 1,
+});
 
 const networksAvailable = networksMenuItems();
 
@@ -53,14 +53,19 @@ if (networksAvailable.length > 1) {
   androidContextMenuActions.splice(0, 0, 'Switch Network');
 }
 
-const AvatarWrapper = styled(Column)`
-  margin-right: 5;
-`;
+const SessionRow = styled(Row)({
+  alignItems: 'center',
+  justifyContent: 'flex-start',
+});
 
-const SessionRow = styled(Row)`
-  align-items: center;
-  justify-content: space-between;
-`;
+const rowStyle = padding.object(
+  ContainerPadding,
+  0,
+  ContainerPadding + 10,
+  ContainerPadding
+);
+
+const columnStyle = padding.object(0, 10, 0, 12);
 
 export default function WalletConnectListItem({
   account,
@@ -203,47 +208,54 @@ export default function WalletConnectListItem({
       onPressMenuItem={handleOnPressMenuItem}
     >
       <Row align="center" height={WalletConnectListItemHeight}>
-        <Row
-          align="center"
-          css={padding(ContainerPadding, 0, ContainerPadding, ContainerPadding)}
-          flex={1}
-        >
+        <Row align="center" flex={1} style={rowStyle}>
           <RequestVendorLogoIcon
             backgroundColor={colors.white}
             dappName={dappName}
             imageUrl={overrideLogo || dappIcon}
             size={VendorLogoIconSize}
           />
-          <ColumnWithMargins css={padding(0, 19, 0, 12)} flex={1} margin={5}>
-            <Row width="70%">
+          <ColumnWithMargins
+            flex={1}
+            margin={android ? -4 : 5}
+            style={columnStyle}
+          >
+            <Row width="95%">
               <TruncatedText size="lmedium" weight="heavy">
-                {overrideName || dappName || 'Unknown Application'}{' '}
+                {overrideName || dappName || 'Unknown Application'}
               </TruncatedText>
             </Row>
 
             <SessionRow>
-              <Centered>
-                <AvatarWrapper>
-                  {approvalAccountInfo.accountImage ? (
-                    <ImageAvatar
-                      image={approvalAccountInfo.accountImage}
-                      size="smaller"
-                    />
-                  ) : (
-                    <ContactAvatar
-                      color={
-                        isNaN(approvalAccountInfo.accountColor)
-                          ? colors.skeleton
-                          : approvalAccountInfo.accountColor
-                      }
-                      size="smaller"
-                      value={approvalAccountInfo.accountSymbol}
-                    />
-                  )}
-                </AvatarWrapper>
+              <Centered
+                style={{
+                  paddingLeft: 10,
+                }}
+              >
+                {approvalAccountInfo.accountImage ? (
+                  <ImageAvatar
+                    image={approvalAccountInfo.accountImage}
+                    size="smaller"
+                  />
+                ) : (
+                  <ContactAvatar
+                    color={
+                      isNaN(approvalAccountInfo.accountColor)
+                        ? colors.skeleton
+                        : approvalAccountInfo.accountColor
+                    }
+                    size="smaller"
+                    value={approvalAccountInfo.accountSymbol}
+                  />
+                )}
                 <TruncatedText
                   size="medium"
-                  style={{ color: colors.alpha(colors.blueGreyDark, 0.6) }}
+                  style={{
+                    color: colors.alpha(colors.blueGreyDark, 0.6),
+                    paddingLeft: 5,
+                    paddingRight: 19,
+                    width: '100%',
+                  }}
                   weight="bold"
                 >
                   {approvalAccountInfo.accountName}
@@ -258,17 +270,22 @@ export default function WalletConnectListItem({
             onPressMenuItem={handleOnPressMenuItem}
           >
             <NetworkPill mainnet={connectionNetworkInfo.value === 'mainnet'}>
-              <ChainLogo network={connectionNetworkInfo.value} />
-              <LabelText
-                color={
-                  connectionNetworkInfo.value === 'mainnet'
-                    ? colors.alpha(colors.blueGreyDark, 0.5)
-                    : colors.alpha(colors.blueGreyDark, 0.8)
-                }
-                numberOfLines={1}
-              >
-                {connectionNetworkInfo.name}
-              </LabelText>
+              <Row align="center">
+                <ChainLogo
+                  marginRight={5}
+                  network={connectionNetworkInfo.value}
+                />
+                <LabelText
+                  color={
+                    connectionNetworkInfo.value === 'mainnet'
+                      ? colors.alpha(colors.blueGreyDark, 0.5)
+                      : colors.alpha(colors.blueGreyDark, 0.8)
+                  }
+                  numberOfLines={1}
+                >
+                  {connectionNetworkInfo.name}
+                </LabelText>
+              </Row>
             </NetworkPill>
           </ContextMenuButton>
         </Row>

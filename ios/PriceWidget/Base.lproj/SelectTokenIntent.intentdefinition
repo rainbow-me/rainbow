@@ -9,7 +9,7 @@
 	<key>INIntentDefinitionNamespace</key>
 	<string>PoGdNI</string>
 	<key>INIntentDefinitionSystemVersion</key>
-	<string>20G224</string>
+	<string>20G165</string>
 	<key>INIntentDefinitionToolsBuildVersion</key>
 	<string>13A1030d</string>
 	<key>INIntentDefinitionToolsVersion</key>
@@ -211,7 +211,7 @@
 			<key>INTypeDisplayNameID</key>
 			<string>N63JF7</string>
 			<key>INTypeLastPropertyTag</key>
-			<integer>103</integer>
+			<integer>104</integer>
 			<key>INTypeName</key>
 			<string>Currency</string>
 			<key>INTypeProperties</key>

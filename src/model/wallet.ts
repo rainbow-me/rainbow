@@ -186,7 +186,7 @@ export const DEFAULT_WALLET_NAME = 'My Wallet';
 const authenticationPrompt = lang.t('wallet.authenticate.please');
 
 export const walletInit = async (
-  seedPhrase = null,
+  seedPhrase = undefined,
   color = null,
   name = null,
   overwrite = false,
@@ -194,7 +194,11 @@ export const walletInit = async (
   network: string
 ): Promise<WalletInitialized> => {
   let walletAddress = null;
-  let isNew = false;
+
+  // When the `seedPhrase` is not defined in the args, then
+  // this means it's a new fresh wallet created by the user.
+  let isNew = typeof seedPhrase === 'undefined';
+
   // Importing a seedphrase
   if (!isEmpty(seedPhrase)) {
     const wallet = await createWallet(
@@ -214,7 +218,9 @@ export const walletInit = async (
     const wallet = await createWallet();
     walletAddress = wallet?.address;
     isNew = true;
-    await saveAccountEmptyState(true, walletAddress?.toLowerCase(), network);
+  }
+  if (isNew) {
+    saveAccountEmptyState(true, walletAddress?.toLowerCase(), network);
   }
   return { isNew, walletAddress };
 };
@@ -552,6 +558,7 @@ export const createWallet = async (
     } =
       checkedWallet ||
       (await ethereumUtils.deriveAccountFromWalletInput(walletSeed));
+    const isReadOnlyType = type === EthereumWalletType.readOnly;
     let pkey = walletSeed;
     if (!walletResult) return null;
     const walletAddress = address;
@@ -594,8 +601,7 @@ export const createWallet = async (
       if (
         !overwrite &&
         alreadyExistingWallet &&
-        (type === EthereumWalletType.readOnly ||
-          isPrivateKeyOverwritingSeedMnemonic)
+        (isReadOnlyType || isPrivateKeyOverwritingSeedMnemonic)
       ) {
         setTimeout(
           () =>
@@ -615,7 +621,7 @@ export const createWallet = async (
 
     // Android users without biometrics need to secure their keys with a PIN
     let userPIN = null;
-    if (android) {
+    if (android && !isReadOnlyType) {
       const hasBiometricsEnabled = await getSupportedBiometryType();
       // Fallback to custom PIN
       if (!hasBiometricsEnabled) {

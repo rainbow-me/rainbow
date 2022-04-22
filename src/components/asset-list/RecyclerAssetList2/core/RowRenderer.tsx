@@ -47,10 +47,16 @@ function rowRenderer(type: CellType, { uid }: { uid: string }) {
             return null;
           case CellType.COIN_DIVIDER:
             return (
-              <CoinDivider balancesSum={(data as CoinDividerExtraData).value} />
+              <CoinDivider
+                balancesSum={(data as CoinDividerExtraData).value}
+                defaultToEditButton={
+                  (data as CoinDividerExtraData).defaultToEditButton
+                }
+              />
             );
           case CellType.ASSETS_HEADER:
             return (
+              // @ts-expect-error JavaScript component
               <AssetListHeader
                 totalValue={(data as AssetsHeaderExtraData).value}
               />
@@ -85,7 +91,10 @@ function rowRenderer(type: CellType, { uid }: { uid: string }) {
               />
             );
           case CellType.NFTS_HEADER:
-            return <AssetListHeader title="Collectibles" />;
+            return (
+              // @ts-expect-error JavaScript component
+              <AssetListHeader title="Collectibles" />
+            );
           case CellType.FAMILY_HEADER: {
             const { name, image, total } = data as NFTFamilyExtraData;
             return (

@@ -15,10 +15,11 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import styled from 'styled-components';
+import vstyled from 'styled-components';
 import useReactiveSharedValue from '../../../react-native-animated-charts/src/helpers/useReactiveSharedValue';
 import { ButtonPressAnimation } from '../../animations';
 import { useDimensions } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 
 const adjustConfig = {
@@ -35,29 +36,33 @@ const exitConfig = {
   mass: 2,
   stiffness: 800,
 };
-const GestureBlocker = styled(View)`
-  height: ${({ height }) => height};
-  left: ${({ containerWidth, width }) => -(width - containerWidth) / 2};
-  position: absolute;
-  top: -85;
-  width: ${({ width }) => width};
-`;
-const Container = styled(Animated.View)`
+const GestureBlocker = styled(View)({
+  height: ({ height }) => height,
+  left: ({ containerWidth, width }) => -(width - containerWidth) / 2,
+  position: 'absolute',
+  top: -85,
+  width: ({ width }) => width,
+});
+
+// TODO osdnk
+const Container = vstyled(Animated.View)`
   align-self: center;
   shadow-color: ${({ theme: { colors } }) => colors.shadowBlack};
   shadow-offset: 0 20px;
   shadow-opacity: 0.4;
   shadow-radius: 30px;
 `;
-const ImageWrapper = styled(Animated.View)`
-  ${position.size('100%')};
-  flex-direction: row;
-  overflow: hidden;
-`;
-const ZoomContainer = styled(Animated.View)`
-  height: ${({ height }) => height};
-  width: ${({ width }) => width};
-`;
+
+const ImageWrapper = styled(Animated.View)({
+  ...position.sizeAsObject('100%'),
+  flexDirection: 'row',
+  overflow: 'hidden',
+});
+
+const ZoomContainer = styled(Animated.View)(({ width, height }) => ({
+  height,
+  width,
+}));
 
 const MAX_IMAGE_SCALE = 4;
 const MIN_IMAGE_SCALE = 1;
@@ -70,6 +75,8 @@ export const ZoomableWrapper = ({
   aspectRatio,
   borderRadius,
   disableAnimations,
+  onZoomIn,
+  onZoomOut,
   yDisplacement: givenYDisplacement,
 }) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -118,10 +125,12 @@ export const ZoomableWrapper = ({
   useEffect(() => {
     if (isZoomed) {
       StatusBar.setHidden(true);
+      onZoomIn?.();
     } else {
       StatusBar.setHidden(false);
+      onZoomOut?.();
     }
-  }, [isZoomed]);
+  }, [isZoomed, onZoomIn, onZoomOut]);
 
   const fullSizeHeight = Math.min(deviceHeight, deviceWidth / aspectRatio);
   const fullSizeWidth = Math.min(deviceWidth, deviceHeight * aspectRatio);
@@ -167,7 +176,7 @@ export const ZoomableWrapper = ({
     ctx.prevTranslateX = 0;
     ctx.prevTranslateY = 0;
     // if zoom state was entered by pinching, adjust targetScale to account for new image dimensions
-    let targetScale = isZoomed
+    let targetScale = isZoomedValue.value
       ? Math.min(scale.value, MAX_IMAGE_SCALE)
       : Math.min(
           scale.value * (containerWidth / fullSizeWidth),
@@ -181,6 +190,7 @@ export const ZoomableWrapper = ({
       breakingScaleX = deviceWidth / containerWidth;
       breakingScaleY = deviceHeight / containerHeight;
     }
+    const zooming = fullSizeHeight / containerHeightValue.value;
 
     const maxDisplacementX =
       (deviceWidth * (Math.max(1, targetScale / breakingScaleX) - 1)) /

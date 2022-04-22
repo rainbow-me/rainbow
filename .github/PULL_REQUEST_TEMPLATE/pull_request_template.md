@@ -7,5 +7,6 @@ Fixes RNBW-####
 ## Dev checklist for QA: what to test
 
 ## Final checklist
-[ ] Assigned individual reviewers?
-[ ] Added labels?
+
+- [ ] Assigned individual reviewers?
+- [ ] Added labels?

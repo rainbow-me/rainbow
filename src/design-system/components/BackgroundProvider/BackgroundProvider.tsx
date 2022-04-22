@@ -6,7 +6,13 @@ import { BackgroundColor } from '../../color/palettes';
 
 export type BackgroundProviderProps = {
   color: BackgroundColor | 'accent';
-  children: (style: StyleProp<ViewStyle>) => JSX.Element;
+  children: ({
+    backgroundColor,
+    backgroundStyle,
+  }: {
+    backgroundColor: ViewStyle['backgroundColor'];
+    backgroundStyle: StyleProp<ViewStyle>;
+  }) => JSX.Element;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -33,7 +39,10 @@ export function BackgroundProvider({
     [background, styleProp]
   );
 
-  const child = children(style);
+  const child = children({
+    backgroundColor: background.color,
+    backgroundStyle: style,
+  });
 
   return <ColorModeProvider value={background.mode}>{child}</ColorModeProvider>;
 }

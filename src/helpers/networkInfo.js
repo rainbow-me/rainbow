@@ -38,7 +38,7 @@ const networkInfo = {
       '0xc55386617db7b4021d87750daaed485eb3ab0154',
     color: '#f6c343',
     disabled: false,
-    exchange_enabled: true,
+    exchange_enabled: false,
     faucet_url: 'https://faucet.rinkeby.io/',
     name: 'Rinkeby',
     testnet: true,

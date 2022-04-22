@@ -1,15 +1,15 @@
 import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
-import styled from 'styled-components';
 import { Centered, RowWithMargins } from '../components/layout';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 
-const Container = styled(Centered)`
-  height: 30;
-  margin-right: 19;
-  padding-left: ${({ mainnet }) => (mainnet ? 10 : 5)};
-  padding-right: 10;
-`;
+const Container = styled(Centered)({
+  height: 30,
+  marginRight: 19,
+  paddingLeft: ({ mainnet }) => (mainnet ? 10 : 5),
+  paddingRight: 10,
+});
 
 const Gradient = styled(RadialGradient).attrs(
   ({ theme: { colors, isDarkMode } }) => ({
@@ -18,13 +18,13 @@ const Gradient = styled(RadialGradient).attrs(
       ? colors.gradients.lightestGreyReverse
       : colors.gradients.lightestGrey,
   })
-)`
-  ${position.cover};
-  border-radius: 15;
-  flex-direction: row;
-  height: 30;
-  overflow: hidden;
-`;
+)({
+  ...position.coverAsObject,
+  borderRadius: 15,
+  flexDirection: 'row',
+  height: 30,
+  overflow: 'hidden',
+});
 
 export default function NetworkPill({ children, mainnet, ...props }) {
   return (

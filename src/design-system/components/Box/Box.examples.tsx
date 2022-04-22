@@ -4,6 +4,7 @@ import React from 'react';
 import { Example } from '../../docs/types';
 import source from '../../docs/utils/source.macro';
 import { Placeholder } from '../../playground/Placeholder';
+import { Column, Columns } from '../Columns/Columns';
 import { Inset } from '../Inset/Inset';
 import { Stack } from '../Stack/Stack';
 import { Text } from '../Text/Text';
@@ -129,6 +130,147 @@ export const widths: Example = {
       <Stack space="12px">
         <Box background="accent" padding="24px" width="1/3" />
         <Box background="accent" padding="24px" width="full" />
+        <Box background="accent" padding="24px" width={{ custom: 30 }} />
       </Stack>
+    ),
+};
+
+export const heights: Example = {
+  name: 'Heights',
+  Example: () =>
+    source(
+      <Stack space="12px">
+        <Box background="accent" height="30px" />
+        <Box background="accent" height="40px" />
+        <Box background="accent" height="46px" />
+        <Box background="accent" height="56px" />
+        <Box background="accent" height="64px" />
+        <Box background="accent" height={{ custom: 30 }} />
+      </Stack>
+    ),
+};
+
+export const shadows: Example = {
+  name: 'Shadows',
+  Example: () =>
+    source(<Box background="body" padding="24px" shadow="30px light" />),
+};
+
+export const shadowsWithSizes: Example = {
+  name: 'Shadows',
+  subTitle: 'Sizes',
+  Example: () =>
+    source(
+      <Stack space="30px">
+        <Columns space="30px">
+          <Column width="1/3" />
+          <Column width="1/3">
+            <Box background="body" padding="15px" shadow="9px medium" />
+          </Column>
+        </Columns>
+        <Columns space="30px">
+          <Column width="1/3" />
+          <Column width="1/3">
+            <Box background="body" padding="15px" shadow="12px medium" />
+          </Column>
+          <Column width="1/3">
+            <Box background="body" padding="15px" shadow="12px heavy" />
+          </Column>
+        </Columns>
+        <Columns space="30px">
+          <Column width="1/3">
+            <Box background="body" padding="15px" shadow="21px light" />
+          </Column>
+          <Column width="1/3" />
+          <Column width="1/3">
+            <Box background="body" padding="15px" shadow="21px heavy" />
+          </Column>
+        </Columns>
+        <Columns space="30px">
+          <Box background="body" padding="15px" shadow="30px light" />
+          <Box background="body" padding="15px" shadow="30px medium" />
+          <Box background="body" padding="15px" shadow="30px heavy" />
+        </Columns>
+      </Stack>
+    ),
+};
+
+export const shadowsWithColors: Example = {
+  name: 'Shadows',
+  subTitle: 'Colors',
+  Example: () =>
+    source(
+      <Columns space="30px">
+        <Box background="body" padding="15px" shadow="12px medium accent" />
+        <Box background="body" padding="15px" shadow="21px heavy swap" />
+        <Box background="body" padding="15px" shadow="30px heavy action" />
+      </Columns>
+    ),
+};
+
+export const shadowsWithCustom: Example = {
+  name: 'Shadows',
+  subTitle: 'Custom shadows',
+  Example: () =>
+    source(
+      <Columns space="30px">
+        <Box
+          background="body"
+          padding="15px"
+          shadow={{
+            custom: {
+              ios: [
+                {
+                  offset: { x: 0, y: 5 },
+                  opacity: 0.05,
+                  blur: 10,
+                },
+                {
+                  offset: { x: 0, y: 10 },
+                  opacity: 0.15,
+                  blur: 20,
+                },
+              ],
+              android: {
+                elevation: 15,
+                opacity: 0.5,
+              },
+            },
+          }}
+        />
+        <Box
+          background="body"
+          padding="15px"
+          shadow={{
+            custom: {
+              ios: [
+                {
+                  color: { custom: '#FF54BB' },
+                  offset: { x: 0, y: 2 },
+                  opacity: 0.5,
+                  blur: 5,
+                },
+                {
+                  color: 'swap',
+                  offset: { x: 0, y: 4 },
+                  opacity: 0.5,
+                  blur: 10,
+                },
+                {
+                  color: 'shadow',
+                  offset: { x: 0, y: 4 },
+                  opacity: 0.5,
+                  blur: 15,
+                },
+              ],
+              android: {
+                color: { custom: '#FF54BB' },
+                elevation: 15,
+                opacity: 1,
+              },
+            },
+          }}
+        />
+      </Columns>
     ),
 };

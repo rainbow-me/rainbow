@@ -28,7 +28,7 @@ class Button : RCTView {
   @objc var hapticType: String = "selection"
   @objc var useLateHaptic: Bool = true
   @objc var throttle: Bool = false
-  @objc var shouldLongPressEndPress: Bool = false
+  @objc var shouldLongPressHoldPress: Bool = false
 
   var blocked: Bool = false
   var invalidated: Bool = false;
@@ -47,7 +47,7 @@ class Button : RCTView {
       case .began:
         onLongPress([:])
       case .ended:
-        if shouldLongPressEndPress {
+        if shouldLongPressHoldPress {
             onLongPressEnded([:])
             animator = animateTapEnd(duration: pressOutDuration == -1 ? duration : pressOutDuration)
         }
@@ -89,7 +89,7 @@ class Button : RCTView {
       scale: scaleTo,
       useHaptic: useLateHaptic ? nil : hapticType
     )
-    if shouldLongPressEndPress {
+    if shouldLongPressHoldPress {
       onPress([:])
     } else {
       onPressStart([:])
@@ -125,7 +125,7 @@ class Button : RCTView {
       if touchInRange(location: location, tolerance: self.touchMoveTolerance * 0.8) {
           let useHaptic = useLateHaptic && enableHapticFeedback ? hapticType : nil
           animator = animateTapEnd(duration: pressOutDuration == -1 ? duration : pressOutDuration, useHaptic: useHaptic)
-          if shouldLongPressEndPress == false {
+          if shouldLongPressHoldPress == false {
             onPress([:])
           }
           if throttle {
@@ -139,16 +139,16 @@ class Button : RCTView {
       }
     }
   }
-  
+
   static func isClose(locationA:CGPoint, locationB: CGPoint) -> Bool {
     if (abs(locationA.x - locationB.x) > 5) {
       return false
     }
-    
+
     if (abs(locationA.y - locationB.y) > 5) {
       return false
     }
-    
+
     return true
   }
 
@@ -160,7 +160,7 @@ class Button : RCTView {
       let location = touch.location(in: self)
       onCancel(["close":Button.isClose(locationA: location, locationB: tapLocation!), "state": self.longPress?.value(forKey: "_state")])
     }
-    if shouldLongPressEndPress == false {
+    if shouldLongPressHoldPress == false {
       animator = animateTapEnd(duration: pressOutDuration == -1 ? duration : pressOutDuration)
     }
     if throttle {

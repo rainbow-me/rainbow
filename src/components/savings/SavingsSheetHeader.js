@@ -5,10 +5,12 @@ import { Centered, RowWithMargins } from '../layout';
 import { DollarFigure, Text } from '../text';
 import { padding } from '@rainbow-me/styles';
 
+const containerStyle = padding.object(17, 0, 8);
+
 const SavingsSheetHeader = ({ balance, lifetimeAccruedInterest }) => {
   const { colors } = useTheme();
   return (
-    <Centered css={padding(17, 0, 8)} direction="column">
+    <Centered direction="column" style={containerStyle}>
       <Text
         color={colors.alpha(colors.blueGreyDark, 0.5)}
         letterSpacing="uppercase"

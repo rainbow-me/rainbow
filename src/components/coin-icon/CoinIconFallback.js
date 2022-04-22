@@ -1,11 +1,11 @@
 import React, { useMemo } from 'react';
 import { Image } from 'react-native';
-import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { Centered } from '../layout';
 import EthIcon from '@rainbow-me/assets/eth-icon.png';
 import { useBooleanState, useColorForAsset } from '@rainbow-me/hooks';
 import { ImageWithCachedMetadata } from '@rainbow-me/images';
+import styled from '@rainbow-me/styled-components';
 import { borders, fonts, position, shadow } from '@rainbow-me/styles';
 import {
   FallbackIcon,
@@ -22,22 +22,25 @@ const fallbackTextStyles = {
   textAlign: 'center',
 };
 
-const FallbackImage = styled(ImageWithCachedMetadata)`
-  height: ${({ size }) => size};
-  width: ${({ size }) => size};
-  ${position.cover};
-  ${({
+const FallbackImage = styled(ImageWithCachedMetadata)(
+  ({
+    size,
+    theme: { colors },
     shadowColor: color,
     shadowOffset: { height: y, width: x },
     shadowOpacity: opacity,
     shadowRadius: radius,
     showImage,
-  }) => shadow.build(x, y, radius * 2, color, showImage ? opacity : 0)};
-  background-color: ${({ showImage, theme: { colors } }) =>
-    showImage ? colors.white : colors.transparent};
-  border-radius: ${({ size }) => size / 2};
-  overflow: visible;
-`;
+  }) => ({
+    height: size,
+    width: size,
+    ...position.coverAsObject,
+    ...shadow.buildAsObject(x, y, radius * 2, color, showImage ? opacity : 0),
+    backgroundColor: showImage ? colors.white : colors.transparent,
+    borderRadius: size / 2,
+    overflow: 'visible',
+  })
+);
 
 function WrappedFallbackImage({
   color,

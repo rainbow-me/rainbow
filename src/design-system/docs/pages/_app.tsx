@@ -5,7 +5,7 @@ import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import React from 'react';
 
-import { ColorModeProvider as NativeColorModeProvider } from '../../color/ColorMode';
+import { DesignSystemProvider } from '../../context/DesignSystemContext';
 import { ColorModeProvider, ColorModeToggle } from '../system/ColorMode';
 import { sprinkles } from '../system/sprinkles.css';
 
@@ -18,12 +18,12 @@ function App({ Component, pageProps }: AppProps) {
       </Head>
       <ColorModeProvider>
         {colorMode => (
-          <NativeColorModeProvider value={colorMode}>
+          <DesignSystemProvider colorMode={colorMode}>
             <div className={sprinkles({ visibility: { collapsed: 'hidden' } })}>
               <ColorModeToggle />
             </div>
             <Component {...pageProps} />
-          </NativeColorModeProvider>
+          </DesignSystemProvider>
         )}
       </ColorModeProvider>
     </>

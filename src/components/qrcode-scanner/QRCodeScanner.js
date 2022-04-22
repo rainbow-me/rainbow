@@ -7,7 +7,6 @@ import {
   request as requestPermission,
   RESULTS,
 } from 'react-native-permissions';
-import styled from 'styled-components';
 import { Centered } from '../layout';
 import { ErrorText } from '../text';
 import ConnectedDapps from './ConnectedDapps';
@@ -16,6 +15,7 @@ import QRCodeScannerNeedsAuthorization from './QRCodeScannerNeedsAuthorization';
 import SimulatorFakeCameraImageSource from '@rainbow-me/assets/simulator-fake-camera-image.jpg';
 import { useAsyncEffect, useHardwareBack, useScanner } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';
 

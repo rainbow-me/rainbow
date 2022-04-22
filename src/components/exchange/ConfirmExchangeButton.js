@@ -2,7 +2,6 @@ import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import makeColorMoreChill from 'make-color-more-chill';
 import React, { useMemo } from 'react';
-import styled from 'styled-components';
 import { darkModeThemeColors } from '../../styles/colors';
 import { HoldToAuthorizeButton } from '../buttons';
 import { Centered } from '../layout';
@@ -17,6 +16,7 @@ import {
 } from '@rainbow-me/hooks';
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { lightModeThemeColors, padding } from '@rainbow-me/styles';
 
 const paddingHorizontal = 19;
@@ -25,14 +25,14 @@ const ConfirmButton = styled(HoldToAuthorizeButton).attrs({
   hideInnerBorder: true,
   parentHorizontalPadding: paddingHorizontal,
   theme: 'dark',
-})`
-  flex: 1;
-`;
+})({
+  flex: 1,
+});
 
-const Container = styled(Centered)`
-  ${padding(5, paddingHorizontal, 0)};
-  width: 100%;
-`;
+const Container = styled(Centered)({
+  ...padding.object(5, paddingHorizontal, 0),
+  width: '100%',
+});
 
 export default function ConfirmExchangeButton({
   disabled,

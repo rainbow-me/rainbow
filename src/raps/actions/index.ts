@@ -9,3 +9,4 @@ export {
   estimateApprove,
 } from './unlock';
 export { default as withdrawCompound } from './withdrawCompound';
+export { default as ens } from './ens';

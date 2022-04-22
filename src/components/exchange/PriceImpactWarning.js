@@ -1,17 +1,18 @@
+import lang from 'i18n-js';
 import React from 'react';
 import Animated from 'react-native-reanimated';
-import styled from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
+import styled from '@rainbow-me/styled-components';
 import { padding, position } from '@rainbow-me/styles';
 
 const Content = styled(Centered).attrs({
   shrink: 0,
-})`
-  ${padding(android ? 14 : 19)};
-  width: 100%;
-`;
+})({
+  ...padding.object(android ? 14 : 19),
+  width: '100%',
+});
 
 const Label = styled(Text).attrs(
   ({
@@ -24,7 +25,7 @@ const Label = styled(Text).attrs(
     size: 'large',
     weight: 'bold',
   })
-)``;
+)({});
 
 export default function PriceImpactWarning({
   onPress,
@@ -42,8 +43,12 @@ export default function PriceImpactWarning({
         <ButtonPressAnimation onPress={onPress} scaleTo={0.94}>
           <Content>
             <Label color={priceImpactColor}>{`􀇿 `}</Label>
-            <Label color="whiteLabel">Small Market</Label>
-            <Label color={priceImpactColor}>{` • Losing `}</Label>
+            <Label color="whiteLabel">
+              {lang.t('exchange.price_impact.small_market')}
+            </Label>
+            <Label color={priceImpactColor}>{` • ${lang.t(
+              'exchange.price_impact.losing_prefix'
+            )} `}</Label>
             <Label color={priceImpactColor} letterSpacing="roundedTight">
               {headingValue}
             </Label>

@@ -39,6 +39,8 @@ export const parsePoaps = data => {
       isPoap: true,
       isSendable: false,
       lastPrice: null,
+      lastSalePaymentToken: null,
+      lowResUrl: imageToPng(event.image_url, 300),
       name: event.name,
       permalink: event.event_url,
       traits: [

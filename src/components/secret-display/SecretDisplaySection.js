@@ -2,7 +2,6 @@ import { useRoute } from '@react-navigation/native';
 import { captureException } from '@sentry/react-native';
 import { upperFirst } from 'lodash';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
-import styled from 'styled-components';
 import {
   identifyWalletType,
   loadSeedPhraseAndMigrateIfNeeded,
@@ -17,6 +16,7 @@ import { Text } from '../text';
 import SecretDisplayCard from './SecretDisplayCard';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { useWallets } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { margin, padding, position, shadow } from '@rainbow-me/styles';
 import logger from 'logger';
 
@@ -24,46 +24,47 @@ const Title = styled(Text).attrs({
   align: 'center',
   size: 'lmedium',
   weight: 'bold',
-})`
-  padding-top: ${isSmallPhone => (isSmallPhone ? 0 : 20)};
-`;
+})({
+  paddingTop: isSmallPhone => (isSmallPhone ? 0 : 20),
+});
+
 const DescriptionText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.alpha(colors.blueGreyDark, 0.6),
   lineHeight: 'loose',
   size: 'lmedium',
   weight: 'semibold',
-}))`
-  margin-bottom: 42;
-  margin-top: 5;
-  padding-horizontal: 3;
-`;
+}))({
+  marginBottom: 42,
+  marginTop: 5,
+  paddingHorizontal: 3,
+});
 
 const AuthenticationText = styled(Text).attrs({
   align: 'center',
   color: 'blueGreyDark',
   size: 'large',
   weight: 'normal',
-})`
-  ${padding(0, 60)};
-`;
+})({
+  ...padding.object(0, 60),
+});
 
 const CopyButtonIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
   color: colors.appleBlue,
   name: 'copy',
-}))`
-  ${position.size(16)};
-  margin-top: 0.5;
-`;
+}))({
+  ...position.sizeAsObject(16),
+  marginTop: 0.5,
+});
 
 const CopyButtonRow = styled(RowWithMargins).attrs({
   align: 'center',
   justify: 'start',
   margin: 6,
-})`
-  background-color: ${({ theme: { colors } }) => colors.transparent};
-  height: 34;
-`;
+})({
+  backgroundColor: ({ theme: { colors } }) => colors.transparent,
+  height: 34,
+});
 
 const CopyButtonText = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.appleBlue,
@@ -71,13 +72,13 @@ const CopyButtonText = styled(Text).attrs(({ theme: { colors } }) => ({
   lineHeight: 19,
   size: 'lmedium',
   weight: 'bold',
-}))``;
+}))({});
 
-const ToggleSecretButton = styled(Button)`
-  ${margin(0, 20)};
-  ${({ theme: { colors } }) => shadow.build(0, 5, 15, colors.purple, 0.3)}
-  background-color: ${({ theme: { colors } }) => colors.appleBlue};
-`;
+const ToggleSecretButton = styled(Button)(({ theme: { colors } }) => ({
+  ...margin.object(0, 20),
+  ...shadow.buildAsObject(0, 5, 15, colors.purple, 0.3),
+  backgroundColor: colors.appleBlue,
+}));
 
 const LoadingSpinner = android ? Spinner : ActivityIndicator;
 
@@ -128,14 +129,14 @@ export default function SecretDisplaySection({
 
   const { colors } = useTheme();
   return (
-    <ColumnWithMargins
-      align="center"
-      justify="center"
-      margin={16}
-      paddingHorizontal={30}
-    >
+    <>
       {visible ? (
-        <Fragment>
+        <ColumnWithMargins
+          align="center"
+          justify="center"
+          margin={16}
+          paddingHorizontal={30}
+        >
           {seed ? (
             <Fragment>
               <CopyFloatingEmojis textToCopy={seed}>
@@ -159,9 +160,9 @@ export default function SecretDisplaySection({
           ) : (
             <LoadingSpinner color={colors.blueGreyDark50} />
           )}
-        </Fragment>
+        </ColumnWithMargins>
       ) : (
-        <Fragment>
+        <ColumnWithMargins align="center" justify="center">
           <AuthenticationText>
             {`You need to authenticate in order to access your recovery ${typeLabel}`}
           </AuthenticationText>
@@ -172,8 +173,8 @@ export default function SecretDisplaySection({
               showIcon={!seed}
             />
           </ToggleSecretButton>
-        </Fragment>
+        </ColumnWithMargins>
       )}
-    </ColumnWithMargins>
+    </>
   );
 }

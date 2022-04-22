@@ -2,13 +2,13 @@ import React, { Fragment } from 'react';
 import Animated from 'react-native-reanimated';
 import { useSpringTransition } from 'react-native-redash/src/v1';
 import { useSafeArea } from 'react-native-safe-area-context';
-import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { interpolate } from '../animations';
 import { Icon } from '../icons';
 import { RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
 import { useDimensions } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { padding, position, shadow } from '@rainbow-me/styles';
 
 const springConfig = {
@@ -23,22 +23,23 @@ const springConfig = {
 const Container = styled(RowWithMargins).attrs({
   margin: 5,
   self: 'center',
-})`
-  ${padding(9, 10, 11, 10)};
-  ${position.centered};
-  ${({ theme: { colors } }) => shadow.build(0, 6, 10, colors.shadow, 0.14)};
-  background-color: ${({ color }) => color};
-  border-radius: 20;
-  bottom: ${({ insets }) => (insets.bottom || 40) + 3};
-  max-width: ${({ deviceWidth }) => deviceWidth - 38};
-  position: absolute;
-  z-index: 100;
-`;
+})(({ color, insets, deviceWidth, theme: { colors } }) => ({
+  ...shadow.buildAsObject(0, 6, 10, colors.shadow, 0.14),
 
-const ToastsWrapper = styled.View`
-  position: absolute;
-  bottom: ${({ insets }) => (insets.bottom || 40) + 3};
-`;
+  ...padding.object(9, 10, 11, 10),
+  ...position.centeredAsObject,
+  backgroundColor: color,
+  borderRadius: 20,
+  bottom: (insets.bottom || 40) + 3,
+  maxWidth: deviceWidth - 38,
+  position: 'absolute',
+  zIndex: 100,
+}));
+
+const ToastsWrapper = styled.View({
+  bottom: ({ insets }) => (insets.bottom || 40) + 3,
+  position: 'absolute',
+});
 
 export function ToastsContainer({ children }) {
   return <ToastsWrapper>{children}</ToastsWrapper>;

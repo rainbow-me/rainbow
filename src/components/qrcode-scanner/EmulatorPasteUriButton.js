@@ -17,7 +17,7 @@ export default function EmulatorPasteUriButton() {
 
   const handlePressPasteSessionUri = useCallback(() => {
     Prompt({
-      callback: handlePastedUri,
+      buttons: [{ onPress: handlePastedUri, text: lang.t('button.confirm') }],
       message: lang.t('walletconnect.paste_uri.message'),
       title: lang.t('walletconnect.paste_uri.title'),
       type: 'plain-text',

@@ -1,19 +1,19 @@
 import React, { useCallback, useState } from 'react';
 import { Pressable } from 'react-native';
-import styled from 'styled-components';
 import { Text } from './text';
 import { useAppVersion, useTimeout } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 
 const DEBUG_TAP_COUNT = 15;
 
-const StyledButton = styled(Pressable)`
-  padding-top: 10;
-  padding-bottom: 10;
-  padding-horizontal: 40;
-  margin-bottom: -10;
-`;
+const StyledButton = styled(Pressable)({
+  marginBottom: -10,
+  paddingBottom: 10,
+  paddingHorizontal: 40,
+  paddingTop: 10,
+});
 
 const StampText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
@@ -21,10 +21,13 @@ const StampText = styled(Text).attrs(({ theme: { colors } }) => ({
   lineHeight: 'normal',
   size: 'smedium',
   weight: 'bold',
-}))``;
+}))({});
+
+// On CI this will be modified if the app is in Fedora mode
+const FEDORA_BRANCH = '';
 
 export default function AppVersionStamp() {
-  const appVersion = useAppVersion();
+  const [appVersion, codePushVersion] = useAppVersion();
   const [numberOfTaps, setNumberOfTaps] = useState(0);
   const [startTimeout, stopTimeout] = useTimeout();
   const { navigate } = useNavigation();
@@ -41,10 +44,21 @@ export default function AppVersionStamp() {
     }
     startTimeout(() => setNumberOfTaps(0), 3000);
   }, [navigate, numberOfTaps, startTimeout, stopTimeout]);
+  const [showCodePushVersion, setShowCodePushVersion] = useState(false);
 
   return (
-    <StyledButton onPress={handleVersionPress}>
-      <StampText>{appVersion}</StampText>
+    <StyledButton
+      onLongPress={() => setShowCodePushVersion(true)}
+      onPress={handleVersionPress}
+      onPressOut={() => setTimeout(() => setShowCodePushVersion(false), 500)}
+    >
+      <StampText>
+        {FEDORA_BRANCH
+          ? FEDORA_BRANCH
+          : showCodePushVersion
+          ? `Update: ${codePushVersion}`
+          : appVersion}
+      </StampText>
     </StyledButton>
   );
 }

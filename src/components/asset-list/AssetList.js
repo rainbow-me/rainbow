@@ -14,6 +14,7 @@ const FabSizeWithPadding =
 const AssetList = ({
   hideHeader,
   isEmpty,
+  isLoading,
   isWalletEthZero,
   network,
   scrollViewTracker,
@@ -22,10 +23,11 @@ const AssetList = ({
 }) => {
   const insets = useSafeArea();
 
-  return isEmpty ? (
+  return isEmpty || isLoading ? (
     <EmptyAssetList
       {...props}
       hideHeader={hideHeader}
+      isLoading={isLoading}
       isWalletEthZero={isWalletEthZero}
       network={network}
       title={lang.t('account.tab_balances')}
@@ -45,4 +47,9 @@ const AssetList = ({
   );
 };
 
-export default magicMemo(AssetList, ['isEmpty', 'isWalletEthZero', 'sections']);
+export default magicMemo(AssetList, [
+  'isEmpty',
+  'isLoading',
+  'isWalletEthZero',
+  'sections',
+]);

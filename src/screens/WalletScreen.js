@@ -5,10 +5,14 @@ import { StatusBar } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useValue } from 'react-native-redash/src/v1';
 import { useDispatch, useSelector } from 'react-redux';
-import styled from 'styled-components';
 import { OpacityToggler } from '../components/animations';
 import { AssetList } from '../components/asset-list';
-import { ExchangeFab, FabWrapper, SendFab } from '../components/fab';
+import {
+  ExchangeFab,
+  FabWrapper,
+  RegisterEnsFab,
+  SendFab,
+} from '../components/fab';
 import {
   DiscoverHeaderButton,
   Header,
@@ -16,6 +20,9 @@ import {
   ScanHeaderButton,
 } from '../components/header';
 import { Page, RowWithMargins } from '../components/layout';
+import useExperimentalFlag, {
+  PROFILES,
+} from '@rainbow-me/config/experimentalHooks';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import {
   useAccountEmptyState,
@@ -35,21 +42,22 @@ import {
   emitChartsRequest,
   emitPortfolioRequest,
 } from '@rainbow-me/redux/explorer';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 
 const HeaderOpacityToggler = styled(OpacityToggler).attrs(({ isVisible }) => ({
   endingOpacity: 0.4,
   pointerEvents: isVisible ? 'none' : 'auto',
-}))`
-  padding-top: 5;
-  z-index: 1;
-  elevation: 1;
-`;
+}))({
+  elevation: 1,
+  paddingTop: 5,
+  zIndex: 1,
+});
 
-const WalletPage = styled(Page)`
-  ${position.size('100%')};
-  flex: 1;
-`;
+const WalletPage = styled(Page)({
+  ...position.sizeAsObject('100%'),
+  flex: 1,
+});
 
 export default function WalletScreen() {
   const { params } = useRoute();
@@ -78,6 +86,7 @@ export default function WalletScreen() {
   } = useWalletSectionsData();
 
   const dispatch = useDispatch();
+  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   const { addressSocket, assetsSocket } = useSelector(
     ({ explorer: { addressSocket, assetsSocket } }) => ({
@@ -165,8 +174,9 @@ export default function WalletScreen() {
       [
         !!get(networkInfo[network], 'exchange_enabled') && ExchangeFab,
         SendFab,
+        profilesEnabled ? RegisterEnsFab : null,
       ].filter(e => !!e),
-    [network]
+    [network, profilesEnabled]
   );
 
   const isLoadingAssets = useSelector(state => state.data.isLoadingAssets);
@@ -195,6 +205,7 @@ export default function WalletScreen() {
         <AssetList
           disableRefreshControl={isLoadingAssets}
           isEmpty={isAccountEmpty || !!params?.emptyWallet}
+          isLoading={android && isLoadingAssets}
           isWalletEthZero={isWalletEthZero}
           network={network}
           scrollViewTracker={scrollViewTracker}

@@ -8,7 +8,7 @@ import { Centered } from './layout';
 import { ImgixImage } from '@rainbow-me/images';
 import { position } from '@rainbow-me/styles';
 
-const Spinner = ({ color, duration, size, ...props }) => {
+const Spinner = ({ color = '', duration = 1500, size = 20, ...props }) => {
   const { colors } = useTheme();
 
   let style;
@@ -42,11 +42,6 @@ Spinner.propTypes = {
   color: PropTypes.string,
   duration: PropTypes.number,
   size: PropTypes.number,
-};
-
-Spinner.defaultProps = {
-  duration: 1500,
-  size: 20,
 };
 
 export default React.memo(Spinner);

@@ -1,12 +1,13 @@
+import lang from 'i18n-js';
 import React, { useCallback, useEffect, useState } from 'react';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import styled from 'styled-components';
 import { isHexString } from '../../handlers/web3';
 import { checkIsValidAddressOrDomain } from '../../helpers/validators';
 import { Input } from '../inputs';
 import { Row } from '../layout';
 import { Label } from '../text';
 import { useClipboard, useDimensions } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { abbreviations, addressUtils } from '@rainbow-me/utils';
 
 const AddressInput = styled(Input).attrs({
@@ -18,28 +19,28 @@ const AddressInput = styled(Input).attrs({
   size: 'large',
   spellCheck: false,
   weight: 'bold',
-})`
-  ${android && 'height: 56;'}
-  flex-grow: 1;
-  margin-top: 1;
-  z-index: 1;
-`;
+})({
+  ...(android ? { height: 56 } : {}),
+  flexGrow: 1,
+  marginTop: 1,
+  zIndex: 1,
+});
 
-const Placeholder = styled(Row)`
-  margin-left: ${android ? 4 : 0};
-  margin-top: ${android ? 11 : 0};
-  position: absolute;
-  top: 0;
-  z-index: 1;
-`;
+const Placeholder = styled(Row)({
+  marginLeft: android ? 4 : 0,
+  marginTop: android ? 11 : 0,
+  position: 'absolute',
+  top: 0,
+  zIndex: 1,
+});
 
 const PlaceholderText = styled(Label).attrs({
   size: 'large',
   weight: 'bold',
-})`
-  color: ${({ theme: { colors } }) => colors.alpha(colors.blueGreyDark, 0.3)};
-  opacity: 1;
-`;
+})({
+  color: ({ theme: { colors } }) => colors.alpha(colors.blueGreyDark, 0.3),
+  opacity: 1,
+});
 
 const formatValue = value =>
   isHexString(value) && value.length === addressUtils.maxLength
@@ -102,8 +103,8 @@ const AddressField = (
           <TouchableWithoutFeedback onPress={ref?.current?.focus}>
             <PlaceholderText>
               {android || isTinyPhone
-                ? 'ENS or address'
-                : 'Name, ENS, or address'}
+                ? lang.t('fields.address.short_placeholder')
+                : lang.t('fields.address.long_placeholder')}
             </PlaceholderText>
           </TouchableWithoutFeedback>
         </Placeholder>

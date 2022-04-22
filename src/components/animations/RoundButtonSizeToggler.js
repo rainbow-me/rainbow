@@ -1,10 +1,10 @@
 import React from 'react';
 import Animated, { SpringUtils } from 'react-native-reanimated';
 import { bin, useSpringTransition } from 'react-native-redash/src/v1';
-import styled from 'styled-components';
 import { useMemoOne } from 'use-memo-one';
 import { useTheme } from '../../context/ThemeContext';
 import { Row } from '../layout';
+import styled from '@rainbow-me/styled-components';
 import { borders, position } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
@@ -12,26 +12,25 @@ const { add, divide, multiply, sub } = Animated;
 
 export const RoundButtonCapSize = 30;
 
-const AnimatedCenter = styled(Animated.View)`
-  background-color: ${({ color }) => color};
-  height: ${RoundButtonCapSize};
-  width: 100;
-`;
+const AnimatedCenter = styled(Animated.View)({
+  backgroundColor: ({ color }) => color,
+  height: RoundButtonCapSize,
+  width: 100,
+});
 
-const Cap = styled(Animated.View)`
-  ${({ capDirection }) =>
-    borders.buildRadius(capDirection, RoundButtonCapSize / 2)};
-  ${position.size(RoundButtonCapSize)};
-  background-color: ${({ color }) => color};
-`;
+const Cap = styled(Animated.View)(({ capDirection, color }) => ({
+  ...borders.buildRadiusAsObject(capDirection, RoundButtonCapSize / 2),
+  ...position.sizeAsObject(RoundButtonCapSize),
+  backgroundColor: color,
+}));
 
-const Center = styled.View`
-  transform: translateX(${RoundButtonCapSize * -2}px);
-`;
+const Center = styled.View({
+  transform: [{ translateX: RoundButtonCapSize * -2 }],
+});
 
-const Container = styled(Row)`
-  position: absolute;
-`;
+const Container = styled(Row)({
+  position: 'absolute',
+});
 
 const RoundButtonSizeToggler = ({
   color,

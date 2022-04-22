@@ -14,6 +14,11 @@ import { margin, position } from '@rainbow-me/styles';
 
 const AnimatedCentered = Animated.createAnimatedComponent(Centered);
 
+const styles = [
+  margin.object(0, 10, android ? 0 : 3, 10),
+  position.sizeAsObject(35),
+];
+
 const RightAction = ({ onPress, progress, text, x }) => {
   const isEdit = text === 'Edit';
   const translateX = progress.interpolate({
@@ -30,11 +35,7 @@ const RightAction = ({ onPress, progress, text, x }) => {
       style={{ transform: [{ translateX }] }}
     >
       <ButtonPressAnimation onPress={onPress} scaleTo={0.9}>
-        <ImgixImage
-          css={margin(0, 10, android ? 0 : 3, 10)}
-          source={isEdit ? EditIcon : DeleteIcon}
-          style={position.sizeAsObject(35)}
-        />
+        <ImgixImage source={isEdit ? EditIcon : DeleteIcon} style={styles} />
         <Text
           align="center"
           color={colors.alpha(colors.blueGreyDark, 0.4)}

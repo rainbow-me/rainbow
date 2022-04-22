@@ -1,25 +1,25 @@
 import React from 'react';
 import Animated from 'react-native-reanimated';
-import styled from 'styled-components';
 import { Column, Flex } from '../../components/layout';
+import styled from '@rainbow-me/styled-components';
 
-const FilledValue = styled(Column)`
-  width: 20;
-  height: 20;
-  border-radius: 20;
-  margin-left: 10;
-  margin-right: 10;
-`;
+const FilledValue = styled(Column)({
+  borderRadius: 20,
+  height: 20,
+  marginLeft: 10,
+  marginRight: 10,
+  width: 20,
+});
 
-const EmptyValue = styled(Column)`
-  border-width: 3;
-  width: 20;
-  height: 20;
-  border-color: ${({ theme: { colors } }) => colors.appleBlue};
-  border-radius: 20;
-  margin-left: 10;
-  margin-right: 10;
-`;
+const EmptyValue = styled(Column)({
+  borderColor: ({ theme: { colors } }) => colors.appleBlue,
+  borderRadius: 20,
+  borderWidth: 3,
+  height: 20,
+  marginLeft: 10,
+  marginRight: 10,
+  width: 20,
+});
 
 const PinValue = ({ translateX, value, ...props }) => {
   const { colors } = useTheme();

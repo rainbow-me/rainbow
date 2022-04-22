@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { delayNext } from '../../hooks/useMagicAutofocus';
 import { useNavigation } from '../../navigation/Navigation';
@@ -9,6 +8,7 @@ import { Text } from '../text';
 import FloatingActionButton from './FloatingActionButton';
 import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { magicMemo, watchingAlert } from '@rainbow-me/utils';
 
 const FabShadow = [
@@ -22,7 +22,7 @@ const FabIcon = styled(Text).attrs(({ theme: { colors } }) => ({
   letterSpacing: 'zero',
   size: 24,
   weight: 'semibold',
-}))``;
+}))({});
 
 const ExchangeFab = ({ disabled, isReadOnlyWallet, ...props }) => {
   const { navigate } = useNavigation();

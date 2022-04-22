@@ -1,9 +1,9 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 import { useRoute } from '@react-navigation/native';
+import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { Linking, StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
-import styled from 'styled-components';
 import { ChainBadge } from '../components/coin-icon';
 import { Centered, Column, ColumnWithMargins } from '../components/layout';
 import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
@@ -12,8 +12,10 @@ import { useNavigation } from '../navigation/Navigation';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { toFixedDecimals } from '@rainbow-me/helpers/utilities';
 import { useDimensions } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth, padding, position } from '@rainbow-me/styles';
 import { gasUtils } from '@rainbow-me/utils';
+import { cloudPlatformAccountName } from '@rainbow-me/utils/platform';
 
 const { GAS_TRENDS } = gasUtils;
 export const ExplainSheetHeight = android ? 454 : 434;
@@ -24,27 +26,28 @@ const GasTrendHeader = styled(Text).attrs(({ theme: { colors }, color }) => ({
   color: color || colors.appleBlue,
   size: 'lmedium',
   weight: 'heavy',
-}))`
-  ${padding(android ? 5 : 8, 12)}
-  border-color: ${({ theme: { colors }, color }) => colors.alpha(color, 0.06)};
-  border-radius: 20;
-  border-width: 2;
-  height: 40;
-  margin-bottom: 4;
-`;
+}))({
+  ...padding.object(android ? 5 : 8, 12),
+  borderColor: ({ theme: { colors }, color }) => colors.alpha(color, 0.06),
+  borderRadius: 20,
+  borderWidth: 2,
+  height: 40,
+  marginBottom: 4,
+});
 
-const Container = styled(Centered).attrs({ direction: 'column' })`
-  ${position.cover};
-  ${({ deviceHeight, height }) =>
-    height ? `height: ${height + deviceHeight}` : null};
-`;
+const Container = styled(Centered).attrs({ direction: 'column' })(
+  ({ deviceHeight, height }) => ({
+    ...position.coverAsObject,
+    ...(height ? { height: height + deviceHeight } : {}),
+  })
+);
 
 const Gradient = styled(GradientText).attrs({
   colors: ['#6AA2E3', '#FF54BB', '#FFA230'],
   letterSpacing: 'roundedMedium',
   steps: [0, 0.5, 1],
   weight: 'heavy',
-})``;
+})({});
 
 const SENDING_FUNDS_TO_CONTRACT = `The address you entered is for a smart contract. 
 
@@ -94,9 +97,9 @@ const POLYGON_EXPLAINER = `Polygon is a sidechain, a distinct network that runs 
 
 It allows for cheaper and faster transactions, but unlike Layer 2 networks, Polygon has its own security and consensus mechanisms that differ from Ethereum.`;
 
-const BACKUP_EXPLAINER = `Don't forget this password! It is separate from your Apple iCloud password, and you should save it in a secure location. 
-
-You will need it in order to restore your wallet from the backup in the future.`;
+const BACKUP_EXPLAINER = lang.t('back_up.explainers.backup', {
+  cloudPlatformName: cloudPlatformAccountName,
+});
 
 export const explainers = network => ({
   floor_price: {

@@ -12,7 +12,6 @@ import {
   balanceCheckerContractAbiOVM,
   chainAssets,
 } from '@rainbow-me/references';
-import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 let lastUpdatePayload = null;
@@ -63,7 +62,6 @@ const fetchAssetBalances = async (tokens, address) => {
 
 export const optimismExplorerInit = () => async (dispatch, getState) => {
   if (networkInfo[optimismNetwork]?.disabled) return;
-  const { genericAssets } = getState().data;
   const { accountAddress, nativeCurrency } = getState().settings;
   const formattedNativeCurrency = toLower(nativeCurrency);
 
@@ -112,16 +110,11 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
         assetsWithBalance = mapValues(assetsWithBalance, assetWithBalance => {
           const assetCoingeckoId = toLower(assetWithBalance.asset.coingecko_id);
           if (prices[assetCoingeckoId]) {
-            const asset =
-              ethereumUtils.getAccountAsset(
-                assetWithBalance.asset.mainnet_address
-              ) ||
-              genericAssets[toLower(assetWithBalance.asset.mainnet_address)];
             return {
               ...assetWithBalance,
               asset: {
                 ...assetWithBalance.asset,
-                price: asset?.price || {
+                price: {
                   changed_at: prices[assetCoingeckoId].last_updated_at,
                   relative_change_24h:
                     prices[assetCoingeckoId][

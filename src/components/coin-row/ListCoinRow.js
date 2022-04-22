@@ -1,6 +1,5 @@
 import { get } from 'lodash';
 import React, { Fragment, useCallback } from 'react';
-import styled, { css } from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIconSize } from '../coin-icon';
 import { Centered, FlexItem, Row } from '../layout';
@@ -8,6 +7,7 @@ import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import { useAccountSettings } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 import { ethereumUtils, magicMemo } from '@rainbow-me/utils';
 
@@ -16,14 +16,20 @@ const CoinRowPaddingBottom = 10;
 
 const PercentageText = styled(BottomRowText).attrs({
   weight: 'medium',
-})`
-  ${({ isPositive, theme: { colors } }) =>
-    isPositive ? `color: ${colors.green};` : `color: ${colors.red}`};
-`;
+})(({ isPositive, theme: { colors } }) => ({
+  color: isPositive ? colors.green : colors.red,
+}));
 
 const BottomRowContainer = ios
   ? Fragment
-  : styled(Row).attrs({ marginBottom: 10, marginTop: ios ? -10 : 0 })``;
+  : styled(Row).attrs({ marginBottom: 10, marginTop: ios ? -10 : 0 })({});
+
+const containerStyles = padding.object(
+  CoinRowPaddingTop,
+  38,
+  CoinRowPaddingBottom,
+  15
+);
 
 const BottomRow = ({ native }) => {
   const percentChange = get(native, 'change');
@@ -73,9 +79,7 @@ const ListCoinRow = ({ item, onPress }) => {
       <CoinRow
         {...formattedItem}
         bottomRowRender={BottomRow}
-        containerStyles={css(
-          padding(CoinRowPaddingTop, 38, CoinRowPaddingBottom, 15)
-        )}
+        containerStyles={containerStyles}
         showBalance={false}
         topRowRender={TopRow}
       />

@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useMemo } from 'react';
 import { ButtonPressAnimation } from '../../animations';
 import SwapDetailsRow, { SwapDetailsValue } from './SwapDetailsRow';
@@ -27,7 +28,7 @@ export default function SwapDetailsPriceRow({ tradeDetails, ...props }) {
 
   return (
     <ButtonPressAnimation {...props} onPress={nextStep} scaleTo={1.06}>
-      <SwapDetailsRow label="Rate">
+      <SwapDetailsRow label={lang.t('modal.helper_rate')}>
         <SwapDetailsValue letterSpacing="roundedTight">
           {steps[step]}
         </SwapDetailsValue>

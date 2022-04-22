@@ -10,28 +10,28 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import RNRestart from 'react-native-restart';
-import styled from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
+import styled from '@rainbow-me/styled-components';
 
-const Button = styled(ButtonPressAnimation)`
-  border-radius: 35;
-  width: 70;
-  height: 70;
-  justify-content: center;
-  align-items: center;
-  background-color: ${({ color }) => color};
-  shadow-opacity: 0.2;
-  shadow-radius: 6;
-`;
+const Button = styled(ButtonPressAnimation)({
+  alignItems: 'center',
+  backgroundColor: ({ color }) => color,
+  borderRadius: 35,
+  height: 70,
+  justifyContent: 'center',
+  shadowOpacity: 0.2,
+  shadowRadius: 6,
+  width: 70,
+});
 
-const Wrapper = styled(Animated.View)`
-  elevation: 5;
-  border-radius: 35;
-  width: 70;
-  height: 70;
-  position: absolute;
-`;
+const Wrapper = styled(Animated.View)({
+  borderRadius: 35,
+  elevation: 5,
+  height: 70,
+  position: 'absolute',
+  width: 70,
+});
 
 export default function DevButton({
   color: givenColor,

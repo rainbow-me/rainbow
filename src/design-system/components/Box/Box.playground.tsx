@@ -12,6 +12,15 @@ const playground: Playground = {
     examples.margin,
     examples.borderRadius,
     examples.widths,
+    examples.heights,
+    {
+      ...examples.shadows,
+      examples: [
+        examples.shadowsWithSizes,
+        examples.shadowsWithColors,
+        examples.shadowsWithCustom,
+      ],
+    },
   ],
 };
 

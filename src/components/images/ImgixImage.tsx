@@ -5,6 +5,7 @@ import { maybeSignSource } from '../../handlers/imgix';
 
 export type ImgixImageProps = FastImageProps & {
   readonly Component?: React.ElementType;
+  readonly size?: Number;
 };
 
 // Here we're emulating the pattern used in react-native-fast-image:

@@ -5,7 +5,6 @@ import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
 import { StatusBar } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useSafeArea } from 'react-native-safe-area-context';
-import styled from 'styled-components';
 import Divider from '../components/Divider';
 import { SavingsCoinRow } from '../components/coin-row';
 import {
@@ -33,6 +32,7 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import { watchingAlert } from '@rainbow-me/utils';
 
@@ -41,11 +41,12 @@ export const SavingsSheetHeight = android
   ? 424 - getSoftMenuBarHeight() / 2
   : 352;
 
-const Container = styled(Centered).attrs({ direction: 'column' })`
-  ${position.cover};
-  ${({ deviceHeight, height }) =>
-    height ? `height: ${height + deviceHeight}` : null};
-`;
+const Container = styled(Centered).attrs({
+  direction: 'column',
+})(({ deviceHeight, height }) => ({
+  ...position.coverAsObject,
+  ...(height && { height: height + deviceHeight }),
+}));
 
 const SavingsSheet = () => {
   const { colors, isDarkMode } = useTheme();

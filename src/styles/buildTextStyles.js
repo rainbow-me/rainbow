@@ -1,7 +1,7 @@
 import { get, isNil } from 'lodash';
-import { css } from 'styled-components';
 import colors from './colors';
 import fonts from './fonts';
+import { css } from '@rainbow-me/styled-components';
 
 function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -61,7 +61,7 @@ const buildTextStyles = css`
   }}
 
   /* Font Size */
-  font-size: ${({ size = 'medium' }) =>
+  font-size:  ${({ size = 'medium' }) =>
     typeof size === 'number' ? size : get(fonts, `size[${size}]`, size)};
 
   /* Font Weight */
@@ -98,5 +98,64 @@ const buildTextStyles = css`
   /* Uppercase */
   ${({ uppercase }) => (uppercase ? 'text-transform: uppercase;' : '')}
 `;
+
+buildTextStyles.object = ({
+  color,
+  theme,
+  size = 'medium',
+  isEmoji,
+  family = 'SFProRounded',
+  mono,
+  weight,
+  letterSpacing = 'rounded',
+  lineHeight,
+  opacity,
+  align,
+  tabularNums,
+  uppercase,
+}) => {
+  const styles = {
+    color: colors.get(color, theme.colors) || theme.colors.dark,
+    fontSize: typeof size === 'number' ? size : fonts.size[size] ?? size,
+  };
+
+  if (!isEmoji) {
+    styles.fontFamily = familyFontWithAndroidWidth(weight, family, mono);
+  }
+
+  if (!(isEmoji || isNil(weight) || android)) {
+    if (typeof weight === 'undefined') {
+      weight = 'regular';
+    }
+
+    styles.fontWeight = fonts.weight[weight] ?? weight;
+  }
+
+  if (!isNil(letterSpacing)) {
+    styles.letterSpacing = fonts.letterSpacing[letterSpacing] ?? letterSpacing;
+  }
+
+  if (!(isNil(lineHeight) || (isEmoji && android))) {
+    styles.lineHeight = fonts.lineHeight[lineHeight] ?? lineHeight;
+  }
+
+  if (!isNil(opacity)) {
+    styles.opacity = opacity;
+  }
+
+  if (tabularNums) {
+    styles.fontVariant = ['tabular-nums'];
+  }
+
+  if (!isNil(align)) {
+    styles.textAlign = align;
+  }
+
+  if (uppercase) {
+    styles.textTransform = 'uppercase';
+  }
+
+  return styles;
+};
 
 export default buildTextStyles;

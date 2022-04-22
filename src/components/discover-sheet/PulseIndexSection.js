@@ -1,4 +1,5 @@
 import analytics from '@segment/analytics-react-native';
+import lang from 'i18n-js';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -129,10 +130,15 @@ const PulseIndex = () => {
                 style={ios ? {} : { marginTop: -10 }}
                 weight="semibold"
               >
-                All the top DeFi tokens in one
+                {lang.t('discover.pulse.pulse_description')}
               </Text>
             </Column>
-            <Column align="end" flex={1} margin={15} marginTop={ios ? 13.5 : 6}>
+            <Column
+              align="end"
+              flex={1}
+              marginRight={15}
+              marginTop={ios ? 13.5 : 6}
+            >
               <Text
                 align="right"
                 color={colors.whiteLabel}
@@ -191,7 +197,7 @@ const PulseIndex = () => {
               weight="semibold"
             >
               {' '}
-              today
+              {lang.t('discover.pulse.today_suffix')}
             </Text>
           </Text>
         </Row>

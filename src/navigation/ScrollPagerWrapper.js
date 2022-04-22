@@ -4,19 +4,22 @@ import ScrollPager from '../helpers/ScrollPager';
 import { ScrollPositionContext } from './ScrollPositionContext';
 import ViewPagerAdapter from './ViewPagerAdapter';
 
-export default forwardRef(function ScrollPagerWrapper(props, ref) {
-  const position = useSharedValue(props.initialScrollPosition ?? 0);
+export default forwardRef(function ScrollPagerWrapper(
+  { initialScrollPosition, useViewPagerAdaptor = android, ...rest },
+  ref
+) {
+  const position = useSharedValue(initialScrollPosition ?? 0);
   return (
     <ScrollPositionContext.Provider value={position}>
-      {android ? (
+      {useViewPagerAdaptor ? (
         <ViewPagerAdapter
-          {...props}
+          {...rest}
           keyboardDismissMode="none"
           overScrollMode="never"
         />
       ) : (
         <ScrollPager
-          {...props}
+          {...rest}
           overscroll={false}
           position={position}
           ref={ref}

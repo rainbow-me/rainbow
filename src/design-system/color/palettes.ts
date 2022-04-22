@@ -5,6 +5,7 @@ export const colors = {
   black: '#000000',
   blackTint: '#12131a',
   grey: 'rgb(60, 66, 66)',
+  grey06: 'rgba(60, 66, 66, 0.06)',
   grey10: 'rgba(60, 66, 66, 0.1)',
   grey20: 'rgba(60, 66, 66, 0.2)',
   grey30: 'rgba(60, 66, 66, 0.3)',
@@ -16,6 +17,7 @@ export const colors = {
   greyDark: '#25292E',
   paleBlue: '#579DFF',
   sky: 'rgb(224, 232, 255)',
+  sky06: 'rgba(224, 232, 255, 0.06)',
   sky10: 'rgba(224, 232, 255, 0.1)',
   sky20: 'rgba(224, 232, 255, 0.2)',
   sky30: 'rgba(224, 232, 255, 0.3)',
@@ -26,6 +28,7 @@ export const colors = {
   sky80: 'rgba(224, 232, 255, 0.8)',
   swapPurple: '#575CFF',
   white: '#FFFFFF',
+  white06: 'rgba(255, 255, 255, 0.06)',
   white10: 'rgba(255, 255, 255, 0.1)',
   white20: 'rgba(255, 255, 255, 0.2)',
   white30: 'rgba(255, 255, 255, 0.3)',
@@ -90,6 +93,7 @@ export type ForegroundColor =
   | 'divider80'
   | 'primary'
   | 'secondary'
+  | 'secondary06'
   | 'secondary10'
   | 'secondary20'
   | 'secondary30'
@@ -97,7 +101,9 @@ export type ForegroundColor =
   | 'secondary50'
   | 'secondary60'
   | 'secondary70'
-  | 'secondary80';
+  | 'secondary80'
+  | 'shadow'
+  | 'swap';
 
 export const foregroundColors: Record<
   ForegroundColor,
@@ -127,13 +133,18 @@ export const foregroundColors: Record<
   primary: {
     dark: colors.sky,
     darkTinted: colors.white,
-    light: colors.grey,
+    light: colors.greyDark,
     lightTinted: colors.greyDark,
   },
   secondary: {
     dark: colors.sky,
     darkTinted: colors.white90,
     light: colors.grey,
+  },
+  secondary06: {
+    dark: colors.sky06,
+    darkTinted: colors.white06,
+    light: colors.grey06,
   },
   secondary10: {
     dark: colors.sky10,
@@ -175,6 +186,13 @@ export const foregroundColors: Record<
     darkTinted: colors.white80,
     light: colors.grey80,
   },
+  shadow: {
+    dark: colors.black,
+    darkTinted: colors.black,
+    light: colors.blackTint,
+    lightTinted: colors.blackTint,
+  },
+  swap: colors.swapPurple,
 };
 
 /**
@@ -255,6 +273,14 @@ export const textColors = selectForegroundColors(
   'secondary80'
 );
 export type TextColor = typeof textColors[number];
+
+export const shadowColors = selectForegroundColors(
+  'shadow',
+  'accent',
+  'swap',
+  'action'
+);
+export type ShadowColor = typeof shadowColors[number];
 
 export const dividerColors = selectForegroundColors(
   'divider20',

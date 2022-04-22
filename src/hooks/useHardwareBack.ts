@@ -1,3 +1,4 @@
+import { useFocusEffect } from '@react-navigation/core';
 import { useCallback, useEffect } from 'react';
 import { BackHandler } from 'react-native';
 
@@ -38,4 +39,29 @@ export default function useHardwareBack(
   }, deps.concat(shouldSkip));
 
   useEffect(callback, [callback]);
+}
+
+export function useHardwareBackOnFocus(
+  cb: () => boolean | undefined,
+  shouldSkip = false,
+  deps: unknown[] = []
+) {
+  const callback = useCallback(() => {
+    if (shouldSkip) {
+      return;
+    }
+
+    const handler = () => {
+      const handleValue = cb?.() ?? true;
+
+      return handleValue;
+    };
+
+    BackHandler.addEventListener('hardwareBackPress', handler);
+
+    return () => BackHandler.removeEventListener('hardwareBackPress', handler);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps.concat(shouldSkip));
+
+  useFocusEffect(callback);
 }

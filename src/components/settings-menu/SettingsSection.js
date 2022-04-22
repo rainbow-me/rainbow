@@ -2,7 +2,6 @@ import AsyncStorage from '@react-native-community/async-storage';
 import lang from 'i18n-js';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { Image, Linking, NativeModules, ScrollView, Share } from 'react-native';
-import styled from 'styled-components';
 import { THEMES, useTheme } from '../../context/ThemeContext';
 import { supportedLanguages } from '../../languages';
 import AppVersionStamp from '../AppVersionStamp';
@@ -30,6 +29,10 @@ import PrivacyIconDark from '@rainbow-me/assets/settingsPrivacyDark.png';
 import useExperimentalFlag, {
   LANGUAGE_SETTINGS,
 } from '@rainbow-me/config/experimentalHooks';
+import {
+  isCustomBuild,
+  setOriginalDeploymentKey,
+} from '@rainbow-me/handlers/fedora';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import {
@@ -38,6 +41,7 @@ import {
   useSendFeedback,
   useWallets,
 } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import {
   AppleReviewAddress,
@@ -57,47 +61,49 @@ export const SettingsExternalURLs = {
 
 const CheckmarkIcon = styled(Icon).attrs({
   name: 'checkmarkCircled',
-})`
-  box-shadow: 0px 4px 6px
-    ${({ theme: { colors, isDarkMode } }) =>
-      colors.alpha(isDarkMode ? colors.shadow : colors.blueGreyDark50, 0.4)};
-`;
+})({
+  shadowColor: ({ theme: { colors, isDarkMode } }) =>
+    colors.alpha(isDarkMode ? colors.shadow : colors.blueGreyDark50, 0.4),
+  shadowOffset: { height: 4, width: 0 },
+  shadowRadius: 6,
+});
 
-const Container = styled(Column).attrs({})`
-  ${position.cover};
-  background-color: ${({ backgroundColor }) => backgroundColor};
-`;
+const Container = styled(Column).attrs({})({
+  ...position.coverAsObject,
 
-const scrollContainerStyle = { flex: 1 };
+  backgroundColor: ({ backgroundColor }) => backgroundColor,
+});
+
 const ScrollContainer = styled(ScrollView).attrs({
   scrollEventThrottle: 32,
-})``;
+})({});
 
 // ⚠️ Beware: magic numbers lol
-const SettingIcon = styled(Image)`
-  ${position.size(60)};
-  margin-left: -16;
-  margin-right: -11;
-  margin-top: 8;
-`;
+const SettingIcon = styled(Image)({
+  ...position.sizeAsObject(60),
+  marginLeft: -16,
+  marginRight: -11,
+  marginTop: 8,
+});
 
 const VersionStampContainer = styled(Column).attrs({
   align: 'center',
   justify: 'end',
-})`
-  flex: 1;
-  padding-bottom: 19;
-`;
+})({
+  flex: 1,
+  paddingBottom: 19,
+});
 
 const WarningIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
   color: colors.orangeLight,
   name: 'warning',
-}))`
-  box-shadow: 0px 4px 6px
-    ${({ theme: { colors, isDarkMode } }) =>
-      isDarkMode ? colors.shadow : colors.alpha(colors.orangeLight, 0.4)};
-  margin-top: 1;
-`;
+}))({
+  marginTop: 1,
+  shadowColor: ({ theme: { colors, isDarkMode } }) =>
+    isDarkMode ? colors.shadow : colors.alpha(colors.orangeLight, 0.4),
+  shadowOffset: { height: 4, width: 0 },
+  shadowRadius: 6,
+});
 
 function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -140,8 +146,13 @@ export default function SettingsSection({
 }) {
   const isReviewAvailable = false;
   const { wallets, isReadOnlyWallet } = useWallets();
-  const { language, nativeCurrency, network } = useAccountSettings();
-  const { isSmallPhone } = useDimensions();
+  const {
+    language,
+    nativeCurrency,
+    network,
+    testnetsEnabled,
+  } = useAccountSettings();
+  const { isNarrowPhone } = useDimensions();
   const isLanguageSelectionEnabled = useExperimentalFlag(LANGUAGE_SETTINGS);
 
   const { colors, isDarkMode, setTheme, colorScheme } = useTheme();
@@ -202,10 +213,7 @@ export default function SettingsSection({
 
   return (
     <Container backgroundColor={colors.white}>
-      <ScrollContainer
-        contentContainerStyle={!isSmallPhone && scrollContainerStyle}
-        scrollEnabled={isSmallPhone}
-      >
+      <ScrollContainer>
         <ColumnWithDividers dividerRenderer={ListItemDivider} marginTop={7}>
           {canBeBackedUp && (
             <ListItem
@@ -244,20 +252,22 @@ export default function SettingsSection({
           >
             <ListItemArrowGroup>{nativeCurrency || ''}</ListItemArrowGroup>
           </ListItem>
-          <ListItem
-            icon={
-              <SettingIcon
-                source={isDarkMode ? NetworkIconDark : NetworkIcon}
-              />
-            }
-            label={lang.t('settings.network')}
-            onPress={onPressNetwork}
-            testID="network-section"
-          >
-            <ListItemArrowGroup>
-              {networkInfo?.[network]?.name}
-            </ListItemArrowGroup>
-          </ListItem>
+          {(testnetsEnabled || IS_DEV) && (
+            <ListItem
+              icon={
+                <SettingIcon
+                  source={isDarkMode ? NetworkIconDark : NetworkIcon}
+                />
+              }
+              label={lang.t('settings.network')}
+              onPress={onPressNetwork}
+              testID="network-section"
+            >
+              <ListItemArrowGroup>
+                {networkInfo?.[network]?.name}
+              </ListItemArrowGroup>
+            </ListItem>
+          )}
           <ListItem
             icon={
               <SettingIcon
@@ -268,7 +278,7 @@ export default function SettingsSection({
             onPress={toggleTheme}
             testID={`darkmode-section-${isDarkMode}`}
           >
-            <Column align="end" flex="1" justify="end">
+            <Column align="end" flex={1} justify="end">
               <Text
                 color={colors.alpha(colors.blueGreyDark, 0.6)}
                 size="large"
@@ -319,7 +329,9 @@ export default function SettingsSection({
           />
           <ListItem
             icon={<Emoji name="brain" />}
-            label={lang.t('settings.learn')}
+            label={lang.t(
+              isNarrowPhone ? 'settings.learn_short' : 'settings.learn'
+            )}
             onPress={onPressLearn}
             testID="learn-section"
             value={SettingsExternalURLs.rainbowLearn}
@@ -349,19 +361,23 @@ export default function SettingsSection({
               testID="review-section"
             />
           )}
-        </ColumnWithDividers>
-        {IS_DEV && (
-          <Fragment>
-            <ListFooter height={10} />
+          {isCustomBuild.value && (
             <ListItem
-              icon={<Emoji name="construction" />}
-              label={lang.t('settings.developer')}
-              onPress={onPressDev}
-              testID="developer-section"
+              icon={<Emoji name="exploding_head" />}
+              label="Restore to original deployment"
+              onPress={setOriginalDeploymentKey}
             />
-          </Fragment>
-        )}
-
+          )}
+        </ColumnWithDividers>
+        <Fragment>
+          <ListFooter height={10} />
+          <ListItem
+            icon={<Emoji name="construction" />}
+            label={lang.t('settings.developer')}
+            onPress={onPressDev}
+            testID="developer-section"
+          />
+        </Fragment>
         <VersionStampContainer>
           <AppVersionStamp />
         </VersionStampContainer>

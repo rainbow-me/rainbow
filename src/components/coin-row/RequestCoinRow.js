@@ -1,4 +1,5 @@
 import { addHours, differenceInMinutes, isPast } from 'date-fns';
+import lang from 'i18n-js';
 import React, {
   useCallback,
   useEffect,
@@ -7,7 +8,6 @@ import React, {
   useState,
 } from 'react';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { RequestCoinIcon } from '../coin-icon';
@@ -18,6 +18,7 @@ import CoinRow from './CoinRow';
 import { useNavigation } from '@rainbow-me/navigation';
 import { removeRequest } from '@rainbow-me/redux/requests';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 
 const getPercentageOfTimeElapsed = (startDate, endDate) => {
   const originalDifference = differenceInMinutes(endDate, startDate);
@@ -29,9 +30,9 @@ const getPercentageOfTimeElapsed = (startDate, endDate) => {
 const ClockEmoji = styled(Emoji).attrs({
   name: 'clock4',
   size: 'tiny',
-})`
-  margin-top: 1.75;
-`;
+})({
+  marginTop: 1.75,
+});
 
 const BottomRow = ({ dappName, expirationColor }) => (
   <CoinName color={expirationColor} weight="semibold">
@@ -46,7 +47,7 @@ const TopRow = ({ expirationColor, expiresAt }) => {
     <RowWithMargins margin={2}>
       <ClockEmoji />
       <Text color={expirationColor} size="smedium" weight="semibold">
-        Expires in {minutes || 0}m
+        {lang.t('exchange.coin_row.expires_in', { minutes: minutes || 0 })}
       </Text>
     </RowWithMargins>
   );

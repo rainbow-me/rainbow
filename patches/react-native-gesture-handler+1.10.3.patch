@@ -1,3 +1,30 @@
+diff --git a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.java b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.java
+index 709727b..464cf12 100644
+--- a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.java
++++ b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.java
+@@ -42,7 +42,8 @@ public class RNGestureHandlerButtonViewManager extends
+     boolean mUseBorderless = false;
+     float mBorderRadius = 0;
+     boolean mNeedBackgroundUpdate = false;
+-    long mLastEventTime = 0;
++    long mLastEventTime = -1;
++    int mLastAction = -1;
+     public static final String SELECTABLE_ITEM_BACKGROUND = "selectableItemBackground";
+     public static final String SELECTABLE_ITEM_BACKGROUND_BORDERLESS = "selectableItemBackgroundBorderless";
+ 
+@@ -127,8 +128,11 @@ public class RNGestureHandlerButtonViewManager extends
+     @Override
+     public boolean onTouchEvent(MotionEvent event) {
+       long eventTime = event.getEventTime();
+-      if (mLastEventTime != eventTime || mLastEventTime == 0) {
++      // https://github.com/software-mansion/react-native-gesture-handler/pull/1512
++      int action = event.getAction();
++      if (mLastEventTime != eventTime || mLastAction != action) {
+         mLastEventTime = eventTime;
++        mLastAction = action;
+         return super.onTouchEvent(event);
+       }
+       return false;
 diff --git a/node_modules/react-native-gesture-handler/ios/Handlers/RNNativeViewHandler.m b/node_modules/react-native-gesture-handler/ios/Handlers/RNNativeViewHandler.m
 index 73022d7..49b8507 100644
 --- a/node_modules/react-native-gesture-handler/ios/Handlers/RNNativeViewHandler.m

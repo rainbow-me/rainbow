@@ -15,12 +15,12 @@ import {
   useSharedValue,
   useWorkletCallback,
 } from 'react-native-reanimated';
-import styled from 'styled-components';
 import DiscoverSheetContent from './DiscoverSheetContent';
 import DiscoverSheetContext from './DiscoverSheetContext';
 import DiscoverSheetHeader from './DiscoverSheetHeader';
 import CustomBackground from './androidCustomComponents/customBackground';
 import CustomHandle from './androidCustomComponents/customHandle';
+import styled from '@rainbow-me/styled-components';
 import { deviceUtils } from '@rainbow-me/utils';
 
 function useAreHeaderButtonVisible() {
@@ -35,11 +35,11 @@ const snapPoints = [
 
 const AndroidWrapper = styled.View.attrs({
   pointerEvents: 'box-none',
-})`
-  width: 100%;
-  height: ${deviceUtils.dimensions.height};
-  position: absolute;
-`;
+})({
+  height: deviceUtils.dimensions.height,
+  position: 'absolute',
+  width: '100%',
+});
 
 let jumpToShort;
 

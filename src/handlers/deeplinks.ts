@@ -1,3 +1,4 @@
+import { captureException } from '@sentry/react-native';
 import { toLower } from 'lodash';
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'qs'.... Remove this comment to see the full error message
 import qs from 'qs';
@@ -10,6 +11,7 @@ import {
   walletConnectRemovePendingRedirect,
   walletConnectSetPendingRedirect,
 } from '../redux/walletconnect';
+import { setDeploymentKey } from '@rainbow-me/handlers/fedora';
 import { delay } from '@rainbow-me/helpers/utilities';
 import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
 import { Navigation } from '@rainbow-me/navigation';
@@ -88,15 +90,40 @@ export default async function handleDeeplink(
         }
         break;
       }
-      default: {
-        const addressOrENS = urlObj.pathname?.split('/')?.[1] || '';
-        const isValid = await checkIsValidAddressOrDomain(addressOrENS);
-        if (isValid) {
-          return Navigation.handleAction(Routes.SHOWCASE_SHEET, {
-            address: addressOrENS,
-          });
+      case 'update-ios': {
+        const code = urlObj.pathname.split('/')[2];
+        if (android) {
+          Alert.alert('Tried to use iOS bundle');
         } else {
-          Alert.alert('Uh oh! We couldn’t recognize this URL!');
+          setDeploymentKey(code);
+        }
+
+        break;
+      }
+
+      case 'update-android': {
+        const code = urlObj.pathname.split('/')[2];
+        if (ios) {
+          Alert.alert('Tried to use Android bundle');
+        } else {
+          setDeploymentKey(code);
+        }
+        break;
+      }
+
+      default: {
+        const addressOrENS = urlObj.pathname?.split('/')?.[1];
+        if (addressOrENS) {
+          const isValid = await checkIsValidAddressOrDomain(addressOrENS);
+          if (isValid) {
+            return Navigation.handleAction(Routes.SHOWCASE_SHEET, {
+              address: addressOrENS,
+            });
+          } else {
+            const error = new Error('Invalid deeplink: ' + url);
+            captureException(error);
+            Alert.alert('Uh oh! We couldn’t recognize this URL!');
+          }
         }
       }
     }

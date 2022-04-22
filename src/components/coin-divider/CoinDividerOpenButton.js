@@ -6,11 +6,11 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-import styled from 'styled-components';
 import Caret from '../../assets/family-dropdown-arrow.png';
 import { ButtonPressAnimation, RoundButtonCapSize } from '../animations';
 import { Text } from '../text';
 import { ImgixImage } from '@rainbow-me/images';
+import styled from '@rainbow-me/styled-components';
 import { magicMemo } from '@rainbow-me/utils';
 
 const AnimatedText = Animated.createAnimatedComponent(Text);
@@ -21,17 +21,17 @@ const openWidth = 78;
 const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
   source: Caret,
   tintColor: colors.blueGreyDark,
-}))`
-  height: 18;
-  width: 8;
-`;
+}))({
+  height: 18,
+  width: 8,
+});
 
-const Content = styled(Animated.View)`
-  background-color: ${({ theme: { colors } }) => colors.blueGreyDarkLight};
-  border-radius: ${RoundButtonCapSize / 2};
-  height: 30;
-  width: 78;
-`;
+const Content = styled(Animated.View)({
+  backgroundColor: ({ theme: { colors } }) => colors.blueGreyDarkLight,
+  borderRadius: RoundButtonCapSize / 2,
+  height: 30,
+  width: 78,
+});
 
 const LabelText = styled(AnimatedText).attrs(({ theme: { colors } }) => ({
   align: 'center',
@@ -40,11 +40,11 @@ const LabelText = styled(AnimatedText).attrs(({ theme: { colors } }) => ({
   lineHeight: 30,
   size: 'lmedium',
   weight: 'bold',
-}))`
-  bottom: ${android ? 0 : 0.5};
-  left: 10;
-  position: absolute;
-`;
+}))({
+  bottom: android ? 0 : 0.5,
+  left: 10,
+  position: 'absolute',
+});
 
 const CoinDividerOpenButton = ({ isSmallBalancesOpen, onPress }) => {
   const isSmallBalancesOpenValue = useSharedValue(0);

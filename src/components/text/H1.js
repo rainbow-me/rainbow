@@ -1,5 +1,5 @@
-import styled from 'styled-components';
 import Text from './Text';
+import styled from '@rainbow-me/styled-components';
 
 const H1 = styled(Text).attrs(
   ({
@@ -13,6 +13,6 @@ const H1 = styled(Text).attrs(
     size: 'big',
     weight,
   })
-)``;
+)({});
 
 export default H1;

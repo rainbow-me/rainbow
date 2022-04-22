@@ -1,7 +1,7 @@
 import { Contract } from '@ethersproject/contracts';
 import { forEach, get, isEmpty, keys, values } from 'lodash';
 import { useCallback } from 'react';
-import { queryCache, useQuery } from 'react-query';
+import { useQuery } from 'react-query';
 import useAccountSettings from './useAccountSettings';
 import {
   saveWalletBalances,
@@ -9,6 +9,7 @@ import {
 } from '@rainbow-me/handlers/localstorage/walletBalances';
 import { web3Provider } from '@rainbow-me/handlers/web3';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
+import { queryClient } from '@rainbow-me/react-query/queryClient';
 import { balanceCheckerContractAbi } from '@rainbow-me/references';
 import { fromWei, handleSignificantDecimals } from '@rainbow-me/utilities';
 import logger from 'logger';
@@ -54,12 +55,11 @@ const useWalletBalances = wallets => {
     return walletBalances;
   }, [network, wallets]);
 
-  const { data } = useQuery(
-    !isEmpty(wallets) && ['walletBalances'],
-    fetchBalances
-  );
+  const { data } = useQuery(['walletBalances'], fetchBalances, {
+    enabled: !isEmpty(wallets),
+  });
 
-  const resultFromStorage = queryCache.getQueryData(
+  const resultFromStorage = queryClient.getQueryData(
     WALLET_BALANCES_FROM_STORAGE
   );
 

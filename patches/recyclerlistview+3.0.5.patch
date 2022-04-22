@@ -1,0 +1,13 @@
+diff --git a/node_modules/recyclerlistview/dist/reactnative/core/RecyclerListView.js b/node_modules/recyclerlistview/dist/reactnative/core/RecyclerListView.js
+index 15e715a..4973d72 100644
+--- a/node_modules/recyclerlistview/dist/reactnative/core/RecyclerListView.js
++++ b/node_modules/recyclerlistview/dist/reactnative/core/RecyclerListView.js
+@@ -340,7 +340,7 @@ var RecyclerListView = /** @class */ (function (_super) {
+             else {
+                 offset_1.x = 0;
+             }
+-            setTimeout(function () {
++            this._processInitialOffsetTimeout = setTimeout(function () {
+                 _this.scrollToOffset(offset_1.x, offset_1.y, false);
+             }, 0);
+         }

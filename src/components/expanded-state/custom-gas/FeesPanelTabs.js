@@ -1,12 +1,12 @@
 import { isEmpty, upperFirst } from 'lodash';
 import React from 'react';
 import { View } from 'react-native';
-import styled from 'styled-components';
 import { ButtonPressAnimation } from '../../animations';
 import EdgeFade from '../../discover-sheet/EdgeFade';
 import { Column, Row } from '../../layout';
 import { Text } from '../../text';
 import { useGas } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { margin, padding } from '@rainbow-me/styles';
 import { gasUtils } from '@rainbow-me/utils';
 
@@ -16,49 +16,48 @@ const { CUSTOM, URGENT, GasSpeedOrder } = gasUtils;
 
 const TabPillsContainer = styled(Row).attrs({
   align: 'center',
-})`
-  justify-content: center;
-`;
+})({
+  justifyContent: 'center',
+});
 
-const TabPillWrapper = styled(View).attrs({})`
-  ${padding(5, 10)};
-  ${margin(0, 5, 0, 5)};
-  height: 30px;
-  background-color: ${({ isSelected, color, theme: { colors } }) =>
+const TabPillWrapper = styled(View).attrs({})({
+  ...padding.object(5, 10),
+  ...margin.object(0, 5, 0, 5),
+  backgroundColor: ({ isSelected, color, theme: { colors } }) =>
     isSelected
       ? color || colors.appleBlue
-      : colors.alpha(color || colors.appleBlue, 0.06)};
-  border-radius: 15px;
-  line-height: 20px;
-  shadow-color: ${({ color, isSelected, theme: { colors, isDarkMode } }) =>
+      : colors.alpha(color || colors.appleBlue, 0.06),
+  borderRadius: 15,
+  height: 30,
+  lineHeight: 20,
+  shadowColor: ({ color, isSelected, theme: { colors, isDarkMode } }) =>
     isSelected
       ? isDarkMode
         ? colors.shadowBlack
         : color || colors.appleBlue
-      : colors.transparent};
-  shadow-offset: 0px 4px;
-  shadow-opacity: 0.3;
-  shadow-radius: 6;
-`;
+      : colors.transparent,
+  shadowOffset: { height: 4, width: 0 },
+  shadowOpacity: 0.3,
+  shadowRadius: 6,
+});
 
 const TabPillText = styled(Text).attrs({
   align: 'center',
   size: 'lmedium',
   weight: 'heavy',
-})`
-  color: ${({ isSelected, theme: { colors }, color }) =>
-    `${
-      isSelected
-        ? colors.whiteLabel
-        : colors.alpha(color || colors.appleBlue, 0.9)
-    }`};
-  ${margin(
+})({
+  color: ({ isSelected, theme: { colors }, color }) =>
+    isSelected
+      ? colors.whiteLabel
+      : colors.alpha(color || colors.appleBlue, 0.9),
+
+  ...margin.object(
     android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
     0,
     android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
     0
-  )}
-`;
+  ),
+});
 
 const TabPill = ({
   label,

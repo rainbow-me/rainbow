@@ -1,15 +1,15 @@
 import React from 'react';
-import styled from 'styled-components';
 import { OpacityToggler } from '../animations';
 import { CoinRowHeight } from '../coin-row';
 import { useFrameDelayedValue, useOpenSmallBalances } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 
 const Container = styled(OpacityToggler).attrs(({ isVisible }) => ({
   pointerEvents: isVisible ? 'none' : 'auto',
-}))`
-  height: ${({ numberOfRows }) => numberOfRows * CoinRowHeight};
-  margin-top: 13;
-`;
+}))({
+  height: ({ numberOfRows }) => numberOfRows * CoinRowHeight,
+  marginTop: 13,
+});
 
 export default function SmallBalancesWrapper({ assets = [] }) {
   const { isSmallBalancesOpen } = useOpenSmallBalances();

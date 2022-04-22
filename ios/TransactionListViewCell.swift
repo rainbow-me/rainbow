@@ -106,7 +106,7 @@ class TransactionListViewCell: TransactionListBaseCell {
     }
     
     if transaction.symbol != nil {
-      if let img = UIImage.init(named: transaction.symbol.lowercased()) {
+      if let img = UIImage.init(named: "coinIcons/\(transaction.symbol.lowercased())") {
         coinImage.image = img
       } else if transaction.address != nil {
         let url = URL(string: "https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/ethereum/assets/\(transaction.address!)/logo.png");

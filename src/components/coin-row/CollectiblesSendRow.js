@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Fragment, useMemo } from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
-import { css } from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
 import { deviceUtils, magicMemo } from '../../utils';
@@ -19,10 +18,14 @@ const isSmallPhone = android || deviceUtils.dimensions.height <= 667;
 const isTinyPhone = deviceUtils.dimensions.height <= 568;
 const selectedHeight = isTinyPhone ? 50 : android || isSmallPhone ? 64 : 70;
 
-const selectedStyles = css`
-  ${isTinyPhone ? padding(10, 0, 0) : isSmallPhone ? padding(12) : padding(15)};
-  height: ${selectedHeight};
-`;
+const selectedStyles = {
+  height: selectedHeight,
+  ...(isTinyPhone
+    ? padding.object(10, 0, 0)
+    : isSmallPhone
+    ? padding.object(12)
+    : padding.object(15)),
+};
 
 const BottomRow = ({ selected, subtitle }) => {
   const { colors } = useTheme();

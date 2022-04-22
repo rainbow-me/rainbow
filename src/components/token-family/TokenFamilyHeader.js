@@ -1,6 +1,5 @@
 import React from 'react';
 import { Animated, Easing } from 'react-native';
-import styled from 'styled-components';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
 import { ButtonPressAnimation } from '../animations';
 import { Row, RowWithMargins } from '../layout';
@@ -8,6 +7,7 @@ import { Emoji, Text, TruncatedText } from '../text';
 import TokenFamilyHeaderIcon from './TokenFamilyHeaderIcon';
 import { useTheme } from '@rainbow-me/context';
 import { ImgixImage } from '@rainbow-me/images';
+import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 
 const AnimatedImgixImage = Animated.createAnimatedComponent(ImgixImage);
@@ -18,20 +18,20 @@ export const TokenFamilyHeaderHeight = 50;
 const Content = styled(Row).attrs({
   align: 'center',
   justify: 'space-between',
-})`
-  ${({ isCoinRow }) => padding(0, isCoinRow ? 19 : 19)};
-  background-color: ${({ theme: { colors } }) => colors.white};
-  height: ${TokenFamilyHeaderHeight};
-  width: 100%;
-`;
+})(({ isCoinRow, theme: { colors } }) => ({
+  ...padding.object(0, isCoinRow ? 19 : 19),
+  backgroundColor: colors.white,
+  height: TokenFamilyHeaderHeight,
+  width: '100%',
+}));
 
 const ChildrenAmountText = styled(Text).attrs({
   align: 'right',
   letterSpacing: 'roundedTight',
   size: 'large',
-})`
-  margin-bottom: 1;
-`;
+})({
+  marginBottom: 1,
+});
 
 const TitleText = styled(TruncatedText).attrs({
   align: 'left',
@@ -39,12 +39,12 @@ const TitleText = styled(TruncatedText).attrs({
   lineHeight: 'normal',
   size: 'large',
   weight: 'heavy',
-})`
-  flex: 1;
-  margin-bottom: 1;
-  padding-left: ${({ isShowcase }) => (isShowcase ? 1 : 10)};
-  padding-right: 9;
-`;
+})({
+  flex: 1,
+  marginBottom: 1,
+  paddingLeft: ({ isShowcase }) => (isShowcase ? 1 : 10),
+  paddingRight: 9,
+});
 
 const TokenFamilyHeader = ({
   childrenAmount,

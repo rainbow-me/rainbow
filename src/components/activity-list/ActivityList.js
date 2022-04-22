@@ -1,7 +1,6 @@
 import lang from 'i18n-js';
 import React, { useEffect, useMemo, useState } from 'react';
 import { SectionList } from 'react-native';
-import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import networkTypes from '../../helpers/networkTypes';
 import ActivityIndicator from '../ActivityIndicator';
@@ -12,6 +11,7 @@ import Text from '../text/Text';
 import ActivityListEmptyState from './ActivityListEmptyState';
 import ActivityListHeader from './ActivityListHeader';
 import RecyclerActivityList from './RecyclerActivityList';
+import styled from '@rainbow-me/styled-components';
 
 const getItemLayout = (data, index) => ({
   index,
@@ -29,13 +29,13 @@ const renderSectionHeader = ({ section }) => (
 
 const LoadingSpinner = android ? Spinner : ActivityIndicator;
 
-const FooterWrapper = styled(ButtonPressAnimation)`
-  width: 100%;
-  justify-content: center;
-  align-items: center;
-  height: 40;
-  padding-bottom: 10;
-`;
+const FooterWrapper = styled(ButtonPressAnimation)({
+  alignItems: 'center',
+  height: 40,
+  justifyContent: 'center',
+  paddingBottom: 10,
+  width: '100%',
+});
 
 function ListFooterComponent({ label, onPress }) {
   const [isLoading, setIsLoading] = useState(false);

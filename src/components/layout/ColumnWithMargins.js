@@ -1,5 +1,5 @@
-import styled from 'styled-components';
 import LayoutWithMargins from './LayoutWithMargins';
+import styled from '@rainbow-me/styled-components';
 
 const ColumnWithMargins = styled(LayoutWithMargins).attrs(
   ({ direction = 'column', margin = 20 }) => ({
@@ -7,6 +7,6 @@ const ColumnWithMargins = styled(LayoutWithMargins).attrs(
     margin,
     marginKey: 'marginBottom',
   })
-)``;
+)({});
 
 export default ColumnWithMargins;

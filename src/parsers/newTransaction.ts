@@ -1,10 +1,11 @@
 import { getDescription, getTitle } from './transactions';
 import {
-  NewTransaction,
+  NewTransactionOrAddCashTransaction,
   RainbowTransaction,
   TransactionStatus,
   TransactionType,
 } from '@rainbow-me/entities';
+import { isL2Network } from '@rainbow-me/handlers/web3';
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import {
   convertAmountAndPriceToNativeDisplay,
@@ -19,7 +20,7 @@ import { ethereumUtils } from '@rainbow-me/utils';
  * @return {String}
  */
 export const parseNewTransaction = async (
-  txDetails: NewTransaction,
+  txDetails: NewTransactionOrAddCashTransaction,
   nativeCurrency: string = ''
 ): Promise<RainbowTransaction> => {
   let balance = null;
@@ -55,11 +56,15 @@ export const parseNewTransaction = async (
 
   const assetPrice =
     asset?.price?.value ?? ethereumUtils.getAssetPrice(asset?.address);
-  const native = convertAmountAndPriceToNativeDisplay(
-    amount ?? 0,
-    assetPrice,
-    nativeCurrency
-  );
+
+  const native =
+    network && isL2Network(network)
+      ? { amount: '', display: '' }
+      : convertAmountAndPriceToNativeDisplay(
+          amount ?? 0,
+          assetPrice,
+          nativeCurrency
+        );
   const hash = txHash ? `${txHash}-0` : null;
 
   const status = txStatus ?? TransactionStatus.sending;

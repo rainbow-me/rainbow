@@ -165,18 +165,20 @@ export const buildCoinsList = (
   const bigBalancesValue = getTotal(assetsAboveDivider);
   const totalBalancesValue = add(bigBalancesValue, smallBalancesValue);
 
+  const defaultToEditButton = assetsBelowDivider.length === 0;
   // include hidden assets if in edit mode
   if (isCoinListEdited) {
     assetsBelowDivider = concat(assetsBelowDivider, hiddenAssets);
   }
-
   const allAssets = assetsAboveDivider;
 
-  if (assetsBelowDivider.length > 0 || isCoinListEdited) {
-    allAssets.push({
-      coinDivider: true,
-      value: smallBalancesValue,
-    });
+  allAssets.push({
+    coinDivider: true,
+    defaultToEditButton: defaultToEditButton,
+    value: smallBalancesValue,
+  });
+
+  if (assetsBelowDivider.length > 0) {
     allAssets.push({
       assets: assetsBelowDivider,
       smallBalancesContainer: true,
@@ -215,6 +217,7 @@ export const buildBriefCoinsList = (
     for (let asset of assets) {
       if (asset.coinDivider) {
         briefAssets.push({
+          defaultToEditButton: asset.defaultToEditButton,
           type: 'COIN_DIVIDER',
           uid: 'coin-divider',
           value: smallBalancesValue,
@@ -344,7 +347,12 @@ export const buildBriefUniqueTokenList = (
     result.push({ name: 'Showcase', type: 'FAMILY_HEADER', uid: 'showcase' });
     for (let index = 0; index < uniqueTokensInShowcase.length; index++) {
       const uniqueId = uniqueTokensInShowcase[index];
-      result.push({ index, type: 'NFT', uid: uniqueId, uniqueId });
+      result.push({
+        index,
+        type: 'NFT',
+        uid: `showcase-${uniqueId}`,
+        uniqueId,
+      });
     }
 
     result.push({ type: 'NFT_SPACE_AFTER', uid: `showcase-space-after` });

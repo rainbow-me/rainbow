@@ -107,10 +107,10 @@ export const updateTopMovers = (message: ZerionAssetInfoResponse) => (
 
   if (orderByDirection === 'asc') {
     // If it's less than 5 better not to show anything lol
-    const fixedLosers = info.filter(
-      ({ price: { relative_change_24h } }) =>
-        typeof relative_change_24h === 'number' && relative_change_24h < 0
-    );
+    const fixedLosers = info.filter(({ price }) => {
+      const { relative_change_24h } = price || {};
+      return typeof relative_change_24h === 'number' && relative_change_24h < 0;
+    });
 
     const isEnoughTopLosers = fixedLosers.length >= MIN_MOVERS;
     dispatch({
@@ -119,10 +119,10 @@ export const updateTopMovers = (message: ZerionAssetInfoResponse) => (
     });
     saveTopLosers(isEnoughTopLosers ? fixedLosers : []);
   } else {
-    const fixedGainers = info.filter(
-      ({ price: { relative_change_24h } }) =>
-        typeof relative_change_24h === 'number' && relative_change_24h > 0
-    );
+    const fixedGainers = info.filter(({ price }) => {
+      const { relative_change_24h } = price || {};
+      return typeof relative_change_24h === 'number' && relative_change_24h > 0;
+    });
     const isEnoughTopGainers = fixedGainers.length >= MIN_MOVERS;
 
     dispatch({

@@ -12,8 +12,10 @@ import BackupSheet from '../screens/BackupSheet';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
 import ConnectedDappsSheet from '../screens/ConnectedDappsSheet';
 import DepositModal from '../screens/DepositModal';
+import ENSConfirmRegisterSheet from '../screens/ENSConfirmRegisterSheet';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ExplainSheet from '../screens/ExplainSheet';
+import ExternalLinkWarningSheet from '../screens/ExternalLinkWarningSheet';
 import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
 import ModalScreen from '../screens/ModalScreen';
 import ReceiveModal from '../screens/ReceiveModal';
@@ -30,6 +32,7 @@ import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
 import WalletDiagnosticsSheet from '../screens/WalletDiagnosticsSheet';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import WithdrawModal from '../screens/WithdrawModal';
+import RegisterENSNavigator from './RegisterENSNavigator';
 import { SwipeNavigator } from './SwipeNavigator';
 import {
   addTokenSheetConfig,
@@ -37,11 +40,14 @@ import {
   basicSheetConfig,
   customGasSheetConfig,
   defaultScreenStackOptions,
+  ensConfirmRegisterSheetConfig,
   expandedAssetSheetConfig,
   expandedAssetSheetConfigWithLimit,
   explainSheetConfig,
+  externalLinkWarningSheetConfig,
   nativeStackDefaultConfig,
   nativeStackDefaultConfigWithoutStatusBar,
+  registerENSNavigatorConfig,
   restoreSheetConfig,
   sendConfirmationSheetConfig,
   stackNavigationConfig,
@@ -56,6 +62,9 @@ import { nativeStackConfig } from './nativeStackConfig';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
+import useExperimentalFlag, {
+  PROFILES,
+} from '@rainbow-me/config/experimentalHooks';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import createNativeStackNavigator from 'react-native-cool-modals/createNativeStackNavigator';
 
@@ -217,6 +226,7 @@ const MainStack = isNativeStackAvailable
 
 function NativeStackNavigator() {
   const { colors, isDarkMode } = useTheme();
+  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   return (
     <NativeStack.Navigator {...nativeStackConfig}>
@@ -294,6 +304,11 @@ function NativeStackNavigator() {
         component={ExplainSheet}
         name={Routes.EXPLAIN_SHEET}
         {...explainSheetConfig}
+      />
+      <NativeStack.Screen
+        component={ExternalLinkWarningSheet}
+        name={Routes.EXTERNAL_LINK_WARNING_SHEET}
+        {...externalLinkWarningSheetConfig}
       />
       <NativeStack.Screen
         component={WalletDiagnosticsSheet}
@@ -378,6 +393,21 @@ function NativeStackNavigator() {
         name={Routes.SWAP_DETAILS_SHEET}
         {...expandedAssetSheetConfig}
       />
+
+      {profilesEnabled && (
+        <>
+          <NativeStack.Screen
+            component={RegisterENSNavigator}
+            name={Routes.REGISTER_ENS_NAVIGATOR}
+            {...registerENSNavigatorConfig}
+          />
+          <NativeStack.Screen
+            component={ENSConfirmRegisterSheet}
+            name={Routes.ENS_CONFIRM_REGISTER_SHEET}
+            {...ensConfirmRegisterSheetConfig}
+          />
+        </>
+      )}
       {isNativeStackAvailable ? (
         <>
           <NativeStack.Screen
@@ -415,7 +445,11 @@ function NativeStackNavigator() {
 }
 
 const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
-  <NavigationContainer onStateChange={onNavigationStateChange} ref={ref}>
+  <NavigationContainer
+    onReady={props.onReady}
+    onStateChange={onNavigationStateChange}
+    ref={ref}
+  >
     <NativeStackNavigator />
   </NavigationContainer>
 ));

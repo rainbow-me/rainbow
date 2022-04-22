@@ -1,6 +1,13 @@
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Alert } from '../components/alerts';
 import { ExchangeModalTypes } from '@rainbow-me/helpers';
+import {
+  multiply,
+  subtract,
+  toFixedDecimals,
+} from '@rainbow-me/helpers/utilities';
+import { useGas } from '@rainbow-me/hooks';
 import { AppState } from '@rainbow-me/redux/store';
 import {
   updateSwapInputAmount,
@@ -8,14 +15,14 @@ import {
   updateSwapOutputAmount,
 } from '@rainbow-me/redux/swap';
 import { ETH_ADDRESS } from '@rainbow-me/references';
-import { greaterThan, subtract } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
-
-const MIN_ETH = '0.01';
 
 export default function useSwapInputHandlers() {
   const dispatch = useDispatch();
   const type = useSelector((state: AppState) => state.swap.type);
+
+  const { selectedGasFee } = useGas();
+
   const supplyBalanceUnderlying = useSelector(
     (state: AppState) =>
       state.swap.typeSpecificParameters?.supplyBalanceUnderlying
@@ -28,16 +35,45 @@ export default function useSwapInputHandlers() {
     if (type === ExchangeModalTypes.withdrawal) {
       dispatch(updateSwapInputAmount(supplyBalanceUnderlying));
     } else {
-      let amount =
-        ethereumUtils.getAccountAsset(inputCurrencyAddress)?.balance?.amount ??
-        '0';
-      if (inputCurrencyAddress === ETH_ADDRESS) {
-        const remaining = subtract(amount, MIN_ETH);
-        amount = greaterThan(remaining, 0) ? remaining : '0';
+      const accountAsset = ethereumUtils.getAccountAsset(inputCurrencyAddress);
+      const oldAmount = accountAsset?.balance?.amount ?? '0';
+      let newAmount = oldAmount;
+      if (inputCurrencyAddress === ETH_ADDRESS && accountAsset) {
+        newAmount = toFixedDecimals(
+          ethereumUtils.getBalanceAmount(selectedGasFee, accountAsset),
+          6
+        );
+
+        Alert({
+          buttons: [
+            { style: 'cancel', text: 'No thanks' },
+            {
+              onPress: () => {
+                const transactionFee = subtract(oldAmount, newAmount);
+                newAmount = toFixedDecimals(
+                  subtract(newAmount, multiply(transactionFee, 1.5)),
+                  6
+                );
+                dispatch(updateSwapInputAmount(newAmount));
+              },
+              text: 'Auto adjust',
+            },
+          ],
+          message: `You are about to swap all the ${inputCurrencyAddress.toUpperCase()} available in your wallet. If you want to swap back to ${inputCurrencyAddress.toUpperCase()}, you may not be able to afford the fee.
+    
+Would you like to auto adjust the balance to leave some ${inputCurrencyAddress.toUpperCase()}?`,
+          title: 'Are you sure?',
+        });
       }
-      dispatch(updateSwapInputAmount(amount));
+      dispatch(updateSwapInputAmount(newAmount));
     }
-  }, [dispatch, inputCurrencyAddress, supplyBalanceUnderlying, type]);
+  }, [
+    dispatch,
+    inputCurrencyAddress,
+    selectedGasFee,
+    supplyBalanceUnderlying,
+    type,
+  ]);
 
   const updateInputAmount = useCallback(
     value => {

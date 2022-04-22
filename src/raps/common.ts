@@ -4,7 +4,14 @@ import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import { Trade } from '@uniswap/sdk';
 import { join, map } from 'lodash';
-import { depositCompound, swap, unlock, withdrawCompound } from './actions';
+import {
+  depositCompound,
+  ens,
+  swap,
+  unlock,
+  withdrawCompound,
+} from './actions';
+import { createCommitENSRap } from './registerENS';
 import {
   createSwapAndDepositCompoundRap,
   estimateSwapAndDepositCompound,
@@ -14,16 +21,29 @@ import {
   createWithdrawFromCompoundRap,
   estimateWithdrawFromCompound,
 } from './withdrawFromCompound';
+import { createRegisterENSRap } from '.';
 import { Asset } from '@rainbow-me/entities';
+import {
+  estimateENSCommitGasLimit,
+  estimateENSRegisterSetRecordsAndNameGasLimit,
+} from '@rainbow-me/handlers/ens';
+import { ENSRegistrationRecords } from '@rainbow-me/helpers/ens';
 import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
 
 import logger from 'logger';
+
+const { commitENS, registerENS, multicallENS, setTextENS, setNameENS } = ens;
 
 export enum RapActionType {
   depositCompound = 'depositCompound',
   swap = 'swap',
   unlock = 'unlock',
   withdrawCompound = 'withdrawCompound',
+  commitENS = 'commitENS',
+  registerENS = 'registerENS',
+  multicallENS = 'multicallENS',
+  setTextENS = 'setTextENS',
+  setNameENS = 'setNameENS',
 }
 
 export interface RapActionParameters {
@@ -33,6 +53,13 @@ export interface RapActionParameters {
   inputAmount?: string | null;
   outputAmount?: string | null;
   tradeDetails?: Trade;
+  name?: string;
+  duration?: number;
+  rentPrice?: string;
+  recordKey?: string;
+  recordValue?: string;
+  salt?: string;
+  records?: ENSRegistrationRecords;
 }
 
 export interface UnlockActionParameters {
@@ -46,6 +73,18 @@ export interface SwapActionParameters {
   nonce: number;
   outputAmount: string;
   tradeDetails: Trade;
+}
+
+export interface RegisterENSActionParameters {
+  nonce: number;
+  name: string;
+  duration: number;
+  rentPrice: string;
+  ownerAddress: string;
+  recordKey: string;
+  recordValue: string;
+  salt: string;
+  records: ENSRegistrationRecords;
 }
 
 export interface RapActionTransaction {
@@ -74,7 +113,13 @@ interface EthersError extends Error {
 const NOOP = () => null;
 
 export const RapActionTypes = {
+  commitENS: 'commitENS' as RapActionType,
   depositCompound: 'depositCompound' as RapActionType,
+  multicallENS: 'multicallENS' as RapActionType,
+  registerENS: 'registerENS' as RapActionType,
+  registerWithConfigENS: 'registerWithConfigENS' as RapActionType,
+  setNameENS: 'setNameENS' as RapActionType,
+  setTextENS: 'setTextENS' as RapActionType,
   swap: 'swap' as RapActionType,
   unlock: 'unlock' as RapActionType,
   withdrawCompound: 'withdrawCompound' as RapActionType,
@@ -82,13 +127,23 @@ export const RapActionTypes = {
 
 const createRapByType = (
   type: string,
-  swapParameters: SwapActionParameters
+  {
+    swapParameters,
+    ensRegistrationParameters,
+  }: {
+    swapParameters: SwapActionParameters;
+    ensRegistrationParameters: RegisterENSActionParameters;
+  }
 ) => {
   switch (type) {
     case ExchangeModalTypes.deposit:
       return createSwapAndDepositCompoundRap(swapParameters);
     case ExchangeModalTypes.withdrawal:
       return createWithdrawFromCompoundRap(swapParameters);
+    case RapActionTypes.registerENS:
+      return createRegisterENSRap(ensRegistrationParameters);
+    case RapActionTypes.commitENS:
+      return createCommitENSRap(ensRegistrationParameters);
     default:
       return createUnlockAndSwapRap(swapParameters);
   }
@@ -96,7 +151,13 @@ const createRapByType = (
 
 export const getRapEstimationByType = (
   type: string,
-  swapParameters: SwapActionParameters
+  {
+    swapParameters,
+    ensRegistrationParameters,
+  }: {
+    swapParameters: SwapActionParameters;
+    ensRegistrationParameters: RegisterENSActionParameters;
+  }
 ) => {
   switch (type) {
     case ExchangeModalTypes.deposit:
@@ -105,6 +166,12 @@ export const getRapEstimationByType = (
       return estimateUnlockAndSwap(swapParameters);
     case ExchangeModalTypes.withdrawal:
       return estimateWithdrawFromCompound();
+    case RapActionTypes.commitENS:
+      return estimateENSCommitGasLimit(ensRegistrationParameters);
+    case RapActionTypes.registerENS:
+      return estimateENSRegisterSetRecordsAndNameGasLimit(
+        ensRegistrationParameters
+      );
     default:
       return null;
   }
@@ -120,6 +187,16 @@ const findActionByType = (type: RapActionType) => {
       return depositCompound;
     case RapActionTypes.withdrawCompound:
       return withdrawCompound;
+    case RapActionTypes.commitENS:
+      return commitENS;
+    case RapActionTypes.registerENS:
+      return registerENS;
+    case RapActionTypes.multicallENS:
+      return multicallENS;
+    case RapActionTypes.setTextENS:
+      return setTextENS;
+    case RapActionTypes.setNameENS:
+      return setNameENS;
     default:
       return NOOP;
   }
@@ -184,10 +261,13 @@ const executeAction = async (
 export const executeRap = async (
   wallet: Wallet,
   type: string,
-  swapParameters: SwapActionParameters,
+  parameters: {
+    swapParameters: SwapActionParameters;
+    ensRegistrationParameters: RegisterENSActionParameters;
+  },
   callback: (success?: boolean, errorMessage?: string | null) => void
 ) => {
-  const rap: Rap = await createRapByType(type, swapParameters);
+  const rap: Rap = await createRapByType(type, parameters);
   const { actions } = rap;
   const rapName = getRapFullName(actions);
 
@@ -199,13 +279,16 @@ export const executeRap = async (
   logger.log('[common - executing rap]: actions', actions);
   if (actions.length) {
     const firstAction = actions[0];
+    const nonce =
+      parameters?.swapParameters?.nonce ||
+      parameters?.ensRegistrationParameters?.nonce;
     const { baseNonce, errorMessage } = await executeAction(
       firstAction,
       wallet,
       rap,
       0,
       rapName,
-      swapParameters.nonce
+      nonce
     );
     if (baseNonce) {
       for (let index = 1; index < actions.length; index++) {

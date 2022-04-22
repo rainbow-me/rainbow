@@ -3,7 +3,6 @@ import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
-import styled from 'styled-components';
 import { isSamsungGalaxy } from '../../helpers/samsung';
 import { saveBackupPassword } from '../../model/backup';
 import { cloudPlatform } from '../../utils/platform';
@@ -25,6 +24,7 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { margin, padding } from '@rainbow-me/styles';
 import logger from 'logger';
 
@@ -33,16 +33,16 @@ const DescriptionText = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.5),
   lineHeight: 'looser',
   size: 'large',
-}))`
-  ${padding(0, 50)};
-`;
+}))({
+  ...padding.object(0, 50),
+});
 
 const Masthead = styled(Centered).attrs({
   direction: 'column',
-})`
-  ${padding(24, 0, 42)}
-  flex-shrink: 0;
-`;
+})({
+  ...padding.object(24, 0, 42),
+  flexShrink: 0,
+});
 
 const MastheadIcon = styled(GradientText).attrs({
   align: 'center',
@@ -54,14 +54,14 @@ const MastheadIcon = styled(GradientText).attrs({
   start: { x: 1, y: 1 },
   steps: [0, 0.5, 1],
   weight: 'bold',
-})``;
+})({});
 
 const Title = styled(Text).attrs({
   size: 'big',
   weight: 'bold',
-})`
-  ${margin(15, 0, 12)};
-`;
+})({
+  ...margin.object(15, 0, 12),
+});
 
 const samsungGalaxy = (android && isSamsungGalaxy()) || false;
 
@@ -78,7 +78,9 @@ export default function BackupConfirmPasswordStep() {
     setPasswordBlurred,
   ] = useBooleanState(true);
   const [password, setPassword] = useState('');
-  const [label, setLabel] = useState('􀎽 Confirm Backup');
+  const [label, setLabel] = useState(
+    `􀎽 ${lang.t('back_up.confirm_password.confirm_backup')}`
+  );
   const passwordRef = useRef();
   const { selectedWallet, setIsWalletLoading } = useWallets();
   const walletId = params?.walletId || selectedWallet.id;
@@ -115,7 +117,11 @@ export default function BackupConfirmPasswordStep() {
 
     if (isCloudBackupPasswordValid(password)) {
       passwordIsValid = true;
-      setLabel(`􀑙 Add to ${cloudPlatform} Backup`);
+      setLabel(
+        `􀑙 ${lang.t('back_up.confirm_password.add_to_cloud_platform', {
+          cloudPlatformName: cloudPlatform,
+        })}`
+      );
     }
     setValidPassword(passwordIsValid);
   }, [password, passwordFocused]);
@@ -179,10 +185,13 @@ export default function BackupConfirmPasswordStep() {
         {(isTinyPhone || samsungGalaxy) && isKeyboardOpen ? null : (
           <MastheadIcon>􀙶</MastheadIcon>
         )}
-        <Title>Enter backup password</Title>
+        <Title>
+          {lang.t('back_up.confirm_password.enter_backup_password')}
+        </Title>
         <DescriptionText>
-          To add this wallet to your {cloudPlatform} backup, enter your existing
-          backup password
+          {lang.t('back_up.confirm_password.enter_backup_description', {
+            cloudPlatformName: cloudPlatform,
+          })}
         </DescriptionText>
       </Masthead>
       <Column align="center" flex={1}>
@@ -198,7 +207,9 @@ export default function BackupConfirmPasswordStep() {
           onFocus={setPasswordFocused}
           onSubmitEditing={onSubmit}
           password={password}
-          placeholder="Backup Password"
+          placeholder={lang.t(
+            'back_up.confirm_password.backup_password_placeholder'
+          )}
           ref={passwordRef}
         />
       </Column>

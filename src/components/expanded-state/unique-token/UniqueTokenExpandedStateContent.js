@@ -1,40 +1,27 @@
 import { toLower } from 'lodash';
 import React, { useMemo } from 'react';
-import { ActivityIndicator, PixelRatio, StyleSheet, View } from 'react-native';
-import styled from 'styled-components';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { ENS_NFT_CONTRACT_ADDRESS } from '../../../references';
 import { magicMemo } from '../../../utils';
-import { getLowResUrl } from '../../../utils/getLowResUrl';
 import { SimpleModelView } from '../../3d';
 import { AudioPlayer } from '../../audio';
 import { UniqueTokenImage } from '../../unique-token';
 import { SimpleVideo } from '../../video';
 import { ZoomableWrapper } from './ZoomableWrapper';
-import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
-import {
-  useDimensions,
-  usePersistentAspectRatio,
-  useUniqueToken,
-} from '@rainbow-me/hooks';
+import { usePersistentAspectRatio, useUniqueToken } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 
-const pixelRatio = PixelRatio.get();
+const ModelView = styled(SimpleModelView)(position.sizeAsObject('100%'));
 
-const GOOGLE_USER_CONTENT_URL = 'https://lh3.googleusercontent.com/';
-const MAX_IMAGE_SCALE = 4;
-
-const ModelView = styled(SimpleModelView)`
-  ${position.size('100%')};
-`;
-
-const LoadingWrapper = styled(View)`
-  align-items: flex-end;
-  height: 100%;
-  justify-content: flex-end;
-  padding-bottom: 10;
-  padding-right: 10;
-  position: absolute;
-`;
+const LoadingWrapper = styled(View)({
+  alignItems: 'flex-end',
+  height: '100%',
+  justifyContent: 'flex-end',
+  paddingBottom: 10,
+  paddingRight: 10,
+  position: 'absolute',
+});
 
 const UniqueTokenExpandedStateContent = ({
   animationProgress,
@@ -46,34 +33,21 @@ const UniqueTokenExpandedStateContent = ({
   textColor,
   disablePreview,
   yPosition,
+  onContentFocus,
+  onContentBlur,
 }) => {
-  const { width: deviceWidth } = useDimensions();
-
-  const maxImageWidth = deviceWidth - horizontalPadding * 2;
   const isENS =
     toLower(asset.asset_contract.address) === toLower(ENS_NFT_CONTRACT_ADDRESS);
-  const isSVG = isSupportedUriExtension(asset.image_url, ['.svg']);
-  const imageUrl = isSVG
-    ? asset.image_preview_url
-    : asset.image_url ||
-      asset.image_original_url ||
-      asset.image_preview_url ||
-      asset.image_thumbnail_url;
-  const size = deviceWidth * pixelRatio;
   const url = useMemo(() => {
-    if (asset.image_url?.startsWith?.(GOOGLE_USER_CONTENT_URL) && size > 0) {
-      return `${asset.image_url}=w${size * MAX_IMAGE_SCALE}`;
-    }
     if (asset.isPoap) return asset.animation_url;
     return asset.image_url;
-  }, [asset.animation_url, asset.image_url, asset.isPoap, size]);
+  }, [asset.animation_url, asset.image_url, asset.isPoap]);
 
-  const lowResUrl = isENS ? url : getLowResUrl(asset.image_url);
   const { supports3d, supportsVideo, supportsAudio } = useUniqueToken(asset);
 
-  const supportsAnythingExceptImage =
-    supports3d || supportsVideo || supportsAudio;
-  const aspectRatio = usePersistentAspectRatio(asset.image_url);
+  const supportsAnythingExceptImageAnd3d = supportsVideo || supportsAudio;
+
+  const aspectRatio = usePersistentAspectRatio(asset.lowResUrl);
   const aspectRatioWithFallback =
     supports3d || supportsAudio ? 0.88 : aspectRatio.result || 1;
 
@@ -85,41 +59,44 @@ const UniqueTokenExpandedStateContent = ({
       animationProgress={animationProgress}
       aspectRatio={aspectRatioWithFallback}
       borderRadius={borderRadius}
-      disableAnimations={disablePreview || supportsAnythingExceptImage}
+      disableAnimations={
+        disablePreview ||
+        (ios ? supportsVideo : supportsAnythingExceptImageAnd3d)
+      }
       horizontalPadding={horizontalPadding}
       isENS={isENS}
+      onZoomIn={onContentFocus}
+      onZoomOut={onContentBlur}
       yDisplacement={yPosition}
     >
       <View style={StyleSheet.absoluteFill}>
         {supportsVideo ? (
           <SimpleVideo
             loading={loading}
-            posterUri={imageUrl}
+            posterUri={url}
             setLoading={setLoading}
             style={StyleSheet.absoluteFill}
-            uri={asset.animation_url || imageUrl}
+            uri={asset.animation_url || url}
           />
         ) : supports3d ? (
           <ModelView
-            fallbackUri={imageUrl}
+            fallbackUri={url}
             loading={loading}
             setLoading={setLoading}
-            uri={asset.animation_url || imageUrl}
+            uri={asset.animation_url || url}
           />
         ) : supportsAudio ? (
           <AudioPlayer
             fontColor={textColor}
             imageColor={imageColor}
-            uri={asset.animation_url || imageUrl}
+            uri={asset.animation_url || url}
           />
         ) : (
           <UniqueTokenImage
             backgroundColor={asset.background}
-            imageUrl={isSVG ? asset.image_url : url}
+            imageUrl={url}
             item={asset}
-            lowResUrl={lowResUrl}
             resizeMode={resizeMode}
-            size={maxImageWidth}
             transformSvgs={false}
           />
         )}

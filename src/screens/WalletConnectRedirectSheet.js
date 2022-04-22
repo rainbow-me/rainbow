@@ -1,21 +1,21 @@
 import { useRoute } from '@react-navigation/native';
 import React, { useEffect } from 'react';
-import styled from 'styled-components';
 import { Centered } from '../components/layout';
 import { Sheet } from '../components/sheet';
 import { Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
 import { useAppState } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 
 const BodyText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.alpha(colors.blueGreyDark, 0.6),
   lineHeight: 'loosest',
   size: 'big',
-}))`
-  padding-bottom: 23;
-  padding-top: 4;
-`;
+}))({
+  paddingBottom: 23,
+  paddingTop: 4,
+});
 
 const emojisMap = {
   'connect': '🥳',

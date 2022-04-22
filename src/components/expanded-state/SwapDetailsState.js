@@ -1,7 +1,7 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
+import lang from 'i18n-js';
 import React, { useCallback, useEffect, useState } from 'react';
 import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
-import styled from 'styled-components';
 import { ConfirmExchangeButton } from '../exchange';
 import { GasSpeedButton } from '../gas';
 import { Column } from '../layout';
@@ -26,6 +26,7 @@ import {
   useSwapDerivedOutputs,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
+import styled from '@rainbow-me/styled-components';
 import { padding, position } from '@rainbow-me/styles';
 import { abbreviations } from '@rainbow-me/utils';
 
@@ -35,28 +36,28 @@ const springConfig = {
   stiffness: 1000,
 };
 
-const AnimatedContainer = styled(Animated.View)`
-  ${position.size('100%')};
-`;
+const AnimatedContainer = styled(Animated.View)({
+  ...position.sizeAsObject('100%'),
+});
 
 const Footer = styled(Column).attrs({
   align: 'end',
   grow: 1,
   justify: 'end',
   shrink: 0,
-})`
-  ${padding(6, 0, 0)};
-`;
+})({
+  ...padding.object(6, 0, 0),
+});
 
 const Header = styled(Column).attrs({
   justify: 'start',
-})`
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: -2;
-  width: 100%;
-`;
+})({
+  left: 0,
+  position: 'absolute',
+  right: 0,
+  top: -2,
+  width: '100%',
+});
 
 const FOOTER_MIN_HEIGHT = 143;
 const FOOTER_CONTENT_MIN_HEIGHT = 241;
@@ -147,7 +148,9 @@ export default function SwapDetailsState({
         contentHeight={ios ? longFormHeight : sheetHeightWithoutKeyboard}
       >
         <Header>
-          <SheetTitle weight="heavy">Review</SheetTitle>
+          <SheetTitle weight="heavy">
+            {lang.t('expanded_state.swap_details.review')}
+          </SheetTitle>
         </Header>
         <SwapDetailsMasthead
           inputAmount={inputAmount}

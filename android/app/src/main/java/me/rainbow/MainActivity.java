@@ -6,11 +6,12 @@ import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
 import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
-import org.devio.rn.splashscreen.SplashScreen;
 import io.branch.rnbranch.*;
 import me.rainbow.NativeModules.RNBackHandler.RNBackHandlerPackage;
 import me.rainbow.NativeModules.Internals.*;
 import android.webkit.WebView;
+import com.facebook.react.ReactActivityDelegate;
+import com.zoontek.rnbootsplash.RNBootSplash;
 
 import android.content.Intent;
 
@@ -18,8 +19,6 @@ public class MainActivity extends ReactActivity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-
-      SplashScreen.show(this, R.style.NoActionBar);
       super.onCreate(savedInstanceState);
       WebView.setWebContentsDebuggingEnabled(false);
   }
@@ -57,13 +56,18 @@ public class MainActivity extends ReactActivity {
       super.onNewIntent(intent);
       setIntent(intent);
     }
-  
+
   @Override
   protected ReactActivityDelegate createReactActivityDelegate() {
     return new ReactActivityDelegate(this, getMainComponentName()) {
       @Override
       protected ReactRootView createRootView() {
        return new RNGestureHandlerEnabledRootView(MainActivity.this);
+      }
+      @Override
+      protected void loadApp(String appKey) {
+          RNBootSplash.init(MainActivity.this);
+          super.loadApp(appKey);
       }
     };
   }

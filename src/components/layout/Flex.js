@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
+import styled from '@rainbow-me/styled-components';
 import { buildFlexStyles } from '@rainbow-me/styles';
 import { memoFn } from '@rainbow-me/utils/memoFn';
 
@@ -36,9 +36,7 @@ const Flex = styled.View.withConfig({
   // passed to the root element because our namespace collides with some native props
   shouldForwardProp: (prop, defaultValidatorFn) =>
     validatorFn(prop) && defaultValidatorFn(prop),
-})`
-  ${buildFlexStyles};
-`;
+})(buildFlexStyles.object);
 
 Flex.displayName = 'Flex';
 

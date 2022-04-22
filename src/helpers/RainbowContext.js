@@ -21,7 +21,12 @@ export default function RainbowContextWrapper({ children }) {
   // This value is hold here to prevent JS VM from shutting down
   // on unmounting all shared values.
   useSharedValue(0);
-  const [config, setConfig] = useState(defaultConfig);
+  const [config, setConfig] = useState(
+    Object.entries(defaultConfig).reduce(
+      (acc, [key, { value }]) => ({ ...acc, [key]: value }),
+      {}
+    )
+  );
   const [globalState, updateGlobalState] = useState({});
 
   // eslint-disable-next-line react-hooks/exhaustive-deps

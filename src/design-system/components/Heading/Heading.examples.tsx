@@ -12,6 +12,7 @@ import { Stack } from '../Stack/Stack';
 import { Heading, HeadingProps } from './Heading';
 
 const headingExamples: Required<Pick<HeadingProps, 'size' | 'weight'>>[] = [
+  { size: '30px', weight: 'bold' },
   { size: '23px', weight: 'bold' },
   { size: '20px', weight: 'bold' },
   { size: '18px', weight: 'bold' },

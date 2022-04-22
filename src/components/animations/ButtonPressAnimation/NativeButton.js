@@ -1,24 +1,30 @@
 import React, { useMemo } from 'react';
 import { requireNativeComponent, View } from 'react-native';
-import styled from 'styled-components';
+import styled from '@rainbow-me/styled-components';
 
 const RawNativeButton = requireNativeComponent('Button');
 
-const ButtonWithTransformOrigin = styled(RawNativeButton)`
-  ${({ transformOrigin }) => {
-    if (!transformOrigin) return '';
+const ButtonWithTransformOrigin = styled(RawNativeButton)(
+  ({ transformOrigin }) => {
+    if (!transformOrigin) return {};
     const [x, y] = transformOrigin;
     // 👇️ Here we want to set the button's top / left
     // properties (relative to the parent wrapper view) to
     // values opposite of the provided transformOrigin.
     // This is necessary to do in order for the `transformOrigin` prop to
     // work with NativeButton without effecting NativeButton's layout.
-    return `
-      ${x !== 0.5 ? `left: ${x + 0.5 * (x > 0.5 ? 100 : -100)}%;` : ''}
-      ${y !== 0.5 ? `top: ${y + 0.5 * (y > 0.5 ? 100 : -100)}%;` : ''}
-    `;
-  }};
-`;
+    const styles = {};
+
+    if (x !== 0.5) {
+      styles.left = `${x + 0.5 * (x > 0.5 ? 100 : -100)}%`;
+    }
+    if (y !== 0.5) {
+      styles.top = `${y + 0.5 * (y > 0.5 ? 100 : -100)}%`;
+    }
+
+    return styles;
+  }
+);
 
 export function normalizeTransformOrigin(transformOrigin) {
   if (Array.isArray(transformOrigin) && transformOrigin.length === 2) {

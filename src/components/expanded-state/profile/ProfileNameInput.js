@@ -1,8 +1,8 @@
 import React, { Fragment, useCallback, useEffect, useRef } from 'react';
-import styled from 'styled-components';
 import { Input } from '../../inputs';
 import { PlaceholderText } from '../../text';
 import { useMagicAutofocus } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth } from '@rainbow-me/styles';
 
 const NameInput = styled(Input).attrs({
@@ -14,11 +14,11 @@ const NameInput = styled(Input).attrs({
   returnKeyType: 'done',
   size: 'big',
   spellCheck: false,
-})`
-  ${fontWithWidth(fonts.weight.heavy)};
-  ${android && 'height: 70; margin-top: -12; margin-bottom: -20;'}
-  width: 100%;
-`;
+})({
+  ...(android ? { height: 70, marginBottom: -20, marginTop: -12 } : {}),
+  ...fontWithWidth(fonts.weight.heavy),
+  width: '100%',
+});
 
 function ProfileNameInput(
   { onChange, placeholder, testID, value, ...props },

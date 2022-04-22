@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo } from 'react';
-import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { darkModeThemeColors } from '../../styles/colors';
 import { magicMemo } from '../../utils';
@@ -7,6 +6,7 @@ import ButtonPressAnimation, {
   ScaleButtonZoomableAndroid,
 } from '../animations/ButtonPressAnimation';
 import { Centered, InnerBorder } from '../layout';
+import styled from '@rainbow-me/styled-components';
 import { borders, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
@@ -20,10 +20,10 @@ export const FloatingActionButtonShadow = colors => [
 
 const DarkModeShadow = [[0, 10, 30, darkModeThemeColors.shadow, 1]];
 
-const Content = styled(Centered)`
-  ${position.cover};
-  background-color: ${({ backgroundColor }) => backgroundColor};
-`;
+const Content = styled(Centered)({
+  ...position.coverAsObject,
+  backgroundColor: ({ backgroundColor }) => backgroundColor,
+});
 
 const Wrapper = android ? ScaleButtonZoomableAndroid : ButtonPressAnimation;
 

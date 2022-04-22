@@ -56,7 +56,7 @@ const PrivacySection = () => {
         onPress={toggleWebData}
         testID="public-showcase"
       >
-        <Column align="end" flex="1" justify="end">
+        <Column align="end" flex={1} justify="end">
           <Switch onValueChange={toggleWebData} value={publicShowCase} />
         </Column>
       </ListItem>

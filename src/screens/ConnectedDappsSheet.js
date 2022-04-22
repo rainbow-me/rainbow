@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { useSafeArea } from 'react-native-safe-area-context';
-import styled from 'styled-components';
 import Divider from '../components/Divider';
 import { Row } from '../components/layout';
 import { Sheet, SheetHandleFixedToTop, SheetTitle } from '../components/sheet';
@@ -9,30 +8,31 @@ import WalletConnectListItem, {
 } from '../components/walletconnect-list/WalletConnectListItem';
 import { useWalletConnectConnections } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
+import styled from '@rainbow-me/styled-components';
 
 const MAX_VISIBLE_DAPPS = 7;
 
-const ScrollableItems = styled.ScrollView`
-  height: ${({ length }) =>
-    WalletConnectListItemHeight * Math.min(length, MAX_VISIBLE_DAPPS) + 20};
-`;
+const ScrollableItems = styled.ScrollView({
+  height: ({ length }) =>
+    WalletConnectListItemHeight * Math.min(length, MAX_VISIBLE_DAPPS) + 20,
+});
 
-const SheetTitleWithPadding = styled(SheetTitle)`
-  margin-top: 18;
-  padding-bottom: 16;
-`;
+const SheetTitleWithPadding = styled(SheetTitle)({
+  marginTop: 18,
+  paddingBottom: 16,
+});
 
 export default function ConnectedDappsSheet() {
-  const { walletConnectorsByDappName } = useWalletConnectConnections();
+  const { mostRecentWalletConnectors } = useWalletConnectConnections();
   const { goBack } = useNavigation();
   const insets = useSafeArea();
   const { colors } = useTheme();
 
   useEffect(() => {
-    if (walletConnectorsByDappName.length === 0) {
+    if (mostRecentWalletConnectors.length === 0) {
       goBack();
     }
-  }, [goBack, walletConnectorsByDappName.length]);
+  }, [goBack, mostRecentWalletConnectors.length]);
 
   return (
     <Sheet
@@ -45,9 +45,9 @@ export default function ConnectedDappsSheet() {
       <SheetHandleFixedToTop />
       <SheetTitleWithPadding>Connected apps</SheetTitleWithPadding>
       <Divider color={colors.rowDividerExtraLight} inset={[0, 19]} />
-      <ScrollableItems length={walletConnectorsByDappName.length}>
+      <ScrollableItems length={mostRecentWalletConnectors.length}>
         <Row height={4} />
-        {walletConnectorsByDappName.map(
+        {mostRecentWalletConnectors.map(
           ({ account, chainId, dappIcon, dappName, dappUrl, peerId }) => (
             <WalletConnectListItem
               account={account}

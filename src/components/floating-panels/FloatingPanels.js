@@ -4,15 +4,17 @@ import { position } from '@rainbow-me/styles';
 
 const FloatingPanelsMargin = 20;
 
+const css = position.sizeAsObject('100%');
+
 const FloatingPanels = React.forwardRef(
   ({ margin = FloatingPanelsMargin, ...props }, ref) => (
     <ColumnWithMargins
       {...props}
-      css={position.size('100%')}
       justify="center"
       margin={margin}
       pointerEvents="box-none"
       ref={ref}
+      style={[css, props.style]}
     />
   )
 );

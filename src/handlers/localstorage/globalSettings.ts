@@ -11,6 +11,7 @@ const KEYCHAIN_INTEGRITY_STATE = 'keychainIntegrityState';
 const AUTH_TIMELOCK = 'authTimelock';
 const PIN_AUTH_ATTEMPTS_LEFT = 'pinAuthAttemptsLeft';
 const TRANSACTION_SIGNATURES = 'transactionSignatures';
+const TESTNETS_ENABLED = 'testnetsEnabled';
 
 export const getKeychainIntegrityState = () =>
   getGlobal(KEYCHAIN_INTEGRITY_STATE, null);
@@ -64,3 +65,16 @@ export const saveTransactionSignatures = (transactionSignatures: any) =>
  */
 export const getTransactionSignatures = () =>
   getGlobal(TRANSACTION_SIGNATURES, {});
+
+/**
+ * @desc get testnets enabled preference
+ */
+export const getTestnetsEnabled = () => getGlobal(TESTNETS_ENABLED, false);
+
+/**
+ * @desc save testnets enabled preference
+ * @param  {Boolean}  [value]
+ */
+export const saveTestnetsEnabled = (preference: boolean) => {
+  saveGlobal(TESTNETS_ENABLED, preference);
+};

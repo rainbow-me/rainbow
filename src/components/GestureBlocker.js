@@ -6,20 +6,20 @@ import {
   TapGestureHandler,
 } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
-import styled from 'styled-components';
 import { useMemoOne } from 'use-memo-one';
 import { useDimensions } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 
 const { call, cond, event, eq } = Animated;
 const NOOP = () => null;
 
-const Container = styled.View`
-  ${({ height, type }) => `${type}: ${-height};`};
-  height: ${({ height }) => height};
-  position: absolute;
-  width: 100%;
-  z-index: 10;
-`;
+const Container = styled.View(({ type, height }) => ({
+  height,
+  position: 'absolute',
+  [type]: -height,
+  width: '100%',
+  zIndex: 10,
+}));
 
 export default function GestureBlocker({ onTouchEnd = NOOP, type }) {
   const { height: screenHeight } = useDimensions();

@@ -17,7 +17,8 @@ const formatDappData = connections =>
       dappIcon: connection?.[0].peerMeta?.icons?.[0],
       dappName: connection?.[0].peerMeta?.name,
       dappUrl: connection?.[0].peerMeta?.url,
-      peerId: connection?.[0].peerId,
+      handshakeId: connection?.[0]._handshakeId,
+      peerId: connection?.[0].peerId, // unix timestamp in microseconds when connection was made
     }))
   );
 
@@ -26,7 +27,10 @@ const walletConnectSelector = createSelector(
   walletConnectors => {
     const sorted = sortList(values(walletConnectors), 'peerMeta.name');
     const groupedByDappName = groupBy(sorted, 'peerMeta.url');
+    const mostRecent = sortList(sorted, '_handshakeId', 'desc');
+    const sortedByMostRecentHandshake = groupBy(mostRecent, 'peerMeta.url');
     return {
+      mostRecentWalletConnectors: formatDappData(sortedByMostRecentHandshake),
       sortedWalletConnectors: sorted,
       walletConnectorsByDappName: formatDappData(groupedByDappName),
       walletConnectorsCount: sorted.length,
@@ -38,6 +42,7 @@ export default function useWalletConnectConnections() {
   const dispatch = useDispatch();
   const {
     sortedWalletConnectors,
+    mostRecentWalletConnectors,
     walletConnectorsByDappName,
     walletConnectorsCount,
   } = useSelector(walletConnectSelector);
@@ -66,6 +71,7 @@ export default function useWalletConnectConnections() {
   );
 
   return {
+    mostRecentWalletConnectors,
     sortedWalletConnectors,
     walletConnectDisconnectAllByDappUrl,
     walletConnectOnSessionRequest,

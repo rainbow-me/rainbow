@@ -7,7 +7,6 @@ import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components';
 import Divider from '../components/Divider';
 import { ButtonPressAnimation } from '../components/animations';
 import WalletList from '../components/change-wallet/WalletList';
@@ -37,6 +36,7 @@ import {
   useWebData,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import {
   abbreviations,
   deviceUtils,
@@ -56,19 +56,20 @@ const EditButton = styled(ButtonPressAnimation).attrs(({ editMode }) => ({
   wrapperStyle: {
     width: editMode ? 70 : 58,
   },
-}))`
-  ${ios
-    ? `
-    position: absolute;
-    right: 20px;
-    top: -11px;`
-    : `
-    position: relative;
-    right: 20px;
-    top: 6px;
-    elevation: 10;
-  `}
-`;
+}))(
+  ios
+    ? {
+        position: 'absolute',
+        right: 20,
+        top: -11,
+      }
+    : {
+        elevation: 10,
+        position: 'relative',
+        right: 20,
+        top: 6,
+      }
+);
 
 const EditButtonLabel = styled(Text).attrs(
   ({ theme: { colors }, editMode }) => ({
@@ -78,16 +79,17 @@ const EditButtonLabel = styled(Text).attrs(
     size: 'large',
     weight: editMode ? 'bold' : 'semibold',
   })
-)`
-  height: 40px;
-`;
-const Whitespace = styled.View`
-  background-color: ${({ theme: { colors } }) => colors.white};
-  bottom: -400px;
-  height: 400px;
-  position: absolute;
-  width: 100%;
-`;
+)({
+  height: 40,
+});
+
+const Whitespace = styled.View({
+  backgroundColor: ({ theme: { colors } }) => colors.white,
+  bottom: -400,
+  height: 400,
+  position: 'absolute',
+  width: '100%',
+});
 
 const getWalletRowCount = wallets => {
   let count = 0;

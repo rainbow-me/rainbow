@@ -1,16 +1,16 @@
 import React from 'react';
-import styled from 'styled-components';
 import { magicMemo } from '../../utils';
 import { CoinIcon } from '../coin-icon';
 import { Centered, Row } from '../layout';
 import { Text, TruncatedText } from '../text';
+import styled from '@rainbow-me/styled-components';
 
 const CoinName = styled(TruncatedText).attrs({
   size: 'large',
   weight: 'medium',
-})`
-  padding-right: 42;
-`;
+})({
+  paddingRight: 42,
+});
 
 const UnderlyingCoinIconSize = 20;
 

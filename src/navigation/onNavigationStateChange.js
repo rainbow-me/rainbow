@@ -32,6 +32,7 @@ export function onNavigationStateChange(currentState) {
   const prevState = memState;
   memState = currentState;
   const { name: routeName } = Navigation.getActiveRoute();
+
   if (isOnSwipeScreen(routeName)) {
     action?.();
     action = undefined;
@@ -118,7 +119,12 @@ export function onNavigationStateChange(currentState) {
       routeName === Routes.SEND_SHEET ||
       routeName === Routes.SWAP_DETAILS_SCREEN ||
       routeName === Routes.SWAP_DETAILS_SHEET ||
-      routeName === Routes.QR_SCANNER_SCREEN
+      routeName === Routes.QR_SCANNER_SCREEN ||
+      routeName === Routes.CUSTOM_GAS_SHEET ||
+      routeName === Routes.ENS_SEARCH_SHEET ||
+      routeName === Routes.ENS_ASSIGN_RECORDS_SHEET ||
+      (routeName === Routes.MODAL_SCREEN &&
+        Navigation.getActiveRoute().params?.type === 'contact_profile')
     ) {
       AndroidKeyboardAdjust.setAdjustPan();
     } else {

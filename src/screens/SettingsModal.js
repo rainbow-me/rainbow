@@ -2,26 +2,32 @@ import { useRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { Animated, InteractionManager, View } from 'react-native';
-import styled from 'styled-components';
+import {
+  Animated,
+  InteractionManager,
+  NativeModules,
+  View,
+} from 'react-native';
 import { Modal } from '../components/modal';
 import ModalHeaderButton from '../components/modal/ModalHeaderButton';
 import {
   CurrencySection,
+  DevSection,
   LanguageSection,
   NetworkSection,
   PrivacySection,
   SettingsSection,
+  UserDevSection,
 } from '../components/settings-menu';
 import SettingsBackupView from '../components/settings-menu/BackupSection/SettingsBackupView';
 import ShowSecretView from '../components/settings-menu/BackupSection/ShowSecretView';
 import WalletSelectionView from '../components/settings-menu/BackupSection/WalletSelectionView';
-import DevSection from '../components/settings-menu/DevSection';
 import { useTheme } from '../context/ThemeContext';
 import WalletTypes from '../helpers/walletTypes';
 import { settingsOptions } from '../navigation/config';
 import { useDimensions, useWallets } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
+import styled from '@rainbow-me/styled-components';
 
 function cardStyleInterpolator({
   current,
@@ -57,6 +63,10 @@ function cardStyleInterpolator({
   };
 }
 
+let isTestFlight = ios
+  ? NativeModules.RNTestFlight.getConstants().isTestFlight
+  : false;
+
 const SettingsPages = {
   backup: {
     component: View,
@@ -74,7 +84,7 @@ const SettingsPages = {
     key: 'SettingsSection',
   },
   dev: {
-    component: IS_DEV ? DevSection : null,
+    component: IS_DEV || isTestFlight ? DevSection : UserDevSection,
     getTitle: () => lang.t('settings.dev'),
     key: 'DevSection',
   },
@@ -90,15 +100,15 @@ const SettingsPages = {
   },
   privacy: {
     component: PrivacySection,
-    getTitle: () => 'Privacy',
+    getTitle: () => lang.t('settings.privacy'),
     key: 'PrivacySection',
   },
 };
 
-const Container = styled.View`
-  flex: 1;
-  overflow: hidden;
-`;
+const Container = styled.View({
+  flex: 1,
+  overflow: 'hidden',
+});
 
 const Stack = createStackNavigator();
 

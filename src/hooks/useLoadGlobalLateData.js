@@ -1,16 +1,16 @@
 import { useCallback } from 'react';
-import { queryCache } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   getWalletBalances,
   WALLET_BALANCES_FROM_STORAGE,
 } from '@rainbow-me/handlers/localstorage/walletBalances';
+import { queryClient } from '@rainbow-me/react-query/queryClient';
 import { nonceManagerLoadState } from '@rainbow-me/redux/nonceManager';
 import { promiseUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const loadWalletBalanceNamesToCache = () =>
-  queryCache.prefetchQuery(WALLET_BALANCES_FROM_STORAGE, getWalletBalances);
+  queryClient.prefetchQuery(WALLET_BALANCES_FROM_STORAGE, getWalletBalances);
 
 export default function useLoadGlobalLateData() {
   const dispatch = useDispatch();

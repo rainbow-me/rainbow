@@ -12,6 +12,59 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.6.9](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.9)
+### Added
+* Codeowners file
+
+### Changed
+* Fix zoomable wrapper issues
+* Bug fixes and improvements
+
+## [1.6.8](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.8)
+* Null Image handling
+* Sorted Connected Dapps
+* Zoomable Wrapper Fixes
+* Assets Address Check
+
+## [1.6.7](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.7)
+### Changed
+* Fix Testnet Support
+* Currency Selection List & Favorites Fixes
+* Small Phone tweaks
+* Android ENV fixes
+* Updated Android Icons 
+
+## [1.6.6](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.6)
+### Changed
+* Uniswap tokens / search to backend 
+* DPI + trendling list to backend 
+* design system usage for NFT Expanded State
+* ios price widgets
+* styled components migration 
+* deeplinking improvements
+* imgix changes
+
+## [1.6.5](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.5)
+### Changed
+* Fix NFT Family Image Crash
+
+## [1.6.4](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.4)
+### Changed
+* Fix NFT fetching on failure
+
+## [1.6.3](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.3)
+### Changed
+* Improved L2 support
+* Update deprecated keychain flags
+* Asset list improvements (RLV v2)
+* More backend proxy updates
+* Performance improvements
+* Bug fixes
+
+## [1.6.2](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.2)
+### Changed
+* Fix Add Cash crash
+
 ## [1.6.1](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.1)
 ### Changed
 * Fix nonce manager issues
