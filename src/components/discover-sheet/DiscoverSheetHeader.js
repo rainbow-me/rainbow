@@ -196,7 +196,7 @@ export default function DiscoverSheetHeader(props) {
         translateX={android ? 4 : 5}
       >
         <Icon
-          color={colors.alpha(colors.blueGreyDark, 0.8)}
+          color={colors.dark}
           direction="left"
           name="caret"
           {...props}
@@ -217,7 +217,7 @@ export default function DiscoverSheetHeader(props) {
       >
         <Icon
           bottom={1}
-          color={colors.alpha(colors.blueGreyDark, 0.8)}
+          color={colors.dark}
           name="scanner"
         />
         <Icon bottom={1} color={colors.whiteLabel} name="scanner" />
