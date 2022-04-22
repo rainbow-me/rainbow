@@ -17,6 +17,7 @@ import {
 } from '@rainbow-me/handlers/ens';
 import { NetworkTypes } from '@rainbow-me/helpers';
 import {
+  ENS_DOMAIN,
   formatEstimatedNetworkFee,
   formatRentPrice,
   formatTotalRegistrationCost,
@@ -46,15 +47,13 @@ enum QUERY_KEYS {
 }
 
 export default function useENSRegistrationCosts({
-  name,
-  records,
+  name: inputName,
   rentPrice,
   sendReverseRecord,
   step,
   yearsDuration,
 }: {
   name: string;
-  records?: Records;
   rentPrice: { wei: number; perYear: { wei: number } };
   sendReverseRecord: boolean;
   step: keyof typeof REGISTRATION_STEPS;
@@ -63,6 +62,7 @@ export default function useENSRegistrationCosts({
   const { nativeCurrency, accountAddress } = useAccountSettings();
   const { registrationParameters } = useENSRegistration();
   const duration = yearsDuration * timeUnits.secs.year;
+  const name = inputName.replace(ENS_DOMAIN, '');
   const {
     gasFeeParamsBySpeed: useGasGasFeeParamsBySpeed,
     currentBlockParams: useGasCurrentBlockParams,

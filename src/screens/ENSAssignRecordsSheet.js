@@ -71,7 +71,6 @@ export default function ENSAssignRecordsSheet() {
     name,
     mode,
     images: { avatarUrl: initialAvatarUrl },
-    changedRecords,
   } = useENSRegistration({
     setInitialRecordsWhenInEditMode: true,
   });
@@ -93,7 +92,6 @@ export default function ENSAssignRecordsSheet() {
 
   useENSRegistrationCosts({
     name,
-    records: changedRecords || {},
     rentPrice: registrationData?.rentPrice,
     step,
     yearsDuration: 1,
