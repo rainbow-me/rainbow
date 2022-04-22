@@ -259,6 +259,8 @@ class App extends Component {
         .catch(() => nanoid());
       await keychain.saveString(analyticsUserIdentifier, identifier);
       analytics.identify(identifier);
+    } else {
+      analytics.identify(storedIdentifier);
     }
 
     await analytics.setup(REACT_APP_SEGMENT_API_WRITE_KEY, {
