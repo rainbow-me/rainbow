@@ -317,7 +317,6 @@ export default function useENSRegistrationActionHandler(
   );
 
   const registrationStep = useMemo(() => {
-    if (!registrationParameters?.name) return REGISTRATION_STEPS.NOT_STARTED;
     if (mode === REGISTRATION_MODES.EDIT) return REGISTRATION_STEPS.EDIT;
     if (mode === REGISTRATION_MODES.RENEW) return REGISTRATION_STEPS.RENEW;
     if (mode === REGISTRATION_MODES.SET_NAME)
@@ -351,7 +350,6 @@ export default function useENSRegistrationActionHandler(
       [REGISTRATION_STEPS.SET_NAME]: setNameAction,
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: speedUpCommitAction,
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: () => null,
-      [REGISTRATION_STEPS.NOT_STARTED]: () => null,
     }),
     [
       commitAction,

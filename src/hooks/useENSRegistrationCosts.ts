@@ -6,7 +6,6 @@ import useENSRegistration from './useENSRegistration';
 import useGas from './useGas';
 import usePrevious from './usePrevious';
 import { useAccountSettings } from '.';
-import { Records } from '@rainbow-me/entities';
 import {
   estimateENSCommitGasLimit,
   estimateENSRegisterSetRecordsAndNameGasLimit,
@@ -238,27 +237,27 @@ export default function useENSRegistrationCosts({
   );
 
   const commitGasLimit = useMemo(
-    () => queriesByKey.GET_COMMIT_GAS_LIMIT?.data || '',
+    () => queriesByKey.GET_COMMIT_GAS_LIMIT.data || '',
     [queriesByKey]
   );
   const renewGasLimit = useMemo(
-    () => queriesByKey.GET_RENEW_GAS_LIMIT?.data || '',
+    () => queriesByKey.GET_RENEW_GAS_LIMIT.data || '',
     [queriesByKey]
   );
   const setRecordsGasLimit = useMemo(
-    () => queriesByKey.GET_SET_RECORDS_GAS_LIMIT?.data || '',
+    () => queriesByKey.GET_SET_RECORDS_GAS_LIMIT.data || '',
     [queriesByKey.GET_SET_RECORDS_GAS_LIMIT]
   );
   const registerRapGasLimit = useMemo(
-    () => queriesByKey.GET_REGISTER_RAP_GAS_LIMIT?.data || '',
+    () => queriesByKey.GET_REGISTER_RAP_GAS_LIMIT.data || '',
     [queriesByKey.GET_REGISTER_RAP_GAS_LIMIT]
   );
   const setNameGasLimit = useMemo(
-    () => queriesByKey.GET_SET_NAME_GAS_LIMIT?.data || '',
+    () => queriesByKey.GET_SET_NAME_GAS_LIMIT.data || '',
     [queriesByKey.GET_SET_NAME_GAS_LIMIT]
   );
   const hasReverseRecord = useMemo(
-    () => queriesByKey.GET_REVERSE_RECORD?.data || false,
+    () => queriesByKey.GET_REVERSE_RECORD.data || false,
     [queriesByKey.GET_REVERSE_RECORD]
   );
 
@@ -271,7 +270,6 @@ export default function useENSRegistrationCosts({
       [REGISTRATION_STEPS.SET_NAME]: setNameGasLimit,
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: null,
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: null,
-      [REGISTRATION_STEPS.NOT_STARTED]: null,
     }),
     [
       commitGasLimit,

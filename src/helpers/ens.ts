@@ -72,7 +72,6 @@ export enum ENS_RECORDS {
 }
 
 export enum REGISTRATION_STEPS {
-  NOT_STARTED = 'NOT_STARTED',
   COMMIT = 'COMMIT',
   EDIT = 'EDIT',
   REGISTER = 'REGISTER',
