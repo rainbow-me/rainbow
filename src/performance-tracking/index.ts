@@ -1,8 +1,11 @@
+/* eslint-disable babel/no-invalid-this */
+// TODO: Fix above line with eslint rule
 import analytics from '@segment/analytics-react-native';
 // @ts-ignore
 import { SENTRY_ENVIRONMENT } from 'react-native-dotenv';
 import PerformanceMetric from './types/PerformanceMetric';
 import { PerformanceMetricData } from './types/PerformanceMetricData';
+import PerformanceTag from './types/PerformanceTag';
 
 const shouldLogToConsole = __DEV__ || SENTRY_ENVIRONMENT === 'LocalRelease';
 const logTag = '[PERFORMANCE]: ';
@@ -97,6 +100,34 @@ function finishMeasuring(
   return true;
 }
 
+/**
+ * Function decorator, that tracks performance of a function using performance.now() calls
+ * and logs the result with segment.
+ * @param fn Function which performance will be measured
+ * @param metric What you're measuring, the name of the metric
+ * @param tag Tag you can use for grouping the results
+ */
+export function withPerformanceTracking<Fn extends Function>(
+  fn: Fn,
+  metric: PerformanceMetric,
+  tag?: PerformanceTag
+) {
+  return function () {
+    const startTime = performance.now();
+
+    // TODO: fix types
+    // @ts-ignore
+    const res = fn.apply(this, arguments);
+
+    const durationInMs = performance.now() - startTime;
+    const additionalParams = tag ? { tag } : undefined;
+    logDurationIfAppropriate(metric, durationInMs);
+    analytics.track(metric, { durationInMs, ...additionalParams });
+
+    return res;
+  };
+}
+
 export const PerformanceTracking = {
   finishMeasuring,
   logDirectly,
@@ -104,3 +135,4 @@ export const PerformanceTracking = {
 };
 
 export { default as PerformanceMetric } from './types/PerformanceMetric';
+export { default as PerformanceTag } from './types/PerformanceTag';
