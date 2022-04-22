@@ -44,6 +44,7 @@ export default function ProfileAvatar({
           borderRadius={size / 2}
           height={{ custom: size }}
           justifyContent="center"
+          shadow="15px light"
           width={{ custom: size }}
         >
           {avatarUrl ? (

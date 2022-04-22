@@ -32,8 +32,8 @@ export default function ProfileCover({
       justifyContent="center"
       {...(ios
         ? {
-            center: [0, 200],
-            colors: [accentColor, accentColor + '50'],
+            center: [0, 126],
+            colors: [accentColor, accentColor + '60'],
             stops: [0, 1],
           }
         : {

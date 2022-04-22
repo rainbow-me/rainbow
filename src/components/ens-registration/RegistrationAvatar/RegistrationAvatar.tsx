@@ -149,7 +149,7 @@ export default function RegistrationAvatar({
                 borderRadius={size / 2}
                 height={{ custom: size }}
                 justifyContent="center"
-                shadow="12px heavy accent"
+                shadow="15px light"
                 width={{ custom: size }}
               >
                 {avatarUrl ? (

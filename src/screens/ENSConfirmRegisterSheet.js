@@ -337,7 +337,7 @@ export default function ENSConfirmRegisterSheet() {
                         background="accent"
                         borderRadius={avatarSize / 2}
                         height={{ custom: avatarSize }}
-                        shadow="12px heavy accent"
+                        shadow="15px light"
                         width={{ custom: avatarSize }}
                       >
                         <Box

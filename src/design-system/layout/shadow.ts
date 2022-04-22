@@ -80,6 +80,19 @@ export const shadowHierarchy = {
       opacity: 1,
     },
   } as ShadowValue,
+  '15px light': {
+    ios: [
+      {
+        offset: { x: 0, y: 5 },
+        blur: 15,
+        opacity: 0.15,
+      },
+    ],
+    android: {
+      elevation: 15,
+      opacity: 0.5,
+    },
+  } as ShadowValue,
   '21px light': {
     ios: [
       {

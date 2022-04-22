@@ -106,16 +106,16 @@ function ENSAvatarPlaceholder({
       onPressCancel={onPressCancel}
       onPressStart={onPressStart}
       reanimatedButton={false}
-      scaleTo={0.95}
+      scaleTo={0.8}
     >
       <Box paddingHorizontal="8px">
         <Stack alignHorizontal="center" space="15px">
           <Box
             as={ImgixImage}
-            background="action"
+            background="body"
             borderRadius={80}
             height={{ custom: 80 }}
-            shadow="21px light"
+            shadow="15px light"
             source={{ uri: ensAvatarUrl(name) }}
             width={{ custom: 80 }}
           />
