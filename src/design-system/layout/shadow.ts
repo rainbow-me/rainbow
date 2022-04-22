@@ -134,12 +134,12 @@ export const shadowHierarchy = {
       {
         offset: { x: 0, y: 5 },
         blur: 15,
-        opacity: 0.06,
+        opacity: 0.2,
       },
       {
         offset: { x: 0, y: 10 },
         blur: 30,
-        opacity: 0.04,
+        opacity: 0.15,
       },
     ],
     android: {
@@ -152,12 +152,12 @@ export const shadowHierarchy = {
       {
         offset: { x: 0, y: 5 },
         blur: 15,
-        opacity: 0.12,
+        opacity: 0.3,
       },
       {
         offset: { x: 0, y: 10 },
         blur: 30,
-        opacity: 0.04,
+        opacity: 0.15,
       },
     ],
     android: {
