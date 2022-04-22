@@ -1,5 +1,4 @@
 import './languages';
-import AsyncStorage from '@react-native-community/async-storage';
 import messaging from '@react-native-firebase/messaging';
 import analytics from '@segment/analytics-react-native';
 import * as Sentry from '@sentry/react-native';
@@ -67,10 +66,7 @@ import { uniswapPairsInit } from './redux/uniswap';
 import { walletConnectLoadState } from './redux/walletconnect';
 import { rainbowTokenList } from './references';
 import { branchListener } from './utils/branch';
-import {
-  analyticsUserIdentifier,
-  signingWallet,
-} from './utils/keychainConstants';
+import { analyticsUserIdentifier } from './utils/keychainConstants';
 import {
   CODE_PUSH_DEPLOYMENT_KEY,
   isCustomBuild,
