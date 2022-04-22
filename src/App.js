@@ -1,4 +1,5 @@
 import './languages';
+import AsyncStorage from '@react-native-community/async-storage';
 import messaging from '@react-native-firebase/messaging';
 import analytics from '@segment/analytics-react-native';
 import * as Sentry from '@sentry/react-native';
@@ -65,7 +66,10 @@ import { uniswapPairsInit } from './redux/uniswap';
 import { walletConnectLoadState } from './redux/walletconnect';
 import { rainbowTokenList } from './references';
 import { branchListener } from './utils/branch';
-import { analyticsUserIdentifier } from './utils/keychainConstants';
+import {
+  analyticsUserIdentifier,
+  signingWallet,
+} from './utils/keychainConstants';
 import {
   CODE_PUSH_DEPLOYMENT_KEY,
   isCustomBuild,
@@ -200,9 +204,23 @@ class App extends Component {
     this.branchListener?.();
   }
 
+  isBrokenState = async () => {
+    const entry = await keychain.loadString(signingWallet);
+    const keys = await AsyncStorage.getAllKeys();
+
+    return typeof entry === 'string' && keys.length === 0;
+  };
+
   identifyFlow = async () => {
     const address = await loadAddress();
-    if (address) {
+    const brokenState = this.isBrokenState();
+
+    if (brokenState) {
+      await keychain.wipeKeychain();
+      await AsyncStorage.setItem('keychain-wiped', 'true');
+
+      this.setState({ initialRoute: Routes.WELCOME_SCREEN });
+    } else if (address) {
       this.setState({ initialRoute: Routes.SWIPE_LAYOUT });
     } else {
       this.setState({ initialRoute: Routes.WELCOME_SCREEN });
