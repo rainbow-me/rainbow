@@ -78,7 +78,6 @@ export const parseAccountUniqueTokens = data => {
         ...asset
       }) => {
         const { imageUrl, lowResUrl } = handleAndSignImages(
-          asset_contract.address,
           asset.image_url,
           asset.image_original_url,
           asset.image_preview_url
