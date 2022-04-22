@@ -200,7 +200,7 @@ export const ENS_SUGGESTIONS = gql`
     domains(
       first: $amount
       where: { name_starts_with: $name, resolvedAddress_not: null }
-      orderBy: name
+      orderBy: labelName
       orderDirection: asc
     ) {
       name
