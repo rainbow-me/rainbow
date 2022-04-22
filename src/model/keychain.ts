@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-community/async-storage';
 import { captureException, captureMessage } from '@sentry/react-native';
 import { forEach, isNil } from 'lodash';
 import DeviceInfo from 'react-native-device-info';
@@ -18,7 +19,10 @@ import {
   UserCredentials,
 } from 'react-native-keychain';
 import { delay } from '../helpers/utilities';
+import { signingWallet } from '@rainbow-me/utils/keychainConstants';
 import logger from 'logger';
+
+const POST_REINSTALL_INTEGRITY_CHECK = 'postReinstallIntegrityCheck';
 
 interface AnonymousKey {
   length: number;
@@ -261,4 +265,38 @@ export async function getPrivateAccessControlOptions(): Promise<Options> {
   } catch (e) {}
 
   return res;
+}
+
+export async function isKeychainBroken() {
+  let isBroken = false;
+
+  const entry = await loadString(signingWallet);
+  const keys = await AsyncStorage.getAllKeys();
+
+  const possiblyBroken = typeof entry === 'string' && keys.length === 0;
+
+  if (possiblyBroken) {
+    const entries = await loadAllKeys();
+
+    if (!entries) {
+      return false;
+    }
+
+    for (const entry of entries) {
+      if (entry.username.endsWith('_rainbowSeedPhrase')) {
+        const object = await loadObject(entry.username);
+        if (!object) {
+          isBroken = true;
+        }
+      }
+    }
+  }
+
+  if (isBroken) {
+    // We add a dummy entry to prevent the logic from recognizing broken
+    // keychain in case of sudden app restart.
+    await AsyncStorage.setItem(POST_REINSTALL_INTEGRITY_CHECK, 'true');
+  }
+
+  return isBroken;
 }

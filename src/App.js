@@ -216,23 +216,11 @@ class App extends Component {
     this.branchListener?.();
   }
 
-  isBrokenState = async () => {
-    const entry = await keychain.loadString(signingWallet);
-    const keys = await AsyncStorage.getAllKeys();
-
-    return typeof entry === 'string' && keys.length === 0;
-  };
-
   identifyFlow = async () => {
     const address = await loadAddress();
-    const brokenState = this.isBrokenState();
+    const isBroken = keychain.isKeychainBroken();
 
-    if (brokenState) {
-      await keychain.wipeKeychain();
-      // We add a dummy entry to prevent the logic from recognizing broken
-      // keychain in case of sudden app restart.
-      await AsyncStorage.setItem('keychain-wiped', 'true');
-
+    if (isBroken) {
       this.setState({ initialRoute: Routes.WELCOME_SCREEN });
     } else if (address) {
       this.setState({ initialRoute: Routes.SWIPE_LAYOUT });
