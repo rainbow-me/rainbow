@@ -24,7 +24,6 @@ import {
   allWalletsKey,
   analyticsUserIdentifier,
   selectedWalletKey,
-  signingWallet,
 } from '@rainbow-me/utils/keychainConstants';
 import logger from 'logger';
 
