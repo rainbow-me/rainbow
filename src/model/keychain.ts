@@ -19,7 +19,13 @@ import {
   UserCredentials,
 } from 'react-native-keychain';
 import { delay } from '../helpers/utilities';
-import { signingWallet } from '@rainbow-me/utils/keychainConstants';
+import {
+  addressKey,
+  allWalletsKey,
+  analyticsUserIdentifier,
+  selectedWalletKey,
+  signingWallet,
+} from '@rainbow-me/utils/keychainConstants';
 import logger from 'logger';
 
 const POST_REINSTALL_INTEGRITY_CHECK = 'postReinstallIntegrityCheck';
@@ -267,10 +273,19 @@ export async function getPrivateAccessControlOptions(): Promise<Options> {
   return res;
 }
 
-export async function isKeychainBroken() {
+// If user does a backup of an iPhone, wipes it and restores the backup on the
+// same phone, keys created using secure enclave will be gone, but due to the
+// flag AccessibleWhenUnlockedThisDeviceOnly, public keys will be restored.
+// This function is responsible for:
+// 1. Figuring out if it is possible that wallet is in a broken state (empty
+//    local storage and available public keychain).
+// 2. If there is a reasonable suspicion that keychain might be broken, we check
+//    if there are seed phrases (this invokes FaceID check) and if they are
+//    valid.
+export async function isBroken() {
   let isBroken = false;
 
-  const entry = await loadString(signingWallet);
+  const entry = await loadString(allWalletsKey);
   const keys = await AsyncStorage.getAllKeys();
 
   const possiblyBroken = typeof entry === 'string' && keys.length === 0;
@@ -292,11 +307,20 @@ export async function isKeychainBroken() {
     }
   }
 
-  if (isBroken) {
-    // We add a dummy entry to prevent the logic from recognizing broken
-    // keychain in case of sudden app restart.
-    await AsyncStorage.setItem(POST_REINSTALL_INTEGRITY_CHECK, 'true');
-  }
-
   return isBroken;
+}
+
+export async function fixBroken() {
+  await Promise.all(
+    [
+      analyticsUserIdentifier,
+      addressKey,
+      selectedWalletKey,
+      allWalletsKey,
+    ].map(key => remove(key))
+  );
+
+  // We add a dummy entry to prevent the logic from recognizing broken
+  // keychain in case of sudden app restart.
+  await AsyncStorage.setItem(POST_REINSTALL_INTEGRITY_CHECK, 'true');
 }
