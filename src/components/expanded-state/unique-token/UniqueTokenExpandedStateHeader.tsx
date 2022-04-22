@@ -187,7 +187,7 @@ const UniqueTokenExpandedStateHeader = ({
   }, [asset, formattedCollectionUrl]);
 
   // @ts-expect-error image_url could be null or undefined?
-  const isSVG = isSupportedUriExtension(asset.image_url, ['.svg']);
+  const isSVG = isSupportedUriExtension(asset.image_original_url, ['.svg']);
   const isENS =
     toLower(asset.asset_contract.address) === toLower(ENS_NFT_CONTRACT_ADDRESS);
 
@@ -260,7 +260,7 @@ const UniqueTokenExpandedStateHeader = ({
       } else if (actionKey === AssetActionsEnum.copyTokenID) {
         setClipboard(asset.id);
       } else if (actionKey === AssetActionsEnum.download) {
-        saveToCameraRoll(getFullResUrl(asset.image_url));
+        saveToCameraRoll(getFullResUrl(asset.image_original_url));
       }
     },
     [accountAddress, accountENS, asset, setClipboard]
@@ -368,7 +368,7 @@ const UniqueTokenExpandedStateHeader = ({
         } else if (isPhotoDownloadAvailable ? idx === 3 : idx === 2) {
           setClipboard(asset.id);
         } else if (idx === 2) {
-          saveToCameraRoll(getFullResUrl(asset.image_url));
+          saveToCameraRoll(getFullResUrl(asset.image_original_url));
         }
       }
     );
