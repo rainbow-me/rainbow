@@ -214,7 +214,7 @@ class App extends Component {
 
   identifyFlow = async () => {
     const address = await loadAddress();
-    const isBroken = keychain.isKeychainBroken();
+    const isBroken = await keychain.isKeychainBroken();
 
     if (isBroken) {
       this.setState({ initialRoute: Routes.WELCOME_SCREEN });
