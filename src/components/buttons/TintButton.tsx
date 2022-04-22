@@ -1,10 +1,9 @@
 import React, { ReactNode } from 'react';
 import { ButtonProps } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 import { TextColor } from '../../design-system/typography/typography';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { useTheme } from '@rainbow-me/context';
-import { Box, Cover, Text } from '@rainbow-me/design-system';
+import { AccentColorProvider, Box, Cover, Text, useForegroundColor } from '@rainbow-me/design-system';
 
 const TintButton = ({
   children,
@@ -20,6 +19,7 @@ const TintButton = ({
   testID?: string;
 }) => {
   const { colors } = useTheme();
+  const secondary06 = useForegroundColor('secondary06');
 
   const height = 56;
 
@@ -39,17 +39,16 @@ const TintButton = ({
       testID={testID}
     >
       <Cover>
-        <Box
-          alignItems="center"
-          as={LinearGradient}
-          borderRadius={46}
-          colors={colors.gradients.transparentToLightGrey}
-          end={{ x: 0.6, y: 0 }}
-          height={`${height}px`}
-          justifyContent="center"
-          start={{ x: 0, y: 0.6 }}
-          width="full"
-        />
+        <AccentColorProvider color={secondary06}>
+          <Box
+            alignItems="center"
+            background="accent"
+            borderRadius={46}
+            height={`${height}px`}
+            justifyContent="center"
+            width="full"
+          />
+        </AccentColorProvider>
       </Cover>
       <Text color={color} size="20px" weight="heavy">
         {children}

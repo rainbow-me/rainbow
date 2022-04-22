@@ -309,13 +309,12 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
                     : {})}
                 >
                   {mode === REGISTRATION_MODES.CREATE && (
-                    <TintButton color="secondary60" onPress={handlePressBack}>
+                    <TintButton onPress={handlePressBack}>
                       {lang.t('profiles.create.back')}
                     </TintButton>
                   )}
                   {isEmpty && mode === REGISTRATION_MODES.CREATE ? (
                     <TintButton
-                      color="secondary60"
                       disabled={disabled}
                       onPress={handlePressContinue}
                       testID="ens-assign-records-skip"
@@ -335,7 +334,6 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
                         />
                       ) : (
                         <TintButton
-                          color="secondary60"
                           onPress={goBack}
                           testID="ens-assign-records-cancel"
                         >
