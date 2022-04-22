@@ -21,7 +21,7 @@ import {
   Stack,
   Text,
 } from '@rainbow-me/design-system';
-import { ENS_DOMAIN, REGISTRATION_STEPS } from '@rainbow-me/helpers/ens';
+import { ENS_DOMAIN } from '@rainbow-me/helpers/ens';
 import {
   useENSRegistration,
   useENSRegistrationActionHandler,
