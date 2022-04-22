@@ -28,6 +28,7 @@ const UniqueTokenAttributes = ({
           trait =>
             trait.value !== undefined &&
             trait.value !== null &&
+            trait.value !== '' &&
             trait.trait_type &&
             !isHttpUrl(trait.value)
         )
