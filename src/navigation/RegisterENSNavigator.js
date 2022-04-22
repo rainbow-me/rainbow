@@ -3,7 +3,6 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import ConditionalWrap from 'conditional-wrap';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { StatusBar } from 'react-native';
-import { IS_TESTING } from 'react-native-dotenv';
 import { useSetRecoilState } from 'recoil';
 import { SheetHandleFixedToTopHeight, SlackSheet } from '../components/sheet';
 import ENSAssignRecordsSheet, {
@@ -133,7 +132,7 @@ export default function RegisterENSNavigator() {
   });
 
   const enableAssignRecordsBottomActions =
-    IS_TESTING !== 'true' && currentRouteName !== Routes.ENS_INTRO_SHEET;
+    currentRouteName !== Routes.ENS_INTRO_SHEET;
   const isBottomActionsVisible =
     currentRouteName === Routes.ENS_ASSIGN_RECORDS_SHEET;
 
