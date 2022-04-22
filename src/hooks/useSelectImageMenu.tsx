@@ -90,6 +90,10 @@ export default function useSelectImageMenu({
     uploadImage
   );
 
+  // If the image is removed while uploading, we don't want to
+  // call `onUploadSuccess` when the upload has finished.
+  const isRemoved = useRef<boolean>(false);
+
   // When this hook is inside a nested navigator, the child
   // navigator will still think it is focused. Here, we are
   // also checking if the parent has not been dismissed too.
@@ -139,15 +143,16 @@ export default function useSelectImageMenu({
           mime: image.mime,
           path: image.path.replace('file://', ''),
         });
-        if (!isFocused.current) return;
+        if (!isFocused.current || isRemoved.current) return;
         onUploadSuccess?.({ data, image });
       } catch (err) {
-        if (!isFocused.current) return;
+        if (!isFocused.current || isRemoved.current) return;
         onUploadError?.({ error: err, image });
       }
     }
   }, [
     imagePickerOptions,
+    isRemoved,
     onChangeImage,
     onUploadError,
     onUploadSuccess,
@@ -174,6 +179,7 @@ export default function useSelectImageMenu({
         handleSelectNFT();
       }
       if (actionKey === 'remove') {
+        isRemoved.current = true;
         onRemoveImage?.();
       }
     },
@@ -195,6 +201,7 @@ export default function useSelectImageMenu({
         } else if (buttonIndex === 1) {
           handleSelectNFT();
         } else if (buttonIndex === 2) {
+          isRemoved.current = true;
           onRemoveImage?.();
         }
       }

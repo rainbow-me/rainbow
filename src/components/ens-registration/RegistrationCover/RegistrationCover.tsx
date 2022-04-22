@@ -1,6 +1,7 @@
+import { useFocusEffect } from '@react-navigation/core';
 import ConditionalWrap from 'conditional-wrap';
 import lang from 'i18n-js';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { Image } from 'react-native-image-crop-picker';
 import RadialGradient from 'react-native-radial-gradient';
@@ -38,10 +39,18 @@ export default function RegistrationCover({
     values,
   } = useENSRegistrationForm();
 
+  const [coverUpdateAllowed, setCoverUpdateAllowed] = useState(true);
   const [coverUrl, setCoverUrl] = useState(initialCoverUrl || values?.cover);
   useEffect(() => {
-    setCoverUrl(initialCoverUrl || values?.cover);
-  }, [initialCoverUrl]); // eslint-disable-line react-hooks/exhaustive-deps
+    if (coverUpdateAllowed) {
+      setCoverUrl(
+        typeof initialCoverUrl === 'string' ? initialCoverUrl : values?.cover
+      );
+    }
+  }, [initialCoverUrl, coverUpdateAllowed]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // We want to allow cover state update when the screen is first focussed.
+  useFocusEffect(useCallback(() => setCoverUpdateAllowed(true), []));
 
   const accentColor = useForegroundColor('accent');
 
@@ -57,6 +66,9 @@ export default function RegistrationCover({
     onChangeImage: ({ asset, image }) => {
       setCoverMetadata(image);
       setCoverUrl(image?.tmpPath);
+      // We want to disallow future avatar state changes (i.e. when upload successful)
+      // to avoid avatar flashing (from temp URL to uploaded URL).
+      setCoverUpdateAllowed(false);
       if (asset) {
         const standard = asset.asset_contract?.schema_name || '';
         const contractAddress = asset.asset_contract?.address || '';

@@ -1,4 +1,3 @@
-import { useFocusEffect } from '@react-navigation/core';
 import { isEmpty, omit } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { atom, useRecoilState } from 'recoil';
