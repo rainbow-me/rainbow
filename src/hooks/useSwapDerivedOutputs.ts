@@ -150,7 +150,7 @@ export default function useSwapDerivedOutputs() {
       derivedValues[SwapModalField.input] = inputAmount;
       const inputAmountDisplay =
         inputAmount && inputPrice
-          ? updatePrecisionToDisplay(inputAmount, inputPrice, true)
+          ? updatePrecisionToDisplay(inputAmount, inputPrice)
           : inputAmount;
       displayValues[DisplayValue.input] = inputAmountDisplay;
       const {
@@ -201,7 +201,7 @@ export default function useSwapDerivedOutputs() {
       derivedValues[SwapModalField.input] = inputAmount;
       const inputAmountDisplay =
         inputAmount && inputPrice
-          ? updatePrecisionToDisplay(inputAmount, inputPrice, true)
+          ? updatePrecisionToDisplay(inputAmount, inputPrice)
           : inputAmount;
       displayValues[DisplayValue.input] = inputAmountDisplay;
 

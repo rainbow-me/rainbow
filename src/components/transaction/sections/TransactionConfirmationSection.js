@@ -74,7 +74,7 @@ export default function TransactionConfirmationSection({
           <RowWithMargins align="center" margin={5}>
             <CoinIcon address={address} size={20} symbol={symbol} />
             <Amount>
-              {Number(amount).toPrecision(10)} {symbol}
+              {Number(amount).toFixed(10)} {symbol}
             </Amount>
           </RowWithMargins>
         </Column>

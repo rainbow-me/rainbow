@@ -96,14 +96,11 @@ export const countDecimalPlaces = (value: BigNumberish): number => {
  * if the updated precision amounts to zero
  * @param  {String}   amount
  * @param  {String}   nativePrice
- * @param  {Boolean}  use rounding up mode
  * @return {String}   updated amount
  */
 export const updatePrecisionToDisplay = (
   amount: BigNumberish | null,
-  nativePrice?: BigNumberish | null,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  roundUp: boolean = false
+  nativePrice?: BigNumberish | null
 ): string => {
   if (!amount) return '0';
   if (!nativePrice) return stringify(amount);
