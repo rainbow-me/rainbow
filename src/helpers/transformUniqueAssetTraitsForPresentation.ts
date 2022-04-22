@@ -22,14 +22,13 @@ const targetDateFormatString = 'MMM do, y';
  */
 export default function transformUniqueAssetTraitsForPresentation(
   trait: UniqueAssetTrait,
-  additionalProperties: AdditionalProperties,
-  isPoap?: boolean
+  additionalProperties: AdditionalProperties
 ): MappedTrait {
   const { display_type, value } = trait;
   const mappedTrait: MappedTrait = {
     ...trait,
     ...additionalProperties,
-    disableMenu: !!isPoap,
+    disableMenu: false,
     originalValue: value,
   };
 
@@ -42,7 +41,7 @@ export default function transformUniqueAssetTraitsForPresentation(
         : value;
     mappedTrait.disableMenu = true;
     // Checking whether the string value is a POAP date format to convert to our date format
-  } else if (isPoap && typeof value === 'string' && poapDateRegex.test(value)) {
+  } else if (typeof value === 'string' && poapDateRegex.test(value)) {
     const poapDate = parse(value, poapDateFormatString, new Date());
 
     mappedTrait.value = format(poapDate, targetDateFormatString);
@@ -56,9 +55,6 @@ export default function transformUniqueAssetTraitsForPresentation(
   ) {
     mappedTrait.value = value.toLowerCase().replace('https://', '');
     mappedTrait.lowercase = true;
-    if (isPoap) {
-      mappedTrait.disableMenu = false;
-    }
   }
 
   return mappedTrait;

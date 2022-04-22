@@ -507,7 +507,7 @@ const UniqueTokenExpandedState = ({
                         <UniqueTokenAttributes
                           {...asset}
                           color={imageColor}
-                          isPoap={isPoap}
+                          hideOpenSeaAction={isPoap}
                           slug={asset.collection.slug}
                         />
                       </Section>
