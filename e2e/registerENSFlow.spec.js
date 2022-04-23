@@ -53,6 +53,31 @@ const resolveName = async ensName => {
   return { address, primaryName };
 };
 
+const validatePrimaryName = async name => {
+  const {
+    address: rainbowAddress,
+    primaryName: rainbowPrimaryName,
+  } = await resolveName(RAINBOW_TEST_WALLET_NAME);
+  const {
+    address: randomAddress,
+    primaryName: randomPrimaryName,
+  } = await resolveName(RANDOM_NAME_ETH);
+
+  if (
+    rainbowAddress !== randomAddress ||
+    rainbowAddress !== RAINBOW_TEST_WALLET_ADDRESS ||
+    randomAddress !== RAINBOW_TEST_WALLET_ADDRESS
+  )
+    throw new Error('Resolved address is wrong');
+
+  if (
+    rainbowPrimaryName !== randomPrimaryName ||
+    rainbowPrimaryName !== name ||
+    randomPrimaryName !== name
+  )
+    throw new Error('Resolved name is wrong');
+};
+
 beforeAll(async () => {
   // Connect to hardhat
   await exec('yarn hardhat');
@@ -170,17 +195,9 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should go to view to set records', async () => {
-    // eslint-disable-next-line no-console
-    console.log('-- 1');
     await Helpers.checkIfVisible('ens-search-continue-action-button');
-    // eslint-disable-next-line no-console
-    console.log('-- 2');
     await Helpers.waitAndTap('ens-search-continue-action-button');
-    // eslint-disable-next-line no-console
-    console.log('-- 3');
     await Helpers.checkIfVisible('ens-text-record-me.rainbow.displayName');
-    // eslint-disable-next-line no-console
-    console.log('-- 4');
     await Helpers.typeText(
       'ens-text-record-me.rainbow.displayName',
       RECORD_NAME,
@@ -191,10 +208,10 @@ describe('Register ENS Flow', () => {
     await Helpers.typeText('ens-text-record-description', RECORD_BIO, false);
     await Helpers.clearField('ens-text-record-me.rainbow.displayName');
     // context menu detox failing in bitrise
-    // await Helpers.waitAndTap('use-select-image-avatar');
-    // await Helpers.tapByText('Choose NFT');
-    // await Helpers.tapByText('CryptoKitties');
-    // await Helpers.tapByText('Arun Cattybinky');
+    await Helpers.waitAndTap('use-select-image-avatar');
+    await Helpers.tapByText('Choose NFT');
+    await Helpers.tapByText('CryptoKitties');
+    await Helpers.tapByText('Arun Cattybinky');
     await Helpers.checkIfVisible('ens-assign-records-review-action-button');
     await Helpers.waitAndTap('ens-assign-records-review-action-button');
   });
@@ -229,15 +246,22 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should confirm that the bio record is set', async () => {
-    const { description, displayName } = await getRecords(RANDOM_NAME_ETH);
+    const { description, displayName, avatar } = await getRecords(
+      RANDOM_NAME_ETH
+    );
     if (description !== RECORD_BIO) throw new Error('ENS description is wrong');
     if (displayName === RECORD_NAME)
       throw new Error('ENS displayName is wrong');
-    // if (
-    //   avatar !==
-    //   'eip155:1/erc721:0x06012c8cf97bead5deae237070f9587f8e7a266d/1368227'
-    // )
-    //   throw new Error('ENS avatar is wrong');
+    if (
+      avatar !==
+      'eip155:1/erc721:0x06012c8cf97bead5deae237070f9587f8e7a266d/1368227'
+    )
+      throw new Error('ENS avatar is wrong');
+  });
+
+  it('Should confirm RANDOM_NAME is primary name', async () => {
+    await Helpers.delay(3000);
+    await validatePrimaryName(RANDOM_NAME_ETH);
   });
 
   it('Should navigate to the Wallet screen', async () => {
@@ -260,30 +284,25 @@ describe('Register ENS Flow', () => {
     await Helpers.waitAndTap(`ens-transaction-action-SET_NAME`);
   });
 
-  it('Should CONFIRM rainbowtestwallet.eth is primary name', async () => {
+  it('Should confirm rainbowtestwallet.eth is primary name', async () => {
     await Helpers.delay(3000);
-    const {
-      address: rainbowAddress,
-      primaryName: rainbowPrimaryName,
-    } = await resolveName(RAINBOW_TEST_WALLET_NAME);
-    const {
-      address: randomAddress,
-      primaryName: randomPrimaryName,
-    } = await resolveName(RANDOM_NAME_ETH);
+    await validatePrimaryName(RAINBOW_TEST_WALLET_NAME);
+  });
 
-    if (
-      rainbowAddress !== randomAddress ||
-      rainbowAddress !== RAINBOW_TEST_WALLET_ADDRESS ||
-      randomAddress !== RAINBOW_TEST_WALLET_ADDRESS
-    )
-      throw new Error('Resolved address is wrong');
+  it('Should navigate to the Wallet screen to renew', async () => {
+    await Helpers.swipe('profile-screen', 'left', 'slow');
+    await Helpers.checkIfVisible('wallet-screen');
+  });
 
-    if (
-      rainbowPrimaryName !== randomPrimaryName ||
-      rainbowPrimaryName !== RAINBOW_TEST_WALLET_NAME ||
-      randomPrimaryName !== RAINBOW_TEST_WALLET_NAME
-    )
-      throw new Error('Resolved name is wrong');
+  it('Should open ENS rainbowtestwallet.eth to renew', async () => {
+    await Helpers.swipe('wallet-screen', 'up', 'slow');
+    await Helpers.waitAndTap('wrapped-nft-rainbowtestwallet.eth');
+  });
+
+  it('Should renew rainbowtestwallet.eth', async () => {
+    await Helpers.waitAndTap('unique-token-expanded-state-extend-duration');
+    await Helpers.checkIfVisible(`ens-transaction-action-RENEW`);
+    await Helpers.waitAndTap(`ens-transaction-action-RENEW`);
   });
 
   afterAll(async () => {
