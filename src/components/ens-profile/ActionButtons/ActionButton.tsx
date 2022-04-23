@@ -6,6 +6,7 @@ import {
   AccentColorProvider,
   Box,
   Inset,
+  Space,
   Text,
   useForegroundColor,
 } from '@rainbow-me/design-system';
@@ -15,14 +16,15 @@ type ActionButtonProps = {
   color?: BackgroundColor | 'accent';
   icon?: string | React.ReactElement;
   onPress?: ButtonProps['onPress'];
+  paddingHorizontal?: Space;
   variant?: 'solid' | 'outlined';
 };
 
 export default function ActionButton({
   children,
   icon,
-  isWatching,
   onPress,
+  paddingHorizontal = '12px',
   variant = 'solid',
 }: ActionButtonProps) {
   const appleBlue = useForegroundColor('action');
@@ -62,7 +64,7 @@ export default function ActionButton({
             width: { custom: 36 },
           })}
         >
-          <Inset horizontal={!isIconOnly ? isWatching ? { custom: 11.25 } : '12px' : undefined}>
+          <Inset horizontal={isIconOnly ? undefined : paddingHorizontal}>
             {typeof icon !== 'string' && icon}
             {(typeof icon === 'string' || children) && (
               <Text

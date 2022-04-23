@@ -21,8 +21,8 @@ export default function WatchButton({
   return (
     <ActionButton
       color="action"
-      isWatching={isWatching}
       onPress={watchWallet}
+      paddingHorizontal={isWatching ? { custom: 11.25 } : undefined}
       variant={!isWatching ? 'solid' : 'outlined'}
     >
       {(isWatching ? '' : '􀨭 ') + lang.t(`profiles.actions.${isWatching ? 'watching' : 'watch'}`)}
