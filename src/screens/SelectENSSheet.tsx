@@ -8,7 +8,6 @@ import {
   AccentColorProvider,
   Bleed,
   Box,
-  ColorModeProvider,
   Heading,
   Inline,
   Inset,
