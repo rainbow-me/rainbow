@@ -91,6 +91,10 @@ describe('Register ENS Flow', () => {
     await Helpers.enableSynchronization();
   });
 
+  it('Should send ETH to test wallet"', async () => {
+    await Helpers.sendETHtoTestWallet();
+  });
+
   it('Should navigate to the Profile screen after swiping right', async () => {
     await Helpers.swipe('wallet-screen', 'right', 'slow');
     await Helpers.checkIfVisible('profile-screen');
@@ -112,8 +116,6 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
-    await Helpers.sendETHtoTestWallet();
-
     await Helpers.waitAndTap('hardhat-section');
     await Helpers.checkIfVisible('testnet-toast-Hardhat');
   });
@@ -188,7 +190,7 @@ describe('Register ENS Flow', () => {
     await Helpers.clearField('ens-text-record-me.rainbow.displayName');
     // eslint-disable-next-line no-console
     console.log('-- 9');
-    await Helpers.tapByText(' 􀣵 ');
+    await Helpers.waitAndTap('use-select-image-avatar');
     // eslint-disable-next-line no-console
     console.log('-- 91');
     await Helpers.tapByText('Choose NFT');
@@ -208,7 +210,7 @@ describe('Register ENS Flow', () => {
     console.log('-- 11');
   });
 
-  it('Should display warning on invalid custom gas price', async () => {
+  it('Should display change gas to Urgent', async () => {
     await Helpers.tapByText('Normal');
     await Helpers.tapByText('Urgent');
   });
@@ -232,7 +234,7 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should confirm that the name is not available anymore', async () => {
-    await Helpers.delay(2000);
+    await Helpers.delay(4000);
     const ensAvailable = await nameIsAvailable(RANDOM_NAME);
     if (ensAvailable) throw new Error('ENS name is available');
   });
@@ -245,10 +247,23 @@ describe('Register ENS Flow', () => {
     if (displayName === RECORD_NAME)
       throw new Error('ENS displayName is wrong');
     if (
-      avatar ===
+      avatar !==
       'eip155:1/erc721:0x06012c8cf97bead5deae237070f9587f8e7a266d/1368227'
     )
       throw new Error('ENS avatar is wrong');
+  });
+
+  it('Should navigate to the Wallet screen', async () => {
+    await Helpers.swipe('profile-screen', 'left', 'slow');
+    await Helpers.checkIfVisible('wallet-screen');
+  });
+
+  it('Should open ENS rainbowtestwallet.eth', async () => {
+    await Helpers.swipe('wallet-screen', 'up', 'slow');
+    await Helpers.tapByText('ENS');
+    await Helpers.swipe('wallet-screen', 'up', 'slow');
+    await Helpers.tapByText('CryptoKitties');
+    await Helpers.waitAndTap('wrapped-nft-rainbowtestwallet.eth');
   });
 
   afterAll(async () => {

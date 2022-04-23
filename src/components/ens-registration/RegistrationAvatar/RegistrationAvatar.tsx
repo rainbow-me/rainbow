@@ -113,6 +113,7 @@ const RegistrationAvatar = ({
       onBlurField({ key: 'avatar', value: data.url });
     },
     showRemove: Boolean(avatarUrl),
+    testID: 'avatar',
     uploadToIPFS: true,
   });
 
@@ -139,8 +140,13 @@ const RegistrationAvatar = ({
           condition={hasSeenExplainSheet}
           wrap={children => <ContextMenu>{children}</ContextMenu>}
         >
-          <ButtonPressAnimation
-            onPress={!hasSeenExplainSheet ? onShowExplainSheet : undefined}
+          <ConditionalWrap
+            condition={!hasSeenExplainSheet}
+            wrap={children => (
+              <ButtonPressAnimation onPress={onShowExplainSheet}>
+                {children}
+              </ButtonPressAnimation>
+            )}
           >
             <AccentColorProvider color={accentColor + '10'}>
               <Box
@@ -169,7 +175,7 @@ const RegistrationAvatar = ({
                 )}
               </Box>
             </AccentColorProvider>
-          </ButtonPressAnimation>
+          </ConditionalWrap>
         </ConditionalWrap>
       )}
     </Box>

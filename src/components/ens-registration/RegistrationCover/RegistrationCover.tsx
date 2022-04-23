@@ -97,6 +97,7 @@ const RegistrationCover = ({
       onBlurField({ key: 'cover', value: data.url });
     },
     showRemove: Boolean(coverUrl),
+    testID: 'cover',
     uploadToIPFS: true,
   });
 
@@ -114,9 +115,16 @@ const RegistrationCover = ({
       condition={hasSeenExplainSheet}
       wrap={children => <ContextMenu>{children}</ContextMenu>}
     >
-      <ButtonPressAnimation
-        onPress={!hasSeenExplainSheet ? onShowExplainSheet : undefined}
-        scaleTo={1}
+      <ConditionalWrap
+        condition={!hasSeenExplainSheet}
+        wrap={children => (
+          <ButtonPressAnimation
+            onPress={!hasSeenExplainSheet ? onShowExplainSheet : undefined}
+            scaleTo={1}
+          >
+            {children}
+          </ButtonPressAnimation>
+        )}
       >
         <Box
           alignItems="center"
@@ -145,7 +153,7 @@ const RegistrationCover = ({
             </Text>
           )}
         </Box>
-      </ButtonPressAnimation>
+      </ConditionalWrap>
     </ConditionalWrap>
   );
 };

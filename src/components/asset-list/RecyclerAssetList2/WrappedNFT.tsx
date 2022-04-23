@@ -58,9 +58,13 @@ export default React.memo(function WrappedNFT({
           alignItems: 'flex-end',
           paddingRight: '19px',
         };
-
   return (
-    <Box flexGrow={1} justifyContent="center" {...placementProps}>
+    <Box
+      flexGrow={1}
+      justifyContent="center"
+      testID={`wrapped-nft-${asset.name}`}
+      {...placementProps}
+    >
       <UniqueTokenCard item={asset} onPress={onPress || handleItemPress} />
     </Box>
   );
