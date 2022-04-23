@@ -188,12 +188,18 @@ describe('Register ENS Flow', () => {
     await Helpers.clearField('ens-text-record-me.rainbow.displayName');
     // eslint-disable-next-line no-console
     console.log('-- 9');
-    // await Helpers.waitAndTap('registration-avatar');
-    // await Helpers.tapByText('Choose NFT');
-    // await Helpers.tapByText('CryptoKitties');
-    // await Helpers.waitAndTap(
-    //   'unique-token-card-0x06012c8cf97bead5deae237070f9587f8e7a266d_1368227'
-    // );
+    await Helpers.tapByText(' 􀣵 ');
+    // eslint-disable-next-line no-console
+    console.log('-- 91');
+    await Helpers.tapByText('Choose NFT');
+    // eslint-disable-next-line no-console
+    console.log('-- 92');
+    await Helpers.tapByText('CryptoKitties');
+    // eslint-disable-next-line no-console
+    console.log('-- 93');
+    await Helpers.tapByText('Arun Cattybinky');
+    // eslint-disable-next-line no-console
+    console.log('-- 94');
     await Helpers.checkIfVisible('ens-assign-records-review-action-button');
     // eslint-disable-next-line no-console
     console.log('-- 10');
@@ -238,7 +244,11 @@ describe('Register ENS Flow', () => {
     if (description !== RECORD_BIO) throw new Error('ENS description is wrong');
     if (displayName === RECORD_NAME)
       throw new Error('ENS displayName is wrong');
-    if (!avatar) throw new Error('ENS avatar is wrong');
+    if (
+      avatar ===
+      'eip155:1/erc721:0x06012c8cf97bead5deae237070f9587f8e7a266d/1368227'
+    )
+      throw new Error('ENS avatar is wrong');
   });
 
   afterAll(async () => {

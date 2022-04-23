@@ -1,4 +1,8 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
+import {
+  // @ts-ignore
+  IS_TESTING,
+} from 'react-native-dotenv';
 import { UniqueTokenCard } from '../../unique-token';
 import { Box, BoxProps } from '@rainbow-me/design-system';
 import { UniqueAsset } from '@rainbow-me/entities';
@@ -15,7 +19,18 @@ export default React.memo(function WrappedNFT({
   uniqueId: string;
   placement: 'left' | 'right';
 }) {
-  const asset = useCollectible({ uniqueId });
+  const assetCollectible = useCollectible({ uniqueId });
+
+  const asset = useMemo(
+    () => ({
+      ...assetCollectible,
+      ...(IS_TESTING === 'true'
+        ? { image_original_url: null, image_preview_url: null, image_url: null }
+        : {}),
+    }),
+    [assetCollectible]
+  );
+
   const { navigate } = useNavigation();
 
   const handleItemPress = useCallback(
