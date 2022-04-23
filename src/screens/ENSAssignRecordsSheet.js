@@ -131,11 +131,12 @@ export default function ENSAssignRecordsSheet() {
 
   const [hasSeenExplainSheet, setHasSeenExplainSheet] = useState(false);
 
-  useEffect(() => {
-    (async () => {
-      setHasSeenExplainSheet(Boolean(await getSeenOnchainDataDisclaimer()));
-    })();
-  }, []);
+  // useEffect(() => {
+  //   (async () => {
+  //     console.log('------- getSeenOnchainDataDisclaimer')
+  //     setHasSeenExplainSheet(Boolean(await getSeenOnchainDataDisclaimer()));
+  //   })();
+  // }, []);
 
   const { navigate } = useNavigation();
 

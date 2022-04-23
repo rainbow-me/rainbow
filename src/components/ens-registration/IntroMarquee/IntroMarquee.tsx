@@ -1,9 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+// @ts-expect-error
+import { IS_TESTING } from 'react-native-dotenv';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { MarqueeList } from '../../list';
 import { Box, Stack, Text } from '@rainbow-me/design-system';
-import { fetchProfile } from '@rainbow-me/handlers/ens';
+import { fetchRecords } from '@rainbow-me/handlers/ens';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import { ensIntroMarqueeNames } from '@rainbow-me/references';
@@ -52,13 +54,13 @@ export default function IntroMarquee() {
       const profiles: { [name: string]: string | undefined } = {};
       await Promise.all(
         ensIntroMarqueeNames.map(async name => {
-          const profile = await fetchProfile(name);
-          profiles[name] = profile?.records?.description;
+          const records = await fetchRecords(name);
+          profiles[name] = records?.description;
         })
       );
       setIntroMarqueeProfiles(profiles as any);
     };
-    getProfiles();
+    if (IS_TESTING !== 'true') getProfiles();
   }, []);
 
   const items = useMemo(
