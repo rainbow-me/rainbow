@@ -23,6 +23,7 @@ export default function WatchButton({
       color="action"
       icon={!isWatching ? '􀨭' : ''}
       onPress={watchWallet}
+      testID="profile-sheet-watch-button"
       variant={!isWatching ? 'solid' : 'outlined'}
     >
       {lang.t(`profiles.actions.${isWatching ? 'watching' : 'watch'}`)}
