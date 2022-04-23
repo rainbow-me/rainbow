@@ -56,7 +56,7 @@ const RegistrationCover = ({
 
   const setCoverMetadata = useSetRecoilState(coverMetadataAtom);
 
-  const { ContextMenu } = useSelectImageMenu({
+  const { ConditionalContextMenu } = useSelectImageMenu({
     imagePickerOptions: {
       cropping: true,
       height: 500,
@@ -111,50 +111,38 @@ const RegistrationCover = ({
     );
   }
   return (
-    <ConditionalWrap
-      condition={hasSeenExplainSheet}
-      wrap={children => <ContextMenu>{children}</ContextMenu>}
+    <ConditionalContextMenu
+      condition={!hasSeenExplainSheet}
+      onPress={onShowExplainSheet}
     >
-      <ConditionalWrap
-        condition={!hasSeenExplainSheet}
-        wrap={children => (
-          <ButtonPressAnimation
-            onPress={!hasSeenExplainSheet ? onShowExplainSheet : undefined}
-            scaleTo={1}
-          >
-            {children}
-          </ButtonPressAnimation>
-        )}
+      <Box
+        alignItems="center"
+        as={ios ? RadialGradient : View}
+        height="126px"
+        justifyContent="center"
+        {...(ios
+          ? {
+              colors: [accentColor + '10', accentColor + '33'],
+              stops: [0.6, 0],
+            }
+          : {
+              style: { backgroundColor: accentColor + '10' },
+            })}
       >
-        <Box
-          alignItems="center"
-          as={ios ? RadialGradient : View}
-          height="126px"
-          justifyContent="center"
-          {...(ios
-            ? {
-                colors: [accentColor + '10', accentColor + '33'],
-                stops: [0.6, 0],
-              }
-            : {
-                style: { backgroundColor: accentColor + '10' },
-              })}
-        >
-          {coverUrl ? (
-            <Box
-              as={ImgixImage}
-              height="126px"
-              source={{ uri: coverUrl }}
-              width="full"
-            />
-          ) : (
-            <Text color="accent" size="18px" weight="heavy">
-              􀣵 {lang.t('profiles.create.add_cover')}
-            </Text>
-          )}
-        </Box>
-      </ConditionalWrap>
-    </ConditionalWrap>
+        {coverUrl ? (
+          <Box
+            as={ImgixImage}
+            height="126px"
+            source={{ uri: coverUrl }}
+            width="full"
+          />
+        ) : (
+          <Text color="accent" size="18px" weight="heavy">
+            􀣵 {lang.t('profiles.create.add_cover')}
+          </Text>
+        )}
+      </Box>
+    </ConditionalContextMenu>
   );
 };
 

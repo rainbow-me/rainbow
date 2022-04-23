@@ -1,9 +1,12 @@
 import { useFocusEffect } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo, useRef } from 'react';
+// @ts-expect-error
+import { IS_TESTING } from 'react-native-dotenv';
 import { Image, Options } from 'react-native-image-crop-picker';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import { useMutation } from 'react-query';
+import { ButtonPressAnimation } from '../components/animations';
 import { useImagePicker } from '.';
 import { UniqueAsset } from '@rainbow-me/entities';
 import {
@@ -211,25 +214,43 @@ export default function useSelectImageMenu({
     );
   }, [handleSelectImage, handleSelectNFT, menuItems, onRemoveImage]);
 
-  const ContextMenu = useCallback(
-    ({ children }) => (
-      <ContextMenuButton
-        enableContextMenu
-        menuConfig={{
-          menuItems: menuItems.map(item => items[item]) as any,
-          menuTitle: '',
-        }}
-        {...(android ? { onPress: handleAndroidPress } : {})}
-        isMenuPrimaryAction
-        onPressMenuItem={handlePressMenuItem}
-        testID={`use-select-image-${testID}`}
-        useActionSheetFallback={false}
-      >
-        {children}
-      </ContextMenuButton>
-    ),
-    [handleAndroidPress, handlePressMenuItem, menuItems, testID]
+  const isTesting = useMemo(() => IS_TESTING === 'true', []);
+
+  const ConditionalContextMenu = useCallback(
+    ({ children, onPress, condition }) => {
+      return condition || isTesting ? (
+        <ButtonPressAnimation
+          onPress={isTesting ? handleSelectNFT : onPress}
+          scale={0.95}
+          testID={`use-select-image-${testID}`}
+        >
+          {children}
+        </ButtonPressAnimation>
+      ) : (
+        <ContextMenuButton
+          enableContextMenu
+          menuConfig={{
+            menuItems: menuItems.map(item => items[item]) as any,
+            menuTitle: '',
+          }}
+          {...(android ? { onPress: handleAndroidPress } : {})}
+          isMenuPrimaryAction
+          onPressMenuItem={handlePressMenuItem}
+          testID={`use-select-image-${testID}`}
+          useActionSheetFallback={false}
+        >
+          {children}
+        </ContextMenuButton>
+      );
+    },
+    [
+      handleAndroidPress,
+      handlePressMenuItem,
+      handleSelectNFT,
+      menuItems,
+      testID,
+    ]
   );
 
-  return { ContextMenu, isUploading };
+  return { ConditionalContextMenu, isUploading };
 }
