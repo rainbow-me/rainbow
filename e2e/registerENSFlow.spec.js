@@ -209,7 +209,7 @@ describe('Register ENS Flow', () => {
     await Helpers.clearField('ens-text-record-me.rainbow.displayName');
     // context menu detox failing in bitrise
     await Helpers.waitAndTap('use-select-image-avatar');
-    // await Helpers.tapByText('Choose NFT');
+    await Helpers.tapByText('Choose NFT');
     await Helpers.tapByText('CryptoKitties');
     await Helpers.tapByText('Arun Cattybinky');
     await Helpers.checkIfVisible('ens-assign-records-review-action-button');
