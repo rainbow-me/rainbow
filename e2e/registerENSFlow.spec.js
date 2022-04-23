@@ -39,7 +39,8 @@ const getRecords = async ensName => {
     hashName,
     'me.rainbow.displayName'
   );
-  return { description, displayName };
+  const avatar = await publicResolver.text(hashName, 'avatar');
+  return { avatar, description, displayName };
 };
 
 beforeAll(async () => {
@@ -156,21 +157,49 @@ describe('Register ENS Flow', () => {
     await Helpers.checkIfVisible('ens-registration-price');
   });
 
-  it('Should go to view to set records and skip it', async () => {
+  it('Should go to view to set records', async () => {
+    // eslint-disable-next-line no-console
+    console.log('-- 1');
     await Helpers.checkIfVisible('ens-search-continue-action-button');
+    // eslint-disable-next-line no-console
+    console.log('-- 2');
     await Helpers.waitAndTap('ens-search-continue-action-button');
+    // eslint-disable-next-line no-console
+    console.log('-- 3');
     await Helpers.checkIfVisible('ens-text-record-me.rainbow.displayName');
+    // eslint-disable-next-line no-console
+    console.log('-- 4');
     await Helpers.typeText(
       'ens-text-record-me.rainbow.displayName',
       RECORD_NAME,
       false
     );
+    // eslint-disable-next-line no-console
+    console.log('-- 5');
     await Helpers.tapByText('Got it');
+    // eslint-disable-next-line no-console
+    console.log('-- 6');
     await Helpers.checkIfVisible('ens-text-record-description');
+    // eslint-disable-next-line no-console
+    console.log('-- 7');
     await Helpers.typeText('ens-text-record-description', RECORD_BIO, false);
+    // eslint-disable-next-line no-console
+    console.log('-- 8');
     await Helpers.clearField('ens-text-record-me.rainbow.displayName');
+    // eslint-disable-next-line no-console
+    console.log('-- 9');
+    // await Helpers.waitAndTap('registration-avatar');
+    // await Helpers.tapByText('Choose NFT');
+    // await Helpers.tapByText('CryptoKitties');
+    // await Helpers.waitAndTap(
+    //   'unique-token-card-0x06012c8cf97bead5deae237070f9587f8e7a266d_1368227'
+    // );
     await Helpers.checkIfVisible('ens-assign-records-review-action-button');
+    // eslint-disable-next-line no-console
+    console.log('-- 10');
     await Helpers.waitAndTap('ens-assign-records-review-action-button');
+    // eslint-disable-next-line no-console
+    console.log('-- 11');
   });
 
   it('Should display warning on invalid custom gas price', async () => {
@@ -203,10 +232,13 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should confirm that the bio record is set', async () => {
-    const { description, displayName } = await getRecords(RANDOM_NAME_ETH);
+    const { description, displayName, avatar } = await getRecords(
+      RANDOM_NAME_ETH
+    );
     if (description !== RECORD_BIO) throw new Error('ENS description is wrong');
     if (displayName === RECORD_NAME)
       throw new Error('ENS displayName is wrong');
+    if (!avatar) throw new Error('ENS avatar is wrong');
   });
 
   afterAll(async () => {
