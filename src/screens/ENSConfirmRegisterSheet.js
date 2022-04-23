@@ -286,6 +286,7 @@ export default function ENSConfirmRegisterSheet() {
             Boolean(registrationCostsData?.stepGasLimit)
           }
           label={lang.t('profiles.confirm.confirm_set_name')}
+          testID={step}
         />
       ),
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: null,

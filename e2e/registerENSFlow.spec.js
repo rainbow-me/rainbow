@@ -12,6 +12,9 @@ const ensPublicResolverAddress = '0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41';
 
 const RANDOM_NAME = 'somerandomname321';
 const RANDOM_NAME_ETH = RANDOM_NAME + '.eth';
+const RAINBOW_TEST_WALLET_NAME = 'rainbowtestwallet.eth';
+const RAINBOW_TEST_WALLET_ADDRESS =
+  '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
 const RECORD_BIO = 'my bio';
 const RECORD_NAME = 'random';
 
@@ -41,6 +44,13 @@ const getRecords = async ensName => {
   );
   const avatar = await publicResolver.text(hashName, 'avatar');
   return { avatar, description, displayName };
+};
+
+const resolveName = async ensName => {
+  const provider = Helpers.getProvider();
+  const address = await provider.resolveName(ensName);
+  const primaryName = await provider.lookupAddress(address);
+  return { address, primaryName };
 };
 
 beforeAll(async () => {
@@ -227,7 +237,7 @@ describe('Register ENS Flow', () => {
 
   it('Should see confirm registration screen and set reverse records', async () => {
     await Helpers.checkIfVisible(`ens-reverse-record-switch`);
-    await Helpers.waitAndTap('ens-reverse-record-switch');
+    // set RANDOM_NAME as primary name
     await Helpers.waitAndTap('ens-reverse-record-switch');
     await Helpers.checkIfVisible(`ens-transaction-action-REGISTER`);
     await Helpers.waitAndTap(`ens-transaction-action-REGISTER`);
@@ -264,6 +274,39 @@ describe('Register ENS Flow', () => {
     await Helpers.swipe('wallet-screen', 'up', 'slow');
     await Helpers.tapByText('CryptoKitties');
     await Helpers.waitAndTap('wrapped-nft-rainbowtestwallet.eth');
+  });
+
+  it('Should use rainbowtestwallet.eth as primary name', async () => {
+    await Helpers.swipe('unique-token-expanded-state', 'up', 'slow');
+    await Helpers.waitAndTap('ens-reverse-record-switch');
+    await Helpers.checkIfVisible(`ens-transaction-action-SET_NAME`);
+    await Helpers.waitAndTap(`ens-transaction-action-SET_NAME`);
+  });
+
+  it('Should CONFIRM rainbowtestwallet.eth is primary name', async () => {
+    await Helpers.delay(3000);
+    const {
+      address: rainbowAddress,
+      primaryName: rainbowPrimaryName,
+    } = await resolveName(RAINBOW_TEST_WALLET_NAME);
+    const {
+      address: randomAddress,
+      primaryName: randomPrimaryName,
+    } = await resolveName(RANDOM_NAME_ETH);
+
+    if (
+      rainbowAddress !== randomAddress ||
+      rainbowAddress !== RAINBOW_TEST_WALLET_ADDRESS ||
+      randomAddress !== RAINBOW_TEST_WALLET_ADDRESS
+    )
+      throw new Error('Resolved address is wrong');
+
+    if (
+      rainbowPrimaryName !== randomPrimaryName ||
+      rainbowPrimaryName !== RAINBOW_TEST_WALLET_NAME ||
+      randomPrimaryName !== RAINBOW_TEST_WALLET_NAME
+    )
+      throw new Error('Resolved name is wrong');
   });
 
   afterAll(async () => {
