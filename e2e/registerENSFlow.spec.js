@@ -1,14 +1,19 @@
 /* eslint-disable no-undef */
 /* eslint-disable jest/expect-expect */
 import { exec } from 'child_process';
+import { hash } from '@ensdomains/eth-ens-namehash';
 import { Contract } from '@ethersproject/contracts';
 import * as Helpers from './helpers';
 import registrarABI from '@rainbow-me/references/ens/ENSETHRegistrarController.json';
-
+import publicResolverABI from '@rainbow-me/references/ens/ENSPublicResolver.json';
 const ensETHRegistrarControllerAddress =
   '0x283Af0B28c62C092C9727F1Ee09c02CA627EB7F5';
+const ensPublicResolverAddress = '0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41';
 
 const RANDOM_NAME = 'somerandomname321';
+const RANDOM_NAME_ETH = RANDOM_NAME + '.eth';
+const RECORD_BIO = 'my bio';
+const RECORD_NAME = 'random';
 
 const nameIsAvailable = async name => {
   const provider = Helpers.getProvider();
@@ -19,6 +24,22 @@ const nameIsAvailable = async name => {
   );
   const nameIsAvailable = await registrarContract.available(name);
   return !!nameIsAvailable;
+};
+
+const getRecords = async ensName => {
+  const provider = Helpers.getProvider();
+  const publicResolver = new Contract(
+    ensPublicResolverAddress,
+    publicResolverABI,
+    provider
+  );
+  const hashName = hash(ensName);
+  const description = await publicResolver.text(hashName, 'description');
+  const displayName = await publicResolver.text(
+    hashName,
+    'me.rainbow.displayName'
+  );
+  return { description, displayName };
 };
 
 beforeAll(async () => {
@@ -138,8 +159,23 @@ describe('Register ENS Flow', () => {
   it('Should go to view to set records and skip it', async () => {
     await Helpers.checkIfVisible('ens-search-continue-action-button');
     await Helpers.waitAndTap('ens-search-continue-action-button');
-    await Helpers.checkIfVisible('ens-assign-records-skip');
-    await Helpers.waitAndTap('ens-assign-records-skip');
+    await Helpers.checkIfVisible('ens-text-record-me.rainbow.displayName');
+    await Helpers.typeText(
+      'ens-text-record-me.rainbow.displayName',
+      RECORD_NAME,
+      false
+    );
+    await Helpers.tapByText('Got it');
+    await Helpers.checkIfVisible('ens-text-record-description');
+    await Helpers.typeText('ens-text-record-description', RECORD_BIO, false);
+    await Helpers.clearField('ens-text-record-me.rainbow.displayName');
+    await Helpers.checkIfVisible('ens-assign-records-review-action-button');
+    await Helpers.waitAndTap('ens-assign-records-review-action-button');
+  });
+
+  it('Should display warning on invalid custom gas price', async () => {
+    await Helpers.tapByText('Normal');
+    await Helpers.tapByText('Urgent');
   });
 
   it('Should go to review registration and start it', async () => {
@@ -164,6 +200,13 @@ describe('Register ENS Flow', () => {
     await Helpers.delay(2000);
     const ensAvailable = await nameIsAvailable(RANDOM_NAME);
     if (ensAvailable) throw new Error('ENS name is available');
+  });
+
+  it('Should confirm that the bio record is set', async () => {
+    const { description, displayName } = await getRecords(RANDOM_NAME_ETH);
+    if (description !== RECORD_BIO) throw new Error('ENS description is wrong');
+    if (displayName === RECORD_NAME)
+      throw new Error('ENS displayName is wrong');
   });
 
   afterAll(async () => {
