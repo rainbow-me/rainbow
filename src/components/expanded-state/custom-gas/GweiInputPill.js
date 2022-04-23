@@ -9,10 +9,10 @@ import { buildTextStyles, margin, padding } from '@rainbow-me/styles';
 
 const ANDROID_EXTRA_LINE_HEIGHT = 6;
 
-const GweiPill = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
+const GweiPill = styled(LinearGradient).attrs(({ theme: { colors, isDarkMode } }) => ({
   colors: colors.gradients.lightGreyTransparent,
-  end: { x: 0.5, y: 1 },
-  start: { x: 0, y: 0 },
+  end: isDarkMode ? { x: 0, y: 0 } : { x: 0.5, y: 1 },
+  start: isDarkMode ? { x: 0.5, y: 1 } : { x: 0, y: 0 },
 }))({
   borderRadius: 15,
   height: 40,
