@@ -207,11 +207,10 @@ describe('Register ENS Flow', () => {
     await Helpers.checkIfVisible('ens-text-record-description');
     await Helpers.typeText('ens-text-record-description', RECORD_BIO, false);
     await Helpers.clearField('ens-text-record-me.rainbow.displayName');
-    // context menu detox failing in bitrise
-    // await Helpers.waitAndTap('use-select-image-avatar');
-    // await Helpers.tapByText('Choose NFT');
-    // await Helpers.tapByText('CryptoKitties');
-    // await Helpers.tapByText('Arun Cattybinky');
+    await Helpers.waitAndTap('use-select-image-avatar');
+    await Helpers.tapByText('Choose NFT');
+    await Helpers.tapByText('CryptoKitties');
+    await Helpers.tapByText('Arun Cattybinky');
     await Helpers.checkIfVisible('ens-assign-records-review-action-button');
     await Helpers.waitAndTap('ens-assign-records-review-action-button');
   });
@@ -250,11 +249,11 @@ describe('Register ENS Flow', () => {
     if (description !== RECORD_BIO) throw new Error('ENS description is wrong');
     if (displayName === RECORD_NAME)
       throw new Error('ENS displayName is wrong');
-    // if (
-    //   avatar !==
-    //   'eip155:1/erc721:0x06012c8cf97bead5deae237070f9587f8e7a266d/1368227'
-    // )
-    //   throw new Error('ENS avatar is wrong');
+    if (
+      avatar !==
+      'eip155:1/erc721:0x06012c8cf97bead5deae237070f9587f8e7a266d/1368227'
+    )
+      throw new Error('ENS avatar is wrong');
   });
 
   it('Should confirm RANDOM_NAME is primary name', async () => {
@@ -271,7 +270,6 @@ describe('Register ENS Flow', () => {
     await Helpers.swipe('wallet-screen', 'up', 'slow');
     await Helpers.tapByText('ENS');
     await Helpers.swipe('wallet-screen', 'up', 'slow');
-    await Helpers.tapByText('CryptoKitties');
     await Helpers.waitAndTap('wrapped-nft-rainbowtestwallet.eth');
   });
 
