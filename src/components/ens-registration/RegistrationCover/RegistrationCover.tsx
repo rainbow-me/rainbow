@@ -1,12 +1,10 @@
 import { useFocusEffect } from '@react-navigation/core';
-import ConditionalWrap from 'conditional-wrap';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { Image } from 'react-native-image-crop-picker';
 import RadialGradient from 'react-native-radial-gradient';
 import { atom, useSetRecoilState } from 'recoil';
-import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import Skeleton from '../../skeleton/Skeleton';
 import { Box, Text, useForegroundColor } from '@rainbow-me/design-system';
 import {

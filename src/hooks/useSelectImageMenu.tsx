@@ -247,6 +247,7 @@ export default function useSelectImageMenu({
       handleAndroidPress,
       handlePressMenuItem,
       handleSelectNFT,
+      isTesting,
       menuItems,
       testID,
     ]
