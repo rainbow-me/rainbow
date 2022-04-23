@@ -188,8 +188,8 @@ export default function useENSRegistrationCosts({
       staleTime: Infinity,
     },
     {
-      enabled: true,
-      // step === REGISTRATION_STEPS.COMMIT || step === REGISTRATION_STEPS.EDIT,
+      enabled:
+        step === REGISTRATION_STEPS.COMMIT || step === REGISTRATION_STEPS.EDIT,
       queryFn: getSetRecordsGasLimit,
       queryKey: [
         QUERY_KEYS.GET_SET_RECORDS_GAS_LIMIT,

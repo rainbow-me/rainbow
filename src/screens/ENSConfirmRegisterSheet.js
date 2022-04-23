@@ -33,6 +33,7 @@ import {
   useENSRegistrationActionHandler,
   useENSRegistrationCosts,
   useENSRegistrationForm,
+  useENSRegistrationStepHandler,
   useENSSearch,
   usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
@@ -118,8 +119,10 @@ export default function ENSConfirmRegisterSheet() {
   });
 
   const [sendReverseRecord, setSendReverseRecord] = useState(false);
-  const { step, action } = useENSRegistrationActionHandler({
+  const { step } = useENSRegistrationStepHandler(false);
+  const { action } = useENSRegistrationActionHandler({
     sendReverseRecord,
+    step,
     yearsDuration: duration,
   });
 
@@ -308,7 +311,7 @@ export default function ENSConfirmRegisterSheet() {
   useFocusEffect(
     useCallback(() => {
       blurFields();
-    }, [blurFields])
+    }, [])
   );
 
   return (

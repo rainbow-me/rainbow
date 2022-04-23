@@ -24,8 +24,8 @@ import {
 import { ENS_DOMAIN } from '@rainbow-me/helpers/ens';
 import {
   useENSRegistration,
-  useENSRegistrationActionHandler,
   useENSRegistrationCosts,
+  useENSRegistrationStepHandler,
   useENSSearch,
   usePrevious,
 } from '@rainbow-me/hooks';
@@ -56,7 +56,7 @@ export default function ENSSearchSheet() {
     name: debouncedSearchQuery,
   });
 
-  const { step } = useENSRegistrationActionHandler();
+  const { step } = useENSRegistrationStepHandler();
   const {
     data: registrationCostsData,
     isSuccess: registrationCostsDataIsAvailable,

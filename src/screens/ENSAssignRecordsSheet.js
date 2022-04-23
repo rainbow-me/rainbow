@@ -50,9 +50,9 @@ import {
 } from '@rainbow-me/helpers/ens';
 import {
   useENSRegistration,
-  useENSRegistrationActionHandler,
   useENSRegistrationCosts,
   useENSRegistrationForm,
+  useENSRegistrationStepHandler,
   useENSSearch,
   useKeyboardHeight,
   usePersistentDominantColorFromImage,
@@ -87,7 +87,7 @@ export default function ENSAssignRecordsSheet() {
     name,
   });
 
-  const { step } = useENSRegistrationActionHandler();
+  const { step } = useENSRegistrationStepHandler();
 
   useENSRegistrationCosts({
     name,
