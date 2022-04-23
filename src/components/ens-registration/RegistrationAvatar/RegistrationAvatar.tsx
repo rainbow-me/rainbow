@@ -12,6 +12,8 @@ import {
   Text,
   useForegroundColor,
 } from '@rainbow-me/design-system';
+import { UniqueAsset } from '@rainbow-me/entities';
+import { UploadImageReturnData } from '@rainbow-me/handlers/pinata';
 import {
   useENSRegistration,
   useENSRegistrationForm,
@@ -71,7 +73,13 @@ const RegistrationAvatar = ({
       cropping: true,
     },
     menuItems: ['library', 'nft'],
-    onChangeImage: ({ asset, image }) => {
+    onChangeImage: ({
+      asset,
+      image,
+    }: {
+      asset?: UniqueAsset;
+      image?: Image & { tmpPath?: string };
+    }) => {
       setAvatarMetadata(image);
       setAvatarUrl(image?.tmpPath || asset?.image_thumbnail_url || '');
       // We want to disallow future avatar state changes (i.e. when upload successful)
@@ -107,7 +115,7 @@ const RegistrationAvatar = ({
       onBlurField({ key: 'avatar', value: '' });
       setAvatarUrl('');
     },
-    onUploadSuccess: ({ data }) => {
+    onUploadSuccess: ({ data }: { data: UploadImageReturnData }) => {
       onBlurField({ key: 'avatar', value: data.url });
     },
     showRemove: Boolean(avatarUrl),
@@ -135,8 +143,8 @@ const RegistrationAvatar = ({
         </Skeleton>
       ) : (
         <ConditionalContextMenu
-          condition={!hasSeenExplainSheet}
-          onPress={onShowExplainSheet}
+          condition={hasSeenExplainSheet}
+          onNonConditionPress={onShowExplainSheet}
         >
           <AccentColorProvider color={accentColor + '10'}>
             <Box

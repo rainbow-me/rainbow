@@ -1,8 +1,6 @@
 import { useFocusEffect } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo, useRef } from 'react';
-// @ts-expect-error
-import { IS_TESTING } from 'react-native-dotenv';
 import { Image, Options } from 'react-native-image-crop-picker';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import { useMutation } from 'react-query';
@@ -214,19 +212,9 @@ export default function useSelectImageMenu({
     );
   }, [handleSelectImage, handleSelectNFT, menuItems, onRemoveImage]);
 
-  const isTesting = useMemo(() => IS_TESTING === 'true', []);
-
   const ConditionalContextMenu = useCallback(
-    ({ children, onPress, condition }) => {
-      return condition || isTesting ? (
-        <ButtonPressAnimation
-          onPress={isTesting ? handleSelectNFT : onPress}
-          scale={0.95}
-          testID={`use-select-image-${testID}`}
-        >
-          {children}
-        </ButtonPressAnimation>
-      ) : (
+    ({ children, onNonConditionPress, condition }) => {
+      return condition ? (
         <ContextMenuButton
           enableContextMenu
           menuConfig={{
@@ -241,16 +229,17 @@ export default function useSelectImageMenu({
         >
           {children}
         </ContextMenuButton>
+      ) : (
+        <ButtonPressAnimation
+          onPress={onNonConditionPress}
+          scale={0.95}
+          testID={`use-select-image-${testID}`}
+        >
+          {children}
+        </ButtonPressAnimation>
       );
     },
-    [
-      handleAndroidPress,
-      handlePressMenuItem,
-      handleSelectNFT,
-      isTesting,
-      menuItems,
-      testID,
-    ]
+    [handleAndroidPress, handlePressMenuItem, menuItems, testID]
   );
 
   return { ConditionalContextMenu, isUploading };
