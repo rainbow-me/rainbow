@@ -38,12 +38,13 @@ export default function IntroMarquee() {
   );
 
   const renderItem = useCallback(
-    ({ item, onPressStart, onPressCancel }) => (
+    ({ item, onPressStart, onPressCancel, testID }) => (
       <ENSAvatarPlaceholder
         name={item.name}
         onPress={item.onPress}
         onPressCancel={onPressCancel}
         onPressStart={onPressStart}
+        testID={testID}
       />
     ),
     []
@@ -65,9 +66,10 @@ export default function IntroMarquee() {
 
   const items = useMemo(
     () =>
-      ensIntroMarqueeNames.map(name => ({
+      ensIntroMarqueeNames.map((name, index) => ({
         name,
         onPress: () => handlePressENS(name),
+        testID: `ens-names-marquee-item-${index}`,
       })),
     [handlePressENS]
   );
@@ -89,11 +91,13 @@ function ENSAvatarPlaceholder({
   onPress,
   onPressCancel,
   onPressStart,
+  testID,
 }: {
   name: string;
   onPress: () => void;
   onPressCancel: () => void;
   onPressStart: () => void;
+  testID?: string;
 }) {
   return (
     <ButtonPressAnimation
@@ -109,8 +113,9 @@ function ENSAvatarPlaceholder({
       onPressStart={onPressStart}
       reanimatedButton={false}
       scaleTo={0.95}
+      testID={testID}
     >
-      <Box paddingHorizontal="8px">
+      <Box paddingHorizontal="8px" testID={testID}>
         <Stack alignHorizontal="center" space="15px">
           <Box
             as={ImgixImage}

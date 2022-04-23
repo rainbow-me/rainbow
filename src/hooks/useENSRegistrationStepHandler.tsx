@@ -112,7 +112,7 @@ export default function useENSRegistrationStepHandler(observer = true) {
     if (!confirmed) {
       timeout.current = setTimeout(() => {
         startPollingWatchCommitTransaction();
-      }, 20000);
+      }, 2000);
     }
   }, [registrationStep, watchCommitTransaction]);
 

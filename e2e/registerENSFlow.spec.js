@@ -109,6 +109,11 @@ describe('Register ENS Flow', () => {
   it('Should go to ENS flow pressing the ENS banner', async () => {
     await Helpers.waitAndTap('ens-register-name-banner');
     await Helpers.checkIfVisible('ens-intro-sheet');
+  });
+
+  it('Should be able to press a profile and continue to the ENS search screen', async () => {
+    await Helpers.swipe('ens-names-marquee', 'left', 'slow');
+    await Helpers.swipe('ens-names-marquee', 'right', 'slow');
     await Helpers.waitAndTap('ens-intro-sheet-search-new-name-button');
   });
 
@@ -139,12 +144,8 @@ describe('Register ENS Flow', () => {
 
   it('Should go to review registration and start it', async () => {
     await Helpers.checkIfVisible(`ens-transaction-action-COMMIT`);
-    await Helpers.delay(5000);
     await Helpers.waitAndTap(`ens-transaction-action-COMMIT`);
-    // await Helpers.checkIfVisible(
-    //   `ens-confirm-register-label-WAIT_COMMIT_CONFIRMATION`
-    // );
-    await Helpers.delay(20000);
+    await Helpers.delay(5000);
     await Helpers.checkIfVisible(
       `ens-confirm-register-label-WAIT_ENS_COMMITMENT`
     );
