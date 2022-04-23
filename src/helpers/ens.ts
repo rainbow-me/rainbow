@@ -375,7 +375,6 @@ const getENSRegistrarControllerContract = async (
   registrarAddress?: string
 ) => {
   const signerOrProvider = wallet || (await getProviderForNetwork());
-  console.log('💰💰 getENSRegistrarControllerContract');
   return new Contract(
     registrarAddress || ensETHRegistrarControllerAddress,
     ENSETHRegistrarControllerABI,
@@ -388,7 +387,6 @@ const getENSPublicResolverContract = async (
   resolverAddress?: EthereumAddress
 ) => {
   const signerOrProvider = wallet || (await getProviderForNetwork());
-  console.log('💰💰 getENSPublicResolverContract');
   return new Contract(
     resolverAddress || ensPublicResolverAddress,
     ENSPublicResolverABI,
@@ -398,7 +396,6 @@ const getENSPublicResolverContract = async (
 
 const getENSReverseRegistrarContract = async (wallet?: Wallet) => {
   const signerOrProvider = wallet || (await getProviderForNetwork());
-  console.log('💰💰 getENSReverseRegistrarContract');
   return new Contract(
     ensReverseRegistrarAddress,
     ENSReverseRegistrarABI,
@@ -408,7 +405,6 @@ const getENSReverseRegistrarContract = async (wallet?: Wallet) => {
 
 const getENSBaseRegistrarImplementationContract = async (wallet?: Wallet) => {
   const signerOrProvider = wallet || (await getProviderForNetwork());
-  console.log('💰💰 getENSBaseRegistrarImplementationContract');
   return new Contract(
     ensBaseRegistrarImplementationAddress,
     ENSBaseRegistrarImplementationABI,
@@ -418,30 +414,25 @@ const getENSBaseRegistrarImplementationContract = async (wallet?: Wallet) => {
 
 const getENSRegistryContract = async () => {
   const provider = await getProviderForNetwork();
-  console.log('💰💰 getENSRegistryContract');
   return new Contract(ensRegistryAddress, ENSRegistryWithFallbackABI, provider);
 };
 
 const getAvailable = async (name: string): Promise<boolean> => {
-  console.log('💰 getAvailable');
   const contract = await getENSRegistrarControllerContract();
   return contract.available(name);
 };
 
 const getNameExpires = async (name: string): Promise<string> => {
-  console.log('💰 getNameExpires');
   const contract = await getENSBaseRegistrarImplementationContract();
   return contract.nameExpires(labelhash(name));
 };
 
 const getNameOwner = async (name: string): Promise<string> => {
-  console.log('💰 getNameOwner');
   const contract = await getENSRegistryContract();
   return contract.owner(hash(name));
 };
 
 const getRentPrice = async (name: string, duration: number): Promise<any> => {
-  console.log('💰 getRentPrice');
   const contract = await getENSRegistrarControllerContract();
   return contract.rentPrice(name, duration);
 };

@@ -311,6 +311,7 @@ export default function ENSConfirmRegisterSheet() {
   useFocusEffect(
     useCallback(() => {
       blurFields();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
   );
 

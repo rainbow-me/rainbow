@@ -38,10 +38,7 @@ import {
   Stack,
   Text,
 } from '@rainbow-me/design-system';
-import {
-  getSeenOnchainDataDisclaimer,
-  saveSeenOnchainDataDisclaimer,
-} from '@rainbow-me/handlers/localstorage/ens';
+import { saveSeenOnchainDataDisclaimer } from '@rainbow-me/handlers/localstorage/ens';
 import {
   accentColorAtom,
   ENS_RECORDS,
