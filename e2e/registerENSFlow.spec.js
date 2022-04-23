@@ -245,7 +245,9 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should confirm that the bio record is set', async () => {
-    const { description, displayName } = await getRecords(RANDOM_NAME_ETH);
+    const { description, displayName, avatar } = await getRecords(
+      RANDOM_NAME_ETH
+    );
     if (description !== RECORD_BIO) throw new Error('ENS description is wrong');
     if (displayName === RECORD_NAME)
       throw new Error('ENS displayName is wrong');
