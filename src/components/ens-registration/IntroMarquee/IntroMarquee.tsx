@@ -75,7 +75,7 @@ export default function IntroMarquee() {
       <MarqueeList
         items={items}
         renderItem={renderItem}
-        speed={10}
+        speed={-15}
         testID="ens-names-marquee"
       />
     </Box>
@@ -108,8 +108,8 @@ function ENSAvatarPlaceholder({
       reanimatedButton={false}
       scaleTo={0.8}
     >
-      <Box paddingHorizontal="8px">
-        <Stack alignHorizontal="center" space="15px">
+      <Box paddingHorizontal="12px">
+        <Stack alignHorizontal="center" space={{ custom: 13 }}>
           <Box
             as={ImgixImage}
             background="body"
@@ -119,7 +119,12 @@ function ENSAvatarPlaceholder({
             source={{ uri: ensAvatarUrl(name) }}
             width={{ custom: 80 }}
           />
-          <Text align="center" color="secondary70" size="14px" weight="medium">
+          <Text
+            align="center"
+            color="secondary50"
+            size="12px"
+            weight="semibold"
+          >
             {name}
           </Text>
         </Stack>

@@ -8,6 +8,7 @@ import {
   AccentColorProvider,
   Bleed,
   Box,
+  ColorModeProvider,
   Heading,
   Inline,
   Inset,
@@ -34,7 +35,10 @@ export default function SelectENSSheet() {
   const { data: domains, isSuccess } = useAccountENSDomains();
   const { accountAddress } = useAccountSettings();
   const { accountENS } = useAccountProfile();
+
   const accentColor = useForegroundColor('action');
+  const secondary06 = useForegroundColor('secondary06');
+  const secondary30 = useForegroundColor('secondary30');
 
   const { goBack } = useNavigation();
   const { params } = useRoute<any>();
@@ -70,7 +74,7 @@ export default function SelectENSSheet() {
         >
           <Inline alignHorizontal="justify" alignVertical="center" wrap={false}>
             <Inline alignVertical="center" wrap={false}>
-              <AccentColorProvider color={accentColor + '20'}>
+              <AccentColorProvider color={secondary06}>
                 <Box
                   alignItems="center"
                   background="accent"
@@ -88,44 +92,41 @@ export default function SelectENSSheet() {
                       width={{ custom: rowHeight }}
                     />
                   ) : (
-                    <AccentColorProvider color={accentColor}>
-                      <Text color="accent" size="14px" weight="medium">
-                        {` 􀣵 `}
+                    <AccentColorProvider color={secondary30}>
+                      <Text align="right" color="accent" size="20px" weight="bold">
+                        􀉭
                       </Text>
                     </AccentColorProvider>
                   )}
                 </Box>
                 <Box paddingLeft="10px">
-                  <Text size="16px" weight="medium">
+                  <Text size="16px" weight="bold">
                     {item.name}
                   </Text>
                 </Box>
               </AccentColorProvider>
             </Inline>
-            <Text color="action" weight="bold">
-              􀰒
-            </Text>
           </Inline>
         </ButtonPressAnimation>
       );
     },
-    [accentColor, handleSelectENS]
+    [handleSelectENS, secondary06, secondary30]
   );
 
   return (
     // @ts-expect-error JavaScript component
     <Sheet>
-      <Inset horizontal="19px" top="10px">
-        <Stack space="15px">
+      <Inset top="6px">
+        <Stack space="24px">
           <Heading align="center" size="18px">
             {lang.t('profiles.select_ens_name')}
           </Heading>
           {isSuccess && (
-            <Bleed bottom="30px">
+            <Bleed bottom={{ custom: scrollEnabled ? 34 : 26 }}>
               <Box
-                ItemSeparatorComponent={() => <Box height={{ custom: 15 }} />}
+                ItemSeparatorComponent={() => <Box height={{ custom: 19 }} />}
                 as={FlatList}
-                contentContainerStyle={{ paddingBottom: 40, paddingTop: 15 }}
+                contentContainerStyle={{ paddingBottom: 50, paddingHorizontal: 19 }}
                 data={nonPrimaryDomains}
                 height={{ custom: listHeight }}
                 keyExtractor={({ domain }: { domain: string }) => domain}
