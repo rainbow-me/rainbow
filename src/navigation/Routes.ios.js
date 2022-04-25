@@ -393,6 +393,11 @@ function NativeStackNavigator() {
         name={Routes.SWAP_DETAILS_SHEET}
         {...expandedAssetSheetConfig}
       />
+      <NativeStack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.SWAP_SETTINGS_SHEET}
+        {...customGasSheetConfig}
+      />
 
       {profilesEnabled && (
         <>

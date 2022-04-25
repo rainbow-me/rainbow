@@ -1,39 +1,32 @@
-import { ETH_ADDRESS } from '@rainbow-me/swaps';
+import lang from 'i18n-js';
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { ColumnWithMargins } from '../../layout';
+import { ButtonPressAnimation } from '../../animations';
 import SwapDetailsContractRow from './SwapDetailsContractRow';
+import SwapDetailsExchangeRow from './SwapDetailsExchangeRow';
+import SwapDetailsFeeRow from './SwapDetailsFeeRow';
 import SwapDetailsPriceRow from './SwapDetailsPriceRow';
-import SwapDetailsRow, {
-  SwapDetailsRowHeight,
-  SwapDetailsValue,
-} from './SwapDetailsRow';
-import SwapDetailsUniswapRow from './SwapDetailsUniswapRow';
+import SwapDetailsRow, { SwapDetailsValue } from './SwapDetailsRow';
 import {
-  convertRawAmountToDecimalFormat,
-  divide,
-  multiply,
-  subtract,
-} from '@rainbow-me/helpers/utilities';
+  AccentColorProvider,
+  Box,
+  Divider,
+  Rows,
+} from '@rainbow-me/design-system';
 import {
-  useAccountSettings,
+  useColorForAsset,
   useSwapAdjustedAmounts,
   useSwapCurrencies,
 } from '@rainbow-me/hooks';
 import { SwapModalField } from '@rainbow-me/redux/swap';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
-import { ethereumUtils, isETH } from '@rainbow-me/utils';
+import { isETH } from '@rainbow-me/utils';
 
-const contentRowMargin = 24;
-export const SwapDetailsContentMinHeight =
-  (SwapDetailsRowHeight + contentRowMargin) * 4;
-
-const Container = styled(ColumnWithMargins).attrs({
+const Container = styled(Box).attrs({
   flex: 1,
-  margin: contentRowMargin,
 })(({ isHighPriceImpact }) =>
-  padding.object(isHighPriceImpact ? 24 : 30, 19, 30)
+  padding.object(isHighPriceImpact ? 24 : 30, 19, 0)
 );
 
 export default function SwapDetailsContent({
@@ -57,104 +50,83 @@ export default function SwapDetailsContent({
     (!isHighPriceImpact || priceImpactNativeAmount) &&
     priceImpactPercentDisplay;
 
-  const { nativeCurrencySymbol } = useAccountSettings();
+  const [detailsExpanded, setDetailsExpanded] = useState(false);
 
-  const feeNativeCurrency = useMemo(() => {
-    // token to ETH
-    if (inputCurrency?.price && tradeDetails.sellAmount) {
-      if (
-        tradeDetails.buyTokenAddress.toLowerCase() === ETH_ADDRESS.toLowerCase()
-      ) {
-        const feeInOutputTokensRawAmount = divide(
-          multiply(
-            tradeDetails.buyAmount,
-            tradeDetails.feePercentageBasisPoints
-          ),
-          '1e18'
-        );
-
-        const feeInOutputToken = convertRawAmountToDecimalFormat(
-          feeInOutputTokensRawAmount,
-          18
-        );
-
-        const priceOfEth = ethereumUtils.getEthPriceUnit();
-
-        return (Number(feeInOutputToken) * priceOfEth).toFixed(2);
-        // eth to token or token to token
-      } else {
-        const feeInInputTokensRawAmount = subtract(
-          tradeDetails.sellAmount,
-          tradeDetails.sellAmountMinusFees
-        );
-
-        const feeInInputToken = convertRawAmountToDecimalFormat(
-          feeInInputTokensRawAmount,
-          inputCurrency.decimals
-        );
-
-        return (
-          Number(feeInInputToken) * Number(inputCurrency.price.value)
-        ).toFixed(2);
-      }
-    }
-    return null;
-  }, [
-    inputCurrency,
-    tradeDetails.buyAmount,
-    tradeDetails.buyTokenAddress,
-    tradeDetails.feePercentageBasisPoints,
-    tradeDetails.sellAmount,
-    tradeDetails.sellAmountMinusFees,
-  ]);
-
-  // logger.debug('tradeDetails', JSON.stringify(tradeDetails, null, 2));
-  // logger.debug('fee in native currency', feeNativeCurrency);
-  // logger.debug('inputCurrency', inputCurrency);
-  // logger.debug('outputCurrency', outputCurrency);
+  const colorForAsset = useColorForAsset(outputCurrency, undefined, true, true);
 
   return (
-    <Container
-      isHighPriceImpact={isHighPriceImpact}
-      testID="swap-details-state"
-      {...props}
-    >
-      {showPriceImpact && (
-        <SwapDetailsRow label="Price impact">
-          <SwapDetailsValue
-            color={priceImpactColor}
-            letterSpacing="roundedTight"
-          >
-            {priceImpactPercentDisplay}
-          </SwapDetailsValue>
-        </SwapDetailsRow>
-      )}
-      <SwapDetailsRow label="Rainbow fee">
-        <SwapDetailsValue letterSpacing="roundedTight">
-          {nativeCurrencySymbol}
-          {feeNativeCurrency}
-        </SwapDetailsValue>
-      </SwapDetailsRow>
-      <SwapDetailsRow label={receivedSoldLabel}>
-        <SwapDetailsValue letterSpacing="roundedTight">
-          {amountReceivedSold}{' '}
-          {inputAsExact ? outputCurrency.symbol : inputCurrency.symbol}
-        </SwapDetailsValue>
-      </SwapDetailsRow>
-      <SwapDetailsPriceRow tradeDetails={tradeDetails} />
-      {!isETH(inputCurrency?.address) && (
-        <SwapDetailsContractRow
-          asset={inputCurrency}
-          onCopySwapDetailsText={onCopySwapDetailsText}
-        />
-      )}
-      {!isETH(outputCurrency?.address) && (
-        <SwapDetailsContractRow
-          asset={outputCurrency}
-          onCopySwapDetailsText={onCopySwapDetailsText}
-        />
-      )}
-      <SwapDetailsUniswapRow protocols={tradeDetails?.protocols} />
-    </Container>
+    <AccentColorProvider color={colorForAsset}>
+      <Container
+        isHighPriceImpact={isHighPriceImpact}
+        testID="swap-details-state"
+        {...props}
+      >
+        <Rows space="24px">
+          {showPriceImpact && (
+            <AccentColorProvider color={priceImpactColor}>
+              <SwapDetailsRow
+                label={lang.t('expanded_state.swap_details.price_impact')}
+              >
+                <SwapDetailsValue color="accent" letterSpacing="roundedTight">
+                  {`-${priceImpactPercentDisplay}`}
+                </SwapDetailsValue>
+              </SwapDetailsRow>
+            </AccentColorProvider>
+          )}
+          <SwapDetailsRow label={receivedSoldLabel}>
+            <SwapDetailsValue letterSpacing="roundedTight">
+              {amountReceivedSold}{' '}
+              {inputAsExact ? outputCurrency.symbol : inputCurrency.symbol}
+            </SwapDetailsValue>
+          </SwapDetailsRow>
+          {tradeDetails?.protocols && (
+            <SwapDetailsExchangeRow protocols={tradeDetails?.protocols} />
+          )}
+          {tradeDetails.feePercentageBasisPoints !== 0 && (
+            <SwapDetailsFeeRow tradeDetails={tradeDetails} />
+          )}
+          {!detailsExpanded ? (
+            <ButtonPressAnimation
+              onPress={() => setDetailsExpanded(!detailsExpanded)}
+              scaleTo={1.06}
+            >
+              <SwapDetailsRow
+                label={
+                  detailsExpanded
+                    ? lang.t('expanded_state.swap_details.hide_details')
+                    : lang.t('expanded_state.swap_details.show_details')
+                }
+                labelColor="accent"
+              >
+                <SwapDetailsValue color="accent">
+                  {detailsExpanded ? '􀁰' : '􀯼'}
+                </SwapDetailsValue>
+              </SwapDetailsRow>
+            </ButtonPressAnimation>
+          ) : (
+            <Divider />
+          )}
+          <Box>
+            {detailsExpanded && (
+              <Rows space="24px">
+                <SwapDetailsPriceRow tradeDetails={tradeDetails} />
+                {!isETH(inputCurrency?.address) && (
+                  <SwapDetailsContractRow
+                    asset={inputCurrency}
+                    onCopySwapDetailsText={onCopySwapDetailsText}
+                  />
+                )}
+                {!isETH(outputCurrency?.address) && (
+                  <SwapDetailsContractRow
+                    asset={outputCurrency}
+                    onCopySwapDetailsText={onCopySwapDetailsText}
+                  />
+                )}
+              </Rows>
+            )}
+          </Box>
+        </Rows>
+      </Container>
+    </AccentColorProvider>
   );
 }

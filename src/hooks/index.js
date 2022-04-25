@@ -85,6 +85,7 @@ export { default as useSwapCurrencyHandlers } from './useSwapCurrencyHandlers';
 export { default as useSwapInputRefs } from './useSwapInputRefs';
 export { default as useSwapInputHandlers } from './useSwapInputHandlers';
 export { default as useSwapIsSufficientBalance } from './useSwapIsSufficientBalance';
+export { default as useSwapSlippage } from './useSwapSlippage';
 export { default as useSwapDerivedOutputs } from './useSwapDerivedOutputs';
 export { default as useTimeout } from './useTimeout';
 export { default as useTopMovers } from './useTopMovers';

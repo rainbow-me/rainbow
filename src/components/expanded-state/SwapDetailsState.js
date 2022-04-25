@@ -60,7 +60,7 @@ const Header = styled(Column).attrs({
 });
 
 const FOOTER_MIN_HEIGHT = 143;
-const FOOTER_CONTENT_MIN_HEIGHT = 241;
+const FOOTER_CONTENT_MIN_HEIGHT = 160;
 
 function useAndroidDisableGesturesOnFocus() {
   const { params } = useRoute();

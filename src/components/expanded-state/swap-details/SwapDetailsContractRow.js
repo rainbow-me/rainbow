@@ -6,18 +6,33 @@ import Animated from 'react-native-reanimated';
 import { mixColor, useTimingTransition } from 'react-native-redash/src/v1';
 import { useMemoOne } from 'use-memo-one';
 import { ButtonPressAnimation, interpolate } from '../../animations';
-import { TruncatedAddress } from '../../text';
-import SwapDetailsRow, { SwapDetailsValue } from './SwapDetailsRow';
+import { Text, TruncatedAddress } from '../../text';
+import SwapDetailsRow from './SwapDetailsRow';
+import { useForegroundColor } from '@rainbow-me/design-system';
 import { useClipboard, useColorForAsset } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
+import { fonts, fontWithWidth } from '@rainbow-me/styles';
 import {
   abbreviations,
   ethereumUtils,
   showActionSheetWithOptions,
 } from '@rainbow-me/utils';
 
+const SwapDetailsText = styled(Text).attrs({
+  lineHeight: 17,
+  size: 'smedium',
+})({});
+
+export const SwapDetailsValue = styled(SwapDetailsText).attrs(
+  ({ theme: { colors }, color = colors.alpha(colors.blueGreyDark, 0.8) }) => ({
+    color,
+  })
+)(fontWithWidth(fonts.weight.bold));
+
 const AnimatedTruncatedAddress = Animated.createAnimatedComponent(
   TruncatedAddress
 );
+const AnimatedText = Animated.createAnimatedComponent(Text);
 
 const ContractActionsEnum = {
   blockExplorer: 'blockExplorer',
@@ -55,16 +70,14 @@ function SwapDetailsContractRowContent({
   scaleTo = 1.06,
   ...props
 }) {
-  const { colors } = useTheme();
+  const defaultColor = useForegroundColor('secondary');
+
   const colorForAsset = useColorForAsset(asset);
-  const animation = useTimingTransition(menuVisible, { duration: 150 });
+  const animation = useTimingTransition(menuVisible, { duration: 80 });
+  const animationColor = useTimingTransition(menuVisible, { duration: 250 });
   const { addressColor, scale } = useMemoOne(
     () => ({
-      addressColor: mixColor(
-        animation,
-        colors.alpha(colors.blueGreyDark, 0.8),
-        colorForAsset
-      ),
+      addressColor: mixColor(animationColor, defaultColor, colorForAsset),
       scale: interpolate(animation, {
         inputRange: [0, 1],
         outputRange: [1, scaleTo],
@@ -76,16 +89,21 @@ function SwapDetailsContractRowContent({
   return (
     <Animated.View style={{ transform: [{ scale }] }}>
       <ButtonPressAnimation scaleTo={scaleTo} {...props}>
-        <SwapDetailsRow label={`${asset?.symbol} contract`}>
+        <SwapDetailsRow
+          label={lang.t('expanded_state.swap_details.token_contract', {
+            token: asset?.symbol,
+          })}
+        >
           <SwapDetailsValue
             address={asset?.address}
             as={AnimatedTruncatedAddress}
             color={addressColor}
             firstSectionLength={6}
           />
-          <SwapDetailsValue color={colors.alpha(colors.blueGreyDark, 0.5)}>
-            {` 􀁰`}
-          </SwapDetailsValue>
+          <SwapDetailsValue
+            as={AnimatedText}
+            color={addressColor}
+          >{` 􀍡`}</SwapDetailsValue>
         </SwapDetailsRow>
       </ButtonPressAnimation>
     </Animated.View>

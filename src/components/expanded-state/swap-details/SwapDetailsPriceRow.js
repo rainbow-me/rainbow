@@ -32,24 +32,31 @@ export default function SwapDetailsPriceRow({ tradeDetails, ...props }) {
 
   const steps = useMemo(
     () => [
-      `${inputExecutionRate} ${outputCurrency?.symbol} per ${inputCurrency?.symbol}`,
-      `${outputExecutionRate} ${inputCurrency?.symbol} per ${outputCurrency?.symbol}`,
+      lang.t('expanded_state.swap_details.output_exchange_rate', {
+        executionRate: outputExecutionRate,
+        inputSymbol: inputCurrency?.symbol,
+        outputSymbol: outputCurrency?.symbol,
+      }),
+      lang.t('expanded_state.swap_details.input_exchange_rate', {
+        executionRate: inputExecutionRate,
+        inputSymbol: inputCurrency?.symbol,
+        outputSymbol: outputCurrency?.symbol,
+      }),
     ],
     [inputCurrency, inputExecutionRate, outputCurrency, outputExecutionRate]
   );
 
   const [step, nextStep] = useStepper(steps.length);
-  const { colors } = useTheme();
 
   return (
     <ButtonPressAnimation {...props} onPress={nextStep} scaleTo={1.06}>
-      <SwapDetailsRow label={lang.t('modal.helper_rate')}>
+      <SwapDetailsRow
+        label={lang.t('expanded_state.swap_details.exchange_rate')}
+      >
         <SwapDetailsValue letterSpacing="roundedTight">
           {steps[step]}
         </SwapDetailsValue>
-        <SwapDetailsValue color={colors.alpha(colors.blueGreyDark, 0.5)}>
-          {` 􀅌`}
-        </SwapDetailsValue>
+        <SwapDetailsValue>{` 􀅌`}</SwapDetailsValue>
       </SwapDetailsRow>
     </ButtonPressAnimation>
   );

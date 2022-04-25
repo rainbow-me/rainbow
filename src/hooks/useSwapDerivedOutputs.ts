@@ -126,6 +126,7 @@ const getOutputAmount = async (
   inputToken: Token,
   outputToken: Token | null,
   outputPrice: string | number | null | undefined,
+  slippage: number,
   fromAddress: EthereumAddress,
   chainId = 1
 ) => {
@@ -159,7 +160,7 @@ const getOutputAmount = async (
       fromAddress,
       sellAmount,
       sellTokenAddress,
-      slippage: IS_TESTING !== 'true' ? 1 : 5, // Add 5% slippage for testing to prevent flaky tests
+      slippage: IS_TESTING !== 'true' ? slippage : 5, // Add 5% slippage for testing to prevent flaky tests
     };
 
     // @ts-ignore About to get quote
@@ -241,6 +242,9 @@ export default function useSwapDerivedOutputs() {
   const outputCurrency = useSelector(
     (state: AppState) => state.swap.outputCurrency
   );
+  const slippageInBips = useSelector(
+    (state: AppState) => state.swap.slippageInBips
+  );
   const genericAssets = useSelector(
     (state: AppState) => state.data.genericAssets
   );
@@ -264,6 +268,7 @@ export default function useSwapDerivedOutputs() {
       setLoading(true);
       const inputToken = inputCurrency;
       const outputToken = outputCurrency;
+      const slippagePercentage = slippageInBips / 100;
 
       if (independentField === SwapModalField.input) {
         derivedValues[SwapModalField.input] = independentValue;
@@ -284,6 +289,7 @@ export default function useSwapDerivedOutputs() {
           inputToken,
           outputToken,
           outputPrice,
+          slippagePercentage,
           accountAddress,
           chainId
         );
@@ -316,6 +322,7 @@ export default function useSwapDerivedOutputs() {
           inputToken,
           outputToken,
           outputPrice,
+          slippagePercentage,
           accountAddress,
           chainId
         );
@@ -391,6 +398,7 @@ export default function useSwapDerivedOutputs() {
     inputPrice,
     outputCurrency,
     outputPrice,
+    slippageInBips,
   ]);
 
   return {

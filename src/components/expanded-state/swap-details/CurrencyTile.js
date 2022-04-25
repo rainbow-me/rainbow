@@ -1,9 +1,9 @@
 import React from 'react';
-import RadialGradient from 'react-native-radial-gradient';
 import { useSelector } from 'react-redux';
 import { CoinIcon } from '../../coin-icon';
 import { Centered, ColumnWithMargins, Row } from '../../layout';
 import { Text, TruncatedText } from '../../text';
+import { Box } from '@rainbow-me/design-system';
 import { useAccountSettings, useColorForAsset } from '@rainbow-me/hooks';
 import { SwapModalField } from '@rainbow-me/redux/swap';
 import styled from '@rainbow-me/styled-components';
@@ -26,15 +26,12 @@ const Container = styled(Centered).attrs({
   flex: 1,
   height: CurrencyTileHeight,
   overflow: 'hidden',
+  zIndex: 0,
 });
 
-const Gradient = styled(RadialGradient).attrs(
-  ({ theme: { colors }, color, type }) => ({
-    center:
-      type === 'input' ? [0, 0] : [CurrencyTileHeight, CurrencyTileHeight],
-    colors: [colors.alpha(color, 0.04), colors.alpha(color, 0)],
-  })
-)({
+const Gradient = styled(Box).attrs(({ theme: { colors }, color }) => ({
+  backgroundColor: colors.alpha(color, 0.08),
+}))({
   ...position.coverAsObject,
 });
 
@@ -82,7 +79,7 @@ export default function CurrencyTile({
 
   return (
     <Container {...props}>
-      <Gradient color={colorForAsset} type={type} />
+      <Gradient color={colorForAsset} />
       <ColumnWithMargins centered margin={15}>
         <CoinIcon address={address} size={50} symbol={symbol} />
         <ColumnWithMargins centered margin={4} paddingHorizontal={8}>

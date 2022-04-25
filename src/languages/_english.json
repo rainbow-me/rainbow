@@ -146,6 +146,7 @@
         "insufficient_funds": "Insufficient Funds",
         "insufficient_liquidity": "Insufficient Liquidity",
         "invalid_fee": "Invalid Fee",
+        "review": "Review",
         "swap": "Hold to Swap",
         "swap_anyway": "Swap Anyway",
         "view_details": "View Details",
@@ -266,6 +267,7 @@
         "losing_prefix": "Losing",
         "small_market": "Small Market"
       },
+      "settings": "Settings",
       "swapping_for_prefix": "Swapping for",
       "unverified_token": {
         "token_not_verified": "This token has not been verified! Rainbow surfaces all tokens that exist on Uniswap. Anyone can create a token, including fake versions of existing tokens and tokens that claim to represent projects that do not have a token. Please do your own research and be careful when interacting with unverified tokens!",
@@ -338,7 +340,18 @@
         "view_on": "View on %{blockExplorerName}"
       },
       "swap_details": {
-        "review": "Review"
+        "exchange_rate": "Exchange rate",
+        "rainbow_fee": "Included Rainbow fee",
+        "review": "Review",
+        "show_details": "Show details",
+        "hide_details": "Hide details",
+        "price_impact": "Difference in value",
+        "minimum_received": "Minimum received",
+        "maximum_sold": "Maximum sold",
+        "token_contract": "%{token} contract",
+        "number_of_exchanges": "%{number} Exchanges",
+        "input_exchange_rate": "1 %{inputSymbol} for %{executionRate} %{outputSymbol}",
+        "output_exchange_rate": "1 %{outputSymbol} for %{executionRate} %{inputSymbol}"
       },
       "token_index": {
         "get_token": "Get %{assetSymbol}",

@@ -7,7 +7,14 @@ import { HoldToAuthorizeButton } from '../buttons';
 import ImgixImage from '../images/ImgixImage';
 import { Centered } from '../layout';
 import { useTheme } from '@rainbow-me/context';
-import { Column, Columns, Row, Rows, Text } from '@rainbow-me/design-system';
+import {
+  ColorModeProvider,
+  Column,
+  Columns,
+  Row,
+  Rows,
+  Text,
+} from '@rainbow-me/design-system';
 import { ExchangeModalTypes } from '@rainbow-me/helpers';
 import {
   useColorForAsset,
@@ -102,7 +109,7 @@ export default function ConfirmExchangeButton({
   if (type === ExchangeModalTypes.deposit) {
     label = lang.t('button.confirm_exchange.deposit');
   } else if (type === ExchangeModalTypes.swap) {
-    label = lang.t('button.confirm_exchange.swap');
+    label = `􀕹 ${lang.t('button.confirm_exchange.review')}`;
   } else if (type === ExchangeModalTypes.withdrawal) {
     label = lang.t('button.confirm_exchange.withdraw');
   }
@@ -115,10 +122,10 @@ export default function ConfirmExchangeButton({
     label = lang.t('button.confirm_exchange.insufficient_eth');
   } else if (!isValidGas) {
     label = lang.t('button.confirm_exchange.invalid_fee');
-  } else if (isHighPriceImpact) {
-    label = isSwapDetailsRoute
+  } else if (isSwapDetailsRoute) {
+    label = isHighPriceImpact
       ? lang.t('button.confirm_exchange.swap_anyway')
-      : `􀕹 ${lang.t('button.confirm_exchange.view_details')}`;
+      : `${lang.t('button.confirm_exchange.swap')}`;
   } else if (disabled) {
     label = lang.t('button.confirm_exchange.enter_amount');
   }
@@ -133,40 +140,32 @@ export default function ConfirmExchangeButton({
 
   return (
     <Container>
-      <Rows backgroundColor={colors.appleBlue} height="content">
+      <Rows height="content">
         {flashbots && (
           <Row
             alignHorizontal="center"
             alignVertical="center"
-            backgroundColor={colors.appleBlue}
             height="content"
             width="content"
           >
-            <Columns
-              alignHorizontal="center"
-              backgroundColor={colors.appleBlue}
-              height="content"
-            >
-              <Column
-                backgroundColor={colors.appleBlue}
-                height="content"
-                width="content"
-              >
-                <ImgixImage
-                  source={{
-                    uri: 'https://docs.flashbots.net/img/logo.png',
-                  }}
-                  style={{ height: 24, marginTop: -7, width: 24 }}
-                />
-              </Column>
-              <Column
-                backgroundColor={colors.appleBlue}
-                height="content"
-                width="content"
-              >
-                <Text> Flashbots Protect enabled 􀅵</Text>
-              </Column>
-            </Columns>
+            <ColorModeProvider value="dark">
+              <Columns alignHorizontal="center" height="content">
+                <Column height="content" width="content">
+                  <ImgixImage
+                    source={{
+                      uri: 'https://docs.flashbots.net/img/logo.png',
+                    }}
+                    style={{ height: 24, marginTop: -7, width: 24 }}
+                  />
+                </Column>
+                <Column height="content" width="content">
+                  <Text color="primary" weight="semibold">
+                    {' '}
+                    Flashbots Protect enabled 􀅵
+                  </Text>
+                </Column>
+              </Columns>
+            </ColorModeProvider>
           </Row>
         )}
         <Row>
@@ -191,7 +190,7 @@ export default function ConfirmExchangeButton({
                   : shadowsForAsset
                 : shadows.default
             }
-            showBiometryIcon={!isDisabled && !isHighPriceImpact}
+            showBiometryIcon={isSwapDetailsRoute}
             testID={testID}
             {...props}
           />

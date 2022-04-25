@@ -32,8 +32,6 @@ import {
 import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
-import { FLASHBOTS } from '../config/experimental';
-import useExperimentalFlag from '../config/experimentalHooks';
 import {
   ExchangeModalTypes,
   isKeyboardOpen,
@@ -152,7 +150,12 @@ export default function ExchangeModal({
     updateTxFee,
   } = useGas();
   const { initWeb3Listener, stopWeb3Listener } = useBlockPolling();
-  const { accountAddress, nativeCurrency, network } = useAccountSettings();
+  const {
+    accountAddress,
+    flashbotsEnabled,
+    nativeCurrency,
+    network,
+  } = useAccountSettings();
   const getNextNonce = useCurrentNonce(accountAddress, network);
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
@@ -220,7 +223,6 @@ export default function ExchangeModal({
     loading
   );
 
-  const flashbotsEnabled = useExperimentalFlag(FLASHBOTS);
   const flashbots = network === Network.mainnet && flashbotsEnabled;
 
   const isDismissing = useRef(false);
@@ -500,6 +502,40 @@ export default function ExchangeModal({
     ]
   );
 
+  const navigateToSwapSettingsSheet = useCallback(() => {
+    android && Keyboard.dismiss();
+    const lastFocusedInputHandleTemporary = lastFocusedInputHandle.current;
+    android && (lastFocusedInputHandle.current = null);
+    inputFieldRef?.current?.blur();
+    outputFieldRef?.current?.blur();
+    nativeFieldRef?.current?.blur();
+    const internalNavigate = () => {
+      android && Keyboard.removeListener('keyboardDidHide', internalNavigate);
+      setParams({ focused: false });
+      navigate(Routes.SWAP_SETTINGS_SHEET, {
+        asset: outputCurrency,
+        restoreFocusOnSwapModal: () => {
+          android &&
+            (lastFocusedInputHandle.current = lastFocusedInputHandleTemporary);
+          setParams({ focused: true });
+        },
+        type: 'swap_settings',
+      });
+      analytics.track('Opened Swap Settings');
+    };
+    ios || !isKeyboardOpen()
+      ? internalNavigate()
+      : Keyboard.addListener('keyboardDidHide', internalNavigate);
+  }, [
+    inputFieldRef,
+    lastFocusedInputHandle,
+    nativeFieldRef,
+    navigate,
+    outputCurrency,
+    outputFieldRef,
+    setParams,
+  ]);
+
   const navigateToSwapDetailsModal = useCallback(() => {
     android && Keyboard.dismiss();
     const lastFocusedInputHandleTemporary = lastFocusedInputHandle.current;
@@ -604,11 +640,10 @@ export default function ExchangeModal({
             <ExchangeDetailsRow
               isHighPriceImpact={isHighPriceImpact}
               onFlipCurrencies={flipCurrencies}
-              onPressViewDetails={navigateToSwapDetailsModal}
+              onPressViewDetails={navigateToSwapSettingsSheet}
               priceImpactColor={priceImpactColor}
               priceImpactNativeAmount={priceImpactNativeAmount}
               priceImpactPercentDisplay={priceImpactPercentDisplay}
-              showDetailsButton={!!tradeDetails}
               type={type}
             />
           )}

@@ -1,7 +1,7 @@
 import React from 'react';
-import { Icon } from '../../icons';
 import { RowWithMargins } from '../../layout';
 import CurrencyTile, { CurrencyTileHeight } from './CurrencyTile';
+import { Bleed, Box, Cover, Text } from '@rainbow-me/design-system';
 import { useSwapCurrencies } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
@@ -12,11 +12,26 @@ export const SwapDetailsMastheadHeight =
 
 const Container = styled(RowWithMargins).attrs({
   align: 'center',
-  margin: 7,
+  margin: 0,
 })({
   ...padding.object(containerPaddingTop, 24, 0),
   width: '100%',
 });
+
+const DoubleChevron = () => (
+  <Cover alignHorizontal="center" alignVertical="center">
+    <RowWithMargins>
+      <Text color="secondary60" weight="semibold">
+        􀯻
+      </Text>
+      <Bleed left="6px">
+        <Text color="secondary40" weight="semibold">
+          􀯻
+        </Text>
+      </Bleed>
+    </RowWithMargins>
+  </Cover>
+);
 
 export default function SwapDetailsMasthead({
   inputAmount,
@@ -30,7 +45,7 @@ export default function SwapDetailsMasthead({
   ...props
 }) {
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
-  const { colors } = useTheme();
+  const { colors, isDarkMode } = useTheme();
 
   return (
     <Container {...props}>
@@ -41,7 +56,21 @@ export default function SwapDetailsMasthead({
         priceValue={inputPriceValue}
         type="input"
       />
-      <Icon color={colors.dark} name="doubleChevron" />
+      <Bleed shadow="21px heavy" space="15px">
+        <Box
+          borderRadius={16}
+          height={{ custom: 32 }}
+          shadow="21px heavy"
+          style={{
+            alignItems: 'center',
+            backgroundColor: isDarkMode ? colors.darkGrey : colors.white,
+            justifyContent: 'center',
+          }}
+          width={{ custom: 32 }}
+        >
+          <DoubleChevron />
+        </Box>
+      </Bleed>
       <CurrencyTile
         amount={outputAmount}
         amountDisplay={outputAmountDisplay}
@@ -49,6 +78,7 @@ export default function SwapDetailsMasthead({
         isHighPriceImpact={isHighPriceImpact}
         priceImpactColor={priceImpactColor}
         priceValue={outputPriceValue}
+        style={{ zIndex: -1 }}
         type="output"
       />
     </Container>
