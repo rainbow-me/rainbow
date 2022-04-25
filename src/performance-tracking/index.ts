@@ -1,5 +1,3 @@
-/* eslint-disable babel/no-invalid-this */
-// TODO: Fix above line with eslint rule
 import analytics from '@segment/analytics-react-native';
 // @ts-ignore
 import { SENTRY_ENVIRONMENT } from 'react-native-dotenv';
@@ -29,6 +27,10 @@ const currentlyTrackedMetrics = new Map<
   PerformanceMetricData
 >();
 
+interface AdditionalParams extends Record<string, any> {
+  tag?: PerformanceTag;
+}
+
 /**
  * Function that allows directly commiting performance events.
  * Useful when we already have duration of something and just want to log it.
@@ -40,7 +42,7 @@ const currentlyTrackedMetrics = new Map<
 function logDirectly(
   metric: PerformanceMetric,
   durationInMs: number,
-  additionalParams?: object
+  additionalParams?: AdditionalParams
 ) {
   logDurationIfAppropriate(metric, durationInMs);
   analytics.track(metric, {
@@ -58,7 +60,10 @@ function logDirectly(
  * @param metric What you're measuring
  * @param additionalParams Any additional context you want to add to your log
  */
-function startMeasuring(metric: PerformanceMetric, additionalParams?: object) {
+function startMeasuring(
+  metric: PerformanceMetric,
+  additionalParams?: AdditionalParams
+) {
   const startTime = performance.now();
 
   currentlyTrackedMetrics.set(metric, {
@@ -80,7 +85,7 @@ function startMeasuring(metric: PerformanceMetric, additionalParams?: object) {
  */
 function finishMeasuring(
   metric: PerformanceMetric,
-  additionalParams?: object
+  additionalParams?: AdditionalParams
 ): boolean {
   const savedEntry = currentlyTrackedMetrics.get(metric);
   if (savedEntry === undefined || savedEntry.startTimestamp === undefined) {
@@ -105,22 +110,20 @@ function finishMeasuring(
  * and logs the result with segment.
  * @param fn Function which performance will be measured
  * @param metric What you're measuring, the name of the metric
- * @param tag Tag you can use for grouping the results
+ * @param additionalParams Any additional context you want to add to your log
  */
-export function withPerformanceTracking<Fn extends Function>(
+export function withPerformanceTracking<Fn extends (...args: any[]) => any>(
   fn: Fn,
   metric: PerformanceMetric,
-  tag?: PerformanceTag
-) {
-  return function () {
+  additionalParams?: AdditionalParams
+): (...args: Parameters<Fn>) => ReturnType<Fn> {
+  return function wrapper(this: any, ...args: Parameters<Fn>): ReturnType<Fn> {
     const startTime = performance.now();
 
-    // TODO: fix types
-    // @ts-ignore
-    const res = fn.apply(this, arguments);
+    // eslint-disable-next-line babel/no-invalid-this
+    const res = fn.apply(this, args);
 
     const durationInMs = performance.now() - startTime;
-    const additionalParams = tag ? { tag } : undefined;
     logDurationIfAppropriate(metric, durationInMs);
     analytics.track(metric, { durationInMs, ...additionalParams });
 
@@ -132,6 +135,7 @@ export const PerformanceTracking = {
   finishMeasuring,
   logDirectly,
   startMeasuring,
+  withPerformanceTracking,
 };
 
 export { default as PerformanceMetric } from './types/PerformanceMetric';
