@@ -125,7 +125,6 @@ export default function ENSConfirmRegisterSheet() {
 
   const { data: registrationCostsData } = useENSRegistrationCosts({
     name: ensName,
-    records: values,
     rentPrice: registrationData?.rentPrice,
     sendReverseRecord,
     step,
