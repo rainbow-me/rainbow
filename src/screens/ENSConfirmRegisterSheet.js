@@ -199,7 +199,7 @@ export default function ENSConfirmRegisterSheet() {
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: (
         <WaitCommitmentConfirmationContent
           accentColor={accentColor}
-          action={action}
+          action={() => action(accentColor)}
         />
       ),
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: <WaitENSConfirmationContent />,
