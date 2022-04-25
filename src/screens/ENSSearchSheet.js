@@ -61,7 +61,6 @@ export default function ENSSearchSheet() {
   } = useENSRegistrationCosts({
     name: debouncedSearchQuery,
     rentPrice: registrationData?.rentPrice,
-    sendReverseRecord: true,
     step: REGISTRATION_STEPS.COMMIT,
     yearsDuration: 1,
   });
