@@ -141,10 +141,6 @@ export default function RegisterENSNavigator() {
     contentHeight,
   ]);
 
-  useEffect(() => () => clearCurrentRegistrationName(), [
-    clearCurrentRegistrationName,
-  ]);
-
   return (
     <>
       <SlackSheet
