@@ -427,7 +427,7 @@ const ensAction = async (
   // @ts-expect-error Since src/redux/data.js is not typed yet, `accountAddress`
   // being a string conflicts with the inferred type of "null" for the second
   // parameter.
-  await dispatch(dataAddNewTransaction(newTransaction, ownerAddress, true));
+  await dispatch(dataAddNewTransaction(newTransaction, ownerAddress));
   return tx?.nonce;
 };
 
