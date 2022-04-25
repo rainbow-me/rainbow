@@ -2,6 +2,7 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import { useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
+import { InteractionManager } from 'react-native';
 import {
   ContextMenuButton,
   MenuActionConfig,
@@ -81,11 +82,11 @@ export default function ENSIntroSheet() {
 
   const navigateToAssignRecords = useCallback(
     (ensName: string) => {
-      params?.onSelectExistingName?.();
       startRegistration(ensName, REGISTRATION_MODES.EDIT);
-      setTimeout(() => {
+      InteractionManager.runAfterInteractions(() => {
+        params?.onSelectExistingName?.();
         navigate(Routes.ENS_ASSIGN_RECORDS_SHEET);
-      }, 0);
+      });
     },
     [navigate, params, startRegistration]
   );

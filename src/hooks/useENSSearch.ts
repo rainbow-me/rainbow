@@ -21,16 +21,17 @@ const formatTime = (timestamp: string, abbreviated: boolean = true) => {
 
 export default function useENSSearch({
   yearsDuration = 1,
-  name,
+  name: inputName,
 }: {
   yearsDuration?: number;
   name: string;
 }) {
+  const name = inputName.replace(ENS_DOMAIN, '');
   const { nativeCurrency } = useAccountSettings();
   const isValidLength = useMemo(() => name.length > 2, [name.length]);
   const duration = yearsDuration * timeUnits.secs.year;
   const getRegistrationValues = useCallback(async () => {
-    const ensValidation = validateENS(`${name}.eth`, {
+    const ensValidation = validateENS(`${name}${ENS_DOMAIN}`, {
       includeSubdomains: false,
     });
 
