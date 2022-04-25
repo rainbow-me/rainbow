@@ -4,6 +4,7 @@ import { useQuery } from 'react-query';
 import { useAccountSettings } from '.';
 import { fetchRegistrationDate } from '@rainbow-me/handlers/ens';
 import {
+  ENS_DOMAIN,
   formatRentPrice,
   getAvailable,
   getNameExpires,
