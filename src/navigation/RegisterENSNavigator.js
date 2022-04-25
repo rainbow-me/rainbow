@@ -114,9 +114,9 @@ export default function RegisterENSNavigator() {
     StatusBar.setBarStyle('light-content');
   }, []);
 
-  useEffect(() => {
-    clearCurrentRegistrationName();
-  }, [clearCurrentRegistrationName]);
+  useEffect(() => () => clearCurrentRegistrationName(), [
+    clearCurrentRegistrationName,
+  ]);
 
   useEffect(() => {
     if (!screenOptions.scrollEnabled) {
