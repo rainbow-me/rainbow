@@ -57,6 +57,8 @@ export default function DiscoverSearch() {
     uniswapCurrencyListLoading,
   } = useUniswapCurrencyList(searchQueryForSearch);
 
+  const { colors } = useTheme();
+
   const currencyList = useMemo(() => [...uniswapCurrencyList, ...ensResults], [
     uniswapCurrencyList,
     ensResults,
@@ -138,10 +140,10 @@ export default function DiscoverSearch() {
     if (ensResults && ensResults.length) {
       ensSearchResults = [
         {
-          color: '#5893ff',
+          color: colors.appleBlue,
           data: ensResults,
-          key: `􀏼 ${lang.t('discover.search.ethereum_name_service')}`,
-          title: `􀏼 ${lang.t('discover.search.ethereum_name_service')}`,
+          key: `􀉮 ${lang.t('discover.search.profiles')}`,
+          title: `􀉮 ${lang.t('discover.search.profiles')}`,
         },
       ];
     }
@@ -200,6 +202,7 @@ export default function DiscoverSearch() {
           loading={uniswapCurrencyListLoading || isFetchingEns}
           query={searchQueryForSearch}
           ref={currencySelectionListRef}
+          scrollIndicatorInsets={{ bottom: 53, top: 8 }}
           showList
           testID="discover-currency-select-list"
           type={CurrencySelectionTypes.output}
