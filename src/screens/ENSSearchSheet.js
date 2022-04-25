@@ -43,6 +43,7 @@ export default function ENSSearchSheet() {
   const { startRegistration, name } = useENSRegistration();
 
   const [searchQuery, setSearchQuery] = useState(name.replace(ENS_DOMAIN, ''));
+  const [inputValue, setInputValue] = useState(name.replace(ENS_DOMAIN, ''));
   const [debouncedSearchQuery] = useDebounce(searchQuery, 200);
 
   const {
@@ -115,11 +116,14 @@ export default function ENSSearchSheet() {
             <SearchInput
               contextMenuHidden
               isLoading={isLoading}
-              onChangeText={value => setSearchQuery(normalizeENS(value))}
+              onChangeText={value => {
+                setSearchQuery(normalizeENS(value));
+                setInputValue(value);
+              }}
               placeholder="Input placeholder"
               state={state}
               testID="ens-search-input"
-              value={searchQuery}
+              value={inputValue}
             />
           </Box>
           {isIdle && (
@@ -137,14 +141,7 @@ export default function ENSSearchSheet() {
               </Text>
             </Inline>
           )}
-          {isIdle && (
-            <>
-              <Inset vertical="24px">
-                <Divider />
-              </Inset>
-              <PendingRegistrations />
-            </>
-          )}
+          {isIdle && <PendingRegistrations />}
           {isInvalid && (
             <Inset horizontal="30px">
               <Text
