@@ -1,3 +1,4 @@
+import analytics from '@segment/analytics-react-native';
 import { captureException, captureMessage } from '@sentry/react-native';
 import { forEach, isNil } from 'lodash';
 import DeviceInfo from 'react-native-device-info';
@@ -17,7 +18,7 @@ import {
   setInternetCredentials,
   UserCredentials,
 } from 'react-native-keychain';
-import { delay } from '../helpers/utilities';
+import { delay, getKeyByValue } from '../helpers/utilities';
 import logger from 'logger';
 
 interface AnonymousKey {
@@ -29,6 +30,32 @@ interface AnonymousKey {
 interface AnonymousKeyData {
   [key: string]: AnonymousKey;
 }
+
+export const keychainErrKey = {
+  KEYCHAIN_ALLOCATE: 'Failed to allocate memory.',
+  KEYCHAIN_AUTH_FAILED:
+    'The user name or passphrase you entered is not correct.',
+  KEYCHAIN_BAD_REQ: 'Bad parameter or invalid state for operation.',
+  KEYCHAIN_CANCEL: 'Cancel',
+  KEYCHAIN_DECODE: 'Unable to decode the provided data.',
+  KEYCHAIN_DUPLICATE_ITEM: 'The specified item already exists in the keychain.',
+  KEYCHAIN_ERROR_AUTHENTICATING: 'Error authenticating', //keychain cell was created with Face and user try to read with PIN, android only
+  KEYCHAIN_FACE_UNLOCK_CANCEL: 'Face Unlock canceled by user',
+  KEYCHAIN_INTERACTION_NOT_ALLOWED: 'User interaction is not allowed.',
+  KEYCHAIN_IO: 'I/O error.',
+  KEYCHAIN_ITEM_NOT_FOUND:
+    'The specified item could not be found in the keychain.',
+  KEYCHAIN_MISSING_ENTITLEMENTS:
+    "Internal error when a required entitlement isn't present.",
+  KEYCHAIN_NOT_AUTHENTICATED: 'Wrapped error: User not authenticated',
+  KEYCHAIN_NOT_AVAILABLE:
+    'No keychain is available. You may need to restart your computer.',
+  KEYCHAIN_OP_WR: 'File already open with with write permission.',
+  KEYCHAIN_PARAM:
+    'One or more parameters passed to a function where not valid.',
+  KEYCHAIN_UNIMPLEMENTED: 'Function or operation not implemented.',
+  KEYCHAIN_USER_CANCELED: 'User canceled the operation.',
+};
 
 export async function saveString(
   key: string,
@@ -61,8 +88,9 @@ export async function saveString(
 
 export async function loadString(
   key: string,
-  options?: Options
-): Promise<null | string | -1 | -2> {
+  options?: Options,
+  isErrorBubbling = false
+): Promise<null | string> {
   try {
     const credentials = await getInternetCredentials(key, options);
     if (credentials) {
@@ -70,17 +98,12 @@ export async function loadString(
       return credentials.password;
     }
     logger.sentry(`Keychain: string does not exist for key: ${key}`);
+    return null;
   } catch (err: any) {
-    if (err.toString() === 'Error: User canceled the operation.') {
-      return -1;
-    }
-    if (err.toString() === 'Error: Wrapped error: User not authenticated') {
-      return -2;
-    }
-    if (
-      err.toString() ===
-      'Error: The user name or passphrase you entered is not correct.'
-    ) {
+    const errMsg = err?.message.split('msg: ')[1];
+    const errCode = getKeyByValue(keychainErrKey, errMsg || err?.message);
+
+    if (errCode === keychainErrKey.KEYCHAIN_AUTH_FAILED) {
       // Try reading from keychain once more
       captureMessage('Keychain read first attempt failed');
       await delay(1000);
@@ -94,26 +117,27 @@ export async function loadString(
         }
         logger.sentry(`Keychain: string does not exist for key: ${key}`);
       } catch (e) {
-        if (err.toString() === 'Error: User canceled the operation.') {
-          return -1;
-        }
-        if (err.toString() === 'Error: Wrapped error: User not authenticated') {
-          return -2;
-        }
         captureMessage('Keychain read second attempt failed');
         logger.sentry(
           `Keychain: failed to load string for key: ${key} error: ${err}`
         );
         captureException(err);
+        analytics.track('Error on getting credentials from keychain', {
+          error: err,
+          os: ios ? 'ios' : 'android',
+        });
+
+        if (!isErrorBubbling) return null;
+        throw e;
       }
-      return null;
     }
     logger.sentry(
       `Keychain: failed to load string for key: ${key} error: ${err}`
     );
     captureException(err);
+    if (!isErrorBubbling) return null;
+    throw errCode || err;
   }
-  return null;
 }
 
 export async function saveObject(
@@ -128,13 +152,11 @@ export async function saveObject(
 export async function loadObject(
   key: string,
   options?: Options
-): Promise<null | Object | -1 | -2> {
-  const jsonValue = await loadString(key, options);
-  if (!jsonValue) return null;
-  if (jsonValue === -1 || jsonValue === -2) {
-    return jsonValue;
-  }
+): Promise<null | Object> {
   try {
+    const jsonValue = await loadString(key, options, true);
+    if (!jsonValue) return null;
+
     const objectValue = JSON.parse(jsonValue);
     logger.log(`Keychain: parsed object for key: ${key}`);
     return objectValue;
@@ -143,8 +165,8 @@ export async function loadObject(
       `Keychain: failed to parse object for key: ${key} error: ${err}`
     );
     captureException(err);
+    throw err;
   }
-  return null;
 }
 
 export async function remove(key: string): Promise<void> {
