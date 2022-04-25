@@ -1358,25 +1358,29 @@ export const assetPricesChanged = (
   dispatch: Dispatch<DataUpdateGenericAssetsAction>,
   getState: AppGetState
 ) => {
-  const price = message?.payload?.prices?.[0]?.price;
-  const assetAddress = message?.meta?.asset_code;
-  if (isNil(price) || isNil(assetAddress)) return;
-  const { genericAssets } = getState().data;
-  const genericAsset = {
-    ...get(genericAssets, assetAddress),
-    price,
-  };
-  const updatedAssets = {
-    ...genericAssets,
-    [assetAddress]: genericAsset,
-  } as {
-    [address: string]: ParsedAddressAsset;
-  };
+  const { nativeCurrency } = getState().settings;
 
-  dispatch({
-    payload: updatedAssets,
-    type: DATA_UPDATE_GENERIC_ASSETS,
-  });
+  if (toLower(nativeCurrency) === message?.meta?.currency) {
+    const price = message?.payload?.prices?.[0]?.price;
+    const assetAddress = message?.meta?.asset_code;
+    if (isNil(price) || isNil(assetAddress)) return;
+    const { genericAssets } = getState().data;
+    const genericAsset = {
+      ...get(genericAssets, assetAddress),
+      price,
+    };
+    const updatedAssets = {
+      ...genericAssets,
+      [assetAddress]: genericAsset,
+    } as {
+      [address: string]: ParsedAddressAsset;
+    };
+
+    dispatch({
+      payload: updatedAssets,
+      type: DATA_UPDATE_GENERIC_ASSETS,
+    });
+  }
 };
 
 /**
