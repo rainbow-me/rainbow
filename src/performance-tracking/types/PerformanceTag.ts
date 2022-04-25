@@ -1,5 +1,5 @@
 enum PerformanceTag {
-  LODASH = 'lodash',
+  lodash = 'lodash',
 }
 
 export default PerformanceTag;

@@ -5,6 +5,7 @@ import {
   PerformanceMetric,
   PerformanceTracking,
 } from '../performance-tracking';
+import { StartTime } from '../performance-tracking/start-time';
 
 const { RainbowSplashScreen, RNBootSplash } = NativeModules;
 
@@ -31,5 +32,9 @@ export default function useHideSplashScreen() {
       });
 
     PerformanceTracking.finishMeasuring(PerformanceMetric.timeToInteractive);
+    PerformanceTracking.logDirectly(
+      PerformanceMetric.completeStartupTime,
+      performance.now() - StartTime.START_TIME
+    );
   }, []);
 }
