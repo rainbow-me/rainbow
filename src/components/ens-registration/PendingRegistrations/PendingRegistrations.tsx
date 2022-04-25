@@ -8,6 +8,7 @@ import {
   Box,
   Column,
   Columns,
+  Divider,
   Inset,
   Stack,
   Text,
@@ -53,6 +54,9 @@ const PendingRegistration = ({
 
   return (
     <Box>
+      <Inset horizontal="19px" vertical="24px">
+        <Divider />
+      </Inset>
       <Columns alignVertical="center">
         {avatarUrl && (
           <Column width="content">
