@@ -214,10 +214,10 @@ class App extends Component {
 
   identifyFlow = async () => {
     const address = await loadAddress();
-    const isBroken = await keychain.isBroken();
+    const needsRepair = await keychain.checkKeychainStatus();
 
-    if (isBroken) {
-      await keychain.fixBroken();
+    if (needsRepair) {
+      await keychain.repairAfterBackup();
       this.setState({ initialRoute: Routes.WELCOME_SCREEN });
     } else if (address) {
       this.setState({ initialRoute: Routes.SWIPE_LAYOUT });

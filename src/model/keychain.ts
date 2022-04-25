@@ -273,7 +273,7 @@ export async function getPrivateAccessControlOptions(): Promise<Options> {
 }
 
 // If user does a backup of an iPhone, wipes it and restores the backup on the
-// same phone, keys created using secure enclave will be gone, but due to the
+// same phone, keys created using secure enclave will be missing, but due to the
 // flag AccessibleWhenUnlockedThisDeviceOnly, public keys will be restored.
 // This function is responsible for:
 // 1. Figuring out if it is possible that wallet is in a broken state (empty
@@ -281,15 +281,14 @@ export async function getPrivateAccessControlOptions(): Promise<Options> {
 // 2. If there is a reasonable suspicion that keychain might be broken, we check
 //    if there are seed phrases (this invokes FaceID check) and if they are
 //    valid.
-export async function isBroken() {
-  let isBroken = false;
+// Result is true if keychain is needs a repair, false otherwise.
+export async function checkKeychainStatus() {
+  let needsRepair = false;
 
   const entry = await loadString(allWalletsKey);
   const keys = await AsyncStorage.getAllKeys();
 
-  const possiblyBroken = typeof entry === 'string' && keys.length === 0;
-
-  if (possiblyBroken) {
+  if (typeof entry === 'string' && keys.length === 0) {
     const entries = await loadAllKeys();
 
     if (!entries) {
@@ -300,16 +299,16 @@ export async function isBroken() {
       if (entry.username.endsWith('_rainbowSeedPhrase')) {
         const object = await loadObject(entry.username);
         if (!object) {
-          isBroken = true;
+          needsRepair = true;
         }
       }
     }
   }
 
-  return isBroken;
+  return needsRepair;
 }
 
-export async function fixBroken() {
+export async function repairAfterBackup() {
   await Promise.all(
     [
       analyticsUserIdentifier,
