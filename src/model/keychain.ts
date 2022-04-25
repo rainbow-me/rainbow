@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-community/async-storage';
 import { captureException, captureMessage } from '@sentry/react-native';
 import { forEach, isNil } from 'lodash';
 import DeviceInfo from 'react-native-device-info';
@@ -20,14 +19,16 @@ import {
 } from 'react-native-keychain';
 import { delay } from '../helpers/utilities';
 import {
+  getAllAsyncStorageKeys,
+  markKeychainAsRepaired,
+} from '@rainbow-me/helpers/asyncStorage';
+import {
   addressKey,
   allWalletsKey,
   analyticsUserIdentifier,
   selectedWalletKey,
 } from '@rainbow-me/utils/keychainConstants';
 import logger from 'logger';
-
-const POST_REINSTALL_INTEGRITY_CHECK = 'postReinstallIntegrityCheck';
 
 interface AnonymousKey {
   length: number;
@@ -285,8 +286,8 @@ export async function getPrivateAccessControlOptions(): Promise<Options> {
 export async function checkKeychainStatus() {
   let needsRepair = false;
 
-  const entry = await loadString(allWalletsKey);
-  const keys = await AsyncStorage.getAllKeys();
+  const entry = await loadString(addressKey);
+  const keys = await getAllAsyncStorageKeys();
 
   if (typeof entry === 'string' && keys.length === 0) {
     const entries = await loadAllKeys();
@@ -320,5 +321,5 @@ export async function repairAfterBackup() {
 
   // We add a dummy entry to prevent the logic from recognizing broken
   // keychain in case of sudden app restart.
-  await AsyncStorage.setItem(POST_REINSTALL_INTEGRITY_CHECK, 'true');
+  await markKeychainAsRepaired();
 }
