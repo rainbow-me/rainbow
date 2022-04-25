@@ -78,7 +78,9 @@ function startMeasuring(
  * If you need more control over timestamps or need to use another format,
  * please use markStartTime/markFinishTime/commitMeasurement API.
  *
- * CAUTION: Finish has to be always called after calling start for the same metric before.
+ * CAUTION: For the same metric, finishMeasuring must always be called after calling startMeasuring first.
+ * The reverse order will result in the measurement not being saved and finishMeasuring returning false.
+ *
  * @param metric What you're measuring
  * @param additionalParams Any additional context you want to add to your log
  * @returns True if the measurement was collected and commited properly, false otherwise
