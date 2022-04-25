@@ -37,7 +37,7 @@ const ShareCollectiblesButton = ({ onPress }) => (
   <ShareCollectiblesBPA onPress={onPress} scale={0.9}>
     <CoinDividerButtonLabel
       align="center"
-      label={`􀈂 ${lang.t('button.share')}}`}
+      label={`􀈂 ${lang.t('button.share')}`}
       shareButton
     />
   </ShareCollectiblesBPA>
