@@ -71,7 +71,6 @@ export default function ENSAssignRecordsSheet() {
     name,
     mode,
     images: { avatarUrl: initialAvatarUrl },
-    changedRecords,
   } = useENSRegistration({
     setInitialRecordsWhenInEditMode: true,
   });
@@ -93,7 +92,6 @@ export default function ENSAssignRecordsSheet() {
 
   useENSRegistrationCosts({
     name,
-    records: changedRecords,
     rentPrice: registrationData?.rentPrice,
     step,
     yearsDuration: 1,
@@ -158,7 +156,7 @@ export default function ENSAssignRecordsSheet() {
       <Box
         background="body"
         flexGrow={1}
-        style={useMemo(() => ({ paddingBottom: BottomActionHeight + 20 }), [])}
+        style={{ paddingBottom: BottomActionHeight + 20 }}
       >
         <Stack space="19px">
           <RegistrationCover

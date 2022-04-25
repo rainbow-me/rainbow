@@ -333,9 +333,9 @@ export default function useENSRegistrationActionHandler(
       return REGISTRATION_STEPS.WAIT_ENS_COMMITMENT;
     return REGISTRATION_STEPS.REGISTER;
   }, [
-    mode,
-    registrationParameters.commitTransactionConfirmedAt,
     registrationParameters.commitTransactionHash,
+    registrationParameters.commitTransactionConfirmedAt,
+    mode,
     secondsSinceCommitConfirmed,
     readyToRegister,
   ]);

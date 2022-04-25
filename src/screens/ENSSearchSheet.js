@@ -21,9 +21,10 @@ import {
   Stack,
   Text,
 } from '@rainbow-me/design-system';
-import { ENS_DOMAIN, REGISTRATION_STEPS } from '@rainbow-me/helpers/ens';
+import { ENS_DOMAIN } from '@rainbow-me/helpers/ens';
 import {
   useENSRegistration,
+  useENSRegistrationActionHandler,
   useENSRegistrationCosts,
   useENSSearch,
   usePrevious,
@@ -42,6 +43,7 @@ export default function ENSSearchSheet() {
   const { startRegistration, name } = useENSRegistration();
 
   const [searchQuery, setSearchQuery] = useState(name.replace(ENS_DOMAIN, ''));
+  const [inputValue, setInputValue] = useState(name.replace(ENS_DOMAIN, ''));
   const [debouncedSearchQuery] = useDebounce(searchQuery, 200);
 
   const {
@@ -55,13 +57,14 @@ export default function ENSSearchSheet() {
     name: debouncedSearchQuery,
   });
 
+  const { step } = useENSRegistrationActionHandler();
   const {
     data: registrationCostsData,
     isSuccess: registrationCostsDataIsAvailable,
   } = useENSRegistrationCosts({
     name: debouncedSearchQuery,
     rentPrice: registrationData?.rentPrice,
-    step: REGISTRATION_STEPS.COMMIT,
+    step,
     yearsDuration: 1,
   });
 
@@ -112,11 +115,14 @@ export default function ENSSearchSheet() {
             <SearchInput
               contextMenuHidden
               isLoading={isLoading}
-              onChangeText={value => setSearchQuery(normalizeENS(value))}
+              onChangeText={value => {
+                setSearchQuery(normalizeENS(value));
+                setInputValue(value);
+              }}
               placeholder="Input placeholder"
               state={state}
               testID="ens-search-input"
-              value={searchQuery}
+              value={inputValue}
             />
           </Box>
           {isIdle && (
@@ -134,14 +140,7 @@ export default function ENSSearchSheet() {
               </Text>
             </Inline>
           )}
-          {isIdle && (
-            <>
-              <Inset vertical="24px">
-                <Divider />
-              </Inset>
-              <PendingRegistrations />
-            </>
-          )}
+          {isIdle && <PendingRegistrations />}
           {isInvalid && (
             <Inset horizontal="30px">
               <Text
