@@ -32,8 +32,16 @@ export default function SwapDetailsPriceRow({ tradeDetails, ...props }) {
 
   const steps = useMemo(
     () => [
-      `1 ${outputCurrency?.symbol} for ${outputExecutionRate} ${inputCurrency?.symbol}`,
-      `1 ${inputCurrency?.symbol} for ${inputExecutionRate} ${outputCurrency?.symbol}`,
+      lang.t('expanded_state.swap_details.output_exchange_rate', {
+        executionRate: outputExecutionRate,
+        inputSymbol: inputCurrency?.symbol,
+        outputSymbol: outputCurrency?.symbol,
+      }),
+      lang.t('expanded_state.swap_details.input_exchange_rate', {
+        executionRate: inputExecutionRate,
+        inputSymbol: inputCurrency?.symbol,
+        outputSymbol: outputCurrency?.symbol,
+      }),
     ],
     [inputCurrency, inputExecutionRate, outputCurrency, outputExecutionRate]
   );

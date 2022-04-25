@@ -349,7 +349,9 @@
         "minimum_received": "Minimum received",
         "maximum_sold": "Maximum sold",
         "token_contract": "%{token} contract",
-        "number_of_exchanges": "%{number} Exchanges"
+        "number_of_exchanges": "%{number} Exchanges",
+        "input_exchange_rate": "1 %{inputSymbol} for %{executionRate} %{outputSymbol}",
+        "output_exchange_rate": "1 %{outputSymbol} for %{executionRate} %{inputSymbol}"
       },
       "token_index": {
         "get_token": "Get %{assetSymbol}",
