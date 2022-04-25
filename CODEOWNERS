@@ -1,10 +1,10 @@
 # Rainbow CODEOWNERS file
 
 # ANDROID
-android/ @brunobar79 @osdnk @terrysahaidak 
+android/ @brunobar79 @osdnk @terrysahaidak
 
 # E2E
-config/ @brunobar79 @skylarbarrera @osdnk 
+config/ @brunobar79 @skylarbarrera @osdnk
 e2e/ @brunobar79 @ibrahimtaveras00 @skylarbarrera
 
 # IOS
@@ -64,13 +64,14 @@ src/handlers/uniswap.ts @brunobar79 @jinchung
 src/handlers/walletReadyEvents.ts @brunobar79 @jinchung
 src/handlers/web3.ts @brunobar79 @jinchung @estebanmino
 src/handlers/wyre.ts @jinchung @skylarbarrera
+src/handlers/fedora.ts @osdnk
 
 # Helpers
 src/helpers @brunobar79 @jinchung
 
 
 # Hooks
-src/hooks @jinchung @osdnk 
+src/hooks @jinchung @osdnk
 src/hooks/useENSProfile.ts @estebanmino @jxom
 src/hooks/useENSProfileForm.ts @estebanmino @jxom
 src/hooks/useENSRegistration.ts @estebanmino @jxom
@@ -81,17 +82,17 @@ src/hooks/useGas.ts @estebanmino @brunobar79 @jinchung
 src/languages @skylarbarrera @marco
 
 
-# Model 
+# Model
 src/model @brunobar79 @jinchung
 src/model/mmkv @osdnk @terrysahaidak
 
-# Navigation 
+# Navigation
 src/navigation @osdnk @terrysahaidak
 
-# Parsers 
+# Parsers
 src/parsers @brunobar79 @jinchung
 
-# rainbow fetch 
+# rainbow fetch
 src/rainbow-fetch @brunobar79 @skylarbarrera
 
 # raps
@@ -127,7 +128,7 @@ src/references @jinchung @brunobar79 @skylarbarrera
 src/screens @osdnk @skylarbarrera
 
 # styled-thing
-src/styled-thing @terrysahaidak @osdnk  
+src/styled-thing @terrysahaidak @osdnk
 
 # styles
 src/styled-thing @terrysahaidak @osdnk @markdalgleish
@@ -136,7 +137,7 @@ src/styled-thing @terrysahaidak @osdnk @markdalgleish
 src/utils @brunobar79 @jinchung
 
 # App
-src/App.js @brunobar79 @jinchung @osdnk 
+src/App.js @brunobar79 @jinchung @osdnk
 
 # types
 eth-contract-metadata.d.ts @markdalgleish @jxom
@@ -163,7 +164,7 @@ types/ @markdalgleish @marco @jinchung
 app.json @jinchung @brunobar79
 
 # SECURITY / APP INFRA
-audit-ci.json @brunobar79 @skylarbarrera  
+audit-ci.json @brunobar79 @skylarbarrera
 
 # APP INFRA
 babel.config.js @brunobar79 @osdnk
