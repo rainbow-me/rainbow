@@ -50,7 +50,7 @@ export default function SwapDetailsContent({
     (!isHighPriceImpact || priceImpactNativeAmount) &&
     priceImpactPercentDisplay;
 
-  const [areDetailsExpanded, setAreDetailsExpanded] = useState(false);
+  const [detailsExpanded, setDetailsExpanded] = useState(false);
 
   const colorForAsset = useColorForAsset(outputCurrency, undefined, true, true);
 
@@ -85,21 +85,21 @@ export default function SwapDetailsContent({
           {tradeDetails.feePercentageBasisPoints !== 0 && (
             <SwapDetailsFeeRow tradeDetails={tradeDetails} />
           )}
-          {!areDetailsExpanded ? (
+          {!detailsExpanded ? (
             <ButtonPressAnimation
-              onPress={() => setAreDetailsExpanded(!areDetailsExpanded)}
+              onPress={() => setDetailsExpanded(!detailsExpanded)}
               scaleTo={1.06}
             >
               <SwapDetailsRow
                 label={
-                  areDetailsExpanded
+                  detailsExpanded
                     ? lang.t('expanded_state.swap_details.hide_details')
                     : lang.t('expanded_state.swap_details.show_details')
                 }
                 labelColor="accent"
               >
                 <SwapDetailsValue color="accent">
-                  {areDetailsExpanded ? '􀁰' : '􀯼'}
+                  {detailsExpanded ? '􀁰' : '􀯼'}
                 </SwapDetailsValue>
               </SwapDetailsRow>
             </ButtonPressAnimation>
@@ -107,7 +107,7 @@ export default function SwapDetailsContent({
             <Divider />
           )}
           <Box>
-            {areDetailsExpanded && (
+            {detailsExpanded && (
               <Rows space="24px">
                 <SwapDetailsPriceRow tradeDetails={tradeDetails} />
                 {!isETH(inputCurrency?.address) && (

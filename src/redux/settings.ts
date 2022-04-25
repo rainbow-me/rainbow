@@ -171,9 +171,9 @@ export const settingsChangeTestnetsEnabled = (testnetsEnabled: any) => async (
   saveTestnetsEnabled(testnetsEnabled);
 };
 
-export const settingsChangeFlashbotsEnabled = (flashbotsEnabled: any) => async (
-  dispatch: Dispatch<SettingsStateUpdateFlashbotsPrefAction>
-) => {
+export const settingsChangeFlashbotsEnabled = (
+  flashbotsEnabled: boolean
+) => async (dispatch: Dispatch<SettingsStateUpdateFlashbotsPrefAction>) => {
   dispatch({
     payload: flashbotsEnabled,
     type: SETTINGS_UPDATE_FLASHBOTS_PREF_SUCCESS,

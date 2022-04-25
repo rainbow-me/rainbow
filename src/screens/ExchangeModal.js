@@ -32,10 +32,6 @@ import {
 import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
-/*
-  import { FLASHBOTS } from '../config/experimental';
-  import useExperimentalFlag from '../config/experimentalHooks';
-*/
 import {
   ExchangeModalTypes,
   isKeyboardOpen,

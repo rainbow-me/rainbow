@@ -268,7 +268,7 @@ export default function useSwapDerivedOutputs() {
       setLoading(true);
       const inputToken = inputCurrency;
       const outputToken = outputCurrency;
-      const slippagePercentage = slippageInBips / 1000;
+      const slippagePercentage = slippageInBips / 100;
 
       if (independentField === SwapModalField.input) {
         derivedValues[SwapModalField.input] = independentValue;

@@ -4,7 +4,6 @@ import { fetchAssetPrices } from './explorer';
 import { UniswapCurrency } from '@rainbow-me/entities';
 import { ExchangeModalTypes } from '@rainbow-me/helpers';
 import { AppDispatch, AppGetState } from '@rainbow-me/redux/store';
-import { convertAmountFromNativeValue } from '@rainbow-me/utilities';
 
 export interface SwapAmount {
   display: string | null;
@@ -200,7 +199,7 @@ const INITIAL_STATE: SwapState = {
   independentValue: null,
   inputCurrency: null,
   outputCurrency: null,
-  slippageInBips: 1000,
+  slippageInBips: 100,
   tradeDetails: null,
   type: ExchangeModalTypes.swap,
   typeSpecificParameters: null,

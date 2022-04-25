@@ -88,8 +88,8 @@ export default function SwapSettingsState({ asset }) {
     setParams({ longFormHeight: sheetHeightWithKeyboard });
   }, [sheetHeightWithKeyboard, setParams]);
 
-  const convertBipsToPercent = bips => bips / 1000;
-  const convertPercentToBips = percent => percent * 1000;
+  const convertBipsToPercent = bips => bips / 100;
+  const convertPercentToBips = percent => percent * 100;
 
   const [slippageValue, setSlippageValue] = useState(
     convertBipsToPercent(slippageInBips)
