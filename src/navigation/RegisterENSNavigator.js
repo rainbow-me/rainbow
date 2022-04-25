@@ -115,6 +115,10 @@ export default function RegisterENSNavigator() {
   }, []);
 
   useEffect(() => {
+    clearCurrentRegistrationName();
+  }, [clearCurrentRegistrationName]);
+
+  useEffect(() => {
     if (!screenOptions.scrollEnabled) {
       sheetRef.current.scrollTo({ animated: false, x: 0, y: 0 });
     }
