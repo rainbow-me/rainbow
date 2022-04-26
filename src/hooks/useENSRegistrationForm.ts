@@ -197,20 +197,6 @@ export default function useENSRegistrationForm({
     updateRecords(values);
   }, [updateRecords, values]);
 
-  // const [isLoading, setIsLoading] = useState(
-  //   mode === REGISTRATION_MODES.EDIT && isEmpty(values)
-  // );
-
-  // useEffect(() => {
-  //   if (mode === REGISTRATION_MODES.EDIT) {
-  //     if (profileQuery.isSuccess || !isEmpty(values)) {
-  //       setTimeout(() => setIsLoading(false), 200);
-  //     } else {
-  //       setIsLoading(true);
-  //     }
-  //   }
-  // }, [mode, profileQuery.isSuccess, values]);
-
   const clearValues = useCallback(() => {
     setValuesMap({});
   }, [setValuesMap]);
@@ -267,8 +253,7 @@ export default function useENSRegistrationForm({
     disabled,
     errors,
     isEmpty: empty,
-    isLoading: profileQuery.isLoading,
-    // isSuccess: profileQuery.isSuccess,
+    isLoading: profileQuery.isLoading && isEmpty(values),
     onAddField,
     onBlurField,
     onChangeField,
