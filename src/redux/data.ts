@@ -1354,11 +1354,10 @@ export const assetPricesChanged = (
 ) => {
   const price = message?.payload?.prices?.[0]?.price;
   const assetAddress = message?.meta?.asset_code;
-  //TODO:
   if (isNil(price) || isNil(assetAddress)) return;
   const { genericAssets } = getState().data;
   const genericAsset = {
-    ...get(genericAssets, assetAddress), 
+    ...genericAssets?.[assetAddress],
     price,
   };
   const updatedAssets = {
