@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import { InteractionManager, NativeModules, StatusBar } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
 import { PerformanceTracking } from '../performance-tracking';
@@ -8,6 +8,8 @@ import { PerformanceMetrics } from '../performance-tracking/types/PerformanceMet
 const { RainbowSplashScreen, RNBootSplash } = NativeModules;
 
 export default function useHideSplashScreen() {
+  const alreadyLoggedPerformance = useRef(false);
+
   return useCallback(() => {
     if (RainbowSplashScreen && RainbowSplashScreen.hideAnimated) {
       RainbowSplashScreen.hideAnimated();
@@ -29,10 +31,13 @@ export default function useHideSplashScreen() {
         StatusBar.setHidden(false, 'fade');
       });
 
-    PerformanceTracking.finishMeasuring(PerformanceMetrics.timeToInteractive);
-    PerformanceTracking.logDirectly(
-      PerformanceMetrics.completeStartupTime,
-      performance.now() - StartTime.START_TIME
-    );
+    if (!alreadyLoggedPerformance.current) {
+      PerformanceTracking.finishMeasuring(PerformanceMetrics.timeToInteractive);
+      PerformanceTracking.logDirectly(
+        PerformanceMetrics.completeStartupTime,
+        performance.now() - StartTime.START_TIME
+      );
+      alreadyLoggedPerformance.current = true;
+    }
   }, []);
 }
