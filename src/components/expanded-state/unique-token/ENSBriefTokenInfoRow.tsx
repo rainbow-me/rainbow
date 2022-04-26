@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/core';
 import { format, formatDistanceStrict } from 'date-fns';
 import lang from 'i18n-js';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ENSConfirmRenewSheetHeight } from '../../../screens/ENSConfirmRegisterSheet';
 import { ButtonPressAnimation } from '../../animations';
 import { TokenInfoItem, TokenInfoValue } from '../../token-info';
@@ -27,9 +27,20 @@ export default function ENSBriefTokenInfoRow({
   const { startRegistration } = useENSRegistration();
   const { data } = useENSProfile(ensName);
   const [showExpiryDistance, setShowExpiryDistance] = useState(true);
+  const [expiryItemTitle, setExpiryItemTitle] = useState(
+    lang.t('expanded_state.unique_expanded.expires_in')
+  );
   const handlePressExpiryDate = useCallback(() => {
     setShowExpiryDistance(x => !x);
   }, []);
+
+  useEffect(() => {
+    if (showExpiryDistance) {
+      setExpiryItemTitle(lang.t('expanded_state.unique_expanded.expires_in'));
+    } else {
+      setExpiryItemTitle(lang.t('expanded_state.unique_expanded.expires_on'));
+    }
+  }, [showExpiryDistance]);
 
   const handlePressEditExpiryDate = useCallback(() => {
     const cleanENSName = ensName?.split(' ')?.[0] ?? ensName;
@@ -89,7 +100,7 @@ export default function ENSBriefTokenInfoRow({
         loading={!expiryDate}
         onPress={handlePressExpiryDate}
         size="big"
-        title={lang.t('expanded_state.unique_expanded.expires_in')}
+        title={expiryItemTitle}
         weight="heavy"
       >
         {expiryDate

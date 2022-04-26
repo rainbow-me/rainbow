@@ -373,7 +373,8 @@
         "toast_removed_from_showcase": "Removed from showcase",
         "view_on_opensea": "View on Opensea",
         "view_on_platform": "View on %{platform}",
-        "expires_in": "Expires in"
+        "expires_in": "Expires in",
+        "expires_on": "Expires on"
       }
     },
     "fields": {
