@@ -205,15 +205,18 @@ export default function ENSAssignRecordsSheet() {
   );
 }
 
-export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
+export function ENSAssignRecordsBottomActions({
+  visible: defaultVisible,
+  previousRouteName,
+  currentRouteName,
+}) {
   const { navigate, goBack } = useNavigation();
   const keyboardHeight = useKeyboardHeight();
   const { colors } = useTheme();
-
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
-
   const { mode } = useENSRegistration();
   const { profileQuery } = useENSAssignRegistration();
+  const [fromRoute, setFromRoute] = useState(previousRouteName);
   const {
     disabled,
     isEmpty,
@@ -226,9 +229,22 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
 
   const handlePressBack = useCallback(() => {
     delayNext();
-    navigate(Routes.ENS_SEARCH_SHEET);
+    navigate(fromRoute);
     setAccentColor(colors.purple);
-  }, [colors.purple, navigate, setAccentColor]);
+  }, [colors.purple, fromRoute, navigate, setAccentColor]);
+
+  const hasBackButton = useMemo(
+    () =>
+      fromRoute === Routes.ENS_SEARCH_SHEET ||
+      fromRoute === Routes.ENS_INTRO_SHEET,
+    [fromRoute]
+  );
+
+  useEffect(() => {
+    if (previousRouteName !== currentRouteName) {
+      setFromRoute(previousRouteName);
+    }
+  }, [currentRouteName, previousRouteName]);
 
   const handlePressContinue = useCallback(() => {
     submit(() => {
@@ -309,9 +325,11 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
                       }
                     : {})}
                 >
-                  <TintButton color="secondary60" onPress={handlePressBack}>
-                    {lang.t('profiles.create.back')}
-                  </TintButton>
+                  {hasBackButton && (
+                    <TintButton color="secondary60" onPress={handlePressBack}>
+                      {lang.t('profiles.create.back')}
+                    </TintButton>
+                  )}
                   {isEmpty && mode === REGISTRATION_MODES.CREATE ? (
                     <TintButton
                       color="secondary60"

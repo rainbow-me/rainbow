@@ -1,6 +1,5 @@
 import { useRoute } from '@react-navigation/core';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import ConditionalWrap from 'conditional-wrap';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { StatusBar } from 'react-native';
 import { useSetRecoilState } from 'recoil';
@@ -148,10 +147,7 @@ export default function RegisterENSNavigator() {
         removeTopPadding
         scrollEnabled={scrollEnabled}
       >
-        <ConditionalWrap
-          condition={!scrollEnabled}
-          wrap={children => <Box style={wrapperStyle}>{children}</Box>}
-        >
+        <Box style={wrapperStyle}>
           <Swipe.Navigator
             initialLayout={deviceUtils.dimensions}
             initialRouteName={currentRouteName}
@@ -162,10 +158,13 @@ export default function RegisterENSNavigator() {
             <Swipe.Screen
               component={ENSIntroSheet}
               initialParams={{
+                onSearchForNewName: () => setIsSearchEnabled(true),
                 onSelectExistingName: () => setIsSearchEnabled(false),
               }}
               listeners={{
-                focus: () => setCurrentRouteName(Routes.ENS_INTRO_SHEET),
+                focus: () => {
+                  setCurrentRouteName(Routes.ENS_INTRO_SHEET);
+                },
               }}
               name={Routes.ENS_INTRO_SHEET}
             />
@@ -176,6 +175,7 @@ export default function RegisterENSNavigator() {
                   focus: () => setCurrentRouteName(Routes.ENS_SEARCH_SHEET),
                 }}
                 name={Routes.ENS_SEARCH_SHEET}
+                visible={isSearchEnabled}
               />
             )}
             <Swipe.Screen
@@ -185,13 +185,14 @@ export default function RegisterENSNavigator() {
                 sheetRef,
               }}
               listeners={{
-                focus: () =>
-                  setCurrentRouteName(Routes.ENS_ASSIGN_RECORDS_SHEET),
+                focus: () => {
+                  setCurrentRouteName(Routes.ENS_ASSIGN_RECORDS_SHEET);
+                },
               }}
               name={Routes.ENS_ASSIGN_RECORDS_SHEET}
             />
           </Swipe.Navigator>
-        </ConditionalWrap>
+        </Box>
       </SlackSheet>
 
       {/**
@@ -201,7 +202,11 @@ export default function RegisterENSNavigator() {
        * ScrollView, so this seems like the best workaround.
        */}
       {enableAssignRecordsBottomActions && (
-        <ENSAssignRecordsBottomActions visible={isBottomActionsVisible} />
+        <ENSAssignRecordsBottomActions
+          currentRouteName={currentRouteName}
+          previousRouteName={previousRouteName}
+          visible={isBottomActionsVisible}
+        />
       )}
     </>
   );
