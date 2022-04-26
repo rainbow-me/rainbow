@@ -1,4 +1,3 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQuery } from 'react-query';
 import useAccountSettings from './useAccountSettings';
 import { EnsAccountRegistratonsData } from '@rainbow-me/apollo/queries';
@@ -40,6 +39,19 @@ async function fetchAccountENSDomains({
   return domains;
 }
 
+async function fetchENSDomainsWithCache({
+  accountAddress,
+}: {
+  accountAddress: string;
+}) {
+  const cachedDomains = await getENSDomains(accountAddress);
+  if (cachedDomains)
+    queryClient.setQueryData(queryKey({ accountAddress }), cachedDomains);
+  const ensDomains = await fetchAccountENSDomains({ accountAddress });
+  setENSDomains(accountAddress, ensDomains);
+  return ensDomains;
+}
+
 export async function prefetchAccountENSDomains({
   accountAddress,
 }: {
@@ -47,7 +59,7 @@ export async function prefetchAccountENSDomains({
 }) {
   queryClient.prefetchQuery(
     queryKey({ accountAddress }),
-    async () => fetchAccountENSDomains({ accountAddress }),
+    async () => fetchENSDomainsWithCache({ accountAddress }),
     { staleTime: 10000 }
   );
 }
@@ -64,41 +76,10 @@ async function fetchAccountENSImages(name: string) {
 
 export default function useAccountENSDomains() {
   const { accountAddress } = useAccountSettings();
-  const [initialENSDomains, setIinitialENSDomains] = useState<
-    {
-      name: string;
-      owner: { id: string };
-      images: { avatarUrl?: string | null; coverUrl?: string | null };
-    }[]
-  >();
 
-  const { data: ensDomains } = useQuery<
+  return useQuery<
     EnsAccountRegistratonsData['account']['registrations'][number]['domain'][]
-  >(queryKey({ accountAddress }), async () => {
-    const ensDomains = await fetchAccountENSDomains({ accountAddress });
-    setENSDomains(accountAddress, ensDomains);
-    setIinitialENSDomains(ensDomains);
-    return ensDomains;
-  });
-
-  const getInitialDomains = useCallback(async () => {
-    const initialDomains = await getENSDomains(accountAddress);
-    setIinitialENSDomains(initialDomains);
-  }, [accountAddress]);
-
-  const data = useMemo(() => ensDomains ?? initialENSDomains, [
-    ensDomains,
-    initialENSDomains,
-  ]);
-
-  useEffect(() => {
-    getInitialDomains();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  return {
-    data,
-    isLoading: !data,
-    isSuccess: !!data,
-  };
+  >(queryKey({ accountAddress }), async () =>
+    fetchENSDomainsWithCache({ accountAddress })
+  );
 }
