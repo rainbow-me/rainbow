@@ -9,7 +9,7 @@
 
 RCT_EXPORT_MODULE()
 
-static CFTimeInterval processStartTime() {
+static CFTimeInterval getProcessStartTime() {
   size_t len = 4;
   int mib[len];
   struct kinfo_proc kp;
@@ -25,9 +25,11 @@ static CFTimeInterval processStartTime() {
 
 - (NSDictionary *)constantsToExport
 {
-  // processStartTime returns value in seconds
-  // we are converting it to milliseconds and cutting the floating point part
-  return @{ @"START_TIME": [NSNumber numberWithDouble:ceil(processStartTime() * 1000)] };
+  /*
+   getProcessStartTime returns value in seconds
+   we are converting it to milliseconds and cutting the floating point part
+   */
+  return @{ @"START_TIME": [NSNumber numberWithDouble:floor(getProcessStartTime() * 1000)] };
 }
 
 @end
