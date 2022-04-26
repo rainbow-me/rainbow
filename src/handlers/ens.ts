@@ -1,4 +1,4 @@
-import { formatsByCoinType } from '@ensdomains/address-encoder';
+import { formatsByCoinType, formatsByName } from '@ensdomains/address-encoder';
 import { captureException } from '@sentry/react-native';
 import { BigNumber } from 'ethers';
 import { debounce, isEmpty, sortBy } from 'lodash';
@@ -209,14 +209,18 @@ export const fetchRecords = async (ensName: string) => {
   const data = response.data?.domains[0] || {};
 
   const resolver = await web3Provider.getResolver(ensName);
-  const recordKeys: string[] = data.resolver?.texts || [];
+  const supportedRecords = Object.values(ENS_RECORDS);
+  const rawRecordKeys: string[] = data.resolver?.texts || [];
+  const recordKeys = (rawRecordKeys as ENS_RECORDS[]).filter(key =>
+    supportedRecords.includes(key)
+  );
   const recordValues = await Promise.all(
     recordKeys.map((key: string) => resolver.getText(key))
   );
   const records = recordKeys.reduce((records, key, i) => {
     return {
       ...records,
-      [key]: recordValues[i],
+      ...(recordValues[i] ? { [key]: recordValues[i] } : {}),
     };
   }, {}) as Partial<Records>;
 
@@ -231,9 +235,18 @@ export const fetchCoinAddresses = async (ensName: string) => {
     },
   });
   const data = response.data?.domains[0] || {};
+  const supportedRecords = Object.values(ENS_RECORDS);
 
   const resolver = await web3Provider.getResolver(ensName);
-  const coinTypes: number[] = data.resolver?.coinTypes || [];
+  const rawCoinTypes: number[] = data.resolver?.coinTypes || [];
+  const rawCoinTypesNames: string[] = rawCoinTypes.map(
+    type => formatsByCoinType[type].name
+  );
+  const coinTypes: number[] =
+    (rawCoinTypesNames as ENS_RECORDS[])
+      .filter(name => supportedRecords.includes(name))
+      .map(name => formatsByName[name].coinType) || [];
+
   const coinAddressValues = await Promise.all(
     coinTypes
       .map(async (coinType: number) => {
@@ -248,7 +261,9 @@ export const fetchCoinAddresses = async (ensName: string) => {
   const coinAddresses = coinTypes.reduce((coinAddresses, coinType, i) => {
     return {
       ...coinAddresses,
-      [formatsByCoinType[coinType].name]: coinAddressValues[i],
+      ...(coinAddressValues[i]
+        ? { [formatsByCoinType[coinType].name]: coinAddressValues[i] }
+        : {}),
     };
   }, {});
   return coinAddresses;

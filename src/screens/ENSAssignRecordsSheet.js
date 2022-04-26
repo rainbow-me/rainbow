@@ -333,7 +333,7 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
                       ) : (
                         <TintButton
                           color="secondary60"
-                          onPress={goBack}
+                          onPress={() => goBack()}
                           testID="ens-assign-records-cancel"
                         >
                           {lang.t(`profiles.create.cancel`)}

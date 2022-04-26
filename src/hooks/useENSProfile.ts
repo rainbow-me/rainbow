@@ -23,7 +23,7 @@ export default function useENSProfile(
         queryClient.setQueryData(queryKey(name), cachedProfile);
       }
       const profile = await fetchProfile(name);
-      await saveProfile(name, profile);
+      saveProfile(name, profile);
       return profile;
     },
     {

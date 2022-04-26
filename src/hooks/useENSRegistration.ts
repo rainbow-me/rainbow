@@ -83,12 +83,11 @@ export default function useENSRegistration({
       mode === REGISTRATION_MODES.EDIT &&
       profileQuery.isSuccess
     ) {
-      dispatch(
-        ensRedux.setInitialRecords(accountAddress, {
-          ...profileQuery.data?.records,
-          ...profileQuery.data?.coinAddresses,
-        } as Records)
-      );
+      const initialRecords = {
+        ...profileQuery.data?.records,
+        ...profileQuery.data?.coinAddresses,
+      } as Records;
+      dispatch(ensRedux.setInitialRecords(accountAddress, initialRecords));
     }
   }, [
     accountAddress,
