@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { times } from 'lodash';
 import React, { useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
@@ -105,7 +106,10 @@ export default function SecretDisplayCard({ seed, type }) {
         </>
       )}
       <Content>
-        <CopyTooltip textToCopy={seed} tooltipText="Copy to clipboard">
+        <CopyTooltip
+          textToCopy={seed}
+          tooltipText={lang.t('back_up.secret.copy_to_clipboard')}
+        >
           {seed && type === WalletTypes.mnemonic && (
             <SeedWordGrid seed={seed} />
           )}
