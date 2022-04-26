@@ -1,5 +1,6 @@
 import { useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
+import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
 import Animated, {
@@ -90,10 +91,12 @@ export default function ENSAssignRecordsSheet() {
       ].map(fieldName => textRecordFields[fieldName]),
     []
   );
-  useENSRegistrationForm({
+  const { values } = useENSRegistrationForm({
     defaultFields,
     initializeForm: true,
   });
+
+  const isEmptyProfile = useMemo(() => isEmpty(values), [values]);
 
   useENSRegistrationCosts({
     name,
@@ -183,11 +186,15 @@ export default function ENSAssignRecordsSheet() {
                 <Heading size="26px" weight="heavy">
                   {name}
                 </Heading>
-                {mode === REGISTRATION_MODES.CREATE && (
-                  <Text color="accent" size="16px" weight="heavy">
-                    {lang.t('profiles.create.description')}
-                  </Text>
-                )}
+                <Text color="accent" size="16px" weight="heavy">
+                  {lang.t(
+                    `profiles.${
+                      mode === REGISTRATION_MODES.CREATE || isEmptyProfile
+                        ? 'create'
+                        : 'edit'
+                    }.label`
+                  )}
+                </Text>
               </Stack>
               <Box flexGrow={1}>
                 <TextRecordsForm
