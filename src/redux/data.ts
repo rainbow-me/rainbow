@@ -1355,15 +1355,16 @@ export const assetPricesReceived = (
 export const assetPricesChanged = (
   message: AssetPricesChangedMessage | undefined
 ) => (
-  dispatch: Dispatch<DataUpdateGenericAssetsAction>,
+  dispatch: Dispatch<DataUpdateGenericAssetsAction | DataUpdateEthUsdAction>,
   getState: AppGetState
 ) => {
   const { nativeCurrency } = getState().settings;
 
+  const price = message?.payload?.prices?.[0]?.price;
+  const assetAddress = message?.meta?.asset_code;
+  if (isNil(price) || isNil(assetAddress)) return;
+
   if (toLower(nativeCurrency) === message?.meta?.currency) {
-    const price = message?.payload?.prices?.[0]?.price;
-    const assetAddress = message?.meta?.asset_code;
-    if (isNil(price) || isNil(assetAddress)) return;
     const { genericAssets } = getState().data;
     const genericAsset = {
       ...get(genericAssets, assetAddress),
@@ -1379,6 +1380,13 @@ export const assetPricesChanged = (
     dispatch({
       payload: updatedAssets,
       type: DATA_UPDATE_GENERIC_ASSETS,
+    });
+  }
+
+  if (message?.meta?.currency === 'usd' && assetAddress === ETH_ADDRESS) {
+    dispatch({
+      payload: price?.value,
+      type: DATA_UPDATE_ETH_USD,
     });
   }
 };
