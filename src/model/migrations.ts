@@ -1,7 +1,14 @@
+import path from 'path';
 import AsyncStorage from '@react-native-community/async-storage';
 import { captureException } from '@sentry/react-native';
 import { findKey, isNumber, keys, toLower, uniq } from 'lodash';
+import RNFS from 'react-native-fs';
 import { MMKV } from 'react-native-mmkv';
+import {
+  rainbowListStorage,
+  RB_TOKEN_LIST_CACHE,
+  RB_TOKEN_LIST_ETAG,
+} from 'src/references/rainbow-token-list';
 import { removeLocal } from '../handlers/localstorage/common';
 import { IMAGE_METADATA } from '../handlers/localstorage/globalSettings';
 import {
@@ -606,6 +613,40 @@ export default async function runMigrations() {
   };
 
   migrations.push(v15);
+
+  /*
+   *************** Migration v16 ******************
+   Migrates cached Rainbow token list from 
+   */
+  const v16 = async () => {
+    try {
+      const [tokenList, tokenListEtag] = await Promise.all([
+        RNFS.readFile(
+          path.join(RNFS.CachesDirectoryPath, RB_TOKEN_LIST_CACHE),
+          'utf8'
+        ),
+        RNFS.readFile(
+          path.join(RNFS.CachesDirectoryPath, RB_TOKEN_LIST_ETAG),
+          'utf8'
+        ),
+      ]);
+
+      rainbowListStorage.set(RB_TOKEN_LIST_CACHE, tokenList);
+      rainbowListStorage.set(RB_TOKEN_LIST_ETAG, tokenListEtag);
+      // RNFS has no Error type :(
+    } catch (error: any) {
+      // If the user didn't have this file then we don't care about this error
+      if (error?.code === 'ENOENT') {
+        return;
+      }
+
+      logger.sentry('Migration v16 failed: ', error);
+      const migrationError = new Error('Migration 16 failed');
+      captureException(migrationError);
+    }
+  };
+
+  migrations.push(v16);
 
   logger.sentry(
     `Migrations: ready to run migrations starting on number ${currentVersion}`
