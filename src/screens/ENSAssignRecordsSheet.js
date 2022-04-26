@@ -49,6 +49,7 @@ import {
   textRecordFields,
 } from '@rainbow-me/helpers/ens';
 import {
+  useENSAssignRegistration,
   useENSRegistration,
   useENSRegistrationCosts,
   useENSRegistrationForm,
@@ -66,11 +67,11 @@ export const BottomActionHeight = ios ? 270 : 250;
 export default function ENSAssignRecordsSheet() {
   const { params } = useRoute();
   const { colors } = useTheme();
+  const { name, mode } = useENSRegistration();
   const {
-    name,
-    mode,
     images: { avatarUrl: initialAvatarUrl },
-  } = useENSRegistration({
+  } = useENSAssignRegistration({
+    modifyChangedRecords: true,
     setInitialRecordsWhenInEditMode: true,
   });
 
@@ -211,7 +212,8 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
 
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
 
-  const { mode, profileQuery } = useENSRegistration();
+  const { mode } = useENSRegistration();
+  const { profileQuery } = useENSAssignRegistration();
   const {
     disabled,
     isEmpty,
