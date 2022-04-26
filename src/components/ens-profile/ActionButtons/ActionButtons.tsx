@@ -27,7 +27,11 @@ export default function ActionButtons({
 
   return (
     <Inline alignHorizontal="right" space="8px">
-      <MoreButton address={primaryAddress} />
+      <MoreButton
+        address={primaryAddress}
+        ensName={ensName}
+        avatarUrl={avatarUrl}
+      />
       {isOwner ? (
         <EditButton ensName={ensName} />
       ) : (

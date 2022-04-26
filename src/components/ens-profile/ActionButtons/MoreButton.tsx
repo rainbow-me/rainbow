@@ -17,12 +17,20 @@ const ACTIONS = {
   ETHERSCAN: 'etherscan',
 };
 
-export default function MoreButton({ address }: { address?: string }) {
+export default function MoreButton({
+  address,
+  ensName,
+  avatarUrl,
+}: {
+  address?: string;
+  ensName?: string;
+  avatarUrl?: string | null;
+}) {
   const { navigate } = useNavigation();
   const { setClipboard } = useClipboard();
   const { contacts } = useContacts();
 
-  const contact = useMemo(
+  const currentContact = useMemo(
     () => (address ? contacts[address.toLowerCase()] : undefined),
     [address, contacts]
   );
@@ -73,13 +81,19 @@ export default function MoreButton({ address }: { address?: string }) {
       if (actionKey === ACTIONS.ADD_CONTACT) {
         navigate(Routes.MODAL_SCREEN, {
           address,
-          color: contact?.color,
-          contact,
+          color: currentContact?.color,
+          contact: currentContact || {
+            address: address,
+            color: currentContact?.color,
+            nickname: ensName,
+            avatarUrl,
+            temporary: true,
+          },
           type: 'contact_profile',
         });
       }
     },
-    [address, contact, navigate, setClipboard]
+    [address, avatarUrl, currentContact, navigate, setClipboard]
   );
 
   const handleAndroidPress = useCallback(() => {

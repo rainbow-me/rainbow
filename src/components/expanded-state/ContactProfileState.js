@@ -1,13 +1,18 @@
 import lang from 'i18n-js';
 import React, { useCallback, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
+import { ImgixImage } from '@rainbow-me/images';
 import { useTheme } from '../../context/ThemeContext';
 import { useNavigation } from '../../navigation/Navigation';
+import ShadowStack from 'react-native-shadow-stack';
 import { abbreviations, magicMemo, profileUtils } from '../../utils';
+import { ImagePreviewOverlayTarget } from '../images/ImagePreviewOverlay';
+import { borders } from '@rainbow-me/styles';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { Button } from '../buttons';
 import { showDeleteContactActionSheet } from '../contacts';
+import { Box } from '@rainbow-me/design-system';
 import CopyTooltip from '../copy-tooltip';
 import { Centered } from '../layout';
 import { Text, TruncatedAddress, TruncatedENS } from '../text';
@@ -136,17 +141,37 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
     setEmoji(profileUtils.avatars[nextAvatarIndex]?.emoji);
   }, [emoji, setColor]);
 
+  console.log(contact);
+
+  const avatarSize = 65;
+
   return (
     <ProfileModal onPressBackdrop={handleAddContact}>
       <Centered direction="column" style={centerdStyles}>
-        <ProfileAvatarButton
+        {/* <ProfileAvatarButton
           changeAvatar={handleChangeAvatar}
           color={color}
           marginBottom={0}
           radiusAndroid={32}
           testID="contact-profile-avatar-button"
           value={emoji || value}
-        />
+        /> */}
+        <ShadowStack
+          {...borders.buildCircleAsObject(avatarSize)}
+          shadows={[
+            [0, 6, 10, colors.shadow, 0.12],
+            [0, 2, 5, colors.shadow, 0.08],
+          ]}
+        >
+          <Box
+            as={ImgixImage}
+            height={{ custom: avatarSize }}
+            width={{ custom: avatarSize }}
+            source={{ uri: contact.avatarUrl }}
+            borderRadius={avatarSize / 2}
+          />
+        </ShadowStack>
+
         <Spacer />
         <ProfileNameInput
           onChange={setValue}
