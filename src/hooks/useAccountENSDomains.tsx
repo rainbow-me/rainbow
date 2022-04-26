@@ -93,7 +93,8 @@ export default function useAccountENSDomains() {
 
   useEffect(() => {
     getInitialDomains();
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return {
     data,

@@ -31,7 +31,7 @@ const rowHeight = 40;
 const maxListHeight = deviceHeight - 220;
 
 export default function SelectENSSheet() {
-  const { data: domains, isSuccess } = useAccountENSDomains();
+  const { data: accountENSDomains, isSuccess } = useAccountENSDomains();
   const { accountAddress } = useAccountSettings();
   const { accountENS } = useAccountProfile();
   const accentColor = useForegroundColor('action');
@@ -47,16 +47,24 @@ export default function SelectENSSheet() {
     [goBack, params]
   );
 
-  const nonPrimaryDomains = useMemo(() => {
-    const ownedDomains = domains
+  const ownedDomains = useMemo(() => {
+    const domains = accountENSDomains
       ?.filter(
-        ({ owner }) => owner?.id?.toLowerCase() === accountAddress.toLowerCase()
+        ({ owner, name }) =>
+          owner?.id?.toLowerCase() === accountAddress.toLowerCase() &&
+          accountENS !== name
       )
       ?.sort((a, b) => (a.name > b.name ? 1 : -1));
-    return ownedDomains?.filter(({ name }) => accountENS !== name) || [];
-  }, [accountAddress, accountENS, domains]);
 
-  let listHeight = (rowHeight + 40) * (nonPrimaryDomains?.length || 0);
+    const primaryDomain = accountENSDomains?.find(
+      ({ name }) => accountENS === name
+    );
+    if (primaryDomain) domains?.unshift(primaryDomain);
+
+    return domains;
+  }, [accountAddress, accountENS, accountENSDomains]);
+
+  let listHeight = (rowHeight + 40) * (ownedDomains?.length || 0);
   let scrollEnabled = false;
   if (listHeight > maxListHeight) {
     listHeight = maxListHeight;
@@ -128,7 +136,7 @@ export default function SelectENSSheet() {
                 ItemSeparatorComponent={() => <Box height={{ custom: 15 }} />}
                 as={FlatList}
                 contentContainerStyle={{ paddingBottom: 40, paddingTop: 15 }}
-                data={nonPrimaryDomains}
+                data={ownedDomains}
                 height={{ custom: listHeight }}
                 keyExtractor={({ domain }: { domain: string }) => domain}
                 renderItem={renderItem}

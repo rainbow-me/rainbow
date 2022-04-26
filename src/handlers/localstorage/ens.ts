@@ -4,7 +4,7 @@ const ensProfileVersion = '0.1.0';
 
 const ensProfileKey = (key: string) => `ensProfile.${key}`;
 const ensResolveNameKey = (key: string) => `ensResolveName.${key}`;
-const ensDomains = (key: string) => `ensDomains-${key}`;
+const ensDomains = (key: string) => `ensDomains.${key}`;
 const ensSeenOnchainDataDisclaimerKey = 'ensProfile.seenOnchainDisclaimer';
 
 export const getProfile = async (key: string) => {
