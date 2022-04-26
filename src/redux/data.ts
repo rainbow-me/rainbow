@@ -38,6 +38,7 @@ import { uniqueTokensRefreshState } from './uniqueTokens';
 import { uniswapUpdateLiquidityTokens } from './uniswapLiquidity';
 import {
   AssetTypes,
+  NativeCurrencyKeys,
   NewTransactionOrAddCashTransaction,
   ParsedAddressAsset,
   RainbowTransaction,
@@ -1338,7 +1339,11 @@ export const assetPricesReceived = (
       type: DATA_UPDATE_GENERIC_ASSETS,
     });
   }
-  if (message?.meta?.currency === 'usd' && newAssetPrices[ETH_ADDRESS]) {
+  if (
+    message?.meta?.currency?.toLowerCase() ===
+      NativeCurrencyKeys.USD.toLowerCase() &&
+    newAssetPrices[ETH_ADDRESS]
+  ) {
     const value = newAssetPrices[ETH_ADDRESS]?.price?.value;
     dispatch({
       payload: value,
@@ -1364,7 +1369,7 @@ export const assetPricesChanged = (
   const assetAddress = message?.meta?.asset_code;
   if (isNil(price) || isNil(assetAddress)) return;
 
-  if (toLower(nativeCurrency) === message?.meta?.currency) {
+  if (nativeCurrency?.toLowerCase() === message?.meta?.currency) {
     const { genericAssets } = getState().data;
     const genericAsset = {
       ...get(genericAssets, assetAddress),
@@ -1382,8 +1387,11 @@ export const assetPricesChanged = (
       type: DATA_UPDATE_GENERIC_ASSETS,
     });
   }
-
-  if (message?.meta?.currency === 'usd' && assetAddress === ETH_ADDRESS) {
+  if (
+    message?.meta?.currency?.toLowerCase() ===
+      NativeCurrencyKeys.USD.toLowerCase() &&
+    assetAddress === ETH_ADDRESS
+  ) {
     dispatch({
       payload: price?.value,
       type: DATA_UPDATE_ETH_USD,
