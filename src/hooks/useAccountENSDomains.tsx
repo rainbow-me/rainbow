@@ -1,3 +1,4 @@
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQuery } from 'react-query';
 import useAccountSettings from './useAccountSettings';
 import { EnsAccountRegistratonsData } from '@rainbow-me/apollo/queries';
@@ -5,6 +6,10 @@ import {
   fetchAccountRegistrations,
   fetchImages,
 } from '@rainbow-me/handlers/ens';
+import {
+  getENSDomains,
+  setENSDomains,
+} from '@rainbow-me/handlers/localstorage/ens';
 import { queryClient } from '@rainbow-me/react-query/queryClient';
 
 const queryKey = ({ accountAddress }: { accountAddress: string }) => [
@@ -31,6 +36,7 @@ async function fetchAccountENSDomains({
       };
     })
   );
+
   return domains;
 }
 
@@ -58,9 +64,40 @@ async function fetchAccountENSImages(name: string) {
 
 export default function useAccountENSDomains() {
   const { accountAddress } = useAccountSettings();
-  return useQuery<
+  const [initialENSDomains, setIinitialENSDomains] = useState<
+    {
+      name: string;
+      owner: { id: string };
+      images: { avatarUrl?: string | null; coverUrl?: string | null };
+    }[]
+  >();
+
+  const { data: ensDomains } = useQuery<
     EnsAccountRegistratonsData['account']['registrations'][number]['domain'][]
-  >(queryKey({ accountAddress }), async () =>
-    fetchAccountENSDomains({ accountAddress })
-  );
+  >(queryKey({ accountAddress }), async () => {
+    const ensDomains = await fetchAccountENSDomains({ accountAddress });
+    setENSDomains(accountAddress, ensDomains);
+    setIinitialENSDomains(ensDomains);
+    return ensDomains;
+  });
+
+  const getInitialDomains = useCallback(async () => {
+    const initialDomains = await getENSDomains(accountAddress);
+    setIinitialENSDomains(initialDomains);
+  }, [accountAddress]);
+
+  const data = useMemo(() => ensDomains ?? initialENSDomains, [
+    ensDomains,
+    initialENSDomains,
+  ]);
+
+  useEffect(() => {
+    getInitialDomains();
+  });
+
+  return {
+    data,
+    isLoading: !data,
+    isSuccess: !!data,
+  };
 }
