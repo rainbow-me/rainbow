@@ -1,10 +1,12 @@
 import { useFocusEffect } from '@react-navigation/core';
+import ConditionalWrap from 'conditional-wrap';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { Image } from 'react-native-image-crop-picker';
 import RadialGradient from 'react-native-radial-gradient';
 import { atom, useSetRecoilState } from 'recoil';
+import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import Skeleton from '../../skeleton/Skeleton';
 import { Box, Text, useForegroundColor } from '@rainbow-me/design-system';
 import { UniqueAsset } from '@rainbow-me/entities';
@@ -56,7 +58,7 @@ const RegistrationCover = ({
 
   const setCoverMetadata = useSetRecoilState(coverMetadataAtom);
 
-  const { ConditionalContextMenu } = useSelectImageMenu({
+  const { ContextMenu } = useSelectImageMenu({
     imagePickerOptions: {
       cropping: true,
       height: 500,
@@ -117,38 +119,43 @@ const RegistrationCover = ({
     );
   }
   return (
-    <ConditionalContextMenu
+    <ConditionalWrap
       condition={hasSeenExplainSheet}
-      onNonConditionPress={onShowExplainSheet}
+      wrap={children => <ContextMenu>{children}</ContextMenu>}
     >
-      <Box
-        alignItems="center"
-        as={ios ? RadialGradient : View}
-        height="126px"
-        justifyContent="center"
-        {...(ios
-          ? {
-              colors: [accentColor + '10', accentColor + '33'],
-              stops: [0.6, 0],
-            }
-          : {
-              style: { backgroundColor: accentColor + '10' },
-            })}
+      <ButtonPressAnimation
+        onPress={!hasSeenExplainSheet ? onShowExplainSheet : undefined}
+        scaleTo={1}
       >
-        {coverUrl ? (
-          <Box
-            as={ImgixImage}
-            height="126px"
-            source={{ uri: coverUrl }}
-            width="full"
-          />
-        ) : (
-          <Text color="accent" size="18px" weight="heavy">
-            􀣵 {lang.t('profiles.create.add_cover')}
-          </Text>
-        )}
-      </Box>
-    </ConditionalContextMenu>
+        <Box
+          alignItems="center"
+          as={ios ? RadialGradient : View}
+          height="126px"
+          justifyContent="center"
+          {...(ios
+            ? {
+                colors: [accentColor + '10', accentColor + '33'],
+                stops: [0.6, 0],
+              }
+            : {
+                style: { backgroundColor: accentColor + '10' },
+              })}
+        >
+          {coverUrl ? (
+            <Box
+              as={ImgixImage}
+              height="126px"
+              source={{ uri: coverUrl }}
+              width="full"
+            />
+          ) : (
+            <Text color="accent" size="18px" weight="heavy">
+              􀣵 {lang.t('profiles.create.add_cover')}
+            </Text>
+          )}
+        </Box>
+      </ButtonPressAnimation>
+    </ConditionalWrap>
   );
 };
 

@@ -1,7 +1,9 @@
 import { useFocusEffect } from '@react-navigation/core';
+import ConditionalWrap from 'conditional-wrap';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Image } from 'react-native-image-crop-picker';
 import { atom, useSetRecoilState } from 'recoil';
+import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import Skeleton from '../../skeleton/Skeleton';
 import AvatarCoverPhotoMaskSvg from '../../svg/AvatarCoverPhotoMaskSvg';
 import {
@@ -67,7 +69,7 @@ const RegistrationAvatar = ({
 
   const accentColor = useForegroundColor('accent');
 
-  const { ConditionalContextMenu } = useSelectImageMenu({
+  const { ContextMenu } = useSelectImageMenu({
     imagePickerOptions: {
       cropperCircleOverlay: true,
       cropping: true,
@@ -142,38 +144,42 @@ const RegistrationAvatar = ({
           />
         </Skeleton>
       ) : (
-        <ConditionalContextMenu
+        <ConditionalWrap
           condition={hasSeenExplainSheet}
-          onNonConditionPress={onShowExplainSheet}
+          wrap={children => <ContextMenu>{children}</ContextMenu>}
         >
-          <AccentColorProvider color={accentColor + '10'}>
-            <Box
-              alignItems="center"
-              background="accent"
-              borderRadius={size / 2}
-              height={{ custom: size }}
-              justifyContent="center"
-              shadow="12px heavy accent"
-              width={{ custom: size }}
-            >
-              {avatarUrl ? (
-                <Box
-                  as={ImgixImage}
-                  borderRadius={size / 2}
-                  height={{ custom: size }}
-                  source={{ uri: avatarUrl }}
-                  width={{ custom: size }}
-                />
-              ) : (
-                <AccentColorProvider color={accentColor}>
-                  <Text color="accent" size="18px" weight="heavy">
-                    {` 􀣵 `}
-                  </Text>
-                </AccentColorProvider>
-              )}
-            </Box>
-          </AccentColorProvider>
-        </ConditionalContextMenu>
+          <ButtonPressAnimation
+            onPress={!hasSeenExplainSheet ? onShowExplainSheet : undefined}
+          >
+            <AccentColorProvider color={accentColor + '10'}>
+              <Box
+                alignItems="center"
+                background="accent"
+                borderRadius={size / 2}
+                height={{ custom: size }}
+                justifyContent="center"
+                shadow="12px heavy accent"
+                width={{ custom: size }}
+              >
+                {avatarUrl ? (
+                  <Box
+                    as={ImgixImage}
+                    borderRadius={size / 2}
+                    height={{ custom: size }}
+                    source={{ uri: avatarUrl }}
+                    width={{ custom: size }}
+                  />
+                ) : (
+                  <AccentColorProvider color={accentColor}>
+                    <Text color="accent" size="18px" weight="heavy">
+                      {` 􀣵 `}
+                    </Text>
+                  </AccentColorProvider>
+                )}
+              </Box>
+            </AccentColorProvider>
+          </ButtonPressAnimation>
+        </ConditionalWrap>
       )}
     </Box>
   );
