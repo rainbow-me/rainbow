@@ -128,7 +128,9 @@ export default function SelectENSSheet() {
                 contentContainerStyle={{ paddingBottom: 40, paddingTop: 15 }}
                 data={nonPrimaryDomains}
                 height={{ custom: listHeight }}
+                initialNumToRender={15}
                 keyExtractor={({ domain }: { domain: string }) => domain}
+                maxToRenderPerBatch={10}
                 renderItem={renderItem}
                 scrollEnabled={scrollEnabled}
                 showsVerticalScrollIndicator={false}
