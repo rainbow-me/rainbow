@@ -2,7 +2,6 @@ import { useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
-import { IS_TESTING } from 'react-native-dotenv';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -51,9 +50,9 @@ import {
 } from '@rainbow-me/helpers/ens';
 import {
   useENSRegistration,
-  useENSRegistrationActionHandler,
   useENSRegistrationCosts,
   useENSRegistrationForm,
+  useENSRegistrationStepHandler,
   useENSSearch,
   useKeyboardHeight,
   usePersistentDominantColorFromImage,
@@ -71,7 +70,6 @@ export default function ENSAssignRecordsSheet() {
     name,
     mode,
     images: { avatarUrl: initialAvatarUrl },
-    changedRecords,
   } = useENSRegistration({
     setInitialRecordsWhenInEditMode: true,
   });
@@ -89,11 +87,10 @@ export default function ENSAssignRecordsSheet() {
     name,
   });
 
-  const { step } = useENSRegistrationActionHandler();
+  const { step } = useENSRegistrationStepHandler();
 
   useENSRegistrationCosts({
     name,
-    records: changedRecords,
     rentPrice: registrationData?.rentPrice,
     step,
     yearsDuration: 1,
@@ -158,7 +155,7 @@ export default function ENSAssignRecordsSheet() {
       <Box
         background="body"
         flexGrow={1}
-        style={useMemo(() => ({ paddingBottom: BottomActionHeight + 20 }), [])}
+        style={{ paddingBottom: BottomActionHeight + 20 }}
       >
         <Stack space="19px">
           <RegistrationCover
@@ -194,9 +191,6 @@ export default function ENSAssignRecordsSheet() {
                   onFocus={handleFocus}
                 />
               </Box>
-              {IS_TESTING === 'true' && (
-                <ENSAssignRecordsBottomActions visible />
-              )}
             </Stack>
           </Inset>
         </Stack>
@@ -271,7 +265,7 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
 
   return (
     <>
-      {visible && IS_TESTING !== 'true' && (
+      {visible && (
         <Box position="absolute" right="0px" style={keyboardButtonWrapperStyle}>
           <Inset bottom="19px" right="19px">
             <HideKeyboardButton color={accentColor} />
@@ -287,7 +281,7 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
             paddingBottom="19px"
             style={useMemo(() => ({ height: BottomActionHeight }), [])}
           >
-            {ios && IS_TESTING !== 'true' ? <Shadow /> : null}
+            {ios ? <Shadow /> : null}
             <Rows>
               <Row>
                 <Inset horizontal="19px" top="30px">

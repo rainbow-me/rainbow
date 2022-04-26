@@ -9,26 +9,28 @@ import { atom, useSetRecoilState } from 'recoil';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import Skeleton from '../../skeleton/Skeleton';
 import { Box, Text, useForegroundColor } from '@rainbow-me/design-system';
+import { UniqueAsset } from '@rainbow-me/entities';
+import { UploadImageReturnData } from '@rainbow-me/handlers/pinata';
 import {
   useENSRegistration,
   useENSRegistrationForm,
   useSelectImageMenu,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
-import { stringifyENSNFTRecord } from '@rainbow-me/utils';
+import { magicMemo, stringifyENSNFTRecord } from '@rainbow-me/utils';
 
 export const coverMetadataAtom = atom<Image | undefined>({
   default: undefined,
   key: 'ens.coverMetadata',
 });
 
-export default function RegistrationCover({
+const RegistrationCover = ({
   hasSeenExplainSheet,
   onShowExplainSheet,
 }: {
   hasSeenExplainSheet: boolean;
   onShowExplainSheet: () => void;
-}) {
+}) => {
   const {
     images: { coverUrl: initialCoverUrl },
   } = useENSRegistration();
@@ -63,7 +65,13 @@ export default function RegistrationCover({
       width: 1500,
     },
     menuItems: ['library', 'nft'],
-    onChangeImage: ({ asset, image }) => {
+    onChangeImage: ({
+      asset,
+      image,
+    }: {
+      asset?: UniqueAsset;
+      image?: Image & { tmpPath?: string };
+    }) => {
       setCoverMetadata(image);
       setCoverUrl(image?.tmpPath);
       // We want to disallow future avatar state changes (i.e. when upload successful)
@@ -93,10 +101,11 @@ export default function RegistrationCover({
       setCoverUrl('');
       setCoverMetadata(undefined);
     },
-    onUploadSuccess: ({ data }) => {
+    onUploadSuccess: ({ data }: { data: UploadImageReturnData }) => {
       onBlurField({ key: 'cover', value: data.url });
     },
     showRemove: Boolean(coverUrl),
+    testID: 'cover',
     uploadToIPFS: true,
   });
 
@@ -148,4 +157,9 @@ export default function RegistrationCover({
       </ButtonPressAnimation>
     </ConditionalWrap>
   );
-}
+};
+
+export default magicMemo(RegistrationCover, [
+  'hasSeenExplainSheet',
+  'onShowExplainSheet',
+]);

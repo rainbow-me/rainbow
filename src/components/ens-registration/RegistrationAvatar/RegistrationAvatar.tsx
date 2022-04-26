@@ -14,13 +14,15 @@ import {
   Text,
   useForegroundColor,
 } from '@rainbow-me/design-system';
+import { UniqueAsset } from '@rainbow-me/entities';
+import { UploadImageReturnData } from '@rainbow-me/handlers/pinata';
 import {
   useENSRegistration,
   useENSRegistrationForm,
   useSelectImageMenu,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
-import { stringifyENSNFTRecord } from '@rainbow-me/utils';
+import { magicMemo, stringifyENSNFTRecord } from '@rainbow-me/utils';
 
 export const avatarMetadataAtom = atom<Image | undefined>({
   default: undefined,
@@ -29,7 +31,7 @@ export const avatarMetadataAtom = atom<Image | undefined>({
 
 const size = 70;
 
-export default function RegistrationAvatar({
+const RegistrationAvatar = ({
   hasSeenExplainSheet,
   onChangeAvatarUrl,
   onShowExplainSheet,
@@ -37,7 +39,7 @@ export default function RegistrationAvatar({
   hasSeenExplainSheet: boolean;
   onChangeAvatarUrl: (url: string) => void;
   onShowExplainSheet: () => void;
-}) {
+}) => {
   const {
     images: { avatarUrl: initialAvatarUrl },
   } = useENSRegistration();
@@ -73,7 +75,13 @@ export default function RegistrationAvatar({
       cropping: true,
     },
     menuItems: ['library', 'nft'],
-    onChangeImage: ({ asset, image }) => {
+    onChangeImage: ({
+      asset,
+      image,
+    }: {
+      asset?: UniqueAsset;
+      image?: Image & { tmpPath?: string };
+    }) => {
       setAvatarMetadata(image);
       setAvatarUrl(image?.tmpPath || asset?.image_thumbnail_url || '');
       // We want to disallow future avatar state changes (i.e. when upload successful)
@@ -109,10 +117,11 @@ export default function RegistrationAvatar({
       onBlurField({ key: 'avatar', value: '' });
       setAvatarUrl('');
     },
-    onUploadSuccess: ({ data }) => {
+    onUploadSuccess: ({ data }: { data: UploadImageReturnData }) => {
       onBlurField({ key: 'avatar', value: data.url });
     },
     showRemove: Boolean(avatarUrl),
+    testID: 'avatar',
     uploadToIPFS: true,
   });
 
@@ -174,4 +183,10 @@ export default function RegistrationAvatar({
       )}
     </Box>
   );
-}
+};
+
+export default magicMemo(RegistrationAvatar, [
+  'hasSeenExplainSheet',
+  'onChangeAvatarUrl',
+  'onShowExplainSheet',
+]);

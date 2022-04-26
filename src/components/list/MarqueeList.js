@@ -245,14 +245,14 @@ const MarqueeList = ({ items = [], renderItem, speed, testID }) => {
       <SwipeableList
         components={items.map((item, index) => ({
           view: ios
-            ? ({ testID }) => renderItem({ index, item, testID })
-            : ({ onPressCancel, onPressStart, testID }) =>
+            ? () => renderItem({ index, item, testID: item.testID })
+            : ({ onPressCancel, onPressStart }) =>
                 renderItem({
                   index,
                   item,
                   onPressCancel,
                   onPressStart,
-                  testID,
+                  testID: item.testID,
                 }),
         }))}
         speed={speed}

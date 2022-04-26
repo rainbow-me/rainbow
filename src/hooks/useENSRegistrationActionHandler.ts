@@ -1,10 +1,5 @@
 import { useNavigation } from '@react-navigation/core';
-import { differenceInSeconds } from 'date-fns';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  // @ts-ignore
-  IS_TESTING,
-} from 'react-native-dotenv';
+import { useCallback, useMemo } from 'react';
 import { Image } from 'react-native-image-crop-picker';
 import { useDispatch } from 'react-redux';
 import { useRecoilValue } from 'recoil';
@@ -16,29 +11,18 @@ import { useAccountSettings, useCurrentNonce, useENSRegistration } from '.';
 import { Records, RegistrationParameters } from '@rainbow-me/entities';
 import { fetchResolver } from '@rainbow-me/handlers/ens';
 import { uploadImage } from '@rainbow-me/handlers/pinata';
-import { isHardHat, web3Provider } from '@rainbow-me/handlers/web3';
 import {
   ENS_DOMAIN,
   generateSalt,
   getRentPrice,
-  REGISTRATION_MODES,
   REGISTRATION_STEPS,
 } from '@rainbow-me/helpers/ens';
 import { loadWallet } from '@rainbow-me/model/wallet';
 import { executeRap } from '@rainbow-me/raps';
-import {
-  saveCommitRegistrationParameters,
-  updateTransactionRegistrationParameters,
-} from '@rainbow-me/redux/ensRegistration';
+import { saveCommitRegistrationParameters } from '@rainbow-me/redux/ensRegistration';
 import { timeUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { logger } from '@rainbow-me/utils';
-
-// add waiting buffer
-const ENS_SECONDS_WAIT = 60;
-
-const getBlockMsTimestamp = (block: { timestamp: number }) =>
-  block.timestamp * 1000;
 
 const formatENSActionParams = (
   registrationParameters: RegistrationParameters
@@ -58,42 +42,20 @@ export default function useENSRegistrationActionHandler(
   {
     sendReverseRecord,
     yearsDuration,
+    step: registrationStep,
   }: {
     yearsDuration: number;
     sendReverseRecord: boolean;
+    step: keyof typeof REGISTRATION_STEPS;
   } = {} as any
 ) {
   const dispatch = useDispatch();
   const { accountAddress, network } = useAccountSettings();
   const getNextNonce = useCurrentNonce(accountAddress, network);
-  const { registrationParameters, mode } = useENSRegistration();
+  const { registrationParameters } = useENSRegistration();
   const { navigate } = useNavigation();
   const { getTransactionByHash } = useTransactions();
 
-  const timeout = useRef<NodeJS.Timeout>();
-
-  const [
-    secondsSinceCommitConfirmed,
-    setSecondsSinceCommitConfirmed,
-  ] = useState(
-    registrationParameters?.commitTransactionConfirmedAt
-      ? differenceInSeconds(
-          Date.now(),
-          registrationParameters.commitTransactionConfirmedAt
-        )
-      : -1
-  );
-
-  const isTesting = useMemo(
-    () => IS_TESTING === 'true' && isHardHat(web3Provider.connection.url),
-    []
-  );
-
-  const [readyToRegister, setReadyToRegister] = useState<boolean>(
-    isTesting || secondsSinceCommitConfirmed > 60
-  );
-  // flag to wait 10 secs before we get the tx block, to be able to simulate not confirmed tx when testing
-  const shouldLoopForConfirmation = useRef(isTesting);
   const avatarMetadata = useRecoilValue(avatarMetadataAtom);
   const coverMetadata = useRecoilValue(coverMetadataAtom);
 
@@ -316,30 +278,6 @@ export default function useENSRegistrationActionHandler(
     ]
   );
 
-  const registrationStep = useMemo(() => {
-    if (mode === REGISTRATION_MODES.EDIT) return REGISTRATION_STEPS.EDIT;
-    if (mode === REGISTRATION_MODES.RENEW) return REGISTRATION_STEPS.RENEW;
-    if (mode === REGISTRATION_MODES.SET_NAME)
-      return REGISTRATION_STEPS.SET_NAME;
-    // still waiting for the COMMIT tx to be sent
-    if (!registrationParameters.commitTransactionHash)
-      return REGISTRATION_STEPS.COMMIT;
-    // COMMIT tx sent, but not confirmed yet
-    if (!registrationParameters.commitTransactionConfirmedAt)
-      return REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION;
-    // COMMIT tx was confirmed but 60 secs haven't passed yet
-    // or current block is not 60 secs ahead of COMMIT tx block
-    if (secondsSinceCommitConfirmed < ENS_SECONDS_WAIT || !readyToRegister)
-      return REGISTRATION_STEPS.WAIT_ENS_COMMITMENT;
-    return REGISTRATION_STEPS.REGISTER;
-  }, [
-    mode,
-    registrationParameters.commitTransactionConfirmedAt,
-    registrationParameters.commitTransactionHash,
-    secondsSinceCommitConfirmed,
-    readyToRegister,
-  ]);
-
   const actions = useMemo(
     () => ({
       [REGISTRATION_STEPS.COMMIT]: commitAction,
@@ -360,100 +298,8 @@ export default function useENSRegistrationActionHandler(
     ]
   );
 
-  const watchCommitTransaction = useCallback(async () => {
-    let confirmed = false;
-    try {
-      const tx = await web3Provider.getTransaction(
-        registrationParameters?.commitTransactionHash || ''
-      );
-      const block = await web3Provider.getBlock(tx.blockHash || '');
-      if (!shouldLoopForConfirmation.current && block?.timestamp) {
-        const now = Date.now();
-        const msBlockTimestamp = getBlockMsTimestamp(block);
-        // hardhat block timestamp is behind
-        const timeDifference = isTesting ? now - msBlockTimestamp : 0;
-        const commitTransactionConfirmedAt = msBlockTimestamp + timeDifference;
-        const secs = differenceInSeconds(now, commitTransactionConfirmedAt);
-        setSecondsSinceCommitConfirmed(secs);
-        dispatch(
-          updateTransactionRegistrationParameters(accountAddress, {
-            commitTransactionConfirmedAt,
-          })
-        );
-        confirmed = true;
-      } else if (shouldLoopForConfirmation.current) {
-        shouldLoopForConfirmation.current = false;
-      }
-    } catch (e) {
-      //
-    }
-    return confirmed;
-  }, [
-    accountAddress,
-    dispatch,
-    isTesting,
-    registrationParameters?.commitTransactionHash,
-  ]);
-
-  const startPollingWatchCommitTransaction = useCallback(async () => {
-    timeout.current && clearTimeout(timeout.current);
-    if (registrationStep !== REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION)
-      return;
-    const confirmed = await watchCommitTransaction();
-    if (!confirmed) {
-      timeout.current = setTimeout(
-        () => startPollingWatchCommitTransaction(),
-        10000
-      );
-    }
-  }, [registrationStep, watchCommitTransaction]);
-
-  useEffect(() => {
-    if (registrationStep === REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION) {
-      startPollingWatchCommitTransaction();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [registrationStep]);
-
-  useEffect(() => {
-    let interval: NodeJS.Timer;
-    if (registrationStep === REGISTRATION_STEPS.WAIT_ENS_COMMITMENT) {
-      interval = setInterval(() => {
-        setSecondsSinceCommitConfirmed(seconds => seconds + 1);
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [registrationStep, secondsSinceCommitConfirmed]);
-
-  useEffect(() => {
-    // we need to check from blocks if the time has passed or not
-    const checkRegisterBlockTimestamp = async () => {
-      try {
-        const block = await web3Provider.getBlock('latest');
-        const msBlockTimestamp = getBlockMsTimestamp(block);
-        const secs = differenceInSeconds(
-          msBlockTimestamp,
-          registrationParameters?.commitTransactionConfirmedAt ||
-            msBlockTimestamp
-        );
-        if (secs > ENS_SECONDS_WAIT) setReadyToRegister(true);
-        // eslint-disable-next-line no-empty
-      } catch (e) {}
-    };
-    if (secondsSinceCommitConfirmed >= ENS_SECONDS_WAIT) {
-      checkRegisterBlockTimestamp();
-    }
-  }, [
-    isTesting,
-    registrationParameters?.commitTransactionConfirmedAt,
-    registrationStep,
-    secondsSinceCommitConfirmed,
-  ]);
-
-  useEffect(() => () => timeout.current && clearTimeout(timeout.current), []);
   return {
     action: actions[registrationStep],
-    step: registrationStep,
   };
 }
 

@@ -8,7 +8,10 @@ export { default as useAccountAsset } from './useAccountAsset';
 export { default as useSortedAccountAssets } from './useSortedAccountAssets';
 export { default as useFrameDelayedValue } from './useFrameDelayedValue';
 export { default as useAccountEmptyState } from './useAccountEmptyState';
-export { default as useAccountENSDomains } from './useAccountENSDomains';
+export {
+  default as useAccountENSDomains,
+  prefetchAccountENSDomains,
+} from './useAccountENSDomains';
 export { default as useAccountProfile } from './useAccountProfile';
 export { default as useAccountSettings } from './useAccountSettings';
 export { default as useAccountTransactions } from './useAccountTransactions';
@@ -40,6 +43,7 @@ export { default as useTrackENSProfile } from './useTrackENSProfile';
 export { default as useENSRecordDisplayProperties } from './useENSRecordDisplayProperties';
 export { default as useENSRegistration } from './useENSRegistration';
 export { default as useENSRegistrationActionHandler } from './useENSRegistrationActionHandler';
+export { default as useENSRegistrationStepHandler } from './useENSRegistrationStepHandler';
 export { default as useENSRegistrationCosts } from './useENSRegistrationCosts';
 export { default as useENSRegistrationForm } from './useENSRegistrationForm';
 export { default as useENSResolveName } from './useENSResolveName';

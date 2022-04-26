@@ -372,7 +372,8 @@
         "toast_added_to_showcase": "Added to showcase",
         "toast_removed_from_showcase": "Removed from showcase",
         "view_on_opensea": "View on Opensea",
-        "view_on_platform": "View on %{platform}"
+        "view_on_platform": "View on %{platform}",
+        "expires_in": "Expires in"
       }
     },
     "fields": {
