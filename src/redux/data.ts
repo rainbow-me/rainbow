@@ -1364,7 +1364,7 @@ export const assetPricesChanged = (
   const assetAddress = message?.meta?.asset_code;
   if (isNil(price) || isNil(assetAddress)) return;
 
-  if (toLower(nativeCurrency) === message?.meta?.currency) {
+  if (nativeCurrency?.toLowerCase() === message?.meta?.currency) {
     const { genericAssets } = getState().data;
     const genericAsset = {
       ...get(genericAssets, assetAddress),
