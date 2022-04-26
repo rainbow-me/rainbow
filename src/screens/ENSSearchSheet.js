@@ -21,11 +21,10 @@ import {
   Stack,
   Text,
 } from '@rainbow-me/design-system';
-import { ENS_DOMAIN } from '@rainbow-me/helpers/ens';
+import { ENS_DOMAIN, REGISTRATION_STEPS } from '@rainbow-me/helpers/ens';
 import {
   useENSRegistration,
   useENSRegistrationCosts,
-  useENSRegistrationStepHandler,
   useENSSearch,
   usePrevious,
 } from '@rainbow-me/hooks';
@@ -57,14 +56,14 @@ export default function ENSSearchSheet() {
     name: debouncedSearchQuery,
   });
 
-  const { step } = useENSRegistrationStepHandler();
   const {
     data: registrationCostsData,
     isSuccess: registrationCostsDataIsAvailable,
   } = useENSRegistrationCosts({
     name: debouncedSearchQuery,
     rentPrice: registrationData?.rentPrice,
-    step,
+    sendReverseRecord: true,
+    step: REGISTRATION_STEPS.COMMIT,
     yearsDuration: 1,
   });
 
@@ -140,14 +139,7 @@ export default function ENSSearchSheet() {
               </Text>
             </Inline>
           )}
-          {isIdle && (
-            <>
-              <Inset horizontal="19px" vertical="24px">
-                <Divider />
-              </Inset>
-              <PendingRegistrations />
-            </>
-          )}
+          {isIdle && <PendingRegistrations />}
           {isInvalid && (
             <Inset horizontal="30px">
               <Text
