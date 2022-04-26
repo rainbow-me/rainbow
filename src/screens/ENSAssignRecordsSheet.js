@@ -206,7 +206,7 @@ export default function ENSAssignRecordsSheet() {
 }
 
 export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
-  const { navigate, goBack } = useNavigation();
+  const { goBack, navigate } = useNavigation();
   const keyboardHeight = useKeyboardHeight();
   const { colors } = useTheme();
 
