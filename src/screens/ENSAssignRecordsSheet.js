@@ -73,21 +73,26 @@ export default function ENSAssignRecordsSheet() {
   } = useENSRegistration({
     setInitialRecordsWhenInEditMode: true,
   });
-  useENSRegistrationForm({
-    defaultFields: [
-      ENS_RECORDS.displayName,
-      ENS_RECORDS.description,
-      ENS_RECORDS.twitter,
-      ENS_RECORDS.pronouns,
-    ].map(fieldName => textRecordFields[fieldName]),
-    initializeForm: true,
-  });
 
   const { data: registrationData } = useENSSearch({
     name,
   });
-
   const { step } = useENSRegistrationStepHandler();
+
+  const defaultFields = useMemo(
+    () =>
+      [
+        ENS_RECORDS.displayName,
+        ENS_RECORDS.description,
+        ENS_RECORDS.twitter,
+        ENS_RECORDS.pronouns,
+      ].map(fieldName => textRecordFields[fieldName]),
+    []
+  );
+  useENSRegistrationForm({
+    defaultFields,
+    initializeForm: true,
+  });
 
   useENSRegistrationCosts({
     name,
@@ -302,11 +307,9 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
                       }
                     : {})}
                 >
-                  {mode === REGISTRATION_MODES.CREATE && (
-                    <TintButton color="secondary60" onPress={handlePressBack}>
-                      {lang.t('profiles.create.back')}
-                    </TintButton>
-                  )}
+                  <TintButton color="secondary60" onPress={handlePressBack}>
+                    {lang.t('profiles.create.back')}
+                  </TintButton>
                   {isEmpty && mode === REGISTRATION_MODES.CREATE ? (
                     <TintButton
                       color="secondary60"
