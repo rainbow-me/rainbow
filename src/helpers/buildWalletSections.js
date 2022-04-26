@@ -1,13 +1,5 @@
 import lang from 'i18n-js';
-import {
-  compact,
-  find,
-  flattenDeep,
-  get,
-  groupBy,
-  map,
-  property,
-} from 'lodash';
+import { compact, find, flattenDeep, groupBy, map, property } from 'lodash';
 import React from 'react';
 import { LayoutAnimation } from 'react-native';
 import { createSelector } from 'reselect';
@@ -83,9 +75,7 @@ const uniswapRenderItem = item => (
 );
 
 const filterWalletSections = sections =>
-  sections.filter(({ data, header }) =>
-    data ? get(header, 'totalItems') : true
-  );
+  sections.filter(({ data, header }) => (data ? header?.totalItems : true));
 
 const buildWalletSections = (
   balanceSection,
@@ -304,7 +294,7 @@ const withBalanceSection = (
 
   const totalBalanceWithSavingsValue = add(
     totalBalancesValue,
-    get(savingsSection, 'totalValue', 0)
+    savingsSection?.totalValue || 0
   );
   const totalBalanceWithAllSectionValues = add(
     totalBalanceWithSavingsValue,
@@ -439,9 +429,9 @@ const sortImagesToPreload = images => {
   const filtered = compact(flattenDeep(images));
   const grouped = groupBy(filtered, property('priority'));
   return [
-    ...get(grouped, 'high', []),
-    ...get(grouped, 'normal', []),
-    ...get(grouped, 'low', []),
+    ...(grouped?.high || []),
+    ...(grouped?.normal || []),
+    ...(grouped?.low || []),
   ];
 };
 
