@@ -2,7 +2,7 @@ import { differenceWith, isEqual } from 'lodash';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAccountSettings, useENSProfile } from '.';
-import { ENSRegistrationState, Records } from '@rainbow-me/entities';
+import { Records } from '@rainbow-me/entities';
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import * as ensRedux from '@rainbow-me/redux/ensRegistration';
 import { AppState } from '@rainbow-me/redux/store';
@@ -17,32 +17,31 @@ export default function useENSRegistration({
 } = {}) {
   const { accountAddress } = useAccountSettings();
 
-  const {
-    mode,
-    name,
-    initialRecords,
-    records,
-    registrationParameters,
-  } = useSelector(({ ensRegistration }: AppState) => {
-    const {
-      currentRegistrationName,
-      registrations,
-    } = ensRegistration as ENSRegistrationState;
-    const registrationParameters =
-      registrations?.[accountAddress?.toLowerCase()]?.[
-        currentRegistrationName
-      ] || {};
-    const initialRecords = registrationParameters?.initialRecords || {};
-    const records = registrationParameters?.records || {};
-    const mode = registrationParameters?.mode || {};
-    return {
-      initialRecords,
-      mode,
-      name: currentRegistrationName,
-      records,
-      registrationParameters,
-    };
-  });
+  const registrationParameters = useSelector(
+    ({ ensRegistration }: AppState) => {
+      return {
+        ...ensRegistration.registrations?.[accountAddress?.toLowerCase()]?.[
+          ensRegistration.currentRegistrationName
+        ],
+        currentRegistrationName: ensRegistration.currentRegistrationName,
+      };
+    }
+  );
+
+  const { mode, name, initialRecords, records } = useMemo(
+    () => ({
+      initialRecords: registrationParameters.initialRecords || {},
+      mode: registrationParameters.mode,
+      name: registrationParameters.currentRegistrationName,
+      records: registrationParameters.records || {},
+    }),
+    [
+      registrationParameters.initialRecords,
+      registrationParameters.mode,
+      registrationParameters.currentRegistrationName,
+      registrationParameters.records,
+    ]
+  );
 
   const dispatch = useDispatch();
   const removeRecordByKey = useCallback(
@@ -85,16 +84,17 @@ export default function useENSRegistration({
       profileQuery.isSuccess
     ) {
       dispatch(
-        ensRedux.setInitialRecords(
-          accountAddress,
-          profileQuery.data?.records as Records
-        )
+        ensRedux.setInitialRecords(accountAddress, {
+          ...profileQuery.data?.records,
+          ...profileQuery.data?.coinAddresses,
+        } as Records)
       );
     }
   }, [
     accountAddress,
     dispatch,
     mode,
+    profileQuery.data?.coinAddresses,
     profileQuery.data?.records,
     profileQuery.isSuccess,
     setInitialRecordsWhenInEditMode,
