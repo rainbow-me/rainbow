@@ -1,12 +1,4 @@
-import {
-  get,
-  groupBy,
-  isEmpty,
-  isNil,
-  mapValues,
-  toNumber,
-  values,
-} from 'lodash';
+import { groupBy, isEmpty, isNil, mapValues, toNumber, values } from 'lodash';
 import { createSelector } from 'reselect';
 import { sortList } from '../helpers/sortList';
 import { parseAssetsNativeWithTotals } from '@rainbow-me/parsers';
@@ -29,14 +21,9 @@ const sortAssetsByNativeAmount = (
   if (!isEmpty(assetPricesFromUniswap)) {
     updatedAssets = mapValues(accountAssetsData, asset => {
       if (isNil(asset.price)) {
-        const assetPrice = get(
-          assetPricesFromUniswap,
-          `[${asset.address}].price`
-        );
-        const relativePriceChange = get(
-          assetPricesFromUniswap,
-          `[${asset.address}].relativePriceChange`
-        );
+        const assetPrice = assetPricesFromUniswap?.[asset.address].price;
+        const relativePriceChange =
+          assetPricesFromUniswap?.[asset.address].relativePriceChange;
         if (assetPrice) {
           return {
             ...asset,

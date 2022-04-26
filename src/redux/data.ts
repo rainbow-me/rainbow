@@ -7,7 +7,6 @@ import {
   concat,
   filter,
   find,
-  get,
   includes,
   isEmpty,
   isNil,
@@ -1200,17 +1199,12 @@ const subscribeToMissingPrices = (addresses: string[]) => (
             const missingPriceInfo = mapValues(
               missingPrices,
               (currentPrice, key) => {
-                const historicalPrice = get(
-                  missingHistoricalPrices,
-                  `[${key}]`
-                );
+                const historicalPrice = missingHistoricalPrices?.[key];
                 // mappedPricingData[key].id will be a `string`, assuming `key`
                 // is present, but `get` resolves to an incorrect type, so must
                 // be casted.
-                const tokenAddress: string = get(
-                  mappedPricingData,
-                  `[${key}].id`
-                ) as any;
+                const tokenAddress: string = mappedPricingData?.[key]
+                  ?.id as any;
                 const relativePriceChange = historicalPrice
                   ? // @ts-expect-error TypeScript disallows string arithmetic,
                     // even though it works correctly.
@@ -1363,7 +1357,7 @@ export const assetPricesChanged = (
   if (isNil(price) || isNil(assetAddress)) return;
   const { genericAssets } = getState().data;
   const genericAsset = {
-    ...get(genericAssets, assetAddress),
+    ...get(genericAssets, assetAddress), 
     price,
   };
   const updatedAssets = {
