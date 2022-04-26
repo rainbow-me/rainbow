@@ -1,5 +1,6 @@
 import { useQuery } from 'react-query';
 import useAccountSettings from './useAccountSettings';
+import { EnsAccountRegistratonsData } from '@rainbow-me/apollo/queries';
 import {
   fetchAccountRegistrations,
   fetchImages,
@@ -13,7 +14,7 @@ const queryKey = ({ accountAddress }: { accountAddress: string }) => [
 
 const imagesQueryKey = ({ name }: { name: string }) => ['domainImages', name];
 
-export async function fetchAccountENSDomains({
+async function fetchAccountENSDomains({
   accountAddress,
 }: {
   accountAddress: string;
@@ -45,7 +46,7 @@ export async function prefetchAccountENSDomains({
   );
 }
 
-export async function fetchAccountENSImages(name: string) {
+async function fetchAccountENSImages(name: string) {
   return queryClient.fetchQuery(
     imagesQueryKey({ name }),
     async () => await fetchImages(name),
@@ -57,7 +58,9 @@ export async function fetchAccountENSImages(name: string) {
 
 export default function useAccountENSDomains() {
   const { accountAddress } = useAccountSettings();
-  return useQuery<any>(queryKey({ accountAddress }), async () =>
+  return useQuery<
+    EnsAccountRegistratonsData['account']['registrations'][number]['domain'][]
+  >(queryKey({ accountAddress }), async () =>
     fetchAccountENSDomains({ accountAddress })
   );
 }
