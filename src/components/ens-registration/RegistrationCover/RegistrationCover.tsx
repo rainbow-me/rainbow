@@ -9,6 +9,8 @@ import { atom, useSetRecoilState } from 'recoil';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import Skeleton from '../../skeleton/Skeleton';
 import { Box, Text, useForegroundColor } from '@rainbow-me/design-system';
+import { UniqueAsset } from '@rainbow-me/entities';
+import { UploadImageReturnData } from '@rainbow-me/handlers/pinata';
 import {
   useENSRegistration,
   useENSRegistrationForm,
@@ -63,7 +65,13 @@ const RegistrationCover = ({
       width: 1500,
     },
     menuItems: ['library', 'nft'],
-    onChangeImage: ({ asset, image }) => {
+    onChangeImage: ({
+      asset,
+      image,
+    }: {
+      asset?: UniqueAsset;
+      image?: Image & { tmpPath?: string };
+    }) => {
       setCoverMetadata(image);
       setCoverUrl(image?.tmpPath);
       // We want to disallow future avatar state changes (i.e. when upload successful)
@@ -93,10 +101,11 @@ const RegistrationCover = ({
       setCoverUrl('');
       setCoverMetadata(undefined);
     },
-    onUploadSuccess: ({ data }) => {
+    onUploadSuccess: ({ data }: { data: UploadImageReturnData }) => {
       onBlurField({ key: 'cover', value: data.url });
     },
     showRemove: Boolean(coverUrl),
+    testID: 'cover',
     uploadToIPFS: true,
   });
 

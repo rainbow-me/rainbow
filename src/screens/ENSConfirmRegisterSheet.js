@@ -33,6 +33,7 @@ import {
   useENSRegistrationActionHandler,
   useENSRegistrationCosts,
   useENSRegistrationForm,
+  useENSRegistrationStepHandler,
   useENSSearch,
   usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
@@ -118,8 +119,10 @@ export default function ENSConfirmRegisterSheet() {
   });
 
   const [sendReverseRecord, setSendReverseRecord] = useState(false);
-  const { step, action } = useENSRegistrationActionHandler({
+  const { step } = useENSRegistrationStepHandler(false);
+  const { action } = useENSRegistrationActionHandler({
     sendReverseRecord,
+    step,
     yearsDuration: duration,
   });
 
@@ -283,6 +286,7 @@ export default function ENSConfirmRegisterSheet() {
             Boolean(registrationCostsData?.stepGasLimit)
           }
           label={lang.t('profiles.confirm.confirm_set_name')}
+          testID={step}
         />
       ),
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: null,
@@ -308,7 +312,8 @@ export default function ENSConfirmRegisterSheet() {
   useFocusEffect(
     useCallback(() => {
       blurFields();
-    }, [blurFields])
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
   );
 
   return (

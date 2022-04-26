@@ -40,6 +40,7 @@ export { default as useTrackENSProfile } from './useTrackENSProfile';
 export { default as useENSRecordDisplayProperties } from './useENSRecordDisplayProperties';
 export { default as useENSRegistration } from './useENSRegistration';
 export { default as useENSRegistrationActionHandler } from './useENSRegistrationActionHandler';
+export { default as useENSRegistrationStepHandler } from './useENSRegistrationStepHandler';
 export { default as useENSRegistrationCosts } from './useENSRegistrationCosts';
 export { default as useENSRegistrationForm } from './useENSRegistrationForm';
 export { default as useENSResolveName } from './useENSResolveName';

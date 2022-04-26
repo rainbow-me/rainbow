@@ -6,7 +6,6 @@ import { Centered } from '../layout';
 import RemoteSvg from '../svg/RemoteSvg';
 import { Monospace } from '../text';
 import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
-
 import { ImgixImage } from '@rainbow-me/images';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
 import styled from '@rainbow-me/styled-components';

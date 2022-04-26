@@ -15,6 +15,7 @@ type ActionButtonProps = {
   icon?: string | React.ReactElement;
   onPress?: ButtonProps['onPress'];
   variant?: 'solid' | 'outlined';
+  testID?: string;
 };
 
 export default function ActionButton({
@@ -22,12 +23,13 @@ export default function ActionButton({
   icon,
   onPress,
   variant = 'solid',
+  testID,
 }: ActionButtonProps) {
   const secondary10 = useForegroundColor('secondary10');
 
   const isIconOnly = Boolean(icon && !children);
   return (
-    <ButtonPressAnimation onPress={onPress}>
+    <ButtonPressAnimation onPress={onPress} testID={testID}>
       <Box
         alignItems="center"
         background="action"
