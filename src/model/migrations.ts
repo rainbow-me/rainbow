@@ -616,7 +616,8 @@ export default async function runMigrations() {
 
   /*
    *************** Migration v16 ******************
-   Migrates cached Rainbow token list from 
+   Migrates cached Rainbow token list from a cached json file
+   in the file system to mmkv
    */
   const v16 = async () => {
     try {
