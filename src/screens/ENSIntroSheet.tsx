@@ -54,7 +54,7 @@ export default function ENSIntroSheet() {
 
   const { ownedDomains, primaryDomain, nonPrimaryDomains } = useMemo(() => {
     const ownedDomains = domains?.filter(
-      ({ owner }) => owner.id?.toLowerCase() === accountAddress.toLowerCase()
+      ({ owner }) => owner?.id?.toLowerCase() === accountAddress.toLowerCase()
     );
     return {
       nonPrimaryDomains:
