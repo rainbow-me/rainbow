@@ -1,4 +1,3 @@
-import { get } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { spring } from 'react-native-reanimated';
@@ -76,8 +75,8 @@ const JellySelector = ({
 
   const handleItemLayout = useCallback(
     (event, index) => {
-      const itemWidth = get(event, 'nativeEvent.layout.width', 0);
-      const itemX = get(event, 'nativeEvent.layout.x', 0);
+      const itemWidth = event?.nativeEvent?.layout?.width || 0;
+      const itemX = event?.nativeEvent?.layout?.x || 0;
       setSelectorVisible(true);
 
       positions[index] = Math.floor(itemX) - Math.floor(itemWidth / 2);

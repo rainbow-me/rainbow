@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { get, isEmpty } from 'lodash';
+import { isEmpty } from 'lodash';
 import React, {
   Fragment,
   useCallback,
@@ -131,7 +131,7 @@ export default function WalletList({
           isReadOnly: wallet.type === WalletTypes.readOnly,
           isSelected:
             accountAddress === account.address &&
-            (watchOnly || wallet?.id === get(currentWallet, 'id')),
+            (watchOnly || wallet?.id === currentWallet?.id),
           label:
             network !== networkTypes.mainnet && account.ens === account.label
               ? address(account.address, 6, 4)

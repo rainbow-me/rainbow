@@ -1,4 +1,3 @@
-import { get } from 'lodash';
 import React, { forwardRef, useEffect, useRef } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import { magicMemo } from '../../utils';
@@ -45,7 +44,7 @@ const CurrencySelectionList = (
   ref
 ) => {
   const skeletonTransitionRef = useRef();
-  const noResults = get(listItems, '[0].data', []).length === 0;
+  const noResults = (listItems?.[0]?.data || []).length === 0;
   const showGhost = !loading && noResults;
   const showSkeleton = noResults && loading;
   const prevShowSkeleton = usePrevious(showSkeleton);

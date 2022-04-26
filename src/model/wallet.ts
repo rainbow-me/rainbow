@@ -17,7 +17,7 @@ import {
   default as LibWallet,
 } from 'ethereumjs-wallet';
 import lang from 'i18n-js';
-import { find, findKey, forEach, get, isEmpty } from 'lodash';
+import { find, findKey, forEach, isEmpty } from 'lodash';
 import { Alert } from 'react-native';
 import { getSupportedBiometryType } from 'react-native-keychain';
 import { lightModeThemeColors } from '../styles/colors';
@@ -475,7 +475,7 @@ const loadPrivateKey = async (
       if (privateKeyData === -1) {
         return -1;
       }
-      privateKey = get(privateKeyData, 'privateKey', null);
+      privateKey = privateKeyData?.privateKey || null;
 
       let userPIN = null;
       if (android) {
@@ -572,7 +572,7 @@ export const createWallet = async (
     // Get all wallets
     const allWalletsResult = await getAllWallets();
     logger.sentry('[createWallet] - getAllWallets');
-    const allWallets: AllRainbowWallets = get(allWalletsResult, 'wallets', {});
+    const allWallets: AllRainbowWallets = allWalletsResult?.wallets || {};
 
     let existingWalletId = null;
     if (isImported) {
@@ -1253,7 +1253,7 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (
       // In that case we regenerate the existing private key to store it with the new format
       if (!isSeedPhraseMigrated) {
         const migratedSecrets = await migrateSecrets();
-        seedPhrase = get(migratedSecrets, 'seedphrase', null);
+        seedPhrase = migratedSecrets?.seedphrase || null;
       } else {
         logger.sentry('Migrated flag was set but there is no key!', id);
         captureMessage('Missing seed for wallet');
@@ -1261,7 +1261,7 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (
     } else {
       logger.sentry('Getting seed directly');
       const seedData = await getSeedPhrase(id);
-      seedPhrase = get(seedData, 'seedphrase', null);
+      seedPhrase = seedData?.seedphrase || null;
       let userPIN = null;
       if (android) {
         const hasBiometricsEnabled = await getSupportedBiometryType();

@@ -1,4 +1,4 @@
-import { get, isNil, map, mapValues, toUpper } from 'lodash';
+import { isNil, map, mapValues, toUpper } from 'lodash';
 import { dedupeUniqueTokens } from './uniqueTokens';
 import { AssetTypes } from '@rainbow-me/entities';
 import { isNativeAsset } from '@rainbow-me/handlers/assets';
@@ -83,7 +83,7 @@ export const parseAsset = ({ asset_code: address, ...asset } = {}) => {
 export const parseAssetsNativeWithTotals = (assets, nativeCurrency) => {
   const assetsNative = parseAssetsNative(assets, nativeCurrency);
   const totalAmount = assetsNative.reduce(
-    (total, asset) => add(total, get(asset, 'native.balance.amount', 0)),
+    (total, asset) => add(total, asset?.native?.balance?.amount || 0),
     0
   );
   const totalDisplay = convertAmountToNativeDisplay(
@@ -98,14 +98,14 @@ export const parseAssetsNative = (assets, nativeCurrency) =>
   map(assets, asset => parseAssetNative(asset, nativeCurrency));
 
 export const parseAssetNative = (asset, nativeCurrency) => {
-  const assetNativePrice = get(asset, 'price');
+  const assetNativePrice = asset?.price;
   if (isNil(assetNativePrice)) {
     return asset;
   }
 
-  const priceUnit = get(assetNativePrice, 'value', 0);
+  const priceUnit = assetNativePrice?.value || 0;
   const nativeDisplay = convertAmountAndPriceToNativeDisplay(
-    get(asset, 'balance.amount', 0),
+    asset?.balance?.amount || 0,
     priceUnit,
     nativeCurrency
   );
@@ -113,7 +113,7 @@ export const parseAssetNative = (asset, nativeCurrency) => {
     ...asset,
     native: {
       balance: nativeDisplay,
-      change: isLowerCaseMatch(get(asset, 'symbol'), nativeCurrency)
+      change: isLowerCaseMatch(asset?.symbol, nativeCurrency)
         ? null
         : assetNativePrice.relative_change_24h
         ? convertAmountToPercentageDisplay(assetNativePrice.relative_change_24h)
