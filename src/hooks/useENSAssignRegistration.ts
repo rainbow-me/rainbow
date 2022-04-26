@@ -1,8 +1,9 @@
 import { differenceWith, isEqual } from 'lodash';
 import { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import useENSProfileRecords from './useENSProfileRecords';
 import useENSRegistration from './useENSRegistration';
-import { useAccountSettings, useENSProfile, usePrevious } from '.';
+import { useAccountSettings, usePrevious } from '.';
 import { Records, UniqueAsset } from '@rainbow-me/entities';
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import * as ensRedux from '@rainbow-me/redux/ensRegistration';
@@ -67,10 +68,10 @@ export default function useENSAssignRegistration({
   const uniqueTokens = useSelector(
     ({ uniqueTokens }: AppState) => uniqueTokens.uniqueTokens
   );
-
-  const profileQuery = useENSProfile(name, {
+  const profileQuery = useENSProfileRecords(name, {
     enabled: mode === REGISTRATION_MODES.EDIT,
   });
+
   useEffect(() => {
     if (
       setInitialRecordsWhenInEditMode &&

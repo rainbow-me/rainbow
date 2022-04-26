@@ -244,7 +244,9 @@ export const fetchCoinAddresses = async (ensName: string) => {
   );
   const coinTypes: number[] =
     (rawCoinTypesNames as ENS_RECORDS[])
-      .filter(name => supportedRecords.includes(name))
+      .filter(
+        name => supportedRecords.includes(name) && name !== ENS_RECORDS.ETH
+      )
       .map(name => formatsByName[name].coinType) || [];
 
   const coinAddressValues = await Promise.all(
@@ -322,7 +324,7 @@ export const fetchPrimary = async (ensName: string) => {
   };
 };
 
-export const fetchProfile = async (ensName: any) => {
+export const fetchProfile = async (ensName: string) => {
   const [
     resolver,
     records,
@@ -355,6 +357,20 @@ export const fetchProfile = async (ensName: any) => {
     registrant,
     registration,
     resolver: resolverData,
+  };
+};
+
+export const fetchProfileRecords = async (ensName: any) => {
+  const [records, coinAddresses, images] = await Promise.all([
+    fetchRecords(ensName),
+    fetchCoinAddresses(ensName),
+    fetchImages(ensName),
+  ]);
+
+  return {
+    coinAddresses,
+    images,
+    records,
   };
 };
 

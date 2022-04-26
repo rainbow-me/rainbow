@@ -1,5 +1,5 @@
 import { isEmpty, omit } from 'lodash';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { atom, useRecoilState } from 'recoil';
 import useENSAssignRegistration from './useENSAssignRegistration';
 import { useENSRegistration } from '.';
@@ -197,19 +197,19 @@ export default function useENSRegistrationForm({
     updateRecords(values);
   }, [updateRecords, values]);
 
-  const [isLoading, setIsLoading] = useState(
-    mode === REGISTRATION_MODES.EDIT && isEmpty(values)
-  );
+  // const [isLoading, setIsLoading] = useState(
+  //   mode === REGISTRATION_MODES.EDIT && isEmpty(values)
+  // );
 
-  useEffect(() => {
-    if (mode === REGISTRATION_MODES.EDIT) {
-      if (profileQuery.isSuccess || !isEmpty(values)) {
-        setTimeout(() => setIsLoading(false), 200);
-      } else {
-        setIsLoading(true);
-      }
-    }
-  }, [mode, profileQuery.isSuccess, values]);
+  // useEffect(() => {
+  //   if (mode === REGISTRATION_MODES.EDIT) {
+  //     if (profileQuery.isSuccess || !isEmpty(values)) {
+  //       setTimeout(() => setIsLoading(false), 200);
+  //     } else {
+  //       setIsLoading(true);
+  //     }
+  //   }
+  // }, [mode, profileQuery.isSuccess, values]);
 
   const clearValues = useCallback(() => {
     setValuesMap({});
@@ -267,7 +267,8 @@ export default function useENSRegistrationForm({
     disabled,
     errors,
     isEmpty: empty,
-    isLoading,
+    isLoading: profileQuery.isLoading,
+    // isSuccess: profileQuery.isSuccess,
     onAddField,
     onBlurField,
     onChangeField,
