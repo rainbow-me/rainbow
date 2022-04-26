@@ -1,5 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import { isValidAddress } from 'ethereumjs-util';
+import lang from 'i18n-js';
 import { keys } from 'lodash';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, InteractionManager, Keyboard } from 'react-native';
@@ -25,6 +26,8 @@ import walletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils, sanitizeSeedPhrase } from '@rainbow-me/utils';
+import match from '@rainbow-me/utils/match';
+import { errorsCode, matchError } from '@rainbow-me/utils/matchError';
 import logger from 'logger';
 
 export default function useImportingWallet() {
@@ -100,7 +103,12 @@ export default function useImportingWallet() {
   );
 
   const handlePressImportButton = useCallback(
-    async (forceColor, forceAddress, forceEmoji = null) => {
+    async (
+      forceColor,
+      forceAddress,
+      forceEmoji = null,
+      isErrorBubbling = false
+    ) => {
       analytics.track('Tapped "Import" button');
       // guard against pressEvent coming in as forceColor if
       // handlePressImportButton is used as onClick handler
@@ -111,88 +119,115 @@ export default function useImportingWallet() {
       if ((!isSecretValid || !seedPhrase) && !forceAddress) return null;
       const input = sanitizeSeedPhrase(seedPhrase || forceAddress);
       let name = null;
-      // Validate ENS
-      if (isENSAddressFormat(input)) {
-        try {
-          const address = await web3Provider.resolveName(input);
-          if (!address) {
-            Alert.alert('This is not a valid ENS name');
-            return;
+
+      try {
+        // Validate ENS
+        if (isENSAddressFormat(input)) {
+          try {
+            const address = await web3Provider.resolveName(input);
+            if (!address) {
+              throw errorsCode.NOT_VALID_ENS;
+            }
+            setResolvedAddress(address);
+            name = forceEmoji ? `${forceEmoji} ${input}` : input;
+            showWalletProfileModal(name, guardedForceColor, address);
+            analytics.track('Show wallet profile modal for ENS address', {
+              address,
+              input,
+            });
+          } catch (e) {
+            throw errorsCode.CANNOT_ADD_ENS;
           }
-          setResolvedAddress(address);
-          name = forceEmoji ? `${forceEmoji} ${input}` : input;
-          showWalletProfileModal(name, guardedForceColor, address);
-          analytics.track('Show wallet profile modal for ENS address', {
-            address,
-            input,
-          });
-        } catch (e) {
-          Alert.alert(
-            'Sorry, we cannot add this ENS name at this time. Please try again later!'
-          );
-          return;
-        }
-        // Look up ENS for 0x address
-      } else if (isUnstoppableAddressFormat(input)) {
-        try {
-          const address = await resolveUnstoppableDomain(input);
-          if (!address) {
-            Alert.alert('This is not a valid Unstoppable name');
-            return;
-          }
-          setResolvedAddress(address);
-          name = forceEmoji ? `${forceEmoji} ${input}` : input;
-          showWalletProfileModal(name, guardedForceColor, address);
-          analytics.track('Show wallet profile modal for Unstoppable address', {
-            address,
-            input,
-          });
-        } catch (e) {
-          Alert.alert(
-            'Sorry, we cannot add this Unstoppable name at this time. Please try again later!'
-          );
-          return;
-        }
-      } else if (isValidAddress(input)) {
-        try {
-          const ens = await web3Provider.lookupAddress(input);
-          if (ens && ens !== input) {
-            name = forceEmoji ? `${forceEmoji} ${ens}` : ens;
-          }
-          analytics.track('Show wallet profile modal for read only wallet', {
-            ens,
-            input,
-          });
-        } catch (e) {
-          logger.log(`Error resolving ENS during wallet import`, e);
-        }
-        showWalletProfileModal(name, guardedForceColor, input);
-      } else {
-        try {
-          setBusy(true);
-          setTimeout(async () => {
-            const walletResult = await ethereumUtils.deriveAccountFromWalletInput(
-              input
+          // Look up ENS for 0x address
+        } else if (isUnstoppableAddressFormat(input)) {
+          try {
+            const address = await resolveUnstoppableDomain(input);
+            if (!address) {
+              throw errorsCode.NOT_VALID_UNSTOPPABLE_NAME;
+            }
+            setResolvedAddress(address);
+            name = forceEmoji ? `${forceEmoji} ${input}` : input;
+            showWalletProfileModal(name, guardedForceColor, address);
+            analytics.track(
+              'Show wallet profile modal for Unstoppable address',
+              {
+                address,
+                input,
+              }
             );
-            setCheckedWallet(walletResult);
-            const ens = await web3Provider.lookupAddress(walletResult.address);
+          } catch (e) {
+            throw errorsCode.CANNOT_ADD_UNSTOPPABLE_NAME;
+          }
+        } else if (isValidAddress(input)) {
+          try {
+            const ens = await web3Provider.lookupAddress(input);
             if (ens && ens !== input) {
               name = forceEmoji ? `${forceEmoji} ${ens}` : ens;
             }
-            setBusy(false);
-            showWalletProfileModal(
-              name,
-              guardedForceColor,
-              walletResult.address
-            );
-            analytics.track('Show wallet profile modal for imported wallet', {
-              address: walletResult.address,
-              type: walletResult.type,
+            analytics.track('Show wallet profile modal for read only wallet', {
+              ens,
+              input,
             });
-          }, 100);
-        } catch (error) {
-          logger.log('Error looking up ENS for imported HD type wallet', error);
-          setBusy(false);
+          } catch (e) {
+            logger.log(`Error resolving ENS during wallet import`, e);
+          }
+          showWalletProfileModal(name, guardedForceColor, input);
+        } else {
+          try {
+            setBusy(true);
+            setTimeout(async () => {
+              const walletResult = await ethereumUtils.deriveAccountFromWalletInput(
+                input
+              );
+              setCheckedWallet(walletResult);
+              const ens = await web3Provider.lookupAddress(
+                walletResult.address
+              );
+              if (ens && ens !== input) {
+                name = forceEmoji ? `${forceEmoji} ${ens}` : ens;
+              }
+              setBusy(false);
+              showWalletProfileModal(
+                name,
+                guardedForceColor,
+                walletResult.address
+              );
+              analytics.track('Show wallet profile modal for imported wallet', {
+                address: walletResult.address,
+                type: walletResult.type,
+              });
+            }, 100);
+          } catch (error) {
+            logger.log(
+              'Error looking up ENS for imported HD type wallet',
+              error
+            );
+            setBusy(false);
+          }
+        }
+      } catch (error) {
+        if (!isErrorBubbling) {
+          const matched = matchError(error);
+          const textForAlert = match(
+            lang.t('errors.connectWithSupport'),
+            [matched.NOT_VALID_ENS, 'This is not a valid ENS name'],
+            [
+              matched.CANNOT_ADD_ENS,
+              'Sorry, we cannot add this ENS name at this time. Please try again later!',
+            ],
+            [
+              matched.NOT_VALID_UNSTOPPABLE_NAME,
+              'This is not a valid Unstoppable name',
+            ],
+            [
+              matched.CANNOT_ADD_UNSTOPPABLE_NAME,
+              'Sorry, we cannot add this Unstoppable name at this time. Please try again later!',
+            ]
+          );
+
+          Alert.alert(textForAlert);
+        } else {
+          throw error;
         }
       }
     },

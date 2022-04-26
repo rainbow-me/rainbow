@@ -408,3 +408,13 @@ export const fromWei = (number: BigNumberish): string =>
 export const delay = (ms: number): Promise<void> => {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
+
+/**
+ * @desc search by key and return it value
+ */
+export const getKeyByValue = (
+  object: { [key: string]: string },
+  value: string
+) => {
+  return Object.keys(object).find(key => object[key] === value);
+};
