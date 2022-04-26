@@ -19,7 +19,7 @@ import {
   Inset,
   Stack,
 } from '@rainbow-me/design-system';
-import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
+import { getENSRecordValuesForProfile } from '@rainbow-me/helpers/ens';
 import { useENSProfile, useFirstTransactionTimestamp } from '@rainbow-me/hooks';
 import { addressHashedEmoji } from '@rainbow-me/utils/profileUtils';
 
@@ -95,17 +95,7 @@ export default function ProfileSheetHeader({
                     <RecordTags
                       firstTransactionTimestamp={firstTransactionTimestamp}
                       records={profile?.records}
-                      show={[
-                        ENS_RECORDS.twitter,
-                        ENS_RECORDS.website,
-                        ENS_RECORDS.url,
-                        ENS_RECORDS.email,
-                        ENS_RECORDS.github,
-                        ENS_RECORDS.instagram,
-                        ENS_RECORDS.reddit,
-                        ENS_RECORDS.snapchat,
-                        ENS_RECORDS.telegram,
-                      ]}
+                      show={getENSRecordValuesForProfile()}
                     />
                   )}
                 </>
