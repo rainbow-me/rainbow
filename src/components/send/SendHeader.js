@@ -1,6 +1,6 @@
 import { isHexString } from '@ethersproject/bytes';
 import lang from 'i18n-js';
-import { get, isEmpty, toLower } from 'lodash';
+import { isEmpty, toLower } from 'lodash';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { ActivityIndicator, Keyboard } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
@@ -87,7 +87,7 @@ export default function SendHeader({
   const { colors } = useTheme();
 
   const contact = useMemo(() => {
-    return get(contacts, `${[toLower(recipient)]}`, defaultContactItem);
+    return contacts?.[recipient.toLowerCase()] || defaultContactItem;
   }, [contacts, recipient]);
   const [hexAddress, setHexAddress] = useState(null);
 
@@ -113,7 +113,7 @@ export default function SendHeader({
   }, [recipient, userAccounts, watchedAccounts]);
 
   const handleNavigateToContact = useCallback(() => {
-    let color = get(contact, 'color');
+    let color = contact?.color;
     let nickname = recipient;
     if (color !== 0 && !color) {
       const emoji = profileUtils.addressHashedEmoji(hexAddress);

@@ -1,7 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import { captureMessage } from '@sentry/react-native';
 import lang from 'i18n-js';
-import { get } from 'lodash';
 import React, { Fragment, useCallback } from 'react';
 import { Linking } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
@@ -278,8 +277,8 @@ const AddFundsInterstitial = ({ network }) => {
       ) : (
         <Fragment>
           <Title>
-            Request test ETH through the {get(networkInfo[network], 'name')}{' '}
-            faucet
+            `Request test ETH through the ${networkInfo?.[network]?.name}{' '}
+            faucet`
           </Title>
           <Row marginTop={30}>
             <InterstitialButton onPress={addFundsToAccountAddress}>
@@ -300,8 +299,8 @@ const AddFundsInterstitial = ({ network }) => {
           </Subtitle>
 
           <Paragraph>
-            Send test ETH from another {get(networkInfo[network], 'name')}{' '}
-            wallet—or ask a friend!
+            `Send test ETH from another ${networkInfo?.[network]?.name}{' '}
+            wallet—or ask a friend!`
           </Paragraph>
         </Fragment>
       )}
