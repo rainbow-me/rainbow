@@ -54,8 +54,6 @@ function logDirectly(
 /**
  * Function that starts a performance measurement.
  * It uses performance.now() to get a start timestamp.
- * If you need more control over timestamps or need to use another format,
- * please use markStartTime/markFinishTime/commitMeasurement API.
  *
  * @param metric What you're measuring
  * @param additionalParams Any additional context you want to add to your log
@@ -75,8 +73,6 @@ function startMeasuring(
 /**
  * Function that finishes and commits a performance measurement.
  * It uses performance.now() to get a finish timestamp.
- * If you need more control over timestamps or need to use another format,
- * please use markStartTime/markFinishTime/commitMeasurement API.
  *
  * CAUTION: For the same metric, finishMeasuring must always be called after calling startMeasuring first.
  * The reverse order will result in the measurement not being saved and finishMeasuring returning false.
