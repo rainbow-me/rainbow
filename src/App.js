@@ -57,7 +57,8 @@ import * as keychain from './model/keychain';
 import { loadAddress } from './model/wallet';
 import { Navigation } from './navigation';
 import RoutesComponent from './navigation/Routes';
-import { PerformanceMetric, PerformanceTracking } from './performance-tracking';
+import { PerformanceTracking } from './performance-tracking';
+import { PerformanceMetrics } from './performance-tracking/types/PerformanceMetrics';
 import { queryClient } from './react-query/queryClient';
 import { explorerInitL2 } from './redux/explorer';
 import { fetchOnchainBalances } from './redux/fallbackExplorer';
@@ -195,7 +196,9 @@ class App extends Component {
       });
     }
 
-    PerformanceTracking.finishMeasuring(PerformanceMetric.loadRootAppComponent);
+    PerformanceTracking.finishMeasuring(
+      PerformanceMetrics.loadRootAppComponent
+    );
   }
 
   componentDidUpdate(prevProps) {

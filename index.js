@@ -4,18 +4,16 @@
 It needs to be an import statement because otherwise it doesn't load properly
 likely because of typescript.
 */
-import {
-  PerformanceMetric,
-  PerformanceTracking,
-} from './src/performance-tracking';
+import { PerformanceTracking } from './src/performance-tracking';
 import { StartTime } from './src/performance-tracking/start-time';
+import { PerformanceMetrics } from './src/performance-tracking/types/PerformanceMetrics';
 
 PerformanceTracking.logDirectly(
-  PerformanceMetric.loadJSBundle,
+  PerformanceMetrics.loadJSBundle,
   Date.now() - StartTime.START_TIME
 );
-PerformanceTracking.startMeasuring(PerformanceMetric.loadRootAppComponent);
-PerformanceTracking.startMeasuring(PerformanceMetric.timeToInteractive);
+PerformanceTracking.startMeasuring(PerformanceMetrics.loadJSBundle);
+PerformanceTracking.startMeasuring(PerformanceMetrics.timeToInteractive);
 
 /*
 We need to use require calls in order to stop babel from moving imports

@@ -1,15 +1,15 @@
 import analytics from '@segment/analytics-react-native';
 // @ts-ignore
 import { SENTRY_ENVIRONMENT } from 'react-native-dotenv';
-import PerformanceMetric from './types/PerformanceMetric';
 import { PerformanceMetricData } from './types/PerformanceMetricData';
-import PerformanceTag from './types/PerformanceTag';
+import { PerformanceMetricsType } from './types/PerformanceMetrics';
+import { PerformanceTagsType } from './types/PerformanceTags';
 
 const shouldLogToConsole = __DEV__ || SENTRY_ENVIRONMENT === 'LocalRelease';
 const logTag = '[PERFORMANCE]: ';
 
 function logDurationIfAppropriate(
-  metric: PerformanceMetric,
+  metric: PerformanceMetricsType,
   durationInMs: number,
   ...additionalArgs: any[]
 ) {
@@ -23,12 +23,12 @@ function logDurationIfAppropriate(
 }
 
 const currentlyTrackedMetrics = new Map<
-  PerformanceMetric,
+  PerformanceMetricsType,
   PerformanceMetricData
 >();
 
 interface AdditionalParams extends Record<string, any> {
-  tag?: PerformanceTag;
+  tag?: PerformanceTagsType;
 }
 
 /**
@@ -40,7 +40,7 @@ interface AdditionalParams extends Record<string, any> {
  * @param additionalParams Any additional context you want to add to your log
  */
 function logDirectly(
-  metric: PerformanceMetric,
+  metric: PerformanceMetricsType,
   durationInMs: number,
   additionalParams?: AdditionalParams
 ) {
@@ -61,7 +61,7 @@ function logDirectly(
  * @param additionalParams Any additional context you want to add to your log
  */
 function startMeasuring(
-  metric: PerformanceMetric,
+  metric: PerformanceMetricsType,
   additionalParams?: AdditionalParams
 ) {
   const startTime = performance.now();
@@ -86,7 +86,7 @@ function startMeasuring(
  * @returns True if the measurement was collected and commited properly, false otherwise
  */
 function finishMeasuring(
-  metric: PerformanceMetric,
+  metric: PerformanceMetricsType,
   additionalParams?: AdditionalParams
 ): boolean {
   const savedEntry = currentlyTrackedMetrics.get(metric);
@@ -116,7 +116,7 @@ function finishMeasuring(
  */
 export function withPerformanceTracking<Fn extends (...args: any[]) => any>(
   fn: Fn,
-  metric: PerformanceMetric,
+  metric: PerformanceMetricsType,
   additionalParams?: AdditionalParams
 ): (...args: Parameters<Fn>) => ReturnType<Fn> {
   return function wrapper(this: any, ...args: Parameters<Fn>): ReturnType<Fn> {
@@ -139,6 +139,3 @@ export const PerformanceTracking = {
   startMeasuring,
   withPerformanceTracking,
 };
-
-export { default as PerformanceMetric } from './types/PerformanceMetric';
-export { default as PerformanceTag } from './types/PerformanceTag';

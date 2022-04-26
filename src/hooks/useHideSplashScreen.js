@@ -1,11 +1,9 @@
 import { useCallback } from 'react';
 import { InteractionManager, NativeModules, StatusBar } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
-import {
-  PerformanceMetric,
-  PerformanceTracking,
-} from '../performance-tracking';
+import { PerformanceTracking } from '../performance-tracking';
 import { StartTime } from '../performance-tracking/start-time';
+import { PerformanceMetrics } from '../performance-tracking/types/PerformanceMetrics';
 
 const { RainbowSplashScreen, RNBootSplash } = NativeModules;
 
@@ -31,9 +29,9 @@ export default function useHideSplashScreen() {
         StatusBar.setHidden(false, 'fade');
       });
 
-    PerformanceTracking.finishMeasuring(PerformanceMetric.timeToInteractive);
+    PerformanceTracking.finishMeasuring(PerformanceMetrics.timeToInteractive);
     PerformanceTracking.logDirectly(
-      PerformanceMetric.completeStartupTime,
+      PerformanceMetrics.completeStartupTime,
       performance.now() - StartTime.START_TIME
     );
   }, []);
