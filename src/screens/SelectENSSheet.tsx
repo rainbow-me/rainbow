@@ -48,9 +48,11 @@ export default function SelectENSSheet() {
   );
 
   const nonPrimaryDomains = useMemo(() => {
-    const ownedDomains = domains?.filter(
-      ({ owner }) => owner.id?.toLowerCase() === accountAddress.toLowerCase()
-    );
+    const ownedDomains = domains
+      ?.filter(
+        ({ owner }) => owner?.id?.toLowerCase() === accountAddress.toLowerCase()
+      )
+      ?.sort((a, b) => (a.name > b.name ? 1 : -1));
     return ownedDomains?.filter(({ name }) => accountENS !== name) || [];
   }, [accountAddress, accountENS, domains]);
 
