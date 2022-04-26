@@ -1,24 +1,22 @@
 import { EventEmitter } from 'events';
-import path from 'path';
 import { captureException } from '@sentry/react-native';
 import { keyBy } from 'lodash';
 // @ts-ignore
 import { RAINBOW_TOKEN_LIST_URL } from 'react-native-dotenv';
-import RNFS from 'react-native-fs';
 import { MMKV } from 'react-native-mmkv';
 import { rainbowFetch } from '../../rainbow-fetch';
 import { ETH_ADDRESS } from '../index';
 import RAINBOW_TOKEN_LIST_DATA from './rainbow-token-list.json';
 import { RainbowToken } from '@rainbow-me/entities';
+import { STORAGE_IDS } from '@rainbow-me/model/mmkv';
 import logger from 'logger';
 
-export const storage = new MMKV({
-  id: 'tokenList',
-  path: `${RNFS.CachesDirectoryPath}/storage`,
+export const rainbowListStorage = new MMKV({
+  id: STORAGE_IDS.RAINBOW_TOKEN_LIST,
 });
 
-const RB_TOKEN_LIST_CACHE = 'rb-token-list.json';
-const RB_TOKEN_LIST_ETAG = 'rb-token-list-etag.json';
+export const RB_TOKEN_LIST_CACHE = 'rb-token-list.json';
+export const RB_TOKEN_LIST_ETAG = 'rb-token-list-etag.json';
 
 type TokenListData = typeof RAINBOW_TOKEN_LIST_DATA;
 type ETagData = { etag: string | null };
@@ -71,35 +69,27 @@ function generateDerivedData(tokenListData: TokenListData) {
   return derivedData;
 }
 
-async function readMMKVJsonData<T>(filename: string): Promise<T | null> {
+function readMMKVJsonData<T>(filename: string): T | null {
   try {
-    let data = await Promise.resolve(storage.getString(filename));
+    const data = rainbowListStorage.getString(filename);
 
     if (!data) {
-      // backward compatibility
-      data = await RNFS.readFile(
-        path.join(RNFS.CachesDirectoryPath, filename),
-        'utf8'
-      );
+      return null;
     }
 
-    const json = JSON.parse(data);
-
-    return json;
+    return JSON.parse(data!);
   } catch (error) {
-    // @ts-ignore: Skip missing file errors.
-    if (error?.code !== 'ENOENT') {
-      logger.sentry('Error parsing token-list-cache data');
-      logger.error(error);
-      captureException(error);
-    }
+    logger.sentry('Error parsing token-list-cache data');
+    logger.error(error);
+    captureException(error);
+
     return null;
   }
 }
 
-async function writeMMKVJsonData<T>(filename: string, data: T) {
+function writeMMKVJsonData<T>(filename: string, data: T) {
   try {
-    await Promise.resolve(storage.set(filename, JSON.stringify(data)));
+    rainbowListStorage.set(filename, JSON.stringify(data));
   } catch (error) {
     logger.sentry(`Token List: Error saving ${filename}`);
     logger.error(error);
@@ -131,23 +121,19 @@ async function getTokenListUpdate(
     );
     const currentDate = new Date(currentTokenListData?.timestamp);
     const freshDate = new Date((data as TokenListData)?.timestamp);
+
     if (freshDate > currentDate) {
-      const work = [
-        writeMMKVJsonData<TokenListData>(
-          RB_TOKEN_LIST_CACHE,
-          data as TokenListData
-        ),
-      ];
+      writeMMKVJsonData<TokenListData>(
+        RB_TOKEN_LIST_CACHE,
+        data as TokenListData
+      );
 
       if ((headers as Headers).get('etag')) {
-        work.push(
-          writeMMKVJsonData<ETagData>(RB_TOKEN_LIST_ETAG, {
-            etag: (headers as Headers).get('etag'),
-          })
-        );
+        writeMMKVJsonData<ETagData>(RB_TOKEN_LIST_ETAG, {
+          etag: (headers as Headers).get('etag'),
+        });
       }
 
-      await Promise.all(work);
       return { newTokenList: data as TokenListData, status };
     } else {
       return { newTokenList: undefined, status };
@@ -176,23 +162,18 @@ class RainbowTokenList extends EventEmitter {
   constructor() {
     super();
 
-    readMMKVJsonData<TokenListData>(RB_TOKEN_LIST_CACHE)
-      .then(cachedData => {
-        if (cachedData?.timestamp) {
-          const bundledDate = new Date(this._tokenListData?.timestamp);
-          const cachedDate = new Date(cachedData?.timestamp);
+    const cachedData = readMMKVJsonData<TokenListData>(RB_TOKEN_LIST_CACHE);
 
-          if (cachedDate > bundledDate) this._tokenListData = cachedData;
-        }
-      })
-      .catch(error => {
-        logger.sentry('Error initializing token-list cache data');
-        logger.error(error);
-        captureException(error);
-      })
-      .finally(() => {
-        logger.debug('Token list initialized');
-      });
+    if (cachedData?.timestamp) {
+      const bundledDate = new Date(this._tokenListData?.timestamp);
+      const cachedDate = new Date(cachedData?.timestamp);
+
+      if (cachedDate > bundledDate) {
+        this._tokenListData = cachedData;
+      }
+    }
+
+    logger.debug('Token list initialized');
   }
 
   // Wrapping #tokenListDataStorage so we can add events around updates.
