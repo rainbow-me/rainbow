@@ -1,18 +1,22 @@
 import lang from 'i18n-js';
-import React, { useCallback, useRef, useState } from 'react';
-import { Keyboard } from 'react-native';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { Keyboard, Text as NativeText } from 'react-native';
 import { ImgixImage } from '@rainbow-me/images';
 import { useTheme } from '../../context/ThemeContext';
 import { useNavigation } from '../../navigation/Navigation';
 import ShadowStack from 'react-native-shadow-stack';
 import { abbreviations, magicMemo, profileUtils } from '../../utils';
 import { ImagePreviewOverlayTarget } from '../images/ImagePreviewOverlay';
+import {
+  addressHashedColorIndex,
+  addressHashedEmoji,
+} from '@rainbow-me/utils/profileUtils';
 import { borders } from '@rainbow-me/styles';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { Button } from '../buttons';
 import { showDeleteContactActionSheet } from '../contacts';
-import { Box } from '@rainbow-me/design-system';
+import { AccentColorProvider, Box } from '@rainbow-me/design-system';
 import CopyTooltip from '../copy-tooltip';
 import { Centered } from '../layout';
 import { Text, TruncatedAddress, TruncatedENS } from '../text';
@@ -145,17 +149,21 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
 
   const avatarSize = 65;
 
+  const emoji2 = useMemo(() => (address ? addressHashedEmoji(address) : ''), [
+    address,
+  ]);
+
+  const colorIndex = useMemo(
+    () => (address ? addressHashedColorIndex(address) : 0),
+    [address]
+  );
+
+  const emojiBackgroundColor =
+    colors.avatarBackgrounds[colorIndex || 0] || colors.appleBlue;
+
   return (
     <ProfileModal onPressBackdrop={handleAddContact}>
       <Centered direction="column" style={centerdStyles}>
-        {/* <ProfileAvatarButton
-          changeAvatar={handleChangeAvatar}
-          color={color}
-          marginBottom={0}
-          radiusAndroid={32}
-          testID="contact-profile-avatar-button"
-          value={emoji || value}
-        /> */}
         <ShadowStack
           {...borders.buildCircleAsObject(avatarSize)}
           shadows={[
@@ -163,13 +171,28 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
             [0, 2, 5, colors.shadow, 0.08],
           ]}
         >
-          <Box
-            as={ImgixImage}
-            height={{ custom: avatarSize }}
-            width={{ custom: avatarSize }}
-            source={{ uri: contact.avatarUrl }}
-            borderRadius={avatarSize / 2}
-          />
+          {contact.avatarUrl ? (
+            <Box
+              as={ImgixImage}
+              height={{ custom: avatarSize }}
+              width={{ custom: avatarSize }}
+              source={{ uri: contact.avatarUrl }}
+              borderRadius={avatarSize / 2}
+            />
+          ) : (
+            <AccentColorProvider color={emojiBackgroundColor}>
+              <Box
+                alignItems="center"
+                background="accent"
+                borderRadius={avatarSize / 2}
+                height={{ custom: avatarSize }}
+                justifyContent="center"
+                width={{ custom: avatarSize }}
+              >
+                <NativeText style={{ fontSize: 38 }}>{emoji2 || ''}</NativeText>
+              </Box>
+            </AccentColorProvider>
+          )}
         </ShadowStack>
 
         <Spacer />
