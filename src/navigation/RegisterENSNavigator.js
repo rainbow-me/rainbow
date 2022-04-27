@@ -111,10 +111,6 @@ export default function RegisterENSNavigator() {
   }, [previousRouteName, screenOptions.scrollEnabled]);
 
   useEffect(() => {
-    StatusBar.setBarStyle('light-content');
-  }, []);
-
-  useEffect(() => {
     if (!screenOptions.scrollEnabled) {
       sheetRef.current.scrollTo({ animated: false, x: 0, y: 0 });
     }
@@ -150,6 +146,7 @@ export default function RegisterENSNavigator() {
         removeTopPadding
         scrollEnabled={scrollEnabled}
       >
+        <StatusBar barStyle="light-content" />
         <ConditionalWrap
           condition={!scrollEnabled}
           wrap={children => <Box style={wrapperStyle}>{children}</Box>}
