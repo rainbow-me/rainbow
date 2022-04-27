@@ -71,9 +71,7 @@ const ExternalENSProfileScrollViewWithRef = React.forwardRef<
         ? {
             onScrollWorklet: scrollHandler,
           }
-        : {
-            onScroll: scrollHandler,
-          })}
+        : {})}
     >
       <ImagePreviewOverlay
         enableZoom={ios && enableZoomableImages}
