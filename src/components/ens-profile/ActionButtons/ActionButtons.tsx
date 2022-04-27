@@ -15,7 +15,7 @@ export default function ActionButtons({
   address?: string;
   ensName?: string;
   avatarUrl?: string | null;
-  emoji?: string;
+  emoji?: string | null;
 }) {
   const { wallets } = useWallets();
 
@@ -31,9 +31,9 @@ export default function ActionButtons({
     <Inline alignHorizontal="right" space="8px">
       <MoreButton
         address={primaryAddress}
-        ensName={ensName}
         avatarUrl={avatarUrl}
         emoji={emoji}
+        ensName={ensName}
       />
       {isOwner ? (
         <EditButton ensName={ensName} />

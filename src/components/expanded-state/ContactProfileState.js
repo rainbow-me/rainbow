@@ -1,23 +1,21 @@
 import lang from 'i18n-js';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { Keyboard, Text as NativeText } from 'react-native';
-import { ImgixImage } from '@rainbow-me/images';
+import { Keyboard } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
 import { useNavigation } from '../../navigation/Navigation';
-import ShadowStack from 'react-native-shadow-stack';
 import { abbreviations, magicMemo, profileUtils } from '../../utils';
-import { ImagePreviewOverlayTarget } from '../images/ImagePreviewOverlay';
-import { addressHashedColorIndex } from '@rainbow-me/utils/profileUtils';
-import { borders } from '@rainbow-me/styles';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { Button } from '../buttons';
 import { showDeleteContactActionSheet } from '../contacts';
-import { AccentColorProvider, Box } from '@rainbow-me/design-system';
 import CopyTooltip from '../copy-tooltip';
 import { Centered } from '../layout';
 import { Text, TruncatedAddress, TruncatedENS } from '../text';
 import { ProfileAvatarButton, ProfileModal, ProfileNameInput } from './profile';
+import useExperimentalFlag, {
+  PROFILES,
+} from '@rainbow-me/config/experimentalHooks';
+import { AccentColorProvider, Box } from '@rainbow-me/design-system';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
@@ -28,8 +26,11 @@ import {
   useContacts,
   usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
+import { ImgixImage } from '@rainbow-me/images';
 import styled from '@rainbow-me/styled-components';
-import { margin, padding } from '@rainbow-me/styles';
+import { borders, margin, padding } from '@rainbow-me/styles';
+import { addressHashedColorIndex } from '@rainbow-me/utils/profileUtils';
+import ShadowStack from 'react-native-shadow-stack';
 
 const AddressAbbreviation = styled(TruncatedAddress).attrs(
   ({ theme: { colors } }) => ({
@@ -91,6 +92,7 @@ const centerdStyles = padding.object(24, 25);
 const bottomStyles = padding.object(8, 9);
 
 const ContactProfileState = ({ address, color: colorProp, contact }) => {
+  const profilesEnabled = useExperimentalFlag(PROFILES);
   const { goBack } = useNavigation();
   const { onAddOrUpdateContacts, onRemoveContact } = useContacts();
   const [color, setColor] = useState(colorProp || 0);
@@ -167,37 +169,47 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
   return (
     <ProfileModal onPressBackdrop={handleAddContact}>
       <Centered direction="column" style={centerdStyles}>
-        <ShadowStack
-          {...borders.buildCircleAsObject(avatarSize)}
-          shadows={[
-            [0, 6, 10, colors.shadow, 0.12],
-            [0, 2, 5, colors.shadow, 0.08],
-          ]}
-        >
-          {contact.avatarUrl ? (
-            <Box
-              as={ImgixImage}
-              height={{ custom: avatarSize }}
-              width={{ custom: avatarSize }}
-              source={{ uri: contact.avatarUrl }}
-              borderRadius={avatarSize / 2}
-            />
-          ) : (
-            <AccentColorProvider color={accentColor}>
+        {profilesEnabled ? (
+          <ShadowStack
+            {...borders.buildCircleAsObject(avatarSize)}
+            shadows={[
+              [0, 6, 10, colors.shadow, 0.12],
+              [0, 2, 5, colors.shadow, 0.08],
+            ]}
+          >
+            {contact.avatarUrl ? (
               <Box
-                alignItems="center"
-                justifyContent="center"
-                background="accent"
+                as={ImgixImage}
                 borderRadius={avatarSize / 2}
                 height={{ custom: avatarSize }}
+                source={{ uri: contact.avatarUrl }}
                 width={{ custom: avatarSize }}
-              >
-                <Text size="biggest">{contact.emoji || ''}</Text>
-              </Box>
-            </AccentColorProvider>
-          )}
-        </ShadowStack>
-
+              />
+            ) : (
+              <AccentColorProvider color={accentColor}>
+                <Box
+                  alignItems="center"
+                  background="accent"
+                  borderRadius={avatarSize / 2}
+                  height={{ custom: avatarSize }}
+                  justifyContent="center"
+                  width={{ custom: avatarSize }}
+                >
+                  <Text size="biggest">{contact.emoji || ''}</Text>
+                </Box>
+              </AccentColorProvider>
+            )}
+          </ShadowStack>
+        ) : (
+          <ProfileAvatarButton
+            changeAvatar={handleChangeAvatar}
+            color={color}
+            marginBottom={0}
+            radiusAndroid={32}
+            testID="contact-profile-avatar-button"
+            value={emoji || value}
+          />
+        )}
         <Spacer />
         <ProfileNameInput
           onChange={setValue}

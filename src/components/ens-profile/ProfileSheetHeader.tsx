@@ -70,9 +70,9 @@ export default function ProfileSheetHeader({
                 <Inset top="30px">
                   <ActionButtons
                     address={profileAddress}
-                    ensName={ensName}
                     avatarUrl={avatarUrl}
                     emoji={emoji}
+                    ensName={ensName}
                   />
                 </Inset>
               )}

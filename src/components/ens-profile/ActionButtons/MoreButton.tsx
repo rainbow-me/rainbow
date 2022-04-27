@@ -26,7 +26,7 @@ export default function MoreButton({
   address?: string;
   ensName?: string;
   avatarUrl?: string | null;
-  emoji: string;
+  emoji?: string | null;
 }) {
   const { navigate } = useNavigation();
   const { setClipboard } = useClipboard();
@@ -86,17 +86,17 @@ export default function MoreButton({
           color: currentContact?.color,
           contact: currentContact || {
             address: address,
-            color: currentContact?.color,
-            nickname: ensName,
             avatarUrl,
+            color: currentContact?.color,
             emoji,
+            nickname: ensName,
             temporary: true,
           },
           type: 'contact_profile',
         });
       }
     },
-    [address, avatarUrl, currentContact, navigate, setClipboard]
+    [address, avatarUrl, currentContact, emoji, ensName, navigate, setClipboard]
   );
 
   const handleAndroidPress = useCallback(() => {
