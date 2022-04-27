@@ -1,7 +1,7 @@
 import analytics from '@segment/analytics-react-native';
-import delay from 'delay';
 import lang from 'i18n-js';
 import React, { useCallback, useRef, useState } from 'react';
+import { InteractionManager } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
 import { getRandomColor } from '../../styles/colors';
 import Divider from '../Divider';
@@ -117,15 +117,18 @@ export default function WalletProfileState({
     }
   }, [actionType, goBack, navigate]);
 
-  const handleSubmit = useCallback(async () => {
+  const handleSubmit = useCallback(() => {
     analytics.track('Tapped "Submit" on Wallet Profile modal');
-    goBack();
-    android && (await delay(200)); //goBack conflicting with checking biometry
-    onCloseModal({
-      color:
-        typeof color === 'string' ? profileUtils.colorHexToIndex(color) : color,
-      name: nameEmoji ? `${nameEmoji} ${value}` : value,
+    InteractionManager.runAfterInteractions(() => {
+      onCloseModal({
+        color:
+          typeof color === 'string'
+            ? profileUtils.colorHexToIndex(color)
+            : color,
+        name: nameEmoji ? `${nameEmoji} ${value}` : value,
+      });
     });
+    goBack();
     if (actionType === 'Create' && isNewProfile) {
       navigate(Routes.CHANGE_WALLET_SHEET);
     }
