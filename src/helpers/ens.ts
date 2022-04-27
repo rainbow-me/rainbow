@@ -117,47 +117,6 @@ export const textRecordFields = {
     label: lang.t('profiles.create.bio'),
     placeholder: lang.t('profiles.create.bio_placeholder'),
   },
-  [ENS_RECORDS.twitter]: {
-    id: 'twitter',
-    inputProps: {
-      maxLength: 16,
-    },
-    key: ENS_RECORDS.twitter,
-    label: lang.t('profiles.create.twitter'),
-    placeholder: lang.t('profiles.create.username_placeholder'),
-    startsWith: '@',
-    validations: {
-      onChange: {
-        match: /^\w*$/,
-      },
-    },
-  },
-  [ENS_RECORDS.pronouns]: {
-    id: 'pronouns',
-    inputProps: {
-      maxLength: 42,
-    },
-    key: ENS_RECORDS.pronouns,
-    label: lang.t('profiles.create.pronouns'),
-    placeholder: lang.t('profiles.create.pronouns_placeholder'),
-  },
-  [ENS_RECORDS.email]: {
-    id: 'email',
-    inputProps: {
-      maxLength: 50,
-    },
-    key: ENS_RECORDS.email,
-    label: lang.t('profiles.create.email'),
-    placeholder: lang.t('profiles.create.email_placeholder'),
-    validations: {
-      onSubmit: {
-        match: {
-          message: lang.t('profiles.create.email_submit_message'),
-          value: /^\S+@\S+\.\S+$/,
-        },
-      },
-    },
-  },
   [ENS_RECORDS.url]: {
     id: 'website',
     inputProps: {
@@ -176,14 +135,37 @@ export const textRecordFields = {
       },
     },
   },
-  [ENS_RECORDS.github]: {
-    id: 'github',
+  [ENS_RECORDS.twitter]: {
+    id: 'twitter',
     inputProps: {
-      maxLength: 20,
+      maxLength: 16,
     },
-    key: ENS_RECORDS.github,
-    label: lang.t('profiles.create.github'),
+    key: ENS_RECORDS.twitter,
+    label: lang.t('profiles.create.twitter'),
     placeholder: lang.t('profiles.create.username_placeholder'),
+    startsWith: '@',
+    validations: {
+      onChange: {
+        match: /^\w*$/,
+      },
+    },
+  },
+  [ENS_RECORDS.email]: {
+    id: 'email',
+    inputProps: {
+      maxLength: 50,
+    },
+    key: ENS_RECORDS.email,
+    label: lang.t('profiles.create.email'),
+    placeholder: lang.t('profiles.create.email_placeholder'),
+    validations: {
+      onSubmit: {
+        match: {
+          message: lang.t('profiles.create.email_submit_message'),
+          value: /^\S+@\S+\.\S+$/,
+        },
+      },
+    },
   },
   [ENS_RECORDS.instagram]: {
     id: 'instagram',
@@ -192,21 +174,6 @@ export const textRecordFields = {
     },
     key: ENS_RECORDS.instagram,
     label: lang.t('profiles.create.instagram'),
-    placeholder: lang.t('profiles.create.username_placeholder'),
-    startsWith: '@',
-    validations: {
-      onChange: {
-        match: /^([\w.])*$/,
-      },
-    },
-  },
-  [ENS_RECORDS.snapchat]: {
-    id: 'snapchat',
-    inputProps: {
-      maxLength: 16,
-    },
-    key: ENS_RECORDS.snapchat,
-    label: lang.t('profiles.create.snapchat'),
     placeholder: lang.t('profiles.create.username_placeholder'),
     startsWith: '@',
     validations: {
@@ -225,44 +192,14 @@ export const textRecordFields = {
     placeholder: lang.t('profiles.create.username_placeholder'),
     startsWith: '@',
   },
-  [ENS_RECORDS.reddit]: {
-    id: 'reddit',
+  [ENS_RECORDS.github]: {
+    id: 'github',
     inputProps: {
-      maxLength: 30,
+      maxLength: 20,
     },
-    key: ENS_RECORDS.reddit,
-    label: lang.t('profiles.create.reddit'),
+    key: ENS_RECORDS.github,
+    label: lang.t('profiles.create.github'),
     placeholder: lang.t('profiles.create.username_placeholder'),
-    startsWith: '@',
-  },
-  [ENS_RECORDS.telegram]: {
-    id: 'telegram',
-    inputProps: {
-      maxLength: 30,
-    },
-    key: ENS_RECORDS.telegram,
-    label: lang.t('profiles.create.telegram'),
-    placeholder: lang.t('profiles.create.username_placeholder'),
-    startsWith: '@',
-  },
-
-  [ENS_RECORDS.notice]: {
-    id: 'notice',
-    inputProps: {
-      maxLength: 100,
-    },
-    key: ENS_RECORDS.notice,
-    label: lang.t('profiles.create.notice'),
-    placeholder: lang.t('profiles.create.notice_placeholder'),
-  },
-  [ENS_RECORDS.keywords]: {
-    id: 'keywords',
-    inputProps: {
-      maxLength: 100,
-    },
-    key: ENS_RECORDS.keywords,
-    label: lang.t('profiles.create.keywords'),
-    placeholder: lang.t('profiles.create.keywords_placeholder'),
   },
   [ENS_RECORDS.BTC]: {
     id: 'btc',
@@ -285,6 +222,68 @@ export const textRecordFields = {
         },
       },
     },
+  },
+  [ENS_RECORDS.snapchat]: {
+    id: 'snapchat',
+    inputProps: {
+      maxLength: 16,
+    },
+    key: ENS_RECORDS.snapchat,
+    label: lang.t('profiles.create.snapchat'),
+    placeholder: lang.t('profiles.create.username_placeholder'),
+    startsWith: '@',
+    validations: {
+      onChange: {
+        match: /^([\w.])*$/,
+      },
+    },
+  },
+  [ENS_RECORDS.telegram]: {
+    id: 'telegram',
+    inputProps: {
+      maxLength: 30,
+    },
+    key: ENS_RECORDS.telegram,
+    label: lang.t('profiles.create.telegram'),
+    placeholder: lang.t('profiles.create.username_placeholder'),
+    startsWith: '@',
+  },
+  [ENS_RECORDS.reddit]: {
+    id: 'reddit',
+    inputProps: {
+      maxLength: 30,
+    },
+    key: ENS_RECORDS.reddit,
+    label: lang.t('profiles.create.reddit'),
+    placeholder: lang.t('profiles.create.username_placeholder'),
+    startsWith: '@',
+  },
+  [ENS_RECORDS.pronouns]: {
+    id: 'pronouns',
+    inputProps: {
+      maxLength: 42,
+    },
+    key: ENS_RECORDS.pronouns,
+    label: lang.t('profiles.create.pronouns'),
+    placeholder: lang.t('profiles.create.pronouns_placeholder'),
+  },
+  [ENS_RECORDS.notice]: {
+    id: 'notice',
+    inputProps: {
+      maxLength: 100,
+    },
+    key: ENS_RECORDS.notice,
+    label: lang.t('profiles.create.notice'),
+    placeholder: lang.t('profiles.create.notice_placeholder'),
+  },
+  [ENS_RECORDS.keywords]: {
+    id: 'keywords',
+    inputProps: {
+      maxLength: 100,
+    },
+    key: ENS_RECORDS.keywords,
+    label: lang.t('profiles.create.keywords'),
+    placeholder: lang.t('profiles.create.keywords_placeholder'),
   },
   [ENS_RECORDS.LTC]: {
     id: 'ltc',

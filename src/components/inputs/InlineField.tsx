@@ -26,6 +26,7 @@ export type InlineFieldProps = {
   onChangeText: (text: string) => void;
   onFocus?: TextInputProps['onFocus'];
   onEndEditing?: TextInputProps['onEndEditing'];
+  selectionColor?: string;
   startsWith?: string;
   validations?: {
     onChange?: {
@@ -47,6 +48,7 @@ export default function InlineField({
   inputProps,
   validations,
   onEndEditing,
+  selectionColor,
   startsWith,
   value,
   testID,
@@ -171,6 +173,8 @@ export default function InlineField({
             onFocus={onFocus}
             placeholder={placeholder}
             scrollEnabled={false}
+            selectionColor={selectionColor}
+            spellCheck={false}
             style={style}
             value={value}
             {...inputProps}

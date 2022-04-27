@@ -140,7 +140,7 @@ export default function RegistrationCover({
               width="full"
             />
           ) : (
-            <Text color="accent" size="18px" weight="heavy">
+            <Text align="center" color="accent" size="18px" weight="heavy">
               􀣵 {lang.t('profiles.create.add_cover')}
             </Text>
           )}

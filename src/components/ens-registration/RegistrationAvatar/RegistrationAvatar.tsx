@@ -145,11 +145,11 @@ export default function RegistrationAvatar({
             <AccentColorProvider color={accentColor + '10'}>
               <Box
                 alignItems="center"
-                background="accent"
+                background={avatarUrl ? 'body' : 'accent'}
                 borderRadius={size / 2}
                 height={{ custom: size }}
                 justifyContent="center"
-                shadow="15px light"
+                shadow={avatarUrl ? '15px light' : undefined}
                 width={{ custom: size }}
               >
                 {avatarUrl ? (
