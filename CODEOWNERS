@@ -26,6 +26,7 @@ src/assets @skylarbarrera @christianbaroni
 
 # COMPONENTS
 src/components @osdnk @terrysahaidak
+src/components/unique-token @jkadamczyk
 
 # APP CONFIG
 src/config @osdnk @brunobar79 @skylarbarrera
@@ -41,6 +42,7 @@ src/design-system @markdalgleish @jxom
 
 # Typescript
 src/entities @jinchung @markdalgleish @marco
+src/entities/uniqueAssets.ts @jkadamczyk
 
 # Handlers
 src/handlers @jinchung @brunobar79
@@ -68,7 +70,9 @@ src/handlers/fedora.ts @osdnk
 
 # Helpers
 src/helpers @brunobar79 @jinchung
-
+src/helpers/uniqueAssetTraitDisplayTypeCompareFunction.ts @jkadamczyk
+src/helpers/transformUniqueAssetTraitsForPresentation.ts @jkadamczyk
+src/helpers/isHttpUrl.ts @jkadamczyk
 
 # Hooks
 src/hooks @jinchung @osdnk
