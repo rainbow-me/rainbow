@@ -35,7 +35,7 @@ export default function useHideSplashScreen() {
       PerformanceTracking.finishMeasuring(PerformanceMetrics.timeToInteractive);
       PerformanceTracking.logDirectly(
         PerformanceMetrics.completeStartupTime,
-        performance.now() - StartTime.START_TIME
+        Date.now() - StartTime.START_TIME
       );
       alreadyLoggedPerformance.current = true;
     }
