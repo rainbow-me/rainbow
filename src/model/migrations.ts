@@ -8,7 +8,7 @@ import {
   rainbowListStorage,
   RB_TOKEN_LIST_CACHE,
   RB_TOKEN_LIST_ETAG,
-} from 'src/references/rainbow-token-list';
+} from '../references/rainbow-token-list';
 import { removeLocal } from '../handlers/localstorage/common';
 import { IMAGE_METADATA } from '../handlers/localstorage/globalSettings';
 import {
