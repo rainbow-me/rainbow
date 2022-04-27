@@ -344,18 +344,18 @@ export const ZoomableWrapper = ({
       isZoomedValue.value &&
       targetScale > breakingScaleX
     ) {
-      const projectedYCoordinate = targetTranslateY + event.velocityY / 8;
+      const projectedYCoordinate = targetTranslateY + (event.velocityY / 8 / (fullSizeHeight / (containerHeightValue.value ?? 1)));
       const edgeBounceConfig = {
         damping: 60,
         mass: 2,
         stiffness: 600,
-        velocity: event.velocityY,
+        velocity: event.velocityY / (fullSizeHeight / (containerHeightValue.value ?? 1)),
       };
       const flingConfig = {
         damping: 120,
         mass: 2,
         stiffness: 600,
-        velocity: event.velocityY,
+        velocity: event.velocityY / (fullSizeHeight / (containerHeightValue.value ?? 1)),
       };
       if (projectedYCoordinate > maxDisplacementY) {
         translateY.value = withSpring(maxDisplacementY, edgeBounceConfig);
@@ -371,18 +371,18 @@ export const ZoomableWrapper = ({
       isZoomedValue.value &&
       targetScale > breakingScaleX
     ) {
-      const projectedXCoordinate = targetTranslateX + event.velocityX / 8;
+      const projectedXCoordinate = targetTranslateX + (event.velocityX / 8 / (fullSizeHeight / (containerHeightValue.value ?? 1)));
       const edgeBounceConfig = {
         damping: 60,
         mass: 2,
         stiffness: 600,
-        velocity: event.velocityX,
+        velocity: event.velocityX / (fullSizeHeight / (containerHeightValue.value ?? 1)),
       };
       const flingConfig = {
         damping: 120,
         mass: 2,
         stiffness: 600,
-        velocity: event.velocityX,
+        velocity: event.velocityX / (fullSizeHeight / (containerHeightValue.value ?? 1)),
       };
       if (projectedXCoordinate > maxDisplacementX) {
         translateX.value = withSpring(maxDisplacementX, edgeBounceConfig);
