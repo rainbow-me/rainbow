@@ -625,11 +625,6 @@ const getENSExecutionDetails = async ({
 
 const getENSRecordKeys = () => Object.keys(ENS_RECORDS);
 const getENSRecordValues = () => Object.values(ENS_RECORDS);
-export const getENSRecordValuesForProfile = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { avatar, cover, description, ...rest } = ENS_RECORDS;
-  return Object.values(rest);
-};
 
 const formatEstimatedNetworkFee = (
   gasLimit: string,
