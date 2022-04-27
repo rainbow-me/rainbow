@@ -1,5 +1,8 @@
-import lang from 'i18n-js';
-import React from 'react';
+import ConditionalWrap from 'conditional-wrap';
+import lang, { l } from 'i18n-js';
+import debounce from 'lodash/debounce';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { ContextMenuButton, MenuConfig } from 'react-native-ios-context-menu';
 import ActionButton from './ActionButton';
 import { useWatchWallet } from '@rainbow-me/hooks';
 
@@ -16,16 +19,73 @@ export default function WatchButton({
     address,
     avatarUrl,
     ensName,
+    showImportModal: false,
   });
 
+  // An "optimistic" state will provide us with optimistic feedback on the UI,
+  // and not wait for the import to finish.
+  const [optimisticIsWatching, setOptimisticIsWatching] = useState(isWatching);
+
+  // We need a ref here since we rely on React state for a debounce fn as
+  // it will create a new instance of the callback function.
+  const optimisticIsWatchingRef = useRef<boolean>();
+  optimisticIsWatchingRef.current = optimisticIsWatching;
+
+  const handleWatch = useCallback(() => {
+    if (isWatching !== optimisticIsWatchingRef.current) {
+      watchWallet();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  // We want to debounce the watch/unwatch functionality to avoid spamming the
+  // JS thread.
+  const debouncedWatchWallet = debounce(handleWatch, 500);
+
+  const handlePressWatch = useCallback(() => {
+    debouncedWatchWallet();
+    setOptimisticIsWatching(isWatching => !isWatching);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const menuConfig = useMemo(() => {
+    return {
+      menuItems: [
+        {
+          actionKey: 'unwatch',
+          actionTitle: lang.t('profiles.actions.unwatch_ens', { ensName }),
+          menuAttributes: ['destructive'],
+        },
+      ],
+      menuTitle: lang.t('profiles.actions.unwatch_ens_title', { ensName }),
+    } as MenuConfig;
+  }, [ensName]);
+
   return (
-    <ActionButton
-      color="action"
-      icon={!isWatching ? '􀨭' : ''}
-      onPress={watchWallet}
-      variant={!isWatching ? 'solid' : 'outlined'}
+    <ConditionalWrap
+      condition={optimisticIsWatching}
+      wrap={children => (
+        <ContextMenuButton
+          enableContextMenu
+          menuConfig={menuConfig}
+          {...(android ? { onPress: handlePressWatch } : {})}
+          isMenuPrimaryAction
+          onPressMenuItem={handlePressWatch}
+          useActionSheetFallback={false}
+        >
+          {children}
+        </ContextMenuButton>
+      )}
     >
-      {lang.t(`profiles.actions.${isWatching ? 'watching' : 'watch'}`)}
-    </ActionButton>
+      <ActionButton
+        color="action"
+        icon={!optimisticIsWatching ? '􀨭' : ''}
+        onPress={!optimisticIsWatching ? handlePressWatch : () => null}
+        variant={!optimisticIsWatching ? 'solid' : 'outlined'}
+      >
+        {lang.t(
+          `profiles.actions.${optimisticIsWatching ? 'watching' : 'watch'}`
+        )}
+      </ActionButton>
+    </ConditionalWrap>
   );
 }

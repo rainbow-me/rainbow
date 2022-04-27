@@ -4,6 +4,7 @@ import { keys } from 'lodash';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, InteractionManager, Keyboard } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
+import { useDispatch } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
 import useInitializeWallet from './useInitializeWallet';
 import useIsWalletEthZero from './useIsWalletEthZero';
@@ -25,12 +26,14 @@ import {
 } from '@rainbow-me/helpers/validators';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import walletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
+import { walletInit } from '@rainbow-me/model/wallet';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
+import { walletsLoadState } from '@rainbow-me/redux/wallets';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils, sanitizeSeedPhrase } from '@rainbow-me/utils';
 import logger from 'logger';
 
-export default function useImportingWallet() {
+export default function useImportingWallet({ showImportModal = true } = {}) {
   const { accountAddress } = useAccountSettings();
   const { selectedWallet, setIsWalletLoading, wallets } = useWallets();
 
@@ -80,30 +83,37 @@ export default function useImportingWallet() {
     [isImporting]
   );
 
-  const showWalletProfileModal = useCallback(
+  const startImportProfile = useCallback(
     (name, forceColor, address = null, avatarUrl) => {
-      android && Keyboard.dismiss();
-      navigate(Routes.MODAL_SCREEN, {
-        actionType: 'Import',
-        additionalPadding: true,
-        address,
-        asset: [],
-        forceColor,
-        isNewProfile: true,
-        onCloseModal: ({ color, name, image }) => {
-          InteractionManager.runAfterInteractions(() => {
-            if (color !== null) setColor(color);
-            if (name) setName(name);
-            if (image) setImage(image);
-            handleSetImporting(true);
-          });
-        },
-        profile: { image: avatarUrl, name },
-        type: 'wallet_profile',
-        withoutStatusBar: true,
-      });
+      const importWallet = (color, name, image) =>
+        InteractionManager.runAfterInteractions(() => {
+          if (color !== null) setColor(color);
+          if (name) setName(name);
+          if (image) setImage(image);
+          handleSetImporting(true);
+        });
+
+      if (showImportModal) {
+        android && Keyboard.dismiss();
+        navigate(Routes.MODAL_SCREEN, {
+          actionType: 'Import',
+          additionalPadding: true,
+          address,
+          asset: [],
+          forceColor,
+          isNewProfile: true,
+          onCloseModal: ({ color, name, image }) => {
+            importWallet(color, name, image);
+          },
+          profile: { image: avatarUrl, name },
+          type: 'wallet_profile',
+          withoutStatusBar: true,
+        });
+      } else {
+        importWallet(name, forceColor, avatarUrl);
+      }
     },
-    [handleSetImporting, navigate]
+    [handleSetImporting, navigate, showImportModal]
   );
 
   const handlePressImportButton = useCallback(
@@ -132,7 +142,7 @@ export default function useImportingWallet() {
           setResolvedAddress(address);
           name = forceEmoji ? `${forceEmoji} ${input}` : input;
           avatarUrl = avatarUrl || images?.avatarUrl;
-          showWalletProfileModal(name, guardedForceColor, address, avatarUrl);
+          startImportProfile(name, guardedForceColor, address, avatarUrl);
           analytics.track('Show wallet profile modal for ENS address', {
             address,
             input,
@@ -153,7 +163,7 @@ export default function useImportingWallet() {
           }
           setResolvedAddress(address);
           name = forceEmoji ? `${forceEmoji} ${input}` : input;
-          showWalletProfileModal(name, guardedForceColor, address);
+          startImportProfile(name, guardedForceColor, address);
           analytics.track('Show wallet profile modal for Unstoppable address', {
             address,
             input,
@@ -181,7 +191,7 @@ export default function useImportingWallet() {
         } catch (e) {
           logger.log(`Error resolving ENS during wallet import`, e);
         }
-        showWalletProfileModal(name, guardedForceColor, input);
+        startImportProfile(name, guardedForceColor, input);
       } else {
         try {
           setBusy(true);
@@ -199,7 +209,7 @@ export default function useImportingWallet() {
               }
             }
             setBusy(false);
-            showWalletProfileModal(
+            startImportProfile(
               name,
               guardedForceColor,
               walletResult.address,
@@ -216,8 +226,10 @@ export default function useImportingWallet() {
         }
       }
     },
-    [isSecretValid, profilesEnabled, seedPhrase, showWalletProfileModal]
+    [isSecretValid, profilesEnabled, seedPhrase, startImportProfile]
   );
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (!wasImporting && isImporting) {
@@ -226,68 +238,82 @@ export default function useImportingWallet() {
           ? resolvedAddress
           : sanitizeSeedPhrase(seedPhrase);
 
-        const previousWalletCount = keys(wallets).length;
-        initializeWallet(
-          input,
-          color,
-          name ? name : '',
-          false,
-          false,
-          checkedWallet,
-          undefined,
-          image
-        )
-          .then(success => {
-            handleSetImporting(false);
-            if (success) {
-              goBack();
-              InteractionManager.runAfterInteractions(async () => {
-                if (previousWalletCount === 0) {
-                  replace(Routes.SWIPE_LAYOUT, {
-                    params: { initialized: true },
-                    screen: Routes.WALLET_SCREEN,
-                  });
-                } else {
-                  navigate(Routes.WALLET_SCREEN, { initialized: true });
-                }
-
-                setTimeout(() => {
-                  // If it's not read only, show the backup sheet
-                  if (
-                    !(
-                      isENSAddressFormat(input) ||
-                      isUnstoppableAddressFormat(input) ||
-                      isValidAddress(input)
-                    )
-                  ) {
-                    IS_TESTING !== 'true' &&
-                      Navigation.handleAction(Routes.BACKUP_SHEET, {
-                        single: true,
-                        step: WalletBackupStepTypes.imported,
-                      });
+        if (!showImportModal) {
+          await walletInit(
+            input,
+            color,
+            name ? name : '',
+            false,
+            checkedWallet,
+            undefined,
+            image,
+            true
+          );
+          await dispatch(walletsLoadState());
+        } else {
+          const previousWalletCount = keys(wallets).length;
+          initializeWallet(
+            input,
+            color,
+            name ? name : '',
+            false,
+            false,
+            checkedWallet,
+            undefined,
+            image
+          )
+            .then(success => {
+              handleSetImporting(false);
+              if (success) {
+                goBack();
+                InteractionManager.runAfterInteractions(async () => {
+                  if (previousWalletCount === 0) {
+                    replace(Routes.SWIPE_LAYOUT, {
+                      params: { initialized: true },
+                      screen: Routes.WALLET_SCREEN,
+                    });
+                  } else {
+                    navigate(Routes.WALLET_SCREEN, { initialized: true });
                   }
-                }, 1000);
 
-                analytics.track('Imported seed phrase', {
-                  isWalletEthZero,
+                  setTimeout(() => {
+                    // If it's not read only, show the backup sheet
+                    if (
+                      !(
+                        isENSAddressFormat(input) ||
+                        isUnstoppableAddressFormat(input) ||
+                        isValidAddress(input)
+                      )
+                    ) {
+                      IS_TESTING !== 'true' &&
+                        Navigation.handleAction(Routes.BACKUP_SHEET, {
+                          single: true,
+                          step: WalletBackupStepTypes.imported,
+                        });
+                    }
+                  }, 1000);
+
+                  analytics.track('Imported seed phrase', {
+                    isWalletEthZero,
+                  });
                 });
-              });
-            } else {
-              // Wait for error messages then refocus
+              } else {
+                // Wait for error messages then refocus
+                setTimeout(() => {
+                  inputRef.current?.focus();
+                  initializeWallet();
+                }, 100);
+              }
+            })
+            .catch(error => {
+              handleSetImporting(false);
+              logger.error('error importing seed phrase: ', error);
               setTimeout(() => {
                 inputRef.current?.focus();
                 initializeWallet();
               }, 100);
-            }
-          })
-          .catch(error => {
-            handleSetImporting(false);
-            logger.error('error importing seed phrase: ', error);
-            setTimeout(() => {
-              inputRef.current?.focus();
-              initializeWallet();
-            }, 100);
-          });
+            });
+        }
       }, 50);
     }
   }, [
@@ -310,13 +336,19 @@ export default function useImportingWallet() {
     wasImporting,
     updateWalletENSAvatars,
     image,
+    dispatch,
+    showImportModal,
   ]);
 
   useEffect(() => {
     setIsWalletLoading(
-      isImporting ? walletLoadingStates.IMPORTING_WALLET : null
+      isImporting
+        ? showImportModal
+          ? walletLoadingStates.IMPORTING_WALLET
+          : walletLoadingStates.IMPORTING_WALLET_SILENTLY
+        : null
     );
-  }, [isImporting, setIsWalletLoading]);
+  }, [isImporting, setIsWalletLoading, showImportModal]);
 
   return {
     busy,
