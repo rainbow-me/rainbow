@@ -21,10 +21,12 @@ export default function MoreButton({
   address,
   ensName,
   avatarUrl,
+  emoji,
 }: {
   address?: string;
   ensName?: string;
   avatarUrl?: string | null;
+  emoji: string;
 }) {
   const { navigate } = useNavigation();
   const { setClipboard } = useClipboard();
@@ -87,6 +89,7 @@ export default function MoreButton({
             color: currentContact?.color,
             nickname: ensName,
             avatarUrl,
+            emoji,
             temporary: true,
           },
           type: 'contact_profile',

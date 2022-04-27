@@ -7,10 +7,7 @@ import { useNavigation } from '../../navigation/Navigation';
 import ShadowStack from 'react-native-shadow-stack';
 import { abbreviations, magicMemo, profileUtils } from '../../utils';
 import { ImagePreviewOverlayTarget } from '../images/ImagePreviewOverlay';
-import {
-  addressHashedColorIndex,
-  addressHashedEmoji,
-} from '@rainbow-me/utils/profileUtils';
+import { addressHashedColorIndex } from '@rainbow-me/utils/profileUtils';
 import { borders } from '@rainbow-me/styles';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
@@ -153,10 +150,6 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
 
   const avatarSize = 65;
 
-  const emoji2 = useMemo(() => (address ? addressHashedEmoji(address) : ''), [
-    address,
-  ]);
-
   const colorIndex = useMemo(
     () => (address ? addressHashedColorIndex(address) : 0),
     [address]
@@ -199,7 +192,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
                 height={{ custom: avatarSize }}
                 width={{ custom: avatarSize }}
               >
-                <Text size="biggest">{emoji2 || ''}</Text>
+                <Text size="biggest">{contact.emoji || ''}</Text>
               </Box>
             </AccentColorProvider>
           )}

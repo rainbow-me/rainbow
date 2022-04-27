@@ -72,6 +72,7 @@ export default function ProfileSheetHeader({
                     address={profileAddress}
                     ensName={ensName}
                     avatarUrl={avatarUrl}
+                    emoji={emoji}
                   />
                 </Inset>
               )}
