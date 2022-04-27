@@ -73,6 +73,8 @@ export const ZoomableWrapper = ({
   aspectRatio,
   borderRadius,
   disableAnimations,
+  onZoomIn,
+  onZoomOut,
   yDisplacement: givenYDisplacement,
 }) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -121,8 +123,10 @@ export const ZoomableWrapper = ({
   useEffect(() => {
     if (isZoomed) {
       StatusBar.setHidden(true);
+      onZoomIn?.();
     } else {
       StatusBar.setHidden(false);
+      onZoomOut?.();
     }
   }, [isZoomed]);
 

@@ -35,7 +35,7 @@ done
 ### Execution ###
 
 # First, find all of the instances of the `lang.t` call.
-OUT=$(ggrep -oh -r -P "$FUNCTION\\(('|\").*?('|\")\\)" $DIRECTORY)
+OUT=$(ggrep -oh -r -P "$FUNCTION\\(('|\").*?('|\")(\\)|, {)" $DIRECTORY)
 
 # Filter those to be unique.
 OUT_UNIQ=$(echo "$OUT" | sort -u)
@@ -60,7 +60,13 @@ do
 
   for (let translationCall of linesParsed) {
     // Extract the key from the \`lang.t\` call.
-    let key = translationCall.substring("lang.t('".length, translationCall.length - 2);
+    let key = translationCall.substring("lang.t('".length);
+
+    if (key.endsWith(')')) {
+      key = key.substring(0, key.length - 2);
+    } else if (key.endsWith(', {')) {
+      key = key.substring(0, key.length - 4);
+    }
 
     // This represents the rest of the key that we have to check as each
     // period-separated token is validated.

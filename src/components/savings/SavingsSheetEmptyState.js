@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { calculateAPY } from '../../helpers/savings';
 import { useNavigation } from '../../navigation/Navigation';
@@ -72,19 +73,24 @@ const SavingsSheetEmptyState = ({
     <Centered direction="column" paddingTop={9}>
       <CoinIcon address={DAI_ADDRESS} size={50} symbol="DAI" />
       <Centered marginBottom={12} marginTop={15}>
-        <APYHeadingText>Get </APYHeadingText>
-        <GradientAPYHeadingText>{apy}%</GradientAPYHeadingText>
-        <APYHeadingText> on your dollars</APYHeadingText>
+        <APYHeadingText>{lang.t('savings.get_prefix')} </APYHeadingText>
+        <GradientAPYHeadingText>
+          {lang.t('savings.percentage', { percentage: apy })}
+        </GradientAPYHeadingText>
+        <APYHeadingText>
+          {' '}
+          {lang.t('savings.on_your_dollars_suffix')}
+        </APYHeadingText>
       </Centered>
       <BodyText>
-        With digital dollars like Dai, saving <Br />
-        earns you more than ever before
+        {lang.t('savings.with_digital_dollars_line_1')} <Br />
+        {lang.t('savings.with_digital_dollars_line_2')}
       </BodyText>
       <Divider color={colors.rowDividerLight} inset={[0, 42]} />
       <ColumnWithMargins margin={19} style={css} width="100%">
         <SheetActionButton
           color={colors.swapPurple}
-          label="􀁍 Deposit from Wallet"
+          label={`􀁍 ${lang.t('savings.deposit_from_wallet')}`}
           onPress={onDeposit}
           size="big"
           weight="bold"

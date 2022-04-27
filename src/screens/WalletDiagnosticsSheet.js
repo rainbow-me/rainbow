@@ -1,6 +1,7 @@
 import Clipboard from '@react-native-community/clipboard';
 import { useRoute } from '@react-navigation/core';
 import { captureException } from '@sentry/react-native';
+import lang from 'i18n-js';
 import { toLower } from 'lodash';
 import React, { Fragment, useCallback, useEffect } from 'react';
 import { Alert, StatusBar, TextInput, View } from 'react-native';
@@ -40,22 +41,20 @@ const SecretInput = ({ value, color }) => {
   const { colors } = useTheme();
   const handleCopy = useCallback(() => {
     Alert.alert(
-      'Reminder',
-      `These words are for your eyes only. Your secret phrase gives access to your entire wallet. 
-
-       Be very careful with it.`,
+      lang.t('wallet.diagnostics.secret.reminder_title'),
+      lang.t('wallet.diagnostics.secret.these_words_are_for_your_eyes_only'),
       [
         {
           onPress: () => {
             Clipboard.setString(value);
             haptics.notificationSuccess();
           },
-          text: 'Ok, I understand',
+          text: lang.t('wallet.diagnostics.secret.okay_i_understand'),
         },
         {
           onPress: null,
           style: 'cancel',
-          text: 'Cancel',
+          text: lang.t('button.cancel'),
         },
       ]
     );
@@ -79,7 +78,7 @@ const SecretInput = ({ value, color }) => {
           width="100%"
         >
           <Text align="center" color={colors.whiteLabel} weight="bold">
-            Copy Secret
+            {lang.t('wallet.diagnostics.secret.copy_secret')}
           </Text>
         </Row>
       </ButtonPressAnimation>
@@ -98,8 +97,8 @@ const ItemRow = ({ data }) => {
   const handlePressRestore = useCallback(async () => {
     if (busy) return;
     Alert.alert(
-      'Heads up!',
-      'This action will completely replace this wallet. Are you sure?',
+      lang.t('wallet.diagnostics.restore.heads_up_title'),
+      lang.t('wallet.diagnostics.restore.this_action_will_completely_replace'),
       [
         {
           onPress: async () => {
@@ -112,12 +111,12 @@ const ItemRow = ({ data }) => {
               captureException(customError);
             }
           },
-          text: 'Yes, I understand',
+          text: lang.t('wallet.diagnostics.restore.yes_i_understand'),
         },
         {
           onPress: null,
           style: 'cancel',
-          text: 'Cancel',
+          text: lang.t('button.cancel'),
         },
       ]
     );
@@ -128,7 +127,7 @@ const ItemRow = ({ data }) => {
       <ColumnWithMargins key={`key_${data.username}`}>
         <RowWithMargins>
           <Text size="lmedium">
-            <Bold>Key:</Bold> {` `}
+            <Bold>{lang.t('wallet.diagnostics.restore.key')}:</Bold> {` `}
             <Text color={colors.blueGreyDark50}>{data.username}</Text>
           </Text>
         </RowWithMargins>
@@ -140,20 +139,21 @@ const ItemRow = ({ data }) => {
     <ColumnWithMargins key={`key_${data.username}`}>
       <RowWithMargins>
         <Text size="lmedium">
-          <Bold>Type:</Bold> {` `}
+          <Bold>{lang.t('wallet.diagnostics.restore.type')}:</Bold> {` `}
           <Text color={colors.blueGreyDark50}>{data.type}</Text>
         </Text>
       </RowWithMargins>
       <RowWithMargins>
         <Text size="lmedium">
-          <Bold>Key:</Bold> {` `}
+          <Bold>{lang.t('wallet.diagnostics.restore.key')}:</Bold> {` `}
           <Text color={colors.blueGreyDark50}>{data.username}</Text>
         </Text>
       </RowWithMargins>
       {data.createdAt && (
         <RowWithMargins>
           <Text size="lmedium">
-            <Bold>Created at:</Bold> {` `}
+            <Bold>{lang.t('wallet.diagnostics.restore.created_at')}:</Bold>{' '}
+            {` `}
             <Text color={colors.blueGreyDark50}>{data.createdAt}</Text>
           </Text>
         </RowWithMargins>
@@ -161,19 +161,19 @@ const ItemRow = ({ data }) => {
       {data.label && (
         <RowWithMargins>
           <Text size="lmedium">
-            <Bold>Label:</Bold> {` `}
+            <Bold>{lang.t('wallet.diagnostics.restore.label')}:</Bold> {` `}
             <Text color={colors.blueGreyDark50}>{data.label}</Text>
           </Text>
         </RowWithMargins>
       )}
       <RowWithMargins>
         <Text size="lmedium">
-          <Bold>Address:</Bold> {` `}
+          <Bold>{lang.t('wallet.diagnostics.restore.address')}:</Bold> {` `}
           <Text color={colors.blueGreyDark50}>{data.address}</Text>
         </Text>
       </RowWithMargins>
       <Text size="lmedium">
-        <Bold>Secret:</Bold> {` `}
+        <Bold>{lang.t('wallet.diagnostics.restore.secret')}:</Bold> {` `}
       </Text>
       <RowWithMargins>
         <SecretInput color={colors.blueGreyDark} value={data.secret} />
@@ -185,7 +185,7 @@ const ItemRow = ({ data }) => {
           style={{ paddingHorizontal: 15, paddingVertical: 10 }}
         >
           <Text align="center" color={colors.whiteLabel} weight="bold">
-            Restore
+            {lang.t('wallet.diagnostics.restore.restore')}
           </Text>
         </View>
       </ButtonPressAnimation>
@@ -348,7 +348,7 @@ const WalletDiagnosticsSheet = () => {
         }}
       >
         <SheetTitle align="center" size="big" weight="heavy">
-          Wallet Diagnostics
+          {lang.t('wallet.diagnostics.wallet_diagnostics_title')}
         </SheetTitle>
 
         {!keys && (
@@ -360,13 +360,14 @@ const WalletDiagnosticsSheet = () => {
         {android && keys && pinRequired && !userPin && (
           <ColumnWithMargins>
             <Text align="center">
-              You need to authenticate with your PIN in order to access your
-              Wallet secrets
+              {lang.t(
+                'wallet.diagnostics.you_need_to_authenticate_with_your_pin'
+              )}
             </Text>
             <SheetActionButton
               color={colors.alpha(colors.green, 0.06)}
               isTransparent
-              label="Authenticate with PIN"
+              label={lang.t('wallet.diagnostics.authenticate_with_pin')}
               onPress={handleAuthenticateWithPIN}
               size="big"
               style={{ margin: 0, padding: 0 }}
@@ -381,7 +382,7 @@ const WalletDiagnosticsSheet = () => {
             <ColumnWithMargins>
               <RowWithMargins>
                 <Text size="lmedium">
-                  <Bold>UUID:</Bold> {` `}
+                  <Bold>{lang.t('wallet.diagnostics.uuid')}:</Bold> {` `}
                   <Text color={colors.blueGreyDark50}>{uuid}</Text>
                 </Text>
               </RowWithMargins>
@@ -424,7 +425,7 @@ const WalletDiagnosticsSheet = () => {
           <SheetActionButton
             color={colors.alpha(colors.appleBlue, 0.06)}
             isTransparent
-            label="Got it"
+            label={lang.t('button.got_it')}
             onPress={handleClose}
             size="big"
             style={{ margin: 0, padding: 0 }}
