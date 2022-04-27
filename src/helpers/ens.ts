@@ -66,7 +66,7 @@ export enum ENS_RECORDS {
   instagram = 'com.instagram',
   snapchat = 'com.snapchat',
   twitter = 'com.twitter',
-  telegram = 'com.telegram',
+  telegram = 'org.telegram',
   ensDelegate = 'eth.ens.delegate',
   pronouns = 'pronouns',
 }
