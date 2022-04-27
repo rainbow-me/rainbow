@@ -21,6 +21,7 @@ import { ButtonPressAnimation } from '../../animations';
 import { useDimensions } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
+import { safeAreaInsetValues } from '@rainbow-me/utils';
 
 const adjustConfig = {
   duration: 300,
@@ -99,7 +100,11 @@ export const ZoomableWrapper = ({
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const yDisplacement = givenYDisplacement || useSharedValue(0);
 
-  const { height: deviceHeight, width: deviceWidth } = useDimensions();
+  let { height: deviceHeight, width: deviceWidth } = useDimensions();
+
+  if (!hideStatusBar) {
+    deviceHeight = deviceHeight - safeAreaInsetValues.top;
+  };
 
   const maxImageWidth = width || deviceWidth - horizontalPadding * 2;
   const maxImageHeight = height || deviceHeight / 2;
@@ -174,7 +179,7 @@ export const ZoomableWrapper = ({
         {
           translateY:
             animationProgress.value *
-            (yDisplacement.value + (deviceHeight - fullSizeHeight) / 2 - 85),
+            (yDisplacement.value + (deviceHeight - fullSizeHeight) / 2 - (hideStatusBar ? 85 : 68)),
         },
         {
           translateY:
@@ -195,7 +200,7 @@ export const ZoomableWrapper = ({
         },
       ],
     };
-  }, [fullSizeHeight, fullSizeWidth]);
+  }, [fullSizeHeight, fullSizeWidth, hideStatusBar]);
 
   const cornerStyle = useAnimatedStyle(() => ({
     borderRadius: (1 - animationProgress.value) * (borderRadius ?? 16),
