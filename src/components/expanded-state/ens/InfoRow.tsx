@@ -116,7 +116,7 @@ export default function InfoRow({
           {isImage ? (
             <>
               {value && (
-                <ImagePreviewOverlayTarget aspectRatioType="cover">
+                <ImagePreviewOverlayTarget aspectRatioType="cover" imageUrl={value}>
                   <Box as={ImgixImage} height="full" source={{ uri: value }} />
                 </ImagePreviewOverlayTarget>
               )}

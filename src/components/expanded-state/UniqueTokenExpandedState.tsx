@@ -405,39 +405,6 @@ const UniqueTokenExpandedState = ({
         <ColorModeProvider value="darkTinted">
           <AccentColorProvider color={imageColor}>
             <ImagePreviewOverlay
-              backgroundOverlay={
-                <Box height="full" width="full">
-                  {ios && (
-                    <Box
-                      as={View}
-                      height="full"
-                      position="absolute"
-                      shouldRasterizeIOS
-                      width="full"
-                    >
-                      <BackgroundImage>
-                        <UniqueTokenImage
-                          backgroundColor={asset.background}
-                          imageUrl={asset.image_url}
-                          item={asset}
-                          resizeMode="cover"
-                          size={CardSize}
-                        />
-                        <BackgroundBlur />
-                      </BackgroundImage>
-                    </Box>
-                  )}
-                  <Box
-                    height="full"
-                    style={{
-                      backgroundColor: isDarkMode
-                        ? `rgba(22, 22, 22, ${ios ? 0.8 : 1})`
-                        : `rgba(26, 26, 26, ${ios ? 0.8 : 1})`,
-                    }}
-                    width="full"
-                  />
-                </Box>
-              }
               opacity={ensCoverOpacity}
               yPosition={yPosition}
             >

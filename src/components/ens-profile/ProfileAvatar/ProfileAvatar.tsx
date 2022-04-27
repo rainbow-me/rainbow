@@ -55,6 +55,7 @@ export default function ProfileAvatar({
               disableEnteringWithPinch
               height={{ custom: size }}
               hideStatusBar={false}
+              imageUrl={avatarUrl}
               topOffset={ios ? 112 : 107}
             >
               <Box

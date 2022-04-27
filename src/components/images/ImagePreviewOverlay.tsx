@@ -9,7 +9,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { InteractionManager, StyleSheet } from 'react-native';
+import { InteractionManager, StyleSheet, View } from 'react-native';
 import Animated, {
   SharedValue,
   useAnimatedStyle,
@@ -26,6 +26,7 @@ import {
   useSetRecoilState,
 } from 'recoil';
 import { ZoomableWrapper } from '../expanded-state/unique-token/ZoomableWrapper';
+import { SheetHandleFixedToTopHeight } from '../sheet';
 import AvatarCoverPhotoMaskSvg from '../svg/AvatarCoverPhotoMaskSvg';
 import {
   BackgroundProvider,
@@ -34,7 +35,40 @@ import {
   Cover,
   useColorMode,
 } from '@rainbow-me/design-system';
-import { usePersistentAspectRatio } from '@rainbow-me/hooks';
+import { useDimensions, usePersistentAspectRatio } from '@rainbow-me/hooks';
+import { ImgixImage } from '@rainbow-me/images';
+import styled from '@rainbow-me/styled-components';
+import { position } from '@rainbow-me/styles';
+import { safeAreaInsetValues } from '@rainbow-me/utils';
+
+const BackgroundBlur = styled(BlurView).attrs({
+  blurAmount: 100,
+  blurType: 'light',
+})({
+  ...position.coverAsObject,
+});
+
+const BackgroundImage = styled(View)({
+  ...position.coverAsObject,
+});
+
+interface BlurWrapperProps {
+  height: number;
+  width: number;
+}
+
+const BlurWrapper = styled(View).attrs({
+  shouldRasterizeIOS: true,
+})({
+  // @ts-expect-error missing theme types
+  backgroundColor: ({ theme: { colors } }) => colors.trueBlack,
+  height: ({ height }: BlurWrapperProps) => height,
+  left: 0,
+  overflow: 'hidden',
+  position: 'absolute',
+  width: ({ width }: BlurWrapperProps) => width,
+  ...(android ? { borderTopLeftRadius: 30, borderTopRightRadius: 30 } : {}),
+});
 
 const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 
@@ -74,6 +108,10 @@ const hideStatusBarAtom = atomFamily({
 const hostComponentAtom = atomFamily<React.ReactElement, string>({
   default: <Box />,
   key: 'imagePreviewOverlay.hostComponent',
+});
+const imageUrlAtom = atomFamily({
+  default: '',
+  key: 'imagePreviewOverlay.imageUrl',
 });
 const widthAtom = atomFamily({
   default: 0,
@@ -188,6 +226,7 @@ function ImagePreview({
   yPosition,
 }: ImagePreviewProps) {
   const { useBackgroundOverlay } = useContext(ImageOverlayConfigContext);
+  const { height: deviceHeight, width: deviceWidth } = useDimensions();
 
   const aspectRatio = useRecoilValue(aspectRatioAtom(id));
   const backgroundMask = useRecoilValue(backgroundMaskAtom(id));
@@ -197,6 +236,7 @@ function ImagePreview({
   const height = useRecoilValue(heightAtom(id));
   const hideStatusBar = useRecoilValue(hideStatusBarAtom(id));
   const hostComponent = useRecoilValue(hostComponentAtom(id));
+  const imageUrl = useRecoilValue(imageUrlAtom(id));
   const width = useRecoilValue(widthAtom(id));
   const xOffset = useRecoilValue(xOffsetAtom(id));
   const yOffset = useRecoilValue(yOffsetAtom(id));
@@ -224,12 +264,13 @@ function ImagePreview({
   const backgroundMaskStyle = useAnimatedStyle(() => ({
     zIndex: progress.value > 0 ? index + 1 : index,
   }));
-  const blurStyle = useAnimatedStyle(() => ({
-    opacity: progress.value,
-    zIndex: progress.value > 0 ? index + 2 : -1,
-  }));
   const overlayStyle = useAnimatedStyle(() => ({
     opacity: 1 * progress.value,
+    transform: [
+      {
+        translateY: yPosition.value - (hideStatusBar ? SheetHandleFixedToTopHeight : 0),
+      },
+    ],
     zIndex: progress.value > 0 ? index + 2 : -2,
   }));
   const containerStyle = useAnimatedStyle(() => ({
@@ -274,35 +315,28 @@ function ImagePreview({
               {backgroundOverlay}
             </Box>
           ) : (
-            <>
+            <Box
+              as={Animated.View}
+              style={[overlayStyle, StyleSheet.absoluteFillObject]}
+            >
               {ios && (
-                <Box
-                  as={AnimatedBlurView}
-                  blurType={colorMode === 'light' ? 'light' : 'dark'}
-                  style={[blurStyle, StyleSheet.absoluteFillObject]}
-                />
+                <BlurWrapper height={hideStatusBar ? deviceHeight : deviceHeight - safeAreaInsetValues.top} width={deviceWidth}>
+                  <BackgroundImage>
+                    <Box as={ImgixImage} height="full" source={{ uri: imageUrl }} width="full" />
+                    <BackgroundBlur />
+                  </BackgroundImage>
+                </BlurWrapper>
               )}
               <Box
-                as={Animated.View}
-                style={[overlayStyle, StyleSheet.absoluteFillObject]}
-              >
-                <Box
-                  background="body"
-                  height="full"
-                  style={{
-                    opacity:
-                      colorMode === 'light'
-                        ? ios
-                          ? 0.7
-                          : 0.9
-                        : ios
-                        ? 0.3
-                        : 0.5,
-                  }}
-                  width="full"
-                />
-              </Box>
-            </>
+                height={{ custom: hideStatusBar ? deviceHeight : deviceHeight - safeAreaInsetValues.top }}
+                style={{
+                  backgroundColor: colorMode === 'dark'
+                    ? `rgba(22, 22, 22, ${ios ? 0.8 : 1})`
+                    : `rgba(26, 26, 26, ${ios ? 0.8 : 1})`,
+                }}
+                width="full"
+              />
+            </Box>
           )}
         </>
       )}
@@ -357,6 +391,7 @@ export function ImagePreviewOverlayTarget({
   hasShadow = false,
   height: initialHeight,
   hideStatusBar = true,
+  imageUrl = '',
   topOffset = 85,
   uri,
 }: {
@@ -367,6 +402,7 @@ export function ImagePreviewOverlayTarget({
   hasShadow?: boolean;
   height?: BoxProps['height'];
   hideStatusBar?: boolean;
+  imageUrl?: string;
   topOffset?: number;
 } & (
   | {
@@ -394,6 +430,7 @@ export function ImagePreviewOverlayTarget({
   const setDisableEnteringWithPinch = useSetRecoilState(disableEnteringWithPinchAtom(id));
   const setHasShadow = useSetRecoilState(hasShadowAtom(id));
   const setHideStatusBar = useSetRecoilState(hideStatusBarAtom(id));
+  const setImageUrl = useSetRecoilState(imageUrlAtom(id));
   const setXOffset = useSetRecoilState(xOffsetAtom(id));
   const setYOffset = useSetRecoilState(yOffsetAtom(id));
 
@@ -405,6 +442,7 @@ export function ImagePreviewOverlayTarget({
     setDisableEnteringWithPinch(disableEnteringWithPinch);
     setHasShadow(hasShadow);
     setHideStatusBar(hideStatusBar);
+    setImageUrl(imageUrl);
     setIds(ids => [...ids, id]);
   }, [
     backgroundMask,
@@ -413,12 +451,14 @@ export function ImagePreviewOverlayTarget({
     hasShadow,
     hideStatusBar,
     id,
+    imageUrl,
     setBackgroundMask,
     setBorderRadius,
     setDisableEnteringWithPinch,
     setHasShadow,
     setHideStatusBar,
     setIds,
+    setImageUrl,
   ]);
 
   // If we are not given an `aspectRatioType`, then we will need to

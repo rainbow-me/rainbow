@@ -53,6 +53,7 @@ export default function ProfileCover({
           disableEnteringWithPinch
           height="126px"
           hideStatusBar={false}
+          imageUrl={coverUrl}
           topOffset={ios ? 112 : 107}
         >
           <Box as={ImgixImage} height="126px" source={{ uri: coverUrl }} />
