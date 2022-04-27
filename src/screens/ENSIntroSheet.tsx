@@ -30,6 +30,7 @@ import {
   useAccountENSDomains,
   useAccountProfile,
   useAccountSettings,
+  useDimensions,
   useENSRegistration,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
@@ -42,11 +43,14 @@ enum AnotherENSEnum {
 const topPadding = android ? 29 : 19;
 
 export default function ENSIntroSheet() {
+  const { width: deviceWidth } = useDimensions();
   const { colors } = useTheme();
   const { params } = useRoute<any>();
   const { accountAddress } = useAccountSettings();
   const { data: domains, isLoading, isSuccess } = useAccountENSDomains();
   const { accountENS } = useAccountProfile();
+
+  const contentWidth = Math.min(deviceWidth - 72, 300);
 
   const { ownedDomains, primaryDomain, nonPrimaryDomains } = useMemo(() => {
     const ownedDomains = domains?.filter(
@@ -184,35 +188,39 @@ export default function ENSIntroSheet() {
                     <Divider color="divider60" />
                   </Inset>
                 </Stack>
-                <Inset horizontal="36px" top="6px">
-                  <Stack space="36px">
-                    <InfoRow
-                      description={lang.t(
-                        'profiles.intro.wallet_address_info.description'
-                      )}
-                      icon="􀈠"
-                      title={lang.t('profiles.intro.wallet_address_info.title')}
-                    />
-                    <InfoRow
-                      description={lang.t(
-                        'profiles.intro.portable_identity_info.description'
-                      )}
-                      icon="􀪽"
-                      title={lang.t(
-                        'profiles.intro.portable_identity_info.title'
-                      )}
-                    />
-                    <InfoRow
-                      description={lang.t(
-                        'profiles.intro.stored_on_blockchain_info.description'
-                      )}
-                      icon="􀐙"
-                      title={lang.t(
-                        'profiles.intro.stored_on_blockchain_info.title'
-                      )}
-                    />
-                  </Stack>
-                </Inset>
+                <Stack alignHorizontal="center">
+                  <Box width={{ custom: contentWidth }}>
+                    <Inset top="6px">
+                      <Stack space="36px">
+                        <InfoRow
+                          description={lang.t(
+                            'profiles.intro.wallet_address_info.description'
+                          )}
+                          icon="􀈠"
+                          title={lang.t('profiles.intro.wallet_address_info.title')}
+                        />
+                        <InfoRow
+                          description={lang.t(
+                            'profiles.intro.portable_identity_info.description'
+                          )}
+                          icon="􀪽"
+                          title={lang.t(
+                            'profiles.intro.portable_identity_info.title'
+                          )}
+                        />
+                        <InfoRow
+                          description={lang.t(
+                            'profiles.intro.stored_on_blockchain_info.description'
+                          )}
+                          icon="􀐙"
+                          title={lang.t(
+                            'profiles.intro.stored_on_blockchain_info.title'
+                          )}
+                        />
+                      </Stack>
+                    </Inset>
+                  </Box>
+                </Stack>
               </Stack>
             </Row>
             <Row height="content">
@@ -331,7 +339,7 @@ function InfoRow({
               </Heading>
             </Box>
           }
-          width={42}
+          style={{ width: 42 }}
         >
           <Box
             as={LinearGradient}
