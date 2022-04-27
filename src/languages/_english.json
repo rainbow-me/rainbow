@@ -624,7 +624,7 @@
         "continue": "Continue on 􀆊"
       },
       "create": {
-        "description": "Create your profile",
+        "label": "Create your profile",
         "add_cover": "Add Cover",
         "name": "Name",
         "bio": "Bio",
@@ -701,6 +701,9 @@
         "transaction_pending_description": "You’ll be taken to the next step automatically when this transaction confirms on the blockchain",
         "wait_one_minute": "Wait for one minute",
         "wait_one_minute_description": "This waiting period ensures that another person can’t register this name before you do"
+      },
+      "edit": {
+        "label": "Edit your profile"
       },
       "profile_avatar": {
         "choose_from_library": "Choose from Library",

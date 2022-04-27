@@ -17,7 +17,7 @@ import {
 import { UniqueAsset } from '@rainbow-me/entities';
 import { UploadImageReturnData } from '@rainbow-me/handlers/pinata';
 import {
-  useENSRegistration,
+  useENSModifiedRegistration,
   useENSRegistrationForm,
   useSelectImageMenu,
 } from '@rainbow-me/hooks';
@@ -42,7 +42,7 @@ const RegistrationAvatar = ({
 }) => {
   const {
     images: { avatarUrl: initialAvatarUrl },
-  } = useENSRegistration();
+  } = useENSModifiedRegistration();
   const {
     isLoading,
     values,

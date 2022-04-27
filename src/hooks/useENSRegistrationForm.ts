@@ -1,7 +1,7 @@
 import { isEmpty, omit } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { atom, useRecoilState } from 'recoil';
-import { useENSRegistration } from '.';
+import { useENSModifiedRegistration, useENSRegistration } from '.';
 import { Records } from '@rainbow-me/entities';
 import {
   ENS_RECORDS,
@@ -45,14 +45,13 @@ export default function useENSRegistrationForm({
   const {
     name,
     mode,
-    changedRecords,
     initialRecords,
     records: allRecords,
-    profileQuery,
     removeRecordByKey,
     updateRecordByKey,
     updateRecords,
   } = useENSRegistration();
+  const { changedRecords, profileQuery } = useENSModifiedRegistration();
 
   // The initial records will be the existing records belonging to the profile in "edit mode",
   // but will be all of the records in "create mode".
