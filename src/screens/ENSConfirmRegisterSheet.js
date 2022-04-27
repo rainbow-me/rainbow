@@ -60,7 +60,7 @@ function TransactionActionRow({
       <Box>
         <SheetActionButtonRow paddingBottom={5}>
           <HoldToAuthorizeButton
-            color={accentColor}
+            backgroundColor={accentColor}
             disabled={!isSufficientGas || !isValidGas}
             hideInnerBorder
             isLongPressAvailableForBiometryType
