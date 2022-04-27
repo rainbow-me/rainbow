@@ -53,7 +53,7 @@ const getImageUrl = (
   return imageUrl;
 };
 
-export default function useENSAssignRegistration({
+export default function useENSModifiedRegistration({
   setInitialRecordsWhenInEditMode = false,
   modifyChangedRecords = false,
 }: {

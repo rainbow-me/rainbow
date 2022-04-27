@@ -12,7 +12,7 @@ import { Box, Text, useForegroundColor } from '@rainbow-me/design-system';
 import { UniqueAsset } from '@rainbow-me/entities';
 import { UploadImageReturnData } from '@rainbow-me/handlers/pinata';
 import {
-  useENSAssignRegistration,
+  useENSModifiedRegistration,
   useENSRegistrationForm,
   useSelectImageMenu,
 } from '@rainbow-me/hooks';
@@ -33,7 +33,7 @@ const RegistrationCover = ({
 }) => {
   const {
     images: { coverUrl: initialCoverUrl },
-  } = useENSAssignRegistration();
+  } = useENSModifiedRegistration();
   const {
     isLoading,
     onBlurField,

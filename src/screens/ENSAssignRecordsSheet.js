@@ -50,7 +50,7 @@ import {
   textRecordFields,
 } from '@rainbow-me/helpers/ens';
 import {
-  useENSAssignRegistration,
+  useENSModifiedRegistration,
   useENSRegistration,
   useENSRegistrationCosts,
   useENSRegistrationForm,
@@ -71,7 +71,7 @@ export default function ENSAssignRecordsSheet() {
   const { name, mode } = useENSRegistration();
   const {
     images: { avatarUrl: initialAvatarUrl },
-  } = useENSAssignRegistration({
+  } = useENSModifiedRegistration({
     modifyChangedRecords: true,
     setInitialRecordsWhenInEditMode: true,
   });
@@ -222,7 +222,7 @@ export function ENSAssignRecordsBottomActions({
   const { colors } = useTheme();
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
   const { mode } = useENSRegistration();
-  const { profileQuery } = useENSAssignRegistration();
+  const { profileQuery } = useENSModifiedRegistration();
   const [fromRoute, setFromRoute] = useState(previousRouteName);
   const {
     disabled,

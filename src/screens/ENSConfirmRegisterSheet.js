@@ -29,7 +29,7 @@ import {
   REGISTRATION_STEPS,
 } from '@rainbow-me/helpers/ens';
 import {
-  useENSAssignRegistration,
+  useENSModifiedRegistration,
   useENSRegistration,
   useENSRegistrationActionHandler,
   useENSRegistrationCosts,
@@ -95,7 +95,7 @@ export default function ENSConfirmRegisterSheet() {
   const { name: ensName, mode } = useENSRegistration();
   const {
     images: { avatarUrl: initialAvatarUrl },
-  } = useENSAssignRegistration();
+  } = useENSModifiedRegistration();
 
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
 
