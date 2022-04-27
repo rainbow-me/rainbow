@@ -81,6 +81,15 @@ const ToggleSecretButton = styled(Button)(({ theme: { colors } }) => ({
   backgroundColor: colors.appleBlue,
 }));
 
+const BiometryWarningText = styled(Text).attrs(({ theme: { colors } }) => ({
+  align: 'center',
+  color: colors.alpha(colors.blueGreyDark, 0.6),
+  lineHeight: 'looser',
+  size: 'lmedium',
+}))({
+  ...padding.object(0, 35),
+});
+
 const LoadingSpinner = android ? Spinner : ActivityIndicator;
 
 export default function SecretDisplaySection({
@@ -153,13 +162,11 @@ export default function SecretDisplaySection({
       );
     } else {
       return (
-        <ColumnWithMargins align="center" justify="center">
-          <AuthenticationText>
-            Your account has been secured with biometric data, like fingerprint
-            or face identification. To see your recovery phrase, turn on
-            biometrics in your phone’s settings.
-          </AuthenticationText>
-        </ColumnWithMargins>
+        <BiometryWarningText>
+          Your account has been secured with biometric data, like fingerprint or
+          face identification. To see your recovery phrase, turn on biometrics
+          in your phone’s settings.
+        </BiometryWarningText>
       );
     }
   }, [isRecoveryPhraseVisible, typeLabel, loadSeed, colors.white, seed]);
