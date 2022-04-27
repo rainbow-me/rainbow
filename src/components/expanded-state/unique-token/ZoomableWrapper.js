@@ -38,9 +38,9 @@ const exitConfig = {
 };
 const GestureBlocker = styled(View)({
   height: ({ height }) => height * 3,
-  left: ({ xOffset }) => -xOffset,
+  left: ({ containerWidth, width, xOffset }) => -(xOffset || (width - containerWidth) / 2),
   position: 'absolute',
-  top: ({ yOffset }) => -yOffset * 3,
+  top: ({ height }) => -height,
   width: ({ width }) => width,
 });
 
@@ -624,6 +624,7 @@ export const ZoomableWrapper = ({
             >
               <ZoomContainer height={containerHeight} width={containerWidth}>
                 <GestureBlocker
+                  containerWidth={containerWidth}
                   height={deviceHeight}
                   pointerEvents={isZoomed ? 'auto' : 'none'}
                   width={deviceWidth}
