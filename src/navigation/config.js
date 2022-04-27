@@ -142,6 +142,7 @@ export const registerENSNavigatorConfig = {
       backgroundOpacity: 1,
       scrollEnabled: true,
       springDamping: 1,
+      transitionDuration: 0.3,
     }),
   }),
 };
@@ -153,6 +154,7 @@ export const profileConfig = {
       backgroundOpacity: 1,
       scrollEnabled: true,
       springDamping: 1,
+      transitionDuration: 0.3,
     }),
   }),
 };
@@ -166,6 +168,7 @@ export const profilePreviewConfig = {
       scrollEnabled: true,
       shortFormHeight: 280 + params.descriptionProfilePreviewHeight,
       springDamping: 1,
+      transitionDuration: 0.3,
       startFromShortForm: true,
     }),
   }),
@@ -174,8 +177,8 @@ export const profilePreviewConfig = {
 export const ensConfirmRegisterSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
-      longFormHeight: ENSConfirmRegisterSheetHeight,
       ...params,
+      longFormHeight: ENSConfirmRegisterSheetHeight,
     }),
   }),
 };
@@ -183,8 +186,8 @@ export const ensConfirmRegisterSheetConfig = {
 export const ensAdditionalRecordsSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
-      longFormHeight: getENSAdditionalRecordsSheetHeight(),
       ...params,
+      longFormHeight: getENSAdditionalRecordsSheetHeight(),
     }),
   }),
 };
