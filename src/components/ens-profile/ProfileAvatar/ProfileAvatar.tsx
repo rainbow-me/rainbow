@@ -52,6 +52,7 @@ export default function ProfileAvatar({
               aspectRatioType="avatar"
               backgroundMask="avatar"
               borderRadius={size / 2}
+              disableEnteringWithPinch
               height={{ custom: size }}
               hideStatusBar={false}
               topOffset={ios ? 112 : 107}

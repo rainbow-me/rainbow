@@ -81,6 +81,7 @@ export const ZoomableWrapper = ({
   aspectRatio,
   borderRadius,
   disableAnimations,
+  disableEnteringWithPinch,
   hideStatusBar = true,
   onZoomIn = () => {},
   onZoomInWorklet = () => {},
@@ -605,7 +606,7 @@ export const ZoomableWrapper = ({
       style={{ alignItems: 'center', zIndex: 1 }}
     >
       <PanGestureHandler
-        enabled={!disableAnimations}
+        enabled={!disableAnimations && (!disableEnteringWithPinch || isZoomed)}
         maxPointers={2}
         minPointers={isZoomed ? 1 : 2}
         onGestureEvent={panGestureHandler}
@@ -646,7 +647,7 @@ export const ZoomableWrapper = ({
                       style={[containerStyle, StyleSheet.absoluteFillObject]}
                     >
                       <PinchGestureHandler
-                        enabled={!disableAnimations}
+                        enabled={!disableAnimations && (!disableEnteringWithPinch || isZoomed)}
                         onGestureEvent={pinchGestureHandler}
                         ref={pinch}
                         simultaneousHandlers={[pan]}

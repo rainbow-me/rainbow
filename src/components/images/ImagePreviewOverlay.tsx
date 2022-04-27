@@ -55,6 +55,10 @@ const borderRadiusAtom = atomFamily({
   default: 16,
   key: 'imagePreviewOverlay.borderRadius',
 });
+const disableEnteringWithPinchAtom = atomFamily({
+  default: false,
+  key: 'imagePreviewOverlay.disableEnteringWithPinch',
+});
 const hasShadowAtom = atomFamily({
   default: false,
   key: 'imagePreviewOverlay.hasShadow',
@@ -188,6 +192,7 @@ function ImagePreview({
   const aspectRatio = useRecoilValue(aspectRatioAtom(id));
   const backgroundMask = useRecoilValue(backgroundMaskAtom(id));
   const borderRadius = useRecoilValue(borderRadiusAtom(id));
+  const disableEnteringWithPinch = useRecoilValue(disableEnteringWithPinchAtom(id));
   const hasShadow = useRecoilValue(hasShadowAtom(id));
   const height = useRecoilValue(heightAtom(id));
   const hideStatusBar = useRecoilValue(hideStatusBarAtom(id));
@@ -316,6 +321,7 @@ function ImagePreview({
           aspectRatio={aspectRatio}
           borderRadius={borderRadius}
           disableAnimations={false}
+          disableEnteringWithPinch={disableEnteringWithPinch}
           hasShadow={hasShadow}
           height={height}
           hideStatusBar={hideStatusBar}
@@ -347,6 +353,7 @@ export function ImagePreviewOverlayTarget({
   backgroundMask,
   borderRadius = 16,
   children,
+  disableEnteringWithPinch = false,
   hasShadow = false,
   height: initialHeight,
   hideStatusBar = true,
@@ -356,6 +363,7 @@ export function ImagePreviewOverlayTarget({
   backgroundMask?: 'avatar';
   borderRadius?: number;
   children: React.ReactElement;
+  disableEnteringWithPinch?: boolean;
   hasShadow?: boolean;
   height?: BoxProps['height'];
   hideStatusBar?: boolean;
@@ -383,6 +391,7 @@ export function ImagePreviewOverlayTarget({
   const setAspectRatio = useSetRecoilState(aspectRatioAtom(id));
   const setBackgroundMask = useSetRecoilState(backgroundMaskAtom(id));
   const setBorderRadius = useSetRecoilState(borderRadiusAtom(id));
+  const setDisableEnteringWithPinch = useSetRecoilState(disableEnteringWithPinchAtom(id));
   const setHasShadow = useSetRecoilState(hasShadowAtom(id));
   const setHideStatusBar = useSetRecoilState(hideStatusBarAtom(id));
   const setXOffset = useSetRecoilState(xOffsetAtom(id));
@@ -393,17 +402,20 @@ export function ImagePreviewOverlayTarget({
       setBackgroundMask(backgroundMask);
     }
     setBorderRadius(borderRadius);
+    setDisableEnteringWithPinch(disableEnteringWithPinch);
     setHasShadow(hasShadow);
     setHideStatusBar(hideStatusBar);
     setIds(ids => [...ids, id]);
   }, [
     backgroundMask,
     borderRadius,
+    disableEnteringWithPinch,
     hasShadow,
     hideStatusBar,
     id,
     setBackgroundMask,
     setBorderRadius,
+    setDisableEnteringWithPinch,
     setHasShadow,
     setHideStatusBar,
     setIds,

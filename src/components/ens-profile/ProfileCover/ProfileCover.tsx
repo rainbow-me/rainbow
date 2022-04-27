@@ -50,6 +50,7 @@ export default function ProfileCover({
         <ImagePreviewOverlayTarget
           aspectRatioType="cover"
           borderRadius={0}
+          disableEnteringWithPinch
           height="126px"
           hideStatusBar={false}
           topOffset={ios ? 112 : 107}
