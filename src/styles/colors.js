@@ -23,6 +23,7 @@ const darkModeColors = {
   dark: '#E0E8FF',
   darkGrey: '#333333',
   darkModeDark: '#404656',
+  exchangeFallback: 'rgba(60, 66, 82, 0.8)',
   green: '#00D146',
   grey: '#333333',
   grey20: '#333333',
@@ -94,6 +95,7 @@ const getColorsByTheme = darkMode => {
     dpiDark: '#8150E6', // '129, 80, 230'
     dpiLight: '#9B74EC', // '155, 116, 236'
     dpiMid: '#8E62E9', // '142, 98, 233'
+    exchangeFallback: '#F4F4F5', // '244, 244, 245'
     flamingo: '#E540F1', // '229, 64, 241'
     green: '#2CCC00', // '58, 166, 134'
     grey: '#A9ADB9', // '169, 173, 185'
