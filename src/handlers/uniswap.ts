@@ -46,11 +46,8 @@ const DEFAULT_DEADLINE_FROM_NOW = 60 * 20;
 export const getTestnetUniswapPairs = (
   network: Network
 ): { [key: string]: Asset } => {
-  const pairs: { [address: string]: Asset } = get(
-    UNISWAP_TESTNET_TOKEN_LIST,
-    network,
-    {}
-  );
+  const pairs: { [address: string]: Asset } =
+    UNISWAP_TESTNET_TOKEN_LIST?.[network] || {};
   const loweredPairs = mapKeys(pairs, (_, key) => toLower(key));
   return mapValues(loweredPairs, value => ({
     ...value,
