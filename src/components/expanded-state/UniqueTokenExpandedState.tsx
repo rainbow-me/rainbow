@@ -376,7 +376,7 @@ const UniqueTokenExpandedState = ({
           <BackgroundImage>
             <UniqueTokenImage
               backgroundColor={asset.background || imageColor}
-              imageUrl={asset.image_url}
+              imageUrl={asset.lowResUrl}
               item={asset}
               resizeMode="cover"
               size={CardSize}
