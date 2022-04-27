@@ -29,7 +29,7 @@ const CommitContent = ({
   return (
     <Inset horizontal="30px" vertical={isSmallPhone ? '12px' : '30px'}>
       <Stack space={isSmallPhone ? '19px' : '30px'}>
-        <Divider color="divider40" />
+        <Divider color="divider60" />
         <Inline
           alignHorizontal="center"
           alignVertical="center"
@@ -42,7 +42,7 @@ const CommitContent = ({
               style={{ height: 20, width: 20 }}
             />
           </Box>
-          <Text color="secondary50" size="14px" weight="bold">
+          <Text align="center" color="secondary50" size="14px" weight="bold">
             {lang.t('profiles.confirm.suggestion')}
           </Text>
         </Inline>
@@ -62,7 +62,7 @@ const CommitContent = ({
             registrationCostsData?.estimatedTotalRegistrationCost?.display
           }
         />
-        <Divider color="divider40" />
+        <Divider color="divider60" />
       </Stack>
     </Inset>
   );
