@@ -4,11 +4,6 @@ import { captureException } from '@sentry/react-native';
 import { findKey, isNumber, keys, toLower, uniq } from 'lodash';
 import RNFS from 'react-native-fs';
 import { MMKV } from 'react-native-mmkv';
-import {
-  rainbowListStorage,
-  RB_TOKEN_LIST_CACHE,
-  RB_TOKEN_LIST_ETAG,
-} from '../references/rainbow-token-list';
 import { removeLocal } from '../handlers/localstorage/common';
 import { IMAGE_METADATA } from '../handlers/localstorage/globalSettings';
 import {
@@ -17,8 +12,12 @@ import {
 } from '../handlers/localstorage/migrations';
 import WalletTypes from '../helpers/walletTypes';
 import store from '../redux/store';
-
 import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
+import {
+  rainbowListStorage,
+  RB_TOKEN_LIST_CACHE,
+  RB_TOKEN_LIST_ETAG,
+} from '../references/rainbow-token-list';
 import colors, { getRandomColor } from '../styles/colors';
 import {
   addressKey,
@@ -160,7 +159,7 @@ export default async function runMigrations() {
     if (!primaryWallet) {
       logger.sentry('v2 migration - primary wallet not found');
       let primaryWalletKey = null;
-      Object.keys(wallets).some(key => {
+      Object.keys(wallets).some((key) => {
         const wallet = wallets[key];
         if (wallet.type === WalletTypes.mnemonic && !wallet.imported) {
           primaryWalletKey = key;
@@ -172,7 +171,7 @@ export default async function runMigrations() {
       // If there's no wallet with seed phrase that wasn't imported
       // let's find a wallet with seed phrase that was imported
       if (!primaryWalletKey) {
-        Object.keys(wallets).some(key => {
+        Object.keys(wallets).some((key) => {
           const wallet = wallets[key];
           if (wallet.type === WalletTypes.mnemonic) {
             primaryWalletKey = key;
@@ -249,7 +248,7 @@ export default async function runMigrations() {
         logger.sentry('Old seedphrase is still there');
         let incorrectDamagedWalletId = null;
         const updatedWallets = { ...wallets };
-        keys(updatedWallets).forEach(walletId => {
+        keys(updatedWallets).forEach((walletId) => {
           if (
             updatedWallets[walletId].damaged &&
             !updatedWallets[walletId].imported
