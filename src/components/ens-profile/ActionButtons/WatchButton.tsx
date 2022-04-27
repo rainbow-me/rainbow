@@ -26,8 +26,7 @@ export default function WatchButton({
   // and not wait for the import to finish.
   const [optimisticIsWatching, setOptimisticIsWatching] = useState(isWatching);
 
-  // We need a ref here since we rely on React state for a debounce fn as
-  // it will create a new instance of the callback function.
+  // We need a ref here to avoid recreating the debounce function.
   const optimisticIsWatchingRef = useRef<boolean>();
   optimisticIsWatchingRef.current = optimisticIsWatching;
 
