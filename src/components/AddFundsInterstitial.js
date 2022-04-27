@@ -230,7 +230,9 @@ const AddFundsInterstitial = ({ network }) => {
       {network === networkTypes.mainnet ? (
         <Fragment>
           <Title>
-            To get started, buy some ETH{ios ? ` with Apple Pay` : ''}
+            {ios
+              ? lang.t('add_funds.to_get_started_ios')
+              : lang.t('add_funds.to_get_started_android')}
           </Title>
           <Row justify="space-between" marginVertical={30}>
             <AmountButton
@@ -267,18 +269,19 @@ const AddFundsInterstitial = ({ network }) => {
           </InterstitialButtonRow>
           {!isSmallPhone && <InterstitialDivider />}
           <Subtitle isSmallPhone={isSmallPhone}>
-            or send ETH to your wallet
+            {lang.t('add_funds.eth.or_send_eth')}
           </Subtitle>
 
           <Paragraph>
-            Send from Coinbase or another exchange—or ask a friend!
+            {lang.t('add_funds.eth.send_from_another_source')}
           </Paragraph>
         </Fragment>
       ) : (
         <Fragment>
           <Title>
-            `Request test ETH through the ${networkInfo?.[network]?.name}{' '}
-            faucet`
+            {lang.t('add_funds.test_eth.request_test_eth', {
+              testnetName: networkInfo?.[network]?.name,
+            })}
           </Title>
           <Row marginTop={30}>
             <InterstitialButton onPress={addFundsToAccountAddress}>
@@ -289,18 +292,18 @@ const AddFundsInterstitial = ({ network }) => {
                 size="large"
                 weight="bold"
               >
-                􀎬 Add from faucet
+                􀎬 {lang.t('add_funds.test_eth.add_from_faucet')}
               </Text>
             </InterstitialButton>
           </Row>
           {!isSmallPhone && <InterstitialDivider />}
           <Subtitle isSmallPhone={isSmallPhone}>
-            or send test ETH to your wallet
+            {lang.t('add_funds.test_eth.or_send_test_eth')}
           </Subtitle>
-
           <Paragraph>
-            `Send test ETH from another ${networkInfo?.[network]?.name}{' '}
-            wallet—or ask a friend!`
+            {lang.t('add_funds.test_eth.send_test_eth_from_another_source', {
+              testnetName: networkInfo?.[network]?.name,
+            })}
           </Paragraph>
         </Fragment>
       )}

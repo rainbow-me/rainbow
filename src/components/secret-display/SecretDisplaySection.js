@@ -1,5 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import { captureException } from '@sentry/react-native';
+import lang from 'i18n-js';
 import { upperFirst } from 'lodash';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import {
@@ -142,7 +143,9 @@ export default function SecretDisplaySection({
               <CopyFloatingEmojis textToCopy={seed}>
                 <CopyButtonRow>
                   <CopyButtonIcon />
-                  <CopyButtonText>Copy to clipboard</CopyButtonText>
+                  <CopyButtonText>
+                    {lang.t('back_up.secret.copy_to_clipboard')}
+                  </CopyButtonText>
                 </CopyButtonRow>
               </CopyFloatingEmojis>
               <Column>
@@ -150,10 +153,10 @@ export default function SecretDisplaySection({
               </Column>
               <Column>
                 <Title isSmallPhone={isSmallPhone}>
-                  👆For your eyes only 👆
+                  👆{lang.t('back_up.secret.for_your_eyes_only')} 👆
                 </Title>
                 <DescriptionText>
-                  Anyone who has these words can access your entire wallet!
+                  {lang.t('back_up.secret.anyone_who_has_these')}
                 </DescriptionText>
               </Column>
             </Fragment>
@@ -164,12 +167,16 @@ export default function SecretDisplaySection({
       ) : (
         <ColumnWithMargins align="center" justify="center">
           <AuthenticationText>
-            {`You need to authenticate in order to access your recovery ${typeLabel}`}
+            {lang.t('back_up.secret.you_need_to_authenticate', {
+              typeName: typeLabel,
+            })}
           </AuthenticationText>
           <ToggleSecretButton onPress={loadSeed}>
             <BiometricButtonContent
               color={colors.white}
-              label={`Show Recovery ${upperFirst(typeLabel)}`}
+              label={lang.t('back_up.secret.show_recovery', {
+                typeName: upperFirst(typeLabel),
+              })}
               showIcon={!seed}
             />
           </ToggleSecretButton>
