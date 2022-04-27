@@ -378,6 +378,9 @@
         "short_placeholder": "ENS or address :)"
       }
     },
+    "gas": {
+      "network_fee": "Frais de réseau",
+    },
     "homepage": {
       "coming_soon": "À venir.",
       "connect_ledger": {

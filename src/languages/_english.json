@@ -381,6 +381,9 @@
         "short_placeholder": "ENS or address"
       }
     },
+    "gas": {
+      "network_fee": "Est. network fee",
+    },
     "homepage": {
       "back": "Back to rainbow.me",
       "coming_soon": "Coming soon.",
