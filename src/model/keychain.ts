@@ -285,8 +285,6 @@ export async function getPrivateAccessControlOptions(): Promise<Options> {
 //    valid.
 // Result is true if keychain is needs a repair, false otherwise.
 export async function checkKeychainStatus() {
-  let needsRepair = false;
-
   const entry = await loadString(addressKey);
   const isAsyncStorageEmpty = await checkIfAsyncStorageIsEmpty();
 
@@ -305,6 +303,9 @@ export async function checkKeychainStatus() {
   const entries = await loadAllKeys();
 
   if (!entries) {
+    logger.log(
+      '🔐 Failed to load all keychain items. Not attempting to repair the keychain.'
+    );
     return false;
   }
 
@@ -312,12 +313,16 @@ export async function checkKeychainStatus() {
     if (entry.username.endsWith('_rainbowSeedPhrase')) {
       const string = await loadString(entry.username);
       if (typeof string !== 'string' || !isValidMnemonic(string)) {
-        needsRepair = true;
+        logger.log(
+          '🔐 Found incorrect seed phrase. Attempting a keychain repair.'
+        );
+        return true;
       }
     }
   }
 
-  return needsRepair;
+  logger.log('🔐 Keychain is in correct state. Not attempting to repair.');
+  return false;
 }
 
 export async function repairAfterBackup() {
