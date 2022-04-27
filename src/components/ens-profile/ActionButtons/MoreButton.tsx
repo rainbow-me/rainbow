@@ -86,11 +86,10 @@ export default function MoreButton({
         navigate(Routes.MODAL_SCREEN, {
           address,
           color: accentColor,
+          avatarUrl,
+          emoji,
           contact: currentContact || {
             address: address,
-            avatarUrl,
-            color: currentContact?.color,
-            emoji,
             nickname: ensName,
             temporary: true,
           },

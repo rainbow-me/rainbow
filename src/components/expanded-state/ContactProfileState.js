@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
 import { useNavigation } from '../../navigation/Navigation';
@@ -21,15 +21,10 @@ import {
   returnStringFirstEmoji,
 } from '@rainbow-me/helpers/emojiHandler';
 import { isValidDomainFormat } from '@rainbow-me/helpers/validators';
-import {
-  useAccountSettings,
-  useContacts,
-  usePersistentDominantColorFromImage,
-} from '@rainbow-me/hooks';
+import { useAccountSettings, useContacts } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import styled from '@rainbow-me/styled-components';
 import { borders, margin, padding } from '@rainbow-me/styles';
-import { addressHashedColorIndex } from '@rainbow-me/utils/profileUtils';
 import ShadowStack from 'react-native-shadow-stack';
 
 const AddressAbbreviation = styled(TruncatedAddress).attrs(
@@ -91,7 +86,13 @@ const SubmitButtonLabel = styled(Text).attrs(({ value }) => ({
 const centerdStyles = padding.object(24, 25);
 const bottomStyles = padding.object(8, 9);
 
-const ContactProfileState = ({ address, color: colorProp, contact }) => {
+const ContactProfileState = ({
+  address,
+  avatarUrl,
+  color: colorProp,
+  contact,
+  emoji: avatarEmoji,
+}) => {
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const { goBack } = useNavigation();
   const { onAddOrUpdateContacts, onRemoveContact } = useContacts();
@@ -161,12 +162,12 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
               [0, 2, 5, colors.shadow, 0.08],
             ]}
           >
-            {contact.avatarUrl ? (
+            {avatarUrl ? (
               <Box
                 as={ImgixImage}
                 borderRadius={avatarSize / 2}
                 height={{ custom: avatarSize }}
-                source={{ uri: contact.avatarUrl }}
+                source={{ uri: avatarUrl }}
                 width={{ custom: avatarSize }}
               />
             ) : (
@@ -179,7 +180,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
                   justifyContent="center"
                   width={{ custom: avatarSize }}
                 >
-                  <Text size="biggest">{contact.emoji || ''}</Text>
+                  <Text size="biggest">{avatarEmoji || ''}</Text>
                 </Box>
               </AccentColorProvider>
             )}
