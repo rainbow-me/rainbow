@@ -5,17 +5,19 @@ import { ENSConfirmRenewSheetHeight } from '../../../screens/ENSConfirmRegisterS
 import { ButtonPressAnimation } from '../../animations';
 import { TokenInfoItem, TokenInfoValue } from '../../token-info';
 import { useTheme } from '@rainbow-me/context';
-import { Column, Columns } from '@rainbow-me/design-system';
+import { Column, Columns, Inset } from '@rainbow-me/design-system';
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import { useENSProfile, useENSRegistration } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 
 export default function ENSBriefTokenInfoRow({
+  color,
   expiryDate,
   registrationDate,
   showExtendDuration,
   ensName,
 }: {
+  color?: string;
   expiryDate?: number;
   registrationDate?: number;
   ensName: string;
@@ -42,18 +44,19 @@ export default function ENSBriefTokenInfoRow({
   }, [startRegistration, ensName, navigate, data?.images?.avatarUrl]);
 
   return (
-    <Columns space="19px">
+    <Columns space="10px">
       {/* @ts-expect-error JavaScript component */}
       <TokenInfoItem
         color={colors.whiteLabel}
+        isENS
         isNft
         loading={!registrationDate}
-        size="big"
+        size="larger"
         title="Registered on"
         weight="heavy"
       >
         {registrationDate
-          ? format(new Date(registrationDate * 1000), "d MMM ''yy")
+          ? format(new Date(registrationDate * 1000), "MMM d, yyyy")
           : ''}
       </TokenInfoItem>
       {/* @ts-expect-error JavaScript component */}
@@ -64,18 +67,21 @@ export default function ENSBriefTokenInfoRow({
               <ButtonPressAnimation
                 enableHapticFeedback
                 onPress={handlePressEditExpiryDate}
-                scaleTo={1}
+                scaleTo={0.75}
               >
-                <TokenInfoValue
-                  activeOpacity={0}
-                  align="right"
-                  color={colors.whiteLabel}
-                  isNft
-                  size="big"
-                  weight="heavy"
-                >
-                  {' 􀌆'}
-                </TokenInfoValue>
+                <Inset left="2px">
+                  <TokenInfoValue
+                    activeOpacity={0}
+                    align="right"
+                    color={color}
+                    isNft
+                    lineHeight="paragraphSmaller"
+                    size="large"
+                    weight="heavy"
+                  >
+                    {' 􀌆'}
+                  </TokenInfoValue>
+                </Inset>
               </ButtonPressAnimation>
             </Column>
           )
@@ -83,17 +89,18 @@ export default function ENSBriefTokenInfoRow({
         align="right"
         color={colors.whiteLabel}
         enableHapticFeedback
+        isENS
         isNft
         loading={!expiryDate}
         onPress={handlePressExpiryDate}
-        size="big"
+        size="larger"
         title="Expires in"
         weight="heavy"
       >
         {expiryDate
           ? showExpiryDistance
             ? formatDistanceStrict(new Date(), new Date(expiryDate * 1000))
-            : format(new Date(expiryDate * 1000), "d MMM ''yy")
+            : format(new Date(expiryDate * 1000), "MMM d, yyyy")
           : ''}
       </TokenInfoItem>
     </Columns>

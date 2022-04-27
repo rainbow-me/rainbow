@@ -23,7 +23,7 @@ const Content = styled(RowWithMargins).attrs({
   margin: 4,
 })({
   height: ({ size }) => (size === 'big' ? 56 : 46),
-  paddingBottom: ({ label }) => (label && containsEmoji(label) ? 4 : 2),
+  paddingBottom: ({ label }) => (label && containsEmoji(label) ? 2.5 : 1),
   paddingHorizontal: 19,
   zIndex: 1,
 });

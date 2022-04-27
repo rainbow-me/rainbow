@@ -139,17 +139,19 @@ const TextButton = ({
 const textSize: TextProps['size'] = '18px';
 const textColor: TextProps['color'] = 'secondary50';
 const sectionSpace: Space = '30px';
-const paragraphSpace: Space = '24px';
+const paragraphSpace: Space = { custom: 22 };
 const listSpace: Space = '19px';
 
 const Section = ({
   addonComponent,
+  paragraphSpace = '24px',
   title,
   titleEmoji,
   titleImageUrl,
   children,
 }: {
   addonComponent?: React.ReactNode;
+  paragraphSpace?: Space;
   title: string;
   titleEmoji?: string;
   titleImageUrl?: string | null;
@@ -560,6 +562,7 @@ const UniqueTokenExpandedState = ({
                           )}
                           {isENS && (
                             <ENSBriefTokenInfoRow
+                              color={imageColor}
                               ensName={uniqueId}
                               expiryDate={ensData?.registration.expiryDate}
                               registrationDate={
@@ -616,6 +619,7 @@ const UniqueTokenExpandedState = ({
                                 </TextButton>
                               )
                             }
+                            paragraphSpace={{ custom: 22 }}
                             title={`${lang.t(
                               'expanded_state.unique_expanded.profile_info'
                             )}`}
@@ -631,6 +635,7 @@ const UniqueTokenExpandedState = ({
                             />
                           </Section>
                           <Section
+                            paragraphSpace={{ custom: 22 }}
                             title={`${lang.t(
                               'expanded_state.unique_expanded.configuration'
                             )}`}
@@ -646,6 +651,7 @@ const UniqueTokenExpandedState = ({
                             />
                           </Section>
                           <Section
+                            paragraphSpace={{ custom: 22 }}
                             title={`${lang.t(
                               'expanded_state.unique_expanded.advanced'
                             )}`}
@@ -657,6 +663,7 @@ const UniqueTokenExpandedState = ({
                       )}
                       {familyDescription ? (
                         <Section
+                          paragraphSpace={{ custom: 26 }}
                           title={`${lang.t(
                             'expanded_state.unique_expanded.about',
                             { assetFamilyName: familyName }
@@ -675,6 +682,7 @@ const UniqueTokenExpandedState = ({
                                   color={imageColor}
                                   display={familyLinkDisplay}
                                   url={familyLink}
+                                  weight="bold"
                                 />
                               </Bleed>
                             ) : null}
