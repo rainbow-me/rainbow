@@ -1,7 +1,11 @@
 import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import Animated, {
+  useAnimatedStyle,
+  useDerivedValue,
   withDelay,
+  withRepeat,
+  withSequence,
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
@@ -73,6 +77,69 @@ export function CheckmarkAnimation() {
     };
   };
 
+  const pulsingCheckmarkAnimation = useDerivedValue(() =>
+    withDelay(
+      2000,
+      withRepeat(
+        withSequence(
+          withDelay(2000, withTiming(1)),
+          withTiming(1.1),
+          withTiming(1)
+        ),
+        -1
+      )
+    )
+  );
+  const pulsingCircleAnimation = useDerivedValue(() =>
+    withDelay(
+      1800,
+      withRepeat(
+        withSequence(
+          withDelay(2000, withTiming(1)),
+          withTiming(1.05),
+          withTiming(1)
+        ),
+        -1
+      )
+    )
+  );
+  const rippleCircleAnimation = useDerivedValue(() =>
+    withDelay(
+      1800,
+      withRepeat(
+        withSequence(
+          withDelay(2000, withTiming(0)),
+          withTiming(1),
+          withTiming(0)
+        ),
+        -1
+      )
+    )
+  );
+  const rippleCircleScaleAnimation = useDerivedValue(() =>
+    withDelay(
+      1800,
+      withRepeat(
+        withSequence(
+          withDelay(2000, withTiming(0.6)),
+          withTiming(1),
+          withTiming(0.6)
+        ),
+        -1
+      )
+    )
+  );
+  const pulseCheckmarkStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: pulsingCheckmarkAnimation.value }],
+  }));
+  const pulseCircleStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: pulsingCircleAnimation.value }],
+  }));
+  const rippleCircleStyle = useAnimatedStyle(() => ({
+    opacity: rippleCircleAnimation.value,
+    transform: [{ scale: rippleCircleScaleAnimation.value }],
+  }));
+
   return (
     <Box
       alignItems="center"
@@ -87,29 +154,72 @@ export function CheckmarkAnimation() {
         entering={circleEntering}
         height={{ custom: 120 }}
         justifyContent="center"
-        style={{
-          overflow: 'hidden',
-        }}
+        style={{ overflow: 'hidden' }}
         width={{ custom: 120 }}
       >
-        <RadialGradient
-          center={[60, 60]}
-          colors={
-            android
-              ? ['#1FC24A10', '#1FC24A10', '#1FC24A00']
-              : ['rgba(31,194,74,0.00)', 'rgba(31,194,74,0.06)']
-            // https://github.com/surajitsarkar19/react-native-radial-gradient/issues/9
-          }
-          stops={[1, 0.5]}
-          style={{
-            borderRadius: 120,
-            height: 120,
-            position: 'absolute',
-            width: 120,
-          }}
-        />
+        <Box
+          alignItems="center"
+          as={Animated.View}
+          borderRadius={200}
+          height={{ custom: 120 }}
+          justifyContent="center"
+          style={[
+            { overflow: 'hidden', position: 'absolute' },
+            rippleCircleStyle,
+          ]}
+          width={{ custom: 120 }}
+        >
+          <RadialGradient
+            center={[60, 60]}
+            colors={
+              android
+                ? ['#1FC24A10', '#1FC24A10', '#1FC24A00']
+                : ['rgba(31,194,74,0.00)', 'rgba(31,194,74,0.03)']
+              // https://github.com/surajitsarkar19/react-native-radial-gradient/issues/9
+            }
+            stops={[1, 0.5]}
+            style={{
+              height: 120,
+              position: 'absolute',
+              width: 120,
+            }}
+          />
+        </Box>
+
+        <Box
+          alignItems="center"
+          as={Animated.View}
+          borderRadius={100}
+          entering={circleEntering}
+          height={{ custom: 100 }}
+          justifyContent="center"
+          style={[
+            { overflow: 'hidden', position: 'absolute' },
+            pulseCircleStyle,
+          ]}
+          width={{ custom: 100 }}
+        >
+          <RadialGradient
+            center={[60, 60]}
+            colors={
+              android
+                ? ['#1FC24A10', '#1FC24A10', '#1FC24A00']
+                : ['rgba(31,194,74,0.00)', 'rgba(31,194,74,0.06)']
+              // https://github.com/surajitsarkar19/react-native-radial-gradient/issues/9
+            }
+            stops={[1, 0.5]}
+            style={{
+              height: 100,
+              position: 'absolute',
+              width: 100,
+            }}
+          />
+        </Box>
+
         <Animated.View entering={checkEntering}>
-          <LargeCheckmarkIcon />
+          <Animated.View style={[pulseCheckmarkStyle]}>
+            <LargeCheckmarkIcon />
+          </Animated.View>
         </Animated.View>
       </Box>
     </Box>

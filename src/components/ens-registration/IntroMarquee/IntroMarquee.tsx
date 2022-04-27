@@ -1,9 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+// @ts-expect-error
+import { IS_TESTING } from 'react-native-dotenv';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { MarqueeList } from '../../list';
 import { Box, Stack, Text } from '@rainbow-me/design-system';
-import { fetchProfile } from '@rainbow-me/handlers/ens';
+import { fetchRecords } from '@rainbow-me/handlers/ens';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import { ensIntroMarqueeNames } from '@rainbow-me/references';
@@ -37,12 +39,13 @@ export default function IntroMarquee() {
   );
 
   const renderItem = useCallback(
-    ({ item, onPressStart, onPressCancel }) => (
+    ({ item, onPressStart, onPressCancel, testID }) => (
       <ENSAvatarPlaceholder
         name={item.name}
         onPress={item.onPress}
         onPressCancel={onPressCancel}
         onPressStart={onPressStart}
+        testID={testID}
       />
     ),
     []
@@ -53,20 +56,21 @@ export default function IntroMarquee() {
       const profiles: { [name: string]: string | undefined } = {};
       await Promise.all(
         ensIntroMarqueeNames.map(async name => {
-          const profile = await fetchProfile(name);
-          profiles[name] = profile?.records?.description;
+          const records = await fetchRecords(name);
+          profiles[name] = records?.description;
         })
       );
       setIntroMarqueeProfiles(profiles as any);
     };
-    getProfiles();
+    if (IS_TESTING !== 'true') getProfiles();
   }, []);
 
   const items = useMemo(
     () =>
-      ensIntroMarqueeNames.map(name => ({
+      ensIntroMarqueeNames.map((name, index) => ({
         name,
         onPress: () => handlePressENS(name),
+        testID: `ens-names-marquee-item-${index}`,
       })),
     [handlePressENS]
   );
@@ -88,11 +92,13 @@ function ENSAvatarPlaceholder({
   onPress,
   onPressCancel,
   onPressStart,
+  testID,
 }: {
   name: string;
   onPress: () => void;
   onPressCancel: () => void;
   onPressStart: () => void;
+  testID?: string;
 }) {
   return (
     <ButtonPressAnimation
@@ -108,6 +114,7 @@ function ENSAvatarPlaceholder({
       onPressStart={onPressStart}
       reanimatedButton={false}
       scaleTo={0.8}
+      testID={testID}
     >
       <Box paddingHorizontal="12px">
         <Stack alignHorizontal="center" space={{ custom: 13 }}>

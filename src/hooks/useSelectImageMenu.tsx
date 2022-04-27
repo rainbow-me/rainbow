@@ -34,6 +34,7 @@ const items = {
       imageValue: {
         systemName: 'square.grid.2x2',
       },
+      testID: 'choose-nft',
       type: 'IMAGE_SYSTEM',
     },
   },
@@ -60,6 +61,7 @@ export default function useSelectImageMenu({
   onUploadError,
   showRemove = false,
   uploadToIPFS = false,
+  testID = '',
 }: {
   imagePickerOptions?: Options;
   menuItems?: Action[];
@@ -82,6 +84,7 @@ export default function useSelectImageMenu({
   onUploadError?: ({ error, image }: { error: unknown; image: Image }) => void;
   showRemove?: boolean;
   uploadToIPFS?: boolean;
+  testID?: string;
 } = {}) {
   const { navigate, dangerouslyGetParent } = useNavigation();
   const { openPicker } = useImagePicker();
@@ -219,12 +222,13 @@ export default function useSelectImageMenu({
         {...(android ? { onPress: handleAndroidPress } : {})}
         isMenuPrimaryAction
         onPressMenuItem={handlePressMenuItem}
+        testID={`use-select-image-${testID}`}
         useActionSheetFallback={false}
       >
         {children}
       </ContextMenuButton>
     ),
-    [handleAndroidPress, handlePressMenuItem, menuItems]
+    [handleAndroidPress, handlePressMenuItem, menuItems, testID]
   );
 
   return { ContextMenu, isUploading };

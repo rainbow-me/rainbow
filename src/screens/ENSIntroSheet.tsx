@@ -2,6 +2,7 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import { useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
+import { InteractionManager } from 'react-native';
 import {
   ContextMenuButton,
   MenuActionConfig,
@@ -54,7 +55,7 @@ export default function ENSIntroSheet() {
 
   const { ownedDomains, primaryDomain, nonPrimaryDomains } = useMemo(() => {
     const ownedDomains = domains?.filter(
-      ({ owner }) => owner.id?.toLowerCase() === accountAddress.toLowerCase()
+      ({ owner }) => owner?.id?.toLowerCase() === accountAddress.toLowerCase()
     );
     return {
       nonPrimaryDomains:
@@ -76,17 +77,20 @@ export default function ENSIntroSheet() {
   const { startRegistration } = useENSRegistration();
 
   const handleNavigateToSearch = useCallback(() => {
-    startRegistration('', REGISTRATION_MODES.CREATE);
-    navigate(Routes.ENS_SEARCH_SHEET);
-  }, [navigate, startRegistration]);
+    params?.onSearchForNewName?.();
+    InteractionManager.runAfterInteractions(() => {
+      startRegistration('', REGISTRATION_MODES.CREATE);
+      navigate(Routes.ENS_SEARCH_SHEET);
+    });
+  }, [navigate, params, startRegistration]);
 
   const navigateToAssignRecords = useCallback(
     (ensName: string) => {
-      params?.onSelectExistingName?.();
       startRegistration(ensName, REGISTRATION_MODES.EDIT);
-      setTimeout(() => {
+      InteractionManager.runAfterInteractions(() => {
+        params?.onSelectExistingName?.();
         navigate(Routes.ENS_ASSIGN_RECORDS_SHEET);
-      }, 0);
+      });
     },
     [navigate, params, startRegistration]
   );
@@ -165,7 +169,7 @@ export default function ENSIntroSheet() {
       background="body"
       flexGrow={1}
       paddingTop={{ custom: topPadding }}
-      testID="ens-search-sheet"
+      testID="ens-intro-sheet"
     >
       <Inset top="36px">
         <Box height="full">
@@ -242,6 +246,7 @@ export default function ENSIntroSheet() {
                           lightShadows
                           marginBottom={15}
                           onPress={handleNavigateToSearch}
+                          testID="ens-intro-sheet-find-your-name-button"
                           weight="heavy"
                         />
                       ) : (
@@ -294,6 +299,7 @@ export default function ENSIntroSheet() {
                               // @ts-expect-error JavaScript component
                               label={lang.t('profiles.intro.search_new_name')}
                               onPress={handleNavigateToSearch}
+                              testID="ens-intro-sheet-search-new-name-button"
                               textColor={colors.appleBlue}
                               textSize="lmedium"
                               weight="bold"

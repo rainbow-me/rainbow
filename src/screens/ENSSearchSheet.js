@@ -1,6 +1,5 @@
-import { useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
 import { useDebounce } from 'use-debounce';
 import dice from '../assets/dice.png';
@@ -21,12 +20,12 @@ import {
   Stack,
   Text,
 } from '@rainbow-me/design-system';
-import { ENS_DOMAIN, REGISTRATION_STEPS } from '@rainbow-me/helpers/ens';
+import { ENS_DOMAIN } from '@rainbow-me/helpers/ens';
 import {
   useENSRegistration,
   useENSRegistrationCosts,
+  useENSRegistrationStepHandler,
   useENSSearch,
-  usePrevious,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import Routes from '@rainbow-me/routes';
@@ -37,11 +36,11 @@ export default function ENSSearchSheet() {
   const { navigate } = useNavigation();
 
   const topPadding = android ? 29 : 19;
-  const { params } = useRoute();
 
   const { startRegistration, name } = useENSRegistration();
 
   const [searchQuery, setSearchQuery] = useState(name.replace(ENS_DOMAIN, ''));
+  const [inputValue, setInputValue] = useState(name.replace(ENS_DOMAIN, ''));
   const [debouncedSearchQuery] = useDebounce(searchQuery, 200);
 
   const {
@@ -55,18 +54,16 @@ export default function ENSSearchSheet() {
     name: debouncedSearchQuery,
   });
 
+  const { step } = useENSRegistrationStepHandler();
   const {
     data: registrationCostsData,
     isSuccess: registrationCostsDataIsAvailable,
   } = useENSRegistrationCosts({
     name: debouncedSearchQuery,
     rentPrice: registrationData?.rentPrice,
-    sendReverseRecord: true,
-    step: REGISTRATION_STEPS.COMMIT,
+    step,
     yearsDuration: 1,
   });
-
-  const prevIsAvailable = usePrevious(isAvailable);
 
   const state = useMemo(() => {
     if (isAvailable) return 'success';
@@ -79,12 +76,6 @@ export default function ENSSearchSheet() {
     Keyboard.dismiss();
     navigate(Routes.ENS_ASSIGN_RECORDS_SHEET);
   }, [navigate, searchQuery, startRegistration]);
-
-  useEffect(() => {
-    if (prevIsAvailable !== isAvailable) {
-      params?.onNameAvailable?.(isAvailable);
-    }
-  }, [prevIsAvailable, isAvailable, params]);
 
   return (
     <Box
@@ -113,7 +104,10 @@ export default function ENSSearchSheet() {
             <SearchInput
               contextMenuHidden
               isLoading={isLoading}
-              onChangeText={value => setSearchQuery(normalizeENS(value))}
+              onChangeText={value => {
+                setSearchQuery(normalizeENS(value));
+                setInputValue(value);
+              }}
               placeholder="Input placeholder"
               selectionColor={
                 isAvailable
@@ -124,7 +118,7 @@ export default function ENSSearchSheet() {
               }
               state={state}
               testID="ens-search-input"
-              value={searchQuery}
+              value={inputValue}
             />
           </Box>
           {isIdle && (

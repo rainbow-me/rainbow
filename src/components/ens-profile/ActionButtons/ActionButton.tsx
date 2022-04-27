@@ -18,6 +18,7 @@ type ActionButtonProps = {
   onPress?: ButtonProps['onPress'];
   paddingHorizontal?: Space;
   variant?: 'solid' | 'outlined';
+  testID?: string;
 };
 
 export default function ActionButton({
@@ -26,6 +27,7 @@ export default function ActionButton({
   onPress,
   paddingHorizontal = '12px',
   variant = 'solid',
+  testID,
 }: ActionButtonProps) {
   const appleBlue = useForegroundColor('action');
   const divider100 = useForegroundColor('divider100');
@@ -40,7 +42,7 @@ export default function ActionButton({
 
   const isIconOnly = Boolean(icon && !children);
   return (
-    <ButtonPressAnimation onPress={onPress}>
+    <ButtonPressAnimation onPress={onPress} testID={testID}>
       <AccentColorProvider color={shadowColor}>
         <Box
           alignItems="center"

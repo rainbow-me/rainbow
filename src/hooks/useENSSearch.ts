@@ -4,6 +4,7 @@ import { useQuery } from 'react-query';
 import { useAccountSettings } from '.';
 import { fetchRegistrationDate } from '@rainbow-me/handlers/ens';
 import {
+  ENS_DOMAIN,
   formatRentPrice,
   getAvailable,
   getNameExpires,
@@ -20,16 +21,17 @@ const formatTime = (timestamp: string, abbreviated: boolean = true) => {
 
 export default function useENSSearch({
   yearsDuration = 1,
-  name,
+  name: inputName,
 }: {
   yearsDuration?: number;
   name: string;
 }) {
+  const name = inputName.replace(ENS_DOMAIN, '');
   const { nativeCurrency } = useAccountSettings();
   const isValidLength = useMemo(() => name.length > 2, [name.length]);
   const duration = yearsDuration * timeUnits.secs.year;
   const getRegistrationValues = useCallback(async () => {
-    const ensValidation = validateENS(`${name}.eth`, {
+    const ensValidation = validateENS(`${name}${ENS_DOMAIN}`, {
       includeSubdomains: false,
     });
 
@@ -60,7 +62,7 @@ export default function useENSSearch({
       };
     } else {
       // we need the expiration and registration date when is not available
-      const registrationDate = await fetchRegistrationDate(name + '.eth');
+      const registrationDate = await fetchRegistrationDate(name + ENS_DOMAIN);
       const nameExpires = await getNameExpires(name);
       const formattedRegistrarionDate = formatTime(registrationDate, false);
       const formattedExpirationDate = formatTime(nameExpires);

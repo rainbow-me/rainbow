@@ -399,6 +399,7 @@ const UniqueTokenExpandedState = ({
         ref={sheetRef}
         scrollEnabled
         showsVerticalScrollIndicator={!contentFocused}
+        testID="unique-token-expanded-state"
         yPosition={yPosition}
       >
         <ColorModeProvider value="darkTinted">

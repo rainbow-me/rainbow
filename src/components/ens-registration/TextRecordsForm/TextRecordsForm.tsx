@@ -104,7 +104,7 @@ export default function TextRecordsForm({
                   placeholder={placeholder}
                   selectionColor={selectionColor}
                   startsWith={startsWith}
-                  testID={`ens-text-record-${id}`}
+                  testID={`ens-text-record-${key}`}
                   validations={validations}
                 />
               </Box>
@@ -137,7 +137,7 @@ function Field({ defaultValue, ...props }: InlineFieldProps) {
           props.onChangeText(text);
           setValue(text);
         }}
-        value={value || defaultValue}
+        value={value ?? defaultValue}
       />
     </>
   );

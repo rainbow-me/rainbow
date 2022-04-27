@@ -29,10 +29,12 @@ import {
   REGISTRATION_STEPS,
 } from '@rainbow-me/helpers/ens';
 import {
+  useENSModifiedRegistration,
   useENSRegistration,
   useENSRegistrationActionHandler,
   useENSRegistrationCosts,
   useENSRegistrationForm,
+  useENSRegistrationStepHandler,
   useENSSearch,
   usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
@@ -90,11 +92,10 @@ function TransactionActionRow({
 
 export default function ENSConfirmRegisterSheet() {
   const { params } = useRoute();
+  const { name: ensName, mode } = useENSRegistration();
   const {
     images: { avatarUrl: initialAvatarUrl },
-    name: ensName,
-    mode,
-  } = useENSRegistration();
+  } = useENSModifiedRegistration();
 
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
 
@@ -118,14 +119,15 @@ export default function ENSConfirmRegisterSheet() {
   });
 
   const [sendReverseRecord, setSendReverseRecord] = useState(false);
-  const { step, action } = useENSRegistrationActionHandler({
+  const { step } = useENSRegistrationStepHandler(false);
+  const { action } = useENSRegistrationActionHandler({
     sendReverseRecord,
+    step,
     yearsDuration: duration,
   });
 
   const { data: registrationCostsData } = useENSRegistrationCosts({
     name: ensName,
-    records: values,
     rentPrice: registrationData?.rentPrice,
     sendReverseRecord,
     step,
@@ -199,7 +201,7 @@ export default function ENSConfirmRegisterSheet() {
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: (
         <WaitCommitmentConfirmationContent
           accentColor={accentColor}
-          action={action}
+          action={() => action(accentColor)}
         />
       ),
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: <WaitENSConfirmationContent />,
@@ -284,6 +286,7 @@ export default function ENSConfirmRegisterSheet() {
             Boolean(registrationCostsData?.stepGasLimit)
           }
           label={lang.t('profiles.confirm.confirm_set_name')}
+          testID={step}
         />
       ),
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: null,
@@ -309,7 +312,8 @@ export default function ENSConfirmRegisterSheet() {
   useFocusEffect(
     useCallback(() => {
       blurFields();
-    }, [blurFields])
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
   );
 
   return (

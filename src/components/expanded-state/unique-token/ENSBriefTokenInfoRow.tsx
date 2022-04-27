@@ -1,5 +1,6 @@
 import { useNavigation } from '@react-navigation/core';
 import { format, formatDistanceStrict } from 'date-fns';
+import lang from 'i18n-js';
 import React, { useCallback, useState } from 'react';
 import { ENSConfirmRenewSheetHeight } from '../../../screens/ENSConfirmRegisterSheet';
 import { ButtonPressAnimation } from '../../animations';
@@ -68,6 +69,7 @@ export default function ENSBriefTokenInfoRow({
                 enableHapticFeedback
                 onPress={handlePressEditExpiryDate}
                 scaleTo={0.75}
+                testID="unique-token-expanded-state-extend-duration"
               >
                 <Inset left="2px">
                   <TokenInfoValue
@@ -94,7 +96,7 @@ export default function ENSBriefTokenInfoRow({
         loading={!expiryDate}
         onPress={handlePressExpiryDate}
         size="larger"
-        title="Expires in"
+        title={lang.t('expanded_state.unique_expanded.expires_in')}
         weight="heavy"
       >
         {expiryDate
