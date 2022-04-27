@@ -25,13 +25,11 @@ export default function MoreButton({
   ensName,
   avatarUrl,
   emoji,
-  accentColor,
 }: {
   address?: string;
   ensName?: string;
   avatarUrl?: string | null;
   emoji?: string | null;
-  accentColor?: string;
 }) {
   const { navigate } = useNavigation();
   const { setClipboard } = useClipboard();
@@ -96,7 +94,6 @@ export default function MoreButton({
       }
       if (actionKey === ACTIONS.ADD_CONTACT) {
         navigate(Routes.MODAL_SCREEN, {
-          accentColor,
           address,
           avatarUrl,
           contact: currentContact,
@@ -115,7 +112,6 @@ export default function MoreButton({
       }
     },
     [
-      accentColor,
       address,
       avatarUrl,
       currentContact,

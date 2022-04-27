@@ -1,11 +1,14 @@
 import { useRoute } from '@react-navigation/core';
 import React, { createContext, useMemo } from 'react';
+import { useSetRecoilState } from 'recoil';
 import RecyclerAssetList2 from '../components/asset-list/RecyclerAssetList2';
 import ProfileSheetHeader from '../components/ens-profile/ProfileSheetHeader';
 import { SheetHandleFixedToTopHeight } from '../components/sheet';
 import Skeleton from '../components/skeleton/Skeleton';
 import useENSProfile from '../hooks/useENSProfile';
+import { useTheme } from '@rainbow-me/context';
 import {
+  AccentColorProvider,
   Box,
   Column,
   Columns,
@@ -13,13 +16,16 @@ import {
   Inset,
   Stack,
 } from '@rainbow-me/design-system';
+import { accentColorAtom } from '@rainbow-me/helpers/ens';
 import {
   useDimensions,
   useENSResolveName,
   useExternalWalletSectionsData,
   useFirstTransactionTimestamp,
+  usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
+import { addressHashedColorIndex } from '@rainbow-me/utils/profileUtils';
 
 export const ProfileSheetConfigContext = createContext<{
   enableZoomableImages: boolean;
@@ -29,12 +35,14 @@ export const ProfileSheetConfigContext = createContext<{
 
 export default function ProfileSheet() {
   const { params, name } = useRoute<any>();
+  const { colors } = useTheme();
 
   const { height: deviceHeight } = useDimensions();
   const contentHeight = deviceHeight - SheetHandleFixedToTopHeight;
 
   const ensName = params?.address;
-  const { isSuccess } = useENSProfile(ensName);
+  const { data: profile, isSuccess } = useENSProfile(ensName);
+  const avatarUrl = profile?.images?.avatarUrl;
 
   const { data: profileAddress } = useENSResolveName(ensName);
 
@@ -48,29 +56,49 @@ export default function ProfileSheet() {
     address: profileAddress,
   });
 
+  const colorIndex = useMemo(
+    () => (profileAddress ? addressHashedColorIndex(profileAddress) : 0),
+    [profileAddress]
+  );
+
+  const { result: dominantColor } = usePersistentDominantColorFromImage(
+    avatarUrl || ''
+  );
+
   const wrapperStyle = useMemo(() => ({ height: contentHeight }), [
     contentHeight,
   ]);
+
+  const accentColor =
+    dominantColor ||
+    colors.avatarBackgrounds[colorIndex || 0] ||
+    colors.appleBlue;
+
+  const setAccentColor = useSetRecoilState(accentColorAtom);
+
+  setAccentColor(accentColor);
 
   const enableZoomableImages =
     !params.isPreview && name !== Routes.PROFILE_PREVIEW_SHEET;
 
   return (
     <ProfileSheetConfigContext.Provider value={{ enableZoomableImages }}>
-      <Box background="body">
-        <Box style={wrapperStyle}>
-          {!isSuccess || !hasListFetched ? (
-            <Stack space="19px">
-              <ProfileSheetHeader isLoading isPreview={params.isPreview} />
-              <PlaceholderList />
-            </Stack>
-          ) : !params.isPreview ? (
-            <RecyclerAssetList2 address={profileAddress} type="ens-profile" />
-          ) : (
-            <ProfileSheetHeader ensName={params?.ensName} isPreview />
-          )}
+      <AccentColorProvider color={accentColor}>
+        <Box background="body">
+          <Box style={wrapperStyle}>
+            {!isSuccess || !hasListFetched ? (
+              <Stack space="19px">
+                <ProfileSheetHeader isLoading isPreview={params.isPreview} />
+                <PlaceholderList />
+              </Stack>
+            ) : !params.isPreview ? (
+              <RecyclerAssetList2 address={profileAddress} type="ens-profile" />
+            ) : (
+              <ProfileSheetHeader ensName={params?.ensName} isPreview />
+            )}
+          </Box>
         </Box>
-      </Box>
+      </AccentColorProvider>
     </ProfileSheetConfigContext.Provider>
   );
 }

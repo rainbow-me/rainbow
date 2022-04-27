@@ -11,13 +11,11 @@ export default function ActionButtons({
   ensName,
   avatarUrl,
   emoji,
-  accentColor,
 }: {
   address?: string;
   ensName?: string;
   avatarUrl?: string | null;
   emoji?: string | null;
-  accentColor?: string;
 }) {
   const { wallets } = useWallets();
 
@@ -32,7 +30,6 @@ export default function ActionButtons({
   return (
     <Inline alignHorizontal="right" space="8px">
       <MoreButton
-        accentColor={accentColor}
         address={primaryAddress}
         avatarUrl={avatarUrl}
         emoji={emoji}
