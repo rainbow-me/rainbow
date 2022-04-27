@@ -32,10 +32,10 @@ export default function ActionButtons({
   return (
     <Inline alignHorizontal="right" space="8px">
       <MoreButton
+        accentColor={accentColor}
         address={primaryAddress}
         avatarUrl={avatarUrl}
         emoji={emoji}
-        accentColor={accentColor}
         ensName={ensName}
       />
       {isOwner ? (

@@ -9,6 +9,7 @@ import ProfileDescription from './ProfileDescription/ProfileDescription';
 import RecordTags, {
   Placeholder as RecordTagsPlaceholder,
 } from './RecordTags/RecordTags';
+import { useTheme } from '@rainbow-me/context';
 import {
   AccentColorProvider,
   Bleed,
@@ -30,7 +31,6 @@ import {
   addressHashedColorIndex,
   addressHashedEmoji,
 } from '@rainbow-me/utils/profileUtils';
-import { useTheme } from '@rainbow-me/context';
 
 export default function ProfileSheetHeader({
   ensName: defaultEnsName,
@@ -94,10 +94,10 @@ export default function ProfileSheetHeader({
                 {!isLoading && (
                   <Inset top="30px">
                     <ActionButtons
+                      accentColor={accentColor}
                       address={profileAddress}
                       avatarUrl={avatarUrl}
                       emoji={emoji}
-                      accentColor={accentColor}
                       ensName={ensName}
                     />
                   </Inset>

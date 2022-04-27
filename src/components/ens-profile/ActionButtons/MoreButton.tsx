@@ -96,15 +96,12 @@ export default function MoreButton({
       }
       if (actionKey === ACTIONS.ADD_CONTACT) {
         navigate(Routes.MODAL_SCREEN, {
+          accentColor,
           address,
-          color: accentColor,
           avatarUrl,
+          contact: currentContact,
           emoji,
-          contact: currentContact || {
-            address: address,
-            nickname: ensName,
-            temporary: true,
-          },
+          nickname: ensName,
           type: 'contact_profile',
         });
       }
@@ -118,6 +115,7 @@ export default function MoreButton({
       }
     },
     [
+      accentColor,
       address,
       avatarUrl,
       currentContact,

@@ -87,34 +87,36 @@ const centerdStyles = padding.object(24, 25);
 const bottomStyles = padding.object(8, 9);
 
 const ContactProfileState = ({
+  accentColor,
   address,
   avatarUrl,
-  color: colorProp,
   contact,
   emoji: avatarEmoji,
+  nickname,
 }) => {
   const profilesEnabled = useExperimentalFlag(PROFILES);
+  const contactNickname = contact?.nickname || nickname;
   const { goBack } = useNavigation();
   const { onAddOrUpdateContacts, onRemoveContact } = useContacts();
-  const [color, setColor] = useState(colorProp || 0);
+  const [color, setColor] = useState(accentColor || 0);
   const [value, setValue] = useState(
-    removeFirstEmojiFromString(contact?.nickname || '')
+    removeFirstEmojiFromString(contactNickname)
   );
-  const [emoji, setEmoji] = useState(returnStringFirstEmoji(contact?.nickname));
+  const [emoji, setEmoji] = useState(returnStringFirstEmoji(contactNickname));
   const inputRef = useRef(null);
   const { network } = useAccountSettings();
 
   const handleAddContact = useCallback(() => {
     const nickname = (emoji ? `${emoji} ${value}` : value).trim();
-    if (value.length > 0 || color !== colorProp) {
+    if (value.length > 0 || color !== accentColor) {
       onAddOrUpdateContacts(address, nickname, color, network);
       goBack();
     }
     android && Keyboard.dismiss();
   }, [
+    accentColor,
     address,
     color,
-    colorProp,
     emoji,
     goBack,
     network,
@@ -136,7 +138,7 @@ const ContactProfileState = ({
     inputRef,
   ]);
 
-  const isContact = contact && !contact.temporary;
+  const isContact = Boolean(contact);
 
   const { isDarkMode, colors } = useTheme();
 
