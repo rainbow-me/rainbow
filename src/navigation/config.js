@@ -164,9 +164,10 @@ export const profilePreviewConfig = {
     ...buildCoolModalConfig({
       ...params,
       backgroundOpacity: 0,
+      disableShortFormAfterTransitionToLongForm: true,
       isShortFormEnabled: true,
       scrollEnabled: true,
-      shortFormHeight: 280 + params.descriptionProfilePreviewHeight,
+      shortFormHeight: 281 + params.descriptionProfilePreviewHeight,
       springDamping: 1,
       transitionDuration: 0.3,
       startFromShortForm: true,
