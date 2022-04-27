@@ -10,6 +10,7 @@ import RecordTags, {
   Placeholder as RecordTagsPlaceholder,
 } from './RecordTags/RecordTags';
 import {
+  AccentColorProvider,
   Bleed,
   Box,
   Column,
@@ -20,8 +21,16 @@ import {
   Stack,
 } from '@rainbow-me/design-system';
 import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
-import { useENSProfile, useFirstTransactionTimestamp } from '@rainbow-me/hooks';
-import { addressHashedEmoji } from '@rainbow-me/utils/profileUtils';
+import {
+  useENSProfile,
+  useFirstTransactionTimestamp,
+  usePersistentDominantColorFromImage,
+} from '@rainbow-me/hooks';
+import {
+  addressHashedColorIndex,
+  addressHashedEmoji,
+} from '@rainbow-me/utils/profileUtils';
+import { useTheme } from '@rainbow-me/context';
 
 export default function ProfileSheetHeader({
   ensName: defaultEnsName,
@@ -34,6 +43,7 @@ export default function ProfileSheetHeader({
 }) {
   const { params } = useRoute<any>();
   const { layout } = useContext(ModalContext) || {};
+  const { colors } = useTheme();
 
   const ensName = defaultEnsName || params?.address;
   const { data: profile } = useENSProfile(ensName);
@@ -50,81 +60,98 @@ export default function ProfileSheetHeader({
     [profileAddress]
   );
 
+  const colorIndex = useMemo(
+    () => (profileAddress ? addressHashedColorIndex(profileAddress) : 0),
+    [profileAddress]
+  );
+
+  const { result: dominantColor } = usePersistentDominantColorFromImage(
+    avatarUrl || ''
+  );
+
+  const accentColor =
+    dominantColor ||
+    colors.avatarBackgrounds[colorIndex || 0] ||
+    colors.appleBlue;
+
   return (
-    <Box
-      {...(ios && { onLayout: (e: any) => setTimeout(() => layout(e), 500) })}
-    >
-      <Stack space="19px">
-        <ProfileCover coverUrl={coverUrl} isLoading={isLoading} />
-        <Bleed top={{ custom: 38 }}>
-          <Inset horizontal="19px">
-            <Columns>
-              <Column width="content">
-                <ProfileAvatar
-                  accountSymbol={emoji as string}
-                  avatarUrl={avatarUrl}
-                  isLoading={isLoading}
-                />
-              </Column>
-              {!isLoading && (
-                <Inset top="30px">
-                  <ActionButtons
-                    address={profileAddress}
+    <AccentColorProvider color={accentColor}>
+      <Box
+        {...(ios && { onLayout: (e: any) => setTimeout(() => layout(e), 500) })}
+      >
+        <Stack space="19px">
+          <ProfileCover coverUrl={coverUrl} isLoading={isLoading} />
+          <Bleed top={{ custom: 38 }}>
+            <Inset horizontal="19px">
+              <Columns>
+                <Column width="content">
+                  <ProfileAvatar
+                    accountSymbol={emoji as string}
                     avatarUrl={avatarUrl}
-                    emoji={emoji}
-                    ensName={ensName}
+                    isLoading={isLoading}
                   />
+                </Column>
+                {!isLoading && (
+                  <Inset top="30px">
+                    <ActionButtons
+                      address={profileAddress}
+                      avatarUrl={avatarUrl}
+                      emoji={emoji}
+                      accentColor={accentColor}
+                      ensName={ensName}
+                    />
+                  </Inset>
+                )}
+              </Columns>
+            </Inset>
+          </Bleed>
+          <Inset horizontal="19px">
+            <Stack space="19px">
+              <Heading size="23px">{ensName}</Heading>
+              <>
+                {isLoading ? (
+                  <DescriptionPlaceholder />
+                ) : profile?.records?.description ? (
+                  <ProfileDescription
+                    description={profile?.records?.description}
+                  />
+                ) : null}
+              </>
+              <Bleed horizontal="19px">
+                {isLoading ? (
+                  <RecordTagsPlaceholder />
+                ) : (
+                  <>
+                    {profile?.records && (
+                      <RecordTags
+                        firstTransactionTimestamp={firstTransactionTimestamp}
+                        records={profile?.records}
+                        show={[
+                          ENS_RECORDS.twitter,
+                          ENS_RECORDS.website,
+                          ENS_RECORDS.url,
+                          ENS_RECORDS.email,
+                          ENS_RECORDS.github,
+                          ENS_RECORDS.instagram,
+                          ENS_RECORDS.reddit,
+                          ENS_RECORDS.snapchat,
+                          ENS_RECORDS.telegram,
+                        ]}
+                      />
+                    )}
+                  </>
+                )}
+              </Bleed>
+              {!isPreview && (
+                <Inset bottom="15px">
+                  <Divider />
                 </Inset>
               )}
-            </Columns>
+            </Stack>
           </Inset>
-        </Bleed>
-        <Inset horizontal="19px">
-          <Stack space="19px">
-            <Heading size="23px">{ensName}</Heading>
-            <>
-              {isLoading ? (
-                <DescriptionPlaceholder />
-              ) : profile?.records?.description ? (
-                <ProfileDescription
-                  description={profile?.records?.description}
-                />
-              ) : null}
-            </>
-            <Bleed horizontal="19px">
-              {isLoading ? (
-                <RecordTagsPlaceholder />
-              ) : (
-                <>
-                  {profile?.records && (
-                    <RecordTags
-                      firstTransactionTimestamp={firstTransactionTimestamp}
-                      records={profile?.records}
-                      show={[
-                        ENS_RECORDS.twitter,
-                        ENS_RECORDS.website,
-                        ENS_RECORDS.url,
-                        ENS_RECORDS.email,
-                        ENS_RECORDS.github,
-                        ENS_RECORDS.instagram,
-                        ENS_RECORDS.reddit,
-                        ENS_RECORDS.snapchat,
-                        ENS_RECORDS.telegram,
-                      ]}
-                    />
-                  )}
-                </>
-              )}
-            </Bleed>
-            {!isPreview && (
-              <Inset bottom="15px">
-                <Divider />
-              </Inset>
-            )}
-          </Stack>
-        </Inset>
-      </Stack>
-    </Box>
+        </Stack>
+      </Box>
+    </AccentColorProvider>
   );
 }
 

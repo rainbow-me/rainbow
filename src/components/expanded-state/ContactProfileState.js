@@ -148,23 +148,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
     setEmoji(profileUtils.avatars[nextAvatarIndex]?.emoji);
   }, [emoji, setColor]);
 
-  console.log(contact);
-
   const avatarSize = 65;
-
-  const colorIndex = useMemo(
-    () => (address ? addressHashedColorIndex(address) : 0),
-    [address]
-  );
-
-  const { result: dominantColor } = usePersistentDominantColorFromImage(
-    contact.avatarUrl || ''
-  );
-
-  const accentColor =
-    dominantColor ||
-    colors.avatarBackgrounds[colorIndex || 0] ||
-    colors.appleBlue;
 
   return (
     <ProfileModal onPressBackdrop={handleAddContact}>
@@ -186,7 +170,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
                 width={{ custom: avatarSize }}
               />
             ) : (
-              <AccentColorProvider color={accentColor}>
+              <AccentColorProvider color={color}>
                 <Box
                   alignItems="center"
                   background="accent"
@@ -235,7 +219,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
           <Divider inset={false} />
         </Centered>
         <SubmitButton
-          color={accentColor}
+          color={color}
           isDarkMode={isDarkMode}
           onPress={handleAddContact}
           testID="contact-profile-add-button"

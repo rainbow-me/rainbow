@@ -22,11 +22,13 @@ export default function MoreButton({
   ensName,
   avatarUrl,
   emoji,
+  accentColor,
 }: {
   address?: string;
   ensName?: string;
   avatarUrl?: string | null;
   emoji?: string | null;
+  accentColor?: string;
 }) {
   const { navigate } = useNavigation();
   const { setClipboard } = useClipboard();
@@ -83,7 +85,7 @@ export default function MoreButton({
       if (actionKey === ACTIONS.ADD_CONTACT) {
         navigate(Routes.MODAL_SCREEN, {
           address,
-          color: currentContact?.color,
+          color: accentColor,
           contact: currentContact || {
             address: address,
             avatarUrl,
