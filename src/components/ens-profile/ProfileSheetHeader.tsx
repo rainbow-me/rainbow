@@ -105,11 +105,6 @@ export default function ProfileSheetHeader({
                         ENS_RECORDS.reddit,
                         ENS_RECORDS.snapchat,
                         ENS_RECORDS.telegram,
-                        ENS_RECORDS.telegram,
-                        ENS_RECORDS.telegram,
-                        ENS_RECORDS.telegram,
-                        ENS_RECORDS.telegram,
-                        ENS_RECORDS.telegram,
                       ]}
                     />
                   )}
