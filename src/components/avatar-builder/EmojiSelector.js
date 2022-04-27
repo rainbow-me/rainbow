@@ -89,7 +89,7 @@ class EmojiSelector extends PureComponent {
       (type, dim, i) => {
         if (type === EMOJI_CONTAINER) {
           dim.height =
-            Math.floor(this.state.allEmojiList[i].data.length / 7 + 1) *
+            Math.floor(this.state.allEmojiList[i].data.length / this.props.column + 1) *
             ((width - 21) / this.props.columns);
           dim.width = deviceUtils.dimensions.width;
         } else if (type === HEADER_ROW) {
