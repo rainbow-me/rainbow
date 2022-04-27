@@ -580,6 +580,7 @@
       },
       "details": {
         "add_to_contacts": "Add to Contacts",
+        "remove_from_contacts": "Remove from Contacts",
         "copy_address": "Copy Address",
         "view_on_etherscan": "View on Etherscan"
       },

@@ -9,7 +9,6 @@ import ENSAssignRecordsSheet, {
 } from '../screens/ENSAssignRecordsSheet';
 import ENSIntroSheet from '../screens/ENSIntroSheet';
 import ENSSearchSheet from '../screens/ENSSearchSheet';
-import { useNavigation } from './Navigation';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
 import { sharedCoolModalTopOffset } from './config';
 import { useTheme } from '@rainbow-me/context';
@@ -52,7 +51,6 @@ const defaultScreenOptions = {
 
 export default function RegisterENSNavigator() {
   const { params } = useRoute();
-  const navigation = useNavigation();
 
   const sheetRef = useRef();
 
@@ -111,23 +109,31 @@ export default function RegisterENSNavigator() {
     StatusBar.setBarStyle('light-content');
   }, []);
 
+  useEffect(() => () => clearCurrentRegistrationName(), [
+    clearCurrentRegistrationName,
+  ]);
+
   useEffect(() => {
     if (!screenOptions.scrollEnabled) {
       sheetRef.current.scrollTo({ animated: false, x: 0, y: 0 });
     }
   }, [screenOptions.scrollEnabled]);
 
-  useEffect(() => {
-    const dismiss = () => {
-      // Remove avatar record on dismissal to prevent accent color inconsistencies.
+  useEffect(
+    () => () => {
       removeRecordByKey('avatar');
       setAccentColor(colors.purple);
       clearValues();
       clearCurrentRegistrationName();
-    };
-    navigation.addListener('dismiss', dismiss);
-    return () => navigation.removeListener('dismiss', dismiss);
-  });
+    },
+    [
+      clearCurrentRegistrationName,
+      clearValues,
+      colors.purple,
+      removeRecordByKey,
+      setAccentColor,
+    ]
+  );
 
   const enableAssignRecordsBottomActions =
     currentRouteName !== Routes.ENS_INTRO_SHEET;
