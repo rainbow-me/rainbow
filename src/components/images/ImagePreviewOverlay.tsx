@@ -63,6 +63,10 @@ const heightAtom = atomFamily({
   default: 0,
   key: 'imagePreviewOverlay.height',
 });
+const hideStatusBarAtom = atomFamily({
+  default: true,
+  key: 'imagePreviewOverlay.hideStatusBar',
+});
 const hostComponentAtom = atomFamily<React.ReactElement, string>({
   default: <Box />,
   key: 'imagePreviewOverlay.hostComponent',
@@ -186,6 +190,7 @@ function ImagePreview({
   const borderRadius = useRecoilValue(borderRadiusAtom(id));
   const hasShadow = useRecoilValue(hasShadowAtom(id));
   const height = useRecoilValue(heightAtom(id));
+  const hideStatusBar = useRecoilValue(hideStatusBarAtom(id));
   const hostComponent = useRecoilValue(hostComponentAtom(id));
   const width = useRecoilValue(widthAtom(id));
   const xOffset = useRecoilValue(xOffsetAtom(id));
@@ -313,6 +318,7 @@ function ImagePreview({
           disableAnimations={false}
           hasShadow={hasShadow}
           height={height}
+          hideStatusBar={hideStatusBar}
           horizontalPadding={0}
           onZoomInWorklet={handleZoomIn}
           onZoomOutWorklet={handleZoomOut}
@@ -343,6 +349,7 @@ export function ImagePreviewOverlayTarget({
   children,
   hasShadow = false,
   height: initialHeight,
+  hideStatusBar = true,
   topOffset = 85,
   uri,
 }: {
@@ -351,6 +358,7 @@ export function ImagePreviewOverlayTarget({
   children: React.ReactElement;
   hasShadow?: boolean;
   height?: BoxProps['height'];
+  hideStatusBar?: boolean;
   topOffset?: number;
 } & (
   | {
@@ -376,6 +384,7 @@ export function ImagePreviewOverlayTarget({
   const setBackgroundMask = useSetRecoilState(backgroundMaskAtom(id));
   const setBorderRadius = useSetRecoilState(borderRadiusAtom(id));
   const setHasShadow = useSetRecoilState(hasShadowAtom(id));
+  const setHideStatusBar = useSetRecoilState(hideStatusBarAtom(id));
   const setXOffset = useSetRecoilState(xOffsetAtom(id));
   const setYOffset = useSetRecoilState(yOffsetAtom(id));
 
@@ -385,15 +394,18 @@ export function ImagePreviewOverlayTarget({
     }
     setBorderRadius(borderRadius);
     setHasShadow(hasShadow);
+    setHideStatusBar(hideStatusBar);
     setIds(ids => [...ids, id]);
   }, [
     backgroundMask,
     borderRadius,
     hasShadow,
+    hideStatusBar,
     id,
     setBackgroundMask,
     setBorderRadius,
     setHasShadow,
+    setHideStatusBar,
     setIds,
   ]);
 

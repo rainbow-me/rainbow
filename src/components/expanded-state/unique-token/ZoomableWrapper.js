@@ -81,6 +81,7 @@ export const ZoomableWrapper = ({
   aspectRatio,
   borderRadius,
   disableAnimations,
+  hideStatusBar = true,
   onZoomIn = () => {},
   onZoomInWorklet = () => {},
   onZoomOut = () => {},
@@ -136,11 +137,19 @@ export const ZoomableWrapper = ({
   const isZoomedValue = useSharedValue(false);
 
   useEffect(() => {
+    if (hideStatusBar) {  
+      if (isZoomed) {
+        StatusBar.setHidden(true);
+      } else {
+        StatusBar.setHidden(false);
+      }
+    }
+  }, [hideStatusBar, isZoomed]);
+
+  useEffect(() => {
     if (isZoomed) {
-      StatusBar.setHidden(true);
       onZoomIn?.();
     } else {
-      StatusBar.setHidden(false);
       onZoomOut?.();
     }
   }, [isZoomed, onZoomIn, onZoomOut]);

@@ -51,6 +51,7 @@ export default function ProfileCover({
           aspectRatioType="cover"
           borderRadius={0}
           height="126px"
+          hideStatusBar={false}
           topOffset={ios ? 112 : 107}
         >
           <Box as={ImgixImage} height="126px" source={{ uri: coverUrl }} />

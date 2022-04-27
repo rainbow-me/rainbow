@@ -53,6 +53,7 @@ export default function ProfileAvatar({
               backgroundMask="avatar"
               borderRadius={size / 2}
               height={{ custom: size }}
+              hideStatusBar={false}
               topOffset={ios ? 112 : 107}
             >
               <Box
