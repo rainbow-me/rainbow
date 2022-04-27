@@ -344,7 +344,6 @@ const UniqueTokenExpandedState = ({
     if (isENS) {
       InteractionManager.runAfterInteractions(() => {
         startRegistration(uniqueId, REGISTRATION_MODES.EDIT);
-        goBack();
         navigate(Routes.REGISTER_ENS_NAVIGATOR, {
           ensName: uniqueId,
           mode: REGISTRATION_MODES.EDIT,
