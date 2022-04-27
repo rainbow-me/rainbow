@@ -20,6 +20,7 @@ export type SearchInputProps = {
   onChangeText: TextInputProps['onChangeText'];
   value: TextInputProps['value'];
   variant: 'rainbow';
+  selectionColor?: string;
   state?: 'success' | 'warning';
   testID: string;
 };
@@ -29,6 +30,7 @@ const SearchInput = ({
   onChangeText,
   value,
   variant = 'rainbow',
+  selectionColor,
   state,
   testID,
 }: SearchInputProps) => {
@@ -129,6 +131,8 @@ const SearchInput = ({
               onChangeText={onChangeText}
               onFocus={handleFocus}
               ref={inputRef}
+              selectionColor={selectionColor}
+              spellCheck={false}
               style={useMemo(
                 () => ({
                   ...headingStyle,
@@ -141,7 +145,7 @@ const SearchInput = ({
               value={value}
             />
             <Column width="content">
-              <Heading size="30px" weight="heavy">
+              <Heading align="right" size="30px" weight="heavy">
                 .eth
               </Heading>
             </Column>

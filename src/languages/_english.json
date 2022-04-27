@@ -611,7 +611,7 @@
       "select_ens_name": "My ENS Names",
       "search": {
         "header": "Find your name",
-        "description": "Search available profile names",
+        "description": "Search available ENS names",
         "available": "🥳 Available",
         "taken": "😭 Taken",
         "registered_on": "This name was last registered on %{content}",
