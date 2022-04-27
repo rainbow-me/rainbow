@@ -26,7 +26,11 @@ import {
   returnStringFirstEmoji,
 } from '@rainbow-me/helpers/emojiHandler';
 import { isValidDomainFormat } from '@rainbow-me/helpers/validators';
-import { useAccountSettings, useContacts } from '@rainbow-me/hooks';
+import {
+  useAccountSettings,
+  useContacts,
+  usePersistentDominantColorFromImage,
+} from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { margin, padding } from '@rainbow-me/styles';
 
@@ -158,8 +162,14 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
     [address]
   );
 
-  const emojiBackgroundColor =
-    colors.avatarBackgrounds[colorIndex || 0] || colors.appleBlue;
+  const { result: dominantColor } = usePersistentDominantColorFromImage(
+    contact.avatarUrl || ''
+  );
+
+  const accentColor =
+    dominantColor ||
+    colors.avatarBackgrounds[colorIndex || 0] ||
+    colors.appleBlue;
 
   return (
     <ProfileModal onPressBackdrop={handleAddContact}>
@@ -180,16 +190,16 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
               borderRadius={avatarSize / 2}
             />
           ) : (
-            <AccentColorProvider color={emojiBackgroundColor}>
+            <AccentColorProvider color={accentColor}>
               <Box
                 alignItems="center"
+                justifyContent="center"
                 background="accent"
                 borderRadius={avatarSize / 2}
                 height={{ custom: avatarSize }}
-                justifyContent="center"
                 width={{ custom: avatarSize }}
               >
-                <NativeText style={{ fontSize: 38 }}>{emoji2 || ''}</NativeText>
+                <Text size="biggest">{emoji2 || ''}</Text>
               </Box>
             </AccentColorProvider>
           )}
@@ -220,7 +230,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
           <Divider inset={false} />
         </Centered>
         <SubmitButton
-          color={color}
+          color={accentColor}
           isDarkMode={isDarkMode}
           onPress={handleAddContact}
           testID="contact-profile-add-button"
