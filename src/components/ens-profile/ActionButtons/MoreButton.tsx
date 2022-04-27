@@ -1,9 +1,11 @@
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
+import { Keyboard } from 'react-native';
 import {
   ContextMenuButton,
   MenuActionConfig,
 } from 'react-native-ios-context-menu';
+import { showDeleteContactActionSheet } from '../../contacts';
 import More from '../MoreButton/MoreButton';
 import { useClipboard, useContacts } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
@@ -15,6 +17,7 @@ const ACTIONS = {
   ADD_CONTACT: 'add-contact',
   COPY_ADDRESS: 'copy-address',
   ETHERSCAN: 'etherscan',
+  REMOVE_CONTACT: 'remove-contact',
 };
 
 export default function MoreButton({
@@ -32,7 +35,7 @@ export default function MoreButton({
 }) {
   const { navigate } = useNavigation();
   const { setClipboard } = useClipboard();
-  const { contacts } = useContacts();
+  const { contacts, onRemoveContact } = useContacts();
 
   const currentContact = useMemo(
     () => (address ? contacts[address.toLowerCase()] : undefined),
@@ -46,14 +49,23 @@ export default function MoreButton({
 
   const menuItems = useMemo(() => {
     return [
-      {
-        actionKey: ACTIONS.ADD_CONTACT,
-        actionTitle: lang.t('profiles.details.add_to_contacts'),
-        icon: {
-          iconType: 'SYSTEM',
-          iconValue: 'person.text.rectangle',
-        },
-      },
+      currentContact
+        ? {
+            actionKey: ACTIONS.REMOVE_CONTACT,
+            actionTitle: lang.t('profiles.details.remove_from_contacts'),
+            icon: {
+              iconType: 'SYSTEM',
+              iconValue: 'person.text.rectangle',
+            },
+          }
+        : {
+            actionKey: ACTIONS.ADD_CONTACT,
+            actionTitle: lang.t('profiles.details.add_to_contacts'),
+            icon: {
+              iconType: 'SYSTEM',
+              iconValue: 'person.text.rectangle',
+            },
+          },
       {
         actionKey: ACTIONS.COPY_ADDRESS,
         actionTitle: lang.t('profiles.details.copy_address'),
@@ -72,7 +84,7 @@ export default function MoreButton({
         },
       },
     ] as MenuActionConfig[];
-  }, [formattedAddress]);
+  }, [currentContact, formattedAddress]);
 
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
@@ -96,8 +108,25 @@ export default function MoreButton({
           type: 'contact_profile',
         });
       }
+      if (actionKey === ACTIONS.REMOVE_CONTACT) {
+        showDeleteContactActionSheet({
+          address,
+          nickname: currentContact.nickname,
+          removeContact: onRemoveContact,
+        });
+        android && Keyboard.dismiss();
+      }
     },
-    [address, avatarUrl, currentContact, emoji, ensName, navigate, setClipboard]
+    [
+      address,
+      avatarUrl,
+      currentContact,
+      emoji,
+      ensName,
+      navigate,
+      onRemoveContact,
+      setClipboard,
+    ]
   );
 
   const handleAndroidPress = useCallback(() => {

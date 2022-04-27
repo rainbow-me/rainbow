@@ -76,9 +76,12 @@ export default function ENSIntroSheet() {
   const { startRegistration } = useENSRegistration();
 
   const handleNavigateToSearch = useCallback(() => {
-    startRegistration('', REGISTRATION_MODES.CREATE);
-    navigate(Routes.ENS_SEARCH_SHEET);
-  }, [navigate, startRegistration]);
+    params?.onSearchForNewName?.();
+    InteractionManager.runAfterInteractions(() => {
+      startRegistration('', REGISTRATION_MODES.CREATE);
+      navigate(Routes.ENS_SEARCH_SHEET);
+    });
+  }, [navigate, params, startRegistration]);
 
   const navigateToAssignRecords = useCallback(
     (ensName: string) => {
