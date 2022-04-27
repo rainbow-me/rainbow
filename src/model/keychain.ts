@@ -18,8 +18,9 @@ import {
   UserCredentials,
 } from 'react-native-keychain';
 import { delay } from '../helpers/utilities';
+import { isValidMnemonic } from '@rainbow-me/handlers/web3';
 import {
-  getAllAsyncStorageKeys,
+  checkIfAsyncStorageIsEmpty,
   markKeychainAsRepaired,
 } from '@rainbow-me/helpers/asyncStorage';
 import {
@@ -287,21 +288,31 @@ export async function checkKeychainStatus() {
   let needsRepair = false;
 
   const entry = await loadString(addressKey);
-  const keys = await getAllAsyncStorageKeys();
+  const isAsyncStorageEmpty = await checkIfAsyncStorageIsEmpty();
 
-  if (typeof entry === 'string' && keys.length === 0) {
-    const entries = await loadAllKeys();
+  if (typeof entry !== 'string') {
+    logger.log('🔐 Wallet address missing. Keychain does not require repair.');
+    return false;
+  }
 
-    if (!entries) {
-      return false;
-    }
+  if (!isAsyncStorageEmpty) {
+    logger.log(
+      '🔐 AsyncStorage is not empty. Keychain does not require repair.'
+    );
+    return false;
+  }
 
-    for (const entry of entries) {
-      if (entry.username.endsWith('_rainbowSeedPhrase')) {
-        const object = await loadObject(entry.username);
-        if (!object) {
-          needsRepair = true;
-        }
+  const entries = await loadAllKeys();
+
+  if (!entries) {
+    return false;
+  }
+
+  for (const entry of entries) {
+    if (entry.username.endsWith('_rainbowSeedPhrase')) {
+      const string = await loadString(entry.username);
+      if (typeof string !== 'string' || !isValidMnemonic(string)) {
+        needsRepair = true;
       }
     }
   }

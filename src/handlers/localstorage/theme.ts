@@ -1,6 +1,6 @@
 import { getGlobal, saveGlobal } from './common';
 
-const THEME = 'theme';
+export const THEME = 'theme';
 
 /**
  * @desc get theme
