@@ -15,8 +15,8 @@ export const rainbowListStorage = new MMKV({
   id: STORAGE_IDS.RAINBOW_TOKEN_LIST,
 });
 
-export const RB_TOKEN_LIST_CACHE = 'rb-token-list.json';
-export const RB_TOKEN_LIST_ETAG = 'rb-token-list-etag.json';
+export const RB_TOKEN_LIST_CACHE = 'rb-token-list';
+export const RB_TOKEN_LIST_ETAG = 'rb-token-list-etag';
 
 type TokenListData = typeof RAINBOW_TOKEN_LIST_DATA;
 type ETagData = { etag: string | null };
@@ -69,9 +69,9 @@ function generateDerivedData(tokenListData: TokenListData) {
   return derivedData;
 }
 
-function readMMKVJsonData<T>(filename: string): T | null {
+function readJson<T>(key: string): T | null {
   try {
-    const data = rainbowListStorage.getString(filename);
+    const data = rainbowListStorage.getString(key);
 
     if (!data) {
       return null;
@@ -87,11 +87,11 @@ function readMMKVJsonData<T>(filename: string): T | null {
   }
 }
 
-function writeMMKVJsonData<T>(filename: string, data: T) {
+function writeJson<T>(key: string, data: T) {
   try {
-    rainbowListStorage.set(filename, JSON.stringify(data));
+    rainbowListStorage.set(key, JSON.stringify(data));
   } catch (error) {
-    logger.sentry(`Token List: Error saving ${filename}`);
+    logger.sentry(`Token List: Error saving ${key}`);
     logger.error(error);
     captureException(error);
   }
@@ -103,7 +103,7 @@ async function getTokenListUpdate(
   newTokenList?: TokenListData;
   status?: Response['status'];
 }> {
-  const etagData = await readMMKVJsonData<ETagData>(RB_TOKEN_LIST_ETAG);
+  const etagData = readJson<ETagData>(RB_TOKEN_LIST_ETAG);
   const etag = etagData?.etag;
   const commonHeaders = {
     Accept: 'application/json',
@@ -123,13 +123,10 @@ async function getTokenListUpdate(
     const freshDate = new Date((data as TokenListData)?.timestamp);
 
     if (freshDate > currentDate) {
-      writeMMKVJsonData<TokenListData>(
-        RB_TOKEN_LIST_CACHE,
-        data as TokenListData
-      );
+      writeJson<TokenListData>(RB_TOKEN_LIST_CACHE, data as TokenListData);
 
       if ((headers as Headers).get('etag')) {
-        writeMMKVJsonData<ETagData>(RB_TOKEN_LIST_ETAG, {
+        writeJson<ETagData>(RB_TOKEN_LIST_ETAG, {
           etag: (headers as Headers).get('etag'),
         });
       }
@@ -162,7 +159,7 @@ class RainbowTokenList extends EventEmitter {
   constructor() {
     super();
 
-    const cachedData = readMMKVJsonData<TokenListData>(RB_TOKEN_LIST_CACHE);
+    const cachedData = readJson<TokenListData>(RB_TOKEN_LIST_CACHE);
 
     if (cachedData?.timestamp) {
       const bundledDate = new Date(this._tokenListData?.timestamp);

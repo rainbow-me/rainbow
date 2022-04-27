@@ -621,13 +621,15 @@ export default async function runMigrations() {
    */
   const v16 = async () => {
     try {
+      // RB_TOKEN_LIST_CACHE and RB_TOKEN_LIST_ETAG were stored as json files
+      // we kept the names but without the `.json` part
       const [tokenList, tokenListEtag] = await Promise.all([
         RNFS.readFile(
-          path.join(RNFS.CachesDirectoryPath, RB_TOKEN_LIST_CACHE),
+          path.join(RNFS.CachesDirectoryPath, `${RB_TOKEN_LIST_CACHE}.json`),
           'utf8'
         ),
         RNFS.readFile(
-          path.join(RNFS.CachesDirectoryPath, RB_TOKEN_LIST_ETAG),
+          path.join(RNFS.CachesDirectoryPath, `${RB_TOKEN_LIST_ETAG}.json`),
           'utf8'
         ),
       ]);
