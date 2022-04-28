@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Text as NativeText } from 'react-native';
 import { ImagePreviewOverlayTarget } from '../../images/ImagePreviewOverlay';
 import Skeleton from '../../skeleton/Skeleton';
@@ -17,6 +17,12 @@ export default function ProfileAvatar({
   avatarUrl?: string | null;
   isLoading?: boolean;
 }) {
+  const enableZoomOnPress = false; // TODO: disable if NFT or no photo
+
+  const handlePressAvatar = useCallback(() => {
+    // TODO
+  }, []);
+
   return (
     <Box height={{ custom: size }} width={{ custom: size }}>
       <Cover alignHorizontal="center">
@@ -38,34 +44,37 @@ export default function ProfileAvatar({
           </Skeleton>
         </Box>
       ) : (
-        <Box
-          alignItems="center"
-          background={avatarUrl ? 'body' : 'accent'}
+        <ImagePreviewOverlayTarget
+          aspectRatioType="avatar"
+          backgroundMask="avatar"
           borderRadius={size / 2}
+          enableZoomOnPress={enableZoomOnPress}
           height={{ custom: size }}
-          justifyContent="center"
-          width={{ custom: size }}
+          onPress={handlePressAvatar}
+          topOffset={ios ? 112 : 107}
         >
-          {avatarUrl ? (
-            <ImagePreviewOverlayTarget
-              aspectRatioType="avatar"
-              backgroundMask="avatar"
-              borderRadius={size / 2}
-              height={{ custom: size }}
-              topOffset={ios ? 112 : 107}
-            >
+          <Box
+            alignItems="center"
+            background={avatarUrl ? 'body' : 'accent'}
+            borderRadius={size / 2}
+            height={{ custom: size }}
+            justifyContent="center"
+            width={{ custom: size }}
+          >
+            {avatarUrl ? (
               <Box
                 as={ImgixImage}
                 height={{ custom: size }}
                 source={{ uri: avatarUrl }}
+                width={{ custom: size }}
               />
-            </ImagePreviewOverlayTarget>
-          ) : (
-            <NativeText style={{ fontSize: 38 }}>
-              {accountSymbol || ''}
-            </NativeText>
-          )}
-        </Box>
+            ) : (
+              <NativeText style={{ fontSize: 38 }}>
+                {accountSymbol || ''}
+              </NativeText>
+            )}
+          </Box>
+        </ImagePreviewOverlayTarget>
       )}
     </Box>
   );

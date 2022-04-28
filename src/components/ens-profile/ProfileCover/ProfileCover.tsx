@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { View } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
 import { ImagePreviewOverlayTarget } from '../../images/ImagePreviewOverlay';
@@ -14,6 +14,12 @@ export default function ProfileCover({
   isLoading?: boolean;
 }) {
   const accentColor = useForegroundColor('accent');
+
+  const enableZoomOnPress = false; // TODO: disable if NFT or no photo
+
+  const handlePressCover = useCallback(() => {
+    // TODO
+  }, []);
 
   if (isLoading) {
     return (
@@ -50,7 +56,9 @@ export default function ProfileCover({
         <ImagePreviewOverlayTarget
           aspectRatioType="cover"
           borderRadius={0}
+          enableZoomOnPress={enableZoomOnPress}
           height="126px"
+          onPress={handlePressCover}
           topOffset={ios ? 112 : 107}
         >
           <Box as={ImgixImage} height="126px" source={{ uri: coverUrl }} />

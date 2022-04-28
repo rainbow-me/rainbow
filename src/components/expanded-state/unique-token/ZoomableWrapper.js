@@ -589,7 +589,6 @@ export const ZoomableWrapper = ({
 
   return (
     <ButtonPressAnimation
-      disabled={disableAnimations}
       enableHapticFeedback={false}
       onPress={() => {}}
       scaleTo={1}

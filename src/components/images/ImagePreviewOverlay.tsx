@@ -9,7 +9,12 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { InteractionManager, StyleSheet } from 'react-native';
+import {
+  InteractionManager,
+  Pressable,
+  PressableProps,
+  StyleSheet,
+} from 'react-native';
 import Animated, {
   SharedValue,
   useAnimatedStyle,
@@ -25,6 +30,7 @@ import {
   useRecoilValue,
   useSetRecoilState,
 } from 'recoil';
+import { ButtonPressAnimation } from '../animations';
 import { ZoomableWrapper } from '../expanded-state/unique-token/ZoomableWrapper';
 import AvatarCoverPhotoMaskSvg from '../svg/AvatarCoverPhotoMaskSvg';
 import {
@@ -54,6 +60,10 @@ const backgroundMaskAtom = atomFamily<string | null, string>({
 const borderRadiusAtom = atomFamily({
   default: 16,
   key: 'imagePreviewOverlay.borderRadius',
+});
+const disableAnimationsAtom = atomFamily({
+  default: false,
+  key: 'imagePreviewOverlay.disableAnimations',
 });
 const hasShadowAtom = atomFamily({
   default: false,
@@ -184,6 +194,7 @@ function ImagePreview({
   const aspectRatio = useRecoilValue(aspectRatioAtom(id));
   const backgroundMask = useRecoilValue(backgroundMaskAtom(id));
   const borderRadius = useRecoilValue(borderRadiusAtom(id));
+  const disableAnimations = useRecoilValue(disableAnimationsAtom(id));
   const hasShadow = useRecoilValue(hasShadowAtom(id));
   const height = useRecoilValue(heightAtom(id));
   const hostComponent = useRecoilValue(hostComponentAtom(id));
@@ -310,7 +321,7 @@ function ImagePreview({
         <ZoomableWrapper
           aspectRatio={aspectRatio}
           borderRadius={borderRadius}
-          disableAnimations={false}
+          disableAnimations={disableAnimations}
           hasShadow={hasShadow}
           height={height}
           horizontalPadding={0}
@@ -340,16 +351,20 @@ export function ImagePreviewOverlayTarget({
   aspectRatioType,
   backgroundMask,
   borderRadius = 16,
-  children,
+  children: children_,
+  enableZoomOnPress = true,
   hasShadow = false,
   height: initialHeight,
+  onPress,
   topOffset = 85,
   uri,
 }: {
   backgroundMask?: 'avatar';
   borderRadius?: number;
   children: React.ReactElement;
+  enableZoomOnPress?: boolean;
   hasShadow?: boolean;
+  onPress?: PressableProps['onPress'];
   height?: BoxProps['height'];
   topOffset?: number;
 } & (
@@ -375,6 +390,7 @@ export function ImagePreviewOverlayTarget({
   const setAspectRatio = useSetRecoilState(aspectRatioAtom(id));
   const setBackgroundMask = useSetRecoilState(backgroundMaskAtom(id));
   const setBorderRadius = useSetRecoilState(borderRadiusAtom(id));
+  const setDisableAnimations = useSetRecoilState(disableAnimationsAtom(id));
   const setHasShadow = useSetRecoilState(hasShadowAtom(id));
   const setXOffset = useSetRecoilState(xOffsetAtom(id));
   const setYOffset = useSetRecoilState(yOffsetAtom(id));
@@ -384,15 +400,18 @@ export function ImagePreviewOverlayTarget({
       setBackgroundMask(backgroundMask);
     }
     setBorderRadius(borderRadius);
+    setDisableAnimations(!enableZoomOnPress);
     setHasShadow(hasShadow);
     setIds(ids => [...ids, id]);
   }, [
     backgroundMask,
     borderRadius,
+    enableZoomOnPress,
     hasShadow,
     id,
     setBackgroundMask,
     setBorderRadius,
+    setDisableAnimations,
     setHasShadow,
     setIds,
   ]);
@@ -445,6 +464,11 @@ export function ImagePreviewOverlayTarget({
     },
     [aspectRatio, setWidth, setXOffset, setYOffset, topOffset]
   );
+
+  const children = useMemo(() => {
+    if (!onPress) return children_;
+    return <Pressable onPress={onPress}>{children_}</Pressable>;
+  }, [children_, onPress]);
 
   useEffect(() => {
     if (!enableZoom) return;
