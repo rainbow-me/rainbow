@@ -31,8 +31,7 @@ const viewTraitOnOpenseaAction = {
 
 const openTraitURLInBrowserAction = {
   actionKey: PropertyActionsEnum.openURL,
-  // TODO: use i18n enabled text
-  actionTitle: 'Open in Web Browser',
+  actionTitle: lang.t('expanded_state.unique_expanded.open_in_web_browser'),
   icon: {
     iconType: 'SYSTEM',
     iconValue: 'safari.fill',
