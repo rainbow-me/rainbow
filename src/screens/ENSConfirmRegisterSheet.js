@@ -2,7 +2,7 @@ import { useFocusEffect, useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { HoldToAuthorizeButton } from '../components/buttons';
 import {
   CommitContent,
@@ -11,6 +11,7 @@ import {
   WaitCommitmentConfirmationContent,
   WaitENSConfirmationContent,
 } from '../components/ens-registration';
+import { avatarMetadataAtom } from '../components/ens-registration/RegistrationAvatar/RegistrationAvatar';
 import { GasSpeedButton } from '../components/gas';
 import { SheetActionButtonRow, SlackSheet } from '../components/sheet';
 import {
@@ -98,9 +99,10 @@ export default function ENSConfirmRegisterSheet() {
   } = useENSModifiedRegistration();
 
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
+  const avatarMetadata = useRecoilValue(avatarMetadataAtom);
 
   const { result: dominantColor } = usePersistentDominantColorFromImage(
-    initialAvatarUrl || ''
+    avatarMetadata?.path || initialAvatarUrl || ''
   );
   useEffect(() => {
     setAccentColor(dominantColor || colors.purple);
