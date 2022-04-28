@@ -8,6 +8,7 @@ import {
   Box,
   Column,
   Columns,
+  Divider,
   Inset,
   Stack,
   Text,
@@ -144,8 +145,11 @@ const PendingRegistrations = () => {
 
   return pendingRegistrations?.length > 0 ? (
     <Box paddingHorizontal="19px">
+      <Inset vertical="24px">
+        <Divider color="divider60" />
+      </Inset>
       <Stack space="19px">
-        <Text color="secondary50" containsEmoji size="14px" weight="bold">
+        <Text color="secondary50" size="14px" weight="bold">
           {lang.t('profiles.pending_registrations.in_progress')}
         </Text>
         {pendingRegistrations.map(registration => (

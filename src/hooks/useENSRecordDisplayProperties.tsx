@@ -145,7 +145,7 @@ export default function useENSRecordDisplayProperties({
             discoverabilityTitle: displayUrl,
             icon: {
               iconType: 'SYSTEM',
-              iconValue: 'safari.fill',
+              iconValue: 'arrow.up.forward.app.fill',
             },
           }
         : undefined,
@@ -155,7 +155,7 @@ export default function useENSRecordDisplayProperties({
         discoverabilityTitle: displayUrl || recordValue,
         icon: {
           iconType: 'SYSTEM',
-          iconValue: 'doc.on.doc',
+          iconValue: 'square.on.square',
         },
       },
     ].filter(x => x);

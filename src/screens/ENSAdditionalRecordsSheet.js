@@ -8,7 +8,7 @@ import { accentColorAtom, textRecordFields } from '@rainbow-me/helpers/ens';
 import { useENSRegistrationForm } from '@rainbow-me/hooks';
 import { deviceUtils } from '@rainbow-me/utils';
 
-export const ENSAdditionalRecordsSheetHeight = 260;
+export const ENSAdditionalRecordsSheetHeight = 262;
 const recordLineHeight = 30;
 
 export const getENSAdditionalRecordsSheetHeight = () => {
@@ -40,7 +40,7 @@ export default function ENSAdditionalRecordsSheet() {
         <Box
           background="body"
           paddingHorizontal="19px"
-          paddingVertical="30px"
+          paddingVertical="24px"
           style={boxStyle}
           testID="ens-confirm-register-sheet"
         >

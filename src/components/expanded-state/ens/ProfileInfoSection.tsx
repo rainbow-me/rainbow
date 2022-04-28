@@ -62,7 +62,7 @@ export default function ProfileInfoSection({
   ]);
 
   return (
-    <Stack space="15px">
+    <Stack space={{ custom: 16 }}>
       {isLoading ? (
         <>
           <InfoRowSkeleton />

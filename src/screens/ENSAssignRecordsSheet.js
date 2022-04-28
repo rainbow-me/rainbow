@@ -10,7 +10,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { useRecoilState } from 'recoil';
-import { MiniButton } from '../components/buttons';
+import { ButtonPressAnimation } from '../components/animations/';
 import TintButton from '../components/buttons/TintButton';
 import {
   RegistrationAvatar,
@@ -63,7 +63,7 @@ import Routes from '@rainbow-me/routes';
 
 const AnimatedBox = Animated.createAnimatedComponent(Box);
 
-export const BottomActionHeight = ios ? 270 : 250;
+export const BottomActionHeight = ios ? 281 : 250;
 
 export default function ENSAssignRecordsSheet() {
   const { params } = useRoute();
@@ -86,8 +86,8 @@ export default function ENSAssignRecordsSheet() {
       [
         ENS_RECORDS.displayName,
         ENS_RECORDS.description,
+        ENS_RECORDS.url,
         ENS_RECORDS.twitter,
-        ENS_RECORDS.pronouns,
       ].map(fieldName => textRecordFields[fieldName]),
     []
   );
@@ -183,10 +183,10 @@ export default function ENSAssignRecordsSheet() {
           <Inset horizontal="19px">
             <Stack space="30px">
               <Stack alignHorizontal="center" space="15px">
-                <Heading size="26px" weight="heavy">
+                <Heading align="center" size="26px" weight="heavy">
                   {name}
                 </Heading>
-                <Text color="accent" size="16px" weight="heavy">
+                <Text align="center" color="accent" size="16px" weight="heavy">
                   {lang.t(
                     `profiles.${
                       mode === REGISTRATION_MODES.CREATE || isEmptyProfile
@@ -202,6 +202,7 @@ export default function ENSAssignRecordsSheet() {
                   onAutoFocusLayout={handleAutoFocusLayout}
                   onError={handleError}
                   onFocus={handleFocus}
+                  selectionColor={accentColor}
                 />
               </Box>
             </Stack>
@@ -330,16 +331,18 @@ export function ENSAssignRecordsBottomActions({
                         ignorePaddingBottom: true,
                         paddingBottom: 8,
                       }
-                    : {})}
+                    : {
+                        ignorePaddingBottom: true,
+                        paddingBottom: 36,
+                      })}
                 >
                   {hasBackButton && (
-                    <TintButton color="secondary60" onPress={handlePressBack}>
+                    <TintButton onPress={handlePressBack}>
                       {lang.t('profiles.create.back')}
                     </TintButton>
                   )}
                   {isEmpty && mode === REGISTRATION_MODES.CREATE ? (
                     <TintButton
-                      color="secondary60"
                       disabled={disabled}
                       onPress={handlePressContinue}
                       testID="ens-assign-records-skip"
@@ -359,7 +362,6 @@ export function ENSAssignRecordsBottomActions({
                         />
                       ) : (
                         <TintButton
-                          color="secondary60"
                           onPress={() => goBack()}
                           testID="ens-assign-records-cancel"
                         >
@@ -404,16 +406,23 @@ function HideKeyboardButton({ color }) {
 
   return (
     <AnimatedBox style={style}>
-      <MiniButton
-        backgroundColor={color}
-        disablePadding
-        height={30}
-        onPress={() => Keyboard.dismiss()}
-        style={useMemo(() => ({ height: 30, width: 30 }), [])}
-        width={30}
-      >
-        􀆈
-      </MiniButton>
+      <ButtonPressAnimation onPress={() => Keyboard.dismiss()} scaleTo={0.8}>
+        <AccentColorProvider color={color}>
+          <Box
+            background="accent"
+            borderRadius={15}
+            height={{ custom: 30 }}
+            shadow="15px light"
+            width={{ custom: 30 }}
+          >
+            <Cover alignHorizontal="center" alignVertical="center">
+              <Text align="center" color="primary" size="14px" weight="heavy">
+                􀆈
+              </Text>
+            </Cover>
+          </Box>
+        </AccentColorProvider>
+      </ButtonPressAnimation>
     </AnimatedBox>
   );
 }
@@ -510,7 +519,7 @@ function SelectableAttributesButtons({
         onSelect={navigateToAdditionalRecords}
         testID="ens-selectable-attribute-dots"
       >
-        ...
+        􀍠
       </SelectableButton>
     </Inline>
   );

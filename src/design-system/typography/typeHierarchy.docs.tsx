@@ -54,6 +54,9 @@ const docs: DocsType = {
             <Text size="14px">
               Lorem ipsum dolor sit amet, consectetur adipiscing elit
             </Text>
+            <Text size="12px">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit
+            </Text>
             <Text size="11px">
               Lorem ipsum dolor sit amet, consectetur adipiscing elit
             </Text>

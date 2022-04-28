@@ -508,7 +508,7 @@ PODS:
     - React
   - RNFastImage (8.5.11):
     - React-Core
-    - SDWebImage (~> 5.11.1)
+    - SDWebImage (~> 5.12.5)
     - SDWebImageWebPCoder (~> 0.8.4)
   - RNFBApp (14.7.0):
     - Firebase/CoreOnly (= 8.14.0)
@@ -590,9 +590,9 @@ PODS:
     - React-Core
   - RNTextSize (4.0.0-rc.1):
     - React
-  - SDWebImage (5.11.1):
-    - SDWebImage/Core (= 5.11.1)
-  - SDWebImage/Core (5.11.1)
+  - SDWebImage (5.12.5):
+    - SDWebImage/Core (= 5.12.5)
+  - SDWebImage/Core (5.12.5)
   - SDWebImageWebPCoder (0.8.4):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.10)
@@ -1076,7 +1076,7 @@ SPEC CHECKSUMS:
   RNCMaskedView: c298b644a10c0c142055b3ae24d83879ecb13ccd
   RNDeviceInfo: 6f20764111df002b4484f90cbe0a861be29bcc6c
   RNExitApp: c4e052df2568b43bec8a37c7cd61194d4cfee2c3
-  RNFastImage: 1f2cab428712a4baaf78d6169eaec7f622556dd7
+  RNFastImage: 945abf54742505d790d9024d230c69b1e866bc88
   RNFBApp: 097a31d372b3db15b41c7a1a5c429433b0609e12
   RNFBCrashlytics: 4ec9aae1a1dbb6572d095417392483bec82b07bb
   RNFBMessaging: 06a7a73883f3f43da61507dbfcf4db2245c22869
@@ -1097,7 +1097,7 @@ SPEC CHECKSUMS:
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
   RNSVG: 91e9ee67766408d08cb08f5bd80cd57c9d2a6691
   RNTextSize: 21c94a67819fbf2c358a219bf6d251e3be9e5f29
-  SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
+  SDWebImage: 0905f1b7760fc8ac4198cae0036600d67478751e
   SDWebImageWebPCoder: f93010f3f6c031e2f8fb3081ca4ee6966c539815
   Sentry: 0c5cd63d714187b4a39c331c1f0eb04ba7868341
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86

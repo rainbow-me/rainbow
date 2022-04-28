@@ -44,6 +44,7 @@ export default function ProfileAvatar({
           borderRadius={size / 2}
           height={{ custom: size }}
           justifyContent="center"
+          shadow="15px light"
           width={{ custom: size }}
         >
           {avatarUrl ? (
@@ -51,7 +52,10 @@ export default function ProfileAvatar({
               aspectRatioType="avatar"
               backgroundMask="avatar"
               borderRadius={size / 2}
+              disableEnteringWithPinch
               height={{ custom: size }}
+              hideStatusBar={false}
+              imageUrl={avatarUrl}
               topOffset={ios ? 112 : 107}
             >
               <Box

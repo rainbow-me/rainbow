@@ -1,7 +1,5 @@
-import { toLower } from 'lodash';
 import React, { useMemo } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
-import { ENS_NFT_CONTRACT_ADDRESS } from '../../../references';
 import { magicMemo } from '../../../utils';
 import { SimpleModelView } from '../../3d';
 import { AudioPlayer } from '../../audio';
@@ -37,8 +35,6 @@ const UniqueTokenExpandedStateContent = ({
   onContentFocus,
   onContentBlur,
 }) => {
-  const isENS =
-    toLower(asset.asset_contract.address) === toLower(ENS_NFT_CONTRACT_ADDRESS);
   const url = useMemo(() => {
     if (asset.isPoap) return asset.animation_url;
     return asset.image_url;
@@ -65,7 +61,6 @@ const UniqueTokenExpandedStateContent = ({
         (ios ? supportsVideo : supportsAnythingExceptImageAnd3d)
       }
       horizontalPadding={horizontalPadding}
-      isENS={isENS}
       onZoomIn={onContentFocus}
       onZoomOut={onContentBlur}
       opacity={opacity}
