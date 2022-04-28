@@ -1,11 +1,16 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Text as NativeText } from 'react-native';
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import { ImagePreviewOverlayTarget } from '../../images/ImagePreviewOverlay';
 import Skeleton from '../../skeleton/Skeleton';
 import AvatarCoverPhotoMaskSvg from '../../svg/AvatarCoverPhotoMaskSvg';
 import { BackgroundProvider, Box, Cover } from '@rainbow-me/design-system';
 import { ImgixImage } from '@rainbow-me/images';
-
 const size = 70;
 
 export default function ProfileAvatar({
@@ -21,6 +26,21 @@ export default function ProfileAvatar({
   enableZoomOnPress?: boolean;
   handleOnPress?: () => void;
 }) {
+  const opacity = useSharedValue(0);
+
+  const style = useAnimatedStyle(() => {
+    return {
+      opacity: withTiming(opacity.value, {
+        duration: 500,
+        easing: Easing.linear,
+      }),
+    };
+  });
+
+  const onLoadEnd = useCallback(() => {
+    opacity.value = 1;
+  }, [opacity]);
+
   return (
     <Box height={{ custom: size }} width={{ custom: size }}>
       <Cover alignHorizontal="center">
@@ -60,12 +80,15 @@ export default function ProfileAvatar({
             width={{ custom: size }}
           >
             {avatarUrl ? (
-              <Box
-                as={ImgixImage}
-                height={{ custom: size }}
-                source={{ uri: avatarUrl }}
-                width={{ custom: size }}
-              />
+              <Animated.View style={style}>
+                <Box
+                  as={ImgixImage}
+                  height={{ custom: size }}
+                  onLoadEnd={onLoadEnd}
+                  source={{ uri: avatarUrl }}
+                  width={{ custom: size }}
+                />
+              </Animated.View>
             ) : (
               <NativeText style={{ fontSize: 38 }}>
                 {accountSymbol || ''}
