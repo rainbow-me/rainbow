@@ -1,5 +1,6 @@
 import { useRoute } from '@react-navigation/core';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import ConditionalWrap from 'conditional-wrap';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { StatusBar } from 'react-native';
 import { useSetRecoilState } from 'recoil';
@@ -147,10 +148,13 @@ export default function RegisterENSNavigator() {
         height="100%"
         ref={sheetRef}
         removeTopPadding
-        scrollEnabled={scrollEnabled}
+        scrollEnabled
       >
         <StatusBar barStyle="light-content" />
-        <Box style={wrapperStyle}>
+        <ConditionalWrap
+          condition={!scrollEnabled}
+          wrap={children => <Box style={wrapperStyle}>{children}</Box>}
+        >
           <Swipe.Navigator
             initialLayout={deviceUtils.dimensions}
             initialRouteName={currentRouteName}
@@ -195,7 +199,7 @@ export default function RegisterENSNavigator() {
               name={Routes.ENS_ASSIGN_RECORDS_SHEET}
             />
           </Swipe.Navigator>
-        </Box>
+        </ConditionalWrap>
       </SlackSheet>
 
       {/**
