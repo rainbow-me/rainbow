@@ -111,6 +111,7 @@ export default function SendContactList({
     ({ item, section }) => {
       const ComponentToReturn =
         section.id === 'contacts' ? SwipeableContactRow : ContactRow;
+
       return (
         <ComponentToReturn
           accountType={section.id}
