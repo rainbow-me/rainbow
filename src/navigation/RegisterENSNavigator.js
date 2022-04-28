@@ -1,9 +1,7 @@
 import { useRoute } from '@react-navigation/core';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import ConditionalWrap from 'conditional-wrap';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { StatusBar } from 'react-native';
-import { IS_TESTING } from 'react-native-dotenv';
 import { useSetRecoilState } from 'recoil';
 import { SheetHandleFixedToTopHeight, SlackSheet } from '../components/sheet';
 import ENSAssignRecordsSheet, {
@@ -11,7 +9,6 @@ import ENSAssignRecordsSheet, {
 } from '../screens/ENSAssignRecordsSheet';
 import ENSIntroSheet from '../screens/ENSIntroSheet';
 import ENSSearchSheet from '../screens/ENSSearchSheet';
-import { useNavigation } from './Navigation';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
 import { sharedCoolModalTopOffset } from './config';
 import { useTheme } from '@rainbow-me/context';
@@ -54,7 +51,6 @@ const defaultScreenOptions = {
 
 export default function RegisterENSNavigator() {
   const { params } = useRoute();
-  const navigation = useNavigation();
 
   const sheetRef = useRef();
 
@@ -68,7 +64,6 @@ export default function RegisterENSNavigator() {
     deviceHeight - SheetHandleFixedToTopHeight - sharedCoolModalTopOffset;
 
   const [isSearchEnabled, setIsSearchEnabled] = useState(true);
-  const [swipeEnabled, setSwipeEnabled] = useState(false);
 
   const { clearValues } = useENSRegistrationForm();
 
@@ -114,26 +109,34 @@ export default function RegisterENSNavigator() {
     StatusBar.setBarStyle('light-content');
   }, []);
 
+  useEffect(() => () => clearCurrentRegistrationName(), [
+    clearCurrentRegistrationName,
+  ]);
+
   useEffect(() => {
     if (!screenOptions.scrollEnabled) {
       sheetRef.current.scrollTo({ animated: false, x: 0, y: 0 });
     }
   }, [screenOptions.scrollEnabled]);
 
-  useEffect(() => {
-    const dismiss = () => {
-      // Remove avatar record on dismissal to prevent accent color inconsistencies.
+  useEffect(
+    () => () => {
       removeRecordByKey('avatar');
       setAccentColor(colors.purple);
       clearValues();
       clearCurrentRegistrationName();
-    };
-    navigation.addListener('dismiss', dismiss);
-    return () => navigation.removeListener('dismiss', dismiss);
-  });
+    },
+    [
+      clearCurrentRegistrationName,
+      clearValues,
+      colors.purple,
+      removeRecordByKey,
+      setAccentColor,
+    ]
+  );
 
   const enableAssignRecordsBottomActions =
-    IS_TESTING !== 'true' && currentRouteName !== Routes.ENS_INTRO_SHEET;
+    currentRouteName !== Routes.ENS_INTRO_SHEET;
   const isBottomActionsVisible =
     currentRouteName === Routes.ENS_ASSIGN_RECORDS_SHEET;
 
@@ -150,37 +153,35 @@ export default function RegisterENSNavigator() {
         removeTopPadding
         scrollEnabled={scrollEnabled}
       >
-        <ConditionalWrap
-          condition={!scrollEnabled}
-          wrap={children => <Box style={wrapperStyle}>{children}</Box>}
-        >
+        <Box style={wrapperStyle}>
           <Swipe.Navigator
             initialLayout={deviceUtils.dimensions}
             initialRouteName={currentRouteName}
             pager={renderPager}
-            swipeEnabled={swipeEnabled}
+            swipeEnabled={false}
             tabBar={renderTabBar}
           >
             <Swipe.Screen
               component={ENSIntroSheet}
               initialParams={{
+                onSearchForNewName: () => setIsSearchEnabled(true),
                 onSelectExistingName: () => setIsSearchEnabled(false),
               }}
               listeners={{
-                focus: () => setCurrentRouteName(Routes.ENS_INTRO_SHEET),
+                focus: () => {
+                  setCurrentRouteName(Routes.ENS_INTRO_SHEET);
+                },
               }}
               name={Routes.ENS_INTRO_SHEET}
             />
             {isSearchEnabled && (
               <Swipe.Screen
                 component={ENSSearchSheet}
-                initialParams={{
-                  onNameAvailable: isAvailable => setSwipeEnabled(isAvailable),
-                }}
                 listeners={{
                   focus: () => setCurrentRouteName(Routes.ENS_SEARCH_SHEET),
                 }}
                 name={Routes.ENS_SEARCH_SHEET}
+                visible={isSearchEnabled}
               />
             )}
             <Swipe.Screen
@@ -190,13 +191,14 @@ export default function RegisterENSNavigator() {
                 sheetRef,
               }}
               listeners={{
-                focus: () =>
-                  setCurrentRouteName(Routes.ENS_ASSIGN_RECORDS_SHEET),
+                focus: () => {
+                  setCurrentRouteName(Routes.ENS_ASSIGN_RECORDS_SHEET);
+                },
               }}
               name={Routes.ENS_ASSIGN_RECORDS_SHEET}
             />
           </Swipe.Navigator>
-        </ConditionalWrap>
+        </Box>
       </SlackSheet>
 
       {/**
@@ -206,7 +208,11 @@ export default function RegisterENSNavigator() {
        * ScrollView, so this seems like the best workaround.
        */}
       {enableAssignRecordsBottomActions && (
-        <ENSAssignRecordsBottomActions visible={isBottomActionsVisible} />
+        <ENSAssignRecordsBottomActions
+          currentRouteName={currentRouteName}
+          previousRouteName={previousRouteName}
+          visible={isBottomActionsVisible}
+        />
       )}
     </>
   );

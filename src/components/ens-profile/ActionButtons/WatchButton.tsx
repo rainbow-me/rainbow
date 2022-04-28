@@ -79,6 +79,7 @@ export default function WatchButton({
         color="action"
         icon={!optimisticIsWatching ? '􀨭' : ''}
         onPress={!optimisticIsWatching ? handlePressWatch : () => null}
+        testID="profile-sheet-watch-button"
         variant={!optimisticIsWatching ? 'solid' : 'outlined'}
       >
         {lang.t(

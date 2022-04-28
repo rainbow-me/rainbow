@@ -1,6 +1,5 @@
-import { useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
 import { useDebounce } from 'use-debounce';
 import dice from '../assets/dice.png';
@@ -24,10 +23,9 @@ import {
 import { ENS_DOMAIN } from '@rainbow-me/helpers/ens';
 import {
   useENSRegistration,
-  useENSRegistrationActionHandler,
   useENSRegistrationCosts,
+  useENSRegistrationStepHandler,
   useENSSearch,
-  usePrevious,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import Routes from '@rainbow-me/routes';
@@ -38,7 +36,6 @@ export default function ENSSearchSheet() {
   const { navigate } = useNavigation();
 
   const topPadding = android ? 29 : 19;
-  const { params } = useRoute();
 
   const { startRegistration, name } = useENSRegistration();
 
@@ -57,7 +54,7 @@ export default function ENSSearchSheet() {
     name: debouncedSearchQuery,
   });
 
-  const { step } = useENSRegistrationActionHandler();
+  const { step } = useENSRegistrationStepHandler();
   const {
     data: registrationCostsData,
     isSuccess: registrationCostsDataIsAvailable,
@@ -67,8 +64,6 @@ export default function ENSSearchSheet() {
     step,
     yearsDuration: 1,
   });
-
-  const prevIsAvailable = usePrevious(isAvailable);
 
   const state = useMemo(() => {
     if (isAvailable) return 'success';
@@ -81,12 +76,6 @@ export default function ENSSearchSheet() {
     Keyboard.dismiss();
     navigate(Routes.ENS_ASSIGN_RECORDS_SHEET);
   }, [navigate, searchQuery, startRegistration]);
-
-  useEffect(() => {
-    if (prevIsAvailable !== isAvailable) {
-      params?.onNameAvailable?.(isAvailable);
-    }
-  }, [prevIsAvailable, isAvailable, params]);
 
   return (
     <Box
@@ -140,7 +129,14 @@ export default function ENSSearchSheet() {
               </Text>
             </Inline>
           )}
-          {isIdle && <PendingRegistrations />}
+          {isIdle && (
+            <>
+              <Inset horizontal="19px" vertical="24px">
+                <Divider />
+              </Inset>
+              <PendingRegistrations />
+            </>
+          )}
           {isInvalid && (
             <Inset horizontal="30px">
               <Text

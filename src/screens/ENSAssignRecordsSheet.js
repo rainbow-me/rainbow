@@ -1,8 +1,8 @@
 import { useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
+import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
-import { IS_TESTING } from 'react-native-dotenv';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -50,10 +50,11 @@ import {
   textRecordFields,
 } from '@rainbow-me/helpers/ens';
 import {
+  useENSModifiedRegistration,
   useENSRegistration,
-  useENSRegistrationActionHandler,
   useENSRegistrationCosts,
   useENSRegistrationForm,
+  useENSRegistrationStepHandler,
   useENSSearch,
   useKeyboardHeight,
   usePersistentDominantColorFromImage,
@@ -67,28 +68,35 @@ export const BottomActionHeight = ios ? 270 : 250;
 export default function ENSAssignRecordsSheet() {
   const { params } = useRoute();
   const { colors } = useTheme();
+  const { name, mode } = useENSRegistration();
   const {
-    name,
-    mode,
     images: { avatarUrl: initialAvatarUrl },
-  } = useENSRegistration({
+  } = useENSModifiedRegistration({
+    modifyChangedRecords: true,
     setInitialRecordsWhenInEditMode: true,
-  });
-  useENSRegistrationForm({
-    defaultFields: [
-      ENS_RECORDS.displayName,
-      ENS_RECORDS.description,
-      ENS_RECORDS.twitter,
-      ENS_RECORDS.pronouns,
-    ].map(fieldName => textRecordFields[fieldName]),
-    initializeForm: true,
   });
 
   const { data: registrationData } = useENSSearch({
     name,
   });
+  const { step } = useENSRegistrationStepHandler();
 
-  const { step } = useENSRegistrationActionHandler();
+  const defaultFields = useMemo(
+    () =>
+      [
+        ENS_RECORDS.displayName,
+        ENS_RECORDS.description,
+        ENS_RECORDS.twitter,
+        ENS_RECORDS.pronouns,
+      ].map(fieldName => textRecordFields[fieldName]),
+    []
+  );
+  const { values } = useENSRegistrationForm({
+    defaultFields,
+    initializeForm: true,
+  });
+
+  const isEmptyProfile = useMemo(() => isEmpty(values), [values]);
 
   useENSRegistrationCosts({
     name,
@@ -178,11 +186,15 @@ export default function ENSAssignRecordsSheet() {
                 <Heading size="26px" weight="heavy">
                   {name}
                 </Heading>
-                {mode === REGISTRATION_MODES.CREATE && (
-                  <Text color="accent" size="16px" weight="heavy">
-                    {lang.t('profiles.create.description')}
-                  </Text>
-                )}
+                <Text color="accent" size="16px" weight="heavy">
+                  {lang.t(
+                    `profiles.${
+                      mode === REGISTRATION_MODES.CREATE || isEmptyProfile
+                        ? 'create'
+                        : 'edit'
+                    }.label`
+                  )}
+                </Text>
               </Stack>
               <Box flexGrow={1}>
                 <TextRecordsForm
@@ -192,9 +204,6 @@ export default function ENSAssignRecordsSheet() {
                   onFocus={handleFocus}
                 />
               </Box>
-              {IS_TESTING === 'true' && (
-                <ENSAssignRecordsBottomActions visible />
-              )}
             </Stack>
           </Inset>
         </Stack>
@@ -203,14 +212,18 @@ export default function ENSAssignRecordsSheet() {
   );
 }
 
-export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
+export function ENSAssignRecordsBottomActions({
+  visible: defaultVisible,
+  previousRouteName,
+  currentRouteName,
+}) {
   const { navigate, goBack } = useNavigation();
   const keyboardHeight = useKeyboardHeight();
   const { colors } = useTheme();
-
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
-
-  const { mode, profileQuery } = useENSRegistration();
+  const { mode } = useENSRegistration();
+  const { profileQuery } = useENSModifiedRegistration();
+  const [fromRoute, setFromRoute] = useState(previousRouteName);
   const {
     disabled,
     isEmpty,
@@ -223,9 +236,22 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
 
   const handlePressBack = useCallback(() => {
     delayNext();
-    navigate(Routes.ENS_SEARCH_SHEET);
+    navigate(fromRoute);
     setAccentColor(colors.purple);
-  }, [colors.purple, navigate, setAccentColor]);
+  }, [colors.purple, fromRoute, navigate, setAccentColor]);
+
+  const hasBackButton = useMemo(
+    () =>
+      fromRoute === Routes.ENS_SEARCH_SHEET ||
+      fromRoute === Routes.ENS_INTRO_SHEET,
+    [fromRoute]
+  );
+
+  useEffect(() => {
+    if (previousRouteName !== currentRouteName) {
+      setFromRoute(previousRouteName);
+    }
+  }, [currentRouteName, previousRouteName]);
 
   const handlePressContinue = useCallback(() => {
     submit(() => {
@@ -269,7 +295,7 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
 
   return (
     <>
-      {visible && IS_TESTING !== 'true' && (
+      {visible && (
         <Box position="absolute" right="0px" style={keyboardButtonWrapperStyle}>
           <Inset bottom="19px" right="19px">
             <HideKeyboardButton color={accentColor} />
@@ -285,7 +311,7 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
             paddingBottom="19px"
             style={useMemo(() => ({ height: BottomActionHeight }), [])}
           >
-            {ios && IS_TESTING !== 'true' ? <Shadow /> : null}
+            {ios ? <Shadow /> : null}
             <Rows>
               <Row>
                 <Inset horizontal="19px" top="30px">
@@ -306,7 +332,7 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
                       }
                     : {})}
                 >
-                  {mode === REGISTRATION_MODES.CREATE && (
+                  {hasBackButton && (
                     <TintButton color="secondary60" onPress={handlePressBack}>
                       {lang.t('profiles.create.back')}
                     </TintButton>
@@ -334,7 +360,7 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
                       ) : (
                         <TintButton
                           color="secondary60"
-                          onPress={goBack}
+                          onPress={() => goBack()}
                           testID="ens-assign-records-cancel"
                         >
                           {lang.t(`profiles.create.cancel`)}

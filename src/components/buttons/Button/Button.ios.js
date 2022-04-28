@@ -70,6 +70,7 @@ export default function Button({
   style,
   textProps,
   type = ButtonShapeTypes.pill,
+  testID,
   ...props
 }) {
   const borderRadius = type === 'rounded' ? 14 : 50;
@@ -80,6 +81,7 @@ export default function Button({
       {...pick(props, Object.keys(ButtonPressAnimation.propTypes))}
       disabled={disabled}
       onPress={onPress}
+      testID={testID}
     >
       <Container
         {...props}

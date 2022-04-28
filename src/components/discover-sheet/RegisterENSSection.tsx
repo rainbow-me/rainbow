@@ -16,7 +16,7 @@ import {
   Stack,
   Text,
 } from '@rainbow-me/design-system';
-import { useAccountENSDomains, useWallets } from '@rainbow-me/hooks';
+import { useWallets } from '@rainbow-me/hooks';
 import { ensIntroMarqueeNames } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { watchingAlert } from '@rainbow-me/utils';
@@ -25,8 +25,6 @@ export default function RegisterENSSection() {
   const { navigate } = useNavigation();
   const { colors } = useTheme();
   const { isReadOnlyWallet } = useWallets();
-
-  useAccountENSDomains();
 
   const handlePress = useCallback(() => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {

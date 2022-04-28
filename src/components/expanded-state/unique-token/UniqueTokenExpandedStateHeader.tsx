@@ -282,7 +282,7 @@ const UniqueTokenExpandedStateHeader = ({
       } else if (actionKey === AssetActionsEnum.copyTokenID) {
         setClipboard(asset.id);
       } else if (actionKey === AssetActionsEnum.download) {
-        saveToCameraRoll(getFullResUrl(asset.image_url));
+        saveToCameraRoll(getFullResUrl(asset.image_original_url));
       }
     },
     [accountAddress, accountENS, asset, setClipboard]
@@ -390,7 +390,7 @@ const UniqueTokenExpandedStateHeader = ({
         } else if (isPhotoDownloadAvailable ? idx === 3 : idx === 2) {
           setClipboard(asset.id);
         } else if (idx === 2) {
-          saveToCameraRoll(getFullResUrl(asset.image_url));
+          saveToCameraRoll(getFullResUrl(asset.image_original_url));
         }
       }
     );
