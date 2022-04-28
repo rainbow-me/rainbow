@@ -76,53 +76,57 @@ export default function ProfileSheetHeader({
     [uniqueTokens]
   );
 
-  const {
-    enableZoomOnPressAvatar,
-    enableZoomOnPressCover,
-    onPressAvatar,
-    onPressCover,
-    avatarUrl,
-    coverUrl,
-  } = useMemo(() => {
+  const { enableZoomOnPressAvatar, onPressAvatar, avatarUrl } = useMemo(() => {
     const avatarUrl = profile?.images.avatarUrl;
     const avatar = profile?.records.avatar;
-    const coverUrl = profile?.images.coverUrl;
-    const cover = profile?.records.cover;
 
     const isNFTAvatar = avatar && isENSNFTRecord(avatar);
     const avatarUniqueToken = isNFTAvatar && getUniqueToken(avatar);
-    const isNFTCover = cover && isENSNFTRecord(cover);
-    const coverUniqueToken = isNFTCover && getUniqueToken(cover);
 
     const onPressAvatar = () => {
       if (!avatar || !isNFTAvatar || !avatarUniqueToken) return null;
       handleSelectNFT(avatarUniqueToken);
     };
 
-    const onPressCover = () => {
-      if (!cover || !isNFTCover || !coverUniqueToken) return null;
-      handleSelectNFT(coverUniqueToken);
-    };
-
     const enableZoomOnPressAvatar =
       !avatarUrl || !isNFTAvatar || !avatarUniqueToken;
-    const enableZoomOnPressCover =
-      !coverUrl || !isNFTCover || !coverUniqueToken;
 
     return {
       avatarUrl,
-      coverUrl,
       enableZoomOnPressAvatar,
-      enableZoomOnPressCover,
       onPressAvatar,
-      onPressCover,
     };
   }, [
     getUniqueToken,
     handleSelectNFT,
     profile?.images.avatarUrl,
-    profile?.images.coverUrl,
     profile?.records.avatar,
+  ]);
+
+  const { enableZoomOnPressCover, onPressCover, coverUrl } = useMemo(() => {
+    const coverUrl = profile?.images.coverUrl;
+    const cover = profile?.records.cover;
+
+    const isNFTCover = cover && isENSNFTRecord(cover);
+    const coverUniqueToken = isNFTCover && getUniqueToken(cover);
+
+    const onPressCover = () => {
+      if (!cover || !isNFTCover || !coverUniqueToken) return null;
+      handleSelectNFT(coverUniqueToken);
+    };
+
+    const enableZoomOnPressCover =
+      !coverUrl || !isNFTCover || !coverUniqueToken;
+
+    return {
+      coverUrl,
+      enableZoomOnPressCover,
+      onPressCover,
+    };
+  }, [
+    getUniqueToken,
+    handleSelectNFT,
+    profile?.images.coverUrl,
     profile?.records.cover,
   ]);
 
