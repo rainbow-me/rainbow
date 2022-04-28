@@ -1,4 +1,4 @@
-import { Quote } from '@rainbow-me/swaps';
+import { ETH_ADDRESS, Quote } from '@rainbow-me/swaps';
 import lang from 'i18n-js';
 import { useSelector } from 'react-redux';
 import {
@@ -7,7 +7,8 @@ import {
 } from '@rainbow-me/handlers/uniswap';
 import { AppState } from '@rainbow-me/redux/store';
 import { SwapModalField } from '@rainbow-me/redux/swap';
-import { updatePrecisionToDisplay } from '@rainbow-me/utilities';
+import { WETH_ADDRESS } from '@rainbow-me/references';
+import { fromWei, updatePrecisionToDisplay } from '@rainbow-me/utilities';
 
 export default function useSwapAdjustedAmounts(tradeDetails: Quote) {
   const genericAssets = useSelector(
@@ -32,11 +33,20 @@ export default function useSwapAdjustedAmounts(tradeDetails: Quote) {
     tradeDetails,
     slippageInBips
   );
-  const amountReceivedSold = inputAsExact
+  let amountReceivedSold = inputAsExact
     ? adjustedAmounts[Field.OUTPUT]
     : adjustedAmounts[Field.INPUT];
   const address = inputAsExact ? outputCurrency.address : inputCurrency.address;
   const priceValue = genericAssets[address]?.price?.value ?? 0;
+
+  if (
+    (tradeDetails.buyTokenAddress === ETH_ADDRESS &&
+      tradeDetails.sellTokenAddress === WETH_ADDRESS) ||
+    (tradeDetails.sellTokenAddress === ETH_ADDRESS &&
+      tradeDetails.buyTokenAddress === WETH_ADDRESS)
+  ) {
+    amountReceivedSold = fromWei(amountReceivedSold.toString());
+  }
 
   const amountReceivedSoldDisplay = updatePrecisionToDisplay(
     // @ts-ignore

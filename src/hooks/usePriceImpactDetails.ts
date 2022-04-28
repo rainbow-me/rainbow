@@ -1,8 +1,10 @@
+import { ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS } from '@rainbow-me/swaps';
 import { useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
 import { useTheme } from '@rainbow-me/context';
 import { UniswapCurrency } from '@rainbow-me/entities';
 import { AppState } from '@rainbow-me/redux/store';
+import { ETH_ADDRESS, WETH_ADDRESS } from '@rainbow-me/references';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToNativeAmount,
@@ -40,7 +42,7 @@ export default function usePriceImpactDetails(
     };
   }
 
-  if (!inputCurrency || !outputCurrency || inputAmount === outputAmount) {
+  if (!inputCurrency || !outputCurrency) {
     return {
       inputPriceValue: 0,
       isHighPriceImpact: false,
@@ -48,8 +50,34 @@ export default function usePriceImpactDetails(
     };
   }
 
-  let inputPriceValue = genericAssets[inputCurrency?.address]?.price?.value;
-  let outputPriceValue = genericAssets[outputCurrency?.address]?.price?.value;
+  const inputTokenAddress =
+    inputCurrency.address?.toLowerCase() ===
+    ETH_ADDRESS_AGGREGATORS.toLowerCase()
+      ? ETH_ADDRESS
+      : inputCurrency.address;
+  const outputTokenAddress =
+    outputCurrency.address?.toLowerCase() ===
+    ETH_ADDRESS_AGGREGATORS.toLowerCase()
+      ? ETH_ADDRESS
+      : outputCurrency.address;
+
+  let inputPriceValue = genericAssets[inputTokenAddress]?.price?.value;
+  let outputPriceValue = genericAssets[outputTokenAddress]?.price?.value;
+
+  // Override WETH price to ETH price
+  if (inputTokenAddress.toLowerCase() === WETH_ADDRESS) {
+    inputPriceValue = genericAssets[ETH_ADDRESS]?.price?.value;
+  } else if (outputTokenAddress.toLowerCase() === WETH_ADDRESS) {
+    outputPriceValue = genericAssets[ETH_ADDRESS]?.price?.value;
+  }
+
+  if (inputPriceValue === outputPriceValue) {
+    return {
+      inputPriceValue,
+      isHighPriceImpact: false,
+      outputPriceValue,
+    };
+  }
 
   let priceImpactNativeAmount = null;
   let impact = null;
