@@ -96,7 +96,8 @@ export default function ENSAssignRecordsSheet() {
     initializeForm: true,
   });
 
-  const isEmptyProfile = useMemo(() => isEmpty(values), [values]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const isEmptyProfile = useMemo(() => isEmpty(values), []);
 
   useENSRegistrationCosts({
     name,
