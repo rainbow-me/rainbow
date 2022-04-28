@@ -293,20 +293,19 @@ function ImagePreview({
               {ios && (
                 <Box
                   as={View}
+                  height={{
+                    custom: hideStatusBar
+                      ? deviceHeight
+                      : deviceHeight - safeAreaInsetValues.top,
+                  }}
+                  left="0px"
+                  position="absolute"
                   shouldRasterizeIOS
                   style={{
                     backgroundColor: colors.trueBlack,
-                    height: hideStatusBar
-                      ? deviceHeight
-                      : deviceHeight - safeAreaInsetValues.top,
-                    left: 0,
                     overflow: 'hidden',
-                    position: 'absolute',
-                    width: deviceWidth,
-                    ...(android
-                      ? { borderTopLeftRadius: 30, borderTopRightRadius: 30 }
-                      : {}),
                   }}
+                  width={{ custom: deviceWidth }}
                 >
                   <Box style={position.coverAsObject}>
                     <Box
