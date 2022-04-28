@@ -106,48 +106,56 @@ export default function useSwapCurrencyHandlers({
     [dispatch, outputFieldRef, setLastFocusedInputHandle]
   );
 
-  const navigateToSelectInputCurrency = useCallback(() => {
-    InteractionManager.runAfterInteractions(() => {
-      dangerouslyGetParent().dangerouslyGetState().index = 0;
-      setParams({ focused: false });
-      delayNext();
-      navigate(Routes.CURRENCY_SELECT_SCREEN, {
-        onSelectCurrency: updateInputCurrency,
-        restoreFocusOnSwapModal: () => setParams({ focused: true }),
-        title,
-        type: CurrencySelectionTypes.input,
+  const navigateToSelectInputCurrency = useCallback(
+    network => {
+      InteractionManager.runAfterInteractions(() => {
+        dangerouslyGetParent().dangerouslyGetState().index = 0;
+        setParams({ focused: false });
+        delayNext();
+        navigate(Routes.CURRENCY_SELECT_SCREEN, {
+          network,
+          onSelectCurrency: updateInputCurrency,
+          restoreFocusOnSwapModal: () => setParams({ focused: true }),
+          title,
+          type: CurrencySelectionTypes.input,
+        });
+        blockInteractions();
       });
-      blockInteractions();
-    });
-  }, [
-    blockInteractions,
-    dangerouslyGetParent,
-    navigate,
-    setParams,
-    title,
-    updateInputCurrency,
-  ]);
+    },
+    [
+      blockInteractions,
+      dangerouslyGetParent,
+      navigate,
+      setParams,
+      title,
+      updateInputCurrency,
+    ]
+  );
 
-  const navigateToSelectOutputCurrency = useCallback(() => {
-    InteractionManager.runAfterInteractions(() => {
-      setParams({ focused: false });
-      dangerouslyGetParent().dangerouslyGetState().index = 0;
-      delayNext();
-      navigate(Routes.CURRENCY_SELECT_SCREEN, {
-        onSelectCurrency: updateOutputCurrency,
-        restoreFocusOnSwapModal: () => setParams({ focused: true }),
-        title: 'Receive',
-        type: CurrencySelectionTypes.output,
+  const navigateToSelectOutputCurrency = useCallback(
+    network => {
+      InteractionManager.runAfterInteractions(() => {
+        setParams({ focused: false });
+        dangerouslyGetParent().dangerouslyGetState().index = 0;
+        delayNext();
+        navigate(Routes.CURRENCY_SELECT_SCREEN, {
+          network,
+          onSelectCurrency: updateOutputCurrency,
+          restoreFocusOnSwapModal: () => setParams({ focused: true }),
+          title: 'Receive',
+          type: CurrencySelectionTypes.output,
+        });
+        blockInteractions();
       });
-      blockInteractions();
-    });
-  }, [
-    blockInteractions,
-    dangerouslyGetParent,
-    navigate,
-    setParams,
-    updateOutputCurrency,
-  ]);
+    },
+    [
+      blockInteractions,
+      dangerouslyGetParent,
+      navigate,
+      setParams,
+      updateOutputCurrency,
+    ]
+  );
 
   return {
     flipCurrencies,

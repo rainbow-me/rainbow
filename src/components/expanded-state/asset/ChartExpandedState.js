@@ -41,11 +41,11 @@ import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 import {
   useAccountSettings,
   useAdditionalAssetData,
+  useAssetsInWallet,
   useChartThrottledPoints,
   useDelayedValueWithLayoutAnimation,
   useDimensions,
   useGenericAsset,
-  useUniswapAssetsInWallet,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { ETH_ADDRESS } from '@rainbow-me/references';
@@ -270,10 +270,10 @@ export default function ChartExpandedState({ asset }) {
     ),
   });
 
-  const uniswapAssetsInWallet = useUniswapAssetsInWallet();
+  const assetsInWallet = useAssetsInWallet();
   const showSwapButton = useMemo(
-    () => find(uniswapAssetsInWallet, ['address', assetWithPrice.address]),
-    [assetWithPrice.address, uniswapAssetsInWallet]
+    () => find(assetsInWallet, ['address', assetWithPrice.address]),
+    [assetWithPrice.address, assetsInWallet]
   );
 
   const needsEth =

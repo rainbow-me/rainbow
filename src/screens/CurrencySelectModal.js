@@ -26,11 +26,11 @@ import { usePagerPosition } from '../navigation/ScrollPositionContext';
 import { addHexPrefix } from '@rainbow-me/handlers/web3';
 import { CurrencySelectionTypes } from '@rainbow-me/helpers';
 import {
+  useAssetsInWallet,
   useCoinListEditOptions,
   useInteraction,
   useMagicAutofocus,
   usePrevious,
-  useUniswapAssetsInWallet,
   useUniswapCurrencyList,
 } from '@rainbow-me/hooks';
 import { delayNext } from '@rainbow-me/hooks/useMagicAutofocus';
@@ -73,6 +73,7 @@ export default function CurrencySelectModal() {
       setPointerEvents,
       toggleGestureEnabled,
       type,
+      network,
     },
   } = useRoute();
 
@@ -88,15 +89,16 @@ export default function CurrencySelectModal() {
     searchQuery,
   ]);
 
-  const uniswapAssetsInWallet = useUniswapAssetsInWallet();
+  const assetsInWallet = useAssetsInWallet();
   const { hiddenCoins } = useCoinListEditOptions();
 
-  const filteredUniswapAssetsInWallet = useMemo(
+  const filteredAssetsInWallet = useMemo(
     () =>
-      uniswapAssetsInWallet.filter(
-        ({ uniqueId }) => !hiddenCoins.includes(uniqueId)
-      ),
-    [uniswapAssetsInWallet, hiddenCoins]
+      assetsInWallet.filter(({ network: networkName, uniqueId }) => {
+        if (network && networkName !== network) return false;
+        return !hiddenCoins.includes(uniqueId);
+      }),
+    [assetsInWallet, hiddenCoins, network]
   );
 
   const {
@@ -108,14 +110,14 @@ export default function CurrencySelectModal() {
   const getWalletCurrencyList = useCallback(() => {
     if (searchQueryForSearch !== '') {
       const searchResults = searchWalletCurrencyList(
-        filteredUniswapAssetsInWallet,
+        filteredAssetsInWallet,
         searchQueryForSearch
       );
       return headerlessSection(searchResults);
     } else {
-      return headerlessSection(filteredUniswapAssetsInWallet);
+      return headerlessSection(filteredAssetsInWallet);
     }
-  }, [filteredUniswapAssetsInWallet, searchQueryForSearch]);
+  }, [filteredAssetsInWallet, searchQueryForSearch]);
 
   const currencyList = useMemo(() => {
     let list =

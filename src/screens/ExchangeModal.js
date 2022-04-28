@@ -272,12 +272,13 @@ export default function ExchangeModal({
       !navigating && navigateToSelectInputCurrency();
       setNavigating(true);
       setTimeout(() => setNavigating(false), 1000);
-    } else if (!outputCurrency) {
-      logger.debug('Navigating to select OUTPUT currency');
-      !navigating && navigateToSelectOutputCurrency();
-      setNavigating(true);
-      setTimeout(() => setNavigating(false), 1000);
     }
+    //  else if (!outputCurrency) {
+    //   logger.debug('Navigating to select OUTPUT currency');
+    //   !navigating && navigateToSelectOutputCurrency(inputCurrency?.network);
+    //   setNavigating(true);
+    //   setTimeout(() => setNavigating(false), 1000);
+    // }
   }, [
     navigating,
     defaultInputAsset,
@@ -626,7 +627,10 @@ export default function ExchangeModal({
               disableInputCurrencySelection={isWithdrawal}
               editable={!!inputCurrency}
               inputAmount={inputAmountDisplay}
-              inputCurrencyAddress={inputCurrency?.address}
+              inputCurrencyAddress={
+                inputCurrency?.mainnet_address || inputCurrency?.address
+              }
+              inputCurrencyAssetType={inputCurrency?.type}
               inputCurrencySymbol={inputCurrency?.symbol}
               inputFieldRef={inputFieldRef}
               nativeAmount={nativeAmount}

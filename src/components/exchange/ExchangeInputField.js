@@ -29,6 +29,7 @@ export default function ExchangeInputField({
   nativeAmount,
   nativeCurrency,
   nativeFieldRef,
+  inputCurrencyAssetType,
   onFocus,
   onPressMaxBalance,
   onPressSelectInputCurrency,
@@ -49,6 +50,7 @@ export default function ExchangeInputField({
         setAmount={setInputAmount}
         symbol={inputCurrencySymbol}
         testID={testID}
+        type={inputCurrencyAssetType}
         useCustomAndroidMask={android}
       />
       <NativeFieldRow>

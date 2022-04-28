@@ -50,6 +50,7 @@ const ExchangeField = (
     amount,
     disableCurrencySelection,
     editable,
+    type,
     onBlur,
     onFocus,
     onPressSelectCurrency,
@@ -77,7 +78,7 @@ const ExchangeField = (
       <TouchableWithoutFeedback onPress={handleFocusField}>
         <FieldRow disableCurrencySelection={disableCurrencySelection}>
           {symbol ? (
-            <CoinIcon address={address} symbol={symbol} />
+            <CoinIcon address={address} symbol={symbol} type={type} />
           ) : (
             <CoinIconSkeleton />
           )}
