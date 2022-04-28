@@ -37,6 +37,7 @@ import { EthereumAddress } from '@rainbow-me/entities';
 import AesEncryptor from '@rainbow-me/handlers/aesEncryption';
 import {
   authenticateWithPIN,
+  authenticateWithPINAndCreateIfNeeded,
   getExistingPIN,
 } from '@rainbow-me/handlers/authentication';
 import { saveAccountEmptyState } from '@rainbow-me/handlers/localstorage/accountLocal';
@@ -55,6 +56,7 @@ import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
 import store from '@rainbow-me/redux/store';
 import { setIsWalletLoading } from '@rainbow-me/redux/wallets';
 import { ethereumUtils } from '@rainbow-me/utils';
+import { errorsCode, matchError } from '@rainbow-me/utils/matchError';
 import logger from 'logger';
 
 const encryptor = new AesEncryptor();
@@ -228,20 +230,35 @@ export const walletInit = async (
 export const loadWallet = async (
   address?: EthereumAddress | undefined,
   showErrorIfNotLoaded = true,
-  provider?: Provider
-): Promise<null | Wallet> => {
-  const privateKey = await loadPrivateKey(address);
-  if (privateKey === -1 || privateKey === -2) {
+  provider?: Provider,
+  isErrorBubbling = false
+): Promise<null | undefined | Wallet> => {
+  try {
+    const privateKey = await loadPrivateKey(address);
+
+    if (privateKey) {
+      // @ts-ignore
+      return new Wallet(privateKey, provider || web3Provider);
+    }
+
+    return null;
+  } catch (err: any) {
+    const matched = matchError(err);
+    if (isErrorBubbling) {
+      throw err;
+    }
+    if (matched.KEYCHAIN_NOT_AUTHENTICATED) {
+      Alert.alert(
+        'Error',
+        'Your current authentication method (Face Recognition) is not secure enough, please go to "Settings > Biometrics & Security" and enable an alternative biometric method like Fingerprint or Iris.'
+      );
+      return null;
+    }
+    if (showErrorIfNotLoaded) {
+      showWalletErrorAlert();
+    }
     return null;
   }
-  if (privateKey) {
-    // @ts-ignore
-    return new Wallet(privateKey, provider || web3Provider);
-  }
-  if (ios && showErrorIfNotLoaded) {
-    showWalletErrorAlert();
-  }
-  return null;
 };
 
 export const sendTransaction = async ({
@@ -451,7 +468,7 @@ export const loadAddress = (): Promise<null | EthereumAddress> =>
 
 const loadPrivateKey = async (
   address?: EthereumAddress | undefined
-): Promise<null | EthereumPrivateKey | -1 | -2> => {
+): Promise<null | EthereumPrivateKey> => {
   try {
     const isSeedPhraseMigrated = await keychain.loadString(
       oldSeedPhraseMigratedKey
@@ -472,20 +489,18 @@ const loadPrivateKey = async (
       }
 
       const privateKeyData = await getPrivateKey(addressToUse);
-      if (privateKeyData === -1) {
-        return -1;
-      }
+
       privateKey = get(privateKeyData, 'privateKey', null);
 
       let userPIN = null;
       if (android) {
-        const hasBiometricsEnabled = await getSupportedBiometryType();
+        const isPrivateKeyHasPINInfo = privateKey?.includes('cipher');
         // Fallback to custom PIN
-        if (!hasBiometricsEnabled) {
+        if (isPrivateKeyHasPINInfo) {
           try {
             userPIN = await authenticateWithPIN();
           } catch (e) {
-            return null;
+            throw errorsCode.DECRYPT_ANDROID_PIN_ERROR;
           }
         }
       }
@@ -498,7 +513,8 @@ const loadPrivateKey = async (
   } catch (error) {
     logger.sentry('Error in loadPrivateKey');
     captureException(error);
-    return null;
+
+    throw error;
   }
 };
 
@@ -630,7 +646,7 @@ export const createWallet = async (
           if (!userPIN) {
             // We gotta dismiss the modal before showing the PIN screen
             dispatch(setIsWalletLoading(null));
-            userPIN = await authenticateWithPIN();
+            userPIN = await authenticateWithPINAndCreateIfNeeded();
             dispatch(
               setIsWalletLoading(
                 seed
@@ -897,26 +913,18 @@ export const savePrivateKey = async (
 
 export const getPrivateKey = async (
   address: EthereumAddress
-): Promise<null | PrivateKeyData | -1> => {
+): Promise<null | PrivateKeyData> => {
   try {
     const key = `${address}_${privateKeyKey}`;
     const pkey = (await keychain.loadObject(key, {
       authenticationPrompt,
-    })) as PrivateKeyData | -2;
+    })) as PrivateKeyData;
 
-    if (pkey === -2) {
-      Alert.alert(
-        'Error',
-        'Your current authentication method (Face Recognition) is not secure enough, please go to "Settings > Biometrics & Security" and enable an alternative biometric method like Fingerprint or Iris.'
-      );
-      return null;
-    }
-
-    return pkey || null;
+    return pkey;
   } catch (error) {
     logger.sentry('Error in getPrivateKey');
     captureException(error);
-    return null;
+    throw error;
   }
 };
 
@@ -942,21 +950,13 @@ export const getSeedPhrase = async (
     const key = `${id}_${seedPhraseKey}`;
     const seedPhraseData = (await keychain.loadObject(key, {
       authenticationPrompt,
-    })) as SeedPhraseData | -2;
+    })) as SeedPhraseData;
 
-    if (seedPhraseData === -2) {
-      Alert.alert(
-        'Error',
-        'Your current authentication method (Face Recognition) is not secure enough, please go to "Settings > Biometrics & Security" and enable an alternative biometric method like Fingerprint or Iris'
-      );
-      return null;
-    }
-
-    return seedPhraseData || null;
+    return seedPhraseData;
   } catch (error) {
     logger.sentry('Error in getSeedPhrase');
     captureException(error);
-    return null;
+    throw error;
   }
 };
 
@@ -1041,7 +1041,7 @@ export const generateAccount = async (
           const { dispatch } = store;
           // Hide the loading overlay while showing the pin auth screen
           dispatch(setIsWalletLoading(null));
-          userPIN = await authenticateWithPIN();
+          userPIN = await authenticateWithPINAndCreateIfNeeded();
           dispatch(setIsWalletLoading(WalletLoadingStates.CREATING_WALLET));
         } catch (e) {
           return null;
@@ -1062,7 +1062,7 @@ export const generateAccount = async (
     }
 
     if (!seedphrase) {
-      throw new Error(`Can't access secret phrase to create new accounts`);
+      throw errorsCode.CAN_ACCESS_SECRET_PHRASE;
     }
 
     const {
@@ -1100,7 +1100,7 @@ export const generateAccount = async (
   } catch (error) {
     logger.sentry('Error generating account for keychain', id);
     captureException(error);
-    return null;
+    throw error;
   }
 };
 
@@ -1261,22 +1261,30 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (
     } else {
       logger.sentry('Getting seed directly');
       const seedData = await getSeedPhrase(id);
-      seedPhrase = get(seedData, 'seedphrase', null);
+
+      seedPhrase = seedData?.seedphrase;
       let userPIN = null;
       if (android) {
         const hasBiometricsEnabled = await getSupportedBiometryType();
-        // Fallback to custom PIN
-        if (!hasBiometricsEnabled) {
+        if (!seedData && !seedPhrase && !hasBiometricsEnabled) {
+          logger.sentry(
+            'Wallet is created with biometric data, there is no access to the seed'
+          );
+          throw errorsCode.CREATED_WITH_BIOMETRY_ERROR;
+        }
+        // Fallback to check PIN
+        const isSeedHasPINInfo = seedPhrase?.includes('cipher');
+        if (isSeedHasPINInfo) {
           try {
             userPIN = await authenticateWithPIN();
             if (userPIN) {
-              // Dencrypt with the PIN
+              // Decrypt with the PIN
               seedPhrase = await encryptor.decrypt(userPIN, seedPhrase);
             } else {
               return null;
             }
           } catch (e) {
-            return null;
+            throw errorsCode.DECRYPT_ANDROID_PIN_ERROR;
           }
         }
       }
@@ -1294,6 +1302,6 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (
   } catch (error) {
     logger.sentry('Error in loadSeedPhraseAndMigrateIfNeeded');
     captureException(error);
-    return null;
+    throw error;
   }
 };

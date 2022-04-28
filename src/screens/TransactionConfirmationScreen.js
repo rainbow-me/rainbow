@@ -56,6 +56,7 @@ import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
 import { isDappAuthenticated } from '@rainbow-me/helpers/dappNameHandler';
 import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
+import { showErrorAlertWithSupportButton } from '@rainbow-me/helpers/support';
 import {
   useAccountSettings,
   useCurrentNonce,
@@ -90,6 +91,8 @@ import {
 } from '@rainbow-me/utilities';
 import { ethereumUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 import { useNativeAssetForNetwork } from '@rainbow-me/utils/ethereumUtils';
+import match from '@rainbow-me/utils/match';
+import { matchError } from '@rainbow-me/utils/matchError';
 import { methodRegistryLookupAndParse } from '@rainbow-me/utils/methodRegistry';
 import {
   isMessageDisplayType,
@@ -759,38 +762,73 @@ export default function TransactionConfirmationScreen() {
     } else if (isSignSecondParamType(method)) {
       message = params?.[1];
     }
-    const existingWallet = await loadWallet(
-      accountInfo.address,
-      true,
-      provider
-    );
-    switch (method) {
-      case SIGN:
-        response = await signMessage(message, existingWallet);
-        break;
-      case PERSONAL_SIGN:
-        response = await signPersonalMessage(message, existingWallet);
-        break;
-      case SIGN_TYPED_DATA_V4:
-      case SIGN_TYPED_DATA:
-        response = await signTypedDataMessage(message, existingWallet);
-        break;
-      default:
-        break;
-    }
-    const { result, error } = response;
-    if (result) {
-      analytics.track('Approved WalletConnect signature request');
-      if (requestId) {
-        dispatch(removeRequest(requestId));
-        await dispatch(walletConnectSendStatus(peerId, requestId, response));
+    try {
+      const existingWallet = await loadWallet(
+        accountInfo.address,
+        true,
+        provider,
+        true
+      );
+      switch (method) {
+        case SIGN:
+          response = await signMessage(message, existingWallet);
+          break;
+        case PERSONAL_SIGN:
+          response = await signPersonalMessage(message, existingWallet);
+          break;
+        case SIGN_TYPED_DATA_V4:
+        case SIGN_TYPED_DATA:
+          response = await signTypedDataMessage(message, existingWallet);
+          break;
+        default:
+          break;
       }
-      if (callback) {
-        callback({ sig: result });
+      const { result, error } = response;
+      if (result) {
+        analytics.track('Approved WalletConnect signature request');
+        if (requestId) {
+          dispatch(removeRequest(requestId));
+          await dispatch(walletConnectSendStatus(peerId, requestId, response));
+        }
+        if (callback) {
+          callback({ sig: result });
+        }
+        closeScreen(false);
+      } else {
+        await onCancel(error);
       }
-      closeScreen(false);
-    } else {
-      await onCancel(error);
+    } catch (error) {
+      const matched = matchError(error);
+      // KEYCHAIN_USER_CANCELED: -1 and KEYCHAIN_NOT_AUTHENTICATED: -2
+      if (
+        matched.KEYCHAIN_USER_CANCELED ||
+        matched.KEYCHAIN_CANCEL ||
+        matched.KEYCHAIN_FACE_UNLOCK_CANCEL
+      ) {
+        //when user cancel loadWallet signPersonalMessage will not ask
+        //authorization again
+        return null;
+      }
+
+      const textForAlert = match(
+        lang.t('errors.connectWithSupport'),
+        [
+          matched.KEYCHAIN_ERROR_AUTHENTICATING,
+          `Your account has been secured with biometric data, like fingerprint
+          or face identification. To continue this operation, turn on
+          biometrics in your phone’s settings.`,
+        ],
+        [
+          matched.KEYCHAIN_NOT_AUTHENTICATED,
+          'Your current authentication method (Face Recognition) is not secure enough, please go to "Settings > Biometrics & Security" and enable an alternative biometric method like Fingerprint or Iris.',
+        ],
+        [
+          matched.DECRYPT_ANDROID_PIN_ERROR,
+          'We are having trouble verifying your password, please contact support',
+        ]
+      );
+
+      Alert.alert('An error occurred', textForAlert);
     }
   }, [
     accountInfo.address,

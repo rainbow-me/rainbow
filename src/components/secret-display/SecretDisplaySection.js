@@ -2,6 +2,7 @@ import { useRoute } from '@react-navigation/native';
 import { captureException } from '@sentry/react-native';
 import { upperFirst } from 'lodash';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
+import { Alert } from 'react-native';
 import {
   identifyWalletType,
   loadSeedPhraseAndMigrateIfNeeded,
@@ -18,6 +19,7 @@ import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { useWallets } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { margin, padding, position, shadow } from '@rainbow-me/styles';
+import { matchError } from '@rainbow-me/utils/matchError';
 import logger from 'logger';
 
 const Title = styled(Text).attrs({
@@ -107,10 +109,31 @@ export default function SecretDisplaySection({
       setVisible(!!s);
       onSecretLoaded?.(!!s);
     } catch (e) {
-      logger.sentry('Error while trying to reveal secret', e);
-      captureException(e);
+      const matched = matchError(e);
+
       setVisible(false);
       onSecretLoaded?.(false);
+      setSeed('');
+
+      if (
+        matched.KEYCHAIN_USER_CANCELED ||
+        matched.KEYCHAIN_CANCEL ||
+        matched.KEYCHAIN_FACE_UNLOCK_CANCEL
+      ) {
+        return;
+      }
+
+      if (matched.KEYCHAIN_ERROR_AUTHENTICATING) {
+        Alert.alert(
+          'An error occurred',
+          `Your account has been secured with biometric data, like fingerprint
+        or face identification. To continue this operation, turn on
+        biometrics in your phone’s settings.`
+        );
+      }
+
+      logger.sentry('Error while trying to reveal secret', e);
+      captureException(e);
     }
   }, [onSecretLoaded, onWalletTypeIdentified, walletId]);
 

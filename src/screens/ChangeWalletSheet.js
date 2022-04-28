@@ -4,7 +4,7 @@ import { captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
 import { get, toLower } from 'lodash';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { InteractionManager } from 'react-native';
+import { Alert, InteractionManager } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useDispatch } from 'react-redux';
 import Divider from '../components/Divider';
@@ -43,6 +43,8 @@ import {
   showActionSheetWithOptions,
 } from '@rainbow-me/utils';
 
+import match from '@rainbow-me/utils/match';
+import { matchError } from '@rainbow-me/utils/matchError';
 import logger from 'logger';
 
 const deviceHeight = deviceUtils.dimensions.height;
@@ -476,10 +478,27 @@ export default function ChangeWalletSheet() {
                 } catch (e) {
                   logger.sentry('Error while trying to add account');
                   captureException(e);
-                  if (isDamaged) {
-                    setTimeout(() => {
-                      showWalletErrorAlert();
-                    }, 1000);
+                  const matched = matchError(e);
+                  //can face any of keychainErrKey err
+                  const alertContent = match(
+                    false,
+                    [
+                      matched.KEYCHAIN_NOT_AUTHENTICATED,
+                      'Your current authentication method (Face Recognition) is not secure enough, please go to "Settings > Biometrics & Security" and enable an alternative biometric method like Fingerprint or Iris',
+                    ],
+                    [
+                      matched.CAN_ACCESS_SECRET_PHRASE,
+                      `Can't access secret phrase to create new accounts`,
+                    ]
+                  );
+                  if (alertContent) {
+                    Alert.alert(alertContent);
+                  } else {
+                    if (isDamaged) {
+                      setTimeout(() => {
+                        showWalletErrorAlert();
+                      }, 1000);
+                    }
                   }
                 }
               }

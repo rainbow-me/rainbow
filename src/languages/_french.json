@@ -811,6 +811,9 @@
     "warning": {
       "user_is_offline": "Hors connexion, veuillez vérifier votre connexion Internet",
       "user_is_online": "Connexion réussie ! Vous êtes encore connecté à Internet"
+    },
+    "errors": {
+      "connectWithSupport": "Pour obtenir de l'aide, veuillez contacter l'assistance! '\n'Nous vous répondrons bientôt!"
     }
   }
 }
