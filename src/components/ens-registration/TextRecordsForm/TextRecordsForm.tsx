@@ -123,7 +123,6 @@ function Field({ defaultValue, ...props }: InlineFieldProps) {
   useFocusEffect(
     useCallback(() => {
       setValue(defaultValue);
-      return () => setValue('');
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
   );
