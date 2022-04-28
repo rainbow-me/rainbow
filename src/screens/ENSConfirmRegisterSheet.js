@@ -135,6 +135,7 @@ export default function ENSConfirmRegisterSheet() {
     step,
     yearsDuration: duration,
   });
+  const { clearCurrentRegistrationName } = useENSRegistration();
 
   const goToProfileScreen = useCallback(() => {
     InteractionManager.runAfterInteractions(() => {
@@ -317,6 +318,10 @@ export default function ENSConfirmRegisterSheet() {
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
   );
+
+  useEffect(() => () => clearCurrentRegistrationName(), [
+    clearCurrentRegistrationName,
+  ]);
 
   return (
     <SlackSheet
