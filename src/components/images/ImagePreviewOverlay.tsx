@@ -37,38 +37,8 @@ import {
 } from '@rainbow-me/design-system';
 import { useDimensions, usePersistentAspectRatio } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
+import { colors, position } from '@rainbow-me/styles';
 import { safeAreaInsetValues } from '@rainbow-me/utils';
-
-const BackgroundBlur = styled(BlurView).attrs({
-  blurAmount: 100,
-  blurType: 'light',
-})({
-  ...position.coverAsObject,
-});
-
-const BackgroundImage = styled(View)({
-  ...position.coverAsObject,
-});
-
-interface BlurWrapperProps {
-  height: number;
-  width: number;
-}
-
-const BlurWrapper = styled(View).attrs({
-  shouldRasterizeIOS: true,
-})({
-  // @ts-expect-error missing theme types
-  backgroundColor: ({ theme: { colors } }) => colors.trueBlack,
-  height: ({ height }: BlurWrapperProps) => height,
-  left: 0,
-  overflow: 'hidden',
-  position: 'absolute',
-  width: ({ width }: BlurWrapperProps) => width,
-  ...(android ? { borderTopLeftRadius: 30, borderTopRightRadius: 30 } : {}),
-});
 
 const idsAtom = atom<string[]>({
   default: [],
@@ -321,24 +291,38 @@ function ImagePreview({
               style={[overlayStyle, StyleSheet.absoluteFillObject]}
             >
               {ios && (
-                <BlurWrapper
-                  height={
-                    hideStatusBar
+                <Box
+                  as={View}
+                  shouldRasterizeIOS
+                  style={{
+                    backgroundColor: colors.trueBlack,
+                    height: hideStatusBar
                       ? deviceHeight
-                      : deviceHeight - safeAreaInsetValues.top
-                  }
-                  width={deviceWidth}
+                      : deviceHeight - safeAreaInsetValues.top,
+                    left: 0,
+                    overflow: 'hidden',
+                    position: 'absolute',
+                    width: deviceWidth,
+                    ...(android
+                      ? { borderTopLeftRadius: 30, borderTopRightRadius: 30 }
+                      : {}),
+                  }}
                 >
-                  <BackgroundImage>
+                  <Box style={position.coverAsObject}>
                     <Box
                       as={ImgixImage}
                       height="full"
                       source={{ uri: imageUrl }}
                       width="full"
                     />
-                    <BackgroundBlur />
-                  </BackgroundImage>
-                </BlurWrapper>
+                    <Box
+                      as={BlurView}
+                      blurAmount={100}
+                      blurType="light"
+                      style={position.coverAsObject}
+                    />
+                  </Box>
+                </Box>
               )}
               <Box
                 height={{
