@@ -62,7 +62,7 @@ function TransactionActionRow({
       <Box>
         <SheetActionButtonRow paddingBottom={5}>
           <HoldToAuthorizeButton
-            color={accentColor}
+            backgroundColor={accentColor}
             disabled={!isSufficientGas || !isValidGas}
             hideInnerBorder
             isLongPressAvailableForBiometryType
@@ -336,23 +336,21 @@ export default function ENSConfirmRegisterSheet() {
               <Box horizontal="30px">
                 <Stack alignHorizontal="center" space="15px">
                   {avatarUrl && (
-                    <AccentColorProvider color={accentColor + '10'}>
+                    <Box
+                      background="body"
+                      borderRadius={avatarSize / 2}
+                      height={{ custom: avatarSize }}
+                      shadow="15px light"
+                      width={{ custom: avatarSize }}
+                    >
                       <Box
-                        background="accent"
+                        as={ImgixImage}
                         borderRadius={avatarSize / 2}
                         height={{ custom: avatarSize }}
-                        shadow="12px heavy accent"
+                        source={{ uri: avatarUrl }}
                         width={{ custom: avatarSize }}
-                      >
-                        <Box
-                          as={ImgixImage}
-                          borderRadius={avatarSize / 2}
-                          height={{ custom: avatarSize }}
-                          source={{ uri: avatarUrl }}
-                          width={{ custom: avatarSize }}
-                        />
-                      </Box>
-                    </AccentColorProvider>
+                      />
+                    </Box>
                   )}
                   <Heading size="26px">{ensName}</Heading>
                   <Text

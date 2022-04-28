@@ -67,6 +67,7 @@ export default function ProfileAvatar({
           background={avatarUrl ? 'body' : 'accent'}
           borderRadius={size / 2}
           justifyContent="center"
+          shadow="15px light"
           width={{ custom: size }}
         >
           {avatarUrl ? (
@@ -75,8 +76,11 @@ export default function ProfileAvatar({
                 aspectRatioType="avatar"
                 backgroundMask="avatar"
                 borderRadius={size / 2}
+                disableEnteringWithPinch
                 enableZoomOnPress={enableZoomOnPress}
                 height={{ custom: size }}
+                hideStatusBar={false}
+                imageUrl={avatarUrl}
                 onPress={handleOnPress}
                 topOffset={ios ? 112 : 107}
               >

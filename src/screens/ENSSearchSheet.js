@@ -85,21 +85,21 @@ export default function ENSSearchSheet() {
       testID="ens-search-sheet"
     >
       <Stack space="15px">
-        <Box flexGrow={1} paddingTop="30px">
-          <Stack alignHorizontal="center" space="15px">
-            <Heading size="23px" weight="heavy">
+        <Box flexGrow={1} paddingTop={{ custom: 28 }}>
+          <Stack alignHorizontal="center" space={{ custom: 16 }}>
+            <Heading align="center" color="primary" size="23px" weight="heavy">
               {`􀠎 ${lang.t('profiles.search.header')}`}
             </Heading>
-            <Text color="secondary50" size="18px" weight="bold">
+            <Text align="center" color="secondary60" size="18px" weight="bold">
               {lang.t('profiles.search.description')}
             </Text>
           </Stack>
 
           <Box
             alignItems="center"
-            paddingBottom="24px"
+            paddingBottom="19px"
             paddingHorizontal="19px"
-            paddingTop="42px"
+            paddingTop={{ custom: 37 }}
           >
             <SearchInput
               contextMenuHidden
@@ -109,34 +109,44 @@ export default function ENSSearchSheet() {
                 setInputValue(value);
               }}
               placeholder="Input placeholder"
+              selectionColor={
+                isAvailable
+                  ? colors.green
+                  : isRegistered
+                  ? colors.yellowOrange
+                  : colors.appleBlue
+              }
               state={state}
               testID="ens-search-input"
               value={inputValue}
             />
           </Box>
           {isIdle && (
-            <Inline
-              alignHorizontal="center"
-              alignVertical="center"
-              space="6px"
-              wrap={false}
-            >
-              <Box>
-                <ImgixImage source={dice} style={{ height: 20, width: 20 }} />
-              </Box>
-              <Text color="secondary50" size="16px" weight="bold">
-                {lang.t('profiles.search.3_char_min')}
-              </Text>
-            </Inline>
+            <Box paddingTop="10px">
+              <Inline
+                alignHorizontal="center"
+                alignVertical="center"
+                space={{ custom: 7 }}
+                wrap={false}
+              >
+                <Box>
+                  <ImgixImage
+                    source={dice}
+                    style={{ height: 20, top: -0.5, width: 20 }}
+                  />
+                </Box>
+                <Text
+                  align="center"
+                  color="secondary50"
+                  size="16px"
+                  weight="bold"
+                >
+                  {lang.t('profiles.search.3_char_min')}
+                </Text>
+              </Inline>
+            </Box>
           )}
-          {isIdle && (
-            <>
-              <Inset horizontal="19px" vertical="24px">
-                <Divider />
-              </Inset>
-              <PendingRegistrations />
-            </>
-          )}
+          {isIdle && <PendingRegistrations />}
           {isInvalid && (
             <Inset horizontal="30px">
               <Text
@@ -154,7 +164,7 @@ export default function ENSSearchSheet() {
               <Stack
                 separator={
                   <Inset horizontal="19px">
-                    <Divider />
+                    <Divider color="divider60" />
                   </Inset>
                 }
                 space="19px"
@@ -177,9 +187,9 @@ export default function ENSSearchSheet() {
                     />
                   )}
                 </Inline>
-                <Inset horizontal="19px">
+                <Inset horizontal="15px">
                   {isRegistered ? (
-                    <Text color="secondary50" size="16px" weight="bold">
+                    <Text color="secondary60" size="16px" weight="bold">
                       {lang.t('profiles.search.registered_on', {
                         content: registrationData?.registrationDate,
                       })}
@@ -188,7 +198,7 @@ export default function ENSSearchSheet() {
                     <Inline>
                       {registrationCostsDataIsAvailable ? (
                         <Text
-                          color="secondary50"
+                          color="secondary60"
                           size="16px"
                           testID="ens-registration-fees"
                           weight="bold"
@@ -200,7 +210,7 @@ export default function ENSSearchSheet() {
                           {lang.t('profiles.search.estimated_total_cost_2')}
                         </Text>
                       ) : (
-                        <Text color="secondary50" size="16px" weight="bold">
+                        <Text color="secondary60" size="16px" weight="bold">
                           {`${lang.t('profiles.search.loading_fees')}\n`}
                         </Text>
                       )}

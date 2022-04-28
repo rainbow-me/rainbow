@@ -51,9 +51,15 @@ const ContactName = styled(TruncatedText).attrs(({ lite }) => ({
   width: ({ deviceWidth }) => deviceWidth - 90,
 });
 
-const css = margin.object(6, 19, 13);
+const css = {
+  default: margin.object(6, 19, 13),
+  symmetrical: margin.object(9.5, 19),
+};
 
-const ContactRow = ({ address, color, nickname, ...props }, ref) => {
+const ContactRow = (
+  { address, color, nickname, symmetricalMargins, ...props },
+  ref
+) => {
   const { width: deviceWidth } = useDimensions();
   const { colors } = useTheme();
   const {
@@ -107,7 +113,7 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
       <RowWithMargins
         height={40}
         margin={10}
-        style={css}
+        style={symmetricalMargins ? css.symmetrical : css.default}
         testID={`${testID}-contact-row-${
           removeFirstEmojiFromString(nickname) || ''
         }`}

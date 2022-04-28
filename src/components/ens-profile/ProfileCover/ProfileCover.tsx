@@ -57,8 +57,8 @@ export default function ProfileCover({
       justifyContent="center"
       {...(ios
         ? {
-            center: [0, 200],
-            colors: [accentColor, accentColor + '50'],
+            center: [0, 126],
+            colors: [accentColor, accentColor + '60'],
             stops: [0, 1],
           }
         : {
@@ -75,8 +75,11 @@ export default function ProfileCover({
         <ImagePreviewOverlayTarget
           aspectRatioType="cover"
           borderRadius={0}
+          disableEnteringWithPinch
           enableZoomOnPress={enableZoomOnPress}
           height="126px"
+          hideStatusBar={false}
+          imageUrl={coverUrl}
           onPress={handleOnPress}
           topOffset={ios ? 112 : 107}
         >

@@ -139,17 +139,19 @@ const TextButton = ({
 const textSize: TextProps['size'] = '18px';
 const textColor: TextProps['color'] = 'secondary50';
 const sectionSpace: Space = '30px';
-const paragraphSpace: Space = '24px';
+const paragraphSpace: Space = { custom: 22 };
 const listSpace: Space = '19px';
 
 const Section = ({
   addonComponent,
+  paragraphSpace = '24px',
   title,
   titleEmoji,
   titleImageUrl,
   children,
 }: {
   addonComponent?: React.ReactNode;
+  paragraphSpace?: Space;
   title: string;
   titleEmoji?: string;
   titleImageUrl?: string | null;
@@ -223,7 +225,7 @@ const UniqueTokenExpandedState = ({
 }: UniqueTokenExpandedStateProps) => {
   const { accountAddress, accountENS } = useAccountProfile();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
-  const { navigate, goBack } = useNavigation();
+  const { navigate } = useNavigation();
   const { colors, isDarkMode } = useTheme();
   const { isReadOnlyWallet } = useWallets();
 
@@ -275,7 +277,6 @@ const UniqueTokenExpandedState = ({
   // TODO(jxom): This is temporary until `ZoomableWrapper` refactor
   const opacityStyle = useAnimatedStyle(() => ({
     opacity: 1 - (animationProgress.value || ensCoverAnimationProgress.value),
-    zIndex: -1,
   }));
   // TODO(jxom): This is temporary until `ZoomableWrapper` refactor
   const sheetHandleStyle = useAnimatedStyle(() => ({
@@ -342,14 +343,13 @@ const UniqueTokenExpandedState = ({
     if (isENS) {
       InteractionManager.runAfterInteractions(() => {
         startRegistration(uniqueId, REGISTRATION_MODES.EDIT);
-        goBack();
         navigate(Routes.REGISTER_ENS_NAVIGATOR, {
           ensName: uniqueId,
           mode: REGISTRATION_MODES.EDIT,
         });
       });
     }
-  }, [goBack, isENS, navigate, startRegistration, uniqueId]);
+  }, [isENS, navigate, startRegistration, uniqueId]);
 
   const sheetRef = useRef();
   const yPosition = useSharedValue(0);
@@ -375,7 +375,7 @@ const UniqueTokenExpandedState = ({
           <BackgroundImage>
             <UniqueTokenImage
               backgroundColor={asset.background || imageColor}
-              imageUrl={asset.image_url}
+              imageUrl={asset.lowResUrl}
               item={asset}
               resizeMode="cover"
               size={CardSize}
@@ -405,39 +405,6 @@ const UniqueTokenExpandedState = ({
         <ColorModeProvider value="darkTinted">
           <AccentColorProvider color={imageColor}>
             <ImagePreviewOverlay
-              backgroundOverlay={
-                <Box height="full" width="full">
-                  {ios && (
-                    <Box
-                      as={View}
-                      height="full"
-                      position="absolute"
-                      shouldRasterizeIOS
-                      width="full"
-                    >
-                      <BackgroundImage>
-                        <UniqueTokenImage
-                          backgroundColor={asset.background}
-                          imageUrl={asset.image_url}
-                          item={asset}
-                          resizeMode="cover"
-                          size={CardSize}
-                        />
-                        <BackgroundBlur />
-                      </BackgroundImage>
-                    </Box>
-                  )}
-                  <Box
-                    height="full"
-                    style={{
-                      backgroundColor: isDarkMode
-                        ? `rgba(22, 22, 22, ${ios ? 0.8 : 1})`
-                        : `rgba(26, 26, 26, ${ios ? 0.8 : 1})`,
-                    }}
-                    width="full"
-                  />
-                </Box>
-              }
               opacity={ensCoverOpacity}
               yPosition={yPosition}
             >
@@ -561,6 +528,7 @@ const UniqueTokenExpandedState = ({
                           )}
                           {isENS && (
                             <ENSBriefTokenInfoRow
+                              color={imageColor}
                               ensName={uniqueId}
                               expiryDate={ensData?.registration.expiryDate}
                               registrationDate={
@@ -617,6 +585,7 @@ const UniqueTokenExpandedState = ({
                                 </TextButton>
                               )
                             }
+                            paragraphSpace={{ custom: 22 }}
                             title={`${lang.t(
                               'expanded_state.unique_expanded.profile_info'
                             )}`}
@@ -632,6 +601,7 @@ const UniqueTokenExpandedState = ({
                             />
                           </Section>
                           <Section
+                            paragraphSpace={{ custom: 22 }}
                             title={`${lang.t(
                               'expanded_state.unique_expanded.configuration'
                             )}`}
@@ -647,6 +617,7 @@ const UniqueTokenExpandedState = ({
                             />
                           </Section>
                           <Section
+                            paragraphSpace={{ custom: 22 }}
                             title={`${lang.t(
                               'expanded_state.unique_expanded.advanced'
                             )}`}
@@ -658,6 +629,7 @@ const UniqueTokenExpandedState = ({
                       )}
                       {familyDescription ? (
                         <Section
+                          paragraphSpace={{ custom: 26 }}
                           title={`${lang.t(
                             'expanded_state.unique_expanded.about',
                             { assetFamilyName: familyName }
@@ -676,6 +648,7 @@ const UniqueTokenExpandedState = ({
                                   color={imageColor}
                                   display={familyLinkDisplay}
                                   url={familyLink}
+                                  weight="bold"
                                 />
                               </Bleed>
                             ) : null}

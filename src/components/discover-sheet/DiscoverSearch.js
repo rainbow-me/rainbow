@@ -57,6 +57,8 @@ export default function DiscoverSearch() {
     uniswapCurrencyListLoading,
   } = useUniswapCurrencyList(searchQueryForSearch);
 
+  const { colors } = useTheme();
+
   const currencyList = useMemo(() => [...uniswapCurrencyList, ...ensResults], [
     uniswapCurrencyList,
     ensResults,
@@ -133,20 +135,23 @@ export default function DiscoverSearch() {
     [handleActionAsset, handlePress]
   );
 
-  const addEnsResults = useCallback(ensResults => {
-    let ensSearchResults = [];
-    if (ensResults && ensResults.length) {
-      ensSearchResults = [
-        {
-          color: '#5893ff',
-          data: ensResults,
-          key: `􀏼 ${lang.t('discover.search.ethereum_name_service')}`,
-          title: `􀏼 ${lang.t('discover.search.ethereum_name_service')}`,
-        },
-      ];
-    }
-    setEnsResults(ensSearchResults);
-  }, []);
+  const addEnsResults = useCallback(
+    ensResults => {
+      let ensSearchResults = [];
+      if (ensResults && ensResults.length) {
+        ensSearchResults = [
+          {
+            color: colors.appleBlue,
+            data: ensResults,
+            key: `􀉮 ${lang.t('discover.search.profiles')}`,
+            title: `􀉮 ${lang.t('discover.search.profiles')}`,
+          },
+        ];
+      }
+      setEnsResults(ensSearchResults);
+    },
+    [colors.appleBlue]
+  );
 
   useEffect(() => {
     const searching = searchQuery !== '';
@@ -200,6 +205,7 @@ export default function DiscoverSearch() {
           loading={uniswapCurrencyListLoading || isFetchingEns}
           query={searchQueryForSearch}
           ref={currencySelectionListRef}
+          scrollIndicatorInsets={{ bottom: 53, top: 8 }}
           showList
           testID="discover-currency-select-list"
           type={CurrencySelectionTypes.output}

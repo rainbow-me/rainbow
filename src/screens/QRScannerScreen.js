@@ -4,7 +4,6 @@ import { View } from 'react-native';
 import { useIsEmulator } from 'react-native-device-info';
 import { useSharedValue } from 'react-native-reanimated';
 import { DiscoverSheet } from '../components/discover-sheet';
-import { FabWrapper, SearchFab } from '../components/fab';
 import { BackButton, Header, HeaderHeight } from '../components/header';
 import { Centered } from '../components/layout';
 import {
@@ -105,10 +104,6 @@ export default function QRScannerScreen() {
           )}
         </ScannerContainer>
       </View>
-      <FabWrapper
-        fabs={[SearchFab]}
-        onPress={() => dsRef.current?.onFabSearch?.current()}
-      />
     </>
   );
 }

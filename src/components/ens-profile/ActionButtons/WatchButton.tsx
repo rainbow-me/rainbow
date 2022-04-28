@@ -77,14 +77,15 @@ export default function WatchButton({
     >
       <ActionButton
         color="action"
-        icon={!optimisticIsWatching ? '􀨭' : ''}
         onPress={!optimisticIsWatching ? handlePressWatch : () => null}
+        paddingHorizontal={isWatching ? { custom: 11.25 } : undefined}
         testID="profile-sheet-watch-button"
         variant={!optimisticIsWatching ? 'solid' : 'outlined'}
       >
-        {lang.t(
-          `profiles.actions.${optimisticIsWatching ? 'watching' : 'watch'}`
-        )}
+        {(optimisticIsWatching ? '' : '􀨭 ') +
+          lang.t(
+            `profiles.actions.${optimisticIsWatching ? 'watching' : 'watch'}`
+          )}
       </ActionButton>
     </ConditionalWrap>
   );

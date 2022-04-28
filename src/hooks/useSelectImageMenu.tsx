@@ -22,7 +22,7 @@ const items = {
     actionTitle: lang.t('profiles.create.upload_photo'),
     icon: {
       imageValue: {
-        systemName: 'photo',
+        systemName: 'photo.on.rectangle.angled',
       },
       type: 'IMAGE_SYSTEM',
     },
@@ -32,7 +32,7 @@ const items = {
     actionTitle: lang.t('profiles.create.choose_nft'),
     icon: {
       imageValue: {
-        systemName: 'cube',
+        systemName: 'square.grid.2x2',
       },
       testID: 'choose-nft',
       type: 'IMAGE_SYSTEM',

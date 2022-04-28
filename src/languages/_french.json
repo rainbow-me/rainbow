@@ -160,7 +160,7 @@
       "etherscan": "🔍 Affichage à Etherscan :)",
       "exchange": "Échanger",
       "exchange_again": "Échanger encore",
-      "exchange_search_uniswap": "Cherche",
+      "exchange_search_placeholder": "Cherche",
       "go_back": "Retourner",
       "hide": "Cacher",
       "hold_to_authorize": {
@@ -217,7 +217,7 @@
         "trading_at_prefix": "Trading at :)"
       },
       "search": {
-        "ethereum_name_service": "Ethereum Name Service :)",
+        "profiles": "Profiles :)",
         "search_ethereum": "Search all of Ethereum :)"
       },
       "strategies": {
@@ -377,6 +377,9 @@
         "long_placeholder": "Name, ENS, or address :)",
         "short_placeholder": "ENS or address :)"
       }
+    },
+    "gas": {
+      "network_fee": "Frais de réseau",
     },
     "homepage": {
       "coming_soon": "À venir.",

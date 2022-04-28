@@ -1,5 +1,6 @@
 import { useRoute } from '@react-navigation/core';
 import React, { createContext, useMemo } from 'react';
+import { StatusBar } from 'react-native';
 import RecyclerAssetList2 from '../components/asset-list/RecyclerAssetList2';
 import ProfileSheetHeader from '../components/ens-profile/ProfileSheetHeader';
 import { SheetHandleFixedToTopHeight } from '../components/sheet';
@@ -77,6 +78,7 @@ export default function ProfileSheet() {
 
   return (
     <ProfileSheetConfigContext.Provider value={{ enableZoomableImages }}>
+      <StatusBar barStyle="light-content" />
       <AccentColorProvider color={accentColor}>
         <Box background="body">
           <Box style={wrapperStyle}>

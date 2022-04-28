@@ -139,7 +139,7 @@ export default function ProfileSheetHeader({
     <Box
       {...(ios && { onLayout: (e: any) => setTimeout(() => layout(e), 500) })}
     >
-      <Stack space="19px">
+      <Stack space={{ custom: 18 }}>
         <ProfileCover
           coverUrl={coverUrl}
           enableZoomOnPress={enableZoomOnPressCover}
@@ -147,7 +147,7 @@ export default function ProfileSheetHeader({
           isLoading={isLoading}
         />
         <Bleed top={{ custom: 38 }}>
-          <Inset horizontal="19px">
+          <Inset left="19px" right="15px" top={{ custom: 1 }}>
             <Columns>
               <Column width="content">
                 <ProfileAvatar
@@ -159,7 +159,7 @@ export default function ProfileSheetHeader({
                 />
               </Column>
               {!isLoading && (
-                <Inset top="30px">
+                <Inset top="34px">
                   <ActionButtons address={profileAddress} ensName={ensName} />
                 </Inset>
               )}
@@ -204,8 +204,8 @@ export default function ProfileSheetHeader({
               )}
             </Bleed>
             {!isPreview && (
-              <Inset bottom="15px">
-                <Divider />
+              <Inset bottom="6px">
+                <Divider color="divider60" />
               </Inset>
             )}
           </Stack>

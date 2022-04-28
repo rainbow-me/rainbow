@@ -105,10 +105,6 @@ export default function RegisterENSNavigator() {
     }
   }, [previousRouteName, screenOptions.scrollEnabled]);
 
-  useEffect(() => {
-    StatusBar.setBarStyle('light-content');
-  }, []);
-
   useEffect(() => () => clearCurrentRegistrationName(), [
     clearCurrentRegistrationName,
   ]);
@@ -153,6 +149,7 @@ export default function RegisterENSNavigator() {
         removeTopPadding
         scrollEnabled={scrollEnabled}
       >
+        <StatusBar barStyle="light-content" />
         <Box style={wrapperStyle}>
           <Swipe.Navigator
             initialLayout={deviceUtils.dimensions}
