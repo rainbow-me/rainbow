@@ -1,5 +1,5 @@
 import { useRoute } from '@react-navigation/core';
-import React, { useContext, useMemo } from 'react';
+import React, { useCallback, useContext, useMemo } from 'react';
 import { ModalContext } from '../../react-native-cool-modals/NativeStackView';
 import Skeleton from '../skeleton/Skeleton';
 import ActionButtons from './ActionButtons/ActionButtons';
@@ -19,8 +19,16 @@ import {
   Inset,
   Stack,
 } from '@rainbow-me/design-system';
+import { UniqueAsset } from '@rainbow-me/entities';
 import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
-import { useENSProfile, useFirstTransactionTimestamp } from '@rainbow-me/hooks';
+import {
+  useENSProfile,
+  useFetchUniqueTokens,
+  useFirstTransactionTimestamp,
+} from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
+import Routes from '@rainbow-me/routes';
+import { isENSNFTRecord, parseENSNFTRecord } from '@rainbow-me/utils';
 import { addressHashedEmoji } from '@rainbow-me/utils/profileUtils';
 
 export default function ProfileSheetHeader({
@@ -37,9 +45,86 @@ export default function ProfileSheetHeader({
 
   const ensName = defaultEnsName || params?.address;
   const { data: profile } = useENSProfile(ensName);
-  const avatarUrl = profile?.images.avatarUrl;
-  const coverUrl = profile?.images.coverUrl;
   const profileAddress = profile?.primary.address;
+
+  const { navigate } = useNavigation();
+  const { data: uniqueTokens } = useFetchUniqueTokens({
+    address: profileAddress,
+  });
+
+  const handleSelectNFT = useCallback(
+    (uniqueToken: UniqueAsset) => {
+      navigate(Routes.EXPANDED_ASSET_SHEET, {
+        asset: uniqueToken,
+        external: true,
+        type: 'unique_token',
+      });
+    },
+    [navigate]
+  );
+
+  const getUniqueToken = useCallback(
+    (avatarOrCover: string) => {
+      const { contractAddress, tokenId } = parseENSNFTRecord(avatarOrCover);
+      const uniqueToken = uniqueTokens?.find(
+        token =>
+          token.asset_contract.address === contractAddress &&
+          token.id === tokenId
+      );
+      return uniqueToken;
+    },
+    [uniqueTokens]
+  );
+
+  const {
+    enableZoomOnPressAvatar,
+    enableZoomOnPressCover,
+    onPressAvatar,
+    onPressCover,
+    avatarUrl,
+    coverUrl,
+  } = useMemo(() => {
+    const avatarUrl = profile?.images.avatarUrl;
+    const avatar = profile?.records.avatar;
+    const coverUrl = profile?.images.coverUrl;
+    const cover = profile?.records.cover;
+
+    const isNFTAvatar = avatar && isENSNFTRecord(avatar);
+    const avatarUniqueToken = isNFTAvatar && getUniqueToken(avatar);
+    const isNFTCover = cover && isENSNFTRecord(cover);
+    const coverUniqueToken = isNFTCover && getUniqueToken(cover);
+
+    const onPressAvatar = () => {
+      if (!avatar || !isNFTAvatar || !avatarUniqueToken) return null;
+      handleSelectNFT(avatarUniqueToken);
+    };
+
+    const onPressCover = () => {
+      if (!cover || !isNFTCover || !coverUniqueToken) return null;
+      handleSelectNFT(coverUniqueToken);
+    };
+
+    const enableZoomOnPressAvatar =
+      !avatarUrl || !isNFTAvatar || !avatarUniqueToken;
+    const enableZoomOnPressCover =
+      !coverUrl || !isNFTCover || !coverUniqueToken;
+
+    return {
+      avatarUrl,
+      coverUrl,
+      enableZoomOnPressAvatar,
+      enableZoomOnPressCover,
+      onPressAvatar,
+      onPressCover,
+    };
+  }, [
+    getUniqueToken,
+    handleSelectNFT,
+    profile?.images.avatarUrl,
+    profile?.images.coverUrl,
+    profile?.records.avatar,
+    profile?.records.cover,
+  ]);
 
   const { data: firstTransactionTimestamp } = useFirstTransactionTimestamp({
     ensName,
@@ -55,7 +140,12 @@ export default function ProfileSheetHeader({
       {...(ios && { onLayout: (e: any) => setTimeout(() => layout(e), 500) })}
     >
       <Stack space="19px">
-        <ProfileCover coverUrl={coverUrl} isLoading={isLoading} />
+        <ProfileCover
+          coverUrl={coverUrl}
+          enableZoomOnPress={enableZoomOnPressCover}
+          handleOnPress={onPressCover}
+          isLoading={isLoading}
+        />
         <Bleed top={{ custom: 38 }}>
           <Inset horizontal="19px">
             <Columns>
@@ -63,6 +153,8 @@ export default function ProfileSheetHeader({
                 <ProfileAvatar
                   accountSymbol={emoji as string}
                   avatarUrl={avatarUrl}
+                  enableZoomOnPress={enableZoomOnPressAvatar}
+                  handleOnPress={onPressAvatar}
                   isLoading={isLoading}
                 />
               </Column>

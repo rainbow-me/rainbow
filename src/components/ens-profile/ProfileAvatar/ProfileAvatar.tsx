@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { Text as NativeText } from 'react-native';
 import { ImagePreviewOverlayTarget } from '../../images/ImagePreviewOverlay';
 import Skeleton from '../../skeleton/Skeleton';
@@ -12,17 +12,15 @@ export default function ProfileAvatar({
   accountSymbol,
   avatarUrl,
   isLoading,
+  enableZoomOnPress,
+  handleOnPress,
 }: {
   accountSymbol?: string | null;
   avatarUrl?: string | null;
   isLoading?: boolean;
+  enableZoomOnPress?: boolean;
+  handleOnPress?: () => void;
 }) {
-  const enableZoomOnPress = false; // TODO: disable if NFT or no photo
-
-  const handlePressAvatar = useCallback(() => {
-    // TODO
-  }, []);
-
   return (
     <Box height={{ custom: size }} width={{ custom: size }}>
       <Cover alignHorizontal="center">
@@ -50,7 +48,7 @@ export default function ProfileAvatar({
           borderRadius={size / 2}
           enableZoomOnPress={enableZoomOnPress}
           height={{ custom: size }}
-          onPress={handlePressAvatar}
+          onPress={handleOnPress}
           topOffset={ios ? 112 : 107}
         >
           <Box
