@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useEffect } from 'react';
+import React, { useLayoutEffect } from 'react';
 import Animated, {
   Easing,
   interpolate,
@@ -28,7 +28,7 @@ const FloatingEmoji = ({
 }) => {
   const animation = useSharedValue(0);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     animation.value = withTiming(1, {
       duration,
       easing: Easing.linear,
