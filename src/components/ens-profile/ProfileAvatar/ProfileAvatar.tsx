@@ -62,25 +62,24 @@ export default function ProfileAvatar({
           </Skeleton>
         </Box>
       ) : (
-        <ImagePreviewOverlayTarget
-          aspectRatioType="avatar"
-          backgroundMask="avatar"
+        <Box
+          alignItems="center"
+          background={avatarUrl ? 'body' : 'accent'}
           borderRadius={size / 2}
-          enableZoomOnPress={enableZoomOnPress}
-          height={{ custom: size }}
-          onPress={handleOnPress}
-          topOffset={ios ? 112 : 107}
+          justifyContent="center"
+          width={{ custom: size }}
         >
-          <Box
-            alignItems="center"
-            background={avatarUrl ? 'body' : 'accent'}
-            borderRadius={size / 2}
-            height={{ custom: size }}
-            justifyContent="center"
-            width={{ custom: size }}
-          >
-            {avatarUrl ? (
-              <Animated.View style={style}>
+          {avatarUrl ? (
+            <Animated.View style={style}>
+              <ImagePreviewOverlayTarget
+                aspectRatioType="avatar"
+                backgroundMask="avatar"
+                borderRadius={size / 2}
+                enableZoomOnPress={enableZoomOnPress}
+                height={{ custom: size }}
+                onPress={handleOnPress}
+                topOffset={ios ? 112 : 107}
+              >
                 <Box
                   as={ImgixImage}
                   height={{ custom: size }}
@@ -88,14 +87,14 @@ export default function ProfileAvatar({
                   source={{ uri: avatarUrl }}
                   width={{ custom: size }}
                 />
-              </Animated.View>
-            ) : (
-              <NativeText style={{ fontSize: 38 }}>
-                {accountSymbol || ''}
-              </NativeText>
-            )}
-          </Box>
-        </ImagePreviewOverlayTarget>
+              </ImagePreviewOverlayTarget>
+            </Animated.View>
+          ) : (
+            <NativeText style={{ fontSize: 38 }}>
+              {accountSymbol || ''}
+            </NativeText>
+          )}
+        </Box>
       )}
     </Box>
   );
