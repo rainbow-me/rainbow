@@ -135,20 +135,23 @@ export default function DiscoverSearch() {
     [handleActionAsset, handlePress]
   );
 
-  const addEnsResults = useCallback(ensResults => {
-    let ensSearchResults = [];
-    if (ensResults && ensResults.length) {
-      ensSearchResults = [
-        {
-          color: colors.appleBlue,
-          data: ensResults,
-          key: `􀉮 ${lang.t('discover.search.profiles')}`,
-          title: `􀉮 ${lang.t('discover.search.profiles')}`,
-        },
-      ];
-    }
-    setEnsResults(ensSearchResults);
-  }, []);
+  const addEnsResults = useCallback(
+    ensResults => {
+      let ensSearchResults = [];
+      if (ensResults && ensResults.length) {
+        ensSearchResults = [
+          {
+            color: colors.appleBlue,
+            data: ensResults,
+            key: `􀉮 ${lang.t('discover.search.profiles')}`,
+            title: `􀉮 ${lang.t('discover.search.profiles')}`,
+          },
+        ];
+      }
+      setEnsResults(ensSearchResults);
+    },
+    [colors.appleBlue]
+  );
 
   useEffect(() => {
     const searching = searchQuery !== '';

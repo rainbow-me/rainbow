@@ -35,7 +35,6 @@ export default function SelectENSSheet() {
   const { accountAddress } = useAccountSettings();
   const { accountENS } = useAccountProfile();
 
-  const accentColor = useForegroundColor('action');
   const secondary06 = useForegroundColor('secondary06');
   const secondary30 = useForegroundColor('secondary30');
 
@@ -102,7 +101,12 @@ export default function SelectENSSheet() {
                     />
                   ) : (
                     <AccentColorProvider color={secondary30}>
-                      <Text align="right" color="accent" size="20px" weight="bold">
+                      <Text
+                        align="right"
+                        color="accent"
+                        size="20px"
+                        weight="bold"
+                      >
                         􀉭
                       </Text>
                     </AccentColorProvider>
@@ -135,7 +139,10 @@ export default function SelectENSSheet() {
               <Box
                 ItemSeparatorComponent={() => <Box height={{ custom: 19 }} />}
                 as={FlatList}
-                contentContainerStyle={{ paddingBottom: 50, paddingHorizontal: 19 }}
+                contentContainerStyle={{
+                  paddingBottom: 50,
+                  paddingHorizontal: 19,
+                }}
                 data={ownedDomains}
                 height={{ custom: listHeight }}
                 initialNumToRender={15}

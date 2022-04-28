@@ -39,7 +39,8 @@ const exitConfig = {
 };
 const GestureBlocker = styled(View)({
   height: ({ height }) => height * 3,
-  left: ({ containerWidth, width, xOffset }) => -(xOffset || (width - containerWidth) / 2),
+  left: ({ containerWidth, width, xOffset }) =>
+    -(xOffset || (width - containerWidth) / 2),
   position: 'absolute',
   top: ({ height }) => -height,
   width: ({ width }) => width,
@@ -104,7 +105,7 @@ export const ZoomableWrapper = ({
 
   if (!hideStatusBar) {
     deviceHeight = deviceHeight - safeAreaInsetValues.top;
-  };
+  }
 
   const maxImageWidth = width || deviceWidth - horizontalPadding * 2;
   const maxImageHeight = height || deviceHeight / 2;
@@ -143,7 +144,7 @@ export const ZoomableWrapper = ({
   const isZoomedValue = useSharedValue(false);
 
   useEffect(() => {
-    if (hideStatusBar) {  
+    if (hideStatusBar) {
       if (isZoomed) {
         StatusBar.setHidden(true);
       } else {
@@ -179,7 +180,9 @@ export const ZoomableWrapper = ({
         {
           translateY:
             animationProgress.value *
-            (yDisplacement.value + (deviceHeight - fullSizeHeight) / 2 - (hideStatusBar ? 85 : 68)),
+            (yDisplacement.value +
+              (deviceHeight - fullSizeHeight) / 2 -
+              (hideStatusBar ? 85 : 68)),
         },
         {
           translateY:
@@ -349,18 +352,26 @@ export const ZoomableWrapper = ({
       isZoomedValue.value &&
       targetScale > breakingScaleX
     ) {
-      const projectedYCoordinate = targetTranslateY + (event.velocityY / 8 / (fullSizeHeight / (containerHeightValue.value ?? 1)));
+      const projectedYCoordinate =
+        targetTranslateY +
+        event.velocityY /
+          8 /
+          (fullSizeHeight / (containerHeightValue.value ?? 1));
       const edgeBounceConfig = {
         damping: 60,
         mass: 2,
         stiffness: 600,
-        velocity: event.velocityY / (fullSizeHeight / (containerHeightValue.value ?? 1)),
+        velocity:
+          event.velocityY /
+          (fullSizeHeight / (containerHeightValue.value ?? 1)),
       };
       const flingConfig = {
         damping: 120,
         mass: 2,
         stiffness: 600,
-        velocity: event.velocityY / (fullSizeHeight / (containerHeightValue.value ?? 1)),
+        velocity:
+          event.velocityY /
+          (fullSizeHeight / (containerHeightValue.value ?? 1)),
       };
       if (projectedYCoordinate > maxDisplacementY) {
         translateY.value = withSpring(maxDisplacementY, edgeBounceConfig);
@@ -376,18 +387,26 @@ export const ZoomableWrapper = ({
       isZoomedValue.value &&
       targetScale > breakingScaleX
     ) {
-      const projectedXCoordinate = targetTranslateX + (event.velocityX / 8 / (fullSizeHeight / (containerHeightValue.value ?? 1)));
+      const projectedXCoordinate =
+        targetTranslateX +
+        event.velocityX /
+          8 /
+          (fullSizeHeight / (containerHeightValue.value ?? 1));
       const edgeBounceConfig = {
         damping: 60,
         mass: 2,
         stiffness: 600,
-        velocity: event.velocityX / (fullSizeHeight / (containerHeightValue.value ?? 1)),
+        velocity:
+          event.velocityX /
+          (fullSizeHeight / (containerHeightValue.value ?? 1)),
       };
       const flingConfig = {
         damping: 120,
         mass: 2,
         stiffness: 600,
-        velocity: event.velocityX / (fullSizeHeight / (containerHeightValue.value ?? 1)),
+        velocity:
+          event.velocityX /
+          (fullSizeHeight / (containerHeightValue.value ?? 1)),
       };
       if (projectedXCoordinate > maxDisplacementX) {
         translateX.value = withSpring(maxDisplacementX, edgeBounceConfig);
@@ -653,7 +672,10 @@ export const ZoomableWrapper = ({
                       style={[containerStyle, StyleSheet.absoluteFillObject]}
                     >
                       <PinchGestureHandler
-                        enabled={!disableAnimations && (!disableEnteringWithPinch || isZoomed)}
+                        enabled={
+                          !disableAnimations &&
+                          (!disableEnteringWithPinch || isZoomed)
+                        }
                         onGestureEvent={pinchGestureHandler}
                         ref={pinch}
                         simultaneousHandlers={[pan]}

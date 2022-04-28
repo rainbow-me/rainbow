@@ -135,6 +135,11 @@ export const foregroundColors: Record<
     light: colors.appleBlue,
     lightTinted: colors.appleBlue,
   },
+  divider100: {
+    dark: 'rgba(60, 66, 82, 0.6)',
+    darkTinted: 'rgba(255, 255, 255, 0.15)',
+    light: 'rgba(60, 66, 82, 0.12)',
+  },
   divider20: {
     dark: 'rgba(60, 66, 82, 0.025)',
     darkTinted: 'rgba(255, 255, 255, 0.01)',
@@ -154,11 +159,6 @@ export const foregroundColors: Record<
     dark: 'rgba(60, 66, 82, 0.075)',
     darkTinted: 'rgba(255, 255, 255, 0.075)',
     light: 'rgba(60, 66, 82, 0.03)',
-  },
-  divider100: {
-    dark: 'rgba(60, 66, 82, 0.6)',
-    darkTinted: 'rgba(255, 255, 255, 0.15)',
-    light: 'rgba(60, 66, 82, 0.12)',
   },
   primary: {
     dark: colors.sky,

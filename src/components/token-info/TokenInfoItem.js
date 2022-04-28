@@ -23,7 +23,7 @@ const WrapperView = styled.View({
   alignSelf: ({ align }) => (align === 'left' ? 'flex-start' : 'flex-end'),
   borderRadius: 12,
   height: 24,
-  marginTop: ({ isENS, isNft }) => ((isNft && !isENS) ? -10 : -14),
+  marginTop: ({ isENS, isNft }) => (isNft && !isENS ? -10 : -14),
   overflow: 'hidden',
   paddingTop: 12,
   width: 50,
@@ -121,14 +121,26 @@ export default function TokenInfoItem({
         {loading && (
           <WrapperView
             align={align}
-            backgroundColor={isNft ? colors.alpha(colors.whiteLabel, 0.04) : colors.alpha(colors.blueGreyDark, 0.04)}
+            backgroundColor={
+              isNft
+                ? colors.alpha(colors.whiteLabel, 0.04)
+                : colors.alpha(colors.blueGreyDark, 0.04)
+            }
             isENS={isENS}
             isNft={isNft}
           >
             <ShimmerAnimation
-              color={isNft ? colors.alpha(colors.whiteLabel, 0.04) : colors.alpha(colors.blueGreyDark, 0.06)}
+              color={
+                isNft
+                  ? colors.alpha(colors.whiteLabel, 0.04)
+                  : colors.alpha(colors.blueGreyDark, 0.06)
+              }
               enabled
-              gradientColor={isNft ? colors.alpha(colors.whiteLabel, 0.04) : colors.alpha(colors.blueGreyDark, 0.06)}
+              gradientColor={
+                isNft
+                  ? colors.alpha(colors.whiteLabel, 0.04)
+                  : colors.alpha(colors.blueGreyDark, 0.06)
+              }
               width={50}
             />
           </WrapperView>

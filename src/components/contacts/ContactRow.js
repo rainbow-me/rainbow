@@ -56,7 +56,10 @@ const css = {
   symmetrical: margin.object(9.5, 19),
 };
 
-const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, ref) => {
+const ContactRow = (
+  { address, color, nickname, symmetricalMargins, ...props },
+  ref
+) => {
   const { width: deviceWidth } = useDimensions();
   const { colors } = useTheme();
   const {

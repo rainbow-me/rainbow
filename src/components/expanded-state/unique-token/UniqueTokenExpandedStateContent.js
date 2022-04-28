@@ -1,4 +1,3 @@
-import { toLower } from 'lodash';
 import React, { useMemo } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { magicMemo } from '../../../utils';

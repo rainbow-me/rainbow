@@ -57,7 +57,7 @@ export default function ENSBriefTokenInfoRow({
         weight="heavy"
       >
         {registrationDate
-          ? format(new Date(registrationDate * 1000), "MMM d, yyyy")
+          ? format(new Date(registrationDate * 1000), 'MMM d, yyyy')
           : ''}
       </TokenInfoItem>
       {/* @ts-expect-error JavaScript component */}
@@ -102,7 +102,7 @@ export default function ENSBriefTokenInfoRow({
         {expiryDate
           ? showExpiryDistance
             ? formatDistanceStrict(new Date(), new Date(expiryDate * 1000))
-            : format(new Date(expiryDate * 1000), "MMM d, yyyy")
+            : format(new Date(expiryDate * 1000), 'MMM d, yyyy')
           : ''}
       </TokenInfoItem>
     </Columns>

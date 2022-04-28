@@ -1,5 +1,5 @@
 import ConditionalWrap from 'conditional-wrap';
-import lang, { l } from 'i18n-js';
+import lang from 'i18n-js';
 import debounce from 'lodash/debounce';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { ContextMenuButton, MenuConfig } from 'react-native-ios-context-menu';
@@ -82,9 +82,10 @@ export default function WatchButton({
         testID="profile-sheet-watch-button"
         variant={!optimisticIsWatching ? 'solid' : 'outlined'}
       >
-        {(optimisticIsWatching ? '' : '􀨭 ') + lang.t(
-          `profiles.actions.${optimisticIsWatching ? 'watching' : 'watch'}`
-        )}
+        {(optimisticIsWatching ? '' : '􀨭 ') +
+          lang.t(
+            `profiles.actions.${optimisticIsWatching ? 'watching' : 'watch'}`
+          )}
       </ActionButton>
     </ConditionalWrap>
   );

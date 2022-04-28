@@ -43,7 +43,10 @@ function StepButton({
       scaleTo={disabled ? 1 : 0.75}
       shouldLongPressHoldPress
     >
-      <Text color={disabled ? { custom: secondary15 } : 'accent'} weight="heavy">
+      <Text
+        color={disabled ? { custom: secondary15 } : 'accent'}
+        weight="heavy"
+      >
         {type === 'increment' ? '􀁍' : '􀁏'}
       </Text>
     </Box>

@@ -195,12 +195,7 @@ export default function DiscoverSheetHeader(props) {
         onPress={() => !isSearchModeEnabled && navigate(Routes.WALLET_SCREEN)}
         translateX={android ? 4 : 5}
       >
-        <Icon
-          color={colors.dark}
-          direction="left"
-          name="caret"
-          {...props}
-        />
+        <Icon color={colors.dark} direction="left" name="caret" {...props} />
         <Icon
           color={colors.whiteLabel}
           direction="left"
@@ -215,11 +210,7 @@ export default function DiscoverSheetHeader(props) {
         left={18.5}
         onPress={handleScannerPress}
       >
-        <Icon
-          bottom={1}
-          color={colors.dark}
-          name="scanner"
-        />
+        <Icon bottom={1} color={colors.dark} name="scanner" />
         <Icon bottom={1} color={colors.whiteLabel} name="scanner" />
       </Stack>
     </Header>

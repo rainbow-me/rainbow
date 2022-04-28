@@ -38,7 +38,6 @@ import {
   Rows,
   Stack,
   Text,
-  useForegroundColor,
 } from '@rainbow-me/design-system';
 import {
   getSeenOnchainDataDisclaimer,
@@ -187,12 +186,7 @@ export default function ENSAssignRecordsSheet() {
                 <Heading align="center" size="26px" weight="heavy">
                   {name}
                 </Heading>
-                <Text
-                  align="center"
-                  color="accent"
-                  size="16px"
-                  weight="heavy"
-                >
+                <Text align="center" color="accent" size="16px" weight="heavy">
                   {lang.t(
                     `profiles.${
                       mode === REGISTRATION_MODES.CREATE || isEmptyProfile
@@ -404,14 +398,6 @@ function HideKeyboardButton({ color }) {
     };
   }, [show]);
 
-  const shadow = useForegroundColor('shadow');
-  const shadowColor = useForegroundColor({
-    custom: {
-      dark: shadow,
-      light: color,
-    },
-  });
-
   const style = useAnimatedStyle(() => {
     return {
       opacity: withTiming(show.value ? 1 : 0, { duration: 100 }),
@@ -422,9 +408,17 @@ function HideKeyboardButton({ color }) {
     <AnimatedBox style={style}>
       <ButtonPressAnimation onPress={() => Keyboard.dismiss()} scaleTo={0.8}>
         <AccentColorProvider color={color}>
-          <Box background="accent" borderRadius={15} height={{ custom: 30 }} shadow="15px light" width={{ custom: 30 }}>
+          <Box
+            background="accent"
+            borderRadius={15}
+            height={{ custom: 30 }}
+            shadow="15px light"
+            width={{ custom: 30 }}
+          >
             <Cover alignHorizontal="center" alignVertical="center">
-              <Text align="center" color="primary" size="14px" weight="heavy">􀆈</Text>
+              <Text align="center" color="primary" size="14px" weight="heavy">
+                􀆈
+              </Text>
             </Cover>
           </Box>
         </AccentColorProvider>

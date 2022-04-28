@@ -116,7 +116,10 @@ export default function InfoRow({
           {isImage ? (
             <>
               {value && (
-                <ImagePreviewOverlayTarget aspectRatioType="cover" imageUrl={value}>
+                <ImagePreviewOverlayTarget
+                  aspectRatioType="cover"
+                  imageUrl={value}
+                >
                   <Box as={ImgixImage} height="full" source={{ uri: value }} />
                 </ImagePreviewOverlayTarget>
               )}
@@ -134,11 +137,7 @@ export default function InfoRow({
                 setShow(true);
               }}
               padding={
-                (isSwitch
-                  ? '0px'
-                  : isMultiline
-                  ? '15px'
-                  : '10px') as Space
+                (isSwitch ? '0px' : isMultiline ? '15px' : '10px') as Space
               }
               style={{
                 backgroundColor: isSwitch

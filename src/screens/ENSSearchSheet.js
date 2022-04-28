@@ -113,8 +113,8 @@ export default function ENSSearchSheet() {
                 isAvailable
                   ? colors.green
                   : isRegistered
-                    ? colors.yellowOrange
-                    : colors.appleBlue
+                  ? colors.yellowOrange
+                  : colors.appleBlue
               }
               state={state}
               testID="ens-search-input"
@@ -146,9 +146,7 @@ export default function ENSSearchSheet() {
               </Inline>
             </Box>
           )}
-          {isIdle && (
-            <PendingRegistrations />
-          )}
+          {isIdle && <PendingRegistrations />}
           {isInvalid && (
             <Inset horizontal="30px">
               <Text

@@ -121,7 +121,12 @@ function Tag({
               />
             </Bleed>
           )}
-          <Text align="center" color={textColors[color]} size={size} weight="bold">
+          <Text
+            align="center"
+            color={textColors[color]}
+            size={size}
+            weight="bold"
+          >
             {symbol ? `${symbol} ` : ''}
             {children}
           </Text>

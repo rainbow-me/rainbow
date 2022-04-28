@@ -201,7 +201,9 @@ export default function ENSIntroSheet() {
                             'profiles.intro.wallet_address_info.description'
                           )}
                           icon="􀈠"
-                          title={lang.t('profiles.intro.wallet_address_info.title')}
+                          title={lang.t(
+                            'profiles.intro.wallet_address_info.title'
+                          )}
                         />
                         <InfoRow
                           description={lang.t(
@@ -246,6 +248,7 @@ export default function ENSIntroSheet() {
                           lightShadows
                           marginBottom={15}
                           onPress={handleNavigateToSearch}
+                          // @ts-expect-error
                           testID="ens-intro-sheet-find-your-name-button"
                           weight="heavy"
                         />
@@ -286,7 +289,9 @@ export default function ENSIntroSheet() {
                                 color={colors.transparent}
                                 isTransparent
                                 // @ts-expect-error JavaScript component
-                                label={lang.t('profiles.intro.choose_another_name')}
+                                label={lang.t(
+                                  'profiles.intro.choose_another_name'
+                                )}
                                 textColor={colors.appleBlue}
                                 textSize="lmedium"
                                 weight="bold"
@@ -299,6 +304,7 @@ export default function ENSIntroSheet() {
                               // @ts-expect-error JavaScript component
                               label={lang.t('profiles.intro.search_new_name')}
                               onPress={handleNavigateToSearch}
+                              // @ts-expect-error
                               testID="ens-intro-sheet-search-new-name-button"
                               textColor={colors.appleBlue}
                               textSize="lmedium"

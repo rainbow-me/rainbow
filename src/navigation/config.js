@@ -169,8 +169,8 @@ export const profilePreviewConfig = {
       scrollEnabled: true,
       shortFormHeight: 281 + params.descriptionProfilePreviewHeight,
       springDamping: 1,
-      transitionDuration: 0.3,
       startFromShortForm: true,
+      transitionDuration: 0.3,
     }),
   }),
 };

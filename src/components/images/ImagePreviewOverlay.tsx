@@ -70,8 +70,6 @@ const BlurWrapper = styled(View).attrs({
   ...(android ? { borderTopLeftRadius: 30, borderTopRightRadius: 30 } : {}),
 });
 
-const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
-
 const idsAtom = atom<string[]>({
   default: [],
   key: 'imagePreviewOverlay.ids',
@@ -231,7 +229,9 @@ function ImagePreview({
   const aspectRatio = useRecoilValue(aspectRatioAtom(id));
   const backgroundMask = useRecoilValue(backgroundMaskAtom(id));
   const borderRadius = useRecoilValue(borderRadiusAtom(id));
-  const disableEnteringWithPinch = useRecoilValue(disableEnteringWithPinchAtom(id));
+  const disableEnteringWithPinch = useRecoilValue(
+    disableEnteringWithPinchAtom(id)
+  );
   const hasShadow = useRecoilValue(hasShadowAtom(id));
   const height = useRecoilValue(heightAtom(id));
   const hideStatusBar = useRecoilValue(hideStatusBarAtom(id));
@@ -268,7 +268,8 @@ function ImagePreview({
     opacity: 1 * progress.value,
     transform: [
       {
-        translateY: yPosition.value - (hideStatusBar ? SheetHandleFixedToTopHeight : 0),
+        translateY:
+          yPosition.value - (hideStatusBar ? SheetHandleFixedToTopHeight : 0),
       },
     ],
     zIndex: progress.value > 0 ? index + 2 : -2,
@@ -320,19 +321,36 @@ function ImagePreview({
               style={[overlayStyle, StyleSheet.absoluteFillObject]}
             >
               {ios && (
-                <BlurWrapper height={hideStatusBar ? deviceHeight : deviceHeight - safeAreaInsetValues.top} width={deviceWidth}>
+                <BlurWrapper
+                  height={
+                    hideStatusBar
+                      ? deviceHeight
+                      : deviceHeight - safeAreaInsetValues.top
+                  }
+                  width={deviceWidth}
+                >
                   <BackgroundImage>
-                    <Box as={ImgixImage} height="full" source={{ uri: imageUrl }} width="full" />
+                    <Box
+                      as={ImgixImage}
+                      height="full"
+                      source={{ uri: imageUrl }}
+                      width="full"
+                    />
                     <BackgroundBlur />
                   </BackgroundImage>
                 </BlurWrapper>
               )}
               <Box
-                height={{ custom: hideStatusBar ? deviceHeight : deviceHeight - safeAreaInsetValues.top }}
+                height={{
+                  custom: hideStatusBar
+                    ? deviceHeight
+                    : deviceHeight - safeAreaInsetValues.top,
+                }}
                 style={{
-                  backgroundColor: colorMode === 'dark'
-                    ? `rgba(22, 22, 22, ${ios ? 0.8 : 1})`
-                    : `rgba(26, 26, 26, ${ios ? 0.8 : 1})`,
+                  backgroundColor:
+                    colorMode === 'dark'
+                      ? `rgba(22, 22, 22, ${ios ? 0.8 : 1})`
+                      : `rgba(26, 26, 26, ${ios ? 0.8 : 1})`,
                 }}
                 width="full"
               />
@@ -427,7 +445,9 @@ export function ImagePreviewOverlayTarget({
   const setAspectRatio = useSetRecoilState(aspectRatioAtom(id));
   const setBackgroundMask = useSetRecoilState(backgroundMaskAtom(id));
   const setBorderRadius = useSetRecoilState(borderRadiusAtom(id));
-  const setDisableEnteringWithPinch = useSetRecoilState(disableEnteringWithPinchAtom(id));
+  const setDisableEnteringWithPinch = useSetRecoilState(
+    disableEnteringWithPinchAtom(id)
+  );
   const setHasShadow = useSetRecoilState(hasShadowAtom(id));
   const setHideStatusBar = useSetRecoilState(hideStatusBarAtom(id));
   const setImageUrl = useSetRecoilState(imageUrlAtom(id));

@@ -16,7 +16,7 @@ import {
   Inset,
   Stack,
   Text,
-  useForegroundColor
+  useForegroundColor,
 } from '@rainbow-me/design-system';
 import { useWallets } from '@rainbow-me/hooks';
 import { ensIntroMarqueeNames } from '@rainbow-me/references';
@@ -45,7 +45,6 @@ export default function RegisterENSSection() {
     );
   }, []);
 
-  const appleBlue = useForegroundColor('action');
   const shadow = useForegroundColor('shadow');
   const shadowColor = useForegroundColor({
     custom: {
@@ -72,19 +71,19 @@ export default function RegisterENSSection() {
               height={{ custom: 70 }}
               shadow={{
                 custom: {
-                  ios: [
-                    {
-                      color: 'accent',
-                      offset: { x: 0, y: 8 },
-                      blur: 24,
-                      opacity: 0.35,
-                    },
-                  ],
                   android: {
                     color: 'accent',
                     elevation: 24,
                     opacity: 0.5,
                   },
+                  ios: [
+                    {
+                      blur: 24,
+                      color: 'accent',
+                      offset: { x: 0, y: 8 },
+                      opacity: 0.35,
+                    },
+                  ],
                 },
               }}
               start={{ x: 0, y: 0.5 }}

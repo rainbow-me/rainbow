@@ -33,16 +33,12 @@ const sizeConfigs = (colors, isDarkMode) => ({
   },
   medium: {
     dimensions: 40,
-    shadow: [
-      [0, 4, 12, colors.shadow, isDarkMode ? 0.3 : 0.15],
-    ],
+    shadow: [[0, 4, 12, colors.shadow, isDarkMode ? 0.3 : 0.15]],
     textSize: 'larger',
   },
   small: {
     dimensions: 30,
-    shadow: [
-      [0, 3, 9, colors.shadow, 0.1],
-    ],
+    shadow: [[0, 3, 9, colors.shadow, 0.1]],
     textSize: 'lmedium',
   },
   smaller: {
@@ -58,10 +54,10 @@ const Avatar = styled(ImgixImage)(({ dimensions }) => ({
 
 const ImageAvatar = ({ image, size = 'medium', ...props }) => {
   const { colors, isDarkMode } = useTheme();
-  const { dimensions, shadow } = useMemo(() => sizeConfigs(colors, isDarkMode)[size], [
-    colors,
-    size,
-  ]);
+  const { dimensions, shadow } = useMemo(
+    () => sizeConfigs(colors, isDarkMode)[size],
+    [colors, isDarkMode, size]
+  );
 
   const shadows = useMemo(
     () =>

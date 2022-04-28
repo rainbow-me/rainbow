@@ -32,7 +32,7 @@ export default function ActionButton({
   const appleBlue = useForegroundColor('action');
   const divider100 = useForegroundColor('divider100');
   const shadow = useForegroundColor('shadow');
-  
+
   const shadowColor = useForegroundColor({
     custom: {
       dark: shadow,
