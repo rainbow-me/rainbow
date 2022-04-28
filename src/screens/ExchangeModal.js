@@ -262,6 +262,31 @@ export default function ExchangeModal({
     lastFocusedInputHandle?.current?.focus();
   }, [lastFocusedInputHandle]);
 
+  const [navigating, setNavigating] = useState(false);
+
+  // Navigate to select input currency automatically
+  // TODO: Do this in a better way
+  useEffect(() => {
+    if (!defaultInputAsset && !inputCurrency) {
+      logger.debug('Navigating to select INPUT currency');
+      !navigating && navigateToSelectInputCurrency();
+      setNavigating(true);
+      setTimeout(() => setNavigating(false), 1000);
+    } else if (!outputCurrency) {
+      logger.debug('Navigating to select OUTPUT currency');
+      !navigating && navigateToSelectOutputCurrency();
+      setNavigating(true);
+      setTimeout(() => setNavigating(false), 1000);
+    }
+  }, [
+    navigating,
+    defaultInputAsset,
+    inputCurrency,
+    navigateToSelectInputCurrency,
+    navigateToSelectOutputCurrency,
+    outputCurrency,
+  ]);
+
   const updateGasLimit = useCallback(async () => {
     try {
       if (
