@@ -40,7 +40,7 @@ const UniqueTokenImage = ({
   transformSvgs = true,
 }) => {
   const isENS =
-    toLower(item.asset_contract.address) === toLower(ENS_NFT_CONTRACT_ADDRESS);
+    toLower(item.asset_contract?.address) === toLower(ENS_NFT_CONTRACT_ADDRESS);
   const isSVG = isSVGImage(imageUrl);
   const [error, setError] = useState(null);
   const handleError = useCallback(error => setError(error), [setError]);

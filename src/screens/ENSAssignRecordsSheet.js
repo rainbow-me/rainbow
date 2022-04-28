@@ -190,9 +190,9 @@ export default function ENSAssignRecordsSheet() {
                 <Text align="center" color="accent" size="16px" weight="heavy">
                   {lang.t(
                     `profiles.${
-                      mode === REGISTRATION_MODES.CREATE || isEmptyProfile
-                        ? 'create'
-                        : 'edit'
+                      mode === REGISTRATION_MODES.EDIT && !isEmptyProfile
+                        ? 'edit'
+                        : 'create'
                     }.label`
                   )}
                 </Text>

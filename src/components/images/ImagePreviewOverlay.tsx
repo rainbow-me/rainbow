@@ -9,7 +9,13 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { InteractionManager, StyleSheet, View } from 'react-native';
+import {
+  InteractionManager,
+  Pressable,
+  PressableProps,
+  StyleSheet,
+  View,
+} from 'react-native';
 import Animated, {
   SharedValue,
   useAnimatedStyle,
@@ -56,6 +62,10 @@ const backgroundMaskAtom = atomFamily<string | null, string>({
 const borderRadiusAtom = atomFamily({
   default: 16,
   key: 'imagePreviewOverlay.borderRadius',
+});
+const disableAnimationsAtom = atomFamily({
+  default: false,
+  key: 'imagePreviewOverlay.disableAnimations',
 });
 const disableEnteringWithPinchAtom = atomFamily({
   default: false,
@@ -199,6 +209,7 @@ function ImagePreview({
   const aspectRatio = useRecoilValue(aspectRatioAtom(id));
   const backgroundMask = useRecoilValue(backgroundMaskAtom(id));
   const borderRadius = useRecoilValue(borderRadiusAtom(id));
+  const disableAnimations = useRecoilValue(disableAnimationsAtom(id));
   const disableEnteringWithPinch = useRecoilValue(
     disableEnteringWithPinchAtom(id)
   );
@@ -355,7 +366,7 @@ function ImagePreview({
         <ZoomableWrapper
           aspectRatio={aspectRatio}
           borderRadius={borderRadius}
-          disableAnimations={false}
+          disableAnimations={disableAnimations}
           disableEnteringWithPinch={disableEnteringWithPinch}
           hasShadow={hasShadow}
           height={height}
@@ -387,20 +398,24 @@ export function ImagePreviewOverlayTarget({
   aspectRatioType,
   backgroundMask,
   borderRadius = 16,
-  children,
+  children: children_,
   disableEnteringWithPinch = false,
+  enableZoomOnPress = true,
   hasShadow = false,
   height: initialHeight,
   hideStatusBar = true,
   imageUrl = '',
+  onPress,
   topOffset = 85,
   uri,
 }: {
   backgroundMask?: 'avatar';
   borderRadius?: number;
   children: React.ReactElement;
+  enableZoomOnPress?: boolean;
   disableEnteringWithPinch?: boolean;
   hasShadow?: boolean;
+  onPress?: PressableProps['onPress'];
   height?: BoxProps['height'];
   hideStatusBar?: boolean;
   imageUrl?: string;
@@ -428,6 +443,7 @@ export function ImagePreviewOverlayTarget({
   const setAspectRatio = useSetRecoilState(aspectRatioAtom(id));
   const setBackgroundMask = useSetRecoilState(backgroundMaskAtom(id));
   const setBorderRadius = useSetRecoilState(borderRadiusAtom(id));
+  const setDisableAnimations = useSetRecoilState(disableAnimationsAtom(id));
   const setDisableEnteringWithPinch = useSetRecoilState(
     disableEnteringWithPinchAtom(id)
   );
@@ -442,6 +458,7 @@ export function ImagePreviewOverlayTarget({
       setBackgroundMask(backgroundMask);
     }
     setBorderRadius(borderRadius);
+    setDisableAnimations(!enableZoomOnPress);
     setDisableEnteringWithPinch(disableEnteringWithPinch);
     setHasShadow(hasShadow);
     setHideStatusBar(hideStatusBar);
@@ -450,6 +467,7 @@ export function ImagePreviewOverlayTarget({
   }, [
     backgroundMask,
     borderRadius,
+    enableZoomOnPress,
     disableEnteringWithPinch,
     hasShadow,
     hideStatusBar,
@@ -457,6 +475,7 @@ export function ImagePreviewOverlayTarget({
     imageUrl,
     setBackgroundMask,
     setBorderRadius,
+    setDisableAnimations,
     setDisableEnteringWithPinch,
     setHasShadow,
     setHideStatusBar,
@@ -512,6 +531,11 @@ export function ImagePreviewOverlayTarget({
     },
     [aspectRatio, setWidth, setXOffset, setYOffset, topOffset]
   );
+
+  const children = useMemo(() => {
+    if (!onPress) return children_;
+    return <Pressable onPress={onPress}>{children_}</Pressable>;
+  }, [children_, onPress]);
 
   useEffect(() => {
     if (!enableZoom) return;
