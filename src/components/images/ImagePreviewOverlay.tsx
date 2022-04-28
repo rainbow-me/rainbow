@@ -30,7 +30,6 @@ import {
   useRecoilValue,
   useSetRecoilState,
 } from 'recoil';
-import { ButtonPressAnimation } from '../animations';
 import { ZoomableWrapper } from '../expanded-state/unique-token/ZoomableWrapper';
 import AvatarCoverPhotoMaskSvg from '../svg/AvatarCoverPhotoMaskSvg';
 import {

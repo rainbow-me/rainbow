@@ -1,5 +1,5 @@
 import ConditionalWrap from 'conditional-wrap';
-import lang, { l } from 'i18n-js';
+import lang from 'i18n-js';
 import debounce from 'lodash/debounce';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { ContextMenuButton, MenuConfig } from 'react-native-ios-context-menu';
