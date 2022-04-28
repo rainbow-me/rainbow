@@ -96,7 +96,7 @@ const SubmitButtonLabel = styled(Text).attrs(({ value }) => ({
 const centerdStyles = padding.object(24, 25);
 const bottomStyles = padding.object(8, 9);
 
-const ContactProfileState = ({ address, contact, ensName, nickname }) => {
+const ContactProfileState = ({ address, contact, ens, nickname }) => {
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const contactNickname = contact?.nickname || nickname;
   const { goBack } = useNavigation();
@@ -116,7 +116,7 @@ const ContactProfileState = ({ address, contact, ensName, nickname }) => {
   const handleAddContact = useCallback(() => {
     const nickname = (emoji ? `${emoji} ${value}` : value).trim();
     if (value.length > 0 || color !== accentColor) {
-      onAddOrUpdateContacts(address, nickname, color, network, ensName);
+      onAddOrUpdateContacts(address, nickname, color, network, ens);
       goBack();
     }
     android && Keyboard.dismiss();
@@ -125,7 +125,7 @@ const ContactProfileState = ({ address, contact, ensName, nickname }) => {
     address,
     color,
     emoji,
-    ensName,
+    ens,
     goBack,
     network,
     onAddOrUpdateContacts,
@@ -159,8 +159,8 @@ const ContactProfileState = ({ address, contact, ensName, nickname }) => {
 
   const avatarSize = 65;
 
-  const { data: profile } = useENSProfileRecords(ensName, {
-    enabled: Boolean(ensName),
+  const { data: profile } = useENSProfileRecords(ens, {
+    enabled: Boolean(ens),
   });
 
   const ensAvatar = profile?.images?.avatarUrl;

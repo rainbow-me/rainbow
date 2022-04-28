@@ -96,7 +96,7 @@ export default function MoreButton({
         navigate(Routes.MODAL_SCREEN, {
           address,
           contact: currentContact,
-          ensName,
+          ens: ensName,
           nickname: ensName,
           type: 'contact_profile',
         });

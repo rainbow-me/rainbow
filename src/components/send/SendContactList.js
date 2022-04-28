@@ -95,12 +95,13 @@ export default function SendContactList({
   }, []);
 
   const handleEditContact = useCallback(
-    ({ address, color, nickname }) => {
+    ({ address, color, ens, nickname }) => {
       navigate(Routes.MODAL_SCREEN, {
         additionalPadding: true,
         address,
         color,
-        contact: { address, color, nickname },
+        ens,
+        nickname,
         type: 'contact_profile',
       });
     },
