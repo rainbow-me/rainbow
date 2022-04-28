@@ -29,6 +29,11 @@ const icons = {
   [ENS_RECORDS.instagram]: 'instagram',
   [ENS_RECORDS.snapchat]: 'snapchat',
   [ENS_RECORDS.discord]: 'discord',
+  [ENS_RECORDS.reddit]: 'reddit',
+  [ENS_RECORDS.telegram]: 'telegram',
+  [ENS_RECORDS.DOGE]: 'dogeCoin',
+  [ENS_RECORDS.BTC]: 'btcCoin',
+  [ENS_RECORDS.LTC]: 'ltcCoin',
 } as { [key: string]: string };
 
 const links = {
