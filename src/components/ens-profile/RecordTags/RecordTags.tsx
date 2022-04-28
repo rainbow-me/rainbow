@@ -29,16 +29,13 @@ export default function RecordTags({
 }) {
   const recordsToShow = useMemo(
     () =>
-      Object.entries(records)
-        .map(([key, value]) =>
-          show.includes(key as ENS_RECORDS)
-            ? {
-                key,
-                value,
-              }
-            : undefined
-        )
-        .filter(x => x) as { key: string; value: string }[],
+      show.map(key => ({
+        key,
+        value: records[key],
+      })) as {
+        key: string;
+        value: string;
+      }[],
     [records, show]
   );
 
