@@ -95,9 +95,8 @@ export default function MoreButton({
       if (actionKey === ACTIONS.ADD_CONTACT) {
         navigate(Routes.MODAL_SCREEN, {
           address,
-          avatarUrl,
           contact: currentContact,
-          emoji,
+          ensName,
           nickname: ensName,
           type: 'contact_profile',
         });
@@ -111,16 +110,7 @@ export default function MoreButton({
         android && Keyboard.dismiss();
       }
     },
-    [
-      address,
-      avatarUrl,
-      currentContact,
-      emoji,
-      ensName,
-      navigate,
-      onRemoveContact,
-      setClipboard,
-    ]
+    [address, currentContact, ensName, navigate, onRemoveContact, setClipboard]
   );
 
   const handleAndroidPress = useCallback(() => {

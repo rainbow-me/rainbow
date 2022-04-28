@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
 import { useRecoilValue } from 'recoil';
 import { useTheme } from '../../context/ThemeContext';
@@ -7,6 +7,10 @@ import { useNavigation } from '../../navigation/Navigation';
 import { abbreviations, magicMemo, profileUtils } from '../../utils';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
+import {
+  addressHashedColorIndex,
+  addressHashedEmoji,
+} from '@rainbow-me/utils/profileUtils';
 import { Button } from '../buttons';
 import { showDeleteContactActionSheet } from '../contacts';
 import CopyTooltip from '../copy-tooltip';
@@ -23,7 +27,11 @@ import {
 } from '@rainbow-me/helpers/emojiHandler';
 import { accentColorAtom } from '@rainbow-me/helpers/ens';
 import { isValidDomainFormat } from '@rainbow-me/helpers/validators';
-import { useAccountSettings, useContacts } from '@rainbow-me/hooks';
+import {
+  useAccountSettings,
+  useContacts,
+  useENSProfileRecords,
+} from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import styled from '@rainbow-me/styled-components';
 import { borders, margin, padding } from '@rainbow-me/styles';
@@ -88,13 +96,7 @@ const SubmitButtonLabel = styled(Text).attrs(({ value }) => ({
 const centerdStyles = padding.object(24, 25);
 const bottomStyles = padding.object(8, 9);
 
-const ContactProfileState = ({
-  address,
-  avatarUrl,
-  contact,
-  emoji: avatarEmoji,
-  nickname,
-}) => {
+const ContactProfileState = ({ address, contact, ensName, nickname }) => {
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const contactNickname = contact?.nickname || nickname;
   const { goBack } = useNavigation();
@@ -114,7 +116,7 @@ const ContactProfileState = ({
   const handleAddContact = useCallback(() => {
     const nickname = (emoji ? `${emoji} ${value}` : value).trim();
     if (value.length > 0 || color !== accentColor) {
-      onAddOrUpdateContacts(address, nickname, color, network);
+      onAddOrUpdateContacts(address, nickname, color, network, ensName);
       goBack();
     }
     android && Keyboard.dismiss();
@@ -123,6 +125,7 @@ const ContactProfileState = ({
     address,
     color,
     emoji,
+    ensName,
     goBack,
     network,
     onAddOrUpdateContacts,
@@ -156,6 +159,17 @@ const ContactProfileState = ({
 
   const avatarSize = 65;
 
+  const { data: profile } = useENSProfileRecords(ensName, {
+    enabled: Boolean(ensName),
+  });
+
+  const ensAvatar = profile?.images?.avatarUrl;
+
+  const emojiFromAddress = useMemo(
+    () => (address ? addressHashedEmoji(address) : ''),
+    [address]
+  );
+
   return (
     <ProfileModal onPressBackdrop={handleAddContact}>
       <Centered direction="column" style={centerdStyles}>
@@ -167,16 +181,16 @@ const ContactProfileState = ({
               [0, 2, 5, colors.shadow, 0.08],
             ]}
           >
-            {avatarUrl ? (
+            {ensAvatar ? (
               <Box
                 as={ImgixImage}
                 borderRadius={avatarSize / 2}
                 height={{ custom: avatarSize }}
-                source={{ uri: avatarUrl }}
+                source={{ uri: ensAvatar }}
                 width={{ custom: avatarSize }}
               />
             ) : (
-              <AccentColorProvider color={color}>
+              <AccentColorProvider color={accentColor}>
                 <Box
                   alignItems="center"
                   background="accent"
@@ -185,7 +199,7 @@ const ContactProfileState = ({
                   justifyContent="center"
                   width={{ custom: avatarSize }}
                 >
-                  <Text size="biggest">{avatarEmoji || ''}</Text>
+                  <Text size="biggest">{emojiFromAddress}</Text>
                 </Box>
               </AccentColorProvider>
             )}

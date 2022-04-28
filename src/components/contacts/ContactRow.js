@@ -17,7 +17,7 @@ import { Column, RowWithMargins } from '../layout';
 import { TruncatedAddress, TruncatedENS, TruncatedText } from '../text';
 import ContactAvatar from './ContactAvatar';
 import ImageAvatar from './ImageAvatar';
-import { useENSProfileRecords } from '@rainbow-me/hooks';
+import { useContacts, useENSProfileRecords } from '@rainbow-me/hooks';
 import { fetchReverseRecord } from '@rainbow-me/handlers/ens';
 import {
   isENSAddressFormat,
@@ -64,6 +64,7 @@ const css = margin.object(6, 19, 13);
 
 const ContactRow = ({ address, color, nickname, ...props }, ref) => {
   const profilesEnabled = useExperimentalFlag(PROFILES);
+  const { onAddOrUpdateContacts } = useContacts();
   const { width: deviceWidth } = useDimensions();
   const { colors } = useTheme();
   const {
@@ -72,12 +73,11 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
     ens,
     image,
     label,
+    network,
     onPress,
     showcaseItem,
     testID,
   } = props;
-
-  console.log(address);
 
   let cleanedUpBalance = balance;
   if (balance === '0.00') {
@@ -91,27 +91,37 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
         profileUtils.addressHashedEmoji(address)
       : null;
 
-  const [ensName, setEnsName] = useState('');
+  const [ensName, setENSName] = useState(ens);
 
   useEffect(() => {
-    if (profilesEnabled) {
+    if (profilesEnabled && accountType !== 'contacts') {
       const fetchENSName = async () => {
         const name = await fetchReverseRecord(address);
-        setEnsName(name);
+        if (name !== ensName) {
+          setENSName(name);
+          onAddOrUpdateContacts(address, nickname, color, network, name);
+        }
       };
       fetchENSName();
     }
-  }, [address, fetchReverseRecord, profilesEnabled, setEnsName]);
+  }, [
+    accountType,
+    address,
+    color,
+    ensName,
+    fetchReverseRecord,
+    network,
+    nickname,
+    profilesEnabled,
+    setENSName,
+  ]);
 
-  const { data: profile } = profilesEnabled
-    ? useENSProfileRecords(ensName, {
-        enabled: Boolean(ensName),
-      })
-    : { data: null };
+  const { data: profile } = useENSProfileRecords(ensName, {
+    enabled: Boolean(ensName),
+  });
 
   const ensAvatar = profile?.images?.avatarUrl;
-  console.log(accountType);
-  console.log(ensAvatar);
+
   let cleanedUpLabel = null;
   if (label) {
     cleanedUpLabel = removeFirstEmojiFromString(label);
@@ -137,7 +147,7 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
 
   const emojiAvatar = profilesEnabled
     ? emoji
-    : avatar || nickname || label || ens;
+    : avatar || nickname || label || ensName;
 
   const colorIndex = useMemo(
     () => (address ? addressHashedColorIndex(address) : 0),
