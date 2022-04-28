@@ -115,7 +115,7 @@ export default function ConfirmExchangeButton({
   }
 
   if (loading) {
-    label = lang.t('button.confirm_exchange.fetching_details');
+    label = lang.t('button.confirm_exchange.fetching_quote');
   } else if (!isSufficientBalance) {
     label = lang.t('button.confirm_exchange.insufficient_funds');
   } else if (isSufficientGas != null && !isSufficientGas) {
@@ -132,7 +132,6 @@ export default function ConfirmExchangeButton({
 
   const isDisabled =
     disabled ||
-    loading ||
     !isSufficientBalance ||
     !isSufficientGas ||
     !isValidGas ||
@@ -181,6 +180,7 @@ export default function ConfirmExchangeButton({
                 : darkModeThemeColors.blueGreyDark04
             }
             label={label}
+            loading={loading}
             marginTop={15}
             onLongPress={shouldOpenSwapDetails ? onPressViewDetails : onSubmit}
             shadows={

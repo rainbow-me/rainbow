@@ -74,8 +74,11 @@ const getInputAmount = async (
       slippage: IS_TESTING !== 'true' ? 1 : 5, // Add 5% slippage for testing to prevent flaky tests
     };
 
+    const rand = Math.floor(Math.random() * 100);
+    Logger.debug('Getting quote ', rand, { quoteParams });
     // @ts-ignore About to get quote
     const quote: Quote = await getQuote(quoteParams);
+    Logger.debug('Got quote', rand);
 
     if (!quote || !quote.sellAmount) {
       const quoteError = (quote as unknown) as QuoteError;
@@ -163,8 +166,11 @@ const getOutputAmount = async (
       slippage: IS_TESTING !== 'true' ? slippage : 5, // Add 5% slippage for testing to prevent flaky tests
     };
 
+    const rand = Math.floor(Math.random() * 100);
+    Logger.debug('Getting quote ', rand, { quoteParams });
     // @ts-ignore About to get quote
     const quote: Quote = await getQuote(quoteParams);
+    Logger.debug('Got quote', rand);
 
     if (!quote || !quote.buyAmount) {
       const quoteError = (quote as unknown) as QuoteError;
@@ -245,6 +251,9 @@ export default function useSwapDerivedOutputs() {
   const slippageInBips = useSelector(
     (state: AppState) => state.swap.slippageInBips
   );
+  const derivedValuesFromRedux = useSelector(
+    (state: AppState) => state.swap.derivedValues
+  );
   const genericAssets = useSelector(
     (state: AppState) => state.data.genericAssets
   );
@@ -306,8 +315,20 @@ export default function useSwapDerivedOutputs() {
                 inputCurrency.decimals
               )
             : null;
+
         derivedValues[SwapModalField.native] = independentValue;
         derivedValues[SwapModalField.input] = inputAmount;
+
+        // The quote is the same
+        if (
+          derivedValuesFromRedux &&
+          derivedValues[SwapModalField.native] ===
+            derivedValuesFromRedux[SwapModalField.native]
+        ) {
+          setLoading(false);
+          return;
+        }
+
         const inputAmountDisplay =
           inputAmount && inputPrice
             ? updatePrecisionToDisplay(inputAmount, inputPrice, true)
@@ -399,6 +420,7 @@ export default function useSwapDerivedOutputs() {
     outputCurrency,
     outputPrice,
     slippageInBips,
+    derivedValuesFromRedux,
   ]);
 
   return {

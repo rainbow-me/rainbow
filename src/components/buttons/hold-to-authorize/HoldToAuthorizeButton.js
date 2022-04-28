@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
 import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
-import { ActivityIndicator, Keyboard } from 'react-native';
+import { Keyboard } from 'react-native';
 import {
   LongPressGestureHandler,
   State,
@@ -70,14 +70,11 @@ const Label = styled(BiometricButtonContent).attrs(
   bottom: 2,
 });
 
-const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
-  ({ theme: { colors } }) => ({
-    color: colors.whiteLabel,
-    size: 31,
-  })
-)({
-  left: 15,
-  position: 'absolute',
+const LoadingSpinner = styled(Spinner).attrs(({ theme: { colors } }) => ({
+  color: colors.whiteLabel,
+  size: 24,
+}))({
+  marginRight: 15,
 });
 
 const animate = (value, { duration = buttonScaleDurationMs, toValue }) =>
@@ -101,6 +98,7 @@ class HoldToAuthorizeButton extends PureComponent {
     hideInnerBorder: PropTypes.bool,
     isAuthorizing: PropTypes.bool,
     label: PropTypes.string,
+    loading: PropTypes.bool,
     onLongPress: PropTypes.func.isRequired,
     parentHorizontalPadding: PropTypes.number,
     shadows: PropTypes.arrayOf(PropTypes.array),
@@ -206,6 +204,7 @@ class HoldToAuthorizeButton extends PureComponent {
       enableLongPress,
       hideInnerBorder,
       label,
+      loading,
       parentHorizontalPadding,
       shadows,
       showBiometryIcon,
@@ -264,7 +263,9 @@ class HoldToAuthorizeButton extends PureComponent {
                         animatedValue={this.longPressProgress}
                       />
                     )}
-                    {android && isAuthorizing && <LoadingSpinner />}
+                    {(loading || (android && isAuthorizing)) && (
+                      <LoadingSpinner />
+                    )}
                     <Label
                       label={
                         isAuthorizing

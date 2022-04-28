@@ -7,6 +7,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import equal from 'react-fast-compare';
 import {
   Alert,
   InteractionManager,
@@ -209,6 +210,9 @@ export default function ExchangeModal({
     loading,
   } = useSwapDerivedOutputs();
 
+  // logger.debug('ExchangeModal quote loading??', loading);
+  const lastTradeDetails = usePrevious(tradeDetails);
+
   const {
     isHighPriceImpact,
     outputPriceValue,
@@ -220,7 +224,7 @@ export default function ExchangeModal({
     outputAmount,
     inputCurrency,
     outputCurrency,
-    loading
+    loading || equal(lastTradeDetails, tradeDetails)
   );
 
   const flashbots = network === Network.mainnet && flashbotsEnabled;

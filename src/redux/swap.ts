@@ -176,7 +176,7 @@ export const flipSwapCurrencies = () => (
 
   // This is not like uniswap anymore
   // we should always try to get a quote based on the input
-  dispatch(updateSwapInputAmount(derivedValues.outputAmount));
+  dispatch(updateSwapInputAmount(derivedValues?.outputAmount));
 };
 
 export const updateSwapQuote = (value: any) => (dispatch: AppDispatch) => {
