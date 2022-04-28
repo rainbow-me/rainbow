@@ -3,7 +3,6 @@ import { useTheme } from '../../context/ThemeContext';
 import { delayNext } from '../../hooks/useMagicAutofocus';
 import { useNavigation } from '../../navigation/Navigation';
 import { lightModeThemeColors } from '../../styles/colors';
-import { useEth } from '../../utils/ethereumUtils';
 import { Text } from '../text';
 import FloatingActionButton from './FloatingActionButton';
 import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
@@ -27,16 +26,12 @@ const FabIcon = styled(Text).attrs(({ theme: { colors } }) => ({
 const ExchangeFab = ({ disabled, isReadOnlyWallet, ...props }) => {
   const { navigate } = useNavigation();
   const { colors } = useTheme();
-  const eth = useEth();
 
   const handlePress = useCallback(() => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
       android && delayNext();
       navigate(Routes.EXCHANGE_MODAL, {
         params: {
-          params: {
-            inputAsset: eth,
-          },
           screen: Routes.MAIN_EXCHANGE_SCREEN,
         },
         screen: Routes.MAIN_EXCHANGE_NAVIGATOR,
@@ -44,7 +39,7 @@ const ExchangeFab = ({ disabled, isReadOnlyWallet, ...props }) => {
     } else {
       watchingAlert();
     }
-  }, [isReadOnlyWallet, navigate, eth]);
+  }, [isReadOnlyWallet, navigate]);
 
   return (
     <FloatingActionButton
