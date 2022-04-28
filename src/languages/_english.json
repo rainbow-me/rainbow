@@ -575,6 +575,8 @@
       "actions": {
         "watching": "Watching",
         "watch": "Watch",
+        "unwatch_ens": "Unwatch %{ensName}",
+        "unwatch_ens_title": "Are you sure you want to unwatch %{ensName}?",
         "edit_profile": "Edit profile"
       },
       "banner": {

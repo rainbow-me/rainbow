@@ -2,16 +2,14 @@ import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
 import React, {
   RefObject,
+  useCallback,
   useContext,
   useEffect,
   useImperativeHandle,
   useState,
 } from 'react';
 import { ScrollViewProps, ViewStyle } from 'react-native';
-import Animated, {
-  useAnimatedScrollHandler,
-  useSharedValue,
-} from 'react-native-reanimated';
+import Animated, { runOnUI, useSharedValue } from 'react-native-reanimated';
 
 import BaseScrollView, {
   ScrollViewDefaultProps,
@@ -38,7 +36,7 @@ const ExternalENSProfileScrollViewWithRef = React.forwardRef<
   const isInsideBottomSheet = !!useContext(BottomSheetContext);
   const { enableZoomableImages } = useContext(ProfileSheetConfigContext);
 
-  const { ...rest } = props;
+  const { onScroll, ...rest } = props;
   const { scrollViewRef } = useContext(StickyHeaderContext)!;
 
   const [scrollEnabled, setScrollEnabled] = useState(ios);
@@ -51,9 +49,22 @@ const ExternalENSProfileScrollViewWithRef = React.forwardRef<
   });
 
   const yPosition = useSharedValue(0);
-  const scrollHandler = useAnimatedScrollHandler(event => {
-    yPosition.value = event.contentOffset.y;
-  });
+
+  const scrollHandler = useCallback(
+    y => {
+      'worklet';
+      yPosition.value = y;
+    },
+    [yPosition]
+  );
+
+  const handleScroll = useCallback(
+    event => {
+      onScroll(event);
+      runOnUI(scrollHandler)(event.nativeEvent.contentOffset.y);
+    },
+    [onScroll, scrollHandler]
+  );
 
   useImperativeHandle(ref, () => scrollViewRef.current!);
 
@@ -65,15 +76,9 @@ const ExternalENSProfileScrollViewWithRef = React.forwardRef<
     <ScrollView
       {...(rest as ScrollViewProps)}
       contentContainerStyle={[extraPadding, rest.contentContainerStyle]}
+      onScroll={handleScroll}
       ref={scrollViewRef as RefObject<any>}
       scrollEnabled={scrollEnabled}
-      {...(isInsideBottomSheet
-        ? {
-            onScrollWorklet: scrollHandler,
-          }
-        : {
-            onScroll: scrollHandler,
-          })}
     >
       <ImagePreviewOverlay
         enableZoom={ios && enableZoomableImages}

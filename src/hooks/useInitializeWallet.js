@@ -43,7 +43,8 @@ export default function useInitializeWallet() {
       overwrite = false,
       checkedWallet = null,
       switching,
-      image
+      image,
+      silent = false
     ) => {
       try {
         logger.sentry('Start wallet setup');
@@ -73,7 +74,8 @@ export default function useInitializeWallet() {
           overwrite,
           checkedWallet,
           network,
-          image
+          image,
+          silent
         );
 
         logger.sentry('walletInit returned ', {
