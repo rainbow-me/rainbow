@@ -94,15 +94,14 @@ export const contactsAddOrUpdate = (
 ) => (dispatch: Dispatch<ContactsUpdateAction>, getState: AppGetState) => {
   const loweredAddress = toLower(address);
   const { contacts } = getState().contacts;
-
   const updatedContacts = {
     ...contacts,
     [loweredAddress]: {
       address: loweredAddress,
       color,
-      ens,
       network,
       nickname,
+      ens,
     },
   };
   saveContacts(updatedContacts);
@@ -117,6 +116,7 @@ export const removeContact = (address: string) => (
   getState: AppGetState
 ) => {
   const { contacts } = getState().contacts;
+  console.log(address);
   const updatedContacts = omit(contacts, toLower(address));
   saveContacts(updatedContacts);
   dispatch({

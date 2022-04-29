@@ -1,7 +1,7 @@
 import { isHexString } from '@ethersproject/bytes';
 import lang from 'i18n-js';
 import { get, isEmpty, toLower } from 'lodash';
-import React, { Fragment, useCallback, useMemo } from 'react';
+import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
 import { ActivityIndicator, Keyboard } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
 import { useNavigation } from '../../navigation/Navigation';
@@ -86,16 +86,11 @@ export default function SendHeader({
   const { navigate } = useNavigation();
   const { colors } = useTheme();
 
-  const contact = useMemo(() => {
-    return get(contacts, `${[toLower(recipient)]}`, defaultContactItem);
-  }, [contacts, recipient]);
-  const [hexAddress, setHexAddress] = useState(null);
+  const [hexAddress, setHexAddress] = useState('');
 
   useEffect(() => {
     if (isValidAddress && !contact.address) {
       resolveAndStoreAddress();
-    } else {
-      setHexAddress(null);
     }
     async function resolveAndStoreAddress() {
       const hex = await resolveNameOrAddress(recipient);
@@ -105,6 +100,10 @@ export default function SendHeader({
       setHexAddress(hex);
     }
   }, [isValidAddress, recipient, setHexAddress, contact]);
+
+  const contact = useMemo(() => {
+    return get(contacts, `${[toLower(hexAddress)]}`, defaultContactItem);
+  }, [contacts, hexAddress]);
 
   const userWallet = useMemo(() => {
     return [...userAccounts, ...watchedAccounts].find(
@@ -158,7 +157,7 @@ export default function SendHeader({
             },
             async buttonIndex => {
               if (buttonIndex === 0) {
-                removeContact(recipient);
+                removeContact(hexAddress);
                 onRefocusInput();
               } else {
                 onRefocusInput();
@@ -169,15 +168,15 @@ export default function SendHeader({
           handleNavigateToContact();
           onRefocusInput();
         } else if (buttonIndex === 2) {
-          setClipboard(recipient);
+          setClipboard(hexAddress);
           onRefocusInput();
         }
       }
     );
   }, [
     handleNavigateToContact,
+    hexAddress,
     onRefocusInput,
-    recipient,
     removeContact,
     setClipboard,
   ]);
@@ -209,32 +208,30 @@ export default function SendHeader({
           ref={recipientFieldRef}
           testID="send-asset-form-field"
         />
-        {isValidAddress &&
-          !userWallet &&
-          (hexAddress || !isEmpty(contact?.address)) && (
-            <ButtonPressAnimation
-              onPress={
+        {isValidAddress && !userWallet && Boolean(hexAddress) && (
+          <ButtonPressAnimation
+            onPress={
+              isPreExistingContact
+                ? handleOpenContactActionSheet
+                : handleNavigateToContact
+            }
+          >
+            <Text
+              align="right"
+              color="appleBlue"
+              size="large"
+              style={{ paddingLeft: 4 }}
+              testID={
                 isPreExistingContact
-                  ? handleOpenContactActionSheet
-                  : handleNavigateToContact
+                  ? 'edit-contact-button'
+                  : 'add-contact-button'
               }
+              weight="heavy"
             >
-              <Text
-                align="right"
-                color="appleBlue"
-                size="large"
-                style={{ paddingLeft: 4 }}
-                testID={
-                  isPreExistingContact
-                    ? 'edit-contact-button'
-                    : 'add-contact-button'
-                }
-                weight="heavy"
-              >
-                {isPreExistingContact ? '􀍡' : ' 􀉯 Save'}
-              </Text>
-            </ButtonPressAnimation>
-          )}
+              {isPreExistingContact ? '􀍡' : ' 􀉯 Save'}
+            </Text>
+          </ButtonPressAnimation>
+        )}
         {isValidAddress && !hexAddress && isEmpty(contact?.address) && (
           <LoadingSpinner />
         )}

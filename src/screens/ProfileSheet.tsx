@@ -1,6 +1,5 @@
 import { useRoute } from '@react-navigation/core';
 import React, { createContext, useMemo } from 'react';
-import { useSetRecoilState } from 'recoil';
 import RecyclerAssetList2 from '../components/asset-list/RecyclerAssetList2';
 import ProfileSheetHeader from '../components/ens-profile/ProfileSheetHeader';
 import { SheetHandleFixedToTopHeight } from '../components/sheet';
@@ -16,7 +15,6 @@ import {
   Inset,
   Stack,
 } from '@rainbow-me/design-system';
-import { accentColorAtom } from '@rainbow-me/helpers/ens';
 import {
   useDimensions,
   useENSResolveName,
@@ -73,10 +71,6 @@ export default function ProfileSheet() {
     dominantColor ||
     colors.avatarBackgrounds[colorIndex || 0] ||
     colors.appleBlue;
-
-  const setAccentColor = useSetRecoilState(accentColorAtom);
-
-  setAccentColor(accentColor);
 
   const enableZoomableImages =
     !params.isPreview && name !== Routes.PROFILE_PREVIEW_SHEET;
