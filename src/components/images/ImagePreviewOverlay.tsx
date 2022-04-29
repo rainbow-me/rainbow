@@ -560,7 +560,6 @@ export function ImagePreviewOverlayTarget({
         height={height ? { custom: height } : initialHeight || { custom: 0 }}
         onLayout={handleLayout}
         ref={zoomableWrapperRef}
-        style={{ overflow: 'hidden' }}
         width="full"
       >
         {renderPlaceholder && children}

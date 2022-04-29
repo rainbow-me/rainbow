@@ -86,6 +86,7 @@ export default function ProfileAvatar({
               >
                 <Box
                   as={ImgixImage}
+                  borderRadius={size / 2}
                   height={{ custom: size }}
                   onLoadEnd={onLoadEnd}
                   source={{ uri: avatarUrl }}
