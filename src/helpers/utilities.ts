@@ -7,9 +7,15 @@ const stringify = (value: BigNumberish) => {
   return value.toString();
 };
 
-export const add = (numberOne: BigNumberish, numberTwo: BigNumberish): number =>
-  parseFloat(numberOne?.toString() || '0') +
-  parseFloat(numberTwo?.toString() || '0');
+export const add = (
+  numberOne: BigNumberish,
+  numberTwo: BigNumberish
+): number => {
+  return (
+    parseFloat(numberOne?.toString() || '0') +
+    parseFloat(numberTwo?.toString() || '0')
+  );
+};
 
 export const subtract = (
   numberOne: BigNumberish,
@@ -252,7 +258,7 @@ const formatLocale = (value: string) => {
 export const convertAmountToNativeAmount = (
   amount: BigNumberish,
   priceUnit: BigNumberish
-): string => stringify(multiply(amount, priceUnit));
+): number => multiply(amount, priceUnit);
 
 /**
  * @desc convert from amount to display formatted string
@@ -263,7 +269,7 @@ export const convertAmountAndPriceToNativeDisplay = (
   nativeCurrency: string,
   buffer?: number,
   skipDecimals: boolean = false
-): { amount: string; display: string } => {
+): { amount: number; display: string } => {
   const nativeBalanceRaw = convertAmountToNativeAmount(amount, priceUnit);
   const nativeDisplay = convertAmountToNativeDisplay(
     nativeBalanceRaw,

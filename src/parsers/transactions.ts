@@ -408,7 +408,7 @@ const parseTransaction = async (
           minedAt: txn.mined_at || txn.signed_at!,
           name: updatedAsset.name,
           native: isL2Network(network)
-            ? { amount: '', display: '' }
+            ? { amount: 0, display: '' }
             : nativeDisplay,
           network,
           nonce: txn.nonce,

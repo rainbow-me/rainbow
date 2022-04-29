@@ -122,7 +122,7 @@ export default function useSwapDerivedOutputs() {
           ? convertAmountToNativeAmount(independentValue, inputPrice)
           : null;
 
-      derivedValues[SwapModalField.native] = nativeValue;
+      derivedValues[SwapModalField.native] = nativeValue?.toString() ?? '';
       const {
         outputAmount,
         outputAmountDisplay,
@@ -210,7 +210,7 @@ export default function useSwapDerivedOutputs() {
           ? convertAmountToNativeAmount(inputAmountExact, inputPrice)
           : null;
 
-      derivedValues[SwapModalField.native] = nativeValue;
+      derivedValues[SwapModalField.native] = nativeValue?.toString() ?? '';
     }
     return { derivedValues, displayValues, doneLoadingReserves, tradeDetails };
   }, [

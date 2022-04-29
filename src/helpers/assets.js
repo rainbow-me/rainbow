@@ -62,6 +62,7 @@ const addEthPlaceholder = (
       name: 'Ethereum',
       native: {
         balance: {
+          // TODO
           amount: '0.00',
           display: convertAmountToNativeDisplay('0.00', nativeCurrency),
         },

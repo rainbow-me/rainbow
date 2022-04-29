@@ -47,8 +47,8 @@ const getBaseFeeMultiplier = (speed: string) => {
 };
 
 const parseGasDataConfirmationTime = (
-  maxBaseFee: string | number,
-  maxPriorityFee: string | number,
+  maxBaseFee: number,
+  maxPriorityFee: number,
   blocksToConfirmation: BlocksToConfirmation
 ) => {
   let blocksToWaitForPriorityFee = 0;
@@ -117,8 +117,10 @@ export const parseRainbowMeteorologyData = (
   };
 
   const parsedFees: GasFeeParamsBySpeed = {};
-  const parsedCurrentBaseFee = parseGasFeeParam(currentBaseFee);
-  const parsedBaseFeeSuggestion = parseGasFeeParam(baseFeeSuggestion);
+  const parsedCurrentBaseFee = parseGasFeeParam(parseFloat(currentBaseFee));
+  const parsedBaseFeeSuggestion = parseGasFeeParam(
+    parseFloat(baseFeeSuggestion)
+  );
 
   Object.keys(maxPriorityFeeSuggestions).forEach(speed => {
     const baseFeeMultiplier = getBaseFeeMultiplier(speed);
@@ -129,11 +131,11 @@ export const parseRainbowMeteorologyData = (
     const maxPriorityFee =
       maxPriorityFeeSuggestions[speed as keyof MaxPriorityFeeSuggestions];
     // next version of the package will send only 2 decimals
-    const cleanMaxPriorityFee = gweiToWei(
+    const cleanMaxPriorityFee = numberGweiToWei(
       Number(weiToGwei(maxPriorityFee)).toFixed(2)
     );
     // clean max base fee to only parser int gwei
-    const cleanMaxBaseFee = gweiToWei(
+    const cleanMaxBaseFee = numberGweiToWei(
       Number(weiToGwei(speedMaxBaseFee)).toFixed(2)
     );
     parsedFees[speed] = {
@@ -194,7 +196,7 @@ export const defaultGasPriceFormat = (
  * @param weiAmount - Gas value in wei unit
  * @returns
  */
-export const parseGasFeeParam = (weiAmount: number | string): GasFeeParam => {
+export const parseGasFeeParam = (weiAmount: number): GasFeeParam => {
   return {
     amount: weiAmount,
     display: `${parseInt(weiToGwei(weiAmount), 10)} Gwei`,
@@ -212,8 +214,8 @@ export const parseGasFeeParam = (weiAmount: number | string): GasFeeParam => {
  */
 export const defaultGasParamsFormat = (
   option: string,
-  maxFeePerGas: string | number,
-  maxPriorityFeePerGas: string | number,
+  maxFeePerGas: number,
+  maxPriorityFeePerGas: number,
   blocksToConfirmation: BlocksToConfirmation
 ): GasFeeParams => {
   const time = parseGasDataConfirmationTime(
@@ -370,6 +372,10 @@ export const parseGasParamsForTransaction = (
 
 export const gweiToWei = (gweiAmount: BigNumberish) => {
   return ethers.utils.parseUnits(gweiAmount.toString(), 'gwei').toString();
+};
+
+export const numberGweiToWei = (gweiAmount: BigNumberish) => {
+  return ethers.utils.parseUnits(gweiAmount.toString(), 'gwei').toNumber();
 };
 
 export const weiToGwei = (weiAmount: BigNumberish) => {

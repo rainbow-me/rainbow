@@ -7,6 +7,7 @@ import {
   // @ts-ignore
   IS_TESTING,
 } from 'react-native-dotenv';
+import { numberGweiToWei } from '../parsers/gas';
 import { AppDispatch, AppGetState } from './store';
 import {
   BlocksToConfirmation,
@@ -39,7 +40,6 @@ import {
 import { Network } from '@rainbow-me/helpers/networkTypes';
 import {
   defaultGasParamsFormat,
-  gweiToWei,
   parseGasFeeParam,
   parseGasFees,
   parseGasFeesBySpeed,
@@ -236,7 +236,7 @@ export const updateGasFeeForSpeed = (
   const { gasFeeParamsBySpeed } = getState().gas;
   const newGasFeeParams = { ...gasFeeParamsBySpeed };
   newGasFeeParams[speed].maxPriorityFeePerGas = parseGasFeeParam(
-    newMaxPriorityFeePerGas
+    parseFloat(newMaxPriorityFeePerGas)
   );
 
   dispatch({
@@ -490,7 +490,7 @@ export const gasPricesStartPolling = (network = Network.mainnet) => async (
                     })
                   )?.connection?.url;
                   if (isHardHat(providerUrl)) {
-                    baseFee = parseGasFeeParam(gweiToWei(1000));
+                    baseFee = parseGasFeeParam(numberGweiToWei(1000));
                   }
                 }
 

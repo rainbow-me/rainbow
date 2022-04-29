@@ -59,7 +59,7 @@ export const parseNewTransaction = async (
 
   const native =
     network && isL2Network(network)
-      ? { amount: '', display: '' }
+      ? { amount: 0, display: '' }
       : convertAmountAndPriceToNativeDisplay(
           amount ?? 0,
           assetPrice,
