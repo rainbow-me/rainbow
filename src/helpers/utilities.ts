@@ -7,38 +7,30 @@ const stringify = (value: BigNumberish) => {
   return value.toString();
 };
 
-export const add = (numberOne: BigNumberish, numberTwo: BigNumberish): string =>
-  stringify(
-    parseFloat(numberOne?.toString() || '0') +
-      parseFloat(numberTwo?.toString() || '0')
-  );
+export const add = (numberOne: BigNumberish, numberTwo: BigNumberish): number =>
+  parseFloat(numberOne?.toString() || '0') +
+  parseFloat(numberTwo?.toString() || '0');
 
 export const subtract = (
   numberOne: BigNumberish,
   numberTwo: BigNumberish
-): string =>
-  stringify(
-    parseFloat(numberOne?.toString() || '0') -
-      parseFloat(numberTwo?.toString() || '0')
-  );
+): number =>
+  parseFloat(numberOne?.toString() || '0') -
+  parseFloat(numberTwo?.toString() || '0');
 
 export const multiply = (
   numberOne: BigNumberish,
   numberTwo: BigNumberish
-): string =>
-  stringify(
-    parseFloat(numberOne?.toString() || '0') *
-      parseFloat(numberTwo?.toString() || '0')
-  );
+): number =>
+  parseFloat(numberOne?.toString() || '0') *
+  parseFloat(numberTwo?.toString() || '0');
 
 export const divide = (
   numberOne: BigNumberish,
   numberTwo: BigNumberish
-): string => {
-  if (!(numberOne || numberTwo)) return '0';
-  return stringify(
-    parseFloat(numberOne.toString()) / parseFloat(numberTwo.toString())
-  );
+): number => {
+  if (!(numberOne || numberTwo)) return 0;
+  return parseFloat(numberOne.toString()) / parseFloat(numberTwo.toString());
 };
 
 export const convertAmountToRawAmount = (
@@ -156,7 +148,7 @@ export const addDisplay = (numberOne: string, numberTwo: string): string => {
 export const addBuffer = (
   numberOne: BigNumberish,
   buffer: BigNumberish = '1.2'
-): string => multiply(numberOne, buffer);
+): string => stringify(multiply(numberOne, buffer));
 
 export const fraction = (
   target: BigNumberish,
@@ -260,7 +252,7 @@ const formatLocale = (value: string) => {
 export const convertAmountToNativeAmount = (
   amount: BigNumberish,
   priceUnit: BigNumberish
-): string => multiply(amount, priceUnit);
+): string => stringify(multiply(amount, priceUnit));
 
 /**
  * @desc convert from amount to display formatted string

@@ -400,7 +400,7 @@ const getENSRecordKeys = () => Object.keys(ENS_RECORDS);
 const getENSRecordValues = () => Object.values(ENS_RECORDS);
 
 const formatEstimatedNetworkFee = (
-  gasLimit: string,
+  gasLimit: number,
   maxBaseFee: string,
   maxPriorityFee: string,
   nativeCurrency: any,
@@ -426,7 +426,7 @@ const formatEstimatedNetworkFee = (
 };
 
 const formatTotalRegistrationCost = (
-  wei: string,
+  wei: number,
   nativeCurrency: any,
   nativeAssetPrice: any,
   skipDecimals: boolean = false

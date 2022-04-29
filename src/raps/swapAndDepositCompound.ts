@@ -88,7 +88,7 @@ export const estimateSwapAndDepositCompound = async (
 
   const depositGasLimit = getDepositGasLimit(inputCurrency);
   gasLimits = concat(gasLimits, depositGasLimit);
-  return reduce(gasLimits, (acc, limit) => add(acc, limit), '0');
+  return reduce(gasLimits, (acc, limit) => add(acc, limit), 0);
 };
 
 export const createSwapAndDepositCompoundRap = async (

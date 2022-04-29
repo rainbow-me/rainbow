@@ -47,8 +47,8 @@ const getBaseFeeMultiplier = (speed: string) => {
 };
 
 const parseGasDataConfirmationTime = (
-  maxBaseFee: string,
-  maxPriorityFee: string,
+  maxBaseFee: string | number,
+  maxPriorityFee: string | number,
   blocksToConfirmation: BlocksToConfirmation
 ) => {
   let blocksToWaitForPriorityFee = 0;
@@ -194,7 +194,7 @@ export const defaultGasPriceFormat = (
  * @param weiAmount - Gas value in wei unit
  * @returns
  */
-export const parseGasFeeParam = (weiAmount: string): GasFeeParam => {
+export const parseGasFeeParam = (weiAmount: number | string): GasFeeParam => {
   return {
     amount: weiAmount,
     display: `${parseInt(weiToGwei(weiAmount), 10)} Gwei`,
@@ -212,8 +212,8 @@ export const parseGasFeeParam = (weiAmount: string): GasFeeParam => {
  */
 export const defaultGasParamsFormat = (
   option: string,
-  maxFeePerGas: string,
-  maxPriorityFeePerGas: string,
+  maxFeePerGas: string | number,
+  maxPriorityFeePerGas: string | number,
   blocksToConfirmation: BlocksToConfirmation
 ): GasFeeParams => {
   const time = parseGasDataConfirmationTime(
@@ -326,7 +326,10 @@ const getTxFee = (
     ? convertHexToString(gasLimit)
     : gasLimit;
 
-  let amount = multiply(gasPrice.toString(), normalizedGasLimit.toString());
+  let amount: number | string = multiply(
+    gasPrice.toString(),
+    normalizedGasLimit.toString()
+  );
   if (l1GasFeeOptimism && greaterThan(l1GasFeeOptimism.toString(), '0')) {
     amount = add(amount, l1GasFeeOptimism.toString());
   }
