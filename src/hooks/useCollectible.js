@@ -4,6 +4,7 @@ import { useQueryClient } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAdditionalRecyclerAssetListData } from '../components/asset-list/RecyclerAssetList2/core/Contexts';
 import { uniqueTokensQueryKey } from './useFetchUniqueTokens';
+import { useAccountSettings } from '@rainbow-me/hooks';
 import { revalidateUniqueToken } from '@rainbow-me/redux/uniqueTokens';
 
 export default function useCollectible(
@@ -14,7 +15,7 @@ export default function useCollectible(
   const selfUniqueTokens = useSelector(
     ({ uniqueTokens: { uniqueTokens } }) => uniqueTokens
   );
-
+  const { accountAddress } = useAccountSettings();
   // Retrieve the unique tokens belonging to the targeted asset list account
   // (e.g. viewing another persons ENS profile via `ProfileSheet`)
   // "External" unique tokens are tokens that belong to another address.
@@ -23,8 +24,7 @@ export default function useCollectible(
   const externalUniqueTokens = useMemo(() => {
     return queryClient.getQueryData(uniqueTokensQueryKey({ address })) || [];
   }, [queryClient, address]);
-
-  const isExternal = Boolean(address);
+  const isExternal = Boolean(address) && address !== accountAddress;
   // Use the appropriate tokens based on if the user is viewing the
   // current accounts tokens, or external tokens (e.g. ProfileSheet)
   const uniqueTokens = useMemo(
