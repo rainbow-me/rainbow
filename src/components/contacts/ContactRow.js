@@ -100,7 +100,9 @@ const ContactRow = (
         profileUtils.addressHashedEmoji(address)
       : null;
 
-  const [ensName, setENSName] = useState(ens);
+  const [ensName, setENSName] = useState(
+    accountType !== 'suggestions' ? ens : nickname
+  );
 
   useEffect(() => {
     if (profilesEnabled && accountType === 'contacts') {

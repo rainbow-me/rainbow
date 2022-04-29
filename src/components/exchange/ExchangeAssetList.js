@@ -198,7 +198,7 @@ const ExchangeAssetList = (
     ({ item }) => {
       return item.ens ? (
         <ContactRow
-          accountType="contact"
+          accountType="suggestions"
           address={item.address}
           color={item.color}
           image={item.image}
