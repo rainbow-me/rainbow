@@ -4,7 +4,11 @@ import { SENTRY_ENVIRONMENT } from 'react-native-dotenv';
 import { PerformanceMetricData } from './types/PerformanceMetricData';
 import { PerformanceMetricsType } from './types/PerformanceMetrics';
 import { PerformanceTagsType } from './types/PerformanceTags';
-
+/*
+This will be a version for all performnce tracking events.
+If we make breaking changes we will be able to take it into consideration when doing analytics
+ */
+const performanceTrackingVersion = 1;
 const shouldLogToConsole = __DEV__ || SENTRY_ENVIRONMENT === 'LocalRelease';
 const logTag = '[PERFORMANCE]: ';
 
@@ -46,6 +50,7 @@ function logDirectly(
   logDurationIfAppropriate(metric, durationInMs);
   analytics.track(metric, {
     durationInMs,
+    performanceTrackingVersion,
     ...additionalParams,
   });
 }
@@ -94,6 +99,7 @@ function finishMeasuring(
 
   analytics.track(metric, {
     durationInMs,
+    performanceTrackingVersion,
     ...savedEntry.additionalParams,
     ...additionalParams,
   });
@@ -122,7 +128,11 @@ export function withPerformanceTracking<Fn extends (...args: any[]) => any>(
 
     const durationInMs = performance.now() - startTime;
     logDurationIfAppropriate(metric, durationInMs);
-    analytics.track(metric, { durationInMs, ...additionalParams });
+    analytics.track(metric, {
+      durationInMs,
+      performanceTrackingVersion,
+      ...additionalParams,
+    });
 
     return res;
   };
