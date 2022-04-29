@@ -13,15 +13,17 @@ export default function ConfigurationSection({
   isLoading,
   owner,
   registrant,
-  isPrimary,
   isOwner,
+  isPrimary,
+  isReadOnlyWallet,
   name,
 }: {
   isLoading?: boolean;
   owner?: { name?: string; address?: string };
   registrant?: { name?: string; address?: string };
-  isPrimary?: boolean;
   isOwner?: boolean;
+  isPrimary?: boolean;
+  isReadOnlyWallet?: boolean;
   name: string;
 }) {
   const { startRegistration } = useENSRegistration();
@@ -36,21 +38,23 @@ export default function ConfigurationSection({
         </>
       ) : (
         <>
-          <InfoRow
-            explainSheetType="ens_primary_name"
-            label={lang.t('expanded_state.unique_expanded.set_primary_name')}
-            onSwitchChange={() => {
-              startRegistration(name, REGISTRATION_MODES.SET_NAME);
-              navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
-                longFormHeight: ENSConfirmUpdateSheetHeight,
-                mode: REGISTRATION_MODES.SET_NAME,
-                name,
-              });
-            }}
-            switchDisabled={!isOwner}
-            switchValue={isPrimary}
-            useAccentColor
-          />
+          {!isReadOnlyWallet && (
+            <InfoRow
+              explainSheetType="ens_primary_name"
+              label={lang.t('expanded_state.unique_expanded.set_primary_name')}
+              onSwitchChange={() => {
+                startRegistration(name, REGISTRATION_MODES.SET_NAME);
+                navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
+                  longFormHeight: ENSConfirmUpdateSheetHeight,
+                  mode: REGISTRATION_MODES.SET_NAME,
+                  name,
+                });
+              }}
+              switchDisabled={!isOwner}
+              switchValue={isPrimary}
+              useAccentColor
+            />
+          )}
           {registrant && (
             <InfoRow
               explainSheetType="ens_registrant"

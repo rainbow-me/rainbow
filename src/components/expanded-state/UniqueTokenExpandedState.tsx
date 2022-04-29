@@ -611,6 +611,7 @@ const UniqueTokenExpandedState = ({
                               isLoading={ensProfile.isLoading}
                               isOwner={ensProfile?.isOwner}
                               isPrimary={ensData?.primary?.isPrimary}
+                              isReadOnlyWallet={isReadOnlyWallet}
                               name={cleanENSName}
                               owner={ensData?.owner}
                               registrant={ensData?.registrant}
