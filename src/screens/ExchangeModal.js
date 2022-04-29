@@ -272,13 +272,12 @@ export default function ExchangeModal({
       !navigating && navigateToSelectInputCurrency();
       setNavigating(true);
       setTimeout(() => setNavigating(false), 1000);
+    } else if (!outputCurrency) {
+      logger.debug('Navigating to select OUTPUT currency');
+      !navigating && navigateToSelectOutputCurrency(inputCurrency?.type);
+      setNavigating(true);
+      setTimeout(() => setNavigating(false), 1000);
     }
-    //  else if (!outputCurrency) {
-    //   logger.debug('Navigating to select OUTPUT currency');
-    //   !navigating && navigateToSelectOutputCurrency(inputCurrency?.network);
-    //   setNavigating(true);
-    //   setTimeout(() => setNavigating(false), 1000);
-    // }
   }, [
     navigating,
     defaultInputAsset,

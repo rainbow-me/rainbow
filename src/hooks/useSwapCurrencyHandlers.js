@@ -107,13 +107,13 @@ export default function useSwapCurrencyHandlers({
   );
 
   const navigateToSelectInputCurrency = useCallback(
-    network => {
+    assetType => {
       InteractionManager.runAfterInteractions(() => {
         dangerouslyGetParent().dangerouslyGetState().index = 0;
         setParams({ focused: false });
         delayNext();
         navigate(Routes.CURRENCY_SELECT_SCREEN, {
-          network,
+          assetType,
           onSelectCurrency: updateInputCurrency,
           restoreFocusOnSwapModal: () => setParams({ focused: true }),
           title,
@@ -133,13 +133,13 @@ export default function useSwapCurrencyHandlers({
   );
 
   const navigateToSelectOutputCurrency = useCallback(
-    network => {
+    assetType => {
       InteractionManager.runAfterInteractions(() => {
         setParams({ focused: false });
         dangerouslyGetParent().dangerouslyGetState().index = 0;
         delayNext();
         navigate(Routes.CURRENCY_SELECT_SCREEN, {
-          network,
+          assetType,
           onSelectCurrency: updateOutputCurrency,
           restoreFocusOnSwapModal: () => setParams({ focused: true }),
           title: 'Receive',

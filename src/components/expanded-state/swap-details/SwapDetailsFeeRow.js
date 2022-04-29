@@ -2,20 +2,28 @@ import lang from 'i18n-js';
 import React from 'react';
 import useRainbowFee from '../../../hooks/useRainbowFee';
 import SwapDetailsRow from './SwapDetailsRow';
+import {
+  convertAmountToNativeDisplay,
+  convertAmountToPercentageDisplay,
+} from '@rainbow-me/helpers/utilities';
 import { useAccountSettings, useStepper } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 
 export default function SwapDetailsUniswapRow(tradeDetails) {
   const { navigate } = useNavigation();
-  const { nativeCurrencySymbol } = useAccountSettings();
+  const { nativeCurrency } = useAccountSettings();
   const { rainbowFeeNative, rainbowFeePercentage } = useRainbowFee(
     tradeDetails
   );
 
-  //TODO: this isnt i18n friendly
-  const rainbowFeeNativeDisplay = `${nativeCurrencySymbol}${rainbowFeeNative} `;
-  const rainbowFeePercentageDisplay = `${rainbowFeePercentage}%`;
+  const rainbowFeeNativeDisplay = convertAmountToNativeDisplay(
+    rainbowFeeNative,
+    nativeCurrency
+  );
+  const rainbowFeePercentageDisplay = convertAmountToPercentageDisplay(
+    rainbowFeePercentage
+  );
   const steps = [rainbowFeeNativeDisplay, rainbowFeePercentageDisplay];
   const [step, nextStep] = useStepper(steps.length);
 
