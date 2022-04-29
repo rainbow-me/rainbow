@@ -675,6 +675,7 @@ export default function SendSheet(props) {
       });
       return;
     }
+
     navigate(Routes.SEND_CONFIRMATION_SHEET, {
       amountDetails: amountDetails,
       asset: selected,

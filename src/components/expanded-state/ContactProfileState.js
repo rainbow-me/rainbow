@@ -95,14 +95,20 @@ const SubmitButtonLabel = styled(Text).attrs(({ value }) => ({
 const centerdStyles = padding.object(24, 25);
 const bottomStyles = padding.object(8, 9);
 
-const ContactProfileState = ({ address, contact, ens, nickname }) => {
+const ContactProfileState = ({
+  address,
+  color: colorProp,
+  contact,
+  ens,
+  nickname,
+}) => {
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const contactNickname = contact?.nickname || nickname;
   const { goBack } = useNavigation();
   const { onAddOrUpdateContacts, onRemoveContact } = useContacts();
   const { isDarkMode, colors } = useTheme();
 
-  const [color, setColor] = useState(accentColor || 0);
+  const [color, setColor] = useState(colorProp || 0);
   const [value, setValue] = useState(
     removeFirstEmojiFromString(contactNickname)
   );
@@ -112,15 +118,15 @@ const ContactProfileState = ({ address, contact, ens, nickname }) => {
 
   const handleAddContact = useCallback(() => {
     const nickname = (emoji ? `${emoji} ${value}` : value).trim();
-    if (value.length > 0 || color !== accentColor) {
+    if (value.length > 0 || color !== colorProp) {
       onAddOrUpdateContacts(address, nickname, color, network, ens);
       goBack();
     }
     android && Keyboard.dismiss();
   }, [
-    accentColor,
     address,
     color,
+    colorProp,
     emoji,
     ens,
     goBack,
