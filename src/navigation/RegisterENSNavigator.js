@@ -10,7 +10,6 @@ import ENSAssignRecordsSheet, {
 } from '../screens/ENSAssignRecordsSheet';
 import ENSIntroSheet from '../screens/ENSIntroSheet';
 import ENSSearchSheet from '../screens/ENSSearchSheet';
-import { useNavigation } from './Navigation';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
 import { sharedCoolModalTopOffset } from './config';
 import { useTheme } from '@rainbow-me/context';
@@ -53,7 +52,6 @@ const defaultScreenOptions = {
 
 export default function RegisterENSNavigator() {
   const { params } = useRoute();
-  const navigation = useNavigation();
 
   const sheetRef = useRef();
 
@@ -67,7 +65,6 @@ export default function RegisterENSNavigator() {
     deviceHeight - SheetHandleFixedToTopHeight - sharedCoolModalTopOffset;
 
   const [isSearchEnabled, setIsSearchEnabled] = useState(true);
-  const [swipeEnabled, setSwipeEnabled] = useState(false);
 
   const { clearValues } = useENSRegistrationForm();
 
@@ -109,9 +106,9 @@ export default function RegisterENSNavigator() {
     }
   }, [previousRouteName, screenOptions.scrollEnabled]);
 
-  useEffect(() => {
-    StatusBar.setBarStyle('light-content');
-  }, []);
+  useEffect(() => () => clearCurrentRegistrationName(), [
+    clearCurrentRegistrationName,
+  ]);
 
   useEffect(() => {
     if (!screenOptions.scrollEnabled) {
@@ -119,17 +116,21 @@ export default function RegisterENSNavigator() {
     }
   }, [screenOptions.scrollEnabled]);
 
-  useEffect(() => {
-    const dismiss = () => {
-      // Remove avatar record on dismissal to prevent accent color inconsistencies.
+  useEffect(
+    () => () => {
       removeRecordByKey('avatar');
       setAccentColor(colors.purple);
       clearValues();
       clearCurrentRegistrationName();
-    };
-    navigation.addListener('dismiss', dismiss);
-    return () => navigation.removeListener('dismiss', dismiss);
-  });
+    },
+    [
+      clearCurrentRegistrationName,
+      clearValues,
+      colors.purple,
+      removeRecordByKey,
+      setAccentColor,
+    ]
+  );
 
   const enableAssignRecordsBottomActions =
     currentRouteName !== Routes.ENS_INTRO_SHEET;
@@ -147,8 +148,9 @@ export default function RegisterENSNavigator() {
         height="100%"
         ref={sheetRef}
         removeTopPadding
-        scrollEnabled={scrollEnabled}
+        scrollEnabled
       >
+        <StatusBar barStyle="light-content" />
         <ConditionalWrap
           condition={!scrollEnabled}
           wrap={children => <Box style={wrapperStyle}>{children}</Box>}
@@ -157,29 +159,30 @@ export default function RegisterENSNavigator() {
             initialLayout={deviceUtils.dimensions}
             initialRouteName={currentRouteName}
             pager={renderPager}
-            swipeEnabled={swipeEnabled}
+            swipeEnabled={false}
             tabBar={renderTabBar}
           >
             <Swipe.Screen
               component={ENSIntroSheet}
               initialParams={{
+                onSearchForNewName: () => setIsSearchEnabled(true),
                 onSelectExistingName: () => setIsSearchEnabled(false),
               }}
               listeners={{
-                focus: () => setCurrentRouteName(Routes.ENS_INTRO_SHEET),
+                focus: () => {
+                  setCurrentRouteName(Routes.ENS_INTRO_SHEET);
+                },
               }}
               name={Routes.ENS_INTRO_SHEET}
             />
             {isSearchEnabled && (
               <Swipe.Screen
                 component={ENSSearchSheet}
-                initialParams={{
-                  onNameAvailable: isAvailable => setSwipeEnabled(isAvailable),
-                }}
                 listeners={{
                   focus: () => setCurrentRouteName(Routes.ENS_SEARCH_SHEET),
                 }}
                 name={Routes.ENS_SEARCH_SHEET}
+                visible={isSearchEnabled}
               />
             )}
             <Swipe.Screen
@@ -189,8 +192,9 @@ export default function RegisterENSNavigator() {
                 sheetRef,
               }}
               listeners={{
-                focus: () =>
-                  setCurrentRouteName(Routes.ENS_ASSIGN_RECORDS_SHEET),
+                focus: () => {
+                  setCurrentRouteName(Routes.ENS_ASSIGN_RECORDS_SHEET);
+                },
               }}
               name={Routes.ENS_ASSIGN_RECORDS_SHEET}
             />
@@ -205,7 +209,11 @@ export default function RegisterENSNavigator() {
        * ScrollView, so this seems like the best workaround.
        */}
       {enableAssignRecordsBottomActions && (
-        <ENSAssignRecordsBottomActions visible={isBottomActionsVisible} />
+        <ENSAssignRecordsBottomActions
+          currentRouteName={currentRouteName}
+          previousRouteName={previousRouteName}
+          visible={isBottomActionsVisible}
+        />
       )}
     </>
   );

@@ -9,7 +9,7 @@ const buildRgba = memoFn(
 );
 
 const darkModeColors = {
-  appleBlue: '#0E76FD',
+  appleBlue: '#1F87FF',
   black: '#FFFFFF',
   blueGreyDark: '#E0E8FF',
   blueGreyDark04: '#222326',
@@ -169,7 +169,7 @@ const getColorsByTheme = darkMode => {
   };
 
   let gradients = {
-    appleBlueTintToAppleBlue: [buildRgba(base.appleBlue, 0.5), base.appleBlue],
+    appleBlueTintToAppleBlue: ['#15B1FE', base.appleBlue],
     blueToGreen: ['#4764F7', '#23D67F'],
     ens: ['#513eff', '#3e80ff'],
     lighterGrey: [buildRgba('#ECF1F5', 0.15), buildRgba('#DFE4EB', 0.5)],
@@ -277,10 +277,7 @@ const getColorsByTheme = darkMode => {
     };
 
     gradients = {
-      appleBlueTintToAppleBlue: [
-        buildRgba(base.appleBlue, 0.5),
-        base.appleBlue,
-      ],
+      appleBlueTintToAppleBlue: ['#2FC3FF', base.appleBlue],
       blueToGreen: ['#4764F7', '#23D67F'],
       ens: ['#513eff', '#3e80ff'],
       lighterGrey: [buildRgba('#1F222A', 0.8), buildRgba('#1F222A', 0.6)],
@@ -291,8 +288,8 @@ const getColorsByTheme = darkMode => {
       ],
       lightGrey: ['#1F222A', buildRgba('#1F222A', 0.8)],
       lightGreyTransparent: [
+        buildRgba(base.blueGreyDark, 0.02),
         buildRgba(base.blueGreyDark, 0.06),
-        buildRgba(base.blueGreyDark, 0.025),
       ],
       lightGreyWhite: [buildRgba('#F0F2F5', 0.05), buildRgba('#FFFFFF', 0.01)],
       offWhite: ['#1F222A', '#1F222A'],

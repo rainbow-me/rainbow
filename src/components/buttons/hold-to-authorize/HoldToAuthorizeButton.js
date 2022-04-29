@@ -67,7 +67,7 @@ const Label = styled(BiometricButtonContent).attrs(
     weight: 'heavy',
   })
 )({
-  bottom: 2,
+  bottom: 1,
 });
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
@@ -296,7 +296,6 @@ class HoldToAuthorizeButton extends PureComponent {
 const HoldToAuthorizeButtonWithBiometrics = ({
   disableLongPress,
   label,
-  color,
   ...props
 }) => {
   const biometryType = useBiometryType();
@@ -311,7 +310,6 @@ const HoldToAuthorizeButtonWithBiometrics = ({
   return (
     <HoldToAuthorizeButton
       {...props}
-      backgroundColor={color}
       colors={colors}
       deviceDimensions={deviceDimensions}
       enableLongPress={!disableLongPress && isLongPressAvailableForBiometryType}

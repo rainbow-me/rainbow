@@ -17,10 +17,12 @@ export default function useWatchWallet({
   address: primaryAddress,
   ensName,
   avatarUrl,
+  showImportModal = true,
 }: {
   address?: string;
   ensName?: string;
   avatarUrl?: string | null;
+  showImportModal?: boolean;
 }) {
   const dispatch = useDispatch();
 
@@ -53,7 +55,9 @@ export default function useWatchWallet({
   );
 
   const { accountAddress } = useAccountProfile();
-  const { handleSetSeedPhrase, handlePressImportButton } = useImportingWallet();
+  const { handleSetSeedPhrase, handlePressImportButton } = useImportingWallet({
+    showImportModal,
+  });
   const watchWallet = useCallback(async () => {
     if (!isWatching) {
       handleSetSeedPhrase(ensName);

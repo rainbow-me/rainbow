@@ -26,6 +26,7 @@ export const heights = {
   '3/4': fraction(3, 4),
   '3/5': fraction(3, 5),
   '30px': 30,
+  '36px': 36,
   '4/5': fraction(4, 5),
   '40px': 40,
   '46px': 46,

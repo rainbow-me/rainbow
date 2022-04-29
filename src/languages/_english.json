@@ -159,7 +159,7 @@
       "edit": "Edit",
       "exchange": "Exchange",
       "exchange_again": "Exchange Again",
-      "exchange_search_uniswap": "Search Uniswap",
+      "exchange_search_placeholder": "Search",
       "go_back": "Go Back",
       "hide": "Hide",
       "hold_to_authorize": {
@@ -215,7 +215,7 @@
         "trading_at_prefix": "Trading at"
       },
       "search": {
-        "ethereum_name_service": "Ethereum Name Service",
+        "profiles": "Profiles",
         "search_ethereum": "Search all of Ethereum"
       },
       "strategies": {
@@ -361,12 +361,12 @@
         "description": "Description",
         "edit": "Edit",
         "in_showcase": "In Showcase",
+        "manager": "Manager",
         "opensea": "Opensea",
         "owner": "Owner",
-        "set_primary_name": "Set as primary ENS name",
+        "set_primary_name": "Set as my ENS name",
         "profile_info": "Profile Info",
         "properties": "Properties",
-        "registrant": "Registrant",
         "resolver": "Resolver",
         "showcase": "Showcase",
         "toast_added_to_showcase": "Added to showcase",
@@ -382,6 +382,9 @@
         "long_placeholder": "Name, ENS, or address",
         "short_placeholder": "ENS or address"
       }
+    },
+    "gas": {
+      "network_fee": "Est. network fee",
     },
     "homepage": {
       "back": "Back to rainbow.me",
@@ -573,14 +576,17 @@
       "actions": {
         "watching": "Watching",
         "watch": "Watch",
+        "unwatch_ens": "Unwatch %{ensName}",
+        "unwatch_ens_title": "Are you sure you want to unwatch %{ensName}?",
         "edit_profile": "Edit profile"
       },
       "banner": {
-        "register_name": "Register a .eth Name",
-        "and_create_ens_profile": "& create your ENS profile"
+        "register_name": "Create Your ENS Profile",
+        "and_create_ens_profile": "Search available .eth names"
       },
       "details": {
         "add_to_contacts": "Add to Contacts",
+        "remove_from_contacts": "Remove from Contacts",
         "copy_address": "Copy Address",
         "view_on_etherscan": "View on Etherscan"
       },
@@ -596,8 +602,8 @@
           "description": "Carry your ENS name and profile between websites. No more signups."
         },
         "stored_on_blockchain_info": {
-          "title": "Stored on the blockchain",
-          "description": "Your name and profile are stored on Ethereum and owned by you."
+          "title": "Stored on Ethereum",
+          "description": "Your profile is stored directly on Ethereum and owned by you."
         },
         "find_your_name": "Find your name",
         "use_name": "Use %{name}",
@@ -605,12 +611,12 @@
         "search_new_name": "Search for a new ENS name",
         "choose_another_name": "Choose another ENS name",
         "my_ens_names": "My ENS Names",
-        "search_new_ens": "Search for a New Name"
+        "search_new_ens": "Find a New Name"
       },
-      "select_ens_name": "Select ENS Name",
+      "select_ens_name": "My ENS Names",
       "search": {
         "header": "Find your name",
-        "description": "Search available profile names",
+        "description": "Search available ENS names",
         "available": "🥳 Available",
         "taken": "😭 Taken",
         "registered_on": "This name was last registered on %{content}",
@@ -619,12 +625,12 @@
         "3_char_min": "Minimum 3 characters",
         "estimated_total_cost_1": "Estimated total cost of",
         "estimated_total_cost_2": "with current network fees",
-        "loading_fees": "Loading network fees...",
+        "loading_fees": "Loading network fees…",
         "clear": "􀅉 Clear",
-        "continue": "Continue on 􀆊"
+        "continue": "Continue 􀆊"
       },
       "create": {
-        "description": "Create your profile",
+        "label": "Create your profile",
         "add_cover": "Add Cover",
         "name": "Name",
         "bio": "Bio",
@@ -637,12 +643,12 @@
         "website_placeholder": "Add your website",
         "review": "Review",
         "cancel": "Cancel",
-        "choose_nft": "Choose NFT",
-        "upload_photo": "Upload photo",
+        "choose_nft": "Choose an NFT",
+        "upload_photo": "Upload a Photo",
         "eth": "Ethereum",
         "btc": "Bitcoin",
         "ltc": "Litecoin",
-        "doge": "Doge",
+        "doge": "Dogecoin",
         "wallet_placeholder": "Add a %{coin} address",
         "content": "Content",
         "content_placeholder": "Add a content hash",
@@ -686,7 +692,7 @@
         "new_expiration_date": "New expiration date",
         "extend_by": "Extend by",
         "registration_cost": "Registration cost",
-        "current_fees": "Current network fee",
+        "estimated_fees": "Estimated network fees",
         "estimated_total_eth": "Estimated total in ETH",
         "estimated_total": "Estimated total",
         "duration_plural": "%{content} years",
@@ -701,6 +707,9 @@
         "transaction_pending_description": "You’ll be taken to the next step automatically when this transaction confirms on the blockchain",
         "wait_one_minute": "Wait for one minute",
         "wait_one_minute_description": "This waiting period ensures that another person can’t register this name before you do"
+      },
+      "edit": {
+        "label": "Edit your profile"
       },
       "profile_avatar": {
         "choose_from_library": "Choose from Library",

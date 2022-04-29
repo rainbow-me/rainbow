@@ -1,5 +1,6 @@
 import { useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
+import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
 import Animated, {
@@ -9,7 +10,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { useRecoilState } from 'recoil';
-import { MiniButton } from '../components/buttons';
+import { ButtonPressAnimation } from '../components/animations/';
 import TintButton from '../components/buttons/TintButton';
 import {
   RegistrationAvatar,
@@ -49,6 +50,7 @@ import {
   textRecordFields,
 } from '@rainbow-me/helpers/ens';
 import {
+  useENSModifiedRegistration,
   useENSRegistration,
   useENSRegistrationCosts,
   useENSRegistrationForm,
@@ -61,33 +63,41 @@ import Routes from '@rainbow-me/routes';
 
 const AnimatedBox = Animated.createAnimatedComponent(Box);
 
-export const BottomActionHeight = ios ? 270 : 250;
+export const BottomActionHeight = ios ? 281 : 250;
 
 export default function ENSAssignRecordsSheet() {
   const { params } = useRoute();
   const { colors } = useTheme();
+  const { name, mode } = useENSRegistration();
   const {
-    name,
-    mode,
     images: { avatarUrl: initialAvatarUrl },
-  } = useENSRegistration({
+  } = useENSModifiedRegistration({
+    modifyChangedRecords: true,
     setInitialRecordsWhenInEditMode: true,
-  });
-  useENSRegistrationForm({
-    defaultFields: [
-      ENS_RECORDS.displayName,
-      ENS_RECORDS.description,
-      ENS_RECORDS.twitter,
-      ENS_RECORDS.pronouns,
-    ].map(fieldName => textRecordFields[fieldName]),
-    initializeForm: true,
   });
 
   const { data: registrationData } = useENSSearch({
     name,
   });
-
   const { step } = useENSRegistrationStepHandler();
+
+  const defaultFields = useMemo(
+    () =>
+      [
+        ENS_RECORDS.displayName,
+        ENS_RECORDS.description,
+        ENS_RECORDS.url,
+        ENS_RECORDS.twitter,
+      ].map(fieldName => textRecordFields[fieldName]),
+    []
+  );
+  const { values } = useENSRegistrationForm({
+    defaultFields,
+    initializeForm: true,
+  });
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const isEmptyProfile = useMemo(() => isEmpty(values), []);
 
   useENSRegistrationCosts({
     name,
@@ -174,14 +184,18 @@ export default function ENSAssignRecordsSheet() {
           <Inset horizontal="19px">
             <Stack space="30px">
               <Stack alignHorizontal="center" space="15px">
-                <Heading size="26px" weight="heavy">
+                <Heading align="center" size="26px" weight="heavy">
                   {name}
                 </Heading>
-                {mode === REGISTRATION_MODES.CREATE && (
-                  <Text color="accent" size="16px" weight="heavy">
-                    {lang.t('profiles.create.description')}
-                  </Text>
-                )}
+                <Text align="center" color="accent" size="16px" weight="heavy">
+                  {lang.t(
+                    `profiles.${
+                      mode === REGISTRATION_MODES.EDIT && !isEmptyProfile
+                        ? 'edit'
+                        : 'create'
+                    }.label`
+                  )}
+                </Text>
               </Stack>
               <Box flexGrow={1}>
                 <TextRecordsForm
@@ -189,6 +203,7 @@ export default function ENSAssignRecordsSheet() {
                   onAutoFocusLayout={handleAutoFocusLayout}
                   onError={handleError}
                   onFocus={handleFocus}
+                  selectionColor={accentColor}
                 />
               </Box>
             </Stack>
@@ -199,14 +214,18 @@ export default function ENSAssignRecordsSheet() {
   );
 }
 
-export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
+export function ENSAssignRecordsBottomActions({
+  visible: defaultVisible,
+  previousRouteName,
+  currentRouteName,
+}) {
   const { navigate, goBack } = useNavigation();
   const keyboardHeight = useKeyboardHeight();
   const { colors } = useTheme();
-
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
-
-  const { mode, profileQuery } = useENSRegistration();
+  const { mode } = useENSRegistration();
+  const { profileQuery } = useENSModifiedRegistration();
+  const [fromRoute, setFromRoute] = useState(previousRouteName);
   const {
     disabled,
     isEmpty,
@@ -219,9 +238,22 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
 
   const handlePressBack = useCallback(() => {
     delayNext();
-    navigate(Routes.ENS_SEARCH_SHEET);
+    navigate(fromRoute);
     setAccentColor(colors.purple);
-  }, [colors.purple, navigate, setAccentColor]);
+  }, [colors.purple, fromRoute, navigate, setAccentColor]);
+
+  const hasBackButton = useMemo(
+    () =>
+      fromRoute === Routes.ENS_SEARCH_SHEET ||
+      fromRoute === Routes.ENS_INTRO_SHEET,
+    [fromRoute]
+  );
+
+  useEffect(() => {
+    if (previousRouteName !== currentRouteName) {
+      setFromRoute(previousRouteName);
+    }
+  }, [currentRouteName, previousRouteName]);
 
   const handlePressContinue = useCallback(() => {
     submit(() => {
@@ -300,16 +332,18 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
                         ignorePaddingBottom: true,
                         paddingBottom: 8,
                       }
-                    : {})}
+                    : {
+                        ignorePaddingBottom: true,
+                        paddingBottom: 36,
+                      })}
                 >
-                  {mode === REGISTRATION_MODES.CREATE && (
-                    <TintButton color="secondary60" onPress={handlePressBack}>
+                  {hasBackButton && (
+                    <TintButton onPress={handlePressBack}>
                       {lang.t('profiles.create.back')}
                     </TintButton>
                   )}
                   {isEmpty && mode === REGISTRATION_MODES.CREATE ? (
                     <TintButton
-                      color="secondary60"
                       disabled={disabled}
                       onPress={handlePressContinue}
                       testID="ens-assign-records-skip"
@@ -329,8 +363,7 @@ export function ENSAssignRecordsBottomActions({ visible: defaultVisible }) {
                         />
                       ) : (
                         <TintButton
-                          color="secondary60"
-                          onPress={goBack}
+                          onPress={() => goBack()}
                           testID="ens-assign-records-cancel"
                         >
                           {lang.t(`profiles.create.cancel`)}
@@ -374,16 +407,23 @@ function HideKeyboardButton({ color }) {
 
   return (
     <AnimatedBox style={style}>
-      <MiniButton
-        backgroundColor={color}
-        disablePadding
-        height={30}
-        onPress={() => Keyboard.dismiss()}
-        style={useMemo(() => ({ height: 30, width: 30 }), [])}
-        width={30}
-      >
-        􀆈
-      </MiniButton>
+      <ButtonPressAnimation onPress={() => Keyboard.dismiss()} scaleTo={0.8}>
+        <AccentColorProvider color={color}>
+          <Box
+            background="accent"
+            borderRadius={15}
+            height={{ custom: 30 }}
+            shadow="15px light"
+            width={{ custom: 30 }}
+          >
+            <Cover alignHorizontal="center" alignVertical="center">
+              <Text align="center" color="primary" size="14px" weight="heavy">
+                􀆈
+              </Text>
+            </Cover>
+          </Box>
+        </AccentColorProvider>
+      </ButtonPressAnimation>
     </AnimatedBox>
   );
 }
@@ -480,7 +520,7 @@ function SelectableAttributesButtons({
         onSelect={navigateToAdditionalRecords}
         testID="ens-selectable-attribute-dots"
       >
-        ...
+        􀍠
       </SelectableButton>
     </Inline>
   );

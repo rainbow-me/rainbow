@@ -17,7 +17,7 @@ import {
 import { UniqueAsset } from '@rainbow-me/entities';
 import { UploadImageReturnData } from '@rainbow-me/handlers/pinata';
 import {
-  useENSRegistration,
+  useENSModifiedRegistration,
   useENSRegistrationForm,
   useSelectImageMenu,
 } from '@rainbow-me/hooks';
@@ -42,7 +42,7 @@ const RegistrationAvatar = ({
 }) => {
   const {
     images: { avatarUrl: initialAvatarUrl },
-  } = useENSRegistration();
+  } = useENSModifiedRegistration();
   const {
     isLoading,
     values,
@@ -154,11 +154,11 @@ const RegistrationAvatar = ({
             <AccentColorProvider color={accentColor + '10'}>
               <Box
                 alignItems="center"
-                background="accent"
+                background={avatarUrl ? 'body' : 'accent'}
                 borderRadius={size / 2}
                 height={{ custom: size }}
                 justifyContent="center"
-                shadow="12px heavy accent"
+                shadow={avatarUrl ? '15px light' : undefined}
                 width={{ custom: size }}
               >
                 {avatarUrl ? (

@@ -46,26 +46,25 @@ const BackgroundGradient = styled(RadialGradient).attrs(
 });
 
 const SearchIcon = styled(Text).attrs(({ theme: { colors } }) => ({
-  color: colors.alpha(colors.blueGreyDark, 0.5),
+  color: colors.alpha(colors.blueGreyDark, 0.6),
   size: 'large',
   weight: 'semibold',
 }))({});
 
 const SearchIconWrapper = styled(Animated.View)({
-  marginTop: android ? 5 : 8,
+  marginTop: android ? 6 : 9,
 });
 
 const SearchInput = styled(Input).attrs(
   ({ theme: { colors }, isSearchModeEnabled, clearTextOnFocus }) => ({
-    autoCapitalize: 'words',
     blurOnSubmit: false,
     clearTextOnFocus,
     color: colors.alpha(colors.blueGreyDark, 0.8),
     enablesReturnKeyAutomatically: true,
     keyboardAppearance: 'dark',
     keyboardType: 'ascii-capable',
-    lineHeight: 'loose',
-    placeholderTextColor: colors.alpha(colors.blueGreyDark, 0.5),
+    lineHeight: 'looserLoose',
+    placeholderTextColor: colors.alpha(colors.blueGreyDark, 0.6),
     returnKeyType: 'search',
     selectionColor: isSearchModeEnabled ? colors.appleBlue : colors.transparent,
     size: 'large',
@@ -75,9 +74,9 @@ const SearchInput = styled(Input).attrs(
 )({
   ...(android ? { marginBottom: -10, marginTop: -6 } : {}),
   flex: 1,
-  height: ios ? 38 : 56,
+  height: ios ? 39 : 56,
   marginBottom: 1,
-  marginLeft: ({ isSearchModeEnabled }) => (isSearchModeEnabled ? 3 : 0),
+  marginLeft: ({ isSearchModeEnabled }) => (isSearchModeEnabled ? 4 : 0),
   textAlign: ({ isSearchModeEnabled }) =>
     isSearchModeEnabled ? 'left' : 'center',
 });
@@ -95,7 +94,7 @@ const SearchSpinnerWrapper = styled(Animated.View)({
   height: 20,
   left: 12,
   position: 'absolute',
-  top: 9.5,
+  top: 10,
   width: 20,
 });
 
@@ -117,7 +116,7 @@ const ExchangeSearch = (
     onFocus,
     searchQuery,
     testID,
-    placeholderText = lang.t('button.exchange_search_uniswap'),
+    placeholderText = lang.t('button.exchange_search_placeholder'),
     clearTextOnFocus = true,
   },
   ref

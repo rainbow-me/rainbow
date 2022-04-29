@@ -21,6 +21,7 @@ import { ButtonPressAnimation } from '../../animations';
 import { useDimensions } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
+import { safeAreaInsetValues } from '@rainbow-me/utils';
 
 const adjustConfig = {
   duration: 300,
@@ -38,9 +39,10 @@ const exitConfig = {
 };
 const GestureBlocker = styled(View)({
   height: ({ height }) => height * 3,
-  left: ({ xOffset }) => -xOffset,
+  left: ({ containerWidth, width, xOffset }) =>
+    -(xOffset || (width - containerWidth) / 2),
   position: 'absolute',
-  top: ({ yOffset }) => -yOffset * 3,
+  top: ({ height }) => -height,
   width: ({ width }) => width,
 });
 
@@ -81,6 +83,8 @@ export const ZoomableWrapper = ({
   aspectRatio,
   borderRadius,
   disableAnimations,
+  disableEnteringWithPinch,
+  hideStatusBar = true,
   onZoomIn = () => {},
   onZoomInWorklet = () => {},
   onZoomOut = () => {},
@@ -97,7 +101,11 @@ export const ZoomableWrapper = ({
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const yDisplacement = givenYDisplacement || useSharedValue(0);
 
-  const { height: deviceHeight, width: deviceWidth } = useDimensions();
+  let { height: deviceHeight, width: deviceWidth } = useDimensions();
+
+  if (!hideStatusBar) {
+    deviceHeight = deviceHeight - safeAreaInsetValues.top;
+  }
 
   const maxImageWidth = width || deviceWidth - horizontalPadding * 2;
   const maxImageHeight = height || deviceHeight / 2;
@@ -136,11 +144,19 @@ export const ZoomableWrapper = ({
   const isZoomedValue = useSharedValue(false);
 
   useEffect(() => {
+    if (hideStatusBar) {
+      if (isZoomed) {
+        StatusBar.setHidden(true);
+      } else {
+        StatusBar.setHidden(false);
+      }
+    }
+  }, [hideStatusBar, isZoomed]);
+
+  useEffect(() => {
     if (isZoomed) {
-      StatusBar.setHidden(true);
       onZoomIn?.();
     } else {
-      StatusBar.setHidden(false);
       onZoomOut?.();
     }
   }, [isZoomed, onZoomIn, onZoomOut]);
@@ -164,7 +180,9 @@ export const ZoomableWrapper = ({
         {
           translateY:
             animationProgress.value *
-            (yDisplacement.value + (deviceHeight - fullSizeHeight) / 2 - 85),
+            (yDisplacement.value +
+              (deviceHeight - fullSizeHeight) / 2 -
+              (hideStatusBar ? 85 : 68)),
         },
         {
           translateY:
@@ -185,7 +203,7 @@ export const ZoomableWrapper = ({
         },
       ],
     };
-  }, [fullSizeHeight, fullSizeWidth]);
+  }, [fullSizeHeight, fullSizeWidth, hideStatusBar]);
 
   const cornerStyle = useAnimatedStyle(() => ({
     borderRadius: (1 - animationProgress.value) * (borderRadius ?? 16),
@@ -334,18 +352,26 @@ export const ZoomableWrapper = ({
       isZoomedValue.value &&
       targetScale > breakingScaleX
     ) {
-      const projectedYCoordinate = targetTranslateY + event.velocityY / 8;
+      const projectedYCoordinate =
+        targetTranslateY +
+        event.velocityY /
+          8 /
+          (fullSizeHeight / (containerHeightValue.value ?? 1));
       const edgeBounceConfig = {
         damping: 60,
         mass: 2,
         stiffness: 600,
-        velocity: event.velocityY,
+        velocity:
+          event.velocityY /
+          (fullSizeHeight / (containerHeightValue.value ?? 1)),
       };
       const flingConfig = {
         damping: 120,
         mass: 2,
         stiffness: 600,
-        velocity: event.velocityY,
+        velocity:
+          event.velocityY /
+          (fullSizeHeight / (containerHeightValue.value ?? 1)),
       };
       if (projectedYCoordinate > maxDisplacementY) {
         translateY.value = withSpring(maxDisplacementY, edgeBounceConfig);
@@ -361,18 +387,26 @@ export const ZoomableWrapper = ({
       isZoomedValue.value &&
       targetScale > breakingScaleX
     ) {
-      const projectedXCoordinate = targetTranslateX + event.velocityX / 8;
+      const projectedXCoordinate =
+        targetTranslateX +
+        event.velocityX /
+          8 /
+          (fullSizeHeight / (containerHeightValue.value ?? 1));
       const edgeBounceConfig = {
         damping: 60,
         mass: 2,
         stiffness: 600,
-        velocity: event.velocityX,
+        velocity:
+          event.velocityX /
+          (fullSizeHeight / (containerHeightValue.value ?? 1)),
       };
       const flingConfig = {
         damping: 120,
         mass: 2,
         stiffness: 600,
-        velocity: event.velocityX,
+        velocity:
+          event.velocityX /
+          (fullSizeHeight / (containerHeightValue.value ?? 1)),
       };
       if (projectedXCoordinate > maxDisplacementX) {
         translateX.value = withSpring(maxDisplacementX, edgeBounceConfig);
@@ -589,14 +623,13 @@ export const ZoomableWrapper = ({
 
   return (
     <ButtonPressAnimation
-      disabled={disableAnimations}
       enableHapticFeedback={false}
       onPress={() => {}}
       scaleTo={1}
       style={{ alignItems: 'center', zIndex: 1 }}
     >
       <PanGestureHandler
-        enabled={!disableAnimations}
+        enabled={!disableAnimations && (!disableEnteringWithPinch || isZoomed)}
         maxPointers={2}
         minPointers={isZoomed ? 1 : 2}
         onGestureEvent={panGestureHandler}
@@ -614,6 +647,7 @@ export const ZoomableWrapper = ({
             >
               <ZoomContainer height={containerHeight} width={containerWidth}>
                 <GestureBlocker
+                  containerWidth={containerWidth}
                   height={deviceHeight}
                   pointerEvents={isZoomed ? 'auto' : 'none'}
                   width={deviceWidth}
@@ -637,7 +671,10 @@ export const ZoomableWrapper = ({
                       style={[containerStyle, StyleSheet.absoluteFillObject]}
                     >
                       <PinchGestureHandler
-                        enabled={!disableAnimations}
+                        enabled={
+                          !disableAnimations &&
+                          (!disableEnteringWithPinch || isZoomed)
+                        }
                         onGestureEvent={pinchGestureHandler}
                         ref={pinch}
                         simultaneousHandlers={[pan]}

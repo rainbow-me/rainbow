@@ -86,6 +86,7 @@ export default function InfoRow({
 
   const [show, setShow] = useState(isImage);
   const [isMultiline, setIsMultiline] = useState(false);
+  const isSwitch = switchValue !== undefined;
 
   const { navigate } = useNavigation();
   const handlePressExplain = useCallback(() => {
@@ -102,7 +103,7 @@ export default function InfoRow({
             </Text>
             {explainSheetType && (
               <ButtonPressAnimation onPress={handlePressExplain}>
-                <Text color="secondary20" size="16px" weight="bold">
+                <Text color="secondary25" size="16px" weight="bold">
                   􀅵
                 </Text>
               </ButtonPressAnimation>
@@ -115,7 +116,10 @@ export default function InfoRow({
           {isImage ? (
             <>
               {value && (
-                <ImagePreviewOverlayTarget aspectRatioType="cover">
+                <ImagePreviewOverlayTarget
+                  aspectRatioType="cover"
+                  imageUrl={value}
+                >
                   <Box as={ImgixImage} height="full" source={{ uri: value }} />
                 </ImagePreviewOverlayTarget>
               )}
@@ -133,14 +137,12 @@ export default function InfoRow({
                 setShow(true);
               }}
               padding={
-                (switchValue !== undefined
-                  ? '0px'
-                  : isMultiline
-                  ? '15px'
-                  : '10px') as Space
+                (isSwitch ? '0px' : isMultiline ? '15px' : '10px') as Space
               }
               style={{
-                backgroundColor: useAccentColor
+                backgroundColor: isSwitch
+                  ? 'transparent'
+                  : useAccentColor
                   ? accentColor + '10'
                   : 'rgba(255, 255, 255, 0.08)',
                 opacity: show ? 1 : 0,
@@ -148,9 +150,9 @@ export default function InfoRow({
             >
               <Inline alignVertical="center" space="6px">
                 {icon && (
-                  <Bleed vertical="2px">
+                  <Bleed vertical="6px">
                     <Icon
-                      color={colors.white}
+                      color={colors.whiteLabel}
                       height="18"
                       name={icon}
                       width="18"
@@ -159,14 +161,15 @@ export default function InfoRow({
                 )}
                 {value && (
                   <Text
+                    align={isMultiline ? 'left' : 'center'}
                     color={useAccentColor ? 'accent' : undefined}
                     containsEmoji
-                    weight="semibold"
+                    weight={isMultiline ? 'semibold' : 'bold'}
                   >
                     {value}
                   </Text>
                 )}
-                {switchValue !== undefined && (
+                {isSwitch && (
                   <Switch
                     disabled={switchDisabled || switchValue}
                     onValueChange={onSwitchChange}

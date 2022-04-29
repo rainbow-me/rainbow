@@ -32,6 +32,7 @@ export default function IntroMarquee() {
         descriptionProfilePreviewHeight: estimateDescriptionProfilePreviewHeight(
           introMarqueeProfiles[ensName]
         ),
+        fromDiscover: true,
       });
     },
     [introMarqueeProfiles, navigate]
@@ -79,7 +80,7 @@ export default function IntroMarquee() {
       <MarqueeList
         items={items}
         renderItem={renderItem}
-        speed={10}
+        speed={-15}
         testID="ens-names-marquee"
       />
     </Box>
@@ -112,21 +113,26 @@ function ENSAvatarPlaceholder({
       onPressCancel={onPressCancel}
       onPressStart={onPressStart}
       reanimatedButton={false}
-      scaleTo={0.95}
+      scaleTo={0.8}
       testID={testID}
     >
-      <Box paddingHorizontal="8px" testID={testID}>
-        <Stack alignHorizontal="center" space="15px">
+      <Box paddingHorizontal="12px">
+        <Stack alignHorizontal="center" space={{ custom: 13 }}>
           <Box
             as={ImgixImage}
-            background="action"
+            background="body"
             borderRadius={80}
             height={{ custom: 80 }}
-            shadow="21px light"
+            shadow="15px light"
             source={{ uri: ensAvatarUrl(name) }}
             width={{ custom: 80 }}
           />
-          <Text align="center" color="secondary70" size="14px" weight="medium">
+          <Text
+            align="center"
+            color="secondary50"
+            size="12px"
+            weight="semibold"
+          >
             {name}
           </Text>
         </Stack>
