@@ -23,13 +23,9 @@ const ACTIONS = {
 export default function MoreButton({
   address,
   ensName,
-  avatarUrl,
-  emoji,
 }: {
   address?: string;
   ensName?: string;
-  avatarUrl?: string | null;
-  emoji?: string | null;
 }) {
   const { navigate } = useNavigation();
   const { setClipboard } = useClipboard();

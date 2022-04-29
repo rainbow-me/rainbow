@@ -71,7 +71,6 @@ export default function ProfileSheetHeader({
                   <ActionButtons
                     address={profileAddress}
                     avatarUrl={avatarUrl}
-                    emoji={emoji}
                     ensName={ensName}
                   />
                 </Inset>

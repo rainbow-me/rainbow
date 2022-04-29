@@ -47,7 +47,6 @@ import {
   useTransactionConfirmation,
   useUpdateAssetOnchainBalance,
   useUserAccounts,
-  useWallets,
 } from '@rainbow-me/hooks';
 import { sendTransaction } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
@@ -110,7 +109,6 @@ export default function SendSheet(props) {
     updateTxFee,
   } = useGas();
   const recipientFieldRef = useRef();
-  const { walletNames } = useWallets();
 
   const { contacts, onRemoveContact, filteredContacts } = useContacts();
   const { userAccounts, watchedAccounts } = useUserAccounts();

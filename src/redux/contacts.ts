@@ -100,9 +100,9 @@ export const contactsAddOrUpdate = (
     [loweredAddress]: {
       address: loweredAddress,
       color,
+      ens,
       network,
       nickname,
-      ens,
     },
   };
   saveContacts(updatedContacts);

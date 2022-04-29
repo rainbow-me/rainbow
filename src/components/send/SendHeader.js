@@ -124,11 +124,10 @@ export default function SendHeader({
     android && Keyboard.dismiss();
     navigate(Routes.MODAL_SCREEN, {
       additionalPadding: true,
-      address: isEmpty(contact.address) ? recipient : contact.address,
+      address: hexAddress,
       color,
-      contact: isEmpty(contact.address)
-        ? { color, nickname, temporary: true }
-        : contact,
+      ens: recipient,
+      nickname,
       onRefocusInput,
       type: 'contact_profile',
     });

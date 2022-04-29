@@ -4,28 +4,31 @@ import {
   returnStringFirstEmoji,
 } from '../../helpers/emojiHandler';
 import { abbreviations, magicMemo, profileUtils } from '../../utils';
-import useExperimentalFlag, {
-  PROFILES,
-} from '@rainbow-me/config/experimentalHooks';
-import {
-  addressHashedColorIndex,
-  addressHashedEmoji,
-} from '@rainbow-me/utils/profileUtils';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText } from '../coin-row';
 import { Column, RowWithMargins } from '../layout';
 import { TruncatedAddress, TruncatedENS, TruncatedText } from '../text';
 import ContactAvatar from './ContactAvatar';
 import ImageAvatar from './ImageAvatar';
-import { useContacts, useENSProfileRecords } from '@rainbow-me/hooks';
+import useExperimentalFlag, {
+  PROFILES,
+} from '@rainbow-me/config/experimentalHooks';
 import { fetchReverseRecord } from '@rainbow-me/handlers/ens';
 import {
   isENSAddressFormat,
   isValidDomainFormat,
 } from '@rainbow-me/helpers/validators';
-import { useDimensions } from '@rainbow-me/hooks';
+import {
+  useContacts,
+  useDimensions,
+  useENSProfileRecords,
+} from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { margin } from '@rainbow-me/styles';
+import {
+  addressHashedColorIndex,
+  addressHashedEmoji,
+} from '@rainbow-me/utils/profileUtils';
 
 const ContactAddress = styled(TruncatedAddress).attrs(
   ({ theme: { colors }, lite }) => ({
@@ -94,7 +97,7 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
   const [ensName, setENSName] = useState(ens);
 
   useEffect(() => {
-    if (profilesEnabled && accountType !== 'contacts') {
+    if (profilesEnabled && accountType === 'contacts') {
       const fetchENSName = async () => {
         const name = await fetchReverseRecord(address);
         if (name !== ensName) {
@@ -109,9 +112,9 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
     address,
     color,
     ensName,
-    fetchReverseRecord,
     network,
     nickname,
+    onAddOrUpdateContacts,
     profilesEnabled,
     setENSName,
   ]);

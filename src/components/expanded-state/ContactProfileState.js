@@ -7,10 +7,6 @@ import { useNavigation } from '../../navigation/Navigation';
 import { abbreviations, magicMemo, profileUtils } from '../../utils';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
-import {
-  addressHashedColorIndex,
-  addressHashedEmoji,
-} from '@rainbow-me/utils/profileUtils';
 import { Button } from '../buttons';
 import { showDeleteContactActionSheet } from '../contacts';
 import CopyTooltip from '../copy-tooltip';
@@ -35,6 +31,10 @@ import {
 import { ImgixImage } from '@rainbow-me/images';
 import styled from '@rainbow-me/styled-components';
 import { borders, margin, padding } from '@rainbow-me/styles';
+import {
+  addressHashedColorIndex,
+  addressHashedEmoji,
+} from '@rainbow-me/utils/profileUtils';
 import ShadowStack from 'react-native-shadow-stack';
 
 const AddressAbbreviation = styled(TruncatedAddress).attrs(
