@@ -479,7 +479,7 @@ export default function ChangeWalletSheet() {
                   logger.sentry('Error while trying to add account');
                   captureException(e);
                   const matched = matchError(e);
-                  //can face any of keychainErrKey err
+                  //can handle any of keychainErrKey|cloud err
                   const alertContent = match(
                     false,
                     [

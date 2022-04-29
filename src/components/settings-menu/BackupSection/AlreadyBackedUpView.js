@@ -91,7 +91,7 @@ const Title = styled(Text).attrs({
   paddingHorizontal: 11,
 });
 
-const onError = error => DelayedAlert({ title: error }, 500);
+const onError = error => DelayedAlert({ title: error.message }, 500);
 
 export default function AlreadyBackedUpView() {
   const { navigate } = useNavigation();

@@ -235,10 +235,10 @@ export default function BackupCloudStep() {
   );
 
   const onError = useCallback(
-    msg => {
+    error => {
       setTimeout(onPasswordSubmit, 1000);
       setIsWalletLoading(null);
-      DelayedAlert({ title: msg }, 500);
+      DelayedAlert({ title: error.message }, 500);
     },
     [onPasswordSubmit, setIsWalletLoading]
   );

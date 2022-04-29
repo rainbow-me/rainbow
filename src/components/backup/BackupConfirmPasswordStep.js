@@ -134,10 +134,10 @@ export default function BackupConfirmPasswordStep() {
   );
 
   const onError = useCallback(
-    msg => {
+    error => {
       passwordRef.current?.focus();
       setIsWalletLoading(null);
-      DelayedAlert({ title: msg }, 500);
+      DelayedAlert({ title: error.message }, 500);
     },
     [setIsWalletLoading]
   );

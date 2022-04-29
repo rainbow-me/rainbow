@@ -7,6 +7,7 @@ import { RAINBOW_MASTER_KEY } from 'react-native-dotenv';
 import RNFS from 'react-native-fs';
 import AesEncryptor from '../handlers/aesEncryption';
 import { logger } from '../utils';
+import { errorsCode } from '@rainbow-me/utils/matchError';
 const REMOTE_BACKUP_WALLET_DIR = 'rainbow.me/wallet-backups';
 const USERDATA_FILE = 'UserData.json';
 const encryptor = new AesEncryptor();
@@ -19,7 +20,7 @@ export const CLOUD_BACKUP_ERRORS = {
   KEYCHAIN_ACCESS_ERROR: `Couldn't read items from keychain`,
   NO_BACKUPS_FOUND: 'No backups found',
   SPECIFIC_BACKUP_NOT_FOUND: 'No backup found with that name',
-  UKNOWN_ERROR: 'Unknown Error',
+  UNKNOWN_ERROR: 'Unknown Error',
   WALLET_BACKUP_STATUS_UPDATE_FAILED: 'Update wallet backup status failed',
 };
 
@@ -99,7 +100,7 @@ export async function encryptAndSaveDataToCloud(
       logger.sentry('Backup doesnt exist after completion');
       const error = new Error(CLOUD_BACKUP_ERRORS.INTEGRITY_CHECK_FAILED);
       captureException(error);
-      throw error;
+      throw errorsCode.CLOUD_BACKUP_INTEGRITY_CHECK_FAILED;
     }
 
     await RNFS.unlink(path);
@@ -107,7 +108,7 @@ export async function encryptAndSaveDataToCloud(
   } catch (e) {
     logger.sentry('Error during encryptAndSaveDataToCloud', e);
     captureException(e);
-    throw new Error(CLOUD_BACKUP_ERRORS.GENERAL_ERROR);
+    throw errorsCode.CLOUD_BACKUP_GENERAL_ERROR;
   }
 }
 
@@ -140,7 +141,7 @@ export async function getDataFromCloud(backupPassword: any, filename = null) {
     logger.sentry('No backups found');
     const error = new Error(CLOUD_BACKUP_ERRORS.NO_BACKUPS_FOUND);
     captureException(error);
-    throw error;
+    throw errorsCode.CLOUD_BACKUP_NO_BACKUPS_FOUND;
   }
 
   let document;
@@ -161,7 +162,7 @@ export async function getDataFromCloud(backupPassword: any, filename = null) {
       logger.sentry('No backup found with that name!', filename);
       const error = new Error(CLOUD_BACKUP_ERRORS.SPECIFIC_BACKUP_NOT_FOUND);
       captureException(error);
-      throw error;
+      throw errorsCode.CLOUD_BACKUP_SPECIFIC_BACKUP_NOT_FOUND;
     }
   } else {
     const sortedBackups = sortBy(backups.files, 'lastModified').reverse();
@@ -184,13 +185,13 @@ export async function getDataFromCloud(backupPassword: any, filename = null) {
       logger.sentry('We couldnt decrypt the data');
       const error = new Error(CLOUD_BACKUP_ERRORS.ERROR_DECRYPTING_DATA);
       captureException(error);
-      throw error;
+      throw errorsCode.CLOUD_BACKUP_ERROR_DECRYPTING_DATA;
     }
   }
   logger.sentry('We couldnt get the encrypted data');
   const error = new Error(CLOUD_BACKUP_ERRORS.ERROR_GETTING_ENCRYPTED_DATA);
   captureException(error);
-  throw error;
+  throw errorsCode.CLOUD_BACKUP_ERROR_GETTING_ENCRYPTED_DATA;
 }
 
 export async function backupUserDataIntoCloud(data: any) {

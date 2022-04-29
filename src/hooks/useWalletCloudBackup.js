@@ -13,31 +13,49 @@ import {
 import { setWalletBackedUp } from '../redux/wallets';
 import { cloudPlatform } from '../utils/platform';
 import useWallets from './useWallets';
-import {
-  CLOUD_BACKUP_ERRORS,
-  isCloudBackupAvailable,
-} from '@rainbow-me/handlers/cloudBackup';
+import { isCloudBackupAvailable } from '@rainbow-me/handlers/cloudBackup';
 import { delay } from '@rainbow-me/helpers/utilities';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import walletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
+import match from '@rainbow-me/utils/match';
+import { errorsCode, matchError } from '@rainbow-me/utils/matchError';
 import logger from 'logger';
 
-function getUserError(e) {
-  switch (e.message) {
-    case CLOUD_BACKUP_ERRORS.KEYCHAIN_ACCESS_ERROR:
-      return 'You need to authenticate to proceed with the Backup process';
-    case CLOUD_BACKUP_ERRORS.ERROR_DECRYPTING_DATA:
-      return 'Incorrect password! Please try again.';
-    case CLOUD_BACKUP_ERRORS.NO_BACKUPS_FOUND:
-    case CLOUD_BACKUP_ERRORS.SPECIFIC_BACKUP_NOT_FOUND:
-      return `We couldn't find your previous backup!`;
-    case CLOUD_BACKUP_ERRORS.ERROR_GETTING_ENCRYPTED_DATA:
-      return `We couldn't access your backup at this time. Please try again later.`;
-    default:
-      return `Error while trying to backup. Error code: ${values(
-        CLOUD_BACKUP_ERRORS
-      ).indexOf(e.message)}`;
-  }
+function getUserError(matched) {
+  const errorText = match(
+    '',
+    [
+      matched.CLOUD_BACKUP_ERROR_DECRYPTING_DATA,
+      'Incorrect password! Please try again.',
+    ],
+    [
+      matched.CLOUD_BACKUP_ERROR_GETTING_ENCRYPTED_DATA,
+      `We couldn't access your backup at this time. Please try again later.`,
+    ],
+    [matched.CLOUD_BACKUP_GENERAL_ERROR, 'Backup failed'],
+    [
+      matched.CLOUD_BACKUP_INTEGRITY_CHECK_FAILED,
+      'Backup integrity check failed',
+    ],
+    [
+      matched.CLOUD_BACKUP_KEYCHAIN_ACCESS_ERROR,
+      'You need to authenticate to proceed with the Backup process',
+    ],
+    [
+      matched.CLOUD_BACKUP_NO_BACKUPS_FOUND,
+      `We couldn't find your previous backup!`,
+    ],
+    [
+      matched.CLOUD_BACKUP_SPECIFIC_BACKUP_NOT_FOUND,
+      `We couldn't find your previous backup!`,
+    ],
+    [matched.CLOUD_BACKUP_UNKNOWN_ERROR, 'Unknown Error'],
+    [
+      matched.CLOUD_BACKUP_WALLET_BACKUP_STATUS_UPDATE_FAILED,
+      'Update wallet backup status failed',
+    ]
+  );
+  return errorText;
 }
 
 export default function useWalletCloudBackup() {
@@ -142,15 +160,16 @@ export default function useWalletCloudBackup() {
           );
         }
       } catch (e) {
-        const userError = getUserError(e);
-        onError && onError(userError);
+        const matched = matchError(e);
+        const errorText = getUserError(matched);
+        onError && onError({ errorCode: e, message: errorText });
         logger.sentry(
           `error while trying to backup wallet to ${cloudPlatform}`
         );
         captureException(e);
         analytics.track(`Error during ${cloudPlatform} Backup`, {
           category: 'backup',
-          error: userError,
+          error: errorText,
           label: cloudPlatform,
         });
         return null;
@@ -170,10 +189,17 @@ export default function useWalletCloudBackup() {
       } catch (e) {
         logger.sentry('error while trying to save wallet backup state');
         captureException(e);
-        const userError = getUserError(
-          new Error(CLOUD_BACKUP_ERRORS.WALLET_BACKUP_STATUS_UPDATE_FAILED)
+
+        const matched = matchError(
+          errorsCode.CLOUD_BACKUP_WALLET_BACKUP_STATUS_UPDATE_FAILED
         );
-        onError && onError(userError);
+        const errorText = getUserError(matched);
+        onError &&
+          onError({
+            errorCode:
+              errorsCode.CLOUD_BACKUP_WALLET_BACKUP_STATUS_UPDATE_FAILED,
+            message: errorText,
+          });
         analytics.track('Error updating Backup status', {
           category: 'backup',
           label: cloudPlatform,
