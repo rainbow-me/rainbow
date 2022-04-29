@@ -191,8 +191,6 @@ export default function SendHeader({
     [contact.nickname, userWallet?.label]
   );
 
-  console.log(recipient);
-
   return (
     <Fragment>
       <SheetHandleFixedToTop />

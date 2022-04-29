@@ -89,7 +89,6 @@ export default function MoreButton({
         ethereumUtils.openAddressInBlockExplorer(address);
       }
       if (actionKey === ACTIONS.ADD_CONTACT) {
-        console.log(currentContact);
         navigate(Routes.MODAL_SCREEN, {
           address,
           contact: currentContact,

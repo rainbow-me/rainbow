@@ -70,12 +70,12 @@ const Spacer = styled.View({
 const SubmitButton = styled(Button).attrs(
   ({ theme: { colors }, value, color }) => ({
     backgroundColor:
-      value.length > 0
+      value?.length > 0
         ? typeof color === 'string'
           ? color
           : colors.avatarBackgrounds[color] || colors.appleBlue
         : undefined,
-    disabled: !value.length > 0,
+    disabled: !value?.length > 0,
     showShadow: true,
     size: 'small',
   })
@@ -85,7 +85,7 @@ const SubmitButton = styled(Button).attrs(
 });
 
 const SubmitButtonLabel = styled(Text).attrs(({ value }) => ({
-  color: value.length > 0 ? 'whiteLabel' : 'white',
+  color: value?.length > 0 ? 'whiteLabel' : 'white',
   size: 'lmedium',
   weight: 'bold',
 }))({

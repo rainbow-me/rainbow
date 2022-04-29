@@ -116,7 +116,6 @@ export const removeContact = (address: string) => (
   getState: AppGetState
 ) => {
   const { contacts } = getState().contacts;
-  console.log(address);
   const updatedContacts = omit(contacts, toLower(address));
   saveContacts(updatedContacts);
   dispatch({
