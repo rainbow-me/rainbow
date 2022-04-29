@@ -195,12 +195,14 @@ export default function SendHeader({
   return (
     <Fragment>
       <SheetHandleFixedToTop />
-      {isTinyPhone ? null : <SendSheetTitle>Send</SendSheetTitle>}
+      {isTinyPhone ? null : (
+        <SendSheetTitle>{lang.t('contacts.send_header')}</SendSheetTitle>
+      )}
       <AddressInputContainer
         isSmallPhone={isSmallPhone}
         isTinyPhone={isTinyPhone}
       >
-        <AddressFieldLabel>To:</AddressFieldLabel>
+        <AddressFieldLabel>{lang.t('contacts.to_header')}:</AddressFieldLabel>
         <AddressField
           address={recipient}
           autoFocus={!showAssetList}
@@ -232,7 +234,7 @@ export default function SendHeader({
                 }
                 weight="heavy"
               >
-                {isPreExistingContact ? '􀍡' : ' 􀉯 Save'}
+                {isPreExistingContact ? '􀍡' : ` 􀉯 ${lang.t('button.save')}`}
               </Text>
             </ButtonPressAnimation>
           )}

@@ -1,6 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import { captureException } from '@sentry/react-native';
 import { BigNumber } from 'ethers';
+import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, {
   Fragment,
@@ -357,8 +358,8 @@ export default function SpeedUpAndCancelSheet() {
           captureException(speedUpOrCancelError);
           if (type === SPEED_UP) {
             Alert.alert(
-              'Unable to speed up transaction',
-              'There was a problem while fetching the transaction data. Please try again...',
+              lang.t('wallet.speed_up.unable_to_speed_up'),
+              lang.t('wallet.speed_up.problem_while_fetching_transaction_data'),
               [
                 {
                   onPress: () => goBack(),
@@ -510,7 +511,7 @@ export default function SpeedUpAndCancelSheet() {
                       >
                         <SheetActionButton
                           color={colors.red}
-                          label="􀎽 Attempt Cancellation"
+                          label={`􀎽 ${lang.t('button.attempt_cancellation')}`}
                           onPress={handleCancellation}
                           size="big"
                           weight="bold"
@@ -519,7 +520,7 @@ export default function SpeedUpAndCancelSheet() {
                       <SheetActionButtonRow ignorePaddingBottom>
                         <SheetActionButton
                           color={colors.white}
-                          label="Close"
+                          label={lang.t('button.close')}
                           onPress={goBack}
                           size="big"
                           textColor={colors.alpha(colors.blueGreyDark, 0.8)}
@@ -535,7 +536,7 @@ export default function SpeedUpAndCancelSheet() {
                     >
                       <SheetActionButton
                         color={colors.white}
-                        label="Cancel"
+                        label={lang.t('button.cancel')}
                         onPress={goBack}
                         size="big"
                         textColor={colors.alpha(colors.blueGreyDark, 0.8)}
@@ -543,7 +544,7 @@ export default function SpeedUpAndCancelSheet() {
                       />
                       <SheetActionButton
                         color={colors.appleBlue}
-                        label="􀎽 Confirm"
+                        label={`􀎽 ${lang.t('button.confirm')}`}
                         onPress={handleSpeedUp}
                         size="big"
                         weight="bold"
