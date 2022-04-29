@@ -18,6 +18,17 @@ import { Records } from '@rainbow-me/entities';
 import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 import { useENSRecordDisplayProperties } from '@rainbow-me/hooks';
 
+const getRecordType = (recordKey: string) => {
+  switch (recordKey) {
+    case ENS_RECORDS.BTC:
+    case ENS_RECORDS.LTC:
+    case ENS_RECORDS.DOGE:
+    case ENS_RECORDS.ETH:
+      return 'address';
+    default:
+      return 'record';
+  }
+};
 export default function RecordTags({
   firstTransactionTimestamp,
   records,
@@ -29,16 +40,15 @@ export default function RecordTags({
 }) {
   const recordsToShow = useMemo(
     () =>
-      Object.entries(records)
-        .map(([key, value]) =>
-          show.includes(key as ENS_RECORDS)
-            ? {
-                key,
-                value,
-              }
-            : undefined
-        )
-        .filter(x => x) as { key: string; value: string }[],
+      show.map(key => ({
+        key,
+        type: getRecordType(key),
+        value: records[key],
+      })) as {
+        key: string;
+        value: string;
+        type: 'address' | 'record';
+      }[],
     [records, show]
   );
 
@@ -46,12 +56,13 @@ export default function RecordTags({
     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
       <Inset horizontal="19px">
         <Inline space="10px">
-          {recordsToShow?.map(({ key: recordKey, value: recordValue }) =>
+          {recordsToShow?.map(({ key: recordKey, value: recordValue, type }) =>
             recordValue ? (
               <RecordTag
                 key={recordKey}
                 recordKey={recordKey}
                 recordValue={recordValue}
+                type={type}
               />
             ) : null
           )}
@@ -139,13 +150,15 @@ function Tag({
 function RecordTag({
   recordKey,
   recordValue,
+  type,
 }: {
   recordKey: string;
   recordValue: string;
+  type: 'address' | 'record';
 }) {
   const { ContextMenuButton, icon, value } = useENSRecordDisplayProperties({
     key: recordKey,
-    type: 'record',
+    type,
     value: recordValue,
   });
   return (

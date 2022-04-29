@@ -46,7 +46,6 @@ export default function ProfileSheetHeader({
   const ensName = defaultEnsName || params?.address;
   const { data: profile } = useENSProfile(ensName);
   const profileAddress = profile?.primary.address;
-
   const { navigate } = useNavigation();
   const { data: uniqueTokens } = useFetchUniqueTokens({
     address: profileAddress,
@@ -190,17 +189,27 @@ export default function ProfileSheetHeader({
                   {profile?.records && (
                     <RecordTags
                       firstTransactionTimestamp={firstTransactionTimestamp}
-                      records={profile?.records}
+                      records={{
+                        ...profile?.records,
+                        ...profile?.coinAddresses,
+                      }}
                       show={[
-                        ENS_RECORDS.twitter,
-                        ENS_RECORDS.website,
+                        ENS_RECORDS.displayName,
                         ENS_RECORDS.url,
+                        ENS_RECORDS.twitter,
                         ENS_RECORDS.email,
-                        ENS_RECORDS.github,
                         ENS_RECORDS.instagram,
-                        ENS_RECORDS.reddit,
+                        ENS_RECORDS.discord,
+                        ENS_RECORDS.github,
+                        ENS_RECORDS.BTC,
                         ENS_RECORDS.snapchat,
                         ENS_RECORDS.telegram,
+                        ENS_RECORDS.reddit,
+                        ENS_RECORDS.pronouns,
+                        ENS_RECORDS.notice,
+                        ENS_RECORDS.keywords,
+                        ENS_RECORDS.LTC,
+                        ENS_RECORDS.DOGE,
                       ]}
                     />
                   )}
