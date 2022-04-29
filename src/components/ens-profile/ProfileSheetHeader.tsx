@@ -1,6 +1,7 @@
 import { useRoute } from '@react-navigation/core';
 import React, { useCallback, useContext, useMemo } from 'react';
 import { ModalContext } from '../../react-native-cool-modals/NativeStackView';
+import { ProfileSheetConfigContext } from '../../screens/ProfileSheet';
 import Skeleton from '../skeleton/Skeleton';
 import ActionButtons from './ActionButtons/ActionButtons';
 import ProfileAvatar from './ProfileAvatar/ProfileAvatar';
@@ -41,6 +42,7 @@ export default function ProfileSheetHeader({
   isPreview?: boolean;
 }) {
   const { params } = useRoute<any>();
+  const { enableZoomableImages } = useContext(ProfileSheetConfigContext);
   const { layout } = useContext(ModalContext) || {};
 
   const ensName = defaultEnsName || params?.address;
@@ -87,13 +89,12 @@ export default function ProfileSheetHeader({
     const isNFTAvatar = avatar && isENSNFTRecord(avatar);
     const avatarUniqueToken = isNFTAvatar && getUniqueToken(avatar);
 
-    const onPressAvatar = () => {
-      if (!avatar || !isNFTAvatar || !avatarUniqueToken) return null;
-      handleSelectNFT(avatarUniqueToken);
-    };
+    let onPressAvatar;
+    if (avatar && isNFTAvatar && avatarUniqueToken) {
+      onPressAvatar = () => handleSelectNFT(avatarUniqueToken);
+    }
 
-    const enableZoomOnPressAvatar =
-      !avatarUrl || !isNFTAvatar || !avatarUniqueToken;
+    const enableZoomOnPressAvatar = enableZoomableImages && !onPressAvatar;
 
     return {
       avatarUrl,
@@ -101,6 +102,7 @@ export default function ProfileSheetHeader({
       onPressAvatar,
     };
   }, [
+    enableZoomableImages,
     getUniqueToken,
     handleSelectNFT,
     profile?.images.avatarUrl,
@@ -114,13 +116,12 @@ export default function ProfileSheetHeader({
     const isNFTCover = cover && isENSNFTRecord(cover);
     const coverUniqueToken = isNFTCover && getUniqueToken(cover);
 
-    const onPressCover = () => {
-      if (!cover || !isNFTCover || !coverUniqueToken) return null;
-      handleSelectNFT(coverUniqueToken);
-    };
+    let onPressCover;
+    if (cover && isNFTCover && coverUniqueToken) {
+      onPressCover = () => handleSelectNFT(coverUniqueToken);
+    }
 
-    const enableZoomOnPressCover =
-      !coverUrl || !isNFTCover || !coverUniqueToken;
+    const enableZoomOnPressCover = enableZoomableImages && !onPressCover;
 
     return {
       coverUrl,
@@ -128,6 +129,7 @@ export default function ProfileSheetHeader({
       onPressCover,
     };
   }, [
+    enableZoomableImages,
     getUniqueToken,
     handleSelectNFT,
     profile?.images.coverUrl,

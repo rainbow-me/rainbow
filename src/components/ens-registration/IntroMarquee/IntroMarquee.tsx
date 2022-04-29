@@ -5,7 +5,7 @@ import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { MarqueeList } from '../../list';
 import { Box, Stack, Text } from '@rainbow-me/design-system';
-import { fetchRecords } from '@rainbow-me/handlers/ens';
+import { fetchImages, fetchRecords } from '@rainbow-me/handlers/ens';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import { ensIntroMarqueeNames } from '@rainbow-me/references';
@@ -57,6 +57,7 @@ export default function IntroMarquee() {
       await Promise.all(
         ensIntroMarqueeNames.map(async name => {
           const records = await fetchRecords(name);
+          fetchImages(name);
           profiles[name] = records?.description;
         })
       );

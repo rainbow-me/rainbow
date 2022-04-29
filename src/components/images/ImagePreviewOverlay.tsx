@@ -556,10 +556,10 @@ export function ImagePreviewOverlayTarget({
     <Box flexShrink={1} width="full">
       <Box
         borderRadius={borderRadius}
-        flexShrink={1}
         height={height ? { custom: height } : initialHeight || { custom: 0 }}
         onLayout={handleLayout}
         ref={zoomableWrapperRef}
+        style={{ overflow: 'hidden' }}
         width="full"
       >
         {renderPlaceholder && children}

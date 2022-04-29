@@ -1,11 +1,5 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { Text as NativeText } from 'react-native';
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
 import { ImagePreviewOverlayTarget } from '../../images/ImagePreviewOverlay';
 import Skeleton from '../../skeleton/Skeleton';
 import AvatarCoverPhotoMaskSvg from '../../svg/AvatarCoverPhotoMaskSvg';
@@ -26,21 +20,6 @@ export default function ProfileAvatar({
   enableZoomOnPress?: boolean;
   handleOnPress?: () => void;
 }) {
-  const opacity = useSharedValue(0);
-
-  const style = useAnimatedStyle(() => {
-    return {
-      opacity: withTiming(opacity.value, {
-        duration: 500,
-        easing: Easing.linear,
-      }),
-    };
-  });
-
-  const onLoadEnd = useCallback(() => {
-    opacity.value = 1;
-  }, [opacity]);
-
   return (
     <Box height={{ custom: size }} width={{ custom: size }}>
       <Cover alignHorizontal="center">
@@ -87,29 +66,25 @@ export default function ProfileAvatar({
           shadow="15px light"
           width={{ custom: size }}
         >
-          <Animated.View style={style}>
-            <ImagePreviewOverlayTarget
-              aspectRatioType="avatar"
-              backgroundMask="avatar"
-              borderRadius={size / 2}
-              disableEnteringWithPinch
-              enableZoomOnPress={enableZoomOnPress}
+          <ImagePreviewOverlayTarget
+            aspectRatioType="avatar"
+            backgroundMask="avatar"
+            borderRadius={size / 2}
+            disableEnteringWithPinch
+            enableZoomOnPress={enableZoomOnPress}
+            height={{ custom: size }}
+            hideStatusBar={false}
+            imageUrl={avatarUrl}
+            onPress={handleOnPress}
+            topOffset={ios ? 112 : 107}
+          >
+            <Box
+              as={ImgixImage}
               height={{ custom: size }}
-              hideStatusBar={false}
-              imageUrl={avatarUrl}
-              onPress={handleOnPress}
-              topOffset={ios ? 112 : 107}
-            >
-              <Box
-                as={ImgixImage}
-                borderRadius={size / 2}
-                height={{ custom: size }}
-                onLoadEnd={onLoadEnd}
-                source={{ uri: avatarUrl }}
-                width={{ custom: size }}
-              />
-            </ImagePreviewOverlayTarget>
-          </Animated.View>
+              source={{ uri: avatarUrl }}
+              width={{ custom: size }}
+            />
+          </ImagePreviewOverlayTarget>
         </Box>
       )}
     </Box>
