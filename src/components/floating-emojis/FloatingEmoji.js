@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useLayoutEffect } from 'react';
+import React from 'react';
 import Animated, {
   Easing,
   interpolate,
@@ -7,6 +7,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import { useMemoOne } from 'use-memo-one';
 import { Emoji } from '../text';
 
 const FloatingEmoji = ({
@@ -28,13 +29,10 @@ const FloatingEmoji = ({
 }) => {
   const animation = useSharedValue(0);
 
-  useLayoutEffect(() => {
-    animation.value = withTiming(1, {
-      duration,
-      easing: Easing.linear,
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  animation.value = useMemoOne(
+    () => withTiming(1, { duration, easing: Easing.linear }),
+    []
+  );
 
   const animatedStyle = useAnimatedStyle(() => {
     const progress = interpolate(animation.value, [0, 1], [0, distance]);
@@ -66,11 +64,15 @@ const FloatingEmoji = ({
       everySecondEmojiMultiplier *
       everyThirdEmojiMultiplier;
 
-    const wiggleMultiplierA = Math.sin(progress * (distance / (350 / 15)));
+    /*
+    We don't really know why these concrete numbers are used there.
+    Original Author of these numbers: Mike Demarais
+     */
+    const wiggleMultiplierA = Math.sin(progress * (distance / 23.3));
     const wiggleMultiplierB = interpolate(
       progress,
       [0, distance / 10, distance],
-      [10 * wiggleFactor, 6.9 * wiggleFactor, 4.2069 * wiggleFactor]
+      [10 * wiggleFactor, 6.9 * wiggleFactor, 4.2137 * wiggleFactor]
     );
     const translateXComponentB = wiggleMultiplierA * wiggleMultiplierB;
 
@@ -84,7 +86,7 @@ const FloatingEmoji = ({
       opacity,
       transform: [{ rotate }, { scale }, { translateX }, { translateY }],
     };
-  });
+  }, []);
 
   return (
     <Animated.View
