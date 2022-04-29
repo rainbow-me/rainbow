@@ -173,13 +173,15 @@ describe('Register ENS Flow', () => {
   it('Should be able to press a profile and continue to the ENS search screen', async () => {
     await Helpers.swipe('ens-names-marquee', 'left', 'slow');
     await Helpers.swipe('ens-names-marquee', 'right', 'slow');
-    await Helpers.waitAndTap('ens-intro-sheet-search-new-name-button');
+    await Helpers.waitAndTap(
+      'ens-intro-sheet-search-new-name-button-action-button'
+    );
   });
 
   it('Should be able to type a name that is not available', async () => {
     await Helpers.checkIfVisible('ens-search-input');
     await Helpers.typeText('ens-search-input', 'rainbowwallet', false);
-    await Helpers.delay(3000);
+    await Helpers.delay(10000);
     await Helpers.waitAndTap('ens-search-clear-button');
   });
 
@@ -208,7 +210,7 @@ describe('Register ENS Flow', () => {
     await Helpers.typeText('ens-text-record-description', RECORD_BIO, false);
     await Helpers.clearField('ens-text-record-me.rainbow.displayName');
     await Helpers.waitAndTap('use-select-image-avatar');
-    await Helpers.tapByText('Choose NFT');
+    await Helpers.tapByText('Choose an NFT');
     await Helpers.tapByText('CryptoKitties');
     await Helpers.tapByText('Arun Cattybinky');
     await Helpers.checkIfVisible('ens-assign-records-review-action-button');
