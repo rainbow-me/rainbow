@@ -110,7 +110,9 @@ const ContactProfileState = ({
 
   const [color, setColor] = useState(colorProp || 0);
   const [value, setValue] = useState(
-    removeFirstEmojiFromString(contactNickname)
+    profilesEnabled
+      ? contactNickname
+      : removeFirstEmojiFromString(contactNickname)
   );
   const [emoji, setEmoji] = useState(returnStringFirstEmoji(contactNickname));
   const inputRef = useRef(null);

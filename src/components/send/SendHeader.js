@@ -125,6 +125,7 @@ export default function SendHeader({
       additionalPadding: true,
       address: hexAddress,
       color,
+      contact,
       ens: recipient,
       nickname,
       onRefocusInput,
