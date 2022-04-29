@@ -89,7 +89,7 @@ export default function SendHeader({
   const [hexAddress, setHexAddress] = useState('');
 
   useEffect(() => {
-    if (isValidAddress && !contact.address) {
+    if (isValidAddress) {
       resolveAndStoreAddress();
     }
     async function resolveAndStoreAddress() {
@@ -99,7 +99,7 @@ export default function SendHeader({
       }
       setHexAddress(hex);
     }
-  }, [isValidAddress, recipient, setHexAddress, contact]);
+  }, [isValidAddress, recipient, setHexAddress]);
 
   const contact = useMemo(() => {
     return get(contacts, `${[toLower(hexAddress)]}`, defaultContactItem);
@@ -190,6 +190,8 @@ export default function SendHeader({
     [contact.nickname, userWallet?.label]
   );
 
+  console.log(recipient);
+
   return (
     <Fragment>
       <SheetHandleFixedToTop />
@@ -208,7 +210,7 @@ export default function SendHeader({
           ref={recipientFieldRef}
           testID="send-asset-form-field"
         />
-        {isValidAddress && !userWallet && Boolean(hexAddress) && (
+        {isValidAddress && Boolean(hexAddress) && (
           <ButtonPressAnimation
             onPress={
               isPreExistingContact

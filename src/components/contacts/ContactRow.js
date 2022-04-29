@@ -137,10 +137,12 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
       const label =
         accountType === 'suggestions' && isENSAddressFormat(nickname)
           ? nickname
+          : ensName
+          ? ensName
           : address;
       onPress(label);
     }
-  }, [accountType, address, nickname, onPress, showcaseItem]);
+  }, [accountType, address, ensName, nickname, onPress, showcaseItem]);
 
   const imageAvatar = profilesEnabled ? ensAvatar : image;
 

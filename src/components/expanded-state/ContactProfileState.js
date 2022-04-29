@@ -182,10 +182,11 @@ const ContactProfileState = ({
     ensAvatar || ''
   );
 
-  const accentColor =
-    dominantColor ||
-    colors.avatarBackgrounds[colorIndex || 0] ||
-    colors.appleBlue;
+  const accentColor = profilesEnabled
+    ? dominantColor ||
+      colors.avatarBackgrounds[colorIndex || 0] ||
+      colors.appleBlue
+    : color;
 
   return (
     <ProfileModal onPressBackdrop={handleAddContact}>
@@ -224,7 +225,7 @@ const ContactProfileState = ({
         ) : (
           <ProfileAvatarButton
             changeAvatar={handleChangeAvatar}
-            color={color}
+            color={accentColor}
             marginBottom={0}
             radiusAndroid={32}
             testID="contact-profile-avatar-button"
@@ -237,7 +238,6 @@ const ContactProfileState = ({
           onSubmitEditing={handleAddContact}
           placeholder="Name"
           ref={inputRef}
-          selectionColor={colors.avatarBackgrounds[color]}
           testID="contact-profile-name-input"
           value={value}
         />
@@ -256,7 +256,7 @@ const ContactProfileState = ({
           <Divider inset={false} />
         </Centered>
         <SubmitButton
-          color={color}
+          color={accentColor}
           isDarkMode={isDarkMode}
           onPress={handleAddContact}
           testID="contact-profile-add-button"
