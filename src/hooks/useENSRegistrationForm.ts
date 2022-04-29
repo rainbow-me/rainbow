@@ -272,6 +272,7 @@ export default function useENSRegistrationForm({
     onBlurField,
     onChangeField,
     onRemoveField,
+    profileQuery,
     selectedFields,
     setDisabled,
     submit,

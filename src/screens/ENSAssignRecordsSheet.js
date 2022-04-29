@@ -91,13 +91,15 @@ export default function ENSAssignRecordsSheet() {
       ].map(fieldName => textRecordFields[fieldName]),
     []
   );
-  const { values } = useENSRegistrationForm({
+  const { values, profileQuery } = useENSRegistrationForm({
     defaultFields,
     initializeForm: true,
   });
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const isEmptyProfile = useMemo(() => isEmpty(values), []);
+  const displayTitleLabel = useMemo(() => !profileQuery.isLoading, [
+    profileQuery.isLoading,
+  ]);
+  const isEmptyProfile = useMemo(() => isEmpty(values), [values]);
 
   useENSRegistrationCosts({
     name,
@@ -188,13 +190,15 @@ export default function ENSAssignRecordsSheet() {
                   {name}
                 </Heading>
                 <Text align="center" color="accent" size="16px" weight="heavy">
-                  {lang.t(
-                    `profiles.${
-                      mode === REGISTRATION_MODES.EDIT && !isEmptyProfile
-                        ? 'edit'
-                        : 'create'
-                    }.label`
-                  )}
+                  {displayTitleLabel
+                    ? lang.t(
+                        `profiles.${
+                          mode === REGISTRATION_MODES.EDIT && !isEmptyProfile
+                            ? 'edit'
+                            : 'create'
+                        }.label`
+                      )
+                    : ''}
                 </Text>
               </Stack>
               <Box flexGrow={1}>
