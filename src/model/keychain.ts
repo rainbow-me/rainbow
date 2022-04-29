@@ -21,10 +21,6 @@ import {
 import { delay, getKeyByValue } from '../helpers/utilities';
 import logger from 'logger';
 
-function getKeyByValue(object: { [key: string]: string }, value: string) {
-  return Object.keys(object).find(key => object[key] === value);
-}
-
 interface AnonymousKey {
   length: number;
   nil: boolean;

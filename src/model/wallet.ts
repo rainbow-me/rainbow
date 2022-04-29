@@ -260,15 +260,6 @@ export const loadWallet = async (
       showWalletErrorAlert();
     }
     return null;
-  } catch (err) {
-    if (
-      isIgnoreCancelAndAuthenticatedKeychainErr &&
-      (keychain.keychainErrKey.KEYCHAIN_NOT_AUTHENTICATED ||
-        keychain.keychainErrKey.KEYCHAIN_USER_CANCELED)
-    ) {
-      return null;
-    }
-    throw err;
   }
 };
 
