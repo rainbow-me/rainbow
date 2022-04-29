@@ -100,6 +100,7 @@ const ContactRow = (
         profileUtils.addressHashedEmoji(address)
       : null;
 
+  // if the accountType === 'suggestions', nickname will always be an ens or hex address, not a custom contact nickname
   const [ensName, setENSName] = useState(
     accountType !== 'suggestions' ? ens : nickname
   );
