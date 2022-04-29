@@ -61,6 +61,23 @@ export default function ProfileAvatar({
             />
           </Skeleton>
         </Box>
+      ) : !avatarUrl ? (
+        <Box height={{ custom: size }}>
+          <Box
+            background="accent"
+            borderRadius={size / 2}
+            height={{ custom: size }}
+            width={{ custom: size }}
+          >
+            <Cover alignHorizontal="center" alignVertical="center">
+              <Box>
+                <NativeText style={{ fontSize: 38 }}>
+                  {accountSymbol || ''}
+                </NativeText>
+              </Box>
+            </Cover>
+          </Box>
+        </Box>
       ) : (
         <Box
           alignItems="center"
@@ -70,35 +87,29 @@ export default function ProfileAvatar({
           shadow="15px light"
           width={{ custom: size }}
         >
-          {avatarUrl ? (
-            <Animated.View style={style}>
-              <ImagePreviewOverlayTarget
-                aspectRatioType="avatar"
-                backgroundMask="avatar"
+          <Animated.View style={style}>
+            <ImagePreviewOverlayTarget
+              aspectRatioType="avatar"
+              backgroundMask="avatar"
+              borderRadius={size / 2}
+              disableEnteringWithPinch
+              enableZoomOnPress={enableZoomOnPress}
+              height={{ custom: size }}
+              hideStatusBar={false}
+              imageUrl={avatarUrl}
+              onPress={handleOnPress}
+              topOffset={ios ? 112 : 107}
+            >
+              <Box
+                as={ImgixImage}
                 borderRadius={size / 2}
-                disableEnteringWithPinch
-                enableZoomOnPress={enableZoomOnPress}
                 height={{ custom: size }}
-                hideStatusBar={false}
-                imageUrl={avatarUrl}
-                onPress={handleOnPress}
-                topOffset={ios ? 112 : 107}
-              >
-                <Box
-                  as={ImgixImage}
-                  borderRadius={size / 2}
-                  height={{ custom: size }}
-                  onLoadEnd={onLoadEnd}
-                  source={{ uri: avatarUrl }}
-                  width={{ custom: size }}
-                />
-              </ImagePreviewOverlayTarget>
-            </Animated.View>
-          ) : (
-            <NativeText style={{ fontSize: 38 }}>
-              {accountSymbol || ''}
-            </NativeText>
-          )}
+                onLoadEnd={onLoadEnd}
+                source={{ uri: avatarUrl }}
+                width={{ custom: size }}
+              />
+            </ImagePreviewOverlayTarget>
+          </Animated.View>
         </Box>
       )}
     </Box>
