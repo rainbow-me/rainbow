@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useLayoutEffect } from 'react';
 import Animated, {
   Easing,
   interpolate,
@@ -7,7 +7,6 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { useMemoOne } from 'use-memo-one';
 import { Emoji } from '../text';
 
 const FloatingEmoji = ({
@@ -29,10 +28,13 @@ const FloatingEmoji = ({
 }) => {
   const animation = useSharedValue(0);
 
-  animation.value = useMemoOne(
-    () => withTiming(1, { duration, easing: Easing.linear }),
-    []
-  );
+  useLayoutEffect(() => {
+    animation.value = withTiming(1, {
+      duration,
+      easing: Easing.linear,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const animatedStyle = useAnimatedStyle(() => {
     const progress = interpolate(animation.value, [0, 1], [0, distance]);
