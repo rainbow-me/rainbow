@@ -435,6 +435,7 @@ export default function ExchangeModal({
       logger.log('[exchange - handle submit] error submitting swap', error);
       setParams({ focused: false });
       navigate(Routes.WALLET_SCREEN);
+      //TODO: ERR handling
     }
   }, [
     defaultInputAsset?.symbol,

@@ -187,6 +187,8 @@ export const DEFAULT_WALLET_NAME = 'My Wallet';
 
 const authenticationPrompt = lang.t('wallet.authenticate.please');
 
+export const createdWithBiometricError = 'createdWithBiometricError';
+
 export const walletInit = async (
   seedPhrase = undefined,
   color = null,
@@ -258,6 +260,15 @@ export const loadWallet = async (
       showWalletErrorAlert();
     }
     return null;
+  } catch (err) {
+    if (
+      isIgnoreCancelAndAuthenticatedKeychainErr &&
+      (keychain.keychainErrKey.KEYCHAIN_NOT_AUTHENTICATED ||
+        keychain.keychainErrKey.KEYCHAIN_USER_CANCELED)
+    ) {
+      return null;
+    }
+    throw err;
   }
 };
 
@@ -271,10 +282,10 @@ export const sendTransaction = async ({
 }> => {
   try {
     logger.sentry('about to send transaction', transaction);
-    const wallet =
-      existingWallet || (await loadWallet(undefined, true, provider));
-    if (!wallet) return null;
     try {
+      const wallet =
+        existingWallet || (await loadWallet(undefined, true, provider));
+      if (!wallet) return null;
       const result = await wallet.sendTransaction(transaction);
       logger.log('tx result', result);
       return { result };
@@ -306,10 +317,10 @@ export const signTransaction = async ({
 }> => {
   try {
     logger.sentry('about to sign transaction', transaction);
-    const wallet =
-      existingWallet || (await loadWallet(undefined, true, provider));
-    if (!wallet) return null;
     try {
+      const wallet =
+        existingWallet || (await loadWallet(undefined, true, provider));
+      if (!wallet) return null;
       const result = await wallet.signTransaction(transaction);
       return { result };
     } catch (error) {
@@ -339,9 +350,9 @@ export const signMessage = async (
 }> => {
   try {
     logger.sentry('about to sign message', message);
-    const wallet =
-      existingWallet || (await loadWallet(undefined, true, provider));
     try {
+      const wallet =
+        existingWallet || (await loadWallet(undefined, true, provider));
       if (!wallet) return null;
       const result = await wallet.signMessage(arrayify(message));
       return { result };
@@ -370,9 +381,9 @@ export const signPersonalMessage = async (
 }> => {
   try {
     logger.sentry('about to sign personal message', message);
-    const wallet =
-      existingWallet || (await loadWallet(undefined, true, provider));
     try {
+      const wallet =
+        existingWallet || (await loadWallet(undefined, true, provider));
       if (!wallet) return null;
       const result = await wallet.signMessage(
         typeof message === 'string' && isHexString(addHexPrefix(message))
@@ -407,10 +418,10 @@ export const signTypedDataMessage = async (
 }> => {
   try {
     logger.sentry('about to sign typed data  message', message);
-    const wallet =
-      existingWallet || (await loadWallet(undefined, true, provider));
-    if (!wallet) return null;
     try {
+      const wallet =
+        existingWallet || (await loadWallet(undefined, true, provider));
+      if (!wallet) return null;
       const pkeyBuffer = toBuffer(addHexPrefix(wallet.privateKey));
       let parsedData = message;
       try {
@@ -457,14 +468,24 @@ export const signTypedDataMessage = async (
 };
 
 export const oldLoadSeedPhrase = async (): Promise<null | EthereumWalletSeed> => {
-  const seedPhrase = await keychain.loadString(seedPhraseKey, {
-    authenticationPrompt,
-  });
-  return seedPhrase as string | null;
+  try {
+    const seedPhrase = await keychain.loadString(seedPhraseKey, {
+      authenticationPrompt,
+    });
+    return seedPhrase as string | null;
+  } catch (error) {
+    return null;
+  }
 };
 
-export const loadAddress = (): Promise<null | EthereumAddress> =>
-  keychain.loadString(addressKey) as Promise<string | null>;
+export const loadAddress = (): Promise<null | EthereumAddress> => {
+  try {
+    return keychain.loadString(addressKey) as Promise<string | null>;
+  } catch (err) {
+    return Promise.resolve(null);
+    // return null
+  }
+};
 
 const loadPrivateKey = async (
   address?: EthereumAddress | undefined
@@ -489,7 +510,6 @@ const loadPrivateKey = async (
       }
 
       const privateKeyData = await getPrivateKey(addressToUse);
-
       privateKey = get(privateKeyData, 'privateKey', null);
 
       let userPIN = null;
@@ -513,7 +533,6 @@ const loadPrivateKey = async (
   } catch (error) {
     logger.sentry('Error in loadPrivateKey');
     captureException(error);
-
     throw error;
   }
 };

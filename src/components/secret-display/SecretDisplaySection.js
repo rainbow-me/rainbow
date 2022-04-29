@@ -4,6 +4,7 @@ import { upperFirst } from 'lodash';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 import {
+  createdWithBiometricError,
   identifyWalletType,
   loadSeedPhraseAndMigrateIfNeeded,
 } from '../../model/wallet';

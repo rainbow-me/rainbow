@@ -203,6 +203,7 @@ export default function RestoreCloudStep({
         setIsWalletLoading(null);
       });
     } catch (e) {
+      setIncorrectPassword(true);
       setIsWalletLoading(null);
       const matched = matchError(e);
       if (
