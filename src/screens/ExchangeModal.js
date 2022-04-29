@@ -1,3 +1,4 @@
+import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { isEmpty } from 'lodash';
 import React, {
@@ -33,6 +34,7 @@ import {
 import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
+import { isL2Asset } from '@rainbow-me/handlers/assets';
 import {
   ExchangeModalTypes,
   isKeyboardOpen,
@@ -61,6 +63,7 @@ import { ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
+import { ethereumUtils } from '@rainbow-me/utils';
 import { useEthUSDPrice } from '@rainbow-me/utils/ethereumUtils';
 import logger from 'logger';
 
@@ -131,6 +134,10 @@ export default function ExchangeModal({
     dangerouslyGetParent,
     addListener,
   } = useNavigation();
+
+  const {
+    params: { focused },
+  } = useRoute();
 
   const isDeposit = type === ExchangeModalTypes.deposit;
   const isWithdrawal = type === ExchangeModalTypes.withdrawal;
@@ -210,7 +217,7 @@ export default function ExchangeModal({
     loading,
   } = useSwapDerivedOutputs();
 
-  // logger.debug('ExchangeModal quote loading??', loading);
+  logger.debug('output currency', outputCurrency);
   const lastTradeDetails = usePrevious(tradeDetails);
 
   const {
@@ -264,27 +271,49 @@ export default function ExchangeModal({
 
   const [navigating, setNavigating] = useState(false);
 
+  const navigateToOutput = useCallback(() => {
+    logger.debug(
+      'Navigating to select OUTPUT currency',
+      JSON.stringify(inputCurrency)
+    );
+    logger.debug('isL2Asset', isL2Asset(inputCurrency?.type));
+    logger.debug(
+      'getChainIdFromNetwork',
+      ethereumUtils.getChainIdFromNetwork(inputCurrency?.type)
+    );
+    const chainId = isL2Asset(inputCurrency?.type)
+      ? ethereumUtils.getChainIdFromNetwork(inputCurrency.type)
+      : 1;
+    logger.debug('chainId', chainId);
+    !navigating && navigateToSelectOutputCurrency(chainId);
+    setNavigating(true);
+    setTimeout(() => setNavigating(false), 1000);
+  }, [inputCurrency, navigateToSelectOutputCurrency, navigating]);
+
+  const navigateToInput = useCallback(() => {
+    logger.debug('Navigating to select INPUT currency');
+    !navigating && navigateToSelectInputCurrency();
+    setNavigating(true);
+    setTimeout(() => setNavigating(false), 1000);
+  }, [navigateToSelectInputCurrency, navigating]);
+
   // Navigate to select input currency automatically
   // TODO: Do this in a better way
   useEffect(() => {
-    if (!defaultInputAsset && !inputCurrency) {
-      logger.debug('Navigating to select INPUT currency');
-      !navigating && navigateToSelectInputCurrency();
-      setNavigating(true);
-      setTimeout(() => setNavigating(false), 1000);
-    } else if (!outputCurrency) {
-      logger.debug('Navigating to select OUTPUT currency');
-      !navigating && navigateToSelectOutputCurrency(inputCurrency?.type);
-      setNavigating(true);
-      setTimeout(() => setNavigating(false), 1000);
+    if (focused) {
+      if (!defaultInputAsset && !inputCurrency) {
+        navigateToInput();
+      } else if (!outputCurrency) {
+        navigateToOutput();
+      }
     }
   }, [
-    navigating,
     defaultInputAsset,
     inputCurrency,
-    navigateToSelectInputCurrency,
-    navigateToSelectOutputCurrency,
     outputCurrency,
+    focused,
+    navigateToInput,
+    navigateToOutput,
   ]);
 
   const updateGasLimit = useCallback(async () => {
@@ -637,7 +666,7 @@ export default function ExchangeModal({
               nativeFieldRef={nativeFieldRef}
               onFocus={handleFocus}
               onPressMaxBalance={handlePressMaxBalance}
-              onPressSelectInputCurrency={navigateToSelectInputCurrency}
+              onPressSelectInputCurrency={navigateToInput}
               setInputAmount={updateInputAmount}
               setNativeAmount={updateNativeAmount}
               testID={`${testID}-input`}
@@ -646,9 +675,12 @@ export default function ExchangeModal({
               <ExchangeOutputField
                 editable={!!outputCurrency}
                 onFocus={handleFocus}
-                onPressSelectOutputCurrency={navigateToSelectOutputCurrency}
+                onPressSelectOutputCurrency={navigateToOutput}
                 outputAmount={outputAmountDisplay}
-                outputCurrencyAddress={outputCurrency?.address}
+                outputCurrencyAddress={
+                  outputCurrency?.mainnet_address || outputCurrency?.address
+                }
+                outputCurrencyAssetType={outputCurrency?.type}
                 outputCurrencySymbol={outputCurrency?.symbol}
                 outputFieldRef={outputFieldRef}
                 setOutputAmount={updateOutputAmount}

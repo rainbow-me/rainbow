@@ -65,9 +65,9 @@ export default function usePriceImpactDetails(
   let outputPriceValue = genericAssets[outputTokenAddress]?.price?.value;
 
   // Override WETH price to ETH price
-  if (inputTokenAddress.toLowerCase() === WETH_ADDRESS) {
+  if (inputTokenAddress?.toLowerCase() === WETH_ADDRESS) {
     inputPriceValue = genericAssets[ETH_ADDRESS]?.price?.value;
-  } else if (outputTokenAddress.toLowerCase() === WETH_ADDRESS) {
+  } else if (outputTokenAddress?.toLowerCase() === WETH_ADDRESS) {
     outputPriceValue = genericAssets[ETH_ADDRESS]?.price?.value;
   }
 

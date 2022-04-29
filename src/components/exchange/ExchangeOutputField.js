@@ -18,6 +18,7 @@ export default function ExchangeOutputField({
   onPressSelectOutputCurrency,
   outputAmount,
   outputCurrencyAddress,
+  outputCurrencyAssetType,
   outputCurrencySymbol,
   outputFieldRef,
   setOutputAmount,
@@ -35,6 +36,7 @@ export default function ExchangeOutputField({
         setAmount={setOutputAmount}
         symbol={outputCurrencySymbol}
         testID={testID}
+        type={outputCurrencyAssetType}
         useCustomAndroidMask={android}
       />
     </Container>

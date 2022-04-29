@@ -21,7 +21,7 @@ import { fetchSuggestions } from '@rainbow-me/handlers/ens';
 import {
   useHardwareBackOnFocus,
   usePrevious,
-  useUniswapCurrencyList,
+  useSwapCurrencyList,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
@@ -50,12 +50,11 @@ export default function DiscoverSearch() {
   const currencySelectionListRef = useRef();
   const [searchQueryForSearch] = useDebounce(searchQuery, 350);
   const [ensResults, setEnsResults] = useState([]);
-  const {
-    uniswapCurrencyList,
-    uniswapCurrencyListLoading,
-  } = useUniswapCurrencyList(searchQueryForSearch);
-  const currencyList = useMemo(() => [...uniswapCurrencyList, ...ensResults], [
-    uniswapCurrencyList,
+  const { swapCurrencyList, uniswapCurrencyListLoading } = useSwapCurrencyList(
+    searchQueryForSearch
+  );
+  const currencyList = useMemo(() => [...swapCurrencyList, ...ensResults], [
+    swapCurrencyList,
     ensResults,
   ]);
   const lastSearchQuery = usePrevious(searchQueryForSearch);

@@ -102,6 +102,9 @@ export interface RainbowToken extends Asset {
   isVerified?: boolean;
   shadowColor?: string;
   uniqueId: string;
+  type: string;
+  mainnet_address?: EthereumAddress;
+  networks?: any;
 }
 
 export interface IndexToken extends Asset {

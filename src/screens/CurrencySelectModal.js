@@ -23,22 +23,23 @@ import {
 import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
 import { usePagerPosition } from '../navigation/ScrollPositionContext';
+import { isL2Asset } from '@rainbow-me/handlers/assets';
 import { addHexPrefix } from '@rainbow-me/handlers/web3';
-import { CurrencySelectionTypes } from '@rainbow-me/helpers';
+import { CurrencySelectionTypes, Network } from '@rainbow-me/helpers';
 import {
   useAssetsInWallet,
   useCoinListEditOptions,
   useInteraction,
   useMagicAutofocus,
   usePrevious,
-  useUniswapCurrencyList,
+  useSwapCurrencyList,
 } from '@rainbow-me/hooks';
 import { delayNext } from '@rainbow-me/hooks/useMagicAutofocus';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
-import { filterList } from '@rainbow-me/utils';
+import { ethereumUtils, filterList } from '@rainbow-me/utils';
 
 const TabTransitionAnimation = styled(Animated.View)(
   position.sizeAsObject('100%')
@@ -73,7 +74,7 @@ export default function CurrencySelectModal() {
       setPointerEvents,
       toggleGestureEnabled,
       type,
-      network,
+      chainId,
     },
   } = useRoute();
 
@@ -92,38 +93,51 @@ export default function CurrencySelectModal() {
   const assetsInWallet = useAssetsInWallet();
   const { hiddenCoins } = useCoinListEditOptions();
 
-  const filteredAssetsInWallet = useMemo(
-    () =>
-      assetsInWallet.filter(({ network: networkName, uniqueId }) => {
-        if (network && networkName !== network) return false;
-        return !hiddenCoins.includes(uniqueId);
-      }),
-    [assetsInWallet, hiddenCoins, network]
+  const assetNetwork = useMemo(
+    () => chainId && ethereumUtils.getNetworkFromChainId(chainId),
+    [chainId]
   );
 
+  const filteredAssetsInWallet = useMemo(() => {
+    if (type === CurrencySelectionTypes.input) {
+      return assetsInWallet?.filter(asset => {
+        if (assetNetwork) {
+          if (isL2Asset(asset.type) && assetNetwork !== asset.type)
+            return false;
+          if (!isL2Asset(asset.type) && assetNetwork !== Network.mainnet)
+            return false;
+        }
+        return !hiddenCoins?.includes(asset.uniqueId);
+      });
+    }
+    return [];
+  }, [type, assetsInWallet, assetNetwork, hiddenCoins]);
+
   const {
-    uniswapCurrencyList,
-    uniswapCurrencyListLoading,
+    swapCurrencyList,
+    swapCurrencyListLoading,
     updateFavorites,
-  } = useUniswapCurrencyList(searchQueryForSearch);
+  } = useSwapCurrencyList(searchQueryForSearch, chainId);
 
   const getWalletCurrencyList = useCallback(() => {
-    if (searchQueryForSearch !== '') {
-      const searchResults = searchWalletCurrencyList(
-        filteredAssetsInWallet,
-        searchQueryForSearch
-      );
-      return headerlessSection(searchResults);
-    } else {
-      return headerlessSection(filteredAssetsInWallet);
+    if (type === CurrencySelectionTypes.input) {
+      if (searchQueryForSearch !== '') {
+        const searchResults = searchWalletCurrencyList(
+          filteredAssetsInWallet,
+          searchQueryForSearch
+        );
+        return headerlessSection(searchResults);
+      } else {
+        return headerlessSection(filteredAssetsInWallet);
+      }
     }
-  }, [filteredAssetsInWallet, searchQueryForSearch]);
+  }, [filteredAssetsInWallet, searchQueryForSearch, type]);
 
   const currencyList = useMemo(() => {
     let list =
       type === CurrencySelectionTypes.input
         ? getWalletCurrencyList()
-        : uniswapCurrencyList;
+        : swapCurrencyList;
 
     // Fake tokens with same symbols break detox e2e tests
     if (IS_TESTING === 'true' && type === CurrencySelectionTypes.output) {
@@ -142,7 +156,7 @@ export default function CurrencySelectModal() {
       });
     }
     return list;
-  }, [getWalletCurrencyList, type, uniswapCurrencyList]);
+  }, [getWalletCurrencyList, type, swapCurrencyList]);
 
   const handleFavoriteAsset = useCallback(
     (asset, isFavorited) => {
@@ -276,8 +290,8 @@ export default function CurrencySelectModal() {
               testID="currency-select-header"
             />
             <ExchangeSearch
-              isFetching={uniswapCurrencyListLoading}
-              isSearching={uniswapCurrencyListLoading}
+              isFetching={swapCurrencyListLoading}
+              isSearching={swapCurrencyListLoading}
               onChangeText={setSearchQuery}
               onFocus={handleFocus}
               ref={searchInputRef}
@@ -288,7 +302,7 @@ export default function CurrencySelectModal() {
               <CurrencySelectionList
                 itemProps={itemProps}
                 listItems={currencyList}
-                loading={uniswapCurrencyListLoading}
+                loading={swapCurrencyListLoading}
                 query={searchQueryForSearch}
                 showList={isFocused}
                 testID="currency-select-list"

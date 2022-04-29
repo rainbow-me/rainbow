@@ -120,7 +120,7 @@ export {
   default as useHardwareBack,
   useHardwareBackOnFocus,
 } from './useHardwareBack';
-export { default as useUniswapCurrencyList } from './useUniswapCurrencyList';
+export { default as useSwapCurrencyList } from './useSwapCurrencyList';
 export { default as useENSRegistration } from './useENSRegistration';
 export { default as useENSRegistrationCosts } from './useENSRegistrationCosts';
 export { default as useENSProfile } from './useENSProfile';
