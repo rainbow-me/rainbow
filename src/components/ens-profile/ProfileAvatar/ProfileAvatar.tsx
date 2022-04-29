@@ -85,7 +85,6 @@ export default function ProfileAvatar({
           borderRadius={size / 2}
           justifyContent="center"
           shadow="15px light"
-          height={{ custom: size }}
           width={{ custom: size }}
         >
           <Animated.View style={style}>
