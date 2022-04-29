@@ -211,6 +211,24 @@ export default function ExchangeModal({
     type,
   });
 
+  const chainId = useMemo(
+    () =>
+      isL2Asset(inputCurrency?.type)
+        ? ethereumUtils.getChainIdFromNetwork(inputCurrency.type)
+        : undefined,
+    [inputCurrency]
+  );
+
+  const currentNetwork = useMemo(
+    () => ethereumUtils.getNetworkNameFromChainId(chainId),
+    [chainId]
+  );
+
+  // logger.debug('ChainId', chainId);
+  // logger.debug('currentNetwork', currentNetwork);
+  // logger.debug('inputCurrency', inputCurrency);
+  // logger.debug('outputCurrency', outputCurrency);
+
   const {
     result: {
       derivedValues: { inputAmount, nativeAmount, outputAmount },
@@ -218,9 +236,8 @@ export default function ExchangeModal({
       tradeDetails,
     },
     loading,
-  } = useSwapDerivedOutputs();
+  } = useSwapDerivedOutputs(chainId);
 
-  logger.debug('output currency', outputCurrency);
   const lastTradeDetails = usePrevious(tradeDetails);
 
   const {
@@ -275,26 +292,12 @@ export default function ExchangeModal({
   const [navigating, setNavigating] = useState(false);
 
   const navigateToOutput = useCallback(() => {
-    logger.debug(
-      'Navigating to select OUTPUT currency',
-      JSON.stringify(inputCurrency)
-    );
-    logger.debug('isL2Asset', isL2Asset(inputCurrency?.type));
-    logger.debug(
-      'getChainIdFromNetwork',
-      ethereumUtils.getChainIdFromNetwork(inputCurrency?.type)
-    );
-    const chainId = isL2Asset(inputCurrency?.type)
-      ? ethereumUtils.getChainIdFromNetwork(inputCurrency.type)
-      : 1;
-    logger.debug('chainId', chainId);
     !navigating && navigateToSelectOutputCurrency(chainId);
     setNavigating(true);
     setTimeout(() => setNavigating(false), 1000);
-  }, [inputCurrency, navigateToSelectOutputCurrency, navigating]);
+  }, [navigateToSelectOutputCurrency, navigating, chainId]);
 
   const navigateToInput = useCallback(() => {
-    logger.debug('Navigating to select INPUT currency');
     !navigating && navigateToSelectInputCurrency();
     setNavigating(true);
     setTimeout(() => setNavigating(false), 1000);
@@ -729,7 +732,7 @@ export default function ExchangeModal({
         <GasSpeedButton
           asset={outputCurrency}
           bottom={insets.bottom - 7}
-          currentNetwork={network}
+          currentNetwork={currentNetwork}
           dontBlur
           onCustomGasBlur={handleCustomGasBlur}
           testID={`${testID}-gas`}

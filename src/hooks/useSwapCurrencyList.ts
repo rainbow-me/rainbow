@@ -74,7 +74,6 @@ const useSwapCurrencyList = (searchQuery: string, chainId = 1) => {
 
   const handleVerifiedResponse = useCallback(
     (tokens: RT[]) => {
-      logger.debug('verified response', tokens);
       const addresses = favoriteAddresses.map(a => a.toLowerCase());
 
       return tokens
@@ -85,6 +84,7 @@ const useSwapCurrencyList = (searchQuery: string, chainId = 1) => {
             if (token.networks[MAINNET_CHAINID]) {
               token.mainnet_address = token.networks[MAINNET_CHAINID].address;
             }
+            token.address = token.networks[chainId].address;
           }
           return token;
         })
@@ -173,6 +173,7 @@ const useSwapCurrencyList = (searchQuery: string, chainId = 1) => {
           setFavoriteAssets((await getFavorites()) || []);
           break;
         case 'importedAssets':
+          // @ts-ignore
           setimportedAssets((await getimportedAsset(searchQuery)) || []);
           break;
       }

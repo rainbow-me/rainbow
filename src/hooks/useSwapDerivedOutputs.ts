@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Token } from '../entities/tokens';
 import useAccountSettings from './useAccountSettings';
 import { EthereumAddress } from '@rainbow-me/entities';
+import { isNativeAsset } from '@rainbow-me/handlers/assets';
 import { AppState } from '@rainbow-me/redux/store';
 import { SwapModalField, updateSwapQuote } from '@rainbow-me/redux/swap';
 import { ETH_ADDRESS } from '@rainbow-me/references';
@@ -51,14 +52,13 @@ const getInputAmount = async (
   }
 
   try {
-    const buyTokenAddress =
-      outputToken?.address === ETH_ADDRESS
-        ? ETH_ADDRESS_AGGREGATORS
-        : outputToken?.address;
-    const sellTokenAddress =
-      inputToken?.address === ETH_ADDRESS
-        ? ETH_ADDRESS_AGGREGATORS
-        : inputToken?.address;
+    const network = ethereumUtils.getNetworkFromChainId(chainId);
+    const buyTokenAddress = isNativeAsset(outputToken?.address, network)
+      ? ETH_ADDRESS_AGGREGATORS
+      : outputToken?.address;
+    const sellTokenAddress = isNativeAsset(inputToken?.address, network)
+      ? ETH_ADDRESS_AGGREGATORS
+      : inputToken?.address;
 
     const buyAmount = convertAmountToRawAmount(
       convertNumberToString(outputAmount),
@@ -142,14 +142,13 @@ const getOutputAmount = async (
   }
 
   try {
-    const buyTokenAddress =
-      outputToken?.address === ETH_ADDRESS
-        ? ETH_ADDRESS_AGGREGATORS
-        : outputToken?.address;
-    const sellTokenAddress =
-      inputToken?.address === ETH_ADDRESS
-        ? ETH_ADDRESS_AGGREGATORS
-        : inputToken?.address;
+    const network = ethereumUtils.getNetworkFromChainId(chainId);
+    const buyTokenAddress = isNativeAsset(outputToken?.address, network)
+      ? ETH_ADDRESS_AGGREGATORS
+      : outputToken?.address;
+    const sellTokenAddress = isNativeAsset(inputToken?.address, network)
+      ? ETH_ADDRESS_AGGREGATORS
+      : inputToken?.address;
 
     const sellAmount = convertAmountToRawAmount(
       convertNumberToString(inputAmount),
@@ -226,7 +225,7 @@ const displayValues: { [key in DisplayValue]: string | null } = {
   [DisplayValue.output]: null,
 };
 
-export default function useSwapDerivedOutputs() {
+export default function useSwapDerivedOutputs(chainId: number) {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
 
@@ -261,7 +260,7 @@ export default function useSwapDerivedOutputs() {
   const inputPrice = ethereumUtils.getAssetPrice(inputCurrency?.address);
   const outputPrice = genericAssets[outputCurrency?.address]?.price?.value;
 
-  const { chainId, accountAddress } = useAccountSettings();
+  const { accountAddress } = useAccountSettings();
 
   useEffect(() => {
     const getTradeDetails = async () => {
