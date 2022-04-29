@@ -81,15 +81,15 @@ const ENS_ON_CHAIN_DATA_WARNING_EXPLAINER =
 
 const ENS_ON_CHAIN_DATA_WARNING_TITLE = 'Heads up!';
 
-const ENS_OWNER_TITLE = `Who is the .eth owner?`;
-
 const ENS_PRIMARY_NAME_TITLE = 'What is a primary ENS name?';
 
-const ENS_OWNER_EXPLAINER = `The owner of a .eth name is the entity referenced in the ENS (Ethereum Name Service) registry's owner field. An owner may transfer ownership, update profile records, as well as create or reassign subdomains`;
+const ENS_MANAGER_TITLE = `Who is the .eth manager?`;
 
-const ENS_REGISTRANT_TITLE = `Who is the .eth registrant?`;
+const ENS_MANAGER_EXPLAINER = `The manager of a .eth name registration. The manager may transfer ownership, set a resolver or TTL, as well as create or reassign subdomains`;
 
-const ENS_REGISTRANT_EXPLAINER = `The occupier of a .eth name registration. The registrant may transfer the registration or reclaim ownership of the name in the registry if required.`;
+const ENS_OWNER_TITLE = `Who is the .eth owner?`;
+
+const ENS_OWNER_EXPLAINER = `The owner of a .eth name registration. The owner may transfer the registration or reclaim ownership of the name in the registry if required.`;
 
 const ENS_RESOLVER_TITLE = `What is a .eth resolver?`;
 
@@ -142,17 +142,17 @@ export const explainers = network => ({
     text: ENS_PRIMARY_NAME_EXPLAINER,
     title: ENS_PRIMARY_NAME_TITLE,
   },
+  ens_manager: {
+    extraHeight: -80,
+    emoji: '❓',
+    text: ENS_MANAGER_EXPLAINER,
+    title: ENS_MANAGER_TITLE,
+  },
   ens_owner: {
-    extraHeight: -40,
+    extraHeight: -80,
     emoji: '❓',
     text: ENS_OWNER_EXPLAINER,
     title: ENS_OWNER_TITLE,
-  },
-  ens_registrant: {
-    extraHeight: -60,
-    emoji: '❓',
-    text: ENS_REGISTRANT_EXPLAINER,
-    title: ENS_REGISTRANT_TITLE,
   },
   ens_resolver: {
     extraHeight: -60,

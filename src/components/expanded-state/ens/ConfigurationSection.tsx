@@ -57,7 +57,7 @@ export default function ConfigurationSection({
           )}
           {registrant && (
             <InfoRow
-              explainSheetType="ens_registrant"
+              explainSheetType="ens_owner"
               label={lang.t('expanded_state.unique_expanded.owner')}
               useAccentColor
               value={
@@ -69,7 +69,7 @@ export default function ConfigurationSection({
           )}
           {owner && (
             <InfoRow
-              explainSheetType="ens_owner"
+              explainSheetType="ens_manager"
               label={lang.t('expanded_state.unique_expanded.manager')}
               useAccentColor
               value={
