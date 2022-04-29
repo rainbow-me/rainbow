@@ -1,7 +1,6 @@
 import lang from 'i18n-js';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
-import { useRecoilValue } from 'recoil';
 import { useTheme } from '../../context/ThemeContext';
 import { useNavigation } from '../../navigation/Navigation';
 import { abbreviations, magicMemo, profileUtils } from '../../utils';
@@ -21,12 +20,12 @@ import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
 } from '@rainbow-me/helpers/emojiHandler';
-import { accentColorAtom } from '@rainbow-me/helpers/ens';
 import { isValidDomainFormat } from '@rainbow-me/helpers/validators';
 import {
   useAccountSettings,
   useContacts,
   useENSProfileRecords,
+  usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import styled from '@rainbow-me/styled-components';
@@ -103,8 +102,6 @@ const ContactProfileState = ({ address, contact, ens, nickname }) => {
   const { onAddOrUpdateContacts, onRemoveContact } = useContacts();
   const { isDarkMode, colors } = useTheme();
 
-  const accentColor = useRecoilValue(accentColorAtom);
-
   const [color, setColor] = useState(accentColor || 0);
   const [value, setValue] = useState(
     removeFirstEmojiFromString(contactNickname)
@@ -169,6 +166,20 @@ const ContactProfileState = ({ address, contact, ens, nickname }) => {
     () => (address ? addressHashedEmoji(address) : ''),
     [address]
   );
+
+  const colorIndex = useMemo(
+    () => (address ? addressHashedColorIndex(address) : 0),
+    [address]
+  );
+
+  const { result: dominantColor } = usePersistentDominantColorFromImage(
+    ensAvatar || ''
+  );
+
+  const accentColor =
+    dominantColor ||
+    colors.avatarBackgrounds[colorIndex || 0] ||
+    colors.appleBlue;
 
   return (
     <ProfileModal onPressBackdrop={handleAddContact}>
