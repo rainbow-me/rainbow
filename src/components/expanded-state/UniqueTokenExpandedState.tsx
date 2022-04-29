@@ -361,7 +361,7 @@ const UniqueTokenExpandedState = ({
 
   const hasEditButton =
     isActionsEnabled && profilesEnabled && isENS && ensProfile.isOwner;
-  const hasExtendDurationButton = isActionsEnabled && profilesEnabled && isENS;
+  const hasExtendDurationButton = !isReadOnlyWallet && profilesEnabled && isENS;
 
   const familyLinkDisplay = useMemo(
     () =>
