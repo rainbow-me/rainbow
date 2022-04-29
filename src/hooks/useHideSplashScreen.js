@@ -1,9 +1,9 @@
 import { useCallback, useRef } from 'react';
 import { InteractionManager, NativeModules, StatusBar } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
-import { PerformanceTracking } from '../performance-tracking';
-import { StartTime } from '../performance-tracking/start-time';
-import { PerformanceMetrics } from '../performance-tracking/types/PerformanceMetrics';
+import { StartTime } from '../performance/start-time';
+import { PerformanceTracking } from '../performance/tracking';
+import { PerformanceMetrics } from '../performance/tracking/types/PerformanceMetrics';
 
 const { RainbowSplashScreen, RNBootSplash } = NativeModules;
 

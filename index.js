@@ -4,9 +4,9 @@
 It needs to be an import statement because otherwise it doesn't load properly
 likely because of typescript.
 */
-import { PerformanceTracking } from './src/performance-tracking';
-import { StartTime } from './src/performance-tracking/start-time';
-import { PerformanceMetrics } from './src/performance-tracking/types/PerformanceMetrics';
+import { StartTime } from './src/performance/start-time';
+import { PerformanceTracking } from './src/performance/tracking';
+import { PerformanceMetrics } from './src/performance/tracking/types/PerformanceMetrics';
 
 PerformanceTracking.logDirectly(
   PerformanceMetrics.loadJSBundle,
