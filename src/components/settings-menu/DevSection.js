@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-community/async-storage';
+import lang from 'i18n-js';
 import React, { useCallback, useContext } from 'react';
 import { Alert, ScrollView } from 'react-native';
 // eslint-disable-next-line import/default
@@ -82,9 +83,15 @@ const DevSection = () => {
       );
       if (android && request.status === 500) throw new Error('failed');
       await request.json();
-      Alert.alert('Status', 'NOT APPLIED');
+      Alert.alert(
+        lang.t('developer_settings.status'),
+        lang.t('developer_settings.not_applied')
+      );
     } catch (e) {
-      Alert.alert('Status', 'APPLIED');
+      Alert.alert(
+        lang.t('developer_settings.status'),
+        lang.t('developer_settings.applied')
+      );
     }
   }, []);
 
@@ -102,7 +109,7 @@ const DevSection = () => {
     // Delete all backups (debugging)
     await deleteAllBackups();
 
-    Alert.alert('Backups deleted succesfully');
+    Alert.alert(lang.t('developer_settings.backups_deleted_successfully'));
     Restart();
   };
 
@@ -116,44 +123,60 @@ const DevSection = () => {
 
   return (
     <ScrollView testID="developer-settings-modal">
-      <ListItem label="💥 Clear async storage" onPress={AsyncStorage.clear} />
       <ListItem
-        label="💥 Clear MMKV storages"
-        onPress={() => clearAllStorages()}
+        label={`💥 ${lang.t('developer_settings.clear_async_storage')}`}
+        onPress={AsyncStorage.clear}
       />
       <ListItem
-        label="📷️ Clear Image Metadata Cache"
+        label={`💥 ${lang.t('developer_settings.clear_mmkv_storage')}`}
+        onPress={clearAllStorages}
+      />
+      <ListItem
+        label={`📷️ ${lang.t('developer_settings.clear_image_metadata_cache')}`}
         onPress={clearImageMetadataCache}
       />
       <ListItem
-        label="💣 Reset Keychain"
+        label={`💣 ${lang.t('developer_settings.reset_keychain')}`}
         onPress={wipeKeychain}
         testID="reset-keychain-section"
       />
-      <ListItem label="🔄 Restart app" onPress={() => Restart.Restart()} />
       <ListItem
-        label="💥 Crash app (render error)"
+        label={`🔄 ${lang.t('developer_settings.restart_app')}`}
+        onPress={() => Restart.Restart()}
+      />
+      <ListItem
+        label={`💥 ${lang.t('developer_settings.crash_app_render_error')}`}
         onPress={throwRenderError}
         testID="crash-app-section"
       />
       {errorObj}
-      <ListItem label="🗑️ Remove all backups" onPress={removeBackups} />
       <ListItem
-        label="🤷 Restore default experimental config"
+        label={`🗑️ ${lang.t('developer_settings.remove_all_backups')}`}
+        onPress={removeBackups}
+      />
+      <ListItem
+        label={`🤷 ${lang.t(
+          'developer_settings.restore_default_experimental_config'
+        )}`}
         onPress={() => AsyncStorage.removeItem('experimentalConfig')}
       />
       <ListItem
-        label="‍👷 Connect to hardhat"
+        label={`👷 ${lang.t('developer_settings.connect_to_hardhat')}`}
         onPress={connectToHardhat}
         testID="hardhat-section"
       />
-      <ListItem label="‍🏖️ Alert" onPress={checkAlert} testID="alert-section" />
+      <ListItem
+        label={`🏖️ ${lang.t('developer_settings.alert')}`}
+        onPress={checkAlert}
+        testID="alert-section"
+      />
       <UserDevSection scrollEnabled={false} />
       <ListItem
-        label={`‍⏩ Sync codepush, current: ${codePushVersion}`}
+        label={`‍⏩ ${lang.t('developer_settings.sync_codepush', {
+          codePushVersion: codePushVersion,
+        })}`}
         onPress={syncCodepush}
       />
-
       {Object.keys(config)
         .sort()
         .filter(key => defaultConfig[key].settings)

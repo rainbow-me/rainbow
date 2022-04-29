@@ -536,7 +536,7 @@ const GasSpeedButton = ({
               size="smedium"
               weight="bold"
             >
-              Estimated fee{' '}
+              {lang.t('swap.gas.estimated_fee')}{' '}
               <Label
                 color={
                   theme === 'dark'
