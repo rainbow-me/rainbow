@@ -294,6 +294,8 @@ export default function useENSRegistrationCosts({
       ].reduce((a, b) => add(a || 0, b || 0));
     } else if (step === REGISTRATION_STEPS.RENEW) {
       estimatedGasLimit = renewGasLimit;
+    } else if (step === REGISTRATION_STEPS.SET_NAME) {
+      estimatedGasLimit = setNameGasLimit;
     }
 
     const formattedEstimatedNetworkFee = formatEstimatedNetworkFee(
@@ -391,8 +393,10 @@ export default function useENSRegistrationCosts({
         nativeCurrency,
         nativeAssetPrice
       );
-
-      if (estimatedFee) {
+      if (
+        estimatedFee?.estimatedGasLimit &&
+        estimatedFee?.estimatedNetworkFee?.amount
+      ) {
         const weiEstimatedTotalCost = add(
           estimatedFee.estimatedNetworkFee.wei,
           estimatedRentPrice.wei.toString()

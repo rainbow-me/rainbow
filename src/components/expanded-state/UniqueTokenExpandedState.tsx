@@ -1,6 +1,7 @@
 import { BlurView } from '@react-native-community/blur';
 import c from 'chroma-js';
 import lang from 'i18n-js';
+import { isEmpty } from 'lodash';
 import React, { ReactNode, useCallback, useMemo, useRef } from 'react';
 import { InteractionManager, Linking, Share, View } from 'react-native';
 import Animated, {
@@ -570,36 +571,38 @@ const UniqueTokenExpandedState = ({
                       )}
                       {isENS && (
                         <>
-                          <Section
-                            addonComponent={
-                              hasEditButton && (
-                                <TextButton
-                                  align="right"
-                                  onPress={handlePressEdit}
-                                  size="18px"
-                                  weight="bold"
-                                >
-                                  {lang.t(
-                                    'expanded_state.unique_expanded.edit'
-                                  )}
-                                </TextButton>
-                              )
-                            }
-                            paragraphSpace={{ custom: 22 }}
-                            title={`${lang.t(
-                              'expanded_state.unique_expanded.profile_info'
-                            )}`}
-                            titleEmoji="🤿"
-                          >
-                            <ProfileInfoSection
-                              allowEdit={hasEditButton}
-                              coinAddresses={ensData?.coinAddresses}
-                              ensName={uniqueId}
-                              images={ensData?.images}
-                              isLoading={ensProfile.isLoading}
-                              records={ensData?.records}
-                            />
-                          </Section>
+                          {!isEmpty(ensData?.records) && (
+                            <Section
+                              addonComponent={
+                                hasEditButton && (
+                                  <TextButton
+                                    align="right"
+                                    onPress={handlePressEdit}
+                                    size="18px"
+                                    weight="bold"
+                                  >
+                                    {lang.t(
+                                      'expanded_state.unique_expanded.edit'
+                                    )}
+                                  </TextButton>
+                                )
+                              }
+                              paragraphSpace={{ custom: 22 }}
+                              title={`${lang.t(
+                                'expanded_state.unique_expanded.profile_info'
+                              )}`}
+                              titleEmoji="🤿"
+                            >
+                              <ProfileInfoSection
+                                allowEdit={hasEditButton}
+                                coinAddresses={ensData?.coinAddresses}
+                                ensName={uniqueId}
+                                images={ensData?.images}
+                                isLoading={ensProfile.isLoading}
+                                records={ensData?.records}
+                              />
+                            </Section>
+                          )}
                           <Section
                             paragraphSpace={{ custom: 22 }}
                             title={`${lang.t(
