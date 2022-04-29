@@ -31,7 +31,7 @@ export default function MoreButton({
   const { setClipboard } = useClipboard();
   const { contacts, onRemoveContact } = useContacts();
 
-  const currentContact = useMemo(
+  const contact = useMemo(
     () => (address ? contacts[address.toLowerCase()] : undefined),
     [address, contacts]
   );
@@ -43,13 +43,22 @@ export default function MoreButton({
 
   const menuItems = useMemo(() => {
     return [
-      currentContact
+      {
+        actionKey: ACTIONS.COPY_ADDRESS,
+        actionTitle: lang.t('profiles.details.copy_address'),
+        discoverabilityTitle: formattedAddress,
+        icon: {
+          iconType: 'SYSTEM',
+          iconValue: 'square.on.square',
+        },
+      },
+      contact
         ? {
             actionKey: ACTIONS.REMOVE_CONTACT,
             actionTitle: lang.t('profiles.details.remove_from_contacts'),
             icon: {
               iconType: 'SYSTEM',
-              iconValue: 'person.text.rectangle',
+              iconValue: 'person.crop.circle.badge.minus',
             },
           }
         : {
@@ -57,28 +66,19 @@ export default function MoreButton({
             actionTitle: lang.t('profiles.details.add_to_contacts'),
             icon: {
               iconType: 'SYSTEM',
-              iconValue: 'person.text.rectangle',
+              iconValue: 'person.crop.circle.badge.plus',
             },
           },
-      {
-        actionKey: ACTIONS.COPY_ADDRESS,
-        actionTitle: lang.t('profiles.details.copy_address'),
-        discoverabilityTitle: formattedAddress,
-        icon: {
-          iconType: 'SYSTEM',
-          iconValue: 'doc.on.doc',
-        },
-      },
       {
         actionKey: ACTIONS.ETHERSCAN,
         actionTitle: lang.t('profiles.details.view_on_etherscan'),
         icon: {
           iconType: 'SYSTEM',
-          iconValue: 'safari.fill',
+          iconValue: 'link',
         },
       },
     ] as MenuActionConfig[];
-  }, [currentContact, formattedAddress]);
+  }, [contact, formattedAddress]);
 
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
@@ -91,7 +91,7 @@ export default function MoreButton({
       if (actionKey === ACTIONS.ADD_CONTACT) {
         navigate(Routes.MODAL_SCREEN, {
           address,
-          contact: currentContact,
+          contact,
           ens: ensName,
           nickname: ensName,
           type: 'contact_profile',
@@ -100,13 +100,13 @@ export default function MoreButton({
       if (actionKey === ACTIONS.REMOVE_CONTACT) {
         showDeleteContactActionSheet({
           address,
-          nickname: currentContact.nickname,
+          nickname: contact.nickname,
           removeContact: onRemoveContact,
         });
         android && Keyboard.dismiss();
       }
     },
-    [address, currentContact, ensName, navigate, onRemoveContact, setClipboard]
+    [address, contact, ensName, navigate, onRemoveContact, setClipboard]
   );
 
   const handleAndroidPress = useCallback(() => {

@@ -154,11 +154,11 @@ const RegistrationAvatar = ({
             <AccentColorProvider color={accentColor + '10'}>
               <Box
                 alignItems="center"
-                background="accent"
+                background={avatarUrl ? 'body' : 'accent'}
                 borderRadius={size / 2}
                 height={{ custom: size }}
                 justifyContent="center"
-                shadow="12px heavy accent"
+                shadow={avatarUrl ? '15px light' : undefined}
                 width={{ custom: size }}
               >
                 {avatarUrl ? (

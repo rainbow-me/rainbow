@@ -18,11 +18,13 @@ export default function TextRecordsForm({
   onAutoFocusLayout,
   onFocus,
   onError,
+  selectionColor,
 }: {
   autoFocusKey?: boolean;
   onAutoFocusLayout?: ViewProps['onLayout'];
   onFocus?: TextInputProps['onFocus'];
   onError?: ({ yOffset }: { yOffset: number }) => void;
+  selectionColor?: string;
 }) {
   const {
     errors,
@@ -100,6 +102,7 @@ export default function TextRecordsForm({
                   }}
                   onFocus={onFocus}
                   placeholder={placeholder}
+                  selectionColor={selectionColor}
                   startsWith={startsWith}
                   testID={`ens-text-record-${key}`}
                   validations={validations}
@@ -120,14 +123,13 @@ function Field({ defaultValue, ...props }: InlineFieldProps) {
   useFocusEffect(
     useCallback(() => {
       setValue(defaultValue);
-      return () => setValue('');
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
   );
 
   return (
     <>
-      <Divider />
+      <Divider color="divider40" />
       <InlineField
         {...props}
         onChangeText={text => {

@@ -13,6 +13,9 @@ import { AddressField } from '../fields';
 import { Row } from '../layout';
 import { SheetHandleFixedToTop, SheetTitle } from '../sheet';
 import { Label, Text } from '../text';
+import useExperimentalFlag, {
+  PROFILES,
+} from '@rainbow-me/config/experimentalHooks';
 import { resolveNameOrAddress } from '@rainbow-me/handlers/web3';
 import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
 import { useClipboard, useDimensions } from '@rainbow-me/hooks';
@@ -81,6 +84,7 @@ export default function SendHeader({
   userAccounts,
   watchedAccounts,
 }) {
+  const profilesEnabled = useExperimentalFlag(PROFILES);
   const { setClipboard } = useClipboard();
   const { isSmallPhone, isTinyPhone } = useDimensions();
   const { navigate } = useNavigation();
@@ -112,12 +116,15 @@ export default function SendHeader({
   }, [recipient, userAccounts, watchedAccounts]);
 
   const handleNavigateToContact = useCallback(() => {
-    let color = get(contact, 'color');
     let nickname = recipient;
-    if (color !== 0 && !color) {
-      const emoji = profileUtils.addressHashedEmoji(hexAddress);
-      color = profileUtils.addressHashedColorIndex(hexAddress) || 0;
-      nickname = isHexString(recipient) ? emoji : `${emoji} ${recipient}`;
+    let color = '';
+    if (!profilesEnabled) {
+      color = get(contact, 'color');
+      if (color !== 0 && !color) {
+        const emoji = profileUtils.addressHashedEmoji(hexAddress);
+        color = profileUtils.addressHashedColorIndex(hexAddress) || 0;
+        nickname = isHexString(recipient) ? emoji : `${emoji} ${recipient}`;
+      }
     }
 
     android && Keyboard.dismiss();
@@ -131,7 +138,14 @@ export default function SendHeader({
       onRefocusInput,
       type: 'contact_profile',
     });
-  }, [contact, hexAddress, navigate, onRefocusInput, recipient]);
+  }, [
+    contact,
+    hexAddress,
+    navigate,
+    onRefocusInput,
+    profilesEnabled,
+    recipient,
+  ]);
 
   const handleOpenContactActionSheet = useCallback(async () => {
     return showActionSheetWithOptions(

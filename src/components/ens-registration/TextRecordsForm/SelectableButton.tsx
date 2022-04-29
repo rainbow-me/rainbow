@@ -20,13 +20,15 @@ export default function SelectableButton({
   isSelected,
   testID,
 }: SelectableButtonProps) {
+  const secondary06 = useForegroundColor('secondary06');
   const secondary30 = useForegroundColor('secondary30');
   const accent = useForegroundColor('accent');
-  const buttonColor = isSelected ? accent : secondary30;
+  const borderColor = isSelected ? accent : secondary06;
+  const textColor = isSelected ? accent : secondary30;
   const height = 30;
 
   return (
-    <AccentColorProvider color={buttonColor}>
+    <AccentColorProvider color={textColor}>
       <Box
         as={ButtonPressAnimation}
         height={`${height}px`}
@@ -40,11 +42,11 @@ export default function SelectableButton({
           height={`${height}px`}
           justifyContent="center"
           paddingHorizontal="8px"
-          style={useMemo(() => ({ borderColor: buttonColor, borderWidth: 2 }), [
-            buttonColor,
+          style={useMemo(() => ({ borderColor: borderColor, borderWidth: 2 }), [
+            borderColor,
           ])}
         >
-          <Text color="accent" size="16px" weight="heavy">
+          <Text align="center" color="accent" size="16px" weight="heavy">
             {children}
           </Text>
         </Box>

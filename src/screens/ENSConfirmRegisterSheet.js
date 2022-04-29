@@ -2,7 +2,7 @@ import { useFocusEffect, useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { HoldToAuthorizeButton } from '../components/buttons';
 import {
   CommitContent,
@@ -11,6 +11,7 @@ import {
   WaitCommitmentConfirmationContent,
   WaitENSConfirmationContent,
 } from '../components/ens-registration';
+import { avatarMetadataAtom } from '../components/ens-registration/RegistrationAvatar/RegistrationAvatar';
 import { GasSpeedButton } from '../components/gas';
 import { SheetActionButtonRow, SlackSheet } from '../components/sheet';
 import {
@@ -62,7 +63,7 @@ function TransactionActionRow({
       <Box>
         <SheetActionButtonRow paddingBottom={5}>
           <HoldToAuthorizeButton
-            color={accentColor}
+            backgroundColor={accentColor}
             disabled={!isSufficientGas || !isValidGas}
             hideInnerBorder
             isLongPressAvailableForBiometryType
@@ -98,9 +99,10 @@ export default function ENSConfirmRegisterSheet() {
   } = useENSModifiedRegistration();
 
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
+  const avatarMetadata = useRecoilValue(avatarMetadataAtom);
 
   const { result: dominantColor } = usePersistentDominantColorFromImage(
-    initialAvatarUrl || ''
+    avatarMetadata?.path || initialAvatarUrl || ''
   );
   useEffect(() => {
     setAccentColor(dominantColor || colors.purple);
@@ -133,6 +135,7 @@ export default function ENSConfirmRegisterSheet() {
     step,
     yearsDuration: duration,
   });
+  const { clearCurrentRegistrationName } = useENSRegistration();
 
   const goToProfileScreen = useCallback(() => {
     InteractionManager.runAfterInteractions(() => {
@@ -316,6 +319,10 @@ export default function ENSConfirmRegisterSheet() {
     }, [])
   );
 
+  useEffect(() => () => clearCurrentRegistrationName(), [
+    clearCurrentRegistrationName,
+  ]);
+
   return (
     <SlackSheet
       additionalTopPadding
@@ -336,23 +343,21 @@ export default function ENSConfirmRegisterSheet() {
               <Box horizontal="30px">
                 <Stack alignHorizontal="center" space="15px">
                   {avatarUrl && (
-                    <AccentColorProvider color={accentColor + '10'}>
+                    <Box
+                      background="body"
+                      borderRadius={avatarSize / 2}
+                      height={{ custom: avatarSize }}
+                      shadow="15px light"
+                      width={{ custom: avatarSize }}
+                    >
                       <Box
-                        background="accent"
+                        as={ImgixImage}
                         borderRadius={avatarSize / 2}
                         height={{ custom: avatarSize }}
-                        shadow="12px heavy accent"
+                        source={{ uri: avatarUrl }}
                         width={{ custom: avatarSize }}
-                      >
-                        <Box
-                          as={ImgixImage}
-                          borderRadius={avatarSize / 2}
-                          height={{ custom: avatarSize }}
-                          source={{ uri: avatarUrl }}
-                          width={{ custom: avatarSize }}
-                        />
-                      </Box>
-                    </AccentColorProvider>
+                      />
+                    </Box>
                   )}
                   <Heading size="26px">{ensName}</Heading>
                   <Text

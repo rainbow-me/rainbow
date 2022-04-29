@@ -8,7 +8,7 @@ export default function MoreButton() {
   return (
     <ActionButton
       // @ts-expect-error JavaScript component
-      icon={<ThreeDotsIcon color={color} tightDots />}
+      icon={<ThreeDotsIcon color={color} smallDots />}
       variant="outlined"
     />
   );

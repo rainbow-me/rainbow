@@ -51,26 +51,26 @@ export default function ConfigurationSection({
             switchValue={isPrimary}
             useAccentColor
           />
-          {owner && (
-            <InfoRow
-              explainSheetType="ens_owner"
-              label={lang.t('expanded_state.unique_expanded.owner')}
-              useAccentColor
-              value={
-                owner.name ||
-                formatAddressForDisplay(owner.address || '', 4, 4) ||
-                ''
-              }
-            />
-          )}
           {registrant && (
             <InfoRow
               explainSheetType="ens_registrant"
-              label={lang.t('expanded_state.unique_expanded.registrant')}
+              label={lang.t('expanded_state.unique_expanded.owner')}
               useAccentColor
               value={
                 registrant.name ||
                 formatAddressForDisplay(registrant.address || '', 4, 4) ||
+                ''
+              }
+            />
+          )}
+          {owner && (
+            <InfoRow
+              explainSheetType="ens_owner"
+              label={lang.t('expanded_state.unique_expanded.manager')}
+              useAccentColor
+              value={
+                owner.name ||
+                formatAddressForDisplay(owner.address || '', 4, 4) ||
                 ''
               }
             />

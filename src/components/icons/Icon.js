@@ -7,6 +7,7 @@ import ArrowBackIcon from './svg/ArrowBack';
 import ArrowCircledIcon from './svg/ArrowCircledIcon';
 import ArrowIcon from './svg/ArrowIcon';
 import AvatarIcon from './svg/AvatarIcon';
+import BTCIcon from './svg/BTCIcon';
 import BackspaceIcon from './svg/BackspaceIcon';
 import CameraIcon from './svg/CameraIcon';
 import CaretIcon from './svg/CaretIcon';
@@ -20,6 +21,7 @@ import CloseIcon from './svg/CloseIcon';
 import CompassIcon from './svg/CompassIcon';
 import CopyIcon from './svg/CopyIcon';
 import CrosshairIcon from './svg/CrosshairIcon';
+import DOGEIcon from './svg/DOGEIcon';
 import DiscordIcon from './svg/DiscordIcon';
 import DotIcon from './svg/DotIcon';
 import DoubleCaretIcon from './svg/DoubleCaretIcon';
@@ -43,6 +45,7 @@ import HiddenIcon from './svg/HiddenIcon';
 import InboxIcon from './svg/InboxIcon';
 import InfoIcon from './svg/InfoIcon';
 import InstagramIcon from './svg/InstagramIcon';
+import LTCIcon from './svg/LTCIcon';
 import LockIcon from './svg/LockIcon';
 import MinusCircledIcon from './svg/MinusCircledIcon';
 import OfflineIcon from './svg/OfflineIcon';
@@ -80,6 +83,7 @@ const IconTypes = {
   arrowCircled: ArrowCircledIcon,
   avatar: AvatarIcon,
   backspace: BackspaceIcon,
+  btcCoin: BTCIcon,
   camera: CameraIcon,
   caret: CaretIcon,
   caretThin: CaretThinIcon,
@@ -93,6 +97,7 @@ const IconTypes = {
   copy: CopyIcon,
   crosshair: CrosshairIcon,
   discord: DiscordIcon,
+  dogeCoin: DOGEIcon,
   dot: DotIcon,
   doubleCaret: DoubleCaretIcon,
   doubleChevron: DoubleChevronIcon,
@@ -118,6 +123,7 @@ const IconTypes = {
   info: InfoIcon,
   instagram: InstagramIcon,
   lock: LockIcon,
+  ltcCoin: LTCIcon,
   minusCircled: MinusCircledIcon,
   offline: OfflineIcon,
   passcode: PasscodeIcon,

@@ -32,7 +32,7 @@ const RenewContent = ({
   return (
     <Inset horizontal="30px" vertical={isSmallPhone ? '12px' : '30px'}>
       <Stack space={isSmallPhone ? '19px' : '30px'}>
-        <Divider color="divider40" />
+        <Divider color="divider60" />
         <RegistrationReviewRows
           duration={yearsDuration}
           estimatedCostETH={
@@ -50,7 +50,7 @@ const RenewContent = ({
             registrationCostsData?.estimatedTotalRegistrationCost?.display
           }
         />
-        <Divider color="divider40" />
+        <Divider color="divider60" />
       </Stack>
     </Inset>
   );

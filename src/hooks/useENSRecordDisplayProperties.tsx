@@ -29,6 +29,11 @@ const icons = {
   [ENS_RECORDS.instagram]: 'instagram',
   [ENS_RECORDS.snapchat]: 'snapchat',
   [ENS_RECORDS.discord]: 'discord',
+  [ENS_RECORDS.reddit]: 'reddit',
+  [ENS_RECORDS.telegram]: 'telegram',
+  [ENS_RECORDS.DOGE]: 'dogeCoin',
+  [ENS_RECORDS.BTC]: 'btcCoin',
+  [ENS_RECORDS.LTC]: 'ltcCoin',
 } as { [key: string]: string };
 
 const links = {
@@ -145,7 +150,7 @@ export default function useENSRecordDisplayProperties({
             discoverabilityTitle: displayUrl,
             icon: {
               iconType: 'SYSTEM',
-              iconValue: 'safari.fill',
+              iconValue: 'arrow.up.forward.app.fill',
             },
           }
         : undefined,
@@ -155,7 +160,7 @@ export default function useENSRecordDisplayProperties({
         discoverabilityTitle: displayUrl || recordValue,
         icon: {
           iconType: 'SYSTEM',
-          iconValue: 'doc.on.doc',
+          iconValue: 'square.on.square',
         },
       },
     ].filter(x => x);

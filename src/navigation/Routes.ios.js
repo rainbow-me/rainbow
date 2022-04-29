@@ -441,7 +441,7 @@ function NativeStackNavigator() {
               backgroundOpacity: 0.7,
               customStack: true,
               springDamping: 1,
-              transitionDuration: 0.25,
+              transitionDuration: 0.3,
             }}
           />
         </>

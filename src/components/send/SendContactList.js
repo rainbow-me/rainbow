@@ -4,7 +4,6 @@ import React, { useCallback, useMemo, useRef } from 'react';
 import { SectionList } from 'react-native';
 import * as DeviceInfo from 'react-native-device-info';
 import LinearGradient from 'react-native-linear-gradient';
-import { useSafeArea } from 'react-native-safe-area-context';
 import { FlyInAnimation } from '../animations';
 import { ContactRow, SwipeableContactRow } from '../contacts';
 import { SheetHandleFixedToTopHeight } from '../sheet';
@@ -18,8 +17,7 @@ import styled from '@rainbow-me/styled-components';
 import { filterList } from '@rainbow-me/utils';
 
 const KeyboardArea = styled.View({
-  height: ({ insets, keyboardHeight }) =>
-    DeviceInfo.hasNotch() ? keyboardHeight : keyboardHeight - insets.top,
+  height: ({ keyboardHeight }) => keyboardHeight,
 });
 
 const rowHeight = 59;
@@ -28,7 +26,7 @@ const getItemLayout = (data, index) => ({
   length: rowHeight,
   offset: rowHeight * index,
 });
-const contentContainerStyle = { paddingBottom: 32, paddingTop: 7 };
+const contentContainerStyle = { paddingBottom: 17, paddingTop: 7 };
 const keyExtractor = item => `SendContactList-${item.address}`;
 
 const SectionTitle = styled(Text).attrs({
@@ -75,7 +73,6 @@ export default function SendContactList({
 }) {
   const { accountAddress } = useAccountSettings();
   const { navigate } = useNavigation();
-  const insets = useSafeArea();
   const keyboardHeight = useKeyboardHeight();
   const { isDarkMode } = useTheme();
 
@@ -236,7 +233,7 @@ export default function SendContactList({
       >
         <InvalidPasteToast />
       </ToastPositionContainer>
-      {ios && <KeyboardArea insets={insets} keyboardHeight={keyboardHeight} />}
+      {ios && <KeyboardArea keyboardHeight={keyboardHeight} />}
     </FlyInAnimation>
   );
 }
