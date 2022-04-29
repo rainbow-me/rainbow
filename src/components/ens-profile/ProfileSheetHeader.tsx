@@ -55,7 +55,12 @@ export default function ProfileSheetHeader({
     (uniqueToken: UniqueAsset) => {
       navigate(Routes.EXPANDED_ASSET_SHEET, {
         asset: uniqueToken,
+        backgroundOpacity: 1,
+        cornerRadius: 'device',
         external: true,
+        springDamping: 1,
+        topOffset: 0,
+        transitionDuration: 0.25,
         type: 'unique_token',
       });
     },

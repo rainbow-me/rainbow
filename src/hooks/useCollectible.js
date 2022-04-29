@@ -47,7 +47,7 @@ export default function useCollectible(
     tokenId: asset?.id,
   });
 
-  return asset;
+  return { ...asset, isExternal };
 }
 
 function useRevalidateInBackground({
