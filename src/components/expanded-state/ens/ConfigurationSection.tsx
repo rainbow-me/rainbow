@@ -15,12 +15,14 @@ export default function ConfigurationSection({
   registrant,
   isOwner,
   isPrimary,
+  isExternal,
   isReadOnlyWallet,
   name,
 }: {
   isLoading?: boolean;
   owner?: { name?: string; address?: string };
   registrant?: { name?: string; address?: string };
+  isExternal?: boolean;
   isOwner?: boolean;
   isPrimary?: boolean;
   isReadOnlyWallet?: boolean;
@@ -38,7 +40,7 @@ export default function ConfigurationSection({
         </>
       ) : (
         <>
-          {!isReadOnlyWallet && (
+          {!isReadOnlyWallet && !isExternal && (
             <InfoRow
               explainSheetType="ens_primary_name"
               label={lang.t('expanded_state.unique_expanded.set_primary_name')}

@@ -645,6 +645,7 @@ const UniqueTokenExpandedState = ({
                             titleEmoji="⚙️"
                           >
                             <ConfigurationSection
+                              isExternal={external}
                               isLoading={ensProfile.isLoading}
                               isOwner={ensProfile?.isOwner}
                               isPrimary={ensData?.primary?.isPrimary}
