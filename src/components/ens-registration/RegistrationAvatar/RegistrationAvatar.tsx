@@ -29,6 +29,11 @@ export const avatarMetadataAtom = atom<Image | undefined>({
   key: 'ens.avatarMetadata',
 });
 
+export const externalAvatarUrlAtom = atom<string>({
+  default: '',
+  key: 'ens.externalAvatarMetadataAtom',
+});
+
 const size = 70;
 
 const RegistrationAvatar = ({

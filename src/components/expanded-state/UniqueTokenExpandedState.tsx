@@ -1,14 +1,20 @@
 import { BlurView } from '@react-native-community/blur';
 import c from 'chroma-js';
 import lang from 'i18n-js';
-import { isEmpty } from 'lodash';
-import React, { ReactNode, useCallback, useMemo, useRef } from 'react';
+import React, {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+} from 'react';
 import { InteractionManager, Linking, Share, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
 } from 'react-native-reanimated';
+import { useSetRecoilState } from 'recoil';
 import URL from 'url-parse';
 import { CardSize } from '../../components/unique-token/CardSize';
 import useWallets from '../../hooks/useWallets';
@@ -16,6 +22,7 @@ import { lightModeThemeColors } from '../../styles/colors';
 import L2Disclaimer from '../L2Disclaimer';
 import Link from '../Link';
 import { ButtonPressAnimation } from '../animations';
+import { externalAvatarUrlAtom } from '../ens-registration/RegistrationAvatar/RegistrationAvatar';
 import ImagePreviewOverlay from '../images/ImagePreviewOverlay';
 import ImgixImage from '../images/ImgixImage';
 import {
@@ -56,7 +63,11 @@ import {
 } from '@rainbow-me/design-system';
 import { AssetTypes, UniqueAsset } from '@rainbow-me/entities';
 import { buildUniqueTokenName } from '@rainbow-me/helpers/assets';
-import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
+import {
+  accentColorAtom,
+  ENS_RECORDS,
+  REGISTRATION_MODES,
+} from '@rainbow-me/helpers/ens';
 import {
   useAccountProfile,
   useBooleanState,
@@ -262,6 +273,13 @@ const UniqueTokenExpandedState = ({
   const ensProfile = useENSProfile(cleanENSName, { enabled: isENS });
   const ensData = ensProfile.data;
 
+  const profileInfoSectionAvailable = useMemo(() => {
+    const available = Object.keys(ensData?.records || {}).some(
+      key => key !== ENS_RECORDS.cover && key !== ENS_RECORDS.avatar
+    );
+    return available;
+  }, [ensData?.records]);
+
   const {
     addShowcaseToken,
     removeShowcaseToken,
@@ -305,6 +323,22 @@ const UniqueTokenExpandedState = ({
     // @ts-expect-error image_url could be null or undefined?
     usePersistentDominantColorFromImage(asset.lowResUrl).result ||
     colors.paleBlue;
+
+  const setAccentColor = useSetRecoilState(accentColorAtom);
+  const setExternalAvatarUrlMetadata = useSetRecoilState(externalAvatarUrlAtom);
+
+  useEffect(() => {
+    if (isENS) {
+      setAccentColor(imageColor);
+      setExternalAvatarUrlMetadata(asset?.lowResUrl || '');
+    }
+  }, [
+    asset.lowResUrl,
+    imageColor,
+    isENS,
+    setAccentColor,
+    setExternalAvatarUrlMetadata,
+  ]);
 
   const textColor = useMemo(() => {
     const contrastWithWhite = c.contrast(imageColor, colors.whiteLabel);
@@ -571,7 +605,7 @@ const UniqueTokenExpandedState = ({
                       )}
                       {isENS && (
                         <>
-                          {!isEmpty(ensData?.records) && (
+                          {profileInfoSectionAvailable && (
                             <Section
                               addonComponent={
                                 hasEditButton && (

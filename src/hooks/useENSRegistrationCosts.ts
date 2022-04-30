@@ -149,22 +149,24 @@ export default function useENSRegistrationCosts({
   }, [debouncedChangedRecords, name]);
 
   const getSetNameGasLimit = useCallback(async () => {
+    const cleanName = registrationParameters?.name?.replace(ENS_DOMAIN, '');
     const newSetNameGasLimit = await estimateENSSetNameGasLimit({
-      name,
+      name: cleanName,
       ownerAddress: accountAddress,
     });
     return newSetNameGasLimit || '';
-  }, [accountAddress, name]);
+  }, [accountAddress, registrationParameters?.name]);
 
   const getRenewGasLimit = useCallback(async () => {
-    const rentPrice = await getRentPrice(name, duration);
+    const cleanName = registrationParameters?.name?.replace(ENS_DOMAIN, '');
+    const rentPrice = await getRentPrice(cleanName, duration);
     const newRenewGasLimit = await estimateENSRenewGasLimit({
       duration,
-      name,
+      name: cleanName,
       rentPrice: rentPrice?.toString(),
     });
     return newRenewGasLimit || '';
-  }, [duration, name]);
+  }, [registrationParameters?.name, duration]);
 
   const getReverseRecord = useCallback(async () => {
     const reverseRecord = await fetchReverseRecord(accountAddress);
@@ -210,7 +212,11 @@ export default function useENSRegistrationCosts({
     {
       enabled: step === REGISTRATION_STEPS.RENEW,
       queryFn: getRenewGasLimit,
-      queryKey: [QUERY_KEYS.GET_RENEW_GAS_LIMIT],
+      queryKey: [
+        QUERY_KEYS.GET_RENEW_GAS_LIMIT,
+        registrationParameters?.name,
+        duration,
+      ],
       staleTime: Infinity,
     },
     {
