@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
 import { useSetRecoilState } from 'recoil';
 import { useDebounce } from 'use-debounce';
@@ -75,16 +75,11 @@ export default function ENSSearchSheet() {
   }, [isAvailable, isInvalid, isRegistered]);
 
   const handlePressContinue = useCallback(() => {
+    setExternalAvatarUrlMetadata('');
     startRegistration(`${searchQuery}${ENS_DOMAIN}`);
     Keyboard.dismiss();
     navigate(Routes.ENS_ASSIGN_RECORDS_SHEET);
-  }, [navigate, searchQuery, startRegistration]);
-
-  useEffect(() => {
-    if (!name) {
-      setExternalAvatarUrlMetadata('');
-    }
-  }, [setExternalAvatarUrlMetadata, name]);
+  }, [navigate, searchQuery, setExternalAvatarUrlMetadata, startRegistration]);
 
   return (
     <Box
