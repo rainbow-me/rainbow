@@ -202,7 +202,8 @@
         "cancel": "Cancel",
         "delete": "Delete Contact",
         "edit": "Edit Contact"
-      }
+      },
+      "input": { "placeholder": "name" }
     },
     "discover": {
       "lists": {
@@ -384,7 +385,7 @@
       }
     },
     "gas": {
-      "network_fee": "Est. network fee",
+      "network_fee": "Est. network fee"
     },
     "homepage": {
       "back": "Back to rainbow.me",

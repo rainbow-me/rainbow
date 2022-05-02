@@ -6,7 +6,7 @@ import { AssetPanel, FloatingPanels } from '../../floating-panels';
 import { KeyboardFixedOpenLayout } from '../../layout';
 import { useDimensions } from '@rainbow-me/hooks';
 
-export default function ProfileModal({ onPressBackdrop, ...props }) {
+export default function ProfileModalContainer({ onPressBackdrop, ...props }) {
   const { width: deviceWidth } = useDimensions();
   const { params } = useRoute();
 
