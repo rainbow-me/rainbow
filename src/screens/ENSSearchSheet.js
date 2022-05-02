@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
 import { useDebounce } from 'use-debounce';
 import dice from '../assets/dice.png';
@@ -20,7 +20,7 @@ import {
   Stack,
   Text,
 } from '@rainbow-me/design-system';
-import { ENS_DOMAIN } from '@rainbow-me/helpers/ens';
+import { ENS_DOMAIN, REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import {
   useENSRegistration,
   useENSRegistrationCosts,
@@ -76,6 +76,14 @@ export default function ENSSearchSheet() {
     Keyboard.dismiss();
     navigate(Routes.ENS_ASSIGN_RECORDS_SHEET);
   }, [navigate, searchQuery, startRegistration]);
+
+  useEffect(() => {
+    debouncedSearchQuery.length > 3 &&
+      startRegistration(
+        `${debouncedSearchQuery}${ENS_DOMAIN}`,
+        REGISTRATION_MODES.CREATE
+      );
+  }, [debouncedSearchQuery, startRegistration]);
 
   return (
     <Box

@@ -117,7 +117,7 @@ export default function ENSAssignRecordsSheet() {
   const [prevDominantColor, setPrevDominantColor] = useState(dominantColor);
 
   useEffect(() => {
-    setAccentColor(dominantColor || prevDominantColor || colors.purple);
+    setAccentColor(dominantColor || colors.purple);
     if (dominantColor) {
       setPrevDominantColor(dominantColor);
     }

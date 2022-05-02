@@ -1,4 +1,3 @@
-import { useFocusEffect } from '@react-navigation/core';
 import { debounce, isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import { TextInputProps, ViewProps } from 'react-native';
@@ -92,6 +91,7 @@ export default function TextRecordsForm({
                   defaultValue={values[key]}
                   errorMessage={errors[key]}
                   inputProps={inputProps}
+                  key={key}
                   label={label}
                   onChangeText={debounce(
                     text => onChangeField({ key, value: text }),
@@ -120,12 +120,9 @@ function Field({ defaultValue, ...props }: InlineFieldProps) {
   const [value, setValue] = useState(defaultValue);
 
   // Set / clear values when the screen comes to focus / unfocus.
-  useFocusEffect(
-    useCallback(() => {
-      setValue(defaultValue);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-  );
+  useEffect(() => {
+    setValue(defaultValue);
+  }, [defaultValue]);
 
   return (
     <>
@@ -136,7 +133,7 @@ function Field({ defaultValue, ...props }: InlineFieldProps) {
           props.onChangeText(text);
           setValue(text);
         }}
-        value={value ?? defaultValue}
+        value={value}
       />
     </>
   );

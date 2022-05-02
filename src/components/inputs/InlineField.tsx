@@ -35,6 +35,7 @@ export type InlineFieldProps = {
   };
   value?: string;
   testID?: string;
+  key?: string;
 };
 
 export default function InlineField({
