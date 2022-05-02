@@ -323,9 +323,16 @@ export default function ENSConfirmRegisterSheet() {
     }, [])
   );
 
-  useEffect(() => () => clearCurrentRegistrationName(), [
-    clearCurrentRegistrationName,
-  ]);
+  useEffect(
+    () => () => {
+      if (
+        step === REGISTRATION_STEPS.RENEW ||
+        step === REGISTRATION_STEPS.SET_NAME
+      )
+        clearCurrentRegistrationName();
+    },
+    [clearCurrentRegistrationName, step]
+  );
 
   return (
     <SlackSheet
