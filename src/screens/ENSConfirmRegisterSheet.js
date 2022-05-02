@@ -18,6 +18,7 @@ import {
   AccentColorProvider,
   Box,
   Heading,
+  Inset,
   Row,
   Rows,
   Stack,
@@ -366,7 +367,11 @@ export default function ENSConfirmRegisterSheet() {
                       />
                     </Box>
                   )}
-                  <Heading size="26px">{ensName}</Heading>
+                  <Inset horizontal="30px">
+                    <Heading align="center" size="26px">
+                      {ensName}
+                    </Heading>
+                  </Inset>
                   <Text
                     color="accent"
                     testID={`ens-confirm-register-label-${step}`}
