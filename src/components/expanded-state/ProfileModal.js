@@ -4,7 +4,6 @@ import { useTheme } from '../../context/ThemeContext';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { BiometricButtonContent } from '../buttons';
-import ImageAvatar from '../contacts/ImageAvatar';
 import CopyTooltip from '../copy-tooltip';
 import { Centered, ColumnWithDividers } from '../layout';
 import { AvatarCircle } from '../profile';
@@ -43,10 +42,6 @@ const ProfileButtonText = styled(Text).attrs({
   align: 'center',
   size: 'larger',
 })({});
-
-const ProfileImage = styled(ImageAvatar)({
-  marginBottom: 15,
-});
 
 const ProfileDivider = styled(Divider).attrs(({ theme: { colors } }) => ({
   borderRadius: 1,
@@ -91,18 +86,19 @@ const ProfileModal = ({
         testID="wallet-info-modal"
         width="100%"
       >
-        {imageAvatar ? (
-          <ProfileImage image={imageAvatar} size="large" />
-        ) : (
-          // hide avatar if creating new wallet since we
-          // don't know what emoji / color it will be (determined by address)
-          toggleAvatar && (
+        {toggleAvatar &&
+          (imageAvatar ? (
+            <AvatarCircle
+              image={imageAvatar}
+              showcaseAccountColor={colors.black}
+              size="large"
+            />
+          ) : (
             <AvatarCircle
               showcaseAccountColor={accentColor}
               showcaseAccountSymbol={emojiAvatar}
             />
-          )
-        )}
+          ))}
         {toggleSpacer && <Spacer />}
         <ProfileNameInput
           onChange={onChange}
