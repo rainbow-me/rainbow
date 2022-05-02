@@ -47,8 +47,8 @@ const hasRowChanged = (r1, r2) => {
     return true;
   }
 
-  const r1Key = r1?.hash || r1?.displayDetails?.timestampInMs || '';
-  const r2Key = r2?.hash || r2?.displayDetails?.timestampInMs || '';
+  const r1Key = r1?.hash ?? r1?.displayDetails?.timestampInMs ?? '';
+  const r2Key = r2?.hash ?? r2?.displayDetails?.timestampInMs ?? '';
 
   return (
     r1Key !== r2Key ||

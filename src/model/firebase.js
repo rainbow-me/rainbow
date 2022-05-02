@@ -8,7 +8,7 @@ import logger from 'logger';
 export const getFCMToken = async () => {
   const fcmTokenLocal = await getLocal('rainbowFcmToken');
 
-  const fcmToken = fcmTokenLocal?.data || null;
+  const fcmToken = fcmTokenLocal?.data ?? null;
 
   if (!fcmToken) {
     throw new Error('Push notification token unavailable.');

@@ -87,7 +87,7 @@ export default function SendHeader({
   const { colors } = useTheme();
 
   const contact = useMemo(() => {
-    return contacts?.[recipient.toLowerCase()] || defaultContactItem;
+    return contacts?.[recipient.toLowerCase()] ?? defaultContactItem;
   }, [contacts, recipient]);
   const [hexAddress, setHexAddress] = useState(null);
 

@@ -498,7 +498,7 @@ function RecyclerAssetList({
             collectiblesIndex < 0) &&
           (index <= sectionsIndices[poolsIndex] || poolsIndex < 0)
         ) {
-          const balanceItemsCount = sections?.[balancesIndex]?.data.length || 0;
+          const balanceItemsCount = sections?.[balancesIndex]?.data.length ?? 0;
           const lastBalanceIndex =
             sectionsIndices[balancesIndex] + balanceItemsCount;
           if (index === lastBalanceIndex - 2) {
@@ -578,7 +578,7 @@ function RecyclerAssetList({
               height: ViewTypes.UNIQUE_TOKEN_ROW.calculateHeight({
                 amountOfRows:
                   sections?.[collectiblesIndex]?.data?.[familyIndex]?.tokens
-                    ?.length || 0,
+                    ?.length ?? 0,
                 isFirst,
                 isHeader,
                 isOpen:

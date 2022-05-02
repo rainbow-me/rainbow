@@ -62,27 +62,27 @@ const buildTextStyles = css`
 
   /* Font Size */
   font-size:  ${({ size = 'medium' }) =>
-    typeof size === 'number' ? size : fonts?.size?.[size] || size};
+    typeof size === 'number' ? size : fonts?.size?.[size] ?? size};
 
   /* Font Weight */
   ${({ isEmoji, weight = 'regular' }) =>
     isEmoji || isNil(weight) || android
       ? ''
-      : `font-weight: ${fonts?.weight?.[weight] || weight};`}
+      : `font-weight: ${fonts?.weight?.[weight] ?? weight};`}
 
   /* Letter Spacing */
   ${({ letterSpacing = 'rounded' }) =>
     isNil(letterSpacing)
       ? ''
       : `letter-spacing: ${
-          fonts?.letterSpacing?.[letterSpacing] || letterSpacing
+          fonts?.letterSpacing?.[letterSpacing] ?? letterSpacing
         };`}
 
   /* Line Height */
   ${({ isEmoji, lineHeight }) =>
     isNil(lineHeight) || (isEmoji && android)
       ? ''
-      : `line-height: ${fonts?.lineHeight?.[lineHeight] || lineHeight};`}
+      : `line-height: ${fonts?.lineHeight?.[lineHeight] ?? lineHeight};`}
 
   /* Opacity */
   ${({ opacity }) => (isNil(opacity) ? '' : `opacity: ${opacity};`)}

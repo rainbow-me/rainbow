@@ -281,7 +281,7 @@ export const getOrderId = async (
       data
     );
 
-    const orderId = response?.data?.id || null;
+    const orderId = response?.data?.id ?? null;
 
     return { orderId };
   } catch (error: any) {

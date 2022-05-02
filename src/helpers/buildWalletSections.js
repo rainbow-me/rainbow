@@ -294,7 +294,7 @@ const withBalanceSection = (
 
   const totalBalanceWithSavingsValue = add(
     totalBalancesValue,
-    savingsSection?.totalValue || 0
+    savingsSection?.totalValue ?? 0
   );
   const totalBalanceWithAllSectionValues = add(
     totalBalanceWithSavingsValue,
@@ -429,9 +429,9 @@ const sortImagesToPreload = images => {
   const filtered = compact(flattenDeep(images));
   const grouped = groupBy(filtered, property('priority'));
   return [
-    ...(grouped?.high || []),
-    ...(grouped?.normal || []),
-    ...(grouped?.low || []),
+    ...(grouped?.high ?? []),
+    ...(grouped?.normal ?? []),
+    ...(grouped?.low ?? []),
   ];
 };
 

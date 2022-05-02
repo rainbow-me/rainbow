@@ -65,7 +65,7 @@ const BottomRow = ({ balance, native }) => {
     <BottomRowContainer>
       <FlexItem flex={1}>
         <BottomRowText color={colors.alpha(colors.blueGreyDark, 0.5)}>
-          {balance?.display || ''}
+          {balance?.display ?? ''}
         </BottomRowText>
       </FlexItem>
       <View>

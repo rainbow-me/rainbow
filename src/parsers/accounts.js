@@ -83,7 +83,7 @@ export const parseAsset = ({ asset_code: address, ...asset } = {}) => {
 export const parseAssetsNativeWithTotals = (assets, nativeCurrency) => {
   const assetsNative = parseAssetsNative(assets, nativeCurrency);
   const totalAmount = assetsNative.reduce(
-    (total, asset) => add(total, asset?.native?.balance?.amount || 0),
+    (total, asset) => add(total, asset?.native?.balance?.amount ?? 0),
     0
   );
   const totalDisplay = convertAmountToNativeDisplay(

@@ -31,7 +31,7 @@ export const getRequestDisplayDetails = (
     payload.method === SEND_TRANSACTION ||
     payload.method === SIGN_TRANSACTION
   ) {
-    const transaction = payload?.params?.[0] || null;
+    const transaction = payload?.params?.[0] ?? null;
 
     // Backwards compatibility with param name change
     if (transaction.gas && !transaction.gasLimit) {
@@ -80,9 +80,9 @@ export const getRequestDisplayDetails = (
   // and switch order if needed to ensure max compatibility with dapps
   if (isSignTypedData(payload.method)) {
     if (payload.params.length && payload.params[0]) {
-      let data = payload?.params?.[0] || null;
-      if (ethereumUtils.isEthAddress(payload?.params?.[0] || '')) {
-        data = payload?.params?.[1] || null;
+      let data = payload?.params?.[0] ?? null;
+      if (ethereumUtils.isEthAddress(payload?.params?.[0] ?? '')) {
+        data = payload?.params?.[1] ?? null;
       }
       return getMessageDisplayDetails(data, timestampInMs);
     }
@@ -105,7 +105,7 @@ const getTransactionDisplayDetails = (
   const nativeAsset = ethereumUtils.getNativeAssetForNetwork(dappNetwork);
   if (transaction.data === '0x') {
     const value = fromWei(convertHexToString(transaction.value));
-    const priceUnit = nativeAsset?.price?.value || 0;
+    const priceUnit = nativeAsset?.price?.value ?? 0;
     const { amount, display } = convertAmountAndPriceToNativeDisplay(
       value,
       priceUnit,
@@ -142,7 +142,7 @@ const getTransactionDisplayDetails = (
       convertHexToString(amount),
       asset.decimals
     );
-    const priceUnit = asset?.price?.value || 0;
+    const priceUnit = asset?.price?.value ?? 0;
     const native = convertAmountAndPriceToNativeDisplay(
       value,
       priceUnit,

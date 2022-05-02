@@ -71,7 +71,7 @@ const handleAndSignImages = (
  */
 
 export const parseAccountUniqueTokens = data => {
-  const erc721s = data?.data?.assets || null;
+  const erc721s = data?.data?.assets ?? null;
   if (isNil(erc721s)) throw new Error('Invalid data from OpenSea');
   return erc721s
     .map(
@@ -243,7 +243,7 @@ export const parseAccountUniqueTokensPolygon = async data => {
 };
 
 export const getFamilies = uniqueTokens =>
-  uniq(map(uniqueTokens, u => u?.asset_contract?.address || ''));
+  uniq(map(uniqueTokens, u => u?.asset_contract?.address ?? ''));
 
 export const dedupeUniqueTokens = (newAssets, uniqueTokens) => {
   const uniqueTokenFamilies = getFamilies(uniqueTokens);

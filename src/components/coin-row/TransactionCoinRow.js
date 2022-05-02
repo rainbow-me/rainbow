@@ -78,7 +78,7 @@ const TopRow = ({ balance, pending, status, title }) => (
   <RowWithMargins align="center" justify="space-between" margin={19}>
     <TransactionStatusBadge pending={pending} status={status} title={title} />
     <Row align="center" flex={1} justify="end">
-      <BottomRowText align="right">{balance?.display || ''}</BottomRowText>
+      <BottomRowText align="right">{balance?.display ?? ''}</BottomRowText>
     </Row>
   </RowWithMargins>
 );

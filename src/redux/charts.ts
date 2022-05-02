@@ -153,7 +153,7 @@ export const assetChartsReceived = (message: ChartsReceivedMessage) => (
 ) => {
   const chartType = message?.meta?.charts_type;
   const { charts: existingCharts } = getState().charts;
-  const assetCharts = message?.payload?.charts || {};
+  const assetCharts = message?.payload?.charts ?? {};
   const { nativeCurrency } = getState().settings;
   if (toLower(nativeCurrency) === message?.meta?.currency) {
     const newChartData = mapValues(assetCharts, (chartData, address) => {

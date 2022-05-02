@@ -406,8 +406,8 @@ export default function ChangeWalletSheet() {
             onCloseModal: async args => {
               if (args) {
                 setIsWalletLoading(WalletLoadingStates.CREATING_WALLET);
-                const name = args?.name || '';
-                const color = args?.color || null;
+                const name = args?.name ?? '';
+                const color = args?.color ?? null;
                 // Check if the selected wallet is the primary
                 let primaryWalletKey = selectedWallet.primary
                   ? selectedWallet.id

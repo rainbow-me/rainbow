@@ -37,7 +37,7 @@ const addContactInfo = contacts => txn => {
   const { from, to, status } = txn;
   const isSent = status === TransactionStatusTypes.sent;
   const contactAddress = isSent ? to : from;
-  const contact = contacts?.[contactAddress?.toLowerCase()] || null;
+  const contact = contacts?.[contactAddress?.toLowerCase()] ?? null;
   return {
     ...txn,
     contact,
