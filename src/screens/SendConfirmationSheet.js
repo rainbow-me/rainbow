@@ -1,5 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import { toChecksumAddress } from 'ethereumjs-util';
+import lang from 'i18n-js';
 import { capitalize, get, toLower } from 'lodash';
 import React, { Fragment, useCallback, useEffect } from 'react';
 import { Keyboard, StatusBar } from 'react-native';
@@ -234,12 +235,20 @@ export default function SendConfirmationSheet() {
   }, [contacts, to]);
 
   const [checkboxes, setCheckboxes] = useState([
-    { checked: false, label: 'I’m not sending to an exchange' },
     {
       checked: false,
-      label: `The person I’m sending to has a wallet that supports ${capitalize(
-        network
-      )}`,
+      label: lang.t(
+        'wallet.transaction.checkboxes.im_not_sending_to_an_exchange'
+      ),
+    },
+    {
+      checked: false,
+      label: lang.t(
+        'wallet.transaction.checkboxes.has_a_wallet_that_supports',
+        {
+          networkName: capitalize(network),
+        }
+      ),
     },
   ]);
 
@@ -357,7 +366,7 @@ export default function SendConfirmationSheet() {
         contentHeight={contentHeight}
         scrollEnabled={false}
       >
-        <SheetTitle>Sending</SheetTitle>
+        <SheetTitle>{lang.t('wallet.transaction.sending_title')}</SheetTitle>
         <Column height={contentHeight}>
           <Column padding={24} paddingBottom={android ? 0 : 19}>
             <Row>
@@ -421,7 +430,7 @@ export default function SendConfirmationSheet() {
                   size="large"
                   weight="heavy"
                 >
-                  to
+                  {lang.t('account.tx_to_lowercase')}
                 </Text>
               </Pill>
 

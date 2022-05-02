@@ -1,8 +1,10 @@
 import { useRoute } from '@react-navigation/native';
 import { captureException } from '@sentry/react-native';
+import lang from 'i18n-js';
 import { upperFirst } from 'lodash';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import {
+  createdWithBiometricError,
   identifyWalletType,
   loadSeedPhraseAndMigrateIfNeeded,
 } from '../../model/wallet';
@@ -80,6 +82,15 @@ const ToggleSecretButton = styled(Button)(({ theme: { colors } }) => ({
   backgroundColor: colors.appleBlue,
 }));
 
+const BiometryWarningText = styled(Text).attrs(({ theme: { colors } }) => ({
+  align: 'center',
+  color: colors.alpha(colors.blueGreyDark, 0.6),
+  lineHeight: 'looser',
+  size: 'lmedium',
+}))({
+  ...padding.object(0, 35),
+});
+
 const LoadingSpinner = android ? Spinner : ActivityIndicator;
 
 export default function SecretDisplaySection({
@@ -92,6 +103,7 @@ export default function SecretDisplaySection({
   const walletId = params?.walletId || selectedWallet.id;
   const currentWallet = wallets[walletId];
   const [visible, setVisible] = useState(true);
+  const [isRecoveryPhraseVisible, setIsRecoveryPhraseVisible] = useState(false);
   const [seed, setSeed] = useState(null);
   const [type, setType] = useState(currentWallet?.type);
 
@@ -106,8 +118,12 @@ export default function SecretDisplaySection({
       }
       setVisible(!!s);
       onSecretLoaded?.(!!s);
+      setIsRecoveryPhraseVisible(!!s);
     } catch (e) {
       logger.sentry('Error while trying to reveal secret', e);
+      if (e?.message === createdWithBiometricError) {
+        setIsRecoveryPhraseVisible(false);
+      }
       captureException(e);
       setVisible(false);
       onSecretLoaded?.(false);
@@ -128,6 +144,37 @@ export default function SecretDisplaySection({
   const typeLabel = type === WalletTypes.privateKey ? 'key' : 'phrase';
 
   const { colors } = useTheme();
+
+  const renderStepNoSeeds = useCallback(() => {
+    if (isRecoveryPhraseVisible) {
+      return (
+        <ColumnWithMargins align="center" justify="center">
+          <AuthenticationText>
+            {lang.t('back_up.secret.you_need_to_authenticate', {
+              typeName: typeLabel,
+            })}
+          </AuthenticationText>
+          <ToggleSecretButton onPress={loadSeed}>
+            <BiometricButtonContent
+              color={colors.white}
+              label={lang.t('back_up.secret.show_recovery', {
+                typeName: upperFirst(typeLabel),
+              })}
+              showIcon={!seed}
+            />
+          </ToggleSecretButton>
+        </ColumnWithMargins>
+      );
+    } else {
+      return (
+        <BiometryWarningText>
+          Your account has been secured with biometric data, like fingerprint or
+          face identification. To see your recovery phrase, turn on biometrics
+          in your phone’s settings.
+        </BiometryWarningText>
+      );
+    }
+  }, [isRecoveryPhraseVisible, typeLabel, loadSeed, colors.white, seed]);
   return (
     <>
       {visible ? (
@@ -142,7 +189,9 @@ export default function SecretDisplaySection({
               <CopyFloatingEmojis textToCopy={seed}>
                 <CopyButtonRow>
                   <CopyButtonIcon />
-                  <CopyButtonText>Copy to clipboard</CopyButtonText>
+                  <CopyButtonText>
+                    {lang.t('back_up.secret.copy_to_clipboard')}
+                  </CopyButtonText>
                 </CopyButtonRow>
               </CopyFloatingEmojis>
               <Column>
@@ -150,10 +199,10 @@ export default function SecretDisplaySection({
               </Column>
               <Column>
                 <Title isSmallPhone={isSmallPhone}>
-                  👆For your eyes only 👆
+                  👆{lang.t('back_up.secret.for_your_eyes_only')} 👆
                 </Title>
                 <DescriptionText>
-                  Anyone who has these words can access your entire wallet!
+                  {lang.t('back_up.secret.anyone_who_has_these')}
                 </DescriptionText>
               </Column>
             </Fragment>
@@ -162,18 +211,7 @@ export default function SecretDisplaySection({
           )}
         </ColumnWithMargins>
       ) : (
-        <ColumnWithMargins align="center" justify="center">
-          <AuthenticationText>
-            {`You need to authenticate in order to access your recovery ${typeLabel}`}
-          </AuthenticationText>
-          <ToggleSecretButton onPress={loadSeed}>
-            <BiometricButtonContent
-              color={colors.white}
-              label={`Show Recovery ${upperFirst(typeLabel)}`}
-              showIcon={!seed}
-            />
-          </ToggleSecretButton>
-        </ColumnWithMargins>
+        renderStepNoSeeds()
       )}
     </>
   );

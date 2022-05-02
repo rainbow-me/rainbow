@@ -29,7 +29,9 @@ const SavingsSheetHeader = ({ balance, lifetimeAccruedInterest }) => {
           size="large"
           weight="bold"
         >
-          Earned {lifetimeAccruedInterest}
+          {lang.t('savings.earned_lifetime_interest', {
+            lifetimeAccruedInterest,
+          })}
         </Text>
       </RowWithMargins>
     </Centered>

@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { startCase, toLower } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import { Linking, View } from 'react-native';
@@ -48,7 +49,7 @@ const getAssetActions = (network: Network) =>
   ({
     [AssetActionsEnum.copyTokenID]: {
       actionKey: AssetActionsEnum.copyTokenID,
-      actionTitle: 'Copy Token ID',
+      actionTitle: lang.t('expanded_state.unique_expanded.copy_token_id'),
       icon: {
         iconType: 'SYSTEM',
         iconValue: 'square.on.square',
@@ -56,7 +57,7 @@ const getAssetActions = (network: Network) =>
     },
     [AssetActionsEnum.download]: {
       actionKey: AssetActionsEnum.download,
-      actionTitle: 'Save to Photos',
+      actionTitle: lang.t('expanded_state.unique_expanded.save_to_photos'),
       icon: {
         iconType: 'SYSTEM',
         iconValue: 'photo.on.rectangle.angled',
@@ -64,9 +65,12 @@ const getAssetActions = (network: Network) =>
     },
     [AssetActionsEnum.etherscan]: {
       actionKey: AssetActionsEnum.etherscan,
-      actionTitle: `View on ${startCase(
-        ethereumUtils.getBlockExplorer(network)
-      )}`,
+      actionTitle: lang.t(
+        'expanded_state.unique_expanded.view_on_block_explorer',
+        {
+          blockExplorerName: startCase(ethereumUtils.getBlockExplorer(network)),
+        }
+      ),
       icon: {
         iconType: 'SYSTEM',
         iconValue: 'link',
@@ -74,7 +78,7 @@ const getAssetActions = (network: Network) =>
     },
     [AssetActionsEnum.rainbowWeb]: {
       actionKey: AssetActionsEnum.rainbowWeb,
-      actionTitle: 'View on Web',
+      actionTitle: lang.t('expanded_state.unique_expanded.view_on_web'),
       icon: {
         iconType: 'SYSTEM',
         iconValue: 'safari.fill',
@@ -92,8 +96,8 @@ const FamilyActionsEnum = {
 const FamilyActions = {
   [FamilyActionsEnum.viewCollection]: {
     actionKey: FamilyActionsEnum.viewCollection,
-    actionTitle: 'View Collection',
-    discoverabilityTitle: 'OpenSea',
+    actionTitle: lang.t('expanded_state.unique_expanded.view_collection'),
+    discoverabilityTitle: lang.t('expanded_state.unique_expanded.opensea'),
     icon: {
       iconType: 'SYSTEM',
       iconValue: 'rectangle.grid.2x2.fill',
@@ -101,7 +105,7 @@ const FamilyActions = {
   },
   [FamilyActionsEnum.collectionWebsite]: {
     actionKey: FamilyActionsEnum.collectionWebsite,
-    actionTitle: 'Collection Website',
+    actionTitle: lang.t('expanded_state.unique_expanded.collection_website'),
     icon: {
       iconType: 'SYSTEM',
       iconValue: 'safari.fill',
@@ -109,7 +113,7 @@ const FamilyActions = {
   },
   [FamilyActionsEnum.discord]: {
     actionKey: FamilyActionsEnum.discord,
-    actionTitle: 'Discord',
+    actionTitle: lang.t('expanded_state.unique_expanded.discord'),
     icon: {
       iconType: 'SYSTEM',
       iconValue: 'ellipsis.bubble.fill',
@@ -117,7 +121,7 @@ const FamilyActions = {
   },
   [FamilyActionsEnum.twitter]: {
     actionKey: FamilyActionsEnum.twitter,
-    actionTitle: 'Twitter',
+    actionTitle: lang.t('expanded_state.unique_expanded.twitter'),
     icon: {
       iconType: 'SYSTEM',
       iconValue: 'at.circle.fill',
@@ -294,10 +298,10 @@ const UniqueTokenExpandedStateHeader = ({
     const hasDiscord = !!asset.collection.discord_url;
     const hasCollection = !!asset.collection.slug;
     const baseActions = [
-      'View Collection',
-      'Collection Website',
-      'Twitter',
-      'Discord',
+      lang.t('expanded_state.unique_expanded.view_collection'),
+      lang.t('expanded_state.unique_expanded.collection_website'),
+      lang.t('expanded_state.unique_expanded.twitter'),
+      lang.t('expanded_state.unique_expanded.discord'),
     ];
     const websiteIndex = 1 - (!hasCollection ? 1 : 0);
     const twitterIndex = 2 - (!hasWebsite ? 1 : 0);
@@ -364,11 +368,17 @@ const UniqueTokenExpandedStateHeader = ({
 
   const onPressAndroidAsset = useCallback(() => {
     const androidContractActions = [
-      'View On Web',
-      // @ts-expect-error network could be undefined?
-      `View on ${startCase(ethereumUtils.getBlockExplorer(asset?.network))}`,
-      ...(isPhotoDownloadAvailable ? (['Save to Photos'] as const) : []),
-      'Copy Token ID',
+      lang.t('expanded_state.unique_expanded.view_on_web'),
+      lang.t('expanded_state.unique_expanded.view_on_block_explorer', {
+        blockExplorerName: startCase(
+          // @ts-expect-error network could be undefined?
+          ethereumUtils.getBlockExplorer(asset?.network)
+        ),
+      }),
+      ...(isPhotoDownloadAvailable
+        ? ([lang.t('expanded_state.unique_expanded.save_to_photos')] as const)
+        : []),
+      lang.t('expanded_state.unique_expanded.copy_token_id'),
     ] as const;
 
     showActionSheetWithOptions(

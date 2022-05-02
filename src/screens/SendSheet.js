@@ -1,6 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { captureEvent, captureException } from '@sentry/react-native';
+import lang from 'i18n-js';
 import { isEmpty, isEqual, isString, toLower } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, InteractionManager, Keyboard, StatusBar } from 'react-native';
@@ -505,7 +506,7 @@ export default function SendSheet(props) {
         logger.sentry('"to" field is missing!');
         const e = new Error('Transaction missing TO field');
         captureException(e);
-        Alert.alert('Invalid transaction');
+        Alert.alert(lang.t('wallet.transaction.alert.invalid_transaction'));
         submitSuccess = false;
       } else {
         const { result: txResult } = await sendTransaction({
@@ -613,7 +614,7 @@ export default function SendSheet(props) {
     const isZeroAssetAmount = Number(amountDetails.assetAmount) <= 0;
 
     let disabled = true;
-    let label = 'Enter an Amount';
+    let label = lang.t('button.confirm_exchange.enter_amount');
 
     let nativeToken = 'ETH';
     if (currentNetwork === Network.polygon) {
@@ -624,20 +625,22 @@ export default function SendSheet(props) {
       !selectedGasFee ||
       isEmpty(selectedGasFee?.gasFee)
     ) {
-      label = `Loading...`;
+      label = lang.t('button.confirm_exchange.loading');
       disabled = true;
     } else if (!isZeroAssetAmount && !isSufficientGas) {
       disabled = true;
-      label = `Insufficient ${nativeToken}`;
+      label = lang.t('button.confirm_exchange.insufficient_token', {
+        tokenName: nativeToken,
+      });
     } else if (!isValidGas) {
       disabled = true;
-      label = 'Invalid fee';
+      label = lang.t('button.confirm_exchange.invalid_fee');
     } else if (!isZeroAssetAmount && !amountDetails.isSufficientBalance) {
       disabled = true;
-      label = 'Insufficient Funds';
+      label = lang.t('button.confirm_exchange.insufficient_funds');
     } else if (!isZeroAssetAmount) {
       disabled = false;
-      label = '􀕹 Review';
+      label = `􀕹 ${lang.t('button.confirm_exchange.review')}`;
     }
 
     return { buttonDisabled: disabled, buttonLabel: label };
