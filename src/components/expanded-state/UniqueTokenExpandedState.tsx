@@ -275,7 +275,7 @@ const UniqueTokenExpandedState = ({
 
   const profileInfoSectionAvailable = useMemo(() => {
     const available = Object.keys(ensData?.records || {}).some(
-      key => key !== ENS_RECORDS.cover && key !== ENS_RECORDS.avatar
+      key => key !== ENS_RECORDS.avatar
     );
     return available;
   }, [ensData?.records]);
