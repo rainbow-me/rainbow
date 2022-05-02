@@ -149,13 +149,12 @@ export default function useENSRegistrationCosts({
   }, [debouncedChangedRecords, name]);
 
   const getSetNameGasLimit = useCallback(async () => {
-    const cleanName = registrationParameters?.name?.replace(ENS_DOMAIN, '');
     const newSetNameGasLimit = await estimateENSSetNameGasLimit({
-      name: cleanName,
+      name,
       ownerAddress: accountAddress,
     });
     return newSetNameGasLimit || '';
-  }, [accountAddress, registrationParameters?.name]);
+  }, [accountAddress, name]);
 
   const getRenewGasLimit = useCallback(async () => {
     const cleanName = registrationParameters?.name?.replace(ENS_DOMAIN, '');
