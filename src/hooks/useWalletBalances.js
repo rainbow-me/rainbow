@@ -32,7 +32,7 @@ const useWalletBalances = wallets => {
     try {
       // Check all the ETH balances at once
       const balanceCheckerContract = new Contract(
-        networkInfo?.[network]?.balance_checker_contract_address,
+        networkInfo[network]?.balance_checker_contract_address,
         balanceCheckerContractAbi,
         web3Provider
       );

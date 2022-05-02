@@ -172,7 +172,7 @@ export default function WalletScreen() {
   const fabs = useMemo(
     () =>
       [
-        !!networkInfo?.[network]?.exchange_enabled && ExchangeFab,
+        !!networkInfo[network]?.exchange_enabled && ExchangeFab,
         SendFab,
         profilesEnabled ? RegisterEnsFab : null,
       ].filter(e => !!e),

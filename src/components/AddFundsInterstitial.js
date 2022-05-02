@@ -280,7 +280,7 @@ const AddFundsInterstitial = ({ network }) => {
         <Fragment>
           <Title>
             {lang.t('add_funds.test_eth.request_test_eth', {
-              testnetName: networkInfo?.[network]?.name,
+              testnetName: networkInfo[network]?.name,
             })}
           </Title>
           <Row marginTop={30}>
@@ -302,7 +302,7 @@ const AddFundsInterstitial = ({ network }) => {
           </Subtitle>
           <Paragraph>
             {lang.t('add_funds.test_eth.send_test_eth_from_another_source', {
-              testnetName: networkInfo?.[network]?.name,
+              testnetName: networkInfo[network]?.name,
             })}
           </Paragraph>
         </Fragment>
