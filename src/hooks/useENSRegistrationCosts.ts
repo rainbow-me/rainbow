@@ -45,6 +45,8 @@ enum QUERY_KEYS {
   GET_SET_RECORDS_GAS_LIMIT = 'GET_SET_RECORDS_GAS_LIMIT',
 }
 
+const QUERY_STALE_TIME = 15000;
+
 export default function useENSRegistrationCosts({
   name: inputName,
   rentPrice,
@@ -177,7 +179,7 @@ export default function useENSRegistrationCosts({
       enabled: step === REGISTRATION_STEPS.COMMIT && nameUpdated,
       queryFn: getCommitGasLimit,
       queryKey: [QUERY_KEYS.GET_COMMIT_GAS_LIMIT, name],
-      staleTime: Infinity,
+      staleTime: QUERY_STALE_TIME,
     },
     {
       enabled:
@@ -186,7 +188,7 @@ export default function useENSRegistrationCosts({
         nameUpdated,
       queryFn: getSetNameGasLimit,
       queryKey: [QUERY_KEYS.GET_SET_NAME_GAS_LIMIT, name],
-      staleTime: Infinity,
+      staleTime: QUERY_STALE_TIME,
     },
     {
       enabled:
@@ -197,7 +199,7 @@ export default function useENSRegistrationCosts({
         name,
         debouncedChangedRecords,
       ],
-      staleTime: Infinity,
+      staleTime: QUERY_STALE_TIME,
     },
     {
       enabled:
@@ -206,7 +208,7 @@ export default function useENSRegistrationCosts({
         nameUpdated,
       queryFn: getReverseRecord,
       queryKey: [QUERY_KEYS.GET_REVERSE_RECORD, name],
-      staleTime: Infinity,
+      staleTime: QUERY_STALE_TIME,
     },
     {
       enabled: step === REGISTRATION_STEPS.RENEW,
@@ -216,13 +218,18 @@ export default function useENSRegistrationCosts({
         registrationParameters?.name,
         duration,
       ],
-      staleTime: Infinity,
+      staleTime: QUERY_STALE_TIME,
     },
     {
       enabled: step === REGISTRATION_STEPS.REGISTER,
       queryFn: getRegisterRapGasLimit,
-      queryKey: [QUERY_KEYS.GET_REGISTER_RAP_GAS_LIMIT, sendReverseRecord],
-      staleTime: Infinity,
+      queryKey: [
+        QUERY_KEYS.GET_REGISTER_RAP_GAS_LIMIT,
+        sendReverseRecord,
+        nameUpdated,
+        step,
+      ],
+      staleTime: QUERY_STALE_TIME,
     },
   ]);
 
@@ -327,6 +334,7 @@ export default function useENSRegistrationCosts({
     renewGasLimit,
     setNameGasLimit,
     setRecordsGasLimit,
+    registerRapGasLimit,
     step,
   ]);
 
