@@ -61,17 +61,16 @@ const ProfileModal = ({
   imageAvatar,
   emojiAvatar,
   accentColor,
-  toggleSpacer,
   toggleSubmitButtonIcon,
   toggleAvatar,
   handleSubmit,
   onChange,
-  value,
+  inputValue,
   handleCancel,
   submitButtonText,
   placeholder,
 }) => {
-  const { colors } = useTheme();
+  const { colors, isDarkMode } = useTheme();
   const inputRef = useRef(null);
 
   const handleTriggerFocusInput = useCallback(() => inputRef.current?.focus(), [
@@ -90,7 +89,7 @@ const ProfileModal = ({
           (imageAvatar ? (
             <AvatarCircle
               image={imageAvatar}
-              showcaseAccountColor={colors.black}
+              showcaseAccountColor={isDarkMode ? colors.trueBlack : colors.dark}
               size="large"
             />
           ) : (
@@ -99,7 +98,7 @@ const ProfileModal = ({
               showcaseAccountSymbol={emojiAvatar}
             />
           ))}
-        {toggleSpacer && <Spacer />}
+        {!toggleAvatar && <Spacer />}
         <ProfileNameInput
           onChange={onChange}
           onSubmitEditing={handleSubmit}
@@ -107,7 +106,7 @@ const ProfileModal = ({
           ref={inputRef}
           selectionColor={colors.avatarBackgrounds[accentColor]}
           testID="wallet-info-input"
-          value={value}
+          value={inputValue}
         />
         {address && (
           <CopyTooltip

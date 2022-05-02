@@ -197,9 +197,8 @@ const ContactProfileState = ({
       profileName={ens}
       submitButtonText={lang.t('contacts.options.add')}
       toggleAvatar
-      toggleSpacer
       toggleSubmitButtonIcon={false}
-      value={value}
+      inputValue={value}
     />
   ) : (
     <ProfileModalContainer onPressBackdrop={handleAddContact}>

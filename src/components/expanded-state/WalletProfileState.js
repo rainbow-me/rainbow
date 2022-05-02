@@ -96,9 +96,8 @@ export default function WalletProfileState({
           : lang.t('button.done')
       }
       toggleAvatar={!isNewProfile || address}
-      toggleSpacer={isNewProfile && !address}
       toggleSubmitButtonIcon={actionType === 'Create'}
-      value={value}
+      inputValue={value}
     />
   );
 }
