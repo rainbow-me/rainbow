@@ -51,7 +51,7 @@ export const walletsLoadState = () => async (dispatch, getState) => {
     if (isEmpty(wallets)) return;
     const selected = await getSelectedWallet();
     // Prevent irrecoverable state (no selected wallet)
-    let selectedWallet = selected?.wallet || undefined;
+    let selectedWallet = selected?.wallet;
     // Check if the selected wallet is among all the wallets
     if (selectedWallet && !wallets[selectedWallet.id]) {
       // If not then we should clear it and default to the first one

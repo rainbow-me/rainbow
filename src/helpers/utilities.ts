@@ -309,7 +309,7 @@ export const convertRawAmountToBalance = (
   asset: { decimals: number },
   buffer?: number
 ) => {
-  const decimals = asset?.decimals || 18;
+  const decimals = asset?.decimals ?? 18;
   const assetBalance = convertRawAmountToDecimalFormat(value, decimals);
 
   return {
@@ -326,7 +326,7 @@ export const convertAmountToBalanceDisplay = (
   asset: { decimals: number; symbol?: string },
   buffer?: number
 ) => {
-  const decimals = asset?.decimals || 18;
+  const decimals = asset?.decimals ?? 18;
   const display = handleSignificantDecimals(value, decimals, buffer);
   return `${display} ${asset?.symbol || ''}`;
 };
