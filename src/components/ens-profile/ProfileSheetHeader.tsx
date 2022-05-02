@@ -89,10 +89,9 @@ export default function ProfileSheetHeader({
     const isNFTAvatar = avatar && isENSNFTRecord(avatar);
     const avatarUniqueToken = isNFTAvatar && getUniqueToken(avatar);
 
-    let onPressAvatar;
-    if (avatar && isNFTAvatar && avatarUniqueToken) {
-      onPressAvatar = () => handleSelectNFT(avatarUniqueToken);
-    }
+    const onPressAvatar = avatarUniqueToken
+      ? () => handleSelectNFT(avatarUniqueToken)
+      : undefined;
 
     const enableZoomOnPressAvatar = enableZoomableImages && !onPressAvatar;
 
@@ -116,10 +115,9 @@ export default function ProfileSheetHeader({
     const isNFTCover = cover && isENSNFTRecord(cover);
     const coverUniqueToken = isNFTCover && getUniqueToken(cover);
 
-    let onPressCover;
-    if (cover && isNFTCover && coverUniqueToken) {
-      onPressCover = () => handleSelectNFT(coverUniqueToken);
-    }
+    const onPressCover = coverUniqueToken
+      ? () => handleSelectNFT(coverUniqueToken)
+      : undefined;
 
     const enableZoomOnPressCover = enableZoomableImages && !onPressCover;
 
