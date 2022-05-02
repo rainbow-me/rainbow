@@ -20,7 +20,13 @@ const ACTIONS = {
   REMOVE_CONTACT: 'remove-contact',
 };
 
-export default function MoreButton({ address }: { address?: string }) {
+export default function MoreButton({
+  address,
+  ensName,
+}: {
+  address?: string;
+  ensName?: string;
+}) {
   const { navigate } = useNavigation();
   const { setClipboard } = useClipboard();
   const { contacts, onRemoveContact } = useContacts();
@@ -85,8 +91,9 @@ export default function MoreButton({ address }: { address?: string }) {
       if (actionKey === ACTIONS.ADD_CONTACT) {
         navigate(Routes.MODAL_SCREEN, {
           address,
-          color: contact?.color,
           contact,
+          ens: ensName,
+          nickname: ensName,
           type: 'contact_profile',
         });
       }
@@ -99,7 +106,7 @@ export default function MoreButton({ address }: { address?: string }) {
         android && Keyboard.dismiss();
       }
     },
-    [address, contact, navigate, onRemoveContact, setClipboard]
+    [address, contact, ensName, navigate, onRemoveContact, setClipboard]
   );
 
   const handleAndroidPress = useCallback(() => {

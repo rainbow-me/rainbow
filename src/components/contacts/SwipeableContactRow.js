@@ -55,6 +55,8 @@ const SwipeableContactRow = (
     accountType,
     address,
     color,
+    ens,
+    network,
     nickname,
     onPress,
     onSelectEdit,
@@ -80,8 +82,8 @@ const SwipeableContactRow = (
 
   const handleEditContact = useCallback(() => {
     swipeableRef.current?.close?.();
-    onSelectEdit({ address, color, nickname });
-  }, [address, color, nickname, onSelectEdit]);
+    onSelectEdit({ address, color, ens, nickname });
+  }, [address, color, ens, nickname, onSelectEdit]);
 
   const handleLongPress = useCallback(
     () => swipeableRef.current?.openRight?.(),
@@ -124,6 +126,8 @@ const SwipeableContactRow = (
         accountType={accountType}
         address={address}
         color={color}
+        ens={ens}
+        network={network}
         nickname={nickname}
         onLongPress={handleLongPress}
         onPress={onPress}

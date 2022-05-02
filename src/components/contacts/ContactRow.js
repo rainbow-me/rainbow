@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
@@ -10,13 +10,25 @@ import { Column, RowWithMargins } from '../layout';
 import { TruncatedAddress, TruncatedENS, TruncatedText } from '../text';
 import ContactAvatar from './ContactAvatar';
 import ImageAvatar from './ImageAvatar';
+import useExperimentalFlag, {
+  PROFILES,
+} from '@rainbow-me/config/experimentalHooks';
+import { fetchReverseRecord } from '@rainbow-me/handlers/ens';
 import {
   isENSAddressFormat,
   isValidDomainFormat,
 } from '@rainbow-me/helpers/validators';
-import { useDimensions } from '@rainbow-me/hooks';
+import {
+  useContacts,
+  useDimensions,
+  useENSProfileRecords,
+} from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { margin } from '@rainbow-me/styles';
+import {
+  addressHashedColorIndex,
+  addressHashedEmoji,
+} from '@rainbow-me/utils/profileUtils';
 
 const ContactAddress = styled(TruncatedAddress).attrs(
   ({ theme: { colors }, lite }) => ({
@@ -60,6 +72,8 @@ const ContactRow = (
   { address, color, nickname, symmetricalMargins, ...props },
   ref
 ) => {
+  const profilesEnabled = useExperimentalFlag(PROFILES);
+  const { onAddOrUpdateContacts } = useContacts();
   const { width: deviceWidth } = useDimensions();
   const { colors } = useTheme();
   const {
@@ -68,10 +82,12 @@ const ContactRow = (
     ens,
     image,
     label,
+    network,
     onPress,
     showcaseItem,
     testID,
   } = props;
+
   let cleanedUpBalance = balance;
   if (balance === '0.00') {
     cleanedUpBalance = '0';
@@ -83,6 +99,40 @@ const ContactRow = (
       ? returnStringFirstEmoji(label) ||
         profileUtils.addressHashedEmoji(address)
       : null;
+
+  // if the accountType === 'suggestions', nickname will always be an ens or hex address, not a custom contact nickname
+  const [ensName, setENSName] = useState(
+    accountType !== 'suggestions' ? ens : nickname
+  );
+
+  useEffect(() => {
+    if (profilesEnabled && accountType === 'contacts') {
+      const fetchENSName = async () => {
+        const name = await fetchReverseRecord(address);
+        if (name !== ensName) {
+          setENSName(name);
+          onAddOrUpdateContacts(address, nickname, color, network, name);
+        }
+      };
+      fetchENSName();
+    }
+  }, [
+    accountType,
+    address,
+    color,
+    ensName,
+    network,
+    nickname,
+    onAddOrUpdateContacts,
+    profilesEnabled,
+    setENSName,
+  ]);
+
+  const { data: profile } = useENSProfileRecords(ensName, {
+    enabled: Boolean(ensName),
+  });
+
+  const ensAvatar = profile?.images?.avatarUrl;
 
   let cleanedUpLabel = null;
   if (label) {
@@ -96,10 +146,31 @@ const ContactRow = (
       const label =
         accountType === 'suggestions' && isENSAddressFormat(nickname)
           ? nickname
+          : ensName
+          ? ensName
           : address;
       onPress(label);
     }
-  }, [accountType, address, nickname, onPress, showcaseItem]);
+  }, [accountType, address, ensName, nickname, onPress, showcaseItem]);
+
+  const imageAvatar = profilesEnabled ? ensAvatar : image;
+
+  const emoji = useMemo(() => (address ? addressHashedEmoji(address) : ''), [
+    address,
+  ]);
+
+  const emojiAvatar = profilesEnabled
+    ? emoji
+    : avatar || nickname || label || ensName;
+
+  const colorIndex = useMemo(
+    () => (address ? addressHashedColorIndex(address) : 0),
+    [address]
+  );
+
+  const bgColor = profilesEnabled
+    ? colors.avatarBackgrounds[colorIndex || 0]
+    : color;
 
   return (
     <ButtonPressAnimation
@@ -118,14 +189,14 @@ const ContactRow = (
           removeFirstEmojiFromString(nickname) || ''
         }`}
       >
-        {image ? (
-          <ImageAvatar image={image} marginRight={10} size="medium" />
+        {imageAvatar ? (
+          <ImageAvatar image={imageAvatar} marginRight={10} size="medium" />
         ) : (
           <ContactAvatar
-            color={color}
+            color={bgColor}
             marginRight={10}
             size="medium"
-            value={avatar || nickname || label || ens}
+            value={emojiAvatar}
           />
         )}
         <Column justify={ios ? 'space-between' : 'center'}>
