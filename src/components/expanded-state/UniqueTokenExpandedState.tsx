@@ -1,20 +1,13 @@
 import { BlurView } from '@react-native-community/blur';
 import c from 'chroma-js';
 import lang from 'i18n-js';
-import React, {
-  ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-} from 'react';
+import React, { ReactNode, useCallback, useMemo, useRef } from 'react';
 import { InteractionManager, Linking, Share, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
 } from 'react-native-reanimated';
-import { useSetRecoilState } from 'recoil';
 import URL from 'url-parse';
 import { CardSize } from '../../components/unique-token/CardSize';
 import useWallets from '../../hooks/useWallets';
@@ -62,11 +55,7 @@ import {
 } from '@rainbow-me/design-system';
 import { AssetTypes, UniqueAsset } from '@rainbow-me/entities';
 import { buildUniqueTokenName } from '@rainbow-me/helpers/assets';
-import {
-  accentColorAtom,
-  ENS_RECORDS,
-  REGISTRATION_MODES,
-} from '@rainbow-me/helpers/ens';
+import { ENS_RECORDS, REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import {
   useAccountProfile,
   useBooleanState,
