@@ -178,8 +178,8 @@ export const profilePreviewConfig = {
 export const ensConfirmRegisterSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
-      ...params,
       longFormHeight: ENSConfirmRegisterSheetHeight,
+      ...params,
     }),
   }),
 };

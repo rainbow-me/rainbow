@@ -157,14 +157,15 @@ export default function useENSRegistrationCosts({
   }, [accountAddress, name]);
 
   const getRenewGasLimit = useCallback(async () => {
-    const rentPrice = await getRentPrice(name, duration);
+    const cleanName = registrationParameters?.name?.replace(ENS_DOMAIN, '');
+    const rentPrice = await getRentPrice(cleanName, duration);
     const newRenewGasLimit = await estimateENSRenewGasLimit({
       duration,
-      name,
+      name: cleanName,
       rentPrice: rentPrice?.toString(),
     });
     return newRenewGasLimit || '';
-  }, [duration, name]);
+  }, [registrationParameters?.name, duration]);
 
   const getReverseRecord = useCallback(async () => {
     const reverseRecord = await fetchReverseRecord(accountAddress);
@@ -188,8 +189,8 @@ export default function useENSRegistrationCosts({
       staleTime: Infinity,
     },
     {
-      enabled: true,
-      // step === REGISTRATION_STEPS.COMMIT || step === REGISTRATION_STEPS.EDIT,
+      enabled:
+        step === REGISTRATION_STEPS.COMMIT || step === REGISTRATION_STEPS.EDIT,
       queryFn: getSetRecordsGasLimit,
       queryKey: [
         QUERY_KEYS.GET_SET_RECORDS_GAS_LIMIT,
@@ -210,7 +211,11 @@ export default function useENSRegistrationCosts({
     {
       enabled: step === REGISTRATION_STEPS.RENEW,
       queryFn: getRenewGasLimit,
-      queryKey: [QUERY_KEYS.GET_RENEW_GAS_LIMIT],
+      queryKey: [
+        QUERY_KEYS.GET_RENEW_GAS_LIMIT,
+        registrationParameters?.name,
+        duration,
+      ],
       staleTime: Infinity,
     },
     {
@@ -294,6 +299,12 @@ export default function useENSRegistrationCosts({
       ].reduce((a, b) => add(a || 0, b || 0));
     } else if (step === REGISTRATION_STEPS.RENEW) {
       estimatedGasLimit = renewGasLimit;
+    } else if (step === REGISTRATION_STEPS.SET_NAME) {
+      estimatedGasLimit = setNameGasLimit;
+    } else if (step === REGISTRATION_STEPS.EDIT) {
+      estimatedGasLimit = setRecordsGasLimit;
+    } else if (step === REGISTRATION_STEPS.REGISTER) {
+      estimatedGasLimit = registerRapGasLimit;
     }
 
     const formattedEstimatedNetworkFee = formatEstimatedNetworkFee(
@@ -391,8 +402,10 @@ export default function useENSRegistrationCosts({
         nativeCurrency,
         nativeAssetPrice
       );
-
-      if (estimatedFee) {
+      if (
+        estimatedFee?.estimatedGasLimit &&
+        estimatedFee?.estimatedNetworkFee?.amount
+      ) {
         const weiEstimatedTotalCost = add(
           estimatedFee.estimatedNetworkFee.wei,
           estimatedRentPrice.wei.toString()

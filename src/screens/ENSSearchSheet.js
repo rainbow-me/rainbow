@@ -39,8 +39,8 @@ export default function ENSSearchSheet() {
 
   const { startRegistration, name } = useENSRegistration();
 
-  const [searchQuery, setSearchQuery] = useState(name.replace(ENS_DOMAIN, ''));
-  const [inputValue, setInputValue] = useState(name.replace(ENS_DOMAIN, ''));
+  const [searchQuery, setSearchQuery] = useState(name?.replace(ENS_DOMAIN, ''));
+  const [inputValue, setInputValue] = useState(name?.replace(ENS_DOMAIN, ''));
   const [debouncedSearchQuery] = useDebounce(searchQuery, 200);
 
   const {
@@ -234,7 +234,10 @@ export default function ENSSearchSheet() {
           )}
           {(isRegistered || isInvalid) && (
             <TintButton
-              onPress={() => setSearchQuery('')}
+              onPress={() => {
+                setSearchQuery('');
+                setInputValue('');
+              }}
               testID="ens-search-clear-button"
             >
               {lang.t('profiles.search.clear')}

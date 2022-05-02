@@ -39,13 +39,13 @@ export default React.memo(function WrappedNFT({
         asset,
         backgroundOpacity: 1,
         cornerRadius: 'device',
-        external: false,
+        external: assetCollectible?.isExternal || false,
         springDamping: 1,
         topOffset: 0,
         transitionDuration: 0.25,
         type: 'unique_token',
       }),
-    [navigate]
+    [assetCollectible?.isExternal, navigate]
   );
 
   const placementProps: BoxProps =

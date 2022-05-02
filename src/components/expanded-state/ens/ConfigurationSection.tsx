@@ -13,16 +13,22 @@ export default function ConfigurationSection({
   isLoading,
   owner,
   registrant,
-  isPrimary,
   isOwner,
+  isPrimary,
+  isExternal,
+  isReadOnlyWallet,
   name,
+  externalAvatarUrl,
 }: {
   isLoading?: boolean;
   owner?: { name?: string; address?: string };
   registrant?: { name?: string; address?: string };
-  isPrimary?: boolean;
+  isExternal?: boolean;
   isOwner?: boolean;
+  isPrimary?: boolean;
+  isReadOnlyWallet?: boolean;
   name: string;
+  externalAvatarUrl?: string | null;
 }) {
   const { startRegistration } = useENSRegistration();
   const { navigate } = useNavigation();
@@ -36,24 +42,27 @@ export default function ConfigurationSection({
         </>
       ) : (
         <>
-          <InfoRow
-            explainSheetType="ens_primary_name"
-            label={lang.t('expanded_state.unique_expanded.set_primary_name')}
-            onSwitchChange={() => {
-              startRegistration(name, REGISTRATION_MODES.SET_NAME);
-              navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
-                longFormHeight: ENSConfirmUpdateSheetHeight,
-                mode: REGISTRATION_MODES.SET_NAME,
-                name,
-              });
-            }}
-            switchDisabled={!isOwner}
-            switchValue={isPrimary}
-            useAccentColor
-          />
+          {!isReadOnlyWallet && !isExternal && (
+            <InfoRow
+              explainSheetType="ens_primary_name"
+              label={lang.t('expanded_state.unique_expanded.set_primary_name')}
+              onSwitchChange={() => {
+                startRegistration(name, REGISTRATION_MODES.SET_NAME);
+                navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
+                  externalAvatarUrl,
+                  longFormHeight: ENSConfirmUpdateSheetHeight,
+                  mode: REGISTRATION_MODES.SET_NAME,
+                  name,
+                });
+              }}
+              switchDisabled={!isOwner}
+              switchValue={isPrimary}
+              useAccentColor
+            />
+          )}
           {registrant && (
             <InfoRow
-              explainSheetType="ens_registrant"
+              explainSheetType="ens_owner"
               label={lang.t('expanded_state.unique_expanded.owner')}
               useAccentColor
               value={
@@ -65,7 +74,7 @@ export default function ConfigurationSection({
           )}
           {owner && (
             <InfoRow
-              explainSheetType="ens_owner"
+              explainSheetType="ens_manager"
               label={lang.t('expanded_state.unique_expanded.manager')}
               useAccentColor
               value={
