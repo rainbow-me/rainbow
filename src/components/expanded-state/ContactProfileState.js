@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
 import { useNavigation } from '../../navigation/Navigation';
@@ -12,14 +12,29 @@ import CopyTooltip from '../copy-tooltip';
 import { Centered } from '../layout';
 import { Text, TruncatedAddress, TruncatedENS } from '../text';
 import { ProfileAvatarButton, ProfileModal, ProfileNameInput } from './profile';
+import useExperimentalFlag, {
+  PROFILES,
+} from '@rainbow-me/config/experimentalHooks';
+import { AccentColorProvider, Box } from '@rainbow-me/design-system';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
 } from '@rainbow-me/helpers/emojiHandler';
 import { isValidDomainFormat } from '@rainbow-me/helpers/validators';
-import { useAccountSettings, useContacts } from '@rainbow-me/hooks';
+import {
+  useAccountSettings,
+  useContacts,
+  useENSProfileRecords,
+  usePersistentDominantColorFromImage,
+} from '@rainbow-me/hooks';
+import { ImgixImage } from '@rainbow-me/images';
 import styled from '@rainbow-me/styled-components';
-import { margin, padding } from '@rainbow-me/styles';
+import { borders, margin, padding } from '@rainbow-me/styles';
+import {
+  addressHashedColorIndex,
+  addressHashedEmoji,
+} from '@rainbow-me/utils/profileUtils';
+import ShadowStack from 'react-native-shadow-stack';
 
 const AddressAbbreviation = styled(TruncatedAddress).attrs(
   ({ theme: { colors } }) => ({
@@ -55,12 +70,12 @@ const Spacer = styled.View({
 const SubmitButton = styled(Button).attrs(
   ({ theme: { colors }, value, color }) => ({
     backgroundColor:
-      value.length > 0
+      value?.length > 0
         ? typeof color === 'string'
           ? color
           : colors.avatarBackgrounds[color] || colors.appleBlue
         : undefined,
-    disabled: !value.length > 0,
+    disabled: !value?.length > 0,
     showShadow: true,
     size: 'small',
   })
@@ -70,7 +85,7 @@ const SubmitButton = styled(Button).attrs(
 });
 
 const SubmitButtonLabel = styled(Text).attrs(({ value }) => ({
-  color: value.length > 0 ? 'whiteLabel' : 'white',
+  color: value?.length > 0 ? 'whiteLabel' : 'white',
   size: 'lmedium',
   weight: 'bold',
 }))({
@@ -80,21 +95,33 @@ const SubmitButtonLabel = styled(Text).attrs(({ value }) => ({
 const centerdStyles = padding.object(24, 25);
 const bottomStyles = padding.object(8, 9);
 
-const ContactProfileState = ({ address, color: colorProp, contact }) => {
+const ContactProfileState = ({
+  address,
+  color: colorProp,
+  contact,
+  ens,
+  nickname,
+}) => {
+  const profilesEnabled = useExperimentalFlag(PROFILES);
+  const contactNickname = contact?.nickname || nickname;
   const { goBack } = useNavigation();
   const { onAddOrUpdateContacts, onRemoveContact } = useContacts();
+  const { isDarkMode, colors } = useTheme();
+
   const [color, setColor] = useState(colorProp || 0);
   const [value, setValue] = useState(
-    removeFirstEmojiFromString(contact?.nickname || '')
+    profilesEnabled
+      ? contactNickname
+      : removeFirstEmojiFromString(contactNickname)
   );
-  const [emoji, setEmoji] = useState(returnStringFirstEmoji(contact?.nickname));
+  const [emoji, setEmoji] = useState(returnStringFirstEmoji(contactNickname));
   const inputRef = useRef(null);
   const { network } = useAccountSettings();
 
   const handleAddContact = useCallback(() => {
     const nickname = (emoji ? `${emoji} ${value}` : value).trim();
     if (value.length > 0 || color !== colorProp) {
-      onAddOrUpdateContacts(address, nickname, color, network);
+      onAddOrUpdateContacts(address, nickname, color, network, ens);
       goBack();
     }
     android && Keyboard.dismiss();
@@ -103,6 +130,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
     color,
     colorProp,
     emoji,
+    ens,
     goBack,
     network,
     onAddOrUpdateContacts,
@@ -123,9 +151,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
     inputRef,
   ]);
 
-  const isContact = contact && !contact.temporary;
-
-  const { isDarkMode, colors } = useTheme();
+  const isContact = Boolean(contact);
 
   const handleChangeAvatar = useCallback(() => {
     const prevAvatarIndex = profileUtils.avatars.findIndex(
@@ -136,24 +162,84 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
     setEmoji(profileUtils.avatars[nextAvatarIndex]?.emoji);
   }, [emoji, setColor]);
 
+  const avatarSize = 65;
+
+  const { data: profile } = useENSProfileRecords(ens, {
+    enabled: Boolean(ens),
+  });
+
+  const ensAvatar = profile?.images?.avatarUrl;
+
+  const emojiFromAddress = useMemo(
+    () => (address ? addressHashedEmoji(address) : ''),
+    [address]
+  );
+
+  const colorIndex = useMemo(
+    () => (address ? addressHashedColorIndex(address) : 0),
+    [address]
+  );
+
+  const { result: dominantColor } = usePersistentDominantColorFromImage(
+    ensAvatar || ''
+  );
+
+  const accentColor = profilesEnabled
+    ? dominantColor ||
+      colors.avatarBackgrounds[colorIndex || 0] ||
+      colors.appleBlue
+    : color;
+
   return (
     <ProfileModal onPressBackdrop={handleAddContact}>
       <Centered direction="column" style={centerdStyles}>
-        <ProfileAvatarButton
-          changeAvatar={handleChangeAvatar}
-          color={color}
-          marginBottom={0}
-          radiusAndroid={32}
-          testID="contact-profile-avatar-button"
-          value={emoji || value}
-        />
+        {profilesEnabled ? (
+          <ShadowStack
+            {...borders.buildCircleAsObject(avatarSize)}
+            shadows={[
+              [0, 6, 10, colors.shadow, 0.12],
+              [0, 2, 5, colors.shadow, 0.08],
+            ]}
+          >
+            {ensAvatar ? (
+              <Box
+                as={ImgixImage}
+                borderRadius={avatarSize / 2}
+                height={{ custom: avatarSize }}
+                source={{ uri: ensAvatar }}
+                width={{ custom: avatarSize }}
+              />
+            ) : (
+              <AccentColorProvider color={accentColor}>
+                <Box
+                  alignItems="center"
+                  background="accent"
+                  borderRadius={avatarSize / 2}
+                  height={{ custom: avatarSize }}
+                  justifyContent="center"
+                  width={{ custom: avatarSize }}
+                >
+                  <Text size="biggest">{emojiFromAddress}</Text>
+                </Box>
+              </AccentColorProvider>
+            )}
+          </ShadowStack>
+        ) : (
+          <ProfileAvatarButton
+            changeAvatar={handleChangeAvatar}
+            color={accentColor}
+            marginBottom={0}
+            radiusAndroid={32}
+            testID="contact-profile-avatar-button"
+            value={emoji || value}
+          />
+        )}
         <Spacer />
         <ProfileNameInput
           onChange={setValue}
           onSubmitEditing={handleAddContact}
           placeholder="Name"
           ref={inputRef}
-          selectionColor={colors.avatarBackgrounds[color]}
           testID="contact-profile-name-input"
           value={value}
         />
@@ -172,7 +258,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
           <Divider inset={false} />
         </Centered>
         <SubmitButton
-          color={color}
+          color={accentColor}
           isDarkMode={isDarkMode}
           onPress={handleAddContact}
           testID="contact-profile-add-button"

@@ -168,7 +168,11 @@ export default function ProfileSheetHeader({
               </Column>
               {!isLoading && (
                 <Inset top="34px">
-                  <ActionButtons address={profileAddress} ensName={ensName} />
+                  <ActionButtons
+                    address={profileAddress}
+                    avatarUrl={avatarUrl}
+                    ensName={ensName}
+                  />
                 </Inset>
               )}
             </Columns>

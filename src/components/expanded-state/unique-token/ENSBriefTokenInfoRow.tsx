@@ -108,7 +108,11 @@ export default function ENSBriefTokenInfoRow({
         loading={!expiryDate}
         onPress={handlePressExpiryDate}
         size="larger"
-        title={lang.t('expanded_state.unique_expanded.expires_in')}
+        title={lang.t(
+          `expanded_state.unique_expanded.${
+            showExpiryDistance ? 'expires_in' : 'expires_on'
+          }`
+        )}
         weight="heavy"
       >
         {expiryDate
