@@ -190,7 +190,7 @@ export const ViewTypes = {
         item: item.tokens,
         shouldPrioritizeImageLoading:
           index <
-          (sections?.[0]?.data?.length || 0) +
+          (sections?.[0]?.data?.length ?? 0) +
             amountOfImagesWithForcedPrioritizeLoading,
         uniqueId: item.uniqueId,
       });
