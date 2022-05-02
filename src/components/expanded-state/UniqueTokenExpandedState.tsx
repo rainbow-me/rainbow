@@ -323,14 +323,6 @@ const UniqueTokenExpandedState = ({
     usePersistentDominantColorFromImage(asset.lowResUrl).result ||
     colors.paleBlue;
 
-  const setAccentColor = useSetRecoilState(accentColorAtom);
-
-  useEffect(() => {
-    if (isENS) {
-      setAccentColor(imageColor);
-    }
-  }, [asset.lowResUrl, imageColor, isENS, setAccentColor]);
-
   const textColor = useMemo(() => {
     const contrastWithWhite = c.contrast(imageColor, colors.whiteLabel);
 
