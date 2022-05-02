@@ -18,12 +18,14 @@ export default function ENSBriefTokenInfoRow({
   registrationDate,
   showExtendDuration,
   ensName,
+  externalAvatarUrl,
 }: {
   color?: string;
   expiryDate?: number;
   registrationDate?: number;
   ensName: string;
   showExtendDuration?: boolean;
+  externalAvatarUrl?: string | null;
 }) {
   const { colors } = useTheme();
   const { navigate } = useNavigation();
@@ -40,12 +42,19 @@ export default function ENSBriefTokenInfoRow({
       startRegistration(cleanENSName, REGISTRATION_MODES.RENEW);
       navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
         ensName: cleanENSName,
+        externalAvatarUrl,
         longFormHeight:
           ENSConfirmRenewSheetHeight + (data?.images?.avatarUrl ? 70 : 0),
         mode: REGISTRATION_MODES.RENEW,
       });
     });
-  }, [startRegistration, ensName, navigate, data?.images?.avatarUrl]);
+  }, [
+    ensName,
+    startRegistration,
+    navigate,
+    externalAvatarUrl,
+    data?.images?.avatarUrl,
+  ]);
 
   return (
     <Columns space="10px">

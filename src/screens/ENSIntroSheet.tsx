@@ -8,10 +8,8 @@ import {
   MenuActionConfig,
 } from 'react-native-ios-context-menu';
 import LinearGradient from 'react-native-linear-gradient';
-import { useSetRecoilState } from 'recoil';
 import ActivityIndicator from '../components/ActivityIndicator';
 import IntroMarquee from '../components/ens-registration/IntroMarquee/IntroMarquee';
-import { externalAvatarUrlAtom } from '../components/ens-registration/RegistrationAvatar/RegistrationAvatar';
 import { SheetActionButton } from '../components/sheet';
 import { useNavigation } from '../navigation/Navigation';
 import { useTheme } from '@rainbow-me/context';
@@ -49,7 +47,6 @@ export default function ENSIntroSheet() {
   const { width: deviceWidth } = useDimensions();
   const { colors } = useTheme();
   const { params } = useRoute<any>();
-  const setExternalAvatarUrlMetadata = useSetRecoilState(externalAvatarUrlAtom);
   const { accountAddress } = useAccountSettings();
   const { data: domains, isLoading, isSuccess } = useAccountENSDomains();
   const { accountENS } = useAccountProfile();
@@ -103,13 +100,12 @@ export default function ENSIntroSheet() {
   }, [navigateToAssignRecords, uniqueDomain]);
 
   const handleSelectExistingName = useCallback(() => {
-    setExternalAvatarUrlMetadata('');
     navigate(Routes.SELECT_ENS_SHEET, {
       onSelectENS: (ensName: string) => {
         navigateToAssignRecords(ensName);
       },
     });
-  }, [navigate, navigateToAssignRecords, setExternalAvatarUrlMetadata]);
+  }, [navigate, navigateToAssignRecords]);
 
   const menuConfig = useMemo(() => {
     return {

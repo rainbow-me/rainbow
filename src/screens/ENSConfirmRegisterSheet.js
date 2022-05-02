@@ -11,10 +11,7 @@ import {
   WaitCommitmentConfirmationContent,
   WaitENSConfirmationContent,
 } from '../components/ens-registration';
-import {
-  avatarMetadataAtom,
-  externalAvatarUrlAtom,
-} from '../components/ens-registration/RegistrationAvatar/RegistrationAvatar';
+import { avatarMetadataAtom } from '../components/ens-registration/RegistrationAvatar/RegistrationAvatar';
 import { GasSpeedButton } from '../components/gas';
 import { SheetActionButtonRow, SlackSheet } from '../components/sheet';
 import {
@@ -103,10 +100,9 @@ export default function ENSConfirmRegisterSheet() {
 
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
   const avatarMetadata = useRecoilValue(avatarMetadataAtom);
-  const externalAvatarUrl = useRecoilValue(externalAvatarUrlAtom);
 
   const { result: dominantColor } = usePersistentDominantColorFromImage(
-    avatarMetadata?.path || initialAvatarUrl || externalAvatarUrl || ''
+    avatarMetadata?.path || initialAvatarUrl || params?.externalAvatarUrl || ''
   );
   useEffect(() => {
     setAccentColor(dominantColor || colors.purple);

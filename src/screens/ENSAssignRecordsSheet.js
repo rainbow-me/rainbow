@@ -9,7 +9,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilState } from 'recoil';
 import { ButtonPressAnimation } from '../components/animations/';
 import TintButton from '../components/buttons/TintButton';
 import {
@@ -17,7 +17,6 @@ import {
   RegistrationCover,
   TextRecordsForm,
 } from '../components/ens-registration';
-import { externalAvatarUrlAtom } from '../components/ens-registration/RegistrationAvatar/RegistrationAvatar';
 import SelectableButton from '../components/ens-registration/TextRecordsForm/SelectableButton';
 import { SheetActionButton, SheetActionButtonRow } from '../components/sheet';
 import { useTheme } from '../context/ThemeContext';
@@ -111,10 +110,9 @@ export default function ENSAssignRecordsSheet() {
 
   const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
-  const externalAvatarUrl = useRecoilValue(externalAvatarUrlAtom);
 
   const { result: dominantColor } = usePersistentDominantColorFromImage(
-    avatarUrl || initialAvatarUrl || externalAvatarUrl || ''
+    avatarUrl || initialAvatarUrl || params?.externalAvatarUrl || ''
   );
   const [prevDominantColor, setPrevDominantColor] = useState(dominantColor);
 

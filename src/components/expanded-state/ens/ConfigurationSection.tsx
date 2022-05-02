@@ -18,6 +18,7 @@ export default function ConfigurationSection({
   isExternal,
   isReadOnlyWallet,
   name,
+  externalAvatarUrl,
 }: {
   isLoading?: boolean;
   owner?: { name?: string; address?: string };
@@ -27,6 +28,7 @@ export default function ConfigurationSection({
   isPrimary?: boolean;
   isReadOnlyWallet?: boolean;
   name: string;
+  externalAvatarUrl?: string | null;
 }) {
   const { startRegistration } = useENSRegistration();
   const { navigate } = useNavigation();
@@ -47,6 +49,7 @@ export default function ConfigurationSection({
               onSwitchChange={() => {
                 startRegistration(name, REGISTRATION_MODES.SET_NAME);
                 navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
+                  externalAvatarUrl,
                   longFormHeight: ENSConfirmUpdateSheetHeight,
                   mode: REGISTRATION_MODES.SET_NAME,
                   name,

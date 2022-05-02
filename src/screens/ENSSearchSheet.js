@@ -1,7 +1,6 @@
 import lang from 'i18n-js';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
-import { useSetRecoilState } from 'recoil';
 import { useDebounce } from 'use-debounce';
 import dice from '../assets/dice.png';
 import TintButton from '../components/buttons/TintButton';
@@ -10,7 +9,6 @@ import {
   SearchInput,
   SearchResultGradientIndicator,
 } from '../components/ens-registration';
-import { externalAvatarUrlAtom } from '../components/ens-registration/RegistrationAvatar/RegistrationAvatar';
 import { SheetActionButton, SheetActionButtonRow } from '../components/sheet';
 import { useNavigation } from '../navigation/Navigation';
 import {
@@ -40,7 +38,6 @@ export default function ENSSearchSheet() {
   const topPadding = android ? 29 : 19;
 
   const { startRegistration, name } = useENSRegistration();
-  const setExternalAvatarUrlMetadata = useSetRecoilState(externalAvatarUrlAtom);
 
   const [searchQuery, setSearchQuery] = useState(name?.replace(ENS_DOMAIN, ''));
   const [inputValue, setInputValue] = useState(name?.replace(ENS_DOMAIN, ''));
@@ -75,11 +72,10 @@ export default function ENSSearchSheet() {
   }, [isAvailable, isInvalid, isRegistered]);
 
   const handlePressContinue = useCallback(() => {
-    setExternalAvatarUrlMetadata('');
     startRegistration(`${searchQuery}${ENS_DOMAIN}`);
     Keyboard.dismiss();
     navigate(Routes.ENS_ASSIGN_RECORDS_SHEET);
-  }, [navigate, searchQuery, setExternalAvatarUrlMetadata, startRegistration]);
+  }, [navigate, searchQuery, startRegistration]);
 
   return (
     <Box

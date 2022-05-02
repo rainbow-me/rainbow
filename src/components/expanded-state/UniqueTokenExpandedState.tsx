@@ -22,7 +22,6 @@ import { lightModeThemeColors } from '../../styles/colors';
 import L2Disclaimer from '../L2Disclaimer';
 import Link from '../Link';
 import { ButtonPressAnimation } from '../animations';
-import { externalAvatarUrlAtom } from '../ens-registration/RegistrationAvatar/RegistrationAvatar';
 import ImagePreviewOverlay from '../images/ImagePreviewOverlay';
 import ImgixImage from '../images/ImgixImage';
 import {
@@ -325,20 +324,12 @@ const UniqueTokenExpandedState = ({
     colors.paleBlue;
 
   const setAccentColor = useSetRecoilState(accentColorAtom);
-  const setExternalAvatarUrlMetadata = useSetRecoilState(externalAvatarUrlAtom);
 
   useEffect(() => {
     if (isENS) {
       setAccentColor(imageColor);
-      setExternalAvatarUrlMetadata(asset?.lowResUrl || '');
     }
-  }, [
-    asset.lowResUrl,
-    imageColor,
-    isENS,
-    setAccentColor,
-    setExternalAvatarUrlMetadata,
-  ]);
+  }, [asset.lowResUrl, imageColor, isENS, setAccentColor]);
 
   const textColor = useMemo(() => {
     const contrastWithWhite = c.contrast(imageColor, colors.whiteLabel);
@@ -380,11 +371,12 @@ const UniqueTokenExpandedState = ({
         startRegistration(uniqueId, REGISTRATION_MODES.EDIT);
         navigate(Routes.REGISTER_ENS_NAVIGATOR, {
           ensName: uniqueId,
+          externalAvatarUrl: asset?.lowResUrl,
           mode: REGISTRATION_MODES.EDIT,
         });
       });
     }
-  }, [isENS, navigate, startRegistration, uniqueId]);
+  }, [isENS, navigate, startRegistration, uniqueId, asset?.lowResUrl]);
 
   const sheetRef = useRef();
   const yPosition = useSharedValue(0);
@@ -566,6 +558,7 @@ const UniqueTokenExpandedState = ({
                               color={imageColor}
                               ensName={uniqueId}
                               expiryDate={ensData?.registration.expiryDate}
+                              externalAvatarUrl={asset?.lowResUrl}
                               registrationDate={
                                 ensData?.registration.registrationDate
                               }
@@ -645,6 +638,7 @@ const UniqueTokenExpandedState = ({
                             titleEmoji="⚙️"
                           >
                             <ConfigurationSection
+                              externalAvatarUrl={asset?.lowResUrl}
                               isExternal={external}
                               isLoading={ensProfile.isLoading}
                               isOwner={ensProfile?.isOwner}
