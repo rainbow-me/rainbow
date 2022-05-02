@@ -201,9 +201,10 @@
         "add": "Add Contact",
         "cancel": "Cancel",
         "delete": "Delete Contact",
-        "edit": "Edit Contact"
+        "edit": "Edit Contact",
+        "view": "View Profile"
       },
-      "input": { "placeholder": "name" }
+      "input": { "placeholder": "Name" }
     },
     "discover": {
       "lists": {

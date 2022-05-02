@@ -154,7 +154,9 @@ export default function SendHeader({
         destructiveButtonIndex: 0,
         options: [
           lang.t('contacts.options.delete'), // <-- destructiveButtonIndex
-          lang.t('contacts.options.edit'),
+          profilesEnabled
+            ? lang.t('contacts.options.view')
+            : lang.t('contacts.options.edit'),
           lang.t('wallet.settings.copy_address_capitalized'),
           lang.t('contacts.options.cancel'), // <-- cancelButtonIndex
         ],
@@ -180,8 +182,12 @@ export default function SendHeader({
             }
           );
         } else if (buttonIndex === 1) {
-          handleNavigateToContact();
-          onRefocusInput();
+          if (profilesEnabled) {
+            navigate(Routes.PROFILE_SHEET, { address: recipient });
+          } else {
+            handleNavigateToContact();
+            onRefocusInput();
+          }
         } else if (buttonIndex === 2) {
           setClipboard(hexAddress);
           onRefocusInput();
@@ -191,7 +197,9 @@ export default function SendHeader({
   }, [
     handleNavigateToContact,
     hexAddress,
+    navigate,
     onRefocusInput,
+    profilesEnabled,
     removeContact,
     setClipboard,
   ]);
