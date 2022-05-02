@@ -1,4 +1,5 @@
 import { BlurView } from '@react-native-community/blur';
+import lang from 'i18n-js';
 import React from 'react';
 import { View } from 'react-native';
 import { ButtonPressAnimation } from '../animations';
@@ -63,8 +64,13 @@ function ConnectedDapps() {
               size="lmedium"
               weight="heavy"
             >
-              ️‍🌈 {walletConnectorsByDappName.length} app
-              {walletConnectorsByDappName.length === 1 ? '' : 's'} connected 􀯼
+              ️‍🌈{' '}
+              {walletConnectorsByDappName.length === 1
+                ? lang.t('wallet.qr.qr_1_app_connected')
+                : lang.t('wallet.qr.qr_multiple_apps_connected', {
+                    appsConnectedCount: walletConnectorsByDappName.length,
+                  })}{' '}
+              􀯼
             </LabelText>
           </OverlayBlur>
         </View>

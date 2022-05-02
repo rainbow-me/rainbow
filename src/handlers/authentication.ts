@@ -36,7 +36,7 @@ export async function savePIN(pin: any) {
   }
 }
 
-export async function authenticateWithPIN() {
+export async function authenticateWithPINAndCreateIfNeeded() {
   let validPin: any;
   try {
     validPin = await getExistingPIN();
@@ -54,6 +54,23 @@ export async function authenticateWithPIN() {
             reject();
           }
         }
+        resolve(pin);
+      },
+      validPin,
+    });
+  });
+}
+
+export async function authenticateWithPIN() {
+  let validPin: any;
+  try {
+    validPin = await getExistingPIN();
+    // eslint-disable-next-line no-empty
+  } catch (e) {}
+  return new Promise((resolve, reject) => {
+    return Navigation.handleAction(Routes.PIN_AUTHENTICATION_SCREEN, {
+      onCancel: () => reject(),
+      onSuccess: async (pin: any) => {
         resolve(pin);
       },
       validPin,

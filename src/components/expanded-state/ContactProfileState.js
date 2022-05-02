@@ -238,7 +238,7 @@ const ContactProfileState = ({
         <ProfileNameInput
           onChange={setValue}
           onSubmitEditing={handleAddContact}
-          placeholder="Name"
+          placeholder={lang.t('expanded_state.contact_profile.name')}
           ref={inputRef}
           testID="contact-profile-name-input"
           value={value}
