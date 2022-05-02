@@ -449,24 +449,15 @@
         "about": "About %{assetFamilyName} :)",
         "advanced": "Advanced :)",
         "attributes": "Attributes :)",
-<<<<<<< HEAD
         "configuration": "Configuration :)",
         "copy": "Copy :)",
-        "description": "Description :)",
         "edit": "Edit :)",
-        "in_showcase": "In Showcase :)",
-        "opensea": "Opensea :)",
         "owner": "Owner :)",
         "profile_info": "Profile Info :)",
-        "properties": "Properties :)",
         "registrant": "Registrant :)",
         "resolver": "Resolver",
-        "showcase": "Showcase :)",
-        "toast_added_to_showcase": "Added to showcase :)",
-        "toast_removed_from_showcase": "Removed from showcase :)",
         "view_on_opensea": "View on Opensea :)",
-        "view_on_platform": "View on %{platform} :)"
-=======
+        "view_on_platform": "View on %{platform} :)",
         "collection_website": "Collection Website :)",
         "copy_token_id": "Copy Token ID :)",
         "description": "Description :)",
@@ -541,7 +532,6 @@
       "verified": {
         "text": "Tokens with a verified badge mean they have appeared on at least 3 other outside token lists.\n\nAlways do your own research to ensure you are interacting with a token you trust. :)",
         "title": "Verified Tokens :)"
->>>>>>> develop
       }
     },
     "fields": {
