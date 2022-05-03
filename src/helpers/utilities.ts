@@ -7,10 +7,6 @@ const stringify = (value: BigNumberish) => {
   return value.toString();
 };
 
-const refs = {};
-
-let c = 0;
-
 export const add = (
   numberOne: BigNumberish,
   numberTwo: BigNumberish
