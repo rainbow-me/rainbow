@@ -18,11 +18,7 @@ import {
   isENSAddressFormat,
   isValidDomainFormat,
 } from '@rainbow-me/helpers/validators';
-import {
-  useContacts,
-  useDimensions,
-  useENSProfileRecords,
-} from '@rainbow-me/hooks';
+import { useDimensions, useENSProfileRecords } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { margin } from '@rainbow-me/styles';
 import {
@@ -73,7 +69,6 @@ const ContactRow = (
   ref
 ) => {
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const { onAddOrUpdateContacts } = useContacts();
   const { width: deviceWidth } = useDimensions();
   const { colors } = useTheme();
   const {
@@ -111,7 +106,6 @@ const ContactRow = (
         const name = await fetchReverseRecord(address);
         if (name !== ensName) {
           setENSName(name);
-          onAddOrUpdateContacts(address, nickname, color, network, name);
         }
       };
       fetchENSName();
@@ -123,7 +117,6 @@ const ContactRow = (
     ensName,
     network,
     nickname,
-    onAddOrUpdateContacts,
     profilesEnabled,
     setENSName,
   ]);

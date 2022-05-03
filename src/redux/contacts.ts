@@ -89,8 +89,7 @@ export const contactsAddOrUpdate = (
   address: string,
   nickname: string,
   color: number,
-  network: Network,
-  ens?: string
+  network: Network
 ) => (dispatch: Dispatch<ContactsUpdateAction>, getState: AppGetState) => {
   const loweredAddress = toLower(address);
   const { contacts } = getState().contacts;
@@ -99,7 +98,6 @@ export const contactsAddOrUpdate = (
     [loweredAddress]: {
       address: loweredAddress,
       color,
-      ens,
       network,
       nickname,
     },

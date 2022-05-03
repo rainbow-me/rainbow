@@ -3,7 +3,7 @@ import lang from 'i18n-js';
 import React, { useCallback, useState } from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { getRandomColor } from '../../styles/colors';
-import { ProfileModal } from './profile';
+import ProfileModal from './profile/ProfileModal';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,

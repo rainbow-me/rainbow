@@ -8,7 +8,8 @@ import CopyTooltip from '../../copy-tooltip';
 import { Centered, ColumnWithDividers } from '../../layout';
 import { AvatarCircle } from '../../profile';
 import { Text, TruncatedAddress } from '../../text';
-import { ProfileModalContainer, ProfileNameInput } from '.';
+import ProfileModalContainer from './ProfileModalContainer';
+import ProfileNameInput from './ProfileNameInput';
 import { useTheme } from '@rainbow-me/context';
 import styled from '@rainbow-me/styled-components';
 import { margin, padding, position } from '@rainbow-me/styles';
@@ -116,7 +117,7 @@ const ProfileModal = ({
             <AvatarCircle
               image={null}
               isAvatarPickerAvailable={false}
-              onPress={null}
+              onPress={null} // TODO: Add avatar picker
               overlayStyles={null}
               showcaseAccountColor={accentColor}
               showcaseAccountSymbol={emojiAvatar}
