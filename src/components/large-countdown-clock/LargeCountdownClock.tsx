@@ -19,6 +19,8 @@ import {
 } from '@rainbow-me/design-system';
 
 type LargeCountdownClockProps = {
+  initialSeconds?: number;
+  initialMinutes?: number;
   minutes?: number;
   seconds: number;
   onFinished: () => void;
@@ -32,6 +34,8 @@ const PROGRESS_STROKE_FULL_LENGTH = Math.round(2 * Math.PI * PROGRESS_RADIUS);
 export default function LargeCountdownClock({
   minutes,
   seconds,
+  initialSeconds,
+  initialMinutes,
   onFinished,
 }: LargeCountdownClockProps) {
   const [completed, setCompleted] = useState(false);
@@ -59,7 +63,9 @@ export default function LargeCountdownClock({
   const accentColor = useForegroundColor('accent');
 
   // convert clock time to seconds
-  const totalSeconds = minutes ? minutes * 60 + seconds : seconds;
+  const mins = initialMinutes || minutes;
+  const secs = initialSeconds || seconds;
+  const totalSeconds = mins ? mins * 60 + secs : secs;
   // convert remaining clock time to seconds
   const timeRemaining = countdown.minutes * 60 + countdown.seconds;
   // save full stroke value to use in animation
