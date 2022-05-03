@@ -180,6 +180,7 @@ export default function ENSConfirmRegisterSheet() {
 
   const onMountSecondsSinceCommitConfirmed = useMemo(
     () => secondsSinceCommitConfirmed,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
