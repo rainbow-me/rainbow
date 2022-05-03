@@ -1,7 +1,6 @@
 import {
   compact,
   concat,
-  filter,
   find,
   findIndex,
   flatten,
@@ -12,7 +11,6 @@ import {
   partition,
   reverse,
   slice,
-  startsWith,
   toLower,
   toUpper,
   uniqBy,
@@ -96,21 +94,9 @@ export const parseTransactions = async (
   const newTransactions = await Promise.all(newTransactionPromises);
   const parsedNewTransactions = flatten(newTransactions);
 
-  const [pendingTransactions, remainingTransactions] = partition(
-    existingTransactions,
-    txn => txn.pending
-  );
-
-  const updatedPendingTransactions = dedupePendingTransactions(
-    accountAddress,
-    pendingTransactions,
-    parsedNewTransactions
-  );
-
   const updatedResults = concat(
-    updatedPendingTransactions,
     parsedNewTransactions,
-    remainingTransactions,
+    existingTransactions,
     allL2Transactions
   );
 
@@ -430,35 +416,6 @@ const parseTransaction = async (
     network
   );
   return parsedTransaction;
-};
-
-export const dedupePendingTransactions = (
-  accountAddress: EthereumAddress,
-  pendingTransactions: RainbowTransaction[],
-  parsedTransactions: RainbowTransaction[]
-) => {
-  let updatedPendingTransactions = pendingTransactions;
-  if (pendingTransactions.length) {
-    updatedPendingTransactions = filter(
-      updatedPendingTransactions,
-      pendingTxn => {
-        const matchingElement = find(
-          parsedTransactions,
-          txn =>
-            (txn.hash &&
-              pendingTxn.hash &&
-              startsWith(toLower(txn.hash), toLower(pendingTxn.hash))) ||
-            (txn.from &&
-              txn.nonce &&
-              pendingTxn.nonce &&
-              toLower(txn.from) === toLower(accountAddress) &&
-              txn.nonce >= pendingTxn.nonce)
-        );
-        return !matchingElement;
-      }
-    );
-  }
-  return updatedPendingTransactions;
 };
 
 export const getTitle = ({
