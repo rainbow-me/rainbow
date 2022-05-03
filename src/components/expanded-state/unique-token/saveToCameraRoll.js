@@ -1,4 +1,5 @@
 import CameraRoll from '@react-native-community/cameraroll';
+import lang from 'i18n-js';
 import { Alert, PermissionsAndroid, Platform } from 'react-native';
 import RNFetchBlob from 'rn-fetch-blob';
 
@@ -7,10 +8,12 @@ const getPermissionAndroid = async () => {
     const granted = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
       {
-        buttonNegative: 'Cancel',
-        buttonPositive: 'OK',
-        message: 'Your permission is required to save images to your device',
-        title: 'Image Download Permission',
+        buttonNegative: lang.t('button.cancel'),
+        buttonPositive: lang.t('button.ok'),
+        message: lang.t(
+          'expanded_state.unique.save.your_permission_is_required'
+        ),
+        title: lang.t('expanded_state.unique.save.image_download_permission'),
       }
     );
     if (granted === PermissionsAndroid.RESULTS.GRANTED) {
@@ -23,9 +26,9 @@ const getPermissionAndroid = async () => {
 
 function alertError(err) {
   Alert.alert(
-    'Failed to save Image',
+    lang.t('expanded_state.unique.save.failed_to_save_image'),
     err.message ? `${err.message}` : '',
-    [{ text: 'OK' }],
+    [{ text: lang.t('button.ok') }],
     { cancelable: false }
   );
 }
@@ -43,7 +46,11 @@ function getFilename(url) {
 async function downloadImageAndroid(url) {
   const granted = await getPermissionAndroid();
   if (!granted) {
-    alertError({ message: 'Access to photo library was denied' });
+    alertError({
+      message: lang.t(
+        'expanded_state.unique.save.access_to_photo_library_was_denied'
+      ),
+    });
     return;
   }
   let { filename, ext } = getFilename(url);
@@ -67,7 +74,7 @@ async function downloadImageAndroid(url) {
     PictureDir + '/nft_' + filename + Date.now().toString() + '.' + ext;
   const options = {
     addAndroidDownloads: {
-      description: 'NFT image',
+      description: lang.t('expanded_state.unique.save.nft_image'),
       mime,
       notification: true,
       path,

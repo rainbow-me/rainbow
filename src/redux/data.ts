@@ -1,10 +1,8 @@
 import { ObservableQuery } from '@apollo/client';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
-import { Mutex } from 'async-mutex';
 import { getUnixTime, startOfMinute, sub } from 'date-fns';
 import isValidDomain from 'is-valid-domain';
 import {
-  concat,
   filter,
   find,
   get,
@@ -39,6 +37,7 @@ import { uniqueTokensRefreshState } from './uniqueTokens';
 import { uniswapUpdateLiquidityTokens } from './uniswapLiquidity';
 import {
   AssetTypes,
+  NativeCurrencyKeys,
   NewTransactionOrAddCashTransaction,
   ParsedAddressAsset,
   RainbowTransaction,
@@ -54,10 +53,12 @@ import appEvents from '@rainbow-me/handlers/appEvents';
 import {
   getAccountAssetsData,
   getAssetPricesFromUniswap,
+  getLocalPendingTransactions,
   getLocalTransactions,
   saveAccountAssetsData,
   saveAccountEmptyState,
   saveAssetPricesFromUniswap,
+  saveLocalPendingTransactions,
   saveLocalTransactions,
 } from '@rainbow-me/handlers/localstorage/accountLocal';
 import {
@@ -156,17 +157,12 @@ const DATA_LOAD_TRANSACTIONS_REQUEST = 'data/DATA_LOAD_TRANSACTIONS_REQUEST';
 const DATA_LOAD_TRANSACTIONS_SUCCESS = 'data/DATA_LOAD_TRANSACTIONS_SUCCESS';
 const DATA_LOAD_TRANSACTIONS_FAILURE = 'data/DATA_LOAD_TRANSACTIONS_FAILURE';
 
-const DATA_ADD_NEW_TRANSACTION_SUCCESS =
-  'data/DATA_ADD_NEW_TRANSACTION_SUCCESS';
+const DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS =
+  'data/DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS';
 
 const DATA_UPDATE_REFETCH_SAVINGS = 'data/DATA_UPDATE_REFETCH_SAVINGS';
 
 const DATA_CLEAR_STATE = 'data/DATA_CLEAR_STATE';
-
-const mutex = new Mutex();
-
-const withRunExclusive = async <T>(callback: (...args: unknown[]) => T) =>
-  await mutex.runExclusive(callback);
 
 // -- Actions ---------------------------------------- //
 
@@ -209,6 +205,11 @@ interface DataState {
    * Whether or not transactions are currently being loaded.
    */
   isLoadingTransactions: boolean;
+
+  /**
+   * Pending transactions for this account.
+   */
+  pendingTransactions: RainbowTransaction[];
 
   /**
    * Zerion portfolio information keyed by account address.
@@ -259,7 +260,7 @@ type DataAction =
   | DataLoadAccountAssetsDataSuccessAction
   | DataLoadAccountAssetsDataFailureAction
   | DataLoadAccountAssetsDataFinalizedAction
-  | DataAddNewTransactionSuccessAction
+  | DataUpdatePendingTransactionSuccessAction
   | DataClearStateAction;
 
 /**
@@ -380,8 +381,8 @@ interface DataLoadAccountAssetsDataFinalizedAction {
  * The action used to indicate that transactions were added successfully,
  * with a payload including the entire new array for `transactions`.
  */
-interface DataAddNewTransactionSuccessAction {
-  type: typeof DATA_ADD_NEW_TRANSACTION_SUCCESS;
+interface DataUpdatePendingTransactionSuccessAction {
+  type: typeof DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS;
   payload: DataState['transactions'];
 }
 
@@ -562,52 +563,60 @@ export const dataLoadState = () => async (
     | DataLoadTransactionSuccessAction
     | DataLoadTransactionsRequestAction
     | DataLoadTransactionsFailureAction
+    | DataUpdatePendingTransactionSuccessAction
   >,
   getState: AppGetState
-) =>
-  withRunExclusive(async () => {
-    const { accountAddress, network } = getState().settings;
-    try {
-      const assetPricesFromUniswap = await getAssetPricesFromUniswap(
-        accountAddress,
-        network
-      );
-      dispatch({
-        payload: assetPricesFromUniswap,
-        type: DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_SUCCESS,
-      });
-      // eslint-disable-next-line no-empty
-    } catch (error) {}
-    try {
-      dispatch({ type: DATA_LOAD_ACCOUNT_ASSETS_DATA_REQUEST });
-      const accountAssetsData = await getAccountAssetsData(
-        accountAddress,
-        network
-      );
+) => {
+  const { accountAddress, network } = getState().settings;
+  try {
+    const assetPricesFromUniswap = await getAssetPricesFromUniswap(
+      accountAddress,
+      network
+    );
+    dispatch({
+      payload: assetPricesFromUniswap,
+      type: DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_SUCCESS,
+    });
+    // eslint-disable-next-line no-empty
+  } catch (error) {}
+  try {
+    dispatch({ type: DATA_LOAD_ACCOUNT_ASSETS_DATA_REQUEST });
+    const accountAssetsData = await getAccountAssetsData(
+      accountAddress,
+      network
+    );
 
-      if (!isEmpty(accountAssetsData)) {
-        dispatch({
-          payload: accountAssetsData,
-          type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
-        });
-      }
-    } catch (error) {
-      dispatch({ type: DATA_LOAD_ACCOUNT_ASSETS_DATA_FAILURE });
-    }
-    try {
-      dispatch({ type: DATA_LOAD_TRANSACTIONS_REQUEST });
-      const transactions = await getLocalTransactions(accountAddress, network);
+    if (!isEmpty(accountAssetsData)) {
       dispatch({
-        payload: transactions,
-        type: DATA_LOAD_TRANSACTIONS_SUCCESS,
+        payload: accountAssetsData,
+        type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
       });
-    } catch (error) {
-      dispatch({ type: DATA_LOAD_TRANSACTIONS_FAILURE });
     }
-    genericAssetsHandle = setTimeout(() => {
-      dispatch(genericAssetsFallback());
-    }, GENERIC_ASSETS_FALLBACK_TIMEOUT);
-  });
+  } catch (error) {
+    dispatch({ type: DATA_LOAD_ACCOUNT_ASSETS_DATA_FAILURE });
+  }
+  try {
+    dispatch({ type: DATA_LOAD_TRANSACTIONS_REQUEST });
+    const transactions = await getLocalTransactions(accountAddress, network);
+    const pendingTransactions = await getLocalPendingTransactions(
+      accountAddress,
+      network
+    );
+    dispatch({
+      payload: pendingTransactions,
+      type: DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS,
+    });
+    dispatch({
+      payload: transactions,
+      type: DATA_LOAD_TRANSACTIONS_SUCCESS,
+    });
+  } catch (error) {
+    dispatch({ type: DATA_LOAD_TRANSACTIONS_FAILURE });
+  }
+  genericAssetsHandle = setTimeout(() => {
+    dispatch(genericAssetsFallback());
+  }, GENERIC_ASSETS_FALLBACK_TIMEOUT);
+};
 
 /**
  * Fetches asset prices from the Coingecko API.
@@ -940,66 +949,82 @@ export const transactionsReceived = (
   message: TransactionsReceivedMessage | undefined,
   appended = false
 ) => async (
-  dispatch: ThunkDispatch<AppState, unknown, DataLoadTransactionSuccessAction>,
+  dispatch: ThunkDispatch<
+    AppState,
+    unknown,
+    DataLoadTransactionSuccessAction | DataUpdatePendingTransactionSuccessAction
+  >,
   getState: AppGetState
-) =>
-  withRunExclusive(async () => {
-    const isValidMeta = dispatch(checkMeta(message));
-    if (!isValidMeta) return;
-    const transactionData = message?.payload?.transactions ?? [];
-    if (appended) {
-      dispatch(checkForConfirmedSavingsActions(transactionData));
-    }
-    await dispatch(checkForUpdatedNonce(transactionData));
+) => {
+  const isValidMeta = dispatch(checkMeta(message));
+  if (!isValidMeta) return;
+  const transactionData = message?.payload?.transactions ?? [];
+  if (appended) {
+    dispatch(checkForConfirmedSavingsActions(transactionData));
+  }
+  await dispatch(checkForUpdatedNonce(transactionData));
 
-    const { accountAddress, nativeCurrency } = getState().settings;
-    const { purchaseTransactions } = getState().addCash;
-    const { transactions } = getState().data;
-    const { selected } = getState().wallets;
+  const { accountAddress, nativeCurrency } = getState().settings;
+  const { purchaseTransactions } = getState().addCash;
+  const { pendingTransactions, transactions } = getState().data;
+  const { selected } = getState().wallets;
 
-    let { network } = getState().settings;
-    if (network === Network.mainnet && message?.meta?.chain_id) {
-      network = message?.meta?.chain_id;
-    }
-    const {
-      parsedTransactions,
-      potentialNftTransaction,
-    } = await parseTransactions(
-      transactionData,
-      accountAddress,
-      nativeCurrency,
-      transactions,
-      purchaseTransactions,
-      network,
-      appended
-    );
-    if (appended && potentialNftTransaction) {
-      setTimeout(() => {
-        dispatch(uniqueTokensRefreshState());
-      }, 60000);
-    }
-    dispatch({
-      payload: parsedTransactions,
-      type: DATA_LOAD_TRANSACTIONS_SUCCESS,
-    });
-    dispatch(updatePurchases(parsedTransactions));
-    saveLocalTransactions(parsedTransactions, accountAddress, network);
-
-    if (appended && parsedTransactions.length) {
-      if (
-        selected &&
-        !selected.backedUp &&
-        !selected.imported &&
-        selected.type !== WalletTypes.readOnly
-      ) {
-        setTimeout(() => {
-          triggerOnSwipeLayout(() =>
-            Navigation.handleAction(Routes.BACKUP_SHEET, { single: true })
-          );
-        }, BACKUP_SHEET_DELAY_MS);
-      }
-    }
+  let { network } = getState().settings;
+  if (network === Network.mainnet && message?.meta?.chain_id) {
+    network = message?.meta?.chain_id;
+  }
+  const {
+    parsedTransactions,
+    potentialNftTransaction,
+  } = await parseTransactions(
+    transactionData,
+    accountAddress,
+    nativeCurrency,
+    transactions,
+    purchaseTransactions,
+    network,
+    appended
+  );
+  if (appended && potentialNftTransaction) {
+    setTimeout(() => {
+      dispatch(uniqueTokensRefreshState());
+    }, 60000);
+  }
+  const txHashes = parsedTransactions.map(tx => ethereumUtils.getHash(tx));
+  const updatedPendingTransactions = pendingTransactions.filter(
+    tx => !txHashes.includes(ethereumUtils.getHash(tx))
+  );
+  dispatch({
+    payload: updatedPendingTransactions,
+    type: DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS,
   });
+  dispatch({
+    payload: parsedTransactions,
+    type: DATA_LOAD_TRANSACTIONS_SUCCESS,
+  });
+  dispatch(updatePurchases(parsedTransactions));
+  saveLocalTransactions(parsedTransactions, accountAddress, network);
+  saveLocalPendingTransactions(
+    updatedPendingTransactions,
+    accountAddress,
+    network
+  );
+
+  if (appended && parsedTransactions.length) {
+    if (
+      selected &&
+      !selected.backedUp &&
+      !selected.imported &&
+      selected.type !== WalletTypes.readOnly
+    ) {
+      setTimeout(() => {
+        triggerOnSwipeLayout(() =>
+          Navigation.handleAction(Routes.BACKUP_SHEET, { single: true })
+        );
+      }, BACKUP_SHEET_DELAY_MS);
+    }
+  }
+};
 
 /**
  * Handles a `TransactionsRemovedMessage` from Zerion and updates state and
@@ -1012,37 +1037,36 @@ export const transactionsRemoved = (
 ) => async (
   dispatch: ThunkDispatch<AppState, unknown, DataLoadTransactionSuccessAction>,
   getState: AppGetState
-) =>
-  withRunExclusive(() => {
-    const isValidMeta = dispatch(checkMeta(message));
-    if (!isValidMeta) return;
+) => {
+  const isValidMeta = dispatch(checkMeta(message));
+  if (!isValidMeta) return;
 
-    const transactionData = message?.payload?.transactions ?? [];
-    if (!transactionData.length) {
-      return;
-    }
-    const { accountAddress, network } = getState().settings;
-    const { transactions } = getState().data;
-    const removeHashes = map(transactionData, txn => txn.hash);
-    logger.log('[data] - remove txn hashes', removeHashes);
-    const [updatedTransactions, removedTransactions] = partition(
-      transactions,
-      txn => !includes(removeHashes, ethereumUtils.getHash(txn))
-    );
+  const transactionData = message?.payload?.transactions ?? [];
+  if (!transactionData.length) {
+    return;
+  }
+  const { accountAddress, network } = getState().settings;
+  const { transactions } = getState().data;
+  const removeHashes = map(transactionData, txn => txn.hash);
+  logger.log('[data] - remove txn hashes', removeHashes);
+  const [updatedTransactions, removedTransactions] = partition(
+    transactions,
+    txn => !includes(removeHashes, ethereumUtils.getHash(txn))
+  );
 
-    dispatch({
-      payload: updatedTransactions,
-      type: DATA_LOAD_TRANSACTIONS_SUCCESS,
-    });
-
-    // In this case `removedTransactions` is an array of `RainbowTransaction`s,
-    // while `checkForRemovedNonce` wants `ZerionTransaction`s. However,
-    // `RainbowTransaction` doesn't have the `address_from` field used in
-    // `checkForRemovedNonce`. Therefore, this likely does not work as intended,
-    // but is being kept for later review!
-    dispatch(checkForRemovedNonce(removedTransactions as any));
-    saveLocalTransactions(updatedTransactions, accountAddress, network);
+  dispatch({
+    payload: updatedTransactions,
+    type: DATA_LOAD_TRANSACTIONS_SUCCESS,
   });
+
+  // In this case `removedTransactions` is an array of `RainbowTransaction`s,
+  // while `checkForRemovedNonce` wants `ZerionTransaction`s. However,
+  // `RainbowTransaction` doesn't have the `address_from` field used in
+  // `checkForRemovedNonce`. Therefore, this likely does not work as intended,
+  // but is being kept for later review!
+  dispatch(checkForRemovedNonce(removedTransactions as any));
+  saveLocalTransactions(updatedTransactions, accountAddress, network);
+};
 
 /**
  * Handles an `AddressAssetsReceivedMessage` from Zerion and updates state and
@@ -1362,7 +1386,11 @@ export const assetPricesReceived = (
       type: DATA_UPDATE_GENERIC_ASSETS,
     });
   }
-  if (message?.meta?.currency === 'usd' && newAssetPrices[ETH_ADDRESS]) {
+  if (
+    message?.meta?.currency?.toLowerCase() ===
+      NativeCurrencyKeys.USD.toLowerCase() &&
+    newAssetPrices[ETH_ADDRESS]
+  ) {
     const value = newAssetPrices[ETH_ADDRESS]?.price?.value;
     dispatch({
       payload: value,
@@ -1379,28 +1407,43 @@ export const assetPricesReceived = (
 export const assetPricesChanged = (
   message: AssetPricesChangedMessage | undefined
 ) => (
-  dispatch: Dispatch<DataUpdateGenericAssetsAction>,
+  dispatch: Dispatch<DataUpdateGenericAssetsAction | DataUpdateEthUsdAction>,
   getState: AppGetState
 ) => {
+  const { nativeCurrency } = getState().settings;
+
   const price = message?.payload?.prices?.[0]?.price;
   const assetAddress = message?.meta?.asset_code;
   if (isNil(price) || isNil(assetAddress)) return;
-  const { genericAssets } = getState().data;
-  const genericAsset = {
-    ...get(genericAssets, assetAddress),
-    price,
-  };
-  const updatedAssets = {
-    ...genericAssets,
-    [assetAddress]: genericAsset,
-  } as {
-    [address: string]: ParsedAddressAsset;
-  };
 
-  dispatch({
-    payload: updatedAssets,
-    type: DATA_UPDATE_GENERIC_ASSETS,
-  });
+  if (nativeCurrency?.toLowerCase() === message?.meta?.currency) {
+    const { genericAssets } = getState().data;
+    const genericAsset = {
+      ...get(genericAssets, assetAddress),
+      price,
+    };
+    const updatedAssets = {
+      ...genericAssets,
+      [assetAddress]: genericAsset,
+    } as {
+      [address: string]: ParsedAddressAsset;
+    };
+
+    dispatch({
+      payload: updatedAssets,
+      type: DATA_UPDATE_GENERIC_ASSETS,
+    });
+  }
+  if (
+    message?.meta?.currency?.toLowerCase() ===
+      NativeCurrencyKeys.USD.toLowerCase() &&
+    assetAddress === ETH_ADDRESS
+  ) {
+    dispatch({
+      payload: price?.value,
+      type: DATA_UPDATE_ETH_USD,
+    });
+  }
 };
 
 /**
@@ -1423,61 +1466,58 @@ export const dataAddNewTransaction = (
   dispatch: ThunkDispatch<
     AppState,
     unknown,
-    DataAddNewTransactionSuccessAction
+    DataUpdatePendingTransactionSuccessAction
   >,
   getState: AppGetState
-) =>
-  withRunExclusive(
-    async (): Promise<RainbowTransaction | undefined> => {
-      const { transactions } = getState().data;
-      const { accountAddress, nativeCurrency, network } = getState().settings;
-      if (
-        accountAddressToUpdate &&
-        toLower(accountAddressToUpdate) !== toLower(accountAddress)
-      )
-        return;
-      try {
-        const parsedTransaction = await parseNewTransaction(
-          txDetails,
-          nativeCurrency
-        );
-        const _transactions = [parsedTransaction, ...transactions];
-        dispatch({
-          payload: _transactions,
-          type: DATA_ADD_NEW_TRANSACTION_SUCCESS,
-        });
-        saveLocalTransactions(_transactions, accountAddress, network);
-        if (parsedTransaction.from && parsedTransaction.nonce) {
-          await dispatch(
-            incrementNonce(
-              parsedTransaction.from,
-              parsedTransaction.nonce,
-              parsedTransaction.network
-            )
-          );
-        }
-        if (
-          !disableTxnWatcher ||
-          network !== Network.mainnet ||
-          parsedTransaction?.network
-        ) {
-          dispatch(
-            watchPendingTransactions(
-              accountAddress,
-              parsedTransaction.network
-                ? TXN_WATCHER_MAX_TRIES_LAYER_2
-                : TXN_WATCHER_MAX_TRIES,
-              null,
-              // @ts-expect-error `watchPendingTransactions` only takes 3 arguments.
-              provider
-            )
-          );
-        }
-        return parsedTransaction;
-        // eslint-disable-next-line no-empty
-      } catch (error) {}
+) => {
+  const { pendingTransactions } = getState().data;
+  const { accountAddress, nativeCurrency, network } = getState().settings;
+  if (
+    accountAddressToUpdate &&
+    toLower(accountAddressToUpdate) !== toLower(accountAddress)
+  )
+    return;
+  try {
+    const parsedTransaction = await parseNewTransaction(
+      txDetails,
+      nativeCurrency
+    );
+    const _pendingTransactions = [parsedTransaction, ...pendingTransactions];
+    dispatch({
+      payload: _pendingTransactions,
+      type: DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS,
+    });
+    saveLocalPendingTransactions(_pendingTransactions, accountAddress, network);
+    if (parsedTransaction.from && parsedTransaction.nonce) {
+      await dispatch(
+        incrementNonce(
+          parsedTransaction.from,
+          parsedTransaction.nonce,
+          parsedTransaction.network
+        )
+      );
     }
-  );
+    if (
+      !disableTxnWatcher ||
+      network !== Network.mainnet ||
+      parsedTransaction?.network
+    ) {
+      dispatch(
+        watchPendingTransactions(
+          accountAddress,
+          parsedTransaction.network
+            ? TXN_WATCHER_MAX_TRIES_LAYER_2
+            : TXN_WATCHER_MAX_TRIES,
+          null,
+          // @ts-expect-error `watchPendingTransactions` only takes 3 arguments.
+          provider
+        )
+      );
+    }
+    return parsedTransaction;
+    // eslint-disable-next-line no-empty
+  } catch (error) {}
+};
 
 /**
  * Returns the `TransactionStatus` that represents completion for a given
@@ -1516,105 +1556,104 @@ export const dataWatchPendingTransactions = (
   provider: StaticJsonRpcProvider | null = null,
   currentNonce: number = -1
 ) => async (
-  dispatch: ThunkDispatch<AppState, unknown, DataLoadTransactionSuccessAction>,
+  dispatch: ThunkDispatch<
+    AppState,
+    unknown,
+    DataLoadTransactionSuccessAction | DataUpdatePendingTransactionSuccessAction
+  >,
   getState: AppGetState
-) =>
-  withRunExclusive(async () => {
-    const { transactions } = getState().data;
-    if (!transactions.length) return true;
+) => {
+  const { pendingTransactions: pending } = getState().data;
+  if (isEmpty(pending)) {
+    return true;
+  }
+  let txStatusesDidChange = false;
+  const updatedPendingTransactions = await Promise.all(
+    pending.map(async tx => {
+      const updatedPending = { ...tx };
+      const txHash = ethereumUtils.getHash(tx);
+      try {
+        logger.log('Checking pending tx with hash', txHash);
+        const p =
+          provider || (await getProviderForNetwork(updatedPending.network));
+        const txObj = await p.getTransaction(txHash!);
+        // if the nonce of last confirmed tx is higher than this pending tx then it got dropped
+        const nonceAlreadyIncluded = currentNonce > tx.nonce!;
+        if ((txObj?.blockNumber && txObj?.blockHash) || nonceAlreadyIncluded) {
+          // When speeding up a non "normal tx" we need to resubscribe
+          // because zerion "append" event isn't reliable
+          logger.log('TX CONFIRMED!', txObj);
+          if (!nonceAlreadyIncluded) {
+            appEvents.emit('transactionConfirmed', txObj);
+          }
+          const minedAt = Math.floor(Date.now() / 1000);
+          txStatusesDidChange = true;
+          // @ts-expect-error `txObj` is not typed as having a `status` field.
+          if (txObj && !isZero(txObj.status)) {
+            const isSelf = toLower(tx?.from!) === toLower(tx?.to!);
+            const newStatus = getTransactionLabel({
+              direction: isSelf
+                ? TransactionDirection.self
+                : TransactionDirection.out,
+              pending: false,
+              protocol: tx?.protocol,
+              status:
+                tx.status === TransactionStatus.cancelling
+                  ? TransactionStatus.cancelled
+                  : getConfirmedState(tx.type),
+              type: tx?.type,
+            });
+            updatedPending.status = newStatus;
+          } else if (nonceAlreadyIncluded) {
+            updatedPending.status = TransactionStatus.unknown;
+          } else {
+            updatedPending.status = TransactionStatus.failed;
+          }
+          const title = getTitle({
+            protocol: tx.protocol,
+            status: updatedPending.status,
+            type: tx.type,
+          });
+          updatedPending.title = title;
+          updatedPending.pending = false;
+          updatedPending.minedAt = minedAt;
+        }
+      } catch (error) {
+        logger.log('Error watching pending txn', error);
+      }
+      return updatedPending;
+    })
+  );
 
-    const [pending, remainingTransactions] = partition(
-      transactions,
-      txn => txn.pending
+  if (txStatusesDidChange) {
+    const { accountAddress, network } = getState().settings;
+    const [newDataTransactions, pendingTransactions] = partition(
+      updatedPendingTransactions.filter(
+        ({ status }) => status !== TransactionStatus.unknown
+      ),
+      tx => !tx.pending
     );
+    dispatch({
+      payload: pendingTransactions,
+      type: DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS,
+    });
+    saveLocalPendingTransactions(pendingTransactions, accountAddress, network);
 
-    if (isEmpty(pending)) {
+    const { transactions } = getState().data;
+    const updatedTransactions = newDataTransactions.concat(transactions);
+    dispatch({
+      payload: updatedTransactions,
+      type: DATA_LOAD_TRANSACTIONS_SUCCESS,
+    });
+    saveLocalTransactions(updatedTransactions, accountAddress, network);
+    dispatch(updatePurchases(updatedTransactions));
+
+    if (!pendingTransactions?.length) {
       return true;
     }
-    let txStatusesDidChange = false;
-    const updatedPendingTransactions = await Promise.all(
-      pending.map(async tx => {
-        const updatedPending = { ...tx };
-        const txHash = ethereumUtils.getHash(tx);
-        try {
-          logger.log('Checking pending tx with hash', txHash);
-          const p =
-            provider || (await getProviderForNetwork(updatedPending.network));
-          const txObj = await p.getTransaction(txHash!);
-          // if the nonce of last confirmed tx is higher than this pending tx then it got dropped
-          const nonceAlreadyIncluded = currentNonce > tx.nonce!;
-          if (
-            (txObj?.blockNumber && txObj?.blockHash) ||
-            nonceAlreadyIncluded
-          ) {
-            // When speeding up a non "normal tx" we need to resubscribe
-            // because zerion "append" event isn't reliable
-            logger.log('TX CONFIRMED!', txObj);
-            if (!nonceAlreadyIncluded) {
-              appEvents.emit('transactionConfirmed', txObj);
-            }
-            const minedAt = Math.floor(Date.now() / 1000);
-            txStatusesDidChange = true;
-            // @ts-expect-error `txObj` is not typed as having a `status` field.
-            if (txObj && !isZero(txObj.status)) {
-              const isSelf = toLower(tx?.from!) === toLower(tx?.to!);
-              const newStatus = getTransactionLabel({
-                direction: isSelf
-                  ? TransactionDirection.self
-                  : TransactionDirection.out,
-                pending: false,
-                protocol: tx?.protocol,
-                status:
-                  tx.status === TransactionStatus.cancelling
-                    ? TransactionStatus.cancelled
-                    : getConfirmedState(tx.type),
-                type: tx?.type,
-              });
-              updatedPending.status = newStatus;
-            } else if (nonceAlreadyIncluded) {
-              updatedPending.status = TransactionStatus.unknown;
-            } else {
-              updatedPending.status = TransactionStatus.failed;
-            }
-            const title = getTitle({
-              protocol: tx.protocol,
-              status: updatedPending.status,
-              type: tx.type,
-            });
-            updatedPending.title = title;
-            updatedPending.pending = false;
-            updatedPending.minedAt = minedAt;
-          }
-        } catch (error) {
-          logger.log('Error watching pending txn', error);
-        }
-        return updatedPending;
-      })
-    );
-
-    if (txStatusesDidChange) {
-      const filteredPendingTransactions = updatedPendingTransactions?.filter(
-        ({ status }) => status !== TransactionStatus.unknown
-      );
-      const updatedTransactions = concat(
-        filteredPendingTransactions,
-        remainingTransactions
-      );
-      dispatch(updatePurchases(updatedTransactions));
-      const { accountAddress, network } = getState().settings;
-      dispatch({
-        payload: updatedTransactions,
-        type: DATA_LOAD_TRANSACTIONS_SUCCESS,
-      });
-      saveLocalTransactions(updatedTransactions, accountAddress, network);
-
-      const pendingTx = updatedTransactions.find(tx => tx.pending);
-      if (!pendingTx) {
-        return true;
-      }
-    }
-    return false;
-  });
+  }
+  return false;
+};
 
 /**
  * Updates a transaction in state and account local storage and watches it,
@@ -1632,32 +1671,35 @@ export const dataUpdateTransaction = (
   watch: boolean,
   provider: StaticJsonRpcProvider | null = null
 ) => async (
-  dispatch: ThunkDispatch<AppState, unknown, DataLoadTransactionSuccessAction>,
+  dispatch: ThunkDispatch<
+    AppState,
+    unknown,
+    DataUpdatePendingTransactionSuccessAction
+  >,
   getState: AppGetState
-) =>
-  withRunExclusive(async () => {
-    const { transactions } = getState().data;
+) => {
+  const { pendingTransactions } = getState().data;
 
-    const allOtherTx = transactions.filter(tx => tx.hash !== txHash);
-    const updatedTransactions = [txObj].concat(allOtherTx);
+  const allOtherTx = pendingTransactions.filter(tx => tx.hash !== txHash);
+  const updatedTransactions = [txObj].concat(allOtherTx);
 
-    dispatch({
-      payload: updatedTransactions,
-      type: DATA_LOAD_TRANSACTIONS_SUCCESS,
-    });
-    const { accountAddress, network } = getState().settings;
-    saveLocalTransactions(updatedTransactions, accountAddress, network);
-    // Always watch cancellation and speed up
-    if (watch) {
-      dispatch(
-        watchPendingTransactions(
-          accountAddress,
-          txObj.network ? TXN_WATCHER_MAX_TRIES_LAYER_2 : TXN_WATCHER_MAX_TRIES,
-          provider
-        )
-      );
-    }
+  dispatch({
+    payload: updatedTransactions,
+    type: DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS,
   });
+  const { accountAddress, network } = getState().settings;
+  saveLocalPendingTransactions(updatedTransactions, accountAddress, network);
+  // Always watch cancellation and speed up
+  if (watch) {
+    dispatch(
+      watchPendingTransactions(
+        accountAddress,
+        txObj.network ? TXN_WATCHER_MAX_TRIES_LAYER_2 : TXN_WATCHER_MAX_TRIES,
+        provider
+      )
+    );
+  }
+};
 
 /**
  * Updates purchases using the `addCash` reducer to reflect new transaction data.
@@ -1763,6 +1805,7 @@ const INITIAL_STATE: DataState = {
   genericAssets: {},
   isLoadingAssets: true,
   isLoadingTransactions: true,
+  pendingTransactions: [],
   portfolios: {},
   shouldRefetchSavings: false,
   transactions: [],
@@ -1836,6 +1879,7 @@ export default (state: DataState = INITIAL_STATE, action: DataAction) => {
         ...state,
         isLoadingAssets: false,
       };
+<<<<<<< HEAD
     case DATA_LOAD_ACCOUNT_ASSETS_DATA_FINALIZED: {
       return {
         ...state,
@@ -1843,9 +1887,12 @@ export default (state: DataState = INITIAL_STATE, action: DataAction) => {
       };
     }
     case DATA_ADD_NEW_TRANSACTION_SUCCESS:
+=======
+    case DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS:
+>>>>>>> develop
       return {
         ...state,
-        transactions: action.payload,
+        pendingTransactions: action.payload,
       };
     case DATA_CLEAR_STATE:
       return {

@@ -9,6 +9,7 @@ import { Alert } from '../components/alerts';
 import { checkPushNotificationPermissions } from '../model/firebase';
 import { useNavigation } from '../navigation/Navigation';
 import useWalletConnectConnections from './useWalletConnectConnections';
+import { handleQRScanner } from '@rainbow-me/handlers/fedora';
 import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
 import { Navigation } from '@rainbow-me/navigation';
 import { RAINBOW_PROFILES_BASE_URL } from '@rainbow-me/references';
@@ -113,8 +114,8 @@ export default function useScanner(enabled, onSuccess) {
 
       Alert({
         buttons: [{ onPress: enableScanning, text: lang.t('button.okay') }],
-        message: lang.t('wallet.unrecognized_qrcode'),
-        title: lang.t('wallet.unrecognized_qrcode_title'),
+        message: lang.t('wallet.qr.sorry_could_not_be_recognized'),
+        title: lang.t('wallet.qr.unrecognized_qr_code_title'),
       });
     },
     [enableScanning]
@@ -154,6 +155,12 @@ export default function useScanner(enabled, onSuccess) {
       // Rainbow profile QR code
       if (data.startsWith(RAINBOW_PROFILES_BASE_URL)) {
         return handleScanRainbowProfile(data);
+      }
+
+      const isHandled = handleQRScanner(data);
+
+      if (isHandled) {
+        return;
       }
 
       return handleScanInvalid(data);

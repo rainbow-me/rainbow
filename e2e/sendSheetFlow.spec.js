@@ -83,7 +83,7 @@ describe('Send Sheet Interaction Flow', () => {
 
   it('Should say correct address in the Profile Screen header', async () => {
     await Helpers.swipe('wallet-screen', 'right');
-    await Helpers.checkIfVisible('profileAddress-0x3C...f608');
+    await Helpers.checkIfVisible('profileAddress-rainbowtestwallet.eth');
     await Helpers.swipe('profile-screen', 'left');
   });
 
