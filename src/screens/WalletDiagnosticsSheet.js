@@ -23,7 +23,7 @@ import { loadAllKeys } from '../model/keychain';
 import { useNavigation } from '../navigation/Navigation';
 import { privateKeyKey, seedPhraseKey } from '../utils/keychainConstants';
 import AesEncryptor from '@rainbow-me/handlers/aesEncryption';
-import { authenticateWithPIN } from '@rainbow-me/handlers/authentication';
+import { authenticateWithPINAndCreateIfNeeded } from '@rainbow-me/handlers/authentication';
 import {
   useDimensions,
   useImportingWallet,
@@ -314,7 +314,7 @@ const WalletDiagnosticsSheet = () => {
 
   const handleAuthenticateWithPIN = useCallback(async () => {
     try {
-      const pin = await authenticateWithPIN();
+      const pin = await authenticateWithPINAndCreateIfNeeded();
       setUserPin(pin);
       // This is a hack because we currently don't
       // support showing the PIN screen on top of certain sheets
