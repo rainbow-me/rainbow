@@ -27,6 +27,7 @@ import {
 import {
   accentColorAtom,
   ENS_DOMAIN,
+  ENS_SECONDS_WAIT,
   REGISTRATION_MODES,
   REGISTRATION_STEPS,
 } from '@rainbow-me/helpers/ens';
@@ -126,7 +127,9 @@ export default function ENSConfirmRegisterSheet() {
   });
 
   const [sendReverseRecord, setSendReverseRecord] = useState(false);
-  const { step } = useENSRegistrationStepHandler(false);
+  const { step, secondsSinceCommitConfirmed } = useENSRegistrationStepHandler(
+    false
+  );
   const { action } = useENSRegistrationActionHandler({
     sendReverseRecord,
     step,
@@ -175,6 +178,11 @@ export default function ENSConfirmRegisterSheet() {
       return lang.t('profiles.confirm.set_name_registration');
   }, [mode, step]);
 
+  const onMountSecondsSinceCommitConfirmed = useMemo(
+    () => secondsSinceCommitConfirmed,
+    []
+  );
+
   const stepContent = useMemo(
     () => ({
       [REGISTRATION_STEPS.COMMIT]: (
@@ -212,15 +220,25 @@ export default function ENSConfirmRegisterSheet() {
           action={() => action(accentColor)}
         />
       ),
-      [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: <WaitENSConfirmationContent />,
+      [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: (
+        <WaitENSConfirmationContent
+          seconds={
+            ENS_SECONDS_WAIT -
+            (onMountSecondsSinceCommitConfirmed > 0
+              ? onMountSecondsSinceCommitConfirmed
+              : 0)
+          }
+        />
+      ),
     }),
     [
-      accentColor,
-      action,
       duration,
-      name,
       registrationCostsData,
+      accentColor,
       sendReverseRecord,
+      name,
+      onMountSecondsSinceCommitConfirmed,
+      action,
     ]
   );
 

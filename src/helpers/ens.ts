@@ -36,6 +36,8 @@ import {
   isValidContenthash,
 } from '@rainbow-me/utils/contenthash';
 
+export const ENS_SECONDS_WAIT = 60;
+
 export enum ENSRegistrationTransactionType {
   COMMIT = 'commit',
   REGISTER_WITH_CONFIG = 'registerWithConfig',
