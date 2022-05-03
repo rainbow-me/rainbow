@@ -3,7 +3,7 @@ import lang from 'i18n-js';
 import React, { useCallback, useState } from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { getRandomColor } from '../../styles/colors';
-import ProfileModal from './ProfileModal';
+import { ProfileModal } from './profile';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
@@ -39,6 +39,7 @@ export default function WalletProfileState({
     : isNewProfile
     ? null
     : (indexOfForceColor !== -1 && indexOfForceColor) || getRandomColor();
+  const accentColor = colors.avatarBackgrounds[color];
 
   const [value, setValue] = useState(
     profile?.name ? removeFirstEmojiFromString(profile.name) : ''
@@ -80,7 +81,7 @@ export default function WalletProfileState({
 
   return (
     <ProfileModal
-      accentColor={color}
+      accentColor={accentColor}
       address={address}
       emojiAvatar={nameEmoji}
       handleCancel={handleCancel}

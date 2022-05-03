@@ -1,19 +1,20 @@
 import lang from 'i18n-js';
 import React, { useCallback, useRef } from 'react';
-import { useTheme } from '../../context/ThemeContext';
-import Divider from '../Divider';
-import { ButtonPressAnimation } from '../animations';
-import { BiometricButtonContent } from '../buttons';
-import CopyTooltip from '../copy-tooltip';
-import { Centered, ColumnWithDividers } from '../layout';
-import { AvatarCircle } from '../profile';
-import { Text, TruncatedAddress } from '../text';
-import { ProfileModalContainer, ProfileNameInput } from './profile';
+import { View } from 'react-native';
+import Divider from '../../Divider';
+import { ButtonPressAnimation } from '../../animations';
+import { BiometricButtonContent } from '../../buttons';
+import CopyTooltip from '../../copy-tooltip';
+import { Centered, ColumnWithDividers } from '../../layout';
+import { AvatarCircle } from '../../profile';
+import { Text, TruncatedAddress } from '../../text';
+import { ProfileModalContainer, ProfileNameInput } from '.';
+import { useTheme } from '@rainbow-me/context';
 import styled from '@rainbow-me/styled-components';
 import { margin, padding, position } from '@rainbow-me/styles';
 
 const ProfileAddressText = styled(TruncatedAddress).attrs(
-  ({ theme: { colors } }) => ({
+  ({ theme: { colors } }: any) => ({
     align: 'center',
     color: colors.alpha(colors.blueGreyDark, 0.6),
     firstSectionLength: 4,
@@ -26,7 +27,7 @@ const ProfileAddressText = styled(TruncatedAddress).attrs(
   width: '100%',
 });
 
-const Spacer = styled.View({
+const Spacer = styled(View)({
   height: 19,
 });
 
@@ -43,7 +44,7 @@ const ProfileButtonText = styled(Text).attrs({
   size: 'larger',
 })({});
 
-const ProfileDivider = styled(Divider).attrs(({ theme: { colors } }) => ({
+const ProfileDivider = styled(Divider).attrs(({ theme: { colors } }: any) => ({
   borderRadius: 1,
   color: colors.rowDividerLight,
   inset: false,
@@ -55,6 +56,21 @@ const Container = styled(ProfileModalContainer).attrs({
   ...padding.object(24, 19, 0),
   width: '100%',
 });
+
+type ProfileModalProps = {
+  address: string;
+  imageAvatar: string;
+  emojiAvatar: string;
+  accentColor: string;
+  toggleSubmitButtonIcon: boolean;
+  toggleAvatar: boolean;
+  handleSubmit: () => void;
+  onChange: (value: string) => void;
+  inputValue: string;
+  handleCancel: () => void;
+  submitButtonText: string;
+  placeholder: string;
+};
 
 const ProfileModal = ({
   address,
@@ -69,9 +85,9 @@ const ProfileModal = ({
   handleCancel,
   submitButtonText,
   placeholder,
-}) => {
+}: ProfileModalProps) => {
   const { colors, isDarkMode } = useTheme();
-  const inputRef = useRef(null);
+  const inputRef = useRef<any>(null);
 
   const handleTriggerFocusInput = useCallback(() => inputRef.current?.focus(), [
     inputRef,
@@ -89,11 +105,19 @@ const ProfileModal = ({
           (imageAvatar ? (
             <AvatarCircle
               image={imageAvatar}
+              isAvatarPickerAvailable={false}
+              onPress={null}
+              overlayStyles={null}
               showcaseAccountColor={isDarkMode ? colors.trueBlack : colors.dark}
+              showcaseAccountSymbol={null}
               size="large"
             />
           ) : (
             <AvatarCircle
+              image={null}
+              isAvatarPickerAvailable={false}
+              onPress={null}
+              overlayStyles={null}
               showcaseAccountColor={accentColor}
               showcaseAccountSymbol={emojiAvatar}
             />
@@ -104,7 +128,7 @@ const ProfileModal = ({
           onSubmitEditing={handleSubmit}
           placeholder={placeholder}
           ref={inputRef}
-          selectionColor={colors.avatarBackgrounds[accentColor]}
+          selectionColor={accentColor}
           testID="wallet-info-input"
           value={inputValue}
         />

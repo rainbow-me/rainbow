@@ -11,9 +11,9 @@ import { showDeleteContactActionSheet } from '../contacts';
 import CopyTooltip from '../copy-tooltip';
 import { Centered } from '../layout';
 import { Text, TruncatedAddress, TruncatedENS } from '../text';
-import ProfileModal from './ProfileModal';
 import {
   ProfileAvatarButton,
+  ProfileModal,
   ProfileModalContainer,
   ProfileNameInput,
 } from './profile';
@@ -29,6 +29,7 @@ import {
   useAccountSettings,
   useContacts,
   useENSProfileRecords,
+  usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { margin, padding } from '@rainbow-me/styles';
@@ -184,9 +185,16 @@ const ContactProfileState = ({
     [address]
   );
 
+  const { result: dominantColor } = usePersistentDominantColorFromImage(
+    ensAvatar || ''
+  );
+
+  const accentColor =
+    dominantColor || colors.avatarBackgrounds[colorIndex || 0];
+
   return profilesEnabled ? (
     <ProfileModal
-      accentColor={colors.avatarBackgrounds[colorIndex || 0]}
+      accentColor={accentColor}
       address={address}
       emojiAvatar={emojiFromAddress}
       handleCancel={handleCancel}
