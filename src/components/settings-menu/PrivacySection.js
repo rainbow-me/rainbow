@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { isNil } from 'lodash';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { Linking } from 'react-native';
@@ -52,7 +53,7 @@ const PrivacySection = () => {
     <Fragment>
       <ListItem
         icon={<Emoji name="framed_picture" />}
-        label="Public Showcase"
+        label={lang.t('settings.privacy_section.public_showcase')}
         onPress={toggleWebData}
         testID="public-showcase"
       >
@@ -72,8 +73,7 @@ const PrivacySection = () => {
           <Text color={colors.alpha(colors.blueGreyDark, 0.3)} weight="bold">
             􀅵
           </Text>{' '}
-          When public, your NFT Showcase will be visible on your Rainbow web
-          profile! You can view your profile at{' '}
+          {lang.t('settings.privacy_section.when_public_prefix')}{' '}
           <Text
             color={
               isDarkMode ? colors.alpha(colors.paleBlue, 0.8) : colors.paleBlue

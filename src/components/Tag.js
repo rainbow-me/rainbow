@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { upperCase, upperFirst } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -19,7 +20,7 @@ const PropertyActionsEnum = {
 
 const viewTraitOnOpenseaAction = {
   actionKey: PropertyActionsEnum.viewTraitOnOpensea,
-  actionTitle: 'View All With Property',
+  actionTitle: lang.t('expanded_state.unique_expanded.view_all_with_property'),
   discoverabilityTitle: 'OpenSea',
   icon: {
     iconType: 'SYSTEM',
@@ -94,7 +95,9 @@ const Tag = ({ color, disableMenu, slug, text, title, maxValue, ...props }) => {
   }, []);
 
   const onPressAndroid = useCallback(() => {
-    const androidContractActions = ['View All With Property'];
+    const androidContractActions = [
+      lang.t('expanded_state.unique_expanded.view_all_with_property'),
+    ];
 
     showActionSheetWithOptions(
       {

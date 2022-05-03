@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
@@ -42,7 +43,7 @@ const SavingsListRowEmptyState = ({ onPress }) => {
         size="lmedium"
         weight="bold"
       >
-        $0.00
+        {lang.toCurrency(0)}
       </Text>
       <ButtonPressAnimation onPress={onPress} scaleTo={0.92} style={sx.button}>
         <Text
@@ -52,7 +53,7 @@ const SavingsListRowEmptyState = ({ onPress }) => {
           size="lmedium"
           weight="bold"
         >
-          􀁍 Deposit
+          􀁍 {lang.t('savings.deposit')}
         </Text>
         <InnerBorder radius={ButtonBorderRadius} />
       </ButtonPressAnimation>

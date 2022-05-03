@@ -25,7 +25,6 @@ export { parsePoaps } from './poap';
 export { getRequestDisplayDetails } from './requests';
 export {
   parseTransactions,
-  dedupePendingTransactions,
   getTitle,
   getDescription,
   getTransactionLabel,
