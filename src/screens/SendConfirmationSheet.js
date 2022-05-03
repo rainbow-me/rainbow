@@ -231,8 +231,8 @@ export default function SendConfirmationSheet() {
   }, [isSendingToUserAccount, network, toAddress, transactions]);
 
   const contact = useMemo(() => {
-    return contacts?.to?.toLowerCase();
-  }, [contacts]);
+    return contacts?.[to?.toLowerCase()];
+  }, [contacts, to]);
 
   const [checkboxes, setCheckboxes] = useState([
     {

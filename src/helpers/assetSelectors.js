@@ -21,9 +21,9 @@ const sortAssetsByNativeAmount = (
   if (!isEmpty(assetPricesFromUniswap)) {
     updatedAssets = mapValues(accountAssetsData, asset => {
       if (isNil(asset.price)) {
-        const assetPrice = assetPricesFromUniswap?.[asset.address].price;
+        const assetPrice = assetPricesFromUniswap?.[asset.address]?.price;
         const relativePriceChange =
-          assetPricesFromUniswap?.[asset.address].relativePriceChange;
+          assetPricesFromUniswap?.[asset.address]?.relativePriceChange;
         if (assetPrice) {
           return {
             ...asset,
