@@ -13,6 +13,7 @@ import {
 import { parseEther } from '@ethersproject/units';
 import UnstoppableResolution from '@unstoppabledomains/resolution';
 import { startsWith } from 'lodash';
+import { EthereumAddress } from '../entities/wallet';
 import { RainbowConfig } from '../model/config';
 import {
   AssetType,
@@ -68,7 +69,7 @@ type GasParamsInput = { gasPrice: BigNumberish } & {
  */
 type TransactionDetailsInput = Pick<
   NewTransactionNonNullable,
-  'from' | 'to' | 'data' | 'gasLimit' | 'network'
+  'from' | 'to' | 'data' | 'gasLimit' | 'network' | 'nonce'
 > &
   Pick<NewTransaction, 'amount'> &
   GasParamsInput;
@@ -83,6 +84,7 @@ type TransactionDetailsReturned = {
   network?: Network | string;
   to?: TransactionRequest['to'];
   value?: TransactionRequest['value'];
+  nonce?: TransactionRequest['nonce'];
 } & GasParamsReturned;
 
 /**
@@ -459,17 +461,29 @@ export const getTxDetails = async (
   const gasLimit = transaction.gasLimit
     ? toHex(transaction.gasLimit)
     : undefined;
-  const baseTx = {
+  const baseTx: {
+    data?: string;
+    gasLimit?: string | undefined;
+    to: EthereumAddress;
+    value: BigNumberish;
+    nonce?: number;
+  } = {
     data,
     gasLimit,
     to,
     value,
   };
+
+  if (transaction?.nonce) {
+    baseTx.nonce = transaction.nonce;
+  }
+
   const gasParams = getTransactionGasParams(transaction);
   const tx = {
     ...baseTx,
     ...gasParams,
   };
+
   return tx;
 };
 

@@ -1488,7 +1488,7 @@ export const dataAddNewTransaction = (
     });
     saveLocalPendingTransactions(_pendingTransactions, accountAddress, network);
     if (parsedTransaction.from && parsedTransaction.nonce) {
-      await dispatch(
+      dispatch(
         incrementNonce(
           parsedTransaction.from,
           parsedTransaction.nonce,
