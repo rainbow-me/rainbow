@@ -84,35 +84,32 @@ export default function ENSConfirmRegisterSheet() {
   useEffect(() => startPollingGasFees(), [startPollingGasFees]);
 
   const handleCommitSubmit = useCallback(async () => {
-    try {
-      const wallet = await loadWallet();
-      if (!wallet) {
-        return;
-      }
-
-      const nonce = await getNextNonce();
-      const salt = generateSalt();
-
-      const ensRegistrationParameters = {
-        duration: duration * timeUnits.secs.year,
-        name,
-        nonce,
-        ownerAddress: accountAddress,
-        records,
-        rentPrice,
-        salt,
-      };
-
-      dispatch(
-        saveCommitRegistrationParameters(
-          accountAddress,
-          ensRegistrationParameters
-        )
-      );
+    const wallet = await loadWallet();
+    if (!wallet) {
       return;
-    } catch (e) {
-      //TODO: err handling
     }
+
+    const nonce = await getNextNonce();
+    const salt = generateSalt();
+
+    const ensRegistrationParameters = {
+      duration: duration * timeUnits.secs.year,
+      name,
+      nonce,
+      ownerAddress: accountAddress,
+      records,
+      rentPrice,
+      salt,
+    };
+
+    dispatch(
+      saveCommitRegistrationParameters(
+        accountAddress,
+        ensRegistrationParameters
+      )
+    );
+    return;
+
     // LEAVING THIS AS WIP TO AVOID PEOPLE ON THE TEAM  SENDING THIS TX
 
     // const callback = () => null;

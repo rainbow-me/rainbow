@@ -534,7 +534,6 @@ export default function SendSheet(props) {
       logger.sentry(error);
       captureException(error);
       submitSuccess = false;
-      //TODO: handle error
     }
     return submitSuccess;
   }, [

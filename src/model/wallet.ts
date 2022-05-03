@@ -245,17 +245,19 @@ export const loadWallet = async (
 
     return null;
   } catch (err: any) {
-    const matched = matchError(err);
     if (isErrorBubbling) {
       throw err;
     }
+
+    const matched = matchError(err);
     if (matched.KEYCHAIN_NOT_AUTHENTICATED) {
       Alert.alert(
-        'Error',
-        'Your current authentication method (Face Recognition) is not secure enough, please go to "Settings > Biometrics & Security" and enable an alternative biometric method like Fingerprint or Iris.'
+        lang.t('errors.error'),
+        lang.t('errors.keychain.not_authenticated')
       );
       return null;
     }
+
     if (showErrorIfNotLoaded) {
       showWalletErrorAlert();
     }

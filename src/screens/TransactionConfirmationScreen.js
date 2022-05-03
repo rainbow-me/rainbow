@@ -56,7 +56,6 @@ import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
 import { isDappAuthenticated } from '@rainbow-me/helpers/dappNameHandler';
 import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
-import { showErrorAlertWithSupportButton } from '@rainbow-me/helpers/support';
 import {
   useAccountSettings,
   useCurrentNonce,
@@ -654,23 +653,6 @@ export default function TransactionConfirmationScreen() {
         `Error while ${sendInsteadOfSign ? 'sending' : 'signing'} transaction`,
         e
       );
-
-      const matched = matchError(e);
-      const textForAlert = match(
-        'Some default message',
-        [
-          matched.CAN_NOT_ADD_ENS,
-          'Sorry, we cannot add this ENS name at this time. Please try again later!',
-        ],
-        [
-          matched.CAN_ADD_UNSTOPPABLE_NAME,
-          'Sorry, we cannot add this Unstoppable name at this time. Please try again later!',
-        ],
-        [matched.SOME_ANOTHER_ERROR, 'Sorry']
-      );
-      //TODO: handle error
-
-      Alert.alert(textForAlert);
     }
 
     const { result, error } = response;
@@ -831,21 +813,19 @@ export default function TransactionConfirmationScreen() {
         lang.t('errors.connectWithSupport'),
         [
           matched.KEYCHAIN_ERROR_AUTHENTICATING,
-          `Your account has been secured with biometric data, like fingerprint
-          or face identification. To continue this operation, turn on
-          biometrics in your phone’s settings.`,
+          lang.t('errors.keychain.error_authorization'),
         ],
         [
           matched.KEYCHAIN_NOT_AUTHENTICATED,
-          'Your current authentication method (Face Recognition) is not secure enough, please go to "Settings > Biometrics & Security" and enable an alternative biometric method like Fingerprint or Iris.',
+          lang.t('errors.keychain.not_authenticated'),
         ],
         [
           matched.DECRYPT_ANDROID_PIN_ERROR,
-          'We are having trouble verifying your password, please contact support',
+          lang.t('errors.keychain.decrypt_android_pin_error'),
         ]
       );
 
-      Alert.alert('An error occurred', textForAlert);
+      Alert.alert(lang.t('errors.error_occurred'), textForAlert);
     }
   }, [
     accountInfo.address,

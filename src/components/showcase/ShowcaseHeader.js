@@ -18,8 +18,6 @@ import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { colors, padding } from '@rainbow-me/styles';
 import { abbreviations, profileUtils } from '@rainbow-me/utils';
-import match from '@rainbow-me/utils/match';
-import { matchError } from '@rainbow-me/utils/matchError';
 
 export const ShowcaseContext = createContext();
 
@@ -161,29 +159,11 @@ export function Header() {
       contextValue.setIsSearchModeEnabled(false);
     }
     handleSetSeedPhrase(contextValue.address);
-    try {
-      handlePressImportButton(
-        color,
-        contextValue.address,
-        contextValue?.data?.profile?.accountSymbol
-      );
-    } catch (e) {
-      const matched = matchError(e);
-      const textForAlert = match(
-        'Some default message',
-        [
-          matched.CAN_NOT_ADD_ENS,
-          'Sorry, we cannot add this ENS name at this time. Please try again later!',
-        ],
-        [
-          matched.CAN_ADD_UNSTOPPABLE_NAME,
-          'Sorry, we cannot add this Unstoppable name at this time. Please try again later!',
-        ],
-        [matched.SOME_ANOTHER_ERROR, 'Sorry']
-      );
-
-      Alert.alert(textForAlert);
-    }
+    handlePressImportButton(
+      color,
+      contextValue.address,
+      contextValue?.data?.profile?.accountSymbol
+    );
   }, [contextValue, handleSetSeedPhrase, handlePressImportButton, color]);
 
   const mainText =
