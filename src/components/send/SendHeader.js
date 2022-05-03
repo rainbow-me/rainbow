@@ -23,6 +23,7 @@ import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 import { profileUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
+import showDeleteContactActionSheet from '../contacts/showDeleteContactActionSheet';
 
 const AddressInputContainer = styled(Row).attrs({ align: 'center' })(
   ({ isSmallPhone, theme: { colors }, isTinyPhone }) => ({
@@ -154,7 +155,7 @@ export default function SendHeader({
         destructiveButtonIndex: 0,
         options: [
           lang.t('contacts.options.delete'), // <-- destructiveButtonIndex
-          profilesEnabled
+          profilesEnabled && recipient.slice(-4) === '.eth'
             ? lang.t('contacts.options.view')
             : lang.t('contacts.options.edit'),
           lang.t('wallet.settings.copy_address_capitalized'),
@@ -163,26 +164,13 @@ export default function SendHeader({
       },
       async buttonIndex => {
         if (buttonIndex === 0) {
-          showActionSheetWithOptions(
-            {
-              cancelButtonIndex: 1,
-              destructiveButtonIndex: 0,
-              options: [
-                lang.t('contacts.options.delete'),
-                lang.t('contacts.options.cancel'),
-              ],
-            },
-            async buttonIndex => {
-              if (buttonIndex === 0) {
-                removeContact(hexAddress);
-                onRefocusInput();
-              } else {
-                onRefocusInput();
-              }
-            }
-          );
+          showDeleteContactActionSheet({
+            address: hexAddress,
+            nickname: recipient,
+            removeContact: removeContact,
+          });
         } else if (buttonIndex === 1) {
-          if (profilesEnabled) {
+          if (profilesEnabled && recipient.slice(-4) === '.eth') {
             navigate(Routes.PROFILE_SHEET, { address: recipient });
           } else {
             handleNavigateToContact();
@@ -200,6 +188,7 @@ export default function SendHeader({
     navigate,
     onRefocusInput,
     profilesEnabled,
+    recipient,
     removeContact,
     setClipboard,
   ]);
