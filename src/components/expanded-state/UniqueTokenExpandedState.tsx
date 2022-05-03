@@ -55,7 +55,7 @@ import {
 } from '@rainbow-me/design-system';
 import { AssetTypes, UniqueAsset } from '@rainbow-me/entities';
 import { buildUniqueTokenName } from '@rainbow-me/helpers/assets';
-import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
+import { ENS_RECORDS, REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import {
   useAccountProfile,
   useBooleanState,
@@ -261,6 +261,13 @@ const UniqueTokenExpandedState = ({
   const ensProfile = useENSProfile(cleanENSName, { enabled: isENS });
   const ensData = ensProfile.data;
 
+  const profileInfoSectionAvailable = useMemo(() => {
+    const available = Object.keys(ensData?.records || {}).some(
+      key => key !== ENS_RECORDS.avatar
+    );
+    return available;
+  }, [ensData?.records]);
+
   const {
     addShowcaseToken,
     removeShowcaseToken,
@@ -345,11 +352,12 @@ const UniqueTokenExpandedState = ({
         startRegistration(uniqueId, REGISTRATION_MODES.EDIT);
         navigate(Routes.REGISTER_ENS_NAVIGATOR, {
           ensName: uniqueId,
+          externalAvatarUrl: asset?.lowResUrl,
           mode: REGISTRATION_MODES.EDIT,
         });
       });
     }
-  }, [isENS, navigate, startRegistration, uniqueId]);
+  }, [isENS, navigate, startRegistration, uniqueId, asset?.lowResUrl]);
 
   const sheetRef = useRef();
   const yPosition = useSharedValue(0);
@@ -360,7 +368,7 @@ const UniqueTokenExpandedState = ({
 
   const hasEditButton =
     isActionsEnabled && profilesEnabled && isENS && ensProfile.isOwner;
-  const hasExtendDurationButton = isActionsEnabled && profilesEnabled && isENS;
+  const hasExtendDurationButton = !isReadOnlyWallet && profilesEnabled && isENS;
 
   const familyLinkDisplay = useMemo(
     () =>
@@ -531,6 +539,7 @@ const UniqueTokenExpandedState = ({
                               color={imageColor}
                               ensName={uniqueId}
                               expiryDate={ensData?.registration.expiryDate}
+                              externalAvatarUrl={asset?.lowResUrl}
                               registrationDate={
                                 ensData?.registration.registrationDate
                               }
@@ -570,36 +579,38 @@ const UniqueTokenExpandedState = ({
                       )}
                       {isENS && (
                         <>
-                          <Section
-                            addonComponent={
-                              hasEditButton && (
-                                <TextButton
-                                  align="right"
-                                  onPress={handlePressEdit}
-                                  size="18px"
-                                  weight="bold"
-                                >
-                                  {lang.t(
-                                    'expanded_state.unique_expanded.edit'
-                                  )}
-                                </TextButton>
-                              )
-                            }
-                            paragraphSpace={{ custom: 22 }}
-                            title={`${lang.t(
-                              'expanded_state.unique_expanded.profile_info'
-                            )}`}
-                            titleEmoji="🤿"
-                          >
-                            <ProfileInfoSection
-                              allowEdit={hasEditButton}
-                              coinAddresses={ensData?.coinAddresses}
-                              ensName={uniqueId}
-                              images={ensData?.images}
-                              isLoading={ensProfile.isLoading}
-                              records={ensData?.records}
-                            />
-                          </Section>
+                          {profileInfoSectionAvailable && (
+                            <Section
+                              addonComponent={
+                                hasEditButton && (
+                                  <TextButton
+                                    align="right"
+                                    onPress={handlePressEdit}
+                                    size="18px"
+                                    weight="bold"
+                                  >
+                                    {lang.t(
+                                      'expanded_state.unique_expanded.edit'
+                                    )}
+                                  </TextButton>
+                                )
+                              }
+                              paragraphSpace={{ custom: 22 }}
+                              title={`${lang.t(
+                                'expanded_state.unique_expanded.profile_info'
+                              )}`}
+                              titleEmoji="🤿"
+                            >
+                              <ProfileInfoSection
+                                allowEdit={hasEditButton}
+                                coinAddresses={ensData?.coinAddresses}
+                                ensName={uniqueId}
+                                images={ensData?.images}
+                                isLoading={ensProfile.isLoading}
+                                records={ensData?.records}
+                              />
+                            </Section>
+                          )}
                           <Section
                             paragraphSpace={{ custom: 22 }}
                             title={`${lang.t(
@@ -608,9 +619,12 @@ const UniqueTokenExpandedState = ({
                             titleEmoji="⚙️"
                           >
                             <ConfigurationSection
+                              externalAvatarUrl={asset?.lowResUrl}
+                              isExternal={external}
                               isLoading={ensProfile.isLoading}
                               isOwner={ensProfile?.isOwner}
                               isPrimary={ensData?.primary?.isPrimary}
+                              isReadOnlyWallet={isReadOnlyWallet}
                               name={cleanENSName}
                               owner={ensData?.owner}
                               registrant={ensData?.registrant}

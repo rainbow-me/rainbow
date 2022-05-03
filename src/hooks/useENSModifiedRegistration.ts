@@ -13,16 +13,17 @@ import getENSNFTAvatarUrl from '@rainbow-me/utils/getENSNFTAvatarUrl';
 
 const getImageUrl = (
   key: 'avatar' | 'cover',
+  records: Records,
+  changedRecords: Records,
   uniqueTokens: UniqueAsset[],
-  records: any,
-  changedRecords: any,
-  defaultValue?: string | null
+  defaultValue?: string | null,
+  mode?: keyof typeof REGISTRATION_MODES
 ) => {
   const recordValue = records?.[key];
   let imageUrl =
     getENSNFTAvatarUrl(uniqueTokens, records?.[key]) || defaultValue;
 
-  if (changedRecords[key] === '') {
+  if (changedRecords[key] === '' && mode === REGISTRATION_MODES.EDIT) {
     // If the image has been removed, update accordingly.
     imageUrl = '';
   } else if (recordValue) {
@@ -69,7 +70,10 @@ export default function useENSModifiedRegistration({
     ({ uniqueTokens }: AppState) => uniqueTokens.uniqueTokens
   );
   const profileQuery = useENSProfileRecords(name, {
-    enabled: mode === REGISTRATION_MODES.EDIT,
+    enabled:
+      mode === REGISTRATION_MODES.EDIT ||
+      mode === REGISTRATION_MODES.RENEW ||
+      mode === REGISTRATION_MODES.SET_NAME,
   });
 
   useEffect(() => {
@@ -161,17 +165,19 @@ export default function useENSModifiedRegistration({
   const images = useMemo(() => {
     const avatarUrl = getImageUrl(
       'avatar',
-      uniqueTokens,
       records,
       changedRecords,
-      profileQuery.data?.images.avatarUrl
+      uniqueTokens,
+      profileQuery.data?.images.avatarUrl,
+      mode
     );
     const coverUrl = getImageUrl(
       'cover',
-      uniqueTokens,
       records,
       changedRecords,
-      profileQuery.data?.images.coverUrl
+      uniqueTokens,
+      profileQuery.data?.images.coverUrl,
+      mode
     );
 
     return {
@@ -184,7 +190,9 @@ export default function useENSModifiedRegistration({
     records,
     uniqueTokens,
     changedRecords,
+    mode,
   ]);
+
   return {
     changedRecords,
     images,

@@ -30,6 +30,7 @@
       "tx_failed": "Failed",
       "tx_fee": "Fee",
       "tx_from": "From",
+      "tx_from_lowercase": "from",
       "tx_hash": "Transaction Hash",
       "tx_pending": "Pending",
       "tx_received": "Received",
@@ -37,6 +38,7 @@
       "tx_sent": "Sent",
       "tx_timestamp": "Timestamp",
       "tx_to": "To",
+      "tx_to_lowercase": "to",
       "unknown_token": "Unknown Token"
     },
     "activity_list": {
@@ -45,6 +47,24 @@
         "recycler_label": "No transactions yet",
         "testnet_label": "Your testnet transaction history starts now!"
       }
+    },
+    "add_funds": {
+      "eth": {
+        "or_send_eth": "or send ETH to your wallet",
+        "send_from_another_source": "Send from Coinbase or another exchange—or ask a friend!"
+      },
+      "limit_left_this_week": "$%{remainingLimit} left this week",
+      "limit_left_this_year": "$%{remainingLimit} left this year",
+      "test_eth": {
+        "add_from_faucet": "Add from faucet",
+        "or_send_test_eth": "or send test ETH to your wallet",
+        "request_test_eth": "Request test ETH through the %{testnetName} faucet",
+        "send_test_eth_from_another_source": "Send test ETH from another %{testnetName} wallet—or ask a friend!"
+      },
+      "to_get_started_ios": "To get started, buy some ETH with Apple Pay",
+      "to_get_started_android": "To get started, buy some ETH",
+      "weekly_limit_reached": "Weekly limit reached",
+      "yearly_limit_reached": "Yearly limit reached"
     },
     "avatar_builder": {
       "emoji_categories": {
@@ -60,16 +80,18 @@
     },
     "back_up": {
       "cloud": {
+        "back_up_to_platform": "Back up to %{cloudPlatformName}",
+        "manage_platform_backups": "Manage %{cloudPlatformName} Backups",
         "password": {
+          "a_password_youll_remember": "Please use a password you'll remember.",
           "backup_password": "Backup Password",
           "choose_a_password": "Choose a password",
           "confirm_backup": "Confirm Backup",
           "confirm_password": "Confirm password",
           "confirm_placeholder": "Confirm Password",
+          "it_cant_be_recovered": "It can't be recovered!",
           "minimum_characters": "Minimum %{minimumLength} characters",
           "passwords_dont_match": "Passwords don't match",
-          "it_cant_be_recovered": "It can't be recovered!",
-          "a_password_youll_remember": "Please use a password you'll remember.",
           "strength": {
             "level1": "Weak password",
             "level2": "Good password",
@@ -83,11 +105,14 @@
         "add_to_cloud_platform": "Add to %{cloudPlatformName} Backup",
         "backup_password_placeholder": "Backup Password",
         "confirm_backup": "Confirm Backup",
-        "enter_backup_password": "Enter backup password",
-        "enter_backup_description": "To add this wallet to your %{cloudPlatformName} backup, enter your existing backup password"
+        "enter_backup_description": "To add this wallet to your %{cloudPlatformName} backup, enter your existing backup password",
+        "enter_backup_password": "Enter backup password"
       },
       "explainers": {
-        "backup": "Don't forget this password! It is separate from your %{cloudPlatformName} password, and you should save it in a secure location.\n\nYou will need it in order to restore your wallet from the backup in the future."
+        "backup": "Don't forget this password! It is separate from your %{cloudPlatformName} password, and you should save it in a secure location.\n\nYou will need it in order to restore your wallet from the backup in the future.",
+        "if_lose_cloud": "If you lose this device, you can recover your encrypted wallet backup from %{cloudPlatformName}.",
+        "if_lose_imported": "If you lose this device, you can restore your wallet with the key you originally imported.",
+        "if_lose_manual": "If you lose this device, you can restore your wallet with the secret phrase you saved."
       },
       "manual": {
         "label": "Your secret phrase",
@@ -102,6 +127,11 @@
           "these_keys": "These words are the keys to your wallet!"
         }
       },
+      "needs_backup": {
+        "back_up_your_wallet": "Back up your wallet",
+        "dont_risk": "Don't risk your money! Back up your wallet so you can recover it if you lose this device.",
+        "not_backed_up": "Not backed up"
+      },
       "restore_cloud": {
         "backup_password_placeholder": "Backup Password",
         "confirm_backup": "Confirm Backup",
@@ -114,8 +144,8 @@
       "restore_sheet": {
         "from_backup": {
           "ios": {
-            "you_have_multiple_wallets": "You have %{walletsBackedUpCount} wallets backed up",
-            "you_have_1_wallet": "You have 1 wallet backed up"
+            "you_have_1_wallet": "You have 1 wallet backed up",
+            "you_have_multiple_wallets": "You have %{walletsBackedUpCount} wallets backed up"
           },
           "non_ios": {
             "if_you_previously_backed_up": "If you previously backed up your wallet on %{cloudPlatformName} tap here to restore it."
@@ -126,15 +156,32 @@
           "secret_phrase_description": "Use your secret phrase from Rainbow or another crypto wallet",
           "secret_phrase_title": "Restore with a secret phrase or private key"
         },
+        "no_backups_found": "No Backups found",
         "watch_address": {
           "watch_description": "Watch a public address or ENS name",
           "watch_title": "Watch an Ethereum address"
-        }
+        },
+        "we_couldnt_find_google_drive": "We couldn't find any backup on Google Drive. Make sure you are logged in with the right account."
+      },
+      "secret": {
+        "anyone_who_has_these": "Anyone who has these words can access your entire wallet!",
+        "copy_to_clipboard": "Copy to clipboard",
+        "for_your_eyes_only": "For your eyes only",
+        "private_key_title": "Private Key",
+        "secret_phrase_title": "Secret Phrase",
+        "show_recovery": "Show Recovery %{typeName}",
+        "view_private_key": "View private key",
+        "view_secret_phrase": "View secret phrase",
+        "you_need_to_authenticate": "You need to authenticate in order to access your recovery %{typeName}"
       }
     },
     "button": {
+      "add": "Add",
       "add_cash": "Add Cash",
+      "add_to_list": "Add to List",
       "all": "All",
+      "attempt_cancellation": "Attempt Cancellation",
+      "buy_more_eth": "Buy more ETH",
       "cancel": "Cancel",
       "close": "Close",
       "confirm": "Confirm",
@@ -145,12 +192,18 @@
         "insufficient_eth": "Insufficient ETH",
         "insufficient_funds": "Insufficient Funds",
         "insufficient_liquidity": "Insufficient Liquidity",
+        "insufficient_token": "Insufficient %{tokenName}",
         "invalid_fee": "Invalid Fee",
+        "invalid_fee_lowercase": "Invalid fee",
+        "loading": "Loading...",
+        "review": "Review",
         "swap": "Hold to Swap",
         "swap_anyway": "Swap Anyway",
+        "symbol_balance_too_low": "%{symbol} balance too low",
         "view_details": "View Details",
         "withdraw": "Hold to Withdraw"
       },
+      "connect": "Connect",
       "connect_walletconnect": "Use WalletConnect",
       "delete": "Delete",
       "disconnect_account": "Log Out",
@@ -161,12 +214,14 @@
       "exchange_again": "Exchange Again",
       "exchange_search_placeholder": "Search",
       "go_back": "Go Back",
+      "got_it": "Got it",
       "hide": "Hide",
       "hold_to_authorize": {
         "authorizing": "Authorizing",
         "hold_keyword": "Hold",
         "tap_keyword": "Tap"
       },
+      "hold_to_send": "Hold to Send",
       "import": "Import",
       "learn_more": "Learn more",
       "less": "Less",
@@ -180,7 +235,10 @@
       "paste_seed_phrase": "Paste",
       "pin": "Pin",
       "proceed": "Proceed",
+      "proceed_anyway": "Proceed Anyway",
       "receive": "Receive",
+      "remove": "Remove",
+      "save": "Save",
       "send": "Send",
       "send_another": "Send Another",
       "share": "Share",
@@ -188,7 +246,8 @@
       "try_again": "Try again",
       "unhide": "Unhide",
       "unpin": "Unpin",
-      "view": "View"
+      "view": "View",
+      "watch_this_wallet": "Watch this Wallet"
     },
     "cloud": {
       "backup_success": "Your wallet has been backed up successfully!"
@@ -197,6 +256,8 @@
       "contact_row": {
         "balance_eth": "%{balanceEth} ETH"
       },
+      "contacts_title": "Contacts",
+      "my_wallets": "My wallets",
       "options": {
         "add": "Add Contact",
         "cancel": "Cancel",
@@ -204,12 +265,33 @@
         "edit": "Edit Contact",
         "view": "View Profile"
       },
-      "input": { "placeholder": "Name" }
+      "send_header": "Send",
+      "suggestions": "Suggestions",
+      "to_header": "To",
+      "watching": "Watching",
+      "input_placeholder": "Name"
+    },
+    "developer_settings": {
+      "alert": "Alert",
+      "applied": "APPLIED",
+      "backups_deleted_successfully": "Backups deleted successfully",
+      "clear_async_storage": "Clear async storage",
+      "clear_mmkv_storage": "Clear MMKV storage",
+      "clear_image_metadata_cache": "Clear Image Metadata Cache",
+      "connect_to_hardhat": "Connect to hardhat",
+      "crash_app_render_error": "Crash app (render error)",
+      "not_applied": "NOT APPLIED",
+      "remove_all_backups": "Remove all backups",
+      "reset_keychain": "Reset Keychain",
+      "restart_app": "Restart app",
+      "restore_default_experimental_config": "Restore default experimental config",
+      "status": "Status",
+      "sync_codepush": "Sync codepush, current: %{codePushVersion}"
     },
     "discover": {
       "lists": {
-        "this_list_is_empty": "This list is empty!",
-        "lists_title": "Lists"
+        "lists_title": "Lists",
+        "this_list_is_empty": "This list is empty!"
       },
       "pulse": {
         "pulse_description": "All the top DeFi tokens in one",
@@ -221,8 +303,8 @@
         "search_ethereum": "Search all of Ethereum"
       },
       "strategies": {
-        "yearn_finance_description": "Smart yield strategies from yearn.finance",
-        "strategies_title": "Strategies"
+        "strategies_title": "Strategies",
+        "yearn_finance_description": "Smart yield strategies from yearn.finance"
       },
       "title_discover": "Discover",
       "title_search": "Search",
@@ -244,14 +326,13 @@
       }
     },
     "error_boundary": {
-      "wallets_are_safe": "Don't worry, your wallets are safe! Just restart the app to get back to business.",
       "error_boundary_oops": "Oops!",
       "restart_rainbow": "Restart Rainbow",
-      "something_went_wrong": "Something went wrong."
+      "something_went_wrong": "Something went wrong.",
+      "wallets_are_safe": "Don't worry, your wallets are safe! Just restart the app to get back to business."
     },
     "exchange": {
       "coin_row": {
-        "copy_address": "Copy Contract Address",
         "expires_in": "Expires in %{minutes}m",
         "from_divider": "from",
         "to_divider": "to",
@@ -270,9 +351,8 @@
       },
       "swapping_for_prefix": "Swapping for",
       "unverified_token": {
-        "token_not_verified": "This token has not been verified! Rainbow surfaces all tokens that exist on Uniswap. Anyone can create a token, including fake versions of existing tokens and tokens that claim to represent projects that do not have a token. Please do your own research and be careful when interacting with unverified tokens!",
         "go_back": "Go Back",
-        "proceed_anyway": "Proceed Anyway",
+        "token_not_verified": "This token has not been verified! Rainbow surfaces all tokens that exist on Uniswap. Anyone can create a token, including fake versions of existing tokens and tokens that claim to represent projects that do not have a token. Please do your own research and be careful when interacting with unverified tokens!",
         "unverified_token_title": "Unverified Token"
       },
       "view_details": "View Details"
@@ -296,6 +376,7 @@
         "volume_24_hours": "24h volume"
       },
       "chart": {
+        "all_time": "All Time",
         "date": {
           "months": {
             "month_00": "Jan",
@@ -313,7 +394,12 @@
           }
         },
         "no_price_data": "No price data",
+        "past_timespan": "Past %{formattedTimespan}",
+        "today": "Today",
         "token_pool": "%{tokenName} Pool"
+      },
+      "contact_profile": {
+        "name": "Name"
       },
       "liquidity_pool": {
         "annualized_fees": "Annualized fees",
@@ -335,8 +421,9 @@
         "us_except": "United States (except Texas and New York)"
       },
       "swap": {
-        "copy_contract_address": "Copy Contract Address",
         "losing": "Losing",
+        "price_impact": "Price impact",
+        "price_row_per_token": "per",
         "slippage_message": "This is a small market, so you’re getting a bad price. Try a smaller trade!",
         "swapping_via": "Swapping via",
         "unicorn_one": "that unicorn one",
@@ -352,6 +439,13 @@
         "underlying_tokens": "Underlying tokens"
       },
       "unique": {
+        "save": {
+          "access_to_photo_library_was_denied": "Access to photo library was denied",
+          "failed_to_save_image": "Failed to save Image",
+          "image_download_permission": "Image Download Permission",
+          "nft_image": "NFT image",
+          "your_permission_is_required": "Your permission is required to save images to your device"
+        },
         "view_on_opensea": "View on OpenSea"
       },
       "unique_expanded": {
@@ -360,23 +454,91 @@
         "attributes": "Attributes",
         "configuration": "Configuration",
         "copy": "Copy",
-        "description": "Description",
         "edit": "Edit",
-        "in_showcase": "In Showcase",
         "manager": "Manager",
-        "opensea": "Opensea",
         "owner": "Owner",
         "set_primary_name": "Set as my ENS name",
         "profile_info": "Profile Info",
         "properties": "Properties",
+        "registrant": "Registrant",
         "resolver": "Resolver",
+        "collection_website": "Collection Website",
+        "copy_token_id": "Copy Token ID",
+        "description": "Description",
+        "discord": "Discord",
+        "floor_price": "Floor price",
+        "for_sale": "For sale",
+        "in_showcase": "In Showcase",
+        "last_sale_price": "Last sale price",
+        "opensea": "OpenSea",
+        "save_to_photos": "Save to Photos",
+        "share_token_info": "Share %{uniqueTokenName} Info",
         "showcase": "Showcase",
         "toast_added_to_showcase": "Added to showcase",
         "toast_removed_from_showcase": "Removed from showcase",
         "view_on_opensea": "View on Opensea",
         "view_on_platform": "View on %{platform}",
         "expires_in": "Expires in",
-        "expires_on": "Expires on"
+        "expires_on": "Expires on",
+        "twitter": "Twitter",
+        "view_all_with_property": "View All With Property",
+        "view_collection": "View Collection",
+        "view_on_block_explorer": "View on %{blockExplorerName}",
+        "view_on_web": "View on Web"
+      }
+    },
+    "explain": {
+      "arbitrum": {
+        "text": "Arbitrum is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
+        "title": "What's Arbitrum?"
+      },
+      "backup": {
+        "title": "Important"
+      },
+      "base_fee": {
+        "text_falling": "\n\nFees are dropping right now!",
+        "text_prefix": "The base fee is set by the Ethereum network and changes depending on how busy the network is.",
+        "text_rising": "\n\nFees are rising right now! It’s best to use a higher max base fee to avoid a stuck transaction.",
+        "text_stable": "\n\nNetwork traffic is stable right now. Have fun!",
+        "text_surging": "\n\nFees are unusually high right now! Unless your transaction is urgent, it’s best to wait for fees to drop.",
+        "title": "Current base fee"
+      },
+      "failed_walletconnect": {
+        "text": "Uh oh, something went wrong! The site may be experiencing a connection outage. Please try again later or contact the site’s team for more details.",
+        "title": "Connection failed"
+      },
+      "floor_price": {
+        "text": "A collection's floor price is the lowest asking price across all the items currently for sale in a collection.",
+        "title": "Collection floor price"
+      },
+      "gas": {
+        "text": "This is the \"gas fee\" used by the %{networkName} blockchain to securely validate your transaction.\n\nThis fee varies depending on the complexity of your transaction and how busy the network is!",
+        "title": "%{networkName} network fee"
+      },
+      "max_base_fee": {
+        "text": "This is the maximum base fee you’re willing to pay for this transaction.\n\nSetting a higher max base fee prevents your transaction from getting stuck if fees rise.",
+        "title": "Max base fee"
+      },
+      "miner_tip": {
+        "text": "The miner tip goes directly to the miner who confirms your transaction on the network.\n\nA higher tip makes your transaction more likely to be confirmed quickly.",
+        "title": "Miner tip"
+      },
+      "optimism": {
+        "text": "Optimism is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
+        "title": "What's Optimism?"
+      },
+      "polygon": {
+        "text": "Polygon is a sidechain, a distinct network that runs alongside Ethereum and is compatible with it.\n\nIt allows for cheaper and faster transactions, but unlike Layer 2 networks, Polygon has its own security and consensus mechanisms that differ from Ethereum.",
+        "title": "What's Polygon?"
+      },
+      "read_more": "Read More",
+      "sending_to_contract": {
+        "text": "The address you entered is for a smart contract.\n\nExcept for rare situations, you probably shouldn't do this. You could lose your assets or they might go to the wrong place.\n\nDouble check the address, verify it with the recipient, or contact support first.",
+        "title": "Hold your horses!"
+      },
+      "verified": {
+        "text": "Tokens with a verified badge mean they have appeared on at least 3 other outside token lists.\n\nAlways do your own research to ensure you are interacting with a token you trust.",
+        "title": "Verified Tokens"
       }
     },
     "fields": {
@@ -459,6 +621,13 @@
       "confirm": "Enable library access",
       "cancel": "Cancel"
     },
+    "list": {
+      "nothing_here": "Nothing here!",
+      "share": {
+        "check_out_my_wallet": "Check out my collectibles on 🌈 Rainbow at %{showcaseUrl}",
+        "check_out_this_wallet": "Check out this wallet's collectibles on 🌈 Rainbow at %{showcaseUrl}"
+      }
+    },
     "message": {
       "click_to_copy_to_clipboard": "Click to copy to clipboard",
       "coming_soon": "Coming soon...",
@@ -496,6 +665,7 @@
         "default": {
           "button": {
             "cloud": "Back up your wallet",
+            "cloud_platform": "Back up to %{cloudPlatformName}",
             "manual": "Back up manually"
           },
           "description": "Don't lose your wallet! Save an encrypted copy to %{cloudPlatformName}",
@@ -526,11 +696,15 @@
       "exchange_fee": "Exchange Fee",
       "exchange_max": "Exchange max",
       "exchange_title": "Exchange from %{walletName}",
+      "external_link_warning": {
+        "go_back": "Go back",
+        "visit_external_link": "Visit external link?",
+        "you_are_attempting_to_visit": "You are attempting to visit a link that is not affiliated with Rainbow."
+      },
       "gas_average": "Average",
       "gas_fast": "Fast",
       "gas_fee": "Fee",
       "gas_slow": "Slow",
-      "helper_balance": "Balance",
       "helper_max": "Max",
       "helper_min": "Min",
       "helper_price": "Price",
@@ -572,6 +746,7 @@
     },
     "pools": {
       "deposit": "Deposit",
+      "pools_title": "Pools",
       "withdraw": "Withdraw"
     },
     "profiles": {
@@ -732,6 +907,8 @@
     },
     "savings": {
       "deposit": "Deposit",
+      "deposit_from_wallet": "Deposit from Wallet",
+      "earned_lifetime_interest": "Earned %{lifetimeAccruedInterest}",
       "earnings": {
         "100_year": "100-Year",
         "10_year": "10-Year",
@@ -743,8 +920,15 @@
         "monthly": "Monthly",
         "yearly": "Yearly"
       },
+      "get_prefix": "Get",
       "label": "Savings",
-      "withdraw": "Withdraw"
+      "on_your_dollars_suffix": "on your dollars",
+      "percentage": "%{percentage}%",
+      "percentage_apy": "%{percentage}% APY",
+      "with_digital_dollars_line_1": "With digital dollars like Dai, saving",
+      "with_digital_dollars_line_2": "earns you more than ever before",
+      "withdraw": "Withdraw",
+      "zero_currency": "$0.00"
     },
     "send_feedback": {
       "copy_email": "Copy email address",
@@ -762,13 +946,20 @@
       "done": "Done",
       "feedback_and_reports": "Feedback & Bug Reports",
       "feedback_and_support": "Feedback and Support",
+      "follow_us_on_twitter": "Follow Us on Twitter",
+      "hey_friend_message": "👋️ Hey friend! You should download Rainbow, it's my favorite Ethereum wallet 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "Settings",
       "language": "Language",
       "learn": "Learn about Rainbow and Ethereum",
       "learn_short": "Learn about Rainbow",
       "network": "Network",
       "privacy": "Privacy",
+      "privacy_section": {
+        "public_showcase": "Public Showcase",
+        "when_public_prefix": "When public, your NFT Showcase will be visible on your Rainbow web profile! You can view your profile at"
+      },
       "review": "Review Rainbow",
+      "share_rainbow": "Share Rainbow",
       "theme": "Theme"
     },
     "subscribe_form": {
@@ -784,6 +975,7 @@
         "custom": "Custom",
         "edit_price": "Edit Gas Price",
         "enter_price": "Enter Gas Price",
+        "estimated_fee": "Estimated fee",
         "fast": "Fast",
         "network_fee": "Network Fee",
         "normal": "Normal",
@@ -794,15 +986,19 @@
         "confirm": "Confirm",
         "deposit": "Deposit",
         "swap": "Swap",
-        "withdraw": "Withdraw"
+        "withdraw": "Withdraw",
+        "withdraw_symbol": "Withdraw %{symbol}"
       },
       "warning": {
+        "cost": {
+          "are_you_sure_title": "Are you sure?",
+          "this_transaction_will_cost_you_more": "This transaction will cost you more than the value you are swapping to, are you sure you want to continue?"
+        },
         "edit_price": "Edit Gas Price",
         "invalid_price": {
           "message": "You need to enter a valid amount",
           "title": "Invalid Gas Price"
         },
-        "proceed_anyway": "Proceed Anyway",
         "too_high": {
           "message": "Double check that you entered the correct amount—you’re likely paying more than you need to!",
           "title": "High gas price!"
@@ -871,10 +1067,15 @@
         }
       }
     },
+    "toasts": {
+      "copied": "Copied \"%{copiedText}\"",
+      "invalid_paste": "You can't paste that here"
+    },
     "wallet": {
       "action": {
         "add_existing": "Add an existing wallet",
         "cancel": "Cancel",
+        "copy_contract_address": "Copy Contract Address",
         "create_new": "Create a new wallet",
         "delete": "Delete Wallet",
         "delete_confirm": "Are you sure you want to delete this wallet?",
@@ -920,11 +1121,44 @@
         "please": "Please authenticate",
         "please_seed_phrase": "Please authenticate to view private key"
       },
+      "back_ups": {
+        "and_1_more_wallet": "And 1 more wallet",
+        "and_more_wallets": "And %{moreWalletCount} more wallets",
+        "backed_up": "Backed up",
+        "backed_up_manually": "Backed up manually",
+        "imported": "Imported"
+      },
+      "balance_title": "Balance",
       "change_wallet": {
         "balance_eth": "%{balanceEth} ETH",
         "watching": "Watching"
       },
       "copy_address": "Copy Address",
+      "diagnostics": {
+        "authenticate_with_pin": "Authenticate with PIN",
+        "restore": {
+          "address": "Address",
+          "created_at": "Created at",
+          "heads_up_title": "Heads up!",
+          "key": "Key",
+          "label": "Label",
+          "restore": "Restore",
+          "secret": "Secret",
+          "this_action_will_completely_replace": "This action will completely replace this wallet. Are you sure?",
+          "type": "Type",
+          "yes_i_understand": "Yes, I understand"
+        },
+        "secret": {
+          "copy_secret": "Copy Secret",
+          "okay_i_understand": "Ok, I understand",
+          "reminder_title": "Reminder",
+          "these_words_are_for_your_eyes_only": "These words are for your eyes only. Your secret phrase gives access to your entire wallet. \n\n       Be very careful with it."
+        },
+        "uuid": "UUID",
+        "wallet_diagnostics_title": "Wallet Diagnostics",
+        "you_need_to_authenticate_with_your_pin": "You need to authenticate with your PIN in order to access your Wallet secrets"
+      },
+      "error_displaying_address": "Error displaying address",
       "feedback": {
         "cancel": "No thanks",
         "choice": "Would you like to manually copy our feedback email address to your clipboard?",
@@ -950,6 +1184,8 @@
         "request": "Message Signing Request",
         "sign": "Sign Message"
       },
+      "my_account_address": "My account address:",
+      "network_title": "Network",
       "new": {
         "already_have_wallet": "I already have one",
         "create_wallet": "Create Wallet",
@@ -958,9 +1194,30 @@
         "import_wallet": "Import Wallet",
         "name_wallet": "Name your wallet"
       },
+      "pin_authentication": {
+        "choose_your_pin": "Choose your PIN",
+        "confirm_your_pin": "Confirm your PIN",
+        "still_blocked": "Still blocked",
+        "too_many_tries": "Too many tries!",
+        "type_your_pin": "Type your PIN",
+        "you_need_to_wait_minutes_plural": "You need to wait %{minutesCount} minutes before trying again",
+        "you_still_need_to_wait": "You still need to wait ~ %{timeAmount} %{unitName} before trying again"
+      },
       "push_notifications": {
         "please_enable_body": "It looks like you are using WalletConnect. Please enable push notifications to be notified of transaction requests from WalletConnect.",
         "please_enable_title": "Rainbow would like to send you push notifications"
+      },
+      "qr": {
+        "camera_access_needed": "Camera access needed to scan!",
+        "enable_camera_access": "Enable camera access",
+        "error_mounting_camera": "Error mounting camera",
+        "find_a_code": "Find a code to scan",
+        "qr_1_app_connected": "1 app connected",
+        "qr_multiple_apps_connected": "%{appsConnectedCount} apps connected",
+        "scan_to_pay_or_connect": "Scan to pay or connect",
+        "simulator_mode": "Simulator Mode",
+        "sorry_could_not_be_recognized": "Sorry, this QR code could not be recognized.",
+        "unrecognized_qr_code_title": "Unrecognized QR Code"
       },
       "settings": {
         "copy_address": "Copy address",
@@ -969,32 +1226,70 @@
         "hide_seed_phrase": "Hide Secret Phrase",
         "show_seed_phrase": "Show Secret Phrase"
       },
+      "speed_up": {
+        "problem_while_fetching_transaction_data": "There was a problem while fetching the transaction data. Please try again...",
+        "unable_to_speed_up": "Unable to speed up transaction"
+      },
       "transaction": {
         "alert": {
           "authentication": "Authentication Failed",
           "cancelled_transaction": "Failed to send cancelled transaction to WalletConnect",
+          "connection_expired": "Connection Expired",
           "failed_sign_message": "Failed to sign message",
           "failed_transaction": "Failed to send transaction",
           "failed_transaction_status": "Failed to send failed transaction status",
+          "invalid_transaction": "Invalid transaction",
+          "please_go_back_and_reconnect": "Please go back to the dapp and reconnect it to your wallet",
           "transaction_status": "Failed to send transaction status"
         },
+        "checkboxes": {
+          "has_a_wallet_that_supports": "The person I’m sending to has a wallet that supports %{networkName}",
+          "im_not_sending_to_an_exchange": "I’m not sending to an exchange"
+        },
+        "complete_checks": "Complete checks",
         "confirm": "Confirm transaction",
+        "max": "Max",
+        "placeholder_title": "Placeholder",
         "request": "Transaction Request",
-        "send": "Send Transaction"
+        "send": "Send Transaction",
+        "sending_title": "Sending"
       },
-      "unrecognized_qrcode": "Sorry, this QR code could not be recognized.",
-      "unrecognized_qrcode_title": "Unrecognized QR Code",
       "wallet_connect": {
         "error": "Error initializing with WalletConnect",
-        "missing_fcm": "Unable to initialize WalletConnect: missing push notification token. Please try again."
-      }
+        "failed_to_disconnect": "Failed to disconnect all WalletConnect sessions",
+        "failed_to_send_request_status": "Failed to send request status to WalletConnect.",
+        "missing_fcm": "Unable to initialize WalletConnect: missing push notification token. Please try again.",
+        "walletconnect_session_has_expired_while_trying_to_send": "WalletConnect session has expired while trying to send request status. Please reconnect."
+      },
+      "wallet_title": "Wallet"
     },
     "walletconnect": {
+      "available_networks": "Available Networks",
+      "change_network": "Change Network",
+      "connected_apps": "Connected apps",
+      "disconnect": "Disconnect",
+      "go_back_to_your_browser": "Go back to your browser",
       "paste_uri": {
         "button": "Paste session URI",
         "message": "Paste WalletConnect URI below",
         "title": "New WalletConnect Session"
-      }
+      },
+      "scam": {
+        "heads_up_title": "Heads up!",
+        "ignore_this_request": "Ignore This Request",
+        "we_found_this_website_in_a_list": "We found this website in a list of malicious crypto scams.\n\n We recommend that you ignore this request and stop using this website immediately"
+      },
+      "switch_network": "Switch Network",
+      "switch_wallet": "Switch Wallet",
+      "titles": {
+        "connect": "You're connected!",
+        "reject": "Connection canceled",
+        "sign": "Message signed!",
+        "sign_canceled": "Transaction canceled!",
+        "transaction_sent": "Transaction sent!",
+        "transaction_canceled": "Transaction canceled!"
+      },
+      "unknown_application": "Unknown Application"
     },
     "warning": {
       "user_is_offline": "Connection offline, please check your internet connection",

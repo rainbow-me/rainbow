@@ -102,7 +102,7 @@ export default function ENSConfirmRegisterSheet() {
   const avatarMetadata = useRecoilValue(avatarMetadataAtom);
 
   const { result: dominantColor } = usePersistentDominantColorFromImage(
-    avatarMetadata?.path || initialAvatarUrl || ''
+    avatarMetadata?.path || initialAvatarUrl || params?.externalAvatarUrl || ''
   );
   useEffect(() => {
     setAccentColor(dominantColor || colors.purple);
@@ -319,9 +319,16 @@ export default function ENSConfirmRegisterSheet() {
     }, [])
   );
 
-  useEffect(() => () => clearCurrentRegistrationName(), [
-    clearCurrentRegistrationName,
-  ]);
+  useEffect(
+    () => () => {
+      if (
+        step === REGISTRATION_STEPS.RENEW ||
+        step === REGISTRATION_STEPS.SET_NAME
+      )
+        clearCurrentRegistrationName();
+    },
+    [clearCurrentRegistrationName, step]
+  );
 
   return (
     <SlackSheet

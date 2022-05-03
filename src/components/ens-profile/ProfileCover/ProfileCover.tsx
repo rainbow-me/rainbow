@@ -1,12 +1,6 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { View } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
 import { ImagePreviewOverlayTarget } from '../../images/ImagePreviewOverlay';
 import Skeleton from '../../skeleton/Skeleton';
 import { Box, useForegroundColor } from '@rainbow-me/design-system';
@@ -24,21 +18,6 @@ export default function ProfileCover({
   handleOnPress?: () => void;
 }) {
   const accentColor = useForegroundColor('accent');
-
-  const opacity = useSharedValue(0);
-
-  const style = useAnimatedStyle(() => {
-    return {
-      opacity: withTiming(opacity.value, {
-        duration: 500,
-        easing: Easing.linear,
-      }),
-    };
-  });
-
-  const onLoadEnd = useCallback(() => {
-    opacity.value = 1;
-  }, [opacity]);
 
   if (isLoading) {
     return (
@@ -83,14 +62,7 @@ export default function ProfileCover({
           onPress={handleOnPress}
           topOffset={ios ? 112 : 107}
         >
-          <Animated.View style={style}>
-            <Box
-              as={ImgixImage}
-              height="126px"
-              onLoadEnd={onLoadEnd}
-              source={{ uri: coverUrl }}
-            />
-          </Animated.View>
+          <Box as={ImgixImage} height="126px" source={{ uri: coverUrl }} />
         </ImagePreviewOverlayTarget>
       )}
     </Box>

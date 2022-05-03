@@ -194,7 +194,7 @@ const ContactProfileState = ({
       imageAvatar={ensAvatar}
       inputValue={value}
       onChange={setValue}
-      placeholder={lang.t('contacts.input.placeholder')}
+      placeholder={lang.t('contacts.input_placeholder')}
       profileName={ens}
       submitButtonText={lang.t('contacts.options.add')}
       toggleAvatar
