@@ -1879,17 +1879,13 @@ export default (state: DataState = INITIAL_STATE, action: DataAction) => {
         ...state,
         isLoadingAssets: false,
       };
-<<<<<<< HEAD
     case DATA_LOAD_ACCOUNT_ASSETS_DATA_FINALIZED: {
       return {
         ...state,
         isLoadingAssets: false,
       };
     }
-    case DATA_ADD_NEW_TRANSACTION_SUCCESS:
-=======
     case DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS:
->>>>>>> develop
       return {
         ...state,
         pendingTransactions: action.payload,
