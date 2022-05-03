@@ -426,7 +426,7 @@ const formatEstimatedNetworkFee = (
 };
 
 const formatTotalRegistrationCost = (
-  wei: number,
+  wei: string,
   nativeCurrency: any,
   nativeAssetPrice: any,
   skipDecimals: boolean = false
