@@ -1,7 +1,6 @@
 import { isEmpty } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQueries } from 'react-query';
-import { useDebounce } from 'use-debounce';
 import useENSRegistration from './useENSRegistration';
 import useGas from './useGas';
 import usePrevious from './usePrevious';
@@ -87,7 +86,6 @@ export default function useENSRegistrationCosts({
     () => registrationParameters?.changedRecords || {},
     [registrationParameters?.changedRecords]
   );
-  const [debouncedChangedRecords] = useDebounce(changedRecords, 500);
   const [currentStepGasLimit, setCurrentStepGasLimit] = useState('');
 
   const [isValidGas, setIsValidGas] = useState(false);
@@ -126,6 +124,7 @@ export default function useENSRegistrationCosts({
         duration,
         name,
         ownerAddress: accountAddress,
+        records: changedRecords,
         rentPrice: registrationParameters?.rentPrice,
         salt: registrationParameters?.salt,
         setReverseRecord: sendReverseRecord,
@@ -139,16 +138,16 @@ export default function useENSRegistrationCosts({
     registrationParameters?.rentPrice,
     registrationParameters?.salt,
     sendReverseRecord,
+    changedRecords,
   ]);
 
   const getSetRecordsGasLimit = useCallback(async () => {
-    if (isEmpty(debouncedChangedRecords)) return '0';
     const newSetRecordsGasLimit = await estimateENSSetRecordsGasLimit({
       name,
-      records: debouncedChangedRecords,
+      records: changedRecords,
     });
     return newSetRecordsGasLimit || '';
-  }, [debouncedChangedRecords, name]);
+  }, [changedRecords, name]);
 
   const getSetNameGasLimit = useCallback(async () => {
     const newSetNameGasLimit = await estimateENSSetNameGasLimit({
@@ -194,11 +193,7 @@ export default function useENSRegistrationCosts({
       enabled:
         step === REGISTRATION_STEPS.COMMIT || step === REGISTRATION_STEPS.EDIT,
       queryFn: getSetRecordsGasLimit,
-      queryKey: [
-        QUERY_KEYS.GET_SET_RECORDS_GAS_LIMIT,
-        name,
-        debouncedChangedRecords,
-      ],
+      queryKey: [QUERY_KEYS.GET_SET_RECORDS_GAS_LIMIT, name, changedRecords],
       staleTime: QUERY_STALE_TIME,
     },
     {
@@ -227,6 +222,7 @@ export default function useENSRegistrationCosts({
         QUERY_KEYS.GET_REGISTER_RAP_GAS_LIMIT,
         sendReverseRecord,
         nameUpdated,
+        changedRecords,
       ],
       staleTime: QUERY_STALE_TIME,
     },
