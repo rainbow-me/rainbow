@@ -60,7 +60,9 @@ export default function DiscoverSearch() {
 
   const currencyListDataKey = useMemo(
     () =>
-      `${uniswapCurrencyList?.[0]?.data?.length}_${ensResults?.[0]?.data?.length}`,
+      `${uniswapCurrencyList?.[0]?.data?.[0]?.address || '_'}_${
+        ensResults?.[0]?.data?.[0]?.address || '_'
+      }`,
     [ensResults, uniswapCurrencyList]
   );
 
