@@ -7,36 +7,75 @@ const stringify = (value: BigNumberish) => {
   return value.toString();
 };
 
+const refs = {};
+
+let c = 0;
+
 export const add = (
   numberOne: BigNumberish,
   numberTwo: BigNumberish
 ): number => {
-  return (
-    parseFloat(numberOne?.toString() || '0') +
-    parseFloat(numberTwo?.toString() || '0')
-  );
+  if (typeof numberOne === 'number' && typeof numberTwo === 'number') {
+    return numberOne + numberTwo;
+  }
+
+  const numberOneAsNumber =
+    typeof numberOne === 'number'
+      ? numberOne
+      : parseFloat(numberOne?.toString());
+  const numberTwoAsNumber =
+    typeof numberTwo === 'number'
+      ? numberTwo
+      : parseFloat(numberTwo?.toString());
+  return numberOneAsNumber + numberTwoAsNumber;
 };
 
 export const subtract = (
   numberOne: BigNumberish,
   numberTwo: BigNumberish
-): number =>
-  parseFloat(numberOne?.toString() || '0') -
-  parseFloat(numberTwo?.toString() || '0');
+): number => {
+  const numberOneAsNumber =
+    typeof numberOne === 'number'
+      ? numberOne
+      : parseFloat(numberOne?.toString());
+  const numberTwoAsNumber =
+    typeof numberTwo === 'number'
+      ? numberTwo
+      : parseFloat(numberTwo?.toString());
 
+  return numberOneAsNumber - numberTwoAsNumber;
+};
 export const multiply = (
   numberOne: BigNumberish,
   numberTwo: BigNumberish
-): number =>
-  parseFloat(numberOne?.toString() || '0') *
-  parseFloat(numberTwo?.toString() || '0');
+): number => {
+  const numberOneAsNumber =
+    typeof numberOne === 'number'
+      ? numberOne
+      : parseFloat(numberOne?.toString());
+  const numberTwoAsNumber =
+    typeof numberTwo === 'number'
+      ? numberTwo
+      : parseFloat(numberTwo?.toString());
+
+  return numberOneAsNumber * numberTwoAsNumber;
+};
 
 export const divide = (
   numberOne: BigNumberish,
   numberTwo: BigNumberish
 ): number => {
+  const numberOneAsNumber =
+    typeof numberOne === 'number'
+      ? numberOne
+      : parseFloat(numberOne?.toString());
+  const numberTwoAsNumber =
+    typeof numberTwo === 'number'
+      ? numberTwo
+      : parseFloat(numberTwo?.toString());
+
   if (!(numberOne || numberTwo)) return 0;
-  return parseFloat(numberOne.toString()) / parseFloat(numberTwo.toString());
+  return numberOneAsNumber / numberTwoAsNumber;
 };
 
 export const convertAmountToRawAmount = (
@@ -60,20 +99,39 @@ export const toFixedDecimals = (
 export const greaterThan = (
   numberOne: BigNumberish,
   numberTwo: BigNumberish
-): boolean =>
-  Number(numberOne?.toString() || '0') > Number(numberTwo?.toString() || '0');
+): boolean => {
+  if (typeof numberOne === 'number' && typeof numberTwo === 'number') {
+    return numberOne > numberTwo;
+  }
+  return (
+    Number(numberOne?.toString() || '0') > Number(numberTwo?.toString() || '0')
+  );
+};
 
 export const greaterThanOrEqualTo = (
   numberOne: BigNumberish,
   numberTwo: BigNumberish
-): boolean =>
-  Number(numberOne?.toString() || '0') >= Number(numberTwo?.toString() || '0');
+): boolean => {
+  if (typeof numberOne === 'number' && typeof numberTwo === 'number') {
+    return numberOne >= numberTwo;
+  }
+  return (
+    Number(numberOne?.toString() || '0') >= Number(numberTwo?.toString() || '0')
+  );
+};
 
 export const isEqual = (
   numberOne: BigNumberish,
   numberTwo: BigNumberish
-): boolean =>
-  Number(numberOne?.toString() || '0') === Number(numberTwo?.toString() || '0');
+): boolean => {
+  if (typeof numberOne === 'number' && typeof numberTwo === 'number') {
+    return numberOne === numberTwo;
+  }
+  return (
+    Number(numberOne?.toString() || '0') ===
+    Number(numberTwo?.toString() || '0')
+  );
+};
 
 export const mod = (numberOne: BigNumberish, numberTwo: BigNumberish): string =>
   stringify(BigNumber.from(numberOne).mod(BigNumber.from(numberTwo)));
@@ -199,8 +257,14 @@ export const convertStringToNumber = (value: BigNumberish) =>
 export const lessThan = (
   numberOne: BigNumberish,
   numberTwo: BigNumberish
-): boolean =>
-  Number(numberOne?.toString() || '0') < Number(numberTwo?.toString() || '0');
+): boolean => {
+  if (typeof numberOne === 'number' && typeof numberTwo === 'number') {
+    return numberOne < numberTwo;
+  }
+  return (
+    Number(numberOne?.toString() || '0') < Number(numberTwo?.toString() || '0')
+  );
+};
 
 export const handleSignificantDecimalsWithThreshold = (
   value: BigNumberish,
@@ -318,6 +382,7 @@ export const convertRawAmountToBalance = (
 
   return {
     amount: assetBalance,
+    amountNum: parseFloat(assetBalance),
     display: convertAmountToBalanceDisplay(assetBalance, asset, buffer),
   };
 };
