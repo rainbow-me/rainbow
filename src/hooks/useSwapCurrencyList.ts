@@ -192,7 +192,7 @@ const useSwapCurrencyList = (searchQuery: string, chainId = 1) => {
     ]
   );
 
-  const search = () => {
+  const search = useCallback(async () => {
     const categories: swapCurrencyListType[] =
       chainId === MAINNET_CHAINID
         ? [
@@ -203,8 +203,10 @@ const useSwapCurrencyList = (searchQuery: string, chainId = 1) => {
           ]
         : ['verifiedAssets'];
     setLoading(true);
-    categories.forEach(assetType => getResultsForAssetType(assetType));
-  };
+    await Promise.all(
+      categories.map(assetType => getResultsForAssetType(assetType))
+    );
+  }, [chainId, getResultsForAssetType]);
 
   const slowSearch = useCallback(async () => {
     try {
@@ -227,19 +229,23 @@ const useSwapCurrencyList = (searchQuery: string, chainId = 1) => {
   const previousSearchQuery = usePrevious(searchQuery);
 
   useEffect(() => {
-    if (
-      (searching && !wasSearching) ||
-      (searching && previousSearchQuery !== searchQuery)
-    ) {
-      search();
-      if (chainId === MAINNET_CHAINID) {
-        slowSearch();
+    const doSearch = async () => {
+      if (
+        (searching && !wasSearching) ||
+        (searching && previousSearchQuery !== searchQuery)
+      ) {
+        if (chainId === MAINNET_CHAINID) {
+          search();
+          slowSearch();
+        } else {
+          await search();
+          setLoading(false);
+        }
       } else {
-        setLoading(false);
+        clearSearch();
       }
-    } else {
-      clearSearch();
-    }
+    };
+    doSearch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searching, searchQuery]);
 
