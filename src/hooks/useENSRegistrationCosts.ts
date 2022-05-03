@@ -227,7 +227,6 @@ export default function useENSRegistrationCosts({
         QUERY_KEYS.GET_REGISTER_RAP_GAS_LIMIT,
         sendReverseRecord,
         nameUpdated,
-        step,
       ],
       staleTime: QUERY_STALE_TIME,
     },
