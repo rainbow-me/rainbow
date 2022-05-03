@@ -249,7 +249,8 @@ export function ENSAssignRecordsBottomActions({
   const hasBackButton = useMemo(
     () =>
       fromRoute === Routes.ENS_SEARCH_SHEET ||
-      fromRoute === Routes.ENS_INTRO_SHEET,
+      fromRoute === Routes.ENS_INTRO_SHEET ||
+      fromRoute === Routes.ENS_ASSIGN_RECORDS_SHEET,
     [fromRoute]
   );
 
