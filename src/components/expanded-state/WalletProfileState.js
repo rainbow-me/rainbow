@@ -86,6 +86,7 @@ export default function WalletProfileState({
       handleCancel={handleCancel}
       handleSubmit={handleSubmit}
       imageAvatar={profileImage}
+      inputValue={value}
       onChange={setValue}
       placeholder={lang.t('wallet.new.name_wallet')}
       submitButtonText={
@@ -97,7 +98,6 @@ export default function WalletProfileState({
       }
       toggleAvatar={!isNewProfile || address}
       toggleSubmitButtonIcon={actionType === 'Create'}
-      inputValue={value}
     />
   );
 }

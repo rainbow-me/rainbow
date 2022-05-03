@@ -192,13 +192,13 @@ const ContactProfileState = ({
       handleCancel={handleCancel}
       handleSubmit={handleAddContact}
       imageAvatar={ensAvatar}
+      inputValue={value}
       onChange={setValue}
       placeholder={lang.t('contacts.input.placeholder')}
       profileName={ens}
       submitButtonText={lang.t('contacts.options.add')}
       toggleAvatar
       toggleSubmitButtonIcon={false}
-      inputValue={value}
     />
   ) : (
     <ProfileModalContainer onPressBackdrop={handleAddContact}>

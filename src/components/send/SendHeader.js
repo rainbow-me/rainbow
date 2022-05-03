@@ -9,6 +9,7 @@ import Divider from '../Divider';
 import Spinner from '../Spinner';
 import { ButtonPressAnimation } from '../animations';
 import { PasteAddressButton } from '../buttons';
+import showDeleteContactActionSheet from '../contacts/showDeleteContactActionSheet';
 import { AddressField } from '../fields';
 import { Row } from '../layout';
 import { SheetHandleFixedToTop, SheetTitle } from '../sheet';
@@ -23,7 +24,6 @@ import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 import { profileUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
-import showDeleteContactActionSheet from '../contacts/showDeleteContactActionSheet';
 
 const AddressInputContainer = styled(Row).attrs({ align: 'center' })(
   ({ isSmallPhone, theme: { colors }, isTinyPhone }) => ({
