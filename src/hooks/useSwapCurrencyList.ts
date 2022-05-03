@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useTheme } from '../context/ThemeContext';
 import { AppState } from '../redux/store';
 import { uniswapUpdateFavorites } from '../redux/uniswap';
+import usePrevious from './usePrevious';
 import {
   RainbowToken as RT,
   TokenSearchTokenListId,
@@ -57,7 +58,10 @@ const searchCurrencyList = async (
 };
 
 const useSwapCurrencyList = (searchQuery: string, chainId = 1) => {
-  const searching = searchQuery !== '';
+  const searching = useMemo(
+    () => searchQuery !== '' || MAINNET_CHAINID !== chainId,
+    [chainId, searchQuery]
+  );
   const dispatch = useDispatch();
 
   const curatedMap = useSelector(uniswapCuratedTokensSelector);
@@ -75,7 +79,7 @@ const useSwapCurrencyList = (searchQuery: string, chainId = 1) => {
   const handleVerifiedResponse = useCallback(
     (tokens: RT[]) => {
       const addresses = favoriteAddresses.map(a => a.toLowerCase());
-
+      // These transformations are necessary for L2 tokens to match our spec
       return tokens
         .map(token => {
           if (chainId !== 1) {
@@ -85,6 +89,7 @@ const useSwapCurrencyList = (searchQuery: string, chainId = 1) => {
               token.mainnet_address = token.networks[MAINNET_CHAINID].address;
             }
             token.address = token.networks[chainId].address;
+            token.uniqueId = `${token.address}_${network}`;
           }
           return token;
         })
@@ -218,8 +223,14 @@ const useSwapCurrencyList = (searchQuery: string, chainId = 1) => {
     setVerifiedAssets([]);
   }, [getResultsForAssetType]);
 
+  const wasSearching = usePrevious(searching);
+  const previousSearchQuery = usePrevious(searchQuery);
+
   useEffect(() => {
-    if (searching) {
+    if (
+      (searching && !wasSearching) ||
+      (searching && previousSearchQuery !== searchQuery)
+    ) {
       search();
       if (chainId === MAINNET_CHAINID) {
         slowSearch();
@@ -230,7 +241,7 @@ const useSwapCurrencyList = (searchQuery: string, chainId = 1) => {
       clearSearch();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQuery]);
+  }, [searching, searchQuery]);
 
   const { colors } = useTheme();
 
@@ -283,14 +294,16 @@ const useSwapCurrencyList = (searchQuery: string, chainId = 1) => {
           title: tokenSectionTypes.favoriteTokenSection,
         });
       }
-      const curatedAssets = getCurated();
-      if (curatedAssets.length) {
-        list.push({
-          data: curatedAssets,
-          key: 'curated',
-          title: tokenSectionTypes.verifiedTokenSection,
-          useGradientText: IS_TESTING === 'true' ? false : true,
-        });
+      if (chainId === MAINNET_CHAINID) {
+        const curatedAssets = getCurated();
+        if (curatedAssets.length) {
+          list.push({
+            data: curatedAssets,
+            key: 'curated',
+            title: tokenSectionTypes.verifiedTokenSection,
+            useGradientText: IS_TESTING === 'true' ? false : true,
+          });
+        }
       }
     }
     return list;
@@ -303,6 +316,7 @@ const useSwapCurrencyList = (searchQuery: string, chainId = 1) => {
     lowLiquidityAssets,
     colors.yellowFavorite,
     unfilteredFavorites,
+    chainId,
     getCurated,
   ]);
 

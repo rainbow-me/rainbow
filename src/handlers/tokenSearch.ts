@@ -8,7 +8,7 @@ import {
 import logger from 'logger';
 
 const tokenSearchApi = new RainbowFetchClient({
-  baseURL: 'https://token-search-v2.rainbowdotme.workers.dev',
+  baseURL: 'https://token-search.rainbow.me/v2',
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
@@ -24,14 +24,17 @@ const tokenSearch = async (
   threshold: TokenSearchThreshold
 ) => {
   try {
-    const url = `/?${qs.stringify({
+    const data = {
       // @ts-ignore
-      chainId,
       keys,
       list,
       query,
       threshold,
-    })}`;
+    };
+    if (query) {
+      data.query = query;
+    }
+    const url = `/${chainId}/?${qs.stringify(data)}`;
 
     const tokenSearch = await tokenSearchApi.get(url);
     return tokenSearch.data?.data;
