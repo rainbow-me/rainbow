@@ -82,7 +82,7 @@ const AddressField = (
       setInputValue(name || address);
       validateAddress(address);
     }
-  }, [address, inputValue, name, validateAddress]);
+  }, [address, inputValue, isValid, name, validateAddress]);
 
   return (
     <Row flex={1}>
