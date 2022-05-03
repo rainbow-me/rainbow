@@ -102,12 +102,16 @@ export default function ENSConfirmRegisterSheet() {
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
   const avatarMetadata = useRecoilValue(avatarMetadataAtom);
 
+  const avatarImage =
+    avatarMetadata?.path || initialAvatarUrl || params?.externalAvatarUrl || '';
   const { result: dominantColor } = usePersistentDominantColorFromImage(
-    avatarMetadata?.path || initialAvatarUrl || params?.externalAvatarUrl || ''
+    avatarImage
   );
   useEffect(() => {
-    setAccentColor(dominantColor || colors.purple);
-  }, [dominantColor, setAccentColor]);
+    if (dominantColor || (!dominantColor && !avatarImage)) {
+      setAccentColor(dominantColor || colors.purple);
+    }
+  }, [avatarImage, dominantColor, setAccentColor]);
 
   const [duration, setDuration] = useState(1);
 

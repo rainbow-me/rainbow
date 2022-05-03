@@ -111,13 +111,17 @@ export default function ENSAssignRecordsSheet() {
   const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
 
+  const avatarImage =
+    avatarUrl || initialAvatarUrl || params?.externalAvatarUrl || '';
   const { result: dominantColor } = usePersistentDominantColorFromImage(
-    avatarUrl || initialAvatarUrl || params?.externalAvatarUrl || ''
+    avatarImage
   );
 
   useEffect(() => {
-    setAccentColor(dominantColor || colors.purple);
-  }, [colors.purple, dominantColor, setAccentColor]);
+    if (dominantColor || (!dominantColor && !avatarImage)) {
+      setAccentColor(dominantColor || colors.purple);
+    }
+  }, [avatarImage, colors.purple, dominantColor, setAccentColor]);
 
   const handleAutoFocusLayout = useCallback(
     ({
