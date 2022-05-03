@@ -187,9 +187,12 @@ export default function BackupSheet() {
             })}
             onPrimaryAction={onIcloudBackup}
             onSecondaryAction={onManualBackup}
-            primaryLabel={`􀙶 ${lang.t('modal.back_up.default.button.cloud', {
-              cloudPlatformName: cloudPlatform,
-            })}`}
+            primaryLabel={`􀙶 ${lang.t(
+              'modal.back_up.default.button.cloud_platform',
+              {
+                cloudPlatformName: cloudPlatform,
+              }
+            )}`}
             secondaryLabel={`🤓 ${lang.t(
               'modal.back_up.default.button.manual'
             )}`}
