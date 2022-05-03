@@ -97,7 +97,6 @@ export const parseAssetsNativeWithTotals = (assets, nativeCurrency) => {
 export const parseAssetsNative = (assets, nativeCurrency) =>
   map(assets, asset => parseAssetNative(asset, nativeCurrency));
 
-// TODO osdnk
 export const parseAssetNative = (asset, nativeCurrency) => {
   const assetNativePrice = get(asset, 'price');
   if (isNil(assetNativePrice)) {
