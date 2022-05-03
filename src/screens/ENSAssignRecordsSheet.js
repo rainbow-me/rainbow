@@ -114,14 +114,10 @@ export default function ENSAssignRecordsSheet() {
   const { result: dominantColor } = usePersistentDominantColorFromImage(
     avatarUrl || initialAvatarUrl || params?.externalAvatarUrl || ''
   );
-  const [prevDominantColor, setPrevDominantColor] = useState(dominantColor);
 
   useEffect(() => {
     setAccentColor(dominantColor || colors.purple);
-    if (dominantColor) {
-      setPrevDominantColor(dominantColor);
-    }
-  }, [colors.purple, dominantColor, prevDominantColor, setAccentColor]);
+  }, [colors.purple, dominantColor, setAccentColor]);
 
   const handleAutoFocusLayout = useCallback(
     ({
