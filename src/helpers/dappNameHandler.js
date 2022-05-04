@@ -157,6 +157,10 @@ const DisplayDappNames = Object.freeze({
     name: 'QuickSwap',
     uri: null,
   },
+  'rainbowkit.com': {
+    name: 'RainbowKit',
+    uri: buildAssetUrl('rainbowkit.com'),
+  },
   'rarible.com': {
     name: 'Rarible',
     uri: buildAssetUrl('rarible.com'),
