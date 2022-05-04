@@ -88,32 +88,15 @@ export default function RegisterENSNavigator() {
   const [currentRouteName, setCurrentRouteName] = useState(initialRouteName);
   const previousRouteName = usePrevious(currentRouteName);
 
+  const [wrapperStyle, setWrapperStyle] = useState({ height: contentHeight });
+
   const screenOptions = useMemo(() => defaultScreenOptions[currentRouteName], [
     currentRouteName,
   ]);
 
-  const [scrollEnabled, setScrollEnabled] = useState(
-    screenOptions.scrollEnabled
-  );
-
-  useEffect(() => {
-    if (previousRouteName) {
-      // Wait 500ms to prevent transition lag
-      setTimeout(() => {
-        setScrollEnabled(screenOptions.scrollEnabled);
-      }, 500);
-    }
-  }, [previousRouteName, screenOptions.scrollEnabled]);
-
   useEffect(() => () => clearCurrentRegistrationName(), [
     clearCurrentRegistrationName,
   ]);
-
-  useEffect(() => {
-    if (!screenOptions.scrollEnabled) {
-      sheetRef.current.scrollTo({ animated: false, x: 0, y: 0 });
-    }
-  }, [screenOptions.scrollEnabled]);
 
   useEffect(
     () => () => {
@@ -136,10 +119,21 @@ export default function RegisterENSNavigator() {
   const isBottomActionsVisible =
     currentRouteName === Routes.ENS_ASSIGN_RECORDS_SHEET;
 
-  const wrapperStyle = useMemo(
-    () => (!scrollEnabled ? { height: contentHeight } : {}),
-    [contentHeight, scrollEnabled]
-  );
+  useEffect(() => {
+    setTimeout(
+      () =>
+        setWrapperStyle(
+          screenOptions.scrollEnabled ? {} : { height: contentHeight }
+        ),
+      screenOptions.scrollEnabled ? 200 : 0
+    );
+  }, [contentHeight, screenOptions.scrollEnabled]);
+
+  useEffect(() => {
+    if (!screenOptions.scrollEnabled?.scrollEnabled) {
+      sheetRef.current.scrollTo({ animated: false, x: 0, y: 0 });
+    }
+  }, [screenOptions.scrollEnabled]);
 
   return (
     <>
