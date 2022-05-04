@@ -11,10 +11,6 @@ export const add = (
   numberOne: BigNumberish,
   numberTwo: BigNumberish
 ): number => {
-  if (typeof numberOne === 'number' && typeof numberTwo === 'number') {
-    return numberOne + numberTwo;
-  }
-
   const numberOneAsNumber =
     typeof numberOne === 'number'
       ? numberOne
