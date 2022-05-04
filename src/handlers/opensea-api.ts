@@ -55,10 +55,15 @@ export const apiGetAccountUniqueTokens = async (
     return isPolygon
       ? parseAccountUniqueTokensPolygon(data)
       : parseAccountUniqueTokens(data);
-  } catch (error) {
-    logger.sentry('Error getting unique tokens', error);
-    captureException(new Error('Opensea: Error getting unique tokens'));
-    if (IS_TESTING !== 'true') {
+  } catch (error: any) {
+    //opensea gives us an error if the account has no tokens on the network, we want to ignore this error
+    if (
+      error.responseBody[0]?.includes('does not exist for chain identifier')
+    ) {
+      return [];
+    } else {
+      logger.sentry('Error getting unique tokens', error);
+      captureException(new Error('Opensea: Error getting unique tokens'));
       throw error;
     }
   }
