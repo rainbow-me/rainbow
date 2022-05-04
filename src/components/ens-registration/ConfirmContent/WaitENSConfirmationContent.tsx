@@ -11,8 +11,13 @@ import {
   Stack,
   Text,
 } from '@rainbow-me/design-system';
+import { ENS_SECONDS_WAIT } from '@rainbow-me/helpers/ens';
 
-const WaitENSConfirmationContent = () => {
+const WaitENSConfirmationContent = ({
+  seconds,
+}: {
+  seconds: number | undefined;
+}) => {
   return (
     <Box flexGrow={1} paddingHorizontal="30px">
       <Box paddingTop="24px">
@@ -23,7 +28,11 @@ const WaitENSConfirmationContent = () => {
           <Box flexGrow={1} justifyContent="center">
             <Inset horizontal="42px">
               <Stack space="34px">
-                <LargeCountdownClock onFinished={() => {}} seconds={60} />
+                <LargeCountdownClock
+                  initialSeconds={ENS_SECONDS_WAIT}
+                  onFinished={() => {}}
+                  seconds={seconds || ENS_SECONDS_WAIT}
+                />
                 <Stack alignHorizontal="center" space="19px">
                   <Heading size="23px">
                     {lang.t('profiles.confirm.wait_one_minute')}

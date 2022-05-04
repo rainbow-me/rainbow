@@ -8,13 +8,11 @@ import { useDispatch } from 'react-redux';
 import { useAccountSettings, useENSRegistration } from '.';
 import { isHardHat, web3Provider } from '@rainbow-me/handlers/web3';
 import {
+  ENS_SECONDS_WAIT,
   REGISTRATION_MODES,
   REGISTRATION_STEPS,
 } from '@rainbow-me/helpers/ens';
 import { updateTransactionRegistrationParameters } from '@rainbow-me/redux/ensRegistration';
-
-// add waiting buffer
-const ENS_SECONDS_WAIT = 60;
 
 const getBlockMsTimestamp = (block: { timestamp: number }) =>
   block.timestamp * 1000;
@@ -30,12 +28,12 @@ export default function useENSRegistrationStepHandler(observer = true) {
     secondsSinceCommitConfirmed,
     setSecondsSinceCommitConfirmed,
   ] = useState(
-    registrationParameters?.commitTransactionConfirmedAt
-      ? differenceInSeconds(
-          Date.now(),
-          registrationParameters.commitTransactionConfirmedAt
-        )
-      : -1
+    (registrationParameters?.commitTransactionConfirmedAt &&
+      differenceInSeconds(
+        Date.now(),
+        registrationParameters?.commitTransactionConfirmedAt
+      )) ||
+      -1
   );
 
   const isTesting = useMemo(
@@ -169,6 +167,7 @@ export default function useENSRegistrationStepHandler(observer = true) {
     [observer]
   );
   return {
+    secondsSinceCommitConfirmed,
     step: registrationStep,
   };
 }
