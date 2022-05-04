@@ -101,18 +101,18 @@ const ContactRow = (
       : null;
 
   // if the accountType === 'suggestions', nickname will always be an ens or hex address, not a custom contact nickname
-  const [ensName, setENSName] = useState(
-    accountType !== 'suggestions' ? ens : nickname
-  );
+  const [ensName, setENSName] = useState(ens);
 
   useEffect(() => {
     if (profilesEnabled && accountType === 'contacts') {
       const fetchENSName = async () => {
         const name = await fetchReverseRecord(address);
-        if (name !== ensName) {
+        if (!ensName || name !== ensName) {
           setENSName(name);
           if (isENSAddressFormat(nickname)) {
-            onAddOrUpdateContacts(address, name, color, network);
+            onAddOrUpdateContacts(address, name, color, network, name);
+          } else {
+            onAddOrUpdateContacts(address, nickname, color, network, name);
           }
         }
       };

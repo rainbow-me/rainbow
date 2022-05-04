@@ -56,7 +56,7 @@ const ContactProfileState = ({ address, color, contact, ens, nickname }) => {
       ? value
       : (emoji ? `${emoji} ${value}` : value).trim();
     if (value.length > 0) {
-      onAddOrUpdateContacts(address, nickname, color, network);
+      onAddOrUpdateContacts(address, nickname, color, network, ens);
       goBack();
     }
     android && Keyboard.dismiss();
@@ -64,6 +64,7 @@ const ContactProfileState = ({ address, color, contact, ens, nickname }) => {
     address,
     color,
     emoji,
+    ens,
     goBack,
     network,
     onAddOrUpdateContacts,
