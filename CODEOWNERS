@@ -27,6 +27,7 @@ src/assets @skylarbarrera @christianbaroni
 # COMPONENTS
 src/components @osdnk @terrysahaidak
 src/components/unique-token @jkadamczyk
+src/components/floating-emojis @jkadamczyk
 
 # APP CONFIG
 src/config @osdnk @brunobar79 @skylarbarrera
