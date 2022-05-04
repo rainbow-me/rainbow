@@ -75,6 +75,7 @@ export default function SendHeader({
   contacts,
   hideDivider,
   isValidAddress,
+  nickname,
   onChangeAddressInput,
   onFocus,
   onPressPaste,
@@ -197,13 +198,9 @@ export default function SendHeader({
   ]);
 
   const isPreExistingContact = (contact?.nickname?.length || 0) > 0;
-  const name = useMemo(
-    () =>
-      userWallet?.label
-        ? removeFirstEmojiFromString(userWallet.label)
-        : removeFirstEmojiFromString(contact.nickname),
-    [contact.nickname, userWallet?.label]
-  );
+  const name = userWallet?.label
+    ? removeFirstEmojiFromString(userWallet.label)
+    : removeFirstEmojiFromString(nickname);
 
   return (
     <Fragment>

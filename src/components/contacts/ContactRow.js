@@ -145,7 +145,7 @@ const ContactRow = (
 
   const handlePress = useCallback(() => {
     if (showcaseItem) {
-      onPress(showcaseItem);
+      onPress(showcaseItem, nickname);
     } else {
       const label =
         accountType === 'suggestions' && isENSAddressFormat(nickname)
@@ -153,7 +153,7 @@ const ContactRow = (
           : ensName
           ? ensName
           : address;
-      onPress(label);
+      onPress(label, nickname);
     }
   }, [accountType, address, ensName, nickname, onPress, showcaseItem]);
 

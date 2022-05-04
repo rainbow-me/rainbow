@@ -78,8 +78,8 @@ const AddressField = (
   );
 
   useEffect(() => {
-    if (address !== inputValue || name !== inputValue) {
-      setInputValue(name || address);
+    if (name !== inputValue) {
+      setInputValue(name);
       validateAddress(address);
     }
   }, [address, inputValue, isValid, name, validateAddress]);
