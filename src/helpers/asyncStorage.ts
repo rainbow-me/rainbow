@@ -1,5 +1,4 @@
 import AsyncStorage from '@react-native-community/async-storage';
-import { THEME } from '@rainbow-me/handlers/localstorage/theme';
 import { WALLET_BALANCES } from '@rainbow-me/handlers/localstorage/walletBalances';
 
 const POST_REINSTALL_INTEGRITY_CHECK = 'postReinstallIntegrityCheck';
@@ -15,7 +14,7 @@ export const markKeychainAsRepaired = async () => {
  * storage is empty if ALL expected keys are missing.
  */
 export const checkIfAsyncStorageIsEmpty = async () => {
-  const keys = [WALLET_BALANCES, THEME];
+  const keys = [WALLET_BALANCES];
   for (const key of keys) {
     const value = await AsyncStorage.getItem(key);
     if (value) {
