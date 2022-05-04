@@ -111,17 +111,17 @@ export default function ENSAssignRecordsSheet() {
   const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
 
+  const avatarImage =
+    avatarUrl || initialAvatarUrl || params?.externalAvatarUrl || '';
   const { result: dominantColor } = usePersistentDominantColorFromImage(
-    avatarUrl || initialAvatarUrl || params?.externalAvatarUrl || ''
+    avatarImage
   );
-  const [prevDominantColor, setPrevDominantColor] = useState(dominantColor);
 
   useEffect(() => {
-    setAccentColor(dominantColor || prevDominantColor || colors.purple);
-    if (dominantColor) {
-      setPrevDominantColor(dominantColor);
+    if (dominantColor || (!dominantColor && !avatarImage)) {
+      setAccentColor(dominantColor || colors.purple);
     }
-  }, [colors.purple, dominantColor, prevDominantColor, setAccentColor]);
+  }, [avatarImage, colors.purple, dominantColor, setAccentColor]);
 
   const handleAutoFocusLayout = useCallback(
     ({
@@ -249,7 +249,8 @@ export function ENSAssignRecordsBottomActions({
   const hasBackButton = useMemo(
     () =>
       fromRoute === Routes.ENS_SEARCH_SHEET ||
-      fromRoute === Routes.ENS_INTRO_SHEET,
+      fromRoute === Routes.ENS_INTRO_SHEET ||
+      fromRoute === Routes.ENS_ASSIGN_RECORDS_SHEET,
     [fromRoute]
   );
 

@@ -49,7 +49,7 @@ const RegistrationCover = ({
         typeof initialCoverUrl === 'string' ? initialCoverUrl : values?.cover
       );
     }
-  }, [initialCoverUrl, coverUpdateAllowed]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [initialCoverUrl, coverUpdateAllowed, values, coverUrl]);
 
   // We want to allow cover state update when the screen is first focussed.
   useFocusEffect(useCallback(() => setCoverUpdateAllowed(true), []));

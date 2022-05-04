@@ -18,6 +18,7 @@ import {
   AccentColorProvider,
   Box,
   Heading,
+  Inset,
   Row,
   Rows,
   Stack,
@@ -101,12 +102,16 @@ export default function ENSConfirmRegisterSheet() {
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
   const avatarMetadata = useRecoilValue(avatarMetadataAtom);
 
+  const avatarImage =
+    avatarMetadata?.path || initialAvatarUrl || params?.externalAvatarUrl || '';
   const { result: dominantColor } = usePersistentDominantColorFromImage(
-    avatarMetadata?.path || initialAvatarUrl || params?.externalAvatarUrl || ''
+    avatarImage
   );
   useEffect(() => {
-    setAccentColor(dominantColor || colors.purple);
-  }, [dominantColor, setAccentColor]);
+    if (dominantColor || (!dominantColor && !avatarImage)) {
+      setAccentColor(dominantColor || colors.purple);
+    }
+  }, [avatarImage, dominantColor, setAccentColor]);
 
   const [duration, setDuration] = useState(1);
 
@@ -366,7 +371,11 @@ export default function ENSConfirmRegisterSheet() {
                       />
                     </Box>
                   )}
-                  <Heading size="26px">{ensName}</Heading>
+                  <Inset horizontal="30px">
+                    <Heading align="center" size="26px">
+                      {ensName}
+                    </Heading>
+                  </Inset>
                   <Text
                     color="accent"
                     testID={`ens-confirm-register-label-${step}`}
