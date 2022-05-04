@@ -1,7 +1,16 @@
 diff --git a/node_modules/react-native-mmkv/lib/module/hooks.js b/node_modules/react-native-mmkv/lib/module/hooks.js
-index 0c5fe95..62b9c56 100644
+index 0c5fe95..9fdf560 100644
 --- a/node_modules/react-native-mmkv/lib/module/hooks.js
 +++ b/node_modules/react-native-mmkv/lib/module/hooks.js
+@@ -70,7 +70,7 @@ function createMMKVHook(getter) {
+     useEffect(() => {
+       const listener = mmkv.addOnValueChangedListener(changedKey => {
+         if (changedKey === key) {
+-          setValue(getter(mmkv, key));
++          setImmediate(() => setValue(getter(mmkv, key)));
+         }
+       });
+       return () => listener.remove();
 @@ -138,6 +138,13 @@ export function useMMKVObject(key, instance) {
      if (v == null) {
        // Clear the Value
