@@ -4,6 +4,7 @@ import useAccountSettings from './useAccountSettings';
 import { fetchProfile } from '@rainbow-me/handlers/ens';
 import { getProfile, saveProfile } from '@rainbow-me/handlers/localstorage/ens';
 import { QueryConfig, UseQueryData } from '@rainbow-me/react-query/types';
+import { isLowerCaseMatch } from '@rainbow-me/utils';
 
 const queryKey = (name: string) => ['ens-profile', name];
 
@@ -33,10 +34,10 @@ export default function useENSProfile(
     }
   );
 
-  const isOwner = useMemo(() => data?.owner?.address === accountAddress, [
-    accountAddress,
-    data?.owner?.address,
-  ]);
+  const isOwner = useMemo(
+    () => isLowerCaseMatch(data?.owner?.address || '', accountAddress),
+    [accountAddress, data?.owner?.address]
+  );
 
   return { data, isLoading, isOwner, isSuccess };
 }

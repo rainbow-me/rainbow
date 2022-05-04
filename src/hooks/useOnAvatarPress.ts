@@ -33,9 +33,8 @@ export default () => {
     accountENS,
   } = useAccountProfile();
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const ensProfile = useENSProfile(accountENS, {
-    enabled: Boolean(accountENS),
-  });
+  const profileEnabled = Boolean(accountENS);
+  const ensProfile = useENSProfile(accountENS, { enabled: profileEnabled });
   const { openPicker } = useImagePicker();
 
   const onAvatarRemovePhoto = useCallback(async () => {
@@ -109,7 +108,9 @@ export default () => {
   const { startRegistration } = useENSRegistration();
 
   const onAvatarPress = useCallback(() => {
-    const isENSProfile = profilesEnabled && ensProfile?.isOwner;
+    if (profileEnabled && !ensProfile?.isSuccess) return;
+    const isENSProfile =
+      profilesEnabled && profileEnabled && ensProfile?.isOwner;
     const avatarActionSheetOptions = (isENSProfile
       ? [
           lang.t('profiles.profile_avatar.view_profile'),
@@ -176,16 +177,17 @@ export default () => {
       (buttonIndex: Number) => callback(buttonIndex)
     );
   }, [
+    ensProfile,
+    profileEnabled,
     profilesEnabled,
-    ensProfile?.isOwner,
     isReadOnlyWallet,
     accountImage,
     navigate,
     accountENS,
     startRegistration,
     onAvatarChooseImage,
-    onAvatarPickEmoji,
     onAvatarRemovePhoto,
+    onAvatarPickEmoji,
     onAvatarCreateProfile,
   ]);
 
