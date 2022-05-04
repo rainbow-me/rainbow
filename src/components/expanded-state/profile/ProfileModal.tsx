@@ -117,7 +117,7 @@ const ProfileModal = ({
             <AvatarCircle
               image={null}
               isAvatarPickerAvailable={false}
-              onPress={null} // TODO: Add avatar picker
+              onPress={null}
               overlayStyles={null}
               showcaseAccountColor={accentColor}
               showcaseAccountSymbol={emojiAvatar}
