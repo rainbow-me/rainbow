@@ -328,7 +328,7 @@ const getTxFee = (
     ? convertHexToString(gasLimit)
     : gasLimit;
 
-  let amount: number | string = multiply(
+  let amount: number = multiply(
     gasPrice.toString(),
     normalizedGasLimit.toString()
   );
