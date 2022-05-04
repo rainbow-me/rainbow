@@ -1,8 +1,20 @@
 diff --git a/node_modules/react-native-mmkv/lib/commonjs/hooks.js b/node_modules/react-native-mmkv/lib/commonjs/hooks.js
-index 9382032..c1d8ffc 100644
+index 9382032..43df503 100644
 --- a/node_modules/react-native-mmkv/lib/commonjs/hooks.js
 +++ b/node_modules/react-native-mmkv/lib/commonjs/hooks.js
-@@ -155,8 +155,14 @@ function useMMKVObject(key, instance) {
+@@ -156,7 +156,6 @@ function useMMKVObject(key, instance) {
+       // Clear the Value
+       setString(undefined);
+     } else {
+-      // Store the Object as a serialized Value
+       setString(JSON.stringify(v));
+     }
+   }, [setString]);
+diff --git a/node_modules/react-native-mmkv/lib/module/hooks.js b/node_modules/react-native-mmkv/lib/module/hooks.js
+index 0c5fe95..62b9c56 100644
+--- a/node_modules/react-native-mmkv/lib/module/hooks.js
++++ b/node_modules/react-native-mmkv/lib/module/hooks.js
+@@ -138,6 +138,13 @@ export function useMMKVObject(key, instance) {
      if (v == null) {
        // Clear the Value
        setString(undefined);
@@ -10,14 +22,12 @@ index 9382032..c1d8ffc 100644
 +      setString(prev => {
 +        if (prev === undefined) {
 +          return JSON.stringify(v(undefined))
-+       }
++        }
 +        return JSON.stringify(v(JSON.parse(prev)))
 +      });
      } else {
--      // Store the Object as a serialized Value
+       // Store the Object as a serialized Value
        setString(JSON.stringify(v));
-     }
-   }, [setString]);
 diff --git a/node_modules/react-native-mmkv/lib/typescript/hooks.d.ts b/node_modules/react-native-mmkv/lib/typescript/hooks.d.ts
 index 54c6ae9..6d992a7 100644
 --- a/node_modules/react-native-mmkv/lib/typescript/hooks.d.ts
