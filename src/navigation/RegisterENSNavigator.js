@@ -34,6 +34,21 @@ const renderPager = props => (
   />
 );
 
+const defaultScreenOptions = {
+  [Routes.ENS_ASSIGN_RECORDS_SHEET]: {
+    scrollEnabled: true,
+    useAccentAsSheetBackground: true,
+  },
+  [Routes.ENS_INTRO_SHEET]: {
+    scrollEnabled: false,
+    useAccentAsSheetBackground: false,
+  },
+  [Routes.ENS_SEARCH_SHEET]: {
+    scrollEnabled: true,
+    useAccentAsSheetBackground: false,
+  },
+};
+
 export default function RegisterENSNavigator() {
   const { params } = useRoute();
 
@@ -75,6 +90,10 @@ export default function RegisterENSNavigator() {
 
   const [wrapperStyle, setWrapperStyle] = useState({ height: contentHeight });
 
+  const screenOptions = useMemo(() => defaultScreenOptions[currentRouteName], [
+    currentRouteName,
+  ]);
+
   useEffect(() => () => clearCurrentRegistrationName(), [
     clearCurrentRegistrationName,
   ]);
@@ -101,16 +120,20 @@ export default function RegisterENSNavigator() {
     currentRouteName === Routes.ENS_ASSIGN_RECORDS_SHEET;
 
   useEffect(() => {
-    const isENSAssignRecordsSheet =
-      currentRouteName === Routes.ENS_ASSIGN_RECORDS_SHEET;
     setTimeout(
       () =>
         setWrapperStyle(
-          isENSAssignRecordsSheet ? {} : { height: contentHeight }
+          screenOptions.scrollEnabled ? {} : { height: contentHeight }
         ),
-      isENSAssignRecordsSheet ? 200 : 0
+      screenOptions.scrollEnabled ? 200 : 0
     );
-  }, [contentHeight, currentRouteName]);
+  }, [contentHeight, screenOptions.scrollEnabled]);
+
+  useEffect(() => {
+    if (!screenOptions.scrollEnabled?.scrollEnabled) {
+      sheetRef.current.scrollTo({ animated: false, x: 0, y: 0 });
+    }
+  }, [screenOptions.scrollEnabled]);
 
   return (
     <>
