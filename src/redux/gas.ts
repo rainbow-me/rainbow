@@ -432,7 +432,6 @@ export const gasPricesStartPolling = (
               if (!adjustedGasFees) return;
 
               const gasFeeParamsBySpeed = parseL2GasPrices(adjustedGasFees);
-
               if (!gasFeeParamsBySpeed) return;
 
               const _selectedGasFeeOption = selectedGasFee.option || NORMAL;

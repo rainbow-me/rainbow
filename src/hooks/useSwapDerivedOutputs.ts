@@ -78,7 +78,7 @@ const getInputAmount = async (
     Logger.debug('Getting quote ', rand, { quoteParams });
     // @ts-ignore About to get quote
     const quote: Quote = await getQuote(quoteParams);
-    Logger.debug('Got quote', rand);
+    Logger.debug('Got quote', rand, quote);
 
     if (!quote || !quote.sellAmount) {
       const quoteError = (quote as unknown) as QuoteError;
@@ -169,7 +169,7 @@ const getOutputAmount = async (
     Logger.debug('Getting quote ', rand, { quoteParams });
     // @ts-ignore About to get quote
     const quote: Quote = await getQuote(quoteParams);
-    Logger.debug('Got quote', rand);
+    Logger.debug('Got quote', rand, quote);
 
     if (!quote || !quote.buyAmount) {
       const quoteError = (quote as unknown) as QuoteError;

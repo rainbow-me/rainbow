@@ -1,3 +1,4 @@
+import { Provider } from '@ethersproject/abstract-provider';
 import { Logger } from '@ethersproject/logger';
 import { Wallet } from '@ethersproject/wallet';
 import { Quote } from '@rainbow-me/swaps';
@@ -77,6 +78,7 @@ export interface SwapActionParameters {
   tradeDetails: Quote;
   permit?: boolean;
   flashbots?: boolean;
+  provider: Provider;
 }
 
 export interface RegisterENSActionParameters {

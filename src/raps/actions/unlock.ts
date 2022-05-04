@@ -11,11 +11,7 @@ import {
   TransactionStatus,
   TransactionType,
 } from '@rainbow-me/entities';
-import {
-  getProviderForNetwork,
-  toHex,
-  web3Provider,
-} from '@rainbow-me/handlers/web3';
+import { getProviderForNetwork, toHex } from '@rainbow-me/handlers/web3';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';
 import { erc20ABI, ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
@@ -26,9 +22,12 @@ import logger from 'logger';
 export const estimateApprove = async (
   owner: string,
   tokenAddress: string,
-  spender: string
+  spender: string,
+  chainId: number = 1
 ): Promise<number | string> => {
   try {
+    const network = ethereumUtils.getNetworkFromChainId(chainId);
+    const provider = await getProviderForNetwork(network);
     if (
       ALLOWS_PERMIT[toLower(tokenAddress) as keyof PermitSupportedTokenList]
     ) {
@@ -40,7 +39,7 @@ export const estimateApprove = async (
       spender,
       tokenAddress,
     });
-    const tokenContract = new Contract(tokenAddress, erc20ABI, web3Provider);
+    const tokenContract = new Contract(tokenAddress, erc20ABI, provider);
     const gasLimit = await tokenContract.estimateGas.approve(
       spender,
       MaxUint256,

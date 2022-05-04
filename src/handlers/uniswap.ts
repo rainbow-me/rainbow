@@ -79,10 +79,16 @@ export const estimateSwapGasLimit = async ({
   const network = ethereumUtils.getNetworkFromChainId(chainId);
   const provider = await getProviderForNetwork(network);
   if (!provider || !tradeDetails) {
+    logger.debug(
+      'aborting because no provider or tradeDetails',
+      provider,
+      tradeDetails
+    );
     return ethUnits.basic_swap;
   }
 
   if (requiresApprove) {
+    logger.debug('aborting approval because it requires gas limit');
     return getBasicSwapGasLimitForTrade(tradeDetails);
   }
 
@@ -120,11 +126,24 @@ export const estimateSwapGasLimit = async ({
     // Swap
   } else {
     try {
+      // const gasLimit = provider.estimateGas({
+      //   from: tradeDetails.from,
+      //   to: tradeDetails.to,
+      //   value: tradeDetails.value,
+      //   data: tradeDetails.data,
+      // });
+      logger.debug('getting quote execution details');
+
       const { params, method, methodArgs } = getQuoteExecutionDetails(
         tradeDetails,
         { from: tradeDetails.from },
         provider
       );
+      logger.debug('got quote execution details', {
+        method,
+        methodArgs,
+        params,
+      });
 
       const gasLimit = await estimateGasWithPadding(
         params,
@@ -133,8 +152,11 @@ export const estimateSwapGasLimit = async ({
         provider,
         1.01
       );
+      logger.debug('estimateGasWithPadding result', gasLimit);
+
       return gasLimit || getBasicSwapGasLimitForTrade(tradeDetails);
     } catch (error) {
+      logger.debug('error estimating swap gas limit', error);
       return getBasicSwapGasLimitForTrade(tradeDetails);
     }
   }

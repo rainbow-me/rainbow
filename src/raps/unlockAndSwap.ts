@@ -14,21 +14,24 @@ import {
   RapActionTypes,
   SwapActionParameters,
 } from './common';
+import { isNativeAsset } from '@rainbow-me/handlers/assets';
 import { estimateSwapGasLimit } from '@rainbow-me/handlers/uniswap';
 import store from '@rainbow-me/redux/store';
 import { ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
 import { add } from '@rainbow-me/utilities';
+import { ethereumUtils, logger } from '@rainbow-me/utils';
 
 export const estimateUnlockAndSwap = async (
   swapParameters: SwapActionParameters
 ) => {
-  const { inputAmount, tradeDetails } = swapParameters;
+  const { inputAmount, tradeDetails, provider } = swapParameters;
   const { inputCurrency, outputCurrency } = store.getState().swap;
 
   if (!inputCurrency || !outputCurrency || !inputAmount)
     return ethUnits.basic_swap;
 
-  const { accountAddress, chainId } = store.getState().settings;
+  const { accountAddress } = store.getState().settings;
+  const chainId = (await provider.getNetwork()).chainId;
 
   const isWethUnwrapping =
     toLower(inputCurrency.address) === toLower(WETH[ChainId.mainnet]) &&
@@ -36,7 +39,14 @@ export const estimateUnlockAndSwap = async (
 
   let gasLimits: (string | number)[] = [];
   let swapAssetNeedsUnlocking = false;
-  if (!isWethUnwrapping) {
+  if (
+    !isWethUnwrapping &&
+    !isNativeAsset(
+      inputCurrency.address,
+      ethereumUtils.getNetworkFromChainId(chainId)
+    )
+  ) {
+    logger.debug('checking if it needs unlocking');
     swapAssetNeedsUnlocking = await assetNeedsUnlocking(
       accountAddress,
       inputAmount,
@@ -50,16 +60,19 @@ export const estimateUnlockAndSwap = async (
     const unlockGasLimit = await estimateApprove(
       accountAddress,
       inputCurrency.address,
-      RAINBOW_ROUTER_CONTRACT_ADDRESS
+      RAINBOW_ROUTER_CONTRACT_ADDRESS,
+      chainId
     );
     gasLimits = concat(gasLimits, unlockGasLimit, ethUnits.basic_swap);
   } else {
+    logger.debug('about to call estimateSwapGasLimit');
     const swapGasLimit = await estimateSwapGasLimit({
       chainId,
       requiresApprove: swapAssetNeedsUnlocking,
       tradeDetails,
     });
 
+    logger.debug('got swapGasLimit', swapGasLimit);
     gasLimits = concat(gasLimits, swapGasLimit);
   }
 

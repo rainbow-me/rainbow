@@ -36,6 +36,7 @@ import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
 import { isL2Asset } from '@rainbow-me/handlers/assets';
+import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
 import {
   ExchangeModalTypes,
   isKeyboardOpen,
@@ -44,7 +45,6 @@ import {
 import { divide, greaterThan, multiply } from '@rainbow-me/helpers/utilities';
 import {
   useAccountSettings,
-  useBlockPolling,
   useCurrentNonce,
   useDimensions,
   useGas,
@@ -160,7 +160,6 @@ export default function ExchangeModal({
     updateDefaultGasLimit,
     updateTxFee,
   } = useGas();
-  const { initWeb3Listener, stopWeb3Listener } = useBlockPolling();
   const {
     accountAddress,
     flashbotsEnabled,
@@ -170,6 +169,7 @@ export default function ExchangeModal({
   const getNextNonce = useCurrentNonce(accountAddress, network);
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
+  const [currentProvider, setCurrentProvider] = useState(null);
 
   const prevGasFeesParamsBySpeed = usePrevious(gasFeeParamsBySpeed);
 
@@ -220,14 +220,17 @@ export default function ExchangeModal({
   );
 
   const currentNetwork = useMemo(
-    () => ethereumUtils.getNetworkNameFromChainId(chainId),
+    () => ethereumUtils.getNetworkFromChainId(chainId || 1),
     [chainId]
   );
 
-  // logger.debug('ChainId', chainId);
-  // logger.debug('currentNetwork', currentNetwork);
-  // logger.debug('inputCurrency', inputCurrency);
-  // logger.debug('outputCurrency', outputCurrency);
+  useEffect(() => {
+    const getProvider = async () => {
+      const p = await getProviderForNetwork(currentNetwork);
+      setCurrentProvider(p);
+    };
+    getProvider();
+  }, [currentNetwork]);
 
   const {
     result: {
@@ -335,18 +338,36 @@ export default function ExchangeModal({
       const swapParams = {
         inputAmount,
         outputAmount,
+        provider: currentProvider,
         tradeDetails,
       };
       const gasLimit = await getRapEstimationByType(type, {
+        provider: currentProvider,
         swapParameters: swapParams,
       });
       if (gasLimit) {
-        updateTxFee(gasLimit);
+        logger.debug('gaslimit ok', gasLimit);
+        if (currentNetwork === Network.optimism && tradeDetails) {
+          const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
+            {
+              data: tradeDetails.data,
+              from: tradeDetails.from,
+              to: tradeDetails.to,
+              value: tradeDetails.value,
+            },
+            currentProvider
+          );
+          updateTxFee(gasLimit, null, l1GasFeeOptimism);
+        } else {
+          updateTxFee(gasLimit);
+        }
       }
     } catch (error) {
       updateTxFee(defaultGasLimit);
     }
   }, [
+    currentNetwork,
+    currentProvider,
     defaultGasLimit,
     inputAmount,
     inputCurrency,
@@ -356,6 +377,13 @@ export default function ExchangeModal({
     type,
     updateTxFee,
   ]);
+
+  useEffect(() => {
+    if (tradeDetails && !equal(tradeDetails, lastTradeDetails)) {
+      logger.debug('Trade details changed. Updating gas limit');
+      updateGasLimit();
+    }
+  }, [lastTradeDetails, tradeDetails, updateGasLimit]);
 
   // Set default gas limit
   useEffect(() => {
@@ -379,21 +407,19 @@ export default function ExchangeModal({
   // Liten to gas prices, Uniswap reserves updates
   useEffect(() => {
     updateDefaultGasLimit(defaultGasLimit);
+    logger.debug('started polling prices for network', currentNetwork);
     InteractionManager.runAfterInteractions(() => {
-      startPollingGasFees(network, flashbots);
+      // Start polling in the current network
+      startPollingGasFees(currentNetwork, flashbots);
     });
-    initWeb3Listener();
     return () => {
       stopPollingGasFees();
-      stopWeb3Listener();
     };
   }, [
     defaultGasLimit,
-    network,
-    initWeb3Listener,
+    currentNetwork,
     startPollingGasFees,
     stopPollingGasFees,
-    stopWeb3Listener,
     updateDefaultGasLimit,
     flashbots,
   ]);

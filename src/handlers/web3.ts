@@ -365,9 +365,13 @@ export async function estimateGasWithPadding(
       saferGasLimit
     );
 
+    logger.debug('txPayloadToEstimate', txPayloadToEstimate);
+
     const estimatedGas = await (contractCallEstimateGas
       ? contractCallEstimateGas(...(callArguments ?? []), txPayloadToEstimate)
       : p.estimateGas(txPayloadToEstimate));
+
+    logger.debug('estimated gas without padding', estimatedGas);
 
     const lastBlockGasLimit = addBuffer(gasLimit.toString(), 0.9);
     const paddedGas = addBuffer(
@@ -398,7 +402,7 @@ export async function estimateGasWithPadding(
     logger.sentry('⛽ returning last block gas limit', lastBlockGasLimit);
     return lastBlockGasLimit;
   } catch (error) {
-    // logger.error('Error calculating gas limit with padding', error);
+    // logger.debug('Error calculating gas limit with padding', error);
     return null;
   }
 }

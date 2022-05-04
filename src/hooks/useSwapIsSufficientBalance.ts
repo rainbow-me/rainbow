@@ -17,9 +17,6 @@ export default function useSwapIsSufficientBalance(inputAmount: string | null) {
 
   const isSufficientBalance = useMemo(() => {
     if (!inputAmount) return true;
-
-    console.log('inputCurrencyAddress', inputCurrencyUniqueId);
-
     const maxInputBalance =
       ethereumUtils.getAccountAsset(inputCurrencyUniqueId)?.balance?.amount ??
       0;
