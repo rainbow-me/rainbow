@@ -208,6 +208,9 @@ const UniqueTokenExpandedState = ({
   } = useShowcaseTokens();
 
   const [floorPrice, setFloorPrice] = useState<string | null>(null);
+  const [priceOfEth, setPriceOfEth] = useState<number>(
+    ethereumUtils.getEthPriceUnit()
+  );
   const [showCurrentPriceInEth, setShowCurrentPriceInEth] = useState(true);
   const [showFloorInEth, setShowFloorInEth] = useState(true);
   const [
@@ -245,7 +248,6 @@ const UniqueTokenExpandedState = ({
         ? `< 0.001 ${lastSalePaymentToken}`
         : `${lastPrice} ${lastSalePaymentToken}`
       : 'None';
-  const priceOfEth = ethereumUtils.getEthPriceUnit() as number;
 
   const textColor = useMemo(() => {
     const contrastWithWhite = c.contrast(imageColor, colors.whiteLabel);
@@ -264,6 +266,10 @@ const UniqueTokenExpandedState = ({
         setFloorPrice(result);
       });
   }, [asset.network, isPoap, network, urlSuffixForAsset]);
+
+  useEffect(() => {
+    setPriceOfEth(ethereumUtils.getEthPriceUnit());
+  }, [nativeCurrency]);
 
   const handlePressCollectionFloor = useCallback(() => {
     navigate(Routes.EXPLAIN_SHEET, {
