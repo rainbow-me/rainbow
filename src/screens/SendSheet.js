@@ -137,6 +137,7 @@ export default function SendSheet(props) {
   const recipientOverride = params?.address;
   const nativeAmountOverride = params?.nativeAmount;
   const [recipient, setRecipient] = useState('');
+  const [nickname, setNickname] = useState('');
   const [selected, setSelected] = useState({});
   const { maxInputBalance, updateMaxInputBalance } = useMaxInputBalance();
 
@@ -712,6 +713,7 @@ export default function SendSheet(props) {
   const onChangeInput = useCallback(event => {
     setCurrentInput(event);
     setRecipient(event);
+    setNickname(event);
   }, []);
 
   useEffect(() => {
@@ -810,6 +812,7 @@ export default function SendSheet(props) {
           contacts={contacts}
           hideDivider={showAssetForm}
           isValidAddress={isValidAddress}
+          nickname={nickname}
           onChangeAddressInput={onChangeInput}
           onPressPaste={setRecipient}
           recipient={recipient}
@@ -824,7 +827,10 @@ export default function SendSheet(props) {
             contacts={filteredContacts}
             currentInput={currentInput}
             ensSuggestions={ensSuggestions}
-            onPressContact={setRecipient}
+            onPressContact={(recipient, nickname) => {
+              setRecipient(recipient);
+              setNickname(nickname);
+            }}
             removeContact={onRemoveContact}
             userAccounts={userAccounts}
             watchedAccounts={watchedAccounts}

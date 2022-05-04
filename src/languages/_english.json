@@ -262,12 +262,14 @@
         "add": "Add Contact",
         "cancel": "Cancel",
         "delete": "Delete Contact",
-        "edit": "Edit Contact"
+        "edit": "Edit Contact",
+        "view": "View Profile"
       },
       "send_header": "Send",
       "suggestions": "Suggestions",
       "to_header": "To",
-      "watching": "Watching"
+      "watching": "Watching",
+      "input_placeholder": "Name"
     },
     "developer_settings": {
       "alert": "Alert",

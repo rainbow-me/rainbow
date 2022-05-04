@@ -78,11 +78,11 @@ const AddressField = (
   );
 
   useEffect(() => {
-    if (address !== inputValue || name !== inputValue) {
-      setInputValue(name || address);
+    if (name !== inputValue) {
+      setInputValue(name);
       validateAddress(address);
     }
-  }, [address, inputValue, name, validateAddress]);
+  }, [address, inputValue, isValid, name, validateAddress]);
 
   return (
     <Row flex={1}>

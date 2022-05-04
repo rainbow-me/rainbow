@@ -9,6 +9,7 @@ import Divider from '../Divider';
 import Spinner from '../Spinner';
 import { ButtonPressAnimation } from '../animations';
 import { PasteAddressButton } from '../buttons';
+import showDeleteContactActionSheet from '../contacts/showDeleteContactActionSheet';
 import { AddressField } from '../fields';
 import { Row } from '../layout';
 import { SheetHandleFixedToTop, SheetTitle } from '../sheet';
@@ -18,6 +19,7 @@ import useExperimentalFlag, {
 } from '@rainbow-me/config/experimentalHooks';
 import { resolveNameOrAddress } from '@rainbow-me/handlers/web3';
 import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
+import { isENSAddressFormat } from '@rainbow-me/helpers/validators';
 import { useClipboard, useDimensions } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
@@ -73,6 +75,7 @@ export default function SendHeader({
   contacts,
   hideDivider,
   isValidAddress,
+  nickname,
   onChangeAddressInput,
   onFocus,
   onPressPaste,
@@ -95,6 +98,8 @@ export default function SendHeader({
   useEffect(() => {
     if (isValidAddress) {
       resolveAndStoreAddress();
+    } else {
+      setHexAddress('');
     }
     async function resolveAndStoreAddress() {
       const hex = await resolveNameOrAddress(recipient);
@@ -154,34 +159,27 @@ export default function SendHeader({
         destructiveButtonIndex: 0,
         options: [
           lang.t('contacts.options.delete'), // <-- destructiveButtonIndex
-          lang.t('contacts.options.edit'),
+          profilesEnabled && isENSAddressFormat(recipient)
+            ? lang.t('contacts.options.view')
+            : lang.t('contacts.options.edit'),
           lang.t('wallet.settings.copy_address_capitalized'),
           lang.t('contacts.options.cancel'), // <-- cancelButtonIndex
         ],
       },
       async buttonIndex => {
         if (buttonIndex === 0) {
-          showActionSheetWithOptions(
-            {
-              cancelButtonIndex: 1,
-              destructiveButtonIndex: 0,
-              options: [
-                lang.t('contacts.options.delete'),
-                lang.t('contacts.options.cancel'),
-              ],
-            },
-            async buttonIndex => {
-              if (buttonIndex === 0) {
-                removeContact(hexAddress);
-                onRefocusInput();
-              } else {
-                onRefocusInput();
-              }
-            }
-          );
+          showDeleteContactActionSheet({
+            address: hexAddress,
+            nickname: recipient,
+            removeContact: removeContact,
+          });
         } else if (buttonIndex === 1) {
-          handleNavigateToContact();
-          onRefocusInput();
+          if (profilesEnabled && isENSAddressFormat(recipient)) {
+            navigate(Routes.PROFILE_SHEET, { address: recipient });
+          } else {
+            handleNavigateToContact();
+            onRefocusInput();
+          }
         } else if (buttonIndex === 2) {
           setClipboard(hexAddress);
           onRefocusInput();
@@ -191,19 +189,18 @@ export default function SendHeader({
   }, [
     handleNavigateToContact,
     hexAddress,
+    navigate,
     onRefocusInput,
+    profilesEnabled,
+    recipient,
     removeContact,
     setClipboard,
   ]);
 
   const isPreExistingContact = (contact?.nickname?.length || 0) > 0;
-  const name = useMemo(
-    () =>
-      userWallet?.label
-        ? removeFirstEmojiFromString(userWallet.label)
-        : removeFirstEmojiFromString(contact.nickname),
-    [contact.nickname, userWallet?.label]
-  );
+  const name = userWallet?.label
+    ? removeFirstEmojiFromString(userWallet.label)
+    : removeFirstEmojiFromString(nickname);
 
   return (
     <Fragment>
