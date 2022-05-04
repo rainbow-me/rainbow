@@ -29,22 +29,22 @@ function createDebounceAverage(
   delay: number = 100
 ) {
   let values: number[] = [];
-  let _timeout: NodeJS.Timeout;
+  let timeout: NodeJS.Timeout;
 
   return (value: number) => {
-    clearTimeout(_timeout);
+    clearTimeout(timeout);
     values.push(value);
 
-    _timeout = setTimeout(() => {
+    timeout = setTimeout(() => {
       const total = values.reduce((acc, curr) => acc + curr);
       const max = Math.max(...values).toFixed(2);
       const min = Math.min(...values).toFixed(2);
       // it won't log it for some reason when i don't String() it
-      const len = String(values.length);
+      const count = String(values.length);
       const average = String((total / values.length).toFixed(2));
 
       global.console.log(
-        `${phase}: ${title} (${len}) - ${average}ms (max: ${max}ms; min: ${min}ms)`
+        `${phase}: ${title} (${count}) - ${average}ms (max: ${max}ms; min: ${min}ms)`
       );
 
       values = [];
@@ -99,7 +99,7 @@ export function measureAverage(name: string, every = false, delay = 100) {
     return function (this: any, ...args: any[]) {
       const start = global.performance.now();
       // eslint-disable-next-line babel/no-invalid-this
-      const res = fn.apply(this, args);
+      const result = fn.apply(this, args);
 
       const time = global.performance.now() - start;
 
@@ -109,7 +109,7 @@ export function measureAverage(name: string, every = false, delay = 100) {
         global.console.log(`exec: ${name} - ${time.toFixed(2)}ms`);
       }
 
-      return res;
+      return result;
     };
   };
 }
