@@ -93,6 +93,7 @@ export default function MoreButton({
           address,
           contact,
           ens: ensName,
+          nickname: ensName,
           type: 'contact_profile',
         });
       }
