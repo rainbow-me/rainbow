@@ -107,13 +107,15 @@ const ContactRow = (
     if (profilesEnabled && accountType === 'contacts') {
       const fetchENSName = async () => {
         const name = await fetchReverseRecord(address);
-        if (!ensName || name !== ensName) {
+        if (name !== ensName) {
           setENSName(name);
-          if (isENSAddressFormat(nickname)) {
-            onAddOrUpdateContacts(address, name, color, network, name);
-          } else {
-            onAddOrUpdateContacts(address, nickname, color, network, name);
-          }
+          onAddOrUpdateContacts(
+            address,
+            name && isENSAddressFormat(nickname) ? name : nickname,
+            color,
+            network,
+            name
+          );
         }
       };
       fetchENSName();
