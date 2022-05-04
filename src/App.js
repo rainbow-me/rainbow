@@ -218,11 +218,11 @@ class App extends Component {
 
     if (needsRepair) {
       await keychain.repairAfterBackup();
-      this.setState({ initialRoute: Routes.WELCOME_SCREEN });
+      this.setState({ initialRoute: Routes.SWIPE_LAYOUT });
     } else if (address) {
       this.setState({ initialRoute: Routes.SWIPE_LAYOUT });
     } else {
-      this.setState({ initialRoute: Routes.WELCOME_SCREEN });
+      this.setState({ initialRoute: Routes.SWIPE_LAYOUT });
     }
   };
 

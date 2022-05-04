@@ -30,6 +30,7 @@ import {
   selectedWalletKey,
 } from '@rainbow-me/utils/keychainConstants';
 import logger from 'logger';
+import AsyncStorage from '@react-native-community/async-storage';
 
 interface AnonymousKey {
   length: number;
@@ -290,6 +291,10 @@ export async function checkKeychainStatus() {
 
   if (typeof entry !== 'string') {
     logger.log('🔐 Wallet address missing. Keychain does not require repair.');
+    AsyncStorage.setItem(
+      'log',
+      '🔐 Wallet address missing. Keychain does not require repair.'
+    );
     return false;
   }
 
@@ -297,6 +302,12 @@ export async function checkKeychainStatus() {
     logger.log(
       '🔐 AsyncStorage is not empty. Keychain does not require repair.'
     );
+    AsyncStorage.setItem(
+      'log',
+      '🔐 AsyncStorage is not empty. Keychain does not require repair.' +
+        JSON.stringify(await AsyncStorage.getAllKeys(), null, 2)
+    );
+    console.log(JSON.stringify(await loadAllKeys(), null, 2));
     return false;
   }
 
@@ -305,6 +316,11 @@ export async function checkKeychainStatus() {
   if (!entries) {
     logger.log(
       '🔐 Failed to load all keychain items. Not attempting to repair the keychain.'
+    );
+    AsyncStorage.setItem(
+      'log',
+      '🔐 Failed to load all keychain items. Not attempting to repair the keychain.' +
+        JSON.stringify(entries)
     );
     return false;
   }
@@ -316,12 +332,23 @@ export async function checkKeychainStatus() {
         logger.log(
           '🔐 Found incorrect seed phrase. Attempting a keychain repair.'
         );
+        AsyncStorage.setItem(
+          'log',
+          '🔐 Found incorrect seed phrase. Attempting a keychain repair.'
+        );
         return true;
       }
     }
   }
 
   logger.log('🔐 Keychain is in correct state. Not attempting to repair.');
+  AsyncStorage.setItem(
+    'log',
+    '🔐 Keychain is in correct state. Not attempting to repair.' +
+      JSON.stringify(await AsyncStorage.getAllKeys(), null, 2) +
+      JSON.stringify(entries, null, 2)
+  );
+  console.log(AsyncStorage.getAllKeys(), 'aaaa', entries);
   return false;
 }
 

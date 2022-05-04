@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/core';
 import { compact, find, get, isEmpty, keys, map, toLower } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
-import { StatusBar } from 'react-native';
+import { StatusBar, Text } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useValue } from 'react-native-redash/src/v1';
 import { useDispatch, useSelector } from 'react-redux';
@@ -44,6 +44,7 @@ import {
 } from '@rainbow-me/redux/explorer';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const HeaderOpacityToggler = styled(OpacityToggler).attrs(({ isVisible }) => ({
   endingOpacity: 0.4,
@@ -180,6 +181,10 @@ export default function WalletScreen() {
   );
 
   const isLoadingAssets = useSelector(state => state.data.isLoadingAssets);
+  const [state, setState] = useState('');
+  useEffect(() => {
+    AsyncStorage.getItem('log').then(item => setState(item));
+  });
 
   return (
     <WalletPage testID="wallet-screen">
@@ -202,14 +207,7 @@ export default function WalletScreen() {
             </RowWithMargins>
           </Header>
         </HeaderOpacityToggler>
-        <AssetList
-          disableRefreshControl={isLoadingAssets}
-          isEmpty={isAccountEmpty || !!params?.emptyWallet}
-          isLoading={android && isLoadingAssets}
-          isWalletEthZero={isWalletEthZero}
-          network={network}
-          scrollViewTracker={scrollViewTracker}
-        />
+        <Text>{state}</Text>
       </FabWrapper>
     </WalletPage>
   );
