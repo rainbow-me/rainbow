@@ -34,21 +34,6 @@ const renderPager = props => (
   />
 );
 
-const defaultScreenOptions = {
-  [Routes.ENS_ASSIGN_RECORDS_SHEET]: {
-    scrollEnabled: true,
-    useAccentAsSheetBackground: true,
-  },
-  [Routes.ENS_INTRO_SHEET]: {
-    scrollEnabled: false,
-    useAccentAsSheetBackground: false,
-  },
-  [Routes.ENS_SEARCH_SHEET]: {
-    scrollEnabled: true,
-    useAccentAsSheetBackground: false,
-  },
-};
-
 export default function RegisterENSNavigator() {
   const { params } = useRoute();
 
@@ -88,32 +73,11 @@ export default function RegisterENSNavigator() {
   const [currentRouteName, setCurrentRouteName] = useState(initialRouteName);
   const previousRouteName = usePrevious(currentRouteName);
 
-  const screenOptions = useMemo(() => defaultScreenOptions[currentRouteName], [
-    currentRouteName,
-  ]);
-
-  const [scrollEnabled, setScrollEnabled] = useState(
-    screenOptions.scrollEnabled
-  );
-
-  useEffect(() => {
-    if (previousRouteName) {
-      // Wait 500ms to prevent transition lag
-      setTimeout(() => {
-        setScrollEnabled(screenOptions.scrollEnabled);
-      }, 500);
-    }
-  }, [previousRouteName, screenOptions.scrollEnabled]);
+  const [wrapperStyle, setWrapperStyle] = useState({ height: contentHeight });
 
   useEffect(() => () => clearCurrentRegistrationName(), [
     clearCurrentRegistrationName,
   ]);
-
-  useEffect(() => {
-    if (!screenOptions.scrollEnabled) {
-      sheetRef.current.scrollTo({ animated: false, x: 0, y: 0 });
-    }
-  }, [screenOptions.scrollEnabled]);
 
   useEffect(
     () => () => {
@@ -136,10 +100,17 @@ export default function RegisterENSNavigator() {
   const isBottomActionsVisible =
     currentRouteName === Routes.ENS_ASSIGN_RECORDS_SHEET;
 
-  const wrapperStyle = useMemo(
-    () => (!scrollEnabled ? { height: contentHeight } : {}),
-    [contentHeight, scrollEnabled]
-  );
+  useEffect(() => {
+    const isENSAssignRecordsSheet =
+      currentRouteName === Routes.ENS_ASSIGN_RECORDS_SHEET;
+    setTimeout(
+      () =>
+        setWrapperStyle(
+          isENSAssignRecordsSheet ? {} : { height: contentHeight }
+        ),
+      isENSAssignRecordsSheet ? 200 : 0
+    );
+  }, [contentHeight, currentRouteName]);
 
   return (
     <>
