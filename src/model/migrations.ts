@@ -1,6 +1,8 @@
+import path from 'path';
 import AsyncStorage from '@react-native-community/async-storage';
 import { captureException } from '@sentry/react-native';
 import { findKey, isNumber, keys, toLower, uniq } from 'lodash';
+import RNFS from 'react-native-fs';
 import { MMKV } from 'react-native-mmkv';
 import { removeLocal } from '../handlers/localstorage/common';
 import { IMAGE_METADATA } from '../handlers/localstorage/globalSettings';
@@ -10,8 +12,12 @@ import {
 } from '../handlers/localstorage/migrations';
 import WalletTypes from '../helpers/walletTypes';
 import store from '../redux/store';
-
 import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
+import {
+  rainbowListStorage,
+  RB_TOKEN_LIST_CACHE,
+  RB_TOKEN_LIST_ETAG,
+} from '../references/rainbow-token-list';
 import colors, { getRandomColor } from '../styles/colors';
 import {
   addressKey,
@@ -606,6 +612,43 @@ export default async function runMigrations() {
   };
 
   migrations.push(v15);
+
+  /*
+   *************** Migration v16 ******************
+   Migrates cached Rainbow token list from a cached json file
+   in the file system to mmkv
+   */
+  const v16 = async () => {
+    try {
+      // RB_TOKEN_LIST_CACHE and RB_TOKEN_LIST_ETAG were stored as json files
+      // we kept the names but without the `.json` part
+      const [tokenList, tokenListEtag] = await Promise.all([
+        RNFS.readFile(
+          path.join(RNFS.CachesDirectoryPath, `${RB_TOKEN_LIST_CACHE}.json`),
+          'utf8'
+        ),
+        RNFS.readFile(
+          path.join(RNFS.CachesDirectoryPath, `${RB_TOKEN_LIST_ETAG}.json`),
+          'utf8'
+        ),
+      ]);
+
+      rainbowListStorage.set(RB_TOKEN_LIST_CACHE, tokenList);
+      rainbowListStorage.set(RB_TOKEN_LIST_ETAG, tokenListEtag);
+      // RNFS has no Error type :(
+    } catch (error: any) {
+      // If the user didn't have this file then we don't care about this error
+      if (error?.code === 'ENOENT') {
+        return;
+      }
+
+      logger.sentry('Migration v16 failed: ', error);
+      const migrationError = new Error('Migration 16 failed');
+      captureException(migrationError);
+    }
+  };
+
+  migrations.push(v16);
 
   logger.sentry(
     `Migrations: ready to run migrations starting on number ${currentVersion}`
