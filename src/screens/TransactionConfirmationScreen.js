@@ -330,7 +330,7 @@ export default function TransactionConfirmationScreen() {
       let fallbackHandler;
       try {
         fallbackHandler = setTimeout(() => {
-          setMethodName('Transaction Request');
+          setMethodName(lang.t('wallet.transaction.request'));
         }, 5000);
         const { name } = await methodRegistryLookupAndParse(
           methodSignaturePrefix
@@ -340,7 +340,7 @@ export default function TransactionConfirmationScreen() {
           clearTimeout(fallbackHandler);
         }
       } catch (e) {
-        setMethodName('Transaction Request');
+        setMethodName(lang.t('wallet.transaction.request'));
         clearTimeout(fallbackHandler);
       }
     },
@@ -443,8 +443,8 @@ export default function TransactionConfirmationScreen() {
   useEffect(() => {
     if (!peerId || !walletConnector) {
       Alert.alert(
-        'Connection Expired',
-        'Please go back to the dapp and reconnect it to your wallet',
+        lang.t('wallet.transaction.alert.connection_expired'),
+        lang.t('wallet.transaction.alert.please_go_back_and_reconnect'),
         [
           {
             onPress: () => onCancel(),
@@ -849,8 +849,10 @@ export default function TransactionConfirmationScreen() {
           disabled
           label={
             !isValidGas
-              ? `Invalid fee`
-              : `${nativeAsset?.symbol} balance too low`
+              ? lang.t('button.confirm_exchange.invalid_fee_lowercase')
+              : lang.t('button.confirm_exchange.symbol_balance_too_low', {
+                  symbol: nativeAsset?.symbol,
+                })
           }
           onPress={onCancel}
           size="big"
@@ -862,7 +864,7 @@ export default function TransactionConfirmationScreen() {
       <SheetActionButtonRow ignorePaddingTop>
         <SheetActionButton
           color={colors.white}
-          label="Cancel"
+          label={lang.t('button.cancel')}
           onPress={onPressCancel}
           size="big"
           textColor={colors.alpha(colors.blueGreyDark, 0.8)}
@@ -870,7 +872,7 @@ export default function TransactionConfirmationScreen() {
         />
         <SheetActionButton
           color={colors.appleBlue}
-          label="􀎽 Confirm"
+          label={`􀎽 ${lang.t('button.confirm')}`}
           onPress={ready ? onPressSend : NOOP}
           size="big"
           testID="wc-confirm"
@@ -1098,7 +1100,8 @@ export default function TransactionConfirmationScreen() {
                     size="18px"
                     weight="heavy"
                   >
-                    {methodName || 'Placeholder'}
+                    {methodName ||
+                      lang.t('wallet.transaction.placeholder_title')}
                   </Text>
                 </Centered>
                 {ios && (
@@ -1122,7 +1125,7 @@ export default function TransactionConfirmationScreen() {
                 <RowWithMargins margin={15} style={rowStyle}>
                   <Column flex={1}>
                     <Row marginBottom={8}>
-                      <SwitchText>Wallet</SwitchText>
+                      <SwitchText>{lang.t('wallet.wallet_title')}</SwitchText>
                     </Row>
                     <RowWithMargins margin={5} style={{ alignItems: 'center' }}>
                       {accountInfo.accountImage ? (
@@ -1146,7 +1149,9 @@ export default function TransactionConfirmationScreen() {
                   </Column>
                   <Column marginLeft={16}>
                     <Row justify="end" marginBottom={12}>
-                      <SwitchText align="right">Balance</SwitchText>
+                      <SwitchText align="right">
+                        {lang.t('wallet.balance_title')}
+                      </SwitchText>
                     </Row>
                     <WalletText align="right" balanceTooLow={balanceTooLow}>
                       {isBalanceEnough === false &&

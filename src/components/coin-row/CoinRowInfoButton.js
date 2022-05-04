@@ -66,7 +66,7 @@ const CoinRowActionsEnum = {
 const CoinRowActions = {
   [CoinRowActionsEnum.copyAddress]: {
     actionKey: CoinRowActionsEnum.copyAddress,
-    actionTitle: lang.t('exchange.coin_row.copy_address'),
+    actionTitle: lang.t('wallet.action.copy_contract_address'),
     icon: {
       iconType: 'SYSTEM',
       iconValue: 'doc.on.doc',
@@ -104,7 +104,7 @@ const CoinRowInfoButton = ({ item, onCopySwapDetailsText }) => {
       ethereumUtils.getBlockExplorer(item?.type)
     )}`;
     const androidContractActions = [
-      lang.t('exchange.coin_row.copy_address'),
+      lang.t('wallet.action.copy_contract_address'),
       blockExplorerText,
       lang.t('button.cancel'),
     ];

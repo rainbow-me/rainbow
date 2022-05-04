@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { Fragment } from 'react';
 import { LayoutAnimation } from 'react-native';
 import { View } from 'react-primitives';
@@ -6,7 +7,6 @@ import {
   LayoutProvider,
   RecyclerListView,
 } from 'recyclerlistview';
-
 import { buildCoinsList } from '../../helpers/assets';
 import networkTypes from '../../helpers/networkTypes';
 import { deviceUtils } from '../../utils';
@@ -87,7 +87,9 @@ export default class SendAssetList extends React.Component {
     }
 
     if (savings && savings.length > 0 && network === networkTypes.mainnet) {
-      this.data = this.data.concat([{ data: savings, name: 'Savings' }]);
+      this.data = this.data.concat([
+        { data: savings, name: lang.t('savings.label') },
+      ]);
     }
     if (uniqueTokens && uniqueTokens.length > 0) {
       this.data = this.data.concat(uniqueTokens);
