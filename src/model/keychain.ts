@@ -1,6 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException, captureMessage } from '@sentry/react-native';
-import { forEach, isNil } from 'lodash';
+// import { forEach, isNil } from 'lodash';
 import DeviceInfo from 'react-native-device-info';
 import {
   ACCESS_CONTROL,
@@ -8,7 +8,7 @@ import {
   AUTHENTICATION_TYPE,
   canImplyAuthentication,
   getAllInternetCredentials,
-  getAllInternetCredentialsKeys,
+  // getAllInternetCredentialsKeys,
   getInternetCredentials,
   getSupportedBiometryType,
   hasInternetCredentials,
@@ -21,15 +21,15 @@ import {
 import { delay, getKeyByValue } from '../helpers/utilities';
 import logger from 'logger';
 
-interface AnonymousKey {
-  length: number;
-  nil: boolean;
-  type: string;
-}
+// interface AnonymousKey {
+//   length: number;
+//   nil: boolean;
+//   type: string;
+// }
 
-interface AnonymousKeyData {
-  [key: string]: AnonymousKey;
-}
+// interface AnonymousKeyData {
+//   [key: string]: AnonymousKey;
+// }
 
 export const keychainErrKey = {
   KEYCHAIN_ALLOCATE: 'Failed to allocate memory.',
@@ -188,38 +188,42 @@ export async function loadAllKeys(): Promise<null | UserCredentials[]> {
     if (response) {
       return response.results;
     }
-  } catch (err) {
+    return null;
+  } catch (err: any) {
+    const errMsg = err?.message.split('msg: ')[1];
+    const errCode = getKeyByValue(keychainErrKey, errMsg || err?.message);
+
     logger.sentry(`Keychain: failed to loadAllKeys error: ${err}`);
     captureException(err);
+    throw errCode;
   }
-  return null;
 }
-
-export async function getAllKeysAnonymized(): Promise<null | AnonymousKeyData> {
-  const data: AnonymousKeyData = {};
-  const results = await loadAllKeys();
-  forEach(results, result => {
-    data[result?.username] = {
-      length: result?.password?.length,
-      nil: isNil(result?.password),
-      type: typeof result?.password,
-    };
-  });
-  return data;
-}
-
-export async function loadAllKeysOnly(): Promise<null | string[]> {
-  try {
-    const response = await getAllInternetCredentialsKeys();
-    if (response) {
-      return response.results;
-    }
-  } catch (err) {
-    logger.log(`Keychain: failed to loadAllKeys error: ${err}`);
-    captureException(err);
-  }
-  return null;
-}
+//TODO: not used here, maybe remove?
+// export async function getAllKeysAnonymized(): Promise<null | AnonymousKeyData> {
+//   const data: AnonymousKeyData = {};
+//   const results = await loadAllKeys();
+//   forEach(results, result => {
+//     data[result?.username] = {
+//       length: result?.password?.length,
+//       nil: isNil(result?.password),
+//       type: typeof result?.password,
+//     };
+//   });
+//   return data;
+// }
+//TODO: not used here, maybe remove?
+// export async function loadAllKeysOnly(): Promise<null | string[]> {
+//   try {
+//     const response = await getAllInternetCredentialsKeys();
+//     if (response) {
+//       return response.results;
+//     }
+//   } catch (err: any) {
+//     logger.log(`Keychain: failed to loadAllKeys error: ${err}`);
+//     captureException(err);
+//   }
+//   return null;
+// }
 
 export async function hasKey(key: string): Promise<boolean | Result> {
   try {
@@ -246,6 +250,7 @@ export async function wipeKeychain(): Promise<void> {
   } catch (e) {
     logger.sentry('error while wiping keychain');
     captureException(e);
+    throw e;
   }
 }
 

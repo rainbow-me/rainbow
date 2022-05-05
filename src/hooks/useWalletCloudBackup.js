@@ -53,6 +53,18 @@ function getUserError(matched) {
     [
       matched.CLOUD_BACKUP_WALLET_BACKUP_STATUS_UPDATE_FAILED,
       'Update wallet backup status failed',
+    ],
+    [
+      matched.KEYCHAIN_ERROR_AUTHENTICATING,
+      lang.t('errors.keychain.error_authorization'),
+    ],
+    [
+      matched.KEYCHAIN_NOT_AUTHENTICATED,
+      lang.t('errors.keychain.not_authenticated'),
+    ],
+    [
+      matched.DECRYPT_ANDROID_PIN_ERROR,
+      lang.t('errors.keychain.decrypt_android_pin_error'),
     ]
   );
   return errorText;
