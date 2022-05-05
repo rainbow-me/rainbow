@@ -26,10 +26,7 @@ import {
 } from '../components/sheet';
 import { Text } from '@rainbow-me/design-system';
 import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
-import {
-  getDappHostname,
-  isDappAuthenticated,
-} from '@rainbow-me/helpers/dappNameHandler';
+import { getDappHostname } from '@rainbow-me/helpers/dappNameHandler';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import WalletConnectApprovalSheetType from '@rainbow-me/helpers/walletConnectApprovalSheetTypes';
 import {
