@@ -1,8 +1,12 @@
 import { applyMiddleware, createStore } from 'redux';
 import thunk from 'redux-thunk';
+import { loadingAssetsMiddleware } from './data';
 import reducers from './reducers';
 
-const store = createStore(reducers, applyMiddleware(thunk));
+const store = createStore(
+  reducers,
+  applyMiddleware(thunk, loadingAssetsMiddleware)
+);
 
 export default store;
 
