@@ -344,7 +344,7 @@ export default function WalletConnectApprovalSheet() {
             </Centered>
             <Row marginBottom={30} marginTop={30}>
               <Text color="action" size="18px" weight="heavy">
-                {isAuthenticated ? `􀇻 ${formattedDappUrl}` : formattedDappUrl}
+                {formattedDappUrl}
               </Text>
             </Row>
             <Divider color={colors.rowDividerLight} inset={[0, 84]} />
