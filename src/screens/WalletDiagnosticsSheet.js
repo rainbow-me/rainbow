@@ -31,6 +31,8 @@ import {
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils, haptics } from '@rainbow-me/utils';
+import match from '@rainbow-me/utils/match';
+import { matchError } from '@rainbow-me/utils/matchError';
 import logger from 'logger';
 
 export const WalletDiagnosticsSheetHeight = '100%';
@@ -282,8 +284,29 @@ const WalletDiagnosticsSheet = () => {
         );
         setKeys(processedKeys);
       } catch (e) {
-        logger.sentry('Error processing keys for wallet diagnostics', e);
-        const customError = new Error('WalletDiagnostics init failed');
+        const matched = matchError(e);
+        const errorText = match(
+          '',
+          [
+            matched.KEYCHAIN_ERROR_AUTHENTICATING,
+            lang.t('errors.keychain.error_authorization'),
+          ],
+          [
+            matched.KEYCHAIN_NOT_AUTHENTICATED,
+            lang.t('errors.keychain.not_authenticated'),
+          ],
+          [
+            matched.DECRYPT_ANDROID_PIN_ERROR,
+            lang.t('errors.keychain.decrypt_android_pin_error'),
+          ]
+        );
+        logger.sentry(
+          'Error processing keys for wallet diagnostics',
+          errorText || e
+        );
+        const customError = new Error(
+          `WalletDiagnostics init failed, ${errorText || e?.message || e}`
+        );
         captureException(customError);
       }
     };

@@ -136,7 +136,7 @@ export default function useManageCloudBackups() {
         }
       );
     } catch (err) {
-      //fetchAllBackups and fetchUserDataFromCloud are not handling errors but at the same time can throw it
+      //fetchUserDataFromCloud is not handling errors but at the same time can throw it
     }
   }, [dispatch, navigate, wallets]);
 

@@ -1,6 +1,5 @@
 import lang from 'i18n-js';
 import React, { createContext, useCallback, useContext, useMemo } from 'react';
-import { Alert } from 'react-native';
 import { ColumnWithMargins } from '../layout';
 import AvatarCircle from '../profile/AvatarCircle';
 import SheetHandle from '../sheet/SheetHandle';

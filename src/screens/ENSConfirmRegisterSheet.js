@@ -109,7 +109,6 @@ export default function ENSConfirmRegisterSheet() {
       )
     );
     return;
-
     // LEAVING THIS AS WIP TO AVOID PEOPLE ON THE TEAM  SENDING THIS TX
 
     // const callback = () => null;

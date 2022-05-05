@@ -238,7 +238,7 @@ export default function BackupCloudStep() {
     error => {
       setTimeout(onPasswordSubmit, 1000);
       setIsWalletLoading(null);
-      DelayedAlert({ title: error.message }, 500);
+      DelayedAlert({ message: error.message, title: 'Warning' }, 500);
     },
     [onPasswordSubmit, setIsWalletLoading]
   );

@@ -25,6 +25,8 @@ import { clearImageMetadataCache } from '@rainbow-me/redux/imageMetadata';
 import store from '@rainbow-me/redux/store';
 import { walletsUpdate } from '@rainbow-me/redux/wallets';
 import Routes from '@rainbow-me/routes';
+import match from '@rainbow-me/utils/match';
+import { matchError } from '@rainbow-me/utils/matchError';
 import logger from 'logger';
 
 const DevSection = () => {
@@ -75,6 +77,30 @@ const DevSection = () => {
       Alert.alert(resultString);
     }
   }, [navigate]);
+
+  const onWipeKeychain = useCallback(async () => {
+    try {
+      await wipeKeychain();
+    } catch (err) {
+      const matched = matchError(err);
+      const errorText = match(
+        `${err?.message}`,
+        [
+          matched.KEYCHAIN_ERROR_AUTHENTICATING,
+          lang.t('errors.keychain.error_authorization'),
+        ],
+        [
+          matched.KEYCHAIN_NOT_AUTHENTICATED,
+          lang.t('errors.keychain.not_authenticated'),
+        ],
+        [
+          matched.DECRYPT_ANDROID_PIN_ERROR,
+          lang.t('errors.keychain.decrypt_android_pin_error'),
+        ]
+      );
+      Alert.alert(errorText);
+    }
+  }, []);
 
   const checkAlert = useCallback(async () => {
     try {
@@ -137,7 +163,7 @@ const DevSection = () => {
       />
       <ListItem
         label={`💣 ${lang.t('developer_settings.reset_keychain')}`}
-        onPress={wipeKeychain}
+        onPress={onWipeKeychain}
         testID="reset-keychain-section"
       />
       <ListItem

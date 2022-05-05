@@ -137,7 +137,7 @@ export default function BackupConfirmPasswordStep() {
     error => {
       passwordRef.current?.focus();
       setIsWalletLoading(null);
-      DelayedAlert({ title: error.message }, 500);
+      DelayedAlert({ message: error.message, title: 'Warning' }, 500);
     },
     [setIsWalletLoading]
   );
