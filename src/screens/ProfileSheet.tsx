@@ -28,8 +28,10 @@ import { addressHashedColorIndex } from '@rainbow-me/utils/profileUtils';
 
 export const ProfileSheetConfigContext = createContext<{
   enableZoomableImages: boolean;
+  shouldFadeImages: boolean;
 }>({
   enableZoomableImages: false,
+  shouldFadeImages: false,
 });
 
 export default function ProfileSheet() {
@@ -76,8 +78,14 @@ export default function ProfileSheet() {
   const enableZoomableImages =
     !params.isPreview && name !== Routes.PROFILE_PREVIEW_SHEET;
 
+  // Only want to fade in images when coming from a loading state.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const shouldFadeImages = useMemo(() => !isSuccess || !hasListFetched, []);
+
   return (
-    <ProfileSheetConfigContext.Provider value={{ enableZoomableImages }}>
+    <ProfileSheetConfigContext.Provider
+      value={{ enableZoomableImages, shouldFadeImages }}
+    >
       <StatusBar barStyle="light-content" />
       <AccentColorProvider color={accentColor}>
         <Box background="body">
