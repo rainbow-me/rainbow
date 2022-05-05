@@ -187,6 +187,7 @@ export const DefaultUniswapFavoritesMeta: Record<
       isVerified: true,
       name: 'Dai',
       symbol: 'DAI',
+      type: 'token',
       uniqueId: DAI_ADDRESS,
     },
     [ETH_ADDRESS]: {
@@ -198,6 +199,7 @@ export const DefaultUniswapFavoritesMeta: Record<
       isVerified: true,
       name: 'Ethereum',
       symbol: 'ETH',
+      type: 'token',
       uniqueId: ETH_ADDRESS,
     },
     [SOCKS_ADDRESS]: {
@@ -210,6 +212,7 @@ export const DefaultUniswapFavoritesMeta: Record<
       isVerified: true,
       name: 'Unisocks',
       symbol: 'SOCKS',
+      type: 'token',
       uniqueId: SOCKS_ADDRESS,
     },
     [WBTC_ADDRESS]: {
@@ -222,6 +225,7 @@ export const DefaultUniswapFavoritesMeta: Record<
       isVerified: true,
       name: 'Wrapped Bitcoin',
       symbol: 'WBTC',
+      type: 'token',
       uniqueId: WBTC_ADDRESS,
     },
   },

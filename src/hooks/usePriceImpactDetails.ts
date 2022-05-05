@@ -22,7 +22,6 @@ import {
   isPositive,
   subtract,
 } from '@rainbow-me/utilities';
-import { logger } from '@rainbow-me/utils';
 
 const PriceImpactWarningThreshold = 0.05;
 const SeverePriceImpactThreshold = 0.1;
@@ -69,7 +68,6 @@ export default function usePriceImpactDetails(
   );
 
   if (!inputCurrency || !outputCurrency) {
-    logger.debug('No input or output currency');
     return {
       inputPriceValue: 0,
       isHighPriceImpact: false,
@@ -86,20 +84,10 @@ export default function usePriceImpactDetails(
     currentNetwork
   );
 
-  logger.debug('hook address', currentNetwork, {
-    inputTokenAddress,
-    outputTokenAddress,
-  });
-
   let inputPriceValue =
     genericAssets[inputTokenAddress.toLowerCase()]?.price?.value;
   let outputPriceValue =
     genericAssets[outputTokenAddress.toLowerCase()]?.price?.value;
-
-  logger.debug('hook asset', {
-    inputAsset: genericAssets[inputTokenAddress.toLowerCase()],
-    outputAsset: genericAssets[outputTokenAddress.toLowerCase()],
-  });
 
   // Override WETH price to ETH price
   if (inputTokenAddress?.toLowerCase() === WETH_ADDRESS) {
@@ -109,18 +97,12 @@ export default function usePriceImpactDetails(
   }
 
   if (inputPriceValue === outputPriceValue) {
-    logger.debug('same price');
     return {
       inputPriceValue,
       isHighPriceImpact: false,
       outputPriceValue,
     };
   }
-
-  logger.debug('hook passed', {
-    inputPriceValue,
-    outputPriceValue,
-  });
 
   let priceImpactNativeAmount = null;
   let impact = null;

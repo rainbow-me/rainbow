@@ -20,7 +20,6 @@ export default function useSwapIsSufficientBalance(inputAmount: string | null) {
     const maxInputBalance =
       ethereumUtils.getAccountAsset(inputCurrencyUniqueId)?.balance?.amount ??
       0;
-
     const isWithdrawal = type === ExchangeModalTypes.withdrawal;
 
     return isWithdrawal

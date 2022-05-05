@@ -24,6 +24,7 @@ const ethWithAddress: RainbowToken = {
   isVerified: true,
   name: 'Ethereum',
   symbol: 'ETH',
+  type: 'token',
   uniqueId: 'eth',
 };
 
@@ -39,6 +40,7 @@ function generateDerivedData(tokenListData: TokenListData) {
       decimals,
       name,
       symbol,
+      type: 'token',
       uniqueId: address,
       ...extensions,
     };

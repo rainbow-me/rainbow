@@ -1,8 +1,6 @@
 import { captureException } from '@sentry/react-native';
 import {
   // @ts-ignore
-  IS_TESTING,
-  // @ts-ignore
   NFT_API_KEY,
   // @ts-ignore
   NFT_API_URL,

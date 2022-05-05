@@ -9,7 +9,6 @@ import { SwapModalField } from '@rainbow-me/redux/swap';
 import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth, position } from '@rainbow-me/styles';
 import { convertAmountAndPriceToNativeDisplay } from '@rainbow-me/utilities';
-import { logger } from '@rainbow-me/utils';
 
 export const CurrencyTileHeight = 143;
 
@@ -61,7 +60,6 @@ export default function CurrencyTile({
   type = 'input',
   ...props
 }) {
-  logger.debug('PriceValue', priceValue);
   const inputAsExact = useSelector(
     state => state.swap.independentField !== SwapModalField.output
   );

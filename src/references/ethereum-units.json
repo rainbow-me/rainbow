@@ -14,6 +14,7 @@
   "basic_withdrawal": 550000,
   "basic_transfer": 50000,
   "arbitrum_basic_tx": 735000,
+  "default_l1_gas_fee_optimism_swap": "1064760511747856",
   "weth_wrap": 30000,
   "weth_unwrap": 40000,
   "noether": 0,

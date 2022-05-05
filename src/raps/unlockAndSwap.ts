@@ -19,7 +19,7 @@ import { estimateSwapGasLimit } from '@rainbow-me/handlers/uniswap';
 import store from '@rainbow-me/redux/store';
 import { ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
 import { add } from '@rainbow-me/utilities';
-import { ethereumUtils, logger } from '@rainbow-me/utils';
+import { ethereumUtils } from '@rainbow-me/utils';
 
 export const estimateUnlockAndSwap = async (
   swapParameters: SwapActionParameters
@@ -46,7 +46,6 @@ export const estimateUnlockAndSwap = async (
       ethereumUtils.getNetworkFromChainId(chainId)
     )
   ) {
-    logger.debug('checking if it needs unlocking');
     swapAssetNeedsUnlocking = await assetNeedsUnlocking(
       accountAddress,
       inputAmount,
@@ -65,14 +64,12 @@ export const estimateUnlockAndSwap = async (
     );
     gasLimits = concat(gasLimits, unlockGasLimit, ethUnits.basic_swap);
   } else {
-    logger.debug('about to call estimateSwapGasLimit');
     const swapGasLimit = await estimateSwapGasLimit({
       chainId,
       requiresApprove: swapAssetNeedsUnlocking,
       tradeDetails,
     });
 
-    logger.debug('got swapGasLimit', swapGasLimit);
     gasLimits = concat(gasLimits, swapGasLimit);
   }
 

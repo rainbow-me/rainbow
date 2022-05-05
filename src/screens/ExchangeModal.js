@@ -347,18 +347,25 @@ export default function ExchangeModal({
         swapParameters: swapParams,
       });
       if (gasLimit) {
-        logger.debug('gaslimit ok', gasLimit);
-        if (currentNetwork === Network.optimism && tradeDetails) {
-          const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
-            {
-              data: tradeDetails.data,
-              from: tradeDetails.from,
-              to: tradeDetails.to,
-              value: tradeDetails.value,
-            },
-            currentProvider
-          );
-          updateTxFee(gasLimit, null, l1GasFeeOptimism);
+        if (currentNetwork === Network.optimism) {
+          if (tradeDetails) {
+            const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
+              {
+                data: tradeDetails.data,
+                from: tradeDetails.from,
+                to: tradeDetails.to,
+                value: tradeDetails.value,
+              },
+              currentProvider
+            );
+            updateTxFee(gasLimit, null, l1GasFeeOptimism);
+          } else {
+            updateTxFee(
+              gasLimit,
+              null,
+              ethUnits.default_l1_gas_fee_optimism_swap
+            );
+          }
         } else {
           updateTxFee(gasLimit);
         }
@@ -381,7 +388,6 @@ export default function ExchangeModal({
 
   useEffect(() => {
     if (tradeDetails && !equal(tradeDetails, lastTradeDetails)) {
-      logger.debug('Trade details changed. Updating gas limit');
       updateGasLimit();
     }
   }, [lastTradeDetails, tradeDetails, updateGasLimit]);
@@ -408,7 +414,6 @@ export default function ExchangeModal({
   // Liten to gas prices, Uniswap reserves updates
   useEffect(() => {
     updateDefaultGasLimit(defaultGasLimit);
-    logger.debug('started polling prices for network', currentNetwork);
     InteractionManager.runAfterInteractions(() => {
       // Start polling in the current network
       startPollingGasFees(currentNetwork, flashbots);

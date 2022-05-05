@@ -644,6 +644,7 @@ export const gasUpdateTxFee = (
       txNetwork,
       currentBlockParams,
     } = getState().gas;
+
     const { nativeCurrency } = getState().settings;
     if (
       isEmpty(gasFeeParamsBySpeed) ||
@@ -679,7 +680,6 @@ export const gasUpdateTxFee = (
         txNetwork,
         l1GasFeeOptimism
       );
-
       dispatch({
         payload: {
           gasFeesBySpeed,

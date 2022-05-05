@@ -28,7 +28,7 @@ import {
 import { useNavigation } from '@rainbow-me/navigation';
 import styled from '@rainbow-me/styled-components';
 import { padding, position } from '@rainbow-me/styles';
-import { abbreviations, logger } from '@rainbow-me/utils';
+import { abbreviations } from '@rainbow-me/utils';
 import Logger from '@rainbow-me/utils/logger';
 
 const springConfig = {
@@ -99,9 +99,6 @@ export default function SwapDetailsState({
     displayValues: { inputAmountDisplay, outputAmountDisplay },
     tradeDetails,
   } = useSelector(state => state.swap);
-
-  logger.debug('Current Network', currentNetwork);
-  logger.debug('chainId', tradeDetails.chainId);
 
   const {
     inputPriceValue,
