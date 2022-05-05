@@ -403,7 +403,7 @@ export default function ChartExpandedState({ asset }) {
           symbol={assetWithPrice.symbol}
         />
       )}
-      {networks && !isL2 && (
+      {networks && !hasBalance && (
         <AvailableNetworks colors={colors} networks={networks} />
       )}
       {!isL2 && (
