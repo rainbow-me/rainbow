@@ -79,8 +79,7 @@ export default function RestoreCloudStep({
   fromSettings,
 }) {
   const dispatch = useDispatch();
-  const { scale } = useDimensions();
-  const { isTinyPhone } = useDimensions();
+  const { isTinyPhone, scale } = useDimensions();
   const { navigate, goBack, replace } = useNavigation();
   const { setIsWalletLoading } = useWallets();
   const [validPassword, setValidPassword] = useState(false);
@@ -94,7 +93,7 @@ export default function RestoreCloudStep({
   const { userAccounts } = useUserAccounts();
   const initializeWallet = useInitializeWallet();
 
-  const isScaleMoreThanDefault = useMemo(() => scale > 3, [scale]);
+  const isScaleMoreThanDefault = scale > 3;
 
   useEffect(() => {
     const keyboardDidShow = () => {
