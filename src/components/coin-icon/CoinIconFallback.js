@@ -1,11 +1,10 @@
 import React, { useMemo } from 'react';
-import { Image } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import FastImage from 'react-native-fast-image';
 import { useTheme } from '../../context/ThemeContext';
-import { Centered } from '../layout';
 import EthIcon from '@rainbow-me/assets/eth-icon.png';
 import { useBooleanState, useColorForAsset } from '@rainbow-me/hooks';
-import { ImageWithCachedMetadata } from '@rainbow-me/images';
-import styled from '@rainbow-me/styled-components';
+import { ImageWithCachedMetadata, ImgixImage } from '@rainbow-me/images';
 import { borders, fonts, position, shadow } from '@rainbow-me/styles';
 import {
   FallbackIcon,
@@ -22,57 +21,73 @@ const fallbackTextStyles = {
   textAlign: 'center',
 };
 
-const FallbackImage = styled(ImageWithCachedMetadata)(
-  ({
+const FallbackImage = React.memo(props => {
+  const {
     size,
-    theme: { colors },
     shadowColor: color,
     shadowOffset: { height: y, width: x },
     shadowOpacity: opacity,
     shadowRadius: radius,
     showImage,
-  }) => ({
-    height: size,
-    width: size,
-    ...position.coverAsObject,
-    ...shadow.buildAsObject(x, y, radius * 2, color, showImage ? opacity : 0),
-    backgroundColor: showImage ? colors.white : colors.transparent,
-    borderRadius: size / 2,
-    overflow: 'visible',
-  })
+    as: ImageComponent = ImageWithCachedMetadata,
+  } = props;
+
+  const style = useMemo(
+    () => ({
+      height: size,
+      width: size,
+      ...position.coverAsObject,
+      ...shadow.buildAsObject(x, y, radius * 2, color, showImage ? opacity : 0),
+      backgroundColor: 'transparent',
+      borderRadius: size / 2,
+      overflow: 'visible',
+    }),
+    [size, showImage, x, y, radius, color, opacity]
+  );
+
+  return (
+    <ImageComponent
+      {...props}
+      cache={ImgixImage.cacheControl.immutable}
+      size={32}
+      style={style}
+    />
+  );
+});
+
+FallbackImage.displayName = 'FallbackImage';
+
+const WrappedFallbackImage = React.memo(
+  ({ color, elevation = 6, shadowOpacity, showImage, size, eth, ...props }) => {
+    const { colors } = useTheme();
+
+    const containerStyles = {
+      ...position.coverAsObject,
+      ...borders.buildCircleAsObject(size),
+      alignItems: 'center',
+      elevation: showImage ? elevation : 0,
+      flexWrap: 'wrap',
+      justifyContent: 'center',
+      overflow: 'hidden',
+    };
+
+    return (
+      <View {...props} style={containerStyles}>
+        <FallbackImage
+          as={eth ? FastImage : ImageWithCachedMetadata}
+          source={eth ? EthIcon : props.imageUrl}
+          {...props}
+          overlayColor={color || colors.dark}
+          shadowOpacity={shadowOpacity}
+          showImage={showImage}
+          size={size}
+        />
+      </View>
+    );
+  }
 );
 
-function WrappedFallbackImage({
-  color,
-  elevation = 6,
-  shadowOpacity,
-  showImage,
-  size,
-  eth,
-  ...props
-}) {
-  const { colors } = useTheme();
-  return (
-    <Centered
-      {...props}
-      {...position.coverAsObject}
-      {...borders.buildCircleAsObject(size)}
-      backgroundColor={colors.alpha(color || colors.dark, shadowOpacity || 0.3)}
-      elevation={showImage ? elevation : 0}
-      style={{ overflow: 'hidden' }}
-    >
-      <FallbackImage
-        as={eth ? Image : undefined}
-        source={EthIcon}
-        {...props}
-        overlayColor={color || colors.dark}
-        shadowOpacity={shadowOpacity}
-        showImage={showImage}
-        size={size}
-      />
-    </Centered>
-  );
-}
+WrappedFallbackImage.displayName = 'WrappedFallbackImage';
 
 const FallbackImageElement = android ? WrappedFallbackImage : FallbackImage;
 
@@ -80,7 +95,7 @@ const CoinIconFallback = fallbackProps => {
   const { address = '', height, symbol, width } = fallbackProps;
 
   const [showImage, showFallbackImage, hideFallbackImage] = useBooleanState(
-    false
+    true
   );
 
   const fallbackIconColor = useColorForAsset({ address });
@@ -91,28 +106,33 @@ const CoinIconFallback = fallbackProps => {
   const eth = isETH(address);
 
   return (
-    <Centered height={height} width={width}>
-      {!showImage && (
-        <FallbackIcon
-          {...fallbackProps}
-          color={fallbackIconColor}
-          showImage={showImage}
-          symbol={symbol || ''}
-          textStyles={fallbackTextStyles}
-        />
-      )}
+    <View style={[styles.container, { height, width }]}>
+      <FallbackIcon
+        {...fallbackProps}
+        color={fallbackIconColor}
+        showImage={showImage}
+        symbol={symbol || ''}
+        textStyles={fallbackTextStyles}
+      />
+
       <FallbackImageElement
         {...fallbackProps}
         color={fallbackIconColor}
         eth={eth}
         imageUrl={imageUrl}
         onError={hideFallbackImage}
-        onLoad={showFallbackImage}
         showImage={showImage}
         size={width}
       />
-    </Centered>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
 
 export default magicMemo(CoinIconFallback, ['address', 'style', 'symbol']);
