@@ -101,9 +101,9 @@ export default function useSwapCurrencyHandlers({
   const updateOutputCurrency = useCallback(
     newOutputCurrency => {
       dispatch(updateSwapOutputCurrency(newOutputCurrency));
-      setLastFocusedInputHandle(outputFieldRef);
+      setLastFocusedInputHandle(inputFieldRef);
     },
-    [dispatch, outputFieldRef, setLastFocusedInputHandle]
+    [dispatch, inputFieldRef, setLastFocusedInputHandle]
   );
 
   const navigateToSelectInputCurrency = useCallback(

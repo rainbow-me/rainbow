@@ -254,6 +254,7 @@ export default function ExchangeModal({
     outputAmount,
     inputCurrency,
     outputCurrency,
+    currentNetwork,
     loading || equal(lastTradeDetails, tradeDetails)
   );
 
@@ -638,6 +639,7 @@ export default function ExchangeModal({
       setParams({ focused: false });
       navigate(Routes.SWAP_DETAILS_SHEET, {
         confirmButtonProps,
+        currentNetwork,
         restoreFocusOnSwapModal: () => {
           android &&
             (lastFocusedInputHandle.current = lastFocusedInputHandleTemporary);

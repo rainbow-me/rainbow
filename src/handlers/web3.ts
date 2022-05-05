@@ -402,7 +402,7 @@ export async function estimateGasWithPadding(
     logger.sentry('⛽ returning last block gas limit', lastBlockGasLimit);
     return lastBlockGasLimit;
   } catch (error) {
-    // logger.debug('Error calculating gas limit with padding', error);
+    logger.debug('Error calculating gas limit with padding', error);
     return null;
   }
 }

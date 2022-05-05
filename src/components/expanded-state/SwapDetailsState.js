@@ -28,7 +28,8 @@ import {
 import { useNavigation } from '@rainbow-me/navigation';
 import styled from '@rainbow-me/styled-components';
 import { padding, position } from '@rainbow-me/styles';
-import { abbreviations } from '@rainbow-me/utils';
+import { abbreviations, logger } from '@rainbow-me/utils';
+import Logger from '@rainbow-me/utils/logger';
 
 const springConfig = {
   damping: 500,
@@ -90,7 +91,7 @@ export default function SwapDetailsState({
 }) {
   const { network } = useAccountSettings();
   const { setParams } = useNavigation();
-  const { params: { longFormHeight } = {} } = useRoute();
+  const { params: { longFormHeight, currentNetwork } = {} } = useRoute();
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
   const {
@@ -98,6 +99,9 @@ export default function SwapDetailsState({
     displayValues: { inputAmountDisplay, outputAmountDisplay },
     tradeDetails,
   } = useSelector(state => state.swap);
+
+  logger.debug('Current Network', currentNetwork);
+  logger.debug('chainId', tradeDetails.chainId);
 
   const {
     inputPriceValue,
@@ -110,8 +114,11 @@ export default function SwapDetailsState({
     inputAmount,
     outputAmount,
     inputCurrency,
-    outputCurrency
+    outputCurrency,
+    currentNetwork
   );
+
+  Logger.debug({ inputPriceValue, outputPriceValue });
 
   const {
     copiedText,

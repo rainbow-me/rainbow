@@ -17,7 +17,6 @@ import { EthereumAddress } from '@rainbow-me/entities';
 import { isNativeAsset } from '@rainbow-me/handlers/assets';
 import { AppState } from '@rainbow-me/redux/store';
 import { SwapModalField, updateSwapQuote } from '@rainbow-me/redux/swap';
-import { ETH_ADDRESS } from '@rainbow-me/references';
 import {
   convertAmountFromNativeValue,
   convertAmountToNativeAmount,
