@@ -1,3 +1,4 @@
+import analytics from '@segment/analytics-react-native';
 import { useCallback, useRef } from 'react';
 import { InteractionManager, NativeModules, StatusBar } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
@@ -37,6 +38,7 @@ export default function useHideSplashScreen() {
         PerformanceMetrics.completeStartupTime,
         Date.now() - StartTime.START_TIME
       );
+      analytics.track('Application became interactive');
       alreadyLoggedPerformance.current = true;
     }
   }, []);

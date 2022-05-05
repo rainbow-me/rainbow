@@ -199,6 +199,7 @@ class App extends Component {
     PerformanceTracking.finishMeasuring(
       PerformanceMetrics.loadRootAppComponent
     );
+    analytics.track('React component tree finished initial mounting');
   }
 
   componentDidUpdate(prevProps) {
