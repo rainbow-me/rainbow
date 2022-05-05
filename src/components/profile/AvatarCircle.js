@@ -36,7 +36,7 @@ export default function AvatarCircle({
   image,
   showcaseAccountSymbol,
   showcaseAccountColor,
-  externalProfile = false,
+  newProfile = false,
   ...props
 }) {
   const { colors, isDarkMode } = useTheme();
@@ -44,17 +44,17 @@ export default function AvatarCircle({
     accountColor: profileAccountColor,
     accountSymbol: profileAccountSymbol,
   } = useAccountProfile();
+  console.log('-- 😬😬😬 newProfile', newProfile);
+  console.log('-- profileAccountSymbol', profileAccountSymbol);
+  console.log('-- showcaseAccountSymbol', showcaseAccountSymbol);
 
-  const accountSymbol =
-    showcaseAccountSymbol || (!externalProfile && profileAccountSymbol);
+  const accountSymbol = showcaseAccountSymbol || profileAccountSymbol;
   const resolvedColor =
     showcaseAccountColor != null
       ? typeof showcaseAccountColor === 'string'
         ? showcaseAccountColor
         : colors.avatarBackgrounds[showcaseAccountColor]
-      : colors.avatarBackgrounds[
-          (!externalProfile && profileAccountColor) || 10
-        ];
+      : colors.avatarBackgrounds[(!newProfile && profileAccountColor) || 10];
   const shadows = useMemo(
     () => ({
       default: [

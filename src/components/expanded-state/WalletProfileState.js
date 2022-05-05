@@ -180,6 +180,7 @@ export default function WalletProfileState({
     getProfile();
   }, [address, getWebProfile]);
 
+  console.log('😬😬😬 ---- address', address);
   return (
     <WalletProfileModal>
       <Centered
@@ -196,7 +197,7 @@ export default function WalletProfileState({
           // and wait for web profile to be loaded, if any
           (!isNewProfile || address) && (
             <AvatarCircle
-              externalProfile={!!address}
+              newProfile={!!address}
               showcaseAccountColor={nameColor}
               showcaseAccountSymbol={nameEmoji}
             />
