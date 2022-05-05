@@ -35,7 +35,6 @@ import {
 import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
-import { isL2Asset } from '@rainbow-me/handlers/assets';
 import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
 import {
   ExchangeModalTypes,
@@ -212,10 +211,7 @@ export default function ExchangeModal({
   });
 
   const chainId = useMemo(
-    () =>
-      isL2Asset(inputCurrency?.type)
-        ? ethereumUtils.getChainIdFromNetwork(inputCurrency.type)
-        : undefined,
+    () => ethereumUtils.getChainIdFromType(inputCurrency?.type),
     [inputCurrency]
   );
 
@@ -659,11 +655,14 @@ export default function ExchangeModal({
       : Keyboard.addListener('keyboardDidHide', internalNavigate);
   }, [
     confirmButtonProps,
+    currentNetwork,
     inputFieldRef,
     lastFocusedInputHandle,
     nativeFieldRef,
     navigate,
-    outputCurrency,
+    outputCurrency?.address,
+    outputCurrency?.name,
+    outputCurrency?.symbol,
     outputFieldRef,
     setParams,
     type,
