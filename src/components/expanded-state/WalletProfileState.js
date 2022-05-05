@@ -7,6 +7,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { InteractionManager } from 'react-native';
 import useUpdateEmoji from '../../../src/hooks/useUpdateEmoji';
 import { useTheme } from '../../context/ThemeContext';
 import { getRandomColor } from '../../styles/colors';
@@ -143,12 +144,14 @@ export default function WalletProfileState({
 
   const handleSubmit = useCallback(() => {
     analytics.track('Tapped "Submit" on Wallet Profile modal');
-    onCloseModal({
-      color:
-        typeof nameColor === 'string'
-          ? profileUtils.colorHexToIndex(nameColor)
-          : nameColor,
-      name: nameEmoji ? `${nameEmoji} ${value}` : value,
+    InteractionManager.runAfterInteractions(() => {
+      onCloseModal({
+        color:
+          typeof nameColor === 'string'
+            ? profileUtils.colorHexToIndex(nameColor)
+            : nameColor,
+        name: nameEmoji ? `${nameEmoji} ${value}` : value,
+      });
     });
     goBack();
     if (actionType === 'Create' && isNewProfile) {

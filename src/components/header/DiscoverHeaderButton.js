@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '../../navigation/Navigation';
@@ -89,7 +90,7 @@ export default function DiscoverHeaderButton() {
             weight="bold"
             {...(android && { lineHeight: 32 })}
           >
-            🪐 Discover
+            🪐 {lang.t('discover.title_discover')}
           </Text>
         </DiscoverButtonContent>
       </Row>

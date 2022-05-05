@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
@@ -85,7 +86,7 @@ function APYPill({ small, value }) {
         weight="semibold"
         {...(android && { lineHeight: small ? 24 : 30 })}
       >
-        {value}% APY
+        {lang.t('savings.percentage_apy', { percentage: value })}
       </TextComponent>
     </Centered>
   );

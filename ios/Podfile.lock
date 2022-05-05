@@ -388,6 +388,8 @@ PODS:
   - react-native-palette-full (1.2.0):
     - React
     - SDWebImage (~> 5)
+  - react-native-quick-md5 (3.0.3):
+    - React-Core
   - react-native-randombytes (3.5.3):
     - React
   - react-native-restart (0.0.22):
@@ -579,9 +581,9 @@ PODS:
     - Yoga
   - RNScreens (2.9.0):
     - React
-  - RNSentry (3.2.13):
+  - RNSentry (3.4.1):
     - React-Core
-    - Sentry (= 7.9.0)
+    - Sentry (= 7.11.0)
   - RNStoreReview (0.1.5):
     - React
   - RNSVG (12.2.1):
@@ -594,9 +596,9 @@ PODS:
   - SDWebImageWebPCoder (0.8.4):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.10)
-  - Sentry (7.9.0):
-    - Sentry/Core (= 7.9.0)
-  - Sentry/Core (7.9.0)
+  - Sentry (7.11.0):
+    - Sentry/Core (= 7.11.0)
+  - Sentry/Core (7.11.0)
   - Shimmer (1.0.2)
   - SRSRadialGradient (1.0.9):
     - React
@@ -658,6 +660,7 @@ DEPENDENCIES:
   - react-native-mmkv (from `../node_modules/react-native-mmkv`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-palette-full (from `../node_modules/react-native-palette-full`)
+  - react-native-quick-md5 (from `../node_modules/react-native-quick-md5`)
   - react-native-randombytes (from `../node_modules/react-native-randombytes`)
   - react-native-restart (from `../node_modules/react-native-restart`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
@@ -842,6 +845,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/netinfo"
   react-native-palette-full:
     :path: "../node_modules/react-native-palette-full"
+  react-native-quick-md5:
+    :path: "../node_modules/react-native-quick-md5"
   react-native-randombytes:
     :path: "../node_modules/react-native-randombytes"
   react-native-restart:
@@ -1036,6 +1041,7 @@ SPEC CHECKSUMS:
   react-native-mmkv: 27029f9f3a30dc798726cfc92775f4cbedcb7dd7
   react-native-netinfo: 250dc0ca126512f618a8a2ca6a936577e1f66586
   react-native-palette-full: 99a6fd796d16fab6a2d3770649070e31c2602fad
+  react-native-quick-md5: 20039aa5f718178ee370d523ca2918a2ccae097d
   react-native-randombytes: 3638d24759d67c68f6ccba60c52a7a8a8faa6a23
   react-native-restart: 733a51ad137f15b0f8dc34c4082e55af7da00979
   react-native-safe-area-context: 13004a45f3021328fdd9ee1f987c3131fb65928d
@@ -1087,13 +1093,13 @@ SPEC CHECKSUMS:
   RNReactNativeHapticFeedback: 653a8c126a0f5e88ce15ffe280b3ff37e1fbb285
   RNReanimated: e8afbe2a9e08e9e778ea72ddb1a8533445812621
   RNScreens: c526239bbe0e957b988dacc8d75ac94ec9cb19da
-  RNSentry: 0aa1567f66c20390f3834637fc4f73380dcd0774
+  RNSentry: fbbdcd7213058e3de5fbaa452b25a06a16b4b382
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
   RNSVG: 91e9ee67766408d08cb08f5bd80cd57c9d2a6691
   RNTextSize: 21c94a67819fbf2c358a219bf6d251e3be9e5f29
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: f93010f3f6c031e2f8fb3081ca4ee6966c539815
-  Sentry: 2f7e91f247cfb05b05bd01e0b5d0692557a7687b
+  Sentry: 0c5cd63d714187b4a39c331c1f0eb04ba7868341
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86
   SRSRadialGradient: a372b4b3bc65a2f3b1a16b906485cff204e1db3e
   SSZipArchive: 62d4947b08730e4cda640473b0066d209ff033c9

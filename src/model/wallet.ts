@@ -40,6 +40,7 @@ import { EthereumAddress } from '@rainbow-me/entities';
 import AesEncryptor from '@rainbow-me/handlers/aesEncryption';
 import {
   authenticateWithPIN,
+  authenticateWithPINAndCreateIfNeeded,
   getExistingPIN,
 } from '@rainbow-me/handlers/authentication';
 import { saveAccountEmptyState } from '@rainbow-me/handlers/localstorage/accountLocal';
@@ -187,6 +188,8 @@ export const DEFAULT_HD_PATH = `m/44'/60'/0'/0`;
 export const DEFAULT_WALLET_NAME = 'My Wallet';
 
 const authenticationPrompt = lang.t('wallet.authenticate.please');
+
+export const createdWithBiometricError = 'createdWithBiometricError';
 
 export const walletInit = async (
   seedPhrase = undefined,
@@ -633,7 +636,7 @@ export const createWallet = async (
           if (!userPIN) {
             // We gotta dismiss the modal before showing the PIN screen
             dispatch(setIsWalletLoading(null));
-            userPIN = await authenticateWithPIN();
+            userPIN = await authenticateWithPINAndCreateIfNeeded();
             dispatch(
               setIsWalletLoading(
                 seed
@@ -1046,7 +1049,7 @@ export const generateAccount = async (
           const { dispatch } = store;
           // Hide the loading overlay while showing the pin auth screen
           dispatch(setIsWalletLoading(null));
-          userPIN = await authenticateWithPIN();
+          userPIN = await authenticateWithPINAndCreateIfNeeded();
           dispatch(setIsWalletLoading(WalletLoadingStates.CREATING_WALLET));
         } catch (e) {
           return null;
@@ -1270,8 +1273,15 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (
       let userPIN = null;
       if (android) {
         const hasBiometricsEnabled = await getSupportedBiometryType();
-        // Fallback to custom PIN
-        if (!hasBiometricsEnabled) {
+        if (!seedData && !seedPhrase && !hasBiometricsEnabled) {
+          logger.sentry(
+            'Wallet is created with biometric data, there is no access to the seed'
+          );
+          throw new Error(createdWithBiometricError);
+        }
+        // Fallback to check PIN
+        const isSeedHasPINInfo = seedPhrase?.includes('cipher');
+        if (isSeedHasPINInfo) {
           try {
             userPIN = await authenticateWithPIN();
             if (userPIN) {
@@ -1299,6 +1309,6 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (
   } catch (error) {
     logger.sentry('Error in loadSeedPhraseAndMigrateIfNeeded');
     captureException(error);
-    return null;
+    throw error;
   }
 };

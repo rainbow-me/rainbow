@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React from 'react';
 import Text from './Text';
 import { abbreviations } from '@rainbow-me/utils';
@@ -7,7 +8,7 @@ const TruncatedENS = ({ ens, truncationLength, ...props }, ref) => {
     () =>
       ens
         ? abbreviations.abbreviateEnsForDisplay(ens, truncationLength)
-        : 'Error displaying address',
+        : lang.t('wallet.error_displaying_address'),
     [ens, truncationLength]
   );
   return (

@@ -32,6 +32,7 @@ import {
 import {
   addressHashedColorIndex,
   addressHashedEmoji,
+  lookupAddressWithRetry,
 } from '../utils/profileUtils';
 import { updateWebDataEnabled } from './showcaseTokens';
 import { lightModeThemeColors } from '@rainbow-me/styles';
@@ -236,7 +237,10 @@ export const fetchWalletNames = () => async (dispatch, getState) => {
       const visibleAccounts = filter(wallet.addresses, 'visible');
       return map(visibleAccounts, async account => {
         try {
-          const ens = await web3Provider.lookupAddress(account.address);
+          const ens = await lookupAddressWithRetry(
+            web3Provider,
+            account.address
+          );
           if (ens && ens !== account.address) {
             updatedWalletNames[account.address] = ens;
           }

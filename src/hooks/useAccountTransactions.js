@@ -8,23 +8,30 @@ import useRequests from './useRequests';
 export const NOE_PAGE = 30;
 
 export default function useAccountTransactions(initialized, isFocused) {
-  const { isLoadingTransactions, network, transactions } = useSelector(
+  const {
+    isLoadingTransactions,
+    network,
+    pendingTransactions,
+    transactions,
+  } = useSelector(
     ({
-      data: { isLoadingTransactions, transactions },
+      data: { isLoadingTransactions, pendingTransactions, transactions },
       settings: { network },
     }) => ({
       isLoadingTransactions,
       network,
+      pendingTransactions,
       transactions,
     })
   );
 
+  const allTransactions = pendingTransactions.concat(transactions);
   const [page, setPage] = useState(1);
   const nextPage = useCallback(() => setPage(page => page + 1), []);
 
   const slicedTransaction = useMemo(
-    () => transactions.slice(0, page * NOE_PAGE),
-    [transactions, page]
+    () => allTransactions.slice(0, page * NOE_PAGE),
+    [allTransactions, page]
   );
 
   const transactionsCount = useMemo(() => {
@@ -45,15 +52,15 @@ export default function useAccountTransactions(initialized, isFocused) {
   const { sections } = buildTransactionsSectionsSelector(accountState);
 
   const remainingItemsLabel = useMemo(() => {
-    const remainingLength = transactions.length - slicedTransaction.length;
+    const remainingLength = allTransactions.length - slicedTransaction.length;
     if (remainingLength === 0) {
       return null;
     }
-    if (transactions.length - slicedTransaction.length <= NOE_PAGE) {
+    if (remainingLength <= NOE_PAGE) {
       return `Show last ${remainingLength} transactions.`;
     }
     return `Show ${NOE_PAGE} more transactions...`;
-  }, [slicedTransaction.length, transactions.length]);
+  }, [slicedTransaction.length, allTransactions.length]);
 
   return {
     isLoadingTransactions:
@@ -61,7 +68,7 @@ export default function useAccountTransactions(initialized, isFocused) {
     nextPage,
     remainingItemsLabel,
     sections,
-    transactions: ios ? transactions : slicedTransaction,
+    transactions: ios ? allTransactions : slicedTransaction,
     transactionsCount,
   };
 }
