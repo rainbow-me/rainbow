@@ -180,7 +180,6 @@ export default function WalletProfileState({
     getProfile();
   }, [address, getWebProfile]);
 
-  console.log('😬😬😬 ---- address', address);
   return (
     <WalletProfileModal>
       <Centered

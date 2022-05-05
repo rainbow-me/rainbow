@@ -44,9 +44,6 @@ export default function AvatarCircle({
     accountColor: profileAccountColor,
     accountSymbol: profileAccountSymbol,
   } = useAccountProfile();
-  console.log('-- 😬😬😬 newProfile', newProfile);
-  console.log('-- profileAccountSymbol', profileAccountSymbol);
-  console.log('-- showcaseAccountSymbol', showcaseAccountSymbol);
 
   const accountSymbol = showcaseAccountSymbol || profileAccountSymbol;
   const resolvedColor =
