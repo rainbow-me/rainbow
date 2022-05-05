@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { StyleSheet, View } from 'react-primitives';
 import CoinIcons from './CoinIcons';
 import FallbackIcon from './FallbackIcon';
@@ -26,31 +26,25 @@ const CoinIcon = ({
   symbol,
   ...props
 }) => {
-  const formattedSymbol = useMemo(() => formatSymbol(symbol), [symbol]);
+  const formattedSymbol = formatSymbol(symbol);
 
-  const circleProps = useMemo(
-    () => ({
-      borderRadius: size / 2,
-      height: size,
-      width: size,
-    }),
-    [size]
-  );
+  const circleProps = {
+    borderRadius: size / 2,
+    height: size,
+    width: size,
+  };
 
-  const shadowProps = useMemo(() => {
-    const isSmall = size < 30;
-
-    return {
-      elevation: isSmall ? 4.5 : 6,
-      shadowColor: shadowColor || color,
-      shadowOffset: {
-        height: isSmall ? 3 : 4,
-        width: 0,
-      },
-      shadowOpacity: isSmall ? 0.2 : 0.3,
-      shadowRadius: isSmall ? 4.5 : 6,
-    };
-  }, [color, shadowColor, size]);
+  const isSmall = size < 30;
+  const shadowProps = {
+    elevation: isSmall ? 4.5 : 6,
+    shadowColor: shadowColor || color,
+    shadowOffset: {
+      height: isSmall ? 3 : 4,
+      width: 0,
+    },
+    shadowOpacity: isSmall ? 0.2 : 0.3,
+    shadowRadius: isSmall ? 4.5 : 6,
+  };
 
   const CoinIconElement = forceFallback
     ? fallbackRenderer
