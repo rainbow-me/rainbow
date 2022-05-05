@@ -146,10 +146,6 @@ export default function WalletConnectApprovalSheet() {
     };
   }, [timeout]);
 
-  const isAuthenticated = useMemo(() => {
-    return isDappAuthenticated(dappUrl);
-  }, [dappUrl]);
-
   const formattedDappUrl = useMemo(() => {
     return getDappHostname(dappUrl);
   }, [dappUrl]);
