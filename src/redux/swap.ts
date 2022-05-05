@@ -115,11 +115,20 @@ export const updateSwapInputCurrency = (
   } = getState().swap;
   if (
     type === ExchangeModalTypes.swap &&
-    newInputCurrency?.address === outputCurrency?.address
+    newInputCurrency?.address === outputCurrency?.address &&
+    newInputCurrency
   ) {
     dispatch(flipSwapCurrencies());
   } else {
     dispatch({ payload: newInputCurrency, type: SWAP_UPDATE_INPUT_CURRENCY });
+    if (
+      type === ExchangeModalTypes.swap &&
+      newInputCurrency?.type !== outputCurrency?.type &&
+      newInputCurrency
+    ) {
+      dispatch({ payload: null, type: SWAP_UPDATE_OUTPUT_CURRENCY });
+    }
+
     if (newInputCurrency) {
       dispatch(fetchAssetPrices(newInputCurrency.address));
     }
@@ -140,10 +149,21 @@ export const updateSwapInputCurrency = (
 export const updateSwapOutputCurrency = (
   newOutputCurrency: UniswapCurrency | null
 ) => (dispatch: AppDispatch, getState: AppGetState) => {
-  const { independentField, inputCurrency } = getState().swap;
-  if (newOutputCurrency?.address === inputCurrency?.address) {
+  const { independentField, inputCurrency, type } = getState().swap;
+  if (
+    newOutputCurrency?.address === inputCurrency?.address &&
+    newOutputCurrency
+  ) {
     dispatch(flipSwapCurrencies());
   } else {
+    if (
+      type === ExchangeModalTypes.swap &&
+      newOutputCurrency?.type !== inputCurrency?.type &&
+      newOutputCurrency
+    ) {
+      dispatch({ payload: null, type: SWAP_UPDATE_INPUT_CURRENCY });
+    }
+
     dispatch({ payload: newOutputCurrency, type: SWAP_UPDATE_OUTPUT_CURRENCY });
     if (newOutputCurrency) {
       dispatch(fetchAssetPrices(newOutputCurrency.address));
