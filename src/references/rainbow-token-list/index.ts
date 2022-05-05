@@ -1,22 +1,18 @@
 import { EventEmitter } from 'events';
+import path from 'path';
 import { captureException } from '@sentry/react-native';
 import { keyBy } from 'lodash';
 // @ts-ignore
 import { RAINBOW_TOKEN_LIST_URL } from 'react-native-dotenv';
-import { MMKV } from 'react-native-mmkv';
+import RNFS from 'react-native-fs';
 import { rainbowFetch } from '../../rainbow-fetch';
 import { ETH_ADDRESS } from '../index';
 import RAINBOW_TOKEN_LIST_DATA from './rainbow-token-list.json';
 import { RainbowToken } from '@rainbow-me/entities';
-import { STORAGE_IDS } from '@rainbow-me/model/mmkv';
 import logger from 'logger';
 
-export const rainbowListStorage = new MMKV({
-  id: STORAGE_IDS.RAINBOW_TOKEN_LIST,
-});
-
-export const RB_TOKEN_LIST_CACHE = 'rb-token-list';
-export const RB_TOKEN_LIST_ETAG = 'rb-token-list-etag';
+const RB_TOKEN_LIST_CACHE = 'rb-token-list.json';
+const RB_TOKEN_LIST_ETAG = 'rb-token-list-etag.json';
 
 type TokenListData = typeof RAINBOW_TOKEN_LIST_DATA;
 type ETagData = { etag: string | null };
@@ -69,29 +65,34 @@ function generateDerivedData(tokenListData: TokenListData) {
   return derivedData;
 }
 
-function readJson<T>(key: string): T | null {
+async function readRNFSJsonData<T>(filename: string): Promise<T | null> {
   try {
-    const data = rainbowListStorage.getString(key);
+    const data = await RNFS.readFile(
+      path.join(RNFS.CachesDirectoryPath, filename),
+      'utf8'
+    );
 
-    if (!data) {
-      return null;
-    }
-
-    return JSON.parse(data!);
+    return JSON.parse(data);
   } catch (error) {
-    logger.sentry('Error parsing token-list-cache data');
-    logger.error(error);
-    captureException(error);
-
+    // @ts-ignore: Skip missing file errors.
+    if (error?.code !== 'ENOENT') {
+      logger.sentry('Error parsing token-list-cache data');
+      logger.error(error);
+      captureException(error);
+    }
     return null;
   }
 }
 
-function writeJson<T>(key: string, data: T) {
+async function writeRNFSJsonData<T>(filename: string, data: T) {
   try {
-    rainbowListStorage.set(key, JSON.stringify(data));
+    await RNFS.writeFile(
+      path.join(RNFS.CachesDirectoryPath, filename),
+      JSON.stringify(data),
+      'utf8'
+    );
   } catch (error) {
-    logger.sentry(`Token List: Error saving ${key}`);
+    logger.sentry(`Token List: Error saving ${filename}`);
     logger.error(error);
     captureException(error);
   }
@@ -103,7 +104,7 @@ async function getTokenListUpdate(
   newTokenList?: TokenListData;
   status?: Response['status'];
 }> {
-  const etagData = readJson<ETagData>(RB_TOKEN_LIST_ETAG);
+  const etagData = await readRNFSJsonData<ETagData>(RB_TOKEN_LIST_ETAG);
   const etag = etagData?.etag;
   const commonHeaders = {
     Accept: 'application/json',
@@ -121,16 +122,23 @@ async function getTokenListUpdate(
     );
     const currentDate = new Date(currentTokenListData?.timestamp);
     const freshDate = new Date((data as TokenListData)?.timestamp);
-
     if (freshDate > currentDate) {
-      writeJson<TokenListData>(RB_TOKEN_LIST_CACHE, data as TokenListData);
+      const work = [
+        writeRNFSJsonData<TokenListData>(
+          RB_TOKEN_LIST_CACHE,
+          data as TokenListData
+        ),
+      ];
 
       if ((headers as Headers).get('etag')) {
-        writeJson<ETagData>(RB_TOKEN_LIST_ETAG, {
-          etag: (headers as Headers).get('etag'),
-        });
+        work.push(
+          writeRNFSJsonData<ETagData>(RB_TOKEN_LIST_ETAG, {
+            etag: (headers as Headers).get('etag'),
+          })
+        );
       }
 
+      await Promise.all(work);
       return { newTokenList: data as TokenListData, status };
     } else {
       return { newTokenList: undefined, status };
@@ -159,18 +167,23 @@ class RainbowTokenList extends EventEmitter {
   constructor() {
     super();
 
-    const cachedData = readJson<TokenListData>(RB_TOKEN_LIST_CACHE);
+    readRNFSJsonData<TokenListData>(RB_TOKEN_LIST_CACHE)
+      .then(cachedData => {
+        if (cachedData?.timestamp) {
+          const bundledDate = new Date(this._tokenListData?.timestamp);
+          const cachedDate = new Date(cachedData?.timestamp);
 
-    if (cachedData?.timestamp) {
-      const bundledDate = new Date(this._tokenListData?.timestamp);
-      const cachedDate = new Date(cachedData?.timestamp);
-
-      if (cachedDate > bundledDate) {
-        this._tokenListData = cachedData;
-      }
-    }
-
-    logger.debug('Token list initialized');
+          if (cachedDate > bundledDate) this._tokenListData = cachedData;
+        }
+      })
+      .catch(error => {
+        logger.sentry('Error initializing token-list cache data');
+        logger.error(error);
+        captureException(error);
+      })
+      .finally(() => {
+        logger.debug('Token list initialized');
+      });
   }
 
   // Wrapping #tokenListDataStorage so we can add events around updates.
