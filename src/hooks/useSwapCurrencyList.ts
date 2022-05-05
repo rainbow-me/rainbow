@@ -58,6 +58,8 @@ const searchCurrencyList = async (
 };
 
 const useSwapCurrencyList = (searchQuery: string, chainId = 1) => {
+  const previousChainId = usePrevious(chainId);
+
   const searching = useMemo(
     () => searchQuery !== '' || MAINNET_CHAINID !== chainId,
     [chainId, searchQuery]
@@ -82,7 +84,7 @@ const useSwapCurrencyList = (searchQuery: string, chainId = 1) => {
       // These transformations are necessary for L2 tokens to match our spec
       return tokens
         .map(token => {
-          if (chainId !== 1) {
+          if (chainId !== MAINNET_CHAINID) {
             const network = ethereumUtils.getNetworkFromChainId(chainId);
             token.type = network;
             if (token.networks[MAINNET_CHAINID]) {
@@ -229,25 +231,20 @@ const useSwapCurrencyList = (searchQuery: string, chainId = 1) => {
   const previousSearchQuery = usePrevious(searchQuery);
 
   useEffect(() => {
-    const doSearch = async () => {
-      if (
-        (searching && !wasSearching) ||
-        (searching && previousSearchQuery !== searchQuery)
-      ) {
-        if (chainId === MAINNET_CHAINID) {
-          search();
-          slowSearch();
-        } else {
-          await search();
-          setLoading(false);
-        }
+    if (
+      (searching && !wasSearching) ||
+      (searching && previousSearchQuery !== searchQuery) ||
+      chainId !== previousChainId
+    ) {
+      search();
+      if (chainId === MAINNET_CHAINID) {
+        slowSearch();
       } else {
         clearSearch();
       }
-    };
-    doSearch();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searching, searchQuery]);
+  }, [searching, searchQuery, chainId]);
 
   const { colors } = useTheme();
 
@@ -261,7 +258,7 @@ const useSwapCurrencyList = (searchQuery: string, chainId = 1) => {
           title: tokenSectionTypes.importedTokenSection,
         });
       }
-      if (favoriteAssets?.length) {
+      if (favoriteAssets?.length && chainId === MAINNET_CHAINID) {
         list.push({
           color: colors.yellowFavorite,
           data: favoriteAssets,
