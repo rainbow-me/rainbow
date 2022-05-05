@@ -15,3 +15,10 @@ export const clearAllStorages = () => {
   const defaultStorage = new MMKV();
   defaultStorage.clearAll();
 };
+
+export const getAllKeys = () => {
+  return Object.keys(STORAGE_IDS).map(id => {
+    const storage = new MMKV({ id });
+    return storage.getAllKeys();
+  });
+};

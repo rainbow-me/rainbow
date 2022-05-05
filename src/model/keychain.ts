@@ -18,6 +18,7 @@ import {
   UserCredentials,
 } from 'react-native-keychain';
 import { delay } from '../helpers/utilities';
+import * as mmkv from '../model/mmkv';
 import { isValidMnemonic } from '@rainbow-me/handlers/web3';
 import {
   checkIfAsyncStorageIsEmpty,
@@ -288,12 +289,22 @@ export async function getPrivateAccessControlOptions(): Promise<Options> {
 export async function checkKeychainStatus() {
   const entry = await loadString(addressKey);
   const isAsyncStorageEmpty = await checkIfAsyncStorageIsEmpty();
+  const mmkvKeys = mmkv.getAllKeys();
+
+  const asyncStorageKeysDump = JSON.stringify(
+    await AsyncStorage.getAllKeys(),
+    null,
+    2
+  );
+  const mmkvKeysDump = JSON.stringify(mmkvKeys, null, 2);
 
   if (typeof entry !== 'string') {
     logger.log('🔐 Wallet address missing. Keychain does not require repair.');
     AsyncStorage.setItem(
       'log',
-      '🔐 Wallet address missing. Keychain does not require repair.'
+      '🔐 Wallet address missing. Keychain does not require repair.' +
+        asyncStorageKeysDump +
+        mmkvKeysDump
     );
     return false;
   }
@@ -305,9 +316,9 @@ export async function checkKeychainStatus() {
     AsyncStorage.setItem(
       'log',
       '🔐 AsyncStorage is not empty. Keychain does not require repair.' +
-        JSON.stringify(await AsyncStorage.getAllKeys(), null, 2)
+        +asyncStorageKeysDump +
+        mmkvKeysDump
     );
-    console.log(JSON.stringify(await loadAllKeys(), null, 2));
     return false;
   }
 
@@ -320,7 +331,9 @@ export async function checkKeychainStatus() {
     AsyncStorage.setItem(
       'log',
       '🔐 Failed to load all keychain items. Not attempting to repair the keychain.' +
-        JSON.stringify(entries)
+        JSON.stringify(entries, null, 2) +
+        asyncStorageKeysDump +
+        mmkvKeysDump
     );
     return false;
   }
@@ -334,7 +347,9 @@ export async function checkKeychainStatus() {
         );
         AsyncStorage.setItem(
           'log',
-          '🔐 Found incorrect seed phrase. Attempting a keychain repair.'
+          '🔐 Found incorrect seed phrase. Attempting a keychain repair.' +
+            asyncStorageKeysDump +
+            mmkvKeysDump
         );
         return true;
       }
@@ -345,8 +360,9 @@ export async function checkKeychainStatus() {
   AsyncStorage.setItem(
     'log',
     '🔐 Keychain is in correct state. Not attempting to repair.' +
-      JSON.stringify(await AsyncStorage.getAllKeys(), null, 2) +
-      JSON.stringify(entries, null, 2)
+      JSON.stringify(entries, null, 2) +
+      asyncStorageKeysDump +
+      mmkvKeysDump
   );
   console.log(AsyncStorage.getAllKeys(), 'aaaa', entries);
   return false;
