@@ -17,7 +17,6 @@
 #import <AVFoundation/AVFoundation.h>
 #import <mach/mach.h>
 #import <CodePush/CodePush.h>
-#import <Segment/SEGAnalytics.h>
 
 
 @interface RainbowSplashScreenManager : NSObject <RCTBridgeModule>
@@ -58,12 +57,6 @@ RCT_EXPORT_METHOD(hideAnimated) {
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  
-  SEGAnalyticsConfiguration *configuration = [SEGAnalyticsConfiguration configurationWithWriteKey:@"YOUR_WRITE_KEY"];
-  configuration.trackApplicationLifecycleEvents = YES; // Enable this to record certain application events automatically!
-  configuration.recordScreenViews = YES; // Enable this to record screen views automatically!
-  [SEGAnalytics setupWithConfiguration:configuration]
-  [SEGAnalytics event];
 
   // Developer support; define whether internal support has been declared for this build.
   NSLog(@"⚙️ Rainbow internals are %@.", RAINBOW_INTERNALS_ENABLED ? @"enabled" : @"disabled");
