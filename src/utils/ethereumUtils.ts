@@ -294,6 +294,11 @@ const getDataString = (func: string, arrVals: string[]) => {
   return data;
 };
 
+const getChainIdFromType = (type: string) => {
+  return getChainIdFromNetwork(
+    type === 'token' ? Network.mainnet : (type as Network)
+  );
+};
 /**
  * @desc get network string from chainId
  * @param  {Number} chainId
@@ -659,6 +664,7 @@ export default {
   getBalanceAmount,
   getBlockExplorer,
   getChainIdFromNetwork,
+  getChainIdFromType,
   getDataString,
   getEtherscanHostForNetwork,
   getEthPriceUnit,
