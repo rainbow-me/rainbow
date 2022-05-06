@@ -470,6 +470,7 @@
         "for_sale": "For sale",
         "in_showcase": "In Showcase",
         "last_sale_price": "Last sale price",
+        "open_in_web_browser": "Open in Web Browser",
         "opensea": "OpenSea",
         "save_to_photos": "Save to Photos",
         "share_token_info": "Share %{uniqueTokenName} Info",

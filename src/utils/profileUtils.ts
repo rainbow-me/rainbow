@@ -1,6 +1,8 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 
+import { Provider } from '@ethersproject/providers';
 import colors from '../styles/colors';
+import { EthereumAddress } from '@rainbow-me/entities';
 
 // avatars groups emojis with their respective color backgrounds in the `avatarBackgrounds` object in colors.js
 export const avatars = [
@@ -119,6 +121,19 @@ export function isValidImagePath(path: string | null) {
   return path !== '~undefined';
 }
 
+export async function lookupAddressWithRetry(
+  web3Provider: Provider,
+  address: EthereumAddress
+) {
+  for (let i = 0; i < 3; i++) {
+    try {
+      return await web3Provider.lookupAddress(address);
+      // eslint-disable-next-line no-empty
+    } catch {}
+  }
+  return null;
+}
+
 export default {
   avatars,
   addressHashedIndex,
@@ -130,6 +145,7 @@ export default {
   getOldAvatarColorToAvatarBackgroundIndex,
   getNextEmojiWithColor,
   hashCode,
+  lookupAddressWithRetry,
   popularEmojis,
   isEthAddress,
   isValidImagePath,

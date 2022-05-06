@@ -570,7 +570,7 @@ const UniqueTokenExpandedState = ({
                               <UniqueTokenAttributes
                                 {...asset}
                                 color={imageColor}
-                                disableMenu={isPoap}
+                                hideOpenSeaAction={isPoap}
                                 slug={asset.collection.slug}
                               />
                             </Section>
