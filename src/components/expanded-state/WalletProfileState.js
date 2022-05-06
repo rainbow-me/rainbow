@@ -1,6 +1,7 @@
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useRef, useState } from 'react';
+import { InteractionManager } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
 import { getRandomColor } from '../../styles/colors';
 import Divider from '../Divider';
@@ -115,16 +116,20 @@ export default function WalletProfileState({
 
   const handleSubmit = useCallback(() => {
     analytics.track('Tapped "Submit" on Wallet Profile modal');
-    onCloseModal({
-      color:
-        typeof color === 'string' ? profileUtils.colorHexToIndex(color) : color,
-      image: profileImage,
-      name: nameEmoji ? `${nameEmoji} ${value}` : value,
+    InteractionManager.runAfterInteractions(() => {
+      onCloseModal({
+        color:
+          typeof color === 'string'
+            ? profileUtils.colorHexToIndex(color)
+            : color,
+        image: profileImage,
+        name: nameEmoji ? `${nameEmoji} ${value}` : value,
+      });
+      goBack();
+      if (actionType === 'Create' && isNewProfile) {
+        navigate(Routes.CHANGE_WALLET_SHEET);
+      }
     });
-    goBack();
-    if (actionType === 'Create' && isNewProfile) {
-      navigate(Routes.CHANGE_WALLET_SHEET);
-    }
   }, [
     actionType,
     color,

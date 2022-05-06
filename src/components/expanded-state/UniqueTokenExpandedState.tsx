@@ -520,26 +520,16 @@ const UniqueTokenExpandedState = ({
                     {(isNFT || isPoap) && (
                       <>
                         {description ? (
-                          <Section
-                            title={`${lang.t(
-                              'expanded_state.unique_expanded.description'
-                            )}`}
-                            titleEmoji="📖"
-                          >
+                          <Section title="Description">
                             <Markdown>{description}</Markdown>
                           </Section>
                         ) : null}
                         {traits.length ? (
-                          <Section
-                            title={`${lang.t(
-                              'expanded_state.unique_expanded.properties'
-                            )}`}
-                            titleEmoji="🎨"
-                          >
+                          <Section title="Properties">
                             <UniqueTokenAttributes
                               {...asset}
                               color={imageColor}
-                              disableMenu={isPoap}
+                              hideOpenSeaAction={isPoap}
                               slug={asset.collection.slug}
                             />
                           </Section>
