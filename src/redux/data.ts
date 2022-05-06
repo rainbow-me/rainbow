@@ -187,6 +187,13 @@ interface DataState {
   };
 
   /**
+   * Parsed asset information for assets belonging to this account.
+   */
+  assetsData: {
+    [uniqueId: string]: ParsedAddressAsset;
+  };
+
+  /**
    * The ETH price in USD.
    */
   ethUSDPrice: number | undefined | null;
@@ -1369,6 +1376,8 @@ export const assetPricesReceived = (
     disableGenericAssetsFallbackIfNeeded();
   }
   const newAssetPrices = message?.payload?.prices ?? {};
+  if (isEmpty(newAssetPrices)) return;
+
   const { nativeCurrency } = getState().settings;
 
   if (toLower(nativeCurrency) === message?.meta?.currency) {
@@ -1380,36 +1389,29 @@ export const assetPricesReceived = (
         return parseAsset(asset);
       }
     });
-    const { genericAssets } = getState().data;
-
-    const updatedAssets = {
-      ...genericAssets,
-      ...parsedAssets,
-    };
-
-    const assetAddresses = Object.keys(parsedAssets);
-
-    for (let address of assetAddresses) {
-      callbacksOnAssetReceived[toLower(address)]?.(parsedAssets[address]);
-      callbacksOnAssetReceived[toLower(address)] = undefined;
+    const assetIds = Object.keys(parsedAssets);
+    for (let id of assetIds) {
+      callbacksOnAssetReceived[toLower(id)]?.(parsedAssets[id]);
+      callbacksOnAssetReceived[toLower(id)] = undefined;
     }
 
     dispatch({
-      payload: updatedAssets,
+      payload: parsedAssets,
       type: DATA_UPDATE_GENERIC_ASSETS,
     });
   }
-  if (
+
+  const isUSD =
     message?.meta?.currency?.toLowerCase() ===
-      NativeCurrencyKeys.USD.toLowerCase() &&
-    newAssetPrices[ETH_ADDRESS]
-  ) {
-    const value = newAssetPrices[ETH_ADDRESS]?.price?.value;
-    dispatch({
-      payload: value,
-      type: DATA_UPDATE_ETH_USD,
-    });
-  }
+    NativeCurrencyKeys.USD.toLowerCase();
+  const containsETH = newAssetPrices[ETH_ADDRESS];
+  if (!(isUSD && containsETH)) return;
+  const newETHValue = newAssetPrices[ETH_ADDRESS]?.price?.value;
+
+  dispatch({
+    payload: newETHValue,
+    type: DATA_UPDATE_ETH_USD,
+  });
 };
 
 /**
@@ -1429,7 +1431,9 @@ export const assetPricesChanged = (
   const assetAddress = message?.meta?.asset_code;
   if (isNil(price) || isNil(assetAddress)) return;
 
-  if (nativeCurrency?.toLowerCase() === message?.meta?.currency) {
+  const currencyMatch =
+    nativeCurrency?.toLowerCase() === message?.meta?.currency;
+  if (currencyMatch) {
     const { genericAssets } = getState().data;
     const genericAsset = {
       ...get(genericAssets, assetAddress),
@@ -1447,16 +1451,16 @@ export const assetPricesChanged = (
       type: DATA_UPDATE_GENERIC_ASSETS,
     });
   }
-  if (
+
+  const isUSD =
     message?.meta?.currency?.toLowerCase() ===
-      NativeCurrencyKeys.USD.toLowerCase() &&
-    assetAddress === ETH_ADDRESS
-  ) {
-    dispatch({
-      payload: price?.value,
-      type: DATA_UPDATE_ETH_USD,
-    });
-  }
+    NativeCurrencyKeys.USD.toLowerCase();
+  const containsETH = assetAddress === ETH_ADDRESS;
+  if (!(isUSD && containsETH)) return;
+  dispatch({
+    payload: price?.value,
+    type: DATA_UPDATE_ETH_USD,
+  });
 };
 
 /**
@@ -1814,6 +1818,7 @@ export const updateRefetchSavings = (fetch: boolean) => (
 const INITIAL_STATE: DataState = {
   accountAssetsData: {}, // for account-specific assets
   assetPricesFromUniswap: {},
+  assetsData: {},
   ethUSDPrice: null,
   genericAssets: {},
   isLoadingAssets: true,
@@ -1878,12 +1883,14 @@ export default (state: DataState = INITIAL_STATE, action: DataAction) => {
       return {
         ...state,
         accountAssetsData: action.payload,
+        assetsData: action.payload,
       };
     }
     case DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS: {
       return {
         ...state,
         accountAssetsData: action.payload,
+        assetsData: action.payload,
         isLoadingAssets: false,
       };
     }
