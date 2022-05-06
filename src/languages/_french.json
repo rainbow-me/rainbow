@@ -365,6 +365,8 @@
         "get_asset": "Get %{assetSymbol} :)",
         "market_cap": "Market cap :)",
         "read_more_button": "Read more :)",
+        "available_networks": "Available on %{availableNetworks} networks :)",
+        "available_network": "Available on the %{availableNetwork} network :)",
         "social": {
           "facebook": "Facebook :)",
           "homepage": "Homepage :)",

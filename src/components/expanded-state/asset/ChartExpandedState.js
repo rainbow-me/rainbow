@@ -11,6 +11,7 @@ import React, {
 import { LayoutAnimation, View } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { ModalContext } from '../../../react-native-cool-modals/NativeStackView';
+import AvailableNetworks from '../../AvailableNetworks';
 import L2Disclaimer from '../../L2Disclaimer';
 import { ButtonPressAnimation } from '../../animations';
 import { CoinDividerHeight } from '../../coin-divider';
@@ -224,6 +225,7 @@ export default function ChartExpandedState({ asset }) {
     totalVolume,
     loading: additionalAssetDataLoading,
     links,
+    networks,
   } = useAdditionalAssetData(asset?.address, assetWithPrice?.price?.value);
 
   const delayedDescriptions = useDelayedValueWithLayoutAnimation(
@@ -401,7 +403,9 @@ export default function ChartExpandedState({ asset }) {
           symbol={assetWithPrice.symbol}
         />
       )}
-
+      {networks && !hasBalance && (
+        <AvailableNetworks colors={colors} networks={networks} />
+      )}
       {!isL2 && (
         <CarouselWrapper
           isAnyItemLoading={additionalAssetDataLoading}
