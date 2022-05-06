@@ -1,4 +1,5 @@
 import { get, isNil, map, mapValues, toUpper } from 'lodash';
+import logger from '../utils/logger';
 import { dedupeUniqueTokens } from './uniqueTokens';
 import { AssetTypes } from '@rainbow-me/entities';
 import { isNativeAsset } from '@rainbow-me/handlers/assets';
@@ -53,6 +54,9 @@ export const parseAsset = ({ asset_code: address, ...asset } = {}) => {
   const type = Object.keys(AssetTypes).includes(asset.type)
     ? asset.type
     : AssetTypes.token;
+
+  logger.debug('asset.network: ', asset.network);
+  logger.debug('asset.mainnet_address: ', asset.mainnet_address, asset.name);
 
   const parsedAsset = {
     ...asset,
