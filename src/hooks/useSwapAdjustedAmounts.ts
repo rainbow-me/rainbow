@@ -36,7 +36,9 @@ export default function useSwapAdjustedAmounts(tradeDetails: Quote) {
   let amountReceivedSold = inputAsExact
     ? adjustedAmounts[Field.OUTPUT]
     : adjustedAmounts[Field.INPUT];
-  const address = inputAsExact ? outputCurrency.address : inputCurrency.address;
+  const address = inputAsExact
+    ? outputCurrency.mainnet_address || outputCurrency.address
+    : inputCurrency.mainnet_address || inputCurrency.address;
   const priceValue = genericAssets[address]?.price?.value ?? 0;
 
   if (
