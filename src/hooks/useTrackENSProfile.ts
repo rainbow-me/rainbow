@@ -1,5 +1,5 @@
 import analytics from '@segment/analytics-react-native';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useQuery } from 'react-query';
 import useWallets from './useWallets';
 import { EthereumAddress } from '@rainbow-me/entities';
@@ -31,10 +31,10 @@ export default function useTrackENSProfile() {
 
   const getTrackProfilesData = useCallback(async () => {
     const data = {
-      avatarOrCoverSet: false,
-      isPrimaryNameSet: false,
+      hasAvatarOrCoverSet: false,
+      hasOtherMetadataSet: false,
+      hasSetPrimaryName: false,
       namesOwned: 0,
-      otherMetadataSet: false,
     };
     for (const i in addresses) {
       const ens = walletNames[addresses[i]];
@@ -49,9 +49,11 @@ export default function useTrackENSProfile() {
         const otherMetadataSet = Object.keys(profile?.records).some(
           key => key !== ENS_RECORDS.cover && key !== ENS_RECORDS.avatar
         );
-        data.isPrimaryNameSet = true;
-        if (!data.avatarOrCoverSet) data.avatarOrCoverSet = avatarOrCoverSet;
-        if (!data.otherMetadataSet) data.otherMetadataSet = otherMetadataSet;
+        data.hasSetPrimaryName = true;
+        if (!data.hasAvatarOrCoverSet)
+          data.hasAvatarOrCoverSet = avatarOrCoverSet;
+        if (!data.hasOtherMetadataSet)
+          data.hasOtherMetadataSet = otherMetadataSet;
       }
     }
     return data;
@@ -63,15 +65,9 @@ export default function useTrackENSProfile() {
     { enabled: Boolean(addresses.length), retry: 0 }
   );
 
-  useEffect(() => {
-    if (isSuccess) {
-      console.log('😬😬😬😬😬😬 IDENTIFY', data);
-    }
-  }, [data, isSuccess]);
-
-  const trackENSProfile = useCallback(async () => {
-    analytics.identify(null, data);
-  }, [data]);
+  const trackENSProfile = useCallback(() => {
+    isSuccess && analytics.identify(null, data);
+  }, [isSuccess, data]);
 
   return { trackENSProfile };
 }
