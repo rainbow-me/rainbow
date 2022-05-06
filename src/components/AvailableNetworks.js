@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import Divider from './Divider';
@@ -95,7 +96,9 @@ const AvailableNetworks = ({
               size="smedium"
               weight={prominent ? 'heavy' : 'bold'}
             >
-              {`Available on ${availableNetworks?.length} networks`}
+              {lang.t('expanded_state.available_networks', {
+                availableNetworks: availableNetworks?.length,
+              })}
             </Text>
           </Column>
           <Column align="end" justify="center">

@@ -363,6 +363,7 @@
         "get_asset": "Get %{assetSymbol}",
         "market_cap": "Market cap",
         "read_more_button": "Read more",
+        "available_networks": "Available on %{availableNetworks} networks",
         "social": {
           "facebook": "Facebook",
           "homepage": "Homepage",
