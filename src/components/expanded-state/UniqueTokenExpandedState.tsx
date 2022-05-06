@@ -208,8 +208,8 @@ const UniqueTokenExpandedState = ({
   } = useShowcaseTokens();
 
   const [floorPrice, setFloorPrice] = useState<string | null>(null);
-  const [priceOfEth, setPriceOfEth] = useState<number>(
-    () => ethereumUtils.getEthPriceUnit()
+  const [priceOfEth, setPriceOfEth] = useState<number>(() =>
+    ethereumUtils.getEthPriceUnit()
   );
   const [showCurrentPriceInEth, setShowCurrentPriceInEth] = useState(true);
   const [showFloorInEth, setShowFloorInEth] = useState(true);
