@@ -116,7 +116,7 @@ const NetworkSwitcher = ({
               size="smedium"
               weight={prominent ? 'heavy' : 'bold'}
             >
-              {lang.t('swap.network_switcher', {
+              {lang.t('expanded_state.swap.network_switcher', {
                 network:
                   networkInfo[
                     ethereumUtils.getNetworkFromChainId(currentChainId)
