@@ -3,7 +3,10 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { useQuery } from 'react-query';
 import useWallets from './useWallets';
 import { EthereumAddress } from '@rainbow-me/entities';
-import { fetchProfile } from '@rainbow-me/handlers/ens';
+import {
+  fetchAccountRegistrations,
+  fetchProfile,
+} from '@rainbow-me/handlers/ens';
 import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 import walletTypes from '@rainbow-me/helpers/walletTypes';
 
@@ -30,12 +33,16 @@ export default function useTrackENSProfile() {
     const data = {
       avatarOrCoverSet: false,
       isPrimaryNameSet: false,
+      namesOwned: 0,
       otherMetadataSet: false,
     };
     for (const i in addresses) {
       const ens = walletNames[addresses[i]];
       if (ens) {
         const profile = await fetchProfile(ens);
+        const registrations = await fetchAccountRegistrations(addresses[i]);
+        data.namesOwned +=
+          registrations?.data?.account?.registrations?.length || 0;
         const avatarOrCoverSet = Boolean(
           profile?.records?.avatar || profile?.records?.cover
         );
