@@ -96,7 +96,7 @@ const AvailableNetworks = ({
               size="smedium"
               weight={prominent ? 'heavy' : 'bold'}
             >
-              {lang.t('expanded_state.available_networks', {
+              {lang.t('expanded_state.asset.available_networks', {
                 availableNetworks: availableNetworks?.length,
               })}
             </Text>
