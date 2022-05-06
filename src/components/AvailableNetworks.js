@@ -8,6 +8,7 @@ import ChainBadge from './coin-icon/ChainBadge';
 import { Column, Row } from './layout';
 import { Text } from './text';
 import { Box } from '@rainbow-me/design-system';
+import networkInfo from '@rainbow-me/helpers/networkInfo';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@rainbow-me/references';
 import { padding, position } from '@rainbow-me/styles';
 import { ethereumUtils } from '@rainbow-me/utils';
@@ -96,9 +97,13 @@ const AvailableNetworks = ({
               size="smedium"
               weight={prominent ? 'heavy' : 'bold'}
             >
-              {lang.t('expanded_state.asset.available_networks', {
-                availableNetworks: availableNetworks?.length,
-              })}
+              {availableNetworks?.length > 1
+                ? lang.t('expanded_state.asset.available_networks', {
+                    availableNetworks: availableNetworks?.length,
+                  })
+                : lang.t('expanded_state.asset.available_network', {
+                    availableNetwork: networkInfo[availableNetworks[0]].name,
+                  })}
             </Text>
           </Column>
           <Column align="end" justify="center">
