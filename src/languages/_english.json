@@ -276,6 +276,7 @@
       "clear_async_storage": "Clear async storage",
       "clear_mmkv_storage": "Clear MMKV storage",
       "clear_image_metadata_cache": "Clear Image Metadata Cache",
+      "clear_image_cache": "Clear Image Cache",
       "connect_to_hardhat": "Connect to hardhat",
       "crash_app_render_error": "Crash app (render error)",
       "not_applied": "NOT APPLIED",

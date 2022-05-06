@@ -40,10 +40,14 @@ export default function usePersistentDominantColorFromImage(
   useEffect(() => {
     if (state === State.init && url) {
       setState(State.loading);
-      getDominantColorFromImage(url, colorToMeasureAgainst).then(color =>
-        // @ts-ignore
-        setPersistentDominantColor(color)
-      );
+      getDominantColorFromImage(url, colorToMeasureAgainst)
+        .then(color => {
+          // @ts-ignore
+          setPersistentDominantColor(color);
+        })
+        .finally(() => {
+          setState(State.loaded);
+        });
     }
   }, [colorToMeasureAgainst, setPersistentDominantColor, state, url]);
 

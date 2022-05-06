@@ -16,6 +16,7 @@ import useExperimentalFlag, {
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
 import { AccentColorProvider, Box } from '@rainbow-me/design-system';
+import { maybeSignUri } from '@rainbow-me/handlers/imgix';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
@@ -24,7 +25,7 @@ import { isValidDomainFormat } from '@rainbow-me/helpers/validators';
 import {
   useAccountSettings,
   useContacts,
-  useENSProfileRecords,
+  useENSProfileImages,
   usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
@@ -164,11 +165,11 @@ const ContactProfileState = ({
 
   const avatarSize = 65;
 
-  const { data: profile } = useENSProfileRecords(ens, {
+  const { data: images } = useENSProfileImages(ens, {
     enabled: Boolean(ens),
   });
 
-  const ensAvatar = profile?.images?.avatarUrl;
+  const avatarUrl = images?.avatarUrl;
 
   const emojiFromAddress = useMemo(
     () => (address ? addressHashedEmoji(address) : ''),
@@ -181,7 +182,7 @@ const ContactProfileState = ({
   );
 
   const { result: dominantColor } = usePersistentDominantColorFromImage(
-    ensAvatar || ''
+    maybeSignUri(avatarUrl || '') || ''
   );
 
   const accentColor = profilesEnabled
@@ -201,12 +202,12 @@ const ContactProfileState = ({
               [0, 2, 5, colors.shadow, 0.08],
             ]}
           >
-            {ensAvatar ? (
+            {avatarUrl ? (
               <Box
                 as={ImgixImage}
                 borderRadius={avatarSize / 2}
                 height={{ custom: avatarSize }}
-                source={{ uri: ensAvatar }}
+                source={{ uri: avatarUrl }}
                 width={{ custom: avatarSize }}
               />
             ) : (

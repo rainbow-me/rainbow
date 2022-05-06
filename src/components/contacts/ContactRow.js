@@ -21,7 +21,7 @@ import {
 import {
   useContacts,
   useDimensions,
-  useENSProfileRecords,
+  useENSProfileImages,
 } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { margin } from '@rainbow-me/styles';
@@ -128,11 +128,11 @@ const ContactRow = (
     setENSName,
   ]);
 
-  const { data: profile } = useENSProfileRecords(ensName, {
+  const { data: images } = useENSProfileImages(ensName, {
     enabled: Boolean(ensName),
   });
 
-  const ensAvatar = profile?.images?.avatarUrl;
+  const ensAvatar = images?.avatarUrl;
 
   let cleanedUpLabel = null;
   if (label) {
