@@ -20,7 +20,6 @@ export const errorsCode = mirrorKeys([
 
   'CAN_ACCESS_SECRET_PHRASE',
 
-  //biometry
   'CREATED_WITH_BIOMETRY_ERROR',
 
   'NOT_VALID_ENS',

@@ -275,9 +275,9 @@ export const sendTransaction = async ({
 }> => {
   try {
     logger.sentry('about to send transaction', transaction);
+    const wallet =
+      existingWallet || (await loadWallet(undefined, true, provider));
     try {
-      const wallet =
-        existingWallet || (await loadWallet(undefined, true, provider));
       if (!wallet) return null;
       const result = await wallet.sendTransaction(transaction);
       logger.log('tx result', result);
@@ -310,9 +310,9 @@ export const signTransaction = async ({
 }> => {
   try {
     logger.sentry('about to sign transaction', transaction);
+    const wallet =
+      existingWallet || (await loadWallet(undefined, true, provider));
     try {
-      const wallet =
-        existingWallet || (await loadWallet(undefined, true, provider));
       if (!wallet) return null;
       const result = await wallet.signTransaction(transaction);
       return { result };
@@ -343,9 +343,9 @@ export const signMessage = async (
 }> => {
   try {
     logger.sentry('about to sign message', message);
+    const wallet =
+      existingWallet || (await loadWallet(undefined, true, provider));
     try {
-      const wallet =
-        existingWallet || (await loadWallet(undefined, true, provider));
       if (!wallet) return null;
       const result = await wallet.signMessage(arrayify(message));
       return { result };
@@ -374,9 +374,9 @@ export const signPersonalMessage = async (
 }> => {
   try {
     logger.sentry('about to sign personal message', message);
+    const wallet =
+      existingWallet || (await loadWallet(undefined, true, provider));
     try {
-      const wallet =
-        existingWallet || (await loadWallet(undefined, true, provider));
       if (!wallet) return null;
       const result = await wallet.signMessage(
         typeof message === 'string' && isHexString(addHexPrefix(message))
@@ -411,9 +411,9 @@ export const signTypedDataMessage = async (
 }> => {
   try {
     logger.sentry('about to sign typed data  message', message);
+    const wallet =
+      existingWallet || (await loadWallet(undefined, true, provider));
     try {
-      const wallet =
-        existingWallet || (await loadWallet(undefined, true, provider));
       if (!wallet) return null;
       const pkeyBuffer = toBuffer(addHexPrefix(wallet.privateKey));
       let parsedData = message;
@@ -471,14 +471,8 @@ export const oldLoadSeedPhrase = async (): Promise<null | EthereumWalletSeed> =>
   }
 };
 
-export const loadAddress = (): Promise<null | EthereumAddress> => {
-  try {
-    return keychain.loadString(addressKey) as Promise<string | null>;
-  } catch (err) {
-    return Promise.resolve(null);
-    // return null
-  }
-};
+export const loadAddress = (): Promise<null | EthereumAddress> =>
+  keychain.loadString(addressKey) as Promise<string | null>;
 
 const loadPrivateKey = async (
   address?: EthereumAddress | undefined
