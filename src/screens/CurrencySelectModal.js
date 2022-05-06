@@ -13,6 +13,7 @@ import React, {
 import { StatusBar } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import { useTheme } from 'styled-components';
 import { useDebounce } from 'use-debounce';
 import GestureBlocker from '../components/GestureBlocker';
 import {
@@ -20,12 +21,12 @@ import {
   CurrencySelectModalHeader,
   ExchangeSearch,
 } from '../components/exchange';
+import NetworkSwitcher from '../components/exchange/NetworkSwitcher';
 import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
 import { usePagerPosition } from '../navigation/ScrollPositionContext';
-import { isL2Asset } from '@rainbow-me/handlers/assets';
 import { addHexPrefix } from '@rainbow-me/handlers/web3';
-import { CurrencySelectionTypes, Network } from '@rainbow-me/helpers';
+import { CurrencySelectionTypes } from '@rainbow-me/helpers';
 import {
   useAssetsInWallet,
   useCoinListEditOptions,
@@ -67,6 +68,7 @@ export default function CurrencySelectModal() {
   const isFocused = useIsFocused();
   const prevIsFocused = usePrevious(isFocused);
   const { navigate, dangerouslyGetState } = useNavigation();
+  const { colors } = useTheme();
   const {
     params: {
       onSelectCurrency,
@@ -89,35 +91,25 @@ export default function CurrencySelectModal() {
   const searchQueryExists = useMemo(() => searchQuery.length > 0, [
     searchQuery,
   ]);
-
   const assetsInWallet = useAssetsInWallet();
   const { hiddenCoins } = useCoinListEditOptions();
 
-  const assetNetwork = useMemo(
-    () => chainId && ethereumUtils.getNetworkFromChainId(chainId),
-    [chainId]
-  );
+  const [currentChainId, setCurrentChainId] = useState(chainId);
 
   const filteredAssetsInWallet = useMemo(() => {
     if (type === CurrencySelectionTypes.input) {
       return assetsInWallet?.filter(asset => {
-        if (assetNetwork) {
-          if (isL2Asset(asset.type) && assetNetwork !== asset.type)
-            return false;
-          if (!isL2Asset(asset.type) && assetNetwork !== Network.mainnet)
-            return false;
-        }
         return !hiddenCoins?.includes(asset.uniqueId);
       });
     }
     return [];
-  }, [type, assetsInWallet, assetNetwork, hiddenCoins]);
+  }, [type, assetsInWallet, hiddenCoins]);
 
   const {
     swapCurrencyList,
     swapCurrencyListLoading,
     updateFavorites,
-  } = useSwapCurrencyList(searchQueryForSearch, chainId);
+  } = useSwapCurrencyList(searchQueryForSearch, currentChainId);
 
   const getWalletCurrencyList = useCallback(() => {
     if (type === CurrencySelectionTypes.input) {
@@ -178,7 +170,13 @@ export default function CurrencySelectModal() {
   const handleSelectAsset = useCallback(
     item => {
       setPointerEvents(false);
-      onSelectCurrency(item);
+      const isMainnet = currentChainId === 1;
+      onSelectCurrency(
+        isMainnet && type === CurrencySelectionTypes.output
+          ? { ...item, type: 'token' }
+          : item
+      );
+      setCurrentChainId(ethereumUtils.getChainIdFromType(item.type));
       if (searchQueryForSearch) {
         analytics.track('Selected a search result in Swap', {
           name: item.name,
@@ -195,6 +193,7 @@ export default function CurrencySelectModal() {
     },
     [
       setPointerEvents,
+      currentChainId,
       onSelectCurrency,
       searchQueryForSearch,
       dangerouslyGetState,
@@ -254,6 +253,11 @@ export default function CurrencySelectModal() {
 
   const isFocusedAndroid = useIsFocused() && android;
 
+  const handleBackButton = useCallback(() => {
+    setSearchQuery('');
+    setCurrentChainId(chainId);
+  }, [chainId]);
+
   const shouldUpdateFavoritesRef = useRef(false);
   useEffect(() => {
     if (!searchQueryExists && shouldUpdateFavoritesRef.current) {
@@ -286,8 +290,9 @@ export default function CurrencySelectModal() {
           <GestureBlocker type="top" />
           <Column flex={1}>
             <CurrencySelectModalHeader
-              setSearchQuery={setSearchQuery}
+              handleBackButton={handleBackButton}
               testID="currency-select-header"
+              type={type}
             />
             <ExchangeSearch
               isFetching={swapCurrencyListLoading}
@@ -298,6 +303,13 @@ export default function CurrencySelectModal() {
               searchQuery={searchQuery}
               testID="currency-select-search"
             />
+            {type === CurrencySelectionTypes.output && (
+              <NetworkSwitcher
+                colors={colors}
+                currentChainId={currentChainId}
+                setCurrentChainId={setCurrentChainId}
+              />
+            )}
             {type === null || type === undefined ? null : (
               <CurrencySelectionList
                 itemProps={itemProps}
