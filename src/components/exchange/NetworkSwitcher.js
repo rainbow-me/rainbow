@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import Divider from '../Divider';
@@ -115,10 +116,12 @@ const NetworkSwitcher = ({
               size="smedium"
               weight={prominent ? 'heavy' : 'bold'}
             >
-              {`Swapping on the ${
-                networkInfo[ethereumUtils.getNetworkFromChainId(currentChainId)]
-                  .name
-              } network`}
+              {lang.t('swap.network_switcher', {
+                network:
+                  networkInfo[
+                    ethereumUtils.getNetworkFromChainId(currentChainId)
+                  ].name,
+              })}
             </Text>
           </Column>
           <Column align="end" justify="center">

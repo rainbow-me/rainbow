@@ -426,7 +426,8 @@
         "swapping_via": "Swapping via :)",
         "unicorn_one": "that unicorn one :)",
         "uniswap_v2": "Uniswap v2 :)",
-        "view_on": "View on %{blockExplorerName} :)"
+        "view_on": "View on %{blockExplorerName} :)",
+        "network_switcher": "Swapping on the %{network} network :)"
       },
       "swap_details": {
         "exchange_rate": "Exchange rate :)",
