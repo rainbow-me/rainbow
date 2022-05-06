@@ -1,7 +1,7 @@
 import { Quote } from '@rainbow-me/swaps';
 import { AnyAction } from 'redux';
 import { fetchAssetPrices } from './explorer';
-import { UniswapCurrency } from '@rainbow-me/entities';
+import { SwappableAsset } from '@rainbow-me/entities';
 import { ExchangeModalTypes } from '@rainbow-me/helpers';
 import { AppDispatch, AppGetState } from '@rainbow-me/redux/store';
 
@@ -24,15 +24,15 @@ export interface TypeSpecificParameters {
 interface SwapState {
   derivedValues: any;
   displayValues: any;
-  depositCurrency: UniswapCurrency | null;
-  inputCurrency: UniswapCurrency | null;
+  depositCurrency: SwappableAsset | null;
+  inputCurrency: SwappableAsset | null;
   independentField: SwapModalField;
   independentValue: string | null;
   slippageInBips: number;
   type: string;
   tradeDetails: Quote | null;
   typeSpecificParameters?: TypeSpecificParameters | null;
-  outputCurrency: UniswapCurrency | null;
+  outputCurrency: SwappableAsset | null;
 }
 
 // -- Constants --------------------------------------- //
@@ -99,13 +99,13 @@ export const updateSwapOutputAmount = (value: string | null) => (
 };
 
 export const updateSwapDepositCurrency = (
-  newDepositCurrency: UniswapCurrency | null
+  newDepositCurrency: SwappableAsset | null
 ) => (dispatch: AppDispatch) => {
   dispatch({ payload: newDepositCurrency, type: SWAP_UPDATE_DEPOSIT_CURRENCY });
 };
 
 export const updateSwapInputCurrency = (
-  newInputCurrency: UniswapCurrency | null
+  newInputCurrency: SwappableAsset | null
 ) => (dispatch: AppDispatch, getState: AppGetState) => {
   const {
     depositCurrency,
@@ -147,7 +147,7 @@ export const updateSwapInputCurrency = (
 };
 
 export const updateSwapOutputCurrency = (
-  newOutputCurrency: UniswapCurrency | null
+  newOutputCurrency: SwappableAsset | null
 ) => (dispatch: AppDispatch, getState: AppGetState) => {
   const { independentField, inputCurrency, type } = getState().swap;
   if (

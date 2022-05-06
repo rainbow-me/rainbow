@@ -1,12 +1,12 @@
 import { useSelector } from 'react-redux';
-import { UniswapCurrency } from '@rainbow-me/entities';
+import { SwappableAsset } from '@rainbow-me/entities';
 import { AppState } from '@rainbow-me/redux/store';
 
 export default function useSwapCurrencies() {
-  const inputCurrency: UniswapCurrency = useSelector(
+  const inputCurrency: SwappableAsset = useSelector(
     (state: AppState) => state.swap.inputCurrency
   );
-  const outputCurrency: UniswapCurrency = useSelector(
+  const outputCurrency: SwappableAsset = useSelector(
     (state: AppState) => state.swap.outputCurrency
   );
 

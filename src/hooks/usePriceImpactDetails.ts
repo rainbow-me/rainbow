@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
 import { useTheme } from '@rainbow-me/context';
-import { RainbowToken, UniswapCurrency } from '@rainbow-me/entities';
+import { RainbowToken, SwappableAsset } from '@rainbow-me/entities';
 import { Network } from '@rainbow-me/helpers';
 import { AppState } from '@rainbow-me/redux/store';
 import { ETH_ADDRESS, WETH_ADDRESS } from '@rainbow-me/references';
@@ -23,8 +23,8 @@ const SeverePriceImpactThreshold = 0.1;
 export default function usePriceImpactDetails(
   inputAmount: string | null,
   outputAmount: string | null,
-  inputCurrency: UniswapCurrency | null,
-  outputCurrency: UniswapCurrency | null,
+  inputCurrency: SwappableAsset | null,
+  outputCurrency: SwappableAsset | null,
   currentNetwork = Network.mainnet,
   loading = false
 ) {

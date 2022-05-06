@@ -34,7 +34,7 @@ import {
   RainbowToken,
   RainbowTransaction,
   SelectedGasFee,
-  UniswapCurrency,
+  SwappableAsset,
 } from '@rainbow-me/entities';
 import { getOnchainAssetBalance } from '@rainbow-me/handlers/assets';
 import {
@@ -657,7 +657,7 @@ const calculateL1FeeOptimism = async (
 const getMultichainAssetWithPrice = (
   asset: RainbowToken,
   network: Network
-): UniswapCurrency => {
+): SwappableAsset => {
   const address = asset?.mainnet_address || asset?.address;
   let realAddress =
     address?.toLowerCase() === ETH_ADDRESS_AGGREGATORS.toLowerCase()
@@ -681,7 +681,7 @@ const getMultichainAssetWithPrice = (
     realAddress = MATIC_POLYGON_ADDRESS;
   }
 
-  return store.getState().data?.genericAssets[realAddress] as UniswapCurrency;
+  return store.getState().data?.genericAssets[realAddress] as SwappableAsset;
 };
 
 export default {

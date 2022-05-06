@@ -85,7 +85,7 @@ export interface ParsedAddressAsset
   isNativeAsset?: boolean;
 }
 
-export interface UniswapCurrency extends ParsedAddressAsset {
+export interface SwappableAsset extends ParsedAddressAsset {
   native?: {
     price?: {
       amount?: string;
