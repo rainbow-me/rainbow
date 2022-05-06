@@ -22,7 +22,7 @@ scripts/codegen-translations.js @jinchung @marco
 src/apollo @brunobar79 @jinchung @derHowie
 
 # ASSETS
-src/assets @skylarbarrera @christianbaroni
+src/assets @skylarbarrera 
 
 # COMPONENTS
 src/components @osdnk @terrysahaidak
@@ -96,6 +96,9 @@ src/navigation @osdnk @terrysahaidak
 
 # Parsers
 src/parsers @brunobar79 @jinchung
+
+# performance
+src/performance/utils.tsx @terrysahaidak
 
 # rainbow fetch
 src/rainbow-fetch @brunobar79 @skylarbarrera
