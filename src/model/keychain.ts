@@ -29,10 +29,14 @@ import {
   allWalletsKey,
   analyticsUserIdentifier,
   selectedWalletKey,
+  signingWallet,
+  signingWalletAddress,
 } from '@rainbow-me/utils/keychainConstants';
 import logger from 'logger';
+import { NativeModules } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 
+const { BackupDetector } = NativeModules;
 interface AnonymousKey {
   length: number;
   nil: boolean;
@@ -287,16 +291,23 @@ export async function getPrivateAccessControlOptions(): Promise<Options> {
 //    valid.
 // Result is true if keychain is needs a repair, false otherwise.
 export async function checkKeychainStatus() {
+  try {
+    console.log(
+      '$#$$$$$$$$$$$$$$$$$$',
+      await BackupDetector.checkBackupMarker()
+    );
+    await BackupDetector.createBackupMarker();
+  } catch (error) {
+    console.error(error);
+  }
+
   const entry = await loadString(addressKey);
   const isAsyncStorageEmpty = await checkIfAsyncStorageIsEmpty();
   const mmkvKeys = mmkv.getAllKeys();
 
-  const asyncStorageKeysDump = JSON.stringify(
-    await AsyncStorage.getAllKeys(),
-    null,
-    2
-  );
-  const mmkvKeysDump = JSON.stringify(mmkvKeys, null, 2);
+  const asyncStorageKeysDump =
+    'AS:' + JSON.stringify(await AsyncStorage.getAllKeys(), null, 2);
+  const mmkvKeysDump = 'mmkv:' + JSON.stringify(mmkvKeys, null, 2);
 
   if (typeof entry !== 'string') {
     logger.log('🔐 Wallet address missing. Keychain does not require repair.');
@@ -375,6 +386,8 @@ export async function repairAfterBackup() {
       addressKey,
       selectedWalletKey,
       allWalletsKey,
+      signingWallet,
+      signingWalletAddress,
     ].map(key => remove(key))
   );
 

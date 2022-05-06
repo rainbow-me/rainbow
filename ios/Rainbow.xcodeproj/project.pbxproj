@@ -33,6 +33,8 @@
 		66FEC91623EDA14000A0F367 /* RoundedCornerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FEC91523EDA13F00A0F367 /* RoundedCornerView.swift */; };
 		6E2F836CD36BA10F28D4B6D5 /* libPods-PriceWidgetExtension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E4178DBFC518CF9D1C433FF /* libPods-PriceWidgetExtension.a */; };
 		7287CE1EC33B4913AEE1F4B6 /* SFMono-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 668A9E253DAF444A90ECB997 /* SFMono-Medium.otf */; };
+		8524CF7D2825343100440CC1 /* BackupDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8524CF7C2825343100440CC1 /* BackupDetector.swift */; };
+		8524CF7F2825346E00440CC1 /* BackupDetectorBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 8524CF7E2825346E00440CC1 /* BackupDetectorBridge.m */; };
 		A4277D9F23CBD1910042BAF4 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4277D9E23CBD1910042BAF4 /* Extensions.swift */; };
 		A4277DA323CFE85F0042BAF4 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4277DA223CFE85F0042BAF4 /* Theme.swift */; };
 		A44A4EEE23EC928900B543F1 /* CoinIconWithProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44A4EED23EC928900B543F1 /* CoinIconWithProgressBar.swift */; };
@@ -228,6 +230,8 @@
 		6E840AA2C1BA9F0557A508BE /* Pods-Rainbow.localrelease.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.localrelease.xcconfig"; path = "Target Support Files/Pods-Rainbow/Pods-Rainbow.localrelease.xcconfig"; sourceTree = "<group>"; };
 		6FD12B23B346295FAAB3DBDC /* Pods-Rainbow.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.staging.xcconfig"; path = "Target Support Files/Pods-Rainbow/Pods-Rainbow.staging.xcconfig"; sourceTree = "<group>"; };
 		7EB36938918AB684A1CF5504 /* Pods-SelectTokenIntent.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SelectTokenIntent.staging.xcconfig"; path = "Target Support Files/Pods-SelectTokenIntent/Pods-SelectTokenIntent.staging.xcconfig"; sourceTree = "<group>"; };
+		8524CF7C2825343100440CC1 /* BackupDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupDetector.swift; sourceTree = "<group>"; };
+		8524CF7E2825346E00440CC1 /* BackupDetectorBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BackupDetectorBridge.m; sourceTree = "<group>"; };
 		95F2888C850F40C8A26E083B /* SFMono-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SFMono-Regular.otf"; path = "../src/assets/fonts/SFMono-Regular.otf"; sourceTree = "<group>"; };
 		98AED33BAB4247CEBEF8464D /* libz.tbd */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		9DEADFA4826D4D0BAA950D21 /* libRNFIRMessaging.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNFIRMessaging.a; sourceTree = "<group>"; };
@@ -377,6 +381,8 @@
 				66A28EAF24CAF1B500410A88 /* TestFlight.m */,
 				C04D10EF25AFC8C1003BEF7A /* Extras.json */,
 				6655FFB325BB2B0700642961 /* ThemeModule.m */,
+				8524CF7C2825343100440CC1 /* BackupDetector.swift */,
+				8524CF7E2825346E00440CC1 /* BackupDetectorBridge.m */,
 			);
 			name = Rainbow;
 			sourceTree = "<group>";
@@ -1041,11 +1047,13 @@
 				A49B52B623DB5D5600A00918 /* TransactionViewModelProtocol.swift in Sources */,
 				15E531DA242DAB7100797B89 /* NotificationManager.m in Sources */,
 				A4F8DACB23DF85DF00560E47 /* TransactionListBaseCell.swift in Sources */,
+				8524CF7F2825346E00440CC1 /* BackupDetectorBridge.m in Sources */,
 				A49B52C023DCCDA800A00918 /* TransactionRequestSection.swift in Sources */,
 				66A1FEB524AB641100C3F539 /* UIViewController+slack.swift in Sources */,
 				A4704B4823C546DA00E50E4B /* TransactionListViewCell.swift in Sources */,
 				A485E61423C8ED6000E5C3D4 /* TransactionListViewHeader.swift in Sources */,
 				A49B52B423DB5D1100A00918 /* TransactionViewModelTransactionItem.swift in Sources */,
+				8524CF7D2825343100440CC1 /* BackupDetector.swift in Sources */,
 				66FEC91623EDA14000A0F367 /* RoundedCornerView.swift in Sources */,
 				A477567E23DB3A85005AE8FD /* TransactionListViewManager.m in Sources */,
 				66A1FEB424AB641100C3F539 /* RNCMScreenStack.m in Sources */,
