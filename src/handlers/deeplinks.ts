@@ -124,6 +124,7 @@ export default async function handleDeeplink(
                 : Routes.SHOWCASE_SHEET,
               {
                 address: addressOrENS,
+                fromRoute: 'Deeplink',
               }
             );
           } else {
