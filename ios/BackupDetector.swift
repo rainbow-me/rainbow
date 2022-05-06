@@ -21,8 +21,8 @@ class BackupDetector: NSObject {
         url.appendPathComponent("backup-detector")
         url.appendPathComponent("backup.txt")
 
-        print("checking for file at path \(url.absoluteString)")
-        resolve(manager.fileExists(atPath: url.absoluteString));
+        print("checking for file at path \(url.path)")
+        resolve(manager.fileExists(atPath: url.path));
         return
       } else {
         reject("checkBackupMarker", "Couldn't get bundleIdentifier", nil)
@@ -47,17 +47,19 @@ class BackupDetector: NSObject {
         url.appendPathComponent(bundleIdentifier, isDirectory: true)
         url.appendPathComponent("backup-detector")
         
-        print("url: \(url.absoluteString)")
+        print("url: \(url.path)")
 
         // TODO: mark directory as excluded from backups
-        if (!manager.fileExists(atPath: url.absoluteString)) {
+        if (!manager.fileExists(atPath: url.path)) {
           print("file doesnt exist")
           try manager.createDirectory(at: url, withIntermediateDirectories: true, attributes: nil)
           print("directory created")
-          manager.createFile(atPath: url.absoluteString + "/backup.txt", contents: "hello".data(using: .utf8))
+          manager.createFile(atPath: url.path + "/backup.txt", contents: "hello".data(using: .utf8))
           print("file created")
-          resolve(nil)
+        } else {
+          print("file already exists")
         }
+        resolve(nil)
       } catch {
         reject("createBackupMarker", "Experienced error", error)
         return
