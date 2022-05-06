@@ -4,6 +4,7 @@ import { useMemoOne } from 'use-memo-one';
 import { interpolate, ScaleInAnimation } from '../../animations';
 import { Icon } from '../../icons';
 import { Centered } from '../../layout';
+import { useTheme } from '@rainbow-me/context';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 
@@ -15,7 +16,11 @@ const Container = styled(Centered)({
   position: 'absolute',
 });
 
-export default function HoldToAuthorizeButtonIcon({ animatedValue }) {
+interface Props {
+  animatedValue: Animated.Value<number>;
+}
+
+export default function HoldToAuthorizeButtonIcon({ animatedValue }: Props) {
   const { colors } = useTheme();
 
   const animation = useMemoOne(() => {
@@ -25,7 +30,7 @@ export default function HoldToAuthorizeButtonIcon({ animatedValue }) {
         extrapolate: Animated.Extrapolate.CLAMP,
         inputRange: [30, 100],
         outputRange: [5, 0],
-      }),
+      }) as Animated.Node<number>,
       divide(1, animatedValue)
     );
   }, [animatedValue]);
