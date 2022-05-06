@@ -50,14 +50,9 @@ export const parseAsset = ({ asset_code: address, ...asset } = {}) => {
   const metadata = getTokenMetadata(asset.mainnet_address || address);
   const name = parseAssetName(metadata, asset.name);
   const symbol = parseAssetSymbol(metadata, asset.symbol);
-  const type =
-    asset.type === AssetTypes.uniswap ||
-    asset.type === AssetTypes.uniswapV2 ||
-    asset.type === AssetTypes.arbitrum ||
-    asset.type === AssetTypes.optimism ||
-    asset.type === AssetTypes.polygon
-      ? asset.type
-      : AssetTypes.token;
+  const type = Object.keys(AssetTypes).includes(asset.type)
+    ? asset.type
+    : AssetTypes.token;
 
   const parsedAsset = {
     ...asset,
