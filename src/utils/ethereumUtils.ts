@@ -2,6 +2,7 @@ import { BigNumberish } from '@ethersproject/bignumber';
 import { Provider } from '@ethersproject/providers';
 import { serialize } from '@ethersproject/transactions';
 import { Wallet } from '@ethersproject/wallet';
+import { ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS } from '@rainbow-me/swaps';
 import AsyncStorage from '@react-native-community/async-storage';
 import { captureException } from '@sentry/react-native';
 import { mnemonicToSeed } from 'bip39';
@@ -30,8 +31,10 @@ import {
   GasFee,
   LegacySelectedGasFee,
   ParsedAddressAsset,
+  RainbowToken,
   RainbowTransaction,
   SelectedGasFee,
+  UniswapCurrency,
 } from '@rainbow-me/entities';
 import { getOnchainAssetBalance } from '@rainbow-me/handlers/assets';
 import {
@@ -651,6 +654,36 @@ const calculateL1FeeOptimism = async (
   }
 };
 
+const getMultichainAssetWithPrice = (
+  asset: RainbowToken,
+  network: Network
+): UniswapCurrency => {
+  const address = asset?.mainnet_address || asset?.address;
+  let realAddress =
+    address?.toLowerCase() === ETH_ADDRESS_AGGREGATORS.toLowerCase()
+      ? ETH_ADDRESS
+      : address;
+
+  if (
+    network === Network.optimism &&
+    address.toLowerCase() === OPTIMISM_ETH_ADDRESS
+  ) {
+    realAddress = ETH_ADDRESS;
+  } else if (
+    network === Network.arbitrum &&
+    address.toLowerCase() === ARBITRUM_ETH_ADDRESS
+  ) {
+    realAddress = ETH_ADDRESS;
+  } else if (
+    network === Network.polygon &&
+    address.toLowerCase() === MATIC_POLYGON_ADDRESS
+  ) {
+    realAddress = MATIC_POLYGON_ADDRESS;
+  }
+
+  return store.getState().data?.genericAssets[realAddress] as UniswapCurrency;
+};
+
 export default {
   calculateL1FeeOptimism,
   checkIfUrlIsAScam,
@@ -670,6 +703,7 @@ export default {
   getEthPriceUnit,
   getHash,
   getMaticPriceUnit,
+  getMultichainAssetWithPrice,
   getNativeAssetForNetwork,
   getNetworkFromChainId,
   getNetworkNameFromChainId,

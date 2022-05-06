@@ -1,17 +1,10 @@
-import { ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS } from '@rainbow-me/swaps';
 import { useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
 import { useTheme } from '@rainbow-me/context';
-import { EthereumAddress, UniswapCurrency } from '@rainbow-me/entities';
+import { RainbowToken, UniswapCurrency } from '@rainbow-me/entities';
 import { Network } from '@rainbow-me/helpers';
 import { AppState } from '@rainbow-me/redux/store';
-import {
-  ARBITRUM_ETH_ADDRESS,
-  ETH_ADDRESS,
-  MATIC_POLYGON_ADDRESS,
-  OPTIMISM_ETH_ADDRESS,
-  WETH_ADDRESS,
-} from '@rainbow-me/references';
+import { ETH_ADDRESS, WETH_ADDRESS } from '@rainbow-me/references';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToNativeAmount,
@@ -22,35 +15,10 @@ import {
   isPositive,
   subtract,
 } from '@rainbow-me/utilities';
+import { ethereumUtils } from '@rainbow-me/utils';
 
 const PriceImpactWarningThreshold = 0.05;
 const SeverePriceImpactThreshold = 0.1;
-
-const getRealAddressForAsset = (address: EthereumAddress, network: Network) => {
-  let realAddress =
-    address?.toLowerCase() === ETH_ADDRESS_AGGREGATORS.toLowerCase()
-      ? ETH_ADDRESS
-      : address;
-
-  if (
-    network === Network.optimism &&
-    address.toLowerCase() === OPTIMISM_ETH_ADDRESS
-  ) {
-    realAddress = ETH_ADDRESS;
-  } else if (
-    network === Network.arbitrum &&
-    address.toLowerCase() === ARBITRUM_ETH_ADDRESS
-  ) {
-    realAddress = ETH_ADDRESS;
-  } else if (
-    network === Network.polygon &&
-    address.toLowerCase() === MATIC_POLYGON_ADDRESS
-  ) {
-    realAddress = MATIC_POLYGON_ADDRESS;
-  }
-
-  return realAddress;
-};
 
 export default function usePriceImpactDetails(
   inputAmount: string | null,
@@ -75,14 +43,14 @@ export default function usePriceImpactDetails(
     };
   }
 
-  const inputTokenAddress = getRealAddressForAsset(
-    inputCurrency?.mainnet_address || inputCurrency?.address,
+  const inputTokenAddress = ethereumUtils.getMultichainAssetWithPrice(
+    inputCurrency as RainbowToken,
     currentNetwork
-  );
-  const outputTokenAddress = getRealAddressForAsset(
-    outputCurrency?.mainnet_address || outputCurrency?.address,
+  )?.address;
+  const outputTokenAddress = ethereumUtils.getMultichainAssetWithPrice(
+    outputCurrency as RainbowToken,
     currentNetwork
-  );
+  )?.address;
 
   let inputPriceValue =
     genericAssets[inputTokenAddress.toLowerCase()]?.price?.value;

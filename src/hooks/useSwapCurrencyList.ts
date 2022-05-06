@@ -57,7 +57,10 @@ const searchCurrencyList = async (
   }
 };
 
-const useSwapCurrencyList = (searchQuery: string, chainId = 1) => {
+const useSwapCurrencyList = (
+  searchQuery: string,
+  chainId = MAINNET_CHAINID
+) => {
   const previousChainId = usePrevious(chainId);
 
   const searching = useMemo(
@@ -230,19 +233,55 @@ const useSwapCurrencyList = (searchQuery: string, chainId = 1) => {
   const wasSearching = usePrevious(searching);
   const previousSearchQuery = usePrevious(searchQuery);
 
+  // useEffect(() => {
+  //   const doSearch = async () => {
+  //     if (
+  //       (searching && !wasSearching) ||
+  //       (searching && previousSearchQuery !== searchQuery) ||
+  //       chainId !== previousChainId
+  //     ) {
+  //       if (chainId === MAINNET_CHAINID) {
+  //         search();
+  //         slowSearch();
+  //       } else {
+  //         await search();
+  //         setLoading(false);
+  //       }
+  //     } else {
+  //       clearSearch();
+  //     }
+  //   };
+  //   doSearch();
+  // }, [
+  //   searching,
+  //   searchQuery,
+  //   chainId,
+  //   previousChainId,
+  //   wasSearching,
+  //   previousSearchQuery,
+  //   search,
+  //   slowSearch,
+  //   clearSearch,
+  // ]);
   useEffect(() => {
-    if (
-      (searching && !wasSearching) ||
-      (searching && previousSearchQuery !== searchQuery) ||
-      chainId !== previousChainId
-    ) {
-      search();
-      if (chainId === MAINNET_CHAINID) {
-        slowSearch();
+    const doSearch = async () => {
+      if (
+        (searching && !wasSearching) ||
+        (searching && previousSearchQuery !== searchQuery) ||
+        chainId !== previousChainId
+      ) {
+        if (chainId === MAINNET_CHAINID) {
+          search();
+          slowSearch();
+        } else {
+          await search();
+          setLoading(false);
+        }
       } else {
         clearSearch();
       }
-    }
+    };
+    doSearch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searching, searchQuery, chainId]);
 

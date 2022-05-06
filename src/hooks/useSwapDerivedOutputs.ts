@@ -256,8 +256,12 @@ export default function useSwapDerivedOutputs(chainId: number) {
     (state: AppState) => state.data.genericAssets
   );
 
-  const inputPrice = ethereumUtils.getAssetPrice(inputCurrency?.address);
-  const outputPrice = genericAssets[outputCurrency?.address]?.price?.value;
+  const inputPrice = ethereumUtils.getAssetPrice(
+    inputCurrency?.mainnet_address || inputCurrency?.address
+  );
+  const outputPrice =
+    genericAssets[outputCurrency?.mainnet_address || outputCurrency?.address]
+      ?.price?.value;
 
   const { accountAddress } = useAccountSettings();
 

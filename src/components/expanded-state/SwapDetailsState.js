@@ -29,7 +29,6 @@ import { useNavigation } from '@rainbow-me/navigation';
 import styled from '@rainbow-me/styled-components';
 import { padding, position } from '@rainbow-me/styles';
 import { abbreviations } from '@rainbow-me/utils';
-import Logger from '@rainbow-me/utils/logger';
 
 const springConfig = {
   damping: 500,
@@ -114,8 +113,6 @@ export default function SwapDetailsState({
     outputCurrency,
     currentNetwork
   );
-
-  Logger.debug({ inputPriceValue, outputPriceValue });
 
   const {
     copiedText,

@@ -95,6 +95,11 @@ export default function CurrencySelectModal() {
   const { hiddenCoins } = useCoinListEditOptions();
 
   const [currentChainId, setCurrentChainId] = useState(chainId);
+  useEffect(() => {
+    if (chainId) {
+      setCurrentChainId(chainId);
+    }
+  }, [chainId]);
 
   const filteredAssetsInWallet = useMemo(() => {
     if (type === CurrencySelectionTypes.input) {
