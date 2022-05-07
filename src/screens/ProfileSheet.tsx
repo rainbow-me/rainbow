@@ -76,9 +76,9 @@ export default function ProfileSheet() {
   const accentColor =
     // Set accent color when ENS images have fetched & dominant
     // color is not loading.
-    isImagesFetched && state !== 1
+    isImagesFetched && state !== 1 && typeof colorIndex === 'number'
       ? dominantColor ||
-        colors.avatarBackgrounds[colorIndex || 0] ||
+        colors.avatarBackgrounds[colorIndex] ||
         colors.appleBlue
       : colors.skeleton;
 
@@ -90,7 +90,6 @@ export default function ProfileSheet() {
       <StatusBar barStyle="light-content" />
       <AccentColorProvider color={accentColor}>
         <Box background="body">
-          <SwipeDownBackgroundBuffer />
           <Box style={wrapperStyle}>
             {!isSuccess || !hasListFetched ? (
               <Stack space="19px">
@@ -106,24 +105,6 @@ export default function ProfileSheet() {
         </Box>
       </AccentColorProvider>
     </ProfileSheetConfigContext.Provider>
-  );
-}
-
-// This component is a workaround for the white flicker when swiping down
-// to dismiss the sheet.
-function SwipeDownBackgroundBuffer() {
-  return (
-    <Box
-      height={{ custom: 50 }}
-      left="0px"
-      position="absolute"
-      right="0px"
-      style={{
-        backgroundColor: 'black',
-        zIndex: -1,
-      }}
-      top="0px"
-    />
   );
 }
 

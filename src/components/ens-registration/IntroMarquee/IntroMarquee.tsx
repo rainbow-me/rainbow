@@ -2,6 +2,8 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 // @ts-expect-error
 import { IS_TESTING } from 'react-native-dotenv';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import { prefetchENSProfile } from '../../../hooks/useENSProfile';
+import { prefetchENSProfileImages } from '../../../hooks/useENSProfileImages';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { MarqueeList } from '../../list';
 import { Box, Stack, Text } from '@rainbow-me/design-system';
@@ -56,6 +58,8 @@ export default function IntroMarquee() {
       const profiles: { [name: string]: string | undefined } = {};
       await Promise.all(
         ensIntroMarqueeNames.map(async name => {
+          prefetchENSProfileImages({ name });
+          prefetchENSProfile({ name });
           const records = await fetchRecords(name);
           profiles[name] = records?.description;
         })
