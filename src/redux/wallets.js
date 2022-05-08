@@ -1,7 +1,6 @@
 import { captureException, captureMessage } from '@sentry/react-native';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { filter, flatMap, get, isEmpty, keys, map, values } from 'lodash';
-import { Alert } from 'react-native';
 import { backupUserDataIntoCloud } from '../handlers/cloudBackup';
 import { saveKeychainIntegrityState } from '../handlers/localstorage/globalSettings';
 import {
@@ -36,8 +35,6 @@ import {
 } from '../utils/profileUtils';
 import { updateWebDataEnabled } from './showcaseTokens';
 import { lightModeThemeColors } from '@rainbow-me/styles';
-import match from '@rainbow-me/utils/match';
-import { matchError } from '@rainbow-me/utils/matchError';
 
 // -- Constants --------------------------------------- //
 const WALLETS_ADDED_ACCOUNT = 'wallets/WALLETS_ADDED_ACCOUNT';
@@ -195,43 +192,36 @@ export const createAccountForWallet = (id, color, name) => async (
     account => (index = Math.max(index, account.index))
   );
   const newIndex = index + 1;
-  try {
-    const account = await generateAccount(id, newIndex);
-    const walletColorIndex =
-      color !== null ? color : addressHashedColorIndex(account.address);
-    newWallets[id].addresses.push({
-      address: account.address,
-      avatar: null,
-      color: walletColorIndex,
-      index: newIndex,
-      label: name,
-      visible: true,
-    });
+  const account = await generateAccount(id, newIndex);
+  const walletColorIndex =
+    color !== null ? color : addressHashedColorIndex(account.address);
+  newWallets[id].addresses.push({
+    address: account.address,
+    avatar: null,
+    color: walletColorIndex,
+    index: newIndex,
+    label: name,
+    visible: true,
+  });
 
-    setPreference(PreferenceActionType.init, 'profile', account.address, {
-      accountColor: lightModeThemeColors.avatarBackgrounds[walletColorIndex],
-    });
+  setPreference(PreferenceActionType.init, 'profile', account.address, {
+    accountColor: lightModeThemeColors.avatarBackgrounds[walletColorIndex],
+  });
 
-    await dispatch(updateWebDataEnabled(true, account.address));
-    // Save all the wallets
-    saveAllWallets(newWallets);
-    // Set the address selected (KEYCHAIN)
-    await saveAddress(account.address);
-    // Set the wallet selected (KEYCHAIN)
-    await setSelectedWallet(newWallets[id]);
+  await dispatch(updateWebDataEnabled(true, account.address));
+  // Save all the wallets
+  saveAllWallets(newWallets);
+  // Set the address selected (KEYCHAIN)
+  await saveAddress(account.address);
+  // Set the wallet selected (KEYCHAIN)
+  await setSelectedWallet(newWallets[id]);
 
-    dispatch({
-      payload: { selected: newWallets[id], wallets: newWallets },
-      type: WALLETS_ADDED_ACCOUNT,
-    });
+  dispatch({
+    payload: { selected: newWallets[id], wallets: newWallets },
+    type: WALLETS_ADDED_ACCOUNT,
+  });
 
-    return newWallets;
-  } catch (error) {
-    const matched = matchError(error);
-    if (matched.CAN_ACCESS_SECRET_PHRASE) {
-      Alert.alert(`Can't access secret phrase to create new accounts`);
-    }
-  }
+  return newWallets;
 };
 
 export const fetchWalletNames = () => async (dispatch, getState) => {

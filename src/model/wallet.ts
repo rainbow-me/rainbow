@@ -277,8 +277,8 @@ export const sendTransaction = async ({
     logger.sentry('about to send transaction', transaction);
     const wallet =
       existingWallet || (await loadWallet(undefined, true, provider));
+    if (!wallet) return null;
     try {
-      if (!wallet) return null;
       const result = await wallet.sendTransaction(transaction);
       logger.log('tx result', result);
       return { result };
@@ -312,8 +312,8 @@ export const signTransaction = async ({
     logger.sentry('about to sign transaction', transaction);
     const wallet =
       existingWallet || (await loadWallet(undefined, true, provider));
+    if (!wallet) return null;
     try {
-      if (!wallet) return null;
       const result = await wallet.signTransaction(transaction);
       return { result };
     } catch (error) {
@@ -345,8 +345,8 @@ export const signMessage = async (
     logger.sentry('about to sign message', message);
     const wallet =
       existingWallet || (await loadWallet(undefined, true, provider));
+    if (!wallet) return null;
     try {
-      if (!wallet) return null;
       const result = await wallet.signMessage(arrayify(message));
       return { result };
     } catch (error) {
@@ -376,8 +376,8 @@ export const signPersonalMessage = async (
     logger.sentry('about to sign personal message', message);
     const wallet =
       existingWallet || (await loadWallet(undefined, true, provider));
+    if (!wallet) return null;
     try {
-      if (!wallet) return null;
       const result = await wallet.signMessage(
         typeof message === 'string' && isHexString(addHexPrefix(message))
           ? arrayify(addHexPrefix(message))
@@ -413,8 +413,8 @@ export const signTypedDataMessage = async (
     logger.sentry('about to sign typed data  message', message);
     const wallet =
       existingWallet || (await loadWallet(undefined, true, provider));
+    if (!wallet) return null;
     try {
-      if (!wallet) return null;
       const pkeyBuffer = toBuffer(addHexPrefix(wallet.privateKey));
       let parsedData = message;
       try {
@@ -461,14 +461,10 @@ export const signTypedDataMessage = async (
 };
 
 export const oldLoadSeedPhrase = async (): Promise<null | EthereumWalletSeed> => {
-  try {
-    const seedPhrase = await keychain.loadString(seedPhraseKey, {
-      authenticationPrompt,
-    });
-    return seedPhrase as string | null;
-  } catch (error) {
-    return null;
-  }
+  const seedPhrase = await keychain.loadString(seedPhraseKey, {
+    authenticationPrompt,
+  });
+  return seedPhrase as string | null;
 };
 
 export const loadAddress = (): Promise<null | EthereumAddress> =>
@@ -1105,7 +1101,11 @@ export const generateAccount = async (
     return newAccount;
   } catch (error) {
     logger.sentry('Error generating account for keychain', id);
-    captureException(error);
+    captureException(
+      error === errorsCode.CAN_ACCESS_SECRET_PHRASE
+        ? `Can't access secret phrase to create new accounts`
+        : error
+    );
     throw error;
   }
 };
