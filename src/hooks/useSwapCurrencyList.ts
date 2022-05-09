@@ -87,6 +87,7 @@ const useSwapCurrencyList = (
       // These transformations are necessary for L2 tokens to match our spec
       return tokens
         .map(token => {
+          token.address = token.networks[chainId].address;
           if (chainId !== MAINNET_CHAINID) {
             const network = ethereumUtils.getNetworkFromChainId(chainId);
             token.type = network;
@@ -171,12 +172,16 @@ const useSwapCurrencyList = (
           break;
         case 'highLiquidityAssets':
           setHighLiquidityAssets(
-            await searchCurrencyList(assetType, searchQuery, chainId)
+            handleVerifiedResponse(
+              await searchCurrencyList(assetType, searchQuery, chainId)
+            )
           );
           break;
         case 'lowLiquidityAssets':
           setLowLiquidityAssets(
-            await searchCurrencyList(assetType, searchQuery, chainId)
+            handleVerifiedResponse(
+              await searchCurrencyList(assetType, searchQuery, chainId)
+            )
           );
           break;
         case 'favoriteAssets':
