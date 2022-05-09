@@ -1,14 +1,15 @@
 import React from 'react';
 import { CoinDivider } from '../../../coin-divider';
 import { AssetListHeader, AssetListItemSkeleton } from '../../index';
+import FastBalanceCoinRow from '../FastComponents/FastBalanceCoinRow';
 import WrappedNFT from '../WrappedNFT';
 import WrappedPoolRow from '../WrappedPoolRow';
 import WrappedPoolsListHeader from '../WrappedPoolsListHeader';
 import WrappedSavingsListHeader from '../WrappedSavingsListHeader';
 import WrappedSavingsRow from '../WrappedSavingsRow';
 import WrappedTokenFamilyHeader from '../WrappedTokenFamilyHeader';
-import WrapperBalanceCoinRow from '../WrapperBalanceCoinRow';
 import { useAdditionalRecyclerAssetListData } from './Contexts';
+import { ExtendedState } from './RawRecyclerList';
 import {
   AssetsHeaderExtraData,
   CellType,
@@ -34,7 +35,12 @@ function CellDataProvider({
   return children(data);
 }
 
-function rowRenderer(type: CellType, { uid }: { uid: string }) {
+function rowRenderer(
+  type: CellType,
+  { uid }: { uid: string },
+  _,
+  extendedState: ExtendedState
+) {
   return (
     <CellDataProvider key={uid} uid={uid}>
       {data => {
@@ -63,7 +69,8 @@ function rowRenderer(type: CellType, { uid }: { uid: string }) {
             );
           case CellType.COIN:
             return (
-              <WrapperBalanceCoinRow
+              <FastBalanceCoinRow
+                extendedState={extendedState}
                 uniqueId={(data as CoinExtraData).uniqueId}
               />
             );
@@ -117,8 +124,9 @@ function rowRenderer(type: CellType, { uid }: { uid: string }) {
           }
           case CellType.LOADING_ASSETS:
             return <AssetListItemSkeleton />;
+          default:
+            assertNever(type);
         }
-        assertNever(type);
       }}
     </CellDataProvider>
   );

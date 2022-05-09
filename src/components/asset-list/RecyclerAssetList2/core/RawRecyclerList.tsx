@@ -1,7 +1,14 @@
-import React, { LegacyRef, useCallback, useEffect, useRef } from 'react';
+import React, {
+  LegacyRef,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+} from 'react';
 import { LayoutChangeEvent } from 'react-native';
 import { DataProvider, RecyclerListView } from 'recyclerlistview';
 import { useMemoOne } from 'use-memo-one';
+import { useTheme } from '../../../../context/ThemeContext';
 import useAccountSettings from '../../../../hooks/useAccountSettings';
 import { useRecyclerAssetListPosition } from './Contexts';
 import ExternalScrollViewWithRef from './ExternalScrollView';
@@ -11,10 +18,18 @@ import { BaseCellType, RecyclerListViewRef } from './ViewTypes';
 import getLayoutProvider from './getLayoutProvider';
 import useLayoutItemAnimator from './useLayoutItemAnimator';
 import { useCoinListEdited } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
 
 const dataProvider = new DataProvider((r1, r2) => {
   return r1.uid !== r2.uid;
 });
+
+export type ExtendedState = {
+  theme: any;
+  nativeCurrencySymbol: string;
+  nativeCurrency: string;
+  navigate: any;
+};
 
 const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   briefSectionsData,
@@ -74,9 +89,25 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
 
   const layoutItemAnimator = useLayoutItemAnimator(ref, topMarginRef);
 
+  const theme = useTheme();
+  const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
+
+  const { navigate } = useNavigation();
+
+  const extendedState = useMemo(
+    () => ({
+      nativeCurrency,
+      nativeCurrencySymbol,
+      navigate,
+      theme,
+    }),
+    [theme, navigate, nativeCurrencySymbol, nativeCurrency]
+  );
+
   return (
     <RecyclerListView
       dataProvider={currentDataProvider}
+      extendedState={extendedState}
       // @ts-ignore
       externalScrollView={ExternalScrollViewWithRef}
       itemAnimator={layoutItemAnimator}
@@ -84,7 +115,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
       onLayout={onLayout}
       ref={ref as LegacyRef<RecyclerListViewRef>}
       refreshControl={<RefreshControl />}
-      renderAheadOffset={700}
+      renderAheadOffset={1000}
       rowRenderer={rowRenderer}
     />
   );

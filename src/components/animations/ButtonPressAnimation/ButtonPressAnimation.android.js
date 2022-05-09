@@ -13,7 +13,6 @@ import Animated, {
 } from 'react-native-reanimated';
 import { normalizeTransformOrigin } from './NativeButton';
 import { useLongPressEvents } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
 
 const ZoomableRawButton = requireNativeComponent('RNZoomableButton');
 
@@ -30,10 +29,6 @@ const AnimatedRawButton = createNativeWrapper(
 const OVERFLOW_MARGIN = 5;
 
 const ScaleButtonContext = createContext(null);
-
-const Content = styled.View({
-  overflow: 'visible',
-});
 
 // I managed to implement partially overflow in scale button (up to 5px),
 // but overflow is not visible beyond small boundaries. Hence, to make it reactive to touches
@@ -271,9 +266,9 @@ export default function ButtonPressAnimation({
 
   const ButtonElement = reanimatedButton ? ScaleButton : SimpleScaleButton;
   return disabled ? (
-    <Content onLayout={onLayout} style={style}>
+    <View onLayout={onLayout} style={[{ overflow: 'visible' }, style]}>
       {children}
-    </Content>
+    </View>
   ) : (
     <ButtonElement
       backgroundColor={backgroundColor}
@@ -297,9 +292,9 @@ export default function ButtonPressAnimation({
       transformOrigin={normalizedTransformOrigin}
       wrapperStyle={wrapperStyle}
     >
-      <Content pointerEvents="box-only" style={style}>
+      <View pointerEvents="box-only" style={[{ overflow: 'visible' }, style]}>
         {children}
-      </Content>
+      </View>
     </ButtonElement>
   );
 }
