@@ -2,6 +2,7 @@ import lang from 'i18n-js';
 import React, {
   Fragment,
   PropsWithChildren,
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -135,11 +136,20 @@ function HoldToAuthorizeButtonContent2({
   const longPressProgress = useRef(new Value(0));
   const buttonScale = useRef(new Value(1));
 
+  const onFinishAuthorizing = useCallback(() => {
+    if (!disabled) {
+      animate(longPressProgress.current, {
+        duration: calculateReverseDuration(longPressProgress.current),
+        toValue: 0,
+      }).start(() => setIsAuthorizing(false));
+    }
+  }, [disabled]);
+
   useEffect(() => {
     if (isAuthorizingState && !isAuthorizingProp) {
       onFinishAuthorizing();
     }
-  }, [isAuthorizingState, isAuthorizingProp]);
+  }, [isAuthorizingState, isAuthorizingProp, onFinishAuthorizing]);
 
   const isAuthorizing = isAuthorizingProp || isAuthorizingState;
 
@@ -154,15 +164,6 @@ function HoldToAuthorizeButtonContent2({
     : BUTTON_HEIGHT;
 
   const width = deviceDimensions.width - parentHorizontalPadding * 2;
-
-  const onFinishAuthorizing = () => {
-    if (!disabled) {
-      animate(longPressProgress.current, {
-        duration: calculateReverseDuration(longPressProgress.current),
-        toValue: 0,
-      }).start(() => setIsAuthorizing(false));
-    }
-  };
 
   const handlePress = () => {
     if (!isAuthorizingState && onLongPress) {
