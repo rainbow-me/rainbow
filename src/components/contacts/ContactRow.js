@@ -14,6 +14,7 @@ import useExperimentalFlag, {
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
 import { fetchReverseRecord } from '@rainbow-me/handlers/ens';
+import { ENS_DOMAIN } from '@rainbow-me/helpers/ens';
 import {
   isENSAddressFormat,
   isValidDomainFormat,
@@ -101,7 +102,9 @@ const ContactRow = (
       : null;
 
   // if the accountType === 'suggestions', nickname will always be an ens or hex address, not a custom contact nickname
-  const [ensName, setENSName] = useState(ens);
+  const [ensName, setENSName] = useState(
+    ens || (nickname.includes(ENS_DOMAIN) ? nickname : undefined)
+  );
 
   useEffect(() => {
     if (profilesEnabled && accountType === 'contacts') {
