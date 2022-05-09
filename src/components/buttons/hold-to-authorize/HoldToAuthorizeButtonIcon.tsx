@@ -1,14 +1,13 @@
 import React from 'react';
-import Animated from 'react-native-reanimated';
-import { useMemoOne } from 'use-memo-one';
-import { interpolate, ScaleInAnimation } from '../../animations';
+import Animated, {
+  Extrapolation,
+  interpolate,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
 import { Icon } from '../../icons';
 import { Centered } from '../../layout';
-import { useTheme } from '@rainbow-me/context';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
-
-const { cond, divide, greaterThan } = Animated;
 
 const Container = styled(Centered)({
   ...position.sizeAsObject(31),
@@ -17,33 +16,44 @@ const Container = styled(Centered)({
 });
 
 interface Props {
-  animatedValue: Animated.Value<number>;
+  sharedValue: Animated.SharedValue<number>;
 }
 
-export default function HoldToAuthorizeButtonIcon({ animatedValue }: Props) {
-  const { colors } = useTheme();
+export default function HoldToAuthorizeButtonIcon({ sharedValue }: Props) {
+  const animatedStyle = useAnimatedStyle(() => {
+    const scaleProgress =
+      sharedValue.value > 0
+        ? interpolate(sharedValue.value, [30, 100], [5, 0], Extrapolation.CLAMP)
+        : 1 / sharedValue.value;
 
-  const animation = useMemoOne(() => {
-    return cond(
-      greaterThan(animatedValue, 0),
-      interpolate(animatedValue, {
-        extrapolate: Animated.Extrapolate.CLAMP,
-        inputRange: [30, 100],
-        outputRange: [5, 0],
-      }) as Animated.Node<number>,
-      divide(1, animatedValue)
+    const opacity = interpolate(
+      scaleProgress,
+      [0, 10, 25],
+      [1, 0.333, 0],
+      Extrapolation.CLAMP
     );
-  }, [animatedValue]);
+
+    const scale = interpolate(
+      scaleProgress,
+      [0, 33],
+      [1, 0.01],
+      Extrapolation.CLAMP
+    );
+
+    return {
+      opacity,
+      transform: [{ scale }],
+    };
+  });
 
   return (
     <Container>
-      <ScaleInAnimation scaleTo={0.001} value={animation}>
-        <Icon
-          color={colors.whiteLabel}
-          name="progress"
-          progress={animatedValue}
-        />
-      </ScaleInAnimation>
+      <Animated.View
+        {...position.centeredAsObject}
+        style={[position.coverAsObject, animatedStyle]}
+      >
+        <Icon name="progress" progress={sharedValue} />
+      </Animated.View>
     </Container>
   );
 }
