@@ -14,7 +14,13 @@ import { ShimmerAnimation } from '../../animations';
 import { Centered, InnerBorder } from '../../layout';
 import BiometricButtonContent from '../BiometricButtonContent';
 import HoldToAuthorizeButtonIcon from './HoldToAuthorizeButtonIcon';
-import { ButtonHeight, SmallButtonHeight, TinyButtonHeight } from './constants';
+import {
+  BUTTON_HEIGHT,
+  BUTTON_SCALE_DURATION_IN_MS,
+  LONG_PRESS_DURATION_IN_MS,
+  SMALL_BUTTON_HEIGHT,
+  TINY_BUTTON_HEIGHT,
+} from './constants';
 import { useTheme } from '@rainbow-me/context';
 import { BiometryTypes } from '@rainbow-me/helpers';
 import { useBiometryType, useDimensions } from '@rainbow-me/hooks';
@@ -45,9 +51,6 @@ const ButtonShadows = (colors: any) => ({
     [0, 3, 9, colors.shadow, 0.08],
   ],
 });
-
-const buttonScaleDurationMs = 150;
-const longPressProgressDurationMs = 500; // 👸 christian approves
 
 interface ButtonOptionParams {
   smallButton?: boolean;
@@ -98,7 +101,7 @@ const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
 const animate = (
   value: Animated.Node<number>,
   {
-    duration = buttonScaleDurationMs,
+    duration = BUTTON_SCALE_DURATION_IN_MS,
     toValue,
   }: {
     duration?: number | Animated.Node<number>;
@@ -113,7 +116,7 @@ const animate = (
 
 const calculateReverseDuration = proc(
   (longPressProgress: Animated.Node<number>) =>
-    multiply(divide(longPressProgress, 100), longPressProgressDurationMs)
+    multiply(divide(longPressProgress, 100), LONG_PRESS_DURATION_IN_MS)
 );
 
 interface Props {
@@ -211,7 +214,7 @@ class HoldToAuthorizeButton extends PureComponent<Props, State> {
         animate(this.buttonScale, { toValue: 0.97 }).start();
         if (enableLongPress) {
           animate(this.longPressProgress, {
-            duration: longPressProgressDurationMs,
+            duration: LONG_PRESS_DURATION_IN_MS,
             toValue: 100,
           }).start();
         }
@@ -256,17 +259,17 @@ class HoldToAuthorizeButton extends PureComponent<Props, State> {
       : backgroundColor || colors.appleBlue;
 
     const height = tinyButton
-      ? TinyButtonHeight
+      ? TINY_BUTTON_HEIGHT
       : smallButton
-      ? SmallButtonHeight
-      : ButtonHeight;
+      ? SMALL_BUTTON_HEIGHT
+      : BUTTON_HEIGHT;
     const width = deviceDimensions.width - parentHorizontalPadding * 2;
 
     return (
       <TapGestureHandler onHandlerStateChange={this.onTapChange}>
         <LongPressGestureHandler
           enabled={enableLongPress}
-          minDurationMs={longPressProgressDurationMs}
+          minDurationMs={LONG_PRESS_DURATION_IN_MS}
           onHandlerStateChange={this.onLongPressChange}
         >
           <Animated.View
