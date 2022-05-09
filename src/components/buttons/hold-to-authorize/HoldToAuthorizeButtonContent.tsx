@@ -1,5 +1,11 @@
 import lang from 'i18n-js';
-import React, { Fragment, PureComponent } from 'react';
+import React, {
+  Fragment,
+  PropsWithChildren,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { ActivityIndicator, Keyboard } from 'react-native';
 import {
   State as GestureHandlerState,
@@ -101,90 +107,110 @@ const calculateReverseDuration = proc(
     multiply(divide(longPressProgress, 100), LONG_PRESS_DURATION_IN_MS)
 );
 
-interface State {
-  isAuthorizing: boolean;
-}
+type Props = PropsWithChildren<HoldToAuthorizeBaseProps>;
 
-type Props = HoldToAuthorizeBaseProps;
+function HoldToAuthorizeButtonContent2({
+  backgroundColor,
+  colors,
+  children,
+  deviceDimensions,
+  disabled = false,
+  disabledBackgroundColor,
+  enableLongPress,
+  hideInnerBorder,
+  label,
+  parentHorizontalPadding,
+  shadows,
+  showBiometryIcon,
+  smallButton,
+  style,
+  testID,
+  tinyButton,
+  isAuthorizing: isAuthorizingProp,
+  theme = 'light',
+  onLongPress,
+  ...props
+}: Props) {
+  const [isAuthorizingState, setIsAuthorizing] = useState(false);
+  const longPressProgress = useRef(new Value(0));
+  const buttonScale = useRef(new Value(1));
 
-class HoldToAuthorizeButtonContent extends PureComponent<Props, State> {
-  static defaultProps = {
-    disabled: false,
-    theme: 'light',
-  };
-
-  state = {
-    isAuthorizing: false,
-  };
-
-  componentDidUpdate = () => {
-    if (this.state.isAuthorizing && !this.props.isAuthorizing) {
-      this.onFinishAuthorizing();
+  useEffect(() => {
+    if (isAuthorizingState && !isAuthorizingProp) {
+      onFinishAuthorizing();
     }
-  };
+  }, [isAuthorizingState, isAuthorizingProp]);
 
-  buttonScale = new Value(1);
+  const isAuthorizing = isAuthorizingProp || isAuthorizingState;
 
-  longPressProgress = new Value(0);
+  const bgColor = disabled
+    ? disabledBackgroundColor || getButtonDisabledBgColor(colors)[theme]
+    : backgroundColor || colors.appleBlue;
 
-  onFinishAuthorizing = () => {
-    if (!this.props.disabled) {
-      animate(this.longPressProgress, {
-        duration: calculateReverseDuration(this.longPressProgress),
+  const height = tinyButton
+    ? TINY_BUTTON_HEIGHT
+    : smallButton
+    ? SMALL_BUTTON_HEIGHT
+    : BUTTON_HEIGHT;
+
+  const width = deviceDimensions.width - parentHorizontalPadding * 2;
+
+  const onFinishAuthorizing = () => {
+    if (!disabled) {
+      animate(longPressProgress.current, {
+        duration: calculateReverseDuration(longPressProgress.current),
         toValue: 0,
-      }).start(() => this.setState({ isAuthorizing: false }));
+      }).start(() => setIsAuthorizing(false));
     }
   };
 
-  handlePress = () => {
-    if (!this.state.isAuthorizing && this.props.onLongPress) {
-      this.props.onLongPress();
+  const handlePress = () => {
+    if (!isAuthorizingState && onLongPress) {
+      onLongPress();
     }
   };
 
-  onLongPressChange = ({ nativeEvent: { state } }: HandlerStateChangeEvent) => {
-    const { disabled } = this.props;
-
+  const onLongPressChange = ({
+    nativeEvent: { state },
+  }: HandlerStateChangeEvent) => {
     if (state === ACTIVE && !disabled) {
       haptics.notificationSuccess();
       Keyboard.dismiss();
 
-      animate(this.buttonScale, {
+      animate(buttonScale.current, {
         toValue: 1,
-      }).start(() => this.setState({ isAuthorizing: true }));
+      }).start(() => setIsAuthorizing(true));
 
-      this.handlePress();
+      handlePress();
     }
   };
 
-  onTapChange = ({ nativeEvent: { state } }: HandlerStateChangeEvent) => {
-    const { disabled, enableLongPress } = this.props;
-
+  const onTapChange = ({ nativeEvent: { state } }: HandlerStateChangeEvent) => {
     if (disabled) {
       if (state === END) {
         haptics.notificationWarning();
-        animate(this.buttonScale, { toValue: 1.02 }).start(() => {
-          animate(this.buttonScale, { toValue: 1 }).start();
+        animate(buttonScale.current, { toValue: 1.02 }).start(() => {
+          animate(buttonScale.current, { toValue: 1 }).start();
         });
       }
     } else {
       if (state === ACTIVE) {
         if (!enableLongPress) {
-          this.handlePress();
+          handlePress();
         }
       } else if (state === BEGAN) {
-        animate(this.buttonScale, { toValue: 0.97 }).start();
+        animate(buttonScale.current, { toValue: 0.97 }).start();
         if (enableLongPress) {
-          animate(this.longPressProgress, {
+          animate(longPressProgress.current, {
             duration: LONG_PRESS_DURATION_IN_MS,
             toValue: 100,
           }).start();
         }
       } else if (state === END || state === FAILED) {
-        animate(this.buttonScale, { toValue: 1 }).start();
+        animate(buttonScale.current, { toValue: 1 }).start();
         if (enableLongPress) {
-          animate(this.longPressProgress, {
-            duration: calculateReverseDuration(this.longPressProgress),
+          animate(longPressProgress.current, {
+            duration: calculateReverseDuration(longPressProgress.current),
             toValue: 0,
           }).start();
         }
@@ -192,104 +218,68 @@ class HoldToAuthorizeButtonContent extends PureComponent<Props, State> {
     }
   };
 
-  render() {
-    const {
-      backgroundColor,
-      colors,
-      children,
-      deviceDimensions,
-      disabled,
-      disabledBackgroundColor,
-      enableLongPress,
-      hideInnerBorder,
-      label,
-      parentHorizontalPadding,
-      shadows,
-      showBiometryIcon,
-      smallButton,
-      style,
-      testID,
-      tinyButton,
-      theme,
-      ...props
-    } = this.props;
-
-    const isAuthorizing = this.props.isAuthorizing || this.state.isAuthorizing;
-
-    const bgColor = disabled
-      ? disabledBackgroundColor || getButtonDisabledBgColor(colors)[theme]
-      : backgroundColor || colors.appleBlue;
-
-    const height = tinyButton
-      ? TINY_BUTTON_HEIGHT
-      : smallButton
-      ? SMALL_BUTTON_HEIGHT
-      : BUTTON_HEIGHT;
-    const width = deviceDimensions.width - parentHorizontalPadding * 2;
-
-    return (
-      <TapGestureHandler onHandlerStateChange={this.onTapChange}>
-        <LongPressGestureHandler
-          enabled={enableLongPress}
-          minDurationMs={LONG_PRESS_DURATION_IN_MS}
-          onHandlerStateChange={this.onLongPressChange}
+  return (
+    <TapGestureHandler onHandlerStateChange={onTapChange}>
+      <LongPressGestureHandler
+        enabled={enableLongPress}
+        minDurationMs={LONG_PRESS_DURATION_IN_MS}
+        onHandlerStateChange={onLongPressChange}
+      >
+        <Animated.View
+          {...props}
+          style={[style, { transform: [{ scale: buttonScale.current }] }]}
         >
-          <Animated.View
-            {...props}
-            style={[style, { transform: [{ scale: this.buttonScale }] }]}
+          {/* Ignoring due to obscure JS error from ShadowStack */}
+          {/* @ts-ignore */}
+          <ShadowStack
+            backgroundColor={bgColor}
+            borderRadius={height}
+            height={height}
+            shadows={
+              shadows ||
+              getButtonShadows(colors)[disabled ? 'disabled' : 'default']
+            }
+            width={width}
           >
-            {/* Ignoring due to obscure JS error from ShadowStack */}
-            {/* @ts-ignore */}
-            <ShadowStack
+            <Content
               backgroundColor={bgColor}
-              borderRadius={height}
               height={height}
-              shadows={
-                shadows ||
-                getButtonShadows(colors)[disabled ? 'disabled' : 'default']
-              }
-              width={width}
+              smallButton={smallButton}
+              tinyButton={tinyButton}
             >
-              <Content
-                backgroundColor={bgColor}
-                height={height}
-                smallButton={smallButton}
-                tinyButton={tinyButton}
-              >
-                {children ?? (
-                  <Fragment>
-                    {!android && !disabled && (
-                      <HoldToAuthorizeButtonIcon
-                        animatedValue={this.longPressProgress}
-                      />
-                    )}
-                    {android && isAuthorizing && <LoadingSpinner />}
-                    <Label
-                      label={
-                        isAuthorizing
-                          ? lang.t('button.hold_to_authorize.authorizing')
-                          : label
-                      }
-                      showIcon={showBiometryIcon && !isAuthorizing}
-                      smallButton={smallButton}
-                      testID={testID}
-                      tinyButton={tinyButton}
+              {children ?? (
+                <Fragment>
+                  {!android && !disabled && (
+                    <HoldToAuthorizeButtonIcon
+                      animatedValue={longPressProgress.current}
                     />
-                  </Fragment>
-                )}
-                <ShimmerAnimation
-                  color={colors.whiteLabel}
-                  enabled={!disabled}
-                  width={width}
-                />
-                {!hideInnerBorder && <InnerBorder radius={height} />}
-              </Content>
-            </ShadowStack>
-          </Animated.View>
-        </LongPressGestureHandler>
-      </TapGestureHandler>
-    );
-  }
+                  )}
+                  {android && isAuthorizing && <LoadingSpinner />}
+                  <Label
+                    label={
+                      isAuthorizing
+                        ? lang.t('button.hold_to_authorize.authorizing')
+                        : label
+                    }
+                    showIcon={showBiometryIcon && !isAuthorizing}
+                    smallButton={smallButton}
+                    testID={testID}
+                    tinyButton={tinyButton}
+                  />
+                </Fragment>
+              )}
+              <ShimmerAnimation
+                color={colors.whiteLabel}
+                enabled={!disabled}
+                width={width}
+              />
+              {!hideInnerBorder && <InnerBorder radius={height} />}
+            </Content>
+          </ShadowStack>
+        </Animated.View>
+      </LongPressGestureHandler>
+    </TapGestureHandler>
+  );
 }
 
-export default HoldToAuthorizeButtonContent;
+export default HoldToAuthorizeButtonContent2;
