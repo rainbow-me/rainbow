@@ -194,7 +194,12 @@ export default function ENSAssignRecordsSheet() {
                 <Text align="center" color="accent" size="16px" weight="heavy">
                   {displayTitleLabel
                     ? lang.t(
-                        `profiles.${isEmptyProfile ? 'create' : 'edit'}.label`
+                        `profiles.${
+                          isEmptyProfile &&
+                          params.mode !== REGISTRATION_MODES.EDIT
+                            ? 'create'
+                            : 'edit'
+                        }.label`
                       )
                     : ''}
                 </Text>

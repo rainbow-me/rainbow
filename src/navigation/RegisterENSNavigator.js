@@ -76,11 +76,11 @@ export default function RegisterENSNavigator() {
   const initialRouteName = useMemo(() => {
     const { ensName, mode } = params || { mode: REGISTRATION_MODES.CREATE };
     if (mode === REGISTRATION_MODES.EDIT) {
-      startRegistration(ensName, mode);
+      startRegistration(ensName, REGISTRATION_MODES.EDIT);
       return Routes.ENS_ASSIGN_RECORDS_SHEET;
     }
     if (mode === REGISTRATION_MODES.SET_NAME) {
-      startRegistration(ensName, mode);
+      startRegistration(ensName, REGISTRATION_MODES.SET_NAME);
       return Routes.ENS_CONFIRM_REGISTER_SHEET;
     }
     return Routes.ENS_INTRO_SHEET;
@@ -180,6 +180,7 @@ export default function RegisterENSNavigator() {
               component={ENSAssignRecordsSheet}
               initialParams={{
                 autoFocusKey: params?.autoFocusKey,
+                mode: params?.mode,
                 sheetRef,
               }}
               listeners={{
