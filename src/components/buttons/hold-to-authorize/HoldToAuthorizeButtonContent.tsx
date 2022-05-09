@@ -4,7 +4,6 @@ import React, {
   PropsWithChildren,
   useCallback,
   useEffect,
-  useRef,
   useState,
 } from 'react';
 import { ActivityIndicator, Keyboard } from 'react-native';
@@ -14,7 +13,11 @@ import {
   LongPressGestureHandler,
   TapGestureHandler,
 } from 'react-native-gesture-handler';
-import Animated, { EasingNode, timing, Value } from 'react-native-reanimated';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import Spinner from '../../Spinner';
 import { ShimmerAnimation } from '../../animations';
 import { Centered, InnerBorder } from '../../layout';
@@ -36,8 +39,6 @@ import styled from '@rainbow-me/styled-components';
 import { padding, position } from '@rainbow-me/styles';
 import { haptics } from '@rainbow-me/utils';
 import ShadowStack from 'react-native-shadow-stack';
-
-const { divide, multiply, proc } = Animated;
 
 const { ACTIVE, BEGAN, END, FAILED } = GestureHandlerState;
 
@@ -87,26 +88,8 @@ const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
   position: 'absolute',
 });
 
-const animate = (
-  value: Animated.Node<number>,
-  {
-    duration = BUTTON_SCALE_DURATION_IN_MS,
-    toValue,
-  }: {
-    duration?: number | Animated.Node<number>;
-    toValue: number | Animated.Node<number>;
-  }
-) =>
-  timing(value, {
-    duration,
-    easing: EasingNode.inOut(EasingNode.ease),
-    toValue,
-  });
-
-const calculateReverseDuration = proc(
-  (longPressProgress: Animated.Node<number>) =>
-    multiply(divide(longPressProgress, 100), LONG_PRESS_DURATION_IN_MS)
-);
+const calculateReverseDuration = (longPressProgress: number) =>
+  (longPressProgress / 100) * LONG_PRESS_DURATION_IN_MS;
 
 type Props = PropsWithChildren<HoldToAuthorizeBaseProps>;
 
@@ -133,17 +116,25 @@ function HoldToAuthorizeButtonContent2({
   ...props
 }: Props) {
   const [isAuthorizingState, setIsAuthorizing] = useState(false);
-  const longPressProgress = useRef(new Value(0));
-  const buttonScale = useRef(new Value(1));
+
+  const longPressProgress = useSharedValue(0);
+  const buttonScale = useSharedValue(1);
+
+  const scaleStyle = useAnimatedStyle(() => {
+    return { transform: [{ scale: buttonScale.value }] };
+  });
 
   const onFinishAuthorizing = useCallback(() => {
     if (!disabled) {
-      animate(longPressProgress.current, {
-        duration: calculateReverseDuration(longPressProgress.current),
-        toValue: 0,
-      }).start(() => setIsAuthorizing(false));
+      longPressProgress.value = withTiming(
+        0,
+        {
+          duration: calculateReverseDuration(longPressProgress.value),
+        },
+        () => setIsAuthorizing(false)
+      );
     }
-  }, [disabled]);
+  }, [disabled, longPressProgress]);
 
   useEffect(() => {
     if (isAuthorizingState && !isAuthorizingProp) {
@@ -178,9 +169,11 @@ function HoldToAuthorizeButtonContent2({
       haptics.notificationSuccess();
       Keyboard.dismiss();
 
-      animate(buttonScale.current, {
-        toValue: 1,
-      }).start(() => setIsAuthorizing(true));
+      buttonScale.value = withTiming(
+        1,
+        { duration: BUTTON_SCALE_DURATION_IN_MS },
+        () => setIsAuthorizing(true)
+      );
 
       handlePress();
     }
@@ -190,9 +183,17 @@ function HoldToAuthorizeButtonContent2({
     if (disabled) {
       if (state === END) {
         haptics.notificationWarning();
-        animate(buttonScale.current, { toValue: 1.02 }).start(() => {
-          animate(buttonScale.current, { toValue: 1 }).start();
-        });
+        buttonScale.value = withTiming(
+          1.02,
+          {
+            duration: BUTTON_SCALE_DURATION_IN_MS,
+          },
+          () => {
+            buttonScale.value = withTiming(1, {
+              duration: BUTTON_SCALE_DURATION_IN_MS,
+            });
+          }
+        );
       }
     } else {
       if (state === ACTIVE) {
@@ -200,20 +201,22 @@ function HoldToAuthorizeButtonContent2({
           handlePress();
         }
       } else if (state === BEGAN) {
-        animate(buttonScale.current, { toValue: 0.97 }).start();
+        buttonScale.value = withTiming(0.97, {
+          duration: BUTTON_SCALE_DURATION_IN_MS,
+        });
         if (enableLongPress) {
-          animate(longPressProgress.current, {
+          longPressProgress.value = withTiming(100, {
             duration: LONG_PRESS_DURATION_IN_MS,
-            toValue: 100,
-          }).start();
+          });
         }
       } else if (state === END || state === FAILED) {
-        animate(buttonScale.current, { toValue: 1 }).start();
+        buttonScale.value = withTiming(1, {
+          duration: BUTTON_SCALE_DURATION_IN_MS,
+        });
         if (enableLongPress) {
-          animate(longPressProgress.current, {
-            duration: calculateReverseDuration(longPressProgress.current),
-            toValue: 0,
-          }).start();
+          longPressProgress.value = withTiming(0, {
+            duration: calculateReverseDuration(longPressProgress.value),
+          });
         }
       }
     }
@@ -226,10 +229,7 @@ function HoldToAuthorizeButtonContent2({
         minDurationMs={LONG_PRESS_DURATION_IN_MS}
         onHandlerStateChange={onLongPressChange}
       >
-        <Animated.View
-          {...props}
-          style={[style, { transform: [{ scale: buttonScale.current }] }]}
-        >
+        <Animated.View {...props} style={[style, scaleStyle]}>
           {/* Ignoring due to obscure JS error from ShadowStack */}
           {/* @ts-ignore */}
           <ShadowStack
@@ -252,7 +252,7 @@ function HoldToAuthorizeButtonContent2({
                 <Fragment>
                   {!android && !disabled && (
                     <HoldToAuthorizeButtonIcon
-                      animatedValue={longPressProgress.current}
+                      sharedValue={longPressProgress}
                     />
                   )}
                   {android && isAuthorizing && <LoadingSpinner />}
