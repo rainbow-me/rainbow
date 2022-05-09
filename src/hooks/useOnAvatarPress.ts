@@ -1,13 +1,16 @@
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import { toLower } from 'lodash';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { Linking } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { RainbowAccount } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import useAccountProfile from './useAccountProfile';
 import useENSProfile from './useENSProfile';
+import useENSProfileImages, {
+  prefetchENSProfileImages,
+} from './useENSProfileImages';
 import useENSRegistration from './useENSRegistration';
 import useImagePicker from './useImagePicker';
 import useWallets from './useWallets';
@@ -109,8 +112,15 @@ export default () => {
 
   const onAvatarPress = useCallback(() => {
     if (profileEnabled && !ensProfile?.isSuccess) return;
+
     const isENSProfile =
       profilesEnabled && profileEnabled && ensProfile?.isOwner;
+
+    if (isENSProfile) {
+      // Prefetch profile images
+      prefetchENSProfileImages({ name: accountENS });
+    }
+
     const avatarActionSheetOptions = (isENSProfile
       ? [
           lang.t('profiles.profile_avatar.view_profile'),
