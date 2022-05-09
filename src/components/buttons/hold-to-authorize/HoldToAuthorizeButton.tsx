@@ -21,6 +21,10 @@ import {
   SMALL_BUTTON_HEIGHT,
   TINY_BUTTON_HEIGHT,
 } from './constants';
+import {
+  getButtonDisabledBgColor,
+  getButtonShadows,
+} from './helpers/buttonStyleValues';
 import { useTheme } from '@rainbow-me/context';
 import { BiometryTypes } from '@rainbow-me/helpers';
 import { useBiometryType, useDimensions } from '@rainbow-me/hooks';
@@ -32,25 +36,6 @@ import ShadowStack from 'react-native-shadow-stack';
 const { divide, multiply, proc } = Animated;
 
 const { ACTIVE, BEGAN, END, FAILED } = GestureHandlerState;
-
-// TODO: try fixing any
-const ButtonDisabledBgColor = (colors: any) => ({
-  dark: colors.darkGrey,
-  light: colors.lightGrey,
-});
-
-// TODO: try fixing any
-const ButtonShadows = (colors: any) => ({
-  default: [
-    [0, 3, 5, colors.shadow, 0.2],
-    [0, 6, 10, colors.shadow, 0.14],
-    [0, 1, 18, colors.shadow, 0.12],
-  ],
-  disabled: [
-    [0, 2, 6, colors.shadow, 0.06],
-    [0, 3, 9, colors.shadow, 0.08],
-  ],
-});
 
 interface ButtonOptionParams {
   smallButton?: boolean;
@@ -255,7 +240,7 @@ class HoldToAuthorizeButton extends PureComponent<Props, State> {
     const isAuthorizing = this.props.isAuthorizing || this.state.isAuthorizing;
 
     const bgColor = disabled
-      ? disabledBackgroundColor || ButtonDisabledBgColor(colors)[theme]
+      ? disabledBackgroundColor || getButtonDisabledBgColor(colors)[theme]
       : backgroundColor || colors.appleBlue;
 
     const height = tinyButton
@@ -284,7 +269,7 @@ class HoldToAuthorizeButton extends PureComponent<Props, State> {
               height={height}
               shadows={
                 shadows ||
-                ButtonShadows(colors)[disabled ? 'disabled' : 'default']
+                getButtonShadows(colors)[disabled ? 'disabled' : 'default']
               }
               width={width}
             >
