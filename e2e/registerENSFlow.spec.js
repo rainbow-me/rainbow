@@ -221,11 +221,6 @@ describe('Register ENS Flow', () => {
   it('Should display change gas to Urgent', async () => {
     await Helpers.waitAndTap('gas-speed-custom');
     await Helpers.waitAndTap('speed-pill-urgent');
-    await Helpers.waitAndTap('speed-pill-custom');
-    await Helpers.clearField('max-base-fee-input');
-    await Helpers.typeText('max-base-fee-input', '200\n', false);
-    await Helpers.clearField('max-priority-fee-input');
-    await Helpers.typeText('max-priority-fee-input', '2\n', false);
     await Helpers.waitAndTap('gas-speed-done-button');
   });
 
