@@ -4,13 +4,10 @@ import { ButtonPressAnimation } from '../../../animations';
 
 import { initialChartExpandedStateSheetHeight } from '../../../expanded-state/asset/ChartExpandedState';
 import { ExtendedState } from '../core/RawRecyclerList';
+import FastCoinIcon from './FastCoinIcon';
 import { Text } from '@rainbow-me/design-system';
 import { useAccountAsset } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
-
-function CoinIcon() {
-  return <View style={cx.coinIconFallback} />;
-}
 
 const formatPercentageString = (percentString?: string) =>
   percentString ? percentString.split('-').join('- ') : '-';
@@ -61,7 +58,7 @@ export default function BalanceCoinRow({
       testID={`balance-coin-row-${item.name}`}
     >
       <View style={cx.container}>
-        <CoinIcon />
+        <FastCoinIcon address={item.address} symbol={item.address} />
 
         <View style={cx.innerContainer}>
           <View style={cx.row}>
@@ -97,12 +94,6 @@ export default function BalanceCoinRow({
 const cx = StyleSheet.create({
   bottom: {
     marginTop: 12,
-  },
-  coinIconFallback: {
-    backgroundColor: '#25292E',
-    borderRadius: 20,
-    height: 40,
-    width: 40,
   },
   container: {
     flexDirection: 'row',
