@@ -1,5 +1,6 @@
+import { useFocusEffect } from '@react-navigation/core';
 import lang from 'i18n-js';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
 import { useDebounce } from 'use-debounce';
 import dice from '../assets/dice.png';
@@ -72,18 +73,20 @@ export default function ENSSearchSheet() {
   }, [isAvailable, isInvalid, isRegistered]);
 
   const handlePressContinue = useCallback(() => {
-    startRegistration(`${searchQuery}${ENS_DOMAIN}`);
+    startRegistration(`${searchQuery}${ENS_DOMAIN}`, REGISTRATION_MODES.CREATE);
     Keyboard.dismiss();
     navigate(Routes.ENS_ASSIGN_RECORDS_SHEET);
   }, [navigate, searchQuery, startRegistration]);
 
-  useEffect(() => {
-    debouncedSearchQuery.length > 3 &&
-      startRegistration(
-        `${debouncedSearchQuery}${ENS_DOMAIN}`,
-        REGISTRATION_MODES.CREATE
-      );
-  }, [debouncedSearchQuery, startRegistration]);
+  useFocusEffect(
+    useCallback(() => {
+      debouncedSearchQuery.length >= 3 &&
+        startRegistration(
+          `${debouncedSearchQuery}${ENS_DOMAIN}`,
+          REGISTRATION_MODES.CREATE
+        );
+    }, [debouncedSearchQuery, startRegistration])
+  );
 
   return (
     <Box
