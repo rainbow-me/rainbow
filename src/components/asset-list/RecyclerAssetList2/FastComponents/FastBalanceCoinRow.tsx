@@ -197,8 +197,8 @@ export default function BalanceCoinRow({
     isCoinListEdited,
   } = extendedState;
 
-  const isHidden = hiddenCoins.includes(uniqueId);
-  const isPinned = pinnedCoins.includes(uniqueId);
+  const isHidden = isCoinListEdited ? false : hiddenCoins.includes(uniqueId);
+  const isPinned = isCoinListEdited ? false : pinnedCoins.includes(uniqueId);
 
   const onPress = useCallback(() => {
     toggleSelectedCoin(uniqueId);
