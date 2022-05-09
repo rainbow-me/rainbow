@@ -31,29 +31,27 @@ export default function useTrackENSProfile() {
 
   const getTrackProfilesData = useCallback(async () => {
     const data = {
-      hasAvatarOrCoverSet: false,
-      hasOtherMetadataSet: false,
-      hasSetPrimaryName: false,
-      namesOwned: 0,
+      numberOfENSOwned: 0,
+      numberOfENSWithAvatarOrCoverSet: 0,
+      numberOfENSWithOtherMetadataSet: 0,
+      numberOfENSWithPrimaryNameSet: 0,
     };
     for (const i in addresses) {
       const ens = walletNames[addresses[i]];
       if (ens) {
         const profile = await fetchProfile(ens);
         const registrations = await fetchAccountRegistrations(addresses[i]);
-        data.namesOwned +=
+        data.numberOfENSOwned +=
           registrations?.data?.account?.registrations?.length || 0;
-        const avatarOrCoverSet = Boolean(
-          profile?.records?.avatar || profile?.records?.cover
-        );
-        const otherMetadataSet = Object.keys(profile?.records).some(
-          key => key !== ENS_RECORDS.cover && key !== ENS_RECORDS.avatar
-        );
-        data.hasSetPrimaryName = true;
-        if (!data.hasAvatarOrCoverSet)
-          data.hasAvatarOrCoverSet = avatarOrCoverSet;
-        if (!data.hasOtherMetadataSet)
-          data.hasOtherMetadataSet = otherMetadataSet;
+        data.numberOfENSWithAvatarOrCoverSet +=
+          profile?.records?.avatar || profile?.records?.cover ? 1 : 0;
+
+        data.numberOfENSWithOtherMetadataSet = Object.keys(
+          profile?.records || {}
+        ).some(key => key !== ENS_RECORDS.cover && key !== ENS_RECORDS.avatar)
+          ? 1
+          : 0;
+        data.numberOfENSWithPrimaryNameSet += 1;
       }
     }
     return data;
