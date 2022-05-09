@@ -5,5 +5,5 @@ export default function getUrlForTrustIconFallback(
 ): string | null {
   if (!address) return null;
   const lowercasedAddress = address.toLowerCase();
-  return `https://raw.githubusercontent.com/rainbow-me/assets/develop/blockchains/ethereum/assets/${lowercasedAddress}/logo.png`;
+  return `https://raw.githubusercontent.com/rainbow-me/assets/lowercase/blockchains/ethereum/assets/${lowercasedAddress}/logo.png`;
 }
