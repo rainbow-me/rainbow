@@ -94,7 +94,6 @@ const useSwapCurrencyList = (
             if (token.networks[MAINNET_CHAINID]) {
               token.mainnet_address = token.networks[MAINNET_CHAINID].address;
             }
-            token.address = token.networks[chainId].address;
             token.uniqueId = `${token.address}_${network}`;
           }
           return token;
