@@ -4,6 +4,7 @@ import React, {
   useEffect,
   useMemo,
   useRef,
+  useState,
 } from 'react';
 import { LayoutChangeEvent } from 'react-native';
 import { DataProvider, RecyclerListView } from 'recyclerlistview';
@@ -17,7 +18,7 @@ import rowRenderer from './RowRenderer';
 import { BaseCellType, RecyclerListViewRef } from './ViewTypes';
 import getLayoutProvider from './getLayoutProvider';
 import useLayoutItemAnimator from './useLayoutItemAnimator';
-import { useCoinListEdited } from '@rainbow-me/hooks';
+import { useCoinListEdited, useCoinListEditOptions } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 
 const dataProvider = new DataProvider((r1, r2) => {
@@ -40,7 +41,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
     () => dataProvider.cloneWithRows(briefSectionsData),
     [briefSectionsData]
   );
-  const { isCoinListEdited } = useCoinListEdited();
+  const { isCoinListEdited, setIsCoinListEdited } = useCoinListEdited();
   const y = useRecyclerAssetListPosition()!;
 
   const layoutProvider = useMemoOne(
@@ -91,17 +92,37 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
 
   const theme = useTheme();
   const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
+  const {
+    hiddenCoins,
+    pinnedCoins,
+    toggleSelectedCoin,
+  } = useCoinListEditOptions();
 
   const { navigate } = useNavigation();
 
-  const extendedState = useMemo(
+  const extendedState = useMemo<ExtendedState>(
     () => ({
+      hiddenCoins,
+      isCoinListEdited,
       nativeCurrency,
       nativeCurrencySymbol,
       navigate,
+      pinnedCoins,
+      setCoinListEdited: setIsCoinListEdited,
       theme,
+      toggleSelectedCoin,
     }),
-    [theme, navigate, nativeCurrencySymbol, nativeCurrency]
+    [
+      theme,
+      navigate,
+      nativeCurrencySymbol,
+      nativeCurrency,
+      pinnedCoins,
+      hiddenCoins,
+      toggleSelectedCoin,
+      isCoinListEdited,
+      setIsCoinListEdited,
+    ]
   );
 
   return (

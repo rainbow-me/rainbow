@@ -58,6 +58,7 @@ function rowRenderer(
                 defaultToEditButton={
                   (data as CoinDividerExtraData).defaultToEditButton
                 }
+                extendedState={extendedState}
               />
             );
           case CellType.ASSETS_HEADER:
