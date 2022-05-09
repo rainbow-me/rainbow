@@ -14,6 +14,7 @@ import { ShimmerAnimation } from '../../animations';
 import { Centered, InnerBorder } from '../../layout';
 import BiometricButtonContent from '../BiometricButtonContent';
 import HoldToAuthorizeButtonIcon from './HoldToAuthorizeButtonIcon';
+import { ButtonHeight, SmallButtonHeight, TinyButtonHeight } from './constants';
 import { useTheme } from '@rainbow-me/context';
 import { BiometryTypes } from '@rainbow-me/helpers';
 import { useBiometryType, useDimensions } from '@rainbow-me/hooks';
@@ -25,10 +26,6 @@ import ShadowStack from 'react-native-shadow-stack';
 const { divide, multiply, proc } = Animated;
 
 const { ACTIVE, BEGAN, END, FAILED } = GestureHandlerState;
-
-const ButtonHeight = 56;
-const SmallButtonHeight = 46;
-const TinyButtonHeight = 40;
 
 // TODO: try fixing any
 const ButtonDisabledBgColor = (colors: any) => ({
