@@ -12,6 +12,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.6.10](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.10)
+### Added
+Fedora support
+
+### Changed
+Image handling fixes
+Blank charts fix
+Fix disconnecting messages on Android
+
 ## [1.6.9](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.9)
 ### Added
 * Codeowners file

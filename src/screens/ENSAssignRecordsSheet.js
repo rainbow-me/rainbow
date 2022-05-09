@@ -1,4 +1,4 @@
-import { useRoute } from '@react-navigation/core';
+import { useFocusEffect, useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -68,7 +68,7 @@ export const BottomActionHeight = ios ? 281 : 250;
 export default function ENSAssignRecordsSheet() {
   const { params } = useRoute();
   const { colors } = useTheme();
-  const { name, mode } = useENSRegistration();
+  const { name, initialRecords } = useENSRegistration();
   const {
     images: { avatarUrl: initialAvatarUrl },
   } = useENSModifiedRegistration({
@@ -91,7 +91,7 @@ export default function ENSAssignRecordsSheet() {
       ].map(fieldName => textRecordFields[fieldName]),
     []
   );
-  const { values, profileQuery } = useENSRegistrationForm({
+  const { profileQuery } = useENSRegistrationForm({
     defaultFields,
     initializeForm: true,
   });
@@ -99,7 +99,9 @@ export default function ENSAssignRecordsSheet() {
   const displayTitleLabel = useMemo(() => !profileQuery.isLoading, [
     profileQuery.isLoading,
   ]);
-  const isEmptyProfile = useMemo(() => isEmpty(values), [values]);
+  const isEmptyProfile = useMemo(() => isEmpty(initialRecords), [
+    initialRecords,
+  ]);
 
   useENSRegistrationCosts({
     name,
@@ -117,7 +119,7 @@ export default function ENSAssignRecordsSheet() {
     avatarImage
   );
 
-  useEffect(() => {
+  useFocusEffect(() => {
     if (dominantColor || (!dominantColor && !avatarImage)) {
       setAccentColor(dominantColor || colors.purple);
     }
@@ -192,11 +194,7 @@ export default function ENSAssignRecordsSheet() {
                 <Text align="center" color="accent" size="16px" weight="heavy">
                   {displayTitleLabel
                     ? lang.t(
-                        `profiles.${
-                          mode === REGISTRATION_MODES.EDIT && !isEmptyProfile
-                            ? 'edit'
-                            : 'create'
-                        }.label`
+                        `profiles.${isEmptyProfile ? 'create' : 'edit'}.label`
                       )
                     : ''}
                 </Text>

@@ -73,8 +73,8 @@ const ContactRow = (
   ref
 ) => {
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const { onAddOrUpdateContacts } = useContacts();
   const { width: deviceWidth } = useDimensions();
+  const { onAddOrUpdateContacts } = useContacts();
   const { colors } = useTheme();
   const {
     accountType,
@@ -101,9 +101,7 @@ const ContactRow = (
       : null;
 
   // if the accountType === 'suggestions', nickname will always be an ens or hex address, not a custom contact nickname
-  const [ensName, setENSName] = useState(
-    accountType !== 'suggestions' ? ens : nickname
-  );
+  const [ensName, setENSName] = useState(ens);
 
   useEffect(() => {
     if (profilesEnabled && accountType === 'contacts') {
@@ -111,19 +109,25 @@ const ContactRow = (
         const name = await fetchReverseRecord(address);
         if (name !== ensName) {
           setENSName(name);
-          onAddOrUpdateContacts(address, nickname, color, network, name);
+          onAddOrUpdateContacts(
+            address,
+            name && isENSAddressFormat(nickname) ? name : nickname,
+            color,
+            network,
+            name
+          );
         }
       };
       fetchENSName();
     }
   }, [
     accountType,
+    onAddOrUpdateContacts,
     address,
     color,
     ensName,
     network,
     nickname,
-    onAddOrUpdateContacts,
     profilesEnabled,
     setENSName,
   ]);
@@ -141,7 +145,7 @@ const ContactRow = (
 
   const handlePress = useCallback(() => {
     if (showcaseItem) {
-      onPress(showcaseItem);
+      onPress(showcaseItem, nickname);
     } else {
       const label =
         accountType === 'suggestions' && isENSAddressFormat(nickname)
@@ -149,7 +153,7 @@ const ContactRow = (
           : ensName
           ? ensName
           : address;
-      onPress(label);
+      onPress(label, nickname);
     }
   }, [accountType, address, ensName, nickname, onPress, showcaseItem]);
 
