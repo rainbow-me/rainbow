@@ -1,13 +1,14 @@
 import lang from 'i18n-js';
-import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
 import { ActivityIndicator, Keyboard } from 'react-native';
 import {
+  State as GestureHandlerState,
+  HandlerStateChangeEvent,
   LongPressGestureHandler,
-  State,
   TapGestureHandler,
 } from 'react-native-gesture-handler';
-import Animated, { Easing, timing, Value } from 'react-native-reanimated';
+import Animated, { EasingNode, timing, Value } from 'react-native-reanimated';
+import { DeviceDimensions } from '../../../hooks/useDimensions';
 import Spinner from '../../Spinner';
 import { ShimmerAnimation } from '../../animations';
 import { Centered, InnerBorder } from '../../layout';
@@ -23,18 +24,20 @@ import ShadowStack from 'react-native-shadow-stack';
 
 const { divide, multiply, proc } = Animated;
 
-const { ACTIVE, BEGAN, END, FAILED } = State;
+const { ACTIVE, BEGAN, END, FAILED } = GestureHandlerState;
 
 const ButtonHeight = 56;
 const SmallButtonHeight = 46;
 const TinyButtonHeight = 40;
 
-const ButtonDisabledBgColor = colors => ({
+// TODO: try fixing any
+const ButtonDisabledBgColor = (colors: any) => ({
   dark: colors.darkGrey,
   light: colors.lightGrey,
 });
 
-const ButtonShadows = colors => ({
+// TODO: try fixing any
+const ButtonShadows = (colors: any) => ({
   default: [
     [0, 3, 5, colors.shadow, 0.2],
     [0, 6, 10, colors.shadow, 0.14],
@@ -49,9 +52,18 @@ const ButtonShadows = colors => ({
 const buttonScaleDurationMs = 150;
 const longPressProgressDurationMs = 500; // 👸 christian approves
 
+interface ButtonOptionParams {
+  smallButton?: boolean;
+  tinyButton?: boolean;
+}
+
+interface ContentProps extends ButtonOptionParams {
+  height: number;
+}
+
 const Content = styled(Centered).attrs({
   grow: 0,
-})(({ smallButton, height, tinyButton }) => ({
+})(({ smallButton, height, tinyButton }: ContentProps) => ({
   ...position.coverAsObject,
   borderRadius: height,
   height: height,
@@ -60,8 +72,13 @@ const Content = styled(Centered).attrs({
   ...padding.object(smallButton || tinyButton ? 0 : 15),
 }));
 
+interface LabelProps extends ButtonOptionParams {
+  // TODO: try fixing any
+  theme: any;
+}
+
 const Label = styled(BiometricButtonContent).attrs(
-  ({ smallButton, theme: { colors }, tinyButton }) => ({
+  ({ smallButton, theme: { colors }, tinyButton }: LabelProps) => ({
     color: colors.whiteLabel,
     size: smallButton || tinyButton ? 'large' : 'larger',
     weight: 'heavy',
@@ -71,7 +88,8 @@ const Label = styled(BiometricButtonContent).attrs(
 });
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
-  ({ theme: { colors } }) => ({
+  // TODO: try fixing any
+  ({ theme: { colors } }: { theme: any }) => ({
     color: colors.whiteLabel,
     size: 31,
   })
@@ -80,37 +98,54 @@ const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
   position: 'absolute',
 });
 
-const animate = (value, { duration = buttonScaleDurationMs, toValue }) =>
+const animate = (
+  value: Animated.Node<number>,
+  {
+    duration = buttonScaleDurationMs,
+    toValue,
+  }: {
+    duration?: number | Animated.Node<number>;
+    toValue: number | Animated.Node<number>;
+  }
+) =>
   timing(value, {
     duration,
-    easing: Easing.inOut(Easing.ease),
+    easing: EasingNode.inOut(EasingNode.ease),
     toValue,
   });
 
-const calculateReverseDuration = proc(longPressProgress =>
-  multiply(divide(longPressProgress, 100), longPressProgressDurationMs)
+const calculateReverseDuration = proc(
+  (longPressProgress: Animated.Node<number>) =>
+    multiply(divide(longPressProgress, 100), longPressProgressDurationMs)
 );
 
-class HoldToAuthorizeButton extends PureComponent {
-  static propTypes = {
-    backgroundColor: PropTypes.string,
-    children: PropTypes.any,
-    deviceDimensions: PropTypes.object,
-    disabled: PropTypes.bool,
-    disabledBackgroundColor: PropTypes.string,
-    hideInnerBorder: PropTypes.bool,
-    isAuthorizing: PropTypes.bool,
-    label: PropTypes.string,
-    onLongPress: PropTypes.func.isRequired,
-    parentHorizontalPadding: PropTypes.number,
-    shadows: PropTypes.arrayOf(PropTypes.array),
-    showBiometryIcon: PropTypes.bool,
-    smallButton: PropTypes.bool,
-    style: PropTypes.object,
-    testID: PropTypes.string,
-    theme: PropTypes.oneOf(['light', 'dark']),
-  };
+interface Props {
+  backgroundColor: string;
+  // TODO: Fix any if possible
+  colors: any;
+  deviceDimensions: DeviceDimensions;
+  disabled: boolean;
+  disabledBackgroundColor: string;
+  enableLongPress?: boolean;
+  hideInnerBorder: boolean;
+  isAuthorizing: boolean;
+  label: string;
+  onLongPress: () => void;
+  parentHorizontalPadding: number;
+  shadows: any[][];
+  showBiometryIcon: boolean;
+  smallButton: boolean;
+  style: object;
+  testID: string;
+  theme: 'light' | 'dark';
+  tinyButton?: boolean;
+}
 
+interface State {
+  isAuthorizing: boolean;
+}
+
+class HoldToAuthorizeButton extends PureComponent<Props, State> {
   static defaultProps = {
     disabled: false,
     theme: 'light',
@@ -145,7 +180,7 @@ class HoldToAuthorizeButton extends PureComponent {
     }
   };
 
-  onLongPressChange = ({ nativeEvent: { state } }) => {
+  onLongPressChange = ({ nativeEvent: { state } }: HandlerStateChangeEvent) => {
     const { disabled } = this.props;
 
     if (state === ACTIVE && !disabled) {
@@ -160,7 +195,7 @@ class HoldToAuthorizeButton extends PureComponent {
     }
   };
 
-  onTapChange = ({ nativeEvent: { state } }) => {
+  onTapChange = ({ nativeEvent: { state } }: HandlerStateChangeEvent) => {
     const { disabled, enableLongPress } = this.props;
 
     if (disabled) {
@@ -233,7 +268,7 @@ class HoldToAuthorizeButton extends PureComponent {
     return (
       <TapGestureHandler onHandlerStateChange={this.onTapChange}>
         <LongPressGestureHandler
-          enableLongPress={enableLongPress}
+          enabled={enableLongPress}
           minDurationMs={longPressProgressDurationMs}
           onHandlerStateChange={this.onLongPressChange}
         >
@@ -241,6 +276,8 @@ class HoldToAuthorizeButton extends PureComponent {
             {...props}
             style={[style, { transform: [{ scale: this.buttonScale }] }]}
           >
+            {/* Ignoring due to obscure JS error from ShadowStack */}
+            {/* @ts-ignore */}
             <ShadowStack
               backgroundColor={bgColor}
               borderRadius={height}
@@ -257,7 +294,7 @@ class HoldToAuthorizeButton extends PureComponent {
                 smallButton={smallButton}
                 tinyButton={tinyButton}
               >
-                {children || (
+                {children ?? (
                   <Fragment>
                     {!android && !disabled && (
                       <HoldToAuthorizeButtonIcon
@@ -293,11 +330,16 @@ class HoldToAuthorizeButton extends PureComponent {
   }
 }
 
+interface WrapperProps extends Props {
+  label: string;
+  disableLongPress?: boolean;
+}
+
 const HoldToAuthorizeButtonWithBiometrics = ({
   disableLongPress,
   label,
   ...props
-}) => {
+}: WrapperProps) => {
   const biometryType = useBiometryType();
   const { colors } = useTheme();
   const deviceDimensions = useDimensions();
