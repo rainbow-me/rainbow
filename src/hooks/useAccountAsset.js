@@ -71,8 +71,7 @@ const makeAccountAssetSelector = () =>
 // with a fallback for generic assets
 // and an ETH placeholder
 // NFTs are not included in this hook
-export default function useAccountAsset(uniqueId) {
-  const { nativeCurrency } = useAccountSettings();
+export default function useAccountAsset(uniqueId, nativeCurrency) {
   const selectAccountAsset = useMemo(makeAccountAssetSelector, []);
   const accountAsset = useSelector(state =>
     selectAccountAsset(state, uniqueId)
