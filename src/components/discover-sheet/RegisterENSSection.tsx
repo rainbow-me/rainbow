@@ -40,9 +40,9 @@ export default function RegisterENSSection() {
 
   useEffect(() => {
     // Preload intro screen preview marquee ENS images
-    ImgixImage.preload(
-      ensIntroMarqueeNames.map(name => ({ uri: ensAvatarUrl(name) }))
-    );
+    // ImgixImage.preload(
+    //   ensIntroMarqueeNames.map(name => ({ uri: ensAvatarUrl(name) }))
+    // );
   }, []);
 
   const shadow = useForegroundColor('shadow');
