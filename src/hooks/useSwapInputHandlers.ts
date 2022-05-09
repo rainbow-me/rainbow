@@ -27,15 +27,17 @@ export default function useSwapInputHandlers() {
     (state: AppState) =>
       state.swap.typeSpecificParameters?.supplyBalanceUnderlying
   );
-  const inputCurrencyAddress = useSelector(
-    (state: AppState) => state.swap.inputCurrency?.address
+  const inputCurrency = useSelector(
+    (state: AppState) => state.swap.inputCurrency
   );
 
   const updateMaxInputAmount = useCallback(() => {
+    const inputCurrencyAddress = inputCurrency?.address;
+    const inputCurrencyUniqueId = inputCurrency?.uniqueId;
     if (type === ExchangeModalTypes.withdrawal) {
       dispatch(updateSwapInputAmount(supplyBalanceUnderlying));
     } else {
-      const accountAsset = ethereumUtils.getAccountAsset(inputCurrencyAddress);
+      const accountAsset = ethereumUtils.getAccountAsset(inputCurrencyUniqueId);
       const oldAmount = accountAsset?.balance?.amount ?? '0';
       let newAmount = oldAmount;
       if (inputCurrencyAddress === ETH_ADDRESS && accountAsset) {
@@ -69,7 +71,8 @@ Would you like to auto adjust the balance to leave some ${inputCurrencyAddress.t
     }
   }, [
     dispatch,
-    inputCurrencyAddress,
+    inputCurrency?.address,
+    inputCurrency?.uniqueId,
     selectedGasFee,
     supplyBalanceUnderlying,
     type,
