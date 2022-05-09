@@ -22,12 +22,14 @@ scripts/codegen-translations.js @jinchung @marco
 src/apollo @brunobar79 @jinchung @derHowie
 
 # ASSETS
-src/assets @skylarbarrera 
+src/assets @skylarbarrera
 
 # COMPONENTS
 src/components @osdnk @terrysahaidak
 src/components/unique-token @jkadamczyk
 src/components/floating-emojis @jkadamczyk
+src/components/buttons/hold-to-authorize @jkadamczyk
+src/components/icons/svg/ProgressIcon.tsx @jkadamczyk
 
 # APP CONFIG
 src/config @osdnk @brunobar79 @skylarbarrera
