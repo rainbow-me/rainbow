@@ -17,6 +17,7 @@ class BackupDetector: NSObject {
     do {
       if let bundleIdentifier = Bundle.main.bundleIdentifier {
         var url = try manager.url(for: .libraryDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+        url.appendPathComponent("Application Support")
         url.appendPathComponent(bundleIdentifier, isDirectory: true)
         url.appendPathComponent("backup-detector")
         url.appendPathComponent("backup.txt")
@@ -43,18 +44,28 @@ class BackupDetector: NSObject {
       print("bundleIdentifier: \(bundleIdentifier)")
       do {
         var url = try manager.url(for: .libraryDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
-
+        url.appendPathComponent("Application Support")
         url.appendPathComponent(bundleIdentifier, isDirectory: true)
         url.appendPathComponent("backup-detector")
+        
+        var values = URLResourceValues()
+        values.isExcludedFromBackup = true
+        try url.setResourceValues(values)
+
+        var fileUrl = try manager.url(for: .libraryDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+        fileUrl.appendPathComponent("Application Support")
+        fileUrl.appendPathComponent(bundleIdentifier, isDirectory: true)
+        fileUrl.appendPathComponent("backup-detector")
+        fileUrl.appendPathComponent("backup.txt")
         
         print("url: \(url.path)")
 
         // TODO: mark directory as excluded from backups
-        if (!manager.fileExists(atPath: url.path)) {
+        if (!manager.fileExists(atPath: url.path) && !manager.fileExists(atPath: fileUrl.path)) {
           print("file doesnt exist")
           try manager.createDirectory(at: url, withIntermediateDirectories: true, attributes: nil)
           print("directory created")
-          manager.createFile(atPath: url.path + "/backup.txt", contents: "hello".data(using: .utf8))
+          manager.createFile(atPath: fileUrl.path, contents: "hello".data(using: .utf8))
           print("file created")
         } else {
           print("file already exists")
