@@ -156,7 +156,6 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should navigate to the Wallet screen after swiping left', async () => {
-    await Helpers.checkIfVisible('testnet-toast-Hardhat');
     await Helpers.swipe('profile-screen', 'left', 'slow');
     await Helpers.checkIfVisible('wallet-screen');
   });
@@ -235,10 +234,8 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should see confirm registration screen and set reverse records', async () => {
-    await Helpers.delay(10000);
     await Helpers.checkIfVisible(`ens-reverse-record-switch`);
     // set RANDOM_NAME as primary name
-    await Helpers.waitAndTap('ens-reverse-record-switch');
     await Helpers.waitAndTap('ens-reverse-record-switch');
     await Helpers.checkIfVisible(`ens-transaction-action-REGISTER`);
     await Helpers.waitAndTap(`ens-transaction-action-REGISTER`);
