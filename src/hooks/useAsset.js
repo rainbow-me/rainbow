@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import useAccountAsset from './useAccountAsset';
+import useCollectible from './useCollectible';
 import { AssetTypes } from '@rainbow-me/entities';
-import { useCollectible } from '@rainbow-me/hooks';
 
 // To fetch an asset from account assets,
 // generic assets, and uniqueTokens
