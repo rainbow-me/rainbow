@@ -80,7 +80,7 @@ export default function ENSSearchSheet() {
 
   useFocusEffect(
     useCallback(() => {
-      debouncedSearchQuery.length > 3 &&
+      debouncedSearchQuery.length >= 3 &&
         startRegistration(
           `${debouncedSearchQuery}${ENS_DOMAIN}`,
           REGISTRATION_MODES.CREATE
