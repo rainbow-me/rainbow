@@ -6,3 +6,4 @@ export {
   FloatingActionButtonSize,
 } from './FloatingActionButton';
 export { default as SendFab } from './SendFab';
+export { default as SearchFab } from './SearchFab';
