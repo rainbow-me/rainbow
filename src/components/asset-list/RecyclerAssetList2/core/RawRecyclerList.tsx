@@ -17,7 +17,7 @@ import rowRenderer from './RowRenderer';
 import { BaseCellType, RecyclerListViewRef } from './ViewTypes';
 import getLayoutProvider from './getLayoutProvider';
 import useLayoutItemAnimator from './useLayoutItemAnimator';
-import { useCoinListEdited } from '@rainbow-me/hooks';
+import { useCoinListEdited, useCoinListEditOptions } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 
 const dataProvider = new DataProvider((r1, r2) => {
@@ -29,6 +29,10 @@ export type ExtendedState = {
   nativeCurrencySymbol: string;
   nativeCurrency: string;
   navigate: any;
+  isCoinListEdited: boolean;
+  hiddenCoins: string[];
+  pinnedCoins: string[];
+  toggleSelectedCoin: (id: string) => void;
 };
 
 const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
@@ -40,7 +44,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
     () => dataProvider.cloneWithRows(briefSectionsData),
     [briefSectionsData]
   );
-  const { isCoinListEdited } = useCoinListEdited();
+  const { isCoinListEdited, setIsCoinListEdited } = useCoinListEdited();
   const y = useRecyclerAssetListPosition()!;
 
   const layoutProvider = useMemoOne(
@@ -91,18 +95,37 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
 
   const theme = useTheme();
   const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
+  const {
+    hiddenCoins,
+    pinnedCoins,
+    toggleSelectedCoin,
+  } = useCoinListEditOptions();
 
   const { navigate } = useNavigation();
 
-  const extendedState = useMemo(
-    () => ({
+  const extendedState = useMemo<ExtendedState>(() => {
+    return {
+      hiddenCoins,
+      isCoinListEdited,
       nativeCurrency,
       nativeCurrencySymbol,
       navigate,
+      pinnedCoins,
+      setCoinListEdited: setIsCoinListEdited,
       theme,
-    }),
-    [theme, navigate, nativeCurrencySymbol, nativeCurrency]
-  );
+      toggleSelectedCoin,
+    };
+  }, [
+    theme,
+    navigate,
+    nativeCurrencySymbol,
+    nativeCurrency,
+    pinnedCoins,
+    hiddenCoins,
+    toggleSelectedCoin,
+    isCoinListEdited,
+    setIsCoinListEdited,
+  ]);
 
   return (
     <RecyclerListView
