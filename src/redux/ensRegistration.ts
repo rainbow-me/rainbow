@@ -1,4 +1,3 @@
-import { omit } from 'lodash';
 import { AppDispatch, AppGetState } from './store';
 import {
   ENSRegistrationState,
@@ -6,6 +5,7 @@ import {
   Records,
   RegistrationParameters,
 } from '@rainbow-me/entities';
+import { omitFlatten } from '@rainbow-me/helpers/utilities';
 
 const ENS_REGISTRATION_UPDATE_DURATION =
   'ensRegistration/ENS_REGISTRATION_UPDATE_DURATION';
@@ -203,7 +203,7 @@ export const removeRecordByKey = (
   const registration = accountRegistrations[currentRegistrationName] || {};
   const registrationRecords = registration?.records || {};
 
-  const newRecords = omit(registrationRecords, key) as Records;
+  const newRecords = omitFlatten(registrationRecords, key) as Records;
 
   const updatedEnsRegistrationManagerForAccount = {
     registrations: {
