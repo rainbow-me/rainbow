@@ -152,7 +152,12 @@ const MemoizedBalanceCoinRow = React.memo(
 
             <View style={[cx.innerContainer, isHidden && cx.hiddenRow]}>
               <View style={cx.row}>
-                <Text align="right" size="16px" weight="medium">
+                <Text
+                  align="right"
+                  numberOfLines={1}
+                  size="16px"
+                  weight="medium"
+                >
                   {item.name}
                 </Text>
 
@@ -217,8 +222,8 @@ export default React.memo(function BalanceCoinRow({
   maybeCallback.current = isCoinListEdited ? onPress : null;
 
   // we return false to make sure we don't run includes for each row when it's not needed
-  const isHidden = isCoinListEdited ? false : hiddenCoins.includes(uniqueId);
-  const isPinned = isCoinListEdited ? false : pinnedCoins.includes(uniqueId);
+  const isHidden = isCoinListEdited ? hiddenCoins.includes(uniqueId) : false;
+  const isPinned = isCoinListEdited ? pinnedCoins.includes(uniqueId) : false;
 
   return (
     <View style={[cx.rootContainer, !isCoinListEdited && cx.nonEditMode]}>
