@@ -143,7 +143,7 @@ const MemoizedBalanceCoinRow = React.memo(
           testID={`balance-coin-row-${item.name}`}
         >
           <View style={[cx.container]}>
-            <FastCoinIcon address={item.address} symbol={item.address} />
+            <FastCoinIcon address={item.address} symbol={item.symbol} />
 
             <View style={[cx.innerContainer, isHidden && cx.hiddenRow]}>
               <View style={cx.row}>
