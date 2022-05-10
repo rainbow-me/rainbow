@@ -107,7 +107,7 @@ export const fetchSuggestions = async (
             const hasAvatar = domain?.resolver?.texts?.find(
               text => text === ENS_RECORDS.avatar
             );
-            if (hasAvatar && profilesEnabled) {
+            if (!!hasAvatar && profilesEnabled) {
               try {
                 const images = await fetchImages(domain.name);
                 queryClient.setQueryData(

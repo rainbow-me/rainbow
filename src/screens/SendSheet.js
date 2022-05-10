@@ -17,6 +17,7 @@ import {
   SendHeader,
 } from '../components/send';
 import { SheetActionButton } from '../components/sheet';
+import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import { AssetTypes } from '@rainbow-me/entities';
 import { isL2Asset, isNativeAsset } from '@rainbow-me/handlers/assets';
 import { debouncedFetchSuggestions } from '@rainbow-me/handlers/ens';
@@ -110,6 +111,7 @@ export default function SendSheet(props) {
     updateTxFee,
   } = useGas();
   const recipientFieldRef = useRef();
+  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   const { contacts, onRemoveContact, filteredContacts } = useContacts();
   const { userAccounts, watchedAccounts } = useUserAccounts();
@@ -739,7 +741,12 @@ export default function SendSheet(props) {
   const [ensSuggestions, setEnsSuggestions] = useState([]);
   useEffect(() => {
     if (network === Network.mainnet && !recipientOverride) {
-      debouncedFetchSuggestions(recipient, setEnsSuggestions);
+      debouncedFetchSuggestions(
+        recipient,
+        setEnsSuggestions,
+        undefined,
+        profilesEnabled
+      );
     } else {
       setEnsSuggestions([]);
     }
@@ -749,6 +756,7 @@ export default function SendSheet(props) {
     recipientOverride,
     setEnsSuggestions,
     watchedAccounts,
+    profilesEnabled,
   ]);
 
   useEffect(() => {

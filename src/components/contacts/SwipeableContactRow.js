@@ -56,6 +56,7 @@ const SwipeableContactRow = (
     address,
     color,
     ens,
+    image,
     network,
     nickname,
     onPress,
@@ -127,6 +128,7 @@ const SwipeableContactRow = (
         address={address}
         color={color}
         ens={ens}
+        image={image}
         network={network}
         nickname={nickname}
         onLongPress={handleLongPress}
