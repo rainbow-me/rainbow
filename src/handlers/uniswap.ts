@@ -410,7 +410,7 @@ export const getTokenForCurrency = (
   return new Token(
     chainId,
     currency.address,
-    currency.decimals,
+    currency.decimals!,
     currency.symbol,
     currency.name
   );
