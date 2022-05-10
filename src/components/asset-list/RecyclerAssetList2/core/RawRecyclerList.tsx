@@ -4,7 +4,6 @@ import React, {
   useEffect,
   useMemo,
   useRef,
-  useState,
 } from 'react';
 import { LayoutChangeEvent } from 'react-native';
 import { DataProvider, RecyclerListView } from 'recyclerlistview';
@@ -30,6 +29,10 @@ export type ExtendedState = {
   nativeCurrencySymbol: string;
   nativeCurrency: string;
   navigate: any;
+  isCoinListEdited: boolean;
+  hiddenCoins: string[];
+  pinnedCoins: string[];
+  toggleSelectedCoin: (id: string) => void;
 };
 
 const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
@@ -100,8 +103,8 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
 
   const { navigate } = useNavigation();
 
-  const extendedState = useMemo<ExtendedState>(
-    () => ({
+  const extendedState = useMemo<ExtendedState>(() => {
+    return {
       hiddenCoins,
       isCoinListEdited,
       nativeCurrency,
@@ -111,19 +114,18 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
       setCoinListEdited: setIsCoinListEdited,
       theme,
       toggleSelectedCoin,
-    }),
-    [
-      theme,
-      navigate,
-      nativeCurrencySymbol,
-      nativeCurrency,
-      pinnedCoins,
-      hiddenCoins,
-      toggleSelectedCoin,
-      isCoinListEdited,
-      setIsCoinListEdited,
-    ]
-  );
+    };
+  }, [
+    theme,
+    navigate,
+    nativeCurrencySymbol,
+    nativeCurrency,
+    pinnedCoins,
+    hiddenCoins,
+    toggleSelectedCoin,
+    isCoinListEdited,
+    setIsCoinListEdited,
+  ]);
 
   return (
     <RecyclerListView

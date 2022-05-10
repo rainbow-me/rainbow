@@ -38,7 +38,7 @@ function CellDataProvider({
 function rowRenderer(
   type: CellType,
   { uid }: { uid: string },
-  _,
+  _: unknown,
   extendedState: ExtendedState
 ) {
   return (
