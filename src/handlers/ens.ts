@@ -2,7 +2,7 @@ import { formatsByCoinType, formatsByName } from '@ensdomains/address-encoder';
 import { captureException } from '@sentry/react-native';
 import { BigNumber } from 'ethers';
 import { debounce, isEmpty, sortBy } from 'lodash';
-// import FastImage from 'react-native-fast-isage';
+import FastImage from 'react-native-fast-image';
 import { ensClient } from '../apollo/client';
 import {
   ENS_ACCOUNT_REGISTRATIONS,
@@ -192,18 +192,18 @@ export const fetchImages = async (ensName: string) => {
         type: 'cover',
       }),
     ]);
-    // FastImage.preload([
-    //   avatarUrl
-    //     ? {
-    //         uri: avatarUrl,
-    //       }
-    //     : {},
-    //   coverUrl
-    //     ? {
-    //         uri: coverUrl,
-    //       }
-    //     : {},
-    // ]);
+    FastImage.preload([
+      avatarUrl
+        ? {
+            uri: avatarUrl,
+          }
+        : {},
+      coverUrl
+        ? {
+            uri: coverUrl,
+          }
+        : {},
+    ]);
     // eslint-disable-next-line no-empty
   } catch (err) {}
 

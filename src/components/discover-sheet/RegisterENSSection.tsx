@@ -3,7 +3,9 @@ import React, { useCallback, useEffect } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '../../navigation/Navigation';
 import { ButtonPressAnimation } from '../animations';
+import { ensAvatarUrl } from '../ens-registration/IntroMarquee/IntroMarquee';
 import ENSIcon from '../icons/svg/ENSIcon';
+import ImgixImage from '../images/ImgixImage';
 import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config';
 import { useTheme } from '@rainbow-me/context';
 import {
@@ -17,6 +19,7 @@ import {
   useForegroundColor,
 } from '@rainbow-me/design-system';
 import { useWallets } from '@rainbow-me/hooks';
+import { ensIntroMarqueeNames } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { watchingAlert } from '@rainbow-me/utils';
 
@@ -37,9 +40,9 @@ export default function RegisterENSSection() {
 
   useEffect(() => {
     // Preload intro screen preview marquee ENS images
-    // ImgixImage.preload(
-    //   ensIntroMarqueeNames.map(name => ({ uri: ensAvatarUrl(name) }))
-    // );
+    ImgixImage.preload(
+      ensIntroMarqueeNames.map(name => ({ uri: ensAvatarUrl(name) }))
+    );
   }, []);
 
   const shadow = useForegroundColor('shadow');
