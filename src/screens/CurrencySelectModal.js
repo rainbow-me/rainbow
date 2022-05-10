@@ -13,6 +13,7 @@ import React, {
 import { StatusBar } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import { useDispatch } from 'react-redux';
 import { useTheme } from 'styled-components';
 import { useDebounce } from 'use-debounce';
 import GestureBlocker from '../components/GestureBlocker';
@@ -37,6 +38,7 @@ import {
 } from '@rainbow-me/hooks';
 import { delayNext } from '@rainbow-me/hooks/useMagicAutofocus';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
+import { emitChartsRequest } from '@rainbow-me/redux/explorer';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
@@ -69,6 +71,7 @@ export default function CurrencySelectModal() {
   const prevIsFocused = usePrevious(isFocused);
   const { navigate, dangerouslyGetState } = useNavigation();
   const { colors } = useTheme();
+  const dispatch = useDispatch();
   const {
     params: {
       onSelectCurrency,
@@ -175,6 +178,7 @@ export default function CurrencySelectModal() {
   const handleSelectAsset = useCallback(
     item => {
       setPointerEvents(false);
+      dispatch(emitChartsRequest(item.mainnet_address || item.address));
       const isMainnet = currentChainId === 1;
       onSelectCurrency(
         isMainnet && type === CurrencySelectionTypes.output
@@ -198,12 +202,13 @@ export default function CurrencySelectModal() {
     },
     [
       setPointerEvents,
+      dispatch,
       currentChainId,
       onSelectCurrency,
+      type,
       searchQueryForSearch,
       dangerouslyGetState,
       navigate,
-      type,
     ]
   );
 

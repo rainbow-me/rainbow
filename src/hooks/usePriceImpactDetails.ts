@@ -15,7 +15,7 @@ import {
   isPositive,
   subtract,
 } from '@rainbow-me/utilities';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils, logger } from '@rainbow-me/utils';
 
 const PriceImpactWarningThreshold = 0.05;
 const SeverePriceImpactThreshold = 0.1;
@@ -43,14 +43,14 @@ export default function usePriceImpactDetails(
     };
   }
 
-  const inputTokenAddress = ethereumUtils.getMultichainAssetWithPrice(
+  const inputTokenAddress = ethereumUtils.getMultichainAssetAddress(
     inputCurrency as RainbowToken,
     currentNetwork
-  )?.address;
-  const outputTokenAddress = ethereumUtils.getMultichainAssetWithPrice(
+  );
+  const outputTokenAddress = ethereumUtils.getMultichainAssetAddress(
     outputCurrency as RainbowToken,
     currentNetwork
-  )?.address;
+  );
 
   let inputPriceValue =
     genericAssets[inputTokenAddress.toLowerCase()]?.price?.value;
@@ -64,7 +64,11 @@ export default function usePriceImpactDetails(
     outputPriceValue = genericAssets[ETH_ADDRESS]?.price?.value;
   }
 
-  if (inputPriceValue === outputPriceValue) {
+  if (
+    inputPriceValue === outputPriceValue ||
+    !inputPriceValue ||
+    !outputPriceValue
+  ) {
     return {
       inputPriceValue,
       isHighPriceImpact: false,
