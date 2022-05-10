@@ -1,7 +1,7 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import { atomFamily, useRecoilState } from 'recoil';
-import ChainBadge from '../../../coin-icon/ChainBadge';
+import { FastChainBadge } from './FastCoinBadge';
 import EthIcon from '@rainbow-me/assets/eth-icon.png';
 import { AssetType } from '@rainbow-me/entities';
 import { useColorForAsset } from '@rainbow-me/hooks';
@@ -41,14 +41,14 @@ export default function FastCoinIcon({
   address,
   symbol,
   assetType,
+  theme,
 }: {
   address: string;
   symbol: string;
   assetType: keyof typeof AssetType;
+  theme: any;
 }) {
-  const imageUrl = useMemo(() => getUrlForTrustIconFallback(address), [
-    address,
-  ]);
+  const imageUrl = getUrlForTrustIconFallback(address);
 
   const [status, setStatus] = useRecoilState(isFallbackOrTrust(address));
 
@@ -67,7 +67,7 @@ export default function FastCoinIcon({
   const eth = isETH(address);
 
   return (
-    <View>
+    <View style={cx.container}>
       <FallbackIcon
         color={fallbackIconColor}
         height={40}
@@ -86,7 +86,7 @@ export default function FastCoinIcon({
           style={cx.coinIconFallback}
         />
       )}
-      <ChainBadge assetType={assetType} />
+      <FastChainBadge assetType={assetType} theme={theme} />
     </View>
   );
 }
@@ -96,5 +96,8 @@ const cx = StyleSheet.create({
     borderRadius: 20,
     height: 40,
     width: 40,
+  },
+  container: {
+    overflow: 'visible',
   },
 });

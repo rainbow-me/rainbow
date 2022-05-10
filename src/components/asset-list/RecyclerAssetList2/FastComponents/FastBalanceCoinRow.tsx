@@ -147,6 +147,7 @@ const MemoizedBalanceCoinRow = React.memo(
               address={item.mainnet_address || item.address}
               assetType={item.type}
               symbol={item.symbol}
+              theme={theme}
             />
 
             <View style={[cx.innerContainer, isHidden && cx.hiddenRow]}>
@@ -249,7 +250,7 @@ const cx = StyleSheet.create({
     marginTop: 12,
   },
   checkboxContainer: {
-    width: 53,
+    width: 51,
   },
   checkboxInnerContainer: {
     alignContent: 'center',
@@ -284,6 +285,7 @@ const cx = StyleSheet.create({
   },
   container: {
     flexDirection: 'row',
+    marginLeft: 2,
     marginRight: 19,
     marginVertical: 9.5,
   },
@@ -299,7 +301,7 @@ const cx = StyleSheet.create({
     marginLeft: 10,
   },
   nonEditMode: {
-    marginLeft: 19,
+    paddingLeft: 19,
   },
   rootContainer: {
     alignItems: 'center',
