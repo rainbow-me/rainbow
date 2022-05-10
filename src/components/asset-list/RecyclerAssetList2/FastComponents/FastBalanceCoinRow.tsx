@@ -6,6 +6,7 @@ import { ButtonPressAnimation } from '../../../animations';
 
 import { initialChartExpandedStateSheetHeight } from '../../../expanded-state/asset/ChartExpandedState';
 import { ExtendedState } from '../core/RawRecyclerList';
+import FastCoinIcon from './FastCoinIcon';
 import { Text } from '@rainbow-me/design-system';
 import {
   useAccountAsset,
@@ -13,10 +14,6 @@ import {
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { borders, colors, padding, shadow } from '@rainbow-me/styles';
-
-function CoinIcon() {
-  return <View style={cx.coinIconFallback} />;
-}
 
 interface CoinCheckButtonProps {
   isHidden: boolean;
@@ -146,7 +143,11 @@ const MemoizedBalanceCoinRow = React.memo(
           testID={`balance-coin-row-${item.name}`}
         >
           <View style={[cx.container]}>
-            <CoinIcon />
+            <FastCoinIcon
+              address={item.mainnet_address || item.address}
+              assetType={item.type}
+              symbol={item.symbol}
+            />
 
             <View style={[cx.innerContainer, isHidden && cx.hiddenRow]}>
               <View style={cx.row}>
