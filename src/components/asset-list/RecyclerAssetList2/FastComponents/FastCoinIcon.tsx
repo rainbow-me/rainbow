@@ -1,10 +1,15 @@
 import React, { useCallback, useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { atomFamily, useRecoilState } from 'recoil';
+import EthIcon from '@rainbow-me/assets/eth-icon.png';
 import { useColorForAsset } from '@rainbow-me/hooks';
 import { ImageWithCachedMetadata } from '@rainbow-me/images';
 import { borders, fonts } from '@rainbow-me/styles';
-import { FallbackIcon, getUrlForTrustIconFallback } from '@rainbow-me/utils';
+import {
+  FallbackIcon,
+  getUrlForTrustIconFallback,
+  isETH,
+} from '@rainbow-me/utils';
 
 const LoadingStates = {
   FALLBACK: 'FALLBACK',
@@ -55,6 +60,8 @@ export default function FastCoinIcon({
     }
   }, [setStatus, status]);
 
+  const eth = isETH(address);
+
   return (
     <View>
       <FallbackIcon
@@ -65,12 +72,16 @@ export default function FastCoinIcon({
         textStyles={fallbackTextStyles}
         width={40}
       />
-      <ImageWithCachedMetadata
-        imageUrl={imageUrl}
-        onError={onError}
-        onLoad={onLoad}
-        style={cx.coinIconFallback}
-      />
+      {eth ? (
+        <Image source={EthIcon} style={cx.coinIconFallback} />
+      ) : (
+        <ImageWithCachedMetadata
+          imageUrl={imageUrl}
+          onError={onError}
+          onLoad={onLoad}
+          style={cx.coinIconFallback}
+        />
+      )}
     </View>
   );
 }
