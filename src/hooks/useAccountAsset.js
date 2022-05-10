@@ -78,10 +78,17 @@ export default function useAccountAsset(uniqueId, nativeCurrency) {
   );
   const genericAssetBackup = useGenericAsset(uniqueId);
 
+  // this is temporary for FastBalanceCoinRow to make a tiny bit faster
+  // we pass nativeCurrency only in that case
+  // for all the other cases it will work as expected
+  const nativeCurrencyToUse =
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    nativeCurrency ?? useAccountSettings().nativeCurrency;
+
   if (accountAsset) {
-    return parseAssetNative(accountAsset, nativeCurrency);
+    return parseAssetNative(accountAsset, nativeCurrencyToUse);
   } else if (uniqueId === ETH_ADDRESS) {
-    const result = parseAssetNative(genericAssetBackup, nativeCurrency);
+    const result = parseAssetNative(genericAssetBackup, nativeCurrencyToUse);
     const placeholderEth = {
       ...getZeroEth(),
       ...result,
