@@ -3,6 +3,7 @@ import {
   compact,
   find,
   isEmpty,
+  isNil,
   join,
   map,
   orderBy,
@@ -86,10 +87,9 @@ const transformPool = (
   if (isEmpty(position)) {
     return null;
   }
-  const liquidityTokenWithNative = parseAssetNative(
-    liquidityToken,
-    nativeCurrency
-  );
+  const liquidityTokenWithNative = !isNil(liquidityToken)
+    ? parseAssetNative(liquidityToken, nativeCurrency)
+    : liquidityToken;
 
   const price = liquidityTokenWithNative?.price;
   const {

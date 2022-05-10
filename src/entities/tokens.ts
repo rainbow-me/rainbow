@@ -3,13 +3,13 @@ import { EthereumAddress } from '.';
 
 interface ZerionAssetPrice {
   value: number;
-  relative_change_24h: number | null;
+  relative_change_24h: number;
   changed_at: number;
 }
 
 export interface Asset {
   address: EthereumAddress;
-  decimals: number;
+  decimals?: number | undefined;
   name: string;
   symbol: string;
 }
@@ -20,8 +20,14 @@ export interface ZerionAsset {
   symbol: string;
   decimals: number;
   type: AssetType | null;
-  icon_url?: string | null;
-  price?: ZerionAssetPrice | null;
+  icon_url?: string;
+  price?: ZerionAssetPrice;
+  // shit we are appending later
+  mainnet_address?: string;
+  network?: string;
+  quantity?: number;
+  // zerion asset fallback typing issues, leaving this here for now
+  coingecko_id?: string;
 }
 
 // Fields that may or may not be present in a `ZerionAssetFallback` but are
@@ -74,10 +80,18 @@ export interface ParsedAddressAsset
   };
   asset_contract?: AssetContract;
   type?: string;
-  id: string;
+  // id: string;
   uniqueId: string;
   mainnet_address?: EthereumAddress;
   isNativeAsset?: boolean;
+}
+
+export interface ParsedAddressAssetWithNative extends ParsedAddressAsset {
+  native: {
+    balance: { amount: string; display: string };
+    change: string | null;
+    price: { amount: number; display: string };
+  };
 }
 
 export interface UniswapCurrency extends ParsedAddressAsset {

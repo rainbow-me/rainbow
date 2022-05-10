@@ -466,6 +466,7 @@ interface AddressAssetsReceivedMessage {
     assets?: {
       [id: string]: {
         asset: ZerionAsset;
+        quantity: number;
       };
     };
   };
@@ -1100,13 +1101,26 @@ export const addressAssetsReceived = (
 
   const { uniqueTokens } = getState().uniqueTokens;
   const newAssets = message?.payload?.assets ?? {};
-  let updatedAssets = pickBy(
-    newAssets,
-    asset =>
-      asset?.asset?.type !== AssetTypes.compound &&
-      asset?.asset?.type !== AssetTypes.trash &&
-      !shitcoins.includes(toLower(asset?.asset?.asset_code))
-  );
+  let updatedAssets = Object.keys(newAssets)
+    .map(assetKey => {
+      const { asset, quantity } = newAssets[assetKey];
+      const notCompound = asset.type !== AssetTypes.compound;
+      const notTrash = asset.type !== AssetTypes.trash;
+      const notShit = !shitcoins.includes(toLower(asset?.asset_code));
+      const hasAddress = asset.asset_code;
+      if (notCompound && notTrash && notShit && hasAddress) {
+        return { ...asset, quantity };
+      }
+      return null;
+    })
+    .filter(Boolean)
+    .reduce(
+      (allAssets, currentAsset) => ({
+        ...allAssets,
+        [currentAsset!.asset_code]: currentAsset,
+      }),
+      {}
+    );
 
   if (removed) {
     updatedAssets = mapValues(newAssets, asset => {
@@ -1117,9 +1131,7 @@ export const addressAssetsReceived = (
     });
   }
 
-  let parsedAssets = parseAccountAssets(updatedAssets, uniqueTokens) as {
-    [id: string]: ParsedAddressAsset;
-  };
+  let parsedAssets = parseAccountAssets(updatedAssets, uniqueTokens);
 
   const liquidityTokens = filter(
     parsedAssets,
@@ -1360,11 +1372,7 @@ export const assetPricesReceived = (
 
   if (toLower(nativeCurrency) === message?.meta?.currency) {
     if (isEmpty(newAssetPrices)) return;
-    const parsedAssets = mapValues(newAssetPrices, asset =>
-      parseAsset(asset)
-    ) as {
-      [id: string]: ParsedAddressAsset;
-    };
+    const parsedAssets = mapValues(newAssetPrices, asset => parseAsset(asset));
     const { genericAssets } = getState().data;
 
     const updatedAssets = {
