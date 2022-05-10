@@ -408,3 +408,31 @@ export const fromWei = (number: BigNumberish): string =>
 export const delay = (ms: number): Promise<void> => {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
+
+/**
+ * @desc Can omit only flatted key, will not work with 'key.someObj.value'
+ */
+export const omitFlatten = (
+  originalObject: {
+    [key: string]: any;
+  },
+  keysToOmit: string | number | string[] | number[]
+) => {
+  if (Array.isArray(keysToOmit)) {
+    const clonedObject = { ...originalObject };
+    for (const path of keysToOmit) {
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+      delete clonedObject[path];
+    }
+    return clonedObject;
+  }
+
+  if (originalObject.hasOwnProperty(keysToOmit)) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { [keysToOmit]: _, ...rest } = originalObject;
+
+    return rest;
+  }
+
+  return originalObject;
+};
