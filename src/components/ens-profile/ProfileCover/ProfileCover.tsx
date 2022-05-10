@@ -1,70 +1,89 @@
 import React from 'react';
 import { View } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
+import Animated from 'react-native-reanimated';
 import { ImagePreviewOverlayTarget } from '../../images/ImagePreviewOverlay';
 import Skeleton from '../../skeleton/Skeleton';
 import { Box, useForegroundColor } from '@rainbow-me/design-system';
+import { useFadeImage } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 
 export default function ProfileCover({
   coverUrl,
-  isLoading,
   enableZoomOnPress,
   handleOnPress,
+  isFetched,
 }: {
   coverUrl?: string | null;
-  isLoading?: boolean;
   enableZoomOnPress?: boolean;
   handleOnPress?: () => void;
+  isFetched: boolean;
 }) {
   const accentColor = useForegroundColor('accent');
 
-  if (isLoading) {
-    return (
-      <Box height="126px">
-        <Skeleton animated>
-          <Box background="body" height="126px" width="full" />
-        </Skeleton>
-      </Box>
-    );
-  }
+  const { isLoading, onLoadEnd, style } = useFadeImage({
+    enabled: isFetched,
+    source: coverUrl ? { uri: coverUrl } : undefined,
+  });
+
+  const showSkeleton = isLoading || !isFetched;
+  const showRadialGradient = ios && !coverUrl && isFetched && !isLoading;
+
   return (
-    <Box
-      alignItems="center"
-      as={ios && !coverUrl ? RadialGradient : View}
-      height="126px"
-      justifyContent="center"
-      {...(ios
-        ? {
-            center: [0, 126],
-            colors: [accentColor, accentColor + '60'],
-            stops: [0, 1],
-          }
-        : {
-            ...(coverUrl
-              ? {
-                  background: 'body',
-                }
-              : {
-                  style: { backgroundColor: accentColor },
-                }),
-          })}
-    >
-      {coverUrl && (
-        <ImagePreviewOverlayTarget
-          aspectRatioType="cover"
-          borderRadius={0}
-          disableEnteringWithPinch
-          enableZoomOnPress={enableZoomOnPress}
-          height="126px"
-          hideStatusBar={false}
-          imageUrl={coverUrl}
-          onPress={handleOnPress}
-          topOffset={ios ? 112 : 107}
-        >
-          <Box as={ImgixImage} height="126px" source={{ uri: coverUrl }} />
-        </ImagePreviewOverlayTarget>
+    <>
+      {showSkeleton && (
+        <Box height="126px" position="absolute" top="0px" width="full">
+          <Skeleton animated>
+            <Box background="body" height="126px" width="full" />
+          </Skeleton>
+        </Box>
       )}
-    </Box>
+      <Animated.View style={style}>
+        <Box
+          alignItems="center"
+          as={showRadialGradient ? RadialGradient : View}
+          height="126px"
+          justifyContent="center"
+          {...(showRadialGradient
+            ? {
+                center: [0, 126],
+                colors: [accentColor, accentColor + '60'],
+                stops: [0, 1],
+              }
+            : {
+                ...(showSkeleton
+                  ? {}
+                  : coverUrl
+                  ? {
+                      background: 'body',
+                    }
+                  : {
+                      style: { backgroundColor: accentColor },
+                    }),
+              })}
+        >
+          <ImagePreviewOverlayTarget
+            aspectRatioType="cover"
+            borderRadius={0}
+            // Defer mounting of overlay component to avoid avatar flickers
+            deferOverlayTimeout={1000}
+            disableEnteringWithPinch
+            enableZoomOnPress={enableZoomOnPress}
+            height="126px"
+            hideStatusBar={false}
+            imageUrl={coverUrl || ''}
+            onPress={handleOnPress}
+            topOffset={ios ? 112 : 107}
+          >
+            <Box
+              as={ImgixImage}
+              height="126px"
+              onLoadEnd={onLoadEnd}
+              source={{ uri: coverUrl || '' }}
+            />
+          </ImagePreviewOverlayTarget>
+        </Box>
+      </Animated.View>
+    </>
   );
 }

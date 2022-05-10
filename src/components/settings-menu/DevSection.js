@@ -17,6 +17,7 @@ import { web3SetHttpProvider } from '@rainbow-me/handlers/web3';
 import { RainbowContext } from '@rainbow-me/helpers/RainbowContext';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { useWallets } from '@rainbow-me/hooks';
+import { ImgixImage } from '@rainbow-me/images';
 import { wipeKeychain } from '@rainbow-me/model/keychain';
 import { clearAllStorages } from '@rainbow-me/model/mmkv';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
@@ -113,6 +114,11 @@ const DevSection = () => {
     Restart();
   };
 
+  const clearImageCache = async () => {
+    ImgixImage.clearDiskCache();
+    ImgixImage.clearImageCache();
+  };
+
   const [errorObj, setErrorObj] = useState(null);
 
   const throwRenderError = () => {
@@ -134,6 +140,10 @@ const DevSection = () => {
       <ListItem
         label={`📷️ ${lang.t('developer_settings.clear_image_metadata_cache')}`}
         onPress={clearImageMetadataCache}
+      />
+      <ListItem
+        label={`📷️ ${lang.t('developer_settings.clear_image_cache')}`}
+        onPress={clearImageCache}
       />
       <ListItem
         label={`💣 ${lang.t('developer_settings.reset_keychain')}`}

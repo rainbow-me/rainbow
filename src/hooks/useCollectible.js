@@ -3,8 +3,8 @@ import { useEffect, useMemo } from 'react';
 import { useQueryClient } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAdditionalRecyclerAssetListData } from '../components/asset-list/RecyclerAssetList2/core/Contexts';
+import useAccountSettings from './useAccountSettings';
 import { uniqueTokensQueryKey } from './useFetchUniqueTokens';
-import { useAccountSettings } from '@rainbow-me/hooks';
 import { revalidateUniqueToken } from '@rainbow-me/redux/uniqueTokens';
 
 export default function useCollectible(
