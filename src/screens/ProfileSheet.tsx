@@ -5,7 +5,6 @@ import RecyclerAssetList2 from '../components/asset-list/RecyclerAssetList2';
 import ProfileSheetHeader from '../components/ens-profile/ProfileSheetHeader';
 import { SheetHandleFixedToTopHeight } from '../components/sheet';
 import Skeleton from '../components/skeleton/Skeleton';
-import useENSProfile from '../hooks/useENSProfile';
 import { useTheme } from '@rainbow-me/context';
 import {
   AccentColorProvider,
@@ -16,8 +15,11 @@ import {
   Inset,
   Stack,
 } from '@rainbow-me/design-system';
+import { maybeSignUri } from '@rainbow-me/handlers/imgix';
 import {
   useDimensions,
+  useENSProfile,
+  useENSProfileImages,
   useENSResolveName,
   useExternalWalletSectionsData,
   useFirstTransactionTimestamp,
@@ -40,8 +42,11 @@ export default function ProfileSheet() {
   const contentHeight = deviceHeight - SheetHandleFixedToTopHeight;
 
   const ensName = params?.address;
-  const { data: profile, isSuccess } = useENSProfile(ensName);
-  const avatarUrl = profile?.images?.avatarUrl;
+  const { isSuccess } = useENSProfile(ensName);
+  const { data: images, isFetched: isImagesFetched } = useENSProfileImages(
+    ensName
+  );
+  const avatarUrl = images?.avatarUrl;
 
   const { data: profileAddress } = useENSResolveName(ensName);
 
@@ -60,8 +65,8 @@ export default function ProfileSheet() {
     [profileAddress]
   );
 
-  const { result: dominantColor } = usePersistentDominantColorFromImage(
-    avatarUrl || ''
+  const { result: dominantColor, state } = usePersistentDominantColorFromImage(
+    maybeSignUri(avatarUrl || '') || ''
   );
 
   const wrapperStyle = useMemo(() => ({ height: contentHeight }), [
@@ -69,9 +74,13 @@ export default function ProfileSheet() {
   ]);
 
   const accentColor =
-    dominantColor ||
-    colors.avatarBackgrounds[colorIndex || 0] ||
-    colors.appleBlue;
+    // Set accent color when ENS images have fetched & dominant
+    // color is not loading.
+    isImagesFetched && state !== 1 && typeof colorIndex === 'number'
+      ? dominantColor ||
+        colors.avatarBackgrounds[colorIndex] ||
+        colors.appleBlue
+      : colors.skeleton;
 
   const enableZoomableImages =
     !params.isPreview && name !== Routes.PROFILE_PREVIEW_SHEET;

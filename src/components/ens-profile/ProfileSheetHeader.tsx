@@ -24,6 +24,7 @@ import { UniqueAsset } from '@rainbow-me/entities';
 import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 import {
   useENSProfile,
+  useENSProfileImages,
   useFetchUniqueTokens,
   useFirstTransactionTimestamp,
 } from '@rainbow-me/hooks';
@@ -47,7 +48,10 @@ export default function ProfileSheetHeader({
 
   const ensName = defaultEnsName || params?.address;
   const { data: profile } = useENSProfile(ensName);
-  const profileAddress = profile?.primary.address;
+  const { data: images, isFetched: isImagesFetched } = useENSProfileImages(
+    ensName
+  );
+  const profileAddress = profile?.primary?.address;
   const { navigate } = useNavigation();
   const { data: uniqueTokens } = useFetchUniqueTokens({
     address: profileAddress,
@@ -82,9 +86,10 @@ export default function ProfileSheetHeader({
     [uniqueTokens]
   );
 
-  const { enableZoomOnPressAvatar, onPressAvatar, avatarUrl } = useMemo(() => {
-    const avatarUrl = profile?.images.avatarUrl;
-    const avatar = profile?.records.avatar;
+  const avatarUrl = images?.avatarUrl;
+
+  const { enableZoomOnPressAvatar, onPressAvatar } = useMemo(() => {
+    const avatar = profile?.records?.avatar;
 
     const isNFTAvatar = avatar && isENSNFTRecord(avatar);
     const avatarUniqueToken = isNFTAvatar && getUniqueToken(avatar);
@@ -96,7 +101,6 @@ export default function ProfileSheetHeader({
     const enableZoomOnPressAvatar = enableZoomableImages && !onPressAvatar;
 
     return {
-      avatarUrl,
       enableZoomOnPressAvatar,
       onPressAvatar,
     };
@@ -104,13 +108,13 @@ export default function ProfileSheetHeader({
     enableZoomableImages,
     getUniqueToken,
     handleSelectNFT,
-    profile?.images.avatarUrl,
-    profile?.records.avatar,
+    profile?.records?.avatar,
   ]);
 
-  const { enableZoomOnPressCover, onPressCover, coverUrl } = useMemo(() => {
-    const coverUrl = profile?.images.coverUrl;
-    const cover = profile?.records.cover;
+  const coverUrl = images?.coverUrl;
+
+  const { enableZoomOnPressCover, onPressCover } = useMemo(() => {
+    const cover = profile?.records?.cover;
 
     const isNFTCover = cover && isENSNFTRecord(cover);
     const coverUniqueToken = isNFTCover && getUniqueToken(cover);
@@ -127,11 +131,11 @@ export default function ProfileSheetHeader({
       onPressCover,
     };
   }, [
+    coverUrl,
     enableZoomableImages,
     getUniqueToken,
     handleSelectNFT,
-    profile?.images.coverUrl,
-    profile?.records.cover,
+    profile?.records?.cover,
   ]);
 
   const { data: firstTransactionTimestamp } = useFirstTransactionTimestamp({
@@ -145,6 +149,7 @@ export default function ProfileSheetHeader({
 
   return (
     <Box
+      background="body"
       {...(ios && { onLayout: (e: any) => setTimeout(() => layout(e), 500) })}
     >
       <Stack space={{ custom: 18 }}>
@@ -152,7 +157,7 @@ export default function ProfileSheetHeader({
           coverUrl={coverUrl}
           enableZoomOnPress={enableZoomOnPressCover}
           handleOnPress={onPressCover}
-          isLoading={isLoading}
+          isFetched={isImagesFetched}
         />
         <Bleed top={{ custom: 38 }}>
           <Inset left="19px" right="15px" top={{ custom: 1 }}>
@@ -163,7 +168,7 @@ export default function ProfileSheetHeader({
                   avatarUrl={avatarUrl}
                   enableZoomOnPress={enableZoomOnPressAvatar}
                   handleOnPress={onPressAvatar}
-                  isLoading={isLoading}
+                  isFetched={isImagesFetched}
                 />
               </Column>
               {!isLoading && (

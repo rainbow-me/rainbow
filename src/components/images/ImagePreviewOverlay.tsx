@@ -108,7 +108,7 @@ const ImageOverlayConfigContext = createContext<{
   enableZoom: boolean;
   useBackgroundOverlay?: boolean;
 }>({
-  enableZoom: true,
+  enableZoom: false,
 });
 
 const enterConfig = {
@@ -399,6 +399,7 @@ export function ImagePreviewOverlayTarget({
   backgroundMask,
   borderRadius = 16,
   children: children_,
+  deferOverlayTimeout = 0,
   disableEnteringWithPinch = false,
   enableZoomOnPress = true,
   hasShadow = false,
@@ -413,6 +414,7 @@ export function ImagePreviewOverlayTarget({
   borderRadius?: number;
   children: React.ReactElement;
   enableZoomOnPress?: boolean;
+  deferOverlayTimeout?: number;
   disableEnteringWithPinch?: boolean;
   hasShadow?: boolean;
   onPress?: PressableProps['onPress'];
@@ -539,18 +541,26 @@ export function ImagePreviewOverlayTarget({
 
   useEffect(() => {
     if (!enableZoom) return;
-    setHostComponent(children);
-  }, [children, enableZoom, setHostComponent, uri]);
+
+    if (deferOverlayTimeout) {
+      setTimeout(() => setHostComponent(children), deferOverlayTimeout);
+    } else {
+      setHostComponent(children);
+    }
+  }, [children, enableZoom, setHostComponent, deferOverlayTimeout, uri]);
 
   const [renderPlaceholder, setRenderPlaceholder] = useState(true);
   useEffect(() => {
     if (!enableZoom) return;
     if (width) {
       InteractionManager.runAfterInteractions(() => {
-        setTimeout(() => setRenderPlaceholder(false), 500);
+        setTimeout(
+          () => setRenderPlaceholder(false),
+          500 + deferOverlayTimeout
+        );
       });
     }
-  }, [enableZoom, width]);
+  }, [enableZoom, deferOverlayTimeout, width]);
 
   return (
     <Box flexShrink={1} width="full">
@@ -559,10 +569,10 @@ export function ImagePreviewOverlayTarget({
         height={height ? { custom: height } : initialHeight || { custom: 0 }}
         onLayout={handleLayout}
         ref={zoomableWrapperRef}
-        style={{ overflow: 'hidden' }}
+        style={{ opacity: renderPlaceholder ? 1 : 0, overflow: 'hidden' }}
         width="full"
       >
-        {renderPlaceholder && children}
+        {children}
       </Box>
     </Box>
   );

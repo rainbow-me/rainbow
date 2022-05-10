@@ -8,6 +8,7 @@ import ProfileModal from './profile/ProfileModal';
 import useExperimentalFlag, {
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
+import { maybeSignUri } from '@rainbow-me/handlers/imgix';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
@@ -15,7 +16,7 @@ import {
 import {
   useAccountSettings,
   useContacts,
-  useENSProfileRecords,
+  useENSProfileImages,
   usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
 import {
@@ -77,14 +78,14 @@ const ContactProfileState = ({ address, color, contact, ens, nickname }) => {
     android && Keyboard.dismiss();
   }, [goBack]);
 
-  const { data: profile } = useENSProfileRecords(ens, {
+  const { data: images } = useENSProfileImages(ens, {
     enabled: Boolean(ens),
   });
 
-  const ensAvatar = profile?.images?.avatarUrl;
+  const avatarUrl = images?.avatarUrl;
 
   const { result: dominantColor } = usePersistentDominantColorFromImage(
-    ensAvatar || ''
+    maybeSignUri(avatarUrl || '') || ''
   );
 
   const accentColor =
@@ -97,7 +98,7 @@ const ContactProfileState = ({ address, color, contact, ens, nickname }) => {
       emojiAvatar={emoji}
       handleCancel={handleCancel}
       handleSubmit={handleAddContact}
-      imageAvatar={ensAvatar}
+      imageAvatar={avatarUrl}
       inputValue={value}
       onChange={setValue}
       placeholder={lang.t('contacts.input_placeholder')}

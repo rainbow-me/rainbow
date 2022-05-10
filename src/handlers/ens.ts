@@ -2,7 +2,6 @@ import { formatsByCoinType, formatsByName } from '@ensdomains/address-encoder';
 import { captureException } from '@sentry/react-native';
 import { BigNumber } from 'ethers';
 import { debounce, isEmpty, sortBy } from 'lodash';
-import FastImage from 'react-native-fast-image';
 import { ensClient } from '../apollo/client';
 import {
   ENS_ACCOUNT_REGISTRATIONS,
@@ -19,6 +18,7 @@ import {
   EnsGetRecordsData,
   EnsGetRegistrationData,
 } from '../apollo/queries';
+import { ensProfileImagesQueryKey } from '../hooks/useENSProfileImages';
 import { ENSActionParameters } from '../raps/common';
 import { estimateGasWithPadding, web3Provider } from './web3';
 import { ENSRegistrationRecords, Records } from '@rainbow-me/entities';
@@ -31,6 +31,8 @@ import {
   getNameOwner,
 } from '@rainbow-me/helpers/ens';
 import { add } from '@rainbow-me/helpers/utilities';
+import { ImgixImage } from '@rainbow-me/images';
+import { queryClient } from '@rainbow-me/react-query/queryClient';
 import {
   ENS_NFT_CONTRACT_ADDRESS,
   ensPublicResolverAddress,
@@ -108,7 +110,14 @@ export const fetchSuggestions = async (
             if (hasAvatar && profilesEnabled) {
               try {
                 const images = await fetchImages(domain.name);
-                return { ...domain, avatar: images.avatarUrl };
+                queryClient.setQueryData(
+                  ensProfileImagesQueryKey(domain.name),
+                  images
+                );
+                return {
+                  ...domain,
+                  avatar: images.avatarUrl,
+                };
                 // eslint-disable-next-line no-empty
               } catch (e) {}
             }
@@ -192,17 +201,9 @@ export const fetchImages = async (ensName: string) => {
         type: 'cover',
       }),
     ]);
-    FastImage.preload([
-      avatarUrl
-        ? {
-            uri: avatarUrl,
-          }
-        : {},
-      coverUrl
-        ? {
-            uri: coverUrl,
-          }
-        : {},
+    ImgixImage.preload([
+      ...(avatarUrl ? [{ uri: avatarUrl }] : []),
+      ...(coverUrl ? [{ uri: coverUrl }] : []),
     ]);
     // eslint-disable-next-line no-empty
   } catch (err) {}

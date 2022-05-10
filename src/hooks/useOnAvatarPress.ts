@@ -8,6 +8,7 @@ import { RainbowAccount } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import useAccountProfile from './useAccountProfile';
 import useENSProfile from './useENSProfile';
+import { prefetchENSProfileImages } from './useENSProfileImages';
 import useENSRegistration from './useENSRegistration';
 import useImagePicker from './useImagePicker';
 import useWallets from './useWallets';
@@ -109,8 +110,15 @@ export default () => {
 
   const onAvatarPress = useCallback(() => {
     if (profileEnabled && !ensProfile?.isSuccess) return;
+
     const isENSProfile =
       profilesEnabled && profileEnabled && ensProfile?.isOwner;
+
+    if (isENSProfile) {
+      // Prefetch profile images
+      prefetchENSProfileImages({ name: accountENS });
+    }
+
     const avatarActionSheetOptions = (isENSProfile
       ? [
           lang.t('profiles.profile_avatar.view_profile'),
