@@ -81,19 +81,19 @@ const useSwapCurrencyList = (
   const [lowLiquidityAssets, setLowLiquidityAssets] = useState<RT[]>([]);
   const [verifiedAssets, setVerifiedAssets] = useState<RT[]>([]);
 
-  const handleVerifiedResponse = useCallback(
+  const handleSearchResponse = useCallback(
     (tokens: RT[]) => {
       const addresses = favoriteAddresses.map(a => a.toLowerCase());
       // These transformations are necessary for L2 tokens to match our spec
       return tokens
         .map(token => {
+          token.address = token.networks[chainId].address;
           if (chainId !== MAINNET_CHAINID) {
             const network = ethereumUtils.getNetworkFromChainId(chainId);
             token.type = network;
             if (token.networks[MAINNET_CHAINID]) {
               token.mainnet_address = token.networks[MAINNET_CHAINID].address;
             }
-            token.address = token.networks[chainId].address;
             token.uniqueId = `${token.address}_${network}`;
           }
           return token;
@@ -164,19 +164,23 @@ const useSwapCurrencyList = (
       switch (assetType) {
         case 'verifiedAssets':
           setVerifiedAssets(
-            handleVerifiedResponse(
+            handleSearchResponse(
               await searchCurrencyList(assetType, searchQuery, chainId)
             )
           );
           break;
         case 'highLiquidityAssets':
           setHighLiquidityAssets(
-            await searchCurrencyList(assetType, searchQuery, chainId)
+            handleSearchResponse(
+              await searchCurrencyList(assetType, searchQuery, chainId)
+            )
           );
           break;
         case 'lowLiquidityAssets':
           setLowLiquidityAssets(
-            await searchCurrencyList(assetType, searchQuery, chainId)
+            handleSearchResponse(
+              await searchCurrencyList(assetType, searchQuery, chainId)
+            )
           );
           break;
         case 'favoriteAssets':
@@ -188,13 +192,7 @@ const useSwapCurrencyList = (
           break;
       }
     },
-    [
-      getFavorites,
-      getimportedAsset,
-      handleVerifiedResponse,
-      searchQuery,
-      chainId,
-    ]
+    [getFavorites, getimportedAsset, handleSearchResponse, searchQuery, chainId]
   );
 
   const search = useCallback(async () => {
