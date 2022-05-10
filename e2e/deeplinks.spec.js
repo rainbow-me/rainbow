@@ -44,7 +44,6 @@ describe('Deeplinks spec', () => {
 
   it('Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
     await Helpers.disableSynchronization();
-    await Helpers.checkIfVisible('wallet-info-input');
     await Helpers.waitAndTap('wallet-info-submit-button');
     if (device.getPlatform() === 'android') {
       await Helpers.checkIfVisible('pin-authentication-screen');
