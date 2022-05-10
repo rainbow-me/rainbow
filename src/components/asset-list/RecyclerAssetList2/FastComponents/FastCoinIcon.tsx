@@ -1,7 +1,9 @@
 import React, { useCallback, useMemo } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import { atomFamily, useRecoilState } from 'recoil';
+import ChainBadge from '../../../coin-icon/ChainBadge';
 import EthIcon from '@rainbow-me/assets/eth-icon.png';
+import { AssetType } from '@rainbow-me/entities';
 import { useColorForAsset } from '@rainbow-me/hooks';
 import { ImageWithCachedMetadata } from '@rainbow-me/images';
 import { borders, fonts } from '@rainbow-me/styles';
@@ -38,9 +40,11 @@ const fallbackIconStyle = {
 export default function FastCoinIcon({
   address,
   symbol,
+  assetType,
 }: {
   address: string;
   symbol: string;
+  assetType: keyof typeof AssetType;
 }) {
   const imageUrl = useMemo(() => getUrlForTrustIconFallback(address), [
     address,
@@ -82,6 +86,7 @@ export default function FastCoinIcon({
           style={cx.coinIconFallback}
         />
       )}
+      <ChainBadge assetType={assetType} />
     </View>
   );
 }
