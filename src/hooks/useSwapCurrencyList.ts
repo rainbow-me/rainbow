@@ -81,7 +81,7 @@ const useSwapCurrencyList = (
   const [lowLiquidityAssets, setLowLiquidityAssets] = useState<RT[]>([]);
   const [verifiedAssets, setVerifiedAssets] = useState<RT[]>([]);
 
-  const handleVerifiedResponse = useCallback(
+  const handleSearchResponse = useCallback(
     (tokens: RT[]) => {
       const addresses = favoriteAddresses.map(a => a.toLowerCase());
       // These transformations are necessary for L2 tokens to match our spec
@@ -164,21 +164,21 @@ const useSwapCurrencyList = (
       switch (assetType) {
         case 'verifiedAssets':
           setVerifiedAssets(
-            handleVerifiedResponse(
+            handleSearchResponse(
               await searchCurrencyList(assetType, searchQuery, chainId)
             )
           );
           break;
         case 'highLiquidityAssets':
           setHighLiquidityAssets(
-            handleVerifiedResponse(
+            handleSearchResponse(
               await searchCurrencyList(assetType, searchQuery, chainId)
             )
           );
           break;
         case 'lowLiquidityAssets':
           setLowLiquidityAssets(
-            handleVerifiedResponse(
+            handleSearchResponse(
               await searchCurrencyList(assetType, searchQuery, chainId)
             )
           );
@@ -192,13 +192,7 @@ const useSwapCurrencyList = (
           break;
       }
     },
-    [
-      getFavorites,
-      getimportedAsset,
-      handleVerifiedResponse,
-      searchQuery,
-      chainId,
-    ]
+    [getFavorites, getimportedAsset, handleSearchResponse, searchQuery, chainId]
   );
 
   const search = useCallback(async () => {
