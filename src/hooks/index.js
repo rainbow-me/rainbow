@@ -19,7 +19,6 @@ export { default as useAddCashLimits } from './useAddCashLimits';
 export { default as useAnimatedListener } from './useAnimatedListener';
 export { default as useAppState } from './useAppState';
 export { default as useAppVersion } from './useAppVersion';
-// eslint-disable-next-line import/no-cycle
 export { default as useAsset } from './useAsset';
 export { default as useBiometryType } from './useBiometryType';
 export { default as useBlockPolling } from './useBlockPolling';
@@ -30,7 +29,6 @@ export {
   default as useCoinListEditOptions,
   useCoinListFinishEditingOptions,
 } from './useCoinListEditOptions';
-// eslint-disable-next-line import/no-cycle
 export { default as useCollectible } from './useCollectible';
 export { default as useColorForAsset } from './useColorForAsset';
 export { default as useContacts } from './useContacts';
@@ -52,7 +50,6 @@ export { default as useENSRegistrationForm } from './useENSRegistrationForm';
 export { default as useENSResolveName } from './useENSResolveName';
 export { default as useENSProfileRecords } from './useENSProfileRecords';
 export { default as useENSSearch } from './useENSSearch';
-// eslint-disable-next-line import/no-cycle
 export { default as useExpandedStateNavigation } from './useExpandedStateNavigation';
 export { default as useExternalWalletSectionsData } from './useExternalWalletSectionsData';
 export { default as useFetchUniqueTokens } from './useFetchUniqueTokens';

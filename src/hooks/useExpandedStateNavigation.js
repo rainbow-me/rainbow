@@ -1,9 +1,8 @@
 import { useRoute } from '@react-navigation/native';
 import { useCallback, useMemo } from 'react';
 import { InteractionManager } from 'react-native';
-import useAsset from './useAsset';
-import useWallets from './useWallets';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
+import { useAsset, useWallets } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { watchingAlert } from '@rainbow-me/utils';
 
