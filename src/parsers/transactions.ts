@@ -6,7 +6,6 @@ import {
   flatten,
   includes,
   isEmpty,
-  map,
   orderBy,
   partition,
   reverse,
@@ -73,7 +72,7 @@ export const parseTransactions = async (
   network: Network,
   appended = false
 ) => {
-  const purchaseTransactionHashes = map(purchaseTransactions, txn =>
+  const purchaseTransactionHashes = purchaseTransactions.map(txn =>
     ethereumUtils.getHash(txn)
   );
 
@@ -337,8 +336,7 @@ const parseTransaction = async (
   txn = overrideTradeRefund(txn);
 
   if (txn.changes.length) {
-    const internalTransactions = map(
-      txn?.changes,
+    const internalTransactions = txn?.changes?.map(
       (internalTxn, index): RainbowTransaction => {
         const address = toLower(internalTxn?.asset?.asset_code);
         const metadata = getTokenMetadata(address);

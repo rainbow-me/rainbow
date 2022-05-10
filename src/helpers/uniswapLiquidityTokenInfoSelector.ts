@@ -126,14 +126,14 @@ const transformPool = (
     nativeCurrency
   );
 
-  const formattedTokens = map(tokens, token => ({
+  const formattedTokens = tokens.map(token => ({
     ...token,
     ...getTokenMetadata(token.address),
     value: handleSignificantDecimalsWithThreshold(token.balance, 4),
   }));
 
   const tokenNames = join(
-    map(formattedTokens, token => token.symbol),
+    formattedTokens.map(token => token.symbol),
     '-'
   );
 
