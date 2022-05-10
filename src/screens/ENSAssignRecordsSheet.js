@@ -68,7 +68,7 @@ export const BottomActionHeight = ios ? 281 : 250;
 export default function ENSAssignRecordsSheet() {
   const { params } = useRoute();
   const { colors } = useTheme();
-  const { name, initialRecords } = useENSRegistration();
+  const { name } = useENSRegistration();
   const {
     images: { avatarUrl: initialAvatarUrl },
   } = useENSModifiedRegistration({
