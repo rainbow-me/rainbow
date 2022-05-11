@@ -35,6 +35,7 @@ import {
   getButtonShadows,
 } from './helpers/buttonStyleValues';
 import { HoldToAuthorizeBaseProps } from './types/HoldToAuthorizeBaseProps';
+import { ThemeContextProps } from '@rainbow-me/context';
 import styled from '@rainbow-me/styled-components';
 import { padding, position } from '@rainbow-me/styles';
 import { haptics } from '@rainbow-me/utils';
@@ -63,8 +64,7 @@ const Content = styled(Centered).attrs({
 }));
 
 interface LabelProps extends ButtonOptionParams {
-  // TODO: try fixing any
-  theme: any;
+  theme: ThemeContextProps;
 }
 
 const Label = styled(BiometricButtonContent).attrs(
@@ -78,8 +78,7 @@ const Label = styled(BiometricButtonContent).attrs(
 });
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
-  // TODO: try fixing any
-  ({ theme: { colors } }: { theme: any }) => ({
+  ({ theme: { colors } }: { theme: ThemeContextProps }) => ({
     color: colors.whiteLabel,
     size: 31,
   })

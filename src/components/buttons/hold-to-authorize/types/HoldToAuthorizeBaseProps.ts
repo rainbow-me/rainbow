@@ -1,9 +1,9 @@
 import { DeviceDimensions } from '@rainbow-me/hooks';
+import { Colors } from '@rainbow-me/styles';
 
 export interface HoldToAuthorizeBaseProps {
   backgroundColor: string;
-  // TODO: Fix any if possible
-  colors: any;
+  colors: Colors;
   deviceDimensions: DeviceDimensions;
   disabled: boolean;
   disabledBackgroundColor: string;
