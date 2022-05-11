@@ -1,7 +1,7 @@
 import chroma from 'chroma-js';
 import { toLower } from 'lodash';
 import PropTypes from 'prop-types';
-import currentColors from '../context/currentColors';
+import currentColors from '../theme/currentColors';
 import { memoFn } from '../utils/memoFn';
 
 export type Colors = ReturnType<typeof getColorsByTheme>;
