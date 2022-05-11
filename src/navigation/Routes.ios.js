@@ -4,7 +4,7 @@ import { omit } from 'lodash';
 import React, { useContext } from 'react';
 import { StatusBar } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
-import { InitialRouteContext } from '../context/initialRoute';
+import { InitialRouteContext } from './initialRoute';
 import AddCashSheet from '../screens/AddCashSheet';
 import AddTokenSheet from '../screens/AddTokenSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
