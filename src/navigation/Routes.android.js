@@ -1,7 +1,7 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useContext, useMemo } from 'react';
-import { InitialRouteContext } from '../context/initialRoute';
+import { InitialRouteContext } from './initialRoute';
 import AddCashSheet from '../screens/AddCashSheet';
 import AddTokenSheet from '../screens/AddTokenSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';

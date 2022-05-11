@@ -43,7 +43,7 @@ import {
   showNetworkResponses,
 } from './config/debug';
 import { MainThemeProvider } from './context/ThemeContext';
-import { InitialRouteContext } from './context/initialRoute';
+import { InitialRouteContext } from '@rainbow-me/navigation/initialRoute';
 import monitorNetwork from './debugging/network';
 import { Playground } from './design-system/playground/Playground';
 import appEvents from './handlers/appEvents';
