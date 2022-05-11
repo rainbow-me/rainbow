@@ -91,7 +91,7 @@ const saveToMemory = async () => {
     imgixCacheStorage.set(ATTRIBUTES.KEYS, keys.join(','));
     imgixCacheStorage.set(ATTRIBUTES.VALUES, values.join(','));
   } catch (error) {
-    global.console.log(`Failed to persist IMGIX cache: ${error}`);
+    logger.error(`Failed to persist IMGIX cache: ${error}`);
   }
 };
 
