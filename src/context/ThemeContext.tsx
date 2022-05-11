@@ -32,7 +32,7 @@ export const Themes = {
 
 export type ThemesType = typeof Themes[keyof typeof Themes];
 
-interface ThemeContextInterface {
+export interface ThemeContextProps {
   colors: Colors;
   darkScheme: Colors;
   lightScheme: Colors;
@@ -41,7 +41,7 @@ interface ThemeContextInterface {
   setTheme: (scheme: ThemesType) => void;
 }
 
-export const ThemeContext = createContext<ThemeContextInterface>({
+export const ThemeContext = createContext<ThemeContextProps>({
   colors: lightModeThemeColors,
   colorScheme: Themes.LIGHT,
   darkScheme: darkModeThemeColors,
@@ -170,9 +170,7 @@ export const useTheme = () => useContext(ThemeContext);
 export function withThemeContext<P extends object>(
   Component: React.ComponentType<P>
 ) {
-  return function WrapperComponent(
-    props: Omit<P, keyof ThemeContextInterface>
-  ) {
+  return function WrapperComponent(props: Omit<P, keyof ThemeContextProps>) {
     return (
       <ThemeContext.Consumer>
         {state => <Component {...(props as P)} {...state} />}

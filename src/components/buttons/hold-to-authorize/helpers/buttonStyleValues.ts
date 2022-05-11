@@ -1,11 +1,11 @@
-// TODO: try fixing any
-export const getButtonDisabledBgColor = (colors: any) => ({
+import { Colors } from '@rainbow-me/styles';
+
+export const getButtonDisabledBgColor = (colors: Colors) => ({
   dark: colors.darkGrey,
   light: colors.lightGrey,
 });
 
-// TODO: try fixing any
-export const getButtonShadows = (colors: any) => ({
+export const getButtonShadows = (colors: Colors) => ({
   default: [
     [0, 3, 5, colors.shadow, 0.2],
     [0, 6, 10, colors.shadow, 0.14],
