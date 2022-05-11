@@ -273,6 +273,7 @@ export default function useSwapDerivedOutputs(chainId: number) {
     displayValues[DisplayValue.output] = null;
     setResult({ derivedValues, displayValues, tradeDetails: null });
     setLoading(false);
+    setInsufficientLiquidity(false);
   };
 
   useEffect(() => {
