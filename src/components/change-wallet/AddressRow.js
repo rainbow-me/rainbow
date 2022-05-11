@@ -2,7 +2,7 @@ import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { useTheme } from '../../context/ThemeContext';
+import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText } from '../coin-row';
 import CoinCheckButton from '../coin-row/CoinCheckButton';

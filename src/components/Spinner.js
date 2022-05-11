@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { IS_TESTING } from 'react-native-dotenv';
 import SpinnerImageSource from '../assets/spinner.png';
-import { useTheme } from '../context/ThemeContext';
+import { useTheme } from '../theme/ThemeContext';
 import { SpinAnimation } from './animations';
 import { Centered } from './layout';
 import { ImgixImage } from '@rainbow-me/images';
