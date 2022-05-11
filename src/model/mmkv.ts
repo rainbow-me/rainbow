@@ -4,6 +4,7 @@ export const STORAGE_IDS = {
   ACCOUNT: 'ACCOUNT',
   ASPECT_RATIO: 'ASPECT_RATIO',
   DOMINANT_COLOR: 'DOMINANT_COLOR',
+  SHOWN_SWAP_RESET_WARNING: 'SHOWN_SWAP_RESET_WARNING',
 };
 
 export const clearAllStorages = () => {
