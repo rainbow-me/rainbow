@@ -16,25 +16,40 @@
 default_platform(:android)
 
 platform :android do
+  lane :bump_version_code do
+    path = '../app/build.gradle'
+    re = /versionCode\s+(\d+)/ 
+  
+    s = File.read(path)
+    versionCode = s[re, 1].to_i
+    s[re, 1] = (versionCode + 1).to_s
+  
+    f = File.new(path, 'w')
+    f.write(s)
+    f.close
+  end
+
   lane :internal do
-    gradle(task: 'assemble', build_type: 'Release')
+    gradle(task: 'bundle', build_type: 'Release')
     upload_to_play_store(track: 'internal')
   end
 
   lane :alpha do
-    gradle(task: 'assemble', build_type: 'Release')
+    gradle(task: 'bundle', build_type: 'Release')
     upload_to_play_store(track: 'alpha')
   end
   
   lane :beta do
-    gradle(task: 'assemble', build_type: 'Release')
+    gradle(task: 'bundle', build_type: 'Release')
     upload_to_play_store(track: 'beta')
   end
 
   desc "Deploy a new version to the Google Play"
   lane :production do
-    gradle(task: "clean assembleRelease")
-    upload_to_play_store
+    versionCode = bump_version_code()
+    gradle(task: 'clean')
+    gradle(task: 'bundle', build_type: 'Release', properties: { 'versionCode' => versionCode})
+    upload_to_play_store(json_key: "./rainbow-google-play-key.json")
   end
 
 end
