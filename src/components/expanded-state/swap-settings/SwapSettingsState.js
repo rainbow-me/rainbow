@@ -171,18 +171,20 @@ export default function SwapSettingsState({ asset }) {
                 />
               </Column>
             </Columns>
-            <Columns alignHorizontal="justify" alignVertical="center">
-              <Text color="primary" size="18px" weight="bold">
-                Use Flashbots
-              </Text>
-              <Column width="content">
-                <Switch
-                  onValueChange={toggleFlashbotsEnabled}
-                  trackColor={{ false: '#767577', true: colorForAsset }}
-                  value={flashbotsEnabled}
-                />
-              </Column>
-            </Columns>
+            {asset?.type === 'token' && (
+              <Columns alignHorizontal="justify" alignVertical="center">
+                <Text color="primary" size="18px" weight="bold">
+                  Use Flashbots
+                </Text>
+                <Column width="content">
+                  <Switch
+                    onValueChange={toggleFlashbotsEnabled}
+                    trackColor={{ false: '#767577', true: colorForAsset }}
+                    value={flashbotsEnabled}
+                  />
+                </Column>
+              </Columns>
+            )}
           </Stack>
         </Inset>
       </FloatingPanel>

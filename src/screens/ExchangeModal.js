@@ -255,7 +255,7 @@ export default function ExchangeModal({
     loading || equal(lastTradeDetails, tradeDetails)
   );
 
-  const flashbots = network === Network.mainnet && flashbotsEnabled;
+  const flashbots = currentNetwork === Network.mainnet && flashbotsEnabled;
 
   const isDismissing = useRef(false);
   useEffect(() => {
