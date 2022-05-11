@@ -116,6 +116,7 @@ function rowRenderer(type: CellType, { uid }: { uid: string }) {
             );
           }
           case CellType.LOADING_ASSETS:
+            // @ts-expect-error untyped JS component
             return <AssetListItemSkeleton />;
         }
         assertNever(type);
