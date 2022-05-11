@@ -265,6 +265,17 @@ export default function useSwapDerivedOutputs(chainId: number) {
 
   const { accountAddress } = useAccountSettings();
 
+  const resetSwapInputs = () => {
+    derivedValues[SwapModalField.input] = null;
+    derivedValues[SwapModalField.output] = null;
+    derivedValues[SwapModalField.native] = null;
+    displayValues[DisplayValue.input] = null;
+    displayValues[DisplayValue.output] = null;
+    setResult({ derivedValues, displayValues, tradeDetails: null });
+    setLoading(false);
+    setInsufficientLiquidity(false);
+  };
+
   useEffect(() => {
     const getTradeDetails = async () => {
       let tradeDetails = null;
@@ -427,6 +438,7 @@ export default function useSwapDerivedOutputs(chainId: number) {
 
   return {
     loading,
+    resetSwapInputs,
     result,
   };
 }
