@@ -36,6 +36,7 @@ import {
   getButtonShadows,
 } from './helpers/buttonStyleValues';
 import { HoldToAuthorizeBaseProps } from './types/HoldToAuthorizeBaseProps';
+import { ThemeContextProps } from '@rainbow-me/context';
 import styled from '@rainbow-me/styled-components';
 import { padding, position } from '@rainbow-me/styles';
 import { haptics } from '@rainbow-me/utils';
