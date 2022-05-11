@@ -141,6 +141,7 @@ export default () => {
         if (buttonIndex === 0) {
           navigate(Routes.PROFILE_SHEET, {
             address: accountENS,
+            fromRoute: 'ProfileAvatar',
           });
           analytics.track('Viewed ENS profile', {
             category: 'profiles',

@@ -1,5 +1,6 @@
 import { useRoute } from '@react-navigation/core';
-import React, { createContext, useMemo } from 'react';
+import analytics from '@segment/analytics-react-native';
+import React, { createContext, useEffect, useMemo } from 'react';
 import { StatusBar } from 'react-native';
 import RecyclerAssetList2 from '../components/asset-list/RecyclerAssetList2';
 import ProfileSheetHeader from '../components/ens-profile/ProfileSheetHeader';
@@ -17,6 +18,7 @@ import {
 } from '@rainbow-me/design-system';
 import { maybeSignUri } from '@rainbow-me/handlers/imgix';
 import {
+  useAccountSettings,
   useDimensions,
   useENSProfile,
   useENSProfileImages,
@@ -37,6 +39,7 @@ export const ProfileSheetConfigContext = createContext<{
 export default function ProfileSheet() {
   const { params, name } = useRoute<any>();
   const { colors } = useTheme();
+  const { accountAddress } = useAccountSettings();
 
   const { height: deviceHeight } = useDimensions();
   const contentHeight = deviceHeight - SheetHandleFixedToTopHeight;
@@ -84,6 +87,16 @@ export default function ProfileSheet() {
 
   const enableZoomableImages =
     !params.isPreview && name !== Routes.PROFILE_PREVIEW_SHEET;
+
+  useEffect(() => {
+    if (profileAddress && accountAddress) {
+      analytics.track('Viewed profile', {
+        category: 'profiles',
+        fromRoute: params.fromRoute,
+        name: profileAddress !== accountAddress ? ensName : '',
+      });
+    }
+  }, [params, ensName, profileAddress, accountAddress]);
 
   return (
     <ProfileSheetConfigContext.Provider value={{ enableZoomableImages }}>

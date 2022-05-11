@@ -175,7 +175,10 @@ export default function SendHeader({
           });
         } else if (buttonIndex === 1) {
           if (profilesEnabled && isENSAddressFormat(recipient)) {
-            navigate(Routes.PROFILE_SHEET, { address: recipient });
+            navigate(Routes.PROFILE_SHEET, {
+              address: recipient,
+              fromRoute: 'SendHeader',
+            });
           } else {
             handleNavigateToContact();
             onRefocusInput();

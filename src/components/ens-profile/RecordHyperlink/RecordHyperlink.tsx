@@ -13,7 +13,10 @@ export default function RecordHyperlink({ value }: { value: string }) {
   const navigateToProfile = useCallback(() => {
     if (value.match(ENS_REGEX)) {
       goBack();
-      navigate(Routes.PROFILE_SHEET, { address: value });
+      navigate(Routes.PROFILE_SHEET, {
+        address: value,
+        fromRoute: 'RecordHyperlink',
+      });
     } else {
       Linking.openURL((value.match('https') ? '' : 'https://') + value);
     }
