@@ -235,6 +235,7 @@ export default function ExchangeModal({
       tradeDetails,
     },
     loading,
+    resetSwapInputs,
   } = useSwapDerivedOutputs(chainId);
 
   const lastTradeDetails = usePrevious(tradeDetails);
@@ -282,8 +283,10 @@ export default function ExchangeModal({
   useEffect(() => {
     return () => {
       dispatch(swapClearState());
+      resetSwapInputs();
     };
-  }, [dispatch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleCustomGasBlur = useCallback(() => {
     lastFocusedInputHandle?.current?.focus();
