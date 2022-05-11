@@ -8,8 +8,20 @@ import {
   IMGIX_TOKEN as secureURLToken,
 } from 'react-native-dotenv';
 import { Source } from 'react-native-fast-image';
+import { MMKV } from 'react-native-mmkv';
 import parse from 'url-parse';
+import { STORAGE_IDS } from '@rainbow-me/model/mmkv';
 import logger from 'logger';
+
+const logTag = '[IMGIX]: ';
+
+export const rainbowImgixCacheStorage = new MMKV({
+  id: STORAGE_IDS.IMGIX_CACHE,
+});
+
+export const first: number[] = [];
+export const second: number[] = [];
+export const third: number[] = [];
 
 const shouldCreateImgixClient = (): ImgixClient | null => {
   if (
@@ -39,8 +51,70 @@ const staticImgixClient = shouldCreateImgixClient();
 // TODO: We need to find a suitable upper limit.
 //       This might be conditional based upon either the runtime
 //       hardware or the number of unique tokens a user may have.
-const capacity = 512;
-export const staticSignatureLRU = new LRUCache<string, string>(capacity);
+const capacity = 1024;
+export let staticSignatureLRU: LRUCache<string, string> = new LRUCache(
+  capacity
+);
+
+const maybeReadCacheFromMemory = async (): Promise<
+  LRUCache<string, string>
+> => {
+  try {
+    const start = +new Date();
+
+    const cache = new LRUCache<string, string>(capacity);
+    const keys = rainbowImgixCacheStorage.getString('keys')?.split(',') ?? [];
+    const values = rainbowImgixCacheStorage.getString('keys')?.split(',') ?? [];
+
+    for (let i = 0; i < keys.length; i++) {
+      cache.set(keys[i], values[i]);
+    }
+
+    global.console.log(
+      `${logTag}loading IMGIX cache, duration: ${(Date.now() - start).toFixed(
+        2
+      )}ms`
+    );
+    return cache;
+  } catch (error) {
+    logger.error(error);
+    global.console.log(`${logTag}${error}`);
+    return new LRUCache<string, string>(capacity);
+  }
+};
+
+const saveToMemory = async () => {
+  try {
+    const keys = [];
+    const values = [];
+
+    const iterator = staticSignatureLRU.entries();
+    for (let i = 0; i < staticSignatureLRU.size; i++) {
+      const [key, value] = iterator.next().value;
+      keys.push(key);
+      values.push(value);
+    }
+
+    rainbowImgixCacheStorage.set('keys', keys.join(','));
+    rainbowImgixCacheStorage.set('values', values.join(','));
+  } catch (error) {
+    global.console.log(`${logTag}!!Failed to save file: ${error}`);
+  }
+};
+
+const timeout = 30_000;
+const loopSaving = async () => {
+  await saveToMemory();
+  setTimeout(loopSaving, timeout);
+};
+
+setTimeout(() => {
+  loopSaving();
+}, timeout);
+
+maybeReadCacheFromMemory().then(cache => {
+  staticSignatureLRU = cache;
+});
 
 interface ImgOptions {
   w?: number;
@@ -121,6 +195,8 @@ export const maybeSignUri = (
   options?: ImgOptions,
   skipCaching: boolean = false
 ): string | undefined => {
+  const start = performance.now(); // TODO: remove after debugging
+
   // If the image has already been signed, return this quickly.
   const signature = `${externalImageUri}-${options?.w}`;
   if (
@@ -128,15 +204,23 @@ export const maybeSignUri = (
     staticSignatureLRU.has(signature as string) &&
     !skipCaching
   ) {
-    return staticSignatureLRU.get(signature);
+    const result = staticSignatureLRU.get(signature);
+    const time = performance.now() - start; // TODO: remove after debugging
+    first.push(time); // TODO: remove after debugging
+    return result;
   }
   if (
     typeof externalImageUri === 'string' &&
     !!externalImageUri.length &&
     isPossibleToSignUri(externalImageUri)
   ) {
-    return shouldSignUri(externalImageUri, options);
+    const result = shouldSignUri(externalImageUri, options);
+    const time = performance.now() - start; // TODO: remove after debugging
+    second.push(time); // TODO: remove after debugging
+    return result;
   }
+  const time = performance.now() - start; // TODO: remove after debugging
+  third.push(time); // TODO: remove after debugging
   return externalImageUri;
 };
 

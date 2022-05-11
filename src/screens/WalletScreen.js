@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/core';
 import { compact, find, get, isEmpty, keys, map, toLower } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
-import { StatusBar } from 'react-native';
+import { StatusBar, Text, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useValue } from 'react-native-redash/src/v1';
 import { useDispatch, useSelector } from 'react-redux';
@@ -44,6 +44,7 @@ import {
 } from '@rainbow-me/redux/explorer';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
+import { first, second, third } from '@rainbow-me/handlers/imgix';
 
 const HeaderOpacityToggler = styled(OpacityToggler).attrs(({ isVisible }) => ({
   endingOpacity: 0.4,
@@ -181,6 +182,36 @@ export default function WalletScreen() {
 
   const isLoadingAssets = useSelector(state => state.data.isLoadingAssets);
 
+  const sum = array => {
+    return array.reduce((a, b) => a + b, 0);
+  };
+
+  const [firstAvg, setFirstAvg] = useState(0);
+  const [secondAvg, setSecondAvg] = useState(0);
+  const [thirdAvg, setThirdAvg] = useState(0);
+
+  useEffect(() => {
+    const callback = () => {
+      setFirstAvg(
+        `avg: ${(sum(first) / first.length).toFixed(2)} total: ${sum(
+          first
+        ).toFixed(2)} count: ${first.length}`
+      );
+      setSecondAvg(
+        `avg: ${(sum(second) / second.length).toFixed(2)} total: ${sum(
+          second
+        ).toFixed(2)} count: ${second.length}`
+      );
+      setThirdAvg(
+        `avg: ${(sum(third) / third.length).toFixed(2)} total: ${sum(
+          third
+        ).toFixed(2)} count: ${third.length}`
+      );
+      setTimeout(() => callback(), 3000);
+    };
+    callback();
+  }, []);
+
   return (
     <WalletPage testID="wallet-screen">
       {ios && <StatusBar barStyle="dark-content" />}
@@ -202,6 +233,11 @@ export default function WalletScreen() {
             </RowWithMargins>
           </Header>
         </HeaderOpacityToggler>
+        <View>
+          <Text>{firstAvg}</Text>
+          <Text>{secondAvg}</Text>
+          <Text>{thirdAvg}</Text>
+        </View>
         <AssetList
           disableRefreshControl={isLoadingAssets}
           isEmpty={isAccountEmpty || !!params?.emptyWallet}
