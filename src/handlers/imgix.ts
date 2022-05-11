@@ -56,7 +56,7 @@ const maybeReadCacheFromMemory = async (): Promise<
   try {
     const cache = new LRUCache<string, string>(capacity);
     const keys = imgixCacheStorage.getString('keys')?.split(',') ?? [];
-    const values = imgixCacheStorage.getString('keys')?.split(',') ?? [];
+    const values = imgixCacheStorage.getString('values')?.split(',') ?? [];
 
     for (let i = 0; i < keys.length; i++) {
       cache.set(keys[i], values[i]);
