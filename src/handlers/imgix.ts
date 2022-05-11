@@ -17,6 +17,11 @@ export const imgixCacheStorage = new MMKV({
   id: STORAGE_IDS.IMGIX_CACHE,
 });
 
+const ATTRIBUTES = {
+  KEYS: 'keys',
+  VALUES: 'values',
+};
+
 const shouldCreateImgixClient = (): ImgixClient | null => {
   if (
     typeof domain === 'string' &&
@@ -55,8 +60,9 @@ const maybeReadCacheFromMemory = async (): Promise<
 > => {
   try {
     const cache = new LRUCache<string, string>(capacity);
-    const keys = imgixCacheStorage.getString('keys')?.split(',') ?? [];
-    const values = imgixCacheStorage.getString('values')?.split(',') ?? [];
+    const keys = imgixCacheStorage.getString(ATTRIBUTES.KEYS)?.split(',') ?? [];
+    const values =
+      imgixCacheStorage.getString(ATTRIBUTES.VALUES)?.split(',') ?? [];
 
     for (let i = 0; i < keys.length; i++) {
       cache.set(keys[i], values[i]);
@@ -82,8 +88,8 @@ const saveToMemory = async () => {
       values.push(value);
     }
 
-    imgixCacheStorage.set('keys', keys.join(','));
-    imgixCacheStorage.set('values', values.join(','));
+    imgixCacheStorage.set(ATTRIBUTES.KEYS, keys.join(','));
+    imgixCacheStorage.set(ATTRIBUTES.VALUES, values.join(','));
   } catch (error) {
     global.console.log(`Failed to persist IMGIX cache: ${error}`);
   }
