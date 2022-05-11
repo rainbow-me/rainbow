@@ -103,7 +103,7 @@ const ContactRow = (
 
   // if the accountType === 'suggestions', nickname will always be an ens or hex address, not a custom contact nickname
   const [ensName, setENSName] = useState(
-    ens || (nickname.includes(ENS_DOMAIN) ? nickname : undefined)
+    ens || (nickname?.includes(ENS_DOMAIN) ? nickname : undefined)
   );
 
   useEffect(() => {
@@ -136,10 +136,8 @@ const ContactRow = (
   ]);
 
   const { data: images } = useENSProfileImages(ensName, {
-    enabled: Boolean(ensName),
+    enabled: profilesEnabled && Boolean(ensName),
   });
-
-  const ensAvatar = images?.avatarUrl;
 
   let cleanedUpLabel = null;
   if (label) {
@@ -160,7 +158,7 @@ const ContactRow = (
     }
   }, [accountType, address, ensName, nickname, onPress, showcaseItem]);
 
-  const imageAvatar = profilesEnabled ? ensAvatar : image;
+  const imageAvatar = profilesEnabled ? images?.avatarUrl : image;
 
   const emoji = useMemo(() => (address ? addressHashedEmoji(address) : ''), [
     address,

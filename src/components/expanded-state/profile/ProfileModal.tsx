@@ -155,6 +155,7 @@ const ProfileModal = ({
           <ProfileButtonText
             color={colors.alpha(colors.blueGreyDark, 0.6)}
             letterSpacing="roundedMedium"
+            testID="wallet-info-cancel-button"
             weight="medium"
             {...(android && { lineHeight: 21 })}
           >

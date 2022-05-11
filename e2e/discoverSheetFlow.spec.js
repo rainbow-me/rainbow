@@ -190,7 +190,8 @@ describe('Discover Sheet Flow', () => {
   });
 
   it('Should navigate to the Wallet screen after swiping right', async () => {
-    await Helpers.swipe('discover-home', 'right', 'slow');
+    await Helpers.swipe('discover-home', 'down', 'slow');
+    await Helpers.swipe('discover-sheet', 'right', 'slow');
     await Helpers.checkIfVisible('wallet-screen');
   });
 
@@ -218,7 +219,6 @@ describe('Discover Sheet Flow', () => {
   it('Should go to Discover screen', async () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
     await Helpers.swipe('wallet-screen', 'left', 'slow');
-    await Helpers.swipe('discover-home', 'down', 'slow');
     await Helpers.checkIfVisible('ens-register-name-banner');
   });
 

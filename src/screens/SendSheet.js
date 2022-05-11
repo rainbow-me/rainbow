@@ -17,6 +17,8 @@ import {
   SendHeader,
 } from '../components/send';
 import { SheetActionButton } from '../components/sheet';
+import { prefetchENSProfileImages } from '../hooks/useENSProfileImages';
+import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import { AssetTypes } from '@rainbow-me/entities';
 import { isL2Asset, isNativeAsset } from '@rainbow-me/handlers/assets';
 import { debouncedFetchSuggestions } from '@rainbow-me/handlers/ens';
@@ -31,7 +33,10 @@ import {
 } from '@rainbow-me/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import Network from '@rainbow-me/helpers/networkTypes';
-import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
+import {
+  checkIsValidAddressOrDomain,
+  isENSAddressFormat,
+} from '@rainbow-me/helpers/validators';
 import {
   useAccountSettings,
   useCoinListEditOptions,
@@ -110,6 +115,7 @@ export default function SendSheet(props) {
     updateTxFee,
   } = useGas();
   const recipientFieldRef = useRef();
+  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   const { contacts, onRemoveContact, filteredContacts } = useContacts();
   const { userAccounts, watchedAccounts } = useUserAccounts();
@@ -710,11 +716,17 @@ export default function SendSheet(props) {
     sendUpdateSelected({});
   }, [sendUpdateSelected]);
 
-  const onChangeInput = useCallback(event => {
-    setCurrentInput(event);
-    setRecipient(event);
-    setNickname(event);
-  }, []);
+  const onChangeInput = useCallback(
+    event => {
+      setCurrentInput(event);
+      setRecipient(event);
+      setNickname(event);
+      if (profilesEnabled && isENSAddressFormat(event)) {
+        prefetchENSProfileImages(event);
+      }
+    },
+    [profilesEnabled]
+  );
 
   useEffect(() => {
     updateDefaultGasLimit();
@@ -739,7 +751,12 @@ export default function SendSheet(props) {
   const [ensSuggestions, setEnsSuggestions] = useState([]);
   useEffect(() => {
     if (network === Network.mainnet && !recipientOverride) {
-      debouncedFetchSuggestions(recipient, setEnsSuggestions);
+      debouncedFetchSuggestions(
+        recipient,
+        setEnsSuggestions,
+        undefined,
+        profilesEnabled
+      );
     } else {
       setEnsSuggestions([]);
     }
@@ -749,6 +766,7 @@ export default function SendSheet(props) {
     recipientOverride,
     setEnsSuggestions,
     watchedAccounts,
+    profilesEnabled,
   ]);
 
   useEffect(() => {

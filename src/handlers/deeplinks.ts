@@ -117,10 +117,9 @@ export default async function handleDeeplink(
         if (addressOrENS) {
           const isValid = await checkIsValidAddressOrDomain(addressOrENS);
           if (isValid) {
+            const profilesEnabled = defaultConfig?.[PROFILES]?.value;
             return Navigation.handleAction(
-              defaultConfig[PROFILES]
-                ? Routes.PROFILE_SHEET
-                : Routes.SHOWCASE_SHEET,
+              profilesEnabled ? Routes.PROFILE_SHEET : Routes.SHOWCASE_SHEET,
               {
                 address: addressOrENS,
                 fromRoute: 'Deeplink',
