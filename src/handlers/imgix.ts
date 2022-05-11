@@ -13,15 +13,9 @@ import parse from 'url-parse';
 import { STORAGE_IDS } from '@rainbow-me/model/mmkv';
 import logger from 'logger';
 
-const logTag = '[IMGIX]: ';
-
-export const rainbowImgixCacheStorage = new MMKV({
+export const imgixCacheStorage = new MMKV({
   id: STORAGE_IDS.IMGIX_CACHE,
 });
-
-export const first: number[] = [];
-export const second: number[] = [];
-export const third: number[] = [];
 
 const shouldCreateImgixClient = (): ImgixClient | null => {
   if (
@@ -60,25 +54,18 @@ const maybeReadCacheFromMemory = async (): Promise<
   LRUCache<string, string>
 > => {
   try {
-    const start = +new Date();
-
     const cache = new LRUCache<string, string>(capacity);
-    const keys = rainbowImgixCacheStorage.getString('keys')?.split(',') ?? [];
-    const values = rainbowImgixCacheStorage.getString('keys')?.split(',') ?? [];
+    const keys = imgixCacheStorage.getString('keys')?.split(',') ?? [];
+    const values = imgixCacheStorage.getString('keys')?.split(',') ?? [];
 
     for (let i = 0; i < keys.length; i++) {
       cache.set(keys[i], values[i]);
     }
 
-    global.console.log(
-      `${logTag}loading IMGIX cache, duration: ${(Date.now() - start).toFixed(
-        2
-      )}ms`
-    );
+    logger.log(`Loaded IMGIX cache.`);
     return cache;
   } catch (error) {
     logger.error(error);
-    global.console.log(`${logTag}${error}`);
     return new LRUCache<string, string>(capacity);
   }
 };
@@ -95,10 +82,10 @@ const saveToMemory = async () => {
       values.push(value);
     }
 
-    rainbowImgixCacheStorage.set('keys', keys.join(','));
-    rainbowImgixCacheStorage.set('values', values.join(','));
+    imgixCacheStorage.set('keys', keys.join(','));
+    imgixCacheStorage.set('values', values.join(','));
   } catch (error) {
-    global.console.log(`${logTag}!!Failed to save file: ${error}`);
+    global.console.log(`Failed to persist IMGIX cache: ${error}`);
   }
 };
 
@@ -195,8 +182,6 @@ export const maybeSignUri = (
   options?: ImgOptions,
   skipCaching: boolean = false
 ): string | undefined => {
-  const start = performance.now(); // TODO: remove after debugging
-
   // If the image has already been signed, return this quickly.
   const signature = `${externalImageUri}-${options?.w}`;
   if (
@@ -204,23 +189,15 @@ export const maybeSignUri = (
     staticSignatureLRU.has(signature as string) &&
     !skipCaching
   ) {
-    const result = staticSignatureLRU.get(signature);
-    const time = performance.now() - start; // TODO: remove after debugging
-    first.push(time); // TODO: remove after debugging
-    return result;
+    return staticSignatureLRU.get(signature);
   }
   if (
     typeof externalImageUri === 'string' &&
     !!externalImageUri.length &&
     isPossibleToSignUri(externalImageUri)
   ) {
-    const result = shouldSignUri(externalImageUri, options);
-    const time = performance.now() - start; // TODO: remove after debugging
-    second.push(time); // TODO: remove after debugging
-    return result;
+    return shouldSignUri(externalImageUri, options);
   }
-  const time = performance.now() - start; // TODO: remove after debugging
-  third.push(time); // TODO: remove after debugging
   return externalImageUri;
 };
 
