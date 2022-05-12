@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-community/async-storage';
+import messaging from '@react-native-firebase/messaging';
 import lang from 'i18n-js';
 import React, { useCallback, useContext } from 'react';
 import { Alert, ScrollView } from 'react-native';
@@ -12,11 +13,13 @@ import useAppVersion from '../../hooks/useAppVersion';
 import { ListFooter, ListItem } from '../list';
 import { RadioListItem } from '../radio-list';
 import UserDevSection from './UserDevSection';
+import { Divider, Heading, Inset } from '@rainbow-me/design-system';
 import { deleteAllBackups } from '@rainbow-me/handlers/cloudBackup';
 import { web3SetHttpProvider } from '@rainbow-me/handlers/web3';
 import { RainbowContext } from '@rainbow-me/helpers/RainbowContext';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
-import { useWallets } from '@rainbow-me/hooks';
+import walletTypes from '@rainbow-me/helpers/walletTypes';
+import { useAccountSettings, useWallets } from '@rainbow-me/hooks';
 import { wipeKeychain } from '@rainbow-me/model/keychain';
 import { clearAllStorages } from '@rainbow-me/model/mmkv';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
@@ -31,6 +34,7 @@ const DevSection = () => {
   const { navigate } = useNavigation();
   const { config, setConfig } = useContext(RainbowContext);
   const { wallets } = useWallets();
+  const { chainId } = useAccountSettings();
   const dispatch = useDispatch();
 
   const onNetworkChange = useCallback(
@@ -119,6 +123,47 @@ const DevSection = () => {
     setErrorObj({ error: 'this throws render error' });
   };
 
+  const handleSubscription = action => {
+    Object.keys(wallets).forEach(async key => {
+      const wallet = wallets[key];
+      const address = wallet.addresses[0].address;
+
+      if (action === 'subscribe') {
+        if (wallet.type === walletTypes.readOnly) {
+          await messaging().subscribeToTopic(
+            `watcher_${address.toLowercase()}`
+          );
+        } else {
+          await messaging().subscribeToTopic(`owner_${address.toLowercase()}`);
+        }
+      }
+
+      if (action === 'unsubscribe') {
+        if (wallet.type === walletTypes.readOnly) {
+          await messaging().unsubscribeFromTopic(
+            `watcher_${address.toLowercase()}`
+          );
+        } else {
+          await messaging().unsubscribeFromTopic(
+            `owner_${address.toLowercase()}`
+          );
+        }
+      }
+
+      if (action === 'subscribe_tx') {
+        await messaging().subscribeToTopic(
+          `${chainId}_${address.toLowercase()}`
+        );
+      }
+
+      if (action === 'unsubscribe_tx') {
+        await messaging().unsubscribeFromTopic(
+          `${chainId}_${address.toLowercase()}`
+        );
+      }
+    });
+  };
+
   const codePushVersion = useAppVersion()[1];
 
   return (
@@ -188,6 +233,29 @@ const DevSection = () => {
             selected={!!config[key]}
           />
         ))}
+      <Divider />
+      <Inset space="19px">
+        <Heading containsEmoji size="18px">
+          📲 Test Notifications
+        </Heading>
+      </Inset>
+      <ListItem
+        label="Subscribe wallets (owner / watcher)"
+        onPress={() => handleSubscription('subscribe')}
+      />
+      <ListItem
+        label="Unsubscribe wallets (owner / watcher)"
+        onPress={() => handleSubscription('unsubscribe')}
+      />
+
+      <ListItem
+        label="Subscribe wallets (all transactions)"
+        onPress={() => handleSubscription('subscribe_tx')}
+      />
+      <ListItem
+        label="Unsubscribe wallets (all transactions)"
+        onPress={() => handleSubscription('unsubscribe_tx')}
+      />
       <ListFooter />
     </ScrollView>
   );
