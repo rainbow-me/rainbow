@@ -77,7 +77,7 @@ function readJson<T>(key: string): T | null {
       return null;
     }
 
-    return JSON.parse(data!);
+    return JSON.parse(data);
   } catch (error) {
     logger.sentry('Error parsing token-list-cache data');
     logger.error(error);

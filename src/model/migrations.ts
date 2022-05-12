@@ -14,7 +14,6 @@ import WalletTypes from '../helpers/walletTypes';
 import store from '../redux/store';
 import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
 import {
-  rainbowListStorage,
   RB_TOKEN_LIST_CACHE,
   RB_TOKEN_LIST_ETAG,
 } from '../references/rainbow-token-list';
@@ -615,33 +614,28 @@ export default async function runMigrations() {
 
   /*
    *************** Migration v16 ******************
-   Migrates cached Rainbow token list from a cached json file
-   in the file system to mmkv
+   Removes cached Rainbow token list from a cached json file
+   in the file system, since we now store fetched from the server files in MMKV now
    */
   const v16 = async () => {
     try {
-      // RB_TOKEN_LIST_CACHE and RB_TOKEN_LIST_ETAG were stored as json files
-      // we kept the names but without the `.json` part
-      const [tokenList, tokenListEtag] = await Promise.all([
-        RNFS.readFile(
-          path.join(RNFS.CachesDirectoryPath, `${RB_TOKEN_LIST_CACHE}.json`),
-          'utf8'
-        ),
-        RNFS.readFile(
-          path.join(RNFS.CachesDirectoryPath, `${RB_TOKEN_LIST_ETAG}.json`),
-          'utf8'
-        ),
-      ]);
+      const tokenListPath = path.join(
+        RNFS.CachesDirectoryPath,
+        `${RB_TOKEN_LIST_CACHE}.json`
+      );
+      const tokenListEtagPath = path.join(
+        RNFS.CachesDirectoryPath,
+        `${RB_TOKEN_LIST_ETAG}.json`
+      );
 
-      rainbowListStorage.set(RB_TOKEN_LIST_CACHE, tokenList);
-      rainbowListStorage.set(RB_TOKEN_LIST_ETAG, tokenListEtag);
-      // RNFS has no Error type :(
-    } catch (error: any) {
-      // If the user didn't have this file then we don't care about this error
-      if (error?.code === 'ENOENT') {
-        return;
+      if (await RNFS.exists(tokenListPath)) {
+        await RNFS.unlink(tokenListPath);
       }
 
+      if (await RNFS.exists(tokenListEtagPath)) {
+        await RNFS.unlink(tokenListEtagPath);
+      }
+    } catch (error: any) {
       logger.sentry('Migration v16 failed: ', error);
       const migrationError = new Error('Migration 16 failed');
       captureException(migrationError);
