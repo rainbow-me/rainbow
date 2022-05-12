@@ -63,8 +63,8 @@ export default function LargeCountdownClock({
   const accentColor = useForegroundColor('accent');
 
   // convert clock time to seconds
-  const mins = initialMinutes || minutes;
-  const secs = initialSeconds || seconds;
+  const mins = initialMinutes ?? minutes;
+  const secs = initialSeconds ?? seconds;
   const totalSeconds = mins ? mins * 60 + secs : secs;
   // convert remaining clock time to seconds
   const timeRemaining = countdown.minutes * 60 + countdown.seconds;

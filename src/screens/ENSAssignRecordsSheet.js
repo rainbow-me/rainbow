@@ -96,12 +96,8 @@ export default function ENSAssignRecordsSheet() {
     initializeForm: true,
   });
 
-  const displayTitleLabel = useMemo(() => !profileQuery.isLoading, [
-    profileQuery.isLoading,
-  ]);
-  const isEmptyProfile = useMemo(() => isEmpty(initialRecords), [
-    initialRecords,
-  ]);
+  const displayTitleLabel = !profileQuery.isLoading;
+  const isEmptyProfile = isEmpty(initialRecords);
 
   useENSRegistrationCosts({
     name,

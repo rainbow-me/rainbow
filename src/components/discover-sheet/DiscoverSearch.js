@@ -64,13 +64,10 @@ export default function DiscoverSearch() {
     ensResults,
   ]);
 
-  const currencyListDataLength = useMemo(
-    () =>
-      uniswapCurrencyList?.[0]?.data?.length ||
-      0 + ensResults?.[0]?.data?.length ||
-      0,
-    [ensResults, uniswapCurrencyList]
-  );
+  const currencyListDataLength =
+    uniswapCurrencyList?.[0]?.data?.length ||
+    0 + ensResults?.[0]?.data?.length ||
+    0;
 
   useHardwareBackOnFocus(() => {
     cancelSearch();
