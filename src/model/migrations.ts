@@ -619,22 +619,17 @@ export default async function runMigrations() {
    */
   const v16 = async () => {
     try {
-      const tokenListPath = path.join(
-        RNFS.CachesDirectoryPath,
-        `${RB_TOKEN_LIST_CACHE}.json`
-      );
-      const tokenListEtagPath = path.join(
-        RNFS.CachesDirectoryPath,
-        `${RB_TOKEN_LIST_ETAG}.json`
-      );
+      RNFS.unlink(
+        path.join(RNFS.CachesDirectoryPath, `${RB_TOKEN_LIST_CACHE}.json`)
+      ).catch(() => {
+        // we don't care if it fails
+      });
 
-      if (await RNFS.exists(tokenListPath)) {
-        await RNFS.unlink(tokenListPath);
-      }
-
-      if (await RNFS.exists(tokenListEtagPath)) {
-        await RNFS.unlink(tokenListEtagPath);
-      }
+      RNFS.unlink(
+        path.join(RNFS.CachesDirectoryPath, `${RB_TOKEN_LIST_ETAG}.json`)
+      ).catch(() => {
+        // we don't care if it fails
+      });
     } catch (error: any) {
       logger.sentry('Migration v16 failed: ', error);
       const migrationError = new Error('Migration 16 failed');
