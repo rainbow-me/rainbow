@@ -408,3 +408,9 @@ export const fromWei = (number: BigNumberish): string =>
 export const delay = (ms: number): Promise<void> => {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
+
+export const isOfType = <T>(
+  varToBeChecked: any,
+  propertyToCheckFor: keyof T
+): varToBeChecked is T =>
+  (varToBeChecked as T)[propertyToCheckFor] !== undefined;

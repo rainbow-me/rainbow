@@ -18,16 +18,14 @@ export interface ZerionAsset {
   asset_code: string;
   name: string;
   symbol: string;
-  decimals: number;
-  type: AssetType | null;
+  decimals?: number;
+  type?: AssetType | null;
   icon_url?: string;
   price?: ZerionAssetPrice;
   // shit we are appending later
   mainnet_address?: string;
   network?: string;
   quantity?: number;
-  // zerion asset fallback typing issues, leaving this here for now
-  coingecko_id?: string;
 }
 
 // Fields that may or may not be present in a `ZerionAssetFallback` but are
@@ -80,10 +78,14 @@ export interface ParsedAddressAsset
   };
   asset_contract?: AssetContract;
   type?: string;
-  // id: string;
   uniqueId: string;
   mainnet_address?: EthereumAddress;
   isNativeAsset?: boolean;
+}
+
+export interface ParsedAddressAssetWithUniqueTokenId
+  extends ParsedAddressAsset {
+  id: string;
 }
 
 export interface ParsedAddressAssetWithNative extends ParsedAddressAsset {

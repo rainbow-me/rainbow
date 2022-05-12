@@ -1,6 +1,9 @@
 import { BigNumberish } from '@ethersproject/bignumber';
 import { ProtocolType } from '../protocolTypes';
-import { ParsedAddressAsset } from '../tokens';
+import {
+  ParsedAddressAsset,
+  ParsedAddressAssetWithUniqueTokenId,
+} from '../tokens';
 import { EthereumAddress } from '../wallet';
 import { TransactionStatus } from './transactionStatus';
 import { TransactionType } from './transactionType';
@@ -46,7 +49,7 @@ export interface RainbowTransaction {
 
 export interface NewTransaction {
   amount: string | null;
-  asset: ParsedAddressAsset | null;
+  asset: ParsedAddressAsset;
   dappName?: string; // for walletconnect
   data?: string;
   from: EthereumAddress | null;
@@ -79,7 +82,7 @@ export interface NewTransactionOrAddCashTransaction
   // compile without the partial since `AddCashCurrencyAsset` does not have the
   // key `price`, even though the statement is safe.
   asset:
-    | ParsedAddressAsset
+    | ParsedAddressAssetWithUniqueTokenId
     | (Partial<ParsedAddressAsset> & AddCashCurrencyAsset)
     | null;
 }

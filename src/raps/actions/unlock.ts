@@ -217,7 +217,10 @@ export const assetNeedsUnlocking = async (
     }
   }
 
-  const rawAmount = convertAmountToRawAmount(amount, assetToUnlock.decimals);
+  const rawAmount = convertAmountToRawAmount(
+    amount,
+    assetToUnlock.decimals || 18
+  );
   const needsUnlocking = !greaterThan(allowance, rawAmount);
   logger.log('asset needs unlocking?', needsUnlocking);
   return needsUnlocking;

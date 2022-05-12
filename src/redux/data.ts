@@ -30,6 +30,8 @@ import {
   UNISWAP_24HOUR_PRICE_QUERY,
   UNISWAP_PRICES_QUERY,
 } from '../apollo/queries';
+import { delay, isOfType, isZero, multiply } from '../helpers/utilities';
+import { parseFallbackAsset } from '../parsers/accounts';
 import { addCashUpdatePurchases } from './addCash';
 import { decrementNonce, incrementNonce } from './nonceManager';
 import { AppGetState, AppState } from './store';
@@ -88,7 +90,6 @@ import {
   shitcoins,
 } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
-import { delay, isZero, multiply } from '@rainbow-me/utilities';
 import {
   ethereumUtils,
   getBlocksFromTimestamps,
@@ -1372,7 +1373,13 @@ export const assetPricesReceived = (
 
   if (toLower(nativeCurrency) === message?.meta?.currency) {
     if (isEmpty(newAssetPrices)) return;
-    const parsedAssets = mapValues(newAssetPrices, asset => parseAsset(asset));
+    const parsedAssets = mapValues(newAssetPrices, asset => {
+      if (isOfType<ZerionAssetFallback>(asset, 'coingecko_id')) {
+        return parseFallbackAsset(asset);
+      } else {
+        return parseAsset(asset);
+      }
+    });
     const { genericAssets } = getState().data;
 
     const updatedAssets = {

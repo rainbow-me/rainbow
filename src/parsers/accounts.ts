@@ -1,4 +1,5 @@
 import { get, isNil, map, toUpper } from 'lodash';
+import { ParsedAddressAssetWithNative } from '../entities/tokens';
 import { dedupeUniqueTokens } from './uniqueTokens';
 import {
   AssetType,
@@ -17,9 +18,9 @@ import {
   convertAmountToNativeDisplay,
   convertAmountToPercentageDisplay,
   convertRawAmountToBalance,
+  isOfType,
 } from '@rainbow-me/utilities';
 import { getTokenMetadata, isLowerCaseMatch } from '@rainbow-me/utils';
-import { ParsedAddressAssetWithNative } from 'src/entities/tokens';
 
 /**
  * @desc parse account assets
@@ -30,19 +31,25 @@ export const parseAccountAssets = (
   data: Record<string, ZerionAsset>,
   uniqueTokens: UniqueAsset[]
 ): Record<string, ParsedAddressAsset> => {
-  const dedupedAssets: Record<string, ZerionAsset> = dedupeUniqueTokens(data, uniqueTokens);
+  const dedupedAssets: Record<string, ZerionAsset> = dedupeUniqueTokens(
+    data,
+    uniqueTokens
+  );
   const dedupedKeys = Object.keys(dedupedAssets);
 
   return dedupedKeys.reduce((parsedAccountAssets, currentKey) => {
-      const currentAsset = dedupedAssets[currentKey];
-      const parsedAsset = parseAsset(currentAsset);
-      return ({
-          ...parsedAccountAssets,
-          [currentKey]: {
-              ...parsedAsset,
-              balance: convertRawAmountToBalance(currentAsset.quantity!, currentAsset),
-          },
-      });
+    const currentAsset = dedupedAssets[currentKey];
+    const parsedAsset = parseAsset(currentAsset);
+    return {
+      ...parsedAccountAssets,
+      [currentKey]: {
+        ...parsedAsset,
+        balance: convertRawAmountToBalance(
+          currentAsset.quantity!,
+          currentAsset
+        ),
+      },
+    };
   }, {});
 };
 
@@ -70,7 +77,9 @@ export const parseAssetSymbol = (
  * @param  {Object} assetData
  * @return The parsed asset.
  */
-export const parseAsset = (asset: ZerionAsset | ZerionAssetFallback) => {
+export const parseGenericAsset = (
+  asset: ZerionAsset | ZerionAssetFallback
+): ParsedAddressAsset => {
   const address = asset.asset_code;
   const metadata = getTokenMetadata(asset.mainnet_address || address);
   const name = parseAssetName(metadata, asset.name);
@@ -100,24 +109,26 @@ export const parseAsset = (asset: ZerionAsset | ZerionAssetFallback) => {
   return parsedAsset;
 };
 
-export const isOfType = <T>(
-    varToBeChecked: any,
-    propertyToCheckFor: keyof T
-  ): varToBeChecked is T =>
-    (varToBeChecked as T)[propertyToCheckFor] !== undefined;
+export const parseAsset = (asset: ZerionAsset) => {
+  return parseGenericAsset(asset);
+};
 
-export const parseAssetsNativeWithTotals = (assets: ParsedAddressAsset[], nativeCurrency: string) => {
+export const parseFallbackAsset = (asset: ZerionAssetFallback) => {
+  return parseGenericAsset(asset);
+};
+
+export const parseAssetsNativeWithTotals = (
+  assets: ParsedAddressAsset[],
+  nativeCurrency: string
+) => {
   const assetsNative = parseAssetsNative(assets, nativeCurrency);
-  const totalAmount = assetsNative.reduce(
-    (total, currentAsset) => {
-        if (isOfType<ParsedAddressAssetWithNative>(currentAsset, 'native')) {
-            return parseFloat(add(total, currentAsset?.native?.balance.amount));
-        } else {
-            return total;
-        }
-    },
-    0
-  );
+  const totalAmount = assetsNative.reduce((total, currentAsset) => {
+    if (isOfType<ParsedAddressAssetWithNative>(currentAsset, 'native')) {
+      return parseFloat(add(total, currentAsset?.native?.balance.amount));
+    } else {
+      return total;
+    }
+  }, 0);
   const totalDisplay = convertAmountToNativeDisplay(
     totalAmount,
     nativeCurrency
@@ -126,10 +137,15 @@ export const parseAssetsNativeWithTotals = (assets: ParsedAddressAsset[], native
   return { assetsNativePrices: assetsNative, total };
 };
 
-export const parseAssetsNative = (assets: ParsedAddressAsset[], nativeCurrency: string) =>
-  map(assets, asset => parseAssetNative(asset, nativeCurrency));
+export const parseAssetsNative = (
+  assets: ParsedAddressAsset[],
+  nativeCurrency: string
+) => map(assets, asset => parseAssetNative(asset, nativeCurrency));
 
-export const parseAssetNative = (asset: ParsedAddressAsset, nativeCurrency: string): ParsedAddressAsset | ParsedAddressAssetWithNative => {
+export const parseAssetNative = (
+  asset: ParsedAddressAsset,
+  nativeCurrency: string
+): ParsedAddressAsset | ParsedAddressAssetWithNative => {
   const assetNativePrice = get(asset, 'price');
   if (isNil(assetNativePrice)) {
     return asset;
