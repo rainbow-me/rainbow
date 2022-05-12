@@ -43,7 +43,6 @@ import {
   showNetworkResponses,
 } from './config/debug';
 import { MainThemeProvider } from './context/ThemeContext';
-import { InitialRouteContext } from '@rainbow-me/navigation/initialRoute';
 import monitorNetwork from './debugging/network';
 import { Playground } from './design-system/playground/Playground';
 import appEvents from './handlers/appEvents';
@@ -74,6 +73,7 @@ import {
   isCustomBuild,
 } from '@rainbow-me/handlers/fedora';
 import { SharedValuesProvider } from '@rainbow-me/helpers/SharedValuesContext';
+import { InitialRouteContext } from '@rainbow-me/navigation/initialRoute';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 import { Portal } from 'react-native-cool-modals/Portal';
