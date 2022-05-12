@@ -45,6 +45,7 @@ export const fetchSuggestions = async (
           ens: true,
           network: 'mainnet',
           nickname: ensDomain?.name,
+          // guessing this is fine but leaving a reminder to confirm
           uniqueId: ensDomain?.resolver?.addr?.id || ensDomain.name,
         }))
         .filter((domain: any) => !domain?.nickname?.includes?.('['));

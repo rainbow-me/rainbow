@@ -409,6 +409,9 @@ export const delay = (ms: number): Promise<void> => {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
 
+/**
+ * @desc type guard based on expected property
+ */
 export const isOfType = <T>(
   varToBeChecked: any,
   propertyToCheckFor: keyof T

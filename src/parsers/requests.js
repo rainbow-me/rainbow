@@ -130,10 +130,10 @@ const getTransactionDisplayDetails = (
   }
   if (transaction.data.startsWith(tokenTransferHash)) {
     const contractAddress = transaction.to;
-    const accountAssetUniqueId = ethereumUtils.getUniqueId(
-      contractAddress,
-      dappNetwork
-    );
+    const accountAssetUniqueId = ethereumUtils.getUniqueId({
+      address: contractAddress,
+      network: dappNetwork,
+    });
     const asset = ethereumUtils.getAccountAsset(accountAssetUniqueId);
     const dataPayload = transaction.data.replace(tokenTransferHash, '');
     const toAddress = `0x${dataPayload.slice(0, 64).replace(/^0+/, '')}`;
