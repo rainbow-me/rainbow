@@ -47,6 +47,7 @@ export default function ConfirmExchangeButton({
   loading,
   inputAmount,
   isHighPriceImpact,
+  insufficientLiquidity,
   onPressViewDetails,
   onSubmit,
   testID,
@@ -130,9 +131,14 @@ export default function ConfirmExchangeButton({
     label = lang.t('button.confirm_exchange.enter_amount');
   }
 
+  if (insufficientLiquidity) {
+    label = lang.t('button.confirm_exchange.insufficient_liquidity');
+  }
+
   const isDisabled =
     disabled ||
     !isSufficientBalance ||
+    insufficientLiquidity ||
     !isSufficientGas ||
     !isValidGas ||
     !isSufficientGas;

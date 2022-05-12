@@ -86,6 +86,14 @@ const getInputAmount = async (
           code: quoteError.error_code,
           msg: quoteError.message,
         });
+        if (quoteError.message === 'insufficient liquidity') {
+          return {
+            inputAmount: null,
+            inputAmountDisplay: null,
+            noLiquidity: true,
+            tradeDetails: null,
+          };
+        }
       }
       return {
         inputAmount: null,
@@ -177,6 +185,14 @@ const getOutputAmount = async (
           code: quoteError.error_code,
           msg: quoteError.message,
         });
+        if (quoteError.message === 'insufficient liquidity') {
+          return {
+            noLiquidity: true,
+            outputAmount: null,
+            outputAmountDisplay: null,
+            tradeDetails: null,
+          };
+        }
       }
       return {
         outputAmount: null,
@@ -227,6 +243,7 @@ const displayValues: { [key in DisplayValue]: string | null } = {
 export default function useSwapDerivedOutputs(chainId: number) {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+  const [insufficientLiquidity, setInsufficientLiquidity] = useState(false);
 
   const [result, setResult] = useState({
     derivedValues,
@@ -269,6 +286,7 @@ export default function useSwapDerivedOutputs(chainId: number) {
     const getTradeDetails = async () => {
       let tradeDetails = null;
       if (!independentValue || !inputCurrency) {
+        setInsufficientLiquidity(false);
         setResult({
           derivedValues,
           displayValues,
@@ -295,6 +313,7 @@ export default function useSwapDerivedOutputs(chainId: number) {
           outputAmount,
           outputAmountDisplay,
           tradeDetails: newTradeDetails,
+          noLiquidity,
         } = await getOutputAmount(
           independentValue,
           inputToken,
@@ -304,6 +323,7 @@ export default function useSwapDerivedOutputs(chainId: number) {
           accountAddress,
           chainId
         );
+        setInsufficientLiquidity(!!noLiquidity);
         tradeDetails = newTradeDetails;
         derivedValues[SwapModalField.output] = outputAmount;
         displayValues[DisplayValue.output] =
@@ -356,6 +376,7 @@ export default function useSwapDerivedOutputs(chainId: number) {
       } else {
         if (!outputToken || !inputToken) {
           setLoading(false);
+          setInsufficientLiquidity(false);
           setResult({
             derivedValues,
             displayValues,
@@ -370,6 +391,7 @@ export default function useSwapDerivedOutputs(chainId: number) {
           inputAmount,
           inputAmountDisplay,
           tradeDetails: newTradeDetails,
+          noLiquidity,
         } = await getInputAmount(
           independentValue,
           inputToken,
@@ -378,6 +400,8 @@ export default function useSwapDerivedOutputs(chainId: number) {
           accountAddress,
           chainId
         );
+
+        setInsufficientLiquidity(!!noLiquidity);
 
         tradeDetails = newTradeDetails;
         derivedValues[SwapModalField.input] = inputAmount || '0';
@@ -426,6 +450,7 @@ export default function useSwapDerivedOutputs(chainId: number) {
   ]);
 
   return {
+    insufficientLiquidity,
     loading,
     result,
   };

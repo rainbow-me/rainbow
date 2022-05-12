@@ -1,3 +1,4 @@
+import { isAddress } from '@ethersproject/address';
 import { qs } from 'url-parse';
 import { RainbowFetchClient } from '../rainbow-fetch';
 import {
@@ -33,9 +34,12 @@ const tokenSearch = async (
     };
     if (query) {
       data.query = query;
+      if (isAddress(query)) {
+        // @ts-ignore
+        data.keys = `networks.${chainId}.address`;
+      }
     }
     const url = `/${chainId}/?${qs.stringify(data)}`;
-
     const tokenSearch = await tokenSearchApi.get(url);
     return tokenSearch.data?.data;
   } catch (e) {

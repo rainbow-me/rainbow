@@ -235,6 +235,7 @@ export default function ExchangeModal({
       tradeDetails,
     },
     loading,
+    insufficientLiquidity,
   } = useSwapDerivedOutputs(chainId);
 
   const lastTradeDetails = usePrevious(tradeDetails);
@@ -573,8 +574,9 @@ export default function ExchangeModal({
 
   const confirmButtonProps = useMemoOne(
     () => ({
-      disabled: !Number(inputAmount),
+      disabled: !Number(inputAmount) || !tradeDetails,
       inputAmount,
+      insufficientLiquidity,
       isAuthorizing,
       isHighPriceImpact,
       loading,
@@ -591,6 +593,7 @@ export default function ExchangeModal({
       testID,
       tradeDetails,
       type,
+      insufficientLiquidity,
     ]
   );
 

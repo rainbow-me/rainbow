@@ -15,7 +15,7 @@ import {
   isPositive,
   subtract,
 } from '@rainbow-me/utilities';
-import { ethereumUtils, logger } from '@rainbow-me/utils';
+import { ethereumUtils } from '@rainbow-me/utils';
 
 const PriceImpactWarningThreshold = 0.05;
 const SeverePriceImpactThreshold = 0.1;
