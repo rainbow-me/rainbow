@@ -4,14 +4,16 @@ import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { Linking, StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
-import { ChainBadge } from '../components/coin-icon';
+import { ChainBadge, CoinIcon } from '../components/coin-icon';
 import { Centered, Column, ColumnWithMargins } from '../components/layout';
 import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, GradientText, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
+import networkInfo from '@rainbow-me/helpers/networkInfo';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { toFixedDecimals } from '@rainbow-me/helpers/utilities';
 import { useDimensions } from '@rainbow-me/hooks';
+import { ETH_ADDRESS } from '@rainbow-me/references';
 import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth, padding, position } from '@rainbow-me/styles';
 import { gasUtils } from '@rainbow-me/utils';
@@ -90,11 +92,13 @@ const POLYGON_EXPLAINER = lang.t('explain.polygon.text');
 
 const RAINBOW_FEE_EXPLAINER = `The Rainbow fee is the fee charged by the Rainbow network to make $$$.`;
 
+const SWAP_RESET_EXPLAINER = `Rainbow doesn’t have the ability to swap across networks yet, but we’re on it. For now, Rainbow will match networks between selected tokens.`;
+
 const BACKUP_EXPLAINER = lang.t('back_up.explainers.backup', {
   cloudPlatformName: cloudPlatformAccountName,
 });
 
-export const explainers = network => ({
+export const explainers = (network, colors) => ({
   floor_price: {
     emoji: '📊',
     extraHeight: -102,
@@ -228,6 +232,25 @@ export const explainers = network => ({
     text: RAINBOW_FEE_EXPLAINER,
     title: 'Rainbow Fee',
   },
+  swapResetInputs: {
+    buttonColor: colors?.networkColors[network],
+    buttonText: `Continue with ${networkInfo[network]?.name}`,
+    emoji: '🔐',
+    extraHeight: -90,
+    text: SWAP_RESET_EXPLAINER,
+    title: `Switching to ${networkInfo[network]?.name}`,
+    logo:
+      network !== 'mainnet' ? (
+        <ChainBadge
+          assetType={networkTypes[network]}
+          marginBottom={8}
+          position="relative"
+          size="large"
+        />
+      ) : (
+        <CoinIcon address={ETH_ADDRESS} size={40} symbol={ETH_ADDRESS} />
+      ),
+  },
 });
 
 const ExplainSheet = () => {
@@ -254,8 +277,11 @@ const ExplainSheet = () => {
   }, [params, type]);
 
   const explainSheetConfig = useMemo(() => {
-    return explainers(network)[type];
-  }, [network, type]);
+    return explainers(
+      network === 'token' ? networkTypes.mainnet : network,
+      colors
+    )[type];
+  }, [colors, network, type]);
 
   const handleClose = useCallback(() => {
     goBack();
@@ -344,12 +370,15 @@ const ExplainSheet = () => {
               </Column>
             )}
             <SheetActionButton
-              color={colors.alpha(colors.appleBlue, 0.04)}
+              color={colors.alpha(
+                explainSheetConfig.buttonColor || colors.appleBlue,
+                0.04
+              )}
               isTransparent
-              label={lang.t('button.got_it')}
+              label={explainSheetConfig.buttonText || lang.t('button.got_it')}
               onPress={handleClose}
               size="big"
-              textColor={colors.appleBlue}
+              textColor={explainSheetConfig.buttonColor || colors.appleBlue}
               weight="heavy"
             />
           </ColumnWithMargins>

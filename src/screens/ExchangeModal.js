@@ -235,6 +235,7 @@ export default function ExchangeModal({
       tradeDetails,
     },
     loading,
+    resetSwapInputs,
     insufficientLiquidity,
   } = useSwapDerivedOutputs(chainId);
 
@@ -255,7 +256,7 @@ export default function ExchangeModal({
     loading || equal(lastTradeDetails, tradeDetails)
   );
 
-  const flashbots = network === Network.mainnet && flashbotsEnabled;
+  const flashbots = currentNetwork === Network.mainnet && flashbotsEnabled;
 
   const isDismissing = useRef(false);
   useEffect(() => {
@@ -283,8 +284,10 @@ export default function ExchangeModal({
   useEffect(() => {
     return () => {
       dispatch(swapClearState());
+      resetSwapInputs();
     };
-  }, [dispatch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleCustomGasBlur = useCallback(() => {
     lastFocusedInputHandle?.current?.focus();

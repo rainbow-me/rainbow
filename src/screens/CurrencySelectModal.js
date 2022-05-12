@@ -76,7 +76,6 @@ export default function CurrencySelectModal() {
     params: {
       onSelectCurrency,
       restoreFocusOnSwapModal,
-      setPointerEvents,
       toggleGestureEnabled,
       type,
       chainId,
@@ -177,31 +176,33 @@ export default function CurrencySelectModal() {
 
   const handleSelectAsset = useCallback(
     item => {
-      setPointerEvents(false);
       dispatch(emitChartsRequest(item.mainnet_address || item.address));
       const isMainnet = currentChainId === 1;
+
+      const handleNavigate = () => {
+        delayNext();
+        dangerouslyGetState().index = 1;
+        setSearchQuery('');
+        navigate(Routes.MAIN_EXCHANGE_SCREEN);
+        setCurrentChainId(ethereumUtils.getChainIdFromType(item.type));
+        if (searchQueryForSearch) {
+          analytics.track('Selected a search result in Swap', {
+            name: item.name,
+            searchQueryForSearch,
+            symbol: item.symbol,
+            tokenAddress: item.address,
+            type,
+          });
+        }
+      };
       onSelectCurrency(
         isMainnet && type === CurrencySelectionTypes.output
           ? { ...item, type: 'token' }
-          : item
+          : item,
+        handleNavigate
       );
-      setCurrentChainId(ethereumUtils.getChainIdFromType(item.type));
-      if (searchQueryForSearch) {
-        analytics.track('Selected a search result in Swap', {
-          name: item.name,
-          searchQueryForSearch,
-          symbol: item.symbol,
-          tokenAddress: item.address,
-          type,
-        });
-      }
-      delayNext();
-      dangerouslyGetState().index = 1;
-      setSearchQuery('');
-      navigate(Routes.MAIN_EXCHANGE_SCREEN);
     },
     [
-      setPointerEvents,
       dispatch,
       currentChainId,
       onSelectCurrency,
