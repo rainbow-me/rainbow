@@ -26,10 +26,7 @@ import {
 } from '../components/sheet';
 import { Text } from '@rainbow-me/design-system';
 import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
-import {
-  getDappHostname,
-  isDappAuthenticated,
-} from '@rainbow-me/helpers/dappNameHandler';
+import { getDappHostname } from '@rainbow-me/helpers/dappNameHandler';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import WalletConnectApprovalSheetType from '@rainbow-me/helpers/walletConnectApprovalSheetTypes';
 import {
@@ -145,10 +142,6 @@ export default function WalletConnectApprovalSheet() {
       clearTimeout(timeout);
     };
   }, [timeout]);
-
-  const isAuthenticated = useMemo(() => {
-    return isDappAuthenticated(dappUrl);
-  }, [dappUrl]);
 
   const formattedDappUrl = useMemo(() => {
     return getDappHostname(dappUrl);
@@ -344,7 +337,7 @@ export default function WalletConnectApprovalSheet() {
             </Centered>
             <Row marginBottom={30} marginTop={30}>
               <Text color="action" size="18px" weight="heavy">
-                {isAuthenticated ? `􀇻 ${formattedDappUrl}` : formattedDappUrl}
+                {formattedDappUrl}
               </Text>
             </Row>
             <Divider color={colors.rowDividerLight} inset={[0, 84]} />
