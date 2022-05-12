@@ -179,8 +179,6 @@ const overrideFailedCompound = (
     address_to: txn.address_to,
     asset: {
       asset_code: asset.address,
-      icon_url: null,
-      price: null,
       type: AssetType.compound,
       ...asset,
     },
@@ -354,7 +352,7 @@ const parseTransaction = async (
         const valueUnit = internalTxn.value || 0;
         const nativeDisplay = convertRawAmountToNativeDisplay(
           valueUnit,
-          updatedAsset.decimals,
+          updatedAsset.decimals || 18,
           priceUnit,
           nativeCurrency
         );

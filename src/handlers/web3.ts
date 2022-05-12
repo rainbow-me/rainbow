@@ -13,6 +13,7 @@ import {
 import { parseEther } from '@ethersproject/units';
 import UnstoppableResolution from '@unstoppabledomains/resolution';
 import { startsWith } from 'lodash';
+import { ParsedAddressAssetWithUniqueTokenId } from '../entities/tokens';
 import { RainbowConfig } from '../model/config';
 import {
   AssetType,
@@ -37,6 +38,7 @@ import {
   fraction,
   greaterThan,
   handleSignificantDecimals,
+  isOfType,
   multiply,
 } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
@@ -512,7 +514,7 @@ export const resolveUnstoppableDomain = async (
  */
 export const resolveNameOrAddress = async (
   nameOrAddress: string
-): Promise<string | void> => {
+): Promise<string | null | void> => {
   if (!isHexString(nameOrAddress)) {
     if (isUnstoppableAddressFormat(nameOrAddress)) {
       return resolveUnstoppableDomain(nameOrAddress);
@@ -550,9 +552,12 @@ export const getTransferNftTransaction = async (
     throw new Error(`Invalid recipient "${transaction.to}"`);
   }
 
-  const { from } = transaction;
-  const contractAddress = transaction.asset.asset_contract?.address;
-  const data = getDataForNftTransfer(from, recipient, transaction.asset);
+  const { asset, from } = transaction;
+  const contractAddress = asset.asset_contract?.address;
+  let data = '';
+  if (isOfType<ParsedAddressAssetWithUniqueTokenId>(asset, 'id')) {
+    data = getDataForNftTransfer(from, recipient, asset);
+  }
   const gasParams = getTransactionGasParams(transaction);
   return {
     data,
@@ -586,7 +591,7 @@ export const getTransferTokenTransaction = async (
 ): Promise<TransactionDetailsReturned> => {
   const value = convertAmountToRawAmount(
     transaction.amount,
-    transaction.asset.decimals
+    transaction.asset.decimals || 18
   );
   const recipient = (await resolveNameOrAddress(transaction.to)) as string;
   const data = getDataForTokenTransfer(value, recipient);
@@ -638,7 +643,7 @@ export const createSignableTransaction = async (
 const estimateAssetBalancePortion = (asset: ParsedAddressAsset): string => {
   if (asset.type !== AssetType.nft && asset.balance?.amount) {
     const assetBalance = asset.balance?.amount;
-    const decimals = asset.decimals;
+    const decimals = asset.decimals || 18;
     const portion = multiply(assetBalance, 0.1);
     const trimmed = handleSignificantDecimals(portion, decimals);
     return convertAmountToRawAmount(trimmed, decimals);
@@ -671,7 +676,7 @@ export const getDataForTokenTransfer = (value: string, to: string): string => {
 export const getDataForNftTransfer = (
   from: string,
   to: string,
-  asset: ParsedAddressAsset
+  asset: ParsedAddressAssetWithUniqueTokenId
 ): string => {
   const nftVersion = asset.asset_contract?.nft_version;
   const schema_name = asset.asset_contract?.schema_name;
@@ -720,7 +725,7 @@ export const buildTransaction = async (
     gasLimit,
     recipient,
   }: {
-    asset: ParsedAddressAsset;
+    asset: ParsedAddressAsset | ParsedAddressAssetWithUniqueTokenId;
     address: string;
     recipient: string;
     amount: number;
@@ -731,7 +736,7 @@ export const buildTransaction = async (
 ): Promise<TransactionRequest> => {
   const _amount =
     amount && Number(amount)
-      ? convertAmountToRawAmount(amount, asset.decimals)
+      ? convertAmountToRawAmount(amount, asset.decimals || 18)
       : estimateAssetBalancePortion(asset);
   const value = _amount.toString();
   const _recipient = (await resolveNameOrAddress(recipient)) as string;
@@ -741,7 +746,10 @@ export const buildTransaction = async (
     to: _recipient,
     value,
   };
-  if (asset.type === AssetType.nft) {
+  if (
+    asset.type === AssetType.nft &&
+    isOfType<ParsedAddressAssetWithUniqueTokenId>(asset, 'id')
+  ) {
     const contractAddress = asset.asset_contract?.address;
     const data = getDataForNftTransfer(address, _recipient, asset);
     txData = {
