@@ -39,6 +39,7 @@ import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { ethereumUtils } from '@rainbow-me/utils';
+import { truncateText } from '@rainbow-me/utils/truncateText';
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
   ({ theme: { colors } }) => ({
@@ -325,7 +326,9 @@ export default function WalletConnectApprovalSheet() {
                   weight="semibold"
                 >
                   <Text color="primary" size="23px" weight="heavy">
-                    {dappName}
+                    {truncateText(
+                      'Portion.io | The 21st Century Auction House | Launch your own NFT auctions | Collect Rare, High-End NFT Art, Music, and Collectibles in our Curated Drops'
+                    )}
                   </Text>{' '}
                   {type === WalletConnectApprovalSheetType.connect
                     ? `wants to connect to your wallet`
