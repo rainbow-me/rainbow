@@ -87,20 +87,15 @@ const { RNBip39 } = NativeModules;
 const getNetworkNativeAsset = (
   network: Network
 ): ParsedAddressAsset | undefined => {
-  let nativeAssetUniqueId;
-  switch (network) {
-    case Network.arbitrum:
-      nativeAssetUniqueId = `${ARBITRUM_ETH_ADDRESS}_${network}`;
-      break;
-    case Network.optimism:
-      nativeAssetUniqueId = `${OPTIMISM_ETH_ADDRESS}_${network}`;
-      break;
-    case Network.polygon:
-      nativeAssetUniqueId = `${MATIC_POLYGON_ADDRESS}_${network}`;
-      break;
-    default:
-      nativeAssetUniqueId = ETH_ADDRESS;
-  }
+  const nativeAddresses: Record<string, EthereumAddress> = {
+    [Network.arbitrum]: ARBITRUM_ETH_ADDRESS,
+    [Network.optimism]: OPTIMISM_ETH_ADDRESS,
+    [Network.polygon]: MATIC_POLYGON_ADDRESS,
+  };
+  const nativeAssetUniqueId = getUniqueId({
+    address: nativeAddresses[network],
+    network,
+  });
   return getAccountAsset(nativeAssetUniqueId);
 };
 
@@ -562,7 +557,10 @@ async function parseEthereumUrl(data: string) {
     nativeAmount = ethUrl.parameters?.value && fromWei(ethUrl.parameters.value);
   } else if (functionName === 'transfer') {
     // Send ERC-20
-    const targetUniqueId = getUniqueId(ethUrl.target_address, network);
+    const targetUniqueId = getUniqueId({
+      address: ethUrl.target_address,
+      network,
+    });
     asset = getAccountAsset(targetUniqueId);
     // @ts-ignore
     if (!asset || asset?.balance.amount === 0) {
@@ -599,8 +597,19 @@ async function parseEthereumUrl(data: string) {
   });
 }
 
-const getUniqueId = (address: EthereumAddress, network: Network) =>
-  network === Network.mainnet ? address : `${address}_${network}`;
+const getUniqueId = (params: {
+  address: EthereumAddress;
+  name?: string;
+  network?: Network;
+}) => {
+  const { address, name, network } = params;
+  const isNotMainnet = network && network !== Network.mainnet;
+  return address
+    ? isNotMainnet
+      ? `${address}_${getChainIdFromNetwork(network)}`
+      : address
+    : name || '';
+};
 
 const calculateL1FeeOptimism = async (
   tx: RainbowTransaction,

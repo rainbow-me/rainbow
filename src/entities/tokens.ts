@@ -1,5 +1,6 @@
 import { AssetType } from './assetTypes';
 import { EthereumAddress } from '.';
+import { Network } from '@rainbow-me/helpers';
 
 interface ZerionAssetPrice {
   value: number;
@@ -24,7 +25,7 @@ export interface ZerionAsset {
   price?: ZerionAssetPrice;
   // shit we are appending later
   mainnet_address?: string;
-  network?: string;
+  network?: Network;
   quantity?: number;
 }
 

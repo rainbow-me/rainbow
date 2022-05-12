@@ -20,7 +20,11 @@ import {
   convertRawAmountToBalance,
   isOfType,
 } from '@rainbow-me/utilities';
-import { getTokenMetadata, isLowerCaseMatch } from '@rainbow-me/utils';
+import {
+  ethereumUtils,
+  getTokenMetadata,
+  isLowerCaseMatch,
+} from '@rainbow-me/utils';
 
 /**
  * @desc parse account assets
@@ -99,11 +103,11 @@ export const parseGenericAsset = (
     name,
     symbol,
     type,
-    uniqueId: address
-      ? asset.network && asset.network !== networkTypes.mainnet
-        ? `${address}_${asset.network}`
-        : address
-      : name,
+    uniqueId: ethereumUtils.getUniqueId({
+      address,
+      name,
+      network: asset.network,
+    }),
   };
 
   return parsedAsset;

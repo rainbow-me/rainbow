@@ -228,6 +228,7 @@ export const parseAccountUniqueTokensPolygon = async data => {
         network: Network.polygon,
         permalink: asset.permalink,
         type: AssetTypes.nft,
+        // not sure it makes sense to touch this
         uniqueId: `${Network.polygon}_${get(
           asset_contract,
           'address'
