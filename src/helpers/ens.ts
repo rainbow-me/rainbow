@@ -1,6 +1,7 @@
 import { formatsByName } from '@ensdomains/address-encoder';
 import { hash } from '@ensdomains/eth-ens-namehash';
-import { BigNumberish, Contract, Wallet } from 'ethers';
+import { Wallet } from '@ethersproject/wallet';
+import { BigNumberish, Contract } from 'ethers';
 import lang from 'i18n-js';
 import { TextInputProps } from 'react-native';
 import { atom } from 'recoil';
