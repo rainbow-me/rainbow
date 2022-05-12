@@ -25,6 +25,7 @@ import {
   getTokenMetadata,
   isLowerCaseMatch,
 } from '@rainbow-me/utils';
+import logger from 'logger';
 
 /**
  * @desc parse account assets
@@ -44,6 +45,12 @@ export const parseAccountAssets = (
   return dedupedKeys.reduce((parsedAccountAssets, currentKey) => {
     const currentAsset = dedupedAssets[currentKey];
     const parsedAsset = parseAsset(currentAsset);
+    if (currentAsset.network) {
+      logger.debug(
+        'CURRENT ASSET.NETWORK: ',
+        JSON.stringify(parsedAsset, null, 2)
+      );
+    }
     return {
       ...parsedAccountAssets,
       [currentKey]: {
