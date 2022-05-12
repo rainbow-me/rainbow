@@ -326,9 +326,7 @@ export default function WalletConnectApprovalSheet() {
                   weight="semibold"
                 >
                   <Text color="primary" size="23px" weight="heavy">
-                    {truncateText(
-                      'Portion.io | The 21st Century Auction House | Launch your own NFT auctions | Collect Rare, High-End NFT Art, Music, and Collectibles in our Curated Drops'
-                    )}
+                    {truncateText(dappName)}
                   </Text>{' '}
                   {type === WalletConnectApprovalSheetType.connect
                     ? `wants to connect to your wallet`
