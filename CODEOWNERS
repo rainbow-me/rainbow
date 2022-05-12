@@ -36,8 +36,8 @@ src/components/icons/svg/ProgressIcon.tsx @jkadamczyk
 # APP CONFIG
 src/config @osdnk @brunobar79 @skylarbarrera
 
-# REACT CONTEXT
-src/context @osdnk @terrysahaidak
+# REACT THEME
+src/theme @osdnk @terrysahaidak @jkadamczyk
 
 # NETWORK DEBUGGING
 src/debugging @brunobar79
