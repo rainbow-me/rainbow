@@ -68,7 +68,7 @@ export const BottomActionHeight = ios ? 281 : 250;
 export default function ENSAssignRecordsSheet() {
   const { params } = useRoute();
   const { colors } = useTheme();
-  const { name, initialRecords } = useENSRegistration();
+  const { name } = useENSRegistration();
   const {
     images: { avatarUrl: initialAvatarUrl },
   } = useENSModifiedRegistration({
@@ -96,8 +96,9 @@ export default function ENSAssignRecordsSheet() {
     initializeForm: true,
   });
 
-  const displayTitleLabel = !profileQuery.isLoading;
-  const isEmptyProfile = isEmpty(initialRecords);
+  const displayTitleLabel =
+    params.mode !== REGISTRATION_MODES.EDIT || profileQuery.isSuccess;
+  const isEmptyProfile = isEmpty(profileQuery.data?.records);
 
   useENSRegistrationCosts({
     name,
@@ -190,7 +191,12 @@ export default function ENSAssignRecordsSheet() {
                 <Text align="center" color="accent" size="16px" weight="heavy">
                   {displayTitleLabel
                     ? lang.t(
-                        `profiles.${isEmptyProfile ? 'create' : 'edit'}.label`
+                        `profiles.${
+                          isEmptyProfile &&
+                          params.mode !== REGISTRATION_MODES.EDIT
+                            ? 'create'
+                            : 'edit'
+                        }.label`
                       )
                     : ''}
                 </Text>

@@ -1,6 +1,10 @@
 import { useFocusEffect } from '@react-navigation/core';
 import ConditionalWrap from 'conditional-wrap';
 import React, { useCallback, useEffect, useState } from 'react';
+import {
+  // @ts-ignore
+  IS_TESTING,
+} from 'react-native-dotenv';
 import { Image } from 'react-native-image-crop-picker';
 import { atom, useSetRecoilState } from 'recoil';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
@@ -22,6 +26,8 @@ import {
   useSelectImageMenu,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
+import { useNavigation } from '@rainbow-me/navigation';
+import Routes from '@rainbow-me/routes';
 import { magicMemo, stringifyENSNFTRecord } from '@rainbow-me/utils';
 
 export const avatarMetadataAtom = atom<Image | undefined>({
@@ -30,6 +36,7 @@ export const avatarMetadataAtom = atom<Image | undefined>({
 });
 
 const size = 70;
+const isTesting = IS_TESTING === 'true';
 
 const RegistrationAvatar = ({
   hasSeenExplainSheet,
@@ -49,6 +56,7 @@ const RegistrationAvatar = ({
     onBlurField,
     onRemoveField,
   } = useENSRegistrationForm();
+  const { navigate } = useNavigation();
 
   const [avatarUpdateAllowed, setAvatarUpdateAllowed] = useState(true);
   const [avatarUrl, setAvatarUrl] = useState(
@@ -69,13 +77,8 @@ const RegistrationAvatar = ({
 
   const accentColor = useForegroundColor('accent');
 
-  const { ContextMenu } = useSelectImageMenu({
-    imagePickerOptions: {
-      cropperCircleOverlay: true,
-      cropping: true,
-    },
-    menuItems: ['library', 'nft'],
-    onChangeImage: ({
+  const onChangeImage = useCallback(
+    ({
       asset,
       image,
     }: {
@@ -107,6 +110,16 @@ const RegistrationAvatar = ({
         });
       }
     },
+    [onBlurField, onChangeAvatarUrl, setAvatarMetadata]
+  );
+
+  const { ContextMenu } = useSelectImageMenu({
+    imagePickerOptions: {
+      cropperCircleOverlay: true,
+      cropping: true,
+    },
+    menuItems: ['library', 'nft'],
+    onChangeImage,
     onRemoveImage: () => {
       onRemoveField({ key: 'avatar' });
       setAvatarUrl('');
@@ -124,6 +137,14 @@ const RegistrationAvatar = ({
     testID: 'avatar',
     uploadToIPFS: true,
   });
+
+  const handleSelectNFT = useCallback(() => {
+    navigate(Routes.SELECT_UNIQUE_TOKEN_SHEET, {
+      onSelect: (asset: any) => onChangeImage?.({ asset }),
+      springDamping: 1,
+      topOffset: 0,
+    });
+  }, [navigate, onChangeImage]);
 
   return (
     <Box height={{ custom: size }} width={{ custom: size }}>
@@ -145,11 +166,18 @@ const RegistrationAvatar = ({
         </Skeleton>
       ) : (
         <ConditionalWrap
-          condition={hasSeenExplainSheet}
+          condition={hasSeenExplainSheet && !isTesting}
           wrap={children => <ContextMenu>{children}</ContextMenu>}
         >
           <ButtonPressAnimation
-            onPress={!hasSeenExplainSheet ? onShowExplainSheet : undefined}
+            onPress={
+              !hasSeenExplainSheet
+                ? onShowExplainSheet
+                : isTesting
+                ? handleSelectNFT
+                : undefined
+            }
+            testID="use-select-image-avatar"
           >
             <AccentColorProvider color={accentColor + '10'}>
               <Box

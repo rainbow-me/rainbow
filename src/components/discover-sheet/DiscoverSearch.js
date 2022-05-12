@@ -85,6 +85,7 @@ export default function DiscoverSearch() {
             profilesEnabled ? Routes.PROFILE_SHEET : Routes.SHOWCASE_SHEET,
             {
               address: item.nickname,
+              fromRoute: 'DiscoverSearch',
               setIsSearchModeEnabled,
             }
           );

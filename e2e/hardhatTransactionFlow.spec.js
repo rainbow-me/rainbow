@@ -94,6 +94,10 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.enableSynchronization();
   });
 
+  it('Should send ETH to test wallet"', async () => {
+    await Helpers.sendETHtoTestWallet();
+  });
+
   it('Should navigate to the Profile screen after swiping right', async () => {
     await Helpers.swipe('wallet-screen', 'right', 'slow');
     await Helpers.checkIfVisible('profile-screen');
@@ -124,8 +128,6 @@ describe('Hardhat Transaction Flow', () => {
   }
 
   it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
-    await Helpers.sendETHtoTestWallet();
-
     await Helpers.waitAndTap('hardhat-section');
     await Helpers.checkIfVisible('testnet-toast-Hardhat');
     await Helpers.swipe('profile-screen', 'left', 'slow');
@@ -197,6 +199,9 @@ describe('Hardhat Transaction Flow', () => {
     );
     await Helpers.waitAndTap('CryptoKitties-family-header');
     await Helpers.tapByText('Arun Cattybinky');
+    await Helpers.waitAndTap('gas-speed-custom');
+    await Helpers.waitAndTap('speed-pill-urgent');
+    await Helpers.waitAndTap('gas-speed-done-button');
     await Helpers.waitAndTap('send-sheet-confirm-action-button', 20000);
     await Helpers.tapAndLongPress('send-confirmation-button');
     await Helpers.checkIfVisible('profile-screen');

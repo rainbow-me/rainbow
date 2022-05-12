@@ -1,11 +1,11 @@
 import { useRoute } from '@react-navigation/core';
-import React, { createContext, useMemo } from 'react';
+import analytics from '@segment/analytics-react-native';
+import React, { createContext, useEffect, useMemo } from 'react';
 import { StatusBar } from 'react-native';
 import RecyclerAssetList2 from '../components/asset-list/RecyclerAssetList2';
 import ProfileSheetHeader from '../components/ens-profile/ProfileSheetHeader';
 import { SheetHandleFixedToTopHeight } from '../components/sheet';
 import Skeleton from '../components/skeleton/Skeleton';
-import useENSProfile from '../hooks/useENSProfile';
 import { useTheme } from '@rainbow-me/context';
 import {
   AccentColorProvider,
@@ -16,8 +16,12 @@ import {
   Inset,
   Stack,
 } from '@rainbow-me/design-system';
+import { maybeSignUri } from '@rainbow-me/handlers/imgix';
 import {
+  useAccountSettings,
   useDimensions,
+  useENSProfile,
+  useENSProfileImages,
   useENSResolveName,
   useExternalWalletSectionsData,
   useFirstTransactionTimestamp,
@@ -35,13 +39,17 @@ export const ProfileSheetConfigContext = createContext<{
 export default function ProfileSheet() {
   const { params, name } = useRoute<any>();
   const { colors } = useTheme();
+  const { accountAddress } = useAccountSettings();
 
   const { height: deviceHeight } = useDimensions();
   const contentHeight = deviceHeight - SheetHandleFixedToTopHeight;
 
   const ensName = params?.address;
-  const { data: profile, isSuccess } = useENSProfile(ensName);
-  const avatarUrl = profile?.images?.avatarUrl;
+  const { isSuccess } = useENSProfile(ensName);
+  const { data: images, isFetched: isImagesFetched } = useENSProfileImages(
+    ensName
+  );
+  const avatarUrl = images?.avatarUrl;
 
   const { data: profileAddress } = useENSResolveName(ensName);
 
@@ -60,8 +68,8 @@ export default function ProfileSheet() {
     [profileAddress]
   );
 
-  const { result: dominantColor } = usePersistentDominantColorFromImage(
-    avatarUrl || ''
+  const { result: dominantColor, state } = usePersistentDominantColorFromImage(
+    maybeSignUri(avatarUrl || '') || ''
   );
 
   const wrapperStyle = useMemo(() => ({ height: contentHeight }), [
@@ -69,12 +77,26 @@ export default function ProfileSheet() {
   ]);
 
   const accentColor =
-    dominantColor ||
-    colors.avatarBackgrounds[colorIndex || 0] ||
-    colors.appleBlue;
+    // Set accent color when ENS images have fetched & dominant
+    // color is not loading.
+    isImagesFetched && state !== 1 && typeof colorIndex === 'number'
+      ? dominantColor ||
+        colors.avatarBackgrounds[colorIndex] ||
+        colors.appleBlue
+      : colors.skeleton;
 
   const enableZoomableImages =
     !params.isPreview && name !== Routes.PROFILE_PREVIEW_SHEET;
+
+  useEffect(() => {
+    if (profileAddress && accountAddress) {
+      analytics.track('Viewed profile', {
+        category: 'profiles',
+        fromRoute: params.fromRoute,
+        name: profileAddress !== accountAddress ? ensName : '',
+      });
+    }
+  }, [params, ensName, profileAddress, accountAddress]);
 
   return (
     <ProfileSheetConfigContext.Provider value={{ enableZoomableImages }}>

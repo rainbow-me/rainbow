@@ -154,7 +154,7 @@ export const ensRegistrationsLoadState = () => async (
 export const startRegistration = (
   accountAddress: EthereumAddress,
   name: string,
-  mode: keyof typeof REGISTRATION_MODES = REGISTRATION_MODES.CREATE
+  mode: keyof typeof REGISTRATION_MODES
 ) => async (dispatch: AppDispatch, getState: AppGetState) => {
   const {
     ensRegistration: { registrations },

@@ -116,9 +116,15 @@ export default function SendHeader({
 
   const userWallet = useMemo(() => {
     return [...userAccounts, ...watchedAccounts].find(
-      account => toLower(account.address) === toLower(recipient)
+      account => toLower(account.address) === toLower(hexAddress || recipient)
     );
-  }, [recipient, userAccounts, watchedAccounts]);
+  }, [recipient, userAccounts, watchedAccounts, hexAddress]);
+
+  const isPreExistingContact = (contact?.nickname?.length || 0) > 0;
+  const label = isPreExistingContact
+    ? removeFirstEmojiFromString(contact?.nickname) || contact?.ens
+    : removeFirstEmojiFromString(userWallet?.label || nickname);
+  const name = label ? label : userWallet?.ens;
 
   const handleNavigateToContact = useCallback(() => {
     let nickname = recipient;
@@ -170,12 +176,15 @@ export default function SendHeader({
         if (buttonIndex === 0) {
           showDeleteContactActionSheet({
             address: hexAddress,
-            nickname: recipient,
+            nickname: name,
             removeContact: removeContact,
           });
         } else if (buttonIndex === 1) {
           if (profilesEnabled && isENSAddressFormat(recipient)) {
-            navigate(Routes.PROFILE_SHEET, { address: recipient });
+            navigate(Routes.PROFILE_SHEET, {
+              address: recipient,
+              fromRoute: 'SendHeader',
+            });
           } else {
             handleNavigateToContact();
             onRefocusInput();
@@ -195,12 +204,8 @@ export default function SendHeader({
     recipient,
     removeContact,
     setClipboard,
+    name,
   ]);
-
-  const isPreExistingContact = (contact?.nickname?.length || 0) > 0;
-  const name = userWallet?.label
-    ? removeFirstEmojiFromString(userWallet.label)
-    : removeFirstEmojiFromString(nickname);
 
   return (
     <Fragment>

@@ -210,7 +210,6 @@ describe('Register ENS Flow', () => {
     await Helpers.typeText('ens-text-record-description', RECORD_BIO, false);
     await Helpers.clearField('ens-text-record-me.rainbow.displayName');
     await Helpers.waitAndTap('use-select-image-avatar');
-    await Helpers.tapByText('Choose an NFT');
     await Helpers.tapByText('CryptoKitties');
     await Helpers.tapByText('Arun Cattybinky');
     await Helpers.checkIfVisible('ens-assign-records-review-action-button');
@@ -218,8 +217,9 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should display change gas to Urgent', async () => {
-    await Helpers.tapByText('Normal');
-    await Helpers.tapByText('Urgent');
+    await Helpers.waitAndTap('gas-speed-custom');
+    await Helpers.waitAndTap('speed-pill-urgent');
+    await Helpers.waitAndTap('gas-speed-done-button');
   });
 
   it('Should go to review registration and start it', async () => {
@@ -235,6 +235,7 @@ describe('Register ENS Flow', () => {
   it('Should see confirm registration screen and set reverse records', async () => {
     await Helpers.checkIfVisible(`ens-reverse-record-switch`);
     // set RANDOM_NAME as primary name
+    await Helpers.waitAndTap('ens-reverse-record-switch');
     await Helpers.waitAndTap('ens-reverse-record-switch');
     await Helpers.checkIfVisible(`ens-transaction-action-REGISTER`);
     await Helpers.waitAndTap(`ens-transaction-action-REGISTER`);
