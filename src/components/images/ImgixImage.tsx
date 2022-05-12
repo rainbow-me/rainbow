@@ -22,8 +22,7 @@ class ImgixImage extends React.PureComponent<
   MergedImgixImageProps,
   ImgixImageProps
 > {
-  constructor(props: MergedImgixImageProps) {
-    super(props);
+  static getDerivedStateFromProps(props: MergedImgixImageProps) {
     const { source, size, fm } = props;
     const options = {
       ...(fm && { fm: fm }),
@@ -32,35 +31,15 @@ class ImgixImage extends React.PureComponent<
         w: size,
       }),
     };
-    this.state = {
+
+    return {
       source:
         !!source && typeof source === 'object'
           ? maybeSignSource(source, options)
           : source,
     };
   }
-  componentDidUpdate(prevProps: ImgixImageProps) {
-    const { source: prevSource } = prevProps;
-    const { source, size, fm } = this.props;
-    if (prevSource !== source) {
-      // If the source has changed and looks signable, attempt to sign it.
-      if (!!source && typeof source === 'object') {
-        const options = {
-          ...(fm && { fm: fm }),
-          ...(size && {
-            h: size,
-            w: size,
-          }),
-        };
-        Object.assign(this.state, {
-          source: maybeSignSource(source, options),
-        });
-      } else {
-        // Else propagate the source as normal.
-        Object.assign(this.state, { source });
-      }
-    }
-  }
+
   render() {
     const { Component: maybeComponent, ...props } = this.props;
     // Use the local state as the signing source, as opposed to the prop directly.
