@@ -7,6 +7,7 @@ import useGenericAsset from './useGenericAsset';
 import { AssetType } from '@rainbow-me/entities';
 import { parseAssetNative } from '@rainbow-me/parsers';
 import { ETH_ADDRESS, ETH_ICON_URL } from '@rainbow-me/references';
+import logger from 'logger';
 
 const getZeroEth = () => {
   return {
@@ -72,6 +73,7 @@ const makeAccountAssetSelector = () =>
 // and an ETH placeholder
 // NFTs are not included in this hook
 export default function useAccountAsset(uniqueId) {
+  logger.debug('USE ACCOUNT ASSET UNIQUE ID: ', uniqueId);
   const { nativeCurrency } = useAccountSettings();
   const selectAccountAsset = useMemo(makeAccountAssetSelector, []);
   const accountAsset = useSelector(state =>

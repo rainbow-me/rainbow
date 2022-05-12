@@ -2,9 +2,9 @@ import { MMKV } from 'react-native-mmkv';
 import { getAccountLocal, getKey, saveAccountLocal } from './common';
 import { STORAGE_IDS } from '@rainbow-me/model/mmkv';
 
-const accountAssetsDataVersion = '0.1.0';
+const accountAssetsDataVersion = '0.2.0';
 const assetPricesFromUniswapVersion = '0.1.0';
-const assetsVersion = '0.2.0';
+const assetsVersion = '0.3.0';
 const pendingTransactionsVersion = '0.1.0';
 const purchaseTransactionsVersion = '0.2.0';
 const savingsVersion = '0.2.0';
