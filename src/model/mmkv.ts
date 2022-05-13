@@ -5,6 +5,7 @@ export const STORAGE_IDS = {
   ASPECT_RATIO: 'ASPECT_RATIO',
   DOMINANT_COLOR: 'DOMINANT_COLOR',
   IMGIX_CACHE: 'IMGIX_CACHE',
+  RAINBOW_TOKEN_LIST: 'RAINBOW_TOKEN_LIST',
 };
 
 export const clearAllStorages = () => {
