@@ -1,23 +1,16 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
-import { atomFamily, useRecoilState } from 'recoil';
 import { FastChainBadge } from './FastCoinBadge';
 import EthIcon from '@rainbow-me/assets/eth-icon.png';
 import { AssetType } from '@rainbow-me/entities';
 import { useColorForAsset } from '@rainbow-me/hooks';
-import { ImageWithCachedMetadata } from '@rainbow-me/images';
+import { ImageWithCachedMetadata, ImgixImage } from '@rainbow-me/images';
 import { borders, fonts } from '@rainbow-me/styles';
 import {
   FallbackIcon,
   getUrlForTrustIconFallback,
   isETH,
 } from '@rainbow-me/utils';
-
-const LoadingStates = {
-  FALLBACK: 'FALLBACK',
-  TRUST: 'TRUST',
-  UNKNOWN: 'UNKNOWN',
-} as const;
 
 const fallbackTextStyles = {
   fontFamily: fonts.family.SFProRounded,
@@ -27,17 +20,12 @@ const fallbackTextStyles = {
   textAlign: 'center',
 };
 
-const isFallbackOrTrust = atomFamily<keyof typeof LoadingStates, string>({
-  default: LoadingStates.UNKNOWN,
-  key: 'isFallbackOrTrust',
-});
-
 const fallbackIconStyle = {
   ...borders.buildCircleAsObject(40),
   position: 'absolute',
 };
 
-export default function FastCoinIcon({
+export default React.memo(function FastCoinIcon({
   address,
   symbol,
   assetType,
@@ -50,19 +38,7 @@ export default function FastCoinIcon({
 }) {
   const imageUrl = getUrlForTrustIconFallback(address);
 
-  const [status, setStatus] = useRecoilState(isFallbackOrTrust(address));
-
   const fallbackIconColor = useColorForAsset({ address });
-
-  const onLoad = useCallback(() => {
-    setStatus(LoadingStates.TRUST);
-  }, [setStatus]);
-
-  const onError = useCallback(() => {
-    if (status === LoadingStates.TRUST) {
-      setStatus(LoadingStates.UNKNOWN);
-    }
-  }, [setStatus, status]);
 
   const eth = isETH(address);
 
@@ -80,16 +56,15 @@ export default function FastCoinIcon({
         <Image source={EthIcon} style={cx.coinIconFallback} />
       ) : (
         <ImageWithCachedMetadata
+          cache={ImgixImage.cacheControl.immutable}
           imageUrl={imageUrl}
-          onError={onError}
-          onLoad={onLoad}
           style={cx.coinIconFallback}
         />
       )}
       <FastChainBadge assetType={assetType} theme={theme} />
     </View>
   );
-}
+});
 
 const cx = StyleSheet.create({
   coinIconFallback: {
