@@ -91,12 +91,10 @@ export const parseAsset = ({ asset_code: address, ...asset } = {}) => {
 
 export const parseAssetsNativeWithTotals = (assets, nativeCurrency) => {
   const assetsNative = parseAssetsNative(assets, nativeCurrency);
-
-  let totalAmount = 0;
-  for (const asset of assetsNative) {
-    totalAmount = add(totalAmount, asset.native?.balance?.amount ?? 0);
-  }
-
+  const totalAmount = assetsNative.reduce(
+    (total, asset) => add(total, asset?.native?.balance?.amount ?? 0),
+    0
+  );
   const totalDisplay = convertAmountToNativeDisplay(
     totalAmount,
     nativeCurrency
@@ -124,7 +122,7 @@ export const parseAssetNative = (asset, nativeCurrency) => {
     ...asset,
     native: {
       balance: nativeDisplay,
-      change: isLowerCaseMatch(asset.symbol, nativeCurrency)
+      change: isLowerCaseMatch(asset?.symbol, nativeCurrency)
         ? null
         : assetNativePrice.relative_change_24h
         ? convertAmountToPercentageDisplay(assetNativePrice.relative_change_24h)

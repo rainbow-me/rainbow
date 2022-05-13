@@ -1,5 +1,5 @@
 import { useRoute } from '@react-navigation/core';
-import { compact, find, get, isEmpty, keys, map, toLower } from 'lodash';
+import { compact, find, isEmpty, keys, map, toLower } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { StatusBar } from 'react-native';
 import Animated from 'react-native-reanimated';
@@ -172,7 +172,7 @@ export default function WalletScreen() {
   const fabs = useMemo(
     () =>
       [
-        !!get(networkInfo[network], 'exchange_enabled') && ExchangeFab,
+        !!networkInfo[network]?.exchange_enabled && ExchangeFab,
         SendFab,
         profilesEnabled ? RegisterEnsFab : null,
       ].filter(e => !!e),

@@ -3,7 +3,6 @@ import {
   compact,
   concat,
   forEach,
-  get,
   groupBy,
   includes,
   isEmpty,
@@ -23,9 +22,9 @@ import { ethereumUtils } from '@rainbow-me/utils';
 const COINS_TO_SHOW = 5;
 
 export const buildAssetUniqueIdentifier = item => {
-  const balance = get(item, 'balance.amount', '');
-  const nativePrice = get(item, 'native.price.display', '');
-  const uniqueId = get(item, 'uniqueId');
+  const balance = item?.balance?.amount ?? '';
+  const nativePrice = item?.native?.price?.display ?? '';
+  const uniqueId = item?.uniqueId;
 
   return compact([balance, nativePrice, uniqueId]).join('_');
 };
@@ -277,7 +276,7 @@ export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
         .join(`__${index}`);
       rows.push({
         childrenAmount: grouped[families[i]].length,
-        familyImage: get(tokensRow, '[0][0].familyImage', null),
+        familyImage: tokensRow?.[0]?.[0]?.familyImage ?? null,
         familyName: families[i],
         isHeader: index === 0,
         stableId: id,

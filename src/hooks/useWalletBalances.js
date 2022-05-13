@@ -1,5 +1,5 @@
 import { Contract } from '@ethersproject/contracts';
-import { forEach, get, isEmpty, keys, values } from 'lodash';
+import { forEach, isEmpty, keys, values } from 'lodash';
 import { useCallback } from 'react';
 import { useQuery } from 'react-query';
 import useAccountSettings from './useAccountSettings';
@@ -32,7 +32,7 @@ const useWalletBalances = wallets => {
     try {
       // Check all the ETH balances at once
       const balanceCheckerContract = new Contract(
-        get(networkInfo[network], 'balance_checker_contract_address'),
+        networkInfo[network]?.balance_checker_contract_address,
         balanceCheckerContractAbi,
         web3Provider
       );

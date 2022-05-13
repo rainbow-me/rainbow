@@ -1,11 +1,17 @@
 import currency from 'currency.js';
 import { BigNumber, BigNumberish, ethers, FixedNumber } from 'ethers';
-import { get, isNil } from 'lodash';
+import { isNil } from 'lodash';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 
 const stringify = (value: BigNumberish) => {
   return value.toString();
 };
+
+type BigNumberish = number | string | BigNumber;
+type nativeCurrencyType = typeof supportedNativeCurrencies;
+
+export const abs = (value: BigNumberish): string =>
+  new BigNumber(value).abs().toFixed();
 
 export const add = (
   numberOne: BigNumberish,
@@ -322,7 +328,7 @@ export const convertAmountToNativeAmount = (
 export const convertAmountAndPriceToNativeDisplay = (
   amount: BigNumberish,
   priceUnit: BigNumberish,
-  nativeCurrency: string,
+  nativeCurrency: keyof nativeCurrencyType,
   buffer?: number,
   skipDecimals: boolean = false
 ): { amount: number; display: string } => {
@@ -346,7 +352,7 @@ export const convertRawAmountToNativeDisplay = (
   rawAmount: BigNumberish,
   assetDecimals: number,
   priceUnit: BigNumberish,
-  nativeCurrency: string,
+  nativeCurrency: keyof nativeCurrencyType,
   buffer?: number
 ) => {
   const assetBalance = convertRawAmountToDecimalFormat(
@@ -369,7 +375,7 @@ export const convertRawAmountToBalance = (
   asset: { decimals: number },
   buffer?: number
 ) => {
-  const decimals = get(asset, 'decimals', 18);
+  const decimals = asset?.decimals ?? 18;
   const assetBalance = convertRawAmountToDecimalFormat(value, decimals);
 
   return {
@@ -384,14 +390,12 @@ export const convertRawAmountToBalance = (
  */
 export const convertAmountToBalanceDisplay = (
   value: BigNumberish,
-  asset: { decimals: number },
+  asset: { decimals: number; symbol?: string },
   buffer?: number
 ) => {
-  const decimals = get(asset, 'decimals', 18);
-  const symbol = get(asset, 'symbol', '');
+  const decimals = asset?.decimals ?? 18;
   const display = handleSignificantDecimals(value, decimals, buffer, false);
-  const ret = `${display} ${symbol}`;
-  return ret;
+  return `${display} ${asset?.symbol || ''}`;
 };
 
 /**
@@ -428,11 +432,11 @@ export const convertAmountToPercentageDisplayWithThreshold = (
  */
 export const convertAmountToNativeDisplay = (
   value: BigNumberish,
-  nativeCurrency: string,
+  nativeCurrency: keyof nativeCurrencyType,
   buffer?: number,
   skipDecimals?: boolean
 ) => {
-  const nativeSelected = get(supportedNativeCurrencies, `${nativeCurrency}`);
+  const nativeSelected = supportedNativeCurrencies?.[nativeCurrency];
   const { decimals } = nativeSelected;
   const display = handleSignificantDecimals(
     value,

@@ -1,6 +1,6 @@
 import { captureException, captureMessage } from '@sentry/react-native';
 import { toChecksumAddress } from 'ethereumjs-util';
-import { filter, flatMap, get, isEmpty, keys, map, values } from 'lodash';
+import { filter, flatMap, isEmpty, keys, map, values } from 'lodash';
 import { backupUserDataIntoCloud } from '../handlers/cloudBackup';
 import { saveKeychainIntegrityState } from '../handlers/localstorage/globalSettings';
 import {
@@ -54,7 +54,7 @@ export const walletsLoadState = () => async (dispatch, getState) => {
     if (isEmpty(wallets)) return;
     const selected = await getSelectedWallet();
     // Prevent irrecoverable state (no selected wallet)
-    let selectedWallet = get(selected, 'wallet', undefined);
+    let selectedWallet = selected?.wallet;
     // Check if the selected wallet is among all the wallets
     if (selectedWallet && !wallets[selectedWallet.id]) {
       // If not then we should clear it and default to the first one

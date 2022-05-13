@@ -1,4 +1,3 @@
-import { get } from 'lodash';
 import { useCallback, useMemo } from 'react';
 import Animated, { Value } from 'react-native-reanimated';
 import {
@@ -14,8 +13,8 @@ export default function useTransformOrigin(transformOrigin, onLayoutProp) {
   const onLayout = useCallback(
     event => {
       if (transformOrigin && !height && !width) {
-        height.setValue(get(event, 'nativeEvent.layout.height'));
-        width.setValue(get(event, 'nativeEvent.layout.width'));
+        height.setValue(event?.nativeEvent?.layout?.height);
+        width.setValue(event?.nativeEvent?.layout?.width);
       }
 
       if (onLayoutProp) {

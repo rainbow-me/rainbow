@@ -1,7 +1,7 @@
 import { Contract } from '@ethersproject/contracts';
 import { ChainId } from '@uniswap/sdk';
 import { BigNumber } from 'ethers';
-import { chunk, forEach, get, keys, map } from 'lodash';
+import { chunk, forEach, keys, map } from 'lodash';
 import { web3Provider } from '../handlers/web3';
 import { MULTICALL_ABI, MULTICALL_NETWORKS } from '../references/uniswap';
 import { AppDispatch, AppGetState } from './store';
@@ -121,7 +121,7 @@ const multicallUpdateResults = ({
   };
 
   forEach(keys(results), callKey => {
-    const current = get(existingResults, `[${chainId}][${callKey}]`);
+    const current = existingResults?.[chainId]?.[callKey];
     if ((current?.blockNumber ?? 0) > blockNumber) return;
     resultsForChainId[callKey] = {
       blockNumber,
@@ -156,7 +156,7 @@ function outdatedListeningKeys(
   if (!results) return listeningKeys;
 
   return listeningKeys.filter(callKey => {
-    const data = get(callResults, `${chainId}.${callKey}`);
+    const data = callResults?.[chainId]?.[callKey];
     // no data, must fetch
     if (!data) return true;
 

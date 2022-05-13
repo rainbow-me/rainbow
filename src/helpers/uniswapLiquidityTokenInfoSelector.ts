@@ -17,7 +17,7 @@ import {
   PositionsState,
   UniswapPosition,
 } from '@rainbow-me/redux/usersPositions';
-import { ETH_ADDRESS } from '@rainbow-me/references';
+import { ETH_ADDRESS, supportedNativeCurrencies } from '@rainbow-me/references';
 import {
   convertAmountToNativeDisplay,
   divide,
@@ -80,7 +80,7 @@ const switchWethToEth = (token: Token, chainId: ChainId): Token => {
 const transformPool = (
   liquidityToken: ParsedAddressAsset | undefined,
   position: UniswapPosition,
-  nativeCurrency: string,
+  nativeCurrency: keyof typeof supportedNativeCurrencies,
   chainId: ChainId
 ): UniswapPool | null => {
   if (isEmpty(position)) {
@@ -150,7 +150,7 @@ const transformPool = (
 const buildUniswapCards = (
   accountAddress: string,
   chainId: number,
-  nativeCurrency: string,
+  nativeCurrency: keyof typeof supportedNativeCurrencies,
   uniswapLiquidityTokens: ParsedAddressAsset[],
   allUniswapLiquidityPositions: PositionsState
 ): UniswapCard => {

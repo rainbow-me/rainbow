@@ -1,9 +1,8 @@
 import { format } from 'date-fns';
-import { get } from 'lodash';
 import { TransactionStatusTypes, TransactionTypes } from '@rainbow-me/entities';
 
 export const buildTransactionUniqueIdentifier = ({ hash, displayDetails }) =>
-  hash || get(displayDetails, 'timestampInMs');
+  hash || displayDetails?.timestampInMs;
 
 export const calculateTimestampOfToday = () => {
   var d = new Date();

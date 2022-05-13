@@ -1,4 +1,3 @@
-import { get } from 'lodash';
 import { AssetTypes } from '@rainbow-me/entities';
 import { imageToPng } from '@rainbow-me/handlers/imgix';
 /**
@@ -8,7 +7,7 @@ import { imageToPng } from '@rainbow-me/handlers/imgix';
  */
 
 export const parsePoaps = data => {
-  const poaps = get(data, 'data', null);
+  const poaps = data?.data ?? null;
   return poaps.map(({ event }) => {
     return {
       animation_url: event.image_url,
