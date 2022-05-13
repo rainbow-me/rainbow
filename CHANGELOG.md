@@ -12,6 +12,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.6.11](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.11)
+### Changed
+* separate pending transactions
+* i18n wrap up
+* update animations
+* sentry performance setup
+
+
 ## [1.6.10](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.10)
 ### Added
 Fedora support
