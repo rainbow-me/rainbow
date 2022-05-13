@@ -296,11 +296,24 @@ const getDataString = (func: string, arrVals: string[]) => {
   return data;
 };
 
+/**
+ * @desc get network string from asset type
+ * @param  {String} type
+ */
+const getNetworkFromType = (type: string) => {
+  return type === 'token' ? Network.mainnet : (type as Network);
+};
+
+/**
+ * @desc get chainId from asset type
+ * @param  {String} type
+ */
 const getChainIdFromType = (type: string) => {
   return getChainIdFromNetwork(
     type === 'token' ? Network.mainnet : (type as Network)
   );
 };
+
 /**
  * @desc get network string from chainId
  * @param  {Number} chainId
@@ -705,6 +718,7 @@ export default {
   getMultichainAssetAddress,
   getNativeAssetForNetwork,
   getNetworkFromChainId,
+  getNetworkFromType,
   getNetworkNameFromChainId,
   getNetworkNativeAsset,
   getPriceOfNativeAssetForNetwork,

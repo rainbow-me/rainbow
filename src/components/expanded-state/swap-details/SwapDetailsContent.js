@@ -13,6 +13,7 @@ import {
   Divider,
   Rows,
 } from '@rainbow-me/design-system';
+import { isNativeAsset } from '@rainbow-me/handlers/assets';
 import {
   useColorForAsset,
   useSwapAdjustedAmounts,
@@ -21,7 +22,7 @@ import {
 import { SwapModalField } from '@rainbow-me/redux/swap';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
-import { isETH } from '@rainbow-me/utils';
+import { ethereumUtils } from '@rainbow-me/utils';
 
 const Container = styled(Box).attrs({
   flex: 1,
@@ -110,13 +111,19 @@ export default function SwapDetailsContent({
             {detailsExpanded && (
               <Rows space="24px">
                 <SwapDetailsPriceRow tradeDetails={tradeDetails} />
-                {!isETH(inputCurrency?.address) && (
+                {!isNativeAsset(
+                  inputCurrency?.address,
+                  ethereumUtils.getNetworkFromType(inputCurrency?.type)
+                ) && (
                   <SwapDetailsContractRow
                     asset={inputCurrency}
                     onCopySwapDetailsText={onCopySwapDetailsText}
                   />
                 )}
-                {!isETH(outputCurrency?.address) && (
+                {!isNativeAsset(
+                  outputCurrency?.address,
+                  ethereumUtils.getNetworkFromType(inputCurrency?.type)
+                ) && (
                   <SwapDetailsContractRow
                     asset={outputCurrency}
                     onCopySwapDetailsText={onCopySwapDetailsText}
