@@ -310,12 +310,12 @@ const getColorsByTheme = darkMode => {
     };
 
     networkColors = {
-      arbitrum: '#28A0F0',
+      arbitrum: '#ADBFE3',
       goerli: '#f6c343',
       kovan: '#7057ff',
       mainnet: buildRgba('#E0E8FF', 0.5),
-      optimism: '#FF4040',
-      polygon: '#8247E5',
+      optimism: '#FF6A6A',
+      polygon: '#A275EE',
       rinkeby: '#f6c343',
       ropsten: '#ff4a8d',
     };
