@@ -1,5 +1,4 @@
 import analytics from '@segment/analytics-react-native';
-import BigNumber from 'bignumber.js';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
@@ -121,7 +120,7 @@ const SavingsListRow = ({
       1
     );
 
-    if (!BigNumber(futureValue).eq(value)) {
+    if (futureValue.toString() !== value.toString()) {
       setValue(futureValue);
       setSteps(MS_IN_1_DAY / ANIMATE_NUMBER_INTERVAL);
     }

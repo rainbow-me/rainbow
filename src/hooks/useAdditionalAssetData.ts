@@ -25,7 +25,7 @@ export default function useAdditionalAssetData(
   );
   const { nativeCurrency } = useAccountSettings();
   const format = useCallback(
-    (value: string) =>
+    (value: string | number) =>
       bigNumberFormat(
         value,
         nativeCurrency,

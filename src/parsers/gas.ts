@@ -1,4 +1,4 @@
-import BigNumber from 'bignumber.js';
+import { BigNumberish, ethers } from 'ethers';
 import { map, zipObject } from 'lodash';
 import { gasUtils } from '../utils';
 import {
@@ -17,11 +17,12 @@ import {
   RainbowMeteorologyData,
   SelectedGasFee,
 } from '@rainbow-me/entities';
-import { toHex } from '@rainbow-me/handlers/web3';
+import { isHexString, toHex } from '@rainbow-me/handlers/web3';
 import { getMinimalTimeUnitStringForMs } from '@rainbow-me/helpers/time';
 import { ethUnits, timeUnits } from '@rainbow-me/references';
 import {
   add,
+  convertHexToString,
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
   divide,
@@ -30,8 +31,6 @@ import {
   multiply,
   toFixedDecimals,
 } from '@rainbow-me/utilities';
-
-type BigNumberish = number | string | BigNumber;
 
 const { CUSTOM, FAST, GasSpeedOrder, NORMAL, URGENT } = gasUtils;
 
@@ -48,8 +47,8 @@ const getBaseFeeMultiplier = (speed: string) => {
 };
 
 const parseGasDataConfirmationTime = (
-  maxBaseFee: string,
-  maxPriorityFee: string,
+  maxBaseFee: number,
+  maxPriorityFee: number,
   blocksToConfirmation: BlocksToConfirmation
 ) => {
   let blocksToWaitForPriorityFee = 0;
@@ -118,8 +117,10 @@ export const parseRainbowMeteorologyData = (
   };
 
   const parsedFees: GasFeeParamsBySpeed = {};
-  const parsedCurrentBaseFee = parseGasFeeParam(currentBaseFee);
-  const parsedBaseFeeSuggestion = parseGasFeeParam(baseFeeSuggestion);
+  const parsedCurrentBaseFee = parseGasFeeParam(parseFloat(currentBaseFee));
+  const parsedBaseFeeSuggestion = parseGasFeeParam(
+    parseFloat(baseFeeSuggestion)
+  );
 
   Object.keys(maxPriorityFeeSuggestions).forEach(speed => {
     const baseFeeMultiplier = getBaseFeeMultiplier(speed);
@@ -130,12 +131,12 @@ export const parseRainbowMeteorologyData = (
     const maxPriorityFee =
       maxPriorityFeeSuggestions[speed as keyof MaxPriorityFeeSuggestions];
     // next version of the package will send only 2 decimals
-    const cleanMaxPriorityFee = gweiToWei(
-      new BigNumber(weiToGwei(maxPriorityFee)).toFixed(2)
+    const cleanMaxPriorityFee = numberGweiToWei(
+      Number(weiToGwei(maxPriorityFee)).toFixed(2)
     );
     // clean max base fee to only parser int gwei
-    const cleanMaxBaseFee = gweiToWei(
-      new BigNumber(weiToGwei(speedMaxBaseFee)).toFixed(0)
+    const cleanMaxBaseFee = numberGweiToWei(
+      Number(weiToGwei(speedMaxBaseFee)).toFixed(2)
     );
     parsedFees[speed] = {
       estimatedTime: parseGasDataConfirmationTime(
@@ -195,7 +196,7 @@ export const defaultGasPriceFormat = (
  * @param weiAmount - Gas value in wei unit
  * @returns
  */
-export const parseGasFeeParam = (weiAmount: string): GasFeeParam => {
+export const parseGasFeeParam = (weiAmount: number): GasFeeParam => {
   return {
     amount: weiAmount,
     display: `${parseInt(weiToGwei(weiAmount), 10)} Gwei`,
@@ -213,8 +214,8 @@ export const parseGasFeeParam = (weiAmount: string): GasFeeParam => {
  */
 export const defaultGasParamsFormat = (
   option: string,
-  maxFeePerGas: string,
-  maxPriorityFeePerGas: string,
+  maxFeePerGas: number,
+  maxPriorityFeePerGas: number,
   blocksToConfirmation: BlocksToConfirmation
 ): GasFeeParams => {
   const time = parseGasDataConfirmationTime(
@@ -241,7 +242,7 @@ export const parseLegacyGasFeesBySpeed = (
   gasLimit: BigNumberish,
   priceUnit: BigNumberish,
   nativeCurrency: string,
-  l1GasFeeOptimism: BigNumber | null = null
+  l1GasFeeOptimism: BigNumberish | null = null
 ): LegacyGasFeesBySpeed => {
   const gasFeesBySpeed = map(GasSpeedOrder, speed => {
     const gasPrice = legacyGasFees?.[speed]?.gasPrice?.amount || 0;
@@ -321,9 +322,16 @@ const getTxFee = (
   gasLimit: BigNumberish,
   priceUnit: BigNumberish,
   nativeCurrency: string,
-  l1GasFeeOptimism: BigNumber | null = null
+  l1GasFeeOptimism: BigNumberish | null = null
 ) => {
-  let amount = multiply(gasPrice, gasLimit);
+  const normalizedGasLimit = isHexString(gasLimit.toString())
+    ? convertHexToString(gasLimit)
+    : gasLimit;
+
+  let amount: number = multiply(
+    gasPrice.toString(),
+    normalizedGasLimit.toString()
+  );
   if (l1GasFeeOptimism && greaterThan(l1GasFeeOptimism.toString(), '0')) {
     amount = add(amount, l1GasFeeOptimism.toString());
   }
@@ -333,7 +341,7 @@ const getTxFee = (
       value: convertRawAmountToNativeDisplay(
         amount,
         18,
-        priceUnit,
+        priceUnit.toString(),
         nativeCurrency
       ),
     },
@@ -363,11 +371,15 @@ export const parseGasParamsForTransaction = (
 };
 
 export const gweiToWei = (gweiAmount: BigNumberish) => {
-  const weiAmount = multiply(gweiAmount, ethUnits.gwei);
-  return weiAmount;
+  return ethers.utils.parseUnits(gweiAmount.toString(), 'gwei').toString();
+};
+
+export const numberGweiToWei = (gweiAmount: BigNumberish) => {
+  return ethers.utils.parseUnits(gweiAmount.toString(), 'gwei').toNumber();
 };
 
 export const weiToGwei = (weiAmount: BigNumberish) => {
-  const gweiAmount = divide(weiAmount, ethUnits.gwei);
-  return gweiAmount;
+  return Number(
+    ethers.utils.formatUnits(weiAmount.toString(), 'gwei')
+  ).toString();
 };

@@ -1,7 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
-import BigNumber from 'bignumber.js';
 import lang from 'i18n-js';
 import { isEmpty, isNil, omit, toLower } from 'lodash';
 import React, {
@@ -81,6 +80,7 @@ import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 import {
+  add,
   convertAmountToNativeDisplay,
   convertHexToString,
   fromWei,
@@ -457,6 +457,8 @@ export default function TransactionConfirmationScreen() {
   const calculateGasLimit = useCallback(async () => {
     calculatingGasLimit.current = true;
     const txPayload = params?.[0];
+    // Ignore gas price from the dapp for the initial estimation
+    delete txPayload.gasPrice;
     // use the default
     let gas = txPayload.gasLimit || txPayload.gas;
     try {
@@ -542,10 +544,12 @@ export default function TransactionConfirmationScreen() {
     }
 
     const { gasFee } = selectedGasFee;
+
     if (!gasFee.estimatedFee) {
       setIsBalanceEnough(false);
       return;
     }
+
     // Get the TX fee Amount
     const txFeeAmount = fromWei(gasFee?.maxFee?.value?.amount ?? 0);
 
@@ -557,7 +561,7 @@ export default function TransactionConfirmationScreen() {
     const value = txPayload?.value ?? 0;
 
     // Check that there's enough ETH to pay for everything!
-    const totalAmount = BigNumber(fromWei(value)).plus(txFeeAmount);
+    const totalAmount = add(fromWei(value), txFeeAmount);
     const isEnough = greaterThanOrEqualTo(balanceAmount, totalAmount);
 
     setIsBalanceEnough(isEnough);

@@ -1,0 +1,39 @@
+diff --git a/node_modules/@ethersproject/bignumber/lib.esm/bignumber.js b/node_modules/@ethersproject/bignumber/lib.esm/bignumber.js
+index 73b0c08..f396c58 100644
+--- a/node_modules/@ethersproject/bignumber/lib.esm/bignumber.js
++++ b/node_modules/@ethersproject/bignumber/lib.esm/bignumber.js
+@@ -6,7 +6,7 @@
+  *  because it is used by elliptic, so it is required regardless.
+  *
+  */
+-import _BN from "bn.js";
++import _BN from "react-native-bignumber";
+ var BN = _BN.BN;
+ import { hexlify, isBytes, isHexString } from "@ethersproject/bytes";
+ import { Logger } from "@ethersproject/logger";
+diff --git a/node_modules/@ethersproject/bignumber/lib/bignumber.js b/node_modules/@ethersproject/bignumber/lib/bignumber.js
+index 8ad6b35..f9a5894 100644
+--- a/node_modules/@ethersproject/bignumber/lib/bignumber.js
++++ b/node_modules/@ethersproject/bignumber/lib/bignumber.js
+@@ -11,7 +11,7 @@ exports._base16To36 = exports._base36To16 = exports.BigNumber = exports.isBigNum
+  *  because it is used by elliptic, so it is required regardless.
+  *
+  */
+-var bn_js_1 = __importDefault(require("bn.js"));
++var bn_js_1 = __importDefault(require("react-native-bignumber"));
+ var BN = bn_js_1.default.BN;
+ var bytes_1 = require("@ethersproject/bytes");
+ var logger_1 = require("@ethersproject/logger");
+diff --git a/node_modules/@ethersproject/bignumber/src.ts/bignumber.ts b/node_modules/@ethersproject/bignumber/src.ts/bignumber.ts
+index 1255f92..94fc92b 100644
+--- a/node_modules/@ethersproject/bignumber/src.ts/bignumber.ts
++++ b/node_modules/@ethersproject/bignumber/src.ts/bignumber.ts
+@@ -8,7 +8,7 @@
+  *
+  */
+ 
+-import _BN from "bn.js";
++import _BN from "react-native-bignumber";
+ import BN = _BN.BN;
+ 
+ import { Bytes, Hexable, hexlify, isBytes, isHexString } from "@ethersproject/bytes";

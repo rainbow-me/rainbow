@@ -1,3 +1,4 @@
+import { BigNumber } from 'ethers';
 import { useCallback, useMemo } from 'react';
 import { useQuery } from 'react-query';
 import { useAccountSettings } from '.';
@@ -8,7 +9,7 @@ import {
   formatTotalRegistrationCost,
 } from '@rainbow-me/helpers/ens';
 import { Network } from '@rainbow-me/helpers/networkTypes';
-import { add, addDisplay, multiply } from '@rainbow-me/helpers/utilities';
+import { addDisplay, multiply } from '@rainbow-me/helpers/utilities';
 import { getEIP1559GasParams } from '@rainbow-me/redux/gas';
 import { timeUnits } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
@@ -81,10 +82,11 @@ export default function useENSRegistrationCosts({
       );
 
       if (estimatedFee) {
-        const weiEstimatedTotalCost = add(
-          estimatedFee.estimatedNetworkFee.wei,
-          estimatedRentPrice.wei.toString()
-        );
+        const weiEstimatedTotalCost = BigNumber.from(
+          estimatedFee.estimatedNetworkFee.wei
+        )
+          .add(BigNumber.from(estimatedRentPrice.wei))
+          .toString();
         const displayEstimatedTotalCost = addDisplay(
           estimatedFee.estimatedNetworkFee.display,
           estimatedRentPrice.total.display

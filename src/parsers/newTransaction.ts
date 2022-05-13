@@ -50,7 +50,7 @@ export const parseNewTransaction = async (
   if (amount && asset) {
     balance = {
       amount,
-      display: convertAmountToBalanceDisplay(amount, asset),
+      display: convertAmountToBalanceDisplay(amount, asset, 2),
     };
   }
 
@@ -59,7 +59,7 @@ export const parseNewTransaction = async (
 
   const native =
     network && isL2Network(network)
-      ? { amount: '', display: '' }
+      ? { amount: 0, display: '' }
       : convertAmountAndPriceToNativeDisplay(
           amount ?? 0,
           assetPrice,

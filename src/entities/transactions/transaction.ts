@@ -25,7 +25,7 @@ export interface RainbowTransaction {
   minedAt: number | null;
   name: string | null;
   native: {
-    amount: string;
+    amount: number;
     display: string;
   };
   network?: Network;

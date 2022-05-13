@@ -233,7 +233,7 @@ export const isHexString = (value: string): boolean => isEthersHexString(value);
 /**
  * Converts a number to a hex string.
  * @param value The number.
- * @return The hex string.
+ * @return The hex string (with 0x prefix).
  */
 export const toHex = (value: BigNumberish): string =>
   BigNumber.from(value).toHexString();
@@ -351,22 +351,25 @@ export async function estimateGasWithPadding(
 
     logger.sentry('⛽ Calculating safer gas limit for last block');
     // 3 - If it is a contract, call the RPC method `estimateGas` with a safe value
-    const saferGasLimit = fraction(gasLimit.toString(), 19, 20);
+    const saferGasLimit = Math.ceil(
+      Number(fraction(gasLimit.toString(), 19, 20))
+    ).toString();
     logger.sentry('⛽ safer gas limit for last block is', saferGasLimit);
-
-    txPayloadToEstimate[contractCallEstimateGas ? 'gasLimit' : 'gas'] = toHex(
-      saferGasLimit
-    );
+    const saferGasLimitHex = toHex(saferGasLimit);
+    txPayloadToEstimate[
+      contractCallEstimateGas ? 'gasLimit' : 'gas'
+    ] = saferGasLimitHex;
 
     const estimatedGas = await (contractCallEstimateGas
       ? contractCallEstimateGas(...(callArguments ?? []), txPayloadToEstimate)
       : p.estimateGas(txPayloadToEstimate));
 
     const lastBlockGasLimit = addBuffer(gasLimit.toString(), 0.9);
-    const paddedGas = addBuffer(
-      estimatedGas.toString(),
-      paddingFactor.toString()
-    );
+
+    const paddedGas = Math.ceil(
+      parseFloat(addBuffer(estimatedGas.toString(), paddingFactor.toString()))
+    ).toString();
+
     logger.sentry('⛽ GAS CALCULATIONS!', {
       estimatedGas: estimatedGas.toString(),
       gasLimit: gasLimit.toString(),
