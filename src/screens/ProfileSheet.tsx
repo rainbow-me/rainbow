@@ -75,7 +75,10 @@ export default function ProfileSheet() {
               <PlaceholderList />
             </Stack>
           ) : (
-            <RecyclerAssetList2 address={profileAddress} type="ens-profile" />
+            <RecyclerAssetList2
+              externalAddress={profileAddress}
+              type="ens-profile"
+            />
           )}
         </Box>
       </Box>

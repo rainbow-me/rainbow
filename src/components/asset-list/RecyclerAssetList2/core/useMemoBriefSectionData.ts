@@ -26,13 +26,13 @@ const FILTER_TYPES = {
 } as { [key in AssetListType]: CellType[] };
 
 export default function useMemoBriefSectionData({
-  address,
+  externalAddress,
   type,
-}: { address?: string; type?: AssetListType } = {}) {
-  const { briefSectionsData }: { briefSectionsData: any[] } = address
-    ? // `address` is a static prop, so hooks will always execute in order.
+}: { externalAddress?: string; type?: AssetListType } = {}) {
+  const { briefSectionsData }: { briefSectionsData: any[] } = externalAddress
+    ? // `externalAddress` is a static prop, so hooks will always execute in order.
       // eslint-disable-next-line react-hooks/rules-of-hooks
-      useExternalWalletSectionsData({ address })
+      useExternalWalletSectionsData({ address: externalAddress })
     : // eslint-disable-next-line react-hooks/rules-of-hooks
       useWalletSectionsData();
   const { isSmallBalancesOpen, stagger } = useOpenSmallBalances();
