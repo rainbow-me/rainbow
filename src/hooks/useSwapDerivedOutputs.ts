@@ -46,10 +46,15 @@ const getOutputAmount = (
     convertNumberToString(inputAmount),
     inputToken.decimals
   );
-  const amountIn = new TokenAmount(inputToken, rawInputAmount);
-  const tradeDetails = Trade.bestTradeExactIn(allPairs, amountIn, outputToken, {
-    maxNumResults: 1,
-  })[0];
+  let tradeDetails = null;
+  try {
+    const amountIn = new TokenAmount(inputToken, rawInputAmount);
+    tradeDetails = Trade.bestTradeExactIn(allPairs, amountIn, outputToken, {
+      maxNumResults: 1,
+    })[0];
+  } catch (err) {
+    // user trying to convert a currency with more decimal places than that currency can be split
+  }
   const outputAmount = tradeDetails?.outputAmount?.toFixed() ?? null;
   const outputAmountDisplay =
     outputAmount && outputPrice
@@ -59,7 +64,7 @@ const getOutputAmount = (
       : null;
   return {
     outputAmount,
-    outputAmountDisplay,
+    outputAmountDisplay: outputAmountDisplay ?? null,
     tradeDetails,
   };
 };
@@ -185,15 +190,19 @@ export default function useSwapDerivedOutputs() {
           convertNumberToString(independentValue),
           outputToken.decimals
         );
-        const amountOut = new TokenAmount(outputToken, outputRawAmount);
-        tradeDetails = Trade.bestTradeExactOut(
-          allPairs,
-          inputToken,
-          amountOut,
-          {
-            maxNumResults: 1,
-          }
-        )[0];
+        try {
+          const amountOut = new TokenAmount(outputToken, outputRawAmount);
+          tradeDetails = Trade.bestTradeExactOut(
+            allPairs,
+            inputToken,
+            amountOut,
+            {
+              maxNumResults: 1,
+            }
+          )[0];
+        } catch (e) {
+          // user trying to convert a currency with more decimal places than that currency can be split
+        }
       }
 
       const inputAmountExact = tradeDetails?.inputAmount?.toExact() ?? null;
