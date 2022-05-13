@@ -7,7 +7,7 @@ import { UniqueAsset } from '@rainbow-me/entities';
 
 export const RecyclerAssetListContext = React.createContext<{
   additionalData: Record<string, CellTypes>;
-  address?: string;
+  externalAddress?: string;
   onPressUniqueToken?: (asset: UniqueAsset) => void;
 }>({ additionalData: {}, onPressUniqueToken: undefined });
 
@@ -16,12 +16,12 @@ export const RecyclerAssetListScrollPositionContext = React.createContext<
 >(undefined);
 
 export function useAdditionalRecyclerAssetListData(uid: string) {
-  const { additionalData, address, onPressUniqueToken } = useContext(
+  const { additionalData, externalAddress, onPressUniqueToken } = useContext(
     RecyclerAssetListContext
   );
   return useDeepCompareMemo(
-    () => ({ ...additionalData[uid], address, onPressUniqueToken }),
-    [additionalData[uid], address, onPressUniqueToken]
+    () => ({ ...additionalData[uid], externalAddress, onPressUniqueToken }),
+    [additionalData[uid], externalAddress, onPressUniqueToken]
   );
 }
 

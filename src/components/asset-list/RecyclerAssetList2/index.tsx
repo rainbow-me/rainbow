@@ -12,22 +12,23 @@ import useMemoBriefSectionData from './core/useMemoBriefSectionData';
 export type AssetListType = 'wallet' | 'ens-profile' | 'select-nft';
 
 function RecyclerAssetList({
-  address,
+  externalAddress,
   type = 'wallet',
 }: {
-  address?: string;
+  /** An "external address" is an address that is not the current account address. */
+  externalAddress?: string;
   type?: AssetListType;
 }) {
   const {
     memoizedResult: briefSectionsData,
     additionalData,
-  } = useMemoBriefSectionData({ address, type });
+  } = useMemoBriefSectionData({ externalAddress, type });
 
   const position = useMemoOne(() => new RNAnimated.Value(0), []);
 
-  const value = useMemo(() => ({ additionalData, address }), [
+  const value = useMemo(() => ({ additionalData, externalAddress }), [
     additionalData,
-    address,
+    externalAddress,
   ]);
 
   return (

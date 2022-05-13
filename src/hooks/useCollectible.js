@@ -18,13 +18,18 @@ export default function useCollectible(
   const { accountAddress } = useAccountSettings();
   // Retrieve the unique tokens belonging to the targeted asset list account
   // (e.g. viewing another persons ENS profile via `ProfileSheet`)
-  // "External" unique tokens are tokens that belong to another address.
-  const { address } = useAdditionalRecyclerAssetListData(0);
+  // "External" unique tokens are tokens that belong to another address (not the current account address).
+  const { externalAddress } = useAdditionalRecyclerAssetListData(0);
   const queryClient = useQueryClient();
   const externalUniqueTokens = useMemo(() => {
-    return queryClient.getQueryData(uniqueTokensQueryKey({ address })) || [];
-  }, [queryClient, address]);
-  const isExternal = Boolean(address) && address !== accountAddress;
+    return (
+      queryClient.getQueryData(
+        uniqueTokensQueryKey({ address: externalAddress })
+      ) || []
+    );
+  }, [queryClient, externalAddress]);
+  const isExternal =
+    Boolean(externalAddress) && externalAddress !== accountAddress;
   // Use the appropriate tokens based on if the user is viewing the
   // current accounts tokens, or external tokens (e.g. ProfileSheet)
   const uniqueTokens = useMemo(

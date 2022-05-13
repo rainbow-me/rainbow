@@ -110,7 +110,10 @@ export default function ProfileSheet() {
                 <PlaceholderList />
               </Stack>
             ) : !params.isPreview ? (
-              <RecyclerAssetList2 address={profileAddress} type="ens-profile" />
+              <RecyclerAssetList2
+                externalAddress={profileAddress}
+                type="ens-profile"
+              />
             ) : (
               <ProfileSheetHeader ensName={params?.ensName} isPreview />
             )}
