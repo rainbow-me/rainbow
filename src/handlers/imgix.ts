@@ -8,8 +8,19 @@ import {
   IMGIX_TOKEN as secureURLToken,
 } from 'react-native-dotenv';
 import { Source } from 'react-native-fast-image';
+import { MMKV } from 'react-native-mmkv';
 import parse from 'url-parse';
+import { STORAGE_IDS } from '@rainbow-me/model/mmkv';
 import logger from 'logger';
+
+export const imgixCacheStorage = new MMKV({
+  id: STORAGE_IDS.IMGIX_CACHE,
+});
+
+const ATTRIBUTES = {
+  KEYS: 'keys',
+  VALUES: 'values',
+};
 
 const shouldCreateImgixClient = (): ImgixClient | null => {
   if (
@@ -39,8 +50,64 @@ const staticImgixClient = shouldCreateImgixClient();
 // TODO: We need to find a suitable upper limit.
 //       This might be conditional based upon either the runtime
 //       hardware or the number of unique tokens a user may have.
-const capacity = 512;
-export const staticSignatureLRU = new LRUCache<string, string>(capacity);
+const capacity = 1024;
+export let staticSignatureLRU: LRUCache<string, string> = new LRUCache(
+  capacity
+);
+
+const maybeReadCacheFromMemory = async (): Promise<
+  LRUCache<string, string>
+> => {
+  try {
+    const cache = new LRUCache<string, string>(capacity);
+    const keys = imgixCacheStorage.getString(ATTRIBUTES.KEYS)?.split(',') ?? [];
+    const values =
+      imgixCacheStorage.getString(ATTRIBUTES.VALUES)?.split(',') ?? [];
+
+    for (let i = 0; i < keys.length; i++) {
+      cache.set(keys[i], values[i]);
+    }
+
+    logger.log(`Loaded IMGIX cache.`);
+    return cache;
+  } catch (error) {
+    logger.error(error);
+    return new LRUCache<string, string>(capacity);
+  }
+};
+
+const saveToMemory = async () => {
+  try {
+    const keys = [];
+    const values = [];
+
+    const iterator = staticSignatureLRU.entries();
+    for (let i = 0; i < staticSignatureLRU.size; i++) {
+      const [key, value] = iterator.next().value;
+      keys.push(key);
+      values.push(value);
+    }
+
+    imgixCacheStorage.set(ATTRIBUTES.KEYS, keys.join(','));
+    imgixCacheStorage.set(ATTRIBUTES.VALUES, values.join(','));
+  } catch (error) {
+    logger.error(`Failed to persist IMGIX cache: ${error}`);
+  }
+};
+
+const timeout = 30_000;
+const loopSaving = async () => {
+  await saveToMemory();
+  setTimeout(loopSaving, timeout);
+};
+
+setTimeout(() => {
+  loopSaving();
+}, timeout);
+
+maybeReadCacheFromMemory().then(cache => {
+  staticSignatureLRU = cache;
+});
 
 interface ImgOptions {
   w?: number;
