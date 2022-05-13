@@ -4,6 +4,7 @@ import { BaseProvider } from '@ethersproject/providers';
 import { AvatarRequestOpts } from '..';
 import { resolveURI } from '../utils';
 import { apiGetUniqueTokenImage } from '@rainbow-me/handlers/opensea-api';
+import { getNFTByTokenId } from '@rainbow-me/handlers/simplehash';
 
 const abi = [
   'function tokenURI(uint256 tokenId) external view returns (string memory)',
@@ -42,10 +43,15 @@ export default class ERC721 {
       }
       return JSON.parse(_resolvedUri);
     }
-    const { image_url } = await apiGetUniqueTokenImage(
-      contractAddress,
-      tokenID
-    );
-    return { image: image_url };
+
+    let image;
+    try {
+      const data = await apiGetUniqueTokenImage(contractAddress, tokenID);
+      image = data.image_url;
+    } catch (error) {
+      const data = await getNFTByTokenId({ contractAddress, tokenId: tokenID });
+      image = data.previews?.image_medium_url;
+    }
+    return { image };
   }
 }
