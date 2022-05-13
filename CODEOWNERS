@@ -206,5 +206,8 @@ tsconfig.json @brunobar79 @osdnk
 # SECURITY / APP INFRA
 yarn.lock @brunobar79 @jinchung
 
-
-
+# Performance Tracking
+src/performance-tracking @jkadamczyk
+android/app/src/main/java/me/rainbow/NativeModules/RNStartTime @jkadamczyk
+ios/RNStartTime.h @jkadamczyk
+ios/RNStartTime.m @jkadamczyk
