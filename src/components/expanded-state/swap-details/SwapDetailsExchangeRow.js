@@ -19,6 +19,10 @@ import { useStepper } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { getExchangeIconUrl } from '@rainbow-me/utils';
 
+const parseExchangeName = name => {
+  return name.slice(name.indexOf('_') + 1, name.length);
+};
+
 const ExchangeIcon = ({ index = 1, icon, protocol }) => {
   const { colors } = useTheme();
   const [error, setError] = useState(false);
@@ -94,7 +98,9 @@ export default function SwapDetailsExchangeRow(props) {
   const steps = useMemo(() => {
     const sortedProtocols = protocols?.sort((a, b) => b.part - a.part);
     const defaultCase = {
-      icons: sortedProtocols.map(({ name }) => getExchangeIconUrl(name)),
+      icons: sortedProtocols.map(({ name }) =>
+        getExchangeIconUrl(parseExchangeName(name))
+      ),
       label: lang.t('expanded_state.swap_details.number_of_exchanges', {
         number: sortedProtocols?.length,
       }),
@@ -102,20 +108,22 @@ export default function SwapDetailsExchangeRow(props) {
     };
     if (sortedProtocols.length === 1) {
       const protocol = sortedProtocols[0];
+      const protocolName = parseExchangeName(protocol.name);
       return [
         {
-          icons: [getExchangeIconUrl(protocol.name)],
-          label: capitalize(protocol.name.replace('_', ' ')),
-          name: protocol.name,
+          icons: [getExchangeIconUrl(protocolName)],
+          label: capitalize(protocolName.replace('_', ' ')),
+          name: protocolName.slice('_'),
           part: convertAmountToPercentageDisplay(protocol.part),
         },
       ];
     }
     const mappedExchanges = sortedProtocols.map(protocol => {
+      const protocolName = parseExchangeName(protocol.name);
       return {
-        icons: [getExchangeIconUrl(protocol.name)],
-        label: capitalize(protocol.name.replace('_', ' ')),
-        name: protocol.name,
+        icons: [getExchangeIconUrl(protocolName)],
+        label: capitalize(protocolName.replace('_', ' ')),
+        name: protocolName,
         part: convertAmountToPercentageDisplay(protocol.part),
       };
     });
@@ -156,8 +164,8 @@ export default function SwapDetailsExchangeRow(props) {
         <Columns alignVertical="center" space="4px">
           <Column width="content">
             <ExchangeIcon
-              icon={getExchangeIconUrl(protocols[0].name)}
-              protocol={protocols[0].name}
+              icon={getExchangeIconUrl(parseExchangeName(protocols[0].name))}
+              protocol={parseExchangeName(protocols[0].name)}
             />
           </Column>
           <Column width="content">
