@@ -14,7 +14,7 @@ import { useRecyclerAssetListPosition } from './Contexts';
 import ExternalScrollViewWithRef from './ExternalScrollView';
 import RefreshControl from './RefreshControl';
 import rowRenderer from './RowRenderer';
-import { BaseCellType, RecyclerListViewRef } from './ViewTypes';
+import { BaseCellType, CellTypes, RecyclerListViewRef } from './ViewTypes';
 import getLayoutProvider from './getLayoutProvider';
 import useLayoutItemAnimator from './useLayoutItemAnimator';
 import { useCoinListEdited, useCoinListEditOptions } from '@rainbow-me/hooks';
@@ -33,12 +33,15 @@ export type ExtendedState = {
   hiddenCoins: string[];
   pinnedCoins: string[];
   toggleSelectedCoin: (id: string) => void;
+  additionalData: Record<string, CellTypes>;
 };
 
 const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   briefSectionsData,
+  additionalData,
 }: {
   briefSectionsData: BaseCellType[];
+  additionalData: Record<string, CellTypes>;
 }) {
   const currentDataProvider = useMemoOne(
     () => dataProvider.cloneWithRows(briefSectionsData),
@@ -105,6 +108,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
 
   const extendedState = useMemo<ExtendedState>(() => {
     return {
+      additionalData,
       hiddenCoins,
       isCoinListEdited,
       nativeCurrency,
@@ -125,6 +129,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
     toggleSelectedCoin,
     isCoinListEdited,
     setIsCoinListEdited,
+    additionalData,
   ]);
 
   return (
