@@ -1,17 +1,43 @@
 import currency from 'currency.js';
 import { BigNumber, BigNumberish, ethers, FixedNumber } from 'ethers';
-import { isNil } from 'lodash';
+import { isNil, isNumber, isString } from 'lodash';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 
 const stringify = (value: BigNumberish) => {
   return value.toString();
 };
 
+function cacheBigNumberFn(fn: any, bigNumbers: boolean[]) {
+  if (!fn.__cache) {
+    fn.__cache = {};
+  }
+
+  return function cached(...args: any[]) {
+    const shouldCache = bigNumbers.every((item, index) => {
+      return item && (isNumber(args[index]) || isString(args[index]));
+    });
+
+    if (!shouldCache) {
+      return fn(...args);
+    } else {
+      const key = args.join('-');
+
+      if (!fn.__cache[key]) {
+        fn.__cache[key] = fn(...args);
+      }
+
+      return fn.__cache[key];
+    }
+  };
+}
+
 type BigNumberish = number | string | BigNumber;
 type nativeCurrencyType = typeof supportedNativeCurrencies;
 
-export const abs = (value: BigNumberish): string =>
-  new BigNumber(value).abs().toFixed();
+export const abs = cacheBigNumberFn(
+  (value: BigNumberish): string => new BigNumber(value).abs().toFixed(),
+  [true]
+);
 
 export const add = (
   numberOne: BigNumberish,
@@ -131,8 +157,11 @@ export const isEqual = (
   );
 };
 
-export const mod = (numberOne: BigNumberish, numberTwo: BigNumberish): string =>
-  stringify(BigNumber.from(numberOne).mod(BigNumber.from(numberTwo)));
+export const mod = cacheBigNumberFn(
+  (numberOne: BigNumberish, numberTwo: BigNumberish): string =>
+    stringify(BigNumber.from(numberOne).mod(BigNumber.from(numberTwo))),
+  [true, true]
+);
 
 /**
  * @desc count value's number of decimals places
@@ -183,8 +212,10 @@ export const formatInputDecimals = (
  * @param  {String} hex
  * @return {String}
  */
-export const convertHexToString = (hex: BigNumberish): string =>
-  stringify(BigNumber.from(hex.toString()));
+export const convertHexToString = cacheBigNumberFn(
+  (hex: BigNumberish): string => stringify(BigNumber.from(hex.toString())),
+  [true]
+);
 
 /**
  * Converts a string to a hex string.
@@ -212,22 +243,25 @@ export const addBuffer = (
   buffer: BigNumberish = '1.2'
 ): string => stringify(multiply(numberOne, buffer));
 
-export const fraction = (
-  target: BigNumberish,
-  numerator: BigNumberish,
-  denominator: BigNumberish
-): string => {
-  if (!target || !numerator || !denominator) return '0';
+export const fraction = cacheBigNumberFn(
+  (
+    target: BigNumberish,
+    numerator: BigNumberish,
+    denominator: BigNumberish
+  ): string => {
+    if (!target || !numerator || !denominator) return '0';
 
-  const targetFixedNum = FixedNumber.from(target.toString());
-  const numeratorFixedNum = FixedNumber.from(numerator.toString());
-  const denominatorFixedNum = FixedNumber.from(denominator.toString());
+    const targetFixedNum = FixedNumber.from(target.toString());
+    const numeratorFixedNum = FixedNumber.from(numerator.toString());
+    const denominatorFixedNum = FixedNumber.from(denominator.toString());
 
-  return targetFixedNum
-    .mulUnsafe(numeratorFixedNum)
-    .divUnsafe(denominatorFixedNum)
-    .toString();
-};
+    return targetFixedNum
+      .mulUnsafe(numeratorFixedNum)
+      .divUnsafe(denominatorFixedNum)
+      .toString();
+  },
+  [true, true, true]
+);
 
 /**
  * @desc convert to asset amount units from native price value units
@@ -236,18 +270,21 @@ export const fraction = (
  * @param  {Number}   priceUnit
  * @return {String}
  */
-export const convertAmountFromNativeValue = (
-  value: BigNumberish,
-  priceUnit: BigNumberish | null,
-  decimals: number = 18
-): string => {
-  if (isNil(priceUnit) || isZero(priceUnit)) return '0';
-  return FixedNumber.from(value.toString())
-    .divUnsafe(FixedNumber.from(priceUnit.toString()))
-    .round(decimals)
-    .toUnsafeFloat()
-    .toString();
-};
+export const convertAmountFromNativeValue = cacheBigNumberFn(
+  (
+    value: BigNumberish,
+    priceUnit: BigNumberish | null,
+    decimals: number = 18
+  ): string => {
+    if (isNil(priceUnit) || isZero(priceUnit)) return '0';
+    return FixedNumber.from(value.toString())
+      .divUnsafe(FixedNumber.from(priceUnit.toString()))
+      .round(decimals)
+      .toUnsafeFloat()
+      .toString();
+  },
+  [true, true]
+);
 
 export const convertStringToNumber = (value: BigNumberish) =>
   parseFloat(value.toString());
