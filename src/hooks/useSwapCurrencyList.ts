@@ -43,13 +43,10 @@ const searchCurrencyList = async (
   const formattedQuery = isAddress ? addHexPrefix(query).toLowerCase() : query;
   if (typeof searchList === 'string') {
     const threshold = isAddress ? 'CASE_SENSITIVE_EQUAL' : 'CONTAINS';
-    return await tokenSearch(
-      searchList,
-      formattedQuery,
-      chainId,
-      keys,
-      threshold
-    );
+    if (chainId === MAINNET_CHAINID && !formattedQuery) {
+      return [];
+    }
+    return tokenSearch(searchList, formattedQuery, chainId, keys, threshold);
   } else {
     return filterList(searchList, formattedQuery, keys, {
       threshold: isAddress ? rankings.CASE_SENSITIVE_EQUAL : rankings.CONTAINS,
