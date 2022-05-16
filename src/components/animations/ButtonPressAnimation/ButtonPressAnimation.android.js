@@ -1,5 +1,10 @@
 import React, { createContext, useCallback, useContext, useMemo } from 'react';
-import { processColor, requireNativeComponent, View } from 'react-native';
+import {
+  processColor,
+  requireNativeComponent,
+  StyleSheet,
+  View,
+} from 'react-native';
 import { createNativeWrapper } from 'react-native-gesture-handler';
 import { PureNativeButton } from 'react-native-gesture-handler/src/components/GestureButtons';
 import Animated, {
@@ -29,6 +34,8 @@ const AnimatedRawButton = createNativeWrapper(
 const OVERFLOW_MARGIN = 5;
 
 const ScaleButtonContext = createContext(null);
+
+const transparentColor = processColor('transparent');
 
 // I managed to implement partially overflow in scale button (up to 5px),
 // but overflow is not visible beyond small boundaries. Hence, to make it reactive to touches
@@ -131,15 +138,15 @@ const ScaleButton = ({
   });
 
   return (
-    <View style={[{ overflow: 'visible' }, wrapperStyle]}>
+    <View style={[cx.overflow, wrapperStyle]}>
       <View style={{ margin: -overflowMargin }}>
         <AnimatedRawButton
           hitSlop={-overflowMargin}
           onGestureEvent={gestureHandler}
-          rippleColor={processColor('transparent')}
-          style={{ overflow: 'visible' }}
+          rippleColor={transparentColor}
+          style={cx.overflow}
         >
-          <View style={{ backgroundColor: 'transparent' }}>
+          <View style={cx.transparentBackground}>
             <View style={{ padding: overflowMargin }}>
               <Animated.View style={[sz, contentContainerStyle]}>
                 {children}
@@ -184,6 +191,10 @@ const SimpleScaleButton = ({
     [onLongPress, onLongPressEnded, onPress, shouldLongPressHoldPress]
   );
 
+  // we won't guess if there are any animated styles in there but we can
+  // not render the Animated.View if we don't use that prop at all
+  const Wrapper = contentContainerStyle ? Animated.View : View;
+
   return (
     <View
       onLayout={onLayout}
@@ -208,22 +219,20 @@ const SimpleScaleButton = ({
           isLongPress={isLongPress}
           minLongPressDuration={minLongPressDuration}
           onPress={onNativePress}
-          rippleColor={processColor('transparent')}
+          rippleColor={transparentColor}
           scaleTo={scaleTo}
           shouldLongPressHoldPress={shouldLongPressHoldPress}
-          style={{ overflow: 'visible' }}
+          style={cx.overflow}
           transformOrigin={transformOrigin}
         >
-          <View style={{ backgroundColor: 'transparent' }}>
+          <View style={cx.transparentBackground}>
             <View
               style={{
                 padding: overflowMargin,
                 paddingTop: skipTopMargin ? OVERFLOW_MARGIN : overflowMargin,
               }}
             >
-              <Animated.View style={contentContainerStyle}>
-                {children}
-              </Animated.View>
+              <Wrapper style={contentContainerStyle}>{children}</Wrapper>
             </View>
           </View>
         </ZoomableButton>
@@ -266,7 +275,7 @@ export default function ButtonPressAnimation({
 
   const ButtonElement = reanimatedButton ? ScaleButton : SimpleScaleButton;
   return disabled ? (
-    <View onLayout={onLayout} style={[{ overflow: 'visible' }, style]}>
+    <View onLayout={onLayout} style={[cx.overflow, style]}>
       {children}
     </View>
   ) : (
@@ -292,9 +301,18 @@ export default function ButtonPressAnimation({
       transformOrigin={normalizedTransformOrigin}
       wrapperStyle={wrapperStyle}
     >
-      <View pointerEvents="box-only" style={[{ overflow: 'visible' }, style]}>
+      <View pointerEvents="box-only" style={[cx.overflow, style]}>
         {children}
       </View>
     </ButtonElement>
   );
 }
+
+const cx = StyleSheet.create({
+  overflow: {
+    overflow: 'visible',
+  },
+  transparentBackground: {
+    backgroundColor: 'transparent',
+  },
+});
