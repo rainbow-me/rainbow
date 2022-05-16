@@ -34,7 +34,7 @@ export default React.memo(function FastCoinIcon({
 }: {
   address: string;
   symbol: string;
-  assetType: keyof typeof AssetType;
+  assetType: AssetType;
   theme: any;
 }) {
   const imageUrl = getUrlForTrustIconFallback(address);

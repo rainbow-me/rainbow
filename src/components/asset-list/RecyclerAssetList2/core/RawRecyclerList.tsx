@@ -6,6 +6,7 @@ import React, {
   useRef,
 } from 'react';
 import { LayoutChangeEvent } from 'react-native';
+import { SetterOrUpdater } from 'recoil';
 import { DataProvider, RecyclerListView } from 'recyclerlistview';
 import { useMemoOne } from 'use-memo-one';
 import { useTheme } from '../../../../context/ThemeContext';
@@ -33,6 +34,7 @@ export type ExtendedState = {
   hiddenCoins: string[];
   pinnedCoins: string[];
   toggleSelectedCoin: (id: string) => void;
+  setIsCoinListEdited: SetterOrUpdater<boolean>;
   additionalData: Record<string, CellTypes>;
 };
 
@@ -115,7 +117,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
       nativeCurrencySymbol,
       navigate,
       pinnedCoins,
-      setCoinListEdited: setIsCoinListEdited,
+      setIsCoinListEdited,
       theme,
       toggleSelectedCoin,
     };

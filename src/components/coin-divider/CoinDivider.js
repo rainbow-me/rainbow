@@ -18,7 +18,6 @@ import CoinDividerOpenButton from './CoinDividerOpenButton';
 import EditAction from '@rainbow-me/helpers/EditAction';
 import {
   useAccountSettings,
-  useCoinListEdited,
   useCoinListEditOptions,
   useCoinListFinishEditingOptions,
   useDimensions,
@@ -104,7 +103,7 @@ export default function CoinDivider({
   defaultToEditButton,
   extendedState,
 }) {
-  const { isCoinListEdited, setCoinListEdited } = extendedState;
+  const { isCoinListEdited, setCoinListIsEdited } = extendedState;
   const interpolation = useInterpolationRange(isCoinListEdited);
   const { nativeCurrency } = useAccountSettings();
   const dispatch = useDispatch();
@@ -141,12 +140,12 @@ export default function CoinDivider({
   ]);
 
   const handlePressEdit = useCallback(() => {
-    setCoinListEdited(prev => !prev);
+    setCoinListIsEdited(prev => !prev);
     clearSelectedCoins();
     LayoutAnimation.configureNext(
       LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
     );
-  }, [clearSelectedCoins, setCoinListEdited]);
+  }, [clearSelectedCoins, setCoinListIsEdited]);
 
   return (
     <Animated.View {...interpolation}>
