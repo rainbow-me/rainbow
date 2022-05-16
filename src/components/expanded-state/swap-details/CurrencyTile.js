@@ -83,6 +83,8 @@ export default function CurrencyTile({
       <ColumnWithMargins centered margin={15}>
         <CoinIcon
           address={mainnet_address || address}
+          badgeXPosition={-5}
+          badgeYPosition={15}
           size={50}
           symbol={symbol}
           type={assetType}
