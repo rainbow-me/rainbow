@@ -1,4 +1,5 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
+import lang from 'i18n-js';
 import React, { useEffect } from 'react';
 import { InteractionManager, Keyboard } from 'react-native';
 import { Switch } from 'react-native-gesture-handler';
@@ -109,10 +110,13 @@ export default function SwapSettingsState({ asset }) {
     slippageRef,
   ]);
 
-  const onSlippageChange = value => {
-    updateSwapSlippage(convertPercentToBips(value));
-    setSlippageValue(value);
-  };
+  const onSlippageChange = useCallback(
+    value => {
+      updateSwapSlippage(convertPercentToBips(value));
+      setSlippageValue(value);
+    },
+    [updateSwapSlippage, setSlippageValue]
+  );
 
   const updateSlippage = useCallback(
     increment => {
@@ -138,6 +142,11 @@ export default function SwapSettingsState({ asset }) {
     updateSlippage(-SLIPPAGE_INCREMENT);
   }, [updateSlippage]);
 
+  const resetToDefaults = useCallback(() => {
+    onSlippageChange(1);
+    settingsChangeFlashbotsEnabled(false);
+  }, [onSlippageChange, settingsChangeFlashbotsEnabled]);
+
   return (
     <SlackSheet
       additionalTopPadding
@@ -155,7 +164,7 @@ export default function SwapSettingsState({ asset }) {
           <Stack backgroundColor="green" space="10px">
             <Columns alignVertical="center">
               <Text size="18px" weight="bold">
-                Slippage Tolerance
+                {lang.t('exchange.slippage_tolerance')}
               </Text>
               <Column width="content">
                 <StepButtonInput
@@ -174,7 +183,7 @@ export default function SwapSettingsState({ asset }) {
             {asset?.type === 'token' && (
               <Columns alignHorizontal="justify" alignVertical="center">
                 <Text color="primary" size="18px" weight="bold">
-                  Use Flashbots
+                  {lang.t('exchange.use_flashbots')}
                 </Text>
                 <Column width="content">
                   <Switch
@@ -192,14 +201,14 @@ export default function SwapSettingsState({ asset }) {
         <Inset horizontal="24px" top="24px">
           <Columns alignHorizontal="justify">
             <Column width="content">
-              <ButtonPressAnimation>
+              <ButtonPressAnimation onPress={resetToDefaults}>
                 <Box
                   borderRadius={20}
                   style={{ borderColor: colorForAsset, borderWidth: 2 }}
                 >
                   <Inset space="8px">
                     <Text color="primary" weight="bold">
-                      Use Defaults
+                      {lang.t('exchange.use_defaults')}
                     </Text>
                   </Inset>
                 </Box>
@@ -218,7 +227,7 @@ export default function SwapSettingsState({ asset }) {
                 >
                   <Inset space="8px">
                     <Text color="primary" weight="bold">
-                      Done
+                      {lang.t('exchange.done')}
                     </Text>
                   </Inset>
                 </Box>
