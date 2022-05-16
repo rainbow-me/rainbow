@@ -44,7 +44,7 @@ enum AnotherENSEnum {
 const topPadding = android ? 29 : 19;
 
 export default function ENSIntroSheet() {
-  const { width: deviceWidth } = useDimensions();
+  const { width: deviceWidth, isSmallPhone } = useDimensions();
   const { colors } = useTheme();
   const { params } = useRoute<any>();
   const { accountAddress } = useAccountSettings();
@@ -171,11 +171,11 @@ export default function ENSIntroSheet() {
       paddingTop={{ custom: topPadding }}
       testID="ens-intro-sheet"
     >
-      <Inset top="36px">
+      <Inset top={isSmallPhone ? '15px' : '36px'}>
         <Box height="full">
           <Rows>
             <Row>
-              <Stack space={{ custom: 38 }}>
+              <Stack space={{ custom: isSmallPhone ? 30 : 38 }}>
                 <Stack alignHorizontal="center" space={{ custom: 17 }}>
                   <Heading align="center" size="34px">
                     {lang.t('profiles.intro.create_your')}
@@ -184,7 +184,7 @@ export default function ENSIntroSheet() {
                     {lang.t('profiles.intro.ens_profile')}
                   </Heading>
                 </Stack>
-                <Stack space={{ custom: 40 }}>
+                <Stack space={{ custom: isSmallPhone ? 30 : 40 }}>
                   <Bleed left="10px">
                     <IntroMarquee />
                   </Bleed>
@@ -195,7 +195,7 @@ export default function ENSIntroSheet() {
                 <Stack alignHorizontal="center">
                   <Box width={{ custom: contentWidth }}>
                     <Inset top="6px">
-                      <Stack space="36px">
+                      <Stack space={isSmallPhone ? '30px' : '36px'}>
                         <InfoRow
                           description={lang.t(
                             'profiles.intro.wallet_address_info.description'
@@ -231,7 +231,10 @@ export default function ENSIntroSheet() {
             </Row>
             <Row height="content">
               <Box paddingBottom="4px">
-                <Inset space="19px">
+                <Inset
+                  space="19px"
+                  {...(isSmallPhone ? { bottom: '8px' } : {})}
+                >
                   {isLoading && (
                     <Box alignItems="center" paddingBottom="15px">
                       {/* @ts-expect-error JavaScript component */}
