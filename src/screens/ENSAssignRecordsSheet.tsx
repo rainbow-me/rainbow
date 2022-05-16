@@ -223,7 +223,7 @@ export function ENSAssignRecordsBottomActions({
   currentRouteName,
 }: {
   visible: boolean;
-  previousRouteName: string;
+  previousRouteName?: string;
   currentRouteName: string;
 }) {
   const { navigate, goBack } = useNavigation();
