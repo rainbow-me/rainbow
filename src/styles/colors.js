@@ -1,5 +1,4 @@
 import chroma from 'chroma-js';
-import { toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import currentColors from '../context/currentColors';
 import { memoFn } from '../utils/memoFn';
@@ -47,7 +46,9 @@ const darkModeColors = {
 };
 
 const isHex = (color = '') => color.length >= 3 && color.charAt(0) === '#';
-const isRGB = memoFn((color = '') => toLower(color).substring(0, 3) === 'rgb');
+const isRGB = memoFn(
+  (color = '') => color.toLowerCase().substring(0, 3) === 'rgb'
+);
 
 const avatarBackgrounds = [
   '#FC5C54',

@@ -1,4 +1,3 @@
-import { toLower } from 'lodash';
 import { useCallback, useMemo } from 'react';
 import { Linking } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -32,7 +31,7 @@ export default () => {
         addresses: wallets[
           selectedWallet.id
         ].addresses.map((account: RainbowAccount) =>
-          toLower(account.address) === toLower(accountAddress)
+          account.address?.toLowerCase() === accountAddress?.toLowerCase()
             ? { ...account, image: null }
             : account
         ),
@@ -53,7 +52,7 @@ export default () => {
           addresses: wallets[
             selectedWallet.id
           ].addresses.map((account: RainbowAccount) =>
-            toLower(account.address) === toLower(accountAddress)
+            account.address?.toLowerCase() === accountAddress?.toLowerCase()
               ? { ...account, image: `~${image?.path.slice(stringIndex)}` }
               : account
           ),

@@ -7,7 +7,6 @@ import {
   pick,
   pickBy,
   remove,
-  toLower,
   uniq,
 } from 'lodash';
 import { CardSize } from '../components/unique-token/CardSize';
@@ -48,7 +47,8 @@ const handleAndSignImages = (
   const isSVG = isSupportedUriExtension(imageUrl, ['.svg']);
 
   const image = imageUrl || originalUrl || previewUrl;
-  const isENS = toLower(contractAddress) === toLower(ENS_NFT_CONTRACT_ADDRESS);
+  const isENS =
+    contractAddress?.toLowerCase() === ENS_NFT_CONTRACT_ADDRESS?.toLowerCase();
   const fullImage = isENS
     ? maybeSignUri(svgToPngIfNeeded(image, true))
     : isSVG
@@ -240,7 +240,7 @@ export const parseAccountUniqueTokensPolygon = async data => {
   //filter out NFTs that are not on our allow list
   remove(
     erc721s,
-    NFT => !polygonAllowList.includes(toLower(NFT.asset_contract.address))
+    NFT => !polygonAllowList.includes(NFT.asset_contract.address?.toLowerCase())
   );
 
   return erc721s;

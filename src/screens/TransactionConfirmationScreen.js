@@ -3,7 +3,7 @@ import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import BigNumber from 'bignumber.js';
 import lang from 'i18n-js';
-import { isEmpty, isNil, toLower } from 'lodash';
+import { isEmpty, isNil } from 'lodash';
 import React, {
   Fragment,
   useCallback,
@@ -676,7 +676,7 @@ export default function TransactionConfirmationScreen() {
           value: result.value.toString(),
           ...gasParams,
         };
-        if (toLower(accountAddress) === toLower(txDetails.from)) {
+        if (accountAddress?.toLowerCase() === txDetails.from?.toLowerCase()) {
           dispatch(dataAddNewTransaction(txDetails, null, false, provider));
           txSavedInCurrentWallet = true;
         }

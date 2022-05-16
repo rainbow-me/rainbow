@@ -1,6 +1,6 @@
 import { Contract } from '@ethersproject/contracts';
 import { captureException } from '@sentry/react-native';
-import { isEmpty, keyBy, map, mapValues, pickBy, toLower } from 'lodash';
+import { isEmpty, keyBy, map, mapValues, pickBy } from 'lodash';
 import isEqual from 'react-fast-compare';
 import { addressAssetsReceived, fetchAssetPricesWithCoingecko } from './data';
 // eslint-disable-next-line import/no-cycle
@@ -63,7 +63,7 @@ const fetchAssetBalances = async (tokens, address) => {
 export const optimismExplorerInit = () => async (dispatch, getState) => {
   if (networkInfo[optimismNetwork]?.disabled) return;
   const { accountAddress, nativeCurrency } = getState().settings;
-  const formattedNativeCurrency = toLower(nativeCurrency);
+  const formattedNativeCurrency = nativeCurrency?.toLowerCase();
 
   const fetchAssetsBalancesAndPrices = async () => {
     const assets = keyBy(
@@ -72,7 +72,7 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
     );
 
     const tokenAddresses = map(assets, ({ asset: { asset_code } }) =>
-      toLower(asset_code)
+      asset_code?.toLowerCase()
     );
 
     const balances = await fetchAssetBalances(
@@ -84,7 +84,7 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
     let updatedAssets = assets;
     if (balances) {
       updatedAssets = mapValues(assets, assetAndQuantity => {
-        const assetCode = toLower(assetAndQuantity.asset.asset_code);
+        const assetCode = assetAndQuantity.asset.asset_code?.toLowerCase();
         return {
           asset: {
             ...assetAndQuantity.asset,
@@ -108,7 +108,7 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
 
       if (prices) {
         assetsWithBalance = mapValues(assetsWithBalance, assetWithBalance => {
-          const assetCoingeckoId = toLower(assetWithBalance.asset.coingecko_id);
+          const assetCoingeckoId = assetWithBalance.asset.coingecko_id?.toLowerCase();
           if (prices[assetCoingeckoId]) {
             return {
               ...assetWithBalance,

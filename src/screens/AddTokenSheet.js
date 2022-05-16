@@ -1,6 +1,5 @@
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
-import { toLower } from 'lodash';
 import React, { useCallback } from 'react';
 import { StatusBar } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
@@ -82,12 +81,12 @@ export default function AddTokenSheet() {
     listId => {
       if (listId === 'favorites') {
         return !!favorites?.find(
-          address => toLower(address) === toLower(item.address)
+          address => address?.toLowerCase() === item.address?.toLowerCase()
         );
       } else {
         const list = lists?.find(list => list?.id === listId);
         return !!list?.tokens?.find(
-          token => toLower(token) === toLower(item.address)
+          token => token?.toLowerCase() === item.address?.toLowerCase()
         );
       }
     },

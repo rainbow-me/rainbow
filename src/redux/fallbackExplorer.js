@@ -1,6 +1,6 @@
 import { Contract } from '@ethersproject/contracts';
 import { captureException } from '@sentry/react-native';
-import { get, isEmpty, keyBy, map, mapValues, toLower, uniqBy } from 'lodash';
+import { get, isEmpty, keyBy, map, mapValues, uniqBy } from 'lodash';
 import isEqual from 'react-fast-compare';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import { addressAssetsReceived, fetchAssetPricesWithCoingecko } from './data';
@@ -60,12 +60,13 @@ const getMainnetAssetsFromCovalent = async (
     const updatedAt = new Date(data.updated_at).getTime();
     const assets = data.items.map(item => {
       let contractAddress = item.contract_address;
-      const isETH = toLower(contractAddress) === toLower(COVALENT_ETH_ADDRESS);
+      const isETH =
+        contractAddress?.toLowerCase() === COVALENT_ETH_ADDRESS.toLowerCase();
       if (isETH) {
         contractAddress = ETH_ADDRESS;
       }
 
-      const coingeckoId = coingeckoIds[toLower(contractAddress)];
+      const coingeckoId = coingeckoIds[contractAddress?.toLowerCase()];
       let price = {
         changed_at: updatedAt,
         relative_change_24h: 0,
@@ -75,7 +76,7 @@ const getMainnetAssetsFromCovalent = async (
       // Overrides
       const fallbackAsset =
         ethereumUtils.getAccountAsset(contractAddress) ||
-        genericAssets[toLower(contractAddress)];
+        genericAssets[contractAddress?.toLowerCase()];
 
       if (fallbackAsset) {
         price = {
@@ -173,7 +174,7 @@ const getTokenType = tx => {
   if (tx.tokenSymbol === 'UNI-V1') return AssetTypes.uniswap;
   if (tx.tokenSymbol === 'UNI-V2') return AssetTypes.uniswapV2;
   if (
-    toLower(tx.tokenName).indexOf('compound') !== -1 &&
+    tx.tokenName?.toLowerCase().indexOf('compound') !== -1 &&
     tx.tokenSymbol !== 'COMP'
   )
     return AssetTypes.compound;
@@ -297,7 +298,7 @@ export const fetchOnchainBalances = ({
   const { network, accountAddress, nativeCurrency } = getState().settings;
   const { accountAssetsData, genericAssets } = getState().data;
   const { coingeckoIds } = getState().additionalAssetsData;
-  const formattedNativeCurrency = toLower(nativeCurrency);
+  const formattedNativeCurrency = nativeCurrency?.toLowerCase();
   const { mainnetAssets } = getState().fallbackExplorer;
   const chainId = ethereumUtils.getChainIdFromNetwork(network);
   const covalentMainnetAssets = await getMainnetAssetsFromCovalent(
@@ -353,7 +354,7 @@ export const fetchOnchainBalances = ({
   const tokenAddresses = map(assets, ({ asset: { asset_code } }) =>
     asset_code === ETH_ADDRESS
       ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
-      : toLower(asset_code)
+      : asset_code?.toLowerCase()
   );
 
   const balances = await fetchAssetBalances(
@@ -365,7 +366,7 @@ export const fetchOnchainBalances = ({
   let updatedAssets = assets;
   if (balances) {
     updatedAssets = mapValues(assets, assetAndQuantity => {
-      const assetCode = toLower(assetAndQuantity.asset.asset_code);
+      const assetCode = assetAndQuantity.asset.asset_code?.toLowerCase();
       return {
         asset: {
           ...assetAndQuantity.asset,
@@ -396,7 +397,7 @@ export const fetchOnchainBalances = ({
 
     if (prices) {
       updatedAssets = mapValues(updatedAssets, asset => {
-        const assetCoingeckoId = toLower(asset.asset.coingecko_id);
+        const assetCoingeckoId = asset.asset.coingecko_id?.toLowerCase();
         if (prices[assetCoingeckoId]) {
           return {
             ...asset,
