@@ -138,12 +138,12 @@ export function useCoinListFinishEditingOptions() {
         ...(currentActionNonReactive.current === EditAction.standard
           ? selectedItemsNonReactive.current!
           : []),
-      ].reduce((acc, curr) => {
+      ];
+      dispatch(reduxSetHiddenCoins(newList));
+      return newList.reduce((acc, curr) => {
         acc[curr] = true;
         return acc;
       }, {} as BooleanMap);
-      dispatch(reduxSetHiddenCoins(newList));
-      return newList;
     });
 
     setSelectedItems([]);
