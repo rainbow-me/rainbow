@@ -28,6 +28,7 @@ src/assets @skylarbarrera
 src/components @osdnk @terrysahaidak
 src/components/unique-token @jkadamczyk
 src/components/floating-emojis @jkadamczyk
+src/components/animations/ButtonPressAnimation @osdnk @terrysahaidak @jkadamczyk
 
 # APP CONFIG
 src/config @osdnk @brunobar79 @skylarbarrera
