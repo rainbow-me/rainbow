@@ -96,13 +96,8 @@ const saveToMemory = async () => {
 };
 
 const timeout = 30000;
-const loopSaving = async () => {
-  await saveToMemory();
-  setTimeout(loopSaving, timeout);
-};
-
-setTimeout(() => {
-  loopSaving();
+setInterval(() => {
+  saveToMemory();
 }, timeout);
 
 maybeReadCacheFromMemory().then(cache => {
