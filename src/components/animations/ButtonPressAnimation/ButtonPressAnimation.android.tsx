@@ -1,8 +1,29 @@
-import React, { createContext, useCallback, useContext, useMemo } from 'react';
-import { processColor, requireNativeComponent, View } from 'react-native';
-import { createNativeWrapper } from 'react-native-gesture-handler';
+/* eslint-disable react/no-unused-prop-types */
+/* 👆 Had to disable this ESLint rule it was false positive on shared Props interface */
+import React, {
+  PropsWithChildren,
+  useCallback,
+  useContext,
+  useMemo,
+} from 'react';
+import {
+  LayoutChangeEvent,
+  NativeSyntheticEvent,
+  NativeTouchEvent,
+  processColor,
+  requireNativeComponent,
+  StyleProp,
+  View,
+  ViewStyle,
+} from 'react-native';
+import {
+  createNativeWrapper,
+  NativeViewGestureHandlerGestureEvent,
+  RawButtonProps,
+} from 'react-native-gesture-handler';
 import { PureNativeButton } from 'react-native-gesture-handler/src/components/GestureButtons';
 import Animated, {
+  AnimateProps,
   Easing,
   runOnJS,
   useAnimatedGestureHandler,
@@ -12,59 +33,65 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { normalizeTransformOrigin } from './NativeButton';
+import { ScaleButtonContext } from './ScaleButtonZoomable.android';
+import { TransformOrigin } from './types';
 import { useLongPressEvents } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 
-const ZoomableRawButton = requireNativeComponent('RNZoomableButton');
+interface ZoomableButtonProps extends RawButtonProps {
+  minLongPressDuration: number;
+  scaleTo: number;
+  isLongPress?: boolean;
+  shouldLongPressHoldPress?: boolean;
+  duration: number;
+  transformOrigin?: TransformOrigin;
+  onPress: (event: NativeSyntheticEvent<NativeTouchEvent>) => void;
+  style: StyleProp<ViewStyle>;
+}
+
+const ZoomableRawButton = requireNativeComponent<
+  PropsWithChildren<ZoomableButtonProps>
+>('RNZoomableButton');
 
 const ZoomableButton = createNativeWrapper(ZoomableRawButton);
 
-const AnimatedRawButton = createNativeWrapper(
-  Animated.createAnimatedComponent(PureNativeButton),
-  {
-    shouldActivateOnStart: true,
-    shouldCancelWhenOutside: true,
-  }
-);
+const AnimatedRawButton = createNativeWrapper<
+  AnimateProps<PropsWithChildren<RawButtonProps>>
+>(Animated.createAnimatedComponent(PureNativeButton), {
+  shouldActivateOnStart: true,
+  shouldCancelWhenOutside: true,
+});
 
 const OVERFLOW_MARGIN = 5;
 
-const ScaleButtonContext = createContext(null);
-
+// @ts-expect-error Property 'View' does not exist on type...
 const Content = styled.View({
   overflow: 'visible',
 });
 
-// I managed to implement partially overflow in scale button (up to 5px),
-// but overflow is not visible beyond small boundaries. Hence, to make it reactive to touches
-// I couldn't just expend boundaries, because then it intercepts touches, so I managed to
-// extract animated component to external value
+interface OwnButtonElementProps {
+  contentContainerStyle: StyleProp<ViewStyle>;
+  duration: number;
+  minLongPressDuration: number;
+  onLongPress: () => void;
+  onPress: () => void;
+  overflowMargin: number;
+  scaleTo: number;
+  wrapperStyle: StyleProp<ViewStyle>;
+  backgroundColor: string;
+  borderRadius: number;
+  onLongPressEnded: () => void;
+  shouldLongPressHoldPress?: boolean;
+  isLongPress?: boolean;
+  onLayout: (event: LayoutChangeEvent) => void;
+  skipTopMargin?: boolean;
+  transformOrigin?: TransformOrigin;
+  testID?: string;
+}
 
-export const ScaleButtonZoomable = ({ children, style, duration = 160 }) => {
-  const scale = useSharedValue(1);
-  const scaleTraversed = useDerivedValue(() => {
-    const value = withTiming(scale.value, {
-      duration,
-      easing: Easing.bezier(0.25, 0.1, 0.25, 1),
-    });
-    return value;
-  });
-  const sz = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {
-          scale: scaleTraversed.value,
-        },
-      ],
-    };
-  });
-
-  return (
-    <ScaleButtonContext.Provider value={scale}>
-      <Animated.View style={[style, sz]}>{children}</Animated.View>
-    </ScaleButtonContext.Provider>
-  );
-};
+type ButtonElementProps = PropsWithChildren<
+  OwnButtonElementProps & Pick<RawButtonProps, 'hitSlop'>
+>;
 
 const ScaleButton = ({
   children,
@@ -76,9 +103,7 @@ const ScaleButton = ({
   overflowMargin,
   scaleTo,
   wrapperStyle,
-  onPressStart,
-  onPressCancel,
-}) => {
+}: ButtonElementProps) => {
   const parentScale = useContext(ScaleButtonContext);
   const childScale = useSharedValue(1);
   const scale = parentScale || childScale;
@@ -108,32 +133,32 @@ const ScaleButton = ({
     minLongPressDuration,
     onLongPress,
     onPress,
-    onPressCancel,
-    onPressStart,
   });
 
-  const gestureHandler = useAnimatedGestureHandler({
-    onActive: () => {
-      runOnJS(handleStartPress)();
-      if (hasScaledDown.value === 0) {
-        scale.value = scaleTo;
-      }
-      hasScaledDown.value = 1;
-    },
-    onCancel: () => {
-      scale.value = 1;
-      hasScaledDown.value = 0;
-      runOnJS(handleCancel)();
-    },
-    onEnd: () => {
-      hasScaledDown.value = 0;
-      scale.value = 1;
-      runOnJS(handlePress)();
-    },
-    onFail: () => {
-      runOnJS(handleCancel)();
-    },
-  });
+  const gestureHandler = useAnimatedGestureHandler<NativeViewGestureHandlerGestureEvent>(
+    {
+      onActive: () => {
+        runOnJS(handleStartPress)();
+        if (hasScaledDown.value === 0) {
+          scale.value = scaleTo;
+        }
+        hasScaledDown.value = 1;
+      },
+      onCancel: () => {
+        scale.value = 1;
+        hasScaledDown.value = 0;
+        runOnJS(handleCancel)();
+      },
+      onEnd: () => {
+        hasScaledDown.value = 0;
+        scale.value = 1;
+        runOnJS(handlePress)();
+      },
+      onFail: () => {
+        runOnJS(handleCancel)();
+      },
+    }
+  );
 
   return (
     <View style={[{ overflow: 'visible' }, wrapperStyle]}>
@@ -175,7 +200,7 @@ const SimpleScaleButton = ({
   skipTopMargin,
   transformOrigin,
   wrapperStyle,
-}) => {
+}: ButtonElementProps) => {
   const onNativePress = useCallback(
     ({ nativeEvent: { type } }) => {
       if (type === 'longPress') {
@@ -237,8 +262,17 @@ const SimpleScaleButton = ({
   );
 };
 
+type Props = PropsWithChildren<
+  {
+    disabled?: boolean;
+    reanimatedButton?: boolean;
+    activeOpacity?: number;
+  } & ButtonElementProps &
+    Pick<ZoomableButtonProps, 'hitSlop' | 'transformOrigin' | 'style'>
+>;
+
 export default function ButtonPressAnimation({
-  // eslint-disable-next-line no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   activeOpacity = 1, // TODO
   backgroundColor = 'transparent',
   borderRadius = 0,
@@ -253,7 +287,6 @@ export default function ButtonPressAnimation({
   onLongPressEnded,
   shouldLongPressHoldPress,
   onPress,
-  onPressStart,
   overflowMargin = OVERFLOW_MARGIN,
   reanimatedButton,
   scaleTo = 0.86,
@@ -262,8 +295,7 @@ export default function ButtonPressAnimation({
   testID,
   transformOrigin,
   wrapperStyle,
-  onPressCancel,
-}) {
+}: Props) {
   const normalizedTransformOrigin = useMemo(
     () => normalizeTransformOrigin(transformOrigin),
     [transformOrigin]
@@ -287,8 +319,6 @@ export default function ButtonPressAnimation({
       onLongPress={onLongPress}
       onLongPressEnded={onLongPressEnded}
       onPress={onPress}
-      onPressCancel={onPressCancel}
-      onPressStart={onPressStart}
       overflowMargin={overflowMargin}
       scaleTo={scaleTo}
       shouldLongPressHoldPress={shouldLongPressHoldPress}

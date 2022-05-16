@@ -1,6 +1,10 @@
-import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { createNativeWrapper, State } from 'react-native-gesture-handler';
+import React, { PropsWithChildren, useCallback, useMemo } from 'react';
+import { StyleProp, ViewProps, ViewStyle } from 'react-native';
+import {
+  createNativeWrapper,
+  RawButtonProps,
+  State,
+} from 'react-native-gesture-handler';
 import { PureNativeButton } from 'react-native-gesture-handler/src/components/GestureButtons';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, {
@@ -10,12 +14,13 @@ import Animated, {
   timing,
   Value,
 } from 'react-native-reanimated';
-import stylePropType from 'react-style-proptype';
 import { useMemoOne } from 'use-memo-one';
-import useNativeButtonAvailable from '../../../helpers/isNativeButtonAvailable';
-import { directionPropType } from '../../../utils';
 import NativeButton from './NativeButton';
+import { usePressHandler } from './helpers/usePressHandler';
+import { Direction, TransformOrigin } from './types';
+import useNativeButtonAvailable from '@rainbow-me/helpers/isNativeButtonAvailable';
 import { useInteraction, useTransformOrigin } from '@rainbow-me/hooks';
+import { HapticFeedback, HapticFeedbackType } from '@rainbow-me/utils/haptics';
 
 const {
   and,
@@ -29,7 +34,6 @@ const {
   or,
   set,
   not,
-  proc,
   startClock,
   stopClock,
 } = Animated;
@@ -42,65 +46,31 @@ const ANIMATION_STATE_2 = 2;
 const ANIMATION_STATE_3 = 3;
 
 const AnimatedRawButton = createNativeWrapper(
-  createAnimatedComponent(PureNativeButton),
+  createAnimatedComponent<PropsWithChildren<RawButtonProps & ViewProps>>(
+    PureNativeButton
+  ),
   {
     shouldActivateOnStart: true,
   }
 );
-
-function usePressHandler({
-  interactionHandle = {},
-  minLongPressDuration,
-  onLongPress,
-  onPress,
-  optionallyTriggerHaptic,
-}) {
-  const longPressHandle = useRef();
-
-  const createHandle = useCallback(() => {
-    longPressHandle.current = setTimeout(() => {
-      onLongPress();
-      longPressHandle.current = null;
-      optionallyTriggerHaptic();
-    }, minLongPressDuration);
-  }, [minLongPressDuration, onLongPress, optionallyTriggerHaptic]);
-
-  const handlePress = useCallback(() => {
-    if (onLongPress && !longPressHandle.current) return;
-    onPress && onPress();
-    optionallyTriggerHaptic();
-  }, [longPressHandle, onLongPress, onPress, optionallyTriggerHaptic]);
-
-  const removeHandle = useCallback(() => {
-    if (interactionHandle.current) {
-      clearTimeout(longPressHandle.current);
-      longPressHandle.current = null;
-    }
-  }, [interactionHandle]);
-
-  useEffect(() => () => removeHandle());
-  return [handlePress, createHandle, removeHandle];
-}
-
-const maybeProc = ios ? a => a : proc;
-
-const ButtonPressAnimationProc = maybeProc(function (
-  animationState,
-  durationVal,
-  finished,
-  frameTime,
-  gestureState,
-  onGestureEvent,
-  prevGestureState,
-  scaleValue,
-  time,
-  toValue,
-  zoomClock,
-  scaleTo,
-  onPressCall,
-  onPressStartCall,
-  onLongPressCall,
-  interactionCall
+// TODO: Leaving any because we will get rid of these Reanimated 1 code
+const ButtonPressAnimationProc = function (
+  animationState: any,
+  durationVal: any,
+  finished: any,
+  frameTime: any,
+  gestureState: any,
+  onGestureEvent: any,
+  prevGestureState: any,
+  scaleValue: any,
+  time: any,
+  toValue: any,
+  zoomClock: any,
+  scaleTo: any,
+  onPressCall: any,
+  onPressStartCall: any,
+  onLongPressCall: any,
+  interactionCall: any
 ) {
   return block([
     cond(neq(prevGestureState, gestureState), [
@@ -160,6 +130,7 @@ const ButtonPressAnimationProc = maybeProc(function (
         },
         {
           duration: durationVal,
+          // @ts-expect-error going to be fixed in Reanimated 2.8.0 whic we will merge later
           easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
           toValue,
         }
@@ -171,13 +142,14 @@ const ButtonPressAnimationProc = maybeProc(function (
     ]),
     scaleValue,
   ]);
-});
+};
 
-const ButtonPressAnimationHelperProc = maybeProc(function (
-  animationState,
-  gestureState,
-  prevGestureState,
-  zoomClock
+// TODO: Leaving any because we will get rid of these Reanimated 1 code
+const ButtonPressAnimationHelperProc = function (
+  animationState: any,
+  gestureState: any,
+  prevGestureState: any,
+  zoomClock: any
 ) {
   return block([
     cond(
@@ -189,26 +161,44 @@ const ButtonPressAnimationHelperProc = maybeProc(function (
       set(prevGestureState, UNDETERMINED)
     ),
   ]);
-});
+};
+
+interface Props {
+  activeOpacity?: number;
+  disabled: boolean;
+  duration?: number;
+  enableHapticFeedback?: boolean;
+  hapticType: HapticFeedbackType;
+  isInteraction?: boolean;
+  minLongPressDuration: number;
+  onLayout: () => void;
+  onLongPress: () => void;
+  onPress: () => void;
+  onPressStart: () => void;
+  scaleTo: number;
+  style: StyleProp<ViewStyle>;
+  transformOrigin: TransformOrigin | Direction;
+  testID?: string;
+}
 
 function ButtonPressAnimationJS({
-  activeOpacity,
+  activeOpacity = 1,
   children,
   disabled,
-  duration,
-  enableHapticFeedback,
-  hapticType,
+  duration = 160,
+  enableHapticFeedback = true,
+  hapticType = HapticFeedback.selection,
   isInteraction,
-  minLongPressDuration,
+  minLongPressDuration = 500,
   onLayout,
   onLongPress,
   onPress,
   onPressStart,
-  scaleTo,
+  scaleTo = 0.86,
   style,
   testID,
   transformOrigin,
-}) {
+}: PropsWithChildren<Props>) {
   const [createHandle, removeHandle, interactionHandle] = useInteraction();
   const {
     onLayout: measureInnerElement,
@@ -301,11 +291,12 @@ function ButtonPressAnimationJS({
           zoomClock,
           scaleTo,
           call([], handlePress),
-          call([], () => onPressStart && onPressStart()),
+          call([], () => onPressStart?.()),
           call([gestureState], ([gs]) => {
             if (!onLongPress) {
               return;
             }
+            // @ts-expect-error whatever, typing there seems off we will rewrite it anyway
             if (gs === ACTIVE) {
               createLongPressHandle();
             } else {
@@ -316,6 +307,7 @@ function ButtonPressAnimationJS({
             if (!isInteraction) {
               return;
             }
+            // @ts-expect-error whatever, typing there seems off we will rewrite it anyway
             if (gs === ACTIVE) {
               createHandle();
             } else {
@@ -360,6 +352,7 @@ function ButtonPressAnimationJS({
         onLayout={measureInnerElement}
         style={[
           style,
+          // @ts-expect-error Will be rewritten to Reanimated 2 useAnimatedStyle
           {
             opacity: scaleValue.interpolate({
               inputRange: scaleTo > 1 ? [1, scaleTo] : [scaleTo, 1],
@@ -376,55 +369,15 @@ function ButtonPressAnimationJS({
   );
 }
 
-const ButtonPressAnimation = React.forwardRef((props, ref) => {
-  const isNativeButtonAvailable = useNativeButtonAvailable();
-  const Component = isNativeButtonAvailable
-    ? NativeButton
-    : ButtonPressAnimationJS;
-  return <Component {...props} ref={ref} />;
-});
+const ButtonPressAnimation = React.forwardRef(
+  (props: PropsWithChildren<Props>, ref) => {
+    const isNativeButtonAvailable = useNativeButtonAvailable();
+    const Component = isNativeButtonAvailable
+      ? NativeButton
+      : ButtonPressAnimationJS;
+    return <Component {...props} ref={ref} />;
+  }
+);
 ButtonPressAnimation.displayName = 'ButtonPressAnimation';
 
 export default ButtonPressAnimation;
-
-ButtonPressAnimation.propTypes = {
-  activeOpacity: PropTypes.number,
-  children: PropTypes.any,
-  disabled: PropTypes.bool,
-  duration: PropTypes.number,
-  enableHapticFeedback: PropTypes.bool,
-  hapticType: PropTypes.string,
-  isInteraction: PropTypes.bool,
-  minLongPressDuration: PropTypes.number,
-  onLayout: PropTypes.func,
-  onLongPress: PropTypes.func,
-  onPress: PropTypes.func,
-  onPressStart: PropTypes.func,
-  pressOutDuration: PropTypes.number,
-  scaleTo: PropTypes.number,
-  style: stylePropType,
-  transformOrigin: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.number),
-    directionPropType,
-  ]),
-  useLateHaptic: PropTypes.bool,
-};
-
-ButtonPressAnimation.defaultProps = {
-  activeOpacity: 1,
-  duration: 160,
-  enableHapticFeedback: true,
-  hapticType: 'selection',
-  minLongPressDuration: 500,
-  scaleTo: 0.86,
-};
-
-NativeButton.defaultProps = {
-  activeOpacity: 1,
-  duration: 160,
-  enableHapticFeedback: true,
-  hapticType: 'selection',
-  minLongPressDuration: 500,
-  scaleTo: 0.86,
-  useLateHaptic: true,
-};

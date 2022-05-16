@@ -1,6 +1,6 @@
 import { UIManager } from 'react-native';
 
-const useNativeButtonAvailable = () =>
+const useNativeButtonAvailable = (): boolean =>
   !!UIManager.getViewManagerConfig('Button');
 
 export default useNativeButtonAvailable;
