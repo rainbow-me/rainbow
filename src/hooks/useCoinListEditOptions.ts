@@ -12,7 +12,7 @@ const selectedItemsAtom = atom<string[]>({
   key: 'selectedItemsAtom',
 });
 
-interface BooleanMap {
+export interface BooleanMap {
   [index: string]: boolean;
 }
 
