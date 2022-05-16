@@ -81,9 +81,7 @@ const saveToMemory = async () => {
     const keys = [];
     const values = [];
 
-    const iterator = staticSignatureLRU.entries();
-    for (let i = 0; i < staticSignatureLRU.size; i++) {
-      const [key, value] = iterator.next().value;
+    for (let [key, value] of staticSignatureLRU.entries()) {
       keys.push(key);
       values.push(value);
     }
