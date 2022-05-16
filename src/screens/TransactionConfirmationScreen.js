@@ -104,7 +104,6 @@ import {
   SIGN_TYPED_DATA_V4,
 } from '@rainbow-me/utils/signingMethods';
 import logger from 'logger';
-import { truncateText } from '@rainbow-me/utils/truncateText';
 
 const springConfig = {
   damping: 500,
@@ -1070,12 +1069,11 @@ export default function TransactionConfirmationScreen() {
                     <Text
                       align="center"
                       color="secondary80"
+                      numberOfLines={1}
                       size="18px"
                       weight="bold"
                     >
-                      {isAuthenticated
-                        ? truncateText(dappName)
-                        : formattedDappUrl}
+                      {isAuthenticated ? dappName : formattedDappUrl}
                     </Text>
                   </Row>
                 </Row>
