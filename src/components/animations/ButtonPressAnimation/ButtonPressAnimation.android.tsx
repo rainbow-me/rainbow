@@ -7,9 +7,6 @@ import React, {
   useMemo,
 } from 'react';
 import {
-  LayoutChangeEvent,
-  NativeSyntheticEvent,
-  NativeTouchEvent,
   processColor,
   requireNativeComponent,
   StyleProp,
@@ -33,24 +30,38 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { normalizeTransformOrigin } from './NativeButton';
-import { ScaleButtonContext } from './ScaleButtonZoomable.android';
-import { TransformOrigin } from './types';
+import { ScaleButtonContext } from './ScaleButtonZoomable';
+import { BaseButtonAnimationProps } from './types';
 import { useLongPressEvents } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 
-interface ZoomableButtonProps extends RawButtonProps {
-  minLongPressDuration: number;
-  scaleTo: number;
+interface BaseProps extends BaseButtonAnimationProps {
+  backgroundColor: string;
+  borderRadius: number;
+  contentContainerStyle: StyleProp<ViewStyle>;
   isLongPress?: boolean;
+  onLongPressEnded: () => void;
+  overflowMargin: number;
+  reanimatedButton?: boolean;
   shouldLongPressHoldPress?: boolean;
-  duration: number;
-  transformOrigin?: TransformOrigin;
-  onPress: (event: NativeSyntheticEvent<NativeTouchEvent>) => void;
-  style: StyleProp<ViewStyle>;
+  skipTopMargin?: boolean;
+  wrapperStyle: StyleProp<ViewStyle>;
 }
 
+type Props = PropsWithChildren<BaseProps>;
+
 const ZoomableRawButton = requireNativeComponent<
-  PropsWithChildren<ZoomableButtonProps>
+  Omit<
+    Props,
+    | 'contentContainerStyle'
+    | 'overflowMargin'
+    | 'backgroundColor'
+    | 'borderRadius'
+    | 'onLongPressEnded'
+    | 'wrapperStyle'
+    | 'onLongPress'
+  > &
+    Pick<RawButtonProps, 'rippleColor'>
 >('RNZoomableButton');
 
 const ZoomableButton = createNativeWrapper(ZoomableRawButton);
@@ -69,30 +80,6 @@ const Content = styled.View({
   overflow: 'visible',
 });
 
-interface OwnButtonElementProps {
-  contentContainerStyle: StyleProp<ViewStyle>;
-  duration: number;
-  minLongPressDuration: number;
-  onLongPress: () => void;
-  onPress: () => void;
-  overflowMargin: number;
-  scaleTo: number;
-  wrapperStyle: StyleProp<ViewStyle>;
-  backgroundColor: string;
-  borderRadius: number;
-  onLongPressEnded: () => void;
-  shouldLongPressHoldPress?: boolean;
-  isLongPress?: boolean;
-  onLayout: (event: LayoutChangeEvent) => void;
-  skipTopMargin?: boolean;
-  transformOrigin?: TransformOrigin;
-  testID?: string;
-}
-
-type ButtonElementProps = PropsWithChildren<
-  OwnButtonElementProps & Pick<RawButtonProps, 'hitSlop'>
->;
-
 const ScaleButton = ({
   children,
   contentContainerStyle,
@@ -101,9 +88,9 @@ const ScaleButton = ({
   onLongPress,
   onPress,
   overflowMargin,
-  scaleTo,
+  scaleTo = 0.86,
   wrapperStyle,
-}: ButtonElementProps) => {
+}: PropsWithChildren<Props>) => {
   const parentScale = useContext(ScaleButtonContext);
   const childScale = useSharedValue(1);
   const scale = parentScale || childScale;
@@ -200,7 +187,7 @@ const SimpleScaleButton = ({
   skipTopMargin,
   transformOrigin,
   wrapperStyle,
-}: ButtonElementProps) => {
+}: PropsWithChildren<Props>) => {
   const onNativePress = useCallback(
     ({ nativeEvent: { type } }) => {
       if (type === 'longPress') {
@@ -261,26 +248,13 @@ const SimpleScaleButton = ({
     </View>
   );
 };
-
-type Props = PropsWithChildren<
-  {
-    disabled?: boolean;
-    reanimatedButton?: boolean;
-    activeOpacity?: number;
-  } & ButtonElementProps &
-    Pick<ZoomableButtonProps, 'hitSlop' | 'transformOrigin' | 'style'>
->;
-
 export default function ButtonPressAnimation({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  activeOpacity = 1, // TODO
   backgroundColor = 'transparent',
   borderRadius = 0,
   children,
   contentContainerStyle,
   disabled,
   duration = 160,
-  hitSlop,
   minLongPressDuration = 500,
   onLayout,
   onLongPress,
@@ -312,7 +286,6 @@ export default function ButtonPressAnimation({
       borderRadius={borderRadius}
       contentContainerStyle={contentContainerStyle}
       duration={duration}
-      hitSlop={hitSlop}
       isLongPress={!!onLongPress}
       minLongPressDuration={minLongPressDuration}
       onLayout={onLayout}

@@ -1,30 +1,23 @@
 import React, { LegacyRef, useMemo } from 'react';
 import { requireNativeComponent, View, ViewStyle } from 'react-native';
-import { Direction, TransformOrigin } from './types';
+import { BaseButtonAnimationProps, TransformOrigin } from './types';
 import styled from '@rainbow-me/styled-components';
 import { HapticFeedback, HapticFeedbackType } from '@rainbow-me/utils/haptics';
 
-interface BaseNativeButtonProps {
+interface Props extends BaseButtonAnimationProps {
   compensateForTransformOrigin?: boolean;
-  disabled?: boolean;
-  duration?: number;
   enableHapticFeedback?: boolean;
   hapticType?: HapticFeedbackType;
-  minLongPressDuration?: number;
   onCancel?: () => void;
-  onLongPress?: () => void;
   onLongPressEnded?: () => void;
-  onPress?: () => void;
   onPressStart?: () => void;
   pressOutDuration?: number;
-  scaleTo?: number;
   shouldLongPressHoldPress?: boolean;
-  testID?: string;
   throttle?: boolean;
   useLateHaptic?: boolean;
 }
 
-interface SpecificRawNativeButtonProps extends BaseNativeButtonProps {
+interface SpecificRawNativeButtonProps extends Props {
   transformOrigin?: TransformOrigin;
 }
 
@@ -75,62 +68,63 @@ export function normalizeTransformOrigin(
   }
 }
 
-interface Props extends BaseNativeButtonProps {
-  transformOrigin?: TransformOrigin | Direction;
-}
+const NativeButton = React.forwardRef(
+  (
+    {
+      duration = 160,
+      hapticType = HapticFeedback.selection,
+      scaleTo = 0.86,
+      useLateHaptic = true,
+      minLongPressDuration = 500,
+      enableHapticFeedback = true,
+      compensateForTransformOrigin,
+      transformOrigin,
+      testID,
+      ...props
+    }: Props,
+    ref
+  ) => {
+    const normalizedTransformOrigin = useMemo(
+      () => normalizeTransformOrigin(transformOrigin),
+      [transformOrigin]
+    );
 
-const NativeButton = (
-  {
-    duration = 160,
-    hapticType = HapticFeedback.selection,
-    scaleTo = 0.86,
-    useLateHaptic = true,
-    minLongPressDuration = 500,
-    enableHapticFeedback = true,
-    compensateForTransformOrigin,
-    transformOrigin,
-    testID,
-    ...props
-  }: Props,
-  ref: LegacyRef<any>
-) => {
-  const normalizedTransformOrigin = useMemo(
-    () => normalizeTransformOrigin(transformOrigin),
-    [transformOrigin]
-  );
-
-  return compensateForTransformOrigin ? (
-    <View>
-      {/*
+    return compensateForTransformOrigin ? (
+      <View>
+        {/*
         👆️ This wrapper View is necessary.
         In order to compensate for the way our NativeButton's transformOrigin effects layout/positioning,
         we set the NativeButton's left / top values relative to this wrapper View.
       */}
-      <ButtonWithTransformOrigin
+        <ButtonWithTransformOrigin
+          {...props}
+          duration={duration}
+          enableHapticFeedback={enableHapticFeedback}
+          hapticType={hapticType}
+          minLongPressDuration={minLongPressDuration}
+          ref={ref}
+          scaleTo={scaleTo}
+          testID={testID}
+          transformOrigin={normalizedTransformOrigin}
+          useLateHaptic={useLateHaptic}
+        />
+      </View>
+    ) : (
+      <RawNativeButton
         {...props}
         duration={duration}
         enableHapticFeedback={enableHapticFeedback}
         hapticType={hapticType}
         minLongPressDuration={minLongPressDuration}
-        ref={ref}
+        ref={ref as LegacyRef<any>}
         scaleTo={scaleTo}
         testID={testID}
-        transformOrigin={normalizedTransformOrigin}
         useLateHaptic={useLateHaptic}
       />
-    </View>
-  ) : (
-    <RawNativeButton
-      {...props}
-      duration={duration}
-      enableHapticFeedback={enableHapticFeedback}
-      hapticType={hapticType}
-      minLongPressDuration={minLongPressDuration}
-      ref={ref}
-      scaleTo={scaleTo}
-      testID={testID}
-      useLateHaptic={useLateHaptic}
-    />
-  );
-};
-export default React.forwardRef(NativeButton);
+    );
+  }
+);
+
+NativeButton.displayName = 'NativeButton';
+
+export default NativeButton;

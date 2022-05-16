@@ -1,7 +1,6 @@
 /* eslint-disable import/no-unresolved */
-// @ts-ignore
+// @ts-ignore .android and .ios exports cause errors
 import ButtonPressAnimation from './ButtonPressAnimation';
-// @ts-ignore
 import { ScaleButtonZoomable as ScaleButtonZoomableAndroid } from './ScaleButtonZoomable';
 
 export default ButtonPressAnimation;
