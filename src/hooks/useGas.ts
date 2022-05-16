@@ -7,6 +7,7 @@ import {
   GasFeeParams,
   LegacyGasFee,
   LegacyGasFeeParams,
+  ParsedAddressAsset,
 } from '@rainbow-me/entities';
 import { isL2Network } from '@rainbow-me/handlers/web3';
 import networkTypes, { Network } from '@rainbow-me/helpers/networkTypes';
@@ -28,7 +29,7 @@ import { ethereumUtils } from '@rainbow-me/utils';
 const checkSufficientGas = (
   txFee: LegacyGasFee | GasFee,
   network: Network,
-  nativeAsset?: any
+  nativeAsset?: ParsedAddressAsset
 ) => {
   const isL2 = isL2Network(network);
   const txFeeValue = isL2
