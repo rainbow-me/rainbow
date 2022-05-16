@@ -95,7 +95,7 @@ const saveToMemory = async () => {
   }
 };
 
-const timeout = 30_000;
+const timeout = 30000;
 const loopSaving = async () => {
   await saveToMemory();
   setTimeout(loopSaving, timeout);
