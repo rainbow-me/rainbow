@@ -1,5 +1,4 @@
 import { captureException } from '@sentry/react-native';
-import { toLower } from 'lodash';
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'qs'.... Remove this comment to see the full error message
 import qs from 'qs';
 import { Alert } from 'react-native';
@@ -50,17 +49,17 @@ export default async function handleDeeplink(
         const { dispatch } = store;
         // @ts-expect-error ts-migrate(2722) FIXME: Cannot invoke an object which is possibly 'undefin... Remove this comment to see the full error message
         const { addr } = qs.parse(urlObj.query?.substring(1));
-        const address = toLower(addr);
+        const address = addr?.toLowerCase();
         if (address && address.length > 0) {
           // @ts-expect-error FIXME: Property 'assets' does not exist on type...
           const { assets: allAssets, genericAssets } = store.getState().data;
           const asset =
             Object.values(genericAssets).find(
-              (asset: any) => address === toLower(asset.address)
+              (asset: any) => address === asset.address?.toLowerCase()
             ) ||
             (address !== ETH_ADDRESS &&
               allAssets.find(
-                (asset: any) => address === toLower(asset.address)
+                (asset: any) => address === asset.address?.toLowerCase()
               ));
 
           // First go back to home to dismiss any open shit

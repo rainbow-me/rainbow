@@ -2,7 +2,7 @@ import { MaxUint256 } from '@ethersproject/constants';
 import { Contract } from '@ethersproject/contracts';
 import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
-import { isNull, toLower } from 'lodash';
+import { isNull } from 'lodash';
 import { alwaysRequireApprove } from '../../config/debug';
 import { Rap, RapActionParameters, UnlockActionParameters } from '../common';
 import {
@@ -155,9 +155,7 @@ const unlock = async (
     throw e;
   }
 
-  const cacheKey = toLower(
-    `${wallet.address}|${assetAddress}|${contractAddress}`
-  );
+  const cacheKey = `${wallet.address}|${assetAddress}|${contractAddress}`.toLowerCase();
 
   // Cache the approved value
   AllowancesCache.cache[cacheKey] = MaxUint256.toString();
@@ -198,7 +196,7 @@ export const assetNeedsUnlocking = async (
   if (address === ETH_ADDRESS) return false;
   if (alwaysRequireApprove) return true;
 
-  const cacheKey = toLower(`${accountAddress}|${address}|${contractAddress}`);
+  const cacheKey = `${accountAddress}|${address}|${contractAddress}`.toLowerCase();
 
   let allowance;
   // Check on cache first

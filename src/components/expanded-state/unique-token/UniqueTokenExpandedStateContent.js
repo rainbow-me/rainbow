@@ -1,4 +1,3 @@
-import { toLower } from 'lodash';
 import React, { useMemo } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { ENS_NFT_CONTRACT_ADDRESS } from '../../../references';
@@ -37,7 +36,8 @@ const UniqueTokenExpandedStateContent = ({
   onContentBlur,
 }) => {
   const isENS =
-    toLower(asset.asset_contract.address) === toLower(ENS_NFT_CONTRACT_ADDRESS);
+    asset.asset_contract.address?.toLowerCase() ===
+    ENS_NFT_CONTRACT_ADDRESS.toLowerCase();
   const url = useMemo(() => {
     if (asset.isPoap) return asset.animation_url;
     return asset.image_url;

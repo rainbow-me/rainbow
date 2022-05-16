@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { startCase, toLower } from 'lodash';
+import { startCase } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import { Linking, View } from 'react-native';
 // @ts-expect-error Missing types
@@ -193,7 +193,8 @@ const UniqueTokenExpandedStateHeader = ({
   // @ts-expect-error image_url could be null or undefined?
   const isSVG = isSupportedUriExtension(asset.image_original_url, ['.svg']);
   const isENS =
-    toLower(asset.asset_contract.address) === toLower(ENS_NFT_CONTRACT_ADDRESS);
+    asset.asset_contract.address?.toLowerCase() ===
+    ENS_NFT_CONTRACT_ADDRESS.toLowerCase();
 
   const isPhotoDownloadAvailable = !isSVG && !isENS;
   const assetMenuConfig = useMemo(() => {

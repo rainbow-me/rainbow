@@ -1,6 +1,6 @@
 import { toChecksumAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
-import { sortBy, toLower } from 'lodash';
+import { sortBy } from 'lodash';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { SectionList } from 'react-native';
 import * as DeviceInfo from 'react-native-device-info';
@@ -92,7 +92,7 @@ export default function SendContactList({
     if (touchedContact.current && contactRefs.current[touchedContact.current]) {
       contactRefs.current[touchedContact.current].close?.();
     }
-    touchedContact.current = toLower(address);
+    touchedContact.current = address?.toLowerCase();
   }, []);
 
   const handleEditContact = useCallback(
@@ -119,7 +119,7 @@ export default function SendContactList({
           onSelectEdit={handleEditContact}
           onTouch={handleCloseAllDifferentContacts}
           ref={component => {
-            contactRefs.current[toLower(item.address)] = component;
+            contactRefs.current[item.address?.toLowerCase()] = component;
           }}
           removeContact={removeContact}
           {...item}
@@ -140,7 +140,7 @@ export default function SendContactList({
         userAccounts.filter(
           account =>
             account.visible &&
-            toLower(account.address) !== toLower(accountAddress)
+            account.address?.toLowerCase() !== accountAddress?.toLowerCase()
         ),
         currentInput,
         ['label']
@@ -155,7 +155,7 @@ export default function SendContactList({
         watchedAccounts.filter(
           account =>
             account.visible &&
-            toLower(account.address) !== toLower(accountAddress)
+            account.address?.toLowerCase() !== accountAddress?.toLowerCase()
         ),
         currentInput,
         ['label']
