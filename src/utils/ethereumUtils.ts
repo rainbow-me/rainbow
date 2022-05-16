@@ -14,7 +14,7 @@ import {
 } from 'ethereumjs-util';
 import { hdkey } from 'ethereumjs-wallet';
 import { Contract } from 'ethers';
-import { find, isEmpty, isString, replace } from 'lodash';
+import { isEmpty, isString, replace } from 'lodash';
 import {
   Alert,
   InteractionManager,
@@ -266,7 +266,7 @@ export const checkWalletEthZero = () => {
  * @param  {String} hex
  * @return {String}
  */
-const removeHexPrefix = (hex: string) => replace(hex.toLowerCase(), '0x', '');
+const removeHexPrefix = (hex: string) => replace(hex?.toLowerCase(), '0x', '');
 
 /**
  * @desc pad string to specific width and padding
@@ -299,7 +299,7 @@ const getDataString = (func: string, arrVals: string[]) => {
  * @param  {Number} chainId
  */
 const getNetworkFromChainId = (chainId: number): Network => {
-  const networkData = find(chains, ['chain_id', chainId]);
+  const networkData = chains.find(i => i?.chain_id === chainId);
   return (networkData?.network as Network) ?? Network.mainnet;
 };
 
@@ -308,7 +308,7 @@ const getNetworkFromChainId = (chainId: number): Network => {
  * @param  {Number} chainId
  */
 const getNetworkNameFromChainId = (chainId: number): string | undefined => {
-  const networkData = find(chains, ['chain_id', chainId]);
+  const networkData = chains.find(i => i?.chain_id === chainId);
   const networkName = networkInfo[networkData?.network ?? Network.mainnet].name;
   return networkName;
 };
@@ -318,7 +318,7 @@ const getNetworkNameFromChainId = (chainId: number): string | undefined => {
  * @param  {String} network
  */
 const getChainIdFromNetwork = (network: Network): number => {
-  const chainData = find(chains, ['network', network]);
+  const chainData = chains.find(i => i?.network === network);
   return chainData?.chain_id ?? 1;
 };
 

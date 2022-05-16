@@ -4,5 +4,5 @@ import { rainbowTokenList } from '@rainbow-me/references';
 export default function getTokenMetadata(
   tokenAddress: string
 ): RainbowToken | undefined {
-  return rainbowTokenList.RAINBOW_TOKEN_LIST[tokenAddress.toLowerCase()];
+  return rainbowTokenList.RAINBOW_TOKEN_LIST[tokenAddress?.toLowerCase()];
 }

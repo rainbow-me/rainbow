@@ -1,14 +1,4 @@
-import {
-  find,
-  get,
-  isEmpty,
-  isNil,
-  map,
-  pick,
-  pickBy,
-  remove,
-  uniq,
-} from 'lodash';
+import { get, isEmpty, isNil, map, pick, pickBy, remove, uniq } from 'lodash';
 import { CardSize } from '../components/unique-token/CardSize';
 import { AssetTypes } from '@rainbow-me/entities';
 import { maybeSignUri } from '@rainbow-me/handlers/imgix';
@@ -254,8 +244,7 @@ export const dedupeUniqueTokens = (newAssets, uniqueTokens) => {
   let updatedAssets = newAssets;
   if (!isEmpty(newAssets)) {
     updatedAssets = pickBy(updatedAssets, newAsset => {
-      const matchingElement = find(
-        uniqueTokenFamilies,
+      const matchingElement = uniqueTokenFamilies?.find(
         uniqueTokenFamily => uniqueTokenFamily === newAsset?.asset?.asset_code
       );
       return !matchingElement;
@@ -267,5 +256,5 @@ export const dedupeUniqueTokens = (newAssets, uniqueTokens) => {
 export const dedupeAssetsWithFamilies = (accountAssets, families) =>
   pickBy(
     accountAssets,
-    asset => !find(families, family => family === asset?.address)
+    asset => !families?.find(family => family === asset?.address)
   );

@@ -436,3 +436,10 @@ export const omitFlatten = (
 
   return originalObject;
 };
+
+export const find = (collection: [] | object, props: any) => {
+  if (Array.isArray(collection)) {
+    return collection.find(props);
+  }
+  return Object.values(collection).find(props);
+};
