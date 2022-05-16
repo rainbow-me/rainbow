@@ -1,5 +1,6 @@
 import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
+import CoinIcon from '../../../coin-icon/CoinIcon';
 import { FastChainBadge } from './FastCoinBadge';
 import EthIcon from '@rainbow-me/assets/eth-icon.png';
 import { AssetType } from '@rainbow-me/entities';
@@ -42,6 +43,12 @@ export default React.memo(function FastCoinIcon({
 
   const eth = isETH(address);
 
+  if (ios) {
+    return (
+      // @ts-ignore
+      <CoinIcon address={address} size={40} symbol={symbol} />
+    );
+  }
   return (
     <View style={cx.container}>
       <FallbackIcon
