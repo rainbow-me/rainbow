@@ -10,9 +10,29 @@ import PolygonBadgeDark from '@rainbow-me/assets/badges/polygonBadgeDark.png';
 import { AssetType } from '@rainbow-me/entities';
 
 interface FastChainBadgeProps {
-  assetType: keyof typeof AssetType;
+  assetType: AssetType;
   theme: any;
 }
+
+const AssetIconsByTheme: {
+  [key in AssetType]?: {
+    dark: StaticImageData;
+    light: StaticImageData;
+  };
+} = {
+  [AssetType.arbitrum]: {
+    dark: ArbitrumBadgeDark,
+    light: ArbitrumBadge,
+  },
+  [AssetType.optimism]: {
+    dark: OptimismBadgeDark,
+    light: OptimismBadge,
+  },
+  [AssetType.polygon]: {
+    dark: PolygonBadgeDark,
+    light: PolygonBadge,
+  },
+};
 
 export const FastChainBadge = React.memo(function FastChainBadge({
   assetType,
@@ -20,15 +40,7 @@ export const FastChainBadge = React.memo(function FastChainBadge({
 }: FastChainBadgeProps) {
   const { isDarkMode } = theme;
 
-  let source = null;
-
-  if (assetType === AssetType.arbitrum) {
-    source = isDarkMode ? ArbitrumBadgeDark : ArbitrumBadge;
-  } else if (assetType === AssetType.optimism) {
-    source = isDarkMode ? OptimismBadgeDark : OptimismBadge;
-  } else if (assetType === AssetType.polygon) {
-    source = isDarkMode ? PolygonBadgeDark : PolygonBadge;
-  }
+  const source = AssetIconsByTheme[assetType]?.[isDarkMode ? 'dark' : 'light'];
 
   if (!source) return null;
 
