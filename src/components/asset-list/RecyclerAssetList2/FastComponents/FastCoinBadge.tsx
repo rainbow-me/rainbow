@@ -34,7 +34,7 @@ export const FastChainBadge = React.memo(function FastChainBadge({
 
   const imageStyles = {
     height: 44,
-    top: 20 / 5,
+    top: 4,
     width: 44,
   };
 
