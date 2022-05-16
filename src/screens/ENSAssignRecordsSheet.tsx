@@ -47,6 +47,7 @@ import {
   accentColorAtom,
   ENS_RECORDS,
   REGISTRATION_MODES,
+  TextRecordField,
   textRecordFields,
 } from '@rainbow-me/helpers/ens';
 import {
@@ -61,12 +62,10 @@ import {
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 
-const AnimatedBox = Animated.createAnimatedComponent(Box);
-
 export const BottomActionHeight = ios ? 281 : 250;
 
 export default function ENSAssignRecordsSheet() {
-  const { params } = useRoute();
+  const { params } = useRoute<any>();
   const { colors } = useTheme();
   const { name } = useENSRegistration();
   const {
@@ -88,7 +87,7 @@ export default function ENSAssignRecordsSheet() {
         ENS_RECORDS.description,
         ENS_RECORDS.url,
         ENS_RECORDS.twitter,
-      ].map(fieldName => textRecordFields[fieldName]),
+      ].map(fieldName => textRecordFields[fieldName] as TextRecordField),
     []
   );
   const { profileQuery } = useENSRegistrationForm({
@@ -120,7 +119,7 @@ export default function ENSAssignRecordsSheet() {
     if (dominantColor || (!dominantColor && !avatarImage)) {
       setAccentColor(dominantColor || colors.purple);
     }
-  }, [avatarImage, colors.purple, dominantColor, setAccentColor]);
+  });
 
   const handleAutoFocusLayout = useCallback(
     ({
@@ -222,6 +221,10 @@ export function ENSAssignRecordsBottomActions({
   visible: defaultVisible,
   previousRouteName,
   currentRouteName,
+}: {
+  visible: boolean;
+  previousRouteName: string;
+  currentRouteName: string;
 }) {
   const { navigate, goBack } = useNavigation();
   const keyboardHeight = useKeyboardHeight();
@@ -309,7 +312,8 @@ export function ENSAssignRecordsBottomActions({
           </Inset>
         </Box>
       )}
-      <AnimatedBox
+      <Box
+        as={Animated.View}
         background="body"
         style={[animatedStyle, { position: 'absolute', width: '100%' }]}
       >
@@ -331,6 +335,7 @@ export function ENSAssignRecordsBottomActions({
                 </Inset>
               </Row>
               <Row height="content">
+                {/* @ts-expect-error JavaScript component */}
                 <SheetActionButtonRow
                   {...(android
                     ? {
@@ -360,9 +365,12 @@ export function ENSAssignRecordsBottomActions({
                       {!disabled ? (
                         <SheetActionButton
                           color={accentColor}
+                          // @ts-expect-error JavaScript component
                           label={lang.t('profiles.create.review')}
                           onPress={handlePressContinue}
+                          // @ts-expect-error JavaScript component
                           size="big"
+                          // @ts-expect-error JavaScript component
                           testID="ens-assign-records-review"
                           weight="heavy"
                         />
@@ -381,12 +389,12 @@ export function ENSAssignRecordsBottomActions({
             </Rows>
           </Box>
         </AccentColorProvider>
-      </AnimatedBox>
+      </Box>
     </>
   );
 }
 
-function HideKeyboardButton({ color }) {
+function HideKeyboardButton({ color }: { color: string }) {
   const show = useSharedValue(false);
 
   useEffect(() => {
@@ -411,7 +419,7 @@ function HideKeyboardButton({ color }) {
   });
 
   return (
-    <AnimatedBox style={style}>
+    <Box as={Animated.View} style={style}>
       <ButtonPressAnimation onPress={() => Keyboard.dismiss()} scaleTo={0.8}>
         <AccentColorProvider color={color}>
           <Box
@@ -429,7 +437,7 @@ function HideKeyboardButton({ color }) {
           </Box>
         </AccentColorProvider>
       </ButtonPressAnimation>
-    </AnimatedBox>
+    </Box>
   );
 }
 
@@ -475,6 +483,17 @@ function SelectableAttributesButtons({
   onAddField,
   onRemoveField,
   navigateToAdditionalRecords,
+}: {
+  selectedFields: TextRecordField[];
+  onAddField: (
+    fieldsToAdd: TextRecordField,
+    selectedFields: TextRecordField[]
+  ) => void;
+  onRemoveField: (
+    fieldsToRemove: TextRecordField,
+    selectedFields: TextRecordField[]
+  ) => void;
+  navigateToAdditionalRecords: () => void;
 }) {
   const dotsButtonIsSelected = useMemo(() => {
     const nonPrimaryRecordsIds = Object.values(textRecordFields)

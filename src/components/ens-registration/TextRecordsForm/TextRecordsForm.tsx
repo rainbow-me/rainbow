@@ -19,7 +19,7 @@ export default function TextRecordsForm({
   onError,
   selectionColor,
 }: {
-  autoFocusKey?: boolean;
+  autoFocusKey?: string;
   onAutoFocusLayout?: ViewProps['onLayout'];
   onFocus?: TextInputProps['onFocus'];
   onError?: ({ yOffset }: { yOffset: number }) => void;

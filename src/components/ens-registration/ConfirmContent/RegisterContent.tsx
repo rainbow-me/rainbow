@@ -23,7 +23,7 @@ const RegisterContent = ({
 }: {
   accentColor: any;
   sendReverseRecord: boolean;
-  setSendReverseRecord: React.Dispatch<React.SetStateAction<boolean>>;
+  setSendReverseRecord: React.Dispatch<React.SetStateAction<boolean>> | null;
 }) => {
   const { navigate } = useNavigation();
   const openPrimaryENSNameHelper = useCallback(() => {
