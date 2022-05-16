@@ -584,8 +584,7 @@ export const createWallet = async (
       const alreadyExistingWallet = find(
         allWallets,
         (someWallet: RainbowWallet) => {
-          return !!find(
-            someWallet.addresses,
+          return !!someWallet.addresses.find(
             account =>
               toChecksumAddress(account.address) ===
                 toChecksumAddress(walletAddress) && account.visible
@@ -735,8 +734,7 @@ export const createWallet = async (
         let discoveredAccount: RainbowAccount | undefined;
         let discoveredWalletId: RainbowWallet['id'] | undefined;
         forEach(allWallets, someWallet => {
-          const existingAccount = find(
-            someWallet.addresses,
+          const existingAccount = someWallet.addresses.find(
             account =>
               toChecksumAddress(account.address) ===
               toChecksumAddress(nextWallet.address)

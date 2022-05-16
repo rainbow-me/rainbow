@@ -1,10 +1,11 @@
-import { filter, find } from 'lodash';
 // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { IS_TESTING } from 'react-native-dotenv';
 import { triggerOnSwipeLayout } from '../navigation/onNavigationStateChange';
 import { getKeychainIntegrityState } from './localstorage/globalSettings';
+import { filter } from '@rainbow-me/helpers/utilities';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
+import { RainbowAccount, RainbowWallet } from '@rainbow-me/model/wallet';
 import { Navigation } from '@rainbow-me/navigation';
 
 import store from '@rainbow-me/redux/store';
@@ -25,10 +26,9 @@ export const runWalletBackupStatusChecks = () => {
   const { selected, wallets } = store.getState().wallets;
 
   // count how many visible, non-imported and non-readonly wallets are not backed up
-  const rainbowWalletsNotBackedUp = filter(wallets, wallet => {
-    const hasVisibleAccount = find(
-      wallet.addresses,
-      account => account.visible
+  const rainbowWalletsNotBackedUp = filter(wallets, (wallet: RainbowWallet) => {
+    const hasVisibleAccount = wallet.addresses?.find(
+      (account: RainbowAccount) => account.visible
     );
     return (
       !wallet.imported &&
@@ -41,8 +41,7 @@ export const runWalletBackupStatusChecks = () => {
   if (!rainbowWalletsNotBackedUp.length) return;
 
   logger.log('there is a rainbow wallet not backed up');
-  const hasSelectedWallet = find(
-    rainbowWalletsNotBackedUp,
+  const hasSelectedWallet = rainbowWalletsNotBackedUp.find(
     notBackedUpWallet => notBackedUpWallet.id === selected.id
   );
 

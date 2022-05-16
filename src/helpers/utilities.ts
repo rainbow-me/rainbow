@@ -443,3 +443,13 @@ export const find = (collection: [] | object, props: any) => {
   }
   return Object.values(collection).find(props);
 };
+
+export const filter = (
+  collection: [] | object,
+  callback: (props: any) => any
+) => {
+  if (Array.isArray(collection)) {
+    return collection.filter(callback);
+  }
+  return Object.values(collection).filter(callback);
+};

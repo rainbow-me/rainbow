@@ -3,8 +3,6 @@ import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { getUnixTime, startOfMinute, sub } from 'date-fns';
 import isValidDomain from 'is-valid-domain';
 import {
-  filter,
-  find,
   get,
   includes,
   isEmpty,
@@ -87,7 +85,7 @@ import {
   shitcoins,
 } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
-import { delay, isZero, multiply } from '@rainbow-me/utilities';
+import { delay, filter, isZero, multiply } from '@rainbow-me/utilities';
 import {
   ethereumUtils,
   getBlocksFromTimestamps,
@@ -861,8 +859,7 @@ const checkMeta = (message: DataMessage | undefined) => (
 const checkForConfirmedSavingsActions = (
   transactionsData: ZerionTransaction[]
 ) => (dispatch: ThunkDispatch<AppState, unknown, never>) => {
-  const foundConfirmedSavings = find(
-    transactionsData,
+  const foundConfirmedSavings = transactionsData?.find(
     (transaction: ZerionTransaction) =>
       (transaction?.type === 'deposit' || transaction?.type === 'withdraw') &&
       transaction?.status === 'confirmed'

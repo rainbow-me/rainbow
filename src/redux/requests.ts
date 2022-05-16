@@ -1,4 +1,4 @@
-import { filter, get, values } from 'lodash';
+import { get, values } from 'lodash';
 import { Dispatch } from 'redux';
 import { AppGetState } from './store';
 import { maybeSignUri } from '@rainbow-me/handlers/imgix';
@@ -227,7 +227,7 @@ export const requestsForTopic = (topic: string) => (
   getState: AppGetState
 ): RequestData[] => {
   const { requests } = getState().requests;
-  return filter(values(requests), { clientId: topic });
+  return values(requests).filter(i => i?.clientId === topic);
 };
 
 /**
