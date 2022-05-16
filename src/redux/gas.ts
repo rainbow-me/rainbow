@@ -17,8 +17,6 @@ import {
   GasFeeParamsBySpeed,
   GasFeesBySpeed,
   GasFeesPolygonGasStationData,
-  LegacyGasFee,
-  LegacyGasFeeParams,
   LegacyGasFeeParamsBySpeed,
   LegacyGasFeesBySpeed,
   LegacySelectedGasFee,
@@ -49,12 +47,7 @@ import {
   weiToGwei,
 } from '@rainbow-me/parsers';
 import { ethUnits } from '@rainbow-me/references';
-import {
-  fromWei,
-  greaterThan,
-  greaterThanOrEqualTo,
-  multiply,
-} from '@rainbow-me/utilities';
+import { multiply } from '@rainbow-me/utilities';
 import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
@@ -118,35 +111,6 @@ const GAS_PRICES_RESET = 'gas/GAS_PRICES_RESET';
 const GAS_UPDATE_TX_FEE = 'gas/GAS_UPDATE_TX_FEE';
 const GAS_UPDATE_GAS_PRICE_OPTION = 'gas/GAS_UPDATE_GAS_PRICE_OPTION';
 const GAS_UPDATE_TRANSACTION_NETWORK = 'gas/GAS_UPDATE_TRANSACTION_NETWORK';
-
-export const checkIsSufficientGas = (
-  txFee: LegacyGasFee | GasFee,
-  network: Network,
-  nativeAsset?: any
-) => {
-  const isL2 = isL2Network(network);
-  const txFeeValue = isL2
-    ? (txFee as LegacyGasFee)?.estimatedFee
-    : (txFee as GasFee)?.maxFee;
-  const networkNativeAsset =
-    nativeAsset || ethereumUtils.getNetworkNativeAsset(network);
-  const balanceAmount = networkNativeAsset?.balance?.amount || 0;
-  const txFeeAmount = fromWei(txFeeValue?.value?.amount);
-  const isSufficientGas = greaterThanOrEqualTo(balanceAmount, txFeeAmount);
-  return isSufficientGas;
-};
-
-export const checkValidGas = (
-  selectedGasParams: LegacyGasFeeParams | GasFeeParams,
-  network: Network
-) => {
-  const isL2 = isL2Network(network);
-  const gasValue = isL2
-    ? (selectedGasParams as LegacyGasFeeParams)?.gasPrice
-    : (selectedGasParams as GasFeeParams)?.maxFeePerGas;
-  const isValidGas = greaterThan(gasValue?.amount, 0);
-  return isValidGas;
-};
 
 const getSelectedGasFee = (
   gasFeeParamsBySpeed: GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed,
