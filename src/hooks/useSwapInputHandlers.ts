@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Alert } from '../components/alerts';
 import { ExchangeModalTypes } from '@rainbow-me/helpers';
 import {
+  greaterThan,
   multiply,
   subtract,
   toFixedDecimals,
@@ -43,27 +44,29 @@ export default function useSwapInputHandlers() {
           ethereumUtils.getBalanceAmount(selectedGasFee, accountAsset),
           6
         );
+        const transactionFee = subtract(oldAmount, newAmount);
+        const newAmountMinusFee = toFixedDecimals(
+          subtract(newAmount, multiply(transactionFee, 1.5)),
+          6
+        );
 
-        Alert({
-          buttons: [
-            { style: 'cancel', text: 'No thanks' },
-            {
-              onPress: () => {
-                const transactionFee = subtract(oldAmount, newAmount);
-                newAmount = toFixedDecimals(
-                  subtract(newAmount, multiply(transactionFee, 1.5)),
-                  6
-                );
-                dispatch(updateSwapInputAmount(newAmount));
+        if (greaterThan(newAmountMinusFee, 0)) {
+          Alert({
+            buttons: [
+              { style: 'cancel', text: 'No thanks' },
+              {
+                onPress: () => {
+                  dispatch(updateSwapInputAmount(newAmountMinusFee));
+                },
+                text: 'Auto adjust',
               },
-              text: 'Auto adjust',
-            },
-          ],
-          message: `You are about to swap all the ${inputCurrencyAddress.toUpperCase()} available in your wallet. If you want to swap back to ${inputCurrencyAddress.toUpperCase()}, you may not be able to afford the fee.
-    
-Would you like to auto adjust the balance to leave some ${inputCurrencyAddress.toUpperCase()}?`,
-          title: 'Are you sure?',
-        });
+            ],
+            message: `You are about to swap all the ${inputCurrencyAddress.toUpperCase()} available in your wallet. If you want to swap back to ${inputCurrencyAddress.toUpperCase()}, you may not be able to afford the fee.
+      
+  Would you like to auto adjust the balance to leave some ${inputCurrencyAddress.toUpperCase()}?`,
+            title: 'Are you sure?',
+          });
+        }
       }
       dispatch(updateSwapInputAmount(newAmount));
     }
