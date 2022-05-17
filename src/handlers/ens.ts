@@ -692,7 +692,7 @@ export const formatRecordsForTransaction = (
         case ENS_RECORDS.snapchat:
         case ENS_RECORDS.telegram:
         case ENS_RECORDS.ensDelegate:
-          Boolean(value) &&
+          (Boolean(value) || value === '') &&
             text.push({
               key,
               value: value,
@@ -702,10 +702,11 @@ export const formatRecordsForTransaction = (
         case ENS_RECORDS.BTC:
         case ENS_RECORDS.LTC:
         case ENS_RECORDS.DOGE:
-          Boolean(value) && coinAddress.push({ address: value, key });
+          (Boolean(value) || value === '') &&
+            coinAddress.push({ address: value, key });
           return;
         case ENS_RECORDS.content:
-          if (value) {
+          if (value || value === '') {
             contentHash = value;
           }
           return;
