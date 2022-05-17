@@ -167,7 +167,8 @@ export default function useENSRegistrationStepHandler(observer = true) {
     // we need to check from blocks if the time has passed or not
     const checkRegisterBlockTimestamp = async () => {
       try {
-        const block = await web3Provider.getBlock('latest');
+        const provider = await getProviderForNetwork();
+        const block = await provider.getBlock('latest');
         const msBlockTimestamp = getBlockMsTimestamp(block);
         const secs = differenceInSeconds(
           msBlockTimestamp,
