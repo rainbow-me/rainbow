@@ -46,7 +46,7 @@ export default React.memo(function FastCoinIcon({
   if (ios) {
     return (
       // @ts-ignore
-      <CoinIcon address={address} size={40} symbol={symbol} />
+      <CoinIcon address={address} size={40} symbol={symbol} type={assetType} />
     );
   }
   return (
