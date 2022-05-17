@@ -131,41 +131,75 @@ export default function useENSRegistrationActionHandler(
 
   const registerAction = useCallback(
     async (callback: () => void) => {
+      console.log('🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫 registerAction');
       const {
         name,
         duration,
       } = registrationParameters as RegistrationParameters;
 
+      console.log('🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫 about to loadWallet');
       const wallet = await loadWallet();
       if (!wallet) {
         return;
       }
+      console.log('🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫 about to Promise.all');
 
-      const [nonce, rentPrice, changedRecords] = await Promise.all([
-        getNextNonce(),
-        getRentPrice(name.replace(ENS_DOMAIN, ''), duration),
-        uploadRecordImages(registrationParameters.changedRecords, {
-          avatar: avatarMetadata,
-          cover: coverMetadata,
-        }),
-      ]);
+      let nonce;
+      let rentPrice;
+      let changedRecords;
 
+      try {
+        const results = await Promise.all([
+          getNextNonce(),
+          getRentPrice(name.replace(ENS_DOMAIN, ''), duration),
+          uploadRecordImages(registrationParameters.changedRecords, {
+            avatar: avatarMetadata,
+            cover: coverMetadata,
+          }),
+        ]);
+        nonce = results[0];
+        rentPrice = results[1];
+        changedRecords = results[2];
+      } catch (e) {
+        console.log('🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫errorr', e);
+      }
+      console.log(
+        '🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫 about to registerEnsRegistrationParameters nonce',
+        nonce
+      );
+      console.log(
+        '🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫 about to registerEnsRegistrationParameters norentPricence',
+        rentPrice
+      );
+      console.log(
+        '🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫 about to registerEnsRegistrationParameters nonce',
+        changedRecords
+      );
+      console.log(
+        '🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫 about to registerEnsRegistrationParameters'
+      );
       const registerEnsRegistrationParameters: ENSActionParameters = {
         ...formatENSActionParams(registrationParameters),
         duration,
         nonce,
         ownerAddress: accountAddress,
         records: changedRecords,
-        rentPrice: rentPrice.toString(),
+        rentPrice: rentPrice?.toString(),
         setReverseRecord: sendReverseRecord,
       };
+      console.log('🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫 about to executeRap');
 
-      await executeRap(
-        wallet,
-        RapActionTypes.registerENS,
-        registerEnsRegistrationParameters,
-        callback
-      );
+      try {
+        await executeRap(
+          wallet,
+          RapActionTypes.registerENS,
+          registerEnsRegistrationParameters,
+          callback
+        );
+      } catch (e) {
+        console.log('🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫  executeRap error', e);
+      }
+      console.log('🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫 about to executeRap out');
     },
     [
       accountAddress,
