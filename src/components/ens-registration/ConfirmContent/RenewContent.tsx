@@ -30,7 +30,7 @@ const RenewContent = ({
   );
 
   return (
-    <Inset horizontal="30px" vertical={isSmallPhone ? '12px' : '30px'}>
+    <Inset vertical={isSmallPhone ? '12px' : '30px'}>
       <Stack space={isSmallPhone ? '19px' : '30px'}>
         <Divider color="divider60" />
         <RegistrationReviewRows

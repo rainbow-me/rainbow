@@ -90,7 +90,9 @@ export default function RegisterENSNavigator() {
   const [currentRouteName, setCurrentRouteName] = useState(initialRouteName);
   const previousRouteName = usePrevious(currentRouteName);
 
-  const [wrapperHeight, setWrapperHeight] = useState<number | undefined>(contentHeight);
+  const [wrapperHeight, setWrapperHeight] = useState<number | undefined>(
+    contentHeight
+  );
 
   const screenOptions = useMemo(() => defaultScreenOptions[currentRouteName], [
     currentRouteName,

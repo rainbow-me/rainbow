@@ -2,6 +2,7 @@ import { useFocusEffect, useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
+import * as DeviceInfo from 'react-native-device-info';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { HoldToAuthorizeButton } from '../components/buttons';
 import {
@@ -32,6 +33,7 @@ import {
   REGISTRATION_STEPS,
 } from '@rainbow-me/helpers/ens';
 import {
+  useDimensions,
   useENSModifiedRegistration,
   useENSRegistration,
   useENSRegistrationActionHandler,
@@ -68,7 +70,7 @@ function TransactionActionRow({
 }) {
   const insufficientEth = isSufficientGas === false && isValidGas;
   return (
-    <Box>
+    <>
       <Box>
         {/* @ts-expect-error JavaScript component */}
         <SheetActionButtonRow paddingBottom={5}>
@@ -95,11 +97,11 @@ function TransactionActionRow({
         <GasSpeedButton
           asset={{ color: accentColor }}
           currentNetwork="mainnet"
-          marginBottom={0}
+          marginBottom={DeviceInfo.hasNotch() ? 0 : undefined}
           theme="light"
         />
       </Box>
-    </Box>
+    </>
   );
 }
 
@@ -109,6 +111,7 @@ export default function ENSConfirmRegisterSheet() {
   const {
     images: { avatarUrl: initialAvatarUrl },
   } = useENSModifiedRegistration();
+  const { isSmallPhone } = useDimensions();
 
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
   const avatarMetadata = useRecoilValue(avatarMetadataAtom);
@@ -137,7 +140,7 @@ export default function ENSConfirmRegisterSheet() {
   });
 
   const [sendReverseRecord, setSendReverseRecord] = useState(false);
-  const { step, secondsSinceCommitConfirmed } = useENSRegistrationStepHandler(
+  const { secondsSinceCommitConfirmed, step } = useENSRegistrationStepHandler(
     false
   );
   const { action } = useENSRegistrationActionHandler({
@@ -419,9 +422,16 @@ export default function ENSConfirmRegisterSheet() {
                 </Stack>
               </Box>
             </Row>
-            <Row>{stepContent[step]}</Row>
-            <Row height="content">{stepActions[step]}</Row>
+            <Row>
+              <Box
+                flexGrow={1}
+                paddingHorizontal={isSmallPhone ? '24px' : '30px'}
+              >
+                {stepContent[step]}
+              </Box>
+            </Row>
           </Rows>
+          <Box>{stepActions[step]}</Box>
         </Box>
       </AccentColorProvider>
     </SlackSheet>
