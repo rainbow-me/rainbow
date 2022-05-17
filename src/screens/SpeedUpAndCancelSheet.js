@@ -130,16 +130,17 @@ export default function SpeedUpAndCancelSheet() {
   const {
     params: { type, tx, accentColor, onSendTransactionCallback },
   } = useRoute();
+  console.log('SPEEEDUPPPPP TX', tx);
   const [ready, setReady] = useState(false);
   const [txType, setTxType] = useState();
   const [minGasPrice, setMinGasPrice] = useState(
-    calcGasParamRetryValue(tx.gasPrice)
+    calcGasParamRetryValue(tx?.gasPrice)
   );
   const [minMaxPriorityFeePerGas, setMinMaxPriorityFeePerGas] = useState(
-    calcGasParamRetryValue(tx.maxPriorityFeePerGas)
+    calcGasParamRetryValue(tx?.maxPriorityFeePerGas)
   );
   const [minMaxFeePerGas, setMinMaxFeePerGas] = useState(
-    calcGasParamRetryValue(tx.maxFeePerGas)
+    calcGasParamRetryValue(tx?.maxFeePerGas)
   );
   const fetchedTx = useRef(false);
   const [currentNetwork, setCurrentNetwork] = useState(null);

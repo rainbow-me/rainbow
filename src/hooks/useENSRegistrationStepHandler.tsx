@@ -5,8 +5,13 @@ import {
   IS_TESTING,
 } from 'react-native-dotenv';
 import { useDispatch } from 'react-redux';
+import usePrevious from './usePrevious';
 import { useAccountSettings, useENSRegistration } from '.';
-import { isHardHat, web3Provider } from '@rainbow-me/handlers/web3';
+import {
+  getProviderForNetwork,
+  isHardHat,
+  web3Provider,
+} from '@rainbow-me/handlers/web3';
 import {
   ENS_SECONDS_WAIT,
   REGISTRATION_MODES,
@@ -21,6 +26,8 @@ export default function useENSRegistrationStepHandler(observer = true) {
   const dispatch = useDispatch();
   const { accountAddress } = useAccountSettings();
   const { registrationParameters, mode } = useENSRegistration();
+  const commitTransactionHash = registrationParameters?.commitTransactionHash;
+  const prevCommitTrasactionHash = usePrevious(commitTransactionHash);
 
   const timeout = useRef<NodeJS.Timeout>();
 
@@ -36,16 +43,17 @@ export default function useENSRegistrationStepHandler(observer = true) {
       -1
   );
 
-  const isTesting = useMemo(
+  const isTestingHardhat = useMemo(
     () => IS_TESTING === 'true' && isHardHat(web3Provider.connection.url),
     []
   );
 
   const [readyToRegister, setReadyToRegister] = useState<boolean>(
-    isTesting || secondsSinceCommitConfirmed > 60
+    isTestingHardhat || secondsSinceCommitConfirmed > 60
   );
+
   // flag to wait 10 secs before we get the tx block, to be able to simulate not confirmed tx when testing
-  const shouldLoopForConfirmation = useRef(isTesting);
+  const shouldLoopForConfirmation = useRef(isTestingHardhat);
 
   const registrationStep = useMemo(() => {
     if (mode === REGISTRATION_MODES.EDIT) return REGISTRATION_STEPS.EDIT;
@@ -72,16 +80,17 @@ export default function useENSRegistrationStepHandler(observer = true) {
   ]);
 
   const watchCommitTransaction = useCallback(async () => {
+    if (observer) return;
+    const provider = await getProviderForNetwork();
     let confirmed = false;
-    const tx = await web3Provider.getTransaction(
-      registrationParameters?.commitTransactionHash || ''
-    );
-    const block = await web3Provider.getBlock(tx.blockHash || '');
+    const tx = await provider.getTransaction(commitTransactionHash || '');
+    if (!tx?.blockHash) return confirmed;
+    const block = await provider.getBlock(tx.blockHash || '');
     if (!shouldLoopForConfirmation.current && block?.timestamp) {
       const now = Date.now();
       const msBlockTimestamp = getBlockMsTimestamp(block);
       // hardhat block timestamp is behind
-      const timeDifference = isTesting ? now - msBlockTimestamp : 0;
+      const timeDifference = isTestingHardhat ? now - msBlockTimestamp : 0;
       const commitTransactionConfirmedAt = msBlockTimestamp + timeDifference;
       const secs = differenceInSeconds(now, commitTransactionConfirmedAt);
       setSecondsSinceCommitConfirmed(secs);
@@ -96,13 +105,15 @@ export default function useENSRegistrationStepHandler(observer = true) {
     }
     return confirmed;
   }, [
+    observer,
     accountAddress,
     dispatch,
-    isTesting,
-    registrationParameters?.commitTransactionHash,
+    isTestingHardhat,
+    commitTransactionHash,
   ]);
 
   const startPollingWatchCommitTransaction = useCallback(async () => {
+    if (observer) return;
     timeout.current && clearTimeout(timeout.current);
     if (registrationStep !== REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION)
       return;
@@ -112,7 +123,25 @@ export default function useENSRegistrationStepHandler(observer = true) {
         startPollingWatchCommitTransaction();
       }, 2000);
     }
-  }, [registrationStep, watchCommitTransaction]);
+  }, [observer, registrationStep, watchCommitTransaction]);
+
+  useEffect(() => {
+    // we need to update the loop with new commit transaction hash in case of speed ups
+    if (
+      !observer &&
+      !!prevCommitTrasactionHash &&
+      !!commitTransactionHash &&
+      prevCommitTrasactionHash !== commitTransactionHash
+    ) {
+      timeout.current && clearTimeout(timeout.current);
+      startPollingWatchCommitTransaction();
+    }
+  }, [
+    observer,
+    commitTransactionHash,
+    prevCommitTrasactionHash,
+    startPollingWatchCommitTransaction,
+  ]);
 
   useEffect(() => {
     if (observer) return;
@@ -153,7 +182,7 @@ export default function useENSRegistrationStepHandler(observer = true) {
       checkRegisterBlockTimestamp();
     }
   }, [
-    isTesting,
+    isTestingHardhat,
     observer,
     registrationParameters?.commitTransactionConfirmedAt,
     registrationStep,

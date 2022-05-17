@@ -34,7 +34,7 @@ const WaitCommitmentConfirmationContent = ({
               <Stack space="34px">
                 <HourglassAnimation />
                 <Stack alignHorizontal="center" space="19px">
-                  <Heading size="23px">
+                  <Heading align="center" size="23px">
                     {lang.t('profiles.confirm.transaction_pending')}
                   </Heading>
                   <Text align="center" color="secondary60" weight="semibold">
