@@ -123,6 +123,7 @@ function AddCashFlowNavigator() {
 
 function MainNavigator() {
   const initialRoute = useContext(InitialRouteContext);
+  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   return (
     <Stack.Navigator
@@ -160,6 +161,57 @@ function MainNavigator() {
           cardStyleInterpolator: speedUpAndCancelStyleInterpolator,
         }}
       />
+      {profilesEnabled && (
+        <>
+          <Stack.Screen
+            component={RegisterENSNavigator}
+            name={Routes.REGISTER_ENS_NAVIGATOR}
+          />
+          <Stack.Screen
+            component={ENSConfirmRegisterSheet}
+            name={Routes.ENS_CONFIRM_REGISTER_SHEET}
+            options={{
+              ...exchangePreset,
+              cardStyleInterpolator: speedUpAndCancelStyleInterpolator,
+            }}
+          />
+          <Stack.Screen
+            component={ENSAdditionalRecordsSheet}
+            name={Routes.ENS_ADDITIONAL_RECORDS_SHEET}
+            options={{
+              height: '45%',
+            }}
+          />
+          <Stack.Screen
+            component={ProfileSheet}
+            name={Routes.PROFILE_SHEET}
+            options={{
+              height: '95%',
+            }}
+          />
+          <Stack.Screen
+            component={ProfileSheet}
+            initialParams={{
+              isPreview: true,
+            }}
+            name={Routes.PROFILE_PREVIEW_SHEET}
+            options={{
+              height: 280,
+            }}
+          />
+          <Stack.Screen
+            component={SelectENSSheet}
+            name={Routes.SELECT_ENS_SHEET}
+            options={{
+              allowsDragToDismiss: true,
+              backgroundOpacity: 0.7,
+              customStack: true,
+              springDamping: 1,
+              transitionDuration: 0.25,
+            }}
+          />
+        </>
+      )}
       <Stack.Screen
         component={ExchangeModalNavigator}
         name={Routes.EXCHANGE_MODAL}
@@ -261,7 +313,6 @@ function MainOuterNavigator() {
 }
 
 function BSNavigator() {
-  const profilesEnabled = useExperimentalFlag(PROFILES);
   return (
     <BSStack.Navigator>
       <BSStack.Screen
@@ -276,56 +327,6 @@ function BSNavigator() {
         component={ExpandedAssetSheet}
         name={Routes.TOKEN_INDEX_SHEET}
       />
-      {profilesEnabled && (
-        <>
-          <BSStack.Screen
-            component={RegisterENSNavigator}
-            name={Routes.REGISTER_ENS_NAVIGATOR}
-            options={{
-              backdropOpacity: 1,
-            }}
-          />
-          <BSStack.Screen
-            component={ENSConfirmRegisterSheet}
-            name={Routes.ENS_CONFIRM_REGISTER_SHEET}
-          />
-          <BSStack.Screen
-            component={ENSAdditionalRecordsSheet}
-            name={Routes.ENS_ADDITIONAL_RECORDS_SHEET}
-            options={{
-              height: '45%',
-            }}
-          />
-          <BSStack.Screen
-            component={ProfileSheet}
-            name={Routes.PROFILE_SHEET}
-            options={{
-              height: '95%',
-            }}
-          />
-          <BSStack.Screen
-            component={ProfileSheet}
-            initialParams={{
-              isPreview: true,
-            }}
-            name={Routes.PROFILE_PREVIEW_SHEET}
-            options={{
-              height: 280,
-            }}
-          />
-          <BSStack.Screen
-            component={SelectENSSheet}
-            name={Routes.SELECT_ENS_SHEET}
-            options={{
-              allowsDragToDismiss: true,
-              backgroundOpacity: 0.7,
-              customStack: true,
-              springDamping: 1,
-              transitionDuration: 0.25,
-            }}
-          />
-        </>
-      )}
       <BSStack.Screen
         component={ShowcaseSheet}
         name={Routes.SHOWCASE_SHEET}

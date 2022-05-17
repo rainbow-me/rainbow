@@ -54,14 +54,16 @@ export default function RegisterENSNavigator() {
 
   const sheetRef = useRef<any>();
 
-  const { height: deviceHeight } = useDimensions();
+  const { height: deviceHeight, isSmallPhone } = useDimensions();
 
   const setAccentColor = useSetRecoilState(accentColorAtom);
 
   const { colors } = useTheme();
 
   const contentHeight =
-    deviceHeight - SheetHandleFixedToTopHeight - sharedCoolModalTopOffset;
+    deviceHeight -
+    SheetHandleFixedToTopHeight -
+    (!isSmallPhone ? sharedCoolModalTopOffset : 0);
 
   const [isSearchEnabled, setIsSearchEnabled] = useState(true);
 
@@ -88,9 +90,7 @@ export default function RegisterENSNavigator() {
   const [currentRouteName, setCurrentRouteName] = useState(initialRouteName);
   const previousRouteName = usePrevious(currentRouteName);
 
-  const [wrapperStyle, setWrapperStyle] = useState<{ height?: number }>({
-    height: contentHeight,
-  });
+  const [wrapperHeight, setWrapperHeight] = useState<number | undefined>(contentHeight);
 
   const screenOptions = useMemo(() => defaultScreenOptions[currentRouteName], [
     currentRouteName,
@@ -125,13 +125,11 @@ export default function RegisterENSNavigator() {
     currentRouteName === Routes.ENS_ASSIGN_RECORDS_SHEET;
 
   useEffect(() => {
-    setTimeout(
-      () =>
-        setWrapperStyle(
-          screenOptions.scrollEnabled ? {} : { height: contentHeight }
-        ),
-      screenOptions.scrollEnabled ? 200 : 0
-    );
+    if (screenOptions.scrollEnabled) {
+      setTimeout(() => setWrapperHeight(undefined), 200);
+      return;
+    }
+    setWrapperHeight(contentHeight);
   }, [contentHeight, screenOptions.scrollEnabled]);
 
   useEffect(() => {
@@ -151,7 +149,7 @@ export default function RegisterENSNavigator() {
         scrollEnabled
       >
         <StatusBar barStyle="light-content" />
-        <Box style={wrapperStyle}>
+        <Box {...(wrapperHeight ? { height: { custom: wrapperHeight } } : {})}>
           <Swipe.Navigator
             initialLayout={deviceUtils.dimensions}
             initialRouteName={currentRouteName}

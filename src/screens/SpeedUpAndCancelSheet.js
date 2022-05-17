@@ -130,6 +130,7 @@ export default function SpeedUpAndCancelSheet() {
   const {
     params: { type, tx, accentColor, onSendTransactionCallback },
   } = useRoute();
+
   const [ready, setReady] = useState(false);
   const [txType, setTxType] = useState();
   const [minGasPrice, setMinGasPrice] = useState(
