@@ -31,7 +31,7 @@ const RegisterContent = ({
   }, [navigate]);
 
   return (
-    <Box flexGrow={1} paddingHorizontal="30px">
+    <>
       <Box paddingTop="24px">
         <StepIndicator currentStep={3} steps={3} />
       </Box>
@@ -92,7 +92,7 @@ const RegisterContent = ({
           </Stack>
         </Row>
       </Rows>
-    </Box>
+    </>
   );
 };
 
