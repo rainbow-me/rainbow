@@ -275,7 +275,7 @@ export const estimateENSRegistrationGasLimit = async (
 
   const totalRegistrationGasLimit =
     [...gasLimits, registerWithConfigGasLimit].reduce(
-      (a, b) => add(a || 0, b || 0),
+      (a, b) => add(a ?? 0, b ?? 0),
       0
     ) || ethUnits.ens_registration;
 
@@ -334,7 +334,7 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
 
   const gasLimits = await Promise.all(promises);
 
-  const gasLimit = gasLimits.reduce((a, b) => add(a || 0, b || 0), 0);
+  const gasLimit = gasLimits.reduce((a, b) => add(a ?? 0, b ?? 0), 0);
   if (!gasLimit) return '0';
   return gasLimit;
 };

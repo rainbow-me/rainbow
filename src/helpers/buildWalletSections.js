@@ -207,7 +207,7 @@ const withBriefBalanceSavingsSection = (savings, isLoadingAssets, network) => {
   let totalUnderlyingNativeValue = 0;
   for (let saving of savings) {
     const { underlyingBalanceNativeValue } = saving;
-    totalUnderlyingNativeValue = underlyingBalanceNativeValue || 0;
+    totalUnderlyingNativeValue = underlyingBalanceNativeValue ?? 0;
   }
   const addresses = savings?.map(asset => asset.cToken.address);
 

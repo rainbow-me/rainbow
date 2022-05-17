@@ -118,7 +118,7 @@ const getTransactionDisplayDetails = (
         ? ethUnits.arbitrum_basic_tx
         : ethUnits.basic_tx;
 
-    const gasLimit = BigNumber.from(transaction.gasLimit || defaultGasLimit);
+    const gasLimit = BigNumber.from(transaction.gasLimit ?? defaultGasLimit);
     const gasPrice = transaction.gasPrice
       ? BigNumber.from(transaction.gasPrice)
       : undefined;
