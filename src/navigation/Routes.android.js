@@ -203,11 +203,8 @@ function MainNavigator() {
             component={SelectENSSheet}
             name={Routes.SELECT_ENS_SHEET}
             options={{
-              allowsDragToDismiss: true,
-              backgroundOpacity: 0.7,
-              customStack: true,
-              springDamping: 1,
-              transitionDuration: 0.25,
+              ...exchangePreset,
+              cardStyleInterpolator: speedUpAndCancelStyleInterpolator,
             }}
           />
         </>
