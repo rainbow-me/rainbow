@@ -187,7 +187,7 @@ const SimpleScaleButton = ({
   skipTopMargin,
   transformOrigin,
   wrapperStyle,
-}: PropsWithChildren<Props>) => {
+}: Props) => {
   const onNativePress = useCallback(
     ({ nativeEvent: { type } }) => {
       if (type === 'longPress') {

@@ -36,7 +36,7 @@ export const ScaleButtonZoomable = ({
     });
     return value;
   });
-  const sz = useAnimatedStyle(() => {
+  const scaleAnimatedStyle = useAnimatedStyle(() => {
     return {
       transform: [
         {
@@ -48,7 +48,9 @@ export const ScaleButtonZoomable = ({
 
   return (
     <ScaleButtonContext.Provider value={scale}>
-      <Animated.View style={[style, sz]}>{children}</Animated.View>
+      <Animated.View style={[style, scaleAnimatedStyle]}>
+        {children}
+      </Animated.View>
     </ScaleButtonContext.Provider>
   );
 };
