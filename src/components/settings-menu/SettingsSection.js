@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import lang from 'i18n-js';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { Image, Linking, NativeModules, ScrollView, Share } from 'react-native';
-import { THEMES, useTheme } from '../../context/ThemeContext';
+import { Themes, useTheme } from '../../context/ThemeContext';
 import { supportedLanguages } from '../../languages';
 import AppVersionStamp from '../AppVersionStamp';
 import { Icon } from '../icons';
@@ -204,12 +204,12 @@ export default function SettingsSection({
     : colors.alpha(colors.blueGreyDark, 0.5);
 
   const toggleTheme = useCallback(() => {
-    if (colorScheme === THEMES.SYSTEM) {
-      setTheme(THEMES.LIGHT);
-    } else if (colorScheme === THEMES.LIGHT) {
-      setTheme(THEMES.DARK);
+    if (colorScheme === Themes.SYSTEM) {
+      setTheme(Themes.LIGHT);
+    } else if (colorScheme === Themes.LIGHT) {
+      setTheme(Themes.DARK);
     } else {
-      setTheme(THEMES.SYSTEM);
+      setTheme(Themes.SYSTEM);
     }
   }, [setTheme, colorScheme]);
 
