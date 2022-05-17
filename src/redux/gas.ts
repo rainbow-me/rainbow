@@ -164,6 +164,21 @@ const getSelectedGasFee = (
   const isValidGas = checkValidGas(selectedGasParams, network);
   // this is going to be undefined for type 0 transactions
   const maxFee = (selectedTxFee as GasFee)?.maxFee;
+
+  // console.log(
+  //   JSON.stringify(
+  //     {
+  //       isSufficientGas,
+  //       isValidGas,
+  //       network,
+  //       selectedGasParams,
+  //       selectedTxFee,
+  //     },
+  //     null,
+  //     2
+  //   )
+  // );
+
   return {
     isSufficientGas,
     isValidGas,
@@ -207,7 +222,6 @@ const getUpdatedGasFeeParams = (
         nativeTokenPriceUnit,
         nativeCurrency
       );
-
   const selectedGasParams = getSelectedGasFee(
     gasFeeParamsBySpeed,
     gasFeesBySpeed,
@@ -391,17 +405,19 @@ export const gasPricesStartPolling = (
   network = Network.mainnet,
   flashbots = false
 ) => async (dispatch: AppDispatch, getState: AppGetState) => {
+  logger.debug('gasPricesStartPolling', network);
   dispatch(gasPricesStopPolling());
-  dispatch({
-    payload: network,
-    type: GAS_UPDATE_TRANSACTION_NETWORK,
-  });
 
   const getGasPrices = (network: Network) =>
     withRunExclusive(
       () =>
         new Promise(async (fetchResolve, fetchReject) => {
+          logger.debug('called getGasPrices with network', network);
           try {
+            dispatch({
+              payload: network,
+              type: GAS_UPDATE_TRANSACTION_NETWORK,
+            });
             const {
               gasFeeParamsBySpeed: existingGasFees,
               customGasFeeModifiedByUser,
@@ -469,6 +485,7 @@ export const gasPricesStartPolling = (
                 type: GAS_FEES_SUCCESS,
               });
             } else {
+              logger.debug('gas tsx: isMainnet', txNetwork);
               try {
                 const {
                   gasFeeParamsBySpeed,
@@ -695,6 +712,7 @@ export const gasUpdateTxFee = (
   });
 
 export const gasPricesStopPolling = () => (dispatch: AppDispatch) => {
+  logger.debug('stop polling gas prices');
   gasPricesHandle && clearTimeout(gasPricesHandle);
   dispatch({
     type: GAS_PRICES_RESET,

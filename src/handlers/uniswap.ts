@@ -54,8 +54,12 @@ export const getTestnetUniswapPairs = (
   }));
 };
 
-const getBasicSwapGasLimitForTrade = (tradeDetails: Quote): number => {
+const getBasicSwapGasLimitForTrade = (
+  tradeDetails: Quote,
+  chainId: number
+): number => {
   const allowsPermit =
+    chainId === ChainId.mainnet &&
     ALLOWS_PERMIT[
       toLower(tradeDetails.sellTokenAddress) as keyof PermitSupportedTokenList
     ];
@@ -83,7 +87,7 @@ export const estimateSwapGasLimit = async ({
   }
 
   if (requiresApprove) {
-    return getBasicSwapGasLimitForTrade(tradeDetails);
+    return getBasicSwapGasLimitForTrade(tradeDetails, chainId);
   }
 
   const { sellTokenAddress, buyTokenAddress } = tradeDetails;
@@ -140,9 +144,9 @@ export const estimateSwapGasLimit = async ({
         provider,
         1.01
       );
-      return gasLimit || getBasicSwapGasLimitForTrade(tradeDetails);
+      return gasLimit || getBasicSwapGasLimitForTrade(tradeDetails, chainId);
     } catch (error) {
-      return getBasicSwapGasLimitForTrade(tradeDetails);
+      return getBasicSwapGasLimitForTrade(tradeDetails, chainId);
     }
   }
 };

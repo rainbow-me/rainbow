@@ -337,6 +337,7 @@ export default function ExchangeModal({
         return;
       }
       const swapParams = {
+        chainId,
         inputAmount,
         outputAmount,
         provider: currentProvider,
@@ -374,6 +375,7 @@ export default function ExchangeModal({
       updateTxFee(defaultGasLimit);
     }
   }, [
+    chainId,
     currentNetwork,
     currentProvider,
     defaultGasLimit,

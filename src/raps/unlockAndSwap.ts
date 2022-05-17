@@ -81,12 +81,14 @@ export const createUnlockAndSwapRap = async (
 ) => {
   let actions: RapAction[] = [];
 
-  const { inputAmount, tradeDetails, flashbots } = swapParameters;
+  const { inputAmount, tradeDetails, flashbots, chainId } = swapParameters;
   const { inputCurrency, outputCurrency } = store.getState().swap;
-  const { accountAddress, chainId } = store.getState().settings;
+  const { accountAddress } = store.getState().settings;
+  // TODO - Add checks for other chains
   const isWethUnwrapping =
-    toLower(inputCurrency.address) === toLower(WETH[ChainId.mainnet]) &&
-    toLower(outputCurrency.address) === toLower(ETH_ADDRESS);
+    toLower(inputCurrency.address) === toLower(WETH[`${chainId}`]) &&
+    toLower(outputCurrency.address) === toLower(ETH_ADDRESS) &&
+    chainId === ChainId.mainnet;
 
   let swapAssetNeedsUnlocking = false;
 
@@ -100,6 +102,7 @@ export const createUnlockAndSwapRap = async (
     );
   }
   const allowsPermit =
+    chainId === ChainId.mainnet &&
     ALLOWS_PERMIT[
       toLower(inputCurrency.address) as keyof PermitSupportedTokenList
     ];
