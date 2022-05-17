@@ -140,8 +140,9 @@ export default function ENSConfirmRegisterSheet() {
   });
 
   const [sendReverseRecord, setSendReverseRecord] = useState(false);
-  const { secondsSinceCommitConfirmed } = useENSRegistrationStepHandler(false);
-  const step = REGISTRATION_STEPS.REGISTER;
+  const { secondsSinceCommitConfirmed, step } = useENSRegistrationStepHandler(
+    false
+  );
   const { action } = useENSRegistrationActionHandler({
     sendReverseRecord,
     step,
