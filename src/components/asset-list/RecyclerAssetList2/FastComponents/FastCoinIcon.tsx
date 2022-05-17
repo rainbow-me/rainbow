@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import CoinIcon from '../../../coin-icon/CoinIcon';
 import { FastChainBadge } from './FastCoinBadge';
@@ -26,6 +26,58 @@ const fallbackIconStyle = {
   position: 'absolute',
 };
 
+const imagesCache: { [imageUrl: string]: boolean } = {};
+
+const CoinIconWithBackground = React.memo(function CoinIconWithBackground({
+  imageUrl,
+  theme,
+  color,
+  symbol,
+}: {
+  imageUrl: string;
+  theme: any;
+  color: string;
+  symbol: string;
+}) {
+  const { colors } = theme;
+
+  const key = `${symbol}-${imageUrl}`;
+
+  const isCached = imagesCache[key];
+
+  // this is hack
+  // we should default to trying to render the image component to fetch the image
+  // then we cache the result - is the image available or not
+  // and then we default to the result
+  const shouldShowImage = typeof isCached === 'undefined' ? true : isCached;
+  const [, forceRerender] = useState(0);
+
+  const onLoad = useCallback(() => {
+    imagesCache[key] = true;
+
+    forceRerender(prev => prev + 1);
+  }, [key, forceRerender]);
+  const onError = useCallback(() => {
+    imagesCache[key] = false;
+
+    forceRerender(prev => prev + 1);
+  }, [key, forceRerender]);
+
+  return (
+    <View style={cx.coinIconContainer}>
+      {shouldShowImage && (
+        <ImageWithCachedMetadata
+          cache={ImgixImage.cacheControl.immutable}
+          imageUrl={imageUrl}
+          onError={onError}
+          onLoad={onLoad}
+          style={[cx.coinIconFallback, isCached && cx.withBackground]}
+        />
+      )}
+    </View>
+  );
+});
+
 export default React.memo(function FastCoinIcon({
   address,
   symbol,
@@ -37,7 +89,7 @@ export default React.memo(function FastCoinIcon({
   assetType?: AssetType;
   theme: any;
 }) {
-  const imageUrl = getUrlForTrustIconFallback(address);
+  const imageUrl = getUrlForTrustIconFallback(address)!;
 
   const fallbackIconColor = useColorForAsset({ address });
 
@@ -59,27 +111,44 @@ export default React.memo(function FastCoinIcon({
         textStyles={fallbackTextStyles}
         width={40}
       />
+
       {eth ? (
         <Image source={EthIcon} style={cx.coinIconFallback} />
       ) : (
-        <ImageWithCachedMetadata
-          cache={ImgixImage.cacheControl.immutable}
+        <CoinIconWithBackground
+          color={fallbackIconColor}
           imageUrl={imageUrl}
-          style={cx.coinIconFallback}
+          symbol={symbol}
+          theme={theme}
         />
       )}
+
       {assetType && <FastChainBadge assetType={assetType} theme={theme} />}
     </View>
   );
 });
 
 const cx = StyleSheet.create({
+  coinIconContainer: {
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+    borderRadius: 20,
+    height: 40,
+    justifyContent: 'center',
+    overflow: 'hidden',
+    width: 40,
+  },
   coinIconFallback: {
     borderRadius: 20,
     height: 40,
+    overflow: 'visible',
     width: 40,
   },
   container: {
+    elevation: 6,
     overflow: 'visible',
+  },
+  withBackground: {
+    backgroundColor: 'white',
   },
 });
