@@ -256,6 +256,7 @@ export type EnsAccountRegistratonsData = {
     registrations: {
       domain: {
         name: string;
+        labelhash: string;
         owner: {
           id: string;
         };
@@ -265,11 +266,19 @@ export type EnsAccountRegistratonsData = {
 };
 
 export const ENS_ACCOUNT_REGISTRATIONS = gql`
-  query getAccountRegistrations($address: String!) {
+  query getAccountRegistrations(
+    $address: String!
+    $registrationDate_gt: BigInt = "0"
+  ) {
     account(id: $address) {
-      registrations(first: 99, orderBy: registrationDate) {
+      registrations(
+        orderBy: registrationDate
+        orderDirection: desc
+        where: { registrationDate_gt: $registrationDate_gt }
+      ) {
         domain {
           name
+          labelhash
           owner {
             id
           }

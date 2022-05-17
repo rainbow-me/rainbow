@@ -1,6 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
-import { concat, isEmpty, without } from 'lodash';
+import { concat, isEmpty, uniqBy, without } from 'lodash';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import {
@@ -10,6 +10,7 @@ import {
 import { dataUpdateAssets } from './data';
 import { AppGetState, AppState } from './store';
 import { UniqueAsset } from '@rainbow-me/entities';
+import { fetchEnsTokens } from '@rainbow-me/handlers/ens';
 import {
   getUniqueTokens,
   saveUniqueTokens,
@@ -247,7 +248,7 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
   const accountAddress = showcaseAddress || getState().settings.accountAddress;
   const { accountAssetsData } = getState().data;
   const { uniqueTokens: existingUniqueTokens } = getState().uniqueTokens;
-  const shouldUpdateInBatches = isEmpty(existingUniqueTokens);
+  let shouldUpdateInBatches = isEmpty(existingUniqueTokens);
   let uniqueTokens: UniqueAsset[] = [];
   let errorCheck = false;
 
@@ -336,6 +337,17 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
     await fetchNetwork(Network.polygon);
     //we only care about analytics for mainnet + L2's
     analytics.identify(null, { NFTs: uniqueTokens.length });
+  }
+
+  // Fetch recently registered ENS tokens (OpenSea doesn't recognize these for a while).
+  // We will fetch tokens registered in the past hour to be safe.
+  const ensTokens = await fetchEnsTokens({
+    address: accountAddress,
+    timeAgo: { hours: 1 },
+  });
+  if (ensTokens.length > 0) {
+    uniqueTokens = uniqBy([...uniqueTokens, ...ensTokens], 'id');
+    shouldUpdateInBatches = false;
   }
 
   // NFT Fetching clean up

@@ -1,5 +1,6 @@
 import { formatsByCoinType, formatsByName } from '@ensdomains/address-encoder';
 import { captureException } from '@sentry/react-native';
+import { Duration, sub } from 'date-fns';
 import { BigNumber } from 'ethers';
 import { debounce, isEmpty, sortBy } from 'lodash';
 import { ensClient } from '../apollo/client';
@@ -21,7 +22,11 @@ import {
 import { ensProfileImagesQueryKey } from '../hooks/useENSProfileImages';
 import { ENSActionParameters } from '../raps/common';
 import { estimateGasWithPadding, web3Provider } from './web3';
-import { ENSRegistrationRecords, Records } from '@rainbow-me/entities';
+import {
+  ENSRegistrationRecords,
+  Records,
+  UniqueAsset,
+} from '@rainbow-me/entities';
 import {
   ENS_DOMAIN,
   ENS_RECORDS,
@@ -48,6 +53,68 @@ const DUMMY_RECORDS = {
   'me.rainbow.displayName': 'name',
 };
 
+const buildEnsToken = ({
+  contractAddress,
+  tokenId,
+  name,
+  imageUrl,
+}: {
+  contractAddress: string;
+  tokenId: string;
+  name: string;
+  imageUrl: string;
+}) =>
+  ({
+    animation_url: null,
+    asset_contract: {
+      address: contractAddress,
+      name: 'ENS',
+      nft_version: '3.0',
+      schema_name: 'ERC721',
+      symbol: 'ENS',
+      total_supply: null,
+    },
+    background: null,
+    collection: {
+      description:
+        'Ethereum Name Service (ENS) domains are secure domain names for the decentralized world. ENS domains provide a way for users to map human readable names to blockchain and non-blockchain resources, like Ethereum addresses, IPFS hashes, or website URLs. ENS domains can be bought and sold on secondary markets.',
+      discord_url: null,
+      external_url: 'https://ens.domains',
+      featured_image_url:
+        'https://lh3.googleusercontent.com/BBj09xD7R4bBtg1lgnAAS9_TfoYXKwMtudlk-0fVljlURaK7BWcARCpkM-1LGNGTAcsGO6V1TgrtmQFvCo8uVYW_QEfASK-9j6Nr=s300',
+      hidden: false,
+      image_url:
+        'https://lh3.googleusercontent.com/0cOqWoYA7xL9CkUjGlxsjreSYBdrUBE0c6EO1COG4XE8UeP-Z30ckqUNiL872zHQHQU5MUNMNhfDpyXIP17hRSC5HQ=s60',
+      name: 'ENS: Ethereum Name Service',
+      short_description: null,
+      slug: 'ens',
+      twitter_username: 'ensdomains',
+    },
+    currentPrice: null,
+    description: `\`${name}\`, an ENS name.`,
+    external_link: `https://app.ens.domains/search/${name}`,
+    familyImage:
+      'https://lh3.googleusercontent.com/0cOqWoYA7xL9CkUjGlxsjreSYBdrUBE0c6EO1COG4XE8UeP-Z30ckqUNiL872zHQHQU5MUNMNhfDpyXIP17hRSC5HQ=s60',
+    familyName: 'ENS',
+    id: tokenId,
+    image_original_url: imageUrl,
+    image_url: imageUrl,
+    isSendable: true,
+    last_sale: null,
+    lastPrice: null,
+    lastPriceUsd: null,
+    lastSale: undefined,
+    lastSalePaymentToken: null,
+    lowResUrl: imageUrl,
+    name,
+    permalink: '',
+    sell_orders: [],
+    traits: [],
+    type: 'nft',
+    uniqueId: name,
+    urlSuffixForAsset: `${contractAddress}/${tokenId}`,
+  } as UniqueAsset);
+
 export const fetchMetadata = async ({
   contractAddress = ENS_NFT_CONTRACT_ADDRESS,
   tokenId,
@@ -68,6 +135,42 @@ export const fetchMetadata = async ({
   } catch (error) {
     logger.sentry('ENS: Error getting ENS metadata', error);
     captureException(new Error('ENS: Error getting ENS metadata'));
+    throw error;
+  }
+};
+
+export const fetchEnsTokens = async ({
+  address,
+  contractAddress = ENS_NFT_CONTRACT_ADDRESS,
+  timeAgo,
+}: {
+  address: string;
+  contractAddress?: string;
+  timeAgo: Duration;
+}) => {
+  try {
+    const { data } = await ensClient.query<EnsAccountRegistratonsData>({
+      query: ENS_ACCOUNT_REGISTRATIONS,
+      variables: {
+        address: address.toLowerCase(),
+        registrationDate_gt: Math.floor(
+          sub(new Date(), timeAgo).getTime() / 1000
+        ).toString(),
+      },
+    });
+    return data.account.registrations.map(registration => {
+      const tokenId = BigNumber.from(registration.domain.labelhash).toString();
+      const token = buildEnsToken({
+        contractAddress,
+        imageUrl: `https://metadata.ens.domains/mainnet/${contractAddress}/${tokenId}/image`,
+        name: registration.domain.name,
+        tokenId,
+      });
+      return token;
+    });
+  } catch (error) {
+    logger.sentry('ENS: Error getting ENS unique tokens', error);
+    captureException(new Error('ENS: Error getting ENS unique tokens'));
     throw error;
   }
 };
