@@ -1,3 +1,4 @@
+import filter from 'lodash/filter';
 import get from 'lodash/get';
 import values from 'lodash/values';
 import { Dispatch } from 'redux';
@@ -228,7 +229,7 @@ export const requestsForTopic = (topic: string) => (
   getState: AppGetState
 ): RequestData[] => {
   const { requests } = getState().requests;
-  return values(requests).filter(i => i?.clientId === topic);
+  return filter(values(requests), { clientId: topic });
 };
 
 /**
