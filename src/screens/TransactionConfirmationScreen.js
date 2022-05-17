@@ -337,7 +337,7 @@ export default function TransactionConfirmationScreen() {
         );
         if (name) {
           setMethodName(name);
-          clearTimeout(fallbackHandler);
+          clear(fallbackHandler);
         }
       } catch (e) {
         setMethodName(lang.t('wallet.transaction.request'));
