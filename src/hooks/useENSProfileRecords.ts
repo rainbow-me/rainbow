@@ -8,6 +8,8 @@ import { QueryConfig, UseQueryData } from '@rainbow-me/react-query/types';
 
 const queryKey = (name: string) => ['ens-profile-records', name];
 
+const STALE_TIME = 10000;
+
 export default function useENSProfileRecords(
   name: string,
   config?: QueryConfig<typeof fetchProfileRecords>
@@ -29,7 +31,7 @@ export default function useENSProfileRecords(
     {
       ...config,
       // Data will be stale for 10s to avoid dupe queries
-      staleTime: 10000,
+      staleTime: STALE_TIME,
     }
   );
 

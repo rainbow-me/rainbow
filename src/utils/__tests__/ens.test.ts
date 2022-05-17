@@ -1,4 +1,4 @@
-import validateENS from '../validateENS';
+import { validateENS } from '../ens';
 
 describe('valid names', () => {
   it('domain', () => {

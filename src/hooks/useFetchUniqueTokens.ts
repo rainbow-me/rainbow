@@ -18,6 +18,8 @@ export const uniqueTokensQueryKey = ({ address }: { address?: string }) => [
   address,
 ];
 
+const STALE_TIME = 10000;
+
 export default function useFetchUniqueTokens({
   address,
 }: {
@@ -64,7 +66,7 @@ export default function useFetchUniqueTokens({
     },
     {
       enabled: Boolean(address),
-      staleTime: 10000,
+      staleTime: STALE_TIME,
     }
   );
   const uniqueTokens = uniqueTokensQuery.data;
