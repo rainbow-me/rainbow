@@ -692,18 +692,20 @@ export const formatRecordsForTransaction = (
         case ENS_RECORDS.snapchat:
         case ENS_RECORDS.telegram:
         case ENS_RECORDS.ensDelegate:
-          (Boolean(value) || value === '') &&
+          if (value || value === '') {
             text.push({
               key,
               value: value,
             });
+          }
           return;
         case ENS_RECORDS.ETH:
         case ENS_RECORDS.BTC:
         case ENS_RECORDS.LTC:
         case ENS_RECORDS.DOGE:
-          (Boolean(value) || value === '') &&
+          if (value || value === '') {
             coinAddress.push({ address: value, key });
+          }
           return;
         case ENS_RECORDS.content:
           if (value || value === '') {
