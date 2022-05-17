@@ -29,27 +29,28 @@ platform :android do
     f.close
   end
 
-  lane :internal do
+  desc "Deploy a new version to the Google Play"
+  lane :release_version do |options|
+    versionCode = bump_version_code()
+    gradle(task: 'clean')
     gradle(task: 'bundle', build_type: 'Release')
-    upload_to_play_store(track: 'internal')
+    upload_to_play_store(json_key: "./rainbow-google-play-key.json", track: options[:track])
+  end
+
+  lane :internal do
+    release_version(track: "internal")
   end
 
   lane :alpha do
-    gradle(task: 'bundle', build_type: 'Release')
-    upload_to_play_store(track: 'alpha')
+    release_version(track: "alpha")
   end
   
   lane :beta do
-    gradle(task: 'bundle', build_type: 'Release')
-    upload_to_play_store(track: 'beta')
+    release_version(track: "beta")
   end
 
-  desc "Deploy a new version to the Google Play"
   lane :production do
-    versionCode = bump_version_code()
-    gradle(task: 'clean')
-    gradle(task: 'bundle', build_type: 'Release', properties: { 'versionCode' => versionCode})
-    upload_to_play_store(json_key: "./rainbow-google-play-key.json")
+    release_version(track: "production")
   end
 
 end
