@@ -238,12 +238,15 @@ export default function useENSRegistrationActionHandler(
       if (!wallet) {
         return;
       }
+      console.log('🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫 renewAction name', name, duration);
 
       const nonce = await getNextNonce();
       const rentPrice = await getRentPrice(
-        name.replace(ENS_DOMAIN, ''),
+        name?.replace(ENS_DOMAIN, ''),
         duration
       );
+      console.log('🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫 renewAction nonce', nonce);
+      console.log('🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫 renewAction rentPrice', rentPrice);
 
       const registerEnsRegistrationParameters: ENSActionParameters = {
         ...formatENSActionParams(registrationParameters),
@@ -251,6 +254,10 @@ export default function useENSRegistrationActionHandler(
         nonce,
         rentPrice: rentPrice.toString(),
       };
+      console.log(
+        '🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫 renewAction registerEnsRegistrationParameters',
+        registerEnsRegistrationParameters
+      );
 
       await executeRap(
         wallet,
