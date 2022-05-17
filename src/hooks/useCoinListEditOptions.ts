@@ -58,9 +58,7 @@ export default function useCoinListEditOptions() {
 
   return {
     clearSelectedCoins,
-    hiddenCoins: Object.keys(hiddenCoins ?? []),
     hiddenCoinsObj: hiddenCoins,
-    pinnedCoins: Object.keys(pinnedCoins ?? []),
     pinnedCoinsObj: pinnedCoins,
     pushSelectedCoin,
     removeSelectedCoin,
@@ -138,12 +136,12 @@ export function useCoinListFinishEditingOptions() {
         ...(currentActionNonReactive.current === EditAction.standard
           ? selectedItemsNonReactive.current!
           : []),
-      ];
-      dispatch(reduxSetHiddenCoins(newList));
-      return newList.reduce((acc, curr) => {
+      ].reduce((acc, curr) => {
         acc[curr] = true;
         return acc;
       }, {} as BooleanMap);
+      dispatch(reduxSetHiddenCoins(newList));
+      return newList;
     });
 
     setSelectedItems([]);

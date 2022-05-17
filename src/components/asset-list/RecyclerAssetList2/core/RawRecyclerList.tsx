@@ -10,6 +10,7 @@ import { DataProvider, RecyclerListView } from 'recyclerlistview';
 import { useMemoOne } from 'use-memo-one';
 import { useTheme } from '../../../../context/ThemeContext';
 import useAccountSettings from '../../../../hooks/useAccountSettings';
+import { BooleanMap } from '../../../../hooks/useCoinListEditOptions';
 import { useRecyclerAssetListPosition } from './Contexts';
 import ExternalScrollViewWithRef from './ExternalScrollView';
 import RefreshControl from './RefreshControl';
@@ -30,8 +31,8 @@ export type ExtendedState = {
   nativeCurrency: string;
   navigate: any;
   isCoinListEdited: boolean;
-  hiddenCoins: string[];
-  pinnedCoins: string[];
+  hiddenCoins: BooleanMap;
+  pinnedCoins: BooleanMap;
   toggleSelectedCoin: (id: string) => void;
   additionalData: Record<string, CellTypes>;
 };
@@ -99,8 +100,8 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   const theme = useTheme();
   const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
   const {
-    hiddenCoins,
-    pinnedCoins,
+    hiddenCoinsObj: hiddenCoins,
+    pinnedCoinsObj: pinnedCoins,
     toggleSelectedCoin,
   } = useCoinListEditOptions();
 
