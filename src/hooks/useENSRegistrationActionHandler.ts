@@ -139,6 +139,7 @@ export default function useENSRegistrationActionHandler(
 
       console.log('🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫 about to loadWallet');
       const wallet = await loadWallet();
+      console.log('🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫 loadWallet', wallet);
       if (!wallet) {
         return;
       }
