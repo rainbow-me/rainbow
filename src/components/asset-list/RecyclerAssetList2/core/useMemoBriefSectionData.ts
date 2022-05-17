@@ -16,7 +16,7 @@ export default function useMemoBriefSectionData() {
   const { isSavingsOpen } = useOpenSavings();
   const { isInvestmentCardsOpen } = useOpenInvestmentCards();
   const { isCoinListEdited } = useCoinListEdited();
-  const { hiddenCoins } = useCoinListEditOptions();
+  const { hiddenCoinsObj } = useCoinListEditOptions();
   const { openFamilies } = useOpenFamilies();
 
   const result = useDeepCompareMemo(() => {
@@ -61,7 +61,7 @@ export default function useMemoBriefSectionData() {
         }
         if (
           data.type === CellType.COIN &&
-          hiddenCoins.includes((data as CoinExtraData).uniqueId) &&
+          hiddenCoinsObj[(data as CoinExtraData).uniqueId] &&
           !isCoinListEdited
         ) {
           return false;
