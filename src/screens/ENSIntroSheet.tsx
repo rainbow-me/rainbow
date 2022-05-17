@@ -43,7 +43,7 @@ enum AnotherENSEnum {
 }
 const topPadding = android ? 29 : 19;
 
-const minHeight = 720;
+const minHeight = 740;
 
 export default function ENSIntroSheet() {
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
