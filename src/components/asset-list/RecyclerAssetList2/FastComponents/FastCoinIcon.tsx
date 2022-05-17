@@ -34,7 +34,7 @@ export default React.memo(function FastCoinIcon({
 }: {
   address: string;
   symbol: string;
-  assetType: AssetType;
+  assetType?: AssetType;
   theme: any;
 }) {
   const imageUrl = getUrlForTrustIconFallback(address);
@@ -68,7 +68,7 @@ export default React.memo(function FastCoinIcon({
           style={cx.coinIconFallback}
         />
       )}
-      <FastChainBadge assetType={assetType} theme={theme} />
+      {assetType && <FastChainBadge assetType={assetType} theme={theme} />}
     </View>
   );
 });
