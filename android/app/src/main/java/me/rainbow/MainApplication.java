@@ -23,6 +23,7 @@ import me.rainbow.NativeModules.Internals.InternalPackage;
 import me.rainbow.NativeModules.RNBip39.RNBip39Package;
 import me.rainbow.NativeModules.RNBackHandler.RNBackHandlerPackage;
 import me.rainbow.NativeModules.RNReview.RNReviewPackage;
+import me.rainbow.NativeModules.RNStartTime.RNStartTimePackage;
 import me.rainbow.NativeModules.RNTextAnimatorPackage.RNTextAnimatorPackage;
 import me.rainbow.NativeModules.RNZoomableButton.RNZoomableButtonPackage;
 import com.microsoft.codepush.react.CodePush;
@@ -37,6 +38,7 @@ class RainbowJSIModulePackage extends ReanimatedJSIModulePackage {
 
 
 public class MainApplication extends Application implements ReactApplication {
+    private static final long START_MARK = System.currentTimeMillis();
     private static Context context;
     private final ReactNativeHost mReactNativeHost =
       new ReactNativeHost(this) {
@@ -62,6 +64,7 @@ public class MainApplication extends Application implements ReactApplication {
           packages.add(new RNZoomableButtonPackage());
           packages.add(new InternalPackage());
           packages.add(new KeychainPackage(new KeychainModuleBuilder().withoutWarmUp()));
+          packages.add(new RNStartTimePackage(MainApplication.START_MARK));
 
             return packages;
         }
