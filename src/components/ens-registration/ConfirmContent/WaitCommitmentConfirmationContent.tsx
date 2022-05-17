@@ -4,7 +4,7 @@ import {
   ButtonPressAnimation,
   HourglassAnimation,
 } from '../../../components/animations';
-import { StepIndicator } from '../../../components/step-indicator';
+import StepIndicator from '../../../components/step-indicator/StepIndicator';
 import {
   Box,
   Heading,

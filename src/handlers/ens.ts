@@ -151,7 +151,7 @@ export const fetchSuggestions = async (
 
 export const debouncedFetchSuggestions = debounce(fetchSuggestions, 200);
 
-export const fetchRegistrationDate = async (recipient: any) => {
+export const fetchRegistrationDate = async (recipient: string) => {
   if (recipient.length > 2) {
     const recpt = recipient.toLowerCase();
     const result = await ensClient.query({
@@ -375,7 +375,7 @@ export const fetchProfile = async (ensName: string) => {
   };
 };
 
-export const fetchProfileRecords = async (ensName: any) => {
+export const fetchProfileRecords = async (ensName: string) => {
   const [records, coinAddresses, images] = await Promise.all([
     fetchRecords(ensName),
     fetchCoinAddresses(ensName),

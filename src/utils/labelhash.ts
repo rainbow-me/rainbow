@@ -1,5 +1,5 @@
 import { keccak256, toUtf8Bytes } from 'ethers/lib/utils';
-import normalizeENS from './normalizeENS';
+import { normalizeENS } from './ens';
 
 export function encodeLabelhash(hash: string) {
   if (!hash.startsWith('0x')) {

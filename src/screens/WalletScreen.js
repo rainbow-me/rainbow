@@ -25,6 +25,7 @@ import {
   useCoinListEdited,
   useInitializeDiscoverData,
   useInitializeWallet,
+  useLoadAccountLateData,
   useLoadGlobalLateData,
   usePortfolios,
   useTrackENSProfile,
@@ -71,6 +72,7 @@ export default function WalletScreen() {
   const { network } = useAccountSettings();
   const { userAccounts } = useUserAccounts();
   const { portfolios, trackPortfolios } = usePortfolios();
+  const loadAccountLateData = useLoadAccountLateData();
   const loadGlobalLateData = useLoadGlobalLateData();
   const initializeDiscoverData = useInitializeDiscoverData();
   const { updateWalletENSAvatars } = useWalletENSAvatar();
@@ -168,10 +170,17 @@ export default function WalletScreen() {
 
   useEffect(() => {
     if (walletReady && assetsSocket) {
+      loadAccountLateData();
       loadGlobalLateData();
       initializeDiscoverData();
     }
-  }, [assetsSocket, initializeDiscoverData, loadGlobalLateData, walletReady]);
+  }, [
+    assetsSocket,
+    initializeDiscoverData,
+    loadAccountLateData,
+    loadGlobalLateData,
+    walletReady,
+  ]);
 
   useEffect(() => {
     if (walletReady) updateWalletENSAvatars();

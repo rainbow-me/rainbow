@@ -9,6 +9,8 @@ import { isLowerCaseMatch } from '@rainbow-me/utils';
 
 const queryKey = (name: string) => ['ens-profile', name];
 
+const STALE_TIME = 10000;
+
 async function fetchENSProfile({ name }: { name: string }) {
   const cachedProfile = await getProfile(name);
   if (cachedProfile) {
@@ -23,7 +25,7 @@ export async function prefetchENSProfile({ name }: { name: string }) {
   queryClient.prefetchQuery(
     queryKey(name),
     async () => fetchENSProfile({ name }),
-    { staleTime: 10000 }
+    { staleTime: STALE_TIME }
   );
 }
 
@@ -37,7 +39,7 @@ export default function useENSProfile(
   >(queryKey(name), async () => fetchENSProfile({ name }), {
     ...config,
     // Data will be stale for 10s to avoid dupe queries
-    staleTime: 10000,
+    staleTime: STALE_TIME,
   });
 
   const isOwner = useMemo(
