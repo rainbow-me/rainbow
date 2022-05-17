@@ -43,13 +43,19 @@ enum AnotherENSEnum {
 }
 const topPadding = android ? 29 : 19;
 
+const minHeight = 720;
+
 export default function ENSIntroSheet() {
-  const { width: deviceWidth, isSmallPhone } = useDimensions();
+  const { width: deviceWidth, height: deviceHeight } = useDimensions();
   const { colors } = useTheme();
   const { params } = useRoute<any>();
   const { accountAddress } = useAccountSettings();
   const { data: domains, isLoading, isSuccess } = useAccountENSDomains();
   const { accountENS } = useAccountProfile();
+
+  // We are not using `isSmallPhone` from `useDimensions` here as we
+  // want to explicitly set a min height.
+  const isSmallPhone = deviceHeight < minHeight;
 
   const contentWidth = Math.min(deviceWidth - 72, 300);
 
