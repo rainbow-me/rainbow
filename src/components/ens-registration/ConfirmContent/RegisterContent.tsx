@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { Switch } from 'react-native-gesture-handler';
-import { StepIndicator } from '../../../components/step-indicator';
+import StepIndicator from '../../../components/step-indicator/StepIndicator';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import {
   Box,
@@ -23,7 +23,7 @@ const RegisterContent = ({
 }: {
   accentColor: any;
   sendReverseRecord: boolean;
-  setSendReverseRecord: React.Dispatch<React.SetStateAction<boolean>>;
+  setSendReverseRecord: React.Dispatch<React.SetStateAction<boolean>> | null;
 }) => {
   const { navigate } = useNavigation();
   const openPrimaryENSNameHelper = useCallback(() => {

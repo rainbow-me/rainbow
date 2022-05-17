@@ -8,8 +8,11 @@ import { Records, UniqueAsset } from '@rainbow-me/entities';
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import * as ensRedux from '@rainbow-me/redux/ensRegistration';
 import { AppState } from '@rainbow-me/redux/store';
-import { isENSNFTRecord, parseENSNFTRecord } from '@rainbow-me/utils';
-import getENSNFTAvatarUrl from '@rainbow-me/utils/getENSNFTAvatarUrl';
+import {
+  getENSNFTAvatarUrl,
+  isENSNFTRecord,
+  parseENSNFTRecord,
+} from '@rainbow-me/utils';
 
 const getImageUrl = (
   key: 'avatar' | 'cover',

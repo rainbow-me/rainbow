@@ -1,5 +1,5 @@
 import { useRoute } from '@react-navigation/core';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useRecoilState } from 'recoil';
 import SelectableButton from '../components/ens-registration/TextRecordsForm/SelectableButton';
 import { SlackSheet } from '../components/sheet';
@@ -20,7 +20,7 @@ export const getENSAdditionalRecordsSheetHeight = () => {
 };
 
 export default function ENSAdditionalRecordsSheet() {
-  const { params } = useRoute();
+  const { params } = useRoute<any>();
   const [accentColor] = useRecoilState(accentColorAtom);
   const {
     selectedFields,
@@ -35,6 +35,7 @@ export default function ENSAdditionalRecordsSheet() {
   );
 
   return (
+    // @ts-expect-error JavaScript component
     <SlackSheet additionalTopPadding height="100%" scrollEnabled={false}>
       <AccentColorProvider color={accentColor}>
         <Box

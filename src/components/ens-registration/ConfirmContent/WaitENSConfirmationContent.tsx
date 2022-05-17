@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
 import React from 'react';
-import { LargeCountdownClock } from '../../../components/large-countdown-clock';
-import { StepIndicator } from '../../../components/step-indicator';
+import LargeCountdownClock from '../../../components/large-countdown-clock/LargeCountdownClock';
+import StepIndicator from '../../../components/step-indicator/StepIndicator';
 import {
   Box,
   Heading,

@@ -19,7 +19,7 @@ export type SearchInputProps = {
   isLoading?: boolean;
   onChangeText: TextInputProps['onChangeText'];
   value: TextInputProps['value'];
-  variant: 'rainbow';
+  variant?: 'rainbow';
   selectionColor?: string;
   state?: 'success' | 'warning';
   testID: string;
