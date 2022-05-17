@@ -114,16 +114,16 @@ function addHiddenCoins(
 ) {
   const storageKey = 'hidden-coins-obj-' + address;
   const storageEntity = storage.getString(storageKey);
-  const list = storageEntity ? JSON.parse(storageEntity) : [];
-  const newList = [
+  const list = Object.keys(storageEntity ? JSON.parse(storageEntity) : {});
+  const newHiddenCoins = [
     ...list.filter((i: string) => !coins.includes(i)),
     ...coins,
   ].reduce((acc, curr) => {
     acc[curr] = true;
     return acc;
   }, {} as BooleanMap);
-  dispatch(setHiddenCoins(newList));
-  storage.set(storageKey, JSON.stringify(newList));
+  dispatch(setHiddenCoins(newHiddenCoins));
+  storage.set(storageKey, JSON.stringify(newHiddenCoins));
 }
 
 const BACKUP_SHEET_DELAY_MS = android ? 10000 : 3000;
