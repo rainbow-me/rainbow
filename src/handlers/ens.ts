@@ -177,7 +177,7 @@ export const fetchEnsTokens = async ({
   } catch (error) {
     logger.sentry('ENS: Error getting ENS unique tokens', error);
     captureException(new Error('ENS: Error getting ENS unique tokens'));
-    throw error;
+    return [];
   }
 };
 
