@@ -1,4 +1,3 @@
-import { omit } from 'lodash';
 import { AppDispatch, AppGetState } from './store';
 import {
   ENSRegistrationState,
@@ -6,6 +5,8 @@ import {
   Records,
   RegistrationParameters,
 } from '@rainbow-me/entities';
+import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
+import { omitFlatten } from '@rainbow-me/helpers/utilities';
 
 const ENS_REGISTRATION_UPDATE_DURATION =
   'ensRegistration/ENS_REGISTRATION_UPDATE_DURATION';
@@ -192,7 +193,7 @@ export const updateRecordByKey = (
 
 export const removeRecordByKey = (
   accountAddress: EthereumAddress,
-  key: string
+  key: keyof typeof ENS_RECORDS
 ) => async (dispatch: AppDispatch, getState: AppGetState) => {
   const {
     ensRegistration: { registrations, currentRegistrationName },
@@ -203,7 +204,7 @@ export const removeRecordByKey = (
   const registration = accountRegistrations[currentRegistrationName] || {};
   const registrationRecords = registration?.records || {};
 
-  const newRecords = omit(registrationRecords, key) as Records;
+  const newRecords = omitFlatten(registrationRecords, key);
 
   const updatedEnsRegistrationManagerForAccount = {
     registrations: {

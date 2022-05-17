@@ -408,3 +408,19 @@ export const fromWei = (number: BigNumberish): string =>
 export const delay = (ms: number): Promise<void> => {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
+
+/**
+ * @desc Can omit only flatted key, will not work with 'key.someObj.value'
+ */
+export const omitFlatten = <T extends object, K extends keyof T>(
+  obj: T,
+  keysToOmit: K[] | K
+): Omit<T, K> => {
+  const keysToUse = Array.isArray(keysToOmit) ? keysToOmit : [keysToOmit];
+  const _ = { ...obj };
+  keysToUse.forEach(key => {
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+    delete _[key];
+  });
+  return _;
+};

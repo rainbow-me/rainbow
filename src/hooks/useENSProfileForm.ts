@@ -1,10 +1,11 @@
-import { isEmpty, omit } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { atom, useRecoilState } from 'recoil';
 import { useAccountSettings, useENSProfile } from '.';
 import { Records } from '@rainbow-me/entities';
 import { textRecordFields } from '@rainbow-me/helpers/ens';
+import { omitFlatten } from '@rainbow-me/helpers/utilities';
 import {
   removeRecordByKey,
   updateRecordByKey,
@@ -75,7 +76,7 @@ export default function useENSProfileForm({
     (fieldToRemove, selectedFields) => {
       setSelectedFields(selectedFields);
       dispatch(removeRecordByKey(accountAddress, fieldToRemove.key));
-      setValues(values => omit(values, fieldToRemove.key) as Records);
+      setValues(values => omitFlatten(values, fieldToRemove.key) as Records);
     },
     [accountAddress, dispatch, setSelectedFields, setValues]
   );
