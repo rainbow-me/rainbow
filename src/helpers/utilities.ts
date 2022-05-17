@@ -412,44 +412,15 @@ export const delay = (ms: number): Promise<void> => {
 /**
  * @desc Can omit only flatted key, will not work with 'key.someObj.value'
  */
-export const omitFlatten = (
-  originalObject: {
-    [key: string]: any;
-  },
-  keysToOmit: string | number | string[] | number[]
-) => {
-  if (Array.isArray(keysToOmit)) {
-    const clonedObject = { ...originalObject };
-    for (const path of keysToOmit) {
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-      delete clonedObject[path];
-    }
-    return clonedObject;
-  }
-
-  if (originalObject.hasOwnProperty(keysToOmit)) {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { [keysToOmit]: _, ...rest } = originalObject;
-
-    return rest;
-  }
-
-  return originalObject;
-};
-
-export const find = (collection: [] | object, props: any) => {
-  if (Array.isArray(collection)) {
-    return collection.find(props);
-  }
-  return Object.values(collection).find(props);
-};
-
-export const filter = (
-  collection: [] | object,
-  callback: (props: any) => any
-) => {
-  if (Array.isArray(collection)) {
-    return collection.filter(callback);
-  }
-  return Object.values(collection).filter(callback);
+export const omitFlatten = <T extends object, K extends keyof T>(
+  obj: T,
+  keysToOmit: K[] | K
+): Omit<T, K> => {
+  const keysToUse = Array.isArray(keysToOmit) ? keysToOmit : [keysToOmit];
+  const _ = { ...obj };
+  keysToUse.forEach(key => {
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+    delete _[key];
+  });
+  return _;
 };
