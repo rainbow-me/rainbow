@@ -609,7 +609,7 @@ export default async function runMigrations() {
   migrations.push(v15);
 
   /*
- *************** Migration v15 ******************
+ *************** Migration v16 ******************
  Pinned coins: list -> obj
  */
   const v16 = async () => {
