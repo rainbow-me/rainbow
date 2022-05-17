@@ -13,7 +13,7 @@ import {
 } from '../components/expanded-state';
 import { Centered } from '../components/layout';
 import { useTheme } from '@rainbow-me/context';
-import { isUnknownOpenSeaENSDescription } from '@rainbow-me/handlers/ens';
+import { isUnknownOpenSeaENS } from '@rainbow-me/handlers/ens';
 import { useAsset, useDimensions } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import styled from '@rainbow-me/styled-components';
@@ -51,9 +51,7 @@ export default function ExpandedAssetSheet(props) {
   // We want to revalidate (ie. refresh OpenSea metadata) collectibles
   // to ensure the user can get the latest metadata of their collectible.
   const selectedAsset = useAsset(params.asset, {
-    revalidateCollectibleInBackground: isUnknownOpenSeaENSDescription(
-      params?.asset?.description
-    ),
+    revalidateCollectibleInBackground: isUnknownOpenSeaENS(params?.asset),
   });
 
   return (

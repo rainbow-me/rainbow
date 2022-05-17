@@ -403,7 +403,6 @@ export const saveCommitRegistrationParameters = (
   const {
     ensRegistration: { registrations, currentRegistrationName },
   } = getState();
-
   const lcAccountAddress = accountAddress.toLowerCase();
   const accountRegistrations = registrations?.[lcAccountAddress] || {};
   const registration = accountRegistrations[currentRegistrationName] || {};
