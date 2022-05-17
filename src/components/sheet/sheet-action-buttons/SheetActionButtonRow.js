@@ -32,8 +32,8 @@ function renderButton(child) {
 
 export default function SheetActionButtonRow({
   children,
-  ignorePaddingBottom,
-  ignorePaddingTop,
+  ignorePaddingBottom = false,
+  ignorePaddingTop = false,
   paddingBottom = null,
   paddingHorizontal = null,
 }) {

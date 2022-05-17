@@ -59,12 +59,21 @@ function TransactionActionRow({
   isValidGas,
   isSufficientGas,
   testID,
+}: {
+  action: any;
+  accentColor?: string;
+  label: string;
+  isValidGas: boolean;
+  isSufficientGas: boolean;
+  testID: string;
 }) {
   const insufficientEth = isSufficientGas === false && isValidGas;
   return (
     <Box>
       <Box>
+        {/* @ts-expect-error JavaScript component */}
         <SheetActionButtonRow paddingBottom={5}>
+          {/* @ts-expect-error JavaScript component */}
           <HoldToAuthorizeButton
             backgroundColor={accentColor}
             disabled={!isSufficientGas || !isValidGas}
@@ -83,6 +92,7 @@ function TransactionActionRow({
         </SheetActionButtonRow>
       </Box>
       <Box alignItems="center" justifyContent="center">
+        {/* @ts-expect-error JavaScript component */}
         <GasSpeedButton
           asset={{ color: accentColor }}
           currentNetwork="mainnet"
@@ -95,7 +105,7 @@ function TransactionActionRow({
 }
 
 export default function ENSConfirmRegisterSheet() {
-  const { params } = useRoute();
+  const { params } = useRoute<any>();
   const { name: ensName, mode } = useENSRegistration();
   const {
     images: { avatarUrl: initialAvatarUrl },
@@ -159,13 +169,6 @@ export default function ENSConfirmRegisterSheet() {
     });
   }, [goBack, navigate]);
 
-  const boxStyle = useMemo(
-    () => ({
-      height: params.longFormHeight || ENSConfirmRegisterSheetHeight,
-    }),
-    [params.longFormHeight]
-  );
-
   const stepLabel = useMemo(() => {
     if (mode === REGISTRATION_MODES.EDIT)
       return lang.t('profiles.confirm.confirm_update');
@@ -213,7 +216,6 @@ export default function ENSConfirmRegisterSheet() {
       [REGISTRATION_STEPS.SET_NAME]: null,
       [REGISTRATION_STEPS.RENEW]: (
         <RenewContent
-          accentColor={accentColor}
           name={name}
           registrationCostsData={registrationCostsData}
           setDuration={setDuration}
@@ -254,14 +256,14 @@ export default function ENSConfirmRegisterSheet() {
         <TransactionActionRow
           accentColor={accentColor}
           action={action}
-          isSufficientGas={
+          isSufficientGas={Boolean(
             registrationCostsData?.isSufficientGasForRegistration &&
-            registrationCostsData?.isSufficientGasForStep
-          }
-          isValidGas={
+              registrationCostsData?.isSufficientGasForStep
+          )}
+          isValidGas={Boolean(
             registrationCostsData?.isValidGas &&
-            Boolean(registrationCostsData?.stepGasLimit)
-          }
+              registrationCostsData?.stepGasLimit
+          )}
           label={lang.t('profiles.confirm.start_registration')}
           testID={step}
         />
@@ -270,11 +272,13 @@ export default function ENSConfirmRegisterSheet() {
         <TransactionActionRow
           accentColor={accentColor}
           action={() => action(goToProfileScreen)}
-          isSufficientGas={registrationCostsData?.isSufficientGasForStep}
-          isValidGas={
+          isSufficientGas={Boolean(
+            registrationCostsData?.isSufficientGasForStep
+          )}
+          isValidGas={Boolean(
             registrationCostsData?.isValidGas &&
-            Boolean(registrationCostsData?.stepGasLimit)
-          }
+              registrationCostsData?.stepGasLimit
+          )}
           label={lang.t('profiles.confirm.confirm_registration')}
           testID={step}
         />
@@ -286,11 +290,13 @@ export default function ENSConfirmRegisterSheet() {
             action();
             goToProfileScreen();
           }}
-          isSufficientGas={registrationCostsData?.isSufficientGasForStep}
-          isValidGas={
+          isSufficientGas={Boolean(
+            registrationCostsData?.isSufficientGasForStep
+          )}
+          isValidGas={Boolean(
             registrationCostsData?.isValidGas &&
-            Boolean(registrationCostsData?.stepGasLimit)
-          }
+              registrationCostsData?.stepGasLimit
+          )}
           label={lang.t('profiles.confirm.confirm_renew')}
           testID={step}
         />
@@ -299,11 +305,13 @@ export default function ENSConfirmRegisterSheet() {
         <TransactionActionRow
           accentColor={accentColor}
           action={() => action(goToProfileScreen)}
-          isSufficientGas={registrationCostsData?.isSufficientGasForStep}
-          isValidGas={
+          isSufficientGas={Boolean(
+            registrationCostsData?.isSufficientGasForStep
+          )}
+          isValidGas={Boolean(
             registrationCostsData?.isValidGas &&
-            Boolean(registrationCostsData?.stepGasLimit)
-          }
+              registrationCostsData?.stepGasLimit
+          )}
           label={lang.t('profiles.confirm.confirm_update')}
           testID={step}
         />
@@ -312,11 +320,13 @@ export default function ENSConfirmRegisterSheet() {
         <TransactionActionRow
           accentColor={accentColor}
           action={() => action(goToProfileScreen)}
-          isSufficientGas={registrationCostsData?.isSufficientGasForStep}
-          isValidGas={
+          isSufficientGas={Boolean(
+            registrationCostsData?.isSufficientGasForStep
+          )}
+          isValidGas={Boolean(
             registrationCostsData?.isValidGas &&
-            Boolean(registrationCostsData?.stepGasLimit)
-          }
+              registrationCostsData?.stepGasLimit
+          )}
           label={lang.t('profiles.confirm.confirm_set_name')}
           testID={step}
         />
@@ -355,6 +365,7 @@ export default function ENSConfirmRegisterSheet() {
   );
 
   return (
+    // @ts-expect-error JavaScript component
     <SlackSheet
       additionalTopPadding
       contentHeight={params.longFormHeight || ENSConfirmRegisterSheetHeight}
@@ -366,11 +377,14 @@ export default function ENSConfirmRegisterSheet() {
           background="body"
           paddingTop="19px"
           paddingVertical="30px"
-          style={boxStyle}
+          style={{
+            height: params.longFormHeight || ENSConfirmRegisterSheetHeight,
+          }}
           testID="ens-confirm-register-sheet"
         >
           <Rows>
             <Row height="content">
+              {/* @ts-expect-error JavaScript component */}
               <Box horizontal="30px">
                 <Stack alignHorizontal="center" space="15px">
                   {avatarUrl && (

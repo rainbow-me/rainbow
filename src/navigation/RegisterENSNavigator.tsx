@@ -26,7 +26,7 @@ import { deviceUtils } from '@rainbow-me/utils';
 const Swipe = createMaterialTopTabNavigator();
 
 const renderTabBar = () => null;
-const renderPager = props => (
+const renderPager = (props: any) => (
   <ScrollPagerWrapper
     {...props}
     initialScrollPosition={1}
@@ -50,9 +50,9 @@ const defaultScreenOptions = {
 };
 
 export default function RegisterENSNavigator() {
-  const { params } = useRoute();
+  const { params } = useRoute<any>();
 
-  const sheetRef = useRef();
+  const sheetRef = useRef<any>();
 
   const { height: deviceHeight, isSmallPhone } = useDimensions();
 
@@ -90,15 +90,18 @@ export default function RegisterENSNavigator() {
   const [currentRouteName, setCurrentRouteName] = useState(initialRouteName);
   const previousRouteName = usePrevious(currentRouteName);
 
-  const [wrapperHeight, setWrapperHeight] = useState(contentHeight);
+  const [wrapperHeight, setWrapperHeight] = useState<number | undefined>(contentHeight);
 
   const screenOptions = useMemo(() => defaultScreenOptions[currentRouteName], [
     currentRouteName,
   ]);
 
-  useEffect(() => () => clearCurrentRegistrationName(), [
-    clearCurrentRegistrationName,
-  ]);
+  useEffect(
+    () => () => {
+      clearCurrentRegistrationName();
+    },
+    [clearCurrentRegistrationName]
+  );
 
   useEffect(
     () => () => {
@@ -130,13 +133,14 @@ export default function RegisterENSNavigator() {
   }, [contentHeight, screenOptions.scrollEnabled]);
 
   useEffect(() => {
-    if (!screenOptions.scrollEnabled?.scrollEnabled) {
-      sheetRef.current.scrollTo({ animated: false, x: 0, y: 0 });
+    if (!screenOptions.scrollEnabled) {
+      sheetRef.current?.scrollTo({ animated: false, x: 0, y: 0 });
     }
   }, [screenOptions.scrollEnabled]);
 
   return (
     <>
+      {/* @ts-expect-error JavaScript component */}
       <SlackSheet
         contentHeight={contentHeight}
         height="100%"
@@ -173,7 +177,6 @@ export default function RegisterENSNavigator() {
                   focus: () => setCurrentRouteName(Routes.ENS_SEARCH_SHEET),
                 }}
                 name={Routes.ENS_SEARCH_SHEET}
-                visible={isSearchEnabled}
               />
             )}
             <Swipe.Screen

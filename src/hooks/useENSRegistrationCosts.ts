@@ -1,3 +1,4 @@
+import { BigNumberish } from 'ethers';
 import { isEmpty } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQueries } from 'react-query';
@@ -54,8 +55,8 @@ export default function useENSRegistrationCosts({
   yearsDuration,
 }: {
   name: string;
-  rentPrice: { wei: number; perYear: { wei: number } };
-  sendReverseRecord: boolean;
+  rentPrice?: { wei: BigNumberish; perYear: { wei: string } };
+  sendReverseRecord?: boolean;
   step: keyof typeof REGISTRATION_STEPS;
   yearsDuration: number;
 }) {
@@ -112,7 +113,7 @@ export default function useENSRegistrationCosts({
       duration,
       name,
       ownerAddress: accountAddress,
-      rentPrice: rentPriceInWei,
+      rentPrice: rentPriceInWei as string,
       salt,
     });
     return newCommitGasLimit || '';

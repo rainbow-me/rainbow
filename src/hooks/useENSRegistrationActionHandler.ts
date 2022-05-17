@@ -301,7 +301,7 @@ export default function useENSRegistrationActionHandler(
   );
 
   return {
-    action: actions[registrationStep],
+    action: actions[registrationStep] as (...args: any) => void,
   };
 }
 
