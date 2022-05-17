@@ -240,15 +240,18 @@ export const loadWallet = async (
 ): Promise<null | Wallet> => {
   const privateKey = await loadPrivateKey(address);
   if (privateKey === -1 || privateKey === -2) {
+    console.log('😬😬😬😬😬 returning null 1');
     return null;
   }
   if (privateKey) {
+    console.log('😬😬😬😬😬 returning privateKey 2', provider);
     // @ts-ignore
     return new Wallet(privateKey, provider || web3Provider);
   }
   if (ios && showErrorIfNotLoaded) {
     showWalletErrorAlert();
   }
+  console.log('😬😬😬😬😬 returning null out');
   return null;
 };
 

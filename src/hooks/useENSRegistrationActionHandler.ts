@@ -11,6 +11,7 @@ import { useAccountSettings, useCurrentNonce, useENSRegistration } from '.';
 import { Records, RegistrationParameters } from '@rainbow-me/entities';
 import { fetchResolver } from '@rainbow-me/handlers/ens';
 import { uploadImage } from '@rainbow-me/handlers/pinata';
+import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
 import {
   ENS_DOMAIN,
   generateSalt,
@@ -138,7 +139,13 @@ export default function useENSRegistrationActionHandler(
       } = registrationParameters as RegistrationParameters;
 
       console.log('🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫 about to loadWallet');
-      const wallet = await loadWallet();
+      const provider = await getProviderForNetwork();
+      let wallet;
+      try {
+        wallet = await loadWallet(undefined, true, provider);
+      } catch (e) {
+        console.log('LOAD WALLET ERRROR', e);
+      }
       console.log('🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫 loadWallet', wallet);
       if (!wallet) {
         return;
