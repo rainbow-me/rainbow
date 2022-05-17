@@ -142,7 +142,15 @@ export default function useENSRegistrationActionHandler(
       if (!wallet) {
         return;
       }
-      console.log('🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫 about to Promise.all');
+      console.log('🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫 about to Promise.all name', name);
+      console.log(
+        '🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫 about to Promise.all duration',
+        duration
+      );
+      console.log(
+        '🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫 about to Promise.all registrationParameters',
+        registrationParameters
+      );
 
       let nonce;
       let rentPrice;
@@ -151,7 +159,7 @@ export default function useENSRegistrationActionHandler(
       try {
         const results = await Promise.all([
           getNextNonce(),
-          getRentPrice(name.replace(ENS_DOMAIN, ''), duration),
+          getRentPrice(name?.replace(ENS_DOMAIN, ''), duration),
           uploadRecordImages(registrationParameters.changedRecords, {
             avatar: avatarMetadata,
             cover: coverMetadata,
