@@ -2,7 +2,6 @@
 import { IS_TESTING } from 'react-native-dotenv';
 import { triggerOnSwipeLayout } from '../navigation/onNavigationStateChange';
 import { getKeychainIntegrityState } from './localstorage/globalSettings';
-import { filter } from '@rainbow-me/helpers/utilities';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { RainbowAccount, RainbowWallet } from '@rainbow-me/model/wallet';
@@ -26,7 +25,8 @@ export const runWalletBackupStatusChecks = () => {
   const { selected, wallets } = store.getState().wallets;
 
   // count how many visible, non-imported and non-readonly wallets are not backed up
-  const rainbowWalletsNotBackedUp = filter(wallets, (wallet: RainbowWallet) => {
+  const walletsArr: RainbowWallet[] = Object.values(wallets);
+  const rainbowWalletsNotBackedUp = walletsArr.filter(wallet => {
     const hasVisibleAccount = wallet.addresses?.find(
       (account: RainbowAccount) => account.visible
     );
