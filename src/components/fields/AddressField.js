@@ -54,7 +54,7 @@ const AddressField = (
   const { isTinyPhone } = useDimensions();
   const { colors } = useTheme();
   const { clipboard, setClipboard } = useClipboard();
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState(address || '');
   const [isValid, setIsValid] = useState(false);
 
   const expandAbbreviatedClipboard = useCallback(() => {
@@ -78,8 +78,11 @@ const AddressField = (
   );
 
   useEffect(() => {
-    if (name !== inputValue) {
+    if (name && name !== inputValue) {
       setInputValue(name);
+      validateAddress(name);
+    } else if (address && address !== inputValue) {
+      setInputValue(address);
       validateAddress(address);
     }
   }, [address, inputValue, isValid, name, validateAddress]);
