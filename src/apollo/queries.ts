@@ -272,6 +272,7 @@ export const ENS_ACCOUNT_REGISTRATIONS = gql`
   ) {
     account(id: $address) {
       registrations(
+        first: 99
         orderBy: registrationDate
         orderDirection: desc
         where: { registrationDate_gt: $registrationDate_gt }
