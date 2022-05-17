@@ -3,7 +3,6 @@ import { hash } from '@ensdomains/eth-ens-namehash';
 import { Wallet } from '@ethersproject/wallet';
 import { BigNumberish, Contract } from 'ethers';
 import lang from 'i18n-js';
-import { TextInputProps } from 'react-native';
 import { atom } from 'recoil';
 import { InlineFieldProps } from '../components/inputs/InlineField';
 import {
@@ -93,11 +92,23 @@ export enum REGISTRATION_MODES {
 
 export type TextRecordField = {
   id: string;
-  key: string;
+  key: ENS_RECORDS;
   label: InlineFieldProps['label'];
   placeholder: InlineFieldProps['placeholder'];
   inputProps?: InlineFieldProps['inputProps'];
-  validations?: InlineFieldProps['validations'];
+  validations?: InlineFieldProps['validations'] & {
+    onSubmit?: {
+      match?: {
+        value: RegExp;
+        message: string;
+      };
+      validate?: {
+        callback: (value: string) => boolean;
+        message: string;
+      };
+    };
+  };
+  startsWith?: string;
 };
 
 export const textRecordFields = {
@@ -346,28 +357,7 @@ export const textRecordFields = {
     },
   },
 } as {
-  [key in ENS_RECORDS]?: {
-    id: string;
-    inputProps: TextInputProps;
-    key: string;
-    label: string;
-    placeholder: string;
-    validations?: {
-      onChange?: {
-        match?: RegExp;
-      };
-      onSubmit?: {
-        match?: {
-          value: RegExp;
-          message: string;
-        };
-        validate?: {
-          callback: (value: string) => boolean;
-          message: string;
-        };
-      };
-    };
-  };
+  [key in ENS_RECORDS]?: TextRecordField;
 };
 
 export const ENS_DOMAIN = '.eth';

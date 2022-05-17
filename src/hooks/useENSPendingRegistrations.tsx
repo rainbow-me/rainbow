@@ -4,7 +4,7 @@ import { useAccountSettings, useENSRegistration } from '.';
 import { ENSRegistrationState } from '@rainbow-me/entities';
 import { removeExpiredRegistrations } from '@rainbow-me/redux/ensRegistration';
 import { AppState } from '@rainbow-me/redux/store';
-import getENSNFTAvatarUrl from '@rainbow-me/utils/getENSNFTAvatarUrl';
+import { getENSNFTAvatarUrl } from '@rainbow-me/utils';
 
 export default function useENSPendingRegistrations() {
   const { accountAddress } = useAccountSettings();

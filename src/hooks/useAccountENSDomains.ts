@@ -18,6 +18,8 @@ const queryKey = ({ accountAddress }: { accountAddress: string }) => [
 
 const imagesQueryKey = ({ name }: { name: string }) => ['domainImages', name];
 
+const STALE_TIME = 10000;
+
 async function fetchAccountENSDomains({
   accountAddress,
 }: {
@@ -60,7 +62,7 @@ export async function prefetchAccountENSDomains({
   queryClient.prefetchQuery(
     queryKey({ accountAddress }),
     async () => fetchENSDomainsWithCache({ accountAddress }),
-    { staleTime: 10000 }
+    { staleTime: STALE_TIME }
   );
 }
 

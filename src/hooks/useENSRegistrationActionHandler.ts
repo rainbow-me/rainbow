@@ -110,11 +110,13 @@ export default function useENSRegistrationActionHandler(
           })
         );
       };
+      const tx = getTransactionByHash(commitTransactionHash || '');
       commitTransactionHash &&
+        tx &&
         navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
           accentColor,
           onSendTransactionCallback: saveCommitTransactionHash,
-          tx: getTransactionByHash(commitTransactionHash),
+          tx,
           type: 'speed_up',
         });
     },
@@ -299,7 +301,7 @@ export default function useENSRegistrationActionHandler(
   );
 
   return {
-    action: actions[registrationStep],
+    action: actions[registrationStep] as (...args: any) => void,
   };
 }
 

@@ -93,7 +93,7 @@ export default function TokenInfoItem({
           <ConditionalWrap
             condition={addonComponent && !loading}
             wrap={children => (
-              <Columns alignHorizontal="left">
+              <Columns alignHorizontal="left" alignVertical="center">
                 <Column alignHorizontal="left">{children}</Column>
                 {addonComponent}
               </Columns>

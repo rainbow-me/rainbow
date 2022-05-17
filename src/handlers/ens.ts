@@ -115,6 +115,12 @@ const buildEnsToken = ({
     urlSuffixForAsset: `${contractAddress}/${tokenId}`,
   } as UniqueAsset);
 
+export const isUnknownOpenSeaENS = (asset?: any) =>
+  asset?.description?.includes('This is an unknown ENS name with the hash') ||
+  !asset.uniqueId.includes('.eth') ||
+  !asset?.image_url ||
+  false;
+
 export const fetchMetadata = async ({
   contractAddress = ENS_NFT_CONTRACT_ADDRESS,
   tokenId,
@@ -174,9 +180,6 @@ export const fetchEnsTokens = async ({
     throw error;
   }
 };
-
-export const isUnknownOpenSeaENSDescription = (description?: string) =>
-  description?.includes('This is an unknown ENS name with the hash') || false;
 
 export const fetchSuggestions = async (
   recipient: any,
@@ -254,7 +257,7 @@ export const fetchSuggestions = async (
 
 export const debouncedFetchSuggestions = debounce(fetchSuggestions, 200);
 
-export const fetchRegistrationDate = async (recipient: any) => {
+export const fetchRegistrationDate = async (recipient: string) => {
   if (recipient.length > 2) {
     const recpt = recipient.toLowerCase();
     const result = await ensClient.query({
@@ -478,7 +481,7 @@ export const fetchProfile = async (ensName: string) => {
   };
 };
 
-export const fetchProfileRecords = async (ensName: any) => {
+export const fetchProfileRecords = async (ensName: string) => {
   const [records, coinAddresses, images] = await Promise.all([
     fetchRecords(ensName),
     fetchCoinAddresses(ensName),

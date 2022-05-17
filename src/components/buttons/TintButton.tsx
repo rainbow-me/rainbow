@@ -20,7 +20,7 @@ const TintButton = ({
   children: ReactNode;
   disabled?: boolean;
   onPress: ButtonProps['onPress'];
-  color: TextColor;
+  color?: TextColor;
   testID?: string;
 }) => {
   const secondary06 = useForegroundColor('secondary06');
