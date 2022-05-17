@@ -1,17 +1,22 @@
 import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from '@rainbow-me/redux/store';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils, isLowerCaseMatch } from '@rainbow-me/utils';
 
 export default function useTransactions() {
-  const transactions = useSelector(({ data }: AppState) => data.transactions);
+  const pendingTransactions = useSelector(
+    ({ data }: AppState) => data.pendingTransactions
+  );
 
   const getTransactionByHash = useCallback(
     (transactionHash: string) =>
-      transactions.find(
-        transaction => ethereumUtils.getHash(transaction) === transactionHash
+      pendingTransactions.find(pendingTransaction =>
+        isLowerCaseMatch(
+          ethereumUtils.getHash(pendingTransaction) || '',
+          transactionHash
+        )
       ),
-    [transactions]
+    [pendingTransactions]
   );
 
   return {
