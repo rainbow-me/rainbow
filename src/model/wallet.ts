@@ -238,7 +238,9 @@ export const loadWallet = async (
   showErrorIfNotLoaded = true,
   provider?: Provider
 ): Promise<null | Wallet> => {
+  console.log('😬😬😬😬😬 loadPrivateKey in');
   const privateKey = await loadPrivateKey(address);
+  console.log('😬😬😬😬😬 loadPrivateKey out');
   if (privateKey === -1 || privateKey === -2) {
     console.log('😬😬😬😬😬 returning null 1');
     return null;
