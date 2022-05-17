@@ -32,6 +32,7 @@ import {
   REGISTRATION_STEPS,
 } from '@rainbow-me/helpers/ens';
 import {
+  useAccountProfile,
   useENSModifiedRegistration,
   useENSRegistration,
   useENSRegistrationActionHandler,
@@ -119,6 +120,8 @@ export default function ENSConfirmRegisterSheet() {
   const { navigate, goBack } = useNavigation();
 
   const { blurFields, values } = useENSRegistrationForm();
+  const accountProfile = useAccountProfile();
+
   const avatarUrl = initialAvatarUrl || values.avatar;
 
   const name = ensName?.replace(ENS_DOMAIN, '');
@@ -126,7 +129,9 @@ export default function ENSConfirmRegisterSheet() {
     name,
   });
 
-  const [sendReverseRecord, setSendReverseRecord] = useState(false);
+  const [sendReverseRecord, setSendReverseRecord] = useState(
+    !accountProfile.accountENS
+  );
   const { step, secondsSinceCommitConfirmed } = useENSRegistrationStepHandler(
     false
   );
@@ -330,11 +335,6 @@ export default function ENSConfirmRegisterSheet() {
       goToProfileScreen,
     ]
   );
-
-  useEffect(() => {
-    registrationCostsData?.hasReverseRecord !== undefined &&
-      setSendReverseRecord(!registrationCostsData?.hasReverseRecord);
-  }, [registrationCostsData?.hasReverseRecord]);
 
   useFocusEffect(
     useCallback(() => {
