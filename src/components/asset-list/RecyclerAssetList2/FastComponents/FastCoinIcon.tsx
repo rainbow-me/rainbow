@@ -1,3 +1,4 @@
+import { isChill } from 'make-color-more-chill';
 import React, { useCallback, useState } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import CoinIcon from '../../../coin-icon/CoinIcon';
@@ -9,6 +10,7 @@ import { ImageWithCachedMetadata, ImgixImage } from '@rainbow-me/images';
 import { borders, fonts } from '@rainbow-me/styles';
 import {
   FallbackIcon,
+  getTokenMetadata,
   getUrlForTrustIconFallback,
   isETH,
 } from '@rainbow-me/utils';
@@ -30,17 +32,13 @@ const imagesCache: { [imageUrl: string]: boolean } = {};
 
 const CoinIconWithBackground = React.memo(function CoinIconWithBackground({
   imageUrl,
-  theme,
-  color,
   symbol,
+  shadowColor,
 }: {
   imageUrl: string;
-  theme: any;
-  color: string;
   symbol: string;
+  shadowColor: string;
 }) {
-  const { colors } = theme;
-
   const key = `${symbol}-${imageUrl}`;
 
   const isCached = imagesCache[key];
@@ -64,13 +62,16 @@ const CoinIconWithBackground = React.memo(function CoinIconWithBackground({
   }, [key, forceRerender]);
 
   return (
-    <View style={cx.coinIconContainer}>
+    <View
+      style={[cx.coinIconContainer, { shadowColor }, isCached && cx.withShadow]}
+    >
       {shouldShowImage && (
         <ImageWithCachedMetadata
           cache={ImgixImage.cacheControl.immutable}
           imageUrl={imageUrl}
           onError={onError}
           onLoad={onLoad}
+          size={32}
           style={[cx.coinIconFallback, isCached && cx.withBackground]}
         />
       )}
@@ -92,6 +93,11 @@ export default React.memo(function FastCoinIcon({
   const imageUrl = getUrlForTrustIconFallback(address)!;
 
   const fallbackIconColor = useColorForAsset({ address });
+  const tokenMetadata = getTokenMetadata(address);
+
+  const shadowColor = theme.isDarkMode
+    ? theme.colors.shadow
+    : tokenMetadata?.shadowColor || fallbackIconColor;
 
   const eth = isETH(address);
 
@@ -116,10 +122,9 @@ export default React.memo(function FastCoinIcon({
         <Image source={EthIcon} style={cx.coinIconFallback} />
       ) : (
         <CoinIconWithBackground
-          color={fallbackIconColor}
           imageUrl={imageUrl}
+          shadowColor={shadowColor}
           symbol={symbol}
-          theme={theme}
         />
       )}
 
@@ -150,5 +155,14 @@ const cx = StyleSheet.create({
   },
   withBackground: {
     backgroundColor: 'white',
+  },
+  withShadow: {
+    elevation: 6,
+    shadowOffset: {
+      height: 4,
+      width: 0,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
   },
 });
