@@ -828,6 +828,7 @@ export default function SendSheet(props) {
       <SheetContainer>
         <SendHeader
           contacts={contacts}
+          fromProfile={params?.fromProfile}
           hideDivider={showAssetForm}
           isValidAddress={isValidAddress}
           nickname={nickname}

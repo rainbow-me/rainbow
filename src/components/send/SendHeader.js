@@ -75,6 +75,7 @@ export default function SendHeader({
   contacts,
   hideDivider,
   isValidAddress,
+  fromProfile,
   nickname,
   onChangeAddressInput,
   onFocus,
@@ -221,6 +222,7 @@ export default function SendHeader({
         <AddressField
           address={recipient}
           autoFocus={!showAssetList}
+          disableInput={fromProfile}
           name={name}
           onChange={onChangeAddressInput}
           onFocus={onFocus}

@@ -11,12 +11,14 @@ export default function SendButton({ ensName }: { ensName?: string }) {
       navigate(Routes.SEND_FLOW, {
         params: {
           address: ensName,
+          fromProfile: true,
         },
         screen: Routes.SEND_SHEET,
       });
     } else {
       navigate(Routes.SEND_FLOW, {
         address: ensName,
+        fromProfile: true,
       });
     }
   }, [ensName, navigate]);

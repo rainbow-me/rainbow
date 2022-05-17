@@ -48,7 +48,16 @@ const formatValue = value =>
     : value;
 
 const AddressField = (
-  { address, autoFocus, name, onChange, onFocus, testID, ...props },
+  {
+    address,
+    autoFocus,
+    disableInput,
+    name,
+    onChange,
+    onFocus,
+    testID,
+    ...props
+  },
   ref
 ) => {
   const { isTinyPhone } = useDimensions();
@@ -77,15 +86,14 @@ const AddressField = (
     [expandAbbreviatedClipboard, onChange, validateAddress]
   );
 
+  const autofill = name || address;
+
   useEffect(() => {
-    if (name && name !== inputValue) {
-      setInputValue(name);
-      validateAddress(name);
-    } else if (address && address !== inputValue) {
-      setInputValue(address);
-      validateAddress(address);
+    if (!inputValue && autofill && autofill !== inputValue) {
+      setInputValue(autofill);
+      validateAddress(autofill);
     }
-  }, [address, inputValue, isValid, name, validateAddress]);
+  }, [autofill, inputValue, validateAddress]);
 
   return (
     <Row flex={1}>
@@ -93,6 +101,7 @@ const AddressField = (
         {...props}
         autoFocus={autoFocus}
         color={isValid ? colors.appleBlue : colors.dark}
+        editable={!disableInput}
         onBlur={expandAbbreviatedClipboard}
         onChange={handleChange}
         onChangeText={setInputValue}
