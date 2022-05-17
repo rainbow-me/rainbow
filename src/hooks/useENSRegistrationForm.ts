@@ -6,6 +6,7 @@ import { Records } from '@rainbow-me/entities';
 import {
   ENS_RECORDS,
   REGISTRATION_MODES,
+  TextRecordField,
   textRecordFields,
 } from '@rainbow-me/helpers/ens';
 
@@ -19,7 +20,7 @@ const errorsAtom = atom<{ [name: string]: string }>({
   key: 'ensProfileForm.errors',
 });
 
-const selectedFieldsAtom = atom({
+const selectedFieldsAtom = atom<TextRecordField[]>({
   default: [],
   key: 'ensProfileForm.selectedFields',
 });
@@ -38,7 +39,7 @@ export default function useENSRegistrationForm({
   defaultFields,
   initializeForm,
 }: {
-  defaultFields?: any[];
+  defaultFields?: TextRecordField[];
   /** A flag that indicates if a new form should be initialised */
   initializeForm?: boolean;
 } = {}) {
@@ -91,7 +92,7 @@ export default function useENSRegistrationForm({
       );
     } else {
       if (defaultFields) {
-        setSelectedFields(defaultFields as any);
+        setSelectedFields(defaultFields);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

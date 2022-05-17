@@ -2,6 +2,7 @@ import { useFocusEffect } from '@react-navigation/core';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
+import { Source } from 'react-native-fast-image';
 import { useDebounce } from 'use-debounce';
 import dice from '../assets/dice.png';
 import TintButton from '../components/buttons/TintButton';
@@ -69,7 +70,6 @@ export default function ENSSearchSheet() {
   const state = useMemo(() => {
     if (isAvailable) return 'success';
     if (isRegistered || isInvalid) return 'warning';
-    return 'rainbow';
   }, [isAvailable, isInvalid, isRegistered]);
 
   const handlePressContinue = useCallback(() => {
@@ -113,13 +113,11 @@ export default function ENSSearchSheet() {
             paddingTop={{ custom: 37 }}
           >
             <SearchInput
-              contextMenuHidden
               isLoading={isLoading}
               onChangeText={value => {
                 setSearchQuery(normalizeENS(value));
                 setInputValue(value);
               }}
-              placeholder="Input placeholder"
               selectionColor={
                 isAvailable
                   ? colors.green
@@ -142,7 +140,7 @@ export default function ENSSearchSheet() {
               >
                 <Box>
                   <ImgixImage
-                    source={dice}
+                    source={dice as Source}
                     style={{ height: 20, top: -0.5, width: 20 }}
                   />
                 </Box>
@@ -236,9 +234,12 @@ export default function ENSSearchSheet() {
           {isAvailable && (
             <SheetActionButton
               color={colors.green}
+              // @ts-expect-error JavaScript component
               label={lang.t('profiles.search.continue')}
               onPress={handlePressContinue}
+              // @ts-expect-error JavaScript component
               size="big"
+              // @ts-expect-error JavaScript component
               testID="ens-search-continue"
               weight="heavy"
             />
