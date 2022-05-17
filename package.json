@@ -332,7 +332,7 @@
     "**/web3": "1.6.1",
     "**/underscore": "1.12.1",
     "**/socket.io-parser": "3.3.2",
-    "**/bl": "2.2.1",
+    "**/bl": "4.1.0",
     "**/browserslist": "4.17.6",
     "**/elliptic": "6.5.4",
     "**/hosted-git-info": "3.0.8",
