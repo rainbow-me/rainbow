@@ -17,7 +17,7 @@ import {
   default as LibWallet,
 } from 'ethereumjs-wallet';
 import lang from 'i18n-js';
-import { find, findKey, forEach, get, isEmpty } from 'lodash';
+import { findKey, forEach, get, isEmpty } from 'lodash';
 import { Alert } from 'react-native';
 import { getSupportedBiometryType } from 'react-native-keychain';
 import { lightModeThemeColors } from '../styles/colors';
@@ -581,11 +581,9 @@ export const createWallet = async (
     if (isImported) {
       // Checking if the generated account already exists and is visible
       logger.sentry('[createWallet] - isImported >> true');
-      const alreadyExistingWallet = find(
-        allWallets,
+      const alreadyExistingWallet = Object.values(allWallets).find(
         (someWallet: RainbowWallet) => {
-          return !!find(
-            someWallet.addresses,
+          return !!someWallet.addresses.find(
             account =>
               toChecksumAddress(account.address) ===
                 toChecksumAddress(walletAddress) && account.visible
@@ -735,8 +733,7 @@ export const createWallet = async (
         let discoveredAccount: RainbowAccount | undefined;
         let discoveredWalletId: RainbowWallet['id'] | undefined;
         forEach(allWallets, someWallet => {
-          const existingAccount = find(
-            someWallet.addresses,
+          const existingAccount = someWallet.addresses.find(
             account =>
               toChecksumAddress(account.address) ===
               toChecksumAddress(nextWallet.address)
