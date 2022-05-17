@@ -42,7 +42,7 @@ export default function useMulticall(
 
   const callResults = useMemo(
     () =>
-      map(calls, call => {
+      calls.map(call => {
         if (!call) return INVALID_RESULT;
         const result = results[chainId as ChainId]?.[toCallKey(call)];
         let data;
