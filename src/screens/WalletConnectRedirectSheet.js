@@ -1,4 +1,5 @@
 import { useRoute } from '@react-navigation/native';
+import lang from 'i18n-js';
 import React, { useEffect } from 'react';
 import { Centered } from '../components/layout';
 import { Sheet } from '../components/sheet';
@@ -27,12 +28,12 @@ const emojisMap = {
 };
 
 const titlesMap = {
-  'connect': "You're connected!",
-  'reject': 'Connection canceled',
-  'sign': 'Message signed!',
-  'sign-canceled': 'Transaction canceled!',
-  'transaction': 'Transaction sent!',
-  'transaction-canceled': 'Transaction canceled!',
+  'connect': lang.t('walletconnect.titles.connect'),
+  'reject': lang.t('walletconnect.titles.reject'),
+  'sign': lang.t('walletconnect.titles.sign'),
+  'sign-canceled': lang.t('walletconnect.titles.sign_canceled'),
+  'transaction': lang.t('walletconnect.titles.transaction_sent'),
+  'transaction-canceled': lang.t('walletconnect.titles.transaction_canceled'),
 };
 
 const WalletConnectRedirectSheet = () => {
@@ -60,7 +61,9 @@ const WalletConnectRedirectSheet = () => {
             {titlesMap[type]}
           </Text>
         </Centered>
-        <BodyText color={colors.dark}>Go back to your browser</BodyText>
+        <BodyText color={colors.dark}>
+          {lang.t('walletconnect.go_back_to_your_browser')}
+        </BodyText>
       </Centered>
     </Sheet>
   );
