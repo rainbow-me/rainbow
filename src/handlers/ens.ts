@@ -72,8 +72,10 @@ export const fetchMetadata = async ({
   }
 };
 
-export const isUnknownOpenSeaENSDescription = (description?: string) =>
-  description?.includes('This is an unknown ENS name with the hash') || false;
+export const isUnknownOpenSeaENS = (asset?: any) =>
+  asset?.description?.includes('This is an unknown ENS name with the hash') ||
+  !asset?.image_url ||
+  false;
 
 export const fetchSuggestions = async (
   recipient: any,
