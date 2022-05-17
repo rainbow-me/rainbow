@@ -14,6 +14,7 @@ import {
   Stack,
   Text,
 } from '@rainbow-me/design-system';
+import { useDimensions } from '@rainbow-me/hooks';
 
 const WaitCommitmentConfirmationContent = ({
   accentColor,
@@ -22,16 +23,18 @@ const WaitCommitmentConfirmationContent = ({
   accentColor: any;
   action: () => void;
 }) => {
+  const { isSmallPhone } = useDimensions();
+
   return (
-    <Box flexGrow={1} paddingHorizontal="30px">
+    <>
       <Box paddingTop="24px">
         <StepIndicator currentStep={1} steps={3} />
       </Box>
       <Rows alignHorizontal="center">
         <Row>
           <Box flexGrow={1} justifyContent="center">
-            <Inset horizontal="42px">
-              <Stack space="34px">
+            <Inset horizontal="12px">
+              <Stack space={isSmallPhone ? '24px' : '34px'}>
                 <HourglassAnimation />
                 <Stack alignHorizontal="center" space="19px">
                   <Heading align="center" size="23px">
@@ -45,20 +48,21 @@ const WaitCommitmentConfirmationContent = ({
             </Inset>
           </Box>
         </Row>
-        <Row height="content">
-          <ButtonPressAnimation onPress={action}>
-            <Text
-              color={{ custom: accentColor }}
-              containsEmoji
-              size="16px"
-              weight="heavy"
-            >
-              {`🚀 ${lang.t('profiles.confirm.speed_up')}`}
-            </Text>
-          </ButtonPressAnimation>
-        </Row>
       </Rows>
-    </Box>
+      <Inset bottom={isSmallPhone ? '30px' : undefined}>
+        <ButtonPressAnimation onPress={action}>
+          <Text
+            align="center"
+            color={{ custom: accentColor }}
+            containsEmoji
+            size="16px"
+            weight="heavy"
+          >
+            {`🚀 ${lang.t('profiles.confirm.speed_up')}`}
+          </Text>
+        </ButtonPressAnimation>
+      </Inset>
+    </>
   );
 };
 

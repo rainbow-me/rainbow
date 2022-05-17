@@ -12,21 +12,24 @@ import {
   Text,
 } from '@rainbow-me/design-system';
 import { ENS_SECONDS_WAIT } from '@rainbow-me/helpers/ens';
+import { useDimensions } from '@rainbow-me/hooks';
 
 const WaitENSConfirmationContent = ({
   seconds,
 }: {
   seconds: number | undefined;
 }) => {
+  const { isSmallPhone } = useDimensions();
+
   return (
-    <Box flexGrow={1} paddingHorizontal="30px">
+    <>
       <Box paddingTop="24px">
         <StepIndicator currentStep={2} steps={3} />
       </Box>
       <Rows alignHorizontal="center">
         <Row>
           <Box flexGrow={1} justifyContent="center">
-            <Inset horizontal="42px">
+            <Inset horizontal={isSmallPhone ? '34px' : '42px'}>
               <Stack space="34px">
                 <LargeCountdownClock
                   initialSeconds={ENS_SECONDS_WAIT}
@@ -46,7 +49,7 @@ const WaitENSConfirmationContent = ({
           </Box>
         </Row>
       </Rows>
-    </Box>
+    </>
   );
 };
 
