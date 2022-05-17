@@ -50,6 +50,7 @@ import {
   androidRecievePreset,
   bottomSheetPreset,
   emojiPreset,
+  ensPreset,
   exchangePreset,
   expandedPreset,
   expandedPresetWithSmallGestureResponseDistance,
@@ -166,28 +167,22 @@ function MainNavigator() {
           <Stack.Screen
             component={RegisterENSNavigator}
             name={Routes.REGISTER_ENS_NAVIGATOR}
+            options={ensPreset}
           />
           <Stack.Screen
             component={ENSConfirmRegisterSheet}
             name={Routes.ENS_CONFIRM_REGISTER_SHEET}
-            options={{
-              ...exchangePreset,
-              cardStyleInterpolator: speedUpAndCancelStyleInterpolator,
-            }}
+            options={ensPreset}
           />
           <Stack.Screen
             component={ENSAdditionalRecordsSheet}
             name={Routes.ENS_ADDITIONAL_RECORDS_SHEET}
-            options={{
-              height: '45%',
-            }}
+            options={ensPreset}
           />
           <Stack.Screen
             component={ProfileSheet}
             name={Routes.PROFILE_SHEET}
-            options={{
-              height: '95%',
-            }}
+            options={ensPreset}
           />
           <Stack.Screen
             component={ProfileSheet}
@@ -195,17 +190,12 @@ function MainNavigator() {
               isPreview: true,
             }}
             name={Routes.PROFILE_PREVIEW_SHEET}
-            options={{
-              height: 280,
-            }}
+            options={ensPreset}
           />
           <Stack.Screen
             component={SelectENSSheet}
             name={Routes.SELECT_ENS_SHEET}
-            options={{
-              ...exchangePreset,
-              cardStyleInterpolator: speedUpAndCancelStyleInterpolator,
-            }}
+            options={ensPreset}
           />
         </>
       )}
