@@ -12,7 +12,7 @@ import {
 } from 'lodash';
 import { CardSize } from '../components/unique-token/CardSize';
 import { AssetTypes } from '@rainbow-me/entities';
-import { fetchMetadata } from '@rainbow-me/handlers/ens';
+import { fetchMetadata, isUnknownOpenSeaENS } from '@rainbow-me/handlers/ens';
 import { maybeSignUri } from '@rainbow-me/handlers/imgix';
 import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
 import { Network } from '@rainbow-me/helpers/networkTypes';
@@ -242,7 +242,7 @@ export const applyENSMetadataFallbackToToken = async token => {
   const isENS =
     token?.asset_contract?.address?.toLowerCase() ===
     ENS_NFT_CONTRACT_ADDRESS.toLowerCase();
-  if (isENS && !token.uniqueId.includes('.eth')) {
+  if (isENS && isUnknownOpenSeaENS(token)) {
     const { name, image_url } = await fetchMetadata({
       tokenId: token.id,
     });
