@@ -12,7 +12,6 @@ import useAppVersion from '../../hooks/useAppVersion';
 import { ListFooter, ListItem } from '../list';
 import { RadioListItem } from '../radio-list';
 import UserDevSection from './UserDevSection';
-import { Divider, Heading, Inset } from '@rainbow-me/design-system';
 import { deleteAllBackups } from '@rainbow-me/handlers/cloudBackup';
 import { web3SetHttpProvider } from '@rainbow-me/handlers/web3';
 import { RainbowContext } from '@rainbow-me/helpers/RainbowContext';
@@ -189,12 +188,6 @@ const DevSection = () => {
             selected={!!config[key]}
           />
         ))}
-      <Divider />
-      <Inset space="19px">
-        <Heading containsEmoji size="18px">
-          📲 Test Notifications
-        </Heading>
-      </Inset>
       <ListFooter />
     </ScrollView>
   );
