@@ -1,4 +1,3 @@
-import { keys, map } from 'lodash';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import reduceArrayToObject from './reduceArrayToObject';
 
@@ -19,6 +18,8 @@ const hapticToTrigger = (haptic: HapticFeedbackType) => ({
   [haptic]: () => ReactNativeHapticFeedback.trigger(haptic),
 });
 
-const haptics = reduceArrayToObject(map(keys(HapticFeedback), hapticToTrigger));
+const haptics = reduceArrayToObject(
+  Object.values(HapticFeedback).map(hapticToTrigger)
+);
 
 export default haptics;
