@@ -129,7 +129,11 @@ export default function SendHeader({
   const name = label.length ? label : userWallet?.ens ?? userWallet?.address;
 
   const handleNavigateToContact = useCallback(() => {
-    let nickname = recipient;
+    let nickname = profilesEnabled
+      ? !isHexString(recipient)
+        ? recipient
+        : null
+      : recipient;
     let color = '';
     if (!profilesEnabled) {
       color = get(contact, 'color');
