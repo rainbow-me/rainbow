@@ -50,6 +50,10 @@ import {
 
 const { RainbowRequestReview, RNReview } = NativeModules;
 
+let isTestFlight = ios
+  ? NativeModules.RNTestFlight.getConstants().isTestFlight
+  : false;
+
 export const SettingsExternalURLs = {
   rainbowHomepage: 'https://rainbow.me',
   rainbowLearn: 'https://learn.rainbow.me',
@@ -380,7 +384,7 @@ export default function SettingsSection({
             onPress={onPressDev}
             testID="developer-section"
           />
-          {IS_DEV && (
+          {(IS_DEV || isTestFlight) && (
             <ListItem
               icon={<Emoji name="construction" />}
               label={lang.t('settings.notifications')}
