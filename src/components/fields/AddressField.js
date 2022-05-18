@@ -80,11 +80,11 @@ const AddressField = (
   const autofill = name || address;
 
   useEffect(() => {
-    if (!inputValue && autofill && autofill !== inputValue) {
-      setInputValue(autofill);
-      validateAddress(autofill);
+    if (name !== inputValue) {
+      setInputValue(name);
+      validateAddress(address);
     }
-  }, [autofill, inputValue, validateAddress]);
+  }, [address, autofill, editable, inputValue, name, validateAddress]);
 
   return (
     <Row flex={1}>

@@ -125,7 +125,8 @@ export default function SendHeader({
   const label = isPreExistingContact
     ? removeFirstEmojiFromString(contact?.nickname) || contact?.ens
     : removeFirstEmojiFromString(userWallet?.label || nickname);
-  const name = label ? label : userWallet?.ens;
+
+  const name = label.length ? label : userWallet?.ens ?? userWallet?.address;
 
   const handleNavigateToContact = useCallback(() => {
     let nickname = recipient;

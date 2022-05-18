@@ -1,6 +1,10 @@
 import { Wallet } from '@ethersproject/wallet';
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
+import {
+  // @ts-ignore
+  IS_TESTING,
+} from 'react-native-dotenv';
 import { Rap, RapActionTypes, RapENSActionParameters } from '../common';
 import { ENSRegistrationRecords } from '@rainbow-me/entities';
 import {
@@ -21,7 +25,6 @@ import {
 import store from '@rainbow-me/redux/store';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
-
 const executeCommit = async (
   name?: string,
   duration?: number,
@@ -244,8 +247,9 @@ const ensAction = async (
     );
 
     const setRecordsType =
-      type === ENSRegistrationTransactionType.MULTICALL ||
-      type === ENSRegistrationTransactionType.SET_TEXT;
+      IS_TESTING !== 'true' &&
+      (type === ENSRegistrationTransactionType.MULTICALL ||
+        type === ENSRegistrationTransactionType.SET_TEXT);
 
     gasLimit = await estimateENSTransactionGasLimit({
       duration,
