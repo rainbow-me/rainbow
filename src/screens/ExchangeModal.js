@@ -769,14 +769,16 @@ export default function ExchangeModal({
             />
           )}
         </FloatingPanels>
-        <GasSpeedButton
-          asset={outputCurrency}
-          bottom={insets.bottom - 7}
-          currentNetwork={currentNetwork}
-          dontBlur
-          onCustomGasBlur={handleCustomGasBlur}
-          testID={`${testID}-gas`}
-        />
+        {inputCurrency && outputCurrency && (
+          <GasSpeedButton
+            asset={outputCurrency}
+            bottom={insets.bottom - 7}
+            currentNetwork={currentNetwork}
+            dontBlur
+            onCustomGasBlur={handleCustomGasBlur}
+            testID={`${testID}-gas`}
+          />
+        )}
       </InnerWrapper>
     </Wrapper>
   );

@@ -405,14 +405,12 @@ export const gasPricesStartPolling = (
   network = Network.mainnet,
   flashbots = false
 ) => async (dispatch: AppDispatch, getState: AppGetState) => {
-  logger.debug('gasPricesStartPolling', network);
   dispatch(gasPricesStopPolling());
 
   const getGasPrices = (network: Network) =>
     withRunExclusive(
       () =>
         new Promise(async (fetchResolve, fetchReject) => {
-          logger.debug('called getGasPrices with network', network);
           try {
             dispatch({
               payload: network,
@@ -485,7 +483,6 @@ export const gasPricesStartPolling = (
                 type: GAS_FEES_SUCCESS,
               });
             } else {
-              logger.debug('gas tsx: isMainnet', txNetwork);
               try {
                 const {
                   gasFeeParamsBySpeed,
@@ -712,7 +709,6 @@ export const gasUpdateTxFee = (
   });
 
 export const gasPricesStopPolling = () => (dispatch: AppDispatch) => {
-  logger.debug('stop polling gas prices');
   gasPricesHandle && clearTimeout(gasPricesHandle);
   dispatch({
     type: GAS_PRICES_RESET,
