@@ -99,28 +99,44 @@ export default function ProfileSheet() {
   }, [params, ensName, profileAddress, accountAddress]);
 
   return (
-    <ProfileSheetConfigContext.Provider value={{ enableZoomableImages }}>
-      <StatusBar barStyle="light-content" />
-      <AccentColorProvider color={accentColor}>
-        <Box background="body">
-          <Box style={wrapperStyle}>
-            {!isSuccess || !hasListFetched ? (
-              <Stack space="19px">
-                <ProfileSheetHeader isLoading isPreview={params.isPreview} />
-                <PlaceholderList />
-              </Stack>
-            ) : !params.isPreview ? (
-              <RecyclerAssetList2
-                externalAddress={profileAddress}
-                type="ens-profile"
-              />
-            ) : (
-              <ProfileSheetHeader ensName={params?.ensName} isPreview />
-            )}
+    <AndroidWrapper>
+      <ProfileSheetConfigContext.Provider value={{ enableZoomableImages }}>
+        <StatusBar barStyle="light-content" />
+        <AccentColorProvider color={accentColor}>
+          <Box background="body">
+            <Box style={wrapperStyle}>
+              {!isSuccess || !hasListFetched ? (
+                <Stack space="19px">
+                  <ProfileSheetHeader isLoading isPreview={params.isPreview} />
+                  <PlaceholderList />
+                </Stack>
+              ) : !params.isPreview ? (
+                <RecyclerAssetList2
+                  externalAddress={profileAddress}
+                  type="ens-profile"
+                />
+              ) : (
+                <ProfileSheetHeader ensName={params?.ensName} isPreview />
+              )}
+            </Box>
           </Box>
-        </Box>
-      </AccentColorProvider>
-    </ProfileSheetConfigContext.Provider>
+        </AccentColorProvider>
+      </ProfileSheetConfigContext.Provider>
+    </AndroidWrapper>
+  );
+}
+
+function AndroidWrapper({ children }: { children: React.ReactElement }) {
+  return android ? (
+    <Box
+      borderTopRadius={30}
+      style={{ overflow: 'hidden' }}
+      top={{ custom: StatusBar.currentHeight || 0 }}
+    >
+      {children}
+    </Box>
+  ) : (
+    children
   );
 }
 

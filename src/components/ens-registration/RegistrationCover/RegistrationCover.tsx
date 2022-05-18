@@ -72,11 +72,12 @@ const RegistrationCover = ({
       asset?: UniqueAsset;
       image?: Image & { tmpPath?: string };
     }) => {
-      setCoverMetadata(image);
-      setCoverUrl(image?.tmpPath);
       // We want to disallow future avatar state changes (i.e. when upload successful)
       // to avoid avatar flashing (from temp URL to uploaded URL).
       setCoverUpdateAllowed(false);
+      setCoverMetadata(image);
+      setCoverUrl(image?.tmpPath);
+
       if (asset) {
         const standard = asset.asset_contract?.schema_name || '';
         const contractAddress = asset.asset_contract?.address || '';
