@@ -350,6 +350,10 @@
         "small_market": "Small Market :)"
       },
       "settings": "Settings :)",
+      "use_defaults": "Use Defaults :)",
+      "done": "Done :)",
+      "slippage_tolerance": "Slippage Tolerance :)",
+      "use_flashbots": "Use Flashbots :)",
       "swapping_for_prefix": "Swapping for :)",
       "unverified_token": {
         "go_back": "Go Back :)",
