@@ -175,101 +175,60 @@ const DevNotificationsSection = () => {
   return (
     <ScrollView>
       <Box paddingHorizontal="19px" paddingTop="19px">
-        {loading ? null : (
+        {!loading && (
           <Columns space="8px">
-            {/* ugly undefined to clear TS because this component is not typed */}
+            {/* 
+            // @ts-expect-error */}
             <MiniButton
               backgroundColor={colors.blueGreyDark30}
               color="secondary60"
-              disablePadding={undefined}
-              disabled={undefined}
-              hasLeadingIcon={undefined}
-              height={undefined}
               hideShadow
-              letterSpacing={undefined}
-              onPress={() => {
-                unsubscribeAll();
-              }}
-              small={undefined}
-              weight={undefined}
-              width={undefined}
+              onPress={unsubscribeAll}
             >
               All Off
             </MiniButton>
+            {/* 
+            // @ts-expect-error */}
             <MiniButton
               backgroundColor={colors.blueGreyDark30}
               color="secondary60"
-              disablePadding={undefined}
-              disabled={undefined}
-              hasLeadingIcon={undefined}
-              height={undefined}
               hideShadow
-              letterSpacing={undefined}
-              onPress={() => {
-                subscribeAllAsWatcher();
-              }}
-              small={undefined}
-              weight={undefined}
-              width={undefined}
+              onPress={subscribeAllAsWatcher}
             >
               All Watcher
             </MiniButton>
+            {/* 
+            // @ts-expect-error */}
             <MiniButton
               backgroundColor={colors.blueGreyDark30}
               color="secondary60"
-              disablePadding={undefined}
-              disabled={undefined}
-              hasLeadingIcon={undefined}
-              height={undefined}
               hideShadow
-              letterSpacing={undefined}
-              onPress={() => {
-                subscribeAllAsOwner();
-              }}
-              small={undefined}
-              weight={undefined}
-              width={undefined}
+              onPress={subscribeAllAsOwner}
             >
               All Owner
             </MiniButton>
           </Columns>
         )}
         <Box paddingTop="8px">
-          {loading ? null : (
+          {!loading && (
             <Columns space="8px">
+              {/* 
+              // @ts-expect-error */}
               <MiniButton
                 backgroundColor={colors.blueGreyDark30}
                 color="secondary60"
-                disablePadding={undefined}
-                disabled={undefined}
-                hasLeadingIcon={undefined}
-                height={undefined}
                 hideShadow
-                letterSpacing={undefined}
-                onPress={() => {
-                  unsubscribeAllTx();
-                }}
-                small={undefined}
-                weight={undefined}
-                width={undefined}
+                onPress={unsubscribeAllTx}
               >
                 All Tx Off
               </MiniButton>
+              {/* 
+              // @ts-expect-error */}
               <MiniButton
                 backgroundColor={colors.blueGreyDark30}
                 color="secondary60"
-                disablePadding={undefined}
-                disabled={undefined}
-                hasLeadingIcon={undefined}
-                height={undefined}
                 hideShadow
-                letterSpacing={undefined}
-                onPress={() => {
-                  subscribeAllTx();
-                }}
-                small={undefined}
-                weight={undefined}
-                width={undefined}
+                onPress={subscribeAllTx}
               >
                 All Tx On
               </MiniButton>
@@ -278,153 +237,112 @@ const DevNotificationsSection = () => {
         </Box>
       </Box>
       <Box paddingBottom="19px" paddingHorizontal="19px">
-        {loading
-          ? null
-          : allWallets.map(wallet => {
-              const isOff =
-                notificationState[wallet.address].subscription === 'off';
-              const isWatcher =
-                notificationState[wallet.address].subscription === 'watcher';
-              const isOwner =
-                notificationState[wallet.address].subscription === 'owner';
-              const isTx = notificationState[wallet.address].tx === 'on';
-              const isNotTx = notificationState[wallet.address].tx === 'off';
+        {!loading &&
+          allWallets.map(wallet => {
+            const isOff =
+              notificationState[wallet.address].subscription === 'off';
+            const isWatcher =
+              notificationState[wallet.address].subscription === 'watcher';
+            const isOwner =
+              notificationState[wallet.address].subscription === 'owner';
+            const isTx = notificationState[wallet.address].tx === 'on';
+            const isNotTx = notificationState[wallet.address].tx === 'off';
 
-              return (
-                <Box key={wallet.address}>
+            return (
+              <Box key={wallet.address}>
+                <Box
+                  height={{ custom: 1 }}
+                  paddingBottom="24px"
+                  paddingTop="24px"
+                  width="full"
+                >
                   <Box
                     height={{ custom: 1 }}
-                    paddingBottom="24px"
-                    paddingTop="24px"
+                    style={{ backgroundColor: colors.blueGreyDark30 }}
                     width="full"
-                  >
-                    <Box
-                      height={{ custom: 1 }}
-                      style={{ backgroundColor: colors.blueGreyDark30 }}
-                      width="full"
-                    />
-                  </Box>
-                  <Box>
-                    <Text containsEmoji size="18px" weight="bold">
-                      {wallet.label}
-                    </Text>
-                  </Box>
-                  <Box paddingTop="15px">
-                    <Text color="secondary60" size="16px">
-                      {formatAddressForDisplay(wallet.address)}
-                    </Text>
-                  </Box>
-                  <Box paddingTop="15px">
-                    <Columns space="8px">
-                      <MiniButton
-                        backgroundColor={
-                          isOff ? colors.appleBlue : colors.blueGreyDark30
-                        }
-                        color={isOff ? 'white' : 'secondary60'}
-                        disablePadding={undefined}
-                        disabled={undefined}
-                        hasLeadingIcon={undefined}
-                        height={undefined}
-                        hideShadow
-                        letterSpacing={undefined}
-                        onPress={() => {
-                          unsubscribe(wallet.address);
-                        }}
-                        small={undefined}
-                        weight={undefined}
-                        width={undefined}
-                      >
-                        Off
-                      </MiniButton>
-                      <MiniButton
-                        backgroundColor={
-                          isWatcher ? colors.appleBlue : colors.blueGreyDark30
-                        }
-                        color={isWatcher ? 'white' : 'secondary60'}
-                        disablePadding={undefined}
-                        disabled={undefined}
-                        hasLeadingIcon={undefined}
-                        height={undefined}
-                        hideShadow
-                        letterSpacing={undefined}
-                        onPress={() => {
-                          subscribeAsWatcher(wallet.address);
-                        }}
-                        small={undefined}
-                        weight={undefined}
-                        width={undefined}
-                      >
-                        Watcher
-                      </MiniButton>
-                      <MiniButton
-                        backgroundColor={
-                          isOwner ? colors.appleBlue : colors.blueGreyDark30
-                        }
-                        color={isOwner ? 'white' : 'secondary60'}
-                        disablePadding={undefined}
-                        disabled={undefined}
-                        hasLeadingIcon={undefined}
-                        height={undefined}
-                        hideShadow
-                        letterSpacing={undefined}
-                        onPress={() => {
-                          subscribeAsOwner(wallet.address);
-                        }}
-                        small={undefined}
-                        weight={undefined}
-                        width={undefined}
-                      >
-                        Owner
-                      </MiniButton>
-                    </Columns>
-                  </Box>
-                  <Box paddingTop="8px">
-                    <Columns space="8px">
-                      <MiniButton
-                        backgroundColor={
-                          isNotTx ? colors.appleBlue : colors.blueGreyDark30
-                        }
-                        color={isNotTx ? 'white' : 'secondary60'}
-                        disablePadding={undefined}
-                        disabled={undefined}
-                        hasLeadingIcon={undefined}
-                        height={undefined}
-                        hideShadow
-                        letterSpacing={undefined}
-                        onPress={() => {
-                          unsubscribeTx(wallet.address);
-                        }}
-                        small={undefined}
-                        weight={undefined}
-                        width={undefined}
-                      >
-                        Transactions Off
-                      </MiniButton>
-                      <MiniButton
-                        backgroundColor={
-                          isTx ? colors.appleBlue : colors.blueGreyDark30
-                        }
-                        color={isTx ? 'white' : 'secondary60'}
-                        disablePadding={undefined}
-                        disabled={undefined}
-                        hasLeadingIcon={undefined}
-                        height={undefined}
-                        hideShadow
-                        letterSpacing={undefined}
-                        onPress={() => {
-                          subscribeTx(wallet.address);
-                        }}
-                        small={undefined}
-                        weight={undefined}
-                        width={undefined}
-                      >
-                        Transactions On
-                      </MiniButton>
-                    </Columns>
-                  </Box>
+                  />
                 </Box>
-              );
-            })}
+                <Box>
+                  <Text containsEmoji size="18px" weight="bold">
+                    {wallet.label}
+                  </Text>
+                </Box>
+                <Box paddingTop="15px">
+                  <Text color="secondary60" size="16px">
+                    {formatAddressForDisplay(wallet.address)}
+                  </Text>
+                </Box>
+                <Box paddingTop="15px">
+                  <Columns space="8px">
+                    {/* 
+                    // @ts-expect-error */}
+                    <MiniButton
+                      backgroundColor={
+                        isOff ? colors.appleBlue : colors.blueGreyDark30
+                      }
+                      color={isOff ? 'white' : 'secondary60'}
+                      hideShadow
+                      onPress={() => unsubscribe(wallet.address)}
+                    >
+                      Off
+                    </MiniButton>
+                    {/* 
+                    // @ts-expect-error */}
+                    <MiniButton
+                      backgroundColor={
+                        isWatcher ? colors.appleBlue : colors.blueGreyDark30
+                      }
+                      color={isWatcher ? 'white' : 'secondary60'}
+                      hideShadow
+                      onPress={() => subscribeAsWatcher(wallet.address)}
+                    >
+                      Watcher
+                    </MiniButton>
+                    {/* 
+                    // @ts-expect-error */}
+                    <MiniButton
+                      backgroundColor={
+                        isOwner ? colors.appleBlue : colors.blueGreyDark30
+                      }
+                      color={isOwner ? 'white' : 'secondary60'}
+                      hideShadow
+                      onPress={() => subscribeAsOwner(wallet.address)}
+                    >
+                      Owner
+                    </MiniButton>
+                  </Columns>
+                </Box>
+                <Box paddingTop="8px">
+                  <Columns space="8px">
+                    {/* 
+                    // @ts-expect-error */}
+                    <MiniButton
+                      backgroundColor={
+                        isNotTx ? colors.appleBlue : colors.blueGreyDark30
+                      }
+                      color={isNotTx ? 'white' : 'secondary60'}
+                      hideShadow
+                      onPress={() => unsubscribeTx(wallet.address)}
+                    >
+                      Transactions Off
+                    </MiniButton>
+                    {/* 
+                    // @ts-expect-error */}
+                    <MiniButton
+                      backgroundColor={
+                        isTx ? colors.appleBlue : colors.blueGreyDark30
+                      }
+                      color={isTx ? 'white' : 'secondary60'}
+                      hideShadow
+                      onPress={() => subscribeTx(wallet.address)}
+                    >
+                      Transactions On
+                    </MiniButton>
+                  </Columns>
+                </Box>
+              </Box>
+            );
+          })}
       </Box>
       <ListFooter />
     </ScrollView>
