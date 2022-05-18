@@ -57,11 +57,8 @@ export default function useENSRegistrationForm({
   // The initial records will be the existing records belonging to the profile in "edit mode",
   // but will be all of the records in "create mode".
   const defaultRecords = useMemo(
-    () =>
-      mode === REGISTRATION_MODES.EDIT
-        ? profileQuery?.data?.records || initialRecords
-        : allRecords,
-    [allRecords, initialRecords, mode, profileQuery?.data?.records]
+    () => (mode === REGISTRATION_MODES.EDIT ? initialRecords : allRecords),
+    [allRecords, initialRecords, mode]
   );
 
   const [errors, setErrors] = useRecoilState(errorsAtom);
