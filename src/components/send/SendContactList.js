@@ -194,7 +194,8 @@ export default function SendContactList({
         id: 'watching',
         title: `${isDarkMode ? '􀨭' : '􀦧'} ${lang.t('contacts.watching')}`,
       });
-    filteredEnsSuggestions.length &&
+    currentInput &&
+      filteredEnsSuggestions.length &&
       tmp.push({
         data: filteredEnsSuggestions,
         id: 'suggestions',
