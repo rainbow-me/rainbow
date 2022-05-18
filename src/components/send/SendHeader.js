@@ -222,7 +222,7 @@ export default function SendHeader({
         <AddressField
           address={recipient}
           autoFocus={!showAssetList}
-          disableInput={fromProfile}
+          editable={!fromProfile}
           name={name}
           onChange={onChangeAddressInput}
           onFocus={onFocus}

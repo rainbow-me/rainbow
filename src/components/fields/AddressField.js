@@ -48,16 +48,7 @@ const formatValue = value =>
     : value;
 
 const AddressField = (
-  {
-    address,
-    autoFocus,
-    disableInput,
-    name,
-    onChange,
-    onFocus,
-    testID,
-    ...props
-  },
+  { address, autoFocus, editable, name, onChange, onFocus, testID, ...props },
   ref
 ) => {
   const { isTinyPhone } = useDimensions();
@@ -101,7 +92,7 @@ const AddressField = (
         {...props}
         autoFocus={autoFocus}
         color={isValid ? colors.appleBlue : colors.dark}
-        editable={!disableInput}
+        editable={editable}
         onBlur={expandAbbreviatedClipboard}
         onChange={handleChange}
         onChangeText={setInputValue}
