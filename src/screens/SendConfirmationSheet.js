@@ -24,6 +24,9 @@ import {
   addressHashedColorIndex,
   addressHashedEmoji,
 } from '../utils/profileUtils';
+import useExperimentalFlag, {
+  PROFILES,
+} from '@rainbow-me/config/experimentalHooks';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
@@ -173,6 +176,7 @@ export default function SendConfirmationSheet() {
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const insets = useSafeArea();
   const { contacts } = useContacts();
+  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   useEffect(() => {
     android && Keyboard.dismiss();
@@ -353,7 +357,9 @@ export default function SendConfirmationSheet() {
     enabled: to.slice(-4) === '.eth',
   });
 
-  const accountImage = images?.avatarUrl || existingAccount?.image;
+  const accountImage = profilesEnabled
+    ? images?.avatarUrl || existingAccount?.image
+    : existingAccount?.image;
 
   const contentHeight = realSheetHeight - (isL2 ? 50 : 30);
   return (
