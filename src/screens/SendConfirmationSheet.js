@@ -232,8 +232,8 @@ export default function SendConfirmationSheet() {
   }, [isSendingToUserAccount, network, toAddress, transactions]);
 
   const contact = useMemo(() => {
-    return get(contacts, `${[toLower(to)]}`);
-  }, [contacts, to]);
+    return get(contacts, `${[toLower(toAddress)]}`);
+  }, [contacts, toAddress]);
 
   const [checkboxes, setCheckboxes] = useState([
     {
@@ -334,7 +334,6 @@ export default function SendConfirmationSheet() {
 
   const avatarValue =
     returnStringFirstEmoji(existingAccount?.label) ||
-    contact?.nickname ||
     addressHashedEmoji(toAddress);
 
   const avatarColor =
@@ -350,8 +349,8 @@ export default function SendConfirmationSheet() {
     realSheetHeight -= 80;
   }
 
-  const { data: images } = useENSProfileImages(avatarName, {
-    enabled: Boolean(avatarName),
+  const { data: images } = useENSProfileImages(to, {
+    enabled: to.slice(-4) === '.eth',
   });
 
   const accountImage = images?.avatarUrl || existingAccount?.image;
