@@ -117,7 +117,7 @@ const buildEnsToken = ({
 
 export const isUnknownOpenSeaENS = (asset?: any) =>
   asset?.description?.includes('This is an unknown ENS name with the hash') ||
-  !asset.uniqueId.includes('.eth') ||
+  !asset?.uniqueId?.includes('.eth') ||
   !asset?.image_url ||
   false;
 
