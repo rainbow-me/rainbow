@@ -6,7 +6,7 @@ import { position } from '@rainbow-me/styles';
 export default function ScaleInAnimation({
   from = 0,
   scaleTo = 0.42,
-  style,
+  style = {},
   to = 100,
   value,
   ...props
