@@ -48,11 +48,9 @@ import {
   REVIEW_DONE_KEY,
 } from '@rainbow-me/utils/reviewAlert';
 
-const { RainbowRequestReview, RNReview } = NativeModules;
+const { RainbowRequestReview, RNReview, RNTestFlight } = NativeModules;
 
-let isTestFlight = ios
-  ? NativeModules.RNTestFlight.getConstants().isTestFlight
-  : false;
+let isTestFlight = ios ? RNTestFlight.getConstants().isTestFlight : false;
 
 export const SettingsExternalURLs = {
   rainbowHomepage: 'https://rainbow.me',
