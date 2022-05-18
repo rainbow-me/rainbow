@@ -243,10 +243,14 @@ const ensAction = async (
       type
     );
 
+    const setRecordsType =
+      type === ENSRegistrationTransactionType.MULTICALL ||
+      type === ENSRegistrationTransactionType.SET_TEXT;
+
     gasLimit = await estimateENSTransactionGasLimit({
       duration,
       name,
-      ownerAddress,
+      ownerAddress: setRecordsType ? undefined : ownerAddress,
       records: ensRegistrationRecords,
       rentPrice,
       salt,
