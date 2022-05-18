@@ -118,7 +118,7 @@ export default function ENSConfirmRegisterSheet() {
   const avatarMetadata = useRecoilValue(avatarMetadataAtom);
 
   const avatarImage =
-    avatarMetadata?.path || params?.externalAvatarUrl || initialAvatarUrl || '';
+    avatarMetadata?.path || initialAvatarUrl || params?.externalAvatarUrl || '';
   const { result: dominantColor } = usePersistentDominantColorFromImage(
     avatarImage
   );
