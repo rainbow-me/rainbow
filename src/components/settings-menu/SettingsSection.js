@@ -141,6 +141,7 @@ export default function SettingsSection({
   onPressIcloudBackup,
   onPressLanguage,
   onPressNetwork,
+  onPressNotifications,
   onPressPrivacy,
   onPressShowSecret,
 }) {
@@ -379,6 +380,14 @@ export default function SettingsSection({
             onPress={onPressDev}
             testID="developer-section"
           />
+          {IS_DEV && (
+            <ListItem
+              icon={<Emoji name="construction" />}
+              label={lang.t('settings.notifications')}
+              onPress={onPressNotifications}
+              testID="notifications-section"
+            />
+          )}
         </Fragment>
         <VersionStampContainer>
           <AppVersionStamp />
