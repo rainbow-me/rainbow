@@ -22,6 +22,11 @@ export const convertAmountToRawAmount = (
 ): string =>
   new BigNumber(value).times(new BigNumber(10).pow(decimals)).toFixed();
 
+export const toFixedDecimalsAndRoundHalfUp = (
+  value: BigNumberish,
+  decimals: number
+): string => new BigNumber(value).toFixed(decimals, BigNumber.ROUND_HALF_UP);
+
 export const isZero = (value: BigNumberish): boolean =>
   new BigNumber(value).isZero();
 

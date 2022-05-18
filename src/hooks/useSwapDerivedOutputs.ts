@@ -13,6 +13,7 @@ import {
   convertAmountToRawAmount,
   convertNumberToString,
   isZero,
+  toFixedDecimalsAndRoundHalfUp,
   updatePrecisionToDisplay,
 } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
@@ -47,14 +48,15 @@ const getOutputAmount = (
     inputToken.decimals
   );
   let tradeDetails = null;
-  try {
-    const amountIn = new TokenAmount(inputToken, rawInputAmount);
-    tradeDetails = Trade.bestTradeExactIn(allPairs, amountIn, outputToken, {
-      maxNumResults: 1,
-    })[0];
-  } catch (err) {
-    // user trying to convert a currency with more decimal places than that currency can be split
-  }
+
+  const amountIn = new TokenAmount(
+    inputToken,
+    toFixedDecimalsAndRoundHalfUp(rawInputAmount, 0)
+  );
+  tradeDetails = Trade.bestTradeExactIn(allPairs, amountIn, outputToken, {
+    maxNumResults: 1,
+  })[0];
+
   const outputAmount = tradeDetails?.outputAmount?.toFixed() ?? null;
   const outputAmountDisplay =
     outputAmount && outputPrice
@@ -120,15 +122,6 @@ export default function useSwapDerivedOutputs() {
       : null;
 
     if (independentField === SwapModalField.input) {
-      derivedValues[SwapModalField.input] = independentValue;
-      displayValues[DisplayValue.input] = independentValue;
-
-      const nativeValue =
-        inputPrice && !isZero(independentValue)
-          ? convertAmountToNativeAmount(independentValue, inputPrice)
-          : null;
-
-      derivedValues[SwapModalField.native] = nativeValue;
       const {
         outputAmount,
         outputAmountDisplay,
@@ -140,6 +133,18 @@ export default function useSwapDerivedOutputs() {
         outputPrice,
         allPairs
       );
+      derivedValues[SwapModalField.input] = toFixedDecimalsAndRoundHalfUp(
+        independentValue,
+        inputToken.decimals
+      );
+      displayValues[DisplayValue.input] = independentValue;
+
+      const nativeValue =
+        inputPrice && !isZero(independentValue)
+          ? convertAmountToNativeAmount(independentValue, inputPrice)
+          : null;
+
+      derivedValues[SwapModalField.native] = nativeValue;
       tradeDetails = newTradeDetails;
       derivedValues[SwapModalField.output] = outputAmount;
       displayValues[DisplayValue.output] = outputAmountDisplay;
@@ -182,7 +187,10 @@ export default function useSwapDerivedOutputs() {
           tradeDetails,
         };
       }
-      derivedValues[SwapModalField.output] = independentValue;
+      derivedValues[SwapModalField.output] = toFixedDecimalsAndRoundHalfUp(
+        independentValue,
+        outputToken.decimals
+      );
       displayValues[DisplayValue.output] = independentValue;
 
       if (!isZero(independentValue)) {
@@ -190,19 +198,18 @@ export default function useSwapDerivedOutputs() {
           convertNumberToString(independentValue),
           outputToken.decimals
         );
-        try {
-          const amountOut = new TokenAmount(outputToken, outputRawAmount);
-          tradeDetails = Trade.bestTradeExactOut(
-            allPairs,
-            inputToken,
-            amountOut,
-            {
-              maxNumResults: 1,
-            }
-          )[0];
-        } catch (e) {
-          // user trying to convert a currency with more decimal places than that currency can be split
-        }
+        const amountOut = new TokenAmount(
+          outputToken,
+          toFixedDecimalsAndRoundHalfUp(outputRawAmount, 0)
+        );
+        tradeDetails = Trade.bestTradeExactOut(
+          allPairs,
+          inputToken,
+          amountOut,
+          {
+            maxNumResults: 1,
+          }
+        )[0];
       }
 
       const inputAmountExact = tradeDetails?.inputAmount?.toExact() ?? null;
