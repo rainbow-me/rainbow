@@ -57,8 +57,11 @@ export default function useENSRegistrationForm({
   // The initial records will be the existing records belonging to the profile in "edit mode",
   // but will be all of the records in "create mode".
   const defaultRecords = useMemo(
-    () => (mode === REGISTRATION_MODES.EDIT ? initialRecords : allRecords),
-    [allRecords, initialRecords, mode]
+    () =>
+      mode === REGISTRATION_MODES.EDIT
+        ? profileQuery?.data?.records || initialRecords
+        : allRecords,
+    [allRecords, initialRecords, mode, profileQuery?.data?.records]
   );
 
   const [errors, setErrors] = useRecoilState(errorsAtom);
@@ -96,7 +99,7 @@ export default function useENSRegistrationForm({
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [name, isEmpty(defaultRecords)]);
+  }, [name, defaultRecords, isEmpty(defaultRecords)]);
 
   const [valuesMap, setValuesMap] = useRecoilState(valuesAtom);
   const values = useMemo(() => valuesMap[name] || {}, [name, valuesMap]);
@@ -109,7 +112,7 @@ export default function useENSRegistrationForm({
       }));
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [name, isEmpty(defaultRecords)]
+    [name, defaultRecords, isEmpty(defaultRecords)]
   );
 
   // Set initial records in redux depending on user input (defaultFields)
