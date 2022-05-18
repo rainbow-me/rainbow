@@ -3,8 +3,8 @@ import { ButtonProps } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { TextColor } from '../../design-system/typography/typography';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
-import { useTheme } from '@rainbow-me/context';
 import { Box, Cover, Text } from '@rainbow-me/design-system';
+import { useTheme } from '@rainbow-me/theme';
 
 const TintButton = ({
   children,

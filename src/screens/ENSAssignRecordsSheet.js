@@ -14,8 +14,8 @@ import TintButton from '../components/buttons/TintButton';
 import { TextRecordsForm } from '../components/ens-registration';
 import SelectableButton from '../components/ens-registration/TextRecordsForm/SelectableButton';
 import { SheetActionButton, SheetActionButtonRow } from '../components/sheet';
-import { useTheme } from '../context/ThemeContext';
 import { useNavigation } from '../navigation/Navigation';
+import { useTheme } from '../theme/ThemeContext';
 // import { usePersistentDominantColorFromImage } from '@rainbow-me/hooks';
 import {
   AccentColorProvider,

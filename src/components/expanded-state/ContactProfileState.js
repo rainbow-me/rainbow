@@ -1,8 +1,8 @@
 import lang from 'i18n-js';
 import React, { useCallback, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
-import { useTheme } from '../../context/ThemeContext';
 import { useNavigation } from '../../navigation/Navigation';
+import { useTheme } from '../../theme/ThemeContext';
 import { abbreviations, magicMemo, profileUtils } from '../../utils';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
