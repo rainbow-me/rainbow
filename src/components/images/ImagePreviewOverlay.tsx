@@ -259,7 +259,8 @@ function ImagePreview({
     zIndex: progress.value > 0 ? index + 10 : index,
   }));
 
-  const ready = id && height > 0 && width > 0 && xOffset >= 0 && aspectRatio;
+  const ready =
+    id && imageUrl && height > 0 && width > 0 && xOffset >= 0 && aspectRatio;
 
   if (!ready) return null;
   return (
