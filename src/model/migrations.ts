@@ -1,6 +1,8 @@
+import path from 'path';
 import AsyncStorage from '@react-native-community/async-storage';
 import { captureException } from '@sentry/react-native';
 import { findKey, isNumber, keys, toLower, uniq } from 'lodash';
+import RNFS from 'react-native-fs';
 import { MMKV } from 'react-native-mmkv';
 import { removeLocal } from '../handlers/localstorage/common';
 import { IMAGE_METADATA } from '../handlers/localstorage/globalSettings';
@@ -11,8 +13,11 @@ import {
 import WalletTypes from '../helpers/walletTypes';
 import { BooleanMap } from '../hooks/useCoinListEditOptions';
 import store from '../redux/store';
-
 import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
+import {
+  RB_TOKEN_LIST_CACHE,
+  RB_TOKEN_LIST_ETAG,
+} from '../references/rainbow-token-list';
 import colors, { getRandomColor } from '../styles/colors';
 import {
   addressKey,
@@ -609,10 +614,37 @@ export default async function runMigrations() {
   migrations.push(v15);
 
   /*
- *************** Migration v16 ******************
- Pinned coins: list -> obj
- */
+   *************** Migration v16 ******************
+   Removes cached Rainbow token list from a cached json file
+   in the file system, since we now store fetched from the server files in MMKV now
+   */
   const v16 = async () => {
+    try {
+      RNFS.unlink(
+        path.join(RNFS.CachesDirectoryPath, `${RB_TOKEN_LIST_CACHE}.json`)
+      ).catch(() => {
+        // we don't care if it fails
+      });
+
+      RNFS.unlink(
+        path.join(RNFS.CachesDirectoryPath, `${RB_TOKEN_LIST_ETAG}.json`)
+      ).catch(() => {
+        // we don't care if it fails
+      });
+    } catch (error: any) {
+      logger.sentry('Migration v16 failed: ', error);
+      const migrationError = new Error('Migration 16 failed');
+      captureException(migrationError);
+    }
+  };
+
+  migrations.push(v16);
+
+  /*
+  *************** Migration v16 ******************
+  Pinned coins: list -> obj
+  */
+  const v17 = async () => {
     const { wallets } = store.getState().wallets;
     if (!wallets) return;
     for (let wallet of Object.values(wallets)) {
@@ -646,7 +678,7 @@ export default async function runMigrations() {
     }
   };
 
-  migrations.push(v16);
+  migrations.push(v17);
 
   logger.sentry(
     `Migrations: ready to run migrations starting on number ${currentVersion}`
