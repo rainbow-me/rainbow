@@ -2,7 +2,7 @@ import { isNil } from 'lodash';
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import ContractInteraction from '../../assets/contractInteraction.png';
-import { useTheme } from '../../context/ThemeContext';
+import { useTheme } from '../../theme/ThemeContext';
 import ChainBadge from './ChainBadge';
 import CoinIconFallback from './CoinIconFallback';
 import { useColorForAsset } from '@rainbow-me/hooks';

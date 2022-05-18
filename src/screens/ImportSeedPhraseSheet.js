@@ -13,7 +13,7 @@ import {
   InvalidPasteToast,
   ToastPositionContainer,
 } from '../components/toasts';
-import { useTheme } from '../context/ThemeContext';
+import { useTheme } from '../theme/ThemeContext';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import { isValidWallet } from '@rainbow-me/helpers/validators';
 import {

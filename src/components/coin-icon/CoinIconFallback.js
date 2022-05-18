@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Image } from 'react-native';
-import { useTheme } from '../../context/ThemeContext';
+import { useTheme } from '../../theme/ThemeContext';
 import { Centered } from '../layout';
 import EthIcon from '@rainbow-me/assets/eth-icon.png';
 import { useBooleanState, useColorForAsset } from '@rainbow-me/hooks';

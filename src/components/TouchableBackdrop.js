@@ -1,6 +1,6 @@
 import React from 'react';
 import { BorderlessButton } from 'react-native-gesture-handler';
-import { useTheme } from '../context/ThemeContext';
+import { useTheme } from '../theme/ThemeContext';
 import { neverRerender } from '../utils';
 import { position } from '@rainbow-me/styles';
 

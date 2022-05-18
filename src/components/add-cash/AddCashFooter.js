@@ -1,8 +1,8 @@
 import lang from 'i18n-js';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import { useTheme } from '../../context/ThemeContext';
 import { useNavigation } from '../../navigation/Navigation';
+import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered, ColumnWithMargins, Row, RowWithMargins } from '../layout';
