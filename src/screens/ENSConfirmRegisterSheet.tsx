@@ -118,10 +118,11 @@ export default function ENSConfirmRegisterSheet() {
   const avatarMetadata = useRecoilValue(avatarMetadataAtom);
 
   const avatarImage =
-    avatarMetadata?.path || initialAvatarUrl || params?.externalAvatarUrl || '';
+    avatarMetadata?.path || params?.externalAvatarUrl || initialAvatarUrl || '';
   const { result: dominantColor } = usePersistentDominantColorFromImage(
     avatarImage
   );
+
   useEffect(() => {
     if (dominantColor || (!dominantColor && !avatarImage)) {
       setAccentColor(dominantColor || colors.purple);
