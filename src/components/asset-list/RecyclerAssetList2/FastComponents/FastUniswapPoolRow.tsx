@@ -1,12 +1,95 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { ButtonPressAnimation } from '../../../animations';
-import { PoolValue } from '../../../investment-cards/PoolValue';
 import FastCoinIcon from './FastCoinIcon';
 import { Text } from '@rainbow-me/design-system';
-import { borders, colors, padding } from '@rainbow-me/styles';
+import { bigNumberFormat } from '@rainbow-me/helpers/bigNumberFormat';
+import { useAccountSettings } from '@rainbow-me/hooks';
+import { padding } from '@rainbow-me/styles';
 
-export default React.memo(function UniswapCoinRow({ item }: { item: any }) {
+export const PoolValue = ({
+  type,
+  value,
+  theme,
+}: {
+  type: string;
+  value: number;
+  theme: any;
+}) => {
+  let formattedValue: number | string = value;
+  const { colors } = theme;
+  let color = type === 'oneDayVolumeUSD' ? colors.swapPurple : colors.appleBlue;
+  const { nativeCurrency } = useAccountSettings();
+
+  if (type === 'annualized_fees' || type === 'profit30d') {
+    let percent: number = value;
+    if (!percent || percent === 0) {
+      formattedValue = '0%';
+    }
+
+    if (percent < 0.0001 && percent > 0) {
+      formattedValue = '< 0.0001%';
+    }
+
+    if (percent < 0 && percent > -0.0001) {
+      formattedValue = '< 0.0001%';
+    }
+
+    let fixedPercent = percent.toFixed(2);
+    if (fixedPercent === '0.00') {
+      formattedValue = '0%';
+    }
+    if (percent > 0) {
+      color = colors.green;
+      if (percent > 100) {
+        formattedValue = `+${percent
+          ?.toFixed(2)
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}%`;
+      } else {
+        formattedValue = `+${fixedPercent}%`;
+      }
+    } else {
+      formattedValue = `${fixedPercent}%`;
+      color = colors.red;
+    }
+  } else if (type === 'liquidity' || type === 'oneDayVolumeUSD') {
+    formattedValue = bigNumberFormat(value, nativeCurrency, value >= 10000);
+  }
+  return (
+    <View
+      style={[
+        { backgroundColor: colors.alpha(color, 0.06) },
+        {
+          borderRadius: 15,
+          height: 30,
+          ...padding.object(2, 9, 0),
+          justifyContent: 'center',
+        },
+      ]}
+    >
+      <Text color={{ custom: color }} size="16px" weight="bold">
+        {formattedValue}
+      </Text>
+    </View>
+  );
+};
+
+interface UniswapCoinRowItem {
+  onPress: () => void;
+  tokens: any[];
+  theme: any;
+  tokenNames: string;
+  symbol: string;
+  value: number;
+  attribute: string;
+}
+
+export default React.memo(function UniswapCoinRow({
+  item,
+}: {
+  item: UniswapCoinRowItem;
+}) {
   return (
     <View style={[cx.rootContainer, cx.nonEditMode]}>
       <View style={cx.flex}>
@@ -34,7 +117,6 @@ export default React.memo(function UniswapCoinRow({ item }: { item: any }) {
 
               <FastCoinIcon
                 address={item.tokens[0].address.toLowerCase()}
-                // assetType={item.type}
                 symbol={item.tokens[0].symbol}
                 theme={item.theme}
               />
@@ -60,8 +142,11 @@ export default React.memo(function UniswapCoinRow({ item }: { item: any }) {
                 </Text>
               </View>
             </View>
-            {/*TODO make fast*/}
-            <PoolValue type={item.attribute} value={item[item.attribute]} />
+            <PoolValue
+              theme={item.theme}
+              type={item.attribute}
+              value={item.value}
+            />
           </View>
         </ButtonPressAnimation>
       </View>
@@ -73,40 +158,6 @@ const cx = StyleSheet.create({
   bottom: {
     marginTop: 12,
   },
-  checkboxContainer: {
-    width: 51,
-  },
-  checkboxInnerContainer: {
-    alignContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'center',
-    height: 40,
-    justifyContent: 'center',
-    width: 51,
-  },
-  checkmarkBackground: {
-    ...borders.buildCircleAsObject(22),
-    ...padding.object(4.5),
-    backgroundColor: colors.appleBlue,
-    left: 19,
-    position: 'absolute',
-  },
-  circleOutline: {
-    ...borders.buildCircleAsObject(22),
-    borderWidth: 1.5,
-    left: 19,
-    position: 'absolute',
-  },
-  coinIconFallback: {
-    backgroundColor: '#25292E',
-    borderRadius: 20,
-    height: 40,
-    width: 40,
-  },
-  coinIconIndicator: {
-    left: 19,
-    position: 'absolute',
-  },
   container: {
     flexDirection: 'row',
     marginLeft: 2,
@@ -115,9 +166,6 @@ const cx = StyleSheet.create({
   },
   flex: {
     flex: 1,
-  },
-  hiddenRow: {
-    opacity: 0.4,
   },
   innerContainer: {
     flex: 1,

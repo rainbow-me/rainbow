@@ -246,6 +246,7 @@ export default function UniswapPools({
         attribute: selectedList,
         onPress: () => handleOpenExpandedState(item),
         theme,
+        value: item[selectedList],
       }));
 
     return sortedPairs;
