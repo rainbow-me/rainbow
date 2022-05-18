@@ -179,10 +179,7 @@ export default function useENSRegistrationActionHandler(
 
   const renewAction = useCallback(
     async (callback: () => void) => {
-      const {
-        name,
-        duration,
-      } = registrationParameters as RegistrationParameters;
+      const { name } = registrationParameters as RegistrationParameters;
 
       const wallet = await loadWallet();
       if (!wallet) {
@@ -209,7 +206,7 @@ export default function useENSRegistrationActionHandler(
         callback
       );
     },
-    [getNextNonce, registrationParameters]
+    [duration, getNextNonce, registrationParameters]
   );
 
   const setNameAction = useCallback(
