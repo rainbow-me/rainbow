@@ -144,6 +144,7 @@ export default function RegisterENSNavigator() {
     <>
       {/* @ts-expect-error JavaScript component */}
       <SlackSheet
+        additionalTopPadding={android ? StatusBar.currentHeight : false}
         contentHeight={contentHeight}
         height="100%"
         ref={sheetRef}
