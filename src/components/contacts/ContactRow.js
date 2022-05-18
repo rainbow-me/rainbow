@@ -102,9 +102,8 @@ const ContactRow = (
       : null;
 
   // if the accountType === 'suggestions', nickname will always be an ens or hex address, not a custom contact nickname
-  const [ensName, setENSName] = useState(
-    ens || (nickname?.includes(ENS_DOMAIN) ? nickname : undefined)
-  );
+  const initialENSName = nickname?.includes(ENS_DOMAIN) ? nickname : ens;
+  const [ensName, setENSName] = useState(initialENSName);
 
   useEffect(() => {
     if (profilesEnabled && accountType === 'contacts') {
