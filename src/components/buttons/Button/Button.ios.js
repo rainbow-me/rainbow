@@ -1,4 +1,4 @@
-import { isArray, isString, pick } from 'lodash';
+import { isArray, isString } from 'lodash';
 import React from 'react';
 import { useTheme } from '../../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../../animations';
@@ -76,11 +76,7 @@ export default function Button({
   const { colors, isDarkMode } = useTheme();
 
   return (
-    <ButtonPressAnimation
-      {...pick(props, Object.keys(ButtonPressAnimation.propTypes))}
-      disabled={disabled}
-      onPress={onPress}
-    >
+    <ButtonPressAnimation {...props} disabled={disabled} onPress={onPress}>
       <Container
         {...props}
         backgroundColor={
