@@ -51,12 +51,12 @@ const StepIndicator = ({ steps, currentStep }: StepIndicatorProps) => {
   );
 
   const animatedPulseStyle = useAnimatedStyle(() => ({
-    left: `${pulseStepTranslate.value}%`,
-    opacity: pulseStepOpacity.value,
+    left: `${pulseStepTranslate?.value}%`,
+    opacity: pulseStepOpacity?.value,
   }));
 
   const animatedFinishedStyle = useAnimatedStyle(() => ({
-    width: `${finishedStepFill.value}%`,
+    width: `${finishedStepFill?.value}%`,
   }));
 
   return (

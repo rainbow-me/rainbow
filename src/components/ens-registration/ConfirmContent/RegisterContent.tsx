@@ -84,6 +84,7 @@ const RegisterContent = ({
                   )
                 }
                 testID="ens-reverse-record-switch"
+                thumbColor={colors.white}
                 trackColor={{ false: colors.white, true: accentColor }}
                 value={sendReverseRecord}
               />

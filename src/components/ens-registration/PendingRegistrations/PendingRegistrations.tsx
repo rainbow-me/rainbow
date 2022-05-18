@@ -1,5 +1,6 @@
 import lang from 'i18n-js';
 import React, { useCallback, useEffect } from 'react';
+import { Keyboard } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { Alert } from '../../../components/alerts';
 import ButtonPressAnimation from '../../../components/animations/ButtonPressAnimation';
@@ -38,6 +39,7 @@ const PendingRegistration = ({
   const onFinish = useCallback(
     async (name: string) => {
       startRegistration(name, REGISTRATION_MODES.CREATE);
+      android && Keyboard.dismiss();
       setTimeout(() => {
         navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {});
       }, 100);
