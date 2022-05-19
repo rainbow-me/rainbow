@@ -95,7 +95,6 @@ export default function SendHeader({
   const { colors } = useTheme();
 
   const [hexAddress, setHexAddress] = useState('');
-  const [ens, setEns] = useState('');
 
   useEffect(() => {
     if (isValidAddress) {
@@ -116,12 +115,6 @@ export default function SendHeader({
     return get(contacts, `${[toLower(hexAddress)]}`, defaultContactItem);
   }, [contacts, hexAddress]);
 
-  useEffect(() => {
-    if (contact?.ens) {
-      setEns(contact.ens);
-    }
-  }, [contact?.ens]);
-
   const userWallet = useMemo(() => {
     return [...userAccounts, ...watchedAccounts].find(
       account => toLower(account.address) === toLower(hexAddress || recipient)
@@ -129,13 +122,12 @@ export default function SendHeader({
   }, [recipient, userAccounts, watchedAccounts, hexAddress]);
 
   const isPreExistingContact = (contact?.nickname?.length || 0) > 0;
-  const label = isPreExistingContact
-    ? removeFirstEmojiFromString(contact?.nickname) || contact?.ens
-    : removeFirstEmojiFromString(userWallet?.label || ens || nickname);
 
-  const name = label.length
-    ? label
-    : userWallet?.ens ?? userWallet?.address ?? recipient;
+  const name =
+    removeFirstEmojiFromString(
+      userWallet?.label || contact?.nickname || nickname
+    ) || userWallet?.ens;
+  contact?.ens || recipient;
 
   const handleNavigateToContact = useCallback(() => {
     let nickname = profilesEnabled
@@ -192,6 +184,9 @@ export default function SendHeader({
           showDeleteContactActionSheet({
             address: hexAddress,
             nickname: name,
+            onDelete: () => {
+              onChangeAddressInput(contact?.ens);
+            },
             removeContact: removeContact,
           });
         } else if (buttonIndex === 1) {
@@ -211,6 +206,7 @@ export default function SendHeader({
       }
     );
   }, [
+    contact?.ens,
     handleNavigateToContact,
     hexAddress,
     navigate,
@@ -220,6 +216,7 @@ export default function SendHeader({
     removeContact,
     setClipboard,
     name,
+    onChangeAddressInput,
   ]);
 
   return (
