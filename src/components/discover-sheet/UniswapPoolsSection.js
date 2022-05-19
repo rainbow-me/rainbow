@@ -244,13 +244,14 @@ export default function UniswapPools({
       .map(item => ({
         ...item,
         attribute: selectedList,
+        nativeCurrency,
         onPress: () => handleOpenExpandedState(item),
         theme,
         value: item[selectedList],
       }));
 
     return sortedPairs;
-  }, [handleOpenExpandedState, pairs, selectedList, theme]);
+  }, [handleOpenExpandedState, nativeCurrency, pairs, selectedList, theme]);
 
   const pairsSorted = useMemo(() => {
     if (sortDirection === SORT_DIRECTION.ASC) {

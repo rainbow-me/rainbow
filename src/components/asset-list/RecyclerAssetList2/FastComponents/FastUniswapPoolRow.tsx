@@ -13,6 +13,7 @@ interface UniswapCoinRowItem {
   symbol: string;
   value: number;
   attribute: string;
+  nativeCurrency: string;
 }
 
 export default React.memo(function UniswapCoinRow({
@@ -72,6 +73,7 @@ export default React.memo(function UniswapCoinRow({
               </View>
             </View>
             <FastPoolValue
+              nativeCurrency={item.nativeCurrency}
               theme={item.theme}
               type={item.attribute}
               value={item.value}

@@ -2,14 +2,15 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Text } from '@rainbow-me/design-system';
 import { bigNumberFormat } from '@rainbow-me/helpers/bigNumberFormat';
-import { useAccountSettings } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
 
 const FastPoolValue = ({
   type,
   value,
   theme,
+  nativeCurrency,
 }: {
+  nativeCurrency: string;
   type: string;
   value: number;
   theme: any;
@@ -17,7 +18,6 @@ const FastPoolValue = ({
   let formattedValue: number | string = value;
   const { colors } = theme;
   let color = type === 'oneDayVolumeUSD' ? colors.swapPurple : colors.appleBlue;
-  const { nativeCurrency } = useAccountSettings();
 
   if (type === 'annualized_fees' || type === 'profit30d') {
     let percent: number = value;
