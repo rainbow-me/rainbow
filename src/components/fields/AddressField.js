@@ -9,7 +9,6 @@ import { Label } from '../text';
 import { useClipboard, useDimensions } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { abbreviations, addressUtils } from '@rainbow-me/utils';
-import { isAddress } from '@rainbow-me/utils/abbreviations';
 
 const AddressInput = styled(Input).attrs({
   autoCapitalize: 'none',
@@ -79,7 +78,7 @@ const AddressField = (
   );
 
   useEffect(() => {
-    if (name !== inputValue || (name !== address && isAddress(address))) {
+    if (name !== inputValue || name !== address) {
       setInputValue(name);
       validateAddress(address);
     }
