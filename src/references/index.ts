@@ -65,6 +65,8 @@ export const POLYGON_BLOCK_EXPLORER_URL = 'polygonscan.com';
 export const OPTIMISM_BLOCK_EXPLORER_URL = 'optimistic.etherscan.io';
 
 // NFTs Contracts
+export const SWAP_AGGREGATOR_CONTRACT_ADDRESS =
+  '0x00000000009726632680FB29d3F7A9734E3010E2';
 export const ENS_NFT_CONTRACT_ADDRESS =
   '0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85';
 export const UNIV3_NFT_CONTRACT_ADDRESS =
