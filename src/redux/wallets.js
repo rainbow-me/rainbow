@@ -7,7 +7,6 @@ import {
   getWalletNames,
   saveWalletNames,
 } from '../handlers/localstorage/walletNames';
-import { web3Provider } from '../handlers/web3';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import WalletTypes from '../helpers/walletTypes';
 import { hasKey } from '../model/keychain';
@@ -29,11 +28,9 @@ import {
   privateKeyKey,
   seedPhraseKey,
 } from '../utils/keychainConstants';
-import {
-  addressHashedColorIndex,
-  lookupAddressWithRetry,
-} from '../utils/profileUtils';
+import { addressHashedColorIndex } from '../utils/profileUtils';
 import { updateWebDataEnabled } from './showcaseTokens';
+import { fetchReverseRecord } from '@rainbow-me/handlers/ens';
 import { lightModeThemeColors } from '@rainbow-me/styles';
 
 // -- Constants --------------------------------------- //
@@ -234,10 +231,7 @@ export const fetchWalletNames = () => async (dispatch, getState) => {
       const visibleAccounts = filter(wallet.addresses, 'visible');
       return map(visibleAccounts, async account => {
         try {
-          const ens = await lookupAddressWithRetry(
-            web3Provider,
-            account.address
-          );
+          const ens = await fetchReverseRecord(account.address);
           if (ens && ens !== account.address) {
             updatedWalletNames[account.address] = ens;
           }
