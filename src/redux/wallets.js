@@ -276,7 +276,8 @@ export const fetchWalletENSAvatars = () => async (dispatch, getState) => {
     }
   }
   if (updatedWallets) {
-    selected && dispatch(walletsSetSelected(updatedWallets[selected.id]));
+    console.log('✅ ✅ ✅  walletsSetSelected');
+    dispatch(walletsSetSelected(updatedWallets[selected.id]));
     dispatch(walletsUpdate(updatedWallets));
   }
 };
