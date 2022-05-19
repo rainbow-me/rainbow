@@ -32,7 +32,10 @@ import {
   returnStringFirstEmoji,
 } from '@rainbow-me/helpers/emojiHandler';
 import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
-import { isValidDomainFormat } from '@rainbow-me/helpers/validators';
+import {
+  isENSAddressFormat,
+  isValidDomainFormat,
+} from '@rainbow-me/helpers/validators';
 import {
   useAccountSettings,
   useAccountTransactions,
@@ -354,7 +357,7 @@ export default function SendConfirmationSheet() {
   }
 
   const { data: images } = useENSProfileImages(to, {
-    enabled: to.slice(-4) === '.eth',
+    enabled: isENSAddressFormat(to),
   });
 
   const accountImage = profilesEnabled
