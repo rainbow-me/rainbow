@@ -103,7 +103,7 @@ export default function CoinDivider({
   defaultToEditButton,
   extendedState,
 }) {
-  const { isCoinListEdited, setCoinListIsEdited } = extendedState;
+  const { isCoinListEdited, setIsCoinListEdited } = extendedState;
   const interpolation = useInterpolationRange(isCoinListEdited);
   const { nativeCurrency } = useAccountSettings();
   const dispatch = useDispatch();
@@ -140,12 +140,12 @@ export default function CoinDivider({
   ]);
 
   const handlePressEdit = useCallback(() => {
-    setCoinListIsEdited(prev => !prev);
+    setIsCoinListEdited(prev => !prev);
     clearSelectedCoins();
     LayoutAnimation.configureNext(
       LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
     );
-  }, [clearSelectedCoins, setCoinListIsEdited]);
+  }, [clearSelectedCoins, setIsCoinListEdited]);
 
   return (
     <Animated.View {...interpolation}>
