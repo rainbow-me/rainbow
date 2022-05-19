@@ -95,6 +95,7 @@ export default function SendHeader({
   const { colors } = useTheme();
 
   const [hexAddress, setHexAddress] = useState('');
+  const [ens, setEns] = useState('');
 
   useEffect(() => {
     if (isValidAddress) {
@@ -115,6 +116,12 @@ export default function SendHeader({
     return get(contacts, `${[toLower(hexAddress)]}`, defaultContactItem);
   }, [contacts, hexAddress]);
 
+  useEffect(() => {
+    if (contact?.ens) {
+      setEns(contact.ens);
+    }
+  }, [contact?.ens]);
+
   const userWallet = useMemo(() => {
     return [...userAccounts, ...watchedAccounts].find(
       account => toLower(account.address) === toLower(hexAddress || recipient)
@@ -124,7 +131,7 @@ export default function SendHeader({
   const isPreExistingContact = (contact?.nickname?.length || 0) > 0;
   const label = isPreExistingContact
     ? removeFirstEmojiFromString(contact?.nickname) || contact?.ens
-    : removeFirstEmojiFromString(userWallet?.label || nickname);
+    : removeFirstEmojiFromString(userWallet?.label || ens || nickname);
 
   const name = label.length
     ? label
