@@ -5,7 +5,7 @@ import isEqual from 'react-fast-compare';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import { addressAssetsReceived, fetchAssetPricesWithCoingecko } from './data';
 // eslint-disable-next-line import/no-cycle
-import { explorerInitL2 } from './explorer';
+import { emitMainnetAssetDiscoveryRequest, explorerInitL2 } from './explorer';
 import { AssetTypes } from '@rainbow-me/entities';
 import { getAssetsFromCovalent } from '@rainbow-me/handlers/covalent';
 import { web3Provider } from '@rainbow-me/handlers/web3';
@@ -308,6 +308,8 @@ export const fetchOnchainBalances = ({
     coingeckoIds,
     genericAssets
   );
+
+  dispatch(emitMainnetAssetDiscoveryRequest);
 
   const chainAssetsMap = keyBy(chainAssets[network], 'asset.asset_code');
 
