@@ -1,8 +1,8 @@
 import { AssetType } from './assetTypes';
-import { EthereumAddress } from '.';
+import { EthereumAddress, NativeCurrencyKeys } from '.';
 import { Network } from '@rainbow-me/helpers';
 
-interface ZerionAssetPrice {
+export interface ZerionAssetPrice {
   value: number;
   relative_change_24h: number;
   changed_at: number;
@@ -83,6 +83,22 @@ export interface ParsedAddressAsset
   mainnet_address?: EthereumAddress;
   isNativeAsset?: boolean;
 }
+
+// src/entities/tokens.ts
+export interface AssetBalanceInfo {
+  amount?: string;
+  display?: string;
+}
+
+export type NativeCurrencyKey = keyof typeof NativeCurrencyKeys;
+export type AssetPricingInfo = Record<
+  NativeCurrencyKey,
+  {
+    changed_at?: number;
+    relative_change_24h?: number;
+    value?: number;
+  }
+>;
 
 export interface ParsedAddressAssetWithUniqueTokenId
   extends ParsedAddressAsset {

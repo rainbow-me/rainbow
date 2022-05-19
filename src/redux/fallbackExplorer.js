@@ -336,7 +336,7 @@ export const fetchOnchainBalances = ({
     }));
   }
 
-  if (isEmptyAssets || (isEmptyAssets && keepPolling)) {
+  if (isEmptyAssets) {
     const fallbackExplorerBalancesHandle = setTimeout(
       () => dispatch(fetchOnchainBalances({ keepPolling, withPrices })),
       10000

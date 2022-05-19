@@ -44,13 +44,8 @@ export const parseAccountAssets = (
 
   return dedupedKeys.reduce((parsedAccountAssets, currentKey) => {
     const currentAsset = dedupedAssets[currentKey];
+    logger.debug('CURRENT KEY: ', currentKey);
     const parsedAsset = parseAsset(currentAsset);
-    if (currentAsset.network) {
-      logger.debug(
-        'CURRENT ASSET.NETWORK: ',
-        JSON.stringify(parsedAsset, null, 2)
-      );
-    }
     return {
       ...parsedAccountAssets,
       [currentKey]: {

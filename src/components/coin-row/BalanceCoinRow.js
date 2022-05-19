@@ -17,7 +17,6 @@ import { buildAssetUniqueIdentifier } from '@rainbow-me/helpers/assets';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
-import logger from 'logger';
 
 const editTranslateOffset = 37;
 
@@ -114,7 +113,6 @@ const BalanceCoinRow = ({
   ...props
 }) => {
   const { toggleSelectedCoin } = useCoinListEditOptions();
-  logger.debug('BALANCE COIN ROW: ', item);
   const isCoinListEditedSharedValue = useIsCoinListEditedSharedValue();
   const { navigate } = useNavigation();
 

@@ -29,14 +29,18 @@ export { default as ProtocolTypeNames, ProtocolType } from './protocolTypes';
 export type { UniqueAsset } from './uniqueAssets';
 export type {
   Asset,
+  AssetBalanceInfo,
+  AssetPricingInfo,
   AssetContract,
   IndexToken,
+  NativeCurrencyKey,
   SavingsAsset,
   ParsedAddressAsset,
   RainbowToken,
   UniswapCurrency,
   ZerionAsset,
   ZerionAssetFallback,
+  ZerionAssetPrice,
 } from './tokens';
 export type {
   GasFeeType,

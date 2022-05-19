@@ -1,5 +1,6 @@
 import { ObservableQuery } from '@apollo/client';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
+import AsyncStorage from '@react-native-community/async-storage';
 import { getUnixTime, startOfMinute, sub } from 'date-fns';
 import isValidDomain from 'is-valid-domain';
 import {
@@ -30,16 +31,12 @@ import {
   UNISWAP_24HOUR_PRICE_QUERY,
   UNISWAP_PRICES_QUERY,
 } from '../apollo/queries';
-import { delay, isOfType, isZero, multiply } from '../helpers/utilities';
-import { parseFallbackAsset } from '../parsers/accounts';
-import { addCashUpdatePurchases } from './addCash';
-import { decrementNonce, incrementNonce } from './nonceManager';
-import { AppGetState, AppState } from './store';
-import { uniqueTokensRefreshState } from './uniqueTokens';
-import { uniswapUpdateLiquidityTokens } from './uniswapLiquidity';
 import {
+  AssetBalanceInfo,
+  AssetPricingInfo,
   AssetTypes,
   EthereumAddress,
+  NativeCurrencyKey,
   NativeCurrencyKeys,
   NewTransactionOrAddCashTransaction,
   ParsedAddressAsset,
@@ -50,8 +47,16 @@ import {
   TransactionTypes,
   ZerionAsset,
   ZerionAssetFallback,
+  ZerionAssetPrice,
   ZerionTransaction,
-} from '@rainbow-me/entities';
+} from '../entities';
+import { delay, isOfType, isZero, multiply } from '../helpers/utilities';
+import { parseFallbackAsset } from '../parsers/accounts';
+import { addCashUpdatePurchases } from './addCash';
+import { decrementNonce, incrementNonce } from './nonceManager';
+import { AppGetState, AppState } from './store';
+import { uniqueTokensRefreshState } from './uniqueTokens';
+import { uniswapUpdateLiquidityTokens } from './uniswapLiquidity';
 import appEvents from '@rainbow-me/handlers/appEvents';
 import {
   getAccountAssetsData,
@@ -70,6 +75,7 @@ import {
   web3Provider,
 } from '@rainbow-me/handlers/web3';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
+import config from '@rainbow-me/model/config';
 import { Navigation } from '@rainbow-me/navigation';
 import { triggerOnSwipeLayout } from '@rainbow-me/navigation/onNavigationStateChange';
 import { Network } from '@rainbow-me/networkTypes';
@@ -151,9 +157,11 @@ const DATA_LOAD_ACCOUNT_ASSETS_DATA_FAILURE =
   'data/DATA_LOAD_ACCOUNT_ASSETS_DATA_FAILURE';
 const DATA_LOAD_ACCOUNT_ASSETS_DATA_FINALIZED =
   'data/DATA_LOAD_ACCOUNT_ASSETS_DATA_FINALIZED';
-
 const DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_SUCCESS =
   'data/DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_SUCCESS';
+
+const DATA_UPDATE_ASSET_PRICING_INFO = 'DATA_UPDATE_ASSET_PRICING_INFO';
+const DATA_UPDATE_ASSET_BALANCE_INFO = 'DATA_UPDATE_ASSET_BALANCE_INFO';
 
 const DATA_LOAD_TRANSACTIONS_REQUEST = 'data/DATA_LOAD_TRANSACTIONS_REQUEST';
 const DATA_LOAD_TRANSACTIONS_SUCCESS = 'data/DATA_LOAD_TRANSACTIONS_SUCCESS';
@@ -187,10 +195,27 @@ interface DataState {
   };
 
   /**
-   * Parsed asset information for assets belonging to this account.
+   * Balance information for assets in the wallet
+   */
+
+  accountAssetBalanceData: {
+    [walletAddress: string]: {
+      [uniqueId: string]: AssetBalanceInfo;
+    };
+  };
+
+  /**
+   * Token info for assets (generic as well as in wallet)
    */
   assetsData: {
     [uniqueId: string]: ParsedAddressAsset;
+  };
+
+  /**
+   * Pricing info for assets (generic as well as in wallet)
+   */
+  assetPriceData: {
+    [uniqueId: string]: AssetPricingInfo;
   };
 
   /**
@@ -258,6 +283,8 @@ type DataAction =
   | DataUpdateUniswapPricesSubscriptionAction
   | DataUpdateRefetchSavingsAction
   | DataUpdateGenericAssetsAction
+  | DataUpdateAssetBalanceInfoAction
+  | DataUpdateAssetPricingInfoAction
   | DataUpdatePortfoliosAction
   | DataUpdateEthUsdAction
   | DataLoadTransactionsRequestAction
@@ -297,6 +324,25 @@ interface DataUpdateRefetchSavingsAction {
 interface DataUpdateGenericAssetsAction {
   type: typeof DATA_UPDATE_GENERIC_ASSETS;
   payload: DataState['genericAssets'];
+}
+
+/**
+ * The action to update `assetPricingInfo`.
+ */
+interface DataUpdateAssetPricingInfoAction {
+  type: typeof DATA_UPDATE_ASSET_PRICING_INFO;
+  payload: DataState['assetPriceData'];
+}
+
+/**
+ * The action to update `assetBalanceInfo`.
+ */
+interface DataUpdateAssetBalanceInfoAction {
+  type: typeof DATA_UPDATE_ASSET_BALANCE_INFO;
+  payload: {
+    balances: DataState['accountAssetBalanceData'];
+    address: string;
+  };
 }
 
 /**
@@ -640,6 +686,8 @@ export const fetchAssetPricesWithCoingecko = async (
   coingeckoIds: string[],
   nativeCurrency: string
 ): Promise<CoingeckoApiResponseWithLastUpdate | undefined> => {
+  const configFromStorage = await AsyncStorage.getItem('experimentalConfig');
+  logger.debug('config from storage: ', configFromStorage);
   try {
     const url = `https://api.coingecko.com/api/v3/simple/price?ids=${coingeckoIds
       .filter(val => !!val)
@@ -1075,6 +1123,30 @@ export const transactionsRemoved = (
   saveLocalTransactions(updatedTransactions, accountAddress, network);
 };
 
+export const updateAssetPriceData = (
+  prices: Record<EthereumAddress, ZerionAssetPrice>,
+  nativeCurrency: NativeCurrencyKey
+) => async (
+  dispatch: ThunkDispatch<AppState, unknown, DataUpdateAssetPricingInfoAction>,
+  getState: AppGetState
+) => {
+  const currentAssetPrices = getState().data.assetPriceData;
+  const assetPrices = Object.keys(prices).reduce(
+    (updatedAssetPrices, currentKey) => ({
+      ...updatedAssetPrices,
+      [currentKey]: {
+        ...(currentAssetPrices[currentKey] || {}),
+        [nativeCurrency]: prices[currentKey],
+      },
+    }),
+    currentAssetPrices
+  );
+  dispatch({
+    payload: assetPrices,
+    type: DATA_UPDATE_ASSET_PRICING_INFO,
+  });
+};
+
 /**
  * Handles an `AddressAssetsReceivedMessage` from Zerion and updates state and
  * account local storage.
@@ -1090,7 +1162,7 @@ export const addressAssetsReceived = (
   append: boolean = false,
   change: boolean = false,
   removed: boolean = false,
-  assetsNetwork: Network | null = null
+  assetsNetwork?: Network
 ) => (
   dispatch: ThunkDispatch<
     AppState,
@@ -1125,10 +1197,32 @@ export const addressAssetsReceived = (
     .reduce(
       (allAssets, currentAsset) => ({
         ...allAssets,
-        [currentAsset!.asset_code]: currentAsset,
+        [ethereumUtils.getUniqueId({
+          address: currentAsset!.asset_code,
+          name: currentAsset?.name,
+          network: assetsNetwork,
+        })]: currentAsset,
       }),
       {}
-    );
+    ) as {
+    [uniqueId: string]: {
+      asset: ZerionAsset;
+      quantity: number;
+    };
+  };
+
+  logger.debug('UPDATED ASSETS: ', updatedAssets);
+
+  const assetPrices = Object.keys(updatedAssets).reduce(
+    (assetPricesData, currentKey) => ({
+      ...assetPricesData,
+      [currentKey]: updatedAssets[currentKey].price,
+    }),
+    {}
+  );
+
+  logger.debug('CURRENCY: ', message.meta?.currency);
+  // dispatch(updateAssetPriceData(assetPrices, message.meta?.currency));
 
   if (removed) {
     updatedAssets = mapValues(newAssets, asset => {
@@ -1816,7 +1910,10 @@ export const updateRefetchSavings = (fetch: boolean) => (
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE: DataState = {
-  accountAssetsData: {}, // for account-specific assets
+  accountAssetBalanceData: {},
+  accountAssetsData: {},
+  assetPriceData: {},
+  // for account-specific assets
   assetPricesFromUniswap: {},
   assetsData: {},
   ethUSDPrice: null,
@@ -1909,6 +2006,19 @@ export default (state: DataState = INITIAL_STATE, action: DataAction) => {
       return {
         ...state,
         pendingTransactions: action.payload,
+      };
+    case DATA_UPDATE_ASSET_BALANCE_INFO:
+      return {
+        ...state,
+        accountAssetBalanceData: {
+          ...state.accountAssetBalanceData,
+          [action.payload.address]: action.payload.balances,
+        },
+      };
+    case DATA_UPDATE_ASSET_PRICING_INFO:
+      return {
+        ...state,
+        assetPriceData: action.payload,
       };
     case DATA_CLEAR_STATE:
       return {

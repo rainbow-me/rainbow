@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-community/async-storage';
 import { concat, isEmpty, isNil, keyBy, keys, toLower } from 'lodash';
 import io from 'socket.io-client';
 import { defaultConfig, L2_TXS } from '../config/experimental';
@@ -31,7 +32,7 @@ import {
   ETH_ADDRESS,
   MATIC_MAINNET_ADDRESS,
 } from '@rainbow-me/references';
-import { ethereumUtils, TokensListenedCache } from '@rainbow-me/utils';
+import { TokensListenedCache } from '@rainbow-me/utils';
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //
@@ -270,7 +271,8 @@ export const explorerInit = () => async (dispatch, getState) => {
   const { network, accountAddress, nativeCurrency } = getState().settings;
   const { pairs } = getState().uniswap;
   const { addressSocket, assetsSocket } = getState().explorer;
-
+  const foo = await AsyncStorage.getItem('experimentalConfig');
+  logger.debug('EXP CONFIG: ', foo);
   // if there is another socket unsubscribe first
   if (addressSocket || assetsSocket) {
     dispatch(explorerUnsubscribe());
@@ -466,34 +468,9 @@ const fetchAssetsFromRefraction = () => (_dispatch, getState) => {
   addressSocket.emit(...addressAssetsRequest(accountAddress, nativeCurrency));
 };
 
-const l2AddressAssetsReceived = (message, network) => (dispatch, getState) => {
-  const { genericAssets } = getState().data;
-
-  const newAssets = message?.payload?.assets?.map(asset => {
-    const mainnetAddress = toLower(asset?.asset?.mainnet_address);
-    const fallbackAsset =
-      mainnetAddress &&
-      (ethereumUtils.getAccountAsset(mainnetAddress) ||
-        genericAssets[mainnetAddress]);
-
-    if (fallbackAsset) {
-      return {
-        ...asset,
-        asset: {
-          ...asset?.asset,
-          price: {
-            ...asset?.asset?.price,
-            ...fallbackAsset.price,
-          },
-        },
-      };
-    }
-    return asset;
-  });
-
-  // temporary until backend supports sending back map for L2 data
+const l2AddressAssetsReceived = (message, network) => dispatch => {
   const newAssetsMap = keyBy(
-    newAssets,
+    message?.payload?.assets,
     asset => `${asset.asset.asset_code}_${asset.asset.network}`
   );
   const updatedMessage = {
