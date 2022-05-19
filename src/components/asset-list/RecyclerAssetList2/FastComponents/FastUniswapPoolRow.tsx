@@ -2,78 +2,8 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { ButtonPressAnimation } from '../../../animations';
 import FastCoinIcon from './FastCoinIcon';
+import FastPoolValue from './FastPoolValue';
 import { Text } from '@rainbow-me/design-system';
-import { bigNumberFormat } from '@rainbow-me/helpers/bigNumberFormat';
-import { useAccountSettings } from '@rainbow-me/hooks';
-import { padding } from '@rainbow-me/styles';
-
-export const PoolValue = ({
-  type,
-  value,
-  theme,
-}: {
-  type: string;
-  value: number;
-  theme: any;
-}) => {
-  let formattedValue: number | string = value;
-  const { colors } = theme;
-  let color = type === 'oneDayVolumeUSD' ? colors.swapPurple : colors.appleBlue;
-  const { nativeCurrency } = useAccountSettings();
-
-  if (type === 'annualized_fees' || type === 'profit30d') {
-    let percent: number = value;
-    if (!percent || percent === 0) {
-      formattedValue = '0%';
-    }
-
-    if (percent < 0.0001 && percent > 0) {
-      formattedValue = '< 0.0001%';
-    }
-
-    if (percent < 0 && percent > -0.0001) {
-      formattedValue = '< 0.0001%';
-    }
-
-    let fixedPercent = percent.toFixed(2);
-    if (fixedPercent === '0.00') {
-      formattedValue = '0%';
-    }
-    if (percent > 0) {
-      color = colors.green;
-      if (percent > 100) {
-        formattedValue = `+${percent
-          ?.toFixed(2)
-          .toString()
-          .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}%`;
-      } else {
-        formattedValue = `+${fixedPercent}%`;
-      }
-    } else {
-      formattedValue = `${fixedPercent}%`;
-      color = colors.red;
-    }
-  } else if (type === 'liquidity' || type === 'oneDayVolumeUSD') {
-    formattedValue = bigNumberFormat(value, nativeCurrency, value >= 10000);
-  }
-  return (
-    <View
-      style={[
-        { backgroundColor: colors.alpha(color, 0.06) },
-        {
-          borderRadius: 15,
-          height: 30,
-          ...padding.object(2, 9, 0),
-          justifyContent: 'center',
-        },
-      ]}
-    >
-      <Text color={{ custom: color }} size="16px" weight="bold">
-        {formattedValue}
-      </Text>
-    </View>
-  );
-};
 
 interface UniswapCoinRowItem {
   onPress: () => void;
@@ -109,7 +39,6 @@ export default React.memo(function UniswapCoinRow({
               <View style={{ transform: [{ translateX: -20 }] }}>
                 <FastCoinIcon
                   address={item.tokens[1].address.toLowerCase()}
-                  // assetType={item.type}
                   symbol={item.tokens[1].symbol}
                   theme={item.theme}
                 />
@@ -142,7 +71,7 @@ export default React.memo(function UniswapCoinRow({
                 </Text>
               </View>
             </View>
-            <PoolValue
+            <FastPoolValue
               theme={item.theme}
               type={item.attribute}
               value={item.value}
