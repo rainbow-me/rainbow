@@ -1,6 +1,7 @@
 import {
   ALLOWS_PERMIT,
   ChainId,
+  ETH_ADDRESS as ETH_ADDRESS_AGGREGATOR,
   PermitSupportedTokenList,
   RAINBOW_ROUTER_CONTRACT_ADDRESS,
   WETH,
@@ -24,14 +25,16 @@ import { ethereumUtils } from '@rainbow-me/utils';
 export const estimateUnlockAndSwap = async (
   swapParameters: SwapActionParameters
 ) => {
-  const { inputAmount, tradeDetails, provider } = swapParameters;
+  const { inputAmount, tradeDetails, chainId } = swapParameters;
   const { inputCurrency, outputCurrency } = store.getState().swap;
 
-  if (!inputCurrency || !outputCurrency || !inputAmount)
+  if (!inputCurrency || !outputCurrency || !inputAmount) {
+    if (ChainId.arbitrum === chainId) {
+      return ethUnits.basic_swap_arbitrum;
+    }
     return ethUnits.basic_swap;
-
+  }
   const { accountAddress } = store.getState().settings;
-  const chainId = (await provider.getNetwork()).chainId;
 
   const isWethUnwrapping =
     toLower(inputCurrency.address) === toLower(WETH[ChainId.mainnet]) &&
@@ -39,13 +42,16 @@ export const estimateUnlockAndSwap = async (
 
   let gasLimits: (string | number)[] = [];
   let swapAssetNeedsUnlocking = false;
-  if (
-    !isWethUnwrapping &&
-    !isNativeAsset(
+  // Aggregators represent native asset as 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
+  let nativeAsset =
+    ETH_ADDRESS_AGGREGATOR.toLowerCase() ===
+      inputCurrency.address.toLowerCase() ||
+    isNativeAsset(
       inputCurrency.address,
-      ethereumUtils.getNetworkFromChainId(chainId)
-    )
-  ) {
+      ethereumUtils.getNetworkFromChainId(Number(chainId))
+    );
+
+  if (!isWethUnwrapping && !nativeAsset) {
     swapAssetNeedsUnlocking = await assetNeedsUnlocking(
       accountAddress,
       inputAmount,
@@ -65,7 +71,7 @@ export const estimateUnlockAndSwap = async (
     gasLimits = concat(gasLimits, unlockGasLimit, ethUnits.basic_swap);
   } else {
     const swapGasLimit = await estimateSwapGasLimit({
-      chainId,
+      chainId: Number(chainId),
       requiresApprove: swapAssetNeedsUnlocking,
       tradeDetails,
     });
@@ -90,9 +96,18 @@ export const createUnlockAndSwapRap = async (
     toLower(outputCurrency.address) === toLower(ETH_ADDRESS) &&
     chainId === ChainId.mainnet;
 
+  // Aggregators represent native asset as 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
+  let nativeAsset =
+    ETH_ADDRESS_AGGREGATOR.toLowerCase() ===
+      inputCurrency.address.toLowerCase() ||
+    isNativeAsset(
+      inputCurrency.address,
+      ethereumUtils.getNetworkFromChainId(Number(chainId))
+    );
+
   let swapAssetNeedsUnlocking = false;
 
-  if (!isWethUnwrapping) {
+  if (!isWethUnwrapping && !nativeAsset) {
     swapAssetNeedsUnlocking = await assetNeedsUnlocking(
       accountAddress,
       inputAmount,
@@ -102,6 +117,7 @@ export const createUnlockAndSwapRap = async (
     );
   }
   const allowsPermit =
+    !nativeAsset &&
     chainId === ChainId.mainnet &&
     ALLOWS_PERMIT[
       toLower(inputCurrency.address) as keyof PermitSupportedTokenList
@@ -111,6 +127,7 @@ export const createUnlockAndSwapRap = async (
     const unlock = createNewAction(RapActionTypes.unlock, {
       amount: inputAmount,
       assetToUnlock: inputCurrency,
+      chainId,
       contractAddress: RAINBOW_ROUTER_CONTRACT_ADDRESS,
     });
     actions = concat(actions, unlock);
@@ -118,6 +135,7 @@ export const createUnlockAndSwapRap = async (
 
   // create a swap rap
   const swap = createNewAction(RapActionTypes.swap, {
+    chainId,
     flashbots,
     inputAmount,
     permit: swapAssetNeedsUnlocking && allowsPermit,

@@ -12,6 +12,7 @@ import {
   TransactionType,
 } from '@rainbow-me/entities';
 import { getProviderForNetwork, toHex } from '@rainbow-me/handlers/web3';
+import { parseGasParamsForTransaction } from '@rainbow-me/parsers';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';
 import { erc20ABI, ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
@@ -79,16 +80,28 @@ const executeApprove = (
   tokenAddress: string,
   spender: string,
   gasLimit: number | string,
-  maxFeePerGas: string,
-  maxPriorityFeePerGas: string,
+  gasParams:
+    | {
+        gasPrice: string;
+        maxFeePerGas?: undefined;
+        maxPriorityFeePerGas?: undefined;
+      }
+    | {
+        maxFeePerGas: string;
+        maxPriorityFeePerGas: string;
+        gasPrice?: undefined;
+      },
   wallet: Wallet,
   nonce: number | null = null
 ) => {
   const exchange = new Contract(tokenAddress, erc20ABI, wallet);
   return exchange.approve(spender, MaxUint256, {
     gasLimit: toHex(gasLimit) || undefined,
-    maxFeePerGas: toHex(maxFeePerGas) || undefined,
-    maxPriorityFeePerGas: toHex(maxPriorityFeePerGas) || undefined,
+    // In case it's an L2 with legacy gas price like arbitrum
+    gasPrice: gasParams.gasPrice || undefined,
+    // EIP-1559 like networks
+    maxFeePerGas: gasParams.maxFeePerGas || undefined,
+    maxPriorityFeePerGas: gasParams.maxPriorityFeePerGas || undefined,
     nonce: nonce ? toHex(nonce) : undefined,
   });
 };
@@ -109,6 +122,7 @@ const unlock = async (
   const {
     assetToUnlock,
     contractAddress,
+    chainId,
   } = parameters as UnlockActionParameters;
   const { address: assetAddress } = assetToUnlock;
 
@@ -123,7 +137,8 @@ const unlock = async (
     gasLimit = await estimateApprove(
       accountAddress,
       assetAddress,
-      contractAddress
+      contractAddress,
+      chainId
     );
   } catch (e) {
     logger.sentry(`[${actionName}] Error estimating gas`);
@@ -131,45 +146,51 @@ const unlock = async (
     throw e;
   }
   let approval;
-  let maxFeePerGas;
-  let maxPriorityFeePerGas;
-  try {
-    // approvals should always use fast gas or custom (whatever is faster)
-    maxFeePerGas = selectedGasFee?.gasFeeParams?.maxFeePerGas?.amount;
-    maxPriorityFeePerGas =
-      selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.amount;
+  let gasParams = parseGasParamsForTransaction(selectedGasFee);
+  // if swap isn't the last action, use fast gas or custom (whatever is faster)
+  if (
+    !gasParams.maxFeePerGas ||
+    !gasParams.maxPriorityFeePerGas ||
+    !gasParams.gasPrice
+  ) {
+    try {
+      // approvals should always use fast gas or custom (whatever is faster)
+      const fastMaxFeePerGas =
+        gasFeeParamsBySpeed?.[gasUtils.FAST]?.maxFeePerGas?.amount;
+      const fastMaxPriorityFeePerGas =
+        gasFeeParamsBySpeed?.[gasUtils.FAST]?.maxPriorityFeePerGas?.amount;
 
-    const fastMaxFeePerGas =
-      gasFeeParamsBySpeed?.[gasUtils.FAST]?.maxFeePerGas?.amount;
-    const fastMaxPriorityFeePerGas =
-      gasFeeParamsBySpeed?.[gasUtils.FAST]?.maxPriorityFeePerGas?.amount;
+      if (greaterThan(fastMaxFeePerGas, gasParams?.maxFeePerGas || 0)) {
+        gasParams.maxFeePerGas = fastMaxFeePerGas;
+      }
+      if (
+        greaterThan(
+          fastMaxPriorityFeePerGas,
+          gasParams?.maxPriorityFeePerGas || 0
+        )
+      ) {
+        gasParams.maxPriorityFeePerGas = fastMaxPriorityFeePerGas;
+      }
 
-    if (greaterThan(fastMaxFeePerGas, maxFeePerGas)) {
-      maxFeePerGas = fastMaxFeePerGas;
+      logger.sentry(`[${actionName}] about to approve`, {
+        assetAddress,
+        contractAddress,
+        gasLimit,
+      });
+      const nonce = baseNonce ? baseNonce + index : null;
+      approval = await executeApprove(
+        assetAddress,
+        contractAddress,
+        gasLimit,
+        gasParams,
+        wallet,
+        nonce
+      );
+    } catch (e) {
+      logger.sentry(`[${actionName}] Error approving`);
+      captureException(e);
+      throw e;
     }
-    if (greaterThan(fastMaxPriorityFeePerGas, maxPriorityFeePerGas)) {
-      maxPriorityFeePerGas = fastMaxPriorityFeePerGas;
-    }
-
-    logger.sentry(`[${actionName}] about to approve`, {
-      assetAddress,
-      contractAddress,
-      gasLimit,
-    });
-    const nonce = baseNonce ? baseNonce + index : null;
-    approval = await executeApprove(
-      assetAddress,
-      contractAddress,
-      gasLimit,
-      maxFeePerGas,
-      maxPriorityFeePerGas,
-      wallet,
-      nonce
-    );
-  } catch (e) {
-    logger.sentry(`[${actionName}] Error approving`);
-    captureException(e);
-    throw e;
   }
 
   const cacheKey = toLower(
@@ -188,13 +209,13 @@ const unlock = async (
     from: accountAddress,
     gasLimit,
     hash: approval?.hash,
-    maxFeePerGas,
-    maxPriorityFeePerGas,
+    network: ethereumUtils.getNetworkFromChainId(Number(chainId)),
     nonce: approval?.nonce,
     status: TransactionStatus.approving,
     to: approval?.to,
     type: TransactionType.authorize,
     value: toHex(approval.value),
+    ...gasParams,
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
   // @ts-expect-error Since src/redux/data.js is not typed yet, `accountAddress`

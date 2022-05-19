@@ -12,10 +12,11 @@ import {
   executeSwap,
 } from '@rainbow-me/handlers/uniswap';
 import { toHex } from '@rainbow-me/handlers/web3';
+import { parseGasParamsForTransaction } from '@rainbow-me/parsers';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';
 import { greaterThan } from '@rainbow-me/utilities';
-import { AllowancesCache, gasUtils } from '@rainbow-me/utils';
+import { AllowancesCache, ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const actionName = 'swap';
@@ -32,38 +33,41 @@ const swap = async (
     inputAmount,
     tradeDetails,
     permit,
+    chainId,
   } = parameters as SwapActionParameters;
   const { dispatch } = store;
-  const { accountAddress, chainId } = store.getState().settings;
+  const { accountAddress } = store.getState().settings;
   const { inputCurrency } = store.getState().swap;
   const { gasFeeParamsBySpeed, selectedGasFee } = store.getState().gas;
-
-  let maxFeePerGas = selectedGasFee?.gasFeeParams?.maxFeePerGas?.amount;
-  let maxPriorityFeePerGas =
-    selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.amount;
-
+  let gasParams = parseGasParamsForTransaction(selectedGasFee);
   // if swap isn't the last action, use fast gas or custom (whatever is faster)
   if (
     currentRap.actions.length - 1 > index ||
-    !maxFeePerGas ||
-    !maxPriorityFeePerGas
+    !gasParams.maxFeePerGas ||
+    !gasParams.maxPriorityFeePerGas ||
+    !gasParams.gasPrice
   ) {
     const fastMaxFeePerGas =
-      gasFeeParamsBySpeed?.[gasUtils.FAST]?.maxFeePerGas.amount;
+      gasFeeParamsBySpeed?.[gasUtils.FAST]?.maxFeePerGas?.amount;
     const fastMaxPriorityFeePerGas =
-      gasFeeParamsBySpeed?.[gasUtils.FAST]?.maxPriorityFeePerGas.amount;
+      gasFeeParamsBySpeed?.[gasUtils.FAST]?.maxPriorityFeePerGas?.amount;
 
-    if (greaterThan(fastMaxFeePerGas, maxFeePerGas)) {
-      maxFeePerGas = fastMaxFeePerGas;
+    if (greaterThan(fastMaxFeePerGas, gasParams?.maxFeePerGas || 0)) {
+      gasParams.maxFeePerGas = fastMaxFeePerGas;
     }
-    if (greaterThan(fastMaxPriorityFeePerGas, maxPriorityFeePerGas)) {
-      maxPriorityFeePerGas = fastMaxPriorityFeePerGas;
+    if (
+      greaterThan(
+        fastMaxPriorityFeePerGas,
+        gasParams?.maxPriorityFeePerGas || 0
+      )
+    ) {
+      gasParams.maxPriorityFeePerGas = fastMaxPriorityFeePerGas;
     }
   }
-  let gasLimit, methodName;
+  let gasLimit;
   try {
     const newGasLimit = await estimateSwapGasLimit({
-      chainId,
+      chainId: Number(chainId),
       requiresApprove: false,
       tradeDetails,
     });
@@ -78,9 +82,7 @@ const swap = async (
   try {
     logger.sentry(`[${actionName}] executing rap`, {
       gasLimit,
-      maxFeePerGas,
-      maxPriorityFeePerGas,
-      methodName,
+      ...gasParams,
     });
     const nonce = baseNonce ? baseNonce + index : undefined;
 
@@ -88,14 +90,14 @@ const swap = async (
       chainId,
       flashbots: !!parameters.flashbots,
       gasLimit,
-      maxFeePerGas,
-      maxPriorityFeePerGas,
       nonce,
       permit: !!permit,
       tradeDetails,
       wallet,
+      ...gasParams,
     };
 
+    // @ts-ignore
     swap = await executeSwap(swapParams);
 
     if (permit) {
@@ -123,14 +125,14 @@ const swap = async (
     from: accountAddress,
     gasLimit,
     hash: swap?.hash,
-    maxFeePerGas,
-    maxPriorityFeePerGas,
+    network: ethereumUtils.getNetworkFromChainId(Number(chainId)),
     nonce: swap?.nonce,
     protocol: ProtocolType.uniswap,
     status: TransactionStatus.swapping,
     to: swap?.to,
     type: TransactionType.trade,
     value: (swap && toHex(swap.value)) || undefined,
+    ...gasParams,
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
 

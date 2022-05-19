@@ -1,3 +1,4 @@
+import { ChainId } from '@rainbow-me/swaps';
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
@@ -144,13 +145,6 @@ export default function ExchangeModal({
   const isDeposit = type === ExchangeModalTypes.deposit;
   const isWithdrawal = type === ExchangeModalTypes.withdrawal;
   const isSavings = isDeposit || isWithdrawal;
-
-  const defaultGasLimit = isDeposit
-    ? ethUnits.basic_deposit
-    : isWithdrawal
-    ? ethUnits.basic_withdrawal
-    : ethUnits.basic_swap;
-
   const {
     selectedGasFee,
     gasFeeParamsBySpeed,
@@ -163,9 +157,7 @@ export default function ExchangeModal({
     accountAddress,
     flashbotsEnabled,
     nativeCurrency,
-    network,
   } = useAccountSettings();
-  const getNextNonce = useCurrentNonce(accountAddress, network);
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const [currentProvider, setCurrentProvider] = useState(null);
@@ -219,6 +211,19 @@ export default function ExchangeModal({
     () => ethereumUtils.getNetworkFromChainId(chainId || 1),
     [chainId]
   );
+
+  const basicSwap =
+    ChainId.arbitrum === chainId
+      ? ethUnits.basic_swap_arbitrum
+      : ethUnits.basic_swap;
+
+  const defaultGasLimit = isDeposit
+    ? ethUnits.basic_deposit
+    : isWithdrawal
+    ? ethUnits.basic_withdrawal
+    : basicSwap;
+
+  const getNextNonce = useCurrentNonce(accountAddress, currentNetwork);
 
   useEffect(() => {
     const getProvider = async () => {
@@ -530,6 +535,7 @@ export default function ExchangeModal({
       logger.log('[exchange - handle submit] rap');
       const nonce = await getNextNonce();
       const swapParameters = {
+        chainId,
         flashbots,
         inputAmount,
         nonce,

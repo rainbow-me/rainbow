@@ -3,6 +3,7 @@
   "basic_deposit": 420000,
   "basic_deposit_eth": 200000,
   "basic_swap": 200000,
+  "basic_swap_arbitrum": 3000000,
   "basic_swap_permit": 300000,
   "ens_register_with_config": 280000,
   "ens_commit": 50000,

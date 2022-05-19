@@ -67,6 +67,9 @@ const getBasicSwapGasLimitForTrade = (
   if (allowsPermit) {
     return ethUnits.basic_swap_permit;
   } else {
+    if (ChainId.arbitrum === chainId) {
+      return ethUnits.basic_swap_arbitrum;
+    }
     return ethUnits.basic_swap;
   }
 };
@@ -83,6 +86,9 @@ export const estimateSwapGasLimit = async ({
   const network = ethereumUtils.getNetworkFromChainId(chainId);
   const provider = await getProviderForNetwork(network);
   if (!provider || !tradeDetails) {
+    if (ChainId.arbitrum === chainId) {
+      return ethUnits.basic_swap_arbitrum;
+    }
     return ethUnits.basic_swap;
   }
 
@@ -186,6 +192,7 @@ export const executeSwap = async ({
   gasLimit,
   maxFeePerGas,
   maxPriorityFeePerGas,
+  gasPrice,
   nonce,
   tradeDetails,
   wallet,
@@ -196,6 +203,7 @@ export const executeSwap = async ({
   gasLimit: string | number;
   maxFeePerGas: string;
   maxPriorityFeePerGas: string;
+  gasPrice: string;
   nonce?: number;
   tradeDetails: Quote | null;
   wallet: Wallet | null;
@@ -208,10 +216,10 @@ export const executeSwap = async ({
 
   // Switch to the flashbots provider if enabled
   if (flashbots && network === Network.mainnet) {
-    logger.debug('flashbots provider being set');
+    logger.debug('flashbots provider being set on mainnet');
     provider = await getFlashbotsProvider();
   } else {
-    logger.debug('normal provider being set');
+    logger.debug('normal provider being set', network);
     provider = await getProviderForNetwork(network);
   }
 
@@ -224,13 +232,16 @@ export const executeSwap = async ({
   if (!walletToUse || !tradeDetails) return null;
 
   const { sellTokenAddress, buyTokenAddress } = tradeDetails;
-
   const transactionParams = {
     gasLimit: toHex(gasLimit) || undefined,
-    maxFeePerGas: toHex(maxFeePerGas) || undefined,
-    maxPriorityFeePerGas: toHex(maxPriorityFeePerGas) || undefined,
+    // In case it's an L2 with legacy gas price like arbitrum
+    gasPrice: gasPrice || undefined,
+    // EIP-1559 like networks
+    maxFeePerGas: maxFeePerGas || undefined,
+    maxPriorityFeePerGas: maxPriorityFeePerGas || undefined,
     nonce: nonce ? toHex(nonce) : undefined,
   };
+
   // Wrap Eth
   if (
     sellTokenAddress === ETH_ADDRESS_AGGREGATORS &&
@@ -249,7 +260,7 @@ export const executeSwap = async ({
       'FILLQUOTE',
       tradeDetails,
       transactionParams,
-      walletToUse,
+      walletToUse.address,
       permit,
       chainId
     );

@@ -63,12 +63,14 @@ export interface RapActionParameters {
   recordValue?: string;
   salt?: string;
   records?: ENSRegistrationRecords;
+  chainId?: number;
 }
 
 export interface UnlockActionParameters {
   amount: string;
   assetToUnlock: Asset;
   contractAddress: string;
+  chainId: number;
 }
 
 export interface SwapActionParameters {
@@ -79,6 +81,7 @@ export interface SwapActionParameters {
   permit?: boolean;
   flashbots?: boolean;
   provider: Provider;
+  chainId?: number;
 }
 
 export interface RegisterENSActionParameters {
@@ -247,6 +250,7 @@ const executeAction = async (
     );
     return { baseNonce: nonce, errorMessage: null };
   } catch (error: any) {
+    logger.debug('Rap blew up', error);
     logger.sentry('[3 INNER] error running action, code:', error?.code);
     captureException(error);
     analytics.track('Rap failed', {
