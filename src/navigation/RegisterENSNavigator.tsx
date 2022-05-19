@@ -1,12 +1,6 @@
 import { useRoute } from '@react-navigation/core';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import React, {
-  createContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { StatusBar } from 'react-native';
 import { useSetRecoilState } from 'recoil';
 import { SheetHandleFixedToTopHeight, SlackSheet } from '../components/sheet';
@@ -30,12 +24,6 @@ import Routes from '@rainbow-me/routes';
 import { deviceUtils } from '@rainbow-me/utils';
 
 const Swipe = createMaterialTopTabNavigator();
-
-export const ContentDimensionsContext = createContext<{
-  contentHeight?: number;
-}>({
-  contentHeight: undefined,
-});
 
 const renderTabBar = () => null;
 const renderPager = (props: any) => (
@@ -153,7 +141,7 @@ export default function RegisterENSNavigator() {
   }, [screenOptions.scrollEnabled]);
 
   return (
-    <ContentDimensionsContext.Provider value={{ contentHeight }}>
+    <>
       {/* @ts-expect-error JavaScript component */}
       <SlackSheet
         additionalTopPadding={android ? StatusBar.currentHeight : false}
@@ -179,6 +167,7 @@ export default function RegisterENSNavigator() {
             <Swipe.Screen
               component={ENSIntroSheet}
               initialParams={{
+                contentHeight,
                 onSearchForNewName: () => setIsSearchEnabled(true),
                 onSelectExistingName: () => setIsSearchEnabled(false),
               }}
@@ -229,6 +218,6 @@ export default function RegisterENSNavigator() {
           visible={isBottomActionsVisible}
         />
       )}
-    </ContentDimensionsContext.Provider>
+    </>
   );
 }

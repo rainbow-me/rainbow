@@ -1,7 +1,7 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import { useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
-import React, { useCallback, useContext, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { InteractionManager } from 'react-native';
 import {
   ContextMenuButton,
@@ -34,7 +34,6 @@ import {
   useDimensions,
   useENSRegistration,
 } from '@rainbow-me/hooks';
-import { ContentDimensionsContext } from '@rainbow-me/navigation/RegisterENSNavigator';
 import Routes from '@rainbow-me/routes';
 import { showActionSheetWithOptions } from '@rainbow-me/utils';
 
@@ -58,7 +57,7 @@ export default function ENSIntroSheet() {
   // want to explicitly set a min height.
   const isSmallPhone = deviceHeight < minHeight;
 
-  const { contentHeight } = useContext(ContentDimensionsContext);
+  const contentHeight = params?.contentHeight;
   const contentWidth = Math.min(deviceWidth - 72, 300);
 
   const { ownedDomains, primaryDomain, nonPrimaryDomains } = useMemo(() => {
