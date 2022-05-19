@@ -21,7 +21,7 @@ import {
 } from '../apollo/queries';
 import { ensProfileImagesQueryKey } from '../hooks/useENSProfileImages';
 import { ENSActionParameters } from '../raps/common';
-import { estimateGasWithPadding, web3Provider } from './web3';
+import { estimateGasWithPadding, getProviderForNetwork } from './web3';
 import {
   ENSRegistrationRecords,
   EthereumAddress,
@@ -301,8 +301,9 @@ export const fetchAccountRegistrations = async (address: string) => {
 export const fetchImages = async (ensName: string) => {
   let avatarUrl;
   let coverUrl;
+  const provider = await getProviderForNetwork();
   try {
-    const avatarResolver = new AvatarResolver(web3Provider);
+    const avatarResolver = new AvatarResolver(provider);
     [avatarUrl, coverUrl] = await Promise.all([
       avatarResolver.getImage(ensName, {
         allowNonOwnerNFTs: true,
@@ -335,7 +336,8 @@ export const fetchRecords = async (ensName: string) => {
   });
   const data = response.data?.domains[0] || {};
 
-  const resolver = await web3Provider.getResolver(ensName);
+  const provider = await getProviderForNetwork();
+  const resolver = await provider.getResolver(ensName);
   const supportedRecords = Object.values(ENS_RECORDS);
   const rawRecordKeys: string[] = data.resolver?.texts || [];
   const recordKeys = (rawRecordKeys as ENS_RECORDS[]).filter(key =>
@@ -363,8 +365,8 @@ export const fetchCoinAddresses = async (ensName: string) => {
   });
   const data = response.data?.domains[0] || {};
   const supportedRecords = Object.values(ENS_RECORDS);
-
-  const resolver = await web3Provider.getResolver(ensName);
+  const provider = await getProviderForNetwork();
+  const resolver = await provider.getResolver(ensName);
   const rawCoinTypes: number[] = data.resolver?.coinTypes || [];
   const rawCoinTypesNames: string[] = rawCoinTypes.map(
     type => formatsByCoinType[type].name
@@ -403,7 +405,8 @@ export const fetchOwner = async (ensName: string) => {
 
   let owner: { address?: string; name?: string } = {};
   if (ownerAddress) {
-    const name = await web3Provider.lookupAddress(ownerAddress);
+    const provider = await getProviderForNetwork();
+    const name = await provider.lookupAddress(ownerAddress);
     owner = {
       address: ownerAddress,
       name,
@@ -425,7 +428,8 @@ export const fetchRegistration = async (ensName: string) => {
   let registrant: { address?: string; name?: string } = {};
   if (data.registrant?.id) {
     const registrantAddress = data.registrant?.id;
-    const name = await web3Provider.lookupAddress(registrantAddress);
+    const provider = await getProviderForNetwork();
+    const name = await provider.lookupAddress(registrantAddress);
     registrant = {
       address: registrantAddress,
       name,
@@ -442,14 +446,16 @@ export const fetchRegistration = async (ensName: string) => {
 };
 
 export const fetchPrimary = async (ensName: string) => {
-  const address = await web3Provider.resolveName(ensName);
+  const provider = await getProviderForNetwork();
+  const address = await provider.resolveName(ensName);
   return {
     address,
   };
 };
 
 export const fetchAccountPrimary = async (accountAddress: string) => {
-  const ensName = await web3Provider.lookupAddress(accountAddress);
+  const provider = await getProviderForNetwork();
+  const ensName = await provider.lookupAddress(accountAddress);
   return {
     ensName,
   };
@@ -872,8 +878,14 @@ export const shouldUseMulticallTransaction = (
   return true;
 };
 
-export const fetchReverseRecord = async (address: string) =>
-  (await web3Provider.lookupAddress(address)) || '';
+export const fetchReverseRecord = async (address: string) => {
+  const provider = await getProviderForNetwork();
+  const reverseRecord = await provider.lookupAddress(address);
+  return reverseRecord;
+};
 
-export const fetchResolver = async (ensName: string) =>
-  web3Provider.getResolver(ensName);
+export const fetchResolver = async (ensName: string) => {
+  const provider = await getProviderForNetwork();
+  const resolver = await provider.getResolver(ensName);
+  return resolver;
+};
