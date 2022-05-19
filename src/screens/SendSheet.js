@@ -822,6 +822,11 @@ export default function SendSheet(props) {
     network,
   ]);
 
+  const sendContactListDataKey = useMemo(
+    () => `${ensSuggestions?.[0]?.address || '_'}`,
+    [ensSuggestions]
+  );
+
   return (
     <Container>
       {ios && <StatusBar barStyle="light-content" />}
@@ -846,6 +851,7 @@ export default function SendSheet(props) {
             contacts={filteredContacts}
             currentInput={currentInput}
             ensSuggestions={ensSuggestions}
+            key={sendContactListDataKey}
             onPressContact={(recipient, nickname) => {
               setRecipient(recipient);
               setNickname(nickname);

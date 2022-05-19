@@ -24,12 +24,18 @@ import {
   addressHashedColorIndex,
   addressHashedEmoji,
 } from '../utils/profileUtils';
+import useExperimentalFlag, {
+  PROFILES,
+} from '@rainbow-me/config/experimentalHooks';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
 } from '@rainbow-me/helpers/emojiHandler';
 import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
-import { isValidDomainFormat } from '@rainbow-me/helpers/validators';
+import {
+  isENSAddressFormat,
+  isValidDomainFormat,
+} from '@rainbow-me/helpers/validators';
 import {
   useAccountSettings,
   useAccountTransactions,
@@ -173,6 +179,7 @@ export default function SendConfirmationSheet() {
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const insets = useSafeArea();
   const { contacts } = useContacts();
+  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   useEffect(() => {
     android && Keyboard.dismiss();
@@ -232,8 +239,8 @@ export default function SendConfirmationSheet() {
   }, [isSendingToUserAccount, network, toAddress, transactions]);
 
   const contact = useMemo(() => {
-    return get(contacts, `${[toLower(to)]}`);
-  }, [contacts, to]);
+    return get(contacts, `${[toLower(toAddress)]}`);
+  }, [contacts, toAddress]);
 
   const [checkboxes, setCheckboxes] = useState([
     {
@@ -334,7 +341,6 @@ export default function SendConfirmationSheet() {
 
   const avatarValue =
     returnStringFirstEmoji(existingAccount?.label) ||
-    contact?.nickname ||
     addressHashedEmoji(toAddress);
 
   const avatarColor =
@@ -350,11 +356,13 @@ export default function SendConfirmationSheet() {
     realSheetHeight -= 80;
   }
 
-  const { data: images } = useENSProfileImages(avatarName, {
-    enabled: Boolean(avatarName),
+  const { data: images } = useENSProfileImages(to, {
+    enabled: isENSAddressFormat(to),
   });
 
-  const accountImage = images?.avatarUrl || existingAccount?.image;
+  const accountImage = profilesEnabled
+    ? images?.avatarUrl || existingAccount?.image
+    : existingAccount?.image;
 
   const contentHeight = realSheetHeight - (isL2 ? 50 : 30);
   return (

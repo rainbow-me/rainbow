@@ -77,14 +77,12 @@ const AddressField = (
     [expandAbbreviatedClipboard, onChange, validateAddress]
   );
 
-  const autofill = name || address;
-
   useEffect(() => {
-    if (name !== inputValue) {
+    if (name !== inputValue || name !== address) {
       setInputValue(name);
       validateAddress(address);
     }
-  }, [address, autofill, editable, inputValue, name, validateAddress]);
+  }, [address, editable, inputValue, name, validateAddress]);
 
   return (
     <Row flex={1}>

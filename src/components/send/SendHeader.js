@@ -122,16 +122,21 @@ export default function SendHeader({
   }, [recipient, userAccounts, watchedAccounts, hexAddress]);
 
   const isPreExistingContact = (contact?.nickname?.length || 0) > 0;
-  const label = isPreExistingContact
-    ? removeFirstEmojiFromString(contact?.nickname) || contact?.ens
-    : removeFirstEmojiFromString(userWallet?.label || nickname);
 
-  const name = label.length
-    ? label
-    : userWallet?.ens ?? userWallet?.address ?? recipient;
+  const name =
+    removeFirstEmojiFromString(
+      userWallet?.label || contact?.nickname || nickname
+    ) ||
+    userWallet?.ens ||
+    contact?.ens ||
+    recipient;
 
   const handleNavigateToContact = useCallback(() => {
-    let nickname = recipient;
+    let nickname = profilesEnabled
+      ? !isHexString(recipient)
+        ? recipient
+        : null
+      : recipient;
     let color = '';
     if (!profilesEnabled) {
       color = get(contact, 'color');
@@ -181,6 +186,9 @@ export default function SendHeader({
           showDeleteContactActionSheet({
             address: hexAddress,
             nickname: name,
+            onDelete: () => {
+              onChangeAddressInput(contact?.ens);
+            },
             removeContact: removeContact,
           });
         } else if (buttonIndex === 1) {
@@ -200,6 +208,7 @@ export default function SendHeader({
       }
     );
   }, [
+    contact?.ens,
     handleNavigateToContact,
     hexAddress,
     navigate,
@@ -209,6 +218,7 @@ export default function SendHeader({
     removeContact,
     setClipboard,
     name,
+    onChangeAddressInput,
   ]);
 
   return (
@@ -227,7 +237,10 @@ export default function SendHeader({
           autoFocus={!showAssetList}
           editable={!fromProfile}
           name={name}
-          onChange={onChangeAddressInput}
+          onChange={e => {
+            onChangeAddressInput(e);
+            setHexAddress('');
+          }}
           onFocus={onFocus}
           ref={recipientFieldRef}
           testID="send-asset-form-field"
