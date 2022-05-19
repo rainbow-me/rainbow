@@ -80,6 +80,7 @@ export { default as usePriceImpactDetails } from './usePriceImpactDetails';
 export { default as useStepper } from './useStepper';
 export { default as useSwapAdjustedAmounts } from './useSwapAdjustedAmounts';
 export { default as useSwapCurrencies } from './useSwapCurrencies';
+// eslint-disable-next-line import/no-cycle
 export { default as useSwapCurrencyHandlers } from './useSwapCurrencyHandlers';
 export { default as useSwapInputRefs } from './useSwapInputRefs';
 export { default as useSwapInputHandlers } from './useSwapInputHandlers';

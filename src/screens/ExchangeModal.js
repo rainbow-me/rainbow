@@ -560,6 +560,7 @@ export default function ExchangeModal({
       navigate(Routes.WALLET_SCREEN);
     }
   }, [
+    chainId,
     defaultInputAsset?.symbol,
     flashbots,
     genericAssets,
