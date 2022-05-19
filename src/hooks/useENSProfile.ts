@@ -17,7 +17,7 @@ async function fetchENSProfile({
   accountAddress,
 }: {
   name: string;
-  accountAddress: EthereumAddress;
+  accountAddress?: EthereumAddress;
 }) {
   const cachedProfile = await getProfile(name);
   if (cachedProfile) {
@@ -33,7 +33,7 @@ export async function prefetchENSProfile({
   accountAddress,
 }: {
   name: string;
-  accountAddress: EthereumAddress;
+  accountAddress?: EthereumAddress;
 }) {
   queryClient.prefetchQuery(
     queryKey(name),

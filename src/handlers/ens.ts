@@ -463,7 +463,7 @@ export const fetchAccountPrimary = async (accountAddress: string) => {
 
 export const fetchProfile = async (
   ensName: string,
-  accountAddress: EthereumAddress
+  accountAddress: EthereumAddress = ''
 ) => {
   const [
     resolver,
