@@ -231,11 +231,14 @@ export const fetchWalletENSAvatars = () => async (dispatch, getState) => {
   for (const key of walletKeys) {
     const wallet = wallets[key];
     for (const account of wallet?.addresses) {
+      console.log('🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫 account', account.address);
       const ens =
         (await fetchReverseRecord(account.address)) ||
         walletNames[account.address];
+      console.log('🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫 ens', ens);
       if (ens) {
         const images = await fetchImages(ens);
+        console.log('🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫 images', images);
         if (images?.avatarUrl) {
           let avatarChanged = false;
           const addresses = wallet.addresses.map(acc => {
