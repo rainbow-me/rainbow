@@ -410,7 +410,7 @@ export const delay = (ms: number): Promise<void> => {
 };
 
 /**
- * @desc Can omit only flatted key, will not work with 'key.someObj.value'
+ * @desc Can omit only flattened key, will not work with 'key.someObj.value'
  */
 export const omitFlatten = <T extends object, K extends keyof T>(
   obj: T,
