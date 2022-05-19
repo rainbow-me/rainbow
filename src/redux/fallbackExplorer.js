@@ -7,20 +7,17 @@ import { addressAssetsReceived, fetchAssetPricesWithCoingecko } from './data';
 // eslint-disable-next-line import/no-cycle
 import { emitMainnetAssetDiscoveryRequest, explorerInitL2 } from './explorer';
 import { AssetTypes } from '@rainbow-me/entities';
-import { getAssetsFromCovalent } from '@rainbow-me/handlers/covalent';
 import { web3Provider } from '@rainbow-me/handlers/web3';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   balanceCheckerContractAbi,
   chainAssets,
-  COVALENT_ETH_ADDRESS,
   ETH_ADDRESS,
   ETH_COINGECKO_ID,
   migratedTokens,
 } from '@rainbow-me/references';
 import { delay } from '@rainbow-me/utilities';
-import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 let lastUpdatePayload = null;
@@ -45,66 +42,6 @@ const DISCOVER_NEW_ASSETS_FREQUENCY = 13000;
 // We need to use the current address to fetch the correct price
 const getCurrentAddress = address => {
   return migratedTokens[address] || address;
-};
-
-const getMainnetAssetsFromCovalent = async (
-  chainId,
-  accountAddress,
-  type,
-  currency,
-  coingeckoIds,
-  genericAssets
-) => {
-  const data = await getAssetsFromCovalent(chainId, accountAddress, currency);
-  if (data) {
-    const updatedAt = new Date(data.updated_at).getTime();
-    const assets = data.items.map(item => {
-      let contractAddress = item.contract_address;
-      const isETH = toLower(contractAddress) === toLower(COVALENT_ETH_ADDRESS);
-      if (isETH) {
-        contractAddress = ETH_ADDRESS;
-      }
-
-      const coingeckoId = coingeckoIds[toLower(contractAddress)];
-      let price = {
-        changed_at: updatedAt,
-        relative_change_24h: 0,
-        value: isETH ? item.quote_rate : 0,
-      };
-
-      // Overrides
-      const fallbackAsset =
-        ethereumUtils.getAccountAsset(contractAddress) ||
-        genericAssets[toLower(contractAddress)];
-
-      if (fallbackAsset) {
-        price = {
-          ...price,
-          ...fallbackAsset.price,
-        };
-      }
-
-      return {
-        asset: {
-          asset_code: contractAddress,
-          coingecko_id: coingeckoId,
-          decimals: item.contract_decimals,
-          icon_url: item.logo_url,
-          name: item.contract_name,
-          price: {
-            value: 0,
-            ...price,
-          },
-          symbol: item.contract_ticker_symbol,
-          type,
-        },
-        quantity: item.balance,
-      };
-    });
-
-    return keyBy(assets, 'asset.asset_code');
-  }
-  return null;
 };
 
 const findNewAssetsToWatch = () => async (dispatch, getState) => {
@@ -293,7 +230,7 @@ const assetDiscoveryCallbackQueue = [];
 
 export const onMainnetAssetDiscoveryResponse = response => {
   const callback = assetDiscoveryCallbackQueue.shift();
-  callback(response);
+  callback?.(response);
 };
 
 export const fetchOnchainBalances = ({
@@ -302,25 +239,12 @@ export const fetchOnchainBalances = ({
 }) => async (dispatch, getState) => {
   logger.log('😬 FallbackExplorer:: fetchOnchainBalances');
   const { network, accountAddress, nativeCurrency } = getState().settings;
-  const { accountAssetsData, genericAssets } = getState().data;
-  const { coingeckoIds } = getState().additionalAssetsData;
+  const { accountAssetsData } = getState().data;
   const formattedNativeCurrency = toLower(nativeCurrency);
   const { mainnetAssets } = getState().fallbackExplorer;
-  const chainId = ethereumUtils.getChainIdFromNetwork(network);
-  const covalentMainnetAssets = await getMainnetAssetsFromCovalent(
-    chainId,
-    accountAddress,
-    AssetTypes.token,
-    formattedNativeCurrency,
-    coingeckoIds,
-    genericAssets
-  );
-
   dispatch(emitMainnetAssetDiscoveryRequest);
 
-  const callback = async newCovalentMainnetAssets => {
-    console.log('N', newCovalentMainnetAssets);
-    console.log('O', covalentMainnetAssets);
+  const callback = async covalentMainnetAssets => {
     const chainAssetsMap = keyBy(chainAssets[network], 'asset.asset_code');
 
     let assets =

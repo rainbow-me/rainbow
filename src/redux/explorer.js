@@ -614,9 +614,7 @@ const listenOnAddressMessages = socket => dispatch => {
   });
 
   socket.on(messages.MAINNET_ASSET_DISCOVERY, message => {
-    onMainnetAssetDiscoveryResponse(message);
-    // eslint-disable-next-line no-console
-    console.log(JSON.stringify(message));
+    onMainnetAssetDiscoveryResponse(message.payload.assets);
   });
 };
 
