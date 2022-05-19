@@ -16,7 +16,7 @@ enum State {
 
 type Result = {
   state: State;
-  result: number;
+  result: number | undefined;
 };
 
 export default function usePersistentAspectRatio(url: string): Result {
