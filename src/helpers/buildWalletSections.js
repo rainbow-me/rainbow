@@ -242,7 +242,7 @@ const coinEditContextMenu = (
   addedEth
 ) => {
   const noSmallBalances = !balanceSectionData?.find(
-    i => i?.smallBalancesContainer
+    ({ smallBalancesContainer }) => smallBalancesContainer
   );
 
   return {

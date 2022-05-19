@@ -275,7 +275,9 @@ export default function ChartExpandedState({ asset }) {
     () =>
       !!networkInfo[currentNetwork]?.exchange_enabled &&
       !isL2 &&
-      uniswapAssetsInWallet.find(i => i?.address === assetWithPrice.address),
+      uniswapAssetsInWallet.find(
+        assetInWallet => assetInWallet.address === assetWithPrice.address
+      ),
     [assetWithPrice.address, currentNetwork, isL2, uniswapAssetsInWallet]
   );
 
