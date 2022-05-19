@@ -243,6 +243,11 @@ export const fetchWalletENSAvatars = () => async (dispatch, getState) => {
           let avatarChanged = false;
           const addresses = wallet.addresses.map(acc => {
             avatarChanged = avatarChanged || images.avatarUrl !== acc.image;
+            console.log(
+              '🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫 avatarChanged',
+              ens,
+              avatarChanged
+            );
             return {
               ...acc,
               image:
@@ -254,6 +259,10 @@ export const fetchWalletENSAvatars = () => async (dispatch, getState) => {
           });
           // don't update wallets if nothing changed
           if (avatarChanged) {
+            console.log(
+              '🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫 avatarChanged final',
+              avatarChanged
+            );
             updatedWallets = {
               ...wallets,
               [key]: {
