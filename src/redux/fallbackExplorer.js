@@ -226,11 +226,20 @@ const fetchAssetBalances = async (tokens, address, network) => {
   }
 };
 
-const assetDiscoveryCallbackQueue = [];
+const assetDiscoveryCallbackQueue = {};
 
 export const onMainnetAssetDiscoveryResponse = response => {
-  const callback = assetDiscoveryCallbackQueue.shift();
-  callback?.(response);
+  const queueKey =
+    response?.meta?.address?.toLowerCase() +
+    response?.meta?.currency?.toLowerCase();
+  const callbacks = assetDiscoveryCallbackQueue[queueKey];
+  if (!callbacks) {
+    return;
+  }
+  assetDiscoveryCallbackQueue[queueKey] = undefined;
+  for (let callback of callbacks) {
+    callback(response.payload.assets);
+  }
 };
 
 export const fetchOnchainBalances = ({
@@ -400,7 +409,11 @@ export const fetchOnchainBalances = ({
       });
     }
   };
-  assetDiscoveryCallbackQueue.push(callback);
+
+  const queueKey = accountAddress.toLowerCase() + nativeCurrency.toLowerCase();
+  assetDiscoveryCallbackQueue[queueKey] =
+    assetDiscoveryCallbackQueue[queueKey] ?? [];
+  assetDiscoveryCallbackQueue[queueKey].push(callback);
 };
 
 export const fallbackExplorerInit = () => async (dispatch, getState) => {

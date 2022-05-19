@@ -614,7 +614,7 @@ const listenOnAddressMessages = socket => dispatch => {
   });
 
   socket.on(messages.MAINNET_ASSET_DISCOVERY, message => {
-    onMainnetAssetDiscoveryResponse(message.payload.assets);
+    onMainnetAssetDiscoveryResponse(message);
   });
 };
 
