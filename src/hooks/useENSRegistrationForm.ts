@@ -96,7 +96,7 @@ export default function useENSRegistrationForm({
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [name, isEmpty(defaultRecords)]);
+  }, [name, defaultRecords]);
 
   const [valuesMap, setValuesMap] = useRecoilState(valuesAtom);
   const values = useMemo(() => valuesMap[name] || {}, [name, valuesMap]);
@@ -109,7 +109,7 @@ export default function useENSRegistrationForm({
       }));
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [name, isEmpty(defaultRecords)]
+    [name, defaultRecords]
   );
 
   // Set initial records in redux depending on user input (defaultFields)

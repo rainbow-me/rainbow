@@ -122,6 +122,7 @@ export default function ENSConfirmRegisterSheet() {
   const { result: dominantColor } = usePersistentDominantColorFromImage(
     avatarImage
   );
+
   useEffect(() => {
     if (dominantColor || (!dominantColor && !avatarImage)) {
       setAccentColor(dominantColor || colors.purple);

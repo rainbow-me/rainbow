@@ -82,7 +82,7 @@ const ContactProfileState = ({ address, color, contact, ens, nickname }) => {
     enabled: Boolean(ens),
   });
 
-  const avatarUrl = images?.avatarUrl;
+  const avatarUrl = profilesEnabled ? images?.avatarUrl : undefined;
 
   const { result: dominantColor } = usePersistentDominantColorFromImage(
     maybeSignUri(avatarUrl || '') || ''

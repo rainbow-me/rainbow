@@ -102,9 +102,18 @@ const ContactRow = (
       : null;
 
   // if the accountType === 'suggestions', nickname will always be an ens or hex address, not a custom contact nickname
-  const [ensName, setENSName] = useState(
-    ens || (nickname?.includes(ENS_DOMAIN) ? nickname : undefined)
-  );
+  const initialENSName =
+    typeof ens === 'string'
+      ? ens
+      : nickname?.includes(ENS_DOMAIN)
+      ? nickname
+      : '';
+
+  const [ensName, setENSName] = useState(initialENSName);
+
+  const { data: images } = useENSProfileImages(ensName, {
+    enabled: profilesEnabled && Boolean(ensName),
+  });
 
   useEffect(() => {
     if (profilesEnabled && accountType === 'contacts') {
@@ -135,10 +144,6 @@ const ContactRow = (
     setENSName,
   ]);
 
-  const { data: images } = useENSProfileImages(ensName, {
-    enabled: profilesEnabled && Boolean(ensName),
-  });
-
   let cleanedUpLabel = null;
   if (label) {
     cleanedUpLabel = removeFirstEmojiFromString(label);
@@ -148,13 +153,11 @@ const ContactRow = (
     if (showcaseItem) {
       onPress(showcaseItem, nickname);
     } else {
-      const label =
+      const recipient =
         accountType === 'suggestions' && isENSAddressFormat(nickname)
           ? nickname
-          : ensName
-          ? ensName
-          : address;
-      onPress(label, nickname);
+          : ensName || address;
+      onPress(recipient, nickname ?? recipient);
     }
   }, [accountType, address, ensName, nickname, onPress, showcaseItem]);
 
