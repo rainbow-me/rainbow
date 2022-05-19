@@ -76,7 +76,7 @@ const getRawAllowance = async (
   }
 };
 
-const executeApprove = (
+const executeApprove = async (
   tokenAddress: string,
   spender: string,
   gasLimit: number | string,
@@ -92,9 +92,14 @@ const executeApprove = (
         gasPrice?: undefined;
       },
   wallet: Wallet,
-  nonce: number | null = null
+  nonce: number | null = null,
+  chainId: number = 1
 ) => {
-  const exchange = new Contract(tokenAddress, erc20ABI, wallet);
+  const network = ethereumUtils.getNetworkFromChainId(chainId);
+  let provider = await getProviderForNetwork(network);
+  const walletToUse = new Wallet(wallet.privateKey, provider);
+
+  const exchange = new Contract(tokenAddress, erc20ABI, walletToUse);
   return exchange.approve(spender, MaxUint256, {
     gasLimit: toHex(gasLimit) || undefined,
     // In case it's an L2 with legacy gas price like arbitrum
@@ -184,7 +189,8 @@ const unlock = async (
         gasLimit,
         gasParams,
         wallet,
-        nonce
+        nonce,
+        chainId
       );
     } catch (e) {
       logger.sentry(`[${actionName}] Error approving`);

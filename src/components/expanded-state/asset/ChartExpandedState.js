@@ -274,8 +274,8 @@ export default function ChartExpandedState({ asset }) {
 
   const assetsInWallet = useAssetsInWallet();
   const showSwapButton = useMemo(
-    () => find(assetsInWallet, ['address', assetWithPrice.address]),
-    [assetWithPrice.address, assetsInWallet]
+    () => find(assetsInWallet, ['address', asset.address]),
+    [asset.address, assetsInWallet]
   );
 
   const needsEth =
