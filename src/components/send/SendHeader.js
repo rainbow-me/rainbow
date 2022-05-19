@@ -126,8 +126,10 @@ export default function SendHeader({
   const name =
     removeFirstEmojiFromString(
       userWallet?.label || contact?.nickname || nickname
-    ) || userWallet?.ens;
-  contact?.ens || recipient;
+    ) ||
+    userWallet?.ens ||
+    contact?.ens ||
+    recipient;
 
   const handleNavigateToContact = useCallback(() => {
     let nickname = profilesEnabled
@@ -235,7 +237,10 @@ export default function SendHeader({
           autoFocus={!showAssetList}
           editable={!fromProfile}
           name={name}
-          onChange={onChangeAddressInput}
+          onChange={e => {
+            onChangeAddressInput(e);
+            setHexAddress('');
+          }}
           onFocus={onFocus}
           ref={recipientFieldRef}
           testID="send-asset-form-field"
