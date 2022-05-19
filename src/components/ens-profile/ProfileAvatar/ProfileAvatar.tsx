@@ -7,7 +7,9 @@ import AvatarCoverPhotoMaskSvg from '../../svg/AvatarCoverPhotoMaskSvg';
 import { BackgroundProvider, Box, Cover } from '@rainbow-me/design-system';
 import { useFadeImage } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
+import { sharedCoolModalTopOffset } from '@rainbow-me/navigation/config';
 
+const imagePreviewOverlayTopOffset = ios ? 68 + sharedCoolModalTopOffset : 107;
 const size = 70;
 
 export default function ProfileAvatar({
@@ -58,7 +60,7 @@ export default function ProfileAvatar({
           hideStatusBar={false}
           imageUrl={avatarUrl || ''}
           onPress={handleOnPress}
-          topOffset={ios ? 112 : 107}
+          topOffset={imagePreviewOverlayTopOffset}
         >
           <>
             {showSkeleton && (

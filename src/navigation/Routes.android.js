@@ -186,9 +186,6 @@ function MainNavigator() {
           />
           <Stack.Screen
             component={ProfileSheet}
-            initialParams={{
-              isPreview: true,
-            }}
             name={Routes.PROFILE_PREVIEW_SHEET}
             options={ensPreset}
           />

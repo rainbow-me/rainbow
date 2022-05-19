@@ -51,7 +51,7 @@ const StepIndicator = ({ steps, currentStep }: StepIndicatorProps) => {
   );
 
   const animatedPulseStyle = useAnimatedStyle(() => ({
-    left: `${pulseStepTranslate?.value}%`,
+    ...(ios ? { left: `${pulseStepTranslate?.value}%` } : {}),
     opacity: pulseStepOpacity?.value,
   }));
 

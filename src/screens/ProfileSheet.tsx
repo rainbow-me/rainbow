@@ -4,7 +4,6 @@ import React, { createContext, useEffect, useMemo } from 'react';
 import { StatusBar } from 'react-native';
 import RecyclerAssetList2 from '../components/asset-list/RecyclerAssetList2';
 import ProfileSheetHeader from '../components/ens-profile/ProfileSheetHeader';
-import { SheetHandleFixedToTopHeight } from '../components/sheet';
 import Skeleton from '../components/skeleton/Skeleton';
 import { useTheme } from '@rainbow-me/context';
 import {
@@ -27,6 +26,7 @@ import {
   useFirstTransactionTimestamp,
   usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
+import { sharedCoolModalTopOffset } from '@rainbow-me/navigation/config';
 import Routes from '@rainbow-me/routes';
 import { addressHashedColorIndex } from '@rainbow-me/utils/profileUtils';
 
@@ -42,7 +42,7 @@ export default function ProfileSheet() {
   const { accountAddress } = useAccountSettings();
 
   const { height: deviceHeight } = useDimensions();
-  const contentHeight = deviceHeight - SheetHandleFixedToTopHeight;
+  const contentHeight = deviceHeight - sharedCoolModalTopOffset;
 
   const ensName = params?.address;
   const { isSuccess } = useENSProfile(ensName);

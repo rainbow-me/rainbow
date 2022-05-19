@@ -254,14 +254,12 @@ export default function ExchangeModal({
       ) {
         return;
       }
-      const swapParams = {
+      const swapParameters = {
         inputAmount,
         outputAmount,
         tradeDetails,
       };
-      const gasLimit = await getSwapRapEstimationByType(type, {
-        swapParameters: swapParams,
-      });
+      const gasLimit = await getSwapRapEstimationByType(type, swapParameters);
       if (gasLimit) {
         updateTxFee(gasLimit);
       }

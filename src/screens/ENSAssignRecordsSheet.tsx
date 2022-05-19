@@ -51,6 +51,7 @@ import {
   textRecordFields,
 } from '@rainbow-me/helpers/ens';
 import {
+  useDimensions,
   useENSModifiedRegistration,
   useENSRegistration,
   useENSRegistrationCosts,
@@ -62,11 +63,13 @@ import {
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 
-export const BottomActionHeight = ios ? 281 : 250;
+const BottomActionHeight = ios ? 281 : 250;
+const BottomActionHeightSmall = 215;
 
 export default function ENSAssignRecordsSheet() {
   const { params } = useRoute<any>();
   const { colors } = useTheme();
+  const { isSmallPhone } = useDimensions();
   const { name } = useENSRegistration();
   const {
     images: { avatarUrl: initialAvatarUrl },
@@ -114,6 +117,10 @@ export default function ENSAssignRecordsSheet() {
   const { result: dominantColor } = usePersistentDominantColorFromImage(
     avatarImage
   );
+
+  const bottomActionHeight = isSmallPhone
+    ? BottomActionHeightSmall
+    : BottomActionHeight;
 
   useFocusEffect(() => {
     if (dominantColor || (!dominantColor && !avatarImage)) {
@@ -165,7 +172,7 @@ export default function ENSAssignRecordsSheet() {
       <Box
         background="body"
         flexGrow={1}
-        style={{ paddingBottom: BottomActionHeight + 20 }}
+        style={{ paddingBottom: bottomActionHeight + 20 }}
       >
         <Stack space="19px">
           <RegistrationCover
@@ -227,6 +234,7 @@ export function ENSAssignRecordsBottomActions({
   currentRouteName: string;
 }) {
   const { navigate, goBack } = useNavigation();
+  const { isSmallPhone } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
   const { colors } = useTheme();
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
@@ -288,9 +296,13 @@ export function ENSAssignRecordsBottomActions({
     }
   }, [defaultVisible, mode, profileQuery.isSuccess]);
 
+  const bottomActionHeight = isSmallPhone
+    ? BottomActionHeightSmall
+    : BottomActionHeight;
+
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      bottom: withSpring(visible ? 0 : -BottomActionHeight - 10, {
+      bottom: withSpring(visible ? 0 : -bottomActionHeight - 10, {
         damping: 40,
         mass: 1,
         stiffness: 420,
@@ -318,14 +330,11 @@ export function ENSAssignRecordsBottomActions({
         style={[animatedStyle, { position: 'absolute', width: '100%' }]}
       >
         <AccentColorProvider color={accentColor}>
-          <Box
-            paddingBottom="19px"
-            style={useMemo(() => ({ height: BottomActionHeight }), [])}
-          >
+          <Box paddingBottom="19px" style={{ height: bottomActionHeight }}>
             {ios ? <Shadow /> : null}
             <Rows>
               <Row>
-                <Inset horizontal="19px" top="30px">
+                <Inset horizontal="19px" top={isSmallPhone ? '19px' : '30px'}>
                   <SelectableAttributesButtons
                     navigateToAdditionalRecords={navigateToAdditionalRecords}
                     onAddField={onAddField}
@@ -344,7 +353,7 @@ export function ENSAssignRecordsBottomActions({
                       }
                     : {
                         ignorePaddingBottom: true,
-                        paddingBottom: 36,
+                        paddingBottom: isSmallPhone ? 0 : 36,
                       })}
                 >
                   {hasBackButton && (

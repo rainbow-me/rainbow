@@ -473,7 +473,7 @@ const UniqueTokenExpandedState = ({
                             textColor={textColor}
                             weight="heavy"
                           />
-                        ) : (
+                        ) : asset.permalink ? (
                           <SheetActionButton
                             color={imageColor}
                             // @ts-expect-error JavaScript component
@@ -491,7 +491,7 @@ const UniqueTokenExpandedState = ({
                             textColor={textColor}
                             weight="heavy"
                           />
-                        )}
+                        ) : null}
                         {hasSendButton ? (
                           <SendActionButton
                             asset={asset}
