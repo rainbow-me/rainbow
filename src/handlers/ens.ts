@@ -24,6 +24,7 @@ import { ENSActionParameters } from '../raps/common';
 import { estimateGasWithPadding, web3Provider } from './web3';
 import {
   ENSRegistrationRecords,
+  EthereumAddress,
   Records,
   UniqueAsset,
 } from '@rainbow-me/entities';
@@ -43,7 +44,12 @@ import {
   ensPublicResolverAddress,
   ethUnits,
 } from '@rainbow-me/references';
-import { labelhash, logger, profileUtils } from '@rainbow-me/utils';
+import {
+  isLowerCaseMatch,
+  labelhash,
+  logger,
+  profileUtils,
+} from '@rainbow-me/utils';
 import { AvatarResolver } from 'ens-avatar';
 
 const DUMMY_RECORDS = {
@@ -437,15 +443,22 @@ export const fetchRegistration = async (ensName: string) => {
 
 export const fetchPrimary = async (ensName: string) => {
   const address = await web3Provider.resolveName(ensName);
-  const primaryName = await web3Provider.lookupAddress(address);
   return {
     address,
-    isPrimary: primaryName === ensName.toLowerCase(),
-    primaryName,
   };
 };
 
-export const fetchProfile = async (ensName: string) => {
+export const fetchAccountPrimary = async (accountAddress: string) => {
+  const ensName = await web3Provider.lookupAddress(accountAddress);
+  return {
+    ensName,
+  };
+};
+
+export const fetchProfile = async (
+  ensName: string,
+  accountAddress: EthereumAddress
+) => {
   const [
     resolver,
     records,
@@ -454,6 +467,7 @@ export const fetchProfile = async (ensName: string) => {
     owner,
     { registrant, registration },
     primary,
+    reverseRecord,
   ] = await Promise.all([
     fetchResolver(ensName),
     fetchRecords(ensName),
@@ -462,6 +476,7 @@ export const fetchProfile = async (ensName: string) => {
     fetchOwner(ensName),
     fetchRegistration(ensName),
     fetchPrimary(ensName),
+    fetchReverseRecord(accountAddress),
   ]);
 
   const resolverData = {
@@ -469,9 +484,12 @@ export const fetchProfile = async (ensName: string) => {
     type: resolver.address === ensPublicResolverAddress ? 'default' : 'custom',
   };
 
+  const isPrimaryName = isLowerCaseMatch(reverseRecord, ensName);
+
   return {
     coinAddresses,
     images,
+    isPrimaryName,
     owner,
     primary,
     records,
