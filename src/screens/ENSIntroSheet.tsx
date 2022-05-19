@@ -57,6 +57,7 @@ export default function ENSIntroSheet() {
   // want to explicitly set a min height.
   const isSmallPhone = deviceHeight < minHeight;
 
+  const contentHeight = params?.contentHeight;
   const contentWidth = Math.min(deviceWidth - 72, 300);
 
   const { ownedDomains, primaryDomain, nonPrimaryDomains } = useMemo(() => {
@@ -173,8 +174,8 @@ export default function ENSIntroSheet() {
   return (
     <Box
       background="body"
-      flexGrow={1}
       paddingTop={{ custom: topPadding }}
+      style={{ height: contentHeight }}
       testID="ens-intro-sheet"
     >
       <Inset top={isSmallPhone ? '15px' : '36px'}>

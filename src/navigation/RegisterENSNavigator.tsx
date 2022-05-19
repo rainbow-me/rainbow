@@ -152,7 +152,11 @@ export default function RegisterENSNavigator() {
         scrollEnabled
       >
         <StatusBar barStyle="light-content" />
-        <Box {...(wrapperHeight ? { height: { custom: wrapperHeight } } : {})}>
+        <Box
+          style={{
+            height: wrapperHeight,
+          }}
+        >
           <Swipe.Navigator
             initialLayout={deviceUtils.dimensions}
             initialRouteName={currentRouteName}
@@ -163,6 +167,7 @@ export default function RegisterENSNavigator() {
             <Swipe.Screen
               component={ENSIntroSheet}
               initialParams={{
+                contentHeight,
                 onSearchForNewName: () => setIsSearchEnabled(true),
                 onSelectExistingName: () => setIsSearchEnabled(false),
               }}
