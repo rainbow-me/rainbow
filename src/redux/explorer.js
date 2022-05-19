@@ -1,6 +1,7 @@
+import AsyncStorage from '@react-native-community/async-storage';
 import { concat, isEmpty, isNil, keyBy, keys, toLower } from 'lodash';
 import io from 'socket.io-client';
-import { defaultConfig, L2_TXS } from '../config/experimental';
+import { L2_TXS } from '../config/experimental';
 import config from '../model/config';
 import { assetChartsReceived, DEFAULT_CHART_TYPE } from './charts';
 import {
@@ -315,7 +316,10 @@ export const explorerInit = () => async (dispatch, getState) => {
     type: EXPLORER_UPDATE_SOCKETS,
   });
 
-  dispatch(listenOnAddressMessages(newAddressSocket));
+  const experimentalConfig = await AsyncStorage.getItem('experimentalConfig');
+  const enableL2TxHistory = JSON.parse(experimentalConfig)?.[L2_TXS];
+
+  dispatch(listenOnAddressMessages(newAddressSocket, enableL2TxHistory));
 
   newAddressSocket.on(messages.CONNECT, () => {
     newAddressSocket.emit(
@@ -530,15 +534,14 @@ const l2AddressAssetsReceived = (message, network) => (dispatch, getState) => {
   dispatch(addressAssetsReceived(updatedMessage, false, false, false, network));
 };
 
-const listenOnAddressMessages = socket => dispatch => {
+const listenOnAddressMessages = (socket, enableL2TxHistory) => dispatch => {
   socket.on(messages.ADDRESS_PORTFOLIO.RECEIVED, message => {
     dispatch(portfolioReceived(message));
   });
 
   socket.on(messages.ADDRESS_TRANSACTIONS.RECEIVED, message => {
     // logger.log('mainnet txns received', message?.payload?.transactions);
-
-    if (defaultConfig[L2_TXS].value) {
+    if (enableL2TxHistory) {
       dispatch(emitL2TransactionHistoryRequest());
     }
     dispatch(transactionsReceived(message));
