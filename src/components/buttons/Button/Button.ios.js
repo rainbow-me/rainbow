@@ -70,13 +70,19 @@ export default function Button({
   style,
   textProps,
   type = ButtonShapeTypes.pill,
+  testID,
   ...props
 }) {
   const borderRadius = type === 'rounded' ? 14 : 50;
   const { colors, isDarkMode } = useTheme();
 
   return (
-    <ButtonPressAnimation {...props} disabled={disabled} onPress={onPress}>
+    <ButtonPressAnimation
+      {...props}
+      disabled={disabled}
+      onPress={onPress}
+      testID={testID}
+    >
       <Container
         {...props}
         backgroundColor={
