@@ -289,6 +289,13 @@ const fetchAssetBalances = async (tokens, address, network) => {
   }
 };
 
+const assetDiscoveryCallbackQueue = [];
+
+export const onMainnetAssetDiscoveryResponse = response => {
+  const callback = assetDiscoveryCallbackQueue.shift();
+  callback(response);
+};
+
 export const fetchOnchainBalances = ({
   keepPolling = true,
   withPrices = true,
@@ -311,160 +318,165 @@ export const fetchOnchainBalances = ({
 
   dispatch(emitMainnetAssetDiscoveryRequest);
 
-  const chainAssetsMap = keyBy(chainAssets[network], 'asset.asset_code');
+  const callback = async newCovalentMainnetAssets => {
+    console.log('N', newCovalentMainnetAssets);
+    console.log('O', covalentMainnetAssets);
+    const chainAssetsMap = keyBy(chainAssets[network], 'asset.asset_code');
 
-  let assets =
-    network === NetworkTypes.mainnet
-      ? covalentMainnetAssets
-        ? {
-            ...mainnetAssets,
-            ...covalentMainnetAssets,
-          }
-        : mainnetAssets
-      : chainAssetsMap;
+    let assets =
+      network === NetworkTypes.mainnet
+        ? covalentMainnetAssets
+          ? {
+              ...mainnetAssets,
+              ...covalentMainnetAssets,
+            }
+          : mainnetAssets
+        : chainAssetsMap;
 
-  const isEmptyAssets = isEmpty(assets);
-  if (isEmptyAssets && !isEmpty(accountAssetsData)) {
-    assets = mapValues(accountAssetsData, asset => ({
-      asset: {
-        asset_code: asset.address,
-        decimals: asset.decimals,
-        icon_url: asset.icon_url,
-        name: asset.name,
-        price: asset.price,
-        symbol: asset.symbol,
-      },
-      quantity: 0,
-    }));
-  }
-
-  if (isEmptyAssets || (isEmptyAssets && keepPolling)) {
-    const fallbackExplorerBalancesHandle = setTimeout(
-      () => dispatch(fetchOnchainBalances({ keepPolling, withPrices })),
-      10000
-    );
-    dispatch({
-      payload: {
-        fallbackExplorerBalancesHandle,
-      },
-      type: FALLBACK_EXPLORER_SET_BALANCE_HANDLER,
-    });
-    return;
-  }
-
-  const tokenAddresses = map(assets, ({ asset: { asset_code } }) =>
-    asset_code === ETH_ADDRESS
-      ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
-      : toLower(asset_code)
-  );
-
-  const balances = await fetchAssetBalances(
-    tokenAddresses,
-    accountAddress,
-    network
-  );
-
-  let updatedAssets = assets;
-  if (balances) {
-    updatedAssets = mapValues(assets, assetAndQuantity => {
-      const assetCode = toLower(assetAndQuantity.asset.asset_code);
-      return {
+    const isEmptyAssets = isEmpty(assets);
+    if (isEmptyAssets && !isEmpty(accountAssetsData)) {
+      assets = mapValues(accountAssetsData, asset => ({
         asset: {
-          ...assetAndQuantity.asset,
-          asset_code:
-            assetCode === ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
-              ? ETH_ADDRESS
-              : assetCode,
+          asset_code: asset.address,
+          decimals: asset.decimals,
+          icon_url: asset.icon_url,
+          name: asset.name,
+          price: asset.price,
+          symbol: asset.symbol,
         },
-        quantity:
-          balances?.[
-            assetCode === ETH_ADDRESS
-              ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
-              : assetCode
-          ],
-      };
-    });
-  }
+        quantity: 0,
+      }));
+    }
 
-  if (withPrices) {
-    const coingeckoIds = map(
-      updatedAssets,
-      ({ asset: { coingecko_id } }) => coingecko_id
-    );
-    const prices = await fetchAssetPricesWithCoingecko(
-      coingeckoIds,
-      formattedNativeCurrency
+    if (isEmptyAssets || (isEmptyAssets && keepPolling)) {
+      const fallbackExplorerBalancesHandle = setTimeout(
+        () => dispatch(fetchOnchainBalances({ keepPolling, withPrices })),
+        10000
+      );
+      dispatch({
+        payload: {
+          fallbackExplorerBalancesHandle,
+        },
+        type: FALLBACK_EXPLORER_SET_BALANCE_HANDLER,
+      });
+      return;
+    }
+
+    const tokenAddresses = map(assets, ({ asset: { asset_code } }) =>
+      asset_code === ETH_ADDRESS
+        ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
+        : toLower(asset_code)
     );
 
-    if (prices) {
-      updatedAssets = mapValues(updatedAssets, asset => {
-        const assetCoingeckoId = toLower(asset.asset.coingecko_id);
-        if (prices[assetCoingeckoId]) {
-          return {
-            ...asset,
-            asset: {
-              ...asset.asset,
-              price: {
-                changed_at: prices[assetCoingeckoId].last_updated_at,
-                relative_change_24h:
-                  prices[assetCoingeckoId][
-                    `${formattedNativeCurrency}_24h_change`
-                  ],
-                value: prices[assetCoingeckoId][`${formattedNativeCurrency}`],
-              },
-            },
-          };
-        }
-        return asset;
+    const balances = await fetchAssetBalances(
+      tokenAddresses,
+      accountAddress,
+      network
+    );
+
+    let updatedAssets = assets;
+    if (balances) {
+      updatedAssets = mapValues(assets, assetAndQuantity => {
+        const assetCode = toLower(assetAndQuantity.asset.asset_code);
+        return {
+          asset: {
+            ...assetAndQuantity.asset,
+            asset_code:
+              assetCode === ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
+                ? ETH_ADDRESS
+                : assetCode,
+          },
+          quantity:
+            balances?.[
+              assetCode === ETH_ADDRESS
+                ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
+                : assetCode
+            ],
+        };
       });
     }
-  }
 
-  logger.log('😬 FallbackExplorer updating assets');
-
-  const newPayload = { assets: updatedAssets };
-
-  if (balances && (!keepPolling || !isEqual(lastUpdatePayload, newPayload))) {
-    dispatch(
-      addressAssetsReceived(
-        {
-          meta: {
-            address: accountAddress,
-            currency: nativeCurrency,
-            status: 'ok',
-          },
-          payload: newPayload,
-        },
-        false,
-        false,
-        false,
-        network
-      )
-    );
-    lastUpdatePayload = newPayload;
-  }
-
-  if (keepPolling) {
-    const fallbackExplorerBalancesHandle = setTimeout(
-      () => dispatch(fetchOnchainBalances({ keepPolling, withPrices })),
-      UPDATE_BALANCE_AND_PRICE_FREQUENCY
-    );
-    let fallbackExplorerAssetsHandle = null;
-    if (NetworkTypes.mainnet === network) {
-      fallbackExplorerAssetsHandle = setTimeout(
-        () => dispatch(findNewAssetsToWatch()),
-        DISCOVER_NEW_ASSETS_FREQUENCY
+    if (withPrices) {
+      const coingeckoIds = map(
+        updatedAssets,
+        ({ asset: { coingecko_id } }) => coingecko_id
       );
+      const prices = await fetchAssetPricesWithCoingecko(
+        coingeckoIds,
+        formattedNativeCurrency
+      );
+
+      if (prices) {
+        updatedAssets = mapValues(updatedAssets, asset => {
+          const assetCoingeckoId = toLower(asset.asset.coingecko_id);
+          if (prices[assetCoingeckoId]) {
+            return {
+              ...asset,
+              asset: {
+                ...asset.asset,
+                price: {
+                  changed_at: prices[assetCoingeckoId].last_updated_at,
+                  relative_change_24h:
+                    prices[assetCoingeckoId][
+                      `${formattedNativeCurrency}_24h_change`
+                    ],
+                  value: prices[assetCoingeckoId][`${formattedNativeCurrency}`],
+                },
+              },
+            };
+          }
+          return asset;
+        });
+      }
     }
 
-    dispatch({
-      payload: {
-        fallbackExplorerAssetsHandle,
-        fallbackExplorerBalancesHandle,
-      },
-      type: FALLBACK_EXPLORER_SET_HANDLERS,
-    });
-  }
+    logger.log('😬 FallbackExplorer updating assets');
+
+    const newPayload = { assets: updatedAssets };
+
+    if (balances && (!keepPolling || !isEqual(lastUpdatePayload, newPayload))) {
+      dispatch(
+        addressAssetsReceived(
+          {
+            meta: {
+              address: accountAddress,
+              currency: nativeCurrency,
+              status: 'ok',
+            },
+            payload: newPayload,
+          },
+          false,
+          false,
+          false,
+          network
+        )
+      );
+      lastUpdatePayload = newPayload;
+    }
+
+    if (keepPolling) {
+      const fallbackExplorerBalancesHandle = setTimeout(
+        () => dispatch(fetchOnchainBalances({ keepPolling, withPrices })),
+        UPDATE_BALANCE_AND_PRICE_FREQUENCY
+      );
+      let fallbackExplorerAssetsHandle = null;
+      if (NetworkTypes.mainnet === network) {
+        fallbackExplorerAssetsHandle = setTimeout(
+          () => dispatch(findNewAssetsToWatch()),
+          DISCOVER_NEW_ASSETS_FREQUENCY
+        );
+      }
+
+      dispatch({
+        payload: {
+          fallbackExplorerAssetsHandle,
+          fallbackExplorerBalancesHandle,
+        },
+        type: FALLBACK_EXPLORER_SET_HANDLERS,
+      });
+    }
+  };
+  assetDiscoveryCallbackQueue.push(callback);
 };
 
 export const fallbackExplorerInit = () => async (dispatch, getState) => {

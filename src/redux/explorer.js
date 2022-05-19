@@ -17,6 +17,7 @@ import {
   fallbackExplorerClearState,
   fallbackExplorerInit,
   fetchOnchainBalances,
+  onMainnetAssetDiscoveryResponse,
 } from './fallbackExplorer';
 // eslint-disable-next-line import/no-cycle
 import { optimismExplorerInit } from './optimismExplorer';
@@ -612,10 +613,11 @@ const listenOnAddressMessages = socket => dispatch => {
     dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
   });
 
-  socket.on(messages.MAINNET_ASSET_DISCOVERY, message =>
+  socket.on(messages.MAINNET_ASSET_DISCOVERY, message => {
+    onMainnetAssetDiscoveryResponse(message);
     // eslint-disable-next-line no-console
-    console.log(JSON.stringify(message))
-  );
+    console.log(JSON.stringify(message));
+  });
 };
 
 // -- Reducer ----------------------------------------- //
