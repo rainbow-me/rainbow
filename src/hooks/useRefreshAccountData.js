@@ -10,12 +10,14 @@ import { walletConnectLoadState } from '../redux/walletconnect';
 import { fetchWalletNames } from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
 import useSavingsAccount from './useSavingsAccount';
+import useWalletENSAvatar from './useWalletENSAvatar';
 import logger from 'logger';
 
 export default function useRefreshAccountData() {
   const dispatch = useDispatch();
   const { network } = useAccountSettings();
   const { refetchSavings } = useSavingsAccount();
+  const { updateWalletENSAvatars } = useWalletENSAvatar();
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const fetchAccountData = useCallback(async () => {
@@ -38,6 +40,8 @@ export default function useRefreshAccountData() {
       );
       const wc = dispatch(walletConnectLoadState());
       const uniswapPositions = dispatch(updatePositions());
+      // update wallets avatars
+      updateWalletENSAvatars();
       return Promise.all([
         delay(1250), // minimum duration we want the "Pull to Refresh" animation to last
         getWalletNames,
@@ -52,7 +56,7 @@ export default function useRefreshAccountData() {
       captureException(error);
       throw error;
     }
-  }, [dispatch, network, refetchSavings]);
+  }, [dispatch, network, refetchSavings, updateWalletENSAvatars]);
 
   const refresh = useCallback(async () => {
     if (isRefreshing) return;

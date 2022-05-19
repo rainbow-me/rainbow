@@ -31,6 +31,7 @@ import {
 import { addressHashedColorIndex } from '../utils/profileUtils';
 import { updateWebDataEnabled } from './showcaseTokens';
 import { fetchReverseRecord } from '@rainbow-me/handlers/ens';
+import { useWalletENSAvatar } from '@rainbow-me/hooks';
 import { lightModeThemeColors } from '@rainbow-me/styles';
 
 // -- Constants --------------------------------------- //
@@ -44,6 +45,7 @@ const WALLETS_SET_SELECTED = 'wallets/SET_SELECTED';
 // -- Actions ---------------------------------------- //
 export const walletsLoadState = () => async (dispatch, getState) => {
   try {
+    console.log('🐒🐒🐒🐒🐒 walletsLoadState');
     const { accountAddress } = getState().settings;
     let addressFromKeychain = accountAddress;
     const allWalletsResult = await getAllWallets();
@@ -99,7 +101,6 @@ export const walletsLoadState = () => async (dispatch, getState) => {
     }
 
     const walletNames = await getWalletNames();
-
     dispatch({
       payload: {
         selected: selectedWallet,
@@ -224,6 +225,7 @@ export const createAccountForWallet = (id, color, name) => async (
 export const fetchWalletNames = () => async (dispatch, getState) => {
   const { wallets } = getState().wallets;
   const updatedWalletNames = {};
+  console.log('😡🤬😡🤬😡🤬 fetchWalletNames');
 
   // Fetch ENS names
   await Promise.all(

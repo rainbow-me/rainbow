@@ -18,29 +18,23 @@ export default function useAccountProfile() {
     accountImage,
     accountName,
     accountSymbol,
-  } = getAccountProfileInfo(
-    selectedWallet,
-    walletNames,
-    network,
-    accountsettingsAddress
+  } = useMemo(
+    () =>
+      getAccountProfileInfo(
+        selectedWallet,
+        walletNames,
+        network,
+        accountsettingsAddress
+      ),
+    [accountsettingsAddress, network, selectedWallet, walletNames]
   );
 
-  return useMemo(
-    () => ({
-      accountAddress,
-      accountColor,
-      accountENS,
-      accountImage,
-      accountName,
-      accountSymbol,
-    }),
-    [
-      accountAddress,
-      accountColor,
-      accountENS,
-      accountImage,
-      accountName,
-      accountSymbol,
-    ]
-  );
+  return {
+    accountAddress,
+    accountColor,
+    accountENS,
+    accountImage,
+    accountName,
+    accountSymbol,
+  };
 }

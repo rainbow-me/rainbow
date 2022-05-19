@@ -879,9 +879,13 @@ export const shouldUseMulticallTransaction = (
 };
 
 export const fetchReverseRecord = async (address: string) => {
-  const provider = await getProviderForNetwork();
-  const reverseRecord = await provider.lookupAddress(address);
-  return reverseRecord;
+  try {
+    const provider = await getProviderForNetwork();
+    const reverseRecord = await provider.lookupAddress(address);
+    return reverseRecord;
+  } catch (e) {
+    return '';
+  }
 };
 
 export const fetchResolver = async (ensName: string) => {

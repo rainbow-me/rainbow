@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
-import { fetchImages } from '@rainbow-me/handlers/ens';
+import { fetchImages, fetchReverseRecord } from '@rainbow-me/handlers/ens';
 import { useWallets } from '@rainbow-me/hooks';
 import { RainbowAccount } from '@rainbow-me/model/wallet';
 import { walletsSetSelected, walletsUpdate } from '@rainbow-me/redux/wallets';
@@ -19,7 +19,9 @@ export default function useWalletENSAvatar() {
     for (const key of walletKeys) {
       const wallet = wallets[key];
       for (const account of wallet?.addresses) {
-        const ens = walletNames[account.address];
+        const ens =
+          (await fetchReverseRecord(account.address)) ||
+          walletNames[account.address];
         if (ens) {
           const images = await fetchImages(ens);
           if (images?.avatarUrl) {
