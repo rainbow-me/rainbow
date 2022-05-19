@@ -404,7 +404,7 @@ export function ImagePreviewOverlayTarget({
   disableEnteringWithPinch = false,
   enableZoomOnPress = true,
   hasShadow = false,
-  height: initialHeight,
+  height: givenHeight,
   hideStatusBar = true,
   imageUrl = '',
   onPress,
@@ -433,7 +433,8 @@ export function ImagePreviewOverlayTarget({
       uri?: never;
     }
 )) {
-  const { enableZoom } = useContext(ImageOverlayConfigContext);
+  const { enableZoom: enableZoom_ } = useContext(ImageOverlayConfigContext);
+  const enableZoom = enableZoom_ && imageUrl;
 
   const id = useMemo(() => uniqueId(), []);
 
@@ -567,7 +568,13 @@ export function ImagePreviewOverlayTarget({
     <Box flexShrink={1} width="full">
       <Box
         borderRadius={borderRadius}
-        height={height ? { custom: height } : initialHeight || { custom: 0 }}
+        height={
+          givenHeight
+            ? givenHeight
+            : height
+            ? { custom: height }
+            : { custom: 0 }
+        }
         onLayout={handleLayout}
         ref={zoomableWrapperRef}
         style={{ opacity: renderPlaceholder ? 1 : 0, overflow: 'hidden' }}
