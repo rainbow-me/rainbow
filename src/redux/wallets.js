@@ -283,7 +283,7 @@ export const fetchWalletENSAvatars = () => async (dispatch, getState) => {
           // don't update wallets if nothing changed
           if (avatarChanged) {
             console.log(
-              '🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫 avatarChanged final',
+              '✅ ✅ ✅✅ ✅ ✅✅ ✅ ✅  avatarChanged final',
               avatarChanged
             );
             updatedWallets = {
