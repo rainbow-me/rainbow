@@ -28,10 +28,11 @@ import {
   privateKeyKey,
   seedPhraseKey,
 } from '../utils/keychainConstants';
-import { addressHashedColorIndex } from '../utils/profileUtils';
+import {
+  addressHashedColorIndex,
+  fetchReverseRecordWithRetry,
+} from '../utils/profileUtils';
 import { updateWebDataEnabled } from './showcaseTokens';
-import { fetchReverseRecord } from '@rainbow-me/handlers/ens';
-import { useWalletENSAvatar } from '@rainbow-me/hooks';
 import { lightModeThemeColors } from '@rainbow-me/styles';
 
 // -- Constants --------------------------------------- //
@@ -45,7 +46,6 @@ const WALLETS_SET_SELECTED = 'wallets/SET_SELECTED';
 // -- Actions ---------------------------------------- //
 export const walletsLoadState = () => async (dispatch, getState) => {
   try {
-    console.log('🐒🐒🐒🐒🐒 walletsLoadState');
     const { accountAddress } = getState().settings;
     let addressFromKeychain = accountAddress;
     const allWalletsResult = await getAllWallets();
@@ -225,7 +225,6 @@ export const createAccountForWallet = (id, color, name) => async (
 export const fetchWalletNames = () => async (dispatch, getState) => {
   const { wallets } = getState().wallets;
   const updatedWalletNames = {};
-  console.log('😡🤬😡🤬😡🤬 fetchWalletNames');
 
   // Fetch ENS names
   await Promise.all(
@@ -233,7 +232,7 @@ export const fetchWalletNames = () => async (dispatch, getState) => {
       const visibleAccounts = filter(wallet.addresses, 'visible');
       return map(visibleAccounts, async account => {
         try {
-          const ens = await fetchReverseRecord(account.address);
+          const ens = await fetchReverseRecordWithRetry(account.address);
           if (ens && ens !== account.address) {
             updatedWalletNames[account.address] = ens;
           }
