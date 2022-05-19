@@ -26,8 +26,7 @@ import {
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 
-const onError = error =>
-  DelayedAlert({ message: error.message, title: 'Warning' }, 500);
+const onError = error => DelayedAlert({ title: error }, 500);
 
 const AndroidHeight = 400;
 

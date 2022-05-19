@@ -198,32 +198,6 @@ export async function loadAllKeys(): Promise<null | UserCredentials[]> {
     throw errCode;
   }
 }
-//TODO: not used here, maybe remove?
-// export async function getAllKeysAnonymized(): Promise<null | AnonymousKeyData> {
-//   const data: AnonymousKeyData = {};
-//   const results = await loadAllKeys();
-//   forEach(results, result => {
-//     data[result?.username] = {
-//       length: result?.password?.length,
-//       nil: isNil(result?.password),
-//       type: typeof result?.password,
-//     };
-//   });
-//   return data;
-// }
-//TODO: not used here, maybe remove?
-// export async function loadAllKeysOnly(): Promise<null | string[]> {
-//   try {
-//     const response = await getAllInternetCredentialsKeys();
-//     if (response) {
-//       return response.results;
-//     }
-//   } catch (err: any) {
-//     logger.log(`Keychain: failed to loadAllKeys error: ${err}`);
-//     captureException(err);
-//   }
-//   return null;
-// }
 
 export async function hasKey(key: string): Promise<boolean | Result> {
   try {

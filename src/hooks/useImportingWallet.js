@@ -103,12 +103,7 @@ export default function useImportingWallet() {
   );
 
   const handlePressImportButton = useCallback(
-    async (
-      forceColor,
-      forceAddress,
-      forceEmoji = null,
-      isErrorBubbling = false
-    ) => {
+    async (forceColor, forceAddress, forceEmoji = null) => {
       analytics.track('Tapped "Import" button');
       // guard against pressEvent coming in as forceColor if
       // handlePressImportButton is used as onClick handler
@@ -206,29 +201,25 @@ export default function useImportingWallet() {
           }
         }
       } catch (error) {
-        if (!isErrorBubbling) {
-          const matched = matchError(error);
-          const textForAlert = match(
-            lang.t('errors.connectWithSupport'),
-            [matched.NOT_VALID_ENS, 'This is not a valid ENS name'],
-            [
-              matched.CANNOT_ADD_ENS,
-              'Sorry, we cannot add this ENS name at this time. Please try again later!',
-            ],
-            [
-              matched.NOT_VALID_UNSTOPPABLE_NAME,
-              'This is not a valid Unstoppable name',
-            ],
-            [
-              matched.CANNOT_ADD_UNSTOPPABLE_NAME,
-              'Sorry, we cannot add this Unstoppable name at this time. Please try again later!',
-            ]
-          );
+        const matched = matchError(error);
+        const textForAlert = match(
+          lang.t('errors.connectWithSupport'),
+          [matched.NOT_VALID_ENS, 'This is not a valid ENS name'],
+          [
+            matched.CANNOT_ADD_ENS,
+            'Sorry, we cannot add this ENS name at this time. Please try again later!',
+          ],
+          [
+            matched.NOT_VALID_UNSTOPPABLE_NAME,
+            'This is not a valid Unstoppable name',
+          ],
+          [
+            matched.CANNOT_ADD_UNSTOPPABLE_NAME,
+            'Sorry, we cannot add this Unstoppable name at this time. Please try again later!',
+          ]
+        );
 
-          Alert.alert(textForAlert);
-        } else {
-          throw error;
-        }
+        Alert.alert(textForAlert);
       }
     },
     [isSecretValid, seedPhrase, showWalletProfileModal]

@@ -206,15 +206,8 @@ export default function RestoreCloudStep({
         setIsWalletLoading(null);
       });
     } catch (e) {
-      setIncorrectPassword(true);
       setIsWalletLoading(null);
       const matched = matchError(e);
-      if (
-        matched.ERROR_IN_RESTORE_SPECIFIC_BACKUP_INTO_KEYCHAIN ||
-        matched.ERROR_IN_RESTORE_BACKUP_INTO_KEYCHAIN
-      )
-        return;
-
       setIncorrectPassword(matched.CLOUD_BACKUP_ERROR_DECRYPTING_DATA);
       if (matched.CLOUD_BACKUP_ERROR_DECRYPTING_DATA) return;
 
