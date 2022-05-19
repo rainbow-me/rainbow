@@ -14,7 +14,7 @@ import useTimeout from './useTimeout';
 import useWalletENSAvatar from './useWalletENSAvatar';
 import useWallets from './useWallets';
 import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
-import { fetchImages } from '@rainbow-me/handlers/ens';
+import { fetchImages, fetchReverseRecord } from '@rainbow-me/handlers/ens';
 import {
   resolveUnstoppableDomain,
   web3Provider,
@@ -200,7 +200,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
               input
             );
             setCheckedWallet(walletResult);
-            const ens = await web3Provider.lookupAddress(walletResult.address);
+            const ens = await fetchReverseRecord(walletResult.address);
             if (ens && ens !== input) {
               name = forceEmoji ? `${forceEmoji} ${ens}` : ens;
               if (!avatarUrl && profilesEnabled) {

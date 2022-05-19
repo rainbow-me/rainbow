@@ -33,6 +33,7 @@ import {
   fetchReverseRecordWithRetry,
 } from '../utils/profileUtils';
 import { updateWebDataEnabled } from './showcaseTokens';
+import { fetchImages, fetchReverseRecord } from '@rainbow-me/handlers/ens';
 import { lightModeThemeColors } from '@rainbow-me/styles';
 
 // -- Constants --------------------------------------- //
@@ -111,6 +112,7 @@ export const walletsLoadState = () => async (dispatch, getState) => {
     });
 
     dispatch(fetchWalletNames());
+    dispatch(fetchWalletENSAvatars());
     return wallets;
   } catch (error) {
     logger.sentry('Exception during walletsLoadState');
@@ -220,6 +222,51 @@ export const createAccountForWallet = (id, color, name) => async (
   });
 
   return newWallets;
+};
+
+export const fetchWalletENSAvatars = () => async (dispatch, getState) => {
+  const { wallets, walletNames, selected } = getState().wallets;
+  const walletKeys = Object.keys(wallets);
+  let updatedWallets;
+  for (const key of walletKeys) {
+    const wallet = wallets[key];
+    for (const account of wallet?.addresses) {
+      const ens =
+        (await fetchReverseRecord(account.address)) ||
+        walletNames[account.address];
+      if (ens) {
+        const images = await fetchImages(ens);
+        if (images?.avatarUrl) {
+          let avatarChanged = false;
+          const addresses = wallet.addresses.map(acc => {
+            avatarChanged = avatarChanged || images.avatarUrl !== acc.image;
+            return {
+              ...acc,
+              image:
+                account.address === acc.address &&
+                images.avatarUrl !== acc.image
+                  ? images.avatarUrl
+                  : acc.image,
+            };
+          });
+          // don't update wallets if nothing changed
+          if (avatarChanged) {
+            updatedWallets = {
+              ...wallets,
+              [key]: {
+                ...wallets[key],
+                addresses,
+              },
+            };
+          }
+        }
+      }
+    }
+  }
+  if (updatedWallets) {
+    selected && dispatch(walletsSetSelected(updatedWallets[selected.id]));
+    dispatch(walletsUpdate(updatedWallets));
+  }
 };
 
 export const fetchWalletNames = () => async (dispatch, getState) => {

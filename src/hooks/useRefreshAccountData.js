@@ -7,7 +7,7 @@ import { fetchOnchainBalances } from '../redux/fallbackExplorer';
 import { uniqueTokensRefreshState } from '../redux/uniqueTokens';
 import { updatePositions } from '../redux/usersPositions';
 import { walletConnectLoadState } from '../redux/walletconnect';
-import { fetchWalletNames } from '../redux/wallets';
+import { fetchWalletENSAvatars, fetchWalletNames } from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
 import useSavingsAccount from './useSavingsAccount';
 import useWalletENSAvatar from './useWalletENSAvatar';
@@ -34,18 +34,18 @@ export default function useRefreshAccountData() {
 
     try {
       const getWalletNames = dispatch(fetchWalletNames());
+      const getWalletENSAvatars = dispatch(fetchWalletENSAvatars());
       const getUniqueTokens = dispatch(uniqueTokensRefreshState());
       const balances = dispatch(
         fetchOnchainBalances({ keepPolling: false, withPrices: false })
       );
       const wc = dispatch(walletConnectLoadState());
       const uniswapPositions = dispatch(updatePositions());
-      // update wallets avatars
-      updateWalletENSAvatars();
       return Promise.all([
         delay(1250), // minimum duration we want the "Pull to Refresh" animation to last
         getWalletNames,
         getUniqueTokens,
+        getWalletENSAvatars,
         refetchSavings(true),
         balances,
         wc,
