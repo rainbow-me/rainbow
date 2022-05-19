@@ -3,6 +3,8 @@ import Animated, {
   Extrapolation,
   interpolate,
   useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
 } from 'react-native-reanimated';
 import { Icon } from '../../icons';
 import { Centered } from '../../layout';
@@ -20,23 +22,32 @@ interface Props {
 }
 
 export default function HoldToAuthorizeButtonIcon({ sharedValue }: Props) {
-  const animatedStyle = useAnimatedStyle(() => {
-    const scaleProgress =
-      sharedValue.value > 0
-        ? interpolate(sharedValue.value, [30, 100], [5, 0], Extrapolation.CLAMP)
-        : 1 / sharedValue.value;
+  const circleFillProgressOverride = useSharedValue<number | null>(null);
 
+  const circleFillProgress = useDerivedValue(() => {
+    if (sharedValue.value === 100) {
+      circleFillProgressOverride.value = 100;
+    } else if (sharedValue.value === 0) {
+      circleFillProgressOverride.value = null;
+    }
+
+    return circleFillProgressOverride.value !== null
+      ? circleFillProgressOverride.value
+      : sharedValue.value;
+  });
+
+  const animatedStyle = useAnimatedStyle(() => {
     const opacity = interpolate(
-      scaleProgress,
+      sharedValue.value,
       [0, 10, 25],
-      [1, 0.333, 0],
+      [0, 0.333, 1],
       Extrapolation.CLAMP
     );
 
     const scale = interpolate(
-      scaleProgress,
-      [0, 33],
-      [1, 0.01],
+      sharedValue.value,
+      [30, 100],
+      [0.85, 1],
       Extrapolation.CLAMP
     );
 
@@ -52,7 +63,7 @@ export default function HoldToAuthorizeButtonIcon({ sharedValue }: Props) {
         {...position.centeredAsObject}
         style={[position.coverAsObject, animatedStyle]}
       >
-        <Icon name="progress" progress={sharedValue} />
+        <Icon name="progress" progress={circleFillProgress} />
       </Animated.View>
     </Container>
   );
