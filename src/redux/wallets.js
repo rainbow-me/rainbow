@@ -230,51 +230,45 @@ export const fetchWalletENSAvatars = () => async (dispatch, getState) => {
   let updatedWallets;
   for (const key of walletKeys) {
     const wallet = wallets[key];
+    const addresses = [];
+    let avatarChanged = false;
     for (const account of wallet?.addresses) {
-      console.log('🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫 account', account.address);
       const ens =
         (await fetchReverseRecord(account.address)) ||
         walletNames[account.address];
-      console.log('🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫 ens', ens);
+
       if (ens) {
         const images = await fetchImages(ens);
-        console.log('🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫 images', images);
-        if (images?.avatarUrl) {
-          let avatarChanged = false;
-          const addresses = wallet.addresses.map(acc => {
-            avatarChanged = avatarChanged || images.avatarUrl !== acc.image;
-            console.log('🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫 addresses', ens, addresses);
-
-            console.log('🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫');
-            return {
-              ...acc,
-              image:
-                account.address === acc.address &&
-                images.avatarUrl !== acc.image
-                  ? images.avatarUrl
-                  : acc.image,
-            };
-          });
-          // don't update wallets if nothing changed
-          if (avatarChanged) {
-            console.log(
-              '✅ ✅ ✅✅ ✅ ✅✅ ✅ ✅  avatarChanged final',
-              avatarChanged
-            );
-            updatedWallets = {
-              ...wallets,
-              [key]: {
-                ...wallets[key],
-                addresses,
-              },
-            };
-          }
-        }
+        console.log(
+          '✅✅✅✅✅ setting image for ',
+          ens,
+          typeof images?.avatarUrl === 'string' &&
+            images?.avatarUrl !== account?.image
+            ? images?.avatarUrl
+            : account.image
+        );
+        addresses.push({
+          ...account,
+          image:
+            typeof images?.avatarUrl === 'string' &&
+            images?.avatarUrl !== account?.image
+              ? images?.avatarUrl
+              : account.image,
+        });
       }
+    }
+    // don't update wallets if nothing changed
+    if (avatarChanged) {
+      updatedWallets = {
+        ...wallets,
+        [key]: {
+          ...wallets[key],
+          addresses,
+        },
+      };
     }
   }
   if (updatedWallets) {
-    console.log('✅ ✅ ✅  walletsSetSelected');
     dispatch(walletsSetSelected(updatedWallets[selected.id]));
     dispatch(walletsUpdate(updatedWallets));
   }
