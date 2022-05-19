@@ -248,6 +248,29 @@ export const fetchWalletENSAvatars = () => async (dispatch, getState) => {
               ens,
               avatarChanged
             );
+            console.log('🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫');
+            console.log(
+              '🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫 address comaprision for',
+              ens,
+              account.address,
+              acc.address,
+              account.address === acc.address
+            );
+            console.log(
+              '🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫 image comaprision for',
+              ens,
+              images.avatarUrl,
+              acc.image,
+              images.avatarUrl !== acc.image
+            );
+            console.log(
+              '🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫 final image',
+              account.address === acc.address && images.avatarUrl !== acc.image
+                ? images.avatarUrl
+                : acc.image
+            );
+
+            console.log('🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫');
             return {
               ...acc,
               image:
