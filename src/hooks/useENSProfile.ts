@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useQuery } from 'react-query';
 import useAccountSettings from './useAccountSettings';
+import useWallets from './useWallets';
 import { EthereumAddress } from '@rainbow-me/entities';
 import { fetchProfile } from '@rainbow-me/handlers/ens';
 import { getProfile, saveProfile } from '@rainbow-me/handlers/localstorage/ens';
@@ -14,7 +15,6 @@ const STALE_TIME = 10000;
 
 async function fetchENSProfile({
   name,
-  accountAddress,
 }: {
   name: string;
   accountAddress?: EthereumAddress;
@@ -23,21 +23,15 @@ async function fetchENSProfile({
   if (cachedProfile) {
     queryClient.setQueryData(queryKey(name), cachedProfile);
   }
-  const profile = await fetchProfile(name, accountAddress);
+  const profile = await fetchProfile(name);
   saveProfile(name, profile);
   return profile;
 }
 
-export async function prefetchENSProfile({
-  name,
-  accountAddress,
-}: {
-  name: string;
-  accountAddress?: EthereumAddress;
-}) {
+export async function prefetchENSProfile({ name }: { name: string }) {
   queryClient.prefetchQuery(
     queryKey(name),
-    async () => fetchENSProfile({ accountAddress, name }),
+    async () => fetchENSProfile({ name }),
     { staleTime: STALE_TIME }
   );
 }
@@ -47,9 +41,10 @@ export default function useENSProfile(
   config?: QueryConfig<typeof fetchProfile>
 ) {
   const { accountAddress } = useAccountSettings();
+  const { walletNames } = useWallets();
   const { data, isLoading, isSuccess } = useQuery<
     UseQueryData<typeof fetchProfile>
-  >(queryKey(name), async () => fetchENSProfile({ accountAddress, name }), {
+  >(queryKey(name), async () => fetchENSProfile({ name }), {
     ...config,
     // Data will be stale for 10s to avoid dupe queries
     staleTime: STALE_TIME,
@@ -60,5 +55,7 @@ export default function useENSProfile(
     [accountAddress, data?.owner?.address]
   );
 
-  return { data, isLoading, isOwner, isSuccess };
+  const isPrimaryName = isLowerCaseMatch(walletNames[accountAddress], name);
+
+  return { data, isLoading, isOwner, isPrimaryName, isSuccess };
 }

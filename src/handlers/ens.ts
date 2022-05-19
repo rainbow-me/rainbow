@@ -24,7 +24,6 @@ import { ENSActionParameters } from '../raps/common';
 import { estimateGasWithPadding, getProviderForNetwork } from './web3';
 import {
   ENSRegistrationRecords,
-  EthereumAddress,
   Records,
   UniqueAsset,
 } from '@rainbow-me/entities';
@@ -44,12 +43,7 @@ import {
   ensPublicResolverAddress,
   ethUnits,
 } from '@rainbow-me/references';
-import {
-  isLowerCaseMatch,
-  labelhash,
-  logger,
-  profileUtils,
-} from '@rainbow-me/utils';
+import { labelhash, logger, profileUtils } from '@rainbow-me/utils';
 import { AvatarResolver } from 'ens-avatar';
 
 const DUMMY_RECORDS = {
@@ -461,10 +455,7 @@ export const fetchAccountPrimary = async (accountAddress: string) => {
   };
 };
 
-export const fetchProfile = async (
-  ensName: string,
-  accountAddress: EthereumAddress = ''
-) => {
+export const fetchProfile = async (ensName: string) => {
   const [
     resolver,
     records,
@@ -473,7 +464,6 @@ export const fetchProfile = async (
     owner,
     { registrant, registration },
     primary,
-    reverseRecord,
   ] = await Promise.all([
     fetchResolver(ensName),
     fetchRecords(ensName),
@@ -482,7 +472,6 @@ export const fetchProfile = async (
     fetchOwner(ensName),
     fetchRegistration(ensName),
     fetchPrimary(ensName),
-    fetchReverseRecord(accountAddress),
   ]);
 
   const resolverData = {
@@ -490,12 +479,9 @@ export const fetchProfile = async (
     type: resolver.address === ensPublicResolverAddress ? 'default' : 'custom',
   };
 
-  const isPrimaryName = isLowerCaseMatch(reverseRecord, ensName);
-
   return {
     coinAddresses,
     images,
-    isPrimaryName,
     owner,
     primary,
     records,
