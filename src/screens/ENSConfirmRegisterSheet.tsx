@@ -295,7 +295,8 @@ export default function ENSConfirmRegisterSheet() {
             goToProfileScreen();
           }}
           isSufficientGas={Boolean(
-            registrationCostsData?.isSufficientGasForStep
+            registrationCostsData?.isSufficientGasForRegistration &&
+              registrationCostsData?.isSufficientGasForStep
           )}
           isValidGas={Boolean(
             registrationCostsData?.isValidGas &&
