@@ -302,7 +302,7 @@ export const textRecordFields = {
   [ENS_RECORDS.LTC]: {
     id: 'ltc',
     inputProps: {
-      maxLength: 35,
+      maxLength: 64,
     },
     key: ENS_RECORDS.LTC,
     label: lang.t('profiles.create.ltc'),
