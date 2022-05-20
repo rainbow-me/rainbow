@@ -249,7 +249,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             image,
             true
           );
-          await dispatch(walletsLoadState());
+          await dispatch(walletsLoadState(profilesEnabled));
         } else {
           const previousWalletCount = keys(wallets).length;
           initializeWallet(
@@ -338,6 +338,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     image,
     dispatch,
     showImportModal,
+    profilesEnabled,
   ]);
 
   useEffect(() => {

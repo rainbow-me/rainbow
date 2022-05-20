@@ -27,6 +27,7 @@ import {
   walletsSetSelected,
   walletsUpdate,
 } from '../redux/wallets';
+import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import {
   useAccountSettings,
@@ -121,6 +122,7 @@ export default function ChangeWalletSheet() {
   const initializeWallet = useInitializeWallet();
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
   const creatingWallet = useRef();
+  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   const [editMode, setEditMode] = useState(false);
   const [currentAddress, setCurrentAddress] = useState(
@@ -466,7 +468,7 @@ export default function ChangeWalletSheet() {
                     // If doesn't exist, we need to create a new wallet
                   } else {
                     await createWallet(null, color, name);
-                    await dispatch(walletsLoadState());
+                    await dispatch(walletsLoadState(profilesEnabled));
                     await initializeWallet();
                   }
                 } catch (e) {
@@ -504,6 +506,7 @@ export default function ChangeWalletSheet() {
     selectedWallet.primary,
     setIsWalletLoading,
     wallets,
+    profilesEnabled,
   ]);
 
   const onPressImportSeedPhrase = useCallback(() => {

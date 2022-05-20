@@ -45,7 +45,10 @@ const WALLETS_SET_IS_LOADING = 'wallets/WALLETS_SET_IS_LOADING';
 const WALLETS_SET_SELECTED = 'wallets/SET_SELECTED';
 
 // -- Actions ---------------------------------------- //
-export const walletsLoadState = () => async (dispatch, getState) => {
+export const walletsLoadState = (profilesEnabled = false) => async (
+  dispatch,
+  getState
+) => {
   try {
     const { accountAddress } = getState().settings;
     let addressFromKeychain = accountAddress;
@@ -112,7 +115,7 @@ export const walletsLoadState = () => async (dispatch, getState) => {
     });
 
     dispatch(fetchWalletNames());
-    dispatch(fetchWalletENSAvatars());
+    profilesEnabled && dispatch(fetchWalletENSAvatars());
     return wallets;
   } catch (error) {
     logger.sentry('Exception during walletsLoadState');
@@ -224,8 +227,8 @@ export const createAccountForWallet = (id, color, name) => async (
   return newWallets;
 };
 
-export const fetchWalletENSAvatars = () => async (dispatch, getState) => {
-  const { wallets, walletNames, selected } = getState().wallets;
+export const getWalletENSAvatars = async (walletsState, dispatch) => {
+  const { wallets, walletNames, selected } = walletsState;
   const walletKeys = Object.keys(wallets);
   let updatedWallets;
   for (const key of walletKeys) {
@@ -239,16 +242,6 @@ export const fetchWalletENSAvatars = () => async (dispatch, getState) => {
 
       if (ens) {
         const images = await fetchImages(ens);
-        console.log(
-          '✅✅✅✅✅ setting image for ',
-          ens,
-          'account.image',
-          account.image,
-          typeof images?.avatarUrl === 'string' &&
-            images?.avatarUrl !== account?.image
-            ? images?.avatarUrl
-            : account.image
-        );
         avatarChanged = true;
         addresses.push({
           ...account,
@@ -278,6 +271,9 @@ export const fetchWalletENSAvatars = () => async (dispatch, getState) => {
     dispatch(walletsUpdate(updatedWallets));
   }
 };
+
+export const fetchWalletENSAvatars = () => async (dispatch, getState) =>
+  getWalletENSAvatars(getState().wallets, dispatch);
 
 export const fetchWalletNames = () => async (dispatch, getState) => {
   const { wallets } = getState().wallets;

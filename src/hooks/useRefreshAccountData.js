@@ -1,5 +1,6 @@
 import { captureException } from '@sentry/react-native';
 import delay from 'delay';
+import { min } from 'lodash';
 import { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import NetworkTypes from '../helpers/networkTypes';
@@ -11,6 +12,11 @@ import { fetchWalletENSAvatars, fetchWalletNames } from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
 import useSavingsAccount from './useSavingsAccount';
 import useWalletENSAvatar from './useWalletENSAvatar';
+import {
+  defaultConfig,
+  PROFILES,
+  useExperimentalFlag,
+} from '@rainbow-me/config';
 import logger from 'logger';
 
 export default function useRefreshAccountData() {
@@ -19,6 +25,7 @@ export default function useRefreshAccountData() {
   const { refetchSavings } = useSavingsAccount();
   const { updateWalletENSAvatars } = useWalletENSAvatar();
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   const fetchAccountData = useCallback(async () => {
     // Refresh unique tokens for Rinkeby
@@ -34,7 +41,9 @@ export default function useRefreshAccountData() {
 
     try {
       const getWalletNames = dispatch(fetchWalletNames());
-      const getWalletENSAvatars = dispatch(fetchWalletENSAvatars());
+      const getWalletENSAvatars = profilesEnabled
+        ? dispatch(fetchWalletENSAvatars())
+        : null;
       const getUniqueTokens = dispatch(uniqueTokensRefreshState());
       const balances = dispatch(
         fetchOnchainBalances({ keepPolling: false, withPrices: false })
