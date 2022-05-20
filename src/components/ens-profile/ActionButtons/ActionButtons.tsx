@@ -15,7 +15,7 @@ export default function ActionButtons({
   ensName?: string;
   avatarUrl?: string | null;
 }) {
-  const { wallets } = useWallets();
+  const { wallets, isReadOnlyWallet } = useWallets();
 
   const isOwner = useMemo(() => {
     return Object.values(wallets || {}).some(
@@ -37,7 +37,7 @@ export default function ActionButtons({
             avatarUrl={avatarUrl}
             ensName={ensName}
           />
-          <SendButton ensName={ensName} />
+          {!isReadOnlyWallet && <SendButton ensName={ensName} />}
         </>
       )}
     </Inline>
