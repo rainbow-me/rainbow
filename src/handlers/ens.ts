@@ -6,6 +6,7 @@ import { debounce, isEmpty, sortBy } from 'lodash';
 import { ensClient } from '../apollo/client';
 import {
   ENS_ACCOUNT_REGISTRATIONS,
+  ENS_ALL_ACCOUNT_REGISTRATIONS,
   ENS_DOMAINS,
   ENS_GET_COIN_TYPES,
   ENS_GET_NAME_FROM_LABELHASH,
@@ -288,7 +289,7 @@ export const fetchRegistrationDate = async (recipient: string) => {
 
 export const fetchAccountRegistrations = async (address: string) => {
   const registrations = await ensClient.query<EnsAccountRegistratonsData>({
-    query: ENS_ACCOUNT_REGISTRATIONS,
+    query: ENS_ALL_ACCOUNT_REGISTRATIONS,
     variables: {
       address: address.toLowerCase(),
     },
@@ -743,11 +744,11 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
 
   const ensRegistrationRecords = formatRecordsForTransaction(records);
   const validRecords = recordsForTransactionAreValid(ensRegistrationRecords);
-  if (validRecords) {
+  if (validRecords && records) {
     promises.push(
-      estimateENSMulticallGasLimit({
+      estimateENSSetRecordsGasLimit({
         name,
-        records: ensRegistrationRecords,
+        records,
       })
     );
   }

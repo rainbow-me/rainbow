@@ -89,6 +89,8 @@ export default function useENSModifiedRegistration({
         ...profileQuery.data?.records,
         ...profileQuery.data?.coinAddresses,
       } as Records;
+      // delete ETH since we don't show it in the ENS form
+      delete initialRecords.ETH;
       dispatch(ensRedux.setInitialRecords(accountAddress, initialRecords));
     }
   }, [
