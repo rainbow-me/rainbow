@@ -19,6 +19,7 @@ import useLoadAccountData from './useLoadAccountData';
 import useLoadGlobalEarlyData from './useLoadGlobalEarlyData';
 import useOpenSmallBalances from './useOpenSmallBalances';
 import useResetAccountState from './useResetAccountState';
+import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import { runKeychainIntegrityChecks } from '@rainbow-me/handlers/walletReadyEvents';
 import { additionalDataCoingeckoIds } from '@rainbow-me/redux/additionalAssetsData';
 import { checkPendingTransactionsOnInitialize } from '@rainbow-me/redux/data';
@@ -33,6 +34,7 @@ export default function useInitializeWallet() {
   const { network } = useAccountSettings();
   const hideSplashScreen = useHideSplashScreen();
   const { setIsSmallBalancesOpen } = useOpenSmallBalances();
+  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   const initializeWallet = useCallback(
     async (
@@ -56,7 +58,7 @@ export default function useInitializeWallet() {
 
         if (shouldRunMigrations && !seedPhrase) {
           logger.sentry('shouldRunMigrations && !seedPhrase? => true');
-          await dispatch(walletsLoadState());
+          await dispatch(walletsLoadState(profilesEnabled));
           logger.sentry('walletsLoadState call #1');
           await runMigrations();
           logger.sentry('done with migrations');
@@ -91,7 +93,7 @@ export default function useInitializeWallet() {
 
         if (seedPhrase || isNew) {
           logger.sentry('walletsLoadState call #2');
-          await dispatch(walletsLoadState());
+          await dispatch(walletsLoadState(profilesEnabled));
         }
 
         if (isNil(walletAddress)) {
@@ -154,6 +156,7 @@ export default function useInitializeWallet() {
       loadAccountData,
       loadGlobalEarlyData,
       network,
+      profilesEnabled,
       resetAccountState,
       setIsSmallBalancesOpen,
     ]

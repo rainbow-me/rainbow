@@ -21,7 +21,7 @@ import {
 } from '../apollo/queries';
 import { ensProfileImagesQueryKey } from '../hooks/useENSProfileImages';
 import { ENSActionParameters } from '../raps/common';
-import { estimateGasWithPadding, web3Provider } from './web3';
+import { estimateGasWithPadding, getProviderForNetwork } from './web3';
 import {
   ENSRegistrationRecords,
   Records,
@@ -299,8 +299,9 @@ export const fetchAccountRegistrations = async (address: string) => {
 export const fetchImages = async (ensName: string) => {
   let avatarUrl;
   let coverUrl;
+  const provider = await getProviderForNetwork();
   try {
-    const avatarResolver = new AvatarResolver(web3Provider);
+    const avatarResolver = new AvatarResolver(provider);
     [avatarUrl, coverUrl] = await Promise.all([
       avatarResolver.getImage(ensName, {
         allowNonOwnerNFTs: true,
@@ -333,7 +334,8 @@ export const fetchRecords = async (ensName: string) => {
   });
   const data = response.data?.domains[0] || {};
 
-  const resolver = await web3Provider.getResolver(ensName);
+  const provider = await getProviderForNetwork();
+  const resolver = await provider.getResolver(ensName);
   const supportedRecords = Object.values(ENS_RECORDS);
   const rawRecordKeys: string[] = data.resolver?.texts || [];
   const recordKeys = (rawRecordKeys as ENS_RECORDS[]).filter(key =>
@@ -352,7 +354,9 @@ export const fetchRecords = async (ensName: string) => {
   return records;
 };
 
-export const fetchCoinAddresses = async (ensName: string) => {
+export const fetchCoinAddresses = async (
+  ensName: string
+): Promise<{ [key in ENS_RECORDS]: string }> => {
   const response = await ensClient.query<EnsGetCoinTypesData>({
     query: ENS_GET_COIN_TYPES,
     variables: {
@@ -361,17 +365,15 @@ export const fetchCoinAddresses = async (ensName: string) => {
   });
   const data = response.data?.domains[0] || {};
   const supportedRecords = Object.values(ENS_RECORDS);
-
-  const resolver = await web3Provider.getResolver(ensName);
+  const provider = await getProviderForNetwork();
+  const resolver = await provider.getResolver(ensName);
   const rawCoinTypes: number[] = data.resolver?.coinTypes || [];
   const rawCoinTypesNames: string[] = rawCoinTypes.map(
     type => formatsByCoinType[type].name
   );
   const coinTypes: number[] =
     (rawCoinTypesNames as ENS_RECORDS[])
-      .filter(
-        name => supportedRecords.includes(name) && name !== ENS_RECORDS.ETH
-      )
+      .filter(name => supportedRecords.includes(name))
       .map(name => formatsByName[name].coinType) || [];
 
   const coinAddressValues = await Promise.all(
@@ -385,14 +387,17 @@ export const fetchCoinAddresses = async (ensName: string) => {
       })
       .filter(x => x)
   );
-  const coinAddresses = coinTypes.reduce((coinAddresses, coinType, i) => {
-    return {
-      ...coinAddresses,
-      ...(coinAddressValues[i]
-        ? { [formatsByCoinType[coinType].name]: coinAddressValues[i] }
-        : {}),
-    };
-  }, {});
+  const coinAddresses: { [key in ENS_RECORDS]: string } = coinTypes.reduce(
+    (coinAddresses, coinType, i) => {
+      return {
+        ...coinAddresses,
+        ...(coinAddressValues[i]
+          ? { [formatsByCoinType[coinType].name]: coinAddressValues[i] }
+          : {}),
+      };
+    },
+    {} as { [key in ENS_RECORDS]: string }
+  );
   return coinAddresses;
 };
 
@@ -401,7 +406,8 @@ export const fetchOwner = async (ensName: string) => {
 
   let owner: { address?: string; name?: string } = {};
   if (ownerAddress) {
-    const name = await web3Provider.lookupAddress(ownerAddress);
+    const provider = await getProviderForNetwork();
+    const name = await provider.lookupAddress(ownerAddress);
     owner = {
       address: ownerAddress,
       name,
@@ -423,7 +429,8 @@ export const fetchRegistration = async (ensName: string) => {
   let registrant: { address?: string; name?: string } = {};
   if (data.registrant?.id) {
     const registrantAddress = data.registrant?.id;
-    const name = await web3Provider.lookupAddress(registrantAddress);
+    const provider = await getProviderForNetwork();
+    const name = await provider.lookupAddress(registrantAddress);
     registrant = {
       address: registrantAddress,
       name,
@@ -440,12 +447,18 @@ export const fetchRegistration = async (ensName: string) => {
 };
 
 export const fetchPrimary = async (ensName: string) => {
-  const address = await web3Provider.resolveName(ensName);
-  const primaryName = await web3Provider.lookupAddress(address);
+  const provider = await getProviderForNetwork();
+  const address = await provider.resolveName(ensName);
   return {
     address,
-    isPrimary: primaryName === ensName.toLowerCase(),
-    primaryName,
+  };
+};
+
+export const fetchAccountPrimary = async (accountAddress: string) => {
+  const provider = await getProviderForNetwork();
+  const ensName = await provider.lookupAddress(accountAddress);
+  return {
+    ensName,
   };
 };
 
@@ -858,8 +871,18 @@ export const shouldUseMulticallTransaction = (
   return true;
 };
 
-export const fetchReverseRecord = async (address: string) =>
-  (await web3Provider.lookupAddress(address)) || '';
+export const fetchReverseRecord = async (address: string) => {
+  try {
+    const provider = await getProviderForNetwork();
+    const reverseRecord = await provider.lookupAddress(address);
+    return reverseRecord;
+  } catch (e) {
+    return '';
+  }
+};
 
-export const fetchResolver = async (ensName: string) =>
-  web3Provider.getResolver(ensName);
+export const fetchResolver = async (ensName: string) => {
+  const provider = await getProviderForNetwork();
+  const resolver = await provider.getResolver(ensName);
+  return resolver;
+};
