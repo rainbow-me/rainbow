@@ -265,9 +265,10 @@ describe('Register ENS Flow', () => {
     await validatePrimaryName(RANDOM_NAME_ETH);
   });
 
-  it('Should navigate to the Wallet screen', async () => {
+  it('Should navigate to the Wallet screen and refresh', async () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
     await Helpers.checkIfVisible('wallet-screen');
+    await Helpers.swipe('wallet-screen', 'down', 'slow');
   });
 
   it('Should open ENS rainbowtestwallet.eth', async () => {
@@ -281,6 +282,7 @@ describe('Register ENS Flow', () => {
     await Helpers.swipe('unique-token-expanded-state', 'up', 'slow');
     await Helpers.waitAndTap('ens-reverse-record-switch');
     await Helpers.checkIfVisible(`ens-transaction-action-SET_NAME`);
+    await Helpers.delay(3000);
     await Helpers.waitAndTap(`ens-transaction-action-SET_NAME`);
   });
 
@@ -305,10 +307,10 @@ describe('Register ENS Flow', () => {
     await Helpers.waitAndTap(`ens-transaction-action-RENEW`);
   });
 
-  afterAll(async () => {
-    // Reset the app state
-    await device.clearKeychain();
-    await exec('kill $(lsof -t -i:8545)');
-    await Helpers.delay(2000);
-  });
+  // afterAll(async () => {
+  //   // Reset the app state
+  //   await device.clearKeychain();
+  //   await exec('kill $(lsof -t -i:8545)');
+  //   await Helpers.delay(2000);
+  // });
 });
