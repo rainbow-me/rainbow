@@ -25,7 +25,7 @@ export default function usePurchaseTransactionStatus() {
 
   const transferStatus = useMemo(() => {
     if (!currentTransferId) return null;
-    const purchase = purchaseTransactions?.find(
+    const purchase = purchaseTransactions.find(
       txn => txn.transferId === currentTransferId
     );
     return purchase ? purchase.status : null;

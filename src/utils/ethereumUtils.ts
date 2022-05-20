@@ -299,7 +299,7 @@ const getDataString = (func: string, arrVals: string[]) => {
  * @param  {Number} chainId
  */
 const getNetworkFromChainId = (chainId: number): Network => {
-  const networkData = chains.find(chain => chain?.chain_id === chainId);
+  const networkData = chains.find(chain => chain.chain_id === chainId);
   return (networkData?.network as Network) ?? Network.mainnet;
 };
 

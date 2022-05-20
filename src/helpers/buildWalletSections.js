@@ -241,7 +241,7 @@ const coinEditContextMenu = (
   totalValue,
   addedEth
 ) => {
-  const noSmallBalances = !balanceSectionData?.find(
+  const noSmallBalances = !balanceSectionData.find(
     ({ smallBalancesContainer }) => smallBalancesContainer
   );
 
@@ -358,7 +358,7 @@ const withBriefBalanceSection = (
     !collectibles.length
   );
 
-  const savingsTotalValue = savingsSection.find(
+  const savingsTotalValue = savingsSection?.find(
     item => item.uid === 'savings-header'
   );
 

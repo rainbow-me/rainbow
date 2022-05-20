@@ -135,10 +135,10 @@ const transformTradeRefund = (
   if (!isSuccessfulSwap) return internalTransactions;
 
   const txnOut = txnsOut[0];
-  const txnIn = txnsIn?.find(
+  const txnIn = txnsIn.find(
     txn => txn?.asset?.asset_code !== txnOut?.asset?.asset_code
   );
-  const refund = txnsIn?.find(
+  const refund = txnsIn.find(
     txn => txn?.asset?.asset_code === txnOut?.asset?.asset_code
   );
   let updatedOut = txnOut;
