@@ -38,7 +38,7 @@ export function getAccountProfileInfo(
   const labelWithoutEmoji = label && removeFirstEmojiFromString(label);
 
   const accountName =
-    labelWithoutEmoji || accountENS || address(accountAddress, 4, 4);
+    accountENS || labelWithoutEmoji || address(accountAddress, 4, 4);
 
   const emojiAvatar = returnStringFirstEmoji(label);
 
