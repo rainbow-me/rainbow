@@ -13,10 +13,10 @@ import { IS_APK_BUILD, IS_TESTING } from 'react-native-dotenv';
 import { useDispatch, useSelector } from 'react-redux';
 import { Token } from '../entities/tokens';
 import useAccountSettings from './useAccountSettings';
+import { EthereumAddress } from '@rainbow-me/entities';
 import { isNativeAsset } from '@rainbow-me/handlers/assets';
 import { AppState } from '@rainbow-me/redux/store';
 import { SwapModalField, updateSwapQuote } from '@rainbow-me/redux/swap';
-import { SWAP_AGGREGATOR_CONTRACT_ADDRESS } from '@rainbow-me/references';
 import {
   convertAmountFromNativeValue,
   convertAmountToNativeAmount,
@@ -39,6 +39,7 @@ const getInputAmount = async (
   inputToken: Token,
   outputToken: Token | null,
   inputPrice: string | null,
+  fromAddress: EthereumAddress,
   chainId = 1
 ) => {
   if (!outputAmount || isZero(outputAmount) || !outputToken) {
@@ -67,7 +68,7 @@ const getInputAmount = async (
       buyAmount,
       buyTokenAddress,
       chainId: Number(chainId),
-      fromAddress: SWAP_AGGREGATOR_CONTRACT_ADDRESS,
+      fromAddress,
       sellTokenAddress,
       slippage: IS_TESTING !== 'true' ? 1 : 5, // Add 5% slippage for testing to prevent flaky tests
     };
@@ -136,6 +137,7 @@ const getOutputAmount = async (
   outputToken: Token | null,
   outputPrice: string | number | null | undefined,
   slippage: number,
+  fromAddress: EthereumAddress,
   chainId = 1
 ) => {
   if (!inputAmount || isZero(inputAmount) || !outputToken) {
@@ -164,7 +166,7 @@ const getOutputAmount = async (
       buyAmount: null || '0',
       buyTokenAddress,
       chainId: Number(chainId),
-      fromAddress: SWAP_AGGREGATOR_CONTRACT_ADDRESS,
+      fromAddress,
       sellAmount,
       sellTokenAddress,
       slippage: IS_TESTING !== 'true' ? slippage : 5, // Add 5% slippage for testing to prevent flaky tests
@@ -329,6 +331,7 @@ export default function useSwapDerivedOutputs(chainId: number) {
           outputToken,
           outputPrice,
           slippagePercentage,
+          accountAddress,
           chainId
         );
         setInsufficientLiquidity(!!noLiquidity);
@@ -374,6 +377,7 @@ export default function useSwapDerivedOutputs(chainId: number) {
           outputToken,
           outputPrice,
           slippagePercentage,
+          accountAddress,
           chainId
         );
         tradeDetails = newTradeDetails;
@@ -404,6 +408,7 @@ export default function useSwapDerivedOutputs(chainId: number) {
           inputToken,
           outputToken,
           inputPrice.toString(),
+          accountAddress,
           chainId
         );
 
