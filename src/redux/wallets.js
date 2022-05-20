@@ -231,7 +231,6 @@ export const fetchWalletENSAvatars = () => async (dispatch, getState) => {
   for (const key of walletKeys) {
     const wallet = wallets[key];
     const addresses = [];
-    let avatarChanged = false;
     for (const account of wallet?.addresses) {
       const ens =
         (await fetchReverseRecord(account.address)) ||
@@ -247,7 +246,6 @@ export const fetchWalletENSAvatars = () => async (dispatch, getState) => {
             ? images?.avatarUrl
             : account.image
         );
-        avatarChanged = true;
         addresses.push({
           ...account,
           image:
@@ -256,18 +254,18 @@ export const fetchWalletENSAvatars = () => async (dispatch, getState) => {
               ? images?.avatarUrl
               : account.image,
         });
+      } else {
+        addresses.push(account);
       }
     }
     // don't update wallets if nothing changed
-    if (avatarChanged) {
-      updatedWallets = {
-        ...wallets,
-        [key]: {
-          ...wallets[key],
-          addresses,
-        },
-      };
-    }
+    updatedWallets = {
+      ...wallets,
+      [key]: {
+        ...wallets[key],
+        addresses,
+      },
+    };
   }
   if (updatedWallets) {
     dispatch(walletsSetSelected(updatedWallets[selected.id]));
