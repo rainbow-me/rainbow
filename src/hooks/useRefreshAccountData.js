@@ -10,7 +10,6 @@ import { walletConnectLoadState } from '../redux/walletconnect';
 import { fetchWalletENSAvatars, fetchWalletNames } from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
 import useSavingsAccount from './useSavingsAccount';
-import useWalletENSAvatar from './useWalletENSAvatar';
 import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import logger from 'logger';
 
@@ -18,7 +17,6 @@ export default function useRefreshAccountData() {
   const dispatch = useDispatch();
   const { network } = useAccountSettings();
   const { refetchSavings } = useSavingsAccount();
-  const { updateWalletENSAvatars } = useWalletENSAvatar();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
