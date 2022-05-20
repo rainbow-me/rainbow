@@ -402,4 +402,4 @@ export const buildBriefUniqueTokenList = (
 };
 
 export const buildUniqueTokenName = ({ collection, id, name }) =>
-  name || `${collection.name} #${id}`;
+  name || `${collection?.name} #${id}`;
