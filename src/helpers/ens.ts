@@ -1,6 +1,7 @@
 import { formatsByName } from '@ensdomains/address-encoder';
 import { hash } from '@ensdomains/eth-ens-namehash';
-import { BigNumberish, Contract, Wallet } from 'ethers';
+import { Wallet } from '@ethersproject/wallet';
+import { BigNumberish, Contract } from 'ethers';
 import { keccak256, toUtf8Bytes } from 'ethers/lib/utils';
 import { atom } from 'recoil';
 import { InlineFieldProps } from '../components/inputs/InlineField';
