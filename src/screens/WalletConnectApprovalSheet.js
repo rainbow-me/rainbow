@@ -1,5 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
+import lang from 'i18n-js';
 import React, {
   useCallback,
   useEffect,
@@ -25,10 +26,7 @@ import {
 } from '../components/sheet';
 import { Text } from '@rainbow-me/design-system';
 import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
-import {
-  getDappHostname,
-  isDappAuthenticated,
-} from '@rainbow-me/helpers/dappNameHandler';
+import { getDappHostname } from '@rainbow-me/helpers/dappNameHandler';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import WalletConnectApprovalSheetType from '@rainbow-me/helpers/walletConnectApprovalSheetTypes';
 import {
@@ -123,17 +121,16 @@ export default function WalletConnectApprovalSheet() {
         Alert({
           buttons: [
             {
-              text: 'Proceed Anyway',
+              text: lang.t('button.proceed_anyway'),
             },
             {
               onPress: () => setScam(true),
               style: 'cancel',
-              text: 'Ignore This Request',
+              text: lang.t('walletconnect.scam.ignore_this_request'),
             },
           ],
-          message:
-            'We found this website in a list of malicious crypto scams.\n\n We recommend that you ignore this request and stop using this website immediately',
-          title: ' 🚨 Heads up! 🚨',
+          message: lang.t('walletconnect.scam.we_found_this_website_in_a_list'),
+          title: ` 🚨 ${lang.t('walletconnect.scam.heads_up_title')} 🚨`,
         });
       }
     },
@@ -145,10 +142,6 @@ export default function WalletConnectApprovalSheet() {
       clearTimeout(timeout);
     };
   }, [timeout]);
-
-  const isAuthenticated = useMemo(() => {
-    return isDappAuthenticated(dappUrl);
-  }, [dappUrl]);
 
   const formattedDappUrl = useMemo(() => {
     return getDappHostname(dappUrl);
@@ -344,7 +337,7 @@ export default function WalletConnectApprovalSheet() {
             </Centered>
             <Row marginBottom={30} marginTop={30}>
               <Text color="action" size="18px" weight="heavy">
-                {isAuthenticated ? `􀇻 ${formattedDappUrl}` : formattedDappUrl}
+                {formattedDappUrl}
               </Text>
             </Row>
             <Divider color={colors.rowDividerLight} inset={[0, 84]} />
@@ -352,7 +345,7 @@ export default function WalletConnectApprovalSheet() {
           <SheetActionButtonRow paddingBottom={android ? 20 : 30}>
             <SheetActionButton
               color={colors.white}
-              label="Cancel"
+              label={lang.t('button.cancel')}
               onPress={handleCancel}
               size="big"
               textColor={colors.alpha(colors.blueGreyDark, 0.8)}
@@ -360,7 +353,7 @@ export default function WalletConnectApprovalSheet() {
             />
             <SheetActionButton
               color={colors.appleBlue}
-              label="Connect"
+              label={lang.t('button.connect')}
               onPress={handleConnect}
               size="big"
               testID="wc-connect"
@@ -373,7 +366,7 @@ export default function WalletConnectApprovalSheet() {
             paddingHorizontal={24}
           >
             <Column style={{ flex: 1, marginRight: 16 }}>
-              <SwitchText>Wallet</SwitchText>
+              <SwitchText>{lang.t('wallet.wallet_title')}</SwitchText>
               <ButtonPressAnimation
                 onPress={handlePressChangeWallet}
                 style={{
@@ -410,7 +403,9 @@ export default function WalletConnectApprovalSheet() {
             </Column>
             <Column>
               <Flex justify="end">
-                <SwitchText align="right">Network</SwitchText>
+                <SwitchText align="right">
+                  {lang.t('wallet.network_title')}
+                </SwitchText>
               </Flex>
               <NetworkSwitcherParent
                 activeOpacity={0}
@@ -418,7 +413,7 @@ export default function WalletConnectApprovalSheet() {
                 {...(android ? { onPress: onPressAndroid } : {})}
                 menuConfig={{
                   menuItems,
-                  menuTitle: 'Available Networks',
+                  menuTitle: lang.t('walletconnect.available_networks'),
                 }}
                 onPressMenuItem={handleOnPressNetworksMenuItem}
                 useActionSheetFallback={false}

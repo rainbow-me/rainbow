@@ -35,6 +35,7 @@ export const parsePoaps = data => {
         'https://lh3.googleusercontent.com/FwLriCvKAMBBFHMxcjqvxjTlmROcDIabIFKRp87NS3u_QfSLxcNThgAzOJSbphgQqnyZ_v2fNgMZQkdCYHUliJwH-Q=s60',
       familyName: 'POAP',
       id: event.id,
+      image_original_url: event.image_url,
       image_url: imageToPng(event.image_url, 300),
       isPoap: true,
       isSendable: false,
