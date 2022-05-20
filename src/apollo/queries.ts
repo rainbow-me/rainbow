@@ -265,6 +265,21 @@ export type EnsAccountRegistratonsData = {
   };
 };
 
+export const ENS_ALL_ACCOUNT_REGISTRATIONS = gql`
+  query getAccountRegistrations($address: String!) {
+    account(id: $address) {
+      registrations(orderBy: registrationDate) {
+        domain {
+          name
+          owner {
+            id
+          }
+        }
+      }
+    }
+  }
+`;
+
 export const ENS_ACCOUNT_REGISTRATIONS = gql`
   query getAccountRegistrations(
     $address: String!
