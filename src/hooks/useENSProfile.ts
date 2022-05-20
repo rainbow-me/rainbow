@@ -1,7 +1,6 @@
 import { useQuery } from 'react-query';
 import useAccountSettings from './useAccountSettings';
 import useWallets from './useWallets';
-import { EthereumAddress } from '@rainbow-me/entities';
 import { fetchProfile } from '@rainbow-me/handlers/ens';
 import { getProfile, saveProfile } from '@rainbow-me/handlers/localstorage/ens';
 import { queryClient } from '@rainbow-me/react-query/queryClient';
@@ -11,12 +10,7 @@ const queryKey = (name: string) => ['ens-profile', name];
 
 const STALE_TIME = 10000;
 
-async function fetchENSProfile({
-  name,
-}: {
-  name: string;
-  accountAddress?: EthereumAddress;
-}) {
+async function fetchENSProfile({ name }: { name: string }) {
   const cachedProfile = await getProfile(name);
   if (cachedProfile) {
     queryClient.setQueryData(queryKey(name), cachedProfile);
