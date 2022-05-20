@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { useQuery } from 'react-query';
 import useAccountSettings from './useAccountSettings';
 import useWallets from './useWallets';
@@ -7,7 +6,6 @@ import { fetchProfile } from '@rainbow-me/handlers/ens';
 import { getProfile, saveProfile } from '@rainbow-me/handlers/localstorage/ens';
 import { queryClient } from '@rainbow-me/react-query/queryClient';
 import { QueryConfig, UseQueryData } from '@rainbow-me/react-query/types';
-import { isLowerCaseMatch } from '@rainbow-me/utils';
 
 const queryKey = (name: string) => ['ens-profile', name];
 
@@ -50,12 +48,24 @@ export default function useENSProfile(
     staleTime: STALE_TIME,
   });
 
-  const isOwner = useMemo(
-    () => isLowerCaseMatch(data?.owner?.address || '', accountAddress),
-    [accountAddress, data?.owner?.address]
-  );
+  const isOwner =
+    data?.owner?.address?.toLocaleLowerCase() === accountAddress?.toLowerCase();
 
-  const isPrimaryName = isLowerCaseMatch(walletNames[accountAddress], name);
+  // if a ENS NFT is sent, the ETH coinAddress record doesn't change
+  // if the user tries to use it to set primary name the tx will go through
+  // but the name won't be set. Disabling it to avoid these cases
+  const isSetNameEnabled =
+    data?.coinAddresses?.ETH?.toLowerCase() === accountAddress?.toLowerCase();
 
-  return { data, isLoading, isOwner, isPrimaryName, isSuccess };
+  const isPrimaryName =
+    walletNames?.[accountAddress]?.toLowerCase() === name?.toLowerCase();
+
+  return {
+    data,
+    isLoading,
+    isOwner,
+    isPrimaryName,
+    isSetNameEnabled,
+    isSuccess,
+  };
 }

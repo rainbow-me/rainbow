@@ -350,7 +350,9 @@ export const fetchRecords = async (ensName: string) => {
   return records;
 };
 
-export const fetchCoinAddresses = async (ensName: string) => {
+export const fetchCoinAddresses = async (
+  ensName: string
+): Promise<{ [key in ENS_RECORDS]: string }> => {
   const response = await ensClient.query<EnsGetCoinTypesData>({
     query: ENS_GET_COIN_TYPES,
     variables: {
@@ -367,9 +369,7 @@ export const fetchCoinAddresses = async (ensName: string) => {
   );
   const coinTypes: number[] =
     (rawCoinTypesNames as ENS_RECORDS[])
-      .filter(
-        name => supportedRecords.includes(name) && name !== ENS_RECORDS.ETH
-      )
+      .filter(name => supportedRecords.includes(name))
       .map(name => formatsByName[name].coinType) || [];
 
   const coinAddressValues = await Promise.all(
@@ -383,14 +383,17 @@ export const fetchCoinAddresses = async (ensName: string) => {
       })
       .filter(x => x)
   );
-  const coinAddresses = coinTypes.reduce((coinAddresses, coinType, i) => {
-    return {
-      ...coinAddresses,
-      ...(coinAddressValues[i]
-        ? { [formatsByCoinType[coinType].name]: coinAddressValues[i] }
-        : {}),
-    };
-  }, {});
+  const coinAddresses: { [key in ENS_RECORDS]: string } = coinTypes.reduce(
+    (coinAddresses, coinType, i) => {
+      return {
+        ...coinAddresses,
+        ...(coinAddressValues[i]
+          ? { [formatsByCoinType[coinType].name]: coinAddressValues[i] }
+          : {}),
+      };
+    },
+    {} as { [key in ENS_RECORDS]: string }
+  );
   return coinAddresses;
 };
 

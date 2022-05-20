@@ -625,6 +625,7 @@ const UniqueTokenExpandedState = ({
                               isOwner={ensProfile?.isOwner}
                               isPrimary={ensProfile?.isPrimaryName}
                               isReadOnlyWallet={isReadOnlyWallet}
+                              isSetNameEnabled={ensProfile?.isSetNameEnabled}
                               name={cleanENSName}
                               owner={ensData?.owner}
                               registrant={ensData?.registrant}

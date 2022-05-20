@@ -16,6 +16,7 @@ export default function ConfigurationSection({
   isOwner,
   isPrimary,
   isExternal,
+  isSetNameEnabled,
   isReadOnlyWallet,
   name,
   externalAvatarUrl,
@@ -26,6 +27,7 @@ export default function ConfigurationSection({
   isExternal?: boolean;
   isOwner?: boolean;
   isPrimary?: boolean;
+  isSetNameEnabled?: boolean;
   isReadOnlyWallet?: boolean;
   name: string;
   externalAvatarUrl?: string | null;
@@ -42,7 +44,7 @@ export default function ConfigurationSection({
         </>
       ) : (
         <>
-          {!isReadOnlyWallet && !isExternal && (
+          {!isReadOnlyWallet && !isExternal && isSetNameEnabled && (
             <InfoRow
               explainSheetType="ens_primary_name"
               label={lang.t('expanded_state.unique_expanded.set_primary_name')}
