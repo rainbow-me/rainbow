@@ -3549,10 +3549,10 @@
     uuid "3.3.2"
     validator "^7.0.0"
 
-"@rainbow-me/swaps@0.1.3":
-  version "0.1.3"
-  resolved "https://registry.yarnpkg.com/@rainbow-me/swaps/-/swaps-0.1.3.tgz#5a98f31dfe5af2480859a543948720b83620560c"
-  integrity sha512-8o7aQFTaQWium+epU0YfUcQqncfBOS9+BB0H5oS5j0qY1WlbvV9yt0YUQxtquvWHQBo14wqrivNXs9SPuhlk3A==
+"@rainbow-me/swaps@0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@rainbow-me/swaps/-/swaps-0.1.4.tgz#b4758c7b7f5db1bf049954f916e3c1f55691c91f"
+  integrity sha512-kEtl2nEt5mb3adDF4IV5wgUKA+APxaDanTYxNT1ZYb2rBC8z0Mt8Cc2a9FyaDOUcu8GQyGMw7st0CL6wNEPl2w==
   dependencies:
     "@ethersproject/abi" "5.6.0"
     "@ethersproject/bignumber" "5.6.0"
@@ -17044,7 +17044,7 @@ superstruct@^0.6.2:
     clone-deep "^2.0.1"
     kind-of "^6.0.1"
 
-supports-color@8.1.1:
+supports-color@8.1.1, supports-color@^8.0.0:
   version "8.1.1"
   resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-8.1.1.tgz#cd6fc17e28500cff56c1b86c0a7fd4a54a73005c"
   integrity sha512-MpUEN2OodtUzxvKQl72cUF7RQ5EiHsGvSsVG0ia9c5RbWGL2CI4C7EpPS8UTBIplnlzZiNuV56w+FuNxy3ty2Q==
@@ -17070,13 +17070,6 @@ supports-color@^6.1.0:
 supports-color@^7.0.0, supports-color@^7.1.0:
   version "7.2.0"
   resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-7.2.0.tgz#1b7dcdcb32b8138801b3e478ba6a51caa89648da"
-  dependencies:
-    has-flag "^4.0.0"
-
-supports-color@^8.0.0:
-  version "8.1.1"
-  resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-8.1.1.tgz#cd6fc17e28500cff56c1b86c0a7fd4a54a73005c"
-  integrity sha512-MpUEN2OodtUzxvKQl72cUF7RQ5EiHsGvSsVG0ia9c5RbWGL2CI4C7EpPS8UTBIplnlzZiNuV56w+FuNxy3ty2Q==
   dependencies:
     has-flag "^4.0.0"
 
