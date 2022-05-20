@@ -218,7 +218,7 @@ export const textRecordFields = {
   [ENS_RECORDS.BTC]: {
     id: 'btc',
     inputProps: {
-      maxLength: 34,
+      maxLength: 42,
       multiline: true,
     },
     key: ENS_RECORDS.BTC,
