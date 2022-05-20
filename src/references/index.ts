@@ -11,7 +11,6 @@ export { default as polygonAllowList } from './polygon-allowlist.json';
 export { default as balanceCheckerContractAbi } from './balances-checker-abi.json';
 export { default as balanceCheckerContractAbiOVM } from './balances-checker-abi-ovm.json';
 export { default as chains } from './chains.json';
-export { default as arbitrumTokenMapping } from './arbitrum-token-mapping.json';
 export { default as chainAssets } from './chain-assets.json';
 export { default as coingeckoIdsFallback } from './coingecko/ids.json';
 export { compoundCERC20ABI, compoundCETHABI } from './compound';
@@ -31,11 +30,7 @@ export { default as migratedTokens } from './migratedTokens.json';
 export { default as supportedNativeCurrencies } from './native-currencies.json';
 export { default as shitcoins } from './shitcoins.json';
 export { default as smartContractMethods } from './smartcontract-methods.json';
-export {
-  UNISWAP_TESTNET_TOKEN_LIST,
-  UNISWAP_V1_EXCHANGE_ABI,
-  UNISWAP_V2_ROUTER_ABI,
-} from './uniswap';
+export { UNISWAP_TESTNET_TOKEN_LIST } from './uniswap';
 export { rainbowTokenList } from './rainbow-token-list';
 export {
   getWyreErrorOverride,
