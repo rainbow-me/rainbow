@@ -242,14 +242,16 @@ export const getWalletENSAvatars = async (walletsState, dispatch) => {
 
       if (ens) {
         const images = await fetchImages(ens);
-        avatarChanged = true;
+        const newImage =
+          typeof images?.avatarUrl === 'string' &&
+          images?.avatarUrl !== account?.image
+            ? images?.avatarUrl
+            : account.image;
+
+        avatarChanged = newImage !== account.image;
         addresses.push({
           ...account,
-          image:
-            typeof images?.avatarUrl === 'string' &&
-            images?.avatarUrl !== account?.image
-              ? images?.avatarUrl
-              : account.image,
+          image: newImage,
         });
       } else {
         addresses.push(account);
