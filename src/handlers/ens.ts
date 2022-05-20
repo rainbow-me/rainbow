@@ -37,6 +37,7 @@ import {
 } from '@rainbow-me/helpers/ens';
 import { add } from '@rainbow-me/helpers/utilities';
 import { ImgixImage } from '@rainbow-me/images';
+import { handleAndSignImages } from '@rainbow-me/parsers';
 import { queryClient } from '@rainbow-me/react-query/queryClient';
 import {
   ENS_NFT_CONTRACT_ADDRESS,
@@ -57,14 +58,16 @@ const buildEnsToken = ({
   contractAddress,
   tokenId,
   name,
-  imageUrl,
+  imageUrl: imageUrl_,
 }: {
   contractAddress: string;
   tokenId: string;
   name: string;
   imageUrl: string;
-}) =>
-  ({
+}) => {
+  // @ts-expect-error JavaScript function
+  const { imageUrl, lowResUrl } = handleAndSignImages(imageUrl_);
+  return {
     animation_url: null,
     asset_contract: {
       address: contractAddress,
@@ -105,7 +108,7 @@ const buildEnsToken = ({
     lastPriceUsd: null,
     lastSale: undefined,
     lastSalePaymentToken: null,
-    lowResUrl: imageUrl,
+    lowResUrl,
     name,
     permalink: '',
     sell_orders: [],
@@ -113,7 +116,8 @@ const buildEnsToken = ({
     type: 'nft',
     uniqueId: name,
     urlSuffixForAsset: `${contractAddress}/${tokenId}`,
-  } as UniqueAsset);
+  } as UniqueAsset;
+};
 
 export const isUnknownOpenSeaENS = (asset?: any) =>
   asset?.description?.includes('This is an unknown ENS name with the hash') ||

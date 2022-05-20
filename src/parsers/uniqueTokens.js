@@ -37,7 +37,7 @@ const parseLastSalePrice = lastSale =>
  * @return {Object}
  */
 
-const handleAndSignImages = (imageUrl, previewUrl, originalUrl) => {
+export const handleAndSignImages = (imageUrl, previewUrl, originalUrl) => {
   if (!imageUrl && !previewUrl && !originalUrl) {
     return { imageUrl: undefined, lowResUrl: undefined };
   }
