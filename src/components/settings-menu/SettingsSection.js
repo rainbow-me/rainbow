@@ -33,6 +33,7 @@ import {
   isCustomBuild,
   setOriginalDeploymentKey,
 } from '@rainbow-me/handlers/fedora';
+import isTestFlight from '@rainbow-me/helpers/isTestFlight';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import {
@@ -48,9 +49,7 @@ import {
   REVIEW_DONE_KEY,
 } from '@rainbow-me/utils/reviewAlert';
 
-const { RainbowRequestReview, RNReview, RNTestFlight } = NativeModules;
-
-let isTestFlight = ios ? RNTestFlight.getConstants().isTestFlight : false;
+const { RainbowRequestReview, RNReview } = NativeModules;
 
 export const SettingsExternalURLs = {
   rainbowHomepage: 'https://rainbow.me',
