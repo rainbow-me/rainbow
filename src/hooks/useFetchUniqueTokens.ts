@@ -1,7 +1,9 @@
+import { uniqBy } from 'lodash';
 import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from 'react-query';
 import useAccountSettings from './useAccountSettings';
 import { UniqueAsset } from '@rainbow-me/entities';
+import { fetchEnsTokens } from '@rainbow-me/handlers/ens';
 import {
   getUniqueTokens,
   saveUniqueTokens,
@@ -114,7 +116,7 @@ export default function useFetchUniqueTokens({
       setShouldFetchMore(false);
       (async () => {
         // Fetch more Ethereum tokens until all have fetched
-        const tokens = await fetchMore({
+        let tokens = await fetchMore({
           network,
           // If there are stored tokens in storage, then we want
           // to do a background refresh.
@@ -124,15 +126,26 @@ export default function useFetchUniqueTokens({
 
         // Fetch Polygon tokens until all have fetched
         const polygonTokens = await fetchMore({ network: Network.polygon });
+        tokens = [...tokens, ...polygonTokens];
+
+        // Fetch recently registered ENS tokens (OpenSea doesn't recognize these for a while).
+        // We will fetch tokens registered in the past 48 hours to be safe.
+        const ensTokens = await fetchEnsTokens({
+          address,
+          timeAgo: { hours: 48 },
+        });
+        if (ensTokens.length > 0) {
+          tokens = uniqBy([...tokens, ...ensTokens], 'id');
+        }
 
         if (hasStoredTokens) {
           queryClient.setQueryData<UniqueAsset[]>(
             uniqueTokensQueryKey({ address }),
-            [...tokens, ...polygonTokens]
+            tokens
           );
         }
 
-        await saveUniqueTokens([...tokens, ...polygonTokens], address, network);
+        await saveUniqueTokens(tokens, address, network);
       })();
     }
   }, [
