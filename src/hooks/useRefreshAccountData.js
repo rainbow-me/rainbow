@@ -1,6 +1,5 @@
 import { captureException } from '@sentry/react-native';
 import delay from 'delay';
-import { min } from 'lodash';
 import { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import NetworkTypes from '../helpers/networkTypes';
@@ -12,11 +11,7 @@ import { fetchWalletENSAvatars, fetchWalletNames } from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
 import useSavingsAccount from './useSavingsAccount';
 import useWalletENSAvatar from './useWalletENSAvatar';
-import {
-  defaultConfig,
-  PROFILES,
-  useExperimentalFlag,
-} from '@rainbow-me/config';
+import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import logger from 'logger';
 
 export default function useRefreshAccountData() {
@@ -65,7 +60,7 @@ export default function useRefreshAccountData() {
       captureException(error);
       throw error;
     }
-  }, [dispatch, network, refetchSavings, updateWalletENSAvatars]);
+  }, [dispatch, network, profilesEnabled, refetchSavings]);
 
   const refresh = useCallback(async () => {
     if (isRefreshing) return;
