@@ -11,21 +11,20 @@ const AnimatedPath = Animated.createAnimatedComponent(Path);
 
 const convertProgress = (progress: number) => {
   'worklet';
-  return (360 * Math.min(100, Math.max(0, progress))) / 100;
+  const normalizedProgress = Math.min(100, Math.max(0, progress));
+  return (Math.PI * 2 * normalizedProgress) / 100;
 };
 
 const polarToCartesian = (
   center: number,
   radius: number,
-  angleInDegrees: number
+  angleInRadians: number
 ) => {
   'worklet';
 
-  const angleInRadians = (Math.PI * (angleInDegrees - 90)) / 180;
-
   return {
-    x: center + radius * Math.cos(angleInRadians),
-    y: center + radius * Math.sin(angleInRadians),
+    x: center + radius * Math.sin(angleInRadians),
+    y: center + radius * -Math.cos(angleInRadians),
   };
 };
 
@@ -38,7 +37,7 @@ const circlePath = (
   'worklet';
   const start = polarToCartesian(center, radius, endAngle * 0.9999);
   const end = polarToCartesian(center, radius, startAngle);
-  const largeArcFlag = endAngle - startAngle <= 180 ? 0 : 1;
+  const largeArcFlag = endAngle - startAngle <= Math.PI ? 0 : 1;
 
   const path = [
     'M',
@@ -81,7 +80,7 @@ const ProgressIcon = ({
   const viewBoxSize = size + strokeWidth * 2;
 
   const outerPathProps = useAnimatedProps(() => ({
-    d: circlePath(center, radius, 0, 360),
+    d: circlePath(center, radius, 0, Math.PI * 2),
   }));
 
   const innerPathProps = useAnimatedProps(
