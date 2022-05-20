@@ -247,6 +247,7 @@ export const fetchWalletENSAvatars = () => async (dispatch, getState) => {
             ? images?.avatarUrl
             : account.image
         );
+        avatarChanged = true;
         addresses.push({
           ...account,
           image:
