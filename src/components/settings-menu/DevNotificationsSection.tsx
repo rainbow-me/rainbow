@@ -8,9 +8,35 @@ import { Box, Columns, Text } from '@rainbow-me/design-system';
 import { useAccountSettings, useWallets } from '@rainbow-me/hooks';
 import { formatAddressForDisplay } from '@rainbow-me/utils/abbreviations';
 
-const firebaseUnsubscribeBoth = async (address: string) => {
-  await messaging().unsubscribeFromTopic(`watcher_${address.toLowerCase()}`);
-  await messaging().unsubscribeFromTopic(`owner_${address.toLowerCase()}`);
+const topics = [
+  'sent',
+  'received',
+  'purchased',
+  'sold',
+  'minted',
+  'swapped',
+  'approvals',
+  'other',
+];
+
+const firebaseSubscribeTopics = async (
+  type: string,
+  chainId: number,
+  address: string
+) => {
+  topics.forEach(topic => {
+    messaging().subscribeToTopic(`${type}_${chainId}_${address}_${topic}`);
+  });
+};
+
+const firebaseUnsubscribeTopics = async (
+  type: string,
+  chainId: number,
+  address: string
+) => {
+  topics.forEach(topic => {
+    messaging().unsubscribeFromTopic(`${type}_${chainId}_${address}_${topic}`);
+  });
 };
 
 const DevNotificationsSection = () => {
@@ -48,127 +74,53 @@ const DevNotificationsSection = () => {
       [address]: { subscription: 'off', tx: state[address].tx },
     }));
 
-    firebaseUnsubscribeBoth(address);
+    firebaseUnsubscribeTopics('watcher', chainId, address);
+    firebaseUnsubscribeTopics('owner', chainId, address);
   };
 
-  const unsubscribeAll = async () => {
+  const unsubscribeAll = async (type: string) => {
     allWallets.forEach(wallet => {
       setNotificationState((state: any) => ({
         ...state,
         [wallet.address]: { subscription: 'off', tx: state[wallet.address].tx },
       }));
 
-      firebaseUnsubscribeBoth(wallet.address);
+      firebaseUnsubscribeTopics(type, chainId, wallet.address);
     });
   };
 
-  const subscribeAsWatcher = async (address: string) => {
+  const subscribe = async (type: string, address: string) => {
     setNotificationState((state: any) => ({
       ...state,
-      [address]: { subscription: 'watcher', tx: state[address].tx },
+      [address]: { subscription: type, tx: state[address].tx },
     }));
 
-    await messaging().unsubscribeFromTopic(`owner_${address.toLowerCase()}`);
-    await messaging().subscribeToTopic(`watcher_${address.toLowerCase()}`);
+    if (type === 'owner') {
+      firebaseUnsubscribeTopics('watcher', chainId, address);
+      firebaseSubscribeTopics('owner', chainId, address);
+    } else {
+      firebaseUnsubscribeTopics('owner', chainId, address);
+      firebaseSubscribeTopics('watcher', chainId, address);
+    }
   };
 
-  const subscribeAllAsWatcher = async () => {
+  const subscribeAll = async (type: string) => {
     allWallets.forEach(async wallet => {
       setNotificationState((state: any) => ({
         ...state,
         [wallet.address]: {
-          subscription: 'watcher',
+          subscription: type,
           tx: state[wallet.address].tx,
         },
       }));
 
-      await messaging().unsubscribeFromTopic(
-        `owner_${wallet.address.toLowerCase()}`
-      );
-      await messaging().subscribeToTopic(
-        `watcher_${wallet.address.toLowerCase()}`
-      );
-    });
-  };
-
-  const subscribeAsOwner = async (address: string) => {
-    setNotificationState((state: any) => ({
-      ...state,
-      [address]: { subscription: 'owner' },
-    }));
-
-    await messaging().unsubscribeFromTopic(`watcher_${address.toLowerCase()}`);
-    await messaging().subscribeToTopic(`owner_${address.toLowerCase()}`);
-  };
-
-  const subscribeAllAsOwner = async () => {
-    allWallets.forEach(async wallet => {
-      setNotificationState((state: any) => ({
-        ...state,
-        [wallet.address]: {
-          subscription: 'owner',
-          tx: state[wallet.address].tx,
-        },
-      }));
-
-      await messaging().unsubscribeFromTopic(
-        `watcher_${wallet.address.toLowerCase()}`
-      );
-      await messaging().subscribeToTopic(
-        `owner_${wallet.address.toLowerCase()}`
-      );
-    });
-  };
-
-  const subscribeTx = async (address: string) => {
-    setNotificationState((state: any) => ({
-      ...state,
-      [address]: { subscription: state[address].subscription, tx: 'on' },
-    }));
-
-    await messaging().subscribeToTopic(`${chainId}_${address.toLowerCase()}`);
-  };
-
-  const subscribeAllTx = async () => {
-    allWallets.forEach(async wallet => {
-      setNotificationState((state: any) => ({
-        ...state,
-        [wallet.address]: {
-          subscription: state[wallet.address].subscription,
-          tx: 'on',
-        },
-      }));
-
-      await messaging().subscribeToTopic(
-        `${chainId}_${wallet.address.toLowerCase()}`
-      );
-    });
-  };
-
-  const unsubscribeTx = async (address: string) => {
-    setNotificationState((state: any) => ({
-      ...state,
-      [address]: { subscription: state[address].subscription, tx: 'off' },
-    }));
-
-    await messaging().unsubscribeFromTopic(
-      `${chainId}_${address.toLowerCase()}`
-    );
-  };
-
-  const unsubscribeAllTx = async () => {
-    allWallets.forEach(async wallet => {
-      setNotificationState((state: any) => ({
-        ...state,
-        [wallet.address]: {
-          subscription: state[wallet.address].subscription,
-          tx: 'off',
-        },
-      }));
-
-      await messaging().unsubscribeFromTopic(
-        `${chainId}_${wallet.address.toLowerCase()}`
-      );
+      if (type === 'owner') {
+        firebaseUnsubscribeTopics('watcher', chainId, wallet.address);
+        firebaseSubscribeTopics('owner', chainId, wallet.address);
+      } else {
+        firebaseUnsubscribeTopics('owner', chainId, wallet.address);
+        firebaseSubscribeTopics('watcher', chainId, wallet.address);
+      }
     });
   };
 
@@ -193,7 +145,7 @@ const DevNotificationsSection = () => {
               backgroundColor={colors.blueGreyDark30}
               color="secondary60"
               hideShadow
-              onPress={subscribeAllAsWatcher}
+              onPress={() => subscribeAll('watcher')}
             >
               All Watcher
             </MiniButton>
@@ -203,38 +155,12 @@ const DevNotificationsSection = () => {
               backgroundColor={colors.blueGreyDark30}
               color="secondary60"
               hideShadow
-              onPress={subscribeAllAsOwner}
+              onPress={() => subscribeAll('owner')}
             >
               All Owner
             </MiniButton>
           </Columns>
         )}
-        <Box paddingTop="8px">
-          {!loading && (
-            <Columns space="8px">
-              {/* 
-              // @ts-expect-error */}
-              <MiniButton
-                backgroundColor={colors.blueGreyDark30}
-                color="secondary60"
-                hideShadow
-                onPress={unsubscribeAllTx}
-              >
-                All Tx Off
-              </MiniButton>
-              {/* 
-              // @ts-expect-error */}
-              <MiniButton
-                backgroundColor={colors.blueGreyDark30}
-                color="secondary60"
-                hideShadow
-                onPress={subscribeAllTx}
-              >
-                All Tx On
-              </MiniButton>
-            </Columns>
-          )}
-        </Box>
       </Box>
       <Box paddingBottom="19px" paddingHorizontal="19px">
         {!loading &&
@@ -245,8 +171,6 @@ const DevNotificationsSection = () => {
               notificationState[wallet.address].subscription === 'watcher';
             const isOwner =
               notificationState[wallet.address].subscription === 'owner';
-            const isTx = notificationState[wallet.address].tx === 'on';
-            const isNotTx = notificationState[wallet.address].tx === 'off';
 
             return (
               <Box key={wallet.address}>
@@ -294,7 +218,7 @@ const DevNotificationsSection = () => {
                       }
                       color={isWatcher ? 'white' : 'secondary60'}
                       hideShadow
-                      onPress={() => subscribeAsWatcher(wallet.address)}
+                      onPress={() => subscribe('watcher', wallet.address)}
                     >
                       Watcher
                     </MiniButton>
@@ -306,37 +230,9 @@ const DevNotificationsSection = () => {
                       }
                       color={isOwner ? 'white' : 'secondary60'}
                       hideShadow
-                      onPress={() => subscribeAsOwner(wallet.address)}
+                      onPress={() => subscribe('owner', wallet.address)}
                     >
                       Owner
-                    </MiniButton>
-                  </Columns>
-                </Box>
-                <Box paddingTop="8px">
-                  <Columns space="8px">
-                    {/* 
-                    // @ts-expect-error */}
-                    <MiniButton
-                      backgroundColor={
-                        isNotTx ? colors.appleBlue : colors.blueGreyDark30
-                      }
-                      color={isNotTx ? 'white' : 'secondary60'}
-                      hideShadow
-                      onPress={() => unsubscribeTx(wallet.address)}
-                    >
-                      Transactions Off
-                    </MiniButton>
-                    {/* 
-                    // @ts-expect-error */}
-                    <MiniButton
-                      backgroundColor={
-                        isTx ? colors.appleBlue : colors.blueGreyDark30
-                      }
-                      color={isTx ? 'white' : 'secondary60'}
-                      hideShadow
-                      onPress={() => subscribeTx(wallet.address)}
-                    >
-                      Transactions On
                     </MiniButton>
                   </Columns>
                 </Box>
