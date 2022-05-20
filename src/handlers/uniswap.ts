@@ -100,9 +100,9 @@ export const estimateSwapGasLimit = async ({
 
   const isWrapEth =
     sellTokenAddress === ETH_ADDRESS_AGGREGATORS &&
-    buyTokenAddress === WETH[ChainId.mainnet];
+    buyTokenAddress === WETH[chainId];
   const isUnwrapEth =
-    sellTokenAddress === WETH[ChainId.mainnet] &&
+    sellTokenAddress === WETH[chainId] &&
     buyTokenAddress === ETH_ADDRESS_AGGREGATORS;
 
   // Wrap / Unwrap Eth
@@ -116,7 +116,7 @@ export const estimateSwapGasLimit = async ({
           from: tradeDetails.from,
           value: isWrapEth ? tradeDetails.buyAmount : '0',
         },
-        geWethMethod(isWrapEth ? 'deposit' : 'withdraw', provider),
+        geWethMethod(isWrapEth ? 'deposit' : 'withdraw', provider, chainId),
         // @ts-ignore
         isUnwrapEth ? [tradeDetails.buyAmount] : null,
         provider,
@@ -130,13 +130,6 @@ export const estimateSwapGasLimit = async ({
     // Swap
   } else {
     try {
-      // const gasLimit = provider.estimateGas({
-      //   from: tradeDetails.from,
-      //   to: tradeDetails.to,
-      //   value: tradeDetails.value,
-      //   data: tradeDetails.data,
-      // });
-
       const { params, method, methodArgs } = getQuoteExecutionDetails(
         tradeDetails,
         { from: tradeDetails.from },
@@ -245,15 +238,15 @@ export const executeSwap = async ({
   // Wrap Eth
   if (
     sellTokenAddress === ETH_ADDRESS_AGGREGATORS &&
-    buyTokenAddress === WETH[ChainId.mainnet]
+    buyTokenAddress === WETH[chainId]
   ) {
-    return wrapEth(tradeDetails.buyAmount, walletToUse);
+    return wrapEth(tradeDetails.buyAmount, walletToUse, chainId);
     // Unwrap Weth
   } else if (
-    sellTokenAddress === WETH[ChainId.mainnet] &&
+    sellTokenAddress === WETH[chainId] &&
     buyTokenAddress === ETH_ADDRESS_AGGREGATORS
   ) {
-    return unwrapWeth(tradeDetails.sellAmount, walletToUse);
+    return unwrapWeth(tradeDetails.sellAmount, walletToUse, chainId);
     // Swap
   } else {
     logger.debug(

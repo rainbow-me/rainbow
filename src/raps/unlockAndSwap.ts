@@ -37,7 +37,7 @@ export const estimateUnlockAndSwap = async (
   const { accountAddress } = store.getState().settings;
 
   const isWethUnwrapping =
-    toLower(inputCurrency.address) === toLower(WETH[ChainId.mainnet]) &&
+    toLower(inputCurrency.address) === toLower(WETH[Number(chainId)]) &&
     toLower(outputCurrency.address) === toLower(ETH_ADDRESS);
 
   let gasLimits: (string | number)[] = [];
@@ -68,7 +68,11 @@ export const estimateUnlockAndSwap = async (
       RAINBOW_ROUTER_CONTRACT_ADDRESS,
       chainId
     );
-    gasLimits = concat(gasLimits, unlockGasLimit, ethUnits.basic_swap);
+    gasLimits = concat(
+      gasLimits,
+      unlockGasLimit,
+      ethereumUtils.getBasicSwapGasLimit(Number(chainId))
+    );
   } else {
     const swapGasLimit = await estimateSwapGasLimit({
       chainId: Number(chainId),

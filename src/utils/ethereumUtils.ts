@@ -2,7 +2,10 @@ import { BigNumberish } from '@ethersproject/bignumber';
 import { Provider } from '@ethersproject/providers';
 import { serialize } from '@ethersproject/transactions';
 import { Wallet } from '@ethersproject/wallet';
-import { ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS } from '@rainbow-me/swaps';
+import {
+  ChainId,
+  ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
+} from '@rainbow-me/swaps';
 import AsyncStorage from '@react-native-community/async-storage';
 import { captureException } from '@sentry/react-native';
 import { mnemonicToSeed } from 'bip39';
@@ -696,6 +699,19 @@ const getMultichainAssetAddress = (
   return realAddress;
 };
 
+const getBasicSwapGasLimit = (chainId: number) => {
+  switch (chainId) {
+    case ChainId.arbitrum:
+      return ethUnits.basic_swap_arbitrum;
+    case ChainId.polygon:
+      return ethUnits.basic_swap_polygon;
+    case ChainId.optimism:
+      return ethUnits.basic_swap_optimism;
+    default:
+      return ethUnits.basic_swap;
+  }
+};
+
 export default {
   calculateL1FeeOptimism,
   checkIfUrlIsAScam,
@@ -707,6 +723,7 @@ export default {
   getAsset,
   getAssetPrice,
   getBalanceAmount,
+  getBasicSwapGasLimit,
   getBlockExplorer,
   getChainIdFromNetwork,
   getChainIdFromType,
