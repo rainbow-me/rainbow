@@ -34,7 +34,7 @@ import {
   multiply,
 } from '@rainbow-me/helpers/utilities';
 import { ethUnits, timeUnits } from '@rainbow-me/references';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
 
 enum QUERY_KEYS {
   GET_COMMIT_GAS_LIMIT = 'GET_COMMIT_GAS_LIMIT',
@@ -46,6 +46,7 @@ enum QUERY_KEYS {
 }
 
 const QUERY_STALE_TIME = 15000;
+const { NORMAL } = gasUtils;
 
 export default function useENSRegistrationCosts({
   name: inputName,
@@ -72,6 +73,7 @@ export default function useENSRegistrationCosts({
     isSufficientGas: useGasIsSufficientGas,
     isValidGas: useGasIsValidGas,
     gasLimit: useGasGasLimit,
+    selectedGasFeeOption,
   } = useGas();
 
   const [gasFeeParams, setGasFeeParams] = useState({
@@ -313,7 +315,8 @@ export default function useENSRegistrationCosts({
     const formattedEstimatedNetworkFee = formatEstimatedNetworkFee(
       estimatedGasLimit,
       currentBaseFee?.gwei,
-      gasFeeParamsBySpeed?.normal?.maxPriorityFeePerGas?.gwei,
+      gasFeeParamsBySpeed?.[selectedGasFeeOption || NORMAL]
+        ?.maxPriorityFeePerGas?.gwei,
       nativeCurrency,
       nativeAssetPrice
     );
@@ -322,16 +325,17 @@ export default function useENSRegistrationCosts({
       estimatedGasLimit,
       estimatedNetworkFee: formattedEstimatedNetworkFee,
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    commitGasLimit,
-    hasReverseRecord,
-    nativeCurrency,
-    renewGasLimit,
-    setNameGasLimit,
-    setRecordsGasLimit,
-    registerRapGasLimit,
+    gasFeeParams,
     step,
+    nativeCurrency,
+    commitGasLimit,
+    setRecordsGasLimit,
+    hasReverseRecord,
+    setNameGasLimit,
+    renewGasLimit,
+    registerRapGasLimit,
+    selectedGasFeeOption,
   ]);
 
   useEffect(() => {
