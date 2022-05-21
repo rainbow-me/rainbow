@@ -2,7 +2,7 @@ import { useFocusEffect, useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Keyboard } from 'react-native';
+import { InteractionManager, Keyboard } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -93,13 +93,13 @@ export default function ENSAssignRecordsSheet() {
       ].map(fieldName => textRecordFields[fieldName] as TextRecordField),
     []
   );
-  const { profileQuery } = useENSRegistrationForm({
+  const { profileQuery, isLoading } = useENSRegistrationForm({
     defaultFields,
     initializeForm: true,
   });
 
   const displayTitleLabel =
-    params.mode !== REGISTRATION_MODES.EDIT || profileQuery.isSuccess;
+    params.mode !== REGISTRATION_MODES.EDIT || !isLoading;
   const isEmptyProfile = isEmpty(profileQuery.data?.records);
 
   useENSRegistrationCosts({
@@ -239,7 +239,6 @@ export function ENSAssignRecordsBottomActions({
   const { colors } = useTheme();
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
   const { mode } = useENSRegistration();
-  const { profileQuery } = useENSModifiedRegistration();
   const [fromRoute, setFromRoute] = useState(previousRouteName);
   const {
     disabled,
@@ -249,6 +248,7 @@ export function ENSAssignRecordsBottomActions({
     onRemoveField,
     submit,
     values,
+    isLoading,
   } = useENSRegistrationForm();
 
   const handlePressBack = useCallback(() => {
@@ -290,11 +290,13 @@ export function ENSAssignRecordsBottomActions({
   const [visible, setVisible] = useState(false);
   useEffect(() => {
     if (mode === REGISTRATION_MODES.EDIT) {
-      setTimeout(() => setVisible(profileQuery.isSuccess), 200);
+      InteractionManager.runAfterInteractions(() => {
+        setVisible(!isLoading);
+      });
     } else {
       setVisible(defaultVisible);
     }
-  }, [defaultVisible, mode, profileQuery.isSuccess]);
+  }, [defaultVisible, mode, isLoading]);
 
   const bottomActionHeight = isSmallPhone
     ? BottomActionHeightSmall
