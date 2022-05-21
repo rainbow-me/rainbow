@@ -2,7 +2,7 @@ import { useFocusEffect, useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { InteractionManager, Keyboard } from 'react-native';
+import { Keyboard } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -248,9 +248,8 @@ export function ENSAssignRecordsBottomActions({
     onRemoveField,
     submit,
     values,
-    isLoading,
   } = useENSRegistrationForm();
-
+  const { profileQuery } = useENSModifiedRegistration();
   const handlePressBack = useCallback(() => {
     delayNext();
     navigate(fromRoute);
@@ -290,13 +289,11 @@ export function ENSAssignRecordsBottomActions({
   const [visible, setVisible] = useState(false);
   useEffect(() => {
     if (mode === REGISTRATION_MODES.EDIT) {
-      InteractionManager.runAfterInteractions(() => {
-        setVisible(!isLoading);
-      });
+      setTimeout(() => setVisible(profileQuery.isSuccess), 50);
     } else {
       setVisible(defaultVisible);
     }
-  }, [defaultVisible, mode, isLoading]);
+  }, [defaultVisible, mode, profileQuery.isSuccess]);
 
   const bottomActionHeight = isSmallPhone
     ? BottomActionHeightSmall

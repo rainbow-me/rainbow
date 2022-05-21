@@ -1,6 +1,5 @@
 import { isEmpty, omit } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { InteractionManager } from 'react-native';
 import { atom, useRecoilState } from 'recoil';
 import { useENSModifiedRegistration, useENSRegistration } from '.';
 import { Records } from '@rainbow-me/entities';
@@ -224,9 +223,7 @@ export default function useENSRegistrationForm({
   useEffect(() => {
     if (mode === REGISTRATION_MODES.EDIT) {
       if (profileQuery.isSuccess || !isEmpty(values)) {
-        InteractionManager.runAfterInteractions(() => {
-          setTimeout(() => setIsLoading(false), 10);
-        });
+        setTimeout(() => setIsLoading(false), 50);
       } else {
         setIsLoading(true);
       }
