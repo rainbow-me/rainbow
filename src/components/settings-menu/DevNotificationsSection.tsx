@@ -25,7 +25,9 @@ const firebaseSubscribeTopics = async (
   address: string
 ) => {
   topics.forEach(topic => {
-    messaging().subscribeToTopic(`${type}_${chainId}_${address}_${topic}`);
+    messaging().subscribeToTopic(
+      `${type}_${chainId}_${address.toLowerCase()}_${topic}`
+    );
   });
 };
 
@@ -35,7 +37,9 @@ const firebaseUnsubscribeTopics = async (
   address: string
 ) => {
   topics.forEach(topic => {
-    messaging().unsubscribeFromTopic(`${type}_${chainId}_${address}_${topic}`);
+    messaging().unsubscribeFromTopic(
+      `${type}_${chainId}_${address.toLowerCase()}_${topic}`
+    );
   });
 };
 
@@ -129,7 +133,7 @@ const DevNotificationsSection = () => {
       <Box paddingHorizontal="19px" paddingTop="19px">
         {!loading && (
           <Columns space="8px">
-            {/* 
+            {/*
             // @ts-expect-error */}
             <MiniButton
               backgroundColor={colors.blueGreyDark30}
@@ -139,7 +143,7 @@ const DevNotificationsSection = () => {
             >
               All Off
             </MiniButton>
-            {/* 
+            {/*
             // @ts-expect-error */}
             <MiniButton
               backgroundColor={colors.blueGreyDark30}
@@ -149,7 +153,7 @@ const DevNotificationsSection = () => {
             >
               All Watcher
             </MiniButton>
-            {/* 
+            {/*
             // @ts-expect-error */}
             <MiniButton
               backgroundColor={colors.blueGreyDark30}
@@ -198,7 +202,7 @@ const DevNotificationsSection = () => {
                 </Box>
                 <Box paddingTop="15px">
                   <Columns space="8px">
-                    {/* 
+                    {/*
                     // @ts-expect-error */}
                     <MiniButton
                       backgroundColor={
@@ -210,7 +214,7 @@ const DevNotificationsSection = () => {
                     >
                       Off
                     </MiniButton>
-                    {/* 
+                    {/*
                     // @ts-expect-error */}
                     <MiniButton
                       backgroundColor={
@@ -222,7 +226,7 @@ const DevNotificationsSection = () => {
                     >
                       Watcher
                     </MiniButton>
-                    {/* 
+                    {/*
                     // @ts-expect-error */}
                     <MiniButton
                       backgroundColor={
