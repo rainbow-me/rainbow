@@ -6,12 +6,12 @@ import {
   ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
   fillQuote,
   getQuoteExecutionDetails,
-  geWethMethod,
+  getWrappedAssetMethod,
   PermitSupportedTokenList,
   Quote,
-  unwrapWeth,
-  WETH,
-  wrapEth,
+  unwrapNativeAsset,
+  WRAPPED_ASSET,
+  wrapNativeAsset,
 } from '@rainbow-me/swaps';
 import { get, mapKeys, mapValues, toLower } from 'lodash';
 import { Token } from '../entities/tokens';
@@ -98,27 +98,31 @@ export const estimateSwapGasLimit = async ({
 
   const { sellTokenAddress, buyTokenAddress } = tradeDetails;
 
-  const isWrapEth =
+  const isWrapNativeAsset =
     sellTokenAddress === ETH_ADDRESS_AGGREGATORS &&
-    buyTokenAddress === WETH[chainId];
-  const isUnwrapEth =
-    sellTokenAddress === WETH[chainId] &&
+    buyTokenAddress === WRAPPED_ASSET[chainId];
+  const isUnwrapNativeAsset =
+    sellTokenAddress === WRAPPED_ASSET[chainId] &&
     buyTokenAddress === ETH_ADDRESS_AGGREGATORS;
 
   // Wrap / Unwrap Eth
-  if (isWrapEth || isUnwrapEth) {
-    const default_estimate = isWrapEth
+  if (isWrapNativeAsset || isUnwrapNativeAsset) {
+    const default_estimate = isWrapNativeAsset
       ? ethUnits.weth_wrap
       : ethUnits.weth_unwrap;
     try {
       const gasLimit = await estimateGasWithPadding(
         {
           from: tradeDetails.from,
-          value: isWrapEth ? tradeDetails.buyAmount : '0',
+          value: isWrapNativeAsset ? tradeDetails.buyAmount : '0',
         },
-        geWethMethod(isWrapEth ? 'deposit' : 'withdraw', provider, chainId),
+        getWrappedAssetMethod(
+          isWrapNativeAsset ? 'deposit' : 'withdraw',
+          provider,
+          chainId
+        ),
         // @ts-ignore
-        isUnwrapEth ? [tradeDetails.buyAmount] : null,
+        isUnwrapNativeAsset ? [tradeDetails.buyAmount] : null,
         provider,
         1.002
       );
@@ -238,15 +242,15 @@ export const executeSwap = async ({
   // Wrap Eth
   if (
     sellTokenAddress === ETH_ADDRESS_AGGREGATORS &&
-    buyTokenAddress === WETH[chainId]
+    buyTokenAddress === WRAPPED_ASSET[chainId]
   ) {
-    return wrapEth(tradeDetails.buyAmount, walletToUse, chainId);
+    return wrapNativeAsset(tradeDetails.buyAmount, walletToUse, chainId);
     // Unwrap Weth
   } else if (
-    sellTokenAddress === WETH[chainId] &&
+    sellTokenAddress === WRAPPED_ASSET[chainId] &&
     buyTokenAddress === ETH_ADDRESS_AGGREGATORS
   ) {
-    return unwrapWeth(tradeDetails.sellAmount, walletToUse, chainId);
+    return unwrapNativeAsset(tradeDetails.sellAmount, walletToUse, chainId);
     // Swap
   } else {
     logger.debug(

@@ -4,7 +4,7 @@ import {
   ETH_ADDRESS as ETH_ADDRESS_AGGREGATOR,
   PermitSupportedTokenList,
   RAINBOW_ROUTER_CONTRACT_ADDRESS,
-  WETH,
+  WRAPPED_ASSET,
 } from '@rainbow-me/swaps';
 import { concat, reduce, toLower } from 'lodash';
 import { assetNeedsUnlocking, estimateApprove } from './actions';
@@ -36,8 +36,9 @@ export const estimateUnlockAndSwap = async (
   }
   const { accountAddress } = store.getState().settings;
 
-  const isWethUnwrapping =
-    toLower(inputCurrency.address) === toLower(WETH[Number(chainId)]) &&
+  const isNativeAssetUnwrapping =
+    toLower(inputCurrency.address) ===
+      toLower(WRAPPED_ASSET[Number(chainId)]) &&
     toLower(outputCurrency.address) === toLower(ETH_ADDRESS);
 
   let gasLimits: (string | number)[] = [];
@@ -51,7 +52,7 @@ export const estimateUnlockAndSwap = async (
       ethereumUtils.getNetworkFromChainId(Number(chainId))
     );
 
-  if (!isWethUnwrapping && !nativeAsset) {
+  if (!isNativeAssetUnwrapping && !nativeAsset) {
     swapAssetNeedsUnlocking = await assetNeedsUnlocking(
       accountAddress,
       inputAmount,
@@ -94,9 +95,8 @@ export const createUnlockAndSwapRap = async (
   const { inputAmount, tradeDetails, flashbots, chainId } = swapParameters;
   const { inputCurrency, outputCurrency } = store.getState().swap;
   const { accountAddress } = store.getState().settings;
-  // TODO - Add checks for other chains
-  const isWethUnwrapping =
-    toLower(inputCurrency.address) === toLower(WETH[`${chainId}`]) &&
+  const isNativeAssetUnwrapping =
+    toLower(inputCurrency.address) === toLower(WRAPPED_ASSET[`${chainId}`]) &&
     toLower(outputCurrency.address) === toLower(ETH_ADDRESS) &&
     chainId === ChainId.mainnet;
 
@@ -111,7 +111,7 @@ export const createUnlockAndSwapRap = async (
 
   let swapAssetNeedsUnlocking = false;
 
-  if (!isWethUnwrapping && !nativeAsset) {
+  if (!isNativeAssetUnwrapping && !nativeAsset) {
     swapAssetNeedsUnlocking = await assetNeedsUnlocking(
       accountAddress,
       inputAmount,

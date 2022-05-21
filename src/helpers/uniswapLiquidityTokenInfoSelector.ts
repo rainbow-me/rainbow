@@ -1,4 +1,4 @@
-import { ChainId, WETH } from '@rainbow-me/swaps';
+import { ChainId, WRAPPED_ASSET } from '@rainbow-me/swaps';
 import {
   compact,
   find,
@@ -65,7 +65,7 @@ interface UniswapCard {
 }
 
 const switchWethToEth = (token: Token, chainId: ChainId): Token => {
-  if (toLower(token.address) === toLower(WETH[chainId])) {
+  if (toLower(token.address) === toLower(WRAPPED_ASSET[chainId])) {
     return {
       ...token,
       address: ETH_ADDRESS,
