@@ -35,6 +35,22 @@ export const valuesAtom = atom<{ [name: string]: Partial<Records> }>({
   key: 'ensProfileForm.values',
 });
 
+const defaultInitialRecords = {
+  [ENS_RECORDS.displayName]: '',
+  [ENS_RECORDS.description]: '',
+  [ENS_RECORDS.url]: '',
+  [ENS_RECORDS.twitter]: '',
+};
+
+const cleanFormRecords = (initialRecords: Records) => {
+  // delete these to show an empty form if the user only have one of these set
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { ETH, avatar, cover, ...cleanFormRecords } = initialRecords;
+  // if ENS has some records, only show those
+  if (Object.keys(cleanFormRecords).length) return initialRecords;
+  return { ...defaultInitialRecords, ...initialRecords };
+};
+
 export default function useENSRegistrationForm({
   defaultFields,
   initializeForm,
@@ -56,10 +72,12 @@ export default function useENSRegistrationForm({
 
   // The initial records will be the existing records belonging to the profile in "edit mode",
   // but will be all of the records in "create mode".
-  const defaultRecords = useMemo(
-    () => (mode === REGISTRATION_MODES.EDIT ? initialRecords : allRecords),
-    [allRecords, initialRecords, mode]
-  );
+  const defaultRecords = useMemo(() => {
+    return mode === REGISTRATION_MODES.EDIT
+      ? cleanFormRecords(initialRecords)
+      : allRecords;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialRecords, mode]);
 
   const [errors, setErrors] = useRecoilState(errorsAtom);
   const [submitting, setSubmitting] = useRecoilState(submittingAtom);

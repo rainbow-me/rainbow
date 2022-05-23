@@ -93,13 +93,13 @@ export default function ENSAssignRecordsSheet() {
       ].map(fieldName => textRecordFields[fieldName] as TextRecordField),
     []
   );
-  const { profileQuery } = useENSRegistrationForm({
+  const { profileQuery, isLoading } = useENSRegistrationForm({
     defaultFields,
     initializeForm: true,
   });
 
   const displayTitleLabel =
-    params.mode !== REGISTRATION_MODES.EDIT || profileQuery.isSuccess;
+    params.mode !== REGISTRATION_MODES.EDIT || !isLoading;
   const isEmptyProfile = isEmpty(profileQuery.data?.records);
 
   useENSRegistrationCosts({
@@ -239,7 +239,6 @@ export function ENSAssignRecordsBottomActions({
   const { colors } = useTheme();
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
   const { mode } = useENSRegistration();
-  const { profileQuery } = useENSModifiedRegistration();
   const [fromRoute, setFromRoute] = useState(previousRouteName);
   const {
     disabled,
@@ -250,7 +249,7 @@ export function ENSAssignRecordsBottomActions({
     submit,
     values,
   } = useENSRegistrationForm();
-
+  const { profileQuery } = useENSModifiedRegistration();
   const handlePressBack = useCallback(() => {
     delayNext();
     navigate(fromRoute);
