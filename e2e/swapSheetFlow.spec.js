@@ -92,7 +92,9 @@ describe('Swap Sheet Interaction Flow', () => {
   it('Should reset all fields on selection of new input currency', async () => {
     await Helpers.waitAndTap('exchange-modal-input-selection-button');
     await Helpers.checkIfVisible('currency-select-list');
-    await Helpers.waitAndTap('currency-select-list-exchange-coin-row-DAI');
+    await Helpers.waitAndTap(
+      'currency-select-list-exchange-coin-row-DAI-token'
+    );
   });
 
   it('Should display Receive Currency Select List after tapping Choose Token', async () => {
@@ -111,13 +113,15 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.waitAndTap('exchange-modal-input-selection-button');
     await Helpers.typeText('currency-select-search-input', 'SOCKS\n', true);
     await Helpers.checkIfNotVisible(
-      'currency-select-list-exchange-coin-row-ETH'
+      'currency-select-list-exchange-coin-row-ETH-token'
     );
   });
 
   it('Should reset Currency Select List on clearing search field', async () => {
     await Helpers.clearField('currency-select-search-input');
-    await Helpers.checkIfVisible('currency-select-list-exchange-coin-row-ETH');
+    await Helpers.checkIfVisible(
+      'currency-select-list-exchange-coin-row-ETH-token'
+    );
     if (device.getPlatform() === 'android') {
       await device.pressBack();
       await device.pressBack();
@@ -128,11 +132,17 @@ describe('Swap Sheet Interaction Flow', () => {
 
   it('Should show Choose Token Button if input & output are same token(ETH)', async () => {
     await Helpers.waitAndTap('exchange-modal-input-selection-button');
-    await Helpers.checkIfVisible('currency-select-list-exchange-coin-row-ETH');
-    await Helpers.waitAndTap('currency-select-list-exchange-coin-row-ETH');
+    await Helpers.checkIfVisible(
+      'currency-select-list-exchange-coin-row-ETH-token'
+    );
+    await Helpers.waitAndTap(
+      'currency-select-list-exchange-coin-row-ETH-token'
+    );
     await Helpers.waitAndTap('exchange-modal-output-selection-button');
     await Helpers.typeText('currency-select-search-input', 'ETH\n', false);
-    await Helpers.waitAndTap('currency-select-list-exchange-coin-row-ETH');
+    await Helpers.waitAndTap(
+      'currency-select-list-exchange-coin-row-ETH-token'
+    );
     await Helpers.checkIfElementHasString(
       'exchange-modal-input-selection-button-text',
       'Choose Token'
@@ -148,11 +158,17 @@ describe('Swap Sheet Interaction Flow', () => {
   it('Should swap input & output and clear form on ETH -> ERC20 when selecting ETH as output', async () => {
     await Helpers.waitAndTap('exchange-modal-output-selection-button');
     await Helpers.typeText('currency-select-search-input', 'DAI\n', true);
-    await Helpers.checkIfVisible('currency-select-list-exchange-coin-row-DAI');
-    await Helpers.waitAndTap('currency-select-list-exchange-coin-row-DAI');
+    await Helpers.checkIfVisible(
+      'currency-select-list-exchange-coin-row-DAI-token'
+    );
+    await Helpers.waitAndTap(
+      'currency-select-list-exchange-coin-row-DAI-token'
+    );
     await Helpers.waitAndTap('exchange-modal-output-selection-button');
     await Helpers.typeText('currency-select-search-input', 'ETH\n', true);
-    await Helpers.waitAndTap('currency-select-list-exchange-coin-row-ETH');
+    await Helpers.waitAndTap(
+      'currency-select-list-exchange-coin-row-ETH-token'
+    );
     await Helpers.checkIfElementHasString(
       'exchange-modal-input-selection-button-text',
       'DAI'
@@ -172,10 +188,16 @@ describe('Swap Sheet Interaction Flow', () => {
   it('Should swap input & output and clear form on ETH -> ERC20 when selecting ERC20 as input', async () => {
     await Helpers.waitAndTap('exchange-modal-output-selection-button');
     await Helpers.typeText('currency-select-search-input', 'DAI\n', true);
-    await Helpers.checkIfVisible('currency-select-list-exchange-coin-row-DAI');
-    await Helpers.waitAndTap('currency-select-list-exchange-coin-row-DAI');
+    await Helpers.checkIfVisible(
+      'currency-select-list-exchange-coin-row-DAI-token'
+    );
+    await Helpers.waitAndTap(
+      'currency-select-list-exchange-coin-row-DAI-token'
+    );
     await Helpers.waitAndTap('exchange-modal-input-selection-button');
-    await Helpers.waitAndTap('currency-select-list-exchange-coin-row-DAI');
+    await Helpers.waitAndTap(
+      'currency-select-list-exchange-coin-row-DAI-token'
+    );
     await Helpers.checkIfElementHasString(
       'exchange-modal-input-selection-button-text',
       'DAI'
@@ -199,7 +221,9 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.waitAndTap('exchange-fab');
     await Helpers.waitAndTap('exchange-modal-output-selection-button');
     await Helpers.typeText('currency-select-search-input', 'ZRX\n', false);
-    await Helpers.waitAndTap('currency-select-list-exchange-coin-row-ZRX');
+    await Helpers.waitAndTap(
+      'currency-select-list-exchange-coin-row-ZRX-token'
+    );
     await Helpers.checkIfVisible('exchange-modal-input-native');
     await Helpers.checkIfVisible('exchange-modal-output');
     await Helpers.typeText('exchange-modal-input', '0.246\n', false);
@@ -217,7 +241,9 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.waitAndTap('exchange-fab');
     await Helpers.waitAndTap('exchange-modal-output-selection-button');
     await Helpers.typeText('currency-select-search-input', 'ZRX', false);
-    await Helpers.waitAndTap('currency-select-list-exchange-coin-row-ZRX');
+    await Helpers.waitAndTap(
+      'currency-select-list-exchange-coin-row-ZRX-token'
+    );
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.checkIfVisible('exchange-modal-output');
     await Helpers.typeText('exchange-modal-input-native', '0.246', false);
@@ -235,7 +261,9 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.waitAndTap('exchange-fab');
     await Helpers.waitAndTap('exchange-modal-output-selection-button');
     await Helpers.typeText('currency-select-search-input', 'ZRX', false);
-    await Helpers.waitAndTap('currency-select-list-exchange-coin-row-ZRX');
+    await Helpers.waitAndTap(
+      'currency-select-list-exchange-coin-row-ZRX-token'
+    );
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.checkIfVisible('exchange-modal-input-native');
     await Helpers.typeText('exchange-modal-output', '0.246', false);
@@ -246,13 +274,13 @@ describe('Swap Sheet Interaction Flow', () => {
 
   it('Should show Hold to Swap Button & Swap Info Button on completion of all input fields', async () => {
     await Helpers.checkIfVisible('exchange-modal-confirm-button');
-    await Helpers.checkIfVisible('exchange-details-button');
+    await Helpers.checkIfVisible('exchange-settings-button');
   });
 
-  it('Should show Swap Details State on Swap Info Button press', async () => {
-    await Helpers.waitAndTap('exchange-details-button');
-    await Helpers.checkIfVisible('swap-details-state');
-    await Helpers.swipe('swap-details-state', 'down', 'slow');
+  it('Should show Swap Settings State on Settings Button press', async () => {
+    await Helpers.waitAndTap('exchange-settings-button');
+    await Helpers.checkIfVisible('swap-settings-container');
+    await Helpers.swipe('swap-settings-container', 'down', 'slow');
   });
 
   it('Should show Insufficient Funds on input greater than balance', async () => {
@@ -264,7 +292,9 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.waitAndTap('exchange-fab');
     await Helpers.waitAndTap('exchange-modal-output-selection-button');
     await Helpers.typeText('currency-select-search-input', 'ZRX', false);
-    await Helpers.waitAndTap('currency-select-list-exchange-coin-row-ZRX');
+    await Helpers.waitAndTap(
+      'currency-select-list-exchange-coin-row-ZRX-token'
+    );
     await Helpers.typeText('exchange-modal-input', '0.546', false);
     await Helpers.checkForElementByLabel('Insufficient Funds');
   });
@@ -294,7 +324,9 @@ describe('Swap Sheet Interaction Flow', () => {
   it('Should prepend 0. to output field on typing .', async () => {
     await Helpers.waitAndTap('exchange-modal-output-selection-button');
     await Helpers.typeText('currency-select-search-input', 'ZRX', false);
-    await Helpers.waitAndTap('currency-select-list-exchange-coin-row-ZRX');
+    await Helpers.waitAndTap(
+      'currency-select-list-exchange-coin-row-ZRX-token'
+    );
     await Helpers.waitAndTap('exchange-modal-output');
     await Helpers.typeText('exchange-modal-output', '.', true);
     await Helpers.checkIfVisible('exchange-modal-output-0.');
@@ -309,7 +341,9 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.waitAndTap('exchange-fab');
     await Helpers.waitAndTap('exchange-modal-output-selection-button');
     await Helpers.typeText('currency-select-search-input', 'ZRX', false);
-    await Helpers.waitAndTap('currency-select-list-exchange-coin-row-ZRX');
+    await Helpers.waitAndTap(
+      'currency-select-list-exchange-coin-row-ZRX-token'
+    );
     await Helpers.checkIfVisible('exchange-modal-gas');
     await Helpers.checkIfElementByTextIsVisible('Normal');
   });

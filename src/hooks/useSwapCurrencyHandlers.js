@@ -75,7 +75,8 @@ export default function useSwapCurrencyHandlers({
     }
     if (type === ExchangeModalTypes.swap) {
       return {
-        defaultInputItemInWallet: defaultInputAsset ?? null,
+        defaultInputItemInWallet:
+          defaultInputAsset ?? ethereumUtils.getAccountAsset(ETH_ADDRESS),
         defaultOutputItem: defaultOutputAsset ?? null,
       };
     }

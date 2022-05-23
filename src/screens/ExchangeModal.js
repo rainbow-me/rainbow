@@ -17,6 +17,7 @@ import {
   Keyboard,
   NativeModules,
 } from 'react-native';
+import { IS_TESTING } from 'react-native-dotenv';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { useDispatch, useSelector } from 'react-redux';
@@ -315,7 +316,7 @@ export default function ExchangeModal({
   // Navigate to select input currency automatically
   // TODO: Do this in a better way
   useEffect(() => {
-    if (focused) {
+    if (focused && IS_TESTING !== 'true') {
       if (!defaultInputAsset && !inputCurrency) {
         navigateToInput();
       } else if (!outputCurrency) {
@@ -757,7 +758,7 @@ export default function ExchangeModal({
             <ExchangeDetailsRow
               isHighPriceImpact={isHighPriceImpact}
               onFlipCurrencies={flipCurrencies}
-              onPressViewDetails={navigateToSwapSettingsSheet}
+              onPressSettings={navigateToSwapSettingsSheet}
               priceImpactColor={priceImpactColor}
               priceImpactNativeAmount={priceImpactNativeAmount}
               priceImpactPercentDisplay={priceImpactPercentDisplay}
