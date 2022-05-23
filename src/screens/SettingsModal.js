@@ -7,6 +7,7 @@ import { Modal } from '../components/modal';
 import ModalHeaderButton from '../components/modal/ModalHeaderButton';
 import {
   CurrencySection,
+  DevNotificationsSection,
   DevSection,
   LanguageSection,
   NetworkSection,
@@ -224,6 +225,15 @@ export default function SettingsModal() {
               cardStyle: { backgroundColor: colors.white, marginTop: 6 },
               cardStyleInterpolator,
               title: lang.t('settings.backup'),
+            }}
+          />
+          <Stack.Screen
+            component={DevNotificationsSection}
+            name="DevNotificationsSection"
+            options={{
+              cardStyle: { backgroundColor: colors.white, marginTop: 6 },
+              cardStyleInterpolator,
+              title: lang.t('developer_settings.notifications_debug'),
             }}
           />
           <Stack.Screen
