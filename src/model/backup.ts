@@ -139,7 +139,6 @@ export function findLatestBackUp(
       }
     });
   }
-
   return filename;
 }
 
