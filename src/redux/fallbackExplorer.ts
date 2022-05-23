@@ -2,15 +2,25 @@ import { Contract } from '@ethersproject/contracts';
 import { captureException } from '@sentry/react-native';
 import { get, isEmpty, keyBy, map, mapValues, toLower, uniqBy } from 'lodash';
 import isEqual from 'react-fast-compare';
-import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
-import { addressAssetsReceived, fetchAssetPricesWithCoingecko } from './data';
-// eslint-disable-next-line import/no-cycle
+import {
+  // @ts-ignore
+  ETHERSCAN_API_KEY,
+} from 'react-native-dotenv';
+import { Dispatch } from 'redux';
+import { ThunkDispatch } from 'redux-thunk';
+import { AdditionalAssetsDataState } from './additionalAssetsData';
+import {
+  addressAssetsReceived,
+  DataState,
+  fetchAssetPricesWithCoingecko,
+} from './data';
 import { explorerInitL2 } from './explorer';
-import { AssetTypes } from '@rainbow-me/entities';
+import { AppGetState, AppState } from './store';
+import { AssetType, ZerionAssetFallback } from '@rainbow-me/entities';
 import { getAssetsFromCovalent } from '@rainbow-me/handlers/covalent';
 import { web3Provider } from '@rainbow-me/handlers/web3';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
-import NetworkTypes from '@rainbow-me/helpers/networkTypes';
+import NetworkTypes, { Network } from '@rainbow-me/helpers/networkTypes';
 import {
   balanceCheckerContractAbi,
   chainAssets,
@@ -23,7 +33,8 @@ import { delay } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
-let lastUpdatePayload = null;
+let lastUpdatePayload: FallbackOnChainAssetsPayload | null = null;
+
 // -- Constants --------------------------------------- //
 const FALLBACK_EXPLORER_CLEAR_STATE = 'explorer/FALLBACK_EXPLORER_CLEAR_STATE';
 const FALLBACK_EXPLORER_SET_ASSETS = 'explorer/FALLBACK_EXPLORER_SET_ASSETS';
@@ -40,21 +51,180 @@ const ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT =
 const UPDATE_BALANCE_AND_PRICE_FREQUENCY = 10000;
 const DISCOVER_NEW_ASSETS_FREQUENCY = 13000;
 
+// -- Types ------------------------------------------- //
+
+/**
+ * The state for the `fallbackExplorer` reducer.
+ */
+interface FallbackExplorerState {
+  /**
+   * A timeout ID for loading assets, if a timeout has been set.
+   */
+  fallbackExplorerAssetsHandle: ReturnType<typeof setTimeout> | null;
+
+  /**
+   * A timeout ID for loading balances, if a timeout has been set.
+   */
+  fallbackExplorerBalancesHandle: ReturnType<typeof setTimeout> | null;
+
+  /**
+   * The latest loaded transaction's block number.
+   */
+  latestTxBlockNumber: number | null;
+
+  /**
+   * Loaded mainnet asset data.
+   */
+  mainnetAssets: {
+    [key: string]: { asset: ZerionAssetFallback };
+  };
+}
+
+/**
+ * An action for the `fallbackExplorer` reducer.
+ */
+type FallbackExplorerAction =
+  | FallbackExplorerSetAssetsAction
+  | FallbackExplorerClearStateAction
+  | FallbackExplorerSetLatestTxBlockNumberAction
+  | FallbackExplorerSetHandlersAction
+  | FallbackExplorerSetBalanceHandlerAction;
+
+/**
+ * An action that sets the loaded mainnet assets for the `fallbackExplorer` reducer.
+ */
+interface FallbackExplorerSetAssetsAction {
+  type: typeof FALLBACK_EXPLORER_SET_ASSETS;
+  payload: {
+    mainnetAssets: FallbackExplorerState['mainnetAssets'];
+  };
+}
+
+/**
+ * An action that clears the `fallbackExplorer` reducer state.
+ */
+interface FallbackExplorerClearStateAction {
+  type: typeof FALLBACK_EXPLORER_CLEAR_STATE;
+}
+
+/**
+ * An action that updates the latest transaction's block number.
+ */
+interface FallbackExplorerSetLatestTxBlockNumberAction {
+  type: typeof FALLBACK_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER;
+  payload: {
+    latestTxBlockNumber: number;
+  };
+}
+
+/**
+ * An action for setting the asset and balance timeout handlers.
+ */
+interface FallbackExplorerSetHandlersAction {
+  type: typeof FALLBACK_EXPLORER_SET_HANDLERS;
+  payload: {
+    fallbackExplorerAssetsHandle: ReturnType<typeof setTimeout> | null;
+    fallbackExplorerBalancesHandle: ReturnType<typeof setTimeout>;
+  };
+}
+
+/**
+ * An action for setting the balance timeout handler.
+ */
+interface FallbackExplorerSetBalanceHandlerAction {
+  type: typeof FALLBACK_EXPLORER_SET_BALANCE_HANDLER;
+  payload: {
+    fallbackExplorerBalancesHandle: ReturnType<typeof setTimeout>;
+  };
+}
+
+/**
+ * A fallback asset's data, which includes a `ZerionAssetFallback` as well
+ * as a quantity.
+ */
+interface FallbackAssetWithQuantity {
+  asset: ZerionAssetFallback;
+  quantity: number;
+}
+
+/**
+ * A fallback asset's data loaded in `fetchOnchainBalances`, which is similar
+ * to a `FallbackAssetWithQuantity`, but its asset's `coingecko_id` and `price`
+ * fields may or may not be specified.
+ */
+interface FallbackOnChainAssetWithQuantity {
+  asset: Omit<ZerionAssetFallback, 'coingecko_id' | 'price'> & {
+    coingecko_id?: ZerionAssetFallback['coingecko_id'];
+    price?: Partial<ZerionAssetFallback['price']>;
+  };
+  quantity?: number | string;
+}
+
+/**
+ * A payload for an on-chain asset update.
+ */
+interface FallbackOnChainAssetsPayload {
+  assets: {
+    [key: string]: FallbackOnChainAssetWithQuantity;
+  };
+}
+
+/**
+ * Data from the Etherscan API about an token transaction for a given account.
+ * See https://docs.etherscan.io/api-endpoints/accounts#get-a-list-of-erc20-token-transfer-events-by-address.
+ */
+interface EtherscanApiAccountTokenTxResult {
+  blockNumber: string;
+  timeStamp: string;
+  hash: string;
+  nonce: string;
+  blockHash: string;
+  from: string;
+  contractAddress: string;
+  to: string;
+  value: string;
+  tokenName: string;
+  tokenSymbol: string;
+  tokenDecimal: string;
+  transactionIndex: string;
+  gas: string;
+  gasPrice: string;
+  gasUsed: string;
+  cumulativeGasUsed: string;
+  input: string;
+  confirmations: string;
+}
+
+// -- Actions ---------------------------------------- //
+
 // Some contracts like SNX / SUSD use an ERC20 proxy
 // some of those tokens have been migrated to a new address
 // We need to use the current address to fetch the correct price
-const getCurrentAddress = address => {
-  return migratedTokens[address] || address;
+const getCurrentAddress = (address: string) => {
+  return migratedTokens[address as keyof typeof migratedTokens] || address;
 };
 
+/**
+ * Fetches asset data for an account from Covalent.
+ *
+ * @param chainId The chain ID.
+ * @param accountAddress The account address.
+ * @param type The `AssetType` to load.
+ * @param currency The currency to use.
+ * @param coingeckoIds A mapping of contract addresses to Coingecko IDs.
+ * @param genericAssets A mapping of contract addresses to generic assets, as a
+ * fallback.
+ * @returns An object mapping contract addresses to fallback assets with
+ * their quantities for the specified account address.
+ */
 const getMainnetAssetsFromCovalent = async (
-  chainId,
-  accountAddress,
-  type,
-  currency,
-  coingeckoIds,
-  genericAssets
-) => {
+  chainId: number,
+  accountAddress: string,
+  type: AssetType,
+  currency: string,
+  coingeckoIds: AdditionalAssetsDataState['coingeckoIds'],
+  genericAssets: DataState['genericAssets']
+): Promise<{ [assetCode: string]: FallbackAssetWithQuantity } | null> => {
   const data = await getAssetsFromCovalent(chainId, accountAddress, currency);
   if (data) {
     const updatedAt = new Date(data.updated_at).getTime();
@@ -92,6 +262,7 @@ const getMainnetAssetsFromCovalent = async (
           icon_url: item.logo_url,
           name: item.contract_name,
           price: {
+            // @ts-expect-error "value" specified more than once.
             value: 0,
             ...price,
           },
@@ -107,7 +278,17 @@ const getMainnetAssetsFromCovalent = async (
   return null;
 };
 
-const findNewAssetsToWatch = () => async (dispatch, getState) => {
+/**
+ * Finds new assets to watch for the current state using `findAssetsToWatch`,
+ * and updates the state accordingly.
+ */
+const findNewAssetsToWatch = () => async (
+  dispatch: Dispatch<
+    | FallbackExplorerSetAssetsAction
+    | FallbackExplorerSetLatestTxBlockNumberAction
+  >,
+  getState: AppGetState
+) => {
   const { accountAddress } = getState().settings;
   const { mainnetAssets, latestTxBlockNumber } = getState().fallbackExplorer;
   const { coingeckoIds } = getState().additionalAssetsData;
@@ -130,18 +311,30 @@ const findNewAssetsToWatch = () => async (dispatch, getState) => {
 
     dispatch({
       payload: {
-        mainnetAssets: newMainnetAssets,
+        mainnetAssets: newMainnetAssets as FallbackExplorerState['mainnetAssets'],
       },
       type: FALLBACK_EXPLORER_SET_ASSETS,
     });
   }
 };
 
+/**
+ * Finds new assets to watch given an account address and a block number using
+ * `discoverTokens`.
+ *
+ * @param address The account address.
+ * @param latestTxBlockNumber The latest transaction block number, which is used
+ * as the starting block number to load.
+ * @param dispatch
+ * @param coingeckoIds
+ * @returns The assets found as an object keyed by contract address, or an
+ * empty array.
+ */
 const findAssetsToWatch = async (
-  address,
-  latestTxBlockNumber,
-  dispatch,
-  coingeckoIds
+  address: string,
+  latestTxBlockNumber: number | null,
+  dispatch: Dispatch<FallbackExplorerSetLatestTxBlockNumberAction>,
+  coingeckoIds: AdditionalAssetsDataState['coingeckoIds']
 ) => {
   // 1 - Discover the list of tokens for the address
   const tokensInWallet = await discoverTokens(
@@ -169,26 +362,47 @@ const findAssetsToWatch = async (
   return keyBy(tokens, 'asset.asset_code');
 };
 
-const getTokenType = tx => {
-  if (tx.tokenSymbol === 'UNI-V1') return AssetTypes.uniswap;
-  if (tx.tokenSymbol === 'UNI-V2') return AssetTypes.uniswapV2;
+/**
+ * Returns an `AssetType` for a transaction.
+ *
+ * @param tx The transaction.
+ * @returns The asset type, or undefined if the transaction does not match a
+ * known `AssetType`.
+ */
+const getTokenType = (
+  tx: EtherscanApiAccountTokenTxResult
+): AssetType | undefined => {
+  if (tx.tokenSymbol === 'UNI-V1') return AssetType.uniswap;
+  if (tx.tokenSymbol === 'UNI-V2') return AssetType.uniswapV2;
   if (
     toLower(tx.tokenName).indexOf('compound') !== -1 &&
     tx.tokenSymbol !== 'COMP'
   )
-    return AssetTypes.compound;
+    return AssetType.compound;
   return undefined;
 };
 
+/**
+ * Finds assets for a given address after a given block number, and updates
+ * state accordingly.
+ *
+ * @param coingeckoIds A mapping of asset addresses to Coingecko IDs, used for
+ * including Coingecko IDs in the result.
+ * @param address The account address.
+ * @param latestTxBlockNumber The latest transaction block number, which is used
+ * as the starting block number to load.
+ * @param dispatch The dispatch object.
+ * @returns An array of found assets.
+ */
 const discoverTokens = async (
-  coingeckoIds,
-  address,
-  latestTxBlockNumber,
-  dispatch
-) => {
+  coingeckoIds: AdditionalAssetsDataState['coingeckoIds'],
+  address: string,
+  latestTxBlockNumber: number | null,
+  dispatch: Dispatch<FallbackExplorerSetLatestTxBlockNumberAction>
+): Promise<{ asset: ZerionAssetFallback }[]> => {
   let page = 1;
   const offset = 1000;
-  let allTxs = [];
+  let allTxs: EtherscanApiAccountTokenTxResult[] = [];
   let poll = true;
   while (poll) {
     const txs = await getTokenTxDataFromEtherscan(
@@ -243,12 +457,22 @@ const discoverTokens = async (
   return [];
 };
 
+/**
+ * Loads token transaction data from the Etherscan API.
+ *
+ * @param address The account address.
+ * @param page The page of results to load.
+ * @param offset The offset of results to load.
+ * @param latestTxBlockNumber The latest transaction block number, which is used
+ * as the starting block number to load.
+ * @returns The data loaded from Etherscan, or `null` if an error occurs.
+ */
 const getTokenTxDataFromEtherscan = async (
-  address,
-  page,
-  offset,
-  latestTxBlockNumber
-) => {
+  address: string,
+  page: number,
+  offset: number,
+  latestTxBlockNumber: number | null
+): Promise<EtherscanApiAccountTokenTxResult[] | null> => {
   let url = `https://api.etherscan.io/api?module=account&action=tokentx&address=${address}&page=${page}&offset=${offset}&sort=desc&apikey=${ETHERSCAN_API_KEY}`;
   if (latestTxBlockNumber) {
     url += `&startBlock=${latestTxBlockNumber}`;
@@ -261,7 +485,20 @@ const getTokenTxDataFromEtherscan = async (
   return null;
 };
 
-const fetchAssetBalances = async (tokens, address, network) => {
+/**
+ * Fetches balances for tokens for a given address.
+ *
+ * @param tokens The tokens to find balances for.
+ * @param address The account address.
+ * @param network The network to use.
+ * @returns An object mapping token addresses to balances, or `null` if an error
+ * occurs.
+ */
+const fetchAssetBalances = async (
+  tokens: string[],
+  address: string,
+  network: Network
+): Promise<{ [tokenAddress: string]: string } | null> => {
   const balanceCheckerContract = new Contract(
     get(networkInfo[network], 'balance_checker_contract_address'),
     balanceCheckerContractAbi,
@@ -269,7 +506,9 @@ const fetchAssetBalances = async (tokens, address, network) => {
   );
   try {
     const values = await balanceCheckerContract.balances([address], tokens);
-    const balances = {};
+    const balances: {
+      [address: string]: { [tokenAddress: string]: string };
+    } = {};
     [address].forEach((addr, addrIdx) => {
       balances[addr] = {};
       tokens.forEach((tokenAddr, tokenIdx) => {
@@ -289,10 +528,24 @@ const fetchAssetBalances = async (tokens, address, network) => {
   }
 };
 
+/**
+ * Fetches on-chain balances given the current state using `fetchAssetBalances`,
+ * and updates the state accordingly. Polls for results if necessary.
+ *
+ * @param options.keepPolling Whether or not to poll if no results are loaded.
+ * @param options.withPrices Whether or not to include asset prices.
+ */
 export const fetchOnchainBalances = ({
   keepPolling = true,
   withPrices = true,
-}) => async (dispatch, getState) => {
+}) => async (
+  dispatch: ThunkDispatch<
+    AppState,
+    unknown,
+    FallbackExplorerSetHandlersAction | FallbackExplorerSetBalanceHandlerAction
+  >,
+  getState: AppGetState
+) => {
   logger.log('😬 FallbackExplorer:: fetchOnchainBalances');
   const { network, accountAddress, nativeCurrency } = getState().settings;
   const { accountAssetsData, genericAssets } = getState().data;
@@ -303,15 +556,18 @@ export const fetchOnchainBalances = ({
   const covalentMainnetAssets = await getMainnetAssetsFromCovalent(
     chainId,
     accountAddress,
-    AssetTypes.token,
+    AssetType.token,
     formattedNativeCurrency,
     coingeckoIds,
     genericAssets
   );
 
-  const chainAssetsMap = keyBy(chainAssets[network], 'asset.asset_code');
+  const chainAssetsMap = keyBy(
+    chainAssets[network as keyof typeof chainAssets],
+    'asset.asset_code'
+  );
 
-  let assets =
+  let assets: { [key: string]: FallbackOnChainAssetWithQuantity } =
     network === NetworkTypes.mainnet
       ? covalentMainnetAssets
         ? {
@@ -431,6 +687,7 @@ export const fetchOnchainBalances = ({
             currency: nativeCurrency,
             status: 'ok',
           },
+          // @ts-expect-error The types of 'asset.decimals' are incompatible between these types.
           payload: newPayload,
         },
         false,
@@ -465,7 +722,14 @@ export const fetchOnchainBalances = ({
   }
 };
 
-export const fallbackExplorerInit = () => async (dispatch, getState) => {
+/**
+ * Initializes the `fallbackExplorer` state, finding assets and fetching
+ * balances if necessary.
+ */
+export const fallbackExplorerInit = () => async (
+  dispatch: ThunkDispatch<AppState, unknown, FallbackExplorerSetAssetsAction>,
+  getState: AppGetState
+) => {
   const { accountAddress, network } = getState().settings;
   const { latestTxBlockNumber, mainnetAssets } = getState().fallbackExplorer;
   const { coingeckoIds } = getState().additionalAssetsData;
@@ -474,12 +738,12 @@ export const fallbackExplorerInit = () => async (dispatch, getState) => {
   // 2 - All tokens list
   // 3 - Etherscan token transfer transactions
   if (NetworkTypes.mainnet === network) {
-    const newMainnetAssets = await findAssetsToWatch(
+    const newMainnetAssets = (await findAssetsToWatch(
       accountAddress,
       latestTxBlockNumber,
       dispatch,
       coingeckoIds
-    );
+    )) as FallbackExplorerState['mainnetAssets'];
 
     await dispatch({
       payload: {
@@ -496,7 +760,13 @@ export const fallbackExplorerInit = () => async (dispatch, getState) => {
   dispatch(fetchOnchainBalances({ keepPolling: true, withPrices: true }));
 };
 
-export const fallbackExplorerClearState = () => (dispatch, getState) => {
+/**
+ * Clears the `fallbackExplorer` state.
+ */
+export const fallbackExplorerClearState = () => (
+  dispatch: Dispatch<FallbackExplorerClearStateAction>,
+  getState: AppGetState
+) => {
   const {
     fallbackExplorerBalancesHandle,
     fallbackExplorerAssetsHandle,
@@ -509,14 +779,17 @@ export const fallbackExplorerClearState = () => (dispatch, getState) => {
 };
 
 // -- Reducer ----------------------------------------- //
-const INITIAL_STATE = {
+const INITIAL_STATE: FallbackExplorerState = {
   fallbackExplorerAssetsHandle: null,
   fallbackExplorerBalancesHandle: null,
   latestTxBlockNumber: null,
   mainnetAssets: {},
 };
 
-export default (state = INITIAL_STATE, action) => {
+export default (
+  state: FallbackExplorerState = INITIAL_STATE,
+  action: FallbackExplorerAction
+): FallbackExplorerState => {
   switch (action.type) {
     case FALLBACK_EXPLORER_SET_ASSETS:
       return {

@@ -20,7 +20,7 @@ interface ZerionAssetInfo {
   asset: ZerionAsset;
 }
 
-interface ZerionAssetInfoResponse {
+export interface ZerionAssetInfoResponse {
   meta: {
     order_by: {
       'relative_changes.1d': string;

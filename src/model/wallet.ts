@@ -49,13 +49,15 @@ import {
 } from '@rainbow-me/handlers/web3';
 import { createSignature } from '@rainbow-me/helpers/signingWallet';
 import showWalletErrorAlert from '@rainbow-me/helpers/support';
-import WalletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
+import { WalletLoadingStates } from '@rainbow-me/helpers/walletLoadingStates';
 import { EthereumWalletType } from '@rainbow-me/helpers/walletTypes';
 import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
 import store from '@rainbow-me/redux/store';
 import { setIsWalletLoading } from '@rainbow-me/redux/wallets';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
+
+export { oldSeedPhraseMigratedKey };
 
 const encryptor = new AesEncryptor();
 
@@ -124,7 +126,7 @@ export interface RainbowAccount {
   avatar: null | string;
   color: number;
   visible: boolean;
-  image: string | null;
+  image?: string | null;
 }
 
 export interface RainbowWallet {
@@ -135,10 +137,11 @@ export interface RainbowWallet {
   name: string;
   primary: boolean;
   type: EthereumWalletType;
-  backedUp: boolean;
-  backupFile?: string;
+  backedUp?: boolean;
+  backupFile?: string | null;
   backupDate?: string;
   backupType?: string;
+  damaged?: boolean;
 }
 
 export interface AllRainbowWallets {

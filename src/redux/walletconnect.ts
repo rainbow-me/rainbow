@@ -14,8 +14,13 @@ import {
   values,
 } from 'lodash';
 import { Alert, AppState, InteractionManager, Linking } from 'react-native';
-import { IS_TESTING } from 'react-native-dotenv';
+import {
+  // @ts-ignore
+  IS_TESTING,
+} from 'react-native-dotenv';
 import Minimizer from 'react-native-minimizer';
+import { Dispatch } from 'redux';
+import { ThunkDispatch } from 'redux-thunk';
 import URL, { qs } from 'url-parse';
 import {
   getAllValidWalletConnectSessions,
@@ -28,7 +33,8 @@ import WalletTypes from '../helpers/walletTypes';
 import { getFCMToken } from '../model/firebase';
 import { Navigation } from '../navigation';
 import { isSigningMethod } from '../utils/signingMethods';
-import { addRequestToApprove } from './requests';
+import { addRequestToApprove, RequestData } from './requests';
+import { AppGetState, AppState as StoreAppState } from './store';
 import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
 import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
@@ -41,17 +47,127 @@ import logger from 'logger';
 // -- Variables --------------------------------------- //
 let showRedirectSheetThreshold = 300;
 
+// -- Types --------------------------------------- //
+
+/**
+ * Represents the state of the `walletconnect` reducer.
+ */
+interface WalletconnectState {
+  /**
+   * Whether or not the connector is currently pending redirection.
+   */
+  pendingRedirect: boolean;
+
+  /**
+   * An object mapping peer IDs to `WalletConnect` instances for pending requests.
+   */
+  pendingRequests: { [key: string]: WalletConnect };
+
+  /**
+   * An object mapping peer IDs to `WalletConnect` instances for approves
+   * requests. Connectors are moved here after being removed from
+   * `pendingRequests`.
+   */
+  walletConnectors: { [key: string]: WalletConnect };
+}
+
+/**
+ * An action for the `walletconnect` reducer.
+ */
+type WalletconnectAction =
+  | WalletconnectUpdateRequestsAction
+  | WalletconnectUpdateConnectorsAction
+  | WalletconnectClearStateAction
+  | WalletconnectSetPendingRedirectAction
+  | WalletconnectRemovePendingRedirectAction;
+
+/**
+ * An action that updates `pendingRequests` for this reducer.
+ */
+interface WalletconnectUpdateRequestsAction {
+  type: typeof WALLETCONNECT_UPDATE_REQUESTS;
+  payload: WalletconnectState['pendingRequests'];
+}
+
+/**
+ * An action that updates `walletConnectors` for this reducer.
+ */
+interface WalletconnectUpdateConnectorsAction {
+  type: typeof WALLETCONNECT_UPDATE_CONNECTORS;
+  payload: WalletconnectState['walletConnectors'];
+}
+
+/**
+ * An action that clears the `walletconnect` reducer's state.
+ */
+interface WalletconnectClearStateAction {
+  type: typeof WALLETCONNECT_CLEAR_STATE;
+}
+
+/**
+ * An action that sets `pendingRedirect` to true.
+ */
+interface WalletconnectSetPendingRedirectAction {
+  type: typeof WALLETCONNECT_SET_PENDING_REDIRECT;
+}
+
+/**
+ * An action that sets `pendingRedirect` to false.
+ */
+interface WalletconnectRemovePendingRedirectAction {
+  type: typeof WALLETCONNECT_REMOVE_PENDING_REDIRECT;
+}
+
+/**
+ * Represents a WalletConnect result passed to a callback function.
+ */
+type WalletconnectResultType =
+  | 'timedOut'
+  | 'sign'
+  | 'transaction'
+  | 'sign-canceled'
+  | 'transaction-canceled'
+  | 'connect'
+  | 'reject';
+
+/**
+ * Route parameters sent to a WalletConnect approval sheet.
+ */
+interface WalletconnectApprovalSheetRouteParams {
+  callback: (
+    approved: boolean,
+    chainId: number,
+    accountAddress: string,
+    peerId: RequestData['peerId'],
+    dappScheme: RequestData['dappScheme'],
+    dappName: RequestData['dappName'],
+    dappUrl: RequestData['dappUrl']
+  ) => Promise<unknown>;
+  receivedTimestamp: number;
+  meta?: {
+    chainId: number;
+  } & Pick<
+    RequestData,
+    'dappName' | 'dappScheme' | 'dappUrl' | 'imageUrl' | 'peerId'
+  >;
+  timeout?: ReturnType<typeof setTimeout> | null;
+  timedOut?: boolean;
+}
+
+/**
+ * A callback for a WalletConnect request.
+ */
+type WalletconnectRequestCallback = (
+  type: WalletconnectResultType,
+  scheme?: string | null
+) => unknown;
+
 // -- Constants --------------------------------------- //
 const BIOMETRICS_ANIMATION_DELAY = 569;
-const WALLETCONNECT_ADD_REQUEST = 'walletconnect/WALLETCONNECT_ADD_REQUEST';
-const WALLETCONNECT_REMOVE_REQUEST =
-  'walletconnect/WALLETCONNECT_REMOVE_REQUEST';
 
-const WALLETCONNECT_ADD_SESSION = 'walletconnect/WALLETCONNECT_ADD_SESSION';
-const WALLETCONNECT_REMOVE_SESSION =
-  'walletconnect/WALLETCONNECT_REMOVE_SESSION';
+const WALLETCONNECT_UPDATE_REQUESTS =
+  'walletconnect/WALLETCONNECT_UPDATE_REQUESTS';
 
-const WALLETCONNECT_INIT_SESSIONS = 'walletconnect/WALLETCONNECT_INIT_SESSIONS';
 const WALLETCONNECT_UPDATE_CONNECTORS =
   'walletconnect/WALLETCONNECT_UPDATE_CONNECTORS';
 
@@ -63,6 +179,12 @@ const WALLETCONNECT_REMOVE_PENDING_REDIRECT =
   'walletconnect/WALLETCONNECT_REMOVE_PENDING_REDIRECT';
 
 // -- Actions ---------------------------------------- //
+
+/**
+ * Loads options for a new WalletConnect instance.
+ *
+ * @returns The options.
+ */
 const getNativeOptions = async () => {
   const language = 'en'; // TODO use lang from settings
   let token = null;
@@ -97,15 +219,29 @@ const getNativeOptions = async () => {
   return nativeOptions;
 };
 
-export const walletConnectSetPendingRedirect = () => dispatch => {
+/**
+ * Updates the state to mark as pending redirection.
+ */
+export const walletConnectSetPendingRedirect = () => (
+  dispatch: Dispatch<WalletconnectSetPendingRedirectAction>
+) => {
   dispatch({
     type: WALLETCONNECT_SET_PENDING_REDIRECT,
   });
 };
+
+/**
+ * Updaets the state to disable a pending redirect and either redirect or
+ * remove the pending connector.
+ *
+ * @param type The result type to use. This determines the action taken if
+ * a scheme is not specified.
+ * @param scheme The scheme to open, if specified.
+ */
 export const walletConnectRemovePendingRedirect = (
-  type,
-  scheme
-) => dispatch => {
+  type: WalletconnectResultType,
+  scheme?: string | null
+) => (dispatch: Dispatch<WalletconnectRemovePendingRedirectAction>) => {
   dispatch({
     type: WALLETCONNECT_REMOVE_PENDING_REDIRECT,
   });
@@ -141,13 +277,23 @@ export const walletConnectRemovePendingRedirect = (
   }
 };
 
-export const walletConnectOnSessionRequest = (uri, callback) => async (
-  dispatch,
-  getState
+/**
+ * Handles an incoming WalletConnect session request and updates state
+ * accordingly.
+ *
+ * @param uri The WalletConnect URI.
+ * @param callback The callback function to use.
+ */
+export const walletConnectOnSessionRequest = (
+  uri: string,
+  callback?: WalletconnectRequestCallback
+) => async (
+  dispatch: ThunkDispatch<StoreAppState, unknown, never>,
+  getState: AppGetState
 ) => {
-  let timeout = null;
+  let timeout: ReturnType<typeof setTimeout> | null = null;
   getState().appState;
-  let walletConnector = null;
+  let walletConnector: WalletConnect | null = null;
   const receivedTimestamp = Date.now();
   try {
     const { clientMeta, push } = await getNativeOptions();
@@ -167,10 +313,10 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
       }
 
       walletConnector = new WalletConnect({ clientMeta, uri }, push);
-      let meta = null;
+      let meta: WalletconnectApprovalSheetRouteParams['meta'] | null = null;
       let navigated = false;
       let timedOut = false;
-      let routeParams = {
+      let routeParams: WalletconnectApprovalSheetRouteParams = {
         callback: async (
           approved,
           chainId,
@@ -181,7 +327,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
           dappUrl
         ) => {
           if (approved) {
-            dispatch(setPendingRequest(peerId, walletConnector));
+            dispatch(setPendingRequest(peerId, walletConnector!));
             dispatch(
               walletConnectApproveSession(
                 peerId,
@@ -196,7 +342,9 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
               dappUrl,
             });
           } else if (!timedOut) {
-            await dispatch(walletConnectRejectSession(peerId, walletConnector));
+            await dispatch(
+              walletConnectRejectSession(peerId, walletConnector!)
+            );
             callback?.('reject', dappScheme);
             analytics.track('Rejected new WalletConnect session', {
               dappName,
@@ -205,6 +353,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
           } else {
             callback?.('timedOut', dappScheme);
             const url = new URL(uri);
+            // @ts-ignore
             const bridge = qs.parse(url?.query)?.bridge;
             analytics.track('New WalletConnect session time out', {
               bridge,
@@ -217,9 +366,10 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
       };
 
       walletConnector?.on('session_request', (error, payload) => {
-        clearTimeout(timeout);
+        clearTimeout(timeout!);
         if (error) {
           analytics.track('Error on wc session_request', {
+            // @ts-ignore
             error,
             payload,
           });
@@ -261,7 +411,8 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
         }
       });
 
-      let waitingFn = InteractionManager.runAfterInteractions;
+      let waitingFn: (callback: () => unknown, timeout: number) => unknown =
+        InteractionManager.runAfterInteractions;
       if (IS_TESTING === 'true') {
         waitingFn = setTimeout;
       }
@@ -297,8 +448,8 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
           routeParams
         );
       }, 2000);
-    } catch (error) {
-      clearTimeout(timeout);
+    } catch (error: any) {
+      clearTimeout(timeout!);
       logger.log('Exception during wc session_request', error);
       analytics.track('Exception on wc session_request', {
         error,
@@ -306,8 +457,8 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
       captureException(error);
       Alert.alert(lang.t('wallet.wallet_connect.error'));
     }
-  } catch (error) {
-    clearTimeout(timeout);
+  } catch (error: any) {
+    clearTimeout(timeout!);
     logger.log('FCM exception during wc session_request', error);
     analytics.track('FCM exception on wc session_request', {
       error,
@@ -317,11 +468,21 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
   }
 };
 
-const listenOnNewMessages = walletConnector => (dispatch, getState) => {
+/**
+ * Starts listening for requests on a given `WalletConnect` instance.
+ *
+ * @param walletConnector The `WalletConnect` instance to listen for requests
+ * on.
+ */
+const listenOnNewMessages = (walletConnector: WalletConnect) => (
+  dispatch: ThunkDispatch<StoreAppState, unknown, never>,
+  getState: AppGetState
+) => {
   walletConnector.on('call_request', async (error, payload) => {
     logger.log('WC Request!', error, payload);
     if (error) {
       analytics.track('Error on wc call_request', {
+        // @ts-ignore
         error,
         payload,
       });
@@ -341,6 +502,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
     ) {
       const { chainId } = payload.params[0];
       const currentNetwork = ethereumUtils.getNetworkFromChainId(
+        // @ts-expect-error "_chainId" is private.
         Number(walletConnector._chainId)
       );
       const supportedChains = [
@@ -356,7 +518,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
       if (supportedChains.includes(numericChainId)) {
         dispatch(walletConnectSetPendingRedirect());
         Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
-          callback: async approved => {
+          callback: async (approved: boolean) => {
             if (approved) {
               walletConnector.approveRequest({
                 id: requestId,
@@ -366,6 +528,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
               logger.log('Updating session for chainID', numericChainId);
               await walletConnector.updateSession({
                 accounts: [accountAddress],
+                // @ts-expect-error "numericChainId" is a string, not a number.
                 chainId: numericChainId,
               });
               dispatch(setWalletConnector(walletConnector));
@@ -376,6 +539,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
               analytics.track('Approved WalletConnect network switch', {
                 chainId,
                 dappName,
+                // @ts-ignore
                 dappUrl,
               });
               dispatch(walletConnectRemovePendingRedirect('connect'));
@@ -386,6 +550,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
               });
               analytics.track('Rejected new WalletConnect chain request', {
                 dappName,
+                // @ts-ignore
                 dappUrl,
               });
             }
@@ -425,9 +590,10 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
       return;
     } else {
       const { wallets } = getState().wallets;
+      // @ts-expect-error "_accounts" is private.
       const address = walletConnector._accounts?.[0];
-      const selectedWallet = findWalletWithAccount(wallets, address);
-      const isReadOnlyWallet = selectedWallet.type === WalletTypes.readOnly;
+      const selectedWallet = findWalletWithAccount(wallets!, address);
+      const isReadOnlyWallet = selectedWallet!.type === WalletTypes.readOnly;
       if (isReadOnlyWallet && !enableActionsOnReadOnlyWallet) {
         watchingAlert();
         walletConnector.rejectRequest({
@@ -457,12 +623,24 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
     if (error) {
       throw error;
     }
-    dispatch(walletConnectDisconnectAllByDappUrl(walletConnector.peerMeta.url));
+    dispatch(
+      walletConnectDisconnectAllByDappUrl(walletConnector.peerMeta!.url)
+    );
   });
   return walletConnector;
 };
 
-export const walletConnectLoadState = () => async (dispatch, getState) => {
+/**
+ * Begins listening to WalletConnect events on existing connections.
+ */
+export const walletConnectLoadState = () => async (
+  dispatch: ThunkDispatch<
+    StoreAppState,
+    unknown,
+    WalletconnectUpdateConnectorsAction
+  >,
+  getState: AppGetState
+) => {
   while (!getState().walletconnect.walletConnectors) {
     await delay(300);
   }
@@ -474,9 +652,12 @@ export const walletConnectLoadState = () => async (dispatch, getState) => {
 
     newWalletConnectors = mapValues(allSessions, session => {
       const connector = walletConnectors[session.peerId];
+      // @ts-expect-error "_transport" is private.
       const connectorConnected = connector?._transport.connected;
       if (!connectorConnected) {
+        // @ts-expect-error "_eventManager" is private.
         if (connector?._eventManager) {
+          // @ts-expect-error "_eventManager" is private.
           connector._eventManager = null;
         }
         const walletConnector = new WalletConnect(
@@ -489,6 +670,7 @@ export const walletConnectLoadState = () => async (dispatch, getState) => {
     });
   } catch (error) {
     analytics.track('Error on walletConnectLoadState', {
+      // @ts-ignore
       error,
     });
     logger.log('Error on wc walletConnectLoadState', error);
@@ -498,14 +680,23 @@ export const walletConnectLoadState = () => async (dispatch, getState) => {
   if (!isEmpty(newWalletConnectors)) {
     dispatch({
       payload: newWalletConnectors,
-      type: WALLETCONNECT_INIT_SESSIONS,
+      type: WALLETCONNECT_UPDATE_CONNECTORS,
     });
   }
 };
 
-export const setPendingRequest = (peerId, walletConnector) => (
-  dispatch,
-  getState
+/**
+ * Updates the pending requests to include a new connector.
+ *
+ * @param peerId The peer ID for the pending request.
+ * @param walletConnector The `WalletConnect` instance for the pending request.
+ */
+export const setPendingRequest = (
+  peerId: string,
+  walletConnector: WalletConnect
+) => (
+  dispatch: Dispatch<WalletconnectUpdateRequestsAction>,
+  getState: AppGetState
 ) => {
   const { pendingRequests } = getState().walletconnect;
   const updatedPendingRequests = {
@@ -514,28 +705,55 @@ export const setPendingRequest = (peerId, walletConnector) => (
   };
   dispatch({
     payload: updatedPendingRequests,
-    type: WALLETCONNECT_ADD_REQUEST,
+    type: WALLETCONNECT_UPDATE_REQUESTS,
   });
 };
 
-export const getPendingRequest = peerId => (dispatch, getState) => {
+/**
+ * Gets an existing pending request for a given peer ID.
+ *
+ * @param peerId The peer ID for the pending request.
+ * @returns Within a dispatch, returns the pending request's `WalletConnector`,
+ * or undefined.
+ */
+export const getPendingRequest = (peerId: string) => (
+  _: Dispatch,
+  getState: AppGetState
+) => {
   const { pendingRequests } = getState().walletconnect;
   return pendingRequests[peerId];
 };
 
-export const removePendingRequest = peerId => (dispatch, getState) => {
+/**
+ * Removes a pending request from state given a peer ID.
+ * @param peerId The peer ID for the pending request to remove.
+ */
+export const removePendingRequest = (peerId: string) => (
+  dispatch: Dispatch<WalletconnectUpdateRequestsAction>,
+  getState: AppGetState
+) => {
   const { pendingRequests } = getState().walletconnect;
   const updatedPendingRequests = pendingRequests;
   if (updatedPendingRequests[peerId]) {
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     delete updatedPendingRequests[peerId];
   }
   dispatch({
     payload: updatedPendingRequests,
-    type: WALLETCONNECT_REMOVE_REQUEST,
+    type: WALLETCONNECT_UPDATE_REQUESTS,
   });
 };
 
-export const setWalletConnector = walletConnector => (dispatch, getState) => {
+/**
+ * Updates the state's `walletConnectors` to include a new instance based on
+ * its `peerId`.
+ *
+ * @param walletConnector The new `WalletConnect` instance.
+ */
+export const setWalletConnector = (walletConnector: WalletConnect) => (
+  dispatch: Dispatch<WalletconnectUpdateConnectorsAction>,
+  getState: AppGetState
+) => {
   const { walletConnectors } = getState().walletconnect;
   const updatedWalletConnectors = {
     ...walletConnectors,
@@ -543,33 +761,64 @@ export const setWalletConnector = walletConnector => (dispatch, getState) => {
   };
   dispatch({
     payload: updatedWalletConnectors,
-    type: WALLETCONNECT_ADD_SESSION,
+    type: WALLETCONNECT_UPDATE_CONNECTORS,
   });
 };
 
-export const getWalletConnector = peerId => (dispatch, getState) => {
+/**
+ * Gets a `WalletConnect` instance from `walletConnectors` in state based on a
+ * peer ID.
+ *
+ * @param peerId The peer ID for the `WalletConnect` instance.
+ * @returns Within a dispatch, the `WalletConnect` instance.
+ */
+export const getWalletConnector = (peerId: string) => (
+  _: Dispatch,
+  getState: AppGetState
+) => {
   const { walletConnectors } = getState().walletconnect;
   const walletConnector = walletConnectors[peerId];
   return walletConnector;
 };
 
-export const removeWalletConnector = peerId => (dispatch, getState) => {
+/**
+ * Removes a `WalletConnect` instance from the state's `walletConnectors` based
+ * on its peer ID.
+ *
+ * @param peerId The peer ID of the `WalletConnect` instance to remove.
+ */
+export const removeWalletConnector = (peerId: string) => (
+  dispatch: Dispatch<WalletconnectUpdateConnectorsAction>,
+  getState: AppGetState
+) => {
   const { walletConnectors } = getState().walletconnect;
   const updatedWalletConnectors = walletConnectors;
   if (updatedWalletConnectors[peerId]) {
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     delete updatedWalletConnectors[peerId];
   }
   dispatch({
     payload: updatedWalletConnectors,
-    type: WALLETCONNECT_REMOVE_SESSION,
+    type: WALLETCONNECT_UPDATE_CONNECTORS,
   });
 };
 
+/**
+ * Updates the account address and chain ID for all connectors that match
+ * a given URL and updates state accordingly.
+ *
+ * @param dappUrl The URL to filter by.
+ * @param accountAddress The account address to use.
+ * @param chainId The chain ID to use.
+ */
 export const walletConnectUpdateSessionConnectorByDappUrl = (
-  dappUrl,
-  accountAddress,
-  chainId
-) => (dispatch, getState) => {
+  dappUrl: RequestData['dappUrl'],
+  accountAddress: string,
+  chainId: number
+) => (
+  dispatch: Dispatch<WalletconnectUpdateConnectorsAction>,
+  getState: AppGetState
+) => {
   const { walletConnectors } = getState().walletconnect;
   const connectors = pickBy(walletConnectors, connector => {
     return connector?.peerMeta?.url === dappUrl;
@@ -588,13 +837,22 @@ export const walletConnectUpdateSessionConnectorByDappUrl = (
   });
 };
 
+/**
+ * Approves a WalletConnect session and updates state accordingly.
+ *
+ * @param peerId The peer ID for the request.
+ * @param callback The callback to use upon connection.
+ * @param dappScheme The scheme to pass to the callback.
+ * @param chainId The chain ID to use in the approval.
+ * @param accountAddress The account address to use in the approval.
+ */
 export const walletConnectApproveSession = (
-  peerId,
-  callback,
-  dappScheme,
-  chainId,
-  accountAddress
-) => dispatch => {
+  peerId: string,
+  callback: WalletconnectRequestCallback | undefined,
+  dappScheme: RequestData['dappScheme'],
+  chainId: number,
+  accountAddress: string
+) => (dispatch: ThunkDispatch<StoreAppState, unknown, never>) => {
   const walletConnector = dispatch(getPendingRequest(peerId));
   walletConnector.approveSession({
     accounts: [accountAddress],
@@ -614,17 +872,29 @@ export const walletConnectApproveSession = (
   }
 };
 
+/**
+ * Rejects a WalletConnect session and updates state accordingly.
+ *
+ * @param peerId The peer ID for the request to reject.
+ * @param walletConnector The `WalletConnect` instance to reject.
+ */
 export const walletConnectRejectSession = (
-  peerId,
-  walletConnector
-) => dispatch => {
+  peerId: string,
+  walletConnector: WalletConnect
+) => (dispatch: ThunkDispatch<StoreAppState, unknown, never>) => {
   walletConnector.rejectSession();
   dispatch(removePendingRequest(peerId));
 };
 
-export const walletConnectDisconnectAllByDappUrl = dappUrl => async (
-  dispatch,
-  getState
+/**
+ * Removes all current WalletConnect sessions matching a given URL and
+ * updates state to remove instances from `walletConnectors` as necessary.
+ *
+ * @param dappUrl The URL to filter by.
+ */
+export const walletConnectDisconnectAllByDappUrl = (dappUrl: string) => async (
+  dispatch: Dispatch<WalletconnectUpdateConnectorsAction>,
+  getState: AppGetState
 ) => {
   const { walletConnectors } = getState().walletconnect;
   const matchingWalletConnectors = values(
@@ -637,7 +907,7 @@ export const walletConnectDisconnectAllByDappUrl = dappUrl => async (
     const peerIds = values(
       mapValues(
         matchingWalletConnectors,
-        walletConnector => walletConnector.peerId
+        (walletConnector: WalletConnect) => walletConnector.peerId
       )
     );
     await removeWalletConnectSessions(peerIds);
@@ -647,17 +917,25 @@ export const walletConnectDisconnectAllByDappUrl = dappUrl => async (
         walletConnectors,
         connector => connector?.peerMeta?.url === dappUrl
       ),
-      type: WALLETCONNECT_REMOVE_SESSION,
+      type: WALLETCONNECT_UPDATE_CONNECTORS,
     });
   } catch (error) {
     Alert.alert('Failed to disconnect all WalletConnect sessions');
   }
 };
 
-export const walletConnectSendStatus = (peerId, requestId, response) => async (
-  dispatch,
-  getState
-) => {
+/**
+ * Responds to a `WalletConnect` request.
+ *
+ * @param peerId The peer ID of the session to respond to.
+ * @param requestId The request ID to respond to.
+ * @param response The response to send.
+ */
+export const walletConnectSendStatus = (
+  peerId: string,
+  requestId: number,
+  response: { result?: any; error?: any }
+) => async (_: Dispatch, getState: AppGetState) => {
   const walletConnector = getState().walletconnect.walletConnectors[peerId];
   if (walletConnector) {
     const { result, error } = response;
@@ -681,24 +959,19 @@ export const walletConnectSendStatus = (peerId, requestId, response) => async (
 };
 
 // -- Reducer ----------------------------------------- //
-const INITIAL_STATE = {
+const INITIAL_STATE: WalletconnectState = {
   pendingRedirect: false,
   pendingRequests: {},
   walletConnectors: {},
 };
 
-export default (state = INITIAL_STATE, action) => {
+export default (
+  state = INITIAL_STATE,
+  action: WalletconnectAction
+): WalletconnectState => {
   switch (action.type) {
-    case WALLETCONNECT_ADD_REQUEST:
+    case WALLETCONNECT_UPDATE_REQUESTS:
       return { ...state, pendingRequests: action.payload };
-    case WALLETCONNECT_REMOVE_REQUEST:
-      return { ...state, pendingRequests: action.payload };
-    case WALLETCONNECT_ADD_SESSION:
-      return { ...state, walletConnectors: action.payload };
-    case WALLETCONNECT_REMOVE_SESSION:
-      return { ...state, walletConnectors: action.payload };
-    case WALLETCONNECT_INIT_SESSIONS:
-      return { ...state, walletConnectors: action.payload };
     case WALLETCONNECT_UPDATE_CONNECTORS:
       return { ...state, walletConnectors: action.payload };
     case WALLETCONNECT_CLEAR_STATE:

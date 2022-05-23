@@ -168,7 +168,7 @@ const withRunExclusive = async <T>(callback: (...args: unknown[]) => T) =>
 /**
  * The state for the `data` reducer.
  */
-interface DataState {
+export interface DataState {
   /**
    * Parsed asset information for assets belonging to this account.
    */
@@ -435,7 +435,7 @@ interface ZerionPortfolio {
 /**
  * A message from the Zerion API indicating that assets were received.
  */
-interface AddressAssetsReceivedMessage {
+export interface AddressAssetsReceivedMessage {
   payload?: {
     assets?: {
       [id: string]: {
@@ -449,7 +449,7 @@ interface AddressAssetsReceivedMessage {
 /**
  * A message from the Zerion API indicating that portfolio data was received.
  */
-interface PortfolioReceivedMessage {
+export interface PortfolioReceivedMessage {
   payload?: {
     portfolio?: ZerionPortfolio;
   };
@@ -459,7 +459,7 @@ interface PortfolioReceivedMessage {
 /**
  * A message from the Zerion API indicating that transaction data was received.
  */
-interface TransactionsReceivedMessage {
+export interface TransactionsReceivedMessage {
   payload?: {
     transactions?: ZerionTransaction[];
   };
@@ -469,7 +469,7 @@ interface TransactionsReceivedMessage {
 /**
  * A message from the Zerion API indicating that transactions were removed.
  */
-interface TransactionsRemovedMessage {
+export interface TransactionsRemovedMessage {
   payload?: {
     transactions?: ZerionTransaction[];
   };
@@ -482,7 +482,7 @@ interface TransactionsRemovedMessage {
  * as the value type in the `prices` map, but this message type is also used
  * when manually invoking `assetPricesReceived` with fallback values.
  */
-interface AssetPricesReceivedMessage {
+export interface AssetPricesReceivedMessage {
   payload?: {
     prices?: {
       [id: string]: ZerionAsset | ZerionAssetFallback;
@@ -494,7 +494,7 @@ interface AssetPricesReceivedMessage {
 /**
  * A message from the Zerion API indicating that asset prices were changed.
  */
-interface AssetPricesChangedMessage {
+export interface AssetPricesChangedMessage {
   payload?: {
     prices?: ZerionAsset[];
   };
@@ -504,7 +504,7 @@ interface AssetPricesChangedMessage {
 /**
  * Metadata for a message from the Zerion API.
  */
-interface MessageMeta {
+export interface MessageMeta {
   address?: string;
   currency?: string;
   status?: string;
@@ -593,7 +593,7 @@ export const dataLoadState = () => async (
  * unsuccessful.
  */
 export const fetchAssetPricesWithCoingecko = async (
-  coingeckoIds: string[],
+  coingeckoIds: (string | undefined)[],
   nativeCurrency: string
 ): Promise<CoingeckoApiResponseWithLastUpdate | undefined> => {
   try {
