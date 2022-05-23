@@ -1,91 +1,30 @@
-import PropTypes from 'prop-types';
-import React, {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import Animated, {
-  Easing,
   interpolate,
-  interpolateColor,
-  useAnimatedProps,
   useAnimatedStyle,
-  useSharedValue,
-  withTiming,
 } from 'react-native-reanimated';
 import { magicMemo } from '../../utils';
-
 import { Centered } from '../layout';
-import { Text } from '../text';
+import { SheetSubtitleCyclerItem } from './SheetSubtitleCyclerItem';
+
 import { useInterval, useTimeout } from '@rainbow-me/hooks';
 import { position } from '@rainbow-me/styles';
 
-const AnimatedText = Animated.createAnimatedComponent(Text);
-
-const SheetSubtitleCyclerItem = ({ error, selected, subtitle }) => {
-  const easing = useMemo(() => Easing[error ? 'out' : 'in'](Easing.ease), [
-    error,
-  ]);
-  const opacity = useSharedValue(selected ? 1 : 0);
-  const colorProgress = useSharedValue(error ? 1 : 0);
-
-  useLayoutEffect(() => {
-    opacity.value = withTiming(selected ? 1 : 0, {
-      duration: 200,
-      easing,
-    });
-    colorProgress.value = withTiming(error ? 1 : 0, {
-      duration: error ? 50 : 200,
-    });
-  }, [selected, error, colorProgress, easing, opacity]);
-
-  const opacityStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-  }));
-
-  const { colors } = useTheme();
-
-  const colorProps = useAnimatedProps(() => {
-    const colorValue = interpolateColor(
-      colorProgress.value,
-      [0, 1],
-      [colors.blueGreyDark50, colors.brightRed]
-    );
-
-    return {
-      color: colorValue,
-    };
-  });
-
-  return (
-    <Animated.View {...position.coverAsObject} style={opacityStyle}>
-      <AnimatedText
-        align="center"
-        animatedProps={colorProps}
-        letterSpacing="uppercase"
-        size="smedium"
-        uppercase
-        weight="semibold"
-      >
-        {subtitle}
-      </AnimatedText>
-    </Animated.View>
-  );
-};
-
-const MemoizedSheetSubtitleCyclerItem = React.memo(SheetSubtitleCyclerItem);
+interface Props {
+  sharedValue: Animated.SharedValue<number>;
+  errorIndex: number;
+  interval?: number;
+  items: [string, string];
+}
 
 const SheetSubtitleCycler = ({
   sharedValue,
-  defaultSelectedIndex,
   errorIndex,
-  interval,
   items,
-  ...props
-}) => {
-  const [selectedIndex, setSelectedIndex] = useState(defaultSelectedIndex);
+  interval = 3000,
+}: Props) => {
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
   const [startInterval, stopInterval] = useInterval();
   const [startTimeout, stopTimeout] = useTimeout();
@@ -138,10 +77,10 @@ const SheetSubtitleCycler = ({
 
   return (
     <TouchableWithoutFeedback onPress={handlePress}>
-      <Centered width="100%" {...props}>
+      <Centered paddingVertical={14} width="100%">
         <Animated.View {...position.coverAsObject} style={scaleStyle}>
           {items.map((subtitle, index) => (
-            <MemoizedSheetSubtitleCyclerItem
+            <SheetSubtitleCyclerItem
               error={index === errorIndex}
               key={subtitle}
               selected={index === selectedIndex}
@@ -152,19 +91,6 @@ const SheetSubtitleCycler = ({
       </Centered>
     </TouchableWithoutFeedback>
   );
-};
-
-SheetSubtitleCycler.propTypes = {
-  defaultSelectedIndex: PropTypes.number,
-  errorIndex: PropTypes.number,
-  interval: PropTypes.number.isRequired,
-  items: PropTypes.arrayOf(PropTypes.string),
-  sharedValue: PropTypes.object,
-};
-
-SheetSubtitleCycler.defaultProps = {
-  defaultSelectedIndex: 0,
-  interval: 3000,
 };
 
 export default magicMemo(SheetSubtitleCycler, [

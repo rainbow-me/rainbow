@@ -3,7 +3,7 @@ import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, { Fragment, useCallback, useState } from 'react';
-import { useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
 import useWallets from '../../hooks/useWallets';
 import { Alert } from '../alerts';
 import { Centered, ColumnWithMargins } from '../layout';
@@ -28,6 +28,15 @@ const springConfig = {
   velocity: 0,
 };
 
+interface Props {
+  limitWeekly: number;
+  onClearError: () => void;
+  onLimitExceeded: (limit: 'weekly' | 'yearly') => void;
+  onPurchase: (params: { address: string; value: string }) => void;
+  onShake: () => void;
+  shakeAnim: Animated.SharedValue<number>;
+}
+
 const AddCashForm = ({
   limitWeekly,
   onClearError,
@@ -35,7 +44,7 @@ const AddCashForm = ({
   onPurchase,
   onShake,
   shakeAnim,
-}) => {
+}: Props) => {
   const isWalletEthZero = useIsWalletEthZero();
   const { params } = useRoute();
   const [paymentSheetVisible, setPaymentSheetVisible] = useState(false);
@@ -45,7 +54,8 @@ const AddCashForm = ({
 
   const initialCurrencyIndex = 1;
   const [currency, setCurrency] = useState(currencies[initialCurrencyIndex]);
-  const [value, setValue] = useState(
+  const [value, setValue] = useState<string>(
+    // @ts-expect-error not fully typed navigation
     params?.amount ? params?.amount?.toString() : ''
   );
 
@@ -55,12 +65,14 @@ const AddCashForm = ({
   const onSubmit = useCallback(async () => {
     if (paymentSheetVisible) return;
 
+    const numberValue = Number(value);
+
     async function handlePurchase() {
       try {
         analytics.track('Submitted Purchase', {
           category: 'add cash',
           label: currency,
-          value: Number(value),
+          value: numberValue,
         });
         setPaymentSheetVisible(true);
         await onPurchase({ address: currency, value });
@@ -73,7 +85,7 @@ const AddCashForm = ({
 
     if (isReadOnlyWallet) {
       const truncatedAddress = abbreviations.formatAddressForDisplay(
-        toChecksumAddress(accountAddress),
+        toChecksumAddress(accountAddress) ?? '',
         4,
         6
       );
@@ -87,7 +99,7 @@ const AddCashForm = ({
         }),
         title: lang.t('wallet.add_cash.watching_mode_confirm_title'),
       });
-    } else if (value <= 50) {
+    } else if (numberValue <= 50) {
       Alert({
         buttons: [
           { style: 'cancel', text: 'Cancel' },
@@ -119,8 +131,7 @@ const AddCashForm = ({
           !prevValue &&
           (newValue === '0' || newValue === '.' || newValue === 'back');
 
-        const isMaxDecimalCount =
-          prevValue && prevValue.includes('.') && newValue === '.';
+        const isMaxDecimalCount = prevValue?.includes('.') && newValue === '.';
 
         const isMaxDecimalLength =
           prevValue &&
