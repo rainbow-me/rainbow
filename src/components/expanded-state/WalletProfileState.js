@@ -175,7 +175,7 @@ export default function WalletProfileState({
   useEffect(() => {
     const getProfile = async () => {
       const profile = await getWebProfile(address);
-      setWebProfile(profile || {});
+      setWebProfile(profile ?? {});
     };
     getProfile();
   }, [address, getWebProfile]);
