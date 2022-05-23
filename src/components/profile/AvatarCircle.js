@@ -51,7 +51,7 @@ export default function AvatarCircle({
       ? typeof showcaseAccountColor === 'string'
         ? showcaseAccountColor
         : colors.avatarBackgrounds[showcaseAccountColor]
-      : colors.avatarBackgrounds[(!newProfile && profileAccountColor) || 10];
+      : colors.avatarBackgrounds[(!newProfile && profileAccountColor) ?? 10];
   const shadows = useMemo(
     () => ({
       default: [
