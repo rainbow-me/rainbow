@@ -1,6 +1,6 @@
 import { concat, isEmpty, isNil, keyBy, keys, toLower } from 'lodash';
 import io from 'socket.io-client';
-import { defaultConfig, L2_TXS } from '../config/experimental';
+import { getExperimetalFlag, L2_TXS } from '../config/experimental';
 import config from '../model/config';
 import { assetChartsReceived, DEFAULT_CHART_TYPE } from './charts';
 import {
@@ -538,7 +538,7 @@ const listenOnAddressMessages = socket => dispatch => {
   socket.on(messages.ADDRESS_TRANSACTIONS.RECEIVED, message => {
     // logger.log('mainnet txns received', message?.payload?.transactions);
 
-    if (defaultConfig[L2_TXS].value) {
+    if (getExperimetalFlag(L2_TXS)) {
       dispatch(emitL2TransactionHistoryRequest());
     }
     dispatch(transactionsReceived(message));
