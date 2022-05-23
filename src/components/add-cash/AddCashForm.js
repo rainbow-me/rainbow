@@ -3,10 +3,9 @@ import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, { Fragment, useCallback, useState } from 'react';
-import { Clock } from 'react-native-reanimated';
+import { useSharedValue, withSpring } from 'react-native-reanimated';
 import useWallets from '../../hooks/useWallets';
 import { Alert } from '../alerts';
-import { runSpring } from '../animations';
 import { Centered, ColumnWithMargins } from '../layout';
 import { Numpad, NumpadValue } from '../numpad';
 import AddCashFooter from './AddCashFooter';
@@ -23,6 +22,11 @@ import { abbreviations } from '@rainbow-me/utils';
 
 const currencies = [DAI_ADDRESS, ETH_ADDRESS];
 const minimumPurchaseAmountUSD = 1;
+const springConfig = {
+  damping: 40,
+  stiffness: 400,
+  velocity: 0,
+};
 
 const AddCashForm = ({
   limitWeekly,
@@ -37,7 +41,7 @@ const AddCashForm = ({
   const [paymentSheetVisible, setPaymentSheetVisible] = useState(false);
 
   const { isNarrowPhone, isSmallPhone, isTallPhone } = useDimensions();
-  const [scaleAnim, setScaleAnim] = useState(1);
+  const scale = useSharedValue(1);
 
   const initialCurrencyIndex = 1;
   const [currency, setCurrency] = useState(currencies[initialCurrencyIndex]);
@@ -50,6 +54,7 @@ const AddCashForm = ({
 
   const onSubmit = useCallback(async () => {
     if (paymentSheetVisible) return;
+
     async function handlePurchase() {
       try {
         analytics.track('Submitted Purchase', {
@@ -144,17 +149,12 @@ const AddCashForm = ({
 
         onClearError();
 
-        let prevPosition = 1;
-        if (prevValue && prevValue.length > 3) {
-          prevPosition = 1 - (prevValue.length - 3) * 0.075;
-        }
         if (nextValue.length > 3) {
-          const characterCount = 1 - (nextValue.length - 3) * 0.075;
-          setScaleAnim(
-            runSpring(new Clock(), prevPosition, characterCount, 0, 400, 40)
-          );
+          const characterCountFactor = 1 - (nextValue.length - 3) * 0.075;
+
+          scale.value = withSpring(characterCountFactor, springConfig);
         } else if (nextValue.length === 3) {
-          setScaleAnim(runSpring(new Clock(), prevPosition, 1, 0, 400, 40));
+          scale.value = withSpring(1, springConfig);
         }
 
         return nextValue;
@@ -164,7 +164,7 @@ const AddCashForm = ({
         category: 'add cash',
       });
     },
-    [limitWeekly, onClearError, onLimitExceeded, onShake]
+    [limitWeekly, onClearError, onLimitExceeded, onShake, scale]
   );
 
   const onCurrencyChange = useCallback(
@@ -202,7 +202,7 @@ const AddCashForm = ({
           style={padding.object(0, 24, isNarrowPhone ? 12 : 24)}
           width="100%"
         >
-          <NumpadValue scale={scaleAnim} translateX={shakeAnim} value={value} />
+          <NumpadValue scale={scale} translateX={shakeAnim} value={value} />
           <AddCashSelector
             currencies={currencies}
             initialCurrencyIndex={initialCurrencyIndex}

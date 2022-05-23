@@ -1,43 +1,69 @@
-import { isNil } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from 'react';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import Animated, { EasingNode } from 'react-native-reanimated';
-import { mixColor, useTimingTransition } from 'react-native-redash/src/v1';
+import Animated, {
+  Easing,
+  interpolate,
+  interpolateColor,
+  useAnimatedProps,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import { magicMemo } from '../../utils';
 
-import { interpolate } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import { useInterval, useTimeout, useTransformOrigin } from '@rainbow-me/hooks';
+import { useInterval, useTimeout } from '@rainbow-me/hooks';
 import { position } from '@rainbow-me/styles';
 
 const AnimatedText = Animated.createAnimatedComponent(Text);
 
 const SheetSubtitleCyclerItem = ({ error, selected, subtitle }) => {
-  const ease = EasingNode[error ? 'out' : 'in'](EasingNode.ease);
+  const easing = useMemo(() => Easing[error ? 'out' : 'in'](Easing.ease), [
+    error,
+  ]);
+  const opacity = useSharedValue(selected ? 1 : 0);
+  const colorProgress = useSharedValue(error ? 1 : 0);
 
-  const opacity = useTimingTransition(selected, {
-    duration: 200,
-    ease,
-  });
+  useLayoutEffect(() => {
+    opacity.value = withTiming(selected ? 1 : 0, {
+      duration: 200,
+      easing,
+    });
+    colorProgress.value = withTiming(error ? 1 : 0, {
+      duration: error ? 50 : 200,
+    });
+  }, [selected, error, colorProgress, easing, opacity]);
 
-  const textColorAnimation = useTimingTransition(error, {
-    duration: error ? 50 : 200,
-    ease,
-  });
+  const opacityStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+  }));
 
   const { colors } = useTheme();
 
+  const colorProps = useAnimatedProps(() => {
+    const colorValue = interpolateColor(
+      colorProgress.value,
+      [0, 1],
+      [colors.blueGreyDark50, colors.brightRed]
+    );
+
+    return {
+      color: colorValue,
+    };
+  });
+
   return (
-    <Animated.View {...position.coverAsObject} style={{ opacity }}>
+    <Animated.View {...position.coverAsObject} style={opacityStyle}>
       <AnimatedText
         align="center"
-        color={mixColor(
-          textColorAnimation,
-          colors.blueGreyDark50,
-          colors.brightRed
-        )}
+        animatedProps={colorProps}
         letterSpacing="uppercase"
         size="smedium"
         uppercase
@@ -52,7 +78,7 @@ const SheetSubtitleCyclerItem = ({ error, selected, subtitle }) => {
 const MemoizedSheetSubtitleCyclerItem = React.memo(SheetSubtitleCyclerItem);
 
 const SheetSubtitleCycler = ({
-  animatedValue,
+  sharedValue,
   defaultSelectedIndex,
   errorIndex,
   interval,
@@ -60,7 +86,6 @@ const SheetSubtitleCycler = ({
   ...props
 }) => {
   const [selectedIndex, setSelectedIndex] = useState(defaultSelectedIndex);
-  const { onLayout, withTransformOrigin } = useTransformOrigin('top');
 
   const [startInterval, stopInterval] = useInterval();
   const [startTimeout, stopTimeout] = useTimeout();
@@ -80,7 +105,7 @@ const SheetSubtitleCycler = ({
   );
 
   useEffect(() => {
-    if (!isNil(errorIndex)) {
+    if (errorIndex !== null) {
       clearTimers();
       setSelectedIndex(errorIndex);
     } else {
@@ -95,23 +120,26 @@ const SheetSubtitleCycler = ({
     startTimeout(() => startCycling(), interval);
   }, [clearTimers, cycleTextOnce, interval, startCycling, startTimeout]);
 
-  const scale = Animated.cond(
-    !isNil(errorIndex),
-    interpolate(animatedValue, {
-      inputRange: [-20, -10, 0, 10, 20],
-      outputRange: [1.025, 1.25, 1, 1.25, 1.025],
-    }),
-    1
-  );
+  const scaleStyle = useAnimatedStyle(() => {
+    const scale =
+      errorIndex !== null
+        ? interpolate(
+            sharedValue.value,
+            [-20, -10, 0, 10, 20],
+            [1.025, 1.25, 1, 1.25, 1.025],
+            'extend'
+          )
+        : 1;
+
+    return {
+      transform: [{ scale }],
+    };
+  });
 
   return (
     <TouchableWithoutFeedback onPress={handlePress}>
       <Centered width="100%" {...props}>
-        <Animated.View
-          {...position.coverAsObject}
-          onLayout={onLayout}
-          style={{ transform: withTransformOrigin({ scale }) }}
-        >
+        <Animated.View {...position.coverAsObject} style={scaleStyle}>
           {items.map((subtitle, index) => (
             <MemoizedSheetSubtitleCyclerItem
               error={index === errorIndex}
@@ -127,11 +155,11 @@ const SheetSubtitleCycler = ({
 };
 
 SheetSubtitleCycler.propTypes = {
-  animatedValue: PropTypes.object,
   defaultSelectedIndex: PropTypes.number,
   errorIndex: PropTypes.number,
   interval: PropTypes.number.isRequired,
   items: PropTypes.arrayOf(PropTypes.string),
+  sharedValue: PropTypes.object,
 };
 
 SheetSubtitleCycler.defaultProps = {
@@ -140,7 +168,7 @@ SheetSubtitleCycler.defaultProps = {
 };
 
 export default magicMemo(SheetSubtitleCycler, [
-  'animatedValue',
+  'sharedValue',
   'errorIndex',
   'interval',
   'items',

@@ -109,11 +109,11 @@ export default function AddCashSheet() {
             <SheetTitle>{lang.t('button.add_cash')}</SheetTitle>
             {!isPaymentComplete && (
               <SheetSubtitleCycler
-                animatedValue={errorAnimation}
                 errorIndex={errorIndex}
                 interval={SubtitleInterval}
                 items={Object.values(cashLimits)}
                 paddingVertical={14}
+                sharedValue={errorAnimation}
               />
             )}
           </ColumnWithMargins>
