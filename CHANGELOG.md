@@ -12,6 +12,45 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.6.11](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.11)
+
+### Changed
+* separate pending transactions
+* i18n wrap up
+* update animations
+* sentry performance setup
+
+## [1.6.10](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.10)
+### Added
+* Fedora support
+
+### Changed
+* Image handling fixes
+* Blank charts fix
+* Fix disconnecting messages on Android
+
+## [1.6.9](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.9)
+### Added
+* Codeowners file
+
+### Changed
+* Fix zoomable wrapper issues
+* Bug fixes and improvements
+
+## [1.6.8](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.8)
+* Null Image handling
+* Sorted Connected Dapps
+* Zoomable Wrapper Fixes
+* Assets Address Check
+
+## [1.6.7](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.7)
+### Changed
+* Fix Testnet Support
+* Currency Selection List & Favorites Fixes
+* Small Phone tweaks
+* Android ENV fixes
+* Updated Android Icons 
+
 ## [1.6.6](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.6)
 ### Changed
 * Uniswap tokens / search to backend 

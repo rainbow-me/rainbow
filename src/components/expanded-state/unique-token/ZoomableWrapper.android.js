@@ -66,14 +66,15 @@ const MAX_IMAGE_SCALE = 3;
 const MIN_IMAGE_SCALE = 1;
 const THRESHOLD = 250;
 
-const disableAnimations = false;
-
 export const ZoomableWrapper = ({
   animationProgress: givenAnimationProgress,
   children,
   horizontalPadding,
   aspectRatio,
   borderRadius,
+  disableAnimations,
+  onZoomIn,
+  onZoomOut,
   yDisplacement: givenYDisplacement,
 }) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -122,8 +123,10 @@ export const ZoomableWrapper = ({
   useEffect(() => {
     if (isZoomed) {
       StatusBar.setHidden(true);
+      onZoomIn?.();
     } else {
       StatusBar.setHidden(false);
+      onZoomOut?.();
     }
   }, [isZoomed]);
 

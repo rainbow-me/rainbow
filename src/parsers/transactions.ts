@@ -1,7 +1,6 @@
 import {
   compact,
   concat,
-  filter,
   find,
   findIndex,
   flatten,
@@ -12,7 +11,6 @@ import {
   partition,
   reverse,
   slice,
-  startsWith,
   toLower,
   toUpper,
   uniqBy,
@@ -96,21 +94,9 @@ export const parseTransactions = async (
   const newTransactions = await Promise.all(newTransactionPromises);
   const parsedNewTransactions = flatten(newTransactions);
 
-  const [pendingTransactions, remainingTransactions] = partition(
-    existingTransactions,
-    txn => txn.pending
-  );
-
-  const updatedPendingTransactions = dedupePendingTransactions(
-    accountAddress,
-    pendingTransactions,
-    parsedNewTransactions
-  );
-
   const updatedResults = concat(
-    updatedPendingTransactions,
     parsedNewTransactions,
-    remainingTransactions,
+    existingTransactions,
     allL2Transactions
   );
 
@@ -292,7 +278,8 @@ const overrideTradeRefund = (txn: ZerionTransaction): ZerionTransaction => {
 
 const parseTransactionWithEmptyChanges = async (
   txn: ZerionTransaction,
-  nativeCurrency: string
+  nativeCurrency: string,
+  network: Network
 ) => {
   const methodName = await getTransactionMethodName(txn);
   const updatedAsset = {
@@ -309,17 +296,19 @@ const parseTransactionWithEmptyChanges = async (
     priceUnit,
     nativeCurrency
   );
-
   return [
     {
       address: ETH_ADDRESS,
-      balance: convertRawAmountToBalance(valueUnit, updatedAsset),
+      balance: isL2Network(network)
+        ? { amount: '', display: '-' }
+        : convertRawAmountToBalance(valueUnit, updatedAsset),
       description: methodName || 'Signed',
       from: txn.address_from,
       hash: `${txn.hash}-${0}`,
-      minedAt: txn.mined_at,
+      minedAt: txn.mined_at || txn.signed_at!,
       name: methodName || 'Signed',
       native: nativeDisplay,
+      network,
       nonce: txn.nonce,
       pending: false,
       protocol: txn.protocol,
@@ -402,9 +391,12 @@ const parseTransaction = async (
           description,
           from: internalTxn.address_from ?? txn.address_from,
           hash: `${txn.hash}-${index}`,
-          minedAt: txn.mined_at,
+          minedAt: txn.mined_at || txn.signed_at!,
           name: updatedAsset.name,
-          native: nativeDisplay,
+          native: isL2Network(network)
+            ? { amount: '', display: '' }
+            : nativeDisplay,
+          network,
           nonce: txn.nonce,
           pending: false,
           protocol: txn.protocol,
@@ -420,38 +412,10 @@ const parseTransaction = async (
   }
   const parsedTransaction = await parseTransactionWithEmptyChanges(
     txn,
-    nativeCurrency
+    nativeCurrency,
+    network
   );
   return parsedTransaction;
-};
-
-export const dedupePendingTransactions = (
-  accountAddress: EthereumAddress,
-  pendingTransactions: RainbowTransaction[],
-  parsedTransactions: RainbowTransaction[]
-) => {
-  let updatedPendingTransactions = pendingTransactions;
-  if (pendingTransactions.length) {
-    updatedPendingTransactions = filter(
-      updatedPendingTransactions,
-      pendingTxn => {
-        const matchingElement = find(
-          parsedTransactions,
-          txn =>
-            (txn.hash &&
-              pendingTxn.hash &&
-              startsWith(toLower(txn.hash), toLower(pendingTxn.hash))) ||
-            (txn.from &&
-              txn.nonce &&
-              pendingTxn.nonce &&
-              toLower(txn.from) === toLower(accountAddress) &&
-              txn.nonce >= pendingTxn.nonce)
-        );
-        return !matchingElement;
-      }
-    );
-  }
-  return updatedPendingTransactions;
 };
 
 export const getTitle = ({

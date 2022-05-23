@@ -27,11 +27,7 @@ export interface UniqueAsset {
       symbol: string;
     };
   }[];
-  traits: {
-    trait_type: string;
-    value: string | number;
-    display_type: string;
-  }[];
+  traits: UniqueAssetTrait[];
   asset_contract: AssetContract;
   background: string | null;
   collection: {
@@ -52,12 +48,21 @@ export interface UniqueAsset {
   familyName: string | null | undefined;
   id: string;
   isSendable: boolean;
-  lastPrice: string | null;
+  lastPrice: number | null;
   lastPriceUsd: string | undefined | null;
   lastSale: UniqueAssetLastSale | undefined;
+  lastSalePaymentToken: string | undefined | null;
+  lowResUrl: string | null;
   type: AssetType;
   uniqueId: string;
   urlSuffixForAsset: string;
   isPoap?: boolean;
   network?: Network;
+}
+
+export interface UniqueAssetTrait {
+  trait_type: string;
+  value: string | number | null | undefined;
+  display_type: string;
+  max_value: string | number | null | undefined;
 }

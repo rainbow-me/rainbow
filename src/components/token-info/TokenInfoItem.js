@@ -87,7 +87,7 @@ export default function TokenInfoItem({
           <TokenInfoBalanceValue align={align} asset={asset} isNft={isNft} />
         ) : (
           <ButtonPressAnimation
-            enableHapticFeedback={onPress && enableHapticFeedback}
+            enableHapticFeedback={!!onPress && enableHapticFeedback}
             onPress={onPress}
             scaleTo={1}
           >

@@ -1,12 +1,14 @@
 import { MMKV } from 'react-native-mmkv';
 import { getAccountLocal, getKey, saveAccountLocal } from './common';
+import { STORAGE_IDS } from '@rainbow-me/model/mmkv';
 
 const accountAssetsDataVersion = '0.1.0';
 const assetPricesFromUniswapVersion = '0.1.0';
 const assetsVersion = '0.2.0';
+const pendingTransactionsVersion = '0.1.0';
 const purchaseTransactionsVersion = '0.2.0';
 const savingsVersion = '0.2.0';
-const transactionsVersion = '0.2.5';
+const transactionsVersion = '0.3.0';
 const uniqueTokensVersion = '0.2.1';
 
 const ACCOUNT_ASSETS_DATA = 'accountAssetsData';
@@ -14,6 +16,7 @@ const ACCOUNT_INFO = 'accountInfo';
 const ACCOUNT_EMPTY = 'accountEmpty';
 const ASSET_PRICES_FROM_UNISWAP = 'assetPricesFromUniswap';
 const ASSETS = 'assets';
+const PENDING_TRANSACTIONS = 'pendingTransactions';
 const PURCHASE_TRANSACTIONS = 'purchaseTransactions';
 const SAVINGS = 'savings';
 const SHOWCASE_TOKENS = 'showcaseTokens';
@@ -24,7 +27,7 @@ const HIDDEN_COINS = 'hiddenCoins';
 const WEB_DATA_ENABLED = 'webDataEnabled';
 
 const storage = new MMKV({
-  id: 'ACCOUNT',
+  id: STORAGE_IDS.ACCOUNT,
 });
 
 export const accountLocalKeys = [
@@ -192,6 +195,43 @@ export const savePurchaseTransactions = (
     accountAddress,
     network,
     purchaseTransactionsVersion
+  );
+
+/**
+ * @desc get transactions
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Object}
+ */
+export const getLocalPendingTransactions = (
+  accountAddress: any,
+  network: any
+) =>
+  getAccountLocal(
+    PENDING_TRANSACTIONS,
+    accountAddress,
+    network,
+    [],
+    pendingTransactionsVersion
+  );
+
+/**
+ * @desc save transactions
+ * @param  {String}   [address]
+ * @param  {Array}   [pendingTransactions]
+ * @param  {String}   [network]
+ */
+export const saveLocalPendingTransactions = (
+  transactions: any,
+  accountAddress: any,
+  network: any
+) =>
+  saveAccountLocal(
+    PENDING_TRANSACTIONS,
+    transactions,
+    accountAddress,
+    network,
+    pendingTransactionsVersion
   );
 
 /**

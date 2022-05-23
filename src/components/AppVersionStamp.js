@@ -23,8 +23,11 @@ const StampText = styled(Text).attrs(({ theme: { colors } }) => ({
   weight: 'bold',
 }))({});
 
+// On CI this will be modified if the app is in Fedora mode
+const FEDORA_BRANCH = '';
+
 export default function AppVersionStamp() {
-  const appVersion = useAppVersion();
+  const [appVersion, codePushVersion] = useAppVersion();
   const [numberOfTaps, setNumberOfTaps] = useState(0);
   const [startTimeout, stopTimeout] = useTimeout();
   const { navigate } = useNavigation();
@@ -41,10 +44,21 @@ export default function AppVersionStamp() {
     }
     startTimeout(() => setNumberOfTaps(0), 3000);
   }, [navigate, numberOfTaps, startTimeout, stopTimeout]);
+  const [showCodePushVersion, setShowCodePushVersion] = useState(false);
 
   return (
-    <StyledButton onPress={handleVersionPress}>
-      <StampText>{appVersion}</StampText>
+    <StyledButton
+      onLongPress={() => setShowCodePushVersion(true)}
+      onPress={handleVersionPress}
+      onPressOut={() => setTimeout(() => setShowCodePushVersion(false), 500)}
+    >
+      <StampText>
+        {FEDORA_BRANCH
+          ? FEDORA_BRANCH
+          : showCodePushVersion
+          ? `Update: ${codePushVersion}`
+          : appVersion}
+      </StampText>
     </StyledButton>
   );
 }

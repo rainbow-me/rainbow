@@ -1,6 +1,8 @@
+import path from 'path';
 import AsyncStorage from '@react-native-community/async-storage';
 import { captureException } from '@sentry/react-native';
 import { findKey, isNumber, keys, toLower, uniq } from 'lodash';
+import RNFS from 'react-native-fs';
 import { MMKV } from 'react-native-mmkv';
 import { removeLocal } from '../handlers/localstorage/common';
 import { IMAGE_METADATA } from '../handlers/localstorage/globalSettings';
@@ -10,8 +12,11 @@ import {
 } from '../handlers/localstorage/migrations';
 import WalletTypes from '../helpers/walletTypes';
 import store from '../redux/store';
-
 import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
+import {
+  RB_TOKEN_LIST_CACHE,
+  RB_TOKEN_LIST_ETAG,
+} from '../references/rainbow-token-list';
 import colors, { getRandomColor } from '../styles/colors';
 import {
   addressKey,
@@ -25,7 +30,6 @@ import {
 } from '../utils/keychainConstants';
 import {
   hasKey,
-  loadAllKeysOnly,
   loadString,
   publicAccessControlOptions,
   saveString,
@@ -527,7 +531,6 @@ export default async function runMigrations() {
    */
   const v13 = async () => {
     try {
-      const keys = await loadAllKeysOnly();
       const keysToMigrate = [
         analyticsUserIdentifier,
         allWalletsKey,
@@ -537,13 +540,17 @@ export default async function runMigrations() {
         signingWallet,
         signingWalletAddress,
       ];
-      // add existing signatures
+
+      // Add existing signatures
       // which look like'signature_0x...'
-      keys?.forEach(key => {
-        if (key.startsWith('signature_')) {
-          keysToMigrate.push(key);
+      const { wallets } = store.getState().wallets;
+      if (Object.keys(wallets).length > 0) {
+        for (let wallet of Object.values(wallets)) {
+          for (let account of (wallet as RainbowWallet).addresses) {
+            keysToMigrate.push(`signature_${account.address}`);
+          }
         }
-      });
+      }
 
       for (const key of keysToMigrate) {
         try {
@@ -576,12 +583,18 @@ export default async function runMigrations() {
     const { wallets } = store.getState().wallets;
     if (!wallets) return;
     for (let wallet of Object.values(wallets)) {
-      for (let address of (wallet as RainbowWallet).addresses) {
-        const hiddenCoins = await getHiddenCoins(address, network);
-        const pinnedCoins = await getPinnedCoins(address, network);
+      for (let account of (wallet as RainbowWallet).addresses) {
+        const hiddenCoins = await getHiddenCoins(account.address, network);
+        const pinnedCoins = await getPinnedCoins(account.address, network);
 
-        mmkv.set('pinned-coins-' + address, JSON.stringify(pinnedCoins));
-        mmkv.set('hidden-coins-' + address, JSON.stringify(hiddenCoins));
+        mmkv.set(
+          'pinned-coins-' + account.address,
+          JSON.stringify(pinnedCoins)
+        );
+        mmkv.set(
+          'hidden-coins-' + account.address,
+          JSON.stringify(hiddenCoins)
+        );
       }
     }
   };
@@ -597,6 +610,33 @@ export default async function runMigrations() {
   };
 
   migrations.push(v15);
+
+  /*
+   *************** Migration v16 ******************
+   Removes cached Rainbow token list from a cached json file
+   in the file system, since we now store fetched from the server files in MMKV now
+   */
+  const v16 = async () => {
+    try {
+      RNFS.unlink(
+        path.join(RNFS.CachesDirectoryPath, `${RB_TOKEN_LIST_CACHE}.json`)
+      ).catch(() => {
+        // we don't care if it fails
+      });
+
+      RNFS.unlink(
+        path.join(RNFS.CachesDirectoryPath, `${RB_TOKEN_LIST_ETAG}.json`)
+      ).catch(() => {
+        // we don't care if it fails
+      });
+    } catch (error: any) {
+      logger.sentry('Migration v16 failed: ', error);
+      const migrationError = new Error('Migration 16 failed');
+      captureException(migrationError);
+    }
+  };
+
+  migrations.push(v16);
 
   logger.sentry(
     `Migrations: ready to run migrations starting on number ${currentVersion}`

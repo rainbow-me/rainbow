@@ -69,6 +69,11 @@ interface WalletconnectState {
    * `pendingRequests`.
    */
   walletConnectors: { [key: string]: WalletConnect };
+
+  /**
+   * Currently active WalletConnect URIs.
+   */
+  walletConnectUris: string[];
 }
 
 /**
@@ -79,7 +84,8 @@ type WalletconnectAction =
   | WalletconnectUpdateConnectorsAction
   | WalletconnectClearStateAction
   | WalletconnectSetPendingRedirectAction
-  | WalletconnectRemovePendingRedirectAction;
+  | WalletconnectRemovePendingRedirectAction
+  | WalletconnectAddUriAction;
 
 /**
  * An action that updates `pendingRequests` for this reducer.
@@ -116,6 +122,14 @@ interface WalletconnectSetPendingRedirectAction {
  */
 interface WalletconnectRemovePendingRedirectAction {
   type: typeof WALLETCONNECT_REMOVE_PENDING_REDIRECT;
+}
+
+/**
+ * An action that updates `walletConnectUris` in state.
+ */
+interface WalletconnectAddUriAction {
+  payload: WalletconnectState['walletConnectUris'];
+  type: typeof WALLETCONNECT_ADD_URI;
 }
 
 /**
@@ -177,6 +191,7 @@ const WALLETCONNECT_SET_PENDING_REDIRECT =
   'walletconnect/WALLETCONNECT_SET_PENDING_REDIRECT';
 const WALLETCONNECT_REMOVE_PENDING_REDIRECT =
   'walletconnect/WALLETCONNECT_REMOVE_PENDING_REDIRECT';
+const WALLETCONNECT_ADD_URI = 'walletconnect/WALLETCONNECT_ADD_URI';
 
 // -- Actions ---------------------------------------- //
 
@@ -291,8 +306,14 @@ export const walletConnectOnSessionRequest = (
   dispatch: ThunkDispatch<StoreAppState, unknown, never>,
   getState: AppGetState
 ) => {
+  // branch and linking are triggering this twice
+  // also branch trigger this when the app is coming back from background
+  // so this is a way to handle this case without persisting anything
+  const { walletConnectUris } = getState().walletconnect;
+  if (walletConnectUris.includes(uri)) return;
+  dispatch(saveWalletConnectUri(uri));
+
   let timeout: ReturnType<typeof setTimeout> | null = null;
-  getState().appState;
   let walletConnector: WalletConnect | null = null;
   const receivedTimestamp = Date.now();
   try {
@@ -301,6 +322,7 @@ export const walletConnectOnSessionRequest = (
       // Don't initiate a new session if we have already established one using this walletconnect URI
       const allSessions = await getAllValidWalletConnectSessions();
       const wcUri = parseWalletConnectUri(uri);
+
       const alreadyConnected = Object.values(allSessions).some(session => {
         return (
           session.handshakeTopic === wcUri.handshakeTopic &&
@@ -313,7 +335,7 @@ export const walletConnectOnSessionRequest = (
       }
 
       walletConnector = new WalletConnect({ clientMeta, uri }, push);
-      let meta: WalletconnectApprovalSheetRouteParams['meta'] | null = null;
+      let meta: WalletconnectApprovalSheetRouteParams['meta'] | false = false;
       let navigated = false;
       let timedOut = false;
       let routeParams: WalletconnectApprovalSheetRouteParams = {
@@ -429,6 +451,7 @@ export const walletConnectOnSessionRequest = (
         // We need to add a timeout in case the bridge is down
         // to explain the user what's happening
         timeout = setTimeout(() => {
+          meta = android ? Navigation.getActiveRoute()?.params?.meta : meta;
           if (meta) return;
           timedOut = true;
           routeParams = { ...routeParams, timedOut };
@@ -439,6 +462,7 @@ export const walletConnectOnSessionRequest = (
         }, 20000);
 
         // If we have the meta, send it
+        meta = android ? Navigation.getActiveRoute()?.params?.meta : meta;
         if (meta) {
           routeParams = { ...routeParams, meta };
         }
@@ -920,7 +944,7 @@ export const walletConnectDisconnectAllByDappUrl = (dappUrl: string) => async (
       type: WALLETCONNECT_UPDATE_CONNECTORS,
     });
   } catch (error) {
-    Alert.alert('Failed to disconnect all WalletConnect sessions');
+    Alert.alert(lang.t('wallet.wallet_connect.failed_to_disconnect'));
   }
 };
 
@@ -949,13 +973,34 @@ export const walletConnectSendStatus = (
         });
       }
     } catch (error) {
-      Alert.alert('Failed to send request status to WalletConnect.');
+      Alert.alert(
+        lang.t('wallet.wallet_connect.failed_to_send_request_status')
+      );
     }
   } else {
     Alert.alert(
-      'WalletConnect session has expired while trying to send request status. Please reconnect.'
+      lang.t(
+        'wallet.wallet_connect.walletconnect_session_has_expired_while_trying_to_send'
+      )
     );
   }
+};
+
+/**
+ * Adds a new WalletConnect URI to state.
+ *
+ * @param uri The new URI.
+ */
+export const saveWalletConnectUri = (uri: string) => async (
+  dispatch: Dispatch<WalletconnectAddUriAction>,
+  getState: AppGetState
+) => {
+  const { walletConnectUris } = getState().walletconnect;
+  const newWalletConnectUris = [...walletConnectUris, uri];
+  dispatch({
+    payload: newWalletConnectUris,
+    type: WALLETCONNECT_ADD_URI,
+  });
 };
 
 // -- Reducer ----------------------------------------- //
@@ -963,6 +1008,7 @@ const INITIAL_STATE: WalletconnectState = {
   pendingRedirect: false,
   pendingRequests: {},
   walletConnectors: {},
+  walletConnectUris: [],
 };
 
 export default (
@@ -980,6 +1026,8 @@ export default (
       return { ...state, pendingRedirect: true };
     case WALLETCONNECT_REMOVE_PENDING_REDIRECT:
       return { ...state, pendingRedirect: false };
+    case WALLETCONNECT_ADD_URI:
+      return { ...state, walletConnectUris: action.payload };
     default:
       return state;
   }

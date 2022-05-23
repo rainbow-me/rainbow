@@ -31,7 +31,10 @@ import {
   privateKeyKey,
   seedPhraseKey,
 } from '../utils/keychainConstants';
-import { addressHashedColorIndex } from '../utils/profileUtils';
+import {
+  addressHashedColorIndex,
+  lookupAddressWithRetry,
+} from '../utils/profileUtils';
 import { settingsUpdateAccountAddress } from './settings';
 import { updateWebDataEnabled } from './showcaseTokens';
 import { AppGetState, AppState } from './store';
@@ -385,7 +388,10 @@ export const fetchWalletNames = () => async (
       const visibleAccounts = filter(wallet.addresses, 'visible');
       return map(visibleAccounts, async account => {
         try {
-          const ens = await web3Provider.lookupAddress(account.address);
+          const ens = await lookupAddressWithRetry(
+            web3Provider,
+            account.address
+          );
           if (ens && ens !== account.address) {
             updatedWalletNames[account.address] = ens;
           }

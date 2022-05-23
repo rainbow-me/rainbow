@@ -1,17 +1,24 @@
 import AsyncStorage from '@react-native-community/async-storage';
+import lang from 'i18n-js';
 import React, { useCallback, useContext } from 'react';
 import { Alert, ScrollView } from 'react-native';
+// eslint-disable-next-line import/default
+import codePush from 'react-native-code-push';
 import { HARDHAT_URL_ANDROID, HARDHAT_URL_IOS } from 'react-native-dotenv';
 import Restart from 'react-native-restart';
 import { useDispatch } from 'react-redux';
+import { defaultConfig } from '../../config/experimental';
+import useAppVersion from '../../hooks/useAppVersion';
 import { ListFooter, ListItem } from '../list';
 import { RadioListItem } from '../radio-list';
+import UserDevSection from './UserDevSection';
 import { deleteAllBackups } from '@rainbow-me/handlers/cloudBackup';
 import { web3SetHttpProvider } from '@rainbow-me/handlers/web3';
 import { RainbowContext } from '@rainbow-me/helpers/RainbowContext';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { useWallets } from '@rainbow-me/hooks';
 import { wipeKeychain } from '@rainbow-me/model/keychain';
+import { clearAllStorages } from '@rainbow-me/model/mmkv';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import { explorerInit } from '@rainbow-me/redux/explorer';
 import { clearImageMetadataCache } from '@rainbow-me/redux/imageMetadata';
@@ -49,6 +56,26 @@ const DevSection = () => {
     dispatch(explorerInit());
   }, [dispatch, navigate]);
 
+  const syncCodepush = useCallback(async () => {
+    const isUpdate = !!(await codePush.checkForUpdate());
+    if (!isUpdate) {
+      Alert.alert('No update');
+    } else {
+      // dismissing not to fuck up native nav structure
+      navigate(Routes.PROFILE_SCREEN);
+      Alert.alert('Installing update');
+
+      const result = await codePush.sync({
+        installMode: codePush.InstallMode.IMMEDIATE,
+      });
+
+      const resultString = Object.entries(codePush.syncStatus).find(
+        e => e[1] === result
+      )[0];
+      Alert.alert(resultString);
+    }
+  }, [navigate]);
+
   const checkAlert = useCallback(async () => {
     try {
       const request = await fetch(
@@ -56,9 +83,15 @@ const DevSection = () => {
       );
       if (android && request.status === 500) throw new Error('failed');
       await request.json();
-      Alert.alert('Status', 'NOT APPLIED');
+      Alert.alert(
+        lang.t('developer_settings.status'),
+        lang.t('developer_settings.not_applied')
+      );
     } catch (e) {
-      Alert.alert('Status', 'APPLIED');
+      Alert.alert(
+        lang.t('developer_settings.status'),
+        lang.t('developer_settings.applied')
+      );
     }
   }, []);
 
@@ -76,7 +109,7 @@ const DevSection = () => {
     // Delete all backups (debugging)
     await deleteAllBackups();
 
-    Alert.alert('Backups deleted succesfully');
+    Alert.alert(lang.t('developer_settings.backups_deleted_successfully'));
     Restart();
   };
 
@@ -86,40 +119,67 @@ const DevSection = () => {
     setErrorObj({ error: 'this throws render error' });
   };
 
+  const codePushVersion = useAppVersion()[1];
+
   return (
     <ScrollView testID="developer-settings-modal">
-      <ListItem label="💥 Clear async storage" onPress={AsyncStorage.clear} />
       <ListItem
-        label="📷️ Clear Image Metadata Cache"
+        label={`💥 ${lang.t('developer_settings.clear_async_storage')}`}
+        onPress={AsyncStorage.clear}
+      />
+      <ListItem
+        label={`💥 ${lang.t('developer_settings.clear_mmkv_storage')}`}
+        onPress={clearAllStorages}
+      />
+      <ListItem
+        label={`📷️ ${lang.t('developer_settings.clear_image_metadata_cache')}`}
         onPress={clearImageMetadataCache}
       />
       <ListItem
-        label="💣 Reset Keychain"
+        label={`💣 ${lang.t('developer_settings.reset_keychain')}`}
         onPress={wipeKeychain}
         testID="reset-keychain-section"
       />
-      <ListItem label="🔄 Restart app" onPress={() => Restart.Restart()} />
       <ListItem
-        label="💥 Crash app (render error)"
+        label={`🔄 ${lang.t('developer_settings.restart_app')}`}
+        onPress={() => Restart.Restart()}
+      />
+      <ListItem
+        label={`💥 ${lang.t('developer_settings.crash_app_render_error')}`}
         onPress={throwRenderError}
         testID="crash-app-section"
       />
       {errorObj}
-      <ListItem label="🗑️ Remove all backups" onPress={removeBackups} />
       <ListItem
-        label="🤷 Restore default experimental config"
+        label={`🗑️ ${lang.t('developer_settings.remove_all_backups')}`}
+        onPress={removeBackups}
+      />
+      <ListItem
+        label={`🤷 ${lang.t(
+          'developer_settings.restore_default_experimental_config'
+        )}`}
         onPress={() => AsyncStorage.removeItem('experimentalConfig')}
       />
       <ListItem
-        label="👷 Connect to hardhat"
+        label={`👷 ${lang.t('developer_settings.connect_to_hardhat')}`}
         onPress={connectToHardhat}
         testID="hardhat-section"
       />
-      <ListItem label="‍🏖️ Alert" onPress={checkAlert} testID="alert-section" />
-      <ListFooter />
-
+      <ListItem
+        label={`🏖️ ${lang.t('developer_settings.alert')}`}
+        onPress={checkAlert}
+        testID="alert-section"
+      />
+      <UserDevSection scrollEnabled={false} />
+      <ListItem
+        label={`‍⏩ ${lang.t('developer_settings.sync_codepush', {
+          codePushVersion: codePushVersion,
+        })}`}
+        onPress={syncCodepush}
+      />
       {Object.keys(config)
         .sort()
+        .filter(key => defaultConfig[key].settings)
         .map(key => (
           <RadioListItem
             key={key}
@@ -128,6 +188,7 @@ const DevSection = () => {
             selected={!!config[key]}
           />
         ))}
+      <ListFooter />
     </ScrollView>
   );
 };

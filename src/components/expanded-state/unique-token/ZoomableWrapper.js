@@ -75,6 +75,8 @@ export const ZoomableWrapper = ({
   aspectRatio,
   borderRadius,
   disableAnimations,
+  onZoomIn,
+  onZoomOut,
   yDisplacement: givenYDisplacement,
 }) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -123,10 +125,12 @@ export const ZoomableWrapper = ({
   useEffect(() => {
     if (isZoomed) {
       StatusBar.setHidden(true);
+      onZoomIn?.();
     } else {
       StatusBar.setHidden(false);
+      onZoomOut?.();
     }
-  }, [isZoomed]);
+  }, [isZoomed, onZoomIn, onZoomOut]);
 
   const fullSizeHeight = Math.min(deviceHeight, deviceWidth / aspectRatio);
   const fullSizeWidth = Math.min(deviceWidth, deviceHeight * aspectRatio);
@@ -172,7 +176,7 @@ export const ZoomableWrapper = ({
     ctx.prevTranslateX = 0;
     ctx.prevTranslateY = 0;
     // if zoom state was entered by pinching, adjust targetScale to account for new image dimensions
-    let targetScale = isZoomed
+    let targetScale = isZoomedValue.value
       ? Math.min(scale.value, MAX_IMAGE_SCALE)
       : Math.min(
           scale.value * (containerWidth / fullSizeWidth),
@@ -186,6 +190,7 @@ export const ZoomableWrapper = ({
       breakingScaleX = deviceWidth / containerWidth;
       breakingScaleY = deviceHeight / containerHeight;
     }
+    const zooming = fullSizeHeight / containerHeightValue.value;
 
     const maxDisplacementX =
       (deviceWidth * (Math.max(1, targetScale / breakingScaleX) - 1)) /

@@ -16,7 +16,7 @@
 #import "RNSplashScreen.h"
 #import <AVFoundation/AVFoundation.h>
 #import <mach/mach.h>
-
+#import <CodePush/CodePush.h>
 
 
 @interface RainbowSplashScreenManager : NSObject <RCTBridgeModule>
@@ -124,9 +124,9 @@ RCT_EXPORT_METHOD(hideAnimated) {
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
   #if DEBUG
-    return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
+    return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
   #else
-    return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+    return [CodePush bundleURL];
   #endif
 }
 

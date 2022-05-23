@@ -2,6 +2,7 @@ import { concat, isEmpty, isNil, keyBy, keys, toLower } from 'lodash';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import io from 'socket.io-client';
+import { defaultConfig, L2_TXS } from '../config/experimental';
 import config from '../model/config';
 import {
   assetChartsReceived,
@@ -75,6 +76,8 @@ const messages = {
     APPENDED: 'appended address transactions',
     CHANGED: 'changed address transactions',
     RECEIVED: 'received address transactions',
+    RECEIVED_ARBITRUM: 'received address arbitrum-transactions',
+    RECEIVED_POLYGON: 'received address polygon-transactions',
     REMOVED: 'removed address transactions',
   },
   ASSET_CHARTS: {
@@ -842,6 +845,16 @@ const listenOnAddressMessages = (socket: SocketIOClient.Socket) => (
       dispatch(transactionsReceived(message));
     }
   );
+
+  if (defaultConfig[L2_TXS].value) {
+    socket.on(
+      messages.ADDRESS_TRANSACTIONS.RECEIVED_ARBITRUM,
+      (message: TransactionsReceivedMessage) => {
+        // logger.log('txns received', message?.payload?.transactions);
+        dispatch(transactionsReceived(message));
+      }
+    );
+  }
 
   socket.on(
     messages.ADDRESS_TRANSACTIONS.APPENDED,

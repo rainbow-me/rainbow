@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React from 'react';
 import { useIsEmulator } from 'react-native-device-info';
 import { Icon } from '../icons';
@@ -28,7 +29,9 @@ export default function QRCodeScannerCrosshair() {
     <Container size={deviceWidth * CrossHairAspectRatio}>
       <Crosshair color={colors.whiteLabel} />
       <Text color="whiteLabel" lineHeight="none" size="large" weight="heavy">
-        {isEmulator ? 'Simulator Mode' : 'Find a code to scan'}
+        {isEmulator
+          ? lang.t('wallet.qr.simulator_mode')
+          : lang.t('wallet.qr.find_a_code')}
       </Text>
     </Container>
   );

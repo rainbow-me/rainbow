@@ -1,4 +1,4 @@
-import MaskedView from '@react-native-community/masked-view';
+import MaskedView from '@react-native-masked-view/masked-view';
 import lang from 'i18n-js';
 import React from 'react';
 import AddCashIconSource from '../../../assets/addCashIcon.png';

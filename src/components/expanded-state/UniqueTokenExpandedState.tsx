@@ -58,6 +58,7 @@ import { buildUniqueTokenName } from '@rainbow-me/helpers/assets';
 import {
   useAccountProfile,
   useAccountSettings,
+  useBooleanState,
   useDimensions,
   usePersistentDominantColorFromImage,
   useShowcaseTokens,
@@ -194,6 +195,7 @@ const UniqueTokenExpandedState = ({
     isPoap,
     isSendable,
     lastPrice,
+    lastSalePaymentToken,
     traits,
     uniqueId,
     urlSuffixForAsset,
@@ -208,6 +210,11 @@ const UniqueTokenExpandedState = ({
   const [floorPrice, setFloorPrice] = useState<string | null>(null);
   const [showCurrentPriceInEth, setShowCurrentPriceInEth] = useState(true);
   const [showFloorInEth, setShowFloorInEth] = useState(true);
+  const [
+    contentFocused,
+    handleContentFocus,
+    handleContentBlur,
+  ] = useBooleanState();
   const animationProgress = useSharedValue(0);
   const opacityStyle = useAnimatedStyle(() => ({
     opacity: 1 - animationProgress.value,
@@ -229,10 +236,15 @@ const UniqueTokenExpandedState = ({
 
   const imageColor =
     // @ts-expect-error image_url could be null or undefined?
-    usePersistentDominantColorFromImage(asset.image_url).result ||
+    usePersistentDominantColorFromImage(asset.lowResUrl).result ||
     colors.paleBlue;
 
-  const lastSalePrice = lastPrice || 'None';
+  const lastSalePrice =
+    lastPrice != null
+      ? lastPrice === 0
+        ? `< 0.001 ${lastSalePaymentToken}`
+        : `${lastPrice} ${lastSalePaymentToken}`
+      : 'None';
   const priceOfEth = ethereumUtils.getEthPriceUnit() as number;
 
   const textColor = useMemo(() => {
@@ -309,8 +321,8 @@ const UniqueTokenExpandedState = ({
         <BlurWrapper height={deviceHeight} width={deviceWidth}>
           <BackgroundImage>
             <UniqueTokenImage
-              backgroundColor={asset.background}
-              imageUrl={asset.image_url}
+              backgroundColor={asset.background || imageColor}
+              imageUrl={asset.lowResUrl}
               item={asset}
               resizeMode="cover"
               size={CardSize}
@@ -333,6 +345,7 @@ const UniqueTokenExpandedState = ({
           : { additionalTopPadding: true, contentHeight: deviceHeight })}
         ref={sheetRef}
         scrollEnabled
+        showsVerticalScrollIndicator={!contentFocused}
         yPosition={yPosition}
       >
         <ColorModeProvider value="darkTinted">
@@ -350,8 +363,9 @@ const UniqueTokenExpandedState = ({
               asset={asset}
               horizontalPadding={24}
               imageColor={imageColor}
+              onContentBlur={handleContentBlur}
+              onContentFocus={handleContentFocus}
               // @ts-expect-error JavaScript component
-
               sheetRef={sheetRef}
               textColor={textColor}
               yPosition={yPosition}
@@ -493,7 +507,7 @@ const UniqueTokenExpandedState = ({
                         <UniqueTokenAttributes
                           {...asset}
                           color={imageColor}
-                          disableMenu={isPoap}
+                          hideOpenSeaAction={isPoap}
                           slug={asset.collection.slug}
                         />
                       </Section>

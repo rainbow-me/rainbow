@@ -5,7 +5,7 @@ import * as Sentry from '@sentry/react-native';
 import { get } from 'lodash';
 import { nanoid } from 'nanoid/non-secure';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { Component, createRef } from 'react';
 import {
   AppRegistry,
   AppState,
@@ -16,7 +16,10 @@ import {
   StatusBar,
   View,
 } from 'react-native';
+// eslint-disable-next-line import/default
+import codePush from 'react-native-code-push';
 import {
+  IS_TESTING,
   REACT_APP_SEGMENT_API_WRITE_KEY,
   SENTRY_ENDPOINT,
   SENTRY_ENVIRONMENT,
@@ -26,12 +29,13 @@ import {
 import RNIOS11DeviceCheck from 'react-native-ios11-devicecheck';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
+import VersionNumber from 'react-native-version-number';
 import { QueryClientProvider } from 'react-query';
 import { connect, Provider } from 'react-redux';
 import { RecoilRoot } from 'recoil';
 import PortalConsumer from './components/PortalConsumer';
 import ErrorBoundary from './components/error-boundary/ErrorBoundary';
-import { OfflineToast } from './components/toasts';
+import { FedoraToast, OfflineToast } from './components/toasts';
 import {
   designSystemPlaygroundEnabled,
   reactNativeDisableYellowBox,
@@ -53,6 +57,8 @@ import * as keychain from './model/keychain';
 import { loadAddress } from './model/wallet';
 import { Navigation } from './navigation';
 import RoutesComponent from './navigation/Routes';
+import { PerformanceTracking } from './performance/tracking';
+import { PerformanceMetrics } from './performance/tracking/types/PerformanceMetrics';
 import { queryClient } from './react-query/queryClient';
 import { explorerInitL2 } from './redux/explorer';
 import { fetchOnchainBalances } from './redux/fallbackExplorer';
@@ -63,6 +69,10 @@ import { walletConnectLoadState } from './redux/walletconnect';
 import { rainbowTokenList } from './references';
 import { branchListener } from './utils/branch';
 import { analyticsUserIdentifier } from './utils/keychainConstants';
+import {
+  CODE_PUSH_DEPLOYMENT_KEY,
+  isCustomBuild,
+} from '@rainbow-me/handlers/fedora';
 import { SharedValuesProvider } from '@rainbow-me/helpers/SharedValuesContext';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
@@ -70,24 +80,61 @@ import { Portal } from 'react-native-cool-modals/Portal';
 
 const WALLETCONNECT_SYNC_DELAY = 500;
 
+const FedoraToastRef = createRef();
+
 StatusBar.pushStackEntry({ animated: true, barStyle: 'dark-content' });
+
+// We need to disable React Navigation instrumentation for E2E tests
+// because detox doesn't like setTimeout calls that are used inside
+// When enabled detox hangs and timeouts on all test cases
+const routingInstrumentation = IS_TESTING
+  ? undefined
+  : new Sentry.ReactNavigationInstrumentation();
 
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
   (showNetworkRequests || showNetworkResponses) &&
     monitorNetwork(showNetworkRequests, showNetworkResponses);
 } else {
-  let sentryOptions = {
-    dsn: SENTRY_ENDPOINT,
-    enableAutoSessionTracking: true,
-    environment: SENTRY_ENVIRONMENT,
-    integrations: [
-      new Sentry.ReactNativeTracing({
-        tracingOrigins: ['localhost', /^\//],
+  // eslint-disable-next-line no-inner-declarations
+  async function initSentryAndCheckForFedoraMode() {
+    let metadata;
+    try {
+      const config = await codePush.getCurrentPackage();
+      if (!config || config.deploymentKey === CODE_PUSH_DEPLOYMENT_KEY) {
+        codePush.sync({
+          deploymentKey: CODE_PUSH_DEPLOYMENT_KEY,
+          installMode: codePush.InstallMode.ON_NEXT_RESTART,
+        });
+      } else {
+        isCustomBuild.value = true;
+        setTimeout(() => FedoraToastRef?.current?.show(), 300);
+      }
+
+      metadata = await codePush.getUpdateMetadata();
+    } catch (e) {
+      logger.log('error initiating codepush settings', e);
+    }
+    const sentryOptions = {
+      dsn: SENTRY_ENDPOINT,
+      enableAutoSessionTracking: true,
+      environment: SENTRY_ENVIRONMENT,
+      integrations: [
+        new Sentry.ReactNativeTracing({
+          routingInstrumentation,
+          tracingOrigins: ['localhost', /^\//],
+        }),
+      ],
+      tracesSampleRate: 0.2,
+      ...(metadata && {
+        dist: metadata.label,
+        release: `${metadata.appVersion} (${VersionNumber.buildVersion}) (CP ${metadata.label})`,
       }),
-    ],
-  };
-  Sentry.init(sentryOptions);
+    };
+    Sentry.init(sentryOptions);
+  }
+
+  initSentryAndCheckForFedoraMode();
 }
 
 enableScreens();
@@ -148,6 +195,11 @@ class App extends Component {
         this.handleOpenLinkingURL(url);
       });
     }
+
+    PerformanceTracking.finishMeasuring(
+      PerformanceMetrics.loadRootAppComponent
+    );
+    analytics.track('React component tree finished initial mounting');
   }
 
   componentDidUpdate(prevProps) {
@@ -214,6 +266,7 @@ class App extends Component {
         .catch(() => nanoid());
       await keychain.saveString(analyticsUserIdentifier, identifier);
       analytics.identify(identifier);
+      analytics.track('First App Open');
     }
 
     await analytics.setup(REACT_APP_SEGMENT_API_WRITE_KEY, {
@@ -241,8 +294,10 @@ class App extends Component {
     });
   };
 
-  handleNavigatorRef = navigatorRef =>
+  handleNavigatorRef = navigatorRef => {
+    this.navigatorRef = navigatorRef;
     Navigation.setTopLevelNavigator(navigatorRef);
+  };
 
   handleTransactionConfirmed = tx => {
     const network = tx.network || networkTypes.mainnet;
@@ -264,6 +319,10 @@ class App extends Component {
     updateBalancesAfter(isL2 ? 10000 : 5000, isL2, network);
   };
 
+  handleSentryNavigationIntegration = () => {
+    routingInstrumentation?.registerNavigationContainer(this.navigatorRef);
+  };
+
   render = () => (
     <MainThemeProvider>
       <RainbowContextWrapper>
@@ -279,11 +338,15 @@ class App extends Component {
                           <InitialRouteContext.Provider
                             value={this.state.initialRoute}
                           >
-                            <RoutesComponent ref={this.handleNavigatorRef} />
+                            <RoutesComponent
+                              onReady={this.handleSentryNavigationIntegration}
+                              ref={this.handleNavigatorRef}
+                            />
                             <PortalConsumer />
                           </InitialRouteContext.Provider>
                         )}
                         <OfflineToast />
+                        <FedoraToast ref={FedoraToastRef} />
                       </View>
                     </SharedValuesProvider>
                   </RecoilRoot>
@@ -306,6 +369,12 @@ const AppWithRedux = connect(
 
 const AppWithReduxStore = () => <AppWithRedux store={store} />;
 
+const AppWithSentry = Sentry.wrap(AppWithReduxStore);
+
+const codePushOptions = { checkFrequency: codePush.CheckFrequency.MANUAL };
+
+const AppWithCodePush = codePush(codePushOptions)(AppWithSentry);
+
 AppRegistry.registerComponent('Rainbow', () =>
-  designSystemPlaygroundEnabled ? Playground : Sentry.wrap(AppWithReduxStore)
+  designSystemPlaygroundEnabled ? Playground : AppWithCodePush
 );

@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React from 'react';
 import { HoldToAuthorizeButton } from '../buttons';
 
@@ -32,7 +33,11 @@ export default function SendButton({
       disabledBackgroundColor={colorForAsset}
       hideInnerBorder
       isAuthorizing={isAuthorizing}
-      label={disabled ? '􀄨 Complete checks' : 'Hold to Send'}
+      label={
+        disabled
+          ? `􀄨 ${lang.t('wallet.transaction.complete_checks')}`
+          : lang.t('button.hold_to_send')
+      }
       onLongPress={onLongPress}
       parentHorizontalPadding={19}
       shadows={disabled ? shadows.disabled : shadows.colored}

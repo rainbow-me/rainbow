@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { RNCamera } from 'react-native-camera';
 import { useIsEmulator } from 'react-native-device-info';
@@ -176,7 +177,7 @@ export default function QRCodeScanner({
 
       {cameraState === CameraState.Error && (
         <ContentOverlay contentPositionTop={contentPositionTop}>
-          <ErrorText error="Error mounting camera" />
+          <ErrorText error={lang.t('wallet.qr.error_mounting_camera')} />
 
           <ConnectedDapps />
         </ContentOverlay>
