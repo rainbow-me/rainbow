@@ -2,7 +2,13 @@ import { useRoute } from '@react-navigation/native';
 import { toChecksumAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
 import { capitalize, get, toLower } from 'lodash';
-import React, { Fragment, useCallback, useEffect } from 'react';
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { Keyboard, StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 import ContactRowInfoButton from '../components/ContactRowInfoButton';
@@ -17,6 +23,7 @@ import { ContactAvatar } from '../components/contacts';
 import ImageAvatar from '../components/contacts/ImageAvatar';
 import { Centered, Column, Row, RowWithMargins } from '../components/layout';
 import { SendButton } from '../components/send';
+import SendENSConfigurationSection from '../components/send/SendENSConfigurationSection';
 import { SheetTitle, SlackSheet } from '../components/sheet';
 import { Text, TruncatedText } from '../components/text';
 import { address } from '../utils/abbreviations';
@@ -27,6 +34,9 @@ import {
 import useExperimentalFlag, {
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
+import { useTheme } from '@rainbow-me/context';
+import { Box, Inset } from '@rainbow-me/design-system';
+import { UniqueAsset } from '@rainbow-me/entities';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
@@ -50,11 +60,12 @@ import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
+import { getUniqueTokenType } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const Container = styled(Centered).attrs({
   direction: 'column',
-})(({ deviceHeight, height }) => ({
+})(({ deviceHeight, height }: { deviceHeight: number; height: number }) => ({
   ...(height && { height: height + deviceHeight }),
   ...position.coverAsObject,
 }));
@@ -64,15 +75,26 @@ const CheckboxContainer = styled(Row)({
   width: 20,
 });
 
-const CheckboxBorder = styled.View(({ checked, color, theme: { colors } }) => ({
-  ...(checked ? { backgroundColor: color } : {}),
-  borderColor: colors.alpha(colors.blueGreyDark, checked ? 0 : 0.15),
-  borderRadius: 7,
-  borderWidth: 2,
-  height: 20,
-  position: 'absolute',
-  width: 20,
-}));
+// @ts-expect-error
+const CheckboxBorder = styled.View(
+  ({
+    checked,
+    color,
+    theme: { colors },
+  }: {
+    checked: boolean;
+    color: string;
+    theme: any;
+  }) => ({
+    ...(checked ? { backgroundColor: color } : {}),
+    borderColor: colors.alpha(colors.blueGreyDark, checked ? 0 : 0.15),
+    borderRadius: 7,
+    borderWidth: 2,
+    height: 20,
+    position: 'absolute',
+    width: 20,
+  })
+);
 
 const CheckboxLabelText = styled(Text).attrs({
   direction: 'column',
@@ -84,13 +106,15 @@ const CheckboxLabelText = styled(Text).attrs({
   flexShrink: 1,
 });
 
-const Checkmark = styled(Text).attrs(({ checked, theme: { colors } }) => ({
-  align: 'center',
-  color: checked ? colors.whiteLabel : colors.transparent,
-  lineHeight: 'normal',
-  size: 'smaller',
-  weight: 'bold',
-}))({
+const Checkmark = styled(Text).attrs(
+  ({ checked, theme: { colors } }: { checked: boolean; theme: any }) => ({
+    align: 'center',
+    color: checked ? colors.whiteLabel : colors.transparent,
+    lineHeight: 'normal',
+    size: 'smaller',
+    weight: 'bold',
+  })
+)({
   width: '100%',
 });
 
@@ -100,7 +124,21 @@ const SendButtonWrapper = styled(Column).attrs({
   height: 56,
 });
 
-export const SendConfirmationSheetHeight = android ? 651 : 540;
+export function getSheetHeight({
+  asset,
+  shouldShowChecks,
+  isL2,
+}: {
+  asset?: UniqueAsset;
+  shouldShowChecks: boolean;
+  isL2: boolean;
+}) {
+  let height = android ? 488 : 377;
+  if (shouldShowChecks) height = height + 104;
+  if (isL2) height = height + 59;
+  if (asset && getUniqueTokenType(asset) === 'ENS') height = height + 200;
+  return height;
+}
 
 const ChevronDown = () => {
   const { colors } = useTheme();
@@ -135,7 +173,19 @@ const ChevronDown = () => {
   );
 };
 
-const Checkbox = ({ activeColor, checked, id, label, onPress }) => {
+const Checkbox = ({
+  activeColor,
+  checked,
+  id,
+  label,
+  onPress,
+}: {
+  activeColor: string;
+  checked: boolean;
+  id: number;
+  label: string;
+  onPress: (opts: { checked: boolean; id: number; label: string }) => void;
+}) => {
   const { colors } = useTheme();
 
   const handlePress = useCallback(() => {
@@ -196,7 +246,7 @@ export default function SendConfirmationSheet() {
       to,
       toAddress,
     },
-  } = useRoute();
+  } = useRoute<any>();
 
   const [
     alreadySentTransactionsTotal,
@@ -211,6 +261,7 @@ export default function SendConfirmationSheet() {
   const { userAccounts, watchedAccounts } = useUserAccounts();
   const { walletNames } = useWallets();
   const isSendingToUserAccount = useMemo(() => {
+    // @ts-expect-error From JavaScript hook
     const found = userAccounts?.find(account => {
       return toLower(account.address) === toLower(toAddress);
     });
@@ -221,6 +272,7 @@ export default function SendConfirmationSheet() {
     if (!isSendingToUserAccount) {
       let sends = 0;
       let sendsCurrentNetwork = 0;
+      // @ts-expect-error From JavaScript hook
       transactions.forEach(tx => {
         if (toLower(tx.to) === toLower(toAddress)) {
           sends++;
@@ -242,23 +294,43 @@ export default function SendConfirmationSheet() {
     return get(contacts, `${[toLower(toAddress)]}`);
   }, [contacts, toAddress]);
 
-  const [checkboxes, setCheckboxes] = useState([
-    {
-      checked: false,
-      label: lang.t(
-        'wallet.transaction.checkboxes.im_not_sending_to_an_exchange'
-      ),
-    },
-    {
-      checked: false,
-      label: lang.t(
-        'wallet.transaction.checkboxes.has_a_wallet_that_supports',
-        {
-          networkName: capitalize(network),
-        }
-      ),
-    },
-  ]);
+  const uniqueTokenType = getUniqueTokenType(asset);
+  const isENS = uniqueTokenType === 'ENS';
+
+  const [checkboxes, setCheckboxes] = useState(
+    isENS
+      ? [
+          {
+            checked: false,
+            label: 'Clear profile information',
+          },
+          {
+            checked: false,
+            label: 'Point this name to the recipient’s wallet address',
+          },
+          {
+            checked: false,
+            label: 'Transfer control to the recipient',
+          },
+        ]
+      : [
+          {
+            checked: false,
+            label: lang.t(
+              'wallet.transaction.checkboxes.im_not_sending_to_an_exchange'
+            ),
+          },
+          {
+            checked: false,
+            label: lang.t(
+              'wallet.transaction.checkboxes.has_a_wallet_that_supports',
+              {
+                networkName: capitalize(network),
+              }
+            ),
+          },
+        ]
+  );
 
   const handleCheckbox = useCallback(
     checkbox => {
@@ -348,14 +420,6 @@ export default function SendConfirmationSheet() {
     contact?.color ||
     addressHashedColorIndex(toAddress);
 
-  let realSheetHeight = !shouldShowChecks
-    ? SendConfirmationSheetHeight - 150
-    : SendConfirmationSheetHeight;
-
-  if (!isL2) {
-    realSheetHeight -= 80;
-  }
-
   const { data: images } = useENSProfileImages(to, {
     enabled: isENSAddressFormat(to),
   });
@@ -364,7 +428,10 @@ export default function SendConfirmationSheet() {
     ? images?.avatarUrl || existingAccount?.image
     : existingAccount?.image;
 
-  const contentHeight = realSheetHeight - (isL2 ? 50 : 30);
+  let contentHeight = getSheetHeight({ isL2, shouldShowChecks }) - 30;
+  if (shouldShowChecks) contentHeight = contentHeight + 150;
+  if (isL2) contentHeight = contentHeight + 60;
+
   return (
     <Container
       deviceHeight={deviceHeight}
@@ -374,6 +441,7 @@ export default function SendConfirmationSheet() {
       {ios && <StatusBar barStyle="light-content" />}
       {ios && <TouchableBackdrop onPress={goBack} />}
 
+      {/* @ts-expect-error JavaScript component */}
       <SlackSheet
         additionalTopPadding={android}
         contentHeight={contentHeight}
@@ -410,6 +478,7 @@ export default function SendConfirmationSheet() {
               <Column align="end" flex={1} justify="center">
                 <Row>
                   {isNft ? (
+                    // @ts-expect-error JavaScript component
                     <RequestVendorLogoIcon
                       backgroundColor={asset.background || colors.lightestGrey}
                       badgeXPosition={-7}
@@ -510,10 +579,12 @@ export default function SendConfirmationSheet() {
                 )}
               </Column>
             </Row>
+            {/* @ts-expect-error JavaScript component */}
             <Divider color={colors.rowDividerExtraLight} inset={[0]} />
           </Column>
           {isL2 && (
             <Fragment>
+              {/* @ts-expect-error JavaScript component */}
               <L2Disclaimer
                 assetType={asset.type}
                 colors={colors}
@@ -526,13 +597,13 @@ export default function SendConfirmationSheet() {
               />
             </Fragment>
           )}
-          <Column
-            paddingBottom={isL2 ? 20.5 : 11}
-            paddingLeft={29}
-            paddingRight={24}
-          >
-            {shouldShowChecks &&
-              checkboxes.map((check, i) => (
+          {shouldShowChecks && (
+            <Column
+              paddingBottom={isL2 ? 20.5 : 11}
+              paddingLeft={29}
+              paddingRight={24}
+            >
+              {checkboxes.map((check, i) => (
                 <Checkbox
                   activeColor={color}
                   checked={check.checked}
@@ -542,8 +613,18 @@ export default function SendConfirmationSheet() {
                   onPress={handleCheckbox}
                 />
               ))}
-          </Column>
+            </Column>
+          )}
+          {isENS && (
+            <Inset bottom="24px">
+              <SendENSConfigurationSection
+                checkboxes={checkboxes}
+                onPressCheckbox={handleCheckbox}
+              />
+            </Inset>
+          )}
           <SendButtonWrapper>
+            {/* @ts-expect-error JavaScript component */}
             <SendButton
               androidWidth={deviceWidth - 60}
               backgroundColor={color}

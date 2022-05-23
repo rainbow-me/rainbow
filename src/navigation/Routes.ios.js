@@ -14,6 +14,7 @@ import ConnectedDappsSheet from '../screens/ConnectedDappsSheet';
 import DepositModal from '../screens/DepositModal';
 import ENSAdditionalRecordsSheet from '../screens/ENSAdditionalRecordsSheet';
 import ENSConfirmRegisterSheet from '../screens/ENSConfirmRegisterSheet';
+import ENSSendSheet from '../screens/ENSSendSheet';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ExplainSheet from '../screens/ExplainSheet';
 import ExternalLinkWarningSheet from '../screens/ExternalLinkWarningSheet';
@@ -404,6 +405,11 @@ function NativeStackNavigator() {
         component={ExpandedAssetSheet}
         name={Routes.SWAP_DETAILS_SHEET}
         {...expandedAssetSheetConfig}
+      />
+      <NativeStack.Screen
+        component={ENSSendSheet}
+        name={Routes.ENS_SEND_SHEET}
+        {...ensConfirmRegisterSheetConfig}
       />
 
       {profilesEnabled && (
