@@ -7,11 +7,9 @@ import {
   useOpenInvestmentCards,
   useOpenSavings,
   useOpenSmallBalances,
-  useWalletSectionsData,
 } from '@rainbow-me/hooks';
 
-export default function useMemoBriefSectionData() {
-  const { briefSectionsData } = useWalletSectionsData();
+export default function useMemoBriefSectionData(briefSectionsData: any[]) {
   const { isSmallBalancesOpen, stagger } = useOpenSmallBalances();
   const { isSavingsOpen } = useOpenSavings();
   const { isInvestmentCardsOpen } = useOpenInvestmentCards();

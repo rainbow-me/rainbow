@@ -69,7 +69,6 @@ export default function WalletScreen() {
   const { isCoinListEdited } = useCoinListEdited();
   const scrollViewTracker = useValue(0);
   const { isReadOnlyWallet } = useWallets();
-  const { isEmpty: isAccountEmpty } = useAccountEmptyState();
   const { network } = useAccountSettings();
   const { userAccounts } = useUserAccounts();
   const { portfolios, trackPortfolios } = usePortfolios();
@@ -83,7 +82,11 @@ export default function WalletScreen() {
     refetchSavings,
     sections,
     shouldRefetchSavings,
+    isEmpty: isSectionsEmpty,
+    briefSectionsData: walletBriefSectionsData,
   } = useWalletSectionsData();
+
+  const { isEmpty: isAccountEmpty } = useAccountEmptyState(isSectionsEmpty);
 
   const dispatch = useDispatch();
   const profilesEnabled = useExperimentalFlag(PROFILES);
@@ -209,6 +212,7 @@ export default function WalletScreen() {
           isWalletEthZero={isWalletEthZero}
           network={network}
           scrollViewTracker={scrollViewTracker}
+          walletBriefSectionsData={walletBriefSectionsData}
         />
       </FabWrapper>
     </WalletPage>

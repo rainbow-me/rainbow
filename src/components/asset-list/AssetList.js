@@ -19,6 +19,7 @@ const AssetList = ({
   network,
   scrollViewTracker,
   sections,
+  walletBriefSectionsData,
   ...props
 }) => {
   const insets = useSafeArea();
@@ -43,7 +44,7 @@ const AssetList = ({
       {...props}
     />
   ) : (
-    <RecyclerAssetList2 />
+    <RecyclerAssetList2 walletBriefSectionsData={walletBriefSectionsData} />
   );
 };
 

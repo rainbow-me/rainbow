@@ -9,11 +9,15 @@ import RawMemoRecyclerAssetList from './core/RawRecyclerList';
 import { StickyHeaderManager } from './core/StickyHeaders';
 import useMemoBriefSectionData from './core/useMemoBriefSectionData';
 
-function RecyclerAssetList() {
+function RecyclerAssetList({
+  walletBriefSectionsData,
+}: {
+  walletBriefSectionsData: any[];
+}) {
   const {
     memoizedResult: briefSectionsData,
     additionalData,
-  } = useMemoBriefSectionData();
+  } = useMemoBriefSectionData(walletBriefSectionsData);
 
   const position = useMemoOne(() => new RNAnimated.Value(0), []);
 
