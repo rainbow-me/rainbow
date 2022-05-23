@@ -1,8 +1,13 @@
 import { MMKV } from 'react-native-mmkv';
 import { getAccountLocal, getKey, saveAccountLocal } from './common';
+import { AssetPricingInfo, EthereumAddress } from '@rainbow-me/entities';
+import { Network } from '@rainbow-me/helpers';
 import { STORAGE_IDS } from '@rainbow-me/model/mmkv';
 
 const accountAssetsDataVersion = '0.2.0';
+const assetsDataVersion = '0.1.0';
+const assetPricingInfoVersion = '0.1.0';
+const assetBalanceInfoVersion = '0.1.0';
 const assetPricesFromUniswapVersion = '0.1.0';
 const assetsVersion = '0.3.0';
 const pendingTransactionsVersion = '0.1.0';
@@ -12,6 +17,9 @@ const transactionsVersion = '0.3.0';
 const uniqueTokensVersion = '0.2.1';
 
 const ACCOUNT_ASSETS_DATA = 'accountAssetsData';
+const ASSETS_DATA = 'assetsData';
+const ASSET_PRICING_INFO = 'assetPriceData';
+const ASSET_BALANCE_INFO = 'accountAssetBalanceData';
 const ACCOUNT_INFO = 'accountInfo';
 const ACCOUNT_EMPTY = 'accountEmpty';
 const ASSET_PRICES_FROM_UNISWAP = 'assetPricesFromUniswap';
@@ -52,7 +60,6 @@ export const accountLocalKeys = [
  * @return {Object}
  */
 export const getSavings = (accountAddress: any, network: any) =>
-  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{}' is not assignable to paramet... Remove this comment to see the full error message
   getAccountLocal(SAVINGS, accountAddress, network, {}, savingsVersion);
 
 /**
@@ -105,7 +112,6 @@ export const getAccountAssetsData = (accountAddress: any, network: any) =>
     ACCOUNT_ASSETS_DATA,
     accountAddress,
     network,
-    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{}' is not assignable to paramet... Remove this comment to see the full error message
     {},
     accountAssetsDataVersion
   );
@@ -127,6 +133,102 @@ export const saveAccountAssetsData = (
     accountAddress,
     network,
     accountAssetsDataVersion
+  );
+
+/**
+ * @desc get assets data
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Object}
+ */
+export const getAssetsData = (accountAddress: any, network: any) =>
+  getAccountLocal(ASSETS_DATA, accountAddress, network, {}, assetsDataVersion);
+
+/**
+ * @desc save assets data
+ * @param  {Object}   [assetsData]
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ */
+export const saveAssetsData = (
+  assetsData: any,
+  accountAddress: any,
+  network: any
+) =>
+  saveAccountLocal(
+    ACCOUNT_ASSETS_DATA,
+    assetsData,
+    accountAddress,
+    network,
+    assetsDataVersion
+  );
+
+/**
+ * @desc get asset pricing data
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Object}
+ */
+export const getAssetPricingData = (accountAddress: any, network: any) =>
+  getAccountLocal(
+    ASSET_PRICING_INFO,
+    accountAddress,
+    network,
+    {},
+    assetPricingInfoVersion
+  );
+
+/**
+ * @desc save assets data
+ * @param  {Object}   [pricingInfo]
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ */
+export const saveAssetPricingData = (
+  pricingInfo: { [uniqueId: string]: AssetPricingInfo },
+  accountAddress: EthereumAddress,
+  network: Network
+) =>
+  saveAccountLocal(
+    ASSET_PRICING_INFO,
+    pricingInfo,
+    accountAddress,
+    network,
+    assetPricingInfoVersion
+  );
+
+/**
+ * @desc get asset balance data
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Object}
+ */
+export const getAssetBalanceData = (accountAddress: any, network: any) =>
+  getAccountLocal(
+    ASSET_BALANCE_INFO,
+    accountAddress,
+    network,
+    {},
+    assetBalanceInfoVersion
+  );
+
+/**
+ * @desc save asset balance data
+ * @param  {Object}   [balanceInfo]
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ */
+export const saveAssetBalanceData = (
+  balanceInfo: any,
+  accountAddress: any,
+  network: any
+) =>
+  saveAccountLocal(
+    ASSET_BALANCE_INFO,
+    balanceInfo,
+    accountAddress,
+    network,
+    assetBalanceInfoVersion
   );
 
 /**
@@ -309,7 +411,6 @@ export const saveUniqueTokens = (
  * @return {Object}
  */
 export const getAccountInfo = (accountAddress: any, network: any) =>
-  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{}' is not assignable to paramet... Remove this comment to see the full error message
   getAccountLocal(ACCOUNT_INFO, accountAddress, network, {});
 
 /**
@@ -331,7 +432,6 @@ export const saveAccountInfo = (
  * @return {Array}
  */
 export const getPinnedCoins = (accountAddress: any, network: any) =>
-  // @ts-expect-error ts-migrate(2322) FIXME: Type 'string' is not assignable to type 'never'.
   getAccountLocal(PINNED_COINS, accountAddress, network, ['eth']);
 
 /**

@@ -18,6 +18,7 @@ import {
 import { fetchPoaps } from '@rainbow-me/handlers/poap';
 import { Network } from '@rainbow-me/helpers/networkTypes';
 import { dedupeAssetsWithFamilies, getFamilies } from '@rainbow-me/parsers';
+import logger from 'logger';
 
 // -- Constants ------------------------------------------------------------- //
 

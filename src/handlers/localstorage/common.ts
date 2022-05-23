@@ -89,7 +89,7 @@ export const getAccountLocal = async (
   prefix: any,
   accountAddress: any,
   network: any,
-  emptyState = [],
+  emptyState: {},
   version = defaultVersion
 ) => {
   const key = getKey(prefix, accountAddress, network);

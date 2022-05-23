@@ -271,8 +271,6 @@ export const explorerInit = () => async (dispatch, getState) => {
   const { network, accountAddress, nativeCurrency } = getState().settings;
   const { pairs } = getState().uniswap;
   const { addressSocket, assetsSocket } = getState().explorer;
-  const foo = await AsyncStorage.getItem('experimentalConfig');
-  logger.debug('EXP CONFIG: ', foo);
   // if there is another socket unsubscribe first
   if (addressSocket || assetsSocket) {
     dispatch(explorerUnsubscribe());

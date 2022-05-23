@@ -1,6 +1,5 @@
 import { ObservableQuery } from '@apollo/client';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
-import AsyncStorage from '@react-native-community/async-storage';
 import { getUnixTime, startOfMinute, sub } from 'date-fns';
 import isValidDomain from 'is-valid-domain';
 import {
@@ -47,10 +46,15 @@ import {
   TransactionTypes,
   ZerionAsset,
   ZerionAssetFallback,
-  ZerionAssetPrice,
   ZerionTransaction,
 } from '../entities';
-import { delay, isOfType, isZero, multiply } from '../helpers/utilities';
+import {
+  convertRawAmountToBalance,
+  delay,
+  isOfType,
+  isZero,
+  multiply,
+} from '../helpers/utilities';
 import { parseFallbackAsset } from '../parsers/accounts';
 import { addCashUpdatePurchases } from './addCash';
 import { decrementNonce, incrementNonce } from './nonceManager';
@@ -60,12 +64,18 @@ import { uniswapUpdateLiquidityTokens } from './uniswapLiquidity';
 import appEvents from '@rainbow-me/handlers/appEvents';
 import {
   getAccountAssetsData,
+  getAssetBalanceData,
   getAssetPricesFromUniswap,
+  getAssetPricingData,
+  getAssetsData,
   getLocalPendingTransactions,
   getLocalTransactions,
   saveAccountAssetsData,
   saveAccountEmptyState,
+  saveAssetBalanceData,
   saveAssetPricesFromUniswap,
+  saveAssetPricingData,
+  saveAssetsData,
   saveLocalPendingTransactions,
   saveLocalTransactions,
 } from '@rainbow-me/handlers/localstorage/accountLocal';
@@ -75,7 +85,6 @@ import {
   web3Provider,
 } from '@rainbow-me/handlers/web3';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
-import config from '@rainbow-me/model/config';
 import { Navigation } from '@rainbow-me/navigation';
 import { triggerOnSwipeLayout } from '@rainbow-me/navigation/onNavigationStateChange';
 import { Network } from '@rainbow-me/networkTypes';
@@ -339,10 +348,7 @@ interface DataUpdateAssetPricingInfoAction {
  */
 interface DataUpdateAssetBalanceInfoAction {
   type: typeof DATA_UPDATE_ASSET_BALANCE_INFO;
-  payload: {
-    balances: DataState['accountAssetBalanceData'];
-    address: string;
-  };
+  payload: DataState['accountAssetBalanceData'];
 }
 
 /**
@@ -619,6 +625,8 @@ export const dataLoadState = () => async (
     | DataLoadTransactionSuccessAction
     | DataLoadTransactionsRequestAction
     | DataLoadTransactionsFailureAction
+    | DataUpdateAssetBalanceInfoAction
+    | DataUpdateAssetPricingInfoAction
     | DataUpdatePendingTransactionSuccessAction
   >,
   getState: AppGetState
@@ -646,6 +654,27 @@ export const dataLoadState = () => async (
       dispatch({
         payload: accountAssetsData,
         type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
+      });
+    }
+    // const assetsData = await getAssetsData(accountAddress, network);
+    // if (!isEmpty(assetsData)) {
+    //   dispatch({
+    //     payload: assetsData,
+    //     type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
+    //   });
+    // }
+    const assetPriceData = await getAssetPricingData(accountAddress, network);
+    if (!isEmpty(assetPriceData)) {
+      dispatch({
+        payload: assetPriceData,
+        type: DATA_UPDATE_ASSET_PRICING_INFO,
+      });
+    }
+    const assetBalanceData = await getAssetBalanceData(accountAddress, network);
+    if (!isEmpty(assetBalanceData)) {
+      dispatch({
+        payload: assetBalanceData,
+        type: DATA_UPDATE_ASSET_BALANCE_INFO,
       });
     }
   } catch (error) {
@@ -686,8 +715,6 @@ export const fetchAssetPricesWithCoingecko = async (
   coingeckoIds: string[],
   nativeCurrency: string
 ): Promise<CoingeckoApiResponseWithLastUpdate | undefined> => {
-  const configFromStorage = await AsyncStorage.getItem('experimentalConfig');
-  logger.debug('config from storage: ', configFromStorage);
   try {
     const url = `https://api.coingecko.com/api/v3/simple/price?ids=${coingeckoIds
       .filter(val => !!val)
@@ -877,7 +904,11 @@ export const dataUpdateAsset = (assetData: ParsedAddressAsset) => (
 export const dataUpdateAssets = (assetsData: {
   [uniqueId: string]: ParsedAddressAsset;
 }) => (
-  dispatch: Dispatch<DataLoadAccountAssetsDataSuccessAction>,
+  dispatch: ThunkDispatch<
+    AppState,
+    unknown,
+    DataLoadAccountAssetsDataSuccessAction
+  >,
   getState: AppGetState
 ) => {
   const { accountAddress, network } = getState().settings;
@@ -1123,28 +1154,76 @@ export const transactionsRemoved = (
   saveLocalTransactions(updatedTransactions, accountAddress, network);
 };
 
-export const updateAssetPriceData = (
-  prices: Record<EthereumAddress, ZerionAssetPrice>,
-  nativeCurrency: NativeCurrencyKey
-) => async (
-  dispatch: ThunkDispatch<AppState, unknown, DataUpdateAssetPricingInfoAction>,
+export const dataUpdateAssetPricingInfo = (
+  updatedAssets: { [uniqueId: string]: ZerionAsset | ZerionAssetFallback },
+  nativeCurrency: string
+) => (
+  dispatch: Dispatch<DataUpdateAssetPricingInfoAction>,
   getState: AppGetState
 ) => {
-  const currentAssetPrices = getState().data.assetPriceData;
-  const assetPrices = Object.keys(prices).reduce(
+  const { accountAddress, network } = getState().settings;
+  nativeCurrency = nativeCurrency.toUpperCase() as NativeCurrencyKey;
+
+  const newPrices = Object.keys(updatedAssets).reduce(
+    (assetPricesData, currentKey) => ({
+      ...assetPricesData,
+      [currentKey]: {
+        ...(assetPricesData[currentKey] || {}),
+        [nativeCurrency]: updatedAssets[currentKey].price,
+      },
+    }),
+    {} as { [uniqueId: string]: AssetPricingInfo }
+  );
+  const currentPrices = getState().data.assetPriceData;
+  const updatedAssetPricingInfo = Object.keys(newPrices).reduce(
     (updatedAssetPrices, currentKey) => ({
       ...updatedAssetPrices,
       [currentKey]: {
-        ...(currentAssetPrices[currentKey] || {}),
-        [nativeCurrency]: prices[currentKey],
+        ...(currentPrices[currentKey] || {}),
+        ...newPrices[currentKey],
       },
     }),
-    currentAssetPrices
+    currentPrices
   );
   dispatch({
-    payload: assetPrices,
+    payload: updatedAssetPricingInfo,
     type: DATA_UPDATE_ASSET_PRICING_INFO,
   });
+  saveAssetPricingData(updatedAssetPricingInfo, accountAddress, network);
+};
+
+export const dataUpdateAssetBalanceInfo = (
+  updatedAssets: {
+    [uniqueId: string]: ZerionAsset | ZerionAssetFallback;
+  },
+  walletAddress: string
+) => (
+  dispatch: Dispatch<DataUpdateAssetBalanceInfoAction>,
+  getState: AppGetState
+) => {
+  const { accountAddress, network } = getState().settings;
+  const currentBalances = getState().data.accountAssetBalanceData;
+  const updatedAssetBalances = Object.keys(updatedAssets).reduce(
+    (accountAssetBalances, currentKey) => {
+      const currentAsset = updatedAssets[currentKey];
+      return {
+        ...accountAssetBalances,
+        [walletAddress]: {
+          ...(accountAssetBalances[walletAddress] || {}),
+          [currentKey]: convertRawAmountToBalance(
+            currentAsset.quantity || 0,
+            currentAsset
+          ),
+        },
+      };
+    },
+    currentBalances
+  );
+  dispatch({
+    payload: updatedAssetBalances,
+    type: DATA_UPDATE_ASSET_BALANCE_INFO,
+  });
+  saveAssetBalanceData(updatedAssetBalances, accountAddress, network);
 };
 
 /**
@@ -1181,7 +1260,7 @@ export const addressAssetsReceived = (
 
   const { uniqueTokens } = getState().uniqueTokens;
   const newAssets = message?.payload?.assets ?? {};
-  let updatedAssets = Object.keys(newAssets)
+  const newAssetsFiltered = Object.keys(newAssets)
     .map(assetKey => {
       const { asset, quantity } = newAssets[assetKey];
       const notCompound = asset.type !== AssetTypes.compound;
@@ -1189,49 +1268,21 @@ export const addressAssetsReceived = (
       const notShit = !shitcoins.includes(toLower(asset?.asset_code));
       const hasAddress = asset.asset_code;
       if (notCompound && notTrash && notShit && hasAddress) {
-        return { ...asset, quantity };
+        return { ...asset, quantity: removed ? 0 : quantity };
       }
       return null;
     })
-    .filter(Boolean)
-    .reduce(
-      (allAssets, currentAsset) => ({
-        ...allAssets,
-        [ethereumUtils.getUniqueId({
-          address: currentAsset!.asset_code,
-          name: currentAsset?.name,
-          network: assetsNetwork,
-        })]: currentAsset,
-      }),
-      {}
-    ) as {
-    [uniqueId: string]: {
-      asset: ZerionAsset;
-      quantity: number;
-    };
-  };
-
-  logger.debug('UPDATED ASSETS: ', updatedAssets);
-
-  const assetPrices = Object.keys(updatedAssets).reduce(
-    (assetPricesData, currentKey) => ({
-      ...assetPricesData,
-      [currentKey]: updatedAssets[currentKey].price,
-    }),
-    {}
+    .filter(Boolean) as ZerionAsset[];
+  let updatedAssets = ethereumUtils.mapAssetsByUniqueId(
+    newAssetsFiltered,
+    assetsNetwork!
   );
 
-  logger.debug('CURRENCY: ', message.meta?.currency);
-  // dispatch(updateAssetPriceData(assetPrices, message.meta?.currency));
-
-  if (removed) {
-    updatedAssets = mapValues(newAssets, asset => {
-      return {
-        ...asset,
-        quantity: 0,
-      };
-    });
+  const currentCurrency = message.meta?.currency;
+  if (currentCurrency) {
+    dispatch(dataUpdateAssetPricingInfo(updatedAssets, currentCurrency));
   }
+  dispatch(dataUpdateAssetBalanceInfo(updatedAssets, responseAddress));
 
   let parsedAssets = parseAccountAssets(updatedAssets, uniqueTokens);
 
@@ -1463,20 +1514,31 @@ export const assetPricesReceived = (
   message: AssetPricesReceivedMessage | undefined,
   fromFallback: boolean = false
 ) => (
-  dispatch: Dispatch<DataUpdateGenericAssetsAction | DataUpdateEthUsdAction>,
+  dispatch: ThunkDispatch<
+    AppState,
+    unknown,
+    DataUpdateGenericAssetsAction | DataUpdateEthUsdAction
+  >,
   getState: AppGetState
 ) => {
   if (!fromFallback) {
     disableGenericAssetsFallbackIfNeeded();
   }
-  const newAssetPrices = message?.payload?.prices ?? {};
-  if (isEmpty(newAssetPrices)) return;
-
+  const newAssets = message?.payload?.prices ?? {};
+  if (isEmpty(newAssets)) return;
   const { nativeCurrency } = getState().settings;
+  const currentCurrency = message?.meta?.currency;
+  const assetsByUniqueId = ethereumUtils.mapAssetsByUniqueId(
+    newAssets,
+    Network.mainnet
+  );
+  if (currentCurrency) {
+    dispatch(dataUpdateAssetPricingInfo(assetsByUniqueId, currentCurrency));
+  }
 
-  if (toLower(nativeCurrency) === message?.meta?.currency) {
-    if (isEmpty(newAssetPrices)) return;
-    const parsedAssets = mapValues(newAssetPrices, asset => {
+  const currencyMatch = toLower(nativeCurrency) === currentCurrency;
+  if (currencyMatch) {
+    const parsedAssets = mapValues(newAssets, asset => {
       if (isOfType<ZerionAssetFallback>(asset, 'coingecko_id')) {
         return parseFallbackAsset(asset);
       } else {
@@ -1488,7 +1550,6 @@ export const assetPricesReceived = (
       callbacksOnAssetReceived[toLower(id)]?.(parsedAssets[id]);
       callbacksOnAssetReceived[toLower(id)] = undefined;
     }
-
     dispatch({
       payload: parsedAssets,
       type: DATA_UPDATE_GENERIC_ASSETS,
@@ -1498,10 +1559,9 @@ export const assetPricesReceived = (
   const isUSD =
     message?.meta?.currency?.toLowerCase() ===
     NativeCurrencyKeys.USD.toLowerCase();
-  const containsETH = newAssetPrices[ETH_ADDRESS];
+  const containsETH = newAssets[ETH_ADDRESS];
   if (!(isUSD && containsETH)) return;
-  const newETHValue = newAssetPrices[ETH_ADDRESS]?.price?.value;
-
+  const newETHValue = newAssets[ETH_ADDRESS]?.price?.value;
   dispatch({
     payload: newETHValue,
     type: DATA_UPDATE_ETH_USD,
@@ -1516,17 +1576,30 @@ export const assetPricesReceived = (
 export const assetPricesChanged = (
   message: AssetPricesChangedMessage | undefined
 ) => (
-  dispatch: Dispatch<DataUpdateGenericAssetsAction | DataUpdateEthUsdAction>,
+  dispatch: ThunkDispatch<
+    AppState,
+    unknown,
+    DataUpdateGenericAssetsAction | DataUpdateEthUsdAction
+  >,
   getState: AppGetState
 ) => {
   const { nativeCurrency } = getState().settings;
 
   const price = message?.payload?.prices?.[0]?.price;
+  const updatedAsset = message?.payload?.prices?.[0];
   const assetAddress = message?.meta?.asset_code;
-  if (isNil(price) || isNil(assetAddress)) return;
+  if (isNil(price) || isNil(assetAddress) || isNil(updatedAsset)) return;
 
-  const currencyMatch =
-    nativeCurrency?.toLowerCase() === message?.meta?.currency;
+  const assetsByUniqueId = ethereumUtils.mapAssetsByUniqueId(
+    { [updatedAsset.asset_code]: updatedAsset },
+    Network.mainnet
+  );
+  const currentCurrency = message?.meta?.currency;
+  if (currentCurrency) {
+    dispatch(dataUpdateAssetPricingInfo(assetsByUniqueId, currentCurrency));
+  }
+
+  const currencyMatch = nativeCurrency?.toLowerCase() === currentCurrency;
   if (currencyMatch) {
     const { genericAssets } = getState().data;
     const genericAsset = {
@@ -2010,10 +2083,7 @@ export default (state: DataState = INITIAL_STATE, action: DataAction) => {
     case DATA_UPDATE_ASSET_BALANCE_INFO:
       return {
         ...state,
-        accountAssetBalanceData: {
-          ...state.accountAssetBalanceData,
-          [action.payload.address]: action.payload.balances,
-        },
+        accountAssetBalanceData: action.payload,
       };
     case DATA_UPDATE_ASSET_PRICING_INFO:
       return {

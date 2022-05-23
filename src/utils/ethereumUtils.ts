@@ -32,6 +32,8 @@ import {
   ParsedAddressAsset,
   RainbowTransaction,
   SelectedGasFee,
+  ZerionAsset,
+  ZerionAssetFallback,
 } from '@rainbow-me/entities';
 import { getOnchainAssetBalance } from '@rainbow-me/handlers/assets';
 import {
@@ -611,6 +613,29 @@ const getUniqueId = (params: {
     : name || '';
 };
 
+const mapAssetsByUniqueId = (
+  assets:
+    | {
+        [uniqueId: string]: ZerionAsset | ZerionAssetFallback;
+      }
+    | (ZerionAsset | ZerionAssetFallback)[],
+  network: Network
+): Record<EthereumAddress, ZerionAsset | ZerionAssetFallback> => {
+  if (!Array.isArray(assets)) {
+    assets = Object.values(assets);
+  }
+  return assets.reduce((updatedAssets, currentAsset) => {
+    return {
+      ...updatedAssets,
+      [getUniqueId({
+        address: currentAsset.asset_code,
+        name: currentAsset.name,
+        network,
+      })]: currentAsset,
+    };
+  }, {});
+};
+
 const calculateL1FeeOptimism = async (
   tx: RainbowTransaction,
   provider: Provider
@@ -681,6 +706,7 @@ export default {
   getUniqueId,
   hasPreviousTransactions,
   isEthAddress,
+  mapAssetsByUniqueId,
   openAddressInBlockExplorer,
   openNftInBlockExplorer,
   openTokenEtherscanURL,
