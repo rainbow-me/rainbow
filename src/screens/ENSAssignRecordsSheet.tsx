@@ -289,7 +289,7 @@ export function ENSAssignRecordsBottomActions({
   const [visible, setVisible] = useState(false);
   useEffect(() => {
     if (mode === REGISTRATION_MODES.EDIT) {
-      setTimeout(() => setVisible(profileQuery.isSuccess), 50);
+      setTimeout(() => setVisible(profileQuery.isSuccess), 200);
     } else {
       setVisible(defaultVisible);
     }

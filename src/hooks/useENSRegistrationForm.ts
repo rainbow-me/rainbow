@@ -223,7 +223,7 @@ export default function useENSRegistrationForm({
   useEffect(() => {
     if (mode === REGISTRATION_MODES.EDIT) {
       if (profileQuery.isSuccess || !isEmpty(values)) {
-        setTimeout(() => setIsLoading(false), 50);
+        setTimeout(() => setIsLoading(false), 200);
       } else {
         setIsLoading(true);
       }
