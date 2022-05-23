@@ -86,7 +86,12 @@ const getInputAmount = async (
           code: quoteError.error_code,
           msg: quoteError.message,
         });
-        if (quoteError.message === 'insufficient liquidity') {
+        if (
+          // insufficient liquidity
+          quoteError.error_code === 502 ||
+          // Unsupported Token
+          quoteError.error_code === 501
+        ) {
           return {
             inputAmount: null,
             inputAmountDisplay: null,
@@ -185,7 +190,12 @@ const getOutputAmount = async (
           code: quoteError.error_code,
           msg: quoteError.message,
         });
-        if (quoteError.message === 'insufficient liquidity') {
+        if (
+          // insufficient liquidity
+          quoteError.error_code === 502 ||
+          // Unsupported Token
+          quoteError.error_code === 501
+        ) {
           return {
             noLiquidity: true,
             outputAmount: null,
