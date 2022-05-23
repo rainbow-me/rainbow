@@ -2,7 +2,6 @@ import {
   chunk,
   compact,
   concat,
-  forEach,
   get,
   groupBy,
   includes,
@@ -118,7 +117,7 @@ export const buildCoinsList = (
   );
 
   // separate into standard, pinned, small balances, hidden assets
-  forEach(assets, asset => {
+  assets?.forEach(asset => {
     if (hiddenCoins && hiddenCoins.includes(asset.uniqueId)) {
       hiddenAssets.push({
         isCoin: true,
