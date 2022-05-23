@@ -544,8 +544,8 @@ export default async function runMigrations() {
       // Add existing signatures
       // which look like'signature_0x...'
       const { wallets } = store.getState().wallets;
-      if (Object.keys(wallets).length > 0) {
-        for (let wallet of Object.values(wallets)) {
+      if (Object.keys(wallets!).length > 0) {
+        for (let wallet of Object.values(wallets!)) {
           for (let account of (wallet as RainbowWallet).addresses) {
             keysToMigrate.push(`signature_${account.address}`);
           }
