@@ -1,6 +1,7 @@
 import { formatsByCoinType, formatsByName } from '@ensdomains/address-encoder';
 import { captureException } from '@sentry/react-native';
 import { Duration, sub } from 'date-fns';
+import { isZeroAddress } from 'ethereumjs-util';
 import { BigNumber } from 'ethers';
 import { debounce, isEmpty, sortBy } from 'lodash';
 import { ensClient } from '../apollo/client';
@@ -213,28 +214,37 @@ export const fetchSuggestions = async (
     });
     if (!isEmpty(result?.data?.domains)) {
       const domains = await Promise.all(
-        result?.data?.domains.map(
-          async (domain: { name: string; resolver: { texts: string[] } }) => {
-            const hasAvatar = domain?.resolver?.texts?.find(
-              text => text === ENS_RECORDS.avatar
-            );
-            if (!!hasAvatar && profilesEnabled) {
-              try {
-                const images = await fetchImages(domain.name);
-                queryClient.setQueryData(
-                  ensProfileImagesQueryKey(domain.name),
-                  images
-                );
-                return {
-                  ...domain,
-                  avatar: images.avatarUrl,
-                };
-                // eslint-disable-next-line no-empty
-              } catch (e) {}
+        result?.data?.domains
+          .filter(
+            (domain: { owner: { id: string } }) =>
+              !isZeroAddress(domain.owner.id)
+          )
+          .map(
+            async (domain: {
+              name: string;
+              resolver: { texts: string[] };
+              owner: { id: string };
+            }) => {
+              const hasAvatar = domain?.resolver?.texts?.find(
+                text => text === ENS_RECORDS.avatar
+              );
+              if (!!hasAvatar && profilesEnabled) {
+                try {
+                  const images = await fetchImages(domain.name);
+                  queryClient.setQueryData(
+                    ensProfileImagesQueryKey(domain.name),
+                    images
+                  );
+                  return {
+                    ...domain,
+                    avatar: images.avatarUrl,
+                  };
+                  // eslint-disable-next-line no-empty
+                } catch (e) {}
+              }
+              return domain;
             }
-            return domain;
-          }
-        )
+          )
       );
       const ensSuggestions = domains
         .map((ensDomain: any) => ({
