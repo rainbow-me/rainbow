@@ -1,13 +1,5 @@
 import lang from 'i18n-js';
-import {
-  compact,
-  find,
-  flattenDeep,
-  get,
-  groupBy,
-  map,
-  property,
-} from 'lodash';
+import { compact, find, flattenDeep, get, groupBy, property } from 'lodash';
 import React from 'react';
 import { LayoutAnimation } from 'react-native';
 import { createSelector } from 'reselect';
@@ -173,7 +165,7 @@ const withBriefUniswapSection = (
 
 const withBalanceSavingsSection = (savings, network) => {
   let totalUnderlyingNativeValue = '0';
-  const savingsAssets = map(savings, asset => {
+  const savingsAssets = savings?.map(asset => {
     const {
       lifetimeSupplyInterestAccrued,
       underlyingBalanceNativeValue,

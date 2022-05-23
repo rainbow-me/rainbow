@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { map, zipObject } from 'lodash';
+import zipObject from 'lodash/zipObject';
 import { gasUtils } from '../utils';
 import {
   BlocksToConfirmation,
@@ -243,7 +243,7 @@ export const parseLegacyGasFeesBySpeed = (
   nativeCurrency: string,
   l1GasFeeOptimism: BigNumber | null = null
 ): LegacyGasFeesBySpeed => {
-  const gasFeesBySpeed = map(GasSpeedOrder, speed => {
+  const gasFeesBySpeed = GasSpeedOrder.map(speed => {
     const gasPrice = legacyGasFees?.[speed]?.gasPrice?.amount || 0;
     const estimatedFee = getTxFee(
       gasPrice,
@@ -304,7 +304,7 @@ export const parseGasFeesBySpeed = (
   priceUnit: BigNumberish,
   nativeCurrency: string
 ): GasFeesBySpeed => {
-  const gasFeesBySpeed = map(GasSpeedOrder, speed =>
+  const gasFeesBySpeed = GasSpeedOrder.map(speed =>
     parseGasFees(
       gasFeeParamsBySpeed[speed],
       baseFeePerGas,

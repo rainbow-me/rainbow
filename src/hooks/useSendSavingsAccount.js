@@ -1,4 +1,3 @@
-import { map } from 'lodash';
 import { convertAmountToNativeDisplay, multiply } from '../helpers/utilities';
 import useAccountSettings from './useAccountSettings';
 import useSavingsAccount from './useSavingsAccount';
@@ -6,7 +5,7 @@ import useSavingsAccount from './useSavingsAccount';
 export default function useSendSavingsAccount() {
   const { nativeCurrency } = useAccountSettings();
   let { savings } = useSavingsAccount();
-  savings = map(savings, asset => {
+  savings = savings.map(asset => {
     const { cToken, cTokenBalance, exchangeRate, underlyingPrice } = asset;
     const cTokenBalanceDisplay = `${cTokenBalance} ${cToken.symbol}`;
 

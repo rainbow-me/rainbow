@@ -3,7 +3,6 @@ import {
   get,
   isEmpty,
   isNil,
-  map,
   pick,
   pickBy,
   remove,
@@ -247,7 +246,7 @@ export const parseAccountUniqueTokensPolygon = async data => {
 };
 
 export const getFamilies = uniqueTokens =>
-  uniq(map(uniqueTokens, u => get(u, 'asset_contract.address', '')));
+  uniq(uniqueTokens.map(u => get(u, 'asset_contract.address', '')));
 
 export const dedupeUniqueTokens = (newAssets, uniqueTokens) => {
   const uniqueTokenFamilies = getFamilies(uniqueTokens);
