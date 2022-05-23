@@ -7,7 +7,6 @@ import { Modal } from '../components/modal';
 import ModalHeaderButton from '../components/modal/ModalHeaderButton';
 import {
   CurrencySection,
-  DevNotificationsSection,
   DevSection,
   LanguageSection,
   NetworkSection,
@@ -90,12 +89,6 @@ const SettingsPages = {
     component: NetworkSection,
     getTitle: () => lang.t('settings.network'),
     key: 'NetworkSection',
-  },
-  notifications: {
-    component:
-      IS_DEV || isTestFlight ? DevNotificationsSection : UserDevSection,
-    getTitle: () => lang.t('settings.notifications'),
-    key: 'NotificationsSection',
   },
   privacy: {
     component: PrivacySection,
@@ -204,9 +197,6 @@ export default function SettingsModal() {
                 onPressDev={onPressSection(SettingsPages.dev)}
                 onPressLanguage={onPressSection(SettingsPages.language)}
                 onPressNetwork={onPressSection(SettingsPages.network)}
-                onPressNotifications={onPressSection(
-                  SettingsPages.notifications
-                )}
                 onPressPrivacy={onPressSection(SettingsPages.privacy)}
               />
             )}

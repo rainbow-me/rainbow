@@ -33,7 +33,6 @@ import {
   isCustomBuild,
   setOriginalDeploymentKey,
 } from '@rainbow-me/handlers/fedora';
-import isTestFlight from '@rainbow-me/helpers/isTestFlight';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import {
@@ -142,7 +141,6 @@ export default function SettingsSection({
   onPressIcloudBackup,
   onPressLanguage,
   onPressNetwork,
-  onPressNotifications,
   onPressPrivacy,
   onPressShowSecret,
 }) {
@@ -381,14 +379,6 @@ export default function SettingsSection({
             onPress={onPressDev}
             testID="developer-section"
           />
-          {(IS_DEV || isTestFlight) && (
-            <ListItem
-              icon={<Emoji name="construction" />}
-              label={lang.t('settings.notifications')}
-              onPress={onPressNotifications}
-              testID="notifications-section"
-            />
-          )}
         </Fragment>
         <VersionStampContainer>
           <AppVersionStamp />
