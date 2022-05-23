@@ -1,0 +1,13 @@
+diff --git a/node_modules/metro-react-native-babel-preset/src/configs/main.js b/node_modules/metro-react-native-babel-preset/src/configs/main.js
+index edc8263..36310ec 100644
+--- a/node_modules/metro-react-native-babel-preset/src/configs/main.js
++++ b/node_modules/metro-react-native-babel-preset/src/configs/main.js
+@@ -44,7 +44,7 @@ const getPreset = (src, options) => {
+   // TODO(jsx): Restore check for transformProfile === 'hermes-canary'
+ 
+   const isHermesCanary = false;
+-  const isHermes = isHermesStable || isHermesCanary;
++  const isHermes = true;
+   const isNull = src == null;
+   const hasClass = isNull || src.indexOf("class") !== -1;
+   const hasForOf =
