@@ -2,7 +2,7 @@ import { concat, isEmpty, isNil, keyBy, keys, toLower } from 'lodash';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import io from 'socket.io-client';
-import { defaultConfig, L2_TXS } from '../config/experimental';
+import { getExperimetalFlag, L2_TXS } from '../config/experimental';
 import config from '../model/config';
 import {
   assetChartsReceived,
@@ -368,6 +368,31 @@ const addressAssetsRequest = (
 ];
 
 /**
+ * Configures a layer-2 transaction history request for a given address.
+ *
+ * @param address The wallet address.
+ * @param currency The currency to use.
+ * @returns The arguments for an `emit` function call.
+ */
+const l2AddressTransactionHistoryRequest = (
+  address: string,
+  currency: string
+): SocketEmitArguments => [
+  'get',
+  {
+    payload: {
+      address,
+      currency: toLower(currency),
+      transactions_limit: TRANSACTIONS_LIMIT,
+    },
+    scope: [
+      `${Network.arbitrum}-transactions`,
+      `${Network.polygon}-transactions`,
+    ],
+  },
+];
+
+/**
  * Configures a chart retrieval request for assets.
  *
  * @param assetCodes The asset addresses.
@@ -695,6 +720,21 @@ export const emitChartsRequest = (
 };
 
 /**
+ * Emits a layer-2 transaction history request for the current address. The
+ * result is handled by a listener in `listenOnAddressMessages`.
+ */
+export const emitL2TransactionHistoryRequest = () => (
+  _: Dispatch,
+  getState: AppGetState
+) => {
+  const { accountAddress, nativeCurrency } = getState().settings;
+  const { addressSocket } = getState().explorer;
+  addressSocket!.emit(
+    ...l2AddressTransactionHistoryRequest(accountAddress, nativeCurrency)
+  );
+};
+
+/**
  * Adds asset message listeners to a given socket.
  *
  * @param socket The socket to add listeners to.
@@ -841,20 +881,30 @@ const listenOnAddressMessages = (socket: SocketIOClient.Socket) => (
   socket.on(
     messages.ADDRESS_TRANSACTIONS.RECEIVED,
     (message: TransactionsReceivedMessage) => {
-      // logger.log('txns received', message?.payload?.transactions);
+      // logger.log('mainnet txns received', message?.payload?.transactions);
+
+      if (getExperimetalFlag(L2_TXS)) {
+        dispatch(emitL2TransactionHistoryRequest());
+      }
       dispatch(transactionsReceived(message));
     }
   );
 
-  if (defaultConfig[L2_TXS].value) {
-    socket.on(
-      messages.ADDRESS_TRANSACTIONS.RECEIVED_ARBITRUM,
-      (message: TransactionsReceivedMessage) => {
-        // logger.log('txns received', message?.payload?.transactions);
-        dispatch(transactionsReceived(message));
-      }
-    );
-  }
+  socket.on(
+    messages.ADDRESS_TRANSACTIONS.RECEIVED_ARBITRUM,
+    (message: TransactionsReceivedMessage) => {
+      // logger.log('arbitrum txns received', message?.payload?.transactions);
+      dispatch(transactionsReceived(message));
+    }
+  );
+
+  socket.on(
+    messages.ADDRESS_TRANSACTIONS.RECEIVED_POLYGON,
+    (message: TransactionsReceivedMessage) => {
+      // logger.log('polygon txns received', message?.payload?.transactions);
+      dispatch(transactionsReceived(message));
+    }
+  );
 
   socket.on(
     messages.ADDRESS_TRANSACTIONS.APPENDED,
