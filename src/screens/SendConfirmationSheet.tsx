@@ -40,6 +40,7 @@ import useExperimentalFlag, {
 import { useTheme } from '@rainbow-me/context';
 import { Box, Inset, Stack, Text } from '@rainbow-me/design-system';
 import { UniqueAsset } from '@rainbow-me/entities';
+import { estimateGasLimit } from '@rainbow-me/handlers/web3';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
@@ -56,6 +57,7 @@ import {
   useContacts,
   useDimensions,
   useENSProfileImages,
+  useGas,
   useUserAccounts,
   useWallets,
 } from '@rainbow-me/hooks';
@@ -169,7 +171,7 @@ const ChevronDown = () => {
 
 export default function SendConfirmationSheet() {
   const { colors, isDarkMode } = useTheme();
-  const { nativeCurrency } = useAccountSettings();
+  const { accountAddress, nativeCurrency } = useAccountSettings();
   const { goBack, navigate, setParams } = useNavigation();
   const {
     height: deviceHeight,
@@ -220,6 +222,29 @@ export default function SendConfirmationSheet() {
     return !!found;
   }, [toAddress, userAccounts]);
 
+  const { updateTxFee } = useGas();
+
+  const uniqueTokenType = getUniqueTokenType(asset);
+  const isENS = uniqueTokenType === 'ENS';
+
+  useEffect(() => {
+    if (isENS) {
+      estimateGasLimit({
+        address: accountAddress,
+        amount: 0,
+        asset: asset,
+        recipient: toAddress,
+      })
+        .then(async gasLimit => {
+          updateTxFee(gasLimit, null);
+        })
+        .catch(e => {
+          logger.sentry('Error calculating gas limit', e);
+          updateTxFee(null, null);
+        });
+    }
+  }, [accountAddress, asset, isENS, toAddress, updateTxFee]);
+
   useEffect(() => {
     if (!isSendingToUserAccount) {
       let sends = 0;
@@ -245,9 +270,6 @@ export default function SendConfirmationSheet() {
   const contact = useMemo(() => {
     return get(contacts, `${[toLower(toAddress)]}`);
   }, [contacts, toAddress]);
-
-  const uniqueTokenType = getUniqueTokenType(asset);
-  const isENS = uniqueTokenType === 'ENS';
 
   const [checkboxes, setCheckboxes] = useState<Checkbox[]>(
     isENS
@@ -627,10 +649,10 @@ export default function SendConfirmationSheet() {
           </SendButtonWrapper>
           {isENS && (
             <GasSpeedButton
-              asset={{ color: color }}
-              currentNetwork="mainnet"
-              testID="testinggas"
-              theme="light"
+              asset={null}
+              currentNetwork={network}
+              testID={null}
+              theme={isDarkMode ? 'dark' : 'light'}
               validateGasParams={null}
             />
           )}
