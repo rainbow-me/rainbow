@@ -1,5 +1,4 @@
-import { find, matchesProperty } from 'lodash';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useQueryClient } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAdditionalRecyclerAssetListData } from '../components/asset-list/RecyclerAssetList2/core/Contexts';
@@ -38,10 +37,10 @@ export default function useCollectible(
   );
 
   const asset = useMemo(() => {
-    let matched = find(
-      uniqueTokens,
-      matchesProperty('uniqueId', initialAsset?.uniqueId)
+    let matched = uniqueTokens.find(
+      uniqueToken => uniqueToken.uniqueId === initialAsset?.uniqueId
     );
+
     return matched || asset;
   }, [initialAsset, uniqueTokens]);
 

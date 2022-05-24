@@ -12,6 +12,7 @@ import useAppVersion from '../../hooks/useAppVersion';
 import { ListFooter, ListItem } from '../list';
 import { RadioListItem } from '../radio-list';
 import UserDevSection from './UserDevSection';
+import { Divider } from '@rainbow-me/design-system';
 import { deleteAllBackups } from '@rainbow-me/handlers/cloudBackup';
 import { web3SetHttpProvider } from '@rainbow-me/handlers/web3';
 import { RainbowContext } from '@rainbow-me/helpers/RainbowContext';
@@ -20,6 +21,7 @@ import { useWallets } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { wipeKeychain } from '@rainbow-me/model/keychain';
 import { clearAllStorages } from '@rainbow-me/model/mmkv';
+import { Navigation } from '@rainbow-me/navigation';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import { explorerInit } from '@rainbow-me/redux/explorer';
 import { clearImageMetadataCache } from '@rainbow-me/redux/imageMetadata';
@@ -34,9 +36,13 @@ const DevSection = () => {
   const { wallets } = useWallets();
   const dispatch = useDispatch();
 
-  const onNetworkChange = useCallback(
+  const onExperimentalKeyChange = useCallback(
     value => {
       setConfig({ ...config, [value]: !config[value] });
+      if (defaultConfig[value].needsRestart) {
+        Navigation.handleAction(Routes.WALLET_SCREEN);
+        setTimeout(Restart.Restart, 1000);
+      }
     },
     [config, setConfig]
   );
@@ -75,6 +81,10 @@ const DevSection = () => {
       )[0];
       Alert.alert(resultString);
     }
+  }, [navigate]);
+
+  const navToDevNotifications = useCallback(() => {
+    navigate('DevNotificationsSection');
   }, [navigate]);
 
   const checkAlert = useCallback(async () => {
@@ -180,6 +190,11 @@ const DevSection = () => {
         onPress={checkAlert}
         testID="alert-section"
       />
+      <ListItem
+        label={`🔔 ${lang.t('developer_settings.notifications_debug')}`}
+        onPress={navToDevNotifications}
+        testID="notifications-section"
+      />
       <UserDevSection scrollEnabled={false} />
       <ListItem
         label={`‍⏩ ${lang.t('developer_settings.sync_codepush', {
@@ -194,10 +209,12 @@ const DevSection = () => {
           <RadioListItem
             key={key}
             label={key}
-            onPress={() => onNetworkChange(key)}
+            onPress={() => onExperimentalKeyChange(key)}
             selected={!!config[key]}
           />
         ))}
+
+      <Divider />
       <ListFooter />
     </ScrollView>
   );
