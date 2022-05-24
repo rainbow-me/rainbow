@@ -17,6 +17,8 @@ const RAINBOW_TEST_WALLET_ADDRESS =
   '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
 const RECORD_BIO = 'my bio';
 const RECORD_NAME = 'random';
+const EIP155_FORMATTED_AVATAR_RECORD =
+  'eip155:1/erc721:0x06012c8cf97bead5deae237070f9587f8e7a266d/1368227';
 
 const nameIsAvailable = async name => {
   const provider = Helpers.getProvider();
@@ -181,7 +183,7 @@ describe('Register ENS Flow', () => {
   it('Should be able to type a name that is not available', async () => {
     await Helpers.checkIfVisible('ens-search-input');
     await Helpers.typeText('ens-search-input', 'rainbowwallet', false);
-    await Helpers.delay(10000);
+    await Helpers.delay(3000);
     await Helpers.waitAndTap('ens-search-clear-button');
   });
 
@@ -253,10 +255,7 @@ describe('Register ENS Flow', () => {
     if (description !== RECORD_BIO) throw new Error('ENS description is wrong');
     if (displayName === RECORD_NAME)
       throw new Error('ENS displayName is wrong');
-    if (
-      avatar !==
-      'eip155:1/erc721:0x06012c8cf97bead5deae237070f9587f8e7a266d/1368227'
-    )
+    if (avatar !== EIP155_FORMATTED_AVATAR_RECORD)
       throw new Error('ENS avatar is wrong');
   });
 
