@@ -43,6 +43,7 @@ import {
   useColorForAsset,
   useContacts,
   useCurrentNonce,
+  useENSProfile,
   useGas,
   useMaxInputBalance,
   usePrevious,
@@ -67,7 +68,11 @@ import {
   formatInputDecimals,
   lessThan,
 } from '@rainbow-me/utilities';
-import { deviceUtils, ethereumUtils } from '@rainbow-me/utils';
+import {
+  deviceUtils,
+  ethereumUtils,
+  getUniqueTokenType,
+} from '@rainbow-me/utils';
 import logger from 'logger';
 
 const sheetHeight = deviceUtils.dimensions.height - (android ? 30 : 10);
@@ -173,6 +178,16 @@ export default function SendSheet(props) {
   if (isNft) {
     colorForAsset = colors.appleBlue;
   }
+
+  const uniqueTokenType = isNft ? getUniqueTokenType(selected) : undefined;
+  const isENS = uniqueTokenType === 'ENS';
+
+  const ensName = selected.uniqueId
+    ? selected.uniqueId?.split(' ')?.[0]
+    : selected.uniqueId;
+  const ensProfile = useENSProfile(ensName, {
+    enabled: isENS,
+  });
 
   const isL2 = useMemo(() => {
     return isL2Network(currentNetwork);
@@ -690,6 +705,7 @@ export default function SendSheet(props) {
       amountDetails: amountDetails,
       asset: selected,
       callback: submitTransaction,
+      ensProfile,
       isL2,
       isNft,
       network: currentNetwork,
@@ -701,6 +717,7 @@ export default function SendSheet(props) {
     assetInputRef,
     buttonDisabled,
     currentNetwork,
+    ensProfile,
     isL2,
     isNft,
     nativeCurrencyInputRef,

@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import { toChecksumAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
-import { capitalize, get, toLower } from 'lodash';
+import { capitalize, get, isEmpty, toLower } from 'lodash';
 import React, {
   Fragment,
   useCallback,
@@ -27,6 +27,7 @@ import { Centered, Column, Row } from '../components/layout';
 import { SendButton } from '../components/send';
 import { SheetTitle, SlackSheet } from '../components/sheet';
 import { Text as OldText, TruncatedText } from '../components/text';
+import { ENSProfile } from '../entities/ens';
 import { address } from '../utils/abbreviations';
 import {
   addressHashedColorIndex,
@@ -77,19 +78,58 @@ const SendButtonWrapper = styled(Column).attrs({
   height: 56,
 });
 
+export type Checkbox = {
+  checked: boolean;
+  id:
+    | 'clear-profile'
+    | 'reverse-record'
+    | 'transfer-owner'
+    | 'not-sending-to-exchange'
+    | 'has-wallet-that-supports';
+  label: string;
+};
+
+const hasClearProfileInfo = (ensProfile?: ENSProfile) =>
+  isEmpty(ensProfile?.data?.records);
+const doesNamePointToRecipient = (
+  ensProfile?: ENSProfile,
+  recipientAddress?: string
+) =>
+  ensProfile?.data?.primary?.address.toLowerCase() ===
+  recipientAddress?.toLowerCase();
+const doesAccountControlName = (ensProfile?: ENSProfile) => ensProfile?.isOwner;
+
+const gasOffset = 120;
+const checkboxOffset = 44;
+
 export function getSheetHeight({
   asset,
+  ensProfile,
   shouldShowChecks,
   isL2,
+  toAddress,
 }: {
   asset?: UniqueAsset;
+  ensProfile?: ENSProfile;
   shouldShowChecks: boolean;
   isL2: boolean;
+  toAddress: string;
 }) {
   let height = android ? 488 : 377;
   if (shouldShowChecks) height = height + 104;
   if (isL2) height = height + 59;
-  if (asset && getUniqueTokenType(asset) === 'ENS') height = height + 250;
+  if (asset && getUniqueTokenType(asset) === 'ENS') {
+    height = height + gasOffset;
+    if (!hasClearProfileInfo(ensProfile)) {
+      height = height + checkboxOffset;
+    }
+    if (!doesNamePointToRecipient(ensProfile, toAddress)) {
+      height = height + checkboxOffset;
+    }
+    if (doesAccountControlName(ensProfile)) {
+      height = height + checkboxOffset;
+    }
+  }
   return height;
 }
 
@@ -150,6 +190,7 @@ export default function SendConfirmationSheet() {
       amountDetails,
       asset,
       callback,
+      ensProfile,
       isL2,
       isNft,
       network,
@@ -207,31 +248,36 @@ export default function SendConfirmationSheet() {
   const uniqueTokenType = getUniqueTokenType(asset);
   const isENS = uniqueTokenType === 'ENS';
 
-  const [checkboxes, setCheckboxes] = useState(
+  const [checkboxes, setCheckboxes] = useState<Checkbox[]>(
     isENS
-      ? [
-          {
+      ? ([
+          !hasClearProfileInfo(ensProfile) && {
             checked: false,
+            id: 'clear-profile',
             label: 'Clear profile information',
           },
-          {
+          !doesNamePointToRecipient(ensProfile, toAddress) && {
             checked: false,
+            id: 'reverse-record',
             label: 'Point this name to the recipient’s wallet address',
           },
-          {
+          doesAccountControlName(ensProfile) && {
             checked: false,
+            id: 'transfer-owner',
             label: 'Transfer control to the recipient',
           },
-        ]
+        ].filter(Boolean) as Checkbox[])
       : [
           {
             checked: false,
+            id: 'not-sending-to-exchange',
             label: lang.t(
               'wallet.transaction.checkboxes.im_not_sending_to_an_exchange'
             ),
           },
           {
             checked: false,
+            id: 'has-wallet-that-supports',
             label: lang.t(
               'wallet.transaction.checkboxes.has_a_wallet_that_supports',
               {
@@ -338,10 +384,19 @@ export default function SendConfirmationSheet() {
     ? images?.avatarUrl || existingAccount?.image
     : existingAccount?.image;
 
-  let contentHeight = getSheetHeight({ isL2, shouldShowChecks }) - 30;
+  let contentHeight =
+    getSheetHeight({
+      ensProfile,
+      isL2,
+      shouldShowChecks,
+      toAddress,
+    }) - 30;
   if (shouldShowChecks) contentHeight = contentHeight + 150;
   if (isL2) contentHeight = contentHeight + 60;
-  if (isENS) contentHeight = contentHeight + 250;
+  if (isENS) {
+    contentHeight =
+      contentHeight + checkboxes.length * checkboxOffset + gasOffset;
+  }
 
   return (
     <Container
@@ -535,7 +590,7 @@ export default function SendConfirmationSheet() {
                 )}
                 {(isENS || shouldShowChecks) && (
                   <Inset horizontal="10px">
-                    <Stack space="19px">
+                    <Stack space="24px">
                       {checkboxes.map((check, i) => (
                         <CheckboxField
                           color={color}
