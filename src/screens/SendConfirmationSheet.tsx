@@ -22,6 +22,7 @@ import RequestVendorLogoIcon from '../components/coin-icon/RequestVendorLogoIcon
 import { ContactAvatar } from '../components/contacts';
 import ImageAvatar from '../components/contacts/ImageAvatar';
 import CheckboxField from '../components/fields/CheckboxField';
+import { GasSpeedButton } from '../components/gas';
 import ENSCircleIcon from '../components/icons/svg/ENSCircleIcon';
 import { Centered, Column, Row } from '../components/layout';
 import { SendButton } from '../components/send';
@@ -624,6 +625,15 @@ export default function SendConfirmationSheet() {
               testID="send-confirmation-button"
             />
           </SendButtonWrapper>
+          {isENS && (
+            <GasSpeedButton
+              asset={{ color: color }}
+              currentNetwork="mainnet"
+              testID="testinggas"
+              theme="light"
+              validateGasParams={null}
+            />
+          )}
         </Column>
       </SlackSheet>
     </Container>
