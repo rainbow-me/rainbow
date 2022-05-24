@@ -296,7 +296,13 @@ export default function useSwapDerivedOutputs(chainId: number) {
   useEffect(() => {
     const getTradeDetails = async () => {
       let tradeDetails = null;
-      if (!independentValue || !inputCurrency) {
+
+      if (isZero(independentValue) || !independentValue) {
+        resetSwapInputs();
+        return;
+      }
+
+      if (!inputCurrency || !outputCurrency) {
         setInsufficientLiquidity(false);
         setResult({
           derivedValues,
@@ -305,6 +311,7 @@ export default function useSwapDerivedOutputs(chainId: number) {
         });
         return;
       }
+
       setLoading(true);
       const inputToken = inputCurrency;
       const outputToken = outputCurrency;
@@ -314,10 +321,9 @@ export default function useSwapDerivedOutputs(chainId: number) {
         derivedValues[SwapModalField.input] = independentValue;
         displayValues[DisplayValue.input] = independentValue;
 
-        const nativeValue =
-          inputPrice && !isZero(independentValue)
-            ? convertAmountToNativeAmount(independentValue, inputPrice)
-            : null;
+        const nativeValue = inputPrice
+          ? convertAmountToNativeAmount(independentValue, inputPrice)
+          : null;
 
         derivedValues[SwapModalField.native] = nativeValue;
         const {
@@ -341,7 +347,7 @@ export default function useSwapDerivedOutputs(chainId: number) {
           outputAmountDisplay?.toString() || null;
       } else if (independentField === SwapModalField.native) {
         const inputAmount =
-          independentValue && !isZero(independentValue) && inputPrice
+          independentValue && inputPrice
             ? convertAmountFromNativeValue(
                 independentValue,
                 inputPrice,
@@ -349,18 +355,17 @@ export default function useSwapDerivedOutputs(chainId: number) {
               )
             : null;
 
-        derivedValues[SwapModalField.native] = independentValue;
-        derivedValues[SwapModalField.input] = inputAmount;
-
         // The quote is the same
         if (
           derivedValuesFromRedux &&
-          derivedValues[SwapModalField.native] ===
-            derivedValuesFromRedux[SwapModalField.native]
+          independentValue === derivedValuesFromRedux[SwapModalField.native]
         ) {
           setLoading(false);
           return;
         }
+
+        derivedValues[SwapModalField.native] = independentValue;
+        derivedValues[SwapModalField.input] = inputAmount;
 
         const inputAmountDisplay =
           inputAmount && inputPrice
