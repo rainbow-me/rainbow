@@ -43,7 +43,7 @@ export default function useENSProfile(
   });
 
   const isOwner =
-    data?.owner?.address?.toLocaleLowerCase() === accountAddress?.toLowerCase();
+    data?.owner?.address?.toLowerCase() === accountAddress?.toLowerCase();
 
   // if a ENS NFT is sent, the ETH coinAddress record doesn't change
   // if the user tries to use it to set primary name the tx will go through
