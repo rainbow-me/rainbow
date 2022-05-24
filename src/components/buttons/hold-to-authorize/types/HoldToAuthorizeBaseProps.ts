@@ -1,3 +1,4 @@
+import { StyleProp, ViewStyle } from 'react-native';
 import { DeviceDimensions } from '@rainbow-me/hooks';
 import { Colors } from '@rainbow-me/styles';
 
@@ -13,10 +14,10 @@ export interface HoldToAuthorizeBaseProps {
   label: string;
   onLongPress: () => void;
   parentHorizontalPadding: number;
-  shadows: any[][];
+  shadows: [number, number, number, string, number][];
   showBiometryIcon: boolean;
   smallButton: boolean;
-  style: object;
+  style: StyleProp<ViewStyle>;
   testID: string;
   theme: 'light' | 'dark';
   tinyButton?: boolean;
