@@ -231,15 +231,13 @@ export const getWalletENSAvatars = async (walletsState, dispatch) => {
   const { wallets, walletNames, selected } = walletsState;
   const walletKeys = Object.keys(wallets);
   let updatedWallets;
-  for (const key of walletKeys) {
+  let promises = [];
+  walletKeys.forEach(key => {
     const wallet = wallets[key];
-    const addresses = [];
-    let avatarChanged = false;
-    for (const account of wallet?.addresses) {
+    const innerPromises = wallet?.addresses?.map(async account => {
       const ens =
         (await fetchReverseRecord(account.address)) ||
         walletNames[account.address];
-
       if (ens) {
         const images = await fetchImages(ens);
         const newImage =
@@ -247,27 +245,37 @@ export const getWalletENSAvatars = async (walletsState, dispatch) => {
           images?.avatarUrl !== account?.image
             ? images?.avatarUrl
             : account.image;
-
-        avatarChanged = newImage !== account.image;
-        addresses.push({
-          ...account,
-          image: newImage,
-        });
+        return {
+          account: {
+            ...account,
+            image: newImage,
+          },
+          avatarChanged: newImage !== account.image,
+          key,
+        };
       } else {
-        addresses.push(account);
+        return { account, avatarChanged: false, key };
       }
-    }
-    // don't update wallets if nothing changed
-    if (avatarChanged) {
-      updatedWallets = {
-        ...wallets,
-        [key]: {
-          ...wallets[key],
-          addresses,
-        },
-      };
-    }
-  }
+    });
+    promises = promises.concat(innerPromises);
+  });
+
+  const newAccounts = await Promise.all(promises);
+  newAccounts.forEach(({ account, key, avatarChanged }) => {
+    if (!avatarChanged) return;
+    const addresses = wallets?.[key]?.addresses;
+    const index = addresses?.findIndex(
+      ({ address }) => address === account.address
+    );
+    addresses.splice(index, 1, account);
+    updatedWallets = {
+      ...(updatedWallets ?? wallets),
+      [key]: {
+        ...wallets[key],
+        addresses,
+      },
+    };
+  });
   if (updatedWallets) {
     dispatch(walletsSetSelected(updatedWallets[selected.id]));
     dispatch(walletsUpdate(updatedWallets));
