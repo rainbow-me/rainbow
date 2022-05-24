@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
-import Animated, { SpringUtils } from 'react-native-reanimated';
-import { useSpringTransition } from 'react-native-redash/src/v1';
+import React, { useLayoutEffect, useState } from 'react';
+import Animated, {
+  interpolate,
+  SpringUtils,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 import { magicMemo } from '../../utils';
-import { interpolate } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { useTimeout } from '@rainbow-me/hooks';
@@ -63,22 +67,24 @@ const Badge = ({
 
   startDelayTimeout(() => setDelayedIsVisible(isVisible), delay);
 
-  const animation = useSpringTransition(delayedIsVisible, BadgeSpringConfig);
+  const animation = useSharedValue(delayedIsVisible ? 1 : 0);
 
-  const translateY = interpolate(animation, {
-    inputRange: [0, 1],
-    outputRange: [1, 0],
+  useLayoutEffect(() => {
+    animation.value = withSpring(delayedIsVisible ? 1 : 0, BadgeSpringConfig);
+  }, [delayedIsVisible, animation]);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    const translateY = interpolate(animation.value, [0, 1], [1, 0], 'extend');
+
+    return {
+      transform: [{ scale: animation.value }, { translateY }],
+    };
   });
 
   const valueLength = value.toString().length;
 
   return (
-    <Container
-      {...props}
-      offset={offset}
-      size={size}
-      style={{ transform: [{ scale: animation, translateY }] }}
-    >
+    <Container {...props} offset={offset} size={size} style={animatedStyle}>
       <Circle offset={offset} size={size} valueLength={valueLength}>
         <NumberText>
           {valueLength > maxLength ? `${'9'.repeat(maxLength)}+` : value}
