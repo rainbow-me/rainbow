@@ -112,6 +112,7 @@ const getShowOutputField = type => {
 export default function ExchangeModal({
   defaultInputAsset,
   defaultOutputAsset,
+  hasBalance,
   testID,
   type,
   typeSpecificParams,
@@ -194,6 +195,7 @@ export default function ExchangeModal({
   } = useSwapCurrencyHandlers({
     defaultInputAsset,
     defaultOutputAsset,
+    hasBalance,
     inputFieldRef,
     lastFocusedInputHandle,
     outputFieldRef,

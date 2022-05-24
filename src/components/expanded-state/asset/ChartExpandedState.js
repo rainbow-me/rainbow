@@ -380,10 +380,11 @@ export default function ChartExpandedState({ asset }) {
             <SwapActionButton color={color} inputType={AssetInputTypes.in} />
           )}
           {hasBalance ? (
-            <SendActionButton asset={ogAsset} color={color} />
+            <SendActionButton asset={ogAsset} color={color} hasBalance />
           ) : (
             <SwapActionButton
               color={color}
+              hasBalance
               inputType={AssetInputTypes.out}
               label={`􀖅 ${lang.t('expanded_state.asset.get_asset', {
                 assetSymbol: asset?.symbol,
