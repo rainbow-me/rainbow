@@ -190,34 +190,6 @@ export const continueRegistration = (name: string) => async (
   });
 };
 
-export const updateRegistrationDuration = (duration: number) => async (
-  dispatch: AppDispatch,
-  getState: AppGetState
-) => {
-  const {
-    ensRegistration: { registrations, currentRegistrationName },
-    settings: { accountAddress },
-  } = getState();
-  const lcAccountAddress = accountAddress.toLowerCase();
-
-  const accountRegistrations = registrations?.[lcAccountAddress] || {};
-  const registration = accountRegistrations[currentRegistrationName] || {};
-
-  const updatedEnsRegistrationManager = {
-    registrations: {
-      ...registrations,
-      [lcAccountAddress]: {
-        ...accountRegistrations,
-        [currentRegistrationName]: { ...registration, duration },
-      },
-    },
-  };
-  dispatch({
-    payload: updatedEnsRegistrationManager,
-    type: ENS_REGISTRATION_UPDATE_DURATION,
-  });
-};
-
 export const removeExpiredRegistrations = () => async (
   dispatch: AppDispatch,
   getState: AppGetState
