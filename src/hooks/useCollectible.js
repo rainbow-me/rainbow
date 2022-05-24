@@ -1,4 +1,3 @@
-import { find, matchesProperty } from 'lodash';
 import { useMemo } from 'react';
 import { useQueryClient } from 'react-query';
 import { useSelector } from 'react-redux';
@@ -32,10 +31,10 @@ export default function useCollectible(asset) {
   );
 
   return useMemo(() => {
-    let matched = find(
-      uniqueTokens,
-      matchesProperty('uniqueId', asset?.uniqueId)
+    let matched = uniqueTokens.find(
+      uniqueToken => uniqueToken.uniqueId === asset?.uniqueId
     );
+
     return matched || asset;
   }, [asset, uniqueTokens]);
 }
