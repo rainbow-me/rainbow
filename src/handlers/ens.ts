@@ -301,7 +301,7 @@ export const fetchAccountRegistrations = async (address: string) => {
   const registrations = await ensClient.query<EnsAccountRegistratonsData>({
     query: ENS_ALL_ACCOUNT_REGISTRATIONS,
     variables: {
-      address: address.toLowerCase(),
+      address: address?.toLowerCase(),
     },
   });
   return registrations;
