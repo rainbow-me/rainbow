@@ -117,7 +117,7 @@ export default function useSwapCurrencyHandlers({
           newInputCurrency?.type
         );
         let newOutputCurrency = outputCurrency;
-        if (newNewtork === Network.mainnet)
+        if (newNewtork !== Network.mainnet)
           newOutputCurrency.mainnet_address = outputCurrency.address;
 
         newOutputCurrency.address =
