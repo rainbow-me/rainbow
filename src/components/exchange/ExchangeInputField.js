@@ -56,7 +56,7 @@ export default function ExchangeInputField({
       <NativeFieldRow>
         <ExchangeNativeField
           address={inputCurrencyAddress}
-          editable
+          editable={editable}
           height={64}
           nativeAmount={nativeAmount}
           nativeCurrency={nativeCurrency}
