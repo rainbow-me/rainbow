@@ -417,8 +417,7 @@ export const fetchOwner = async (ensName: string) => {
 
   let owner: { address?: string; name?: string } = {};
   if (ownerAddress) {
-    const provider = await getProviderForNetwork();
-    const name = await provider.lookupAddress(ownerAddress);
+    const name = await fetchReverseRecord(ownerAddress);
     owner = {
       address: ownerAddress,
       name,
@@ -440,8 +439,7 @@ export const fetchRegistration = async (ensName: string) => {
   let registrant: { address?: string; name?: string } = {};
   if (data.registrant?.id) {
     const registrantAddress = data.registrant?.id;
-    const provider = await getProviderForNetwork();
-    const name = await provider.lookupAddress(registrantAddress);
+    const name = await fetchReverseRecord(registrantAddress);
     registrant = {
       address: registrantAddress,
       name,
@@ -466,8 +464,7 @@ export const fetchPrimary = async (ensName: string) => {
 };
 
 export const fetchAccountPrimary = async (accountAddress: string) => {
-  const provider = await getProviderForNetwork();
-  const ensName = await provider.lookupAddress(accountAddress);
+  const ensName = await fetchReverseRecord(accountAddress);
   return {
     ensName,
   };
