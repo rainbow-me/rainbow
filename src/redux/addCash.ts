@@ -1,6 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException, captureMessage } from '@sentry/react-native';
-import { find, toLower } from 'lodash';
+import toLower from 'lodash/toLower';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { dataAddNewTransaction } from './data';
@@ -202,8 +202,7 @@ export const addCashUpdatePurchases = (purchases: RainbowTransaction[]) => (
 
   const updatedPurchases = purchaseTransactions.map(txn => {
     if (txn.status === TransactionStatus.purchasing) {
-      const updatedPurchase = find(
-        purchases,
+      const updatedPurchase = purchases.find(
         purchase =>
           ethereumUtils.getHash(purchase) === ethereumUtils.getHash(txn)
       );

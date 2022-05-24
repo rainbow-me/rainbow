@@ -1,5 +1,4 @@
 import {
-  find,
   get,
   isEmpty,
   isNil,
@@ -253,8 +252,7 @@ export const dedupeUniqueTokens = (newAssets, uniqueTokens) => {
   let updatedAssets = newAssets;
   if (!isEmpty(newAssets)) {
     updatedAssets = pickBy(updatedAssets, newAsset => {
-      const matchingElement = find(
-        uniqueTokenFamilies,
+      const matchingElement = uniqueTokenFamilies?.find(
         uniqueTokenFamily => uniqueTokenFamily === newAsset?.asset?.asset_code
       );
       return !matchingElement;
@@ -266,5 +264,5 @@ export const dedupeUniqueTokens = (newAssets, uniqueTokens) => {
 export const dedupeAssetsWithFamilies = (accountAssets, families) =>
   pickBy(
     accountAssets,
-    asset => !find(families, family => family === asset?.address)
+    asset => !families?.find(family => family === asset?.address)
   );

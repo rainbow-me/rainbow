@@ -1,7 +1,6 @@
 import {
   compact,
   concat,
-  find,
   findIndex,
   flatten,
   includes,
@@ -47,8 +46,7 @@ const dataFromLastTxHash = (
   transactions: RainbowTransaction[]
 ): ZerionTransaction[] => {
   if (__DEV__ && parseAllTxnsOnReceive) return transactionData;
-  const lastSuccessfulTxn = find(
-    transactions,
+  const lastSuccessfulTxn = transactions.find(
     txn => !!txn.hash && !txn.pending
   );
   const lastTxHash = lastSuccessfulTxn?.hash;
@@ -100,7 +98,7 @@ export const parseTransactions = async (
   );
 
   const potentialNftTransaction = appended
-    ? find(parsedNewTransactions, txn => {
+    ? parsedNewTransactions.find(txn => {
         return (
           !txn.protocol &&
           (txn.type === TransactionType.send ||
@@ -136,12 +134,10 @@ const transformTradeRefund = (
   if (!isSuccessfulSwap) return internalTransactions;
 
   const txnOut = txnsOut[0];
-  const txnIn = find(
-    txnsIn,
+  const txnIn = txnsIn.find(
     txn => txn?.asset?.asset_code !== txnOut?.asset?.asset_code
   );
-  const refund = find(
-    txnsIn,
+  const refund = txnsIn.find(
     txn => txn?.asset?.asset_code === txnOut?.asset?.asset_code
   );
   let updatedOut = txnOut;

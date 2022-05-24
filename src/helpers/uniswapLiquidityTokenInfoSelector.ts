@@ -1,5 +1,5 @@
 import { ChainId, WETH } from '@uniswap/sdk';
-import { compact, find, isEmpty, join, orderBy, sumBy, toLower } from 'lodash';
+import { compact, isEmpty, join, orderBy, sumBy, toLower } from 'lodash';
 import { createSelector } from 'reselect';
 import { Asset, ParsedAddressAsset } from '@rainbow-me/entities';
 import { parseAssetNative } from '@rainbow-me/parsers';
@@ -149,8 +149,7 @@ const buildUniswapCards = (
     allUniswapLiquidityPositions?.[accountAddress];
   const uniswapPools = compact(
     uniswapLiquidityPositions?.map(position => {
-      const liquidityToken = find(
-        uniswapLiquidityTokens,
+      const liquidityToken = uniswapLiquidityTokens.find(
         token => token.address === position?.pair?.id
       );
       return transformPool(liquidityToken, position, nativeCurrency, chainId);
