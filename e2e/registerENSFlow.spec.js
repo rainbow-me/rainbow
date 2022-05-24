@@ -306,10 +306,10 @@ describe('Register ENS Flow', () => {
     await Helpers.waitAndTap(`ens-transaction-action-RENEW`);
   });
 
-  // afterAll(async () => {
-  //   // Reset the app state
-  //   await device.clearKeychain();
-  //   await exec('kill $(lsof -t -i:8545)');
-  //   await Helpers.delay(2000);
-  // });
+  afterAll(async () => {
+    // Reset the app state
+    await device.clearKeychain();
+    await exec('kill $(lsof -t -i:8545)');
+    await Helpers.delay(2000);
+  });
 });
