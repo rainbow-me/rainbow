@@ -21,7 +21,7 @@ import {
   isValidWallet,
 } from '@rainbow-me/helpers/validators';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
-import walletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
+import { WalletLoadingStates } from '@rainbow-me/helpers/walletLoadingStates';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils, sanitizeSeedPhrase } from '@rainbow-me/utils';
@@ -289,7 +289,7 @@ export default function useImportingWallet() {
 
   useEffect(() => {
     setIsWalletLoading(
-      isImporting ? walletLoadingStates.IMPORTING_WALLET : null
+      isImporting ? WalletLoadingStates.IMPORTING_WALLET : null
     );
   }, [isImporting, setIsWalletLoading]);
 
