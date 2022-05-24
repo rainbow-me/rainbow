@@ -20,6 +20,7 @@ import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { useWallets } from '@rainbow-me/hooks';
 import { wipeKeychain } from '@rainbow-me/model/keychain';
 import { clearAllStorages } from '@rainbow-me/model/mmkv';
+import { Navigation } from '@rainbow-me/navigation';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import { explorerInit } from '@rainbow-me/redux/explorer';
 import { clearImageMetadataCache } from '@rainbow-me/redux/imageMetadata';
@@ -34,9 +35,13 @@ const DevSection = () => {
   const { wallets } = useWallets();
   const dispatch = useDispatch();
 
-  const onNetworkChange = useCallback(
+  const onExperimentalKeyChange = useCallback(
     value => {
       setConfig({ ...config, [value]: !config[value] });
+      if (defaultConfig[value].needsRestart) {
+        Navigation.handleAction(Routes.WALLET_SCREEN);
+        setTimeout(Restart.Restart, 1000);
+      }
     },
     [config, setConfig]
   );
@@ -194,7 +199,7 @@ const DevSection = () => {
           <RadioListItem
             key={key}
             label={key}
-            onPress={() => onNetworkChange(key)}
+            onPress={() => onExperimentalKeyChange(key)}
             selected={!!config[key]}
           />
         ))}
