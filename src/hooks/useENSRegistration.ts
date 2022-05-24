@@ -37,23 +37,22 @@ export default function useENSRegistration() {
 
   const dispatch = useDispatch();
   const removeRecordByKey = useCallback(
-    (key: string) => dispatch(ensRedux.removeRecordByKey(accountAddress, key)),
-    [accountAddress, dispatch]
+    (key: string) => dispatch(ensRedux.removeRecordByKey(key)),
+    [dispatch]
   );
   const startRegistration = useCallback(
     (name: string, mode: keyof typeof REGISTRATION_MODES) =>
-      dispatch(ensRedux.startRegistration(accountAddress, name, mode)),
-    [accountAddress, dispatch]
+      dispatch(ensRedux.startRegistration(name, mode)),
+    [dispatch]
   );
   const updateRecordByKey = useCallback(
     (key: string, value: string) =>
-      dispatch(ensRedux.updateRecordByKey(accountAddress, key, value)),
-    [accountAddress, dispatch]
+      dispatch(ensRedux.updateRecordByKey(key, value)),
+    [dispatch]
   );
   const updateRecords = useCallback(
-    (records: Records) =>
-      dispatch(ensRedux.updateRecords(accountAddress, records)),
-    [accountAddress, dispatch]
+    (records: Records) => dispatch(ensRedux.updateRecords(records)),
+    [dispatch]
   );
   const clearCurrentRegistrationName = useCallback(
     () => dispatch(ensRedux.clearCurrentRegistrationName()),
@@ -61,9 +60,8 @@ export default function useENSRegistration() {
   );
 
   const removeRegistrationByName = useCallback(
-    (name: string) =>
-      dispatch(ensRedux.removeRegistrationByName(accountAddress, name)),
-    [accountAddress, dispatch]
+    (name: string) => dispatch(ensRedux.removeRegistrationByName(name)),
+    [dispatch]
   );
 
   return {
