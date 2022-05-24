@@ -236,7 +236,11 @@ export default function ExchangeModal({
   const {
     result: {
       derivedValues: { inputAmount, nativeAmount, outputAmount },
-      displayValues: { inputAmountDisplay, outputAmountDisplay },
+      displayValues: {
+        inputAmountDisplay,
+        outputAmountDisplay,
+        nativeAmountDisplay,
+      },
       tradeDetails,
     },
     loading,
@@ -714,7 +718,7 @@ export default function ExchangeModal({
               inputCurrencyAssetType={inputCurrency?.type}
               inputCurrencySymbol={inputCurrency?.symbol}
               inputFieldRef={inputFieldRef}
-              nativeAmount={nativeAmount}
+              nativeAmount={nativeAmountDisplay}
               nativeCurrency={nativeCurrency}
               nativeFieldRef={nativeFieldRef}
               onFocus={handleFocus}

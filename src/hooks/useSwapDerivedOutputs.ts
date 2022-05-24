@@ -32,6 +32,7 @@ import Logger from '@rainbow-me/utils/logger';
 enum DisplayValue {
   input = 'inputAmountDisplay',
   output = 'outputAmountDisplay',
+  native = 'nativeAmountDisplay',
 }
 
 const getInputAmount = async (
@@ -238,6 +239,7 @@ const derivedValues: { [key in SwapModalField]: string | null } = {
 const displayValues: { [key in DisplayValue]: string | null } = {
   [DisplayValue.input]: null,
   [DisplayValue.output]: null,
+  [DisplayValue.native]: null,
 };
 
 export default function useSwapDerivedOutputs(chainId: number) {
@@ -297,6 +299,26 @@ export default function useSwapDerivedOutputs(chainId: number) {
     const getTradeDetails = async () => {
       let tradeDetails = null;
 
+      if (independentValue === '0.') {
+        switch (independentField) {
+          case SwapModalField.input:
+            displayValues[DisplayValue.input] = independentValue;
+            break;
+          case SwapModalField.output:
+            displayValues[DisplayValue.output] = independentValue;
+            break;
+          case SwapModalField.native:
+            displayValues[DisplayValue.native] = independentValue;
+            break;
+        }
+        setResult({
+          derivedValues,
+          displayValues,
+          tradeDetails,
+        });
+        return;
+      }
+
       if (isZero(independentValue) || !independentValue) {
         resetSwapInputs();
         return;
@@ -326,6 +348,8 @@ export default function useSwapDerivedOutputs(chainId: number) {
           : null;
 
         derivedValues[SwapModalField.native] = nativeValue;
+        displayValues[DisplayValue.native] = nativeValue;
+
         const {
           outputAmount,
           outputAmountDisplay,
@@ -365,6 +389,7 @@ export default function useSwapDerivedOutputs(chainId: number) {
         }
 
         derivedValues[SwapModalField.native] = independentValue;
+        displayValues[DisplayValue.native] = independentValue;
         derivedValues[SwapModalField.input] = inputAmount;
 
         const inputAmountDisplay =
@@ -429,6 +454,7 @@ export default function useSwapDerivedOutputs(chainId: number) {
             : null;
 
         derivedValues[SwapModalField.native] = nativeValue;
+        displayValues[DisplayValue.native] = nativeValue;
       }
 
       const data = {
