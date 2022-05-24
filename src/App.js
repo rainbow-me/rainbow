@@ -12,7 +12,6 @@ import {
   InteractionManager,
   Linking,
   LogBox,
-  NativeModules,
   StatusBar,
   View,
 } from 'react-native';
@@ -51,6 +50,7 @@ import handleDeeplink from './handlers/deeplinks';
 import { runWalletBackupStatusChecks } from './handlers/walletReadyEvents';
 import { isL2Network } from './handlers/web3';
 import RainbowContextWrapper from './helpers/RainbowContext';
+import isTestFlight from './helpers/isTestFlight';
 import networkTypes from './helpers/networkTypes';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
@@ -139,8 +139,6 @@ if (__DEV__) {
 
 enableScreens();
 
-const { RNTestFlight } = NativeModules;
-
 const containerStyle = { flex: 1 };
 
 class App extends Component {
@@ -151,8 +149,7 @@ class App extends Component {
   state = { appState: AppState.currentState, initialRoute: null };
 
   async componentDidMount() {
-    if (!__DEV__ && RNTestFlight) {
-      const { isTestFlight } = RNTestFlight.getConstants();
+    if (!__DEV__ && isTestFlight) {
       logger.sentry(`Test flight usage - ${isTestFlight}`);
     }
     this.identifyFlow();

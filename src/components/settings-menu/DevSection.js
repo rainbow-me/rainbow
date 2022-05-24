@@ -12,6 +12,7 @@ import useAppVersion from '../../hooks/useAppVersion';
 import { ListFooter, ListItem } from '../list';
 import { RadioListItem } from '../radio-list';
 import UserDevSection from './UserDevSection';
+import { Divider } from '@rainbow-me/design-system';
 import { deleteAllBackups } from '@rainbow-me/handlers/cloudBackup';
 import { web3SetHttpProvider } from '@rainbow-me/handlers/web3';
 import { RainbowContext } from '@rainbow-me/helpers/RainbowContext';
@@ -74,6 +75,10 @@ const DevSection = () => {
       )[0];
       Alert.alert(resultString);
     }
+  }, [navigate]);
+
+  const navToDevNotifications = useCallback(() => {
+    navigate('DevNotificationsSection');
   }, [navigate]);
 
   const checkAlert = useCallback(async () => {
@@ -170,6 +175,11 @@ const DevSection = () => {
         onPress={checkAlert}
         testID="alert-section"
       />
+      <ListItem
+        label={`🔔 ${lang.t('developer_settings.notifications_debug')}`}
+        onPress={navToDevNotifications}
+        testID="notifications-section"
+      />
       <UserDevSection scrollEnabled={false} />
       <ListItem
         label={`‍⏩ ${lang.t('developer_settings.sync_codepush', {
@@ -188,6 +198,8 @@ const DevSection = () => {
             selected={!!config[key]}
           />
         ))}
+
+      <Divider />
       <ListFooter />
     </ScrollView>
   );
