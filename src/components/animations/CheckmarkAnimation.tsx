@@ -11,6 +11,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { LargeCheckmarkIcon } from '../icons/svg/LargeCheckmarkIcon';
 import { Box } from '@rainbow-me/design-system';
+import { colors } from '@rainbow-me/styles';
 
 export function CheckmarkAnimation() {
   const circleEntering = () => {
@@ -173,7 +174,7 @@ export function CheckmarkAnimation() {
             center={[60, 60]}
             colors={
               android
-                ? ['#1FC24A10', '#1FC24A10', '#1FC24A00']
+                ? colors.gradients.checkmarkAnimation
                 : ['rgba(31,194,74,0.00)', 'rgba(31,194,74,0.03)']
               // https://github.com/surajitsarkar19/react-native-radial-gradient/issues/9
             }
@@ -203,7 +204,7 @@ export function CheckmarkAnimation() {
             center={[60, 60]}
             colors={
               android
-                ? ['#1FC24A10', '#1FC24A10', '#1FC24A00']
+                ? colors.gradients.checkmarkAnimation
                 : ['rgba(31,194,74,0.00)', 'rgba(31,194,74,0.06)']
               // https://github.com/surajitsarkar19/react-native-radial-gradient/issues/9
             }
