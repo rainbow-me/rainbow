@@ -105,7 +105,7 @@ export default function useENSRegistrationActionHandler(
         registrationParameters?.commitTransactionHash;
       const saveCommitTransactionHash = (hash: string) => {
         dispatch(
-          saveCommitRegistrationParameters(accountAddress, {
+          saveCommitRegistrationParameters({
             commitTransactionHash: hash,
           })
         );
@@ -121,7 +121,6 @@ export default function useENSRegistrationActionHandler(
         });
     },
     [
-      accountAddress,
       dispatch,
       getTransactionByHash,
       navigate,

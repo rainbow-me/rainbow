@@ -3,7 +3,7 @@ import { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import useENSProfileRecords from './useENSProfileRecords';
 import useENSRegistration from './useENSRegistration';
-import { useAccountSettings, usePrevious } from '.';
+import { usePrevious } from '.';
 import { Records, UniqueAsset } from '@rainbow-me/entities';
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import * as ensRedux from '@rainbow-me/redux/ensRegistration';
@@ -66,7 +66,6 @@ export default function useENSModifiedRegistration({
   modifyChangedRecords?: boolean;
 } = {}) {
   const dispatch = useDispatch();
-  const { accountAddress } = useAccountSettings();
   const { records, initialRecords, name, mode } = useENSRegistration();
 
   const uniqueTokens = useSelector(
@@ -89,10 +88,9 @@ export default function useENSModifiedRegistration({
         ...profileQuery.data?.records,
         ...profileQuery.data?.coinAddresses,
       } as Records;
-      dispatch(ensRedux.setInitialRecords(accountAddress, initialRecords));
+      dispatch(ensRedux.setInitialRecords(initialRecords));
     }
   }, [
-    accountAddress,
     dispatch,
     mode,
     profileQuery.data?.coinAddresses,
@@ -152,15 +150,9 @@ export default function useENSModifiedRegistration({
       JSON.stringify(prevChangedRecords || {}) !==
         JSON.stringify(changedRecords)
     ) {
-      dispatch(ensRedux.setChangedRecords(accountAddress, changedRecords));
+      dispatch(ensRedux.setChangedRecords(changedRecords));
     }
-  }, [
-    accountAddress,
-    changedRecords,
-    dispatch,
-    modifyChangedRecords,
-    prevChangedRecords,
-  ]);
+  }, [changedRecords, dispatch, modifyChangedRecords, prevChangedRecords]);
 
   // Since `records.avatar` is not a reliable source for an avatar URL
   // (the avatar can be an NFT), then if the avatar is an NFT, we will
