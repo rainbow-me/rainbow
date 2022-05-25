@@ -58,7 +58,7 @@ function Skeleton({
 }: {
   animated?: boolean;
   children: React.ReactElement;
-  style: ViewProps['style'];
+  style?: ViewProps['style'];
   colors: any;
   width?: number;
 }) {
