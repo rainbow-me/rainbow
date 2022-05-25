@@ -1,4 +1,3 @@
-import { useTheme } from '@rainbow-me/theme';
 import lang from 'i18n-js';
 import React from 'react';
 import HoldToAuthorizeButtonContent from './HoldToAuthorizeButtonContent';

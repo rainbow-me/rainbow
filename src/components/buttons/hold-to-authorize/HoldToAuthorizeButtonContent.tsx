@@ -1,4 +1,3 @@
-import { ThemeContextProps } from '@rainbow-me/theme';
 import lang from 'i18n-js';
 import React, {
   Fragment,
@@ -135,15 +134,6 @@ function HoldToAuthorizeButtonContent2({
       );
     }
   }, [disabled, longPressProgress]);
-
-  const onFinishAuthorizing = useCallback(() => {
-    if (!disabled) {
-      animate(longPressProgress.current, {
-        duration: calculateReverseDuration(longPressProgress.current),
-        toValue: 0,
-      }).start(() => setIsAuthorizing(false));
-    }
-  }, [disabled]);
 
   useEffect(() => {
     if (isAuthorizingState && !isAuthorizingProp) {
