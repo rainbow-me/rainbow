@@ -593,6 +593,19 @@ export const estimateENSSetNameGasLimit = async ({
     type: ENSRegistrationTransactionType.SET_NAME,
   });
 
+export const estimateENSSetOwnerGasLimit = async ({
+  name,
+  ownerAddress,
+}: {
+  name: string;
+  ownerAddress: string;
+}) =>
+  estimateENSTransactionGasLimit({
+    name,
+    ownerAddress,
+    type: ENSRegistrationTransactionType.SET_OWNER,
+  });
+
 export const estimateENSSetTextGasLimit = async ({
   name,
   records,

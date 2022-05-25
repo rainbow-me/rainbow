@@ -41,8 +41,9 @@ import { useTheme } from '@rainbow-me/context';
 import { Box, Inset, Stack, Text } from '@rainbow-me/design-system';
 import { UniqueAsset } from '@rainbow-me/entities';
 import {
-  estimateENSSetRecordsGasLimit,
   estimateENSSetNameGasLimit,
+  estimateENSSetOwnerGasLimit,
+  estimateENSSetRecordsGasLimit,
 } from '@rainbow-me/handlers/ens';
 import { estimateGasLimit } from '@rainbow-me/handlers/web3';
 import {
@@ -321,8 +322,11 @@ export default function SendConfirmationSheet() {
                 name: asset?.name,
                 ownerAddress: toAddress,
               });
-            // case 'transfer-control':
-            //   return;
+            case 'transfer-control':
+              return estimateENSSetOwnerGasLimit({
+                name: asset?.name,
+                ownerAddress: toAddress,
+              });
             default:
               return Promise.resolve(0);
           }
