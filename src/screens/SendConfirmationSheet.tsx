@@ -40,6 +40,7 @@ import useExperimentalFlag, {
 import { useTheme } from '@rainbow-me/context';
 import { Box, Inset, Stack, Text } from '@rainbow-me/design-system';
 import { UniqueAsset } from '@rainbow-me/entities';
+import { estimateENSSetNameGasLimit } from '@rainbow-me/handlers/ens';
 import { estimateGasLimit } from '@rainbow-me/handlers/web3';
 import {
   removeFirstEmojiFromString,
@@ -65,7 +66,7 @@ import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
-import { getUniqueTokenType } from '@rainbow-me/utils';
+import { getUniqueTokenType, promiseUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const Container = styled(Centered).attrs({
@@ -228,24 +229,6 @@ export default function SendConfirmationSheet() {
   const isENS = uniqueTokenType === 'ENS';
 
   useEffect(() => {
-    if (isENS) {
-      estimateGasLimit({
-        address: accountAddress,
-        amount: 0,
-        asset: asset,
-        recipient: toAddress,
-      })
-        .then(async gasLimit => {
-          updateTxFee(gasLimit, null);
-        })
-        .catch(e => {
-          logger.sentry('Error calculating gas limit', e);
-          updateTxFee(null, null);
-        });
-    }
-  }, [accountAddress, asset, isENS, toAddress, updateTxFee]);
-
-  useEffect(() => {
     if (!isSendingToUserAccount) {
       let sends = 0;
       let sendsCurrentNetwork = 0;
@@ -310,6 +293,40 @@ export default function SendConfirmationSheet() {
           },
         ]
   );
+
+  useEffect(() => {
+    const estimateTotalGasLimit = async () => {
+      try {
+        const nftGasLimit = estimateGasLimit({
+          address: accountAddress,
+          amount: 0,
+          asset: asset,
+          recipient: toAddress,
+        });
+        const setNameGasLimit = checkboxes[0]['checked']
+          ? estimateENSSetNameGasLimit({
+              name: asset?.name,
+              ownerAddress: toAddress,
+            })
+          : Promise.resolve(0);
+        const gasLimits = await promiseUtils.PromiseAllWithFails([
+          nftGasLimit,
+          setNameGasLimit,
+        ]);
+        const gasLimit = gasLimits.reduce(
+          (a, b) => parseFloat(a) + parseFloat(b),
+          0
+        );
+        updateTxFee(gasLimit, null);
+      } catch (e) {
+        logger.sentry('Error calculating gas limit', e);
+        updateTxFee(null, null);
+      }
+    };
+    if (isENS) {
+      estimateTotalGasLimit();
+    }
+  }, [accountAddress, asset, checkboxes, isENS, toAddress, updateTxFee]);
 
   const handleCheckbox = useCallback(
     checkbox => {
