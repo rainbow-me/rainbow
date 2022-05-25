@@ -196,8 +196,9 @@ export default function TransactionCoinRow({ item, ...props }) {
 
   const mainnetAddress = useSelector(
     state =>
-      state.data.accountAssetsData?.[`${item.address}_${item.network}`]
-        ?.mainnet_address
+      state.data.assetsData?.[
+        ethereumUtils.getUniqueId(item.address, item.network)
+      ]?.mainnet_address
   );
 
   return (

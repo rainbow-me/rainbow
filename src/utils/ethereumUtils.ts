@@ -153,9 +153,7 @@ const getAccountAsset = (
   uniqueId: EthereumAddress
 ): ParsedAddressAsset | undefined => {
   const loweredUniqueId = toLower(uniqueId);
-  const accountAsset = store.getState().data?.accountAssetsData?.[
-    loweredUniqueId
-  ];
+  const accountAsset = store.getState().data?.assetsData?.[loweredUniqueId];
   return accountAsset;
 };
 
@@ -601,23 +599,20 @@ async function parseEthereumUrl(data: string) {
 
 const getUniqueId = (params: {
   address: EthereumAddress;
-  name?: string;
   network?: Network;
 }) => {
-  const { address, name, network } = params;
+  const { address, network } = params;
   const isNotMainnet = network && network !== Network.mainnet;
   return address
     ? isNotMainnet
       ? `${address}_${getChainIdFromNetwork(network)}`
       : address
-    : name || '';
+    : '';
 };
 
 const mapAssetsByUniqueId = (
   assets:
-    | {
-        [uniqueId: string]: ZerionAsset | ZerionAssetFallback;
-      }
+    | { [uniqueId: string]: ZerionAsset | ZerionAssetFallback }
     | (ZerionAsset | ZerionAssetFallback)[],
   network: Network
 ): Record<EthereumAddress, ZerionAsset | ZerionAssetFallback> => {
@@ -629,7 +624,6 @@ const mapAssetsByUniqueId = (
       ...updatedAssets,
       [getUniqueId({
         address: currentAsset.asset_code,
-        name: currentAsset.name,
         network,
       })]: currentAsset,
     };

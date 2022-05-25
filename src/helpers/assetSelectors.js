@@ -1,33 +1,30 @@
-import {
-  get,
-  groupBy,
-  isEmpty,
-  isNil,
-  mapValues,
-  toNumber,
-  values,
-} from 'lodash';
+import { get, groupBy, isEmpty, isNil, mapValues, toNumber } from 'lodash';
 import { createSelector } from 'reselect';
 import { sortList } from '../helpers/sortList';
 import { parseAssetsNativeWithTotals } from '@rainbow-me/parsers';
-
 const EMPTY_ARRAY = [];
 
+const accountAddressSelector = state => state.settings.accountAddress;
 const assetPricesFromUniswapSelector = state =>
   state.data.assetPricesFromUniswap;
-const accountAssetsDataSelector = state => state.data.accountAssetsData;
+const accountAssetsDataSelector = state => state.data.assetsData;
+const assetPricesSelector = state => state.data.assetPriceData;
+const assetBalancesSelector = state => state.data.accountAssetBalanceData;
 const isLoadingAssetsSelector = state => state.data.isLoadingAssets;
 const nativeCurrencySelector = state => state.settings.nativeCurrency;
 
 const sortAssetsByNativeAmount = (
-  accountAssetsData,
+  assetsData,
+  assetPrices,
+  assetBalances,
   assetPricesFromUniswap,
   isLoadingAssets,
-  nativeCurrency
+  nativeCurrency,
+  accountAddress
 ) => {
-  let updatedAssets = accountAssetsData;
+  let updatedAssets = assetsData;
   if (!isEmpty(assetPricesFromUniswap)) {
-    updatedAssets = mapValues(accountAssetsData, asset => {
+    updatedAssets = mapValues(assetsData, asset => {
       if (isNil(asset.price)) {
         const assetPrice = get(
           assetPricesFromUniswap,
@@ -50,16 +47,13 @@ const sortAssetsByNativeAmount = (
       return asset;
     });
   }
-  let assetsNativePrices = values(updatedAssets);
-  let total = null;
-  if (!isEmpty(assetsNativePrices)) {
-    const parsedAssets = parseAssetsNativeWithTotals(
-      assetsNativePrices,
-      nativeCurrency
-    );
-    assetsNativePrices = parsedAssets.assetsNativePrices;
-    total = parsedAssets.total;
-  }
+  const parsedAssets = parseAssetsNativeWithTotals(
+    Object.values(updatedAssets),
+    assetPrices,
+    assetBalances[accountAddress],
+    nativeCurrency
+  );
+  const { assetsNativePrices, total } = parsedAssets;
   const {
     hasValue = EMPTY_ARRAY,
     noValue = EMPTY_ARRAY,
@@ -90,9 +84,12 @@ const groupAssetsByMarketValue = assets =>
 export const sortAssetsByNativeAmountSelector = createSelector(
   [
     accountAssetsDataSelector,
+    assetPricesSelector,
+    assetBalancesSelector,
     assetPricesFromUniswapSelector,
     isLoadingAssetsSelector,
     nativeCurrencySelector,
+    accountAddressSelector,
   ],
   sortAssetsByNativeAmount
 );

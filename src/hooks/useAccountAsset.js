@@ -28,7 +28,7 @@ const getZeroEth = () => {
   };
 };
 
-const accountAssetsDataSelector = state => state.data.accountAssetsData;
+const accountAssetsDataSelector = state => state.data.assetsData;
 const assetPricesFromUniswapSelector = state =>
   state.data.assetPricesFromUniswap;
 const uniqueIdSelector = (_, uniqueId) => uniqueId;

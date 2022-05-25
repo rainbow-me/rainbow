@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-community/async-storage';
 import { concat, isEmpty, isNil, keyBy, keys, toLower } from 'lodash';
 import io from 'socket.io-client';
 import { defaultConfig, L2_TXS } from '../config/experimental';

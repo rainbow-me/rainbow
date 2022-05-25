@@ -295,7 +295,7 @@ export const fetchOnchainBalances = ({
 }) => async (dispatch, getState) => {
   logger.log('😬 FallbackExplorer:: fetchOnchainBalances');
   const { network, accountAddress, nativeCurrency } = getState().settings;
-  const { accountAssetsData, genericAssets } = getState().data;
+  const { assetsData, genericAssets } = getState().data;
   const { coingeckoIds } = getState().additionalAssetsData;
   const formattedNativeCurrency = toLower(nativeCurrency);
   const { mainnetAssets } = getState().fallbackExplorer;
@@ -322,8 +322,8 @@ export const fetchOnchainBalances = ({
       : chainAssetsMap;
 
   const isEmptyAssets = isEmpty(assets);
-  if (isEmptyAssets && !isEmpty(accountAssetsData)) {
-    assets = mapValues(accountAssetsData, asset => ({
+  if (isEmptyAssets && !isEmpty(assetsData)) {
+    assets = mapValues(assetsData, asset => ({
       asset: {
         asset_code: asset.address,
         decimals: asset.decimals,

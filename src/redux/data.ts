@@ -63,14 +63,12 @@ import { uniqueTokensRefreshState } from './uniqueTokens';
 import { uniswapUpdateLiquidityTokens } from './uniswapLiquidity';
 import appEvents from '@rainbow-me/handlers/appEvents';
 import {
-  getAccountAssetsData,
   getAssetBalanceData,
   getAssetPricesFromUniswap,
   getAssetPricingData,
   getAssetsData,
   getLocalPendingTransactions,
   getLocalTransactions,
-  saveAccountAssetsData,
   saveAccountEmptyState,
   saveAssetBalanceData,
   saveAssetPricesFromUniswap,
@@ -189,13 +187,6 @@ const DATA_CLEAR_STATE = 'data/DATA_CLEAR_STATE';
  * The state for the `data` reducer.
  */
 interface DataState {
-  /**
-   * Parsed asset information for assets belonging to this account.
-   */
-  accountAssetsData: {
-    [uniqueId: string]: ParsedAddressAsset;
-  };
-
   /**
    * Uniswap price data for assets.
    */
@@ -403,7 +394,7 @@ interface DataLoadAccountAssetsDataRequestAction {
  */
 interface DataLoadAccountAssetsDataReceivedAction {
   type: typeof DATA_LOAD_ACCOUNT_ASSETS_DATA_RECEIVED;
-  payload: DataState['accountAssetsData'];
+  payload: DataState['assetsData'];
 }
 
 /**
@@ -421,7 +412,7 @@ interface DataLoadAssetPricesFromUniswapSuccessAction {
  */
 interface DataLoadAccountAssetsDataSuccessAction {
   type: typeof DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS;
-  payload: DataState['accountAssetsData'];
+  payload: DataState['assetsData'];
 }
 
 /**
@@ -644,25 +635,13 @@ export const dataLoadState = () => async (
     // eslint-disable-next-line no-empty
   } catch (error) {}
   try {
-    dispatch({ type: DATA_LOAD_ACCOUNT_ASSETS_DATA_REQUEST });
-    const accountAssetsData = await getAccountAssetsData(
-      accountAddress,
-      network
-    );
-
-    if (!isEmpty(accountAssetsData)) {
+    const assetsData = await getAssetsData(accountAddress, network);
+    if (!isEmpty(assetsData)) {
       dispatch({
-        payload: accountAssetsData,
+        payload: assetsData,
         type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
       });
     }
-    // const assetsData = await getAssetsData(accountAddress, network);
-    // if (!isEmpty(assetsData)) {
-    //   dispatch({
-    //     payload: assetsData,
-    //     type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
-    //   });
-    // }
     const assetPriceData = await getAssetPricingData(accountAddress, network);
     if (!isEmpty(assetPriceData)) {
       dispatch({
@@ -884,16 +863,16 @@ export const dataUpdateAsset = (assetData: ParsedAddressAsset) => (
   getState: AppGetState
 ) => {
   const { accountAddress, network } = getState().settings;
-  const { accountAssetsData } = getState().data;
+  const { assetsData } = getState().data;
   const updatedAssetsData = {
-    ...accountAssetsData,
+    ...assetsData,
     [assetData.uniqueId]: assetData,
   };
   dispatch({
     payload: updatedAssetsData,
     type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
   });
-  saveAccountAssetsData(updatedAssetsData, accountAddress, network);
+  saveAssetsData(updatedAssetsData, accountAddress, network);
 };
 
 /**
@@ -913,7 +892,7 @@ export const dataUpdateAssets = (assetsData: {
 ) => {
   const { accountAddress, network } = getState().settings;
   if (!isEmpty(assetsData)) {
-    saveAccountAssetsData(assetsData, accountAddress, network);
+    saveAssetsData(assetsData, accountAddress, network);
     // Change the state since the account isn't empty anymore
     saveAccountEmptyState(false, accountAddress, network);
     dispatch({
@@ -1164,7 +1143,7 @@ export const dataUpdateAssetPricingInfo = (
   const { accountAddress, network } = getState().settings;
   nativeCurrency = nativeCurrency.toUpperCase() as NativeCurrencyKey;
 
-  const newPrices = Object.keys(updatedAssets).reduce(
+  const updatedPrices = Object.keys(updatedAssets).reduce(
     (assetPricesData, currentKey) => ({
       ...assetPricesData,
       [currentKey]: {
@@ -1175,12 +1154,12 @@ export const dataUpdateAssetPricingInfo = (
     {} as { [uniqueId: string]: AssetPricingInfo }
   );
   const currentPrices = getState().data.assetPriceData;
-  const updatedAssetPricingInfo = Object.keys(newPrices).reduce(
+  const updatedAssetPricingInfo = Object.keys(updatedPrices).reduce(
     (updatedAssetPrices, currentKey) => ({
       ...updatedAssetPrices,
       [currentKey]: {
         ...(currentPrices[currentKey] || {}),
-        ...newPrices[currentKey],
+        ...updatedPrices[currentKey],
       },
     }),
     currentPrices
@@ -1304,18 +1283,13 @@ export const addressAssetsReceived = (
     );
   }
 
-  const { accountAssetsData: existingAccountAssetsData } = getState().data;
+  const { assetsData: existingAssetsData } = getState().data;
   parsedAssets = {
-    ...existingAccountAssetsData,
+    ...existingAssetsData,
     ...parsedAssets,
   };
 
-  parsedAssets = pickBy(
-    parsedAssets,
-    asset => !!Number(asset?.balance?.amount)
-  );
-
-  saveAccountAssetsData(parsedAssets, accountAddress, network);
+  saveAssetsData(parsedAssets, accountAddress, network);
   if (!isEmpty(parsedAssets)) {
     // Change the state since the account isn't empty anymore
     saveAccountEmptyState(false, accountAddress, network);
@@ -1984,7 +1958,6 @@ export const updateRefetchSavings = (fetch: boolean) => (
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE: DataState = {
   accountAssetBalanceData: {},
-  accountAssetsData: {},
   assetPriceData: {},
   // for account-specific assets
   assetPricesFromUniswap: {},
@@ -2052,14 +2025,12 @@ export default (state: DataState = INITIAL_STATE, action: DataAction) => {
     case DATA_LOAD_ACCOUNT_ASSETS_DATA_RECEIVED: {
       return {
         ...state,
-        accountAssetsData: action.payload,
         assetsData: action.payload,
       };
     }
     case DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS: {
       return {
         ...state,
-        accountAssetsData: action.payload,
         assetsData: action.payload,
         isLoadingAssets: false,
       };

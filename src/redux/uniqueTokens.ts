@@ -18,7 +18,6 @@ import {
 import { fetchPoaps } from '@rainbow-me/handlers/poap';
 import { Network } from '@rainbow-me/helpers/networkTypes';
 import { dedupeAssetsWithFamilies, getFamilies } from '@rainbow-me/parsers';
-import logger from 'logger';
 
 // -- Constants ------------------------------------------------------------- //
 
@@ -241,7 +240,7 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
   }
   const { network: currentNetwork } = getState().settings;
   const accountAddress = showcaseAddress || getState().settings.accountAddress;
-  const { accountAssetsData } = getState().data;
+  const { assetsData } = getState().data;
   const { uniqueTokens: existingUniqueTokens } = getState().uniqueTokens;
   const shouldUpdateInBatches = isEmpty(existingUniqueTokens);
   let uniqueTokens: UniqueAsset[] = [];
@@ -297,7 +296,7 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
         const incomingFamilies = without(newFamilies, ...existingFamilies);
         if (incomingFamilies.length) {
           const dedupedAssets = dedupeAssetsWithFamilies(
-            accountAssetsData,
+            assetsData,
             incomingFamilies
           );
           dispatch(dataUpdateAssets(dedupedAssets));

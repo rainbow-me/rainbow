@@ -2,8 +2,11 @@ import { get, isNil, map, toUpper } from 'lodash';
 import { ParsedAddressAssetWithNative } from '../entities/tokens';
 import { dedupeUniqueTokens } from './uniqueTokens';
 import {
+  AssetBalanceInfo,
+  AssetPricingInfo,
   AssetType,
   AssetTypes,
+  NativeCurrencyKey,
   ParsedAddressAsset,
   RainbowToken,
   UniqueAsset,
@@ -17,7 +20,6 @@ import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToNativeDisplay,
   convertAmountToPercentageDisplay,
-  convertRawAmountToBalance,
   isOfType,
 } from '@rainbow-me/utilities';
 import {
@@ -39,22 +41,17 @@ export const parseAccountAssets = (
     data,
     uniqueTokens
   );
-  const dedupedKeys = Object.keys(dedupedAssets);
-
-  return dedupedKeys.reduce((parsedAccountAssets, currentKey) => {
-    const currentAsset = dedupedAssets[currentKey];
-    const parsedAsset = parseAsset(currentAsset);
-    return {
-      ...parsedAccountAssets,
-      [currentKey]: {
-        ...parsedAsset,
-        balance: convertRawAmountToBalance(
-          currentAsset.quantity!,
-          currentAsset
-        ),
-      },
-    };
-  }, {});
+  return Object.keys(dedupedAssets).reduce(
+    (parsedAccountAssets, currentKey) => {
+      const currentAsset = dedupedAssets[currentKey];
+      const parsedAsset = parseAsset(currentAsset);
+      return {
+        ...parsedAccountAssets,
+        [currentKey]: parsedAsset,
+      };
+    },
+    {}
+  );
 };
 
 // eslint-disable-next-line no-useless-escape
@@ -78,7 +75,7 @@ export const parseAssetSymbol = (
 
 /**
  * @desc parse asset
- * @param  {Object} assetData
+ * @param  {Object} asset
  * @return The parsed asset.
  */
 export const parseGenericAsset = (
@@ -105,7 +102,6 @@ export const parseGenericAsset = (
     type,
     uniqueId: ethereumUtils.getUniqueId({
       address,
-      name,
       network: asset.network,
     }),
   };
@@ -123,9 +119,32 @@ export const parseFallbackAsset = (asset: ZerionAssetFallback) => {
 
 export const parseAssetsNativeWithTotals = (
   assets: ParsedAddressAsset[],
+  prices: { [uniqueId: string]: AssetPricingInfo },
+  balances: { [uniqueId: string]: AssetBalanceInfo },
   nativeCurrency: string
 ) => {
-  const assetsNative = parseAssetsNative(assets, nativeCurrency);
+  const assetsWithPricesAndBalances: ParsedAddressAsset[] = assets
+    .map(asset => {
+      let updatedAsset = asset;
+      const balance = balances?.[asset.uniqueId];
+      const price = prices?.[asset.uniqueId];
+      if (balance) {
+        updatedAsset.balance = balance;
+      }
+      if (price) {
+        updatedAsset.price =
+          price[nativeCurrency.toUpperCase() as NativeCurrencyKey];
+      }
+      return updatedAsset;
+    })
+    .filter(asset =>
+      asset.balance ? parseFloat(asset.balance?.amount || '0') > 0 : true
+    )
+    .filter(asset => (asset.price ? (asset.price.value || 0) > 0 : true));
+  const assetsNative = parseAssetsNative(
+    assetsWithPricesAndBalances,
+    nativeCurrency
+  );
   const totalAmount = assetsNative.reduce((total, currentAsset) => {
     if (isOfType<ParsedAddressAssetWithNative>(currentAsset, 'native')) {
       return parseFloat(add(total, currentAsset?.native?.balance.amount));
