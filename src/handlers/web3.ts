@@ -512,14 +512,14 @@ export const resolveUnstoppableDomain = async (
  */
 export const resolveNameOrAddress = async (
   nameOrAddress: string
-): Promise<string | void> => {
+): Promise<string | void | null> => {
   if (!isHexString(nameOrAddress)) {
     if (isUnstoppableAddressFormat(nameOrAddress)) {
       return resolveUnstoppableDomain(nameOrAddress);
     }
     const p = await getProviderForNetwork(Network.mainnet);
-    const name = await p?.resolveName(nameOrAddress);
-    return name ?? undefined;
+    const name = p?.resolveName(nameOrAddress);
+    return name;
   }
   return nameOrAddress;
 };
