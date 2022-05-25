@@ -330,6 +330,7 @@
   "resolutions": {
     "**/node-fetch": "2.6.7",
     "**/web3": "1.6.1",
+    "**/bn.js": "5.2.1",
     "**/underscore": "1.12.1",
     "**/socket.io-parser": "3.3.2",
     "**/bl": "4.1.0",
