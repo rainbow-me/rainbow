@@ -85,9 +85,9 @@ const SendButtonWrapper = styled(Column).attrs({
 export type Checkbox = {
   checked: boolean;
   id:
-    | 'clear-profile'
-    | 'reverse-record'
-    | 'transfer-owner'
+    | 'clear-records'
+    | 'set-address'
+    | 'transfer-control'
     | 'not-sending-to-exchange'
     | 'has-wallet-that-supports';
   label: string;
@@ -259,17 +259,17 @@ export default function SendConfirmationSheet() {
       ? ([
           !hasClearProfileInfo(ensProfile) && {
             checked: false,
-            id: 'clear-profile',
+            id: 'clear-records',
             label: 'Clear profile information',
           },
           !doesNamePointToRecipient(ensProfile, toAddress) && {
             checked: false,
-            id: 'reverse-record',
+            id: 'set-address',
             label: 'Point this name to the recipient’s wallet address',
           },
           doesAccountControlName(ensProfile) && {
             checked: false,
-            id: 'transfer-owner',
+            id: 'transfer-control',
             label: 'Transfer control to the recipient',
           },
         ].filter(Boolean) as Checkbox[])
@@ -331,7 +331,7 @@ export default function SendConfirmationSheet() {
   const handleCheckbox = useCallback(
     checkbox => {
       const newCheckboxesState = [...checkboxes];
-      newCheckboxesState[checkbox.id] = checkbox;
+      newCheckboxesState[checkbox.index] = checkbox;
       setCheckboxes(newCheckboxesState);
     },
     [checkboxes]
@@ -374,12 +374,28 @@ export default function SendConfirmationSheet() {
     if (!canSubmit) return;
     try {
       setIsAuthorizing(true);
-      await callback();
+      if (isENS) {
+        const clearRecords = checkboxes.some(
+          ({ checked, id }) => checked && id === 'clear-records'
+        );
+        const setAddress = checkboxes.some(
+          ({ checked, id }) => checked && id === 'set-address'
+        );
+        const transferControl = checkboxes.some(
+          ({ checked, id }) => checked && id === 'transfer-control'
+        );
+        console.log('test00', clearRecords, setAddress, transferControl);
+        await callback({
+          ens: { clearRecords, setAddress, transferControl },
+        });
+      } else {
+        await callback();
+      }
     } catch (e) {
       logger.sentry('TX submit failed', e);
       setIsAuthorizing(false);
     }
-  }, [callback, canSubmit]);
+  }, [callback, canSubmit, checkboxes, isENS]);
 
   const existingAccount = useMemo(() => {
     let existingAcct = null;
@@ -639,9 +655,9 @@ export default function SendConfirmationSheet() {
                           label={check.label}
                           onPress={() =>
                             handleCheckbox({
+                              ...check,
                               checked: !check.checked,
-                              id: i,
-                              label: check.label,
+                              index: i,
                             })
                           }
                         />
