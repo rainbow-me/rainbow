@@ -225,9 +225,6 @@ export default function SendConfirmationSheet() {
 
   const { updateTxFee } = useGas();
 
-  const uniqueTokenType = getUniqueTokenType(asset);
-  const isENS = uniqueTokenType === 'ENS';
-
   useEffect(() => {
     if (!isSendingToUserAccount) {
       let sends = 0;
@@ -253,6 +250,9 @@ export default function SendConfirmationSheet() {
   const contact = useMemo(() => {
     return get(contacts, `${[toLower(toAddress)]}`);
   }, [contacts, toAddress]);
+
+  const uniqueTokenType = getUniqueTokenType(asset);
+  const isENS = uniqueTokenType === 'ENS';
 
   const [checkboxes, setCheckboxes] = useState<Checkbox[]>(
     isENS
@@ -384,7 +384,6 @@ export default function SendConfirmationSheet() {
         const transferControl = checkboxes.some(
           ({ checked, id }) => checked && id === 'transfer-control'
         );
-        console.log('test00', clearRecords, setAddress, transferControl);
         await callback({
           ens: { clearRecords, setAddress, transferControl },
         });

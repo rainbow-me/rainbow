@@ -119,7 +119,12 @@ export const createTransferENSRap = async (
 ) => {
   let actions: RapENSAction[] = [];
 
-  const { clearRecords, setAddress, toAddress } = ensActionParameters;
+  const {
+    clearRecords,
+    setAddress,
+    transferControl,
+    toAddress,
+  } = ensActionParameters;
 
   if (clearRecords) {
     const records = await fetchProfileRecords(ensActionParameters.name);
@@ -164,8 +169,13 @@ export const createTransferENSRap = async (
     });
     actions = concat(actions, setName);
   }
-
-  console.log('test2', JSON.stringify(actions));
+  if (transferControl && toAddress) {
+    const transferControl = createNewENSAction(RapActionTypes.setOwnerENS, {
+      ...ensActionParameters,
+      ownerAddress: toAddress,
+    });
+    actions = concat(actions, transferControl);
+  }
 
   // create the overall rap
   const newRap = createNewRap(actions);

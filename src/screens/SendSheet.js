@@ -540,7 +540,6 @@ export default function SendSheet(props) {
           submitSuccess = false;
         } else {
           if (isENS && (clearRecords || setAddress || transferControl)) {
-            console.log('test', clearRecords, setAddress, transferControl);
             await transferENS(() => null, {
               clearRecords,
               name: ensName,

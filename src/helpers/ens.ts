@@ -43,6 +43,7 @@ export enum ENSRegistrationTransactionType {
   REGISTER_WITH_CONFIG = 'registerWithConfig',
   RENEW = 'renew',
   SET_ADDR = 'setAddr',
+  SET_OWNER = 'setOwner',
   SET_TEXT = 'setText',
   SET_NAME = 'setName',
   MULTICALL = 'multicall',
@@ -607,6 +608,13 @@ const getENSExecutionDetails = async ({
       const namehash = hash(name);
       args = [namehash, record.key, record.address];
       contract = await getENSPublicResolverContract(wallet, resolverAddress);
+      break;
+    }
+    case ENSRegistrationTransactionType.SET_OWNER: {
+      if (!name || !ownerAddress) throw new Error('Bad arguments for setOwner');
+      const namehash = hash(name);
+      args = [namehash, ownerAddress];
+      contract = await getENSRegistryContract();
       break;
     }
     case ENSRegistrationTransactionType.SET_TEXT: {
