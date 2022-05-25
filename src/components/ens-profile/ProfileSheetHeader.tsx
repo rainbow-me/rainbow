@@ -51,7 +51,7 @@ export default function ProfileSheetHeader({
   const { data: images, isFetched: isImagesFetched } = useENSProfileImages(
     ensName
   );
-  const profileAddress = profile?.primary?.address;
+  const profileAddress = profile?.primary?.address ?? '';
   const { navigate } = useNavigation();
   const { data: uniqueTokens } = useFetchUniqueTokens({
     address: profileAddress,

@@ -1,4 +1,5 @@
 import { formatsByCoinType, formatsByName } from '@ensdomains/address-encoder';
+import { Resolver } from '@ethersproject/providers';
 import { captureException } from '@sentry/react-native';
 import { Duration, sub } from 'date-fns';
 import { isZeroAddress } from 'ethereumjs-util';
@@ -353,7 +354,7 @@ export const fetchRecords = async (ensName: string) => {
     supportedRecords.includes(key)
   );
   const recordValues = await Promise.all(
-    recordKeys.map((key: string) => resolver.getText(key))
+    recordKeys.map((key: string) => resolver?.getText(key))
   );
   const records = recordKeys.reduce((records, key, i) => {
     return {
@@ -391,7 +392,7 @@ export const fetchCoinAddresses = async (
     coinTypes
       .map(async (coinType: number) => {
         try {
-          return await resolver.getAddress(coinType);
+          return await resolver?.getAddress(coinType);
         } catch (err) {
           return undefined;
         }
@@ -490,8 +491,8 @@ export const fetchProfile = async (ensName: string) => {
   ]);
 
   const resolverData = {
-    address: resolver.address,
-    type: resolver.address === ensPublicResolverAddress ? 'default' : 'custom',
+    address: resolver?.address,
+    type: resolver?.address === ensPublicResolverAddress ? 'default' : 'custom',
   };
 
   return {
@@ -867,14 +868,18 @@ export const fetchReverseRecord = async (address: string) => {
   try {
     const provider = await getProviderForNetwork();
     const reverseRecord = await provider.lookupAddress(address);
-    return reverseRecord;
+    return reverseRecord ?? '';
   } catch (e) {
     return '';
   }
 };
 
 export const fetchResolver = async (ensName: string) => {
-  const provider = await getProviderForNetwork();
-  const resolver = await provider.getResolver(ensName);
-  return resolver;
+  try {
+    const provider = await getProviderForNetwork();
+    const resolver = await provider.getResolver(ensName);
+    return resolver ?? ({} as Resolver);
+  } catch (e) {
+    return {} as Resolver;
+  }
 };

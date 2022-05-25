@@ -257,7 +257,7 @@ export default function useENSRegistrationActionHandler(
         nonce,
         ownerAddress: accountAddress,
         records: changedRecords,
-        resolverAddress: resolver.address,
+        resolverAddress: resolver?.address,
       };
 
       await executeRap(
