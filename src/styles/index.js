@@ -4,6 +4,7 @@ export { default as buildTextStyles, fontWithWidth } from './buildTextStyles';
 export { default as calcDirectionToDegrees } from './calcDirectionToDegrees';
 export { default as colors } from './colors';
 export { lightModeThemeColors } from './colors';
+export { Colors } from './colors';
 export { default as fonts } from './fonts';
 export { getFontSize } from './fonts';
 export { default as margin } from './margin';

@@ -24,7 +24,7 @@ const ColorGradient = styled(AnimatedLinearGradient).attrs({
 export default function ShimmerAnimation({
   color,
   enabled = true,
-  gradientColor,
+  gradientColor = undefined,
   width = 0,
 }) {
   const opacity = useSharedValue(1);
@@ -34,7 +34,7 @@ export default function ShimmerAnimation({
   const gradientColors = useMemo(
     () => [
       colors.alpha(color, 0),
-      gradientColor || colors.alpha(colors.whiteLabel, 0.2),
+      gradientColor ?? colors.alpha(colors.whiteLabel, 0.2),
       colors.alpha(color, 0),
     ],
     [gradientColor, color, colors]

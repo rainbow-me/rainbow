@@ -274,8 +274,13 @@ export default function ChartExpandedState({ asset }) {
 
   const assetsInWallet = useAssetsInWallet();
   const showSwapButton = useMemo(
-    () => find(assetsInWallet, ['address', asset.address]),
-    [asset.address, assetsInWallet]
+    () =>
+      !!networkInfo[currentNetwork]?.exchange_enabled &&
+      !isL2 &&
+      uniswapAssetsInWallet.find(
+        assetInWallet => assetInWallet.address === assetWithPrice.address
+      ),
+    [assetWithPrice.address, currentNetwork, isL2, uniswapAssetsInWallet]
   );
 
   const needsEth =

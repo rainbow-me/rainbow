@@ -271,6 +271,7 @@
     },
     "developer_settings": {
       "alert": "Alert",
+      "notifications_debug": "Notifications Debug",
       "applied": "APPLIED",
       "backups_deleted_successfully": "Backups deleted successfully",
       "clear_async_storage": "Clear async storage",
