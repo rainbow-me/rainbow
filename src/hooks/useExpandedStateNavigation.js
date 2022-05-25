@@ -29,10 +29,10 @@ export default function useExpandedStateNavigation(inputType) {
 
   return useCallback(
     (routeName, traverseParams) => {
-      if (isReadOnlyWallet) {
-        watchingAlert();
-        return;
-      }
+      // if (isReadOnlyWallet) {
+      //   watchingAlert();
+      //   return;
+      // }
 
       InteractionManager.runAfterInteractions(goBack);
       InteractionManager.runAfterInteractions(() => {
