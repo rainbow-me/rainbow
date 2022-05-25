@@ -6,7 +6,7 @@ import { useNavigation } from '@rainbow-me/navigation';
 
 const SwapModal = (props, ref) => {
   const { params = {} } = useRoute();
-  const { inputAsset, outputAsset, hasBalance } = params;
+  const { inputAsset, outputAsset, fromDiscover } = params;
   const { setParams } = useNavigation();
   useEffect(() => {
     setParams({ focused: true });
@@ -17,7 +17,7 @@ const SwapModal = (props, ref) => {
     <ExchangeModal
       defaultInputAsset={inputAsset}
       defaultOutputAsset={outputAsset}
-      hasBalance={hasBalance}
+      fromDiscover={fromDiscover}
       ref={ref}
       testID="exchange-modal"
       type={ExchangeModalTypes.swap}

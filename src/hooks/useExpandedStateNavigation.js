@@ -10,7 +10,7 @@ import { watchingAlert } from '@rainbow-me/utils';
 
 export default function useExpandedStateNavigation(
   inputType,
-  hasBalance = false
+  fromDiscover = false
 ) {
   const { goBack, navigate } = useNavigation();
   const { params } = useRoute();
@@ -22,15 +22,18 @@ export default function useExpandedStateNavigation(
     switch (inputType) {
       case AssetInputTypes.in:
         return {
-          hasBalance,
+          fromDiscover,
           inputAsset: asset,
         };
       case AssetInputTypes.out:
-        return { hasBalance, outputAsset: asset };
+        return {
+          fromDiscover,
+          outputAsset: asset,
+        };
       default:
         return { asset };
     }
-  }, [asset, hasBalance, inputType]);
+  }, [asset, fromDiscover, inputType]);
 
   return useCallback(
     (routeName, traverseParams) => {

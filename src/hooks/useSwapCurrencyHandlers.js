@@ -35,7 +35,7 @@ const { currentlyFocusedInput, focusTextInput } = TextInput.State;
 export default function useSwapCurrencyHandlers({
   defaultInputAsset,
   defaultOutputAsset,
-  hasBalance,
+  fromDiscover,
   inputFieldRef,
   setLastFocusedInputHandle,
   outputFieldRef,
@@ -107,7 +107,7 @@ export default function useSwapCurrencyHandlers({
   const updateInputCurrency = useCallback(
     (newInputCurrency, handleNavigate) => {
       if (
-        !hasBalance &&
+        !fromDiscover &&
         !inputCurrency &&
         outputCurrency.implementations[
           ethereumUtils.getNetworkFromType(newInputCurrency?.type)
@@ -162,7 +162,7 @@ export default function useSwapCurrencyHandlers({
     },
     [
       dispatch,
-      hasBalance,
+      fromDiscover,
       inputCurrency,
       inputFieldRef,
       outputCurrency,
