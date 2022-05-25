@@ -375,6 +375,20 @@ const ensAction = async (
           category: 'profiles',
         });
         break;
+      case ENSRegistrationTransactionType.SET_ADDR:
+        tx = await executeSetText(
+          name,
+          ensRegistrationRecords,
+          gasLimit,
+          maxFeePerGas,
+          maxPriorityFeePerGas,
+          wallet,
+          nonce
+        );
+        analytics.track('Edited ENS records', {
+          category: 'profiles',
+        });
+        break;
       case ENSRegistrationTransactionType.SET_NAME:
         tx = await executeSetName(
           name,
@@ -506,6 +520,23 @@ const setNameENS = async (
   );
 };
 
+const setAddrENS = async (
+  wallet: Wallet,
+  currentRap: Rap,
+  index: number,
+  parameters: RapENSActionParameters,
+  baseNonce?: number
+): Promise<number | undefined> => {
+  return ensAction(
+    wallet,
+    RapActionTypes.setAddrENS,
+    index,
+    parameters,
+    ENSRegistrationTransactionType.SET_ADDR,
+    baseNonce
+  );
+};
+
 const setTextENS = async (
   wallet: Wallet,
   currentRap: Rap,
@@ -528,6 +559,7 @@ export default {
   multicallENS,
   registerWithConfig,
   renewENS,
+  setAddrENS,
   setNameENS,
   setTextENS,
 };

@@ -42,6 +42,7 @@ export enum ENSRegistrationTransactionType {
   COMMIT = 'commit',
   REGISTER_WITH_CONFIG = 'registerWithConfig',
   RENEW = 'renew',
+  SET_ADDR = 'setAddr',
   SET_TEXT = 'setText',
   SET_NAME = 'setName',
   MULTICALL = 'multicall',
@@ -79,6 +80,7 @@ export enum REGISTRATION_STEPS {
   REGISTER = 'REGISTER',
   RENEW = 'RENEW',
   SET_NAME = 'SET_NAME',
+  TRANSFER = 'TRANSFER',
   WAIT_COMMIT_CONFIRMATION = 'WAIT_COMMIT_CONFIRMATION',
   WAIT_ENS_COMMITMENT = 'WAIT_ENS_COMMITMENT',
 }
@@ -598,6 +600,15 @@ const getENSExecutionDetails = async ({
       args = [name];
       contract = await getENSReverseRegistrarContract(wallet);
       break;
+    case ENSRegistrationTransactionType.SET_ADDR: {
+      if (!name || !records || !records?.coinAddress?.[0])
+        throw new Error('Bad arguments for setAddr');
+      const record = records?.coinAddress[0];
+      const namehash = hash(name);
+      args = [namehash, record.key, record.address];
+      contract = await getENSPublicResolverContract(wallet, resolverAddress);
+      break;
+    }
     case ENSRegistrationTransactionType.SET_TEXT: {
       if (!name || !records || !records?.text?.[0])
         throw new Error('Bad arguments for setText');
