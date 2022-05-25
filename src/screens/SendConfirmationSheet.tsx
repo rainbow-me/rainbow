@@ -40,7 +40,10 @@ import useExperimentalFlag, {
 import { useTheme } from '@rainbow-me/context';
 import { Box, Inset, Stack, Text } from '@rainbow-me/design-system';
 import { UniqueAsset } from '@rainbow-me/entities';
-import { estimateENSSetNameGasLimit } from '@rainbow-me/handlers/ens';
+import {
+  estimateENSSetRecordsGasLimit,
+  estimateENSSetNameGasLimit,
+} from '@rainbow-me/handlers/ens';
 import { estimateGasLimit } from '@rainbow-me/handlers/web3';
 import {
   removeFirstEmojiFromString,
@@ -300,8 +303,19 @@ export default function SendConfirmationSheet() {
         .filter(option => option.checked)
         .map(option => {
           switch (option.id) {
-            // case 'clear-records':
-            //   return;
+            case 'clear-records':
+              const emptyRecords = Object.keys(
+                ensProfile?.data?.records || {}
+              ).reduce((records, recordKey) => {
+                return {
+                  ...records,
+                  [recordKey]: '',
+                };
+              }, {});
+              return estimateENSSetRecordsGasLimit({
+                name: asset?.name,
+                records: emptyRecords,
+              });
             case 'set-address':
               return estimateENSSetNameGasLimit({
                 name: asset?.name,
@@ -335,7 +349,15 @@ export default function SendConfirmationSheet() {
           updateTxFee(null, null);
         });
     }
-  }, [accountAddress, asset, checkboxes, isENS, toAddress, updateTxFee]);
+  }, [
+    accountAddress,
+    asset,
+    checkboxes,
+    ensProfile?.data?.records,
+    isENS,
+    toAddress,
+    updateTxFee,
+  ]);
 
   const handleCheckbox = useCallback(
     checkbox => {
