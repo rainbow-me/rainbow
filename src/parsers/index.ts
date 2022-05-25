@@ -32,6 +32,7 @@ export {
 export {
   parseAccountUniqueTokens,
   parseAccountUniqueTokensPolygon,
+  handleAndSignImages,
   getFamilies,
   dedupeUniqueTokens,
   dedupeAssetsWithFamilies,
