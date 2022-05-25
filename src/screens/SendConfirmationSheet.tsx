@@ -295,36 +295,45 @@ export default function SendConfirmationSheet() {
   );
 
   useEffect(() => {
-    const estimateTotalGasLimit = async () => {
-      try {
-        const nftGasLimit = estimateGasLimit({
+    if (isENS) {
+      const promises = checkboxes
+        .filter(option => option.checked)
+        .map(option => {
+          switch (option.id) {
+            // case 'clear-records':
+            //   return;
+            case 'set-address':
+              return estimateENSSetNameGasLimit({
+                name: asset?.name,
+                ownerAddress: toAddress,
+              });
+            // case 'transfer-control':
+            //   return;
+            default:
+              return Promise.resolve(0);
+          }
+        });
+      promises.push(
+        estimateGasLimit({
           address: accountAddress,
           amount: 0,
           asset: asset,
           recipient: toAddress,
+        })
+      );
+      promiseUtils
+        .PromiseAllWithFails(promises)
+        .then(gasLimits => {
+          const gasLimit = gasLimits.reduce(
+            (a, b) => parseFloat(a) + parseFloat(b),
+            0
+          );
+          updateTxFee(gasLimit, null);
+        })
+        .catch(e => {
+          logger.sentry('Error calculating gas limit', e);
+          updateTxFee(null, null);
         });
-        const setNameGasLimit = checkboxes[0]['checked']
-          ? estimateENSSetNameGasLimit({
-              name: asset?.name,
-              ownerAddress: toAddress,
-            })
-          : Promise.resolve(0);
-        const gasLimits = await promiseUtils.PromiseAllWithFails([
-          nftGasLimit,
-          setNameGasLimit,
-        ]);
-        const gasLimit = gasLimits.reduce(
-          (a, b) => parseFloat(a) + parseFloat(b),
-          0
-        );
-        updateTxFee(gasLimit, null);
-      } catch (e) {
-        logger.sentry('Error calculating gas limit', e);
-        updateTxFee(null, null);
-      }
-    };
-    if (isENS) {
-      estimateTotalGasLimit();
     }
   }, [accountAddress, asset, checkboxes, isENS, toAddress, updateTxFee]);
 
