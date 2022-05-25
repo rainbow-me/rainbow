@@ -32,6 +32,7 @@ import Logger from '@rainbow-me/utils/logger';
 enum DisplayValue {
   input = 'inputAmountDisplay',
   output = 'outputAmountDisplay',
+  native = 'nativeAmountDisplay',
 }
 
 const getInputAmount = async (
@@ -248,6 +249,7 @@ const derivedValues: { [key in SwapModalField]: string | null } = {
 const displayValues: { [key in DisplayValue]: string | null } = {
   [DisplayValue.input]: null,
   [DisplayValue.output]: null,
+  [DisplayValue.native]: null,
 };
 
 export default function useSwapDerivedOutputs(chainId: number) {
@@ -306,7 +308,33 @@ export default function useSwapDerivedOutputs(chainId: number) {
   useEffect(() => {
     const getTradeDetails = async () => {
       let tradeDetails = null;
-      if (!independentValue || !inputCurrency) {
+
+      if (independentValue === '0.') {
+        switch (independentField) {
+          case SwapModalField.input:
+            displayValues[DisplayValue.input] = independentValue;
+            break;
+          case SwapModalField.output:
+            displayValues[DisplayValue.output] = independentValue;
+            break;
+          case SwapModalField.native:
+            displayValues[DisplayValue.native] = independentValue;
+            break;
+        }
+        setResult({
+          derivedValues,
+          displayValues,
+          tradeDetails,
+        });
+        return;
+      }
+
+      if (isZero(independentValue) || !independentValue) {
+        resetSwapInputs();
+        return;
+      }
+
+      if (!inputCurrency || !outputCurrency) {
         setInsufficientLiquidity(false);
         setResult({
           derivedValues,
@@ -315,6 +343,7 @@ export default function useSwapDerivedOutputs(chainId: number) {
         });
         return;
       }
+
       setLoading(true);
       const inputToken = inputCurrency;
       const outputToken = outputCurrency;
@@ -324,12 +353,13 @@ export default function useSwapDerivedOutputs(chainId: number) {
         derivedValues[SwapModalField.input] = independentValue;
         displayValues[DisplayValue.input] = independentValue;
 
-        const nativeValue =
-          inputPrice && !isZero(independentValue)
-            ? convertAmountToNativeAmount(independentValue, inputPrice)
-            : null;
+        const nativeValue = inputPrice
+          ? convertAmountToNativeAmount(independentValue, inputPrice)
+          : null;
 
         derivedValues[SwapModalField.native] = nativeValue;
+        displayValues[DisplayValue.native] = nativeValue;
+
         const {
           outputAmount,
           outputAmountDisplay,
@@ -351,7 +381,7 @@ export default function useSwapDerivedOutputs(chainId: number) {
           outputAmountDisplay?.toString() || null;
       } else if (independentField === SwapModalField.native) {
         const inputAmount =
-          independentValue && !isZero(independentValue) && inputPrice
+          independentValue && inputPrice
             ? convertAmountFromNativeValue(
                 independentValue,
                 inputPrice,
@@ -359,18 +389,18 @@ export default function useSwapDerivedOutputs(chainId: number) {
               )
             : null;
 
-        derivedValues[SwapModalField.native] = independentValue;
-        derivedValues[SwapModalField.input] = inputAmount;
-
         // The quote is the same
         if (
           derivedValuesFromRedux &&
-          derivedValues[SwapModalField.native] ===
-            derivedValuesFromRedux[SwapModalField.native]
+          independentValue === derivedValuesFromRedux[SwapModalField.native]
         ) {
           setLoading(false);
           return;
         }
+
+        derivedValues[SwapModalField.native] = independentValue;
+        displayValues[DisplayValue.native] = independentValue;
+        derivedValues[SwapModalField.input] = inputAmount;
 
         const inputAmountDisplay =
           inputAmount && inputPrice
@@ -434,6 +464,7 @@ export default function useSwapDerivedOutputs(chainId: number) {
             : null;
 
         derivedValues[SwapModalField.native] = nativeValue;
+        displayValues[DisplayValue.native] = nativeValue;
       }
 
       const data = {
