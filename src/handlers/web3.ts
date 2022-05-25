@@ -518,8 +518,7 @@ export const resolveNameOrAddress = async (
       return resolveUnstoppableDomain(nameOrAddress);
     }
     const p = await getProviderForNetwork(Network.mainnet);
-    const name = p?.resolveName(nameOrAddress);
-    return name;
+    return p?.resolveName(nameOrAddress);
   }
   return nameOrAddress;
 };
