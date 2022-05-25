@@ -1,3 +1,4 @@
+import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import { find } from 'lodash';
 import React, {
@@ -183,6 +184,9 @@ function Description({ text = '' }) {
 
 export default function ChartExpandedState({ asset }) {
   const genericAsset = useGenericAsset(asset?.address);
+  const {
+    params: { fromDiscover = false },
+  } = useRoute();
 
   const [carouselHeight, setCarouselHeight] = useState(defaultCarouselHeight);
   const { nativeCurrency } = useAccountSettings();
@@ -385,10 +389,15 @@ export default function ChartExpandedState({ asset }) {
             <SwapActionButton color={color} inputType={AssetInputTypes.in} />
           )}
           {hasBalance ? (
-            <SendActionButton asset={ogAsset} color={color} />
+            <SendActionButton
+              asset={ogAsset}
+              color={color}
+              fromDiscover={fromDiscover}
+            />
           ) : (
             <SwapActionButton
               color={color}
+              fromDiscover={fromDiscover}
               inputType={AssetInputTypes.out}
               label={`􀖅 ${lang.t('expanded_state.asset.get_asset', {
                 assetSymbol: asset?.symbol,

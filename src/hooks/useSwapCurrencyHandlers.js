@@ -9,6 +9,7 @@ import useTimeout from './useTimeout';
 import {
   CurrencySelectionTypes,
   ExchangeModalTypes,
+  Network,
 } from '@rainbow-me/helpers';
 import { useSwapCurrencies } from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
@@ -34,6 +35,7 @@ const { currentlyFocusedInput, focusTextInput } = TextInput.State;
 export default function useSwapCurrencyHandlers({
   defaultInputAsset,
   defaultOutputAsset,
+  fromDiscover,
   inputFieldRef,
   setLastFocusedInputHandle,
   outputFieldRef,
@@ -105,6 +107,33 @@ export default function useSwapCurrencyHandlers({
   const updateInputCurrency = useCallback(
     (newInputCurrency, handleNavigate) => {
       if (
+        !fromDiscover &&
+        !inputCurrency &&
+        outputCurrency.implementations[
+          ethereumUtils.getNetworkFromType(newInputCurrency?.type)
+        ]?.address
+      ) {
+        const newNewtork = ethereumUtils.getNetworkFromType(
+          newInputCurrency?.type
+        );
+        let newOutputCurrency = outputCurrency;
+        if (newNewtork !== Network.mainnet)
+          newOutputCurrency.mainnet_address = outputCurrency.address;
+
+        newOutputCurrency.address =
+          outputCurrency.implementations[
+            ethereumUtils.getNetworkFromType(newInputCurrency?.type)
+          ].address;
+        newOutputCurrency.type = newInputCurrency?.type;
+        newOutputCurrency.uniqueId =
+          newNewtork === Network.mainnet
+            ? newOutputCurrency?.address
+            : `${newOutputCurrency?.address}_${newOutputCurrency?.type}`;
+        dispatch(updateSwapInputCurrency(newInputCurrency, true));
+        dispatch(updateSwapOutputCurrency(newOutputCurrency));
+        setLastFocusedInputHandle(inputFieldRef);
+        handleNavigate();
+      } else if (
         outputCurrency &&
         newInputCurrency?.type !== outputCurrency?.type &&
         !hasShownWarning
@@ -131,7 +160,14 @@ export default function useSwapCurrencyHandlers({
         handleNavigate();
       }
     },
-    [dispatch, inputFieldRef, outputCurrency, setLastFocusedInputHandle]
+    [
+      dispatch,
+      fromDiscover,
+      inputCurrency,
+      inputFieldRef,
+      outputCurrency,
+      setLastFocusedInputHandle,
+    ]
   );
 
   const updateOutputCurrency = useCallback(
