@@ -1,5 +1,6 @@
 import messaging from '@react-native-firebase/messaging';
 import React, { useEffect, useMemo, useState } from 'react';
+import { ScrollView } from 'react-native-gesture-handler';
 import { MiniButton } from '../buttons';
 import { ListFooter } from '../list';
 import { useTheme } from '@rainbow-me/context';
@@ -128,7 +129,7 @@ const DevNotificationsSection = () => {
   };
 
   return (
-    <Box>
+    <ScrollView>
       <Box paddingHorizontal="19px" paddingTop="19px">
         <Box paddingBottom="19px">
           <Text size="20px" weight="bold">
@@ -249,7 +250,7 @@ const DevNotificationsSection = () => {
           })}
       </Box>
       <ListFooter />
-    </Box>
+    </ScrollView>
   );
 };
 
