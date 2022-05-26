@@ -1,11 +1,4 @@
 export {
-  contains,
-  isGestureActiveProc,
-  isEitherGestureActiveProc,
-  onEitherGestureActiveChange,
-  runSpring,
-} from './procs';
-export {
   default as ButtonPressAnimation,
   ScaleButtonZoomableAndroid,
 } from './ButtonPressAnimation';
