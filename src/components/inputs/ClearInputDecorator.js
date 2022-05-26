@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { Transition, Transitioning } from 'react-native-reanimated';
+import React from 'react';
+import Animated, { Easing, Keyframe } from 'react-native-reanimated';
 import { magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Centered } from '../layout';
@@ -29,46 +29,30 @@ const TextIcon = styled(Text).attrs(({ theme: { colors } }) => ({
   marginBottom: 0.5,
 });
 
-const duration = 100;
-const transition = (
-  <Transition.Sequence>
-    <Transition.Together>
-      <Transition.Out
-        durationMs={duration * 0.666}
-        interpolation="easeIn"
-        type="fade"
-      />
-      <Transition.Out
-        durationMs={duration * 0.42}
-        interpolation="easeIn"
-        type="scale"
-      />
-    </Transition.Together>
-    <Transition.Change durationMs={duration} interpolation="easeInOut" />
-    <Transition.Together>
-      <Transition.In
-        durationMs={duration}
-        interpolation="easeOut"
-        type="fade"
-      />
-      <Transition.In
-        durationMs={duration * 0.5}
-        interpolation="easeOut"
-        type="scale"
-      />
-    </Transition.Together>
-  </Transition.Sequence>
-);
+const easing = Easing.out(Easing.ease);
+const duration = 69;
 
 const ClearInputDecorator = ({ inputHeight, isVisible, onPress, testID }) => {
-  const transitionRef = useRef();
-
-  useEffect(() => transitionRef.current?.animateNextTransition(), [isVisible]);
+  const keyframe = new Keyframe({
+    0: {
+      easing,
+      opacity: 0,
+      transform: [{ scale: 0.0001 }],
+    },
+    100: {
+      easing,
+      opacity: 1,
+      transform: [{ scale: 1 }],
+    },
+  });
 
   return (
     <Container>
       {isVisible && (
-        <Transitioning.View ref={transitionRef} transition={transition}>
+        <Animated.View
+          entering={keyframe.duration(duration)}
+          exiting={keyframe.duration(duration)}
+        >
           <Button
             as={ButtonPressAnimation}
             onPress={onPress}
@@ -77,7 +61,7 @@ const ClearInputDecorator = ({ inputHeight, isVisible, onPress, testID }) => {
           >
             <TextIcon>􀁡</TextIcon>
           </Button>
-        </Transitioning.View>
+        </Animated.View>
       )}
     </Container>
   );
