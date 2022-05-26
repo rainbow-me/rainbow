@@ -540,12 +540,15 @@ export const estimateENSCommitGasLimit = async ({
 export const estimateENSMulticallGasLimit = async ({
   name,
   records,
+  ownerAddress,
 }: {
   name: string;
   records: ENSRegistrationRecords;
+  ownerAddress?: string;
 }) =>
   estimateENSTransactionGasLimit({
     name,
+    ownerAddress,
     records,
     type: ENSRegistrationTransactionType.MULTICALL,
   });
@@ -604,12 +607,15 @@ export const estimateENSSetNameGasLimit = async ({
 export const estimateENSSetTextGasLimit = async ({
   name,
   records,
+  ownerAddress,
 }: {
   name: string;
+  ownerAddress?: string;
   records: ENSRegistrationRecords;
 }) =>
   estimateENSTransactionGasLimit({
     name,
+    ownerAddress,
     records,
     type: ENSRegistrationTransactionType.SET_TEXT,
   });
@@ -754,6 +760,7 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
 export const estimateENSSetRecordsGasLimit = async ({
   name,
   records,
+  ownerAddress,
 }:
   | { name: string; records: Records; ownerAddress?: string }
   | ENSActionParameters) => {
@@ -767,7 +774,7 @@ export const estimateENSSetRecordsGasLimit = async ({
     gasLimit = await (shouldUseMulticall
       ? estimateENSMulticallGasLimit
       : estimateENSSetTextGasLimit)({
-      ...{ name, records: ensRegistrationRecords },
+      ...{ name, ownerAddress, records: ensRegistrationRecords },
     });
   }
   return gasLimit;
