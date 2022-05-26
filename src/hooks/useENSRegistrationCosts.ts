@@ -22,6 +22,7 @@ import {
   formatTotalRegistrationCost,
   generateSalt,
   getRentPrice,
+  REGISTRATION_MODES,
   REGISTRATION_STEPS,
 } from '@rainbow-me/helpers/ens';
 import { Network } from '@rainbow-me/helpers/networkTypes';
@@ -62,7 +63,7 @@ export default function useENSRegistrationCosts({
   yearsDuration: number;
 }) {
   const { nativeCurrency, accountAddress } = useAccountSettings();
-  const { registrationParameters } = useENSRegistration();
+  const { registrationParameters, mode } = useENSRegistration();
   const duration = yearsDuration * timeUnits.secs.year;
   const name = inputName.replace(ENS_DOMAIN, '');
   const {
@@ -146,15 +147,17 @@ export default function useENSRegistrationCosts({
 
   const getSetRecordsGasLimit = useCallback(async () => {
     const newSetRecordsGasLimit = await estimateENSSetRecordsGasLimit({
-      name,
+      name: `${name}${ENS_DOMAIN}`,
+      ownerAddress:
+        mode === REGISTRATION_MODES.EDIT ? accountAddress : undefined,
       records: changedRecords,
     });
     return newSetRecordsGasLimit || '';
-  }, [changedRecords, name]);
+  }, [changedRecords, name, accountAddress, mode]);
 
   const getSetNameGasLimit = useCallback(async () => {
     const newSetNameGasLimit = await estimateENSSetNameGasLimit({
-      name,
+      name: `${name}${ENS_DOMAIN}`,
       ownerAddress: accountAddress,
     });
     return newSetNameGasLimit || '';
