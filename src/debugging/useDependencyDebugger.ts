@@ -1,8 +1,9 @@
+import { inspect } from 'util';
 import { useEffect, useRef } from 'react';
 import { logger } from '../utils';
 
-const usePrevious = <T>(value: T, initialValue: T): T => {
-  const ref = useRef<T>(initialValue);
+const usePrevious = <T>(value: T): T => {
+  const ref = useRef<T>(value);
   useEffect(() => {
     ref.current = value;
   });
@@ -10,12 +11,29 @@ const usePrevious = <T>(value: T, initialValue: T): T => {
 };
 
 export const useDependencyDebugger = (
-  dependencies: unknown[],
+  dependencies: unknown[] | Record<string, unknown>,
   dependencyNames: string[] = []
 ) => {
-  const previousDeps = usePrevious(dependencies, []);
+  let dependenciesToUse: Record<string, unknown>;
 
-  const changedDeps = dependencies.reduce<
+  if (Array.isArray(dependencies)) {
+    dependenciesToUse = dependencies.reduce<Record<string, unknown>>(
+      (acc, current, index) => {
+        const name = dependencyNames[index] ?? index;
+
+        acc[name] = current;
+
+        return acc;
+      },
+      {}
+    );
+  } else {
+    dependenciesToUse = dependencies;
+  }
+
+  const previousDeps = usePrevious(dependenciesToUse);
+
+  const changedDeps = Object.entries(dependenciesToUse).reduce<
     Record<
       string,
       {
@@ -23,14 +41,14 @@ export const useDependencyDebugger = (
         before: unknown;
       }
     >
-  >((accum, dependency, index) => {
-    if (dependency !== previousDeps[index]) {
-      const keyName = dependencyNames[index] || index;
+  >((accum, [name, value]) => {
+    const prev = previousDeps[name];
+    if (value !== prev) {
       return {
         ...accum,
-        [keyName]: {
-          after: dependency,
-          before: previousDeps[index],
+        [name]: {
+          after: value,
+          before: prev,
         },
       };
     }
@@ -39,6 +57,6 @@ export const useDependencyDebugger = (
   }, {});
 
   if (Object.keys(changedDeps).length) {
-    logger.log('[use-memo-debugger] ', changedDeps);
+    logger.log('[use-dependencies-debugger] ', changedDeps);
   }
 };
