@@ -1,9 +1,14 @@
-import React, { Fragment } from 'react';
-import Animated from 'react-native-reanimated';
-import { useSpringTransition } from 'react-native-redash/src/v1';
+import React, { Fragment, PropsWithChildren, useLayoutEffect } from 'react';
+import { Insets, ViewProps } from 'react-native';
+import Animated, {
+  interpolate,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  WithSpringConfig,
+} from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
-import { useTheme } from '../../context/ThemeContext';
-import { interpolate } from '../animations';
+import { ThemeContextProps, useTheme } from '../../context/ThemeContext';
 import { Icon } from '../icons';
 import { RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
@@ -11,7 +16,7 @@ import { useDimensions } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { padding, position, shadow } from '@rainbow-me/styles';
 
-const springConfig = {
+const springConfig: WithSpringConfig = {
   damping: 14,
   mass: 1,
   overshootClamping: false,
@@ -20,10 +25,17 @@ const springConfig = {
   stiffness: 121.6,
 };
 
+interface ContainerParams {
+  color: string;
+  insets: Insets;
+  deviceWidth: number;
+  theme: ThemeContextProps;
+}
+
 const Container = styled(RowWithMargins).attrs({
   margin: 5,
   self: 'center',
-})(({ color, insets, deviceWidth, theme: { colors } }) => ({
+})(({ color, insets, deviceWidth, theme: { colors } }: ContainerParams) => ({
   ...shadow.buildAsObject(0, 6, 10, colors.shadow, 0.14),
 
   ...padding.object(9, 10, 11, 10),
@@ -36,14 +48,16 @@ const Container = styled(RowWithMargins).attrs({
   zIndex: 100,
 }));
 
-const ToastsWrapper = styled.View({
-  bottom: ({ insets }) => (insets.bottom || 40) + 3,
-  position: 'absolute',
-});
-
-export function ToastsContainer({ children }) {
-  return <ToastsWrapper>{children}</ToastsWrapper>;
-}
+type Props = PropsWithChildren<{
+  color?: string;
+  distance?: number;
+  targetTranslate?: number;
+  icon: any;
+  isVisible?: boolean;
+  text: string;
+  textColor?: string;
+}> &
+  Pick<ViewProps, 'testID'>;
 
 export default function Toast({
   children,
@@ -55,46 +69,51 @@ export default function Toast({
   testID,
   text,
   textColor,
-  ...props
-}) {
+}: Props) {
   const { colors, isDarkMode } = useTheme();
   const { width: deviceWidth } = useDimensions();
   const insets = useSafeArea();
+  const animation = useSharedValue(isVisible ? 1 : 0);
 
-  const animation = useSpringTransition(isVisible, springConfig);
+  useLayoutEffect(() => {
+    animation.value = withSpring(isVisible ? 1 : 0, springConfig);
+  }, [isVisible, animation]);
 
-  const opacity = interpolate(animation, {
-    inputRange: [0, 1],
-    outputRange: [0, 1],
+  const animatedStyle = useAnimatedStyle(() => {
+    const translateY = interpolate(
+      animation.value,
+      [0, 1],
+      [distance, targetTranslate],
+      'extend'
+    );
+
+    return {
+      opacity: animation.value,
+      transform: [{ translateY }],
+    };
   });
 
-  const translateY = interpolate(animation, {
-    inputRange: [0, 1],
-    outputRange: [distance, targetTranslate],
-  });
-
-  const currentColor = color || isDarkMode ? colors.darkModeDark : colors.dark;
+  const currentColor = color ?? isDarkMode ? colors.darkModeDark : colors.dark;
 
   return (
-    <Animated.View style={{ opacity, transform: [{ translateY }] }}>
+    <Animated.View style={animatedStyle}>
       <Container
         color={currentColor}
         deviceWidth={deviceWidth}
         insets={insets}
         testID={testID}
-        {...props}
       >
-        {children || (
+        {children ?? (
           <Fragment>
             {icon && (
               <Icon
-                color={textColor || colors.whiteLabel}
+                color={textColor ?? colors.whiteLabel}
                 marginTop={3}
                 name={icon}
               />
             )}
             <TruncatedText
-              color={textColor || colors.whiteLabel}
+              color={textColor ?? colors.whiteLabel}
               size="smedium"
               weight="bold"
             >
