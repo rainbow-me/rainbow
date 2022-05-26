@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/core';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { StatusBar } from 'react-native';
+import { Dimensions, StatusBar } from 'react-native';
 import { useSetRecoilState } from 'recoil';
 import { SheetHandleFixedToTopHeight, SlackSheet } from '../components/sheet';
 import ENSAssignRecordsSheet, {
@@ -30,7 +30,9 @@ const renderPager = (props: any) => (
   <ScrollPagerWrapper
     {...props}
     initialScrollPosition={1}
-    useViewPagerAdaptor={false}
+    {...(android && {
+      style: { height: Dimensions.get('window').height },
+    })}
   />
 );
 
