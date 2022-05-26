@@ -1,5 +1,6 @@
 import { useRoute } from '@react-navigation/core';
 import React, { useMemo } from 'react';
+import { useWindowDimensions } from 'react-native';
 import { useRecoilState } from 'recoil';
 import SelectableButton from '../components/ens-registration/TextRecordsForm/SelectableButton';
 import { SlackSheet } from '../components/sheet';
@@ -27,6 +28,8 @@ export default function ENSAdditionalRecordsSheet() {
     onAddField,
     onRemoveField,
   } = useENSRegistrationForm();
+  const { height: deviceHeight } = useWindowDimensions();
+
   const boxStyle = useMemo(
     () => ({
       height: params.longFormHeight || ENSAdditionalRecordsSheetHeight,
@@ -34,9 +37,16 @@ export default function ENSAdditionalRecordsSheet() {
     [params.longFormHeight]
   );
 
+  const androidTop = deviceHeight - boxStyle.height - recordLineHeight;
+
   return (
     // @ts-expect-error JavaScript component
-    <SlackSheet additionalTopPadding height="100%" scrollEnabled={false}>
+    <SlackSheet
+      additionalTopPadding
+      height="100%"
+      scrollEnabled={false}
+      style={android ? { top: androidTop } : {}}
+    >
       <AccentColorProvider color={accentColor}>
         <Box
           background="body"
