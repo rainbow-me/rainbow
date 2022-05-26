@@ -3,7 +3,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 import React, { useContext } from 'react';
 import { StatusBar } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
-import { InitialRouteContext } from '../context/initialRoute';
 import AddCashSheet from '../screens/AddCashSheet';
 import AddTokenSheet from '../screens/AddTokenSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
@@ -57,6 +56,7 @@ import {
   overlayExpandedPreset,
   sheetPreset,
 } from './effects';
+import { InitialRouteContext } from './initialRoute';
 import { nativeStackConfig } from './nativeStackConfig';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
