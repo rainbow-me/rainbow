@@ -321,11 +321,13 @@ export default function SendConfirmationSheet() {
               return estimateENSSetNameGasLimit({
                 name: asset?.name,
                 ownerAddress: toAddress,
+                fromAddress: accountAddress,
               });
             case 'transfer-control':
               return estimateENSSetOwnerGasLimit({
                 name: asset?.name,
                 ownerAddress: toAddress,
+                fromAddress: accountAddress,
               });
             default:
               return Promise.resolve(0);
