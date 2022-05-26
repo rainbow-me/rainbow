@@ -1,7 +1,6 @@
 import lang from 'i18n-js';
 import React from 'react';
 import { useSafeArea } from 'react-native-safe-area-context';
-import { magicMemo } from '../../utils';
 import { FabWrapperBottomPosition, FloatingActionButtonSize } from '../fab';
 import { ListFooter } from '../list';
 import EmptyAssetList from './EmptyAssetList';
@@ -48,9 +47,4 @@ const AssetList = ({
   );
 };
 
-export default magicMemo(AssetList, [
-  'isEmpty',
-  'isLoading',
-  'isWalletEthZero',
-  'sections',
-]);
+export default React.memo(AssetList);
