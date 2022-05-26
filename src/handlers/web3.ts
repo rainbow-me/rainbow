@@ -356,11 +356,12 @@ export async function estimateGasWithPadding(
     txPayloadToEstimate[contractCallEstimateGas ? 'gasLimit' : 'gas'] = toHex(
       saferGasLimit
     );
-
+    console.log('abc');
+    console.log(contractCallEstimateGas);
     const estimatedGas = await (contractCallEstimateGas
       ? contractCallEstimateGas(...(callArguments ?? []), txPayloadToEstimate)
       : p.estimateGas(txPayloadToEstimate));
-
+    console.log('def');
     const lastBlockGasLimit = addBuffer(gasLimit.toString(), 0.9);
     const paddedGas = addBuffer(
       estimatedGas.toString(),
@@ -372,7 +373,7 @@ export async function estimateGasWithPadding(
       lastBlockGasLimit: lastBlockGasLimit,
       paddedGas: paddedGas,
     });
-
+    console.log('book');
     // If the safe estimation is above the last block gas limit, use it
     if (greaterThan(estimatedGas.toString(), lastBlockGasLimit)) {
       logger.sentry(
