@@ -41,7 +41,7 @@ const CurrencySection = () => {
     currency => {
       settingsChangeNativeCurrency(currency);
       // reload widget timelines only if on ios version 14 or above
-      if (ios && parseInt(Platform.Version, 10) >= 14) {
+      if (ios && parseInt(Platform.Version) >= 14) {
         reloadTimelines('PriceWidget');
       }
       analytics.track('Changed native currency', { currency });
