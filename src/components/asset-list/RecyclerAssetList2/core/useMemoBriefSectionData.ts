@@ -1,4 +1,6 @@
+import { useMemo } from 'react';
 import { useDeepCompareMemo } from 'use-deep-compare';
+import { useDependencyDebugger } from '../../../../debugging/useDependencyDebugger';
 import { CellType, CoinExtraData, NFTFamilyExtraData } from './ViewTypes';
 import {
   useCoinListEdited,
@@ -7,26 +9,24 @@ import {
   useOpenInvestmentCards,
   useOpenSavings,
   useOpenSmallBalances,
-  useWalletSectionsData,
 } from '@rainbow-me/hooks';
 
-export default function useMemoBriefSectionData() {
-  const { briefSectionsData } = useWalletSectionsData();
-  const { isSmallBalancesOpen, stagger } = useOpenSmallBalances();
+export default function useMemoBriefSectionData(briefSectionsData: any[]) {
+  const { isSmallBalancesOpen } = useOpenSmallBalances();
   const { isSavingsOpen } = useOpenSavings();
   const { isInvestmentCardsOpen } = useOpenInvestmentCards();
   const { isCoinListEdited } = useCoinListEdited();
   const { hiddenCoinsObj } = useCoinListEditOptions();
   const { openFamilies } = useOpenFamilies();
 
-  const result = useDeepCompareMemo(() => {
+  const result = useMemo(() => {
     let afterDivider = false;
     let isGroupOpen = true;
     const stickyHeaders = [];
     let index = 0;
     let afterCoins = false;
     // load firstly 12, then the rest after 1 sec
-    let numberOfSmallBalancesAllowed = stagger ? 12 : briefSectionsData.length;
+    let numberOfSmallBalancesAllowed = briefSectionsData.length;
     const briefSectionsDataFiltered = briefSectionsData
       .filter((data, arrIndex, arr) => {
         if (
@@ -118,7 +118,7 @@ export default function useMemoBriefSectionData() {
     isInvestmentCardsOpen,
     isCoinListEdited,
     openFamilies,
-    stagger,
+    hiddenCoins,
   ]);
   const memoizedResult = useDeepCompareMemo(() => result, [result]);
   const additionalData = useDeepCompareMemo(

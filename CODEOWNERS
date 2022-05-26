@@ -40,6 +40,9 @@ src/context @osdnk @terrysahaidak
 # NETWORK DEBUGGING
 src/debugging @brunobar79
 
+# Debugging
+src/debugging/useDependencyDebugger.ts @terrysahaidak
+
 # DESIGN SYSTEM
 src/design-system @markdalgleish @jxom
 
