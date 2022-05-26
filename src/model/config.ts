@@ -34,11 +34,12 @@ import {
   // @ts-ignore
   POLYGON_MAINNET_RPC,
 } from 'react-native-dotenv';
+import { setRpcEndpoints, web3SetHttpProvider } from '../handlers/web3';
 import {
-  setRpcEndpoints,
-  web3SetHttpProvider,
-} from '@rainbow-me/handlers/web3';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
+  getNetwork,
+  saveNetwork,
+} from '@rainbow-me/handlers/localstorage/globalSettings';
+
 import Logger from 'logger';
 
 export interface RainbowConfig extends Record<string, any> {
@@ -107,9 +108,11 @@ const init = async () => {
     Logger.sentry('using default config instead...');
   } finally {
     Logger.debug('CURRENT CONFIG', JSON.stringify(config, null, 2));
-    // SET THE DEFAULT PROVIDER AFTER LOADING THE CONFIG
+    // UPDATE THE PROVIDER AFTER LOADING THE NEW CONFIG
+    const currentNetwork = await getNetwork();
     setRpcEndpoints(config);
-    web3SetHttpProvider(networkTypes.mainnet);
+    web3SetHttpProvider(currentNetwork);
+    await saveNetwork(currentNetwork);
   }
 };
 
