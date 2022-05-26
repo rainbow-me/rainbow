@@ -8,7 +8,7 @@ import React, {
   useState,
 } from 'react';
 import { FlatList } from 'react-native-gesture-handler';
-import { Transition, Transitioning } from 'react-native-reanimated';
+import Animated, { Easing, FadeIn, FadeOut } from 'react-native-reanimated';
 import networkTypes from '../../helpers/networkTypes';
 import WalletTypes from '../../helpers/walletTypes';
 import { address } from '../../utils/abbreviations';
@@ -39,19 +39,6 @@ const getItemLayout = (data, index) => {
 };
 
 const keyExtractor = item => `${item.walletId}-${item?.id}`;
-
-const skeletonTransition = (
-  <Transition.Sequence>
-    <Transition.Out interpolation="easeOut" type="fade" />
-    <Transition.Change durationMs={0.001} interpolation="easeOut" />
-    <Transition.In durationMs={0.001} interpolation="easeOut" type="fade" />
-  </Transition.Sequence>
-);
-
-const Container = styled(Transitioning.View)({
-  height: ({ height }) => height,
-  marginTop: -2,
-});
 
 const EmptyWalletList = styled(EmptyAssetList).attrs({
   descendingOpacity: true,
@@ -205,10 +192,10 @@ export default function WalletList({
   );
 
   return (
-    <Container
-      height={height}
-      ref={skeletonTransitionRef}
-      transition={skeletonTransition}
+    <Animated.View
+      entering={FadeIn.easing(Easing.out(Easing.ease)).duration(0.001)}
+      exiting={FadeOut.easing(Easing.out(Easing.ease))}
+      style={{ height, marginTop: -2 }}
     >
       {ready ? (
         <Fragment>
@@ -241,6 +228,6 @@ export default function WalletList({
       ) : (
         <EmptyWalletList />
       )}
-    </Container>
+    </Animated.View>
   );
 }
