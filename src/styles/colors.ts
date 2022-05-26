@@ -4,8 +4,10 @@ import PropTypes from 'prop-types';
 import currentColors from '../context/currentColors';
 import { memoFn } from '../utils/memoFn';
 
+export type Colors = ReturnType<typeof getColorsByTheme>;
+
 const buildRgba = memoFn(
-  (color, alpha = 1) => `rgba(${chroma(color).rgb()},${alpha})`
+  (color: string, alpha = 1) => `rgba(${chroma(color).rgb()},${alpha})`
 );
 
 const darkModeColors = {
@@ -47,7 +49,9 @@ const darkModeColors = {
 };
 
 const isHex = (color = '') => color.length >= 3 && color.charAt(0) === '#';
-const isRGB = memoFn((color = '') => toLower(color).substring(0, 3) === 'rgb');
+const isRGB = memoFn(
+  (color: string = '') => toLower(color).substring(0, 3) === 'rgb'
+);
 
 const avatarBackgrounds = [
   '#FC5C54',
@@ -75,11 +79,13 @@ const avatarBackgrounds = [
   '#FFB35A',
 ];
 
-const getColorsByTheme = darkMode => {
+const getColorsByTheme = (darkMode?: boolean) => {
   let base = {
     appleBlue: '#0E76FD', // '14, 118, 253'
     black: '#000000', // '0, 0, 0'
     blueGreyDark: '#3C4252', // '60, 66, 82'
+    blueGreyDark04: '#222326', // this color is blueGreyDark at 4% over white
+    blueGreyDark20: '#3A3D45', // this color is blueGreyDark at 20% over white
     blueGreyDark30: '#C5C6CB', // this color is blueGreyDark at 30% over white
     blueGreyDark40: '#B1B3BA', // this color is blueGreyDark at 40% over white
     blueGreyDark50: '#9DA0A8', // this color is blueGreyDark at 50% over white
@@ -91,6 +97,7 @@ const getColorsByTheme = darkMode => {
     chartGreen: '#66D28F', // '102, 210, 143'
     dark: '#25292E', // '37, 41, 46'
     darkGrey: '#71778A', // '113, 119, 138'
+    darkModeDark: '#404656',
     dpiDark: '#8150E6', // '129, 80, 230'
     dpiLight: '#9B74EC', // '155, 116, 236'
     dpiMid: '#8E62E9', // '142, 98, 233'
@@ -106,6 +113,7 @@ const getColorsByTheme = darkMode => {
     mintDark: '#00E0A9', // '0, 224, 169'
     neonSkyblue: '#34FFFF', // '52, 255, 255'
     offWhite: '#F8F9FA', // '248, 249, 250'
+    offWhite80: '#1C1F27',
     orange: '#F46E38', // '244, 110, 56'
     orangeLight: '#FEBE44', // '254, 190, 68'
     paleBlue: '#579DFF', // 87, 157, 255
@@ -149,11 +157,21 @@ const getColorsByTheme = darkMode => {
     '#6D7E8F', // '109, 126, 143'
   ];
 
-  const assetIcon = {
+  const assetIconColors = {
     blue: '#7DABF0', // '125, 171, 240'
     orange: '#F2BB3A', // '242, 187, 58'
     purple: '#464E5E', // '70, 78, 94'
     red: '#C95050', // '201, 80, 80',
+  };
+
+  const assetIcon = {
+    ...assetIconColors,
+    random: () => {
+      const assetIconColorValues = Object.values(assetIconColors);
+      return assetIconColorValues[
+        Math.floor(Math.random() * assetIconColorValues.length)
+      ];
+    },
   };
 
   let networkColors = {
@@ -214,11 +232,6 @@ const getColorsByTheme = darkMode => {
     clearGrey: buildRgba(base.blueGreyDark, 0.06),
   };
 
-  assetIcon.random = () => {
-    const assetIconColors = Object.values(assetIcon);
-    return assetIconColors[Math.floor(Math.random() * assetIconColors.length)];
-  };
-
   const vendor = {
     etherscan: '#025C90', // '2, 92, 144'
     ethplorer: '#506685', // '80, 102, 133'
@@ -227,29 +240,33 @@ const getColorsByTheme = darkMode => {
   };
 
   const isColorLight = memoFn(
-    targetColor => chroma(targetColor || base.white).luminance() > 0.5
+    (targetColor: string) => chroma(targetColor ?? base.white).luminance() > 0.5
   );
 
-  const getTextColorForBackground = (targetColor, textColors = {}) => {
-    const { dark = base.black, light = base.white } = textColors;
+  const getTextColorForBackground = (
+    targetColor: string,
+    textColors?: { dark: string; light: string }
+  ) => {
+    const dark = textColors?.dark ?? base.black;
+    const light = textColors?.light ?? base.white;
 
     return isColorLight(targetColor) ? dark : light;
   };
 
-  const getFallbackTextColor = bg =>
-    colors.getTextColorForBackground(bg, {
+  const getFallbackTextColor = (backgroundColor: string) =>
+    colors.getTextColorForBackground(backgroundColor, {
       dark: colors.alpha(colors.blueGreyDark, 0.5),
       light: colors.whiteLabel,
     });
 
-  const isColorDark = memoFn(targetColor => {
+  const isColorDark = memoFn((targetColor: string) => {
     return (
       chroma.contrast(targetColor, darkModeColors.white) < 1.5 ||
-      chroma(targetColor || base.white).luminance() < 0.11
+      chroma(targetColor ?? base.white).luminance() < 0.11
     );
   });
 
-  const brighten = memoFn(targetColor =>
+  const brighten = memoFn((targetColor: string) =>
     chroma(targetColor).brighten(2).saturate(0.3).hex()
   );
 
@@ -340,16 +357,22 @@ const getColorsByTheme = darkMode => {
   };
 };
 
+/**
+ * @deprecated used for safely retrieving color values in JS not needed with TypeScript anymore
+ */
 const getColorForString = (colorString = '', providedThemeColors = colors) => {
   if (!colorString) return null;
 
   const isValidColorString = isHex(colorString) || isRGB(colorString);
-  return isValidColorString ? colorString : providedThemeColors[colorString];
+  return isValidColorString
+    ? colorString
+    : // @ts-expect-error Used in JS code to safely retrieve a color
+      providedThemeColors?.[colorString] ?? null;
 };
 
 export const darkModeThemeColors = getColorsByTheme(true);
 export const lightModeThemeColors = getColorsByTheme(false);
-const colors = currentColors.themedColors || lightModeThemeColors;
+const colors = currentColors.themedColors ?? lightModeThemeColors;
 export const getRandomColor = () =>
   Math.floor(Math.random() * colors.avatarColor.length);
 
@@ -359,6 +382,9 @@ export default {
   ...colors,
   darkModeColors,
   darkModeThemeColors,
+  /**
+   * @deprecated used for safely retrieving color values in JS not needed with TypeScript anymore
+   */
   get: getColorForString,
   getRandomColor,
   lightModeThemeColors,
