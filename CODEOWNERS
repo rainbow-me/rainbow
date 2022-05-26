@@ -54,6 +54,7 @@ src/handlers/appEvents.ts @brunobar79 @derHowie
 src/handlers/assets.ts @jinchung @marco @derHowie
 src/handlers/authentication.ts @jinchung @brunobar79
 src/handlers/cloudBackup.ts @brunobar79 @skylarbarrera
+src/handlers/covalent.ts @brunobar79 @derHowie
 src/handlers/deeplinks.ts @brunobar79 @tchayen
 src/handlers/dispersion.ts @brunobar79 @derHowie @jinchung
 src/handlers/ens.ts @estebanmino @skylarbarrera @jxom
@@ -129,7 +130,6 @@ src/redux/showcaseTokens.ts @osdnk @skylarbarrera
 src/redux/transactionSignatures.ts @brunobar79 @estebanmino
 src/redux/uniqueTokens.ts @jinchung @skylarbarrera
 src/redux/walletconnect.js @brunobar79 @estebanmino
-src/redux/fallbackExplorer.js @osdnk @derHowie @brunobar79
 
 # references
 src/references @jinchung @brunobar79 @skylarbarrera
