@@ -34,11 +34,14 @@ import {
   // @ts-ignore
   POLYGON_MAINNET_RPC,
 } from 'react-native-dotenv';
-import { setRpcEndpoints, web3SetHttpProvider } from '../handlers/web3';
 import {
   getNetwork,
   saveNetwork,
 } from '@rainbow-me/handlers/localstorage/globalSettings';
+import {
+  setRpcEndpoints,
+  web3SetHttpProvider,
+} from '@rainbow-me/handlers/web3';
 
 import Logger from 'logger';
 
@@ -112,7 +115,7 @@ const init = async () => {
     const currentNetwork = await getNetwork();
     setRpcEndpoints(config);
     web3SetHttpProvider(currentNetwork);
-    await saveNetwork(currentNetwork);
+    saveNetwork(currentNetwork);
   }
 };
 
