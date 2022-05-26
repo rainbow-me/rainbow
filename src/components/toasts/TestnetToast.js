@@ -24,7 +24,7 @@ const TestnetToast = ({ network, web3Provider }) => {
       }
     } else {
       setVisible(true);
-      setNetworkName(name + (isConnected ? '' : ' (offline)'));
+      setNetworkName(providerUrl + (isConnected ? '' : ' (offline)'));
     }
   }, [name, network, providerUrl, isConnected]);
 
