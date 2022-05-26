@@ -2,7 +2,7 @@ import { useFocusEffect, useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Keyboard } from 'react-native';
+import { Keyboard, ScrollView } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -170,9 +170,13 @@ export default function ENSAssignRecordsSheet() {
   return (
     <AccentColorProvider color={accentColor}>
       <Box
+        as={ScrollView}
         background="body"
+        contentContainerStyle={{
+          paddingBottom: bottomActionHeight + 20,
+        }}
         flexGrow={1}
-        style={{ paddingBottom: bottomActionHeight + 20 }}
+        scrollEnabled={android}
       >
         <Stack space="19px">
           <RegistrationCover
