@@ -17,6 +17,7 @@ import {
   createRenewENSRap,
   createSetNameENSRap,
   createSetRecordsENSRap,
+  createTransferENSRap,
 } from './registerENS';
 import {
   createSwapAndDepositCompoundRap,
@@ -42,6 +43,8 @@ const {
   commitENS,
   registerWithConfig,
   multicallENS,
+  setAddrENS,
+  setOwnerENS,
   setTextENS,
   setNameENS,
   renewENS,
@@ -56,6 +59,8 @@ export enum RapActionType {
   registerENS = 'registerENS',
   multicallENS = 'multicallENS',
   renewENS = 'renewENS',
+  setAddrENS = 'setAddrENS',
+  setOwnerENS = 'setOwnerENS',
   setTextENS = 'setTextENS',
   setNameENS = 'setNameENS',
 }
@@ -97,10 +102,14 @@ export interface ENSActionParameters {
   name: string;
   rentPrice: string;
   ownerAddress: string;
+  toAddress?: string;
   salt: string;
   records?: Records;
   setReverseRecord?: boolean;
   resolverAddress?: EthereumAddress;
+  clearRecords?: boolean;
+  setAddress?: boolean;
+  transferControl?: boolean;
 }
 
 export interface RapActionTransaction {
@@ -152,10 +161,13 @@ export const RapActionTypes = {
   registerENS: 'registerENS' as RapActionType,
   registerWithConfigENS: 'registerWithConfigENS' as RapActionType,
   renewENS: 'renewENS' as RapActionType,
+  setAddrENS: 'setAddrENS' as RapActionType,
   setNameENS: 'setNameENS' as RapActionType,
+  setOwnerENS: 'setOwnerENS' as RapActionType,
   setRecordsENS: 'setRecordsENS' as RapActionType,
   setTextENS: 'setTextENS' as RapActionType,
   swap: 'swap' as RapActionType,
+  transferENS: 'transferENS' as RapActionType,
   unlock: 'unlock' as RapActionType,
   withdrawCompound: 'withdrawCompound' as RapActionType,
 };
@@ -187,6 +199,8 @@ const createENSRapByType = (
       return createSetNameENSRap(ensRegistrationParameters);
     case RapActionTypes.setRecordsENS:
       return createSetRecordsENSRap(ensRegistrationParameters);
+    case RapActionTypes.transferENS:
+      return createTransferENSRap(ensRegistrationParameters);
     case RapActionTypes.commitENS:
     default:
       return createCommitENSRap(ensRegistrationParameters);
@@ -254,10 +268,14 @@ const findENSActionByType = (type: RapActionType) => {
       return registerWithConfig;
     case RapActionTypes.multicallENS:
       return multicallENS;
+    case RapActionTypes.setAddrENS:
+      return setAddrENS;
     case RapActionTypes.setTextENS:
       return setTextENS;
     case RapActionTypes.setNameENS:
       return setNameENS;
+    case RapActionTypes.setOwnerENS:
+      return setOwnerENS;
     case RapActionTypes.renewENS:
       return renewENS;
     default:
@@ -348,8 +366,11 @@ const getRapTypeFromActionType = (actionType: RapActionType) => {
     case RapActionTypes.multicallENS:
     case RapActionTypes.renewENS:
     case RapActionTypes.setNameENS:
+    case RapActionTypes.setAddrENS:
+    case RapActionTypes.setOwnerENS:
     case RapActionTypes.setTextENS:
     case RapActionTypes.setRecordsENS:
+    case RapActionTypes.transferENS:
       return RAP_TYPE.ENS;
   }
   return '';

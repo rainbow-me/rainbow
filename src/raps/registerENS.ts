@@ -1,4 +1,4 @@
-import { concat } from 'lodash';
+import { concat, isEmpty } from 'lodash';
 import {
   createNewENSAction,
   createNewRap,
@@ -6,7 +6,9 @@ import {
   RapActionTypes,
   RapENSAction,
 } from './common';
+import { Records } from '@rainbow-me/entities';
 import {
+  fetchProfileRecords,
   formatRecordsForTransaction,
   recordsForTransactionAreValid,
   shouldUseMulticallTransaction,
@@ -106,6 +108,74 @@ export const createSetNameENSRap = async (
     ENSActionParameters
   );
   actions = concat(actions, commit);
+
+  // create the overall rap
+  const newRap = createNewRap(actions);
+  return newRap;
+};
+
+export const createTransferENSRap = async (
+  ensActionParameters: ENSActionParameters
+) => {
+  let actions: RapENSAction[] = [];
+
+  const {
+    clearRecords,
+    setAddress,
+    transferControl,
+    toAddress,
+  } = ensActionParameters;
+
+  if (clearRecords) {
+    const records = await fetchProfileRecords(ensActionParameters.name);
+    const emptyRecords = Object.keys({
+      ...(records.coinAddresses || {}),
+      ...(records.records || {}),
+    }).reduce((records, recordKey) => {
+      return {
+        ...records,
+        [recordKey]: '',
+      };
+    }, {});
+
+    let newRecords: Records = emptyRecords;
+    if (setAddress && toAddress) {
+      newRecords = {
+        ...newRecords,
+        ETH: toAddress,
+      };
+    }
+
+    const ensRegistrationRecords = formatRecordsForTransaction(newRecords);
+    const validRecords =
+      !isEmpty(emptyRecords) &&
+      recordsForTransactionAreValid(ensRegistrationRecords);
+    if (validRecords) {
+      const shouldUseMulticall = shouldUseMulticallTransaction(
+        ensRegistrationRecords
+      );
+      const recordsAction = createNewENSAction(
+        shouldUseMulticall
+          ? RapActionTypes.multicallENS
+          : RapActionTypes.setTextENS,
+        { ...ensActionParameters, records: newRecords }
+      );
+      actions = concat(actions, recordsAction);
+    }
+  } else if (setAddress) {
+    const setName = createNewENSAction(RapActionTypes.setAddrENS, {
+      ...ensActionParameters,
+      records: { ETH: toAddress },
+    });
+    actions = concat(actions, setName);
+  }
+  if (transferControl && toAddress) {
+    const transferControl = createNewENSAction(RapActionTypes.setOwnerENS, {
+      ...ensActionParameters,
+      ownerAddress: toAddress,
+    });
+    actions = concat(actions, transferControl);
+  }
 
   // create the overall rap
   const newRap = createNewRap(actions);

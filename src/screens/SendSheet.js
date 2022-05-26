@@ -43,6 +43,8 @@ import {
   useColorForAsset,
   useContacts,
   useCurrentNonce,
+  useENSProfile,
+  useENSRegistrationActionHandler,
   useGas,
   useMaxInputBalance,
   usePrevious,
@@ -67,7 +69,11 @@ import {
   formatInputDecimals,
   lessThan,
 } from '@rainbow-me/utilities';
-import { deviceUtils, ethereumUtils } from '@rainbow-me/utils';
+import {
+  deviceUtils,
+  ethereumUtils,
+  getUniqueTokenType,
+} from '@rainbow-me/utils';
 import logger from 'logger';
 
 const sheetHeight = deviceUtils.dimensions.height - (android ? 30 : 10);
@@ -122,6 +128,10 @@ export default function SendSheet(props) {
   const { sendableUniqueTokens } = useSendableUniqueTokens();
   const { accountAddress, nativeCurrency, network } = useAccountSettings();
 
+  const { action: transferENS } = useENSRegistrationActionHandler({
+    step: 'TRANSFER',
+  });
+
   const savings = useSendSavingsAccount();
   const { hiddenCoins, pinnedCoins } = useCoinListEditOptions();
   const [toAddress, setToAddress] = useState();
@@ -173,6 +183,16 @@ export default function SendSheet(props) {
   if (isNft) {
     colorForAsset = colors.appleBlue;
   }
+
+  const uniqueTokenType = isNft ? getUniqueTokenType(selected) : undefined;
+  const isENS = uniqueTokenType === 'ENS';
+
+  const ensName = selected.uniqueId
+    ? selected.uniqueId?.split(' ')?.[0]
+    : selected.uniqueId;
+  const ensProfile = useENSProfile(ensName, {
+    enabled: isENS,
+  });
 
   const isL2 = useMemo(() => {
     return isL2Network(currentNetwork);
@@ -442,156 +462,178 @@ export default function SendSheet(props) {
     ]
   );
 
-  const onSubmit = useCallback(async () => {
-    const validTransaction =
-      isValidAddress &&
-      amountDetails.isSufficientBalance &&
-      isSufficientGas &&
-      isValidGas;
-    if (!selectedGasFee?.gasFee?.estimatedFee || !validTransaction) {
-      logger.sentry('preventing tx submit for one of the following reasons:');
-      logger.sentry('selectedGasFee ? ', selectedGasFee);
-      logger.sentry('selectedGasFee.maxFee ? ', selectedGasFee?.maxFee);
-      logger.sentry('validTransaction ? ', validTransaction);
-      logger.sentry('isValidGas ? ', isValidGas);
-      captureEvent('Preventing tx submit');
-      return false;
-    }
+  const onSubmit = useCallback(
+    async ({
+      ens: { setAddress, transferControl, clearRecords } = {},
+    } = {}) => {
+      const validTransaction =
+        isValidAddress &&
+        amountDetails.isSufficientBalance &&
+        isSufficientGas &&
+        isValidGas;
+      if (!selectedGasFee?.gasFee?.estimatedFee || !validTransaction) {
+        logger.sentry('preventing tx submit for one of the following reasons:');
+        logger.sentry('selectedGasFee ? ', selectedGasFee);
+        logger.sentry('selectedGasFee.maxFee ? ', selectedGasFee?.maxFee);
+        logger.sentry('validTransaction ? ', validTransaction);
+        logger.sentry('isValidGas ? ', isValidGas);
+        captureEvent('Preventing tx submit');
+        return false;
+      }
 
-    let submitSuccess = false;
-    let updatedGasLimit = null;
+      let submitSuccess = false;
+      let updatedGasLimit = null;
 
-    // Attempt to update gas limit before sending ERC20 / ERC721
-    if (!isNativeAsset(selected.address, currentNetwork)) {
+      // Attempt to update gas limit before sending ERC20 / ERC721
+      if (!isNativeAsset(selected.address, currentNetwork)) {
+        try {
+          // Estimate the tx with gas limit padding before sending
+          updatedGasLimit = await estimateGasLimit(
+            {
+              address: accountAddress,
+              amount: amountDetails.assetAmount,
+              asset: selected,
+              recipient: toAddress,
+            },
+            true,
+            currentProvider,
+            currentNetwork
+          );
+
+          if (!lessThan(updatedGasLimit, gasLimit)) {
+            if (currentNetwork === Network.optimism) {
+              updateTxFeeForOptimism(updatedGasLimit);
+            } else {
+              updateTxFee(updatedGasLimit, null);
+            }
+          }
+          // eslint-disable-next-line no-empty
+        } catch (e) {}
+      }
+
+      const gasLimitToUse =
+        updatedGasLimit && !lessThan(updatedGasLimit, gasLimit)
+          ? updatedGasLimit
+          : gasLimit;
+
+      const gasParams = parseGasParamsForTransaction(selectedGasFee);
+      const txDetails = {
+        amount: amountDetails.assetAmount,
+        asset: selected,
+        from: accountAddress,
+        gasLimit: gasLimitToUse,
+        network: currentNetwork,
+        nonce: await getNextNonce(),
+        to: toAddress,
+        ...gasParams,
+      };
+
       try {
-        // Estimate the tx with gas limit padding before sending
-        updatedGasLimit = await estimateGasLimit(
-          {
-            address: accountAddress,
-            amount: amountDetails.assetAmount,
-            asset: selected,
-            recipient: toAddress,
-          },
-          true,
-          currentProvider,
-          currentNetwork
-        );
-
-        if (!lessThan(updatedGasLimit, gasLimit)) {
-          if (currentNetwork === Network.optimism) {
-            updateTxFeeForOptimism(updatedGasLimit);
-          } else {
-            updateTxFee(updatedGasLimit, null);
+        const signableTransaction = await createSignableTransaction(txDetails);
+        if (!signableTransaction.to) {
+          logger.sentry('txDetails', txDetails);
+          logger.sentry('signableTransaction', signableTransaction);
+          logger.sentry('"to" field is missing!');
+          const e = new Error('Transaction missing TO field');
+          captureException(e);
+          Alert.alert(lang.t('wallet.transaction.alert.invalid_transaction'));
+          submitSuccess = false;
+        } else {
+          if (isENS && (clearRecords || setAddress || transferControl)) {
+            await transferENS(() => null, {
+              clearRecords,
+              name: ensName,
+              setAddress,
+              toAddress,
+              transferControl,
+            });
+          }
+          const { result: txResult } = await sendTransaction({
+            provider: currentProvider,
+            transaction: signableTransaction,
+          });
+          const { hash, nonce } = txResult;
+          const { data, value } = signableTransaction;
+          if (!isEmpty(hash)) {
+            submitSuccess = true;
+            txDetails.hash = hash;
+            txDetails.nonce = nonce;
+            txDetails.network = currentNetwork;
+            txDetails.data = data;
+            txDetails.value = value;
+            txDetails.txTo = signableTransaction.to;
+            await dispatch(
+              dataAddNewTransaction(txDetails, null, false, currentProvider)
+            );
           }
         }
-        // eslint-disable-next-line no-empty
-      } catch (e) {}
-    }
-
-    const gasLimitToUse =
-      updatedGasLimit && !lessThan(updatedGasLimit, gasLimit)
-        ? updatedGasLimit
-        : gasLimit;
-
-    const gasParams = parseGasParamsForTransaction(selectedGasFee);
-    const txDetails = {
-      amount: amountDetails.assetAmount,
-      asset: selected,
-      from: accountAddress,
-      gasLimit: gasLimitToUse,
-      network: currentNetwork,
-      nonce: await getNextNonce(),
-      to: toAddress,
-      ...gasParams,
-    };
-
-    try {
-      const signableTransaction = await createSignableTransaction(txDetails);
-      if (!signableTransaction.to) {
-        logger.sentry('txDetails', txDetails);
-        logger.sentry('signableTransaction', signableTransaction);
-        logger.sentry('"to" field is missing!');
-        const e = new Error('Transaction missing TO field');
-        captureException(e);
-        Alert.alert(lang.t('wallet.transaction.alert.invalid_transaction'));
+      } catch (error) {
+        logger.sentry('TX Details', txDetails);
+        logger.sentry('SendSheet onSubmit error');
+        logger.sentry(error);
+        captureException(error);
         submitSuccess = false;
-      } else {
-        const { result: txResult } = await sendTransaction({
-          provider: currentProvider,
-          transaction: signableTransaction,
-        });
-        const { hash, nonce } = txResult;
-        const { data, value } = signableTransaction;
-        if (!isEmpty(hash)) {
-          submitSuccess = true;
-          txDetails.hash = hash;
-          txDetails.nonce = nonce;
-          txDetails.network = currentNetwork;
-          txDetails.data = data;
-          txDetails.value = value;
-          txDetails.txTo = signableTransaction.to;
-          await dispatch(
-            dataAddNewTransaction(txDetails, null, false, currentProvider)
-          );
-        }
       }
-    } catch (error) {
-      logger.sentry('TX Details', txDetails);
-      logger.sentry('SendSheet onSubmit error');
-      logger.sentry(error);
-      captureException(error);
-      submitSuccess = false;
-    }
-    return submitSuccess;
-  }, [
-    accountAddress,
-    amountDetails.assetAmount,
-    amountDetails.isSufficientBalance,
-    currentNetwork,
-    currentProvider,
-    dataAddNewTransaction,
-    dispatch,
-    gasLimit,
-    getNextNonce,
-    isSufficientGas,
-    isValidAddress,
-    isValidGas,
-    selected,
-    selectedGasFee,
-    toAddress,
-    updateTxFee,
-    updateTxFeeForOptimism,
-  ]);
+      return submitSuccess;
+    },
+    [
+      accountAddress,
+      amountDetails.assetAmount,
+      amountDetails.isSufficientBalance,
+      currentNetwork,
+      currentProvider,
+      dataAddNewTransaction,
+      dispatch,
+      gasLimit,
+      getNextNonce,
+      isENS,
+      isSufficientGas,
+      isValidAddress,
+      isValidGas,
+      selected,
+      selectedGasFee,
+      toAddress,
+      transferENS,
+      updateTxFee,
+      updateTxFeeForOptimism,
+    ]
+  );
 
-  const submitTransaction = useCallback(async () => {
-    if (Number(amountDetails.assetAmount) <= 0) {
-      logger.sentry('amountDetails.assetAmount ? ', amountDetails?.assetAmount);
-      captureEvent('Preventing tx submit due to amount <= 0');
-      return false;
-    }
-    const submitSuccessful = await onSubmit();
-    analytics.track('Sent transaction', {
-      assetName: selected?.name || '',
-      assetType: selected?.type || '',
-      isRecepientENS: toLower(recipient.slice(-4)) === '.eth',
-    });
-
-    if (submitSuccessful) {
-      goBack();
-      navigate(Routes.WALLET_SCREEN);
-      InteractionManager.runAfterInteractions(() => {
-        navigate(Routes.PROFILE_SCREEN);
+  const submitTransaction = useCallback(
+    async (...args) => {
+      if (Number(amountDetails.assetAmount) <= 0) {
+        logger.sentry(
+          'amountDetails.assetAmount ? ',
+          amountDetails?.assetAmount
+        );
+        captureEvent('Preventing tx submit due to amount <= 0');
+        return false;
+      }
+      const submitSuccessful = await onSubmit(...args);
+      analytics.track('Sent transaction', {
+        assetName: selected?.name || '',
+        assetType: selected?.type || '',
+        isRecepientENS: toLower(recipient.slice(-4)) === '.eth',
       });
-    }
-  }, [
-    amountDetails.assetAmount,
-    goBack,
-    navigate,
-    onSubmit,
-    recipient,
-    selected?.name,
-    selected?.type,
-  ]);
+
+      if (submitSuccessful) {
+        goBack();
+        navigate(Routes.WALLET_SCREEN);
+        InteractionManager.runAfterInteractions(() => {
+          navigate(Routes.PROFILE_SCREEN);
+        });
+      }
+    },
+    [
+      amountDetails.assetAmount,
+      goBack,
+      navigate,
+      onSubmit,
+      recipient,
+      selected?.name,
+      selected?.type,
+    ]
+  );
 
   const validateRecipient = useCallback(
     async toAddress => {
@@ -690,6 +732,7 @@ export default function SendSheet(props) {
       amountDetails: amountDetails,
       asset: selected,
       callback: submitTransaction,
+      ensProfile,
       isL2,
       isNft,
       network: currentNetwork,
@@ -701,6 +744,7 @@ export default function SendSheet(props) {
     assetInputRef,
     buttonDisabled,
     currentNetwork,
+    ensProfile,
     isL2,
     isNft,
     nativeCurrencyInputRef,

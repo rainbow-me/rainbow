@@ -219,6 +219,36 @@ const executeSetText = async (
   );
 };
 
+const executeSetOwner = async (
+  name?: string,
+  records?: ENSRegistrationRecords,
+  gasLimit?: string | null,
+  maxFeePerGas?: string,
+  maxPriorityFeePerGas?: string,
+  wallet?: Wallet,
+  nonce: number | null = null
+) => {
+  const { contract, methodArguments, value } = await getENSExecutionDetails({
+    name,
+    records,
+    type: ENSRegistrationTransactionType.SET_OWNER,
+    wallet,
+  });
+
+  return (
+    methodArguments &&
+    contract?.setText(...methodArguments, {
+      gasLimit: gasLimit ? toHex(gasLimit) : undefined,
+      maxFeePerGas: maxFeePerGas ? toHex(maxFeePerGas) : undefined,
+      maxPriorityFeePerGas: maxPriorityFeePerGas
+        ? toHex(maxPriorityFeePerGas)
+        : undefined,
+      nonce: nonce ? toHex(nonce) : undefined,
+      ...(value ? { value } : {}),
+    })
+  );
+};
+
 const ensAction = async (
   wallet: Wallet,
   actionName: string,
@@ -375,6 +405,34 @@ const ensAction = async (
           category: 'profiles',
         });
         break;
+      case ENSRegistrationTransactionType.SET_ADDR:
+        tx = await executeSetText(
+          name,
+          ensRegistrationRecords,
+          gasLimit,
+          maxFeePerGas,
+          maxPriorityFeePerGas,
+          wallet,
+          nonce
+        );
+        analytics.track('Edited ENS records', {
+          category: 'profiles',
+        });
+        break;
+      case ENSRegistrationTransactionType.SET_OWNER:
+        tx = await executeSetOwner(
+          name,
+          ensRegistrationRecords,
+          gasLimit,
+          maxFeePerGas,
+          maxPriorityFeePerGas,
+          wallet,
+          nonce
+        );
+        analytics.track('Transferred ENS control', {
+          category: 'profiles',
+        });
+        break;
       case ENSRegistrationTransactionType.SET_NAME:
         tx = await executeSetName(
           name,
@@ -506,6 +564,40 @@ const setNameENS = async (
   );
 };
 
+const setAddrENS = async (
+  wallet: Wallet,
+  currentRap: Rap,
+  index: number,
+  parameters: RapENSActionParameters,
+  baseNonce?: number
+): Promise<number | undefined> => {
+  return ensAction(
+    wallet,
+    RapActionTypes.setAddrENS,
+    index,
+    parameters,
+    ENSRegistrationTransactionType.SET_ADDR,
+    baseNonce
+  );
+};
+
+const setOwnerENS = async (
+  wallet: Wallet,
+  currentRap: Rap,
+  index: number,
+  parameters: RapENSActionParameters,
+  baseNonce?: number
+): Promise<number | undefined> => {
+  return ensAction(
+    wallet,
+    RapActionTypes.setOwnerENS,
+    index,
+    parameters,
+    ENSRegistrationTransactionType.SET_OWNER,
+    baseNonce
+  );
+};
+
 const setTextENS = async (
   wallet: Wallet,
   currentRap: Rap,
@@ -528,6 +620,8 @@ export default {
   multicallENS,
   registerWithConfig,
   renewENS,
+  setAddrENS,
+  setOwnerENS,
   setNameENS,
   setTextENS,
 };
