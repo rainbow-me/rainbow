@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { ContextMenuButton as IOSContextMenuButton } from 'react-native-ios-context-menu';
-import ButtonPressAnimation from '../../components/animations/ButtonPressAnimation';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 
 export default function ContextMenuButton({
   children,
