@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import { useDeepCompareMemo } from 'use-deep-compare';
-import { useDependencyDebugger } from '../../../../debugging/useDependencyDebugger';
 import { CellType, CoinExtraData, NFTFamilyExtraData } from './ViewTypes';
 import {
   useCoinListEdited,
@@ -118,7 +117,7 @@ export default function useMemoBriefSectionData(briefSectionsData: any[]) {
     isInvestmentCardsOpen,
     isCoinListEdited,
     openFamilies,
-    hiddenCoins,
+    hiddenCoinsObj,
   ]);
   const memoizedResult = useDeepCompareMemo(() => result, [result]);
   const additionalData = useDeepCompareMemo(
