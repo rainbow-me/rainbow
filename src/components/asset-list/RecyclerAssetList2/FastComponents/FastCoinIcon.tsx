@@ -96,7 +96,7 @@ export default React.memo(function FastCoinIcon({
 
   const shadowColor = theme.isDarkMode
     ? theme.colors.shadow
-    : tokenMetadata?.shadowColor || fallbackIconColor;
+    : tokenMetadata?.shadowColor ?? fallbackIconColor;
 
   const eth = isETH(address);
 
