@@ -144,7 +144,7 @@ const MemoizedBalanceCoinRow = React.memo(
         >
           <View style={[cx.container]}>
             <FastCoinIcon
-              address={item.mainnet_address || item.address}
+              address={item.mainnet_address ?? item.address}
               assetType={item.type}
               symbol={item.symbol}
               theme={theme}
