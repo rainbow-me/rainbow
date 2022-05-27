@@ -594,16 +594,13 @@ export const estimateENSRenewGasLimit = async ({
 export const estimateENSSetNameGasLimit = async ({
   name,
   ownerAddress,
-  fromAddress,
 }: {
   name: string;
   ownerAddress: string;
-  fromAddress?: string;
 }) =>
   estimateENSTransactionGasLimit({
     name,
     ownerAddress,
-    fromAddress,
     type: ENSRegistrationTransactionType.SET_NAME,
   });
 
@@ -668,7 +665,6 @@ export const estimateENSTransactionGasLimit = async ({
     type,
   });
 
-  console.log(fromAddress);
   const txPayload = {
     ...(ownerAddress ? { from: fromAddress ? fromAddress : ownerAddress } : {}),
     ...(value ? { value } : {}),

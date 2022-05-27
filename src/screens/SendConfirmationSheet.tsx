@@ -41,7 +41,6 @@ import { useTheme } from '@rainbow-me/context';
 import { Box, Inset, Stack, Text } from '@rainbow-me/design-system';
 import { UniqueAsset } from '@rainbow-me/entities';
 import {
-  estimateENSSetNameGasLimit,
   estimateENSSetOwnerGasLimit,
   estimateENSSetRecordsGasLimit,
 } from '@rainbow-me/handlers/ens';
@@ -301,47 +300,55 @@ export default function SendConfirmationSheet() {
 
   useEffect(() => {
     if (isENS) {
-      const promises = checkboxes
-        .filter(option => option.checked)
-        .map(option => {
-          switch (option.id) {
-            case 'clear-records':
-              const emptyRecords = Object.keys(
-                ensProfile?.data?.records || {}
-              ).reduce((records, recordKey) => {
-                return {
-                  ...records,
-                  [recordKey]: '',
-                };
-              }, {});
-              return estimateENSSetRecordsGasLimit({
-                name: asset?.name,
-                records: emptyRecords,
-              });
-            case 'set-address':
-              return estimateENSSetNameGasLimit({
-                name: asset?.name,
-                ownerAddress: toAddress,
-                fromAddress: accountAddress,
-              });
-            case 'transfer-control':
-              return estimateENSSetOwnerGasLimit({
-                name: asset?.name,
-                ownerAddress: toAddress,
-                fromAddress: accountAddress,
-              });
-            default:
-              return Promise.resolve(0);
-          }
-        });
-      promises.push(
+      const promises = [
         estimateGasLimit({
           address: accountAddress,
           amount: 0,
           asset: asset,
           recipient: toAddress,
-        })
+        }),
+      ];
+      const sendENSOptions = Object.fromEntries(
+        checkboxes.map(option => [option.id, option.checked])
       );
+      if (sendENSOptions['clear-records']) {
+        let records = Object.keys({
+          ...(ensProfile?.data?.coinAddresses || {}),
+          ...(ensProfile?.data?.records || {}),
+        }).reduce((records, recordKey) => {
+          return {
+            ...records,
+            [recordKey]: '',
+          };
+        }, {});
+        if (sendENSOptions['set-address']) {
+          records = { ...records, ETH: toAddress };
+        }
+        promises.push(
+          estimateENSSetRecordsGasLimit({
+            name: asset?.name,
+            records: records,
+            ownerAddress: accountAddress,
+          })
+        );
+      } else if (sendENSOptions['set-address']) {
+        promises.push(
+          estimateENSSetRecordsGasLimit({
+            name: asset?.name,
+            records: { ETH: toAddress },
+            ownerAddress: accountAddress,
+          })
+        );
+      }
+      if (sendENSOptions['transfer-control']) {
+        promises.push(
+          estimateENSSetOwnerGasLimit({
+            name: asset?.name,
+            ownerAddress: toAddress,
+            fromAddress: accountAddress,
+          })
+        );
+      }
       promiseUtils
         .PromiseAllWithFails(promises)
         .then(gasLimits => {
