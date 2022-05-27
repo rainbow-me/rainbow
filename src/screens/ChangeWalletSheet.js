@@ -16,7 +16,7 @@ import { Text } from '../components/text';
 import { backupUserDataIntoCloud } from '../handlers/cloudBackup';
 import { removeWalletData } from '../handlers/localstorage/removeWallet';
 import showWalletErrorAlert from '../helpers/support';
-import WalletLoadingStates from '../helpers/walletLoadingStates';
+import { WalletLoadingStates } from '../helpers/walletLoadingStates';
 import WalletTypes from '../helpers/walletTypes';
 import { cleanUpWalletKeys, createWallet } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
