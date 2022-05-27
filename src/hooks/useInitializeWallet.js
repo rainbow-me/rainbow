@@ -5,6 +5,8 @@ import { Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
 import runMigrations from '../model/migrations';
 import { walletInit } from '../model/wallet';
+import { PerformanceTracking } from '../performance/tracking';
+import { PerformanceMetrics } from '../performance/tracking/types/PerformanceMetrics';
 import { appStateUpdate } from '../redux/appState';
 import {
   settingsLoadNetwork,
@@ -49,6 +51,9 @@ export default function useInitializeWallet() {
       silent = false
     ) => {
       try {
+        PerformanceTracking.startMeasuring(
+          PerformanceMetrics.useInitializeWallet
+        );
         logger.sentry('Start wallet setup');
         await resetAccountState();
         logger.sentry('resetAccountState ran ok');
@@ -133,10 +138,16 @@ export default function useInitializeWallet() {
         }
 
         logger.sentry('💰 Wallet initialized');
+        PerformanceTracking.finishMeasuring(
+          PerformanceMetrics.useInitializeWallet
+        );
 
         dispatch(checkPendingTransactionsOnInitialize(walletAddress));
         return walletAddress;
       } catch (error) {
+        PerformanceTracking.clearMeasure(
+          PerformanceMetrics.useInitializeWallet
+        );
         logger.sentry('Error while initializing wallet');
         // TODO specify error states more granular
         if (!switching) {

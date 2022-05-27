@@ -210,6 +210,9 @@ export const ENS_SUGGESTIONS = gql`
           id
         }
       }
+      owner {
+        id
+      }
     }
   }
 `;

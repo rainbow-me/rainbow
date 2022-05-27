@@ -324,7 +324,7 @@ const ensAction = async (
         );
         dispatch(
           // @ts-ignore
-          saveCommitRegistrationParameters(ownerAddress, {
+          saveCommitRegistrationParameters({
             commitTransactionHash: tx?.hash,
             duration,
             name,
@@ -367,7 +367,7 @@ const ensAction = async (
         );
         dispatch(
           // @ts-ignore
-          updateTransactionRegistrationParameters(ownerAddress, {
+          updateTransactionRegistrationParameters({
             registerTransactionHash: tx?.hash,
           })
         );

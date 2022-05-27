@@ -56,10 +56,10 @@ export const saveResolveName = (key: string, value: string) =>
   saveGlobal(ensResolveNameKey(key), value);
 
 export const getSeenOnchainDataDisclaimer = () =>
-  getGlobal(ensResolveNameKey(ensSeenOnchainDataDisclaimerKey), false);
+  getGlobal(ensSeenOnchainDataDisclaimerKey, false);
 
 export const saveSeenOnchainDataDisclaimer = (value: boolean) =>
-  saveGlobal(ensResolveNameKey(ensSeenOnchainDataDisclaimerKey), value);
+  saveGlobal(ensSeenOnchainDataDisclaimerKey, value);
 
 export const getENSDomains = (key: string) => getGlobal(ensDomains(key), []);
 

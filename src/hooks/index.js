@@ -32,8 +32,8 @@ export {
 export { default as useCollectible } from './useCollectible';
 export { default as useColorForAsset } from './useColorForAsset';
 export { default as useContacts } from './useContacts';
+export { default as useDimensions, DeviceDimensions } from './useDimensions';
 export { default as useDeleteWallet } from './useDeleteWallet';
-export { default as useDimensions } from './useDimensions';
 export { default as useDPI } from './useDPI';
 export { default as useEffectDebugger } from './useEffectDebugger';
 export { default as useEmailRainbow } from './useEmailRainbow';
@@ -115,7 +115,7 @@ export { default as useSwapDerivedOutputs } from './useSwapDerivedOutputs';
 export { default as useTimeout } from './useTimeout';
 export { default as useTopMovers } from './useTopMovers';
 export { default as useTransactionConfirmation } from './useTransactionConfirmation';
-export { default as useTransactions } from './useTransactions';
+export { default as usePendingTransactions } from './usePendingTransactions';
 export { default as useTransformOrigin } from './useTransformOrigin';
 export { default as useUniswapAssetsInWallet } from './useUniswapAssetsInWallet';
 export { default as useUniswapCalls } from './useUniswapCalls';

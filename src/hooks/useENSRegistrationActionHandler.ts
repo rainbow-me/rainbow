@@ -6,7 +6,7 @@ import { useRecoilValue } from 'recoil';
 import { avatarMetadataAtom } from '../components/ens-registration/RegistrationAvatar/RegistrationAvatar';
 import { coverMetadataAtom } from '../components/ens-registration/RegistrationCover/RegistrationCover';
 import { ENSActionParameters, RapActionTypes } from '../raps/common';
-import useTransactions from './useTransactions';
+import usePendingTransactions from './usePendingTransactions';
 import { useAccountSettings, useCurrentNonce, useENSRegistration } from '.';
 import { Records, RegistrationParameters } from '@rainbow-me/entities';
 import { fetchResolver } from '@rainbow-me/handlers/ens';
@@ -54,7 +54,7 @@ export default function useENSRegistrationActionHandler(
   const getNextNonce = useCurrentNonce(accountAddress, network);
   const { registrationParameters } = useENSRegistration();
   const { navigate } = useNavigation();
-  const { getTransactionByHash } = useTransactions();
+  const { getPendingTransactionByHash } = usePendingTransactions();
 
   const avatarMetadata = useRecoilValue(avatarMetadataAtom);
   const coverMetadata = useRecoilValue(coverMetadataAtom);
@@ -105,12 +105,12 @@ export default function useENSRegistrationActionHandler(
         registrationParameters?.commitTransactionHash;
       const saveCommitTransactionHash = (hash: string) => {
         dispatch(
-          saveCommitRegistrationParameters(accountAddress, {
+          saveCommitRegistrationParameters({
             commitTransactionHash: hash,
           })
         );
       };
-      const tx = getTransactionByHash(commitTransactionHash || '');
+      const tx = getPendingTransactionByHash(commitTransactionHash || '');
       commitTransactionHash &&
         tx &&
         navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
@@ -121,9 +121,8 @@ export default function useENSRegistrationActionHandler(
         });
     },
     [
-      accountAddress,
       dispatch,
-      getTransactionByHash,
+      getPendingTransactionByHash,
       navigate,
       registrationParameters?.commitTransactionHash,
     ]
@@ -258,7 +257,7 @@ export default function useENSRegistrationActionHandler(
         nonce,
         ownerAddress: accountAddress,
         records: changedRecords,
-        resolverAddress: resolver.address,
+        resolverAddress: resolver?.address,
       };
 
       await executeRap(

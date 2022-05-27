@@ -142,7 +142,7 @@ const SheetActionButton = ({
             align="center"
             color={textColor}
             numberOfLines={truncate ? 1 : undefined}
-            size={textSize || (size === 'big' ? 'larger' : 'large')}
+            size={textSize ?? (size === 'big' ? 'larger' : 'large')}
             weight={weight}
           >
             {label}

@@ -175,7 +175,7 @@ export const ZoomableWrapper = ({
 
     const maxWidth = (deviceWidth - containerWidth) / 2;
     return {
-      opacity: opacity?.value || 1,
+      opacity: opacity?.value ?? 1,
       transform: [
         {
           translateY:

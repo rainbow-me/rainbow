@@ -77,10 +77,9 @@ function TransactionActionRow({
         <SheetActionButtonRow paddingBottom={5}>
           {/* @ts-expect-error JavaScript component */}
           <HoldToAuthorizeButton
-            backgroundColor={accentColor}
+            backgroundColor={accentColor ?? ''}
             disabled={!isSufficientGas || !isValidGas}
             hideInnerBorder
-            isLongPressAvailableForBiometryType
             label={
               insufficientEth
                 ? lang.t('profiles.confirm.insufficient_eth')

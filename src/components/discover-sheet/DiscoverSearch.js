@@ -203,7 +203,6 @@ export default function DiscoverSearch() {
           loading={uniswapCurrencyListLoading || isFetchingEns}
           query={searchQueryForSearch}
           ref={currencySelectionListRef}
-          scrollIndicatorInsets={{ bottom: 53, top: 8 }}
           showList
           testID="discover-currency-select-list"
           type={CurrencySelectionTypes.output}
