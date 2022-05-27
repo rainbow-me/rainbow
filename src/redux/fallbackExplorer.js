@@ -7,17 +7,20 @@ import { addressAssetsReceived, fetchAssetPricesWithCoingecko } from './data';
 // eslint-disable-next-line import/no-cycle
 import { emitMainnetAssetDiscoveryRequest, explorerInitL2 } from './explorer';
 import { AssetTypes } from '@rainbow-me/entities';
+import { getAssetsFromCovalent } from '@rainbow-me/handlers/covalent';
 import { web3Provider } from '@rainbow-me/handlers/web3';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   balanceCheckerContractAbi,
   chainAssets,
+  COVALENT_ETH_ADDRESS,
   ETH_ADDRESS,
   ETH_COINGECKO_ID,
   migratedTokens,
 } from '@rainbow-me/references';
 import { delay } from '@rainbow-me/utilities';
+import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 let lastUpdatePayload = null;
@@ -72,6 +75,66 @@ const findNewAssetsToWatch = () => async (dispatch, getState) => {
       type: FALLBACK_EXPLORER_SET_ASSETS,
     });
   }
+};
+
+const getMainnetAssetsFromCovalent = async (
+  chainId,
+  accountAddress,
+  type,
+  currency,
+  coingeckoIds,
+  genericAssets
+) => {
+  const data = await getAssetsFromCovalent(chainId, accountAddress, currency);
+  if (data) {
+    const updatedAt = new Date(data.updated_at).getTime();
+    const assets = data.items.map(item => {
+      let contractAddress = item.contract_address;
+      const isETH = toLower(contractAddress) === toLower(COVALENT_ETH_ADDRESS);
+      if (isETH) {
+        contractAddress = ETH_ADDRESS;
+      }
+
+      const coingeckoId = coingeckoIds[toLower(contractAddress)];
+      let price = {
+        changed_at: updatedAt,
+        relative_change_24h: 0,
+        value: isETH ? item.quote_rate : 0,
+      };
+
+      // Overrides
+      const fallbackAsset =
+        ethereumUtils.getAccountAsset(contractAddress) ||
+        genericAssets[toLower(contractAddress)];
+
+      if (fallbackAsset) {
+        price = {
+          ...price,
+          ...fallbackAsset.price,
+        };
+      }
+
+      return {
+        asset: {
+          asset_code: contractAddress,
+          coingecko_id: coingeckoId,
+          decimals: item.contract_decimals,
+          icon_url: item.logo_url,
+          name: item.contract_name,
+          price: {
+            value: 0,
+            ...price,
+          },
+          symbol: item.contract_ticker_symbol,
+          type,
+        },
+        quantity: item.balance,
+      };
+    });
+
+    return keyBy(assets, 'asset.asset_code');
+  }
+  return null;
 };
 
 const findAssetsToWatch = async (
@@ -248,11 +311,10 @@ export const fetchOnchainBalances = ({
 }) => async (dispatch, getState) => {
   logger.log('😬 FallbackExplorer:: fetchOnchainBalances');
   const { network, accountAddress, nativeCurrency } = getState().settings;
-  const { accountAssetsData } = getState().data;
+  const { accountAssetsData, genericAssets } = getState().data;
+  const { coingeckoIds } = getState().additionalAssetsData;
   const formattedNativeCurrency = toLower(nativeCurrency);
   const { mainnetAssets } = getState().fallbackExplorer;
-  dispatch(emitMainnetAssetDiscoveryRequest);
-
   const callback = async covalentMainnetAssets => {
     const chainAssetsMap = keyBy(chainAssets[network], 'asset.asset_code');
 
@@ -410,10 +472,25 @@ export const fetchOnchainBalances = ({
     }
   };
 
-  const queueKey = accountAddress.toLowerCase() + nativeCurrency.toLowerCase();
-  assetDiscoveryCallbackQueue[queueKey] =
-    assetDiscoveryCallbackQueue[queueKey] ?? [];
-  assetDiscoveryCallbackQueue[queueKey].push(callback);
+  if (network === NetworkTypes.mainnet) {
+    dispatch(emitMainnetAssetDiscoveryRequest);
+    const queueKey =
+      accountAddress.toLowerCase() + nativeCurrency.toLowerCase();
+    assetDiscoveryCallbackQueue[queueKey] =
+      assetDiscoveryCallbackQueue[queueKey] ?? [];
+    assetDiscoveryCallbackQueue[queueKey].push(callback);
+  } else {
+    const chainId = ethereumUtils.getChainIdFromNetwork(network);
+    const covalentMainnetAssets = await getMainnetAssetsFromCovalent(
+      chainId,
+      accountAddress,
+      AssetTypes.token,
+      formattedNativeCurrency,
+      coingeckoIds,
+      genericAssets
+    );
+    callback(covalentMainnetAssets);
+  }
 };
 
 export const fallbackExplorerInit = () => async (dispatch, getState) => {
