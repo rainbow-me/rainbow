@@ -641,7 +641,7 @@ export default async function runMigrations() {
   migrations.push(v16);
 
   /*
-  *************** Migration v16 ******************
+  *************** Migration v17 ******************
   Pinned coins: list -> obj
   */
   const v17 = async () => {
