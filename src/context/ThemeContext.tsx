@@ -36,7 +36,7 @@ export interface ThemeContextProps {
   colors: Colors;
   darkScheme: Colors;
   lightScheme: Colors;
-  colorScheme: ThemesType;
+  colorScheme: ThemesType | null;
   isDarkMode: boolean;
   setTheme: (scheme: ThemesType) => void;
 }
@@ -53,7 +53,7 @@ export const ThemeContext = createContext<ThemeContextProps>({
 const { RNThemeModule } = NativeModules;
 
 export const MainThemeProvider = (props: PropsWithChildren<{}>) => {
-  const [colorScheme, setColorScheme] = useState<ThemesType>(Themes.LIGHT);
+  const [colorScheme, setColorScheme] = useState<ThemesType | null>(null);
 
   // looks like one works on Android and another one on iOS. good.
   const isSystemDarkModeIOS = useDarkMode();
