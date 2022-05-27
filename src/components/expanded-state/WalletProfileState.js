@@ -10,7 +10,6 @@ import React, {
 import { InteractionManager } from 'react-native';
 import useUpdateEmoji from '../../../src/hooks/useUpdateEmoji';
 import { useTheme } from '../../context/ThemeContext';
-import { getRandomColor } from '../../styles/colors';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { BiometricButtonContent } from '../buttons';
@@ -20,11 +19,8 @@ import { Centered, ColumnWithDividers } from '../layout';
 import { AvatarCircle } from '../profile';
 import { Text, TruncatedAddress } from '../text';
 import { ProfileModal, ProfileNameInput } from './profile';
-import {
-  removeFirstEmojiFromString,
-  returnStringFirstEmoji,
-} from '@rainbow-me/helpers/emojiHandler';
-
+import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
+import { getWalletProfileMeta } from '@rainbow-me/helpers/walletProfileHandler';
 import { useAccountProfile } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
@@ -91,48 +87,28 @@ export default function WalletProfileState({
   const [webProfile, setWebProfile] = useState(null);
   const { goBack, navigate } = useNavigation();
   const { accountImage } = useAccountProfile();
-
   const { colors } = useTheme();
   const { getWebProfile } = useUpdateEmoji();
 
-  const nameEmoji = useMemo(() => {
-    if (!webProfile) return null;
-    if (webProfile?.accountSymbol) return webProfile?.accountSymbol;
-    const addressHashedEmoji = profileUtils.addressHashedEmoji(address);
-    return isNewProfile && !forceColor
-      ? addressHashedEmoji
-      : returnStringFirstEmoji(profile?.name) || addressHashedEmoji;
-  }, [address, forceColor, isNewProfile, profile?.name, webProfile]);
-
-  const nameColor = useMemo(() => {
-    if (!webProfile) return null;
-    if (webProfile?.accountColor) return webProfile?.accountColor;
-
-    const indexOfForceColor = colors.avatarBackgrounds.indexOf(forceColor);
-    return forceColor
-      ? forceColor
-      : isNewProfile && address
-      ? profileUtils.addressHashedColorIndex(address)
-      : profile.color !== null
-      ? profile.color
-      : isNewProfile
-      ? null
-      : (indexOfForceColor !== -1 && indexOfForceColor) || getRandomColor();
-  }, [
-    address,
-    colors.avatarBackgrounds,
-    forceColor,
-    isNewProfile,
-    profile.color,
-    webProfile,
-  ]);
+  const { color: nameColor, emoji: nameEmoji } = useMemo(
+    () =>
+      getWalletProfileMeta(
+        address,
+        profile,
+        webProfile,
+        isNewProfile,
+        forceColor
+      ),
+    [address, forceColor, isNewProfile, profile, webProfile]
+  );
 
   const [value, setValue] = useState(
     profile?.name ? removeFirstEmojiFromString(profile.name) : ''
   );
   const inputRef = useRef(null);
 
-  const profileImage = accountImage || profile.image;
+  const profileImage = accountImage ?? profile.image;
+  const profileMetaReady = (nameColor || nameColor === 0) && nameEmoji;
 
   const handleCancel = useCallback(() => {
     goBack();
@@ -188,7 +164,7 @@ export default function WalletProfileState({
         testID="wallet-info-modal"
         width="100%"
       >
-        {profileImage ? (
+        {profileImage || !profileMetaReady ? (
           <ProfileImage image={profileImage} size="large" />
         ) : (
           // hide avatar if creating new wallet since we
@@ -197,7 +173,7 @@ export default function WalletProfileState({
           (!isNewProfile || address) && (
             <AvatarCircle
               newProfile={!!address}
-              showcaseAccountColor={nameColor}
+              showcaseAccountColor={nameColor ?? 10}
               showcaseAccountSymbol={nameEmoji}
             />
           )
