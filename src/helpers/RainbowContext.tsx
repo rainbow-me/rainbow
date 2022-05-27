@@ -21,7 +21,7 @@ const storage = new MMKV({
   id: STORAGE_IDS.EXPERIMENTAL_CONFIG,
 });
 
-export default function RainbowContextWrapper({ children }) {
+export default function RainbowContextWrapper({ children }: any) {
   // This value is hold here to prevent JS VM from shutting down
   // on unmounting all shared values.
   useSharedValue(0);
@@ -65,12 +65,14 @@ export default function RainbowContextWrapper({ children }) {
   return (
     <RainbowContext.Provider value={initialValue}>
       {children}
+      // @ts-expect-error ts-migrate(2741) FIXME: Property 'color' is missing in type '{ initialDisp... Remove this comment to see the full error message
       {showReloadButton && __DEV__ && <DevButton initialDisplacement={200} />}
       {showSwitchModeButton && __DEV__ && (
         <DevButton
           color={colors.dark}
           onPress={() => setTheme(isDarkMode ? 'light' : 'dark')}
         >
+          // @ts-expect-error ts-migrate(2741) FIXME: Property 'name' is missing in type '{ children: st... Remove this comment to see the full error message
           <Emoji>{isDarkMode ? '🌞' : '🌚'}</Emoji>
         </DevButton>
       )}

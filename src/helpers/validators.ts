@@ -28,12 +28,13 @@ const supportedUnstoppableDomains = [
  * @param  {String}  email
  * @return {Boolean}
  */
-export const isValidEmail = email =>
+export const isValidEmail = (email: any) =>
   !!email.match(
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   );
 
 export const isENSAddressFormat = memoFn(address => {
+  // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
   const parts = address && address.split('.');
   if (
     !parts ||
@@ -49,6 +50,7 @@ export const isENSAddressFormat = memoFn(address => {
 });
 
 export const isUnstoppableAddressFormat = memoFn(address => {
+  // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
   const parts = address && address.split('.');
   if (
     !parts ||
@@ -65,7 +67,7 @@ export const isUnstoppableAddressFormat = memoFn(address => {
  * @param  {String} address, ENS, or Unstoppable
  * @return {Boolean}
  */
-export const checkIsValidAddressOrDomain = async address => {
+export const checkIsValidAddressOrDomain = async (address: any) => {
   const provider = await getProviderForNetwork(Network.mainnet);
   if (isENSAddressFormat(address)) {
     try {
@@ -95,7 +97,7 @@ export const isValidDomainFormat = memoFn(domain => {
  * @param  {String} seed phrase mnemonic
  * @return {Boolean}
  */
-const isValidSeedPhrase = seedPhrase => {
+const isValidSeedPhrase = (seedPhrase: any) => {
   const sanitizedSeedPhrase = sanitizeSeedPhrase(seedPhrase);
   return (
     sanitizedSeedPhrase.split(' ').length >= 12 &&
@@ -108,7 +110,7 @@ const isValidSeedPhrase = seedPhrase => {
  * @param  {String} private key string
  * @return {Boolean}
  */
-const isValidPrivateKey = key => {
+const isValidPrivateKey = (key: any) => {
   return key.length >= 64 && isHexStringIgnorePrefix(key);
 };
 
@@ -117,7 +119,7 @@ const isValidPrivateKey = key => {
  * @param  {String} seed phrase mnemonic or private key
  * @return {Boolean}
  */
-export const isValidSeed = seed =>
+export const isValidSeed = (seed: any) =>
   seed && (isValidPrivateKey(seed) || isValidSeedPhrase(seed));
 
 /**
@@ -125,7 +127,7 @@ export const isValidSeed = seed =>
  * @param  {String} seed, mnemonic, private key, address, ENS name, or Unstoppable name
  * @return {Boolean}
  */
-export const isValidWallet = seed =>
+export const isValidWallet = (seed: any) =>
   seed &&
   (isValidPrivateKey(seed) ||
     isValidSeedPhrase(seed) ||

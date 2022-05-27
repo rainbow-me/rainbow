@@ -2,8 +2,10 @@ import { format } from 'date-fns';
 import { get } from 'lodash';
 import { TransactionStatusTypes, TransactionTypes } from '@rainbow-me/entities';
 
-export const buildTransactionUniqueIdentifier = ({ hash, displayDetails }) =>
-  hash || get(displayDetails, 'timestampInMs');
+export const buildTransactionUniqueIdentifier = ({
+  hash,
+  displayDetails,
+}: any) => hash || get(displayDetails, 'timestampInMs');
 
 export const calculateTimestampOfToday = () => {
   var d = new Date();
@@ -38,20 +40,23 @@ export let yesterdayTimestamp = calculateTimestampOfYesterday();
 export let thisMonthTimestamp = calculateTimestampOfThisMonth();
 export let thisYearTimestamp = calculateTimestampOfThisYear();
 
-export function getHumanReadableDate(date) {
+export function getHumanReadableDate(date: any) {
   const timestamp = new Date(date * 1000);
 
   return format(
     timestamp,
+    // @ts-expect-error ts-migrate(2365) FIXME: Operator '>' cannot be applied to types 'Date' and... Remove this comment to see the full error message
     timestamp > todayTimestamp
       ? `'Today'`
-      : timestamp > yesterdayTimestamp
+      : // @ts-expect-error ts-migrate(2365) FIXME: Operator '>' cannot be applied to types 'Date' and... Remove this comment to see the full error message
+      timestamp > yesterdayTimestamp
       ? `'Yesterday'`
-      : `'on' MMM d${timestamp > thisYearTimestamp ? '' : ' yyyy'}`
+      : // @ts-expect-error ts-migrate(2365) FIXME: Operator '>' cannot be applied to types 'Date' and... Remove this comment to see the full error message
+        `'on' MMM d${timestamp > thisYearTimestamp ? '' : ' yyyy'}`
   );
 }
 
-export function hasAddableContact(status, type) {
+export function hasAddableContact(status: any, type: any) {
   if (
     (status === TransactionStatusTypes.received &&
       type !== TransactionTypes.trade) ||
