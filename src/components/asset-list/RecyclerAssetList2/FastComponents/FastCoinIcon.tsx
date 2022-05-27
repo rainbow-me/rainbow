@@ -42,7 +42,7 @@ const CoinIconWithBackground = React.memo(function CoinIconWithBackground({
 
   const isCached = imagesCache[key];
 
-  // this is hack
+  // this is a hack
   // we should default to trying to render the image component to fetch the image
   // then we cache the result - is the image available or not
   // and then we default to the result
