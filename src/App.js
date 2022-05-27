@@ -11,7 +11,6 @@ import {
   InteractionManager,
   Linking,
   LogBox,
-  NativeModules,
   StatusBar,
   View,
 } from 'react-native';
@@ -42,7 +41,6 @@ import {
   showNetworkResponses,
 } from './config/debug';
 import { MainThemeProvider } from './context/ThemeContext';
-import { InitialRouteContext } from './context/initialRoute';
 import monitorNetwork from './debugging/network';
 import { Playground } from './design-system/playground/Playground';
 import appEvents from './handlers/appEvents';
@@ -50,12 +48,15 @@ import handleDeeplink from './handlers/deeplinks';
 import { runWalletBackupStatusChecks } from './handlers/walletReadyEvents';
 import { isL2Network } from './handlers/web3';
 import RainbowContextWrapper from './helpers/RainbowContext';
+import isTestFlight from './helpers/isTestFlight';
 import networkTypes from './helpers/networkTypes';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
 import { loadAddress } from './model/wallet';
 import { Navigation } from './navigation';
 import RoutesComponent from './navigation/Routes';
+import { PerformanceTracking } from './performance/tracking';
+import { PerformanceMetrics } from './performance/tracking/types/PerformanceMetrics';
 import { queryClient } from './react-query/queryClient';
 import { explorerInitL2 } from './redux/explorer';
 import { fetchOnchainBalances } from './redux/fallbackExplorer';
@@ -71,6 +72,7 @@ import {
   isCustomBuild,
 } from '@rainbow-me/handlers/fedora';
 import { SharedValuesProvider } from '@rainbow-me/helpers/SharedValuesContext';
+import { InitialRouteContext } from '@rainbow-me/navigation/initialRoute';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 import { Portal } from 'react-native-cool-modals/Portal';
@@ -136,8 +138,6 @@ if (__DEV__) {
 
 enableScreens();
 
-const { RNTestFlight } = NativeModules;
-
 const containerStyle = { flex: 1 };
 
 class App extends Component {
@@ -148,8 +148,7 @@ class App extends Component {
   state = { appState: AppState.currentState, initialRoute: null };
 
   async componentDidMount() {
-    if (!__DEV__ && RNTestFlight) {
-      const { isTestFlight } = RNTestFlight.getConstants();
+    if (!__DEV__ && isTestFlight) {
       logger.sentry(`Test flight usage - ${isTestFlight}`);
     }
     this.identifyFlow();
@@ -191,6 +190,11 @@ class App extends Component {
         this.handleOpenLinkingURL(url);
       });
     }
+
+    PerformanceTracking.finishMeasuring(
+      PerformanceMetrics.loadRootAppComponent
+    );
+    analytics.track('React component tree finished initial mounting');
   }
 
   componentDidUpdate(prevProps) {

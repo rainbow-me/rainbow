@@ -36,6 +36,7 @@ import { uniqueTokensRefreshState } from './uniqueTokens';
 import { uniswapUpdateLiquidityTokens } from './uniswapLiquidity';
 import {
   AssetTypes,
+  EthereumAddress,
   NativeCurrencyKeys,
   NewTransactionOrAddCashTransaction,
   ParsedAddressAsset,
@@ -880,15 +881,15 @@ const checkForConfirmedSavingsActions = (
 const checkForUpdatedNonce = (transactionData: ZerionTransaction[]) => (
   dispatch: ThunkDispatch<AppState, unknown, never>
 ) => {
-  const txSortedByDescendingNonce = transactionData.sort(
-    ({ nonce: n1 }, { nonce: n2 }) => (n2 ?? 0) - (n1 ?? 0)
-  );
-  const [latestTx] = txSortedByDescendingNonce;
-  // @ts-expect-error `ZerionTransaction` doesn't have a `network` field, but
-  // the undefined network is defaulted to mainnet later.
-  const { address_from, network, nonce } = latestTx;
-  if (nonce) {
-    dispatch(incrementNonce(address_from!, nonce, network));
+  if (transactionData.length) {
+    const txSortedByDescendingNonce = transactionData.sort(
+      ({ nonce: n1 }, { nonce: n2 }) => (n2 ?? 0) - (n1 ?? 0)
+    );
+    const [latestTx] = txSortedByDescendingNonce;
+    const { address_from, nonce } = latestTx;
+    if (nonce) {
+      dispatch(incrementNonce(address_from!, nonce));
+    }
   }
 };
 
@@ -898,17 +899,18 @@ const checkForUpdatedNonce = (transactionData: ZerionTransaction[]) => (
  *
  * @param removedTransactions Removed transaction data.
  */
-const checkForRemovedNonce = (removedTransactions: ZerionTransaction[]) => (
-  dispatch: ThunkDispatch<AppState, unknown, never>
-) => {
-  const txSortedByAscendingNonce = removedTransactions.sort(
-    ({ nonce: n1 }, { nonce: n2 }) => (n1 ?? 0) - (n2 ?? 0)
-  );
-  const [lowestNonceTx] = txSortedByAscendingNonce;
-  // @ts-expect-error `ZerionTransaction` doesn't have a `network` field, but
-  // the undefined network is defaulted to mainnet later.
-  const { address_from, network, nonce } = lowestNonceTx;
-  dispatch(decrementNonce(address_from!, nonce!, network));
+const checkForRemovedNonce = (
+  removedTransactions: RainbowTransaction[],
+  accountAddress: EthereumAddress
+) => (dispatch: ThunkDispatch<AppState, unknown, never>) => {
+  if (removedTransactions.length) {
+    const txSortedByAscendingNonce = removedTransactions.sort(
+      ({ nonce: n1 }, { nonce: n2 }) => (n1 ?? 0) - (n2 ?? 0)
+    );
+    const [lowestNonceTx] = txSortedByAscendingNonce;
+    const { nonce } = lowestNonceTx;
+    dispatch(decrementNonce(accountAddress, nonce!));
+  }
 };
 
 /**
@@ -961,7 +963,8 @@ export const transactionsReceived = (
   if (appended) {
     dispatch(checkForConfirmedSavingsActions(transactionData));
   }
-  await dispatch(checkForUpdatedNonce(transactionData));
+
+  dispatch(checkForUpdatedNonce(transactionData));
 
   const { accountAddress, nativeCurrency } = getState().settings;
   const { purchaseTransactions } = getState().addCash;
@@ -1058,12 +1061,7 @@ export const transactionsRemoved = (
     type: DATA_LOAD_TRANSACTIONS_SUCCESS,
   });
 
-  // In this case `removedTransactions` is an array of `RainbowTransaction`s,
-  // while `checkForRemovedNonce` wants `ZerionTransaction`s. However,
-  // `RainbowTransaction` doesn't have the `address_from` field used in
-  // `checkForRemovedNonce`. Therefore, this likely does not work as intended,
-  // but is being kept for later review!
-  dispatch(checkForRemovedNonce(removedTransactions as any));
+  dispatch(checkForRemovedNonce(removedTransactions, accountAddress));
   saveLocalTransactions(updatedTransactions, accountAddress, network);
 };
 

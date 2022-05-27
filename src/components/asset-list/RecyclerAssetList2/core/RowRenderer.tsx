@@ -36,7 +36,7 @@ function CellDataProvider({
 
 function rowRenderer(type: CellType, { uid }: { uid: string }) {
   return (
-    <CellDataProvider key={uid} uid={uid}>
+    <CellDataProvider uid={uid}>
       {data => {
         switch (type) {
           case CellType.ASSETS_HEADER_SPACE_AFTER:
@@ -116,6 +116,7 @@ function rowRenderer(type: CellType, { uid }: { uid: string }) {
             );
           }
           case CellType.LOADING_ASSETS:
+            // @ts-expect-error untyped JS component
             return <AssetListItemSkeleton />;
         }
         assertNever(type);

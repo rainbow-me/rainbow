@@ -2,10 +2,11 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowDisablePreview">true</item>
-        
+        <item name="android:editTextBackground">@drawable/rn_edit_text_material</item>
     </style>
     <style name="NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="android:editTextBackground">@drawable/rn_edit_text_material</item>
     </style>
     <style name="BootTheme" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/primary_dark</item>
