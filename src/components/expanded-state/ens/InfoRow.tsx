@@ -34,7 +34,7 @@ export function InfoRowSkeleton() {
         <ShimmerAnimation
           color={colors.alpha(colors.blueGreyDark, 0.06)}
           enabled
-          gradientColor={colors.alpha(colors.blueGreyDark, 0.06)}
+          gradientColor={colors.alpha(colors.blueGreyDark, 0.06) as any}
           width={100}
         />
       </Box>
@@ -50,7 +50,7 @@ export function InfoRowSkeleton() {
         <ShimmerAnimation
           color={colors.alpha(colors.blueGreyDark, 0.06)}
           enabled
-          gradientColor={colors.alpha(colors.blueGreyDark, 0.06)}
+          gradientColor={colors.alpha(colors.blueGreyDark, 0.06) as any}
           width={150}
         />
       </Box>

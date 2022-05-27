@@ -13,7 +13,7 @@ export default function useWalletENSAvatar() {
   const updateWalletENSAvatars = useCallback(async () => {
     if (!profilesEnabled) return;
     await getWalletENSAvatars(
-      { selectedWallet, walletNames, wallets },
+      { selected: selectedWallet, walletNames, wallets },
       dispatch
     );
   }, [dispatch, profilesEnabled, selectedWallet, walletNames, wallets]);

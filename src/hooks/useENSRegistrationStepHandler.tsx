@@ -6,7 +6,7 @@ import {
 } from 'react-native-dotenv';
 import { useDispatch } from 'react-redux';
 import usePrevious from './usePrevious';
-import { useAccountSettings, useENSRegistration } from '.';
+import { useENSRegistration } from '.';
 import {
   getProviderForNetwork,
   isHardHat,
@@ -24,7 +24,6 @@ const getBlockMsTimestamp = (block: { timestamp: number }) =>
 
 export default function useENSRegistrationStepHandler(observer = true) {
   const dispatch = useDispatch();
-  const { accountAddress } = useAccountSettings();
   const { registrationParameters, mode } = useENSRegistration();
   const commitTransactionHash = registrationParameters?.commitTransactionHash;
   const prevCommitTrasactionHash = usePrevious(commitTransactionHash);
@@ -95,7 +94,7 @@ export default function useENSRegistrationStepHandler(observer = true) {
       const secs = differenceInSeconds(now, commitTransactionConfirmedAt);
       setSecondsSinceCommitConfirmed(secs);
       dispatch(
-        updateTransactionRegistrationParameters(accountAddress, {
+        updateTransactionRegistrationParameters({
           commitTransactionConfirmedAt,
         })
       );
@@ -104,13 +103,7 @@ export default function useENSRegistrationStepHandler(observer = true) {
       shouldLoopForConfirmation.current = false;
     }
     return confirmed;
-  }, [
-    observer,
-    accountAddress,
-    dispatch,
-    isTestingHardhat,
-    commitTransactionHash,
-  ]);
+  }, [observer, dispatch, isTestingHardhat, commitTransactionHash]);
 
   const startPollingWatchCommitTransaction = useCallback(async () => {
     if (observer) return;

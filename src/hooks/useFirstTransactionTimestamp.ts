@@ -11,7 +11,7 @@ export default function useFirstTransactionTimestamp({
     ['first-transaction-timestamp', ensName],
     async () => {
       const address = await web3Provider.resolveName(ensName);
-      return getFirstTransactionTimestamp(address);
+      return address ? getFirstTransactionTimestamp(address) : undefined;
     },
     {
       cacheTime: Infinity,

@@ -584,6 +584,7 @@ export default function SendSheet(props) {
       currentProvider,
       dataAddNewTransaction,
       dispatch,
+      ensName,
       gasLimit,
       getNextNonce,
       isENS,

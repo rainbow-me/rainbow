@@ -47,10 +47,10 @@ export default class ERC721 {
     let image;
     try {
       const data = await apiGetUniqueTokenImage(contractAddress, tokenID);
-      image = data.image_url;
+      image = data?.image_url;
     } catch (error) {
       const data = await getNFTByTokenId({ contractAddress, tokenId: tokenID });
-      image = data.previews?.image_medium_url;
+      image = data?.previews?.image_medium_url;
     }
     return { image };
   }

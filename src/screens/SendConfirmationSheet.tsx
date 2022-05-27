@@ -45,6 +45,7 @@ import {
   estimateENSSetOwnerGasLimit,
   estimateENSSetRecordsGasLimit,
 } from '@rainbow-me/handlers/ens';
+import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
 import { estimateGasLimit } from '@rainbow-me/handlers/web3';
 import {
   removeFirstEmojiFromString,
@@ -476,6 +477,11 @@ export default function SendConfirmationSheet() {
     ? images?.avatarUrl || existingAccount?.image
     : existingAccount?.image;
 
+  const imageUrl = svgToPngIfNeeded(
+    asset.image_thumbnail_url || asset.image_url,
+    true
+  );
+
   let contentHeight =
     getSheetHeight({
       ensProfile,
@@ -542,7 +548,7 @@ export default function SendConfirmationSheet() {
                       badgeXPosition={-7}
                       badgeYPosition={0}
                       borderRadius={10}
-                      imageUrl={asset.image_thumbnail_url || asset.image_url}
+                      imageUrl={imageUrl}
                       network={asset.network}
                       showLargeShadow
                       size={50}

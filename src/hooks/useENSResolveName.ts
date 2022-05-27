@@ -11,7 +11,7 @@ export default function useENSResolveName(ensName: string) {
     if (cachedAddress) return cachedAddress;
 
     const address = await web3Provider.resolveName(ensName);
-    saveResolveName(ensName, address);
+    address && saveResolveName(ensName, address);
     return address;
   });
 }

@@ -1,13 +1,5 @@
 import lang from 'i18n-js';
-import {
-  compact,
-  find,
-  flattenDeep,
-  get,
-  groupBy,
-  map,
-  property,
-} from 'lodash';
+import { compact, flattenDeep, get, groupBy, map, property } from 'lodash';
 import React from 'react';
 import { LayoutAnimation } from 'react-native';
 import { createSelector } from 'reselect';
@@ -249,7 +241,9 @@ const coinEditContextMenu = (
   totalValue,
   addedEth
 ) => {
-  const noSmallBalances = !find(balanceSectionData, 'smallBalancesContainer');
+  const noSmallBalances = !balanceSectionData.find(
+    ({ smallBalancesContainer }) => smallBalancesContainer
+  );
 
   return {
     contextMenuOptions:
@@ -364,8 +358,7 @@ const withBriefBalanceSection = (
     !collectibles.length
   );
 
-  const savingsTotalValue = find(
-    savingsSection,
+  const savingsTotalValue = savingsSection?.find(
     item => item.uid === 'savings-header'
   );
 

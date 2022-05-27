@@ -1,6 +1,8 @@
 import { formatsByCoinType, formatsByName } from '@ensdomains/address-encoder';
+import { Resolver } from '@ethersproject/providers';
 import { captureException } from '@sentry/react-native';
 import { Duration, sub } from 'date-fns';
+import { isZeroAddress } from 'ethereumjs-util';
 import { BigNumber } from 'ethers';
 import { debounce, isEmpty, sortBy } from 'lodash';
 import { ensClient } from '../apollo/client';
@@ -213,28 +215,37 @@ export const fetchSuggestions = async (
     });
     if (!isEmpty(result?.data?.domains)) {
       const domains = await Promise.all(
-        result?.data?.domains.map(
-          async (domain: { name: string; resolver: { texts: string[] } }) => {
-            const hasAvatar = domain?.resolver?.texts?.find(
-              text => text === ENS_RECORDS.avatar
-            );
-            if (!!hasAvatar && profilesEnabled) {
-              try {
-                const images = await fetchImages(domain.name);
-                queryClient.setQueryData(
-                  ensProfileImagesQueryKey(domain.name),
-                  images
-                );
-                return {
-                  ...domain,
-                  avatar: images.avatarUrl,
-                };
-                // eslint-disable-next-line no-empty
-              } catch (e) {}
+        result?.data?.domains
+          .filter(
+            (domain: { owner: { id: string } }) =>
+              !isZeroAddress(domain.owner.id)
+          )
+          .map(
+            async (domain: {
+              name: string;
+              resolver: { texts: string[] };
+              owner: { id: string };
+            }) => {
+              const hasAvatar = domain?.resolver?.texts?.find(
+                text => text === ENS_RECORDS.avatar
+              );
+              if (!!hasAvatar && profilesEnabled) {
+                try {
+                  const images = await fetchImages(domain.name);
+                  queryClient.setQueryData(
+                    ensProfileImagesQueryKey(domain.name),
+                    images
+                  );
+                  return {
+                    ...domain,
+                    avatar: images.avatarUrl,
+                  };
+                  // eslint-disable-next-line no-empty
+                } catch (e) {}
+              }
+              return domain;
             }
-            return domain;
-          }
-        )
+          )
       );
       const ensSuggestions = domains
         .map((ensDomain: any) => ({
@@ -291,7 +302,7 @@ export const fetchAccountRegistrations = async (address: string) => {
   const registrations = await ensClient.query<EnsAccountRegistratonsData>({
     query: ENS_ALL_ACCOUNT_REGISTRATIONS,
     variables: {
-      address: address.toLowerCase(),
+      address: address?.toLowerCase(),
     },
   });
   return registrations;
@@ -343,7 +354,7 @@ export const fetchRecords = async (ensName: string) => {
     supportedRecords.includes(key)
   );
   const recordValues = await Promise.all(
-    recordKeys.map((key: string) => resolver.getText(key))
+    recordKeys.map((key: string) => resolver?.getText(key))
   );
   const records = recordKeys.reduce((records, key, i) => {
     return {
@@ -381,7 +392,7 @@ export const fetchCoinAddresses = async (
     coinTypes
       .map(async (coinType: number) => {
         try {
-          return await resolver.getAddress(coinType);
+          return await resolver?.getAddress(coinType);
         } catch (err) {
           return undefined;
         }
@@ -407,8 +418,7 @@ export const fetchOwner = async (ensName: string) => {
 
   let owner: { address?: string; name?: string } = {};
   if (ownerAddress) {
-    const provider = await getProviderForNetwork();
-    const name = await provider.lookupAddress(ownerAddress);
+    const name = await fetchReverseRecord(ownerAddress);
     owner = {
       address: ownerAddress,
       name,
@@ -430,8 +440,7 @@ export const fetchRegistration = async (ensName: string) => {
   let registrant: { address?: string; name?: string } = {};
   if (data.registrant?.id) {
     const registrantAddress = data.registrant?.id;
-    const provider = await getProviderForNetwork();
-    const name = await provider.lookupAddress(registrantAddress);
+    const name = await fetchReverseRecord(registrantAddress);
     registrant = {
       address: registrantAddress,
       name,
@@ -456,8 +465,7 @@ export const fetchPrimary = async (ensName: string) => {
 };
 
 export const fetchAccountPrimary = async (accountAddress: string) => {
-  const provider = await getProviderForNetwork();
-  const ensName = await provider.lookupAddress(accountAddress);
+  const ensName = await fetchReverseRecord(accountAddress);
   return {
     ensName,
   };
@@ -483,8 +491,8 @@ export const fetchProfile = async (ensName: string) => {
   ]);
 
   const resolverData = {
-    address: resolver.address,
-    type: resolver.address === ensPublicResolverAddress ? 'default' : 'custom',
+    address: resolver?.address,
+    type: resolver?.address === ensPublicResolverAddress ? 'default' : 'custom',
   };
 
   return {
@@ -532,12 +540,15 @@ export const estimateENSCommitGasLimit = async ({
 export const estimateENSMulticallGasLimit = async ({
   name,
   records,
+  ownerAddress,
 }: {
   name: string;
   records: ENSRegistrationRecords;
+  ownerAddress?: string;
 }) =>
   estimateENSTransactionGasLimit({
     name,
+    ownerAddress,
     records,
     type: ENSRegistrationTransactionType.MULTICALL,
   });
@@ -615,12 +626,15 @@ export const estimateENSSetOwnerGasLimit = async ({
 export const estimateENSSetTextGasLimit = async ({
   name,
   records,
+  ownerAddress,
 }: {
   name: string;
+  ownerAddress?: string;
   records: ENSRegistrationRecords;
 }) =>
   estimateENSTransactionGasLimit({
     name,
+    ownerAddress,
     records,
     type: ENSRegistrationTransactionType.SET_TEXT,
   });
@@ -721,22 +735,6 @@ export const estimateENSRegistrationGasLimit = async (
   };
 };
 
-export const getENSRegistrationGasLimit = () => {
-  const commitGasLimit = `${ethUnits.ens_commit}`;
-  const multicallGasLimit = `${ethUnits.ens_set_multicall}`;
-  const setNameGasLimit = `${ethUnits.ens_set_name}`;
-  const registerWithConfigGasLimit = `${ethUnits.ens_register_with_config}`;
-  const totalRegistrationGasLimit = `${ethUnits.ens_registration}`;
-
-  return {
-    commitGasLimit,
-    multicallGasLimit,
-    registerWithConfigGasLimit,
-    setNameGasLimit,
-    totalRegistrationGasLimit,
-  };
-};
-
 export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
   name,
   ownerAddress,
@@ -784,6 +782,7 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
 export const estimateENSSetRecordsGasLimit = async ({
   name,
   records,
+  ownerAddress,
 }:
   | { name: string; records: Records; ownerAddress?: string }
   | ENSActionParameters) => {
@@ -797,7 +796,7 @@ export const estimateENSSetRecordsGasLimit = async ({
     gasLimit = await (shouldUseMulticall
       ? estimateENSMulticallGasLimit
       : estimateENSSetTextGasLimit)({
-      ...{ name, records: ensRegistrationRecords },
+      ...{ name, ownerAddress, records: ensRegistrationRecords },
     });
   }
   return gasLimit;
@@ -898,14 +897,18 @@ export const fetchReverseRecord = async (address: string) => {
   try {
     const provider = await getProviderForNetwork();
     const reverseRecord = await provider.lookupAddress(address);
-    return reverseRecord;
+    return reverseRecord ?? '';
   } catch (e) {
     return '';
   }
 };
 
 export const fetchResolver = async (ensName: string) => {
-  const provider = await getProviderForNetwork();
-  const resolver = await provider.getResolver(ensName);
-  return resolver;
+  try {
+    const provider = await getProviderForNetwork();
+    const resolver = await provider.getResolver(ensName);
+    return resolver ?? ({} as Resolver);
+  } catch (e) {
+    return {} as Resolver;
+  }
 };

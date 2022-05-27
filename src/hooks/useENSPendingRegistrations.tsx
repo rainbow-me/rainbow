@@ -60,8 +60,8 @@ export default function useENSPendingRegistrations() {
   );
 
   const refreshRegistrations = useCallback(() => {
-    dispatch(removeExpiredRegistrations(accountAddress));
-  }, [accountAddress, dispatch]);
+    dispatch(removeExpiredRegistrations());
+  }, [dispatch]);
 
   return {
     accountRegistrations,
