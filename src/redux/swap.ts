@@ -105,8 +105,7 @@ export const updateSwapDepositCurrency = (
 };
 
 export const updateSwapInputCurrency = (
-  newInputCurrency: SwappableAsset | null,
-  ignoreTypeCheck = false
+  newInputCurrency: SwappableAsset | null
 ) => (dispatch: AppDispatch, getState: AppGetState) => {
   const {
     depositCurrency,
@@ -125,8 +124,7 @@ export const updateSwapInputCurrency = (
     if (
       type === ExchangeModalTypes.swap &&
       newInputCurrency?.type !== outputCurrency?.type &&
-      newInputCurrency &&
-      !ignoreTypeCheck
+      newInputCurrency
     ) {
       dispatch({ payload: null, type: SWAP_UPDATE_OUTPUT_CURRENCY });
     }
@@ -149,8 +147,7 @@ export const updateSwapInputCurrency = (
 };
 
 export const updateSwapOutputCurrency = (
-  newOutputCurrency: SwappableAsset | null,
-  ignoreTypeCheck = false
+  newOutputCurrency: SwappableAsset | null
 ) => (dispatch: AppDispatch, getState: AppGetState) => {
   const { independentField, inputCurrency, type } = getState().swap;
   if (
@@ -162,8 +159,7 @@ export const updateSwapOutputCurrency = (
     if (
       type === ExchangeModalTypes.swap &&
       newOutputCurrency?.type !== inputCurrency?.type &&
-      newOutputCurrency &&
-      !ignoreTypeCheck
+      newOutputCurrency
     ) {
       dispatch({ payload: null, type: SWAP_UPDATE_INPUT_CURRENCY });
     }

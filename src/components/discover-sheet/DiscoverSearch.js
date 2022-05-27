@@ -81,7 +81,6 @@ export default function DiscoverSearch() {
         dispatch(emitAssetRequest(item.address));
         navigate(Routes.EXPANDED_ASSET_SHEET, {
           asset: asset || item,
-          fromDiscover: true,
           longFormHeight: initialChartExpandedStateSheetHeight,
           type: 'token',
         });
