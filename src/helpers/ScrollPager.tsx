@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { InteractionManager, Keyboard, StyleSheet } from 'react-native';
+import { Handle, InteractionManager, Keyboard, StyleSheet } from 'react-native';
 import { ScrollView as GHScrollView } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedScrollHandler,
@@ -70,9 +70,9 @@ class ScrollPager extends React.Component {
   wasTouched = false;
 
   // InteractionHandle to handle tasks around animations
-  interactionHandle = null;
+  interactionHandle: null | Handle = null;
 
-  scrollViewRef = React.createRef();
+  scrollViewRef = React.createRef<typeof AnimatedScrollView>();
 
   jumpTo = (key: any) => {
     this.wasTouched = false;

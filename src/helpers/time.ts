@@ -30,9 +30,9 @@ const isZero = (number: any) => number === 0;
  * @return {String}
  */
 export const getMinimalTimeUnitStringForMs = (
-  value = 0,
+  value: string | number = 0,
   short = true,
-  plural: any
+  plural?: any
 ) => {
   const ms =
     isObjectLike(value) || isString(value)
