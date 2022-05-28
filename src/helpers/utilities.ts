@@ -413,14 +413,14 @@ export const delay = (ms: number): Promise<void> => {
  * @desc Can omit only flattened key, will not work with 'key.someObj.value'
  */
 export const omitFlatten = <T extends object, K extends keyof T>(
-  obj: T,
+  obj: T | null | undefined,
   keysToOmit: K[] | K
 ): Omit<T, K> => {
-  const keysToUse = Array.isArray(keysToOmit) ? keysToOmit : [keysToOmit];
-  const _ = { ...obj };
-  keysToUse.forEach(key => {
-    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-    delete _[key];
-  });
-  return _;
+  const keys = Array.isArray(keysToOmit) ? keysToOmit : [keysToOmit];
+  const keysToUse = keys.map(String);
+  const newObj: any = {};
+  for (const key in obj) {
+    if (!keysToUse.includes(key)) newObj[key] = obj[key];
+  }
+  return newObj;
 };
