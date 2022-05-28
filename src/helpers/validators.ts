@@ -35,7 +35,7 @@ export const isValidEmail = (email: any) =>
 
 export const isENSAddressFormat = memoFn(address => {
   // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
-  const parts = address && address.split('.');
+  const parts = !!address && address.split('.');
   if (
     !parts ||
     parts.length === 1 ||
@@ -51,7 +51,7 @@ export const isENSAddressFormat = memoFn(address => {
 
 export const isUnstoppableAddressFormat = memoFn(address => {
   // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
-  const parts = address && address.split('.');
+  const parts = !!address && address.split('.');
   if (
     !parts ||
     parts.length === 1 ||
