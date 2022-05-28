@@ -715,6 +715,15 @@ export default function ExchangeModal({
     type,
   ]);
 
+  const handleTapWhileDisabled = useCallback(() => {
+    if (currentNetwork === Network.arbitrum) {
+      navigate(Routes.EXPLAIN_SHEET, {
+        network: currentNetwork,
+        type: 'output_disabled',
+      });
+    }
+  }, [navigate, currentNetwork]);
+
   const showConfirmButton = isSavings
     ? !!inputCurrency
     : !!inputCurrency && !!outputCurrency;
@@ -755,9 +764,13 @@ export default function ExchangeModal({
             />
             {showOutputField && (
               <ExchangeOutputField
-                editable={!!outputCurrency}
+                editable={
+                  !!outputCurrency && currentNetwork !== Network.arbitrum
+                }
+                network={currentNetwork}
                 onFocus={handleFocus}
                 onPressSelectOutputCurrency={navigateToOutput}
+                onTapWhileDisabled={handleTapWhileDisabled}
                 outputAmount={outputAmountDisplay}
                 outputCurrencyAddress={
                   outputCurrency?.mainnet_address || outputCurrency?.address

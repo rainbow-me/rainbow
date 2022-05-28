@@ -4,7 +4,7 @@ import { useDebounce } from 'use-debounce';
 import { TokenSelectionButton } from '../buttons';
 import { CoinIcon, CoinIconSize } from '../coin-icon';
 import { Row, RowWithMargins } from '../layout';
-import { EnDash } from '../text';
+import { EnDash, Text } from '../text';
 import ExchangeInput from './ExchangeInput';
 import { useColorForAsset } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
@@ -54,6 +54,7 @@ const ExchangeField = (
     onBlur,
     onFocus,
     onPressSelectCurrency,
+    onTapWhileDisabled,
     setAmount,
     symbol,
     testID,
@@ -63,7 +64,10 @@ const ExchangeField = (
   ref
 ) => {
   const colorForAsset = useColorForAsset({ address });
-  const handleFocusField = useCallback(() => ref?.current?.focus(), [ref]);
+  const handleFocusField = useCallback(() => {
+    ref?.current?.focus();
+    !editable && onTapWhileDisabled();
+  }, [editable, onTapWhileDisabled, ref]);
   const { colors } = useTheme();
 
   const [value, setValue] = useState(amount);
@@ -72,6 +76,12 @@ const ExchangeField = (
   useEffect(() => {
     setAmount(debouncedValue);
   }, [debouncedValue, setAmount]);
+
+  const placeholderTextColor = symbol
+    ? colors.alpha(colors.blueGreyDark, 0.3)
+    : colors.alpha(colors.blueGreyDark, 0.1);
+
+  const placeholderText = symbol ? '0' : EnDash.unicode;
 
   return (
     <Container {...props}>
@@ -82,21 +92,32 @@ const ExchangeField = (
           ) : (
             <CoinIconSkeleton />
           )}
-          <Input
-            color={colorForAsset}
-            editable={editable}
-            onBlur={onBlur}
-            onChangeText={setValue}
-            onFocus={onFocus}
-            placeholder={symbol ? '0' : EnDash.unicode}
-            placeholderTextColor={
-              symbol ? undefined : colors.alpha(colors.blueGreyDark, 0.1)
-            }
-            ref={ref}
-            testID={testID}
-            useCustomAndroidMask={useCustomAndroidMask}
-            value={amount}
-          />
+          {!editable && onTapWhileDisabled && (
+            <Text
+              color={amount > 0 ? colorForAsset : placeholderTextColor}
+              letterSpacing="roundedTightest"
+              size="h2"
+              weight="semibold"
+            >
+              {amount || placeholderText}
+            </Text>
+          )}
+          {editable && (
+            <Input
+              color={colorForAsset}
+              editable={editable}
+              onBlur={onBlur}
+              onChangeText={setValue}
+              onFocus={onFocus}
+              onTapWhileDisabled={onTapWhileDisabled}
+              placeholder={placeholderText}
+              placeholderTextColor={placeholderTextColor}
+              ref={ref}
+              testID={testID}
+              useCustomAndroidMask={useCustomAndroidMask}
+              value={amount}
+            />
+          )}
         </FieldRow>
       </TouchableWithoutFeedback>
       {!disableCurrencySelection && (

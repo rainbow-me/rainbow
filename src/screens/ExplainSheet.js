@@ -99,6 +99,19 @@ const BACKUP_EXPLAINER = lang.t('back_up.explainers.backup', {
 });
 
 export const explainers = (network, colors) => ({
+  output_disabled: {
+    extraHeight: -100,
+    title: lang.t('explain.output_disabled.title'),
+    text: lang.t('explain.output_disabled.text', { network }),
+    logo: (
+      <ChainBadge
+        assetType={network}
+        marginBottom={8}
+        position="relative"
+        size="large"
+      />
+    ),
+  },
   floor_price: {
     emoji: '📊',
     extraHeight: -102,
