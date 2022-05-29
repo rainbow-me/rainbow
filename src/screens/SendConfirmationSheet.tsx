@@ -356,7 +356,6 @@ export default function SendConfirmationSheet() {
       promiseUtils
         .PromiseAllWithFails(promises)
         .then(gasLimits => {
-          console.log(gasLimits);
           const gasLimit = gasLimits.reduce(
             (a, b) => parseFloat(a) + parseFloat(b),
             0
