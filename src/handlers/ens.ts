@@ -620,6 +620,19 @@ export const estimateENSSetOwnerGasLimit = async ({
     type: ENSRegistrationTransactionType.SET_OWNER,
   });
 
+export const estimateENSSetAddressGasLimit = async ({
+  name,
+  records,
+}: {
+  name: string;
+  records: ENSRegistrationRecords;
+}) =>
+  estimateENSTransactionGasLimit({
+    name,
+    records,
+    type: ENSRegistrationTransactionType.SET_ADDR,
+  });
+
 export const estimateENSSetTextGasLimit = async ({
   name,
   records,
@@ -789,11 +802,26 @@ export const estimateENSSetRecordsGasLimit = async ({
     const shouldUseMulticall = shouldUseMulticallTransaction(
       ensRegistrationRecords
     );
-    gasLimit = await (shouldUseMulticall
-      ? estimateENSMulticallGasLimit
-      : estimateENSSetTextGasLimit)({
-      ...{ name, ownerAddress, records: ensRegistrationRecords },
-    });
+    if (shouldUseMulticall) {
+      gasLimit = await estimateENSMulticallGasLimit({
+        name,
+        ownerAddress,
+        records: ensRegistrationRecords,
+      });
+    } else {
+      if (ensRegistrationRecords?.coinAddress?.length) {
+        gasLimit = await estimateENSSetAddressGasLimit({
+          name,
+          records: ensRegistrationRecords,
+        });
+      } else {
+        gasLimit = await estimateENSSetTextGasLimit({
+          name,
+          ownerAddress,
+          records: ensRegistrationRecords,
+        });
+      }
+    }
   }
   return gasLimit;
 };
@@ -879,10 +907,9 @@ export const shouldUseMulticallTransaction = (
     text,
   } = registrationRecords;
   if (
-    !coinAddress?.length &&
     !contentHash &&
     !ensAssociatedAddress &&
-    text?.length === 1
+    (text?.length || 0) + (coinAddress?.length || 0) === 1
   ) {
     return false;
   }

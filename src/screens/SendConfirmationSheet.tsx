@@ -9,6 +9,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import { AddressZero } from '@ethersproject/constants';
 import { Keyboard, StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 import ContactRowInfoButton from '../components/ContactRowInfoButton';
@@ -41,8 +42,10 @@ import { useTheme } from '@rainbow-me/context';
 import { Box, Inset, Stack, Text } from '@rainbow-me/design-system';
 import { UniqueAsset } from '@rainbow-me/entities';
 import {
+  estimateENSSetAddressGasLimit,
   estimateENSSetOwnerGasLimit,
   estimateENSSetRecordsGasLimit,
+  formatRecordsForTransaction,
 } from '@rainbow-me/handlers/ens';
 import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
 import { estimateGasLimit } from '@rainbow-me/handlers/web3';
@@ -103,7 +106,7 @@ const doesNamePointToRecipient = (
   ensProfile?: ENSProfile,
   recipientAddress?: string
 ) =>
-  ensProfile?.data?.primary?.address.toLowerCase() ===
+  ensProfile?.data?.primary?.address?.toLowerCase() ===
   recipientAddress?.toLowerCase();
 const doesAccountControlName = (ensProfile?: ENSProfile) => ensProfile?.isOwner;
 
@@ -323,6 +326,8 @@ export default function SendConfirmationSheet() {
         }, {});
         if (sendENSOptions['set-address']) {
           records = { ...records, ETH: toAddress };
+        } else {
+          records = { ...records, ETH: AddressZero };
         }
         promises.push(
           estimateENSSetRecordsGasLimit({
@@ -333,10 +338,9 @@ export default function SendConfirmationSheet() {
         );
       } else if (sendENSOptions['set-address']) {
         promises.push(
-          estimateENSSetRecordsGasLimit({
+          estimateENSSetAddressGasLimit({
             name: asset?.name,
-            records: { ETH: toAddress },
-            ownerAddress: accountAddress,
+            records: formatRecordsForTransaction({ ETH: toAddress }),
           })
         );
       }
@@ -352,6 +356,7 @@ export default function SendConfirmationSheet() {
       promiseUtils
         .PromiseAllWithFails(promises)
         .then(gasLimits => {
+          console.log(gasLimits);
           const gasLimit = gasLimits.reduce(
             (a, b) => parseFloat(a) + parseFloat(b),
             0

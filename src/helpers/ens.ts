@@ -482,6 +482,8 @@ const setupMulticallRecords = (
         } else {
           addressAsBytes = decoder(coinRecord.address);
         }
+        console.log(addressAsBytes);
+        console.log(coinRecord.key);
         return resolver.encodeFunctionData('setAddr(bytes32,uint256,bytes)', [
           namehash,
           coinType,
