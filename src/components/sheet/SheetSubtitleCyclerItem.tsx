@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useMemo } from 'react';
+import React, { useLayoutEffect } from 'react';
 import Animated, {
   Easing,
   interpolateColor,
@@ -9,9 +9,12 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Text } from '../text';
 import { useTheme } from '@rainbow-me/context';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 
 const AnimatedText = Animated.createAnimatedComponent(Text);
+
+const Container = styled(Animated.View)({ ...position.coverAsObject });
 
 interface Props {
   error?: boolean;
@@ -20,9 +23,7 @@ interface Props {
 }
 
 const LocalSheetSubtitleCyclerItem = ({ error, selected, subtitle }: Props) => {
-  const easing = useMemo(() => Easing[error ? 'out' : 'in'](Easing.ease), [
-    error,
-  ]);
+  const easing = Easing[error ? 'out' : 'in'](Easing.ease);
   const opacity = useSharedValue(selected ? 1 : 0);
   const colorProgress = useSharedValue(error ? 1 : 0);
 
@@ -55,7 +56,7 @@ const LocalSheetSubtitleCyclerItem = ({ error, selected, subtitle }: Props) => {
   });
 
   return (
-    <Animated.View {...position.coverAsObject} style={opacityStyle}>
+    <Container style={opacityStyle}>
       <AnimatedText
         align="center"
         // @ts-expect-error untyped JS component
@@ -67,7 +68,7 @@ const LocalSheetSubtitleCyclerItem = ({ error, selected, subtitle }: Props) => {
       >
         {subtitle}
       </AnimatedText>
-    </Animated.View>
+    </Container>
   );
 };
 
