@@ -118,11 +118,14 @@ export default function TextRecordsForm({
 
 function Field({ defaultValue, ...props }: InlineFieldProps) {
   const [value, setValue] = useState(defaultValue);
+  const [isTouched, setIsTouched] = useState(false);
 
-  // Set / clear values when the screen comes to focus / unfocus.
   useEffect(() => {
+    // If the field is touched, we don't want to set the default value again.
+    if (isTouched) return;
+
     setValue(defaultValue);
-  }, [defaultValue]);
+  }, [defaultValue, isTouched]);
 
   return (
     <>
@@ -131,6 +134,7 @@ function Field({ defaultValue, ...props }: InlineFieldProps) {
         {...props}
         onChangeText={text => {
           props.onChangeText(text);
+          setIsTouched(true);
           setValue(text);
         }}
         value={value}
