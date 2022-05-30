@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { Dimensions, View } from 'react-native';
 import Animated, { Easing, FadeOut, Keyframe } from 'react-native-reanimated';
 import { sheetVerticalOffset } from '../../navigation/effects';
 import { Icon } from '../icons';
@@ -7,19 +7,17 @@ import { Centered } from '../layout';
 
 const duration = 200;
 
+const screenHeight = Dimensions.get('window').height;
+
 const keyframe = new Keyframe({
   0: {
     opacity: 0,
-    transform: [{ translateY: 100 }, { scale: 0.0001 }],
+    transform: [{ translateY: screenHeight }, { scale: 0.0001 }],
   },
   100: {
     easing: Easing.out(Easing.ease),
-    opacity: 0.5,
+    opacity: 1,
     transform: [{ translateY: 0 }, { scale: 1 }],
-  },
-  50: {
-    opacity: 0.5,
-    transform: [{ translateY: 50 }, { scale: 1 }],
   },
 });
 
@@ -51,7 +49,7 @@ const SendEmptyState = () => {
       paddingBottom={sheetVerticalOffset + 19}
     >
       <Animated.View
-        entering={keyframe.duration(duration).delay(duration)}
+        entering={keyframe.duration(duration)}
         exiting={FadeOut.duration(duration).easing(Easing.in(Easing.ease))}
       >
         {icon}
