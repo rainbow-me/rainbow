@@ -126,7 +126,7 @@ export default function CoinDivider({ balancesSum, defaultToEditButton }) {
   useEffect(() => {
     if (isSmallBalancesOpen && !fetchedCharts) {
       const assetCodes = assets?.map(asset => asset.address);
-      dispatch(emitChartsRequest(assetCodes || []));
+      dispatch(emitChartsRequest(assetCodes ?? []));
       setFetchedCharts(true);
     }
   }, [

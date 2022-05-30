@@ -126,7 +126,7 @@ export default function useSavingsAccount(includeDefaultDai) {
 
     if (data) {
       const markets = keyBy(data?.markets, 'id');
-      const resultTokens = data?.account?.tokens || [];
+      const resultTokens = data?.account?.tokens ?? [];
 
       const accountTokens = resultTokens.map(token => {
         const [cTokenAddress] = token.id.split('-');

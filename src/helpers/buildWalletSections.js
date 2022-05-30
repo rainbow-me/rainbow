@@ -163,9 +163,9 @@ const withBriefUniswapSection = (
   return [];
 };
 
-const withBalanceSavingsSection = (savings, network) => {
+const withBalanceSavingsSection = (savings = [], network) => {
   let totalUnderlyingNativeValue = '0';
-  const savingsAssets = savings?.map(asset => {
+  const savingsAssets = savings.map(asset => {
     const {
       lifetimeSupplyInterestAccrued,
       underlyingBalanceNativeValue,
