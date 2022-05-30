@@ -1,5 +1,6 @@
 import React, {
   createContext,
+  PropsWithChildren,
   useContext,
   useEffect,
   useMemo,
@@ -13,28 +14,46 @@ import {
 } from 'react-native';
 import { useDarkMode } from 'react-native-dark-mode';
 import { ThemeProvider } from 'styled-components';
-import { getTheme, saveTheme } from '../handlers/localstorage/theme';
-import { darkModeThemeColors, lightModeThemeColors } from '../styles/colors';
+import {
+  Colors,
+  darkModeThemeColors,
+  lightModeThemeColors,
+} from '../styles/colors';
 import currentColors from './currentColors';
 import { DesignSystemProvider } from '@rainbow-me/design-system';
+import { getTheme, saveTheme } from '@rainbow-me/handlers/localstorage/theme';
 import { StyleThingThemeProvider } from '@rainbow-me/styled-components';
 
-export const THEMES = {
+export const Themes = {
   DARK: 'dark',
   LIGHT: 'light',
   SYSTEM: 'system',
-};
+} as const;
 
-export const ThemeContext = createContext({
+export type ThemesType = typeof Themes[keyof typeof Themes];
+
+export interface ThemeContextProps {
+  colors: Colors;
+  darkScheme: Colors;
+  lightScheme: Colors;
+  colorScheme: ThemesType | null;
+  isDarkMode: boolean;
+  setTheme: (scheme: ThemesType) => void;
+}
+
+export const ThemeContext = createContext<ThemeContextProps>({
   colors: lightModeThemeColors,
+  colorScheme: Themes.LIGHT,
+  darkScheme: darkModeThemeColors,
   isDarkMode: false,
+  lightScheme: lightModeThemeColors,
   setTheme: () => {},
 });
 
 const { RNThemeModule } = NativeModules;
 
-export const MainThemeProvider = props => {
-  const [colorScheme, setColorScheme] = useState();
+export const MainThemeProvider = (props: PropsWithChildren<{}>) => {
+  const [colorScheme, setColorScheme] = useState<ThemesType | null>(null);
 
   // looks like one works on Android and another one on iOS. good.
   const isSystemDarkModeIOS = useDarkMode();
@@ -42,11 +61,12 @@ export const MainThemeProvider = props => {
   const isSystemDarkMode = ios ? isSystemDarkModeIOS : isSystemDarkModeAndroid;
 
   const colorSchemeSystemAdjusted =
-    colorScheme === THEMES.SYSTEM
+    colorScheme === Themes.SYSTEM
       ? isSystemDarkMode
         ? 'dark'
         : 'light'
       : colorScheme;
+
   useEffect(() => {
     setTimeout(() => RNThemeModule?.setMode(colorSchemeSystemAdjusted), 400);
   }, [colorSchemeSystemAdjusted]);
@@ -54,22 +74,22 @@ export const MainThemeProvider = props => {
   // Override default with user preferences
   useEffect(() => {
     const loadUserPref = async () => {
-      const userPref = (await getTheme()) || THEMES.LIGHT;
+      const userPref = (await getTheme()) ?? Themes.LIGHT;
       const userPrefSystemAdjusted =
-        userPref === THEMES.SYSTEM
+        userPref === Themes.SYSTEM
           ? isSystemDarkMode
             ? 'dark'
             : 'light'
           : userPref;
       StatusBar.setBarStyle(
-        userPrefSystemAdjusted === THEMES.DARK
+        userPrefSystemAdjusted === Themes.DARK
           ? 'light-content'
           : 'dark-content',
         true
       );
       currentColors.theme = userPrefSystemAdjusted;
       currentColors.themedColors =
-        userPrefSystemAdjusted === THEMES.DARK
+        userPrefSystemAdjusted === Themes.DARK
           ? darkModeThemeColors
           : lightModeThemeColors;
       setColorScheme(userPref);
@@ -80,7 +100,7 @@ export const MainThemeProvider = props => {
   // Listening to changes of device appearance while in run-time
   useEffect(() => {
     if (colorScheme) {
-      //setIsDarkMode(colorScheme === THEMES.DARK);
+      //setIsDarkMode(colorScheme === Themes.DARK);
       saveTheme(colorScheme);
     }
   }, [colorScheme]);
@@ -96,22 +116,22 @@ export const MainThemeProvider = props => {
       isDarkMode: colorSchemeSystemAdjusted === 'dark',
       lightScheme: lightModeThemeColors,
       // Overrides the isDarkMode value will cause re-render inside the context.
-      setTheme: scheme => {
+      setTheme: (scheme: ThemesType) => {
         const schemeSystemAdjusted =
-          scheme === THEMES.SYSTEM
+          scheme === Themes.SYSTEM
             ? isSystemDarkMode
               ? 'dark'
               : 'light'
             : scheme;
         currentColors.theme = schemeSystemAdjusted;
         StatusBar.setBarStyle(
-          schemeSystemAdjusted === THEMES.DARK
+          schemeSystemAdjusted === Themes.DARK
             ? 'light-content'
             : 'dark-content',
           true
         );
         currentColors.themedColors =
-          schemeSystemAdjusted === THEMES.DARK
+          schemeSystemAdjusted === Themes.DARK
             ? darkModeThemeColors
             : lightModeThemeColors;
         setColorScheme(scheme);
@@ -142,14 +162,18 @@ export const MainThemeProvider = props => {
   );
 };
 
-// Custom hook to get the theme object returns {isDarkMode, colors, setTheme}
+/**
+ * Custom hook to get the theme object
+ */
 export const useTheme = () => useContext(ThemeContext);
 
-export function withThemeContext(Component) {
-  return function WrapperComponent(props) {
+export function withThemeContext<P extends object>(
+  Component: React.ComponentType<P>
+) {
+  return function WrapperComponent(props: Omit<P, keyof ThemeContextProps>) {
     return (
       <ThemeContext.Consumer>
-        {state => <Component {...props} {...state} />}
+        {state => <Component {...(props as P)} {...state} />}
       </ThemeContext.Consumer>
     );
   };

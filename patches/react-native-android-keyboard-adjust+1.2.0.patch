@@ -1,0 +1,11 @@
+diff --git a/node_modules/react-native-android-keyboard-adjust/android/build.gradle b/node_modules/react-native-android-keyboard-adjust/android/build.gradle
+index bbcb06a..1d8fee9 100644
+--- a/node_modules/react-native-android-keyboard-adjust/android/build.gradle
++++ b/node_modules/react-native-android-keyboard-adjust/android/build.gradle
+@@ -35,5 +35,5 @@ repositories {
+ }
+ 
+ dependencies {
+-  compile "com.facebook.react:react-native:+"
++  implementation "com.facebook.react:react-native:+"
+ }

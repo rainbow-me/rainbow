@@ -2,16 +2,12 @@ import { useRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo } from 'react';
-import {
-  Animated,
-  InteractionManager,
-  NativeModules,
-  View,
-} from 'react-native';
+import { Animated, InteractionManager, View } from 'react-native';
 import { Modal } from '../components/modal';
 import ModalHeaderButton from '../components/modal/ModalHeaderButton';
 import {
   CurrencySection,
+  DevNotificationsSection,
   DevSection,
   LanguageSection,
   NetworkSection,
@@ -25,6 +21,7 @@ import WalletSelectionView from '../components/settings-menu/BackupSection/Walle
 import { useTheme } from '../context/ThemeContext';
 import WalletTypes from '../helpers/walletTypes';
 import { settingsOptions } from '../navigation/config';
+import isTestFlight from '@rainbow-me/helpers/isTestFlight';
 import { useDimensions, useWallets } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import styled from '@rainbow-me/styled-components';
@@ -62,10 +59,6 @@ function cardStyleInterpolator({
     },
   };
 }
-
-let isTestFlight = ios
-  ? NativeModules.RNTestFlight.getConstants().isTestFlight
-  : false;
 
 const SettingsPages = {
   backup: {
@@ -232,6 +225,15 @@ export default function SettingsModal() {
               cardStyle: { backgroundColor: colors.white, marginTop: 6 },
               cardStyleInterpolator,
               title: lang.t('settings.backup'),
+            }}
+          />
+          <Stack.Screen
+            component={DevNotificationsSection}
+            name="DevNotificationsSection"
+            options={{
+              cardStyle: { backgroundColor: colors.white, marginTop: 6 },
+              cardStyleInterpolator,
+              title: lang.t('developer_settings.notifications_debug'),
             }}
           />
           <Stack.Screen

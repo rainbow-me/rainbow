@@ -222,7 +222,7 @@ const ChartPathInner = React.memo(
           return;
         }
 
-        const yForX = getYForX(currentPath.parsed, Math.floor(values.x));
+        const yForX = getYForX(currentPath.parsed, values.x);
 
         if (yForX !== null) {
           positionY.value = yForX;
