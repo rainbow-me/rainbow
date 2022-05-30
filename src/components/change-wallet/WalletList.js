@@ -40,6 +40,11 @@ const getItemLayout = (data, index) => {
 
 const keyExtractor = item => `${item.walletId}-${item?.id}`;
 
+const Container = styled(Animated.View)({
+  height: ({ height }) => height,
+  marginTop: -2,
+});
+
 const EmptyWalletList = styled(EmptyAssetList).attrs({
   descendingOpacity: true,
   pointerEvents: 'none',
@@ -192,10 +197,10 @@ export default function WalletList({
   );
 
   return (
-    <Animated.View
+    <Container
       entering={FadeIn.easing(Easing.out(Easing.ease)).duration(0.001)}
       exiting={FadeOut.easing(Easing.out(Easing.ease))}
-      style={{ height, marginTop: -2 }}
+      height={height}
     >
       {ready ? (
         <Fragment>
@@ -228,6 +233,6 @@ export default function WalletList({
       ) : (
         <EmptyWalletList />
       )}
-    </Animated.View>
+    </Container>
   );
 }
