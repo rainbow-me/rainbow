@@ -1,5 +1,12 @@
-import React from 'react';
-import Animated, { Easing, Keyframe } from 'react-native-reanimated';
+import React, { useLayoutEffect, useState } from 'react';
+import Animated, {
+  Easing,
+  interpolate,
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import { magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Centered } from '../layout';
@@ -29,30 +36,48 @@ const TextIcon = styled(Text).attrs(({ theme: { colors } }) => ({
   marginBottom: 0.5,
 });
 
-const easing = Easing.out(Easing.ease);
+const easingOut = Easing.out(Easing.ease);
+const easingIn = Easing.in(Easing.ease);
 const duration = 69;
 
 const ClearInputDecorator = ({ inputHeight, isVisible, onPress, testID }) => {
-  const keyframe = new Keyframe({
-    0: {
-      easing,
-      opacity: 0,
-      transform: [{ scale: 0.0001 }],
-    },
-    100: {
-      easing,
-      opacity: 1,
-      transform: [{ scale: 1 }],
-    },
+  const [isVisibleInternal, setIsVisibleInternal] = useState(isVisible);
+  const animation = useSharedValue(isVisible ? 1 : 0);
+
+  useLayoutEffect(() => {
+    if (isVisible) {
+      setIsVisibleInternal(true);
+    } else if (!isVisible) {
+      animation.value = withTiming(
+        0,
+        { duration, easing: easingOut },
+        finished => {
+          if (finished) {
+            runOnJS(setIsVisibleInternal)(false);
+          }
+        }
+      );
+    }
+  }, [isVisible, animation]);
+
+  useLayoutEffect(() => {
+    if (isVisibleInternal && isVisible) {
+      animation.value = withTiming(1, { duration, easing: easingIn });
+    }
+  }, [isVisible, isVisibleInternal, animation]);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    const scale = interpolate(animation.value, [0, 1], [0.0001, 1], 'extend');
+    return {
+      opacity: animation.value,
+      transform: [{ scale }],
+    };
   });
 
   return (
     <Container>
-      {isVisible && (
-        <Animated.View
-          entering={keyframe.duration(duration)}
-          exiting={keyframe.duration(duration)}
-        >
+      {isVisibleInternal && (
+        <Animated.View style={animatedStyle}>
           <Button
             as={ButtonPressAnimation}
             onPress={onPress}
