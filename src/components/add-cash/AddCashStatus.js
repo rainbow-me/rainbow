@@ -168,6 +168,19 @@ const AddCashSuccess = ({ currency }) => {
   );
 };
 
+const keyframe = new Keyframe({
+  0: {
+    easing: Easing.out(Easing.ease),
+    opacity: 0,
+    transform: [{ scale: 0.0001 }],
+  },
+  100: {
+    easing: Easing.out(Easing.ease),
+    opacity: 1,
+    transform: [{ scale: 1 }],
+  },
+});
+
 const AddCashStatus = ({
   error,
   orderCurrency,
@@ -176,18 +189,6 @@ const AddCashStatus = ({
   resetAddCashForm,
   transferStatus,
 }) => {
-  const keyframe = new Keyframe({
-    0: {
-      easing: Easing.out(Easing.ease),
-      opacity: 0,
-      transform: [{ scale: 0.0001 }],
-    },
-    100: {
-      easing: Easing.out(Easing.ease),
-      opacity: 1,
-      transform: [{ scale: 1 }],
-    },
-  });
   const status = useMemo(() => {
     if (
       orderStatus === WYRE_ORDER_STATUS_TYPES.success ||
