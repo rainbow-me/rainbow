@@ -1,6 +1,6 @@
 import { concat, isEmpty, isNil, keyBy, keys, toLower } from 'lodash';
 import io from 'socket.io-client';
-import { defaultConfig, L2_TXS } from '../config/experimental';
+import { getExperimetalFlag, L2_TXS } from '../config/experimental';
 import config from '../model/config';
 import { assetChartsReceived, DEFAULT_CHART_TYPE } from './charts';
 import {
@@ -177,6 +177,21 @@ const addressAssetsRequest = (address, currency) => [
       currency: toLower(currency),
     },
     scope: ['assets'],
+  },
+];
+
+const l2AddressTransactionHistoryRequest = (address, currency) => [
+  'get',
+  {
+    payload: {
+      address,
+      currency: toLower(currency),
+      transactions_limit: TRANSACTIONS_LIMIT,
+    },
+    scope: [
+      `${NetworkTypes.arbitrum}-transactions`,
+      `${NetworkTypes.polygon}-transactions`,
+    ],
   },
 ];
 
@@ -421,6 +436,14 @@ export const emitChartsRequest = (
   }
 };
 
+export const emitL2TransactionHistoryRequest = () => (dispatch, getState) => {
+  const { accountAddress, nativeCurrency } = getState().settings;
+  const { addressSocket } = getState().explorer;
+  addressSocket.emit(
+    ...l2AddressTransactionHistoryRequest(accountAddress, nativeCurrency)
+  );
+};
+
 const listenOnAssetMessages = socket => dispatch => {
   socket.on(messages.ASSET_INFO.RECEIVED, message => {
     dispatch(updateTopMovers(message));
@@ -513,16 +536,23 @@ const listenOnAddressMessages = socket => dispatch => {
   });
 
   socket.on(messages.ADDRESS_TRANSACTIONS.RECEIVED, message => {
-    // logger.log('txns received', message?.payload?.transactions);
+    // logger.log('mainnet txns received', message?.payload?.transactions);
+
+    if (getExperimetalFlag(L2_TXS)) {
+      dispatch(emitL2TransactionHistoryRequest());
+    }
     dispatch(transactionsReceived(message));
   });
 
-  if (defaultConfig[L2_TXS].value) {
-    socket.on(messages.ADDRESS_TRANSACTIONS.RECEIVED_ARBITRUM, message => {
-      // logger.log('txns received', message?.payload?.transactions);
-      dispatch(transactionsReceived(message));
-    });
-  }
+  socket.on(messages.ADDRESS_TRANSACTIONS.RECEIVED_ARBITRUM, message => {
+    // logger.log('arbitrum txns received', message?.payload?.transactions);
+    dispatch(transactionsReceived(message));
+  });
+
+  socket.on(messages.ADDRESS_TRANSACTIONS.RECEIVED_POLYGON, message => {
+    // logger.log('polygon txns received', message?.payload?.transactions);
+    dispatch(transactionsReceived(message));
+  });
 
   socket.on(messages.ADDRESS_TRANSACTIONS.APPENDED, message => {
     logger.log('txns appended', message?.payload?.transactions);
