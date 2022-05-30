@@ -1,19 +1,29 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { View } from 'react-native';
-import Animated, { Easing, FadeInDown, FadeOut } from 'react-native-reanimated';
+import Animated, { Easing, FadeOut, Keyframe } from 'react-native-reanimated';
 import { sheetVerticalOffset } from '../../navigation/effects';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 
-const duration = 100;
+const duration = 200;
+
+const keyframe = new Keyframe({
+  0: {
+    opacity: 0,
+    transform: [{ translateY: 100 }, { scale: 0.0001 }],
+  },
+  100: {
+    easing: Easing.out(Easing.ease),
+    opacity: 0.5,
+    transform: [{ translateY: 0 }, { scale: 1 }],
+  },
+  50: {
+    opacity: 0.5,
+    transform: [{ translateY: 50 }, { scale: 1 }],
+  },
+});
 
 const SendEmptyState = () => {
-  const ref = useRef();
-
-  if (ref.current && ios) {
-    ref.current.animateNextTransition();
-  }
-
   const { colors } = useTheme();
 
   const icon = (
@@ -41,7 +51,7 @@ const SendEmptyState = () => {
       paddingBottom={sheetVerticalOffset + 19}
     >
       <Animated.View
-        entering={FadeInDown.duration(duration).easing(Easing.out(Easing.ease))}
+        entering={keyframe.duration(duration).delay(duration)}
         exiting={FadeOut.duration(duration).easing(Easing.in(Easing.ease))}
       >
         {icon}
