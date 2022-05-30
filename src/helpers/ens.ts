@@ -205,6 +205,11 @@ export const textRecordFields = {
     label: lang.t('profiles.create.discord'),
     placeholder: lang.t('profiles.create.username_placeholder'),
     startsWith: '@',
+    validations: {
+      onChange: {
+        match: /^([\w.])*$/,
+      },
+    },
   },
   [ENS_RECORDS.github]: {
     id: 'github',
@@ -214,6 +219,12 @@ export const textRecordFields = {
     key: ENS_RECORDS.github,
     label: lang.t('profiles.create.github'),
     placeholder: lang.t('profiles.create.username_placeholder'),
+    startsWith: '@',
+    validations: {
+      onChange: {
+        match: /^([\w.])*$/,
+      },
+    },
   },
   [ENS_RECORDS.BTC]: {
     id: 'btc',
