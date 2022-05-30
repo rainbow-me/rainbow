@@ -1,6 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
-import React, { Fragment, useCallback, useMemo } from 'react';
+import React, { Fragment, useMemo } from 'react';
 import { View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
@@ -9,7 +9,7 @@ import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
-import { useAccountSettings } from '@rainbow-me/hooks';
+import { useAccountSettings, useStableCallback } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { DPI_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
@@ -51,7 +51,7 @@ const PulseIndex = () => {
     return formatItem(asset, nativeCurrencySymbol);
   }, [genericAssets, nativeCurrencySymbol]);
 
-  const handlePress = useCallback(() => {
+  const handlePress = useStableCallback(() => {
     const asset = ethereumUtils.formatGenericAsset(
       genericAssets[DPI_ADDRESS],
       nativeCurrency
@@ -66,16 +66,38 @@ const PulseIndex = () => {
       fromDiscover: true,
       type: 'token_index',
     });
-  }, [genericAssets, nativeCurrency, navigate]);
+  });
 
+  if (!item) return null;
+
+  return (
+    <PulseIndexMemo
+      address={item.address}
+      change={item.change}
+      handlePress={handlePress}
+      isPositive={item.isPositive}
+      name={item.name}
+      price={item.price}
+      symbol={item.symbol}
+    />
+  );
+};
+
+const PulseIndexMemo = React.memo(function PulseIndexMemo({
+  isPositive,
+  change,
+  price,
+  name,
+  handlePress,
+  symbol,
+  address,
+}) {
   const { colors, isDarkMode } = useTheme();
 
   const CardShadow = useMemo(
     () => [[0, 8, 24, isDarkMode ? colors.shadow : colors.dpiMid, 0.35]],
     [colors.dpiMid, colors.shadow, isDarkMode]
   );
-
-  if (!item) return null;
 
   return (
     <Fragment>
@@ -118,11 +140,15 @@ const PulseIndex = () => {
           />
           <Row position="absolute" zIndex={1}>
             <Column margin={15} marginRight={10}>
-              <CoinIcon forcedShadowColor={colors.dpiDark} {...item} />
+              <CoinIcon
+                address={address}
+                forcedShadowColor={colors.dpiDark}
+                symbol={symbol}
+              />
             </Column>
             <Column marginLeft={0} marginTop={ios ? 13.5 : 6}>
               <Text color={colors.whiteLabel} size="large" weight="heavy">
-                {item.name}
+                {name}
               </Text>
               <Text
                 color={colors.alpha(colors.whiteLabel, 0.6)}
@@ -177,22 +203,22 @@ const PulseIndex = () => {
               size="smedium"
               weight="bold"
             >
-              {item.price}
+              {price}
             </Text>
           </Text>
           <Text
             align="right"
-            color={item.isPositive ? colors.green : colors.red}
+            color={isPositive ? colors.green : colors.red}
             letterSpacing="roundedMedium"
             numberOfLines={1}
             {...fontWithWidth(font.weight.bold)}
             size="smedium"
             weight="bold"
           >
-            {item.isPositive ? `↑` : `↓`} {item.change}
+            {isPositive ? `↑` : `↓`} {change}
             <Text
               align="right"
-              color={item.isPositive ? colors.green : colors.red}
+              color={isPositive ? colors.green : colors.red}
               size="smedium"
               weight="semibold"
             >
@@ -204,6 +230,6 @@ const PulseIndex = () => {
       </ButtonPressAnimation>
     </Fragment>
   );
-};
+});
 
 export default React.memo(PulseIndex);
