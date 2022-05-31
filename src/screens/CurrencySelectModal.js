@@ -214,13 +214,15 @@ export default function CurrencySelectModal() {
   );
 
   const itemProps = useMemo(
-    () => ({
+    () => { 
+      const isMainnet = currentChainId === 1;
+      return {
       onActionAsset: handleFavoriteAsset,
       onPress: handleSelectAsset,
       showBalance: type === CurrencySelectionTypes.input,
-      showFavoriteButton: type === CurrencySelectionTypes.output,
-    }),
-    [handleFavoriteAsset, handleSelectAsset, type]
+      showFavoriteButton: type === CurrencySelectionTypes.output && isMainnet,
+    }},
+    [handleFavoriteAsset, handleSelectAsset, type, currentChainId]
   );
 
   const handleApplyFavoritesQueue = useCallback(() => {
