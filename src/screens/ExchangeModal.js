@@ -17,7 +17,6 @@ import {
   Keyboard,
   NativeModules,
 } from 'react-native';
-import { IS_TESTING } from 'react-native-dotenv';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { useDispatch, useSelector } from 'react-redux';
@@ -113,6 +112,7 @@ const getShowOutputField = type => {
 export default function ExchangeModal({
   defaultInputAsset,
   defaultOutputAsset,
+  fromDiscover,
   testID,
   type,
   typeSpecificParams,
@@ -137,6 +137,7 @@ export default function ExchangeModal({
     setParams,
     dangerouslyGetParent,
     addListener,
+    goBack,
   } = useNavigation();
 
   const {
@@ -164,6 +165,7 @@ export default function ExchangeModal({
   const [currentProvider, setCurrentProvider] = useState(null);
 
   const prevGasFeesParamsBySpeed = usePrevious(gasFeeParamsBySpeed);
+  const wasFocused = usePrevious(focused);
 
   useAndroidBackHandler(() => {
     navigate(Routes.WALLET_SCREEN);
@@ -195,6 +197,7 @@ export default function ExchangeModal({
   } = useSwapCurrencyHandlers({
     defaultInputAsset,
     defaultOutputAsset,
+    fromDiscover,
     inputFieldRef,
     lastFocusedInputHandle,
     outputFieldRef,
@@ -237,7 +240,11 @@ export default function ExchangeModal({
   const {
     result: {
       derivedValues: { inputAmount, nativeAmount, outputAmount },
-      displayValues: { inputAmountDisplay, outputAmountDisplay },
+      displayValues: {
+        inputAmountDisplay,
+        outputAmountDisplay,
+        nativeAmountDisplay,
+      },
       tradeDetails,
     },
     loading,
@@ -300,6 +307,8 @@ export default function ExchangeModal({
   }, [lastFocusedInputHandle]);
 
   const [navigating, setNavigating] = useState(false);
+  const [navigatedToInput, setNavigatedToInput] = useState(false);
+  const [navigatedToOutput, setNavigatedToOutput] = useState(false);
 
   const navigateToOutput = useCallback(() => {
     !navigating && navigateToSelectOutputCurrency(chainId);
@@ -310,17 +319,30 @@ export default function ExchangeModal({
   const navigateToInput = useCallback(() => {
     !navigating && navigateToSelectInputCurrency();
     setNavigating(true);
+    setNavigatedToInput(true);
     setTimeout(() => setNavigating(false), 1000);
   }, [navigateToSelectInputCurrency, navigating]);
 
   // Navigate to select input currency automatically
   // TODO: Do this in a better way
   useEffect(() => {
-    if (focused && IS_TESTING !== 'true') {
-      if (!defaultInputAsset && !inputCurrency) {
-        navigateToInput();
-      } else if (!outputCurrency) {
-        navigateToOutput();
+    if (focused && !wasFocused) {
+      // Coming back from input selection without selecting anything
+      if (!inputCurrency && !outputCurrency && navigatedToInput) {
+        goBack();
+        goBack();
+      } else {
+        // initial launch
+        if (!defaultInputAsset && !inputCurrency) {
+          navigateToInput();
+          // if we just got the input but still not output
+        } else if (!outputCurrency && !navigatedToOutput) {
+          setNavigatedToInput(false);
+          setNavigatedToOutput(true);
+          navigateToOutput();
+        } else {
+          setNavigatedToOutput(false);
+        }
       }
     }
   }, [
@@ -330,6 +352,10 @@ export default function ExchangeModal({
     focused,
     navigateToInput,
     navigateToOutput,
+    wasFocused,
+    navigatedToInput,
+    goBack,
+    navigatedToOutput,
   ]);
 
   const updateGasLimit = useCallback(async () => {
@@ -689,9 +715,20 @@ export default function ExchangeModal({
     type,
   ]);
 
+  const handleTapWhileDisabled = useCallback(() => {
+    if (currentNetwork === Network.arbitrum) {
+      navigate(Routes.EXPLAIN_SHEET, {
+        network: currentNetwork,
+        type: 'output_disabled',
+      });
+    }
+  }, [navigate, currentNetwork]);
+
   const showConfirmButton = isSavings
     ? !!inputCurrency
     : !!inputCurrency && !!outputCurrency;
+
+  if (!inputCurrency && !outputCurrency) return <Wrapper />;
 
   return (
     <Wrapper>
@@ -715,7 +752,7 @@ export default function ExchangeModal({
               inputCurrencyAssetType={inputCurrency?.type}
               inputCurrencySymbol={inputCurrency?.symbol}
               inputFieldRef={inputFieldRef}
-              nativeAmount={nativeAmount}
+              nativeAmount={nativeAmountDisplay}
               nativeCurrency={nativeCurrency}
               nativeFieldRef={nativeFieldRef}
               onFocus={handleFocus}
@@ -727,9 +764,13 @@ export default function ExchangeModal({
             />
             {showOutputField && (
               <ExchangeOutputField
-                editable={!!outputCurrency}
+                editable={
+                  !!outputCurrency && currentNetwork !== Network.arbitrum
+                }
+                network={currentNetwork}
                 onFocus={handleFocus}
                 onPressSelectOutputCurrency={navigateToOutput}
+                onTapWhileDisabled={handleTapWhileDisabled}
                 outputAmount={outputAmountDisplay}
                 outputCurrencyAddress={
                   outputCurrency?.mainnet_address || outputCurrency?.address

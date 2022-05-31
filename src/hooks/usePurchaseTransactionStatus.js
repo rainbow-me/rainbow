@@ -1,4 +1,3 @@
-import { find } from 'lodash';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -26,8 +25,7 @@ export default function usePurchaseTransactionStatus() {
 
   const transferStatus = useMemo(() => {
     if (!currentTransferId) return null;
-    const purchase = find(
-      purchaseTransactions,
+    const purchase = purchaseTransactions.find(
       txn => txn.transferId === currentTransferId
     );
     return purchase ? purchase.status : null;
