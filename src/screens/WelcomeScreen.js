@@ -64,7 +64,7 @@ const ButtonContent = styled(RowWithMargins).attrs({
 })({
   alignSelf: 'center',
   height: '100%',
-  paddingBottom: 4,
+  paddingBottom: 2,
 });
 
 const ButtonLabel = styled(Text).attrs(
@@ -83,20 +83,22 @@ const ButtonEmoji = styled(Emoji).attrs({
   paddingBottom: 1.5,
 });
 
-const DarkShadow = styled(Reanimated.View)(({ theme: { colors } }) => ({
-  ...shadow.buildAsObject(0, 10, 30, colors.dark, 1),
-  backgroundColor: colors.white,
-  borderRadius: 30,
-  height: 60,
-  left: -3,
-  opacity: 0.2,
-  position: 'absolute',
-  top: -3,
-  width: 236,
-}));
+const DarkShadow = styled(Reanimated.View)(
+  ({ theme: { colors, isDarkMode } }) => ({
+    ...shadow.buildAsObject(0, 10, 30, colors.shadow, isDarkMode ? 0 : 1),
+    backgroundColor: colors.white,
+    borderRadius: 30,
+    height: 60,
+    left: -3,
+    opacity: 0.2,
+    position: 'absolute',
+    top: -3,
+    width: 236,
+  })
+);
 
-const Shadow = styled(Reanimated.View)(({ theme: { colors } }) => ({
-  ...shadow.buildAsObject(0, 10, 30, colors.dark, 0.4),
+const Shadow = styled(Reanimated.View)(({ theme: { colors, isDarkMode } }) => ({
+  ...shadow.buildAsObject(0, 5, 15, colors.shadow, isDarkMode ? 0 : 0.4),
   borderRadius: 30,
   height: 60,
   left: -3,
@@ -337,7 +339,7 @@ const springConfig = {
   useNativeDriver: true,
 };
 
-function colorAnimation(rValue, fromShadow) {
+function colorAnimation(rValue) {
   const animation = runTiming(rValue.current);
   const r = interpolate(animation, {
     inputRange: [0, 1, 2, 3, 4, 5],
@@ -353,16 +355,18 @@ function colorAnimation(rValue, fromShadow) {
     inputRange: [0, 1, 2, 3, 4, 5],
     outputRange: [...colorsRGB.map(({ b }) => b), colorsRGB[0].b],
   });
-  return colorRGB(r, g, b, fromShadow);
+  return colorRGB(r, g, b);
 }
 
 export default function WelcomeScreen() {
-  const { colors } = useTheme();
   const insets = useSafeArea();
+  const { colors, isDarkMode } = useTheme();
   const { replace, navigate, dangerouslyGetState } = useNavigation();
   const contentAnimation = useAnimatedValue(1);
   const hideSplashScreen = useHideSplashScreen();
-  const createWalletButtonAnimation = useAnimatedValue(1);
+  const createWalletButtonAnimation = useAnimatedValue(
+    IS_TESTING === 'true' ? 1 : 0.98
+  );
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
@@ -450,7 +454,7 @@ export default function WelcomeScreen() {
         },
       ],
     }),
-    [createWalletButtonAnimation]
+    [contentAnimation]
   );
 
   const rValue = useValue(0);
@@ -466,25 +470,25 @@ export default function WelcomeScreen() {
     });
   }, [dangerouslyGetState, navigate, replace]);
 
-  const createWalletButtonProps = useMemoOne(() => {
-    const color = colorAnimation(rValue, true);
-    return {
+  const createWalletButtonProps = useMemoOne(
+    () => ({
       emoji: 'castle',
       height: 54 + (ios ? 0 : 6),
       shadowStyle: {
         backgroundColor: backgroundColor,
-        shadowColor: color,
+        shadowColor: backgroundColor,
       },
       style: {
-        backgroundColor: colors.dark,
+        backgroundColor: isDarkMode ? colors.blueGreyDarkLight : colors.dark,
         borderColor: backgroundColor,
         borderWidth: ios ? 0 : 3,
         width: 230 + (ios ? 0 : 6),
       },
       text: lang.t('wallet.new.get_new_wallet'),
-      textColor: colors.white,
-    };
-  }, [rValue]);
+      textColor: isDarkMode ? colors.dark : colors.white,
+    }),
+    []
+  );
 
   const handlePressTerms = useCallback(() => {
     Linking.openURL('https://rainbow.me/terms-of-use');
