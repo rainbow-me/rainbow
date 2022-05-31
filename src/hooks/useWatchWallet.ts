@@ -55,7 +55,11 @@ export default function useWatchWallet({
   );
 
   const { accountAddress } = useAccountProfile();
-  const { handleSetSeedPhrase, handlePressImportButton } = useImportingWallet({
+  const {
+    isImporting,
+    handleSetSeedPhrase,
+    handlePressImportButton,
+  } = useImportingWallet({
     showImportModal,
   });
   const watchWallet = useCallback(async () => {
@@ -90,5 +94,5 @@ export default function useWatchWallet({
     changeAccount,
   ]);
 
-  return { isWatching, watchWallet };
+  return { isImporting, isWatching, watchWallet };
 }

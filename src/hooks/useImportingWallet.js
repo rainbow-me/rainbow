@@ -250,6 +250,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             true
           );
           await dispatch(walletsLoadState(profilesEnabled));
+          handleSetImporting(false);
         } else {
           const previousWalletCount = keys(wallets).length;
           initializeWallet(
@@ -357,6 +358,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     handlePressImportButton,
     handleSetSeedPhrase,
     inputRef,
+    isImporting,
     isSecretValid,
     seedPhrase,
   };
