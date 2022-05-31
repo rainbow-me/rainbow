@@ -412,8 +412,8 @@ export default function ChartExpandedState({ asset }) {
           symbol={assetWithPrice.symbol}
         />
       )}
-      {networks && !hasBalance && (
-        <AvailableNetworks colors={colors} networks={networks} />
+      {networks && fromDiscover && (
+        <AvailableNetworks asset={assetWithPrice} colors={colors} networks={networks} />
       )}
       {!isL2 && (
         <CarouselWrapper
