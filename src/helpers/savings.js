@@ -26,9 +26,9 @@ const calculateCompoundInterestInDays = memoFn((principal, apr, days) => {
   return principal * Math.pow(1 + periodicRate, periods);
 });
 
-const formatSavingsAmount = memoFn(amount => {
+const formatSavingsAmount = amount => {
   return Number(amount.toString()).toFixed(MAX_DECIMALS_TO_SHOW);
-});
+};
 
 const isSymbolStablecoin = memoFn(symbol => STABLECOINS.indexOf(symbol) !== -1);
 
