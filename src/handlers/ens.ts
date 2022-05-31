@@ -171,7 +171,7 @@ export const fetchEnsTokens = async ({
         ).toString(),
       },
     });
-    return data.account.registrations.map(registration => {
+    return data?.account?.registrations?.map(registration => {
       const tokenId = BigNumber.from(registration.domain.labelhash).toString();
       const token = buildEnsToken({
         contractAddress,

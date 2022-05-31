@@ -98,6 +98,7 @@ export const showcaseTokensLoadState = () => async (
 
     // if web data is enabled, fetch values from cloud
     const pref = await getWebDataEnabled(accountAddress, network);
+
     if (pref) {
       const showcaseTokensFromCloud = (await getPreference(
         'showcase',
