@@ -110,7 +110,7 @@ export default function useSwapCurrencyHandlers({
       if (
         !fromDiscover &&
         !inputCurrency &&
-        outputCurrency?.implementations[
+        outputCurrency?.implementations?.[
           ethereumUtils.getNetworkFromType(newInputCurrency?.type)
         ]?.address
       ) {

@@ -1,5 +1,6 @@
 import lang from 'i18n-js';
 import React from 'react';
+import { Linking } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
 import Divider from './Divider';
 import ButtonPressAnimation from './animations/ButtonPressAnimation';
@@ -9,19 +10,23 @@ import { Column, Row } from './layout';
 import { Text } from './text';
 import { Box } from '@rainbow-me/design-system';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
+import { useNavigation } from '@rainbow-me/navigation';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@rainbow-me/references';
+import Routes from '@rainbow-me/routes';
 import { padding, position } from '@rainbow-me/styles';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 const AvailableNetworks = ({
+  asset,
   networks,
   colors,
   hideDivider,
   marginBottom = 24,
   marginHorizontal = 19,
-  onPress,
   prominent,
 }) => {
+  const { navigate } = useNavigation();
+
   const radialGradientProps = {
     center: [0, 1],
     colors: colors.gradients.lightGreyWhite,
@@ -31,15 +36,29 @@ const AvailableNetworks = ({
       overflow: 'hidden',
     },
   };
+
   const availableNetworks = Object.keys(networks).map(network => {
     return ethereumUtils.getNetworkFromChainId(Number(network));
   });
+
+  const linkToHop = useCallback(() => {
+    Linking.openURL('https://app.hop.exchange/#/send');
+  }, []);
+
+  const handleAvailableNetworksPress = useCallback(() => {
+    navigate(Routes.EXPLAIN_SHEET, {
+      networks: availableNetworks,
+      onClose: linkToHop,
+      tokenSymbol: asset.symbol,
+      type: 'availableNetworks',
+    });
+  }, [navigate, availableNetworks, linkToHop, asset.symbol]);
 
   return (
     <>
       <ButtonPressAnimation
         marginBottom={marginBottom}
-        onPress={onPress}
+        onPress={handleAvailableNetworksPress}
         scaleTo={0.95}
       >
         <Row
