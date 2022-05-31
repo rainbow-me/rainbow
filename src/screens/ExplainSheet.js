@@ -5,15 +5,16 @@ import React, { useCallback } from 'react';
 import { Linking, StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { ChainBadge, CoinIcon } from '../components/coin-icon';
-import { Centered, Column, ColumnWithMargins } from '../components/layout';
+import { Centered, Column, ColumnWithMargins, Row } from '../components/layout';
 import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, GradientText, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
+import { Box } from '@rainbow-me/design-system';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { toFixedDecimals } from '@rainbow-me/helpers/utilities';
 import { useDimensions } from '@rainbow-me/hooks';
-import { ETH_ADDRESS } from '@rainbow-me/references';
+import { ETH_ADDRESS, ETH_SYMBOL } from '@rainbow-me/references';
 import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth, padding, position } from '@rainbow-me/styles';
 import { gasUtils } from '@rainbow-me/utils';
@@ -58,6 +59,17 @@ const FLOOR_PRICE_EXPLAINER = lang.t('explain.floor_price.text');
 const gasExplainer = network =>
   lang.t('explain.gas.text', { networkName: network });
 
+const availableNetworksExplainer = (tokenSymbol, networks) => {
+  const readableNetworks = networks
+    ?.map(network => networkInfo[network].name)
+    ?.join(', ');
+
+  return lang.t('explain.available_networks.text', {
+    tokenSymbol: tokenSymbol,
+    networks: readableNetworks,
+  });
+};
+
 const CURRENT_BASE_FEE_TITLE = lang.t('explain.base_fee.title');
 
 const BASE_CURRENT_BASE_FEE_EXPLAINER = lang.t('explain.base_fee.text_prefix');
@@ -98,14 +110,14 @@ const BACKUP_EXPLAINER = lang.t('back_up.explainers.backup', {
   cloudPlatformName: cloudPlatformAccountName,
 });
 
-export const explainers = (network, colors) => ({
+export const explainers = (params, colors) => ({
   output_disabled: {
     extraHeight: -100,
     title: lang.t('explain.output_disabled.title'),
-    text: lang.t('explain.output_disabled.text', { network }),
+    text: lang.t('explain.output_disabled.text', { network: params?.network }),
     logo: (
       <ChainBadge
-        assetType={network}
+        assetType={params?.network}
         marginBottom={8}
         position="relative"
         size="large"
@@ -121,9 +133,9 @@ export const explainers = (network, colors) => ({
   gas: {
     emoji: '⛽️',
     extraHeight: 2,
-    text: gasExplainer(network),
+    text: gasExplainer(params?.network),
     title: lang.t('explain.gas.title', {
-      networkName: network,
+      networkName: params?.network,
     }),
   },
   currentBaseFeeStable: {
@@ -246,16 +258,16 @@ export const explainers = (network, colors) => ({
     title: 'Rainbow Fee',
   },
   swapResetInputs: {
-    buttonColor: colors?.networkColors[network],
-    buttonText: `Continue with ${networkInfo[network]?.name}`,
+    buttonColor: colors?.networkColors[params?.network],
+    buttonText: `Continue with ${networkInfo[params?.network]?.name}`,
     emoji: '🔐',
     extraHeight: -90,
     text: SWAP_RESET_EXPLAINER,
-    title: `Switching to ${networkInfo[network]?.name}`,
+    title: `Switching to ${networkInfo[params?.network]?.name}`,
     logo:
-      network !== 'mainnet' ? (
+      params?.network !== 'mainnet' ? (
         <ChainBadge
-          assetType={networkTypes[network]}
+          assetType={networkTypes[params?.network]}
           marginBottom={8}
           position="relative"
           size="large"
@@ -264,15 +276,65 @@ export const explainers = (network, colors) => ({
         <CoinIcon address={ETH_ADDRESS} size={40} symbol={ETH_ADDRESS} />
       ),
   },
+  availableNetworks: {
+    buttonText: `Go to Hop`,
+    extraHeight: -90,
+    text: availableNetworksExplainer(params?.tokenSymbol, params?.networks),
+    title:
+      params?.networks.length > 1
+        ? lang.t('explain.available_networks.title_plural', {
+            length: params?.networks.length,
+          })
+        : lang.t('explain.available_networks.title_singular', {
+            network: params?.networks[0],
+          }),
+    logo: (
+      <Row justify="center" marginBottom={10}>
+        {params?.networks.map((network, index) => {
+          return (
+            <Box
+              height={{ custom: 40 }}
+              key={`networks-${network}`}
+              marginLeft={{
+                custom:
+                  index > 0 ? -12 : params.networks.length % 2 === 0 ? -2 : -30,
+              }}
+              style={{
+                borderColor: colors.transparent,
+                borderRadius: 0,
+                borderWidth: 1,
+                zIndex: index,
+              }}
+              width={{ custom: 40 }}
+              zIndex={params?.networks.length - index}
+            >
+              {network !== 'mainnet' ? (
+                <ChainBadge
+                  assetType={network}
+                  position="relative"
+                  size="large"
+                />
+              ) : (
+                <CoinIcon
+                  address={ETH_ADDRESS}
+                  size={40}
+                  style={{ marginTop: 4 }}
+                  symbol={ETH_SYMBOL}
+                />
+              )}
+            </Box>
+          );
+        })}
+      </Row>
+    ),
+  },
 });
 
 const ExplainSheet = () => {
   const { height: deviceHeight } = useDimensions();
   const insets = useSafeArea();
-  const {
-    params: { type = 'gas', network = networkTypes.mainnet, onClose } = {},
-    params = {},
-  } = useRoute();
+  const { params } = useRoute();
+  const type = params.type;
   const { colors } = useTheme();
   const { goBack } = useNavigation();
   const renderBaseFeeIndicator = useMemo(() => {
@@ -290,16 +352,13 @@ const ExplainSheet = () => {
   }, [params, type]);
 
   const explainSheetConfig = useMemo(() => {
-    return explainers(
-      network === 'token' ? networkTypes.mainnet : network,
-      colors
-    )[type];
-  }, [colors, network, type]);
+    return explainers(params, colors)[type];
+  }, [colors, params, type]);
 
   const handleClose = useCallback(() => {
     goBack();
-    onClose?.();
-  }, [onClose, goBack]);
+    params?.onClose?.();
+  }, [goBack, params]);
 
   const handleReadMore = useCallback(() => {
     Linking.openURL(explainSheetConfig.readMoreLink);
