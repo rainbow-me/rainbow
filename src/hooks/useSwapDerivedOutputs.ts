@@ -329,7 +329,10 @@ export default function useSwapDerivedOutputs(chainId: number) {
         return;
       }
 
-      if (isZero(independentValue) || !independentValue) {
+      if (
+        (isZero(independentValue) && independentValue.length === 1) ||
+        !independentValue
+      ) {
         resetSwapInputs();
         return;
       }
