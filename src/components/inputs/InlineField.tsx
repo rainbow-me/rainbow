@@ -13,7 +13,6 @@ import {
   useTextStyle,
 } from '@rainbow-me/design-system';
 import { useDimensions } from '@rainbow-me/hooks';
-// init pr
 
 const textSize = 16;
 
