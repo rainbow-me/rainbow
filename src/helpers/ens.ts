@@ -167,6 +167,7 @@ export const textRecordFields = {
   [ENS_RECORDS.email]: {
     id: 'email',
     inputProps: {
+      keyboardType: 'email-address',
       maxLength: 50,
     },
     key: ENS_RECORDS.email,
