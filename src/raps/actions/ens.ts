@@ -189,6 +189,36 @@ const executeSetName = async (
   );
 };
 
+const executeSetAddr = async (
+  name?: string,
+  records?: ENSRegistrationRecords,
+  gasLimit?: string | null,
+  maxFeePerGas?: string,
+  maxPriorityFeePerGas?: string,
+  wallet?: Wallet,
+  nonce: number | null = null
+) => {
+  const { contract, methodArguments, value } = await getENSExecutionDetails({
+    name,
+    records,
+    type: ENSRegistrationTransactionType.SET_ADDR,
+    wallet,
+  });
+
+  return (
+    methodArguments &&
+    contract?.setText(...methodArguments, {
+      gasLimit: gasLimit ? toHex(gasLimit) : undefined,
+      maxFeePerGas: maxFeePerGas ? toHex(maxFeePerGas) : undefined,
+      maxPriorityFeePerGas: maxPriorityFeePerGas
+        ? toHex(maxPriorityFeePerGas)
+        : undefined,
+      nonce: nonce ? toHex(nonce) : undefined,
+      ...(value ? { value } : {}),
+    })
+  );
+};
+
 const executeSetText = async (
   name?: string,
   records?: ENSRegistrationRecords,
@@ -406,7 +436,7 @@ const ensAction = async (
         });
         break;
       case ENSRegistrationTransactionType.SET_ADDR:
-        tx = await executeSetText(
+        tx = await executeSetAddr(
           name,
           ensRegistrationRecords,
           gasLimit,
@@ -621,7 +651,7 @@ export default {
   registerWithConfig,
   renewENS,
   setAddrENS,
-  setOwnerENS,
   setNameENS,
+  setOwnerENS,
   setTextENS,
 };
