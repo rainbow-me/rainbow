@@ -1009,7 +1009,9 @@
         "enter_seeds_placeholder": "Secret phrase, private key, Ethereum address, or ENS name",
         "get_new_wallet": "Get a new wallet",
         "import_wallet": "Import Wallet",
-        "name_wallet": "Name your wallet"
+        "name_wallet": "Name your wallet",
+        "terms": "By proceeding, you agree to Rainbow’s ",
+        "terms_link": "Terms of Use"
       },
       "pin_authentication": {
         "choose_your_pin": "Choose your PIN",

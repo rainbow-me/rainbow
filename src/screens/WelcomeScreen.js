@@ -2,7 +2,7 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Animated, Easing } from 'react-native';
+import { Animated, Dimensions, Easing, Linking } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import Reanimated, {
   Clock,
@@ -11,6 +11,7 @@ import Reanimated, {
   timing,
 } from 'react-native-reanimated';
 import { useValue } from 'react-native-redash/src/v1';
+import { useSafeArea } from 'react-native-safe-area-context';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { useMemoOne } from 'use-memo-one';
 import RainbowGreyNeon from '../assets/rainbows/greyneon.png';
@@ -50,6 +51,8 @@ const {
   round,
   startClock,
 } = Reanimated;
+
+const { height: deviceHeight } = Dimensions.get('screen');
 
 const ButtonContainer = styled(Reanimated.View)({
   borderRadius: ({ height }) => height / 2,
@@ -151,6 +154,12 @@ const ButtonWrapper = styled(Animated.View)({
   width: '100%',
 });
 
+const TermsOfUse = styled.View(({ bottomInset }) => ({
+  bottom: bottomInset / 2 + 32,
+  position: 'absolute',
+  width: 200,
+}));
+
 const INITIAL_SIZE = 375;
 
 export const useAnimatedValue = initialValue => {
@@ -180,7 +189,7 @@ const rainbows = [
     scale: 0.3333333333,
     source: ios ? { uri: 'neon' } : RainbowNeon,
     x: 149,
-    y: 380,
+    y: deviceHeight < 725 ? 380 * (deviceHeight / 725) : 380,
   },
   {
     delay: 40,
@@ -189,7 +198,7 @@ const rainbows = [
     scale: 0.6666666667,
     source: ios ? { uri: 'pixel' } : RainbowPixel,
     x: 173,
-    y: -263,
+    y: deviceHeight < 800 ? -263 * (deviceHeight / 800) : -263,
   },
   {
     delay: 60,
@@ -204,10 +213,10 @@ const rainbows = [
     delay: 80,
     id: 'liquid',
     rotate: '75deg',
-    scale: 0.42248,
+    scale: deviceHeight < 800 ? 0.42248 * (deviceHeight / 800) : 0.42248,
     source: ios ? { uri: 'liquid' } : RainbowLiquid,
     x: 40,
-    y: 215,
+    y: deviceHeight < 800 ? 215 * (deviceHeight / 800) : 215,
   },
 ];
 
@@ -349,6 +358,7 @@ function colorAnimation(rValue, fromShadow) {
 
 export default function WelcomeScreen() {
   const { colors } = useTheme();
+  const insets = useSafeArea();
   const { replace, navigate, dangerouslyGetState } = useNavigation();
   const contentAnimation = useAnimatedValue(1);
   const hideSplashScreen = useHideSplashScreen();
@@ -476,6 +486,10 @@ export default function WelcomeScreen() {
     };
   }, [rValue]);
 
+  const handlePressTerms = useCallback(() => {
+    Linking.openURL('https://rainbow.me/terms-of-use');
+  }, []);
+
   const showRestoreSheet = useCallback(() => {
     analytics.track('Tapped "I already have one"');
     navigate(Routes.RESTORE_SHEET, {
@@ -547,6 +561,27 @@ export default function WelcomeScreen() {
           />
         </ButtonWrapper>
       </ContentWrapper>
+      <TermsOfUse bottomInset={insets.bottom}>
+        <Text
+          align="center"
+          color={colors.alpha(colors.blueGreyDark, 0.5)}
+          lineHeight="loose"
+          size="smedium"
+          weight="semibold"
+        >
+          {lang.t('wallet.new.terms')}
+          <Text
+            color={colors.paleBlue}
+            lineHeight="loose"
+            onPress={handlePressTerms}
+            size="smedium"
+            suppressHighlighting
+            weight="semibold"
+          >
+            {lang.t('wallet.new.terms_link')}
+          </Text>
+        </Text>
+      </TermsOfUse>
     </Container>
   );
 }
