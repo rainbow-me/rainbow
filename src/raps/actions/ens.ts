@@ -16,6 +16,7 @@ import { NetworkTypes } from '@rainbow-me/helpers';
 import {
   ENSRegistrationTransactionType,
   getENSExecutionDetails,
+  REGISTRATION_MODES,
 } from '@rainbow-me/helpers/ens';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
 import {
@@ -231,7 +232,7 @@ const ensAction = async (
   const { dispatch } = store;
   const { accountAddress: ownerAddress } = store.getState().settings;
   const { selectedGasFee } = store.getState().gas;
-  const { name, duration, rentPrice, records, salt } = parameters;
+  const { name, duration, rentPrice, records, salt, mode } = parameters;
 
   logger.log(`[${actionName}] rap for`, name);
 
@@ -246,15 +247,19 @@ const ensAction = async (
       type
     );
 
-    const setRecordsType =
+    // when registering the ENS if we try to estimate gas for setting records
+    // (MULTICALL || SET_TEXT) it's going to fail if we put the account address
+    // since the account doesn't have the ENS yet
+    const notUseOwnerAddress =
       IS_TESTING !== 'true' &&
+      mode === REGISTRATION_MODES.CREATE &&
       (type === ENSRegistrationTransactionType.MULTICALL ||
         type === ENSRegistrationTransactionType.SET_TEXT);
 
     gasLimit = await estimateENSTransactionGasLimit({
       duration,
       name,
-      ownerAddress: setRecordsType ? undefined : ownerAddress,
+      ownerAddress: notUseOwnerAddress ? undefined : ownerAddress,
       records: ensRegistrationRecords,
       rentPrice,
       salt,
