@@ -2,7 +2,8 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Animated, Easing } from 'react-native';
+import { Animated, Easing, StyleProp, ViewStyle } from 'react-native';
+// @ts-expect-error
 import { IS_TESTING } from 'react-native-dotenv';
 import Reanimated, {
   Clock,
@@ -19,6 +20,7 @@ import RainbowLiquid from '../assets/rainbows/liquid.png';
 import RainbowNeon from '../assets/rainbows/neon.png';
 import RainbowPixel from '../assets/rainbows/pixel.png';
 import { ButtonPressAnimation } from '../components/animations';
+import { BaseButtonAnimationProps } from '../components/animations/ButtonPressAnimation/types';
 import RainbowText from '../components/icons/svg/RainbowText';
 import { RowWithMargins } from '../components/layout';
 import { Emoji, Text } from '../components/text';
@@ -30,6 +32,7 @@ import {
 } from '../handlers/cloudBackup';
 import { cloudPlatform } from '../utils/platform';
 
+import { ThemeContextProps, useTheme } from '@rainbow-me/context';
 import { useHideSplashScreen } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
@@ -52,7 +55,7 @@ const {
 } = Reanimated;
 
 const ButtonContainer = styled(Reanimated.View)({
-  borderRadius: ({ height }) => height / 2,
+  borderRadius: ({ height }: { height: number }) => height / 2,
 });
 
 const ButtonContent = styled(RowWithMargins).attrs({
@@ -65,7 +68,13 @@ const ButtonContent = styled(RowWithMargins).attrs({
 });
 
 const ButtonLabel = styled(Text).attrs(
-  ({ textColor: color, theme: { colors } }) => ({
+  ({
+    textColor: color,
+    theme: { colors },
+  }: {
+    textColor: string;
+    theme: ThemeContextProps;
+  }) => ({
     align: 'center',
     color: color || colors.dark,
     size: 'larger',
@@ -80,27 +89,40 @@ const ButtonEmoji = styled(Emoji).attrs({
   paddingBottom: 1.5,
 });
 
-const DarkShadow = styled(Reanimated.View)(({ theme: { colors } }) => ({
-  ...shadow.buildAsObject(0, 10, 30, colors.dark, 1),
-  backgroundColor: colors.white,
-  borderRadius: 30,
-  height: 60,
-  left: -3,
-  opacity: 0.2,
-  position: 'absolute',
-  top: -3,
-  width: 236,
-}));
+const DarkShadow = styled(Reanimated.View)(
+  ({ theme: { colors } }: { theme: ThemeContextProps }) => ({
+    ...shadow.buildAsObject(0, 10, 30, colors.dark, 1),
+    backgroundColor: colors.white,
+    borderRadius: 30,
+    height: 60,
+    left: -3,
+    opacity: 0.2,
+    position: 'absolute',
+    top: -3,
+    width: 236,
+  })
+);
 
-const Shadow = styled(Reanimated.View)(({ theme: { colors } }) => ({
-  ...shadow.buildAsObject(0, 10, 30, colors.dark, 0.4),
-  borderRadius: 30,
-  height: 60,
-  left: -3,
-  position: 'absolute',
-  top: -3,
-  width: 236,
-}));
+const Shadow = styled(Reanimated.View)(
+  ({ theme: { colors } }: { theme: ThemeContextProps }) => ({
+    ...shadow.buildAsObject(0, 10, 30, colors.dark, 0.4),
+    borderRadius: 30,
+    height: 60,
+    left: -3,
+    position: 'absolute',
+    top: -3,
+    width: 236,
+  })
+);
+
+interface RainbowButtonProps extends BaseButtonAnimationProps {
+  height: number;
+  textColor: string;
+  text: string;
+  emoji: string;
+  shadowStyle?: StyleProp<ViewStyle>;
+  darkShadowStyle?: StyleProp<ViewStyle>;
+}
 
 const RainbowButton = ({
   darkShadowStyle,
@@ -112,7 +134,7 @@ const RainbowButton = ({
   textColor,
   text,
   ...props
-}) => {
+}: RainbowButtonProps) => {
   return (
     <ButtonPressAnimation
       onPress={onPress}
@@ -132,10 +154,12 @@ const RainbowButton = ({
   );
 };
 
+// @ts-expect-error Our implementation of SC complains
 const Container = styled.View({
   ...position.coverAsObject,
   alignItems: 'center',
-  backgroundColor: ({ theme: { colors } }) => colors.white,
+  backgroundColor: ({ theme: { colors } }: { theme: ThemeContextProps }) =>
+    colors.white,
   justifyContent: 'center',
 });
 
@@ -153,8 +177,8 @@ const ButtonWrapper = styled(Animated.View)({
 
 const INITIAL_SIZE = 375;
 
-export const useAnimatedValue = initialValue => {
-  const value = useRef();
+const useAnimatedValue = (initialValue: any) => {
+  const value = useRef<Animated.Value>();
 
   if (!value.current) {
     value.current = new Animated.Value(initialValue);
@@ -212,18 +236,7 @@ const rainbows = [
 ];
 
 const traversedRainbows = rainbows.map(
-  (
-    {
-      delay,
-      initialRotate = '0deg',
-      rotate = '0deg',
-      scale = 1,
-      source,
-      x = 0,
-      y = 0,
-    },
-    index
-  ) => {
+  ({ delay, rotate = '0deg', scale = 1, source, x = 0, y = 0 }, index) => {
     const animatedValue = new Animated.Value(0);
     return {
       delay,
@@ -250,7 +263,7 @@ const traversedRainbows = rainbows.map(
           {
             rotate: animatedValue.interpolate({
               inputRange: [0, 1],
-              outputRange: [initialRotate, rotate],
+              outputRange: ['0deg', rotate],
             }),
           },
           {
@@ -280,7 +293,7 @@ const RainbowTextMask = styled(Reanimated.View)({
   width: RAINBOW_TEXT_WIDTH,
 });
 
-function runTiming(value) {
+function runTiming(value: any) {
   const clock = new Clock();
   const state = {
     finished: new RValue(0),
@@ -319,7 +332,11 @@ const colorsRGB = [
 ];
 /* eslint-enable sort-keys-fix/sort-keys-fix */
 
-const colorRGB = (r, g, b) => color(round(r), round(g), round(b));
+const colorRGB = (
+  r: Reanimated.Node<number>,
+  g: Reanimated.Node<number>,
+  b: Reanimated.Node<number>
+) => color(round(r), round(g), round(b));
 
 const springConfig = {
   bounciness: 7.30332,
@@ -328,8 +345,8 @@ const springConfig = {
   useNativeDriver: true,
 };
 
-function colorAnimation(rValue, fromShadow) {
-  const animation = runTiming(rValue.current);
+function colorAnimation(rValue: Reanimated.Value<any>) {
+  const animation = runTiming(rValue);
   const r = interpolate(animation, {
     inputRange: [0, 1, 2, 3, 4, 5],
     outputRange: [...colorsRGB.map(({ r }) => r), colorsRGB[0].r],
@@ -344,11 +361,12 @@ function colorAnimation(rValue, fromShadow) {
     inputRange: [0, 1, 2, 3, 4, 5],
     outputRange: [...colorsRGB.map(({ b }) => b), colorsRGB[0].b],
   });
-  return colorRGB(r, g, b, fromShadow);
+  return colorRGB(r, g, b);
 }
 
 export default function WelcomeScreen() {
   const { colors } = useTheme();
+  // @ts-expect-error Navigation types
   const { replace, navigate, dangerouslyGetState } = useNavigation();
   const contentAnimation = useAnimatedValue(1);
   const hideSplashScreen = useHideSplashScreen();
@@ -372,41 +390,49 @@ export default function WelcomeScreen() {
         logger.log('error getting userData', e);
       } finally {
         hideSplashScreen();
-        Animated.parallel([
+        const animations = [
           ...traversedRainbows.map(({ value, delay = 0 }) =>
             Animated.spring(value, { ...springConfig, delay })
           ),
           Animated.sequence([
-            Animated.timing(contentAnimation.current, {
+            Animated.timing(contentAnimation.current!, {
               duration: 120,
               easing: Easing.bezier(0.165, 0.84, 0.44, 1),
               toValue: 1.2,
+              useNativeDriver: false,
             }),
-            Animated.spring(contentAnimation.current, {
+            Animated.spring(contentAnimation.current!, {
               friction: 8,
               tension: 100,
               toValue: 1,
+              useNativeDriver: false,
             }),
           ]),
-          // We need to disable looping animations
-          // There's no way to disable sync yet
-          // See https://stackoverflow.com/questions/47391019/animated-button-block-the-detox
-          IS_TESTING !== 'true' &&
+        ];
+
+        // We need to disable looping animations
+        // There's no way to disable sync yet
+        // See https://stackoverflow.com/questions/47391019/animated-button-block-the-detox
+        if (IS_TESTING !== 'true') {
+          animations.push(
             Animated.loop(
               Animated.sequence([
-                Animated.timing(createWalletButtonAnimation.current, {
+                Animated.timing(createWalletButtonAnimation.current!, {
                   duration: 1000,
                   toValue: 1.02,
                   useNativeDriver: true,
                 }),
-                Animated.timing(createWalletButtonAnimation.current, {
+                Animated.timing(createWalletButtonAnimation.current!, {
                   duration: 1000,
                   toValue: 0.98,
                   useNativeDriver: true,
                 }),
               ])
-            ),
-        ]).start();
+            )
+          );
+        }
+
+        Animated.parallel(animations).start();
         if (IS_TESTING === 'true') {
           logger.log(
             'Disabled loop animations in WelcomeScreen due to .env var IS_TESTING === "true"'
@@ -418,9 +444,9 @@ export default function WelcomeScreen() {
 
     return () => {
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      createWalletButtonAnimation.current.setValue(1);
+      createWalletButtonAnimation.current!.setValue(1);
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      contentAnimation.current.setValue(1);
+      contentAnimation.current!.setValue(1);
     };
   }, [contentAnimation, hideSplashScreen, createWalletButtonAnimation]);
 
@@ -445,7 +471,7 @@ export default function WelcomeScreen() {
 
   const rValue = useValue(0);
 
-  const backgroundColor = useMemoOne(() => colorAnimation(rValue, false), []);
+  const backgroundColor = useMemoOne(() => colorAnimation(rValue), []);
 
   const onCreateWallet = useCallback(async () => {
     analytics.track('Tapped "Get a new wallet"');
@@ -457,7 +483,7 @@ export default function WelcomeScreen() {
   }, [dangerouslyGetState, navigate, replace]);
 
   const createWalletButtonProps = useMemoOne(() => {
-    const color = colorAnimation(rValue, true);
+    const color = colorAnimation(rValue);
     return {
       emoji: 'castle',
       height: 54 + (ios ? 0 : 6),
@@ -525,14 +551,17 @@ export default function WelcomeScreen() {
 
       <ContentWrapper style={contentStyle}>
         {android && IS_TESTING === 'true' ? (
+          // @ts-expect-error JS component
           <RainbowText colors={colors} />
         ) : (
+          // @ts-expect-error JS component
           <MaskedView maskElement={<RainbowText colors={colors} />}>
             <RainbowTextMask style={textStyle} />
           </MaskedView>
         )}
 
         <ButtonWrapper style={buttonStyle}>
+          {/* @ts-expect-error not animated style */}
           <RainbowButton
             onPress={onCreateWallet}
             testID="new-wallet-button"
