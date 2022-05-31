@@ -142,10 +142,6 @@ const ExchangeAssetList = (
     });
   }
 
-  const createItem = useCallback(item => Object.assign(item, itemProps), [
-    itemProps,
-  ]);
-
   const handleUnverifiedTokenPress = useCallback(
     item => {
       Alert.alert(
@@ -196,7 +192,7 @@ const ExchangeAssetList = (
 
   // either show ENS row or Currency row
   const LineToRender = useCallback(
-    ({ item }) => {
+    ({ item, itemProps }) => {
       return item.ens ? (
         <ContactRow
           accountType="contact"
@@ -218,18 +214,18 @@ const ExchangeAssetList = (
         />
       );
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [onCopySwapDetailsText]
+    [handleUnverifiedTokenPress, onCopySwapDetailsText, testID]
   );
   const renderItemCallback = useCallback(
     ({ item, index, section }) => (
       // in the Discover screen search results, we mix in ENS rows with coin rows
       <LineToRender
         item={item}
+        itemProps={itemProps}
         key={`${item.address}_${index}_${section.key}`}
       />
     ),
-    []
+    [itemProps]
   );
 
   const FooterSpacer = useCallback(() => (footerSpacer ? <Spacer /> : null), [
@@ -237,8 +233,6 @@ const ExchangeAssetList = (
   ]);
 
   const isFocused = useIsFocused();
-
-  const sections = useMemo(() => items.map(createItem), [createItem, items]);
 
   return (
     <Fragment>
@@ -250,7 +244,7 @@ const ExchangeAssetList = (
         renderItem={renderItemCallback}
         renderSectionHeader={ExchangeAssetSectionListHeader}
         scrollsToTop={isFocused}
-        sections={sections}
+        sections={items}
       />
       <ToastPositionContainer>
         <CopyToast copiedText={copiedText} copyCount={copyCount} />
