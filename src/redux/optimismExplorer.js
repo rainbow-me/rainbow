@@ -1,6 +1,6 @@
 import { Contract } from '@ethersproject/contracts';
 import { captureException } from '@sentry/react-native';
-import { isEmpty, keyBy, map, mapValues, pickBy, toLower } from 'lodash';
+import { isEmpty, keyBy, map, pickBy, toLower } from 'lodash';
 import isEqual from 'react-fast-compare';
 import { addressAssetsReceived, fetchAssetPricesWithCoingecko } from './data';
 // eslint-disable-next-line import/no-cycle
@@ -83,15 +83,19 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
 
     let updatedAssets = assets;
     if (balances) {
-      updatedAssets = mapValues(assets, assetAndQuantity => {
-        const assetCode = toLower(assetAndQuantity.asset.asset_code);
-        return {
-          asset: {
-            ...assetAndQuantity.asset,
-          },
-          quantity: balances?.[assetCode],
-        };
-      });
+      updatedAssets = Object.entries(assets).reduce(
+        (acc, [key, assetAndQuantity]) => {
+          const assetCode = assetAndQuantity.asset.asset_code?.toLowerCase();
+          acc[key] = {
+            asset: {
+              ...assetAndQuantity.asset,
+            },
+            quantity: balances?.[assetCode],
+          };
+          return acc;
+        },
+        {}
+      );
     }
 
     let assetsWithBalance = pickBy(updatedAssets, asset => asset.quantity > 0);
@@ -107,26 +111,30 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
       );
 
       if (prices) {
-        assetsWithBalance = mapValues(assetsWithBalance, assetWithBalance => {
-          const assetCoingeckoId = toLower(assetWithBalance.asset.coingecko_id);
-          if (prices[assetCoingeckoId]) {
-            return {
-              ...assetWithBalance,
-              asset: {
-                ...assetWithBalance.asset,
-                price: {
-                  changed_at: prices[assetCoingeckoId].last_updated_at,
-                  relative_change_24h:
-                    prices[assetCoingeckoId][
-                      `${formattedNativeCurrency}_24h_change`
-                    ],
-                  value: prices[assetCoingeckoId][`${formattedNativeCurrency}`],
-                },
-              },
-            };
-          }
-          return assetWithBalance;
-        });
+        assetsWithBalance = Object.fromEntries(
+          Object.entries(assetsWithBalance).map(([key, assetWithBalance]) => {
+            const assetCoingeckoId = assetWithBalance.asset.coingecko_id.toLowerCase();
+            const assetWithBalanceValue = prices[assetCoingeckoId]
+              ? {
+                  ...assetWithBalance,
+                  asset: {
+                    ...assetWithBalance.asset,
+                    price: {
+                      changed_at: prices[assetCoingeckoId].last_updated_at,
+                      relative_change_24h:
+                        prices[assetCoingeckoId][
+                          `${formattedNativeCurrency}_24h_change`
+                        ],
+                      value:
+                        prices[assetCoingeckoId][`${formattedNativeCurrency}`],
+                    },
+                  },
+                }
+              : assetWithBalance;
+
+            return [key, assetWithBalanceValue];
+          })
+        );
       }
 
       const newPayload = { assets: assetsWithBalance };

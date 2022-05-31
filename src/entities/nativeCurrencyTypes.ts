@@ -1,4 +1,3 @@
-import { mapValues } from 'lodash';
 import nativeCurrencyReference from '../references/native-currencies.json';
 
 type NativeCurrencyKey = keyof typeof nativeCurrencyReference;
@@ -10,7 +9,6 @@ type NativeCurrencyKeysMap = { [Key in NativeCurrencyKey]: Key };
 /**
  * An enum of native currencies such as "USD" or "ETH".
  */
-export const NativeCurrencyKeys = mapValues(
-  nativeCurrencyReference,
-  (_value, key) => key
+export const NativeCurrencyKeys = Object.fromEntries(
+  Object.entries(nativeCurrencyReference).map(([key, _value]) => [key, key])
 ) as NativeCurrencyKeysMap;

@@ -1,5 +1,3 @@
-import { mapValues } from 'lodash';
-
 export const colors = {
   appleBlue: '#0E76FD',
   black: '#000000',
@@ -226,23 +224,35 @@ export type Palette = {
 
 function createPalette(colorMode: ColorMode): Palette {
   return {
-    backgroundColors: mapValues(backgroundColors, value => {
-      if ('color' in value) {
-        return value;
-      }
+    backgroundColors: Object.entries(backgroundColors).reduce(
+      (acc, [key, value]) => {
+        if ('color' in value) {
+          Object.assign(acc, { [key]: value });
+          return acc;
+        }
 
-      if (colorMode === 'darkTinted') {
-        return value.darkTinted ?? value.dark;
-      }
+        if (colorMode === 'darkTinted') {
+          Object.assign(acc, { [key]: value.darkTinted ?? value.dark });
+          return acc;
+        }
 
-      if (colorMode === 'lightTinted') {
-        return value.lightTinted ?? value.light;
-      }
+        if (colorMode === 'lightTinted') {
+          Object.assign(acc, { [key]: value.darkTinted ?? value.dark });
+          return acc;
+        }
 
-      return value[colorMode];
-    }),
-    foregroundColors: mapValues(foregroundColors, value =>
-      getValueForColorMode(value, colorMode)
+        Object.assign(acc, { [key]: value[colorMode] });
+        return acc;
+      },
+      {} as Record<BackgroundColor, BackgroundColorValue>
+    ),
+    foregroundColors: Object.entries(backgroundColors).reduce(
+      (acc, [key, value]) => {
+        Object.assign(acc, { [key]: getValueForColorMode(value, colorMode) });
+
+        return acc;
+      },
+      {} as Record<ForegroundColor, string>
     ),
   };
 }

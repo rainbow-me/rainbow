@@ -13,7 +13,6 @@ import {
   keys,
   map,
   mapKeys,
-  mapValues,
   partition,
   pickBy,
   property,
@@ -1109,12 +1108,15 @@ export const addressAssetsReceived = (
   );
 
   if (removed) {
-    updatedAssets = mapValues(newAssets, asset => {
-      return {
-        ...asset,
-        quantity: 0,
-      };
-    });
+    updatedAssets = Object.entries(newAssets).reduce((acc, [key, asset]) => {
+      Object.assign(acc, {
+        [key]: {
+          ...asset,
+          quantity: 0,
+        },
+      });
+      return acc;
+    }, {});
   }
 
   let parsedAssets = parseAccountAssets(updatedAssets, uniqueTokens) as {
@@ -1234,18 +1236,23 @@ const subscribeToMissingPrices = (addresses: string[]) => (
             const { chartsEthUSDDay } = getState().charts;
             const ethereumPriceOneDayAgo = chartsEthUSDDay?.[0]?.[1];
 
-            const missingHistoricalPrices = mapValues(
-              mappedHistoricalData,
-              value => multiply(ethereumPriceOneDayAgo, value?.derivedETH!)
+            const missingHistoricalPrices = Object.fromEntries(
+              Object.entries(mappedHistoricalData).map(([key, value]) => [
+                key,
+                multiply(ethereumPriceOneDayAgo, value?.derivedETH!),
+              ])
             );
 
             const mappedPricingData = keyBy(data.tokens, 'id');
-            const missingPrices = mapValues(mappedPricingData, token =>
-              multiply(nativePriceOfEth, token.derivedETH)
+            const missingPrices = Object.fromEntries(
+              Object.entries(mappedPricingData).map(([key, token]) => [
+                key,
+                multiply(nativePriceOfEth, token.derivedETH),
+              ])
             );
-            const missingPriceInfo = mapValues(
-              missingPrices,
-              (currentPrice, key) => {
+
+            const missingPriceInfo = Object.fromEntries(
+              Object.entries(missingPrices).map(([key, currentPrice]) => {
                 const historicalPrice = get(
                   missingHistoricalPrices,
                   `[${key}]`
@@ -1262,12 +1269,15 @@ const subscribeToMissingPrices = (addresses: string[]) => (
                     // even though it works correctly.
                     ((currentPrice - historicalPrice) / currentPrice) * 100
                   : 0;
-                return {
-                  price: currentPrice,
-                  relativePriceChange,
-                  tokenAddress,
-                };
-              }
+                return [
+                  key,
+                  {
+                    price: currentPrice,
+                    relativePriceChange,
+                    tokenAddress,
+                  },
+                ];
+              })
             );
             const tokenPricingInfo = mapKeys(missingPriceInfo, 'tokenAddress');
 
@@ -1360,11 +1370,15 @@ export const assetPricesReceived = (
 
   if (toLower(nativeCurrency) === message?.meta?.currency) {
     if (isEmpty(newAssetPrices)) return;
-    const parsedAssets = mapValues(newAssetPrices, asset =>
-      parseAsset(asset)
-    ) as {
-      [id: string]: ParsedAddressAsset;
-    };
+    const parsedAssets = Object.entries(newAssetPrices).reduce(
+      (acc, [key, asset]) => {
+        Object.assign(acc, { [key]: parseAsset(asset) });
+        return acc;
+      },
+      {} as {
+        [id: string]: ParsedAddressAsset;
+      }
+    );
     const { genericAssets } = getState().data;
 
     const updatedAssets = {

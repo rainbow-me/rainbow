@@ -482,21 +482,26 @@ export const walletConnectLoadState = () => async (dispatch, getState) => {
     const allSessions = await getAllValidWalletConnectSessions();
     const { clientMeta, push } = await getNativeOptions();
 
-    newWalletConnectors = mapValues(allSessions, session => {
-      const connector = walletConnectors[session.peerId];
-      const connectorConnected = connector?._transport.connected;
-      if (!connectorConnected) {
-        if (connector?._eventManager) {
-          connector._eventManager = null;
+    newWalletConnectors = Object.entries(allSessions).reduce(
+      (acc, [key, session]) => {
+        const connector = walletConnectors[session.peerId];
+        const connectorConnected = connector?._transport.connected;
+        if (!connectorConnected) {
+          if (connector?._eventManager) {
+            connector._eventManager = null;
+          }
+          const walletConnector = new WalletConnect(
+            { clientMeta, session },
+            push
+          );
+          acc[key] = dispatch(listenOnNewMessages(walletConnector));
+          return acc;
         }
-        const walletConnector = new WalletConnect(
-          { clientMeta, session },
-          push
-        );
-        return dispatch(listenOnNewMessages(walletConnector));
-      }
-      return connector;
-    });
+        acc[key] = connector;
+        return acc;
+      },
+      {}
+    );
   } catch (error) {
     analytics.track('Error on walletConnectLoadState', {
       error,

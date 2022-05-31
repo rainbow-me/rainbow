@@ -1,6 +1,6 @@
 import { Contract } from '@ethersproject/contracts';
 import { captureException } from '@sentry/react-native';
-import { get, isEmpty, keyBy, map, mapValues, toLower, uniqBy } from 'lodash';
+import { get, isEmpty, keyBy, map, toLower, uniqBy } from 'lodash';
 import isEqual from 'react-fast-compare';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import { addressAssetsReceived, fetchAssetPricesWithCoingecko } from './data';
@@ -323,17 +323,22 @@ export const fetchOnchainBalances = ({
 
   const isEmptyAssets = isEmpty(assets);
   if (isEmptyAssets && !isEmpty(accountAssetsData)) {
-    assets = mapValues(accountAssetsData, asset => ({
-      asset: {
-        asset_code: asset.address,
-        decimals: asset.decimals,
-        icon_url: asset.icon_url,
-        name: asset.name,
-        price: asset.price,
-        symbol: asset.symbol,
-      },
-      quantity: 0,
-    }));
+    assets = Object.fromEntries(
+      Object.entries(accountAssetsData).map(([key, asset]) => [
+        key,
+        {
+          asset: {
+            asset_code: asset.address,
+            decimals: asset.decimals,
+            icon_url: asset.icon_url,
+            name: asset.name,
+            price: asset.price,
+            symbol: asset.symbol,
+          },
+          quantity: 0,
+        },
+      ])
+    );
   }
 
   if (isEmptyAssets || (isEmptyAssets && keepPolling)) {
@@ -364,24 +369,29 @@ export const fetchOnchainBalances = ({
 
   let updatedAssets = assets;
   if (balances) {
-    updatedAssets = mapValues(assets, assetAndQuantity => {
-      const assetCode = toLower(assetAndQuantity.asset.asset_code);
-      return {
-        asset: {
-          ...assetAndQuantity.asset,
-          asset_code:
-            assetCode === ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
-              ? ETH_ADDRESS
-              : assetCode,
-        },
-        quantity:
-          balances?.[
-            assetCode === ETH_ADDRESS
-              ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
-              : assetCode
-          ],
-      };
-    });
+    updatedAssets = Object.fromEntries(
+      Object.entries(assets).map(([key, assetAndQuantity]) => {
+        const assetCode = assetAndQuantity.asset.asset_code.toLowerCase();
+        return [
+          key,
+          {
+            asset: {
+              ...assetAndQuantity.asset,
+              asset_code:
+                assetCode === ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
+                  ? ETH_ADDRESS
+                  : assetCode,
+            },
+            quantity:
+              balances?.[
+                assetCode === ETH_ADDRESS
+                  ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
+                  : assetCode
+              ],
+          },
+        ];
+      })
+    );
   }
 
   if (withPrices) {
@@ -395,26 +405,33 @@ export const fetchOnchainBalances = ({
     );
 
     if (prices) {
-      updatedAssets = mapValues(updatedAssets, asset => {
-        const assetCoingeckoId = toLower(asset.asset.coingecko_id);
-        if (prices[assetCoingeckoId]) {
-          return {
-            ...asset,
-            asset: {
-              ...asset.asset,
-              price: {
-                changed_at: prices[assetCoingeckoId].last_updated_at,
-                relative_change_24h:
-                  prices[assetCoingeckoId][
-                    `${formattedNativeCurrency}_24h_change`
-                  ],
-                value: prices[assetCoingeckoId][`${formattedNativeCurrency}`],
+      updatedAssets = Object.fromEntries(
+        Object.entries(updatedAssets).map(([key, asset]) => {
+          const assetCoingeckoId = asset.asset.coingecko_id.toLowerCase();
+
+          if (prices[assetCoingeckoId]) {
+            return [
+              key,
+              {
+                ...asset,
+                asset: {
+                  ...asset.asset,
+                  price: {
+                    changed_at: prices[assetCoingeckoId].last_updated_at,
+                    relative_change_24h:
+                      prices[assetCoingeckoId][
+                        `${formattedNativeCurrency}_24h_change`
+                      ],
+                    value:
+                      prices[assetCoingeckoId][`${formattedNativeCurrency}`],
+                  },
+                },
               },
-            },
-          };
-        }
-        return asset;
-      });
+            ];
+          }
+          return [key, asset];
+        })
+      );
     }
   }
 

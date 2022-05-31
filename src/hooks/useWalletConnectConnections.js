@@ -1,4 +1,5 @@
-import { groupBy, mapValues, values } from 'lodash';
+import groupBy from 'lodash/groupBy';
+import values from 'lodash/values';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
@@ -10,16 +11,21 @@ import {
 } from '../redux/walletconnect';
 
 const formatDappData = connections =>
-  values(
-    mapValues(connections, connection => ({
-      account: connection?.[0].accounts?.[0],
-      chainId: connection?.[0].chainId,
-      dappIcon: connection?.[0].peerMeta?.icons?.[0],
-      dappName: connection?.[0].peerMeta?.name,
-      dappUrl: connection?.[0].peerMeta?.url,
-      handshakeId: connection?.[0]._handshakeId,
-      peerId: connection?.[0].peerId, // unix timestamp in microseconds when connection was made
-    }))
+  Object.values(
+    Object.fromEntries(
+      Object.entries(connections).map(([key, connection]) => [
+        key,
+        {
+          account: connection?.[0].accounts?.[0],
+          chainId: connection?.[0].chainId,
+          dappIcon: connection?.[0].peerMeta?.icons?.[0],
+          dappName: connection?.[0].peerMeta?.name,
+          dappUrl: connection?.[0].peerMeta?.url,
+          handshakeId: connection?.[0]._handshakeId,
+          peerId: connection?.[0].peerId, // unix timestamp in microseconds when connection was made
+        },
+      ])
+    )
   );
 
 const walletConnectSelector = createSelector(

@@ -1,6 +1,6 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 import { precomputeValues } from '@capsizecss/core';
-import { mapValues, pick } from 'lodash';
+import pick from 'lodash/pick';
 import { PixelRatio, Platform } from 'react-native';
 import { ForegroundColor } from './../color/palettes';
 import { fontWeights } from './fontWeights';
@@ -115,8 +115,19 @@ const createTextSize = ({
   };
 };
 
-export const headingSizes = mapValues(typeHierarchy.heading, createTextSize);
-export const textSizes = mapValues(typeHierarchy.text, createTextSize);
+export const headingSizes = Object.fromEntries(
+  Object.entries(typeHierarchy.heading).map(([key, value]) => [
+    key,
+    createTextSize(value),
+  ])
+);
+
+export const textSizes = Object.fromEntries(
+  Object.entries(typeHierarchy.text).map(([key, value]) => [
+    key,
+    createTextSize(value),
+  ])
+);
 
 function selectForegroundColors<
   SelectedColors extends readonly (ForegroundColor | 'accent')[]
