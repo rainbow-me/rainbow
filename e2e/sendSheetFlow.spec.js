@@ -171,7 +171,7 @@ describe('Send Sheet Interaction Flow', () => {
   });
 
   it('Should prepend a 0 to quantity field on input of .', async () => {
-    await Helpers.waitAndTap('send-asset-form-DAI');
+    await Helpers.waitAndTap('send-asset-form-DAI-token');
     await Helpers.waitAndTap('send-asset-DAI-token');
     await Helpers.checkIfVisible('selected-asset-quantity-field-input');
     await Helpers.waitAndTap('selected-asset-quantity-field-input');
@@ -180,7 +180,7 @@ describe('Send Sheet Interaction Flow', () => {
   });
 
   it('Should only show a max of 2 decimals in quantity field', async () => {
-    await Helpers.waitAndTap('send-asset-form-DAI');
+    await Helpers.waitAndTap('send-asset-form-DAI-token');
     await Helpers.waitAndTap('send-asset-ETH-token');
     await Helpers.checkIfVisible('selected-asset-quantity-field-input');
     await Helpers.waitAndTap('selected-asset-quantity-field-input');
@@ -190,7 +190,7 @@ describe('Send Sheet Interaction Flow', () => {
       true
     );
     await Helpers.checkIfElementByTextIsVisible('8.12');
-    await Helpers.waitAndTap('send-asset-form-ETH');
+    await Helpers.waitAndTap('send-asset-form-ETH-token');
   });
 
   it('Should display Asset Form after tapping on asset ETH', async () => {
@@ -219,7 +219,7 @@ describe('Send Sheet Interaction Flow', () => {
   });
 
   it('Should prepend a 0 to quantity field on input of . ETH', async () => {
-    await Helpers.waitAndTap('send-asset-form-ETH');
+    await Helpers.waitAndTap('send-asset-form-ETH-token');
     await Helpers.waitAndTap('send-asset-ETH-token');
     await Helpers.checkIfVisible('selected-asset-quantity-field-input');
     await Helpers.waitAndTap('selected-asset-quantity-field-input');
@@ -228,7 +228,7 @@ describe('Send Sheet Interaction Flow', () => {
   });
 
   it('Should only show a max of 2 decimals in quantity field ETH', async () => {
-    await Helpers.waitAndTap('send-asset-form-ETH');
+    await Helpers.waitAndTap('send-asset-form-ETH-token');
     await Helpers.waitAndTap('send-asset-ETH-token');
     await Helpers.checkIfVisible('selected-asset-quantity-field-input');
     await Helpers.waitAndTap('selected-asset-quantity-field-input');
@@ -238,7 +238,7 @@ describe('Send Sheet Interaction Flow', () => {
       true
     );
     await Helpers.checkIfElementByTextIsVisible('8.12');
-    await Helpers.waitAndTap('send-asset-form-ETH');
+    await Helpers.waitAndTap('send-asset-form-ETH-token');
   });
 
   it('Should show Add Contact Screen after tapping Add Contact Button', async () => {
