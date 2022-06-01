@@ -9,7 +9,7 @@ import { Column } from '../layout';
 import { Text } from '../text';
 import SendAssetFormCollectible from './SendAssetFormCollectible';
 import SendAssetFormToken from './SendAssetFormToken';
-import { AssetTypes } from '@rainbow-me/entities';
+import { AssetType, AssetTypes } from '@rainbow-me/entities';
 import {
   useColorForAsset,
   useDimensions,
@@ -93,8 +93,9 @@ export default function SendAssetForm({
   const { colors } = useTheme();
 
   const address = selected?.mainnet_address || selected?.address;
+  const type = selected?.mainnet_address ? AssetType.token : selected?.type;
 
-  let colorForAsset = useColorForAsset({ address });
+  let colorForAsset = useColorForAsset({ address, type });
   if (isNft) {
     colorForAsset = colors.appleBlue;
   }
