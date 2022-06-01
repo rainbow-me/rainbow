@@ -172,9 +172,8 @@ const GasSpeedButton = ({
     () =>
       isNil(price) ||
       isEmpty(gasFeeParamsBySpeed) ||
-      isEmpty(selectedGasFee?.gasFee)[
-        (gasFeeParamsBySpeed, price, selectedGasFee)
-      ]
+      isEmpty(selectedGasFee?.gasFee),
+    [gasFeeParamsBySpeed, price, selectedGasFee]
   );
 
   const formatGasPrice = useCallback(
