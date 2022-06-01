@@ -10,6 +10,10 @@ import Reanimated, {
   EasingNode as REasing,
   Value as RValue,
   timing,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
 } from 'react-native-reanimated';
 import { useValue } from 'react-native-redash/src/v1';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
@@ -171,7 +175,7 @@ const ContentWrapper = styled(Animated.View)({
   zIndex: 10,
 });
 
-const ButtonWrapper = styled(Animated.View)({
+const ButtonWrapper = styled(Reanimated.View)({
   width: '100%',
 });
 
@@ -370,7 +374,7 @@ export default function WelcomeScreen() {
   const { replace, navigate, dangerouslyGetState } = useNavigation();
   const contentAnimation = useAnimatedValue(1);
   const hideSplashScreen = useHideSplashScreen();
-  const createWalletButtonAnimation = useAnimatedValue(1);
+  const createWalletButtonAnimation = useSharedValue(1);
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
@@ -414,21 +418,18 @@ export default function WelcomeScreen() {
         // There's no way to disable sync yet
         // See https://stackoverflow.com/questions/47391019/animated-button-block-the-detox
         if (IS_TESTING !== 'true') {
-          animations.push(
-            Animated.loop(
-              Animated.sequence([
-                Animated.timing(createWalletButtonAnimation.current!, {
+          createWalletButtonAnimation.value = withTiming(
+            1.02,
+            { duration: 1000 },
+            () => {
+              createWalletButtonAnimation.value = withRepeat(
+                withTiming(0.98, {
                   duration: 1000,
-                  toValue: 1.02,
-                  useNativeDriver: true,
                 }),
-                Animated.timing(createWalletButtonAnimation.current!, {
-                  duration: 1000,
-                  toValue: 0.98,
-                  useNativeDriver: true,
-                }),
-              ])
-            )
+                0,
+                true
+              );
+            }
           );
         }
 
@@ -440,23 +441,20 @@ export default function WelcomeScreen() {
         }
       }
     };
+
     initialize();
 
     return () => {
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      createWalletButtonAnimation.current!.setValue(1);
+      createWalletButtonAnimation.value = 1;
       // eslint-disable-next-line react-hooks/exhaustive-deps
       contentAnimation.current!.setValue(1);
     };
   }, [contentAnimation, hideSplashScreen, createWalletButtonAnimation]);
 
-  const buttonStyle = useMemoOne(
-    () => ({
-      transform: [{ scale: createWalletButtonAnimation.current }],
-      zIndex: 10,
-    }),
-    [createWalletButtonAnimation]
-  );
+  const buttonStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: createWalletButtonAnimation.value }],
+    zIndex: 10,
+  }));
 
   const contentStyle = useMemoOne(
     () => ({
