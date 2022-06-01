@@ -173,7 +173,7 @@ export default function ENSAssignRecordsSheet() {
         as={ScrollView}
         background="body"
         contentContainerStyle={{
-          paddingBottom: bottomActionHeight + 20,
+          paddingBottom: bottomActionHeight + 55,
         }}
         flexGrow={1}
         scrollEnabled={android}
