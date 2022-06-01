@@ -188,25 +188,26 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
-  // it('Should be able to search random tokens (like SWYF) via address and swap them', async () => {
-  //   await Helpers.tap('exchange-fab');
-  //   await Helpers.checkIfVisible('currency-select-list');
-  //   await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
-  //   await Helpers.checkIfVisible('currency-select-list');
-  //   await Helpers.typeText(
-  //     'currency-select-search-input',
-  //     '0xefa6903aa49cd539c079ac4b0a090db432615822',
-  //     true
-  //   );
-  //   await Helpers.tap('currency-select-list-exchange-coin-row-SWYF-token');
-  //   await Helpers.checkIfVisible('exchange-modal');
-  //   await Helpers.typeText('exchange-modal-input', '0.001', true);
-  //   await acceptAlertIfTokenNotVerified();
-  //   await Helpers.tapAndLongPress('exchange-modal-confirm-button');
-  //   await acceptAlertIfGasPriceIsHigh();
-  //   await checkIfSwapCompleted('Ethereum', '0.001 ETH');
-  //   await Helpers.swipe('profile-screen', 'left', 'slow');
-  // });
+  it('Should be able to search random tokens (like SWYF) via address and swap them', async () => {
+    await Helpers.tap('exchange-fab');
+    await Helpers.checkIfVisible('currency-select-list');
+    await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
+    await Helpers.checkIfVisible('currency-select-list');
+    await Helpers.typeText(
+      'currency-select-search-input',
+      '0xefa6903aa49cd539c079ac4b0a090db432615822',
+      true
+    );
+    await Helpers.tap('currency-select-list-exchange-coin-row-SWYF-token');
+    await Helpers.checkIfVisible('exchange-modal');
+    await Helpers.typeText('exchange-modal-input', '0.001', true);
+    await acceptAlertIfTokenNotVerified();
+    await Helpers.tapAndLongPress('exchange-modal-confirm-button');
+    await Helpers.tapAndLongPress('swap-details-confirm-button');
+    await acceptAlertIfGasPriceIsHigh();
+    await checkIfSwapCompleted('Ethereum', '0.001 ETH');
+    await Helpers.swipe('profile-screen', 'left', 'slow');
+  });
 
   it('Should be able to wrap ETH -> WETH', async () => {
     await Helpers.tap('exchange-fab');

@@ -117,7 +117,7 @@ const ExchangeSearch = (
     onFocus,
     searchQuery,
     testID,
-    placeholderText = lang.t('button.exchange_search_uniswap'),
+    placeholderText = lang.t('button.exchange_search_tokens'),
     clearTextOnFocus = true,
   },
   ref
