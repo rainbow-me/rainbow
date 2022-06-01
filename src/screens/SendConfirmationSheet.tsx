@@ -53,7 +53,10 @@ import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
 } from '@rainbow-me/helpers/emojiHandler';
-import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
+import {
+  add,
+  convertAmountToNativeDisplay,
+} from '@rainbow-me/helpers/utilities';
 import {
   isENSAddressFormat,
   isValidDomainFormat,
@@ -358,10 +361,7 @@ export default function SendConfirmationSheet() {
       promiseUtils
         .PromiseAllWithFails(promises)
         .then(gasLimits => {
-          const gasLimit = gasLimits.reduce(
-            (a, b) => parseFloat(a) + parseFloat(b),
-            0
-          );
+          const gasLimit = gasLimits.reduce(add, 0);
           updateTxFee(gasLimit, null);
         })
         .catch(e => {
