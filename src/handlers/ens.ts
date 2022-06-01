@@ -929,9 +929,10 @@ export const shouldUseMulticallTransaction = (
     text,
   } = registrationRecords;
   if (
+    !coinAddress?.length &&
     !contentHash &&
     !ensAssociatedAddress &&
-    (text?.length || 0) + (coinAddress?.length || 0) === 1
+    text?.length === 1
   ) {
     return false;
   }
