@@ -799,28 +799,27 @@ export const estimateENSSetRecordsGasLimit = async ({
   const ensRegistrationRecords = formatRecordsForTransaction(records);
   const validRecords = recordsForTransactionAreValid(ensRegistrationRecords);
   if (validRecords) {
-    const shouldUseMulticall = shouldUseMulticallTransaction(
-      ensRegistrationRecords
-    );
-    if (shouldUseMulticall) {
-      gasLimit = await estimateENSMulticallGasLimit({
-        name,
-        ownerAddress,
-        records: ensRegistrationRecords,
-      });
-    } else {
-      if (ensRegistrationRecords?.coinAddress?.length) {
+    const txType = getTransactionTypeForRecords(ensRegistrationRecords);
+    switch (txType) {
+      case ENSRegistrationTransactionType.MULTICALL:
+        gasLimit = await estimateENSMulticallGasLimit({
+          name,
+          ownerAddress,
+          records: ensRegistrationRecords,
+        });
+      case ENSRegistrationTransactionType.SET_ADDR:
         gasLimit = await estimateENSSetAddressGasLimit({
           name,
           records: ensRegistrationRecords,
         });
-      } else {
+      case ENSRegistrationTransactionType.SET_TEXT:
         gasLimit = await estimateENSSetTextGasLimit({
           name,
           ownerAddress,
           records: ensRegistrationRecords,
         });
-      }
+      default:
+        gasLimit = '0';
     }
   }
   return gasLimit;
@@ -895,6 +894,29 @@ export const recordsForTransactionAreValid = (
     return false;
   }
   return true;
+};
+
+export const getTransactionTypeForRecords = (
+  registrationRecords: ENSRegistrationRecords
+) => {
+  const {
+    coinAddress,
+    contentHash,
+    ensAssociatedAddress,
+    text,
+  } = registrationRecords;
+
+  if (
+    contentHash ||
+    ensAssociatedAddress ||
+    (text?.length || 0) + (coinAddress?.length || 0) > 1
+  ) {
+    return ENSRegistrationTransactionType.MULTICALL;
+  } else if (text?.length) {
+    return ENSRegistrationTransactionType.SET_TEXT;
+  } else if (coinAddress?.length) {
+    return ENSRegistrationTransactionType.SET_ADDR;
+  }
 };
 
 export const shouldUseMulticallTransaction = (
