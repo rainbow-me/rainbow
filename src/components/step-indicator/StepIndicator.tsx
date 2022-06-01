@@ -21,7 +21,7 @@ type StepIndicatorProps = {
 
 const StepIndicator = ({ steps, currentStep }: StepIndicatorProps) => {
   const { width: screenWidth } = useDimensions();
-  const stepWidth = screenWidth / steps - STEP_SPACING * (steps - 1);
+  const stepWidth = screenWidth / steps - STEP_SPACING;
   const accentColor = useForegroundColor('accent');
   const accentColorTint = accentColor + '25';
 
@@ -41,7 +41,7 @@ const StepIndicator = ({ steps, currentStep }: StepIndicatorProps) => {
       withSequence(
         withTiming(-stepWidth, { duration: PULSE_STEP_DURATION }),
         withTiming(-stepWidth, { duration: PULSE_STEP_DURATION }),
-        withTiming(0, { duration: PULSE_STEP_DURATION })
+        withTiming(5, { duration: PULSE_STEP_DURATION })
       ),
       -1
     )
