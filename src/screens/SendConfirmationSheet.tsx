@@ -314,6 +314,8 @@ export default function SendConfirmationSheet() {
       const sendENSOptions = Object.fromEntries(
         checkboxes.map(option => [option.id, option.checked])
       );
+      const cleanENSName = asset?.name?.split(' ')?.[0] ?? asset?.name;
+
       if (sendENSOptions['clear-records']) {
         let records = Object.keys({
           ...(ensProfile?.data?.coinAddresses || {}),
@@ -331,7 +333,7 @@ export default function SendConfirmationSheet() {
         }
         promises.push(
           estimateENSSetRecordsGasLimit({
-            name: asset?.name,
+            name: cleanENSName,
             records: records,
             ownerAddress: accountAddress,
           })
@@ -339,7 +341,7 @@ export default function SendConfirmationSheet() {
       } else if (sendENSOptions['set-address']) {
         promises.push(
           estimateENSSetAddressGasLimit({
-            name: asset?.name,
+            name: cleanENSName,
             records: formatRecordsForTransaction({ ETH: toAddress }),
           })
         );
@@ -347,7 +349,7 @@ export default function SendConfirmationSheet() {
       if (sendENSOptions['transfer-control']) {
         promises.push(
           estimateENSSetOwnerGasLimit({
-            name: asset?.name,
+            name: cleanENSName,
             ownerAddress: toAddress,
             fromAddress: accountAddress,
           })
