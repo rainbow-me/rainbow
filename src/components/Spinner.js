@@ -30,7 +30,7 @@ const Spinner = ({ color = '', duration = 1500, size = 20, ...props }) => {
           <ImgixImage
             source={SpinnerImageSource}
             style={style}
-            tintColor={color || colors.whiteLabel}
+            tintColor={color ?? colors.whiteLabel}
           />
         </SpinAnimation>
       )}

@@ -16,6 +16,6 @@ export { default as FlyInAnimation } from './FlyInAnimation';
 export { default as OpacityToggler } from './OpacityToggler';
 export { default as ScaleInAnimation } from './ScaleInAnimation';
 export { default as ShimmerAnimation } from './ShimmerAnimation';
-export { default as SpinAnimation } from './SpinAnimation';
+export { SpinAnimation } from './SpinAnimation';
 
 export const RoundButtonCapSize = 30;

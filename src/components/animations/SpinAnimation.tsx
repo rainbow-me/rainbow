@@ -1,9 +1,9 @@
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, useLayoutEffect } from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 import Animated, {
   Easing,
   useAnimatedStyle,
-  useDerivedValue,
+  useSharedValue,
   withRepeat,
   withTiming,
 } from 'react-native-reanimated';
@@ -14,18 +14,21 @@ type Props = PropsWithChildren<{
 }>;
 
 export const SpinAnimation = ({ children, style, duration = 2000 }: Props) => {
-  const progress = useDerivedValue(() =>
-    withRepeat(
+  const progress = useSharedValue(0);
+
+  useLayoutEffect(() => {
+    progress.value = withRepeat(
       withTiming(1, {
         duration,
         easing: Easing.linear,
       }),
       -1
-    )
-  );
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const animatedStyles = useAnimatedStyle(() => {
-    const rotation = progress.value * 360;
+    const rotation = Math.ceil(progress.value * 360);
     return { transform: [{ rotate: `${rotation}deg` }] };
   });
 
