@@ -352,12 +352,11 @@ const UniqueTokenExpandedState = ({
   const yPosition = useSharedValue(0);
 
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const isActionsEnabled = true || (!external && !isReadOnlyWallet);
+  const isActionsEnabled = !external && !isReadOnlyWallet;
   const hasSendButton = isActionsEnabled && isSendable;
 
   const hasEditButton =
-    true ||
-    (isActionsEnabled && profilesEnabled && isENS && ensProfile.isOwner);
+    isActionsEnabled && profilesEnabled && isENS && ensProfile.isOwner;
   const hasExtendDurationButton = !isReadOnlyWallet && profilesEnabled && isENS;
 
   const familyLinkDisplay = useMemo(
