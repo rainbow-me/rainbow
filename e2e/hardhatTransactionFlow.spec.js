@@ -199,9 +199,9 @@ describe('Hardhat Transaction Flow', () => {
       true
     );
     await Helpers.tap('currency-select-list-exchange-coin-row-SWYF-token');
-    await Helpers.checkIfVisible('exchange-modal');
-    await Helpers.typeText('exchange-modal-input', '0.001', true);
     await acceptAlertIfTokenNotVerified();
+    await Helpers.checkIfVisible('exchange-modal-input');
+    await Helpers.typeText('exchange-modal-input', '0.001', true);
     await Helpers.tapAndLongPress('exchange-modal-confirm-button');
     await Helpers.tapAndLongPress('swap-details-confirm-button');
     await acceptAlertIfGasPriceIsHigh();
