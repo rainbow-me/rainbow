@@ -64,8 +64,8 @@ const messages = {
     APPENDED: 'appended address transactions',
     CHANGED: 'changed address transactions',
     RECEIVED: 'received address transactions',
-    RECEIVED_OPTIMISM: 'received address optimism-transactions',
     RECEIVED_ARBITRUM: 'received address arbitrum-transactions',
+    RECEIVED_OPTIMISM: 'received address optimism-transactions',
     RECEIVED_POLYGON: 'received address polygon-transactions',
     REMOVED: 'removed address transactions',
   },
@@ -591,7 +591,7 @@ const listenOnAddressMessages = socket => dispatch => {
   socket.on(messages.ADDRESS_ASSETS.RECEIVED_ARBITRUM, message => {
     dispatch(l2AddressAssetsReceived(message, NetworkTypes.arbitrum));
   });
-  
+
   socket.on(messages.ADDRESS_ASSETS.RECEIVED_OPTIMISM, message => {
     dispatch(l2AddressAssetsReceived(message, NetworkTypes.optimism));
   });
