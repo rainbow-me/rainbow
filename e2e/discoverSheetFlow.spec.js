@@ -62,13 +62,13 @@ describe('Discover Sheet Flow', () => {
   it('Should search and open expanded state for SOCKS', async () => {
     await Helpers.typeText('discover-search-input', 'SOCKS\n', true);
     await Helpers.checkIfVisible(
-      'discover-currency-select-list-exchange-coin-row-SOCKS'
+      'discover-currency-select-list-exchange-coin-row-SOCKS-token'
     );
     await Helpers.checkIfNotVisible(
-      'discover-currency-select-list-exchange-coin-row-ETH'
+      'discover-currency-select-list-exchange-coin-row-ETH-token'
     );
     await Helpers.waitAndTap(
-      'discover-currency-select-list-exchange-coin-row-SOCKS'
+      'discover-currency-select-list-exchange-coin-row-SOCKS-token'
     );
     await Helpers.checkIfVisible('chart-header-Unisocks');
   });
@@ -87,7 +87,7 @@ describe('Discover Sheet Flow', () => {
   it('Should close expanded state and return to search', async () => {
     await Helpers.swipe('expanded-state-header', 'down');
     await Helpers.checkIfNotVisible(
-      'discover-currency-select-list-exchange-coin-row-ETH'
+      'discover-currency-select-list-exchange-coin-row-ETH-token'
     );
   });
 
@@ -102,7 +102,7 @@ describe('Discover Sheet Flow', () => {
       'discover-currency-select-list-contact-row-rainbowwallet.eth'
     );
     await Helpers.checkIfNotVisible(
-      'discover-currency-select-list-exchange-coin-row-ETH'
+      'discover-currency-select-list-exchange-coin-row-ETH-token'
     );
     await Helpers.waitAndTap(
       'discover-currency-select-list-contact-row-rainbowwallet.eth'
@@ -114,7 +114,7 @@ describe('Discover Sheet Flow', () => {
     await Helpers.swipe('showcase-header-wrapper', 'down');
     await Helpers.waitAndTap('discover-search-clear-input');
     await Helpers.checkIfVisible(
-      'discover-currency-select-list-exchange-coin-row-ETH'
+      'discover-currency-select-list-exchange-coin-row-ETH-token'
     );
   });
 

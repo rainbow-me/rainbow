@@ -18,6 +18,7 @@ import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/Ch
 import { Row } from '../layout';
 import DiscoverSheetContext from './DiscoverSheetContext';
 import { fetchSuggestions } from '@rainbow-me/handlers/ens';
+import { IS_TESTING } from 'react-native-dotenv';
 import {
   useHardwareBackOnFocus,
   usePrevious,
@@ -27,6 +28,7 @@ import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { ethereumUtils } from '@rainbow-me/utils';
+import { uniqBy } from 'lodash';
 
 export const SearchContainer = styled(Row)({
   height: '100%',
@@ -53,7 +55,26 @@ export default function DiscoverSearch() {
   const { swapCurrencyList, uniswapCurrencyListLoading } = useSwapCurrencyList(
     searchQueryForSearch
   );
-  const currencyList = useMemo(() => [...swapCurrencyList, ...ensResults], [
+  const currencyList = useMemo(() => {
+    let list = [...swapCurrencyList, ...ensResults];
+    // ONLY FOR e2e!!! Fake tokens with same symbols break detox e2e tests
+    if (IS_TESTING === 'true') {
+      let symbols = [];
+      list = list?.map(section => {
+        // Remove dupes
+        section.data = uniqBy(section?.data, 'symbol');
+        // Remove dupes across sections
+        section.data = section?.data?.filter(
+          token => !symbols.includes(token?.symbol)
+        );
+        const sectionSymbols = section?.data?.map(token => token?.symbol);
+        symbols = symbols.concat(sectionSymbols);
+
+        return section;
+      });
+    }
+    return list.filter(section => section.data.length > 0);
+  }, [
     swapCurrencyList,
     ensResults,
   ]);
