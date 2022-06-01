@@ -1,9 +1,9 @@
 import { useQuery } from 'react-query';
+import { fetchPrimary } from '@rainbow-me/handlers/ens';
 import {
   getResolveName,
   saveResolveName,
 } from '@rainbow-me/handlers/localstorage/ens';
-import { web3Provider } from '@rainbow-me/handlers/web3';
 import { queryClient } from '@rainbow-me/react-query/queryClient';
 
 const STALE_TIME = 10000;
@@ -17,7 +17,7 @@ async function resolveENSName(ensName: string) {
   const cachedAddress = await getResolveName(ensName);
   if (cachedAddress)
     queryClient.setQueryData(ensResolveNameQueryKey(ensName), cachedAddress);
-  const address = await web3Provider.resolveName(ensName);
+  const { address } = await fetchPrimary(ensName);
   if (address) {
     saveResolveName(ensName, address);
   }
