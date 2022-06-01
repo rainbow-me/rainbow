@@ -61,6 +61,7 @@ export default function CoinRow({
           isHidden,
           isPinned,
           symbol,
+          type,
           ...props,
         })
       )}

@@ -49,6 +49,7 @@ function WrappedFallbackImage({
   showImage,
   size,
   eth,
+  type,
   ...props
 }) {
   const { colors } = useTheme();
@@ -69,6 +70,7 @@ function WrappedFallbackImage({
         shadowOpacity={shadowOpacity}
         showImage={showImage}
         size={size}
+        type={type}
       />
     </Centered>
   );
@@ -77,15 +79,16 @@ function WrappedFallbackImage({
 const FallbackImageElement = android ? WrappedFallbackImage : FallbackImage;
 
 const CoinIconFallback = fallbackProps => {
-  const { address = '', height, symbol, width } = fallbackProps;
+  const { address = '', height, symbol, width, type } = fallbackProps;
 
   const [showImage, showFallbackImage, hideFallbackImage] = useBooleanState(
     false
   );
 
   const fallbackIconColor = useColorForAsset({ address });
-  const imageUrl = useMemo(() => getUrlForTrustIconFallback(address), [
+  const imageUrl = useMemo(() => getUrlForTrustIconFallback(address, type), [
     address,
+    type,
   ]);
 
   const eth = isETH(address);
@@ -115,4 +118,9 @@ const CoinIconFallback = fallbackProps => {
   );
 };
 
-export default magicMemo(CoinIconFallback, ['address', 'style', 'symbol']);
+export default magicMemo(CoinIconFallback, [
+  'address',
+  'type',
+  'style',
+  'symbol',
+]);
