@@ -110,7 +110,7 @@ export default function RegistrationReviewRows({
 
   return (
     <Box>
-      <Stack space="34px">
+      <Stack space="30px">
         <Columns>
           <Column width="3/5">
             <Text size="16px" weight="heavy">
@@ -135,7 +135,7 @@ export default function RegistrationReviewRows({
                     type="decrement"
                   />
                 </Column>
-                <Box>
+                <Box height={{ custom: 16 }}>
                   <Text align="center" size="16px" weight="heavy">
                     {duration > 1
                       ? lang.t('profiles.confirm.duration_plural', {
@@ -180,13 +180,20 @@ export default function RegistrationReviewRows({
             </Text>
           </Column>
           <Column width="1/3">
-            {registrationFee ? (
-              <Text align="right" color="secondary80" size="16px" weight="bold">
-                {registrationFee}
-              </Text>
-            ) : (
-              <LoadingPlaceholder />
-            )}
+            <Box height={{ custom: 16 }}>
+              {registrationFee ? (
+                <Text
+                  align="right"
+                  color="secondary80"
+                  size="16px"
+                  weight="bold"
+                >
+                  {registrationFee}
+                </Text>
+              ) : (
+                <LoadingPlaceholder />
+              )}
+            </Box>
           </Column>
         </Columns>
 
@@ -197,13 +204,20 @@ export default function RegistrationReviewRows({
             </Text>
           </Column>
           <Column width="1/3">
-            {networkFee ? (
-              <Text align="right" color="secondary80" size="16px" weight="bold">
-                {networkFee}
-              </Text>
-            ) : (
-              <LoadingPlaceholder />
-            )}
+            <Box height={{ custom: 16 }}>
+              {networkFee ? (
+                <Text
+                  align="right"
+                  color="secondary80"
+                  size="16px"
+                  weight="bold"
+                >
+                  {networkFee}
+                </Text>
+              ) : (
+                <LoadingPlaceholder />
+              )}
+            </Box>
           </Column>
         </Columns>
 
@@ -215,18 +229,20 @@ export default function RegistrationReviewRows({
               </Text>
             </Column>
             <Column width="1/3">
-              {networkFee ? (
-                <Text
-                  align="right"
-                  color="secondary80"
-                  size="16px"
-                  weight="bold"
-                >
-                  {estimatedCostETH} ETH
-                </Text>
-              ) : (
-                <LoadingPlaceholder />
-              )}
+              <Box height={{ custom: 16 }}>
+                {networkFee ? (
+                  <Text
+                    align="right"
+                    color="secondary80"
+                    size="16px"
+                    weight="bold"
+                  >
+                    {estimatedCostETH} ETH
+                  </Text>
+                ) : (
+                  <LoadingPlaceholder />
+                )}
+              </Box>
             </Column>
           </Columns>
         )}
@@ -238,13 +254,15 @@ export default function RegistrationReviewRows({
             </Text>
           </Column>
           <Column width="1/3">
-            {totalCost ? (
-              <Text align="right" size="16px" weight="heavy">
-                {totalCost}
-              </Text>
-            ) : (
-              <LoadingPlaceholder />
-            )}
+            <Box height={{ custom: 16 }}>
+              {totalCost ? (
+                <Text align="right" size="16px" weight="heavy">
+                  {totalCost}
+                </Text>
+              ) : (
+                <LoadingPlaceholder />
+              )}
+            </Box>
           </Column>
         </Columns>
       </Stack>
