@@ -12,7 +12,6 @@ import {
   keyBy,
   keys,
   map,
-  mapKeys,
   partition,
   pickBy,
   property,
@@ -1279,7 +1278,13 @@ const subscribeToMissingPrices = (addresses: string[]) => (
                 ];
               })
             );
-            const tokenPricingInfo = mapKeys(missingPriceInfo, 'tokenAddress');
+
+            const tokenPricingInfo = Object.fromEntries(
+              Object.entries(missingPriceInfo).map(([_, value]) => [
+                value.tokenAddress,
+                value,
+              ])
+            );
 
             saveAssetPricesFromUniswap(
               tokenPricingInfo,
