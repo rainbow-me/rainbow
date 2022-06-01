@@ -163,7 +163,7 @@ export default function useENSRecordDisplayProperties({
           iconValue: 'square.on.square',
         },
       },
-    ].filter(x => x);
+    ].filter(Boolean);
   }, [
     allowEdit,
     displayUrl,
@@ -209,7 +209,7 @@ export default function useENSRecordDisplayProperties({
   const handleAndroidPress = useCallback(() => {
     const actionSheetOptions = menuItems
       .map(item => item?.actionTitle)
-      .filter(x => x) as any;
+      .filter(Boolean) as any;
 
     showActionSheetWithOptions(
       {

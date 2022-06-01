@@ -119,9 +119,7 @@ const PendingRegistrations = () => {
     removeExpiredRegistrations,
   } = useENSPendingRegistrations();
 
-  useEffect(() => {
-    removeExpiredRegistrations();
-  }, [removeExpiredRegistrations]);
+  useEffect(removeExpiredRegistrations, [removeExpiredRegistrations]);
 
   const removeRegistration = useCallback(
     (name: string) => {

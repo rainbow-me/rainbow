@@ -84,9 +84,7 @@ export default function useMagicAutofocus(
         InteractionManager.runAfterInteractions(fallbackRefocusLastInput);
       } else {
         if (showAfterInteractions) {
-          InteractionManager.runAfterInteractions(() => {
-            triggerFocus();
-          });
+          InteractionManager.runAfterInteractions(triggerFocus);
         } else {
           triggerFocus();
         }

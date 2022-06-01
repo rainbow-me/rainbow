@@ -397,7 +397,7 @@ export const fetchCoinAddresses = async (
           return undefined;
         }
       })
-      .filter(x => x)
+      .filter(Boolean)
   );
   const coinAddresses: { [key in ENS_RECORDS]: string } = coinTypes.reduce(
     (coinAddresses, coinType, i) => {

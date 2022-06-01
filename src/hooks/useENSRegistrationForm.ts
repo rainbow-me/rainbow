@@ -106,7 +106,7 @@ export default function useENSRegistrationForm({
         Object.keys(defaultRecords)
           // @ts-ignore
           .map(key => textRecordFields[key])
-          .filter(x => x)
+          .filter(Boolean)
       );
     } else {
       if (defaultFields) {
