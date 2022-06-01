@@ -44,6 +44,7 @@ export default function CoinRow({
   testID,
   topRowRender,
   tokens,
+  type,
   ...props
 }) {
   const { nativeCurrency, nativeCurrencySymbol } = useAccountSettings();
@@ -60,11 +61,15 @@ export default function CoinRow({
           isHidden,
           isPinned,
           symbol,
+          type,
           ...props,
         })
       )}
       <Content isHidden={isHidden} justify="center" style={contentStyles}>
-        <Row align="center" testID={`${testID}-${symbol || ''}`}>
+        <Row
+          align="center"
+          testID={`${testID}-${symbol || ''}-${type || 'token'}`}
+        >
           {topRowRender({
             name,
             nativeCurrency,

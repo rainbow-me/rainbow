@@ -10,8 +10,8 @@ import {
   PermitSupportedTokenList,
   Quote,
   unwrapNativeAsset,
-  WRAPPED_ASSET,
   wrapNativeAsset,
+  WRAPPED_ASSET,
 } from '@rainbow-me/swaps';
 import { get, mapKeys, mapValues, toLower } from 'lodash';
 import { Token } from '../entities/tokens';

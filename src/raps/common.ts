@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import { Provider } from '@ethersproject/abstract-provider';
 import { Logger } from '@ethersproject/logger';
 import { Wallet } from '@ethersproject/wallet';

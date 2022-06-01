@@ -157,9 +157,10 @@ export default function SwapSettingsState({ asset }) {
       hideHandle
       radius={0}
       scrollEnabled={false}
+      testID="swap-settings-state"
     >
-      <FloatingPanel radius={android ? 30 : 39}>
-        <ExchangeHeader testID="swap-settings" />
+      <FloatingPanel radius={android ? 30 : 39} testID="swap-settings">
+        <ExchangeHeader />
         <Inset bottom="24px" horizontal="24px" top="10px">
           <Stack backgroundColor="green" space="10px">
             <Columns alignVertical="center">
@@ -188,6 +189,7 @@ export default function SwapSettingsState({ asset }) {
                 <Column width="content">
                   <Switch
                     onValueChange={toggleFlashbotsEnabled}
+                    testID="swap-settings-flashbots-switch"
                     trackColor={{ false: '#767577', true: colorForAsset }}
                     value={flashbotsEnabled}
                   />

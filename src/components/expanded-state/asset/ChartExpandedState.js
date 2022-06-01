@@ -1,6 +1,5 @@
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
-import { find } from 'lodash';
 import React, {
   useCallback,
   useContext,
@@ -278,9 +277,12 @@ export default function ChartExpandedState({ asset }) {
 
   const assetsInWallet = useAssetsInWallet();
   const showSwapButton = useMemo(
-    () =>  assetsInWallet.find(
-    assetInWallet => assetInWallet.address === assetWithPrice.address
-  ),[asset.address, assetsInWallet]);
+    () =>
+      assetsInWallet.find(
+        assetInWallet => assetInWallet.address === assetWithPrice.address
+      ),
+    [asset.address, assetWithPrice.address, assetsInWallet]
+  );
 
   const needsEth =
     asset?.address === ETH_ADDRESS && asset?.balance?.amount === '0';
@@ -413,7 +415,11 @@ export default function ChartExpandedState({ asset }) {
         />
       )}
       {networks && fromDiscover && (
-        <AvailableNetworks asset={assetWithPrice} colors={colors} networks={networks} />
+        <AvailableNetworks
+          asset={assetWithPrice}
+          colors={colors}
+          networks={networks}
+        />
       )}
       {!isL2 && (
         <CarouselWrapper

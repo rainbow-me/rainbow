@@ -799,7 +799,7 @@ export default function ExchangeModal({
             <ExchangeDetailsRow
               isHighPriceImpact={isHighPriceImpact}
               onFlipCurrencies={flipCurrencies}
-              onPressViewDetails={navigateToSwapSettingsSheet}
+              onPressSettings={navigateToSwapSettingsSheet}
               priceImpactColor={priceImpactColor}
               priceImpactNativeAmount={priceImpactNativeAmount}
               priceImpactPercentDisplay={priceImpactPercentDisplay}
