@@ -17,7 +17,7 @@ import {
   SendHeader,
 } from '../components/send';
 import { SheetActionButton } from '../components/sheet';
-import { AssetTypes } from '@rainbow-me/entities';
+import { AssetType, AssetTypes } from '@rainbow-me/entities';
 import { isL2Asset, isNativeAsset } from '@rainbow-me/handlers/assets';
 import { debouncedFetchSuggestions } from '@rainbow-me/handlers/ens';
 import {
@@ -155,9 +155,13 @@ export default function SendSheet(props) {
   const showAssetForm = isValidAddress && !isEmpty(selected);
 
   const isNft = selected?.type === AssetTypes.nft;
+
+  const address = selected?.mainnet_address || selected?.address;
+  const type = selected?.mainnet_address ? AssetType.token : selected?.type;
   let colorForAsset = useColorForAsset(
     {
-      address: selected?.mainnet_address || selected.address,
+      address,
+      type,
     },
     null,
     false,
