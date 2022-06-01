@@ -737,11 +737,8 @@ export default function SendConfirmationSheet() {
           </SendButtonWrapper>
           {isENS && (
             <GasSpeedButton
-              asset={null}
               currentNetwork={network}
-              testID={null}
               theme={isDarkMode ? 'dark' : 'light'}
-              validateGasParams={null}
             />
           )}
         </Column>

@@ -120,17 +120,17 @@ const TransactionTimeLabel = ({ formatter, theme }) => {
 };
 
 const GasSpeedButton = ({
-  asset,
+  asset = null,
   bottom = 0,
   currentNetwork,
   horizontalPadding = 19,
   marginBottom = 20,
   speeds = null,
   showGasOptions = false,
-  testID,
+  testID = null,
   theme = 'dark',
   canGoBack = true,
-  validateGasParams,
+  validateGasParams = null,
 }) => {
   const { colors } = useTheme();
   const { navigate, goBack } = useNavigation();
