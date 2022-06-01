@@ -60,7 +60,7 @@ export default function ProfileSheet() {
 
   // Prefetch asset list
   const { isSuccess: hasListFetched } = useExternalWalletSectionsData({
-    address: profileAddress,
+    address: profileAddress || undefined,
   });
 
   const colorIndex = useMemo(
