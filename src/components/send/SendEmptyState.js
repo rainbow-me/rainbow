@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dimensions, View } from 'react-native';
+import { Dimensions } from 'react-native';
 import Animated, { Easing, FadeOut, Keyframe } from 'react-native-reanimated';
 import { sheetVerticalOffset } from '../../navigation/effects';
 import { Icon } from '../icons';
@@ -38,7 +38,15 @@ const SendEmptyState = () => {
   );
 
   if (android) {
-    return <View style={{ alignItems: 'center', flex: 1 }}>{icon}</View>;
+    return (
+      <Animated.View
+        entering={keyframe.duration(duration)}
+        exiting={FadeOut.duration(duration).easing(Easing.in(Easing.ease))}
+        style={{ alignItems: 'center', flex: 1 }}
+      >
+        {icon}
+      </Animated.View>
+    );
   }
 
   return (
