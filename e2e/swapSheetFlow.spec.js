@@ -56,7 +56,6 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.tap('currency-select-list-exchange-coin-row-BAT-token');
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.waitAndTap('exchange-modal-input-max');
-    await Helpers.checkIfNotVisible('exchange-modal-input');
   });
 
   it('Should display token depletion alert after tapping the Max Button', async () => {
@@ -101,18 +100,20 @@ describe('Swap Sheet Interaction Flow', () => {
     } else {
       await Helpers.waitAndTap('currency-select-header-back-button');
     }
+    if (device.getPlatform() === 'android') {
+      await device.pressBack();
+    } else {
+      await Helpers.swipe('exchange-modal-header', 'down', 'slow');
+    }
   });
 
   it('Should show Choose Token Button if input & output are same token(ETH)', async () => {
+    await Helpers.waitAndTap('balance-coin-row-ETH-token');
+    await Helpers.waitAndTap('swap-action-button');
     await Helpers.waitAndTap('exchange-modal-input-selection-button');
     await Helpers.checkIfVisible(
       'currency-select-list-exchange-coin-row-ETH-token'
     );
-    await Helpers.waitAndTap(
-      'currency-select-list-exchange-coin-row-ETH-token'
-    );
-    await Helpers.waitAndTap('exchange-modal-output-selection-button');
-    await Helpers.typeText('currency-select-search-input', 'ETH\n', false);
     await Helpers.waitAndTap(
       'currency-select-list-exchange-coin-row-ETH-token'
     );
