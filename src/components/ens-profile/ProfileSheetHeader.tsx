@@ -10,6 +10,7 @@ import ProfileDescription from './ProfileDescription/ProfileDescription';
 import RecordTags, {
   Placeholder as RecordTagsPlaceholder,
 } from './RecordTags/RecordTags';
+import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import {
   Bleed,
   Box,
@@ -45,11 +46,16 @@ export default function ProfileSheetHeader({
   const { params } = useRoute<any>();
   const { enableZoomableImages } = useContext(ProfileSheetConfigContext);
   const { layout } = useContext(ModalContext) || {};
-
+  const profilesEnabled = useExperimentalFlag(PROFILES);
   const ensName = defaultEnsName || params?.address;
-  const { data: profile } = useENSProfile(ensName);
+  const { data: profile } = useENSProfile(ensName, {
+    enabled: profilesEnabled,
+  });
   const { data: images, isFetched: isImagesFetched } = useENSProfileImages(
-    ensName
+    ensName,
+    {
+      enabled: profilesEnabled,
+    }
   );
   const profileAddress = profile?.primary?.address ?? '';
   const { navigate } = useNavigation();

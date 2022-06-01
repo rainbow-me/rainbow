@@ -50,7 +50,7 @@ import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 
 export const ENSConfirmRegisterSheetHeight = 600;
-export const ENSConfirmRenewSheetHeight = ios ? 500 : 560;
+export const ENSConfirmRenewSheetHeight = 560;
 export const ENSConfirmUpdateSheetHeight = 400;
 const avatarSize = 60;
 

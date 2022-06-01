@@ -176,7 +176,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         }
       } else if (isValidAddress(input)) {
         try {
-          const ens = await web3Provider.lookupAddress(input);
+          const ens = await fetchReverseRecord(input);
           if (ens && ens !== input) {
             name = forceEmoji ? `${forceEmoji} ${ens}` : ens;
             if (!avatarUrl && profilesEnabled) {

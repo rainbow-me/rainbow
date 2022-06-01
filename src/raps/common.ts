@@ -35,6 +35,7 @@ import {
   estimateENSSetNameGasLimit,
   estimateENSSetRecordsGasLimit,
 } from '@rainbow-me/handlers/ens';
+import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
 import logger from 'logger';
 
@@ -76,6 +77,7 @@ export interface RapENSActionParameters {
   rentPrice: string;
   records?: Records;
   salt: string;
+  mode?: keyof typeof REGISTRATION_MODES;
 }
 
 export interface UnlockActionParameters {
@@ -101,6 +103,7 @@ export interface ENSActionParameters {
   records?: Records;
   setReverseRecord?: boolean;
   resolverAddress?: EthereumAddress;
+  mode?: keyof typeof REGISTRATION_MODES;
 }
 
 export interface RapActionTransaction {
