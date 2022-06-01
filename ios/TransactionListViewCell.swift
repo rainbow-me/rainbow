@@ -109,7 +109,10 @@ class TransactionListViewCell: TransactionListBaseCell {
       if let img = UIImage.init(named: "coinIcons/\(transaction.symbol.lowercased())") {
         coinImage.image = img
       } else if transaction.address != nil {
-        let network = transaction.network == "mainnet" ? "ethereum" : transaction.network!;
+        var network = "ethereum";
+        if transaction.network != nil && transaction.network != "mainnet" {
+          network =  transaction.network!;
+        }
         let urlString = "https://raw.githubusercontent.com/rainbow-me/assets/lowercase/blockchains/\(network)/assets/\(transaction.address!)/logo.png" ;
         let url = URL(string: urlString);
         coinImage.sd_setImage(with: url) { (image, error, cache, urls) in
