@@ -906,6 +906,9 @@
         "alert_cancel": "Cancel",
         "in_progress": "In progress",
         "finish": "Finish"
+      },
+      "records": {
+        "since": "Since"
       }
     },
     "savings": {

@@ -1,6 +1,5 @@
 import ConditionalWrap from 'conditional-wrap';
 import lang from 'i18n-js';
-import debounce from 'lodash/debounce';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { ContextMenuButton, MenuConfig } from 'react-native-ios-context-menu';
 import ActionButton from './ActionButton';
@@ -15,7 +14,7 @@ export default function WatchButton({
   ensName?: string;
   avatarUrl?: string | null;
 }) {
-  const { isWatching, watchWallet } = useWatchWallet({
+  const { isImporting, isWatching, watchWallet } = useWatchWallet({
     address,
     avatarUrl,
     ensName,
@@ -26,25 +25,12 @@ export default function WatchButton({
   // and not wait for the import to finish.
   const [optimisticIsWatching, setOptimisticIsWatching] = useState(isWatching);
 
-  // We need a ref here to avoid recreating the debounce function.
-  const optimisticIsWatchingRef = useRef<boolean>();
-  optimisticIsWatchingRef.current = optimisticIsWatching;
-
-  const handleWatch = useCallback(() => {
-    if (isWatching !== optimisticIsWatchingRef.current) {
-      watchWallet();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  // We want to debounce the watch/unwatch functionality to avoid spamming the
-  // JS thread.
-  const debouncedWatchWallet = debounce(handleWatch, 500);
-
   const handlePressWatch = useCallback(() => {
-    debouncedWatchWallet();
-    setOptimisticIsWatching(isWatching => !isWatching);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (!isImporting) {
+      watchWallet();
+      setOptimisticIsWatching(isWatching => !isWatching);
+    }
+  }, [isImporting, watchWallet]);
 
   const menuConfig = useMemo(() => {
     return {
