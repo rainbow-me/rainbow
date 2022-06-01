@@ -122,6 +122,10 @@ export default function ENSAssignRecordsSheet() {
     ? BottomActionHeightSmall
     : BottomActionHeight;
 
+  useEffect(() => {
+    setAvatarUrl('');
+  }, [setAvatarUrl]);
+
   useFocusEffect(() => {
     if (dominantColor || (!dominantColor && !avatarImage)) {
       setAccentColor(dominantColor || colors.purple);
