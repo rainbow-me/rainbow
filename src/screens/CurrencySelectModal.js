@@ -1,3 +1,4 @@
+import { ChainId } from '@rainbow-me/swaps';
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { toLower, uniqBy } from 'lodash';
@@ -138,7 +139,22 @@ export default function CurrencySelectModal() {
         ? getWalletCurrencyList()
         : swapCurrencyList;
 
-    // Fake tokens with same symbols break detox e2e tests
+    // Remove tokens that show up in two lists and empty sections
+    let uniqueIds = [];
+    list = list?.map(section => {
+      // Remove dupes
+      section.data = uniqBy(section?.data, 'uniqueId');
+      // Remove dupes across sections
+      section.data = section?.data?.filter(
+        token => !uniqueIds.includes(token?.uniqueId)
+      );
+      const sectionUniqueIds = section?.data?.map(token => token?.uniqueId);
+      uniqueIds = uniqueIds.concat(sectionUniqueIds);
+
+      return section;
+    });
+
+    // ONLY FOR e2e!!! Fake tokens with same symbols break detox e2e tests
     if (IS_TESTING === 'true' && type === CurrencySelectionTypes.output) {
       let symbols = [];
       list = list?.map(section => {
@@ -154,7 +170,7 @@ export default function CurrencySelectModal() {
         return section;
       });
     }
-    return list;
+    return list.filter(section => section.data.length > 0);
   }, [getWalletCurrencyList, type, swapCurrencyList]);
 
   const handleFavoriteAsset = useCallback(
@@ -213,17 +229,15 @@ export default function CurrencySelectModal() {
     ]
   );
 
-  const itemProps = useMemo(
-    () => { 
-      const isMainnet = currentChainId === 1;
-      return {
+  const itemProps = useMemo(() => {
+    const isMainnet = currentChainId === ChainId.mainnet;
+    return {
       onActionAsset: handleFavoriteAsset,
       onPress: handleSelectAsset,
       showBalance: type === CurrencySelectionTypes.input,
       showFavoriteButton: type === CurrencySelectionTypes.output && isMainnet,
-    }},
-    [handleFavoriteAsset, handleSelectAsset, type, currentChainId]
-  );
+    };
+  }, [handleFavoriteAsset, handleSelectAsset, type, currentChainId]);
 
   const handleApplyFavoritesQueue = useCallback(() => {
     const addresses = Object.keys(assetsToFavoriteQueue);

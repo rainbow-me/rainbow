@@ -1,4 +1,5 @@
 import { isAddress } from '@ethersproject/address';
+import { ChainId } from '@rainbow-me/swaps';
 import { Contract, ethers } from 'ethers';
 import { rankings } from 'match-sorter';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -10,11 +11,13 @@ import { AppState } from '../redux/store';
 import { uniswapUpdateFavorites } from '../redux/uniswap';
 import usePrevious from './usePrevious';
 import {
+  AssetType,
+  RainbowToken,
   RainbowToken as RT,
   TokenSearchTokenListId,
 } from '@rainbow-me/entities';
 import tokenSearch from '@rainbow-me/handlers/tokenSearch';
-import { addHexPrefix, web3Provider } from '@rainbow-me/handlers/web3';
+import { addHexPrefix, getProviderForNetwork } from '@rainbow-me/handlers/web3';
 import tokenSectionTypes from '@rainbow-me/helpers/tokenSectionTypes';
 import { erc20ABI } from '@rainbow-me/references';
 import { ethereumUtils, filterList, logger } from '@rainbow-me/utils';
@@ -114,14 +117,12 @@ const useSwapCurrencyList = (
   }, [chainId, searchQuery, searching, unfilteredFavorites]);
 
   const getimportedAsset = useCallback(
-    async searchQuery => {
+    async (searchQuery, chainId): Promise<RT[] | null> => {
       if (searching) {
         if (isAddress(searchQuery)) {
-          const tokenContract = new Contract(
-            searchQuery,
-            erc20ABI,
-            web3Provider
-          );
+          const network = ethereumUtils.getNetworkFromChainId(chainId);
+          const provider = await getProviderForNetwork(network);
+          const tokenContract = new Contract(searchQuery, erc20ABI, provider);
           try {
             const [name, symbol, decimals, address] = await Promise.all([
               tokenContract.name(),
@@ -129,20 +130,28 @@ const useSwapCurrencyList = (
               tokenContract.decimals(),
               ethers.utils.getAddress(searchQuery),
             ]);
-
+            const uniqueId =
+              chainId === ChainId.mainnet ? address : `${address}_${network}`;
+            const type =
+              chainId === ChainId.mainnet ? AssetType.token : network;
             return [
               {
-                address,
                 decimals,
                 favorite: false,
                 highLiquidity: false,
                 isRainbowCurated: false,
                 isVerified: false,
                 name,
+                networks: {
+                  [chainId]: {
+                    address,
+                    decimals,
+                  },
+                },
                 symbol,
-                totalLiquidity: 0,
-                uniqueId: address,
-              },
+                type,
+                uniqueId,
+              } as RainbowToken,
             ];
           } catch (e) {
             logger.log('error getting token data');
@@ -183,10 +192,16 @@ const useSwapCurrencyList = (
         case 'favoriteAssets':
           setFavoriteAssets((await getFavorites()) || []);
           break;
-        case 'importedAssets':
-          // @ts-ignore
-          setimportedAssets((await getimportedAsset(searchQuery)) || []);
+        case 'importedAssets': {
+          const importedAssetResult = await getimportedAsset(
+            searchQuery,
+            chainId
+          );
+          if (importedAssetResult) {
+            setimportedAssets(handleSearchResponse(importedAssetResult));
+          }
           break;
+        }
       }
     },
     [getFavorites, getimportedAsset, handleSearchResponse, searchQuery, chainId]
@@ -223,41 +238,12 @@ const useSwapCurrencyList = (
     setLowLiquidityAssets([]);
     setHighLiquidityAssets([]);
     setVerifiedAssets([]);
+    setimportedAssets([]);
   }, [getResultsForAssetType]);
 
   const wasSearching = usePrevious(searching);
   const previousSearchQuery = usePrevious(searchQuery);
 
-  // useEffect(() => {
-  //   const doSearch = async () => {
-  //     if (
-  //       (searching && !wasSearching) ||
-  //       (searching && previousSearchQuery !== searchQuery) ||
-  //       chainId !== previousChainId
-  //     ) {
-  //       if (chainId === MAINNET_CHAINID) {
-  //         search();
-  //         slowSearch();
-  //       } else {
-  //         await search();
-  //         setLoading(false);
-  //       }
-  //     } else {
-  //       clearSearch();
-  //     }
-  //   };
-  //   doSearch();
-  // }, [
-  //   searching,
-  //   searchQuery,
-  //   chainId,
-  //   previousChainId,
-  //   wasSearching,
-  //   previousSearchQuery,
-  //   search,
-  //   slowSearch,
-  //   clearSearch,
-  // ]);
   useEffect(() => {
     const doSearch = async () => {
       if (

@@ -111,9 +111,9 @@ const ExchangeCoinRow = ({
       </ButtonPressAnimation>
       {!item.isNativeAsset && !showBalance && (
         <CoinRowInfoButton
-          showFavoriteButton={showFavoriteButton}
           item={item}
           onCopySwapDetailsText={onCopySwapDetailsText}
+          showFavoriteButton={showFavoriteButton}
         />
       )}
       {showFavoriteButton && ios && (

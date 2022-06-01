@@ -63,6 +63,7 @@ const CoinIcon = ({
           }
           size={size}
           symbol={symbol}
+          type={type}
         />
       ) : (
         <ContractInteractionIcon size={size} source={ContractInteraction} />
