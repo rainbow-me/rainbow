@@ -18,12 +18,16 @@ export const saveProfile = (key: string, value: Object) =>
   saveGlobal(ensProfileKey(key), JSON.stringify(value), ensProfileVersion);
 
 export const getProfileImages = async (key: string) => {
-  const images = await getGlobal(
-    ensProfileImagesKey(key),
-    null,
-    ensProfileVersion
-  );
-  return images ? JSON.parse(images) : null;
+  try {
+    const images = await getGlobal(
+      ensProfileImagesKey(key),
+      null,
+      ensProfileVersion
+    );
+    return images ? JSON.parse(images) : null;
+  } catch {
+    return null;
+  }
 };
 
 export const saveProfileImages = (key: string, value: Object) =>

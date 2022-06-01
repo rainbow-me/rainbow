@@ -85,8 +85,8 @@ export default function ProfileSheet() {
         colors.appleBlue
       : colors.skeleton;
 
-  const enableZoomableImages =
-    !params.isPreview && name !== Routes.PROFILE_PREVIEW_SHEET;
+  const isPreview = name === Routes.PROFILE_PREVIEW_SHEET;
+  const enableZoomableImages = !isPreview;
 
   useEffect(() => {
     if (profileAddress && accountAddress) {
@@ -105,19 +105,17 @@ export default function ProfileSheet() {
         <AccentColorProvider color={accentColor}>
           <Box background="body">
             <Box style={wrapperStyle}>
-              {!isSuccess || !hasListFetched ? (
+              {!isPreview && (!isSuccess || !hasListFetched) ? (
                 <Stack space="19px">
-                  <ProfileSheetHeader isLoading isPreview={params.isPreview} />
+                  <ProfileSheetHeader isLoading />
                   <PlaceholderList />
                 </Stack>
-              ) : !params.isPreview ? (
+              ) : profileAddress ? (
                 <RecyclerAssetList2
                   externalAddress={profileAddress}
                   type="ens-profile"
                 />
-              ) : (
-                <ProfileSheetHeader ensName={params?.ensName} isPreview />
-              )}
+              ) : null}
             </Box>
           </Box>
         </AccentColorProvider>

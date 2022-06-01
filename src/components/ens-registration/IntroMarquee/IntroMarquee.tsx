@@ -1,15 +1,12 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-// @ts-expect-error
-import { IS_TESTING } from 'react-native-dotenv';
+import React, { useCallback, useMemo } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import { prefetchENSProfile } from '../../../hooks/useENSProfile';
-import { prefetchENSProfileImages } from '../../../hooks/useENSProfileImages';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { MarqueeList } from '../../list';
 import { Box, Stack, Text } from '@rainbow-me/design-system';
-import { fetchRecords } from '@rainbow-me/handlers/ens';
+import { ensProfileQueryKey, useENSProfile } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
+import { queryClient } from '@rainbow-me/react-query/queryClient';
 import { ensIntroMarqueeNames } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 
@@ -23,21 +20,22 @@ const estimateDescriptionProfilePreviewHeight = (description?: string) => {
 
 export default function IntroMarquee() {
   const { navigate } = useNavigation();
-  const [introMarqueeProfiles, setIntroMarqueeProfiles] = useState<{
-    [name: string]: string | undefined;
-  }>({});
 
   const handlePressENS = useCallback(
     (ensName: string) => {
+      const profile = queryClient.getQueryData<
+        ReturnType<typeof useENSProfile>['data']
+      >(ensProfileQueryKey(ensName));
+      const description = profile?.records?.description || '';
       navigate(Routes.PROFILE_PREVIEW_SHEET, {
         address: ensName,
         descriptionProfilePreviewHeight: estimateDescriptionProfilePreviewHeight(
-          introMarqueeProfiles[ensName]
+          description
         ),
         fromDiscover: true,
       });
     },
-    [introMarqueeProfiles, navigate]
+    [navigate]
   );
 
   const renderItem = useCallback(
@@ -52,22 +50,6 @@ export default function IntroMarquee() {
     ),
     []
   );
-
-  useEffect(() => {
-    const getProfiles = async () => {
-      const profiles: { [name: string]: string | undefined } = {};
-      await Promise.all(
-        ensIntroMarqueeNames.map(async name => {
-          prefetchENSProfileImages({ name });
-          prefetchENSProfile({ name });
-          const records = await fetchRecords(name);
-          profiles[name] = records?.description;
-        })
-      );
-      setIntroMarqueeProfiles(profiles as any);
-    };
-    if (IS_TESTING !== 'true') getProfiles();
-  }, []);
 
   const items = useMemo(
     () =>

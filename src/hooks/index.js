@@ -38,7 +38,7 @@ export { default as useDPI } from './useDPI';
 export { default as useEffectDebugger } from './useEffectDebugger';
 export { default as useEmailRainbow } from './useEmailRainbow';
 export { default as useENSPendingRegistrations } from './useENSPendingRegistrations';
-export { default as useENSProfile } from './useENSProfile';
+export { default as useENSProfile, ensProfileQueryKey } from './useENSProfile';
 export { default as useENSProfileImages } from './useENSProfileImages';
 export { default as useFadeImage } from './useFadeImage';
 export { default as useTrackENSProfile } from './useTrackENSProfile';
@@ -49,7 +49,10 @@ export { default as useENSRegistrationActionHandler } from './useENSRegistration
 export { default as useENSRegistrationStepHandler } from './useENSRegistrationStepHandler';
 export { default as useENSRegistrationCosts } from './useENSRegistrationCosts';
 export { default as useENSRegistrationForm } from './useENSRegistrationForm';
-export { default as useENSResolveName } from './useENSResolveName';
+export {
+  default as useENSResolveName,
+  prefetchENSResolveName,
+} from './useENSResolveName';
 export { default as useENSProfileRecords } from './useENSProfileRecords';
 export { default as useENSSearch } from './useENSSearch';
 export { default as useExpandedStateNavigation } from './useExpandedStateNavigation';
