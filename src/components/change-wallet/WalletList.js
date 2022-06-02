@@ -1,14 +1,8 @@
 import lang from 'i18n-js';
 import { get, isEmpty } from 'lodash';
-import React, {
-  Fragment,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList } from 'react-native-gesture-handler';
-import { Transition, Transitioning } from 'react-native-reanimated';
+import Animated, { Easing, FadeIn, FadeOut } from 'react-native-reanimated';
 import networkTypes from '../../helpers/networkTypes';
 import WalletTypes from '../../helpers/walletTypes';
 import { address } from '../../utils/abbreviations';
@@ -23,6 +17,7 @@ import { position } from '@rainbow-me/styles';
 
 const listTopPadding = 7.5;
 const rowHeight = 59;
+const transitionDuration = 150;
 
 const RowTypes = {
   ADDRESS: 1,
@@ -40,17 +35,13 @@ const getItemLayout = (data, index) => {
 
 const keyExtractor = item => `${item.walletId}-${item?.id}`;
 
-const skeletonTransition = (
-  <Transition.Sequence>
-    <Transition.Out interpolation="easeOut" type="fade" />
-    <Transition.Change durationMs={0.001} interpolation="easeOut" />
-    <Transition.In durationMs={0.001} interpolation="easeOut" type="fade" />
-  </Transition.Sequence>
-);
-
-const Container = styled(Transitioning.View)({
+const Container = styled.View({
   height: ({ height }) => height,
   marginTop: -2,
+});
+
+const WalletsContainer = styled(Animated.View)({
+  flex: 1,
 });
 
 const EmptyWalletList = styled(EmptyAssetList).attrs({
@@ -105,7 +96,6 @@ export default function WalletList({
   const [rows, setRows] = useState([]);
   const [ready, setReady] = useState(false);
   const scrollView = useRef(null);
-  const skeletonTransitionRef = useRef();
   const { network } = useAccountSettings();
 
   // Update the rows when allWallets changes
@@ -174,9 +164,6 @@ export default function WalletList({
   useEffect(() => {
     if (rows && rows.length && !ready) {
       setTimeout(() => {
-        if (ios) {
-          skeletonTransitionRef.current?.animateNextTransition();
-        }
         setReady(true);
       }, 50);
     }
@@ -205,13 +192,14 @@ export default function WalletList({
   );
 
   return (
-    <Container
-      height={height}
-      ref={skeletonTransitionRef}
-      transition={skeletonTransition}
-    >
+    <Container height={height}>
       {ready ? (
-        <Fragment>
+        <WalletsContainer
+          entering={FadeIn.easing(Easing.in(Easing.ease)).duration(
+            transitionDuration
+          )}
+          exiting={FadeOut.easing(Easing.out(Easing.ease)).duration(0.001)}
+        >
           <WalletFlatList
             data={rows}
             initialNumToRender={rows.length}
@@ -237,9 +225,16 @@ export default function WalletList({
               />
             </WalletListFooter>
           )}
-        </Fragment>
+        </WalletsContainer>
       ) : (
-        <EmptyWalletList />
+        <Animated.View
+          entering={FadeIn.easing(Easing.out(Easing.ease)).duration(0.001)}
+          exiting={FadeOut.easing(Easing.out(Easing.ease)).duration(
+            transitionDuration
+          )}
+        >
+          <EmptyWalletList />
+        </Animated.View>
       )}
     </Container>
   );

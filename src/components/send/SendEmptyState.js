@@ -1,45 +1,27 @@
-import React, { useRef } from 'react';
-import { View } from 'react-native';
-import { Transition, Transitioning } from 'react-native-reanimated';
+import React from 'react';
+import { Dimensions } from 'react-native';
+import Animated, { Easing, FadeOut, Keyframe } from 'react-native-reanimated';
 import { sheetVerticalOffset } from '../../navigation/effects';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 
 const duration = 200;
-const transition = (
-  <Transition.Sequence>
-    <Transition.Out durationMs={duration} interpolation="easeIn" type="fade" />
-    <Transition.Change durationMs={duration} interpolation="easeInOut" />
-    <Transition.Together>
-      <Transition.In
-        delayMs={duration}
-        durationMs={duration}
-        interpolation="easeOut"
-        type="fade"
-      />
-      <Transition.In
-        delayMs={duration}
-        durationMs={duration / 2}
-        interpolation="easeIn"
-        type="scale"
-      />
-      <Transition.In
-        delayMs={duration}
-        durationMs={duration}
-        interpolation="easeInOut"
-        type="slide-bottom"
-      />
-    </Transition.Together>
-  </Transition.Sequence>
-);
+
+const screenHeight = Dimensions.get('window').height;
+
+const keyframe = new Keyframe({
+  0: {
+    opacity: 0,
+    transform: [{ translateY: screenHeight }, { scale: 0.0001 }],
+  },
+  100: {
+    easing: Easing.out(Easing.ease),
+    opacity: 1,
+    transform: [{ translateY: 0 }, { scale: 1 }],
+  },
+});
 
 const SendEmptyState = () => {
-  const ref = useRef();
-
-  if (ref.current && ios) {
-    ref.current.animateNextTransition();
-  }
-
   const { colors } = useTheme();
 
   const icon = (
@@ -56,7 +38,15 @@ const SendEmptyState = () => {
   );
 
   if (android) {
-    return <View style={{ alignItems: 'center', flex: 1 }}>{icon}</View>;
+    return (
+      <Animated.View
+        entering={keyframe.duration(duration)}
+        exiting={FadeOut.duration(duration).easing(Easing.in(Easing.ease))}
+        style={{ alignItems: 'center', flex: 1 }}
+      >
+        {icon}
+      </Animated.View>
+    );
   }
 
   return (
@@ -66,9 +56,12 @@ const SendEmptyState = () => {
       justify="space-between"
       paddingBottom={sheetVerticalOffset + 19}
     >
-      <Transitioning.View ref={ref} transition={transition}>
+      <Animated.View
+        entering={keyframe.duration(duration)}
+        exiting={FadeOut.duration(duration).easing(Easing.in(Easing.ease))}
+      >
         {icon}
-      </Transitioning.View>
+      </Animated.View>
     </Centered>
   );
 };
