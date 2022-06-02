@@ -18,7 +18,11 @@ import {
   ETH_ICON_URL,
   supportedNativeCurrencies,
 } from '@rainbow-me/references';
-import { ethereumUtils, getUniqueTokenFormat } from '@rainbow-me/utils';
+import {
+  ethereumUtils,
+  getUniqueTokenFormat,
+  getUniqueTokenType,
+} from '@rainbow-me/utils';
 
 const COINS_TO_SHOW = 5;
 
@@ -339,7 +343,8 @@ export const buildBriefUniqueTokenList = (
   const filteredUniqueTokens = uniqueTokens.filter(token => {
     if (listType === 'select-nft') {
       const format = getUniqueTokenFormat(token);
-      return format === 'image';
+      const type = getUniqueTokenType(token);
+      return format === 'image' && type === 'NFT';
     }
     return true;
   });
