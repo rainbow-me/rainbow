@@ -2,14 +2,19 @@ import c from 'chroma-js';
 import makeColorMoreChill from 'make-color-more-chill';
 // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { IS_TESTING } from 'react-native-dotenv';
-import Palette from 'react-native-palette-full';
+import Palette, { IPalette } from 'react-native-palette-full';
 
 export default async function getDominantColorFromImage(
   imageUrl: string,
   colorToMeasureAgainst: string
 ) {
   if (IS_TESTING === 'true') return undefined;
-  let colors = await Palette.getNamedSwatchesFromUrl(imageUrl);
+  let colors: IPalette;
+  if (/^http/.test(imageUrl)) {
+    colors = await Palette.getNamedSwatchesFromUrl(imageUrl);
+  } else {
+    colors = await Palette.getNamedSwatches(imageUrl);
+  }
 
   // react-native-palette keys for Android are not the same as iOS so we fix here
   if (android) {

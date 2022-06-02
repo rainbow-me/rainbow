@@ -106,16 +106,22 @@ function rowRenderer(type: CellType, { uid }: { uid: string }) {
             );
           }
           case CellType.NFT: {
-            const { index, uniqueId } = data as NFTExtraData;
+            const {
+              index,
+              uniqueId,
+              onPressUniqueToken,
+            } = data as NFTExtraData;
 
             return (
               <WrappedNFT
+                onPress={onPressUniqueToken}
                 placement={index % 2 === 0 ? 'left' : 'right'}
                 uniqueId={uniqueId}
               />
             );
           }
           case CellType.LOADING_ASSETS:
+            // @ts-expect-error untyped JS component
             return <AssetListItemSkeleton />;
         }
         assertNever(type);

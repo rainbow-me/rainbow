@@ -7,9 +7,10 @@ import { fetchOnchainBalances } from '../redux/fallbackExplorer';
 import { uniqueTokensRefreshState } from '../redux/uniqueTokens';
 import { updatePositions } from '../redux/usersPositions';
 import { walletConnectLoadState } from '../redux/walletconnect';
-import { fetchWalletNames } from '../redux/wallets';
+import { fetchWalletENSAvatars, fetchWalletNames } from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
 import useSavingsAccount from './useSavingsAccount';
+import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import logger from 'logger';
 
 export default function useRefreshAccountData() {
@@ -17,6 +18,7 @@ export default function useRefreshAccountData() {
   const { network } = useAccountSettings();
   const { refetchSavings } = useSavingsAccount();
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   const fetchAccountData = useCallback(async () => {
     // Refresh unique tokens for Rinkeby
@@ -32,6 +34,9 @@ export default function useRefreshAccountData() {
 
     try {
       const getWalletNames = dispatch(fetchWalletNames());
+      const getWalletENSAvatars = profilesEnabled
+        ? dispatch(fetchWalletENSAvatars())
+        : null;
       const getUniqueTokens = dispatch(uniqueTokensRefreshState());
       const balances = dispatch(
         fetchOnchainBalances({ keepPolling: false, withPrices: false })
@@ -42,6 +47,7 @@ export default function useRefreshAccountData() {
         delay(1250), // minimum duration we want the "Pull to Refresh" animation to last
         getWalletNames,
         getUniqueTokens,
+        getWalletENSAvatars,
         refetchSavings(true),
         balances,
         wc,
@@ -52,7 +58,7 @@ export default function useRefreshAccountData() {
       captureException(error);
       throw error;
     }
-  }, [dispatch, network, refetchSavings]);
+  }, [dispatch, network, profilesEnabled, refetchSavings]);
 
   const refresh = useCallback(async () => {
     if (isRefreshing) return;

@@ -1,99 +1,80 @@
-import { format } from 'date-fns';
 import { useCallback, useMemo } from 'react';
-import { useQuery } from 'react-query';
+import { useDispatch, useSelector } from 'react-redux';
 import { useAccountSettings } from '.';
-import { fetchRegistrationDate } from '@rainbow-me/handlers/ens';
-import {
-  formatRentPrice,
-  getAvailable,
-  getNameExpires,
-  getRentPrice,
-} from '@rainbow-me/helpers/ens';
-import { Network } from '@rainbow-me/helpers/networkTypes';
-import { timeUnits } from '@rainbow-me/references';
-import { ethereumUtils, validateENS } from '@rainbow-me/utils';
+import { Records } from '@rainbow-me/entities';
+import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
+import * as ensRedux from '@rainbow-me/redux/ensRegistration';
+import { AppState } from '@rainbow-me/redux/store';
 
-const formatTime = (timestamp: string, abbreviated: boolean = true) => {
-  const style = abbreviated ? 'MMM d, y' : 'MMMM d, y';
-  return format(new Date(Number(timestamp) * 1000), style);
-};
+export default function useENSRegistration() {
+  const { accountAddress } = useAccountSettings();
 
-export default function useENSRegistration({
-  duration = 1,
-  name,
-}: {
-  duration?: number;
-  name: string;
-}) {
-  const { nativeCurrency } = useAccountSettings();
-  const isValidLength = useMemo(() => name.length > 2, [name.length]);
-
-  const getRegistrationValues = useCallback(async () => {
-    const ensValidation = validateENS(`${name}.eth`, {
-      includeSubdomains: false,
-    });
-
-    if (!ensValidation.valid) {
+  const registrationParameters = useSelector(
+    ({ ensRegistration }: AppState) => {
       return {
-        code: ensValidation.code,
-        hint: ensValidation.hint,
-        valid: false,
+        ...ensRegistration.registrations?.[accountAddress?.toLowerCase()]?.[
+          ensRegistration.currentRegistrationName
+        ],
+        currentRegistrationName: ensRegistration.currentRegistrationName,
       };
     }
-
-    const isAvailable = await getAvailable(name);
-    if (isAvailable) {
-      const rentPrice = await getRentPrice(
-        name,
-        duration * timeUnits.secs.year
-      );
-      const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
-        Network.mainnet
-      );
-      const formattedRentPrice = formatRentPrice(
-        rentPrice,
-        duration,
-        nativeCurrency,
-        nativeAssetPrice
-      );
-
-      return {
-        available: isAvailable,
-        rentPrice: formattedRentPrice,
-        valid: true,
-      };
-    } else {
-      // we need the expiration and registration date when is not available
-      const registrationDate = await fetchRegistrationDate(name + '.eth');
-      const nameExpires = await getNameExpires(name);
-      const formattedRegistrationDate = formatTime(registrationDate, false);
-      const formattedExpirationDate = formatTime(nameExpires);
-
-      return {
-        available: isAvailable,
-        expirationDate: formattedExpirationDate,
-        registrationDate: formattedRegistrationDate,
-        valid: true,
-      };
-    }
-  }, [duration, name, nativeCurrency]);
-
-  const { data, status, isIdle, isLoading } = useQuery(
-    ['getRegistrationValues', [duration, name, nativeCurrency]],
-    getRegistrationValues,
-    { enabled: isValidLength, retry: 0, staleTime: Infinity }
   );
 
-  const isAvailable = status === 'success' && data?.available === true;
-  const isRegistered = status === 'success' && data?.available === false;
-  const isInvalid = status === 'success' && !data?.valid;
+  const { mode, name, initialRecords, records } = useMemo(
+    () => ({
+      initialRecords: registrationParameters.initialRecords || {},
+      mode: registrationParameters.mode,
+      name: registrationParameters.currentRegistrationName,
+      records: registrationParameters.records || {},
+    }),
+    [
+      registrationParameters.initialRecords,
+      registrationParameters.mode,
+      registrationParameters.currentRegistrationName,
+      registrationParameters.records,
+    ]
+  );
+
+  const dispatch = useDispatch();
+  const removeRecordByKey = useCallback(
+    (key: string) => dispatch(ensRedux.removeRecordByKey(key)),
+    [dispatch]
+  );
+  const startRegistration = useCallback(
+    (name: string, mode: keyof typeof REGISTRATION_MODES) =>
+      dispatch(ensRedux.startRegistration(name, mode)),
+    [dispatch]
+  );
+  const updateRecordByKey = useCallback(
+    (key: string, value: string) =>
+      dispatch(ensRedux.updateRecordByKey(key, value)),
+    [dispatch]
+  );
+  const updateRecords = useCallback(
+    (records: Records) => dispatch(ensRedux.updateRecords(records)),
+    [dispatch]
+  );
+  const clearCurrentRegistrationName = useCallback(
+    () => dispatch(ensRedux.clearCurrentRegistrationName()),
+    [dispatch]
+  );
+
+  const removeRegistrationByName = useCallback(
+    (name: string) => dispatch(ensRedux.removeRegistrationByName(name)),
+    [dispatch]
+  );
 
   return {
-    data,
-    isAvailable,
-    isIdle,
-    isInvalid,
-    isLoading,
-    isRegistered,
+    clearCurrentRegistrationName,
+    initialRecords,
+    mode,
+    name,
+    records,
+    registrationParameters,
+    removeRecordByKey,
+    removeRegistrationByName,
+    startRegistration,
+    updateRecordByKey,
+    updateRecords,
   };
 }
