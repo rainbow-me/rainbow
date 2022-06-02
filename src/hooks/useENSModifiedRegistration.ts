@@ -40,7 +40,9 @@ const getImageUrl = (
           token.asset_contract.address === contractAddress &&
           token.id === tokenId
       );
-      if (uniqueToken?.image_url) {
+      if (uniqueToken?.lowResUrl) {
+        imageUrl = uniqueToken?.lowResUrl;
+      } else if (uniqueToken?.image_url) {
         imageUrl = uniqueToken?.image_url;
       } else if (uniqueToken?.image_thumbnail_url) {
         imageUrl = uniqueToken?.image_thumbnail_url;

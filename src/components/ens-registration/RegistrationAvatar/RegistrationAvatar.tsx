@@ -64,9 +64,12 @@ const RegistrationAvatar = ({
   );
   useEffect(() => {
     if (avatarUpdateAllowed) {
-      setAvatarUrl(
-        typeof initialAvatarUrl === 'string' ? initialAvatarUrl : values?.avatar
-      );
+      const avatarUrl =
+        typeof initialAvatarUrl === 'string'
+          ? initialAvatarUrl
+          : values?.avatar;
+      setAvatarUrl(avatarUrl);
+      onChangeAvatarUrl(avatarUrl || '');
     }
   }, [initialAvatarUrl, avatarUpdateAllowed]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -86,11 +89,15 @@ const RegistrationAvatar = ({
       image?: Image & { tmpPath?: string };
     }) => {
       setAvatarMetadata(image);
-      setAvatarUrl(image?.tmpPath || asset?.image_thumbnail_url || '');
+      setAvatarUrl(
+        image?.tmpPath || asset?.lowResUrl || asset?.image_thumbnail_url || ''
+      );
       // We want to disallow future avatar state changes (i.e. when upload successful)
       // to avoid avatar flashing (from temp URL to uploaded URL).
       setAvatarUpdateAllowed(false);
-      onChangeAvatarUrl(image?.path || asset?.image_thumbnail_url || '');
+      onChangeAvatarUrl(
+        image?.path || asset?.lowResUrl || asset?.image_thumbnail_url || ''
+      );
       if (asset) {
         const standard = asset.asset_contract?.schema_name || '';
         const contractAddress = asset.asset_contract?.address || '';

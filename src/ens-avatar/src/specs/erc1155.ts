@@ -3,7 +3,9 @@ import { Contract } from '@ethersproject/contracts';
 import { BaseProvider } from '@ethersproject/providers';
 import { AvatarRequestOpts } from '..';
 import { resolveURI } from '../utils';
-import { apiGetUniqueTokenImage } from '@rainbow-me/handlers/opensea-api';
+import { UniqueAsset } from '@rainbow-me/entities';
+import { apiGetAccountUniqueToken } from '@rainbow-me/handlers/opensea-api';
+import { NetworkTypes } from '@rainbow-me/helpers';
 
 const abi = [
   'function uri(uint256 _id) public view returns (string memory)',
@@ -37,10 +39,11 @@ export default class ERC1155 {
       return JSON.parse(_resolvedUri);
     }
 
-    const { image_url } = await apiGetUniqueTokenImage(
+    const data: UniqueAsset = await apiGetAccountUniqueToken(
+      NetworkTypes.mainnet,
       contractAddress,
       tokenID
     );
-    return { image: image_url };
+    return { image: data?.image_url || data?.lowResUrl };
   }
 }

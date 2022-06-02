@@ -18,7 +18,11 @@ import {
   ETH_ICON_URL,
   supportedNativeCurrencies,
 } from '@rainbow-me/references';
-import { ethereumUtils } from '@rainbow-me/utils';
+import {
+  ethereumUtils,
+  getUniqueTokenFormat,
+  getUniqueTokenType,
+} from '@rainbow-me/utils';
 
 const COINS_TO_SHOW = 5;
 
@@ -330,12 +334,21 @@ const regex = RegExp(/\s*(the)\s/, 'i');
 export const buildBriefUniqueTokenList = (
   uniqueTokens,
   selectedShowcaseTokens,
-  sellingTokens = []
+  sellingTokens = [],
+  listType
 ) => {
   const uniqueTokensInShowcase = uniqueTokens
     .filter(({ uniqueId }) => selectedShowcaseTokens?.includes(uniqueId))
     .map(({ uniqueId }) => uniqueId);
-  const grouped2 = groupBy(uniqueTokens, token => token.familyName);
+  const filteredUniqueTokens = uniqueTokens.filter(token => {
+    if (listType === 'select-nft') {
+      const format = getUniqueTokenFormat(token);
+      const type = getUniqueTokenType(token);
+      return format === 'image' && type === 'NFT';
+    }
+    return true;
+  });
+  const grouped2 = groupBy(filteredUniqueTokens, token => token.familyName);
   const families2 = sortBy(Object.keys(grouped2), row =>
     row.replace(regex, '').toLowerCase()
   );
@@ -344,7 +357,7 @@ export const buildBriefUniqueTokenList = (
     { type: 'NFTS_HEADER', uid: 'nfts-header' },
     { type: 'NFTS_HEADER_SPACE_AFTER', uid: 'nfts-header-space-after' },
   ];
-  if (uniqueTokensInShowcase.length > 0) {
+  if (uniqueTokensInShowcase.length > 0 && listType !== 'select-nft') {
     result.push({
       name: 'Showcase',
       total: uniqueTokensInShowcase.length,
