@@ -3,13 +3,13 @@ import { ButtonPressAnimation } from '../animations';
 import { InnerBorder } from '../layout';
 import { CardSize } from './CardSize';
 import UniqueTokenImage from './UniqueTokenImage';
-import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
 import {
   usePersistentAspectRatio,
   usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { shadow as shadowUtil } from '@rainbow-me/styles';
+import isSVGImage from '@rainbow-me/utils/isSVG';
 
 const UniqueTokenCardBorderRadius = 20;
 const UniqueTokenCardShadowFactory = colors => [0, 2, 6, colors.shadow, 0.08];
@@ -42,7 +42,7 @@ const UniqueTokenCard = ({
   usePersistentAspectRatio(item.lowResUrl);
   usePersistentDominantColorFromImage(item.lowResUrl);
 
-  const isSVG = isSupportedUriExtension(item.image_url, ['.svg']);
+  const isSVG = isSVGImage(item.image_url);
 
   const handlePress = useCallback(() => {
     if (onPress) {
