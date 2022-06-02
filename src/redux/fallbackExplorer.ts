@@ -12,6 +12,7 @@ import { AdditionalAssetsDataState } from './additionalAssetsData';
 import {
   addressAssetsReceived,
   DataState,
+  DISPERSION_SUCCESS_CODE,
   fetchAssetPricesWithCoingecko,
 } from './data';
 import { explorerInitL2 } from './explorer';
@@ -685,7 +686,7 @@ export const fetchOnchainBalances = ({
           meta: {
             address: accountAddress,
             currency: nativeCurrency,
-            status: 'ok',
+            status: DISPERSION_SUCCESS_CODE,
           },
           // @ts-expect-error The types of 'asset.decimals' are incompatible between these types.
           payload: newPayload,

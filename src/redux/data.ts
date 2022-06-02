@@ -548,6 +548,9 @@ type DataMessage =
   | AssetPricesReceivedMessage
   | AssetPricesChangedMessage;
 
+// The success code used to determine if an incoming message is successful.
+export const DISPERSION_SUCCESS_CODE = 'ok';
+
 // Functions:
 
 /**
@@ -750,7 +753,7 @@ const genericAssetsFallback = () => async (
       {
         meta: {
           currency: 'usd',
-          status: 'ok',
+          status: DISPERSION_SUCCESS_CODE,
         },
         payload: { prices: allPrices },
       },
@@ -926,7 +929,7 @@ export const portfolioReceived = (
   dispatch: Dispatch<DataUpdatePortfoliosAction>,
   getState: AppGetState
 ) => {
-  if (message?.meta?.status !== 'ok') return;
+  if (message?.meta?.status !== DISPERSION_SUCCESS_CODE) return;
   if (!message?.payload?.portfolio) return;
 
   const { portfolios } = getState().data;

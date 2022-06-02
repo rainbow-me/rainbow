@@ -17,6 +17,7 @@ import {
   assetPricesReceived,
   AssetPricesReceivedMessage,
   disableGenericAssetsFallbackIfNeeded,
+  DISPERSION_SUCCESS_CODE,
   MessageMeta,
   portfolioReceived,
   PortfolioReceivedMessage,
@@ -497,7 +498,7 @@ const disableFallbackIfNeeded = () => (
  */
 const isValidAssetsResponseFromZerion = (msg: AddressAssetsReceivedMessage) => {
   // Check that the payload meta is valid
-  if (msg?.meta?.status === 'ok') {
+  if (msg?.meta?.status === DISPERSION_SUCCESS_CODE) {
     // Check that there's an assets property in the payload
     if (msg.payload?.assets) {
       const assets = keys(msg.payload.assets);

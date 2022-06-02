@@ -4,7 +4,11 @@ import { isEmpty, keyBy, map, mapValues, pickBy, toLower } from 'lodash';
 import isEqual from 'react-fast-compare';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
-import { addressAssetsReceived, fetchAssetPricesWithCoingecko } from './data';
+import {
+  addressAssetsReceived,
+  DISPERSION_SUCCESS_CODE,
+  fetchAssetPricesWithCoingecko,
+} from './data';
 import { emitAssetRequest, emitChartsRequest } from './explorer';
 import { AppGetState, AppState } from './store';
 import { ZerionAsset } from '@rainbow-me/entities';
@@ -225,7 +229,7 @@ export const optimismExplorerInit = () => async (
               meta: {
                 address: accountAddress,
                 currency: nativeCurrency,
-                status: 'ok',
+                status: DISPERSION_SUCCESS_CODE,
               },
               payload: newPayload,
             },
