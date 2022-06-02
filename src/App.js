@@ -77,7 +77,6 @@ import { InitialRouteContext } from '@rainbow-me/navigation/initialRoute';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 import { Portal } from 'react-native-cool-modals/Portal';
-
 const WALLETCONNECT_SYNC_DELAY = 500;
 
 const FedoraToastRef = createRef();
@@ -133,7 +132,6 @@ if (__DEV__) {
     };
     Sentry.init(sentryOptions);
   }
-
   initSentryAndCheckForFedoraMode();
 }
 

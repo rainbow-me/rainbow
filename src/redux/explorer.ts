@@ -67,6 +67,7 @@ const messages = {
     CHANGED: 'changed address assets',
     RECEIVED: 'received address assets',
     RECEIVED_ARBITRUM: 'received address arbitrum-assets',
+    RECEIVED_OPTIMISM: 'received address optimism-assets',
     RECEIVED_POLYGON: 'received address polygon-assets',
     REMOVED: 'removed address assets',
   },
@@ -78,6 +79,7 @@ const messages = {
     CHANGED: 'changed address transactions',
     RECEIVED: 'received address transactions',
     RECEIVED_ARBITRUM: 'received address arbitrum-transactions',
+    RECEIVED_OPTIMISM: 'received address optimism-transactions',
     RECEIVED_POLYGON: 'received address polygon-transactions',
     REMOVED: 'removed address transactions',
   },
@@ -388,6 +390,7 @@ const l2AddressTransactionHistoryRequest = (
     },
     scope: [
       `${Network.arbitrum}-transactions`,
+      `${Network.optimism}-transactions`,
       `${Network.polygon}-transactions`,
     ],
   },
@@ -785,6 +788,8 @@ export const explorerInitL2 = (network: Network | null = null) => (
         break;
       case Network.optimism:
         // Start watching optimism assets
+        dispatch(fetchAssetsFromRefraction());
+        // Once covalent supports is official, we should get rid of the optimism explorer
         dispatch(optimismExplorerInit());
         break;
       default:
@@ -900,6 +905,14 @@ const listenOnAddressMessages = (socket: SocketIOClient.Socket) => (
   );
 
   socket.on(
+    messages.ADDRESS_TRANSACTIONS.RECEIVED_OPTIMISM,
+    (message: TransactionsReceivedMessage) => {
+      // logger.log('optimism txns received', message?.payload?.transactions);
+      dispatch(transactionsReceived(message));
+    }
+  );
+
+  socket.on(
     messages.ADDRESS_TRANSACTIONS.RECEIVED_POLYGON,
     (message: TransactionsReceivedMessage) => {
       // logger.log('polygon txns received', message?.payload?.transactions);
@@ -948,6 +961,13 @@ const listenOnAddressMessages = (socket: SocketIOClient.Socket) => (
   );
 
   socket.on(
+    messages.ADDRESS_ASSETS.RECEIVED_OPTIMISM,
+    (message: L2AddressAssetsReceivedMessage) => {
+      dispatch(l2AddressAssetsReceived(message, Network.optimism));
+    }
+  );
+
+  socket.on(
     messages.ADDRESS_ASSETS.RECEIVED_POLYGON,
     (message: L2AddressAssetsReceivedMessage) => {
       dispatch(l2AddressAssetsReceived(message, Network.polygon));
@@ -978,6 +998,7 @@ const listenOnAddressMessages = (socket: SocketIOClient.Socket) => (
     (message: AddressAssetsReceivedMessage) => {
       dispatch(addressAssetsReceived(message, true));
       dispatch(disableFallbackIfNeeded());
+      dispatch(optimismExplorerInit());
       // Fetch balances onchain to override zerion's
       // which is likely behind
       dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));

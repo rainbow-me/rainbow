@@ -7,6 +7,7 @@ import ArrowBackIcon from './svg/ArrowBack';
 import ArrowCircledIcon from './svg/ArrowCircledIcon';
 import ArrowIcon from './svg/ArrowIcon';
 import AvatarIcon from './svg/AvatarIcon';
+import BTCIcon from './svg/BTCIcon';
 import BackspaceIcon from './svg/BackspaceIcon';
 import CameraIcon from './svg/CameraIcon';
 import CaretIcon from './svg/CaretIcon';
@@ -20,6 +21,8 @@ import CloseIcon from './svg/CloseIcon';
 import CompassIcon from './svg/CompassIcon';
 import CopyIcon from './svg/CopyIcon';
 import CrosshairIcon from './svg/CrosshairIcon';
+import DOGEIcon from './svg/DOGEIcon';
+import DiscordIcon from './svg/DiscordIcon';
 import DotIcon from './svg/DotIcon';
 import DoubleCaretIcon from './svg/DoubleCaretIcon';
 import DoubleChevronIcon from './svg/DoubleChevronIcon';
@@ -36,10 +39,13 @@ import FaceIdIcon from './svg/FaceIdIcon';
 import FacebookIcon from './svg/FacebookIcon';
 import FatArrowIcon from './svg/FatArrowIcon';
 import GearIcon from './svg/GearIcon';
+import GitHubIcon from './svg/GitHubIcon';
 import HandleIcon from './svg/HandleIcon';
 import HiddenIcon from './svg/HiddenIcon';
 import InboxIcon from './svg/InboxIcon';
 import InfoIcon from './svg/InfoIcon';
+import InstagramIcon from './svg/InstagramIcon';
+import LTCIcon from './svg/LTCIcon';
 import LockIcon from './svg/LockIcon';
 import MinusCircledIcon from './svg/MinusCircledIcon';
 import OfflineIcon from './svg/OfflineIcon';
@@ -57,6 +63,7 @@ import SendIcon from './svg/SendIcon';
 import SendSmallIcon from './svg/SendSmallIcon';
 import ShareIcon from './svg/ShareIcon';
 import SignatureIcon from './svg/SignatureIcon';
+import SnapchatIcon from './svg/SnapchatIcon';
 import SpinnerIcon from './svg/SpinnerIcon';
 import StarIcon from './svg/StarIcon';
 import SwapIcon from './svg/SwapIcon';
@@ -76,6 +83,7 @@ const IconTypes = {
   arrowCircled: ArrowCircledIcon,
   avatar: AvatarIcon,
   backspace: BackspaceIcon,
+  btcCoin: BTCIcon,
   camera: CameraIcon,
   caret: CaretIcon,
   caretThin: CaretThinIcon,
@@ -88,6 +96,8 @@ const IconTypes = {
   compass: CompassIcon,
   copy: CopyIcon,
   crosshair: CrosshairIcon,
+  discord: DiscordIcon,
+  dogeCoin: DOGEIcon,
   dot: DotIcon,
   doubleCaret: DoubleCaretIcon,
   doubleChevron: DoubleChevronIcon,
@@ -106,11 +116,14 @@ const IconTypes = {
   fatArrow: FatArrowIcon,
   fingerprint: TouchIdIcon,
   gear: GearIcon,
+  github: GitHubIcon,
   handle: HandleIcon,
   hidden: HiddenIcon,
   inbox: InboxIcon,
   info: InfoIcon,
+  instagram: InstagramIcon,
   lock: LockIcon,
+  ltcCoin: LTCIcon,
   minusCircled: MinusCircledIcon,
   offline: OfflineIcon,
   passcode: PasscodeIcon,
@@ -128,6 +141,7 @@ const IconTypes = {
   sendSmall: SendSmallIcon,
   share: ShareIcon,
   signature: SignatureIcon,
+  snapchat: SnapchatIcon,
   spinner: SpinnerIcon,
   star: StarIcon,
   sunflower: Emoji,

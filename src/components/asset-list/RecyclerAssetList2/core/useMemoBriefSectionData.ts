@@ -1,8 +1,10 @@
 import { useDeepCompareMemo } from 'use-deep-compare';
+import { AssetListType } from '..';
 import { CellType, CoinExtraData, NFTFamilyExtraData } from './ViewTypes';
 import {
   useCoinListEdited,
   useCoinListEditOptions,
+  useExternalWalletSectionsData,
   useOpenFamilies,
   useOpenInvestmentCards,
   useOpenSavings,
@@ -10,8 +12,29 @@ import {
   useWalletSectionsData,
 } from '@rainbow-me/hooks';
 
-export default function useMemoBriefSectionData() {
-  const { briefSectionsData } = useWalletSectionsData();
+const FILTER_TYPES = {
+  'ens-profile': [
+    CellType.NFT_SPACE_AFTER,
+    CellType.NFT,
+    CellType.FAMILY_HEADER,
+  ],
+  'select-nft': [
+    CellType.NFT_SPACE_AFTER,
+    CellType.NFT,
+    CellType.FAMILY_HEADER,
+  ],
+} as { [key in AssetListType]: CellType[] };
+
+export default function useMemoBriefSectionData({
+  externalAddress,
+  type,
+}: { externalAddress?: string; type?: AssetListType } = {}) {
+  const { briefSectionsData }: { briefSectionsData: any[] } = externalAddress
+    ? // `externalAddress` is a static prop, so hooks will always execute in order.
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      useExternalWalletSectionsData({ address: externalAddress })
+    : // eslint-disable-next-line react-hooks/rules-of-hooks
+      useWalletSectionsData();
   const { isSmallBalancesOpen, stagger } = useOpenSmallBalances();
   const { isSavingsOpen } = useOpenSavings();
   const { isInvestmentCardsOpen } = useOpenInvestmentCards();
@@ -27,8 +50,17 @@ export default function useMemoBriefSectionData() {
     let afterCoins = false;
     // load firstly 12, then the rest after 1 sec
     let numberOfSmallBalancesAllowed = stagger ? 12 : briefSectionsData.length;
+    const filterTypes = type ? FILTER_TYPES[type as AssetListType] : [];
     const briefSectionsDataFiltered = briefSectionsData
       .filter((data, arrIndex, arr) => {
+        if (
+          filterTypes &&
+          filterTypes.length !== 0 &&
+          !filterTypes.includes(data.type)
+        ) {
+          return false;
+        }
+
         if (
           arr[arrIndex - 1]?.type === CellType.COIN &&
           data.type !== CellType.COIN_DIVIDER &&
@@ -109,7 +141,9 @@ export default function useMemoBriefSectionData() {
         index++;
         return true;
       })
-      .map(({ uid, type }) => ({ type, uid }));
+      .map(({ uid, type: cellType }) => {
+        return { type: cellType, uid };
+      });
     return briefSectionsDataFiltered;
   }, [
     briefSectionsData,

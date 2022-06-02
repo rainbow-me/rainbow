@@ -11,9 +11,9 @@ import {
 } from 'lodash';
 import { CardSize } from '../components/unique-token/CardSize';
 import { AssetTypes } from '@rainbow-me/entities';
+import { fetchMetadata, isUnknownOpenSeaENS } from '@rainbow-me/handlers/ens';
 import { maybeSignUri } from '@rainbow-me/handlers/imgix';
 import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
-import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
 import { Network } from '@rainbow-me/helpers/networkTypes';
 import {
   ENS_NFT_CONTRACT_ADDRESS,
@@ -21,6 +21,7 @@ import {
 } from '@rainbow-me/references';
 import { getFullSizeUrl } from '@rainbow-me/utils/getFullSizeUrl';
 import { getLowResUrl } from '@rainbow-me/utils/getLowResUrl';
+import isSVGImage from '@rainbow-me/utils/isSVG';
 
 const parseLastSalePrice = lastSale =>
   lastSale
@@ -35,24 +36,17 @@ const parseLastSalePrice = lastSale =>
  * @return {Object}
  */
 
-const handleAndSignImages = (
-  contractAddress,
-  imageUrl,
-  previewUrl,
-  originalUrl
-) => {
+export const handleAndSignImages = (imageUrl, previewUrl, originalUrl) => {
+  if (!imageUrl && !previewUrl && !originalUrl) {
+    return { imageUrl: undefined, lowResUrl: undefined };
+  }
+
   const lowResImageOptions = {
     w: CardSize,
   };
-  const isSVG = isSupportedUriExtension(imageUrl, ['.svg']);
-
+  const isSVG = isSVGImage(imageUrl);
   const image = imageUrl || originalUrl || previewUrl;
-  const isENS = toLower(contractAddress) === toLower(ENS_NFT_CONTRACT_ADDRESS);
-  const fullImage = isENS
-    ? maybeSignUri(svgToPngIfNeeded(image, true))
-    : isSVG
-    ? image
-    : getFullSizeUrl(image);
+  const fullImage = isSVG ? image : getFullSizeUrl(image);
 
   const lowResUrl = isSVG
     ? maybeSignUri(svgToPngIfNeeded(image), lowResImageOptions)
@@ -83,7 +77,6 @@ export const parseAccountUniqueTokens = data => {
         ...asset
       }) => {
         const { imageUrl, lowResUrl } = handleAndSignImages(
-          asset_contract.address,
           asset.image_url,
           asset.image_original_url,
           asset.image_preview_url
@@ -161,13 +154,12 @@ export const parseAccountUniqueTokens = data => {
     .filter(token => !!token.familyName);
 };
 
-export const parseAccountUniqueTokensPolygon = async data => {
+export const parseAccountUniqueTokensPolygon = data => {
   let erc721s = data?.data?.results;
   if (isNil(erc721s)) throw new Error('Invalid data from OpenSea Polygon');
   erc721s = erc721s
     .map(({ asset_contract, collection, token_id, metadata, ...asset }) => {
       const { imageUrl, lowResUrl } = handleAndSignImages(
-        asset_contract.address,
         asset.image_url,
         asset.image_original_url,
         asset.image_preview_url
@@ -243,6 +235,39 @@ export const parseAccountUniqueTokensPolygon = async data => {
   );
 
   return erc721s;
+};
+
+export const applyENSMetadataFallbackToToken = async token => {
+  const isENS =
+    token?.asset_contract?.address?.toLowerCase() ===
+    ENS_NFT_CONTRACT_ADDRESS.toLowerCase();
+  if (isENS && isUnknownOpenSeaENS(token)) {
+    const { name, image_url } = await fetchMetadata({
+      tokenId: token.id,
+    });
+    const { imageUrl, lowResUrl } = handleAndSignImages(image_url);
+    return {
+      ...token,
+      image_preview_url: lowResUrl,
+      image_url: imageUrl,
+      lowResUrl,
+      name,
+      uniqueId: name,
+    };
+  }
+  return token;
+};
+
+export const applyENSMetadataFallbackToTokens = async data => {
+  return await Promise.all(
+    data.map(async token => {
+      try {
+        return applyENSMetadataFallbackToToken(token);
+      } catch {
+        return token;
+      }
+    })
+  );
 };
 
 export const getFamilies = uniqueTokens =>

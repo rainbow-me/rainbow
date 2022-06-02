@@ -1,4 +1,10 @@
+import { JsonRpcProvider } from '@ethersproject/providers';
+import { Wallet } from '@ethersproject/wallet';
 import { expect } from 'detox';
+import { ethers } from 'ethers';
+
+const TESTING_WALLET = '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
+
 const DEFAULT_TIMEOUT = 8000;
 // eslint-disable-next-line eslint-comments/disable-enable-pair
 /* eslint-disable no-undef */
@@ -199,4 +205,31 @@ export function delay(ms) {
       resolve();
     }, ms);
   });
+}
+
+export function getProvider() {
+  if (!getProvider._instance) {
+    getProvider._instance = new JsonRpcProvider(
+      device.getPlatform() === 'ios'
+        ? process.env.HARDHAT_URL_IOS
+        : process.env.HARDHAT_URL_ANDROID,
+      'any'
+    );
+  }
+  return getProvider._instance;
+}
+
+export async function sendETHtoTestWallet() {
+  const provider = getProvider();
+  // Hardhat account 0 that has 10000 ETH
+  const wallet = new Wallet(
+    '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80',
+    provider
+  );
+  // Sending 20 ETH so we have enough to pay the tx fees even when the gas is too high
+  await wallet.sendTransaction({
+    to: TESTING_WALLET,
+    value: ethers.utils.parseEther('20'),
+  });
+  return true;
 }

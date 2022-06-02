@@ -9,7 +9,6 @@ import {
   getWalletNames,
   saveWalletNames,
 } from '../handlers/localstorage/walletNames';
-import { web3Provider } from '../handlers/web3';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import WalletTypes from '../helpers/walletTypes';
 import { hasKey } from '../model/keychain';
@@ -20,6 +19,7 @@ import {
   getSelectedWallet,
   loadAddress,
   oldSeedPhraseMigratedKey,
+  RainbowAccount,
   RainbowWallet,
   saveAddress,
   saveAllWallets,
@@ -33,11 +33,12 @@ import {
 } from '../utils/keychainConstants';
 import {
   addressHashedColorIndex,
-  lookupAddressWithRetry,
+  fetchReverseRecordWithRetry,
 } from '../utils/profileUtils';
 import { settingsUpdateAccountAddress } from './settings';
 import { updateWebDataEnabled } from './showcaseTokens';
 import { AppGetState, AppState } from './store';
+import { fetchImages, fetchReverseRecord } from '@rainbow-me/handlers/ens';
 import { WalletLoadingState } from '@rainbow-me/helpers/walletLoadingStates';
 import { lightModeThemeColors } from '@rainbow-me/styles';
 
@@ -140,7 +141,7 @@ const WALLETS_SET_SELECTED = 'wallets/SET_SELECTED';
 /**
  * Loads wallet information from storage and updates state accordingly.
  */
-export const walletsLoadState = () => async (
+export const walletsLoadState = (profilesEnabled: boolean = false) => async (
   dispatch: ThunkDispatch<AppState, unknown, WalletsLoadAction>,
   getState: AppGetState
 ) => {
@@ -200,7 +201,6 @@ export const walletsLoadState = () => async (
     }
 
     const walletNames = await getWalletNames();
-
     dispatch({
       payload: {
         selected: selectedWallet,
@@ -211,6 +211,7 @@ export const walletsLoadState = () => async (
     });
 
     dispatch(fetchWalletNames());
+    profilesEnabled && dispatch(fetchWalletENSAvatars());
     return wallets;
   } catch (error) {
     logger.sentry('Exception during walletsLoadState');
@@ -373,6 +374,88 @@ export const createAccountForWallet = (
 };
 
 /**
+ * Fetches ENS avatars for the given `walletsState` and updates state
+ * accordingly.
+ *
+ * @param walletsState The wallets to use for fetching avatars.
+ * @param dispatch The dispatch.
+ */
+export const getWalletENSAvatars = async (
+  walletsState: WalletsState,
+  dispatch: ThunkDispatch<AppState, unknown, never>
+) => {
+  const { wallets, walletNames, selected } = walletsState;
+  const walletKeys = Object.keys(wallets!);
+  let updatedWallets:
+    | {
+        [key: string]: RainbowWallet;
+      }
+    | undefined;
+  let promises: Promise<{
+    account: RainbowAccount;
+    avatarChanged: boolean;
+    key: string;
+  }>[] = [];
+  walletKeys.forEach(key => {
+    const wallet = wallets![key];
+    const innerPromises = wallet?.addresses?.map(async account => {
+      const ens =
+        (await fetchReverseRecord(account.address)) ||
+        walletNames[account.address];
+      if (ens) {
+        const images = await fetchImages(ens);
+        const newImage =
+          typeof images?.avatarUrl === 'string' &&
+          images?.avatarUrl !== account?.image
+            ? images?.avatarUrl
+            : account.image;
+        return {
+          account: {
+            ...account,
+            image: newImage,
+          },
+          avatarChanged: newImage !== account.image,
+          key,
+        };
+      } else {
+        return { account, avatarChanged: false, key };
+      }
+    });
+    promises = promises.concat(innerPromises);
+  });
+
+  const newAccounts = await Promise.all(promises);
+  newAccounts.forEach(({ account, key, avatarChanged }) => {
+    if (!avatarChanged) return;
+    const addresses = wallets?.[key]?.addresses;
+    const index = addresses?.findIndex(
+      ({ address }) => address === account.address
+    );
+    addresses!.splice(index!, 1, account);
+    updatedWallets = {
+      ...(updatedWallets ?? wallets),
+      [key]: {
+        ...wallets![key],
+        addresses: addresses!,
+      },
+    };
+  });
+  if (updatedWallets) {
+    dispatch(walletsSetSelected(updatedWallets[selected!.id]));
+    dispatch(walletsUpdate(updatedWallets));
+  }
+};
+
+/**
+ * Fetches wallet ENS avatars using `getWalletENSAvatars` with the current
+ * wallets in state.
+ */
+export const fetchWalletENSAvatars = () => async (
+  dispatch: ThunkDispatch<AppState, unknown, never>,
+  getState: AppGetState
+) => getWalletENSAvatars(getState().wallets, dispatch);
+
+/**
  * Fetches wallet names and updates storage and state.
  */
 export const fetchWalletNames = () => async (
@@ -388,10 +471,7 @@ export const fetchWalletNames = () => async (
       const visibleAccounts = filter(wallet.addresses, 'visible');
       return map(visibleAccounts, async account => {
         try {
-          const ens = await lookupAddressWithRetry(
-            web3Provider,
-            account.address
-          );
+          const ens = await fetchReverseRecordWithRetry(account.address);
           if (ens && ens !== account.address) {
             updatedWalletNames[account.address] = ens;
           }
