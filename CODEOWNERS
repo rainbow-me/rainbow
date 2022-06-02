@@ -30,6 +30,7 @@ src/components/unique-token @osdnk @terrysahaidak @jkadamczyk
 src/components/floating-emojis @osdnk @terrysahaidak @jkadamczyk
 src/components/buttons/hold-to-authorize @osdnk @terrysahaidak @jkadamczyk
 src/components/icons/svg/ProgressIcon.tsx @osdnk @terrysahaidak @jkadamczyk
+src/components/animations/ButtonPressAnimation @osdnk @terrysahaidak @jkadamczyk
 src/components/large-countdown-clock @pugson @osdnk @terrysahaidak
 src/components/step-indicator @pugson @osdnk @terrysahaidak
 
