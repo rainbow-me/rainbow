@@ -2,7 +2,7 @@ import { formatsByName } from '@ensdomains/address-encoder';
 import { hash } from '@ensdomains/eth-ens-namehash';
 import { Wallet } from '@ethersproject/wallet';
 import { BigNumberish, Contract } from 'ethers';
-import { keccak256, toUtf8Bytes } from 'ethers/lib/utils';
+import lang from 'i18n-js';
 import { atom } from 'recoil';
 import { InlineFieldProps } from '../components/inputs/InlineField';
 import {
@@ -11,9 +11,11 @@ import {
   convertAmountAndPriceToNativeDisplay,
   divide,
   fromWei,
+  handleSignificantDecimals,
   multiply,
 } from './utilities';
-import { toHex, web3Provider } from '@rainbow-me/handlers/web3';
+import { ENSRegistrationRecords, EthereumAddress } from '@rainbow-me/entities';
+import { getProviderForNetwork, toHex } from '@rainbow-me/handlers/web3';
 import { gweiToWei } from '@rainbow-me/parsers';
 import {
   ENSBaseRegistrarImplementationABI,
@@ -28,38 +30,34 @@ import {
   ensReverseRegistrarAddress,
 } from '@rainbow-me/references';
 import { colors } from '@rainbow-me/styles';
+import { labelhash } from '@rainbow-me/utils';
+import {
+  encodeContenthash,
+  isValidContenthash,
+} from '@rainbow-me/utils/contenthash';
+
+export const ENS_SECONDS_WAIT = 60;
 
 export enum ENSRegistrationTransactionType {
   COMMIT = 'commit',
   REGISTER_WITH_CONFIG = 'registerWithConfig',
+  RENEW = 'renew',
   SET_TEXT = 'setText',
   SET_NAME = 'setName',
   MULTICALL = 'multicall',
 }
 
-export interface ENSRegistrationRecords {
-  coinAddress: { key: string; address: string }[] | null;
-  contentHash: string | null;
-  ensAssociatedAddress: string | null;
-  text: { key: string; value: string }[] | null;
-}
-
-const getENSRegistryContract = () => {
-  return new Contract(
-    ensRegistryAddress,
-    ENSRegistryWithFallbackABI,
-    web3Provider
-  );
-};
-enum ENS_RECORDS {
+export enum ENS_RECORDS {
   ETH = 'ETH',
   BTC = 'BTC',
   LTC = 'LTC',
   DOGE = 'DOGE',
   displayName = 'me.rainbow.displayName',
+  cover = 'cover',
   content = 'content',
-  email = 'email',
   url = 'url',
+  email = 'email',
+  website = 'website',
   avatar = 'avatar',
   description = 'description',
   notice = 'notice',
@@ -70,28 +68,58 @@ enum ENS_RECORDS {
   instagram = 'com.instagram',
   snapchat = 'com.snapchat',
   twitter = 'com.twitter',
-  telegram = 'com.telegram',
+  telegram = 'org.telegram',
   ensDelegate = 'eth.ens.delegate',
+  pronouns = 'pronouns',
+}
+
+export enum REGISTRATION_STEPS {
+  COMMIT = 'COMMIT',
+  EDIT = 'EDIT',
+  REGISTER = 'REGISTER',
+  RENEW = 'RENEW',
+  SET_NAME = 'SET_NAME',
+  WAIT_COMMIT_CONFIRMATION = 'WAIT_COMMIT_CONFIRMATION',
+  WAIT_ENS_COMMITMENT = 'WAIT_ENS_COMMITMENT',
+}
+
+export enum REGISTRATION_MODES {
+  CREATE = 'CREATE',
+  EDIT = 'EDIT',
+  RENEW = 'RENEW',
+  SET_NAME = 'SET_NAME',
 }
 
 export type TextRecordField = {
   id: string;
-  key: string;
+  key: ENS_RECORDS;
   label: InlineFieldProps['label'];
   placeholder: InlineFieldProps['placeholder'];
   inputProps?: InlineFieldProps['inputProps'];
-  validations?: InlineFieldProps['validations'];
+  validations?: InlineFieldProps['validations'] & {
+    onSubmit?: {
+      match?: {
+        value: RegExp;
+        message: string;
+      };
+      validate?: {
+        callback: (value: string) => boolean;
+        message: string;
+      };
+    };
+  };
+  startsWith?: string;
 };
 
-const textRecordFields = {
+export const textRecordFields = {
   [ENS_RECORDS.displayName]: {
     id: 'name',
     inputProps: {
       maxLength: 50,
     },
     key: ENS_RECORDS.displayName,
-    label: 'Name',
-    placeholder: 'Add a display name',
+    label: lang.t('profiles.create.name'),
+    placeholder: lang.t('profiles.create.name_placeholder'),
   },
   [ENS_RECORDS.description]: {
     id: 'bio',
@@ -100,22 +128,8 @@ const textRecordFields = {
       multiline: true,
     },
     key: ENS_RECORDS.description,
-    label: 'Bio',
-    placeholder: 'Add a bio to your profile',
-  },
-  [ENS_RECORDS.twitter]: {
-    id: 'twitter',
-    inputProps: {
-      maxLength: 16,
-    },
-    key: ENS_RECORDS.twitter,
-    label: 'Twitter',
-    placeholder: '@username',
-    validations: {
-      allowCharacterRegex: {
-        match: /^@?\w*$/,
-      },
-    },
+    label: lang.t('profiles.create.bio'),
+    placeholder: lang.t('profiles.create.bio_placeholder'),
   },
   [ENS_RECORDS.url]: {
     id: 'website',
@@ -124,17 +138,48 @@ const textRecordFields = {
       maxLength: 100,
     },
     key: ENS_RECORDS.url,
-    label: 'Website',
-    placeholder: 'Add your website',
-  },
-  [ENS_RECORDS.github]: {
-    id: 'github',
-    inputProps: {
-      maxLength: 20,
+    label: lang.t('profiles.create.website'),
+    placeholder: lang.t('profiles.create.website_placeholder'),
+    validations: {
+      onSubmit: {
+        match: {
+          message: lang.t('profiles.create.website_submit_message'),
+          value: /[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/,
+        },
+      },
     },
-    key: ENS_RECORDS.github,
-    label: 'GitHub',
-    placeholder: '@username',
+  },
+  [ENS_RECORDS.twitter]: {
+    id: 'twitter',
+    inputProps: {
+      maxLength: 16,
+    },
+    key: ENS_RECORDS.twitter,
+    label: lang.t('profiles.create.twitter'),
+    placeholder: lang.t('profiles.create.username_placeholder'),
+    startsWith: '@',
+    validations: {
+      onChange: {
+        match: /^\w*$/,
+      },
+    },
+  },
+  [ENS_RECORDS.email]: {
+    id: 'email',
+    inputProps: {
+      maxLength: 50,
+    },
+    key: ENS_RECORDS.email,
+    label: lang.t('profiles.create.email'),
+    placeholder: lang.t('profiles.create.email_placeholder'),
+    validations: {
+      onSubmit: {
+        match: {
+          message: lang.t('profiles.create.email_submit_message'),
+          value: /^\S+@\S+\.\S+$/,
+        },
+      },
+    },
   },
   [ENS_RECORDS.instagram]: {
     id: 'instagram',
@@ -142,25 +187,12 @@ const textRecordFields = {
       maxLength: 30,
     },
     key: ENS_RECORDS.instagram,
-    label: 'Instagram',
-    placeholder: '@username',
+    label: lang.t('profiles.create.instagram'),
+    placeholder: lang.t('profiles.create.username_placeholder'),
+    startsWith: '@',
     validations: {
-      allowCharacterRegex: {
-        match: /^@?([\w.])*$/,
-      },
-    },
-  },
-  [ENS_RECORDS.snapchat]: {
-    id: 'snapchat',
-    inputProps: {
-      maxLength: 16,
-    },
-    key: ENS_RECORDS.snapchat,
-    label: 'Snapchat',
-    placeholder: '@username',
-    validations: {
-      allowCharacterRegex: {
-        match: /^@?([\w.])*$/,
+      onChange: {
+        match: /^([\w.])*$/,
       },
     },
   },
@@ -170,60 +202,232 @@ const textRecordFields = {
       maxLength: 50,
     },
     key: ENS_RECORDS.discord,
-    label: 'Discord',
-    placeholder: '@username',
+    label: lang.t('profiles.create.discord'),
+    placeholder: lang.t('profiles.create.username_placeholder'),
+    startsWith: '@',
   },
-} as const;
+  [ENS_RECORDS.github]: {
+    id: 'github',
+    inputProps: {
+      maxLength: 20,
+    },
+    key: ENS_RECORDS.github,
+    label: lang.t('profiles.create.github'),
+    placeholder: lang.t('profiles.create.username_placeholder'),
+  },
+  [ENS_RECORDS.BTC]: {
+    id: 'btc',
+    inputProps: {
+      maxLength: 42,
+      multiline: true,
+    },
+    key: ENS_RECORDS.BTC,
+    label: lang.t('profiles.create.btc'),
+    placeholder: lang.t('profiles.create.wallet_placeholder', {
+      coin: lang.t('profiles.create.btc'),
+    }),
+    validations: {
+      onSubmit: {
+        validate: {
+          callback: value => validateCoinRecordValue(value, ENS_RECORDS.BTC),
+          message: lang.t('profiles.create.invalid_asset', {
+            coin: ENS_RECORDS.BTC,
+          }),
+        },
+      },
+    },
+  },
+  [ENS_RECORDS.snapchat]: {
+    id: 'snapchat',
+    inputProps: {
+      maxLength: 16,
+    },
+    key: ENS_RECORDS.snapchat,
+    label: lang.t('profiles.create.snapchat'),
+    placeholder: lang.t('profiles.create.username_placeholder'),
+    startsWith: '@',
+    validations: {
+      onChange: {
+        match: /^([\w.])*$/,
+      },
+    },
+  },
+  [ENS_RECORDS.telegram]: {
+    id: 'telegram',
+    inputProps: {
+      maxLength: 30,
+    },
+    key: ENS_RECORDS.telegram,
+    label: lang.t('profiles.create.telegram'),
+    placeholder: lang.t('profiles.create.username_placeholder'),
+    startsWith: '@',
+  },
+  [ENS_RECORDS.reddit]: {
+    id: 'reddit',
+    inputProps: {
+      maxLength: 30,
+    },
+    key: ENS_RECORDS.reddit,
+    label: lang.t('profiles.create.reddit'),
+    placeholder: lang.t('profiles.create.username_placeholder'),
+    startsWith: '@',
+  },
+  [ENS_RECORDS.pronouns]: {
+    id: 'pronouns',
+    inputProps: {
+      maxLength: 42,
+    },
+    key: ENS_RECORDS.pronouns,
+    label: lang.t('profiles.create.pronouns'),
+    placeholder: lang.t('profiles.create.pronouns_placeholder'),
+  },
+  [ENS_RECORDS.notice]: {
+    id: 'notice',
+    inputProps: {
+      maxLength: 100,
+    },
+    key: ENS_RECORDS.notice,
+    label: lang.t('profiles.create.notice'),
+    placeholder: lang.t('profiles.create.notice_placeholder'),
+  },
+  [ENS_RECORDS.keywords]: {
+    id: 'keywords',
+    inputProps: {
+      maxLength: 100,
+    },
+    key: ENS_RECORDS.keywords,
+    label: lang.t('profiles.create.keywords'),
+    placeholder: lang.t('profiles.create.keywords_placeholder'),
+  },
+  [ENS_RECORDS.LTC]: {
+    id: 'ltc',
+    inputProps: {
+      maxLength: 64,
+    },
+    key: ENS_RECORDS.LTC,
+    label: lang.t('profiles.create.ltc'),
+    placeholder: lang.t('profiles.create.wallet_placeholder', {
+      coin: lang.t('profiles.create.ltc'),
+    }),
+    validations: {
+      onSubmit: {
+        validate: {
+          callback: value => validateCoinRecordValue(value, ENS_RECORDS.LTC),
+          message: lang.t('profiles.create.invalid_asset', {
+            coin: ENS_RECORDS.LTC,
+          }),
+        },
+      },
+    },
+  },
+  [ENS_RECORDS.DOGE]: {
+    id: 'doge',
+    inputProps: {
+      maxLength: 34,
+    },
+    key: ENS_RECORDS.DOGE,
+    label: lang.t('profiles.create.doge'),
+    placeholder: lang.t('profiles.create.wallet_placeholder', {
+      coin: lang.t('profiles.create.doge'),
+    }),
+    validations: {
+      onSubmit: {
+        validate: {
+          callback: value => validateCoinRecordValue(value, ENS_RECORDS.DOGE),
+          message: lang.t('profiles.create.invalid_asset', {
+            coin: ENS_RECORDS.DOGE,
+          }),
+        },
+      },
+    },
+  },
+  [ENS_RECORDS.content]: {
+    id: 'content',
+    inputProps: {},
+    key: ENS_RECORDS.content,
+    label: lang.t('profiles.create.content'),
+    placeholder: lang.t('profiles.create.content_placeholder'),
+    validations: {
+      onSubmit: {
+        validate: {
+          callback: value => validateContentHashRecordValue(value),
+          message: lang.t('profiles.create.invalid_content_hash'),
+        },
+      },
+    },
+  },
+} as {
+  [key in ENS_RECORDS]?: TextRecordField;
+};
 
 export const ENS_DOMAIN = '.eth';
 
-const getENSRegistrarControllerContract = (
+const getENSRegistrarControllerContract = async (
   wallet?: Wallet,
   registrarAddress?: string
 ) => {
+  const signerOrProvider = wallet || (await getProviderForNetwork());
   return new Contract(
     registrarAddress || ensETHRegistrarControllerAddress,
     ENSETHRegistrarControllerABI,
-    wallet || web3Provider
-  );
-};
-const getENSPublicResolverContract = (wallet?: Wallet) => {
-  return new Contract(
-    ensPublicResolverAddress,
-    ENSPublicResolverABI,
-    wallet || web3Provider
+    signerOrProvider
   );
 };
 
-const getENSReverseRegistrarContract = (wallet?: Wallet) => {
+const getENSPublicResolverContract = async (
+  wallet?: Wallet,
+  resolverAddress?: EthereumAddress
+) => {
+  const signerOrProvider = wallet || (await getProviderForNetwork());
+  return new Contract(
+    resolverAddress || ensPublicResolverAddress,
+    ENSPublicResolverABI,
+    signerOrProvider
+  );
+};
+
+const getENSReverseRegistrarContract = async (wallet?: Wallet) => {
+  const signerOrProvider = wallet || (await getProviderForNetwork());
   return new Contract(
     ensReverseRegistrarAddress,
     ENSReverseRegistrarABI,
-    wallet || web3Provider
+    signerOrProvider
   );
 };
 
-const getENSBaseRegistrarImplementationContract = (wallet?: Wallet) => {
+const getENSBaseRegistrarImplementationContract = async (wallet?: Wallet) => {
+  const signerOrProvider = wallet || (await getProviderForNetwork());
   return new Contract(
     ensBaseRegistrarImplementationAddress,
     ENSBaseRegistrarImplementationABI,
-    wallet || web3Provider
+    signerOrProvider
   );
 };
 
-const getResolver = async (name: string): Promise<string> =>
-  getENSRegistryContract().resolver(name);
+const getENSRegistryContract = async () => {
+  const provider = await getProviderForNetwork();
+  return new Contract(ensRegistryAddress, ENSRegistryWithFallbackABI, provider);
+};
 
-const getAvailable = async (name: string): Promise<boolean> =>
-  getENSRegistrarControllerContract().available(name);
+const getAvailable = async (name: string): Promise<boolean> => {
+  const contract = await getENSRegistrarControllerContract();
+  return contract.available(name);
+};
 
-const getNameExpires = async (name: string): Promise<string> =>
-  getENSBaseRegistrarImplementationContract().nameExpires(
-    keccak256(toUtf8Bytes(name))
-  );
+const getNameExpires = async (name: string): Promise<string> => {
+  const contract = await getENSBaseRegistrarImplementationContract();
+  return contract.nameExpires(labelhash(name));
+};
 
-const getRentPrice = async (name: string, duration: number): Promise<any> =>
-  getENSRegistrarControllerContract().rentPrice(name, duration);
+const getNameOwner = async (name: string): Promise<string> => {
+  const contract = await getENSRegistryContract();
+  return contract.owner(hash(name));
+};
+
+const getRentPrice = async (name: string, duration: number): Promise<any> => {
+  const contract = await getENSRegistrarControllerContract();
+  return contract.rentPrice(name, duration);
+};
 
 const setupMulticallRecords = (
   name: string,
@@ -234,9 +438,9 @@ const setupMulticallRecords = (
   const namehash = hash(name);
 
   const data = [];
-
   // ens associated address
   const ensAssociatedRecord = records.ensAssociatedAddress;
+
   if (
     Boolean(ensAssociatedRecord) &&
     typeof ensAssociatedRecord === 'string' &&
@@ -287,20 +491,22 @@ const setupMulticallRecords = (
   const textAssociatedRecord = records.text;
   if (textAssociatedRecord) {
     data.push(
-      textAssociatedRecord.map(textRecord => {
-        return resolver.encodeFunctionData('setText', [
-          namehash,
-          textRecord.key,
-          textRecord.value,
-        ]);
-      })
+      textAssociatedRecord
+        .filter(textRecord => Boolean(textRecord.value))
+        .map(textRecord => {
+          return resolver.encodeFunctionData('setText', [
+            namehash,
+            textRecord.key,
+            textRecord.value,
+          ]);
+        })
     );
   }
   // flatten textrecords and addresses and remove undefined
   return data.flat().filter(Boolean);
 };
 
-export const generateSalt = () => {
+const generateSalt = () => {
   const random = new Uint8Array(32);
   crypto.getRandomValues(random);
   const salt =
@@ -320,6 +526,7 @@ const getENSExecutionDetails = async ({
   duration,
   records,
   wallet,
+  resolverAddress,
 }: {
   name?: string;
   type: ENSRegistrationTransactionType;
@@ -329,6 +536,7 @@ const getENSExecutionDetails = async ({
   records?: ENSRegistrationRecords;
   wallet?: Wallet;
   salt?: string;
+  resolverAddress?: EthereumAddress;
 }): Promise<{
   methodArguments: any[] | null;
   value: BigNumberish | null;
@@ -341,7 +549,9 @@ const getENSExecutionDetails = async ({
   switch (type) {
     case ENSRegistrationTransactionType.COMMIT: {
       if (!name || !ownerAddress) throw new Error('Bad arguments for commit');
-      const registrarController = getENSRegistrarControllerContract(wallet);
+      const registrarController = await getENSRegistrarControllerContract(
+        wallet
+      );
       const commitment = await registrarController.makeCommitmentWithConfig(
         name.replace(ENS_DOMAIN, ''),
         ownerAddress,
@@ -350,7 +560,14 @@ const getENSExecutionDetails = async ({
         ownerAddress
       );
       args = [commitment];
-      contract = getENSRegistrarControllerContract(wallet);
+      contract = registrarController;
+      break;
+    }
+    case ENSRegistrationTransactionType.MULTICALL: {
+      if (!name || !records) throw new Error('Bad arguments for multicall');
+      contract = await getENSPublicResolverContract(wallet, resolverAddress);
+      const data = setupMulticallRecords(name, records, contract) || [];
+      args = [data];
       break;
     }
     case ENSRegistrationTransactionType.REGISTER_WITH_CONFIG: {
@@ -365,30 +582,31 @@ const getENSExecutionDetails = async ({
         ensPublicResolverAddress,
         ownerAddress,
       ];
-      contract = getENSRegistrarControllerContract(wallet);
+      contract = await getENSRegistrarControllerContract(wallet);
       break;
     }
+    case ENSRegistrationTransactionType.RENEW: {
+      if (!name || !duration || !rentPrice)
+        throw new Error('Bad arguments for renew');
+      value = toHex(addBuffer(rentPrice, 1.1));
+      args = [name.replace(ENS_DOMAIN, ''), duration];
+      contract = await getENSRegistrarControllerContract(wallet);
+      break;
+    }
+    case ENSRegistrationTransactionType.SET_NAME:
+      if (!name) throw new Error('Bad arguments for setName');
+      args = [name];
+      contract = await getENSReverseRegistrarContract(wallet);
+      break;
     case ENSRegistrationTransactionType.SET_TEXT: {
       if (!name || !records || !records?.text?.[0])
         throw new Error('Bad arguments for setText');
       const record = records?.text[0];
       const namehash = hash(name);
       args = [namehash, record.key, record.value];
-      contract = getENSPublicResolverContract();
+      contract = await getENSPublicResolverContract(wallet, resolverAddress);
       break;
     }
-    case ENSRegistrationTransactionType.MULTICALL: {
-      if (!name || !records) throw new Error('Bad arguments for multicall');
-      contract = getENSPublicResolverContract(wallet);
-      const data = setupMulticallRecords(name, records, contract) || [];
-      args = [data];
-      break;
-    }
-    case ENSRegistrationTransactionType.SET_NAME:
-      if (!name) throw new Error('Bad arguments for setName');
-      args = [name];
-      contract = getENSReverseRegistrarContract(wallet);
-      break;
   }
   return {
     contract,
@@ -433,6 +651,7 @@ const formatTotalRegistrationCost = (
   skipDecimals: boolean = false
 ) => {
   const networkFeeInEth = fromWei(wei);
+  const eth = handleSignificantDecimals(networkFeeInEth, 3);
 
   const { amount, display } = convertAmountAndPriceToNativeDisplay(
     networkFeeInEth,
@@ -445,8 +664,27 @@ const formatTotalRegistrationCost = (
   return {
     amount,
     display,
+    eth,
     wei,
   };
+};
+
+const validateCoinRecordValue = (value: string, coin: string) => {
+  try {
+    formatsByName[coin].decoder(value);
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
+
+const validateContentHashRecordValue = (value: string) => {
+  const { encoded, error: encodeError } = encodeContenthash(value);
+  if (!encodeError && encoded) {
+    return isValidContenthash(encoded);
+  } else {
+    return false;
+  }
 };
 
 const getRentPricePerYear = (rentPrice: string, duration: number) =>
@@ -495,12 +733,12 @@ const formatRentPrice = (
 };
 
 const accentColorAtom = atom({
-  default: colors.appleBlue,
+  default: colors.purple,
   key: 'ens.accentColor',
 });
 
 export {
-  ENS_RECORDS,
+  generateSalt,
   getENSRecordKeys,
   getENSRecordValues,
   getENSRegistryContract,
@@ -508,11 +746,10 @@ export {
   getENSBaseRegistrarImplementationContract,
   getENSPublicResolverContract,
   getENSReverseRegistrarContract,
-  getResolver,
   getAvailable,
   getNameExpires,
+  getNameOwner,
   getRentPrice,
-  textRecordFields,
   getENSExecutionDetails,
   formatEstimatedNetworkFee,
   formatTotalRegistrationCost,
