@@ -2,12 +2,9 @@
 
 # ANDROID
 android/ @brunobar79 @osdnk @terrysahaidak @estebanmino
-android/app/src/main/java/me/rainbow/NativeModules/RNStartTime @terrysahaidak @jkadamczyk
 
 # IOS
-ios/ @brunobar79 @osdnk @estebanmino
-ios/RNStartTime.h @terrysahaidak @jkadamczyk
-ios/RNStartTime.m @terrysahaidak @jkadamczyk
+ios/ @brunobar79 @osdnk
 
 # SECURITY / APP INFRA
 patches/ @brunobar79 @osdnk @estebanmino
@@ -20,7 +17,7 @@ src/design-system @markdalgleish @jxom
 src/handlers/aesEncryption.ts @brunobar79 @estebanmino
 src/handlers/authentication.ts @brunobar79 @estebanmino
 src/handlers/cloudBackup.ts @brunobar79 @skylarbarrera @estebanmino
-src/handlers/fedora.ts @osdnk @estebanmino
+src/handlers/fedora.ts @osdnk @estebanmino @terrysahaidak
 
 # Model
 src/model/backup.ts @brunobar79 @estebanmino
