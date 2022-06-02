@@ -3,7 +3,9 @@ import { LayoutChangeEvent } from 'react-native';
 import { DataProvider, RecyclerListView } from 'recyclerlistview';
 import { useMemoOne } from 'use-memo-one';
 import useAccountSettings from '../../../../hooks/useAccountSettings';
+import { AssetListType } from '..';
 import { useRecyclerAssetListPosition } from './Contexts';
+import ExternalENSProfileScrollViewWithRef from './ExternalENSProfileScrollView';
 import ExternalScrollViewWithRef from './ExternalScrollView';
 import RefreshControl from './RefreshControl';
 import rowRenderer from './RowRenderer';
@@ -18,8 +20,10 @@ const dataProvider = new DataProvider((r1, r2) => {
 
 const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   briefSectionsData,
+  type,
 }: {
   briefSectionsData: BaseCellType[];
+  type?: AssetListType;
 }) {
   const currentDataProvider = useMemoOne(
     () => dataProvider.cloneWithRows(briefSectionsData),
@@ -78,7 +82,11 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
     <RecyclerListView
       dataProvider={currentDataProvider}
       // @ts-ignore
-      externalScrollView={ExternalScrollViewWithRef}
+      externalScrollView={
+        type === 'ens-profile'
+          ? ExternalENSProfileScrollViewWithRef
+          : ExternalScrollViewWithRef
+      }
       itemAnimator={layoutItemAnimator}
       layoutProvider={layoutProvider}
       onLayout={onLayout}

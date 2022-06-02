@@ -253,7 +253,7 @@ export default function UniswapPools({
   }
 
   return (
-    <Column marginTop={25}>
+    <Column marginTop={32}>
       <Row marginBottom={12} paddingHorizontal={19}>
         <PoolEmoji>🐋</PoolEmoji>
         <Text size="larger" testID="pools-section" weight="heavy">

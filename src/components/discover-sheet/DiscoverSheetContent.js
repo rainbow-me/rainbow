@@ -10,12 +10,14 @@ import styled from '@rainbow-me/styled-components';
 
 const HeaderTitle = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.8),
+  color: colors.dark,
   letterSpacing: 'roundedMedium',
   lineHeight: 'loose',
   size: 'large',
   weight: 'heavy',
-}))({});
+}))({
+  marginTop: 2,
+});
 
 const Spacer = styled.View({
   height: 16,
