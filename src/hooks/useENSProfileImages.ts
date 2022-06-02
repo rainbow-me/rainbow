@@ -27,7 +27,7 @@ async function fetchENSProfileImages({ name }: { name: string }) {
 export async function prefetchENSProfileImages({ name }: { name: string }) {
   queryClient.prefetchQuery(
     ensProfileImagesQueryKey(name),
-    async () => fetchENSProfileImages({ name }),
+    async () => await fetchENSProfileImages({ name }),
     { staleTime: STALE_TIME }
   );
 }
@@ -38,7 +38,7 @@ export default function useENSProfileImages(
 ) {
   const { data, isFetched } = useQuery<UseQueryData<typeof fetchImages>>(
     ensProfileImagesQueryKey(name),
-    async () => fetchENSProfileImages({ name }),
+    async () => await fetchENSProfileImages({ name }),
     {
       ...config,
       // Data will be stale for 10s to avoid dupe queries

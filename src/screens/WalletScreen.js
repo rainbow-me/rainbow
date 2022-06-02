@@ -24,6 +24,7 @@ import {
   useAccountSettings,
   useCoinListEdited,
   useInitializeDiscoverData,
+  useInitializeENSIntroData,
   useInitializeWallet,
   useLoadAccountLateData,
   useLoadGlobalLateData,
@@ -75,6 +76,7 @@ export default function WalletScreen() {
   const loadAccountLateData = useLoadAccountLateData();
   const loadGlobalLateData = useLoadGlobalLateData();
   const initializeDiscoverData = useInitializeDiscoverData();
+  const initializeENSIntroData = useInitializeENSIntroData();
   const { updateWalletENSAvatars } = useWalletENSAvatar();
   const walletReady = useSelector(
     ({ appState: { walletReady } }) => walletReady
@@ -181,6 +183,10 @@ export default function WalletScreen() {
     loadGlobalLateData,
     walletReady,
   ]);
+
+  useEffect(() => {
+    initializeENSIntroData();
+  }, [initializeENSIntroData]);
 
   useEffect(() => {
     if (walletReady) updateWalletENSAvatars();

@@ -6,14 +6,14 @@ import { getProfile, saveProfile } from '@rainbow-me/handlers/localstorage/ens';
 import { queryClient } from '@rainbow-me/react-query/queryClient';
 import { QueryConfig, UseQueryData } from '@rainbow-me/react-query/types';
 
-const queryKey = (name: string) => ['ens-profile', name];
+export const ensProfileQueryKey = (name: string) => ['ens-profile', name];
 
 const STALE_TIME = 10000;
 
 async function fetchENSProfile({ name }: { name: string }) {
   const cachedProfile = await getProfile(name);
   if (cachedProfile) {
-    queryClient.setQueryData(queryKey(name), cachedProfile);
+    queryClient.setQueryData(ensProfileQueryKey(name), cachedProfile);
   }
   const profile = await fetchProfile(name);
   saveProfile(name, profile);
@@ -21,9 +21,9 @@ async function fetchENSProfile({ name }: { name: string }) {
 }
 
 export async function prefetchENSProfile({ name }: { name: string }) {
-  queryClient.prefetchQuery(
-    queryKey(name),
-    async () => fetchENSProfile({ name }),
+  await queryClient.prefetchQuery(
+    ensProfileQueryKey(name),
+    async () => await fetchENSProfile({ name }),
     { staleTime: STALE_TIME }
   );
 }
@@ -36,7 +36,7 @@ export default function useENSProfile(
   const { walletNames } = useWallets();
   const { data, isLoading, isSuccess } = useQuery<
     UseQueryData<typeof fetchProfile>
-  >(queryKey(name), async () => fetchENSProfile({ name }), {
+  >(ensProfileQueryKey(name), async () => await fetchENSProfile({ name }), {
     ...config,
     // Data will be stale for 10s to avoid dupe queries
     staleTime: STALE_TIME,
