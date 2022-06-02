@@ -53,7 +53,7 @@ export default class ERC721 {
         contractAddress,
         tokenID
       );
-      image = data?.lowResUrl || data?.image_url;
+      image = data?.image_url || data?.lowResUrl;
     } catch (error) {
       const data = await getNFTByTokenId({ contractAddress, tokenId: tokenID });
       image = data?.previews?.image_medium_url;

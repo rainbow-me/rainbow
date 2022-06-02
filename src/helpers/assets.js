@@ -357,7 +357,7 @@ export const buildBriefUniqueTokenList = (
     { type: 'NFTS_HEADER', uid: 'nfts-header' },
     { type: 'NFTS_HEADER_SPACE_AFTER', uid: 'nfts-header-space-after' },
   ];
-  if (uniqueTokensInShowcase.length > 0) {
+  if (uniqueTokensInShowcase.length > 0 && listType !== 'select-nft') {
     result.push({
       name: 'Showcase',
       total: uniqueTokensInShowcase.length,

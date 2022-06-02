@@ -44,6 +44,6 @@ export default class ERC1155 {
       contractAddress,
       tokenID
     );
-    return { image: data?.lowResUrl || data?.image_url };
+    return { image: data?.image_url || data?.lowResUrl };
   }
 }
