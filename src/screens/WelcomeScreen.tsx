@@ -1,21 +1,22 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Animated, Easing, StyleProp, ViewStyle } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Animated, StyleProp, ViewStyle } from 'react-native';
 // @ts-expect-error
 import { IS_TESTING } from 'react-native-dotenv';
 import Reanimated, {
-  Clock,
-  EasingNode as REasing,
-  Value as RValue,
-  timing,
+  Easing,
+  interpolateColor,
   useAnimatedStyle,
+  useDerivedValue,
   useSharedValue,
+  withDelay,
   withRepeat,
+  withSequence,
+  withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { useValue } from 'react-native-redash/src/v1';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { useMemoOne } from 'use-memo-one';
 import RainbowGreyNeon from '../assets/rainbows/greyneon.png';
@@ -44,19 +45,6 @@ import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { position, shadow } from '@rainbow-me/styles';
 import logger from 'logger';
-
-const {
-  and,
-  block,
-  clockRunning,
-  color,
-  not,
-  set,
-  cond,
-  interpolateNode: interpolate,
-  round,
-  startClock,
-} = Reanimated;
 
 const ButtonContainer = styled(Reanimated.View)({
   borderRadius: ({ height }: { height: number }) => height / 2,
@@ -167,7 +155,7 @@ const Container = styled.View({
   justifyContent: 'center',
 });
 
-const ContentWrapper = styled(Animated.View)({
+const ContentWrapper = styled(Reanimated.View)({
   alignItems: 'center',
   height: 192,
   justifyContent: 'space-between',
@@ -180,16 +168,6 @@ const ButtonWrapper = styled(Reanimated.View)({
 });
 
 const INITIAL_SIZE = 375;
-
-const useAnimatedValue = (initialValue: any) => {
-  const value = useRef<Animated.Value>();
-
-  if (!value.current) {
-    value.current = new Animated.Value(initialValue);
-  }
-
-  return value;
-};
 
 const rainbows = [
   {
@@ -297,51 +275,6 @@ const RainbowTextMask = styled(Reanimated.View)({
   width: RAINBOW_TEXT_WIDTH,
 });
 
-function runTiming(value: any) {
-  const clock = new Clock();
-  const state = {
-    finished: new RValue(0),
-    frameTime: new RValue(0),
-    position: new RValue(0),
-    time: new RValue(0),
-  };
-
-  const config = {
-    duration: 2500,
-    easing: REasing.linear,
-    toValue: new RValue(1),
-  };
-
-  return block([
-    cond(and(not(state.finished), clockRunning(clock)), 0, [
-      set(state.finished, 0),
-      set(state.time, 0),
-      set(state.position, value),
-      set(state.frameTime, 0),
-      set(config.toValue, 5),
-      startClock(clock),
-    ]),
-    timing(clock, state, config),
-    state.position,
-  ]);
-}
-
-/* eslint-disable sort-keys-fix/sort-keys-fix */
-const colorsRGB = [
-  { r: 255, g: 73, b: 74 },
-  { r: 255, g: 170, b: 0 },
-  { r: 0, g: 222, b: 111 },
-  { r: 0, g: 163, b: 217 },
-  { r: 115, g: 92, b: 255 },
-];
-/* eslint-enable sort-keys-fix/sort-keys-fix */
-
-const colorRGB = (
-  r: Reanimated.Node<number>,
-  g: Reanimated.Node<number>,
-  b: Reanimated.Node<number>
-) => color(round(r), round(g), round(b));
-
 const springConfig = {
   bounciness: 7.30332,
   speed: 0.6021408,
@@ -349,33 +282,34 @@ const springConfig = {
   useNativeDriver: true,
 };
 
-function colorAnimation(rValue: Reanimated.Value<any>) {
-  const animation = runTiming(rValue);
-  const r = interpolate(animation, {
-    inputRange: [0, 1, 2, 3, 4, 5],
-    outputRange: [...colorsRGB.map(({ r }) => r), colorsRGB[0].r],
-  });
-
-  const g = interpolate(animation, {
-    inputRange: [0, 1, 2, 3, 4, 5],
-    outputRange: [...colorsRGB.map(({ g }) => g), colorsRGB[0].g],
-  });
-
-  const b = interpolate(animation, {
-    inputRange: [0, 1, 2, 3, 4, 5],
-    outputRange: [...colorsRGB.map(({ b }) => b), colorsRGB[0].b],
-  });
-  return colorRGB(r, g, b);
-}
+const animationColors = [
+  'rgb(255,73,74)',
+  'rgb(255,170,0)',
+  'rgb(0,163,217)',
+  'rgb(0,163,217)',
+  'rgb(115,92,255)',
+  'rgb(255,73,74)',
+];
 
 export default function WelcomeScreen() {
   const { colors } = useTheme();
   // @ts-expect-error Navigation types
   const { replace, navigate, dangerouslyGetState } = useNavigation();
-  const contentAnimation = useAnimatedValue(1);
-  const hideSplashScreen = useHideSplashScreen();
-  const createWalletButtonAnimation = useSharedValue(1);
   const [userData, setUserData] = useState(null);
+  const hideSplashScreen = useHideSplashScreen();
+
+  const contentAnimation = useSharedValue(1);
+  const colorAnimation = useSharedValue(0);
+  const calculatedColor = useDerivedValue(
+    () =>
+      interpolateColor(
+        colorAnimation.value,
+        [0, 1, 2, 3, 4, 5],
+        animationColors
+      ),
+    [colorAnimation]
+  );
+  const createWalletButtonAnimation = useSharedValue(1);
 
   useEffect(() => {
     const initialize = async () => {
@@ -398,38 +332,44 @@ export default function WelcomeScreen() {
           ...traversedRainbows.map(({ value, delay = 0 }) =>
             Animated.spring(value, { ...springConfig, delay })
           ),
-          Animated.sequence([
-            Animated.timing(contentAnimation.current!, {
-              duration: 120,
-              easing: Easing.bezier(0.165, 0.84, 0.44, 1),
-              toValue: 1.2,
-              useNativeDriver: false,
-            }),
-            Animated.spring(contentAnimation.current!, {
-              friction: 8,
-              tension: 100,
-              toValue: 1,
-              useNativeDriver: false,
-            }),
-          ]),
         ];
+
+        const initialDuration = 120;
+
+        contentAnimation.value = withSequence(
+          withTiming(1.2, {
+            duration: initialDuration,
+            easing: Easing.bezier(0.165, 0.84, 0.44, 1),
+          }),
+          withSpring(1, {
+            damping: 7,
+            overshootClamping: false,
+            stiffness: 250,
+          })
+        );
 
         // We need to disable looping animations
         // There's no way to disable sync yet
         // See https://stackoverflow.com/questions/47391019/animated-button-block-the-detox
         if (IS_TESTING !== 'true') {
-          createWalletButtonAnimation.value = withTiming(
-            1.02,
-            { duration: 1000 },
-            () => {
+          createWalletButtonAnimation.value = withDelay(
+            initialDuration,
+            withTiming(1.02, { duration: 1000 }, () => {
               createWalletButtonAnimation.value = withRepeat(
                 withTiming(0.98, {
                   duration: 1000,
                 }),
-                0,
+                -1,
                 true
               );
-            }
+            })
+          );
+          colorAnimation.value = withRepeat(
+            withTiming(5, {
+              duration: 2500,
+              easing: Easing.linear,
+            }),
+            -1
           );
         }
 
@@ -446,30 +386,31 @@ export default function WelcomeScreen() {
 
     return () => {
       createWalletButtonAnimation.value = 1;
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      contentAnimation.current!.setValue(1);
+      contentAnimation.value = 1;
     };
-  }, [contentAnimation, hideSplashScreen, createWalletButtonAnimation]);
+  }, [
+    colorAnimation,
+    contentAnimation,
+    createWalletButtonAnimation,
+    hideSplashScreen,
+  ]);
 
   const buttonStyle = useAnimatedStyle(() => ({
     transform: [{ scale: createWalletButtonAnimation.value }],
     zIndex: 10,
   }));
 
-  const contentStyle = useMemoOne(
-    () => ({
-      transform: [
-        {
-          scale: contentAnimation.current,
-        },
-      ],
-    }),
-    [createWalletButtonAnimation]
-  );
+  const contentStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        scale: contentAnimation.value,
+      },
+    ],
+  }));
 
-  const rValue = useValue(0);
-
-  const backgroundColor = useMemoOne(() => colorAnimation(rValue), []);
+  const textStyle = useAnimatedStyle(() => ({
+    backgroundColor: calculatedColor.value,
+  }));
 
   const onCreateWallet = useCallback(async () => {
     analytics.track('Tapped "Get a new wallet"');
@@ -481,24 +422,25 @@ export default function WelcomeScreen() {
   }, [dangerouslyGetState, navigate, replace]);
 
   const createWalletButtonProps = useMemoOne(() => {
-    const color = colorAnimation(rValue);
     return {
       emoji: 'castle',
       height: 54 + (ios ? 0 : 6),
-      shadowStyle: {
-        backgroundColor: backgroundColor,
-        shadowColor: color,
-      },
-      style: {
-        backgroundColor: colors.dark,
-        borderColor: backgroundColor,
-        borderWidth: ios ? 0 : 3,
-        width: 230 + (ios ? 0 : 6),
-      },
       text: lang.t('wallet.new.get_new_wallet'),
       textColor: colors.white,
     };
-  }, [rValue]);
+  }, []);
+
+  const createWalletButtonAnimatedStyle = useAnimatedStyle(() => ({
+    backgroundColor: colors.dark,
+    borderColor: calculatedColor.value,
+    borderWidth: ios ? 0 : 3,
+    width: 230 + (ios ? 0 : 6),
+  }));
+
+  const createWalletButtonAnimatedShadowStyle = useAnimatedStyle(() => ({
+    backgroundColor: calculatedColor.value,
+    shadowColor: calculatedColor.value,
+  }));
 
   const showRestoreSheet = useCallback(() => {
     analytics.track('Tapped "I already have one"');
@@ -524,13 +466,7 @@ export default function WelcomeScreen() {
       text: lang.t('wallet.new.already_have_wallet'),
       textColor: colors.alpha(colors.blueGreyDark, 0.8),
     };
-  }, [rValue]);
-
-  const textStyle = useMemoOne(() => {
-    return {
-      backgroundColor,
-    };
-  }, [rValue]);
+  }, []);
 
   useAndroidBackHandler(() => {
     return true;
@@ -559,11 +495,12 @@ export default function WelcomeScreen() {
         )}
 
         <ButtonWrapper style={buttonStyle}>
-          {/* @ts-expect-error not animated style */}
           <RainbowButton
             onPress={onCreateWallet}
             testID="new-wallet-button"
             {...createWalletButtonProps}
+            shadowStyle={createWalletButtonAnimatedShadowStyle}
+            style={createWalletButtonAnimatedStyle}
           />
         </ButtonWrapper>
         <ButtonWrapper>
