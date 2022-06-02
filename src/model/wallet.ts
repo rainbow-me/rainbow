@@ -30,7 +30,10 @@ import {
   seedPhraseKey,
   selectedWalletKey,
 } from '../utils/keychainConstants';
-import { addressHashedColorIndex } from '../utils/profileUtils';
+import profileUtils, {
+  addressHashedColorIndex,
+  addressHashedEmoji,
+} from '../utils/profileUtils';
 import * as keychain from './keychain';
 import { PreferenceActionType, setPreference } from './preferences';
 import { EthereumAddress } from '@rainbow-me/entities';
@@ -715,6 +718,7 @@ export const createWallet = async (
       setPreference(PreferenceActionType.init, 'profile', address, {
         accountColor:
           lightModeThemeColors.avatarBackgrounds[colorIndexForWallet],
+        accountSymbol: profileUtils.addressHashedEmoji(address),
       });
       logger.sentry(`[createWallet] - enabled web profile`);
     }
@@ -816,6 +820,7 @@ export const createWallet = async (
             {
               accountColor:
                 lightModeThemeColors.avatarBackgrounds[colorIndexForWallet],
+              accountSymbol: addressHashedEmoji(nextWallet.address),
             }
           );
 

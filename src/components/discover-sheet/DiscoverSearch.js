@@ -64,10 +64,13 @@ export default function DiscoverSearch() {
     ensResults,
   ]);
 
-  const currencyListDataLength =
-    uniswapCurrencyList?.[0]?.data?.length ||
-    0 + ensResults?.[0]?.data?.length ||
-    0;
+  const currencyListDataKey = useMemo(
+    () =>
+      `${uniswapCurrencyList?.[0]?.data?.[0]?.address || '_'}_${
+        ensResults?.[0]?.data?.[0]?.address || '_'
+      }`,
+    [ensResults, uniswapCurrencyList]
+  );
 
   useHardwareBackOnFocus(() => {
     cancelSearch();
@@ -191,7 +194,7 @@ export default function DiscoverSearch() {
 
   return (
     <View
-      key={currencyListDataLength}
+      key={currencyListDataKey}
       style={{ height: deviceUtils.dimensions.height - 140 }}
     >
       <SearchContainer>

@@ -162,9 +162,13 @@ export default function SendSheet(props) {
   const showAssetForm = isValidAddress && !isEmpty(selected);
 
   const isNft = selected?.type === AssetTypes.nft;
+
+  const address = selected?.mainnet_address || selected?.address;
+  const type = selected?.mainnet_address ? AssetTypes.token : selected?.type;
   let colorForAsset = useColorForAsset(
     {
-      address: selected?.mainnet_address || selected.address,
+      address,
+      type,
     },
     null,
     false,

@@ -1,16 +1,14 @@
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
-import { useTheme } from '../../context/ThemeContext';
-import { getRandomColor } from '../../styles/colors';
+import useUpdateEmoji from '../../../src/hooks/useUpdateEmoji';
 import ProfileModal from './profile/ProfileModal';
-import {
-  removeFirstEmojiFromString,
-  returnStringFirstEmoji,
-} from '@rainbow-me/helpers/emojiHandler';
+import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
+import { getWalletProfileMeta } from '@rainbow-me/helpers/walletProfileHandler';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import { colors } from '@rainbow-me/styles';
 import { profileUtils } from '@rainbow-me/utils';
 
 export default function WalletProfileState({
@@ -21,31 +19,27 @@ export default function WalletProfileState({
   profile,
   forceColor,
 }) {
-  const nameEmoji =
-    isNewProfile && !forceColor
-      ? profileUtils.addressHashedEmoji(address)
-      : returnStringFirstEmoji(profile?.name) ||
-        profileUtils.addressHashedEmoji(address);
-
+  const [webProfile, setWebProfile] = useState(null);
   const { goBack, navigate } = useNavigation();
-  const { colors } = useTheme();
+  const { getWebProfile } = useUpdateEmoji();
 
-  const indexOfForceColor = colors.avatarBackgrounds.indexOf(forceColor);
-  const color = forceColor
-    ? forceColor
-    : isNewProfile && address
-    ? profileUtils.addressHashedColorIndex(address)
-    : profile.color !== null
-    ? profile.color
-    : isNewProfile
-    ? null
-    : (indexOfForceColor !== -1 && indexOfForceColor) || getRandomColor();
-  const accentColor = colors.avatarBackgrounds[color];
+  const { color: nameColor, emoji: nameEmoji } = useMemo(
+    () =>
+      getWalletProfileMeta(
+        address,
+        profile,
+        webProfile,
+        isNewProfile,
+        forceColor
+      ),
+    [address, forceColor, isNewProfile, profile, webProfile]
+  );
 
   const [value, setValue] = useState(
     profile?.name ? removeFirstEmojiFromString(profile.name) : ''
   );
 
+  const accentColor = colors.avatarBackgrounds[nameColor];
   const profileImage = profile.image;
 
   const handleCancel = useCallback(() => {
@@ -61,9 +55,9 @@ export default function WalletProfileState({
     InteractionManager.runAfterInteractions(() => {
       onCloseModal({
         color:
-          typeof color === 'string'
-            ? profileUtils.colorHexToIndex(color)
-            : color,
+          typeof nameColor === 'string'
+            ? profileUtils.colorHexToIndex(nameColor)
+            : nameColor,
         image: profileImage,
         name: nameEmoji ? `${nameEmoji} ${value}` : value,
       });
@@ -74,7 +68,7 @@ export default function WalletProfileState({
     });
   }, [
     actionType,
-    color,
+    nameColor,
     goBack,
     isNewProfile,
     nameEmoji,
@@ -83,6 +77,14 @@ export default function WalletProfileState({
     profileImage,
     value,
   ]);
+
+  useEffect(() => {
+    const getProfile = async () => {
+      const profile = await getWebProfile(address);
+      setWebProfile(profile ?? {});
+    };
+    getProfile();
+  }, [address, getWebProfile]);
 
   return (
     <ProfileModal

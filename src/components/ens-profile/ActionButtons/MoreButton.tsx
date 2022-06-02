@@ -112,7 +112,7 @@ export default function MoreButton({
   const handleAndroidPress = useCallback(() => {
     const actionSheetOptions = menuItems
       .map(item => item?.actionTitle)
-      .filter(x => x) as any;
+      .filter(Boolean) as any;
 
     showActionSheetWithOptions(
       {
