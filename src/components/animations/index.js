@@ -1,4 +1,3 @@
-export { interpolate } from './procs';
 export {
   default as ButtonPressAnimation,
   ScaleButtonZoomableAndroid,
