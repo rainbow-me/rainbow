@@ -10,6 +10,7 @@ import {
   Divider,
   Stack,
 } from '@rainbow-me/design-system';
+import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 import { useENSRegistrationForm } from '@rainbow-me/hooks';
 
 export default function TextRecordsForm({
@@ -103,6 +104,13 @@ export default function TextRecordsForm({
                   onFocus={onFocus}
                   placeholder={placeholder}
                   selectionColor={selectionColor}
+                  shouldFormatText={
+                    key === ENS_RECORDS.displayName ||
+                    key === ENS_RECORDS.description ||
+                    key === ENS_RECORDS.notice ||
+                    key === ENS_RECORDS.keywords ||
+                    key === ENS_RECORDS.pronouns
+                  }
                   startsWith={startsWith}
                   testID={`ens-text-record-${key}`}
                   validations={validations}
