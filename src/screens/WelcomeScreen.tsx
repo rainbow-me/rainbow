@@ -2,7 +2,7 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Animated, StyleProp, ViewStyle } from 'react-native';
+import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 // @ts-expect-error
 import { IS_TESTING } from 'react-native-dotenv';
 import Reanimated, {
@@ -18,18 +18,12 @@ import Reanimated, {
   withTiming,
 } from 'react-native-reanimated';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
-import { useMemoOne } from 'use-memo-one';
-import RainbowGreyNeon from '../assets/rainbows/greyneon.png';
-import RainbowLight from '../assets/rainbows/light.png';
-import RainbowLiquid from '../assets/rainbows/liquid.png';
-import RainbowNeon from '../assets/rainbows/neon.png';
-import RainbowPixel from '../assets/rainbows/pixel.png';
 import { ButtonPressAnimation } from '../components/animations';
 import { BaseButtonAnimationProps } from '../components/animations/ButtonPressAnimation/types';
 import RainbowText from '../components/icons/svg/RainbowText';
 import { RowWithMargins } from '../components/layout';
+import { RainbowsBackground } from '../components/rainbows-background/RainbowsBackground';
 import { Emoji, Text } from '../components/text';
-
 import {
   fetchUserDataFromCloud,
   isCloudBackupAvailable,
@@ -39,7 +33,6 @@ import { cloudPlatform } from '../utils/platform';
 
 import { ThemeContextProps, useTheme } from '@rainbow-me/context';
 import { useHideSplashScreen } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
@@ -167,106 +160,6 @@ const ButtonWrapper = styled(Reanimated.View)({
   width: '100%',
 });
 
-const INITIAL_SIZE = 375;
-
-const rainbows = [
-  {
-    delay: 0,
-    id: 'grey',
-    rotate: '150deg',
-    scale: 0.5066666667,
-    source: ios ? { uri: 'greyneon' } : RainbowGreyNeon,
-    x: -116,
-    y: -202,
-  },
-  {
-    delay: 20,
-    id: 'neon',
-    rotate: '394.75deg',
-    scale: 0.3333333333,
-    source: ios ? { uri: 'neon' } : RainbowNeon,
-    x: 149,
-    y: 380,
-  },
-  {
-    delay: 40,
-    id: 'pixel',
-    rotate: '360deg',
-    scale: 0.6666666667,
-    source: ios ? { uri: 'pixel' } : RainbowPixel,
-    x: 173,
-    y: -263,
-  },
-  {
-    delay: 60,
-    id: 'light',
-    rotate: '-33deg',
-    scale: 0.2826666667,
-    source: ios ? { uri: 'light' } : RainbowLight,
-    x: -172,
-    y: 180,
-  },
-  {
-    delay: 80,
-    id: 'liquid',
-    rotate: '75deg',
-    scale: 0.42248,
-    source: ios ? { uri: 'liquid' } : RainbowLiquid,
-    x: 40,
-    y: 215,
-  },
-];
-
-const traversedRainbows = rainbows.map(
-  ({ delay, rotate = '0deg', scale = 1, source, x = 0, y = 0 }, index) => {
-    const animatedValue = new Animated.Value(0);
-    return {
-      delay,
-      id: index,
-      source,
-      style: {
-        opacity: animatedValue.interpolate({
-          inputRange: [0, 1],
-          outputRange: [0, 1],
-        }),
-        transform: [
-          {
-            translateX: animatedValue.interpolate({
-              inputRange: [0, 1],
-              outputRange: [0, x],
-            }),
-          },
-          {
-            translateY: animatedValue.interpolate({
-              inputRange: [0, 1],
-              outputRange: [0, y],
-            }),
-          },
-          {
-            rotate: animatedValue.interpolate({
-              inputRange: [0, 1],
-              outputRange: ['0deg', rotate],
-            }),
-          },
-          {
-            scale: animatedValue.interpolate({
-              inputRange: [0, 1],
-              outputRange: [0, scale],
-            }),
-          },
-        ],
-      },
-      value: animatedValue,
-    };
-  }
-);
-
-const RainbowImage = styled(ImgixImage)({
-  height: INITIAL_SIZE,
-  position: 'absolute',
-  width: INITIAL_SIZE,
-});
-
 const RAINBOW_TEXT_HEIGHT = 32;
 const RAINBOW_TEXT_WIDTH = 125;
 
@@ -274,13 +167,6 @@ const RainbowTextMask = styled(Reanimated.View)({
   height: RAINBOW_TEXT_HEIGHT,
   width: RAINBOW_TEXT_WIDTH,
 });
-
-const springConfig = {
-  bounciness: 7.30332,
-  speed: 0.6021408,
-  toValue: 1,
-  useNativeDriver: true,
-};
 
 const animationColors = [
   'rgb(255,73,74)',
@@ -300,6 +186,7 @@ export default function WelcomeScreen() {
 
   const contentAnimation = useSharedValue(1);
   const colorAnimation = useSharedValue(0);
+  const shouldAnimateRainbows = useSharedValue(false);
   const calculatedColor = useDerivedValue(
     () =>
       interpolateColor(
@@ -328,11 +215,7 @@ export default function WelcomeScreen() {
         logger.log('error getting userData', e);
       } finally {
         hideSplashScreen();
-        const animations = [
-          ...traversedRainbows.map(({ value, delay = 0 }) =>
-            Animated.spring(value, { ...springConfig, delay })
-          ),
-        ];
+        shouldAnimateRainbows.value = true;
 
         const initialDuration = 120;
 
@@ -373,7 +256,6 @@ export default function WelcomeScreen() {
           );
         }
 
-        Animated.parallel(animations).start();
         if (IS_TESTING === 'true') {
           logger.log(
             'Disabled loop animations in WelcomeScreen due to .env var IS_TESTING === "true"'
@@ -393,6 +275,7 @@ export default function WelcomeScreen() {
     contentAnimation,
     createWalletButtonAnimation,
     hideSplashScreen,
+    shouldAnimateRainbows,
   ]);
 
   const buttonStyle = useAnimatedStyle(() => ({
@@ -412,24 +295,6 @@ export default function WelcomeScreen() {
     backgroundColor: calculatedColor.value,
   }));
 
-  const onCreateWallet = useCallback(async () => {
-    analytics.track('Tapped "Get a new wallet"');
-    const operation = dangerouslyGetState().index === 1 ? navigate : replace;
-    operation(Routes.SWIPE_LAYOUT, {
-      params: { emptyWallet: true },
-      screen: Routes.WALLET_SCREEN,
-    });
-  }, [dangerouslyGetState, navigate, replace]);
-
-  const createWalletButtonProps = useMemoOne(() => {
-    return {
-      emoji: 'castle',
-      height: 54 + (ios ? 0 : 6),
-      text: lang.t('wallet.new.get_new_wallet'),
-      textColor: colors.white,
-    };
-  }, []);
-
   const createWalletButtonAnimatedStyle = useAnimatedStyle(() => ({
     backgroundColor: colors.dark,
     borderColor: calculatedColor.value,
@@ -442,6 +307,15 @@ export default function WelcomeScreen() {
     shadowColor: calculatedColor.value,
   }));
 
+  const onCreateWallet = useCallback(async () => {
+    analytics.track('Tapped "Get a new wallet"');
+    const operation = dangerouslyGetState().index === 1 ? navigate : replace;
+    operation(Routes.SWIPE_LAYOUT, {
+      params: { emptyWallet: true },
+      screen: Routes.WALLET_SCREEN,
+    });
+  }, [dangerouslyGetState, navigate, replace]);
+
   const showRestoreSheet = useCallback(() => {
     analytics.track('Tapped "I already have one"');
     navigate(Routes.RESTORE_SHEET, {
@@ -449,40 +323,13 @@ export default function WelcomeScreen() {
     });
   }, [navigate, userData]);
 
-  const existingWalletButtonProps = useMemoOne(() => {
-    return {
-      darkShadowStyle: {
-        opacity: 0,
-      },
-      emoji: 'old_key',
-      height: 56,
-      shadowStyle: {
-        opacity: 0,
-      },
-      style: {
-        backgroundColor: colors.blueGreyDarkLight,
-        width: 248,
-      },
-      text: lang.t('wallet.new.already_have_wallet'),
-      textColor: colors.alpha(colors.blueGreyDark, 0.8),
-    };
-  }, []);
-
   useAndroidBackHandler(() => {
     return true;
   });
 
   return (
     <Container testID="welcome-screen">
-      {traversedRainbows.map(({ source, style, id }) => (
-        <RainbowImage
-          Component={Animated.Image}
-          key={`rainbow${id}`}
-          source={source}
-          style={style}
-        />
-      ))}
-
+      <RainbowsBackground shouldAnimate={shouldAnimateRainbows} />
       <ContentWrapper style={contentStyle}>
         {android && IS_TESTING === 'true' ? (
           // @ts-expect-error JS component
@@ -496,21 +343,42 @@ export default function WelcomeScreen() {
 
         <ButtonWrapper style={buttonStyle}>
           <RainbowButton
+            emoji="castle"
+            height={54 + (ios ? 0 : 6)}
             onPress={onCreateWallet}
-            testID="new-wallet-button"
-            {...createWalletButtonProps}
             shadowStyle={createWalletButtonAnimatedShadowStyle}
             style={createWalletButtonAnimatedStyle}
+            testID="new-wallet-button"
+            text={lang.t('wallet.new.get_new_wallet')}
+            textColor={colors.white}
           />
         </ButtonWrapper>
         <ButtonWrapper>
           <RainbowButton
+            darkShadowStyle={sx.existingWalletShadow}
+            emoji="old_key"
+            height={56}
             onPress={showRestoreSheet}
-            {...existingWalletButtonProps}
+            shadowStyle={sx.existingWalletShadow}
+            style={[
+              sx.existingWallet,
+              { backgroundColor: colors.blueGreyDarkLight },
+            ]}
             testID="already-have-wallet-button"
+            text={lang.t('wallet.new.already_have_wallet')}
+            textColor={colors.alpha(colors.blueGreyDark, 0.8)}
           />
         </ButtonWrapper>
       </ContentWrapper>
     </Container>
   );
 }
+
+const sx = StyleSheet.create({
+  existingWallet: {
+    width: 248,
+  },
+  existingWalletShadow: {
+    opacity: 0,
+  },
+});
