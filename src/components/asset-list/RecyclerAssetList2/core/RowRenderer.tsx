@@ -36,7 +36,7 @@ function CellDataProvider({
 
 function rowRenderer(type: CellType, { uid }: { uid: string }) {
   return (
-    <CellDataProvider key={uid} uid={uid}>
+    <CellDataProvider uid={uid}>
       {data => {
         switch (type) {
           case CellType.ASSETS_HEADER_SPACE_AFTER:
@@ -106,16 +106,22 @@ function rowRenderer(type: CellType, { uid }: { uid: string }) {
             );
           }
           case CellType.NFT: {
-            const { index, uniqueId } = data as NFTExtraData;
+            const {
+              index,
+              uniqueId,
+              onPressUniqueToken,
+            } = data as NFTExtraData;
 
             return (
               <WrappedNFT
+                onPress={onPressUniqueToken}
                 placement={index % 2 === 0 ? 'left' : 'right'}
                 uniqueId={uniqueId}
               />
             );
           }
           case CellType.LOADING_ASSETS:
+            // @ts-expect-error untyped JS component
             return <AssetListItemSkeleton />;
         }
         assertNever(type);

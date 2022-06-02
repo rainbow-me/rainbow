@@ -1075,20 +1075,6 @@ export default function TransactionConfirmationScreen() {
                       {isAuthenticated ? dappName : formattedDappUrl}
                     </Text>
                   </Row>
-                  {
-                    //We only show the checkmark
-                    // if it's on the override list (dappNameHandler.js)
-                    isAuthenticated && (
-                      <Text
-                        align="center"
-                        color="action"
-                        size="18px"
-                        weight="bold"
-                      >
-                        {' 􀇻'}
-                      </Text>
-                    )
-                  }
                 </Row>
                 <Centered
                   marginBottom={android ? 10 : 24}

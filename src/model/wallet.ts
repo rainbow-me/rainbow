@@ -17,7 +17,7 @@ import {
   default as LibWallet,
 } from 'ethereumjs-wallet';
 import lang from 'i18n-js';
-import { find, findKey, forEach, get, isEmpty } from 'lodash';
+import { findKey, forEach, get, isEmpty } from 'lodash';
 import { Alert } from 'react-native';
 import { getSupportedBiometryType } from 'react-native-keychain';
 import { lightModeThemeColors } from '../styles/colors';
@@ -194,7 +194,10 @@ export const walletInit = async (
   name = null,
   overwrite = false,
   checkedWallet = null,
-  network: string
+  network: string,
+  image = null,
+  // Import the wallet "silently" in the background (i.e. no "loading" prompts).
+  silent = false
 ): Promise<WalletInitialized> => {
   let walletAddress = null;
 
@@ -209,7 +212,9 @@ export const walletInit = async (
       color,
       name,
       overwrite,
-      checkedWallet
+      checkedWallet,
+      image,
+      silent
     );
     walletAddress = wallet?.address;
     return { isNew, walletAddress };
@@ -538,7 +543,9 @@ export const createWallet = async (
   color: null | number = null,
   name: null | string = null,
   overwrite: boolean = false,
-  checkedWallet: null | EthereumWalletFromSeed = null
+  checkedWallet: null | EthereumWalletFromSeed = null,
+  image: null | string = null,
+  silent: boolean = false
 ): Promise<null | EthereumWallet> => {
   const isImported = !!seed;
   logger.sentry('Creating wallet, isImported?', isImported);
@@ -549,7 +556,10 @@ export const createWallet = async (
   let addresses: RainbowAccount[] = [];
   try {
     const { dispatch } = store;
-    dispatch(setIsWalletLoading(WalletLoadingStates.CREATING_WALLET));
+
+    if (!silent) {
+      dispatch(setIsWalletLoading(WalletLoadingStates.CREATING_WALLET));
+    }
 
     const {
       isHDWallet,
@@ -581,11 +591,9 @@ export const createWallet = async (
     if (isImported) {
       // Checking if the generated account already exists and is visible
       logger.sentry('[createWallet] - isImported >> true');
-      const alreadyExistingWallet = find(
-        allWallets,
+      const alreadyExistingWallet = Object.values(allWallets).find(
         (someWallet: RainbowWallet) => {
-          return !!find(
-            someWallet.addresses,
+          return !!someWallet.addresses.find(
             account =>
               toChecksumAddress(account.address) ===
                 toChecksumAddress(walletAddress) && account.visible
@@ -637,7 +645,9 @@ export const createWallet = async (
             dispatch(
               setIsWalletLoading(
                 seed
-                  ? WalletLoadingStates.IMPORTING_WALLET
+                  ? silent
+                    ? WalletLoadingStates.IMPORTING_WALLET_SILENTLY
+                    : WalletLoadingStates.IMPORTING_WALLET
                   : WalletLoadingStates.CREATING_WALLET
               )
             );
@@ -689,7 +699,7 @@ export const createWallet = async (
       address: walletAddress,
       avatar: null,
       color: colorIndexForWallet,
-      image: null,
+      image,
       index: 0,
       label: name || '',
       visible: true,
@@ -735,8 +745,7 @@ export const createWallet = async (
         let discoveredAccount: RainbowAccount | undefined;
         let discoveredWalletId: RainbowWallet['id'] | undefined;
         forEach(allWallets, someWallet => {
-          const existingAccount = find(
-            someWallet.addresses,
+          const existingAccount = someWallet.addresses.find(
             account =>
               toChecksumAddress(account.address) ===
               toChecksumAddress(nextWallet.address)
@@ -857,8 +866,10 @@ export const createWallet = async (
       type,
     };
 
-    await setSelectedWallet(allWallets[id]);
-    logger.sentry('[createWallet] - setSelectedWallet');
+    if (!silent) {
+      await setSelectedWallet(allWallets[id]);
+      logger.sentry('[createWallet] - setSelectedWallet');
+    }
 
     await saveAllWallets(allWallets);
     logger.sentry('[createWallet] - saveAllWallets');

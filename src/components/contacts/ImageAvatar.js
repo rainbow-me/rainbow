@@ -10,7 +10,11 @@ const buildSmallShadows = (color, colors) => [
   [0, 6, 10, colors.avatarBackgrounds[color] || color, 0.2],
 ];
 
-const sizeConfigs = colors => ({
+const sizeConfigs = (colors, isDarkMode) => ({
+  header: {
+    dimensions: 34,
+    textSize: 'large',
+  },
   large: {
     dimensions: 65,
     shadow: [
@@ -29,15 +33,13 @@ const sizeConfigs = colors => ({
   },
   medium: {
     dimensions: 40,
-    shadow: [
-      [0, 4, 6, colors.shadow, 0.04],
-      [0, 1, 3, colors.shadow, 0.08],
-    ],
+    shadow: [[0, 4, 12, colors.shadow, isDarkMode ? 0.3 : 0.15]],
     textSize: 'larger',
   },
   small: {
-    dimensions: 34,
-    textSize: 'large',
+    dimensions: 30,
+    shadow: [[0, 3, 9, colors.shadow, 0.1]],
+    textSize: 'lmedium',
   },
   smaller: {
     dimensions: 20,
@@ -51,15 +53,15 @@ const Avatar = styled(ImgixImage)(({ dimensions }) => ({
 }));
 
 const ImageAvatar = ({ image, size = 'medium', ...props }) => {
-  const { colors } = useTheme();
-  const { dimensions, shadow } = useMemo(() => sizeConfigs(colors)[size], [
-    colors,
-    size,
-  ]);
+  const { colors, isDarkMode } = useTheme();
+  const { dimensions, shadow } = useMemo(
+    () => sizeConfigs(colors, isDarkMode)[size],
+    [colors, isDarkMode, size]
+  );
 
   const shadows = useMemo(
     () =>
-      size === 'small' || size === 'smaller'
+      size === 'header' || size === 'smaller'
         ? buildSmallShadows(colors.shadow, colors)
         : shadow,
     [shadow, size, colors]
