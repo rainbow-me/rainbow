@@ -96,7 +96,7 @@ export const updateTopMovers = (message: ZerionAssetInfoResponse) => (
 ) => {
   const { nativeCurrency } = getState().settings;
   const orderByDirection = message.meta.order_by['relative_changes.1d'];
-  const assets = message.payload.info.map(({ asset }) => {
+  const assets = message?.payload?.info?.map(({ asset }) => {
     return parseAsset(asset);
   });
 

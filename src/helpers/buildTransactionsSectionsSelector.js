@@ -57,7 +57,7 @@ const buildTransactionsSections = (
 
   let sectionedTransactions = [];
 
-  const transactionsWithContacts = transactions.map(addContactInfo(contacts));
+  const transactionsWithContacts = transactions?.map(addContactInfo(contacts));
 
   if (!isEmpty(transactionsWithContacts)) {
     const transactionsByDate = groupBy(
