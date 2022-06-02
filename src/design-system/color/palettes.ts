@@ -131,9 +131,7 @@ export const foregroundColors: Record<
 > = {
   action: {
     dark: colors.appleBlueLight,
-    darkTinted: colors.appleBlueLight,
     light: colors.appleBlue,
-    lightTinted: colors.appleBlue,
   },
   divider100: {
     dark: 'rgba(60, 66, 82, 0.6)',
