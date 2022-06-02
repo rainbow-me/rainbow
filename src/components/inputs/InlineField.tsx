@@ -179,6 +179,7 @@ export default function InlineField({
             placeholder={placeholder}
             scrollEnabled={false}
             selectionColor={selectionColor}
+            spellCheck={false}
             style={style}
             value={value}
             {...inputProps}

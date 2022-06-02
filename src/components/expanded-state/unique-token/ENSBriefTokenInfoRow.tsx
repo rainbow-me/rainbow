@@ -85,7 +85,7 @@ export default function ENSBriefTokenInfoRow({
                 scaleTo={0.75}
                 testID="unique-token-expanded-state-extend-duration"
               >
-                <Inset left="2px">
+                <Inset left="4px">
                   <TokenInfoValue
                     activeOpacity={0}
                     align="right"
@@ -95,7 +95,7 @@ export default function ENSBriefTokenInfoRow({
                     size="large"
                     weight="heavy"
                   >
-                    {' 􀌆'}
+                    􀌆
                   </TokenInfoValue>
                 </Inset>
               </ButtonPressAnimation>

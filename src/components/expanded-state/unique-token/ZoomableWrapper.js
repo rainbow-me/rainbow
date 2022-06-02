@@ -103,12 +103,14 @@ export const ZoomableWrapper = ({
 
   let { height: deviceHeight, width: deviceWidth } = useDimensions();
 
+  let deviceHeightWithMaybeHiddenStatusBar = deviceHeight;
   if (!hideStatusBar) {
-    deviceHeight = deviceHeight - safeAreaInsetValues.top;
+    deviceHeightWithMaybeHiddenStatusBar =
+      deviceHeight - safeAreaInsetValues.top;
   }
 
   const maxImageWidth = width || deviceWidth - horizontalPadding * 2;
-  const maxImageHeight = height || deviceHeight / 2;
+  const maxImageHeight = height || deviceHeightWithMaybeHiddenStatusBar / 2;
   const [
     containerWidth = maxImageWidth,
     containerHeight = maxImageWidth,
@@ -161,8 +163,14 @@ export const ZoomableWrapper = ({
     }
   }, [isZoomed, onZoomIn, onZoomOut]);
 
-  const fullSizeHeight = Math.min(deviceHeight, deviceWidth / aspectRatio);
-  const fullSizeWidth = Math.min(deviceWidth, deviceHeight * aspectRatio);
+  const fullSizeHeight = Math.min(
+    deviceHeightWithMaybeHiddenStatusBar,
+    deviceWidth / aspectRatio
+  );
+  const fullSizeWidth = Math.min(
+    deviceWidth,
+    deviceHeightWithMaybeHiddenStatusBar * aspectRatio
+  );
   const zooming = fullSizeHeight / containerHeightValue.value;
 
   const xOffset = givenXOffset || (width - containerWidth) / 2 || 0;
@@ -181,7 +189,7 @@ export const ZoomableWrapper = ({
           translateY:
             animationProgress.value *
             (yDisplacement.value +
-              (deviceHeight - fullSizeHeight) / 2 -
+              (deviceHeightWithMaybeHiddenStatusBar - fullSizeHeight) / 2 -
               (hideStatusBar ? 85 : 68)),
         },
         {
@@ -229,10 +237,10 @@ export const ZoomableWrapper = ({
 
     // determine whether to snap to screen edges
     let breakingScaleX = deviceWidth / fullSizeWidth;
-    let breakingScaleY = deviceHeight / fullSizeHeight;
+    let breakingScaleY = deviceHeightWithMaybeHiddenStatusBar / fullSizeHeight;
     if (isZoomedValue.value === false) {
       breakingScaleX = deviceWidth / containerWidth;
-      breakingScaleY = deviceHeight / containerHeight;
+      breakingScaleY = deviceHeightWithMaybeHiddenStatusBar / containerHeight;
     }
     const zooming = fullSizeHeight / containerHeightValue.value;
 
@@ -241,7 +249,8 @@ export const ZoomableWrapper = ({
       2 /
       zooming;
     const maxDisplacementY =
-      (deviceHeight * (Math.max(1, targetScale / breakingScaleY) - 1)) /
+      (deviceHeightWithMaybeHiddenStatusBar *
+        (Math.max(1, targetScale / breakingScaleY) - 1)) /
       2 /
       zooming;
 
@@ -335,7 +344,7 @@ export const ZoomableWrapper = ({
           (Math.abs(event?.velocityY) ?? 0) -
           (Math.abs(event?.velocityX / 2) ?? 0) >
           THRESHOLD * targetScale &&
-        fullSizeHeight * scale.value <= deviceHeight
+        fullSizeHeight * scale.value <= deviceHeightWithMaybeHiddenStatusBar
       ) {
         isZoomedValue.value = false;
         runOnJS(setIsZoomed)(false);
@@ -427,7 +436,9 @@ export const ZoomableWrapper = ({
       ) {
         scale.value =
           ctx.startScale -
-          ((ctx.startY + Math.abs(event.translationY)) / deviceHeight / 2) *
+          ((ctx.startY + Math.abs(event.translationY)) /
+            deviceHeightWithMaybeHiddenStatusBar /
+            2) *
             ctx.startScale;
       }
       if (event.numberOfPointers === 2) {
@@ -440,7 +451,8 @@ export const ZoomableWrapper = ({
       // lock y translation on horizontal swipe
       if (
         ctx.startScale <= MIN_IMAGE_SCALE ||
-        ctx.startScale * fullSizeHeight >= deviceHeight ||
+        ctx.startScale * fullSizeHeight >=
+          deviceHeightWithMaybeHiddenStatusBar ||
         ctx.numberOfPointers === 2 ||
         event.numberOfPointers === 2 ||
         !(Math.abs(ctx.startVelocityX) / Math.abs(ctx.startVelocityY) > 1)
@@ -528,10 +540,12 @@ export const ZoomableWrapper = ({
       } else if (
         scale.value === MIN_IMAGE_SCALE &&
         ((event.absoluteY > 0 &&
-          event.absoluteY < (deviceHeight - fullSizeHeight) / 2) ||
-          (event.absoluteY <= deviceHeight &&
+          event.absoluteY <
+            (deviceHeightWithMaybeHiddenStatusBar - fullSizeHeight) / 2) ||
+          (event.absoluteY <= deviceHeightWithMaybeHiddenStatusBar &&
             event.absoluteY >
-              deviceHeight - (deviceHeight - fullSizeHeight) / 2))
+              deviceHeightWithMaybeHiddenStatusBar -
+                (deviceHeightWithMaybeHiddenStatusBar - fullSizeHeight) / 2))
       ) {
         // dismiss if tap was outside image bounds
         isZoomedValue.value = false;
@@ -552,22 +566,27 @@ export const ZoomableWrapper = ({
         } else {
           // zoom to tapped coordinates and prevent detachment from screen edges
           const centerX = deviceWidth / 2;
-          const centerY = deviceHeight / 2;
+          const centerY = deviceHeightWithMaybeHiddenStatusBar / 2;
           const scaleTo = Math.min(
-            Math.max(deviceHeight / fullSizeHeight, 2.5),
+            Math.max(
+              deviceHeightWithMaybeHiddenStatusBar / fullSizeHeight,
+              2.5
+            ),
             MAX_IMAGE_SCALE
           );
           const zoomToX = ((centerX - event.absoluteX) * scaleTo) / zooming;
           const zoomToY = ((centerY - event.absoluteY) * scaleTo) / zooming;
 
           const breakingScaleX = deviceWidth / fullSizeWidth;
-          const breakingScaleY = deviceHeight / fullSizeHeight;
+          const breakingScaleY =
+            deviceHeightWithMaybeHiddenStatusBar / fullSizeHeight;
           const maxDisplacementX =
             (deviceWidth * (Math.max(1, scaleTo / breakingScaleX) - 1)) /
             2 /
             zooming;
           const maxDisplacementY =
-            (deviceHeight * (Math.max(1, scaleTo / breakingScaleY) - 1)) /
+            (deviceHeightWithMaybeHiddenStatusBar *
+              (Math.max(1, scaleTo / breakingScaleY) - 1)) /
             2 /
             zooming;
 
@@ -648,7 +667,7 @@ export const ZoomableWrapper = ({
               <ZoomContainer height={containerHeight} width={containerWidth}>
                 <GestureBlocker
                   containerWidth={containerWidth}
-                  height={deviceHeight}
+                  height={deviceHeightWithMaybeHiddenStatusBar}
                   pointerEvents={isZoomed ? 'auto' : 'none'}
                   width={deviceWidth}
                   xOffset={xOffset}

@@ -83,7 +83,7 @@ export async function getPreference(
     });
     return responseData?.data || null;
   } catch (e) {
-    logger.log('☁️  error setting pref', e);
+    logger.log('☁️  error getting pref', e);
     return null;
   }
 }
