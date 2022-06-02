@@ -197,7 +197,10 @@ export const walletInit = async (
   name = null,
   overwrite = false,
   checkedWallet = null,
-  network: string
+  network: string,
+  image = null,
+  // Import the wallet "silently" in the background (i.e. no "loading" prompts).
+  silent = false
 ): Promise<WalletInitialized> => {
   let walletAddress = null;
 
@@ -212,7 +215,9 @@ export const walletInit = async (
       color,
       name,
       overwrite,
-      checkedWallet
+      checkedWallet,
+      image,
+      silent
     );
     walletAddress = wallet?.address;
     return { isNew, walletAddress };
@@ -541,7 +546,9 @@ export const createWallet = async (
   color: null | number = null,
   name: null | string = null,
   overwrite: boolean = false,
-  checkedWallet: null | EthereumWalletFromSeed = null
+  checkedWallet: null | EthereumWalletFromSeed = null,
+  image: null | string = null,
+  silent: boolean = false
 ): Promise<null | EthereumWallet> => {
   const isImported = !!seed;
   logger.sentry('Creating wallet, isImported?', isImported);
@@ -552,7 +559,10 @@ export const createWallet = async (
   let addresses: RainbowAccount[] = [];
   try {
     const { dispatch } = store;
-    dispatch(setIsWalletLoading(WalletLoadingStates.CREATING_WALLET));
+
+    if (!silent) {
+      dispatch(setIsWalletLoading(WalletLoadingStates.CREATING_WALLET));
+    }
 
     const {
       isHDWallet,
@@ -638,7 +648,9 @@ export const createWallet = async (
             dispatch(
               setIsWalletLoading(
                 seed
-                  ? WalletLoadingStates.IMPORTING_WALLET
+                  ? silent
+                    ? WalletLoadingStates.IMPORTING_WALLET_SILENTLY
+                    : WalletLoadingStates.IMPORTING_WALLET
                   : WalletLoadingStates.CREATING_WALLET
               )
             );
@@ -690,7 +702,7 @@ export const createWallet = async (
       address: walletAddress,
       avatar: null,
       color: colorIndexForWallet,
-      image: null,
+      image,
       index: 0,
       label: name || '',
       visible: true,
@@ -859,8 +871,10 @@ export const createWallet = async (
       type,
     };
 
-    await setSelectedWallet(allWallets[id]);
-    logger.sentry('[createWallet] - setSelectedWallet');
+    if (!silent) {
+      await setSelectedWallet(allWallets[id]);
+      logger.sentry('[createWallet] - setSelectedWallet');
+    }
 
     await saveAllWallets(allWallets);
     logger.sentry('[createWallet] - saveAllWallets');

@@ -167,7 +167,7 @@ const PulseIndex = () => {
             color={colors.dpiLight}
             numberOfLines={1}
             size="smedium"
-            weight="semibold"
+            weight="bold"
           >
             Trading at{' '}
             <Text
@@ -194,7 +194,7 @@ const PulseIndex = () => {
               align="right"
               color={item.isPositive ? colors.green : colors.red}
               size="smedium"
-              weight="semibold"
+              weight="bold"
             >
               {' '}
               {lang.t('discover.pulse.today_suffix')}

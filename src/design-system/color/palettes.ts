@@ -2,24 +2,27 @@ import { mapValues } from 'lodash';
 
 export const colors = {
   appleBlue: '#0E76FD',
+  appleBlueLight: '#1F87FF',
   black: '#000000',
   blackTint: '#12131a',
-  grey: 'rgb(60, 66, 66)',
-  grey06: 'rgba(60, 66, 66, 0.06)',
-  grey10: 'rgba(60, 66, 66, 0.1)',
-  grey20: 'rgba(60, 66, 66, 0.2)',
-  grey30: 'rgba(60, 66, 66, 0.3)',
-  grey40: 'rgba(60, 66, 66, 0.4)',
-  grey50: 'rgba(60, 66, 66, 0.5)',
-  grey60: 'rgba(60, 66, 66, 0.6)',
-  grey70: 'rgba(60, 66, 66, 0.7)',
-  grey80: 'rgba(60, 66, 66, 0.8)',
+  grey: 'rgb(60, 66, 82)',
+  grey06: 'rgba(60, 66, 82, 0.06)',
+  grey10: 'rgba(60, 66, 82, 0.1)',
+  grey20: 'rgba(60, 66, 82, 0.2)',
+  grey25: 'rgba(60, 66, 82, 0.25)',
+  grey30: 'rgba(60, 66, 82, 0.3)',
+  grey40: 'rgba(60, 66, 82, 0.4)',
+  grey50: 'rgba(60, 66, 82, 0.5)',
+  grey60: 'rgba(60, 66, 82, 0.6)',
+  grey70: 'rgba(60, 66, 82, 0.7)',
+  grey80: 'rgba(60, 66, 82, 0.8)',
   greyDark: '#25292E',
   paleBlue: '#579DFF',
-  sky: 'rgb(224, 232, 255)',
+  sky: '#E0E8FF',
   sky06: 'rgba(224, 232, 255, 0.06)',
   sky10: 'rgba(224, 232, 255, 0.1)',
   sky20: 'rgba(224, 232, 255, 0.2)',
+  sky25: 'rgba(224, 232, 255, 0.25)',
   sky30: 'rgba(224, 232, 255, 0.3)',
   sky40: 'rgba(224, 232, 255, 0.4)',
   sky50: 'rgba(224, 232, 255, 0.5)',
@@ -31,6 +34,7 @@ export const colors = {
   white06: 'rgba(255, 255, 255, 0.06)',
   white10: 'rgba(255, 255, 255, 0.1)',
   white20: 'rgba(255, 255, 255, 0.2)',
+  white25: 'rgba(255, 255, 255, 0.25)',
   white30: 'rgba(255, 255, 255, 0.3)',
   white40: 'rgba(255, 255, 255, 0.4)',
   white50: 'rgba(255, 255, 255, 0.5)',
@@ -66,17 +70,31 @@ export const backgroundColors: Record<
   BackgroundColorValue | ContextualColorValue<BackgroundColorValue>
 > = {
   action: {
-    color: colors.appleBlue,
-    mode: 'darkTinted',
+    dark: {
+      color: colors.appleBlueLight,
+      mode: 'darkTinted',
+    },
+    light: {
+      color: colors.appleBlue,
+      mode: 'darkTinted',
+    },
   },
   body: {
     dark: {
       color: colors.blackTint,
       mode: 'dark',
     },
+    darkTinted: {
+      color: colors.blackTint,
+      mode: 'darkTinted',
+    },
     light: {
       color: colors.white,
       mode: 'light',
+    },
+    lightTinted: {
+      color: colors.white,
+      mode: 'lightTinted',
     },
   },
   swap: {
@@ -91,11 +109,13 @@ export type ForegroundColor =
   | 'divider40'
   | 'divider60'
   | 'divider80'
+  | 'divider100'
   | 'primary'
   | 'secondary'
   | 'secondary06'
   | 'secondary10'
   | 'secondary20'
+  | 'secondary25'
   | 'secondary30'
   | 'secondary40'
   | 'secondary50'
@@ -109,7 +129,15 @@ export const foregroundColors: Record<
   ForegroundColor,
   string | ContextualColorValue<string>
 > = {
-  action: colors.appleBlue,
+  action: {
+    dark: colors.appleBlueLight,
+    light: colors.appleBlue,
+  },
+  divider100: {
+    dark: 'rgba(60, 66, 82, 0.6)',
+    darkTinted: 'rgba(255, 255, 255, 0.15)',
+    light: 'rgba(60, 66, 82, 0.12)',
+  },
   divider20: {
     dark: 'rgba(60, 66, 82, 0.025)',
     darkTinted: 'rgba(255, 255, 255, 0.01)',
@@ -156,6 +184,11 @@ export const foregroundColors: Record<
     darkTinted: colors.white20,
     light: colors.grey20,
   },
+  secondary25: {
+    dark: colors.sky25,
+    darkTinted: colors.white25,
+    light: colors.grey25,
+  },
   secondary30: {
     dark: colors.sky30,
     darkTinted: colors.white30,
@@ -189,8 +222,8 @@ export const foregroundColors: Record<
   shadow: {
     dark: colors.black,
     darkTinted: colors.black,
-    light: colors.blackTint,
-    lightTinted: colors.blackTint,
+    light: colors.greyDark,
+    lightTinted: colors.greyDark,
   },
   swap: colors.swapPurple,
 };
@@ -286,6 +319,7 @@ export const dividerColors = selectForegroundColors(
   'divider20',
   'divider40',
   'divider60',
-  'divider80'
+  'divider80',
+  'divider100'
 );
 export type DividerColor = typeof dividerColors[number];
