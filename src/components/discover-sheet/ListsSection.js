@@ -1,6 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
-import { times, toLower } from 'lodash';
+import { times } from 'lodash';
 import React, {
   Fragment,
   useCallback,
@@ -23,6 +23,7 @@ import { getTrendingAddresses } from '@rainbow-me/handlers/dispersion';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { useAccountSettings, useUserLists } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
+import { parseAssetNative } from '@rainbow-me/parsers';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { ethereumUtils } from '@rainbow-me/utils';
@@ -76,10 +77,6 @@ export default function ListSection() {
   } = useUserLists();
   const listRef = useRef(null);
   const initialized = useRef(false);
-  const genericAssets = useSelector(
-    ({ data: { genericAssets } }) => genericAssets
-  );
-
   const { colors } = useTheme();
   const listData = useMemo(() => DefaultTokenLists[network], [network]);
 
@@ -165,13 +162,10 @@ export default function ListSection() {
     let items = [];
     if (selectedList === 'favorites') {
       items = favorites
-        .map(
-          address =>
-            ethereumUtils.getAccountAsset(address) ||
-            ethereumUtils.formatGenericAsset(
-              genericAssets[toLower(address)],
-              nativeCurrency
-            )
+        .map(address =>
+          parseAssetNative(
+            ethereumUtils.getUniqueId({ address, nativeCurrency })
+          )
         )
         .sort((a, b) => (a.name > b.name ? 1 : -1));
     } else {
@@ -181,18 +175,13 @@ export default function ListSection() {
         return [];
       }
 
-      items = currentList.tokens.map(
-        address =>
-          ethereumUtils.getAccountAsset(address) ||
-          ethereumUtils.formatGenericAsset(
-            genericAssets[toLower(address)],
-            nativeCurrency
-          )
+      items = currentList.tokens.map(address =>
+        parseAssetNative(ethereumUtils.getUniqueId({ address, nativeCurrency }))
       );
     }
 
     return items.filter(item => item.symbol && Number(item.price?.value) > 0);
-  }, [favorites, genericAssets, lists, nativeCurrency, network, selectedList]);
+  }, [favorites, lists, nativeCurrency, network, selectedList]);
 
   const handlePress = useCallback(
     item => {

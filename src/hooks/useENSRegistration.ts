@@ -48,7 +48,8 @@ export default function useENSRegistration({
         duration * timeUnits.secs.year
       );
       const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
-        Network.mainnet
+        Network.mainnet,
+        nativeCurrency
       );
       const formattedRentPrice = formatRentPrice(
         rentPrice,

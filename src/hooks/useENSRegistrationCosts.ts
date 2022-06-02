@@ -30,7 +30,8 @@ export default function useENSRegistrationCosts({
     if (!rentPriceInWei) return;
 
     const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
-      Network.mainnet
+      Network.mainnet,
+      nativeCurrency
     );
 
     const { totalRegistrationGasLimit } = await estimateENSRegistrationGasLimit(
@@ -68,7 +69,8 @@ export default function useENSRegistrationCosts({
   const data = useMemo(() => {
     const rentPricePerYearInWei = rentPrice?.perYear?.wei?.toString();
     const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
-      Network.mainnet
+      Network.mainnet,
+      nativeCurrency
     );
 
     if (rentPricePerYearInWei) {

@@ -15,7 +15,7 @@ import {
   isZero,
   updatePrecisionToDisplay,
 } from '@rainbow-me/utilities';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils, logger } from '@rainbow-me/utils';
 
 enum DisplayValue {
   input = 'inputAmountDisplay',
@@ -77,15 +77,19 @@ export default function useSwapDerivedOutputs() {
   const outputCurrency = useSelector(
     (state: AppState) => state.swap.outputCurrency
   );
-  const genericAssets = useSelector(
-    (state: AppState) => state.data.genericAssets
-  );
 
-  const inputPrice = ethereumUtils.getAssetPrice(inputCurrency?.address);
-  const outputPrice = genericAssets[outputCurrency?.address]?.price?.value;
-
-  const { chainId } = useAccountSettings();
+  const { chainId, nativeCurrency } = useAccountSettings();
   const { allPairs, doneLoadingReserves } = useUniswapPairs();
+
+  logger.debug('TO DO: check if I can use unique id here instead.');
+  const inputPrice = ethereumUtils.getAssetPrice({
+    address: inputCurrency?.address,
+    nativeCurrency,
+  });
+  const outputPrice = ethereumUtils.getAssetPrice({
+    address: outputCurrency?.address,
+    nativeCurrency,
+  });
 
   return useMemo(() => {
     let tradeDetails = null;

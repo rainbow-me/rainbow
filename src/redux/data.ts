@@ -148,7 +148,6 @@ export const COINGECKO_IDS_ENDPOINT =
 
 // -- Constants --------------------------------------- //
 
-const DATA_UPDATE_GENERIC_ASSETS = 'data/DATA_UPDATE_GENERIC_ASSETS';
 const DATA_UPDATE_ETH_USD = 'data/DATA_UPDATE_ETH_USD';
 const DATA_UPDATE_PORTFOLIOS = 'data/DATA_UPDATE_PORTFOLIOS';
 const DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION =
@@ -224,13 +223,6 @@ interface DataState {
   ethUSDPrice: number | undefined | null;
 
   /**
-   * Parsed asset information for generic loaded assets.
-   */
-  genericAssets: {
-    [assetAddress: string]: ParsedAddressAsset;
-  };
-
-  /**
    * Whether or not assets are currently being loaded.
    */
   isLoadingAssets: boolean;
@@ -282,7 +274,6 @@ interface DataState {
 type DataAction =
   | DataUpdateUniswapPricesSubscriptionAction
   | DataUpdateRefetchSavingsAction
-  | DataUpdateGenericAssetsAction
   | DataUpdateAssetBalanceInfoAction
   | DataUpdateAssetPricingInfoAction
   | DataUpdatePortfoliosAction
@@ -316,14 +307,6 @@ interface DataUpdateUniswapPricesSubscriptionAction {
 interface DataUpdateRefetchSavingsAction {
   type: typeof DATA_UPDATE_REFETCH_SAVINGS;
   payload: boolean;
-}
-
-/**
- * The action to update `genericAssets`.
- */
-interface DataUpdateGenericAssetsAction {
-  type: typeof DATA_UPDATE_GENERIC_ASSETS;
-  payload: DataState['genericAssets'];
 }
 
 /**
@@ -1491,7 +1474,7 @@ export const assetPricesReceived = (
   dispatch: ThunkDispatch<
     AppState,
     unknown,
-    DataUpdateGenericAssetsAction | DataUpdateEthUsdAction
+    DataUpdateEthUsdAction | DataLoadAccountAssetsDataSuccessAction
   >,
   getState: AppGetState
 ) => {
@@ -1501,32 +1484,46 @@ export const assetPricesReceived = (
   const newAssets = message?.payload?.prices ?? {};
   if (isEmpty(newAssets)) return;
   const { nativeCurrency } = getState().settings;
+  const { assetsData } = getState().data;
   const currentCurrency = message?.meta?.currency;
-  const assetsByUniqueId = ethereumUtils.mapAssetsByUniqueId(
+  const currencyMatch = toLower(nativeCurrency) === currentCurrency;
+  const updatedAssets = ethereumUtils.mapAssetsByUniqueId(
     newAssets,
     Network.mainnet
   );
   if (currentCurrency) {
-    dispatch(dataUpdateAssetPricingInfo(assetsByUniqueId, currentCurrency));
+    dispatch(dataUpdateAssetPricingInfo(updatedAssets, currentCurrency));
   }
-
-  const currencyMatch = toLower(nativeCurrency) === currentCurrency;
   if (currencyMatch) {
-    const parsedAssets = mapValues(newAssets, asset => {
-      if (isOfType<ZerionAssetFallback>(asset, 'coingecko_id')) {
-        return parseFallbackAsset(asset);
-      } else {
-        return parseAsset(asset);
-      }
-    });
-    const assetIds = Object.keys(parsedAssets);
-    for (let id of assetIds) {
-      callbacksOnAssetReceived[toLower(id)]?.(parsedAssets[id]);
-      callbacksOnAssetReceived[toLower(id)] = undefined;
+    const parsedAssets = Object.keys(updatedAssets).reduce(
+      (allAssets, currentKey) => {
+        const currentAsset = updatedAssets[currentKey];
+        return {
+          ...allAssets,
+          [currentKey]: isOfType<ZerionAssetFallback>(
+            currentAsset,
+            'coingecko_id'
+          )
+            ? parseFallbackAsset(currentAsset)
+            : parseAsset(currentAsset),
+        };
+      },
+      assetsData
+    );
+    const assetAddresses = Object.values(parsedAssets).map(
+      asset => asset.address
+    );
+    for (let address of assetAddresses) {
+      callbacksOnAssetReceived[toLower(address)]?.(
+        parsedAssets[
+          ethereumUtils.getUniqueId({ address, network: Network.mainnet })
+        ]
+      );
+      callbacksOnAssetReceived[toLower(address)] = undefined;
     }
     dispatch({
       payload: parsedAssets,
-      type: DATA_UPDATE_GENERIC_ASSETS,
+      type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
     });
   }
 
@@ -1549,16 +1546,7 @@ export const assetPricesReceived = (
  */
 export const assetPricesChanged = (
   message: AssetPricesChangedMessage | undefined
-) => (
-  dispatch: ThunkDispatch<
-    AppState,
-    unknown,
-    DataUpdateGenericAssetsAction | DataUpdateEthUsdAction
-  >,
-  getState: AppGetState
-) => {
-  const { nativeCurrency } = getState().settings;
-
+) => (dispatch: ThunkDispatch<AppState, unknown, DataUpdateEthUsdAction>) => {
   const price = message?.payload?.prices?.[0]?.price;
   const updatedAsset = message?.payload?.prices?.[0];
   const assetAddress = message?.meta?.asset_code;
@@ -1572,27 +1560,6 @@ export const assetPricesChanged = (
   if (currentCurrency) {
     dispatch(dataUpdateAssetPricingInfo(assetsByUniqueId, currentCurrency));
   }
-
-  const currencyMatch = nativeCurrency?.toLowerCase() === currentCurrency;
-  if (currencyMatch) {
-    const { genericAssets } = getState().data;
-    const genericAsset = {
-      ...get(genericAssets, assetAddress),
-      price,
-    };
-    const updatedAssets = {
-      ...genericAssets,
-      [assetAddress]: genericAsset,
-    } as {
-      [address: string]: ParsedAddressAsset;
-    };
-
-    dispatch({
-      payload: updatedAssets,
-      type: DATA_UPDATE_GENERIC_ASSETS,
-    });
-  }
-
   const isUSD =
     message?.meta?.currency?.toLowerCase() ===
     NativeCurrencyKeys.USD.toLowerCase();
@@ -1963,7 +1930,6 @@ const INITIAL_STATE: DataState = {
   assetPricesFromUniswap: {},
   assetsData: {},
   ethUSDPrice: null,
-  genericAssets: {},
   isLoadingAssets: true,
   isLoadingTransactions: true,
   pendingTransactions: [],
@@ -1984,8 +1950,6 @@ export default (state: DataState = INITIAL_STATE, action: DataAction) => {
       };
     case DATA_UPDATE_REFETCH_SAVINGS:
       return { ...state, shouldRefetchSavings: action.payload };
-    case DATA_UPDATE_GENERIC_ASSETS:
-      return { ...state, genericAssets: action.payload };
     case DATA_UPDATE_PORTFOLIOS:
       return {
         ...state,
@@ -2065,7 +2029,8 @@ export default (state: DataState = INITIAL_STATE, action: DataAction) => {
       return {
         ...state,
         ...INITIAL_STATE,
-        genericAssets: state.genericAssets,
+        assetPriceData: state.assetPriceData,
+        assetsData: state.assetsData,
       };
     default:
       return state;

@@ -266,8 +266,8 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
 
   const nativeTokenPriceUnit =
     txNetwork !== Network.polygon
-      ? ethereumUtils.getEthPriceUnit()
-      : ethereumUtils.getMaticPriceUnit();
+      ? ethereumUtils.getEthPriceUnit(nativeCurrency)
+      : ethereumUtils.getMaticPriceUnit(nativeCurrency);
 
   const customGasFees = parseGasFees(
     gasParams,

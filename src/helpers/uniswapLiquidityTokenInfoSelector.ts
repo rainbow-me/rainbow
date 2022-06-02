@@ -26,7 +26,7 @@ import {
   handleSignificantDecimalsWithThreshold,
   multiply,
 } from '@rainbow-me/utilities';
-import { getTokenMetadata } from '@rainbow-me/utils';
+import { ethereumUtils, getTokenMetadata } from '@rainbow-me/utils';
 
 const accountAddressSelector = (state: AppState) =>
   state.settings.accountAddress;
@@ -90,8 +90,13 @@ const transformPool = (
   const liquidityTokenWithNative = !isNil(liquidityToken)
     ? parseAssetNative(liquidityToken, nativeCurrency)
     : liquidityToken;
+  const price = ethereumUtils.getAssetPrice({
+    address: liquidityToken?.address,
+    nativeCurrency,
+    network: ethereumUtils.getNetworkFromChainId(chainId),
+    uniqueId: liquidityToken?.uniqueId,
+  });
 
-  const price = liquidityTokenWithNative?.price;
   const {
     liquidityTokenBalance: balanceAmount,
     pair: { totalSupply, reserve0, reserve1 },
@@ -120,7 +125,7 @@ const transformPool = (
 
   const tokens = [token0, token1];
 
-  const totalBalancePrice = multiply(balanceAmount, price?.value || 0);
+  const totalBalancePrice = multiply(balanceAmount, price || 0);
   const totalNativeDisplay = convertAmountToNativeDisplay(
     totalBalancePrice,
     nativeCurrency

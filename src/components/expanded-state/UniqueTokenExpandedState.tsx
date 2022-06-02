@@ -209,7 +209,7 @@ const UniqueTokenExpandedState = ({
 
   const [floorPrice, setFloorPrice] = useState<string | null>(null);
   const [priceOfEth, setPriceOfEth] = useState<number>(
-    ethereumUtils.getEthPriceUnit()
+    ethereumUtils.getEthPriceUnit(nativeCurrency)
   );
   const [showCurrentPriceInEth, setShowCurrentPriceInEth] = useState(true);
   const [showFloorInEth, setShowFloorInEth] = useState(true);
@@ -268,7 +268,7 @@ const UniqueTokenExpandedState = ({
   }, [asset.network, isPoap, network, urlSuffixForAsset]);
 
   useEffect(() => {
-    setPriceOfEth(ethereumUtils.getEthPriceUnit());
+    setPriceOfEth(ethereumUtils.getEthPriceUnit(nativeCurrency));
   }, [nativeCurrency]);
 
   const handlePressCollectionFloor = useCallback(() => {

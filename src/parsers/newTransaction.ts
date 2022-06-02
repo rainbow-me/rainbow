@@ -54,8 +54,12 @@ export const parseNewTransaction = async (
     };
   }
 
-  const assetPrice =
-    asset?.price?.value ?? ethereumUtils.getAssetPrice(asset?.address);
+  const assetPrice = ethereumUtils.getAssetPrice({
+    address: asset?.address,
+    nativeCurrency,
+    network,
+    uniqueId: asset?.uniqueId,
+  });
 
   const native =
     network && isL2Network(network)

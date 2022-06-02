@@ -2,8 +2,6 @@ import { get, isNil, map, toUpper } from 'lodash';
 import { ParsedAddressAssetWithNative } from '../entities/tokens';
 import { dedupeUniqueTokens } from './uniqueTokens';
 import {
-  AssetBalanceInfo,
-  AssetPricingInfo,
   AssetType,
   AssetTypes,
   NativeCurrencyKey,
@@ -15,12 +13,12 @@ import {
 } from '@rainbow-me/entities';
 import { isNativeAsset } from '@rainbow-me/handlers/assets';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
+import store from '@rainbow-me/redux/store';
 import {
   add,
   convertAmountAndPriceToNativeDisplay,
   convertAmountToNativeDisplay,
   convertAmountToPercentageDisplay,
-  isOfType,
 } from '@rainbow-me/utilities';
 import {
   ethereumUtils,
@@ -34,7 +32,7 @@ import {
  * @return The array of parsed account assets.
  */
 export const parseAccountAssets = (
-  data: Record<string, ZerionAsset>,
+  data: { [uniqueId: string]: ZerionAsset },
   uniqueTokens: UniqueAsset[]
 ): Record<string, ParsedAddressAsset> => {
   const dedupedAssets: Record<string, ZerionAsset> = dedupeUniqueTokens(
@@ -119,35 +117,12 @@ export const parseFallbackAsset = (asset: ZerionAssetFallback) => {
 
 export const parseAssetsNativeWithTotals = (
   assets: ParsedAddressAsset[],
-  prices: { [uniqueId: string]: AssetPricingInfo },
-  balances: { [uniqueId: string]: AssetBalanceInfo },
   nativeCurrency: string
 ) => {
-  const assetsWithPricesAndBalances: ParsedAddressAsset[] = assets
-    .map(asset => {
-      let updatedAsset = asset;
-      const balance = balances?.[asset.uniqueId];
-      const price = prices?.[asset.uniqueId];
-      if (balance) {
-        updatedAsset.balance = balance;
-      }
-      if (price) {
-        updatedAsset.price =
-          price[nativeCurrency.toUpperCase() as NativeCurrencyKey];
-      }
-      return updatedAsset;
-    })
-    .filter(asset =>
-      asset.balance ? parseFloat(asset.balance?.amount || '0') > 0 : true
-    )
-    .filter(asset => (asset.price ? (asset.price.value || 0) > 0 : true));
-  const assetsNative = parseAssetsNative(
-    assetsWithPricesAndBalances,
-    nativeCurrency
-  );
-  const totalAmount = assetsNative.reduce((total, currentAsset) => {
-    if (isOfType<ParsedAddressAssetWithNative>(currentAsset, 'native')) {
-      return parseFloat(add(total, currentAsset?.native?.balance.amount));
+  const assetsNative = parseAssetsNative(assets, nativeCurrency);
+  const totalAmount = assetsNative.reduce((total, { native }) => {
+    if (native) {
+      return parseFloat(add(total, native?.balance.amount || 0));
     } else {
       return total;
     }
@@ -168,15 +143,21 @@ export const parseAssetsNative = (
 export const parseAssetNative = (
   asset: ParsedAddressAsset,
   nativeCurrency: string
-): ParsedAddressAsset | ParsedAddressAssetWithNative => {
-  const assetNativePrice = get(asset, 'price');
-  if (isNil(assetNativePrice)) {
+): ParsedAddressAssetWithNative => {
+  const { data, settings } = store.getState();
+  const { accountAddress } = settings;
+  const prices = data.assetPriceData;
+  const balances = data.accountAssetBalanceData[accountAddress];
+  const price =
+    prices[asset.uniqueId]?.[toUpper(nativeCurrency) as NativeCurrencyKey];
+  const balance = balances[asset.uniqueId];
+  if (isNil(price)) {
     return asset;
   }
-
-  const priceUnit = get(assetNativePrice, 'value', 0);
+  const priceUnit = get(price, 'value', 0);
+  const amount = balance?.amount || 0;
   const nativeDisplay = convertAmountAndPriceToNativeDisplay(
-    get(asset, 'balance.amount', 0),
+    amount,
     priceUnit,
     nativeCurrency
   );
@@ -186,8 +167,8 @@ export const parseAssetNative = (
       balance: nativeDisplay,
       change: isLowerCaseMatch(asset?.symbol!, nativeCurrency)
         ? null
-        : assetNativePrice.relative_change_24h
-        ? convertAmountToPercentageDisplay(assetNativePrice.relative_change_24h)
+        : price.relative_change_24h
+        ? convertAmountToPercentageDisplay(price.relative_change_24h)
         : '',
       price: {
         amount: priceUnit,

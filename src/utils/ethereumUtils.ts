@@ -14,7 +14,7 @@ import {
 } from 'ethereumjs-util';
 import { hdkey } from 'ethereumjs-wallet';
 import { Contract } from 'ethers';
-import { find, isEmpty, isString, replace, toLower } from 'lodash';
+import { find, isEmpty, isString, replace, toLower, toUpper } from 'lodash';
 import {
   Alert,
   InteractionManager,
@@ -29,6 +29,7 @@ import {
   EthereumAddress,
   GasFee,
   LegacySelectedGasFee,
+  NativeCurrencyKey,
   ParsedAddressAsset,
   RainbowTransaction,
   SelectedGasFee,
@@ -114,7 +115,9 @@ const getNativeAssetForNetwork = async (
   if (differentWallet || !nativeAsset || isTestnetNetwork(network)) {
     const mainnetAddress =
       network === Network.polygon ? MATIC_MAINNET_ADDRESS : ETH_ADDRESS;
-    nativeAsset = store.getState().data?.genericAssets?.[mainnetAddress];
+    nativeAsset = store.getState().data?.assetsData?.[
+      getUniqueId({ address, network })
+    ];
 
     const provider = await getProviderForNetwork(network);
     if (nativeAsset) {
@@ -157,21 +160,38 @@ const getAccountAsset = (
   return accountAsset;
 };
 
-const getAssetPrice = (address: EthereumAddress = ETH_ADDRESS): number => {
-  const genericAsset = store.getState().data?.genericAssets?.[address];
-  const genericPrice = genericAsset?.price?.value;
-  return genericPrice || getAccountAsset(address)?.price?.value || 0;
+const getParsedAsset = (params: {
+  address?: string;
+  network?: Network;
+  uniqueId?: string;
+}): ParsedAddressAsset | undefined => {
+  const { assetsData } = store.getState().data;
+  const { address, network, uniqueId } = params;
+  if (uniqueId) {
+    return assetsData?.[toLower(uniqueId)];
+  } else if (address) {
+    return assetsData?.[getUniqueId({ address, network })];
+  }
 };
 
-export const useEth = (): ParsedAddressAsset => {
-  return useSelector(
-    ({
-      // @ts-expect-error ts-migrate(2339) FIXME: Property 'data' does not exist on type 'DefaultRoo... Remove this comment to see the full error message
-      data: {
-        genericAssets: { [ETH_ADDRESS]: asset },
-      },
-    }) => asset
-  );
+const getAssetPrice = (params: {
+  address?: string;
+  nativeCurrency: string;
+  network?: Network;
+  uniqueId?: string;
+}): number => {
+  const { assetPriceData } = store.getState().data;
+  const { address, network, uniqueId } = params;
+  const nativeCurrency = toUpper(params.nativeCurrency) as NativeCurrencyKey;
+  if (uniqueId) {
+    return assetPriceData?.[toLower(uniqueId)]?.[nativeCurrency]?.value || 0;
+  } else if (address) {
+    return (
+      assetPriceData?.[getUniqueId({ address, network })]?.[nativeCurrency]
+        ?.value || 0
+    );
+  }
+  return 0;
 };
 
 export const useNativeAssetForNetwork = (
@@ -199,13 +219,20 @@ export const useEthUSDMonthChart = (): number => {
   return useSelector(({ charts: { chartsEthUSDMonth } }) => chartsEthUSDMonth);
 };
 
-const getPriceOfNativeAssetForNetwork = (network: Network) => {
-  return network === Network.polygon ? getMaticPriceUnit() : getEthPriceUnit();
+const getPriceOfNativeAssetForNetwork = (
+  network: Network,
+  nativeCurrency: string
+) => {
+  return network === Network.polygon
+    ? getMaticPriceUnit(nativeCurrency)
+    : getEthPriceUnit(nativeCurrency);
 };
 
-const getEthPriceUnit = () => getAssetPrice();
+const getEthPriceUnit = (nativeCurrency: string) =>
+  getAssetPrice({ address: ETH_ADDRESS, nativeCurrency });
 
-const getMaticPriceUnit = () => getAssetPrice(MATIC_MAINNET_ADDRESS);
+const getMaticPriceUnit = (nativeCurrency: string) =>
+  getAssetPrice({ address: MATIC_MAINNET_ADDRESS, nativeCurrency });
 
 const getBalanceAmount = (
   selectedGasFee: SelectedGasFee | LegacySelectedGasFee,
@@ -599,15 +626,21 @@ async function parseEthereumUrl(data: string) {
 
 const getUniqueId = (params: {
   address: EthereumAddress;
+  chainId?: ChainId;
   network?: Network;
 }) => {
-  const { address, network } = params;
-  const isNotMainnet = network && network !== Network.mainnet;
-  return address
-    ? isNotMainnet
-      ? `${address}_${getChainIdFromNetwork(network)}`
-      : address
-    : '';
+  const { address, chainId, network } = params;
+  if (address) {
+    if (chainId) {
+      return `${address}_${chainId}`;
+    } else if (network) {
+      const isNotMainnet = network && network !== Network.mainnet;
+      return isNotMainnet
+        ? `${address}_${getChainIdFromNetwork(network)}`
+        : address;
+    }
+  }
+  return '';
 };
 
 const mapAssetsByUniqueId = (
@@ -696,6 +729,7 @@ export default {
   getNetworkFromChainId,
   getNetworkNameFromChainId,
   getNetworkNativeAsset,
+  getParsedAsset,
   getPriceOfNativeAssetForNetwork,
   getUniqueId,
   hasPreviousTransactions,

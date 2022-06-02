@@ -17,7 +17,7 @@ function cutIfOver10000(value) {
   return value > 10000 ? Math.round(value) : value;
 }
 
-async function fetchPoolDetails(address, dispatch) {
+async function fetchPoolDetails(address, nativeCurrency, dispatch) {
   const result = await uniswapClient.query({
     query: UNISWAP_ADDITIONAL_POOL_DATA,
     variables: {
@@ -52,7 +52,7 @@ async function fetchPoolDetails(address, dispatch) {
       partialData.oneDayVolumeUSD = oneDayVolumeUSD;
     }
 
-    const priceOfEther = ethereumUtils.getEthPriceUnit();
+    const priceOfEther = ethereumUtils.getEthPriceUnit(nativeCurrency);
     const trackedReserveUSD = pair.trackedReserveETH * priceOfEther;
     partialData.annualized_fees =
       (partialData.oneDayVolumeUSD * 0.003 * 365 * 100) / trackedReserveUSD;
@@ -85,9 +85,9 @@ export default function usePoolDetails(address) {
   useEffect(() => {
     if (poolDetails && !data) {
       // if there are not data, get partial data from the graph
-      fetchPoolDetails(address, dispatch);
+      fetchPoolDetails(address, nativeCurrency, dispatch);
     }
-  }, [address, data, poolDetails, dispatch]);
+  }, [address, data, nativeCurrency, poolDetails, dispatch]);
 
   const volume = useMemo(() => format(data?.oneDayVolumeUSD * rate), [
     data?.oneDayVolumeUSD,

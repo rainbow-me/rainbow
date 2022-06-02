@@ -66,17 +66,8 @@ type RainbowTokenOwnFields = Omit<RainbowToken, keyof Asset>;
 export interface ParsedAddressAsset
   extends Asset,
     Partial<RainbowTokenOwnFields> {
-  balance?: {
-    amount?: string;
-    display?: string;
-  };
   color?: string;
   icon_url?: string;
-  price?: {
-    changed_at?: number;
-    relative_change_24h?: number;
-    value?: number;
-  };
   asset_contract?: AssetContract;
   type?: string;
   uniqueId: string;
@@ -106,7 +97,7 @@ export interface ParsedAddressAssetWithUniqueTokenId
 }
 
 export interface ParsedAddressAssetWithNative extends ParsedAddressAsset {
-  native: {
+  native?: {
     balance: { amount: string; display: string };
     change: string | null;
     price: { amount: number; display: string };

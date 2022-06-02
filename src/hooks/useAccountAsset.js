@@ -78,7 +78,6 @@ export default function useAccountAsset(uniqueId) {
     selectAccountAsset(state, uniqueId)
   );
   const genericAssetBackup = useGenericAsset(uniqueId);
-
   if (accountAsset) {
     return parseAssetNative(accountAsset, nativeCurrency);
   } else if (uniqueId === ETH_ADDRESS) {

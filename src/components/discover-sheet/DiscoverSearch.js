@@ -76,7 +76,7 @@ export default function DiscoverSearch() {
           });
         });
       } else {
-        const asset = ethereumUtils.getAccountAsset(item.uniqueId);
+        const asset = ethereumUtils.getParsedAsset(item.uniqueId);
         dispatch(emitAssetRequest(item.address));
         navigate(Routes.EXPANDED_ASSET_SHEET, {
           asset: asset || item,

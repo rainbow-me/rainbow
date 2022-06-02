@@ -325,8 +325,11 @@ async function fetchSnapshots(account: string): Promise<Position[]> {
   return [];
 }
 
-async function fetchData(account: string): Promise<UniswapPosition[]> {
-  const priceOfEther = ethereumUtils.getEthPriceUnit();
+async function fetchData(
+  account: string,
+  nativeCurrency: string
+): Promise<UniswapPosition[]> {
+  const priceOfEther = ethereumUtils.getEthPriceUnit(nativeCurrency);
 
   try {
     let result = await uniswapClient.query({
@@ -366,9 +369,9 @@ export const updatePositions = () => async (
   dispatch: AppDispatch,
   getState: AppGetState
 ) => {
-  const { accountAddress, network } = getState().settings;
+  const { accountAddress, nativeCurrency, network } = getState().settings;
   const existingPositions = getState().usersPositions;
-  const data = await fetchData(accountAddress);
+  const data = await fetchData(accountAddress, nativeCurrency);
   if (!isEmpty(data)) {
     const payload = {
       ...existingPositions,
