@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { lightModeThemeColors } from '../styles/colors';
 import useImageMetadata from './useImageMetadata';
-import { AssetType } from '@rainbow-me/entities';
+import { AssetTypes } from '@rainbow-me/entities';
 import {
   getTokenMetadata,
   getUrlForTrustIconFallback,
@@ -23,7 +23,7 @@ export default function useColorForAsset(
   const { color: imageColor } = useImageMetadata(
     getUrlForTrustIconFallback(
       mainnet_address || address,
-      mainnet_address ? AssetType.token : type
+      mainnet_address ? AssetTypes.token : type
     )
   );
 

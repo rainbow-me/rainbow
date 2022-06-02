@@ -3,7 +3,7 @@ import { Image } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
 import { Centered } from '../layout';
 import EthIcon from '@rainbow-me/assets/eth-icon.png';
-import { AssetType } from '@rainbow-me/entities';
+import { AssetTypes } from '@rainbow-me/entities';
 import { useBooleanState, useColorForAsset } from '@rainbow-me/hooks';
 import { ImageWithCachedMetadata } from '@rainbow-me/images';
 import styled from '@rainbow-me/styled-components';
@@ -95,13 +95,13 @@ const CoinIconFallback = fallbackProps => {
 
   const fallbackIconColor = useColorForAsset({
     address: mainnet_address || address,
-    type: mainnet_address ? AssetType.token : type,
+    type: mainnet_address ? AssetTypes.token : type,
   });
   const imageUrl = useMemo(
     () =>
       getUrlForTrustIconFallback(
         mainnet_address || address,
-        mainnet_address ? AssetType.token : type
+        mainnet_address ? AssetTypes.token : type
       ),
     [address, mainnet_address, type]
   );

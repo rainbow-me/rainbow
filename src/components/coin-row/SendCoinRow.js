@@ -9,7 +9,7 @@ import { ButtonPressAnimation } from '../animations';
 import { Text } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
-import { AssetType } from '@rainbow-me/entities';
+import { AssetTypes } from '@rainbow-me/entities';
 import { isL2Network } from '@rainbow-me/handlers/web3';
 import { useColorForAsset } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
@@ -76,7 +76,7 @@ const BottomRow = ({
 const TopRow = ({ item, name, selected }) => {
   const { colors } = useTheme();
   const address = item?.mainnet_address || item?.address;
-  const type = item?.mainnet_address ? AssetType.token : item?.type;
+  const type = item?.mainnet_address ? AssetTypes.token : item?.type;
 
   const colorForAsset = useColorForAsset({ address, type });
 

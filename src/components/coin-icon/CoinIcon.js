@@ -5,7 +5,7 @@ import ContractInteraction from '../../assets/contractInteraction.png';
 import { useTheme } from '../../context/ThemeContext';
 import ChainBadge from './ChainBadge';
 import CoinIconFallback from './CoinIconFallback';
-import { AssetType } from '@rainbow-me/entities';
+import { AssetTypes } from '@rainbow-me/entities';
 import { useColorForAsset } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import styled from '@rainbow-me/styled-components';
@@ -42,7 +42,7 @@ const CoinIcon = ({
   const tokenMetadata = getTokenMetadata(props.mainnet_address || address);
   const color = useColorForAsset({
     address: props.mainnet_address || address,
-    type: props.mainnet_address ? AssetType.token : type,
+    type: props.mainnet_address ? AssetTypes.token : type,
   });
   const { colors, isDarkMode } = useTheme();
   const forceFallback =
@@ -68,7 +68,7 @@ const CoinIcon = ({
           }
           size={size}
           symbol={symbol}
-          type={props.mainnet_address ? AssetType.token : type}
+          type={props.mainnet_address ? AssetTypes.token : type}
         />
       ) : (
         <ContractInteractionIcon size={size} source={ContractInteraction} />
