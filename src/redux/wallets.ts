@@ -381,7 +381,7 @@ export const createAccountForWallet = (
  * @param dispatch The dispatch.
  */
 export const getWalletENSAvatars = async (
-  walletsState: WalletsState,
+  walletsState: Pick<WalletsState, 'wallets' | 'walletNames' | 'selected'>,
   dispatch: ThunkDispatch<AppState, unknown, never>
 ) => {
   const { wallets, walletNames, selected } = walletsState;

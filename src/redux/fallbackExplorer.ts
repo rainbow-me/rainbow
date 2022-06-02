@@ -145,7 +145,7 @@ interface FallbackExplorerSetBalanceHandlerAction {
  */
 interface FallbackAssetWithQuantity {
   asset: ZerionAssetFallback;
-  quantity: number;
+  quantity: number | string;
 }
 
 /**
