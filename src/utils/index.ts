@@ -8,10 +8,20 @@ export { default as AllowancesCache } from './allowancesCache';
 export { default as buildRainbowUrl } from './buildRainbowUrl';
 export { default as TokensListenedCache } from './tokensListenedCache';
 export { default as checkTokenIsScam } from './checkTokenIsScam';
+export { default as contenthash } from './contenthash';
 export { default as deviceUtils } from './deviceUtils';
 export { default as profileUtils } from './profileUtils';
+export { default as doesWalletsContainAddress } from './doesWalletsContainAddress';
 export { default as dimensionsPropType } from './dimensionsPropType';
 export { default as directionPropType } from './directionPropType';
+export {
+  getENSNFTAvatarUrl,
+  isENSNFTRecord,
+  normalizeENS,
+  parseENSNFTRecord,
+  stringifyENSNFTRecord,
+  validateENS,
+} from './ens';
 export { default as ethereumUtils } from './ethereumUtils';
 export { default as formatURLForDisplay } from './formatURLForDisplay';
 export { default as gasUtils } from './gas';
@@ -24,11 +34,11 @@ export { default as isETH } from './isETH';
 export { default as isLowerCaseMatch } from './isLowerCaseMatch';
 export { default as isNewValueForObjectPaths } from './isNewValueForObjectPaths';
 export { default as isNewValueForPath } from './isNewValueForPath';
+export { default as labelhash } from './labelhash';
 export { default as logger } from './logger';
 export { default as magicMemo } from './magicMemo';
 export { default as measureText } from './measureText';
 export { default as neverRerender } from './neverRerender';
-export { default as normalizeENS } from './normalizeENS';
 export { default as parseObjectToUrlQueryString } from './parseObjectToUrlQueryString';
 export { default as parseQueryParams } from './parseQueryParams';
 export { default as promiseUtils } from './promise';
@@ -46,7 +56,6 @@ export {
   removeLeadingZeros,
   sanitizeSeedPhrase,
 } from './formatters';
-export { default as validateENS } from './validateENS';
 export { default as watchingAlert } from './watchingAlert';
 export { default as withSpeed } from './withSpeed';
 export { default as CoinIcon } from './CoinIcons/CoinIcon';

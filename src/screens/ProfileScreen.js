@@ -7,10 +7,10 @@ import { Icon } from '../components/icons';
 import { Page } from '../components/layout';
 import { ProfileMasthead } from '../components/profile';
 import TransactionList from '../components/transaction-list/TransactionList';
-import { useTheme } from '../context/ThemeContext';
 import useNativeTransactionListAvailable from '../helpers/isNativeTransactionListAvailable';
 import NetworkTypes from '../helpers/networkTypes';
 import { useNavigation } from '../navigation/Navigation';
+import { useTheme } from '../theme/ThemeContext';
 import {
   useAccountSettings,
   useAccountTransactions,
@@ -39,6 +39,7 @@ export default function ProfileScreen({ navigation }) {
     activityListInitialized,
     isFocused
   );
+
   const {
     isLoadingTransactions: isLoading,
     sections,

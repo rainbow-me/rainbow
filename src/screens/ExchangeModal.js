@@ -569,7 +569,7 @@ export default function ExchangeModal({
         outputAmount,
         tradeDetails,
       };
-      await executeRap(wallet, type, { swapParameters }, callback);
+      await executeRap(wallet, type, swapParameters, callback);
       logger.log('[exchange - handle submit] executed rap!');
       analytics.track(`Completed ${type}`, {
         amountInUSD,

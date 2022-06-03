@@ -244,7 +244,7 @@ describe('Send Sheet Interaction Flow', () => {
   it('Should show Add Contact Screen after tapping Add Contact Button', async () => {
     await Helpers.checkIfVisible('add-contact-button');
     await Helpers.waitAndTap('add-contact-button');
-    await Helpers.checkIfVisible('contact-profile-name-input');
+    await Helpers.checkIfVisible('wallet-info-input');
   });
 
   it('Should do nothing on Add Contact cancel', async () => {
@@ -256,9 +256,9 @@ describe('Send Sheet Interaction Flow', () => {
 
   it('Should update address field to show contact name & show edit contact button', async () => {
     await Helpers.waitAndTap('add-contact-button');
-    await Helpers.clearField('contact-profile-name-input');
-    await Helpers.typeText('contact-profile-name-input', 'testcoin.test', true);
-    await Helpers.waitAndTap('contact-profile-add-button');
+    await Helpers.clearField('wallet-info-input');
+    await Helpers.typeText('wallet-info-input', 'testcoin.test', true);
+    await Helpers.waitAndTap('wallet-info-submit-button');
     await Helpers.checkIfElementByTextIsVisible('testcoin.test');
     await Helpers.checkIfVisible('edit-contact-button');
   });
@@ -273,9 +273,10 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('edit-contact-button');
     await Helpers.waitAndTap('edit-contact-button');
     await Helpers.tapByText('Edit Contact');
-    await Helpers.clearField('contact-profile-name-input');
-    await Helpers.typeText('contact-profile-name-input', 'testcoin.eth', true);
-    await Helpers.tapByText('Done');
+    await Helpers.clearField('wallet-info-input');
+    await Helpers.typeText('wallet-info-input', 'testcoin.eth', true);
+    await Helpers.waitAndTap('wallet-info-submit-button');
+    // await Helpers.tapByText('Done');
     await Helpers.checkIfElementByTextIsVisible('testcoin.eth');
   });
 

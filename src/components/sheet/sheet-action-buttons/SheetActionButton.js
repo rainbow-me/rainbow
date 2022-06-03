@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import { useTheme } from '../../../context/ThemeContext';
+import { useTheme } from '../../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../../animations';
 import { Icon } from '../../icons';
 import { Centered, InnerBorder, RowWithMargins } from '../../layout';
@@ -23,7 +23,7 @@ const Content = styled(RowWithMargins).attrs({
   margin: 4,
 })({
   height: ({ size }) => (size === 'big' ? 56 : 46),
-  paddingBottom: ({ label }) => (label && containsEmoji(label) ? 4 : 2),
+  paddingBottom: ({ label }) => (label && containsEmoji(label) ? 2.5 : 1),
   paddingHorizontal: 19,
   zIndex: 1,
 });
@@ -57,11 +57,14 @@ const SheetActionButton = ({
   isCharts = false,
   isTransparent = false,
   label = null,
+  lightShadows,
+  onPress,
   nftShadows,
   scaleTo = 0.9,
   size = null,
   testID = null,
   textColor: givenTextColor,
+  textSize,
   truncate = false,
   weight = 'semibold',
   ...props
@@ -77,13 +80,13 @@ const SheetActionButton = ({
       return [[0, 0, 0, colors.transparent, 0]];
     } else
       return [
-        [0, 10, 30, colors.shadow, isWhite ? 0.12 : 0.2],
+        [0, 10, 30, colors.shadow, isWhite ? 0.12 : lightShadows ? 0.15 : 0.2],
         [
           0,
           5,
           15,
           isDarkMode || isWhite ? colors.shadow : color,
-          isWhite ? 0.08 : 0.4,
+          isWhite ? 0.08 : lightShadows ? 0.3 : 0.4,
         ],
       ];
   }, [
@@ -93,6 +96,7 @@ const SheetActionButton = ({
     forceShadows,
     isTransparent,
     isDarkMode,
+    lightShadows,
     nftShadows,
     isWhite,
   ]);
@@ -105,9 +109,10 @@ const SheetActionButton = ({
       }}
       elevation={android ? elevation : null}
       isCharts={isCharts}
+      onPress={disabled ? () => undefined : onPress}
       overflowMargin={30}
       radiusAndroid={borderRadius}
-      scaleTo={scaleTo}
+      scaleTo={disabled ? 1 : scaleTo}
       size={size}
       testID={`${testID}-action-button`}
       {...props}
@@ -137,7 +142,7 @@ const SheetActionButton = ({
             align="center"
             color={textColor}
             numberOfLines={truncate ? 1 : undefined}
-            size={size === 'big' ? 'larger' : 'large'}
+            size={textSize ?? (size === 'big' ? 'larger' : 'large')}
             weight={weight}
           >
             {label}

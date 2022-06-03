@@ -1,7 +1,11 @@
 import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
 import { toLower } from 'lodash';
-import { Rap, RapActionParameters, SwapActionParameters } from '../common';
+import {
+  Rap,
+  RapExchangeActionParameters,
+  SwapActionParameters,
+} from '../common';
 import {
   ProtocolType,
   TransactionStatus,
@@ -25,7 +29,7 @@ const swap = async (
   wallet: Wallet,
   currentRap: Rap,
   index: number,
-  parameters: RapActionParameters,
+  parameters: RapExchangeActionParameters,
   baseNonce?: number
 ): Promise<number | undefined> => {
   logger.log(`[${actionName}] base nonce`, baseNonce, 'index:', index);

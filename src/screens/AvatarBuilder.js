@@ -65,13 +65,15 @@ const AvatarBuilder = ({ route: { params } }) => {
   const { goBack } = useNavigation();
   const { colors } = useTheme();
   const [currentAccountColor, setCurrentAccountColor] = useState(
-    colors.avatarBackgrounds[params.initialAccountColor]
+    params.initialAccountColor
   );
+  const [currentEmoji, setCurrentEmoji] = useState(null);
   const { saveInfo } = useUpdateEmoji();
 
   const onChangeEmoji = event => {
     ReactNativeHapticFeedback.trigger('selection');
-    saveInfo(`${event} ${params.initialAccountName}`);
+    setCurrentEmoji(`${event} ${params.initialAccountName}`);
+    saveInfo(`${event} ${params.initialAccountName}`, currentAccountColor);
   };
 
   const avatarColors = colors.avatarBackgrounds.map((color, index) => (
@@ -82,8 +84,8 @@ const AvatarBuilder = ({ route: { params } }) => {
       onPressColor={() => {
         const destination = index * 40;
         springTo(translateX, destination);
-        setCurrentAccountColor(color);
-        saveInfo(null, colors.avatarBackgrounds.indexOf(color));
+        setCurrentAccountColor(colors.avatarBackgrounds.indexOf(color));
+        saveInfo(currentEmoji, colors.avatarBackgrounds.indexOf(color));
       }}
     />
   ));

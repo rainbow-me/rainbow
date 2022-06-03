@@ -130,8 +130,9 @@ export default function SpeedUpAndCancelSheet() {
   const calculatingGasLimit = useRef(false);
   const speedUrgentSelected = useRef(false);
   const {
-    params: { type, tx },
+    params: { type, tx, accentColor, onSendTransactionCallback },
   } = useRoute();
+
   const [ready, setReady] = useState(false);
   const [txType, setTxType] = useState();
   const [minGasPrice, setMinGasPrice] = useState(
@@ -246,6 +247,7 @@ export default function SpeedUpAndCancelSheet() {
         provider: currentProvider,
         transaction: fasterTxPayload,
       });
+      onSendTransactionCallback?.(hash);
       const updatedTx = { ...tx };
       // Update the hash on the copy of the original tx
       updatedTx.hash = hash;
@@ -270,6 +272,7 @@ export default function SpeedUpAndCancelSheet() {
     getNewTransactionGasParams,
     goBack,
     nonce,
+    onSendTransactionCallback,
     to,
     tx,
     value,
@@ -553,7 +556,7 @@ export default function SpeedUpAndCancelSheet() {
                         weight="bold"
                       />
                       <SheetActionButton
-                        color={colors.appleBlue}
+                        color={accentColor || colors.appleBlue}
                         label={`􀎽 ${lang.t('button.confirm')}`}
                         onPress={handleSpeedUp}
                         size="big"
@@ -563,6 +566,7 @@ export default function SpeedUpAndCancelSheet() {
                   )}
                   <GasSpeedButtonContainer>
                     <GasSpeedButton
+                      asset={{ color: accentColor }}
                       currentNetwork={currentNetwork}
                       speeds={[URGENT, CUSTOM]}
                       theme={isDarkMode ? 'dark' : 'light'}

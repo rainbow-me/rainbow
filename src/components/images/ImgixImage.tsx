@@ -66,17 +66,30 @@ const preload = (sources: Source[], size?: Number, fm?: String): void => {
   return;
 };
 
+const getCachePath = (source: Source) =>
+  FastImage.getCachePath(maybeSignSource(source));
+
 const ImgixImageWithForwardRef = React.forwardRef(
   (props: ImgixImageProps, ref: React.Ref<any>) => (
     <ImgixImage forwardedRef={ref} {...props} />
   )
 );
 
-const { cacheControl, contextTypes, priority, resizeMode } = FastImage;
+const {
+  cacheControl,
+  clearDiskCache,
+  clearMemoryCache,
+  contextTypes,
+  priority,
+  resizeMode,
+} = FastImage;
 
 export default Object.assign(ImgixImageWithForwardRef, {
   cacheControl,
+  clearDiskCache,
+  clearMemoryCache,
   contextTypes,
+  getCachePath,
   preload,
   priority,
   resizeMode,

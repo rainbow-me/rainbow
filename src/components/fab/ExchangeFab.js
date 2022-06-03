@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-import { useTheme } from '../../context/ThemeContext';
 import { delayNext } from '../../hooks/useMagicAutofocus';
 import { useNavigation } from '../../navigation/Navigation';
 import { lightModeThemeColors } from '../../styles/colors';

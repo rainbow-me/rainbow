@@ -281,7 +281,7 @@ export default function ChartExpandedState({ asset }) {
       assetsInWallet.find(
         assetInWallet => assetInWallet.address === assetWithPrice.address
       ),
-    [asset.address, assetWithPrice.address, assetsInWallet]
+    [assetWithPrice.address, assetsInWallet]
   );
 
   const needsEth =

@@ -8,7 +8,7 @@ import React, {
   useState,
 } from 'react';
 import { useDispatch } from 'react-redux';
-import { useTheme } from '../../context/ThemeContext';
+import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { RequestCoinIcon } from '../coin-icon';
 import { RowWithMargins } from '../layout';

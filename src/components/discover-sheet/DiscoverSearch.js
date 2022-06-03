@@ -1,4 +1,6 @@
+import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
+import { uniqBy } from 'lodash';
 import React, {
   useCallback,
   useContext,
@@ -8,6 +10,7 @@ import React, {
   useState,
 } from 'react';
 import { InteractionManager, View } from 'react-native';
+import { IS_TESTING } from 'react-native-dotenv';
 import { useDispatch } from 'react-redux';
 import { useDebounce } from 'use-debounce/lib';
 import CurrencySelectionTypes from '../../helpers/currencySelectionTypes';
@@ -17,8 +20,8 @@ import { CurrencySelectionList } from '../exchange';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/ChartExpandedState';
 import { Row } from '../layout';
 import DiscoverSheetContext from './DiscoverSheetContext';
+import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import { fetchSuggestions } from '@rainbow-me/handlers/ens';
-import { IS_TESTING } from 'react-native-dotenv';
 import {
   useHardwareBackOnFocus,
   usePrevious,
@@ -27,8 +30,8 @@ import {
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
+import { useTheme } from '@rainbow-me/theme';
 import { ethereumUtils } from '@rainbow-me/utils';
-import { uniqBy } from 'lodash';
 
 export const SearchContainer = styled(Row)({
   height: '100%',
@@ -49,10 +52,13 @@ export default function DiscoverSearch() {
     cancelSearch,
   } = useContext(DiscoverSheetContext);
 
+  const { colors } = useTheme();
+  const profilesEnabled = useExperimentalFlag(PROFILES);
+
   const currencySelectionListRef = useRef();
   const [searchQueryForSearch] = useDebounce(searchQuery, 350);
   const [ensResults, setEnsResults] = useState([]);
-  const { swapCurrencyList, uniswapCurrencyListLoading } = useSwapCurrencyList(
+  const { swapCurrencyList, swapCurrencyListLoading } = useSwapCurrencyList(
     searchQueryForSearch
   );
   const currencyList = useMemo(() => {
@@ -74,11 +80,16 @@ export default function DiscoverSearch() {
       });
     }
     return list.filter(section => section.data.length > 0);
-  }, [
-    swapCurrencyList,
-    ensResults,
-  ]);
+  }, [swapCurrencyList, ensResults]);
   const lastSearchQuery = usePrevious(searchQueryForSearch);
+
+  const currencyListDataKey = useMemo(
+    () =>
+      `${swapCurrencyList?.[0]?.data?.[0]?.address || '_'}_${
+        ensResults?.[0]?.data?.[0]?.address || '_'
+      }`,
+    [ensResults, swapCurrencyList]
+  );
 
   useHardwareBackOnFocus(() => {
     cancelSearch();
@@ -92,10 +103,21 @@ export default function DiscoverSearch() {
         // navigate to Showcase sheet
         searchInputRef?.current?.blur();
         InteractionManager.runAfterInteractions(() => {
-          navigate(Routes.SHOWCASE_SHEET, {
-            address: item.nickname,
-            setIsSearchModeEnabled,
-          });
+          navigate(
+            profilesEnabled ? Routes.PROFILE_SHEET : Routes.SHOWCASE_SHEET,
+            {
+              address: item.nickname,
+              fromRoute: 'DiscoverSearch',
+              setIsSearchModeEnabled,
+            }
+          );
+          if (profilesEnabled) {
+            analytics.track('Viewed ENS profile', {
+              category: 'profiles',
+              ens: item.nickname,
+              from: 'Discover search',
+            });
+          }
         });
       } else {
         const asset = ethereumUtils.getAccountAsset(item.uniqueId);
@@ -108,7 +130,13 @@ export default function DiscoverSearch() {
         });
       }
     },
-    [dispatch, navigate, searchInputRef, setIsSearchModeEnabled]
+    [
+      dispatch,
+      navigate,
+      profilesEnabled,
+      searchInputRef,
+      setIsSearchModeEnabled,
+    ]
   );
 
   const handleActionAsset = useCallback(
@@ -128,26 +156,34 @@ export default function DiscoverSearch() {
     [handleActionAsset, handlePress]
   );
 
-  const addEnsResults = useCallback(ensResults => {
-    let ensSearchResults = [];
-    if (ensResults && ensResults.length) {
-      ensSearchResults = [
-        {
-          color: '#5893ff',
-          data: ensResults,
-          key: `􀏼 ${lang.t('discover.search.ethereum_name_service')}`,
-          title: `􀏼 ${lang.t('discover.search.ethereum_name_service')}`,
-        },
-      ];
-    }
-    setEnsResults(ensSearchResults);
-  }, []);
+  const addEnsResults = useCallback(
+    ensResults => {
+      let ensSearchResults = [];
+      if (ensResults && ensResults.length) {
+        ensSearchResults = [
+          {
+            color: colors.appleBlue,
+            data: ensResults,
+            key: `􀉮 ${lang.t('discover.search.profiles')}`,
+            title: `􀉮 ${lang.t('discover.search.profiles')}`,
+          },
+        ];
+      }
+      setEnsResults(ensSearchResults);
+    },
+    [colors.appleBlue]
+  );
 
   useEffect(() => {
     if (searchQueryForSearch && !isSearching) {
       if (lastSearchQuery !== searchQueryForSearch) {
         setIsSearching(true);
-        fetchSuggestions(searchQuery, addEnsResults, setIsFetchingEns);
+        fetchSuggestions(
+          searchQuery,
+          addEnsResults,
+          setIsFetchingEns,
+          profilesEnabled
+        );
       }
     }
   }, [
@@ -161,10 +197,10 @@ export default function DiscoverSearch() {
   ]);
 
   useEffect(() => {
-    if (!uniswapCurrencyListLoading && !isFetchingEns) {
+    if (!swapCurrencyListLoading && !isFetchingEns) {
       setIsSearching(false);
     }
-  }, [isFetchingEns, setIsSearching, uniswapCurrencyListLoading]);
+  }, [isFetchingEns, setIsSearching, swapCurrencyListLoading]);
 
   useEffect(() => {
     currencySelectionListRef.current?.scrollToLocation({
@@ -177,14 +213,17 @@ export default function DiscoverSearch() {
   }, [isSearchModeEnabled]);
 
   return (
-    <View style={{ height: deviceUtils.dimensions.height - 140 }}>
+    <View
+      key={currencyListDataKey}
+      style={{ height: deviceUtils.dimensions.height - 140 }}
+    >
       <SearchContainer>
         <CurrencySelectionList
           footerSpacer
           itemProps={itemProps}
           keyboardDismissMode="on-drag"
           listItems={currencyList}
-          loading={uniswapCurrencyListLoading || isFetchingEns}
+          loading={swapCurrencyListLoading || isFetchingEns}
           query={searchQueryForSearch}
           ref={currencySelectionListRef}
           showList

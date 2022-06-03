@@ -6,7 +6,6 @@ import { darkModeThemeColors } from '../../styles/colors';
 import { HoldToAuthorizeButton } from '../buttons';
 import ImgixImage from '../images/ImgixImage';
 import { Centered } from '../layout';
-import { useTheme } from '@rainbow-me/context';
 import {
   ColorModeProvider,
   Column,
@@ -26,6 +25,7 @@ import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { lightModeThemeColors, padding } from '@rainbow-me/styles';
+import { useTheme } from '@rainbow-me/theme';
 
 const paddingHorizontal = 19;
 

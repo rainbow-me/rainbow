@@ -1,6 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useEffect } from 'react';
-import { useTheme } from '../../context/ThemeContext';
+import { useTheme } from '../../theme/ThemeContext';
 import Divider from '../Divider';
 import { RainbowButton } from '../buttons';
 import { Column, ColumnWithMargins } from '../layout';
