@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { Switch } from 'react-native-gesture-handler';
-import { useTheme } from '../../../context/ThemeContext';
 import { useNavigation } from '../../../navigation/Navigation';
+import { useTheme } from '../../../theme/ThemeContext';
 import { ShimmerAnimation } from '../../animations';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { Icon } from '../../icons';
