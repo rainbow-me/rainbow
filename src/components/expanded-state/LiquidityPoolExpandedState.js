@@ -22,7 +22,6 @@ import { TokenInfoItem, TokenInfoRow, TokenInfoSection } from '../token-info';
 import { Chart } from '../value-chart';
 import UnderlyingAsset from './unique-token/UnderlyingAsset';
 import { ChartPathProvider } from '@rainbow-me/animated-charts';
-import { useTheme } from '@rainbow-me/context';
 import { toChecksumAddress } from '@rainbow-me/handlers/web3';
 import { bigNumberFormat } from '@rainbow-me/helpers/bigNumberFormat';
 import chartTypes from '@rainbow-me/helpers/chartTypes';
@@ -39,6 +38,7 @@ import { emitAssetRequest } from '@rainbow-me/redux/explorer';
 
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import styled from '@rainbow-me/styled-components';
+import { useTheme } from '@rainbow-me/theme';
 import { magicMemo, safeAreaInsetValues } from '@rainbow-me/utils';
 
 const Spacer = styled.View({

@@ -1,8 +1,8 @@
 import lang from 'i18n-js';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
-import { useTheme } from '../../context/ThemeContext';
 import { useNavigation } from '../../navigation/Navigation';
+import { useTheme } from '../../theme/ThemeContext';
 import { magicMemo } from '../../utils';
 import ProfileModal from './profile/ProfileModal';
 import useExperimentalFlag, {
