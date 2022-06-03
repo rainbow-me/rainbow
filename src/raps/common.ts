@@ -11,7 +11,13 @@ import {
   unlock,
   withdrawCompound,
 } from './actions';
-import { createCommitENSRap } from './registerENS';
+import {
+  createCommitENSRap,
+  createRegisterENSRap,
+  createRenewENSRap,
+  createSetNameENSRap,
+  createSetRecordsENSRap,
+} from './registerENS';
 import {
   createSwapAndDepositCompoundRap,
   estimateSwapAndDepositCompound,
@@ -21,18 +27,25 @@ import {
   createWithdrawFromCompoundRap,
   estimateWithdrawFromCompound,
 } from './withdrawFromCompound';
-import { createRegisterENSRap } from '.';
-import { Asset } from '@rainbow-me/entities';
+import { Asset, EthereumAddress, Records } from '@rainbow-me/entities';
 import {
   estimateENSCommitGasLimit,
   estimateENSRegisterSetRecordsAndNameGasLimit,
+  estimateENSRenewGasLimit,
+  estimateENSSetNameGasLimit,
+  estimateENSSetRecordsGasLimit,
 } from '@rainbow-me/handlers/ens';
-import { ENSRegistrationRecords } from '@rainbow-me/helpers/ens';
 import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
-
 import logger from 'logger';
 
-const { commitENS, registerENS, multicallENS, setTextENS, setNameENS } = ens;
+const {
+  commitENS,
+  registerWithConfig,
+  multicallENS,
+  setTextENS,
+  setNameENS,
+  renewENS,
+} = ens;
 
 export enum RapActionType {
   depositCompound = 'depositCompound',
@@ -42,24 +55,27 @@ export enum RapActionType {
   commitENS = 'commitENS',
   registerENS = 'registerENS',
   multicallENS = 'multicallENS',
+  renewENS = 'renewENS',
   setTextENS = 'setTextENS',
   setNameENS = 'setNameENS',
 }
 
-export interface RapActionParameters {
+export interface RapExchangeActionParameters {
   amount?: string | null;
   assetToUnlock?: Asset;
   contractAddress?: string;
   inputAmount?: string | null;
   outputAmount?: string | null;
   tradeDetails?: Trade;
-  name?: string;
-  duration?: number;
-  rentPrice?: string;
-  recordKey?: string;
-  recordValue?: string;
-  salt?: string;
-  records?: ENSRegistrationRecords;
+}
+
+export interface RapENSActionParameters {
+  duration: number;
+  name: string;
+  ownerAddress: EthereumAddress;
+  rentPrice: string;
+  records?: Records;
+  salt: string;
 }
 
 export interface UnlockActionParameters {
@@ -75,30 +91,47 @@ export interface SwapActionParameters {
   tradeDetails: Trade;
 }
 
-export interface RegisterENSActionParameters {
-  nonce: number;
-  name: string;
+export interface ENSActionParameters {
   duration: number;
+  nonce?: number;
+  name: string;
   rentPrice: string;
   ownerAddress: string;
-  recordKey: string;
-  recordValue: string;
   salt: string;
-  records: ENSRegistrationRecords;
+  records?: Records;
+  setReverseRecord?: boolean;
+  resolverAddress?: EthereumAddress;
 }
 
 export interface RapActionTransaction {
   hash: string | null;
 }
 
-export interface RapAction {
-  parameters: RapActionParameters;
+enum RAP_TYPE {
+  EXCHANGE = 'EXCHANGE',
+  ENS = 'ENS',
+}
+
+export type RapAction = RapSwapAction | RapENSAction;
+
+export interface RapSwapAction {
+  parameters: RapExchangeActionParameters;
+  transaction: RapActionTransaction;
+  type: RapActionType;
+}
+
+export interface RapENSAction {
+  parameters: RapENSActionParameters;
   transaction: RapActionTransaction;
   type: RapActionType;
 }
 
 export interface Rap {
   actions: RapAction[];
+}
+
+export interface ENSRap {
+  actions: RapENSAction[];
 }
 
 interface RapActionResponse {
@@ -118,46 +151,51 @@ export const RapActionTypes = {
   multicallENS: 'multicallENS' as RapActionType,
   registerENS: 'registerENS' as RapActionType,
   registerWithConfigENS: 'registerWithConfigENS' as RapActionType,
+  renewENS: 'renewENS' as RapActionType,
   setNameENS: 'setNameENS' as RapActionType,
+  setRecordsENS: 'setRecordsENS' as RapActionType,
   setTextENS: 'setTextENS' as RapActionType,
   swap: 'swap' as RapActionType,
   unlock: 'unlock' as RapActionType,
   withdrawCompound: 'withdrawCompound' as RapActionType,
 };
 
-const createRapByType = (
+const createSwapRapByType = (
   type: string,
-  {
-    swapParameters,
-    ensRegistrationParameters,
-  }: {
-    swapParameters: SwapActionParameters;
-    ensRegistrationParameters: RegisterENSActionParameters;
-  }
+  swapParameters: SwapActionParameters
 ) => {
   switch (type) {
     case ExchangeModalTypes.deposit:
       return createSwapAndDepositCompoundRap(swapParameters);
     case ExchangeModalTypes.withdrawal:
       return createWithdrawFromCompoundRap(swapParameters);
-    case RapActionTypes.registerENS:
-      return createRegisterENSRap(ensRegistrationParameters);
-    case RapActionTypes.commitENS:
-      return createCommitENSRap(ensRegistrationParameters);
     default:
       return createUnlockAndSwapRap(swapParameters);
   }
 };
 
-export const getRapEstimationByType = (
+const createENSRapByType = (
   type: string,
-  {
-    swapParameters,
-    ensRegistrationParameters,
-  }: {
-    swapParameters: SwapActionParameters;
-    ensRegistrationParameters: RegisterENSActionParameters;
+  ensRegistrationParameters: ENSActionParameters
+) => {
+  switch (type) {
+    case RapActionTypes.registerENS:
+      return createRegisterENSRap(ensRegistrationParameters);
+    case RapActionTypes.renewENS:
+      return createRenewENSRap(ensRegistrationParameters);
+    case RapActionTypes.setNameENS:
+      return createSetNameENSRap(ensRegistrationParameters);
+    case RapActionTypes.setRecordsENS:
+      return createSetRecordsENSRap(ensRegistrationParameters);
+    case RapActionTypes.commitENS:
+    default:
+      return createCommitENSRap(ensRegistrationParameters);
   }
+};
+
+export const getSwapRapEstimationByType = (
+  type: string,
+  swapParameters: SwapActionParameters
 ) => {
   switch (type) {
     case ExchangeModalTypes.deposit:
@@ -166,18 +204,34 @@ export const getRapEstimationByType = (
       return estimateUnlockAndSwap(swapParameters);
     case ExchangeModalTypes.withdrawal:
       return estimateWithdrawFromCompound();
+    default:
+      return null;
+  }
+};
+
+export const getENSRapEstimationByType = (
+  type: string,
+  ensRegistrationParameters: ENSActionParameters
+) => {
+  switch (type) {
     case RapActionTypes.commitENS:
       return estimateENSCommitGasLimit(ensRegistrationParameters);
     case RapActionTypes.registerENS:
       return estimateENSRegisterSetRecordsAndNameGasLimit(
         ensRegistrationParameters
       );
+    case RapActionTypes.renewENS:
+      return estimateENSRenewGasLimit(ensRegistrationParameters);
+    case RapActionTypes.setNameENS:
+      return estimateENSSetNameGasLimit(ensRegistrationParameters);
+    case RapActionTypes.setRecordsENS:
+      return estimateENSSetRecordsGasLimit(ensRegistrationParameters);
     default:
       return null;
   }
 };
 
-const findActionByType = (type: RapActionType) => {
+const findSwapActionByType = (type: RapActionType) => {
   switch (type) {
     case RapActionTypes.unlock:
       return unlock;
@@ -187,16 +241,25 @@ const findActionByType = (type: RapActionType) => {
       return depositCompound;
     case RapActionTypes.withdrawCompound:
       return withdrawCompound;
+    default:
+      return NOOP;
+  }
+};
+
+const findENSActionByType = (type: RapActionType) => {
+  switch (type) {
     case RapActionTypes.commitENS:
       return commitENS;
-    case RapActionTypes.registerENS:
-      return registerENS;
+    case RapActionTypes.registerWithConfigENS:
+      return registerWithConfig;
     case RapActionTypes.multicallENS:
       return multicallENS;
     case RapActionTypes.setTextENS:
       return setTextENS;
     case RapActionTypes.setNameENS:
       return setNameENS;
+    case RapActionTypes.renewENS:
+      return renewENS;
     default:
       return NOOP;
   }
@@ -228,18 +291,32 @@ const executeAction = async (
   baseNonce?: number
 ): Promise<RapActionResponse> => {
   logger.log('[1 INNER] index', index);
-  const { parameters, type } = action;
-  const actionPromise = findActionByType(type);
-  logger.log('[2 INNER] executing type', type);
+  const { type, parameters } = action;
+  let nonce;
   try {
-    const nonce = await actionPromise(
-      wallet,
-      rap,
-      index,
-      parameters,
-      baseNonce
-    );
-    return { baseNonce: nonce, errorMessage: null };
+    logger.log('[2 INNER] executing type', type);
+    const rapType = getRapTypeFromActionType(type);
+    if (rapType === RAP_TYPE.ENS) {
+      const actionPromise = findENSActionByType(type);
+      nonce = await actionPromise(
+        wallet,
+        rap,
+        index,
+        parameters as RapENSActionParameters,
+        baseNonce
+      );
+      return { baseNonce: nonce, errorMessage: null };
+    } else {
+      const actionPromise = findSwapActionByType(type);
+      nonce = await actionPromise(
+        wallet,
+        rap,
+        index,
+        parameters as RapExchangeActionParameters,
+        baseNonce
+      );
+      return { baseNonce: nonce, errorMessage: null };
+    }
   } catch (error: any) {
     logger.sentry('[3 INNER] error running action, code:', error?.code);
     captureException(error);
@@ -258,16 +335,41 @@ const executeAction = async (
   }
 };
 
+const getRapTypeFromActionType = (actionType: RapActionType) => {
+  switch (actionType) {
+    case RapActionTypes.swap:
+    case RapActionTypes.unlock:
+    case RapActionTypes.depositCompound:
+    case RapActionTypes.withdrawCompound:
+      return RAP_TYPE.EXCHANGE;
+    case RapActionTypes.commitENS:
+    case RapActionTypes.registerENS:
+    case RapActionTypes.registerWithConfigENS:
+    case RapActionTypes.multicallENS:
+    case RapActionTypes.renewENS:
+    case RapActionTypes.setNameENS:
+    case RapActionTypes.setTextENS:
+    case RapActionTypes.setRecordsENS:
+      return RAP_TYPE.ENS;
+  }
+  return '';
+};
+
 export const executeRap = async (
   wallet: Wallet,
-  type: string,
-  parameters: {
-    swapParameters: SwapActionParameters;
-    ensRegistrationParameters: RegisterENSActionParameters;
-  },
+  type: RapActionType,
+  parameters: SwapActionParameters | ENSActionParameters,
   callback: (success?: boolean, errorMessage?: string | null) => void
 ) => {
-  const rap: Rap = await createRapByType(type, parameters);
+  const rapType = getRapTypeFromActionType(type);
+
+  let rap: Rap = { actions: [] };
+  if (rapType === RAP_TYPE.EXCHANGE) {
+    rap = await createSwapRapByType(type, parameters as SwapActionParameters);
+  } else if (rapType === RAP_TYPE.ENS) {
+    rap = await createENSRapByType(type, parameters as ENSActionParameters);
+  }
+
   const { actions } = rap;
   const rapName = getRapFullName(actions);
 
@@ -279,9 +381,7 @@ export const executeRap = async (
   logger.log('[common - executing rap]: actions', actions);
   if (actions.length) {
     const firstAction = actions[0];
-    const nonce =
-      parameters?.swapParameters?.nonce ||
-      parameters?.ensRegistrationParameters?.nonce;
+    const nonce = parameters?.nonce;
     const { baseNonce, errorMessage } = await executeAction(
       firstAction,
       wallet,
@@ -317,8 +417,23 @@ export const createNewRap = (actions: RapAction[]) => {
 
 export const createNewAction = (
   type: RapActionType,
-  parameters: RapActionParameters
-) => {
+  parameters: RapExchangeActionParameters
+): RapSwapAction => {
+  const newAction = {
+    parameters,
+    rapType: RAP_TYPE.EXCHANGE,
+    transaction: { confirmed: null, hash: null },
+    type,
+  };
+
+  logger.log('[common] Creating a new action', newAction);
+  return newAction;
+};
+
+export const createNewENSAction = (
+  type: RapActionType,
+  parameters: ENSActionParameters
+): RapENSAction => {
   const newAction = {
     parameters,
     transaction: { confirmed: null, hash: null },
