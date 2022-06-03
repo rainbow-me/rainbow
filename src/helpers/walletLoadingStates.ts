@@ -3,5 +3,6 @@ export default {
   CREATING_WALLET: 'Creating wallet...',
   FETCHING_PASSWORD: 'Fetching Password...',
   IMPORTING_WALLET: 'Importing...',
+  IMPORTING_WALLET_SILENTLY: '',
   RESTORING_WALLET: 'Restoring...',
 };
