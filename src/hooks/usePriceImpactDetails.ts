@@ -1,8 +1,8 @@
 import { Trade } from '@uniswap/sdk';
 import { useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
-import { useTheme } from '@rainbow-me/context';
 import { AppState } from '@rainbow-me/redux/store';
+import { useTheme } from '@rainbow-me/theme';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToNativeAmount,

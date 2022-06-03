@@ -6,7 +6,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { useTheme } from '../../context/ThemeContext';
+import { useTheme } from '../../theme/ThemeContext';
 import { ExchangeInput } from '../exchange';
 import { Column, Row } from '../layout';
 import { Text } from '../text';

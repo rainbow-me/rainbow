@@ -6,10 +6,10 @@ import { ColumnWithMargins, RowWithMargins } from '../layout';
 import TokenInfoBalanceValue from './TokenInfoBalanceValue';
 import TokenInfoHeading from './TokenInfoHeading';
 import TokenInfoValue from './TokenInfoValue';
-import { useTheme } from '@rainbow-me/context';
 import { Column, Columns } from '@rainbow-me/design-system';
 import { useDelayedValueWithLayoutAnimation } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
+import { useTheme } from '@rainbow-me/theme';
 
 const VerticalDivider = styled.View({
   backgroundColor: ({ theme: { colors } }) => colors.rowDividerExtraLight,
