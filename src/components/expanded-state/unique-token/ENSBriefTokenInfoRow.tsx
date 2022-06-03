@@ -7,11 +7,11 @@ import { ENSConfirmRenewSheetHeight } from '../../../screens/ENSConfirmRegisterS
 import { ButtonPressAnimation } from '../../animations';
 import { TokenInfoItem, TokenInfoValue } from '../../token-info';
 import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
-import { useTheme } from '@rainbow-me/context';
 import { Column, Columns, Inset } from '@rainbow-me/design-system';
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import { useENSProfile, useENSRegistration } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
+import { useTheme } from '@rainbow-me/theme';
 
 export default function ENSBriefTokenInfoRow({
   color,

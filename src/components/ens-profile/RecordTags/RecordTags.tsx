@@ -6,7 +6,6 @@ import LinearGradient from 'react-native-linear-gradient';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { Icon } from '../../icons';
 import Skeleton from '../../skeleton/Skeleton';
-import { useTheme } from '@rainbow-me/context';
 import {
   Bleed,
   Box,
@@ -18,6 +17,7 @@ import {
 import { Records } from '@rainbow-me/entities';
 import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 import { useENSRecordDisplayProperties } from '@rainbow-me/hooks';
+import { useTheme } from '@rainbow-me/theme';
 
 const getRecordType = (recordKey: string) => {
   switch (recordKey) {

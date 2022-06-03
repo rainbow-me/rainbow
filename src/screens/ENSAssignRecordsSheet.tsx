@@ -19,9 +19,9 @@ import {
 } from '../components/ens-registration';
 import SelectableButton from '../components/ens-registration/TextRecordsForm/SelectableButton';
 import { SheetActionButton, SheetActionButtonRow } from '../components/sheet';
-import { useTheme } from '../context/ThemeContext';
 import { delayNext } from '../hooks/useMagicAutofocus';
 import { useNavigation } from '../navigation/Navigation';
+import { useTheme } from '../theme/ThemeContext';
 import {
   ENSConfirmRegisterSheetHeight,
   ENSConfirmUpdateSheetHeight,
