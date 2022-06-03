@@ -5,6 +5,7 @@ import useENSProfileRecords from './useENSProfileRecords';
 import useENSRegistration from './useENSRegistration';
 import { usePrevious } from '.';
 import { Records, UniqueAsset } from '@rainbow-me/entities';
+import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import * as ensRedux from '@rainbow-me/redux/ensRegistration';
 import { AppState } from '@rainbow-me/redux/store';
@@ -40,10 +41,10 @@ const getImageUrl = (
           token.asset_contract.address === contractAddress &&
           token.id === tokenId
       );
-      if (uniqueToken?.lowResUrl) {
+      if (uniqueToken?.image_url) {
+        imageUrl = svgToPngIfNeeded(uniqueToken?.image_url, false);
+      } else if (uniqueToken?.lowResUrl) {
         imageUrl = uniqueToken?.lowResUrl;
-      } else if (uniqueToken?.image_url) {
-        imageUrl = uniqueToken?.image_url;
       } else if (uniqueToken?.image_thumbnail_url) {
         imageUrl = uniqueToken?.image_thumbnail_url;
       }

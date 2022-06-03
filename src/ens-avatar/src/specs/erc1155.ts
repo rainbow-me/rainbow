@@ -5,6 +5,8 @@ import { AvatarRequestOpts } from '..';
 import { resolveURI } from '../utils';
 import { UniqueAsset } from '@rainbow-me/entities';
 import { apiGetAccountUniqueToken } from '@rainbow-me/handlers/opensea-api';
+import { getNFTByTokenId } from '@rainbow-me/handlers/simplehash';
+import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
 import { NetworkTypes } from '@rainbow-me/helpers';
 
 const abi = [
@@ -39,11 +41,19 @@ export default class ERC1155 {
       return JSON.parse(_resolvedUri);
     }
 
-    const data: UniqueAsset = await apiGetAccountUniqueToken(
-      NetworkTypes.mainnet,
-      contractAddress,
-      tokenID
-    );
-    return { image: data?.image_url || data?.lowResUrl };
+    let image;
+    try {
+      const data: UniqueAsset = await apiGetAccountUniqueToken(
+        NetworkTypes.mainnet,
+        contractAddress,
+        tokenID
+      );
+      image = svgToPngIfNeeded(data?.image_url, false) || data?.lowResUrl;
+    } catch (error) {
+      const data = await getNFTByTokenId({ contractAddress, tokenId: tokenID });
+      image = data?.previews?.image_medium_url;
+      if (!image) throw new Error('no image found');
+    }
+    return { image };
   }
 }
