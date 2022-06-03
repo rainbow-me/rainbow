@@ -1,16 +1,22 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
-import { concat, isEmpty, without } from 'lodash';
+import { concat, isEmpty, uniqBy, without } from 'lodash';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
+import {
+  applyENSMetadataFallbackToToken,
+  applyENSMetadataFallbackToTokens,
+} from '../parsers/uniqueTokens';
 import { dataUpdateAssets } from './data';
 import { AppGetState, AppState } from './store';
 import { UniqueAsset } from '@rainbow-me/entities';
+import { fetchEnsTokens } from '@rainbow-me/handlers/ens';
 import {
   getUniqueTokens,
   saveUniqueTokens,
 } from '@rainbow-me/handlers/localstorage/accountLocal';
 import {
+  apiGetAccountUniqueToken,
   apiGetAccountUniqueTokens,
   UNIQUE_TOKENS_LIMIT_PER_PAGE,
   UNIQUE_TOKENS_LIMIT_TOTAL,
@@ -242,7 +248,7 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
   const accountAddress = showcaseAddress || getState().settings.accountAddress;
   const { accountAssetsData } = getState().data;
   const { uniqueTokens: existingUniqueTokens } = getState().uniqueTokens;
-  const shouldUpdateInBatches = isEmpty(existingUniqueTokens);
+  let shouldUpdateInBatches = isEmpty(existingUniqueTokens);
   let uniqueTokens: UniqueAsset[] = [];
   let errorCheck = false;
 
@@ -266,11 +272,16 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
   const fetchPage = async (page: number, network: Network) => {
     let shouldStopFetching = false;
     try {
-      const newPageResults = await apiGetAccountUniqueTokens(
+      let newPageResults = await apiGetAccountUniqueTokens(
         network,
         accountAddress,
         page
       );
+
+      // If there are any "unknown" ENS names, fallback to the ENS
+      // metadata service.
+      newPageResults = await applyENSMetadataFallbackToTokens(newPageResults);
+
       uniqueTokens = concat(uniqueTokens, newPageResults);
       shouldStopFetching =
         newPageResults.length < UNIQUE_TOKENS_LIMIT_PER_PAGE ||
@@ -328,6 +339,17 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
     analytics.identify(null, { NFTs: uniqueTokens.length });
   }
 
+  // Fetch recently registered ENS tokens (OpenSea doesn't recognize these for a while).
+  // We will fetch tokens registered in the past 48 hours to be safe.
+  const ensTokens = await fetchEnsTokens({
+    address: accountAddress,
+    timeAgo: { hours: 48 },
+  });
+  if (ensTokens.length > 0) {
+    uniqueTokens = uniqBy([...uniqueTokens, ...ensTokens], 'id');
+    shouldUpdateInBatches = false;
+  }
+
   // NFT Fetching clean up
   // check that the account address to fetch for has not changed while fetching before updating state
   const isCurrentAccountAddress =
@@ -342,6 +364,62 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
       type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,
     });
   }
+};
+
+/**
+ * Revalidates a unique token via OpenSea API, updates state, and saves to local storage.
+ *
+ * Note:  it is intentional that there are no loading states dispatched in this action. This
+ *        is for _revalidation_ purposes only.
+ *
+ * @param contractAddress - The contract address of the NFT
+ * @param tokenId - The tokenId of the NFT
+ * @param {Object} config - Optional configuration
+ * @param {boolean} config.forceUpdate - Trigger a force update of metadata (equivalent to refreshing metadata in OpenSea)
+ */
+export const revalidateUniqueToken = (
+  contractAddress: string,
+  tokenId: string,
+  { forceUpdate = false }: { forceUpdate?: boolean } = {}
+) => async (
+  dispatch: ThunkDispatch<
+    AppState,
+    unknown,
+    UniqueTokensGetAction | UniqueTokensClearStateShowcaseAction
+  >,
+  getState: AppGetState
+) => {
+  const { network: currentNetwork } = getState().settings;
+  const { uniqueTokens: existingUniqueTokens } = getState().uniqueTokens;
+  const accountAddress = getState().settings.accountAddress;
+
+  let token = await apiGetAccountUniqueToken(
+    currentNetwork,
+    contractAddress,
+    tokenId,
+    { forceUpdate }
+  );
+
+  // If the token is an "unknown" ENS name, fallback to the ENS
+  // metadata service.
+  try {
+    token = await applyENSMetadataFallbackToToken(token);
+  } catch (error) {
+    captureException(error);
+  }
+
+  const uniqueTokens = existingUniqueTokens.map(existingToken =>
+    existingToken.id === tokenId ? token : existingToken
+  );
+
+  saveUniqueTokens(uniqueTokens, accountAddress, currentNetwork);
+  dispatch({
+    payload: uniqueTokens,
+    showcase: false,
+    type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,
+  });
+
+  return token;
 };
 
 // -- Reducer --------------------------------------------------------------- //

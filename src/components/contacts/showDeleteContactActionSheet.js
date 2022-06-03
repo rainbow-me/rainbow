@@ -6,7 +6,7 @@ import { showActionSheetWithOptions } from '@rainbow-me/utils';
 const showDeleteContactActionSheet = ({
   address,
   nickname,
-  onDelete,
+  onDelete = () => undefined,
   removeContact,
 }) =>
   showActionSheetWithOptions(
@@ -25,7 +25,7 @@ const showDeleteContactActionSheet = ({
       if (buttonIndex === 0) {
         removeContact(address);
         ReactNativeHapticFeedback.trigger('notificationSuccess');
-        onDelete();
+        onDelete?.();
       }
     }
   );

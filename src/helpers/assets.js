@@ -328,10 +328,11 @@ const regex = RegExp(/\s*(the)\s/, 'i');
 
 export const buildBriefUniqueTokenList = (
   uniqueTokens,
-  selectedShowcaseTokens
+  selectedShowcaseTokens,
+  sellingTokens = []
 ) => {
   const uniqueTokensInShowcase = uniqueTokens
-    .filter(({ uniqueId }) => selectedShowcaseTokens.includes(uniqueId))
+    .filter(({ uniqueId }) => selectedShowcaseTokens?.includes(uniqueId))
     .map(({ uniqueId }) => uniqueId);
   const grouped2 = groupBy(uniqueTokens, token => token.familyName);
   const families2 = sortBy(Object.keys(grouped2), row =>
@@ -343,7 +344,12 @@ export const buildBriefUniqueTokenList = (
     { type: 'NFTS_HEADER_SPACE_AFTER', uid: 'nfts-header-space-after' },
   ];
   if (uniqueTokensInShowcase.length > 0) {
-    result.push({ name: 'Showcase', type: 'FAMILY_HEADER', uid: 'showcase' });
+    result.push({
+      name: 'Showcase',
+      total: uniqueTokensInShowcase.length,
+      type: 'FAMILY_HEADER',
+      uid: 'showcase',
+    });
     for (let index = 0; index < uniqueTokensInShowcase.length; index++) {
       const uniqueId = uniqueTokensInShowcase[index];
       result.push({
@@ -354,6 +360,24 @@ export const buildBriefUniqueTokenList = (
       });
     }
 
+    result.push({ type: 'NFT_SPACE_AFTER', uid: `showcase-space-after` });
+  }
+  if (sellingTokens.length > 0) {
+    result.push({
+      name: 'Selling',
+      total: sellingTokens.length,
+      type: 'FAMILY_HEADER',
+      uid: 'selling',
+    });
+    for (let index = 0; index < sellingTokens.length; index++) {
+      const uniqueId = sellingTokens[index].uniqueId;
+      result.push({
+        index,
+        type: 'NFT',
+        uid: uniqueId,
+        uniqueId,
+      });
+    }
     result.push({ type: 'NFT_SPACE_AFTER', uid: `showcase-space-after` });
   }
   for (let family of families2) {
@@ -377,4 +401,4 @@ export const buildBriefUniqueTokenList = (
 };
 
 export const buildUniqueTokenName = ({ collection, id, name }) =>
-  name || `${collection.name} #${id}`;
+  name || `${collection?.name} #${id}`;
