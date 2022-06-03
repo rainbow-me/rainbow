@@ -93,8 +93,9 @@ export default function SendAssetForm({
   const { colors } = useTheme();
 
   const address = selected?.mainnet_address || selected?.address;
+  const type = selected?.mainnet_address ? AssetTypes.token : selected?.type;
 
-  let colorForAsset = useColorForAsset({ address });
+  let colorForAsset = useColorForAsset({ address, type });
   if (isNft) {
     colorForAsset = colors.appleBlue;
   }
