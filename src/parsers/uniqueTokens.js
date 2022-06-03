@@ -262,7 +262,7 @@ export const applyENSMetadataFallbackToTokens = async data => {
   return await Promise.all(
     data.map(async token => {
       try {
-        return applyENSMetadataFallbackToToken(token);
+        return await applyENSMetadataFallbackToToken(token);
       } catch {
         return token;
       }
