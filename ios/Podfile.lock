@@ -389,7 +389,7 @@ PODS:
     - React
   - react-native-minimizer (1.3.5):
     - React
-  - react-native-mmkv (2.3.3):
+  - react-native-mmkv (2.4.1):
     - MMKV (>= 1.2.13)
     - React-Core
   - react-native-netinfo (5.9.7):
@@ -1051,7 +1051,7 @@ SPEC CHECKSUMS:
   react-native-ios-context-menu: 7bf49ec6006cc0c61d873419557b85eb1b9629fb
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
   react-native-minimizer: b94809a769ac3825b46fd081d4f0ae2560791536
-  react-native-mmkv: 30297e5e2a65341b36a727c1c79b0aff0132b396
+  react-native-mmkv: b5c7f9bc369eef2b8a2aa36e8a15949989fa823f
   react-native-netinfo: 250dc0ca126512f618a8a2ca6a936577e1f66586
   react-native-palette-full: 99a6fd796d16fab6a2d3770649070e31c2602fad
   react-native-quick-md5: 20039aa5f718178ee370d523ca2918a2ccae097d
