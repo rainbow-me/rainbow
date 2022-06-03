@@ -1,3 +1,4 @@
+import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, {
   useCallback,
@@ -16,6 +17,7 @@ import { CurrencySelectionList } from '../exchange';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/ChartExpandedState';
 import { Row } from '../layout';
 import DiscoverSheetContext from './DiscoverSheetContext';
+import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import { fetchSuggestions } from '@rainbow-me/handlers/ens';
 import {
   useHardwareBackOnFocus,
@@ -44,6 +46,7 @@ export default function DiscoverSearch() {
     searchInputRef,
     cancelSearch,
   } = useContext(DiscoverSheetContext);
+  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   const currencySelectionListRef = useRef();
   const [searchQueryForSearch, setSearchQueryForSearch] = useState('');
@@ -53,10 +56,21 @@ export default function DiscoverSearch() {
     uniswapCurrencyList,
     uniswapCurrencyListLoading,
   } = useUniswapCurrencyList(searchQueryForSearch);
+
+  const { colors } = useTheme();
+
   const currencyList = useMemo(() => [...uniswapCurrencyList, ...ensResults], [
     uniswapCurrencyList,
     ensResults,
   ]);
+
+  const currencyListDataKey = useMemo(
+    () =>
+      `${uniswapCurrencyList?.[0]?.data?.[0]?.address || '_'}_${
+        ensResults?.[0]?.data?.[0]?.address || '_'
+      }`,
+    [ensResults, uniswapCurrencyList]
+  );
 
   useHardwareBackOnFocus(() => {
     cancelSearch();
@@ -70,10 +84,21 @@ export default function DiscoverSearch() {
         // navigate to Showcase sheet
         searchInputRef?.current?.blur();
         InteractionManager.runAfterInteractions(() => {
-          navigate(Routes.SHOWCASE_SHEET, {
-            address: item.nickname,
-            setIsSearchModeEnabled,
-          });
+          navigate(
+            profilesEnabled ? Routes.PROFILE_SHEET : Routes.SHOWCASE_SHEET,
+            {
+              address: item.nickname,
+              fromRoute: 'DiscoverSearch',
+              setIsSearchModeEnabled,
+            }
+          );
+          if (profilesEnabled) {
+            analytics.track('Viewed ENS profile', {
+              category: 'profiles',
+              ens: item.nickname,
+              from: 'Discover search',
+            });
+          }
         });
       } else {
         const asset = ethereumUtils.getAccountAsset(item.uniqueId);
@@ -85,7 +110,13 @@ export default function DiscoverSearch() {
         });
       }
     },
-    [dispatch, navigate, searchInputRef, setIsSearchModeEnabled]
+    [
+      dispatch,
+      navigate,
+      profilesEnabled,
+      searchInputRef,
+      setIsSearchModeEnabled,
+    ]
   );
 
   const handleActionAsset = useCallback(
@@ -105,20 +136,23 @@ export default function DiscoverSearch() {
     [handleActionAsset, handlePress]
   );
 
-  const addEnsResults = useCallback(ensResults => {
-    let ensSearchResults = [];
-    if (ensResults && ensResults.length) {
-      ensSearchResults = [
-        {
-          color: '#5893ff',
-          data: ensResults,
-          key: `􀏼 ${lang.t('discover.search.ethereum_name_service')}`,
-          title: `􀏼 ${lang.t('discover.search.ethereum_name_service')}`,
-        },
-      ];
-    }
-    setEnsResults(ensSearchResults);
-  }, []);
+  const addEnsResults = useCallback(
+    ensResults => {
+      let ensSearchResults = [];
+      if (ensResults && ensResults.length) {
+        ensSearchResults = [
+          {
+            color: colors.appleBlue,
+            data: ensResults,
+            key: `􀉮 ${lang.t('discover.search.profiles')}`,
+            title: `􀉮 ${lang.t('discover.search.profiles')}`,
+          },
+        ];
+      }
+      setEnsResults(ensSearchResults);
+    },
+    [colors.appleBlue]
+  );
 
   useEffect(() => {
     const searching = searchQuery !== '';
@@ -130,7 +164,12 @@ export default function DiscoverSearch() {
       () => {
         setIsSearching(true);
         setSearchQueryForSearch(searchQuery);
-        fetchSuggestions(searchQuery, addEnsResults, setIsFetchingEns);
+        fetchSuggestions(
+          searchQuery,
+          addEnsResults,
+          setIsFetchingEns,
+          profilesEnabled
+        );
       },
       searchQuery === '' ? 1 : 500
     );
@@ -154,7 +193,10 @@ export default function DiscoverSearch() {
   }, [isSearchModeEnabled]);
 
   return (
-    <View style={{ height: deviceUtils.dimensions.height - 140 }}>
+    <View
+      key={currencyListDataKey}
+      style={{ height: deviceUtils.dimensions.height - 140 }}
+    >
       <SearchContainer>
         <CurrencySelectionList
           footerSpacer
