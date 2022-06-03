@@ -1,6 +1,7 @@
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { IS_TESTING } from 'react-native-dotenv';
+import { TopMoverCoinRow } from '../coin-row';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/ChartExpandedState';
 import { Centered, Column, Flex } from '../layout';
 import { MarqueeList } from '../list';
@@ -74,8 +75,21 @@ export default function TopMoversSection() {
     losers,
   ]);
 
+  const renderItem = useCallback(
+    ({ item, index, onPressCancel, onPressStart, testID }) => (
+      <TopMoverCoinRow
+        {...item}
+        key={`topmovercoinrow-${item?.address}`}
+        onPressCancel={onPressCancel}
+        onPressStart={onPressStart}
+        testID={`${testID}-coin-row-${index}`}
+      />
+    ),
+    []
+  );
+
   return (
-    <Column marginBottom={15} marginTop={11} testID="top-movers-section">
+    <Column marginBottom={16} marginTop={16} testID="top-movers-section">
       {(gainerItems?.length > 0 || loserItems?.length > 0) && (
         <Flex marginBottom={12} paddingHorizontal={19}>
           <Text size="larger" weight="heavy">
@@ -93,6 +107,7 @@ export default function TopMoversSection() {
           {gainerItems?.length !== 0 && (
             <MarqueeList
               items={gainerItems}
+              renderItem={renderItem}
               speed={IS_TESTING !== 'true' ? 40 : 0}
               testID="top-gainers"
             />
@@ -100,6 +115,7 @@ export default function TopMoversSection() {
           {loserItems?.length !== 0 && (
             <MarqueeList
               items={loserItems}
+              renderItem={renderItem}
               speed={IS_TESTING !== 'true' ? -40 : 0}
               testID="top-losers"
             />

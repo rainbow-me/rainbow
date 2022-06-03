@@ -109,6 +109,7 @@ function DiscoverSheet(_, forwardedRef) {
           renderHeader={renderHeader}
           scrollEnabled={!headerButtonsHandlers.isSearchModeEnabled}
           showBlur
+          testID="discover-sheet"
         >
           <DiscoverSheetContent />
         </SlackSheet>

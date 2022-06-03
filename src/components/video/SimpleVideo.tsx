@@ -95,6 +95,7 @@ export default function SimpleVideo({
         <StyledBackground />
         <StyledVideo
           controls={controlsEnabled}
+          ignoreSilentSwitch="obey"
           onLoad={() => setLoading(false)}
           ref={ref}
           repeat

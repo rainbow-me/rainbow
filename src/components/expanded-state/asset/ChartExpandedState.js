@@ -1,5 +1,4 @@
 import lang from 'i18n-js';
-import { find, get } from 'lodash';
 import React, {
   useCallback,
   useContext,
@@ -274,9 +273,11 @@ export default function ChartExpandedState({ asset }) {
   const uniswapAssetsInWallet = useUniswapAssetsInWallet();
   const showSwapButton = useMemo(
     () =>
-      !!get(networkInfo[currentNetwork], 'exchange_enabled') &&
+      !!networkInfo[currentNetwork]?.exchange_enabled &&
       !isL2 &&
-      find(uniswapAssetsInWallet, ['address', assetWithPrice.address]),
+      uniswapAssetsInWallet.find(
+        assetInWallet => assetInWallet.address === assetWithPrice.address
+      ),
     [assetWithPrice.address, currentNetwork, isL2, uniswapAssetsInWallet]
   );
 

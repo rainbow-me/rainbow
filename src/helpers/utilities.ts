@@ -196,9 +196,9 @@ export const convertStringToHex = (stringToConvert: string): string => {
 };
 
 export const addDisplay = (numberOne: string, numberTwo: string): string => {
-  const template = numberOne.split(/\d+\.\d+/);
+  const template = numberOne.split(/^(\D*)(.*)/);
   const display = currency(numberOne, { symbol: '' }).add(numberTwo).format();
-  return template.map(item => (item === '' ? `${display}` : item)).join('');
+  return [template[1], display].join('');
 };
 
 export const addBuffer = (

@@ -233,7 +233,7 @@
           "mainnet_address": "0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f",
           "asset_code": "0x8700daec35af8ff88c16bdf0418774cb3d7599b4",
           "coingecko_id": "havven",
-          "decimals": 8,
+          "decimals": 18,
           "icon_url": "https://s3.amazonaws.com/icons.assets/SNX.png",
           "name": "Synthetix",
           "network": "optimism",
