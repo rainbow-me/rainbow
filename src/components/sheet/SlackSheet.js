@@ -42,7 +42,9 @@ const Container = styled(Centered).attrs({ direction: 'column' })(
       ? {}
       : {
           top:
-            contentHeight && additionalTopPadding
+            typeof additionalTopPadding === 'number'
+              ? additionalTopPadding
+              : contentHeight && additionalTopPadding
               ? deviceHeight - contentHeight
               : 0,
         }),

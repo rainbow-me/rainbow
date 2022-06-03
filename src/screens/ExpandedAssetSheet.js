@@ -12,6 +12,7 @@ import {
   UniqueTokenExpandedState,
 } from '../components/expanded-state';
 import { Centered } from '../components/layout';
+import { isUnknownOpenSeaENS } from '@rainbow-me/handlers/ens';
 import { useAsset, useDimensions } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import styled from '@rainbow-me/styled-components';
@@ -46,7 +47,12 @@ export default function ExpandedAssetSheet(props) {
   const { goBack } = useNavigation();
   const { params } = useRoute();
   const { isDarkMode } = useTheme();
-  const selectedAsset = useAsset(params.asset);
+
+  // We want to revalidate (ie. refresh OpenSea metadata) collectibles
+  // to ensure the user can get the latest metadata of their collectible.
+  const selectedAsset = useAsset(params.asset, {
+    revalidateCollectibleInBackground: isUnknownOpenSeaENS(params?.asset),
+  });
 
   return (
     <Container

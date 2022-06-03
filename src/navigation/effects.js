@@ -337,6 +337,18 @@ export const exchangePreset = {
   transitionSpec: { close: closeSpec, open: sheetOpenSpec },
 };
 
+export const ensPreset = {
+  cardOverlayEnabled: true,
+  cardShadowEnabled: true,
+  cardStyle: { backgroundColor: 'transparent' },
+  cardStyleInterpolator: speedUpAndCancelStyleInterpolator,
+  cardTransparent: true,
+  gestureDirection: 'vertical',
+  gestureEnabled: true,
+  gestureResponseDistance,
+  transitionSpec: { close: closeSpec, open: sheetOpenSpec },
+};
+
 export const androidRecievePreset = {
   cardStyle: { backgroundColor: 'transparent' },
   cardStyleInterpolator: expandStyleInterpolator(0.9),

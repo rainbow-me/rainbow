@@ -10,7 +10,7 @@ import { getNextEmojiWithColor } from '@rainbow-me/utils/profileUtils';
 export default function useUpdateEmoji() {
   const { accountColor, accountName } = useAccountProfile();
   const { wallets, selectedWallet } = useWallets();
-  const { updateWebProfile } = useWebData();
+  const { updateWebProfile, getWebProfile } = useWebData();
   const { accountAddress } = useAccountSettings();
   const { colors } = useTheme();
   const dispatch = useDispatch();
@@ -68,6 +68,7 @@ export default function useUpdateEmoji() {
   }, [accountAddress, accountName, saveInfo, selectedWallet.id, wallets]);
 
   return {
+    getWebProfile,
     saveInfo,
     setNextEmoji,
   };
