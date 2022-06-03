@@ -1,12 +1,25 @@
+import { subDays } from 'date-fns';
 import { omit } from 'lodash';
+import { Dispatch } from 'react';
 import { AppDispatch, AppGetState } from './store';
 import {
+  ENSRegistrations,
   ENSRegistrationState,
-  EthereumAddress,
   Records,
   RegistrationParameters,
+  TransactionRegistrationParameters,
 } from '@rainbow-me/entities';
+import {
+  getLocalENSRegistrations,
+  saveLocalENSRegistrations,
+} from '@rainbow-me/handlers/localstorage/accountLocal';
+import { NetworkTypes } from '@rainbow-me/helpers';
+import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 
+const ENS_REGISTRATION_SET_CHANGED_RECORDS =
+  'ensRegistration/ENS_REGISTRATION_SET_CHANGED_RECORDS';
+const ENS_REGISTRATION_SET_INITIAL_RECORDS =
+  'ensRegistration/ENS_REGISTRATION_SET_INITIAL_RECORDS';
 const ENS_REGISTRATION_UPDATE_DURATION =
   'ensRegistration/ENS_REGISTRATION_UPDATE_DURATION';
 const ENS_REGISTRATION_UPDATE_RECORDS =
@@ -15,34 +28,58 @@ const ENS_REGISTRATION_UPDATE_RECORD_BY_KEY =
   'ensRegistration/ENS_REGISTRATION_UPDATE_RECORD_BY_KEY';
 const ENS_REGISTRATION_REMOVE_RECORD_BY_KEY =
   'ensRegistration/ENS_REGISTRATION_REMOVE_RECORD_BY_KEY';
+const ENS_REMOVE_EXPIRED_REGISTRATIONS =
+  'ensRegistration/ENS_REMOVE_EXPIRED_REGISTRATIONS';
 const ENS_CONTINUE_REGISTRATION = 'ensRegistration/ENS_CONTINUE_REGISTRATION';
 const ENS_START_REGISTRATION = 'ensRegistration/ENS_START_REGISTRATION';
 const ENS_SAVE_COMMIT_REGISTRATION_PARAMETERS =
   'ensRegistration/ENS_SAVE_COMMIT_REGISTRATION_PARAMETERS';
+const ENS_CLEAR_CURRENT_REGISTRATION_NAME =
+  'ensRegistration/CLEAR_CURRENT_REGISTRATION_NAME';
+const ENS_UPDATE_REGISTRATION_PARAMETERS =
+  'ensRegistration/ENS_UPDATE_REGISTRATION_PARAMETERS';
+const ENS_REMOVE_REGISTRATION_BY_NAME =
+  'ensRegistration/ENS_REMOVE_REGISTRATION_BY_NAME';
+const ENS_LOAD_STATE = 'ensRegistration/ENS_LOAD_STATE';
+
+interface EnsRegistrationSetChangedRecordsAction {
+  type: typeof ENS_REGISTRATION_SET_CHANGED_RECORDS;
+  payload: ENSRegistrationState;
+}
+
+interface EnsRegistrationSetInitialRecordsAction {
+  type: typeof ENS_REGISTRATION_SET_INITIAL_RECORDS;
+  payload: ENSRegistrationState;
+}
 
 interface EnsRegistrationUpdateDurationAction {
   type: typeof ENS_REGISTRATION_UPDATE_DURATION;
-  payload: ENSRegistrationState;
+  payload: { registrations: ENSRegistrations };
 }
 
 interface EnsRegistrationUpdateRecordsAction {
   type: typeof ENS_REGISTRATION_UPDATE_RECORDS;
-  payload: ENSRegistrationState;
+  payload: { registrations: ENSRegistrations };
 }
 
 interface EnsRegistrationUpdateRecordByKeyAction {
   type: typeof ENS_REGISTRATION_UPDATE_RECORD_BY_KEY;
-  payload: ENSRegistrationState;
+  payload: { registrations: ENSRegistrations };
 }
 
 interface EnsRegistrationRemoveRecordByKeyAction {
   type: typeof ENS_REGISTRATION_REMOVE_RECORD_BY_KEY;
-  payload: ENSRegistrationState;
+  payload: { registrations: ENSRegistrations };
+}
+
+interface EnsRegistrationRemoveRegistrationByName {
+  type: typeof ENS_REMOVE_REGISTRATION_BY_NAME;
+  payload: { registrations: ENSRegistrations };
 }
 
 interface EnsRegistrationContinueRegistrationAction {
   type: typeof ENS_CONTINUE_REGISTRATION;
-  payload: ENSRegistrationState;
+  payload: { registrations: ENSRegistrations };
 }
 
 interface EnsRegistrationStartRegistrationAction {
@@ -52,27 +89,75 @@ interface EnsRegistrationStartRegistrationAction {
 
 interface EnsRegistrationSaveCommitRegistrationParametersAction {
   type: typeof ENS_SAVE_COMMIT_REGISTRATION_PARAMETERS;
-  payload: ENSRegistrationState;
+  payload: { registrations: ENSRegistrations };
+}
+
+interface EnsRegistrationLoadState {
+  type: typeof ENS_LOAD_STATE;
+  payload: { registrations: ENSRegistrations };
+}
+
+interface EnsRemoveExpiredRegistrationsAction {
+  type: typeof ENS_REMOVE_EXPIRED_REGISTRATIONS;
+  payload: { registrations: ENSRegistrations };
+}
+
+interface EnsUpdateTransactionRegistrationParameters {
+  type: typeof ENS_UPDATE_REGISTRATION_PARAMETERS;
+  payload: { registrations: ENSRegistrations };
+}
+
+interface EnsClearCurrentRegistrationNameAction {
+  type: typeof ENS_CLEAR_CURRENT_REGISTRATION_NAME;
 }
 
 export type EnsRegistrationActionTypes =
+  | EnsRegistrationSetChangedRecordsAction
+  | EnsRegistrationSetInitialRecordsAction
   | EnsRegistrationUpdateDurationAction
   | EnsRegistrationUpdateRecordsAction
   | EnsRegistrationUpdateRecordByKeyAction
   | EnsRegistrationRemoveRecordByKeyAction
+  | EnsRegistrationRemoveRegistrationByName
   | EnsRegistrationContinueRegistrationAction
   | EnsRegistrationStartRegistrationAction
-  | EnsRegistrationSaveCommitRegistrationParametersAction;
+  | EnsRegistrationSaveCommitRegistrationParametersAction
+  | EnsClearCurrentRegistrationNameAction
+  | EnsRegistrationLoadState
+  | EnsRemoveExpiredRegistrationsAction
+  | EnsUpdateTransactionRegistrationParameters;
 
 // -- Actions ---------------------------------------- //
+
+/**
+ * Loads initial state from account local storage.
+ */
+export const ensRegistrationsLoadState = () => async (
+  dispatch: Dispatch<EnsRegistrationLoadState>,
+  getState: AppGetState
+) => {
+  const { accountAddress, network } = getState().settings;
+  try {
+    const registrations = await getLocalENSRegistrations(
+      accountAddress,
+      network
+    );
+    dispatch({
+      payload: { registrations },
+      type: ENS_LOAD_STATE,
+    });
+    // eslint-disable-next-line no-empty
+  } catch (error) {}
+};
+
 export const startRegistration = (
-  accountAddress: EthereumAddress,
-  name: string
+  name: string,
+  mode: keyof typeof REGISTRATION_MODES
 ) => async (dispatch: AppDispatch, getState: AppGetState) => {
   const {
     ensRegistration: { registrations },
+    settings: { accountAddress },
   } = getState();
-
   const lcAccountAddress = accountAddress.toLowerCase();
   const accountRegistrations = registrations?.[lcAccountAddress] || {};
   const registration = accountRegistrations[name] || {};
@@ -83,7 +168,7 @@ export const startRegistration = (
       ...registrations,
       [lcAccountAddress]: {
         ...accountRegistrations,
-        [name]: { ...registration, name },
+        [name]: { ...registration, mode, name },
       },
     },
   };
@@ -105,39 +190,102 @@ export const continueRegistration = (name: string) => async (
   });
 };
 
-export const updateRegistrationDuration = (
-  accountAddress: EthereumAddress,
-  duration: number
-) => async (dispatch: AppDispatch, getState: AppGetState) => {
+export const removeExpiredRegistrations = () => async (
+  dispatch: AppDispatch,
+  getState: AppGetState
+) => {
+  const {
+    ensRegistration: { registrations },
+    settings: { accountAddress },
+  } = getState();
+
+  const accountRegistrations =
+    registrations?.[accountAddress.toLowerCase()] || [];
+
+  const registrationsArray = Object.values(accountRegistrations);
+
+  const sevenDaysAgoMs = subDays(new Date(), 7).getTime();
+
+  const activeRegistrations = registrationsArray.filter(registration =>
+    registration?.commitTransactionConfirmedAt
+      ? registration?.commitTransactionConfirmedAt >= sevenDaysAgoMs
+      : true
+  );
+
+  dispatch({
+    payload: activeRegistrations,
+    type: ENS_REMOVE_EXPIRED_REGISTRATIONS,
+  });
+};
+
+export const setInitialRecords = (records: Records) => async (
+  dispatch: AppDispatch,
+  getState: AppGetState
+) => {
   const {
     ensRegistration: { registrations, currentRegistrationName },
+    settings: { accountAddress },
   } = getState();
   const lcAccountAddress = accountAddress.toLowerCase();
-
   const accountRegistrations = registrations?.[lcAccountAddress] || {};
   const registration = accountRegistrations[currentRegistrationName] || {};
 
-  const updatedEnsRegistrationManager = {
+  const updatedEnsRegistrationManagerForAccount = {
     registrations: {
       ...registrations,
       [lcAccountAddress]: {
         ...accountRegistrations,
-        [currentRegistrationName]: { ...registration, duration },
+        [currentRegistrationName]: {
+          ...registration,
+          initialRecords: records,
+          records,
+        },
       },
     },
   };
   dispatch({
-    payload: updatedEnsRegistrationManager,
-    type: ENS_REGISTRATION_UPDATE_DURATION,
+    payload: updatedEnsRegistrationManagerForAccount,
+    type: ENS_REGISTRATION_SET_INITIAL_RECORDS,
   });
 };
 
-export const updateRecords = (
-  accountAddress: EthereumAddress,
-  records: Records
-) => async (dispatch: AppDispatch, getState: AppGetState) => {
+export const setChangedRecords = (changedRecords: Records) => async (
+  dispatch: AppDispatch,
+  getState: AppGetState
+) => {
   const {
     ensRegistration: { registrations, currentRegistrationName },
+    settings: { accountAddress },
+  } = getState();
+  const lcAccountAddress = accountAddress.toLowerCase();
+  const accountRegistrations = registrations?.[lcAccountAddress] || {};
+  const registration = accountRegistrations[currentRegistrationName] || {};
+
+  const updatedEnsRegistrationManagerForAccount = {
+    registrations: {
+      ...registrations,
+      [lcAccountAddress]: {
+        ...accountRegistrations,
+        [currentRegistrationName]: {
+          ...registration,
+          changedRecords,
+        },
+      },
+    },
+  };
+  dispatch({
+    payload: updatedEnsRegistrationManagerForAccount,
+    type: ENS_REGISTRATION_SET_CHANGED_RECORDS,
+  });
+};
+
+export const updateRecords = (records: Records) => async (
+  dispatch: AppDispatch,
+  getState: AppGetState
+) => {
+  const {
+    ensRegistration: { registrations, currentRegistrationName },
+    settings: { accountAddress },
   } = getState();
   const lcAccountAddress = accountAddress.toLowerCase();
   const accountRegistrations = registrations?.[lcAccountAddress] || {};
@@ -158,20 +306,19 @@ export const updateRecords = (
   });
 };
 
-export const updateRecordByKey = (
-  accountAddress: EthereumAddress,
-  key: string,
-  value: string
-) => async (dispatch: AppDispatch, getState: AppGetState) => {
+export const updateRecordByKey = (key: string, value: string) => async (
+  dispatch: AppDispatch,
+  getState: AppGetState
+) => {
   const {
     ensRegistration: { registrations, currentRegistrationName },
+    settings: { accountAddress },
   } = getState();
   const lcAccountAddress = accountAddress.toLowerCase();
 
   const accountRegistrations = registrations?.[lcAccountAddress] || {};
   const registration = accountRegistrations[currentRegistrationName] || {};
   const registrationRecords = registration?.records || {};
-
   const updatedEnsRegistrationManagerForAccount = {
     registrations: {
       ...registrations,
@@ -190,12 +337,13 @@ export const updateRecordByKey = (
   });
 };
 
-export const removeRecordByKey = (
-  accountAddress: EthereumAddress,
-  key: string
-) => async (dispatch: AppDispatch, getState: AppGetState) => {
+export const removeRecordByKey = (key: string) => async (
+  dispatch: AppDispatch,
+  getState: AppGetState
+) => {
   const {
     ensRegistration: { registrations, currentRegistrationName },
+    settings: { accountAddress },
   } = getState();
 
   const lcAccountAddress = accountAddress.toLowerCase();
@@ -225,17 +373,18 @@ export const removeRecordByKey = (
 };
 
 export const saveCommitRegistrationParameters = (
-  accountAddress: EthereumAddress,
-  registrationParameters: RegistrationParameters
+  registrationParameters:
+    | RegistrationParameters
+    | TransactionRegistrationParameters
 ) => async (dispatch: AppDispatch, getState: AppGetState) => {
   const {
     ensRegistration: { registrations, currentRegistrationName },
+    settings: { accountAddress },
   } = getState();
-
   const lcAccountAddress = accountAddress.toLowerCase();
   const accountRegistrations = registrations?.[lcAccountAddress] || {};
   const registration = accountRegistrations[currentRegistrationName] || {};
-  const updatedEnsRegistrationManagerForAccount = {
+  const updatedEnsRegistrationManager = {
     registrations: {
       ...registrations,
       [lcAccountAddress]: {
@@ -248,9 +397,92 @@ export const saveCommitRegistrationParameters = (
     },
   };
 
+  saveLocalENSRegistrations(
+    updatedEnsRegistrationManager.registrations,
+    accountAddress,
+    NetworkTypes.mainnet
+  );
+
   dispatch({
-    payload: updatedEnsRegistrationManagerForAccount,
+    payload: updatedEnsRegistrationManager,
     type: ENS_SAVE_COMMIT_REGISTRATION_PARAMETERS,
+  });
+};
+
+export const clearCurrentRegistrationName = () => async (
+  dispatch: AppDispatch
+) => {
+  dispatch({
+    type: ENS_CLEAR_CURRENT_REGISTRATION_NAME,
+  });
+};
+
+export const updateTransactionRegistrationParameters = (
+  registrationParameters: TransactionRegistrationParameters
+) => async (dispatch: AppDispatch, getState: AppGetState) => {
+  const {
+    ensRegistration: { registrations, currentRegistrationName },
+    settings: { accountAddress },
+  } = getState();
+
+  const lcAccountAddress = accountAddress.toLowerCase();
+  const accountRegistrations = registrations?.[lcAccountAddress] || {};
+  const registration = accountRegistrations[currentRegistrationName] || {};
+  const updatedEnsRegistrationManager = {
+    registrations: {
+      ...registrations,
+      [lcAccountAddress]: {
+        ...accountRegistrations,
+        [currentRegistrationName]: {
+          ...registration,
+          ...registrationParameters,
+        },
+      },
+    },
+  };
+
+  saveLocalENSRegistrations(
+    updatedEnsRegistrationManager.registrations,
+    accountAddress,
+    NetworkTypes.mainnet
+  );
+
+  dispatch({
+    payload: updatedEnsRegistrationManager,
+    type: ENS_UPDATE_REGISTRATION_PARAMETERS,
+  });
+};
+
+export const removeRegistrationByName = (name: string) => async (
+  dispatch: AppDispatch,
+  getState: AppGetState
+) => {
+  const {
+    ensRegistration: { registrations },
+    settings: { accountAddress },
+  } = getState();
+
+  const lcAccountAddress = accountAddress.toLowerCase();
+  const accountRegistrations = registrations?.[lcAccountAddress] || {};
+  delete accountRegistrations?.[name];
+  const updatedEnsRegistrationManager = {
+    registrations: {
+      ...registrations,
+      [lcAccountAddress]: {
+        ...accountRegistrations,
+      },
+    },
+  };
+
+  saveLocalENSRegistrations(
+    updatedEnsRegistrationManager.registrations,
+    accountAddress,
+    NetworkTypes.mainnet
+  );
+
+  dispatch({
+    payload: updatedEnsRegistrationManager,
+    type: ENS_UPDATE_REGISTRATION_PARAMETERS,
   });
 };
 
@@ -266,6 +498,16 @@ export default (
 ): ENSRegistrationState => {
   switch (action.type) {
     case ENS_START_REGISTRATION:
+      return {
+        ...state,
+        ...action.payload,
+      };
+    case ENS_REGISTRATION_SET_CHANGED_RECORDS:
+      return {
+        ...state,
+        ...action.payload,
+      };
+    case ENS_REGISTRATION_SET_INITIAL_RECORDS:
       return {
         ...state,
         ...action.payload,
@@ -290,7 +532,32 @@ export default (
         ...state,
         ...action.payload,
       };
+    case ENS_REMOVE_EXPIRED_REGISTRATIONS:
+      return {
+        ...state,
+        ...action.payload,
+      };
     case ENS_SAVE_COMMIT_REGISTRATION_PARAMETERS:
+      return {
+        ...state,
+        ...action.payload,
+      };
+    case ENS_UPDATE_REGISTRATION_PARAMETERS:
+      return {
+        ...state,
+        ...action.payload,
+      };
+    case ENS_REMOVE_REGISTRATION_BY_NAME:
+      return {
+        ...state,
+        ...action.payload,
+      };
+    case ENS_CLEAR_CURRENT_REGISTRATION_NAME:
+      return {
+        ...state,
+        currentRegistrationName: '',
+      };
+    case ENS_LOAD_STATE:
       return {
         ...state,
         ...action.payload,
