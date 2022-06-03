@@ -27,33 +27,30 @@ const docsTypeHierarchy = {
   },
 } as const;
 
-export const typeHierarchy = Object.assign(
-  {},
-  appTypeHierarchy,
-  docsTypeHierarchy
-);
-
-const mapLetterSpacingValues = <T extends object>(
-  objectForMap: T
-): { [P in keyof T]: number } => {
-  return Object.entries(objectForMap).reduce((a, [key, { letterSpacing }]) => {
-    Object.assign(a, { [key]: letterSpacing });
-    return a;
-  }, {} as { [P in keyof T]: number });
+export const typeHierarchy = {
+  ...appTypeHierarchy,
+  heading: { ...docsTypeHierarchy.heading, ...appTypeHierarchy.heading },
 };
 
-const mapTextSizeValues = <T extends object>(
-  objectForMap: T
-): { [P in keyof T]: string } => {
+const mapTextSizeValues = <T extends object>(objectForMap: T) => {
   return Object.entries(objectForMap).reduce(
-    (a, [key, { fontSize, lineHeight }]) => {
-      Object.assign(a, { [key]: createTextSize({ fontSize, lineHeight }) });
-      return a;
+    (acc, [key, { fontSize, lineHeight }]) => {
+      acc[key as keyof T] = createTextSize({ fontSize, lineHeight });
+      return acc;
     },
-    {} as { [P in keyof T]: string }
+    {} as { [k in keyof T]: string }
   );
 };
 
+const mapLetterSpacingValues = <T extends object>(objectForMap: T) => {
+  return Object.entries(objectForMap).reduce(
+    (acc, [key, { letterSpacing }]) => {
+      acc[key as keyof T] = letterSpacing;
+      return acc;
+    },
+    {} as { [k in keyof T]: number }
+  );
+};
 export const sizes = {
   heading: mapTextSizeValues(typeHierarchy.heading),
   text: mapTextSizeValues(typeHierarchy.text),

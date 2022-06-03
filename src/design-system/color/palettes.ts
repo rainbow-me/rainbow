@@ -224,36 +224,35 @@ export type Palette = {
 
 function createPalette(colorMode: ColorMode): Palette {
   return {
-    backgroundColors: Object.entries(backgroundColors).reduce(
-      (acc, [key, value]) => {
-        if ('color' in value) {
-          Object.assign(acc, { [key]: value });
-          return acc;
-        }
-
-        if (colorMode === 'darkTinted') {
-          Object.assign(acc, { [key]: value.darkTinted ?? value.dark });
-          return acc;
-        }
-
-        if (colorMode === 'lightTinted') {
-          Object.assign(acc, { [key]: value.darkTinted ?? value.dark });
-          return acc;
-        }
-
-        Object.assign(acc, { [key]: value[colorMode] });
+    backgroundColors: Object.entries(backgroundColors).reduce<
+      Record<BackgroundColor, BackgroundColorValue>
+    >((acc, [key, value]) => {
+      if ('color' in value) {
+        acc[key as BackgroundColor] = value;
         return acc;
-      },
-      {} as Record<BackgroundColor, BackgroundColorValue>
-    ),
-    foregroundColors: Object.entries(backgroundColors).reduce(
-      (acc, [key, value]) => {
-        Object.assign(acc, { [key]: getValueForColorMode(value, colorMode) });
+      }
 
+      if (colorMode === 'darkTinted') {
+        acc[key as BackgroundColor] = value.darkTinted ?? value.dark;
         return acc;
-      },
-      {} as Record<ForegroundColor, string>
-    ),
+      }
+
+      if (colorMode === 'lightTinted') {
+        acc[key as BackgroundColor] = value.darkTinted ?? value.dark;
+        return acc;
+      }
+
+      acc[key as BackgroundColor] = value[colorMode];
+      return acc;
+    }, {} as Record<BackgroundColor, BackgroundColorValue>),
+
+    foregroundColors: Object.entries(foregroundColors).reduce<
+      Record<ForegroundColor, string>
+    >((acc, [key, value]) => {
+      acc[key as ForegroundColor] = getValueForColorMode(value, colorMode);
+
+      return acc;
+    }, {} as Record<ForegroundColor, string>),
   };
 }
 

@@ -1107,13 +1107,16 @@ export const addressAssetsReceived = (
   );
 
   if (removed) {
-    updatedAssets = Object.entries(newAssets).reduce((acc, [key, asset]) => {
-      Object.assign(acc, {
-        [key]: {
-          ...asset,
-          quantity: 0,
-        },
-      });
+    updatedAssets = Object.entries(newAssets).reduce<{
+      [id: string]: {
+        asset: ZerionAsset;
+        quantity: number;
+      };
+    }>((acc, [key, asset]) => {
+      acc[key] = {
+        ...asset,
+        quantity: 0,
+      };
       return acc;
     }, {});
   }
