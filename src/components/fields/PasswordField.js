@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import { useTheme } from '../../context/ThemeContext';
+import { useTheme } from '../../theme/ThemeContext';
 import { Icon } from '../icons';
 import { Input } from '../inputs';
 import { cloudBackupPasswordMinLength } from '@rainbow-me/handlers/cloudBackup';

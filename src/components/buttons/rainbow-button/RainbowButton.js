@@ -2,7 +2,7 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import lang from 'i18n-js';
 import React from 'react';
 import AddCashIconSource from '../../../assets/addCashIcon.png';
-import { useTheme } from '../../../context/ThemeContext';
+import { useTheme } from '../../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../../animations';
 import { RowWithMargins } from '../../layout';
 import { Text } from '../../text';
