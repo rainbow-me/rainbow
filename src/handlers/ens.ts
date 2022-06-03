@@ -24,6 +24,7 @@ import {
 } from '../apollo/queries';
 import { ensProfileImagesQueryKey } from '../hooks/useENSProfileImages';
 import { ENSActionParameters } from '../raps/common';
+import { getProfileImages } from './localstorage/ens';
 import { estimateGasWithPadding, getProviderForNetwork } from './web3';
 import {
   ENSRegistrationRecords,
@@ -328,8 +329,12 @@ export const fetchImages = async (ensName: string) => {
       ...(avatarUrl ? [{ uri: avatarUrl }] : []),
       ...(coverUrl ? [{ uri: coverUrl }] : []),
     ]);
-    // eslint-disable-next-line no-empty
-  } catch (err) {}
+  } catch (err) {
+    // Fallback to storage images
+    const images = await getProfileImages(ensName);
+    avatarUrl = images.avatarUrl;
+    coverUrl = images.coverUrl;
+  }
 
   return {
     avatarUrl,
