@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { requireNativeComponent, StyleSheet } from 'react-native';
-import { useTheme } from '../../context/ThemeContext';
 import isRainbowTextAvailable from '../../helpers/isRainbowTextAvailable';
 import { formatSavingsAmount, isSymbolStablecoin } from '../../helpers/savings';
+import { useTheme } from '../../theme/ThemeContext';
 import AndroidText from './AndroidAnimatedNumbers';
 import { fonts } from '@rainbow-me/styles';
 

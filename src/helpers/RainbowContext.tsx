@@ -11,7 +11,7 @@ import DevButton from '../components/dev-buttons/DevButton';
 import Emoji from '../components/text/Emoji';
 import { showReloadButton, showSwitchModeButton } from '../config/debug';
 import { defaultConfig } from '../config/experimental';
-import { useTheme } from '../context/ThemeContext';
+import { useTheme } from '../theme/ThemeContext';
 import { STORAGE_IDS } from '@rainbow-me/model/mmkv';
 
 export const RainbowContext = createContext({});
