@@ -1380,7 +1380,7 @@ export const assetPricesReceived = (
     if (isEmpty(newAssetPrices)) return;
     const parsedAssets = Object.entries(newAssetPrices).reduce(
       (acc, [key, asset]) => {
-        Object.assign(acc, { [key]: parseAsset(asset) });
+        acc[key] = parseAsset(asset) as ParsedAddressAsset;
         return acc;
       },
       {} as {
