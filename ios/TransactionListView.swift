@@ -141,7 +141,10 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   @objc var accountImage: NSString? = nil {
    didSet {
     if (accountImage != nil) {
-      let url = URL.init(fileURLWithPath: accountImage!.expandingTildeInPath)
+      var url: URL = URL.init(string: accountImage! as String)!
+      if !UIApplication.shared.canOpenURL(url) {
+        url = URL.init(fileURLWithPath: accountImage!.expandingTildeInPath)
+      }
       if let imageData:NSData = NSData(contentsOf: url) {
         let image = UIImage(data: imageData as Data)
         header.accountImage.alpha = 1.0

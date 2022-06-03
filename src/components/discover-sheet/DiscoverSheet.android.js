@@ -125,7 +125,7 @@ const DiscoverSheet = (_, forwardedRef) => {
           scrollsToTopOnTapStatusBar={isFocused}
           snapPoints={snapPoints}
           style={{
-            borderRadius: 20,
+            borderRadius: 30,
             overflow: 'hidden',
           }}
         >
