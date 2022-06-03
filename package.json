@@ -337,6 +337,7 @@
     "typescript-coverage-report": "0.6.1"
   },
   "resolutions": {
+    "**/async": "2.6.4",
     "**/node-fetch": "2.6.7",
     "**/web3": "1.6.1",
     "**/bn.js": "5.2.1",

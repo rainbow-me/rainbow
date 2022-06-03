@@ -4,7 +4,7 @@ import RadialGradientBackground, {
   RadialGradientBackgroundProps,
 } from '../../RadialGradientBackground';
 import { SearchInputProps } from './SearchInput';
-import { useTheme } from '@rainbow-me/context';
+import { useTheme } from '@rainbow-me/theme';
 
 type SearchInputGradientBackgroundProps = {
   variant: SearchInputProps['variant'];
