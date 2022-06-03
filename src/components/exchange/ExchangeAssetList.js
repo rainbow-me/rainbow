@@ -63,7 +63,6 @@ const HeaderTitleWrapper = styled.View({});
 
 const contentContainerStyle = { paddingBottom: 9.5 };
 const keyExtractor = ({ uniqueId }) => `ExchangeAssetList-${uniqueId}`;
-const scrollIndicatorInsets = { bottom: 24 };
 const getItemLayout = ({ showBalance }, index) => {
   const height = showBalance ? CoinRowHeight + 1 : CoinRowHeight;
   return {
@@ -102,7 +101,6 @@ const ExchangeAssetSectionList = styled(SectionList).attrs({
   keyExtractor,
   maxToRenderPerBatch: 50,
   scrollEventThrottle: 32,
-  scrollIndicatorInsets,
   windowSize: 41,
 })({
   height: '100%',
@@ -116,6 +114,7 @@ const ExchangeAssetList = (
     items,
     onLayout,
     query,
+    scrollIndicatorInsets = { bottom: 24 },
     testID,
   },
   ref
@@ -199,12 +198,14 @@ const ExchangeAssetList = (
     ({ item }) => {
       return item.ens ? (
         <ContactRow
-          accountType="contact"
+          accountType="suggestions"
           address={item.address}
           color={item.color}
+          image={item.image}
           nickname={item.nickname}
           onPress={itemProps.onPress}
           showcaseItem={item}
+          symmetricalMargins
           testID={testID}
         />
       ) : (
@@ -249,6 +250,7 @@ const ExchangeAssetList = (
         ref={sectionListRef}
         renderItem={renderItemCallback}
         renderSectionHeader={ExchangeAssetSectionListHeader}
+        scrollIndicatorInsets={scrollIndicatorInsets}
         scrollsToTop={isFocused}
         sections={sections}
       />

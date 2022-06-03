@@ -1,6 +1,5 @@
 // @ts-expect-error ts-migrate(2305) FIXME: Could not find a declaration file for module 'pako... Remove this comment to see the full error message
 import pako from 'pako';
-// @ts-expect-error ts-migrate(2305) FIXME: Could not find a declaration file for module 'qs'.
 import qs from 'qs';
 import branch from 'react-native-branch';
 // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
@@ -72,7 +71,7 @@ export const branchListener = (handleOpenLinkingURL: (url: any) => void) =>
 const decodeBranchUrl = (source: string) => {
   const query = source.split('?')[1];
   const queryParam = qs.parse(query)['_branch_referrer'];
-  const base64Url = decodeURIComponent(queryParam);
+  const base64Url = decodeURIComponent(queryParam as string);
   const ascii = Buffer.from(base64Url, 'base64');
 
   const originalUniversalUrl = pako.inflate(ascii, { to: 'string' });

@@ -44,7 +44,6 @@ describe('Deeplinks spec', () => {
 
   it('Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
     await Helpers.disableSynchronization();
-    await Helpers.checkIfVisible('wallet-info-input');
     await Helpers.waitAndTap('wallet-info-submit-button');
     if (device.getPlatform() === 'android') {
       await Helpers.checkIfVisible('pin-authentication-screen');
@@ -55,8 +54,6 @@ describe('Deeplinks spec', () => {
     }
     await Helpers.checkIfVisible('wallet-screen', 40000);
     await Helpers.enableSynchronization();
-    // Waiting 10s for MATIC assets to show up
-    await Helpers.delay(20000);
   });
 
   it('should be able to handle ethereum payments urls for ETH (mainnet)', async () => {

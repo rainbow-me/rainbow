@@ -27,16 +27,31 @@ export default function usePersistentDominantColorFromImage(
     (url || '') as string,
     storage
   );
+
   const [state, setState] = useState<State>(
-    dominantColor ? State.loaded : State.init
+    dominantColor ? State.loaded : url ? State.loading : State.init
   );
   useEffect(() => {
-    if (state === State.init && url) {
+    if (!dominantColor) {
+      if (url) {
+        setState(State.loading);
+      } else {
+        setState(State.init);
+      }
+    }
+  }, [dominantColor, url]);
+
+  useEffect(() => {
+    if ((state === State.loading || state === State.init) && url) {
       setState(State.loading);
-      getDominantColorFromImage(url, colorToMeasureAgainst).then(color =>
-        // @ts-ignore
-        setPersistentDominantColor(color)
-      );
+      getDominantColorFromImage(url, colorToMeasureAgainst)
+        .then(color => {
+          // @ts-ignore
+          setPersistentDominantColor(color);
+        })
+        .finally(() => {
+          setState(State.loaded);
+        });
     }
   }, [colorToMeasureAgainst, setPersistentDominantColor, state, url]);
 
