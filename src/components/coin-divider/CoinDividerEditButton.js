@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { LayoutAnimation } from 'react-native';
-import { useTheme } from '../../context/ThemeContext';
+import { useTheme } from '../../theme/ThemeContext';
 import { magicMemo } from '../../utils';
 import { ButtonPressAnimation, OpacityToggler } from '../animations';
 import { Row } from '../layout';
