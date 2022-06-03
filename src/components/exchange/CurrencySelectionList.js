@@ -39,6 +39,7 @@ const CurrencySelectionList = (
     listItems,
     loading,
     query,
+    scrollIndicatorInsets,
     showList,
     testID,
   },
@@ -75,6 +76,7 @@ const CurrencySelectionList = (
               keyboardDismissMode={keyboardDismissMode}
               query={query}
               ref={ref}
+              scrollIndicatorInsets={scrollIndicatorInsets}
               testID={testID}
             />
           )}
@@ -89,4 +91,5 @@ export default magicMemo(forwardRef(CurrencySelectionList), [
   'listItems',
   'loading',
   'showList',
+  'query',
 ]);
