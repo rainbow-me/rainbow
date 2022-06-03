@@ -17,6 +17,8 @@ import {
   SendHeader,
 } from '../components/send';
 import { SheetActionButton } from '../components/sheet';
+import { prefetchENSProfileImages } from '../hooks/useENSProfileImages';
+import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import { AssetTypes } from '@rainbow-me/entities';
 import { isL2Asset, isNativeAsset } from '@rainbow-me/handlers/assets';
 import { debouncedFetchSuggestions } from '@rainbow-me/handlers/ens';
@@ -31,7 +33,10 @@ import {
 } from '@rainbow-me/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import Network from '@rainbow-me/helpers/networkTypes';
-import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
+import {
+  checkIsValidAddressOrDomain,
+  isENSAddressFormat,
+} from '@rainbow-me/helpers/validators';
 import {
   useAccountSettings,
   useCoinListEditOptions,
@@ -110,6 +115,7 @@ export default function SendSheet(props) {
     updateTxFee,
   } = useGas();
   const recipientFieldRef = useRef();
+  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   const { contacts, onRemoveContact, filteredContacts } = useContacts();
   const { userAccounts, watchedAccounts } = useUserAccounts();
@@ -137,6 +143,7 @@ export default function SendSheet(props) {
   const recipientOverride = params?.address;
   const nativeAmountOverride = params?.nativeAmount;
   const [recipient, setRecipient] = useState('');
+  const [nickname, setNickname] = useState('');
   const [selected, setSelected] = useState({});
   const { maxInputBalance, updateMaxInputBalance } = useMaxInputBalance();
 
@@ -155,9 +162,13 @@ export default function SendSheet(props) {
   const showAssetForm = isValidAddress && !isEmpty(selected);
 
   const isNft = selected?.type === AssetTypes.nft;
+
+  const address = selected?.mainnet_address || selected?.address;
+  const type = selected?.mainnet_address ? AssetTypes.token : selected?.type;
   let colorForAsset = useColorForAsset(
     {
-      address: selected?.mainnet_address || selected.address,
+      address,
+      type,
     },
     null,
     false,
@@ -678,6 +689,7 @@ export default function SendSheet(props) {
       });
       return;
     }
+
     navigate(Routes.SEND_CONFIRMATION_SHEET, {
       amountDetails: amountDetails,
       asset: selected,
@@ -708,10 +720,17 @@ export default function SendSheet(props) {
     sendUpdateSelected({});
   }, [sendUpdateSelected]);
 
-  const onChangeInput = useCallback(event => {
-    setCurrentInput(event);
-    setRecipient(event);
-  }, []);
+  const onChangeInput = useCallback(
+    event => {
+      setCurrentInput(event);
+      setRecipient(event);
+      setNickname(event);
+      if (profilesEnabled && isENSAddressFormat(event)) {
+        prefetchENSProfileImages(event);
+      }
+    },
+    [profilesEnabled]
+  );
 
   useEffect(() => {
     updateDefaultGasLimit();
@@ -736,7 +755,12 @@ export default function SendSheet(props) {
   const [ensSuggestions, setEnsSuggestions] = useState([]);
   useEffect(() => {
     if (network === Network.mainnet && !recipientOverride) {
-      debouncedFetchSuggestions(recipient, setEnsSuggestions);
+      debouncedFetchSuggestions(
+        recipient,
+        setEnsSuggestions,
+        undefined,
+        profilesEnabled
+      );
     } else {
       setEnsSuggestions([]);
     }
@@ -746,6 +770,7 @@ export default function SendSheet(props) {
     recipientOverride,
     setEnsSuggestions,
     watchedAccounts,
+    profilesEnabled,
   ]);
 
   useEffect(() => {
@@ -801,14 +826,21 @@ export default function SendSheet(props) {
     network,
   ]);
 
+  const sendContactListDataKey = useMemo(
+    () => `${ensSuggestions?.[0]?.address || '_'}`,
+    [ensSuggestions]
+  );
+
   return (
     <Container>
       {ios && <StatusBar barStyle="light-content" />}
       <SheetContainer>
         <SendHeader
           contacts={contacts}
+          fromProfile={params?.fromProfile}
           hideDivider={showAssetForm}
           isValidAddress={isValidAddress}
+          nickname={nickname}
           onChangeAddressInput={onChangeInput}
           onPressPaste={setRecipient}
           recipient={recipient}
@@ -823,7 +855,11 @@ export default function SendSheet(props) {
             contacts={filteredContacts}
             currentInput={currentInput}
             ensSuggestions={ensSuggestions}
-            onPressContact={setRecipient}
+            key={sendContactListDataKey}
+            onPressContact={(recipient, nickname) => {
+              setRecipient(recipient);
+              setNickname(nickname);
+            }}
             removeContact={onRemoveContact}
             userAccounts={userAccounts}
             watchedAccounts={watchedAccounts}
