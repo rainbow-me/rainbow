@@ -146,7 +146,7 @@ const Tag = ({
         }
       }
     );
-  }, [hideOpenSeaAction, slug, originalValue, title]);
+  }, [hideOpenSeaAction, isURL, slug, title, originalValue]);
 
   const menuConfig = useMemo(() => {
     const menuItems = [];
@@ -163,7 +163,7 @@ const Tag = ({
       menuItems,
       menuTitle: '',
     };
-  }, [hideOpenSeaAction, originalValue]);
+  }, [hideOpenSeaAction, isURL]);
 
   const textWithUpdatedCase = lowercase ? text : upperFirst(text);
 
