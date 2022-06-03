@@ -15,12 +15,15 @@ import {
   ScanHeaderButton,
 } from '../components/header';
 import { Page, RowWithMargins } from '../components/layout';
+import { prefetchENSProfile } from '../hooks/useENSProfile';
+import { prefetchENSProfileImages } from '../hooks/useENSProfileImages';
 import useExperimentalFlag, {
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import {
   useAccountEmptyState,
+  useAccountProfile,
   useAccountSettings,
   useCoinListEdited,
   useInitializeDiscoverData,
@@ -31,7 +34,6 @@ import {
   usePortfolios,
   useTrackENSProfile,
   useUserAccounts,
-  useWalletENSAvatar,
   useWallets,
   useWalletSectionsData,
 } from '@rainbow-me/hooks';
@@ -77,7 +79,8 @@ export default function WalletScreen() {
   const loadGlobalLateData = useLoadGlobalLateData();
   const initializeDiscoverData = useInitializeDiscoverData();
   const initializeENSIntroData = useInitializeENSIntroData();
-  const { updateWalletENSAvatars } = useWalletENSAvatar();
+  const { accountENS } = useAccountProfile();
+
   const walletReady = useSelector(
     ({ appState: { walletReady } }) => walletReady
   );
@@ -185,13 +188,12 @@ export default function WalletScreen() {
   ]);
 
   useEffect(() => {
-    initializeENSIntroData();
-  }, [initializeENSIntroData]);
-
-  useEffect(() => {
-    if (walletReady) updateWalletENSAvatars();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [walletReady]);
+    if (profilesEnabled && accountENS) {
+      prefetchENSProfileImages({ name: accountENS });
+      prefetchENSProfile({ name: accountENS });
+      initializeENSIntroData();
+    }
+  }, [initializeENSIntroData, profilesEnabled, accountENS]);
 
   // Show the exchange fab only for supported networks
   // (mainnet & rinkeby)
