@@ -1,9 +1,14 @@
-import { EthereumAddress } from '@rainbow-me/entities';
+import { AssetType, EthereumAddress } from '@rainbow-me/entities';
 
 export default function getUrlForTrustIconFallback(
-  address: EthereumAddress
+  address: EthereumAddress,
+  type: AssetType
 ): string | null {
   if (!address) return null;
   const lowercasedAddress = address.toLowerCase();
-  return `https://raw.githubusercontent.com/rainbow-me/assets/lowercase/blockchains/ethereum/assets/${lowercasedAddress}/logo.png`;
+  let network = 'ethereum';
+  if (type && type !== AssetType.token) {
+    network = type;
+  }
+  return `https://raw.githubusercontent.com/rainbow-me/assets/lowercase/blockchains/${network}/assets/${lowercasedAddress}/logo.png`;
 }

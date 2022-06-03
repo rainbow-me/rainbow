@@ -29,7 +29,7 @@ export const parsePoaps = data => {
         name: 'POAP',
         short_description: 'The Proof of Attendance Protocol',
       },
-      description: event.description,
+      description: event?.description,
       external_link: event.event_url,
       familyImage:
         'https://lh3.googleusercontent.com/FwLriCvKAMBBFHMxcjqvxjTlmROcDIabIFKRp87NS3u_QfSLxcNThgAzOJSbphgQqnyZ_v2fNgMZQkdCYHUliJwH-Q=s60',
