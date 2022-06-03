@@ -37,6 +37,5 @@ export async function getNFTByTokenId({
   } catch (error) {
     logger.sentry(`Error fetching simplehash NFT: ${error}`);
     captureException(error);
-    throw error;
   }
 }
