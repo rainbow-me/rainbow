@@ -919,26 +919,6 @@ export const getTransactionTypeForRecords = (
   }
 };
 
-export const shouldUseMulticallTransaction = (
-  registrationRecords: ENSRegistrationRecords
-) => {
-  const {
-    coinAddress,
-    contentHash,
-    ensAssociatedAddress,
-    text,
-  } = registrationRecords;
-  if (
-    !coinAddress?.length &&
-    !contentHash &&
-    !ensAssociatedAddress &&
-    text?.length === 1
-  ) {
-    return false;
-  }
-  return true;
-};
-
 export const fetchReverseRecord = async (address: string) => {
   try {
     const provider = await getProviderForNetwork();
