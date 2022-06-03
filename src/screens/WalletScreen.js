@@ -15,15 +15,12 @@ import {
   ScanHeaderButton,
 } from '../components/header';
 import { Page, RowWithMargins } from '../components/layout';
-import { prefetchENSProfile } from '../hooks/useENSProfile';
-import { prefetchENSProfileImages } from '../hooks/useENSProfileImages';
 import useExperimentalFlag, {
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import {
   useAccountEmptyState,
-  useAccountProfile,
   useAccountSettings,
   useCoinListEdited,
   useInitializeDiscoverData,
@@ -79,7 +76,6 @@ export default function WalletScreen() {
   const loadGlobalLateData = useLoadGlobalLateData();
   const initializeDiscoverData = useInitializeDiscoverData();
   const initializeENSIntroData = useInitializeENSIntroData();
-  const { accountENS } = useAccountProfile();
 
   const walletReady = useSelector(
     ({ appState: { walletReady } }) => walletReady
@@ -188,12 +184,10 @@ export default function WalletScreen() {
   ]);
 
   useEffect(() => {
-    if (profilesEnabled && accountENS) {
-      prefetchENSProfileImages({ name: accountENS });
-      prefetchENSProfile({ name: accountENS });
+    if (profilesEnabled) {
       initializeENSIntroData();
     }
-  }, [initializeENSIntroData, profilesEnabled, accountENS]);
+  }, [initializeENSIntroData, profilesEnabled]);
 
   // Show the exchange fab only for supported networks
   // (mainnet & rinkeby)
