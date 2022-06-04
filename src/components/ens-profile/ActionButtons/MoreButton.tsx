@@ -30,20 +30,27 @@ export default function MoreButton({
   address?: string;
   ensName?: string;
 }) {
-  const { switchToWalletWithAddress, wallets } = useWallets();
+  const { switchToWalletWithAddress, wallets, selectedWallet } = useWallets();
   const { navigate } = useNavigation();
   const { setClipboard } = useClipboard();
   const { contacts, onRemoveContact } = useContacts();
 
-  const existingWallet = useMemo(() => {
+  const isWatchedOrOwnedWallet = useMemo(() => {
     return Object.keys(wallets).find(key => {
-      const filteredWallet = wallets[key].addresses.find(
-        (account: { address: string }) =>
-          account.address.toLowerCase() === address?.toLowerCase()
+      return wallets[key].addresses.some(
+        (wallet: { address: string }) =>
+          wallet.address.toLowerCase() === address?.toLowerCase()
       );
-      return filteredWallet ? true : false;
     });
   }, [address, wallets]);
+
+  const isSelectedWallet = useMemo(() => {
+    const visibleWallet = selectedWallet.addresses.find(
+      (wallet: { visible: boolean }) => wallet.visible === true
+    );
+
+    return visibleWallet.address.toLowerCase() === address?.toLowerCase();
+  }, [selectedWallet.addresses, address]);
 
   const contact = useMemo(
     () => (address ? contacts[address.toLowerCase()] : undefined),
@@ -57,16 +64,14 @@ export default function MoreButton({
 
   const menuItems = useMemo(() => {
     return [
-      existingWallet
-        ? {
-            actionKey: ACTIONS.OPEN_WALLET,
-            actionTitle: lang.t('profiles.details.open_wallet'),
-            icon: {
-              iconType: 'SYSTEM',
-              iconValue: 'person.text.rectangle',
-            },
-          }
-        : null,
+      isWatchedOrOwnedWallet && {
+        actionKey: ACTIONS.OPEN_WALLET,
+        actionTitle: lang.t('profiles.details.open_wallet'),
+        icon: {
+          iconType: 'SYSTEM',
+          iconValue: 'person.text.rectangle',
+        },
+      },
       {
         actionKey: ACTIONS.COPY_ADDRESS,
         actionTitle: lang.t('profiles.details.copy_address'),
@@ -110,12 +115,14 @@ export default function MoreButton({
         },
       },
     ] as MenuActionConfig[];
-  }, [contact, existingWallet, formattedAddress]);
+  }, [isWatchedOrOwnedWallet, formattedAddress, contact]);
 
   const handlePressMenuItem = useCallback(
     async ({ nativeEvent: { actionKey } }) => {
       if (actionKey === ACTIONS.OPEN_WALLET) {
-        switchToWalletWithAddress(address);
+        if (!isSelectedWallet) {
+          switchToWalletWithAddress(address);
+        }
         navigate(Routes.WALLET_SCREEN);
       }
       if (actionKey === ACTIONS.COPY_ADDRESS) {
@@ -144,23 +151,14 @@ export default function MoreButton({
       if (actionKey === ACTIONS.SHARE) {
         const walletDisplay = ensName || address;
         const shareLink = `${RAINBOW_PROFILES_BASE_URL}/${walletDisplay}`;
-
-        if (android) {
-          // Android does not support the `url` share sheet option
-          Share.share({
-            message: shareLink,
-          });
-        } else {
-          Share.share({
-            url: shareLink,
-          });
-        }
+        Share.share(android ? { message: shareLink } : { url: shareLink });
       }
     },
     [
       address,
       contact,
       ensName,
+      isSelectedWallet,
       navigate,
       onRemoveContact,
       setClipboard,
@@ -178,7 +176,10 @@ export default function MoreButton({
         options: actionSheetOptions,
       },
       async (buttonIndex: number) => {
-        const actionKey = menuItems[buttonIndex]?.actionKey;
+        // android: filter out undefined "Open Wallet" when not available
+        // otherwise it messes up the action order index
+        const items = menuItems.filter(item => item);
+        const actionKey = items[buttonIndex]?.actionKey;
         handlePressMenuItem({ nativeEvent: { actionKey } });
       }
     );
