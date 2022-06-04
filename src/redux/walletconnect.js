@@ -643,11 +643,12 @@ export const walletConnectDisconnectAllByDappUrl = (
   );
   try {
     const peerIds = Object.values(
-      Object.fromEntries(
-        Object.entries(matchingWalletConnectors).map(([, walletConnector]) => [
-          walletConnector.peerId,
-          walletConnector,
-        ])
+      Object.entries(matchingWalletConnectors).reduce(
+        (acc, [, walletConnector]) => {
+          acc[walletConnector.peerId] = walletConnector;
+          return acc;
+        },
+        {}
       )
     );
     await removeWalletConnectSessions(peerIds);

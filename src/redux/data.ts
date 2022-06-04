@@ -9,7 +9,6 @@ import {
   includes,
   isEmpty,
   isNil,
-  keyBy,
   keys,
   map,
   partition,
@@ -1234,60 +1233,63 @@ const subscribeToMissingPrices = (addresses: string[]) => (
             const historicalPriceResults = await Promise.all(
               historicalPriceCalls
             );
-            const mappedHistoricalData = keyBy(historicalPriceResults, 'id');
             const { chartsEthUSDDay } = getState().charts;
             const ethereumPriceOneDayAgo = chartsEthUSDDay?.[0]?.[1];
 
-            const missingHistoricalPrices = Object.fromEntries(
-              Object.entries(mappedHistoricalData).map(([key, value]) => [
-                key,
-                multiply(ethereumPriceOneDayAgo, value?.derivedETH!),
-              ])
+            const missingHistoricalPrices = historicalPriceResults.reduce<
+              Record<string, string>
+            >((acc, value) => {
+              if (!value?.id) return acc;
+              acc[value.id] = multiply(
+                ethereumPriceOneDayAgo,
+                value?.derivedETH!
+              );
+              return acc;
+            }, {});
+
+            const mappedPricingData = data.tokens.reduce<
+              Record<string, UniswapPricesQueryData['tokens'][0]>
+            >((acc, value) => {
+              if (!value?.id) return acc;
+              acc[value.id] = value;
+              return acc;
+            }, {});
+
+            const missingPrices = data.tokens.reduce<Record<string, string>>(
+              (acc, token) => {
+                if (!token?.id) return acc;
+                acc[token.id] = multiply(nativePriceOfEth, token.derivedETH);
+                return acc;
+              },
+              {}
             );
 
-            const mappedPricingData = keyBy(data.tokens, 'id');
-            const missingPrices = Object.fromEntries(
-              Object.entries(mappedPricingData).map(([key, token]) => [
-                key,
-                multiply(nativePriceOfEth, token.derivedETH),
-              ])
-            );
+            const missingPriceInfo = Object.entries(missingPrices).reduce<
+              Record<string, UniswapAssetPriceData>
+            >((acc, [key, currentPrice]) => {
+              const historicalPrice = get(missingHistoricalPrices, `[${key}]`);
+              const tokenAddress = mappedPricingData?.[key].id;
 
-            const missingPriceInfo = Object.fromEntries(
-              Object.entries(missingPrices).map(([key, currentPrice]) => {
-                const historicalPrice = get(
-                  missingHistoricalPrices,
-                  `[${key}]`
-                );
-                // mappedPricingData[key].id will be a `string`, assuming `key`
-                // is present, but `get` resolves to an incorrect type, so must
-                // be casted.
-                const tokenAddress: string = get(
-                  mappedPricingData,
-                  `[${key}].id`
-                ) as any;
-                const relativePriceChange = historicalPrice
-                  ? // @ts-expect-error TypeScript disallows string arithmetic,
-                    // even though it works correctly.
-                    ((currentPrice - historicalPrice) / currentPrice) * 100
-                  : 0;
-                return [
-                  key,
-                  {
-                    price: currentPrice,
-                    relativePriceChange,
-                    tokenAddress,
-                  },
-                ];
-              })
-            );
+              const relativePriceChange = historicalPrice
+                ? // @ts-expect-error TypeScript disallows string arithmetic,
+                  // even though it works correctly.
+                  ((currentPrice - historicalPrice) / currentPrice) * 100
+                : 0;
+              acc[key] = {
+                price: currentPrice,
+                relativePriceChange,
+                tokenAddress,
+              };
 
-            const tokenPricingInfo = Object.fromEntries(
-              Object.entries(missingPriceInfo).map(([_, value]) => [
-                value.tokenAddress,
-                value,
-              ])
-            );
+              return acc;
+            }, {});
+
+            const tokenPricingInfo = Object.entries(missingPriceInfo).reduce<
+              Record<string, UniswapAssetPriceData>
+            >((acc, [_, value]) => {
+              acc[value.tokenAddress] = value;
+              return acc;
+            }, {});
 
             saveAssetPricesFromUniswap(
               tokenPricingInfo,

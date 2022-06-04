@@ -6,6 +6,31 @@ import { ForegroundColor } from './../color/palettes';
 import { fontWeights } from './fontWeights';
 import { typeHierarchy } from './typeHierarchy';
 
+type CreateTextSize = {
+  fontSize: number;
+  lineHeight: number;
+  letterSpacing: number;
+  marginCorrection: {
+    ios: number;
+    android: number;
+  };
+};
+type TextSize = {
+  fontSize: number;
+  lineHeight?: number;
+  marginBottom: number;
+  marginTop: number;
+  letterSpacing: number;
+};
+type HeadingKey = keyof typeof typeHierarchy.heading;
+type TextKey = keyof typeof typeHierarchy.text;
+type HeadingSizes = {
+  [Key in HeadingKey]: TextSize;
+};
+type TextSizes = {
+  [Key in TextKey]: TextSize;
+};
+
 const capsize = (options: Parameters<typeof precomputeValues>[0]) => {
   const values = precomputeValues(options);
   const fontSize = parseFloat(values.fontSize);
@@ -81,15 +106,7 @@ const createTextSize = ({
   lineHeight: leading,
   letterSpacing,
   marginCorrection,
-}: {
-  fontSize: number;
-  lineHeight: number;
-  letterSpacing: number;
-  marginCorrection: {
-    ios: number;
-    android: number;
-  };
-}) => {
+}: CreateTextSize): TextSize => {
   const styles = {
     letterSpacing,
     ...capsize({
@@ -115,18 +132,21 @@ const createTextSize = ({
   };
 };
 
-export const headingSizes = Object.fromEntries(
-  Object.entries(typeHierarchy.heading).map(([key, value]) => [
-    key,
-    createTextSize(value),
-  ])
+export const headingSizes = Object.entries(typeHierarchy.heading).reduce(
+  (acc, [key, value]) => {
+    acc[key as HeadingKey] = createTextSize(value);
+    return acc;
+  },
+  {} as HeadingSizes
 );
 
-export const textSizes = Object.fromEntries(
-  Object.entries(typeHierarchy.text).map(([key, value]) => [
-    key,
-    createTextSize(value),
-  ])
+export const textSizes = Object.entries(typeHierarchy.text).reduce(
+  (acc, [key, value]) => {
+    acc[key as TextKey] = createTextSize(value);
+
+    return acc;
+  },
+  {} as TextSizes
 );
 
 function selectForegroundColors<

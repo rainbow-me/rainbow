@@ -51,17 +51,24 @@ export const getTestnetUniswapPairs = (
     network,
     {}
   );
-  const loweredPairs = Object.fromEntries(
-    Object.entries(pairs).map(([key, value]) => [
-      key.toLocaleLowerCase(),
-      value,
-    ])
+
+  const loweredPairs = Object.entries(pairs).reduce<Record<string, Asset>>(
+    (acc, [key, value]) => {
+      acc[key.toLocaleLowerCase()] = value;
+      return acc;
+    },
+    {}
   );
-  return Object.fromEntries(
-    Object.entries(loweredPairs).map(([key, value]) => [
-      key,
-      { ...value, address: value.address?.toLocaleLowerCase() ?? '' },
-    ])
+
+  return Object.entries(loweredPairs).reduce<Record<string, Asset>>(
+    (acc, [key, value]) => {
+      acc[key] = {
+        ...value,
+        address: value.address?.toLocaleLowerCase() ?? '',
+      };
+      return acc;
+    },
+    {}
   );
 };
 

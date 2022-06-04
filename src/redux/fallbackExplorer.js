@@ -323,22 +323,20 @@ export const fetchOnchainBalances = ({
 
   const isEmptyAssets = isEmpty(assets);
   if (isEmptyAssets && !isEmpty(accountAssetsData)) {
-    assets = Object.fromEntries(
-      Object.entries(accountAssetsData).map(([key, asset]) => [
-        key,
-        {
-          asset: {
-            asset_code: asset.address,
-            decimals: asset.decimals,
-            icon_url: asset.icon_url,
-            name: asset.name,
-            price: asset.price,
-            symbol: asset.symbol,
-          },
-          quantity: 0,
+    assets = Object.entries(accountAssetsData).reduce((acc, [key, asset]) => {
+      acc[key] = {
+        asset: {
+          asset_code: asset.address,
+          decimals: asset.decimals,
+          icon_url: asset.icon_url,
+          name: asset.name,
+          price: asset.price,
+          symbol: asset.symbol,
         },
-      ])
-    );
+        quantity: 0,
+      };
+      return acc;
+    }, {});
   }
 
   if (isEmptyAssets || (isEmptyAssets && keepPolling)) {
@@ -369,28 +367,28 @@ export const fetchOnchainBalances = ({
 
   let updatedAssets = assets;
   if (balances) {
-    updatedAssets = Object.fromEntries(
-      Object.entries(assets).map(([key, assetAndQuantity]) => {
+    updatedAssets = Object.entries(assets).reduce(
+      (acc, [key, assetAndQuantity]) => {
         const assetCode = assetAndQuantity.asset.asset_code.toLowerCase();
-        return [
-          key,
-          {
-            asset: {
-              ...assetAndQuantity.asset,
-              asset_code:
-                assetCode === ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
-                  ? ETH_ADDRESS
-                  : assetCode,
-            },
-            quantity:
-              balances?.[
-                assetCode === ETH_ADDRESS
-                  ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
-                  : assetCode
-              ],
+
+        acc[key] = {
+          asset: {
+            ...assetAndQuantity.asset,
+            asset_code:
+              assetCode === ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
+                ? ETH_ADDRESS
+                : assetCode,
           },
-        ];
-      })
+          quantity:
+            balances?.[
+              assetCode === ETH_ADDRESS
+                ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
+                : assetCode
+            ],
+        };
+        return acc;
+      },
+      {}
     );
   }
 
@@ -405,8 +403,8 @@ export const fetchOnchainBalances = ({
     );
 
     if (prices) {
-      updatedAssets = Object.fromEntries(
-        Object.entries(updatedAssets).map(([key, asset]) => {
+      updatedAssets = Object.entries(updatedAssets).reduce(
+        (acc, [key, asset]) => {
           const assetCoingeckoId = asset.asset.coingecko_id.toLowerCase();
 
           if (prices[assetCoingeckoId]) {
@@ -429,8 +427,10 @@ export const fetchOnchainBalances = ({
               },
             ];
           }
-          return [key, asset];
-        })
+          acc[key] = asset;
+          return acc;
+        },
+        {}
       );
     }
   }

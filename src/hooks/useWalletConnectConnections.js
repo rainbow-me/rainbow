@@ -12,20 +12,18 @@ import {
 
 const formatDappData = connections =>
   Object.values(
-    Object.fromEntries(
-      Object.entries(connections).map(([key, connection]) => [
-        key,
-        {
-          account: connection?.[0].accounts?.[0],
-          chainId: connection?.[0].chainId,
-          dappIcon: connection?.[0].peerMeta?.icons?.[0],
-          dappName: connection?.[0].peerMeta?.name,
-          dappUrl: connection?.[0].peerMeta?.url,
-          handshakeId: connection?.[0]._handshakeId,
-          peerId: connection?.[0].peerId, // unix timestamp in microseconds when connection was made
-        },
-      ])
-    )
+    Object.entries(connections).reduce((acc, [key, connection]) => {
+      acc[key] = {
+        account: connection?.[0].accounts?.[0],
+        chainId: connection?.[0].chainId,
+        dappIcon: connection?.[0].peerMeta?.icons?.[0],
+        dappName: connection?.[0].peerMeta?.name,
+        dappUrl: connection?.[0].peerMeta?.url,
+        handshakeId: connection?.[0]._handshakeId,
+        peerId: connection?.[0].peerId, // unix timestamp in microseconds when connection was made
+      };
+      return acc;
+    }, {})
   );
 
 const walletConnectSelector = createSelector(

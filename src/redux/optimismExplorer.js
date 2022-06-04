@@ -111,8 +111,8 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
       );
 
       if (prices) {
-        assetsWithBalance = Object.fromEntries(
-          Object.entries(assetsWithBalance).map(([key, assetWithBalance]) => {
+        Object.entries(assetsWithBalance).reduce(
+          (acc, [key, assetWithBalance]) => {
             const assetCoingeckoId = assetWithBalance.asset.coingecko_id.toLowerCase();
             const assetWithBalanceValue = prices[assetCoingeckoId]
               ? {
@@ -131,9 +131,10 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
                   },
                 }
               : assetWithBalance;
-
-            return [key, assetWithBalanceValue];
-          })
+            acc[key] = assetWithBalanceValue;
+            return acc;
+          },
+          {}
         );
       }
 

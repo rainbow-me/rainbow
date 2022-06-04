@@ -241,11 +241,15 @@ export const savingsAssetsListByUnderlying: Record<
   string,
   Record<string, SavingsAsset>
 > = Object.entries(savingsAssets).reduce((a, [key, assetsByNetwork]) => {
-  a[key] = Object.fromEntries(
-    Object.entries(assetsByNetwork).map(([nestedKey, assetByContract]) => [
-      assetByContract.address,
-      { ...assetByContract, contractAddress: nestedKey },
-    ])
+  a[key] = Object.entries(assetsByNetwork).reduce(
+    (acc, [nestedKey, assetByContract]) => {
+      acc[assetByContract.address] = {
+        ...assetByContract,
+        contractAddress: nestedKey,
+      };
+      return acc;
+    },
+    {} as Record<string, SavingsAsset>
   );
   return a;
 }, {} as Record<string, Record<string, SavingsAsset>>);
