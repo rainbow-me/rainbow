@@ -1,7 +1,7 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import { useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { InteractionManager } from 'react-native';
 import {
   ContextMenuButton,
@@ -27,6 +27,7 @@ import {
 } from '@rainbow-me/design-system';
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import {
+  prefetchENSProfileRecords,
   useAccountENSDomains,
   useAccountProfile,
   useAccountSettings,
@@ -79,6 +80,12 @@ export default function ENSIntroSheet() {
       ? nonPrimaryDomains?.[0]
       : null;
   }, [nonPrimaryDomains, primaryDomain]);
+
+  useEffect(() => {
+    if (uniqueDomain?.name) {
+      prefetchENSProfileRecords({ name: uniqueDomain.name });
+    }
+  }, [uniqueDomain]);
 
   const { navigate } = useNavigation();
   const { startRegistration } = useENSRegistration();
