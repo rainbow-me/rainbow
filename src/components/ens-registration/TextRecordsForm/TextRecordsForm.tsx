@@ -10,6 +10,7 @@ import {
   Divider,
   Stack,
 } from '@rainbow-me/design-system';
+import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 import { useENSRegistrationForm } from '@rainbow-me/hooks';
 
 export default function TextRecordsForm({
@@ -103,6 +104,13 @@ export default function TextRecordsForm({
                   onFocus={onFocus}
                   placeholder={placeholder}
                   selectionColor={selectionColor}
+                  shouldFormatText={
+                    key === ENS_RECORDS.displayName ||
+                    key === ENS_RECORDS.description ||
+                    key === ENS_RECORDS.notice ||
+                    key === ENS_RECORDS.keywords ||
+                    key === ENS_RECORDS.pronouns
+                  }
                   startsWith={startsWith}
                   testID={`ens-text-record-${key}`}
                   validations={validations}
@@ -118,11 +126,14 @@ export default function TextRecordsForm({
 
 function Field({ defaultValue, ...props }: InlineFieldProps) {
   const [value, setValue] = useState(defaultValue);
+  const [isTouched, setIsTouched] = useState(false);
 
-  // Set / clear values when the screen comes to focus / unfocus.
   useEffect(() => {
+    // If the field is touched, we don't want to set the default value again.
+    if (isTouched) return;
+
     setValue(defaultValue);
-  }, [defaultValue]);
+  }, [defaultValue, isTouched]);
 
   return (
     <>
@@ -131,6 +142,7 @@ function Field({ defaultValue, ...props }: InlineFieldProps) {
         {...props}
         onChangeText={text => {
           props.onChangeText(text);
+          setIsTouched(true);
           setValue(text);
         }}
         value={value}

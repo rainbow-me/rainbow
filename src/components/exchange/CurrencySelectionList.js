@@ -91,4 +91,5 @@ export default magicMemo(forwardRef(CurrencySelectionList), [
   'listItems',
   'loading',
   'showList',
+  'query',
 ]);

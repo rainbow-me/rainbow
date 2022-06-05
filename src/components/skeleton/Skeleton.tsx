@@ -3,7 +3,7 @@ import React from 'react';
 import { View, ViewProps } from 'react-native';
 // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { IS_TESTING } from 'react-native-dotenv';
-import { withThemeContext } from '../../context/ThemeContext';
+import { withThemeContext } from '../../theme/ThemeContext';
 import { deviceUtils } from '../../utils';
 import { ShimmerAnimation } from '../animations';
 import { CoinRowHeight } from '../coin-row';

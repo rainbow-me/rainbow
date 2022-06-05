@@ -192,7 +192,7 @@ export default function useSelectImageMenu({
   const handleAndroidPress = useCallback(() => {
     const actionSheetOptions = menuItems
       .map(item => items[item]?.actionTitle)
-      .filter(x => x) as any;
+      .filter(Boolean) as any;
 
     showActionSheetWithOptions(
       {

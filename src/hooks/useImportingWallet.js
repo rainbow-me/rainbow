@@ -176,7 +176,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         }
       } else if (isValidAddress(input)) {
         try {
-          const ens = await web3Provider.lookupAddress(input);
+          const ens = await fetchReverseRecord(input);
           if (ens && ens !== input) {
             name = forceEmoji ? `${forceEmoji} ${ens}` : ens;
             if (!avatarUrl && profilesEnabled) {
@@ -250,6 +250,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             true
           );
           await dispatch(walletsLoadState(profilesEnabled));
+          handleSetImporting(false);
         } else {
           const previousWalletCount = keys(wallets).length;
           initializeWallet(
@@ -357,6 +358,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     handlePressImportButton,
     handleSetSeedPhrase,
     inputRef,
+    isImporting,
     isSecretValid,
     seedPhrase,
   };

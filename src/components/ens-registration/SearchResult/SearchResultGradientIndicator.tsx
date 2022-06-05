@@ -1,7 +1,6 @@
 import lang from 'i18n-js';
 import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import { useTheme } from '@rainbow-me/context';
 import {
   AccentColorProvider,
   Box,
@@ -9,6 +8,7 @@ import {
   Text,
 } from '@rainbow-me/design-system';
 import { useDimensions } from '@rainbow-me/hooks';
+import { useTheme } from '@rainbow-me/theme';
 
 type Props = {
   type: 'availability' | 'expiration' | 'price';

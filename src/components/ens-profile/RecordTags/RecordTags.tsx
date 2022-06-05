@@ -1,11 +1,11 @@
 import { format } from 'date-fns';
+import lang from 'i18n-js';
 import React, { useMemo } from 'react';
 import { ScrollView } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { Icon } from '../../icons';
 import Skeleton from '../../skeleton/Skeleton';
-import { useTheme } from '@rainbow-me/context';
 import {
   Bleed,
   Box,
@@ -17,6 +17,7 @@ import {
 import { Records } from '@rainbow-me/entities';
 import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 import { useENSRecordDisplayProperties } from '@rainbow-me/hooks';
+import { useTheme } from '@rainbow-me/theme';
 
 const getRecordType = (recordKey: string) => {
   switch (recordKey) {
@@ -68,7 +69,10 @@ export default function RecordTags({
           )}
           {firstTransactionTimestamp && (
             <Tag color="grey" symbol="􀉉">
-              Since {format(firstTransactionTimestamp, 'MMM yyyy')}
+              {`${lang.t(`profiles.records.since`)} ${format(
+                firstTransactionTimestamp,
+                'MMM yyyy'
+              )}`}
             </Tag>
           )}
         </Inline>

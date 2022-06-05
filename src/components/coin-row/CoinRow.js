@@ -44,6 +44,7 @@ export default function CoinRow({
   testID,
   topRowRender,
   tokens,
+  type,
   ...props
 }) {
   const { nativeCurrency, nativeCurrencySymbol } = useAccountSettings();
@@ -60,6 +61,7 @@ export default function CoinRow({
           isHidden,
           isPinned,
           symbol,
+          type,
           ...props,
         })
       )}

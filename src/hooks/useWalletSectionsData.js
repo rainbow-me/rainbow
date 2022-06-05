@@ -14,7 +14,7 @@ import {
 } from '@rainbow-me/helpers/buildWalletSections';
 import { readableUniswapSelector } from '@rainbow-me/helpers/uniswapLiquidityTokenInfoSelector';
 
-export default function useWalletSectionsData() {
+export default function useWalletSectionsData({ type } = {}) {
   const sortedAccountData = useSortedAccountAssets();
   const isWalletEthZero = useIsWalletEthZero();
 
@@ -44,6 +44,7 @@ export default function useWalletSectionsData() {
       ...uniqueTokens,
       ...uniswap,
       ...isWalletEthZero,
+      listType: type,
       showcaseTokens,
     };
 
@@ -70,6 +71,7 @@ export default function useWalletSectionsData() {
     shouldRefetchSavings,
     showcaseTokens,
     sortedAccountData,
+    type,
     uniqueTokens,
     uniswap,
   ]);

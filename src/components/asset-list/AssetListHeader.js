@@ -11,12 +11,12 @@ import { ListHeader, ListHeaderHeight } from '../list';
 import Skeleton, { FakeText } from '../skeleton/Skeleton';
 import { H1, TruncatedText } from '../text';
 import { StickyHeader } from './RecyclerAssetList2/core/StickyHeaders';
-import { useTheme } from '@rainbow-me/context';
 import { useAccountProfile, useDimensions } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { fonts, position } from '@rainbow-me/styles';
+import { useTheme } from '@rainbow-me/theme';
 
 export const AssetListHeaderHeight = ListHeaderHeight + DividerSize;
 

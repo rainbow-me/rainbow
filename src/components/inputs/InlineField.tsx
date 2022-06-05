@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Alert, TextInputProps } from 'react-native';
-import { useTheme } from '../../context/ThemeContext';
+import { useTheme } from '../../theme/ThemeContext';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import Input from './Input';
 import {
@@ -27,6 +27,7 @@ export type InlineFieldProps = {
   onFocus?: TextInputProps['onFocus'];
   onEndEditing?: TextInputProps['onEndEditing'];
   selectionColor?: string;
+  shouldFormatText?: boolean;
   startsWith?: string;
   validations?: {
     onChange?: {
@@ -50,6 +51,7 @@ export default function InlineField({
   validations,
   onEndEditing,
   selectionColor,
+  shouldFormatText,
   startsWith,
   value,
   testID,
@@ -162,6 +164,8 @@ export default function InlineField({
             </Inset>
           )}
           <Input
+            autoCapitalize={shouldFormatText ? 'sentences' : 'none'}
+            autoCorrect={shouldFormatText}
             autoFocus={autoFocus}
             defaultValue={defaultValue}
             onChangeText={handleChangeText}
@@ -180,7 +184,11 @@ export default function InlineField({
             value={value}
             {...inputProps}
             keyboardType={
-              android ? 'visible-password' : inputProps?.keyboardType
+              android
+                ? shouldFormatText
+                  ? 'default'
+                  : 'visible-password'
+                : inputProps?.keyboardType
             }
             testID={testID}
           />

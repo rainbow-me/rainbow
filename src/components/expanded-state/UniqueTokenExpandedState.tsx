@@ -35,7 +35,6 @@ import {
 import ENSBriefTokenInfoRow from './unique-token/ENSBriefTokenInfoRow';
 import NFTBriefTokenInfoRow from './unique-token/NFTBriefTokenInfoRow';
 import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
-import { useTheme } from '@rainbow-me/context';
 import {
   AccentColorProvider,
   Bleed,
@@ -69,6 +68,7 @@ import { useNavigation, useUntrustedUrlOpener } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
+import { useTheme } from '@rainbow-me/theme';
 import {
   buildRainbowUrl,
   getUniqueTokenType,

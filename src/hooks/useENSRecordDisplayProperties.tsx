@@ -113,6 +113,18 @@ export default function useENSRecordDisplayProperties({
     if (type === 'address') {
       return formatAddressForDisplay(recordValue, 4, 4) || '';
     }
+    if (
+      recordValue.includes('@') &&
+      (recordKey === ENS_RECORDS.discord ||
+        recordKey === ENS_RECORDS.github ||
+        recordKey === ENS_RECORDS.reddit ||
+        recordKey === ENS_RECORDS.instagram ||
+        recordKey === ENS_RECORDS.snapchat ||
+        recordKey === ENS_RECORDS.telegram ||
+        recordKey === ENS_RECORDS.twitter)
+    ) {
+      return recordValue.replace('@', '');
+    }
     return recordValue;
   }, [
     displayUrl,
@@ -163,7 +175,7 @@ export default function useENSRecordDisplayProperties({
           iconValue: 'square.on.square',
         },
       },
-    ].filter(x => x);
+    ].filter(Boolean);
   }, [
     allowEdit,
     displayUrl,
@@ -209,7 +221,7 @@ export default function useENSRecordDisplayProperties({
   const handleAndroidPress = useCallback(() => {
     const actionSheetOptions = menuItems
       .map(item => item?.actionTitle)
-      .filter(x => x) as any;
+      .filter(Boolean) as any;
 
     showActionSheetWithOptions(
       {

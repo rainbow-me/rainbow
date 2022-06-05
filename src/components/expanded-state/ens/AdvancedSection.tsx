@@ -14,9 +14,7 @@ export default function AdvancedSection({
   return (
     <Stack space="15px">
       {isLoading ? (
-        <>
-          <InfoRowSkeleton />
-        </>
+        <InfoRowSkeleton />
       ) : (
         <>
           {resolver && (

@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { Switch } from 'react-native-gesture-handler';
-import { useTheme } from '../../../context/ThemeContext';
 import { useNavigation } from '../../../navigation/Navigation';
+import { useTheme } from '../../../theme/ThemeContext';
 import { ShimmerAnimation } from '../../animations';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { Icon } from '../../icons';
@@ -112,76 +112,74 @@ export default function InfoRow({
         </Inset>
       </Box>
       {wrapValue(
-        <>
-          {isImage ? (
-            <>
-              {value && (
-                <ImagePreviewOverlayTarget
-                  aspectRatioType="cover"
-                  imageUrl={value}
-                >
-                  <Box as={ImgixImage} height="full" source={{ uri: value }} />
-                </ImagePreviewOverlayTarget>
-              )}
-            </>
-          ) : (
-            <Box
-              borderRadius={16}
-              flexShrink={1}
-              onLayout={({
-                nativeEvent: {
-                  layout: { height },
-                },
-              }) => {
-                setIsMultiline(height > 40);
-                setShow(true);
-              }}
-              padding={
-                (isSwitch ? '0px' : isMultiline ? '15px' : '10px') as Space
-              }
-              style={{
-                backgroundColor: isSwitch
-                  ? 'transparent'
-                  : useAccentColor
-                  ? accentColor + '10'
-                  : 'rgba(255, 255, 255, 0.08)',
-                opacity: show ? 1 : 0,
-              }}
-            >
-              <Inline alignVertical="center" space="6px">
-                {icon && (
-                  <Bleed vertical="6px">
-                    <Icon
-                      color={colors.whiteLabel}
-                      height="18"
-                      name={icon}
-                      width="18"
-                    />
-                  </Bleed>
-                )}
-                {value && (
-                  <Text
-                    align={isMultiline ? 'left' : 'center'}
-                    color={useAccentColor ? 'accent' : undefined}
-                    containsEmoji
-                    weight={isMultiline ? 'semibold' : 'bold'}
-                  >
-                    {value}
-                  </Text>
-                )}
-                {isSwitch && (
-                  <Switch
-                    disabled={switchDisabled || switchValue}
-                    onValueChange={onSwitchChange}
-                    testID="ens-reverse-record-switch"
-                    trackColor={{ false: colors.white, true: accentColor }}
-                    value={switchValue}
+        isImage ? (
+          <>
+            {value && (
+              <ImagePreviewOverlayTarget
+                aspectRatioType="cover"
+                imageUrl={value}
+              >
+                <Box as={ImgixImage} height="full" source={{ uri: value }} />
+              </ImagePreviewOverlayTarget>
+            )}
+          </>
+        ) : (
+          <Box
+            borderRadius={16}
+            flexShrink={1}
+            onLayout={({
+              nativeEvent: {
+                layout: { height },
+              },
+            }) => {
+              setIsMultiline(height > 40);
+              setShow(true);
+            }}
+            padding={
+              (isSwitch ? '0px' : isMultiline ? '15px' : '10px') as Space
+            }
+            style={{
+              backgroundColor: isSwitch
+                ? 'transparent'
+                : useAccentColor
+                ? accentColor + '10'
+                : 'rgba(255, 255, 255, 0.08)',
+              opacity: show ? 1 : 0,
+            }}
+          >
+            <Inline alignVertical="center" space="6px">
+              {icon && (
+                <Bleed vertical="6px">
+                  <Icon
+                    color={colors.whiteLabel}
+                    height="18"
+                    name={icon}
+                    width="18"
                   />
-                )}
-              </Inline>
-            </Box>
-          )}
-        </>
+                </Bleed>
+              )}
+              {value && (
+                <Text
+                  align={isMultiline ? 'left' : 'center'}
+                  color={useAccentColor ? 'accent' : undefined}
+                  containsEmoji
+                  weight={isMultiline ? 'semibold' : 'bold'}
+                >
+                  {value}
+                </Text>
+              )}
+              {isSwitch && (
+                <Switch
+                  disabled={switchDisabled || switchValue}
+                  onValueChange={onSwitchChange}
+                  testID="ens-reverse-record-switch"
+                  trackColor={{ false: colors.white, true: accentColor }}
+                  value={switchValue}
+                />
+              )}
+            </Inline>
+          </Box>
+        )
       )}
     </Inline>
   );
