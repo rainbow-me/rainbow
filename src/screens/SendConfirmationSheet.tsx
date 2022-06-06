@@ -307,12 +307,15 @@ export default function SendConfirmationSheet() {
   useEffect(() => {
     if (isENS) {
       const promises = [
-        estimateGasLimit({
-          address: accountAddress,
-          amount: 0,
-          asset: asset,
-          recipient: toAddress,
-        }),
+        estimateGasLimit(
+          {
+            address: accountAddress,
+            amount: 0,
+            asset: asset,
+            recipient: toAddress,
+          },
+          true
+        ),
       ];
       const sendENSOptions = Object.fromEntries(
         checkboxes.map(option => [option.id, option.checked])
