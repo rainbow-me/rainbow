@@ -1,10 +1,14 @@
-import { toChecksumAddress } from '../handlers/web3';
-import { EthereumAddress } from '@rainbow-me/entities';
+import { AssetType, EthereumAddress } from '@rainbow-me/entities';
 
 export default function getUrlForTrustIconFallback(
-  address: EthereumAddress
+  address: EthereumAddress,
+  type: AssetType
 ): string | null {
   if (!address) return null;
-  const checksummedAddress = toChecksumAddress(address);
-  return `https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/ethereum/assets/${checksummedAddress}/logo.png`;
+  const lowercasedAddress = address.toLowerCase();
+  let network = 'ethereum';
+  if (type && type !== AssetType.token) {
+    network = type;
+  }
+  return `https://raw.githubusercontent.com/rainbow-me/assets/lowercase/blockchains/${network}/assets/${lowercasedAddress}/logo.png`;
 }

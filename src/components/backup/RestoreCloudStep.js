@@ -64,6 +64,7 @@ const MastheadIcon = styled(GradientText).attrs({
 })({});
 
 const Title = styled(Text).attrs({
+  align: 'center',
   size: 'big',
   weight: 'bold',
 })({
@@ -78,7 +79,7 @@ export default function RestoreCloudStep({
   fromSettings,
 }) {
   const dispatch = useDispatch();
-  const { isTinyPhone } = useDimensions();
+  const { isTinyPhone, scale } = useDimensions();
   const { navigate, goBack, replace } = useNavigation();
   const { setIsWalletLoading } = useWallets();
   const [validPassword, setValidPassword] = useState(false);
@@ -91,6 +92,8 @@ export default function RestoreCloudStep({
   const passwordRef = useRef();
   const { userAccounts } = useUserAccounts();
   const initializeWallet = useInitializeWallet();
+
+  const isScaleMoreThanDefault = scale > 3;
 
   useEffect(() => {
     const keyboardDidShow = () => {
@@ -239,7 +242,8 @@ export default function RestoreCloudStep({
       type="restore"
     >
       <Masthead>
-        {(isTinyPhone || samsungGalaxy) && isKeyboardOpen ? null : (
+        {(isTinyPhone || samsungGalaxy || isScaleMoreThanDefault) &&
+        isKeyboardOpen ? null : (
           <MastheadIcon>􀙶</MastheadIcon>
         )}
         <Title>{lang.t('back_up.restore_cloud.enter_backup_password')}</Title>

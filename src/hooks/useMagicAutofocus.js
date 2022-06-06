@@ -21,7 +21,8 @@ export function delayNext() {
 export default function useMagicAutofocus(
   defaultAutofocusInputRef,
   customTriggerFocusCallback,
-  shouldFocusOnNavigateOnAndroid = false
+  shouldFocusOnNavigateOnAndroid = false,
+  showAfterInteractions = false
 ) {
   const isScreenFocused = useIsFocused();
   const lastFocusedInputHandle = useRef(null);
@@ -78,7 +79,11 @@ export default function useMagicAutofocus(
           }, 200);
         });
       } else {
-        triggerFocus();
+        if (showAfterInteractions) {
+          InteractionManager.runAfterInteractions(triggerFocus);
+        } else {
+          triggerFocus();
+        }
       }
 
       // We need to do this in order to assure that the input gets focused
@@ -90,7 +95,12 @@ export default function useMagicAutofocus(
       return () => {
         setListener(null);
       };
-    }, [fallbackRefocusLastInput, shouldFocusOnNavigateOnAndroid, triggerFocus])
+    }, [
+      fallbackRefocusLastInput,
+      shouldFocusOnNavigateOnAndroid,
+      showAfterInteractions,
+      triggerFocus,
+    ])
   );
 
   return {

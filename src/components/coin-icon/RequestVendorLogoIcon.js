@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
-import { useTheme } from '../../context/ThemeContext';
+import { useTheme } from '../../theme/ThemeContext';
 import { initials } from '../../utils';
 import ChainBadge from '../coin-icon/ChainBadge';
 import { Centered } from '../layout';

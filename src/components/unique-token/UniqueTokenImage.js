@@ -1,14 +1,16 @@
+import { toLower } from 'lodash';
 import React, { Fragment, useCallback, useState } from 'react';
-import { useTheme } from '../../context/ThemeContext';
 import { buildUniqueTokenName } from '../../helpers/assets';
+import { useTheme } from '../../theme/ThemeContext';
 import { Centered } from '../layout';
 import RemoteSvg from '../svg/RemoteSvg';
 import { Monospace } from '../text';
 import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
-import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
 import { ImgixImage } from '@rainbow-me/images';
+import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
+import isSVGImage from '@rainbow-me/utils/isSVG';
 
 const FallbackTextColorVariants = (darkMode, colors) => ({
   dark: darkMode
@@ -37,7 +39,9 @@ const UniqueTokenImage = ({
   size,
   transformSvgs = true,
 }) => {
-  const isSVG = isSupportedUriExtension(imageUrl, ['.svg']);
+  const isENS =
+    toLower(item.asset_contract?.address) === toLower(ENS_NFT_CONTRACT_ADDRESS);
+  const isSVG = isSVGImage(imageUrl);
   const [error, setError] = useState(null);
   const handleError = useCallback(error => setError(error), [setError]);
   const { isDarkMode, colors } = useTheme();
@@ -49,7 +53,7 @@ const UniqueTokenImage = ({
     <Centered backgroundColor={backgroundColor} style={position.coverAsObject}>
       {isSVG && !transformSvgs && !error ? (
         <RemoteSvg
-          fallbackIfNonAnimated
+          fallbackIfNonAnimated={!isENS || isCard}
           fallbackUri={svgToPngIfNeeded(imageUrl, true)}
           lowResFallbackUri={item.lowResUrl}
           onError={handleError}
