@@ -1,4 +1,4 @@
-import React, { ReactNode, useMemo } from 'react';
+import React, { ReactNode } from 'react';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import {
   AccentColorProvider,
@@ -42,9 +42,7 @@ export default function SelectableButton({
           height={`${height}px`}
           justifyContent="center"
           paddingHorizontal="8px"
-          style={useMemo(() => ({ borderColor: borderColor, borderWidth: 2 }), [
-            borderColor,
-          ])}
+          style={{ borderColor: borderColor, borderWidth: 2 }}
         >
           <Text align="center" color="accent" size="16px" weight="heavy">
             {children}

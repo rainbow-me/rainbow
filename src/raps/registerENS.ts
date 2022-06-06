@@ -1,3 +1,4 @@
+import { AddressZero } from '@ethersproject/constants';
 import { concat, isEmpty } from 'lodash';
 import {
   createNewENSAction,
@@ -8,11 +9,13 @@ import {
 } from './common';
 import { Records } from '@rainbow-me/entities';
 import {
-  fetchProfileRecords,
+  fetchCoinAddresses,
+  fetchRecords,
   formatRecordsForTransaction,
   recordsForTransactionAreValid,
   shouldUseMulticallTransaction,
 } from '@rainbow-me/handlers/ens';
+import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 
 export const createSetRecordsENSRap = async (
   ensActionParameters: ENSActionParameters
@@ -127,16 +130,25 @@ export const createTransferENSRap = async (
   } = ensActionParameters;
 
   if (clearRecords) {
-    const records = await fetchProfileRecords(ensActionParameters.name);
+    const [allRecords, allCoinAddresses] = await Promise.all([
+      fetchRecords(ensActionParameters.name, {
+        supportedOnly: false,
+      }),
+      fetchCoinAddresses(ensActionParameters.name, {
+        supportedOnly: false,
+      }),
+    ]);
     const emptyRecords = Object.keys({
-      ...(records.coinAddresses || {}),
-      ...(records.records || {}),
-    }).reduce((records, recordKey) => {
-      return {
+      ...(allCoinAddresses || {}),
+      ...(allRecords || {}),
+    }).reduce(
+      (records, recordKey) => ({
         ...records,
-        [recordKey]: '',
-      };
-    }, {});
+        // Use zero address for ETH record as an empty string throws an error
+        [recordKey]: recordKey === ENS_RECORDS.ETH ? AddressZero : '',
+      }),
+      {}
+    );
 
     let newRecords: Records = emptyRecords;
     if (setAddress && toAddress) {

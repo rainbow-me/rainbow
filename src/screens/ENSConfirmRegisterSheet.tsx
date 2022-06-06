@@ -50,7 +50,7 @@ import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 
 export const ENSConfirmRegisterSheetHeight = 600;
-export const ENSConfirmRenewSheetHeight = ios ? 500 : 560;
+export const ENSConfirmRenewSheetHeight = 560;
 export const ENSConfirmUpdateSheetHeight = 400;
 const avatarSize = 60;
 
@@ -217,6 +217,7 @@ export default function ENSConfirmRegisterSheet() {
       ),
       [REGISTRATION_STEPS.EDIT]: null,
       [REGISTRATION_STEPS.SET_NAME]: null,
+      [REGISTRATION_STEPS.TRANSFER]: null,
       [REGISTRATION_STEPS.RENEW]: (
         <RenewContent
           name={name}
@@ -335,6 +336,7 @@ export default function ENSConfirmRegisterSheet() {
           testID={step}
         />
       ),
+      [REGISTRATION_STEPS.TRANSFER]: null,
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: null,
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: null,
     }),

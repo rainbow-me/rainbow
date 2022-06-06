@@ -61,7 +61,7 @@ export async function prefetchAccountENSDomains({
 }) {
   queryClient.prefetchQuery(
     queryKey({ accountAddress }),
-    async () => fetchENSDomainsWithCache({ accountAddress }),
+    async () => await fetchENSDomainsWithCache({ accountAddress }),
     { staleTime: STALE_TIME }
   );
 }

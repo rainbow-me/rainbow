@@ -30,6 +30,7 @@ import {
 } from '../utils/keychainConstants';
 import {
   addressHashedColorIndex,
+  addressHashedEmoji,
   fetchReverseRecordWithRetry,
 } from '../utils/profileUtils';
 import { updateWebDataEnabled } from './showcaseTokens';
@@ -207,11 +208,13 @@ export const createAccountForWallet = (id, color, name) => async (
     visible: true,
   });
 
+  await dispatch(updateWebDataEnabled(true, account.address));
+
   setPreference(PreferenceActionType.init, 'profile', account.address, {
     accountColor: lightModeThemeColors.avatarBackgrounds[walletColorIndex],
+    accountSymbol: addressHashedEmoji(account.address),
   });
 
-  await dispatch(updateWebDataEnabled(true, account.address));
   // Save all the wallets
   saveAllWallets(newWallets);
   // Set the address selected (KEYCHAIN)

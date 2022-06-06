@@ -29,6 +29,7 @@ const formatENSActionParams = (
 ): ENSActionParameters => {
   return {
     duration: registrationParameters?.duration,
+    mode: registrationParameters?.mode,
     name: registrationParameters?.name,
     ownerAddress: registrationParameters?.ownerAddress,
     records: registrationParameters?.records,

@@ -35,7 +35,9 @@ export default () => {
   } = useAccountProfile();
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const profileEnabled = Boolean(accountENS);
-  const ensProfile = useENSProfile(accountENS, { enabled: profileEnabled });
+  const ensProfile = useENSProfile(accountENS, {
+    enabled: profileEnabled && profilesEnabled,
+  });
   const { openPicker } = useImagePicker();
 
   const onAvatarRemovePhoto = useCallback(async () => {
@@ -109,8 +111,6 @@ export default () => {
   const { startRegistration } = useENSRegistration();
 
   const onAvatarPress = useCallback(() => {
-    if (profileEnabled && !ensProfile?.isSuccess) return;
-
     const isENSProfile =
       profilesEnabled && profileEnabled && ensProfile?.isOwner;
 
@@ -127,10 +127,12 @@ export default () => {
         ]
       : [
           lang.t('profiles.profile_avatar.choose_from_library'),
-          !accountImage && lang.t(`profiles.profile_avatar.pick_emoji`),
-          (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) &&
+          !accountImage
+            ? lang.t(`profiles.profile_avatar.pick_emoji`)
+            : lang.t(`profiles.profile_avatar.remove_photo`),
+          profilesEnabled &&
+            (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) &&
             lang.t('profiles.profile_avatar.create_profile'),
-          !!accountImage && lang.t(`profiles.profile_avatar.remove_photo`),
         ]
     )
       .filter(option => Boolean(option))
@@ -139,14 +141,14 @@ export default () => {
     const callback = async (buttonIndex: Number) => {
       if (isENSProfile) {
         if (buttonIndex === 0) {
-          navigate(Routes.PROFILE_SHEET, {
-            address: accountENS,
-            fromRoute: 'ProfileAvatar',
-          });
           analytics.track('Viewed ENS profile', {
             category: 'profiles',
             ens: accountENS,
             from: 'Transaction list',
+          });
+          navigate(Routes.PROFILE_SHEET, {
+            address: accountENS,
+            fromRoute: 'ProfileAvatar',
           });
         } else if (buttonIndex === 1 && !isReadOnlyWallet) {
           startRegistration(accountENS, REGISTRATION_MODES.EDIT);
@@ -170,6 +172,8 @@ export default () => {
           } else {
             onAvatarCreateProfile();
           }
+        } else if (buttonIndex === 2 && profilesEnabled) {
+          onAvatarCreateProfile();
         }
       }
     };
@@ -179,7 +183,7 @@ export default () => {
         cancelButtonIndex: avatarActionSheetOptions.length - 1,
         destructiveButtonIndex:
           !isENSProfile && accountImage
-            ? avatarActionSheetOptions.length - 2
+            ? avatarActionSheetOptions.length - (profilesEnabled ? 3 : 2)
             : undefined,
         options: avatarActionSheetOptions,
       },

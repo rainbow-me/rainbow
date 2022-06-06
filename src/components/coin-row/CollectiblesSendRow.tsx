@@ -1,7 +1,7 @@
 import React, { Fragment, useMemo } from 'react';
 import { PressableProps, TouchableWithoutFeedback } from 'react-native';
-import { useTheme } from '../../context/ThemeContext';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
+import { useTheme } from '../../theme/ThemeContext';
 import { deviceUtils, getUniqueTokenType, magicMemo } from '../../utils';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';

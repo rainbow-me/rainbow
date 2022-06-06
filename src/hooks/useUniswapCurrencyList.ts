@@ -3,9 +3,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { IS_TESTING } from 'react-native-dotenv';
 import { useDispatch, useSelector } from 'react-redux';
-import { useTheme } from '../context/ThemeContext';
 import { AppState } from '../redux/store';
 import { uniswapUpdateFavorites } from '../redux/uniswap';
+import { useTheme } from '../theme/ThemeContext';
 import {
   RainbowToken as RT,
   TokenSearchTokenListId,

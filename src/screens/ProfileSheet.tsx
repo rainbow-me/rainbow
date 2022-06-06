@@ -5,7 +5,6 @@ import { StatusBar } from 'react-native';
 import RecyclerAssetList2 from '../components/asset-list/RecyclerAssetList2';
 import ProfileSheetHeader from '../components/ens-profile/ProfileSheetHeader';
 import Skeleton from '../components/skeleton/Skeleton';
-import { useTheme } from '@rainbow-me/context';
 import {
   AccentColorProvider,
   Box,
@@ -28,6 +27,7 @@ import {
 } from '@rainbow-me/hooks';
 import { sharedCoolModalTopOffset } from '@rainbow-me/navigation/config';
 import Routes from '@rainbow-me/routes';
+import { useTheme } from '@rainbow-me/theme';
 import { addressHashedColorIndex } from '@rainbow-me/utils/profileUtils';
 
 export const ProfileSheetConfigContext = createContext<{
@@ -60,7 +60,7 @@ export default function ProfileSheet() {
 
   // Prefetch asset list
   const { isSuccess: hasListFetched } = useExternalWalletSectionsData({
-    address: profileAddress,
+    address: profileAddress || undefined,
   });
 
   const colorIndex = useMemo(
@@ -85,8 +85,8 @@ export default function ProfileSheet() {
         colors.appleBlue
       : colors.skeleton;
 
-  const enableZoomableImages =
-    !params.isPreview && name !== Routes.PROFILE_PREVIEW_SHEET;
+  const isPreview = name === Routes.PROFILE_PREVIEW_SHEET;
+  const enableZoomableImages = !isPreview;
 
   useEffect(() => {
     if (profileAddress && accountAddress) {
@@ -105,19 +105,17 @@ export default function ProfileSheet() {
         <AccentColorProvider color={accentColor}>
           <Box background="body">
             <Box style={wrapperStyle}>
-              {!isSuccess || !hasListFetched ? (
+              {!isPreview && (!isSuccess || !hasListFetched) ? (
                 <Stack space="19px">
-                  <ProfileSheetHeader isLoading isPreview={params.isPreview} />
+                  <ProfileSheetHeader isLoading />
                   <PlaceholderList />
                 </Stack>
-              ) : !params.isPreview ? (
+              ) : profileAddress ? (
                 <RecyclerAssetList2
                   externalAddress={profileAddress}
                   type="ens-profile"
                 />
-              ) : (
-                <ProfileSheetHeader ensName={params?.ensName} isPreview />
-              )}
+              ) : null}
             </Box>
           </Box>
         </AccentColorProvider>

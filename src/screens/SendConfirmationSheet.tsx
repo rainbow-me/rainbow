@@ -1,3 +1,4 @@
+import { AddressZero } from '@ethersproject/constants';
 import { useRoute } from '@react-navigation/native';
 import { toChecksumAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
@@ -9,7 +10,6 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { AddressZero } from '@ethersproject/constants';
 import { Keyboard, StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 import ContactRowInfoButton from '../components/ContactRowInfoButton';
@@ -38,7 +38,6 @@ import {
 import useExperimentalFlag, {
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
-import { useTheme } from '@rainbow-me/context';
 import { Box, Inset, Stack, Text } from '@rainbow-me/design-system';
 import { UniqueAsset } from '@rainbow-me/entities';
 import {
@@ -76,6 +75,7 @@ import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
+import { useTheme } from '@rainbow-me/theme';
 import { getUniqueTokenType, promiseUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 

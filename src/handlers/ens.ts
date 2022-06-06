@@ -24,6 +24,7 @@ import {
 } from '../apollo/queries';
 import { ensProfileImagesQueryKey } from '../hooks/useENSProfileImages';
 import { ENSActionParameters } from '../raps/common';
+import { getProfileImages } from './localstorage/ens';
 import { estimateGasWithPadding, getProviderForNetwork } from './web3';
 import {
   ENSRegistrationRecords,
@@ -122,11 +123,19 @@ const buildEnsToken = ({
   } as UniqueAsset;
 };
 
-export const isUnknownOpenSeaENS = (asset?: any) =>
-  asset?.description?.includes('This is an unknown ENS name with the hash') ||
-  !asset?.uniqueId?.includes('.eth') ||
-  !asset?.image_url ||
-  false;
+export const isUnknownOpenSeaENS = (asset?: any) => {
+  const isENS =
+    asset?.asset_contract?.address.toLowerCase() ===
+    ENS_NFT_CONTRACT_ADDRESS.toLowerCase();
+  return (
+    isENS &&
+    (asset?.description?.includes(
+      'This is an unknown ENS name with the hash'
+    ) ||
+      !asset?.uniqueId?.includes('.eth') ||
+      !asset?.image_url)
+  );
+};
 
 export const fetchMetadata = async ({
   contractAddress = ENS_NFT_CONTRACT_ADDRESS,
@@ -171,7 +180,7 @@ export const fetchEnsTokens = async ({
         ).toString(),
       },
     });
-    return data.account.registrations.map(registration => {
+    return data?.account?.registrations?.map(registration => {
       const tokenId = BigNumber.from(registration.domain.labelhash).toString();
       const token = buildEnsToken({
         contractAddress,
@@ -328,8 +337,12 @@ export const fetchImages = async (ensName: string) => {
       ...(avatarUrl ? [{ uri: avatarUrl }] : []),
       ...(coverUrl ? [{ uri: coverUrl }] : []),
     ]);
-    // eslint-disable-next-line no-empty
-  } catch (err) {}
+  } catch (err) {
+    // Fallback to storage images
+    const images = await getProfileImages(ensName);
+    avatarUrl = images.avatarUrl;
+    coverUrl = images.coverUrl;
+  }
 
   return {
     avatarUrl,
@@ -337,7 +350,10 @@ export const fetchImages = async (ensName: string) => {
   };
 };
 
-export const fetchRecords = async (ensName: string) => {
+export const fetchRecords = async (
+  ensName: string,
+  { supportedOnly = true }: { supportedOnly?: boolean } = {}
+) => {
   const response = await ensClient.query<EnsGetRecordsData>({
     query: ENS_GET_RECORDS,
     variables: {
@@ -351,7 +367,7 @@ export const fetchRecords = async (ensName: string) => {
   const supportedRecords = Object.values(ENS_RECORDS);
   const rawRecordKeys: string[] = data.resolver?.texts || [];
   const recordKeys = (rawRecordKeys as ENS_RECORDS[]).filter(key =>
-    supportedRecords.includes(key)
+    supportedOnly ? supportedRecords.includes(key) : true
   );
   const recordValues = await Promise.all(
     recordKeys.map((key: string) => resolver?.getText(key))
@@ -367,7 +383,8 @@ export const fetchRecords = async (ensName: string) => {
 };
 
 export const fetchCoinAddresses = async (
-  ensName: string
+  ensName: string,
+  { supportedOnly = true }: { supportedOnly?: boolean } = {}
 ): Promise<{ [key in ENS_RECORDS]: string }> => {
   const response = await ensClient.query<EnsGetCoinTypesData>({
     query: ENS_GET_COIN_TYPES,
@@ -385,7 +402,7 @@ export const fetchCoinAddresses = async (
   );
   const coinTypes: number[] =
     (rawCoinTypesNames as ENS_RECORDS[])
-      .filter(name => supportedRecords.includes(name))
+      .filter(name => (supportedOnly ? supportedRecords.includes(name) : true))
       .map(name => formatsByName[name].coinType) || [];
 
   const coinAddressValues = await Promise.all(
@@ -397,7 +414,7 @@ export const fetchCoinAddresses = async (
           return undefined;
         }
       })
-      .filter(x => x)
+      .filter(Boolean)
   );
   const coinAddresses: { [key in ENS_RECORDS]: string } = coinTypes.reduce(
     (coinAddresses, coinType, i) => {
