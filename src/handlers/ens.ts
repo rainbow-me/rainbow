@@ -824,17 +824,20 @@ export const estimateENSSetRecordsGasLimit = async ({
           ownerAddress,
           records: ensRegistrationRecords,
         });
+        break;
       case ENSRegistrationTransactionType.SET_ADDR:
         gasLimit = await estimateENSSetAddressGasLimit({
           name,
           records: ensRegistrationRecords,
         });
+        break;
       case ENSRegistrationTransactionType.SET_TEXT:
         gasLimit = await estimateENSSetTextGasLimit({
           name,
           ownerAddress,
           records: ensRegistrationRecords,
         });
+        break;
       default:
         gasLimit = '0';
     }

@@ -340,8 +340,8 @@ export default function SendConfirmationSheet() {
         promises.push(
           estimateENSSetRecordsGasLimit({
             name: cleanENSName,
-            records: records,
             ownerAddress: accountAddress,
+            records: records,
           })
         );
       } else if (sendENSOptions['set-address']) {
@@ -355,9 +355,9 @@ export default function SendConfirmationSheet() {
       if (sendENSOptions['transfer-control']) {
         promises.push(
           estimateENSSetOwnerGasLimit({
+            fromAddress: accountAddress,
             name: cleanENSName,
             ownerAddress: toAddress,
-            fromAddress: accountAddress,
           })
         );
       }
@@ -376,6 +376,7 @@ export default function SendConfirmationSheet() {
     accountAddress,
     asset,
     checkboxes,
+    ensProfile?.data?.coinAddresses,
     ensProfile?.data?.records,
     isENS,
     toAddress,
@@ -739,6 +740,7 @@ export default function SendConfirmationSheet() {
             />
           </SendButtonWrapper>
           {isENS && (
+            /* @ts-expect-error JavaScript component */
             <GasSpeedButton
               currentNetwork={network}
               theme={isDarkMode ? 'dark' : 'light'}
