@@ -14,6 +14,9 @@ import { Text } from '../text';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 
+const START_SCALE = 0.5;
+const FINISH_SCALE = 1;
+
 const Button = styled(Centered).attrs({
   scaleTo: 0.8,
 })(({ size }) => position.sizeAsObject(size));
@@ -67,7 +70,12 @@ const ClearInputDecorator = ({ inputHeight, isVisible, onPress, testID }) => {
   }, [isVisible, isVisibleInternal, animation]);
 
   const animatedStyle = useAnimatedStyle(() => {
-    const scale = interpolate(animation.value, [0, 1], [0.0001, 1], 'extend');
+    const scale = interpolate(
+      animation.value,
+      [0, 1],
+      [START_SCALE, FINISH_SCALE],
+      'extend'
+    );
     return {
       opacity: animation.value,
       transform: [{ scale }],
