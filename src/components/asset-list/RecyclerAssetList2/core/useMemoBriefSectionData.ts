@@ -25,13 +25,15 @@ const FILTER_TYPES = {
   ],
 } as { [key in AssetListType]: CellType[] };
 
-export default function useMemoBriefSectionData(
-  {
-    externalAddress,
-    type,
-  }: { externalAddress?: string; type?: AssetListType } = {},
-  briefSectionsData?: any[]
-) {
+export default function useMemoBriefSectionData({
+  externalAddress,
+  type,
+  briefSectionsData,
+}: {
+  externalAddress?: string;
+  type?: AssetListType;
+  briefSectionsData?: any[];
+} = {}) {
   let sectionsDataToUse: any[];
 
   if (externalAddress) {

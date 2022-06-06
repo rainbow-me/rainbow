@@ -50,7 +50,11 @@ export default function SelectUniqueTokenSheet() {
       <RecyclerAssetListScrollPositionContext.Provider value={position}>
         <RecyclerAssetListContext.Provider value={value}>
           <StickyHeaderManager>
-            <RawMemoRecyclerAssetList briefSectionsData={briefSectionsData} />
+            <RawMemoRecyclerAssetList
+              briefSectionsData={briefSectionsData}
+              extendedState={value}
+              type="select-nft"
+            />
           </StickyHeaderManager>
         </RecyclerAssetListContext.Provider>
       </RecyclerAssetListScrollPositionContext.Provider>
