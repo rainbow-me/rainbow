@@ -7,7 +7,12 @@ import {
 } from 'react-native-ios-context-menu';
 import { showDeleteContactActionSheet } from '../../contacts';
 import More from '../MoreButton/MoreButton';
-import { useClipboard, useContacts, useWallets } from '@rainbow-me/hooks';
+import {
+  useClipboard,
+  useContacts,
+  useWallets,
+  useWatchWallet,
+} from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { RAINBOW_PROFILES_BASE_URL } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
@@ -30,19 +35,11 @@ export default function MoreButton({
   address?: string;
   ensName?: string;
 }) {
-  const { switchToWalletWithAddress, wallets, selectedWallet } = useWallets();
+  const { switchToWalletWithAddress, selectedWallet } = useWallets();
+  const { isWatching } = useWatchWallet({ address });
   const { navigate } = useNavigation();
   const { setClipboard } = useClipboard();
   const { contacts, onRemoveContact } = useContacts();
-
-  const isWatchedOrOwnedWallet = useMemo(() => {
-    return Object.keys(wallets).find(key => {
-      return wallets[key].addresses.some(
-        (wallet: { address: string }) =>
-          wallet.address.toLowerCase() === address?.toLowerCase()
-      );
-    });
-  }, [address, wallets]);
 
   const isSelectedWallet = useMemo(() => {
     const visibleWallet = selectedWallet.addresses.find(
@@ -64,7 +61,7 @@ export default function MoreButton({
 
   const menuItems = useMemo(() => {
     return [
-      isWatchedOrOwnedWallet && {
+      isWatching && {
         actionKey: ACTIONS.OPEN_WALLET,
         actionTitle: lang.t('profiles.details.open_wallet'),
         icon: {
@@ -115,7 +112,7 @@ export default function MoreButton({
         },
       },
     ] as MenuActionConfig[];
-  }, [isWatchedOrOwnedWallet, formattedAddress, contact]);
+  }, [isWatching, formattedAddress, contact]);
 
   const handlePressMenuItem = useCallback(
     async ({ nativeEvent: { actionKey } }) => {
