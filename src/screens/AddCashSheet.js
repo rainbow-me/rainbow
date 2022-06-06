@@ -10,9 +10,9 @@ import {
   SheetSubtitleCycler,
   SheetTitle,
 } from '../components/sheet';
-import { useTheme } from '../context/ThemeContext';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import { deviceUtils } from '../utils';
+import { useTheme } from '@rainbow-me/context';
 import {
   useAddCashLimits,
   useDimensions,
@@ -97,24 +97,23 @@ export default function AddCashSheet() {
       <Column
         align="center"
         height={isNativeStackAvailable ? sheetHeight : '100%'}
-        justify="end"
         paddingBottom={isNarrowPhone ? 15 : insets.bottom + 11}
       >
         <Column align="center" paddingVertical={6}>
           <SheetHandle />
           <ColumnWithMargins
+            align="center"
             margin={4}
             paddingTop={isNativeStackAvailable ? 7 : 5}
           >
             <SheetTitle>{lang.t('button.add_cash')}</SheetTitle>
-            {!isPaymentComplete && (
-              <SheetSubtitleCycler
-                errorIndex={errorIndex}
-                interval={subtitleInterval}
-                items={Object.values(cashLimits)}
-                sharedValue={errorAnimation}
-              />
-            )}
+            <SheetSubtitleCycler
+              errorIndex={errorIndex}
+              interval={subtitleInterval}
+              isPaymentComplete={isPaymentComplete}
+              items={Object.values(cashLimits)}
+              sharedValue={errorAnimation}
+            />
           </ColumnWithMargins>
         </Column>
         <FlexItem width="100%">

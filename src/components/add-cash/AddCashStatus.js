@@ -170,12 +170,12 @@ const AddCashSuccess = ({ currency }) => {
 
 const keyframe = new Keyframe({
   0: {
-    easing: Easing.out(Easing.ease),
+    easing: Easing.in(Easing.ease),
     opacity: 0,
     transform: [{ scale: 0.0001 }],
   },
   100: {
-    easing: Easing.out(Easing.ease),
+    easing: Easing.in(Easing.ease),
     opacity: 1,
     transform: [{ scale: 1 }],
   },
