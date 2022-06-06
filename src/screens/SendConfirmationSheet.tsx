@@ -1,3 +1,4 @@
+import { AddressZero } from '@ethersproject/constants';
 import { useRoute } from '@react-navigation/native';
 import { toChecksumAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
@@ -22,6 +23,7 @@ import RequestVendorLogoIcon from '../components/coin-icon/RequestVendorLogoIcon
 import { ContactAvatar } from '../components/contacts';
 import ImageAvatar from '../components/contacts/ImageAvatar';
 import CheckboxField from '../components/fields/CheckboxField';
+import { GasSpeedButton } from '../components/gas';
 import ENSCircleIcon from '../components/icons/svg/ENSCircleIcon';
 import { Centered, Column, Row } from '../components/layout';
 import { SendButton } from '../components/send';
@@ -38,12 +40,22 @@ import useExperimentalFlag, {
 } from '@rainbow-me/config/experimentalHooks';
 import { Box, Inset, Stack, Text } from '@rainbow-me/design-system';
 import { UniqueAsset } from '@rainbow-me/entities';
+import {
+  estimateENSSetAddressGasLimit,
+  estimateENSSetOwnerGasLimit,
+  estimateENSSetRecordsGasLimit,
+  formatRecordsForTransaction,
+} from '@rainbow-me/handlers/ens';
 import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
+import { estimateGasLimit } from '@rainbow-me/handlers/web3';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
 } from '@rainbow-me/helpers/emojiHandler';
-import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
+import {
+  add,
+  convertAmountToNativeDisplay,
+} from '@rainbow-me/helpers/utilities';
 import {
   isENSAddressFormat,
   isValidDomainFormat,
@@ -55,6 +67,7 @@ import {
   useContacts,
   useDimensions,
   useENSProfileImages,
+  useGas,
   useUserAccounts,
   useWallets,
 } from '@rainbow-me/hooks';
@@ -63,7 +76,7 @@ import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import { useTheme } from '@rainbow-me/theme';
-import { getUniqueTokenType } from '@rainbow-me/utils';
+import { getUniqueTokenType, promiseUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const Container = styled(Centered).attrs({
@@ -169,7 +182,7 @@ const ChevronDown = () => {
 
 export default function SendConfirmationSheet() {
   const { colors, isDarkMode } = useTheme();
-  const { nativeCurrency } = useAccountSettings();
+  const { accountAddress, nativeCurrency } = useAccountSettings();
   const { goBack, navigate, setParams } = useNavigation();
   const {
     height: deviceHeight,
@@ -219,6 +232,8 @@ export default function SendConfirmationSheet() {
     });
     return !!found;
   }, [toAddress, userAccounts]);
+
+  const { updateTxFee } = useGas();
 
   useEffect(() => {
     if (!isSendingToUserAccount) {
@@ -288,6 +303,85 @@ export default function SendConfirmationSheet() {
           },
         ]
   );
+
+  useEffect(() => {
+    if (isENS) {
+      const promises = [
+        estimateGasLimit(
+          {
+            address: accountAddress,
+            amount: 0,
+            asset: asset,
+            recipient: toAddress,
+          },
+          true
+        ),
+      ];
+      const sendENSOptions = Object.fromEntries(
+        checkboxes.map(option => [option.id, option.checked])
+      );
+      const cleanENSName = asset?.name?.split(' ')?.[0] ?? asset?.name;
+
+      if (sendENSOptions['clear-records']) {
+        let records = Object.keys({
+          ...(ensProfile?.data?.coinAddresses || {}),
+          ...(ensProfile?.data?.records || {}),
+        }).reduce((records, recordKey) => {
+          return {
+            ...records,
+            [recordKey]: '',
+          };
+        }, {});
+        if (sendENSOptions['set-address']) {
+          records = { ...records, ETH: toAddress };
+        } else {
+          records = { ...records, ETH: AddressZero };
+        }
+        promises.push(
+          estimateENSSetRecordsGasLimit({
+            name: cleanENSName,
+            ownerAddress: accountAddress,
+            records: records,
+          })
+        );
+      } else if (sendENSOptions['set-address']) {
+        promises.push(
+          estimateENSSetAddressGasLimit({
+            name: cleanENSName,
+            records: formatRecordsForTransaction({ ETH: toAddress }),
+          })
+        );
+      }
+      if (sendENSOptions['transfer-control']) {
+        promises.push(
+          estimateENSSetOwnerGasLimit({
+            fromAddress: accountAddress,
+            name: cleanENSName,
+            ownerAddress: toAddress,
+          })
+        );
+      }
+      promiseUtils
+        .PromiseAllWithFails(promises)
+        .then(gasLimits => {
+          const gasLimit = gasLimits.reduce(add, 0);
+          updateTxFee(gasLimit, null);
+        })
+        .catch(e => {
+          logger.sentry('Error calculating gas limit', e);
+          updateTxFee(null, null);
+        });
+    }
+  }, [
+    accountAddress,
+    asset,
+    checkboxes,
+    ensProfile?.data?.coinAddresses,
+    ensProfile?.data?.records,
+    isENS,
+    toAddress,
+    updateTxFee,
+  ]);
 
   const handleCheckbox = useCallback(
     checkbox => {
@@ -645,6 +739,13 @@ export default function SendConfirmationSheet() {
               testID="send-confirmation-button"
             />
           </SendButtonWrapper>
+          {isENS && (
+            /* @ts-expect-error JavaScript component */
+            <GasSpeedButton
+              currentNetwork={network}
+              theme={isDarkMode ? 'dark' : 'light'}
+            />
+          )}
         </Column>
       </SlackSheet>
     </Container>

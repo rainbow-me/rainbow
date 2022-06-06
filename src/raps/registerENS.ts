@@ -12,10 +12,14 @@ import {
   fetchCoinAddresses,
   fetchRecords,
   formatRecordsForTransaction,
+  getRapActionTypeForTxType,
+  getTransactionTypeForRecords,
   recordsForTransactionAreValid,
-  shouldUseMulticallTransaction,
 } from '@rainbow-me/handlers/ens';
-import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
+import {
+  ENS_RECORDS,
+  ENSRegistrationTransactionType,
+} from '@rainbow-me/helpers/ens';
 
 export const createSetRecordsENSRap = async (
   ensActionParameters: ENSActionParameters
@@ -27,16 +31,17 @@ export const createSetRecordsENSRap = async (
   );
   const validRecords = recordsForTransactionAreValid(ensRegistrationRecords);
   if (validRecords) {
-    const shouldUseMulticall = shouldUseMulticallTransaction(
-      ensRegistrationRecords
-    );
-    const recordsAction = createNewENSAction(
-      shouldUseMulticall
-        ? RapActionTypes.multicallENS
-        : RapActionTypes.setTextENS,
-      ensActionParameters
-    );
-    actions = concat(actions, recordsAction);
+    const txType = getTransactionTypeForRecords(ensRegistrationRecords);
+    if (txType) {
+      const rapActionType = getRapActionTypeForTxType(txType);
+      if (rapActionType) {
+        const recordsAction = createNewENSAction(
+          rapActionType,
+          ensActionParameters
+        );
+        actions = concat(actions, recordsAction);
+      }
+    }
   }
 
   // create the overall rap
@@ -60,16 +65,17 @@ export const createRegisterENSRap = async (
   );
   const validRecords = recordsForTransactionAreValid(ensRegistrationRecords);
   if (validRecords) {
-    const shouldUseMulticall = shouldUseMulticallTransaction(
-      ensRegistrationRecords
-    );
-    const recordsAction = createNewENSAction(
-      shouldUseMulticall
-        ? RapActionTypes.multicallENS
-        : RapActionTypes.setTextENS,
-      ensActionParameters
-    );
-    actions = concat(actions, recordsAction);
+    const txType = getTransactionTypeForRecords(ensRegistrationRecords);
+    if (txType) {
+      const rapActionType = getRapActionTypeForTxType(txType);
+      if (rapActionType) {
+        const recordsAction = createNewENSAction(
+          rapActionType,
+          ensActionParameters
+        );
+        actions = concat(actions, recordsAction);
+      }
+    }
   }
 
   if (ensActionParameters.setReverseRecord) {
@@ -124,24 +130,14 @@ export const createTransferENSRap = async (
 
   const {
     clearRecords,
+    records,
     setAddress,
     transferControl,
     toAddress,
   } = ensActionParameters;
 
   if (clearRecords) {
-    const [allRecords, allCoinAddresses] = await Promise.all([
-      fetchRecords(ensActionParameters.name, {
-        supportedOnly: false,
-      }),
-      fetchCoinAddresses(ensActionParameters.name, {
-        supportedOnly: false,
-      }),
-    ]);
-    const emptyRecords = Object.keys({
-      ...(allCoinAddresses || {}),
-      ...(allRecords || {}),
-    }).reduce(
+    const emptyRecords = Object.keys(records || {}).reduce(
       (records, recordKey) => ({
         ...records,
         // Use zero address for ETH record as an empty string throws an error
@@ -163,16 +159,17 @@ export const createTransferENSRap = async (
       !isEmpty(emptyRecords) &&
       recordsForTransactionAreValid(ensRegistrationRecords);
     if (validRecords) {
-      const shouldUseMulticall = shouldUseMulticallTransaction(
-        ensRegistrationRecords
-      );
-      const recordsAction = createNewENSAction(
-        shouldUseMulticall
-          ? RapActionTypes.multicallENS
-          : RapActionTypes.setTextENS,
-        { ...ensActionParameters, records: newRecords }
-      );
-      actions = concat(actions, recordsAction);
+      const txType = getTransactionTypeForRecords(ensRegistrationRecords);
+      if (txType) {
+        const rapActionType = getRapActionTypeForTxType(txType);
+        if (rapActionType) {
+          const recordsAction = createNewENSAction(rapActionType, {
+            ...ensActionParameters,
+            records: newRecords,
+          });
+          actions = concat(actions, recordsAction);
+        }
+      }
     }
   } else if (setAddress) {
     const setName = createNewENSAction(RapActionTypes.setAddrENS, {

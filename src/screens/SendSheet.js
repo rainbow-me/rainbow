@@ -196,6 +196,7 @@ export default function SendSheet(props) {
     : selected.uniqueId;
   const ensProfile = useENSProfile(ensName, {
     enabled: isENS,
+    supportedRecordsOnly: false,
   });
 
   const isL2 = useMemo(() => {
@@ -523,6 +524,10 @@ export default function SendSheet(props) {
         await transferENS(() => null, {
           clearRecords,
           name: ensName,
+          records: {
+            ...(ensProfile?.data?.records || {}),
+            ...(ensProfile?.data?.coinAddresses || {}),
+          },
           setAddress,
           toAddress,
           transferControl,

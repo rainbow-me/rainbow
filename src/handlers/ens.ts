@@ -23,7 +23,7 @@ import {
   EnsGetRegistrationData,
 } from '../apollo/queries';
 import { ensProfileImagesQueryKey } from '../hooks/useENSProfileImages';
-import { ENSActionParameters } from '../raps/common';
+import { ENSActionParameters, RapActionTypes } from '../raps/common';
 import { getProfileImages } from './localstorage/ens';
 import { estimateGasWithPadding, getProviderForNetwork } from './web3';
 import {
@@ -488,7 +488,10 @@ export const fetchAccountPrimary = async (accountAddress: string) => {
   };
 };
 
-export const fetchProfile = async (ensName: string) => {
+export const fetchProfile = async (
+  ensName: string,
+  { supportedRecordsOnly = true }: { supportedRecordsOnly?: boolean } = {}
+) => {
   const [
     resolver,
     records,
@@ -499,8 +502,8 @@ export const fetchProfile = async (ensName: string) => {
     primary,
   ] = await Promise.all([
     fetchResolver(ensName),
-    fetchRecords(ensName),
-    fetchCoinAddresses(ensName),
+    fetchRecords(ensName, { supportedOnly: supportedRecordsOnly }),
+    fetchCoinAddresses(ensName, { supportedOnly: supportedRecordsOnly }),
     fetchImages(ensName),
     fetchOwner(ensName),
     fetchRegistration(ensName),
@@ -621,6 +624,35 @@ export const estimateENSSetNameGasLimit = async ({
     type: ENSRegistrationTransactionType.SET_NAME,
   });
 
+export const estimateENSSetOwnerGasLimit = async ({
+  name,
+  ownerAddress,
+  fromAddress,
+}: {
+  name: string;
+  ownerAddress: string;
+  fromAddress?: string;
+}) =>
+  estimateENSTransactionGasLimit({
+    name,
+    ownerAddress,
+    fromAddress,
+    type: ENSRegistrationTransactionType.SET_OWNER,
+  });
+
+export const estimateENSSetAddressGasLimit = async ({
+  name,
+  records,
+}: {
+  name: string;
+  records: ENSRegistrationRecords;
+}) =>
+  estimateENSTransactionGasLimit({
+    name,
+    records,
+    type: ENSRegistrationTransactionType.SET_ADDR,
+  });
+
 export const estimateENSSetTextGasLimit = async ({
   name,
   records,
@@ -641,6 +673,7 @@ export const estimateENSTransactionGasLimit = async ({
   name,
   type,
   ownerAddress,
+  fromAddress,
   rentPrice,
   duration,
   records,
@@ -649,6 +682,7 @@ export const estimateENSTransactionGasLimit = async ({
   name?: string;
   type: ENSRegistrationTransactionType;
   ownerAddress?: string;
+  fromAddress?: string;
   rentPrice?: string;
   duration?: number;
   salt?: string;
@@ -665,7 +699,7 @@ export const estimateENSTransactionGasLimit = async ({
   });
 
   const txPayload = {
-    ...(ownerAddress ? { from: ownerAddress } : {}),
+    ...(ownerAddress ? { from: fromAddress ? fromAddress : ownerAddress } : {}),
     ...(value ? { value } : {}),
   };
 
@@ -785,14 +819,31 @@ export const estimateENSSetRecordsGasLimit = async ({
   const ensRegistrationRecords = formatRecordsForTransaction(records);
   const validRecords = recordsForTransactionAreValid(ensRegistrationRecords);
   if (validRecords) {
-    const shouldUseMulticall = shouldUseMulticallTransaction(
-      ensRegistrationRecords
-    );
-    gasLimit = await (shouldUseMulticall
-      ? estimateENSMulticallGasLimit
-      : estimateENSSetTextGasLimit)({
-      ...{ name, ownerAddress, records: ensRegistrationRecords },
-    });
+    const txType = getTransactionTypeForRecords(ensRegistrationRecords);
+    switch (txType) {
+      case ENSRegistrationTransactionType.MULTICALL:
+        gasLimit = await estimateENSMulticallGasLimit({
+          name,
+          ownerAddress,
+          records: ensRegistrationRecords,
+        });
+        break;
+      case ENSRegistrationTransactionType.SET_ADDR:
+        gasLimit = await estimateENSSetAddressGasLimit({
+          name,
+          records: ensRegistrationRecords,
+        });
+        break;
+      case ENSRegistrationTransactionType.SET_TEXT:
+        gasLimit = await estimateENSSetTextGasLimit({
+          name,
+          ownerAddress,
+          records: ensRegistrationRecords,
+        });
+        break;
+      default:
+        gasLimit = '0';
+    }
   }
   return gasLimit;
 };
@@ -868,7 +919,7 @@ export const recordsForTransactionAreValid = (
   return true;
 };
 
-export const shouldUseMulticallTransaction = (
+export const getTransactionTypeForRecords = (
   registrationRecords: ENSRegistrationRecords
 ) => {
   const {
@@ -877,15 +928,35 @@ export const shouldUseMulticallTransaction = (
     ensAssociatedAddress,
     text,
   } = registrationRecords;
+
   if (
-    !coinAddress?.length &&
-    !contentHash &&
-    !ensAssociatedAddress &&
-    text?.length === 1
+    contentHash ||
+    ensAssociatedAddress ||
+    (text?.length || 0) + (coinAddress?.length || 0) > 1
   ) {
-    return false;
+    return ENSRegistrationTransactionType.MULTICALL;
+  } else if (text?.length) {
+    return ENSRegistrationTransactionType.SET_TEXT;
+  } else if (coinAddress?.length) {
+    return ENSRegistrationTransactionType.SET_ADDR;
+  } else {
+    return null;
   }
-  return true;
+};
+
+export const getRapActionTypeForTxType = (
+  txType: ENSRegistrationTransactionType
+) => {
+  switch (txType) {
+    case ENSRegistrationTransactionType.MULTICALL:
+      return RapActionTypes.multicallENS;
+    case ENSRegistrationTransactionType.SET_ADDR:
+      return RapActionTypes.setAddrENS;
+    case ENSRegistrationTransactionType.SET_TEXT:
+      return RapActionTypes.setTextENS;
+    default:
+      return null;
+  }
 };
 
 export const fetchReverseRecord = async (address: string) => {
