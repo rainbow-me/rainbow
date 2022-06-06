@@ -1,21 +1,9 @@
-import { omit, pick } from 'lodash';
 import React, { Fragment, useCallback, useRef, useState } from 'react';
 import ActionSheet from 'react-native-actionsheet';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 import { padding } from '@rainbow-me/styles';
-
-const ActionSheetProps = [
-  'cancelButtonIndex',
-  'destructiveButtonIndex',
-  'message',
-  'onPress',
-  'options',
-  'tintColor',
-  'title',
-];
-
 const style = padding.object(12, 8);
 
 const ContextButton = props => (
@@ -31,6 +19,12 @@ export default function ContextMenu({
   dynamicOptions,
   onPressActionSheet,
   options = [],
+  destructiveButtonIndex,
+  message,
+  tintColor,
+  title,
+  // eslint-disable-next-line no-unused-vars
+  onPress: _, //to avoid getting onPress in ContextButton
   ...props
 }) {
   const actionsheetRef = useRef();
@@ -62,19 +56,22 @@ export default function ContextMenu({
           activeOpacity={activeOpacity}
           onPress={handleShowActionSheet}
         >
-          {children || <ContextButton {...omit(props, ActionSheetProps)} />}
+          {children || <ContextButton {...props} />}
         </ButtonPressAnimation>
       )}
       <ActionSheet
-        {...pick(props, ActionSheetProps)}
         cancelButtonIndex={
           Number.isInteger(cancelButtonIndex)
             ? cancelButtonIndex
             : options.length - 1
         }
+        destructiveButtonIndex={destructiveButtonIndex}
+        message={message}
         onPress={handlePressActionSheet}
         options={dynamicOptions ? dynamicOptions() : options}
         ref={actionsheetRef}
+        tintColor={tintColor}
+        title={title}
       />
     </Fragment>
   );

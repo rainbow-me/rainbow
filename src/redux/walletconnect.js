@@ -10,7 +10,6 @@ import {
   isEmpty,
   mapValues,
   omitBy,
-  pickBy,
   values,
 } from 'lodash';
 import { Alert, AppState, InteractionManager, Linking } from 'react-native';
@@ -32,7 +31,11 @@ import { addRequestToApprove } from './requests';
 import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
 import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
-import { convertHexToString, delay } from '@rainbow-me/helpers/utilities';
+import {
+  convertHexToString,
+  delay,
+  pickBy,
+} from '@rainbow-me/helpers/utilities';
 import WalletConnectApprovalSheetType from '@rainbow-me/helpers/walletConnectApprovalSheetTypes';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils, watchingAlert } from '@rainbow-me/utils';

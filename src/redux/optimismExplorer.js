@@ -1,6 +1,6 @@
 import { Contract } from '@ethersproject/contracts';
 import { captureException } from '@sentry/react-native';
-import { isEmpty, keyBy, map, mapValues, pickBy, toLower } from 'lodash';
+import { isEmpty, keyBy, map, mapValues, toLower } from 'lodash';
 import isEqual from 'react-fast-compare';
 import { addressAssetsReceived, fetchAssetPricesWithCoingecko } from './data';
 // eslint-disable-next-line import/no-cycle
@@ -8,6 +8,7 @@ import { emitAssetRequest, emitChartsRequest } from './explorer';
 import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
+import { pickBy } from '@rainbow-me/helpers/utilities';
 import {
   balanceCheckerContractAbiOVM,
   chainAssets,
