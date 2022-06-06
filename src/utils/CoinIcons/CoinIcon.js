@@ -1,6 +1,8 @@
+/* eslint-disable import/namespace */
 import React, { useMemo } from 'react';
+import * as CoinIconsImages from 'react-coin-icon/lib/pngs';
+import { Image } from 'react-native';
 import { StyleSheet, View } from 'react-primitives';
-import CoinIcons from './CoinIcons';
 import FallbackIcon from './FallbackIcon';
 
 const sx = StyleSheet.create({
@@ -18,7 +20,7 @@ function formatSymbol(symbol) {
 
 const CoinIcon = ({
   color = '#3A3D51',
-  fallbackRenderer = FallbackIcon,
+  fallbackRenderer: Fallback = FallbackIcon,
   forceFallback,
   shadowColor,
   size = 32,
@@ -52,13 +54,24 @@ const CoinIcon = ({
     };
   }, [color, shadowColor, size]);
 
-  const CoinIconElement = forceFallback
-    ? fallbackRenderer
-    : CoinIcons[formattedSymbol] || fallbackRenderer;
+  if (!forceFallback && CoinIconsImages[formattedSymbol]) {
+    return (
+      <View {...circleProps} {...shadowProps} style={[sx.container, style]}>
+        <Image
+          resizeMode="contain"
+          source={CoinIconsImages[formattedSymbol]}
+          style={{
+            height: '100%',
+            width: '100%',
+          }}
+        />
+      </View>
+    );
+  }
 
   return (
     <View {...circleProps} style={[sx.container, style]}>
-      <CoinIconElement
+      <Fallback
         {...circleProps}
         {...shadowProps}
         color={color}
