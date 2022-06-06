@@ -1187,7 +1187,9 @@
         "enter_seeds_placeholder": "Phrase de départ, clé privée, adresse Ethereum ou nom ENS",
         "get_new_wallet": "Get a new wallet :)",
         "import_wallet": "Import Wallet :)",
-        "name_wallet": "Nommez votre portefeuille"
+        "name_wallet": "Nommez votre portefeuille",
+        "terms": "By proceeding, you agree to Rainbow’s  :)",
+        "terms_link": "Terms of Use :)"
       },
       "pin_authentication": {
         "choose_your_pin": "Choose your PIN :)",
