@@ -66,7 +66,7 @@ export default function MoreButton({
         actionTitle: lang.t('profiles.details.open_wallet'),
         icon: {
           iconType: 'SYSTEM',
-          iconValue: 'person.text.rectangle',
+          iconValue: 'iphone.and.arrow.forward',
         },
       },
       {
