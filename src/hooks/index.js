@@ -53,7 +53,10 @@ export {
   default as useENSResolveName,
   prefetchENSResolveName,
 } from './useENSResolveName';
-export { default as useENSProfileRecords } from './useENSProfileRecords';
+export {
+  default as useENSProfileRecords,
+  prefetchENSProfileRecords,
+} from './useENSProfileRecords';
 export { default as useENSSearch } from './useENSSearch';
 export { default as useExpandedStateNavigation } from './useExpandedStateNavigation';
 export { default as useExternalWalletSectionsData } from './useExternalWalletSectionsData';
