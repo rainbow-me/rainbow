@@ -1,3 +1,4 @@
+import { useFocusEffect } from '@react-navigation/core';
 import { debounce, isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import { TextInputProps, ViewProps } from 'react-native';
@@ -12,7 +13,6 @@ import {
 } from '@rainbow-me/design-system';
 import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 import { useENSRegistrationForm } from '@rainbow-me/hooks';
-import { useFocusEffect } from '@react-navigation/core';
 
 export default function TextRecordsForm({
   autoFocusKey,
