@@ -2,7 +2,7 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Animated, Easing } from 'react-native';
+import { Animated, Dimensions, Easing, Linking } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import Reanimated, {
   Clock,
@@ -11,6 +11,7 @@ import Reanimated, {
   timing,
 } from 'react-native-reanimated';
 import { useValue } from 'react-native-redash/src/v1';
+import { useSafeArea } from 'react-native-safe-area-context';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { useMemoOne } from 'use-memo-one';
 import RainbowGreyNeon from '../assets/rainbows/greyneon.png';
@@ -51,6 +52,8 @@ const {
   startClock,
 } = Reanimated;
 
+const { height: deviceHeight } = Dimensions.get('screen');
+
 const ButtonContainer = styled(Reanimated.View)({
   borderRadius: ({ height }) => height / 2,
 });
@@ -61,7 +64,7 @@ const ButtonContent = styled(RowWithMargins).attrs({
 })({
   alignSelf: 'center',
   height: '100%',
-  paddingBottom: 4,
+  paddingBottom: 2,
 });
 
 const ButtonLabel = styled(Text).attrs(
@@ -80,20 +83,22 @@ const ButtonEmoji = styled(Emoji).attrs({
   paddingBottom: 1.5,
 });
 
-const DarkShadow = styled(Reanimated.View)(({ theme: { colors } }) => ({
-  ...shadow.buildAsObject(0, 10, 30, colors.dark, 1),
-  backgroundColor: colors.white,
-  borderRadius: 30,
-  height: 60,
-  left: -3,
-  opacity: 0.2,
-  position: 'absolute',
-  top: -3,
-  width: 236,
-}));
+const DarkShadow = styled(Reanimated.View)(
+  ({ theme: { colors, isDarkMode } }) => ({
+    ...shadow.buildAsObject(0, 10, 30, colors.shadow, isDarkMode ? 0 : 1),
+    backgroundColor: colors.white,
+    borderRadius: 30,
+    height: 60,
+    left: -3,
+    opacity: 0.2,
+    position: 'absolute',
+    top: -3,
+    width: 236,
+  })
+);
 
-const Shadow = styled(Reanimated.View)(({ theme: { colors } }) => ({
-  ...shadow.buildAsObject(0, 10, 30, colors.dark, 0.4),
+const Shadow = styled(Reanimated.View)(({ theme: { colors, isDarkMode } }) => ({
+  ...shadow.buildAsObject(0, 5, 15, colors.shadow, isDarkMode ? 0 : 0.4),
   borderRadius: 30,
   height: 60,
   left: -3,
@@ -151,6 +156,12 @@ const ButtonWrapper = styled(Animated.View)({
   width: '100%',
 });
 
+const TermsOfUse = styled.View(({ bottomInset }) => ({
+  bottom: bottomInset / 2 + 32,
+  position: 'absolute',
+  width: 200,
+}));
+
 const INITIAL_SIZE = 375;
 
 export const useAnimatedValue = initialValue => {
@@ -180,7 +191,7 @@ const rainbows = [
     scale: 0.3333333333,
     source: ios ? { uri: 'neon' } : RainbowNeon,
     x: 149,
-    y: 380,
+    y: deviceHeight < 725 ? 380 * (deviceHeight / 725) : 380,
   },
   {
     delay: 40,
@@ -189,7 +200,7 @@ const rainbows = [
     scale: 0.6666666667,
     source: ios ? { uri: 'pixel' } : RainbowPixel,
     x: 173,
-    y: -263,
+    y: deviceHeight < 800 ? -263 * (deviceHeight / 800) : -263,
   },
   {
     delay: 60,
@@ -204,10 +215,10 @@ const rainbows = [
     delay: 80,
     id: 'liquid',
     rotate: '75deg',
-    scale: 0.42248,
+    scale: deviceHeight < 800 ? 0.42248 * (deviceHeight / 800) : 0.42248,
     source: ios ? { uri: 'liquid' } : RainbowLiquid,
     x: 40,
-    y: 215,
+    y: deviceHeight < 800 ? 215 * (deviceHeight / 800) : 215,
   },
 ];
 
@@ -328,7 +339,7 @@ const springConfig = {
   useNativeDriver: true,
 };
 
-function colorAnimation(rValue, fromShadow) {
+function colorAnimation(rValue) {
   const animation = runTiming(rValue.current);
   const r = interpolate(animation, {
     inputRange: [0, 1, 2, 3, 4, 5],
@@ -344,15 +355,18 @@ function colorAnimation(rValue, fromShadow) {
     inputRange: [0, 1, 2, 3, 4, 5],
     outputRange: [...colorsRGB.map(({ b }) => b), colorsRGB[0].b],
   });
-  return colorRGB(r, g, b, fromShadow);
+  return colorRGB(r, g, b);
 }
 
 export default function WelcomeScreen() {
-  const { colors } = useTheme();
+  const insets = useSafeArea();
+  const { colors, isDarkMode } = useTheme();
   const { replace, navigate, dangerouslyGetState } = useNavigation();
   const contentAnimation = useAnimatedValue(1);
   const hideSplashScreen = useHideSplashScreen();
-  const createWalletButtonAnimation = useAnimatedValue(1);
+  const createWalletButtonAnimation = useAnimatedValue(
+    IS_TESTING === 'true' ? 1 : 0.98
+  );
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
@@ -440,7 +454,7 @@ export default function WelcomeScreen() {
         },
       ],
     }),
-    [createWalletButtonAnimation]
+    [contentAnimation]
   );
 
   const rValue = useValue(0);
@@ -456,25 +470,29 @@ export default function WelcomeScreen() {
     });
   }, [dangerouslyGetState, navigate, replace]);
 
-  const createWalletButtonProps = useMemoOne(() => {
-    const color = colorAnimation(rValue, true);
-    return {
+  const createWalletButtonProps = useMemoOne(
+    () => ({
       emoji: 'castle',
       height: 54 + (ios ? 0 : 6),
       shadowStyle: {
         backgroundColor: backgroundColor,
-        shadowColor: color,
+        shadowColor: backgroundColor,
       },
       style: {
-        backgroundColor: colors.dark,
+        backgroundColor: isDarkMode ? colors.blueGreyDarkLight : colors.dark,
         borderColor: backgroundColor,
         borderWidth: ios ? 0 : 3,
         width: 230 + (ios ? 0 : 6),
       },
       text: lang.t('wallet.new.get_new_wallet'),
-      textColor: colors.white,
-    };
-  }, [rValue]);
+      textColor: isDarkMode ? colors.dark : colors.white,
+    }),
+    []
+  );
+
+  const handlePressTerms = useCallback(() => {
+    Linking.openURL('https://rainbow.me/terms-of-use');
+  }, []);
 
   const showRestoreSheet = useCallback(() => {
     analytics.track('Tapped "I already have one"');
@@ -547,6 +565,27 @@ export default function WelcomeScreen() {
           />
         </ButtonWrapper>
       </ContentWrapper>
+      <TermsOfUse bottomInset={insets.bottom}>
+        <Text
+          align="center"
+          color={colors.alpha(colors.blueGreyDark, 0.5)}
+          lineHeight="loose"
+          size="smedium"
+          weight="semibold"
+        >
+          {lang.t('wallet.new.terms')}
+          <Text
+            color={colors.paleBlue}
+            lineHeight="loose"
+            onPress={handlePressTerms}
+            size="smedium"
+            suppressHighlighting
+            weight="semibold"
+          >
+            {lang.t('wallet.new.terms_link')}
+          </Text>
+        </Text>
+      </TermsOfUse>
     </Container>
   );
 }

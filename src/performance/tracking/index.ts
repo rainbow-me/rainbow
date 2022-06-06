@@ -109,6 +109,14 @@ function finishMeasuring(
 }
 
 /**
+ * Function used to remove started measurement in case of error in the measured procedure
+ * @param metric What you're clearing
+ */
+function clearMeasure(metric: PerformanceMetricsType) {
+  currentlyTrackedMetrics.delete(metric);
+}
+
+/**
  * Function decorator, that tracks performance of a function using performance.now() calls
  * and logs the result with segment.
  * @param fn Function which performance will be measured
@@ -139,6 +147,7 @@ export function withPerformanceTracking<Fn extends (...args: any[]) => any>(
 }
 
 export const PerformanceTracking = {
+  clearMeasure,
   finishMeasuring,
   logDirectly,
   startMeasuring,

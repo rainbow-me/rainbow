@@ -16,14 +16,12 @@ enum State {
 
 type Result = {
   state: State;
-  result: number;
+  result: number | undefined;
 };
 
 export default function usePersistentAspectRatio(url: string): Result {
   const [ratio, setAspectRatio] = useMMKVNumber((url || '') as string, storage);
-  const [state, setState] = useState<State>(
-    ratio !== 0 ? State.loaded : State.init
-  );
+  const [state, setState] = useState<State>(ratio ? State.loaded : State.init);
   useEffect(() => {
     if (state === State.init && url) {
       setState(State.loading);

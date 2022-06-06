@@ -15,7 +15,7 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
-import { useTheme } from '../../context/ThemeContext';
+import { useTheme } from '../../theme/ThemeContext';
 import { Centered } from '../layout';
 import SheetHandleFixedToTop, {
   SheetHandleFixedToTopHeight,
@@ -42,7 +42,9 @@ const Container = styled(Centered).attrs({ direction: 'column' })(
       ? {}
       : {
           top:
-            contentHeight && additionalTopPadding
+            typeof additionalTopPadding === 'number'
+              ? additionalTopPadding
+              : contentHeight && additionalTopPadding
               ? deviceHeight - contentHeight
               : 0,
         }),
