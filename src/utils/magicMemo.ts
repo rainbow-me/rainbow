@@ -26,10 +26,6 @@ export default function magicMemo<C extends ComponentType<any>>(
       );
     }
 
-    if (magicDeps.length === 1 && typeof magicPrev !== 'object') {
-      return magicPrev === magicNext;
-    }
-
     return isEqual(magicPrev, magicNext);
   });
 }
