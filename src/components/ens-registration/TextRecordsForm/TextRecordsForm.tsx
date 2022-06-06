@@ -12,6 +12,7 @@ import {
 } from '@rainbow-me/design-system';
 import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 import { useENSRegistrationForm } from '@rainbow-me/hooks';
+import { useFocusEffect } from '@react-navigation/core';
 
 export default function TextRecordsForm({
   autoFocusKey,
@@ -134,6 +135,9 @@ function Field({ defaultValue, ...props }: InlineFieldProps) {
 
     setValue(defaultValue);
   }, [defaultValue, isTouched]);
+
+  // Set fields to be not touched when screen gets out of focus.
+  useFocusEffect(useCallback(() => () => setIsTouched(false), []));
 
   return (
     <>
