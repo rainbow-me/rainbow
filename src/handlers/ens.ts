@@ -488,7 +488,10 @@ export const fetchAccountPrimary = async (accountAddress: string) => {
   };
 };
 
-export const fetchProfile = async (ensName: string) => {
+export const fetchProfile = async (
+  ensName: string,
+  { supportedRecordsOnly = true }: { supportedRecordsOnly?: boolean } = {}
+) => {
   const [
     resolver,
     records,
@@ -499,8 +502,8 @@ export const fetchProfile = async (ensName: string) => {
     primary,
   ] = await Promise.all([
     fetchResolver(ensName),
-    fetchRecords(ensName),
-    fetchCoinAddresses(ensName),
+    fetchRecords(ensName, { supportedOnly: supportedRecordsOnly }),
+    fetchCoinAddresses(ensName, { supportedOnly: supportedRecordsOnly }),
     fetchImages(ensName),
     fetchOwner(ensName),
     fetchRegistration(ensName),
@@ -824,17 +827,20 @@ export const estimateENSSetRecordsGasLimit = async ({
           ownerAddress,
           records: ensRegistrationRecords,
         });
+        break;
       case ENSRegistrationTransactionType.SET_ADDR:
         gasLimit = await estimateENSSetAddressGasLimit({
           name,
           records: ensRegistrationRecords,
         });
+        break;
       case ENSRegistrationTransactionType.SET_TEXT:
         gasLimit = await estimateENSSetTextGasLimit({
           name,
           ownerAddress,
           records: ensRegistrationRecords,
         });
+        break;
       default:
         gasLimit = '0';
     }

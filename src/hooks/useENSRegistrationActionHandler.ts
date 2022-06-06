@@ -280,7 +280,7 @@ export default function useENSRegistrationActionHandler(
   const transferAction = useCallback(
     async (
       callback: () => void,
-      { clearRecords, name, setAddress, toAddress, transferControl }
+      { clearRecords, records, name, setAddress, toAddress, transferControl }
     ) => {
       const wallet = await loadWallet();
       if (!wallet) {
@@ -290,7 +290,10 @@ export default function useENSRegistrationActionHandler(
       const nonce = await getNextNonce();
 
       const transferEnsParameters: ENSActionParameters = {
-        ...formatENSActionParams(registrationParameters),
+        ...formatENSActionParams({
+          ...registrationParameters,
+          records: records || registrationParameters.records,
+        }),
         clearRecords,
         name,
         nonce,

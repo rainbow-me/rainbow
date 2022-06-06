@@ -196,6 +196,7 @@ export default function SendSheet(props) {
     : selected.uniqueId;
   const ensProfile = useENSProfile(ensName, {
     enabled: isENS,
+    supportedRecordsOnly: false,
   });
 
   const isL2 = useMemo(() => {
@@ -515,6 +516,24 @@ export default function SendSheet(props) {
         } catch (e) {}
       }
 
+      if (
+        isENS &&
+        toAddress &&
+        (clearRecords || setAddress || transferControl)
+      ) {
+        await transferENS(() => null, {
+          clearRecords,
+          name: ensName,
+          records: {
+            ...(ensProfile?.data?.records || {}),
+            ...(ensProfile?.data?.coinAddresses || {}),
+          },
+          setAddress,
+          toAddress,
+          transferControl,
+        });
+      }
+
       const gasLimitToUse =
         updatedGasLimit && !lessThan(updatedGasLimit, gasLimit)
           ? updatedGasLimit
@@ -543,15 +562,6 @@ export default function SendSheet(props) {
           Alert.alert(lang.t('wallet.transaction.alert.invalid_transaction'));
           submitSuccess = false;
         } else {
-          if (isENS && (clearRecords || setAddress || transferControl)) {
-            await transferENS(() => null, {
-              clearRecords,
-              name: ensName,
-              setAddress,
-              toAddress,
-              transferControl,
-            });
-          }
           const { result: txResult } = await sendTransaction({
             provider: currentProvider,
             transaction: signableTransaction,
