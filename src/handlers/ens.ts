@@ -634,9 +634,9 @@ export const estimateENSSetOwnerGasLimit = async ({
   fromAddress?: string;
 }) =>
   estimateENSTransactionGasLimit({
+    fromAddress,
     name,
     ownerAddress,
-    fromAddress,
     type: ENSRegistrationTransactionType.SET_OWNER,
   });
 
