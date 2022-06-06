@@ -23,7 +23,7 @@ import {
   EnsGetRegistrationData,
 } from '../apollo/queries';
 import { ensProfileImagesQueryKey } from '../hooks/useENSProfileImages';
-import { ENSActionParameters } from '../raps/common';
+import { ENSActionParameters, RapActionTypes } from '../raps/common';
 import { getProfileImages } from './localstorage/ens';
 import { estimateGasWithPadding, getProviderForNetwork } from './web3';
 import {
@@ -933,6 +933,23 @@ export const getTransactionTypeForRecords = (
     return ENSRegistrationTransactionType.SET_TEXT;
   } else if (coinAddress?.length) {
     return ENSRegistrationTransactionType.SET_ADDR;
+  } else {
+    return null;
+  }
+};
+
+export const getRapActionTypeForTxType = (
+  txType: ENSRegistrationTransactionType
+) => {
+  switch (txType) {
+    case ENSRegistrationTransactionType.MULTICALL:
+      return RapActionTypes.multicallENS;
+    case ENSRegistrationTransactionType.SET_ADDR:
+      return RapActionTypes.setAddrENS;
+    case ENSRegistrationTransactionType.SET_TEXT:
+      return RapActionTypes.setTextENS;
+    default:
+      return null;
   }
 };
 

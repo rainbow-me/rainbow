@@ -12,6 +12,7 @@ import {
   fetchCoinAddresses,
   fetchRecords,
   formatRecordsForTransaction,
+  getRapActionTypeForTxType,
   getTransactionTypeForRecords,
   recordsForTransactionAreValid,
 } from '@rainbow-me/handlers/ens';
@@ -31,27 +32,15 @@ export const createSetRecordsENSRap = async (
   const validRecords = recordsForTransactionAreValid(ensRegistrationRecords);
   if (validRecords) {
     const txType = getTransactionTypeForRecords(ensRegistrationRecords);
-    let rapActionType;
-    switch (txType) {
-      case ENSRegistrationTransactionType.MULTICALL:
-        rapActionType = RapActionTypes.multicallENS;
-        break;
-      case ENSRegistrationTransactionType.SET_ADDR:
-        rapActionType = RapActionTypes.setAddrENS;
-        break;
-      case ENSRegistrationTransactionType.SET_TEXT:
-        rapActionType = RapActionTypes.setTextENS;
-        break;
-      default:
-        rapActionType = null;
-        break;
-    }
-    if (rapActionType) {
-      const recordsAction = createNewENSAction(
-        rapActionType,
-        ensActionParameters
-      );
-      actions = concat(actions, recordsAction);
+    if (txType) {
+      const rapActionType = getRapActionTypeForTxType(txType);
+      if (rapActionType) {
+        const recordsAction = createNewENSAction(
+          rapActionType,
+          ensActionParameters
+        );
+        actions = concat(actions, recordsAction);
+      }
     }
   }
 
@@ -77,27 +66,15 @@ export const createRegisterENSRap = async (
   const validRecords = recordsForTransactionAreValid(ensRegistrationRecords);
   if (validRecords) {
     const txType = getTransactionTypeForRecords(ensRegistrationRecords);
-    let rapActionType;
-    switch (txType) {
-      case ENSRegistrationTransactionType.MULTICALL:
-        rapActionType = RapActionTypes.multicallENS;
-        break;
-      case ENSRegistrationTransactionType.SET_ADDR:
-        rapActionType = RapActionTypes.setAddrENS;
-        break;
-      case ENSRegistrationTransactionType.SET_TEXT:
-        rapActionType = RapActionTypes.setTextENS;
-        break;
-      default:
-        rapActionType = null;
-        break;
-    }
-    if (rapActionType) {
-      const recordsAction = createNewENSAction(
-        rapActionType,
-        ensActionParameters
-      );
-      actions = concat(actions, recordsAction);
+    if (txType) {
+      const rapActionType = getRapActionTypeForTxType(txType);
+      if (rapActionType) {
+        const recordsAction = createNewENSAction(
+          rapActionType,
+          ensActionParameters
+        );
+        actions = concat(actions, recordsAction);
+      }
     }
   }
 
@@ -193,27 +170,15 @@ export const createTransferENSRap = async (
       recordsForTransactionAreValid(ensRegistrationRecords);
     if (validRecords) {
       const txType = getTransactionTypeForRecords(ensRegistrationRecords);
-      let rapActionType;
-      switch (txType) {
-        case ENSRegistrationTransactionType.MULTICALL:
-          rapActionType = RapActionTypes.multicallENS;
-          break;
-        case ENSRegistrationTransactionType.SET_ADDR:
-          rapActionType = RapActionTypes.setAddrENS;
-          break;
-        case ENSRegistrationTransactionType.SET_TEXT:
-          rapActionType = RapActionTypes.setTextENS;
-          break;
-        default:
-          rapActionType = null;
-          break;
-      }
-      if (rapActionType) {
-        const recordsAction = createNewENSAction(rapActionType, {
-          ...ensActionParameters,
-          records: newRecords,
-        });
-        actions = concat(actions, recordsAction);
+      if (txType) {
+        const rapActionType = getRapActionTypeForTxType(txType);
+        if (rapActionType) {
+          const recordsAction = createNewENSAction(rapActionType, {
+            ...ensActionParameters,
+            records: newRecords,
+          });
+          actions = concat(actions, recordsAction);
+        }
       }
     }
   } else if (setAddress) {
