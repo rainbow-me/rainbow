@@ -594,7 +594,7 @@ describe('Hardhat Transaction Flow', () => {
 
   afterAll(async () => {
     // Reset the app state
-    // await connector?.killSession();
+    await connector?.killSession();
     connector = null;
     await device.clearKeychain();
     await exec('kill $(lsof -t -i:8545)');
