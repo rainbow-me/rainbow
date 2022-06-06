@@ -30,6 +30,11 @@ export interface Contact {
   color: number;
 
   /**
+   * The address's primary ens name
+   */
+  ens: string;
+
+  /**
    * The network.
    */
   network: Network;
@@ -89,7 +94,8 @@ export const contactsAddOrUpdate = (
   address: string,
   nickname: string,
   color: number,
-  network: Network
+  network: Network,
+  ens: string
 ) => (dispatch: Dispatch<ContactsUpdateAction>, getState: AppGetState) => {
   const loweredAddress = toLower(address);
   const { contacts } = getState().contacts;
@@ -98,6 +104,7 @@ export const contactsAddOrUpdate = (
     [loweredAddress]: {
       address: loweredAddress,
       color,
+      ens,
       network,
       nickname,
     },

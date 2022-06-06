@@ -3,14 +3,14 @@ import { useDispatch } from 'react-redux';
 import useAccountProfile from './useAccountProfile';
 import useAccountSettings from './useAccountSettings';
 import { useWallets, useWebData } from './index';
-import { useTheme } from '@rainbow-me/context';
 import { walletsSetSelected, walletsUpdate } from '@rainbow-me/redux/wallets';
+import { useTheme } from '@rainbow-me/theme';
 import { getNextEmojiWithColor } from '@rainbow-me/utils/profileUtils';
 
 export default function useUpdateEmoji() {
   const { accountColor, accountName } = useAccountProfile();
   const { wallets, selectedWallet } = useWallets();
-  const { updateWebProfile } = useWebData();
+  const { updateWebProfile, getWebProfile } = useWebData();
   const { accountAddress } = useAccountSettings();
   const { colors } = useTheme();
   const dispatch = useDispatch();
@@ -68,6 +68,7 @@ export default function useUpdateEmoji() {
   }, [accountAddress, accountName, saveInfo, selectedWallet.id, wallets]);
 
   return {
+    getWebProfile,
     saveInfo,
     setNextEmoji,
   };

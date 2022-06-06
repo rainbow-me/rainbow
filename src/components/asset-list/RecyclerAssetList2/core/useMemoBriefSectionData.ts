@@ -1,16 +1,49 @@
 import { useMemo } from 'react';
 import { useDeepCompareMemo } from 'use-deep-compare';
+import { AssetListType } from '..';
 import { CellType, CoinExtraData, NFTFamilyExtraData } from './ViewTypes';
 import {
   useCoinListEdited,
   useCoinListEditOptions,
+  useExternalWalletSectionsData,
   useOpenFamilies,
   useOpenInvestmentCards,
   useOpenSavings,
   useOpenSmallBalances,
 } from '@rainbow-me/hooks';
 
-export default function useMemoBriefSectionData(briefSectionsData: any[]) {
+const FILTER_TYPES = {
+  'ens-profile': [
+    CellType.NFT_SPACE_AFTER,
+    CellType.NFT,
+    CellType.FAMILY_HEADER,
+  ],
+  'select-nft': [
+    CellType.NFT_SPACE_AFTER,
+    CellType.NFT,
+    CellType.FAMILY_HEADER,
+  ],
+} as { [key in AssetListType]: CellType[] };
+
+export default function useMemoBriefSectionData(
+  {
+    externalAddress,
+    type,
+  }: { externalAddress?: string; type?: AssetListType } = {},
+  briefSectionsData?: any[]
+) {
+  let sectionsDataToUse: any[];
+
+  if (externalAddress) {
+    // `externalAddress` is a static prop, so hooks will always execute in order.
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    sectionsDataToUse = useExternalWalletSectionsData({
+      address: externalAddress,
+    }).briefSectionsData;
+  } else {
+    sectionsDataToUse = briefSectionsData!;
+  }
+
   const { isSmallBalancesOpen } = useOpenSmallBalances();
   const { isSavingsOpen } = useOpenSavings();
   const { isInvestmentCardsOpen } = useOpenInvestmentCards();
@@ -25,9 +58,18 @@ export default function useMemoBriefSectionData(briefSectionsData: any[]) {
     let index = 0;
     let afterCoins = false;
     // load firstly 12, then the rest after 1 sec
-    let numberOfSmallBalancesAllowed = briefSectionsData.length;
-    const briefSectionsDataFiltered = briefSectionsData
+    let numberOfSmallBalancesAllowed = sectionsDataToUse.length;
+    const filterTypes = type ? FILTER_TYPES[type as AssetListType] : [];
+    const briefSectionsDataFiltered = sectionsDataToUse
       .filter((data, arrIndex, arr) => {
+        if (
+          filterTypes &&
+          filterTypes.length !== 0 &&
+          !filterTypes.includes(data.type)
+        ) {
+          return false;
+        }
+
         if (
           arr[arrIndex - 1]?.type === CellType.COIN &&
           data.type !== CellType.COIN_DIVIDER &&
@@ -108,10 +150,13 @@ export default function useMemoBriefSectionData(briefSectionsData: any[]) {
         index++;
         return true;
       })
-      .map(({ uid, type }) => ({ type, uid }));
+      .map(({ uid, type: cellType }) => {
+        return { type: cellType, uid };
+      });
     return briefSectionsDataFiltered;
   }, [
-    briefSectionsData,
+    type,
+    sectionsDataToUse,
     isSmallBalancesOpen,
     isSavingsOpen,
     isInvestmentCardsOpen,
@@ -122,11 +167,11 @@ export default function useMemoBriefSectionData(briefSectionsData: any[]) {
   const memoizedResult = useDeepCompareMemo(() => result, [result]);
   const additionalData = useDeepCompareMemo(
     () =>
-      briefSectionsData.reduce((acc, data) => {
+      sectionsDataToUse.reduce((acc, data) => {
         acc[data.uid] = data;
         return acc;
       }, {}),
-    [briefSectionsData]
+    [sectionsDataToUse]
   );
   return { additionalData, memoizedResult };
 }

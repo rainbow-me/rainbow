@@ -2,7 +2,6 @@ import lang from 'i18n-js';
 import { startCase, toLower } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import { Linking, View } from 'react-native';
-// @ts-expect-error Missing types
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import URL from 'url-parse';
 import { buildUniqueTokenName } from '../../../helpers/assets';
@@ -21,7 +20,6 @@ import {
 } from '@rainbow-me/design-system';
 import { UniqueAsset } from '@rainbow-me/entities';
 import { Network } from '@rainbow-me/helpers';
-import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
 import {
   useAccountProfile,
   useClipboard,
@@ -38,6 +36,7 @@ import {
   showActionSheetWithOptions,
 } from '@rainbow-me/utils';
 import { getFullResUrl } from '@rainbow-me/utils/getFullResUrl';
+import isSVGImage from '@rainbow-me/utils/isSVG';
 
 const AssetActionsEnum = {
   copyTokenID: 'copyTokenID',
@@ -172,26 +171,49 @@ const UniqueTokenExpandedStateHeader = ({
   const familyMenuConfig = useMemo(() => {
     return {
       menuItems: [
-        !asset?.isPoap && {
-          ...FamilyActions[FamilyActionsEnum.viewCollection],
-        },
-        (asset.external_link || asset.collection.external_url) && {
-          ...FamilyActions[FamilyActionsEnum.collectionWebsite],
-          discoverabilityTitle: formattedCollectionUrl,
-        },
-        asset.collection.twitter_username && {
-          ...FamilyActions[FamilyActionsEnum.twitter],
-        },
-        asset.collection.discord_url && {
-          ...FamilyActions[FamilyActionsEnum.discord],
-        },
+        ...(!asset?.isPoap
+          ? [
+              {
+                ...FamilyActions[FamilyActionsEnum.viewCollection],
+              },
+            ]
+          : []),
+        ...(asset.external_link || asset.collection.external_url
+          ? [
+              {
+                ...FamilyActions[FamilyActionsEnum.collectionWebsite],
+                discoverabilityTitle: formattedCollectionUrl,
+              },
+            ]
+          : []),
+        ...(asset.collection.twitter_username
+          ? [
+              {
+                ...FamilyActions[FamilyActionsEnum.twitter],
+              },
+            ]
+          : []),
+        ...(asset.collection.discord_url
+          ? [
+              {
+                ...FamilyActions[FamilyActionsEnum.discord],
+              },
+            ]
+          : []),
       ],
       menuTitle: '',
-    } as const;
-  }, [asset, formattedCollectionUrl]);
+    };
+  }, [
+    asset.collection.discord_url,
+    asset.collection.external_url,
+    asset.collection.twitter_username,
+    asset.external_link,
+    asset?.isPoap,
+    formattedCollectionUrl,
+  ]);
 
   // @ts-expect-error image_url could be null or undefined?
-  const isSVG = isSupportedUriExtension(asset.image_original_url, ['.svg']);
+  const isSVG = isSVGImage(asset.image_url);
   const isENS =
     toLower(asset.asset_contract.address) === toLower(ENS_NFT_CONTRACT_ADDRESS);
 
@@ -222,7 +244,7 @@ const UniqueTokenExpandedStateHeader = ({
         },
       ],
       menuTitle: '',
-    } as const;
+    };
   }, [asset.id, asset?.network, isPhotoDownloadAvailable]);
 
   const handlePressFamilyMenuItem = useCallback(
@@ -396,19 +418,17 @@ const UniqueTokenExpandedStateHeader = ({
   return (
     <Stack space="15px">
       <Columns space="24px">
-        <Heading size="23px" weight="heavy">
+        <Heading containsEmoji size="23px" weight="heavy">
           {buildUniqueTokenName(asset)}
         </Heading>
         <Column width="content">
           <Bleed space={overflowMenuHitSlop}>
             <ContextMenuButton
-              activeOpacity={1}
               menuConfig={assetMenuConfig}
               {...(android ? { onPress: onPressAndroidAsset } : {})}
               isMenuPrimaryAction
               onPressMenuItem={handlePressAssetMenuItem}
               useActionSheetFallback={false}
-              wrapNativeComponent
             >
               <ButtonPressAnimation scaleTo={0.75}>
                 <Inset space={overflowMenuHitSlop}>
@@ -424,13 +444,11 @@ const UniqueTokenExpandedStateHeader = ({
       <Inline wrap={false}>
         <Bleed space={familyNameHitSlop}>
           <ContextMenuButton
-            activeOpacity={0}
             menuConfig={familyMenuConfig}
             {...(android ? { onPress: onPressAndroidFamily } : {})}
             isMenuPrimaryAction
             onPressMenuItem={handlePressFamilyMenuItem}
             useActionSheetFallback={false}
-            wrapNativeComponent={false}
           >
             <ButtonPressAnimation scaleTo={0.88}>
               <Inset space={familyNameHitSlop}>

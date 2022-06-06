@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { Share } from 'react-native';
-import { useTheme } from '../../context/ThemeContext';
+import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { Centered, InnerBorder } from '../layout';
 import { Text } from '../text';

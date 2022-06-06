@@ -6,15 +6,26 @@ import RawMemoRecyclerAssetList from './core/RawRecyclerList';
 import { StickyHeaderManager } from './core/StickyHeaders';
 import useMemoBriefSectionData from './core/useMemoBriefSectionData';
 
+export type AssetListType = 'wallet' | 'ens-profile' | 'select-nft';
+
 function RecyclerAssetList({
   walletBriefSectionsData,
+  externalAddress,
+  type = 'wallet',
 }: {
   walletBriefSectionsData: any[];
+  /** An "external address" is an address that is not the current account address. */
+  externalAddress?: string;
+  type?: AssetListType;
 }) {
   const {
     memoizedResult: briefSectionsData,
     additionalData,
-  } = useMemoBriefSectionData(walletBriefSectionsData);
+  } = useMemoBriefSectionData({
+    briefSectionsData: walletBriefSectionsData,
+    externalAddress,
+    type,
+  });
 
   const position = useMemoOne(() => new RNAnimated.Value(0), []);
 
@@ -24,6 +35,7 @@ function RecyclerAssetList({
         <RawMemoRecyclerAssetList
           additionalData={additionalData}
           briefSectionsData={briefSectionsData}
+          externalAddress={externalAddress}
         />
       </StickyHeaderManager>
     </RecyclerAssetListScrollPositionContext.Provider>

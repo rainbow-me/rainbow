@@ -10,9 +10,12 @@ import { SetterOrUpdater } from 'recoil';
 import { DataProvider, RecyclerListView } from 'recyclerlistview';
 import { useMemoOne } from 'use-memo-one';
 import { useTheme } from '../../../../context/ThemeContext';
+import { UniqueAsset } from '../../../../entities';
 import useAccountSettings from '../../../../hooks/useAccountSettings';
 import { BooleanMap } from '../../../../hooks/useCoinListEditOptions';
+import { AssetListType } from '..';
 import { useRecyclerAssetListPosition } from './Contexts';
+import ExternalENSProfileScrollViewWithRef from './ExternalENSProfileScrollView';
 import ExternalScrollViewWithRef from './ExternalScrollView';
 import RefreshControl from './RefreshControl';
 import rowRenderer from './RowRenderer';
@@ -36,15 +39,19 @@ export type ExtendedState = {
   pinnedCoins: BooleanMap;
   toggleSelectedCoin: (id: string) => void;
   setIsCoinListEdited: SetterOrUpdater<boolean>;
-  additionalData: Record<string, CellTypes>;
+  additionalData?: Record<string, CellTypes>;
+  externalAddress?: string;
+  onPressUniqueToken?: (asset: UniqueAsset) => void;
 };
 
 const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   briefSectionsData,
-  additionalData,
+  extendedState,
+  type,
 }: {
   briefSectionsData: BaseCellType[];
-  additionalData: Record<string, CellTypes>;
+  type?: AssetListType;
+  extendedState: Partial<ExtendedState>;
 }) {
   const currentDataProvider = useMemoOne(
     () => dataProvider.cloneWithRows(briefSectionsData),
@@ -109,9 +116,9 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
 
   const { navigate } = useNavigation();
 
-  const extendedState = useMemo<ExtendedState>(() => {
+  const mergedExtendedState = useMemo<ExtendedState>(() => {
     return {
-      additionalData,
+      ...extendedState,
       hiddenCoins,
       isCoinListEdited,
       nativeCurrency,
@@ -123,6 +130,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
       toggleSelectedCoin,
     };
   }, [
+    extendedState,
     theme,
     navigate,
     nativeCurrencySymbol,
@@ -132,15 +140,18 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
     toggleSelectedCoin,
     isCoinListEdited,
     setIsCoinListEdited,
-    additionalData,
   ]);
 
   return (
     <RecyclerListView
       dataProvider={currentDataProvider}
-      extendedState={extendedState}
+      extendedState={mergedExtendedState}
       // @ts-ignore
-      externalScrollView={ExternalScrollViewWithRef}
+      externalScrollView={
+        type === 'ens-profile'
+          ? ExternalENSProfileScrollViewWithRef
+          : ExternalScrollViewWithRef
+      }
       itemAnimator={layoutItemAnimator}
       layoutProvider={layoutProvider}
       onLayout={onLayout}

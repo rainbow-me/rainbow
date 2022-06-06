@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-native';
 import { EasingNode } from 'react-native-reanimated';
-import { useTheme } from '../../context/ThemeContext';
+import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 
 const ColorCircle = ({ backgroundColor, isSelected, onPressColor }) => {

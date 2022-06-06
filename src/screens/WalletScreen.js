@@ -7,12 +7,7 @@ import { useValue } from 'react-native-redash/src/v1';
 import { useDispatch, useSelector } from 'react-redux';
 import { OpacityToggler } from '../components/animations';
 import { AssetList } from '../components/asset-list';
-import {
-  ExchangeFab,
-  FabWrapper,
-  RegisterEnsFab,
-  SendFab,
-} from '../components/fab';
+import { ExchangeFab, FabWrapper, SendFab } from '../components/fab';
 import {
   DiscoverHeaderButton,
   Header,
@@ -30,9 +25,12 @@ import {
   useCoinListEdited,
   useInitializeDiscoverData,
   useInitializeWallet,
+  useLoadAccountLateData,
   useLoadGlobalLateData,
   usePortfolios,
+  useTrackENSProfile,
   useUserAccounts,
+  useWalletENSAvatar,
   useWallets,
   useWalletSectionsData,
 } from '@rainbow-me/hooks';
@@ -69,11 +67,14 @@ export default function WalletScreen() {
   const { isCoinListEdited } = useCoinListEdited();
   const scrollViewTracker = useValue(0);
   const { isReadOnlyWallet } = useWallets();
+  const { trackENSProfile } = useTrackENSProfile();
   const { network } = useAccountSettings();
   const { userAccounts } = useUserAccounts();
   const { portfolios, trackPortfolios } = usePortfolios();
+  const loadAccountLateData = useLoadAccountLateData();
   const loadGlobalLateData = useLoadGlobalLateData();
   const initializeDiscoverData = useInitializeDiscoverData();
+  const { updateWalletENSAvatars } = useWalletENSAvatar();
   const walletReady = useSelector(
     ({ appState: { walletReady } }) => walletReady
   );
@@ -89,7 +90,6 @@ export default function WalletScreen() {
   const { isEmpty: isAccountEmpty } = useAccountEmptyState(isSectionsEmpty);
 
   const dispatch = useDispatch();
-  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   const { addressSocket, assetsSocket } = useSelector(
     ({ explorer: { addressSocket, assetsSocket } }) => ({
@@ -97,6 +97,8 @@ export default function WalletScreen() {
       assetsSocket,
     })
   );
+
+  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   useEffect(() => {
     const fetchAndResetFetchSavings = async () => {
@@ -143,6 +145,12 @@ export default function WalletScreen() {
   ]);
 
   useEffect(() => {
+    if (profilesEnabled) {
+      trackENSProfile();
+    }
+  }, [profilesEnabled, trackENSProfile]);
+
+  useEffect(() => {
     if (
       !isEmpty(portfolios) &&
       portfoliosFetched &&
@@ -165,10 +173,22 @@ export default function WalletScreen() {
 
   useEffect(() => {
     if (walletReady && assetsSocket) {
+      loadAccountLateData();
       loadGlobalLateData();
       initializeDiscoverData();
     }
-  }, [assetsSocket, initializeDiscoverData, loadGlobalLateData, walletReady]);
+  }, [
+    assetsSocket,
+    initializeDiscoverData,
+    loadAccountLateData,
+    loadGlobalLateData,
+    walletReady,
+  ]);
+
+  useEffect(() => {
+    if (walletReady) updateWalletENSAvatars();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [walletReady]);
 
   // Show the exchange fab only for supported networks
   // (mainnet & rinkeby)
@@ -177,9 +197,8 @@ export default function WalletScreen() {
       [
         !!get(networkInfo[network], 'exchange_enabled') && ExchangeFab,
         SendFab,
-        profilesEnabled ? RegisterEnsFab : null,
       ].filter(e => !!e),
-    [network, profilesEnabled]
+    [network]
   );
 
   const isLoadingAssets = useSelector(state => state.data.isLoadingAssets);

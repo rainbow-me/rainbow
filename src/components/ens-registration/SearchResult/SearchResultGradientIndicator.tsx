@@ -1,6 +1,6 @@
+import lang from 'i18n-js';
 import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import { useTheme } from '@rainbow-me/context';
 import {
   AccentColorProvider,
   Box,
@@ -8,12 +8,14 @@ import {
   Text,
 } from '@rainbow-me/design-system';
 import { useDimensions } from '@rainbow-me/hooks';
+import { useTheme } from '@rainbow-me/theme';
 
 type Props = {
   type: 'availability' | 'expiration' | 'price';
   isRegistered?: boolean;
   price?: string;
   expirationDate?: string;
+  testID?: string;
 };
 
 const SearchResultGradientIndicator = ({
@@ -21,6 +23,7 @@ const SearchResultGradientIndicator = ({
   isRegistered = false,
   price,
   expirationDate,
+  testID,
 }: Props) => {
   const { colors } = useTheme();
   const { isSmallPhone } = useDimensions();
@@ -28,19 +31,21 @@ const SearchResultGradientIndicator = ({
   switch (type) {
     case 'availability':
       if (isRegistered) {
-        text = '😭 Taken';
+        text = lang.t('profiles.search.taken');
         gradient = colors.gradients.transparentToLightOrange;
       } else {
-        text = '🥳 Available';
+        text = lang.t('profiles.search.available');
         gradient = colors.gradients.transparentToGreen;
       }
       break;
     case 'expiration':
-      text = `Til ${expirationDate}`;
+      text = `${lang.t('profiles.search.expiration', {
+        content: expirationDate,
+      })}`;
       gradient = colors.gradients.transparentToLightGrey;
       break;
     case 'price':
-      text = `${price} / Year`;
+      text = `${lang.t('profiles.search.price', { content: price })}`;
       gradient = colors.gradients.transparentToLightGrey;
       break;
   }
@@ -64,6 +69,7 @@ const SearchResultGradientIndicator = ({
             color={type === 'availability' ? 'accent' : 'secondary80'}
             containsEmoji
             size={isSmallPhone ? '18px' : '20px'}
+            testID={testID}
             weight="heavy"
           >
             {text}
