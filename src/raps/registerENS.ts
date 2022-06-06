@@ -1,3 +1,4 @@
+import { AddressZero } from '@ethersproject/constants';
 import { concat, isEmpty } from 'lodash';
 import {
   createNewENSAction,
@@ -15,8 +16,6 @@ import {
   shouldUseMulticallTransaction,
 } from '@rainbow-me/handlers/ens';
 import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
-
-const emptyAddress = '0x0000000000000000000000000000000000000000';
 
 export const createSetRecordsENSRap = async (
   ensActionParameters: ENSActionParameters
@@ -142,17 +141,14 @@ export const createTransferENSRap = async (
     const emptyRecords = Object.keys({
       ...(allCoinAddresses || {}),
       ...(allRecords || {}),
-    }).reduce((records, recordKey) => {
-      let value = '';
-      // Use empty address for ETH record as an empty string throws error
-      if (recordKey === ENS_RECORDS.ETH) {
-        value = emptyAddress;
-      }
-      return {
+    }).reduce(
+      (records, recordKey) => ({
         ...records,
-        [recordKey]: value,
-      };
-    }, {});
+        // Use zero address for ETH record as an empty string throws an error
+        [recordKey]: recordKey === ENS_RECORDS.ETH ? AddressZero : '',
+      }),
+      {}
+    );
 
     let newRecords: Records = emptyRecords;
     if (setAddress && toAddress) {
