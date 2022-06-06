@@ -63,11 +63,7 @@ export const FastChainBadge = React.memo(function FastChainBadge({
 
   return (
     <View style={containerStyle}>
-      <FastImage
-        // @ts-expect-error
-        source={source}
-        style={imageStyles}
-      />
+      <FastImage source={source} style={imageStyles} />
     </View>
   );
 });

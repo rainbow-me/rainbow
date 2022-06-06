@@ -46,12 +46,19 @@ const CoinIconWithBackground = React.memo(function CoinIconWithBackground({
   // we should default to trying to render the image component to fetch the image
   // then we cache the result - is the image available or not
   // and then we default to the result
-  const shouldShowImage = typeof isCached === 'undefined' ? true : isCached;
+  // the point here is to have imagesCache static outside the component.
+  // Unfortunately, there is no easy way to check if some image is in Fast Image's cache.
+  // So we store it here so when we recycle the view
+  // it immediately can decide whether to render the image or not.
+  // Fast Image doesn't have easy way to render "default" component.
+  // Many images are transparent so we have to render background for it.
+  const shouldShowImage = isCached ?? true;
   const [, forceRerender] = useState(0);
 
   const onLoad = useCallback(() => {
+    // because of some race conditions or whatever sometimes it just doesn't work
+    // when we use `imagesCached` boolean as a state
     imagesCache[key] = true;
-
     forceRerender(prev => prev + 1);
   }, [key, forceRerender]);
   const onError = useCallback(() => {

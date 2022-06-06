@@ -61,7 +61,6 @@ const CoinCheckButton = React.memo(function CoinCheckButton({
 
           {coinIconPlaceholder && (
             <CoinIconIndicator
-              // @ts-expect-error
               isPinned={isPinned}
               style={cx.coinIconIndicator}
               theme={theme}
@@ -283,12 +282,6 @@ const cx = StyleSheet.create({
     borderWidth: 1.5,
     left: 19,
     position: 'absolute',
-  },
-  coinIconFallback: {
-    backgroundColor: '#25292E',
-    borderRadius: 20,
-    height: 40,
-    width: 40,
   },
   coinIconIndicator: {
     left: 19,

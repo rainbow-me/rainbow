@@ -3,11 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { Icon } from '../icons';
 import { borders, shadow } from '@rainbow-me/styles';
 
-const CoinIconIndicator = React.memo(function CoinIconIndicator({
-  theme,
-  style,
-  isPinned,
-}) {
+function CoinIconIndicator({ theme, style, isPinned }) {
   // this is used inside of FastBalanceCoinRow where we have theme from props
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const { colors, isDarkMode } = theme ?? useTheme();
@@ -39,9 +35,9 @@ const CoinIconIndicator = React.memo(function CoinIconIndicator({
       />
     </View>
   );
-});
+}
 
-export default CoinIconIndicator;
+export default React.memo(CoinIconIndicator);
 
 const cx = StyleSheet.create({
   container: {

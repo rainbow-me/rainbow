@@ -10,9 +10,6 @@ ios/ @brunobar79 @osdnk
 patches/ @brunobar79 @osdnk @estebanmino
 scripts/ @brunobar79 @osdnk @estebanmino
 
-# Debugging
-src/debugging/useDependencyDebugger.ts @terrysahaidak
-
 # DESIGN SYSTEM
 src/design-system @markdalgleish @jxom
 
