@@ -153,24 +153,14 @@ export const createTransferENSRap = async (
 
   const {
     clearRecords,
+    records,
     setAddress,
     transferControl,
     toAddress,
   } = ensActionParameters;
 
   if (clearRecords) {
-    const [allRecords, allCoinAddresses] = await Promise.all([
-      fetchRecords(ensActionParameters.name, {
-        supportedOnly: false,
-      }),
-      fetchCoinAddresses(ensActionParameters.name, {
-        supportedOnly: false,
-      }),
-    ]);
-    const emptyRecords = Object.keys({
-      ...(allCoinAddresses || {}),
-      ...(allRecords || {}),
-    }).reduce(
+    const emptyRecords = Object.keys(records || {}).reduce(
       (records, recordKey) => ({
         ...records,
         // Use zero address for ETH record as an empty string throws an error

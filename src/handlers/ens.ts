@@ -488,7 +488,10 @@ export const fetchAccountPrimary = async (accountAddress: string) => {
   };
 };
 
-export const fetchProfile = async (ensName: string) => {
+export const fetchProfile = async (
+  ensName: string,
+  { supportedRecordsOnly = true }: { supportedRecordsOnly?: boolean } = {}
+) => {
   const [
     resolver,
     records,
@@ -499,8 +502,8 @@ export const fetchProfile = async (ensName: string) => {
     primary,
   ] = await Promise.all([
     fetchResolver(ensName),
-    fetchRecords(ensName),
-    fetchCoinAddresses(ensName),
+    fetchRecords(ensName, { supportedOnly: supportedRecordsOnly }),
+    fetchCoinAddresses(ensName, { supportedOnly: supportedRecordsOnly }),
     fetchImages(ensName),
     fetchOwner(ensName),
     fetchRegistration(ensName),
