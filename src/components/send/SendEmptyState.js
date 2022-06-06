@@ -1,25 +1,11 @@
 import React from 'react';
-import { Dimensions } from 'react-native';
-import Animated, { Easing, FadeOut, Keyframe } from 'react-native-reanimated';
+import { StyleSheet } from 'react-native';
+import Animated, { Easing, FadeInDown, FadeOut } from 'react-native-reanimated';
 import { sheetVerticalOffset } from '../../navigation/effects';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 
 const duration = 200;
-
-const screenHeight = Dimensions.get('window').height;
-
-const keyframe = new Keyframe({
-  0: {
-    opacity: 0,
-    transform: [{ translateY: screenHeight }, { scale: 0.0001 }],
-  },
-  100: {
-    easing: Easing.out(Easing.ease),
-    opacity: 1,
-    transform: [{ translateY: 0 }, { scale: 1 }],
-  },
-});
 
 const SendEmptyState = () => {
   const { colors } = useTheme();
@@ -40,9 +26,9 @@ const SendEmptyState = () => {
   if (android) {
     return (
       <Animated.View
-        entering={keyframe.duration(duration)}
+        entering={FadeInDown.duration(duration).easing(Easing.out(Easing.ease))}
         exiting={FadeOut.duration(duration).easing(Easing.in(Easing.ease))}
-        style={{ alignItems: 'center', flex: 1 }}
+        style={sx.androidContainer}
       >
         {icon}
       </Animated.View>
@@ -57,7 +43,7 @@ const SendEmptyState = () => {
       paddingBottom={sheetVerticalOffset + 19}
     >
       <Animated.View
-        entering={keyframe.duration(duration)}
+        entering={FadeInDown.duration(duration).easing(Easing.out(Easing.ease))}
         exiting={FadeOut.duration(duration).easing(Easing.in(Easing.ease))}
       >
         {icon}
@@ -67,3 +53,7 @@ const SendEmptyState = () => {
 };
 
 export default SendEmptyState;
+
+const sx = StyleSheet.create({
+  androidContainer: { alignItems: 'center', flex: 1 },
+});

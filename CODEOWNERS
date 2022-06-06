@@ -1,222 +1,77 @@
 # Rainbow CODEOWNERS file
 
 # ANDROID
-android/ @brunobar79 @osdnk @terrysahaidak
-
-# E2E
-config/ @brunobar79 @skylarbarrera @osdnk
-e2e/ @brunobar79 @ibrahimtaveras00 @skylarbarrera
+android/ @brunobar79 @osdnk @terrysahaidak @estebanmino
 
 # IOS
 ios/ @brunobar79 @osdnk
 
 # SECURITY / APP INFRA
-patches/ @brunobar79 @osdnk
-scripts/ @brunobar79 @osdnk
-
-# i18N
-scripts/check-translations.sh @jinchung @marco
-scripts/codegen-translations.js @jinchung @marco
-
-# APOLLO
-src/apollo @brunobar79 @jinchung @derHowie
-
-# ASSETS
-src/assets @skylarbarrera
-
-# COMPONENTS
-src/components @osdnk @terrysahaidak
-src/components/animations/ButtonPressAnimation @osdnk @terrysahaidak @jkadamczyk
-src/components/buttons/hold-to-authorize @osdnk @terrysahaidak @jkadamczyk
-src/components/change-wallet @osdnk @terrysahaidak @jkadamczyk
-src/components/exchange/CurrencySelectionList.js @osdnk @terrysahaidak @jkadamczyk
-src/components/floating-emojis @osdnk @terrysahaidak @jkadamczyk
-src/components/icons/svg/ProgressIcon.tsx @osdnk @terrysahaidak @jkadamczyk
-src/components/inputs/ClearInputDecorator.js @osdnk @terrysahaidak @jkadamczyk
-src/components/send/SendEmptyState.js @osdnk @terrysahaidak @jkadamczyk
-src/components/unique-token @osdnk @terrysahaidak @jkadamczyk
-src/components/large-countdown-clock @pugson @osdnk @terrysahaidak
-src/components/step-indicator @pugson @osdnk @terrysahaidak
-
-# APP CONFIG
-src/config @osdnk @brunobar79 @skylarbarrera
-
-# REACT CONTEXT
-src/context @osdnk @terrysahaidak
-
-# NETWORK DEBUGGING
-src/debugging @brunobar79
+patches/ @brunobar79 @osdnk @estebanmino
+scripts/ @brunobar79 @osdnk @estebanmino
 
 # DESIGN SYSTEM
 src/design-system @markdalgleish @jxom
 
-# Typescript
-src/entities @jinchung @markdalgleish @marco
-src/entities/uniqueAssets.ts @jinchung @markdalgleish @marco @jkadamczyk
-
 # Handlers
-src/handlers @jinchung @brunobar79
 src/handlers/aesEncryption.ts @brunobar79 @estebanmino
-src/handlers/appEvents.ts @brunobar79 @derHowie
-src/handlers/assets.ts @jinchung @marco @derHowie
-src/handlers/authentication.ts @jinchung @brunobar79
-src/handlers/cloudBackup.ts @brunobar79 @skylarbarrera
-src/handlers/covalent.ts @brunobar79 @derHowie
-src/handlers/deeplinks.ts @brunobar79 @tchayen
-src/handlers/dispersion.ts @brunobar79 @derHowie @jinchung
-src/handlers/ens.ts @estebanmino @skylarbarrera @jxom
-src/handlers/gasFees.ts @estebanmino @brunobar79 @jinchung
-src/handlers/imgix.ts @brunobar79 @osdnk @skylarbarrera
-src/handlers/opensea-api.ts @jinchung @skylarbarrera
-src/handlers/poap.ts @skylarbarrera @osdnk
-src/handlers/svgs.ts @skylarbarrera @osdnk
-src/handlers/tokenSearch.ts @brunobar79 @jinchung @derHowie
-src/handlers/transactions.ts @brunobar79 @osdnk @jinchung
-src/handlers/uniswap.ts @brunobar79 @jinchung
-src/handlers/walletReadyEvents.ts @brunobar79 @jinchung
-src/handlers/web3.ts @brunobar79 @jinchung @estebanmino
-src/handlers/wyre.ts @jinchung @skylarbarrera
-src/handlers/fedora.ts @osdnk
-
-# Helpers
-src/helpers @brunobar79 @jinchung
-src/helpers/uniqueAssetTraitDisplayTypeCompareFunction.ts @brunobar79 @jinchung @jkadamczyk
-src/helpers/transformUniqueAssetTraitsForPresentation.ts @brunobar79 @jinchung @jkadamczyk
-src/helpers/isHttpUrl.ts @brunobar79 @jinchung @jkadamczyk
-
-# Hooks
-src/hooks @jinchung @osdnk
-src/hooks/useENSProfile.ts @estebanmino @jxom
-src/hooks/useENSProfileForm.ts @estebanmino @jxom
-src/hooks/useENSRegistration.ts @estebanmino @jxom
-src/hooks/useENSRegistrationCosts.ts @estebanmino @jxom
-src/hooks/useGas.ts @estebanmino @brunobar79 @jinchung
-
-# Languages
-src/languages @skylarbarrera @marco
-
+src/handlers/authentication.ts @brunobar79 @estebanmino
+src/handlers/cloudBackup.ts @brunobar79 @skylarbarrera @estebanmino
+src/handlers/fedora.ts @osdnk @estebanmino @terrysahaidak
 
 # Model
-src/model @brunobar79 @jinchung
-src/model/mmkv @osdnk @terrysahaidak
-
-# Navigation
-src/navigation @osdnk @terrysahaidak
-
-# Parsers
-src/parsers @brunobar79 @jinchung
-
-# performance
-src/performance/utils.tsx @terrysahaidak
-
-# rainbow fetch
-src/rainbow-fetch @brunobar79 @skylarbarrera
-
-# raps
-src/raps @brunobar79 @jinchung
-src/raps/registerENS.ts @estebanmino @jxom
-
-# charts, shadow stack, cool modals, sheets
-src/react-native-animated-charts @osdnk @terrysahaidak
-src/react-native-cool-modals @osdnk @brunobar79
-src/react-native-shadow-stack @osdnk @terrysahaidak
-src/react-native-yet-another-bottom-sheet @osdnk @terrysahaidak
-
-# react query
-src/react-query @jinchung @derHowie @jxom
+src/model/backup.ts @brunobar79 @estebanmino
+src/model/keychain.ts @brunobar79 @estebanmino
+src/model/migrations.ts @brunobar79 @estebanmino
+src/model/wallet.ts @brunobar79 @estebanmino
 
 # redux
-src/redux @jinchung @brunobar79
-src/redux/charts.ts @osdnk @terrysahaidak
-src/redux/ensRegistration.ts @estebanmino @jxom
-src/redux/imageMetadata.ts @osdnk @skylarbarrera
 src/redux/gas.ts @brunobar79 @estebanmino
-src/redux/keyboardHeight.ts @osdnk @skylarbarrera
-src/redux/nonceManager.ts @derHowie @brunobar79
-src/redux/showcaseTokens.ts @osdnk @skylarbarrera
-src/redux/transactionSignatures.ts @brunobar79 @estebanmino
-src/redux/uniqueTokens.ts @jinchung @skylarbarrera
-src/redux/walletconnect.js @brunobar79 @estebanmino
-
-# references
-src/references @jinchung @brunobar79 @skylarbarrera
-
-# screens
-src/screens @osdnk @skylarbarrera
-
-# styled-thing
-src/styled-thing @terrysahaidak @osdnk
-
-# styles
-src/styled-thing @terrysahaidak @osdnk @markdalgleish
-
-# utils
-src/utils @brunobar79 @jinchung
-
-# App
-src/App.js @brunobar79 @jinchung @osdnk
-
-# types
-eth-contract-metadata.d.ts @markdalgleish @jxom
-eth-ens-namehash.d.ts @markdalgleish @jxom
-
-
-# TYPESCRIPT
-types/ @markdalgleish @marco @jinchung
+src/redux/nonceManager.ts @derHowie @brunobar79 @estebanmino
 
 # APP INFRA
-.eslintignore @brunobar79 @osdnk
-.eslintrc.js @brunobar79 @osdnk
-.flowconfig @brunobar79 @osdnk
-.gitattributes @brunobar79 @jinchung
-.gitignore @brunobar79 @jinchung
-.nvmrc @brunobar79 @osdnk
-.prettierrc.js @brunobar79 @osdnk
-.watchmanconfig @brunobar79 @osdnk
-# SECURITY / APP INFRA
-
-.yarnrc @brunobar79
-
-# APP INFRA
-app.json @jinchung @brunobar79
+.eslintignore @brunobar79 @osdnk @estebanmino
+.eslintrc.js @brunobar79 @osdnk @estebanmino
+.gitattributes @brunobar79 @estebanmino
+.gitignore @brunobar79 @estebanmino
+.nvmrc @brunobar79 @osdnk @estebanmino
+.prettierrc.js @brunobar79 @osdnk @estebanmino
+.watchmanconfig @brunobar79 @osdnk @estebanmino
 
 # SECURITY / APP INFRA
-audit-ci.json @brunobar79 @skylarbarrera
+.yarnrc @brunobar79 @estebanmino
 
 # APP INFRA
-babel.config.js @brunobar79 @osdnk
-bitrise.yml @brunobar79 @skylarbarrera
-CHANGELOG.md
-CODEOWNERS @brunobar79 @jinchung @skylarbarrera
-cspell.json
-globals.d.ts @brunobar79 @osdnk
-globalVariables.js @brunobar79 @osdnk
+app.json @brunobar79 @estebanmino
+
+# SECURITY / APP INFRA
+audit-ci.json @brunobar79 @skylarbarrera @estebanmino @nickbytes
+
+# APP INFRA
+babel.config.js @brunobar79 @osdnk @estebanmino
+CODEOWNERS @brunobar79 @estebanmino @nickbytes
+globals.d.ts @brunobar79 @osdnk @estebanmino
+globalVariables.js @brunobar79 @osdnk @estebanmino
 
 # HARDHAT
 hardhat.config.js @brunobar79 @estebanmino
 
 # APP CORE
-index.js @brunobar79 @jinchung
+index.js @brunobar79 @estebanmino @nickbytes
 
 # LEGAL
-LICENSE @jinchung @brunobar79
+LICENSE @jinchung @brunobar79 @nickbytes @estebanmino
 
 # SECURITY / APP INFRA
-metro.config.js @brunobar79 @osdnk
-metro.transform.js @brunobar79 @osdnk
-package.json @brunobar79 @jinchung
+metro.config.js @brunobar79 @osdnk @terrysahaidak @estebanmino
+metro.transform.js @brunobar79 @osdnk @estebanmino
+package.json @brunobar79 @estebanmino @nickbytes
 
 # APP INFRA
-react-native.config.js @brunobar79 @jinchung
-README.md @jinchung @skylarbarrera
-shim.js @brunobar79 @osdnk
-tsconfig.json @brunobar79 @osdnk
+react-native.config.js @brunobar79 @estebanmino
+README.md @brunobar79 @estebanmino @nickbytes
+shim.js @brunobar79 @osdnk @estebanmino @nickbytes
+tsconfig.json @brunobar79 @osdnk @estebanmino @nickbytes
 
 # SECURITY / APP INFRA
-yarn.lock @brunobar79 @jinchung
-
-# Performance Tracking
-src/performance-tracking @terrysahaidak @jkadamczyk
-android/app/src/main/java/me/rainbow/NativeModules/RNStartTime @terrysahaidak @jkadamczyk
-ios/RNStartTime.h @terrysahaidak @jkadamczyk
-ios/RNStartTime.m @terrysahaidak @jkadamczyk
+yarn.lock @brunobar79 @estebanmino @nickbytes

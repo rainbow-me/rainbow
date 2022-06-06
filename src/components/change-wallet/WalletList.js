@@ -17,7 +17,7 @@ import { position } from '@rainbow-me/styles';
 
 const listTopPadding = 7.5;
 const rowHeight = 59;
-const transitionDuration = 150;
+const transitionDuration = 75;
 
 const RowTypes = {
   ADDRESS: 1,
@@ -198,7 +198,6 @@ export default function WalletList({
           entering={FadeIn.easing(Easing.in(Easing.ease)).duration(
             transitionDuration
           )}
-          exiting={FadeOut.easing(Easing.out(Easing.ease)).duration(0.001)}
         >
           <WalletFlatList
             data={rows}
@@ -228,7 +227,6 @@ export default function WalletList({
         </WalletsContainer>
       ) : (
         <Animated.View
-          entering={FadeIn.easing(Easing.out(Easing.ease)).duration(0.001)}
           exiting={FadeOut.easing(Easing.out(Easing.ease)).duration(
             transitionDuration
           )}
