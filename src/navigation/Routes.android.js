@@ -367,7 +367,11 @@ function BSNavigator() {
         name={Routes.WALLET_DIAGNOSTICS_SHEET}
       />
       <BSStack.Screen component={SavingsSheet} name={Routes.SAVINGS_SHEET} />
-      <BSStack.Screen component={SettingsModal} name={Routes.SETTINGS_MODAL} />
+      <BSStack.Screen
+        component={SettingsModal}
+        name={Routes.SETTINGS_MODAL}
+        options={{ ...bottomSheetPreset, height: '97%' }}
+      />
     </BSStack.Navigator>
   );
 }

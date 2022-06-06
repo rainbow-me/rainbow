@@ -56,6 +56,7 @@ import {
   registerENSNavigatorConfig,
   restoreSheetConfig,
   sendConfirmationSheetConfig,
+  settingsSheetConfig,
   stackNavigationConfig,
 } from './config';
 import {
@@ -250,13 +251,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={SettingsModal}
         name={Routes.SETTINGS_MODAL}
-        options={{
-          backgroundOpacity: 0.7,
-          cornerRadius: 0,
-          customStack: true,
-          ignoreBottomOffset: true,
-          topOffset: 0,
-        }}
+        {...settingsSheetConfig}
       />
       <NativeStack.Screen
         component={ExchangeModalNavigator}

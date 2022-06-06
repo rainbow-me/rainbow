@@ -135,6 +135,17 @@ export const sendConfirmationSheetConfig = {
   },
 };
 
+export const settingsSheetConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 1,
+      scrollEnabled: false,
+      springDamping: 1,
+    }),
+  }),
+};
+
 export const registerENSNavigatorConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
@@ -368,6 +379,12 @@ const headerConfigOptions = {
     fontWeight: fonts.weight.medium,
     letterSpacing: fonts.letterSpacing.roundedMedium,
   },
+  headerLeftContainerStyle: {
+    paddingLeft: 4,
+  },
+  headerRightContainerStyle: {
+    paddingRight: 4,
+  },
   ...(android && {
     headerRightContainerStyle: {
       paddingTop: 6,
@@ -378,7 +395,7 @@ const headerConfigOptions = {
     color: colors.themedColors.dark,
     fontFamily: fonts.family.SFProRounded,
     fontSize: parseFloat(fonts.size.large),
-    fontWeight: fonts.weight.bold,
+    fontWeight: fonts.weight.heavy,
     letterSpacing: fonts.letterSpacing.roundedMedium,
   },
 };
@@ -423,33 +440,23 @@ export const settingsOptions = colors => ({
   ...headerConfigOptions,
   cardShadowEnabled: false,
   cardStyle: {
-    backgroundColor: colors.white,
+    backgroundColor: 'transparent',
     overflow: 'visible',
   },
   gestureEnabled: true,
   gestureResponseDistance: { horizontal: deviceUtils.dimensions.width },
   ...(ios && { headerBackImage: BackImage }),
-  headerBackTitle: 'Back',
+  headerBackTitle: ' ',
   headerStatusBarHeight: 0,
   headerStyle: {
     backgroundColor: 'transparent',
     elevation: 0,
-    height: 49,
+    height: 60,
     shadowColor: 'transparent',
   },
   headerTitleStyle: {
     ...headerConfigOptions.headerTitleStyle,
     color: colors.dark,
-  },
-  transitionSpec: {
-    close: {
-      animation: 'spring',
-      config: transitionConfig,
-    },
-    open: {
-      animation: 'spring',
-      config: transitionConfig,
-    },
   },
   ...(android && {
     headerLeft: props => <BackButton {...props} textChevron />,
