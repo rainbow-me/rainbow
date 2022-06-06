@@ -1,4 +1,5 @@
 import React from 'react';
+import { StyleSheet } from 'react-native';
 import Animated, { Easing, FadeInDown, FadeOut } from 'react-native-reanimated';
 import { sheetVerticalOffset } from '../../navigation/effects';
 import { Icon } from '../icons';
@@ -27,7 +28,7 @@ const SendEmptyState = () => {
       <Animated.View
         entering={FadeInDown.duration(duration).easing(Easing.out(Easing.ease))}
         exiting={FadeOut.duration(duration).easing(Easing.in(Easing.ease))}
-        style={{ alignItems: 'center', flex: 1 }}
+        style={sx.androidContainer}
       >
         {icon}
       </Animated.View>
@@ -52,3 +53,7 @@ const SendEmptyState = () => {
 };
 
 export default SendEmptyState;
+
+const sx = StyleSheet.create({
+  androidContainer: { alignItems: 'center', flex: 1 },
+});
