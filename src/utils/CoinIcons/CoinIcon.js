@@ -10,6 +10,10 @@ const sx = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  image: {
+    height: '100%',
+    width: '100%',
+  },
 });
 
 function formatSymbol(symbol) {
@@ -60,10 +64,7 @@ const CoinIcon = ({
         <Image
           resizeMode="contain"
           source={CoinIconsImages[formattedSymbol]}
-          style={{
-            height: '100%',
-            width: '100%',
-          }}
+          style={sx.image}
         />
       </View>
     );
