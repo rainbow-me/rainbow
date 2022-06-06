@@ -8,7 +8,6 @@ import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
 import { getWalletProfileMeta } from '@rainbow-me/helpers/walletProfileHandler';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
 import { profileUtils } from '@rainbow-me/utils';
 
 export default function WalletProfileState({
@@ -39,7 +38,6 @@ export default function WalletProfileState({
     profile?.name ? removeFirstEmojiFromString(profile.name) : ''
   );
 
-  const accentColor = colors.avatarBackgrounds[nameColor];
   const profileImage = profile.image;
 
   const handleCancel = useCallback(() => {
@@ -88,7 +86,7 @@ export default function WalletProfileState({
 
   return (
     <ProfileModal
-      accentColor={accentColor}
+      accentColor={nameColor}
       address={address}
       emojiAvatar={nameEmoji}
       handleCancel={handleCancel}

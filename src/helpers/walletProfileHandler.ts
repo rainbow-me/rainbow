@@ -1,6 +1,7 @@
 import { returnStringFirstEmoji } from './emojiHandler';
 import { EthereumAddress } from '@rainbow-me/entities';
 import { profileUtils } from '@rainbow-me/utils';
+import { colors } from '@rainbow-me/styles';
 
 export const getWalletProfileMeta = (
   address: EthereumAddress,
@@ -19,9 +20,9 @@ const getWalletEmoji = (
   webProfile: { accountColor?: string; accountSymbol?: string },
   isNewProfile: boolean
 ) => {
-  if (!webProfile) return null;
-  if (webProfile?.accountSymbol) return webProfile?.accountSymbol;
   const addressHashedEmoji = profileUtils.addressHashedEmoji(address);
+  if (!webProfile) return addressHashedEmoji;
+  if (webProfile?.accountSymbol) return webProfile?.accountSymbol;
   if (isNewProfile) return addressHashedEmoji;
   return returnStringFirstEmoji(profile?.name) ?? addressHashedEmoji;
 };
@@ -33,10 +34,13 @@ const getWalletColor = (
   isNewProfile: boolean,
   forceColor?: string
 ) => {
-  if (!webProfile) return null;
+  const addressHashedColor =
+    colors.avatarBackgrounds[
+      profileUtils.addressHashedColorIndex(address) || 0
+    ];
+  if (!webProfile) return forceColor ?? addressHashedColor;
   if (webProfile?.accountColor) return webProfile?.accountColor;
   if (forceColor) return forceColor;
-  const addressHashedColor = profileUtils.addressHashedColorIndex(address);
   if (isNewProfile) return addressHashedColor;
   return profile?.color ?? addressHashedColor;
 };
