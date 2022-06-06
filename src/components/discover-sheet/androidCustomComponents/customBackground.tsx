@@ -1,7 +1,7 @@
 import { BottomSheetBackgroundProps } from '@gorhom/bottom-sheet';
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
-import { useTheme } from '../../../context/ThemeContext';
+import { useTheme } from '../../../theme/ThemeContext';
 
 interface CustomBackgroundProps extends BottomSheetBackgroundProps {}
 
