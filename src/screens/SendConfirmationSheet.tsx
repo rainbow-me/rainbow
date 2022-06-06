@@ -36,7 +36,6 @@ import {
 import useExperimentalFlag, {
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
-import { useTheme } from '@rainbow-me/context';
 import { Box, Inset, Stack, Text } from '@rainbow-me/design-system';
 import { UniqueAsset } from '@rainbow-me/entities';
 import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
@@ -63,6 +62,7 @@ import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
+import { useTheme } from '@rainbow-me/theme';
 import { getUniqueTokenType } from '@rainbow-me/utils';
 import logger from 'logger';
 
@@ -96,7 +96,7 @@ const doesNamePointToRecipient = (
   ensProfile?: ENSProfile,
   recipientAddress?: string
 ) =>
-  ensProfile?.data?.primary?.address.toLowerCase() ===
+  ensProfile?.data?.primary?.address?.toLowerCase() ===
   recipientAddress?.toLowerCase();
 const doesAccountControlName = (ensProfile?: ENSProfile) => ensProfile?.isOwner;
 

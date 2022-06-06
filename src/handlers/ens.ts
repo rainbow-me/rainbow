@@ -350,7 +350,10 @@ export const fetchImages = async (ensName: string) => {
   };
 };
 
-export const fetchRecords = async (ensName: string) => {
+export const fetchRecords = async (
+  ensName: string,
+  { supportedOnly = true }: { supportedOnly?: boolean } = {}
+) => {
   const response = await ensClient.query<EnsGetRecordsData>({
     query: ENS_GET_RECORDS,
     variables: {
@@ -364,7 +367,7 @@ export const fetchRecords = async (ensName: string) => {
   const supportedRecords = Object.values(ENS_RECORDS);
   const rawRecordKeys: string[] = data.resolver?.texts || [];
   const recordKeys = (rawRecordKeys as ENS_RECORDS[]).filter(key =>
-    supportedRecords.includes(key)
+    supportedOnly ? supportedRecords.includes(key) : true
   );
   const recordValues = await Promise.all(
     recordKeys.map((key: string) => resolver?.getText(key))
@@ -380,7 +383,8 @@ export const fetchRecords = async (ensName: string) => {
 };
 
 export const fetchCoinAddresses = async (
-  ensName: string
+  ensName: string,
+  { supportedOnly = true }: { supportedOnly?: boolean } = {}
 ): Promise<{ [key in ENS_RECORDS]: string }> => {
   const response = await ensClient.query<EnsGetCoinTypesData>({
     query: ENS_GET_COIN_TYPES,
@@ -398,7 +402,7 @@ export const fetchCoinAddresses = async (
   );
   const coinTypes: number[] =
     (rawCoinTypesNames as ENS_RECORDS[])
-      .filter(name => supportedRecords.includes(name))
+      .filter(name => (supportedOnly ? supportedRecords.includes(name) : true))
       .map(name => formatsByName[name].coinType) || [];
 
   const coinAddressValues = await Promise.all(

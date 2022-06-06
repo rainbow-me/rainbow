@@ -8,11 +8,15 @@ import {
 } from './common';
 import { Records } from '@rainbow-me/entities';
 import {
-  fetchProfileRecords,
+  fetchCoinAddresses,
+  fetchRecords,
   formatRecordsForTransaction,
   recordsForTransactionAreValid,
   shouldUseMulticallTransaction,
 } from '@rainbow-me/handlers/ens';
+import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
+
+const emptyAddress = '0x0000000000000000000000000000000000000000';
 
 export const createSetRecordsENSRap = async (
   ensActionParameters: ENSActionParameters
@@ -127,14 +131,26 @@ export const createTransferENSRap = async (
   } = ensActionParameters;
 
   if (clearRecords) {
-    const records = await fetchProfileRecords(ensActionParameters.name);
+    const [allRecords, allCoinAddresses] = await Promise.all([
+      fetchRecords(ensActionParameters.name, {
+        supportedOnly: false,
+      }),
+      fetchCoinAddresses(ensActionParameters.name, {
+        supportedOnly: false,
+      }),
+    ]);
     const emptyRecords = Object.keys({
-      ...(records.coinAddresses || {}),
-      ...(records.records || {}),
+      ...(allCoinAddresses || {}),
+      ...(allRecords || {}),
     }).reduce((records, recordKey) => {
+      let value = '';
+      // Use empty address for ETH record as an empty string throws error
+      if (recordKey === ENS_RECORDS.ETH) {
+        value = emptyAddress;
+      }
       return {
         ...records,
-        [recordKey]: '',
+        [recordKey]: value,
       };
     }, {});
 

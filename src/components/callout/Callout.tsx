@@ -1,7 +1,7 @@
 import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import { useTheme } from '@rainbow-me/context';
 import { Box, Inline, Inset, Text } from '@rainbow-me/design-system';
+import { useTheme } from '@rainbow-me/theme';
 
 export default function Callout({
   after,
