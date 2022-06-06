@@ -1267,6 +1267,7 @@ export const addressAssetsReceived = (
   }
 
   const { assetsData: existingAssetsData } = getState().data;
+  const { nativeCurrency } = getState().settings;
   parsedAssets = {
     ...existingAssetsData,
     ...parsedAssets,
@@ -1283,9 +1284,10 @@ export const addressAssetsReceived = (
     type: DATA_LOAD_ACCOUNT_ASSETS_DATA_RECEIVED,
   });
   if (!change) {
-    const missingPriceAssetAddresses: string[] = map(
-      filter(parsedAssets, asset => isNil(asset?.price)),
-      property('address')
+    const missingPriceAssetAddresses: string[] = Object.keys(
+      parsedAssets
+    ).filter(key =>
+      isNil(ethereumUtils.getAssetPrice({ nativeCurrency, uniqueId: key }))
     );
     dispatch(subscribeToMissingPrices(missingPriceAssetAddresses));
   }
@@ -1314,7 +1316,7 @@ const subscribeToMissingPrices = (addresses: string[]) => (
   >,
   getState: AppGetState
 ) => {
-  const { accountAddress, network } = getState().settings;
+  const { accountAddress, nativeCurrency, network } = getState().settings;
   const { uniswapPricesQuery } = getState().data;
 
   if (uniswapPricesQuery) {
@@ -1336,7 +1338,9 @@ const subscribeToMissingPrices = (addresses: string[]) => (
       next: async ({ data }) => {
         try {
           if (data?.tokens) {
-            const nativePriceOfEth = ethereumUtils.getEthPriceUnit();
+            const nativePriceOfEth = ethereumUtils.getEthPriceUnit(
+              nativeCurrency
+            );
             const tokenAddresses: string[] = map(data.tokens, property('id'));
 
             const yesterday = getUnixTime(

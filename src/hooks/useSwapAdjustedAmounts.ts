@@ -7,11 +7,9 @@ import {
 import { AppState } from '@rainbow-me/redux/store';
 import { SwapModalField } from '@rainbow-me/redux/swap';
 import { updatePrecisionToDisplay } from '@rainbow-me/utilities';
+import { ethereumUtils } from '@rainbow-me/utils';
 
 export default function useSwapAdjustedAmounts(tradeDetails: Trade) {
-  const genericAssets = useSelector(
-    (state: AppState) => state.data.genericAssets
-  );
   const inputCurrency = useSelector(
     (state: AppState) => state.swap.inputCurrency
   );
@@ -20,6 +18,9 @@ export default function useSwapAdjustedAmounts(tradeDetails: Trade) {
   );
   const inputAsExact = useSelector(
     (state: AppState) => state.swap.independentField !== SwapModalField.output
+  );
+  const nativeCurrency = useSelector(
+    (state: AppState) => state.settings.nativeCurrency
   );
   const slippageInBips = useSelector(
     (state: AppState) => state.swap.slippageInBips
@@ -33,7 +34,7 @@ export default function useSwapAdjustedAmounts(tradeDetails: Trade) {
     ? adjustedAmounts[Field.OUTPUT]?.toExact()
     : adjustedAmounts[Field.INPUT]?.toExact();
   const address = inputAsExact ? outputCurrency.address : inputCurrency.address;
-  const priceValue = genericAssets[address]?.price?.value ?? 0;
+  const priceValue = ethereumUtils.getAssetPrice({ address, nativeCurrency });
   const amountReceivedSoldDisplay = updatePrecisionToDisplay(
     amountReceivedSold,
     priceValue,

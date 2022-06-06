@@ -4,6 +4,7 @@ import { UniswapCurrency } from '@rainbow-me/entities';
 import { ExchangeModalTypes } from '@rainbow-me/helpers';
 import { AppDispatch, AppGetState } from '@rainbow-me/redux/store';
 import { convertAmountFromNativeValue } from '@rainbow-me/utilities';
+import { ethereumUtils } from '@rainbow-me/utils';
 
 export interface SwapAmount {
   display: string | null;
@@ -154,7 +155,6 @@ export const flipSwapCurrencies = () => (
   dispatch: AppDispatch,
   getState: AppGetState
 ) => {
-  const { genericAssets } = getState().data;
   const {
     independentField,
     independentValue,
@@ -172,7 +172,11 @@ export const flipSwapCurrencies = () => (
     dispatch(updateSwapInputAmount(independentValue));
   } else if (independentField === SwapModalField.native) {
     const nativeAmount = independentValue;
-    const inputPrice = genericAssets[inputCurrency?.address]?.price?.value ?? 0;
+    const { nativeCurrency } = getState().settings;
+    const inputPrice = ethereumUtils.getAssetPrice({
+      address: inputCurrency.address,
+      nativeCurrency,
+    });
     const inputAmount = nativeAmount
       ? convertAmountFromNativeValue(
           nativeAmount,

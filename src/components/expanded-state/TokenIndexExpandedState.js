@@ -1,7 +1,6 @@
 import lang from 'i18n-js';
-import { sortBy, times, toLower } from 'lodash';
+import { sortBy, times } from 'lodash';
 import React, { Fragment, useContext, useEffect, useMemo, useRef } from 'react';
-import { useSelector } from 'react-redux';
 import { AssetListItemSkeleton } from '../asset-list';
 import { Column, Row } from '../layout';
 import {
@@ -22,6 +21,7 @@ import {
   useDimensions,
   useDPI,
 } from '@rainbow-me/hooks';
+import { parseAssetNative } from '@rainbow-me/parsers';
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import {
   convertRawAmountToNativeDisplay,
@@ -58,25 +58,24 @@ const formatItem = (
 
 export default function TokenIndexExpandedState({ asset }) {
   const { colors } = useTheme();
-  const genericAssets = useSelector(
-    ({ data: { genericAssets } }) => genericAssets
-  );
   const { nativeCurrency, nativeCurrencySymbol } = useAccountSettings();
 
   const dpi = useDPI();
 
   const underlying = useMemo(() => {
     if (!dpi) return [];
-    const baseAsset = ethereumUtils.formatGenericAsset(
-      genericAssets[toLower(dpi?.base?.address)],
-      nativeCurrency
-    );
+    const baseAsset = ethereumUtils.getParsedAsset({
+      address: dpi?.base?.address,
+    });
+    const baseAssetWithNative = parseAssetNative(baseAsset, nativeCurrency);
 
     const underlyingAssets = dpi?.underlying.map(asset => {
-      const genericAsset = genericAssets[toLower(asset?.address)];
-      if (!genericAsset) return null;
-      const assetWithPrice = ethereumUtils.formatGenericAsset(
-        genericAsset,
+      const parsedAsset = ethereumUtils.getParsedAsset({
+        address: asset?.address,
+      });
+      if (!parsedAsset) return null;
+      const parsedAssetWithNative = parseAssetNative(
+        parsedAsset,
         nativeCurrency
       );
 
@@ -86,17 +85,17 @@ export default function TokenIndexExpandedState({ asset }) {
       } = convertRawAmountToNativeDisplay(
         asset.amount,
         asset.decimals,
-        assetWithPrice?.price?.value || 0,
+        parsedAssetWithNative?.price?.value || 0,
         nativeCurrency
       );
 
       const percentageAllocation = Number(
-        divide(multiply(pricePerUnit, 100), baseAsset.price.value)
+        divide(multiply(pricePerUnit, 100), baseAssetWithNative.price.value)
       );
 
       return {
-        ...formatItem(assetWithPrice, nativeCurrencySymbol),
-        color: assetWithPrice.color,
+        ...formatItem(parsedAssetWithNative, nativeCurrencySymbol),
+        color: parsedAssetWithNative.color,
         percentageAllocation,
         pricePerUnitFormatted,
       };
@@ -105,23 +104,18 @@ export default function TokenIndexExpandedState({ asset }) {
       underlyingAssets.filter(asset => asset !== null),
       'percentageAllocation'
     ).reverse();
-  }, [dpi, genericAssets, nativeCurrency, nativeCurrencySymbol]);
+  }, [dpi, nativeCurrency, nativeCurrencySymbol]);
 
   const hasUnderlying = underlying.length !== 0;
   const { layout } = useContext(ModalContext) || {};
+  const parsedAsset = ethereumUtils.getParsedAsset({ address: asset?.address });
+  const parsedAssetWithNative = parseAssetNative(parsedAsset, nativeCurrency);
 
   useEffect(() => {
     if (hasUnderlying) {
       layout?.();
     }
   }, [hasUnderlying, layout]);
-
-  // If we don't have a balance for this asset
-  // It's a generic asset
-  const assetWithPrice = ethereumUtils.formatGenericAsset(
-    genericAssets[asset?.address],
-    nativeCurrency
-  );
 
   const {
     chart,
@@ -133,7 +127,7 @@ export default function TokenIndexExpandedState({ asset }) {
     showChart,
     throttledData,
   } = useChartThrottledPoints({
-    asset: assetWithPrice,
+    asset: parsedAssetWithNative,
     secondStore: true,
   });
 
@@ -160,7 +154,7 @@ export default function TokenIndexExpandedState({ asset }) {
           <Chart
             {...chartData}
             {...initialChartDataLabels}
-            asset={assetWithPrice}
+            asset={parsedAssetWithNative}
             chart={chart}
             chartType={chartType}
             color={color}
@@ -211,7 +205,7 @@ export default function TokenIndexExpandedState({ asset }) {
               weight="semibold"
             >
               {lang.t('expanded_state.token_index.makeup_of_token', {
-                assetSymbol: assetWithPrice.symbol,
+                assetSymbol: parsedAssetWithNative.symbol,
               })}
             </Text>
           </Column>

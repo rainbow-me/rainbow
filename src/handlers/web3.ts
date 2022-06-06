@@ -641,8 +641,14 @@ export const createSignableTransaction = async (
  * @return The estimated portion.
  */
 const estimateAssetBalancePortion = (asset: ParsedAddressAsset): string => {
-  if (asset.type !== AssetType.nft && asset.balance?.amount) {
-    const assetBalance = asset.balance?.amount;
+  if (asset.type !== AssetType.nft) {
+    const assetBalanceData = ethereumUtils.getAssetBalanceData({
+      address: asset.address,
+      network: asset.network,
+      uniqueId: asset.uniqueId,
+    });
+    const assetBalance = assetBalanceData?.amount;
+    if (!assetBalance) return '0';
     const decimals = asset.decimals || 18;
     const portion = multiply(assetBalance, 0.1);
     const trimmed = handleSignificantDecimals(portion, decimals);

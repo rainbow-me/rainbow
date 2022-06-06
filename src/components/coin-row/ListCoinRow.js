@@ -7,9 +7,10 @@ import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import { useAccountSettings } from '@rainbow-me/hooks';
+import { parseAssetNative } from '@rainbow-me/parsers';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
-import { ethereumUtils, magicMemo } from '@rainbow-me/utils';
+import { magicMemo } from '@rainbow-me/utils';
 
 const CoinRowPaddingTop = 9;
 const CoinRowPaddingBottom = 10;
@@ -66,7 +67,7 @@ const ListCoinRow = ({ item, onPress }) => {
   const handlePress = useCallback(() => onPress(item), [item, onPress]);
   const formattedItem = useMemo(() => {
     if (item?.native?.price) return item;
-    return ethereumUtils.formatGenericAsset(item, nativeCurrency);
+    return parseAssetNative(item, nativeCurrency);
   }, [item, nativeCurrency]);
   return (
     <ButtonPressAnimation

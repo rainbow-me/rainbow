@@ -4,6 +4,7 @@ import { serialize } from '@ethersproject/transactions';
 import { Wallet } from '@ethersproject/wallet';
 import AsyncStorage from '@react-native-community/async-storage';
 import { captureException } from '@sentry/react-native';
+import { ChainId } from '@uniswap/sdk';
 import { mnemonicToSeed } from 'bip39';
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'eth-... Remove this comment to see the full error message
 import { parse } from 'eth-url-parser';
@@ -26,6 +27,7 @@ import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import { useSelector } from 'react-redux';
 import URL from 'url-parse';
 import {
+  AssetBalanceInfo,
   EthereumAddress,
   GasFee,
   LegacySelectedGasFee,
@@ -46,8 +48,6 @@ import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import { Network } from '@rainbow-me/helpers/networkTypes';
 import {
-  convertAmountAndPriceToNativeDisplay,
-  convertAmountToPercentageDisplay,
   convertRawAmountToDecimalFormat,
   delay,
   fromWei,
@@ -99,7 +99,7 @@ const getNetworkNativeAsset = (
     address: nativeAddresses[network],
     network,
   });
-  return getAccountAsset(nativeAssetUniqueId);
+  return getParsedAsset({ uniqueId: nativeAssetUniqueId });
 };
 
 const getNativeAssetForNetwork = async (
@@ -152,14 +152,6 @@ const getAsset = (
   return accountAssets[loweredUniqueId];
 };
 
-const getAccountAsset = (
-  uniqueId: EthereumAddress
-): ParsedAddressAsset | undefined => {
-  const loweredUniqueId = toLower(uniqueId);
-  const accountAsset = store.getState().data?.assetsData?.[loweredUniqueId];
-  return accountAsset;
-};
-
 const getParsedAsset = (params: {
   address?: string;
   network?: Network;
@@ -174,24 +166,52 @@ const getParsedAsset = (params: {
   }
 };
 
+const getAssetPriceData = (params: {
+  address?: string;
+  nativeCurrency: string;
+  network?: Network;
+  uniqueId?: string;
+}):
+  | {
+      changed_at?: number;
+      relative_change_24h?: number;
+      value?: number;
+    }
+  | undefined => {
+  const { assetPriceData } = store.getState().data;
+  const { address, network, uniqueId } = params;
+  const nativeCurrency = toUpper(params.nativeCurrency) as NativeCurrencyKey;
+  if (uniqueId) {
+    return assetPriceData?.[toLower(uniqueId)]?.[nativeCurrency];
+  } else if (address) {
+    return assetPriceData?.[getUniqueId({ address, network })]?.[
+      nativeCurrency
+    ];
+  }
+};
+
 const getAssetPrice = (params: {
   address?: string;
   nativeCurrency: string;
   network?: Network;
   uniqueId?: string;
-}): number => {
-  const { assetPriceData } = store.getState().data;
+}): number => getAssetPriceData(params)?.value || 0;
+
+const getAssetBalanceData = (params: {
+  address?: string;
+  network?: Network;
+  uniqueId?: string;
+}): AssetBalanceInfo | undefined => {
+  const { accountAddress } = store.getState().settings;
+  const { accountAssetBalanceData } = store.getState().data;
   const { address, network, uniqueId } = params;
-  const nativeCurrency = toUpper(params.nativeCurrency) as NativeCurrencyKey;
+  const walletData = accountAssetBalanceData?.[accountAddress];
+  if (!walletData) return;
   if (uniqueId) {
-    return assetPriceData?.[toLower(uniqueId)]?.[nativeCurrency]?.value || 0;
+    return walletData?.[toLower(uniqueId)];
   } else if (address) {
-    return (
-      assetPriceData?.[getUniqueId({ address, network })]?.[nativeCurrency]
-        ?.value || 0
-    );
+    return walletData?.[getUniqueId({ address, network })];
   }
-  return 0;
 };
 
 export const useNativeAssetForNetwork = (
@@ -199,14 +219,7 @@ export const useNativeAssetForNetwork = (
 ): ParsedAddressAsset => {
   const address =
     network === Network.polygon ? MATIC_MAINNET_ADDRESS : ETH_ADDRESS;
-  return useSelector(
-    ({
-      // @ts-expect-error ts-migrate(2339) FIXME: Property 'data' does not exist on type 'DefaultRoo... Remove this comment to see the full error message
-      data: {
-        genericAssets: { [address]: asset },
-      },
-    }) => asset
-  );
+  return getParsedAsset({ address, network }) as ParsedAddressAsset;
 };
 
 export const useEthUSDPrice = (): number => {
@@ -238,8 +251,8 @@ const getBalanceAmount = (
   selectedGasFee: SelectedGasFee | LegacySelectedGasFee,
   selected: ParsedAddressAsset
 ) => {
-  const accountAsset = getAccountAsset(selected?.uniqueId);
-  let amount = selected?.balance?.amount ?? accountAsset?.balance?.amount ?? 0;
+  let amount =
+    getAssetBalanceData({ uniqueId: selected.uniqueId })?.amount || 0;
 
   if (selected?.isNativeAsset) {
     if (!isEmpty(selectedGasFee)) {
@@ -256,31 +269,9 @@ const getBalanceAmount = (
 
 const getHash = (txn: RainbowTransaction) => txn.hash?.split('-').shift();
 
-const formatGenericAsset = (
-  asset: ParsedAddressAsset,
-  nativeCurrency: string
-) => {
-  return {
-    ...asset,
-    native: {
-      change: asset?.price?.relative_change_24h
-        ? convertAmountToPercentageDisplay(
-            `${asset?.price?.relative_change_24h}`
-          )
-        : '',
-      price: convertAmountAndPriceToNativeDisplay(
-        1,
-        asset?.price?.value || 0,
-        nativeCurrency
-      ),
-    },
-  };
-};
-
 export const checkWalletEthZero = () => {
-  const ethAsset = getAccountAsset(ETH_ADDRESS);
-  let amount = ethAsset?.balance?.amount ?? 0;
-  return isZero(amount);
+  const ethBalance = getAssetBalanceData({ address: ETH_ADDRESS })?.amount || 0;
+  return isZero(ethBalance);
 };
 
 /**
@@ -588,7 +579,7 @@ async function parseEthereumUrl(data: string) {
       address: ethUrl.target_address,
       network,
     });
-    asset = getAccountAsset(targetUniqueId);
+    asset = getParsedAsset({ uniqueId: targetUniqueId });
     // @ts-ignore
     if (!asset || asset?.balance.amount === 0) {
       Alert.alert(
@@ -713,9 +704,8 @@ export default {
   deriveAccountFromMnemonic,
   deriveAccountFromPrivateKey,
   deriveAccountFromWalletInput,
-  formatGenericAsset,
-  getAccountAsset,
   getAsset,
+  getAssetBalanceData,
   getAssetPrice,
   getBalanceAmount,
   getBlockExplorer,

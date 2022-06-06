@@ -12,9 +12,7 @@ import {
 import { useMemo } from 'react';
 import { useMMKVObject } from 'react-native-mmkv';
 import { useDispatch, useSelector } from 'react-redux';
-import { useDeepCompareMemo } from 'use-deep-compare';
 import useAccountSettings from './useAccountSettings';
-import { useGenericAssets } from './useGenericAsset';
 import { compoundClient } from '@rainbow-me/apollo/client';
 import { COMPOUND_ACCOUNT_AND_MARKET_QUERY } from '@rainbow-me/apollo/queries';
 import { AssetTypes } from '@rainbow-me/entities';
@@ -81,13 +79,9 @@ const getUnderlyingData = marketData => {
   };
 };
 
-const getUnderlyingPrice = (token, genericAssets) => {
+const getUnderlyingPrice = token => {
   const address = token.underlying.address;
-  const genericAsset = genericAssets?.[address];
-  const genericPrice = genericAsset?.price?.value;
-  const underlyingPrice =
-    genericPrice || ethereumUtils.getAccountAsset(address)?.price?.value || 0;
-
+  const underlyingPrice = ethereumUtils.getAssetPrice({ address });
   const underlyingBalanceNativeValue =
     underlyingPrice && token.supplyBalanceUnderlying
       ? multiply(underlyingPrice, token.supplyBalanceUnderlying)
@@ -190,19 +184,12 @@ export default function useSavingsAccount(includeDefaultDai) {
     setBackupSavings,
   ]);
 
-  const accountTokensAddresses = useDeepCompareMemo(
-    () => result.accountTokens?.map(token => token.underlying.address),
-    [result.accountTokens]
-  );
-
-  const genericAssets = useGenericAssets(accountTokensAddresses);
-
   const savings = useMemo(() => {
     if (isEmpty(result)) return [];
 
     const { accountTokens, daiMarketData } = result;
     const accountTokensWithPrices = accountTokens?.map(token =>
-      getUnderlyingPrice(token, genericAssets)
+      getUnderlyingPrice(token)
     );
 
     const orderedAccountTokens = orderBy(
@@ -222,13 +209,10 @@ export default function useSavingsAccount(includeDefaultDai) {
       includeDefaultDai && !accountHasCDAI && !isEmpty(daiMarketData);
 
     if (shouldAddDai) {
-      savings = concat(
-        orderedAccountTokens,
-        getUnderlyingPrice(daiMarketData, genericAssets)
-      );
+      savings = concat(orderedAccountTokens, getUnderlyingPrice(daiMarketData));
     }
     return savings;
-  }, [includeDefaultDai, result, genericAssets]);
+  }, [includeDefaultDai, result]);
 
   return {
     refetchSavings,

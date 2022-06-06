@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useMemoOne } from 'use-memo-one';
 import { dismissingScreenListener } from '../../shim';
 import {
@@ -58,6 +58,7 @@ import { ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
+import { ethereumUtils } from '@rainbow-me/utils';
 import { useEthUSDPrice } from '@rainbow-me/utils/ethereumUtils';
 import logger from 'logger';
 
@@ -120,9 +121,6 @@ export default function ExchangeModal({
   const title = getInputHeaderTitle(type, defaultInputAsset);
   const showOutputField = getShowOutputField(type);
   const priceOfEther = useEthUSDPrice();
-  const genericAssets = useSelector(
-    ({ data: { genericAssets } }) => genericAssets
-  );
 
   const {
     navigate,
@@ -362,10 +360,14 @@ export default function ExchangeModal({
       if (nativeCurrency === 'usd') {
         amountInUSD = nativeAmount;
       } else {
-        const ethPriceInNativeCurrency =
-          genericAssets[ETH_ADDRESS]?.price?.value ?? 0;
-        const tokenPriceInNativeCurrency =
-          genericAssets[inputCurrency?.address]?.price?.value ?? 0;
+        const ethPriceInNativeCurrency = ethereumUtils.getAssetPrice({
+          address: ETH_ADDRESS,
+          nativeCurrency,
+        });
+        const tokenPriceInNativeCurrency = ethereumUtils.getAssetPrice({
+          address: inputCurrency?.address,
+          nativeCurrency,
+        });
         const tokensPerEth = divide(
           tokenPriceInNativeCurrency,
           ethPriceInNativeCurrency
@@ -441,7 +443,6 @@ export default function ExchangeModal({
     }
   }, [
     defaultInputAsset?.symbol,
-    genericAssets,
     getNextNonce,
     inputAmount,
     inputCurrency?.address,

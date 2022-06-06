@@ -3,10 +3,10 @@ import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import useAccountSettings from './useAccountSettings';
-import useGenericAsset from './useGenericAsset';
 import { AssetType } from '@rainbow-me/entities';
 import { parseAssetNative } from '@rainbow-me/parsers';
 import { ETH_ADDRESS, ETH_ICON_URL } from '@rainbow-me/references';
+import { ethereumUtils } from '@rainbow-me/utils';
 
 const getZeroEth = () => {
   return {
@@ -77,17 +77,15 @@ export default function useAccountAsset(uniqueId) {
   const accountAsset = useSelector(state =>
     selectAccountAsset(state, uniqueId)
   );
-  const genericAssetBackup = useGenericAsset(uniqueId);
   if (accountAsset) {
     return parseAssetNative(accountAsset, nativeCurrency);
   } else if (uniqueId === ETH_ADDRESS) {
-    const result = parseAssetNative(genericAssetBackup, nativeCurrency);
+    const eth = ethereumUtils.getParsedAsset({ address: ETH_ADDRESS });
+    const result = parseAssetNative(eth, nativeCurrency);
     const placeholderEth = {
       ...getZeroEth(),
       ...result,
     };
     return placeholderEth;
-  } else {
-    return genericAssetBackup;
   }
 }

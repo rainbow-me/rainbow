@@ -12,7 +12,6 @@ import {
   sortBy,
 } from 'lodash';
 import { add, convertAmountToNativeDisplay, greaterThan } from './utilities';
-import store from '@rainbow-me/redux/store';
 import {
   ETH_ADDRESS,
   ETH_ICON_URL,
@@ -37,15 +36,17 @@ const addEthPlaceholder = (
   nativeCurrency,
   emptyCollectibles
 ) => {
-  const hasEth = !!ethereumUtils.getAccountAsset(ETH_ADDRESS);
+  const ethAmount = ethereumUtils.getAssetBalanceData({ address: ETH_ADDRESS })
+    ?.amount;
+  const hasEth = ethAmount ? parseInt(ethAmount, 10) > 0 : false;
 
-  const { genericAssets } = store.getState().data;
   if (
     includePlaceholder &&
     !hasEth &&
     (assets.length > 0 || !emptyCollectibles)
   ) {
-    const { relative_change_24h, value } = genericAssets?.eth?.price || {};
+    const ethPriceData = ethereumUtils.getAssetPrice({ address: ETH_ADDRESS });
+    const { relative_change_24h, value } = ethPriceData;
 
     const zeroEth = {
       address: 'eth',

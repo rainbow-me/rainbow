@@ -1,7 +1,5 @@
-import { toLower } from 'lodash';
 import React, { useCallback } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import { useSelector } from 'react-redux';
 import { useRemoveNextToLast } from '../../../navigation/useRemoveNextToLast';
 import { ButtonPressAnimation } from '../../animations';
 import { UnderlyingAssetCoinRow } from '../../coin-row';
@@ -9,6 +7,7 @@ import { Column, Row } from '../../layout';
 import { Text } from '../../text';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
+import { parseAssetNative } from '@rainbow-me/parsers';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
 import { ethereumUtils } from '@rainbow-me/utils';
@@ -29,28 +28,21 @@ export default function UnderlyingAsset({
 
   const { colors, isDarkMode } = useTheme();
   const { push } = useNavigation();
-  const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
-    genericAssets,
-  }));
 
   const removeNextToLastRoute = useRemoveNextToLast();
 
   const handlePress = useCallback(() => {
-    const asset =
-      ethereumUtils.getAccountAsset(address) ||
-      ethereumUtils.formatGenericAsset(
-        genericAssets[toLower(address)],
-        nativeCurrency
-      );
+    const parsedAsset = ethereumUtils.getParsedAsset({ address });
+    const parsedAssetWithNative = parseAssetNative(parsedAsset, nativeCurrency);
 
     // on iOS we handle this on native side
     android && removeNextToLastRoute();
 
     push(Routes.EXPANDED_ASSET_SHEET, {
-      asset,
+      parsedAssetWithNative,
       type: 'token',
     });
-  }, [address, genericAssets, nativeCurrency, push, removeNextToLastRoute]);
+  }, [address, nativeCurrency, push, removeNextToLastRoute]);
 
   return (
     <Row

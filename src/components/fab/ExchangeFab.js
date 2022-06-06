@@ -3,10 +3,11 @@ import { useTheme } from '../../context/ThemeContext';
 import { delayNext } from '../../hooks/useMagicAutofocus';
 import { useNavigation } from '../../navigation/Navigation';
 import { lightModeThemeColors } from '../../styles/colors';
-import { useEth } from '../../utils/ethereumUtils';
 import { Text } from '../text';
 import FloatingActionButton from './FloatingActionButton';
 import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
+import { useAsset } from '@rainbow-me/hooks';
+import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { magicMemo, watchingAlert } from '@rainbow-me/utils';
@@ -27,7 +28,7 @@ const FabIcon = styled(Text).attrs(({ theme: { colors } }) => ({
 const ExchangeFab = ({ disabled, isReadOnlyWallet, ...props }) => {
   const { navigate } = useNavigation();
   const { colors } = useTheme();
-  const eth = useEth();
+  const eth = useAsset({ address: ETH_ADDRESS });
 
   const handlePress = useCallback(() => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {

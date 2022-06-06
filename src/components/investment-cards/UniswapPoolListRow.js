@@ -11,11 +11,12 @@ import { initialLiquidityPoolExpandedStateSheetHeight } from '../expanded-state/
 import { FlexItem, Row } from '../layout';
 import { PoolValue } from './PoolValue';
 import { readableUniswapSelector } from '@rainbow-me/helpers/uniswapLiquidityTokenInfoSelector';
-import { useAccountSettings, useGenericAsset } from '@rainbow-me/hooks';
+import { useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { parseAssetNative } from '@rainbow-me/parsers';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
+import { ethereumUtils } from '@rainbow-me/utils';
 
 const BottomRowContainer = styled(Row)({
   marginBottom: 10,
@@ -54,7 +55,9 @@ export default function UniswapPoolListRow({ assetType, item, ...props }) {
   const { push } = useNavigation();
   const removeNextToLastRoute = useRemoveNextToLast();
   const { nativeCurrency } = useAccountSettings();
-  const genericPoolAsset = useGenericAsset(item.address);
+  const genericPoolAsset = ethereumUtils.getParsedAsset({
+    address: item.address,
+  });
   const { uniswap } = useSelector(readableUniswapSelector);
 
   const handleOpenExpandedState = useCallback(() => {

@@ -1,17 +1,16 @@
 import { isEmpty } from 'lodash';
 import { useCallback } from 'react';
 import { useQuery } from 'react-query';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { emitAssetRequest } from '../redux/explorer';
-import { AppState } from '../redux/store';
+import useAsset from './useAsset';
 import { IndexToken } from '@rainbow-me/entities';
 import { getDPIBalance } from '@rainbow-me/handlers/dispersion';
+import { DPI_ADDRESS } from '@rainbow-me/references';
 
 export default function useDPI() {
   const dispatch = useDispatch();
-  const genericAssets = useSelector(
-    ({ data: { genericAssets } }: AppState) => genericAssets
-  );
+  const dpiAssetData = useAsset({ address: DPI_ADDRESS });
 
   const fetchDPIData = useCallback(async () => {
     const defiPulseData = await getDPIBalance();
@@ -25,7 +24,7 @@ export default function useDPI() {
   }, [dispatch]);
 
   const { data } = useQuery(['defiPulse'], fetchDPIData, {
-    enabled: !isEmpty(genericAssets),
+    enabled: !isEmpty(dpiAssetData),
   });
 
   return data;

@@ -2,15 +2,19 @@ import { pick, sortBy, toLower } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
-import { useEthUSDMonthChart, useEthUSDPrice } from '../utils/ethereumUtils';
+import ethereumUtils, {
+  useEthUSDMonthChart,
+  useEthUSDPrice,
+} from '../utils/ethereumUtils';
 import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';
 import { getUniswapV2Pools } from '@rainbow-me/handlers/dispersion';
+import { parseAssetNative } from '@rainbow-me/parsers';
 import {
   emitAssetRequest,
   emitChartsRequest,
 } from '@rainbow-me/redux/explorer';
 import { setPoolsDetails } from '@rainbow-me/redux/uniswapLiquidity';
-import { WETH_ADDRESS } from '@rainbow-me/references';
+import { ETH_ADDRESS, WETH_ADDRESS } from '@rainbow-me/references';
 import logger from 'logger';
 const AMOUNT_OF_PAIRS_TO_DISPLAY = 40;
 
@@ -155,6 +159,9 @@ export default function useUniswapPools(sortField, sortDirection, token) {
   const walletReady = useSelector(
     ({ appState: { walletReady } }) => walletReady
   );
+  const nativeCurrency = useSelector(
+    ({ appState: { settings } }) => settings.nativeCurrency
+  );
 
   const dispatch = useDispatch();
 
@@ -173,10 +180,6 @@ export default function useUniswapPools(sortField, sortDirection, token) {
         )
       );
   }, [pairs, dispatch]);
-
-  const genericAssets = useSelector(
-    ({ data: { genericAssets } }) => genericAssets
-  );
 
   const { data: poolData, error } = useQuery(
     ['pools/uniswap/v2', token],
@@ -230,19 +233,24 @@ export default function useUniswapPools(sortField, sortDirection, token) {
     const tmpAllTokens = [];
     // Override with tokens from generic assets
     sortedPairs = sortedPairs.map(pair => {
-      const token0 = (toLower(pair.token0?.id) === WETH_ADDRESS
-        ? genericAssets['eth']
-        : genericAssets[toLower(pair.token0?.id)]) || {
+      const address0 =
+        toLower(pair.token0?.id) === WETH_ADDRESS
+          ? ETH_ADDRESS
+          : toLower(pair.token0?.id);
+      const parsedAsset0 = ethereumUtils.getParsedAsset({ address: address0 });
+      const token0 = parseAssetNative(parsedAsset0, nativeCurrency) || {
         ...pair.token0,
         address: pair.token0?.id,
       };
-      const token1 =
+      const address1 =
         toLower(pair.token1?.id) === WETH_ADDRESS
-          ? genericAssets['eth']
-          : genericAssets[toLower(pair.token1?.id)] || {
-              ...pair.token1,
-              address: pair.token1?.id,
-            };
+          ? ETH_ADDRESS
+          : toLower(pair.token1?.id);
+      const parsedAsset1 = ethereumUtils.getParsedAsset({ address: address1 });
+      const token1 = parseAssetNative(parsedAsset1, nativeCurrency) || {
+        ...pair.token1,
+        address: pair.token1?.id,
+      };
       pair.tokens = [token0, token1];
       tmpAllTokens.push(toLower(pair.tokens[0]?.id));
       tmpAllTokens.push(toLower(pair.tokens[1]?.id));

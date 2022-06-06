@@ -130,7 +130,9 @@ const checkIsSufficientGas = (
     ? (txFee as LegacyGasFee)?.estimatedFee
     : (txFee as GasFee)?.maxFee;
   const nativeAsset = ethereumUtils.getNetworkNativeAsset(network);
-  const balanceAmount = nativeAsset?.balance?.amount || 0;
+  const balanceAmount =
+    ethereumUtils.getAssetBalanceData({ uniqueId: nativeAsset?.uniqueId })
+      ?.amount || 0;
   const txFeeAmount = fromWei(txFeeValue?.value?.amount);
   const isSufficientGas = greaterThanOrEqualTo(balanceAmount, txFeeAmount);
   return isSufficientGas;
@@ -187,8 +189,8 @@ const getUpdatedGasFeeParams = (
 ) => {
   const nativeTokenPriceUnit =
     txNetwork !== Network.polygon
-      ? ethereumUtils.getEthPriceUnit()
-      : ethereumUtils.getMaticPriceUnit();
+      ? ethereumUtils.getEthPriceUnit(nativeCurrency)
+      : ethereumUtils.getMaticPriceUnit(nativeCurrency);
 
   const isL2 = isL2Network(txNetwork);
 

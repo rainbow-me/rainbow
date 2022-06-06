@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { find, get } from 'lodash';
+import { find, get, isNil } from 'lodash';
 import React, {
   useCallback,
   useContext,
@@ -45,10 +45,10 @@ import {
   useChartThrottledPoints,
   useDelayedValueWithLayoutAnimation,
   useDimensions,
-  useGenericAsset,
   useUniswapAssetsInWallet,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
+import { parseAssetNative } from '@rainbow-me/parsers';
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
@@ -182,40 +182,40 @@ function Description({ text = '' }) {
 }
 
 export default function ChartExpandedState({ asset }) {
-  const genericAsset = useGenericAsset(asset?.address);
-
   const [carouselHeight, setCarouselHeight] = useState(defaultCarouselHeight);
   const { nativeCurrency, network: currentNetwork } = useAccountSettings();
   const [additionalContentHeight, setAdditionalContentHeight] = useState(0);
 
+  const parsedAsset = ethereumUtils.getParsedAsset({
+    address: asset?.address,
+    network: asset?.network,
+    uniqueId: asset?.uniqueId,
+  });
+  const parsedAssetWithNative = useMemo(() => {
+    return parseAssetNative(parsedAsset, nativeCurrency);
+  }, [nativeCurrency, parsedAsset]);
+
   // If we don't have a balance for this asset
   // It's a generic asset
-  const hasBalance = asset?.balance;
-  const assetWithPrice = useMemo(() => {
-    return hasBalance
-      ? { ...asset }
-      : genericAsset
-      ? ethereumUtils.formatGenericAsset(genericAsset, nativeCurrency)
-      : { ...asset };
-  }, [asset, genericAsset, hasBalance, nativeCurrency]);
+  const hasBalance = !isNil(parseAssetNative?.balance?.amount);
 
-  if (assetWithPrice?.mainnet_address) {
-    assetWithPrice.l2Address = assetWithPrice.address;
-    assetWithPrice.address = assetWithPrice.mainnet_address;
+  if (parsedAssetWithNative?.mainnet_address) {
+    parsedAssetWithNative.l2Address = parsedAssetWithNative.address;
+    parsedAssetWithNative.address = parsedAssetWithNative.mainnet_address;
   }
 
-  const isL2 = useMemo(() => isL2Network(assetWithPrice.type), [
-    assetWithPrice.type,
+  const isL2 = useMemo(() => isL2Network(parsedAssetWithNative.type), [
+    parsedAssetWithNative.type,
   ]);
   // This one includes the original l2 address if exists
   const ogAsset = useMemo(() => {
     return {
-      ...assetWithPrice,
+      ...parsedAssetWithNative,
       address: isL2
-        ? assetWithPrice.l2Address || asset?.address
-        : assetWithPrice.address,
+        ? parsedAssetWithNative.l2Address || asset?.address
+        : parsedAssetWithNative.address,
     };
-  }, [assetWithPrice, isL2, asset]);
+  }, [parsedAssetWithNative, isL2, asset]);
 
   const { height: screenHeight } = useDimensions();
   const {
@@ -225,7 +225,10 @@ export default function ChartExpandedState({ asset }) {
     totalVolume,
     loading: additionalAssetDataLoading,
     links,
-  } = useAdditionalAssetData(asset?.address, assetWithPrice?.price?.value);
+  } = useAdditionalAssetData(
+    asset?.address,
+    parsedAssetWithNative?.price?.value
+  );
 
   const delayedDescriptions = useDelayedValueWithLayoutAnimation(
     description?.replace(/\s+/g, '')
@@ -244,7 +247,7 @@ export default function ChartExpandedState({ asset }) {
     showChart,
     throttledData,
   } = useChartThrottledPoints({
-    asset: assetWithPrice,
+    asset: parsedAssetWithNative,
     heightWithChart: Math.min(
       carouselHeight +
         heightWithChart -
@@ -276,8 +279,8 @@ export default function ChartExpandedState({ asset }) {
     () =>
       !!get(networkInfo[currentNetwork], 'exchange_enabled') &&
       !isL2 &&
-      find(uniswapAssetsInWallet, ['address', assetWithPrice.address]),
-    [assetWithPrice.address, currentNetwork, isL2, uniswapAssetsInWallet]
+      find(uniswapAssetsInWallet, ['address', parsedAssetWithNative.address]),
+    [parsedAssetWithNative.address, currentNetwork, isL2, uniswapAssetsInWallet]
   );
 
   const needsEth =
@@ -300,9 +303,9 @@ export default function ChartExpandedState({ asset }) {
 
   const handleL2DisclaimerPress = useCallback(() => {
     navigate(Routes.EXPLAIN_SHEET, {
-      type: assetWithPrice.type,
+      type: parsedAssetWithNative.type,
     });
-  }, [assetWithPrice.type, navigate]);
+  }, [parsedAssetWithNative.type, navigate]);
 
   const { layout } = useContext(ModalContext) || {};
 
@@ -339,7 +342,7 @@ export default function ChartExpandedState({ asset }) {
         <Chart
           {...chartData}
           {...initialChartDataLabels}
-          asset={assetWithPrice}
+          asset={parsedAssetWithNative}
           chart={chart}
           chartType={chartType}
           color={color}
@@ -354,7 +357,7 @@ export default function ChartExpandedState({ asset }) {
         <TokenInfoSection>
           <TokenInfoRow>
             <TokenInfoItem
-              asset={assetWithPrice}
+              asset={parsedAssetWithNative}
               title={lang.t('expanded_state.asset.balance')}
             >
               <TokenInfoBalanceValue asset={asset} />
@@ -399,10 +402,10 @@ export default function ChartExpandedState({ asset }) {
       )}
       {isL2 && (
         <L2Disclaimer
-          assetType={assetWithPrice.type}
+          assetType={parsedAssetWithNative.type}
           colors={colors}
           onPress={handleL2DisclaimerPress}
-          symbol={assetWithPrice.symbol}
+          symbol={parsedAssetWithNative.symbol}
         />
       )}
 
@@ -474,7 +477,7 @@ export default function ChartExpandedState({ asset }) {
         <SocialLinks
           address={ogAsset.address}
           color={color}
-          isNativeAsset={assetWithPrice?.isNativeAsset}
+          isNativeAsset={parsedAssetWithNative?.isNativeAsset}
           links={links}
           marginTop={!delayedDescriptions && 19}
           type={asset?.type}

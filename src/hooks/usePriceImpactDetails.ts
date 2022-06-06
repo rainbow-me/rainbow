@@ -13,6 +13,7 @@ import {
   isPositive,
   subtract,
 } from '@rainbow-me/utilities';
+import { ethereumUtils } from '@rainbow-me/utils';
 
 const PriceImpactWarningThreshold = 0.05;
 const SeverePriceImpactThreshold = 0.1;
@@ -30,12 +31,15 @@ export default function usePriceImpactDetails(
   const outputCurrencyAddress = useSelector(
     (state: AppState) => state.swap.outputCurrency?.address
   );
-  const genericAssets = useSelector(
-    (state: AppState) => state.data.genericAssets
-  );
 
-  let inputPriceValue = genericAssets[inputCurrencyAddress]?.price?.value;
-  let outputPriceValue = genericAssets[outputCurrencyAddress]?.price?.value;
+  let inputPriceValue = ethereumUtils.getAssetPrice({
+    address: inputCurrencyAddress,
+    nativeCurrency,
+  });
+  let outputPriceValue = ethereumUtils.getAssetPrice({
+    address: outputCurrencyAddress,
+    nativeCurrency,
+  });
 
   let priceImpactNativeAmount = null;
   let impact = null;

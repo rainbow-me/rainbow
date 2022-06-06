@@ -76,7 +76,7 @@ export const parseAssetSymbol = (
  * @param  {Object} asset
  * @return The parsed asset.
  */
-export const parseGenericAsset = (
+export const parseZerionAsset = (
   asset: ZerionAsset | ZerionAssetFallback
 ): ParsedAddressAsset => {
   const address = asset.asset_code;
@@ -108,11 +108,11 @@ export const parseGenericAsset = (
 };
 
 export const parseAsset = (asset: ZerionAsset) => {
-  return parseGenericAsset(asset);
+  return parseZerionAsset(asset);
 };
 
 export const parseFallbackAsset = (asset: ZerionAssetFallback) => {
-  return parseGenericAsset(asset);
+  return parseZerionAsset(asset);
 };
 
 export const parseAssetsNativeWithTotals = (
@@ -122,7 +122,7 @@ export const parseAssetsNativeWithTotals = (
   const assetsNative = parseAssetsNative(assets, nativeCurrency);
   const totalAmount = assetsNative.reduce((total, { native }) => {
     if (native) {
-      return parseFloat(add(total, native?.balance.amount || 0));
+      return parseFloat(add(total, native?.balance?.amount || 0));
     } else {
       return total;
     }
@@ -149,7 +149,7 @@ export const parseAssetNative = (
   const prices = data.assetPriceData;
   const balances = data.accountAssetBalanceData[accountAddress];
   const price =
-    prices[asset.uniqueId]?.[toUpper(nativeCurrency) as NativeCurrencyKey];
+    prices?.[asset?.uniqueId]?.[toUpper(nativeCurrency) as NativeCurrencyKey];
   const balance = balances[asset.uniqueId];
   if (isNil(price)) {
     return asset;

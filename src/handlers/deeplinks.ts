@@ -20,7 +20,6 @@ import {
   emitAssetRequest,
   emitChartsRequest,
 } from '@rainbow-me/redux/explorer';
-import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils } from '@rainbow-me/utils';
 
@@ -52,16 +51,7 @@ export default async function handleDeeplink(
         const { addr } = qs.parse(urlObj.query?.substring(1));
         const address = toLower(addr);
         if (address && address.length > 0) {
-          // @ts-expect-error FIXME: Property 'assets' does not exist on type...
-          const { assets: allAssets, genericAssets } = store.getState().data;
-          const asset =
-            Object.values(genericAssets).find(
-              (asset: any) => address === toLower(asset.address)
-            ) ||
-            (address !== ETH_ADDRESS &&
-              allAssets.find(
-                (asset: any) => address === toLower(asset.address)
-              ));
+          const asset = ethereumUtils.getParsedAsset({ address });
 
           // First go back to home to dismiss any open shit
           // and prevent a weird crash

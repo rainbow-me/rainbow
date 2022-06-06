@@ -155,6 +155,13 @@ export default function ListSection() {
     listData?.length,
   ]);
 
+  const getAssetNative = useCallback(
+    address => {
+      const asset = ethereumUtils.getParsedAsset({ address }); // mainnet only
+      return parseAssetNative(asset, nativeCurrency);
+    },
+    [nativeCurrency]
+  );
   const listItems = useMemo(() => {
     if (network !== networkTypes.mainnet) {
       return [];
@@ -162,11 +169,7 @@ export default function ListSection() {
     let items = [];
     if (selectedList === 'favorites') {
       items = favorites
-        .map(address =>
-          parseAssetNative(
-            ethereumUtils.getUniqueId({ address, nativeCurrency })
-          )
-        )
+        .map(getAssetNative)
         .sort((a, b) => (a.name > b.name ? 1 : -1));
     } else {
       if (!lists?.length) return [];
@@ -175,13 +178,11 @@ export default function ListSection() {
         return [];
       }
 
-      items = currentList.tokens.map(address =>
-        parseAssetNative(ethereumUtils.getUniqueId({ address, nativeCurrency }))
-      );
+      items = currentList.tokens.map(getAssetNative);
     }
 
     return items.filter(item => item.symbol && Number(item.price?.value) > 0);
-  }, [favorites, lists, nativeCurrency, network, selectedList]);
+  }, [favorites, getAssetNative, lists, network, selectedList]);
 
   const handlePress = useCallback(
     item => {

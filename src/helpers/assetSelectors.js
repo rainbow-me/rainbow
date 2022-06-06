@@ -4,23 +4,17 @@ import { sortList } from '../helpers/sortList';
 import { parseAssetsNativeWithTotals } from '@rainbow-me/parsers';
 const EMPTY_ARRAY = [];
 
-const accountAddressSelector = state => state.settings.accountAddress;
 const assetPricesFromUniswapSelector = state =>
   state.data.assetPricesFromUniswap;
 const accountAssetsDataSelector = state => state.data.assetsData;
-const assetPricesSelector = state => state.data.assetPriceData;
-const assetBalancesSelector = state => state.data.accountAssetBalanceData;
 const isLoadingAssetsSelector = state => state.data.isLoadingAssets;
 const nativeCurrencySelector = state => state.settings.nativeCurrency;
 
 const sortAssetsByNativeAmount = (
   assetsData,
-  assetPrices,
-  assetBalances,
   assetPricesFromUniswap,
   isLoadingAssets,
-  nativeCurrency,
-  accountAddress
+  nativeCurrency
 ) => {
   let updatedAssets = assetsData;
   if (!isEmpty(assetPricesFromUniswap)) {
@@ -49,8 +43,6 @@ const sortAssetsByNativeAmount = (
   }
   const parsedAssets = parseAssetsNativeWithTotals(
     Object.values(updatedAssets),
-    assetPrices,
-    assetBalances[accountAddress],
     nativeCurrency
   );
   const { assetsNativePrices, total } = parsedAssets;
@@ -84,12 +76,9 @@ const groupAssetsByMarketValue = assets =>
 export const sortAssetsByNativeAmountSelector = createSelector(
   [
     accountAssetsDataSelector,
-    assetPricesSelector,
-    assetBalancesSelector,
     assetPricesFromUniswapSelector,
     isLoadingAssetsSelector,
     nativeCurrencySelector,
-    accountAddressSelector,
   ],
   sortAssetsByNativeAmount
 );

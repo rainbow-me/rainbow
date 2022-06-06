@@ -72,6 +72,7 @@ export interface ParsedAddressAsset
   type?: string;
   uniqueId: string;
   mainnet_address?: EthereumAddress;
+  network?: Network;
   isNativeAsset?: boolean;
 }
 

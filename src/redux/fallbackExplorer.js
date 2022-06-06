@@ -52,8 +52,7 @@ const getMainnetAssetsFromCovalent = async (
   accountAddress,
   type,
   currency,
-  coingeckoIds,
-  genericAssets
+  coingeckoIds
 ) => {
   const data = await getAssetsFromCovalent(chainId, accountAddress, currency);
   if (data) {
@@ -73,14 +72,14 @@ const getMainnetAssetsFromCovalent = async (
       };
 
       // Overrides
-      const fallbackAsset =
-        ethereumUtils.getAccountAsset(contractAddress) ||
-        genericAssets[toLower(contractAddress)];
+      const fallbackPrice = ethereumUtils.getAssetPrice({
+        address: contractAddress,
+      });
 
-      if (fallbackAsset) {
+      if (fallbackPrice) {
         price = {
           ...price,
-          ...fallbackAsset.price,
+          ...fallbackPrice,
         };
       }
 
@@ -295,7 +294,7 @@ export const fetchOnchainBalances = ({
 }) => async (dispatch, getState) => {
   logger.log('😬 FallbackExplorer:: fetchOnchainBalances');
   const { network, accountAddress, nativeCurrency } = getState().settings;
-  const { assetsData, genericAssets } = getState().data;
+  const { assetsData } = getState().data;
   const { coingeckoIds } = getState().additionalAssetsData;
   const formattedNativeCurrency = toLower(nativeCurrency);
   const { mainnetAssets } = getState().fallbackExplorer;
@@ -305,8 +304,7 @@ export const fetchOnchainBalances = ({
     accountAddress,
     AssetTypes.token,
     formattedNativeCurrency,
-    coingeckoIds,
-    genericAssets
+    coingeckoIds
   );
 
   const chainAssetsMap = keyBy(chainAssets[network], 'asset.asset_code');
