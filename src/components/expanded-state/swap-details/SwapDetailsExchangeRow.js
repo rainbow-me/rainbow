@@ -16,12 +16,15 @@ import {
   Text,
   useForegroundColor,
 } from '@rainbow-me/design-system';
+import networkInfo from '@rainbow-me/helpers/networkInfo';
 import { useStepper } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { getExchangeIconUrl } from '@rainbow-me/utils';
 
 const parseExchangeName = name => {
-  const networks = ['arbitrum', 'optimism', 'polygon'];
+  const networks = Object.keys(networkInfo).map(network =>
+    network.toLowerCase()
+  );
 
   return networks.some(network => name.includes(network))
     ? name.slice(name.indexOf('_') + 1, name.length)
