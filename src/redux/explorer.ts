@@ -983,7 +983,7 @@ const listenOnAddressMessages = (socket: SocketIOClient.Socket) => (
           '😬 Cancelling fallback data provider listener. Zerion is good!'
         );
         dispatch(disableFallbackIfNeeded());
-        dispatch(explorerInitL2(Network.optimism));
+        dispatch(optimismExplorerInit());
         // Fetch balances onchain to override zerion's
         // which is likely behind
         dispatch(
@@ -998,7 +998,6 @@ const listenOnAddressMessages = (socket: SocketIOClient.Socket) => (
     (message: AddressAssetsReceivedMessage) => {
       dispatch(addressAssetsReceived(message, true));
       dispatch(disableFallbackIfNeeded());
-      dispatch(optimismExplorerInit());
       // Fetch balances onchain to override zerion's
       // which is likely behind
       dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
