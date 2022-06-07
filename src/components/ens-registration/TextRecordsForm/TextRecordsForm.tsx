@@ -1,3 +1,4 @@
+import { useFocusEffect } from '@react-navigation/core';
 import { debounce, isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import { TextInputProps, ViewProps } from 'react-native';
@@ -134,6 +135,9 @@ function Field({ defaultValue, ...props }: InlineFieldProps) {
 
     setValue(defaultValue);
   }, [defaultValue, isTouched]);
+
+  // Set fields to be not touched when screen gets out of focus.
+  useFocusEffect(useCallback(() => () => setIsTouched(false), []));
 
   return (
     <>

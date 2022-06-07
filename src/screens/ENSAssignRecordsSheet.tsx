@@ -214,6 +214,7 @@ export default function ENSAssignRecordsSheet() {
               <Box flexGrow={1}>
                 <TextRecordsForm
                   autoFocusKey={params?.autoFocusKey}
+                  key={name}
                   onAutoFocusLayout={handleAutoFocusLayout}
                   onError={handleError}
                   onFocus={handleFocus}
