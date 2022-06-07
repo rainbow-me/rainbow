@@ -4,6 +4,10 @@ import { get, isNil } from 'lodash';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 
 type BigNumberish = number | string | BigNumber;
+interface Dictionary<T> {
+  [index: string]: T;
+}
+type ValueKeyIteratee<T> = (value: T, key: string) => unknown;
 
 export const abs = (value: BigNumberish): string =>
   new BigNumber(value).abs().toFixed();
@@ -407,6 +411,23 @@ export const fromWei = (number: BigNumberish): string =>
  */
 export const delay = (ms: number): Promise<void> => {
   return new Promise(resolve => setTimeout(resolve, ms));
+};
+
+// /**
+//  * Creates an object composed of the omitted object properties by some predicate function.
+//  * @param obj The source object
+//  * @param paths The property paths to omit
+//  */
+export const omitBy = <T>(
+  obj: Dictionary<T>,
+  predicate: ValueKeyIteratee<T>
+): Dictionary<T> => {
+  return Object.keys(obj)
+    .filter(k => !predicate(obj[k], k))
+    .reduce((acc, key) => {
+      acc[key] = obj[key];
+      return acc;
+    }, {} as Dictionary<T>);
 };
 
 /**
