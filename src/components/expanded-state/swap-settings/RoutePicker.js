@@ -26,11 +26,9 @@ const androidRouteMenuItems = () => {
 };
 
 export default function SwapSettingsState({ onSelect, swapRoute }) {
-  const [currentRoute, setCurrentRoute] = React.useState(swapRoute);
-
   const imageSource = useMemo(() => {
     let source = null;
-    switch (currentRoute) {
+    switch (swapRoute) {
       case SwapRoute['1inch']:
         source = OneInchExchange;
         break;
@@ -43,11 +41,10 @@ export default function SwapSettingsState({ onSelect, swapRoute }) {
     }
 
     return source;
-  }, [currentRoute]);
+  }, [swapRoute]);
 
   const handleOnPressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
-      setCurrentRoute(actionKey);
       onSelect(actionKey);
     },
     [onSelect]
@@ -61,7 +58,6 @@ export default function SwapSettingsState({ onSelect, swapRoute }) {
       idx => {
         if (idx !== undefined) {
           const routeOptions = androidRouteMenuItems();
-          setCurrentRoute(routeOptions[idx]);
           onSelect(routeOptions[idx]);
         }
       }
@@ -72,7 +68,7 @@ export default function SwapSettingsState({ onSelect, swapRoute }) {
     <Columns alignHorizontal="justify" alignVertical="center">
       <Column>
         <Text size="18px" weight="bold">
-          Route swaps via
+          {lang.t('exchange.route_picker')}
         </Text>
       </Column>
       <Column width="content">
@@ -94,7 +90,7 @@ export default function SwapSettingsState({ onSelect, swapRoute }) {
             />
             <Text size="18px" weight="bold">
               {`${Object.keys(SwapRoute).find(
-                key => SwapRoute[key] === currentRoute
+                key => SwapRoute[key] === swapRoute
               )} 􀆈`}
             </Text>
           </Inline>

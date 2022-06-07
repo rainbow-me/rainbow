@@ -352,6 +352,7 @@
       "use_defaults": "Use Defaults",
       "done": "Done",
       "slippage_tolerance": "Slippage Tolerance",
+      "route_picker": "Route Swaps via",
       "use_flashbots": "Use Flashbots",
       "swapping_for_prefix": "Swapping for",
       "unverified_token": {

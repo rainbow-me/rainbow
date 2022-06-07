@@ -1,6 +1,6 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { InteractionManager, Keyboard } from 'react-native';
 import { Switch } from 'react-native-gesture-handler';
 import { useDispatch } from 'react-redux';
@@ -32,6 +32,7 @@ import {
   useSwapSettings,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
+import { SwapRoute } from '@rainbow-me/redux/swap';
 import { deviceUtils } from '@rainbow-me/utils';
 
 function useAndroidDisableGesturesOnFocus() {
@@ -98,6 +99,15 @@ export default function SwapSettingsState({ asset }) {
   const convertBipsToPercent = bips => bips / 100;
   const convertPercentToBips = percent => percent * 100;
 
+  const [currentRoute, setCurrentRoute] = useState(swapRoute);
+  const updateRoute = useCallback(
+    newRoute => {
+      setCurrentRoute(newRoute);
+      updateSwapRoute(newRoute);
+    },
+    [updateSwapRoute]
+  );
+
   const [slippageValue, setSlippageValue] = useState(
     convertBipsToPercent(slippageInBips)
   );
@@ -151,7 +161,8 @@ export default function SwapSettingsState({ asset }) {
   const resetToDefaults = useCallback(() => {
     onSlippageChange(1);
     settingsChangeFlashbotsEnabled(false);
-  }, [onSlippageChange, settingsChangeFlashbotsEnabled]);
+    updateRoute(SwapRoute.Both);
+  }, [onSlippageChange, settingsChangeFlashbotsEnabled, updateRoute]);
 
   return (
     <SlackSheet
@@ -169,7 +180,7 @@ export default function SwapSettingsState({ asset }) {
         <ExchangeHeader />
         <Inset bottom="24px" horizontal="24px" top="10px">
           <Stack backgroundColor="green" space="10px">
-            <RoutePicker onSelect={updateSwapRoute} swapRoute={swapRoute} />
+            <RoutePicker onSelect={updateRoute} swapRoute={currentRoute} />
             <Columns alignVertical="center">
               <Text size="18px" weight="bold">
                 {lang.t('exchange.slippage_tolerance')}
