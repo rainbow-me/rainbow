@@ -104,6 +104,19 @@ index 019032b..31646a4 100644
 +        });
 +    }
  }
+diff --git a/node_modules/react-native-fast-image/dist/index.cjs.js b/node_modules/react-native-fast-image/dist/index.cjs.js
+index 2a49562..7b1161c 100644
+--- a/node_modules/react-native-fast-image/dist/index.cjs.js
++++ b/node_modules/react-native-fast-image/dist/index.cjs.js
+@@ -95,6 +95,8 @@ FastImage.priority = priority;
+ 
+ FastImage.preload = sources => FastImageViewNativeModule.preload(sources);
+ 
++FastImage.getCachePath = (source: Source) => FastImageViewNativeModule.getCachePath(source);
++
+ FastImage.clearMemoryCache = () => FastImageViewNativeModule.clearMemoryCache();
+ 
+ FastImage.clearDiskCache = () => FastImageViewNativeModule.clearDiskCache();
 diff --git a/node_modules/react-native-fast-image/dist/index.d.ts b/node_modules/react-native-fast-image/dist/index.d.ts
 index 8a91257..641d0fe 100644
 --- a/node_modules/react-native-fast-image/dist/index.d.ts
