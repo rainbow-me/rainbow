@@ -300,6 +300,7 @@ export default function useSwapDerivedOutputs(chainId: number) {
     derivedValues[SwapModalField.native] = null;
     displayValues[DisplayValue.input] = null;
     displayValues[DisplayValue.output] = null;
+    displayValues[DisplayValue.native] = null;
     setResult({ derivedValues, displayValues, tradeDetails: null });
     setLoading(false);
     setInsufficientLiquidity(false);
