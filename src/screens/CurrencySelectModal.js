@@ -221,7 +221,7 @@ export default function CurrencySelectModal() {
             });
             setSearchQuery('');
             setCurrentChainId(ethereumUtils.getChainIdFromType(item.type));
-          }, 0);
+          }, android ? 500 : 0);
         } else {
           navigate(Routes.MAIN_EXCHANGE_SCREEN);
           setSearchQuery('');

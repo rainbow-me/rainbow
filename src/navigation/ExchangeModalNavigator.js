@@ -85,7 +85,6 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
     const ref = useRef();
     const { params } = useRoute();
 
-    // TODO(jxom): properly derive this
     const tabTransitionPosition = useValue(0);
 
     const [swipeEnabled, setSwipeEnabled] = useStateCallback(false);

@@ -1,5 +1,5 @@
 import { useRoute } from '@react-navigation/native';
-import { useCallback, useLayoutEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { InteractionManager, TextInput } from 'react-native';
 import { MMKV } from 'react-native-mmkv';
 import { useDispatch } from 'react-redux';
@@ -92,7 +92,7 @@ export default function useSwapCurrencyHandlers({
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (shouldUpdate) {
       dispatch(updateSwapInputCurrency(defaultInputItemInWallet));
       dispatch(updateSwapOutputCurrency(defaultOutputItem));
