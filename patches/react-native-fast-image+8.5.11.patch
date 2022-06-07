@@ -35,7 +35,6 @@ index 019032b..99c1e88 100644
  package com.dylanvann.fastimage;
  
  import android.app.Activity;
-+import android.support.annotation.Nullable;
  
  import com.bumptech.glide.Glide;
 +import com.bumptech.glide.load.DataSource;
@@ -88,7 +87,7 @@ index 019032b..99c1e88 100644
 +                    .apply(FastImageViewConverter.getOptions(activity, imageSource,  source))
 +                    .listener(new RequestListener<File>() {
 +                        @Override
-+                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<File> target, boolean isFirstResource) {
++                        public boolean onLoadFailed(@androidx.annotation.Nullable GlideException e, Object model, Target<File> target, boolean isFirstResource) {
 +                            promise.reject(ERROR_LOAD_FAILED, e);
 +                            return false;
 +                        }
