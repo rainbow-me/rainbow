@@ -191,10 +191,9 @@ export default function WalletScreen() {
   // (mainnet & rinkeby)
   const fabs = useMemo(
     () =>
-      [
-        !!networkInfo[network]?.exchange_enabled && ExchangeFab,
-        SendFab,
-      ].filter(e => !!e),
+      [!!networkInfo[network]?.exchange_enabled && ExchangeFab, SendFab].filter(
+        e => !!e
+      ),
     [network]
   );
 
