@@ -166,7 +166,7 @@ export default function useENSModifiedRegistration({
       records,
       changedRecords,
       uniqueTokens,
-      profileQuery.data?.images.avatarUrl,
+      profileQuery.data?.images?.avatarUrl,
       mode
     );
     const coverUrl = getImageUrl(
@@ -174,7 +174,7 @@ export default function useENSModifiedRegistration({
       records,
       changedRecords,
       uniqueTokens,
-      profileQuery.data?.images.coverUrl,
+      profileQuery.data?.images?.coverUrl,
       mode
     );
 
@@ -183,8 +183,8 @@ export default function useENSModifiedRegistration({
       coverUrl,
     };
   }, [
-    profileQuery.data?.images.avatarUrl,
-    profileQuery.data?.images.coverUrl,
+    profileQuery.data?.images?.avatarUrl,
+    profileQuery.data?.images?.coverUrl,
     records,
     uniqueTokens,
     changedRecords,
