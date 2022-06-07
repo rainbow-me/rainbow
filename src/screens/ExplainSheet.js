@@ -333,16 +333,16 @@ export const explainers = (params, colors) => ({
     extraHeight: -90,
     text: availableNetworksExplainer(params?.tokenSymbol, params?.networks),
     title:
-      params?.networks.length > 1
+      params?.networks?.length > 1
         ? lang.t('explain.available_networks.title_plural', {
-            length: params?.networks.length,
+            length: params?.networks?.length,
           })
         : lang.t('explain.available_networks.title_singular', {
-            network: params?.networks[0],
+            network: params?.networks?.[0],
           }),
     logo: (
       <Row justify="center" marginBottom={10}>
-        {params?.networks.map((network, index) => {
+        {params?.networks?.map((network, index) => {
           return (
             <Box
               height={{ custom: 40 }}
@@ -358,7 +358,7 @@ export const explainers = (params, colors) => ({
                 zIndex: index,
               }}
               width={{ custom: 40 }}
-              zIndex={params?.networks.length - index}
+              zIndex={params?.networks?.length - index}
             >
               {network !== 'mainnet' ? (
                 <ChainBadge

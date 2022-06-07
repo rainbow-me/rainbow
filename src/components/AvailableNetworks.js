@@ -72,7 +72,7 @@ const AvailableNetworks = ({
             radius={600}
           />
           <Row justify="center">
-            {availableNetworks.map((network, index) => {
+            {availableNetworks?.map((network, index) => {
               return (
                 <Box
                   background="body"
@@ -86,7 +86,7 @@ const AvailableNetworks = ({
                     zIndex: index,
                   }}
                   width={{ custom: 22 }}
-                  zIndex={availableNetworks.length - index}
+                  zIndex={availableNetworks?.length - index}
                 >
                   {network !== 'mainnet' ? (
                     <ChainBadge
@@ -121,7 +121,7 @@ const AvailableNetworks = ({
                     availableNetworks: availableNetworks?.length,
                   })
                 : lang.t('expanded_state.asset.available_network', {
-                    availableNetwork: networkInfo[availableNetworks[0]].name,
+                    availableNetwork: networkInfo[availableNetworks?.[0]].name,
                   })}
             </Text>
           </Column>

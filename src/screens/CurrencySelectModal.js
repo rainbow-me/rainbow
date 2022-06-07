@@ -28,13 +28,17 @@ import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
 import { usePagerPosition } from '../navigation/ScrollPositionContext';
 import { addHexPrefix } from '@rainbow-me/handlers/web3';
-import { CurrencySelectionTypes } from '@rainbow-me/helpers';
+import {
+  CurrencySelectionTypes,
+  ExchangeModalTypes,
+} from '@rainbow-me/helpers';
 import {
   useAssetsInWallet,
   useCoinListEditOptions,
   useInteraction,
   useMagicAutofocus,
   usePrevious,
+  useSwapCurrencyHandlers,
   useSwapCurrencyList,
 } from '@rainbow-me/hooks';
 import { delayNext } from '@rainbow-me/hooks/useMagicAutofocus';
@@ -70,16 +74,23 @@ const searchWalletCurrencyList = (searchList, query) => {
 export default function CurrencySelectModal() {
   const isFocused = useIsFocused();
   const prevIsFocused = usePrevious(isFocused);
-  const { navigate, dangerouslyGetState } = useNavigation();
+  const {
+    goBack,
+    navigate,
+    dangerouslyGetState,
+    dangerouslyGetParent,
+  } = useNavigation();
   const { colors } = useTheme();
   const dispatch = useDispatch();
   const {
     params: {
+      chainId,
+      fromDiscover,
       onSelectCurrency,
+      params,
       restoreFocusOnSwapModal,
       toggleGestureEnabled,
       type,
-      chainId,
     },
   } = useRoute();
 
@@ -198,9 +209,24 @@ export default function CurrencySelectModal() {
       const handleNavigate = () => {
         delayNext();
         dangerouslyGetState().index = 1;
-        setSearchQuery('');
-        navigate(Routes.MAIN_EXCHANGE_SCREEN);
-        setCurrentChainId(ethereumUtils.getChainIdFromType(item.type));
+        if (fromDiscover) {
+          goBack();
+          setTimeout(() => {
+            navigate(Routes.EXCHANGE_MODAL, {
+              params: {
+                defaultInputAsset: item,
+                ...params,
+              },
+              screen: Routes.MAIN_EXCHANGE_SCREEN,
+            });
+            setSearchQuery('');
+            setCurrentChainId(ethereumUtils.getChainIdFromType(item.type));
+          }, 0);
+        } else {
+          navigate(Routes.MAIN_EXCHANGE_SCREEN);
+          setSearchQuery('');
+          setCurrentChainId(ethereumUtils.getChainIdFromType(item.type));
+        }
         if (searchQueryForSearch) {
           analytics.track('Selected a search result in Swap', {
             name: item.name,
@@ -259,15 +285,14 @@ export default function CurrencySelectModal() {
 
   const [startInteraction] = useInteraction();
   useEffect(() => {
-    // on new focus state
-    if (isFocused !== prevIsFocused) {
-      toggleGestureEnabled(!isFocused);
-    }
-
-    // on page blur
-    if (!isFocused && prevIsFocused) {
-      handleApplyFavoritesQueue();
-      restoreFocusOnSwapModal?.();
+    if (!fromDiscover) {
+      if (isFocused !== prevIsFocused) {
+        toggleGestureEnabled(!isFocused);
+      }
+      if (!isFocused && prevIsFocused) {
+        handleApplyFavoritesQueue();
+        restoreFocusOnSwapModal?.();
+      }
     }
   }, [
     handleApplyFavoritesQueue,

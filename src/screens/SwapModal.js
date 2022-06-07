@@ -15,7 +15,7 @@ const SwapModal = (props, ref) => {
 
   return (
     <ExchangeModal
-      defaultInputAsset={inputAsset}
+      defaultInputAsset={inputAsset || params.defaultInputAsset}
       defaultOutputAsset={outputAsset}
       fromDiscover={fromDiscover}
       ref={ref}

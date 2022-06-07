@@ -39,14 +39,13 @@ export default function useSwapCurrencyHandlers({
   inputFieldRef,
   setLastFocusedInputHandle,
   outputFieldRef,
+  shouldUpdate = true,
   title,
   type,
-}) {
+} = {}) {
   const dispatch = useDispatch();
   const { navigate, setParams, dangerouslyGetParent } = useNavigation();
-  const {
-    params: { blockInteractions },
-  } = useRoute();
+  const { params: { blockInteractions } = {} } = useRoute();
 
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
@@ -76,8 +75,14 @@ export default function useSwapCurrencyHandlers({
       };
     }
     if (type === ExchangeModalTypes.swap) {
+      const defaultInputItemInWallet = defaultInputAsset
+        ? {
+            ...defaultInputAsset,
+            type: ethereumUtils.getNetworkFromType(defaultInputAsset?.type),
+          }
+        : null;
       return {
-        defaultInputItemInWallet: defaultInputAsset ?? null,
+        defaultInputItemInWallet,
         defaultOutputItem: defaultOutputAsset ?? null,
       };
     }
@@ -88,9 +93,11 @@ export default function useSwapCurrencyHandlers({
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useLayoutEffect(() => {
-    dispatch(updateSwapInputCurrency(defaultInputItemInWallet));
-    dispatch(updateSwapOutputCurrency(defaultOutputItem));
-  }, [defaultInputItemInWallet, dispatch, defaultOutputItem]);
+    if (shouldUpdate) {
+      dispatch(updateSwapInputCurrency(defaultInputItemInWallet));
+      dispatch(updateSwapOutputCurrency(defaultOutputItem));
+    }
+  }, [defaultInputItemInWallet, dispatch, defaultOutputItem, shouldUpdate]);
 
   const [startFlipFocusTimeout] = useTimeout();
   const flipCurrencies = useCallback(() => {
@@ -105,33 +112,32 @@ export default function useSwapCurrencyHandlers({
   }, [dispatch, inputFieldRef, outputFieldRef, startFlipFocusTimeout]);
 
   const updateInputCurrency = useCallback(
-    (newInputCurrency, handleNavigate) => {
+    (inputCurrency, handleNavigate) => {
+      const newInputCurrency = inputCurrency
+        ? {
+            ...inputCurrency,
+            type: ethereumUtils.getNetworkFromType(inputCurrency?.type),
+          }
+        : null;
       if (
         !fromDiscover &&
         !inputCurrency &&
-        outputCurrency?.implementations?.[
-          ethereumUtils.getNetworkFromType(newInputCurrency?.type)
-        ]?.address
+        outputCurrency?.implementations?.[newInputCurrency?.type]?.address
       ) {
-        const newNewtork = ethereumUtils.getNetworkFromType(
-          newInputCurrency?.type
-        );
         let newOutputCurrency = outputCurrency;
-        if (newNewtork !== Network.mainnet)
+        if (newInputCurrency.type !== Network.mainnet)
           newOutputCurrency.mainnet_address = outputCurrency.address;
 
         newOutputCurrency.address =
-          outputCurrency.implementations[
-            ethereumUtils.getNetworkFromType(newInputCurrency?.type)
-          ].address;
-        newOutputCurrency.type = newInputCurrency?.type;
+          outputCurrency.implementations[newInputCurrency?.type].address;
+        newOutputCurrency.type = newInputCurrency.type;
         newOutputCurrency.uniqueId =
-          newNewtork === Network.mainnet
+          newInputCurrency.type === Network.mainnet
             ? newOutputCurrency?.address
             : `${newOutputCurrency?.address}_${newOutputCurrency?.type}`;
         dispatch(updateSwapInputCurrency(newInputCurrency, true));
         dispatch(updateSwapOutputCurrency(newOutputCurrency));
-        setLastFocusedInputHandle(inputFieldRef);
+        setLastFocusedInputHandle?.(inputFieldRef);
         handleNavigate();
       } else if (
         outputCurrency &&
@@ -146,7 +152,7 @@ export default function useSwapCurrencyHandlers({
                 setTimeout(() => {
                   setHasShownWarning();
                   dispatch(updateSwapInputCurrency(newInputCurrency));
-                  setLastFocusedInputHandle(inputFieldRef);
+                  setLastFocusedInputHandle?.(inputFieldRef);
                   handleNavigate();
                 }, 250);
               });
@@ -156,14 +162,13 @@ export default function useSwapCurrencyHandlers({
         });
       } else {
         dispatch(updateSwapInputCurrency(newInputCurrency));
-        setLastFocusedInputHandle(inputFieldRef);
+        setLastFocusedInputHandle?.(inputFieldRef);
         handleNavigate();
       }
     },
     [
       dispatch,
       fromDiscover,
-      inputCurrency,
       inputFieldRef,
       outputCurrency,
       setLastFocusedInputHandle,
@@ -171,7 +176,13 @@ export default function useSwapCurrencyHandlers({
   );
 
   const updateOutputCurrency = useCallback(
-    (newOutputCurrency, handleNavigate) => {
+    (outputCurrency, handleNavigate) => {
+      const newOutputCurrency = outputCurrency
+        ? {
+            ...outputCurrency,
+            type: ethereumUtils.getNetworkFromType(outputCurrency?.type),
+          }
+        : null;
       if (
         inputCurrency &&
         newOutputCurrency?.type !== inputCurrency?.type &&
@@ -185,7 +196,7 @@ export default function useSwapCurrencyHandlers({
                 setTimeout(() => {
                   setHasShownWarning();
                   dispatch(updateSwapOutputCurrency(newOutputCurrency));
-                  setLastFocusedInputHandle(inputFieldRef);
+                  setLastFocusedInputHandle?.(inputFieldRef);
                   handleNavigate();
                 }, 250);
               });
@@ -195,7 +206,7 @@ export default function useSwapCurrencyHandlers({
         });
       } else {
         dispatch(updateSwapOutputCurrency(newOutputCurrency));
-        setLastFocusedInputHandle(inputFieldRef);
+        setLastFocusedInputHandle?.(inputFieldRef);
         handleNavigate();
       }
     },
