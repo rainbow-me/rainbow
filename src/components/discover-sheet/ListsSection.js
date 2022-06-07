@@ -116,7 +116,7 @@ export default function ListSection() {
 
   const handleSwitchList = useCallback(
     (id, index) => {
-      if (IS_TESTING !== 'false') {
+      if (IS_TESTING !== 'true') {
         LayoutAnimation.configureNext(
           LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
         );
