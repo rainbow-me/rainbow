@@ -5,11 +5,16 @@ import { AssetTypes } from '@rainbow-me/entities';
 
 // To fetch an asset from account assets,
 // generic assets, and uniqueTokens
-export default function useAsset(asset) {
+export default function useAsset(
+  asset,
+  { revalidateCollectibleInBackground = false } = {}
+) {
   const accountAsset = useAccountAsset(
     asset?.uniqueId || asset?.mainnet_address || asset?.address
   );
-  const uniqueToken = useCollectible(asset);
+  const uniqueToken = useCollectible(asset, {
+    revalidateInBackground: revalidateCollectibleInBackground,
+  });
   return useMemo(() => {
     if (!asset) return null;
 

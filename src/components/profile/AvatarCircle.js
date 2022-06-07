@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { useTheme } from '../../context/ThemeContext';
+import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import ImageAvatar from '../contacts/ImageAvatar';
 import { Flex, InnerBorder } from '../layout';
@@ -36,6 +36,7 @@ export default function AvatarCircle({
   image,
   showcaseAccountSymbol,
   showcaseAccountColor,
+  newProfile = false,
   ...props
 }) {
   const { colors, isDarkMode } = useTheme();
@@ -43,13 +44,14 @@ export default function AvatarCircle({
     accountColor: profileAccountColor,
     accountSymbol: profileAccountSymbol,
   } = useAccountProfile();
+
   const accountSymbol = showcaseAccountSymbol || profileAccountSymbol;
   const resolvedColor =
     showcaseAccountColor != null
       ? typeof showcaseAccountColor === 'string'
         ? showcaseAccountColor
         : colors.avatarBackgrounds[showcaseAccountColor]
-      : colors.avatarBackgrounds[profileAccountColor || 0];
+      : colors.avatarBackgrounds[(!newProfile && profileAccountColor) ?? 10];
   const shadows = useMemo(
     () => ({
       default: [

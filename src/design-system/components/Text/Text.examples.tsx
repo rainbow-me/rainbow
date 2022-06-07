@@ -18,7 +18,9 @@ const textExamples: Required<Pick<TextProps, 'size' | 'weight'>>[] = [
   { size: '23px', weight: 'bold' },
   { size: '18px', weight: 'bold' },
   { size: '16px', weight: 'bold' },
+  { size: '15px', weight: 'bold' },
   { size: '14px', weight: 'bold' },
+  { size: '12px', weight: 'bold' },
   { size: '11px', weight: 'bold' },
 ];
 

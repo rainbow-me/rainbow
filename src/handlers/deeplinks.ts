@@ -1,6 +1,5 @@
 import { captureException } from '@sentry/react-native';
 import { toLower } from 'lodash';
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'qs'.... Remove this comment to see the full error message
 import qs from 'qs';
 import { Alert } from 'react-native';
 import URL from 'url-parse';
@@ -11,6 +10,8 @@ import {
   walletConnectRemovePendingRedirect,
   walletConnectSetPendingRedirect,
 } from '../redux/walletconnect';
+import { defaultConfig } from '@rainbow-me/config/experimental';
+import { PROFILES } from '@rainbow-me/config/experimentalHooks';
 import { setDeploymentKey } from '@rainbow-me/handlers/fedora';
 import { delay } from '@rainbow-me/helpers/utilities';
 import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
@@ -50,7 +51,7 @@ export default async function handleDeeplink(
         const { dispatch } = store;
         // @ts-expect-error ts-migrate(2722) FIXME: Cannot invoke an object which is possibly 'undefin... Remove this comment to see the full error message
         const { addr } = qs.parse(urlObj.query?.substring(1));
-        const address = toLower(addr);
+        const address = toLower(addr as string);
         if (address && address.length > 0) {
           // @ts-expect-error FIXME: Property 'assets' does not exist on type...
           const { assets: allAssets, genericAssets } = store.getState().data;
@@ -116,9 +117,14 @@ export default async function handleDeeplink(
         if (addressOrENS) {
           const isValid = await checkIsValidAddressOrDomain(addressOrENS);
           if (isValid) {
-            return Navigation.handleAction(Routes.SHOWCASE_SHEET, {
-              address: addressOrENS,
-            });
+            const profilesEnabled = defaultConfig?.[PROFILES]?.value;
+            return Navigation.handleAction(
+              profilesEnabled ? Routes.PROFILE_SHEET : Routes.SHOWCASE_SHEET,
+              {
+                address: addressOrENS,
+                fromRoute: 'Deeplink',
+              }
+            );
           } else {
             const error = new Error('Invalid deeplink: ' + url);
             captureException(error);

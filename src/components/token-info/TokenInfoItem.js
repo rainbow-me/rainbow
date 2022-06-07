@@ -1,3 +1,4 @@
+import ConditionalWrap from 'conditional-wrap';
 import React from 'react';
 import { View } from 'react-native';
 import { ButtonPressAnimation, ShimmerAnimation } from '../animations';
@@ -5,9 +6,10 @@ import { ColumnWithMargins, RowWithMargins } from '../layout';
 import TokenInfoBalanceValue from './TokenInfoBalanceValue';
 import TokenInfoHeading from './TokenInfoHeading';
 import TokenInfoValue from './TokenInfoValue';
-import { useTheme } from '@rainbow-me/context';
+import { Column, Columns } from '@rainbow-me/design-system';
 import { useDelayedValueWithLayoutAnimation } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
+import { useTheme } from '@rainbow-me/theme';
 
 const VerticalDivider = styled.View({
   backgroundColor: ({ theme: { colors } }) => colors.rowDividerExtraLight,
@@ -21,7 +23,7 @@ const WrapperView = styled.View({
   alignSelf: ({ align }) => (align === 'left' ? 'flex-start' : 'flex-end'),
   borderRadius: 12,
   height: 24,
-  marginTop: -17,
+  marginTop: ({ isENS, isNft }) => (isNft && !isENS ? -10 : -14),
   overflow: 'hidden',
   paddingTop: 12,
   width: 50,
@@ -33,10 +35,12 @@ export default function TokenInfoItem({
   color,
   children,
   enableHapticFeedback = true,
+  isENS,
   isNft,
   onInfoPress,
   onPress,
   showDivider,
+  addonComponent,
   showInfoButton,
   size,
   title,
@@ -86,33 +90,57 @@ export default function TokenInfoItem({
         {asset ? (
           <TokenInfoBalanceValue align={align} asset={asset} isNft={isNft} />
         ) : (
-          <ButtonPressAnimation
-            enableHapticFeedback={!!onPress && enableHapticFeedback}
-            onPress={onPress}
-            scaleTo={1}
+          <ConditionalWrap
+            condition={addonComponent && !loading}
+            wrap={children => (
+              <Columns alignHorizontal="left" alignVertical="center">
+                <Column alignHorizontal="left">{children}</Column>
+                {addonComponent}
+              </Columns>
+            )}
           >
-            <TokenInfoValue
-              activeOpacity={0}
-              align={align}
-              color={color}
-              isNft={isNft}
-              lineHeight={lineHeight}
-              size={size}
-              weight={weight}
+            <ButtonPressAnimation
+              enableHapticFeedback={!!onPress && enableHapticFeedback}
+              onPress={onPress}
+              scaleTo={1}
             >
-              {!loading && children}
-            </TokenInfoValue>
-          </ButtonPressAnimation>
+              <TokenInfoValue
+                activeOpacity={0}
+                align={align}
+                color={color}
+                isNft={isNft}
+                lineHeight={lineHeight}
+                size={size}
+                weight={weight}
+              >
+                {!loading && children}
+              </TokenInfoValue>
+            </ButtonPressAnimation>
+          </ConditionalWrap>
         )}
         {loading && (
           <WrapperView
             align={align}
-            backgroundColor={colors.alpha(colors.blueGreyDark, 0.04)}
+            backgroundColor={
+              isNft
+                ? colors.alpha(colors.whiteLabel, 0.04)
+                : colors.alpha(colors.blueGreyDark, 0.04)
+            }
+            isENS={isENS}
+            isNft={isNft}
           >
             <ShimmerAnimation
-              color={colors.alpha(colors.blueGreyDark, 0.06)}
+              color={
+                isNft
+                  ? colors.alpha(colors.whiteLabel, 0.04)
+                  : colors.alpha(colors.blueGreyDark, 0.06)
+              }
               enabled
-              gradientColor={colors.alpha(colors.blueGreyDark, 0.06)}
+              gradientColor={
+                isNft
+                  ? colors.alpha(colors.whiteLabel, 0.04)
+                  : colors.alpha(colors.blueGreyDark, 0.06)
+              }
               width={50}
             />
           </WrapperView>
