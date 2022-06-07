@@ -7,7 +7,6 @@ import { ensAvatarUrl } from '../ens-registration/IntroMarquee/IntroMarquee';
 import ENSIcon from '../icons/svg/ENSIcon';
 import ImgixImage from '../images/ImgixImage';
 import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config';
-import { useTheme } from '@rainbow-me/context';
 import {
   AccentColorProvider,
   Box,
@@ -21,6 +20,7 @@ import {
 import { useWallets } from '@rainbow-me/hooks';
 import { ensIntroMarqueeNames } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
+import { useTheme } from '@rainbow-me/theme';
 import { watchingAlert } from '@rainbow-me/utils';
 
 export default function RegisterENSSection() {

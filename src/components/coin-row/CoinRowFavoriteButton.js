@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import { BaseButton } from 'react-native-gesture-handler';
 import RadialGradient from 'react-native-radial-gradient';
-import { useTheme } from '../../context/ThemeContext';
+import { useTheme } from '../../theme/ThemeContext';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { CoinRowHeight } from './CoinRow';
