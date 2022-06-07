@@ -93,6 +93,7 @@ function rowRenderer(
 
       return (
         <WrappedNFT
+          externalAddress={extendedState.externalAddress}
           onPress={onPressUniqueToken}
           placement={index % 2 === 0 ? 'left' : 'right'}
           uniqueId={uniqueId}
