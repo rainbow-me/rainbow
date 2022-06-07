@@ -477,6 +477,8 @@ const UniqueTokenExpandedState = ({
                             }
                             nftShadows
                             onPress={handlePressOpensea}
+                            // @ts-expect-error JavaScript component
+                            testID="unique-expanded-state-send"
                             textColor={textColor}
                             weight="heavy"
                           />

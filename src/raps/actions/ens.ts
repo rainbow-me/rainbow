@@ -208,7 +208,7 @@ const executeSetAddr = async (
 
   return (
     methodArguments &&
-    contract?.setText(...methodArguments, {
+    contract?.setAddr(...methodArguments, {
       gasLimit: gasLimit ? toHex(gasLimit) : undefined,
       maxFeePerGas: maxFeePerGas ? toHex(maxFeePerGas) : undefined,
       maxPriorityFeePerGas: maxPriorityFeePerGas
@@ -252,6 +252,7 @@ const executeSetText = async (
 
 const executeSetOwner = async (
   name?: string,
+  ownerAddress?: string,
   records?: ENSRegistrationRecords,
   gasLimit?: string | null,
   maxFeePerGas?: string,
@@ -261,6 +262,7 @@ const executeSetOwner = async (
 ) => {
   const { contract, methodArguments, value } = await getENSExecutionDetails({
     name,
+    ownerAddress,
     records,
     type: ENSRegistrationTransactionType.SET_OWNER,
     wallet,
@@ -268,7 +270,7 @@ const executeSetOwner = async (
 
   return (
     methodArguments &&
-    contract?.setText(...methodArguments, {
+    contract?.setOwner(...methodArguments, {
       gasLimit: gasLimit ? toHex(gasLimit) : undefined,
       maxFeePerGas: maxFeePerGas ? toHex(maxFeePerGas) : undefined,
       maxPriorityFeePerGas: maxPriorityFeePerGas
@@ -457,6 +459,7 @@ const ensAction = async (
       case ENSRegistrationTransactionType.SET_OWNER:
         tx = await executeSetOwner(
           name,
+          ownerAddress,
           ensRegistrationRecords,
           gasLimit,
           maxFeePerGas,
