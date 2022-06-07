@@ -21,8 +21,8 @@ import {
 } from '@rainbow-me/references';
 import { getFullSizeUrl } from '@rainbow-me/utils/getFullSizeUrl';
 import { getLowResUrl } from '@rainbow-me/utils/getLowResUrl';
-import { toMaximalPrecision } from '@rainbow-me/utils/numbers';
 import isSVGImage from '@rainbow-me/utils/isSVG';
+import { toMaximalPrecision } from '@rainbow-me/utils/numbers';
 
 const parseLastSalePrice = lastSale =>
   lastSale

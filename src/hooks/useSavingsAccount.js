@@ -120,19 +120,22 @@ export default function useSavingsAccount(includeDefaultDai) {
     variables: { id: toLower(accountAddress) },
   });
 
-  const data = useMemo(() => ({
-    ...resultData,
-    account: {
-      ...resultData?.account,
-      tokens: resultData?.account?.tokens.map(token => ({
-        ...token,
-        lifetimeSupplyInterestAccruedNum: parseFloat(
-          token.lifetimeSupplyInterestAccrued
-        ),
-        supplyBalanceUnderlyingNum: parseFloat(token.supplyBalanceUnderlying),
-      })),
-    },
-  }));
+  const data = useMemo(
+    () => ({
+      ...resultData,
+      account: {
+        ...resultData?.account,
+        tokens: resultData?.account?.tokens.map(token => ({
+          ...token,
+          lifetimeSupplyInterestAccruedNum: parseFloat(
+            token.lifetimeSupplyInterestAccrued
+          ),
+          supplyBalanceUnderlyingNum: parseFloat(token.supplyBalanceUnderlying),
+        })),
+      },
+    }),
+    [resultData]
+  );
 
   const result = useMemo(() => {
     if (error) return {};
