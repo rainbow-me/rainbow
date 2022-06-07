@@ -10,6 +10,8 @@ import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 import { profileUtils } from '@rainbow-me/utils';
 
+const TIMEOUT_MS = 500;
+
 export default function WalletProfileState({
   actionType,
   address,
@@ -65,14 +67,20 @@ export default function WalletProfileState({
     value,
   ]);
 
+  const timeoutPromise = useCallback(
+    () =>
+      new Promise(resolve => {
+        setTimeout(resolve, TIMEOUT_MS, { color: null, emoji: null });
+      }),
+    []
+  );
+
   useEffect(() => {
     const getProfile = async () => {
-      const { color, emoji } = await getWalletProfileMeta(
-        address,
-        profile,
-        isNewProfile,
-        forceColor
-      );
+      const { color, emoji } = await Promise.race([
+        getWalletProfileMeta(address, profile, isNewProfile, forceColor),
+        timeoutPromise(),
+      ]);
       setNameColor(
         color ??
           colors.avatarBackgrounds[
@@ -90,6 +98,7 @@ export default function WalletProfileState({
     profile,
     setNameColor,
     setNameEmoji,
+    timeoutPromise,
   ]);
 
   return (
