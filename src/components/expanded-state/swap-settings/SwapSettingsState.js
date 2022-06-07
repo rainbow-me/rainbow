@@ -8,6 +8,7 @@ import { ButtonPressAnimation } from '../../animations';
 import { ExchangeHeader } from '../../exchange';
 import { FloatingPanel } from '../../floating-panels';
 import { SlackSheet } from '../../sheet';
+import RoutePicker from './RoutePicker';
 import StepButtonInput from './StepButtonInput';
 import {
   Box,
@@ -28,7 +29,7 @@ import {
   useAccountSettings,
   useColorForAsset,
   useKeyboardHeight,
-  useSwapSlippage,
+  useSwapSettings,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { deviceUtils } from '@rainbow-me/utils';
@@ -58,7 +59,12 @@ export default function SwapSettingsState({ asset }) {
   const keyboardHeight = useKeyboardHeight();
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(true);
 
-  const { slippageInBips, updateSwapSlippage } = useSwapSlippage();
+  const {
+    slippageInBips,
+    updateSwapSlippage,
+    updateSwapRoute,
+    swapRoute,
+  } = useSwapSettings();
 
   useEffect(() => {
     const keyboardDidShow = () => {
@@ -163,6 +169,7 @@ export default function SwapSettingsState({ asset }) {
         <ExchangeHeader />
         <Inset bottom="24px" horizontal="24px" top="10px">
           <Stack backgroundColor="green" space="10px">
+            <RoutePicker onSelect={updateSwapRoute} swapRoute={swapRoute} />
             <Columns alignVertical="center">
               <Text size="18px" weight="bold">
                 {lang.t('exchange.slippage_tolerance')}
