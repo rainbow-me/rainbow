@@ -1,6 +1,5 @@
 import React from 'react';
-import { View, ViewStyle } from 'react-native';
-import FastImage from 'react-native-fast-image';
+import { Image, View, ViewStyle } from 'react-native';
 import ArbitrumBadge from '@rainbow-me/assets/badges/arbitrumBadge.png';
 import ArbitrumBadgeDark from '@rainbow-me/assets/badges/arbitrumBadgeDark.png';
 import OptimismBadge from '@rainbow-me/assets/badges/optimismBadge.png';
@@ -63,7 +62,7 @@ export const FastChainBadge = React.memo(function FastChainBadge({
 
   return (
     <View style={containerStyle}>
-      <FastImage source={source} style={imageStyles} />
+      <Image source={source} style={imageStyles} />
     </View>
   );
 });
