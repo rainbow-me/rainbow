@@ -39,7 +39,7 @@ export type ExtendedState = {
   pinnedCoins: BooleanMap;
   toggleSelectedCoin: (id: string) => void;
   setIsCoinListEdited: SetterOrUpdater<boolean>;
-  additionalData?: Record<string, CellTypes>;
+  additionalData: Record<string, CellTypes>;
   externalAddress?: string;
   onPressUniqueToken?: (asset: UniqueAsset) => void;
 };
@@ -51,7 +51,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
 }: {
   briefSectionsData: BaseCellType[];
   type?: AssetListType;
-  extendedState: Partial<ExtendedState>;
+  extendedState: Partial<ExtendedState> & Pick<ExtendedState, 'additionalData'>;
 }) {
   const currentDataProvider = useMemoOne(
     () => dataProvider.cloneWithRows(briefSectionsData),
