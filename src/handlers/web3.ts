@@ -320,7 +320,6 @@ export async function estimateGasWithPadding(
 ): Promise<string | null> {
   try {
     const p = provider || web3Provider;
-
     if (!p) {
       return null;
     }
@@ -512,14 +511,13 @@ export const resolveUnstoppableDomain = async (
  */
 export const resolveNameOrAddress = async (
   nameOrAddress: string
-): Promise<string | void> => {
+): Promise<string | void | null> => {
   if (!isHexString(nameOrAddress)) {
     if (isUnstoppableAddressFormat(nameOrAddress)) {
       return resolveUnstoppableDomain(nameOrAddress);
     }
     const p = await getProviderForNetwork(Network.mainnet);
-    const name = p?.resolveName(nameOrAddress);
-    return name;
+    return p?.resolveName(nameOrAddress);
   }
   return nameOrAddress;
 };

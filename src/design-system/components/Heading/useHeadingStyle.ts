@@ -5,10 +5,11 @@ import { HeadingProps } from './Heading';
 
 export function useHeadingStyle({
   align: textAlign,
+  color = 'primary',
   size = '20px',
   weight = 'heavy',
-}: Pick<HeadingProps, 'align' | 'size' | 'weight'>) {
-  const colorValue = useForegroundColor('primary');
+}: Pick<HeadingProps, 'align' | 'color' | 'size' | 'weight'>) {
+  const colorValue = useForegroundColor(color);
   const sizeStyles = headingSizes[size];
   const weightStyles = headingWeights[weight];
 

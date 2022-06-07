@@ -1,14 +1,6 @@
-import {
-  get,
-  groupBy,
-  isEmpty,
-  isNil,
-  mapValues,
-  toNumber,
-  values,
-} from 'lodash';
+import isEmpty from 'lodash/isEmpty';
+import isNil from 'lodash/isNil';
 import { createSelector } from 'reselect';
-import { sortList } from '../helpers/sortList';
 import { parseAssetsNativeWithTotals } from '@rainbow-me/parsers';
 
 const EMPTY_ARRAY = [];
@@ -25,18 +17,15 @@ const sortAssetsByNativeAmount = (
   isLoadingAssets,
   nativeCurrency
 ) => {
-  let updatedAssets = accountAssetsData;
+  let assetsNativePrices = Object.values(accountAssetsData);
+
   if (!isEmpty(assetPricesFromUniswap)) {
-    updatedAssets = mapValues(accountAssetsData, asset => {
+    assetsNativePrices = assetsNativePrices.map(asset => {
       if (isNil(asset.price)) {
-        const assetPrice = get(
-          assetPricesFromUniswap,
-          `[${asset.address}].price`
-        );
-        const relativePriceChange = get(
-          assetPricesFromUniswap,
-          `[${asset.address}].relativePriceChange`
-        );
+        const assetPrice = assetPricesFromUniswap[asset.address]?.price;
+
+        const relativePriceChange =
+          assetPricesFromUniswap[asset.address]?.relativePriceChange;
         if (assetPrice) {
           return {
             ...asset,
@@ -50,7 +39,7 @@ const sortAssetsByNativeAmount = (
       return asset;
     });
   }
-  let assetsNativePrices = values(updatedAssets);
+
   let total = null;
   if (!isEmpty(assetsNativePrices)) {
     const parsedAssets = parseAssetsNativeWithTotals(
@@ -65,14 +54,20 @@ const sortAssetsByNativeAmount = (
     noValue = EMPTY_ARRAY,
   } = groupAssetsByMarketValue(assetsNativePrices);
 
-  const sortedAssetsNoShitcoins = sortList(
-    hasValue,
-    'native.balance.amount',
-    'desc',
-    0,
-    toNumber
-  );
-  const sortedShitcoins = sortList(noValue, 'name', 'asc');
+  const sortedAssetsNoShitcoins = hasValue.sort((a, b) => {
+    let itemA = Number(a.native?.balance?.amount) ?? 0;
+    let itemB = Number(b.native?.balance?.amount) ?? 0;
+
+    return itemA < itemB ? 1 : -1;
+  });
+
+  const sortedShitcoins = noValue.sort((a, b) => {
+    let itemA = a.name;
+    let itemB = b.name;
+
+    return itemA > itemB ? 1 : -1;
+  });
+
   const sortedAssets = sortedAssetsNoShitcoins.concat(sortedShitcoins);
 
   return {
@@ -85,7 +80,21 @@ const sortAssetsByNativeAmount = (
 };
 
 const groupAssetsByMarketValue = assets =>
-  groupBy(assets, ({ native }) => (isNil(native) ? 'noValue' : 'hasValue'));
+  assets.reduce(
+    (acc, asset) => {
+      if (isNil(asset.native)) {
+        acc.noValue.push(asset);
+      } else {
+        acc.hasValue.push(asset);
+      }
+
+      return acc;
+    },
+    {
+      hasValue: [],
+      noValue: [],
+    }
+  );
 
 export const sortAssetsByNativeAmountSelector = createSelector(
   [

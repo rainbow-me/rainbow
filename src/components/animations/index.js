@@ -14,10 +14,10 @@ export {
 } from './ButtonPressAnimation';
 export { default as FlyInAnimation } from './FlyInAnimation';
 export { default as OpacityToggler } from './OpacityToggler';
-export {
-  default as RoundButtonSizeToggler,
-  RoundButtonCapSize,
-} from './RoundButtonSizeToggler';
 export { default as ScaleInAnimation } from './ScaleInAnimation';
 export { default as ShimmerAnimation } from './ShimmerAnimation';
 export { default as SpinAnimation } from './SpinAnimation';
+export { default as HourglassAnimation } from './HourglassAnimation';
+export { default as CheckmarkAnimation } from './CheckmarkAnimation';
+
+export const RoundButtonCapSize = 30;
