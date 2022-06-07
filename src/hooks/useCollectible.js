@@ -8,7 +8,7 @@ import { revalidateUniqueToken } from '@rainbow-me/redux/uniqueTokens';
 export default function useCollectible(
   initialAsset,
   { revalidateInBackground = false } = {},
-  externalAddress?: string
+  externalAddress
 ) {
   // Retrieve the unique tokens belonging to the current account address.
   const selfUniqueTokens = useSelector(
