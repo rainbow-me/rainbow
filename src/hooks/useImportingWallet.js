@@ -5,14 +5,17 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, InteractionManager, Keyboard } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import { useDispatch } from 'react-redux';
-import useAccountSettings from './useAccountSettings';
-import useInitializeWallet from './useInitializeWallet';
-import useIsWalletEthZero from './useIsWalletEthZero';
-import useMagicAutofocus from './useMagicAutofocus';
-import usePrevious from './usePrevious';
-import useTimeout from './useTimeout';
-import useWalletENSAvatar from './useWalletENSAvatar';
-import useWallets from './useWallets';
+import {
+  useAccountSettings,
+  useInitializeWallet,
+  useIsWalletEthZero,
+  useMagicAutofocus,
+  usePrevious,
+  useTimeout,
+  useWalletENSAvatar,
+  useWalletProfile,
+  useWallets,
+} from '.';
 import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import { fetchImages, fetchReverseRecord } from '@rainbow-me/handlers/ens';
 import {
@@ -30,8 +33,11 @@ import { walletInit } from '@rainbow-me/model/wallet';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import { walletsLoadState } from '@rainbow-me/redux/wallets';
 import Routes from '@rainbow-me/routes';
+import { colors } from '@rainbow-me/styles';
 import { ethereumUtils, sanitizeSeedPhrase } from '@rainbow-me/utils';
 import logger from 'logger';
+
+const TIMEOUT_THRESHOLD_MS = 500;
 
 export default function useImportingWallet({ showImportModal = true } = {}) {
   const { accountAddress } = useAccountSettings();
@@ -52,6 +58,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const wasImporting = usePrevious(isImporting);
   const { updateWalletENSAvatars } = useWalletENSAvatar();
   const profilesEnabled = useExperimentalFlag(PROFILES);
+  const { fetchWalletProfileMeta } = useWalletProfile();
 
   const inputRef = useRef(null);
 
@@ -84,15 +91,14 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   );
 
   const startImportProfile = useCallback(
-    (name, forceColor, address = null, avatarUrl) => {
+    (name, color, emoji, address = null, avatarUrl) => {
       const importWallet = (color, name, image) =>
         InteractionManager.runAfterInteractions(() => {
-          if (color !== null) setColor(color);
+          if (color) setColor(colors.avatarBackgrounds.indexOf(color));
           if (name) setName(name);
           if (image) setImage(image);
           handleSetImporting(true);
         });
-
       if (showImportModal) {
         android && Keyboard.dismiss();
         navigate(Routes.MODAL_SCREEN, {
@@ -100,20 +106,33 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           additionalPadding: true,
           address,
           asset: [],
-          forceColor,
           isNewProfile: true,
           onCloseModal: ({ color, name, image }) => {
             importWallet(color, name, image);
           },
-          profile: { image: avatarUrl, name },
+          profile: { color, emoji, image: avatarUrl, name },
           type: 'wallet_profile',
           withoutStatusBar: true,
         });
       } else {
-        importWallet(name, forceColor, avatarUrl);
+        importWallet(color, name, avatarUrl);
       }
     },
     [handleSetImporting, navigate, showImportModal]
+  );
+
+  const fetchWalletProfileMetaWithTimeout = useCallback(
+    async (address, forceColor) =>
+      Promise.race([
+        fetchWalletProfileMeta(address, forceColor),
+        new Promise(resolve => {
+          setTimeout(resolve, TIMEOUT_THRESHOLD_MS, {
+            color: null,
+            emoji: null,
+          });
+        }),
+      ]),
+    [fetchWalletProfileMeta]
   );
 
   const handlePressImportButton = useCallback(
@@ -121,13 +140,18 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
       analytics.track('Tapped "Import" button');
       // guard against pressEvent coming in as forceColor if
       // handlePressImportButton is used as onClick handler
-      let guardedForceColor =
-        typeof forceColor === 'string' || typeof forceColor === 'number'
+      const guardedForceColor =
+        typeof forceColor === 'string'
           ? forceColor
+          : typeof forceColor === 'number' &&
+            forceColor < colors.avatarBackgrounds.length
+          ? colors.avatarBackgrounds[forceColor]
           : null;
+
       if ((!isSecretValid || !seedPhrase) && !forceAddress) return null;
       const input = sanitizeSeedPhrase(seedPhrase || forceAddress);
       let name = null;
+
       // Validate ENS
       if (isENSAddressFormat(input)) {
         try {
@@ -142,7 +166,14 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           setResolvedAddress(address);
           name = forceEmoji ? `${forceEmoji} ${input}` : input;
           avatarUrl = avatarUrl || images?.avatarUrl;
-          startImportProfile(name, guardedForceColor, address, avatarUrl);
+
+          // fetch web profile
+          const { color, emoji } = await fetchWalletProfileMetaWithTimeout(
+            address,
+            guardedForceColor
+          );
+
+          startImportProfile(name, color, emoji, address, avatarUrl);
           analytics.track('Show wallet profile modal for ENS address', {
             address,
             input,
@@ -162,8 +193,15 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             return;
           }
           setResolvedAddress(address);
+
+          // fetch web profile
+          const { color, emoji } = await fetchWalletProfileMetaWithTimeout(
+            address,
+            guardedForceColor
+          );
+
           name = forceEmoji ? `${forceEmoji} ${input}` : input;
-          startImportProfile(name, guardedForceColor, address);
+          startImportProfile(name, color, emoji, address);
           analytics.track('Show wallet profile modal for Unstoppable address', {
             address,
             input,
@@ -175,6 +213,11 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           return;
         }
       } else if (isValidAddress(input)) {
+        // fetch web profile
+        const { color, emoji } = await fetchWalletProfileMetaWithTimeout(
+          input,
+          guardedForceColor
+        );
         try {
           const ens = await web3Provider.lookupAddress(input);
           if (ens && ens !== input) {
@@ -191,7 +234,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         } catch (e) {
           logger.log(`Error resolving ENS during wallet import`, e);
         }
-        startImportProfile(name, guardedForceColor, input);
+        startImportProfile(name, color, emoji, input);
       } else {
         try {
           setBusy(true);
@@ -200,6 +243,13 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
               input
             );
             setCheckedWallet(walletResult);
+
+            // fetch web profile
+            const { color, emoji } = await fetchWalletProfileMetaWithTimeout(
+              walletResult.address,
+              guardedForceColor
+            );
+
             const ens = await fetchReverseRecord(walletResult.address);
             if (ens && ens !== input) {
               name = forceEmoji ? `${forceEmoji} ${ens}` : ens;
@@ -211,7 +261,8 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             setBusy(false);
             startImportProfile(
               name,
-              guardedForceColor,
+              color,
+              emoji,
               walletResult.address,
               avatarUrl
             );
@@ -226,7 +277,13 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         }
       }
     },
-    [isSecretValid, profilesEnabled, seedPhrase, startImportProfile]
+    [
+      fetchWalletProfileMetaWithTimeout,
+      isSecretValid,
+      profilesEnabled,
+      seedPhrase,
+      startImportProfile,
+    ]
   );
 
   const dispatch = useDispatch();

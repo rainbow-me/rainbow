@@ -1,35 +1,24 @@
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import ProfileModal from './profile/ProfileModal';
 import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
-import { useWalletProfile } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
-import { profileUtils } from '@rainbow-me/utils';
-
-const TIMEOUT_MS = 500;
-
 export default function WalletProfileState({
   actionType,
   address,
   isNewProfile,
   onCloseModal,
   profile,
-  forceColor,
 }) {
-  const [nameColor, setNameColor] = useState(null);
-  const [nameEmoji, setNameEmoji] = useState(null);
   const { goBack, navigate } = useNavigation();
-  const { getWalletProfileMeta } = useWalletProfile();
+  const { name, color, image, emoji } = profile;
 
   const [value, setValue] = useState(
-    profile?.name ? removeFirstEmojiFromString(profile.name) : ''
+    name ? removeFirstEmojiFromString(name) : ''
   );
-
-  const profileImage = profile.image;
 
   const handleCancel = useCallback(() => {
     goBack();
@@ -43,12 +32,9 @@ export default function WalletProfileState({
     analytics.track('Tapped "Submit" on Wallet Profile modal');
     InteractionManager.runAfterInteractions(() => {
       onCloseModal({
-        color:
-          typeof nameColor === 'string'
-            ? profileUtils.colorHexToIndex(nameColor)
-            : nameColor,
-        image: profileImage,
-        name: nameEmoji ? `${nameEmoji} ${value}` : value,
+        color: color,
+        image: image,
+        name: emoji ? `${emoji} ${value}` : value,
       });
       goBack();
       if (actionType === 'Create' && isNewProfile) {
@@ -57,58 +43,24 @@ export default function WalletProfileState({
     });
   }, [
     actionType,
-    nameColor,
+    color,
     goBack,
     isNewProfile,
-    nameEmoji,
+    emoji,
     navigate,
     onCloseModal,
-    profileImage,
+    image,
     value,
-  ]);
-
-  const timeoutPromise = useCallback(
-    () =>
-      new Promise(resolve => {
-        setTimeout(resolve, TIMEOUT_MS, { color: null, emoji: null });
-      }),
-    []
-  );
-
-  useEffect(() => {
-    const getProfile = async () => {
-      const { color, emoji } = await Promise.race([
-        getWalletProfileMeta(address, profile, isNewProfile, forceColor),
-        timeoutPromise(),
-      ]);
-      setNameColor(
-        color ??
-          colors.avatarBackgrounds[
-            profileUtils.addressHashedColorIndex(address) || 0
-          ]
-      );
-      setNameEmoji(emoji ?? profileUtils.addressHashedEmoji(address));
-    };
-    getProfile();
-  }, [
-    address,
-    forceColor,
-    getWalletProfileMeta,
-    isNewProfile,
-    profile,
-    setNameColor,
-    setNameEmoji,
-    timeoutPromise,
   ]);
 
   return (
     <ProfileModal
-      accentColor={nameColor}
+      accentColor={color}
       address={address}
-      emojiAvatar={nameEmoji}
+      emojiAvatar={emoji}
       handleCancel={handleCancel}
       handleSubmit={handleSubmit}
-      imageAvatar={profileImage}
+      imageAvatar={image}
       inputValue={value}
       onChange={setValue}
       placeholder={lang.t('wallet.new.name_wallet')}
