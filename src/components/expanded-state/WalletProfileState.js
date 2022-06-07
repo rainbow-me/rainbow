@@ -1,13 +1,13 @@
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { InteractionManager } from 'react-native';
-import useUpdateEmoji from '../../../src/hooks/useUpdateEmoji';
 import ProfileModal from './profile/ProfileModal';
 import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
-import { getWalletProfileMeta } from '@rainbow-me/helpers/walletProfileHandler';
+import { useWalletProfile } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import { colors } from '@rainbow-me/styles';
 import { profileUtils } from '@rainbow-me/utils';
 
 export default function WalletProfileState({
@@ -18,21 +18,10 @@ export default function WalletProfileState({
   profile,
   forceColor,
 }) {
-  const [webProfile, setWebProfile] = useState(null);
+  const [nameColor, setNameColor] = useState(null);
+  const [nameEmoji, setNameEmoji] = useState(null);
   const { goBack, navigate } = useNavigation();
-  const { getWebProfile } = useUpdateEmoji();
-
-  const { color: nameColor, emoji: nameEmoji } = useMemo(
-    () =>
-      getWalletProfileMeta(
-        address,
-        profile,
-        webProfile,
-        isNewProfile,
-        forceColor
-      ),
-    [address, forceColor, isNewProfile, profile, webProfile]
-  );
+  const { getWalletProfileMeta } = useWalletProfile();
 
   const [value, setValue] = useState(
     profile?.name ? removeFirstEmojiFromString(profile.name) : ''
@@ -78,11 +67,30 @@ export default function WalletProfileState({
 
   useEffect(() => {
     const getProfile = async () => {
-      const profile = await getWebProfile(address);
-      setWebProfile(profile ?? {});
+      const { color, emoji } = await getWalletProfileMeta(
+        address,
+        profile,
+        isNewProfile,
+        forceColor
+      );
+      setNameColor(
+        color ??
+          colors.avatarBackgrounds[
+            profileUtils.addressHashedColorIndex(address) || 0
+          ]
+      );
+      setNameEmoji(emoji ?? profileUtils.addressHashedEmoji(address));
     };
     getProfile();
-  }, [address, getWebProfile]);
+  }, [
+    address,
+    forceColor,
+    getWalletProfileMeta,
+    isNewProfile,
+    profile,
+    setNameColor,
+    setNameEmoji,
+  ]);
 
   return (
     <ProfileModal
