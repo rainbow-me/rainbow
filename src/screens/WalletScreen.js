@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/core';
 import { compact, get, isEmpty, keys, map, toLower } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
-import { StatusBar } from 'react-native';
+import { InteractionManager, StatusBar } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useValue } from 'react-native-redash/src/v1';
 import { useDispatch, useSelector } from 'react-redux';
@@ -143,12 +143,6 @@ export default function WalletScreen() {
   ]);
 
   useEffect(() => {
-    if (profilesEnabled) {
-      trackENSProfile();
-    }
-  }, [profilesEnabled, trackENSProfile]);
-
-  useEffect(() => {
     if (
       !isEmpty(portfolios) &&
       portfoliosFetched &&
@@ -184,10 +178,13 @@ export default function WalletScreen() {
   ]);
 
   useEffect(() => {
-    if (profilesEnabled) {
-      initializeENSIntroData();
+    if (walletReady && profilesEnabled) {
+      InteractionManager.runAfterInteractions(() => {
+        initializeENSIntroData();
+        trackENSProfile();
+      });
     }
-  }, [initializeENSIntroData, profilesEnabled]);
+  }, [initializeENSIntroData, profilesEnabled, trackENSProfile, walletReady]);
 
   // Show the exchange fab only for supported networks
   // (mainnet & rinkeby)
