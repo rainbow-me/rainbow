@@ -37,8 +37,6 @@ import { colors } from '@rainbow-me/styles';
 import { ethereumUtils, sanitizeSeedPhrase } from '@rainbow-me/utils';
 import logger from 'logger';
 
-const TIMEOUT_THRESHOLD_MS = 500;
-
 export default function useImportingWallet({ showImportModal = true } = {}) {
   const { accountAddress } = useAccountSettings();
   const { selectedWallet, setIsWalletLoading, wallets } = useWallets();
@@ -121,20 +119,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     [handleSetImporting, navigate, showImportModal]
   );
 
-  const fetchWalletProfileMetaWithTimeout = useCallback(
-    async (address, forceColor) =>
-      Promise.race([
-        fetchWalletProfileMeta(address, forceColor),
-        new Promise(resolve => {
-          setTimeout(resolve, TIMEOUT_THRESHOLD_MS, {
-            color: null,
-            emoji: null,
-          });
-        }),
-      ]),
-    [fetchWalletProfileMeta]
-  );
-
   const handlePressImportButton = useCallback(
     async (forceColor, forceAddress, forceEmoji = null, avatarUrl) => {
       analytics.track('Tapped "Import" button');
@@ -168,7 +152,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           avatarUrl = avatarUrl || images?.avatarUrl;
 
           // fetch web profile
-          const { color, emoji } = await fetchWalletProfileMetaWithTimeout(
+          const { color, emoji } = await fetchWalletProfileMeta(
             address,
             guardedForceColor
           );
@@ -195,7 +179,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           setResolvedAddress(address);
 
           // fetch web profile
-          const { color, emoji } = await fetchWalletProfileMetaWithTimeout(
+          const { color, emoji } = await fetchWalletProfileMeta(
             address,
             guardedForceColor
           );
@@ -214,7 +198,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         }
       } else if (isValidAddress(input)) {
         // fetch web profile
-        const { color, emoji } = await fetchWalletProfileMetaWithTimeout(
+        const { color, emoji } = await fetchWalletProfileMeta(
           input,
           guardedForceColor
         );
@@ -245,7 +229,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             setCheckedWallet(walletResult);
 
             // fetch web profile
-            const { color, emoji } = await fetchWalletProfileMetaWithTimeout(
+            const { color, emoji } = await fetchWalletProfileMeta(
               walletResult.address,
               guardedForceColor
             );
@@ -278,7 +262,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
       }
     },
     [
-      fetchWalletProfileMetaWithTimeout,
+      fetchWalletProfileMeta,
       isSecretValid,
       profilesEnabled,
       seedPhrase,

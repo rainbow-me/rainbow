@@ -8,9 +8,18 @@ export default function useWalletProfile() {
 
   const fetchWalletProfileMeta = async (
     address: EthereumAddress,
-    forceColor?: string
+    forceColor?: string,
+    timeoutMs = 500
   ) => {
-    const webProfile = await getWebProfile(address);
+    const { accountColor, accountSymbol } = await Promise.race([
+      getWebProfile(address),
+      new Promise(resolve => {
+        setTimeout(resolve, timeoutMs, {
+          accountColor: null,
+          accountSymbol: null,
+        });
+      }),
+    ]);
 
     const addressHashedColor =
       colors.avatarBackgrounds[
@@ -19,8 +28,8 @@ export default function useWalletProfile() {
     const addressHashedEmoji = profileUtils.addressHashedEmoji(address);
 
     return {
-      color: webProfile?.accountColor ?? forceColor ?? addressHashedColor,
-      emoji: webProfile?.accountSymbol ?? addressHashedEmoji,
+      color: accountColor ?? forceColor ?? addressHashedColor,
+      emoji: accountSymbol ?? addressHashedEmoji,
     };
   };
   return { fetchWalletProfileMeta };
