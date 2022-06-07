@@ -964,8 +964,14 @@ export const transactionsReceived = (
   if (appended) {
     dispatch(checkForConfirmedSavingsActions(transactionData));
   }
+<<<<<<< HEAD
 
   dispatch(checkForUpdatedNonce(transactionData));
+=======
+  if (transactionData.length) {
+    dispatch(checkForUpdatedNonce(transactionData));
+  }
+>>>>>>> 781e0f8a1 (check for transactions.length in nonce checks)
 
   const { accountAddress, nativeCurrency } = getState().settings;
   const { purchaseTransactions } = getState().addCash;
