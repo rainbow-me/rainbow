@@ -8,7 +8,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { ActivityIndicator, InteractionManager } from 'react-native';
+import { ActivityIndicator, InteractionManager, View } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import ChainLogo from '../components/ChainLogo';
 import Divider from '../components/Divider';
@@ -39,7 +39,6 @@ import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { ethereumUtils } from '@rainbow-me/utils';
-import { truncateText } from '@rainbow-me/utils/truncateText';
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
   ({ theme: { colors } }) => ({
@@ -318,23 +317,31 @@ export default function WalletConnectApprovalSheet() {
           >
             <DappLogo dappName={dappName || ''} imageUrl={imageUrl} />
             <Centered paddingHorizontal={24}>
-              <Row>
+              <Column>
+                <View style={{ marginBottom: 10 }}>
+                  <Text
+                    align="center"
+                    color="primary"
+                    numberOfLines={1}
+                    size="23px"
+                    weight="heavy"
+                  >
+                    {dappName}
+                  </Text>
+                </View>
                 <Text
                   align="center"
                   color="secondary60"
                   size="23px"
                   weight="semibold"
                 >
-                  <Text color="primary" size="23px" weight="heavy">
-                    {truncateText(dappName)}
-                  </Text>{' '}
                   {type === WalletConnectApprovalSheetType.connect
                     ? `wants to connect to your wallet`
                     : `wants to connect to the ${ethereumUtils.getNetworkNameFromChainId(
                         Number(chainId)
                       )} network`}
                 </Text>
-              </Row>
+              </Column>
             </Centered>
             <Row marginBottom={30} marginTop={30}>
               <Text color="action" size="18px" weight="heavy">
