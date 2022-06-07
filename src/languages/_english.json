@@ -766,8 +766,10 @@
       },
       "details": {
         "add_to_contacts": "Add to Contacts",
-        "remove_from_contacts": "Remove from Contacts",
         "copy_address": "Copy Address",
+        "open_wallet": "Open Wallet",
+        "remove_from_contacts": "Remove from Contacts",
+        "share": "Share",
         "view_on_etherscan": "View on Etherscan"
       },
       "intro": {
