@@ -8,6 +8,7 @@ import BackupSheet from '../screens/BackupSheet';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
 import ConnectedDappsSheet from '../screens/ConnectedDappsSheet';
 import DepositModal from '../screens/DepositModal';
+import ENSAdditionalRecordsSheet from '../screens/ENSAdditionalRecordsSheet';
 import ENSConfirmRegisterSheet from '../screens/ENSConfirmRegisterSheet';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ExplainSheet from '../screens/ExplainSheet';
@@ -15,9 +16,12 @@ import ExternalLinkWarningSheet from '../screens/ExternalLinkWarningSheet';
 import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
 import ModalScreen from '../screens/ModalScreen';
 import PinAuthenticationScreen from '../screens/PinAuthenticationScreen';
+import ProfileSheet from '../screens/ProfileSheet';
 import ReceiveModal from '../screens/ReceiveModal';
 import RestoreSheet from '../screens/RestoreSheet';
 import SavingsSheet from '../screens/SavingsSheet';
+import SelectENSSheet from '../screens/SelectENSSheet';
+import SelectUniqueTokenSheet from '../screens/SelectUniqueTokenSheet';
 import SendConfirmationSheet from '../screens/SendConfirmationSheet';
 import SendSheet from '../screens/SendSheet';
 import SettingsModal from '../screens/SettingsModal';
@@ -45,6 +49,7 @@ import {
   androidRecievePreset,
   bottomSheetPreset,
   emojiPreset,
+  ensPreset,
   exchangePreset,
   expandedPreset,
   expandedPresetWithSmallGestureResponseDistance,
@@ -119,6 +124,7 @@ function AddCashFlowNavigator() {
 
 function MainNavigator() {
   const initialRoute = useContext(InitialRouteContext);
+  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   return (
     <Stack.Navigator
@@ -156,6 +162,40 @@ function MainNavigator() {
           cardStyleInterpolator: speedUpAndCancelStyleInterpolator,
         }}
       />
+      {profilesEnabled && (
+        <>
+          <Stack.Screen
+            component={RegisterENSNavigator}
+            name={Routes.REGISTER_ENS_NAVIGATOR}
+            options={ensPreset}
+          />
+          <Stack.Screen
+            component={ENSConfirmRegisterSheet}
+            name={Routes.ENS_CONFIRM_REGISTER_SHEET}
+            options={ensPreset}
+          />
+          <Stack.Screen
+            component={ENSAdditionalRecordsSheet}
+            name={Routes.ENS_ADDITIONAL_RECORDS_SHEET}
+            options={ensPreset}
+          />
+          <Stack.Screen
+            component={ProfileSheet}
+            name={Routes.PROFILE_SHEET}
+            options={ensPreset}
+          />
+          <Stack.Screen
+            component={ProfileSheet}
+            name={Routes.PROFILE_PREVIEW_SHEET}
+            options={ensPreset}
+          />
+          <Stack.Screen
+            component={SelectENSSheet}
+            name={Routes.SELECT_ENS_SHEET}
+            options={ensPreset}
+          />
+        </>
+      )}
       <Stack.Screen
         component={ExchangeModalNavigator}
         name={Routes.EXCHANGE_MODAL}
@@ -257,7 +297,6 @@ function MainOuterNavigator() {
 }
 
 function BSNavigator() {
-  const profilesEnabled = useExperimentalFlag(PROFILES);
   return (
     <BSStack.Navigator>
       <BSStack.Screen
@@ -272,24 +311,16 @@ function BSNavigator() {
         component={ExpandedAssetSheet}
         name={Routes.TOKEN_INDEX_SHEET}
       />
-      {profilesEnabled && (
-        <>
-          <BSStack.Screen
-            component={RegisterENSNavigator}
-            name={Routes.REGISTER_ENS_NAVIGATOR}
-            options={{
-              backdropOpacity: 1,
-            }}
-          />
-          <BSStack.Screen
-            component={ENSConfirmRegisterSheet}
-            name={Routes.ENS_CONFIRM_REGISTER_SHEET}
-          />
-        </>
-      )}
       <BSStack.Screen
         component={ShowcaseSheet}
         name={Routes.SHOWCASE_SHEET}
+        options={{
+          height: '95%',
+        }}
+      />
+      <BSStack.Screen
+        component={SelectUniqueTokenSheet}
+        name={Routes.SELECT_UNIQUE_TOKEN_SHEET}
         options={{
           height: '95%',
         }}

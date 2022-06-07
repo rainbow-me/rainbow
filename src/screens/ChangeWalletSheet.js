@@ -27,6 +27,7 @@ import {
   walletsSetSelected,
   walletsUpdate,
 } from '../redux/wallets';
+import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import {
   useAccountSettings,
@@ -40,6 +41,7 @@ import styled from '@rainbow-me/styled-components';
 import {
   abbreviations,
   deviceUtils,
+  doesWalletsContainAddress,
   showActionSheetWithOptions,
 } from '@rainbow-me/utils';
 
@@ -120,6 +122,7 @@ export default function ChangeWalletSheet() {
   const initializeWallet = useInitializeWallet();
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
   const creatingWallet = useRef();
+  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   const [editMode, setEditMode] = useState(false);
   const [currentAddress, setCurrentAddress] = useState(
@@ -354,18 +357,13 @@ export default function ChangeWalletSheet() {
                     // If we're deleting the selected wallet
                     // we need to switch to another one
                     if (address === currentAddress) {
-                      for (let i = 0; i < Object.keys(wallets).length; i++) {
-                        const key = Object.keys(wallets)[i];
-                        const someWallet = wallets[key];
-                        const found = someWallet.addresses.find(
-                          account =>
-                            account.visible && account.address !== address
-                        );
-
-                        if (found) {
-                          await onChangeAccount(key, found.address, true);
-                          break;
-                        }
+                      const { wallet: foundWallet, key } =
+                        doesWalletsContainAddress({
+                          address: address,
+                          wallets,
+                        }) || {};
+                      if (foundWallet) {
+                        await onChangeAccount(key, foundWallet.address, true);
                       }
                     }
                   }
@@ -470,7 +468,7 @@ export default function ChangeWalletSheet() {
                     // If doesn't exist, we need to create a new wallet
                   } else {
                     await createWallet(null, color, name);
-                    await dispatch(walletsLoadState());
+                    await dispatch(walletsLoadState(profilesEnabled));
                     await initializeWallet();
                   }
                 } catch (e) {
@@ -508,6 +506,7 @@ export default function ChangeWalletSheet() {
     selectedWallet.primary,
     setIsWalletLoading,
     wallets,
+    profilesEnabled,
   ]);
 
   const onPressImportSeedPhrase = useCallback(() => {

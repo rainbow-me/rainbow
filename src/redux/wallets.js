@@ -7,7 +7,6 @@ import {
   getWalletNames,
   saveWalletNames,
 } from '../handlers/localstorage/walletNames';
-import { web3Provider } from '../handlers/web3';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import WalletTypes from '../helpers/walletTypes';
 import { hasKey } from '../model/keychain';
@@ -31,9 +30,11 @@ import {
 } from '../utils/keychainConstants';
 import {
   addressHashedColorIndex,
-  lookupAddressWithRetry,
+  addressHashedEmoji,
+  fetchReverseRecordWithRetry,
 } from '../utils/profileUtils';
 import { updateWebDataEnabled } from './showcaseTokens';
+import { fetchImages, fetchReverseRecord } from '@rainbow-me/handlers/ens';
 import { lightModeThemeColors } from '@rainbow-me/styles';
 
 // -- Constants --------------------------------------- //
@@ -45,7 +46,10 @@ const WALLETS_SET_IS_LOADING = 'wallets/WALLETS_SET_IS_LOADING';
 const WALLETS_SET_SELECTED = 'wallets/SET_SELECTED';
 
 // -- Actions ---------------------------------------- //
-export const walletsLoadState = () => async (dispatch, getState) => {
+export const walletsLoadState = (profilesEnabled = false) => async (
+  dispatch,
+  getState
+) => {
   try {
     const { accountAddress } = getState().settings;
     let addressFromKeychain = accountAddress;
@@ -102,7 +106,6 @@ export const walletsLoadState = () => async (dispatch, getState) => {
     }
 
     const walletNames = await getWalletNames();
-
     dispatch({
       payload: {
         selected: selectedWallet,
@@ -113,6 +116,7 @@ export const walletsLoadState = () => async (dispatch, getState) => {
     });
 
     dispatch(fetchWalletNames());
+    profilesEnabled && dispatch(fetchWalletENSAvatars());
     return wallets;
   } catch (error) {
     logger.sentry('Exception during walletsLoadState');
@@ -204,11 +208,13 @@ export const createAccountForWallet = (id, color, name) => async (
     visible: true,
   });
 
+  await dispatch(updateWebDataEnabled(true, account.address));
+
   setPreference(PreferenceActionType.init, 'profile', account.address, {
     accountColor: lightModeThemeColors.avatarBackgrounds[walletColorIndex],
+    accountSymbol: addressHashedEmoji(account.address),
   });
 
-  await dispatch(updateWebDataEnabled(true, account.address));
   // Save all the wallets
   saveAllWallets(newWallets);
   // Set the address selected (KEYCHAIN)
@@ -224,6 +230,64 @@ export const createAccountForWallet = (id, color, name) => async (
   return newWallets;
 };
 
+export const getWalletENSAvatars = async (walletsState, dispatch) => {
+  const { wallets, walletNames, selected } = walletsState;
+  const walletKeys = Object.keys(wallets);
+  let updatedWallets;
+  let promises = [];
+  walletKeys.forEach(key => {
+    const wallet = wallets[key];
+    const innerPromises = wallet?.addresses?.map(async account => {
+      const ens =
+        (await fetchReverseRecord(account.address)) ||
+        walletNames[account.address];
+      if (ens) {
+        const images = await fetchImages(ens);
+        const newImage =
+          typeof images?.avatarUrl === 'string' &&
+          images?.avatarUrl !== account?.image
+            ? images?.avatarUrl
+            : account.image;
+        return {
+          account: {
+            ...account,
+            image: newImage,
+          },
+          avatarChanged: newImage !== account.image,
+          key,
+        };
+      } else {
+        return { account, avatarChanged: false, key };
+      }
+    });
+    promises = promises.concat(innerPromises);
+  });
+
+  const newAccounts = await Promise.all(promises);
+  newAccounts.forEach(({ account, key, avatarChanged }) => {
+    if (!avatarChanged) return;
+    const addresses = wallets?.[key]?.addresses;
+    const index = addresses?.findIndex(
+      ({ address }) => address === account.address
+    );
+    addresses.splice(index, 1, account);
+    updatedWallets = {
+      ...(updatedWallets ?? wallets),
+      [key]: {
+        ...wallets[key],
+        addresses,
+      },
+    };
+  });
+  if (updatedWallets) {
+    dispatch(walletsSetSelected(updatedWallets[selected.id]));
+    dispatch(walletsUpdate(updatedWallets));
+  }
+};
+
+export const fetchWalletENSAvatars = () => async (dispatch, getState) =>
+  getWalletENSAvatars(getState().wallets, dispatch);
+
 export const fetchWalletNames = () => async (dispatch, getState) => {
   const { wallets } = getState().wallets;
   const updatedWalletNames = {};
@@ -234,10 +298,7 @@ export const fetchWalletNames = () => async (dispatch, getState) => {
       const visibleAccounts = filter(wallet.addresses, 'visible');
       return map(visibleAccounts, async account => {
         try {
-          const ens = await lookupAddressWithRetry(
-            web3Provider,
-            account.address
-          );
+          const ens = await fetchReverseRecordWithRetry(account.address);
           if (ens && ens !== account.address) {
             updatedWalletNames[account.address] = ens;
           }

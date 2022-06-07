@@ -1,8 +1,8 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { View } from 'react-primitives';
-import { useTheme } from '../../context/ThemeContext';
 import useCoinListEditOptions from '../../hooks/useCoinListEditOptions';
+import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/ChartExpandedState';
 import { FlexItem, Row } from '../layout';

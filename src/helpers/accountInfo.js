@@ -3,7 +3,7 @@ import {
   returnStringFirstEmoji,
 } from '../helpers/emojiHandler';
 import { address } from '../utils/abbreviations';
-import { addressHashedEmoji } from '../utils/profileUtils';
+import { addressHashedEmoji, isValidImagePath } from '../utils/profileUtils';
 
 export function getAccountProfileInfo(
   selectedWallet,
@@ -45,7 +45,7 @@ export function getAccountProfileInfo(
     emojiAvatar || addressHashedEmoji(accountAddress)
   );
   const accountColor = color;
-  const accountImage = image;
+  const accountImage = isValidImagePath(image) ? image : null;
 
   return {
     accountAddress,

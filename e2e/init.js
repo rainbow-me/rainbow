@@ -3,6 +3,8 @@
 require('dotenv').config({ path: '.env' });
 
 beforeAll(async () => {
+  await device.clearKeychain();
+
   await device.launchApp();
 
   await device.setURLBlacklist([
