@@ -343,6 +343,8 @@ export default function CurrencySelectModal() {
           <Column flex={1}>
             <CurrencySelectModalHeader
               handleBackButton={handleBackButton}
+              showBackButton={!fromDiscover}
+              showHandle={fromDiscover}
               testID="currency-select-header"
               type={type}
             />
