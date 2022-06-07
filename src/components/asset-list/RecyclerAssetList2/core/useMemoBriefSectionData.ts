@@ -34,17 +34,13 @@ export default function useMemoBriefSectionData({
   type?: AssetListType;
   briefSectionsData?: any[];
 } = {}) {
-  let sectionsDataToUse: any[];
-
-  if (externalAddress) {
-    // `externalAddress` is a static prop, so hooks will always execute in order.
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    sectionsDataToUse = useExternalWalletSectionsData({
-      address: externalAddress,
-    }).briefSectionsData;
-  } else {
-    sectionsDataToUse = briefSectionsData!;
-  }
+  const sectionsDataToUse = externalAddress
+    ? // `externalAddress` is a static prop, so hooks will always execute in order.
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      useExternalWalletSectionsData({
+        address: externalAddress,
+      }).briefSectionsData
+    : briefSectionsData!;
 
   const { isSmallBalancesOpen } = useOpenSmallBalances();
   const { isSavingsOpen } = useOpenSavings();

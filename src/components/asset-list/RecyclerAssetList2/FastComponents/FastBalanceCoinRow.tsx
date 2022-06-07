@@ -226,9 +226,8 @@ export default React.memo(function BalanceCoinRow({
   const maybeCallback = useRef<null | (() => void)>(null);
   maybeCallback.current = isCoinListEdited ? onPress : null;
 
-  // we return false to make sure we don't run includes for each row when it's not needed
-  const isHidden = isCoinListEdited ? hiddenCoins[uniqueId] : false;
-  const isPinned = isCoinListEdited ? pinnedCoins[uniqueId] : false;
+  const isHidden = hiddenCoins[uniqueId];
+  const isPinned = pinnedCoins[uniqueId];
 
   return (
     <View style={[cx.rootContainer, !isCoinListEdited && cx.nonEditMode]}>

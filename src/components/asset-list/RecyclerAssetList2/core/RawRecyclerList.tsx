@@ -9,10 +9,7 @@ import { LayoutChangeEvent } from 'react-native';
 import { SetterOrUpdater } from 'recoil';
 import { DataProvider, RecyclerListView } from 'recyclerlistview';
 import { useMemoOne } from 'use-memo-one';
-import { UniqueAsset } from '../../../../entities';
-import useAccountSettings from '../../../../hooks/useAccountSettings';
 import { BooleanMap } from '../../../../hooks/useCoinListEditOptions';
-import { useTheme } from '../../../../theme';
 import { AssetListType } from '..';
 import { useRecyclerAssetListPosition } from './Contexts';
 import ExternalENSProfileScrollViewWithRef from './ExternalENSProfileScrollView';
@@ -22,8 +19,14 @@ import rowRenderer from './RowRenderer';
 import { BaseCellType, CellTypes, RecyclerListViewRef } from './ViewTypes';
 import getLayoutProvider from './getLayoutProvider';
 import useLayoutItemAnimator from './useLayoutItemAnimator';
-import { useCoinListEdited, useCoinListEditOptions } from '@rainbow-me/hooks';
+import { UniqueAsset } from '@rainbow-me/entities';
+import {
+  useAccountSettings,
+  useCoinListEdited,
+  useCoinListEditOptions,
+} from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
+import { useTheme } from '@rainbow-me/theme';
 
 const dataProvider = new DataProvider((r1, r2) => {
   return r1.uid !== r2.uid;
