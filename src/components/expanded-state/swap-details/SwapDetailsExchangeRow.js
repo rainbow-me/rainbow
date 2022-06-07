@@ -10,6 +10,7 @@ import {
   Box,
   Column,
   Columns,
+  Cover,
   Inline,
   Stack,
   Text,
@@ -20,7 +21,11 @@ import { ImgixImage } from '@rainbow-me/images';
 import { getExchangeIconUrl } from '@rainbow-me/utils';
 
 const parseExchangeName = name => {
-  return name.slice(name.indexOf('_') + 1, name.length);
+  const networks = ['arbitrum', 'optimism', 'polygon'];
+
+  return networks.some(network => name.includes(network))
+    ? name.slice(name.indexOf('_') + 1, name.length)
+    : name;
 };
 
 const ExchangeIcon = ({ index = 1, icon, protocol }) => {
@@ -46,6 +51,8 @@ const ExchangeIcon = ({ index = 1, icon, protocol }) => {
       ) : (
         <Stack>
           <Box
+            alignHorizontal="center"
+            alignVertical="center"
             height={{ custom: 20 }}
             style={{
               backgroundColor: colors.exchangeFallback,
@@ -56,14 +63,16 @@ const ExchangeIcon = ({ index = 1, icon, protocol }) => {
             }}
             width={{ custom: 20 }}
           >
-            <Text
-              align="center"
-              color="secondary80"
-              size="12px"
-              weight="semibold"
-            >
-              {protocol?.substring(0, 1)}
-            </Text>
+            <Cover alignHorizontal="center" alignVertical="center">
+              <Text
+                align="center"
+                color="secondary80"
+                size="14px"
+                weight="semibold"
+              >
+                {protocol?.substring(0, 1)}
+              </Text>
+            </Cover>
           </Box>
         </Stack>
       )}
