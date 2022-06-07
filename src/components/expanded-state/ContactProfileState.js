@@ -1,77 +1,35 @@
 import lang from 'i18n-js';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Keyboard } from 'react-native';
 import { useNavigation } from '../../navigation/Navigation';
-import { useTheme } from '../../theme/ThemeContext';
 import { magicMemo } from '../../utils';
 import ProfileModal from './profile/ProfileModal';
 import useExperimentalFlag, {
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
 import { maybeSignUri } from '@rainbow-me/handlers/imgix';
-import {
-  removeFirstEmojiFromString,
-  returnStringFirstEmoji,
-} from '@rainbow-me/helpers/emojiHandler';
+import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
 import {
   useAccountSettings,
   useContacts,
   useENSProfileImages,
   usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
-import {
-  addressHashedColorIndex,
-  addressHashedEmoji,
-} from '@rainbow-me/utils/profileUtils';
-
-const ContactProfileState = ({ address, color, contact, ens, nickname }) => {
+const ContactProfileState = ({ address, color, contact, emoji, ens }) => {
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const contactNickname = contact?.nickname || nickname;
+  const [nickname, setNickname] = useState(
+    removeFirstEmojiFromString(contact?.nickname) || ens
+  );
   const { goBack } = useNavigation();
   const { onAddOrUpdateContacts } = useContacts();
-  const { colors } = useTheme();
-
-  const [value, setValue] = useState(
-    profilesEnabled
-      ? contactNickname
-      : removeFirstEmojiFromString(contactNickname)
-  );
-
-  const emoji = useMemo(
-    () =>
-      profilesEnabled
-        ? addressHashedEmoji(address)
-        : returnStringFirstEmoji(contactNickname),
-    [address, contactNickname, profilesEnabled]
-  );
-
-  const colorIndex = useMemo(
-    () => (profilesEnabled ? addressHashedColorIndex(address) : color || 0),
-    [address, color, profilesEnabled]
-  );
 
   const { network } = useAccountSettings();
 
   const handleAddContact = useCallback(() => {
-    const nickname = profilesEnabled
-      ? value
-      : (emoji ? `${emoji} ${value}` : value).trim();
-    if (value.length > 0) {
-      onAddOrUpdateContacts(address, nickname, color, network, ens);
-      goBack();
-    }
+    onAddOrUpdateContacts(address, nickname, color, network, ens);
+    goBack();
     android && Keyboard.dismiss();
-  }, [
-    address,
-    color,
-    emoji,
-    ens,
-    goBack,
-    network,
-    onAddOrUpdateContacts,
-    profilesEnabled,
-    value,
-  ]);
+  }, [address, color, ens, goBack, network, nickname, onAddOrUpdateContacts]);
 
   const handleCancel = useCallback(() => {
     goBack();
@@ -79,7 +37,7 @@ const ContactProfileState = ({ address, color, contact, ens, nickname }) => {
   }, [goBack]);
 
   const { data: images } = useENSProfileImages(ens, {
-    enabled: Boolean(ens),
+    enabled: Boolean(profilesEnabled && ens),
   });
 
   const avatarUrl = profilesEnabled ? images?.avatarUrl : undefined;
@@ -88,8 +46,7 @@ const ContactProfileState = ({ address, color, contact, ens, nickname }) => {
     maybeSignUri(avatarUrl || '') || ''
   );
 
-  const accentColor =
-    dominantColor || colors.avatarBackgrounds[colorIndex || 0];
+  const accentColor = dominantColor || color;
 
   return (
     <ProfileModal
@@ -99,8 +56,8 @@ const ContactProfileState = ({ address, color, contact, ens, nickname }) => {
       handleCancel={handleCancel}
       handleSubmit={handleAddContact}
       imageAvatar={avatarUrl}
-      inputValue={value}
-      onChange={setValue}
+      inputValue={nickname}
+      onChange={setNickname}
       placeholder={lang.t('contacts.input_placeholder')}
       profileName={ens}
       submitButtonText={lang.t('contacts.options.add')}

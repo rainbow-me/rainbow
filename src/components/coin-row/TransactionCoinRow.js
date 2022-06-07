@@ -2,7 +2,6 @@ import lang from 'i18n-js';
 import { compact, get, startCase, toLower } from 'lodash';
 import React, { useCallback } from 'react';
 import { useSelector } from 'react-redux';
-import { getRandomColor } from '../../styles/colors';
 import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIconSize } from '../coin-icon';
@@ -19,7 +18,7 @@ import {
   hasAddableContact,
 } from '@rainbow-me/helpers/transactions';
 import { isValidDomainFormat } from '@rainbow-me/helpers/validators';
-import { useAccountSettings } from '@rainbow-me/hooks';
+import { useAccountSettings, useWalletProfile } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import {
@@ -27,6 +26,7 @@ import {
   ethereumUtils,
   showActionSheetWithOptions,
 } from '@rainbow-me/utils';
+import { address } from '@rainbow-me/utils/abbreviations';
 
 const containerStyles = {
   paddingLeft: 19,
@@ -87,9 +87,12 @@ export default function TransactionCoinRow({ item, ...props }) {
   const { contact } = item;
   const { accountAddress } = useAccountSettings();
   const { navigate } = useNavigation();
+  const { fetchWalletProfileMeta } = useWalletProfile();
 
   const onPressTransaction = useCallback(async () => {
     const { hash, from, minedAt, pending, to, status, type, network } = item;
+
+    const { color, emoji } = await fetchWalletProfileMeta(address);
 
     const date = getHumanReadableDate(minedAt);
     const isSent =
@@ -111,16 +114,13 @@ export default function TransactionCoinRow({ item, ...props }) {
     };
 
     const contactAddress = isSent ? to : from;
-    let contactColor = 0;
 
     if (contact) {
       headerInfo.address = contact.nickname;
-      contactColor = contact.color;
     } else {
       headerInfo.address = isValidDomainFormat(contactAddress)
         ? contactAddress
         : abbreviations.address(contactAddress, 4, 10);
-      contactColor = getRandomColor();
     }
 
     const blockExplorerAction = lang.t('exchange.coin_row.view_on', {
@@ -163,8 +163,10 @@ export default function TransactionCoinRow({ item, ...props }) {
               navigate(Routes.MODAL_SCREEN, {
                 address: contactAddress,
                 asset: item,
-                color: contactColor,
-                contact,
+                color: color,
+                contact: contact,
+                emoji: emoji,
+                ens: null,
                 type: 'contact_profile',
               });
               break;
@@ -192,7 +194,7 @@ export default function TransactionCoinRow({ item, ...props }) {
         }
       );
     }
-  }, [accountAddress, contact, item, navigate]);
+  }, [accountAddress, contact, fetchWalletProfileMeta, item, navigate]);
 
   const mainnetAddress = useSelector(
     state =>
