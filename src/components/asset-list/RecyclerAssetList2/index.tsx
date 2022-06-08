@@ -43,6 +43,7 @@ function RecyclerAssetList({
         <RawMemoRecyclerAssetList
           briefSectionsData={briefSectionsData}
           extendedState={extendedState}
+          type={type}
         />
       </StickyHeaderManager>
     </RecyclerAssetListScrollPositionContext.Provider>
