@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text } from 'react-native';
-import Animated from 'react-native-reanimated';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { useTheme } from '@rainbow-me/context';
 import { fonts } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
@@ -8,7 +8,7 @@ import { magicMemo } from '@rainbow-me/utils';
 interface Props {
   title: string;
   showSectionTitles?: boolean;
-  nextCategoryOffset: Animated.Value<number>;
+  nextCategoryOffset: Animated.SharedValue<number>;
 }
 
 const EmojisListHeader = ({
@@ -18,12 +18,17 @@ const EmojisListHeader = ({
 }: Props) => {
   const { colors } = useTheme();
 
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: nextCategoryOffset.value,
+  }));
+
   if (showSectionTitles) {
     return (
       <Animated.View
         style={[
           sx.sectionHeaderWrap,
-          { backgroundColor: colors.white, opacity: nextCategoryOffset },
+          { backgroundColor: colors.white },
+          animatedStyle,
         ]}
       >
         <Text

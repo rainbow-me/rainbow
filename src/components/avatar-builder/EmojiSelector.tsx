@@ -15,7 +15,7 @@ import {
   TapGestureHandler,
   TapGestureHandlerStateChangeEvent,
 } from 'react-native-gesture-handler';
-import { Value } from 'react-native-reanimated';
+import { useSharedValue } from 'react-native-reanimated';
 import {
   DataProvider,
   LayoutProvider,
@@ -50,11 +50,6 @@ const EMOJI_CONTAINER = 1;
 const HEADER_ROW = 2;
 const OVERLAY = 3;
 
-let currentIndex = 0;
-let scrollPosition = new Value(0);
-let nextCategoryOffset = new Value(1);
-let blockCategories = true;
-
 type Props = {
   /** Function called when a user selects an Emoji */
   onEmojiSelected: (emojiCode: string) => void;
@@ -80,8 +75,12 @@ const EmojiSelector = ({
   const [isReady, setIsReady] = useState(false);
   const [category, setCategory] = useState(Categories.people);
   const [colSize, setColSize] = useState(0);
+  const scrollPosition = useSharedValue(0);
+  const nextCategoryOffset = useSharedValue(1);
 
   const recyclerListView = useRef<ComponentType<any>>();
+  const currentIndex = useRef(0);
+  const blockCategories = useRef(true);
 
   const layoutProvider = useMemo(
     () =>
@@ -117,7 +116,7 @@ const EmojiSelector = ({
   );
 
   useEffect(() => {
-    nextCategoryOffset = new Value(1);
+    nextCategoryOffset.value = 1;
 
     loadEmojis();
     setTimeout(() => {
@@ -136,19 +135,19 @@ const EmojiSelector = ({
     nativeEvent: { state },
   }: TapGestureHandlerStateChangeEvent) => {
     if (state === GestureHandlerState.BEGAN) {
-      blockCategories = false;
+      blockCategories.current = false;
     }
   };
 
   const handleTabSelect = (category: EmojiCategory) => {
-    blockCategories = true;
+    blockCategories.current = true;
     scrollToOffset(
       category.index * 2 - 1 > 0
         ? (allEmojiList[category.index * 2] as AllEmojiContentEntry).offset ?? 0
         : 0,
       true
     );
-    currentIndex = category.index;
+    currentIndex.current = category.index;
     setCategory(category);
   };
 
@@ -157,9 +156,12 @@ const EmojiSelector = ({
     recyclerListView.current?.scrollTo(position, 0, animated);
   };
 
-  const handleEmojiSelect = (emoji: EmojiEntry) => {
-    onEmojiSelected(charFromEmojiObject(emoji));
-  };
+  const handleEmojiSelect = useCallback(
+    (emoji: EmojiEntry) => {
+      onEmojiSelected(charFromEmojiObject(emoji));
+    },
+    [onEmojiSelected]
+  );
 
   const hasRowChanged = () => {
     return false;
@@ -173,33 +175,31 @@ const EmojiSelector = ({
     if (!blockCategories) {
       if (
         // @ts-expect-error
-        offsetY - 0.5 > allEmojiList[(currentIndex + 1) * 2].offset &&
-        currentIndex < allEmojiList.length / 2 - 2
+        offsetY - 0.5 > allEmojiList[(currentIndex.current + 1) * 2].offset &&
+        currentIndex.current < allEmojiList.length / 2 - 2
       ) {
-        currentIndex += 1;
-        setCategory(Categories[categoryKeys[currentIndex]]);
+        currentIndex.current += 1;
+        setCategory(Categories[categoryKeys[currentIndex.current]]);
       } else if (
-        currentIndex * 2 - 1 > 0 &&
+        currentIndex.current * 2 - 1 > 0 &&
         // @ts-expect-error
-        offsetY - 0.5 < allEmojiList[currentIndex * 2].offset
+        offsetY - 0.5 < allEmojiList[currentIndex.current * 2].offset
       ) {
-        currentIndex -= 1;
-        setCategory(Categories[categoryKeys[currentIndex]]);
+        currentIndex.current -= 1;
+        setCategory(Categories[categoryKeys[currentIndex.current]]);
       }
-      scrollPosition.setValue(
-        // @ts-expect-error
-        -offsetY + allEmojiList[(currentIndex + 1) * 2].offset > 40
+      scrollPosition.value = // @ts-expect-error
+        -offsetY + allEmojiList[(currentIndex.current + 1) * 2].offset > 40
           ? 1
           : // @ts-expect-error
-            (-offsetY + allEmojiList[(currentIndex + 1) * 2].offset) / 40
-      );
-      nextCategoryOffset.setValue(
+            (-offsetY + allEmojiList[(currentIndex.current + 1) * 2].offset) /
+            40;
+      nextCategoryOffset.value =
         // @ts-expect-error
-        -offsetY + allEmojiList[(currentIndex + 1) * 2].offset < 400 ||
-          offsetY < 1
+        -offsetY + allEmojiList[(currentIndex.current + 1) * 2].offset < 400 ||
+        offsetY < 1
           ? 1
-          : 0
-      );
+          : 0;
     }
   };
 
@@ -217,7 +217,7 @@ const EmojiSelector = ({
         />
       );
     },
-    []
+    [scrollPosition]
   );
 
   const renderScrollView = useCallback(
@@ -296,7 +296,14 @@ const EmojiSelector = ({
         />
       );
     },
-    [colSize, columns, handleEmojiSelect, colors]
+    [
+      colSize,
+      columns,
+      handleEmojiSelect,
+      colors,
+      nextCategoryOffset,
+      showSectionTitles,
+    ]
   );
 
   return (

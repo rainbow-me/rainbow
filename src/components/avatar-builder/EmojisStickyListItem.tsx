@@ -1,7 +1,7 @@
 import { BlurView } from '@react-native-community/blur';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import Animated from 'react-native-reanimated';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { Categories } from './Categories';
 import { AllEmojiHeaderEntry } from './helpers/getFormattedAllEmojiList';
 import { useTheme } from '@rainbow-me/context';
@@ -11,21 +11,20 @@ const categoryKeys = Object.keys(Categories);
 
 interface Props {
   index: number;
-  scrollPosition: Animated.Value<number>;
+  scrollPosition: Animated.SharedValue<number>;
   headerData: AllEmojiHeaderEntry;
 }
 
 const EmojisStickyListItem = ({ index, scrollPosition, headerData }: Props) => {
   const { colors } = useTheme();
 
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: scrollPosition.value,
+  }));
+
   return (
     <View style={sx.sectionStickyHeaderWrap}>
-      <Animated.View
-        // @ts-expect-error
-        style={{
-          opacity: scrollPosition,
-        }}
-      >
+      <Animated.View style={animatedStyle}>
         {ios ? (
           <BlurView
             blurAmount={10}
