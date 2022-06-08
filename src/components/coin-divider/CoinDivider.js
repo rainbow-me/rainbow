@@ -1,5 +1,4 @@
 import lang from 'i18n-js';
-import { map } from 'lodash';
 import React, {
   useCallback,
   useContext,
@@ -126,8 +125,8 @@ export default function CoinDivider({ balancesSum, defaultToEditButton }) {
 
   useEffect(() => {
     if (isSmallBalancesOpen && !fetchedCharts) {
-      const assetCodes = map(assets, 'address');
-      dispatch(emitChartsRequest(assetCodes));
+      const assetCodes = assets?.map(asset => asset.address);
+      dispatch(emitChartsRequest(assetCodes ?? []));
       setFetchedCharts(true);
     }
   }, [

@@ -1,5 +1,5 @@
 import { useQuery } from '@apollo/client';
-import { concat, isEmpty, isNil, keyBy, map, orderBy, toLower } from 'lodash';
+import { concat, isEmpty, isNil, keyBy, orderBy, toLower } from 'lodash';
 import { useMemo } from 'react';
 import { useMMKVObject } from 'react-native-mmkv';
 import { useDispatch, useSelector } from 'react-redux';
@@ -126,9 +126,9 @@ export default function useSavingsAccount(includeDefaultDai) {
 
     if (data) {
       const markets = keyBy(data?.markets, 'id');
-      const resultTokens = data?.account?.tokens;
+      const resultTokens = data?.account?.tokens ?? [];
 
-      const accountTokens = map(resultTokens, token => {
+      const accountTokens = resultTokens.map(token => {
         const [cTokenAddress] = token.id.split('-');
         const marketData = markets[cTokenAddress] || {};
 
@@ -159,8 +159,7 @@ export default function useSavingsAccount(includeDefaultDai) {
         accountTokens,
         daiMarketData,
       };
-      const underlyingAddresses = map(
-        accountTokens,
+      const underlyingAddresses = accountTokens.map(
         token => token?.underlying?.address
       );
       dispatch(emitAssetRequest([DAI_ADDRESS, ...underlyingAddresses]));

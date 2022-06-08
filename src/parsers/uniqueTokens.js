@@ -1,13 +1,4 @@
-import {
-  isEmpty,
-  isNil,
-  map,
-  pick,
-  pickBy,
-  remove,
-  toLower,
-  uniq,
-} from 'lodash';
+import { isEmpty, isNil, pick, pickBy, remove, toLower, uniq } from 'lodash';
 import { CardSize } from '../components/unique-token/CardSize';
 import { AssetTypes } from '@rainbow-me/entities';
 import { fetchMetadata, isUnknownOpenSeaENS } from '@rainbow-me/handlers/ens';
@@ -267,7 +258,7 @@ export const applyENSMetadataFallbackToTokens = async data => {
 };
 
 export const getFamilies = uniqueTokens =>
-  uniq(map(uniqueTokens, u => u?.asset_contract?.address ?? ''));
+  uniq(uniqueTokens?.map(u => u?.asset_contract?.address ?? ''));
 
 export const dedupeUniqueTokens = (newAssets, uniqueTokens) => {
   const uniqueTokenFamilies = getFamilies(uniqueTokens);
