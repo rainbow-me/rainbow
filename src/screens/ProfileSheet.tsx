@@ -5,7 +5,6 @@ import { StatusBar } from 'react-native';
 import RecyclerAssetList2 from '../components/asset-list/RecyclerAssetList2';
 import ProfileSheetHeader from '../components/ens-profile/ProfileSheetHeader';
 import Skeleton from '../components/skeleton/Skeleton';
-import { useTheme } from '@rainbow-me/context';
 import {
   AccentColorProvider,
   Box,
@@ -28,6 +27,7 @@ import {
 } from '@rainbow-me/hooks';
 import { sharedCoolModalTopOffset } from '@rainbow-me/navigation/config';
 import Routes from '@rainbow-me/routes';
+import { useTheme } from '@rainbow-me/theme';
 import { addressHashedColorIndex } from '@rainbow-me/utils/profileUtils';
 
 export const ProfileSheetConfigContext = createContext<{

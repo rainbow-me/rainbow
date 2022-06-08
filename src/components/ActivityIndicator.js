@@ -1,6 +1,6 @@
 import React from 'react';
 import { UIActivityIndicator } from 'react-native-indicators';
-import { useTheme } from '../context/ThemeContext';
+import { useTheme } from '../theme/ThemeContext';
 import { Centered } from './layout';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
