@@ -1,25 +1,21 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 /* eslint-disable react-native/no-unused-styles */
-import { BlurView } from '@react-native-community/blur';
-import React, { PureComponent, RefCallback } from 'react';
-import {
-  Dimensions,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  ViewStyle,
-} from 'react-native';
-import { getBrand } from 'react-native-device-info';
+import React, {
+  ComponentType,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { Dimensions, StyleSheet, View, ViewStyle } from 'react-native';
 import {
   State as GestureHandlerState,
-  TouchableOpacity as GHTouchableOpacity,
   ScrollView,
   TapGestureHandler,
   TapGestureHandlerStateChangeEvent,
 } from 'react-native-gesture-handler';
-import LinearGradient from 'react-native-linear-gradient';
-import Animated, { Value } from 'react-native-reanimated';
+import { Value } from 'react-native-reanimated';
 import {
   DataProvider,
   LayoutProvider,
@@ -28,14 +24,14 @@ import {
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import 'string.fromcodepoint';
 import { ScrollEvent } from 'recyclerlistview/dist/reactnative/core/scrollcomponent/BaseScrollView';
-import EmojiTabBarShadow from '../../assets/emojiTabBarShadow.png';
-import {
-  ThemeContextProps,
-  withThemeContext,
-} from '../../context/ThemeContext';
 import { deviceUtils } from '../../utils';
 import { Categories } from './Categories';
-import TabBar from './TabBar';
+import EmojiContent from './EmojiContent';
+import EmojisListHeader from './EmojisListHeader';
+import EmojisLoader from './EmojisLoader';
+import EmojisStickyListItem from './EmojisStickyListItem';
+import InitialEmojis from './InitialEmojis';
+import TabsWithShadows from './TabsWithShadows';
 import { charFromEmojiObject } from './helpers/charFromEmojiObject';
 import getFormattedAllEmojiList, {
   AllEmojiContentEntry,
@@ -43,8 +39,7 @@ import getFormattedAllEmojiList, {
   AllEmojiHeaderEntry,
 } from './helpers/getFormattedAllEmojiList';
 import { EmojiCategory, EmojiEntry } from './types';
-import { ImgixImage } from '@rainbow-me/images';
-import { fonts, position } from '@rainbow-me/styles';
+import { ThemeContextProps, useTheme } from '@rainbow-me/context';
 
 // TODO width attribute is temporary solution that will be removed as soon as I figure out why proper scaling does not work – comment from 2019
 const { width } = Dimensions.get('screen');
@@ -65,385 +60,79 @@ type Props = {
   onEmojiSelected: (emojiCode: string) => void;
   /** Toggle the tabs on or off */
   showTabs?: boolean;
-  /** Toggle the history section on or off */
-  showHistory?: boolean;
   /** Toggle section title on or off */
   showSectionTitles?: boolean;
   /** Set the default category. Use the `Categories` class */
   category: EmojiCategory;
   /** Number of columns across */
   columns: number;
-  /** Theme color used for loaders and active tab indicator */
-  theme?: string;
 } & ThemeContextProps;
 
-interface State {
-  allEmojiList: AllEmojiEntry[];
-  category: EmojiCategory;
-  colSize: number;
-  emojiList: string[];
-  history: string[];
-  isReady: boolean;
-}
+const EmojiSelector = ({
+  columns = 7,
+  showSectionTitles = true,
+  showTabs = ios,
+  onEmojiSelected,
+  ...other
+}: Props) => {
+  const { colors } = useTheme();
+  const [allEmojiList, setAllEmojiList] = useState<AllEmojiEntry[]>([]);
+  const [isReady, setIsReady] = useState(false);
+  const [category, setCategory] = useState(Categories.people);
+  const [colSize, setColSize] = useState(0);
 
-class EmojiSelector extends PureComponent<Props, State> {
-  constructor(args: any) {
-    super(args);
-    this.renderScrollView = this.renderScrollView.bind(this);
+  const recyclerListView = useRef<ComponentType<any>>();
 
-    this.state = {
-      allEmojiList: [],
-      category: Categories.people,
-      colSize: 0,
-      emojiList: [],
-      history: [],
-      isReady: false,
-    };
+  const layoutProvider = useMemo(
+    () =>
+      new LayoutProvider(
+        i => {
+          if (i === 0 || i === allEmojiList.length - 1) {
+            return OVERLAY;
+          }
+          if (i % 2 === 0) {
+            return EMOJI_CONTAINER;
+          }
+          return HEADER_ROW;
+        },
+        (type, dim, i) => {
+          if (type === EMOJI_CONTAINER) {
+            const entry = allEmojiList[i] as AllEmojiContentEntry;
+            dim.height =
+              Math.floor(entry.data.length / 7 + 1) * ((width - 21) / columns);
+            dim.width = deviceUtils.dimensions.width;
+          } else if (type === HEADER_ROW) {
+            dim.height = 34.7;
+            dim.width = deviceUtils.dimensions.width;
+          } else if (type === OVERLAY) {
+            dim.height = i === 0 ? 0.1 : 100;
+            dim.width = deviceUtils.dimensions.width;
+          } else {
+            dim.height = 0;
+            dim.width = 0;
+          }
+        }
+      ),
+    [allEmojiList, columns]
+  );
 
+  useEffect(() => {
     nextCategoryOffset = new Value(1);
 
-    this._layoutProvider = new LayoutProvider(
-      i => {
-        if (i === 0 || i === this.state.allEmojiList.length - 1) {
-          return OVERLAY;
-        }
-        if (i % 2 === 0) {
-          return EMOJI_CONTAINER;
-        }
-        return HEADER_ROW;
-      },
-      (type, dim, i) => {
-        if (type === EMOJI_CONTAINER) {
-          const entry = this.state.allEmojiList[i] as AllEmojiContentEntry;
-          dim.height =
-            Math.floor(entry.data.length / 7 + 1) *
-            ((width - 21) / this.props.columns);
-          dim.width = deviceUtils.dimensions.width;
-        } else if (type === HEADER_ROW) {
-          dim.height = 34.7;
-          dim.width = deviceUtils.dimensions.width;
-        } else if (type === OVERLAY) {
-          dim.height = i === 0 ? 0.1 : 100;
-          dim.width = deviceUtils.dimensions.width;
-        } else {
-          dim.height = 0;
-          dim.width = 0;
-        }
-      }
-    );
-  }
-
-  componentDidMount() {
-    this.loadEmojis();
+    loadEmojis();
     setTimeout(() => {
-      this.setState({ isReady: true });
+      setIsReady(true);
     }, 300);
-  }
+  }, []);
 
-  private _layoutProvider: LayoutProvider;
-  private recyclerListView: ScrollView | null = null;
+  const loadEmojis = () => {
+    const allEmojiList = getFormattedAllEmojiList(categoryKeys, columns);
 
-  handleTabSelect = (category: EmojiCategory) => {
-    blockCategories = true;
-    this.scrollToOffset(
-      category.index * 2 - 1 > 0
-        ? (this.state.allEmojiList[category.index * 2] as AllEmojiContentEntry)
-            .offset ?? 0
-        : 0,
-      true
-    );
-    currentIndex = category.index;
-    this.setState({
-      category,
-    });
+    setAllEmojiList(allEmojiList);
+    setColSize(width / columns);
   };
 
-  handleEmojiSelect = (emoji: EmojiEntry) => {
-    this.props.onEmojiSelected(charFromEmojiObject(emoji));
-  };
-
-  renderEmojis({ data }: AllEmojiContentEntry) {
-    let categoryEmojis = [];
-    for (let i = 0; i < data.length; i += this.props.columns) {
-      let rowContent = [];
-      let touchableNet = [];
-      for (let j = 0; j < this.props.columns; j++) {
-        if (i + j < data.length) {
-          rowContent.push(charFromEmojiObject(data[i + j].emoji));
-          touchableNet.push(data[i + j].emoji);
-        }
-      }
-      categoryEmojis.push({
-        rowContent,
-        touchableNet,
-      });
-    }
-    const { colors } = this.props;
-    return (
-      <View>
-        {categoryEmojis.map(({ rowContent, touchableNet }) => (
-          <View key={`categoryEmoji${rowContent[0]}`}>
-            <Text
-              style={{
-                color: colors.black,
-                marginHorizontal: 10,
-                fontSize: Math.floor(this.state.colSize) - (ios ? 15 : 22),
-                height: (width - 21) / this.props.columns,
-                width: deviceUtils.dimensions.width,
-                letterSpacing: ios ? 8 : getBrand() === 'google' ? 11 : 8,
-                backgroundColor: colors.white,
-              }}
-            >
-              {rowContent}
-            </Text>
-            <View
-              style={{
-                flexDirection: 'row',
-                marginHorizontal: 10,
-                position: 'absolute',
-              }}
-            >
-              {touchableNet.map(singleLine => {
-                const touchableProps = {
-                  key: `categoryEmojiTouchableOpacity${rowContent[0]}${singleLine.sort_order}`,
-                  onPress: () => this.handleEmojiSelect(singleLine),
-                  style: {
-                    height: (width - 21) / this.props.columns,
-                    width: (width - 21) / this.props.columns,
-                    opacity: 0,
-                    backgroundColor: colors.white,
-                  },
-                };
-                return ios ? (
-                  <TouchableOpacity activeOpacity={0.5} {...touchableProps} />
-                ) : (
-                  <GHTouchableOpacity activeOpacity={0.7} {...touchableProps} />
-                );
-              })}
-            </View>
-          </View>
-        ))}
-      </View>
-    );
-  }
-
-  renderListHeader = (title: string) => {
-    const { colors } = this.props;
-    return (
-      this.props.showSectionTitles && (
-        <Animated.View
-          style={[
-            sx.sectionHeaderWrap,
-            { backgroundColor: colors.white, opacity: nextCategoryOffset },
-          ]}
-        >
-          <Text
-            style={[
-              sx.sectionHeader,
-              { color: colors.alpha(colors.blueGreyDark, 0.5) },
-            ]}
-          >
-            {title}
-          </Text>
-        </Animated.View>
-      )
-    );
-  };
-
-  loadEmojis() {
-    const allEmojiList = getFormattedAllEmojiList(
-      categoryKeys,
-      this.props.columns
-    );
-
-    this.setState({
-      allEmojiList,
-      colSize: width / this.props.columns,
-    });
-  }
-
-  hasRowChanged = () => {
-    return false;
-  };
-
-  renderItem = (type: number, item: AllEmojiEntry, index: number) => {
-    const { colors } = this.props;
-
-    if (type === HEADER_ROW) {
-      return this.renderListHeader((item as AllEmojiHeaderEntry).title);
-    } else if (type === OVERLAY) {
-      const overlayStyle: ViewStyle = {};
-      if (index === 0) {
-        overlayStyle.top = -3000;
-      } else {
-        overlayStyle.bottom = -3000;
-      }
-
-      return ios ? (
-        <View
-          style={[
-            sx.header,
-            {
-              width: width,
-              backgroundColor: colors.white,
-            },
-            overlayStyle,
-          ]}
-        />
-      ) : null;
-    }
-    return this.renderEmojis(item as AllEmojiContentEntry);
-  };
-
-  renderStickyItem = (
-    type: string | number | undefined,
-    item: AllEmojiHeaderEntry,
-    index: number
-  ) => {
-    const { colors } = this.props;
-    return (
-      <View style={sx.sectionStickyHeaderWrap}>
-        <Animated.View
-          // @ts-expect-error
-          style={{
-            opacity: scrollPosition,
-          }}
-        >
-          {ios ? (
-            <BlurView
-              blurAmount={10}
-              blurType="light"
-              style={[
-                sx.sectionStickyBlur,
-                {
-                  width:
-                    (index - 1) / 2 <= categoryKeys.length - 1
-                      ? Categories[categoryKeys[(index - 1) / 2]].width
-                      : Categories[categoryKeys[categoryKeys.length - 1]].width,
-                },
-              ]}
-            >
-              <Text
-                style={[
-                  sx.sectionStickyHeader,
-                  { backgroundColor: colors.alpha(colors.white, 0.7) },
-                ]}
-              >
-                {item.title}
-              </Text>
-            </BlurView>
-          ) : (
-            <View style={sx.sectionStickyBlur}>
-              <Text
-                style={[
-                  sx.sectionStickyHeader,
-                  { color: colors.alpha(colors.blueGreyDark, 0.5) },
-                ]}
-              >
-                {item.title}
-              </Text>
-            </View>
-          )}
-        </Animated.View>
-      </View>
-    );
-  };
-
-  handleScroll = (event: ScrollEvent, offsetX: number, offsetY: number) => {
-    if (!blockCategories) {
-      if (
-        offsetY - 0.5 >
-          // @ts-expect-error
-          this.state.allEmojiList[(currentIndex + 1) * 2].offset &&
-        currentIndex < this.state.allEmojiList.length / 2 - 2
-      ) {
-        currentIndex += 1;
-        this.setState({ category: Categories[categoryKeys[currentIndex]] });
-      } else if (
-        currentIndex * 2 - 1 > 0 &&
-        // @ts-expect-error
-        offsetY - 0.5 < this.state.allEmojiList[currentIndex * 2].offset
-      ) {
-        currentIndex -= 1;
-        this.setState({ category: Categories[categoryKeys[currentIndex]] });
-      }
-      scrollPosition.setValue(
-        // @ts-expect-error
-        -offsetY + this.state.allEmojiList[(currentIndex + 1) * 2].offset > 40
-          ? 1
-          : (-offsetY +
-              // @ts-expect-error
-              this.state.allEmojiList[(currentIndex + 1) * 2].offset) /
-              40
-      );
-      nextCategoryOffset.setValue(
-        // @ts-expect-error
-        -offsetY + this.state.allEmojiList[(currentIndex + 1) * 2].offset <
-          400 || offsetY < 1
-          ? 1
-          : 0
-      );
-    }
-  };
-
-  handleListRef: RefCallback<ScrollView> = ref => {
-    this.recyclerListView = ref;
-  };
-
-  scrollToOffset = (position: number, animated?: boolean) => {
-    this.recyclerListView?.scrollTo(position, 0, animated);
-  };
-
-  prerenderEmojis(emojisRows: string[][]) {
-    const { colors } = this.props;
-    return (
-      <View style={{ marginTop: 34 }}>
-        {emojisRows.map(emojis => (
-          <Text
-            key={`emojiRow${emojis[0]}`}
-            style={{
-              color: colors.black,
-              marginHorizontal: 10,
-              fontSize: Math.floor(this.state.colSize) - (ios ? 15 : 22),
-              height: (width - 21) / this.props.columns,
-              width: deviceUtils.dimensions.width,
-              letterSpacing: ios ? 8 : getBrand() === 'google' ? 11 : 8,
-              top: 0.8,
-            }}
-          >
-            {emojis}
-          </Text>
-        ))}
-      </View>
-    );
-  }
-
-  // @ts-expect-error
-  renderScrollView({ children, ...props }) {
-    const prerenderEmoji: string[][] = [];
-    if (this.state.allEmojiList[2]) {
-      for (let i = 0; i < this.props.columns * 10; i += this.props.columns) {
-        let emojis = [];
-        for (let j = 0; j < this.props.columns; j++) {
-          emojis.push(
-            charFromEmojiObject(
-              (this.state.allEmojiList[2] as AllEmojiContentEntry).data[i + j]
-                .emoji
-            )
-          );
-        }
-        prerenderEmoji.push(emojis);
-      }
-    }
-
-    return (
-      <ScrollView {...props} ref={this.handleListRef}>
-        {this.state.isReady ? children : this.prerenderEmojis(prerenderEmoji)}
-      </ScrollView>
-    );
-  }
-
-  onTapChange = ({
+  const onTapChange = ({
     nativeEvent: { state },
   }: TapGestureHandlerStateChangeEvent) => {
     if (state === GestureHandlerState.BEGAN) {
@@ -451,117 +140,201 @@ class EmojiSelector extends PureComponent<Props, State> {
     }
   };
 
-  render() {
-    const { showTabs, colors, isDarkMode, ...other } = this.props;
-
-    const { category, isReady } = this.state;
-
-    return (
-      <View style={sx.frame} {...other}>
-        <TapGestureHandler onHandlerStateChange={this.onTapChange}>
-          <View
-            style={{ alignItems: 'center', flex: 1, justifyContent: 'center' }}
-          >
-            {!isReady ? (
-              <View style={sx.loader} {...other}>
-                <View
-                  style={[
-                    sx.sectionHeaderWrap,
-                    { backgroundColor: colors.white },
-                  ]}
-                >
-                  <Text
-                    style={[
-                      sx.sectionHeader,
-                      { color: colors.alpha(colors.blueGreyDark, 0.5) },
-                    ]}
-                  >
-                    {Categories.people.getTitle()}
-                  </Text>
-                </View>
-                {null}
-              </View>
-            ) : null}
-            <View style={sx.container}>
-              <StickyContainer
-                overrideRowRenderer={this.renderStickyItem}
-                stickyHeaderIndices={[1, 3, 5, 7, 9, 11, 13, 15, 17]}
-              >
-                {/* @ts-expect-error */}
-                <ProgressiveListView
-                  canChangeSize={false}
-                  dataProvider={new DataProvider(
-                    this.hasRowChanged
-                  ).cloneWithRows(this.state.allEmojiList)}
-                  // @ts-expect-error
-                  externalScrollView={this.renderScrollView}
-                  layoutProvider={this._layoutProvider}
-                  onScroll={this.handleScroll}
-                  renderAheadOffset={300}
-                  renderAheadStep={100}
-                  // @ts-expect-error
-                  rowRenderer={this.renderItem}
-                  scrollIndicatorInsets={[15, 0, 15, 0]}
-                  style={{ width: deviceUtils.dimensions.width }}
-                />
-              </StickyContainer>
-            </View>
-          </View>
-        </TapGestureHandler>
-        {showTabs ? (
-          <View style={sx.tabBar}>
-            <View
-              style={[
-                sx.tabBarShadowImage,
-                { opacity: isDarkMode ? 0.3 : 0.6 },
-              ]}
-            >
-              <ImgixImage
-                pointerEvents="none"
-                // @ts-expect-error
-                source={EmojiTabBarShadow}
-                style={StyleSheet.absoluteFill}
-              />
-            </View>
-            <View
-              style={[
-                { shadowColor: colors.shadowBlack },
-                sx.gradientContainer,
-              ]}
-            >
-              <LinearGradient
-                colors={[
-                  colors.white,
-                  colors.white,
-                  isDarkMode ? colors.white : '#F0F5FA',
-                ]}
-                end={{ x: 0.5, y: 1 }}
-                pointerEvents="none"
-                start={{ x: 0.5, y: 0 }}
-                style={sx.gradient}
-              />
-            </View>
-            <TabBar
-              activeCategory={category}
-              categoryKeys={categoryKeys}
-              onPress={this.handleTabSelect}
-            />
-          </View>
-        ) : null}
-      </View>
+  const handleTabSelect = (category: EmojiCategory) => {
+    blockCategories = true;
+    scrollToOffset(
+      category.index * 2 - 1 > 0
+        ? (allEmojiList[category.index * 2] as AllEmojiContentEntry).offset ?? 0
+        : 0,
+      true
     );
-  }
-}
+    currentIndex = category.index;
+    setCategory(category);
+  };
 
-// @ts-expect-error
-EmojiSelector.defaultProps = {
-  category: Categories.people,
-  columns: 7,
-  showHistory: false,
-  showSearchBar: true,
-  showSectionTitles: true,
-  showTabs: ios,
-  theme: '#007AFF',
+  const scrollToOffset = (position: number, animated?: boolean) => {
+    // @ts-expect-error
+    recyclerListView.current?.scrollTo(position, 0, animated);
+  };
+
+  const handleEmojiSelect = (emoji: EmojiEntry) => {
+    onEmojiSelected(charFromEmojiObject(emoji));
+  };
+
+  const hasRowChanged = () => {
+    return false;
+  };
+
+  const handleScroll = (
+    event: ScrollEvent,
+    offsetX: number,
+    offsetY: number
+  ) => {
+    if (!blockCategories) {
+      if (
+        // @ts-expect-error
+        offsetY - 0.5 > allEmojiList[(currentIndex + 1) * 2].offset &&
+        currentIndex < allEmojiList.length / 2 - 2
+      ) {
+        currentIndex += 1;
+        setCategory(Categories[categoryKeys[currentIndex]]);
+      } else if (
+        currentIndex * 2 - 1 > 0 &&
+        // @ts-expect-error
+        offsetY - 0.5 < allEmojiList[currentIndex * 2].offset
+      ) {
+        currentIndex -= 1;
+        setCategory(Categories[categoryKeys[currentIndex]]);
+      }
+      scrollPosition.setValue(
+        // @ts-expect-error
+        -offsetY + allEmojiList[(currentIndex + 1) * 2].offset > 40
+          ? 1
+          : // @ts-expect-error
+            (-offsetY + allEmojiList[(currentIndex + 1) * 2].offset) / 40
+      );
+      nextCategoryOffset.setValue(
+        // @ts-expect-error
+        -offsetY + allEmojiList[(currentIndex + 1) * 2].offset < 400 ||
+          offsetY < 1
+          ? 1
+          : 0
+      );
+    }
+  };
+
+  const renderStickyItem = useCallback(
+    (
+      type: string | number | undefined,
+      item: AllEmojiHeaderEntry,
+      index: number
+    ) => {
+      return (
+        <EmojisStickyListItem
+          headerData={item}
+          index={index}
+          scrollPosition={scrollPosition}
+        />
+      );
+    },
+    []
+  );
+
+  const renderScrollView = useCallback(
+    ({ children, ...props }) => {
+      const emojiRows: string[][] = [];
+
+      if (allEmojiList[2]) {
+        for (let i = 0; i < columns * 10; i += columns) {
+          let emojis = [];
+          for (let j = 0; j < columns; j++) {
+            emojis.push(
+              charFromEmojiObject(
+                (allEmojiList[2] as AllEmojiContentEntry).data[i + j].emoji
+              )
+            );
+          }
+          emojiRows.push(emojis);
+        }
+      }
+
+      return (
+        <ScrollView {...props} ref={recyclerListView}>
+          {isReady ? (
+            children
+          ) : (
+            <InitialEmojis
+              columnSize={colSize}
+              columns={columns}
+              emojisRows={emojiRows}
+            />
+          )}
+        </ScrollView>
+      );
+    },
+    [allEmojiList, colSize, columns, isReady]
+  );
+
+  const renderItem = useCallback(
+    (type: number, item: AllEmojiEntry, index: number) => {
+      if (type === HEADER_ROW) {
+        const title = (item as AllEmojiHeaderEntry).title;
+        return (
+          <EmojisListHeader
+            nextCategoryOffset={nextCategoryOffset}
+            showSectionTitles={showSectionTitles}
+            title={title}
+          />
+        );
+      } else if (type === OVERLAY) {
+        const overlayStyle: ViewStyle = {};
+        if (index === 0) {
+          overlayStyle.top = -3000;
+        } else {
+          overlayStyle.bottom = -3000;
+        }
+
+        return ios ? (
+          <View
+            style={[
+              sx.header,
+              {
+                width: width,
+                backgroundColor: colors.white,
+              },
+              overlayStyle,
+            ]}
+          />
+        ) : null;
+      }
+      return (
+        <EmojiContent
+          {...(item as AllEmojiContentEntry)}
+          columnSize={colSize}
+          columns={columns}
+          onEmojiSelect={handleEmojiSelect}
+        />
+      );
+    },
+    [colSize, columns, handleEmojiSelect, colors]
+  );
+
+  return (
+    <View style={sx.frame} {...other}>
+      <TapGestureHandler onHandlerStateChange={onTapChange}>
+        <View style={sx.outerContainer}>
+          {!isReady ? <EmojisLoader /> : null}
+          <View style={sx.container}>
+            <StickyContainer
+              overrideRowRenderer={renderStickyItem}
+              stickyHeaderIndices={[1, 3, 5, 7, 9, 11, 13, 15, 17]}
+            >
+              {/* @ts-expect-error */}
+              <ProgressiveListView
+                canChangeSize={false}
+                dataProvider={new DataProvider(hasRowChanged).cloneWithRows(
+                  allEmojiList
+                )}
+                // @ts-expect-error
+                externalScrollView={renderScrollView}
+                layoutProvider={layoutProvider}
+                onScroll={handleScroll}
+                renderAheadOffset={300}
+                renderAheadStep={100}
+                // @ts-expect-error
+                rowRenderer={renderItem}
+                scrollIndicatorInsets={[15, 0, 15, 0]}
+                style={{ width: deviceUtils.dimensions.width }}
+              />
+            </StickyContainer>
+          </View>
+        </View>
+      </TapGestureHandler>
+      {showTabs ? (
+        <TabsWithShadows category={category} onTabSelect={handleTabSelect} />
+      ) : null}
+    </View>
+  );
 };
 
 const sx = StyleSheet.create({
@@ -572,15 +345,14 @@ const sx = StyleSheet.create({
     overflow: 'visible',
     width: width,
   },
+  outerContainer: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
   header: { height: 400, position: 'absolute' },
   frame: {
     flex: 1,
-  },
-  loader: {
-    flex: 1,
-    position: 'absolute',
-    width: width,
-    top: 0,
   },
   row: {
     alignItems: 'center',
@@ -589,69 +361,6 @@ const sx = StyleSheet.create({
     width: '100%',
     zIndex: 1,
   },
-  sectionHeader: {
-    fontFamily: fonts.family.SFProRounded,
-    fontSize: fonts.size.small,
-    fontWeight: fonts.weight.semibold,
-    letterSpacing: fonts.letterSpacing.rounded,
-    paddingBottom: 3.75,
-    paddingLeft: 9,
-    paddingRight: 9,
-    paddingTop: 15.25,
-    textTransform: 'uppercase',
-    width: '100%',
-  },
-  sectionHeaderWrap: {
-    marginRight: 10,
-    paddingLeft: 10,
-  },
-  sectionStickyHeaderWrap: {
-    marginLeft: 12,
-    flex: 1,
-  },
-  sectionStickyHeader: {
-    fontFamily: fonts.family.SFProRounded,
-    fontSize: fonts.size.small,
-    fontWeight: fonts.weight.semibold,
-    letterSpacing: fonts.letterSpacing.rounded,
-    paddingBottom: 3.75,
-    paddingLeft: 7,
-    paddingRight: 7,
-    paddingTop: 3.25,
-    textTransform: 'uppercase',
-  },
-  sectionStickyBlur: {
-    borderRadius: 11,
-    marginTop: 12,
-  },
-  tabBar: {
-    alignSelf: 'center',
-    bottom: 24,
-    flexDirection: 'row',
-    height: 38,
-    justifyContent: 'space-between',
-    padding: 4,
-    position: 'absolute',
-    width: 276,
-  },
-  tabBarShadowImage: {
-    height: 138,
-    left: -50.5,
-    position: 'absolute',
-    top: -46,
-    width: 377,
-  },
-  gradient: {
-    borderRadius: 19,
-    overflow: 'hidden',
-    ...position.coverAsObject,
-  },
-  gradientContainer: {
-    shadowOffset: { height: 0, width: 0 },
-    shadowOpacity: 0.06,
-    shadowRadius: 0.5,
-    ...position.coverAsObject,
-  },
 });
 
-export default withThemeContext(EmojiSelector);
+export default EmojiSelector;
