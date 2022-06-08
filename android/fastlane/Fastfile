@@ -29,7 +29,7 @@ platform :android do
     f.close
   end
 
-  desc "Deploy a new version to the Google Play"
+  desc "Upload a new version to the Google Play"
   lane :release_version do |options|
     versionCode = bump_version_code()
     gradle(task: 'clean')
