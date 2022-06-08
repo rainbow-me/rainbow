@@ -11,9 +11,7 @@ import {
   SheetTitle,
 } from '../components/sheet';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
-import { useTheme } from '../theme/ThemeContext';
 import { deviceUtils } from '../utils';
-import { useTheme } from '@rainbow-me/context';
 import {
   useAddCashLimits,
   useDimensions,
@@ -23,6 +21,7 @@ import {
 } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { borders } from '@rainbow-me/styles';
+import { useTheme } from '@rainbow-me/theme';
 
 const deviceHeight = deviceUtils.dimensions.height;
 const statusBarHeight = getStatusBarHeight(true);

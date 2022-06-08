@@ -1,8 +1,8 @@
 import React from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import { Categories } from './Categories';
-import { useTheme } from '@rainbow-me/context';
 import { fonts } from '@rainbow-me/styles';
+import { useTheme } from '@rainbow-me/theme';
 
 const { width } = Dimensions.get('screen');
 

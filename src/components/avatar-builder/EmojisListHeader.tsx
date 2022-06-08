@@ -1,8 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
-import { useTheme } from '@rainbow-me/context';
 import { fonts } from '@rainbow-me/styles';
+import { useTheme } from '@rainbow-me/theme';
 import { magicMemo } from '@rainbow-me/utils';
 
 interface Props {

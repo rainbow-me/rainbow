@@ -37,7 +37,7 @@ import getFormattedAllEmojiList, {
   AllEmojiHeaderEntry,
 } from './helpers/getFormattedAllEmojiList';
 import { EmojiCategory, EmojiEntry } from './types';
-import { useTheme } from '@rainbow-me/context';
+import { useTheme } from '@rainbow-me/theme';
 
 // TODO width attribute is temporary solution that will be removed as soon as I figure out why proper scaling does not work – comment from 2019
 const { width } = Dimensions.get('screen');

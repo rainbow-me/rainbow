@@ -4,8 +4,8 @@ import { StyleSheet, Text, View } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { Categories } from './Categories';
 import { AllEmojiHeaderEntry } from './helpers/getFormattedAllEmojiList';
-import { useTheme } from '@rainbow-me/context';
 import { fonts } from '@rainbow-me/styles';
+import { useTheme } from '@rainbow-me/theme';
 
 const categoryKeys = Object.keys(Categories);
 

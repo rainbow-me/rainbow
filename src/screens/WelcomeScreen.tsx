@@ -31,12 +31,12 @@ import {
 } from '../handlers/cloudBackup';
 import { cloudPlatform } from '../utils/platform';
 
-import { ThemeContextProps, useTheme } from '@rainbow-me/context';
 import { useHideSplashScreen } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { position, shadow } from '@rainbow-me/styles';
+import { ThemeContextProps, useTheme } from '@rainbow-me/theme';
 import logger from 'logger';
 
 const ButtonContainer = styled(Reanimated.View)({
