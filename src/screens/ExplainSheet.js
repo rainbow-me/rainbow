@@ -333,9 +333,9 @@ export const explainers = (params, colors) => ({
     extraHeight: -90,
     text: availableNetworksExplainer(params?.tokenSymbol, params?.networks),
     title:
-      params?.networks.length > 1
+      params?.networks?.length > 1
         ? lang.t('explain.available_networks.title_plural', {
-            length: params?.networks.length,
+            length: params?.networks?.length,
           })
         : lang.t('explain.available_networks.title_singular', {
             network: params?.networks[0],
@@ -349,7 +349,11 @@ export const explainers = (params, colors) => ({
               key={`networks-${network}`}
               marginLeft={{
                 custom:
-                  index > 0 ? -12 : params.networks.length % 2 === 0 ? -2 : -30,
+                  index > 0
+                    ? -12
+                    : params?.networks?.length % 2 === 0
+                    ? -2
+                    : -30,
               }}
               style={{
                 borderColor: colors.transparent,
