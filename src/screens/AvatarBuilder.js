@@ -13,9 +13,9 @@ import { Column, Row } from '../components/layout';
 import useUpdateEmoji from '../hooks/useUpdateEmoji';
 import { useNavigation } from '../navigation/Navigation';
 import { deviceUtils } from '../utils';
-import { useTheme } from '@rainbow-me/context';
 import { useDimensions } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
+import { useTheme } from '@rainbow-me/theme';
 
 const AvatarCircleHeight = 65;
 const AvatarCircleMarginTop = 2;

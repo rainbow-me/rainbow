@@ -1,7 +1,7 @@
 import React from 'react';
 import { Dimensions, Text, View } from 'react-native';
 import { getBrand } from 'react-native-device-info';
-import { useTheme } from '@rainbow-me/context';
+import { useTheme } from '@rainbow-me/theme';
 import { deviceUtils, magicMemo } from '@rainbow-me/utils';
 
 const { width } = Dimensions.get('screen');

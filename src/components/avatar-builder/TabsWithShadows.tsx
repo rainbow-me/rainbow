@@ -5,9 +5,9 @@ import EmojiTabBarShadow from '../../assets/emojiTabBarShadow.png';
 import { Categories } from './Categories';
 import TabBar from './TabBar';
 import { EmojiCategory } from './types';
-import { useTheme } from '@rainbow-me/context';
 import { ImgixImage } from '@rainbow-me/images';
 import { position } from '@rainbow-me/styles';
+import { useTheme } from '@rainbow-me/theme';
 import { magicMemo } from '@rainbow-me/utils';
 
 const categoryKeys = Object.keys(Categories);

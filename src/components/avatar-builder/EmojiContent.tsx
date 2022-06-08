@@ -5,7 +5,7 @@ import { TouchableOpacity as GHTouchableOpacity } from 'react-native-gesture-han
 import { charFromEmojiObject } from './helpers/charFromEmojiObject';
 import { AllEmojiContentEntry } from './helpers/getFormattedAllEmojiList';
 import { EmojiEntry } from './types';
-import { useTheme } from '@rainbow-me/context';
+import { useTheme } from '@rainbow-me/theme';
 import { deviceUtils } from '@rainbow-me/utils';
 
 const { width } = Dimensions.get('screen');

@@ -1,14 +1,13 @@
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useState } from 'react';
-
 import assetTypes from '../../../entities/assetTypes';
 import { TokenInfoItem } from '../../token-info';
-import { useTheme } from '@rainbow-me/context';
 import { Columns } from '@rainbow-me/design-system';
 import { apiGetUniqueTokenFloorPrice } from '@rainbow-me/handlers/opensea-api';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import { useTheme } from '@rainbow-me/theme';
 import { convertAmountToNativeDisplay } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 
