@@ -122,10 +122,10 @@ describe('Swap Sheet Interaction Flow', () => {
     } else {
       await Helpers.swipe('exchange-modal-header', 'down', 'slow');
     }
-    await Helpers.waitAndTap('exchange-fab');
   });
 
   it('Should swap input & output and clear form on ETH -> ERC20 when selecting ETH as output', async () => {
+    await Helpers.waitAndTap('exchange-fab');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
     await Helpers.checkIfVisible('currency-select-list');
@@ -137,6 +137,7 @@ describe('Swap Sheet Interaction Flow', () => {
       'currency-select-list-exchange-coin-row-DAI-token'
     );
     await Helpers.waitAndTap('exchange-modal-output-selection-button');
+    await Helpers.checkIfVisible('currency-select-list');
     await Helpers.typeText('currency-select-search-input', 'ETH\n', true);
     await Helpers.waitAndTap(
       'currency-select-list-exchange-coin-row-ETH-token'
@@ -154,10 +155,10 @@ describe('Swap Sheet Interaction Flow', () => {
     } else {
       await Helpers.swipe('exchange-modal-header', 'down', 'slow');
     }
-    await Helpers.waitAndTap('exchange-fab');
   });
 
   it('Should swap input & output and clear form on ETH -> ERC20 when selecting ERC20 as input', async () => {
+    await Helpers.waitAndTap('exchange-fab');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
     await Helpers.checkIfVisible('currency-select-list');
@@ -169,6 +170,7 @@ describe('Swap Sheet Interaction Flow', () => {
       'currency-select-list-exchange-coin-row-DAI-token'
     );
     await Helpers.waitAndTap('exchange-modal-input-selection-button');
+    await Helpers.checkIfVisible('currency-select-list');
     await Helpers.waitAndTap(
       'currency-select-list-exchange-coin-row-DAI-token'
     );
