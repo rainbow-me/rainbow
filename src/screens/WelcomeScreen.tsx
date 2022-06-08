@@ -2,7 +2,7 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useState } from 'react';
-import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
+import { Linking, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 // @ts-expect-error
 import { IS_TESTING } from 'react-native-dotenv';
 import Reanimated, {
@@ -17,6 +17,7 @@ import Reanimated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+import { useSafeArea } from 'react-native-safe-area-context';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { ButtonPressAnimation } from '../components/animations';
 import { BaseButtonAnimationProps } from '../components/animations/ButtonPressAnimation/types';
@@ -31,12 +32,12 @@ import {
 } from '../handlers/cloudBackup';
 import { cloudPlatform } from '../utils/platform';
 
-import { ThemeContextProps, useTheme } from '@rainbow-me/context';
 import { useHideSplashScreen } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { position, shadow } from '@rainbow-me/styles';
+import { ThemeContextProps, useTheme } from '@rainbow-me/theme';
 import logger from 'logger';
 
 const ButtonContainer = styled(Reanimated.View)({
@@ -49,7 +50,7 @@ const ButtonContent = styled(RowWithMargins).attrs({
 })({
   alignSelf: 'center',
   height: '100%',
-  paddingBottom: 4,
+  paddingBottom: 2,
 });
 
 const ButtonLabel = styled(Text).attrs(
@@ -75,8 +76,8 @@ const ButtonEmoji = styled(Emoji).attrs({
 });
 
 const DarkShadow = styled(Reanimated.View)(
-  ({ theme: { colors } }: { theme: ThemeContextProps }) => ({
-    ...shadow.buildAsObject(0, 10, 30, colors.dark, 1),
+  ({ theme: { colors, isDarkMode } }: { theme: ThemeContextProps }) => ({
+    ...shadow.buildAsObject(0, 10, 30, colors.dark, isDarkMode ? 0 : 1),
     backgroundColor: colors.white,
     borderRadius: 30,
     height: 60,
@@ -89,8 +90,8 @@ const DarkShadow = styled(Reanimated.View)(
 );
 
 const Shadow = styled(Reanimated.View)(
-  ({ theme: { colors } }: { theme: ThemeContextProps }) => ({
-    ...shadow.buildAsObject(0, 10, 30, colors.dark, 0.4),
+  ({ theme: { colors, isDarkMode } }: { theme: ThemeContextProps }) => ({
+    ...shadow.buildAsObject(0, 5, 15, colors.shadow, isDarkMode ? 0 : 0.4),
     borderRadius: 30,
     height: 60,
     left: -3,
@@ -160,6 +161,13 @@ const ButtonWrapper = styled(Reanimated.View)({
   width: '100%',
 });
 
+// @ts-expect-error
+const TermsOfUse = styled.View(({ bottomInset }) => ({
+  bottom: bottomInset / 2 + 32,
+  position: 'absolute',
+  width: 200,
+}));
+
 const RAINBOW_TEXT_HEIGHT = 32;
 const RAINBOW_TEXT_WIDTH = 125;
 
@@ -178,7 +186,8 @@ const animationColors = [
 ];
 
 export default function WelcomeScreen() {
-  const { colors } = useTheme();
+  const insets = useSafeArea();
+  const { colors, isDarkMode } = useTheme();
   // @ts-expect-error Navigation types
   const { replace, navigate, dangerouslyGetState } = useNavigation();
   const [userData, setUserData] = useState(null);
@@ -296,7 +305,7 @@ export default function WelcomeScreen() {
   }));
 
   const createWalletButtonAnimatedStyle = useAnimatedStyle(() => ({
-    backgroundColor: colors.dark,
+    backgroundColor: isDarkMode ? colors.blueGreyDarkLight : colors.dark,
     borderColor: calculatedColor.value,
     borderWidth: ios ? 0 : 3,
     width: 230 + (ios ? 0 : 6),
@@ -315,6 +324,10 @@ export default function WelcomeScreen() {
       screen: Routes.WALLET_SCREEN,
     });
   }, [dangerouslyGetState, navigate, replace]);
+
+  const handlePressTerms = useCallback(() => {
+    Linking.openURL('https://rainbow.me/terms-of-use');
+  }, []);
 
   const showRestoreSheet = useCallback(() => {
     analytics.track('Tapped "I already have one"');
@@ -350,7 +363,7 @@ export default function WelcomeScreen() {
             style={createWalletButtonAnimatedStyle}
             testID="new-wallet-button"
             text={lang.t('wallet.new.get_new_wallet')}
-            textColor={colors.white}
+            textColor={isDarkMode ? colors.dark : colors.white}
           />
         </ButtonWrapper>
         <ButtonWrapper>
@@ -370,6 +383,27 @@ export default function WelcomeScreen() {
           />
         </ButtonWrapper>
       </ContentWrapper>
+      <TermsOfUse bottomInset={insets.bottom}>
+        <Text
+          align="center"
+          color={colors.alpha(colors.blueGreyDark, 0.5)}
+          lineHeight="loose"
+          size="smedium"
+          weight="semibold"
+        >
+          {lang.t('wallet.new.terms')}
+          <Text
+            color={colors.paleBlue}
+            lineHeight="loose"
+            onPress={handlePressTerms}
+            size="smedium"
+            suppressHighlighting
+            weight="semibold"
+          >
+            {lang.t('wallet.new.terms_link')}
+          </Text>
+        </Text>
+      </TermsOfUse>
     </Container>
   );
 }

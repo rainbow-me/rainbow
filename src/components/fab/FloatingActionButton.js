@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
-import { useTheme } from '../../context/ThemeContext';
 import { darkModeThemeColors } from '../../styles/colors';
+import { useTheme } from '../../theme/ThemeContext';
 import { magicMemo } from '../../utils';
 import ButtonPressAnimation, {
   ScaleButtonZoomableAndroid,

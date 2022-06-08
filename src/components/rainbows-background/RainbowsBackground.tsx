@@ -1,4 +1,5 @@
 import React from 'react';
+import { Dimensions } from 'react-native';
 import Animated from 'react-native-reanimated';
 import RainbowGreyNeon from '../../assets/rainbows/greyneon.png';
 import RainbowLight from '../../assets/rainbows/light.png';
@@ -6,9 +7,10 @@ import RainbowLiquid from '../../assets/rainbows/liquid.png';
 import RainbowNeon from '../../assets/rainbows/neon.png';
 import RainbowPixel from '../../assets/rainbows/pixel.png';
 import SingleRainbow from './SingleRainbow';
-import { RainbowAnimationDetails } from './types';
 
-const rainbows: RainbowAnimationDetails[] = [
+const { height: deviceHeight } = Dimensions.get('screen');
+
+const rainbows = [
   {
     delay: 0,
     id: 'grey',
@@ -25,7 +27,7 @@ const rainbows: RainbowAnimationDetails[] = [
     scale: 0.3333333333,
     source: ios ? { uri: 'neon' } : RainbowNeon,
     x: 149,
-    y: 380,
+    y: deviceHeight < 725 ? 380 * (deviceHeight / 725) : 380,
   },
   {
     delay: 40,
@@ -34,7 +36,7 @@ const rainbows: RainbowAnimationDetails[] = [
     scale: 0.6666666667,
     source: ios ? { uri: 'pixel' } : RainbowPixel,
     x: 173,
-    y: -263,
+    y: deviceHeight < 800 ? -263 * (deviceHeight / 800) : -263,
   },
   {
     delay: 60,
@@ -49,10 +51,10 @@ const rainbows: RainbowAnimationDetails[] = [
     delay: 80,
     id: 'liquid',
     rotate: 75,
-    scale: 0.42248,
+    scale: deviceHeight < 800 ? 0.42248 * (deviceHeight / 800) : 0.42248,
     source: ios ? { uri: 'liquid' } : RainbowLiquid,
     x: 40,
-    y: 215,
+    y: deviceHeight < 800 ? 215 * (deviceHeight / 800) : 215,
   },
 ];
 
