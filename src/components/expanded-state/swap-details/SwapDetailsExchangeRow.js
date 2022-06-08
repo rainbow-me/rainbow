@@ -26,7 +26,7 @@ const parseExchangeName = name => {
     network.toLowerCase()
   );
 
-  return networks.some(network => name.includes(network))
+  return networks.some(network => name.toLowerCase().includes(network))
     ? name.slice(name.indexOf('_') + 1, name.length)
     : name;
 };
