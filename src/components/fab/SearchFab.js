@@ -1,6 +1,6 @@
 import React from 'react';
-import { useTheme } from '../../context/ThemeContext';
 import { lightModeThemeColors } from '../../styles/colors';
+import { useTheme } from '../../theme/ThemeContext';
 import { magicMemo } from '../../utils';
 import { Text } from '../text';
 import FloatingActionButton from './FloatingActionButton';
