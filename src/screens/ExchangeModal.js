@@ -722,7 +722,7 @@ export default function ExchangeModal({
         type: 'output_disabled',
       });
     }
-  }, [navigate, currentNetwork]);
+  }, [currentNetwork, navigate]);
 
   const showConfirmButton = isSavings
     ? !!inputCurrency
@@ -764,13 +764,13 @@ export default function ExchangeModal({
             />
             {showOutputField && (
               <ExchangeOutputField
-                editable={
-                  !!outputCurrency && currentNetwork !== Network.arbitrum
-                }
+                editable={!!outputCurrency}
                 network={currentNetwork}
                 onFocus={handleFocus}
                 onPressSelectOutputCurrency={navigateToOutput}
-                onTapWhileDisabled={handleTapWhileDisabled}
+                {...(currentNetwork === Network.arbitrum && {
+                  onTapWhileDisabled: handleTapWhileDisabled,
+                })}
                 outputAmount={outputAmountDisplay}
                 outputCurrencyAddress={
                   outputCurrency?.mainnet_address || outputCurrency?.address
