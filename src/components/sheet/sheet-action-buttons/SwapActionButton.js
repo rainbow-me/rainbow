@@ -54,7 +54,7 @@ function SwapActionButton({
       color={color}
       label={label || `􀖅 ${lang.t('button.swap')}`}
       onPress={handlePress}
-      testID="swap-action-button"
+      testID="swap"
       weight={weight}
     />
   );
