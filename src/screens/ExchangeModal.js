@@ -57,7 +57,7 @@ import {
 } from '@rainbow-me/hooks';
 import { loadWallet } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
-import { executeRap, getRapEstimationByType } from '@rainbow-me/raps';
+import { executeRap, getSwapRapEstimationByType } from '@rainbow-me/raps';
 import { swapClearState, updateSwapTypeDetails } from '@rainbow-me/redux/swap';
 import { ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
@@ -318,10 +318,7 @@ export default function ExchangeModal({
         provider: currentProvider,
         tradeDetails,
       };
-      const gasLimit = await getRapEstimationByType(type, {
-        provider: currentProvider,
-        swapParameters: swapParams,
-      });
+      const gasLimit = await getSwapRapEstimationByType(type, swapParams);
       if (gasLimit) {
         if (currentNetwork === Network.optimism) {
           if (tradeDetails) {
@@ -670,7 +667,6 @@ export default function ExchangeModal({
   const showConfirmButton = isSavings
     ? !!inputCurrency
     : !!inputCurrency && !!outputCurrency;
-
 
   return (
     <Wrapper>

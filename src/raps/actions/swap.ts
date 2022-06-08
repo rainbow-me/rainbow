@@ -85,12 +85,13 @@ const swap = async (
   let swap;
   try {
     logger.sentry(`[${actionName}] executing rap`, {
-      gasLimit,
       ...gasParams,
+      gasLimit,
     });
     const nonce = baseNonce ? baseNonce + index : undefined;
 
     const swapParams = {
+      ...gasParams,
       chainId,
       flashbots: !!parameters.flashbots,
       gasLimit,
@@ -98,7 +99,6 @@ const swap = async (
       permit: !!permit,
       tradeDetails,
       wallet,
-      ...gasParams,
     };
 
     // @ts-ignore
@@ -122,6 +122,7 @@ const swap = async (
   logger.log(`[${actionName}] response`, swap);
 
   const newTransaction = {
+    ...gasParams,
     amount: inputAmount,
     asset: inputCurrency,
     data: swap?.data,
@@ -136,7 +137,6 @@ const swap = async (
     to: swap?.to,
     type: TransactionType.trade,
     value: (swap && toHex(swap.value)) || undefined,
-    ...gasParams,
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
 
