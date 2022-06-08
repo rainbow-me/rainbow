@@ -57,6 +57,10 @@ font.size = {
 };
 
 // react-native requires font weights to be defined as strings
+/**
+ *
+ * @type {Record<string, "100" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900" | "bold" | "normal" | undefined>}
+ */
 font.weight = {
   thin: '100',
   ultraLight: '200',
