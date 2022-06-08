@@ -37,8 +37,13 @@ function SwapActionButton({
           params: {
             fromDiscover: true,
             onSelectCurrency: updateInputCurrency,
-            params,
-            title: lang.t('swap.modal_types.swap'),
+            params: {
+              ...params,
+              ignoreInitialTypeCheck: true,
+            },
+            title: lang.t('swap.modal_types.get_symbol_with', {
+              symbol: params.outputAsset.symbol,
+            }),
             type: CurrencySelectionTypes.input,
           },
           screen: Routes.CURRENCY_SELECT_SCREEN,

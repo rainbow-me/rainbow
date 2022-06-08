@@ -36,6 +36,7 @@ export default function useSwapCurrencyHandlers({
   defaultInputAsset,
   defaultOutputAsset,
   fromDiscover,
+  ignoreInitialTypeCheck = false,
   inputFieldRef,
   setLastFocusedInputHandle,
   outputFieldRef,
@@ -95,9 +96,24 @@ export default function useSwapCurrencyHandlers({
   useEffect(() => {
     if (shouldUpdate) {
       dispatch(updateSwapInputCurrency(defaultInputItemInWallet));
-      dispatch(updateSwapOutputCurrency(defaultOutputItem));
+
+      /**
+       * Note: `ignoreInitialTypeCheck` is truthy when the user comes from the "Get {currency}" swap button flow.
+       * In this flow, we prepopulate the output currency, but we also do not want to clear the selected input
+       * currency.
+       */
+      dispatch(
+        updateSwapOutputCurrency(defaultOutputItem, ignoreInitialTypeCheck)
+      );
     }
-  }, [defaultInputItemInWallet, dispatch, defaultOutputItem, shouldUpdate]);
+  }, [
+    defaultInputItemInWallet,
+    dispatch,
+    defaultOutputItem,
+    shouldUpdate,
+    fromDiscover,
+    ignoreInitialTypeCheck,
+  ]);
 
   const [startFlipFocusTimeout] = useTimeout();
   const flipCurrencies = useCallback(() => {

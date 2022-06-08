@@ -112,6 +112,7 @@ export default function ExchangeModal({
   defaultInputAsset,
   defaultOutputAsset,
   fromDiscover,
+  ignoreInitialTypeCheck,
   testID,
   type,
   typeSpecificParams,
@@ -191,6 +192,7 @@ export default function ExchangeModal({
     defaultInputAsset,
     defaultOutputAsset,
     fromDiscover,
+    ignoreInitialTypeCheck,
     inputFieldRef,
     lastFocusedInputHandle,
     outputFieldRef,
@@ -668,6 +670,7 @@ export default function ExchangeModal({
   const showConfirmButton = isSavings
     ? !!inputCurrency
     : !!inputCurrency && !!outputCurrency;
+
 
   return (
     <Wrapper>

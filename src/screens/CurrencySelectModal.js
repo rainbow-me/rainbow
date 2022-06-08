@@ -214,7 +214,7 @@ export default function CurrencySelectModal() {
           setTimeout(() => {
             navigate(Routes.EXCHANGE_MODAL, {
               params: {
-                defaultInputAsset: item,
+                inputAsset: item,
                 ...params,
               },
               screen: Routes.MAIN_EXCHANGE_SCREEN,
