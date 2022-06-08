@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { ScrollView } from 'react-native';
-import { useTheme } from '../../../context/ThemeContext';
+import { useTheme } from '../../../theme/ThemeContext';
 import { cloudPlatform } from '../../../utils/platform';
 import Divider from '../../Divider';
 import { ButtonPressAnimation } from '../../animations';
