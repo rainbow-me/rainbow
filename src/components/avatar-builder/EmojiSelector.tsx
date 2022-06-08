@@ -39,7 +39,7 @@ import getFormattedAllEmojiList, {
   AllEmojiHeaderEntry,
 } from './helpers/getFormattedAllEmojiList';
 import { EmojiCategory, EmojiEntry } from './types';
-import { ThemeContextProps, useTheme } from '@rainbow-me/context';
+import { useTheme } from '@rainbow-me/context';
 
 // TODO width attribute is temporary solution that will be removed as soon as I figure out why proper scaling does not work – comment from 2019
 const { width } = Dimensions.get('screen');
@@ -57,13 +57,11 @@ type Props = {
   showTabs?: boolean;
   /** Toggle section title on or off */
   showSectionTitles?: boolean;
-  /** Set the default category. Use the `Categories` class */
-  category: EmojiCategory;
   /** Number of columns across */
   columns: number;
-} & ThemeContextProps;
+};
 
-const EmojiSelector = ({
+export const EmojiSelector = ({
   columns = 7,
   showSectionTitles = true,
   showTabs = ios,
@@ -369,5 +367,3 @@ const sx = StyleSheet.create({
     zIndex: 1,
   },
 });
-
-export default EmojiSelector;

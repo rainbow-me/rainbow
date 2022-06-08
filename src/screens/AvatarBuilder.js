@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import Animated from 'react-native-reanimated';
-import { useValues } from 'react-native-redash/src/v1';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import ColorCircle from '../components/avatar-builder/ColorCircle';
-import EmojiSelector from '../components/avatar-builder/EmojiSelector';
+import { EmojiSelector } from '../components/avatar-builder/EmojiSelector';
 import { HeaderHeightWithStatusBar } from '../components/header';
 import { Column, Row } from '../components/layout';
 import useUpdateEmoji from '../hooks/useUpdateEmoji';
@@ -48,32 +51,31 @@ const SelectedColorRing = styled(Animated.View)({
   width: 38,
 });
 
-const springTo = (node, toValue) =>
-  Animated.spring(node, {
-    damping: 38,
-    mass: 1,
-    overshootClamping: false,
-    restDisplacementThreshold: 0.001,
-    restSpeedThreshold: 0.001,
-    stiffness: 600,
-    toValue,
-  }).start();
+const springConfig = {
+  damping: 38,
+  mass: 1,
+  overshootClamping: false,
+  restDisplacementThreshold: 0.001,
+  restSpeedThreshold: 0.001,
+  stiffness: 600,
+};
 
 const AvatarBuilder = ({ route: { params } }) => {
   const { height, width } = useDimensions();
-  const [translateX] = useValues(params.initialAccountColor * 40);
+  const selectedRingPosition = useSharedValue(params.initialAccountColor * 40);
   const { goBack } = useNavigation();
   const { colors } = useTheme();
   const [currentAccountColor, setCurrentAccountColor] = useState(
     params.initialAccountColor
   );
   const [currentEmoji, setCurrentEmoji] = useState(null);
+  const colorIndex = useRef(params.initialAccountColor);
   const { saveInfo } = useUpdateEmoji();
 
   const onChangeEmoji = event => {
     ReactNativeHapticFeedback.trigger('selection');
     setCurrentEmoji(`${event} ${params.initialAccountName}`);
-    saveInfo(`${event} ${params.initialAccountName}`, currentAccountColor);
+    saveInfo(`${event} ${params.initialAccountName}`, colorIndex.current);
   };
 
   const avatarColors = colors.avatarBackgrounds.map((color, index) => (
@@ -83,12 +85,17 @@ const AvatarBuilder = ({ route: { params } }) => {
       key={color}
       onPressColor={() => {
         const destination = index * 40;
-        springTo(translateX, destination);
-        setCurrentAccountColor(colors.avatarBackgrounds.indexOf(color));
-        saveInfo(currentEmoji, colors.avatarBackgrounds.indexOf(color));
+        selectedRingPosition.value = withSpring(destination, springConfig);
+        colorIndex.current = colors.avatarBackgrounds.indexOf(color);
+        setCurrentAccountColor(color);
+        saveInfo(currentEmoji, colorIndex.current);
       }}
     />
   ));
+
+  const selectedRingStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: selectedRingPosition.value }],
+  }));
 
   const colorCircleTopPadding = 15;
   const colorCircleBottomPadding = 19;
@@ -131,9 +138,7 @@ const AvatarBuilder = ({ route: { params } }) => {
           >
             <SelectedColorRing
               selectedColor={currentAccountColor}
-              style={{
-                transform: [{ translateX }],
-              }}
+              style={selectedRingStyle}
             />
             {avatarColors}
           </ScrollableColorPicker>
