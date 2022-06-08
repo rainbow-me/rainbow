@@ -7,7 +7,11 @@ import {
 } from 'react-native-ios-context-menu';
 import { showDeleteContactActionSheet } from '../../contacts';
 import More from '../MoreButton/MoreButton';
-import { useClipboard, useContacts, useWalletProfile } from '@rainbow-me/hooks';
+import {
+  useClipboard,
+  useContacts,
+  useRainbowProfile,
+} from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
@@ -30,7 +34,9 @@ export default function MoreButton({
   const { navigate } = useNavigation();
   const { setClipboard } = useClipboard();
   const { contacts, onRemoveContact } = useContacts();
-  const { fetchWalletProfileMeta } = useWalletProfile();
+  const { data: rainbowProfile } = useRainbowProfile(address || '', {
+    enabled: Boolean(address),
+  });
 
   const contact = useMemo(
     () => (address ? contacts[address.toLowerCase()] : undefined),
@@ -82,7 +88,7 @@ export default function MoreButton({
   }, [contact, formattedAddress]);
 
   const handlePressMenuItem = useCallback(
-    async ({ nativeEvent: { actionKey } }) => {
+    ({ nativeEvent: { actionKey } }) => {
       if (actionKey === ACTIONS.COPY_ADDRESS) {
         setClipboard(address);
       }
@@ -90,12 +96,11 @@ export default function MoreButton({
         ethereumUtils.openAddressInBlockExplorer(address);
       }
       if (actionKey === ACTIONS.ADD_CONTACT) {
-        const walletProfile = await fetchWalletProfileMeta(address || '');
         navigate(Routes.MODAL_SCREEN, {
           address,
           contactNickname: contact?.nickname,
           ens: ensName,
-          profile: walletProfile,
+          profile: rainbowProfile,
           type: 'contact_profile',
         });
       }
@@ -112,7 +117,7 @@ export default function MoreButton({
       address,
       contact?.nickname,
       ensName,
-      fetchWalletProfileMeta,
+      rainbowProfile,
       navigate,
       onRemoveContact,
       setClipboard,

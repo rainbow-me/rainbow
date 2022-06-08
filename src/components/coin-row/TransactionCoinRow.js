@@ -1,6 +1,6 @@
 import lang from 'i18n-js';
 import { compact, get, startCase, toLower } from 'lodash';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
@@ -19,7 +19,7 @@ import {
   hasAddableContact,
 } from '@rainbow-me/helpers/transactions';
 import { isValidDomainFormat } from '@rainbow-me/helpers/validators';
-import { useAccountSettings, useWalletProfile } from '@rainbow-me/hooks';
+import { useAccountSettings, useRainbowProfile } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import {
@@ -87,7 +87,10 @@ export default function TransactionCoinRow({ item, ...props }) {
   const { contact } = item;
   const { accountAddress } = useAccountSettings();
   const { navigate } = useNavigation();
-  const { fetchWalletProfileMeta } = useWalletProfile();
+  const { data: rainbowProfile } = useRainbowProfile(contact?.address, {
+    enabled: Boolean(contact?.address),
+  });
+  const [ens, setEns] = useState(null);
 
   const onPressTransaction = useCallback(async () => {
     const { hash, from, minedAt, pending, to, status, type, network } = item;
@@ -157,20 +160,15 @@ export default function TransactionCoinRow({ item, ...props }) {
           const action = buttons[buttonIndex];
           switch (action) {
             case TransactionActions.viewContact:
-            case TransactionActions.addToContacts: {
-              const [walletProfile, ens] = await Promise.all([
-                fetchWalletProfileMeta(accountAddress),
-                fetchReverseRecord(accountAddress),
-              ]);
+            case TransactionActions.addToContacts:
               navigate(Routes.MODAL_SCREEN, {
                 address: contactAddress,
                 contactNickname: contact?.nickname,
                 ens: ens,
-                profile: walletProfile,
+                profile: rainbowProfile,
                 type: 'contact_profile',
               });
               break;
-            }
             case TransactionActions.speedUp:
               navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
                 tx: item,
@@ -195,13 +193,21 @@ export default function TransactionCoinRow({ item, ...props }) {
         }
       );
     }
-  }, [accountAddress, contact, fetchWalletProfileMeta, item, navigate]);
+  }, [accountAddress, contact, ens, item, navigate, rainbowProfile]);
 
   const mainnetAddress = useSelector(
     state =>
       state.data.accountAssetsData?.[`${item.address}_${item.network}`]
         ?.mainnet_address
   );
+
+  useEffect(() => {
+    const fetchEns = async () => {
+      const ensName = await fetchReverseRecord(contact?.address);
+      setEns(ensName);
+    };
+    if (contact?.address) fetchEns();
+  }, [contact?.address, setEns]);
 
   return (
     <ButtonPressAnimation onPress={onPressTransaction} scaleTo={0.96}>

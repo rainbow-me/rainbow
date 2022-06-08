@@ -22,7 +22,7 @@ import { isENSAddressFormat } from '@rainbow-me/helpers/validators';
 import {
   useClipboard,
   useDimensions,
-  useWalletProfile,
+  useRainbowProfile,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
@@ -96,9 +96,11 @@ export default function SendHeader({
   const { isSmallPhone, isTinyPhone } = useDimensions();
   const { navigate } = useNavigation();
   const { colors } = useTheme();
-  const { fetchWalletProfileMeta } = useWalletProfile();
 
   const [hexAddress, setHexAddress] = useState('');
+  const { data: rainbowProfile } = useRainbowProfile(hexAddress, {
+    enabled: Boolean(hexAddress),
+  });
 
   useEffect(() => {
     if (isValidAddress) {
@@ -135,26 +137,25 @@ export default function SendHeader({
     contact?.ens ||
     recipient;
 
-  const handleNavigateToContact = useCallback(async () => {
-    const walletProfile = await fetchWalletProfileMeta(hexAddress);
-
+  const handleNavigateToContact = useCallback(() => {
     android && Keyboard.dismiss();
     navigate(Routes.MODAL_SCREEN, {
       additionalPadding: true,
       address: hexAddress,
-      contactNickname: contact?.nickname,
+      contactNickname: userWallet?.label ?? contact?.nickname,
       ens: recipient,
       onRefocusInput,
-      profile: walletProfile,
+      profile: rainbowProfile,
       type: 'contact_profile',
     });
   }, [
     contact?.nickname,
-    fetchWalletProfileMeta,
     hexAddress,
     navigate,
     onRefocusInput,
+    rainbowProfile,
     recipient,
+    userWallet?.label,
   ]);
 
   const handleOpenContactActionSheet = useCallback(async () => {

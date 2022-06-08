@@ -13,7 +13,7 @@ import { isHexString } from '@rainbow-me/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import {
   useImportingWallet,
-  useWalletProfile,
+  useRainbowProfile,
   useWallets,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
@@ -90,7 +90,9 @@ export function Header() {
   const { goBack, navigate } = useNavigation();
   const contextValue = useContext(ShowcaseContext);
   const { isReadOnlyWallet } = useWallets();
-  const { fetchWalletProfileMeta } = useWalletProfile();
+  const { data: rainbowProfile } = useRainbowProfile(contextValue?.address, {
+    enabled: Boolean(contextValue?.address),
+  });
 
   const { colors } = useTheme();
 
@@ -114,21 +116,20 @@ export function Header() {
 
   const onAddToContact = useCallback(async () => {
     const contacts = await getContacts();
-    const walletProfile = await fetchWalletProfileMeta(contextValue?.address);
     const currentContact = contacts[contextValue?.address];
 
     navigate(Routes.MODAL_SCREEN, {
       address: contextValue?.address,
       contactNickname: currentContact?.nickname,
       ens: contextValue?.data?.reverseEns,
-      profile: walletProfile,
+      profile: rainbowProfile,
       type: 'contact_profile',
     });
   }, [
     contextValue?.address,
     contextValue?.data?.reverseEns,
-    fetchWalletProfileMeta,
     navigate,
+    rainbowProfile,
   ]);
 
   const onSend = useCallback(async () => {

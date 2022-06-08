@@ -9,6 +9,7 @@ import { Centered, Row } from '../layout';
 import { Text } from '../text';
 import ContactRow from './ContactRow';
 import showDeleteContactActionSheet from './showDeleteContactActionSheet';
+import { useRainbowProfile } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { margin, position } from '@rainbow-me/styles';
 
@@ -67,6 +68,9 @@ const SwipeableContactRow = (
   forwardedRef
 ) => {
   const swipeableRef = useRef();
+  const { data: rainbowProfile } = useRainbowProfile(address, {
+    enabled: Boolean(address),
+  });
 
   useImperativeHandle(forwardedRef, () => ({
     close: swipeableRef.current?.close,
@@ -83,8 +87,8 @@ const SwipeableContactRow = (
 
   const handleEditContact = useCallback(() => {
     swipeableRef.current?.close?.();
-    onSelectEdit({ address, ens, nickname });
-  }, [address, ens, nickname, onSelectEdit]);
+    onSelectEdit({ address, ens, nickname, rainbowProfile });
+  }, [address, ens, nickname, onSelectEdit, rainbowProfile]);
 
   const handleLongPress = useCallback(
     () => swipeableRef.current?.openRight?.(),
