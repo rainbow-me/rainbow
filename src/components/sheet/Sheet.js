@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useSafeArea } from 'react-native-safe-area-context';
-import { useTheme } from '../../context/ThemeContext';
 import { useNavigation } from '../../navigation/Navigation';
+import { useTheme } from '../../theme/ThemeContext';
 
 import TouchableBackdrop from '../TouchableBackdrop';
 import { Centered, Column } from '../layout';

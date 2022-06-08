@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { lightModeThemeColors } from '../styles/colors';
 import useImageMetadata from './useImageMetadata';
+import { AssetTypes } from '@rainbow-me/entities';
 import {
   getTokenMetadata,
   getUrlForTrustIconFallback,
@@ -15,12 +16,15 @@ export default function useColorForAsset(
   forceETHColor = false
 ) {
   const { isDarkMode: isDarkModeTheme, colors } = useTheme();
-  const { address, color, mainnet_address } = asset;
+  const { address, color, mainnet_address, type } = asset;
   const token = getTokenMetadata(mainnet_address || address);
   const tokenListColor = token?.color;
 
   const { color: imageColor } = useImageMetadata(
-    getUrlForTrustIconFallback(address)
+    getUrlForTrustIconFallback(
+      mainnet_address || address,
+      mainnet_address ? AssetTypes.token : type
+    )
   );
 
   const isDarkMode = forceLightMode || isDarkModeTheme;

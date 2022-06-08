@@ -212,7 +212,7 @@
       "edit": "Edit",
       "exchange": "Exchange",
       "exchange_again": "Exchange Again",
-      "exchange_search_uniswap": "Search Uniswap",
+      "exchange_search_placeholder": "Search",
       "go_back": "Go Back",
       "got_it": "Got it",
       "hide": "Hide",
@@ -262,12 +262,14 @@
         "add": "Add Contact",
         "cancel": "Cancel",
         "delete": "Delete Contact",
-        "edit": "Edit Contact"
+        "edit": "Edit Contact",
+        "view": "View Profile"
       },
       "send_header": "Send",
       "suggestions": "Suggestions",
       "to_header": "To",
-      "watching": "Watching"
+      "watching": "Watching",
+      "input_placeholder": "Name"
     },
     "developer_settings": {
       "alert": "Alert",
@@ -277,6 +279,7 @@
       "clear_async_storage": "Clear async storage",
       "clear_mmkv_storage": "Clear MMKV storage",
       "clear_image_metadata_cache": "Clear Image Metadata Cache",
+      "clear_image_cache": "Clear Image Cache",
       "connect_to_hardhat": "Connect to hardhat",
       "crash_app_render_error": "Crash app (render error)",
       "not_applied": "NOT APPLIED",
@@ -298,7 +301,7 @@
         "trading_at_prefix": "Trading at"
       },
       "search": {
-        "ethereum_name_service": "Ethereum Name Service",
+        "profiles": "Profiles",
         "search_ethereum": "Search all of Ethereum"
       },
       "strategies": {
@@ -411,6 +414,10 @@
         "total_value": "Total value",
         "underlying_tokens": "Underlying tokens"
       },
+      "nft_brief_token_info": {
+        "for_sale": "For sale",
+        "last_sale": "Last sale price"
+      },
       "supported_countries": {
         "supported_countries": "Supported Countries",
         "us_except": "United States (except Texas and New York)"
@@ -445,7 +452,18 @@
       },
       "unique_expanded": {
         "about": "About %{assetFamilyName}",
+        "advanced": "Advanced",
         "attributes": "Attributes",
+        "configuration": "Configuration",
+        "copy": "Copy",
+        "edit": "Edit",
+        "manager": "Manager",
+        "owner": "Owner",
+        "set_primary_name": "Set as my ENS name",
+        "profile_info": "Profile Info",
+        "properties": "Properties",
+        "registrant": "Registrant",
+        "resolver": "Resolver",
         "collection_website": "Collection Website",
         "copy_token_id": "Copy Token ID",
         "description": "Description",
@@ -456,12 +474,15 @@
         "last_sale_price": "Last sale price",
         "open_in_web_browser": "Open in Web Browser",
         "opensea": "OpenSea",
-        "properties": "Properties",
         "save_to_photos": "Save to Photos",
         "share_token_info": "Share %{uniqueTokenName} Info",
         "showcase": "Showcase",
         "toast_added_to_showcase": "Added to showcase",
         "toast_removed_from_showcase": "Removed from showcase",
+        "view_on_opensea": "View on Opensea",
+        "view_on_platform": "View on %{platform}",
+        "expires_in": "Expires in",
+        "expires_on": "Expires on",
         "twitter": "Twitter",
         "view_all_with_property": "View All With Property",
         "view_collection": "View Collection",
@@ -529,6 +550,9 @@
         "short_placeholder": "ENS or address"
       }
     },
+    "gas": {
+      "network_fee": "Est. network fee"
+    },
     "homepage": {
       "back": "Back to rainbow.me",
       "coming_soon": "Coming soon.",
@@ -593,6 +617,12 @@
       "password_placeholder": "••••••••••",
       "private_key": "Private Key",
       "recipient_address": "Recipient Address"
+    },
+    "image_picker": {
+      "title": "Rainbow would like to access your photos",
+      "message": "This allows Rainbow to use your photos from your library",
+      "confirm": "Enable library access",
+      "cancel": "Cancel"
     },
     "list": {
       "nothing_here": "Nothing here!",
@@ -721,6 +751,162 @@
       "deposit": "Deposit",
       "pools_title": "Pools",
       "withdraw": "Withdraw"
+    },
+    "profiles": {
+      "actions": {
+        "watching": "Watching",
+        "watch": "Watch",
+        "unwatch_ens": "Unwatch %{ensName}",
+        "unwatch_ens_title": "Are you sure you want to unwatch %{ensName}?",
+        "edit_profile": "Edit profile"
+      },
+      "banner": {
+        "register_name": "Create Your ENS Profile",
+        "and_create_ens_profile": "Search available .eth names"
+      },
+      "details": {
+        "add_to_contacts": "Add to Contacts",
+        "remove_from_contacts": "Remove from Contacts",
+        "copy_address": "Copy Address",
+        "view_on_etherscan": "View on Etherscan"
+      },
+      "intro": {
+        "create_your": "Create Your",
+        "ens_profile": "ENS Profile",
+        "wallet_address_info": {
+          "title": "A better wallet address",
+          "description": "Send to ENS names instead of hard-to-remember wallet addresses."
+        },
+        "portable_identity_info": {
+          "title": "A portable digital identity",
+          "description": "Carry your ENS name and profile between websites. No more signups."
+        },
+        "stored_on_blockchain_info": {
+          "title": "Stored on Ethereum",
+          "description": "Your profile is stored directly on Ethereum and owned by you."
+        },
+        "find_your_name": "Find your name",
+        "use_name": "Use %{name}",
+        "use_existing_name": "Use an existing ENS name",
+        "search_new_name": "Search for a new ENS name",
+        "choose_another_name": "Choose another ENS name",
+        "my_ens_names": "My ENS Names",
+        "search_new_ens": "Find a New Name"
+      },
+      "select_ens_name": "My ENS Names",
+      "search": {
+        "header": "Find your name",
+        "description": "Search available ENS names",
+        "available": "🥳 Available",
+        "taken": "😭 Taken",
+        "registered_on": "This name was last registered on %{content}",
+        "price": "%{content} / Year",
+        "expiration": "Til %{content}",
+        "3_char_min": "Minimum 3 characters",
+        "estimated_total_cost_1": "Estimated total cost of",
+        "estimated_total_cost_2": "with current network fees",
+        "loading_fees": "Loading network fees…",
+        "clear": "􀅉 Clear",
+        "continue": "Continue 􀆊"
+      },
+      "create": {
+        "label": "Create your profile",
+        "add_cover": "Add Cover",
+        "name": "Name",
+        "bio": "Bio",
+        "website": "Website",
+        "back": "􀆉 Back",
+        "skip": "Skip",
+        "username_placeholder": "username",
+        "name_placeholder": "Add a display name",
+        "bio_placeholder": "Add a bio to your profile",
+        "website_placeholder": "Add your website",
+        "review": "Review",
+        "cancel": "Cancel",
+        "choose_nft": "Choose an NFT",
+        "upload_photo": "Upload a Photo",
+        "eth": "Ethereum",
+        "btc": "Bitcoin",
+        "ltc": "Litecoin",
+        "doge": "Dogecoin",
+        "wallet_placeholder": "Add a %{coin} address",
+        "content": "Content",
+        "content_placeholder": "Add a content hash",
+        "notice": "Notice",
+        "notice_placeholder": "Add a notice",
+        "keywords": "Keywords",
+        "keywords_placeholder": "Add keywords",
+        "reddit": "Reddit",
+        "twitter": "Twitter",
+        "telegram": "Telegram",
+        "pronouns": "Pronouns",
+        "pronouns_placeholder": "Add pronouns",
+        "email": "Email",
+        "github": "GitHub",
+        "instagram": "Instagram",
+        "snapchat": "Snapchat",
+        "discord": "Discord",
+        "email_placeholder": "Add your email",
+        "email_submit_message": "Please enter a valid email",
+        "website_submit_message": "Please enter a valid email",
+        "invalid_asset": "Invalid %{coin} address",
+        "invalid_content_hash": "Invalid content hash",
+        "remove": "Remove",
+        "email_message": "Please enter a valid email",
+        "website_message": "Please enter a valid website URL"
+      },
+      "confirm": {
+        "confirm_purchase": "Confirm purchase",
+        "registration_details": "Registration Details",
+        "requesting_register": "Requesting to Register",
+        "reserving_name": "Reserving Your Name",
+        "confirm_registration": "Confirm Registration",
+        "set_name_registration": "Set as Primary Name",
+        "confirm_set_name": "Confirm Set Primary Name",
+        "start_registration": "Start Registration",
+        "confirm_update": "Confirm Update",
+        "confirm_renew": "Hold to Extend",
+        "suggestion": "Buy more years now to save on fees",
+        "set_ens_name": "Set as my primary ENS name",
+        "registration_duration": "Register name for",
+        "new_expiration_date": "New expiration date",
+        "extend_by": "Extend by",
+        "registration_cost": "Registration cost",
+        "estimated_fees": "Estimated network fees",
+        "estimated_total_eth": "Estimated total in ETH",
+        "estimated_total": "Estimated total",
+        "duration_plural": "%{content} years",
+        "duration_singular": "1 year",
+        "commit_button": "Hold to Commit",
+        "insufficient_eth": "Insufficient ETH",
+        "speed_up": "Speed Up",
+        "extend_registration": "Extend Registration",
+        "last_step": "One last step",
+        "last_step_description": "Confirm below to register your name and configure your profile",
+        "transaction_pending": "Transaction pending",
+        "transaction_pending_description": "You’ll be taken to the next step automatically when this transaction confirms on the blockchain",
+        "wait_one_minute": "Wait for one minute",
+        "wait_one_minute_description": "This waiting period ensures that another person can’t register this name before you do"
+      },
+      "edit": {
+        "label": "Edit your profile"
+      },
+      "profile_avatar": {
+        "choose_from_library": "Choose from Library",
+        "create_profile": "Create your Profile",
+        "edit_profile": "Edit Profile",
+        "pick_emoji": "Pick an Emoji",
+        "remove_photo": "Remove Photo",
+        "view_profile": "View Profile"
+      },
+      "pending_registrations": {
+        "alert_title": "Are you sure?",
+        "alert_message": "`You are about to stop the registration process.\n  You'd need to start it again which means you'll need to send an additional transaction.`",
+        "alert_confirm": "Proceed Anyway",
+        "alert_cancel": "Cancel",
+        "in_progress": "In progress",
+        "finish": "Finish"
+      }
     },
     "savings": {
       "deposit": "Deposit",
@@ -1009,7 +1195,9 @@
         "enter_seeds_placeholder": "Secret phrase, private key, Ethereum address, or ENS name",
         "get_new_wallet": "Get a new wallet",
         "import_wallet": "Import Wallet",
-        "name_wallet": "Name your wallet"
+        "name_wallet": "Name your wallet",
+        "terms": "By proceeding, you agree to Rainbow’s ",
+        "terms_link": "Terms of Use"
       },
       "pin_authentication": {
         "choose_your_pin": "Choose your PIN",

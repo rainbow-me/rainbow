@@ -1,5 +1,5 @@
 import { Keyboard, StatusBar } from 'react-native';
-import currentColors from '../context/currentColors';
+import currentColors from '../theme/currentColors';
 import { getActiveRoute, onDidPop, onWillPop } from './Navigation';
 import { appearListener } from './nativeStackHelpers';
 

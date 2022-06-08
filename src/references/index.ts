@@ -21,6 +21,7 @@ export {
   SIGNATURE_REGISTRY_ADDRESS,
 } from './signatureRegistry';
 export { default as emojis } from './emojis.json';
+export { default as ensIntroMarqueeNames } from './ens-intro-marquee-names.json';
 export { default as erc20ABI } from './erc20-abi.json';
 export { default as optimismGasOracleAbi } from './optimism-gas-oracle-abi.json';
 export { default as ethUnits } from './ethereum-units.json';
@@ -102,8 +103,8 @@ export const TUSD_ADDRESS = '0x0000000000085d4780b73119b644ae5ecd22b376';
 export const BUSD_ADDRESS = '0x4fabb145d64652a948d72533023f6e7a623c7c53';
 export const SUSD_ADDRESS = '0x57ab1ec28d129707052df4df418d58a2d46d5f51';
 export const GUSD_ADDRESS = '0x056fd409e1d7a124bd7017459dfea2f387b6d5cd';
-export const SOCKS_ADDRESS = '0x23B608675a2B2fB1890d3ABBd85c5775c51691d5';
-export const WBTC_ADDRESS = '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599';
+export const SOCKS_ADDRESS = '0x23b608675a2b2fb1890d3abbd85c5775c51691d5';
+export const WBTC_ADDRESS = '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599';
 
 export const TRANSFER_EVENT_TOPIC_LENGTH = 3;
 export const TRANSFER_EVENT_KECCAK =

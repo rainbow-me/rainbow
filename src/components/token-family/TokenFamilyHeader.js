@@ -5,10 +5,10 @@ import { ButtonPressAnimation } from '../animations';
 import { Row, RowWithMargins } from '../layout';
 import { Emoji, Text, TruncatedText } from '../text';
 import TokenFamilyHeaderIcon from './TokenFamilyHeaderIcon';
-import { useTheme } from '@rainbow-me/context';
 import { ImgixImage } from '@rainbow-me/images';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
+import { useTheme } from '@rainbow-me/theme';
 
 const AnimatedImgixImage = Animated.createAnimatedComponent(ImgixImage);
 
@@ -42,7 +42,7 @@ const TitleText = styled(TruncatedText).attrs({
 })({
   flex: 1,
   marginBottom: 1,
-  paddingLeft: ({ isShowcase }) => (isShowcase ? 1 : 10),
+  paddingLeft: 10,
   paddingRight: 9,
 });
 
@@ -118,7 +118,7 @@ const TokenFamilyHeader = ({
             />
           )}
         </RowWithMargins>
-        <TitleText isShowcase={title === 'Showcase'}>{title}</TitleText>
+        <TitleText>{title}</TitleText>
         <RowWithMargins align="center" margin={10}>
           <Animated.View style={amountAnimatedStyles}>
             <ChildrenAmountText>{childrenAmount}</ChildrenAmountText>
