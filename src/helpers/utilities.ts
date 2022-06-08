@@ -423,7 +423,7 @@ export const pickFlatten = <T, K extends keyof T>(
   paths: K[]
 ): Pick<T, K> => {
   return paths.reduce((acc, key) => {
-    if (typeof obj[key] !== 'undefined') {
+    if (obj[key] !== undefined) {
       acc[key] = obj[key];
       return acc;
     }
