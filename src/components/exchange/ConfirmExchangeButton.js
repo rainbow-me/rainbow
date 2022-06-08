@@ -5,7 +5,6 @@ import React, { useMemo } from 'react';
 import { darkModeThemeColors } from '../../styles/colors';
 import { HoldToAuthorizeButton } from '../buttons';
 import { Centered } from '../layout';
-import { useTheme } from '@rainbow-me/context';
 import { ExchangeModalTypes } from '@rainbow-me/helpers';
 import {
   useColorForAsset,
@@ -18,6 +17,7 @@ import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { lightModeThemeColors, padding } from '@rainbow-me/styles';
+import { useTheme } from '@rainbow-me/theme';
 
 const paddingHorizontal = 19;
 

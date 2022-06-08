@@ -12,7 +12,6 @@ import ActivityIndicator from '../components/ActivityIndicator';
 import IntroMarquee from '../components/ens-registration/IntroMarquee/IntroMarquee';
 import { SheetActionButton } from '../components/sheet';
 import { useNavigation } from '../navigation/Navigation';
-import { useTheme } from '@rainbow-me/context';
 import {
   Bleed,
   Box,
@@ -35,6 +34,7 @@ import {
   useENSRegistration,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
+import { useTheme } from '@rainbow-me/theme';
 import { showActionSheetWithOptions } from '@rainbow-me/utils';
 
 enum AnotherENSEnum {
