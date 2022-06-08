@@ -28,11 +28,12 @@ const MaxButtonLabel = styled(Text).attrs({
 
 export default function ExchangeMaxButton({
   address,
+  mainnet_address,
   disabled,
   onPress,
   testID,
 }) {
-  const colorForAsset = useColorForAsset({ address });
+  const colorForAsset = useColorForAsset({ address, mainnet_address });
   const { colors } = useTheme();
 
   return (

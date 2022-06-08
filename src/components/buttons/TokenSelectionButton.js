@@ -35,6 +35,7 @@ const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
 
 export default function TokenSelectionButton({
   address,
+  mainnet_address,
   borderRadius = 30,
   onPress,
   symbol,
@@ -43,7 +44,7 @@ export default function TokenSelectionButton({
   const { isDarkMode, colors } = useTheme();
 
   const colorForAsset = useColorForAsset(
-    { address },
+    { address, mainnet_address },
     address ? undefined : colors.appleBlue
   );
 

@@ -24,6 +24,7 @@ export default function ExchangeInputField({
   editable,
   inputAmount,
   inputCurrencyAddress,
+  inputCurrencyMainnetAddress,
   inputCurrencySymbol,
   inputFieldRef,
   nativeAmount,
@@ -44,6 +45,7 @@ export default function ExchangeInputField({
         amount={inputAmount}
         disableCurrencySelection={disableInputCurrencySelection}
         editable={editable}
+        mainnet_address={inputCurrencyMainnetAddress}
         onFocus={onFocus}
         onPressSelectCurrency={onPressSelectInputCurrency}
         ref={inputFieldRef}
@@ -68,6 +70,7 @@ export default function ExchangeInputField({
         <ExchangeMaxButton
           address={inputCurrencyAddress}
           disabled={!inputCurrencySymbol}
+          mainnet_address={inputCurrencyMainnetAddress}
           onPress={onPressMaxBalance}
           testID={testID + '-max'}
         />

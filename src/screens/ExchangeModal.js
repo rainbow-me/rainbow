@@ -746,10 +746,9 @@ export default function ExchangeModal({
               disableInputCurrencySelection={isWithdrawal}
               editable={!!inputCurrency}
               inputAmount={inputAmountDisplay}
-              inputCurrencyAddress={
-                inputCurrency?.mainnet_address || inputCurrency?.address
-              }
+              inputCurrencyAddress={inputCurrency?.address}
               inputCurrencyAssetType={inputCurrency?.type}
+              inputCurrencyMainnetAddress={inputCurrency?.mainnet_address}
               inputCurrencySymbol={inputCurrency?.symbol}
               inputFieldRef={inputFieldRef}
               nativeAmount={nativeAmountDisplay}
@@ -772,10 +771,9 @@ export default function ExchangeModal({
                   onTapWhileDisabled: handleTapWhileDisabled,
                 })}
                 outputAmount={outputAmountDisplay}
-                outputCurrencyAddress={
-                  outputCurrency?.mainnet_address || outputCurrency?.address
-                }
+                outputCurrencyAddress={outputCurrency?.address}
                 outputCurrencyAssetType={outputCurrency?.type}
+                outputCurrencyMainnetAddress={outputCurrency?.mainnet_address}
                 outputCurrencySymbol={outputCurrency?.symbol}
                 outputFieldRef={outputFieldRef}
                 setOutputAmount={updateOutputAmount}
