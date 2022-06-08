@@ -9,7 +9,10 @@ import { Centered } from '../layout';
 import { SheetSubtitleCyclerItem } from './SheetSubtitleCyclerItem';
 
 import { useInterval, useTimeout } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
+
+const Container = styled(Animated.View)({ ...position.coverAsObject });
 
 interface Props {
   sharedValue: Animated.SharedValue<number>;
@@ -78,7 +81,7 @@ const SheetSubtitleCycler = ({
   return (
     <TouchableWithoutFeedback onPress={handlePress}>
       <Centered paddingVertical={14} width="100%">
-        <Animated.View {...position.coverAsObject} style={scaleStyle}>
+        <Container style={scaleStyle}>
           {items.map((subtitle, index) => (
             <SheetSubtitleCyclerItem
               error={index === errorIndex}
@@ -87,7 +90,7 @@ const SheetSubtitleCycler = ({
               subtitle={subtitle}
             />
           ))}
-        </Animated.View>
+        </Container>
       </Centered>
     </TouchableWithoutFeedback>
   );
