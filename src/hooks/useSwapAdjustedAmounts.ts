@@ -39,7 +39,7 @@ export default function useSwapAdjustedAmounts(tradeDetails: Quote) {
   const address = inputAsExact
     ? outputCurrency.mainnet_address || outputCurrency.address
     : inputCurrency.mainnet_address || inputCurrency.address;
-  const priceValue = genericAssets[address]?.price?.value ?? 0;
+  const priceValue = genericAssets[address]?.price?.value ?? 0.0000000001;
 
   if (
     (tradeDetails.buyTokenAddress === ETH_ADDRESS &&
