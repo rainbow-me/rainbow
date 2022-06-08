@@ -362,7 +362,7 @@ export const explainers = (params, colors) => ({
                 zIndex: index,
               }}
               width={{ custom: 40 }}
-              zIndex={params?.networks.length - index}
+              zIndex={params?.networks?.length - index}
             >
               {network !== 'mainnet' ? (
                 <ChainBadge

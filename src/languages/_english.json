@@ -1017,6 +1017,7 @@
         "confirm": "Confirm",
         "deposit": "Deposit",
         "swap": "Swap",
+        "get_symbol_with": "Get %{symbol} With",
         "withdraw": "Withdraw",
         "withdraw_symbol": "Withdraw %{symbol}"
       },

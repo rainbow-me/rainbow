@@ -52,7 +52,7 @@ function useStateCallback(initialState) {
 }
 
 export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
-  function MainExchangeNavigator() {
+  function MainExchangeNavigator(prop) {
     const { params } = useRoute();
 
     return (
@@ -83,6 +83,7 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
     const { setOptions } = useNavigation();
     const pointerEvents = useRef('auto');
     const ref = useRef();
+    const { params } = useRoute();
 
     const tabTransitionPosition = useValue(0);
 
@@ -169,6 +170,7 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
         <ScrollPagerWrapper
           {...props}
           id="exchange"
+          initialScrollPosition={props.navigationState.index}
           onMomentumScrollEnd={onMomentumScrollEnd}
           onSwipeEnd={(...args) => {
             onSwipeEnd(...args);
@@ -205,6 +207,7 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
         setPointerEvents,
         tabTransitionPosition,
         toggleGestureEnabled,
+        ...params?.params
       }),
       [
         blockInteractions,
