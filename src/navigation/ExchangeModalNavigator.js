@@ -52,7 +52,7 @@ function useStateCallback(initialState) {
 }
 
 export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
-  function MainExchangeNavigator(prop) {
+  function MainExchangeNavigator() {
     const { params } = useRoute();
 
     return (
@@ -207,7 +207,7 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
         setPointerEvents,
         tabTransitionPosition,
         toggleGestureEnabled,
-        ...params?.params
+        ...params?.params,
       }),
       [
         blockInteractions,

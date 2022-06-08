@@ -28,17 +28,13 @@ import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
 import { usePagerPosition } from '../navigation/ScrollPositionContext';
 import { addHexPrefix } from '@rainbow-me/handlers/web3';
-import {
-  CurrencySelectionTypes,
-  ExchangeModalTypes,
-} from '@rainbow-me/helpers';
+import { CurrencySelectionTypes } from '@rainbow-me/helpers';
 import {
   useAssetsInWallet,
   useCoinListEditOptions,
   useInteraction,
   useMagicAutofocus,
   usePrevious,
-  useSwapCurrencyHandlers,
   useSwapCurrencyList,
 } from '@rainbow-me/hooks';
 import { delayNext } from '@rainbow-me/hooks/useMagicAutofocus';
@@ -74,12 +70,7 @@ const searchWalletCurrencyList = (searchList, query) => {
 export default function CurrencySelectModal() {
   const isFocused = useIsFocused();
   const prevIsFocused = usePrevious(isFocused);
-  const {
-    goBack,
-    navigate,
-    dangerouslyGetState,
-    dangerouslyGetParent,
-  } = useNavigation();
+  const { goBack, navigate, dangerouslyGetState } = useNavigation();
   const { colors } = useTheme();
   const dispatch = useDispatch();
   const {
@@ -211,17 +202,20 @@ export default function CurrencySelectModal() {
         dangerouslyGetState().index = 1;
         if (fromDiscover) {
           goBack();
-          setTimeout(() => {
-            navigate(Routes.EXCHANGE_MODAL, {
-              params: {
-                inputAsset: item,
-                ...params,
-              },
-              screen: Routes.MAIN_EXCHANGE_SCREEN,
-            });
-            setSearchQuery('');
-            setCurrentChainId(ethereumUtils.getChainIdFromType(item.type));
-          }, android ? 500 : 0);
+          setTimeout(
+            () => {
+              navigate(Routes.EXCHANGE_MODAL, {
+                params: {
+                  inputAsset: item,
+                  ...params,
+                },
+                screen: Routes.MAIN_EXCHANGE_SCREEN,
+              });
+              setSearchQuery('');
+              setCurrentChainId(ethereumUtils.getChainIdFromType(item.type));
+            },
+            android ? 500 : 0
+          );
         } else {
           navigate(Routes.MAIN_EXCHANGE_SCREEN);
           setSearchQuery('');
