@@ -2,9 +2,9 @@ import lang from 'i18n-js';
 import React from 'react';
 import HoldToAuthorizeButtonContent from './HoldToAuthorizeButtonContent';
 import { HoldToAuthorizeBaseProps } from './types/HoldToAuthorizeBaseProps';
-import { useTheme } from '@rainbow-me/context';
 import { BiometryTypes } from '@rainbow-me/helpers';
 import { useBiometryType, useDimensions } from '@rainbow-me/hooks';
+import { useTheme } from '@rainbow-me/theme';
 
 interface WrapperProps extends HoldToAuthorizeBaseProps {
   label: string;
