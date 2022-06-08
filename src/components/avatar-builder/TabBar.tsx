@@ -38,7 +38,7 @@ const TabBar = ({ categoryKeys, activeCategory, onPress }: Props) => {
                   end={{ x: 0, y: 0.5 }}
                   pointerEvents="none"
                   start={{ x: 1, y: 0.5 }}
-                  style={[sx.gradient, position.coverAsObject]}
+                  style={[sx.gradient]}
                 />
               )}
               <Icon
@@ -70,5 +70,6 @@ const sx = StyleSheet.create({
     borderRadius: 15,
     opacity: 0.1,
     overflow: 'hidden',
+    ...position.coverAsObject,
   },
 });

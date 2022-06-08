@@ -1,5 +1,3 @@
-/* eslint-disable sort-keys-fix/sort-keys-fix */
-/* eslint-disable react-native/no-unused-styles */
 import React, {
   ComponentType,
   useCallback,
@@ -171,33 +169,33 @@ export const EmojiSelector = ({
     offsetY: number
   ) => {
     if (!blockCategories) {
+      const nextSection = allEmojiList[
+        (currentIndex.current + 1) * 2
+      ] as AllEmojiContentEntry;
+
+      const currentSection = allEmojiList[
+        currentIndex.current * 2
+      ] as AllEmojiContentEntry;
+
       if (
-        // @ts-expect-error
-        offsetY - 0.5 > allEmojiList[(currentIndex.current + 1) * 2].offset &&
+        offsetY - 0.5 > (nextSection.offset ?? 0) &&
         currentIndex.current < allEmojiList.length / 2 - 2
       ) {
         currentIndex.current += 1;
         setCategory(Categories[categoryKeys[currentIndex.current]]);
       } else if (
         currentIndex.current * 2 - 1 > 0 &&
-        // @ts-expect-error
-        offsetY - 0.5 < allEmojiList[currentIndex.current * 2].offset
+        offsetY - 0.5 < (currentSection.offset ?? 0)
       ) {
         currentIndex.current -= 1;
         setCategory(Categories[categoryKeys[currentIndex.current]]);
       }
-      scrollPosition.value = // @ts-expect-error
-        -offsetY + allEmojiList[(currentIndex.current + 1) * 2].offset > 40
+      scrollPosition.value =
+        -offsetY + (nextSection.offset ?? 0) > 40
           ? 1
-          : // @ts-expect-error
-            (-offsetY + allEmojiList[(currentIndex.current + 1) * 2].offset) /
-            40;
+          : (-offsetY + (nextSection.offset ?? 0)) / 40;
       nextCategoryOffset.value =
-        // @ts-expect-error
-        -offsetY + allEmojiList[(currentIndex.current + 1) * 2].offset < 400 ||
-        offsetY < 1
-          ? 1
-          : 0;
+        -offsetY + (nextSection.offset ?? 0) < 400 || offsetY < 1 ? 1 : 0;
     }
   };
 
@@ -277,8 +275,8 @@ export const EmojiSelector = ({
             style={[
               sx.header,
               {
-                width: width,
                 backgroundColor: colors.white,
+                width: width,
               },
               overlayStyle,
             ]}
@@ -350,20 +348,13 @@ const sx = StyleSheet.create({
     overflow: 'visible',
     width: width,
   },
+  frame: {
+    flex: 1,
+  },
+  header: { height: 400, position: 'absolute' },
   outerContainer: {
     alignItems: 'center',
     flex: 1,
     justifyContent: 'center',
-  },
-  header: { height: 400, position: 'absolute' },
-  frame: {
-    flex: 1,
-  },
-  row: {
-    alignItems: 'center',
-  },
-  searchbar_container: {
-    width: '100%',
-    zIndex: 1,
   },
 });

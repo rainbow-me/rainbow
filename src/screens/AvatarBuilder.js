@@ -13,6 +13,7 @@ import { Column, Row } from '../components/layout';
 import useUpdateEmoji from '../hooks/useUpdateEmoji';
 import { useNavigation } from '../navigation/Navigation';
 import { deviceUtils } from '../utils';
+import { useTheme } from '@rainbow-me/context';
 import { useDimensions } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 
@@ -62,9 +63,9 @@ const springConfig = {
 
 const AvatarBuilder = ({ route: { params } }) => {
   const { height, width } = useDimensions();
+  const { colors } = useTheme();
   const selectedRingPosition = useSharedValue(params.initialAccountColor * 40);
   const { goBack } = useNavigation();
-  const { colors } = useTheme();
   const [currentAccountColor, setCurrentAccountColor] = useState(
     params.initialAccountColor
   );

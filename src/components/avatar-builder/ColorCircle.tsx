@@ -1,15 +1,14 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { ButtonPressAnimation } from '../animations';
 import { useTheme } from '@rainbow-me/context';
 
 interface Props {
-  backgroundColor: string;
+  backgroundColor?: string;
   onPressColor: () => void;
 }
 
-const ColorCircle = ({ backgroundColor, onPressColor }: Props) => {
+const ColorCircle = ({ backgroundColor = 'blue', onPressColor }: Props) => {
   const { colors } = useTheme();
 
   return (
@@ -30,16 +29,6 @@ const ColorCircle = ({ backgroundColor, onPressColor }: Props) => {
       </ButtonPressAnimation>
     </View>
   );
-};
-
-ColorCircle.propTypes = {
-  backgroundColor: PropTypes.string,
-  onPressColor: PropTypes.func,
-};
-
-ColorCircle.defaultProps = {
-  backgroundColor: 'blue',
-  isSelected: false,
 };
 
 const sx = StyleSheet.create({
