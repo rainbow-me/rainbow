@@ -65,7 +65,7 @@ export default function useWatchWallet({
   const watchWallet = useCallback(async () => {
     if (!isWatching) {
       handleSetSeedPhrase(ensName);
-      handlePressImportButton(null, ensName, null, avatarUrl);
+      handlePressImportButton(ensName, avatarUrl);
     } else {
       deleteWallet();
       // If we're deleting the selected wallet

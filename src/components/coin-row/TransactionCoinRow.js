@@ -12,6 +12,7 @@ import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
 import { TransactionStatusTypes, TransactionTypes } from '@rainbow-me/entities';
+import { fetchReverseRecord } from '@rainbow-me/handlers/ens';
 import TransactionActions from '@rainbow-me/helpers/transactionActions';
 import {
   getHumanReadableDate,
@@ -26,7 +27,6 @@ import {
   ethereumUtils,
   showActionSheetWithOptions,
 } from '@rainbow-me/utils';
-import { address } from '@rainbow-me/utils/abbreviations';
 
 const containerStyles = {
   paddingLeft: 19,
@@ -92,8 +92,6 @@ export default function TransactionCoinRow({ item, ...props }) {
   const onPressTransaction = useCallback(async () => {
     const { hash, from, minedAt, pending, to, status, type, network } = item;
 
-    const { color, emoji } = await fetchWalletProfileMeta(address);
-
     const date = getHumanReadableDate(minedAt);
     const isSent =
       status === TransactionStatusTypes.sending ||
@@ -155,21 +153,24 @@ export default function TransactionCoinRow({ item, ...props }) {
             ? `${headerInfo.type} ${date} ${headerInfo.divider} ${headerInfo.address}`
             : `${headerInfo.type} ${date}`,
         },
-        buttonIndex => {
+        async buttonIndex => {
           const action = buttons[buttonIndex];
           switch (action) {
             case TransactionActions.viewContact:
-            case TransactionActions.addToContacts:
+            case TransactionActions.addToContacts: {
+              const [walletProfile, ens] = await Promise.all([
+                fetchWalletProfileMeta(accountAddress),
+                fetchReverseRecord(accountAddress),
+              ]);
               navigate(Routes.MODAL_SCREEN, {
                 address: contactAddress,
-                asset: item,
-                color: color,
-                contact: contact,
-                emoji: emoji,
-                ens: null,
+                contactNickname: contact?.nickname,
+                ens: ens,
+                profile: walletProfile,
                 type: 'contact_profile',
               });
               break;
+            }
             case TransactionActions.speedUp:
               navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
                 tx: item,

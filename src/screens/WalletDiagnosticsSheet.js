@@ -104,7 +104,7 @@ const ItemRow = ({ data }) => {
           onPress: async () => {
             try {
               handleSetSeedPhrase(data.secret);
-              await handlePressImportButton(null, data.secret);
+              await handlePressImportButton(data.secret, null);
             } catch (e) {
               logger.sentry('Error restoring from wallet diagnostics', e);
               const customError = new Error('WalletDiagnostics restore failed');

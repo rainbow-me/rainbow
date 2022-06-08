@@ -11,7 +11,11 @@ import { SheetHandleFixedToTopHeight } from '../sheet';
 import { Text } from '../text';
 import { InvalidPasteToast, ToastPositionContainer } from '../toasts';
 import SendEmptyState from './SendEmptyState';
-import { useAccountSettings, useKeyboardHeight } from '@rainbow-me/hooks';
+import {
+  useAccountSettings,
+  useKeyboardHeight,
+  useWalletProfile,
+} from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
@@ -76,6 +80,7 @@ export default function SendContactList({
   const { navigate } = useNavigation();
   const keyboardHeight = useKeyboardHeight();
   const { isDarkMode } = useTheme();
+  const { fetchWalletProfileMeta } = useWalletProfile();
 
   const contactRefs = useRef({});
   const touchedContact = useRef(undefined);
@@ -93,17 +98,18 @@ export default function SendContactList({
   }, []);
 
   const handleEditContact = useCallback(
-    ({ address, color, ens, nickname }) => {
+    async ({ address, ens, nickname }) => {
+      const walletProfile = await fetchWalletProfileMeta(address);
       navigate(Routes.MODAL_SCREEN, {
         additionalPadding: true,
         address,
-        color,
+        contactNickname: nickname,
         ens,
-        nickname,
+        profile: walletProfile,
         type: 'contact_profile',
       });
     },
-    [navigate]
+    [fetchWalletProfileMeta, navigate]
   );
 
   const renderItemCallback = useCallback(

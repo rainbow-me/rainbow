@@ -83,8 +83,8 @@ const SwipeableContactRow = (
 
   const handleEditContact = useCallback(() => {
     swipeableRef.current?.close?.();
-    onSelectEdit({ address, color, ens, nickname });
-  }, [address, color, ens, nickname, onSelectEdit]);
+    onSelectEdit({ address, ens, nickname });
+  }, [address, ens, nickname, onSelectEdit]);
 
   const handleLongPress = useCallback(
     () => swipeableRef.current?.openRight?.(),

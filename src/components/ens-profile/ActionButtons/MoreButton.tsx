@@ -7,7 +7,7 @@ import {
 } from 'react-native-ios-context-menu';
 import { showDeleteContactActionSheet } from '../../contacts';
 import More from '../MoreButton/MoreButton';
-import { useClipboard, useContacts } from '@rainbow-me/hooks';
+import { useClipboard, useContacts, useWalletProfile } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
@@ -30,6 +30,7 @@ export default function MoreButton({
   const { navigate } = useNavigation();
   const { setClipboard } = useClipboard();
   const { contacts, onRemoveContact } = useContacts();
+  const { fetchWalletProfileMeta } = useWalletProfile();
 
   const contact = useMemo(
     () => (address ? contacts[address.toLowerCase()] : undefined),
@@ -81,7 +82,7 @@ export default function MoreButton({
   }, [contact, formattedAddress]);
 
   const handlePressMenuItem = useCallback(
-    ({ nativeEvent: { actionKey } }) => {
+    async ({ nativeEvent: { actionKey } }) => {
       if (actionKey === ACTIONS.COPY_ADDRESS) {
         setClipboard(address);
       }
@@ -89,24 +90,33 @@ export default function MoreButton({
         ethereumUtils.openAddressInBlockExplorer(address);
       }
       if (actionKey === ACTIONS.ADD_CONTACT) {
+        const walletProfile = await fetchWalletProfileMeta(address || '');
         navigate(Routes.MODAL_SCREEN, {
           address,
-          contact,
+          contactNickname: contact?.nickname,
           ens: ensName,
-          nickname: ensName,
+          profile: walletProfile,
           type: 'contact_profile',
         });
       }
       if (actionKey === ACTIONS.REMOVE_CONTACT) {
         showDeleteContactActionSheet({
           address,
-          nickname: contact.nickname,
+          nickname: contact?.nickname,
           removeContact: onRemoveContact,
         });
         android && Keyboard.dismiss();
       }
     },
-    [address, contact, ensName, navigate, onRemoveContact, setClipboard]
+    [
+      address,
+      contact?.nickname,
+      ensName,
+      fetchWalletProfileMeta,
+      navigate,
+      onRemoveContact,
+      setClipboard,
+    ]
   );
 
   const handleAndroidPress = useCallback(() => {

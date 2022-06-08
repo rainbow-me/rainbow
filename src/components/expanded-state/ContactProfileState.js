@@ -15,15 +15,17 @@ import {
   useENSProfileImages,
   usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
-const ContactProfileState = ({ address, color, contact, emoji, ens }) => {
+const ContactProfileState = ({ address, ens, contactNickname, profile }) => {
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const [nickname, setNickname] = useState(
-    removeFirstEmojiFromString(contact?.nickname) || ens
+    removeFirstEmojiFromString(contactNickname) || ens || ''
   );
   const { goBack } = useNavigation();
   const { onAddOrUpdateContacts } = useContacts();
 
   const { network } = useAccountSettings();
+
+  const { color, emoji } = profile;
 
   const handleAddContact = useCallback(() => {
     onAddOrUpdateContacts(address, nickname, color, network, ens);

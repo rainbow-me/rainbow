@@ -5,9 +5,9 @@ import { pick, startCase, toLower } from 'lodash';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { requireNativeComponent } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { getRandomColor } from '../../styles/colors';
 import { FloatingEmojis } from '../floating-emojis';
 import { TransactionStatusTypes } from '@rainbow-me/entities';
+import { fetchReverseRecord } from '@rainbow-me/handlers/ens';
 import showWalletErrorAlert from '@rainbow-me/helpers/support';
 import TransactionActions from '@rainbow-me/helpers/transactionActions';
 import {
@@ -19,6 +19,7 @@ import {
   useAccountProfile,
   useOnAvatarPress,
   useSafeImageUri,
+  useWalletProfile,
   useWallets,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
@@ -62,6 +63,7 @@ export default function TransactionList({
   transactions,
 }) {
   const { isDamaged } = useWallets();
+  const { fetchWalletProfileMeta } = useWalletProfile();
   const [tapTarget, setTapTarget] = useState([0, 0, 0, 0]);
   const onNewEmoji = useRef();
   const setOnNewEmoji = useCallback(
@@ -149,16 +151,13 @@ export default function TransactionList({
 
       const contactAddress = isSent ? to : from;
       const contact = contacts[contactAddress];
-      let contactColor = 0;
 
       if (contact) {
         headerInfo.address = contact.nickname;
-        contactColor = contact.color;
       } else {
         headerInfo.address = isValidDomainFormat(contactAddress)
           ? contactAddress
           : abbreviations.address(contactAddress, 4, 10);
-        contactColor = getRandomColor();
       }
 
       const isOutgoing = toLower(from) === toLower(accountAddress);
@@ -199,19 +198,24 @@ export default function TransactionList({
               ? `${headerInfo.type} ${date} ${headerInfo.divider} ${headerInfo.address}`
               : `${headerInfo.type} ${date}`,
           },
-          buttonIndex => {
+          async buttonIndex => {
             const action = buttons[buttonIndex];
             switch (action) {
               case TransactionActions.viewContact:
-              case TransactionActions.addToContacts:
+              case TransactionActions.addToContacts: {
+                const [walletProfile, ens] = await Promise.all([
+                  fetchWalletProfileMeta(contactAddress),
+                  fetchReverseRecord(contactAddress),
+                ]);
                 navigate(Routes.MODAL_SCREEN, {
                   address: contactAddress,
-                  asset: item,
-                  color: contactColor,
-                  contact,
+                  contactNickname: contact?.nickname,
+                  ens,
+                  profile: walletProfile,
                   type: 'contact_profile',
                 });
                 break;
+              }
               case TransactionActions.speedUp:
                 navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
                   tx: item,
@@ -235,7 +239,7 @@ export default function TransactionList({
         );
       }
     },
-    [accountAddress, contacts, navigate, transactions]
+    [accountAddress, contacts, fetchWalletProfileMeta, navigate, transactions]
   );
 
   const onCopyAddressPress = useCallback(

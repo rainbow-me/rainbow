@@ -11,7 +11,11 @@ import { Text, TruncatedAddress } from '../text';
 import { getContacts } from '@rainbow-me/handlers/localstorage/contacts';
 import { isHexString } from '@rainbow-me/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
-import { useImportingWallet, useWallets } from '@rainbow-me/hooks';
+import {
+  useImportingWallet,
+  useWalletProfile,
+  useWallets,
+} from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
@@ -86,6 +90,7 @@ export function Header() {
   const { goBack, navigate } = useNavigation();
   const contextValue = useContext(ShowcaseContext);
   const { isReadOnlyWallet } = useWallets();
+  const { fetchWalletProfileMeta } = useWalletProfile();
 
   const { colors } = useTheme();
 
@@ -109,29 +114,20 @@ export function Header() {
 
   const onAddToContact = useCallback(async () => {
     const contacts = await getContacts();
+    const walletProfile = await fetchWalletProfileMeta(contextValue?.address);
     const currentContact = contacts[contextValue?.address];
-    const nickname =
-      contextValue?.data?.reverseEns ||
-      (isHexString(contextValue?.addressOrDomain)
-        ? abbreviations.address(contextValue?.addressOrDomain, 4, 4)
-        : contextValue?.addressOrDomain);
+
     navigate(Routes.MODAL_SCREEN, {
       address: contextValue?.address,
-      color: currentContact?.color || color,
-      contact: currentContact || {
-        address: contextValue?.address,
-        color: currentContact?.color || color,
-        nickname: `${emoji} ${nickname}`,
-        temporary: true,
-      },
+      contactNickname: currentContact?.nickname,
+      ens: contextValue?.data?.reverseEns,
+      profile: walletProfile,
       type: 'contact_profile',
     });
   }, [
-    color,
     contextValue?.address,
-    contextValue?.addressOrDomain,
     contextValue?.data?.reverseEns,
-    emoji,
+    fetchWalletProfileMeta,
     navigate,
   ]);
 
@@ -158,12 +154,8 @@ export function Header() {
       contextValue.setIsSearchModeEnabled(false);
     }
     handleSetSeedPhrase(contextValue.address);
-    handlePressImportButton(
-      color,
-      contextValue.address,
-      contextValue?.data?.profile?.accountSymbol
-    );
-  }, [contextValue, handleSetSeedPhrase, handlePressImportButton, color]);
+    handlePressImportButton(contextValue.address);
+  }, [contextValue, handleSetSeedPhrase, handlePressImportButton]);
 
   const mainText =
     contextValue?.data?.reverseEns ||

@@ -14,7 +14,7 @@ export default function WalletProfileState({
   profile,
 }) {
   const { goBack, navigate } = useNavigation();
-  const { name, color, image, emoji } = profile;
+  const { name, image, color, emoji } = profile;
 
   const [value, setValue] = useState(
     name ? removeFirstEmojiFromString(name) : ''

@@ -1,4 +1,3 @@
-import { isHexString } from '@ethersproject/bytes';
 import lang from 'i18n-js';
 import { get, isEmpty, toLower } from 'lodash';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
@@ -20,11 +19,15 @@ import useExperimentalFlag, {
 import { resolveNameOrAddress } from '@rainbow-me/handlers/web3';
 import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
 import { isENSAddressFormat } from '@rainbow-me/helpers/validators';
-import { useClipboard, useDimensions } from '@rainbow-me/hooks';
+import {
+  useClipboard,
+  useDimensions,
+  useWalletProfile,
+} from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
-import { profileUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
+import { showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const AddressInputContainer = styled(Row).attrs({ align: 'center' })(
   ({ isSmallPhone, theme: { colors }, isTinyPhone }) => ({
@@ -93,6 +96,7 @@ export default function SendHeader({
   const { isSmallPhone, isTinyPhone } = useDimensions();
   const { navigate } = useNavigation();
   const { colors } = useTheme();
+  const { fetchWalletProfileMeta } = useWalletProfile();
 
   const [hexAddress, setHexAddress] = useState('');
 
@@ -131,39 +135,25 @@ export default function SendHeader({
     contact?.ens ||
     recipient;
 
-  const handleNavigateToContact = useCallback(() => {
-    let nickname = profilesEnabled
-      ? !isHexString(recipient)
-        ? recipient
-        : null
-      : recipient;
-    let color = '';
-    if (!profilesEnabled) {
-      color = get(contact, 'color');
-      if (color !== 0 && !color) {
-        const emoji = profileUtils.addressHashedEmoji(hexAddress);
-        color = profileUtils.addressHashedColorIndex(hexAddress) || 0;
-        nickname = isHexString(recipient) ? emoji : `${emoji} ${recipient}`;
-      }
-    }
+  const handleNavigateToContact = useCallback(async () => {
+    const walletProfile = await fetchWalletProfileMeta(hexAddress);
 
     android && Keyboard.dismiss();
     navigate(Routes.MODAL_SCREEN, {
       additionalPadding: true,
       address: hexAddress,
-      color,
-      contact,
+      contactNickname: contact?.nickname,
       ens: recipient,
-      nickname,
       onRefocusInput,
+      profile: walletProfile,
       type: 'contact_profile',
     });
   }, [
-    contact,
+    contact?.nickname,
+    fetchWalletProfileMeta,
     hexAddress,
     navigate,
     onRefocusInput,
-    profilesEnabled,
     recipient,
   ]);
 
