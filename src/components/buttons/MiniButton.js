@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
-import { useTheme } from '../../context/ThemeContext';
 import { darkModeThemeColors, lightModeThemeColors } from '../../styles/colors';
+import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { RowWithMargins } from '../layout';
 import { Text } from '../text';

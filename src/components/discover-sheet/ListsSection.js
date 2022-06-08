@@ -9,6 +9,7 @@ import React, {
   useRef,
 } from 'react';
 import { FlatList, LayoutAnimation } from 'react-native';
+import { IS_TESTING } from 'react-native-dotenv';
 import { useDispatch, useSelector } from 'react-redux';
 import { emitAssetRequest, emitChartsRequest } from '../../redux/explorer';
 import { DefaultTokenLists } from '../../references';
@@ -115,9 +116,11 @@ export default function ListSection() {
 
   const handleSwitchList = useCallback(
     (id, index) => {
-      LayoutAnimation.configureNext(
-        LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
-      );
+      if (IS_TESTING !== 'true') {
+        LayoutAnimation.configureNext(
+          LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
+        );
+      }
       setSelectedList(id);
       listRef.current?.scrollToIndex({
         animated: true,
@@ -265,10 +268,10 @@ export default function ListSection() {
             showsHorizontalScrollIndicator={false}
             testID={`lists-section-${selectedList}`}
           />
-          <EdgeFade />
+          {IS_TESTING !== 'true' && <EdgeFade />}
         </Column>
         <Column>
-          {!ready ? (
+          {!ready && IS_TESTING !== 'true' ? (
             times(2, index => (
               <AssetListItemSkeleton
                 animated
