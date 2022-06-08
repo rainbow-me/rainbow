@@ -46,16 +46,6 @@
     "check-translations": "./scripts/check-translations.sh ./src './src/languages/*.json' lang.t",
     "codegen-translations": "node ./scripts/codegen-translations.js"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
-      "eslint --ext '.js,.jsx,.ts,.tsx' -c .eslintrc.js"
-    ]
-  },
   "dependencies": {
     "@apollo/client": "3.2.4",
     "@bankify/react-native-animate-number": "0.2.1",
@@ -147,7 +137,6 @@
     "graphql-tag": "2.11.0",
     "hermes-engine": "0.11.0",
     "https-browserify": "0.0.1",
-    "husky": "2.7.0",
     "i18n-js": "3.8.0",
     "i18next": "17.3.1",
     "idna-uts46-hx": "3.4.0",
@@ -499,7 +488,6 @@
       "dtrace-provider": false,
       "esbuild": false,
       "fsevents": false,
-      "husky": false,
       "keccak": false,
       "react-native-storage": false,
       "react-query": false,
