@@ -46,16 +46,6 @@
     "check-translations": "./scripts/check-translations.sh ./src './src/languages/*.json' lang.t",
     "codegen-translations": "node ./scripts/codegen-translations.js"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
-      "eslint --ext '.js,.jsx,.ts,.tsx' -c .eslintrc.js"
-    ]
-  },
   "dependencies": {
     "@apollo/client": "3.2.4",
     "@bankify/react-native-animate-number": "0.2.1",
@@ -73,6 +63,7 @@
     "@ethersproject/constants": "5.6.1",
     "@ethersproject/contracts": "5.6.2",
     "@ethersproject/hdnode": "5.6.2",
+    "@ethersproject/logger": "5.6.0",
     "@ethersproject/providers": "5.6.8",
     "@ethersproject/random": "5.6.1",
     "@ethersproject/shims": "5.6.0",
@@ -146,7 +137,6 @@
     "graphql-tag": "2.11.0",
     "hermes-engine": "0.11.0",
     "https-browserify": "0.0.1",
-    "husky": "2.7.0",
     "i18n-js": "3.8.0",
     "i18next": "17.3.1",
     "idna-uts46-hx": "3.4.0",
@@ -310,7 +300,7 @@
     "babel-plugin-styled-components": "1.11.1",
     "babel-plugin-transform-remove-console": "6.9.4",
     "chai": "4.2.0",
-    "detox": "19.7.1",
+    "detox": "19.5.7",
     "dotenv": "8.2.0",
     "eslint": "7.32.0",
     "eslint-config-rainbow": "2.0.0",
@@ -499,7 +489,6 @@
       "dtrace-provider": false,
       "esbuild": false,
       "fsevents": false,
-      "husky": false,
       "keccak": false,
       "react-native-storage": false,
       "react-query": false,

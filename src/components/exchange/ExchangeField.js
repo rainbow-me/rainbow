@@ -113,7 +113,7 @@ const ExchangeField = (
               placeholder={placeholderText}
               placeholderTextColor={placeholderTextColor}
               ref={ref}
-              testID={testID}
+              testID={amount ? `${testID}-${amount}` : testID}
               useCustomAndroidMask={useCustomAndroidMask}
               value={amount}
             />

@@ -351,7 +351,7 @@ export const explainers = (params, colors) => ({
                 custom:
                   index > 0
                     ? -12
-                    : params.networks?.length % 2 === 0
+                    : params?.networks?.length % 2 === 0
                     ? -2
                     : -30,
               }}
