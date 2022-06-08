@@ -8,7 +8,7 @@ import Animated, {
   WithSpringConfig,
 } from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
-import { ThemeContextProps, useTheme } from '../../context/ThemeContext';
+import { ThemeContextProps, useTheme } from '../../theme/ThemeContext';
 import { Icon } from '../icons';
 import { RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';

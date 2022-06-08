@@ -9,8 +9,8 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { useTheme } from '../../context/ThemeContext';
 import { darkModeThemeColors, lightModeThemeColors } from '../../styles/colors';
+import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered, InnerBorder } from '../layout';

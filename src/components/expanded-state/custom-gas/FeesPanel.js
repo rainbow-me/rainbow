@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import { Alert } from '../../../components/alerts';
-import { useTheme } from '../../../context/ThemeContext';
+import { useTheme } from '../../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../../animations';
 import { Column, ColumnWithMargins, Row } from '../../layout';
 import { Text } from '../../text';
