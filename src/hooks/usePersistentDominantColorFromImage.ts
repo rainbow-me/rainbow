@@ -46,7 +46,6 @@ export default function usePersistentDominantColorFromImage(
       setState(State.loading);
       getDominantColorFromImage(url, colorToMeasureAgainst)
         .then(color => {
-          // @ts-ignore
           setPersistentDominantColor(color);
         })
         .finally(() => {

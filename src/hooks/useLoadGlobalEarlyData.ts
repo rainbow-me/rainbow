@@ -26,6 +26,7 @@ export default function useLoadGlobalEarlyData() {
 
     promises.push(p1, p2, p3, p4, p5, p6);
 
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '((dispatch: Dispatch<any>) => Pr... Remove this comment to see the full error message
     return promiseUtils.PromiseAllWithFails(promises);
   }, [dispatch]);
 

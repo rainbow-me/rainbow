@@ -10,9 +10,9 @@ import {
 } from '../redux/settings';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 
-const languageSelector = state => state.settings.language;
+const languageSelector = (state: any) => state.settings.language;
 
-const withLanguage = language => {
+const withLanguage = (language: any) => {
   if (language !== lang.locale) {
     updateLanguageLocale(language);
   }
@@ -26,6 +26,7 @@ export default function useAccountSettings() {
   const dispatch = useDispatch();
   const settingsData = useSelector(
     ({
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'settings' does not exist on type 'Defaul... Remove this comment to see the full error message
       settings: {
         accountAddress,
         chainId,
@@ -38,6 +39,7 @@ export default function useAccountSettings() {
       chainId,
       language,
       nativeCurrency,
+      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       nativeCurrencySymbol: supportedNativeCurrencies[nativeCurrency].symbol,
       network,
       testnetsEnabled,

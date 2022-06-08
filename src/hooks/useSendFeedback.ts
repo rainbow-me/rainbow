@@ -2,6 +2,7 @@ import Clipboard from '@react-native-community/clipboard';
 import lang from 'i18n-js';
 import { debounce } from 'lodash';
 import { useCallback } from 'react';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
 import Mailer from 'react-native-mail';
 import { Alert } from '../components/alerts';
 import useAppVersion from './useAppVersion';
@@ -32,7 +33,7 @@ const handleMailError = debounce(
   250
 );
 
-function feedbackEmailOptions(appVersion, codePushVersion) {
+function feedbackEmailOptions(appVersion: any, codePushVersion: any) {
   return {
     recipients: [FeedbackEmailAddress],
     subject: `🌈️ Rainbow Feedback - ${

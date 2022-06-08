@@ -9,7 +9,7 @@ import {
   walletConnectUpdateSessionConnectorByDappUrl as rawWalletConnectUpdateSessionConnectorByDappUrl,
 } from '../redux/walletconnect';
 
-const formatDappData = connections =>
+const formatDappData = (connections: any) =>
   values(
     mapValues(connections, connection => ({
       account: connection?.[0].accounts?.[0],
@@ -23,6 +23,7 @@ const formatDappData = connections =>
   );
 
 const walletConnectSelector = createSelector(
+  // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
   state => state.walletconnect.walletConnectors,
   walletConnectors => {
     const sorted = sortList(values(walletConnectors), 'peerMeta.name');

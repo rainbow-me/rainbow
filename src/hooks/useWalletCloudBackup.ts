@@ -22,7 +22,7 @@ import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import walletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
 import logger from 'logger';
 
-function getUserError(e) {
+function getUserError(e: any) {
   switch (e.message) {
     case CLOUD_BACKUP_ERRORS.KEYCHAIN_ACCESS_ERROR:
       return 'You need to authenticate to proceed with the Backup process';
@@ -88,7 +88,7 @@ export default function useWalletCloudBackup() {
       if (!password && !latestBackup) {
         // No password, No latest backup meaning
         // it's a first time backup so we need to show the password sheet
-        handleNoLatestBackup && handleNoLatestBackup();
+        !!handleNoLatestBackup && handleNoLatestBackup();
         return;
       }
 
@@ -108,7 +108,7 @@ export default function useWalletCloudBackup() {
 
       // If we still can't get the password, handle password not found
       if (!fetchedPassword) {
-        handlePasswordNotFound && handlePasswordNotFound();
+        !!handlePasswordNotFound && handlePasswordNotFound();
         return;
       }
 
@@ -138,12 +138,13 @@ export default function useWalletCloudBackup() {
           updatedBackupFile = await addWalletToCloudBackup(
             fetchedPassword,
             wallets[walletId],
+            // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string | true' is not assignable... Remove this comment to see the full error message
             latestBackup
           );
         }
       } catch (e) {
         const userError = getUserError(e);
-        onError && onError(userError);
+        !!onError && onError(userError);
         logger.sentry(
           `error while trying to backup wallet to ${cloudPlatform}`
         );
@@ -166,14 +167,14 @@ export default function useWalletCloudBackup() {
           )
         );
         logger.log('backup saved everywhere!');
-        onSuccess && onSuccess();
+        !!onSuccess && onSuccess();
       } catch (e) {
         logger.sentry('error while trying to save wallet backup state');
         captureException(e);
         const userError = getUserError(
           new Error(CLOUD_BACKUP_ERRORS.WALLET_BACKUP_STATUS_UPDATE_FAILED)
         );
-        onError && onError(userError);
+        !!onError && onError(userError);
         analytics.track('Error updating Backup status', {
           category: 'backup',
           label: cloudPlatform,

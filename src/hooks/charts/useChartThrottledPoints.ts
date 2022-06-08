@@ -11,15 +11,16 @@ import {
 import { useNavigation } from '@rainbow-me/navigation';
 import { ETH_ADDRESS } from '@rainbow-me/references';
 
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'react-native-cool-modals/Nativ... Remove this comment to see the full error message
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
 
 export const UniBalanceHeightDifference = 100;
 
-const traverseData = (prev, data) => {
+const traverseData = (prev: any, data: any) => {
   if (!data || data.length === 0) {
     return prev;
   }
-  const filtered = data.filter(({ y }) => y);
+  const filtered = data.filter(({ y }: any) => y);
   if (
     filtered[0]?.y === prev?.nativePoints[0]?.y &&
     filtered[0]?.x === prev?.nativePoints[0]?.x
@@ -38,11 +39,11 @@ const traverseData = (prev, data) => {
 };
 
 function useJumpingForm(
-  isLong,
-  heightWithChart,
-  heightWithoutChart,
-  shortHeightWithChart,
-  shortHeightWithoutChart
+  isLong: any,
+  heightWithChart: any,
+  heightWithoutChart: any,
+  shortHeightWithChart: any,
+  shortHeightWithoutChart: any
 ) {
   const { setOptions } = useNavigation();
 
@@ -92,7 +93,7 @@ export default function useChartThrottledPoints({
   secondStore,
   shortHeightWithChart,
   shortHeightWithoutChart,
-}) {
+}: any) {
   const { nativeCurrency } = useAccountSettings();
 
   let assetForColor = asset;
@@ -100,6 +101,7 @@ export default function useChartThrottledPoints({
     assetForColor = asset?.tokens?.[0] || asset;
   }
 
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 2-4 arguments, but got 1.
   const color = useColorForAsset(assetForColor);
 
   const [isFetchingInitially, setIsFetchingInitially] = useState(true);
@@ -114,7 +116,7 @@ export default function useChartThrottledPoints({
   );
 
   useEffect(() => {
-    setThrottledPoints(prev => traverseData(prev, chart));
+    setThrottledPoints((prev: any) => traverseData(prev, chart));
   }, [chart]);
 
   const initialChartDataLabels = useChartDataLabels({

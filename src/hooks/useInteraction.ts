@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import { InteractionManager } from 'react-native';
 
 export default function useInteraction() {
-  const interactionHandle = useRef();
+  const interactionHandle = useRef<any>();
 
   const createInteractionHandle = useCallback(callback => {
     interactionHandle.current = callback

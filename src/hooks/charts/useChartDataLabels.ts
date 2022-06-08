@@ -5,7 +5,7 @@ import { toFixedDecimals } from '@rainbow-me/helpers/utilities';
 
 const formatPercentChange = (change = 0) => toFixedDecimals(change, 2);
 
-export default function useChartDataLabels({ asset, chartType, points }) {
+export default function useChartDataLabels({ asset, chartType, points }: any) {
   const changeDirection = useValue(1);
 
   const latestPrice = asset?.native?.price?.amount;

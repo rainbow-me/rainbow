@@ -2,9 +2,9 @@ import { filter, groupBy } from 'lodash';
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 
-const uniqueTokensSelector = state => state.uniqueTokens.uniqueTokens;
+const uniqueTokensSelector = (state: any) => state.uniqueTokens.uniqueTokens;
 
-const sendableUniqueTokens = uniqueTokens => {
+const sendableUniqueTokens = (uniqueTokens: any) => {
   const sendableUniqueTokens = filter(uniqueTokens, ['isSendable', true]);
   const grouped = groupBy(sendableUniqueTokens, token => token.familyName);
   const families = Object.keys(grouped).sort();

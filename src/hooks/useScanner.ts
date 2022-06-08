@@ -17,9 +17,10 @@ import Routes from '@rainbow-me/routes';
 import { addressUtils, ethereumUtils, haptics } from '@rainbow-me/utils';
 import logger from 'logger';
 
-export default function useScanner(enabled, onSuccess) {
+export default function useScanner(enabled: any, onSuccess: any) {
   const { navigate } = useNavigation();
   const { walletConnectOnSessionRequest } = useWalletConnectConnections();
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useRef'.
   const enabledVar = useRef();
 
   const enableScanning = useCallback(() => {
@@ -135,6 +136,7 @@ export default function useScanner(enabled, onSuccess) {
       }
       const address = await addressUtils.getEthereumAddressFromQRCodeData(data);
       // Ethereum address (no ethereum: prefix)
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string | null' is not assignable... Remove this comment to see the full error message
       if (data.startsWith('0x') && isValidAddress(address)) {
         return handleScanAddress(address);
       }
@@ -148,6 +150,7 @@ export default function useScanner(enabled, onSuccess) {
         urlObj?.protocol === 'https:' &&
         urlObj?.pathname?.split('/')?.[1] === 'wc'
       ) {
+        // @ts-expect-error ts-migrate(2722) FIXME: Cannot invoke an object which is possibly 'undefin... Remove this comment to see the full error message
         const { uri } = qs.parse(urlObj.query.substring(1));
         onSuccess();
         return handleScanWalletConnect(uri);

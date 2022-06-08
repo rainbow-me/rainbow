@@ -12,7 +12,7 @@ export default function useHideSplashScreen() {
   const alreadyLoggedPerformance = useRef(false);
 
   return useCallback(() => {
-    if (RainbowSplashScreen && RainbowSplashScreen.hideAnimated) {
+    if (!!RainbowSplashScreen && RainbowSplashScreen.hideAnimated) {
       RainbowSplashScreen.hideAnimated();
     } else {
       if (android) {

@@ -32,6 +32,7 @@ export {
 export { default as useCollectible } from './useCollectible';
 export { default as useColorForAsset } from './useColorForAsset';
 export { default as useContacts } from './useContacts';
+// @ts-expect-error ts-migrate(1205) FIXME: Re-exporting a type when the '--isolatedModules' f... Remove this comment to see the full error message
 export { default as useDimensions, DeviceDimensions } from './useDimensions';
 export { default as useDeleteWallet } from './useDeleteWallet';
 export { default as useDPI } from './useDPI';

@@ -5,6 +5,7 @@ import useSavingsAccount from './useSavingsAccount';
 
 export default function useSendSavingsAccount() {
   const { nativeCurrency } = useAccountSettings();
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 0.
   let { savings } = useSavingsAccount();
   savings = map(savings, asset => {
     const { cToken, cTokenBalance, exchangeRate, underlyingPrice } = asset;

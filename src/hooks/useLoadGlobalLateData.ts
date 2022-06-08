@@ -16,6 +16,7 @@ export default function useLoadGlobalLateData() {
   const dispatch = useDispatch();
 
   const walletReady = useSelector(
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'appState' does not exist on type 'Defaul... Remove this comment to see the full error message
     ({ appState: { walletReady } }) => walletReady
   );
 
@@ -29,6 +30,7 @@ export default function useLoadGlobalLateData() {
     const p2 = dispatch(nonceManagerLoadState());
     promises.push(p1, p2);
 
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '(Promise<void> | ((dispatch: Dis... Remove this comment to see the full error message
     return promiseUtils.PromiseAllWithFails(promises);
   }, [dispatch, walletReady]);
 

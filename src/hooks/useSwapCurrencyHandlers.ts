@@ -37,11 +37,12 @@ export default function useSwapCurrencyHandlers({
   outputFieldRef,
   title,
   type,
-}) {
+}: any) {
   const dispatch = useDispatch();
   const { chainId } = useAccountSettings();
   const { navigate, setParams, dangerouslyGetParent } = useNavigation();
   const {
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'blockInteractions' does not exist on typ... Remove this comment to see the full error message
     params: { blockInteractions },
   } = useRoute();
 
@@ -101,6 +102,7 @@ export default function useSwapCurrencyHandlers({
   const [startFlipFocusTimeout] = useTimeout();
   const flipCurrencies = useCallback(() => {
     dispatch(flipSwapCurrencies());
+    // @ts-expect-error ts-migrate(2349) FIXME: This expression is not callable.
     startFlipFocusTimeout(() => {
       if (inputFieldRef.current === currentlyFocusedInput()) {
         focusTextInput(outputFieldRef.current);
@@ -128,6 +130,7 @@ export default function useSwapCurrencyHandlers({
 
   const navigateToSelectInputCurrency = useCallback(() => {
     InteractionManager.runAfterInteractions(() => {
+      // @ts-expect-error ts-migrate(2532) FIXME: Object is possibly 'undefined'.
       dangerouslyGetParent().dangerouslyGetState().index = 0;
       setParams({ focused: false });
       delayNext();
@@ -151,6 +154,7 @@ export default function useSwapCurrencyHandlers({
   const navigateToSelectOutputCurrency = useCallback(() => {
     InteractionManager.runAfterInteractions(() => {
       setParams({ focused: false });
+      // @ts-expect-error ts-migrate(2532) FIXME: Object is possibly 'undefined'.
       dangerouslyGetParent().dangerouslyGetState().index = 0;
       delayNext();
       navigate(Routes.CURRENCY_SELECT_SCREEN, {

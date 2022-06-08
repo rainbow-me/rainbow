@@ -6,7 +6,7 @@ import { AssetTypes } from '@rainbow-me/entities';
 // To fetch an asset from account assets,
 // generic assets, and uniqueTokens
 export default function useAsset(
-  asset,
+  asset: any,
   { revalidateCollectibleInBackground = false } = {}
 ) {
   const accountAsset = useAccountAsset(

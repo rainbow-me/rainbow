@@ -3,7 +3,7 @@ import { Animated } from 'react-native';
 import { useMemoOne } from 'use-memo-one';
 
 export default function useAnimatedListener(defaultValue = 0) {
-  const id = useRef();
+  const id = useRef<string>();
   const value = useMemoOne(() => new Animated.Value(defaultValue), [
     defaultValue,
   ]);

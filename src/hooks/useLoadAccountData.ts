@@ -35,6 +35,7 @@ export default function useLoadAccountData() {
       const p9 = dispatch(ensRegistrationsLoadState());
       promises.push(p3, p4, p5, p6, p7, p8, p9);
 
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '((dispatch: ThunkDispatch<{ read... Remove this comment to see the full error message
       return promiseUtils.PromiseAllWithFails(promises);
     },
     [dispatch]

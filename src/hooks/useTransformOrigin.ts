@@ -8,13 +8,18 @@ import {
 
 const { floor, divide, multiply } = Animated;
 
-export default function useTransformOrigin(transformOrigin, onLayoutProp) {
+export default function useTransformOrigin(
+  transformOrigin: any,
+  onLayoutProp: any
+) {
   const [height, width] = useValues(0, 0);
 
   const onLayout = useCallback(
     event => {
       if (transformOrigin && !height && !width) {
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'setValue' does not exist on type 'never'... Remove this comment to see the full error message
         height.setValue(get(event, 'nativeEvent.layout.height'));
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'setValue' does not exist on type 'never'... Remove this comment to see the full error message
         width.setValue(get(event, 'nativeEvent.layout.width'));
       }
 
@@ -33,8 +38,10 @@ export default function useTransformOrigin(transformOrigin, onLayoutProp) {
     const offsetY = new Value(0);
 
     if (transformOrigin === 'left' || transformOrigin === 'right') {
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'AnimatedNode<number>' is not ass... Remove this comment to see the full error message
       offsetX.setValue(multiply(floor(divide(width, 2)), offsetMultiplier));
     } else if (transformOrigin === 'bottom' || transformOrigin === 'top') {
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'AnimatedNode<number>' is not ass... Remove this comment to see the full error message
       offsetY.setValue(multiply(floor(divide(height, 2)), offsetMultiplier));
     }
     return { offsetX, offsetY };

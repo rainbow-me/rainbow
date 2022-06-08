@@ -7,7 +7,7 @@ import useInteraction from './useInteraction';
 
 const { currentlyFocusedInput, focusTextInput } = TextInput.State;
 
-let timeout = null;
+let timeout: any = null;
 let delay = false;
 
 export function delayNext() {
@@ -19,8 +19,8 @@ export function delayNext() {
 }
 
 export default function useMagicAutofocus(
-  defaultAutofocusInputRef,
-  customTriggerFocusCallback,
+  defaultAutofocusInputRef: any,
+  customTriggerFocusCallback: any,
   shouldFocusOnNavigateOnAndroid = false,
   showAfterInteractions = false
 ) {
@@ -52,6 +52,7 @@ export default function useMagicAutofocus(
 
   const [createRefocusInteraction] = useInteraction();
   const fallbackRefocusLastInput = useCallback(() => {
+    // @ts-expect-error ts-migrate(2349) FIXME: This expression is not callable.
     createRefocusInteraction(() => {
       if (isScreenFocused) {
         triggerFocus();

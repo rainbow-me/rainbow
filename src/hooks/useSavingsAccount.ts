@@ -21,7 +21,7 @@ import { ethereumUtils, getTokenMetadata } from '@rainbow-me/utils';
 
 const COMPOUND_QUERY_INTERVAL = 120000; // 120 seconds
 
-const getMarketData = marketData => {
+const getMarketData = (marketData: any) => {
   if (!marketData) return {};
   const underlying = getUnderlyingData(marketData);
   const cToken = getCTokenData(marketData);
@@ -35,7 +35,7 @@ const getMarketData = marketData => {
   };
 };
 
-const getCTokenData = marketData => {
+const getCTokenData = (marketData: any) => {
   const {
     id: cTokenAddress,
     name: originalName,
@@ -53,7 +53,7 @@ const getCTokenData = marketData => {
   };
 };
 
-const getUnderlyingData = marketData => {
+const getUnderlyingData = (marketData: any) => {
   const {
     underlyingAddress,
     underlyingDecimals,
@@ -72,7 +72,7 @@ const getUnderlyingData = marketData => {
   };
 };
 
-const getUnderlyingPrice = (token, genericAssets) => {
+const getUnderlyingPrice = (token: any, genericAssets: any) => {
   const address = token.underlying.address;
   const genericAsset = genericAssets?.[address];
   const genericPrice = genericAsset?.price?.value;
@@ -90,11 +90,11 @@ const getUnderlyingPrice = (token, genericAssets) => {
   };
 };
 
-function usePersistentBackupSavings(accountAddress, network) {
+function usePersistentBackupSavings(accountAddress: any, network: any) {
   return useMMKVObject('savings-' + accountAddress + network);
 }
 
-export default function useSavingsAccount(includeDefaultDai) {
+export default function useSavingsAccount(includeDefaultDai: any) {
   const dispatch = useDispatch();
   const { accountAddress, network } = useAccountSettings();
   const [backupSavings = null, setBackupSavings] = usePersistentBackupSavings(
@@ -105,6 +105,7 @@ export default function useSavingsAccount(includeDefaultDai) {
   const hasAccountAddress = !!accountAddress;
 
   const shouldRefetchSavings = useSelector(
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'data' does not exist on type 'DefaultRoo... Remove this comment to see the full error message
     ({ data: { shouldRefetchSavings } }) => shouldRefetchSavings
   );
 
@@ -182,7 +183,9 @@ export default function useSavingsAccount(includeDefaultDai) {
   ]);
 
   const accountTokensAddresses = useDeepCompareMemo(
-    () => result.accountTokens?.map(token => token.underlying.address),
+    // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
+    () => result.accountTokens?.map((token: any) => token.underlying.address),
+    // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
     [result.accountTokens]
   );
 
@@ -191,8 +194,9 @@ export default function useSavingsAccount(includeDefaultDai) {
   const savings = useMemo(() => {
     if (isEmpty(result)) return [];
 
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'accountTokens' does not exist on type 'u... Remove this comment to see the full error message
     const { accountTokens, daiMarketData } = result;
-    const accountTokensWithPrices = accountTokens?.map(token =>
+    const accountTokensWithPrices = accountTokens?.map((token: any) =>
       getUnderlyingPrice(token, genericAssets)
     );
 

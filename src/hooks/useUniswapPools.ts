@@ -22,12 +22,12 @@ export const SORT_DIRECTION = {
 export const REFETCH_INTERVAL = 600000;
 
 function parseData(
-  data,
-  oneDayData,
-  oneMonthData,
-  ethPrice,
-  ethPriceOneMonthAgo,
-  oneDayBlock
+  data: any,
+  oneDayData: any,
+  oneMonthData: any,
+  ethPrice: any,
+  ethPriceOneMonthAgo: any,
+  oneDayBlock: any
 ) {
   const newData = { ...data };
   // get volume changes
@@ -44,6 +44,7 @@ function parseData(
   );
 
   // set volume properties
+  // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
   newData.oneDayVolumeUSD = parseFloat(oneDayVolumeUSD);
 
   // set liquidity properties
@@ -81,14 +82,14 @@ function parseData(
   };
 }
 
-export const getOneDayVolume = (valueNow, value24HoursAgo) =>
+export const getOneDayVolume = (valueNow: any, value24HoursAgo: any) =>
   parseFloat(valueNow) - parseFloat(value24HoursAgo);
 
 export const calculateProfit30d = (
-  data,
-  valueOneMonthAgo,
-  ethPriceNow,
-  ethPriceOneMonthAgo
+  data: any,
+  valueOneMonthAgo: any,
+  ethPriceNow: any,
+  ethPriceOneMonthAgo: any
 ) => {
   const now = calculateLPTokenPrice(data, ethPriceNow);
   if (now === 0) {
@@ -112,7 +113,7 @@ export const calculateProfit30d = (
   return Number(percentageChange.toFixed(2));
 };
 
-export const calculateLPTokenPrice = (data, ethPrice) => {
+export const calculateLPTokenPrice = (data: any, ethPrice: any) => {
   const {
     reserve0,
     reserve1,
@@ -140,7 +141,7 @@ export const calculateLPTokenPrice = (data, ethPrice) => {
  * @param {*} valueNow
  * @param {*} value24HoursAgo
  */
-export const getPercentChange = (valueNow, value24HoursAgo) => {
+export const getPercentChange = (valueNow: any, value24HoursAgo: any) => {
   const adjustedPercentChange =
     ((parseFloat(valueNow) - parseFloat(value24HoursAgo)) /
       parseFloat(value24HoursAgo)) *
@@ -151,8 +152,13 @@ export const getPercentChange = (valueNow, value24HoursAgo) => {
   return adjustedPercentChange;
 };
 
-export default function useUniswapPools(sortField, sortDirection, token) {
+export default function useUniswapPools(
+  sortField: any,
+  sortDirection: any,
+  token: any
+) {
   const walletReady = useSelector(
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'appState' does not exist on type 'Defaul... Remove this comment to see the full error message
     ({ appState: { walletReady } }) => walletReady
   );
 
@@ -160,13 +166,15 @@ export default function useUniswapPools(sortField, sortDirection, token) {
 
   const [pairs, setPairs] = useState();
   const priceOfEther = useEthUSDPrice();
+  // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   const ethereumPriceOneMonthAgo = useEthUSDMonthChart()?.[0]?.[1];
 
   useEffect(() => {
     pairs &&
       dispatch(
         setPoolsDetails(
-          pairs.reduce((acc, pair) => {
+          // @ts-expect-error ts-migrate(2532) FIXME: Object is possibly 'undefined'.
+          pairs.reduce((acc: any, pair: any) => {
             acc[pair.address] = pair;
             return acc;
           }, {})
@@ -175,14 +183,17 @@ export default function useUniswapPools(sortField, sortDirection, token) {
   }, [pairs, dispatch]);
 
   const genericAssets = useSelector(
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'data' does not exist on type 'DefaultRoo... Remove this comment to see the full error message
     ({ data: { genericAssets } }) => genericAssets
   );
 
+  // @ts-expect-error ts-migrate(7022) FIXME: 'error' implicitly has type 'any' because it does ... Remove this comment to see the full error message
   const { data: poolData, error } = useQuery(
     ['pools/uniswap/v2', token],
     () => getUniswapV2Pools(token),
     {
       enabled: walletReady,
+      // @ts-expect-error ts-migrate(7024) FIXME: Function implicitly has return type 'any' because ... Remove this comment to see the full error message
       onError: () => logger.log('🦄🦄🦄 error getting pairs data', error),
       refetchInterval: REFETCH_INTERVAL,
     }
@@ -202,6 +213,7 @@ export default function useUniswapPools(sortField, sortDirection, token) {
         );
       }
     );
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ address: any; annualized_fees:... Remove this comment to see the full error message
     setPairs(topPairs);
   }, [poolData, priceOfEther, ethereumPriceOneMonthAgo]);
 
@@ -230,26 +242,38 @@ export default function useUniswapPools(sortField, sortDirection, token) {
     const tmpAllTokens = [];
     // Override with tokens from generic assets
     sortedPairs = sortedPairs.map(pair => {
+      // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
       const token0 = (toLower(pair.token0?.id) === WETH_ADDRESS
         ? genericAssets['eth']
-        : genericAssets[toLower(pair.token0?.id)]) || {
+        : // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
+          genericAssets[toLower(pair.token0?.id)]) || {
+        // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
         ...pair.token0,
+        // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
         address: pair.token0?.id,
       };
       const token1 =
+        // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
         toLower(pair.token1?.id) === WETH_ADDRESS
           ? genericAssets['eth']
-          : genericAssets[toLower(pair.token1?.id)] || {
+          : // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
+            genericAssets[toLower(pair.token1?.id)] || {
+              // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
               ...pair.token1,
+              // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
               address: pair.token1?.id,
             };
+      // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
       pair.tokens = [token0, token1];
+      // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
       tmpAllTokens.push(toLower(pair.tokens[0]?.id));
+      // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
       tmpAllTokens.push(toLower(pair.tokens[1]?.id));
       const pairAdjustedForCurrency = {
+        // @ts-expect-error ts-migrate(2698) FIXME: Spread types may only be created from object types... Remove this comment to see the full error message
         ...pair,
-        liquidity: pair.liquidity * currenciesRate,
-        oneDayVolumeUSD: pair.oneDayVolumeUSD * currenciesRate,
+        liquidity: (pair as any).liquidity * currenciesRate,
+        oneDayVolumeUSD: (pair as any).oneDayVolumeUSD * currenciesRate,
       };
       return pick(pairAdjustedForCurrency, [
         'address',
@@ -264,6 +288,7 @@ export default function useUniswapPools(sortField, sortDirection, token) {
       ]);
     });
 
+    // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
     const allLPTokens = sortedPairs.map(({ address }) => address);
     dispatch(emitAssetRequest(allLPTokens));
     dispatch(emitChartsRequest(allLPTokens));

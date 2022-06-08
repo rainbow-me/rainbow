@@ -16,7 +16,7 @@ import logger from 'logger';
 
 const ETH_ADDRESS = '0x0000000000000000000000000000000000000000';
 
-const useWalletBalances = wallets => {
+const useWalletBalances = (wallets: any) => {
   const { network } = useAccountSettings();
 
   const fetchBalances = useCallback(async () => {
@@ -25,6 +25,7 @@ const useWalletBalances = wallets => {
     // Get list of addresses to get balances for
     forEach(values(wallets), wallet => {
       forEach(wallet.addresses, account => {
+        // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
         walletBalances[account.address] = '0.00';
       });
     });
@@ -45,6 +46,7 @@ const useWalletBalances = wallets => {
       forEach(keys(walletBalances), (address, index) => {
         const amountInETH = fromWei(balances[index].toString());
         const formattedBalance = handleSignificantDecimals(amountInETH, 4);
+        // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
         walletBalances[address] = formattedBalance;
       });
       saveWalletBalances(walletBalances);

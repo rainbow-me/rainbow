@@ -9,6 +9,7 @@ import logger from 'logger';
 export default function useInitializeDiscoverData() {
   const dispatch = useDispatch();
   const walletReady = useSelector(
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'appState' does not exist on type 'Defaul... Remove this comment to see the full error message
     ({ appState: { walletReady } }) => walletReady
   );
 

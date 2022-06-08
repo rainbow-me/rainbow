@@ -13,11 +13,11 @@ import { bigNumberFormat } from '@rainbow-me/helpers/bigNumberFormat';
 import { setPoolsDetails } from '@rainbow-me/redux/uniswapLiquidity';
 import { ethereumUtils, getBlocksFromTimestamps } from '@rainbow-me/utils';
 
-function cutIfOver10000(value) {
+function cutIfOver10000(value: any) {
   return value > 10000 ? Math.round(value) : value;
 }
 
-async function fetchPoolDetails(address, dispatch) {
+async function fetchPoolDetails(address: any, dispatch: any) {
   const result = await uniswapClient.query({
     query: UNISWAP_ADDITIONAL_POOL_DATA,
     variables: {
@@ -54,10 +54,12 @@ async function fetchPoolDetails(address, dispatch) {
 
     const priceOfEther = ethereumUtils.getEthPriceUnit();
     const trackedReserveUSD = pair.trackedReserveETH * priceOfEther;
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'annualized_fees' does not exist on type ... Remove this comment to see the full error message
     partialData.annualized_fees =
       (partialData.oneDayVolumeUSD * 0.003 * 365 * 100) / trackedReserveUSD;
 
     dispatch(
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ [x: number]: { liquidity: numb... Remove this comment to see the full error message
       setPoolsDetails({
         [address]: partialData,
       })
@@ -65,7 +67,7 @@ async function fetchPoolDetails(address, dispatch) {
   }
 }
 
-export default function usePoolDetails(address) {
+export default function usePoolDetails(address: any) {
   const { nativeCurrency } = useAccountSettings();
   const rate = useNativeCurrencyToUSD();
 
@@ -77,6 +79,7 @@ export default function usePoolDetails(address) {
     [nativeCurrency]
   );
 
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'uniswapLiquidity' does not exist on type... Remove this comment to see the full error message
   const poolDetails = useSelector(state => state.uniswapLiquidity.poolsDetails);
 
   const data = poolDetails[address];

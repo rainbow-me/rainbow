@@ -7,11 +7,12 @@ import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 import { useNavigation } from '@rainbow-me/navigation';
 import { watchingAlert } from '@rainbow-me/utils';
 
-export default function useExpandedStateNavigation(inputType) {
+export default function useExpandedStateNavigation(inputType: any) {
   const { goBack, navigate } = useNavigation();
   const { params } = useRoute();
   const { isReadOnlyWallet } = useWallets();
 
+  // @ts-expect-error ts-migrate(2532) FIXME: Object is possibly 'undefined'.
   const asset = useAsset(params.asset);
 
   const navigationPayload = useMemo(() => {

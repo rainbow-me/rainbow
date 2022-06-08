@@ -1,5 +1,6 @@
 import { debounce, upperFirst } from 'lodash';
 import { useCallback, useMemo } from 'react';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
 import Mailer from 'react-native-mail';
 import { Alert } from '../components/alerts';
 import useClipboard from './useClipboard';

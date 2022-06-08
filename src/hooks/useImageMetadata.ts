@@ -6,7 +6,7 @@ import { updateImageMetadataCache } from '@rainbow-me/redux/imageMetadata';
 import { position } from '@rainbow-me/styles';
 import { getDominantColorFromImage } from '@rainbow-me/utils';
 
-export default function useImageMetadata(imageUrl) {
+export default function useImageMetadata(imageUrl: any) {
   const dispatch = useDispatch();
   const { width: deviceWidth } = useDimensions();
 
@@ -16,6 +16,7 @@ export default function useImageMetadata(imageUrl) {
   );
 
   const selectorMeta = useSelector(imageMetadataSelector);
+  // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   const metadata = imageUrl ? OfflineMetadata[imageUrl] || selectorMeta : null;
   const defaultMetadata = useMemo(
     () => ({
@@ -28,6 +29,7 @@ export default function useImageMetadata(imageUrl) {
   const onCacheImageMetadata = useCallback(
     async ({ color, height, width }) => {
       if (isCached || !imageUrl) return;
+      // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
       const colorFromImage = await getDominantColorFromImage(imageUrl);
 
       dispatch(

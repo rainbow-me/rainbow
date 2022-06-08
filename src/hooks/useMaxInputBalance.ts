@@ -14,6 +14,7 @@ export default function useMaxInputBalance() {
         selectedGasFee,
         inputCurrency
       );
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string | number' is not assignab... Remove this comment to see the full error message
       setMaxInputBalance(newInputBalance);
       return newInputBalance;
     },

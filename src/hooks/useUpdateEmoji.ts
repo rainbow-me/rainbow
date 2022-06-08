@@ -16,6 +16,7 @@ export default function useUpdateEmoji() {
   const dispatch = useDispatch();
   const saveInfo = useCallback(
     async (name, color) => {
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'id' does not exist on type '{}'.
       const walletId = selectedWallet.id;
       const newWallets = {
         ...wallets,
@@ -48,6 +49,7 @@ export default function useUpdateEmoji() {
       accountColor,
       colors.avatarBackgrounds,
       dispatch,
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'id' does not exist on type '{}'.
       selectedWallet.id,
       updateWebProfile,
       wallets,
@@ -55,6 +57,7 @@ export default function useUpdateEmoji() {
   );
 
   const setNextEmoji = useCallback(() => {
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'id' does not exist on type '{}'.
     const walletId = selectedWallet.id;
     const { label } =
       wallets[walletId].addresses.find(
@@ -65,6 +68,7 @@ export default function useUpdateEmoji() {
     const { emoji, colorIndex } = getNextEmojiWithColor(maybeEmoji);
     const name = `${emoji} ${accountName}`;
     saveInfo(name, colorIndex);
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'id' does not exist on type '{}'.
   }, [accountAddress, accountName, saveInfo, selectedWallet.id, wallets]);
 
   return {

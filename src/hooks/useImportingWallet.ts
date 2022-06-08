@@ -3,6 +3,7 @@ import { isValidAddress } from 'ethereumjs-util';
 import { keys } from 'lodash';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, InteractionManager, Keyboard } from 'react-native';
+// @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { IS_TESTING } from 'react-native-dotenv';
 import { useDispatch } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
@@ -37,6 +38,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const { accountAddress } = useAccountSettings();
   const { selectedWallet, setIsWalletLoading, wallets } = useWallets();
 
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'replace' does not exist on type '{ dispa... Remove this comment to see the full error message
   const { goBack, navigate, replace, setParams } = useNavigation();
   const initializeWallet = useInitializeWallet();
   const isWalletEthZero = useIsWalletEthZero();
@@ -58,9 +60,11 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   useEffect(() => {
     android &&
       setTimeout(() => {
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'focus' does not exist on type 'never'.
         inputRef.current?.focus();
       }, 500);
   }, []);
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 2-4 arguments, but got 1.
   const { handleFocus } = useMagicAutofocus(inputRef);
 
   const isSecretValid = useMemo(() => {
@@ -85,7 +89,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
 
   const startImportProfile = useCallback(
     (name, forceColor, address = null, avatarUrl) => {
-      const importWallet = (color, name, image) =>
+      const importWallet = (color: any, name: any, image: any) =>
         InteractionManager.runAfterInteractions(() => {
           if (color !== null) setColor(color);
           if (name) setName(name);
@@ -102,7 +106,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           asset: [],
           forceColor,
           isNewProfile: true,
-          onCloseModal: ({ color, name, image }) => {
+          onCloseModal: ({ color, name, image }: any) => {
             importWallet(color, name, image);
           },
           profile: { image: avatarUrl, name },
@@ -127,7 +131,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           : null;
       if ((!isSecretValid || !seedPhrase) && !forceAddress) return null;
       const input = sanitizeSeedPhrase(seedPhrase || forceAddress);
-      let name = null;
+      let name: any = null;
       // Validate ENS
       if (isENSAddressFormat(input)) {
         try {
@@ -139,6 +143,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             Alert.alert('This is not a valid ENS name');
             return;
           }
+          // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string' is not assignable to par... Remove this comment to see the full error message
           setResolvedAddress(address);
           name = forceEmoji ? `${forceEmoji} ${input}` : input;
           avatarUrl = avatarUrl || images?.avatarUrl;
@@ -161,8 +166,10 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             Alert.alert('This is not a valid Unstoppable name');
             return;
           }
+          // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string' is not assignable to par... Remove this comment to see the full error message
           setResolvedAddress(address);
           name = forceEmoji ? `${forceEmoji} ${input}` : input;
+          // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 3.
           startImportProfile(name, guardedForceColor, address);
           analytics.track('Show wallet profile modal for Unstoppable address', {
             address,
@@ -191,6 +198,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         } catch (e) {
           logger.log(`Error resolving ENS during wallet import`, e);
         }
+        // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 3.
         startImportProfile(name, guardedForceColor, input);
       } else {
         try {
@@ -199,6 +207,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             const walletResult = await ethereumUtils.deriveAccountFromWalletInput(
               input
             );
+            // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ address: string; isHDWallet: b... Remove this comment to see the full error message
             setCheckedWallet(walletResult);
             const ens = await fetchReverseRecord(walletResult.address);
             if (ens && ens !== input) {
@@ -233,6 +242,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
 
   useEffect(() => {
     if (!wasImporting && isImporting) {
+      // @ts-expect-error ts-migrate(2349) FIXME: This expression is not callable.
       startAnalyticsTimeout(async () => {
         const input = resolvedAddress
           ? resolvedAddress
@@ -240,6 +250,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
 
         if (!showImportModal) {
           await walletInit(
+            // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string | null' is not assignable... Remove this comment to see the full error message
             input,
             color,
             name ? name : '',
@@ -301,7 +312,9 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
               } else {
                 // Wait for error messages then refocus
                 setTimeout(() => {
+                  // @ts-expect-error ts-migrate(2339) FIXME: Property 'focus' does not exist on type 'never'.
                   inputRef.current?.focus();
+                  // @ts-expect-error ts-migrate(2554) FIXME: Expected 8-9 arguments, but got 0.
                   initializeWallet();
                 }, 100);
               }
@@ -310,7 +323,9 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
               handleSetImporting(false);
               logger.error('error importing seed phrase: ', error);
               setTimeout(() => {
+                // @ts-expect-error ts-migrate(2339) FIXME: Property 'focus' does not exist on type 'never'.
                 inputRef.current?.focus();
+                // @ts-expect-error ts-migrate(2554) FIXME: Expected 8-9 arguments, but got 0.
                 initializeWallet();
               }, 100);
             });
@@ -330,7 +345,9 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     replace,
     resolvedAddress,
     seedPhrase,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'id' does not exist on type '{}'.
     selectedWallet.id,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'type' does not exist on type '{}'.
     selectedWallet.type,
     startAnalyticsTimeout,
     wallets,

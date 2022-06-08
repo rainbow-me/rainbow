@@ -16,6 +16,7 @@ import logger from 'logger';
 export default function useRefreshAccountData() {
   const dispatch = useDispatch();
   const { network } = useAccountSettings();
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 0.
   const { refetchSavings } = useSavingsAccount();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const profilesEnabled = useExperimentalFlag(PROFILES);
@@ -48,6 +49,7 @@ export default function useRefreshAccountData() {
         getWalletNames,
         getUniqueTokens,
         getWalletENSAvatars,
+        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'true' is not assignable to param... Remove this comment to see the full error message
         refetchSavings(true),
         balances,
         wc,

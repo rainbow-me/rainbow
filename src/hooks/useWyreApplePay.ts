@@ -46,6 +46,7 @@ export default function useWyreApplePay() {
   const handlePaymentCallback = useCallback(() => {
     // In order to have the UI appear to be in-sync with the Apple Pay modal's
     // animation, we need to artificially delay before marking a purchase as pending.
+    // @ts-expect-error ts-migrate(2349) FIXME: This expression is not callable.
     startPaymentCompleteTimeout(() => setPaymentComplete(true), 1500);
   }, [startPaymentCompleteTimeout]);
 
@@ -108,6 +109,7 @@ export default function useWyreApplePay() {
         network
       );
 
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string | undefined' is not assig... Remove this comment to see the full error message
       setOrderCurrency(currency);
 
       if (applePayResponse) {
@@ -127,12 +129,14 @@ export default function useWyreApplePay() {
           reservationId
         );
         if (orderId) {
+          // @ts-expect-error ts-migrate(2339) FIXME: Property 'orderId' does not exist on type '{ refer... Remove this comment to see the full error message
           referenceInfo.orderId = orderId;
           applePayResponse.complete(PaymentRequestStatusTypes.SUCCESS);
           setOrderId(orderId);
           handlePaymentCallback();
           dispatch(
             addCashGetOrderStatus(
+              // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ referenceId: string; }' is not... Remove this comment to see the full error message
               referenceInfo,
               currency,
               orderId,

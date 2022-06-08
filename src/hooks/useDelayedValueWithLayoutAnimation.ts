@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
 import { LayoutAnimation } from 'react-native';
 
-export default function (value, property = LayoutAnimation.Properties.opacity) {
+export default function (
+  value: any,
+  property = LayoutAnimation.Properties.opacity
+) {
   const [delayedValue, setValue] = useState(value);
 
   useEffect(() => {

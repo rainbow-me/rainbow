@@ -28,10 +28,10 @@ const getZeroEth = () => {
   };
 };
 
-const accountAssetsDataSelector = state => state.data.accountAssetsData;
-const assetPricesFromUniswapSelector = state =>
+const accountAssetsDataSelector = (state: any) => state.data.accountAssetsData;
+const assetPricesFromUniswapSelector = (state: any) =>
   state.data.assetPricesFromUniswap;
-const uniqueIdSelector = (_, uniqueId) => uniqueId;
+const uniqueIdSelector = (_: any, uniqueId: any) => uniqueId;
 
 const accountAssetDataSelector = createSelector(
   accountAssetsDataSelector,
@@ -71,7 +71,7 @@ const makeAccountAssetSelector = () =>
 // with a fallback for generic assets
 // and an ETH placeholder
 // NFTs are not included in this hook
-export default function useAccountAsset(uniqueId) {
+export default function useAccountAsset(uniqueId: any) {
   const { nativeCurrency } = useAccountSettings();
   const selectAccountAsset = useMemo(makeAccountAssetSelector, []);
   const accountAsset = useSelector(state =>

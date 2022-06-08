@@ -15,7 +15,7 @@ import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
 import logger from 'logger';
 
-const getAccountSymbol = name => {
+const getAccountSymbol = (name: any) => {
   if (!name) {
     return null;
   }
@@ -23,7 +23,7 @@ const getAccountSymbol = name => {
   return accountSymbol;
 };
 
-const wipeNotEmoji = text => {
+const wipeNotEmoji = (text: any) => {
   const characters = new GraphemeSplitter().splitGraphemes(text);
   if (characters.length !== 1) {
     return null;
@@ -37,12 +37,14 @@ export default function useWebData() {
   const { wallets } = useWallets();
 
   const { showcaseTokens, webDataEnabled } = useSelector(
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'showcaseTokens' does not exist on type '... Remove this comment to see the full error message
     ({ showcaseTokens: { webDataEnabled, showcaseTokens } }) => ({
       showcaseTokens,
       webDataEnabled,
     })
   );
 
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors } = useTheme();
   const { accountSymbol, accountColor } = useAccountProfile();
 
@@ -87,6 +89,7 @@ export default function useWebData() {
     async (address, name, color) => {
       if (!webDataEnabled) return;
       const wallet = findWalletWithAccount(wallets, address);
+      // @ts-expect-error ts-migrate(2532) FIXME: Object is possibly 'undefined'.
       if (wallet.type === WalletTypes.readOnly) return;
       const data = {
         accountColor: color || accountColor,
@@ -114,6 +117,7 @@ export default function useWebData() {
       if (!webDataEnabled) return;
       const response = await getPreference('showcase', accountAddress);
       // If the showcase is populated, just updated it
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'ids' does not exist on type 'Object'.
       if (response?.ids?.length > 0) {
         setPreference(
           PreferenceActionType.update,
@@ -138,6 +142,7 @@ export default function useWebData() {
         if (webDataEnabled) {
           const response = await getPreference('showcase', accountAddress);
           // If the showcase is populated, nothing to do
+          // @ts-expect-error ts-migrate(2339) FIXME: Property 'ids' does not exist on type 'Object'.
           if (response?.ids?.length > 0) {
             logger.log('showcase already initialized. skipping');
           } else {

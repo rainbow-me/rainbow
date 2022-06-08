@@ -5,7 +5,7 @@ import { sortAssetsByNativeAmountSelector } from '@rainbow-me/helpers/assetSelec
 import NetworkTypes from '@rainbow-me/networkTypes';
 import { ETH_ADDRESS } from '@rainbow-me/references';
 
-const networkSelector = state => state.settings.network;
+const networkSelector = (state: any) => state.settings.network;
 
 const useUniswapAssetsInWallet = () => {
   const [uniswapAssets, setUniswapAssets] = useState([]);
@@ -16,7 +16,7 @@ const useUniswapAssetsInWallet = () => {
     let uniswapAssets;
     if (isMainnet) {
       const uniswapData = await getUniswapV2Tokens(
-        sortedAssets.map(({ address }) => address)
+        sortedAssets.map(({ address }: any) => address)
       );
       uniswapAssets = uniswapData ? Object.values(uniswapData) : [];
     } else {
@@ -40,6 +40,7 @@ const useUniswapAssetsInWallet = () => {
     getUniswapAssets();
   }, [getUniswapAssets]);
 
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useMemo'.
   const uniswapAssetsInWallet = useMemo(
     () => sortedAssets.filter(getIsUniswapAsset),
     [sortedAssets, getIsUniswapAsset]

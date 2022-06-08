@@ -12,7 +12,7 @@ export default function useAppState() {
   const [appState, setAppState] = useState(AppState.currentState);
   const prevAppState = usePrevious(appState);
 
-  function onChange(newState) {
+  function onChange(newState: any) {
     setAppState(newState);
   }
 
