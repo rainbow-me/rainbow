@@ -8,7 +8,7 @@ import {
 } from 'react';
 import { Platform } from 'react-native';
 import { ENABLE_DEV_MODE } from 'react-native-dotenv';
-import { useTheme } from './src/context/ThemeContext';
+import { useTheme } from './src/theme/ThemeContext';
 import magicMemo from '@rainbow-me/utils/magicMemo';
 
 export default {

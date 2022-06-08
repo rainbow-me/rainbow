@@ -2,7 +2,7 @@ import lang from 'i18n-js';
 import { forEach } from 'lodash';
 import React, { useEffect, useMemo } from 'react';
 import { IS_TESTING } from 'react-native-dotenv';
-import { useTheme } from '../../context/ThemeContext';
+import { useTheme } from '../../theme/ThemeContext';
 import { cloudPlatform } from '../../utils/platform';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';

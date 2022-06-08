@@ -1,7 +1,7 @@
 import React, { Fragment, useCallback } from 'react';
 import { View } from 'react-native';
-import { useTheme } from '../../context/ThemeContext';
 import { convertAmountToPercentageDisplay } from '../../helpers/utilities';
+import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText, CoinRow } from '../coin-row';
 import BalanceText from '../coin-row/BalanceText';

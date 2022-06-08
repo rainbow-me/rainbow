@@ -10,8 +10,8 @@ import {
   SheetSubtitleCycler,
   SheetTitle,
 } from '../components/sheet';
-import { useTheme } from '../context/ThemeContext';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
+import { useTheme } from '../theme/ThemeContext';
 import { deviceUtils } from '../utils';
 import {
   useAddCashLimits,

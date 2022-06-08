@@ -11,7 +11,6 @@ import ENSIntroSheet from '../screens/ENSIntroSheet';
 import ENSSearchSheet from '../screens/ENSSearchSheet';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
 import { sharedCoolModalTopOffset } from './config';
-import { useTheme } from '@rainbow-me/context';
 import { Box } from '@rainbow-me/design-system';
 import { accentColorAtom, REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import {
@@ -21,6 +20,7 @@ import {
   usePrevious,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
+import { useTheme } from '@rainbow-me/theme';
 import { deviceUtils } from '@rainbow-me/utils';
 
 const Swipe = createMaterialTopTabNavigator();
