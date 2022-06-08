@@ -18,9 +18,9 @@ import {
 import SettingsBackupView from '../components/settings-menu/BackupSection/SettingsBackupView';
 import ShowSecretView from '../components/settings-menu/BackupSection/ShowSecretView';
 import WalletSelectionView from '../components/settings-menu/BackupSection/WalletSelectionView';
-import { useTheme } from '../context/ThemeContext';
 import WalletTypes from '../helpers/walletTypes';
 import { settingsOptions } from '../navigation/config';
+import { useTheme } from '../theme/ThemeContext';
 import isTestFlight from '@rainbow-me/helpers/isTestFlight';
 import { useDimensions, useWallets } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';

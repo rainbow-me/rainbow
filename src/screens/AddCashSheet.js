@@ -11,6 +11,7 @@ import {
   SheetTitle,
 } from '../components/sheet';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
+import { useTheme } from '../theme/ThemeContext';
 import { deviceUtils } from '../utils';
 import { useTheme } from '@rainbow-me/context';
 import {
