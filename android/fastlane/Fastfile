@@ -16,25 +16,41 @@
 default_platform(:android)
 
 platform :android do
-  lane :bump_version_code do
+  lane :bump_version_code do |options|
+    track = options[:track]
     path = '../app/build.gradle'
     re = /versionCode\s+(\d+)/ 
+
+    versionCode = google_play_track_version_codes(
+      json_key: "./rainbow-google-play-key.json",
+      package_name: "me.rainbow", 
+      track: track
+    )
+
+    updatedCode = versionCode[0] + 1
   
     s = File.read(path)
     versionCode = s[re, 1].to_i
-    s[re, 1] = (versionCode + 1).to_s
+    s[re, 1] = (updatedCode).to_s
   
     f = File.new(path, 'w')
     f.write(s)
     f.close
+
+    versionCode
   end
 
   desc "Upload a new version to the Google Play"
   lane :release_version do |options|
-    versionCode = bump_version_code()
+    track = options[:track]
+    version_code = bump_version_code(track: track)
+
     gradle(task: 'clean')
     gradle(task: 'bundle', build_type: 'Release')
-    upload_to_play_store(json_key: "./rainbow-google-play-key.json", track: options[:track])
+    upload_to_play_store(
+      json_key: "./rainbow-google-play-key.json", 
+      track: track
+    )
   end
 
   lane :internal do
