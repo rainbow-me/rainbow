@@ -24,7 +24,7 @@ export default function ContextMenu({
   tintColor,
   title,
   // eslint-disable-next-line no-unused-vars
-  onPress: _, //to avoid getting onPress in ContextButton
+  onPress, //to avoid getting onPress in ContextButton
   ...props
 }) {
   const actionsheetRef = useRef();
