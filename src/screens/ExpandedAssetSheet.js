@@ -12,12 +12,12 @@ import {
   UniqueTokenExpandedState,
 } from '../components/expanded-state';
 import { Centered } from '../components/layout';
-import { useTheme } from '@rainbow-me/context';
 import { isUnknownOpenSeaENS } from '@rainbow-me/handlers/ens';
 import { useAsset, useDimensions } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
+import { useTheme } from '@rainbow-me/theme';
 
 const ScreenTypes = {
   custom_gas: CustomGasState,
