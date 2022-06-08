@@ -10,4 +10,5 @@ export { default as WaitCommitmentConfirmationContent } from './ConfirmContent/W
 export { default as WaitENSConfirmationContent } from './ConfirmContent/WaitENSConfirmationContent';
 export { default as RegisterContent } from './ConfirmContent/RegisterContent';
 export { default as CommitContent } from './ConfirmContent/CommitContent';
+export { default as EditContent } from './ConfirmContent/EditContent';
 export { default as RenewContent } from './ConfirmContent/RenewContent';

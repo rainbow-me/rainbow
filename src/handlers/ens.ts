@@ -774,22 +774,41 @@ export const estimateENSSetRecordsGasLimit = async ({
   name,
   records,
   ownerAddress,
+  setReverseRecord,
 }:
-  | { name: string; records: Records; ownerAddress?: string }
+  | {
+      name: string;
+      records: Records;
+      ownerAddress?: string;
+      setReverseRecord?: boolean;
+    }
   | ENSActionParameters) => {
-  let gasLimit: string | null = '0';
+  const promises = [];
   const ensRegistrationRecords = formatRecordsForTransaction(records);
   const validRecords = recordsForTransactionAreValid(ensRegistrationRecords);
   if (validRecords) {
     const shouldUseMulticall = shouldUseMulticallTransaction(
       ensRegistrationRecords
     );
-    gasLimit = await (shouldUseMulticall
-      ? estimateENSMulticallGasLimit
-      : estimateENSSetTextGasLimit)({
-      ...{ name, ownerAddress, records: ensRegistrationRecords },
-    });
+    promises.push(
+      (shouldUseMulticall
+        ? estimateENSMulticallGasLimit
+        : estimateENSSetTextGasLimit)({
+        ...{ name, ownerAddress, records: ensRegistrationRecords },
+      })
+    );
   }
+  if (setReverseRecord && ownerAddress) {
+    promises.push(
+      estimateENSSetNameGasLimit({
+        name,
+        ownerAddress,
+      })
+    );
+  }
+  const gasLimits = await Promise.all(promises);
+  const gasLimit = gasLimits.reduce((a, b) => add(a || 0, b || 0));
+  if (!gasLimit) return '0';
   return gasLimit;
 };
 

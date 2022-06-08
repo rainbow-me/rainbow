@@ -259,6 +259,7 @@ export default function useENSRegistrationActionHandler(
         ownerAddress: accountAddress,
         records: changedRecords,
         resolverAddress: resolver?.address,
+        setReverseRecord: sendReverseRecord,
       };
 
       await executeRap(
@@ -274,6 +275,7 @@ export default function useENSRegistrationActionHandler(
       coverMetadata,
       getNextNonce,
       registrationParameters,
+      sendReverseRecord,
     ]
   );
 
