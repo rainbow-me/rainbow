@@ -45,7 +45,7 @@ ColorCircle.defaultProps = {
 const sx = StyleSheet.create({
   button: {
     alignItems: 'center',
-    height: 40,
+    height: 42,
     width: 40,
   },
   circle: {
@@ -63,7 +63,7 @@ const sx = StyleSheet.create({
     alignItems: 'center',
     height: 42,
     justifyContent: 'center',
-    width: 42,
+    width: 40,
   },
 });
 
