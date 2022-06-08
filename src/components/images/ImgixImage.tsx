@@ -67,7 +67,7 @@ const preload = (sources: Source[], size?: Number, fm?: String): void => {
 };
 
 const getCachePath = (source: Source) =>
-  FastImage?.getCachePath?.(maybeSignSource(source));
+  FastImage.getCachePath(maybeSignSource(source));
 
 const ImgixImageWithForwardRef = React.forwardRef(
   (props: ImgixImageProps, ref: React.Ref<any>) => (
