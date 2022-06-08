@@ -9,7 +9,6 @@ import {
   Inset,
   Stack,
   Text,
-  useForegroundColor,
 } from '@rainbow-me/design-system';
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import { useInterval } from '@rainbow-me/hooks';
