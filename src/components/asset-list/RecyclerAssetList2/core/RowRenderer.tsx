@@ -89,12 +89,12 @@ function rowRenderer(
       );
     }
     case CellType.NFT: {
-      const { index, uniqueId, onPressUniqueToken } = data as NFTExtraData;
+      const { index, uniqueId } = data as NFTExtraData;
 
       return (
         <WrappedNFT
           externalAddress={extendedState.externalAddress}
-          onPress={onPressUniqueToken}
+          onPress={extendedState.onPressUniqueToken}
           placement={index % 2 === 0 ? 'left' : 'right'}
           uniqueId={uniqueId}
         />
