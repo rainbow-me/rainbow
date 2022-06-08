@@ -349,7 +349,11 @@ export const explainers = (params, colors) => ({
               key={`networks-${network}`}
               marginLeft={{
                 custom:
-                  index > 0 ? -12 : params.networks.length % 2 === 0 ? -2 : -30,
+                  index > 0
+                    ? -12
+                    : params?.networks?.length % 2 === 0
+                    ? -2
+                    : -30,
               }}
               style={{
                 borderColor: colors.transparent,
