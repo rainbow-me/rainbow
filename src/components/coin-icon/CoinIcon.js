@@ -2,9 +2,10 @@ import { isNil } from 'lodash';
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import ContractInteraction from '../../assets/contractInteraction.png';
-import { useTheme } from '../../context/ThemeContext';
+import { useTheme } from '../../theme/ThemeContext';
 import ChainBadge from './ChainBadge';
 import CoinIconFallback from './CoinIconFallback';
+import { AssetTypes } from '@rainbow-me/entities';
 import { useColorForAsset } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import styled from '@rainbow-me/styled-components';
@@ -31,6 +32,7 @@ const CoinIcon = ({
   badgeXPosition,
   badgeYPosition,
   badgeSize,
+  ignoreBadge = false,
   forcedShadowColor,
   size = CoinIconSize,
   symbol = '',
@@ -38,7 +40,10 @@ const CoinIcon = ({
   ...props
 }) => {
   const tokenMetadata = getTokenMetadata(props.mainnet_address || address);
-  const color = useColorForAsset({ address: props.mainnet_address || address });
+  const color = useColorForAsset({
+    address: props.mainnet_address || address,
+    type: props.mainnet_address ? AssetTypes.token : type,
+  });
   const { colors, isDarkMode } = useTheme();
   const forceFallback =
     !isETH(props.mainnet_address || address) && isNil(tokenMetadata);
@@ -63,16 +68,19 @@ const CoinIcon = ({
           }
           size={size}
           symbol={symbol}
+          type={props.mainnet_address ? AssetTypes.token : type}
         />
       ) : (
         <ContractInteractionIcon size={size} source={ContractInteraction} />
       )}
-      <ChainBadge
-        assetType={type}
-        badgeXPosition={badgeXPosition}
-        badgeYPosition={badgeYPosition}
-        size={badgeSize}
-      />
+      {!ignoreBadge && (
+        <ChainBadge
+          assetType={type}
+          badgeXPosition={badgeXPosition}
+          badgeYPosition={badgeYPosition}
+          size={badgeSize}
+        />
+      )}
     </View>
   );
 };

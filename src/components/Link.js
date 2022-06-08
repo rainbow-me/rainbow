@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { Linking } from 'react-native';
-import { useTheme } from '../context/ThemeContext';
+import { useTheme } from '../theme/ThemeContext';
 import { formatURLForDisplay, magicMemo } from '../utils';
 import { ButtonPressAnimation } from './animations';
 import { Icon } from './icons';

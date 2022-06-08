@@ -5,7 +5,7 @@ import {
   withRepeat,
   withTiming,
 } from 'react-native-reanimated';
-import { withThemeContext } from '../../context/ThemeContext';
+import { withThemeContext } from '../../theme/ThemeContext';
 import { CoinRowHeight } from '../coin-row';
 import { ColumnWithMargins, RowWithMargins } from '../layout';
 import Skeleton, { FakeAvatar, FakeRow, FakeText } from '../skeleton/Skeleton';

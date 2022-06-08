@@ -4,12 +4,13 @@ import BackButton from '../components/header/BackButton';
 import { Icon } from '../components/icons';
 import { SheetHandleFixedToTopHeight } from '../components/sheet';
 import { Text } from '../components/text';
-import { useTheme } from '../context/ThemeContext';
-import colors from '../context/currentColors';
+import { getENSAdditionalRecordsSheetHeight } from '../screens/ENSAdditionalRecordsSheet';
 import { ENSConfirmRegisterSheetHeight } from '../screens/ENSConfirmRegisterSheet';
 import { explainers, ExplainSheetHeight } from '../screens/ExplainSheet';
 import { ExternalLinkWarningSheetHeight } from '../screens/ExternalLinkWarningSheet';
 import { SendConfirmationSheetHeight } from '../screens/SendConfirmationSheet';
+import { useTheme } from '../theme/ThemeContext';
+import colors from '../theme/currentColors';
 import { onWillPop } from './Navigation';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
@@ -141,6 +142,35 @@ export const registerENSNavigatorConfig = {
       backgroundOpacity: 1,
       scrollEnabled: true,
       springDamping: 1,
+      transitionDuration: 0.3,
+    }),
+  }),
+};
+
+export const profileConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 1,
+      scrollEnabled: true,
+      springDamping: 1,
+      transitionDuration: 0.3,
+    }),
+  }),
+};
+
+export const profilePreviewConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 0,
+      disableShortFormAfterTransitionToLongForm: true,
+      isShortFormEnabled: true,
+      scrollEnabled: true,
+      shortFormHeight: 281 + params.descriptionProfilePreviewHeight,
+      springDamping: 1,
+      startFromShortForm: true,
+      transitionDuration: 0.3,
     }),
   }),
 };
@@ -148,8 +178,17 @@ export const registerENSNavigatorConfig = {
 export const ensConfirmRegisterSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
-      ...params,
       longFormHeight: ENSConfirmRegisterSheetHeight,
+      ...params,
+    }),
+  }),
+};
+
+export const ensAdditionalRecordsSheetConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      longFormHeight: getENSAdditionalRecordsSheetHeight(),
     }),
   }),
 };

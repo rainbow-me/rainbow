@@ -156,7 +156,7 @@ export default class SendAssetList extends React.Component {
                   visibleAssetsLength -
                   (savings && savings.length > 0 ? 1 : 0) -
                   (shitcoins && shitcoins.length > 0 ? 1 : 0)
-              ].familyId
+              ]?.familyId
             ]
           ) {
             return {

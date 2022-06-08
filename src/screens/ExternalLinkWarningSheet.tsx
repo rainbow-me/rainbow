@@ -8,9 +8,9 @@ import { Centered, Column, ColumnWithMargins } from '../components/layout';
 import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
-import { useTheme } from '@rainbow-me/context';
 import { useDimensions } from '@rainbow-me/hooks';
 import { fonts, fontWithWidth, position } from '@rainbow-me/styles';
+import { useTheme } from '@rainbow-me/theme';
 import { formatURLForDisplay } from '@rainbow-me/utils';
 
 export const ExternalLinkWarningSheetHeight = 380 + (android ? 20 : 0);
@@ -68,11 +68,11 @@ const ExternalLinkWarningSheet = () => {
               width: '100%',
             }}
           >
-            {/* @ts-expect-error JavaScript component */}
             <Emoji
               align="center"
               size="h1"
               style={{ ...fontWithWidth(fonts.weight.bold) }}
+              // @ts-expect-error JavaScript component
             >
               🧭
             </Emoji>

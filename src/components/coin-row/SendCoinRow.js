@@ -2,13 +2,14 @@ import { concat } from 'lodash';
 import React from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { useTheme } from '../../context/ThemeContext';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
+import { useTheme } from '../../theme/ThemeContext';
 import { deviceUtils, magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Text } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
+import { AssetTypes } from '@rainbow-me/entities';
 import { isL2Network } from '@rainbow-me/handlers/web3';
 import { useColorForAsset } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
@@ -75,8 +76,9 @@ const BottomRow = ({
 const TopRow = ({ item, name, selected }) => {
   const { colors } = useTheme();
   const address = item?.mainnet_address || item?.address;
+  const type = item?.mainnet_address ? AssetTypes.token : item?.type;
 
-  const colorForAsset = useColorForAsset({ address });
+  const colorForAsset = useColorForAsset({ address, type });
 
   return (
     <CoinName

@@ -1,20 +1,25 @@
 import { isHexString } from '@ethersproject/bytes';
 import lang from 'i18n-js';
 import { get, isEmpty, toLower } from 'lodash';
-import React, { Fragment, useCallback, useMemo } from 'react';
+import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
 import { ActivityIndicator, Keyboard } from 'react-native';
-import { useTheme } from '../../context/ThemeContext';
 import { useNavigation } from '../../navigation/Navigation';
+import { useTheme } from '../../theme/ThemeContext';
 import Divider from '../Divider';
 import Spinner from '../Spinner';
 import { ButtonPressAnimation } from '../animations';
 import { PasteAddressButton } from '../buttons';
+import showDeleteContactActionSheet from '../contacts/showDeleteContactActionSheet';
 import { AddressField } from '../fields';
 import { Row } from '../layout';
 import { SheetHandleFixedToTop, SheetTitle } from '../sheet';
 import { Label, Text } from '../text';
+import useExperimentalFlag, {
+  PROFILES,
+} from '@rainbow-me/config/experimentalHooks';
 import { resolveNameOrAddress } from '@rainbow-me/handlers/web3';
 import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
+import { isENSAddressFormat } from '@rainbow-me/helpers/validators';
 import { useClipboard, useDimensions } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
@@ -70,6 +75,8 @@ export default function SendHeader({
   contacts,
   hideDivider,
   isValidAddress,
+  fromProfile,
+  nickname,
   onChangeAddressInput,
   onFocus,
   onPressPaste,
@@ -81,21 +88,19 @@ export default function SendHeader({
   userAccounts,
   watchedAccounts,
 }) {
+  const profilesEnabled = useExperimentalFlag(PROFILES);
   const { setClipboard } = useClipboard();
   const { isSmallPhone, isTinyPhone } = useDimensions();
   const { navigate } = useNavigation();
   const { colors } = useTheme();
 
-  const contact = useMemo(() => {
-    return get(contacts, `${[toLower(recipient)]}`, defaultContactItem);
-  }, [contacts, recipient]);
-  const [hexAddress, setHexAddress] = useState(null);
+  const [hexAddress, setHexAddress] = useState('');
 
   useEffect(() => {
-    if (isValidAddress && !contact.address) {
+    if (isValidAddress) {
       resolveAndStoreAddress();
     } else {
-      setHexAddress(null);
+      setHexAddress('');
     }
     async function resolveAndStoreAddress() {
       const hex = await resolveNameOrAddress(recipient);
@@ -104,35 +109,63 @@ export default function SendHeader({
       }
       setHexAddress(hex);
     }
-  }, [isValidAddress, recipient, setHexAddress, contact]);
+  }, [isValidAddress, recipient, setHexAddress]);
+
+  const contact = useMemo(() => {
+    return get(contacts, `${[toLower(hexAddress)]}`, defaultContactItem);
+  }, [contacts, hexAddress]);
 
   const userWallet = useMemo(() => {
     return [...userAccounts, ...watchedAccounts].find(
-      account => toLower(account.address) === toLower(recipient)
+      account => toLower(account.address) === toLower(hexAddress || recipient)
     );
-  }, [recipient, userAccounts, watchedAccounts]);
+  }, [recipient, userAccounts, watchedAccounts, hexAddress]);
+
+  const isPreExistingContact = (contact?.nickname?.length || 0) > 0;
+
+  const name =
+    removeFirstEmojiFromString(
+      userWallet?.label || contact?.nickname || nickname
+    ) ||
+    userWallet?.ens ||
+    contact?.ens ||
+    recipient;
 
   const handleNavigateToContact = useCallback(() => {
-    let color = get(contact, 'color');
-    let nickname = recipient;
-    if (color !== 0 && !color) {
-      const emoji = profileUtils.addressHashedEmoji(hexAddress);
-      color = profileUtils.addressHashedColorIndex(hexAddress) || 0;
-      nickname = isHexString(recipient) ? emoji : `${emoji} ${recipient}`;
+    let nickname = profilesEnabled
+      ? !isHexString(recipient)
+        ? recipient
+        : null
+      : recipient;
+    let color = '';
+    if (!profilesEnabled) {
+      color = get(contact, 'color');
+      if (color !== 0 && !color) {
+        const emoji = profileUtils.addressHashedEmoji(hexAddress);
+        color = profileUtils.addressHashedColorIndex(hexAddress) || 0;
+        nickname = isHexString(recipient) ? emoji : `${emoji} ${recipient}`;
+      }
     }
 
     android && Keyboard.dismiss();
     navigate(Routes.MODAL_SCREEN, {
       additionalPadding: true,
-      address: isEmpty(contact.address) ? recipient : contact.address,
+      address: hexAddress,
       color,
-      contact: isEmpty(contact.address)
-        ? { color, nickname, temporary: true }
-        : contact,
+      contact,
+      ens: recipient,
+      nickname,
       onRefocusInput,
       type: 'contact_profile',
     });
-  }, [contact, hexAddress, navigate, onRefocusInput, recipient]);
+  }, [
+    contact,
+    hexAddress,
+    navigate,
+    onRefocusInput,
+    profilesEnabled,
+    recipient,
+  ]);
 
   const handleOpenContactActionSheet = useCallback(async () => {
     return showActionSheetWithOptions(
@@ -141,56 +174,52 @@ export default function SendHeader({
         destructiveButtonIndex: 0,
         options: [
           lang.t('contacts.options.delete'), // <-- destructiveButtonIndex
-          lang.t('contacts.options.edit'),
+          profilesEnabled && isENSAddressFormat(recipient)
+            ? lang.t('contacts.options.view')
+            : lang.t('contacts.options.edit'),
           lang.t('wallet.settings.copy_address_capitalized'),
           lang.t('contacts.options.cancel'), // <-- cancelButtonIndex
         ],
       },
       async buttonIndex => {
         if (buttonIndex === 0) {
-          showActionSheetWithOptions(
-            {
-              cancelButtonIndex: 1,
-              destructiveButtonIndex: 0,
-              options: [
-                lang.t('contacts.options.delete'),
-                lang.t('contacts.options.cancel'),
-              ],
+          showDeleteContactActionSheet({
+            address: hexAddress,
+            nickname: name,
+            onDelete: () => {
+              onChangeAddressInput(contact?.ens);
             },
-            async buttonIndex => {
-              if (buttonIndex === 0) {
-                removeContact(recipient);
-                onRefocusInput();
-              } else {
-                onRefocusInput();
-              }
-            }
-          );
+            removeContact: removeContact,
+          });
         } else if (buttonIndex === 1) {
-          handleNavigateToContact();
-          onRefocusInput();
+          if (profilesEnabled && isENSAddressFormat(recipient)) {
+            navigate(Routes.PROFILE_SHEET, {
+              address: recipient,
+              fromRoute: 'SendHeader',
+            });
+          } else {
+            handleNavigateToContact();
+            onRefocusInput();
+          }
         } else if (buttonIndex === 2) {
-          setClipboard(recipient);
+          setClipboard(hexAddress);
           onRefocusInput();
         }
       }
     );
   }, [
+    contact?.ens,
     handleNavigateToContact,
+    hexAddress,
+    navigate,
     onRefocusInput,
+    profilesEnabled,
     recipient,
     removeContact,
     setClipboard,
+    name,
+    onChangeAddressInput,
   ]);
-
-  const isPreExistingContact = (contact?.nickname?.length || 0) > 0;
-  const name = useMemo(
-    () =>
-      userWallet?.label
-        ? removeFirstEmojiFromString(userWallet.label)
-        : removeFirstEmojiFromString(contact.nickname),
-    [contact.nickname, userWallet?.label]
-  );
 
   return (
     <Fragment>
@@ -206,38 +235,40 @@ export default function SendHeader({
         <AddressField
           address={recipient}
           autoFocus={!showAssetList}
+          editable={!fromProfile}
           name={name}
-          onChange={onChangeAddressInput}
+          onChange={e => {
+            onChangeAddressInput(e);
+            setHexAddress('');
+          }}
           onFocus={onFocus}
           ref={recipientFieldRef}
           testID="send-asset-form-field"
         />
-        {isValidAddress &&
-          !userWallet &&
-          (hexAddress || !isEmpty(contact?.address)) && (
-            <ButtonPressAnimation
-              onPress={
+        {isValidAddress && Boolean(hexAddress) && (
+          <ButtonPressAnimation
+            onPress={
+              isPreExistingContact
+                ? handleOpenContactActionSheet
+                : handleNavigateToContact
+            }
+          >
+            <Text
+              align="right"
+              color="appleBlue"
+              size="large"
+              style={{ paddingLeft: 4 }}
+              testID={
                 isPreExistingContact
-                  ? handleOpenContactActionSheet
-                  : handleNavigateToContact
+                  ? 'edit-contact-button'
+                  : 'add-contact-button'
               }
+              weight="heavy"
             >
-              <Text
-                align="right"
-                color="appleBlue"
-                size="large"
-                style={{ paddingLeft: 4 }}
-                testID={
-                  isPreExistingContact
-                    ? 'edit-contact-button'
-                    : 'add-contact-button'
-                }
-                weight="heavy"
-              >
-                {isPreExistingContact ? '􀍡' : ` 􀉯 ${lang.t('button.save')}`}
-              </Text>
-            </ButtonPressAnimation>
-          )}
+              {isPreExistingContact ? '􀍡' : ` 􀉯 ${lang.t('button.save')}`}
+            </Text>
+          </ButtonPressAnimation>
+        )}
         {isValidAddress && !hexAddress && isEmpty(contact?.address) && (
           <LoadingSpinner />
         )}
