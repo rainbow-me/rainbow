@@ -17,6 +17,7 @@ import Divider from '../components/Divider';
 import L2Disclaimer from '../components/L2Disclaimer';
 import Pill from '../components/Pill';
 import TouchableBackdrop from '../components/TouchableBackdrop';
+import ButtonPressAnimation from '../components/animations/ButtonPressAnimation';
 import Callout from '../components/callout/Callout';
 import { CoinIcon } from '../components/coin-icon';
 import RequestVendorLogoIcon from '../components/coin-icon/RequestVendorLogoIcon';
@@ -104,7 +105,7 @@ export type Checkbox = {
 };
 
 const hasClearProfileInfo = (ensProfile?: ENSProfile) =>
-  isEmpty(ensProfile?.data?.records);
+  isEmpty({ ...ensProfile?.data?.records, ...ensProfile?.data?.coinAddresses });
 const doesNamePointToRecipient = (
   ensProfile?: ENSProfile,
   recipientAddress?: string
@@ -270,17 +271,21 @@ export default function SendConfirmationSheet() {
           !hasClearProfileInfo(ensProfile) && {
             checked: false,
             id: 'clear-records',
-            label: 'Clear profile information',
+            label: lang.t(
+              'wallet.transaction.checkboxes.clear_profile_information'
+            ),
           },
           !doesNamePointToRecipient(ensProfile, toAddress) && {
             checked: false,
             id: 'set-address',
-            label: 'Point this name to the recipient’s wallet address',
+            label: lang.t(
+              'wallet.transaction.checkboxes.point_name_to_recipient'
+            ),
           },
           doesAccountControlName(ensProfile) && {
             checked: false,
             id: 'transfer-control',
-            label: 'Transfer control to the recipient',
+            label: lang.t('wallet.transaction.checkboxes.transfer_control'),
           },
         ].filter(Boolean) as Checkbox[])
       : [
@@ -319,7 +324,9 @@ export default function SendConfirmationSheet() {
       ];
       const sendENSOptions = Object.fromEntries(
         checkboxes.map(option => [option.id, option.checked])
-      );
+      ) as {
+        [key in Checkbox['id']]: Checkbox['checked'];
+      };
       const cleanENSName = asset?.name?.split(' ')?.[0] ?? asset?.name;
 
       if (sendENSOptions['clear-records']) {
@@ -391,6 +398,12 @@ export default function SendConfirmationSheet() {
     },
     [checkboxes]
   );
+
+  const handleENSConfigurationPress = useCallback(() => {
+    navigate(Routes.EXPLAIN_SHEET, {
+      type: 'ens_configuration',
+    });
+  }, [navigate]);
 
   const handleL2DisclaimerPress = useCallback(() => {
     navigate(Routes.EXPLAIN_SHEET, {
@@ -682,26 +695,31 @@ export default function SendConfirmationSheet() {
                     />
                   </Fragment>
                 )}
-                {isENS && (
-                  <Callout
-                    after={
-                      <Text color="secondary30" weight="heavy">
-                        􀅵
-                      </Text>
-                    }
-                    before={
-                      <Box
-                        background="accent"
-                        borderRadius={20}
-                        shadow="12px heavy accent"
-                        style={{ height: 20, width: 20 }}
-                      >
-                        <ENSCircleIcon height={20} width={20} />
-                      </Box>
-                    }
+                {isENS && checkboxes.length > 0 && (
+                  <ButtonPressAnimation
+                    onPress={handleENSConfigurationPress}
+                    scale={0.95}
                   >
-                    ENS configuration options
-                  </Callout>
+                    <Callout
+                      after={
+                        <Text color="secondary30" weight="heavy">
+                          􀅵
+                        </Text>
+                      }
+                      before={
+                        <Box
+                          background="accent"
+                          borderRadius={20}
+                          shadow="12px heavy accent"
+                          style={{ height: 20, width: 20 }}
+                        >
+                          <ENSCircleIcon height={20} width={20} />
+                        </Box>
+                      }
+                    >
+                      {lang.t('wallet.transaction.ens_configuration_options')}
+                    </Callout>
+                  </ButtonPressAnimation>
                 )}
                 {(isENS || shouldShowChecks) && (
                   <Inset horizontal="10px">

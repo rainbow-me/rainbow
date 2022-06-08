@@ -114,6 +114,11 @@ const ENS_RESOLVER_TITLE = `What is a .eth resolver?`;
 
 const ENS_RESOLVER_EXPLAINER = `A resolver is a contract that maps from name to the resource (e.g., cryptocurrency addresses, content hash, etc). Resolvers are pointed to by the resolver field of the registry.`;
 
+const ENS_CONFIGURATION_TITLE = 'What do these options mean?';
+
+const ENS_CONFIGURATION_EXPLAINER =
+  'When sending an ENS name to someone else and making them the new ENS name owner, you may want to configure it for them in advance and save them a future transaction. Rainbow allows you to clear any profile information currently set for the name, configure the ENS name to point to the recipient’s address and make the recipient address the manager of the name.';
+
 export const explainers = network => ({
   floor_price: {
     emoji: '📊',
@@ -152,6 +157,12 @@ export const explainers = network => ({
     emoji: '❓',
     text: ENS_RESOLVER_EXPLAINER,
     title: ENS_RESOLVER_TITLE,
+  },
+  ens_configuration: {
+    extraHeight: 100,
+    emoji: '❓',
+    text: ENS_CONFIGURATION_EXPLAINER,
+    title: ENS_CONFIGURATION_TITLE,
   },
   ensOnChainDataWarning: {
     extraHeight: -30,

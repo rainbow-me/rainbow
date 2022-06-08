@@ -699,7 +699,7 @@ export const estimateENSTransactionGasLimit = async ({
   });
 
   const txPayload = {
-    ...(ownerAddress ? { from: fromAddress ? fromAddress : ownerAddress } : {}),
+    ...(ownerAddress ? { from: fromAddress ?? ownerAddress } : {}),
     ...(value ? { value } : {}),
   };
 
