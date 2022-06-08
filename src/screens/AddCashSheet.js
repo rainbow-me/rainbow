@@ -11,7 +11,6 @@ import {
   SheetTitle,
 } from '../components/sheet';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
-import { useTheme } from '../theme/ThemeContext';
 import { deviceUtils } from '../utils';
 import {
   useAddCashLimits,
@@ -22,6 +21,7 @@ import {
 } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { borders } from '@rainbow-me/styles';
+import { useTheme } from '@rainbow-me/theme';
 
 const deviceHeight = deviceUtils.dimensions.height;
 const statusBarHeight = getStatusBarHeight(true);
@@ -97,24 +97,23 @@ export default function AddCashSheet() {
       <Column
         align="center"
         height={isNativeStackAvailable ? sheetHeight : '100%'}
-        justify="end"
         paddingBottom={isNarrowPhone ? 15 : insets.bottom + 11}
       >
         <Column align="center" paddingVertical={6}>
           <SheetHandle />
           <ColumnWithMargins
+            align="center"
             margin={4}
             paddingTop={isNativeStackAvailable ? 7 : 5}
           >
             <SheetTitle>{lang.t('button.add_cash')}</SheetTitle>
-            {!isPaymentComplete && (
-              <SheetSubtitleCycler
-                errorIndex={errorIndex}
-                interval={subtitleInterval}
-                items={Object.values(cashLimits)}
-                sharedValue={errorAnimation}
-              />
-            )}
+            <SheetSubtitleCycler
+              errorIndex={errorIndex}
+              interval={subtitleInterval}
+              isPaymentComplete={isPaymentComplete}
+              items={Object.values(cashLimits)}
+              sharedValue={errorAnimation}
+            />
           </ColumnWithMargins>
         </Column>
         <FlexItem width="100%">
