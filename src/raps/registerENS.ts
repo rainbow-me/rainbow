@@ -9,17 +9,12 @@ import {
 } from './common';
 import { Records } from '@rainbow-me/entities';
 import {
-  fetchCoinAddresses,
-  fetchRecords,
   formatRecordsForTransaction,
   getRapActionTypeForTxType,
   getTransactionTypeForRecords,
   recordsForTransactionAreValid,
 } from '@rainbow-me/handlers/ens';
-import {
-  ENS_RECORDS,
-  ENSRegistrationTransactionType,
-} from '@rainbow-me/helpers/ens';
+import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 
 export const createSetRecordsENSRap = async (
   ensActionParameters: ENSActionParameters
