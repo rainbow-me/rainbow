@@ -41,7 +41,7 @@ const EmojisStickyListItem = ({ index, scrollPosition, headerData }: Props) => {
           >
             <Text
               style={[
-                // @ts-expect-error Font weight type is to broad string vs a union of select strings
+                // @ts-expect-error Font weight type (string) is too broad to be used in styles when using TypeScript. Type Script complains that it should be a union of ... "900" | "800" ...
                 sx.sectionStickyHeader,
                 { backgroundColor: colors.alpha(colors.white, 0.7) },
               ]}
@@ -53,7 +53,7 @@ const EmojisStickyListItem = ({ index, scrollPosition, headerData }: Props) => {
           <View style={sx.sectionStickyBlur}>
             <Text
               style={[
-                // @ts-expect-error Font weight type is to broad string vs a union of select strings
+                // @ts-expect-error Font weight type (string) is too broad to be used in styles when using TypeScript. Type Script complains that it should be a union of ... "900" | "800" ...
                 sx.sectionStickyHeader,
                 { color: colors.alpha(colors.blueGreyDark, 0.5) },
               ]}

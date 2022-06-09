@@ -1,7 +1,7 @@
 import React from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import { Categories } from './Categories';
-import { fonts } from '@rainbow-me/styles';
+import { avatarBuilderStyles } from './avatarBuilderStyles';
 import { useTheme } from '@rainbow-me/theme';
 
 const { width } = Dimensions.get('screen');
@@ -11,11 +11,16 @@ const EmojisLoader = () => {
 
   return (
     <View style={sx.loader}>
-      <View style={[sx.sectionHeaderWrap, { backgroundColor: colors.white }]}>
+      <View
+        style={[
+          avatarBuilderStyles.sectionHeaderWrap,
+          { backgroundColor: colors.white },
+        ]}
+      >
         <Text
           style={[
-            // @ts-expect-error Font weight type is to broad string vs a union of select strings
-            sx.sectionHeader,
+            // @ts-expect-error Font weight type (string) is too broad to be used in styles when using TypeScript. Type Script complains that it should be a union of ... "900" | "800" ...
+            avatarBuilderStyles.sectionHeader,
             { color: colors.alpha(colors.blueGreyDark, 0.5) },
           ]}
         >
@@ -33,22 +38,6 @@ const sx = StyleSheet.create({
     position: 'absolute',
     top: 0,
     width: width,
-  },
-  sectionHeader: {
-    fontFamily: fonts.family.SFProRounded,
-    fontSize: fonts.size.small,
-    fontWeight: fonts.weight.semibold,
-    letterSpacing: fonts.letterSpacing.rounded,
-    paddingBottom: 3.75,
-    paddingLeft: 9,
-    paddingRight: 9,
-    paddingTop: 15.25,
-    textTransform: 'uppercase',
-    width: '100%',
-  },
-  sectionHeaderWrap: {
-    marginRight: 10,
-    paddingLeft: 10,
   },
 });
 

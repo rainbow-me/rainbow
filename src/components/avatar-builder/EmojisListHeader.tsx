@@ -1,7 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { Text } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
-import { fonts } from '@rainbow-me/styles';
+import { avatarBuilderStyles } from './avatarBuilderStyles';
 import { useTheme } from '@rainbow-me/theme';
 import { magicMemo } from '@rainbow-me/utils';
 
@@ -26,15 +26,15 @@ const EmojisListHeader = ({
     return (
       <Animated.View
         style={[
-          sx.sectionHeaderWrap,
+          avatarBuilderStyles.sectionHeaderWrap,
           { backgroundColor: colors.white },
           animatedStyle,
         ]}
       >
         <Text
           style={[
-            // @ts-expect-error Font weight type is to broad string vs a union of select strings
-            sx.sectionHeader,
+            // @ts-expect-error Font weight type (string) is too broad to be used in styles when using TypeScript. Type Script complains that it should be a union of ... "900" | "800" ...
+            avatarBuilderStyles.sectionHeader,
             { color: colors.alpha(colors.blueGreyDark, 0.5) },
           ]}
         >
@@ -45,25 +45,6 @@ const EmojisListHeader = ({
   }
   return null;
 };
-
-const sx = StyleSheet.create({
-  sectionHeader: {
-    fontFamily: fonts.family.SFProRounded,
-    fontSize: fonts.size.small,
-    fontWeight: fonts.weight.semibold,
-    letterSpacing: fonts.letterSpacing.rounded,
-    paddingBottom: 3.75,
-    paddingLeft: 9,
-    paddingRight: 9,
-    paddingTop: 15.25,
-    textTransform: 'uppercase',
-    width: '100%',
-  },
-  sectionHeaderWrap: {
-    marginRight: 10,
-    paddingLeft: 10,
-  },
-});
 
 export default magicMemo(EmojisListHeader, [
   'title',
