@@ -662,7 +662,7 @@ export default function ExchangeModal({
         type: 'output_disabled',
       });
     }
-  }, [navigate, currentNetwork]);
+  }, [currentNetwork, navigate]);
 
   const showConfirmButton = isSavings
     ? !!inputCurrency
@@ -684,10 +684,9 @@ export default function ExchangeModal({
               disableInputCurrencySelection={isWithdrawal}
               editable={!!inputCurrency}
               inputAmount={inputAmountDisplay}
-              inputCurrencyAddress={
-                inputCurrency?.mainnet_address || inputCurrency?.address
-              }
+              inputCurrencyAddress={inputCurrency?.address}
               inputCurrencyAssetType={inputCurrency?.type}
+              inputCurrencyMainnetAddress={inputCurrency?.mainnet_address}
               inputCurrencySymbol={inputCurrency?.symbol}
               inputFieldRef={inputFieldRef}
               nativeAmount={nativeAmountDisplay}
@@ -702,20 +701,19 @@ export default function ExchangeModal({
             />
             {showOutputField && (
               <ExchangeOutputField
-                editable={
-                  !!outputCurrency && currentNetwork !== Network.arbitrum
-                }
+                editable={!!outputCurrency}
                 network={currentNetwork}
                 onFocus={handleFocus}
                 onPressSelectOutputCurrency={() =>
                   navigateToSelectOutputCurrency(chainId)
                 }
-                onTapWhileDisabled={handleTapWhileDisabled}
+                {...(currentNetwork === Network.arbitrum && {
+                  onTapWhileDisabled: handleTapWhileDisabled,
+                })}
                 outputAmount={outputAmountDisplay}
-                outputCurrencyAddress={
-                  outputCurrency?.mainnet_address || outputCurrency?.address
-                }
+                outputCurrencyAddress={outputCurrency?.address}
                 outputCurrencyAssetType={outputCurrency?.type}
+                outputCurrencyMainnetAddress={outputCurrency?.mainnet_address}
                 outputCurrencySymbol={outputCurrency?.symbol}
                 outputFieldRef={outputFieldRef}
                 setOutputAmount={updateOutputAmount}
