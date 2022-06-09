@@ -173,22 +173,22 @@ describe('Register ENS Flow', () => {
     await Helpers.checkIfVisible('testnet-toast-Hardhat');
   });
 
-  xit('Should navigate to the Wallet screen after swiping left', async () => {
+  it('Should navigate to the Wallet screen after swiping left', async () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
     await Helpers.checkIfVisible('wallet-screen');
   });
 
-  xit('Should navigate to the Discover sheet screen after tapping Discover Button', async () => {
+  it('Should navigate to the Discover sheet screen after tapping Discover Button', async () => {
     await Helpers.waitAndTap('discover-button');
     await Helpers.checkIfVisible('discover-header');
   });
 
-  xit('Should go to ENS flow pressing the ENS banner', async () => {
+  it('Should go to ENS flow pressing the ENS banner', async () => {
     await Helpers.waitAndTap('ens-register-name-banner');
     await Helpers.checkIfVisible('ens-intro-sheet');
   });
 
-  xit('Should be able to press a profile and continue to the ENS search screen', async () => {
+  it('Should be able to press a profile and continue to the ENS search screen', async () => {
     await Helpers.swipe('ens-names-marquee', 'left', 'slow');
     await Helpers.swipe('ens-names-marquee', 'right', 'slow');
     await Helpers.waitAndTap(
@@ -196,25 +196,25 @@ describe('Register ENS Flow', () => {
     );
   });
 
-  xit('Should be able to type a name that is not available', async () => {
+  it('Should be able to type a name that is not available', async () => {
     await Helpers.checkIfVisible('ens-search-input');
     await Helpers.typeText('ens-search-input', 'rainbowwallet', false);
     await Helpers.delay(3000);
     await Helpers.waitAndTap('ens-search-clear-button');
   });
 
-  xit('Should be able to type a name that is available and wait for fees', async () => {
+  it('Should be able to type a name that is available and wait for fees', async () => {
     await Helpers.checkIfVisible('ens-search-input');
     await Helpers.typeText('ens-search-input', RANDOM_NAME, false);
   });
 
-  xit('Should be able to see network fees and name rent price', async () => {
+  it('Should be able to see network fees and name rent price', async () => {
     await Helpers.checkIfVisible('ens-search-input');
     await Helpers.checkIfVisible('ens-registration-fees');
     await Helpers.checkIfVisible('ens-registration-price');
   });
 
-  xit('Should go to view to set records', async () => {
+  it('Should go to view to set records', async () => {
     await Helpers.checkIfVisible('ens-search-continue-action-button');
     await Helpers.waitAndTap('ens-search-continue-action-button');
     await Helpers.checkIfVisible('ens-text-record-me.rainbow.displayName');
@@ -234,13 +234,13 @@ describe('Register ENS Flow', () => {
     await Helpers.waitAndTap('ens-assign-records-review-action-button');
   });
 
-  xit('Should display change gas to Urgent', async () => {
+  it('Should display change gas to Urgent', async () => {
     await Helpers.waitAndTap('gas-speed-custom');
     await Helpers.waitAndTap('speed-pill-urgent');
     await Helpers.waitAndTap('gas-speed-done-button');
   });
 
-  xit('Should go to review registration and start it', async () => {
+  it('Should go to review registration and start it', async () => {
     await Helpers.checkIfVisible(`ens-transaction-action-COMMIT`);
     await Helpers.waitAndTap(`ens-transaction-action-COMMIT`);
     await Helpers.delay(5000);
@@ -250,7 +250,7 @@ describe('Register ENS Flow', () => {
     await Helpers.delay(60000);
   });
 
-  xit('Should see confirm registration screen and set reverse records', async () => {
+  it('Should see confirm registration screen and set reverse records', async () => {
     await Helpers.checkIfVisible(`ens-reverse-record-switch`);
     // set RANDOM_NAME as primary name
     await Helpers.waitAndTap('ens-reverse-record-switch');
@@ -258,13 +258,13 @@ describe('Register ENS Flow', () => {
     await Helpers.waitAndTap(`ens-transaction-action-REGISTER`);
   });
 
-  xit('Should confirm that the name is not available anymore', async () => {
+  it('Should confirm that the name is not available anymore', async () => {
     await Helpers.delay(4000);
     const ensAvailable = await nameIsAvailable(RANDOM_NAME);
     if (ensAvailable) throw new Error('ENS name is available');
   });
 
-  xit('Should confirm that the bio record is set', async () => {
+  it('Should confirm that the bio record is set', async () => {
     const { description, displayName, avatar } = await getRecords(
       RANDOM_NAME_ETH
     );
@@ -275,25 +275,25 @@ describe('Register ENS Flow', () => {
       throw new Error('ENS avatar is wrong');
   });
 
-  xit('Should confirm RANDOM_NAME is primary name', async () => {
+  it('Should confirm RANDOM_NAME is primary name', async () => {
     await Helpers.delay(3000);
     await validatePrimaryName(RANDOM_NAME_ETH);
   });
 
-  xit('Should navigate to the Wallet screen and refresh', async () => {
+  it('Should navigate to the Wallet screen and refresh', async () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
     await Helpers.checkIfVisible('wallet-screen');
     await Helpers.swipe('wallet-screen', 'down', 'slow');
   });
 
-  xit('Should open ENS rainbowtestwallet.eth', async () => {
+  it('Should open ENS rainbowtestwallet.eth', async () => {
     await Helpers.swipe('wallet-screen', 'up', 'slow');
     await Helpers.tapByText('ENS');
     await Helpers.swipe('wallet-screen', 'up', 'slow');
     await Helpers.waitAndTap('wrapped-nft-rainbowtestwallet.eth');
   });
 
-  xit('Should use rainbowtestwallet.eth as primary name', async () => {
+  it('Should use rainbowtestwallet.eth as primary name', async () => {
     await Helpers.swipe('unique-token-expanded-state', 'up', 'slow');
     await Helpers.waitAndTap('ens-reverse-record-switch');
     await Helpers.checkIfVisible(`ens-transaction-action-SET_NAME`);
@@ -301,22 +301,22 @@ describe('Register ENS Flow', () => {
     await Helpers.waitAndTap(`ens-transaction-action-SET_NAME`);
   });
 
-  xit('Should confirm rainbowtestwallet.eth is primary name', async () => {
+  it('Should confirm rainbowtestwallet.eth is primary name', async () => {
     await Helpers.delay(3000);
     await validatePrimaryName(RAINBOW_TEST_WALLET_NAME);
   });
 
-  xit('Should navigate to the Wallet screen to renew', async () => {
+  it('Should navigate to the Wallet screen to renew', async () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
     await Helpers.checkIfVisible('wallet-screen');
   });
 
-  xit('Should open ENS rainbowtestwallet.eth to renew', async () => {
+  it('Should open ENS rainbowtestwallet.eth to renew', async () => {
     await Helpers.swipe('wallet-screen', 'up', 'slow');
     await Helpers.waitAndTap('wrapped-nft-rainbowtestwallet.eth');
   });
 
-  xit('Should renew rainbowtestwallet.eth', async () => {
+  it('Should renew rainbowtestwallet.eth', async () => {
     await Helpers.waitAndTap('unique-token-expanded-state-extend-duration');
     await Helpers.checkIfVisible(`ens-transaction-action-RENEW`);
     await Helpers.waitAndTap(`ens-transaction-action-RENEW`);
