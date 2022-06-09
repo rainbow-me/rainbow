@@ -66,7 +66,7 @@ const ExchangeField = (
 ) => {
   const colorForAsset = useColorForAsset({
     address,
-    mainnetAddress,
+    mainnet_address: mainnetAddress,
   });
   const handleFocusField = useCallback(() => {
     ref?.current?.focus();
@@ -95,7 +95,7 @@ const ExchangeField = (
           {symbol ? (
             <CoinIcon
               address={address}
-              mainnetAddress={mainnetAddress}
+              mainnet_address={mainnetAddress}
               symbol={symbol}
               type={type}
             />

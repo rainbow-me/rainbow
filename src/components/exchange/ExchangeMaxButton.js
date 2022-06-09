@@ -33,7 +33,10 @@ export default function ExchangeMaxButton({
   onPress,
   testID,
 }) {
-  const colorForAsset = useColorForAsset({ address, mainnetAddress });
+  const colorForAsset = useColorForAsset({
+    address,
+    mainnet_address: mainnetAddress,
+  });
   const { colors } = useTheme();
 
   return (

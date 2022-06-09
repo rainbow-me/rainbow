@@ -44,7 +44,7 @@ export default function TokenSelectionButton({
   const { isDarkMode, colors } = useTheme();
 
   const colorForAsset = useColorForAsset(
-    { address, mainnetAddress },
+    { address, mainnet_address: mainnetAddress },
     address ? undefined : colors.appleBlue
   );
 
