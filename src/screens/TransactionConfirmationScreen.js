@@ -186,6 +186,7 @@ export default function TransactionConfirmationScreen() {
   const dispatch = useDispatch();
   const { params: routeParams } = useRoute();
   const { goBack, navigate } = useNavigation();
+  const [screenMounted, setScreeenMounted] = useState(true);
 
   const pendingRedirect = useSelector(
     ({ walletconnect }) => walletconnect.pendingRedirect
@@ -373,8 +374,13 @@ export default function TransactionConfirmationScreen() {
     startPollingGasFees,
   ]);
 
+  console.log('👹👹👹👹👹👹👹👹  TX CONFIRMATION SCREEN still mounted');
   const closeScreen = useCallback(
     canceled => {
+      setScreeenMounted(false);
+      console.log(
+        '😀😀😀😀😀😀😀😀😀😀😀😀  TX CONFIRMATION SCREEN will close now'
+      );
       goBack();
       if (!isMessageRequest) {
         stopPollingGasFees();
@@ -441,7 +447,7 @@ export default function TransactionConfirmationScreen() {
   const onPressCancel = useCallback(() => onCancel(), [onCancel]);
 
   useEffect(() => {
-    if (!peerId || !walletConnector) {
+    if (screenMounted && (!peerId || !walletConnector)) {
       Alert.alert(
         lang.t('wallet.transaction.alert.connection_expired'),
         lang.t('wallet.transaction.alert.please_go_back_and_reconnect'),
@@ -452,7 +458,7 @@ export default function TransactionConfirmationScreen() {
         ]
       );
     }
-  }, [goBack, onCancel, peerId, walletConnector]);
+  }, [screenMounted, goBack, onCancel, peerId, walletConnector]);
 
   const calculateGasLimit = useCallback(async () => {
     calculatingGasLimit.current = true;
@@ -681,7 +687,7 @@ export default function TransactionConfirmationScreen() {
         }
       }
       analytics.track('Approved WalletConnect transaction request');
-      if (requestId) {
+      if (screenMounted && requestId) {
         dispatch(removeRequest(requestId));
         await dispatch(
           walletConnectSendStatus(peerId, requestId, { result: result.hash })
@@ -729,6 +735,7 @@ export default function TransactionConfirmationScreen() {
     provider,
     accountInfo.address,
     callback,
+    screenMounted,
     requestId,
     closeScreen,
     displayDetails?.request?.value,
