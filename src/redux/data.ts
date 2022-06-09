@@ -37,7 +37,6 @@ import { uniqueTokensRefreshState } from './uniqueTokens';
 import { uniswapUpdateLiquidityTokens } from './uniswapLiquidity';
 import {
   AssetTypes,
-  EthereumAddress,
   NativeCurrencyKeys,
   NewTransactionOrAddCashTransaction,
   ParsedAddressAsset,
@@ -883,16 +882,18 @@ const checkForConfirmedSavingsActions = (
  * @param transactionData Incoming transaction data.
  */
 const checkForUpdatedNonce = (transactionData: ZerionTransaction[]) => (
-  dispatch: ThunkDispatch<AppState, unknown, never>
+  dispatch: ThunkDispatch<AppState, unknown, never>,
+  getState: AppGetState
 ) => {
   if (transactionData.length) {
-    const txSortedByDescendingNonce = transactionData.sort(
-      ({ nonce: n1 }, { nonce: n2 }) => (n2 ?? 0) - (n1 ?? 0)
-    );
+    const { accountAddress, network } = getState().settings;
+    const txSortedByDescendingNonce = transactionData
+      .filter(({ address_from }) => address_from === accountAddress)
+      .sort(({ nonce: n1 }, { nonce: n2 }) => (n2 ?? 0) - (n1 ?? 0));
     const [latestTx] = txSortedByDescendingNonce;
     const { address_from, nonce } = latestTx;
     if (nonce) {
-      dispatch(incrementNonce(address_from!, nonce));
+      dispatch(incrementNonce(address_from!, nonce, network));
     }
   }
 };
@@ -903,17 +904,18 @@ const checkForUpdatedNonce = (transactionData: ZerionTransaction[]) => (
  *
  * @param removedTransactions Removed transaction data.
  */
-const checkForRemovedNonce = (
-  removedTransactions: RainbowTransaction[],
-  accountAddress: EthereumAddress
-) => (dispatch: ThunkDispatch<AppState, unknown, never>) => {
+const checkForRemovedNonce = (removedTransactions: RainbowTransaction[]) => (
+  dispatch: ThunkDispatch<AppState, unknown, never>,
+  getState: AppGetState
+) => {
   if (removedTransactions.length) {
-    const txSortedByAscendingNonce = removedTransactions.sort(
-      ({ nonce: n1 }, { nonce: n2 }) => (n1 ?? 0) - (n2 ?? 0)
-    );
+    const { accountAddress, network } = getState().settings;
+    const txSortedByAscendingNonce = removedTransactions
+      .filter(({ from }) => from === accountAddress)
+      .sort(({ nonce: n1 }, { nonce: n2 }) => (n1 ?? 0) - (n2 ?? 0));
     const [lowestNonceTx] = txSortedByAscendingNonce;
     const { nonce } = lowestNonceTx;
-    dispatch(decrementNonce(accountAddress, nonce!));
+    dispatch(decrementNonce(accountAddress, nonce!, network));
   }
 };
 
@@ -967,8 +969,9 @@ export const transactionsReceived = (
   if (appended) {
     dispatch(checkForConfirmedSavingsActions(transactionData));
   }
-
-  dispatch(checkForUpdatedNonce(transactionData));
+  if (transactionData.length) {
+    dispatch(checkForUpdatedNonce(transactionData));
+  }
 
   const { accountAddress, nativeCurrency } = getState().settings;
   const { purchaseTransactions } = getState().addCash;
@@ -1065,7 +1068,7 @@ export const transactionsRemoved = (
     type: DATA_LOAD_TRANSACTIONS_SUCCESS,
   });
 
-  dispatch(checkForRemovedNonce(removedTransactions, accountAddress));
+  dispatch(checkForRemovedNonce(removedTransactions));
   saveLocalTransactions(updatedTransactions, accountAddress, network);
 };
 
@@ -1490,7 +1493,7 @@ export const dataAddNewTransaction = (
     });
     saveLocalPendingTransactions(_pendingTransactions, accountAddress, network);
     if (parsedTransaction.from && parsedTransaction.nonce) {
-      await dispatch(
+      dispatch(
         incrementNonce(
           parsedTransaction.from,
           parsedTransaction.nonce,
