@@ -1,14 +1,20 @@
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
-import { Keyboard } from 'react-native';
+import { Keyboard, Share } from 'react-native';
 import {
   ContextMenuButton,
   MenuActionConfig,
 } from 'react-native-ios-context-menu';
 import { showDeleteContactActionSheet } from '../../contacts';
 import More from '../MoreButton/MoreButton';
-import { useClipboard, useContacts } from '@rainbow-me/hooks';
+import {
+  useClipboard,
+  useContacts,
+  useWallets,
+  useWatchWallet,
+} from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
+import { RAINBOW_PROFILES_BASE_URL } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
 import { formatAddressForDisplay } from '@rainbow-me/utils/abbreviations';
@@ -17,7 +23,9 @@ const ACTIONS = {
   ADD_CONTACT: 'add-contact',
   COPY_ADDRESS: 'copy-address',
   ETHERSCAN: 'etherscan',
+  OPEN_WALLET: 'open-wallet',
   REMOVE_CONTACT: 'remove-contact',
+  SHARE: 'share',
 };
 
 export default function MoreButton({
@@ -27,9 +35,19 @@ export default function MoreButton({
   address?: string;
   ensName?: string;
 }) {
+  const { switchToWalletWithAddress, selectedWallet } = useWallets();
+  const { isWatching } = useWatchWallet({ address });
   const { navigate } = useNavigation();
   const { setClipboard } = useClipboard();
   const { contacts, onRemoveContact } = useContacts();
+
+  const isSelectedWallet = useMemo(() => {
+    const visibleWallet = selectedWallet.addresses.find(
+      (wallet: { visible: boolean }) => wallet.visible === true
+    );
+
+    return visibleWallet.address.toLowerCase() === address?.toLowerCase();
+  }, [selectedWallet.addresses, address]);
 
   const contact = useMemo(
     () => (address ? contacts[address.toLowerCase()] : undefined),
@@ -43,6 +61,14 @@ export default function MoreButton({
 
   const menuItems = useMemo(() => {
     return [
+      isWatching && {
+        actionKey: ACTIONS.OPEN_WALLET,
+        actionTitle: lang.t('profiles.details.open_wallet'),
+        icon: {
+          iconType: 'SYSTEM',
+          iconValue: 'iphone.and.arrow.forward',
+        },
+      },
       {
         actionKey: ACTIONS.COPY_ADDRESS,
         actionTitle: lang.t('profiles.details.copy_address'),
@@ -77,11 +103,25 @@ export default function MoreButton({
           iconValue: 'link',
         },
       },
+      {
+        actionKey: ACTIONS.SHARE,
+        actionTitle: lang.t('profiles.details.share'),
+        icon: {
+          iconType: 'SYSTEM',
+          iconValue: 'square.and.arrow.up',
+        },
+      },
     ] as MenuActionConfig[];
-  }, [contact, formattedAddress]);
+  }, [isWatching, formattedAddress, contact]);
 
   const handlePressMenuItem = useCallback(
-    ({ nativeEvent: { actionKey } }) => {
+    async ({ nativeEvent: { actionKey } }) => {
+      if (actionKey === ACTIONS.OPEN_WALLET) {
+        if (!isSelectedWallet) {
+          switchToWalletWithAddress(address);
+        }
+        navigate(Routes.WALLET_SCREEN);
+      }
       if (actionKey === ACTIONS.COPY_ADDRESS) {
         setClipboard(address);
       }
@@ -105,8 +145,22 @@ export default function MoreButton({
         });
         android && Keyboard.dismiss();
       }
+      if (actionKey === ACTIONS.SHARE) {
+        const walletDisplay = ensName || address;
+        const shareLink = `${RAINBOW_PROFILES_BASE_URL}/${walletDisplay}`;
+        Share.share(android ? { message: shareLink } : { url: shareLink });
+      }
     },
-    [address, contact, ensName, navigate, onRemoveContact, setClipboard]
+    [
+      address,
+      contact,
+      ensName,
+      isSelectedWallet,
+      navigate,
+      onRemoveContact,
+      setClipboard,
+      switchToWalletWithAddress,
+    ]
   );
 
   const handleAndroidPress = useCallback(() => {
@@ -119,7 +173,10 @@ export default function MoreButton({
         options: actionSheetOptions,
       },
       async (buttonIndex: number) => {
-        const actionKey = menuItems[buttonIndex]?.actionKey;
+        // android: filter out undefined "Open Wallet" when not available
+        // otherwise it messes up the action order index
+        const items = menuItems.filter(item => item);
+        const actionKey = items[buttonIndex]?.actionKey;
         handlePressMenuItem({ nativeEvent: { actionKey } });
       }
     );

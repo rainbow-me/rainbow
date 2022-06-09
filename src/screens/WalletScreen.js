@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/core';
 import { compact, get, isEmpty, keys, map, toLower } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
-import { StatusBar } from 'react-native';
+import { InteractionManager, StatusBar } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useValue } from 'react-native-redash/src/v1';
 import { useDispatch, useSelector } from 'react-redux';
@@ -31,7 +31,6 @@ import {
   usePortfolios,
   useTrackENSProfile,
   useUserAccounts,
-  useWalletENSAvatar,
   useWallets,
   useWalletSectionsData,
 } from '@rainbow-me/hooks';
@@ -77,7 +76,7 @@ export default function WalletScreen() {
   const loadGlobalLateData = useLoadGlobalLateData();
   const initializeDiscoverData = useInitializeDiscoverData();
   const initializeENSIntroData = useInitializeENSIntroData();
-  const { updateWalletENSAvatars } = useWalletENSAvatar();
+
   const walletReady = useSelector(
     ({ appState: { walletReady } }) => walletReady
   );
@@ -144,12 +143,6 @@ export default function WalletScreen() {
   ]);
 
   useEffect(() => {
-    if (profilesEnabled) {
-      trackENSProfile();
-    }
-  }, [profilesEnabled, trackENSProfile]);
-
-  useEffect(() => {
     if (
       !isEmpty(portfolios) &&
       portfoliosFetched &&
@@ -185,13 +178,13 @@ export default function WalletScreen() {
   ]);
 
   useEffect(() => {
-    initializeENSIntroData();
-  }, [initializeENSIntroData]);
-
-  useEffect(() => {
-    if (walletReady) updateWalletENSAvatars();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [walletReady]);
+    if (walletReady && profilesEnabled) {
+      InteractionManager.runAfterInteractions(() => {
+        initializeENSIntroData();
+        trackENSProfile();
+      });
+    }
+  }, [initializeENSIntroData, profilesEnabled, trackENSProfile, walletReady]);
 
   // Show the exchange fab only for supported networks
   // (mainnet & rinkeby)

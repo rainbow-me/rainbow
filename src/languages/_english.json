@@ -766,8 +766,10 @@
       },
       "details": {
         "add_to_contacts": "Add to Contacts",
-        "remove_from_contacts": "Remove from Contacts",
         "copy_address": "Copy Address",
+        "open_wallet": "Open Wallet",
+        "remove_from_contacts": "Remove from Contacts",
+        "share": "Share",
         "view_on_etherscan": "View on Etherscan"
       },
       "intro": {
@@ -1198,7 +1200,9 @@
         "enter_seeds_placeholder": "Secret phrase, private key, Ethereum address, or ENS name",
         "get_new_wallet": "Get a new wallet",
         "import_wallet": "Import Wallet",
-        "name_wallet": "Name your wallet"
+        "name_wallet": "Name your wallet",
+        "terms": "By proceeding, you agree to Rainbow’s ",
+        "terms_link": "Terms of Use"
       },
       "pin_authentication": {
         "choose_your_pin": "Choose your PIN",

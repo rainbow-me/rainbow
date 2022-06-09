@@ -1,7 +1,7 @@
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import { toLower } from 'lodash';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { Linking } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { RainbowAccount } from '../model/wallet';
@@ -9,6 +9,7 @@ import { useNavigation } from '../navigation/Navigation';
 import useAccountProfile from './useAccountProfile';
 import useENSProfile from './useENSProfile';
 import { prefetchENSProfileImages } from './useENSProfileImages';
+import { prefetchENSProfileRecords } from './useENSProfileRecords';
 import useENSRegistration from './useENSRegistration';
 import useImagePicker from './useImagePicker';
 import useWallets from './useWallets';
@@ -39,6 +40,12 @@ export default () => {
     enabled: profileEnabled && profilesEnabled,
   });
   const { openPicker } = useImagePicker();
+
+  useEffect(() => {
+    if (accountENS) {
+      prefetchENSProfileRecords(accountENS);
+    }
+  }, [accountENS]);
 
   const onAvatarRemovePhoto = useCallback(async () => {
     const newWallets = {
