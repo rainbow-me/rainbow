@@ -11,11 +11,7 @@ import { Text, TruncatedAddress } from '../text';
 import { getContacts } from '@rainbow-me/handlers/localstorage/contacts';
 import { isHexString } from '@rainbow-me/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
-import {
-  useImportingWallet,
-  useRainbowProfile,
-  useWallets,
-} from '@rainbow-me/hooks';
+import { useImportingWallet, useWallets } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
@@ -90,9 +86,6 @@ export function Header() {
   const { goBack, navigate } = useNavigation();
   const contextValue = useContext(ShowcaseContext);
   const { isReadOnlyWallet } = useWallets();
-  const { data: rainbowProfile } = useRainbowProfile(contextValue?.address, {
-    enabled: Boolean(contextValue?.address),
-  });
 
   const { colors } = useTheme();
 
@@ -122,15 +115,9 @@ export function Header() {
       address: contextValue?.address,
       contactNickname: currentContact?.nickname,
       ens: contextValue?.data?.reverseEns,
-      profile: rainbowProfile,
       type: 'contact_profile',
     });
-  }, [
-    contextValue?.address,
-    contextValue?.data?.reverseEns,
-    navigate,
-    rainbowProfile,
-  ]);
+  }, [contextValue?.address, contextValue?.data?.reverseEns, navigate]);
 
   const onSend = useCallback(async () => {
     goBack();

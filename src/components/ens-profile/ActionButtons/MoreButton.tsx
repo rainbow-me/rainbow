@@ -7,11 +7,7 @@ import {
 } from 'react-native-ios-context-menu';
 import { showDeleteContactActionSheet } from '../../contacts';
 import More from '../MoreButton/MoreButton';
-import {
-  useClipboard,
-  useContacts,
-  useRainbowProfile,
-} from '@rainbow-me/hooks';
+import { useClipboard, useContacts } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
@@ -34,9 +30,6 @@ export default function MoreButton({
   const { navigate } = useNavigation();
   const { setClipboard } = useClipboard();
   const { contacts, onRemoveContact } = useContacts();
-  const { data: rainbowProfile } = useRainbowProfile(address || '', {
-    enabled: Boolean(address),
-  });
 
   const contact = useMemo(
     () => (address ? contacts[address.toLowerCase()] : undefined),
@@ -100,7 +93,6 @@ export default function MoreButton({
           address,
           contactNickname: contact?.nickname,
           ens: ensName,
-          profile: rainbowProfile,
           type: 'contact_profile',
         });
       }
@@ -117,7 +109,6 @@ export default function MoreButton({
       address,
       contact?.nickname,
       ensName,
-      rainbowProfile,
       navigate,
       onRemoveContact,
       setClipboard,

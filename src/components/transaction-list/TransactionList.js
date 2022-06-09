@@ -24,7 +24,6 @@ import { isValidDomainFormat } from '@rainbow-me/helpers/validators';
 import {
   useAccountProfile,
   useOnAvatarPress,
-  useRainbowProfile,
   useSafeImageUri,
   useWallets,
 } from '@rainbow-me/hooks';
@@ -86,9 +85,6 @@ export default function TransactionList({
   } = useAccountProfile();
   const [address, setAddress] = useState(null);
   const [ens, setEns] = useState(null);
-  const { data: rainbowProfile } = useRainbowProfile(address, {
-    enabled: Boolean(address),
-  });
 
   useEffect(() => {
     const fetchENS = async () => {
@@ -226,7 +222,6 @@ export default function TransactionList({
                   address: contactAddress,
                   contactNickname: contact?.nickname,
                   ens,
-                  profile: rainbowProfile,
                   type: 'contact_profile',
                 });
                 break;
@@ -253,15 +248,7 @@ export default function TransactionList({
         );
       }
     },
-    [
-      accountAddress,
-      contacts,
-      ens,
-      navigate,
-      rainbowProfile,
-      setAddress,
-      transactions,
-    ]
+    [accountAddress, contacts, ens, navigate, setAddress, transactions]
   );
 
   const onCopyAddressPress = useCallback(

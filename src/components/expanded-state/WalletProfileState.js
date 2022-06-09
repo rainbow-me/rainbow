@@ -1,11 +1,14 @@
 import analytics from '@segment/analytics-react-native';
+import { isValidAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
 import React, { useCallback, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import ProfileModal from './profile/ProfileModal';
 import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
+import { useRainbowProfile } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+
 export default function WalletProfileState({
   actionType,
   address,
@@ -14,7 +17,10 @@ export default function WalletProfileState({
   profile,
 }) {
   const { goBack, navigate } = useNavigation();
-  const { name, image, color, emoji } = profile;
+  const { data: rainbowProfile } = useRainbowProfile(address, {
+    enabled: isValidAddress(address),
+  });
+  const { name, image } = profile;
 
   const [value, setValue] = useState(
     name ? removeFirstEmojiFromString(name) : ''
@@ -32,9 +38,9 @@ export default function WalletProfileState({
     analytics.track('Tapped "Submit" on Wallet Profile modal');
     InteractionManager.runAfterInteractions(() => {
       onCloseModal({
-        color: color,
+        color: rainbowProfile?.color,
         image: image,
-        name: emoji ? `${emoji} ${value}` : value,
+        name: value,
       });
       goBack();
       if (actionType === 'Create' && isNewProfile) {
@@ -43,10 +49,9 @@ export default function WalletProfileState({
     });
   }, [
     actionType,
-    color,
+    rainbowProfile?.color,
     goBack,
     isNewProfile,
-    emoji,
     navigate,
     onCloseModal,
     image,
@@ -55,9 +60,9 @@ export default function WalletProfileState({
 
   return (
     <ProfileModal
-      accentColor={color}
+      accentColor={rainbowProfile?.color}
       address={address}
-      emojiAvatar={emoji}
+      emojiAvatar={rainbowProfile?.emoji}
       handleCancel={handleCancel}
       handleSubmit={handleSubmit}
       imageAvatar={image}

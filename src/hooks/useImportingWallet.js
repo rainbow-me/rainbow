@@ -11,7 +11,6 @@ import {
   useIsWalletEthZero,
   useMagicAutofocus,
   usePrevious,
-  useRainbowProfile,
   useTimeout,
   useWalletENSAvatar,
   useWallets,
@@ -52,14 +51,10 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const [busy, setBusy] = useState(false);
   const [checkedWallet, setCheckedWallet] = useState(null);
   const [resolvedAddress, setResolvedAddress] = useState(null);
-  const [importAddress, setImportAddress] = useState(null);
   const [startAnalyticsTimeout] = useTimeout();
   const wasImporting = usePrevious(isImporting);
   const { updateWalletENSAvatars } = useWalletENSAvatar();
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const { data: rainbowProfile } = useRainbowProfile(importAddress, {
-    enabled: Boolean(importAddress),
-  });
 
   const inputRef = useRef(null);
 
@@ -111,15 +106,15 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           onCloseModal: ({ color, name, image }) => {
             importWallet(color, name, image);
           },
-          profile: { ...rainbowProfile, image: avatarUrl, name },
+          profile: { image: avatarUrl, name },
           type: 'wallet_profile',
           withoutStatusBar: true,
         });
       } else {
-        importWallet(rainbowProfile?.color, name, avatarUrl);
+        importWallet(null, name, avatarUrl);
       }
     },
-    [handleSetImporting, navigate, rainbowProfile, showImportModal]
+    [handleSetImporting, navigate, showImportModal]
   );
 
   const handlePressImportButton = useCallback(
@@ -142,7 +137,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             return;
           }
           setResolvedAddress(address);
-          setImportAddress(address);
           name = input;
           avatarUrl = avatarUrl || images?.avatarUrl;
 
@@ -166,7 +160,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             return;
           }
           setResolvedAddress(address);
-          setImportAddress(address);
           name = input;
           startImportProfile(name, address);
           analytics.track('Show wallet profile modal for Unstoppable address', {
@@ -196,7 +189,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         } catch (e) {
           logger.log(`Error resolving ENS during wallet import`, e);
         }
-        setImportAddress(address);
         startImportProfile(name, input);
       } else {
         try {
@@ -216,7 +208,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
               }
             }
             setBusy(false);
-            setImportAddress(walletResult.address);
             startImportProfile(name, walletResult.address, avatarUrl);
             analytics.track('Show wallet profile modal for imported wallet', {
               address: walletResult.address,
@@ -229,13 +220,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         }
       }
     },
-    [
-      isSecretValid,
-      profilesEnabled,
-      seedPhrase,
-      setImportAddress,
-      startImportProfile,
-    ]
+    [isSecretValid, profilesEnabled, seedPhrase, startImportProfile]
   );
 
   const dispatch = useDispatch();

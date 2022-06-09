@@ -1,3 +1,4 @@
+import { isValidAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
 import React, { useCallback, useState } from 'react';
 import { Keyboard } from 'react-native';
@@ -14,8 +15,9 @@ import {
   useContacts,
   useENSProfileImages,
   usePersistentDominantColorFromImage,
+  useRainbowProfile,
 } from '@rainbow-me/hooks';
-const ContactProfileState = ({ address, ens, contactNickname, profile }) => {
+const ContactProfileState = ({ address, ens, contactNickname }) => {
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const [nickname, setNickname] = useState(
     removeFirstEmojiFromString(contactNickname) || ens || ''
@@ -25,13 +27,29 @@ const ContactProfileState = ({ address, ens, contactNickname, profile }) => {
 
   const { network } = useAccountSettings();
 
-  const { color, emoji } = profile;
+  const { data: rainbowProfile } = useRainbowProfile(address, {
+    enabled: isValidAddress(address),
+  });
 
   const handleAddContact = useCallback(() => {
-    onAddOrUpdateContacts(address, nickname, color, network, ens);
+    onAddOrUpdateContacts(
+      address,
+      nickname,
+      rainbowProfile?.color,
+      network,
+      ens
+    );
     goBack();
     android && Keyboard.dismiss();
-  }, [address, color, ens, goBack, network, nickname, onAddOrUpdateContacts]);
+  }, [
+    address,
+    ens,
+    goBack,
+    network,
+    nickname,
+    onAddOrUpdateContacts,
+    rainbowProfile?.color,
+  ]);
 
   const handleCancel = useCallback(() => {
     goBack();
@@ -48,13 +66,13 @@ const ContactProfileState = ({ address, ens, contactNickname, profile }) => {
     maybeSignUri(avatarUrl || '') || ''
   );
 
-  const accentColor = dominantColor || color;
+  const accentColor = dominantColor || rainbowProfile?.color;
 
   return (
     <ProfileModal
       accentColor={accentColor}
       address={address}
-      emojiAvatar={emoji}
+      emojiAvatar={rainbowProfile?.emoji}
       handleCancel={handleCancel}
       handleSubmit={handleAddContact}
       imageAvatar={avatarUrl}

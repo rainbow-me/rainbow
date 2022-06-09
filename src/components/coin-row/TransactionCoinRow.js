@@ -19,7 +19,7 @@ import {
   hasAddableContact,
 } from '@rainbow-me/helpers/transactions';
 import { isValidDomainFormat } from '@rainbow-me/helpers/validators';
-import { useAccountSettings, useRainbowProfile } from '@rainbow-me/hooks';
+import { useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import {
@@ -87,9 +87,6 @@ export default function TransactionCoinRow({ item, ...props }) {
   const { contact } = item;
   const { accountAddress } = useAccountSettings();
   const { navigate } = useNavigation();
-  const { data: rainbowProfile } = useRainbowProfile(contact?.address, {
-    enabled: Boolean(contact?.address),
-  });
   const [ens, setEns] = useState(null);
 
   const onPressTransaction = useCallback(async () => {
@@ -165,7 +162,6 @@ export default function TransactionCoinRow({ item, ...props }) {
                 address: contactAddress,
                 contactNickname: contact?.nickname,
                 ens: ens,
-                profile: rainbowProfile,
                 type: 'contact_profile',
               });
               break;
@@ -193,7 +189,7 @@ export default function TransactionCoinRow({ item, ...props }) {
         }
       );
     }
-  }, [accountAddress, contact, ens, item, navigate, rainbowProfile]);
+  }, [accountAddress, contact, ens, item, navigate]);
 
   const mainnetAddress = useSelector(
     state =>

@@ -19,11 +19,7 @@ import useExperimentalFlag, {
 import { resolveNameOrAddress } from '@rainbow-me/handlers/web3';
 import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
 import { isENSAddressFormat } from '@rainbow-me/helpers/validators';
-import {
-  useClipboard,
-  useDimensions,
-  useRainbowProfile,
-} from '@rainbow-me/hooks';
+import { useClipboard, useDimensions } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
@@ -98,9 +94,6 @@ export default function SendHeader({
   const { colors } = useTheme();
 
   const [hexAddress, setHexAddress] = useState('');
-  const { data: rainbowProfile } = useRainbowProfile(hexAddress, {
-    enabled: Boolean(hexAddress),
-  });
 
   useEffect(() => {
     if (isValidAddress) {
@@ -145,7 +138,6 @@ export default function SendHeader({
       contactNickname: userWallet?.label ?? contact?.nickname,
       ens: recipient,
       onRefocusInput,
-      profile: rainbowProfile,
       type: 'contact_profile',
     });
   }, [
@@ -153,7 +145,6 @@ export default function SendHeader({
     hexAddress,
     navigate,
     onRefocusInput,
-    rainbowProfile,
     recipient,
     userWallet?.label,
   ]);
