@@ -200,7 +200,6 @@ const ExchangeAssetList = (
         <ContactRow
           accountType="suggestions"
           address={item.address}
-          color={item.color}
           image={item.image}
           nickname={item.nickname}
           onPress={itemProps.onPress}

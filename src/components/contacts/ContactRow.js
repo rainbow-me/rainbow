@@ -1,9 +1,7 @@
-import React, { Fragment, useEffect, useMemo, useState } from 'react';
-import {
-  removeFirstEmojiFromString,
-  returnStringFirstEmoji,
-} from '../../helpers/emojiHandler';
-import { abbreviations, magicMemo, profileUtils } from '../../utils';
+import { isValidAddress } from 'ethereumjs-util';
+import React, { Fragment, useEffect, useState } from 'react';
+import { removeFirstEmojiFromString } from '../../helpers/emojiHandler';
+import { abbreviations, magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText } from '../coin-row';
 import { Column, RowWithMargins } from '../layout';
@@ -23,13 +21,10 @@ import {
   useContacts,
   useDimensions,
   useENSProfileImages,
+  useRainbowProfile,
 } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { margin } from '@rainbow-me/styles';
-import {
-  addressHashedColorIndex,
-  addressHashedEmoji,
-} from '@rainbow-me/utils/profileUtils';
 
 const ContactAddress = styled(TruncatedAddress).attrs(
   ({ theme: { colors }, lite }) => ({
@@ -70,13 +65,16 @@ const css = {
 };
 
 const ContactRow = (
-  { address, color, nickname, symmetricalMargins, ...props },
+  { address, nickname, symmetricalMargins, ...props },
   ref
 ) => {
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const { width: deviceWidth } = useDimensions();
   const { onAddOrUpdateContacts } = useContacts();
   const { colors } = useTheme();
+  const { data: rainbowProfile } = useRainbowProfile(address, {
+    enabled: isValidAddress(address),
+  });
   const {
     accountType,
     balance,
@@ -93,13 +91,6 @@ const ContactRow = (
   if (balance === '0.00') {
     cleanedUpBalance = '0';
   }
-
-  // show avatar for contact rows that are accounts, not contacts
-  const avatar =
-    accountType !== 'contacts'
-      ? returnStringFirstEmoji(label) ||
-        profileUtils.addressHashedEmoji(address)
-      : null;
 
   // if the accountType === 'suggestions', nickname will always be an ens or hex address, not a custom contact nickname
   const initialENSName =
@@ -124,7 +115,7 @@ const ContactRow = (
           onAddOrUpdateContacts(
             address,
             name && isENSAddressFormat(nickname) ? name : nickname,
-            color,
+            rainbowProfile?.color,
             network,
             name
           );
@@ -136,11 +127,11 @@ const ContactRow = (
     accountType,
     onAddOrUpdateContacts,
     address,
-    color,
     ensName,
     network,
     nickname,
     profilesEnabled,
+    rainbowProfile?.color,
     setENSName,
   ]);
 
@@ -163,23 +154,6 @@ const ContactRow = (
 
   const imageAvatar = profilesEnabled ? images?.avatarUrl : image;
 
-  const emoji = useMemo(() => (address ? addressHashedEmoji(address) : ''), [
-    address,
-  ]);
-
-  const emojiAvatar = profilesEnabled
-    ? emoji
-    : avatar || nickname || label || ensName;
-
-  const colorIndex = useMemo(
-    () => (address ? addressHashedColorIndex(address) : 0),
-    [address]
-  );
-
-  const bgColor = profilesEnabled
-    ? colors.avatarBackgrounds[colorIndex || 0]
-    : color;
-
   return (
     <ButtonPressAnimation
       exclusive
@@ -201,10 +175,10 @@ const ContactRow = (
           <ImageAvatar image={imageAvatar} marginRight={10} size="medium" />
         ) : (
           <ContactAvatar
-            color={bgColor}
+            color={rainbowProfile?.color}
             marginRight={10}
             size="medium"
-            value={emojiAvatar}
+            value={rainbowProfile?.emoji}
           />
         )}
         <Column justify={ios ? 'space-between' : 'center'}>

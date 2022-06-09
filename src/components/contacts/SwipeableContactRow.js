@@ -54,7 +54,6 @@ const SwipeableContactRow = (
   {
     accountType,
     address,
-    color,
     ens,
     image,
     network,
@@ -126,7 +125,6 @@ const SwipeableContactRow = (
       <ContactRow
         accountType={accountType}
         address={address}
-        color={color}
         ens={ens}
         image={image}
         network={network}
