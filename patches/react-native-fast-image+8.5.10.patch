@@ -11,7 +11,7 @@ index db0fada..54d8d5b 100644
    s.dependency 'SDWebImageWebPCoder', '~> 0.8.4'
  end
 diff --git a/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageSource.java b/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageSource.java
-index 888b38e..e73737d 100644
+index 888b38e..bb7ffc2 100644
 --- a/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageSource.java
 +++ b/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageSource.java
 @@ -107,6 +107,12 @@ public class FastImageSource extends ImageSource {
@@ -23,15 +23,71 @@ index 888b38e..e73737d 100644
 +        if (Uri.EMPTY.equals(uriVal)) {
 +            return null;
 +        }
-+        
++
          return new GlideUrl(getUri().toString(), getHeaders());
      }
  }
+diff --git a/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageViewManager.java b/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageViewManager.java
+index 09b01c3..0944463 100644
+--- a/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageViewManager.java
++++ b/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageViewManager.java
+@@ -9,6 +9,7 @@ import android.os.Build;
+ import com.bumptech.glide.Glide;
+ import com.bumptech.glide.RequestManager;
+ import com.bumptech.glide.load.model.GlideUrl;
++import com.bumptech.glide.request.Request;
+ import com.facebook.react.bridge.ReadableMap;
+ import com.facebook.react.bridge.WritableMap;
+ import com.facebook.react.bridge.WritableNativeMap;
+@@ -58,9 +59,7 @@ class FastImageViewManager extends SimpleViewManager<FastImageViewWithUrl> imple
+     public void setSrc(FastImageViewWithUrl view, @Nullable ReadableMap source) {
+         if (source == null || !source.hasKey("uri") || isNullOrEmpty(source.getString("uri"))) {
+             // Cancel existing requests.
+-            if (requestManager != null) {
+-                requestManager.clear(view);
+-            }
++            clearView(view);
+ 
+             if (view.glideUrl != null) {
+                 FastImageOkHttpProgressGlideModule.forget(view.glideUrl.toStringUrl());
+@@ -97,9 +96,7 @@ class FastImageViewManager extends SimpleViewManager<FastImageViewWithUrl> imple
+ 
+         // Cancel existing request.
+         view.glideUrl = glideUrl;
+-        if (requestManager != null) {
+-            requestManager.clear(view);
+-        }
++        clearView(view);
+ 
+         String key = glideUrl.toStringUrl();
+         FastImageOkHttpProgressGlideModule.expect(key, this);
+@@ -149,9 +146,7 @@ class FastImageViewManager extends SimpleViewManager<FastImageViewWithUrl> imple
+     @Override
+     public void onDropViewInstance(FastImageViewWithUrl view) {
+         // This will cancel existing requests.
+-        if (requestManager != null) {
+-            requestManager.clear(view);
+-        }
++        clearView(view);
+ 
+         if (view.glideUrl != null) {
+             final String key = view.glideUrl.toString();
+@@ -244,4 +239,10 @@ class FastImageViewManager extends SimpleViewManager<FastImageViewWithUrl> imple
+         }
+ 
+     }
++
++    private void clearView(FastImageViewWithUrl view) {
++        if (requestManager != null && view != null && view.getTag() != null && view.getTag() instanceof Request) {
++            requestManager.clear(view);
++        }
++    }
+ }
 diff --git a/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageViewModule.java b/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageViewModule.java
-index 019032b..31646a4 100644
+index 019032b..eac2913 100644
 --- a/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageViewModule.java
 +++ b/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageViewModule.java
-@@ -2,8 +2,15 @@ package com.dylanvann.fastimage;
+@@ -2,8 +2,14 @@ package com.dylanvann.fastimage;
  
  import android.app.Activity;
  
@@ -43,11 +99,10 @@ index 019032b..31646a4 100644
  import com.bumptech.glide.load.model.GlideUrl;
 +import com.bumptech.glide.request.RequestListener;
 +import com.bumptech.glide.request.target.Target;
-+import com.facebook.react.bridge.Promise;
  import com.facebook.react.bridge.Promise;
  import com.facebook.react.bridge.ReactApplicationContext;
  import com.facebook.react.bridge.ReactContextBaseJavaModule;
-@@ -12,9 +19,12 @@ import com.facebook.react.bridge.ReadableArray;
+@@ -12,9 +18,12 @@ import com.facebook.react.bridge.ReadableArray;
  import com.facebook.react.bridge.ReadableMap;
  import com.facebook.react.views.imagehelper.ImageSource;
  
@@ -60,7 +115,7 @@ index 019032b..31646a4 100644
  
      FastImageViewModule(ReactApplicationContext reactContext) {
          super(reactContext);
-@@ -83,4 +93,43 @@ class FastImageViewModule extends ReactContextBaseJavaModule {
+@@ -83,4 +92,43 @@ class FastImageViewModule extends ReactContextBaseJavaModule {
          Glide.get(activity.getApplicationContext()).clearDiskCache();
          promise.resolve(null);
      }
@@ -130,29 +185,29 @@ index 8a91257..641d0fe 100644
      clearDiskCache: () => Promise<void>;
  }
 diff --git a/node_modules/react-native-fast-image/dist/index.js b/node_modules/react-native-fast-image/dist/index.js
-index 1fc0e9d..91b4033 100644
+index 1fc0e9d..d0d8ec0 100644
 --- a/node_modules/react-native-fast-image/dist/index.js
 +++ b/node_modules/react-native-fast-image/dist/index.js
 @@ -88,6 +88,8 @@ FastImage.priority = priority;
  
  FastImage.preload = sources => FastImageViewNativeModule.preload(sources);
  
-+FastImage.getCachePath = (source: Source) => FastImageViewNativeModule.getCachePath(source)
++FastImage.getCachePath = (source: Source) => FastImageViewNativeModule.getCachePath(source);
 +
  FastImage.clearMemoryCache = () => FastImageViewNativeModule.clearMemoryCache();
  
  FastImage.clearDiskCache = () => FastImageViewNativeModule.clearDiskCache();
 diff --git a/node_modules/react-native-fast-image/ios/FastImage/FFFastImageViewManager.m b/node_modules/react-native-fast-image/ios/FastImage/FFFastImageViewManager.m
-index a8059af..641647f 100644
+index a8059af..5356b11 100644
 --- a/node_modules/react-native-fast-image/ios/FastImage/FFFastImageViewManager.m
 +++ b/node_modules/react-native-fast-image/ios/FastImage/FFFastImageViewManager.m
-@@ -48,4 +48,20 @@ - (FFFastImageView*)view {
+@@ -48,4 +48,21 @@ - (FFFastImageView*)view {
      }];
  }
  
 +RCT_EXPORT_METHOD(getCachePath:(nonnull FFFastImageSource *)source
-+    withResolver:(RCTPromiseResolveBlock)resolve
-+    andRejecter:(RCTPromiseRejectBlock)reject)
++                  withResolver:(RCTPromiseResolveBlock)resolve
++                   andRejecter:(RCTPromiseRejectBlock)reject)
 +{
 +    SDWebImageManager *imageManager = [SDWebImageManager sharedManager];
 +    NSString *key = [imageManager cacheKeyForURL:source.url];
@@ -167,3 +222,4 @@ index a8059af..641647f 100644
 +}
 +
  @end
++
