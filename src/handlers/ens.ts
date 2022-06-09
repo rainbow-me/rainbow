@@ -247,7 +247,7 @@ export const fetchSuggestions = async (
                   );
                   return {
                     ...domain,
-                    avatar: images.avatarUrl,
+                    avatar: images?.avatarUrl,
                   };
                   // eslint-disable-next-line no-empty
                 } catch (e) {}
@@ -340,8 +340,8 @@ export const fetchImages = async (ensName: string) => {
   } catch (err) {
     // Fallback to storage images
     const images = await getProfileImages(ensName);
-    avatarUrl = images.avatarUrl;
-    coverUrl = images.coverUrl;
+    avatarUrl = images?.avatarUrl;
+    coverUrl = images?.coverUrl;
   }
 
   return {
@@ -634,9 +634,9 @@ export const estimateENSSetOwnerGasLimit = async ({
   fromAddress?: string;
 }) =>
   estimateENSTransactionGasLimit({
+    fromAddress,
     name,
     ownerAddress,
-    fromAddress,
     type: ENSRegistrationTransactionType.SET_OWNER,
   });
 

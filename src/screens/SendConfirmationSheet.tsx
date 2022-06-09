@@ -737,6 +737,7 @@ export default function SendConfirmationSheet() {
                               index: i,
                             })
                           }
+                          testID={check.id}
                         />
                       ))}
                     </Stack>

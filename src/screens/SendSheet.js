@@ -599,6 +599,8 @@ export default function SendSheet(props) {
       dataAddNewTransaction,
       dispatch,
       ensName,
+      ensProfile?.data?.coinAddresses,
+      ensProfile?.data?.records,
       gasLimit,
       getNextNonce,
       isENS,

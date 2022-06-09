@@ -14,17 +14,19 @@ export default function CheckboxField({
   isChecked,
   label,
   onPress,
+  testID,
 }: {
   color: string;
   isChecked: boolean;
   label: string;
   onPress: () => void;
+  testID: string;
 }) {
   const secondary15 = useForegroundColor('secondary15');
   const action = useForegroundColor('action');
 
   return (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.925}>
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.925} testID={testID}>
       <Inline alignVertical="center" space="8px" wrap={false}>
         <Box
           alignItems="center"

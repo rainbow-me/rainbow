@@ -76,7 +76,6 @@ export default function WalletScreen() {
   const loadGlobalLateData = useLoadGlobalLateData();
   const initializeDiscoverData = useInitializeDiscoverData();
   const initializeENSIntroData = useInitializeENSIntroData();
-
   const walletReady = useSelector(
     ({ appState: { walletReady } }) => walletReady
   );
