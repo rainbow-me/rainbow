@@ -419,9 +419,13 @@ const getENSBaseRegistrarImplementationContract = async (wallet?: Wallet) => {
   );
 };
 
-const getENSRegistryContract = async () => {
-  const provider = await getProviderForNetwork();
-  return new Contract(ensRegistryAddress, ENSRegistryWithFallbackABI, provider);
+const getENSRegistryContract = async (wallet?: Wallet) => {
+  const signerOrProvider = wallet || (await getProviderForNetwork());
+  return new Contract(
+    ensRegistryAddress,
+    ENSRegistryWithFallbackABI,
+    signerOrProvider
+  );
 };
 
 const getAvailable = async (name: string): Promise<boolean> => {
@@ -507,7 +511,9 @@ const setupMulticallRecords = (
   if (textAssociatedRecord) {
     data.push(
       textAssociatedRecord
-        .filter(textRecord => Boolean(textRecord.value))
+        .filter(
+          textRecord => Boolean(textRecord.value) || textRecord.value === ''
+        )
         .map(textRecord => {
           return resolver.encodeFunctionData('setText', [
             namehash,

@@ -6,9 +6,12 @@ import { Contract } from '@ethersproject/contracts';
 import * as Helpers from './helpers';
 import registrarABI from '@rainbow-me/references/ens/ENSETHRegistrarController.json';
 import publicResolverABI from '@rainbow-me/references/ens/ENSPublicResolver.json';
+import registryWithFallbackABI from '@rainbow-me/references/ens/ENSRegistryWithFallback.json';
+
 const ensETHRegistrarControllerAddress =
   '0x283Af0B28c62C092C9727F1Ee09c02CA627EB7F5';
 const ensPublicResolverAddress = '0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41';
+const ensRegistryAddress = '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e'
 
 const RANDOM_NAME = 'somerandomname321';
 const RANDOM_NAME_ETH = RANDOM_NAME + '.eth';
@@ -22,6 +25,7 @@ const RECORD_NAME = 'random';
 const EIP155_FORMATTED_AVATAR_RECORD =
   'eip155:1/erc721:0x06012c8cf97bead5deae237070f9587f8e7a266d/1368227';
 
+
 const nameIsAvailable = async name => {
   const provider = Helpers.getProvider();
   const registrarContract = new Contract(
@@ -32,6 +36,17 @@ const nameIsAvailable = async name => {
   const nameIsAvailable = await registrarContract.available(name);
   return !!nameIsAvailable;
 };
+
+const getNameOwner = async ensName => {
+  const provider = Helpers.getProvider();
+  const registry = new Contract(
+    ensRegistryAddress,
+    registryWithFallbackABI,
+    provider
+  );
+  const owner = await registry.owner(hash(ensName))
+  return owner;
+}
 
 const getRecords = async ensName => {
   const provider = Helpers.getProvider();
@@ -344,11 +359,14 @@ describe('Register ENS Flow', () => {
     const { address, primaryName } = await resolveName(
       RAINBOW_TEST_WALLET_NAME
     );
+    const owner = await getNameOwner(RAINBOW_TEST_WALLET_NAME)
     if (address !== RAINBOW_WALLET_ADDRESS)
       throw new Error('Resolved address is wrong');
     if (primaryName !== RAINBOW_WALLET_NAME)
       throw new Error('Resolved primary name is wrong');
     if (displayName) throw new Error('me.rainbow.displayName name is wrong');
+    // TODO this is failing
+    // if (owner !== RAINBOW_WALLET_ADDRESS)throw new Error('Owner not set correctly');
   });
 
   afterAll(async () => {
