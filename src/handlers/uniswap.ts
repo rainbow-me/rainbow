@@ -52,7 +52,7 @@ export const getTestnetUniswapPairs = (
     {}
   );
 
-  const loweredPairs = Object.entries(pairs).reduce<Record<string, Asset>>(
+  const keysToLowerCase = Object.entries(pairs).reduce<Record<string, Asset>>(
     (acc, [key, value]) => {
       acc[key.toLocaleLowerCase()] = value;
       return acc;
@@ -60,7 +60,7 @@ export const getTestnetUniswapPairs = (
     {}
   );
 
-  return Object.entries(loweredPairs).reduce<Record<string, Asset>>(
+  return Object.entries(keysToLowerCase).reduce<Record<string, Asset>>(
     (acc, [key, value]) => {
       acc[key] = {
         ...value,
