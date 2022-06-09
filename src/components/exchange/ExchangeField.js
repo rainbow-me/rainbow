@@ -47,7 +47,7 @@ const Input = styled(ExchangeInput).attrs({
 const ExchangeField = (
   {
     address,
-    mainnet_address,
+    mainnetAddress,
     amount,
     disableCurrencySelection,
     editable,
@@ -66,7 +66,7 @@ const ExchangeField = (
 ) => {
   const colorForAsset = useColorForAsset({
     address,
-    mainnet_address,
+    mainnetAddress,
   });
   const handleFocusField = useCallback(() => {
     ref?.current?.focus();
@@ -95,7 +95,7 @@ const ExchangeField = (
           {symbol ? (
             <CoinIcon
               address={address}
-              mainnet_address={mainnet_address}
+              mainnetAddress={mainnetAddress}
               symbol={symbol}
               type={type}
             />
@@ -122,7 +122,7 @@ const ExchangeField = (
       {!disableCurrencySelection && (
         <TokenSelectionButton
           address={address}
-          mainnet_address={mainnet_address}
+          mainnetAddress={mainnetAddress}
           onPress={onPressSelectCurrency}
           symbol={symbol}
           testID={testID + '-selection-button'}

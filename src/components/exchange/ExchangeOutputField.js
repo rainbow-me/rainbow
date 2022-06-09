@@ -32,7 +32,7 @@ export default function ExchangeOutputField({
         address={outputCurrencyAddress}
         amount={outputAmount}
         editable={editable}
-        mainnet_address={outputCurrencyMainnetAddress}
+        mainnetAddress={outputCurrencyMainnetAddress}
         onFocus={onFocus}
         onPressSelectCurrency={onPressSelectOutputCurrency}
         onTapWhileDisabled={onTapWhileDisabled}
