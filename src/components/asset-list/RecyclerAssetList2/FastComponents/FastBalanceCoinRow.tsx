@@ -256,7 +256,7 @@ export default React.memo(function BalanceCoinRow({
 
 const cx = StyleSheet.create({
   bottom: {
-    marginTop: 12,
+    marginTop: 10,
   },
   checkboxContainer: {
     width: 51,
@@ -288,9 +288,7 @@ const cx = StyleSheet.create({
   },
   container: {
     flexDirection: 'row',
-    marginLeft: 2,
-    marginRight: 19,
-    marginVertical: 9.5,
+    marginRight: 18,
   },
   flex: {
     flex: 1,
@@ -310,6 +308,7 @@ const cx = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
     flexDirection: 'row',
+    marginTop: -1,
   },
   row: {
     flexDirection: 'row',
