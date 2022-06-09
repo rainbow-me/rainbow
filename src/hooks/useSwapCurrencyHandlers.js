@@ -1,6 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import { useCallback, useEffect, useMemo } from 'react';
-import { InteractionManager, TextInput } from 'react-native';
+import { InteractionManager, Keyboard, TextInput } from 'react-native';
 import { MMKV } from 'react-native-mmkv';
 import { useDispatch } from 'react-redux';
 import { STORAGE_IDS } from '../model/mmkv';
@@ -161,6 +161,7 @@ export default function useSwapCurrencyHandlers({
         !hasShownWarning
       ) {
         InteractionManager.runAfterInteractions(() => {
+          android && Keyboard.dismiss();
           Navigation.handleAction(Routes.EXPLAIN_SHEET, {
             network: newInputCurrency?.type,
             onClose: () => {

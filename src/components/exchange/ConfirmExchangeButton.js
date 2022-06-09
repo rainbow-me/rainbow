@@ -10,8 +10,6 @@ import {
   ColorModeProvider,
   Column,
   Columns,
-  Row,
-  Rows,
   Text,
 } from '@rainbow-me/design-system';
 import { ExchangeModalTypes } from '@rainbow-me/helpers';
@@ -145,63 +143,51 @@ export default function ConfirmExchangeButton({
 
   return (
     <Container>
-      <Rows height="content">
-        {flashbots && (
-          <Row
-            alignHorizontal="center"
-            alignVertical="center"
-            height="content"
-            width="content"
-          >
-            <ColorModeProvider value="dark">
-              <Columns alignHorizontal="center" height="content">
-                <Column height="content" width="content">
-                  <ImgixImage
-                    source={{
-                      uri: 'https://docs.flashbots.net/img/logo.png',
-                    }}
-                    style={{ height: 24, marginTop: -7, width: 24 }}
-                  />
-                </Column>
-                <Column height="content" width="content">
-                  <Text color="primary" weight="semibold">
-                    {' '}
-                    Flashbots Protect enabled 􀅵
-                  </Text>
-                </Column>
-              </Columns>
-            </ColorModeProvider>
-          </Row>
-        )}
-        <Row>
-          <ConfirmButton
-            backgroundColor={buttonColor}
-            disableLongPress={shouldOpenSwapDetails}
-            disabled={isDisabled}
-            disabledBackgroundColor={
-              isSwapDetailsRoute
-                ? isDarkMode
-                  ? darkModeThemeColors.blueGreyDark04
-                  : lightModeThemeColors.blueGreyDark50
-                : darkModeThemeColors.blueGreyDark04
-            }
-            label={label}
-            loading={loading}
-            marginTop={15}
-            onLongPress={shouldOpenSwapDetails ? onPressViewDetails : onSubmit}
-            shadows={
-              isSwapDetailsRoute
-                ? isDisabled
-                  ? shadows.disabled
-                  : shadowsForAsset
-                : shadows.default
-            }
-            showBiometryIcon={isSwapDetailsRoute}
-            testID={testID}
-            {...props}
-          />
-        </Row>
-      </Rows>
+      {flashbots && (
+        <ColorModeProvider value="dark">
+          <Columns alignHorizontal="center" height="content">
+            <Column height="content" width="content">
+              <ImgixImage
+                source={{
+                  uri: 'https://docs.flashbots.net/img/logo.png',
+                }}
+                style={{ height: 24, marginTop: -7, width: 24 }}
+              />
+            </Column>
+            <Column height="content" width="content">
+              <Text color="primary" weight="semibold">
+                {` ${lang.t('exchange.flashbots_protected')} 􀅵`}
+              </Text>
+            </Column>
+          </Columns>
+        </ColorModeProvider>
+      )}
+      <ConfirmButton
+        backgroundColor={buttonColor}
+        disableLongPress={shouldOpenSwapDetails}
+        disabled={isDisabled}
+        disabledBackgroundColor={
+          isSwapDetailsRoute
+            ? isDarkMode
+              ? darkModeThemeColors.blueGreyDark04
+              : lightModeThemeColors.blueGreyDark50
+            : darkModeThemeColors.blueGreyDark04
+        }
+        label={label}
+        loading={loading}
+        marginTop={ios ? 15 : 0}
+        onLongPress={shouldOpenSwapDetails ? onPressViewDetails : onSubmit}
+        shadows={
+          isSwapDetailsRoute
+            ? isDisabled
+              ? shadows.disabled
+              : shadowsForAsset
+            : shadows.default
+        }
+        showBiometryIcon={isSwapDetailsRoute}
+        testID={testID}
+        {...props}
+      />
     </Container>
   );
 }
