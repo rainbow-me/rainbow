@@ -259,6 +259,7 @@ const cx = StyleSheet.create({
     marginTop: 10,
   },
   checkboxContainer: {
+    marginRight: 5,
     width: 51,
   },
   checkboxInnerContainer: {
