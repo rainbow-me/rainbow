@@ -79,9 +79,12 @@ const getUnderlyingData = marketData => {
   };
 };
 
-const getUnderlyingPrice = token => {
+const getUnderlyingPrice = (token, nativeCurrency) => {
   const address = token.underlying.address;
-  const underlyingPrice = ethereumUtils.getAssetPrice({ address });
+  const underlyingPrice = ethereumUtils.getAssetPrice({
+    address,
+    nativeCurrency,
+  });
   const underlyingBalanceNativeValue =
     underlyingPrice && token.supplyBalanceUnderlying
       ? multiply(underlyingPrice, token.supplyBalanceUnderlying)
@@ -99,7 +102,7 @@ function usePersistentBackupSavings(accountAddress, network) {
 
 export default function useSavingsAccount(includeDefaultDai) {
   const dispatch = useDispatch();
-  const { accountAddress, network } = useAccountSettings();
+  const { accountAddress, nativeCurrency, network } = useAccountSettings();
   const [backupSavings = null, setBackupSavings] = usePersistentBackupSavings(
     accountAddress,
     network
@@ -189,7 +192,7 @@ export default function useSavingsAccount(includeDefaultDai) {
 
     const { accountTokens, daiMarketData } = result;
     const accountTokensWithPrices = accountTokens?.map(token =>
-      getUnderlyingPrice(token)
+      getUnderlyingPrice(token, nativeCurrency)
     );
 
     const orderedAccountTokens = orderBy(
@@ -209,10 +212,13 @@ export default function useSavingsAccount(includeDefaultDai) {
       includeDefaultDai && !accountHasCDAI && !isEmpty(daiMarketData);
 
     if (shouldAddDai) {
-      savings = concat(orderedAccountTokens, getUnderlyingPrice(daiMarketData));
+      savings = concat(
+        orderedAccountTokens,
+        getUnderlyingPrice(daiMarketData, nativeCurrency)
+      );
     }
     return savings;
-  }, [includeDefaultDai, result]);
+  }, [includeDefaultDai, nativeCurrency, result]);
 
   return {
     refetchSavings,

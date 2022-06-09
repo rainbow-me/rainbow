@@ -17,6 +17,7 @@ import { buildAssetUniqueIdentifier } from '@rainbow-me/helpers/assets';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
+import { ethereumUtils } from '@rainbow-me/utils';
 
 const editTranslateOffset = 37;
 
@@ -55,10 +56,11 @@ const PriceContainer = ios
       marginTop: -3,
     });
 
-const BottomRow = ({ balance, native }) => {
+const BottomRow = ({ native, uniqueId }) => {
   const { colors } = useTheme();
   const percentChange = get(native, 'change');
   const percentageChangeDisplay = formatPercentageString(percentChange);
+  const balance = ethereumUtils.getAssetBalanceData({ uniqueId });
 
   const isPositive = percentChange && percentageChangeDisplay.charAt(0) !== '-';
 
@@ -66,7 +68,7 @@ const BottomRow = ({ balance, native }) => {
     <BottomRowContainer>
       <FlexItem flex={1}>
         <BottomRowText color={colors.alpha(colors.blueGreyDark, 0.5)}>
-          {get(balance, 'display', '')}
+          {balance?.display || ''}
         </BottomRowText>
       </FlexItem>
       <View>
@@ -109,7 +111,7 @@ const arePropsEqual = (prev, next) => {
 const BalanceCoinRow = ({
   containerStyles = null,
   isFirstCoinRow = false,
-  item = {},
+  item,
   ...props
 }) => {
   const { toggleSelectedCoin } = useCoinListEditOptions();

@@ -202,6 +202,10 @@ export default function ChartExpandedState({ asset }) {
     () => parseAssetNative(parsedAsset, nativeCurrency),
     [nativeCurrency, parsedAsset]
   );
+  const assetPrice = ethereumUtils.getAssetPrice({
+    nativeCurrency,
+    uniqueId: parsedAsset?.uniqueId,
+  });
 
   // If we don't have a balance for this asset
   // It's a generic asset
@@ -233,10 +237,7 @@ export default function ChartExpandedState({ asset }) {
     totalVolume,
     loading: additionalAssetDataLoading,
     links,
-  } = useAdditionalAssetData(
-    asset?.address,
-    parsedAssetWithNative?.price?.value
-  );
+  } = useAdditionalAssetData(asset?.address, assetPrice);
 
   const delayedDescriptions = useDelayedValueWithLayoutAnimation(
     description?.replace(/\s+/g, '')

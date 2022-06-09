@@ -1193,8 +1193,6 @@ export const dataUpdateAssetBalanceInfo = (
     },
   };
 
-  logger.debug('payload ', payload);
-
   dispatch({
     payload,
     type: DATA_UPDATE_ASSET_BALANCE_INFO,

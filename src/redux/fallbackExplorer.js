@@ -74,6 +74,7 @@ const getMainnetAssetsFromCovalent = async (
       // Overrides
       const fallbackPrice = ethereumUtils.getAssetPrice({
         address: contractAddress,
+        currency,
       });
 
       if (fallbackPrice) {

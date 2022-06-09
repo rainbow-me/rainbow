@@ -32,7 +32,7 @@ const getZeroEth = () => {
 export default function useAccountAsset(uniqueId) {
   const { nativeCurrency } = useAccountSettings();
   const assetsWithBalance = useSelector(filterAssetsByBalanceSelector);
-  const assets = useSelector(({ data: { assetsData }}) => assetsData);
+  const assets = useSelector(({ data: { assetsData } }) => assetsData);
   const accountAsset = assetsWithBalance?.find(
     asset => asset.uniqueId === uniqueId
   );

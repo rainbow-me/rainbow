@@ -27,6 +27,7 @@ import {
   multiply,
 } from '@rainbow-me/utilities';
 import { ethereumUtils, getTokenMetadata } from '@rainbow-me/utils';
+import logger from 'logger';
 
 const accountAddressSelector = (state: AppState) =>
   state.settings.accountAddress;
@@ -90,12 +91,14 @@ const transformPool = (
   const liquidityTokenWithNative = !isNil(liquidityToken)
     ? parseAssetNative(liquidityToken, nativeCurrency)
     : liquidityToken;
+  logger.debug('token w native: ', liquidityTokenWithNative);
   const price = ethereumUtils.getAssetPrice({
     address: liquidityToken?.address,
     nativeCurrency,
     network: ethereumUtils.getNetworkFromChainId(chainId),
     uniqueId: liquidityToken?.uniqueId,
   });
+  logger.debug('ltwn price: ', price);
 
   const {
     liquidityTokenBalance: balanceAmount,
@@ -167,6 +170,7 @@ const buildUniswapCards = (
         uniswapLiquidityTokens,
         token => token.address === position?.pair?.id
       );
+      logger.debug('buc lt: ', liquidityToken);
       return transformPool(liquidityToken, position, nativeCurrency, chainId);
     })
   );

@@ -9,6 +9,7 @@ import {
   getLiquidity,
   saveLiquidity,
 } from '@rainbow-me/handlers/localstorage/uniswap';
+import { filterAssetsByBalanceSelector } from '@rainbow-me/helpers/assetSelectors';
 
 // -- Constants ------------------------------------------------------------- //
 
@@ -169,12 +170,14 @@ export const uniswapUpdateLiquidityTokens = (
     const {
       liquidityTokens: existingLiquidityTokens,
     } = getState().uniswapLiquidity;
+    const balances = filterAssetsByBalanceSelector(getState());
     updatedLiquidityTokens = filter(
       uniqBy(
         concat(updatedLiquidityTokens, existingLiquidityTokens),
         token => token.address
       ),
-      token => !!Number(token?.balance?.amount ?? 0)
+      token =>
+        !!Number(balances.find(({ address }) => address === token.address) ?? 0)
     );
   } else {
     const assetCodes = map(liquidityTokens, token => token.address);

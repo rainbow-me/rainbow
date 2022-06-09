@@ -45,7 +45,10 @@ const addEthPlaceholder = (
     !hasEth &&
     (assets.length > 0 || !emptyCollectibles)
   ) {
-    const ethPriceData = ethereumUtils.getAssetPrice({ address: ETH_ADDRESS });
+    const ethPriceData = ethereumUtils.getAssetPrice({
+      nativeCurrency,
+      uniqueId: ETH_ADDRESS,
+    });
     const { relative_change_24h, value } = ethPriceData;
 
     const zeroEth = {

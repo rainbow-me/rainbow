@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 import currency from 'currency.js';
-import { get, isNil } from 'lodash';
+import { get, isNil, toUpper } from 'lodash';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 
 type BigNumberish = number | string | BigNumber;
@@ -376,7 +376,10 @@ export const convertAmountToNativeDisplay = (
   buffer?: number,
   skipDecimals?: boolean
 ) => {
-  const nativeSelected = get(supportedNativeCurrencies, `${nativeCurrency}`);
+  const nativeSelected = get(
+    supportedNativeCurrencies,
+    `${toUpper(nativeCurrency)}`
+  );
   const { decimals } = nativeSelected;
   const display = handleSignificantDecimals(
     value,

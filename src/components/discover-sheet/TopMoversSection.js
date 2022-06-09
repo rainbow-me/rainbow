@@ -12,7 +12,6 @@ import { useAccountSettings, useTopMovers } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { parseAssetNative } from '@rainbow-me/parsers';
 import Routes from '@rainbow-me/routes';
-import logger from 'logger';
 
 const ErrorMessage = ({ colors, children }) => (
   <Centered marginVertical={50}>
@@ -34,7 +33,8 @@ export default function TopMoversSection() {
   const assets = useSelector(({ data: { assetsData } }) => assetsData);
   const handlePress = useCallback(
     assetData => {
-      const asset = assets?.[assetData.address] || assetData;
+      const asset =
+        { ...(assets?.[assetData.address] || {}), ...assetData } || assetData;
       const parsedAssetWithNative = parseAssetNative(asset, nativeCurrency);
 
       navigate(Routes.EXPANDED_ASSET_SHEET, {
@@ -51,7 +51,6 @@ export default function TopMoversSection() {
     assetData => {
       const asset = assets?.[assetData.address] || assetData;
       const parsedAssetWithNative = parseAssetNative(asset, nativeCurrency);
-      logger.debug('parsed asset with native: ', parsedAssetWithNative);
       const {
         name,
         native,
