@@ -1,17 +1,5 @@
-diff --git a/node_modules/react-native-fast-image/RNFastImage.podspec b/node_modules/react-native-fast-image/RNFastImage.podspec
-index db0fada..54d8d5b 100644
---- a/node_modules/react-native-fast-image/RNFastImage.podspec
-+++ b/node_modules/react-native-fast-image/RNFastImage.podspec
-@@ -16,6 +16,6 @@ Pod::Spec.new do |s|
-   s.source_files  = "ios/**/*.{h,m}"
- 
-   s.dependency 'React-Core'
--  s.dependency 'SDWebImage', '~> 5.11.1'
-+  s.dependency 'SDWebImage', '~> 5.12.5'
-   s.dependency 'SDWebImageWebPCoder', '~> 0.8.4'
- end
 diff --git a/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageSource.java b/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageSource.java
-index 888b38e..e73737d 100644
+index 888b38e..bb7ffc2 100644
 --- a/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageSource.java
 +++ b/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageSource.java
 @@ -107,6 +107,12 @@ public class FastImageSource extends ImageSource {
@@ -23,7 +11,7 @@ index 888b38e..e73737d 100644
 +        if (Uri.EMPTY.equals(uriVal)) {
 +            return null;
 +        }
-+        
++
          return new GlideUrl(getUri().toString(), getHeaders());
      }
  }
@@ -130,14 +118,14 @@ index 8a91257..641d0fe 100644
      clearDiskCache: () => Promise<void>;
  }
 diff --git a/node_modules/react-native-fast-image/dist/index.js b/node_modules/react-native-fast-image/dist/index.js
-index 1fc0e9d..91b4033 100644
+index 1fc0e9d..d0d8ec0 100644
 --- a/node_modules/react-native-fast-image/dist/index.js
 +++ b/node_modules/react-native-fast-image/dist/index.js
 @@ -88,6 +88,8 @@ FastImage.priority = priority;
  
  FastImage.preload = sources => FastImageViewNativeModule.preload(sources);
  
-+FastImage.getCachePath = (source: Source) => FastImageViewNativeModule.getCachePath(source)
++FastImage.getCachePath = (source: Source) => FastImageViewNativeModule.getCachePath(source);
 +
  FastImage.clearMemoryCache = () => FastImageViewNativeModule.clearMemoryCache();
  
