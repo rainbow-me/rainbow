@@ -90,14 +90,6 @@ export default function useMagicAutofocus(
       // when using fallback stacks.
       if (!isNativeStackAvailable) {
         InteractionManager.runAfterInteractions(fallbackRefocusLastInput);
-      } else {
-        if (showAfterInteractions) {
-          InteractionManager.runAfterInteractions(() => {
-            triggerFocus();
-          });
-        } else {
-          triggerFocus();
-        }
       }
 
       return () => {
