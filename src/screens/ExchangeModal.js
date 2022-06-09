@@ -139,6 +139,31 @@ export default function ExchangeModal({
     addListener,
   } = useNavigation();
 
+  const defaultOutputAssetOverride = useMemo(() => {
+    if (defaultInputAsset && defaultOutputAsset) {
+      if (
+        defaultInputAsset.type !== defaultOutputAsset.type &&
+        defaultOutputAsset?.implementations?.[defaultInputAsset?.type]?.address
+      ) {
+        if (defaultInputAsset.type !== Network.mainnet)
+          defaultOutputAsset.mainnet_address = defaultOutputAsset.address;
+
+        defaultOutputAsset.address =
+          defaultOutputAsset.implementations[defaultInputAsset?.type].address;
+        defaultOutputAsset.type = defaultInputAsset.type;
+        defaultOutputAsset.uniqueId =
+          defaultOutputAsset.type === Network.mainnet
+            ? defaultOutputAsset?.address
+            : `${defaultOutputAsset?.address}_${defaultOutputAsset?.type}`;
+        return defaultOutputAsset;
+      } else {
+        return null;
+      }
+    } else {
+      return defaultOutputAsset;
+    }
+  }, [defaultInputAsset, defaultOutputAsset]);
+
   const isDeposit = type === ExchangeModalTypes.deposit;
   const isWithdrawal = type === ExchangeModalTypes.withdrawal;
   const isSavings = isDeposit || isWithdrawal;
@@ -167,7 +192,6 @@ export default function ExchangeModal({
   });
 
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
-
   const {
     handleFocus,
     inputFieldRef,
@@ -190,7 +214,7 @@ export default function ExchangeModal({
     navigateToSelectOutputCurrency,
   } = useSwapCurrencyHandlers({
     defaultInputAsset,
-    defaultOutputAsset,
+    defaultOutputAsset: defaultOutputAssetOverride,
     fromDiscover,
     ignoreInitialTypeCheck,
     inputFieldRef,
