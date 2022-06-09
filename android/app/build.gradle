@@ -305,8 +305,7 @@ android {
             keyPassword 'android'
         }
 
-
-        def pass = System.getenv('RAINBOW_KEY_ANDROID_PASSWORD')
+        def pass = System.getenv('RAINBOW_KEY_ANDROID_PASSWORD') ?: getPassword("rainbow","rainbow-android-key")
 
         release {
             storeFile file('../keystores/rainbow-key.keystore')
