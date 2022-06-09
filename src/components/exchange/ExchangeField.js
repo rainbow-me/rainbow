@@ -89,7 +89,7 @@ const ExchangeField = (
   return (
     <Container {...props}>
       <TouchableWithoutFeedback
-        onPress={onTapWhileDisabled || handleFocusField}
+        onPress={onTapWhileDisabled ?? handleFocusField}
       >
         <FieldRow disableCurrencySelection={disableCurrencySelection}>
           {symbol ? (
