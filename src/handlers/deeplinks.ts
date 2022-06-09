@@ -51,7 +51,8 @@ export default async function handleDeeplink(
         const { addr } = qs.parse(urlObj.query?.substring(1));
         const address = toLower(addr);
         if (address && address.length > 0) {
-          const asset = ethereumUtils.getParsedAsset({ address });
+          const assets = store.getState().data.assetsData;
+          const asset = assets[address]; // mainnet only?
 
           // First go back to home to dismiss any open shit
           // and prevent a weird crash

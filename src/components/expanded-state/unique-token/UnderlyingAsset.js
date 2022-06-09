@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
+import { useSelector } from 'react-redux';
 import { useRemoveNextToLast } from '../../../navigation/useRemoveNextToLast';
 import { ButtonPressAnimation } from '../../animations';
 import { UnderlyingAssetCoinRow } from '../../coin-row';
@@ -31,10 +32,12 @@ export default function UnderlyingAsset({
 
   const removeNextToLastRoute = useRemoveNextToLast();
 
-  const handlePress = useCallback(() => {
-    const parsedAsset = ethereumUtils.getParsedAsset({ address });
-    const parsedAssetWithNative = parseAssetNative(parsedAsset, nativeCurrency);
+  const assets = useSelector(({ data: { assetsData } }) => assetsData);
+  const parsedAsset =
+    assets?.[ethereumUtils.getUniqueId({ uniqueId: address })];
+  const parsedAssetWithNative = parseAssetNative(parsedAsset, nativeCurrency);
 
+  const handlePress = useCallback(() => {
     // on iOS we handle this on native side
     android && removeNextToLastRoute();
 
@@ -42,7 +45,7 @@ export default function UnderlyingAsset({
       parsedAssetWithNative,
       type: 'token',
     });
-  }, [address, nativeCurrency, push, removeNextToLastRoute]);
+  }, [parsedAssetWithNative, push, removeNextToLastRoute]);
 
   return (
     <Row

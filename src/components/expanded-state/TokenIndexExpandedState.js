@@ -1,6 +1,7 @@
 import lang from 'i18n-js';
 import { sortBy, times } from 'lodash';
 import React, { Fragment, useContext, useEffect, useMemo, useRef } from 'react';
+import { useSelector } from 'react-redux';
 import { AssetListItemSkeleton } from '../asset-list';
 import { Column, Row } from '../layout';
 import {
@@ -59,20 +60,23 @@ const formatItem = (
 export default function TokenIndexExpandedState({ asset }) {
   const { colors } = useTheme();
   const { nativeCurrency, nativeCurrencySymbol } = useAccountSettings();
+  const assets = useSelector(({ data: { assetsData } }) => assetsData);
 
   const dpi = useDPI();
 
   const underlying = useMemo(() => {
     if (!dpi) return [];
-    const baseAsset = ethereumUtils.getParsedAsset({
-      address: dpi?.base?.address,
-    });
+    const baseAsset = assets[dpi?.base?.address];
     const baseAssetWithNative = parseAssetNative(baseAsset, nativeCurrency);
 
     const underlyingAssets = dpi?.underlying.map(asset => {
-      const parsedAsset = ethereumUtils.getParsedAsset({
-        address: asset?.address,
-      });
+      const parsedAsset =
+        assets[
+          ethereumUtils.getUniqueId({
+            address: asset?.address,
+            network: asset?.network,
+          })
+        ];
       if (!parsedAsset) return null;
       const parsedAssetWithNative = parseAssetNative(
         parsedAsset,
@@ -104,11 +108,17 @@ export default function TokenIndexExpandedState({ asset }) {
       underlyingAssets.filter(asset => asset !== null),
       'percentageAllocation'
     ).reverse();
-  }, [dpi, nativeCurrency, nativeCurrencySymbol]);
+  }, [assets, dpi, nativeCurrency, nativeCurrencySymbol]);
 
   const hasUnderlying = underlying.length !== 0;
   const { layout } = useContext(ModalContext) || {};
-  const parsedAsset = ethereumUtils.getParsedAsset({ address: asset?.address });
+  const parsedAsset =
+    assets[
+      ethereumUtils.getUniqueId({
+        address: asset?.address,
+        network: asset?.network,
+      })
+    ];
   const parsedAssetWithNative = parseAssetNative(parsedAsset, nativeCurrency);
 
   useEffect(() => {

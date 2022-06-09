@@ -426,6 +426,7 @@ export const fetchOnchainBalances = ({
         {
           meta: {
             address: accountAddress,
+            balance_only: true,
             currency: nativeCurrency,
             status: 'ok',
           },

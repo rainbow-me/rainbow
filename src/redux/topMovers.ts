@@ -4,9 +4,11 @@ import {
   saveTopGainers,
   saveTopLosers,
 } from '../handlers/localstorage/topMovers';
+import { dataUpdateAssetPricingInfo } from './data';
 import { emitChartsRequest } from './explorer';
 import { AppDispatch, AppGetState } from './store';
-import { parseAsset, parseAssetsNative } from '@rainbow-me/parsers';
+import { parseAssets, parseAssetsNative } from '@rainbow-me/parsers';
+import logger from 'logger';
 
 interface ZerionAsset {
   asset_code: string;
@@ -97,8 +99,17 @@ export const updateTopMovers = (message: ZerionAssetInfoResponse) => (
 ) => {
   const { nativeCurrency } = getState().settings;
   const orderByDirection = message.meta.order_by['relative_changes.1d'];
-  const assets = message.payload?.info?.map(({ asset }) => parseAsset(asset));
-  const info = parseAssetsNative(assets, nativeCurrency);
+  const assets = message.payload?.info?.map(({ asset }) => asset);
+  const assetsMap = assets.reduce(
+    (mappedAssets, currentAsset) => ({
+      ...mappedAssets,
+      [currentAsset.asset_code]: currentAsset,
+    }),
+    {} as { [address: string]: ZerionAsset }
+  );
+  dataUpdateAssetPricingInfo(assetsMap, nativeCurrency);
+  const parsedAssets = parseAssets(assetsMap);
+  const info = parseAssetsNative(parsedAssets, nativeCurrency);
 
   const assetCodes = map(info, asset => asset.address);
   dispatch(emitChartsRequest(assetCodes));
@@ -106,6 +117,7 @@ export const updateTopMovers = (message: ZerionAssetInfoResponse) => (
   if (orderByDirection === 'asc') {
     // If it's less than 5 better not to show anything lol
     const fixedLosers = info.filter(({ price }) => {
+      logger.debug('price: ', price);
       const { relative_change_24h } = price || {};
       return typeof relative_change_24h === 'number' && relative_change_24h < 0;
     });

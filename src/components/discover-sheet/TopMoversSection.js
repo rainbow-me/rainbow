@@ -1,6 +1,7 @@
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { IS_TESTING } from 'react-native-dotenv';
+import { useSelector } from 'react-redux';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/ChartExpandedState';
 import { Centered, Column, Flex } from '../layout';
 import { MarqueeList } from '../list';
@@ -9,8 +10,9 @@ import EdgeFade from './EdgeFade';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { useAccountSettings, useTopMovers } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
+import { parseAssetNative } from '@rainbow-me/parsers';
 import Routes from '@rainbow-me/routes';
-import { ethereumUtils } from '@rainbow-me/utils';
+import logger from 'logger';
 
 const ErrorMessage = ({ colors, children }) => (
   <Centered marginVertical={50}>
@@ -27,33 +29,37 @@ const ErrorMessage = ({ colors, children }) => (
 export default function TopMoversSection() {
   const { gainers = [], losers = [] } = useTopMovers() || {};
   const { navigate } = useNavigation();
-  const { network } = useAccountSettings();
+  const { nativeCurrency, network } = useAccountSettings();
   const { colors } = useTheme();
+  const assets = useSelector(({ data: { assetsData } }) => assetsData);
   const handlePress = useCallback(
-    asset => {
-      const assetFormatted =
-        ethereumUtils.getAccountAsset(asset.address) || asset;
+    assetData => {
+      const asset = assets?.[assetData.address] || assetData;
+      const parsedAssetWithNative = parseAssetNative(asset, nativeCurrency);
 
       navigate(Routes.EXPANDED_ASSET_SHEET, {
-        asset: assetFormatted,
+        asset: parsedAssetWithNative,
         fromDiscover: true,
         longFormHeight: initialChartExpandedStateSheetHeight,
         type: 'token',
       });
     },
-    [navigate]
+    [assets, nativeCurrency, navigate]
   );
 
   const formatItems = useCallback(
-    asset => {
+    assetData => {
+      const asset = assets?.[assetData.address] || assetData;
+      const parsedAssetWithNative = parseAssetNative(asset, nativeCurrency);
+      logger.debug('parsed asset with native: ', parsedAssetWithNative);
       const {
         name,
-        native: { change },
+        native,
         price: { relative_change_24h },
-      } = asset;
+      } = parsedAssetWithNative;
       return {
-        ...asset,
-        change: `${relative_change_24h > 0 ? '+' : ''}${change}`,
+        ...parsedAssetWithNative,
+        change: `${relative_change_24h > 0 ? '+' : ''}${native?.change}`,
         onPress: handlePress,
         // We’re truncating the coin name manually so the width of the text can be measured accurately
         truncatedName: `${
@@ -61,7 +67,7 @@ export default function TopMoversSection() {
         }`,
       };
     },
-    [handlePress]
+    [assets, nativeCurrency, handlePress]
   );
 
   const gainerItems = useMemo(() => gainers.map(formatItems), [

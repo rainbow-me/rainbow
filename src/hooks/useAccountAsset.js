@@ -1,12 +1,9 @@
-import { isNil } from 'lodash';
-import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
 import useAccountSettings from './useAccountSettings';
 import { AssetType } from '@rainbow-me/entities';
+import { filterAssetsByBalanceSelector } from '@rainbow-me/helpers/assetSelectors';
 import { parseAssetNative } from '@rainbow-me/parsers';
 import { ETH_ADDRESS, ETH_ICON_URL } from '@rainbow-me/references';
-import { ethereumUtils } from '@rainbow-me/utils';
 
 const getZeroEth = () => {
   return {
@@ -28,59 +25,21 @@ const getZeroEth = () => {
   };
 };
 
-const accountAssetsDataSelector = state => state.data.assetsData;
-const assetPricesFromUniswapSelector = state =>
-  state.data.assetPricesFromUniswap;
-const uniqueIdSelector = (_, uniqueId) => uniqueId;
-
-const accountAssetDataSelector = createSelector(
-  accountAssetsDataSelector,
-  uniqueIdSelector,
-  (accountAssetsData, uniqueId) => accountAssetsData?.[uniqueId]
-);
-
-const assetPriceFromUniswapSelector = createSelector(
-  assetPricesFromUniswapSelector,
-  uniqueIdSelector,
-  (assetPricesFromUniswap, uniqueId) => assetPricesFromUniswap?.[uniqueId]
-);
-
-const makeAccountAssetSelector = () =>
-  createSelector(
-    accountAssetDataSelector,
-    assetPriceFromUniswapSelector,
-    (accountAsset, assetPriceFromUniswap) => {
-      if (!accountAsset) return null;
-      const assetUniswapPrice = assetPriceFromUniswap?.price;
-      const assetUniswapRelativeChange =
-        assetPriceFromUniswap?.relativePriceChange;
-      if (isNil(accountAsset?.price) && assetUniswapPrice) {
-        return {
-          ...accountAsset,
-          price: {
-            relative_change_24h: assetUniswapRelativeChange,
-            value: assetUniswapPrice,
-          },
-        };
-      }
-      return accountAsset;
-    }
-  );
-
 // this is meant to be used for assets under balances
 // with a fallback for generic assets
 // and an ETH placeholder
 // NFTs are not included in this hook
 export default function useAccountAsset(uniqueId) {
   const { nativeCurrency } = useAccountSettings();
-  const selectAccountAsset = useMemo(makeAccountAssetSelector, []);
-  const accountAsset = useSelector(state =>
-    selectAccountAsset(state, uniqueId)
+  const assetsWithBalance = useSelector(filterAssetsByBalanceSelector);
+  const assets = useSelector(({ data: { assetsData }}) => assetsData);
+  const accountAsset = assetsWithBalance?.find(
+    asset => asset.uniqueId === uniqueId
   );
   if (accountAsset) {
     return parseAssetNative(accountAsset, nativeCurrency);
   } else if (uniqueId === ETH_ADDRESS) {
-    const eth = ethereumUtils.getParsedAsset({ address: ETH_ADDRESS });
+    const eth = assets[ETH_ADDRESS];
     const result = parseAssetNative(eth, nativeCurrency);
     const placeholderEth = {
       ...getZeroEth(),

@@ -3,6 +3,7 @@ import lang from 'i18n-js';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import { useSelector } from 'react-redux';
 import font from '../../styles/fonts';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
@@ -15,7 +16,6 @@ import { DPI_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { fontWithWidth, position } from '@rainbow-me/styles';
 import { handleSignificantDecimals } from '@rainbow-me/utilities';
-import { ethereumUtils } from '@rainbow-me/utils';
 import ShadowStack from 'react-native-shadow-stack';
 
 const formatItem = ({ address, name, price, symbol }, nativeCurrencySymbol) => {
@@ -40,28 +40,27 @@ const formatItem = ({ address, name, price, symbol }, nativeCurrencySymbol) => {
 
 const PulseIndex = () => {
   const { navigate } = useNavigation();
+  const assets = useSelector(({ data }) => data.assetsData);
+  const dpi = useMemo(() => assets[DPI_ADDRESS], [assets]);
 
   const { nativeCurrency, nativeCurrencySymbol } = useAccountSettings();
   const item = useMemo(() => {
-    const asset = ethereumUtils.getParsedAsset({ address: DPI_ADDRESS });
-    if (!asset) return null;
-    return formatItem(asset, nativeCurrencySymbol);
-  }, [nativeCurrencySymbol]);
+    return formatItem(dpi || {}, nativeCurrencySymbol);
+  }, [nativeCurrencySymbol, dpi]);
 
   const handlePress = useCallback(() => {
-    const asset = ethereumUtils.getParsedAsset({ address: DPI_ADDRESS });
-    const assetWithNative = parseAssetNative(asset, nativeCurrency);
+    const dpiWithNative = parseAssetNative(dpi, nativeCurrency);
 
     analytics.track('Pressed DPI Button', { category: 'discover' });
 
     navigate(Routes.TOKEN_INDEX_SHEET, {
-      assetWithNative,
+      asset: dpiWithNative,
       backgroundOpacity: 1,
       cornerRadius: 39,
       fromDiscover: true,
       type: 'token_index',
     });
-  }, [nativeCurrency, navigate]);
+  }, [dpi, nativeCurrency, navigate]);
 
   const { colors, isDarkMode } = useTheme();
 

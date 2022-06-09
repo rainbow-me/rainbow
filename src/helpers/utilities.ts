@@ -2,7 +2,6 @@ import BigNumber from 'bignumber.js';
 import currency from 'currency.js';
 import { get, isNil } from 'lodash';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
-import logger from 'logger';
 
 type BigNumberish = number | string | BigNumber;
 
@@ -377,8 +376,6 @@ export const convertAmountToNativeDisplay = (
   buffer?: number,
   skipDecimals?: boolean
 ) => {
-  logger.debug('supported native currencies: ', supportedNativeCurrencies);
-  logger.debug('native currency: ', nativeCurrency);
   const nativeSelected = get(supportedNativeCurrencies, `${nativeCurrency}`);
   const { decimals } = nativeSelected;
   const display = handleSignificantDecimals(

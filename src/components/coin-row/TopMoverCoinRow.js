@@ -70,9 +70,7 @@ const TopMoverCoinRow = asset => {
     address,
     change,
     onPress,
-    native: {
-      price: { display },
-    },
+    native,
     symbol,
     truncatedName,
     onPressCancel,
@@ -128,7 +126,7 @@ const TopMoverCoinRow = asset => {
         <ColumnWithMargins margin={2}>
           <TopMoverTitle>{truncatedName}</TopMoverTitle>
           <BottomRowText weight="medium">
-            {display}
+            {native?.price?.display}
             <Spacer />
             <BottomRowText
               color={parseFloat(change) > 0 ? colors.green : colors.red}

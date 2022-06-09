@@ -8,7 +8,7 @@ import React, {
   useState,
 } from 'react';
 import { InteractionManager, View } from 'react-native';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import CurrencySelectionTypes from '../../helpers/currencySelectionTypes';
 import { emitAssetRequest } from '../../redux/explorer';
 import deviceUtils from '../../utils/deviceUtils';
@@ -25,7 +25,7 @@ import {
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
-import { ethereumUtils } from '@rainbow-me/utils';
+import logger from 'logger';
 
 export const SearchContainer = styled(Row)({
   height: '100%',
@@ -57,6 +57,7 @@ export default function DiscoverSearch() {
     uniswapCurrencyList,
     ensResults,
   ]);
+  const assets = useSelector(({ data: { assetsData } }) => assetsData);
 
   useHardwareBackOnFocus(() => {
     cancelSearch();
@@ -76,7 +77,8 @@ export default function DiscoverSearch() {
           });
         });
       } else {
-        const asset = ethereumUtils.getParsedAsset(item.uniqueId);
+        const asset = assets?.[item?.uniqueId];
+        logger.debug('asset: ', asset);
         dispatch(emitAssetRequest(item.address));
         navigate(Routes.EXPANDED_ASSET_SHEET, {
           asset: asset || item,
@@ -85,7 +87,7 @@ export default function DiscoverSearch() {
         });
       }
     },
-    [dispatch, navigate, searchInputRef, setIsSearchModeEnabled]
+    [dispatch, navigate, searchInputRef, setIsSearchModeEnabled, assets]
   );
 
   const handleActionAsset = useCallback(

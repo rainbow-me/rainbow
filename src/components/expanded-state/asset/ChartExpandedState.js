@@ -10,6 +10,7 @@ import React, {
 } from 'react';
 import { LayoutAnimation, View } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
+import { useSelector } from 'react-redux';
 import { ModalContext } from '../../../react-native-cool-modals/NativeStackView';
 import L2Disclaimer from '../../L2Disclaimer';
 import { ButtonPressAnimation } from '../../animations';
@@ -185,27 +186,34 @@ export default function ChartExpandedState({ asset }) {
   const [carouselHeight, setCarouselHeight] = useState(defaultCarouselHeight);
   const { nativeCurrency, network: currentNetwork } = useAccountSettings();
   const [additionalContentHeight, setAdditionalContentHeight] = useState(0);
-
-  const parsedAsset = ethereumUtils.getParsedAsset({
-    address: asset?.address,
-    network: asset?.network,
-    uniqueId: asset?.uniqueId,
-  });
-  const parsedAssetWithNative = useMemo(() => {
-    return parseAssetNative(parsedAsset, nativeCurrency);
-  }, [nativeCurrency, parsedAsset]);
+  const assets = useSelector(({ data: { assetsData } }) => assetsData);
+  const parsedAsset = useMemo(() => {
+    return (
+      assets?.[
+        ethereumUtils.getUniqueId({
+          address: asset?.address,
+          network: asset?.network,
+          uniqueId: asset?.uniqueId,
+        })
+      ] || asset
+    );
+  }, [asset, assets]);
+  const parsedAssetWithNative = useMemo(
+    () => parseAssetNative(parsedAsset, nativeCurrency),
+    [nativeCurrency, parsedAsset]
+  );
 
   // If we don't have a balance for this asset
   // It's a generic asset
-  const hasBalance = !isNil(parseAssetNative?.balance?.amount);
+  const hasBalance = !isNil(parsedAssetWithNative?.native?.balance?.amount);
 
   if (parsedAssetWithNative?.mainnet_address) {
     parsedAssetWithNative.l2Address = parsedAssetWithNative.address;
     parsedAssetWithNative.address = parsedAssetWithNative.mainnet_address;
   }
 
-  const isL2 = useMemo(() => isL2Network(parsedAssetWithNative.type), [
-    parsedAssetWithNative.type,
+  const isL2 = useMemo(() => isL2Network(parsedAssetWithNative?.type), [
+    parsedAssetWithNative?.type,
   ]);
   // This one includes the original l2 address if exists
   const ogAsset = useMemo(() => {
@@ -364,13 +372,13 @@ export default function ChartExpandedState({ asset }) {
             </TokenInfoItem>
             <TokenInfoItem
               title={
-                asset?.native?.balance.display
+                parsedAssetWithNative?.native?.balance?.display
                   ? lang.t('expanded_state.asset.value')
                   : ' '
               }
               weight="bold"
             >
-              {asset?.native?.balance?.display || ' '}
+              {parsedAssetWithNative?.native?.balance?.display || ' '}
             </TokenInfoItem>
           </TokenInfoRow>
         </TokenInfoSection>

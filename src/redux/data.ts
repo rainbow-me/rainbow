@@ -570,6 +570,7 @@ interface MessageMeta {
   currency?: string;
   status?: string;
   chain_id?: Network; // L2
+  balance_only?: boolean;
 }
 
 /**
@@ -1158,34 +1159,47 @@ export const dataUpdateAssetBalanceInfo = (
   updatedAssets: {
     [uniqueId: string]: ZerionAsset | ZerionAssetFallback;
   },
-  walletAddress: string
+  responseAddress: string
 ) => (
   dispatch: Dispatch<DataUpdateAssetBalanceInfoAction>,
   getState: AppGetState
 ) => {
-  const { accountAddress, network } = getState().settings;
-  const currentBalances = getState().data.accountAssetBalanceData;
+  const { network } = getState().settings;
+  const { accountAssetBalanceData } = getState().data;
+  const currentBalances = accountAssetBalanceData[responseAddress] || {};
   const updatedAssetBalances = Object.keys(updatedAssets).reduce(
     (accountAssetBalances, currentKey) => {
       const currentAsset = updatedAssets[currentKey];
       return {
         ...accountAssetBalances,
-        [walletAddress]: {
-          ...(accountAssetBalances[walletAddress] || {}),
-          [currentKey]: convertRawAmountToBalance(
-            currentAsset.quantity || 0,
-            currentAsset
-          ),
-        },
+        [currentKey]: convertRawAmountToBalance(
+          currentAsset.quantity || 0,
+          currentAsset
+        ),
       };
     },
     currentBalances
   );
+
+  const payload: {
+    [walletAddress: string]: {
+      [uniqueId: string]: AssetBalanceInfo;
+    };
+  } = {
+    ...accountAssetBalanceData,
+    [responseAddress]: {
+      ...(accountAssetBalanceData[responseAddress] || {}),
+      ...updatedAssetBalances,
+    },
+  };
+
+  logger.debug('payload ', payload);
+
   dispatch({
-    payload: updatedAssetBalances,
+    payload,
     type: DATA_UPDATE_ASSET_BALANCE_INFO,
   });
-  saveAssetBalanceData(updatedAssetBalances, accountAddress, network);
+  saveAssetBalanceData(updatedAssetBalances, responseAddress, network);
 };
 
 /**
@@ -1241,10 +1255,11 @@ export const addressAssetsReceived = (
   );
 
   const currentCurrency = message.meta?.currency;
-  if (currentCurrency) {
+  if (currentCurrency && !message?.meta?.balance_only) {
     dispatch(dataUpdateAssetPricingInfo(updatedAssets, currentCurrency));
   }
-  dispatch(dataUpdateAssetBalanceInfo(updatedAssets, responseAddress));
+
+  dispatch(dataUpdateAssetBalanceInfo(updatedAssets, accountAddress));
 
   let parsedAssets = parseAccountAssets(updatedAssets, uniqueTokens);
 

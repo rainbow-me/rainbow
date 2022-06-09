@@ -1,19 +1,19 @@
 import { get, groupBy, isEmpty, isNil, mapValues, toNumber } from 'lodash';
 import { createSelector } from 'reselect';
 import { sortList } from '../helpers/sortList';
-import { parseAssetsNativeWithTotals } from '@rainbow-me/parsers';
+import { parseAssetsNative } from '@rainbow-me/parsers';
+import { add, convertAmountToNativeDisplay } from '@rainbow-me/utilities';
 const EMPTY_ARRAY = [];
 
 const assetPricesFromUniswapSelector = state =>
   state.data.assetPricesFromUniswap;
-const accountAssetsDataSelector = state => state.data.assetsData;
+const assetsDataSelector = state => state.data.assetsData;
 const isLoadingAssetsSelector = state => state.data.isLoadingAssets;
 const nativeCurrencySelector = state => state.settings.nativeCurrency;
 
-const sortAssetsByNativeAmount = (
+const filterAssetsByBalance = (
   assetsData,
   assetPricesFromUniswap,
-  isLoadingAssets,
   nativeCurrency
 ) => {
   let updatedAssets = assetsData;
@@ -41,15 +41,36 @@ const sortAssetsByNativeAmount = (
       return asset;
     });
   }
-  const parsedAssets = parseAssetsNativeWithTotals(
-    Object.values(updatedAssets),
+  const parsedAssetsWithNative = parseAssetsNative(
+    updatedAssets,
     nativeCurrency
   );
-  const { assetsNativePrices, total } = parsedAssets;
+  return parsedAssetsWithNative.filter(({ native }) => !isNil(native?.balance));
+};
+
+export const filterAssetsByBalanceSelector = createSelector(
+  [assetsDataSelector, assetPricesFromUniswapSelector, nativeCurrencySelector],
+  filterAssetsByBalance
+);
+
+const sortAssetsByNativeAmount = (
+  assetsWithBalance,
+  isLoadingAssets,
+  nativeCurrency
+) => {
+  let totalAmount = 0;
+  for (const asset of assetsWithBalance) {
+    totalAmount = add(totalAmount, asset.native?.balance?.amount ?? 0);
+  }
+  const totalDisplay = convertAmountToNativeDisplay(
+    totalAmount,
+    nativeCurrency
+  );
+  const total = { amount: totalAmount, display: totalDisplay };
   const {
     hasValue = EMPTY_ARRAY,
     noValue = EMPTY_ARRAY,
-  } = groupAssetsByMarketValue(assetsNativePrices);
+  } = groupAssetsByMarketValue(assetsWithBalance);
 
   const sortedAssetsNoShitcoins = sortList(
     hasValue,
@@ -75,8 +96,7 @@ const groupAssetsByMarketValue = assets =>
 
 export const sortAssetsByNativeAmountSelector = createSelector(
   [
-    accountAssetsDataSelector,
-    assetPricesFromUniswapSelector,
+    filterAssetsByBalanceSelector,
     isLoadingAssetsSelector,
     nativeCurrencySelector,
   ],

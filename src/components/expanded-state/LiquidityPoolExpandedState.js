@@ -1,3 +1,4 @@
+import { useTheme } from '@rainbow-me/context';
 import { useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
 import { toLower } from 'lodash';
@@ -22,7 +23,6 @@ import { TokenInfoItem, TokenInfoRow, TokenInfoSection } from '../token-info';
 import { Chart } from '../value-chart';
 import UnderlyingAsset from './unique-token/UnderlyingAsset';
 import { ChartPathProvider } from '@rainbow-me/animated-charts';
-import { useTheme } from '@rainbow-me/context';
 import { toChecksumAddress } from '@rainbow-me/handlers/web3';
 import { bigNumberFormat } from '@rainbow-me/helpers/bigNumberFormat';
 import chartTypes from '@rainbow-me/helpers/chartTypes';

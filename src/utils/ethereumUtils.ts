@@ -99,7 +99,7 @@ const getNetworkNativeAsset = (
     address: nativeAddresses[network],
     network,
   });
-  return getParsedAsset({ uniqueId: nativeAssetUniqueId });
+  return store.getState().data?.assetsData?.[nativeAssetUniqueId];
 };
 
 const getNativeAssetForNetwork = async (
@@ -150,20 +150,6 @@ const getAsset = (
 ) => {
   const loweredUniqueId = toLower(uniqueId);
   return accountAssets[loweredUniqueId];
-};
-
-const getParsedAsset = (params: {
-  address?: string;
-  network?: Network;
-  uniqueId?: string;
-}): ParsedAddressAsset | undefined => {
-  const { assetsData } = store.getState().data;
-  const { address, network, uniqueId } = params;
-  if (uniqueId) {
-    return assetsData?.[toLower(uniqueId)];
-  } else if (address) {
-    return assetsData?.[getUniqueId({ address, network })];
-  }
 };
 
 const getAssetPriceData = (params: {
@@ -219,7 +205,7 @@ export const useNativeAssetForNetwork = (
 ): ParsedAddressAsset => {
   const address =
     network === Network.polygon ? MATIC_MAINNET_ADDRESS : ETH_ADDRESS;
-  return getParsedAsset({ address, network }) as ParsedAddressAsset;
+  return store.getState().data?.assetsData?.[address];
 };
 
 export const useEthUSDPrice = (): number => {
@@ -241,11 +227,12 @@ const getPriceOfNativeAssetForNetwork = (
     : getEthPriceUnit(nativeCurrency);
 };
 
-const getEthPriceUnit = (nativeCurrency: string) =>
-  getAssetPrice({ address: ETH_ADDRESS, nativeCurrency });
+const getEthPriceUnit = (nativeCurrency: string) => {
+  return getAssetPrice({ nativeCurrency, uniqueId: ETH_ADDRESS });
+};
 
 const getMaticPriceUnit = (nativeCurrency: string) =>
-  getAssetPrice({ address: MATIC_MAINNET_ADDRESS, nativeCurrency });
+  getAssetPrice({ nativeCurrency, uniqueId: MATIC_MAINNET_ADDRESS });
 
 const getBalanceAmount = (
   selectedGasFee: SelectedGasFee | LegacySelectedGasFee,
@@ -554,6 +541,7 @@ async function parseEthereumUrl(data: string) {
   let address: any = null;
   let nativeAmount: any = null;
   const { nativeCurrency } = store.getState().settings;
+  const { assetsData } = store.getState().data;
 
   while (store.getState().data.isLoadingAssets) {
     await delay(300);
@@ -579,7 +567,7 @@ async function parseEthereumUrl(data: string) {
       address: ethUrl.target_address,
       network,
     });
-    asset = getParsedAsset({ uniqueId: targetUniqueId });
+    asset = assetsData?.[targetUniqueId];
     // @ts-ignore
     if (!asset || asset?.balance.amount === 0) {
       Alert.alert(
@@ -629,6 +617,8 @@ const getUniqueId = (params: {
       return isNotMainnet
         ? `${address}_${getChainIdFromNetwork(network)}`
         : address;
+    } else {
+      return address;
     }
   }
   return '';
@@ -719,7 +709,6 @@ export default {
   getNetworkFromChainId,
   getNetworkNameFromChainId,
   getNetworkNativeAsset,
-  getParsedAsset,
   getPriceOfNativeAssetForNetwork,
   getUniqueId,
   hasPreviousTransactions,

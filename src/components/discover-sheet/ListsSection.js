@@ -26,7 +26,6 @@ import { useNavigation } from '@rainbow-me/navigation';
 import { parseAssetNative } from '@rainbow-me/parsers';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
-import { ethereumUtils } from '@rainbow-me/utils';
 
 const ListButton = styled(ButtonPressAnimation).attrs({
   scaleTo: 0.96,
@@ -80,6 +79,7 @@ export default function ListSection() {
   const { colors } = useTheme();
   const listData = useMemo(() => DefaultTokenLists[network], [network]);
 
+  const assetsData = useSelector(({ data: { assetsData } }) => assetsData);
   const assetsSocket = useSelector(
     ({ explorer: { assetsSocket } }) => assetsSocket
   );
@@ -157,10 +157,10 @@ export default function ListSection() {
 
   const getAssetNative = useCallback(
     address => {
-      const asset = ethereumUtils.getParsedAsset({ address }); // mainnet only
+      const asset = assetsData[address]; // mainnet only
       return parseAssetNative(asset, nativeCurrency);
     },
-    [nativeCurrency]
+    [nativeCurrency, assetsData]
   );
   const listItems = useMemo(() => {
     if (network !== networkTypes.mainnet) {
@@ -170,6 +170,7 @@ export default function ListSection() {
     if (selectedList === 'favorites') {
       items = favorites
         .map(getAssetNative)
+        .filter(Boolean)
         .sort((a, b) => (a.name > b.name ? 1 : -1));
     } else {
       if (!lists?.length) return [];
@@ -178,7 +179,7 @@ export default function ListSection() {
         return [];
       }
 
-      items = currentList.tokens.map(getAssetNative);
+      items = currentList.tokens.map(getAssetNative).filter(Boolean);
     }
 
     return items.filter(item => item.symbol && Number(item.price?.value) > 0);

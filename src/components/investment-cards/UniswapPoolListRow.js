@@ -16,7 +16,6 @@ import { useNavigation } from '@rainbow-me/navigation';
 import { parseAssetNative } from '@rainbow-me/parsers';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
-import { ethereumUtils } from '@rainbow-me/utils';
 
 const BottomRowContainer = styled(Row)({
   marginBottom: 10,
@@ -55,9 +54,8 @@ export default function UniswapPoolListRow({ assetType, item, ...props }) {
   const { push } = useNavigation();
   const removeNextToLastRoute = useRemoveNextToLast();
   const { nativeCurrency } = useAccountSettings();
-  const genericPoolAsset = ethereumUtils.getParsedAsset({
-    address: item.address,
-  });
+  const assets = useSelector(({ data: { assetsData } }) => assetsData);
+  const genericPoolAsset = assets[item?.address];
   const { uniswap } = useSelector(readableUniswapSelector);
 
   const handleOpenExpandedState = useCallback(() => {
