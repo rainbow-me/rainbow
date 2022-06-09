@@ -6,7 +6,7 @@ import { pickBy } from '@rainbow-me/helpers/utilities';
 import { useAccountSettings } from '@rainbow-me/hooks';
 
 const languagesWithWalletTranslations = Object.keys(
-  pickBy(resources, language => language?.translation?.wallet) //// Only show languages that have 'wallet' translations available.
+  pickBy(resources, language => language?.translation?.wallet) // Only show languages that have 'wallet' translations available.
 );
 
 const languageListItems = languagesWithWalletTranslations.map(code => ({
