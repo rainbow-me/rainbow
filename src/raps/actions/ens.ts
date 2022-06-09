@@ -270,7 +270,7 @@ const executeSetOwner = async (
 
   return (
     methodArguments &&
-    contract?.setOwner(...methodArguments, {
+    contract?.reclaim(...methodArguments, {
       gasLimit: gasLimit ? toHex(gasLimit) : undefined,
       maxFeePerGas: maxFeePerGas ? toHex(maxFeePerGas) : undefined,
       maxPriorityFeePerGas: maxPriorityFeePerGas

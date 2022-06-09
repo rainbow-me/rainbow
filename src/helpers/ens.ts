@@ -630,7 +630,7 @@ const getENSExecutionDetails = async ({
     }
     case ENSRegistrationTransactionType.SET_OWNER: {
       if (!name || !ownerAddress) throw new Error('Bad arguments for setOwner');
-      const namehash = hash(name);
+      const namehash = labelhash(name.replace(ENS_DOMAIN, ''));
       args = [namehash, ownerAddress];
       contract = await getENSRegistryContract();
       break;
