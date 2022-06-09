@@ -165,6 +165,8 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.tap('exchange-fab');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
+    await Helpers.checkIfVisible('exchange-modal-input');
+    await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.typeText(
       'currency-select-search-input',
@@ -186,6 +188,8 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.tap('exchange-fab');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
+    await Helpers.checkIfVisible('exchange-modal-input');
+    await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.typeText('currency-select-search-input', 'WETH', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-WETH-token');
@@ -202,6 +206,8 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.typeText('currency-select-search-input', 'WETH', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-WETH-token');
+    await Helpers.checkIfVisible('exchange-modal-input');
+    await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
     await Helpers.checkIfVisible('exchange-modal-input');
@@ -217,6 +223,8 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.typeText('currency-select-search-input', 'WETH', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-WETH-token');
+    await Helpers.checkIfVisible('exchange-modal-input');
+    await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.typeText('currency-select-search-input', 'DAI', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-DAI-token');
@@ -233,6 +241,8 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.typeText('currency-select-search-input', 'DAI', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-DAI-token');
+    await Helpers.checkIfVisible('exchange-modal-input');
+    await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.typeText('currency-select-search-input', 'USDC', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-USDC-token');
@@ -249,6 +259,8 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.typeText('currency-select-search-input', 'DAI', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-DAI-token');
+    await Helpers.checkIfVisible('exchange-modal-input');
+    await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
     await Helpers.typeText('exchange-modal-input', '4', true);
@@ -263,6 +275,8 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.tap('exchange-fab');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
+    await Helpers.checkIfVisible('exchange-modal-input');
+    await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.typeText('currency-select-search-input', 'USDC', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-USDC-token');
@@ -278,6 +292,8 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.typeText('currency-select-search-input', 'USDC', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-USDC-token');
+    await Helpers.checkIfVisible('exchange-modal-input');
+    await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.typeText('currency-select-search-input', 'WETH', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-WETH-token');
@@ -294,6 +310,8 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.typeText('currency-select-search-input', 'USDC', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-USDC-token');
+    await Helpers.checkIfVisible('exchange-modal-input');
+    await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
     await Helpers.typeText('exchange-modal-input', '10', true);

@@ -70,16 +70,18 @@ const searchWalletCurrencyList = (searchList, query) => {
 export default function CurrencySelectModal() {
   const isFocused = useIsFocused();
   const prevIsFocused = usePrevious(isFocused);
-  const { navigate, dangerouslyGetState } = useNavigation();
+  const { goBack, navigate, dangerouslyGetState } = useNavigation();
   const { colors } = useTheme();
   const dispatch = useDispatch();
   const {
     params: {
+      chainId,
+      fromDiscover,
       onSelectCurrency,
+      params,
       restoreFocusOnSwapModal,
       toggleGestureEnabled,
       type,
-      chainId,
     },
   } = useRoute();
 
@@ -198,9 +200,27 @@ export default function CurrencySelectModal() {
       const handleNavigate = () => {
         delayNext();
         dangerouslyGetState().index = 1;
-        setSearchQuery('');
-        navigate(Routes.MAIN_EXCHANGE_SCREEN);
-        setCurrentChainId(ethereumUtils.getChainIdFromType(item.type));
+        if (fromDiscover) {
+          goBack();
+          setTimeout(
+            () => {
+              navigate(Routes.EXCHANGE_MODAL, {
+                params: {
+                  inputAsset: item,
+                  ...params,
+                },
+                screen: Routes.MAIN_EXCHANGE_SCREEN,
+              });
+              setSearchQuery('');
+              setCurrentChainId(ethereumUtils.getChainIdFromType(item.type));
+            },
+            android ? 500 : 0
+          );
+        } else {
+          navigate(Routes.MAIN_EXCHANGE_SCREEN);
+          setSearchQuery('');
+          setCurrentChainId(ethereumUtils.getChainIdFromType(item.type));
+        }
         if (searchQueryForSearch) {
           analytics.track('Selected a search result in Swap', {
             name: item.name,
@@ -259,15 +279,14 @@ export default function CurrencySelectModal() {
 
   const [startInteraction] = useInteraction();
   useEffect(() => {
-    // on new focus state
-    if (isFocused !== prevIsFocused) {
-      toggleGestureEnabled(!isFocused);
-    }
-
-    // on page blur
-    if (!isFocused && prevIsFocused) {
-      handleApplyFavoritesQueue();
-      restoreFocusOnSwapModal?.();
+    if (!fromDiscover) {
+      if (isFocused !== prevIsFocused) {
+        toggleGestureEnabled(!isFocused);
+      }
+      if (!isFocused && prevIsFocused) {
+        handleApplyFavoritesQueue();
+        restoreFocusOnSwapModal?.();
+      }
     }
   }, [
     handleApplyFavoritesQueue,
@@ -318,6 +337,8 @@ export default function CurrencySelectModal() {
           <Column flex={1}>
             <CurrencySelectModalHeader
               handleBackButton={handleBackButton}
+              showBackButton={!fromDiscover}
+              showHandle={fromDiscover}
               testID="currency-select-header"
               type={type}
             />

@@ -1,5 +1,4 @@
 import { ChainId } from '@rainbow-me/swaps';
-import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
@@ -58,7 +57,7 @@ import {
 } from '@rainbow-me/hooks';
 import { loadWallet } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
-import { executeRap, getRapEstimationByType } from '@rainbow-me/raps';
+import { executeRap, getSwapRapEstimationByType } from '@rainbow-me/raps';
 import { swapClearState, updateSwapTypeDetails } from '@rainbow-me/redux/swap';
 import { ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
@@ -113,6 +112,7 @@ export default function ExchangeModal({
   defaultInputAsset,
   defaultOutputAsset,
   fromDiscover,
+  ignoreInitialTypeCheck,
   testID,
   type,
   typeSpecificParams,
@@ -137,12 +137,7 @@ export default function ExchangeModal({
     setParams,
     dangerouslyGetParent,
     addListener,
-    goBack,
   } = useNavigation();
-
-  const {
-    params: { focused },
-  } = useRoute();
 
   const isDeposit = type === ExchangeModalTypes.deposit;
   const isWithdrawal = type === ExchangeModalTypes.withdrawal;
@@ -165,7 +160,6 @@ export default function ExchangeModal({
   const [currentProvider, setCurrentProvider] = useState(null);
 
   const prevGasFeesParamsBySpeed = usePrevious(gasFeeParamsBySpeed);
-  const wasFocused = usePrevious(focused);
 
   useAndroidBackHandler(() => {
     navigate(Routes.WALLET_SCREEN);
@@ -198,6 +192,7 @@ export default function ExchangeModal({
     defaultInputAsset,
     defaultOutputAsset,
     fromDiscover,
+    ignoreInitialTypeCheck,
     inputFieldRef,
     lastFocusedInputHandle,
     outputFieldRef,
@@ -306,58 +301,6 @@ export default function ExchangeModal({
     lastFocusedInputHandle?.current?.focus();
   }, [lastFocusedInputHandle]);
 
-  const [navigating, setNavigating] = useState(false);
-  const [navigatedToInput, setNavigatedToInput] = useState(false);
-  const [navigatedToOutput, setNavigatedToOutput] = useState(false);
-
-  const navigateToOutput = useCallback(() => {
-    !navigating && navigateToSelectOutputCurrency(chainId);
-    setNavigating(true);
-    setTimeout(() => setNavigating(false), 1000);
-  }, [navigateToSelectOutputCurrency, navigating, chainId]);
-
-  const navigateToInput = useCallback(() => {
-    !navigating && navigateToSelectInputCurrency();
-    setNavigating(true);
-    setNavigatedToInput(true);
-    setTimeout(() => setNavigating(false), 1000);
-  }, [navigateToSelectInputCurrency, navigating]);
-
-  // Navigate to select input currency automatically
-  // TODO: Do this in a better way
-  useEffect(() => {
-    if (focused && !wasFocused) {
-      // Coming back from input selection without selecting anything
-      if (!inputCurrency && !outputCurrency && navigatedToInput) {
-        goBack();
-        goBack();
-      } else {
-        // initial launch
-        if (!defaultInputAsset && !inputCurrency) {
-          navigateToInput();
-          // if we just got the input but still not output
-        } else if (!outputCurrency && !navigatedToOutput) {
-          setNavigatedToInput(false);
-          setNavigatedToOutput(true);
-          navigateToOutput();
-        } else {
-          setNavigatedToOutput(false);
-        }
-      }
-    }
-  }, [
-    defaultInputAsset,
-    inputCurrency,
-    outputCurrency,
-    focused,
-    navigateToInput,
-    navigateToOutput,
-    wasFocused,
-    navigatedToInput,
-    goBack,
-    navigatedToOutput,
-  ]);
-
   const updateGasLimit = useCallback(async () => {
     try {
       if (
@@ -375,10 +318,7 @@ export default function ExchangeModal({
         provider: currentProvider,
         tradeDetails,
       };
-      const gasLimit = await getRapEstimationByType(type, {
-        provider: currentProvider,
-        swapParameters: swapParams,
-      });
+      const gasLimit = await getSwapRapEstimationByType(type, swapParams);
       if (gasLimit) {
         if (currentNetwork === Network.optimism) {
           if (tradeDetails) {
@@ -728,8 +668,6 @@ export default function ExchangeModal({
     ? !!inputCurrency
     : !!inputCurrency && !!outputCurrency;
 
-  if (!inputCurrency && !outputCurrency) return <Wrapper />;
-
   return (
     <Wrapper>
       <InnerWrapper isSmallPhone={isSmallPhone}>
@@ -756,7 +694,7 @@ export default function ExchangeModal({
               nativeFieldRef={nativeFieldRef}
               onFocus={handleFocus}
               onPressMaxBalance={handlePressMaxBalance}
-              onPressSelectInputCurrency={navigateToInput}
+              onPressSelectInputCurrency={() => navigateToSelectInputCurrency()}
               setInputAmount={updateInputAmount}
               setNativeAmount={updateNativeAmount}
               testID={`${testID}-input`}
@@ -766,7 +704,9 @@ export default function ExchangeModal({
                 editable={!!outputCurrency}
                 network={currentNetwork}
                 onFocus={handleFocus}
-                onPressSelectOutputCurrency={navigateToOutput}
+                onPressSelectOutputCurrency={() =>
+                  navigateToSelectOutputCurrency(chainId)
+                }
                 {...(currentNetwork === Network.arbitrum && {
                   onTapWhileDisabled: handleTapWhileDisabled,
                 })}
