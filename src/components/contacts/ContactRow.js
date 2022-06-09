@@ -72,7 +72,7 @@ const ContactRow = (
   const { width: deviceWidth } = useDimensions();
   const { onAddOrUpdateContacts } = useContacts();
   const { colors } = useTheme();
-  const { data: rainbowProfile } = useRainbowProfile(address, {
+  const { rainbowProfile } = useRainbowProfile(address, {
     enabled: isValidAddress(address),
   });
   const {

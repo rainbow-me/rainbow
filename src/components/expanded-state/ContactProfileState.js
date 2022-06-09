@@ -27,7 +27,7 @@ const ContactProfileState = ({ address, ens, contactNickname }) => {
 
   const { network } = useAccountSettings();
 
-  const { data: rainbowProfile } = useRainbowProfile(address, {
+  const { rainbowProfile } = useRainbowProfile(address, {
     enabled: isValidAddress(address),
   });
 

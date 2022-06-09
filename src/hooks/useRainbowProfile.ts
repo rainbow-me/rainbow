@@ -40,13 +40,15 @@ export default function useRainbowProfile(
       if (cachedProfile) {
         queryClient.setQueryData(queryKey(address), cachedProfile);
       }
-      const rainbowProfile = (await fetchRainbowProfile(address)) ?? {
-        color: addressHashedColor,
-        emoji: addressHashedEmoji,
-      };
+      const rainbowProfile = await fetchRainbowProfile(address);
 
-      saveRainbowProfile(address, rainbowProfile);
-      return rainbowProfile;
+      rainbowProfile && saveRainbowProfile(address, rainbowProfile);
+      return (
+        rainbowProfile ?? {
+          color: addressHashedColor,
+          emoji: addressHashedEmoji,
+        }
+      );
     },
     {
       ...config,
@@ -55,5 +57,5 @@ export default function useRainbowProfile(
     }
   );
 
-  return { data, isLoading, isSuccess };
+  return { rainbowProfile: data, isLoading, isSuccess };
 }

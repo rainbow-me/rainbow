@@ -17,9 +17,10 @@ export default function WalletProfileState({
   profile,
 }) {
   const { goBack, navigate } = useNavigation();
-  const { data: rainbowProfile } = useRainbowProfile(address, {
+  const { rainbowProfile } = useRainbowProfile(address, {
     enabled: isValidAddress(address),
   });
+  console.log(rainbowProfile);
   const { name, image } = profile;
 
   const [value, setValue] = useState(
