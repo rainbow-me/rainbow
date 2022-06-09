@@ -12,6 +12,7 @@ import {
 import { setPoolsDetails } from '@rainbow-me/redux/uniswapLiquidity';
 import { WETH_ADDRESS } from '@rainbow-me/references';
 import logger from 'logger';
+import { pickFlatten } from '@rainbow-me/helpers/utilities';
 const AMOUNT_OF_PAIRS_TO_DISPLAY = 40;
 
 export const SORT_DIRECTION = {
@@ -257,28 +258,18 @@ export default function useUniswapPools(sortField, sortDirection, token) {
         liquidity: pair.liquidity * currenciesRate,
         oneDayVolumeUSD: pair.oneDayVolumeUSD * currenciesRate,
       };
-      const {
-        address,
-        annualized_fees,
-        liquidity,
-        oneDayVolumeUSD,
-        profit30d,
-        symbol,
-        tokens,
-        tokenNames,
-        type,
-      } = pairAdjustedForCurrency;
-      return {
-        address,
-        annualized_fees,
-        liquidity,
-        oneDayVolumeUSD,
-        profit30d,
-        symbol,
-        tokenNames,
-        tokens,
-        type,
-      };
+
+      return pickFlatten(pairAdjustedForCurrency, [
+        'address',
+        'annualized_fees',
+        'liquidity',
+        'oneDayVolumeUSD',
+        'profit30d',
+        'symbol',
+        'tokens',
+        'tokenNames',
+        'type',
+      ]);
     });
 
     const allLPTokens = sortedPairs.map(({ address }) => address);
