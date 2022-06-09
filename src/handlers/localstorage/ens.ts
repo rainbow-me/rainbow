@@ -2,12 +2,25 @@ import { getGlobal, saveGlobal } from './common';
 
 const ensProfileVersion = '0.1.0';
 
+const ensLabelhashesKey = (key: string) => `ensLabelhashes.${key}`;
 const ensProfileKey = (key: string) => `ensProfile.${key}`;
 const ensProfileImagesKey = (key: string) => `ensProfileImages.${key}`;
 const ensProfileRecordsKey = (key: string) => `ensProfileRecords.${key}`;
 const ensResolveNameKey = (key: string) => `ensResolveName.${key}`;
 const ensDomains = (key: string) => `ensDomains.${key}`;
 const ensSeenOnchainDataDisclaimerKey = 'ensProfile.seenOnchainDisclaimer';
+
+export const getNameFromLabelhash = async (key: string) => {
+  const labelhash = await getGlobal(
+    ensLabelhashesKey(key),
+    null,
+    ensProfileVersion
+  );
+  return labelhash;
+};
+
+export const saveNameFromLabelhash = (key: string, value: Object) =>
+  saveGlobal(ensLabelhashesKey(key), value, ensProfileVersion);
 
 export const getProfile = async (key: string) => {
   const profile = await getGlobal(ensProfileKey(key), null, ensProfileVersion);
