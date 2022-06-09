@@ -1,5 +1,4 @@
 import lang from 'i18n-js';
-import { times } from 'lodash';
 import React, { Fragment, useCallback, useMemo, useRef, useState } from 'react';
 import { FlatList, LayoutAnimation } from 'react-native';
 import { SORT_DIRECTION } from '../../hooks/useUniswapPools';
@@ -12,6 +11,7 @@ import EdgeFade from './EdgeFade';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { useAccountSettings, useUniswapPools } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
+import { times } from '@rainbow-me/helpers/utilities';
 
 const INITIAL_PAGE_AMOUNT = 15;
 

@@ -1,6 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
-import { times, toLower } from 'lodash';
+import { toLower } from 'lodash';
 import React, {
   Fragment,
   useCallback,
@@ -27,6 +27,7 @@ import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { ethereumUtils } from '@rainbow-me/utils';
+import { times } from '@rainbow-me/helpers/utilities';
 
 const ListButton = styled(ButtonPressAnimation).attrs({
   scaleTo: 0.96,
