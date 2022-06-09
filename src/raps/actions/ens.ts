@@ -459,7 +459,7 @@ const ensAction = async (
       case ENSRegistrationTransactionType.SET_OWNER:
         tx = await executeSetOwner(
           name,
-          ownerAddress,
+          parameters.ownerAddress || ownerAddress,
           ensRegistrationRecords,
           gasLimit,
           maxFeePerGas,
