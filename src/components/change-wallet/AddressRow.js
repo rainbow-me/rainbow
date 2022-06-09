@@ -1,3 +1,4 @@
+import { isValidAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -11,13 +12,11 @@ import ImageAvatar from '../contacts/ImageAvatar';
 import { Icon } from '../icons';
 import { Centered, Column, ColumnWithMargins, Row } from '../layout';
 import { Text, TruncatedAddress, TruncatedText } from '../text';
-import {
-  removeFirstEmojiFromString,
-  returnStringFirstEmoji,
-} from '@rainbow-me/helpers/emojiHandler';
+import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
+import { useRainbowProfile } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth, getFontSize } from '@rainbow-me/styles';
-import { deviceUtils, profileUtils } from '@rainbow-me/utils';
+import { deviceUtils } from '@rainbow-me/utils';
 
 const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;
 const NOOP = () => undefined;
@@ -113,7 +112,6 @@ export default function AddressRow({
   const {
     address,
     balance,
-    color: accountColor,
     ens,
     image: accountImage,
     isSelected,
@@ -121,6 +119,10 @@ export default function AddressRow({
     label,
     walletId,
   } = data;
+
+  const { rainbowProfile } = useRainbowProfile(address, {
+    enabled: isValidAddress(address),
+  });
 
   const { colors, isDarkMode } = useTheme();
 
@@ -169,15 +171,10 @@ export default function AddressRow({
               />
             ) : (
               <ContactAvatar
-                color={accountColor}
+                color={rainbowProfile?.color}
                 marginRight={10}
                 size="medium"
-                value={
-                  returnStringFirstEmoji(label) ||
-                  profileUtils.addressHashedEmoji(address) ||
-                  label ||
-                  ens
-                }
+                value={rainbowProfile?.emoji}
               />
             )}
             <ColumnWithMargins margin={android ? -6 : 3}>

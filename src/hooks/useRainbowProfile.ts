@@ -57,5 +57,5 @@ export default function useRainbowProfile(
     }
   );
 
-  return { rainbowProfile: data, isLoading, isSuccess };
+  return { isLoading, isSuccess, rainbowProfile: data };
 }
