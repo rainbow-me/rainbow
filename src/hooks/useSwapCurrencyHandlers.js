@@ -154,7 +154,7 @@ export default function useSwapCurrencyHandlers({
         dispatch(updateSwapInputCurrency(newInputCurrency, true));
         dispatch(updateSwapOutputCurrency(newOutputCurrency));
         setLastFocusedInputHandle?.(inputFieldRef);
-        handleNavigate();
+        handleNavigate?.();
       } else if (
         outputCurrency &&
         newInputCurrency?.type !== outputCurrency?.type &&
@@ -169,7 +169,7 @@ export default function useSwapCurrencyHandlers({
                   setHasShownWarning();
                   dispatch(updateSwapInputCurrency(newInputCurrency));
                   setLastFocusedInputHandle?.(inputFieldRef);
-                  handleNavigate();
+                  handleNavigate?.();
                 }, 250);
               });
             },
@@ -179,7 +179,7 @@ export default function useSwapCurrencyHandlers({
       } else {
         dispatch(updateSwapInputCurrency(newInputCurrency));
         setLastFocusedInputHandle?.(inputFieldRef);
-        handleNavigate();
+        handleNavigate?.();
       }
     },
     [
@@ -213,7 +213,7 @@ export default function useSwapCurrencyHandlers({
                   setHasShownWarning();
                   dispatch(updateSwapOutputCurrency(newOutputCurrency));
                   setLastFocusedInputHandle?.(inputFieldRef);
-                  handleNavigate();
+                  handleNavigate?.();
                 }, 250);
               });
             },
@@ -223,7 +223,7 @@ export default function useSwapCurrencyHandlers({
       } else {
         dispatch(updateSwapOutputCurrency(newOutputCurrency));
         setLastFocusedInputHandle?.(inputFieldRef);
-        handleNavigate();
+        handleNavigate?.();
       }
     },
     [dispatch, inputCurrency, inputFieldRef, setLastFocusedInputHandle]
