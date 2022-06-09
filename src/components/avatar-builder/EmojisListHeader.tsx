@@ -33,6 +33,7 @@ const EmojisListHeader = ({
       >
         <Text
           style={[
+            // @ts-expect-error Font weight type is to broad string vs a union of select strings
             sx.sectionHeader,
             { color: colors.alpha(colors.blueGreyDark, 0.5) },
           ]}

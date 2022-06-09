@@ -41,6 +41,7 @@ const EmojisStickyListItem = ({ index, scrollPosition, headerData }: Props) => {
           >
             <Text
               style={[
+                // @ts-expect-error Font weight type is to broad string vs a union of select strings
                 sx.sectionStickyHeader,
                 { backgroundColor: colors.alpha(colors.white, 0.7) },
               ]}
@@ -52,6 +53,7 @@ const EmojisStickyListItem = ({ index, scrollPosition, headerData }: Props) => {
           <View style={sx.sectionStickyBlur}>
             <Text
               style={[
+                // @ts-expect-error Font weight type is to broad string vs a union of select strings
                 sx.sectionStickyHeader,
                 { color: colors.alpha(colors.blueGreyDark, 0.5) },
               ]}
