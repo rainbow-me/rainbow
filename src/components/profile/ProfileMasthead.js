@@ -1,5 +1,6 @@
 import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
+import { isValidAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
 import React, { useCallback, useRef } from 'react';
 import Divider from '../Divider';
@@ -16,6 +17,7 @@ import {
   useAccountProfile,
   useDimensions,
   useOnAvatarPress,
+  useRainbowProfile,
   useWallets,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
@@ -91,13 +93,10 @@ export default function ProfileMasthead({
   );
   const { width: deviceWidth } = useDimensions();
   const { navigate } = useNavigation();
-  const {
-    accountAddress,
-    accountColor,
-    accountSymbol,
-    accountName,
-    accountImage,
-  } = useAccountProfile();
+  const { accountAddress, accountName, accountImage } = useAccountProfile();
+  const { rainbowProfile } = useRainbowProfile(accountAddress, {
+    enabled: isValidAddress(accountAddress),
+  });
 
   const { onAvatarPress } = useOnAvatarPress();
 
@@ -163,8 +162,8 @@ export default function ProfileMasthead({
     >
       {/* [AvatarCircle -> ImageAvatar -> ImgixImage], so no need to sign accountImage here. */}
       <AvatarCircle
-        accountColor={accountColor}
-        accountSymbol={accountSymbol}
+        accountColor={rainbowProfile?.color ?? colors.skeleton}
+        accountSymbol={rainbowProfile?.emoji}
         image={accountImage}
         isAvatarPickerAvailable
         onPress={handlePressAvatar}

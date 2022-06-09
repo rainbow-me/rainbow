@@ -8,7 +8,7 @@ import { useTheme } from '@rainbow-me/theme';
 import { getNextEmojiWithColor } from '@rainbow-me/utils/profileUtils';
 
 export default function useUpdateEmoji() {
-  const { accountColor, accountName } = useAccountProfile();
+  const { accountName } = useAccountProfile();
   const { wallets, selectedWallet } = useWallets();
   const { updateWebProfile, getWebProfile } = useWebData();
   const { accountAddress } = useAccountSettings();
@@ -40,12 +40,11 @@ export default function useUpdateEmoji() {
       updateWebProfile(
         accountAddress,
         name,
-        (color !== undefined && colors.avatarBackgrounds[color]) || accountColor
+        color !== undefined && colors.avatarBackgrounds[color]
       );
     },
     [
       accountAddress,
-      accountColor,
       colors.avatarBackgrounds,
       dispatch,
       selectedWallet.id,

@@ -1,5 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
+import { isValidAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
 import React, {
   useCallback,
@@ -34,7 +35,11 @@ import {
   NETWORK_MENU_ACTION_KEY_FILTER,
   networksMenuItems,
 } from '@rainbow-me/helpers/walletConnectNetworks';
-import { useAccountSettings, useWallets } from '@rainbow-me/hooks';
+import {
+  useAccountSettings,
+  useRainbowProfile,
+  useWallets,
+} from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
@@ -97,6 +102,10 @@ export default function WalletConnectApprovalSheet() {
   const [approvalAccount, setApprovalAccount] = useState({
     address: accountAddress,
     wallet: selectedWallet,
+  });
+
+  const { rainbowProfile } = useRainbowProfile(approvalAccount?.address, {
+    enabled: isValidAddress(approvalAccount?.address),
   });
 
   const type = params?.type || WalletConnectApprovalSheetType.connect;
@@ -383,13 +392,9 @@ export default function WalletConnectApprovalSheet() {
                     />
                   ) : (
                     <ContactAvatar
-                      color={
-                        isNaN(approvalAccountInfo.accountColor)
-                          ? colors.skeleton
-                          : approvalAccountInfo.accountColor
-                      }
+                      color={rainbowProfile?.color ?? colors.skeleton}
                       size="smaller"
-                      value={approvalAccountInfo.accountSymbol}
+                      value={rainbowProfile?.emoji}
                     />
                   )}
                 </AvatarWrapper>

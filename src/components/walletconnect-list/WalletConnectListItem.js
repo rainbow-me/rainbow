@@ -1,4 +1,5 @@
 import analytics from '@segment/analytics-react-native';
+import { isValidAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import ChainLogo from '../ChainLogo';
@@ -24,6 +25,7 @@ import {
 } from '@rainbow-me/helpers/walletConnectNetworks';
 import {
   useAccountSettings,
+  useRainbowProfile,
   useWalletConnectConnections,
   useWallets,
 } from '@rainbow-me/hooks';
@@ -86,6 +88,9 @@ export default function WalletConnectListItem({
     walletConnectDisconnectAllByDappUrl,
     walletConnectUpdateSessionConnectorByDappUrl,
   } = useWalletConnectConnections();
+  const { rainbowProfile } = useRainbowProfile(account, {
+    enabled: isValidAddress(account),
+  });
   const { goBack } = useNavigation();
   const { colors } = useTheme();
   const { wallets, walletNames } = useWallets();
@@ -249,13 +254,9 @@ export default function WalletConnectListItem({
                   />
                 ) : (
                   <ContactAvatar
-                    color={
-                      isNaN(approvalAccountInfo.accountColor)
-                        ? colors.skeleton
-                        : approvalAccountInfo.accountColor
-                    }
+                    color={rainbowProfile?.color ?? colors.skeleton}
                     size="smaller"
-                    value={approvalAccountInfo.accountSymbol}
+                    value={rainbowProfile?.emoji}
                   />
                 )}
                 <TruncatedText

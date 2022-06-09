@@ -1,10 +1,11 @@
+import { isValidAddress } from 'ethereumjs-util';
 import React, { useMemo } from 'react';
 import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import ImageAvatar from '../contacts/ImageAvatar';
 import { Flex, InnerBorder } from '../layout';
 import { Text } from '../text';
-import { useAccountProfile } from '@rainbow-me/hooks';
+import { useAccountProfile, useRainbowProfile } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
@@ -36,22 +37,22 @@ export default function AvatarCircle({
   image,
   showcaseAccountSymbol,
   showcaseAccountColor,
-  newProfile = false,
   ...props
 }) {
   const { colors, isDarkMode } = useTheme();
-  const {
-    accountColor: profileAccountColor,
-    accountSymbol: profileAccountSymbol,
-  } = useAccountProfile();
+  const { accountAddress } = useAccountProfile();
 
-  const accountSymbol = showcaseAccountSymbol || profileAccountSymbol;
+  const { rainbowProfile } = useRainbowProfile(accountAddress, {
+    enabled: isValidAddress(accountAddress),
+  });
+
+  const accountSymbol = showcaseAccountSymbol ?? rainbowProfile?.emoji;
   const resolvedColor =
     showcaseAccountColor != null
       ? typeof showcaseAccountColor === 'string'
         ? showcaseAccountColor
         : colors.avatarBackgrounds[showcaseAccountColor]
-      : colors.avatarBackgrounds[(!newProfile && profileAccountColor) ?? 10];
+      : rainbowProfile?.color;
   const shadows = useMemo(
     () => ({
       default: [

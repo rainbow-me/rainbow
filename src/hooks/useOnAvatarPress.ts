@@ -1,4 +1,5 @@
 import analytics from '@segment/analytics-react-native';
+import { isValidAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
 import { toLower } from 'lodash';
 import { useCallback, useMemo } from 'react';
@@ -6,11 +7,13 @@ import { Linking } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { RainbowAccount } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
+import { useTheme } from '../theme/ThemeContext';
 import useAccountProfile from './useAccountProfile';
 import useENSProfile from './useENSProfile';
 import { prefetchENSProfileImages } from './useENSProfileImages';
 import useENSRegistration from './useENSRegistration';
 import useImagePicker from './useImagePicker';
+import useRainbowProfile from './useRainbowProfile';
 import useWallets from './useWallets';
 import {
   enableActionsOnReadOnlyWallet,
@@ -26,13 +29,16 @@ export default () => {
   const { wallets, selectedWallet, isReadOnlyWallet } = useWallets();
   const dispatch = useDispatch();
   const { navigate } = useNavigation();
+  const { colors } = useTheme();
   const {
     accountAddress,
-    accountColor,
     accountName,
     accountImage,
     accountENS,
   } = useAccountProfile();
+  const { rainbowProfile } = useRainbowProfile(accountAddress, {
+    enabled: isValidAddress(accountAddress),
+  });
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const profileEnabled = Boolean(accountENS);
   const ensProfile = useENSProfile(accountENS, { enabled: profileEnabled });
@@ -82,10 +88,10 @@ export default () => {
 
   const onAvatarPickEmoji = useCallback(() => {
     navigate(Routes.AVATAR_BUILDER, {
-      initialAccountColor: accountColor,
+      initialAccountColor: rainbowProfile?.color ?? colors.skeleton,
       initialAccountName: accountName,
     });
-  }, [accountColor, accountName, navigate]);
+  }, [accountName, colors.skeleton, rainbowProfile, navigate]);
 
   const onAvatarChooseImage = useCallback(async () => {
     const image = await openPicker({

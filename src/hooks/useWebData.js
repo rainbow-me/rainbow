@@ -1,18 +1,21 @@
+import { isValidAddress } from 'ethereumjs-util';
 import GraphemeSplitter from 'grapheme-splitter';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   getPreference,
   PreferenceActionType,
   setPreference,
 } from '../model/preferences';
-import useAccountProfile from './useAccountProfile';
 import useAccountSettings from './useAccountSettings';
+import useRainbowProfile from './useRainbowProfile';
 import useWallets from './useWallets';
 import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
 import { containsEmoji } from '@rainbow-me/helpers/strings';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
+import { colors } from '@rainbow-me/styles';
+import { profileUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const getAccountSymbol = name => {
@@ -43,8 +46,21 @@ export default function useWebData() {
     })
   );
 
-  const { colors } = useTheme();
-  const { accountSymbol, accountColor } = useAccountProfile();
+  const { rainbowProfile } = useRainbowProfile(accountAddress, {
+    enabled: isValidAddress(accountAddress),
+  });
+
+  const addressHashedColor = useMemo(
+    () =>
+      colors.avatarBackgrounds[
+        profileUtils.addressHashedColorIndex(accountAddress) || 0
+      ],
+    [accountAddress]
+  );
+  const addressHashedEmoji = useMemo(
+    () => profileUtils.addressHashedEmoji(accountAddress),
+    [accountAddress]
+  );
 
   const initWebData = useCallback(
     async showcaseTokens => {
@@ -60,8 +76,8 @@ export default function useWebData() {
         'profile',
         accountAddress,
         {
-          accountColor: colors.avatarBackgrounds[accountColor],
-          accountSymbol: wipeNotEmoji(accountSymbol),
+          accountColor: rainbowProfile?.color ?? addressHashedColor,
+          accountSymbol: rainbowProfile?.emoji ?? addressHashedEmoji,
         }
       );
 
@@ -69,10 +85,10 @@ export default function useWebData() {
     },
     [
       accountAddress,
-      accountColor,
-      accountSymbol,
-      colors.avatarBackgrounds,
+      addressHashedColor,
+      addressHashedEmoji,
       dispatch,
+      rainbowProfile,
     ]
   );
 
@@ -89,10 +105,11 @@ export default function useWebData() {
       const wallet = findWalletWithAccount(wallets, address);
       if (wallet.type === WalletTypes.readOnly) return;
       const data = {
-        accountColor: color || accountColor,
-        accountSymbol: wipeNotEmoji(
-          name ? getAccountSymbol(name) : accountSymbol
-        ),
+        accountColor: color ?? rainbowProfile?.color ?? addressHashedColor,
+        accountSymbol:
+          wipeNotEmoji(getAccountSymbol(name)) ??
+          rainbowProfile.emoji ??
+          addressHashedEmoji,
       };
       await setPreference(
         PreferenceActionType.update,
@@ -101,7 +118,13 @@ export default function useWebData() {
         data
       );
     },
-    [accountColor, accountSymbol, wallets, webDataEnabled]
+    [
+      addressHashedColor,
+      addressHashedEmoji,
+      rainbowProfile,
+      wallets,
+      webDataEnabled,
+    ]
   );
 
   const getWebProfile = useCallback(async address => {

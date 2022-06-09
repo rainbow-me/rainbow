@@ -13,11 +13,9 @@ export default function useAccountProfile() {
 
   const {
     accountAddress,
-    accountColor,
     accountENS,
     accountImage,
     accountName,
-    accountSymbol,
   } = useMemo(
     () =>
       getAccountProfileInfo(
@@ -31,10 +29,8 @@ export default function useAccountProfile() {
 
   return {
     accountAddress,
-    accountColor,
     accountENS,
     accountImage,
     accountName,
-    accountSymbol,
   };
 }

@@ -1,5 +1,6 @@
 import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
+import { isValidAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
 import { pick, startCase, toLower } from 'lodash';
 import React, {
@@ -24,6 +25,7 @@ import { isValidDomainFormat } from '@rainbow-me/helpers/validators';
 import {
   useAccountProfile,
   useOnAvatarPress,
+  useRainbowProfile,
   useSafeImageUri,
   useWallets,
 } from '@rainbow-me/hooks';
@@ -76,13 +78,10 @@ export default function TransactionList({
   );
   const dispatch = useDispatch();
   const { navigate, isFocused } = useNavigation();
-  const {
-    accountAddress,
-    accountColor,
-    accountSymbol,
-    accountName,
-    accountImage,
-  } = useAccountProfile();
+  const { accountAddress, accountName, accountImage } = useAccountProfile();
+  const rainbowProfile = useRainbowProfile(accountAddress, {
+    enabled: isValidAddress(accountAddress),
+  });
   const [address, setAddress] = useState(null);
   const [ens, setEns] = useState(null);
 
@@ -328,9 +327,9 @@ export default function TransactionList({
     <Container>
       <Container
         accountAddress={accountName}
-        accountColor={colors.avatarBackgrounds[accountColor]}
+        accountColor={rainbowProfile?.color ?? colors.skeleton}
         accountImage={safeAccountImage}
-        accountName={accountSymbol}
+        accountName={rainbowProfile?.emoji}
         addCashAvailable={addCashAvailable}
         as={NativeTransactionListView}
         avatarOptions={avatarOptions}

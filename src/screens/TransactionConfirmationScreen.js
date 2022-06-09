@@ -2,6 +2,7 @@ import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import BigNumber from 'bignumber.js';
+import { isValidAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
 import { isEmpty, isNil, omit, toLower } from 'lodash';
 import React, {
@@ -62,6 +63,7 @@ import {
   useDimensions,
   useGas,
   useKeyboardHeight,
+  useRainbowProfile,
   useTransactionConfirmation,
   useWalletBalances,
   useWallets,
@@ -218,9 +220,13 @@ export default function TransactionConfirmationScreen() {
   const [ready, setReady] = useState(isMessageRequest);
   const genericNativeAsset = useNativeAssetForNetwork(currentNetwork);
   const walletConnector = walletConnectors[peerId];
+  const address = walletConnector?._accounts?.[0];
+
+  const { rainbowProfile } = useRainbowProfile(address, {
+    enabled: isValidAddress(address),
+  });
 
   const accountInfo = useMemo(() => {
-    const address = walletConnector?._accounts?.[0];
     const selectedWallet = findWalletWithAccount(wallets, address);
     const profileInfo = getAccountProfileInfo(
       selectedWallet,
@@ -232,7 +238,7 @@ export default function TransactionConfirmationScreen() {
       ...profileInfo,
       address,
     };
-  }, [currentNetwork, walletConnector?._accounts, walletNames, wallets]);
+  }, [address, currentNetwork, walletNames, wallets]);
 
   const getNextNonce = useCurrentNonce(accountInfo.address, currentNetwork);
 
@@ -1121,13 +1127,9 @@ export default function TransactionConfirmationScreen() {
                         />
                       ) : (
                         <ContactAvatar
-                          color={
-                            isNaN(accountInfo.accountColor)
-                              ? colors.skeleton
-                              : accountInfo.accountColor
-                          }
+                          color={rainbowProfile?.color ?? colors.skeleton}
                           size="smaller"
-                          value={accountInfo.accountSymbol}
+                          value={rainbowProfile?.emoji}
                         />
                       )}
                       <WalletText>{accountInfo.accountName}</WalletText>
