@@ -53,7 +53,7 @@ interface ImgOptions {
 }
 
 // We use this to reduce our quota for Cloudinary and Imgix
-const roundUpTo50 = (value: number) => Math.ceil(value / 50) * 50
+const roundUpTo50 = (value: number) => Math.ceil(value / 50) * 50;
 
 const shouldSignUri = (
   externalImageUri: string,
