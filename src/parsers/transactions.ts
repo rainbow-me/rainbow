@@ -1,7 +1,6 @@
 import {
   compact,
   concat,
-  findIndex,
   flatten,
   includes,
   isEmpty,
@@ -52,7 +51,7 @@ const dataFromLastTxHash = (
   );
   const lastTxHash = lastSuccessfulTxn?.hash;
   if (lastTxHash) {
-    const lastTxnHashIndex = findIndex(transactionData, txn =>
+    const lastTxnHashIndex = transactionData.findIndex(txn =>
       lastTxHash.startsWith(txn.hash)
     );
     if (lastTxnHashIndex > -1) {
