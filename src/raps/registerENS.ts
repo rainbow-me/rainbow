@@ -174,7 +174,7 @@ export const createTransferENSRap = async (
     actions = concat(actions, setName);
   }
   if (transferControl && toAddress) {
-    const transferControl = createNewENSAction(RapActionTypes.setOwnerENS, {
+    const transferControl = createNewENSAction(RapActionTypes.reclaimENS, {
       ...ensActionParameters,
       ownerAddress: toAddress,
     });

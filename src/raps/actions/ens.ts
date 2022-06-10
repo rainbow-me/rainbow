@@ -250,7 +250,7 @@ const executeSetText = async (
   );
 };
 
-const executeSetOwner = async (
+const executeReclaim = async (
   name?: string,
   ownerAddress?: string,
   records?: ENSRegistrationRecords,
@@ -264,7 +264,7 @@ const executeSetOwner = async (
     name,
     ownerAddress,
     records,
-    type: ENSRegistrationTransactionType.SET_OWNER,
+    type: ENSRegistrationTransactionType.RECLAIM,
     wallet,
   });
 
@@ -456,8 +456,8 @@ const ensAction = async (
           category: 'profiles',
         });
         break;
-      case ENSRegistrationTransactionType.SET_OWNER:
-        tx = await executeSetOwner(
+      case ENSRegistrationTransactionType.RECLAIM:
+        tx = await executeReclaim(
           name,
           parameters.ownerAddress ?? ownerAddress,
           ensRegistrationRecords,
@@ -619,7 +619,7 @@ const setAddrENS = async (
   );
 };
 
-const setOwnerENS = async (
+const reclaimENS = async (
   wallet: Wallet,
   currentRap: Rap,
   index: number,
@@ -628,10 +628,10 @@ const setOwnerENS = async (
 ): Promise<number | undefined> => {
   return ensAction(
     wallet,
-    RapActionTypes.setOwnerENS,
+    RapActionTypes.reclaimENS,
     index,
     parameters,
-    ENSRegistrationTransactionType.SET_OWNER,
+    ENSRegistrationTransactionType.RECLAIM,
     baseNonce
   );
 };
@@ -656,10 +656,10 @@ const setTextENS = async (
 export default {
   commitENS,
   multicallENS,
+  reclaimENS,
   registerWithConfig,
   renewENS,
   setAddrENS,
   setNameENS,
-  setOwnerENS,
   setTextENS,
 };

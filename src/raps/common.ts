@@ -45,7 +45,7 @@ const {
   registerWithConfig,
   multicallENS,
   setAddrENS,
-  setOwnerENS,
+  reclaimENS,
   setTextENS,
   setNameENS,
   renewENS,
@@ -61,7 +61,7 @@ export enum RapActionType {
   multicallENS = 'multicallENS',
   renewENS = 'renewENS',
   setAddrENS = 'setAddrENS',
-  setOwnerENS = 'setOwnerENS',
+  reclaimENS = 'reclaimENS',
   setTextENS = 'setTextENS',
   setNameENS = 'setNameENS',
 }
@@ -161,12 +161,12 @@ export const RapActionTypes = {
   commitENS: 'commitENS' as RapActionType,
   depositCompound: 'depositCompound' as RapActionType,
   multicallENS: 'multicallENS' as RapActionType,
+  reclaimENS: 'reclaimENS' as RapActionType,
   registerENS: 'registerENS' as RapActionType,
   registerWithConfigENS: 'registerWithConfigENS' as RapActionType,
   renewENS: 'renewENS' as RapActionType,
   setAddrENS: 'setAddrENS' as RapActionType,
   setNameENS: 'setNameENS' as RapActionType,
-  setOwnerENS: 'setOwnerENS' as RapActionType,
   setRecordsENS: 'setRecordsENS' as RapActionType,
   setTextENS: 'setTextENS' as RapActionType,
   swap: 'swap' as RapActionType,
@@ -277,8 +277,8 @@ const findENSActionByType = (type: RapActionType) => {
       return setTextENS;
     case RapActionTypes.setNameENS:
       return setNameENS;
-    case RapActionTypes.setOwnerENS:
-      return setOwnerENS;
+    case RapActionTypes.reclaimENS:
+      return reclaimENS;
     case RapActionTypes.renewENS:
       return renewENS;
     default:
@@ -370,7 +370,7 @@ const getRapTypeFromActionType = (actionType: RapActionType) => {
     case RapActionTypes.renewENS:
     case RapActionTypes.setNameENS:
     case RapActionTypes.setAddrENS:
-    case RapActionTypes.setOwnerENS:
+    case RapActionTypes.reclaimENS:
     case RapActionTypes.setTextENS:
     case RapActionTypes.setRecordsENS:
     case RapActionTypes.transferENS:

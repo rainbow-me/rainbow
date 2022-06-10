@@ -42,8 +42,8 @@ import useExperimentalFlag, {
 import { Box, Inset, Stack, Text } from '@rainbow-me/design-system';
 import { UniqueAsset } from '@rainbow-me/entities';
 import {
+  estimateENSReclaimGasLimit,
   estimateENSSetAddressGasLimit,
-  estimateENSSetOwnerGasLimit,
   estimateENSSetRecordsGasLimit,
   formatRecordsForTransaction,
 } from '@rainbow-me/handlers/ens';
@@ -374,7 +374,7 @@ export default function SendConfirmationSheet() {
       }
       if (sendENSOptions['transfer-control']) {
         promises.push(
-          estimateENSSetOwnerGasLimit({
+          estimateENSReclaimGasLimit({
             fromAddress: accountAddress,
             name: cleanENSName,
             ownerAddress: toAddress,

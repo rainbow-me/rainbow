@@ -1,7 +1,7 @@
 import { formatsByName } from '@ensdomains/address-encoder';
 import { hash } from '@ensdomains/eth-ens-namehash';
 import { Wallet } from '@ethersproject/wallet';
-import { BigNumberish, Contract } from 'ethers';
+import { BigNumber, BigNumberish, Contract } from 'ethers';
 import lang from 'i18n-js';
 import { atom } from 'recoil';
 import { InlineFieldProps } from '../components/inputs/InlineField';
@@ -43,7 +43,7 @@ export enum ENSRegistrationTransactionType {
   REGISTER_WITH_CONFIG = 'registerWithConfig',
   RENEW = 'renew',
   SET_ADDR = 'setAddr',
-  SET_OWNER = 'setOwner',
+  RECLAIM = 'reclaim',
   SET_TEXT = 'setText',
   SET_NAME = 'setName',
   MULTICALL = 'multicall',
@@ -628,10 +628,12 @@ const getENSExecutionDetails = async ({
       contract = await getENSPublicResolverContract(wallet, resolverAddress);
       break;
     }
-    case ENSRegistrationTransactionType.SET_OWNER: {
-      if (!name || !ownerAddress) throw new Error('Bad arguments for setOwner');
-      const namehash = labelhash(name.replace(ENS_DOMAIN, ''));
-      args = [namehash, ownerAddress];
+    case ENSRegistrationTransactionType.RECLAIM: {
+      if (!name || !ownerAddress) throw new Error('Bad arguments for reclaim');
+      const id = BigNumber.from(
+        labelhash(name.replace(ENS_DOMAIN, ''))
+      ).toString();
+      args = [id, ownerAddress];
       contract = await getENSRegistryContract();
       break;
     }
