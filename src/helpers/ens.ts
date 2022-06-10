@@ -5,7 +5,6 @@ import { BigNumberish, Contract } from 'ethers';
 import lang from 'i18n-js';
 import { atom } from 'recoil';
 import { InlineFieldProps } from '../components/inputs/InlineField';
-import { isRegexMatch } from './validators';
 import {
   add,
   addBuffer,
@@ -136,9 +135,8 @@ export const textRecordFields = {
     validation: {
       message: lang.t('profiles.create.website_submit_message'),
       validator: value =>
-        isRegexMatch(
-          value,
-          /[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/
+        /[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/.test(
+          value
         ),
     },
   },
@@ -152,8 +150,8 @@ export const textRecordFields = {
     placeholder: lang.t('profiles.create.username_placeholder'),
     startsWith: '@',
     validation: {
-      message: 'Something',
-      validator: value => isRegexMatch(value, /^\w*$/),
+      message: lang.t('profiles.create.twitter_submit_message'),
+      validator: value => /^\w*$/.test(value),
     },
   },
   [ENS_RECORDS.email]: {
@@ -167,7 +165,7 @@ export const textRecordFields = {
     placeholder: lang.t('profiles.create.email_placeholder'),
     validation: {
       message: lang.t('profiles.create.email_submit_message'),
-      validator: value => isRegexMatch(value, /^\S+@\S+\.\S+$/),
+      validator: value => /^\S+@\S+\.\S+$/.test(value),
     },
   },
   [ENS_RECORDS.instagram]: {
@@ -180,8 +178,8 @@ export const textRecordFields = {
     placeholder: lang.t('profiles.create.username_placeholder'),
     startsWith: '@',
     validation: {
-      message: 'Something',
-      validator: value => isRegexMatch(value, /^([\w.])*$/),
+      message: lang.t('profiles.create.instagram_submit_message'),
+      validator: value => /^([\w.])*$/.test(value),
     },
   },
   [ENS_RECORDS.discord]: {
@@ -194,8 +192,8 @@ export const textRecordFields = {
     placeholder: lang.t('profiles.create.username_placeholder'),
     startsWith: '@',
     validation: {
-      message: 'Something',
-      validator: value => isRegexMatch(value, /^([\w.])*$/),
+      message: lang.t('profiles.create.discord_submit_message'),
+      validator: value => /^([\w.])*$/.test(value),
     },
   },
   [ENS_RECORDS.github]: {
@@ -208,8 +206,8 @@ export const textRecordFields = {
     placeholder: lang.t('profiles.create.username_placeholder'),
     startsWith: '@',
     validation: {
-      message: 'Something',
-      validator: value => isRegexMatch(value, /^([\w.])*$/),
+      message: lang.t('profiles.create.github_submit_message'),
+      validator: value => /^([\w.])*$/.test(value),
     },
   },
   [ENS_RECORDS.BTC]: {
@@ -240,8 +238,8 @@ export const textRecordFields = {
     placeholder: lang.t('profiles.create.username_placeholder'),
     startsWith: '@',
     validation: {
-      message: 'Something',
-      validator: value => isRegexMatch(value, /^([\w.])*$/),
+      message: lang.t('profiles.create.snapchat_submit_message'),
+      validator: value => /^([\w.])*$/.test(value),
     },
   },
   [ENS_RECORDS.telegram]: {

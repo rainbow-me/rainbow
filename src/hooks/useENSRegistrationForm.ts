@@ -221,7 +221,6 @@ export default function useENSRegistrationForm({
       setErrors,
       setEvaluatingErrors,
       setValuesMap,
-      textRecordFields,
       updateRecordByKey,
     ]
   );
@@ -263,7 +262,7 @@ export default function useENSRegistrationForm({
         setSubmitting(false);
       }, 100);
     },
-    [setErrors, setSubmitting, values]
+    [setSubmitting]
   );
 
   return {

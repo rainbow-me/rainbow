@@ -78,15 +78,7 @@ export default function TextRecordsForm({
       ) : (
         <>
           {selectedFields.map(
-            ({
-              label,
-              inputProps,
-              placeholder,
-              startsWith,
-              validations,
-              id,
-              key,
-            }) => (
+            ({ label, inputProps, placeholder, startsWith, id, key }) => (
               <Box key={id} onLayout={e => handleLayout(e, key)}>
                 <Field
                   autoFocus={autoFocusKey === key}
@@ -114,7 +106,6 @@ export default function TextRecordsForm({
                   }
                   startsWith={startsWith}
                   testID={`ens-text-record-${key}`}
-                  validations={validations}
                 />
               </Box>
             )

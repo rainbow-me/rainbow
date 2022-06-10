@@ -828,13 +828,16 @@
         "snapchat": "Snapchat :)",
         "discord": "Discord :)",
         "email_placeholder": "Add your email :)",
+        "twitter_submit_message": "Please enter a valid Twitter username :)",
+        "github_submit_message": "Please enter a valid Github username :)",
+        "snapchat_submit_message": "Please enter a valid Snapchat username :)",
+        "instagram_submit_message": "Please enter a valid Instagram username :)",
+        "discord_submit_message": "Please enter a valid Discord username :)",
         "email_submit_message": "Please enter a valid email :)",
-        "website_submit_message": "Please enter a valid email :)",
+        "website_submit_message": "Please enter a valid website URL :)",
         "invalid_asset": "Invalid %{coin} address :)",
         "invalid_content_hash": "Invalid content hash :)",
-        "remove": "Remove :)",
-        "email_message": "Please enter a valid email :)",
-        "website_message": "Please enter a valid website URL :)"
+        "remove": "Remove :)"
       },
       "confirm": {
         "confirm_purchase": "Confirm purchase :)",
