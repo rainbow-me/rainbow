@@ -1,4 +1,4 @@
-import { useRoute } from '@react-navigation/native';
+import { useIsFocused, useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import BigNumber from 'bignumber.js';
@@ -186,7 +186,7 @@ export default function TransactionConfirmationScreen() {
   const dispatch = useDispatch();
   const { params: routeParams } = useRoute();
   const { goBack, navigate } = useNavigation();
-  const [screenMounted, setScreeenMounted] = useState(true);
+  const isFocused = useIsFocused();
 
   const pendingRedirect = useSelector(
     ({ walletconnect }) => walletconnect.pendingRedirect
@@ -376,7 +376,6 @@ export default function TransactionConfirmationScreen() {
 
   const closeScreen = useCallback(
     canceled => {
-      setScreeenMounted(false);
       goBack();
       if (!isMessageRequest) {
         stopPollingGasFees();
@@ -443,7 +442,7 @@ export default function TransactionConfirmationScreen() {
   const onPressCancel = useCallback(() => onCancel(), [onCancel]);
 
   useEffect(() => {
-    if (screenMounted && (!peerId || !walletConnector)) {
+    if (isFocused && (!peerId || !walletConnector)) {
       Alert.alert(
         lang.t('wallet.transaction.alert.connection_expired'),
         lang.t('wallet.transaction.alert.please_go_back_and_reconnect'),
@@ -454,7 +453,7 @@ export default function TransactionConfirmationScreen() {
         ]
       );
     }
-  }, [screenMounted, goBack, onCancel, peerId, walletConnector]);
+  }, [isFocused, goBack, onCancel, peerId, walletConnector]);
 
   const calculateGasLimit = useCallback(async () => {
     calculatingGasLimit.current = true;
@@ -683,7 +682,7 @@ export default function TransactionConfirmationScreen() {
         }
       }
       analytics.track('Approved WalletConnect transaction request');
-      if (screenMounted && requestId) {
+      if (isFocused && requestId) {
         dispatch(removeRequest(requestId));
         await dispatch(
           walletConnectSendStatus(peerId, requestId, { result: result.hash })
@@ -731,7 +730,7 @@ export default function TransactionConfirmationScreen() {
     provider,
     accountInfo.address,
     callback,
-    screenMounted,
+    isFocused,
     requestId,
     closeScreen,
     displayDetails?.request?.value,
