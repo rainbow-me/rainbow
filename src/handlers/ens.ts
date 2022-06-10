@@ -24,7 +24,7 @@ import {
 } from '../apollo/queries';
 import { ensProfileImagesQueryKey } from '../hooks/useENSProfileImages';
 import { ENSActionParameters, RapActionTypes } from '../raps/common';
-import { getProfileImages } from './localstorage/ens';
+import { getNameFromLabelhash, getProfileImages } from './localstorage/ens';
 import { estimateGasWithPadding, getProviderForNetwork } from './web3';
 import {
   ENSRegistrationRecords,
@@ -123,9 +123,9 @@ const buildEnsToken = ({
   } as UniqueAsset;
 };
 
-export const isUnknownOpenSeaENS = (asset?: any) => {
+export const isUnknownOpenSeaENS = (asset?: UniqueAsset) => {
   const isENS =
-    asset?.asset_contract?.address.toLowerCase() ===
+    asset?.asset_contract?.address?.toLowerCase() ===
     ENS_NFT_CONTRACT_ADDRESS.toLowerCase();
   return (
     isENS &&
@@ -145,13 +145,19 @@ export const fetchMetadata = async ({
   tokenId: string;
 }) => {
   try {
-    const { data } = await ensClient.query<EnsGetNameFromLabelhash>({
-      query: ENS_GET_NAME_FROM_LABELHASH,
-      variables: {
-        labelhash: BigNumber.from(tokenId).toHexString(),
-      },
-    });
-    const name = data.domains[0].labelName;
+    const labelhash = BigNumber.from(tokenId).toHexString();
+
+    let name = await getNameFromLabelhash(labelhash);
+    if (!name) {
+      const { data } = await ensClient.query<EnsGetNameFromLabelhash>({
+        query: ENS_GET_NAME_FROM_LABELHASH,
+        variables: {
+          labelhash,
+        },
+      });
+      name = data.domains[0].labelName;
+    }
+
     const image_url = `https://metadata.ens.domains/mainnet/${contractAddress}/${tokenId}/image`;
     return { image_url, name: `${name}.eth` };
   } catch (error) {

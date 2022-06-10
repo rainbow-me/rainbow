@@ -10,6 +10,7 @@ import usePendingTransactions from './usePendingTransactions';
 import { useAccountSettings, useCurrentNonce, useENSRegistration } from '.';
 import { Records, RegistrationParameters } from '@rainbow-me/entities';
 import { fetchResolver } from '@rainbow-me/handlers/ens';
+import { saveNameFromLabelhash } from '@rainbow-me/handlers/localstorage/ens';
 import { uploadImage } from '@rainbow-me/handlers/pinata';
 import {
   ENS_DOMAIN,
@@ -22,7 +23,7 @@ import { executeRap } from '@rainbow-me/raps';
 import { saveCommitRegistrationParameters } from '@rainbow-me/redux/ensRegistration';
 import { timeUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
-import { logger } from '@rainbow-me/utils';
+import { labelhash, logger } from '@rainbow-me/utils';
 
 const formatENSActionParams = (
   registrationParameters: RegistrationParameters
@@ -78,6 +79,11 @@ export default function useENSRegistrationActionHandler(
           duration
         ),
       ]);
+
+      const hash = labelhash(
+        registrationParameters.name.replace(ENS_DOMAIN, '')
+      );
+      await saveNameFromLabelhash(hash, registrationParameters.name);
 
       const commitEnsRegistrationParameters: ENSActionParameters = {
         ...formatENSActionParams(registrationParameters),
