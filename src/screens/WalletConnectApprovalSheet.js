@@ -318,7 +318,7 @@ export default function WalletConnectApprovalSheet() {
             <DappLogo dappName={dappName || ''} imageUrl={imageUrl} />
             <Centered paddingHorizontal={24}>
               <Column>
-                <View style={{ marginBottom: 10 }}>
+                <Row marginBottom={12}>
                   <Text
                     align="center"
                     color="primary"
@@ -328,7 +328,7 @@ export default function WalletConnectApprovalSheet() {
                   >
                     {dappName}
                   </Text>
-                </View>
+                </Row>
                 <Text
                   align="center"
                   color="secondary60"
