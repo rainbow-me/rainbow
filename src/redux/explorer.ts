@@ -30,6 +30,8 @@ import {
   fallbackExplorerClearState,
   fallbackExplorerInit,
   fetchOnchainBalances,
+  MainnetAssetDiscoveryMessage,
+  onMainnetAssetDiscoveryResponse,
 } from './fallbackExplorer';
 import { optimismExplorerInit } from './optimismExplorer';
 import { AppGetState, AppState } from './store';
@@ -98,6 +100,7 @@ const messages = {
   CONNECT: 'connect',
   DISCONNECT: 'disconnect',
   ERROR: 'error',
+  MAINNET_ASSET_DISCOVERY: 'received address mainnet-assets-discovery',
   RECONNECT_ATTEMPT: 'reconnect_attempt',
 };
 
@@ -275,6 +278,29 @@ const portfolioSubscription = (
       portfolio_fields: 'all',
     },
     scope: ['portfolio'],
+  },
+];
+
+/**
+ * Configures a mainnet asset discovery request.
+ *
+ * @param address The address to request assets for.
+ * @param currency The currency to use.
+ * @param action The API action.
+ * @returns Arguments for an `emit` function call.
+ */
+const mainnetAssetDisovery = (
+  address: string,
+  currency: string,
+  action = 'get'
+) => [
+  action,
+  {
+    payload: {
+      address,
+      currency: toLower(currency),
+    },
+    scope: ['mainnet-assets-discovery'],
   },
 ];
 
@@ -616,6 +642,18 @@ export const explorerInit = () => async (
       type: EXPLORER_SET_FALLBACK_HANDLER,
     });
   }
+};
+
+/**
+ * Emits a mainnet asset discovery request using the current account address.
+ */
+export const emitMainnetAssetDiscoveryRequest = (
+  _: Dispatch,
+  getState: AppGetState
+) => {
+  const { addressSocket } = getState().explorer;
+  const { accountAddress, nativeCurrency } = getState().settings;
+  addressSocket.emit(...mainnetAssetDisovery(accountAddress, nativeCurrency));
 };
 
 /**
@@ -1023,6 +1061,13 @@ const listenOnAddressMessages = (socket: SocketIOClient.Socket) => (
       // Fetch balances onchain to override zerion's
       // which is likely behind
       dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
+    }
+  );
+
+  socket.on(
+    messages.MAINNET_ASSET_DISCOVERY,
+    (message: MainnetAssetDiscoveryMessage) => {
+      onMainnetAssetDiscoveryResponse(message);
     }
   );
 };
