@@ -1,5 +1,5 @@
 import { ChainId, Pair, Token } from '@uniswap/sdk';
-import { filter, flatMap, map, toLower, uniqBy } from 'lodash';
+import { flatMap, map, toLower, uniqBy } from 'lodash';
 import { useMemo } from 'react';
 import { getTokenForCurrency } from '../handlers/uniswap';
 import useAccountSettings from './useAccountSettings';
@@ -43,8 +43,7 @@ export default function useUniswapCalls() {
       ),
     ];
 
-    const validCombos = filter(
-      combos,
+    const validCombos = combos.filter(
       ([inputToken, outputToken]) =>
         inputToken && outputToken && !inputToken.equals(outputToken)
     );
