@@ -127,7 +127,7 @@ const ExchangeInput = (
         ref={ref}
         selectionColor={selectionColor}
         size={size}
-        testID={testID}
+        testID={value ? `${testID}-${value}` : testID}
         value={value}
         weight={weight}
       />

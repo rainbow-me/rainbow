@@ -84,7 +84,7 @@ const ExchangeNativeField = (
           placeholder={placeholder}
           ref={ref}
           selectionColor={colorForAsset}
-          testID={nativeAmount ? `${testID}-${nativeAmount}` : testID}
+          testID={testID}
           value={nativeAmount}
         />
       </Row>
