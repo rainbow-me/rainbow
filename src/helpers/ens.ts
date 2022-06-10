@@ -420,7 +420,7 @@ const getENSBaseRegistrarImplementationContract = async (wallet?: Wallet) => {
 };
 
 const getENSRegistryContract = async (wallet?: Wallet) => {
-  const signerOrProvider = wallet || (await getProviderForNetwork());
+  const signerOrProvider = wallet ?? (await getProviderForNetwork());
   return new Contract(
     ensRegistryAddress,
     ENSRegistryWithFallbackABI,

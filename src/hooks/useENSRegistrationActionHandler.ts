@@ -298,7 +298,7 @@ export default function useENSRegistrationActionHandler(
       const transferEnsParameters: ENSActionParameters = {
         ...formatENSActionParams({
           ...registrationParameters,
-          records: records || registrationParameters.records,
+          records: records ?? registrationParameters.records,
         }),
         clearRecords,
         name,

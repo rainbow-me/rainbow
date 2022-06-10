@@ -132,7 +132,7 @@ export const createTransferENSRap = async (
   } = ensActionParameters;
 
   if (clearRecords) {
-    const emptyRecords = Object.keys(records || {}).reduce(
+    const emptyRecords = Object.keys(records ?? {}).reduce(
       (records, recordKey) => ({
         ...records,
         // Use zero address for ETH record as an empty string throws an error

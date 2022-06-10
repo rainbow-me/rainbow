@@ -117,6 +117,59 @@ const doesAccountControlName = (ensProfile?: ENSProfile) => ensProfile?.isOwner;
 const gasOffset = 120;
 const checkboxOffset = 44;
 
+function getDefaultCheckboxes({
+  isENS,
+  ensProfile,
+  network,
+  toAddress,
+}: {
+  isENS: boolean;
+  ensProfile: any;
+  network: string;
+  toAddress: string;
+}): Checkbox[] {
+  if (isENS) {
+    return [
+      !hasClearProfileInfo(ensProfile) && {
+        checked: false,
+        id: 'clear-records',
+        label: lang.t(
+          'wallet.transaction.checkboxes.clear_profile_information'
+        ),
+      },
+      !doesNamePointToRecipient(ensProfile, toAddress) && {
+        checked: false,
+        id: 'set-address',
+        label: lang.t('wallet.transaction.checkboxes.point_name_to_recipient'),
+      },
+      doesAccountControlName(ensProfile) && {
+        checked: false,
+        id: 'transfer-control',
+        label: lang.t('wallet.transaction.checkboxes.transfer_control'),
+      },
+    ].filter(Boolean) as Checkbox[];
+  }
+  return [
+    {
+      checked: false,
+      id: 'not-sending-to-exchange',
+      label: lang.t(
+        'wallet.transaction.checkboxes.im_not_sending_to_an_exchange'
+      ),
+    },
+    {
+      checked: false,
+      id: 'has-wallet-that-supports',
+      label: lang.t(
+        'wallet.transaction.checkboxes.has_a_wallet_that_supports',
+        {
+          networkName: capitalize(network),
+        }
+      ),
+    },
+  ];
+}
+
 export function getSheetHeight({
   asset,
   ensProfile,
@@ -266,47 +319,7 @@ export default function SendConfirmationSheet() {
   const isENS = uniqueTokenType === 'ENS';
 
   const [checkboxes, setCheckboxes] = useState<Checkbox[]>(
-    isENS
-      ? ([
-          !hasClearProfileInfo(ensProfile) && {
-            checked: false,
-            id: 'clear-records',
-            label: lang.t(
-              'wallet.transaction.checkboxes.clear_profile_information'
-            ),
-          },
-          !doesNamePointToRecipient(ensProfile, toAddress) && {
-            checked: false,
-            id: 'set-address',
-            label: lang.t(
-              'wallet.transaction.checkboxes.point_name_to_recipient'
-            ),
-          },
-          doesAccountControlName(ensProfile) && {
-            checked: false,
-            id: 'transfer-control',
-            label: lang.t('wallet.transaction.checkboxes.transfer_control'),
-          },
-        ].filter(Boolean) as Checkbox[])
-      : [
-          {
-            checked: false,
-            id: 'not-sending-to-exchange',
-            label: lang.t(
-              'wallet.transaction.checkboxes.im_not_sending_to_an_exchange'
-            ),
-          },
-          {
-            checked: false,
-            id: 'has-wallet-that-supports',
-            label: lang.t(
-              'wallet.transaction.checkboxes.has_a_wallet_that_supports',
-              {
-                networkName: capitalize(network),
-              }
-            ),
-          },
-        ]
+    getDefaultCheckboxes({ ensProfile, isENS, network, toAddress })
   );
 
   useEffect(() => {
@@ -331,8 +344,8 @@ export default function SendConfirmationSheet() {
 
       if (sendENSOptions['clear-records']) {
         let records = Object.keys({
-          ...(ensProfile?.data?.coinAddresses || {}),
-          ...(ensProfile?.data?.records || {}),
+          ...(ensProfile?.data?.coinAddresses ?? {}),
+          ...(ensProfile?.data?.records ?? {}),
         }).reduce((records, recordKey) => {
           return {
             ...records,
