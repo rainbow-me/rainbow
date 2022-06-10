@@ -464,7 +464,7 @@ export interface AddressAssetsReceivedMessage {
   payload?: {
     assets?: {
       [id: string]: {
-        asset: ZerionAsset;
+        asset: ZerionAsset | ZerionAssetFallback;
       };
     };
   };
