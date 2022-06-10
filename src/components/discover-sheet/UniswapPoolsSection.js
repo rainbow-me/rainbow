@@ -9,9 +9,9 @@ import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
 import EdgeFade from './EdgeFade';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
+import { times } from '@rainbow-me/helpers/utilities';
 import { useAccountSettings, useUniswapPools } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
-import { times } from '@rainbow-me/helpers/utilities';
 
 const INITIAL_PAGE_AMOUNT = 15;
 

@@ -22,12 +22,12 @@ import { Emoji, Text } from '../text';
 import EdgeFade from './EdgeFade';
 import { getTrendingAddresses } from '@rainbow-me/handlers/dispersion';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
+import { times } from '@rainbow-me/helpers/utilities';
 import { useAccountSettings, useUserLists } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { ethereumUtils } from '@rainbow-me/utils';
-import { times } from '@rainbow-me/helpers/utilities';
 
 const ListButton = styled(ButtonPressAnimation).attrs({
   scaleTo: 0.96,
