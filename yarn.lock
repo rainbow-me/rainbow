@@ -15319,10 +15319,10 @@ react-native-extra-dimensions-android@1.2.2:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/react-native-extra-dimensions-android/-/react-native-extra-dimensions-android-1.2.2.tgz#04e311bc27f66ec5b15e8a719abba462a2d71e58"
 
-react-native-fast-image@8.5.10:
-  version "8.5.10"
-  resolved "https://registry.yarnpkg.com/react-native-fast-image/-/react-native-fast-image-8.5.10.tgz#b2a5375b806c5bcf48f3dca1bb14050608c256bb"
-  integrity sha512-NWQ4cKqvTMIE7E740Q3Nnkg9GzmXgCW79Hfq1+nFAll+6LgkWIc3MRRs+hcEcxvyGH0R6Whs9Lw0NUzoWPOjuw==
+react-native-fast-image@8.5.11:
+  version "8.5.11"
+  resolved "https://registry.yarnpkg.com/react-native-fast-image/-/react-native-fast-image-8.5.11.tgz#e3dc969d0e4e8df026646bf18194465aa55cbc2b"
+  integrity sha512-cNW4bIJg3nvKaheG8vGMfqCt5LMWX9MS5+wMudgKIHbGO51spRr4sgnlhVgwHLcZ5aeNOVJ8CPRxDIWKRq/0QA==
 
 react-native-fit-image@^1.5.5:
   version "1.5.5"
