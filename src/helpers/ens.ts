@@ -634,7 +634,7 @@ const getENSExecutionDetails = async ({
         labelhash(name.replace(ENS_DOMAIN, ''))
       ).toString();
       args = [id, ownerAddress];
-      contract = await getENSRegistryContract();
+      contract = await getENSBaseRegistrarImplementationContract();
       break;
     }
     case ENSRegistrationTransactionType.SET_TEXT: {
