@@ -2,7 +2,6 @@ import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import BigNumber from 'bignumber.js';
-import { isValidAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
 import { isEmpty, isNil, omit, toLower } from 'lodash';
 import React, {
@@ -222,9 +221,7 @@ export default function TransactionConfirmationScreen() {
   const walletConnector = walletConnectors[peerId];
   const address = walletConnector?._accounts?.[0];
 
-  const { rainbowProfile } = useRainbowProfile(address, {
-    enabled: isValidAddress(address),
-  });
+  const { rainbowProfile } = useRainbowProfile(address);
 
   const accountInfo = useMemo(() => {
     const selectedWallet = findWalletWithAccount(wallets, address);

@@ -1,5 +1,4 @@
 import analytics from '@segment/analytics-react-native';
-import { isValidAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
 import { toLower } from 'lodash';
 import { useCallback, useMemo } from 'react';
@@ -36,9 +35,7 @@ export default () => {
     accountImage,
     accountENS,
   } = useAccountProfile();
-  const { rainbowProfile } = useRainbowProfile(accountAddress, {
-    enabled: isValidAddress(accountAddress),
-  });
+  const { rainbowProfile } = useRainbowProfile(accountAddress);
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const profileEnabled = Boolean(accountENS);
   const ensProfile = useENSProfile(accountENS, { enabled: profileEnabled });

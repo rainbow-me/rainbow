@@ -1,6 +1,5 @@
 import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
-import { isValidAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
 import React, { useCallback, useRef } from 'react';
 import Divider from '../Divider';
@@ -94,9 +93,7 @@ export default function ProfileMasthead({
   const { width: deviceWidth } = useDimensions();
   const { navigate } = useNavigation();
   const { accountAddress, accountName, accountImage } = useAccountProfile();
-  const { rainbowProfile } = useRainbowProfile(accountAddress, {
-    enabled: isValidAddress(accountAddress),
-  });
+  const { rainbowProfile } = useRainbowProfile(accountAddress);
 
   const { onAvatarPress } = useOnAvatarPress();
 

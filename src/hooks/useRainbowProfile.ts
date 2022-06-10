@@ -9,6 +9,7 @@ import { fetchRainbowProfile } from '@rainbow-me/handlers/rainbowProfiles';
 import { QueryConfig, UseQueryData } from '@rainbow-me/react-query/types';
 import { colors } from '@rainbow-me/styles';
 import { profileUtils } from '@rainbow-me/utils';
+import { isValidAddress } from 'ethereumjs-util';
 
 const queryKey = (address: EthereumAddress) => ['wallet-profiles', address];
 
@@ -53,6 +54,7 @@ export default function useRainbowProfile(
     {
       ...config,
       // Data will be stale for 10s to avoid dupe queries
+      enabled: isValidAddress(address),
       staleTime: STALE_TIME,
     }
   );

@@ -1,4 +1,3 @@
-import { isValidAddress } from 'ethereumjs-util';
 import React, { useCallback } from 'react';
 import { useNavigation } from '../../navigation/Navigation';
 import { NumberBadge } from '../badge';
@@ -17,9 +16,7 @@ export default function ProfileHeaderButton() {
   const { navigate } = useNavigation();
   const { pendingRequestCount } = useRequests();
   const { accountAddress, accountImage } = useAccountProfile();
-  const { rainbowProfile } = useRainbowProfile(accountAddress, {
-    enabled: isValidAddress(accountAddress),
-  });
+  const { rainbowProfile } = useRainbowProfile(accountAddress);
 
   const onPress = useCallback(() => navigate(Routes.PROFILE_SCREEN), [
     navigate,

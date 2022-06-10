@@ -1,4 +1,3 @@
-import { isValidAddress } from 'ethereumjs-util';
 import React, { useMemo } from 'react';
 import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
@@ -42,9 +41,7 @@ export default function AvatarCircle({
   const { colors, isDarkMode } = useTheme();
   const { accountAddress } = useAccountProfile();
 
-  const { rainbowProfile } = useRainbowProfile(accountAddress, {
-    enabled: isValidAddress(accountAddress),
-  });
+  const { rainbowProfile } = useRainbowProfile(accountAddress);
 
   const accountSymbol = showcaseAccountSymbol ?? rainbowProfile?.emoji;
   const resolvedColor =

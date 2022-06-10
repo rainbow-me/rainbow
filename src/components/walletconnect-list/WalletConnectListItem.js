@@ -1,5 +1,4 @@
 import analytics from '@segment/analytics-react-native';
-import { isValidAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import ChainLogo from '../ChainLogo';
@@ -88,9 +87,7 @@ export default function WalletConnectListItem({
     walletConnectDisconnectAllByDappUrl,
     walletConnectUpdateSessionConnectorByDappUrl,
   } = useWalletConnectConnections();
-  const { rainbowProfile } = useRainbowProfile(account, {
-    enabled: isValidAddress(account),
-  });
+  const { rainbowProfile } = useRainbowProfile(account);
   const { goBack } = useNavigation();
   const { colors } = useTheme();
   const { wallets, walletNames } = useWallets();

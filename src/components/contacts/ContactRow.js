@@ -1,4 +1,3 @@
-import { isValidAddress } from 'ethereumjs-util';
 import React, { Fragment, useEffect, useState } from 'react';
 import { removeFirstEmojiFromString } from '../../helpers/emojiHandler';
 import { abbreviations, magicMemo } from '../../utils';
@@ -72,9 +71,7 @@ const ContactRow = (
   const { width: deviceWidth } = useDimensions();
   const { onAddOrUpdateContacts } = useContacts();
   const { colors } = useTheme();
-  const { rainbowProfile } = useRainbowProfile(address, {
-    enabled: isValidAddress(address),
-  });
+  const { rainbowProfile } = useRainbowProfile(address);
   const {
     accountType,
     balance,

@@ -1,5 +1,4 @@
 import analytics from '@segment/analytics-react-native';
-import { isValidAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
 import React, { useCallback, useState } from 'react';
 import { InteractionManager } from 'react-native';
@@ -17,9 +16,7 @@ export default function WalletProfileState({
   profile,
 }) {
   const { goBack, navigate } = useNavigation();
-  const { rainbowProfile } = useRainbowProfile(address, {
-    enabled: isValidAddress(address),
-  });
+  const { rainbowProfile } = useRainbowProfile(address);
   const { name, image } = profile;
 
   const [value, setValue] = useState(

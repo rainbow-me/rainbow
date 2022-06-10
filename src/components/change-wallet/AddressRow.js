@@ -1,4 +1,3 @@
-import { isValidAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -120,9 +119,7 @@ export default function AddressRow({
     walletId,
   } = data;
 
-  const { rainbowProfile } = useRainbowProfile(address, {
-    enabled: isValidAddress(address),
-  });
+  const { rainbowProfile } = useRainbowProfile(address);
 
   const { colors, isDarkMode } = useTheme();
 

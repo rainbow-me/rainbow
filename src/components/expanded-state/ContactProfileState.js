@@ -1,4 +1,3 @@
-import { isValidAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
 import React, { useCallback, useState } from 'react';
 import { Keyboard } from 'react-native';
@@ -27,9 +26,7 @@ const ContactProfileState = ({ address, ens, contactNickname }) => {
 
   const { network } = useAccountSettings();
 
-  const { rainbowProfile } = useRainbowProfile(address, {
-    enabled: isValidAddress(address),
-  });
+  const { rainbowProfile } = useRainbowProfile(address);
 
   const handleAddContact = useCallback(() => {
     onAddOrUpdateContacts(

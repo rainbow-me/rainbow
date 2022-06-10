@@ -79,9 +79,7 @@ export default function TransactionList({
   const dispatch = useDispatch();
   const { navigate, isFocused } = useNavigation();
   const { accountAddress, accountName, accountImage } = useAccountProfile();
-  const rainbowProfile = useRainbowProfile(accountAddress, {
-    enabled: isValidAddress(accountAddress),
-  });
+  const rainbowProfile = useRainbowProfile(accountAddress);
   const [address, setAddress] = useState(null);
   const [ens, setEns] = useState(null);
 

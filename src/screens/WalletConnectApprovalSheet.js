@@ -1,6 +1,5 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
-import { isValidAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
 import React, {
   useCallback,
@@ -104,9 +103,7 @@ export default function WalletConnectApprovalSheet() {
     wallet: selectedWallet,
   });
 
-  const { rainbowProfile } = useRainbowProfile(approvalAccount?.address, {
-    enabled: isValidAddress(approvalAccount?.address),
-  });
+  const { rainbowProfile } = useRainbowProfile(approvalAccount?.address);
 
   const type = params?.type || WalletConnectApprovalSheetType.connect;
 

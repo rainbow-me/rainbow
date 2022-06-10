@@ -1,4 +1,3 @@
-import { isValidAddress } from 'ethereumjs-util';
 import GraphemeSplitter from 'grapheme-splitter';
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -46,9 +45,7 @@ export default function useWebData() {
     })
   );
 
-  const { rainbowProfile } = useRainbowProfile(accountAddress, {
-    enabled: isValidAddress(accountAddress),
-  });
+  const { rainbowProfile } = useRainbowProfile(accountAddress);
 
   const addressHashedColor = useMemo(
     () =>
