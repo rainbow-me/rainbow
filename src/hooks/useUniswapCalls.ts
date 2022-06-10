@@ -1,5 +1,5 @@
 import { ChainId, Pair, Token } from '@uniswap/sdk';
-import { flatMap, map, toLower, uniqBy } from 'lodash';
+import { map, toLower, uniqBy } from 'lodash';
 import { useMemo } from 'react';
 import { getTokenForCurrency } from '../handlers/uniswap';
 import useAccountSettings from './useAccountSettings';
@@ -38,7 +38,7 @@ export default function useUniswapCalls() {
       // token B against all bases
       ...bases.map((base): [Token, Token] => [outputToken, base]),
       // each base against all bases
-      ...flatMap(bases, (base): [Token, Token][] =>
+      ...bases.flatMap((base): [Token, Token][] =>
         bases.map(otherBase => [base, otherBase])
       ),
     ];
