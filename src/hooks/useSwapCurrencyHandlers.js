@@ -9,7 +9,6 @@ import useTimeout from './useTimeout';
 import {
   CurrencySelectionTypes,
   ExchangeModalTypes,
-  Network,
 } from '@rainbow-me/helpers';
 import { useSwapCurrencies } from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
@@ -135,27 +134,8 @@ export default function useSwapCurrencyHandlers({
             type: ethereumUtils.getNetworkFromType(inputCurrency?.type),
           }
         : null;
-      if (
-        !fromDiscover &&
-        !inputCurrency &&
-        outputCurrency?.implementations?.[newInputCurrency?.type]?.address
-      ) {
-        let newOutputCurrency = outputCurrency;
-        if (newInputCurrency.type !== Network.mainnet)
-          newOutputCurrency.mainnet_address = outputCurrency.address;
 
-        newOutputCurrency.address =
-          outputCurrency.implementations[newInputCurrency?.type].address;
-        newOutputCurrency.type = newInputCurrency.type;
-        newOutputCurrency.uniqueId =
-          newInputCurrency.type === Network.mainnet
-            ? newOutputCurrency?.address
-            : `${newOutputCurrency?.address}_${newOutputCurrency?.type}`;
-        dispatch(updateSwapInputCurrency(newInputCurrency, true));
-        dispatch(updateSwapOutputCurrency(newOutputCurrency));
-        setLastFocusedInputHandle?.(inputFieldRef);
-        handleNavigate();
-      } else if (
+      if (
         outputCurrency &&
         newInputCurrency?.type !== outputCurrency?.type &&
         !hasShownWarning
@@ -170,7 +150,7 @@ export default function useSwapCurrencyHandlers({
                   setHasShownWarning();
                   dispatch(updateSwapInputCurrency(newInputCurrency));
                   setLastFocusedInputHandle?.(inputFieldRef);
-                  handleNavigate();
+                  handleNavigate?.();
                 }, 250);
               });
             },
@@ -180,16 +160,10 @@ export default function useSwapCurrencyHandlers({
       } else {
         dispatch(updateSwapInputCurrency(newInputCurrency));
         setLastFocusedInputHandle?.(inputFieldRef);
-        handleNavigate();
+        handleNavigate?.();
       }
     },
-    [
-      dispatch,
-      fromDiscover,
-      inputFieldRef,
-      outputCurrency,
-      setLastFocusedInputHandle,
-    ]
+    [dispatch, inputFieldRef, outputCurrency, setLastFocusedInputHandle]
   );
 
   const updateOutputCurrency = useCallback(
@@ -214,7 +188,7 @@ export default function useSwapCurrencyHandlers({
                   setHasShownWarning();
                   dispatch(updateSwapOutputCurrency(newOutputCurrency));
                   setLastFocusedInputHandle?.(inputFieldRef);
-                  handleNavigate();
+                  handleNavigate?.();
                 }, 250);
               });
             },
@@ -224,7 +198,7 @@ export default function useSwapCurrencyHandlers({
       } else {
         dispatch(updateSwapOutputCurrency(newOutputCurrency));
         setLastFocusedInputHandle?.(inputFieldRef);
-        handleNavigate();
+        handleNavigate?.();
       }
     },
     [dispatch, inputCurrency, inputFieldRef, setLastFocusedInputHandle]
