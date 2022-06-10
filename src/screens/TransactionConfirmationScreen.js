@@ -374,13 +374,9 @@ export default function TransactionConfirmationScreen() {
     startPollingGasFees,
   ]);
 
-  console.log('👹👹👹👹👹👹👹👹  TX CONFIRMATION SCREEN still mounted');
   const closeScreen = useCallback(
     canceled => {
       setScreeenMounted(false);
-      console.log(
-        '😀😀😀😀😀😀😀😀😀😀😀😀  TX CONFIRMATION SCREEN will close now'
-      );
       goBack();
       if (!isMessageRequest) {
         stopPollingGasFees();
