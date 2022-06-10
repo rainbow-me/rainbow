@@ -139,28 +139,31 @@ export default function ExchangeModal({
     addListener,
   } = useNavigation();
 
+  // if the default input is on a different network than
+  // we want to update the output to be on the same, if its not available -> null
   const defaultOutputAssetOverride = useMemo(() => {
+    let newOutput = defaultOutputAsset;
     if (defaultInputAsset && defaultOutputAsset) {
       if (
         defaultInputAsset.type !== defaultOutputAsset.type &&
         defaultOutputAsset?.implementations?.[defaultInputAsset?.type]?.address
       ) {
         if (defaultInputAsset.type !== Network.mainnet)
-          defaultOutputAsset.mainnet_address = defaultOutputAsset.address;
+          newOutput.mainnet_address = defaultOutputAsset.address;
 
-        defaultOutputAsset.address =
+        newOutput.address =
           defaultOutputAsset.implementations[defaultInputAsset?.type].address;
-        defaultOutputAsset.type = defaultInputAsset.type;
-        defaultOutputAsset.uniqueId =
-          defaultOutputAsset.type === Network.mainnet
+        newOutput.type = defaultInputAsset.type;
+        newOutput.uniqueId =
+          newOutput.type === Network.mainnet
             ? defaultOutputAsset?.address
             : `${defaultOutputAsset?.address}_${defaultOutputAsset?.type}`;
-        return defaultOutputAsset;
+        return newOutput;
       } else {
         return null;
       }
     } else {
-      return defaultOutputAsset;
+      return newOutput;
     }
   }, [defaultInputAsset, defaultOutputAsset]);
 
