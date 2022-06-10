@@ -5,6 +5,7 @@ import { BigNumberish, Contract } from 'ethers';
 import lang from 'i18n-js';
 import { atom } from 'recoil';
 import { InlineFieldProps } from '../components/inputs/InlineField';
+import { isRegexMatch } from './validators';
 import {
   add,
   addBuffer,
@@ -96,17 +97,9 @@ export type TextRecordField = {
   label: InlineFieldProps['label'];
   placeholder: InlineFieldProps['placeholder'];
   inputProps?: InlineFieldProps['inputProps'];
-  validations?: InlineFieldProps['validations'] & {
-    onSubmit?: {
-      match?: {
-        value: RegExp;
-        message: string;
-      };
-      validate?: {
-        callback: (value: string) => boolean;
-        message: string;
-      };
-    };
+  validation?: {
+    validator: (value: string) => boolean;
+    message: string;
   };
   startsWith?: string;
 };
@@ -140,13 +133,13 @@ export const textRecordFields = {
     key: ENS_RECORDS.url,
     label: lang.t('profiles.create.website'),
     placeholder: lang.t('profiles.create.website_placeholder'),
-    validations: {
-      onSubmit: {
-        match: {
-          message: lang.t('profiles.create.website_submit_message'),
-          value: /[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/,
-        },
-      },
+    validation: {
+      message: lang.t('profiles.create.website_submit_message'),
+      validator: value =>
+        isRegexMatch(
+          value,
+          /[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/
+        ),
     },
   },
   [ENS_RECORDS.twitter]: {
@@ -158,10 +151,9 @@ export const textRecordFields = {
     label: lang.t('profiles.create.twitter'),
     placeholder: lang.t('profiles.create.username_placeholder'),
     startsWith: '@',
-    validations: {
-      onChange: {
-        match: /^\w*$/,
-      },
+    validation: {
+      message: 'Something',
+      validator: value => isRegexMatch(value, /^\w*$/),
     },
   },
   [ENS_RECORDS.email]: {
@@ -173,13 +165,9 @@ export const textRecordFields = {
     key: ENS_RECORDS.email,
     label: lang.t('profiles.create.email'),
     placeholder: lang.t('profiles.create.email_placeholder'),
-    validations: {
-      onSubmit: {
-        match: {
-          message: lang.t('profiles.create.email_submit_message'),
-          value: /^\S+@\S+\.\S+$/,
-        },
-      },
+    validation: {
+      message: lang.t('profiles.create.email_submit_message'),
+      validator: value => isRegexMatch(value, /^\S+@\S+\.\S+$/),
     },
   },
   [ENS_RECORDS.instagram]: {
@@ -191,10 +179,9 @@ export const textRecordFields = {
     label: lang.t('profiles.create.instagram'),
     placeholder: lang.t('profiles.create.username_placeholder'),
     startsWith: '@',
-    validations: {
-      onChange: {
-        match: /^([\w.])*$/,
-      },
+    validation: {
+      message: 'Something',
+      validator: value => isRegexMatch(value, /^([\w.])*$/),
     },
   },
   [ENS_RECORDS.discord]: {
@@ -206,10 +193,9 @@ export const textRecordFields = {
     label: lang.t('profiles.create.discord'),
     placeholder: lang.t('profiles.create.username_placeholder'),
     startsWith: '@',
-    validations: {
-      onChange: {
-        match: /^([\w.])*$/,
-      },
+    validation: {
+      message: 'Something',
+      validator: value => isRegexMatch(value, /^([\w.])*$/),
     },
   },
   [ENS_RECORDS.github]: {
@@ -221,10 +207,9 @@ export const textRecordFields = {
     label: lang.t('profiles.create.github'),
     placeholder: lang.t('profiles.create.username_placeholder'),
     startsWith: '@',
-    validations: {
-      onChange: {
-        match: /^([\w.])*$/,
-      },
+    validation: {
+      message: 'Something',
+      validator: value => isRegexMatch(value, /^([\w.])*$/),
     },
   },
   [ENS_RECORDS.BTC]: {
@@ -238,15 +223,11 @@ export const textRecordFields = {
     placeholder: lang.t('profiles.create.wallet_placeholder', {
       coin: lang.t('profiles.create.btc'),
     }),
-    validations: {
-      onSubmit: {
-        validate: {
-          callback: value => validateCoinRecordValue(value, ENS_RECORDS.BTC),
-          message: lang.t('profiles.create.invalid_asset', {
-            coin: ENS_RECORDS.BTC,
-          }),
-        },
-      },
+    validation: {
+      message: lang.t('profiles.create.invalid_asset', {
+        coin: ENS_RECORDS.BTC,
+      }),
+      validator: value => validateCoinRecordValue(value, ENS_RECORDS.BTC),
     },
   },
   [ENS_RECORDS.snapchat]: {
@@ -258,10 +239,9 @@ export const textRecordFields = {
     label: lang.t('profiles.create.snapchat'),
     placeholder: lang.t('profiles.create.username_placeholder'),
     startsWith: '@',
-    validations: {
-      onChange: {
-        match: /^([\w.])*$/,
-      },
+    validation: {
+      message: 'Something',
+      validator: value => isRegexMatch(value, /^([\w.])*$/),
     },
   },
   [ENS_RECORDS.telegram]: {
@@ -321,15 +301,11 @@ export const textRecordFields = {
     placeholder: lang.t('profiles.create.wallet_placeholder', {
       coin: lang.t('profiles.create.ltc'),
     }),
-    validations: {
-      onSubmit: {
-        validate: {
-          callback: value => validateCoinRecordValue(value, ENS_RECORDS.LTC),
-          message: lang.t('profiles.create.invalid_asset', {
-            coin: ENS_RECORDS.LTC,
-          }),
-        },
-      },
+    validation: {
+      message: lang.t('profiles.create.invalid_asset', {
+        coin: ENS_RECORDS.LTC,
+      }),
+      validator: value => validateCoinRecordValue(value, ENS_RECORDS.LTC),
     },
   },
   [ENS_RECORDS.DOGE]: {
@@ -342,15 +318,11 @@ export const textRecordFields = {
     placeholder: lang.t('profiles.create.wallet_placeholder', {
       coin: lang.t('profiles.create.doge'),
     }),
-    validations: {
-      onSubmit: {
-        validate: {
-          callback: value => validateCoinRecordValue(value, ENS_RECORDS.DOGE),
-          message: lang.t('profiles.create.invalid_asset', {
-            coin: ENS_RECORDS.DOGE,
-          }),
-        },
-      },
+    validation: {
+      message: lang.t('profiles.create.invalid_asset', {
+        coin: ENS_RECORDS.DOGE,
+      }),
+      validator: value => validateCoinRecordValue(value, ENS_RECORDS.DOGE),
     },
   },
   [ENS_RECORDS.content]: {
@@ -359,13 +331,9 @@ export const textRecordFields = {
     key: ENS_RECORDS.content,
     label: lang.t('profiles.create.content'),
     placeholder: lang.t('profiles.create.content_placeholder'),
-    validations: {
-      onSubmit: {
-        validate: {
-          callback: value => validateContentHashRecordValue(value),
-          message: lang.t('profiles.create.invalid_content_hash'),
-        },
-      },
+    validation: {
+      message: lang.t('profiles.create.invalid_content_hash'),
+      validator: value => validateContentHashRecordValue(value),
     },
   },
 } as {
