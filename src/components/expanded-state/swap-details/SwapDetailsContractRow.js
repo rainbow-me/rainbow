@@ -160,17 +160,21 @@ export default function SwapDetailsContractRow({
     );
   }, [asset, handleCopyContractAddress]);
 
+  const [menuVisible, setMenuVisible] = useState(false);
+
   return (
     <ContextMenuButton
       activeOpacity={1}
       isMenuPrimaryAction
       menuConfig={menuConfig}
+      onMenuWillHide={() => setMenuVisible(false)}
+      onMenuWillShow={() => setMenuVisible(true)}
       {...(android ? { onPress: onPressAndroid } : {})}
       onPressMenuItem={handlePressMenuItem}
       useActionSheetFallback={false}
       {...props}
     >
-      <SwapDetailsContractRowContent asset={asset} />
+      <SwapDetailsContractRowContent asset={asset} menuVisible={menuVisible} />
     </ContextMenuButton>
   );
 }
