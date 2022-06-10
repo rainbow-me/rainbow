@@ -5,7 +5,6 @@ import {
   forEach,
   get,
   groupBy,
-  includes,
   isEmpty,
   reduce,
   slice,
@@ -243,7 +242,10 @@ export const buildBriefCoinsList = (
   return { briefAssets, totalBalancesValue };
 };
 
-export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
+export const buildUniqueTokenList = (
+  uniqueTokens,
+  selectedShowcaseTokens = []
+) => {
   let rows = [];
   const showcaseTokens = [];
   const bundledShowcaseTokens = [];
@@ -254,12 +256,12 @@ export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
   for (let i = 0; i < families.length; i++) {
     const tokensRow = [];
     for (let j = 0; j < grouped[families[i]].length; j += 2) {
-      if (includes(selectedShowcaseTokens, grouped[families[i]][j].uniqueId)) {
+      if (selectedShowcaseTokens.includes(grouped[families[i]][j].uniqueId)) {
         showcaseTokens.push(grouped[families[i]][j]);
       }
       if (grouped[families[i]][j + 1]) {
         if (
-          includes(selectedShowcaseTokens, grouped[families[i]][j + 1].uniqueId)
+          selectedShowcaseTokens.includes(grouped[families[i]][j + 1].uniqueId)
         ) {
           showcaseTokens.push(grouped[families[i]][j + 1]);
         }

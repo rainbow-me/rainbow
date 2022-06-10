@@ -2,7 +2,6 @@ import {
   compact,
   concat,
   flatten,
-  includes,
   isEmpty,
   map,
   orderBy,
@@ -354,7 +353,7 @@ const parseTransaction = async (
           nativeCurrency
         );
 
-        if (includes(purchaseTransactionsHashes, toLower(txn.hash))) {
+        if (purchaseTransactionsHashes.includes(toLower(txn.hash))) {
           txn.type = TransactionType.purchase;
         }
 

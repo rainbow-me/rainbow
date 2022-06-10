@@ -5,7 +5,6 @@ import isValidDomain from 'is-valid-domain';
 import {
   find,
   get,
-  includes,
   isEmpty,
   isNil,
   keyBy,
@@ -1056,7 +1055,7 @@ export const transactionsRemoved = (
   logger.log('[data] - remove txn hashes', removeHashes);
   const [updatedTransactions, removedTransactions] = partition(
     transactions,
-    txn => !includes(removeHashes, ethereumUtils.getHash(txn))
+    txn => !removeHashes.includes(ethereumUtils.getHash(txn) || '')
   );
 
   dispatch({
