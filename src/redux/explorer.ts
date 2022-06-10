@@ -293,7 +293,7 @@ const mainnetAssetDisovery = (
   address: string,
   currency: string,
   action = 'get'
-) => [
+): SocketEmitArguments => [
   action,
   {
     payload: {
@@ -653,7 +653,7 @@ export const emitMainnetAssetDiscoveryRequest = (
 ) => {
   const { addressSocket } = getState().explorer;
   const { accountAddress, nativeCurrency } = getState().settings;
-  addressSocket.emit(...mainnetAssetDisovery(accountAddress, nativeCurrency));
+  addressSocket!.emit(...mainnetAssetDisovery(accountAddress, nativeCurrency));
 };
 
 /**
