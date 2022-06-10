@@ -9,6 +9,10 @@ import {
 } from 'react-native-dotenv';
 import { Source } from 'react-native-fast-image';
 import parse from 'url-parse';
+import {
+  isCloudinaryStorageLink,
+  signUrl,
+} from '@rainbow-me/handlers/cloudinary';
 import logger from 'logger';
 
 const shouldCreateImgixClient = (): ImgixClient | null => {
@@ -48,28 +52,40 @@ interface ImgOptions {
   fm?: string;
 }
 
+// We use this to reduce our quota for Cloudinary and Imgix
+const roundUpTo50 = (value: number) => Math.ceil(value / 50) * 50
+
 const shouldSignUri = (
   externalImageUri: string,
   options?: ImgOptions
 ): string | undefined => {
   try {
+    const updatedOptions: ImgOptions = {
+      ...(options?.w && {
+        w: roundUpTo50(PixelRatio.getPixelSizeForLayoutSize(options.w)),
+      }),
+      ...(options?.h && {
+        h: roundUpTo50(PixelRatio.getPixelSizeForLayoutSize(options.h)),
+      }),
+      ...(options?.fm && {
+        fm: options.fm,
+      }),
+    };
+
+    // Firstly, we check if the url is a Cloudinary link.
+    // Then, obviously, we use Cloudinary to transform the size and format.
+    if (isCloudinaryStorageLink(externalImageUri)) {
+      return signUrl(externalImageUri, {
+        format: updatedOptions.fm,
+        height: updatedOptions.h,
+        width: updatedOptions.w,
+      });
+    }
+
     // We'll only attempt to sign if there's an available client. A client
     // will not exist if the .env hasn't been configured correctly.
     if (staticImgixClient) {
       // Attempt to sign the image.
-      let updatedOptions: ImgOptions = {};
-
-      updatedOptions = {
-        ...(options?.w && {
-          w: PixelRatio.getPixelSizeForLayoutSize(options.w),
-        }),
-        ...(options?.h && {
-          h: PixelRatio.getPixelSizeForLayoutSize(options.h),
-        }),
-        ...(options?.fm && {
-          fm: options.fm,
-        }),
-      };
 
       const signedExternalImageUri = staticImgixClient.buildURL(
         externalImageUri,
