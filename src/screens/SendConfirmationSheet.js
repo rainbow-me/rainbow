@@ -20,10 +20,6 @@ import { SendButton } from '../components/send';
 import { SheetTitle, SlackSheet } from '../components/sheet';
 import { Text, TruncatedText } from '../components/text';
 import { address } from '../utils/abbreviations';
-import {
-  addressHashedColorIndex,
-  addressHashedEmoji,
-} from '../utils/profileUtils';
 import useExperimentalFlag, {
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
@@ -43,6 +39,7 @@ import {
   useContacts,
   useDimensions,
   useENSProfileImages,
+  useRainbowProfile,
   useUserAccounts,
   useWallets,
 } from '@rainbow-me/hooks';
@@ -198,6 +195,8 @@ export default function SendConfirmationSheet() {
     },
   } = useRoute();
 
+  const { rainbowProfile } = useRainbowProfile(toAddress);
+
   const [
     alreadySentTransactionsTotal,
     setAlreadySentTransactionsTotal,
@@ -340,13 +339,9 @@ export default function SendConfirmationSheet() {
       : address(to, 4, 6));
 
   const avatarValue =
-    returnStringFirstEmoji(existingAccount?.label) ||
-    addressHashedEmoji(toAddress);
+    returnStringFirstEmoji(existingAccount?.label) || rainbowProfile?.emoji;
 
-  const avatarColor =
-    existingAccount?.color ||
-    contact?.color ||
-    addressHashedColorIndex(toAddress);
+  const avatarColor = existingAccount?.color || rainbowProfile?.color;
 
   let realSheetHeight = !shouldShowChecks
     ? SendConfirmationSheetHeight - 150

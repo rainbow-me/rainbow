@@ -24,11 +24,11 @@ import {
   useExternalWalletSectionsData,
   useFirstTransactionTimestamp,
   usePersistentDominantColorFromImage,
+  useRainbowProfile,
 } from '@rainbow-me/hooks';
 import { sharedCoolModalTopOffset } from '@rainbow-me/navigation/config';
 import Routes from '@rainbow-me/routes';
 import { useTheme } from '@rainbow-me/theme';
-import { addressHashedColorIndex } from '@rainbow-me/utils/profileUtils';
 
 export const ProfileSheetConfigContext = createContext<{
   enableZoomableImages: boolean;
@@ -53,6 +53,8 @@ export default function ProfileSheet() {
 
   const { data: profileAddress } = useENSResolveName(ensName);
 
+  const { rainbowProfile } = useRainbowProfile(profileAddress ?? '');
+
   // Prefetch first transaction timestamp
   useFirstTransactionTimestamp({
     ensName,
@@ -62,11 +64,6 @@ export default function ProfileSheet() {
   const { isSuccess: hasListFetched } = useExternalWalletSectionsData({
     address: profileAddress,
   });
-
-  const colorIndex = useMemo(
-    () => (profileAddress ? addressHashedColorIndex(profileAddress) : 0),
-    [profileAddress]
-  );
 
   const { result: dominantColor, state } = usePersistentDominantColorFromImage(
     maybeSignUri(avatarUrl || '') || ''
@@ -79,11 +76,9 @@ export default function ProfileSheet() {
   const accentColor =
     // Set accent color when ENS images have fetched & dominant
     // color is not loading.
-    isImagesFetched && state !== 1 && typeof colorIndex === 'number'
-      ? dominantColor ||
-        colors.avatarBackgrounds[colorIndex] ||
-        colors.appleBlue
-      : colors.skeleton;
+    isImagesFetched && state !== 1
+      ? dominantColor ?? rainbowProfile?.color ?? colors.appleBlue
+      : rainbowProfile?.color ?? colors.skeleton;
 
   const enableZoomableImages =
     !params.isPreview && name !== Routes.PROFILE_PREVIEW_SHEET;
