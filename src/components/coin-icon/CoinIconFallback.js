@@ -1,8 +1,9 @@
 import React, { useMemo } from 'react';
 import { Image } from 'react-native';
-import { useTheme } from '../../context/ThemeContext';
+import { useTheme } from '../../theme/ThemeContext';
 import { Centered } from '../layout';
 import EthIcon from '@rainbow-me/assets/eth-icon.png';
+import { AssetTypes } from '@rainbow-me/entities';
 import { useBooleanState, useColorForAsset } from '@rainbow-me/hooks';
 import { ImageWithCachedMetadata } from '@rainbow-me/images';
 import styled from '@rainbow-me/styled-components';
@@ -49,6 +50,7 @@ function WrappedFallbackImage({
   showImage,
   size,
   eth,
+  type,
   ...props
 }) {
   const { colors } = useTheme();
@@ -69,6 +71,7 @@ function WrappedFallbackImage({
         shadowOpacity={shadowOpacity}
         showImage={showImage}
         size={size}
+        type={type}
       />
     </Centered>
   );
@@ -77,16 +80,31 @@ function WrappedFallbackImage({
 const FallbackImageElement = android ? WrappedFallbackImage : FallbackImage;
 
 const CoinIconFallback = fallbackProps => {
-  const { address = '', height, symbol, width } = fallbackProps;
+  const {
+    address = '',
+    mainnet_address,
+    height,
+    symbol,
+    width,
+    type,
+  } = fallbackProps;
 
   const [showImage, showFallbackImage, hideFallbackImage] = useBooleanState(
     false
   );
 
-  const fallbackIconColor = useColorForAsset({ address });
-  const imageUrl = useMemo(() => getUrlForTrustIconFallback(address), [
-    address,
-  ]);
+  const fallbackIconColor = useColorForAsset({
+    address: mainnet_address || address,
+    type: mainnet_address ? AssetTypes.token : type,
+  });
+  const imageUrl = useMemo(
+    () =>
+      getUrlForTrustIconFallback(
+        mainnet_address || address,
+        mainnet_address ? AssetTypes.token : type
+      ),
+    [address, mainnet_address, type]
+  );
 
   const eth = isETH(address);
 
@@ -115,4 +133,9 @@ const CoinIconFallback = fallbackProps => {
   );
 };
 
-export default magicMemo(CoinIconFallback, ['address', 'style', 'symbol']);
+export default magicMemo(CoinIconFallback, [
+  'address',
+  'type',
+  'style',
+  'symbol',
+]);
