@@ -110,10 +110,6 @@ const ENS_OWNER_TITLE = `Who is the .eth owner?`;
 
 const ENS_OWNER_EXPLAINER = `The owner of a .eth name registration. The owner may transfer the registration or reclaim ownership of the name in the registry if required.`;
 
-const ENS_RESOLVER_TITLE = `What is a .eth resolver?`;
-
-const ENS_RESOLVER_EXPLAINER = `A resolver is a contract that maps from name to the resource (e.g., cryptocurrency addresses, content hash, etc). Resolvers are pointed to by the resolver field of the registry.`;
-
 export const explainers = network => ({
   floor_price: {
     emoji: '📊',
@@ -146,12 +142,6 @@ export const explainers = network => ({
     emoji: '❓',
     text: ENS_OWNER_EXPLAINER,
     title: ENS_OWNER_TITLE,
-  },
-  ens_resolver: {
-    extraHeight: -60,
-    emoji: '❓',
-    text: ENS_RESOLVER_EXPLAINER,
-    title: ENS_RESOLVER_TITLE,
   },
   ensOnChainDataWarning: {
     extraHeight: -30,
