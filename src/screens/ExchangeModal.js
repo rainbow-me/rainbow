@@ -148,8 +148,9 @@ export default function ExchangeModal({
         defaultInputAsset.type !== defaultOutputAsset.type &&
         defaultOutputAsset?.implementations?.[defaultInputAsset?.type]?.address
       ) {
-        if (defaultInputAsset.type !== Network.mainnet)
+        if (defaultInputAsset.type !== Network.mainnet) {
           newOutput.mainnet_address = defaultOutputAsset.address;
+        }
 
         newOutput.address =
           defaultOutputAsset.implementations[defaultInputAsset?.type].address;
