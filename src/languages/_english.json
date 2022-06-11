@@ -452,7 +452,6 @@
       },
       "unique_expanded": {
         "about": "About %{assetFamilyName}",
-        "advanced": "Advanced",
         "attributes": "Attributes",
         "configuration": "Configuration",
         "copy": "Copy",
@@ -463,7 +462,6 @@
         "profile_info": "Profile Info",
         "properties": "Properties",
         "registrant": "Registrant",
-        "resolver": "Resolver",
         "collection_website": "Collection Website",
         "copy_token_id": "Copy Token ID",
         "description": "Description",
