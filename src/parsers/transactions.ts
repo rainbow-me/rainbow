@@ -1,6 +1,5 @@
 import {
   compact,
-  concat,
   findIndex,
   flatten,
   includes,
@@ -92,8 +91,7 @@ export const parseTransactions = async (
   const newTransactions = await Promise.all(newTransactionPromises);
   const parsedNewTransactions = flatten(newTransactions);
 
-  const updatedResults = concat(
-    parsedNewTransactions,
+  const updatedResults = parsedNewTransactions.concat(
     existingTransactions,
     allL2Transactions
   );
