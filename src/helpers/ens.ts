@@ -624,7 +624,8 @@ const getENSExecutionDetails = async ({
         throw new Error('Bad arguments for setAddr');
       const record = records?.coinAddress[0];
       const namehash = hash(name);
-      args = [namehash, record.key, record.address];
+      const coinType = formatsByName[record.key].coinType;
+      args = [namehash, coinType, record.address];
       contract = await getENSPublicResolverContract(wallet, resolverAddress);
       break;
     }
