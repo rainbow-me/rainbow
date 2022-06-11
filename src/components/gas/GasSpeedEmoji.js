@@ -1,4 +1,3 @@
-import { has } from 'lodash';
 import React from 'react';
 import { Emoji } from '../text';
 import styled from '@rainbow-me/styled-components';
@@ -40,7 +39,7 @@ const GasEmoji = styled(Emoji).attrs({
 })(({ top }) => margin.object(top, 0, 0, 0));
 
 const GasSpeedEmoji = ({ label }) => {
-  const gasSpeed = has(EmojiForGasSpeedType, label)
+  const gasSpeed = EmojiForGasSpeedType.hasOwnProperty(label)
     ? EmojiForGasSpeedType[label]
     : EmojiForGasSpeedType[gasUtils.NORMAL];
 
