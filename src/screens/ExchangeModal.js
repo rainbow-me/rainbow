@@ -706,7 +706,7 @@ export default function ExchangeModal({
             radius={39}
             testID={testID}
           >
-            {showOutputField && <ExchangeNotch />}
+            {showOutputField && <ExchangeNotch testID={testID} />}
             <ExchangeHeader testID={testID} title={title} />
             <ExchangeInputField
               disableInputCurrencySelection={isWithdrawal}

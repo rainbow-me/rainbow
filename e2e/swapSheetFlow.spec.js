@@ -105,7 +105,7 @@ describe('Swap Sheet Interaction Flow', () => {
     if (device.getPlatform() === 'android') {
       await device.pressBack();
     } else {
-      await Helpers.swipe('exchange-modal-container', 'down', 'slow');
+      await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
     }
   });
 
@@ -124,7 +124,7 @@ describe('Swap Sheet Interaction Flow', () => {
     if (device.getPlatform() === 'android') {
       await device.pressBack();
     } else {
-      await Helpers.swipe('exchange-modal-container', 'down', 'slow');
+      await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
     }
   });
 
@@ -159,7 +159,7 @@ describe('Swap Sheet Interaction Flow', () => {
     if (device.getPlatform() === 'android') {
       await device.pressBack();
     } else {
-      await Helpers.swipe('exchange-modal-container', 'down', 'slow');
+      await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
     }
   });
 
@@ -197,7 +197,7 @@ describe('Swap Sheet Interaction Flow', () => {
     if (device.getPlatform() === 'android') {
       await device.pressBack();
     } else {
-      await Helpers.swipe('exchange-modal-container', 'down', 'slow');
+      await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
     }
   });
 
@@ -221,7 +221,7 @@ describe('Swap Sheet Interaction Flow', () => {
     if (device.getPlatform() === 'android') {
       await device.pressBack();
     } else {
-      await Helpers.swipe('exchange-modal-container', 'down', 'slow');
+      await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
     }
   });
 
@@ -245,7 +245,7 @@ describe('Swap Sheet Interaction Flow', () => {
     if (device.getPlatform() === 'android') {
       await device.pressBack();
     } else {
-      await Helpers.swipe('exchange-modal-container', 'down', 'slow');
+      await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
     }
   });
 
@@ -283,7 +283,7 @@ describe('Swap Sheet Interaction Flow', () => {
     if (device.getPlatform() === 'android') {
       await device.pressBack();
     } else {
-      await Helpers.swipe('exchange-modal-container', 'down', 'slow');
+      await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
     }
     await Helpers.waitAndTap('exchange-fab');
     await Helpers.checkIfVisible('currency-select-list');
@@ -300,7 +300,7 @@ describe('Swap Sheet Interaction Flow', () => {
     if (device.getPlatform() === 'android') {
       await device.pressBack();
     } else {
-      await Helpers.swipe('exchange-modal-container', 'down', 'slow');
+      await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
     }
   });
 
@@ -326,7 +326,7 @@ describe('Swap Sheet Interaction Flow', () => {
     if (device.getPlatform() === 'android') {
       await device.pressBack();
     } else {
-      await Helpers.swipe('exchange-modal-container', 'down', 'slow');
+      await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
     }
     await Helpers.waitAndTap('exchange-fab');
     await Helpers.checkIfVisible('currency-select-list');
@@ -346,7 +346,7 @@ describe('Swap Sheet Interaction Flow', () => {
     if (device.getPlatform() === 'android') {
       await device.pressBack();
     } else {
-      await Helpers.swipe('exchange-modal-container', 'down', 'slow');
+      await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
     }
   });
 
@@ -369,7 +369,7 @@ describe('Swap Sheet Interaction Flow', () => {
     if (device.getPlatform() === 'android') {
       await device.pressBack();
     } else {
-      await Helpers.swipe('exchange-modal-container', 'down', 'slow');
+      await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
     }
   });
 
