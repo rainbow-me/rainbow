@@ -198,7 +198,7 @@ export default function RestoreCloudStep({
           const p1 = dispatch(walletsSetSelected(firstWallet));
           const p2 = dispatch(addressSetSelected(firstAddress));
           await Promise.all([p1, p2]);
-          await initializeWallet(null, null, null, false, false, null, true);
+          await initializeWallet(null, null, false, false, null, true);
           if (fromSettings) {
             logger.log('navigating to wallet');
             navigate(Routes.WALLET_SCREEN);

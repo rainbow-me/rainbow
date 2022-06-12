@@ -11,11 +11,21 @@ import {
   useRequests,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
+import { getAvatarColorHex } from '@rainbow-me/helpers/rainbowProfiles';
 
 export default function ProfileHeaderButton() {
   const { navigate } = useNavigation();
   const { pendingRequestCount } = useRequests();
-  const { accountAddress, accountImage } = useAccountProfile();
+  const { colors } = useTheme();
+  const {
+    accountAddress,
+    accountImage,
+    accountColor,
+    accountSymbol,
+  } = useAccountProfile();
+
+  const colorHex = getAvatarColorHex(accountColor);
+
   const { rainbowProfile } = useRainbowProfile(accountAddress);
 
   const onPress = useCallback(() => navigate(Routes.PROFILE_SCREEN), [
@@ -25,8 +35,6 @@ export default function ProfileHeaderButton() {
   const onLongPress = useCallback(() => navigate(Routes.CHANGE_WALLET_SHEET), [
     navigate,
   ]);
-
-  const { colors } = useTheme();
 
   return (
     <HeaderButton
@@ -40,9 +48,9 @@ export default function ProfileHeaderButton() {
           <ImageAvatar image={accountImage} size="header" />
         ) : (
           <ContactAvatar
-            color={rainbowProfile?.color ?? colors.skeleton}
+            color={colorHex ?? rainbowProfile?.color ?? colors.skeleton}
             size="small"
-            value={rainbowProfile?.emoji}
+            value={accountSymbol ?? rainbowProfile?.emoji}
           />
         )}
         <NumberBadge

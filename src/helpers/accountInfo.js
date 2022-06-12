@@ -33,18 +33,17 @@ export function getAccountProfileInfo(
   if (!selectedAccount) {
     return {};
   }
-  const { label, color, image } = selectedAccount;
+  const { label, color, emoji, image } = selectedAccount;
 
   const labelWithoutEmoji = label && removeFirstEmojiFromString(label);
 
   const accountName =
     labelWithoutEmoji || accountENS || address(accountAddress, 4, 4);
 
-  const emojiAvatar = returnStringFirstEmoji(label);
-
-  const accountSymbol = returnStringFirstEmoji(
-    emojiAvatar || addressHashedEmoji(accountAddress)
-  );
+  const accountSymbol =
+    emoji ||
+    getEmojiFromAccountName(label) ||
+    addressHashedEmoji(accountAddress);
   const accountColor = color;
   const accountImage = isValidImagePath(image) ? image : null;
 

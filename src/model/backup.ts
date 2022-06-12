@@ -205,7 +205,7 @@ async function restoreSpecificBackupIntoKeychain(
       if (endsWith(key, seedPhraseKey)) {
         const valueStr = backedUpData[key];
         const { seedphrase } = JSON.parse(valueStr);
-        await createWallet(seedphrase, null, null, true);
+        await createWallet(seedphrase, null, true);
       }
     }
     return true;

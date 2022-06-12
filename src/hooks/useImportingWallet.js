@@ -235,7 +235,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         if (!showImportModal) {
           await walletInit(
             input,
-            color,
             name ? name : '',
             false,
             checkedWallet,
@@ -249,7 +248,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           const previousWalletCount = keys(wallets).length;
           initializeWallet(
             input,
-            color,
             name ? name : '',
             false,
             false,

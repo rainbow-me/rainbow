@@ -15,7 +15,7 @@ export default function useUpdateEmoji() {
   const { colors } = useTheme();
   const dispatch = useDispatch();
   const saveInfo = useCallback(
-    async (name, color) => {
+    async (color, emoji) => {
       const walletId = selectedWallet.id;
       const newWallets = {
         ...wallets,
@@ -27,19 +27,20 @@ export default function useUpdateEmoji() {
               accountAddress.toLowerCase()
                 ? {
                     ...singleAddress,
-                    ...(name && { label: name }),
                     ...(color !== undefined && { color }),
+                    ...(emoji !== undefined && { emoji }),
                   }
                 : singleAddress
           ),
         },
       };
+      console.log(newWallets);
 
       await dispatch(walletsSetSelected(newWallets[walletId]));
       await dispatch(walletsUpdate(newWallets));
       updateWebProfile(
         accountAddress,
-        name,
+        emoji,
         color !== undefined && colors.avatarBackgrounds[color]
       );
     },

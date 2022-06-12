@@ -185,7 +185,7 @@ export const setWalletBackedUp = (
 
 export const addressSetSelected = address => () => saveAddress(address);
 
-export const createAccountForWallet = (id, color, name) => async (
+export const createAccountForWallet = (id, name) => async (
   dispatch,
   getState
 ) => {
@@ -197,12 +197,17 @@ export const createAccountForWallet = (id, color, name) => async (
   );
   const newIndex = index + 1;
   const account = await generateAccount(id, newIndex);
-  const walletColorIndex =
-    color !== null ? color : addressHashedColorIndex(account.address);
+  const walletColor =
+    lightModeThemeColors.avatarBackgrounds[
+      addressHashedColorIndex(account.address) || 0
+    ];
+  const walletEmoji = addressHashedEmoji(account.address);
+
   newWallets[id].addresses.push({
     address: account.address,
     avatar: null,
-    color: walletColorIndex,
+    color: walletColor,
+    emoji: walletEmoji,
     index: newIndex,
     label: name,
     visible: true,
@@ -211,8 +216,8 @@ export const createAccountForWallet = (id, color, name) => async (
   await dispatch(updateWebDataEnabled(true, account.address));
 
   setPreference(PreferenceActionType.init, 'profile', account.address, {
-    accountColor: lightModeThemeColors.avatarBackgrounds[walletColorIndex],
-    accountSymbol: addressHashedEmoji(account.address),
+    accountColor: walletColor,
+    accountSymbol: walletEmoji,
   });
 
   // Save all the wallets

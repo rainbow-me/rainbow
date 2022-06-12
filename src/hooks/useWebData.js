@@ -25,7 +25,7 @@ const getAccountSymbol = name => {
   return accountSymbol;
 };
 
-const wipeNotEmoji = text => {
+export const wipeNotEmoji = text => {
   const characters = new GraphemeSplitter().splitGraphemes(text);
   if (characters.length !== 1) {
     return null;

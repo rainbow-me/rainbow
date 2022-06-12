@@ -165,7 +165,7 @@ export default function ChangeWalletSheet() {
         const p2 = dispatch(addressSetSelected(address));
         await Promise.all([p1, p2]);
 
-        initializeWallet(null, null, null, false, false, null, true);
+        initializeWallet(null, null, false, false, null, true);
         !fromDeletion && goBack();
       } catch (e) {
         logger.log('error while switching account', e);
@@ -402,10 +402,12 @@ export default function ChangeWalletSheet() {
             asset: [],
             isNewProfile: true,
             onCloseModal: async args => {
+              console.log('BESTING');
               if (args) {
+                console.log('TESTING');
+                console.log(args);
                 setIsWalletLoading(WalletLoadingStates.CREATING_WALLET);
                 const name = get(args, 'name', '');
-                const color = get(args, 'color', null);
                 // Check if the selected wallet is the primary
                 let primaryWalletKey = selectedWallet.primary
                   ? selectedWallet.id
@@ -444,7 +446,7 @@ export default function ChangeWalletSheet() {
                   // If we found it and it's not damaged use it to create the new account
                   if (primaryWalletKey && !wallets[primaryWalletKey].damaged) {
                     const newWallets = await dispatch(
-                      createAccountForWallet(primaryWalletKey, color, name)
+                      createAccountForWallet(primaryWalletKey, name)
                     );
                     await initializeWallet();
                     // If this wallet was previously backed up to the cloud
@@ -467,7 +469,7 @@ export default function ChangeWalletSheet() {
 
                     // If doesn't exist, we need to create a new wallet
                   } else {
-                    await createWallet(null, color, name);
+                    await createWallet(null, name);
                     await dispatch(walletsLoadState(profilesEnabled));
                     await initializeWallet();
                   }
@@ -485,7 +487,6 @@ export default function ChangeWalletSheet() {
               setIsWalletLoading(null);
             },
             profile: {
-              color: null,
               name: ``,
             },
             type: 'wallet_profile',

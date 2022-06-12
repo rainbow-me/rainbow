@@ -77,7 +77,13 @@ export default function TransactionList({
   );
   const dispatch = useDispatch();
   const { navigate, isFocused } = useNavigation();
-  const { accountAddress, accountName, accountImage } = useAccountProfile();
+  const {
+    accountAddress,
+    accountName,
+    accountImage,
+    accountColor,
+    accountSymbol,
+  } = useAccountProfile();
   const { rainbowProfile } = useRainbowProfile(accountAddress);
   const [address, setAddress] = useState(null);
   const [ens, setEns] = useState(null);
@@ -324,9 +330,9 @@ export default function TransactionList({
     <Container>
       <Container
         accountAddress={accountName}
-        accountColor={rainbowProfile?.color ?? colors.skeleton}
+        accountColor={accountColor ?? rainbowProfile?.color ?? colors.skeleton}
         accountImage={safeAccountImage}
-        accountName={rainbowProfile?.emoji}
+        accountName={accountSymbol ?? rainbowProfile?.emoji}
         addCashAvailable={addCashAvailable}
         as={NativeTransactionListView}
         avatarOptions={avatarOptions}

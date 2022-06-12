@@ -29,6 +29,7 @@ export default () => {
   const {
     accountAddress,
     accountColor,
+    accountSymbol,
     accountName,
     accountImage,
     accountENS,
@@ -82,8 +83,9 @@ export default () => {
 
   const onAvatarPickEmoji = useCallback(() => {
     navigate(Routes.AVATAR_BUILDER, {
-      initialAccountColor: accountColor,
+      initialColor: accountColor,
       initialAccountName: accountName,
+      initialEmoji: accountSymbol,
     });
   }, [accountColor, accountName, navigate]);
 

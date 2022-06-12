@@ -12,6 +12,10 @@ import { useNavigation } from '../navigation/Navigation';
 import { deviceUtils } from '../utils';
 import { useDimensions } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
+import {
+  getAvatarColorHex,
+  getAvatarColorIndex,
+} from '@rainbow-me/helpers/rainbowProfiles';
 
 const AvatarCircleHeight = 65;
 const AvatarCircleMarginTop = 2;
@@ -61,19 +65,22 @@ const springTo = (node, toValue) =>
 
 const AvatarBuilder = ({ route: { params } }) => {
   const { height, width } = useDimensions();
-  const [translateX] = useValues(params.initialAccountColor * 40);
-  const { goBack } = useNavigation();
   const { colors } = useTheme();
+  const { initialColor, initialEmoji } = params;
+  const initialColorHex = getAvatarColorHex(initialColor);
+  const initialColorIndex = getAvatarColorIndex(initialColor);
+  const [translateX] = useValues(initialColorIndex * 40);
+  const { goBack } = useNavigation();
   const [currentAccountColor, setCurrentAccountColor] = useState(
-    params.initialAccountColor
+    initialColorHex
   );
-  const [currentEmoji, setCurrentEmoji] = useState(null);
+  const [currentEmoji, setCurrentEmoji] = useState(initialEmoji);
   const { saveInfo } = useUpdateEmoji();
 
-  const onChangeEmoji = event => {
+  const onChangeEmoji = emoji => {
     ReactNativeHapticFeedback.trigger('selection');
-    setCurrentEmoji(`${event} ${params.initialAccountName}`);
-    saveInfo(`${event} ${params.initialAccountName}`, currentAccountColor);
+    setCurrentEmoji(emoji);
+    saveInfo(currentAccountColor, emoji);
   };
 
   const avatarColors = colors.avatarBackgrounds.map((color, index) => (
@@ -84,8 +91,8 @@ const AvatarBuilder = ({ route: { params } }) => {
       onPressColor={() => {
         const destination = index * 40;
         springTo(translateX, destination);
-        setCurrentAccountColor(colors.avatarBackgrounds.indexOf(color));
-        saveInfo(currentEmoji, colors.avatarBackgrounds.indexOf(color));
+        setCurrentAccountColor(color);
+        saveInfo(color, currentEmoji);
       }}
     />
   ));
@@ -95,8 +102,7 @@ const AvatarBuilder = ({ route: { params } }) => {
 
   const selectedOffset = useMemo(() => {
     const maxOffset = colors.avatarBackgrounds.length * 40 - width + 20;
-    const rawOffset =
-      params.initialAccountColor * 40 - width / 2 + width ** 0.5 * 1.5;
+    const rawOffset = initialColorIndex * 40 - width / 2 + width ** 0.5 * 1.5;
     let finalOffset = rawOffset;
     if (rawOffset < 0) {
       finalOffset = 0;
@@ -107,7 +113,7 @@ const AvatarBuilder = ({ route: { params } }) => {
     return {
       x: finalOffset, // curve to have selected color in middle of scrolling colorpicker
     };
-  }, [params.initialAccountColor, width, colors.avatarBackgrounds.length]);
+  }, [initialColorIndex, width, colors.avatarBackgrounds.length]);
 
   return (
     <Container {...deviceUtils.dimensions}>

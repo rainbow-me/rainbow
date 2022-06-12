@@ -109,7 +109,7 @@ export default function WalletScreen() {
 
   useEffect(() => {
     const initializeAndSetParams = async () => {
-      await initializeWallet(null, null, null, !params?.emptyWallet);
+      await initializeWallet(null, null, !params?.emptyWallet);
       setInitialized(true);
       setParams({ emptyWallet: false });
     };

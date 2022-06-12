@@ -30,7 +30,7 @@ import {
   seedPhraseKey,
   selectedWalletKey,
 } from '../utils/keychainConstants';
-import profileUtils, {
+import {
   addressHashedColorIndex,
   addressHashedEmoji,
 } from '../utils/profileUtils';
@@ -60,6 +60,10 @@ import store from '@rainbow-me/redux/store';
 import { setIsWalletLoading } from '@rainbow-me/redux/wallets';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
+import {
+  getAvatarColorHex,
+  getEmojiFromAccountName,
+} from '@rainbow-me/helpers/rainbowProfiles';
 
 const encryptor = new AesEncryptor();
 
@@ -126,14 +130,16 @@ export interface RainbowAccount {
   label: string;
   address: EthereumAddress;
   avatar: null | string;
-  color: number;
+  color: number | string;
+  emoji?: string;
   visible: boolean;
   image: string | null;
 }
 
 export interface RainbowWallet {
   addresses: RainbowAccount[];
-  color: number;
+  color: number | string;
+  emoji?: string;
   id: string;
   imported: boolean;
   name: string;
@@ -193,7 +199,6 @@ export const createdWithBiometricError = 'createdWithBiometricError';
 
 export const walletInit = async (
   seedPhrase = undefined,
-  color = null,
   name = null,
   overwrite = false,
   checkedWallet = null,
@@ -212,7 +217,6 @@ export const walletInit = async (
   if (!isEmpty(seedPhrase)) {
     const wallet = await createWallet(
       seedPhrase,
-      color,
       name,
       overwrite,
       checkedWallet,
@@ -543,7 +547,6 @@ export const identifyWalletType = (
 
 export const createWallet = async (
   seed: null | EthereumSeed = null,
-  color: null | number = null,
   name: null | string = null,
   overwrite: boolean = false,
   checkedWallet: null | EthereumWalletFromSeed = null,
@@ -696,12 +699,17 @@ export const createWallet = async (
     }
     logger.sentry('[createWallet] - saved private key');
 
-    const colorIndexForWallet =
-      color !== null ? color : addressHashedColorIndex(walletAddress) || 0;
+    const walletColor =
+      lightModeThemeColors.avatarBackgrounds[
+        addressHashedColorIndex(walletAddress) || 0
+      ];
+    const walletEmoji = addressHashedEmoji(address);
+
     addresses.push({
       address: walletAddress,
       avatar: null,
-      color: colorIndexForWallet,
+      color: walletColor,
+      emoji: walletEmoji,
       image,
       index: 0,
       label: name || '',
@@ -716,9 +724,8 @@ export const createWallet = async (
       store.dispatch(updateWebDataEnabled(true, walletAddress));
       // Save the color
       setPreference(PreferenceActionType.init, 'profile', address, {
-        accountColor:
-          lightModeThemeColors.avatarBackgrounds[colorIndexForWallet],
-        accountSymbol: profileUtils.addressHashedEmoji(address),
+        accountColor: walletColor,
+        accountSymbol: walletEmoji,
       });
       logger.sentry(`[createWallet] - enabled web profile`);
     }
@@ -764,13 +771,20 @@ export const createWallet = async (
 
         // Remove any discovered wallets if they already exist
         // and copy over label and color if account was visible
-        let colorIndexForWallet =
-          addressHashedColorIndex(nextWallet.address) || 0;
+        let walletColor =
+          lightModeThemeColors.avatarBackgrounds[
+            addressHashedColorIndex(nextWallet.address) || 0
+          ];
+        let walletEmoji = addressHashedEmoji(nextWallet.address);
         let label = '';
 
         if (discoveredAccount && discoveredWalletId) {
           if (discoveredAccount.visible) {
-            colorIndexForWallet = discoveredAccount.color;
+            walletColor =
+              getAvatarColorHex(discoveredAccount.color) ?? walletColor;
+            walletEmoji =
+              discoveredAccount.emoji ??
+              (getEmojiFromAccountName(discoveredAccount.label) || walletEmoji);
             label = discoveredAccount.label ?? '';
           }
           // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
@@ -800,7 +814,8 @@ export const createWallet = async (
           addresses.push({
             address: nextWallet.address,
             avatar: null,
-            color: colorIndexForWallet,
+            color: walletColor,
+            emoji: walletEmoji,
             image: null,
             index,
             label,
@@ -818,8 +833,7 @@ export const createWallet = async (
             'profile',
             nextWallet.address,
             {
-              accountColor:
-                lightModeThemeColors.avatarBackgrounds[colorIndexForWallet],
+              accountColor: walletColor,
               accountSymbol: addressHashedEmoji(nextWallet.address),
             }
           );
@@ -863,7 +877,8 @@ export const createWallet = async (
     allWallets[id] = {
       addresses,
       backedUp: false,
-      color: color || 0,
+      color: walletColor,
+      emoji: walletEmoji,
       id,
       imported: isImported,
       name: walletName,
