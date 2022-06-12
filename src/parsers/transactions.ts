@@ -1,7 +1,6 @@
 import {
   compact,
   findIndex,
-  flatten,
   includes,
   isEmpty,
   map,
@@ -89,7 +88,7 @@ export const parseTransactions = async (
   );
 
   const newTransactions = await Promise.all(newTransactionPromises);
-  const parsedNewTransactions = flatten(newTransactions);
+  const parsedNewTransactions = newTransactions.flatMap(key => key);
 
   const updatedResults = parsedNewTransactions.concat(
     existingTransactions,
