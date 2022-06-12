@@ -7,6 +7,7 @@ import { Centered } from '../layout';
 import { Text } from '../text';
 import { borders } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
+import { useRainbowProfile } from '@rainbow-me/hooks';
 
 const buildShadows = (color, size, darkMode, colors) => {
   if (size === 'small') {
@@ -88,8 +89,15 @@ const sizeConfigs = colors => ({
   },
 });
 
-const ContactAvatar = ({ color, size = 'medium', value, ...props }) => {
+const ContactAvatar = ({
+  address,
+  color,
+  size = 'medium',
+  emoji,
+  ...props
+}) => {
   const { colors } = useTheme();
+  const { rainbowProfile } = useRainbowProfile(address);
   const { dimensions, textSize } = useMemo(() => sizeConfigs(colors)[size], [
     colors,
     size,
@@ -107,7 +115,7 @@ const ContactAvatar = ({ color, size = 'medium', value, ...props }) => {
     <ShadowStack
       {...props}
       {...borders.buildCircleAsObject(dimensions)}
-      backgroundColor={colors.avatarBackgrounds[color] || color}
+      backgroundColor={color || rainbowProfile?.color || colors.skeleton}
       shadows={shadows}
     >
       <Centered flex={1}>
@@ -118,7 +126,7 @@ const ContactAvatar = ({ color, size = 'medium', value, ...props }) => {
           size={textSize}
           weight="bold"
         >
-          {value && getFirstGrapheme(toUpper(value))}
+          {emoji || rainbowProfile?.emoji}
         </Text>
       </Centered>
     </ShadowStack>

@@ -12,7 +12,6 @@ import { Icon } from '../icons';
 import { Centered, Column, ColumnWithMargins, Row } from '../layout';
 import { Text, TruncatedAddress, TruncatedText } from '../text';
 import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
-import { useRainbowProfile, useWebData } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth, getFontSize } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';
@@ -124,8 +123,6 @@ export default function AddressRow({
     walletId,
   } = data;
 
-  const { rainbowProfile } = useRainbowProfile(address);
-
   const { colors, isDarkMode } = useTheme();
 
   const bgColor = getAvatarColorHex(color);
@@ -177,10 +174,11 @@ export default function AddressRow({
               />
             ) : (
               <ContactAvatar
-                color={bgColor ?? rainbowProfile?.color ?? colors}
+                address={address}
+                color={bgColor}
                 marginRight={10}
                 size="medium"
-                value={emoji ?? rainbowProfile?.emoji}
+                emoji={emoji || getEmojiFromAccountName(label)}
               />
             )}
             <ColumnWithMargins margin={android ? -6 : 3}>

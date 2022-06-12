@@ -171,12 +171,7 @@ const ContactRow = (
         {imageAvatar ? (
           <ImageAvatar image={imageAvatar} marginRight={10} size="medium" />
         ) : (
-          <ContactAvatar
-            color={rainbowProfile?.color}
-            marginRight={10}
-            size="medium"
-            value={rainbowProfile?.emoji}
-          />
+          <ContactAvatar address={address} marginRight={10} size="medium" />
         )}
         <Column justify={ios ? 'space-between' : 'center'}>
           {accountType === 'accounts' || accountType === 'watching' ? (

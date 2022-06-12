@@ -5,18 +5,13 @@ import { ContactAvatar } from '../contacts';
 import ImageAvatar from '../contacts/ImageAvatar';
 import { Centered } from '../layout';
 import HeaderButton from './HeaderButton';
-import {
-  useAccountProfile,
-  useRainbowProfile,
-  useRequests,
-} from '@rainbow-me/hooks';
+import { useAccountProfile, useRequests } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { getAvatarColorHex } from '@rainbow-me/helpers/rainbowProfiles';
 
 export default function ProfileHeaderButton() {
   const { navigate } = useNavigation();
   const { pendingRequestCount } = useRequests();
-  const { colors } = useTheme();
   const {
     accountAddress,
     accountImage,
@@ -25,8 +20,6 @@ export default function ProfileHeaderButton() {
   } = useAccountProfile();
 
   const colorHex = getAvatarColorHex(accountColor);
-
-  const { rainbowProfile } = useRainbowProfile(accountAddress);
 
   const onPress = useCallback(() => navigate(Routes.PROFILE_SCREEN), [
     navigate,
@@ -48,9 +41,10 @@ export default function ProfileHeaderButton() {
           <ImageAvatar image={accountImage} size="header" />
         ) : (
           <ContactAvatar
-            color={colorHex ?? rainbowProfile?.color ?? colors.skeleton}
+            address={accountAddress}
+            color={colorHex}
             size="small"
-            value={accountSymbol ?? rainbowProfile?.emoji}
+            emoji={accountSymbol}
           />
         )}
         <NumberBadge

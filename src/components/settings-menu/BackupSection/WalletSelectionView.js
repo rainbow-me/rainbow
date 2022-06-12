@@ -19,6 +19,8 @@ import { useNavigation } from '@rainbow-me/navigation';
 import styled from '@rainbow-me/styled-components';
 import { fonts, padding } from '@rainbow-me/styles';
 import { abbreviations } from '@rainbow-me/utils';
+import { getEmojiFromAccountName } from '@rainbow-me/helpers/rainbowProfiles';
+import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
 
 const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
   source: Caret,
@@ -124,7 +126,7 @@ const WalletSelectionView = () => {
           const visibleAccounts = wallet.addresses.filter(a => a.visible);
           const account = visibleAccounts[0];
           const totalAccounts = visibleAccounts.length;
-          const { color, label, index, address } = account;
+          const { color, emoji, label, address } = account;
           if (wallet.backupType === WalletBackupTypes.cloud) {
             cloudBackedUpWallets += 1;
           }
@@ -146,16 +148,19 @@ const WalletSelectionView = () => {
                 <Row height={56}>
                   <Row alignSelf="center" flex={1} marginLeft={15}>
                     <ContactAvatar
+                      address={address}
                       alignSelf="center"
                       color={color}
                       marginRight={10}
                       size="smedium"
-                      value={labelOrName || `${index + 1}`}
+                      emoji={emoji ?? getEmojiFromAccountName(labelOrName)}
                     />
                     <ColumnWithMargins margin={3} marginBottom={0.5}>
                       <Row>
                         {labelOrName ? (
-                          <AccountLabel>{labelOrName}</AccountLabel>
+                          <AccountLabel>
+                            {removeFirstEmojiFromString(labelOrName)}
+                          </AccountLabel>
                         ) : (
                           <Address address={address} />
                         )}

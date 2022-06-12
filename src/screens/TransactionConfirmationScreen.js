@@ -62,7 +62,6 @@ import {
   useDimensions,
   useGas,
   useKeyboardHeight,
-  useRainbowProfile,
   useTransactionConfirmation,
   useWalletBalances,
   useWallets,
@@ -220,8 +219,6 @@ export default function TransactionConfirmationScreen() {
   const genericNativeAsset = useNativeAssetForNetwork(currentNetwork);
   const walletConnector = walletConnectors[peerId];
   const address = walletConnector?._accounts?.[0];
-
-  const { rainbowProfile } = useRainbowProfile(address);
 
   const accountInfo = useMemo(() => {
     const selectedWallet = findWalletWithAccount(wallets, address);
@@ -1123,11 +1120,7 @@ export default function TransactionConfirmationScreen() {
                           size="smaller"
                         />
                       ) : (
-                        <ContactAvatar
-                          color={rainbowProfile?.color ?? colors.skeleton}
-                          size="smaller"
-                          value={rainbowProfile?.emoji}
-                        />
+                        <ContactAvatar address={address} size="smaller" />
                       )}
                       <WalletText>{accountInfo.accountName}</WalletText>
                     </RowWithMargins>

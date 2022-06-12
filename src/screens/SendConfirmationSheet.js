@@ -39,7 +39,6 @@ import {
   useContacts,
   useDimensions,
   useENSProfileImages,
-  useRainbowProfile,
   useUserAccounts,
   useWallets,
 } from '@rainbow-me/hooks';
@@ -195,8 +194,6 @@ export default function SendConfirmationSheet() {
     },
   } = useRoute();
 
-  const { rainbowProfile } = useRainbowProfile(toAddress);
-
   const [
     alreadySentTransactionsTotal,
     setAlreadySentTransactionsTotal,
@@ -339,9 +336,9 @@ export default function SendConfirmationSheet() {
       : address(to, 4, 6));
 
   const avatarValue =
-    returnStringFirstEmoji(existingAccount?.label) || rainbowProfile?.emoji;
+    existingAccount?.emoji || returnStringFirstEmoji(existingAccount?.label);
 
-  const avatarColor = existingAccount?.color || rainbowProfile?.color;
+  const avatarColor = existingAccount?.color;
 
   let realSheetHeight = !shouldShowChecks
     ? SendConfirmationSheetHeight - 150
@@ -498,9 +495,10 @@ export default function SendConfirmationSheet() {
                   <ImageAvatar image={accountImage} size="lmedium" />
                 ) : (
                   <ContactAvatar
+                    address={toAddress}
                     color={avatarColor}
                     size="lmedium"
-                    value={avatarValue}
+                    emoji={avatarValue}
                   />
                 )}
               </Column>

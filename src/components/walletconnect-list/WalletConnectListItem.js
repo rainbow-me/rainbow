@@ -24,7 +24,6 @@ import {
 } from '@rainbow-me/helpers/walletConnectNetworks';
 import {
   useAccountSettings,
-  useRainbowProfile,
   useWalletConnectConnections,
   useWallets,
 } from '@rainbow-me/hooks';
@@ -87,7 +86,6 @@ export default function WalletConnectListItem({
     walletConnectDisconnectAllByDappUrl,
     walletConnectUpdateSessionConnectorByDappUrl,
   } = useWalletConnectConnections();
-  const { rainbowProfile } = useRainbowProfile(account);
   const { goBack } = useNavigation();
   const { colors } = useTheme();
   const { wallets, walletNames } = useWallets();
@@ -250,11 +248,7 @@ export default function WalletConnectListItem({
                     size="smaller"
                   />
                 ) : (
-                  <ContactAvatar
-                    color={rainbowProfile?.color ?? colors.skeleton}
-                    size="smaller"
-                    value={rainbowProfile?.emoji}
-                  />
+                  <ContactAvatar address={account} size="smaller" />
                 )}
                 <TruncatedText
                   size="medium"

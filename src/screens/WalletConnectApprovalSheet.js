@@ -34,11 +34,7 @@ import {
   NETWORK_MENU_ACTION_KEY_FILTER,
   networksMenuItems,
 } from '@rainbow-me/helpers/walletConnectNetworks';
-import {
-  useAccountSettings,
-  useRainbowProfile,
-  useWallets,
-} from '@rainbow-me/hooks';
+import { useAccountSettings, useWallets } from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
@@ -102,8 +98,6 @@ export default function WalletConnectApprovalSheet() {
     address: accountAddress,
     wallet: selectedWallet,
   });
-
-  const { rainbowProfile } = useRainbowProfile(approvalAccount?.address);
 
   const type = params?.type || WalletConnectApprovalSheetType.connect;
 
@@ -389,9 +383,8 @@ export default function WalletConnectApprovalSheet() {
                     />
                   ) : (
                     <ContactAvatar
-                      color={rainbowProfile?.color ?? colors.skeleton}
+                      address={approvalAccount?.address}
                       size="smaller"
-                      value={rainbowProfile?.emoji}
                     />
                   )}
                 </AvatarWrapper>
