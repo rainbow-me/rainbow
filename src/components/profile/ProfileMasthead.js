@@ -16,7 +16,6 @@ import {
   useAccountProfile,
   useDimensions,
   useOnAvatarPress,
-  useRainbowProfile,
   useWallets,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
@@ -93,7 +92,6 @@ export default function ProfileMasthead({
   const { width: deviceWidth } = useDimensions();
   const { navigate } = useNavigation();
   const { accountAddress, accountName, accountImage } = useAccountProfile();
-  const { rainbowProfile } = useRainbowProfile(accountAddress);
 
   const { onAvatarPress } = useOnAvatarPress();
 
@@ -159,8 +157,6 @@ export default function ProfileMasthead({
     >
       {/* [AvatarCircle -> ImageAvatar -> ImgixImage], so no need to sign accountImage here. */}
       <AvatarCircle
-        accountColor={rainbowProfile?.color ?? colors.skeleton}
-        accountSymbol={rainbowProfile?.emoji}
         image={accountImage}
         isAvatarPickerAvailable
         onPress={handlePressAvatar}

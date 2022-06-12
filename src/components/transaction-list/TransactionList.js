@@ -1,6 +1,5 @@
 import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
-import { isValidAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
 import { pick, startCase, toLower } from 'lodash';
 import React, {
@@ -79,7 +78,7 @@ export default function TransactionList({
   const dispatch = useDispatch();
   const { navigate, isFocused } = useNavigation();
   const { accountAddress, accountName, accountImage } = useAccountProfile();
-  const rainbowProfile = useRainbowProfile(accountAddress);
+  const { rainbowProfile } = useRainbowProfile(accountAddress);
   const [address, setAddress] = useState(null);
   const [ens, setEns] = useState(null);
 
