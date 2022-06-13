@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useEthUSDMonthChart, useEthUSDPrice } from '../utils/ethereumUtils';
 import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';
 import { getUniswapV2Pools } from '@rainbow-me/handlers/dispersion';
+import { pickFlatten } from '@rainbow-me/helpers/utilities';
 import {
   emitAssetRequest,
   emitChartsRequest,
@@ -12,7 +13,6 @@ import {
 import { setPoolsDetails } from '@rainbow-me/redux/uniswapLiquidity';
 import { WETH_ADDRESS } from '@rainbow-me/references';
 import logger from 'logger';
-import { pickFlatten } from '@rainbow-me/helpers/utilities';
 const AMOUNT_OF_PAIRS_TO_DISPLAY = 40;
 
 export const SORT_DIRECTION = {
