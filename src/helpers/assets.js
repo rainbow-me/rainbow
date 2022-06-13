@@ -6,12 +6,16 @@ import {
   get,
   groupBy,
   includes,
-  isEmpty,
   reduce,
   slice,
   sortBy,
 } from 'lodash';
-import { add, convertAmountToNativeDisplay, greaterThan } from './utilities';
+import {
+  add,
+  convertAmountToNativeDisplay,
+  greaterThan,
+  isEmpty,
+} from './utilities';
 import store from '@rainbow-me/redux/store';
 import {
   ETH_ADDRESS,

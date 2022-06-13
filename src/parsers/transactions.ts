@@ -4,7 +4,6 @@ import {
   findIndex,
   flatten,
   includes,
-  isEmpty,
   map,
   orderBy,
   partition,
@@ -37,6 +36,7 @@ import { ETH_ADDRESS, savingsAssetsList } from '@rainbow-me/references';
 import {
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
+  isEmpty,
 } from '@rainbow-me/utilities';
 import { ethereumUtils, getTokenMetadata } from '@rainbow-me/utils';
 

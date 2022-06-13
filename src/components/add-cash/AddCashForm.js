@@ -1,7 +1,6 @@
 import { useRoute } from '@react-navigation/core';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
-import { isEmpty } from 'lodash';
 import React, { Fragment, useCallback, useState } from 'react';
 import { Clock } from 'react-native-reanimated';
 import useWallets from '../../hooks/useWallets';
@@ -12,6 +11,7 @@ import { Numpad, NumpadValue } from '../numpad';
 import AddCashFooter from './AddCashFooter';
 import AddCashSelector from './AddCashSelector';
 import { toChecksumAddress } from '@rainbow-me/handlers/web3';
+import { isEmpty } from '@rainbow-me/helpers/utilities';
 import {
   useAccountSettings,
   useDimensions,

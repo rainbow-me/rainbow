@@ -1,4 +1,4 @@
-import { isEmpty, omit } from 'lodash';
+import { omit } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { atom, useRecoilState } from 'recoil';
 import { useENSModifiedRegistration, useENSRegistration } from '.';
@@ -9,6 +9,7 @@ import {
   TextRecordField,
   textRecordFields,
 } from '@rainbow-me/helpers/ens';
+import { isEmpty } from '@rainbow-me/helpers/utilities';
 
 const disabledAtom = atom({
   default: false,

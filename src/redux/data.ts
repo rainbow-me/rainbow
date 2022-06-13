@@ -7,7 +7,6 @@ import {
   find,
   get,
   includes,
-  isEmpty,
   keyBy,
   keys,
   map,
@@ -86,7 +85,7 @@ import {
   shitcoins,
 } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
-import { delay, isNil, isZero, multiply } from '@rainbow-me/utilities';
+import { delay, isEmpty, isNil, isZero, multiply } from '@rainbow-me/utilities';
 import {
   ethereumUtils,
   getBlocksFromTimestamps,

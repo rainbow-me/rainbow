@@ -2,7 +2,6 @@ import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import { Mutex } from 'async-mutex';
 import BigNumber from 'bignumber.js';
-import { isEmpty } from 'lodash';
 import {
   // @ts-ignore
   IS_TESTING,
@@ -53,6 +52,7 @@ import {
   fromWei,
   greaterThan,
   greaterThanOrEqualTo,
+  isEmpty,
   multiply,
 } from '@rainbow-me/utilities';
 import { ethereumUtils, gasUtils } from '@rainbow-me/utils';

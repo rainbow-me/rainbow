@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { get, groupBy, isEmpty, map, toLower } from 'lodash';
+import { get, groupBy, map, toLower } from 'lodash';
 import { createElement } from 'react';
 import { createSelector } from 'reselect';
 import { RequestCoinRow, TransactionCoinRow } from '../components/coin-row';
@@ -9,6 +9,7 @@ import {
   todayTimestamp,
   yesterdayTimestamp,
 } from './transactions';
+import { isEmpty } from './utilities';
 import { TransactionStatusTypes } from '@rainbow-me/entities';
 
 const contactsSelector = state => state.contacts;
