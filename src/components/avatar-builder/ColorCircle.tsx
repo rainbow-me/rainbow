@@ -34,8 +34,6 @@ const ColorCircle = ({ backgroundColor = 'blue', onPressColor }: Props) => {
 const sx = StyleSheet.create({
   button: {
     alignItems: 'center',
-    height: 42,
-    width: 40,
   },
   circle: {
     borderRadius: 15,

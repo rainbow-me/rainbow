@@ -36,8 +36,8 @@ const SheetContainer = styled(Column)({
 });
 
 const ScrollableColorPicker = styled.ScrollView({
+  height: 42,
   marginHorizontal: 10,
-  marginVertical: 0,
   overflow: 'visible',
 });
 
@@ -83,9 +83,6 @@ const AvatarBuilder = ({ route: { params } }) => {
     transform: [{ translateX: selectedRingPosition.value }],
   }));
 
-  const colorCircleTopPadding = 15;
-  const colorCircleBottomPadding = 19;
-
   const selectedOffset = useMemo(() => {
     const maxOffset = colors.avatarBackgrounds.length * 40 - width + 20;
     const rawOffset =
@@ -110,13 +107,7 @@ const AvatarBuilder = ({ route: { params } }) => {
         pointerEvents="box-none"
         top={AvatarBuilderTopPoint}
       >
-        <Row
-          height={38 + colorCircleTopPadding + colorCircleBottomPadding}
-          justify="center"
-          paddingBottom={colorCircleBottomPadding + 7}
-          paddingTop={colorCircleTopPadding + 7}
-          width="100%"
-        >
+        <Row justify="center" paddingBottom={16} paddingTop={15} width="100%">
           <ScrollableColorPicker
             contentOffset={selectedOffset}
             horizontal
