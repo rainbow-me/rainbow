@@ -13,7 +13,7 @@ export default function useUpdateEmoji() {
   const dispatch = useDispatch();
   const saveInfo = useCallback(
     async (color, emoji) => {
-      if (!color || !emoji) return;
+      if (!color && !emoji) return;
       const walletId = selectedWallet.id;
       const newWallets = {
         ...wallets,

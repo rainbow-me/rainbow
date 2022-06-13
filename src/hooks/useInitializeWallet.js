@@ -47,6 +47,8 @@ export default function useInitializeWallet() {
       checkedWallet = null,
       switching,
       image,
+      color = null,
+      emoji = null,
       silent = false
     ) => {
       try {
@@ -80,6 +82,8 @@ export default function useInitializeWallet() {
           checkedWallet,
           network,
           image,
+          color,
+          emoji,
           silent
         );
 

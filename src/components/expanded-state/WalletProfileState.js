@@ -35,9 +35,10 @@ export default function WalletProfileState({
     analytics.track('Tapped "Submit" on Wallet Profile modal');
     InteractionManager.runAfterInteractions(() => {
       onCloseModal({
-        color: rainbowProfile?.color,
         image: image,
         name: value,
+        color: rainbowProfile?.color,
+        emoji: rainbowProfile?.emoji,
       });
       goBack();
       if (actionType === 'Create' && isNewProfile) {
@@ -46,11 +47,11 @@ export default function WalletProfileState({
     });
   }, [
     actionType,
-    rainbowProfile?.color,
     goBack,
     isNewProfile,
     navigate,
     onCloseModal,
+    rainbowProfile,
     image,
     value,
   ]);

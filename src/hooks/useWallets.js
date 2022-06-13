@@ -67,7 +67,7 @@ export default function useWallets() {
     const p1 = dispatch(walletsSetSelected(wallets[walletKey]));
     const p2 = dispatch(addressSetSelected(toChecksumAddress(address)));
     await Promise.all([p1, p2]);
-    return initializeWallet(null, null, false, false, null, true);
+    return initializeWallet(null, null, false, false, null, null, null, true);
   };
 
   return {

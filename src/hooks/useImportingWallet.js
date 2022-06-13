@@ -32,7 +32,6 @@ import { walletInit } from '@rainbow-me/model/wallet';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import { walletsLoadState } from '@rainbow-me/redux/wallets';
 import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
 import { ethereumUtils, sanitizeSeedPhrase } from '@rainbow-me/utils';
 import logger from 'logger';
 
@@ -45,9 +44,10 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const isWalletEthZero = useIsWalletEthZero();
   const [isImporting, setImporting] = useState(false);
   const [seedPhrase, setSeedPhrase] = useState('');
-  const [color, setColor] = useState(null);
   const [name, setName] = useState(null);
   const [image, setImage] = useState(null);
+  const [color, setColor] = useState(null);
+  const [emoji, setEmoji] = useState(null);
   const [busy, setBusy] = useState(false);
   const [checkedWallet, setCheckedWallet] = useState(null);
   const [resolvedAddress, setResolvedAddress] = useState(null);
@@ -88,11 +88,12 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
 
   const startImportProfile = useCallback(
     async (name, address = null, avatarUrl) => {
-      const importWallet = (color, name, image) =>
+      const importWallet = (name, image, color, emoji) =>
         InteractionManager.runAfterInteractions(() => {
-          if (color) setColor(colors.avatarBackgrounds.indexOf(color));
           if (name) setName(name);
           if (image) setImage(image);
+          if (color) setColor(color);
+          if (emoji) setEmoji(emoji);
           handleSetImporting(true);
         });
       if (showImportModal) {
@@ -103,15 +104,15 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           address,
           asset: [],
           isNewProfile: true,
-          onCloseModal: ({ color, name, image }) => {
-            importWallet(color, name, image);
+          onCloseModal: ({ name, image, color, emoji }) => {
+            importWallet(name, image, color, emoji);
           },
           profile: { image: avatarUrl, name },
           type: 'wallet_profile',
           withoutStatusBar: true,
         });
       } else {
-        importWallet(null, name, avatarUrl);
+        importWallet(name, avatarUrl, color, emoji);
       }
     },
     [handleSetImporting, navigate, showImportModal]
@@ -240,6 +241,8 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             checkedWallet,
             undefined,
             image,
+            color,
+            emoji,
             true
           );
           await dispatch(walletsLoadState(profilesEnabled));
@@ -253,7 +256,9 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             false,
             checkedWallet,
             undefined,
-            image
+            image,
+            color,
+            emoji
           )
             .then(success => {
               handleSetImporting(false);
@@ -311,12 +316,13 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     }
   }, [
     checkedWallet,
-    color,
     isWalletEthZero,
     handleSetImporting,
     goBack,
     initializeWallet,
     isImporting,
+    color,
+    emoji,
     name,
     navigate,
     replace,

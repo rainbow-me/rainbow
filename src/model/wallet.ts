@@ -131,7 +131,7 @@ export interface RainbowAccount {
   address: EthereumAddress;
   avatar: null | string;
   color: number | string;
-  emoji?: string;
+  emoji?: string | null;
   visible: boolean;
   image: string | null;
 }
@@ -139,7 +139,7 @@ export interface RainbowAccount {
 export interface RainbowWallet {
   addresses: RainbowAccount[];
   color: number | string;
-  emoji?: string;
+  emoji?: string | null;
   id: string;
   imported: boolean;
   name: string;
@@ -204,6 +204,8 @@ export const walletInit = async (
   checkedWallet = null,
   network: string,
   image = null,
+  color = null,
+  emoji = null,
   // Import the wallet "silently" in the background (i.e. no "loading" prompts).
   silent = false
 ): Promise<WalletInitialized> => {
@@ -221,6 +223,8 @@ export const walletInit = async (
       overwrite,
       checkedWallet,
       image,
+      color,
+      emoji,
       silent
     );
     walletAddress = wallet?.address;
@@ -551,6 +555,8 @@ export const createWallet = async (
   overwrite: boolean = false,
   checkedWallet: null | EthereumWalletFromSeed = null,
   image: null | string = null,
+  color: null | string = null,
+  emoji: null | string = null,
   silent: boolean = false
 ): Promise<null | EthereumWallet> => {
   const isImported = !!seed;
@@ -700,10 +706,11 @@ export const createWallet = async (
     logger.sentry('[createWallet] - saved private key');
 
     const walletColor =
+      color ||
       lightModeThemeColors.avatarBackgrounds[
         addressHashedColorIndex(walletAddress) || 0
       ];
-    const walletEmoji = addressHashedEmoji(address);
+    const walletEmoji = emoji || addressHashedEmoji(address);
 
     addresses.push({
       address: walletAddress,
@@ -772,19 +779,24 @@ export const createWallet = async (
         // Remove any discovered wallets if they already exist
         // and copy over label and color if account was visible
         let walletColor =
+          color ||
           lightModeThemeColors.avatarBackgrounds[
             addressHashedColorIndex(nextWallet.address) || 0
           ];
-        let walletEmoji = addressHashedEmoji(nextWallet.address);
+        let walletEmoji = emoji || addressHashedEmoji(nextWallet.address);
         let label = '';
 
         if (discoveredAccount && discoveredWalletId) {
           if (discoveredAccount.visible) {
             walletColor =
-              getAvatarColorHex(discoveredAccount.color) ?? walletColor;
+              color ||
+              getAvatarColorHex(discoveredAccount.color) ||
+              walletColor;
             walletEmoji =
-              discoveredAccount.emoji ??
-              (getEmojiFromAccountName(discoveredAccount.label) || walletEmoji);
+              emoji ||
+              discoveredAccount.emoji ||
+              getEmojiFromAccountName(discoveredAccount.label) ||
+              walletEmoji;
             label = discoveredAccount.label ?? '';
           }
           // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
@@ -834,7 +846,7 @@ export const createWallet = async (
             nextWallet.address,
             {
               accountColor: walletColor,
-              accountSymbol: addressHashedEmoji(nextWallet.address),
+              accountSymbol: walletEmoji,
             }
           );
 

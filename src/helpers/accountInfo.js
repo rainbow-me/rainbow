@@ -1,10 +1,7 @@
 import { get } from 'lodash';
-import {
-  removeFirstEmojiFromString,
-  returnStringFirstEmoji,
-} from '../helpers/emojiHandler';
+import { removeFirstEmojiFromString } from '../helpers/emojiHandler';
 import { address } from '../utils/abbreviations';
-import { addressHashedEmoji, isValidImagePath } from '../utils/profileUtils';
+import { isValidImagePath } from '../utils/profileUtils';
 import { getEmojiFromAccountName } from './rainbowProfiles';
 
 export function getAccountProfileInfo(

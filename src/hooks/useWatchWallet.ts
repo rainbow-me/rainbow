@@ -46,7 +46,7 @@ export default function useWatchWallet({
         const p2 = dispatch(addressSetSelected(address));
         await Promise.all([p1, p2]);
 
-        initializeWallet(null, null, false, false, null, true);
+        initializeWallet(null, null, false, false, null, null, null, true);
       } catch (e) {
         logger.log('error while switching account', e);
       }
