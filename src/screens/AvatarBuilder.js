@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, {
   useAnimatedStyle,
@@ -67,7 +67,7 @@ const AvatarBuilder = ({ route: { params } }) => {
   const selectedRingPosition = useSharedValue(params.initialAccountColor * 40);
   const { goBack } = useNavigation();
   const [currentAccountColor, setCurrentAccountColor] = useState(
-    params.initialAccountColor
+    colors.avatarBackgrounds[params.initialAccountColor]
   );
   const [currentEmoji, setCurrentEmoji] = useState(null);
   const colorIndex = useRef(params.initialAccountColor);
@@ -78,21 +78,6 @@ const AvatarBuilder = ({ route: { params } }) => {
     setCurrentEmoji(`${event} ${params.initialAccountName}`);
     saveInfo(`${event} ${params.initialAccountName}`, colorIndex.current);
   };
-
-  const avatarColors = colors.avatarBackgrounds.map((color, index) => (
-    <ColorCircle
-      backgroundColor={color}
-      isSelected={index - 4 === 0}
-      key={color}
-      onPressColor={() => {
-        const destination = index * 40;
-        selectedRingPosition.value = withSpring(destination, springConfig);
-        colorIndex.current = colors.avatarBackgrounds.indexOf(color);
-        setCurrentAccountColor(color);
-        saveInfo(currentEmoji, colorIndex.current);
-      }}
-    />
-  ));
 
   const selectedRingStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: selectedRingPosition.value }],
@@ -141,7 +126,23 @@ const AvatarBuilder = ({ route: { params } }) => {
               selectedColor={currentAccountColor}
               style={selectedRingStyle}
             />
-            {avatarColors}
+            {colors.avatarBackgrounds.map((color, index) => (
+              <ColorCircle
+                backgroundColor={color}
+                isSelected={index - 4 === 0}
+                key={color}
+                onPressColor={() => {
+                  const destination = index * 40;
+                  selectedRingPosition.value = withSpring(
+                    destination,
+                    springConfig
+                  );
+                  colorIndex.current = colors.avatarBackgrounds.indexOf(color);
+                  setCurrentAccountColor(color);
+                  saveInfo(currentEmoji, colorIndex.current);
+                }}
+              />
+            ))}
           </ScrollableColorPicker>
         </Row>
         <SheetContainer deviceHeight={height}>
