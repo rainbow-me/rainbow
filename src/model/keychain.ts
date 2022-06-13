@@ -1,7 +1,8 @@
 import { captureException, captureMessage } from '@sentry/react-native';
 import { forEach, isNil } from 'lodash';
-import { IS_TESTING } from 'react-native-dotenv';
 import DeviceInfo from 'react-native-device-info';
+// @ts-expect-error
+import { IS_TESTING } from 'react-native-dotenv';
 import {
   ACCESS_CONTROL,
   ACCESSIBLE,
@@ -49,7 +50,7 @@ export async function saveString(
         let acOptions = accessControlOptions;
         // This is a bug on iOS 14 and 15 simulators
         // See https://github.com/oblador/react-native-keychain/issues/509
-        if(IS_TESTING === 'true'){
+        if (IS_TESTING === 'true') {
           acOptions.accessControl = undefined;
         }
         await setInternetCredentials(key, key, value, acOptions);
