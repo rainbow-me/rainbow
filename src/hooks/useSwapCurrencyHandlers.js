@@ -94,6 +94,8 @@ export default function useSwapCurrencyHandlers({
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
+    // CBH COMMENT: this sideeffect clears the swap output currency
+    // see swap.ts -> updateSwapOutputCurrency (I placed logs there that illustrate the override issue)
     if (shouldUpdate) {
       dispatch(updateSwapInputCurrency(defaultInputItemInWallet));
 

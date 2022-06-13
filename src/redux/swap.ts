@@ -4,6 +4,7 @@ import { fetchAssetPrices } from './explorer';
 import { SwappableAsset } from '@rainbow-me/entities';
 import { ExchangeModalTypes } from '@rainbow-me/helpers';
 import { AppDispatch, AppGetState } from '@rainbow-me/redux/store';
+import logger from 'logger';
 
 export interface SwapAmount {
   display: string | null;
@@ -152,11 +153,13 @@ export const updateSwapOutputCurrency = (
   newOutputCurrency: SwappableAsset | null,
   ignoreTypeCheck = false
 ) => (dispatch: AppDispatch, getState: AppGetState) => {
+  logger.log('1');
   const { independentField, inputCurrency, type } = getState().swap;
   if (
     newOutputCurrency?.address === inputCurrency?.address &&
     newOutputCurrency
   ) {
+    logger.log('2');
     dispatch(flipSwapCurrencies());
   } else {
     if (
@@ -165,14 +168,17 @@ export const updateSwapOutputCurrency = (
       newOutputCurrency &&
       !ignoreTypeCheck
     ) {
+      logger.log('3');
       dispatch({ payload: null, type: SWAP_UPDATE_INPUT_CURRENCY });
     }
 
     dispatch({ payload: newOutputCurrency, type: SWAP_UPDATE_OUTPUT_CURRENCY });
     if (newOutputCurrency) {
+      logger.log('4');
       dispatch(fetchAssetPrices(newOutputCurrency.address));
     }
     if (independentField === SwapModalField.output) {
+      logger.log('5');
       dispatch(updateSwapOutputAmount(null));
     }
   }

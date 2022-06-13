@@ -24,27 +24,38 @@ function SwapActionButton({
   const { colors } = useTheme();
   const color = givenColor || colors.swapPurple;
 
-  const { updateInputCurrency } = useSwapCurrencyHandlers({
-    shouldUpdate: false,
-    type: ExchangeModalTypes.swap,
-  });
+  const { updateInputCurrency, updateOutputCurrency } = useSwapCurrencyHandlers(
+    {
+      shouldUpdate: false,
+      type: ExchangeModalTypes.swap,
+    }
+  );
 
   const navigate = useExpandedStateNavigation(inputType);
   const goToSwap = useCallback(() => {
     navigate(Routes.EXCHANGE_MODAL, params => {
-      if (params.outputAsset) {
+      const { inputAsset, outputAsset } = params;
+      if (inputAsset || outputAsset) {
+        const ownsInitial = !!inputAsset;
+        const symbol = inputAsset?.symbol || outputAsset?.symbol;
+        const type = CurrencySelectionTypes[ownsInitial ? 'output' : 'input'];
+        const copyField = `swap.modal_types.${
+          ownsInitial ? 'receive' : 'get_symbol_with'
+        }`;
         return {
           params: {
             fromDiscover: true,
-            onSelectCurrency: updateInputCurrency,
+            onSelectCurrency: ownsInitial
+              ? updateOutputCurrency
+              : updateInputCurrency,
             params: {
               ...params,
-              ignoreInitialTypeCheck: true,
+              inputAsset,
             },
-            title: lang.t('swap.modal_types.get_symbol_with', {
-              symbol: params.outputAsset.symbol,
+            title: lang.t(copyField, {
+              symbol,
             }),
-            type: CurrencySelectionTypes.input,
+            type,
           },
           screen: Routes.CURRENCY_SELECT_SCREEN,
         };
@@ -57,7 +68,7 @@ function SwapActionButton({
         screen: Routes.MAIN_EXCHANGE_NAVIGATOR,
       };
     });
-  }, [navigate, updateInputCurrency]);
+  }, [navigate, updateInputCurrency, updateOutputCurrency]);
   const handlePress = useCallback(() => {
     if (requireVerification && !verified) {
       Alert.alert(
