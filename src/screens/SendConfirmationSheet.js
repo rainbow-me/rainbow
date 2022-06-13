@@ -497,8 +497,8 @@ export default function SendConfirmationSheet() {
                   <ContactAvatar
                     address={toAddress}
                     color={avatarColor}
-                    size="lmedium"
                     emoji={avatarValue}
+                    size="lmedium"
                   />
                 )}
               </Column>

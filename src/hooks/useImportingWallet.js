@@ -115,7 +115,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         importWallet(name, avatarUrl, color, emoji);
       }
     },
-    [handleSetImporting, navigate, showImportModal]
+    [color, emoji, handleSetImporting, navigate, showImportModal]
   );
 
   const handlePressImportButton = useCallback(

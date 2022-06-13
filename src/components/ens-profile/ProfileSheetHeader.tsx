@@ -160,8 +160,8 @@ export default function ProfileSheetHeader({
             <Columns>
               <Column width="content">
                 <ProfileAvatar
-                  emoji={rainbowProfile?.emoji}
                   avatarUrl={avatarUrl}
+                  emoji={rainbowProfile?.emoji}
                   enableZoomOnPress={enableZoomOnPressAvatar}
                   handleOnPress={onPressAvatar}
                   isFetched={isImagesFetched}

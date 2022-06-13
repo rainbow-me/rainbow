@@ -1,3 +1,4 @@
+import { isValidAddress } from 'ethereumjs-util';
 import { useMemo } from 'react';
 import { useQuery, useQueryClient } from 'react-query';
 import { EthereumAddress } from '@rainbow-me/entities';
@@ -9,7 +10,6 @@ import { fetchRainbowProfile } from '@rainbow-me/handlers/rainbowProfiles';
 import { QueryConfig, UseQueryData } from '@rainbow-me/react-query/types';
 import { colors } from '@rainbow-me/styles';
 import { profileUtils } from '@rainbow-me/utils';
-import { isValidAddress } from 'ethereumjs-util';
 
 export const rainbowProfileQueryKey = (address: EthereumAddress) => [
   'rainbow-profiles',

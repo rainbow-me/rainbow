@@ -278,7 +278,7 @@ export default function TransactionList({
   ]);
 
   const safeAccountImage = useSafeImageUri(accountImage);
-  const { isDarkMode, colors } = useTheme();
+  const { isDarkMode } = useTheme();
 
   const onNativeAvatarMenuSelect = useCallback(
     e => {

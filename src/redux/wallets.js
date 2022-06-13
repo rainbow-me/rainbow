@@ -35,8 +35,8 @@ import {
 } from '../utils/profileUtils';
 import { updateWebDataEnabled } from './showcaseTokens';
 import { fetchImages, fetchReverseRecord } from '@rainbow-me/handlers/ens';
-import { lightModeThemeColors } from '@rainbow-me/styles';
 import { fetchRainbowProfile } from '@rainbow-me/handlers/rainbowProfiles';
+import { lightModeThemeColors } from '@rainbow-me/styles';
 
 // -- Constants --------------------------------------- //
 const WALLETS_ADDED_ACCOUNT = 'wallets/WALLETS_ADDED_ACCOUNT';
@@ -316,11 +316,11 @@ export const getWalletRainbowProfiles = async (walletsState, dispatch) => {
             color: rainbowProfile.color,
             emoji: rainbowProfile.emoji,
           },
-          updated: true,
           key,
+          updated: true,
         };
       } else {
-        return { account, updated: false, key };
+        return { account, key, updated: false };
       }
     });
     promises = promises.concat(innerPromises);

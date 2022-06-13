@@ -23,9 +23,10 @@ import {
   EnsGetRegistrationData,
 } from '../apollo/queries';
 import { ensProfileImagesQueryKey } from '../hooks/useENSProfileImages';
+import { rainbowProfileQueryKey } from '../hooks/useRainbowProfile';
 import { ENSActionParameters } from '../raps/common';
+import { fetchRainbowProfile } from './rainbowProfiles';
 import { estimateGasWithPadding, getProviderForNetwork } from './web3';
-import { colors } from '@rainbow-me/styles';
 import {
   ENSRegistrationRecords,
   Records,
@@ -48,14 +49,13 @@ import {
   ensPublicResolverAddress,
   ethUnits,
 } from '@rainbow-me/references';
-import { labelhash, logger, profileUtils } from '@rainbow-me/utils';
-import { AvatarResolver } from 'ens-avatar';
-import { rainbowProfileQueryKey } from '../hooks/useRainbowProfile';
-import { fetchRainbowProfile } from './rainbowProfiles';
+import { colors } from '@rainbow-me/styles';
+import { labelhash, logger } from '@rainbow-me/utils';
 import {
   addressHashedColorIndex,
   addressHashedEmoji,
 } from '@rainbow-me/utils/profileUtils';
+import { AvatarResolver } from 'ens-avatar';
 
 const DUMMY_RECORDS = {
   'cover':

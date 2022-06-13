@@ -7,15 +7,15 @@ import ColorCircle from '../components/avatar-builder/ColorCircle';
 import EmojiSelector from '../components/avatar-builder/EmojiSelector';
 import { HeaderHeightWithStatusBar } from '../components/header';
 import { Column, Row } from '../components/layout';
-import useUpdateEmoji from '../hooks/useUpdateEmoji';
+import useUpdateAvatar from '../hooks/useUpdateAvatar';
 import { useNavigation } from '../navigation/Navigation';
 import { deviceUtils } from '../utils';
-import { useDimensions } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
 import {
   getAvatarColorHex,
   getAvatarColorIndex,
 } from '@rainbow-me/helpers/colorHandler';
+import { useDimensions } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 
 const AvatarCircleHeight = 65;
 const AvatarCircleMarginTop = 2;
@@ -75,7 +75,7 @@ const AvatarBuilder = ({ route: { params } }) => {
     initialColorHex
   );
   const [currentEmoji, setCurrentEmoji] = useState(initialEmoji);
-  const { saveInfo } = useUpdateEmoji();
+  const { saveInfo } = useUpdateAvatar();
 
   const onChangeEmoji = emoji => {
     ReactNativeHapticFeedback.trigger('selection');

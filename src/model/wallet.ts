@@ -51,6 +51,8 @@ import {
   isValidMnemonic,
   web3Provider,
 } from '@rainbow-me/handlers/web3';
+import { getAvatarColorHex } from '@rainbow-me/helpers/colorHandler';
+import { returnStringFirstEmoji } from '@rainbow-me/helpers/emojiHandler';
 import { createSignature } from '@rainbow-me/helpers/signingWallet';
 import showWalletErrorAlert from '@rainbow-me/helpers/support';
 import WalletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
@@ -60,8 +62,6 @@ import store from '@rainbow-me/redux/store';
 import { setIsWalletLoading } from '@rainbow-me/redux/wallets';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
-import { getAvatarColorHex } from '@rainbow-me/helpers/colorHandler';
-import { returnStringFirstEmoji } from '@rainbow-me/helpers/emojiHandler';
 
 const encryptor = new AesEncryptor();
 

@@ -59,6 +59,10 @@ import {
 } from '@rainbow-me/handlers/localstorage/userLists';
 import { resolveNameOrAddress } from '@rainbow-me/handlers/web3';
 import {
+  getAvatarColorHex,
+  getAvatarColorIndex,
+} from '@rainbow-me/helpers/colorHandler';
+import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
 } from '@rainbow-me/helpers/emojiHandler';
@@ -67,10 +71,6 @@ import { DefaultTokenLists } from '@rainbow-me/references';
 import { ethereumUtils, profileUtils } from '@rainbow-me/utils';
 import { REVIEW_ASKED_KEY } from '@rainbow-me/utils/reviewAlert';
 import logger from 'logger';
-import {
-  getAvatarColorHex,
-  getAvatarColorIndex,
-} from '@rainbow-me/helpers/colorHandler';
 
 export default async function runMigrations() {
   // get current version
@@ -668,8 +668,8 @@ export default async function runMigrations() {
         const newAddresses = wallet.addresses.map((account: RainbowAccount) => {
           return {
             ...account,
-            emoji: returnStringFirstEmoji(account?.label),
             color: getAvatarColorHex(account?.color),
+            emoji: returnStringFirstEmoji(account?.label),
             label: removeFirstEmojiFromString(account?.label),
           };
         });

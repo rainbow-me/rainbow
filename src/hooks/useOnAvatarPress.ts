@@ -83,11 +83,11 @@ export default () => {
 
   const onAvatarPickEmoji = useCallback(() => {
     navigate(Routes.AVATAR_BUILDER, {
-      initialColor: accountColor,
       initialAccountName: accountName,
+      initialColor: accountColor,
       initialEmoji: accountSymbol,
     });
-  }, [accountColor, accountName, navigate]);
+  }, [accountColor, accountName, accountSymbol, navigate]);
 
   const onAvatarChooseImage = useCallback(async () => {
     const image = await openPicker({

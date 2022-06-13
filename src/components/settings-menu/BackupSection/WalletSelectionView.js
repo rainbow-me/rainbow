@@ -11,6 +11,10 @@ import { Icon } from '../../icons';
 import { Centered, Column, ColumnWithMargins, Row } from '../../layout';
 import { Text, TruncatedAddress } from '../../text';
 import Caret from '@rainbow-me/assets/family-dropdown-arrow.png';
+import {
+  removeFirstEmojiFromString,
+  returnStringFirstEmoji,
+} from '@rainbow-me/helpers/emojiHandler';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { useManageCloudBackups, useWallets } from '@rainbow-me/hooks';
@@ -19,10 +23,6 @@ import { useNavigation } from '@rainbow-me/navigation';
 import styled from '@rainbow-me/styled-components';
 import { fonts, padding } from '@rainbow-me/styles';
 import { abbreviations } from '@rainbow-me/utils';
-import {
-  removeFirstEmojiFromString,
-  returnStringFirstEmoji,
-} from '@rainbow-me/helpers/emojiHandler';
 
 const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
   source: Caret,
@@ -154,9 +154,9 @@ const WalletSelectionView = () => {
                       address={address}
                       alignSelf="center"
                       color={color}
+                      emoji={emoji || returnStringFirstEmoji(labelOrName)}
                       marginRight={10}
                       size="smedium"
-                      emoji={emoji || returnStringFirstEmoji(labelOrName)}
                     />
                     <ColumnWithMargins margin={3} marginBottom={0.5}>
                       <Row>

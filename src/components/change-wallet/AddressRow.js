@@ -11,6 +11,7 @@ import ImageAvatar from '../contacts/ImageAvatar';
 import { Icon } from '../icons';
 import { Centered, Column, ColumnWithMargins, Row } from '../layout';
 import { Text, TruncatedAddress, TruncatedText } from '../text';
+import { getAvatarColorHex } from '@rainbow-me/helpers/colorHandler';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
@@ -18,7 +19,6 @@ import {
 import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth, getFontSize } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';
-import { getAvatarColorHex } from '@rainbow-me/helpers/colorHandler';
 
 const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;
 const NOOP = () => undefined;
@@ -176,9 +176,9 @@ export default function AddressRow({
               <ContactAvatar
                 address={address}
                 color={bgColor}
+                emoji={emoji || returnStringFirstEmoji(label)}
                 marginRight={10}
                 size="medium"
-                emoji={emoji || returnStringFirstEmoji(label)}
               />
             )}
             <ColumnWithMargins margin={android ? -6 : 3}>

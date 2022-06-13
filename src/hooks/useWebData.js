@@ -6,6 +6,7 @@ import {
   PreferenceActionType,
   setPreference,
 } from '../model/preferences';
+import useAccountProfile from './useAccountProfile';
 import useAccountSettings from './useAccountSettings';
 import useWallets from './useWallets';
 import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
@@ -15,7 +16,6 @@ import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
 import { colors } from '@rainbow-me/styles';
 import { profileUtils } from '@rainbow-me/utils';
 import logger from 'logger';
-import useAccountProfile from './useAccountProfile';
 
 export const wipeNotEmoji = text => {
   const characters = new GraphemeSplitter().splitGraphemes(text);
