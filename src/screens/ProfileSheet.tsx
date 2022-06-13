@@ -53,7 +53,7 @@ export default function ProfileSheet() {
 
   const { data: profileAddress } = useENSResolveName(ensName);
 
-  const { rainbowProfile } = useRainbowProfile(profileAddress ?? '');
+  const { rainbowProfile } = useRainbowProfile(profileAddress || '');
 
   // Prefetch first transaction timestamp
   useFirstTransactionTimestamp({
@@ -77,7 +77,7 @@ export default function ProfileSheet() {
     // Set accent color when ENS images have fetched & dominant
     // color is not loading.
     isImagesFetched && state !== 1
-      ? dominantColor ?? rainbowProfile?.color ?? colors.appleBlue
+      ? dominantColor ?? rainbowProfile?.color ?? colors.skeleton
       : rainbowProfile?.color ?? colors.skeleton;
 
   const enableZoomableImages =
