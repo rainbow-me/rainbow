@@ -38,7 +38,10 @@ import {
   useSwapCurrencyList,
 } from '@rainbow-me/hooks';
 import { delayNext } from '@rainbow-me/hooks/useMagicAutofocus';
-import { useNavigation } from '@rainbow-me/navigation/Navigation';
+import {
+  getActiveRoute,
+  useNavigation,
+} from '@rainbow-me/navigation/Navigation';
 import { emitChartsRequest } from '@rainbow-me/redux/explorer';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
@@ -120,6 +123,12 @@ export default function CurrencySelectModal() {
     swapCurrencyListLoading,
     updateFavorites,
   } = useSwapCurrencyList(searchQueryForSearch, currentChainId);
+
+  const routeName = getActiveRoute()?.name;
+  const showList = useMemo(() => {
+    const viewingExplainer = routeName === Routes.EXPLAIN_SHEET;
+    return isFocused || viewingExplainer;
+  }, [isFocused, routeName]);
 
   const getWalletCurrencyList = useCallback(() => {
     if (type === CurrencySelectionTypes.input) {
@@ -364,7 +373,7 @@ export default function CurrencySelectModal() {
                 listItems={currencyList}
                 loading={swapCurrencyListLoading}
                 query={searchQueryForSearch}
-                showList={isFocused}
+                showList={showList}
                 testID="currency-select-list"
                 type={type}
               />
