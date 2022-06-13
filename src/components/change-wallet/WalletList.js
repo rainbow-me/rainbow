@@ -1,8 +1,20 @@
 import lang from 'i18n-js';
 import { get, isEmpty } from 'lodash';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import { FlatList } from 'react-native-gesture-handler';
-import Animated, { Easing, FadeIn, FadeOut } from 'react-native-reanimated';
+import Animated, {
+  Easing,
+  FadeOut,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import networkTypes from '../../helpers/networkTypes';
 import WalletTypes from '../../helpers/walletTypes';
 import { address } from '../../utils/abbreviations';
@@ -97,6 +109,7 @@ export default function WalletList({
   const [ready, setReady] = useState(false);
   const scrollView = useRef(null);
   const { network } = useAccountSettings();
+  const opacityAnimation = useSharedValue(0);
 
   // Update the rows when allWallets changes
   useEffect(() => {
@@ -169,6 +182,21 @@ export default function WalletList({
     }
   }, [rows, ready]);
 
+  useLayoutEffect(() => {
+    if (ready) {
+      opacityAnimation.value = withTiming(1, {
+        duration: transitionDuration,
+        easing: Easing.in(Easing.ease),
+      });
+    } else {
+      opacityAnimation.value = 0;
+    }
+  }, [ready, opacityAnimation]);
+
+  const opacityStyle = useAnimatedStyle(() => ({
+    opacity: opacityAnimation.value,
+  }));
+
   const renderItem = useCallback(
     ({ item }) => {
       switch (item.rowType) {
@@ -194,11 +222,7 @@ export default function WalletList({
   return (
     <Container height={height}>
       {ready ? (
-        <WalletsContainer
-          entering={FadeIn.easing(Easing.in(Easing.ease)).duration(
-            transitionDuration
-          )}
-        >
+        <WalletsContainer style={opacityStyle}>
           <WalletFlatList
             data={rows}
             initialNumToRender={rows.length}
