@@ -7,11 +7,16 @@ import { fetchOnchainBalances } from '../redux/fallbackExplorer';
 import { uniqueTokensRefreshState } from '../redux/uniqueTokens';
 import { updatePositions } from '../redux/usersPositions';
 import { walletConnectLoadState } from '../redux/walletconnect';
-import { fetchWalletENSAvatars, fetchWalletNames } from '../redux/wallets';
+import {
+  fetchWalletENSAvatars,
+  fetchWalletNames,
+  fetchWalletRainbowProfiles,
+} from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
 import useSavingsAccount from './useSavingsAccount';
 import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import logger from 'logger';
+import { useAccountProfile } from '.';
 
 export default function useRefreshAccountData() {
   const dispatch = useDispatch();
@@ -19,6 +24,8 @@ export default function useRefreshAccountData() {
   const { refetchSavings } = useSavingsAccount();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const profilesEnabled = useExperimentalFlag(PROFILES);
+  const { accountColor, accountSymbol } = useAccountProfile();
+  console.log(accountColor, accountSymbol);
 
   const fetchAccountData = useCallback(async () => {
     // Refresh unique tokens for Rinkeby
@@ -34,6 +41,7 @@ export default function useRefreshAccountData() {
 
     try {
       const getWalletNames = dispatch(fetchWalletNames());
+      const getWalletRainbowProfiles = dispatch(fetchWalletRainbowProfiles());
       const getWalletENSAvatars = profilesEnabled
         ? dispatch(fetchWalletENSAvatars())
         : null;
@@ -46,6 +54,7 @@ export default function useRefreshAccountData() {
       return Promise.all([
         delay(1250), // minimum duration we want the "Pull to Refresh" animation to last
         getWalletNames,
+        getWalletRainbowProfiles,
         getUniqueTokens,
         getWalletENSAvatars,
         refetchSavings(true),

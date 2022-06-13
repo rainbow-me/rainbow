@@ -36,6 +36,7 @@ import {
 import { updateWebDataEnabled } from './showcaseTokens';
 import { fetchImages, fetchReverseRecord } from '@rainbow-me/handlers/ens';
 import { lightModeThemeColors } from '@rainbow-me/styles';
+import { fetchRainbowProfile } from '@rainbow-me/handlers/rainbowProfiles';
 
 // -- Constants --------------------------------------- //
 const WALLETS_ADDED_ACCOUNT = 'wallets/WALLETS_ADDED_ACCOUNT';
@@ -292,6 +293,64 @@ export const getWalletENSAvatars = async (walletsState, dispatch) => {
 
 export const fetchWalletENSAvatars = () => async (dispatch, getState) =>
   getWalletENSAvatars(getState().wallets, dispatch);
+
+export const getWalletRainbowProfiles = async (walletsState, dispatch) => {
+  const { wallets, selected } = walletsState;
+  const walletKeys = Object.keys(wallets);
+  let updatedWallets;
+  let promises = [];
+  walletKeys.forEach(key => {
+    const wallet = wallets[key];
+    const innerPromises = wallet?.addresses?.map(async account => {
+      const rainbowProfile = await fetchRainbowProfile(account.address);
+      if (
+        rainbowProfile &&
+        rainbowProfile.color &&
+        rainbowProfile.emoji &&
+        (rainbowProfile.color !== account.color ||
+          rainbowProfile.emoji !== account.emoji)
+      ) {
+        return {
+          account: {
+            ...account,
+            color: rainbowProfile.color,
+            emoji: rainbowProfile.emoji,
+          },
+          updated: true,
+          key,
+        };
+      } else {
+        return { account, updated: false, key };
+      }
+    });
+    promises = promises.concat(innerPromises);
+  });
+
+  const newAccounts = await Promise.all(promises);
+  newAccounts.forEach(({ account, key, updated }) => {
+    if (!updated) return;
+    const addresses = wallets?.[key]?.addresses;
+    const index = addresses?.findIndex(
+      ({ address }) => address === account.address
+    );
+    addresses.splice(index, 1, account);
+    updatedWallets = {
+      ...(updatedWallets ?? wallets),
+      [key]: {
+        ...wallets[key],
+        addresses,
+      },
+    };
+  });
+  console.log(updatedWallets);
+  if (updatedWallets) {
+    dispatch(walletsSetSelected(updatedWallets[selected.id]));
+    dispatch(walletsUpdate(updatedWallets));
+  }
+};
+
+export const fetchWalletRainbowProfiles = () => async (dispatch, getState) =>
+  getWalletRainbowProfiles(getState().wallets, dispatch);
 
 export const fetchWalletNames = () => async (dispatch, getState) => {
   const { wallets } = getState().wallets;

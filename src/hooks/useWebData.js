@@ -17,14 +17,6 @@ import { colors } from '@rainbow-me/styles';
 import { profileUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
-const getAccountSymbol = name => {
-  if (!name) {
-    return null;
-  }
-  const accountSymbol = new GraphemeSplitter().splitGraphemes(name)[0];
-  return accountSymbol;
-};
-
 export const wipeNotEmoji = text => {
   const characters = new GraphemeSplitter().splitGraphemes(text);
   if (characters.length !== 1) {
@@ -73,8 +65,8 @@ export default function useWebData() {
         'profile',
         accountAddress,
         {
-          accountColor: rainbowProfile?.color ?? addressHashedColor,
-          accountSymbol: rainbowProfile?.emoji ?? addressHashedEmoji,
+          accountColor: addressHashedColor,
+          accountSymbol: addressHashedEmoji,
         }
       );
 
@@ -97,16 +89,13 @@ export default function useWebData() {
   }, [accountAddress, dispatch, webDataEnabled]);
 
   const updateWebProfile = useCallback(
-    async (address, name, color) => {
+    async (address, color, emoji) => {
       if (!webDataEnabled) return;
       const wallet = findWalletWithAccount(wallets, address);
       if (wallet.type === WalletTypes.readOnly) return;
       const data = {
-        accountColor: color ?? rainbowProfile?.color ?? addressHashedColor,
-        accountSymbol:
-          wipeNotEmoji(getAccountSymbol(name)) ??
-          rainbowProfile.emoji ??
-          addressHashedEmoji,
+        accountColor: color,
+        accountSymbol: emoji,
       };
       await setPreference(
         PreferenceActionType.update,
@@ -115,13 +104,7 @@ export default function useWebData() {
         data
       );
     },
-    [
-      addressHashedColor,
-      addressHashedEmoji,
-      rainbowProfile,
-      wallets,
-      webDataEnabled,
-    ]
+    [wallets, webDataEnabled]
   );
 
   const getWebProfile = useCallback(async address => {

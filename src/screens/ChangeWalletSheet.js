@@ -244,6 +244,7 @@ export default function ChangeWalletSheet() {
                   const updatedWalletAddress = {
                     ...walletAddress,
                     color: args.color,
+                    emoji: args.emoji,
                     label: args.name,
                   };
                   let updatedWalletAddresses = [...walletAddresses];
@@ -265,11 +266,7 @@ export default function ChangeWalletSheet() {
                     await dispatch(walletsSetSelected(updatedWallet));
                   }
 
-                  updateWebProfile(
-                    address,
-                    args.name,
-                    colors.avatarBackgrounds[args.color]
-                  );
+                  updateWebProfile(address, args.color, args.emoji);
 
                   await dispatch(walletsUpdate(updatedWallets));
                 } else {
@@ -402,10 +399,7 @@ export default function ChangeWalletSheet() {
             asset: [],
             isNewProfile: true,
             onCloseModal: async args => {
-              console.log('BESTING');
               if (args) {
-                console.log('TESTING');
-                console.log(args);
                 setIsWalletLoading(WalletLoadingStates.CREATING_WALLET);
                 const name = get(args, 'name', '');
                 // Check if the selected wallet is the primary

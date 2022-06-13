@@ -5,6 +5,7 @@ import {
 } from '../helpers/emojiHandler';
 import { address } from '../utils/abbreviations';
 import { addressHashedEmoji, isValidImagePath } from '../utils/profileUtils';
+import { getEmojiFromAccountName } from './rainbowProfiles';
 
 export function getAccountProfileInfo(
   selectedWallet,
