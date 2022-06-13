@@ -78,13 +78,10 @@ const ContactAvatar = ({
   ]);
   const { isDarkMode } = useTheme();
 
-  console.log(profileColor);
   const shadows = useMemo(
     () => buildShadows(profileColor, size, isDarkMode, colors),
     [profileColor, size, isDarkMode, colors]
   );
-
-  console.log(color, emoji);
 
   return (
     <ShadowStack

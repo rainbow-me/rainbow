@@ -64,6 +64,11 @@ import { DefaultTokenLists } from '@rainbow-me/references';
 import { ethereumUtils, profileUtils } from '@rainbow-me/utils';
 import { REVIEW_ASKED_KEY } from '@rainbow-me/utils/reviewAlert';
 import logger from 'logger';
+import {
+  getAvatarColorHex,
+  getAvatarColorIndex,
+  getEmojiFromAccountName,
+} from '@rainbow-me/helpers/rainbowProfiles';
 
 export default async function runMigrations() {
   // get current version
@@ -354,7 +359,9 @@ export default async function runMigrations() {
             }),
             color:
               (accountEmoji
-                ? newColorIndexes[account.color]
+                ? isNumber(account.color)
+                  ? newColorIndexes[account.color]
+                  : newColorIndexes[getAvatarColorIndex(account.color) || 0]
                 : profileUtils.addressHashedColorIndex(account.address)) || 0,
           };
         });
@@ -638,6 +645,71 @@ export default async function runMigrations() {
   };
 
   migrations.push(v16);
+
+  /*
+   *************** Migration v17 ******************
+   * Switch wallet "color" property from index to hex.
+   * Create new wallet property "emoji".
+   * Remove emoji from wallet property "label".
+   * Remove "color" property from contacts.
+   */
+  const v17 = async () => {
+    logger.log('Start migration v9');
+    try {
+      const { selected, wallets } = store.getState().wallets;
+      if (!wallets) return;
+      const walletKeys = Object.keys(wallets);
+      let updatedWallets = { ...wallets };
+      // eslint-disable-next-line @typescript-eslint/prefer-for-of
+      for (let i = 0; i < walletKeys.length; i++) {
+        const wallet = wallets[walletKeys[i]];
+        const newAddresses = wallet.addresses.map((account: RainbowAccount) => {
+          return {
+            ...account,
+            emoji: getEmojiFromAccountName(account?.label),
+            color: getAvatarColorHex(account?.color),
+            label: returnStringFirstEmoji(account?.label),
+          };
+        });
+        const newWallet = { ...wallet, addresses: newAddresses };
+        updatedWallets[walletKeys[i]] = newWallet;
+      }
+      logger.log(
+        'update wallets in store with new emoji and modified color and label properties'
+      );
+      await store.dispatch(walletsUpdate(updatedWallets));
+
+      const selectedWalletId = selected?.id;
+      if (selectedWalletId) {
+        logger.log(
+          'update selected wallet with new emoji and modified color and label properties'
+        );
+        await store.dispatch(
+          walletsSetSelected(updatedWallets[selectedWalletId])
+        );
+      }
+
+      // migrate contacts to new color index
+      const contacts = await getContacts();
+      let updatedContacts = { ...contacts };
+      if (!contacts) return;
+      const contactKeys = Object.keys(contacts);
+      // eslint-disable-next-line @typescript-eslint/prefer-for-of
+      for (let j = 0; j < contactKeys.length; j++) {
+        const contact = contacts[contactKeys[j]];
+        delete contact.color;
+        updatedContacts[contactKeys[j]] = contact;
+      }
+      logger.log('remove color property from contacts');
+      await saveContacts(updatedContacts);
+    } catch (error) {
+      logger.sentry('Migration v17 failed: ', error);
+      const migrationError = new Error('Migration 17 failed');
+      captureException(migrationError);
+    }
+  };
+
+  migrations.push(v17);
 
   logger.sentry(
     `Migrations: ready to run migrations starting on number ${currentVersion}`

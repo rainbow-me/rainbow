@@ -36,6 +36,7 @@ export default function MoreButton({
     [address, contacts]
   );
 
+  console.log(contact);
   const formattedAddress = useMemo(
     () => (address ? formatAddressForDisplay(address, 4, 4) : ''),
     [address]

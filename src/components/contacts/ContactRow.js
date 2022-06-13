@@ -86,8 +86,6 @@ const ContactRow = (
     testID,
   } = props;
 
-  // console.log(props);
-
   let cleanedUpBalance = balance;
   if (balance === '0.00') {
     cleanedUpBalance = '0';

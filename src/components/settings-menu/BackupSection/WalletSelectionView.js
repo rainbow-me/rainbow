@@ -127,6 +127,7 @@ const WalletSelectionView = () => {
           const account = visibleAccounts[0];
           const totalAccounts = visibleAccounts.length;
           const { color, emoji, label, address } = account;
+
           if (wallet.backupType === WalletBackupTypes.cloud) {
             cloudBackedUpWallets += 1;
           }
@@ -153,7 +154,7 @@ const WalletSelectionView = () => {
                       color={color}
                       marginRight={10}
                       size="smedium"
-                      emoji={emoji ?? getEmojiFromAccountName(labelOrName)}
+                      emoji={emoji || getEmojiFromAccountName(labelOrName)}
                     />
                     <ColumnWithMargins margin={3} marginBottom={0.5}>
                       <Row>
