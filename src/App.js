@@ -41,7 +41,6 @@ import {
   showNetworkRequests,
   showNetworkResponses,
 } from './config/debug';
-import { MainThemeProvider } from './context/ThemeContext';
 import monitorNetwork from './debugging/network';
 import { Playground } from './design-system/playground/Playground';
 import appEvents from './handlers/appEvents';
@@ -66,6 +65,7 @@ import store from './redux/store';
 import { uniswapPairsInit } from './redux/uniswap';
 import { walletConnectLoadState } from './redux/walletconnect';
 import { rainbowTokenList } from './references';
+import { MainThemeProvider } from './theme/ThemeContext';
 import { branchListener } from './utils/branch';
 import { analyticsUserIdentifier } from './utils/keychainConstants';
 import {
@@ -77,7 +77,6 @@ import { InitialRouteContext } from '@rainbow-me/navigation/initialRoute';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 import { Portal } from 'react-native-cool-modals/Portal';
-
 const WALLETCONNECT_SYNC_DELAY = 500;
 
 const FedoraToastRef = createRef();
@@ -133,7 +132,6 @@ if (__DEV__) {
     };
     Sentry.init(sentryOptions);
   }
-
   initSentryAndCheckForFedoraMode();
 }
 

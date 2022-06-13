@@ -48,13 +48,13 @@ const formatValue = value =>
     : value;
 
 const AddressField = (
-  { address, autoFocus, name, onChange, onFocus, testID, ...props },
+  { address, autoFocus, editable, name, onChange, onFocus, testID, ...props },
   ref
 ) => {
   const { isTinyPhone } = useDimensions();
   const { colors } = useTheme();
   const { clipboard, setClipboard } = useClipboard();
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState(address || '');
   const [isValid, setIsValid] = useState(false);
 
   const expandAbbreviatedClipboard = useCallback(() => {
@@ -78,11 +78,11 @@ const AddressField = (
   );
 
   useEffect(() => {
-    if (address !== inputValue || name !== inputValue) {
-      setInputValue(name || address);
+    if (name !== inputValue || name !== address) {
+      setInputValue(name);
       validateAddress(address);
     }
-  }, [address, inputValue, name, validateAddress]);
+  }, [address, editable, inputValue, name, validateAddress]);
 
   return (
     <Row flex={1}>
@@ -90,6 +90,7 @@ const AddressField = (
         {...props}
         autoFocus={autoFocus}
         color={isValid ? colors.appleBlue : colors.dark}
+        editable={editable}
         onBlur={expandAbbreviatedClipboard}
         onChange={handleChange}
         onChangeText={setInputValue}

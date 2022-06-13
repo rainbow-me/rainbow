@@ -3,7 +3,7 @@ import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { useTheme } from '../../context/ThemeContext';
+import { useTheme } from '../../theme/ThemeContext';
 import { Column, Row } from '../layout';
 import { SecretDisplaySection } from '../secret-display';
 import { SheetActionButton } from '../sheet';

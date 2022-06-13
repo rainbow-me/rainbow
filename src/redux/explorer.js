@@ -17,6 +17,7 @@ import {
   fallbackExplorerClearState,
   fallbackExplorerInit,
   fetchOnchainBalances,
+  onMainnetAssetDiscoveryResponse,
 } from './fallbackExplorer';
 // eslint-disable-next-line import/no-cycle
 import { optimismExplorerInit } from './optimismExplorer';
@@ -53,6 +54,7 @@ const messages = {
     CHANGED: 'changed address assets',
     RECEIVED: 'received address assets',
     RECEIVED_ARBITRUM: 'received address arbitrum-assets',
+    RECEIVED_OPTIMISM: 'received address optimism-assets',
     RECEIVED_POLYGON: 'received address polygon-assets',
     REMOVED: 'removed address assets',
   },
@@ -64,6 +66,7 @@ const messages = {
     CHANGED: 'changed address transactions',
     RECEIVED: 'received address transactions',
     RECEIVED_ARBITRUM: 'received address arbitrum-transactions',
+    RECEIVED_OPTIMISM: 'received address optimism-transactions',
     RECEIVED_POLYGON: 'received address polygon-transactions',
     REMOVED: 'removed address transactions',
   },
@@ -82,6 +85,7 @@ const messages = {
   CONNECT: 'connect',
   DISCONNECT: 'disconnect',
   ERROR: 'error',
+  MAINNET_ASSET_DISCOVERY: 'received address mainnet-assets-discovery',
   RECONNECT_ATTEMPT: 'reconnect_attempt',
 };
 
@@ -116,6 +120,17 @@ const portfolioSubscription = (address, currency, action = 'get') => [
       portfolio_fields: 'all',
     },
     scope: ['portfolio'],
+  },
+];
+
+const mainnetAssetDisovery = (address, currency, action = 'get') => [
+  action,
+  {
+    payload: {
+      address,
+      currency: toLower(currency),
+    },
+    scope: ['mainnet-assets-discovery'],
   },
 ];
 
@@ -190,6 +205,7 @@ const l2AddressTransactionHistoryRequest = (address, currency) => [
     },
     scope: [
       `${NetworkTypes.arbitrum}-transactions`,
+      `${NetworkTypes.optimism}-transactions`,
       `${NetworkTypes.polygon}-transactions`,
     ],
   },
@@ -362,6 +378,12 @@ export const explorerInit = () => async (dispatch, getState) => {
   }
 };
 
+export const emitMainnetAssetDiscoveryRequest = (dispatch, getState) => {
+  const { addressSocket } = getState().explorer;
+  const { accountAddress, nativeCurrency } = getState().settings;
+  addressSocket.emit(...mainnetAssetDisovery(accountAddress, nativeCurrency));
+};
+
 export const emitPortfolioRequest = (address, currency) => (
   dispatch,
   getState
@@ -473,6 +495,8 @@ export const explorerInitL2 = (network = null) => (dispatch, getState) => {
         break;
       case NetworkTypes.optimism:
         // Start watching optimism assets
+        dispatch(fetchAssetsFromRefraction());
+        // Once covalent supports is official, we should get rid of the optimism explorer
         dispatch(optimismExplorerInit());
         break;
       default:
@@ -549,6 +573,11 @@ const listenOnAddressMessages = socket => dispatch => {
     dispatch(transactionsReceived(message));
   });
 
+  socket.on(messages.ADDRESS_TRANSACTIONS.RECEIVED_OPTIMISM, message => {
+    // logger.log('optimism txns received', message?.payload?.transactions);
+    dispatch(transactionsReceived(message));
+  });
+
   socket.on(messages.ADDRESS_TRANSACTIONS.RECEIVED_POLYGON, message => {
     // logger.log('polygon txns received', message?.payload?.transactions);
     dispatch(transactionsReceived(message));
@@ -582,6 +611,10 @@ const listenOnAddressMessages = socket => dispatch => {
     dispatch(l2AddressAssetsReceived(message, NetworkTypes.arbitrum));
   });
 
+  socket.on(messages.ADDRESS_ASSETS.RECEIVED_OPTIMISM, message => {
+    dispatch(l2AddressAssetsReceived(message, NetworkTypes.optimism));
+  });
+
   socket.on(messages.ADDRESS_ASSETS.RECEIVED_POLYGON, message => {
     dispatch(l2AddressAssetsReceived(message, NetworkTypes.polygon));
   });
@@ -593,7 +626,7 @@ const listenOnAddressMessages = socket => dispatch => {
         '😬 Cancelling fallback data provider listener. Zerion is good!'
       );
       dispatch(disableFallbackIfNeeded());
-      dispatch(explorerInitL2(NetworkTypes.optimism));
+      dispatch(optimismExplorerInit());
       // Fetch balances onchain to override zerion's
       // which is likely behind
       dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
@@ -622,6 +655,10 @@ const listenOnAddressMessages = socket => dispatch => {
     // Fetch balances onchain to override zerion's
     // which is likely behind
     dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
+  });
+
+  socket.on(messages.MAINNET_ASSET_DISCOVERY, message => {
+    onMainnetAssetDiscoveryResponse(message);
   });
 };
 

@@ -1,5 +1,6 @@
 import { RecyclerListView, RecyclerListViewProps } from 'recyclerlistview';
 import { RecyclerListViewState } from 'recyclerlistview/dist/reactnative/core/RecyclerListView';
+import { UniqueAsset } from '@rainbow-me/entities';
 
 export enum CellType {
   ASSETS_HEADER = 'ASSETS_HEADER',
@@ -53,6 +54,7 @@ export type NFTExtraData = {
   type: CellType.NFT;
   index: number;
   uniqueId: string;
+  onPressUniqueToken?: (asset: UniqueAsset) => void;
 };
 export type NFTFamilyExtraData = {
   type: CellType.FAMILY_HEADER;
