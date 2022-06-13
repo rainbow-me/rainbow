@@ -18,7 +18,7 @@ import {
 import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth, getFontSize } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';
-import { getAvatarColorHex } from '@rainbow-me/helpers/rainbowProfiles';
+import { getAvatarColorHex } from '@rainbow-me/helpers/colorHandler';
 
 const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;
 const NOOP = () => undefined;

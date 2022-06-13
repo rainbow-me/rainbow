@@ -60,7 +60,7 @@ import store from '@rainbow-me/redux/store';
 import { setIsWalletLoading } from '@rainbow-me/redux/wallets';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
-import { getAvatarColorHex } from '@rainbow-me/helpers/rainbowProfiles';
+import { getAvatarColorHex } from '@rainbow-me/helpers/colorHandler';
 import { returnStringFirstEmoji } from '@rainbow-me/helpers/emojiHandler';
 
 const encryptor = new AesEncryptor();

@@ -11,7 +11,10 @@ export const getAvatarColorIndex = (
   hexOrColorIndex: string | number | null
 ) => {
   if (!hexOrColorIndex) return null;
-  return typeof hexOrColorIndex === 'string'
-    ? colors.avatarBackgrounds.indexOf(hexOrColorIndex)
-    : hexOrColorIndex;
+  if (typeof hexOrColorIndex === 'string') {
+    const colorIndex = colors.avatarBackgrounds.indexOf(hexOrColorIndex);
+    return colorIndex !== -1 ? colorIndex : 0;
+  } else {
+    return hexOrColorIndex;
+  }
 };

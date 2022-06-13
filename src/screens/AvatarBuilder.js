@@ -15,7 +15,7 @@ import styled from '@rainbow-me/styled-components';
 import {
   getAvatarColorHex,
   getAvatarColorIndex,
-} from '@rainbow-me/helpers/rainbowProfiles';
+} from '@rainbow-me/helpers/colorHandler';
 
 const AvatarCircleHeight = 65;
 const AvatarCircleMarginTop = 2;

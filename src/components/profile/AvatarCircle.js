@@ -8,7 +8,7 @@ import { useAccountProfile, useRainbowProfile } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
-import { getAvatarColorHex } from '@rainbow-me/helpers/rainbowProfiles';
+import { getAvatarColorHex } from '@rainbow-me/helpers/colorHandler';
 
 const AvatarCircleSize = 65;
 

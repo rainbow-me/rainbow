@@ -7,7 +7,7 @@ import { Centered } from '../layout';
 import HeaderButton from './HeaderButton';
 import { useAccountProfile, useRequests } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
-import { getAvatarColorHex } from '@rainbow-me/helpers/rainbowProfiles';
+import { getAvatarColorHex } from '@rainbow-me/helpers/colorHandler';
 
 export default function ProfileHeaderButton() {
   const { navigate } = useNavigation();

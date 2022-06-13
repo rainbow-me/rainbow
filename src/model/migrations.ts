@@ -70,7 +70,7 @@ import logger from 'logger';
 import {
   getAvatarColorHex,
   getAvatarColorIndex,
-} from '@rainbow-me/helpers/rainbowProfiles';
+} from '@rainbow-me/helpers/colorHandler';
 
 export default async function runMigrations() {
   // get current version
