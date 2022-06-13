@@ -70,7 +70,6 @@ import logger from 'logger';
 import {
   getAvatarColorHex,
   getAvatarColorIndex,
-  getEmojiFromAccountName,
 } from '@rainbow-me/helpers/rainbowProfiles';
 
 export default async function runMigrations() {
@@ -669,7 +668,7 @@ export default async function runMigrations() {
         const newAddresses = wallet.addresses.map((account: RainbowAccount) => {
           return {
             ...account,
-            emoji: getEmojiFromAccountName(account?.label),
+            emoji: returnStringFirstEmoji(account?.label),
             color: getAvatarColorHex(account?.color),
             label: removeFirstEmojiFromString(account?.label),
           };

@@ -11,14 +11,14 @@ import ImageAvatar from '../contacts/ImageAvatar';
 import { Icon } from '../icons';
 import { Centered, Column, ColumnWithMargins, Row } from '../layout';
 import { Text, TruncatedAddress, TruncatedText } from '../text';
-import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
+import {
+  removeFirstEmojiFromString,
+  returnStringFirstEmoji,
+} from '@rainbow-me/helpers/emojiHandler';
 import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth, getFontSize } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';
-import {
-  getAvatarColorHex,
-  getEmojiFromAccountName,
-} from '@rainbow-me/helpers/rainbowProfiles';
+import { getAvatarColorHex } from '@rainbow-me/helpers/rainbowProfiles';
 
 const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;
 const NOOP = () => undefined;
@@ -127,7 +127,7 @@ export default function AddressRow({
 
   const bgColor = getAvatarColorHex(color);
 
-  const emoji = getEmojiFromAccountName(label);
+  const emoji = returnStringFirstEmoji(label);
 
   let cleanedUpBalance = balance;
   if (balance === '0.00') {
@@ -178,7 +178,7 @@ export default function AddressRow({
                 color={bgColor}
                 marginRight={10}
                 size="medium"
-                emoji={emoji || getEmojiFromAccountName(label)}
+                emoji={emoji || returnStringFirstEmoji(label)}
               />
             )}
             <ColumnWithMargins margin={android ? -6 : 3}>

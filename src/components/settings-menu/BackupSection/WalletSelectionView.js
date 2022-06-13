@@ -19,8 +19,10 @@ import { useNavigation } from '@rainbow-me/navigation';
 import styled from '@rainbow-me/styled-components';
 import { fonts, padding } from '@rainbow-me/styles';
 import { abbreviations } from '@rainbow-me/utils';
-import { getEmojiFromAccountName } from '@rainbow-me/helpers/rainbowProfiles';
-import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
+import {
+  removeFirstEmojiFromString,
+  returnStringFirstEmoji,
+} from '@rainbow-me/helpers/emojiHandler';
 
 const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
   source: Caret,
@@ -154,7 +156,7 @@ const WalletSelectionView = () => {
                       color={color}
                       marginRight={10}
                       size="smedium"
-                      emoji={emoji || getEmojiFromAccountName(labelOrName)}
+                      emoji={emoji || returnStringFirstEmoji(labelOrName)}
                     />
                     <ColumnWithMargins margin={3} marginBottom={0.5}>
                       <Row>

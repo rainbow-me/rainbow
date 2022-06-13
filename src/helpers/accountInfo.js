@@ -1,8 +1,10 @@
 import { get } from 'lodash';
-import { removeFirstEmojiFromString } from '../helpers/emojiHandler';
+import {
+  removeFirstEmojiFromString,
+  returnStringFirstEmoji,
+} from '../helpers/emojiHandler';
 import { address } from '../utils/abbreviations';
 import { isValidImagePath } from '../utils/profileUtils';
-import { getEmojiFromAccountName } from './rainbowProfiles';
 
 export function getAccountProfileInfo(
   selectedWallet,
@@ -38,7 +40,7 @@ export function getAccountProfileInfo(
   const accountName =
     labelWithoutEmoji || accountENS || address(accountAddress, 4, 4);
 
-  const accountSymbol = emoji || getEmojiFromAccountName(label);
+  const accountSymbol = emoji || returnStringFirstEmoji(label);
   const accountColor = color;
   const accountImage = isValidImagePath(image) ? image : null;
 

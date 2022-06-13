@@ -60,10 +60,8 @@ import store from '@rainbow-me/redux/store';
 import { setIsWalletLoading } from '@rainbow-me/redux/wallets';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
-import {
-  getAvatarColorHex,
-  getEmojiFromAccountName,
-} from '@rainbow-me/helpers/rainbowProfiles';
+import { getAvatarColorHex } from '@rainbow-me/helpers/rainbowProfiles';
+import { returnStringFirstEmoji } from '@rainbow-me/helpers/emojiHandler';
 
 const encryptor = new AesEncryptor();
 
@@ -795,7 +793,7 @@ export const createWallet = async (
             walletEmoji =
               emoji ||
               discoveredAccount.emoji ||
-              getEmojiFromAccountName(discoveredAccount.label) ||
+              returnStringFirstEmoji(discoveredAccount.label) ||
               walletEmoji;
             label = discoveredAccount.label ?? '';
           }
