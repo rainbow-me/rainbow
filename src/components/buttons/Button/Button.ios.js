@@ -1,9 +1,10 @@
-import { isArray, isString, pick } from 'lodash';
+import { isArray, isString } from 'lodash';
 import React from 'react';
 import { useTheme } from '../../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered, InnerBorder } from '../../layout';
 import { Text } from '../../text';
+import { pickFlatten } from '@rainbow-me/helpers/utilities';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 
@@ -75,10 +76,13 @@ export default function Button({
 }) {
   const borderRadius = type === 'rounded' ? 14 : 50;
   const { colors, isDarkMode } = useTheme();
-
+  const buttonPressAnimationProps = pickFlatten(
+    props,
+    Object.keys(ButtonPressAnimation.propTypes)
+  );
   return (
     <ButtonPressAnimation
-      {...pick(props, Object.keys(ButtonPressAnimation.propTypes))}
+      {...buttonPressAnimationProps}
       disabled={disabled}
       onPress={onPress}
       testID={testID}

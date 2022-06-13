@@ -107,4 +107,4 @@ const UniqueTokenExpandedStateContent = ({
   );
 };
 
-export default magicMemo(UniqueTokenExpandedStateContent, 'asset.uniqueId');
+export default magicMemo(UniqueTokenExpandedStateContent, 'uniqueId');

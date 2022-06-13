@@ -5,6 +5,10 @@ import { supportedNativeCurrencies } from '@rainbow-me/references';
 
 type BigNumberish = number | string | BigNumber;
 type nativeCurrencyType = typeof supportedNativeCurrencies;
+interface Dictionary<T> {
+  [index: string]: T;
+}
+type ValueKeyIteratee<T> = (value: T, key: string) => unknown;
 
 export const abs = (value: BigNumberish): string =>
   new BigNumber(value).abs().toFixed();
@@ -408,4 +412,39 @@ export const fromWei = (number: BigNumberish): string =>
  */
 export const delay = (ms: number): Promise<void> => {
   return new Promise(resolve => setTimeout(resolve, ms));
+};
+
+/**
+ * Creates an object composed of the picked object properties.
+ * @param obj The source object
+ * @param paths The property paths to pick
+ */
+export const pickFlatten = <T, K extends keyof T>(
+  obj: T,
+  paths: K[]
+): Pick<T, K> => {
+  return paths.reduce((acc, key) => {
+    if (obj[key] !== undefined) {
+      acc[key] = obj[key];
+      return acc;
+    }
+    return acc;
+  }, {} as Pick<T, K>);
+};
+
+/**
+ * Creates an object composed of the picked object properties by some predicate function.
+ * @param obj The source object
+ * @param paths The property paths to pick
+ */
+export const pickBy = <T>(
+  obj: Dictionary<T>,
+  predicate: ValueKeyIteratee<T>
+): Dictionary<T> => {
+  return Object.keys(obj)
+    .filter(k => predicate(obj[k], k))
+    .reduce((acc, key) => {
+      acc[key] = obj[key];
+      return acc;
+    }, {} as Dictionary<T>);
 };
