@@ -20,7 +20,6 @@ import {
   SwapDetailsSlippageMessage,
 } from './swap-details';
 import {
-  useAccountSettings,
   useHeight,
   usePriceImpactDetails,
   useSwapCurrencies,
@@ -88,7 +87,6 @@ export default function SwapDetailsState({
   confirmButtonProps,
   restoreFocusOnSwapModal,
 }) {
-  const { network } = useAccountSettings();
   const { setParams } = useNavigation();
   const { params: { longFormHeight, currentNetwork } = {} } = useRoute();
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
@@ -192,7 +190,7 @@ export default function SwapDetailsState({
           />
           <GasSpeedButton
             asset={outputCurrency}
-            currentNetwork={network}
+            currentNetwork={currentNetwork}
             testID="swap-details-gas"
             theme="light"
           />

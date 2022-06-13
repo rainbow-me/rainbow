@@ -15,6 +15,7 @@ import { Token } from '../entities/tokens';
 import useAccountSettings from './useAccountSettings';
 import { EthereumAddress } from '@rainbow-me/entities';
 import { isNativeAsset } from '@rainbow-me/handlers/assets';
+import { ExchangeModalTypes } from '@rainbow-me/helpers';
 import { AppState } from '@rainbow-me/redux/store';
 import { SwapModalField, updateSwapQuote } from '@rainbow-me/redux/swap';
 import {
@@ -252,10 +253,14 @@ const displayValues: { [key in DisplayValue]: string | null } = {
   [DisplayValue.native]: null,
 };
 
-export default function useSwapDerivedOutputs(chainId: number) {
+export default function useSwapDerivedOutputs(chainId: number, type: string) {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [insufficientLiquidity, setInsufficientLiquidity] = useState(false);
+
+  const isDeposit = type === ExchangeModalTypes.deposit;
+  const isWithdrawal = type === ExchangeModalTypes.withdrawal;
+  const isSavings = isDeposit || isWithdrawal;
 
   const [result, setResult] = useState({
     derivedValues,
@@ -338,7 +343,7 @@ export default function useSwapDerivedOutputs(chainId: number) {
         return;
       }
 
-      if (!inputCurrency || !outputCurrency) {
+      if ((!inputCurrency || !outputCurrency) && !isSavings) {
         setInsufficientLiquidity(false);
         setResult({
           derivedValues,
@@ -503,6 +508,7 @@ export default function useSwapDerivedOutputs(chainId: number) {
     outputPrice,
     slippageInBips,
     derivedValuesFromRedux,
+    isSavings,
   ]);
 
   return {

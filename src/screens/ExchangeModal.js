@@ -139,6 +139,35 @@ export default function ExchangeModal({
     addListener,
   } = useNavigation();
 
+  // if the default input is on a different network than
+  // we want to update the output to be on the same, if its not available -> null
+  const defaultOutputAssetOverride = useMemo(() => {
+    let newOutput = defaultOutputAsset;
+    if (defaultInputAsset && defaultOutputAsset) {
+      if (
+        defaultInputAsset.type !== defaultOutputAsset.type &&
+        defaultOutputAsset?.implementations?.[defaultInputAsset?.type]?.address
+      ) {
+        if (defaultInputAsset.type !== Network.mainnet) {
+          newOutput.mainnet_address = defaultOutputAsset.address;
+        }
+
+        newOutput.address =
+          defaultOutputAsset.implementations[defaultInputAsset?.type].address;
+        newOutput.type = defaultInputAsset.type;
+        newOutput.uniqueId =
+          newOutput.type === Network.mainnet
+            ? defaultOutputAsset?.address
+            : `${defaultOutputAsset?.address}_${defaultOutputAsset?.type}`;
+        return newOutput;
+      } else {
+        return null;
+      }
+    } else {
+      return newOutput;
+    }
+  }, [defaultInputAsset, defaultOutputAsset]);
+
   const isDeposit = type === ExchangeModalTypes.deposit;
   const isWithdrawal = type === ExchangeModalTypes.withdrawal;
   const isSavings = isDeposit || isWithdrawal;
@@ -167,7 +196,6 @@ export default function ExchangeModal({
   });
 
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
-
   const {
     handleFocus,
     inputFieldRef,
@@ -190,7 +218,7 @@ export default function ExchangeModal({
     navigateToSelectOutputCurrency,
   } = useSwapCurrencyHandlers({
     defaultInputAsset,
-    defaultOutputAsset,
+    defaultOutputAsset: defaultOutputAssetOverride,
     fromDiscover,
     ignoreInitialTypeCheck,
     inputFieldRef,
@@ -245,7 +273,7 @@ export default function ExchangeModal({
     loading,
     resetSwapInputs,
     insufficientLiquidity,
-  } = useSwapDerivedOutputs(chainId);
+  } = useSwapDerivedOutputs(chainId, type);
 
   const lastTradeDetails = usePrevious(tradeDetails);
 
@@ -553,7 +581,7 @@ export default function ExchangeModal({
 
   const confirmButtonProps = useMemoOne(
     () => ({
-      disabled: !Number(inputAmount) || !tradeDetails,
+      disabled: !Number(inputAmount) || (!tradeDetails && !isSavings),
       inputAmount,
       insufficientLiquidity,
       isAuthorizing,
@@ -664,7 +692,7 @@ export default function ExchangeModal({
     }
   }, [currentNetwork, navigate]);
 
-  const showConfirmButton = isSavings
+  const showConfirmSection = isSavings
     ? !!inputCurrency
     : !!inputCurrency && !!outputCurrency;
 
@@ -694,7 +722,7 @@ export default function ExchangeModal({
               nativeFieldRef={nativeFieldRef}
               onFocus={handleFocus}
               onPressMaxBalance={handlePressMaxBalance}
-              onPressSelectInputCurrency={() => navigateToSelectInputCurrency()}
+              onPressSelectInputCurrency={navigateToSelectInputCurrency}
               setInputAmount={updateInputAmount}
               setNativeAmount={updateNativeAmount}
               testID={`${testID}-input`}
@@ -733,7 +761,7 @@ export default function ExchangeModal({
               testID="deposit-info-button"
             />
           )}
-          {!isSavings && showConfirmButton && (
+          {!isSavings && showConfirmSection && (
             <ExchangeDetailsRow
               isHighPriceImpact={isHighPriceImpact}
               onFlipCurrencies={flipCurrencies}
@@ -747,7 +775,7 @@ export default function ExchangeModal({
 
           {isWithdrawal && <Spacer />}
 
-          {showConfirmButton && (
+          {showConfirmSection && (
             <ConfirmExchangeButton
               {...confirmButtonProps}
               flashbots={flashbots}
@@ -756,7 +784,7 @@ export default function ExchangeModal({
             />
           )}
         </FloatingPanels>
-        {inputCurrency && outputCurrency && (
+        {showConfirmSection && (
           <GasSpeedButton
             asset={outputCurrency}
             bottom={insets.bottom - 7}
