@@ -12,7 +12,7 @@ import { profileUtils } from '@rainbow-me/utils';
 import { isValidAddress } from 'ethereumjs-util';
 
 export const rainbowProfileQueryKey = (address: EthereumAddress) => [
-  'wallet-profiles',
+  'rainbow-profiles',
   address,
 ];
 
