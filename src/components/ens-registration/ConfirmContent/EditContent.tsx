@@ -2,7 +2,16 @@ import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { Switch } from 'react-native-gesture-handler';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
-import { Divider, Inline, Inset, Stack, Text } from '@rainbow-me/design-system';
+import {
+  Box,
+  Divider,
+  Inline,
+  Inset,
+  Row,
+  Rows,
+  Stack,
+  Text,
+} from '@rainbow-me/design-system';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
@@ -25,36 +34,37 @@ const EditContent = ({
 
   if (!showReverseRecordSwitch) return null;
   return (
-    <Inset top="24px">
-      <Stack space="15px">
-        <Divider />
-        <Inline alignHorizontal="justify" alignVertical="center">
-          <Inline>
-            <Text color="secondary80" size="16px" weight="bold">
-              {`${lang.t('profiles.confirm.set_ens_name')} `}
-            </Text>
-            <ButtonPressAnimation
-              onPress={openPrimaryENSNameHelper}
-              scaleTo={0.9}
-            >
-              <Text color="secondary30" size="16px" weight="bold">
-                􀅵
+    <Rows alignVertical="bottom">
+      <Row height="content">
+        <Inset top="24px">
+          <Inline alignHorizontal="justify" alignVertical="center">
+            <Inline>
+              <Text color="secondary80" size="16px" weight="bold">
+                {`${lang.t('profiles.confirm.set_ens_name')} `}
               </Text>
-            </ButtonPressAnimation>
+              <ButtonPressAnimation
+                onPress={openPrimaryENSNameHelper}
+                scaleTo={0.9}
+              >
+                <Text color="secondary30" size="16px" weight="bold">
+                  􀅵
+                </Text>
+              </ButtonPressAnimation>
+            </Inline>
+            <Switch
+              disabled={!setSendReverseRecord}
+              onValueChange={() =>
+                setSendReverseRecord?.(sendReverseRecord => !sendReverseRecord)
+              }
+              testID="ens-reverse-record-switch"
+              thumbColor={colors.white}
+              trackColor={{ false: colors.white, true: accentColor }}
+              value={sendReverseRecord}
+            />
           </Inline>
-          <Switch
-            disabled={!setSendReverseRecord}
-            onValueChange={() =>
-              setSendReverseRecord?.(sendReverseRecord => !sendReverseRecord)
-            }
-            testID="ens-reverse-record-switch"
-            thumbColor={colors.white}
-            trackColor={{ false: colors.white, true: accentColor }}
-            value={sendReverseRecord}
-          />
-        </Inline>
-      </Stack>
-    </Inset>
+        </Inset>
+      </Row>
+    </Rows>
   );
 };
 
