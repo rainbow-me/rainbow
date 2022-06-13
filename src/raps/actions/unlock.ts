@@ -2,7 +2,7 @@ import { MaxUint256 } from '@ethersproject/constants';
 import { Contract } from '@ethersproject/contracts';
 import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
-import { isNull, toLower } from 'lodash';
+import { toLower } from 'lodash';
 import { alwaysRequireApprove } from '../../config/debug';
 import {
   Rap,
@@ -18,7 +18,11 @@ import { toHex, web3Provider } from '@rainbow-me/handlers/web3';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';
 import { erc20ABI, ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
-import { convertAmountToRawAmount, greaterThan } from '@rainbow-me/utilities';
+import {
+  convertAmountToRawAmount,
+  greaterThan,
+  isNull,
+} from '@rainbow-me/utilities';
 import { AllowancesCache, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
