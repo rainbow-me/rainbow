@@ -11,38 +11,12 @@ const buildShadows = (color, size, darkMode, colors) => {
   if (size === 'small') {
     return [
       [0, 3, 5, colors.shadow, 0.14],
-      [
-        0,
-        6,
-        10,
-        darkMode
-          ? darkModeThemeColors.shadow
-          : darkModeThemeColors.avatarBackgrounds[color] || color,
-        0.2,
-      ],
+      [0, 6, 10, darkMode ? darkModeThemeColors.shadow : color, 0.2],
     ];
   } else if (size === 'smaller') {
-    return [
-      [
-        0,
-        4,
-        12,
-        darkMode
-          ? darkModeThemeColors.shadow
-          : darkModeThemeColors.avatarBackgrounds[color] || color,
-        0.3,
-      ],
-    ];
+    return [[0, 4, 12, darkMode ? darkModeThemeColors.shadow : color, 0.3]];
   } else if (size === 'lmedium' || size === 'medium' || size === 'smedium') {
-    return [
-      [
-        0,
-        4,
-        android ? 5 : 12,
-        darkMode ? colors.shadow : colors.avatarBackgrounds[color] || color,
-        0.4,
-      ],
-    ];
+    return [[0, 4, android ? 5 : 12, darkMode ? colors.shadow : color, 0.4]];
   } else {
     return sizeConfigs(colors)[size]['shadow'];
   }
@@ -96,18 +70,19 @@ const ContactAvatar = ({
 }) => {
   const { colors } = useTheme();
   const { rainbowProfile } = useRainbowProfile(color && emoji ? '' : address);
+  const profileColor = color || rainbowProfile?.color;
+  const profileEmoji = emoji || rainbowProfile?.emoji;
   const { dimensions, textSize } = useMemo(() => sizeConfigs(colors)[size], [
     colors,
     size,
   ]);
   const { isDarkMode } = useTheme();
 
-  const shadows = useMemo(() => buildShadows(color, size, isDarkMode, colors), [
-    color,
-    size,
-    isDarkMode,
-    colors,
-  ]);
+  console.log(profileColor);
+  const shadows = useMemo(
+    () => buildShadows(profileColor, size, isDarkMode, colors),
+    [profileColor, size, isDarkMode, colors]
+  );
 
   console.log(color, emoji);
 
@@ -115,7 +90,7 @@ const ContactAvatar = ({
     <ShadowStack
       {...props}
       {...borders.buildCircleAsObject(dimensions)}
-      backgroundColor={color || rainbowProfile?.color || colors.skeleton}
+      backgroundColor={profileColor || colors.skeleton}
       shadows={shadows}
     >
       <Centered flex={1}>
@@ -126,7 +101,7 @@ const ContactAvatar = ({
           size={textSize}
           weight="bold"
         >
-          {emoji || rainbowProfile?.emoji}
+          {profileEmoji}
         </Text>
       </Centered>
     </ShadowStack>
