@@ -58,7 +58,10 @@ import {
   saveUserLists,
 } from '@rainbow-me/handlers/localstorage/userLists';
 import { resolveNameOrAddress } from '@rainbow-me/handlers/web3';
-import { returnStringFirstEmoji } from '@rainbow-me/helpers/emojiHandler';
+import {
+  removeFirstEmojiFromString,
+  returnStringFirstEmoji,
+} from '@rainbow-me/helpers/emojiHandler';
 import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
 import { DefaultTokenLists } from '@rainbow-me/references';
 import { ethereumUtils, profileUtils } from '@rainbow-me/utils';
@@ -668,7 +671,7 @@ export default async function runMigrations() {
             ...account,
             emoji: getEmojiFromAccountName(account?.label),
             color: getAvatarColorHex(account?.color),
-            label: returnStringFirstEmoji(account?.label),
+            label: removeFirstEmojiFromString(account?.label),
           };
         });
         const newWallet = { ...wallet, addresses: newAddresses };
