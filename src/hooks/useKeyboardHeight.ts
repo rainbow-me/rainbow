@@ -3,8 +3,9 @@ import { Keyboard } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import KeyboardTypes from '@rainbow-me/helpers/keyboardTypes';
 import { setKeyboardHeight } from '@rainbow-me/redux/keyboardHeight';
+import { AppState } from '@rainbow-me/redux/store';
 
-const keyboardHeightsSelector = (state: any) =>
+const keyboardHeightsSelector = (state: AppState) =>
   state.keyboardHeight.keyboardHeight;
 
 export default function useKeyboardHeight(options = {}) {
@@ -16,7 +17,8 @@ export default function useKeyboardHeight(options = {}) {
   const dispatch = useDispatch();
 
   const cachedKeyboardHeights = useSelector(keyboardHeightsSelector);
-  const heightForKeyboardType = cachedKeyboardHeights?.[keyboardType];
+  const heightForKeyboardType =
+    cachedKeyboardHeights?.[keyboardType as keyof typeof cachedKeyboardHeights];
 
   const handleKeyboardDidShow = useCallback(
     event => {

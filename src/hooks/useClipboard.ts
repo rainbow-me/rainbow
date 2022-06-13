@@ -5,7 +5,7 @@ import { deviceUtils } from '@rainbow-me/utils';
 
 const listeners = new Set();
 
-function setClipboard(content: any) {
+function setClipboard(content: string) {
   Clipboard.setString(content);
   // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
   listeners.forEach(listener => listener(content));

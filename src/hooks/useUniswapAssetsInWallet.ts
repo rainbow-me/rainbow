@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { ParsedAddressAsset } from '@rainbow-me/entities';
 import { getUniswapV2Tokens } from '@rainbow-me/handlers/dispersion';
 import { sortAssetsByNativeAmountSelector } from '@rainbow-me/helpers/assetSelectors';
 import NetworkTypes from '@rainbow-me/networkTypes';
+import { AppState } from '@rainbow-me/redux/store';
 import { ETH_ADDRESS } from '@rainbow-me/references';
 
-const networkSelector = (state: any) => state.settings.network;
+const networkSelector = (state: AppState) => state.settings.network;
 
 const useUniswapAssetsInWallet = () => {
   const [uniswapAssets, setUniswapAssets] = useState([]);
@@ -16,7 +18,7 @@ const useUniswapAssetsInWallet = () => {
     let uniswapAssets;
     if (isMainnet) {
       const uniswapData = await getUniswapV2Tokens(
-        sortedAssets.map(({ address }: any) => address)
+        sortedAssets.map(({ address }: ParsedAddressAsset) => address)
       );
       uniswapAssets = uniswapData ? Object.values(uniswapData) : [];
     } else {

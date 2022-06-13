@@ -83,7 +83,7 @@ export default function MoreButton({
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === ACTIONS.COPY_ADDRESS) {
-        setClipboard(address);
+        setClipboard(address!);
       }
       if (address && actionKey === ACTIONS.ETHERSCAN) {
         ethereumUtils.openAddressInBlockExplorer(address);
@@ -100,7 +100,7 @@ export default function MoreButton({
       if (actionKey === ACTIONS.REMOVE_CONTACT) {
         showDeleteContactActionSheet({
           address,
-          nickname: contact.nickname,
+          nickname: contact!.nickname,
           removeContact: onRemoveContact,
         });
         android && Keyboard.dismiss();

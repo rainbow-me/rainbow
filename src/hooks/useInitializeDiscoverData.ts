@@ -3,14 +3,14 @@ import { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { userListsLoadState } from '../redux/userLists';
+import { AppState } from '@rainbow-me/redux/store';
 import { topMoversLoadState } from '@rainbow-me/redux/topMovers';
 import logger from 'logger';
 
 export default function useInitializeDiscoverData() {
   const dispatch = useDispatch();
   const walletReady = useSelector(
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'appState' does not exist on type 'Defaul... Remove this comment to see the full error message
-    ({ appState: { walletReady } }) => walletReady
+    ({ appState: { walletReady } }: AppState) => walletReady
   );
 
   const initializeDiscoverData = useCallback(async () => {

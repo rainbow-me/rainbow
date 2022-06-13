@@ -7,6 +7,7 @@ import {
   useInitializeWallet,
   useWallets,
 } from '@rainbow-me/hooks';
+import { RainbowWallet } from '@rainbow-me/model/wallet';
 import {
   addressSetSelected,
   walletsSetSelected,
@@ -29,8 +30,8 @@ export default function useWatchWallet({
   const { wallets } = useWallets();
 
   const watchingWallet = useMemo(() => {
-    return Object.values(wallets || {}).find((wallet: any) =>
-      wallet.addresses.some(({ address }: any) => address === primaryAddress)
+    return Object.values<RainbowWallet>(wallets || {}).find(wallet =>
+      wallet.addresses.some(({ address }) => address === primaryAddress)
     );
   }, [primaryAddress, wallets]);
   const isWatching = useMemo(() => Boolean(watchingWallet), [watchingWallet]);

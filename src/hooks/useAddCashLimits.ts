@@ -3,25 +3,23 @@ import { findIndex, sumBy, take } from 'lodash';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { TransactionStatusTypes } from '@rainbow-me/entities';
+import { AppState } from '@rainbow-me/redux/store';
 
 const DEFAULT_WEEKLY_LIMIT = 500;
 const DEFAULT_YEARLY_LIMIT = 5000;
 
 const findRemainingAmount = (
-  limit: any,
-  purchaseTransactions: any,
-  index: any
+  limit: number,
+  purchaseTransactions: AppState['addCash']['purchaseTransactions'],
+  index: number
 ) => {
   const transactionsInTimeline =
     index >= 0 ? take(purchaseTransactions, index) : purchaseTransactions;
   const purchasedAmount = sumBy(transactionsInTimeline, txn =>
-    // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
     txn.status === TransactionStatusTypes.failed
       ? 0
-      : // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
-      txn.sourceAmount
-      ? // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
-        Number(txn.sourceAmount)
+      : txn.sourceAmount
+      ? Number(txn.sourceAmount)
       : 0
   );
   return limit - purchasedAmount;

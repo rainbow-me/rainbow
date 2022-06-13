@@ -3,6 +3,7 @@ import { useCallback, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { removeWalletData } from '@rainbow-me/handlers/localstorage/removeWallet';
 import { useWallets } from '@rainbow-me/hooks';
+import { RainbowAccount, RainbowWallet } from '@rainbow-me/model/wallet';
 import { walletsUpdate } from '@rainbow-me/redux/wallets';
 
 export default function useDeleteWallet({
@@ -16,8 +17,12 @@ export default function useDeleteWallet({
 
   const [watchingWalletId] = useMemo(() => {
     return (
-      Object.entries(wallets || {}).find(([_, wallet]: [string, any]) =>
-        wallet.addresses.some(({ address }: any) => address === primaryAddress)
+      Object.entries<RainbowWallet>(
+        wallets || {}
+      ).find(([_, wallet]: [string, RainbowWallet]) =>
+        wallet.addresses.some(
+          ({ address }: RainbowAccount) => address === primaryAddress
+        )
       ) || ['', '']
     );
   }, [primaryAddress, wallets]);

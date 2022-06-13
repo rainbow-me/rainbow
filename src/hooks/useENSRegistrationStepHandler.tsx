@@ -147,7 +147,7 @@ export default function useENSRegistrationStepHandler(observer = true) {
     let interval: NodeJS.Timer;
     if (registrationStep === REGISTRATION_STEPS.WAIT_ENS_COMMITMENT) {
       interval = setInterval(() => {
-        setSecondsSinceCommitConfirmed((seconds: any) => seconds + 1);
+        setSecondsSinceCommitConfirmed((seconds: number) => seconds + 1);
       }, 1000);
     }
     return () => clearInterval(interval);

@@ -11,10 +11,14 @@ import {
 import useInitializeWallet from './useInitializeWallet';
 import { toChecksumAddress } from '@rainbow-me/handlers/web3';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
+import { RainbowAccount } from '@rainbow-me/model/wallet';
+import { AppState } from '@rainbow-me/redux/store';
 import logger from 'logger';
 
 const walletSelector = createSelector(
-  ({ wallets: { isWalletLoading, selected = {}, walletNames, wallets } }) => ({
+  ({
+    wallets: { isWalletLoading, selected = {}, walletNames, wallets },
+  }: AppState) => ({
     isWalletLoading,
     selectedWallet: selected,
     walletNames,
@@ -38,7 +42,6 @@ export default function useWallets() {
     selectedWallet,
     walletNames,
     wallets,
-    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'OutputParametricSelector<{ walle... Remove this comment to see the full error message
   } = useSelector(walletSelector);
 
   const setIsWalletLoading = useCallback(
@@ -47,7 +50,6 @@ export default function useWallets() {
   );
 
   const isDamaged = useMemo(() => {
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'damaged' does not exist on type '{}'.
     const bool = selectedWallet?.damaged;
     if (bool) {
       logger.sentry('Wallet is damaged. Check values below:');
@@ -57,11 +59,12 @@ export default function useWallets() {
     return bool;
   }, [selectedWallet, wallets]);
 
-  const switchToWalletWithAddress = async (address: any) => {
+  const switchToWalletWithAddress = async (address: string) => {
     const walletKey = Object.keys(wallets).find(key => {
       // Addresses
       return wallets[key].addresses.find(
-        (account: any) => toLower(account.address) === toLower(address)
+        (account: RainbowAccount) =>
+          toLower(account.address) === toLower(address)
       );
     });
 
@@ -75,7 +78,6 @@ export default function useWallets() {
 
   return {
     isDamaged,
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'type' does not exist on type '{}'.
     isReadOnlyWallet: selectedWallet.type === WalletTypes.readOnly,
     isWalletLoading,
     latestBackup,

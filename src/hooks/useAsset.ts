@@ -1,12 +1,12 @@
 import { useMemo } from 'react';
 import useAccountAsset from './useAccountAsset';
 import useCollectible from './useCollectible';
-import { AssetTypes } from '@rainbow-me/entities';
+import { AssetTypes, ParsedAddressAsset } from '@rainbow-me/entities';
 
 // To fetch an asset from account assets,
 // generic assets, and uniqueTokens
 export default function useAsset(
-  asset: any,
+  asset: ParsedAddressAsset,
   { revalidateCollectibleInBackground = false } = {}
 ) {
   const accountAsset = useAccountAsset(

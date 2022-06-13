@@ -46,7 +46,6 @@ export default function useWyreApplePay() {
   const handlePaymentCallback = useCallback(() => {
     // In order to have the UI appear to be in-sync with the Apple Pay modal's
     // animation, we need to artificially delay before marking a purchase as pending.
-    // @ts-expect-error ts-migrate(2349) FIXME: This expression is not callable.
     startPaymentCompleteTimeout(() => setPaymentComplete(true), 1500);
   }, [startPaymentCompleteTimeout]);
 

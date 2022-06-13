@@ -8,6 +8,7 @@ import {
   walletConnectOnSessionRequest as rawWalletConnectOnSessionRequest,
   walletConnectUpdateSessionConnectorByDappUrl as rawWalletConnectUpdateSessionConnectorByDappUrl,
 } from '../redux/walletconnect';
+import { AppState } from '@rainbow-me/redux/store';
 
 const formatDappData = (connections: any) =>
   values(
@@ -23,8 +24,7 @@ const formatDappData = (connections: any) =>
   );
 
 const walletConnectSelector = createSelector(
-  // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
-  state => state.walletconnect.walletConnectors,
+  (state: AppState) => state.walletconnect.walletConnectors,
   walletConnectors => {
     const sorted = sortList(values(walletConnectors), 'peerMeta.name');
     const groupedByDappName = groupBy(sorted, 'peerMeta.url');

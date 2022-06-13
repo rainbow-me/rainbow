@@ -10,14 +10,15 @@ import useAccountSettings from './useAccountSettings';
 import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';
 import { getOneDayVolume } from './useUniswapPools';
 import { bigNumberFormat } from '@rainbow-me/helpers/bigNumberFormat';
+import { AppDispatch, AppState } from '@rainbow-me/redux/store';
 import { setPoolsDetails } from '@rainbow-me/redux/uniswapLiquidity';
 import { ethereumUtils, getBlocksFromTimestamps } from '@rainbow-me/utils';
 
-function cutIfOver10000(value: any) {
+function cutIfOver10000(value: number) {
   return value > 10000 ? Math.round(value) : value;
 }
 
-async function fetchPoolDetails(address: any, dispatch: any) {
+async function fetchPoolDetails(address: string, dispatch: AppDispatch) {
   const result = await uniswapClient.query({
     query: UNISWAP_ADDITIONAL_POOL_DATA,
     variables: {
@@ -67,7 +68,7 @@ async function fetchPoolDetails(address: any, dispatch: any) {
   }
 }
 
-export default function usePoolDetails(address: any) {
+export default function usePoolDetails(address: string) {
   const { nativeCurrency } = useAccountSettings();
   const rate = useNativeCurrencyToUSD();
 
@@ -79,8 +80,9 @@ export default function usePoolDetails(address: any) {
     [nativeCurrency]
   );
 
-  // @ts-expect-error ts-migrate(2339) FIXME: Property 'uniswapLiquidity' does not exist on type... Remove this comment to see the full error message
-  const poolDetails = useSelector(state => state.uniswapLiquidity.poolsDetails);
+  const poolDetails = useSelector(
+    (state: AppState) => state.uniswapLiquidity.poolsDetails
+  );
 
   const data = poolDetails[address];
   const dispatch = useDispatch();

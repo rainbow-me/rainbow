@@ -6,6 +6,7 @@ import {
 } from '@rainbow-me/handlers/localstorage/walletBalances';
 import { queryClient } from '@rainbow-me/react-query/queryClient';
 import { nonceManagerLoadState } from '@rainbow-me/redux/nonceManager';
+import { AppState } from '@rainbow-me/redux/store';
 import { promiseUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
@@ -16,8 +17,7 @@ export default function useLoadGlobalLateData() {
   const dispatch = useDispatch();
 
   const walletReady = useSelector(
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'appState' does not exist on type 'Defaul... Remove this comment to see the full error message
-    ({ appState: { walletReady } }) => walletReady
+    ({ appState: { walletReady } }: AppState) => walletReady
   );
 
   const loadGlobalData = useCallback(async () => {

@@ -1,15 +1,18 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { Ref, useCallback, useEffect, useRef } from 'react';
 
-export default function useTimeout() {
-  const handle = useRef();
+export default function useTimeout(): [
+  ReturnType<typeof useCallback>,
+  ReturnType<typeof useCallback>,
+  Ref<number | undefined>
+] {
+  const handle = useRef<number | undefined>();
 
   const start = useCallback((func, ms) => {
-    // @ts-expect-error ts-migrate(2322) FIXME: Type 'number' is not assignable to type 'undefined... Remove this comment to see the full error message
     handle.current = setTimeout(func, ms);
   }, []);
 
   const stop = useCallback(
-    () => handle.current && clearTimeout(handle.current),
+    () => (handle.current && clearTimeout(handle.current)) as void,
     []
   );
 

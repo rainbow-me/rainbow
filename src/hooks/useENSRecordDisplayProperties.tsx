@@ -89,10 +89,9 @@ export default function useENSRecordDisplayProperties({
   }, [url]);
 
   const label = useMemo(() => {
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-    if (textRecordFields[recordKey]?.label) {
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-      return textRecordFields[recordKey].label;
+    if (textRecordFields[recordKey as keyof typeof textRecordFields]?.label) {
+      return textRecordFields[recordKey as keyof typeof textRecordFields]!
+        .label;
     }
     if (recordKey.includes('.')) {
       return recordKey;
@@ -209,7 +208,7 @@ export default function useENSRecordDisplayProperties({
   const handleAndroidPress = useCallback(() => {
     const actionSheetOptions = menuItems
       .map(item => item?.actionTitle)
-      .filter(Boolean) as any;
+      .filter((item): item is string => !!item);
 
     showActionSheetWithOptions(
       {

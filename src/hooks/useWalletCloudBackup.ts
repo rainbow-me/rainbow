@@ -22,7 +22,7 @@ import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import walletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
 import logger from 'logger';
 
-function getUserError(e: any) {
+function getUserError(e: Error) {
   switch (e.message) {
     case CLOUD_BACKUP_ERRORS.KEYCHAIN_ACCESS_ERROR:
       return 'You need to authenticate to proceed with the Backup process';
@@ -142,7 +142,7 @@ export default function useWalletCloudBackup() {
             latestBackup
           );
         }
-      } catch (e) {
+      } catch (e: any) {
         const userError = getUserError(e);
         !!onError && onError(userError);
         logger.sentry(

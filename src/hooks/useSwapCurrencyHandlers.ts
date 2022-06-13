@@ -102,7 +102,6 @@ export default function useSwapCurrencyHandlers({
   const [startFlipFocusTimeout] = useTimeout();
   const flipCurrencies = useCallback(() => {
     dispatch(flipSwapCurrencies());
-    // @ts-expect-error ts-migrate(2349) FIXME: This expression is not callable.
     startFlipFocusTimeout(() => {
       if (inputFieldRef.current === currentlyFocusedInput()) {
         focusTextInput(outputFieldRef.current);

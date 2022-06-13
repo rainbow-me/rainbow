@@ -5,7 +5,7 @@ import {
 } from 'react-native-dotenv';
 import { UniqueTokenCard } from '../../unique-token';
 import { Box, BoxProps } from '@rainbow-me/design-system';
-import { UniqueAsset } from '@rainbow-me/entities';
+import { ParsedAddressAsset, UniqueAsset } from '@rainbow-me/entities';
 import { useCollectible } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
@@ -19,7 +19,7 @@ export default React.memo(function WrappedNFT({
   uniqueId: string;
   placement: 'left' | 'right';
 }) {
-  const assetCollectible = useCollectible({ uniqueId });
+  const assetCollectible = useCollectible({ uniqueId } as ParsedAddressAsset);
 
   const asset = useMemo(
     () => ({

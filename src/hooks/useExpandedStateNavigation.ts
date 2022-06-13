@@ -7,7 +7,9 @@ import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 import { useNavigation } from '@rainbow-me/navigation';
 import { watchingAlert } from '@rainbow-me/utils';
 
-export default function useExpandedStateNavigation(inputType: any) {
+export default function useExpandedStateNavigation(
+  inputType: typeof AssetInputTypes[keyof typeof AssetInputTypes]
+) {
   const { goBack, navigate } = useNavigation();
   const { params } = useRoute();
   const { isReadOnlyWallet } = useWallets();

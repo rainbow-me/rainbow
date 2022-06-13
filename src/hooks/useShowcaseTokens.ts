@@ -7,6 +7,7 @@ import {
 import useOpenFamilies from './useOpenFamilies';
 import useWallets from './useWallets';
 import useWebData from './useWebData';
+import { AppState } from '@rainbow-me/redux/store';
 
 export default function useShowcaseTokens() {
   const dispatch = useDispatch();
@@ -15,8 +16,7 @@ export default function useShowcaseTokens() {
   const { updateOpenFamilies } = useOpenFamilies();
 
   const showcaseTokens = useSelector(
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'showcaseTokens' does not exist on type '... Remove this comment to see the full error message
-    state => state.showcaseTokens.showcaseTokens
+    (state: AppState) => state.showcaseTokens.showcaseTokens
   );
 
   const addShowcaseToken = useCallback(
@@ -38,7 +38,7 @@ export default function useShowcaseTokens() {
     async asset => {
       dispatch(rawRemoveShowcaseToken(asset));
       !isReadOnlyWallet &&
-        updateWebShowcase(showcaseTokens.filter((id: any) => id !== asset));
+        updateWebShowcase(showcaseTokens.filter((id: string) => id !== asset));
     },
     [dispatch, isReadOnlyWallet, showcaseTokens, updateWebShowcase]
   );

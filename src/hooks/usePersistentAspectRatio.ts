@@ -27,7 +27,7 @@ export default function usePersistentAspectRatio(url: string): Result {
       setState(State.loading);
       Image.getSize(
         url,
-        (width: any, height: any) => {
+        (width: number, height: number) => {
           setAspectRatio(width / height);
           setState(State.loaded);
         },

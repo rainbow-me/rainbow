@@ -4,16 +4,17 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useAdditionalRecyclerAssetListData } from '../components/asset-list/RecyclerAssetList2/core/Contexts';
 import useAccountSettings from './useAccountSettings';
 import { uniqueTokensQueryKey } from './useFetchUniqueTokens';
+import { ParsedAddressAsset, UniqueAsset } from '@rainbow-me/entities';
+import { AppState } from '@rainbow-me/redux/store';
 import { revalidateUniqueToken } from '@rainbow-me/redux/uniqueTokens';
 
 export default function useCollectible(
-  initialAsset: any,
+  initialAsset: ParsedAddressAsset,
   { revalidateInBackground = false } = {}
 ) {
   // Retrieve the unique tokens belonging to the current account address.
   const selfUniqueTokens = useSelector(
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'uniqueTokens' does not exist on type 'De... Remove this comment to see the full error message
-    ({ uniqueTokens: { uniqueTokens } }) => uniqueTokens
+    ({ uniqueTokens: { uniqueTokens } }: AppState) => uniqueTokens
   );
   const { accountAddress } = useAccountSettings();
   // Retrieve the unique tokens belonging to the targeted asset list account
@@ -24,7 +25,7 @@ export default function useCollectible(
   const queryClient = useQueryClient();
   const externalUniqueTokens = useMemo(() => {
     return (
-      queryClient.getQueryData(
+      queryClient.getQueryData<UniqueAsset[]>(
         uniqueTokensQueryKey({ address: externalAddress })
       ) || []
     );
@@ -40,7 +41,8 @@ export default function useCollectible(
 
   const asset = useMemo(() => {
     let matched = uniqueTokens.find(
-      (uniqueToken: any) => uniqueToken.uniqueId === initialAsset?.uniqueId
+      (uniqueToken: UniqueAsset) =>
+        uniqueToken.uniqueId === initialAsset?.uniqueId
     );
     return matched || initialAsset;
   }, [initialAsset, uniqueTokens]);
@@ -60,7 +62,12 @@ function useRevalidateInBackground({
   tokenId,
   isExternal,
   enabled,
-}: any) {
+}: {
+  contractAddress: string | undefined;
+  tokenId: string;
+  isExternal: boolean;
+  enabled: boolean;
+}) {
   const dispatch = useDispatch();
   useEffect(() => {
     // If `forceUpdate` is truthy, we want to force refresh the metadata from OpenSea &

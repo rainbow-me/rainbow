@@ -9,6 +9,7 @@ import {
 } from '@rainbow-me/handlers/localstorage/walletBalances';
 import { web3Provider } from '@rainbow-me/handlers/web3';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
+import { AllRainbowWallets } from '@rainbow-me/model/wallet';
 import { queryClient } from '@rainbow-me/react-query/queryClient';
 import { balanceCheckerContractAbi } from '@rainbow-me/references';
 import { fromWei, handleSignificantDecimals } from '@rainbow-me/utilities';
@@ -16,16 +17,15 @@ import logger from 'logger';
 
 const ETH_ADDRESS = '0x0000000000000000000000000000000000000000';
 
-const useWalletBalances = (wallets: any) => {
+const useWalletBalances = (wallets: AllRainbowWallets) => {
   const { network } = useAccountSettings();
 
   const fetchBalances = useCallback(async () => {
-    const walletBalances = {};
+    const walletBalances: { [address: string]: string } = {};
 
     // Get list of addresses to get balances for
     forEach(values(wallets), wallet => {
       forEach(wallet.addresses, account => {
-        // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
         walletBalances[account.address] = '0.00';
       });
     });
@@ -46,7 +46,6 @@ const useWalletBalances = (wallets: any) => {
       forEach(keys(walletBalances), (address, index) => {
         const amountInETH = fromWei(balances[index].toString());
         const formattedBalance = handleSignificantDecimals(amountInETH, 4);
-        // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
         walletBalances[address] = formattedBalance;
       });
       saveWalletBalances(walletBalances);
