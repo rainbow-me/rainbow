@@ -98,8 +98,10 @@ git update-index --assume-unchanged "android/app/src/main/java/me/rainbow/MainAc
 # them. If we don't specify which packages, rn-nodeify  will look into each
 # package.json and install everything including a bunch devDeps that we don't
 # need like "console"
+cp ./node_modules/react-native-bignumber/package.json packagebignumber.json
 rn-nodeify --install --hack 'crypto,buffer,react-native-randombytes,vm,stream,http,https,os,url,net,fs,process'
 echo "✅ rn-nodeify packages hacked succesfully"
+mv packagebignumber.json ./node_modules/react-native-bignumber/package.json
 
 # Apply patches.
 patch-package
