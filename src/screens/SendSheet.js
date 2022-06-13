@@ -2,7 +2,7 @@ import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { captureEvent, captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
-import { isEqual, isString, toLower } from 'lodash';
+import { isEqual, toLower } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, InteractionManager, Keyboard, StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
@@ -66,6 +66,7 @@ import {
   convertAmountFromNativeValue,
   formatInputDecimals,
   isEmpty,
+  isString,
   lessThan,
 } from '@rainbow-me/utilities';
 import { deviceUtils, ethereumUtils } from '@rainbow-me/utils';

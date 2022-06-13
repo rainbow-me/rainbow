@@ -1,9 +1,10 @@
-import { isArray, isString, pick } from 'lodash';
+import { isArray, pick } from 'lodash';
 import React from 'react';
 import { useTheme } from '../../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered, InnerBorder } from '../../layout';
 import { Text } from '../../text';
+import { isString } from '@rainbow-me/helpers/utilities';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 

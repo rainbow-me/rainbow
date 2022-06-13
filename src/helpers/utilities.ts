@@ -9,6 +9,12 @@ export const isNil = (prop: unknown): prop is null | undefined => prop == null;
 export const isEmpty = (obj: any): boolean =>
   [Object, Array].includes((obj || {}).constructor) &&
   !Object.entries(obj || {}).length;
+export const isString = (str: any): str is string => {
+  if (str != null && typeof str.valueOf() === 'string') {
+    return true;
+  }
+  return false;
+};
 
 export const abs = (value: BigNumberish): string =>
   new BigNumber(value).abs().toFixed();

@@ -1,6 +1,6 @@
 import { captureException, captureMessage } from '@sentry/react-native';
 import { toChecksumAddress } from 'ethereumjs-util';
-import { filter, flatMap, get, isEmpty, keys, map, values } from 'lodash';
+import { filter, flatMap, get, keys, map, values } from 'lodash';
 import { backupUserDataIntoCloud } from '../handlers/cloudBackup';
 import { saveKeychainIntegrityState } from '../handlers/localstorage/globalSettings';
 import {
@@ -35,6 +35,7 @@ import {
 } from '../utils/profileUtils';
 import { updateWebDataEnabled } from './showcaseTokens';
 import { fetchImages, fetchReverseRecord } from '@rainbow-me/handlers/ens';
+import { isEmpty } from '@rainbow-me/helpers/utilities';
 import { lightModeThemeColors } from '@rainbow-me/styles';
 
 // -- Constants --------------------------------------- //
