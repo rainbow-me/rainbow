@@ -273,7 +273,7 @@ export default function ExchangeModal({
     loading,
     resetSwapInputs,
     insufficientLiquidity,
-  } = useSwapDerivedOutputs(chainId);
+  } = useSwapDerivedOutputs(chainId, type);
 
   const lastTradeDetails = usePrevious(tradeDetails);
 
@@ -581,7 +581,7 @@ export default function ExchangeModal({
 
   const confirmButtonProps = useMemoOne(
     () => ({
-      disabled: !Number(inputAmount) || !tradeDetails,
+      disabled: !Number(inputAmount) || (!tradeDetails && !isSavings),
       inputAmount,
       insufficientLiquidity,
       isAuthorizing,
@@ -692,7 +692,7 @@ export default function ExchangeModal({
     }
   }, [currentNetwork, navigate]);
 
-  const showConfirmButton = isSavings
+  const showConfirmSection = isSavings
     ? !!inputCurrency
     : !!inputCurrency && !!outputCurrency;
 
@@ -761,7 +761,7 @@ export default function ExchangeModal({
               testID="deposit-info-button"
             />
           )}
-          {!isSavings && showConfirmButton && (
+          {!isSavings && showConfirmSection && (
             <ExchangeDetailsRow
               isHighPriceImpact={isHighPriceImpact}
               onFlipCurrencies={flipCurrencies}
@@ -775,7 +775,7 @@ export default function ExchangeModal({
 
           {isWithdrawal && <Spacer />}
 
-          {showConfirmButton && (
+          {showConfirmSection && (
             <ConfirmExchangeButton
               {...confirmButtonProps}
               flashbots={flashbots}
@@ -784,7 +784,7 @@ export default function ExchangeModal({
             />
           )}
         </FloatingPanels>
-        {inputCurrency && outputCurrency && (
+        {showConfirmSection && (
           <GasSpeedButton
             asset={outputCurrency}
             bottom={insets.bottom - 7}
