@@ -543,6 +543,7 @@ const getENSExecutionDetails = async ({
   type,
   ownerAddress,
   salt,
+  toAddress,
   rentPrice,
   duration,
   records,
@@ -555,6 +556,7 @@ const getENSExecutionDetails = async ({
   rentPrice?: string;
   duration?: number;
   records?: ENSRegistrationRecords;
+  toAddress?: string;
   wallet?: Wallet;
   salt?: string;
   resolverAddress?: EthereumAddress;
@@ -630,11 +632,11 @@ const getENSExecutionDetails = async ({
       break;
     }
     case ENSRegistrationTransactionType.RECLAIM: {
-      if (!name || !ownerAddress) throw new Error('Bad arguments for reclaim');
+      if (!name || !toAddress) throw new Error('Bad arguments for reclaim');
       const id = BigNumber.from(
         labelhash(name.replace(ENS_DOMAIN, ''))
       ).toString();
-      args = [id, ownerAddress];
+      args = [id, toAddress];
       contract = await getENSBaseRegistrarImplementationContract(wallet);
       break;
     }

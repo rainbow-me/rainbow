@@ -252,7 +252,7 @@ const executeSetText = async (
 
 const executeReclaim = async (
   name?: string,
-  ownerAddress?: string,
+  toAddress?: string,
   records?: ENSRegistrationRecords,
   gasLimit?: string | null,
   maxFeePerGas?: string,
@@ -262,8 +262,8 @@ const executeReclaim = async (
 ) => {
   const { contract, methodArguments, value } = await getENSExecutionDetails({
     name,
-    ownerAddress,
     records,
+    toAddress,
     type: ENSRegistrationTransactionType.RECLAIM,
     wallet,
   });
@@ -294,7 +294,15 @@ const ensAction = async (
   const { dispatch } = store;
   const { accountAddress: ownerAddress } = store.getState().settings;
   const { selectedGasFee } = store.getState().gas;
-  const { name, duration, rentPrice, records, salt, mode } = parameters;
+  const {
+    name,
+    duration,
+    rentPrice,
+    records,
+    salt,
+    toAddress,
+    mode,
+  } = parameters;
 
   logger.log(`[${actionName}] rap for`, name);
 
@@ -325,6 +333,7 @@ const ensAction = async (
       records: ensRegistrationRecords,
       rentPrice,
       salt,
+      toAddress,
       type,
     });
   } catch (e) {
@@ -459,7 +468,7 @@ const ensAction = async (
       case ENSRegistrationTransactionType.RECLAIM:
         tx = await executeReclaim(
           name,
-          parameters.ownerAddress ?? ownerAddress,
+          toAddress,
           ensRegistrationRecords,
           gasLimit,
           maxFeePerGas,

@@ -361,7 +361,7 @@ export default function SendConfirmationSheet() {
           estimateENSSetRecordsGasLimit({
             name: cleanENSName,
             ownerAddress: accountAddress,
-            records: records,
+            records,
           })
         );
       } else if (sendENSOptions['set-address']) {
@@ -375,9 +375,8 @@ export default function SendConfirmationSheet() {
       if (sendENSOptions['transfer-control']) {
         promises.push(
           estimateENSReclaimGasLimit({
-            fromAddress: accountAddress,
             name: cleanENSName,
-            ownerAddress: toAddress,
+            toAddress,
           })
         );
       }

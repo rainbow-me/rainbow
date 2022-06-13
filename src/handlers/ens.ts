@@ -632,17 +632,14 @@ export const estimateENSSetNameGasLimit = async ({
 
 export const estimateENSReclaimGasLimit = async ({
   name,
-  ownerAddress,
-  fromAddress,
+  toAddress,
 }: {
   name: string;
-  ownerAddress: string;
-  fromAddress?: string;
+  toAddress: string;
 }) =>
   estimateENSTransactionGasLimit({
-    fromAddress,
     name,
-    ownerAddress,
+    toAddress,
     type: ENSRegistrationTransactionType.RECLAIM,
   });
 
@@ -679,7 +676,7 @@ export const estimateENSTransactionGasLimit = async ({
   name,
   type,
   ownerAddress,
-  fromAddress,
+  toAddress,
   rentPrice,
   duration,
   records,
@@ -688,7 +685,7 @@ export const estimateENSTransactionGasLimit = async ({
   name?: string;
   type: ENSRegistrationTransactionType;
   ownerAddress?: string;
-  fromAddress?: string;
+  toAddress?: string;
   rentPrice?: string;
   duration?: number;
   salt?: string;
@@ -701,11 +698,12 @@ export const estimateENSTransactionGasLimit = async ({
     records,
     rentPrice,
     salt,
+    toAddress,
     type,
   });
 
   const txPayload = {
-    ...(ownerAddress ? { from: fromAddress ?? ownerAddress } : {}),
+    ...(ownerAddress ? { from: ownerAddress } : {}),
     ...(value ? { value } : {}),
   };
 

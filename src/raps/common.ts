@@ -82,6 +82,7 @@ export interface RapENSActionParameters {
   rentPrice: string;
   records?: Records;
   salt: string;
+  toAddress?: string;
   mode?: keyof typeof REGISTRATION_MODES;
 }
 
