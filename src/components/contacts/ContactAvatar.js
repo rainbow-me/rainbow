@@ -1,8 +1,6 @@
-import { toUpper } from 'lodash';
 import React, { useMemo } from 'react';
 import { darkModeThemeColors } from '../../styles/colors';
 import { useTheme } from '../../theme/ThemeContext';
-import { getFirstGrapheme } from '../../utils';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { borders } from '@rainbow-me/styles';
@@ -97,7 +95,7 @@ const ContactAvatar = ({
   ...props
 }) => {
   const { colors } = useTheme();
-  const { rainbowProfile } = useRainbowProfile(address);
+  const { rainbowProfile } = useRainbowProfile(color && emoji ? '' : address);
   const { dimensions, textSize } = useMemo(() => sizeConfigs(colors)[size], [
     colors,
     size,
@@ -110,6 +108,8 @@ const ContactAvatar = ({
     isDarkMode,
     colors,
   ]);
+
+  console.log(color, emoji);
 
   return (
     <ShadowStack

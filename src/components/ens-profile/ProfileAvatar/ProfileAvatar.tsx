@@ -13,13 +13,13 @@ const imagePreviewOverlayTopOffset = ios ? 68 + sharedCoolModalTopOffset : 107;
 const size = 70;
 
 export default function ProfileAvatar({
-  accountSymbol,
+  emoji,
   avatarUrl,
   enableZoomOnPress,
   handleOnPress,
   isFetched,
 }: {
-  accountSymbol?: string | null;
+  emoji?: string | null;
   avatarUrl?: string | null;
   enableZoomOnPress?: boolean;
   handleOnPress?: () => void;
@@ -96,7 +96,7 @@ export default function ProfileAvatar({
                   <Cover alignHorizontal="center" alignVertical="center">
                     <Box>
                       <NativeText style={{ fontSize: 38 }}>
-                        {accountSymbol || ''}
+                        {emoji || ''}
                       </NativeText>
                     </Box>
                   </Cover>

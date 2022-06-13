@@ -40,42 +40,30 @@ export default function AvatarCircle({
   ...props
 }) {
   const { colors, isDarkMode } = useTheme();
-  const {
-    accountAddress,
-    accountColor: profileAccountColor,
-    accountSymbol: profileAccountSymbol,
-  } = useAccountProfile();
-
-  const profileAccountColorHex = getAvatarColorHex(profileAccountColor);
+  const { accountAddress, accountColor, accountSymbol } = useAccountProfile();
 
   const { rainbowProfile } = useRainbowProfile(accountAddress);
 
-  const accountSymbol =
-    showcaseAccountSymbol ?? profileAccountSymbol ?? rainbowProfile?.emoji;
-  const resolvedColor =
+  const emoji = showcaseAccountSymbol || accountSymbol || rainbowProfile?.emoji;
+  const color =
     showcaseAccountColor != null
       ? typeof showcaseAccountColor === 'string'
         ? showcaseAccountColor
         : colors.avatarBackgrounds[showcaseAccountColor]
-      : profileAccountColorHex ?? rainbowProfile?.color;
+      : getAvatarColorHex(accountColor) || rainbowProfile?.color;
 
   const shadows = useMemo(
     () => ({
       default: [
         [0, 2, 5, isDarkMode ? colors.trueBlack : colors.dark, 0.2],
-        [
-          0,
-          6,
-          10,
-          isDarkMode ? colors.trueBlack : colors.alpha(resolvedColor, 0.6),
-        ],
+        [0, 6, 10, isDarkMode ? colors.trueBlack : colors.alpha(color, 0.6)],
       ],
       overlay: [
         [0, 6, 10, isDarkMode ? colors.trueBlack : colors.shadowBlack, 0.08],
         [0, 2, 5, isDarkMode ? colors.trueBlack : colors.shadowBlack, 0.12],
       ],
     }),
-    [resolvedColor, colors, isDarkMode]
+    [color, colors, isDarkMode]
   );
 
   return (
@@ -103,8 +91,8 @@ export default function AvatarCircle({
         {image ? (
           <ImageAvatar image={image} size="large" />
         ) : (
-          <AvatarCircleView backgroundColor={resolvedColor}>
-            <FirstLetter>{accountSymbol}</FirstLetter>
+          <AvatarCircleView backgroundColor={color}>
+            <FirstLetter>{emoji}</FirstLetter>
             {!overlayStyles && <InnerBorder opacity={0.02} radius={65} />}
           </AvatarCircleView>
         )}

@@ -7,7 +7,6 @@ import {
   setPreference,
 } from '../model/preferences';
 import useAccountSettings from './useAccountSettings';
-import useRainbowProfile from './useRainbowProfile';
 import useWallets from './useWallets';
 import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
 import { containsEmoji } from '@rainbow-me/helpers/strings';
@@ -16,6 +15,7 @@ import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
 import { colors } from '@rainbow-me/styles';
 import { profileUtils } from '@rainbow-me/utils';
 import logger from 'logger';
+import useAccountProfile from './useAccountProfile';
 
 export const wipeNotEmoji = text => {
   const characters = new GraphemeSplitter().splitGraphemes(text);
@@ -27,6 +27,7 @@ export const wipeNotEmoji = text => {
 
 export default function useWebData() {
   const { accountAddress } = useAccountSettings();
+  const { accountColor, accountSymbol } = useAccountProfile();
   const dispatch = useDispatch();
   const { wallets } = useWallets();
 
@@ -36,8 +37,6 @@ export default function useWebData() {
       webDataEnabled,
     })
   );
-
-  const { rainbowProfile } = useRainbowProfile(accountAddress);
 
   const addressHashedColor = useMemo(
     () =>
@@ -65,8 +64,8 @@ export default function useWebData() {
         'profile',
         accountAddress,
         {
-          accountColor: addressHashedColor,
-          accountSymbol: addressHashedEmoji,
+          accountColor: accountColor || addressHashedColor,
+          accountSymbol: accountSymbol || addressHashedEmoji,
         }
       );
 
@@ -74,10 +73,11 @@ export default function useWebData() {
     },
     [
       accountAddress,
+      accountColor,
+      accountSymbol,
       addressHashedColor,
       addressHashedEmoji,
       dispatch,
-      rainbowProfile,
     ]
   );
 

@@ -25,6 +25,7 @@ import {
 import { ensProfileImagesQueryKey } from '../hooks/useENSProfileImages';
 import { ENSActionParameters } from '../raps/common';
 import { estimateGasWithPadding, getProviderForNetwork } from './web3';
+import { colors } from '@rainbow-me/styles';
 import {
   ENSRegistrationRecords,
   Records,
@@ -49,6 +50,12 @@ import {
 } from '@rainbow-me/references';
 import { labelhash, logger, profileUtils } from '@rainbow-me/utils';
 import { AvatarResolver } from 'ens-avatar';
+import { rainbowProfileQueryKey } from '../hooks/useRainbowProfile';
+import { fetchRainbowProfile } from './rainbowProfiles';
+import {
+  addressHashedColorIndex,
+  addressHashedEmoji,
+} from '@rainbow-me/utils/profileUtils';
 
 const DUMMY_RECORDS = {
   'cover':
@@ -197,7 +204,6 @@ export const fetchSuggestions = async (
   if (recipient.length > 2) {
     let suggestions: {
       address: any;
-      color: number | null;
       ens: boolean;
       image: any;
       network: string;
@@ -247,19 +253,41 @@ export const fetchSuggestions = async (
             }
           )
       );
-      const ensSuggestions = domains
-        .map((ensDomain: any) => ({
-          address: ensDomain?.resolver?.addr?.id || ensDomain?.name,
-          color: profileUtils.addressHashedColorIndex(
-            ensDomain?.resolver?.addr?.id || ensDomain.name
-          ),
-          ens: true,
-          image: ensDomain?.avatar,
-          network: 'mainnet',
-          nickname: ensDomain?.name,
-          uniqueId: ensDomain?.resolver?.addr?.id || ensDomain.name,
-        }))
-        .filter((domain: any) => !domain?.nickname?.includes?.('['));
+      const ensSuggestions = await Promise.all(
+        domains
+          .filter((domain: any) => !domain?.name?.includes?.('['))
+          .map(async (ensDomain: any) => {
+            let color =
+              colors.avatarBackgrounds[
+                addressHashedColorIndex(ensDomain?.resolver?.addr?.id) || 0
+              ];
+            let emoji = addressHashedEmoji(ensDomain?.resolver?.addr?.id);
+            try {
+              const rainbowProfile = await fetchRainbowProfile(
+                ensDomain?.resolver?.addr?.id
+              );
+              queryClient.setQueryData(
+                rainbowProfileQueryKey(ensDomain?.resolver?.addr?.id),
+                rainbowProfile
+              );
+              if (rainbowProfile) {
+                color = rainbowProfile?.color;
+                emoji = rainbowProfile?.emoji;
+              }
+              // eslint-disable-next-line no-empty
+            } catch (e) {}
+            return {
+              address: ensDomain?.resolver?.addr?.id || ensDomain?.name,
+              color: color,
+              emoji: emoji,
+              ens: true,
+              image: ensDomain?.avatar,
+              network: 'mainnet',
+              nickname: ensDomain?.name,
+              uniqueId: ensDomain?.resolver?.addr?.id || ensDomain.name,
+            };
+          })
+      );
       suggestions = sortBy(ensSuggestions, domain => domain.nickname.length, [
         'asc',
       ]);

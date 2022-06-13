@@ -24,7 +24,6 @@ import { isValidDomainFormat } from '@rainbow-me/helpers/validators';
 import {
   useAccountProfile,
   useOnAvatarPress,
-  useRainbowProfile,
   useSafeImageUri,
   useWallets,
 } from '@rainbow-me/hooks';
@@ -84,7 +83,6 @@ export default function TransactionList({
     accountColor,
     accountSymbol,
   } = useAccountProfile();
-  const { rainbowProfile } = useRainbowProfile(accountAddress);
   const [address, setAddress] = useState(null);
   const [ens, setEns] = useState(null);
 
@@ -330,9 +328,9 @@ export default function TransactionList({
     <Container>
       <Container
         accountAddress={accountName}
-        accountColor={accountColor ?? rainbowProfile?.color ?? colors.skeleton}
+        accountColor={accountColor}
         accountImage={safeAccountImage}
-        accountName={accountSymbol ?? rainbowProfile?.emoji}
+        accountName={accountSymbol}
         addCashAvailable={addCashAvailable}
         as={NativeTransactionListView}
         avatarOptions={avatarOptions}

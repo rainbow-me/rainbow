@@ -342,7 +342,6 @@ export const getWalletRainbowProfiles = async (walletsState, dispatch) => {
       },
     };
   });
-  console.log(updatedWallets);
   if (updatedWallets) {
     dispatch(walletsSetSelected(updatedWallets[selected.id]));
     dispatch(walletsUpdate(updatedWallets));

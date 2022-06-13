@@ -11,7 +11,10 @@ import { colors } from '@rainbow-me/styles';
 import { profileUtils } from '@rainbow-me/utils';
 import { isValidAddress } from 'ethereumjs-util';
 
-const queryKey = (address: EthereumAddress) => ['wallet-profiles', address];
+export const rainbowProfileQueryKey = (address: EthereumAddress) => [
+  'wallet-profiles',
+  address,
+];
 
 const STALE_TIME = 10000;
 
@@ -35,17 +38,20 @@ export default function useRainbowProfile(
   const { data, isLoading, isSuccess } = useQuery<
     UseQueryData<typeof fetchRainbowProfile>
   >(
-    queryKey(address),
+    rainbowProfileQueryKey(address),
     async () => {
       const cachedProfile = await getRainbowProfile(address);
       if (cachedProfile) {
-        queryClient.setQueryData(queryKey(address), cachedProfile);
+        queryClient.setQueryData(
+          rainbowProfileQueryKey(address),
+          cachedProfile
+        );
       }
       const rainbowProfile = await fetchRainbowProfile(address);
 
       rainbowProfile && saveRainbowProfile(address, rainbowProfile);
       return (
-        rainbowProfile ?? {
+        rainbowProfile || {
           color: addressHashedColor,
           emoji: addressHashedEmoji,
         }

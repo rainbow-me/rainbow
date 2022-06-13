@@ -68,13 +68,15 @@ const ContactRow = (
   ref
 ) => {
   const profilesEnabled = useExperimentalFlag(PROFILES);
+  const { rainbowProfile } = useRainbowProfile(address);
   const { width: deviceWidth } = useDimensions();
   const { onAddOrUpdateContacts } = useContacts();
   const { colors } = useTheme();
-  const { rainbowProfile } = useRainbowProfile(address);
   const {
     accountType,
     balance,
+    color,
+    emoji,
     ens,
     image,
     label,
@@ -83,6 +85,8 @@ const ContactRow = (
     showcaseItem,
     testID,
   } = props;
+
+  // console.log(props);
 
   let cleanedUpBalance = balance;
   if (balance === '0.00') {
@@ -124,11 +128,11 @@ const ContactRow = (
     accountType,
     onAddOrUpdateContacts,
     address,
+    rainbowProfile?.color,
     ensName,
     network,
     nickname,
     profilesEnabled,
-    rainbowProfile?.color,
     setENSName,
   ]);
 
@@ -171,7 +175,13 @@ const ContactRow = (
         {imageAvatar ? (
           <ImageAvatar image={imageAvatar} marginRight={10} size="medium" />
         ) : (
-          <ContactAvatar address={address} marginRight={10} size="medium" />
+          <ContactAvatar
+            address={address}
+            color={color}
+            emoji={emoji}
+            marginRight={10}
+            size="medium"
+          />
         )}
         <Column justify={ios ? 'space-between' : 'center'}>
           {accountType === 'accounts' || accountType === 'watching' ? (

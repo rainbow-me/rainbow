@@ -198,6 +198,7 @@ const ExchangeAssetList = (
     ({ item }) => {
       return item.ens ? (
         <ContactRow
+          {...item}
           accountType="suggestions"
           address={item.address}
           image={item.image}
