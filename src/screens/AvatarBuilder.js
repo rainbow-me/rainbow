@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, {
   useAnimatedStyle,
@@ -36,8 +36,8 @@ const SheetContainer = styled(Column)({
 });
 
 const ScrollableColorPicker = styled.ScrollView({
+  height: 42,
   marginHorizontal: 10,
-  marginVertical: 0,
   overflow: 'visible',
 });
 
@@ -67,7 +67,7 @@ const AvatarBuilder = ({ route: { params } }) => {
   const selectedRingPosition = useSharedValue(params.initialAccountColor * 40);
   const { goBack } = useNavigation();
   const [currentAccountColor, setCurrentAccountColor] = useState(
-    params.initialAccountColor
+    colors.avatarBackgrounds[params.initialAccountColor]
   );
   const [currentEmoji, setCurrentEmoji] = useState(null);
   const colorIndex = useRef(params.initialAccountColor);
@@ -79,27 +79,9 @@ const AvatarBuilder = ({ route: { params } }) => {
     saveInfo(`${event} ${params.initialAccountName}`, colorIndex.current);
   };
 
-  const avatarColors = colors.avatarBackgrounds.map((color, index) => (
-    <ColorCircle
-      backgroundColor={color}
-      isSelected={index - 4 === 0}
-      key={color}
-      onPressColor={() => {
-        const destination = index * 40;
-        selectedRingPosition.value = withSpring(destination, springConfig);
-        colorIndex.current = colors.avatarBackgrounds.indexOf(color);
-        setCurrentAccountColor(color);
-        saveInfo(currentEmoji, colorIndex.current);
-      }}
-    />
-  ));
-
   const selectedRingStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: selectedRingPosition.value }],
   }));
-
-  const colorCircleTopPadding = 15;
-  const colorCircleBottomPadding = 19;
 
   const selectedOffset = useMemo(() => {
     const maxOffset = colors.avatarBackgrounds.length * 40 - width + 20;
@@ -125,13 +107,7 @@ const AvatarBuilder = ({ route: { params } }) => {
         pointerEvents="box-none"
         top={AvatarBuilderTopPoint}
       >
-        <Row
-          height={38 + colorCircleTopPadding + colorCircleBottomPadding}
-          justify="center"
-          paddingBottom={colorCircleBottomPadding + 7}
-          paddingTop={colorCircleTopPadding + 7}
-          width="100%"
-        >
+        <Row justify="center" paddingBottom={16} paddingTop={15} width="100%">
           <ScrollableColorPicker
             contentOffset={selectedOffset}
             horizontal
@@ -141,7 +117,23 @@ const AvatarBuilder = ({ route: { params } }) => {
               selectedColor={currentAccountColor}
               style={selectedRingStyle}
             />
-            {avatarColors}
+            {colors.avatarBackgrounds.map((color, index) => (
+              <ColorCircle
+                backgroundColor={color}
+                isSelected={index - 4 === 0}
+                key={color}
+                onPressColor={() => {
+                  const destination = index * 40;
+                  selectedRingPosition.value = withSpring(
+                    destination,
+                    springConfig
+                  );
+                  colorIndex.current = colors.avatarBackgrounds.indexOf(color);
+                  setCurrentAccountColor(color);
+                  saveInfo(currentEmoji, colorIndex.current);
+                }}
+              />
+            ))}
           </ScrollableColorPicker>
         </Row>
         <SheetContainer deviceHeight={height}>
