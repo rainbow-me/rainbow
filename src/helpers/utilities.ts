@@ -1,9 +1,11 @@
 import BigNumber from 'bignumber.js';
 import currency from 'currency.js';
-import { get, isNil } from 'lodash';
+import { get } from 'lodash';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 
 type BigNumberish = number | string | BigNumber;
+
+export const isNil = (prop: unknown): prop is null | undefined => prop == null;
 
 export const abs = (value: BigNumberish): string =>
   new BigNumber(value).abs().toFixed();

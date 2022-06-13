@@ -1,4 +1,4 @@
-import { concat, isEmpty, isNil, keyBy, keys, toLower } from 'lodash';
+import { concat, isEmpty, keyBy, keys, toLower } from 'lodash';
 import io from 'socket.io-client';
 import { getExperimetalFlag, L2_TXS } from '../config/experimental';
 import config from '../model/config';
@@ -27,6 +27,7 @@ import { getProviderForNetwork, isHardHat } from '@rainbow-me/handlers/web3';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
 import currencyTypes from '@rainbow-me/helpers/currencyTypes';
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
+import { isNil } from '@rainbow-me/helpers/utilities';
 import {
   DPI_ADDRESS,
   ETH_ADDRESS,

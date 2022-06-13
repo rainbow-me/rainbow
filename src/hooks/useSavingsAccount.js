@@ -1,5 +1,5 @@
 import { useQuery } from '@apollo/client';
-import { concat, isEmpty, isNil, keyBy, map, orderBy, toLower } from 'lodash';
+import { concat, isEmpty, keyBy, map, orderBy, toLower } from 'lodash';
 import { useMemo } from 'react';
 import { useMMKVObject } from 'react-native-mmkv';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,7 +9,7 @@ import { useGenericAssets } from './useGenericAsset';
 import { compoundClient } from '@rainbow-me/apollo/client';
 import { COMPOUND_ACCOUNT_AND_MARKET_QUERY } from '@rainbow-me/apollo/queries';
 import { AssetTypes } from '@rainbow-me/entities';
-import { multiply } from '@rainbow-me/helpers/utilities';
+import { isNil, multiply } from '@rainbow-me/helpers/utilities';
 import { parseAssetName, parseAssetSymbol } from '@rainbow-me/parsers';
 import { emitAssetRequest } from '@rainbow-me/redux/explorer';
 import {

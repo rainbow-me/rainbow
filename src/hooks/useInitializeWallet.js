@@ -1,5 +1,4 @@
 import { captureException } from '@sentry/react-native';
-import { isNil } from 'lodash';
 import { useCallback } from 'react';
 import { Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
@@ -23,6 +22,7 @@ import useOpenSmallBalances from './useOpenSmallBalances';
 import useResetAccountState from './useResetAccountState';
 import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import { runKeychainIntegrityChecks } from '@rainbow-me/handlers/walletReadyEvents';
+import { isNil } from '@rainbow-me/helpers/utilities';
 import { additionalDataCoingeckoIds } from '@rainbow-me/redux/additionalAssetsData';
 import { checkPendingTransactionsOnInitialize } from '@rainbow-me/redux/data';
 import logger from 'logger';
