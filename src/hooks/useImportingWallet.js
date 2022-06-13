@@ -5,16 +5,14 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, InteractionManager, Keyboard } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import { useDispatch } from 'react-redux';
-import {
-  useAccountSettings,
-  useInitializeWallet,
-  useIsWalletEthZero,
-  useMagicAutofocus,
-  usePrevious,
-  useTimeout,
-  useWalletENSAvatar,
-  useWallets,
-} from '.';
+import useAccountSettings from './useAccountSettings';
+import useInitializeWallet from './useInitializeWallet';
+import useIsWalletEthZero from './useIsWalletEthZero';
+import useMagicAutofocus from './useMagicAutofocus';
+import usePrevious from './usePrevious';
+import useTimeout from './useTimeout';
+import useWalletENSAvatar from './useWalletENSAvatar';
+import useWallets from './useWallets';
 import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import { fetchImages, fetchReverseRecord } from '@rainbow-me/handlers/ens';
 import {

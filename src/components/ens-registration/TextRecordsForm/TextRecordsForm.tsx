@@ -1,4 +1,3 @@
-import { useFocusEffect } from '@react-navigation/core';
 import { debounce, isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import { TextInputProps, ViewProps } from 'react-native';
