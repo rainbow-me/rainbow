@@ -31,7 +31,6 @@ import {
 } from '../sheet';
 import { ToastPositionContainer, ToggleStateToast } from '../toasts';
 import { UniqueTokenAttributes, UniqueTokenImage } from '../unique-token';
-import AdvancedSection from './ens/AdvancedSection';
 import ConfigurationSection from './ens/ConfigurationSection';
 import ProfileInfoSection from './ens/ProfileInfoSection';
 import {
@@ -634,15 +633,6 @@ const UniqueTokenExpandedState = ({
                               owner={ensData?.owner}
                               registrant={ensData?.registrant}
                             />
-                          </Section>
-                          <Section
-                            paragraphSpace={{ custom: 22 }}
-                            title={`${lang.t(
-                              'expanded_state.unique_expanded.advanced'
-                            )}`}
-                            titleEmoji="👽"
-                          >
-                            <AdvancedSection resolver={ensData?.resolver} />
                           </Section>
                         </>
                       )}

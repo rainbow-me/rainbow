@@ -454,7 +454,6 @@
       },
       "unique_expanded": {
         "about": "About %{assetFamilyName} :)",
-        "advanced": "Advanced :)",
         "attributes": "Attributes :)",
         "configuration": "Configuration :)",
         "copy": "Copy :)",
@@ -466,7 +465,6 @@
         "set_primary_name": "Set as my ENS name :)",
         "profile_info": "Profile Info :)",
         "registrant": "Registrant :)",
-        "resolver": "Resolver",
         "view_on_opensea": "View on Opensea :)",
         "view_on_platform": "View on %{platform} :)",
         "collection_website": "Collection Website :)",

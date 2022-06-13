@@ -157,6 +157,7 @@ export default function RegisterENSNavigator() {
         <Box
           style={{
             height: wrapperHeight,
+            overflow: 'hidden',
           }}
         >
           <Swipe.Navigator
