@@ -1,4 +1,4 @@
-import { concat, filter, isEmpty, map, uniqBy } from 'lodash';
+import { concat, filter, map, uniqBy } from 'lodash';
 import { AppState } from 'react-native';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
@@ -9,6 +9,7 @@ import {
   getLiquidity,
   saveLiquidity,
 } from '@rainbow-me/handlers/localstorage/uniswap';
+import { isEmpty } from '@rainbow-me/helpers/utilities';
 
 // -- Constants ------------------------------------------------------------- //
 

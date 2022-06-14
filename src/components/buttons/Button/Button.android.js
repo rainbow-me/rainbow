@@ -1,4 +1,3 @@
-import { isArray } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useTheme } from '../../../theme/ThemeContext';
@@ -53,7 +52,7 @@ const Container = styled(Centered)(
 );
 
 const shouldRenderChildrenAsText = children =>
-  isArray(children) ? isString(children[0]) : isString(children);
+  Array.isArray(children) ? isString(children[0]) : isString(children);
 
 const Button = ({
   backgroundColor,

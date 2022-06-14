@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { concat, isArray, map, toLower, uniq, without } from 'lodash';
+import { concat, map, toLower, uniq, without } from 'lodash';
 import { Dispatch } from 'redux';
 import { AppGetState } from './store';
 import {
@@ -240,7 +240,7 @@ export const uniswapUpdateFavorites = (
 
   const updatedFavorites = add
     ? uniq(concat(normalizedFavorites, assetAddress))
-    : isArray(assetAddress)
+    : Array.isArray(assetAddress)
     ? without(normalizedFavorites, ...assetAddress)
     : without(normalizedFavorites, assetAddress);
   const updatedFavoritesMeta =

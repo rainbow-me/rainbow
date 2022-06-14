@@ -1,6 +1,5 @@
-import isEmpty from 'lodash/isEmpty';
 import { createSelector } from 'reselect';
-import { isNil } from './utilities';
+import { isEmpty, isNil } from './utilities';
 import { parseAssetsNativeWithTotals } from '@rainbow-me/parsers';
 
 const EMPTY_ARRAY = [];

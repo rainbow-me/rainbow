@@ -1,4 +1,4 @@
-import { isArray, pick } from 'lodash';
+import { pick } from 'lodash';
 import React from 'react';
 import { useTheme } from '../../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../../animations';
@@ -54,7 +54,7 @@ const Container = styled(Centered)(
 );
 
 const shouldRenderChildrenAsText = children =>
-  isArray(children) ? isString(children[0]) : isString(children);
+  Array.isArray(children) ? isString(children[0]) : isString(children);
 
 export default function Button({
   backgroundColor,
