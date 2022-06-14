@@ -8,7 +8,10 @@
     "reporters": ["detox/runners/jest/streamlineReporter"],
     "verbose": true,
     "transform": {
-        "^.+\\.js?$": "babel-jest"
+        "^.+\\.js$": "../node_modules/react-native/jest/preprocessor.js"
     },
-    "setupFiles": ["dotenv/config"]
+    "setupFiles": ["dotenv/config"],
+    "transformIgnorePatterns": [
+        "/node_modules/(?!react-native-bignumber)/"
+    ]
 }
