@@ -5,7 +5,11 @@ import { ALLOWS_PERMIT, PermitSupportedTokenList } from '@rainbow-me/swaps';
 import { captureException } from '@sentry/react-native';
 import { isNull, toLower } from 'lodash';
 import { alwaysRequireApprove } from '../../config/debug';
-import { Rap, RapActionParameters, UnlockActionParameters } from '../common';
+import {
+  Rap,
+  RapExchangeActionParameters,
+  UnlockActionParameters,
+} from '../common';
 import {
   Asset,
   TransactionStatus,
@@ -117,7 +121,7 @@ const unlock = async (
   wallet: Wallet,
   currentRap: Rap,
   index: number,
-  parameters: RapActionParameters,
+  parameters: RapExchangeActionParameters,
   baseNonce?: number
 ): Promise<number | undefined> => {
   logger.log(`[${actionName}] base nonce`, baseNonce, 'index:', index);

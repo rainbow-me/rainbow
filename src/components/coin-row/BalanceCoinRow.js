@@ -2,8 +2,8 @@ import { get } from 'lodash';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { View } from 'react-primitives';
-import { useTheme } from '../../context/ThemeContext';
 import useCoinListEditOptions from '../../hooks/useCoinListEditOptions';
+import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/ChartExpandedState';
 import { FlexItem, Row } from '../layout';
@@ -168,7 +168,7 @@ const BalanceCoinRow = ({
         <ButtonPressAnimation
           onPress={handlePress}
           scaleTo={0.96}
-          testID={`balance-coin-row-${item.symbol}-${item.type || 'token'}}`}
+          testID={`balance-coin-row-${item.symbol}-${item.type || 'token'}`}
         >
           <Animated.View>
             <CoinRow

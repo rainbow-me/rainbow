@@ -110,6 +110,28 @@ const BACKUP_EXPLAINER = lang.t('back_up.explainers.backup', {
   cloudPlatformName: cloudPlatformAccountName,
 });
 
+const ENS_PRIMARY_NAME_EXPLAINER =
+  'Setting a primary ENS name makes your Ethereum address point to your .eth name, enabling dapps to find and display it when you connect your wallet.';
+
+const ENS_ON_CHAIN_DATA_WARNING_EXPLAINER =
+  'The data you provide here will be stored on the Ethereum blockchain – meaning it will be visible to everyone and accessible by anyone. Do not share any data you are uncomfortable with publicizing.';
+
+const ENS_ON_CHAIN_DATA_WARNING_TITLE = 'Heads up!';
+
+const ENS_PRIMARY_NAME_TITLE = 'What is a primary ENS name?';
+
+const ENS_MANAGER_TITLE = `Who is the .eth manager?`;
+
+const ENS_MANAGER_EXPLAINER = `The manager of a .eth name registration. The manager may transfer ownership, set a resolver or TTL, as well as create or reassign subdomains`;
+
+const ENS_OWNER_TITLE = `Who is the .eth owner?`;
+
+const ENS_OWNER_EXPLAINER = `The owner of a .eth name registration. The owner may transfer the registration or reclaim ownership of the name in the registry if required.`;
+
+const ENS_RESOLVER_TITLE = `What is a .eth resolver?`;
+
+const ENS_RESOLVER_EXPLAINER = `A resolver is a contract that maps from name to the resource (e.g., cryptocurrency addresses, content hash, etc). Resolvers are pointed to by the resolver field of the registry.`;
+
 export const explainers = (params, colors) => ({
   output_disabled: {
     extraHeight: -100,
@@ -137,6 +159,36 @@ export const explainers = (params, colors) => ({
     title: lang.t('explain.gas.title', {
       networkName: params?.network,
     }),
+  },
+  ens_primary_name: {
+    extraHeight: -70,
+    emoji: '❓',
+    text: ENS_PRIMARY_NAME_EXPLAINER,
+    title: ENS_PRIMARY_NAME_TITLE,
+  },
+  ens_manager: {
+    extraHeight: -80,
+    emoji: '❓',
+    text: ENS_MANAGER_EXPLAINER,
+    title: ENS_MANAGER_TITLE,
+  },
+  ens_owner: {
+    extraHeight: -80,
+    emoji: '❓',
+    text: ENS_OWNER_EXPLAINER,
+    title: ENS_OWNER_TITLE,
+  },
+  ens_resolver: {
+    extraHeight: -60,
+    emoji: '❓',
+    text: ENS_RESOLVER_EXPLAINER,
+    title: ENS_RESOLVER_TITLE,
+  },
+  ensOnChainDataWarning: {
+    extraHeight: -30,
+    emoji: '✋',
+    text: ENS_ON_CHAIN_DATA_WARNING_EXPLAINER,
+    title: ENS_ON_CHAIN_DATA_WARNING_TITLE,
   },
   currentBaseFeeStable: {
     emoji: '🌞',
@@ -281,23 +333,27 @@ export const explainers = (params, colors) => ({
     extraHeight: -90,
     text: availableNetworksExplainer(params?.tokenSymbol, params?.networks),
     title:
-      params?.networks.length > 1
+      params?.networks?.length > 1
         ? lang.t('explain.available_networks.title_plural', {
-            length: params?.networks.length,
+            length: params?.networks?.length,
           })
         : lang.t('explain.available_networks.title_singular', {
-            network: params?.networks[0],
+            network: params?.networks?.[0],
           }),
     logo: (
       <Row justify="center" marginBottom={10}>
-        {params?.networks.map((network, index) => {
+        {params?.networks?.map((network, index) => {
           return (
             <Box
               height={{ custom: 40 }}
               key={`networks-${network}`}
               marginLeft={{
                 custom:
-                  index > 0 ? -12 : params.networks.length % 2 === 0 ? -2 : -30,
+                  index > 0
+                    ? -12
+                    : params?.networks?.length % 2 === 0
+                    ? -2
+                    : -30,
               }}
               style={{
                 borderColor: colors.transparent,
@@ -306,7 +362,7 @@ export const explainers = (params, colors) => ({
                 zIndex: index,
               }}
               width={{ custom: 40 }}
-              zIndex={params?.networks.length - index}
+              zIndex={params?.networks?.length - index}
             >
               {network !== 'mainnet' ? (
                 <ChainBadge

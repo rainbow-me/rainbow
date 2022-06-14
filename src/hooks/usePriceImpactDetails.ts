@@ -1,10 +1,10 @@
 import { useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
-import { useTheme } from '@rainbow-me/context';
 import { RainbowToken, SwappableAsset } from '@rainbow-me/entities';
 import { Network } from '@rainbow-me/helpers';
 import { AppState } from '@rainbow-me/redux/store';
 import { ETH_ADDRESS, WETH_ADDRESS } from '@rainbow-me/references';
+import { useTheme } from '@rainbow-me/theme';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToNativeAmount,

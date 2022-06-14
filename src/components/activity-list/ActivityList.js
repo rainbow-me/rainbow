@@ -1,8 +1,8 @@
 import lang from 'i18n-js';
 import React, { useEffect, useMemo, useState } from 'react';
 import { SectionList } from 'react-native';
-import { useTheme } from '../../context/ThemeContext';
 import networkTypes from '../../helpers/networkTypes';
+import { useTheme } from '../../theme/ThemeContext';
 import ActivityIndicator from '../ActivityIndicator';
 import Spinner from '../Spinner';
 import { ButtonPressAnimation } from '../animations';

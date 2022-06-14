@@ -1,6 +1,6 @@
 import lang from 'i18n-js';
 import React, { useMemo } from 'react';
-import { useTheme } from '../../context/ThemeContext';
+import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder, RowWithMargins } from '../layout';
 import { Text } from '../text';
@@ -35,6 +35,7 @@ const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
 
 export default function TokenSelectionButton({
   address,
+  mainnetAddress,
   borderRadius = 30,
   onPress,
   symbol,
@@ -43,7 +44,7 @@ export default function TokenSelectionButton({
   const { isDarkMode, colors } = useTheme();
 
   const colorForAsset = useColorForAsset(
-    { address },
+    { address, mainnet_address: mainnetAddress },
     address ? undefined : colors.appleBlue
   );
 

@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { lightModeThemeColors } from '../styles/colors';
 import useImageMetadata from './useImageMetadata';
+import { AssetType } from '@rainbow-me/entities';
 import {
   getTokenMetadata,
   getUrlForTrustIconFallback,
@@ -15,26 +16,30 @@ export default function useColorForAsset(
   forceETHColor = false
 ) {
   const { isDarkMode: isDarkModeTheme, colors } = useTheme();
-  const { address, color, mainnet_address } = asset;
+  const { address, color, mainnet_address, type } = asset;
   const token = getTokenMetadata(mainnet_address || address);
   const tokenListColor = token?.color;
 
   const { color: imageColor } = useImageMetadata(
-    getUrlForTrustIconFallback(address)
+    getUrlForTrustIconFallback(
+      mainnet_address || address,
+      mainnet_address ? AssetType.token : type
+    )
   );
 
   const isDarkMode = forceLightMode || isDarkModeTheme;
 
   const colorDerivedFromAddress = useMemo(() => {
-    const color = isETH(address)
-      ? isDarkMode
-        ? forceETHColor
-          ? colors.appleBlue
-          : colors.brighten(lightModeThemeColors.dark)
-        : colors.dark
-      : pseudoRandomArrayItemFromString(address, colors.avatarBackgrounds);
+    const color =
+      isETH(address) || isETH(mainnet_address)
+        ? isDarkMode
+          ? forceETHColor
+            ? colors.appleBlue
+            : colors.brighten(lightModeThemeColors.dark)
+          : colors.dark
+        : pseudoRandomArrayItemFromString(address, colors.avatarBackgrounds);
     return color;
-  }, [address, colors, forceETHColor, isDarkMode]);
+  }, [address, colors, forceETHColor, isDarkMode, mainnet_address]);
 
   return useMemo(() => {
     let color2Return;

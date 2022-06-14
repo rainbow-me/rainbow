@@ -51,6 +51,8 @@ describe('Swap Sheet Interaction Flow', () => {
 
   it('Should update input value after tapping Max Button', async () => {
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
+    await Helpers.checkIfVisible('exchange-modal-input');
+    await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.typeText('currency-select-search-input', 'BAT', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-BAT-token');
@@ -110,10 +112,8 @@ describe('Swap Sheet Interaction Flow', () => {
   it('Should show Choose Token Button if input & output are same token(ETH)', async () => {
     await Helpers.waitAndTap('balance-coin-row-ETH-token');
     await Helpers.waitAndTap('swap-action-button');
-    await Helpers.waitAndTap('exchange-modal-input-selection-button');
-    await Helpers.checkIfVisible(
-      'currency-select-list-exchange-coin-row-ETH-token'
-    );
+    await Helpers.checkIfVisible('exchange-modal-input');
+    await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.waitAndTap(
       'currency-select-list-exchange-coin-row-ETH-token'
     );
@@ -126,12 +126,14 @@ describe('Swap Sheet Interaction Flow', () => {
     } else {
       await Helpers.swipe('exchange-modal-header', 'down', 'slow');
     }
-    await Helpers.waitAndTap('exchange-fab');
   });
 
   it('Should swap input & output and clear form on ETH -> ERC20 when selecting ETH as output', async () => {
+    await Helpers.waitAndTap('exchange-fab');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
+    await Helpers.checkIfVisible('exchange-modal-input');
+    await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.typeText('currency-select-search-input', 'DAI\n', true);
     await Helpers.checkIfVisible(
@@ -141,6 +143,7 @@ describe('Swap Sheet Interaction Flow', () => {
       'currency-select-list-exchange-coin-row-DAI-token'
     );
     await Helpers.waitAndTap('exchange-modal-output-selection-button');
+    await Helpers.checkIfVisible('currency-select-list');
     await Helpers.typeText('currency-select-search-input', 'ETH\n', true);
     await Helpers.waitAndTap(
       'currency-select-list-exchange-coin-row-ETH-token'
@@ -158,12 +161,14 @@ describe('Swap Sheet Interaction Flow', () => {
     } else {
       await Helpers.swipe('exchange-modal-header', 'down', 'slow');
     }
-    await Helpers.waitAndTap('exchange-fab');
   });
 
   it('Should swap input & output and clear form on ETH -> ERC20 when selecting ERC20 as input', async () => {
+    await Helpers.waitAndTap('exchange-fab');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
+    await Helpers.checkIfVisible('exchange-modal-input');
+    await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.typeText('currency-select-search-input', 'DAI\n', true);
     await Helpers.checkIfVisible(
@@ -173,6 +178,7 @@ describe('Swap Sheet Interaction Flow', () => {
       'currency-select-list-exchange-coin-row-DAI-token'
     );
     await Helpers.waitAndTap('exchange-modal-input-selection-button');
+    await Helpers.checkIfVisible('currency-select-list');
     await Helpers.waitAndTap(
       'currency-select-list-exchange-coin-row-DAI-token'
     );
@@ -188,17 +194,19 @@ describe('Swap Sheet Interaction Flow', () => {
 
   it('Should display Enter an Amount Button once input & output currencies are selected', async () => {
     await Helpers.checkForElementByLabel('Enter an Amount');
-  });
-
-  it('Should update native input & output after input field change', async () => {
     if (device.getPlatform() === 'android') {
       await device.pressBack();
     } else {
       await Helpers.swipe('exchange-modal-header', 'down', 'slow');
     }
+  });
+
+  it('Should update native input & output after input field change', async () => {
     await Helpers.waitAndTap('exchange-fab');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
+    await Helpers.checkIfVisible('exchange-modal-input');
+    await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.typeText('currency-select-search-input', 'ZRX\n', false);
     await Helpers.waitAndTap(
@@ -210,17 +218,19 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('exchange-modal-input-0.246');
     await Helpers.checkIfNotVisible('exchange-modal-input-native');
     await Helpers.checkIfNotVisible('exchange-modal-output');
-  });
-
-  it('Should update input & output after native input field change', async () => {
     if (device.getPlatform() === 'android') {
       await device.pressBack();
     } else {
       await Helpers.swipe('exchange-modal-header', 'down', 'slow');
     }
+  });
+
+  it('Should update input & output after native input field change', async () => {
     await Helpers.waitAndTap('exchange-fab');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
+    await Helpers.checkIfVisible('exchange-modal-input');
+    await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.typeText('currency-select-search-input', 'ZRX', false);
     await Helpers.waitAndTap(
@@ -232,17 +242,19 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('exchange-modal-input-native-0.24');
     await Helpers.checkIfNotVisible('exchange-modal-input');
     await Helpers.checkIfNotVisible('exchange-modal-output');
-  });
-
-  it('Should update input & native input after output field change', async () => {
     if (device.getPlatform() === 'android') {
       await device.pressBack();
     } else {
       await Helpers.swipe('exchange-modal-header', 'down', 'slow');
     }
+  });
+
+  it('Should update input & native input after output field change', async () => {
     await Helpers.waitAndTap('exchange-fab');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
+    await Helpers.checkIfVisible('exchange-modal-input');
+    await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.typeText('currency-select-search-input', 'ZRX', false);
     await Helpers.waitAndTap(
@@ -276,6 +288,8 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.waitAndTap('exchange-fab');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
+    await Helpers.checkIfVisible('exchange-modal-input');
+    await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.typeText('currency-select-search-input', 'ZRX', false);
     await Helpers.waitAndTap(
@@ -283,17 +297,19 @@ describe('Swap Sheet Interaction Flow', () => {
     );
     await Helpers.typeText('exchange-modal-input', '0.546', false);
     await Helpers.checkForElementByLabel('Insufficient Funds');
-  });
-
-  it('Should prepend 0. to input field on typing .', async () => {
     if (device.getPlatform() === 'android') {
       await device.pressBack();
     } else {
       await Helpers.swipe('exchange-modal-header', 'down', 'slow');
     }
+  });
+
+  it('Should prepend 0. to input field on typing .', async () => {
     await Helpers.waitAndTap('exchange-fab');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
+    await Helpers.checkIfVisible('exchange-modal-input');
+    await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.typeText('currency-select-search-input', 'DAI\n', true);
     await Helpers.checkIfVisible(
@@ -302,7 +318,6 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.waitAndTap(
       'currency-select-list-exchange-coin-row-DAI-token'
     );
-    await Helpers.checkIfVisible('currency-select-list');
     await Helpers.typeText('exchange-modal-input', '.', false);
     await Helpers.checkIfVisible('exchange-modal-input-0.');
   });
@@ -316,6 +331,8 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.waitAndTap('exchange-fab');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
+    await Helpers.checkIfVisible('exchange-modal-input');
+    await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.typeText('currency-select-search-input', 'DAI\n', true);
     await Helpers.checkIfVisible(
@@ -324,32 +341,21 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.waitAndTap(
       'currency-select-list-exchange-coin-row-DAI-token'
     );
-    await Helpers.checkIfVisible('currency-select-list');
     await Helpers.typeText('exchange-modal-input-native', '.', false);
     await Helpers.checkIfVisible('exchange-modal-input-native-0.');
-  });
-
-  it('Should prepend 0. to output field on typing .', async () => {
-    await Helpers.waitAndTap('exchange-modal-output-selection-button');
-    await Helpers.typeText('currency-select-search-input', 'ZRX', false);
-    await Helpers.waitAndTap(
-      'currency-select-list-exchange-coin-row-ZRX-token'
-    );
-    await Helpers.waitAndTap('exchange-modal-output');
-    await Helpers.typeText('exchange-modal-output', '.', true);
-    await Helpers.checkIfVisible('exchange-modal-output-0.');
-  });
-
-  it('Should display Gas Button on Normal by default', async () => {
     if (device.getPlatform() === 'android') {
       await device.pressBack();
     } else {
       await Helpers.swipe('exchange-modal-header', 'down', 'slow');
     }
-    await Helpers.waitAndTap('exchange-fab');
+  });
+
+  it('Should prepend 0. to output field on typing .', async () => {
     await Helpers.waitAndTap('exchange-fab');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
+    await Helpers.checkIfVisible('exchange-modal-input');
+    await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.typeText('currency-select-search-input', 'DAI\n', true);
     await Helpers.checkIfVisible(
@@ -358,9 +364,23 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.waitAndTap(
       'currency-select-list-exchange-coin-row-DAI-token'
     );
+    await Helpers.typeText('exchange-modal-output', '.', false);
+    await Helpers.checkIfVisible('exchange-modal-output-0.');
+    if (device.getPlatform() === 'android') {
+      await device.pressBack();
+    } else {
+      await Helpers.swipe('exchange-modal-header', 'down', 'slow');
+    }
+  });
+
+  it('Should display Gas Button on Normal by default', async () => {
+    await Helpers.waitAndTap('exchange-fab');
     await Helpers.checkIfVisible('currency-select-list');
-    await Helpers.waitAndTap('exchange-modal-output-selection-button');
-    await Helpers.typeText('currency-select-search-input', 'ZRX', false);
+    await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
+    await Helpers.checkIfVisible('exchange-modal-input');
+    await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.checkIfVisible('currency-select-list');
+    await Helpers.typeText('currency-select-search-input', 'ZRX\n', false);
     await Helpers.waitAndTap(
       'currency-select-list-exchange-coin-row-ZRX-token'
     );

@@ -1,11 +1,16 @@
+import lang from 'i18n-js';
 import React, { useCallback } from 'react';
-import { useTheme } from '../../context/ThemeContext';
 import { delayNext } from '../../hooks/useMagicAutofocus';
 import { useNavigation } from '../../navigation/Navigation';
 import { lightModeThemeColors } from '../../styles/colors';
 import { Text } from '../text';
 import FloatingActionButton from './FloatingActionButton';
 import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
+import {
+  CurrencySelectionTypes,
+  ExchangeModalTypes,
+} from '@rainbow-me/helpers';
+import { useSwapCurrencyHandlers } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { magicMemo, watchingAlert } from '@rainbow-me/utils';
@@ -27,19 +32,27 @@ const ExchangeFab = ({ disabled, isReadOnlyWallet, ...props }) => {
   const { navigate } = useNavigation();
   const { colors } = useTheme();
 
+  const { updateInputCurrency } = useSwapCurrencyHandlers({
+    shouldUpdate: false,
+    type: ExchangeModalTypes.swap,
+  });
+
   const handlePress = useCallback(() => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
       android && delayNext();
       navigate(Routes.EXCHANGE_MODAL, {
         params: {
-          screen: Routes.MAIN_EXCHANGE_SCREEN,
+          fromDiscover: true,
+          onSelectCurrency: updateInputCurrency,
+          title: lang.t('swap.modal_types.swap'),
+          type: CurrencySelectionTypes.input,
         },
-        screen: Routes.MAIN_EXCHANGE_NAVIGATOR,
+        screen: Routes.CURRENCY_SELECT_SCREEN,
       });
     } else {
       watchingAlert();
     }
-  }, [isReadOnlyWallet, navigate]);
+  }, [isReadOnlyWallet, navigate, updateInputCurrency]);
 
   return (
     <FloatingActionButton

@@ -2,7 +2,7 @@ import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { useTheme } from '../../context/ThemeContext';
+import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText } from '../coin-row';
 import CoinCheckButton from '../coin-row/CoinCheckButton';
@@ -52,7 +52,8 @@ const sx = StyleSheet.create({
   gradient: {
     alignSelf: 'center',
     borderRadius: 24,
-    height: 24,
+    height: 26,
+    justifyContent: 'center',
     marginLeft: 19,
     textAlign: 'center',
   },
@@ -80,12 +81,11 @@ const StyledBottomRowText = styled(BottomRowText)({
 
 const ReadOnlyText = styled(Text).attrs({
   align: 'center',
-  letterSpacing: 'roundedTight',
-  lineHeight: 'paragraphSmall',
+  letterSpacing: 'roundedMedium',
+  size: 'smedium',
   weight: 'semibold',
 })({
-  paddingHorizontal: 6.5,
-  paddingVertical: 1,
+  paddingHorizontal: 8,
 });
 
 const OptionsIcon = ({ onPress }) => {
@@ -122,7 +122,7 @@ export default function AddressRow({
     walletId,
   } = data;
 
-  const { colors } = useTheme();
+  const { colors, isDarkMode } = useTheme();
 
   let cleanedUpBalance = balance;
   if (balance === '0.00') {
@@ -142,13 +142,13 @@ export default function AddressRow({
     () => ({
       ...gradientProps,
       colors: [
-        colors.alpha(colors.gradients.lightGrey[0], 0.6),
-        colors.gradients.lightGrey[1],
+        colors.alpha(colors.blueGreyDark, 0.03),
+        colors.alpha(colors.blueGreyDark, isDarkMode ? 0.02 : 0.06),
       ],
       end: { x: 1, y: 1 },
       start: { x: 0, y: 0 },
     }),
-    [colors]
+    [colors, isDarkMode]
   );
 
   return (

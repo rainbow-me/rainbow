@@ -327,7 +327,6 @@ export async function estimateGasWithPadding(
 ): Promise<string | null> {
   try {
     const p = provider || web3Provider;
-
     if (!p) {
       return null;
     }

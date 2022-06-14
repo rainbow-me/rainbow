@@ -66,7 +66,10 @@ export type {
 export type { UniswapFavoriteTokenData } from './uniswap';
 export type { UniswapPoolData } from './dispersion';
 export type {
-  Records,
+  ENSRegistrationRecords,
+  ENSRegistrations,
   ENSRegistrationState,
+  Records,
   RegistrationParameters,
+  TransactionRegistrationParameters,
 } from './ensRegistration';

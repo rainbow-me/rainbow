@@ -1,5 +1,4 @@
 import { ChainId } from '@rainbow-me/swaps';
-import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
@@ -58,7 +57,7 @@ import {
 } from '@rainbow-me/hooks';
 import { loadWallet } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
-import { executeRap, getRapEstimationByType } from '@rainbow-me/raps';
+import { executeRap, getSwapRapEstimationByType } from '@rainbow-me/raps';
 import { swapClearState, updateSwapTypeDetails } from '@rainbow-me/redux/swap';
 import { ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
@@ -113,6 +112,7 @@ export default function ExchangeModal({
   defaultInputAsset,
   defaultOutputAsset,
   fromDiscover,
+  ignoreInitialTypeCheck,
   testID,
   type,
   typeSpecificParams,
@@ -137,12 +137,36 @@ export default function ExchangeModal({
     setParams,
     dangerouslyGetParent,
     addListener,
-    goBack,
   } = useNavigation();
 
-  const {
-    params: { focused },
-  } = useRoute();
+  // if the default input is on a different network than
+  // we want to update the output to be on the same, if its not available -> null
+  const defaultOutputAssetOverride = useMemo(() => {
+    let newOutput = defaultOutputAsset;
+    if (defaultInputAsset && defaultOutputAsset) {
+      if (
+        defaultInputAsset.type !== defaultOutputAsset.type &&
+        defaultOutputAsset?.implementations?.[defaultInputAsset?.type]?.address
+      ) {
+        if (defaultInputAsset.type !== Network.mainnet) {
+          newOutput.mainnet_address = defaultOutputAsset.address;
+        }
+
+        newOutput.address =
+          defaultOutputAsset.implementations[defaultInputAsset?.type].address;
+        newOutput.type = defaultInputAsset.type;
+        newOutput.uniqueId =
+          newOutput.type === Network.mainnet
+            ? defaultOutputAsset?.address
+            : `${defaultOutputAsset?.address}_${defaultOutputAsset?.type}`;
+        return newOutput;
+      } else {
+        return null;
+      }
+    } else {
+      return newOutput;
+    }
+  }, [defaultInputAsset, defaultOutputAsset]);
 
   const isDeposit = type === ExchangeModalTypes.deposit;
   const isWithdrawal = type === ExchangeModalTypes.withdrawal;
@@ -165,7 +189,6 @@ export default function ExchangeModal({
   const [currentProvider, setCurrentProvider] = useState(null);
 
   const prevGasFeesParamsBySpeed = usePrevious(gasFeeParamsBySpeed);
-  const wasFocused = usePrevious(focused);
 
   useAndroidBackHandler(() => {
     navigate(Routes.WALLET_SCREEN);
@@ -173,7 +196,6 @@ export default function ExchangeModal({
   });
 
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
-
   const {
     handleFocus,
     inputFieldRef,
@@ -196,8 +218,9 @@ export default function ExchangeModal({
     navigateToSelectOutputCurrency,
   } = useSwapCurrencyHandlers({
     defaultInputAsset,
-    defaultOutputAsset,
+    defaultOutputAsset: defaultOutputAssetOverride,
     fromDiscover,
+    ignoreInitialTypeCheck,
     inputFieldRef,
     lastFocusedInputHandle,
     outputFieldRef,
@@ -250,7 +273,7 @@ export default function ExchangeModal({
     loading,
     resetSwapInputs,
     insufficientLiquidity,
-  } = useSwapDerivedOutputs(chainId);
+  } = useSwapDerivedOutputs(chainId, type);
 
   const lastTradeDetails = usePrevious(tradeDetails);
 
@@ -306,58 +329,6 @@ export default function ExchangeModal({
     lastFocusedInputHandle?.current?.focus();
   }, [lastFocusedInputHandle]);
 
-  const [navigating, setNavigating] = useState(false);
-  const [navigatedToInput, setNavigatedToInput] = useState(false);
-  const [navigatedToOutput, setNavigatedToOutput] = useState(false);
-
-  const navigateToOutput = useCallback(() => {
-    !navigating && navigateToSelectOutputCurrency(chainId);
-    setNavigating(true);
-    setTimeout(() => setNavigating(false), 1000);
-  }, [navigateToSelectOutputCurrency, navigating, chainId]);
-
-  const navigateToInput = useCallback(() => {
-    !navigating && navigateToSelectInputCurrency();
-    setNavigating(true);
-    setNavigatedToInput(true);
-    setTimeout(() => setNavigating(false), 1000);
-  }, [navigateToSelectInputCurrency, navigating]);
-
-  // Navigate to select input currency automatically
-  // TODO: Do this in a better way
-  useEffect(() => {
-    if (focused && !wasFocused) {
-      // Coming back from input selection without selecting anything
-      if (!inputCurrency && !outputCurrency && navigatedToInput) {
-        goBack();
-        goBack();
-      } else {
-        // initial launch
-        if (!defaultInputAsset && !inputCurrency) {
-          navigateToInput();
-          // if we just got the input but still not output
-        } else if (!outputCurrency && !navigatedToOutput) {
-          setNavigatedToInput(false);
-          setNavigatedToOutput(true);
-          navigateToOutput();
-        } else {
-          setNavigatedToOutput(false);
-        }
-      }
-    }
-  }, [
-    defaultInputAsset,
-    inputCurrency,
-    outputCurrency,
-    focused,
-    navigateToInput,
-    navigateToOutput,
-    wasFocused,
-    navigatedToInput,
-    goBack,
-    navigatedToOutput,
-  ]);
-
   const updateGasLimit = useCallback(async () => {
     try {
       if (
@@ -375,10 +346,7 @@ export default function ExchangeModal({
         provider: currentProvider,
         tradeDetails,
       };
-      const gasLimit = await getRapEstimationByType(type, {
-        provider: currentProvider,
-        swapParameters: swapParams,
-      });
+      const gasLimit = await getSwapRapEstimationByType(type, swapParams);
       if (gasLimit) {
         if (currentNetwork === Network.optimism) {
           if (tradeDetails) {
@@ -569,7 +537,7 @@ export default function ExchangeModal({
         outputAmount,
         tradeDetails,
       };
-      await executeRap(wallet, type, { swapParameters }, callback);
+      await executeRap(wallet, type, swapParameters, callback);
       logger.log('[exchange - handle submit] executed rap!');
       analytics.track(`Completed ${type}`, {
         amountInUSD,
@@ -613,7 +581,7 @@ export default function ExchangeModal({
 
   const confirmButtonProps = useMemoOne(
     () => ({
-      disabled: !Number(inputAmount) || !tradeDetails,
+      disabled: !Number(inputAmount) || (!tradeDetails && !isSavings),
       inputAmount,
       insufficientLiquidity,
       isAuthorizing,
@@ -722,13 +690,11 @@ export default function ExchangeModal({
         type: 'output_disabled',
       });
     }
-  }, [navigate, currentNetwork]);
+  }, [currentNetwork, navigate]);
 
-  const showConfirmButton = isSavings
+  const showConfirmSection = isSavings
     ? !!inputCurrency
     : !!inputCurrency && !!outputCurrency;
-
-  if (!inputCurrency && !outputCurrency) return <Wrapper />;
 
   return (
     <Wrapper>
@@ -746,10 +712,9 @@ export default function ExchangeModal({
               disableInputCurrencySelection={isWithdrawal}
               editable={!!inputCurrency}
               inputAmount={inputAmountDisplay}
-              inputCurrencyAddress={
-                inputCurrency?.mainnet_address || inputCurrency?.address
-              }
+              inputCurrencyAddress={inputCurrency?.address}
               inputCurrencyAssetType={inputCurrency?.type}
+              inputCurrencyMainnetAddress={inputCurrency?.mainnet_address}
               inputCurrencySymbol={inputCurrency?.symbol}
               inputFieldRef={inputFieldRef}
               nativeAmount={nativeAmountDisplay}
@@ -757,25 +722,26 @@ export default function ExchangeModal({
               nativeFieldRef={nativeFieldRef}
               onFocus={handleFocus}
               onPressMaxBalance={handlePressMaxBalance}
-              onPressSelectInputCurrency={navigateToInput}
+              onPressSelectInputCurrency={navigateToSelectInputCurrency}
               setInputAmount={updateInputAmount}
               setNativeAmount={updateNativeAmount}
               testID={`${testID}-input`}
             />
             {showOutputField && (
               <ExchangeOutputField
-                editable={
-                  !!outputCurrency && currentNetwork !== Network.arbitrum
-                }
+                editable={!!outputCurrency}
                 network={currentNetwork}
                 onFocus={handleFocus}
-                onPressSelectOutputCurrency={navigateToOutput}
-                onTapWhileDisabled={handleTapWhileDisabled}
-                outputAmount={outputAmountDisplay}
-                outputCurrencyAddress={
-                  outputCurrency?.mainnet_address || outputCurrency?.address
+                onPressSelectOutputCurrency={() =>
+                  navigateToSelectOutputCurrency(chainId)
                 }
+                {...(currentNetwork === Network.arbitrum && {
+                  onTapWhileDisabled: handleTapWhileDisabled,
+                })}
+                outputAmount={outputAmountDisplay}
+                outputCurrencyAddress={outputCurrency?.address}
                 outputCurrencyAssetType={outputCurrency?.type}
+                outputCurrencyMainnetAddress={outputCurrency?.mainnet_address}
                 outputCurrencySymbol={outputCurrency?.symbol}
                 outputFieldRef={outputFieldRef}
                 setOutputAmount={updateOutputAmount}
@@ -795,7 +761,7 @@ export default function ExchangeModal({
               testID="deposit-info-button"
             />
           )}
-          {!isSavings && showConfirmButton && (
+          {!isSavings && showConfirmSection && (
             <ExchangeDetailsRow
               isHighPriceImpact={isHighPriceImpact}
               onFlipCurrencies={flipCurrencies}
@@ -809,7 +775,7 @@ export default function ExchangeModal({
 
           {isWithdrawal && <Spacer />}
 
-          {showConfirmButton && (
+          {showConfirmSection && (
             <ConfirmExchangeButton
               {...confirmButtonProps}
               flashbots={flashbots}
@@ -818,7 +784,7 @@ export default function ExchangeModal({
             />
           )}
         </FloatingPanels>
-        {inputCurrency && outputCurrency && (
+        {showConfirmSection && (
           <GasSpeedButton
             asset={outputCurrency}
             bottom={insets.bottom - 7}
