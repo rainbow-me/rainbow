@@ -112,7 +112,7 @@ const doesNamePointToRecipient = (
 ) =>
   ensProfile?.data?.primary?.address?.toLowerCase() ===
   recipientAddress?.toLowerCase();
-const doesAccountControlName = (ensProfile?: ENSProfile) => ensProfile?.isOwner;
+const isRegistrant = (ensProfile?: ENSProfile) => ensProfile?.isRegistrant;
 
 const gasOffset = 120;
 const checkboxOffset = 44;
@@ -130,23 +130,29 @@ function getDefaultCheckboxes({
 }): Checkbox[] {
   if (isENS) {
     return [
-      !hasClearProfileInfo(ensProfile) && {
-        checked: false,
-        id: 'clear-records',
-        label: lang.t(
-          'wallet.transaction.checkboxes.clear_profile_information'
-        ),
-      },
-      !doesNamePointToRecipient(ensProfile, toAddress) && {
-        checked: false,
-        id: 'set-address',
-        label: lang.t('wallet.transaction.checkboxes.point_name_to_recipient'),
-      },
-      doesAccountControlName(ensProfile) && {
-        checked: false,
-        id: 'transfer-control',
-        label: lang.t('wallet.transaction.checkboxes.transfer_control'),
-      },
+      !hasClearProfileInfo(ensProfile) &&
+        ensProfile?.isOwner && {
+          checked: false,
+          id: 'clear-records',
+          label: lang.t(
+            'wallet.transaction.checkboxes.clear_profile_information'
+          ),
+        },
+      !doesNamePointToRecipient(ensProfile, toAddress) &&
+        ensProfile?.isOwner && {
+          checked: false,
+          id: 'set-address',
+          label: lang.t(
+            'wallet.transaction.checkboxes.point_name_to_recipient'
+          ),
+        },
+      isRegistrant(ensProfile) &&
+        ensProfile?.data?.owner?.address?.toLowerCase() !==
+          toAddress.toLowerCase() && {
+          checked: false,
+          id: 'transfer-control',
+          label: lang.t('wallet.transaction.checkboxes.transfer_control'),
+        },
     ].filter(Boolean) as Checkbox[];
   }
   return [
@@ -188,13 +194,20 @@ export function getSheetHeight({
   if (isL2) height = height + 59;
   if (asset && getUniqueTokenType(asset) === 'ENS') {
     height = height + gasOffset;
-    if (!hasClearProfileInfo(ensProfile)) {
+    if (!hasClearProfileInfo(ensProfile) && ensProfile?.isOwner) {
       height = height + checkboxOffset;
     }
-    if (!doesNamePointToRecipient(ensProfile, toAddress)) {
+    if (
+      !doesNamePointToRecipient(ensProfile, toAddress) &&
+      ensProfile?.isOwner
+    ) {
       height = height + checkboxOffset;
     }
-    if (doesAccountControlName(ensProfile)) {
+    if (
+      isRegistrant(ensProfile) &&
+      ensProfile?.data?.owner?.address?.toLowerCase() !==
+        toAddress.toLowerCase()
+    ) {
       height = height + checkboxOffset;
     }
   }
@@ -734,7 +747,7 @@ export default function SendConfirmationSheet() {
                     </Callout>
                   </ButtonPressAnimation>
                 )}
-                {(isENS || shouldShowChecks) && (
+                {(isENS || shouldShowChecks) && checkboxes.length > 0 && (
                   <Inset horizontal="10px">
                     <Stack space="24px">
                       {checkboxes.map((check, i) => (
