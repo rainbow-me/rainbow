@@ -645,13 +645,16 @@ export const estimateENSReclaimGasLimit = async ({
 
 export const estimateENSSetAddressGasLimit = async ({
   name,
+  ownerAddress,
   records,
 }: {
   name: string;
+  ownerAddress?: string;
   records: ENSRegistrationRecords;
 }) =>
   estimateENSTransactionGasLimit({
     name,
+    ownerAddress,
     records,
     type: ENSRegistrationTransactionType.SET_ADDR,
   });
@@ -801,6 +804,7 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
     promises.push(
       estimateENSSetRecordsGasLimit({
         name,
+        ownerAddress,
         records,
       })
     );
@@ -835,6 +839,7 @@ export const estimateENSSetRecordsGasLimit = async ({
       case ENSRegistrationTransactionType.SET_ADDR:
         gasLimit = await estimateENSSetAddressGasLimit({
           name,
+          ownerAddress,
           records: ensRegistrationRecords,
         });
         break;

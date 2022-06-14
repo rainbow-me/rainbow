@@ -368,6 +368,7 @@ export default function SendConfirmationSheet() {
         promises.push(
           estimateENSSetAddressGasLimit({
             name: cleanENSName,
+            ownerAddress: accountAddress,
             records: formatRecordsForTransaction({ ETH: toAddress }),
           })
         );
