@@ -885,7 +885,10 @@ const checkForUpdatedNonce = (transactionData: ZerionTransaction[]) => (
   if (transactionData.length) {
     const { accountAddress, network } = getState().settings;
     const txSortedByDescendingNonce = transactionData
-      .filter(({ address_from }) => address_from === accountAddress)
+      .filter(
+        ({ address_from }) =>
+          address_from?.toLowerCase() === accountAddress.toLowerCase()
+      )
       .sort(({ nonce: n1 }, { nonce: n2 }) => (n2 ?? 0) - (n1 ?? 0));
     const [latestTx] = txSortedByDescendingNonce;
     const { address_from, nonce } = latestTx;
