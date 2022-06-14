@@ -1,4 +1,3 @@
-import { isNil } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
@@ -9,6 +8,7 @@ import { magicMemo } from '../../utils';
 import { interpolate } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
+import { isNil } from '@rainbow-me/helpers/utilities';
 import { useInterval, useTimeout, useTransformOrigin } from '@rainbow-me/hooks';
 import { position } from '@rainbow-me/styles';
 
