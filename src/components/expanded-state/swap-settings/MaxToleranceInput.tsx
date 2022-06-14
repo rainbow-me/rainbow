@@ -27,13 +27,16 @@ import {
   Stack,
   Text as StyledText,
 } from '@rainbow-me/design-system';
+import { AppState } from '@rainbow-me/redux/store';
 import { Text } from '../../text';
 import { Icon } from '../../icons';
 
-const convertBipsToPercent = bips => bips / 100;
-const convertPercentToBips = percent => percent * 100;
+const convertBipsToPercent = (bips: number) => (bips / 100).toString();
+const convertPercentToBips = (percent: number) => (percent * 100).toString();
 
-export const MaxToleranceInput = forwardRef(({ colorForAsset }, ref) => {
+export const MaxToleranceInput: React.FC<{
+  colorForAsset: string;
+}> = forwardRef(({ colorForAsset }, ref) => {
   const { slippageInBips, updateSwapSlippage } = useSwapSlippage();
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
@@ -41,19 +44,28 @@ export const MaxToleranceInput = forwardRef(({ colorForAsset }, ref) => {
     convertBipsToPercent(slippageInBips)
   );
 
-  const { derivedValues } = useSelector(state => state.swap);
+  const { derivedValues } = useSelector((state: AppState) => state.swap);
 
   const { inputAmount, outputAmount } = derivedValues ?? {
     inputAmount: 0,
     outputAmount: 0,
   };
+  const slippageRef = useRef<{ blur: () => void; focus: () => void }>(null);
+
+  useImperativeHandle(ref, () => ({
+    reset: () => {
+      onSlippageChange(1);
+    },
+    blur: () => {
+      slippageRef?.current?.blur();
+    },
+  }));
 
   const {
     isHighPriceImpact,
     isSeverePriceImpact,
     priceImpactColor,
     priceImpactNativeAmount,
-    outputPriceValue,
   } = usePriceImpactDetails(
     inputAmount,
     outputAmount,
@@ -61,39 +73,23 @@ export const MaxToleranceInput = forwardRef(({ colorForAsset }, ref) => {
     outputCurrency
   );
 
-  const hasPriceImpact = isSeverePriceImpact || isHighPriceImpact || true;
-
-  console.log(
-    'isHighPriceImpact',
-    isHighPriceImpact,
-    'isSeverePriceImpact',
-    isSeverePriceImpact,
-    'color',
-    priceImpactColor,
-    'price value',
-    priceImpactNativeAmount
-  );
-
-  const slippageRef = useRef(null);
-
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
       setTimeout(() => {
-        slippageRef?.current.focus();
+        slippageRef?.current?.focus();
       }, 200);
     });
   }, []);
 
   const updateSlippage = useCallback(
     increment => {
-      //setLastFocusedInputHandle(maxBaseFieldRef)
-      const newSlippageValue = toFixedDecimals(
-        add(slippageValue, increment),
-        2
-      );
+      const newSlippage = add(slippageValue, increment);
+      const newSlippageValue = toFixedDecimals(newSlippage, 2);
       if (greaterThan(0, newSlippageValue)) return;
 
-      updateSwapSlippage(convertPercentToBips(newSlippageValue));
+      updateSwapSlippage(
+        convertPercentToBips((newSlippageValue as unknown) as number)
+      );
       setSlippageValue(newSlippageValue);
     },
     [slippageValue, updateSwapSlippage]
@@ -120,14 +116,7 @@ export const MaxToleranceInput = forwardRef(({ colorForAsset }, ref) => {
     [updateSwapSlippage, setSlippageValue]
   );
 
-  useImperativeHandle(ref, () => ({
-    reset: () => {
-      onSlippageChange(1);
-    },
-    blur: () => {
-      slippageRef?.current?.blur();
-    },
-  }));
+  const hasPriceImpact = isSeverePriceImpact || isHighPriceImpact || true;
 
   return (
     <Columns alignVertical="center">
