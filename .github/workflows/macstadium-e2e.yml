@@ -1,12 +1,12 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: iOS e2e (MacStadium)
 
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the "develop" branch
   pull_request:
-    branches: [ "@bruno/macstadium-e2e" ]
+    branches: [ "develop", "@bruno/macstadium-e2e" ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -29,8 +29,20 @@ jobs:
       - name: Set up ENV vars & scripts
         run: git clone git@github.com:rainbow-me/rainbow-env.git && mv rainbow-env/dotenv .env && rm -rf rainbow-env && git clone git@github.com:rainbow-me/rainbow-scripts.git && sed -i''-e "s/\IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
 
-      - name: Install deps
-        run: yarn setup && cd ios && pod install && cd ..
+      - name: Install deps via Yarn
+        run: yarn setup-ci
 
-      - name: Run e2e tests in release mode
+      - name: Check for frozen lockfile
+        run: yarn check-lockfile
+        
+      - name: Audit CI
+        run:  yarn audit-ci --moderate --config audit-ci.json
+
+      - name: Lint
+        run: yarn lint
+        
+      - name: Install Pods
+        run: cd ios && pod install && cd ..
+
+      - name: Run iOS e2e tests (Release mode)
         run: yarn detox:ios:release
