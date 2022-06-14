@@ -386,7 +386,7 @@
       "./config/test/jest-setup.js"
     ],
     "transformIgnorePatterns": [
-      "<rootDir>/node_modules/(?!react-native-bignumber)/"
+      "/node_modules/(?!react-native-bignumber)/"
     ]
   },
   "detox": {
