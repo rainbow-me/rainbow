@@ -5,13 +5,11 @@ import {
   IS_TESTING,
 } from 'react-native-dotenv';
 import { useDispatch } from 'react-redux';
+import useAccountSettings from './useAccountSettings';
 import usePrevious from './usePrevious';
+import useProviderWithNetwork from './useProviderWithNetwork';
 import { useENSRegistration } from '.';
-import {
-  getProviderForNetwork,
-  isHardHat,
-  web3Provider,
-} from '@rainbow-me/handlers/web3';
+import { getProviderForNetwork, isHardHat } from '@rainbow-me/handlers/web3';
 import {
   ENS_SECONDS_WAIT,
   REGISTRATION_MODES,
@@ -27,6 +25,8 @@ export default function useENSRegistrationStepHandler(observer = true) {
   const { registrationParameters, mode } = useENSRegistration();
   const commitTransactionHash = registrationParameters?.commitTransactionHash;
   const prevCommitTrasactionHash = usePrevious(commitTransactionHash);
+  const { network } = useAccountSettings();
+  const provider = useProviderWithNetwork(network);
 
   const timeout = useRef<NodeJS.Timeout>();
 
@@ -43,8 +43,8 @@ export default function useENSRegistrationStepHandler(observer = true) {
   );
 
   const isTestingHardhat = useMemo(
-    () => IS_TESTING === 'true' && isHardHat(web3Provider.connection.url),
-    []
+    () => IS_TESTING === 'true' && isHardHat(provider?.connection.url || ''),
+    [provider?.connection?.url]
   );
 
   const [readyToRegister, setReadyToRegister] = useState<boolean>(

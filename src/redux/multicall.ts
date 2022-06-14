@@ -1,10 +1,11 @@
+import { Provider } from '@ethersproject/abstract-provider';
 import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import { ChainId } from '@uniswap/sdk';
 import { chunk, forEach, get, keys, map } from 'lodash';
-import { web3Provider } from '../handlers/web3';
 import { MULTICALL_ABI, MULTICALL_NETWORKS } from '../references/uniswap';
 import { AppDispatch, AppGetState } from './store';
+import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
 import logger from 'logger';
 
 // -- Constants ------------------------------------------------------------- //
@@ -189,8 +190,8 @@ export function activeListeningKeys(
 
 export const multicallUpdateOutdatedListeners = (
   latestBlockNumber?: number
-) => (dispatch: AppDispatch, getState: AppGetState) => {
-  const { chainId } = getState().settings;
+) => async (dispatch: AppDispatch, getState: AppGetState) => {
+  const { chainId, network } = getState().settings;
   const { listeners, results } = getState().multicall;
   const listeningKeys = activeListeningKeys(listeners, chainId);
   const outdatedCallKeys = outdatedListeningKeys(
@@ -203,10 +204,11 @@ export const multicallUpdateOutdatedListeners = (
   const calls = map(outdatedCallKeys, key => parseCallKey(key));
   const chunkedCalls = chunk(calls, CALL_CHUNK_SIZE);
 
+  const provider = await getProviderForNetwork(network);
   const multicallContract = new Contract(
     MULTICALL_NETWORKS[chainId as ChainId],
     MULTICALL_ABI,
-    web3Provider!
+    provider as Provider
   );
 
   forEach(chunkedCalls, (chunk, chunkIndex) => {

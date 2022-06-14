@@ -5,10 +5,8 @@ import { Contract } from '@ethersproject/contracts';
 import { isValidMnemonic as ethersIsValidMnemonic } from '@ethersproject/hdnode';
 import {
   Block,
-  Network as EthersNetwork,
   StaticJsonRpcProvider,
   TransactionRequest,
-  TransactionResponse,
 } from '@ethersproject/providers';
 import { parseEther } from '@ethersproject/units';
 import UnstoppableResolution from '@unstoppabledomains/resolution';
@@ -111,11 +109,6 @@ export const setRpcEndpoints = (config: RainbowConfig): void => {
 };
 
 /**
- * @desc web3 http instance
- */
-export let web3Provider: StaticJsonRpcProvider = (null as unknown) as StaticJsonRpcProvider;
-
-/**
  * @desc Checks whether or not a `Network | string` union type should be
  * treated as a `Network` based on its prefix, as opposed to a `string` type.
  * @param network The network to check.
@@ -123,18 +116,6 @@ export let web3Provider: StaticJsonRpcProvider = (null as unknown) as StaticJson
  */
 const isNetworkEnum = (network: Network | string): network is Network => {
   return !network.startsWith('http://');
-};
-
-/**
- * @desc Sets a different web3 provider.
- * @param network The network to set.
- * @return A promise that resolves with an Ethers Network when the provider is ready.
- */
-export const web3SetHttpProvider = async (
-  network: Network | string
-): Promise<EthersNetwork> => {
-  web3Provider = await getProviderForNetwork(network);
-  return web3Provider.ready;
 };
 
 /**
@@ -220,9 +201,12 @@ export const sendRpcCall = async (
     method: string;
     params: any[];
   },
-  provider: StaticJsonRpcProvider | null = null
-): Promise<any> =>
-  (provider || web3Provider)?.send(payload.method, payload.params);
+  provider: StaticJsonRpcProvider | null = null,
+  network: Network | undefined
+): Promise<any> => {
+  const p = provider || (await getProviderForNetwork(network));
+  p?.send(payload.method, payload.params);
+};
 
 /**
  * @desc check if hex string
@@ -283,8 +267,7 @@ export const toChecksumAddress = (address: string): string | null => {
 /**
  * @desc estimate gas limit
  * @param estimateGasData The transaction request to use for the estimate.
- * @param provider If specified, a provider to use instead of the cached
- * `web3Provider`.
+ * @param provider A specific provider to use
  * @return The gas limit, or `null` if an error occurs.
  */
 export const estimateGas = async (
@@ -292,7 +275,11 @@ export const estimateGas = async (
   provider: StaticJsonRpcProvider | null = null
 ): Promise<string | null> => {
   try {
-    const p = provider || web3Provider;
+    const { chainId } = estimateGasData;
+    const network = chainId
+      ? ethereumUtils.getNetworkFromChainId(chainId)
+      : Network.mainnet;
+    const p = provider || (await getProviderForNetwork(network));
     const gasLimit = await p?.estimateGas(estimateGasData);
     return gasLimit?.toString() ?? null;
   } catch (error) {
@@ -307,8 +294,7 @@ export const estimateGas = async (
  * defaulting to `null`.
  * @param callArguments Arbitrary arguments passed as the first parameters
  * of `contractCallEstimateGas`, if provided.
- * @param provider The provider to use. If none is specified, the cached
- * `web3Provider` is used instead.
+ * @param provider The specific provider to use.
  * @param paddingFactor The padding applied to the gas limit.
  * @return The gas estimation as a string, or `null` if estimation failed
  */
@@ -320,7 +306,11 @@ export async function estimateGasWithPadding(
   paddingFactor: number = 1.1
 ): Promise<string | null> {
   try {
-    const p = provider || web3Provider;
+    const { chainId } = txPayload;
+    const network = chainId
+      ? ethereumUtils.getNetworkFromChainId(chainId)
+      : Network.mainnet;
+    const p = provider || (await getProviderForNetwork(network));
     if (!p) {
       return null;
     }
@@ -407,27 +397,6 @@ export const toWei = (ether: string): string => {
 };
 
 /**
- * @desc get transaction info
- * @param hash The transaction hash.
- * @return The corresponding `TransactionResponse`, or `null` if one could not
- * be found.
- */
-export const getTransaction = async (
-  hash: string
-): Promise<TransactionResponse | null> =>
-  web3Provider?.getTransaction(hash) ?? null;
-
-/**
- * @desc get address transaction count
- * @param address The address to check.
- * @return The transaction count, or `null` if it could not be found.
- */
-export const getTransactionCount = async (
-  address: string
-): Promise<number | null> =>
-  web3Provider?.getTransactionCount(address, 'pending') ?? null;
-
-/**
  * get transaction gas params depending on network
  * @returns - object with `gasPrice` or `maxFeePerGas` and `maxPriorityFeePerGas`
  */
@@ -509,8 +478,6 @@ export const resolveUnstoppableDomain = async (
 /**
  * @desc Resolves a name or address to an Ethereum hex-formatted address.
  * @param nameOrAddress The name or address to resolve.
- * @param provider If provided, a provider to use instead of the cached
- * `web3Provider`.
  * @return The address, or undefined if one could not be resolved.
  */
 export const resolveNameOrAddress = async (
@@ -769,8 +736,7 @@ export const buildTransaction = async (
  * transaction.
  * @param addPadding Whether or not to add padding to the gas limit, defaulting
  * to `false`.
- * @param provider If provided, a provider to use instead of the default
- * cached `web3Provider`.
+ * @param provider A specific provider to use
  * @param network The network to use, defaulting to `Network.mainnet`.
  * @returns The estimated gas limit.
  */

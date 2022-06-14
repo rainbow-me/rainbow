@@ -10,15 +10,13 @@ import useInitializeWallet from './useInitializeWallet';
 import useIsWalletEthZero from './useIsWalletEthZero';
 import useMagicAutofocus from './useMagicAutofocus';
 import usePrevious from './usePrevious';
+import useProviderWithNetwork from './useProviderWithNetwork';
 import useTimeout from './useTimeout';
 import useWalletENSAvatar from './useWalletENSAvatar';
 import useWallets from './useWallets';
 import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import { fetchImages, fetchReverseRecord } from '@rainbow-me/handlers/ens';
-import {
-  resolveUnstoppableDomain,
-  web3Provider,
-} from '@rainbow-me/handlers/web3';
+import { resolveUnstoppableDomain } from '@rainbow-me/handlers/web3';
 import {
   isENSAddressFormat,
   isUnstoppableAddressFormat,
@@ -34,7 +32,7 @@ import { ethereumUtils, sanitizeSeedPhrase } from '@rainbow-me/utils';
 import logger from 'logger';
 
 export default function useImportingWallet({ showImportModal = true } = {}) {
-  const { accountAddress } = useAccountSettings();
+  const { accountAddress, network } = useAccountSettings();
   const { selectedWallet, setIsWalletLoading, wallets } = useWallets();
 
   const { goBack, navigate, replace, setParams } = useNavigation();
@@ -52,6 +50,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const wasImporting = usePrevious(isImporting);
   const { updateWalletENSAvatars } = useWalletENSAvatar();
   const profilesEnabled = useExperimentalFlag(PROFILES);
+  const provider = useProviderWithNetwork(network);
 
   const inputRef = useRef(null);
 
@@ -132,7 +131,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
       if (isENSAddressFormat(input)) {
         try {
           const [address, images] = await Promise.all([
-            web3Provider.resolveName(input),
+            provider.resolveName(input),
             !avatarUrl && profilesEnabled && fetchImages(input),
           ]);
           if (!address) {
@@ -176,7 +175,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         }
       } else if (isValidAddress(input)) {
         try {
-          const ens = await web3Provider.lookupAddress(input);
+          const ens = await provider.lookupAddress(input);
           if (ens && ens !== input) {
             name = forceEmoji ? `${forceEmoji} ${ens}` : ens;
             if (!avatarUrl && profilesEnabled) {
@@ -226,7 +225,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         }
       }
     },
-    [isSecretValid, profilesEnabled, seedPhrase, startImportProfile]
+    [isSecretValid, profilesEnabled, provider, seedPhrase, startImportProfile]
   );
 
   const dispatch = useDispatch();

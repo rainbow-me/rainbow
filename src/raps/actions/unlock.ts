@@ -1,3 +1,4 @@
+import { Provider } from '@ethersproject/abstract-provider';
 import { MaxUint256 } from '@ethersproject/constants';
 import { Contract } from '@ethersproject/contracts';
 import { Wallet } from '@ethersproject/wallet';
@@ -14,7 +15,8 @@ import {
   TransactionStatus,
   TransactionType,
 } from '@rainbow-me/entities';
-import { toHex, web3Provider } from '@rainbow-me/handlers/web3';
+import { getProviderForNetwork, toHex } from '@rainbow-me/handlers/web3';
+import { Network } from '@rainbow-me/helpers';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';
 import { erc20ABI, ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
@@ -25,7 +27,8 @@ import logger from 'logger';
 export const estimateApprove = async (
   owner: string,
   tokenAddress: string,
-  spender: string
+  spender: string,
+  network: Network
 ): Promise<number | string> => {
   try {
     logger.sentry('exchange estimate approve', {
@@ -33,7 +36,8 @@ export const estimateApprove = async (
       spender,
       tokenAddress,
     });
-    const exchange = new Contract(tokenAddress, erc20ABI, web3Provider!);
+    const provider = await getProviderForNetwork(network);
+    const exchange = new Contract(tokenAddress, erc20ABI, provider as Provider);
     const gasLimit = await exchange.estimateGas.approve(spender, MaxUint256, {
       from: owner,
     });
@@ -48,11 +52,17 @@ export const estimateApprove = async (
 const getRawAllowance = async (
   owner: string,
   token: Asset,
-  spender: string
+  spender: string,
+  network: Network
 ) => {
   try {
     const { address: tokenAddress } = token;
-    const tokenContract = new Contract(tokenAddress, erc20ABI, web3Provider!);
+    const provider = await getProviderForNetwork(network);
+    const tokenContract = new Contract(
+      tokenAddress,
+      erc20ABI,
+      provider as Provider
+    );
     const allowance = await tokenContract.allowance(owner, spender);
     return allowance.toString();
   } catch (error) {
@@ -91,7 +101,7 @@ const unlock = async (
 ): Promise<number | undefined> => {
   logger.log(`[${actionName}] base nonce`, baseNonce, 'index:', index);
   const { dispatch } = store;
-  const { accountAddress } = store.getState().settings;
+  const { accountAddress, network } = store.getState().settings;
   const { gasFeeParamsBySpeed, selectedGasFee } = store.getState().gas;
   const {
     assetToUnlock,
@@ -110,7 +120,8 @@ const unlock = async (
     gasLimit = await estimateApprove(
       accountAddress,
       assetAddress,
-      contractAddress
+      contractAddress,
+      network
     );
   } catch (e) {
     logger.sentry(`[${actionName}] Error estimating gas`);
@@ -209,10 +220,12 @@ export const assetNeedsUnlocking = async (
   if (AllowancesCache.cache[cacheKey]) {
     allowance = AllowancesCache.cache[cacheKey];
   } else {
+    const { network } = store.getState()?.settings;
     allowance = await getRawAllowance(
       accountAddress,
       assetToUnlock,
-      contractAddress
+      contractAddress,
+      network
     );
 
     // Cache that value

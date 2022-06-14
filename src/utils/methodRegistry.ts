@@ -1,17 +1,21 @@
+import { Provider } from '@ethersproject/abstract-provider';
 import { Contract } from '@ethersproject/contracts';
-import { web3Provider } from '../handlers/web3';
+import { getProviderForNetwork } from '../handlers/web3';
 import namesOverrides from '../references/method-names-overrides.json';
 import methodRegistryABI from '../references/method-registry-abi.json';
+import { Network } from '@rainbow-me/helpers';
 
 const METHOD_REGISTRY_ADDRESS = '0x44691B39d1a75dC4E0A0346CBB15E310e6ED1E86';
 
 export const methodRegistryLookupAndParse = async (
-  methodSignatureBytes: any
+  methodSignatureBytes: any,
+  network: Network | undefined = Network.mainnet
 ) => {
+  const provider = await getProviderForNetwork(network);
   const registry = new Contract(
     METHOD_REGISTRY_ADDRESS,
     methodRegistryABI,
-    web3Provider
+    provider as Provider
   );
 
   const signature = await registry.entries(methodSignatureBytes);

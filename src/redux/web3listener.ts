@@ -1,6 +1,5 @@
 import { debounce, isEmpty } from 'lodash';
 import { ThunkDispatch } from 'redux-thunk';
-import { web3Provider } from '@rainbow-me/handlers/web3';
 import { multicallUpdateOutdatedListeners } from '@rainbow-me/redux/multicall';
 import store, { AppGetState, AppState } from '@rainbow-me/redux/store';
 import logger from 'logger';
@@ -27,14 +26,14 @@ const debouncedUpdateMulticallListeners = debounce(blockNumber => {
 }, 1000);
 
 export const web3ListenerInit = (): void => {
-  if (!web3Provider) {
-    return;
-  }
+  // if (!web3Provider) {
+  //   return;
+  // }
 
-  web3Provider.pollingInterval = 10000;
-  web3Provider.on('block', debouncedUpdateMulticallListeners);
+  // web3Provider.pollingInterval = 10000;
+  // web3Provider.on('block', debouncedUpdateMulticallListeners);
 };
 
 export const web3ListenerStop = (): void => {
-  web3Provider?.removeAllListeners('block');
+  // web3Provider?.removeAllListeners('block');
 };

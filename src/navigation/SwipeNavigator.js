@@ -2,14 +2,17 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import React, { useMemo, useState } from 'react';
 import { FlexItem } from '../components/layout';
 import { TestnetToast } from '../components/toasts';
-import { web3Provider } from '../handlers/web3';
 import ProfileScreen from '../screens/ProfileScreen';
 import QRScannerScreen from '../screens/QRScannerScreen';
 import WalletScreen from '../screens/WalletScreen';
 import { deviceUtils } from '../utils';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
 import Routes from './routesNames';
-import { useAccountSettings, useCoinListEdited } from '@rainbow-me/hooks';
+import {
+  useAccountSettings,
+  useCoinListEdited,
+  useProviderWithNetwork,
+} from '@rainbow-me/hooks';
 
 const Swipe = createMaterialTopTabNavigator();
 
@@ -24,6 +27,7 @@ export function SwipeNavigator() {
   const { network } = useAccountSettings();
   const [swipeEnabled, setSwipeEnabled] = useState(true);
   const params = useMemo(() => ({ setSwipeEnabled }), []);
+  const provider = useProviderWithNetwork(network);
 
   return (
     <FlexItem>
@@ -42,7 +46,7 @@ export function SwipeNavigator() {
           name={Routes.QR_SCANNER_SCREEN}
         />
       </Swipe.Navigator>
-      <TestnetToast network={network} web3Provider={web3Provider} />
+      {provider && <TestnetToast network={network} provider={provider} />}
     </FlexItem>
   );
 }

@@ -1,5 +1,6 @@
 import { useQuery } from 'react-query';
-import { web3Provider } from '@rainbow-me/handlers/web3';
+import useAccountSettings from './useAccountSettings';
+import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
 import { getFirstTransactionTimestamp } from '@rainbow-me/utils/ethereumUtils';
 
 export default function useFirstTransactionTimestamp({
@@ -7,10 +8,12 @@ export default function useFirstTransactionTimestamp({
 }: {
   ensName: string;
 }) {
+  const { network } = useAccountSettings();
   return useQuery(
     ['first-transaction-timestamp', ensName],
     async () => {
-      const address = await web3Provider.resolveName(ensName);
+      const provider = await getProviderForNetwork(network);
+      const address = await provider.resolveName(ensName);
       return address ? getFirstTransactionTimestamp(address) : undefined;
     },
     {

@@ -47,7 +47,7 @@ import {
   ensPublicResolverAddress,
   ethUnits,
 } from '@rainbow-me/references';
-import { labelhash, logger, profileUtils } from '@rainbow-me/utils';
+import { logger, profileUtils } from '@rainbow-me/utils';
 import { AvatarResolver } from 'ens-avatar';
 
 const DUMMY_RECORDS = {

@@ -61,11 +61,7 @@ import {
   saveLocalPendingTransactions,
   saveLocalTransactions,
 } from '@rainbow-me/handlers/localstorage/accountLocal';
-import {
-  getProviderForNetwork,
-  isL2Network,
-  web3Provider,
-} from '@rainbow-me/handlers/web3';
+import { getProviderForNetwork, isL2Network } from '@rainbow-me/handlers/web3';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { Navigation } from '@rainbow-me/navigation';
 import { triggerOnSwipeLayout } from '@rainbow-me/navigation/onNavigationStateChange';
@@ -1739,9 +1735,13 @@ export const checkPendingTransactionsOnInitialize = (
   dispatch: ThunkDispatch<AppState, unknown, never>,
   getState: AppGetState
 ) => {
-  const { accountAddress: currentAccountAddress } = getState().settings;
+  const {
+    accountAddress: currentAccountAddress,
+    network,
+  } = getState().settings;
   if (currentAccountAddress !== accountAddressToWatch) return;
-  const currentNonce = await (provider || web3Provider).getTransactionCount(
+  const p = provider || (await getProviderForNetwork(network));
+  const currentNonce = await (provider || p).getTransactionCount(
     currentAccountAddress,
     'latest'
   );

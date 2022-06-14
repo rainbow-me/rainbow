@@ -29,7 +29,6 @@ import {
   getProviderForNetwork,
   isL2Network,
   resolveNameOrAddress,
-  web3Provider,
 } from '@rainbow-me/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import Network from '@rainbow-me/helpers/networkTypes';
@@ -307,7 +306,7 @@ export default function SendSheet(props) {
           !currentNetwork ||
           prevNetwork !== currentNetwork)
       ) {
-        let provider = web3Provider;
+        let provider;
         switch (selected.type) {
           case AssetTypes.polygon:
             setCurrentNetwork(Network.polygon);
@@ -323,6 +322,7 @@ export default function SendSheet(props) {
             break;
           default:
             setCurrentNetwork(network);
+            provider = await getProviderForNetwork(network);
         }
         setCurrentProvider(provider);
       }

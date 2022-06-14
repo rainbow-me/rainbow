@@ -47,7 +47,8 @@ export const estimateSwapAndDepositCompound = async (
       const unlockGasLimit = await estimateApprove(
         accountAddress,
         inputCurrency.address,
-        UNISWAP_V2_ROUTER_ADDRESS
+        UNISWAP_V2_ROUTER_ADDRESS,
+        network
       );
       gasLimits = concat(gasLimits, unlockGasLimit);
     }
@@ -81,7 +82,8 @@ export const estimateSwapAndDepositCompound = async (
     const depositGasLimit = await estimateApprove(
       accountAddress,
       tokenToDeposit.address,
-      cTokenContract
+      cTokenContract,
+      network
     );
     gasLimits = concat(gasLimits, depositGasLimit);
   }

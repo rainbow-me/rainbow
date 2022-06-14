@@ -26,13 +26,14 @@ import {
 } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
 import { GasFeeTypes, TransactionStatusTypes } from '@rainbow-me/entities';
-import {
-  getProviderForNetwork,
-  isL2Network,
-  toHex,
-} from '@rainbow-me/handlers/web3';
+import { isL2Network, toHex } from '@rainbow-me/handlers/web3';
 import { greaterThan } from '@rainbow-me/helpers/utilities';
-import { useAccountSettings, useDimensions, useGas } from '@rainbow-me/hooks';
+import {
+  useAccountSettings,
+  useDimensions,
+  useGas,
+  useProviderWithNetwork,
+} from '@rainbow-me/hooks';
 import { sendTransaction } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
 import { getTitle } from '@rainbow-me/parsers';
@@ -144,12 +145,12 @@ export default function SpeedUpAndCancelSheet() {
   );
   const fetchedTx = useRef(false);
   const [currentNetwork, setCurrentNetwork] = useState(null);
-  const [currentProvider, setCurrentProvider] = useState(null);
   const [data, setData] = useState(null);
   const [gasLimit, setGasLimit] = useState(null);
   const [nonce, setNonce] = useState(null);
   const [to, setTo] = useState(tx.to);
   const [value, setValue] = useState(null);
+  const currentProvider = useProviderWithNetwork(currentNetwork);
 
   const getNewTransactionGasParams = useCallback(() => {
     if (txType === GasFeeTypes.eip1559) {
@@ -285,13 +286,6 @@ export default function SpeedUpAndCancelSheet() {
   useEffect(() => {
     if (currentNetwork) {
       startPollingGasFees(currentNetwork);
-      const updateProvider = async () => {
-        const provider = await getProviderForNetwork(currentNetwork);
-        setCurrentProvider(provider);
-      };
-
-      updateProvider();
-
       return () => {
         stopPollingGasFees();
       };

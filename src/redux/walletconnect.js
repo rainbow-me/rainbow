@@ -22,7 +22,7 @@ import {
   removeWalletConnectSessions,
   saveWalletConnectSession,
 } from '../handlers/localstorage/walletconnectSessions';
-import { sendRpcCall } from '../handlers/web3';
+import { getProviderForNetwork, sendRpcCall } from '../handlers/web3';
 import { dappLogoOverride, dappNameOverride } from '../helpers/dappNameHandler';
 import WalletTypes from '../helpers/walletTypes';
 import { getFCMToken } from '../model/firebase';
@@ -419,7 +419,11 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
 
       return;
     } else if (!isSigningMethod(payload.method)) {
-      sendRpcCall(payload)
+      const network = ethereumUtils.getNetworkFromChainId(
+        Number(walletConnector._chainId)
+      );
+      const provider = await getProviderForNetwork(network);
+      sendRpcCall(payload, provider)
         .then(result => {
           walletConnector.approveRequest({
             id: payload.id,

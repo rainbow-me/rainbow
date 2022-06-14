@@ -7,7 +7,7 @@ import {
   saveWalletBalances,
   WALLET_BALANCES_FROM_STORAGE,
 } from '@rainbow-me/handlers/localstorage/walletBalances';
-import { web3Provider } from '@rainbow-me/handlers/web3';
+import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import { queryClient } from '@rainbow-me/react-query/queryClient';
 import { balanceCheckerContractAbi } from '@rainbow-me/references';
@@ -20,6 +20,7 @@ const useWalletBalances = wallets => {
   const { network } = useAccountSettings();
 
   const fetchBalances = useCallback(async () => {
+    const provider = await getProviderForNetwork(network);
     const walletBalances = {};
 
     // Get list of addresses to get balances for
@@ -34,7 +35,7 @@ const useWalletBalances = wallets => {
       const balanceCheckerContract = new Contract(
         get(networkInfo[network], 'balance_checker_contract_address'),
         balanceCheckerContractAbi,
-        web3Provider
+        provider
       );
 
       const balances = await balanceCheckerContract.balances(

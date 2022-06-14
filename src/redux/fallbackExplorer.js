@@ -8,7 +8,7 @@ import { addressAssetsReceived, fetchAssetPricesWithCoingecko } from './data';
 import { emitMainnetAssetDiscoveryRequest, explorerInitL2 } from './explorer';
 import { AssetTypes } from '@rainbow-me/entities';
 import { getAssetsFromCovalent } from '@rainbow-me/handlers/covalent';
-import { web3Provider } from '@rainbow-me/handlers/web3';
+import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
 import {
@@ -262,10 +262,11 @@ const getTokenTxDataFromEtherscan = async (
 };
 
 const fetchAssetBalances = async (tokens, address, network) => {
+  const provider = await getProviderForNetwork(network);
   const balanceCheckerContract = new Contract(
     get(networkInfo[network], 'balance_checker_contract_address'),
     balanceCheckerContractAbi,
-    web3Provider
+    provider
   );
   try {
     const values = await balanceCheckerContract.balances([address], tokens);

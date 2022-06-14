@@ -34,7 +34,6 @@ import {
   getProviderForNetwork,
   isHardHat,
   isL2Network,
-  web3Provider,
 } from '@rainbow-me/handlers/web3';
 import { Network } from '@rainbow-me/helpers/networkTypes';
 import {
@@ -483,8 +482,9 @@ export const gasPricesStartPolling = (network = Network.mainnet) => async (
                 // the basefee at the time we fork mainnet during our hardhat tests
                 let baseFee = baseFeePerGas;
                 if (network === Network.mainnet && IS_TESTING === 'true') {
+                  const provider = await getProviderForNetwork(Network.mainnet);
                   const providerUrl = (
-                    web3Provider ||
+                    provider ||
                     ({} as {
                       connection: { url: string };
                     })

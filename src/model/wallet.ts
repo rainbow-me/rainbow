@@ -46,10 +46,10 @@ import {
 import { saveAccountEmptyState } from '@rainbow-me/handlers/localstorage/accountLocal';
 import {
   addHexPrefix,
+  getProviderForNetwork,
   isHexString,
   isHexStringIgnorePrefix,
   isValidMnemonic,
-  web3Provider,
 } from '@rainbow-me/handlers/web3';
 import { createSignature } from '@rainbow-me/helpers/signingWallet';
 import showWalletErrorAlert from '@rainbow-me/helpers/support';
@@ -241,13 +241,16 @@ export const loadWallet = async (
   showErrorIfNotLoaded = true,
   provider?: Provider
 ): Promise<null | Wallet> => {
+  const p =
+    provider ||
+    (await getProviderForNetwork(store.getState()?.settings?.network));
   const privateKey = await loadPrivateKey(address);
   if (privateKey === -1 || privateKey === -2) {
     return null;
   }
   if (privateKey) {
     // @ts-ignore
-    return new Wallet(privateKey, provider || web3Provider);
+    return new Wallet(privateKey, p);
   }
   if (ios && showErrorIfNotLoaded) {
     showWalletErrorAlert();

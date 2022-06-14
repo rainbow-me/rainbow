@@ -47,7 +47,6 @@ import { Text } from '@rainbow-me/design-system';
 import {
   estimateGas,
   estimateGasWithPadding,
-  getProviderForNetwork,
   isL2Network,
   isTestnetNetwork,
   toHex,
@@ -62,6 +61,7 @@ import {
   useDimensions,
   useGas,
   useKeyboardHeight,
+  useProviderWithNetwork,
   useTransactionConfirmation,
   useWalletBalances,
   useWallets,
@@ -170,7 +170,6 @@ const Wrapper = ios ? SlackSheet : ({ children }) => children;
 
 export default function TransactionConfirmationScreen() {
   const { colors } = useTheme();
-  const [provider, setProvider] = useState();
   const [currentNetwork, setCurrentNetwork] = useState();
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const [methodName, setMethodName] = useState(null);
@@ -194,6 +193,8 @@ export default function TransactionConfirmationScreen() {
   const walletConnectors = useSelector(
     ({ walletconnect }) => walletconnect.walletConnectors
   );
+
+  const provider = useProviderWithNetwork(currentNetwork);
 
   const {
     dataAddNewTransaction,
@@ -244,14 +245,6 @@ export default function TransactionConfirmationScreen() {
       ethereumUtils.getNetworkFromChainId(Number(walletConnector?._chainId))
     );
   }, [walletConnector?._chainId]);
-
-  useEffect(() => {
-    const initProvider = async () => {
-      const p = await getProviderForNetwork(currentNetwork);
-      setProvider(p);
-    };
-    currentNetwork && initProvider();
-  }, [currentNetwork]);
 
   useEffect(() => {
     const getNativeAsset = async () => {
@@ -333,7 +326,8 @@ export default function TransactionConfirmationScreen() {
           setMethodName(lang.t('wallet.transaction.request'));
         }, 5000);
         const { name } = await methodRegistryLookupAndParse(
-          methodSignaturePrefix
+          methodSignaturePrefix,
+          currentNetwork
         );
         if (name) {
           setMethodName(name);

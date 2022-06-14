@@ -25,7 +25,7 @@ export const estimateUnlockAndSwap = async (
   if (!inputCurrency || !outputCurrency || !inputAmount)
     return ethUnits.basic_swap;
 
-  const { accountAddress, chainId } = store.getState().settings;
+  const { accountAddress, chainId, network } = store.getState().settings;
 
   let gasLimits: (string | number)[] = [];
   const swapAssetNeedsUnlocking = await assetNeedsUnlocking(
@@ -38,7 +38,8 @@ export const estimateUnlockAndSwap = async (
     const unlockGasLimit = await estimateApprove(
       accountAddress,
       inputCurrency.address,
-      UNISWAP_V2_ROUTER_ADDRESS
+      UNISWAP_V2_ROUTER_ADDRESS,
+      network
     );
     gasLimits = concat(gasLimits, unlockGasLimit, ethUnits.basic_swap);
   } else {

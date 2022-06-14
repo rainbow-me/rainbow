@@ -14,7 +14,7 @@ import {
 } from '@uniswap/sdk';
 import { get, mapKeys, mapValues, toLower } from 'lodash';
 import { loadWallet } from '../model/wallet';
-import { estimateGasWithPadding, toHex, web3Provider } from './web3';
+import { estimateGasWithPadding, getProviderForNetwork, toHex } from './web3';
 import { Asset } from '@rainbow-me/entities';
 import { Network } from '@rainbow-me/networkTypes';
 import {
@@ -24,6 +24,7 @@ import {
   UNISWAP_V2_ROUTER_ABI,
   UNISWAP_V2_ROUTER_ADDRESS,
 } from '@rainbow-me/references';
+import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 export enum Field {
@@ -79,6 +80,8 @@ export const estimateSwapGasLimit = async ({
   methodName?: string | null;
 }> => {
   let methodName = null;
+  const network = ethereumUtils.getNetworkFromChainId(chainId);
+  const provider = await getProviderForNetwork(network);
   if (!tradeDetails) {
     logger.sentry('No trade details in estimateSwapGasLimit');
     return {
@@ -96,7 +99,7 @@ export const estimateSwapGasLimit = async ({
       chainId,
       inputCurrency,
       outputCurrency,
-      providerOrSigner: web3Provider!,
+      providerOrSigner: provider as Provider,
       slippage,
       tradeDetails,
     });

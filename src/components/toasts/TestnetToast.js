@@ -7,9 +7,9 @@ import Toast from './Toast';
 import { isHardHat } from '@rainbow-me/handlers/web3';
 import { useInternetStatus } from '@rainbow-me/hooks';
 
-const TestnetToast = ({ network, web3Provider }) => {
+const TestnetToast = ({ network, provider }) => {
   const isConnected = useInternetStatus();
-  const providerUrl = web3Provider?.connection?.url;
+  const providerUrl = provider?.connection?.url;
   const { name, color } = networkInfo[network];
   const [visible, setVisible] = useState(!network === networkTypes.mainnet);
   const [networkName, setNetworkName] = useState(name);
