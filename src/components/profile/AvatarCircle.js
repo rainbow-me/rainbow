@@ -4,7 +4,6 @@ import { ButtonPressAnimation } from '../animations';
 import ImageAvatar from '../contacts/ImageAvatar';
 import { Flex, InnerBorder } from '../layout';
 import { Text } from '../text';
-import { getAvatarColorHex } from '@rainbow-me/helpers/colorHandler';
 import { useAccountProfile, useRainbowProfile } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
@@ -35,8 +34,8 @@ export default function AvatarCircle({
   onPress,
   overlayStyles,
   image,
-  showcaseAccountSymbol,
-  showcaseAccountColor,
+  emoji,
+  color,
   ...props
 }) {
   const { colors, isDarkMode } = useTheme();
@@ -44,26 +43,27 @@ export default function AvatarCircle({
 
   const { rainbowProfile } = useRainbowProfile(accountAddress);
 
-  const emoji = showcaseAccountSymbol || accountSymbol || rainbowProfile?.emoji;
-  const color =
-    showcaseAccountColor != null
-      ? typeof showcaseAccountColor === 'string'
-        ? showcaseAccountColor
-        : colors.avatarBackgrounds[showcaseAccountColor]
-      : getAvatarColorHex(accountColor) || rainbowProfile?.color;
+  const avatarEmoji = emoji || accountSymbol || rainbowProfile?.emoji;
+  const avatarColor =
+    color || accountColor || rainbowProfile?.color || colors.skeleton;
 
   const shadows = useMemo(
     () => ({
       default: [
         [0, 2, 5, isDarkMode ? colors.trueBlack : colors.dark, 0.2],
-        [0, 6, 10, isDarkMode ? colors.trueBlack : colors.alpha(color, 0.6)],
+        [
+          0,
+          6,
+          10,
+          isDarkMode ? colors.trueBlack : colors.alpha(avatarColor, 0.6),
+        ],
       ],
       overlay: [
         [0, 6, 10, isDarkMode ? colors.trueBlack : colors.shadowBlack, 0.08],
         [0, 2, 5, isDarkMode ? colors.trueBlack : colors.shadowBlack, 0.12],
       ],
     }),
-    [color, colors, isDarkMode]
+    [avatarColor, colors, isDarkMode]
   );
 
   return (
@@ -91,8 +91,8 @@ export default function AvatarCircle({
         {image ? (
           <ImageAvatar image={image} size="large" />
         ) : (
-          <AvatarCircleView backgroundColor={color}>
-            <FirstLetter>{emoji}</FirstLetter>
+          <AvatarCircleView backgroundColor={avatarColor}>
+            <FirstLetter>{avatarEmoji}</FirstLetter>
             {!overlayStyles && <InnerBorder opacity={0.02} radius={65} />}
           </AvatarCircleView>
         )}

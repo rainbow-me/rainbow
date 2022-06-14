@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import React, { createContext, useCallback, useContext, useMemo } from 'react';
+import React, { createContext, useCallback, useContext } from 'react';
 import { ColumnWithMargins } from '../layout';
 import AvatarCircle from '../profile/AvatarCircle';
 import SheetHandle from '../sheet/SheetHandle';
@@ -11,12 +11,16 @@ import { Text, TruncatedAddress } from '../text';
 import { getContacts } from '@rainbow-me/handlers/localstorage/contacts';
 import { isHexString } from '@rainbow-me/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
-import { useImportingWallet, useWallets } from '@rainbow-me/hooks';
+import {
+  useImportingWallet,
+  useRainbowProfile,
+  useWallets,
+} from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
-import { colors, padding } from '@rainbow-me/styles';
-import { abbreviations, profileUtils } from '@rainbow-me/utils';
+import { padding } from '@rainbow-me/styles';
+import { abbreviations } from '@rainbow-me/utils';
 
 export const ShowcaseContext = createContext();
 
@@ -65,47 +69,19 @@ const ENSAddress = styled(Text).attrs(({ theme: { colors } }) => ({
   width: '100%',
 });
 
-const avatarColor = profileUtils.emojiColorIndexes.map(
-  idx => colors.avatarBackgrounds[idx]
-);
-
-function hashCode(text) {
-  let hash = 0,
-    i,
-    chr;
-  if (text.length === 0) return hash;
-  for (i = 0; i < text.length; i++) {
-    chr = text.charCodeAt(i);
-    hash = (hash << 5) - hash + chr;
-    hash |= 0;
-  }
-  return hash;
-}
-
 export function Header() {
   const { goBack, navigate } = useNavigation();
   const contextValue = useContext(ShowcaseContext);
   const { isReadOnlyWallet } = useWallets();
+  const { rainbowProfile } = useRainbowProfile(contextValue?.address);
 
   const { colors } = useTheme();
 
-  const hash = Math.abs(hashCode(contextValue?.address?.toLowerCase()) % 35);
+  const emoji =
+    contextValue?.data?.profile?.accountSymbol || rainbowProfile?.emoji;
 
-  const emoji = useMemo(() => {
-    const emojiFromContext = contextValue?.data?.profile?.accountSymbol;
-    if (emojiFromContext) {
-      return emojiFromContext;
-    }
-    return profileUtils.popularEmojis[hash];
-  }, [contextValue?.data?.profile?.accountSymbol, hash]);
-
-  const color = useMemo(() => {
-    const colorFromContext = contextValue?.data?.profile?.accountColor;
-    if (colorFromContext) {
-      return colorFromContext;
-    }
-    return avatarColor[hash];
-  }, [contextValue?.data?.profile?.accountColor, hash]);
+  const color =
+    contextValue?.data?.profile?.accountColor || rainbowProfile?.color;
 
   const onAddToContact = useCallback(async () => {
     const contacts = await getContacts();
@@ -161,8 +137,8 @@ export function Header() {
       <AvatarCircle
         image={null}
         onPress={() => {}}
-        showcaseAccountColor={color}
-        showcaseAccountSymbol={emoji}
+        color={color}
+        emoji={emoji}
       />
       <ENSAddress
         address={mainText}

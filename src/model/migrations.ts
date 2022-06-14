@@ -71,6 +71,9 @@ import { DefaultTokenLists } from '@rainbow-me/references';
 import { ethereumUtils, profileUtils } from '@rainbow-me/utils';
 import { REVIEW_ASKED_KEY } from '@rainbow-me/utils/reviewAlert';
 import logger from 'logger';
+import { fetchRainbowProfile } from '@rainbow-me/handlers/rainbowProfiles';
+import { queryClient } from '@rainbow-me/react-query/queryClient';
+import { rainbowProfileQueryKey } from '../hooks/useRainbowProfile';
 
 export default async function runMigrations() {
   // get current version
@@ -656,7 +659,7 @@ export default async function runMigrations() {
    * Remove "color" property from contacts.
    */
   const v17 = async () => {
-    logger.log('Start migration v9');
+    logger.log('Start migration v17');
     try {
       const { selected, wallets } = store.getState().wallets;
       if (!wallets) return;
@@ -665,14 +668,29 @@ export default async function runMigrations() {
       // eslint-disable-next-line @typescript-eslint/prefer-for-of
       for (let i = 0; i < walletKeys.length; i++) {
         const wallet = wallets[walletKeys[i]];
-        const newAddresses = wallet.addresses.map((account: RainbowAccount) => {
-          return {
-            ...account,
-            color: getAvatarColorHex(account?.color),
-            emoji: returnStringFirstEmoji(account?.label),
-            label: removeFirstEmojiFromString(account?.label),
-          };
-        });
+        const newAddresses = await wallet.addresses.map(
+          async (account: RainbowAccount) => {
+            const rainbowProfile = await fetchRainbowProfile(account?.address);
+            queryClient.setQueryData(
+              rainbowProfileQueryKey(account?.address),
+              rainbowProfile
+            );
+            return {
+              ...account,
+              color:
+                getAvatarColorHex(account?.color) ||
+                rainbowProfile?.color ||
+                colors.avatarBackgrounds[
+                  profileUtils.addressHashedColorIndex(account?.address) || 0
+                ],
+              emoji:
+                returnStringFirstEmoji(account?.label) ||
+                rainbowProfile?.emoji ||
+                profileUtils.addressHashedEmoji(account?.address),
+              label: removeFirstEmojiFromString(account?.label),
+            };
+          }
+        );
         const newWallet = { ...wallet, addresses: newAddresses };
         updatedWallets[walletKeys[i]] = newWallet;
       }
@@ -713,6 +731,7 @@ export default async function runMigrations() {
 
   migrations.push(v17);
 
+  setMigrationVersion(17);
   logger.sentry(
     `Migrations: ready to run migrations starting on number ${currentVersion}`
   );

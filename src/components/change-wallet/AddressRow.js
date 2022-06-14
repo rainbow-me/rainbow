@@ -11,7 +11,6 @@ import ImageAvatar from '../contacts/ImageAvatar';
 import { Icon } from '../icons';
 import { Centered, Column, ColumnWithMargins, Row } from '../layout';
 import { Text, TruncatedAddress, TruncatedText } from '../text';
-import { getAvatarColorHex } from '@rainbow-me/helpers/colorHandler';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
@@ -115,6 +114,7 @@ export default function AddressRow({
     address,
     balance,
     color,
+    emoji,
     ens,
     image: accountImage,
     isSelected,
@@ -124,10 +124,6 @@ export default function AddressRow({
   } = data;
 
   const { colors, isDarkMode } = useTheme();
-
-  const bgColor = getAvatarColorHex(color);
-
-  const emoji = returnStringFirstEmoji(label);
 
   let cleanedUpBalance = balance;
   if (balance === '0.00') {
@@ -175,8 +171,8 @@ export default function AddressRow({
             ) : (
               <ContactAvatar
                 address={address}
-                color={bgColor}
-                emoji={emoji || returnStringFirstEmoji(label)}
+                color={color}
+                emoji={emoji}
                 marginRight={10}
                 size="medium"
               />

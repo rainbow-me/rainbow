@@ -109,8 +109,8 @@ const ProfileModal = ({
               isAvatarPickerAvailable={false}
               onPress={null}
               overlayStyles={null}
-              showcaseAccountColor={isDarkMode ? colors.trueBlack : colors.dark}
-              showcaseAccountSymbol={null}
+              color={isDarkMode ? colors.trueBlack : colors.dark}
+              emoji={null}
               size="large"
             />
           ) : (
@@ -119,8 +119,8 @@ const ProfileModal = ({
               isAvatarPickerAvailable={false}
               onPress={null}
               overlayStyles={null}
-              showcaseAccountColor={accentColor}
-              showcaseAccountSymbol={emojiAvatar}
+              color={accentColor}
+              emoji={emojiAvatar}
             />
           ))}
         {!toggleAvatar && <Spacer />}

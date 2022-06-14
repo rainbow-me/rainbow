@@ -40,7 +40,7 @@ export function getAccountProfileInfo(
   const accountName =
     labelWithoutEmoji || accountENS || address(accountAddress, 4, 4);
 
-  const accountSymbol = emoji || returnStringFirstEmoji(label);
+  const accountSymbol = emoji;
   const accountColor = color;
   const accountImage = isValidImagePath(image) ? image : null;
 

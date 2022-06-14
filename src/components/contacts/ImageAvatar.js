@@ -7,7 +7,7 @@ import ShadowStack from 'react-native-shadow-stack';
 
 const buildSmallShadows = (color, colors) => [
   [0, 3, 5, colors.shadow, 0.14],
-  [0, 6, 10, colors.avatarBackgrounds[color] || color, 0.2],
+  [0, 6, 10, color, 0.2],
 ];
 
 const sizeConfigs = (colors, isDarkMode) => ({

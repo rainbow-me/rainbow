@@ -5,7 +5,6 @@ import { ContactAvatar } from '../contacts';
 import ImageAvatar from '../contacts/ImageAvatar';
 import { Centered } from '../layout';
 import HeaderButton from './HeaderButton';
-import { getAvatarColorHex } from '@rainbow-me/helpers/colorHandler';
 import { useAccountProfile, useRequests } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 
@@ -18,8 +17,6 @@ export default function ProfileHeaderButton() {
     accountColor,
     accountSymbol,
   } = useAccountProfile();
-
-  const colorHex = getAvatarColorHex(accountColor);
 
   const onPress = useCallback(() => navigate(Routes.PROFILE_SCREEN), [
     navigate,
@@ -42,7 +39,7 @@ export default function ProfileHeaderButton() {
         ) : (
           <ContactAvatar
             address={accountAddress}
-            color={colorHex}
+            color={accountColor}
             emoji={accountSymbol}
             size="small"
           />
