@@ -136,7 +136,7 @@ export const MaxToleranceInput = forwardRef(({ colorForAsset }, ref) => {
           <StyledText size="18px" weight="bold">
             {`${lang.t('exchange.slippage_tolerance')} `}
             {hasPriceImpact && (
-              <Icon name="warning" size={10} color={priceImpactColor} />
+              <Icon name="warning" size={8} color={priceImpactColor} />
             )}
           </StyledText>
         </Row>
@@ -144,10 +144,11 @@ export const MaxToleranceInput = forwardRef(({ colorForAsset }, ref) => {
           <Row>
             <Text size="14px" weight="bold" color={priceImpactColor}>
               High
-              <Text
+              <StyledText
                 size="14px"
                 weight="bold"
-              >{` · Losing ${priceImpactNativeAmount}`}</Text>
+                color="secondary50"
+              >{` · Losing ${priceImpactNativeAmount}`}</StyledText>
             </Text>
           </Row>
         )}
