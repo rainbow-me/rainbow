@@ -61,8 +61,6 @@ import { setIsWalletLoading } from '@rainbow-me/redux/wallets';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
-export { oldSeedPhraseMigratedKey };
-
 const encryptor = new AesEncryptor();
 
 export type EthereumPrivateKey = string;

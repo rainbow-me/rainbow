@@ -26,7 +26,7 @@ import {
 import { getAssetsFromCovalent } from '@rainbow-me/handlers/covalent';
 import { web3Provider } from '@rainbow-me/handlers/web3';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
-import NetworkTypes, { Network } from '@rainbow-me/helpers/networkTypes';
+import { Network } from '@rainbow-me/helpers/networkTypes';
 import {
   balanceCheckerContractAbi,
   chainAssets,
@@ -618,7 +618,7 @@ export const fetchOnchainBalances = ({
     );
 
     let assets =
-      network === NetworkTypes.mainnet
+      network === Network.mainnet
         ? covalentMainnetAssets
           ? {
               ...mainnetAssets,
@@ -760,7 +760,7 @@ export const fetchOnchainBalances = ({
         UPDATE_BALANCE_AND_PRICE_FREQUENCY
       );
       let fallbackExplorerAssetsHandle = null;
-      if (NetworkTypes.mainnet === network) {
+      if (Network.mainnet === network) {
         fallbackExplorerAssetsHandle = setTimeout(
           () => dispatch(findNewAssetsToWatch()),
           DISCOVER_NEW_ASSETS_FREQUENCY
@@ -777,7 +777,7 @@ export const fetchOnchainBalances = ({
     }
   };
 
-  if (network === NetworkTypes.mainnet) {
+  if (network === Network.mainnet) {
     dispatch(emitMainnetAssetDiscoveryRequest);
     const queueKey =
       accountAddress.toLowerCase() + nativeCurrency.toLowerCase();
@@ -813,7 +813,7 @@ export const fallbackExplorerInit = () => async (
   // 1 - Coingecko ids
   // 2 - All tokens list
   // 3 - Etherscan token transfer transactions
-  if (NetworkTypes.mainnet === network) {
+  if (Network.mainnet === network) {
     const newMainnetAssets = (await findAssetsToWatch(
       accountAddress,
       latestTxBlockNumber,

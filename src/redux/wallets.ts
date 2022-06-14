@@ -18,7 +18,6 @@ import {
   getAllWallets,
   getSelectedWallet,
   loadAddress,
-  oldSeedPhraseMigratedKey,
   RainbowAccount,
   RainbowWallet,
   saveAddress,
@@ -28,6 +27,7 @@ import {
 import { logger } from '../utils';
 import {
   addressKey,
+  oldSeedPhraseMigratedKey,
   privateKeyKey,
   seedPhraseKey,
 } from '../utils/keychainConstants';
