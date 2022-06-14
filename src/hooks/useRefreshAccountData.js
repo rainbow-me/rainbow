@@ -16,6 +16,7 @@ import useAccountSettings from './useAccountSettings';
 import useSavingsAccount from './useSavingsAccount';
 import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import logger from 'logger';
+import useAccountProfile from './useAccountProfile';
 
 export default function useRefreshAccountData() {
   const dispatch = useDispatch();
@@ -23,6 +24,8 @@ export default function useRefreshAccountData() {
   const { refetchSavings } = useSavingsAccount();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const profilesEnabled = useExperimentalFlag(PROFILES);
+  const { accountImage } = useAccountProfile();
+  console.log(accountImage);
 
   const fetchAccountData = useCallback(async () => {
     // Refresh unique tokens for Rinkeby

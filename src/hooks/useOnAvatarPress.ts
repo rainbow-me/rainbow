@@ -1,7 +1,8 @@
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import { toLower } from 'lodash';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { Linking } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { RainbowAccount } from '../model/wallet';
@@ -12,6 +13,11 @@ import { prefetchENSProfileImages } from './useENSProfileImages';
 import useENSRegistration from './useENSRegistration';
 import useImagePicker from './useImagePicker';
 import useWallets from './useWallets';
+import logger from 'logger';
+import {
+  uploadImage,
+  UploadImageReturnData,
+} from '@rainbow-me/handlers/pinata';
 import {
   enableActionsOnReadOnlyWallet,
   PROFILES,
@@ -21,11 +27,12 @@ import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import { walletsSetSelected, walletsUpdate } from '@rainbow-me/redux/wallets';
 import Routes from '@rainbow-me/routes';
 import { buildRainbowUrl, showActionSheetWithOptions } from '@rainbow-me/utils';
+import { useMutation } from 'react-query';
 
 export default () => {
   const { wallets, selectedWallet, isReadOnlyWallet } = useWallets();
   const dispatch = useDispatch();
-  const { navigate } = useNavigation();
+  const { dangerouslyGetParent, navigate } = useNavigation();
   const {
     accountAddress,
     accountColor,
@@ -38,6 +45,32 @@ export default () => {
   const profileEnabled = Boolean(accountENS);
   const ensProfile = useENSProfile(accountENS, { enabled: profileEnabled });
   const { openPicker } = useImagePicker();
+  const { isLoading: isUploading, mutateAsync: upload } = useMutation(
+    'ensImageUpload',
+    uploadImage
+  );
+
+  // If the image is removed while uploading, we don't want to
+  // call `onUploadSuccess` when the upload has finished.
+  const isRemoved = useRef<boolean>(false);
+
+  // When this hook is inside a nested navigator, the child
+  // navigator will still think it is focused. Here, we are
+  // also checking if the parent has not been dismissed too.
+  const isFocused = useRef<boolean>();
+  useFocusEffect(
+    useCallback(() => {
+      isFocused.current = true;
+      const dismiss = () => (isFocused.current = false);
+      // @ts-expect-error `dismiss` is valid event
+      dangerouslyGetParent()?.addListener('dismiss', dismiss);
+      return () => {
+        isFocused.current = false;
+        // @ts-expect-error `dismiss` is valid event
+        dangerouslyGetParent()?.removeListener('dismiss', dismiss);
+      };
+    }, [dangerouslyGetParent])
+  );
 
   const onAvatarRemovePhoto = useCallback(async () => {
     const newWallets = {
@@ -59,24 +92,36 @@ export default () => {
   }, [dispatch, selectedWallet, accountAddress, wallets]);
 
   const processPhoto = useCallback(
-    (image: any) => {
-      const stringIndex = image?.path.indexOf('/tmp');
-      const newWallets = {
-        ...wallets,
-        [selectedWallet.id]: {
-          ...wallets[selectedWallet.id],
-          addresses: wallets[
-            selectedWallet.id
-          ].addresses.map((account: RainbowAccount) =>
-            toLower(account.address) === toLower(accountAddress)
-              ? { ...account, image: `~${image?.path.slice(stringIndex)}` }
-              : account
-          ),
-        },
-      };
+    async (image: any) => {
+      try {
+        const splitPath = image.path.split('/');
+        const filename =
+          image.filename || splitPath[splitPath.length - 1] || '';
+        const data = await upload({
+          filename,
+          mime: image.mime,
+          path: image.path.replace('file://', ''),
+        });
+        if (!isFocused.current || isRemoved.current) return;
+        const newWallets = {
+          ...wallets,
+          [selectedWallet.id]: {
+            ...wallets[selectedWallet.id],
+            addresses: wallets[
+              selectedWallet.id
+            ].addresses.map((account: RainbowAccount) =>
+              toLower(account.address) === toLower(accountAddress)
+                ? { ...account, image: data.url }
+                : account
+            ),
+          },
+        };
 
-      dispatch(walletsSetSelected(newWallets[selectedWallet.id]));
-      dispatch(walletsUpdate(newWallets));
+        dispatch(walletsSetSelected(newWallets[selectedWallet.id]));
+        dispatch(walletsUpdate(newWallets));
+      } catch (err) {
+        logger.log('Failed to upload avatar image');
+      }
     },
     [accountAddress, dispatch, selectedWallet.id, wallets]
   );
