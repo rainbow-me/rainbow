@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux';
 import { STORAGE_IDS } from '../model/mmkv';
 import { delayNext } from './useMagicAutofocus';
 import useTimeout from './useTimeout';
+import { AssetType } from '@rainbow-me/entities';
 import {
   CurrencySelectionTypes,
   ExchangeModalTypes,
@@ -81,6 +82,7 @@ export default function useSwapCurrencyHandlers({
             type: ethereumUtils.getNetworkFromType(defaultInputAsset?.type),
           }
         : null;
+
       return {
         defaultInputItemInWallet,
         defaultOutputItem: defaultOutputAsset ?? null,
@@ -96,16 +98,19 @@ export default function useSwapCurrencyHandlers({
     // CBH COMMENT: this sideeffect clears the swap output currency
     // see swap.ts -> updateSwapOutputCurrency (I placed logs there that illustrate the override issue)
     if (shouldUpdate) {
-      dispatch(updateSwapInputCurrency(defaultInputItemInWallet));
-
-      /**
-       * Note: `ignoreInitialTypeCheck` is truthy when the user comes from the "Get {currency}" swap button flow.
-       * In this flow, we prepopulate the output currency, but we also do not want to clear the selected input
-       * currency.
-       */
-      dispatch(
-        updateSwapOutputCurrency(defaultOutputItem, ignoreInitialTypeCheck)
-      );
+      if (defaultInputItemInWallet) {
+        dispatch(
+          updateSwapInputCurrency(
+            defaultInputItemInWallet,
+            ignoreInitialTypeCheck
+          )
+        );
+      }
+      if (defaultOutputItem) {
+        dispatch(
+          updateSwapOutputCurrency(defaultOutputItem, ignoreInitialTypeCheck)
+        );
+      }
     }
   }, [
     defaultInputItemInWallet,
@@ -133,7 +138,7 @@ export default function useSwapCurrencyHandlers({
       const newInputCurrency = inputCurrency
         ? {
             ...inputCurrency,
-            type: ethereumUtils.getNetworkFromType(inputCurrency?.type),
+            type: inputCurrency?.type ?? AssetType.token,
           }
         : null;
 
@@ -152,7 +157,7 @@ export default function useSwapCurrencyHandlers({
                   setHasShownWarning();
                   dispatch(updateSwapInputCurrency(newInputCurrency));
                   setLastFocusedInputHandle?.(inputFieldRef);
-                  handleNavigate?.();
+                  handleNavigate?.(newInputCurrency);
                 }, 250);
               });
             },
@@ -162,7 +167,7 @@ export default function useSwapCurrencyHandlers({
       } else {
         dispatch(updateSwapInputCurrency(newInputCurrency));
         setLastFocusedInputHandle?.(inputFieldRef);
-        handleNavigate?.();
+        handleNavigate?.(newInputCurrency);
       }
     },
     [dispatch, inputFieldRef, outputCurrency, setLastFocusedInputHandle]
@@ -173,7 +178,7 @@ export default function useSwapCurrencyHandlers({
       const newOutputCurrency = outputCurrency
         ? {
             ...outputCurrency,
-            type: ethereumUtils.getNetworkFromType(outputCurrency?.type),
+            type: outputCurrency?.type ?? AssetType.token,
           }
         : null;
       if (
@@ -190,7 +195,7 @@ export default function useSwapCurrencyHandlers({
                   setHasShownWarning();
                   dispatch(updateSwapOutputCurrency(newOutputCurrency));
                   setLastFocusedInputHandle?.(inputFieldRef);
-                  handleNavigate?.();
+                  handleNavigate?.(newOutputCurrency);
                 }, 250);
               });
             },
@@ -200,7 +205,7 @@ export default function useSwapCurrencyHandlers({
       } else {
         dispatch(updateSwapOutputCurrency(newOutputCurrency));
         setLastFocusedInputHandle?.(inputFieldRef);
-        handleNavigate?.();
+        handleNavigate?.(newOutputCurrency);
       }
     },
     [dispatch, inputCurrency, inputFieldRef, setLastFocusedInputHandle]
