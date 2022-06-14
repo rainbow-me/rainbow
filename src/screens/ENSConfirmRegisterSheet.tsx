@@ -1,5 +1,6 @@
 import { useFocusEffect, useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
+import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import * as DeviceInfo from 'react-native-device-info';
@@ -7,6 +8,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { HoldToAuthorizeButton } from '../components/buttons';
 import {
   CommitContent,
+  EditContent,
   RegisterContent,
   RenewContent,
   WaitCommitmentConfirmationContent,
@@ -109,6 +111,7 @@ export default function ENSConfirmRegisterSheet() {
   const { params } = useRoute<any>();
   const { name: ensName, mode } = useENSRegistration();
   const {
+    changedRecords,
     images: { avatarUrl: initialAvatarUrl },
   } = useENSModifiedRegistration();
   const { isSmallPhone } = useDimensions();
@@ -143,7 +146,7 @@ export default function ENSConfirmRegisterSheet() {
   });
 
   const [sendReverseRecord, setSendReverseRecord] = useState(
-    !accountProfile.accountENS
+    !accountProfile.accountENS || mode === REGISTRATION_MODES.EDIT
   );
   const { step, secondsSinceCommitConfirmed } = useENSRegistrationStepHandler(
     false
@@ -215,7 +218,18 @@ export default function ENSConfirmRegisterSheet() {
           }
         />
       ),
-      [REGISTRATION_STEPS.EDIT]: null,
+      [REGISTRATION_STEPS.EDIT]: (
+        <EditContent
+          accentColor={accentColor}
+          sendReverseRecord={sendReverseRecord}
+          setSendReverseRecord={
+            registrationCostsData?.isSufficientGasForStep
+              ? setSendReverseRecord
+              : null
+          }
+          showReverseRecordSwitch={accountProfile.accountENS !== ensName}
+        />
+      ),
       [REGISTRATION_STEPS.SET_NAME]: null,
       [REGISTRATION_STEPS.TRANSFER]: null,
       [REGISTRATION_STEPS.RENEW]: (
@@ -248,6 +262,8 @@ export default function ENSConfirmRegisterSheet() {
       registrationCostsData,
       accentColor,
       sendReverseRecord,
+      accountProfile.accountENS,
+      ensName,
       name,
       onMountSecondsSinceCommitConfirmed,
       action,
@@ -358,6 +374,14 @@ export default function ENSConfirmRegisterSheet() {
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
   );
+
+  useEffect(() => {
+    if (step === REGISTRATION_STEPS.REGISTER) {
+      setSendReverseRecord(
+        !isEmpty(changedRecords) || !accountProfile.accountENS
+      );
+    }
+  }, [accountProfile.accountENS, changedRecords, step]);
 
   useEffect(
     () => () => {

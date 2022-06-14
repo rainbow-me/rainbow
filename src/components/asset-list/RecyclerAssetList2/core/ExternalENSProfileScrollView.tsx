@@ -75,6 +75,7 @@ const ExternalENSProfileScrollViewWithRef = React.forwardRef<
   return (
     <ScrollView
       {...(rest as ScrollViewProps)}
+      bounces={false}
       contentContainerStyle={[extraPadding, rest.contentContainerStyle]}
       onScroll={handleScroll}
       ref={scrollViewRef as RefObject<any>}

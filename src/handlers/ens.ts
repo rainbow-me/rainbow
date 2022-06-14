@@ -820,40 +820,62 @@ export const estimateENSSetRecordsGasLimit = async ({
   name,
   records,
   ownerAddress,
+  setReverseRecord,
 }:
-  | { name: string; records: Records; ownerAddress?: string }
+  | {
+      name: string;
+      records: Records;
+      ownerAddress?: string;
+      setReverseRecord?: boolean;
+    }
   | ENSActionParameters) => {
-  let gasLimit: string | null = '0';
+  const promises = [];
   const ensRegistrationRecords = formatRecordsForTransaction(records);
   const validRecords = recordsForTransactionAreValid(ensRegistrationRecords);
   if (validRecords) {
     const txType = getTransactionTypeForRecords(ensRegistrationRecords);
     switch (txType) {
       case ENSRegistrationTransactionType.MULTICALL:
-        gasLimit = await estimateENSMulticallGasLimit({
-          name,
-          ownerAddress,
-          records: ensRegistrationRecords,
-        });
+        promises.push(
+          estimateENSMulticallGasLimit({
+            name,
+            ownerAddress,
+            records: ensRegistrationRecords,
+          })
+        );
         break;
       case ENSRegistrationTransactionType.SET_ADDR:
-        gasLimit = await estimateENSSetAddressGasLimit({
-          name,
-          ownerAddress,
-          records: ensRegistrationRecords,
-        });
+        promises.push(
+          estimateENSSetAddressGasLimit({
+            name,
+            ownerAddress,
+            records: ensRegistrationRecords,
+          })
+        );
         break;
       case ENSRegistrationTransactionType.SET_TEXT:
-        gasLimit = await estimateENSSetTextGasLimit({
-          name,
-          ownerAddress,
-          records: ensRegistrationRecords,
-        });
+        promises.push(
+          estimateENSSetTextGasLimit({
+            name,
+            ownerAddress,
+            records: ensRegistrationRecords,
+          })
+        );
         break;
       default:
-        gasLimit = '0';
     }
   }
+  if (setReverseRecord && ownerAddress) {
+    promises.push(
+      estimateENSSetNameGasLimit({
+        name,
+        ownerAddress,
+      })
+    );
+  }
+  const gasLimits = await Promise.all(promises);
+  const gasLimit = gasLimits.reduce((a, b) => add(a || 0, b || 0));
+  if (!gasLimit) return '0';
   return gasLimit;
 };
 

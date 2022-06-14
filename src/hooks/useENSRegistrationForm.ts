@@ -141,8 +141,6 @@ export default function useENSRegistrationForm({
         };
       }, {});
       updateRecords(records);
-    } else if (mode === REGISTRATION_MODES.EDIT && !isEmpty(defaultRecords)) {
-      updateRecords(defaultRecords);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEmpty(defaultRecords), updateRecords]);

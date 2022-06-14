@@ -30,20 +30,20 @@ const ExchangeFab = ({ disabled, isReadOnlyWallet, ...props }) => {
   const eth = useEth();
 
   const handlePress = useCallback(() => {
-    if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
-      android && delayNext();
-      navigate(Routes.EXCHANGE_MODAL, {
+    android && delayNext();
+    navigate(Routes.EXCHANGE_MODAL, {
+      params: {
         params: {
-          params: {
-            inputAsset: eth,
-          },
-          screen: Routes.MAIN_EXCHANGE_SCREEN,
+          inputAsset: eth,
         },
-        screen: Routes.MAIN_EXCHANGE_NAVIGATOR,
-      });
-    } else {
-      watchingAlert();
-    }
+        screen: Routes.MAIN_EXCHANGE_SCREEN,
+      },
+      screen: Routes.MAIN_EXCHANGE_NAVIGATOR,
+    });
+    // if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
+    // } else {
+    //   watchingAlert();
+    // }
   }, [isReadOnlyWallet, navigate, eth]);
 
   return (

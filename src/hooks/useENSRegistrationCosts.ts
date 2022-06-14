@@ -151,9 +151,10 @@ export default function useENSRegistrationCosts({
       ownerAddress:
         mode === REGISTRATION_MODES.EDIT ? accountAddress : undefined,
       records: changedRecords,
+      setReverseRecord: sendReverseRecord,
     });
     return newSetRecordsGasLimit || '';
-  }, [changedRecords, name, accountAddress, mode]);
+  }, [name, mode, accountAddress, changedRecords, sendReverseRecord]);
 
   const getSetNameGasLimit = useCallback(async () => {
     const newSetNameGasLimit = await estimateENSSetNameGasLimit({
@@ -199,7 +200,12 @@ export default function useENSRegistrationCosts({
       enabled:
         step === REGISTRATION_STEPS.COMMIT || step === REGISTRATION_STEPS.EDIT,
       queryFn: getSetRecordsGasLimit,
-      queryKey: [QUERY_KEYS.GET_SET_RECORDS_GAS_LIMIT, name, changedRecords],
+      queryKey: [
+        QUERY_KEYS.GET_SET_RECORDS_GAS_LIMIT,
+        name,
+        changedRecords,
+        sendReverseRecord,
+      ],
       staleTime: QUERY_STALE_TIME,
     },
     {
