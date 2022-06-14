@@ -5,6 +5,8 @@ const TIMEOUT_MS = 500;
 
 const getWebProfile = async (address: EthereumAddress) => {
   const response: any = address && (await getPreference('profile', address));
+  console.log('getting response');
+  console.log(response);
   return response?.profile;
 };
 
@@ -15,11 +17,14 @@ export const fetchRainbowProfile = async (address: EthereumAddress) => {
       setTimeout(resolve, TIMEOUT_MS, null);
     }),
   ]);
+  console.log('fetched');
+  console.log(rainbowProfile);
 
   return rainbowProfile
     ? {
         color: rainbowProfile.accountColor,
         emoji: rainbowProfile.accountSymbol,
+        image: rainbowProfile.accountImage,
       }
     : null;
 };

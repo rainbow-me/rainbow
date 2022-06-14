@@ -243,8 +243,6 @@ export default function ChangeWalletSheet() {
 
                   const updatedWalletAddress = {
                     ...walletAddress,
-                    color: args.color,
-                    emoji: args.emoji,
                     label: args.name,
                   };
                   let updatedWalletAddresses = [...walletAddresses];
@@ -266,7 +264,7 @@ export default function ChangeWalletSheet() {
                     await dispatch(walletsSetSelected(updatedWallet));
                   }
 
-                  updateWebProfile(address, args.color, args.emoji);
+                  updateWebProfile(address, args.color, args.emoji, args.image);
 
                   await dispatch(walletsUpdate(updatedWallets));
                 } else {

@@ -48,12 +48,12 @@ export default function useRainbowProfile(
         );
       }
       const rainbowProfile = await fetchRainbowProfile(address);
-
       rainbowProfile && saveRainbowProfile(address, rainbowProfile);
       return (
         rainbowProfile || {
           color: addressHashedColor,
           emoji: addressHashedEmoji,
+          image: null,
         }
       );
     },

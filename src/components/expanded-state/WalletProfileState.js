@@ -17,6 +17,7 @@ export default function WalletProfileState({
   const { goBack, navigate } = useNavigation();
   const { rainbowProfile } = useRainbowProfile(address);
   const { name, image } = profile;
+  const imageAvatar = image || rainbowProfile?.image;
 
   const [value, setValue] = useState(name || '');
 
@@ -34,7 +35,7 @@ export default function WalletProfileState({
       onCloseModal({
         color: rainbowProfile?.color,
         emoji: rainbowProfile?.emoji,
-        image: image,
+        image: imageAvatar,
         name: value,
       });
       goBack();
@@ -60,7 +61,7 @@ export default function WalletProfileState({
       emojiAvatar={rainbowProfile?.emoji}
       handleCancel={handleCancel}
       handleSubmit={handleSubmit}
-      imageAvatar={image}
+      imageAvatar={imageAvatar}
       inputValue={value}
       onChange={setValue}
       placeholder={lang.t('wallet.new.name_wallet')}

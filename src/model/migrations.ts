@@ -658,6 +658,7 @@ export default async function runMigrations() {
    * Remove first emoji from wallet property "label".
    * Remove "color" property from contact.
    * Remove first emoji from contact property "nickname"
+   * Enable web data for all wallets.
    */
   const v17 = async () => {
     logger.log('Start migration v17');
@@ -671,6 +672,7 @@ export default async function runMigrations() {
         const wallet = wallets[walletKeys[i]];
         const newAddresses = await Promise.all(
           wallet.addresses.map(async (account: RainbowAccount) => {
+            updateWebDataEnabled(true, account?.address);
             const rainbowProfile = await fetchRainbowProfile(account?.address);
             queryClient.setQueryData(
               rainbowProfileQueryKey(account?.address),

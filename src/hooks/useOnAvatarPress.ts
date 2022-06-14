@@ -28,6 +28,7 @@ import { walletsSetSelected, walletsUpdate } from '@rainbow-me/redux/wallets';
 import Routes from '@rainbow-me/routes';
 import { buildRainbowUrl, showActionSheetWithOptions } from '@rainbow-me/utils';
 import { useMutation } from 'react-query';
+import useUpdateAvatar from './useUpdateAvatar';
 
 export default () => {
   const { wallets, selectedWallet, isReadOnlyWallet } = useWallets();
@@ -45,6 +46,7 @@ export default () => {
   const profileEnabled = Boolean(accountENS);
   const ensProfile = useENSProfile(accountENS, { enabled: profileEnabled });
   const { openPicker } = useImagePicker();
+  const { saveInfo } = useUpdateAvatar();
   const { isLoading: isUploading, mutateAsync: upload } = useMutation(
     'ensImageUpload',
     uploadImage
@@ -72,24 +74,10 @@ export default () => {
     }, [dangerouslyGetParent])
   );
 
-  const onAvatarRemovePhoto = useCallback(async () => {
-    const newWallets = {
-      ...wallets,
-      [selectedWallet.id]: {
-        ...wallets[selectedWallet.id],
-        addresses: wallets[
-          selectedWallet.id
-        ].addresses.map((account: RainbowAccount) =>
-          toLower(account.address) === toLower(accountAddress)
-            ? { ...account, image: null }
-            : account
-        ),
-      },
-    };
-
-    dispatch(walletsSetSelected(newWallets[selectedWallet.id]));
-    await dispatch(walletsUpdate(newWallets));
-  }, [dispatch, selectedWallet, accountAddress, wallets]);
+  const onAvatarRemovePhoto = useCallback(
+    async () => saveInfo(null, null, null, true),
+    [saveInfo]
+  );
 
   const processPhoto = useCallback(
     async (image: any) => {
@@ -103,27 +91,12 @@ export default () => {
           path: image.path.replace('file://', ''),
         });
         if (!isFocused.current || isRemoved.current) return;
-        const newWallets = {
-          ...wallets,
-          [selectedWallet.id]: {
-            ...wallets[selectedWallet.id],
-            addresses: wallets[
-              selectedWallet.id
-            ].addresses.map((account: RainbowAccount) =>
-              toLower(account.address) === toLower(accountAddress)
-                ? { ...account, image: data.url }
-                : account
-            ),
-          },
-        };
-
-        dispatch(walletsSetSelected(newWallets[selectedWallet.id]));
-        dispatch(walletsUpdate(newWallets));
+        saveInfo(null, null, data.url);
       } catch (err) {
         logger.log('Failed to upload avatar image');
       }
     },
-    [accountAddress, dispatch, selectedWallet.id, wallets]
+    [saveInfo]
   );
 
   const onAvatarPickEmoji = useCallback(() => {

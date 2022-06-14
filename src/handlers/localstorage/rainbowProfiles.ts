@@ -8,11 +8,11 @@ const rainbowProfilesVersion = '0.1.0';
 export const getRainbowProfile = async (key: EthereumAddress) =>
   await getGlobal(
     rainbowProfileKey(key),
-    { color: null, emoji: null },
+    { color: null, emoji: null, image: null },
     rainbowProfilesVersion
   );
 
 export const saveRainbowProfile = (
   key: EthereumAddress,
-  value: { color: string | null; emoji: string | null }
+  value: { color: string | null; emoji: string | null; image: string | null }
 ) => saveGlobal(rainbowProfileKey(key), value, rainbowProfilesVersion);

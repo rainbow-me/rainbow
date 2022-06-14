@@ -27,7 +27,7 @@ export const wipeNotEmoji = text => {
 
 export default function useWebData() {
   const { accountAddress } = useAccountSettings();
-  const { accountColor, accountSymbol } = useAccountProfile();
+  const { accountColor, accountImage, accountSymbol } = useAccountProfile();
   const dispatch = useDispatch();
   const { wallets } = useWallets();
 
@@ -65,6 +65,7 @@ export default function useWebData() {
         accountAddress,
         {
           accountColor: accountColor || addressHashedColor,
+          accountImage,
           accountSymbol: accountSymbol || addressHashedEmoji,
         }
       );
@@ -89,14 +90,16 @@ export default function useWebData() {
   }, [accountAddress, dispatch, webDataEnabled]);
 
   const updateWebProfile = useCallback(
-    async (address, color, emoji) => {
+    async (address, color, emoji, image) => {
       if (!webDataEnabled) return;
       const wallet = findWalletWithAccount(wallets, address);
       if (wallet.type === WalletTypes.readOnly) return;
       const data = {
         accountColor: color,
+        accountImage: image,
         accountSymbol: emoji,
       };
+      console.log(data);
       await setPreference(
         PreferenceActionType.update,
         'profile',

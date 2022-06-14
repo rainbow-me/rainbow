@@ -1,41 +1,56 @@
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
-import { useWallets, useWebData } from './index';
+import { useAccountProfile, useWallets, useWebData } from './index';
 import { walletsSetSelected, walletsUpdate } from '@rainbow-me/redux/wallets';
+import { RainbowAccount } from '@rainbow-me/model/wallet';
 
 export default function useUpdateAvatar() {
   const { wallets, selectedWallet } = useWallets();
   const { updateWebProfile } = useWebData();
   const { accountAddress } = useAccountSettings();
+  const { accountColor, accountImage, accountSymbol } = useAccountProfile();
   const dispatch = useDispatch();
+
   const saveInfo = useCallback(
-    async (color, emoji) => {
-      if (!color && !emoji) return;
+    async (color, emoji, image, shouldRemoveImage = false) => {
+      if (!color && !emoji && !(image || shouldRemoveImage)) return;
+      const newColor = color || accountColor;
+      const newEmoji = emoji || accountSymbol;
+      const newImage = shouldRemoveImage ? null : image || accountImage;
       const walletId = selectedWallet.id;
       const newWallets = {
         ...wallets,
-        [walletId]: {
-          ...wallets[walletId],
-          addresses: wallets[walletId].addresses.map(
-            (singleAddress: { address: string }) =>
-              singleAddress.address.toLowerCase() ===
-              accountAddress.toLowerCase()
+        [selectedWallet.id]: {
+          ...wallets[selectedWallet.id],
+          addresses: wallets[selectedWallet.id].addresses.map(
+            (account: RainbowAccount) =>
+              account.address.toLowerCase() === accountAddress.toLowerCase()
                 ? {
-                    ...singleAddress,
-                    color,
-                    emoji,
+                    ...account,
+                    color: newColor,
+                    emoji: newEmoji,
+                    image: newImage,
                   }
-                : singleAddress
+                : account
           ),
         },
       };
 
       await dispatch(walletsSetSelected(newWallets[walletId]));
       await dispatch(walletsUpdate(newWallets));
-      updateWebProfile(accountAddress, color, emoji);
+      updateWebProfile(accountAddress, newColor, newEmoji, newImage);
     },
-    [accountAddress, dispatch, selectedWallet.id, updateWebProfile, wallets]
+    [
+      accountAddress,
+      accountColor,
+      accountImage,
+      accountSymbol,
+      dispatch,
+      selectedWallet.id,
+      updateWebProfile,
+      wallets,
+    ]
   );
 
   return { saveInfo };
