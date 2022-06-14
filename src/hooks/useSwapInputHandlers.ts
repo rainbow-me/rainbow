@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Alert } from '../components/alerts';
@@ -53,19 +54,34 @@ export default function useSwapInputHandlers() {
         if (greaterThan(newAmountMinusFee, 0)) {
           Alert({
             buttons: [
-              { style: 'cancel', text: 'No thanks' },
+              {
+                style: 'cancel',
+                text: lang.t('expanded_state.swap.swap_max_alert.no_thanks'),
+              },
               {
                 onPress: () => {
                   dispatch(updateSwapInputAmount(newAmountMinusFee));
                 },
-                text: 'Auto adjust',
+                text: lang.t('expanded_state.swap.swap_max_alert.auto_adjust'),
               },
             ],
-            message: `You are about to swap all the ${inputCurrencyAddress.toUpperCase()} available in your wallet. If you want to swap back to ${inputCurrencyAddress.toUpperCase()}, you may not be able to afford the fee.
-      
-  Would you like to auto adjust the balance to leave some ${inputCurrencyAddress.toUpperCase()}?`,
-            title: 'Are you sure?',
+            message: lang.t('expanded_state.swap.swap_max_alert.message', {
+              inputCurrencyAddress: inputCurrencyAddress.toUpperCase(),
+            }),
+            title: lang.t('expanded_state.swap.swap_max_alert.title'),
           });
+        } else {
+          Alert({
+            message: lang.t(
+              'expanded_state.swap.swap_max_insufficient_alert.message',
+              { symbol: accountAsset.symbol }
+            ),
+            title: lang.t(
+              'expanded_state.swap.swap_max_insufficient_alert.title',
+              { symbol: accountAsset.symbol }
+            ),
+          });
+          return;
         }
       }
       dispatch(updateSwapInputAmount(newAmount));
