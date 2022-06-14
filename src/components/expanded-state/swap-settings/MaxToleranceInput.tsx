@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, {
   forwardRef,
   useCallback,
@@ -6,20 +7,11 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { useSelector } from 'react-redux';
 import { InteractionManager } from 'react-native';
+import { useSelector } from 'react-redux';
+import { Icon } from '../../icons';
+import { Text } from '../../text';
 import StepButtonInput from './StepButtonInput';
-import lang from 'i18n-js';
-import {
-  add,
-  greaterThan,
-  toFixedDecimals,
-} from '@rainbow-me/helpers/utilities';
-import {
-  usePriceImpactDetails,
-  useSwapSlippage,
-  useSwapCurrencies,
-} from '@rainbow-me/hooks';
 import {
   Box,
   Column,
@@ -27,9 +19,17 @@ import {
   Stack,
   Text as StyledText,
 } from '@rainbow-me/design-system';
+import {
+  add,
+  greaterThan,
+  toFixedDecimals,
+} from '@rainbow-me/helpers/utilities';
+import {
+  usePriceImpactDetails,
+  useSwapCurrencies,
+  useSwapSlippage,
+} from '@rainbow-me/hooks';
 import { AppState } from '@rainbow-me/redux/store';
-import { Text } from '../../text';
-import { Icon } from '../../icons';
 
 const convertBipsToPercent = (bips: number) => (bips / 100).toString();
 const convertPercentToBips = (percent: number) => (percent * 100).toString();
@@ -53,11 +53,11 @@ export const MaxToleranceInput: React.FC<{
   const slippageRef = useRef<{ blur: () => void; focus: () => void }>(null);
 
   useImperativeHandle(ref, () => ({
-    reset: () => {
-      onSlippageChange(1);
-    },
     blur: () => {
       slippageRef?.current?.blur();
+    },
+    reset: () => {
+      onSlippageChange(1);
     },
   }));
 
@@ -125,18 +125,18 @@ export const MaxToleranceInput: React.FC<{
           <StyledText size="18px" weight="bold">
             {`${lang.t('exchange.slippage_tolerance')} `}
             {hasPriceImpact && (
-              <Icon name="warning" size={18} color={priceImpactColor} />
+              <Icon color={priceImpactColor} name="warning" size={18} />
             )}
           </StyledText>
         </Box>
         {hasPriceImpact && (
           <Box>
-            <Text size="14px" weight="bold" color={priceImpactColor}>
+            <Text color={priceImpactColor} size="14px" weight="bold">
               High
               <StyledText
+                color="secondary50"
                 size="14px"
                 weight="bold"
-                color="secondary50"
               >{` · Losing ${priceImpactNativeAmount}`}</StyledText>
             </Text>
           </Box>
@@ -148,9 +148,9 @@ export const MaxToleranceInput: React.FC<{
           inputLabel="%"
           inputRef={slippageRef}
           minusAction={minusSlippage}
+          onBlur={null}
           onChange={onSlippageChange}
           onPress={handleSlippagePress}
-          onBlur={null}
           plusAction={addSlippage}
           testID="swap-slippage-input"
           value={slippageValue}

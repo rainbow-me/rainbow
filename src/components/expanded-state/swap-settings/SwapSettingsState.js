@@ -119,8 +119,8 @@ export default function SwapSettingsState({ asset }) {
               </Columns>
             )}
             <MaxToleranceInput
-              ref={slippageRef}
               colorForAsset={colorForAsset}
+              ref={slippageRef}
             />
           </Stack>
         </Inset>
