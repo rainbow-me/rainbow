@@ -23,6 +23,12 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
+      - name: Set up github keys
+        run: git config core.sshCommand "ssh -i ~/.ssh/id_ed25519 -F /dev/null"
+
+      - name: Set up ENV vars
+        run: git clone git@github.com:rainbow-me/rainbow-env.git && mv rainbow-env/dotenv .env && rm -rf rainbow-env
+
       - name: Install deps
         run: yarn setup && cd ios && pod install && cd ..
 
