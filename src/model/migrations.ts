@@ -11,6 +11,7 @@ import {
   setMigrationVersion,
 } from '../handlers/localstorage/migrations';
 import WalletTypes from '../helpers/walletTypes';
+import { rainbowProfileQueryKey } from '../hooks/useRainbowProfile';
 import store from '../redux/store';
 import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
 import {
@@ -57,6 +58,7 @@ import {
   getUserLists,
   saveUserLists,
 } from '@rainbow-me/handlers/localstorage/userLists';
+import { fetchRainbowProfile } from '@rainbow-me/handlers/rainbowProfiles';
 import { resolveNameOrAddress } from '@rainbow-me/handlers/web3';
 import {
   getAvatarColorHex,
@@ -66,14 +68,12 @@ import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
 } from '@rainbow-me/helpers/emojiHandler';
+import { queryClient } from '@rainbow-me/react-query/queryClient';
 import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
 import { DefaultTokenLists } from '@rainbow-me/references';
 import { ethereumUtils, profileUtils } from '@rainbow-me/utils';
 import { REVIEW_ASKED_KEY } from '@rainbow-me/utils/reviewAlert';
 import logger from 'logger';
-import { fetchRainbowProfile } from '@rainbow-me/handlers/rainbowProfiles';
-import { queryClient } from '@rainbow-me/react-query/queryClient';
-import { rainbowProfileQueryKey } from '../hooks/useRainbowProfile';
 
 export default async function runMigrations() {
   // get current version

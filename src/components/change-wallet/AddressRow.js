@@ -11,10 +11,6 @@ import ImageAvatar from '../contacts/ImageAvatar';
 import { Icon } from '../icons';
 import { Centered, Column, ColumnWithMargins, Row } from '../layout';
 import { Text, TruncatedAddress, TruncatedText } from '../text';
-import {
-  removeFirstEmojiFromString,
-  returnStringFirstEmoji,
-} from '@rainbow-me/helpers/emojiHandler';
 import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth, getFontSize } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';
@@ -130,14 +126,9 @@ export default function AddressRow({
     cleanedUpBalance = '0';
   }
 
-  let cleanedUpLabel = null;
-  if (label) {
-    cleanedUpLabel = removeFirstEmojiFromString(label);
-  }
-
   const onOptionsPress = useCallback(() => {
-    onEditWallet(walletId, address, cleanedUpLabel);
-  }, [address, cleanedUpLabel, onEditWallet, walletId]);
+    onEditWallet(walletId, address, label);
+  }, [address, label, onEditWallet, walletId]);
 
   const linearGradientProps = useMemo(
     () => ({
@@ -178,9 +169,9 @@ export default function AddressRow({
               />
             )}
             <ColumnWithMargins margin={android ? -6 : 3}>
-              {cleanedUpLabel || ens ? (
+              {label || ens ? (
                 <StyledTruncatedText color={colors.dark}>
-                  {cleanedUpLabel || ens}
+                  {label || ens}
                 </StyledTruncatedText>
               ) : (
                 <TruncatedAddress

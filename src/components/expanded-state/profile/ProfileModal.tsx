@@ -105,22 +105,22 @@ const ProfileModal = ({
         {toggleAvatar &&
           (imageAvatar ? (
             <AvatarCircle
+              color={isDarkMode ? colors.trueBlack : colors.dark}
+              emoji={null}
               image={imageAvatar}
               isAvatarPickerAvailable={false}
               onPress={null}
               overlayStyles={null}
-              color={isDarkMode ? colors.trueBlack : colors.dark}
-              emoji={null}
               size="large"
             />
           ) : (
             <AvatarCircle
+              color={accentColor}
+              emoji={emojiAvatar}
               image={null}
               isAvatarPickerAvailable={false}
               onPress={null}
               overlayStyles={null}
-              color={accentColor}
-              emoji={emojiAvatar}
             />
           ))}
         {!toggleAvatar && <Spacer />}

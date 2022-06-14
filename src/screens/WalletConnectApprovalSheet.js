@@ -151,7 +151,6 @@ export default function WalletConnectApprovalSheet() {
     const approvalAccountInfo = getAccountProfileInfo(
       approvalAccount.wallet,
       walletNames,
-      approvalNetwork,
       approvalAccount.address
     );
     return {
@@ -161,12 +160,7 @@ export default function WalletConnectApprovalSheet() {
         approvalAccountInfo.accountName ||
         approvalAccount.address,
     };
-  }, [
-    walletNames,
-    approvalNetwork,
-    approvalAccount.wallet,
-    approvalAccount.address,
-  ]);
+  }, [walletNames, approvalAccount.wallet, approvalAccount.address]);
 
   const approvalNetworkInfo = useMemo(() => {
     const value = networkInfo[approvalNetwork]?.value;

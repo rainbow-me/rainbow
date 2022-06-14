@@ -33,6 +33,7 @@ import {
 import {
   addressHashedColorIndex,
   addressHashedEmoji,
+  popularEmojis,
 } from '../utils/profileUtils';
 import * as keychain from './keychain';
 import { PreferenceActionType, setPreference } from './preferences';
@@ -128,16 +129,14 @@ export interface RainbowAccount {
   label: string;
   address: EthereumAddress;
   avatar: null | string;
-  color: number | string;
-  emoji?: string | null;
+  color: string;
+  emoji: string;
   visible: boolean;
   image: string | null;
 }
 
 export interface RainbowWallet {
   addresses: RainbowAccount[];
-  color: number | string;
-  emoji?: string | null;
   id: string;
   imported: boolean;
   name: string;
@@ -708,7 +707,8 @@ export const createWallet = async (
       lightModeThemeColors.avatarBackgrounds[
         addressHashedColorIndex(walletAddress) || 0
       ];
-    const walletEmoji = emoji || addressHashedEmoji(address);
+    const walletEmoji =
+      emoji || addressHashedEmoji(address) || popularEmojis[0];
 
     addresses.push({
       address: walletAddress,
@@ -781,7 +781,8 @@ export const createWallet = async (
           lightModeThemeColors.avatarBackgrounds[
             addressHashedColorIndex(nextWallet.address) || 0
           ];
-        let walletEmoji = emoji || addressHashedEmoji(nextWallet.address);
+        let walletEmoji =
+          emoji || addressHashedEmoji(nextWallet.address) || popularEmojis[0];
         let label = '';
 
         if (discoveredAccount && discoveredWalletId) {
@@ -887,8 +888,6 @@ export const createWallet = async (
     allWallets[id] = {
       addresses,
       backedUp: false,
-      color: walletColor,
-      emoji: walletEmoji,
       id,
       imported: isImported,
       name: walletName,

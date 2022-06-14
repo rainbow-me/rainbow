@@ -135,10 +135,10 @@ export function Header() {
       <SheetHandle />
       <Spacer />
       <AvatarCircle
-        image={null}
-        onPress={() => {}}
         color={color}
         emoji={emoji}
+        image={null}
+        onPress={() => {}}
       />
       <ENSAddress
         address={mainText}

@@ -1,15 +1,10 @@
 import { get } from 'lodash';
-import {
-  removeFirstEmojiFromString,
-  returnStringFirstEmoji,
-} from '../helpers/emojiHandler';
 import { address } from '../utils/abbreviations';
 import { isValidImagePath } from '../utils/profileUtils';
 
 export function getAccountProfileInfo(
   selectedWallet,
   walletNames,
-  network,
   accountAddress
 ) {
   if (!selectedWallet) {
@@ -35,21 +30,12 @@ export function getAccountProfileInfo(
   }
   const { label, color, emoji, image } = selectedAccount;
 
-  const labelWithoutEmoji = label && removeFirstEmojiFromString(label);
-
-  const accountName =
-    labelWithoutEmoji || accountENS || address(accountAddress, 4, 4);
-
-  const accountSymbol = emoji;
-  const accountColor = color;
-  const accountImage = isValidImagePath(image) ? image : null;
-
   return {
     accountAddress,
-    accountColor,
+    accountColor: color,
     accountENS,
-    accountImage,
-    accountName,
-    accountSymbol,
+    accountImage: isValidImagePath(image) ? image : null,
+    accountName: label || accountENS || address(accountAddress, 4, 4),
+    accountSymbol: emoji,
   };
 }

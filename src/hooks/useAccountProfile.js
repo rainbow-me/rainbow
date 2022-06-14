@@ -6,10 +6,7 @@ import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
 export default function useAccountProfile() {
   const wallets = useWallets();
   const { selectedWallet, walletNames } = wallets;
-  const {
-    accountAddress: accountsettingsAddress,
-    network,
-  } = useAccountSettings();
+  const { accountAddress: accountsettingsAddress } = useAccountSettings();
 
   const {
     accountAddress,
@@ -23,10 +20,9 @@ export default function useAccountProfile() {
       getAccountProfileInfo(
         selectedWallet,
         walletNames,
-        network,
         accountsettingsAddress
       ),
-    [accountsettingsAddress, network, selectedWallet, walletNames]
+    [accountsettingsAddress, selectedWallet, walletNames]
   );
 
   return {
