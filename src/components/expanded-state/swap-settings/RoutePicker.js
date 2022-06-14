@@ -1,19 +1,19 @@
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
-import RainbowExchange from '../../../assets/exchanges/Both.png';
+import RainbowExchange from '../../../assets/exchanges/both.png';
 import OneInchExchange from '../../../assets/exchanges/oneinch.png';
 import ZeroXExchange from '../../../assets/exchanges/zerox.png';
 import { ContextMenuButton } from '../../context-menu';
 import { Column, Columns, Inline, Text } from '@rainbow-me/design-system';
 
 import { ImgixImage } from '@rainbow-me/images';
-import { SwapRoute } from '@rainbow-me/redux/swap';
+import { Source } from '@rainbow-me/redux/swap';
 import { showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const routeMenuItems = () => {
-  return Object.values(SwapRoute).map(route => ({
+  return Object.values(Source).map(route => ({
     actionKey: route,
-    actionTitle: Object.keys(SwapRoute).find(key => SwapRoute[key] === route),
+    actionTitle: lang.t(`exchange.source.${route}`),
     icon: {
       iconType: 'ASSET',
       iconValue: `${route}`,
@@ -22,17 +22,17 @@ const routeMenuItems = () => {
 };
 
 const androidRouteMenuItems = () => {
-  return Object.values(SwapRoute);
+  return Object.values(Source);
 };
 
-export default function SwapSettingsState({ onSelect, swapRoute }) {
+export default function SwapSettingsState({ onSelect, currentSource }) {
   const imageSource = useMemo(() => {
     let source = null;
-    switch (swapRoute) {
-      case SwapRoute['1inch']:
+    switch (currentSource) {
+      case Source.Aggregator1inch:
         source = OneInchExchange;
         break;
-      case SwapRoute['0x']:
+      case Source.Aggregator0x:
         source = ZeroXExchange;
         break;
       default:
@@ -41,7 +41,7 @@ export default function SwapSettingsState({ onSelect, swapRoute }) {
     }
 
     return source;
-  }, [swapRoute]);
+  }, [currentSource]);
 
   const handleOnPressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
@@ -89,9 +89,7 @@ export default function SwapSettingsState({ onSelect, swapRoute }) {
               width={20}
             />
             <Text size="18px" weight="bold">
-              {`${Object.keys(SwapRoute).find(
-                key => SwapRoute[key] === swapRoute
-              )} 􀆈`}
+              {`${lang.t(`exchange.source.${currentSource}`)} 􀆈`}
             </Text>
           </Inline>
         </ContextMenuButton>

@@ -32,7 +32,7 @@ import {
   useSwapSettings,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import { SwapRoute } from '@rainbow-me/redux/swap';
+import { Source } from '@rainbow-me/redux/swap';
 import { deviceUtils } from '@rainbow-me/utils';
 
 function useAndroidDisableGesturesOnFocus() {
@@ -63,8 +63,8 @@ export default function SwapSettingsState({ asset }) {
   const {
     slippageInBips,
     updateSwapSlippage,
-    updateSwapRoute,
-    swapRoute,
+    updateSwapSource,
+    source,
   } = useSwapSettings();
 
   useEffect(() => {
@@ -99,13 +99,13 @@ export default function SwapSettingsState({ asset }) {
   const convertBipsToPercent = bips => bips / 100;
   const convertPercentToBips = percent => percent * 100;
 
-  const [currentRoute, setCurrentRoute] = useState(swapRoute);
-  const updateRoute = useCallback(
-    newRoute => {
-      setCurrentRoute(newRoute);
-      updateSwapRoute(newRoute);
+  const [currentSource, setCurrentSource] = useState(source);
+  const updateSource = useCallback(
+    newSource => {
+      setCurrentSource(newSource);
+      updateSwapSource(newSource);
     },
-    [updateSwapRoute]
+    [updateSwapSource]
   );
 
   const [slippageValue, setSlippageValue] = useState(
@@ -161,8 +161,8 @@ export default function SwapSettingsState({ asset }) {
   const resetToDefaults = useCallback(() => {
     onSlippageChange(1);
     settingsChangeFlashbotsEnabled(false);
-    updateRoute(SwapRoute.Both);
-  }, [onSlippageChange, settingsChangeFlashbotsEnabled, updateRoute]);
+    updateSource(Source.AggregatorRainbow);
+  }, [onSlippageChange, settingsChangeFlashbotsEnabled, updateSource]);
 
   return (
     <SlackSheet
@@ -180,7 +180,10 @@ export default function SwapSettingsState({ asset }) {
         <ExchangeHeader />
         <Inset bottom="24px" horizontal="24px" top="10px">
           <Stack backgroundColor="green" space="10px">
-            <RoutePicker onSelect={updateRoute} swapRoute={currentRoute} />
+            <RoutePicker
+              currentSource={currentSource}
+              onSelect={updateSource}
+            />
             <Columns alignVertical="center">
               <Text size="18px" weight="bold">
                 {lang.t('exchange.slippage_tolerance')}

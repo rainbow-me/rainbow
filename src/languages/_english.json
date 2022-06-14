@@ -351,6 +351,11 @@
         "losing_prefix": "Losing",
         "small_market": "Small Market"
       },
+      "source": {
+        "rainbow": "Both",
+        "0x": "0x",
+        "1inch": "1inch"
+      },
       "settings": "Settings",
       "use_defaults": "Use Defaults",
       "done": "Done",

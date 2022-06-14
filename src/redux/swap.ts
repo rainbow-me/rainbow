@@ -16,10 +16,10 @@ export enum SwapModalField {
   output = 'outputAmount',
 }
 
-export enum SwapRoute {
-  Both = 'Both',
-  '0x' = '0x',
-  '1inch' = '1inch',
+export enum Source {
+  AggregatorRainbow = 'rainbow',
+  Aggregator0x = '0x',
+  Aggregator1inch = '1inch',
 }
 
 export interface TypeSpecificParameters {
@@ -35,7 +35,7 @@ interface SwapState {
   independentField: SwapModalField;
   independentValue: string | null;
   slippageInBips: number;
-  route: SwapRoute;
+  source: Source;
   type: string;
   tradeDetails: Quote | null;
   typeSpecificParameters?: TypeSpecificParameters | null;
@@ -45,7 +45,7 @@ interface SwapState {
 // -- Constants --------------------------------------- //
 const SWAP_UPDATE_DEPOSIT_CURRENCY = 'swap/SWAP_UPDATE_DEPOSIT_CURRENCY';
 const SWAP_UPDATE_SLIPPAGE = 'swap/SWAP_UPDATE_SLIPPAGE';
-const SWAP_UPDATE_ROUTE = 'swap/SWAP_UPDATE_ROUTE';
+const SWAP_UPDATE_SOURCE = 'swap/SWAP_UPDATE_SOURCE';
 const SWAP_UPDATE_INPUT_AMOUNT = 'swap/SWAP_UPDATE_INPUT_AMOUNT';
 const SWAP_UPDATE_NATIVE_AMOUNT = 'swap/SWAP_UPDATE_NATIVE_AMOUNT';
 const SWAP_UPDATE_OUTPUT_AMOUNT = 'swap/SWAP_UPDATE_OUTPUT_AMOUNT';
@@ -79,12 +79,12 @@ export const updateSwapSlippage = (slippage: number) => (
   });
 };
 
-export const updateSwapRoute = (newRoute: SwapRoute) => (
+export const updateSwapSource = (newSource: Source) => (
   dispatch: AppDispatch
 ) => {
   dispatch({
-    payload: newRoute,
-    type: SWAP_UPDATE_ROUTE,
+    payload: newSource,
+    type: SWAP_UPDATE_SOURCE,
   });
 };
 
@@ -240,8 +240,8 @@ const INITIAL_STATE: SwapState = {
   independentValue: null,
   inputCurrency: null,
   outputCurrency: null,
-  route: SwapRoute.Both,
   slippageInBips: 100,
+  source: Source.AggregatorRainbow,
   tradeDetails: null,
   type: ExchangeModalTypes.swap,
   typeSpecificParameters: null,
@@ -267,10 +267,10 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
         ...state,
         slippageInBips: action.payload,
       };
-    case SWAP_UPDATE_ROUTE:
+    case SWAP_UPDATE_SOURCE:
       return {
         ...state,
-        route: action.payload,
+        source: action.payload,
       };
     case SWAP_UPDATE_INPUT_AMOUNT:
       return {
