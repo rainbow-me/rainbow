@@ -2,16 +2,7 @@ import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { Switch } from 'react-native-gesture-handler';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
-import {
-  Box,
-  Divider,
-  Inline,
-  Inset,
-  Row,
-  Rows,
-  Stack,
-  Text,
-} from '@rainbow-me/design-system';
+import { Inline, Inset, Row, Rows, Text } from '@rainbow-me/design-system';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
