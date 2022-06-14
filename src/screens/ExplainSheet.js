@@ -159,7 +159,7 @@ export const explainers = network => ({
     title: ENS_RESOLVER_TITLE,
   },
   ens_configuration: {
-    extraHeight: android ? 120 : 100,
+    extraHeight: android ? 100 : 80,
     emoji: '❓',
     text: ENS_CONFIGURATION_EXPLAINER,
     title: ENS_CONFIGURATION_TITLE,
