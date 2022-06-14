@@ -669,8 +669,8 @@ export default async function runMigrations() {
       // eslint-disable-next-line @typescript-eslint/prefer-for-of
       for (let i = 0; i < walletKeys.length; i++) {
         const wallet = wallets[walletKeys[i]];
-        const newAddresses = await wallet.addresses.map(
-          async (account: RainbowAccount) => {
+        const newAddresses = await Promise.all(
+          wallet.addresses.map(async (account: RainbowAccount) => {
             const rainbowProfile = await fetchRainbowProfile(account?.address);
             queryClient.setQueryData(
               rainbowProfileQueryKey(account?.address),
@@ -690,7 +690,7 @@ export default async function runMigrations() {
                 profileUtils.addressHashedEmoji(account?.address),
               label: removeFirstEmojiFromString(account?.label),
             };
-          }
+          })
         );
         const newWallet = { ...wallet, addresses: newAddresses };
         updatedWallets[walletKeys[i]] = newWallet;
