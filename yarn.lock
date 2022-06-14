@@ -15148,9 +15148,9 @@ rc@^1.2.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-react-coin-icon@osdnk/react-coin-icon#928a541f2001a819a8a89e93c91d8dcb67405f96:
+react-coin-icon@osdnk/react-coin-icon#06464588a3d986f6ef3a7d7341b2d7ea0c5ac50b:
   version "0.1.44"
-  resolved "https://codeload.github.com/osdnk/react-coin-icon/tar.gz/928a541f2001a819a8a89e93c91d8dcb67405f96"
+  resolved "https://codeload.github.com/osdnk/react-coin-icon/tar.gz/06464588a3d986f6ef3a7d7341b2d7ea0c5ac50b"
   dependencies:
     "@svgr/cli" "^4.3.0"
     react-primitives "^0.8.1"
