@@ -60,17 +60,21 @@ const shouldSignUri = (
   options?: ImgOptions
 ): string | undefined => {
   try {
-    const updatedOptions: ImgOptions = {
-      ...(options?.w && {
-        w: roundUpTo50(PixelRatio.getPixelSizeForLayoutSize(options.w)),
-      }),
-      ...(options?.h && {
-        h: roundUpTo50(PixelRatio.getPixelSizeForLayoutSize(options.h)),
-      }),
-      ...(options?.fm && {
-        fm: options.fm,
-      }),
-    };
+    const updatedOptions: ImgOptions = {};
+    if (options?.w) {
+      updatedOptions.w = roundUpTo50(
+        PixelRatio.getPixelSizeForLayoutSize(options.w)
+      );
+    }
+    if (options?.h) {
+      updatedOptions.h = roundUpTo50(
+        PixelRatio.getPixelSizeForLayoutSize(options.h)
+      );
+    }
+
+    if (options?.fm) {
+      updatedOptions.fm = options.fm;
+    }
 
     // Firstly, we check if the url is a Cloudinary link.
     // Then, obviously, we use Cloudinary to transform the size and format.
