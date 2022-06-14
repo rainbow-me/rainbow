@@ -26,8 +26,8 @@ jobs:
       - name: Set up github keys
         run: git config core.sshCommand "ssh -i ~/.ssh/id_ed25519 -F /dev/null"
 
-      - name: Set up ENV vars
-        run: git clone git@github.com:rainbow-me/rainbow-env.git && mv rainbow-env/dotenv .env && rm -rf rainbow-env
+      - name: Set up ENV vars & scripts
+        run: git clone git@github.com:rainbow-me/rainbow-env.git && mv rainbow-env/dotenv .env && rm -rf rainbow-env && git clone git@github.com:rainbow-me/rainbow-scripts.git
 
       - name: Install deps
         run: yarn setup && cd ios && pod install && cd ..
