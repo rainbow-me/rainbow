@@ -19,7 +19,7 @@ const WithdrawModal = props => {
 
   return (
     <ExchangeModal
-      defaultInputAsset={params?.defaultInputAsset}
+      inputAsset={params?.defaultInputAsset}
       type={ExchangeModalTypes.withdrawal}
       typeSpecificParams={typeSpecificParams}
       {...props}
