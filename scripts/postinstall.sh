@@ -102,6 +102,8 @@ cp ./node_modules/react-native-bignumber/package.json packagebignumber.json
 rn-nodeify --install --hack 'crypto,buffer,react-native-randombytes,vm,stream,http,https,os,url,net,fs,process'
 echo "✅ rn-nodeify packages hacked succesfully"
 mv packagebignumber.json ./node_modules/react-native-bignumber/package.json
+#FIXME
+rm -rf ./node_modules/react-native-bignumber/src
 
 # Apply patches.
 patch-package
