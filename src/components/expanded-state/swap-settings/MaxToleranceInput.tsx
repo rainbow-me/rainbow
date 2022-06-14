@@ -116,7 +116,7 @@ export const MaxToleranceInput: React.FC<{
     [updateSwapSlippage, setSlippageValue]
   );
 
-  const hasPriceImpact = isSeverePriceImpact || isHighPriceImpact || true;
+  const hasPriceImpact = isSeverePriceImpact || isHighPriceImpact;
 
   return (
     <Columns alignVertical="center">
