@@ -1,14 +1,14 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useEffect } from 'react';
-import { InteractionManager, Keyboard } from 'react-native';
+import { Keyboard } from 'react-native';
 import { Switch } from 'react-native-gesture-handler';
 import { useDispatch } from 'react-redux';
 import { ButtonPressAnimation } from '../../animations';
 import { ExchangeHeader } from '../../exchange';
 import { FloatingPanel } from '../../floating-panels';
 import { SlackSheet } from '../../sheet';
-import StepButtonInput from './StepButtonInput';
+import { MaxToleranceInput } from './MaxToleranceInput';
 import {
   Box,
   ColorModeProvider,
@@ -18,17 +18,11 @@ import {
   Stack,
   Text,
 } from '@rainbow-me/design-system';
-import {
-  add,
-  greaterThan,
-  toFixedDecimals,
-} from '@rainbow-me/helpers/utilities';
 
 import {
   useAccountSettings,
   useColorForAsset,
   useKeyboardHeight,
-  useSwapSlippage,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { deviceUtils } from '@rainbow-me/utils';
@@ -57,8 +51,7 @@ export default function SwapSettingsState({ asset }) {
 
   const keyboardHeight = useKeyboardHeight();
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(true);
-
-  const { slippageInBips, updateSwapSlippage } = useSwapSlippage();
+  const toleranceInputRef = useRef(null);
 
   useEffect(() => {
     const keyboardDidShow = () => {
@@ -89,63 +82,10 @@ export default function SwapSettingsState({ asset }) {
     setParams({ longFormHeight: sheetHeightWithKeyboard });
   }, [sheetHeightWithKeyboard, setParams]);
 
-  const convertBipsToPercent = bips => bips / 100;
-  const convertPercentToBips = percent => percent * 100;
-
-  const [slippageValue, setSlippageValue] = useState(
-    convertBipsToPercent(slippageInBips)
-  );
-
-  const slippageRef = useRef(null);
-
-  useEffect(() => {
-    InteractionManager.runAfterInteractions(() => {
-      setTimeout(() => {
-        slippageRef?.current.focus();
-      }, 200);
-    });
-  }, []);
-
-  const handleSlippagePress = useCallback(() => slippageRef?.current?.focus(), [
-    slippageRef,
-  ]);
-
-  const onSlippageChange = useCallback(
-    value => {
-      updateSwapSlippage(convertPercentToBips(value));
-      setSlippageValue(value);
-    },
-    [updateSwapSlippage, setSlippageValue]
-  );
-
-  const updateSlippage = useCallback(
-    increment => {
-      //setLastFocusedInputHandle(maxBaseFieldRef)
-      const newSlippageValue = toFixedDecimals(
-        add(slippageValue, increment),
-        2
-      );
-      if (greaterThan(0, newSlippageValue)) return;
-
-      updateSwapSlippage(convertPercentToBips(newSlippageValue));
-      setSlippageValue(newSlippageValue);
-    },
-    [slippageValue, updateSwapSlippage]
-  );
-
-  const SLIPPAGE_INCREMENT = 0.1;
-  const addSlippage = useCallback(() => {
-    updateSlippage(SLIPPAGE_INCREMENT);
-  }, [updateSlippage]);
-
-  const minusSlippage = useCallback(() => {
-    updateSlippage(-SLIPPAGE_INCREMENT);
-  }, [updateSlippage]);
-
   const resetToDefaults = useCallback(() => {
-    onSlippageChange(1);
+    toleranceInputRef.reset();
     settingsChangeFlashbotsEnabled(false);
-  }, [onSlippageChange, settingsChangeFlashbotsEnabled]);
+  }, [toleranceInputRef, settingsChangeFlashbotsEnabled]);
 
   return (
     <SlackSheet
@@ -163,24 +103,10 @@ export default function SwapSettingsState({ asset }) {
         <ExchangeHeader />
         <Inset bottom="24px" horizontal="24px" top="10px">
           <Stack backgroundColor="green" space="10px">
-            <Columns alignVertical="center">
-              <Text size="18px" weight="bold">
-                {lang.t('exchange.slippage_tolerance')}
-              </Text>
-              <Column width="content">
-                <StepButtonInput
-                  buttonColor={colorForAsset}
-                  inputLabel="%"
-                  inputRef={slippageRef}
-                  minusAction={minusSlippage}
-                  onChange={onSlippageChange}
-                  onPress={handleSlippagePress}
-                  plusAction={addSlippage}
-                  testID="swap-slippage-input"
-                  value={slippageValue}
-                />
-              </Column>
-            </Columns>
+            <MaxToleranceInput
+              ref={toleranceInputRef}
+              colorForAsset={colorForAsset}
+            />
             {asset?.type === 'token' && (
               <Columns alignHorizontal="justify" alignVertical="center">
                 <Text color="primary" size="18px" weight="bold">
