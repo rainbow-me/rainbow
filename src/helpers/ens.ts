@@ -628,7 +628,7 @@ const formatEstimatedNetworkFee = (
   const networkFeeInWei = multiply(
     gweiToWei(add(maxBaseFee, maxPriorityFee)),
     gasLimit
-  );
+  ).toString();
   const networkFeeInEth = fromWei(networkFeeInWei);
 
   const { amount, display } = convertAmountAndPriceToNativeDisplay(
@@ -730,7 +730,7 @@ const formatRentPrice = (
       amount,
       display,
     },
-    wei: rentPrice,
+    wei: rentPrice.toString(),
   };
 };
 

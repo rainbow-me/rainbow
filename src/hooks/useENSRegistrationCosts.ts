@@ -304,7 +304,13 @@ export default function useENSRegistrationCosts({
         // gas limit estimat for registerWithConfig fails if there's no commit tx sent first
         `${ethUnits.ens_register_with_config}`,
         !hasReverseRecord ? setNameGasLimit : '',
-      ].reduce((a, b) => BigNumber.from(a).add(b).toString(), '0');
+      ].reduce(
+        (a, b) =>
+          BigNumber.from(a)
+            .add(b || '0')
+            .toString(),
+        '0'
+      );
     } else if (step === REGISTRATION_STEPS.RENEW) {
       estimatedGasLimit = renewGasLimit;
     } else if (step === REGISTRATION_STEPS.SET_NAME) {
@@ -317,9 +323,9 @@ export default function useENSRegistrationCosts({
 
     const formattedEstimatedNetworkFee = formatEstimatedNetworkFee(
       estimatedGasLimit,
-      currentBaseFee?.gwei,
+      currentBaseFee?.gwei || '0',
       gasFeeParamsBySpeed?.[selectedGasFeeOption || NORMAL]
-        ?.maxPriorityFeePerGas?.gwei,
+        ?.maxPriorityFeePerGas?.gwei || '0',
       nativeCurrency,
       nativeAssetPrice
     );

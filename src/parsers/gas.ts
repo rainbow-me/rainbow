@@ -1,4 +1,4 @@
-import { BigNumberish, ethers } from 'ethers';
+import { BigNumberish, ethers, FixedNumber } from 'ethers';
 import { map, zipObject } from 'lodash';
 import { gasUtils } from '../utils';
 import {
@@ -375,7 +375,12 @@ export const gweiToWei = (gweiAmount: BigNumberish) => {
 };
 
 export const numberGweiToWei = (gweiAmount: BigNumberish) => {
-  return ethers.utils.parseUnits(gweiAmount.toString(), 'gwei').toNumber();
+  return ethers.utils
+    .parseUnits(
+      FixedNumber.from(gweiAmount.toString()).round(9).toString(),
+      'gwei'
+    )
+    .toNumber();
 };
 
 export const weiToGwei = (weiAmount: BigNumberish) => {
