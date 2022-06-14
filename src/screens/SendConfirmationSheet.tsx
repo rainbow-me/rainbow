@@ -189,7 +189,7 @@ export function getSheetHeight({
   isL2: boolean;
   toAddress: string;
 }) {
-  let height = android ? 488 : 377;
+  let height = android ? 440 : 377;
   if (shouldShowChecks) height = height + 104;
   if (isL2) height = height + 59;
   if (asset && getUniqueTokenType(asset) === 'ENS') {
@@ -300,7 +300,7 @@ export default function SendConfirmationSheet() {
     return !!found;
   }, [toAddress, userAccounts]);
 
-  const { updateTxFee } = useGas();
+  const { isSufficientGas, isValidGas, updateTxFee } = useGas();
 
   useEffect(() => {
     if (!isSendingToUserAccount) {
@@ -461,8 +461,12 @@ export default function SendConfirmationSheet() {
   }, [setParams, shouldShowChecks]);
 
   const canSubmit =
-    !shouldShowChecks ||
-    checkboxes.filter(check => check.checked === false).length === 0;
+    isSufficientGas &&
+    isValidGas &&
+    (!shouldShowChecks ||
+      checkboxes.filter(check => check.checked === false).length === 0);
+
+  const insufficientEth = isSufficientGas === false && isValidGas;
 
   const handleSubmit = useCallback(async () => {
     if (!canSubmit) return;
@@ -778,8 +782,10 @@ export default function SendConfirmationSheet() {
               androidWidth={deviceWidth - 60}
               backgroundColor={color}
               disabled={!canSubmit}
+              insufficientEth={insufficientEth}
               isAuthorizing={isAuthorizing}
               onLongPress={handleSubmit}
+              requiresChecks={shouldShowChecks}
               smallButton={!isTinyPhone && (android || isSmallPhone)}
               testID="send-confirmation-button"
             />
