@@ -49,14 +49,14 @@ const DevSection = () => {
 
   const connectToHardhat = useCallback(async () => {
     try {
-      const ready = await web3SetHttpProvider(
-        (ios && HARDHAT_URL_IOS) ||
-          (android && HARDHAT_URL_ANDROID) ||
-          'http://127.0.0.1:8545'
-      );
-      logger.log('connected to hardhat', ready);
+      // const ready = await web3SetHttpProvider(
+      //   (ios && HARDHAT_URL_IOS) ||
+      //     (android && HARDHAT_URL_ANDROID) ||
+      //     'http://127.0.0.1:8545'
+      // );
+      // logger.log('connected to hardhat', ready);
     } catch (e) {
-      await web3SetHttpProvider(networkTypes.mainnet);
+      // await web3SetHttpProvider(networkTypes.mainnet);
       logger.log('error connecting to hardhat');
     }
     navigate(Routes.PROFILE_SCREEN);

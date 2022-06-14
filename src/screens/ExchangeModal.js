@@ -37,7 +37,6 @@ import { ExchangeModalTypes, isKeyboardOpen } from '@rainbow-me/helpers';
 import { divide, greaterThan, multiply } from '@rainbow-me/helpers/utilities';
 import {
   useAccountSettings,
-  useBlockPolling,
   useCurrentNonce,
   useDimensions,
   useGas,
@@ -149,7 +148,6 @@ export default function ExchangeModal({
     updateDefaultGasLimit,
     updateTxFee,
   } = useGas();
-  const { initWeb3Listener, stopWeb3Listener } = useBlockPolling();
   const { accountAddress, nativeCurrency, network } = useAccountSettings();
   const getNextNonce = useCurrentNonce(accountAddress, network);
 
@@ -302,18 +300,14 @@ export default function ExchangeModal({
     InteractionManager.runAfterInteractions(() => {
       startPollingGasFees();
     });
-    initWeb3Listener();
     return () => {
       stopPollingGasFees();
-      stopWeb3Listener();
     };
   }, [
     defaultGasLimit,
     network,
-    initWeb3Listener,
     startPollingGasFees,
     stopPollingGasFees,
-    stopWeb3Listener,
     updateDefaultGasLimit,
   ]);
 

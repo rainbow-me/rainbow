@@ -13,7 +13,6 @@ import {
   saveNetwork,
   saveTestnetsEnabled,
 } from '@rainbow-me/handlers/localstorage/globalSettings';
-import { web3SetHttpProvider } from '@rainbow-me/handlers/web3';
 import { Network } from '@rainbow-me/helpers/networkTypes';
 import { dataResetState } from '@rainbow-me/redux/data';
 import { explorerClearState, explorerInit } from '@rainbow-me/redux/explorer';
@@ -122,7 +121,6 @@ export const settingsLoadNetwork = () => async (
   try {
     const network = await getNetwork();
     const chainId = ethereumUtils.getChainIdFromNetwork(network);
-    await web3SetHttpProvider(network);
     dispatch({
       payload: { chainId, network },
       type: SETTINGS_UPDATE_NETWORK_SUCCESS,
@@ -166,11 +164,10 @@ export const settingsUpdateAccountAddress = (accountAddress: string) => async (
   });
 };
 
-export const settingsUpdateNetwork = (network: Network) => async (
+export const settingsUpdateNetwork = (network: Network) => (
   dispatch: Dispatch<SettingsStateUpdateNetworkSuccessAction>
 ) => {
   const chainId = ethereumUtils.getChainIdFromNetwork(network);
-  await web3SetHttpProvider(network);
   try {
     dispatch({
       payload: { chainId, network },

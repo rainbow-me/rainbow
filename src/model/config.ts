@@ -38,10 +38,7 @@ import {
   getNetwork,
   saveNetwork,
 } from '@rainbow-me/handlers/localstorage/globalSettings';
-import {
-  setRpcEndpoints,
-  web3SetHttpProvider,
-} from '@rainbow-me/handlers/web3';
+import { setRpcEndpoints } from '@rainbow-me/handlers/web3';
 
 import Logger from 'logger';
 
@@ -114,7 +111,6 @@ const init = async () => {
     // UPDATE THE PROVIDER AFTER LOADING THE NEW CONFIG
     const currentNetwork = await getNetwork();
     setRpcEndpoints(config);
-    web3SetHttpProvider(currentNetwork);
     saveNetwork(currentNetwork);
   }
 };

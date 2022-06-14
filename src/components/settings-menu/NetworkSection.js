@@ -25,7 +25,7 @@ const NetworkSection = props => {
   const onNetworkChange = useCallback(
     async network => {
       await resetAccountState();
-      await dispatch(settingsUpdateNetwork(network));
+      dispatch(settingsUpdateNetwork(network));
       InteractionManager.runAfterInteractions(async () => {
         await loadAccountData(network);
         initializeAccountData();
