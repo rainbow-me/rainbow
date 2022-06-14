@@ -17,7 +17,6 @@ import useExperimentalFlag, {
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
 import { resolveNameOrAddress } from '@rainbow-me/handlers/web3';
-import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
 import { isENSAddressFormat } from '@rainbow-me/helpers/validators';
 import { useClipboard, useDimensions } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
@@ -123,9 +122,9 @@ export default function SendHeader({
   const isPreExistingContact = (contact?.nickname?.length || 0) > 0;
 
   const name =
-    removeFirstEmojiFromString(
-      userWallet?.label || contact?.nickname || nickname
-    ) ||
+    userWallet?.label ||
+    contact?.nickname ||
+    nickname ||
     userWallet?.ens ||
     contact?.ens ||
     recipient;

@@ -11,10 +11,6 @@ import { Icon } from '../../icons';
 import { Centered, Column, ColumnWithMargins, Row } from '../../layout';
 import { Text, TruncatedAddress } from '../../text';
 import Caret from '@rainbow-me/assets/family-dropdown-arrow.png';
-import {
-  removeFirstEmojiFromString,
-  returnStringFirstEmoji,
-} from '@rainbow-me/helpers/emojiHandler';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { useManageCloudBackups, useWallets } from '@rainbow-me/hooks';
@@ -154,16 +150,14 @@ const WalletSelectionView = () => {
                       address={address}
                       alignSelf="center"
                       color={color}
-                      emoji={emoji || returnStringFirstEmoji(labelOrName)}
+                      emoji={emoji}
                       marginRight={10}
                       size="smedium"
                     />
                     <ColumnWithMargins margin={3} marginBottom={0.5}>
                       <Row>
                         {labelOrName ? (
-                          <AccountLabel>
-                            {removeFirstEmojiFromString(labelOrName)}
-                          </AccountLabel>
+                          <AccountLabel>{labelOrName}</AccountLabel>
                         ) : (
                           <Address address={address} />
                         )}

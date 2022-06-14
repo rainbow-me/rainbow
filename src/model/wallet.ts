@@ -52,8 +52,6 @@ import {
   isValidMnemonic,
   web3Provider,
 } from '@rainbow-me/handlers/web3';
-import { getAvatarColorHex } from '@rainbow-me/helpers/colorHandler';
-import { returnStringFirstEmoji } from '@rainbow-me/helpers/emojiHandler';
 import { createSignature } from '@rainbow-me/helpers/signingWallet';
 import showWalletErrorAlert from '@rainbow-me/helpers/support';
 import WalletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
@@ -787,15 +785,8 @@ export const createWallet = async (
 
         if (discoveredAccount && discoveredWalletId) {
           if (discoveredAccount.visible) {
-            walletColor =
-              color ||
-              getAvatarColorHex(discoveredAccount.color) ||
-              walletColor;
-            walletEmoji =
-              emoji ||
-              discoveredAccount.emoji ||
-              returnStringFirstEmoji(discoveredAccount.label) ||
-              walletEmoji;
+            walletColor = color || discoveredAccount.color || walletColor;
+            walletEmoji = emoji || discoveredAccount.emoji || walletEmoji;
             label = discoveredAccount.label ?? '';
           }
           // eslint-disable-next-line @typescript-eslint/no-dynamic-delete

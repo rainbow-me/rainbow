@@ -1,5 +1,4 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { removeFirstEmojiFromString } from '../../helpers/emojiHandler';
 import { abbreviations, magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText } from '../coin-row';
@@ -134,11 +133,6 @@ const ContactRow = (
     setENSName,
   ]);
 
-  let cleanedUpLabel = null;
-  if (label) {
-    cleanedUpLabel = removeFirstEmojiFromString(label);
-  }
-
   const handlePress = useCallback(() => {
     if (showcaseItem) {
       onPress(showcaseItem, nickname);
@@ -166,9 +160,7 @@ const ContactRow = (
         height={40}
         margin={10}
         style={symmetricalMargins ? css.symmetrical : css.default}
-        testID={`${testID}-contact-row-${
-          removeFirstEmojiFromString(nickname) || ''
-        }`}
+        testID={`${testID}-contact-row-${nickname || ''}`}
       >
         {imageAvatar ? (
           <ImageAvatar image={imageAvatar} marginRight={10} size="medium" />
@@ -184,9 +176,9 @@ const ContactRow = (
         <Column justify={ios ? 'space-between' : 'center'}>
           {accountType === 'accounts' || accountType === 'watching' ? (
             <Fragment>
-              {cleanedUpLabel || ens ? (
+              {label || ens ? (
                 <ContactName deviceWidth={deviceWidth}>
-                  {cleanedUpLabel || ens}
+                  {label || ens}
                 </ContactName>
               ) : (
                 <ContactName deviceWidth={deviceWidth}>
@@ -206,7 +198,7 @@ const ContactRow = (
           ) : (
             <Fragment>
               <ContactName deviceWidth={deviceWidth} lite={!!showcaseItem}>
-                {removeFirstEmojiFromString(nickname)}
+                {nickname}
               </ContactName>
               {isValidDomainFormat(address) ? (
                 <ContactENS ens={address} />

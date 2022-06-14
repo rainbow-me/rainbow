@@ -3,7 +3,6 @@ import lang from 'i18n-js';
 import React, { useCallback, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import ProfileModal from './profile/ProfileModal';
-import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
 import { useRainbowProfile } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
@@ -19,9 +18,7 @@ export default function WalletProfileState({
   const { rainbowProfile } = useRainbowProfile(address);
   const { name, image } = profile;
 
-  const [value, setValue] = useState(
-    name ? removeFirstEmojiFromString(name) : ''
-  );
+  const [value, setValue] = useState(name || '');
 
   const handleCancel = useCallback(() => {
     goBack();

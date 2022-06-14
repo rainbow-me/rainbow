@@ -23,10 +23,6 @@ import { address } from '../utils/abbreviations';
 import useExperimentalFlag, {
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
-import {
-  removeFirstEmojiFromString,
-  returnStringFirstEmoji,
-} from '@rainbow-me/helpers/emojiHandler';
 import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
 import {
   isENSAddressFormat,
@@ -328,17 +324,13 @@ export default function SendConfirmationSheet() {
   }, [toAddress, userAccounts, watchedAccounts]);
 
   const avatarName =
-    removeFirstEmojiFromString(existingAccount?.label || contact?.nickname) ||
+    existingAccount?.label ||
+    contact?.nickname ||
     (isValidDomainFormat(to)
       ? to
       : walletNames?.[to]
       ? walletNames[to]
       : address(to, 4, 6));
-
-  const avatarValue =
-    existingAccount?.emoji || returnStringFirstEmoji(existingAccount?.label);
-
-  const avatarColor = existingAccount?.color;
 
   let realSheetHeight = !shouldShowChecks
     ? SendConfirmationSheetHeight - 150
@@ -496,8 +488,8 @@ export default function SendConfirmationSheet() {
                 ) : (
                   <ContactAvatar
                     address={toAddress}
-                    color={avatarColor}
-                    emoji={avatarValue}
+                    color={existingAccount?.color}
+                    emoji={existingAccount?.emoji}
                     size="lmedium"
                   />
                 )}

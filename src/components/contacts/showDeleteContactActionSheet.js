@@ -1,6 +1,5 @@
 import lang from 'i18n-js';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
 import { showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const showDeleteContactActionSheet = ({
@@ -14,7 +13,7 @@ const showDeleteContactActionSheet = ({
       cancelButtonIndex: 1,
       destructiveButtonIndex: 0,
       message: `Are you sure you want to delete "${
-        removeFirstEmojiFromString(nickname) || address
+        nickname || address
       }" from your contacts?`,
       options: [
         lang.t('contacts.options.delete'),
