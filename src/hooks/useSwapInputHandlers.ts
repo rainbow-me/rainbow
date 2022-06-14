@@ -54,7 +54,9 @@ export default function useSwapInputHandlers() {
                   subtract(newAmount, multiply(transactionFee, 1.5)),
                   6
                 );
-                dispatch(updateSwapInputAmount(newAmount));
+                if (Number(newAmount) >= 0) {
+                  dispatch(updateSwapInputAmount(newAmount));
+                }
               },
               text: 'Auto adjust',
             },

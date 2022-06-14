@@ -304,7 +304,7 @@ export default function useENSRegistrationCosts({
         // gas limit estimat for registerWithConfig fails if there's no commit tx sent first
         `${ethUnits.ens_register_with_config}`,
         !hasReverseRecord ? setNameGasLimit : '',
-      ].reduce((a, b) => BigNumber.from(a).add(b).toString(), '');
+      ].reduce((a, b) => BigNumber.from(a).add(b).toString(), '0');
     } else if (step === REGISTRATION_STEPS.RENEW) {
       estimatedGasLimit = renewGasLimit;
     } else if (step === REGISTRATION_STEPS.SET_NAME) {
