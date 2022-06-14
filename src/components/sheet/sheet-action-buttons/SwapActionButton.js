@@ -6,13 +6,16 @@ import {
   CurrencySelectionTypes,
   ExchangeModalTypes,
 } from '@rainbow-me/helpers';
+import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 import {
   useExpandedStateNavigation,
   useSwapCurrencyHandlers,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
+import { ethereumUtils } from '@rainbow-me/utils';
 
 function SwapActionButton({
+  asset,
   color: givenColor,
   inputType,
   label,
@@ -26,7 +29,9 @@ function SwapActionButton({
 
   const { updateInputCurrency, updateOutputCurrency } = useSwapCurrencyHandlers(
     {
-      shouldUpdate: false,
+      defaultInputAsset: inputType === AssetInputTypes.in ? asset : null,
+      defaultOutputAsset: inputType === AssetInputTypes.out ? asset : null,
+      shouldUpdate: true,
       type: ExchangeModalTypes.swap,
     }
   );
@@ -34,41 +39,43 @@ function SwapActionButton({
   const navigate = useExpandedStateNavigation(inputType);
   const goToSwap = useCallback(() => {
     navigate(Routes.EXCHANGE_MODAL, params => {
-      const { inputAsset, outputAsset } = params;
-      if (inputAsset || outputAsset) {
-        const ownsInitial = !!inputAsset;
-        const symbol = inputAsset?.symbol || outputAsset?.symbol;
-        const type = CurrencySelectionTypes[ownsInitial ? 'output' : 'input'];
-        const copyField = `swap.modal_types.${
-          ownsInitial ? 'receive' : 'get_symbol_with'
-        }`;
+      if (params.outputAsset) {
         return {
           params: {
+            chainId: ethereumUtils.getChainIdFromType(asset.type),
+            defaultOutputAsset: asset,
             fromDiscover: true,
-            onSelectCurrency: ownsInitial
-              ? updateOutputCurrency
-              : updateInputCurrency,
+            onSelectCurrency: updateInputCurrency,
             params: {
               ...params,
-              inputAsset,
+              ignoreInitialTypeCheck: true,
             },
-            title: lang.t(copyField, {
-              symbol,
+            title: lang.t('swap.modal_types.get_symbol_with', {
+              symbol: params.outputAsset.symbol,
             }),
-            type,
+            type: CurrencySelectionTypes.input,
+          },
+          screen: Routes.CURRENCY_SELECT_SCREEN,
+        };
+      } else {
+        return {
+          params: {
+            chainId: ethereumUtils.getChainIdFromType(asset.type),
+            defaultInputAsset: asset,
+            fromDiscover: true,
+            onSelectCurrency: updateOutputCurrency,
+            params: {
+              ...params,
+              ignoreInitialTypeCheck: true,
+            },
+            title: 'swap',
+            type: CurrencySelectionTypes.output,
           },
           screen: Routes.CURRENCY_SELECT_SCREEN,
         };
       }
-      return {
-        params: {
-          params,
-          screen: Routes.MAIN_EXCHANGE_SCREEN,
-        },
-        screen: Routes.MAIN_EXCHANGE_NAVIGATOR,
-      };
     });
-  }, [navigate, updateInputCurrency, updateOutputCurrency]);
+  }, [asset, navigate, updateInputCurrency, updateOutputCurrency]);
   const handlePress = useCallback(() => {
     if (requireVerification && !verified) {
       Alert.alert(
