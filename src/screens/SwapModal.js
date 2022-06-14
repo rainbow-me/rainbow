@@ -6,12 +6,7 @@ import { useNavigation } from '@rainbow-me/navigation';
 
 const SwapModal = (props, ref) => {
   const { params = {} } = useRoute();
-  const {
-    ignoreInitialTypeCheck,
-    inputAsset,
-    outputAsset,
-    fromDiscover,
-  } = params;
+  const { ignoreInitialTypeCheck, fromDiscover } = params;
   const { setParams } = useNavigation();
   useEffect(() => {
     setParams({ focused: true });
@@ -20,8 +15,6 @@ const SwapModal = (props, ref) => {
 
   return (
     <ExchangeModal
-      defaultInputAsset={inputAsset}
-      defaultOutputAsset={outputAsset}
       fromDiscover={fromDiscover}
       ignoreInitialTypeCheck={ignoreInitialTypeCheck}
       ref={ref}
