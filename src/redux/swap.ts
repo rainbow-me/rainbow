@@ -129,7 +129,7 @@ export const updateSwapInputCurrency = (
       newInputCurrency &&
       !ignoreTypeCheck
     ) {
-      dispatch({ payload: null, type: SWAP_UPDATE_OUTPUT_CURRENCY });
+      dispatch(updateSwapOutputCurrency(null, true));
     }
 
     if (newInputCurrency) {
@@ -153,7 +153,6 @@ export const updateSwapOutputCurrency = (
   newOutputCurrency: SwappableAsset | null,
   ignoreTypeCheck = false
 ) => (dispatch: AppDispatch, getState: AppGetState) => {
-  logger.log('1');
   const { independentField, inputCurrency, type } = getState().swap;
   if (
     newOutputCurrency?.address === inputCurrency?.address &&
@@ -168,17 +167,14 @@ export const updateSwapOutputCurrency = (
       newOutputCurrency &&
       !ignoreTypeCheck
     ) {
-      logger.log('3');
-      dispatch({ payload: null, type: SWAP_UPDATE_INPUT_CURRENCY });
+      dispatch(updateSwapInputCurrency(null, true));
     }
 
     dispatch({ payload: newOutputCurrency, type: SWAP_UPDATE_OUTPUT_CURRENCY });
     if (newOutputCurrency) {
-      logger.log('4');
       dispatch(fetchAssetPrices(newOutputCurrency.address));
     }
     if (independentField === SwapModalField.output) {
-      logger.log('5');
       dispatch(updateSwapOutputAmount(null));
     }
   }
