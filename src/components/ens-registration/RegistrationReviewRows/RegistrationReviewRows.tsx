@@ -9,7 +9,6 @@ import {
   Inset,
   Stack,
   Text,
-  useForegroundColor,
 } from '@rainbow-me/design-system';
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import { useInterval } from '@rainbow-me/hooks';
@@ -30,8 +29,6 @@ function StepButton({
   type: 'increment' | 'decrement';
   disabled: boolean;
 }) {
-  const secondary15 = useForegroundColor('secondary') + '15';
-
   return (
     <Box
       as={ButtonPressAnimation}
@@ -43,10 +40,7 @@ function StepButton({
       scaleTo={disabled ? 1 : 0.75}
       shouldLongPressHoldPress
     >
-      <Text
-        color={disabled ? { custom: secondary15 } : 'accent'}
-        weight="heavy"
-      >
+      <Text color={disabled ? 'secondary20' : 'accent'} weight="heavy">
         {type === 'increment' ? '􀁍' : '􀁏'}
       </Text>
     </Box>

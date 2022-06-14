@@ -34,6 +34,14 @@ export const createSetRecordsENSRap = async (
     actions = concat(actions, recordsAction);
   }
 
+  if (ensActionParameters.setReverseRecord) {
+    const setName = createNewENSAction(
+      RapActionTypes.setNameENS,
+      ensActionParameters
+    );
+    actions = concat(actions, setName);
+  }
+
   // create the overall rap
   const newRap = createNewRap(actions);
   return newRap;
