@@ -1,6 +1,6 @@
 import { isHexString } from '@ethersproject/bytes';
 import lang from 'i18n-js';
-import { get, isEmpty, toLower } from 'lodash';
+import { get, isEmpty } from 'lodash';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
 import { ActivityIndicator, Keyboard } from 'react-native';
 import { useNavigation } from '../../navigation/Navigation';
@@ -112,12 +112,14 @@ export default function SendHeader({
   }, [isValidAddress, recipient, setHexAddress]);
 
   const contact = useMemo(() => {
-    return get(contacts, `${[toLower(hexAddress)]}`, defaultContactItem);
+    return contacts?.[hexAddress.toLowerCase()] ?? defaultContactItem;
   }, [contacts, hexAddress]);
 
   const userWallet = useMemo(() => {
     return [...userAccounts, ...watchedAccounts].find(
-      account => toLower(account.address) === toLower(hexAddress || recipient)
+      account =>
+        account.address.toLowerCase() ===
+        (hexAddress || recipient)?.toLowerCase()
     );
   }, [recipient, userAccounts, watchedAccounts, hexAddress]);
 

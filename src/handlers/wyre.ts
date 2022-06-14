@@ -1,7 +1,7 @@
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@rai... Remove this comment to see the full error message
 import { PaymentRequest } from '@rainbow-me/react-native-payments';
 import { captureException } from '@sentry/react-native';
-import { get, join, split, toLower, values } from 'lodash';
+import { get, join, split, values } from 'lodash';
 import {
   // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   RAINBOW_WYRE_MERCHANT_ID,
@@ -65,7 +65,7 @@ class WyreException extends Error {
 }
 
 export const getReferenceId = (accountAddress: any) => {
-  const lowered = toLower(accountAddress);
+  const lowered = accountAddress.toLowerCase();
   return lowered.substr(-12);
 };
 

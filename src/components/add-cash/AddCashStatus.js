@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { isEmpty, toLower } from 'lodash';
+import { isEmpty } from 'lodash';
 import LottieView from 'lottie-react-native';
 import React, { Fragment, useEffect, useMemo, useRef } from 'react';
 import { StyleSheet } from 'react-native';
@@ -235,7 +235,7 @@ const AddCashStatus = ({
     }
   }, [previousStatus, status]);
 
-  const currency = toLower(orderCurrency || 'ETH');
+  const currency = (orderCurrency || 'ETH').toLowerCase();
 
   const updatedError = useMemo(() => {
     return getWyreErrorOverride(error);

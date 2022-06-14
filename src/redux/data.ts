@@ -17,7 +17,6 @@ import {
   partition,
   pickBy,
   property,
-  toLower,
   toUpper,
   uniqBy,
 } from 'lodash';
@@ -654,7 +653,7 @@ const genericAssetsFallback = () => async (
 ) => {
   logger.log('ZERION IS DOWN! ENABLING GENERIC ASSETS FALLBACK');
   const { nativeCurrency } = getState().settings;
-  const formattedNativeCurrency = toLower(nativeCurrency);
+  const formattedNativeCurrency = nativeCurrency.toLowerCase();
   let ids: typeof coingeckoIdsFallback;
   try {
     const request = await fetch(COINGECKO_IDS_ENDPOINT);
@@ -683,7 +682,7 @@ const genericAssetsFallback = () => async (
   keys(TokensListenedCache?.[nativeCurrency]).forEach(address => {
     const coingeckoAsset = ids.find(
       ({ platforms: { ethereum: tokenAddress } }) =>
-        toLower(tokenAddress) === address
+        tokenAddress.toLowerCase() === address
     );
 
     if (coingeckoAsset) {
@@ -723,7 +722,7 @@ const genericAssetsFallback = () => async (
   if (!isEmpty(prices)) {
     Object.keys(prices).forEach(key => {
       for (let uniqueAsset of allAssetsUnique) {
-        if (toLower(uniqueAsset.coingecko_id) === toLower(key)) {
+        if (uniqueAsset.coingecko_id.toLowerCase() === key.toLowerCase()) {
           uniqueAsset.price = {
             changed_at: prices[key].last_updated_at,
             relative_change_24h:
@@ -1108,7 +1107,7 @@ export const addressAssetsReceived = (
     asset =>
       asset?.asset?.type !== AssetTypes.compound &&
       asset?.asset?.type !== AssetTypes.trash &&
-      !shitcoins.includes(toLower(asset?.asset?.asset_code))
+      !shitcoins.includes(asset?.asset?.asset_code?.toLowerCase())
   );
 
   if (removed) {
@@ -1361,7 +1360,7 @@ export const assetPricesReceived = (
   const newAssetPrices = message?.payload?.prices ?? {};
   const { nativeCurrency } = getState().settings;
 
-  if (toLower(nativeCurrency) === message?.meta?.currency) {
+  if (nativeCurrency.toLowerCase() === message?.meta?.currency) {
     if (isEmpty(newAssetPrices)) return;
     const parsedAssets = mapValues(newAssetPrices, asset =>
       parseAsset(asset)
@@ -1378,8 +1377,8 @@ export const assetPricesReceived = (
     const assetAddresses = Object.keys(parsedAssets);
 
     for (let address of assetAddresses) {
-      callbacksOnAssetReceived[toLower(address)]?.(parsedAssets[address]);
-      callbacksOnAssetReceived[toLower(address)] = undefined;
+      callbacksOnAssetReceived[address.toLowerCase()]?.(parsedAssets[address]);
+      callbacksOnAssetReceived[address.toLowerCase()] = undefined;
     }
 
     dispatch({
@@ -1475,7 +1474,7 @@ export const dataAddNewTransaction = (
   const { accountAddress, nativeCurrency, network } = getState().settings;
   if (
     accountAddressToUpdate &&
-    toLower(accountAddressToUpdate) !== toLower(accountAddress)
+    accountAddressToUpdate.toLowerCase() !== accountAddress.toLowerCase()
   )
     return;
   try {
@@ -1591,7 +1590,7 @@ export const dataWatchPendingTransactions = (
           txStatusesDidChange = true;
           // @ts-expect-error `txObj` is not typed as having a `status` field.
           if (txObj && !isZero(txObj.status)) {
-            const isSelf = toLower(tx?.from!) === toLower(tx?.to!);
+            const isSelf = tx?.from!.toLowerCase() === tx?.to!.toLowerCase();
             const newStatus = getTransactionLabel({
               direction: isSelf
                 ? TransactionDirection.self

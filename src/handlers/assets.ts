@@ -1,5 +1,4 @@
 import { Contract } from '@ethersproject/contracts';
-import { toLower } from 'lodash';
 import { AssetTypes } from '@rainbow-me/entities';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
@@ -37,7 +36,9 @@ export function isL2Asset(type: any) {
 }
 
 export function isNativeAsset(address: any, network: any) {
-  return toLower(nativeAssetsPerNetwork[network]) === toLower(address);
+  return (
+    nativeAssetsPerNetwork[network]?.toLowerCase() === address?.toLowerCase()
+  );
 }
 
 export async function getOnchainAssetBalance(

@@ -1,4 +1,4 @@
-import { concat, isEmpty, isNil, keyBy, keys, toLower } from 'lodash';
+import { concat, isEmpty, isNil, keyBy, keys } from 'lodash';
 import io from 'socket.io-client';
 import { getExperimetalFlag, L2_TXS } from '../config/experimental';
 import config from '../model/config';
@@ -104,7 +104,7 @@ const addressSubscription = (address, currency, action = 'subscribe') => [
   {
     payload: {
       address,
-      currency: toLower(currency),
+      currency: currency?.toLowerCase(),
       transactions_limit: TRANSACTIONS_LIMIT,
     },
     scope: ['assets', 'transactions'],
@@ -116,7 +116,7 @@ const portfolioSubscription = (address, currency, action = 'get') => [
   {
     payload: {
       address,
-      currency: toLower(currency),
+      currency: currency?.toLowerCase(),
       portfolio_fields: 'all',
     },
     scope: ['portfolio'],
@@ -128,7 +128,7 @@ const mainnetAssetDisovery = (address, currency, action = 'get') => [
   {
     payload: {
       address,
-      currency: toLower(currency),
+      currency: currency?.toLowerCase(),
     },
     scope: ['mainnet-assets-discovery'],
   },
@@ -150,7 +150,7 @@ const assetPricesSubscription = (
     {
       payload: {
         asset_codes: assetCodes,
-        currency: toLower(currency),
+        currency: currency?.toLowerCase(),
       },
       scope: ['prices'],
     },
@@ -172,7 +172,7 @@ const assetInfoRequest = (currency, order = 'desc') => [
   'get',
   {
     payload: {
-      currency: toLower(currency),
+      currency: currency?.toLowerCase(),
       limit: 12,
       offset: 0,
       order_by: {
@@ -189,7 +189,7 @@ const addressAssetsRequest = (address, currency) => [
   {
     payload: {
       address,
-      currency: toLower(currency),
+      currency: currency?.toLowerCase(),
     },
     scope: ['assets'],
   },
@@ -200,7 +200,7 @@ const l2AddressTransactionHistoryRequest = (address, currency) => [
   {
     payload: {
       address,
-      currency: toLower(currency),
+      currency: currency?.toLowerCase(),
       transactions_limit: TRANSACTIONS_LIMIT,
     },
     scope: [
@@ -217,7 +217,7 @@ const chartsRetrieval = (assetCodes, currency, chartType, action = 'get') => [
     payload: {
       asset_codes: assetCodes,
       charts_type: chartType,
-      currency: toLower(currency),
+      currency: currency?.toLowerCase(),
     },
     scope: ['charts'],
   },
@@ -232,7 +232,7 @@ export const fetchAssetPrices = assetAddress => (dispatch, getState) => {
     {
       payload: {
         asset_codes: [assetAddress],
-        currency: toLower(nativeCurrency),
+        currency: nativeCurrency.toLowerCase(),
       },
       scope: ['prices'],
     },
@@ -517,7 +517,7 @@ const l2AddressAssetsReceived = (message, network) => (dispatch, getState) => {
   const { genericAssets } = getState().data;
 
   const newAssets = message?.payload?.assets?.map(asset => {
-    const mainnetAddress = toLower(asset?.asset?.mainnet_address);
+    const mainnetAddress = asset?.asset?.mainnet_address?.toLowerCase() ?? '';
     const fallbackAsset =
       mainnetAddress &&
       (ethereumUtils.getAccountAsset(mainnetAddress) ||
