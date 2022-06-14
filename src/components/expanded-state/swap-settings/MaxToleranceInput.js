@@ -21,10 +21,10 @@ import {
   useSwapCurrencies,
 } from '@rainbow-me/hooks';
 import {
+  Box,
   Column,
   Columns,
-  Row,
-  Rows,
+  Stack,
   Text as StyledText,
 } from '@rainbow-me/design-system';
 import { Text } from '../../text';
@@ -131,17 +131,17 @@ export const MaxToleranceInput = forwardRef(({ colorForAsset }, ref) => {
 
   return (
     <Columns alignVertical="center">
-      <Rows alignVertical="center">
-        <Row>
+      <Stack space="5px">
+        <Box>
           <StyledText size="18px" weight="bold">
             {`${lang.t('exchange.slippage_tolerance')} `}
             {hasPriceImpact && (
-              <Icon name="warning" size={8} color={priceImpactColor} />
+              <Icon name="warning" size={18} color={priceImpactColor} />
             )}
           </StyledText>
-        </Row>
+        </Box>
         {hasPriceImpact && (
-          <Row>
+          <Box>
             <Text size="14px" weight="bold" color={priceImpactColor}>
               High
               <StyledText
@@ -150,9 +150,9 @@ export const MaxToleranceInput = forwardRef(({ colorForAsset }, ref) => {
                 color="secondary50"
               >{` · Losing ${priceImpactNativeAmount}`}</StyledText>
             </Text>
-          </Row>
+          </Box>
         )}
-      </Rows>
+      </Stack>
       <Column width="content">
         <StepButtonInput
           buttonColor={colorForAsset}
