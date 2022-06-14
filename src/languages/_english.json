@@ -354,7 +354,7 @@
       "settings": "Settings",
       "use_defaults": "Use Defaults",
       "done": "Done",
-      "slippage_tolerance": "Slippage Tolerance",
+      "slippage_tolerance": "Max Slippage",
       "use_flashbots": "Use Flashbots",
       "swapping_for_prefix": "Swapping for",
       "unverified_token": {
