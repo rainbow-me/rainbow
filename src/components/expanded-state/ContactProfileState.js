@@ -8,7 +8,6 @@ import useExperimentalFlag, {
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
 import { maybeSignUri } from '@rainbow-me/handlers/imgix';
-import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
 import {
   useAccountSettings,
   useContacts,
@@ -18,9 +17,7 @@ import {
 } from '@rainbow-me/hooks';
 const ContactProfileState = ({ address, ens, contactNickname }) => {
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const [nickname, setNickname] = useState(
-    removeFirstEmojiFromString(contactNickname) || ens || ''
-  );
+  const [nickname, setNickname] = useState(contactNickname || ens || '');
   const { goBack } = useNavigation();
   const { onAddOrUpdateContacts } = useContacts();
 
@@ -84,4 +81,8 @@ const ContactProfileState = ({ address, ens, contactNickname }) => {
   );
 };
 
-export default magicMemo(ContactProfileState, ['address', 'color', 'contact']);
+export default magicMemo(ContactProfileState, [
+  'address',
+  'ens',
+  'contactNickname',
+]);

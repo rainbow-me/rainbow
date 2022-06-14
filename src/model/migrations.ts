@@ -655,8 +655,9 @@ export default async function runMigrations() {
    *************** Migration v17 ******************
    * Switch wallet "color" property from index to hex.
    * Create new wallet property "emoji".
-   * Remove emoji from wallet property "label".
-   * Remove "color" property from contacts.
+   * Remove first emoji from wallet property "label".
+   * Remove "color" property from contact.
+   * Remove first emoji from contact property "nickname"
    */
   const v17 = async () => {
     logger.log('Start migration v17');
@@ -695,7 +696,7 @@ export default async function runMigrations() {
         updatedWallets[walletKeys[i]] = newWallet;
       }
       logger.log(
-        'update wallets in store with new emoji and modified color and label properties'
+        'wallets: add emoji property, convert color property from index to hex, remove first emoji from label property'
       );
       await store.dispatch(walletsUpdate(updatedWallets));
 
@@ -709,7 +710,6 @@ export default async function runMigrations() {
         );
       }
 
-      // migrate contacts to new color index
       const contacts = await getContacts();
       let updatedContacts = { ...contacts };
       if (!contacts) return;
@@ -718,9 +718,15 @@ export default async function runMigrations() {
       for (let j = 0; j < contactKeys.length; j++) {
         const contact = contacts[contactKeys[j]];
         delete contact.color;
-        updatedContacts[contactKeys[j]] = contact;
+        const updatedContact = {
+          ...contact,
+          nickname: removeFirstEmojiFromString(contact.nickname),
+        };
+        updatedContacts[contactKeys[j]] = updatedContact;
       }
-      logger.log('remove color property from contacts');
+      logger.log(
+        'contacts: remove color property and remove first emoji from nickname property'
+      );
       await saveContacts(updatedContacts);
     } catch (error) {
       logger.sentry('Migration v17 failed: ', error);
