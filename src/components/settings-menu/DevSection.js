@@ -40,8 +40,8 @@ import store from '@rainbow-me/redux/store';
 import { walletsUpdate } from '@rainbow-me/redux/wallets';
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
-import logger from 'logger';
 import { ethereumUtils } from '@rainbow-me/utils';
+import logger from 'logger';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
