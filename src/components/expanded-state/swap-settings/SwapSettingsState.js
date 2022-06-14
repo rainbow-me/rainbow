@@ -51,7 +51,7 @@ export default function SwapSettingsState({ asset }) {
 
   const keyboardHeight = useKeyboardHeight();
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(true);
-  const toleranceInputRef = useRef(null);
+  const slippageRef = useRef(null);
 
   useEffect(() => {
     const keyboardDidShow = () => {
@@ -83,9 +83,9 @@ export default function SwapSettingsState({ asset }) {
   }, [sheetHeightWithKeyboard, setParams]);
 
   const resetToDefaults = useCallback(() => {
-    toleranceInputRef.reset();
+    slippageRef?.current?.reset();
     settingsChangeFlashbotsEnabled(false);
-  }, [toleranceInputRef, settingsChangeFlashbotsEnabled]);
+  }, [slippageRef, settingsChangeFlashbotsEnabled]);
 
   return (
     <SlackSheet
@@ -102,11 +102,7 @@ export default function SwapSettingsState({ asset }) {
       <FloatingPanel radius={android ? 30 : 39} testID="swap-settings">
         <ExchangeHeader />
         <Inset bottom="24px" horizontal="24px" top="10px">
-          <Stack backgroundColor="green" space="10px">
-            <MaxToleranceInput
-              ref={toleranceInputRef}
-              colorForAsset={colorForAsset}
-            />
+          <Stack backgroundColor="green" space="24px">
             {asset?.type === 'token' && (
               <Columns alignHorizontal="justify" alignVertical="center">
                 <Text color="primary" size="18px" weight="bold">
@@ -122,6 +118,10 @@ export default function SwapSettingsState({ asset }) {
                 </Column>
               </Columns>
             )}
+            <MaxToleranceInput
+              ref={slippageRef}
+              colorForAsset={colorForAsset}
+            />
           </Stack>
         </Inset>
       </FloatingPanel>

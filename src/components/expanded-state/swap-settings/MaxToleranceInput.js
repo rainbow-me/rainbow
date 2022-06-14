@@ -6,6 +6,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { useSelector } from 'react-redux';
 import { InteractionManager } from 'react-native';
 import StepButtonInput from './StepButtonInput';
 import lang from 'i18n-js';
@@ -14,17 +15,63 @@ import {
   greaterThan,
   toFixedDecimals,
 } from '@rainbow-me/helpers/utilities';
-import { useSwapSlippage } from '@rainbow-me/hooks';
-import { Column, Columns, Text } from '@rainbow-me/design-system';
+import {
+  usePriceImpactDetails,
+  useSwapSlippage,
+  useSwapCurrencies,
+} from '@rainbow-me/hooks';
+import {
+  Column,
+  Columns,
+  Row,
+  Rows,
+  Text as StyledText,
+} from '@rainbow-me/design-system';
+import { Text } from '../../text';
+import { Icon } from '../../icons';
 
 const convertBipsToPercent = bips => bips / 100;
 const convertPercentToBips = percent => percent * 100;
 
 export const MaxToleranceInput = forwardRef(({ colorForAsset }, ref) => {
   const { slippageInBips, updateSwapSlippage } = useSwapSlippage();
+  const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
   const [slippageValue, setSlippageValue] = useState(
     convertBipsToPercent(slippageInBips)
+  );
+
+  const { derivedValues } = useSelector(state => state.swap);
+
+  const { inputAmount, outputAmount } = derivedValues ?? {
+    inputAmount: 0,
+    outputAmount: 0,
+  };
+
+  const {
+    isHighPriceImpact,
+    isSeverePriceImpact,
+    priceImpactColor,
+    priceImpactNativeAmount,
+    outputPriceValue,
+  } = usePriceImpactDetails(
+    inputAmount,
+    outputAmount,
+    inputCurrency,
+    outputCurrency
+  );
+
+  const hasPriceImpact = isSeverePriceImpact || isHighPriceImpact || true;
+
+  console.log(
+    'isHighPriceImpact',
+    isHighPriceImpact,
+    'isSeverePriceImpact',
+    isSeverePriceImpact,
+    'color',
+    priceImpactColor,
+    'price value',
+    priceImpactNativeAmount
   );
 
   const slippageRef = useRef(null);
@@ -77,13 +124,34 @@ export const MaxToleranceInput = forwardRef(({ colorForAsset }, ref) => {
     reset: () => {
       onSlippageChange(1);
     },
+    blur: () => {
+      slippageRef?.current?.blur();
+    },
   }));
 
   return (
     <Columns alignVertical="center">
-      <Text size="18px" weight="bold">
-        {lang.t('exchange.slippage_tolerance')}
-      </Text>
+      <Rows alignVertical="center">
+        <Row>
+          <StyledText size="18px" weight="bold">
+            {`${lang.t('exchange.slippage_tolerance')} `}
+            {hasPriceImpact && (
+              <Icon name="warning" size={10} color={priceImpactColor} />
+            )}
+          </StyledText>
+        </Row>
+        {hasPriceImpact && (
+          <Row>
+            <Text size="14px" weight="bold" color={priceImpactColor}>
+              High
+              <Text
+                size="14px"
+                weight="bold"
+              >{` · Losing ${priceImpactNativeAmount}`}</Text>
+            </Text>
+          </Row>
+        )}
+      </Rows>
       <Column width="content">
         <StepButtonInput
           buttonColor={colorForAsset}
