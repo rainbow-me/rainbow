@@ -56,7 +56,7 @@ describe('Deeplinks spec', () => {
     await Helpers.enableSynchronization();
   });
 
-  it('should be able to handle ethereum payments urls for ETH (mainnet)', async () => {
+  xit('should be able to handle ethereum payments urls for ETH (mainnet)', async () => {
     const url = 'ethereum:payment-brunobarbieri.eth@1?value=1e15';
     await testEthereumDeeplink(url);
   });
@@ -71,7 +71,7 @@ describe('Deeplinks spec', () => {
     await testEthereumDeeplink(url);
   });
 
-  it('should be able to handle ethereum payments urls for DAI (mainnet)', async () => {
+  xit('should be able to handle ethereum payments urls for DAI (mainnet)', async () => {
     const url =
       'ethereum:0x6b175474e89094c44da98b954eedeac495271d0f@1/transfer?address=brunobarbieri.eth&uint256=1e18';
     await testEthereumDeeplink(url);
