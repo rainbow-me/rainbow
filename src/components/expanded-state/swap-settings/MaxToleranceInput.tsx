@@ -10,14 +10,14 @@ import React, {
 import { InteractionManager } from 'react-native';
 import { useSelector } from 'react-redux';
 import { Icon } from '../../icons';
-import { Text } from '../../text';
 import StepButtonInput from './StepButtonInput';
 import {
+  AccentColorProvider,
   Box,
   Column,
   Columns,
   Stack,
-  Text as StyledText,
+  Text,
 } from '@rainbow-me/design-system';
 import {
   add,
@@ -118,26 +118,26 @@ export const MaxToleranceInput: React.FC<{
 
   return (
     <Columns alignVertical="center">
-      <Stack space="5px">
+      <Stack space="10px">
         <Box>
-          <StyledText size="18px" weight="bold">
+          <Text size="18px" weight="bold">
             {`${lang.t('exchange.slippage_tolerance')} `}
             {hasPriceImpact && (
               <Icon color={priceImpactColor} name="warning" size={18} />
             )}
-          </StyledText>
+          </Text>
         </Box>
         {hasPriceImpact && (
           <Box>
-            <Text color={priceImpactColor} size="14px" weight="bold">
-              High
-              <StyledText
-                color="secondary50"
-                size="14px"
-                weight="bold"
-              >{` · ${lang.t(
+            <Text size="14px">
+              <AccentColorProvider color={priceImpactColor!}>
+                <Text size="14px" weight="bold" color="accent">
+                  High
+                </Text>
+              </AccentColorProvider>
+              <Text color="secondary50" size="14px" weight="bold">{` · ${lang.t(
                 'exchange.losing'
-              )} ${priceImpactNativeAmount}`}</StyledText>
+              )} ${priceImpactNativeAmount}`}</Text>
             </Text>
           </Box>
         )}
