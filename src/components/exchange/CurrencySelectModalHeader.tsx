@@ -83,7 +83,7 @@ export default function CurrencySelectModalHeader({
       )}
       {showCoinIcon && (
         <Inset right="4px" top="3px">
-          <CoinIcon size={20} {...defaultOutputAsset} />
+          <CoinIcon size={20} {...defaultOutputAsset} ignoreBadge />
         </Inset>
       )}
       <Title>{title}</Title>
