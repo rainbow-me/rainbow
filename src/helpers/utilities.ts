@@ -456,7 +456,7 @@ export const convertRawAmountToDecimalFormat = (
 ): string => ethers.utils.formatUnits(value, decimals);
 
 export const fromWei = (number: BigNumberish): string =>
-  ethers.utils.formatEther(number.toString());
+  ethers.utils.formatEther((number || 0).toString());
 
 /**
  * @desc Promise that will resolve after the ms interval

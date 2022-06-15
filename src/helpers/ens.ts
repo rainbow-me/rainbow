@@ -625,10 +625,10 @@ const formatEstimatedNetworkFee = (
   nativeCurrency: any,
   nativeAssetPrice: any
 ) => {
-  const networkFeeInWei = multiply(
+  const networkFeeInWei = (multiply(
     gweiToWei(add(maxBaseFee, maxPriorityFee)),
     gasLimit
-  ).toString();
+  ) || 0).toString();
   const networkFeeInEth = fromWei(networkFeeInWei);
 
   const { amount, display } = convertAmountAndPriceToNativeDisplay(
