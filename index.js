@@ -25,7 +25,6 @@ import { PerformanceTracking } from './src/performance/tracking';
 import { PerformanceMetrics } from './src/performance/tracking/types/PerformanceMetrics';
 import {
   addValue,
-  addValueAndCreateNewField,
   addValueDestructuring,
   arr,
   forLikeMap,
@@ -46,6 +45,7 @@ import {
   omitForInWithSet,
   omitReduce,
   pathsArr,
+  payloadForLoop,
   pickBy,
   pickFlattenFromEntries,
   pickFlattenKeys,
@@ -111,13 +111,14 @@ export default function measurement() {
   measureEventStart('1: for loop');
   getAvgRunTime(() => forLikeMap(arr, addValue), 10000);
   measureEventEnd('1: for loop');
+
   //----------------------------------------------------------------
   measureEventStart('2: forEch lodash');
-  getAvgRunTime(() => _forEach(arr, addValueAndCreateNewField), 10000);
+  getAvgRunTime(() => _forEach(arr, payloadForLoop), 10000);
   measureEventEnd('2: forEch lodash');
 
   measureEventStart('2: arr.forEch');
-  getAvgRunTime(() => arr.forEach(addValueAndCreateNewField), 10000);
+  getAvgRunTime(() => arr.forEach(payloadForLoop), 10000);
   measureEventEnd('2: arr.forEch');
 
   measureEventStart('2: for..of arr');
@@ -133,8 +134,8 @@ export default function measurement() {
     () =>
       _reduce(
         arr,
-        (acc, { value1, value2 }) => {
-          acc += value1 + value2;
+        (acc, { a, b }) => {
+          acc += a + b;
           return acc;
         },
         0
@@ -146,8 +147,8 @@ export default function measurement() {
   measureEventStart('3: arr.reduce');
   getAvgRunTime(
     () =>
-      arr.reduce((acc, value) => {
-        acc += value.value1 + value.value2;
+      arr.reduce((acc, { a, b }) => {
+        acc += a + b;
         return acc;
       }, 0),
     10000
@@ -202,7 +203,7 @@ export default function measurement() {
       _reduce(
         arr,
         (acc, value) => {
-          acc[value.id] = { ...value, newField: value.value1 + value.value2 };
+          acc[value.id] = { ...value, newField: value.a + value.b };
           return acc;
         },
         {}
@@ -215,7 +216,7 @@ export default function measurement() {
   getAvgRunTime(
     () =>
       arr.reduce((acc, value) => {
-        acc[value.id] = { ...value, newField: value.value1 + value.value2 };
+        acc[value.id] = { ...value, newField: value.a + value.b };
         return acc;
       }, {}),
     10000

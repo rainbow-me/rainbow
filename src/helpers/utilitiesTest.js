@@ -1,4 +1,6 @@
 export const smallObj = {
+  a: 1,
+  b: 2,
   company: 'ABC1',
   country: 'IN',
   id: 1001,
@@ -8,12 +10,12 @@ export const smallObj = {
     currency: 'USD',
   },
   result: 0,
-  value1: 1,
-  value2: 2,
   zip: 1,
 };
 export const largeObj = {
   eight: {
+    a: 8,
+    b: 8,
     company: 'ABC2',
     country: 'IN',
     id: 107,
@@ -23,11 +25,11 @@ export const largeObj = {
       currency: 'USD',
     },
     result: 0,
-    value1: 8,
-    value2: 8,
     zip: 8,
   },
   five: {
+    a: 5,
+    b: 5,
     company: 'ABC2',
     country: 'IN',
     id: 104,
@@ -37,11 +39,11 @@ export const largeObj = {
       currency: 'USD',
     },
     result: 0,
-    value1: 5,
-    value2: 5,
     zip: 5,
   },
   four: {
+    a: 3,
+    b: 3,
     company: 'ABC3',
     country: 'IN',
     id: 103,
@@ -51,11 +53,11 @@ export const largeObj = {
       currency: 'USD',
     },
     result: 0,
-    value1: 3,
-    value2: 3,
     zip: 3,
   },
   nine: {
+    a: 9,
+    b: 9,
     company: 'ABC2',
     country: 'IN',
     id: 108,
@@ -65,11 +67,11 @@ export const largeObj = {
       currency: 'USD',
     },
     result: 0,
-    value1: 9,
-    value2: 9,
     zip: 9,
   },
   one: {
+    a: 1,
+    b: 1,
     company: 'ABC1',
     country: 'IN',
     id: 100,
@@ -79,11 +81,11 @@ export const largeObj = {
       currency: 'USD',
     },
     result: 0,
-    value1: 1,
-    value2: 1,
     zip: 1,
   },
   seven: {
+    a: 7,
+    b: 7,
     company: 'ABC2',
     country: 'IN',
     id: 106,
@@ -93,11 +95,11 @@ export const largeObj = {
       currency: 'USD',
     },
     result: 0,
-    value1: 7,
-    value2: 7,
     zip: 7,
   },
   six: {
+    a: 6,
+    b: 6,
     company: 'ABC2',
     country: 'IN',
     id: 105,
@@ -107,11 +109,11 @@ export const largeObj = {
       currency: 'USD',
     },
     result: 0,
-    value1: 6,
-    value2: 6,
     zip: 6,
   },
   ten: {
+    a: 10,
+    b: 10,
     company: 'ABC2',
     country: 'IN',
     id: 109,
@@ -121,11 +123,11 @@ export const largeObj = {
       currency: 'USD',
     },
     result: 0,
-    value1: 10,
-    value2: 10,
     zip: 10,
   },
   three: {
+    a: 3,
+    b: 3,
     company: 'ABC3',
     country: 'IN',
     id: 102,
@@ -135,11 +137,11 @@ export const largeObj = {
       currency: 'USD',
     },
     result: 0,
-    value1: 3,
-    value2: 3,
     zip: 3,
   },
   two: {
+    a: 2,
+    b: 2,
     company: 'ABC2',
     country: 'IN',
     id: 101,
@@ -149,8 +151,6 @@ export const largeObj = {
       currency: 'USD',
     },
     result: 0,
-    value1: 2,
-    value2: 2,
     zip: 2,
   },
 };
@@ -164,89 +164,79 @@ export const pathsArr = [
   'four',
   'six',
 ];
-export const smallArr = [smallObj, smallObj, smallObj, smallObj, smallObj];
-export const arr = [
-  smallObj,
-  smallObj,
-  smallObj,
-  smallObj,
-  smallObj,
-  smallObj,
-  smallObj,
-  smallObj,
-  smallObj,
-  smallObj,
-  smallObj,
-  smallObj,
-  smallObj,
-  smallObj,
-  smallObj,
-  smallObj,
-  smallObj,
-  smallObj,
-  smallObj,
-  smallObj,
-  smallObj,
-  smallObj,
-  smallObj,
-  smallObj,
-  smallObj,
-  smallObj,
-  smallObj,
-  smallObj,
-];
+export const smallArr = Array.from(Array(5)).map((_, i) => ({
+  ...smallObj,
+  a: i,
+  b: i / 2,
+  id: i + 1,
+}));
+export const arr = Array.from(Array(28)).map((_, i) => ({
+  ...smallObj,
+  a: i,
+  b: i / 2,
+  id: i + 1,
+}));
 export const fnReturnId = v => v?.id;
 export const isIdEven = v => v?.id % 2;
-export const addValue = props => props.value1 + props.value2;
-export const addValueDestructuring = ({ value1, value2 }) => value1 + value2;
-export const addValueAndCreateNewField = i => {
-  i.priceObj = { amount: i.value1 + i.value2 };
+export const addValue = item => item.a + item.b;
+export const addValueDestructuring = ({ a, b }) => a + b;
+export const payloadForLoop = i => {
+  i.priceObj = { amount: i.a + i.b };
 };
-
-export const formObj = ({ company, id, zip, value1, value2 }) => ({
-  id: `${company}+${id}+${zip}`,
-  value: value1 + value2,
-});
 
 export const forOfArr = arr => {
   for (const element of arr) {
-    addValueAndCreateNewField(element);
+    payloadForLoop(element);
   }
 };
 
 export const forLoop = arr => {
   for (let i = 0; i < arr.length; i++) {
-    addValueAndCreateNewField(arr[i]);
+    payloadForLoop(arr[i]);
   }
 };
 
 //Array.map vs lodash.map vs for vs for..of
-export const forOfLikeMap = (arr, fn) => {
+export const forOfLikeMap = (arr, payload) => {
   const result = [];
   for (const v of arr) {
-    result.push(fn(v));
+    result.push(payload(v));
   }
   return result;
 };
-export const forLikeMap = (arr, fn) => {
+export const forLikeMap = (arr, payload) => {
   const result = new Array(arr.length);
   for (let i = 0; i < arr.length; ++i) {
-    result[i] = fn(arr[i]);
+    result[i] = payload(arr[i]);
+  }
+  return result;
+};
+export const forOfLikeMap1 = arr => {
+  const result = [];
+  for (const v of arr) {
+    result.push(v.a + v.b);
+  }
+  return result;
+};
+export const forLikeMap1 = arr => {
+  const result = new Array(arr.length);
+  for (let i = 0; i < arr.length; ++i) {
+    result[i] = arr[i].a + arr[i].b;
   }
   return result;
 };
 
 export const forOfLikeReduce = arr => {
   let acc = 0;
-  for (const { value1, value2 } of arr) {
-    acc += value1 + value2;
+  for (const { a, b } of arr) {
+    acc += a + b;
   }
   return acc;
 };
 export const forLoopReduce = arr => {
   let acc = 0;
   for (let i = 0; i < arr.length; i++) {
-    acc += arr[i].value1 + arr[i].value2;
+    acc += arr[i].a + arr[i].b;
   }
   return acc;
 };
@@ -268,14 +258,14 @@ export const forLoopReduceObj = arr => {
 export const forOfLikeReduceObjSpread = arr => {
   let acc = {};
   for (const value of arr) {
-    acc[value.id] = { ...value, newField: value.value1 + value.value2 };
+    acc[value.id] = { ...value, newField: value.a + value.b };
   }
   return acc;
 };
 export const forLoopReduceObjSpread = arr => {
   let acc = {};
   for (let i = 0; i < arr.length; i++) {
-    acc[arr[i].id] = { ...arr[i], newField: arr[i].value1 + arr[i].value2 };
+    acc[arr[i].id] = { ...arr[i], newField: arr[i].a + arr[i].b };
   }
   return acc;
 };
