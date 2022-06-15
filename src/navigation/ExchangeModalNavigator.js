@@ -12,7 +12,11 @@ import SwapModalScreen from '../screens/SwapModal';
 import { useNavigation } from './Navigation';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
 import { exchangeTabNavigatorConfig, stackNavigationConfig } from './config';
-import { exchangeModalPreset, expandedPreset } from './effects';
+import {
+  exchangeModalPreset,
+  expandedPreset,
+  swapSettingsPreset,
+} from './effects';
 import Routes from './routesNames';
 import { useDimensions } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
@@ -67,12 +71,19 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
           name={Routes.MAIN_EXCHANGE_SCREEN}
         />
         {android && (
-          <Stack.Screen
-            component={ExpandedAssetSheet}
-            initialParams={params}
-            name={Routes.SWAP_DETAILS_SHEET}
-            options={expandedPreset}
-          />
+          <>
+            <Stack.Screen
+              component={ExpandedAssetSheet}
+              initialParams={params}
+              name={Routes.SWAP_DETAILS_SHEET}
+              options={expandedPreset}
+            />
+            <Stack.Screen
+              component={ExpandedAssetSheet}
+              name={Routes.SWAP_SETTINGS_SHEET}
+              options={swapSettingsPreset}
+            />
+          </>
         )}
       </Stack.Navigator>
     );
@@ -83,6 +94,7 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
     const { setOptions } = useNavigation();
     const pointerEvents = useRef('auto');
     const ref = useRef();
+    const { params } = useRoute();
 
     const tabTransitionPosition = useValue(0);
 
@@ -169,6 +181,7 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
         <ScrollPagerWrapper
           {...props}
           id="exchange"
+          initialScrollPosition={props.navigationState.index}
           onMomentumScrollEnd={onMomentumScrollEnd}
           onSwipeEnd={(...args) => {
             onSwipeEnd(...args);
@@ -205,6 +218,7 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
         setPointerEvents,
         tabTransitionPosition,
         toggleGestureEnabled,
+        ...params?.params,
       }),
       [
         blockInteractions,

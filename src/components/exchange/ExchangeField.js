@@ -4,7 +4,7 @@ import { useDebounce } from 'use-debounce';
 import { TokenSelectionButton } from '../buttons';
 import { CoinIcon, CoinIconSize } from '../coin-icon';
 import { Row, RowWithMargins } from '../layout';
-import { EnDash, Text } from '../text';
+import { EnDash } from '../text';
 import ExchangeInput from './ExchangeInput';
 import { useColorForAsset } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
@@ -47,6 +47,7 @@ const Input = styled(ExchangeInput).attrs({
 const ExchangeField = (
   {
     address,
+    mainnetAddress,
     amount,
     disableCurrencySelection,
     editable,
@@ -63,11 +64,13 @@ const ExchangeField = (
   },
   ref
 ) => {
-  const colorForAsset = useColorForAsset({ address });
+  const colorForAsset = useColorForAsset({
+    address,
+    mainnet_address: mainnetAddress,
+  });
   const handleFocusField = useCallback(() => {
     ref?.current?.focus();
-    !editable && onTapWhileDisabled();
-  }, [editable, onTapWhileDisabled, ref]);
+  }, [ref]);
   const { colors } = useTheme();
 
   const [value, setValue] = useState(amount);
@@ -85,47 +88,45 @@ const ExchangeField = (
 
   return (
     <Container {...props}>
-      <TouchableWithoutFeedback onPress={handleFocusField}>
+      <TouchableWithoutFeedback
+        onPress={onTapWhileDisabled ?? handleFocusField}
+      >
         <FieldRow disableCurrencySelection={disableCurrencySelection}>
           {symbol ? (
-            <CoinIcon address={address} symbol={symbol} type={type} />
+            <CoinIcon
+              address={address}
+              mainnet_address={mainnetAddress}
+              symbol={symbol}
+              type={type}
+            />
           ) : (
             <CoinIconSkeleton />
           )}
-          {!editable && onTapWhileDisabled && (
-            <Text
-              color={amount > 0 ? colorForAsset : placeholderTextColor}
-              letterSpacing="roundedTightest"
-              size="h2"
-              weight="semibold"
-            >
-              {amount || placeholderText}
-            </Text>
-          )}
-          {editable && (
-            <Input
-              color={colorForAsset}
-              editable={editable}
-              onBlur={onBlur}
-              onChangeText={setValue}
-              onFocus={onFocus}
-              onTapWhileDisabled={onTapWhileDisabled}
-              placeholder={placeholderText}
-              placeholderTextColor={placeholderTextColor}
-              ref={ref}
-              testID={amount ? `${testID}-${amount}` : testID}
-              useCustomAndroidMask={useCustomAndroidMask}
-              value={amount}
-            />
-          )}
+
+          <Input
+            color={colorForAsset}
+            editable={editable}
+            onBlur={onBlur}
+            onChangeText={setValue}
+            onFocus={onFocus}
+            placeholder={placeholderText}
+            placeholderTextColor={placeholderTextColor}
+            {...(onTapWhileDisabled && { pointerEvents: 'none' })}
+            ref={ref}
+            testID={testID}
+            useCustomAndroidMask={useCustomAndroidMask}
+            value={amount}
+          />
         </FieldRow>
       </TouchableWithoutFeedback>
       {!disableCurrencySelection && (
         <TokenSelectionButton
           address={address}
+          mainnetAddress={mainnetAddress}
           onPress={onPressSelectCurrency}
           symbol={symbol}
           testID={testID + '-selection-button'}
+          type={type}
         />
       )}
     </Container>

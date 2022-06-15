@@ -19,6 +19,7 @@ export default function ExchangeOutputField({
   onTapWhileDisabled,
   outputAmount,
   outputCurrencyAddress,
+  outputCurrencyMainnetAddress,
   outputCurrencyAssetType,
   outputCurrencySymbol,
   outputFieldRef,
@@ -31,6 +32,7 @@ export default function ExchangeOutputField({
         address={outputCurrencyAddress}
         amount={outputAmount}
         editable={editable}
+        mainnetAddress={outputCurrencyMainnetAddress}
         onFocus={onFocus}
         onPressSelectCurrency={onPressSelectOutputCurrency}
         onTapWhileDisabled={onTapWhileDisabled}

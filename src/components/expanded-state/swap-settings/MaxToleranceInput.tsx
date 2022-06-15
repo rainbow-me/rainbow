@@ -27,7 +27,7 @@ import {
 import {
   usePriceImpactDetails,
   useSwapCurrencies,
-  useSwapSlippage,
+  useSwapSettings,
 } from '@rainbow-me/hooks';
 import { AppState } from '@rainbow-me/redux/store';
 
@@ -37,7 +37,7 @@ const convertPercentToBips = (percent: number) => (percent * 100).toString();
 export const MaxToleranceInput: React.FC<{
   colorForAsset: string;
 }> = forwardRef(({ colorForAsset }, ref) => {
-  const { slippageInBips, updateSwapSlippage } = useSwapSlippage();
+  const { slippageInBips, updateSwapSlippage } = useSwapSettings();
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
   const [slippageValue, setSlippageValue] = useState(
@@ -87,9 +87,7 @@ export const MaxToleranceInput: React.FC<{
       const newSlippageValue = toFixedDecimals(newSlippage, 2);
       if (greaterThan(0, newSlippageValue)) return;
 
-      updateSwapSlippage(
-        convertPercentToBips((newSlippageValue as unknown) as number)
-      );
+      updateSwapSlippage(convertPercentToBips(parseInt(newSlippageValue)));
       setSlippageValue(newSlippageValue);
     },
     [slippageValue, updateSwapSlippage]
@@ -137,7 +135,9 @@ export const MaxToleranceInput: React.FC<{
                 color="secondary50"
                 size="14px"
                 weight="bold"
-              >{` · Losing ${priceImpactNativeAmount}`}</StyledText>
+              >{` · ${lang.t(
+                'exchange.losing'
+              )} ${priceImpactNativeAmount}`}</StyledText>
             </Text>
           </Box>
         )}

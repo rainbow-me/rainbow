@@ -1,14 +1,16 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
-import React, { useEffect } from 'react';
 import { Keyboard } from 'react-native';
+import React, { useCallback, useEffect } from 'react';
 import { Switch } from 'react-native-gesture-handler';
 import { useDispatch } from 'react-redux';
+import SourcePicker from './SourcePicker';
 import { ButtonPressAnimation } from '../../animations';
 import { ExchangeHeader } from '../../exchange';
 import { FloatingPanel } from '../../floating-panels';
 import { SlackSheet } from '../../sheet';
 import { MaxToleranceInput } from './MaxToleranceInput';
+
 import {
   Box,
   ColorModeProvider,
@@ -23,8 +25,10 @@ import {
   useAccountSettings,
   useColorForAsset,
   useKeyboardHeight,
+  useSwapSettings,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
+import { Source } from '@rainbow-me/redux/swap';
 import { deviceUtils } from '@rainbow-me/utils';
 
 function useAndroidDisableGesturesOnFocus() {
@@ -51,7 +55,9 @@ export default function SwapSettingsState({ asset }) {
 
   const keyboardHeight = useKeyboardHeight();
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(true);
+
   const slippageRef = useRef(null);
+  const { updateSwapSource, source } = useSwapSettings();
 
   useEffect(() => {
     const keyboardDidShow = () => {
@@ -71,7 +77,16 @@ export default function SwapSettingsState({ asset }) {
 
   const colorForAsset = useColorForAsset(asset || {}, null, false, true);
 
-  const sheetHeightWithoutKeyboard = 185;
+  const [currentSource, setCurrentSource] = useState(source);
+  const updateSource = useCallback(
+    newSource => {
+      setCurrentSource(newSource);
+      updateSwapSource(newSource);
+    },
+    [updateSwapSource]
+  );
+
+  const sheetHeightWithoutKeyboard = android ? 210 : 185;
 
   const sheetHeightWithKeyboard =
     sheetHeightWithoutKeyboard +
@@ -85,7 +100,8 @@ export default function SwapSettingsState({ asset }) {
   const resetToDefaults = useCallback(() => {
     slippageRef?.current?.reset();
     settingsChangeFlashbotsEnabled(false);
-  }, [slippageRef, settingsChangeFlashbotsEnabled]);
+    updateSource(Source.AggregatorRainbow);
+  }, [settingsChangeFlashbotsEnabled, updateSource]);
 
   return (
     <SlackSheet
@@ -118,6 +134,10 @@ export default function SwapSettingsState({ asset }) {
                 </Column>
               </Columns>
             )}
+            <SourcePicker
+              currentSource={currentSource}
+              onSelect={updateSource}
+            />
             <MaxToleranceInput
               colorForAsset={colorForAsset}
               ref={slippageRef}

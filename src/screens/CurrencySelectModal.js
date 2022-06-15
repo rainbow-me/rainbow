@@ -38,7 +38,10 @@ import {
   useSwapCurrencyList,
 } from '@rainbow-me/hooks';
 import { delayNext } from '@rainbow-me/hooks/useMagicAutofocus';
-import { useNavigation } from '@rainbow-me/navigation/Navigation';
+import {
+  getActiveRoute,
+  useNavigation,
+} from '@rainbow-me/navigation/Navigation';
 import { emitChartsRequest } from '@rainbow-me/redux/explorer';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
@@ -70,16 +73,18 @@ const searchWalletCurrencyList = (searchList, query) => {
 export default function CurrencySelectModal() {
   const isFocused = useIsFocused();
   const prevIsFocused = usePrevious(isFocused);
-  const { navigate, dangerouslyGetState } = useNavigation();
+  const { goBack, navigate, dangerouslyGetState } = useNavigation();
   const { colors } = useTheme();
   const dispatch = useDispatch();
   const {
     params: {
+      chainId,
+      fromDiscover,
       onSelectCurrency,
+      params,
       restoreFocusOnSwapModal,
       toggleGestureEnabled,
       type,
-      chainId,
     },
   } = useRoute();
 
@@ -118,6 +123,12 @@ export default function CurrencySelectModal() {
     swapCurrencyListLoading,
     updateFavorites,
   } = useSwapCurrencyList(searchQueryForSearch, currentChainId);
+
+  const routeName = getActiveRoute()?.name;
+  const showList = useMemo(() => {
+    const viewingExplainer = routeName === Routes.EXPLAIN_SHEET;
+    return isFocused || viewingExplainer;
+  }, [isFocused, routeName]);
 
   const getWalletCurrencyList = useCallback(() => {
     if (type === CurrencySelectionTypes.input) {
@@ -198,9 +209,27 @@ export default function CurrencySelectModal() {
       const handleNavigate = () => {
         delayNext();
         dangerouslyGetState().index = 1;
-        setSearchQuery('');
-        navigate(Routes.MAIN_EXCHANGE_SCREEN);
-        setCurrentChainId(ethereumUtils.getChainIdFromType(item.type));
+        if (fromDiscover) {
+          goBack();
+          setTimeout(
+            () => {
+              navigate(Routes.EXCHANGE_MODAL, {
+                params: {
+                  inputAsset: item,
+                  ...params,
+                },
+                screen: Routes.MAIN_EXCHANGE_SCREEN,
+              });
+              setSearchQuery('');
+              setCurrentChainId(ethereumUtils.getChainIdFromType(item.type));
+            },
+            android ? 500 : 0
+          );
+        } else {
+          navigate(Routes.MAIN_EXCHANGE_SCREEN);
+          setSearchQuery('');
+          setCurrentChainId(ethereumUtils.getChainIdFromType(item.type));
+        }
         if (searchQueryForSearch) {
           analytics.track('Selected a search result in Swap', {
             name: item.name,
@@ -259,15 +288,14 @@ export default function CurrencySelectModal() {
 
   const [startInteraction] = useInteraction();
   useEffect(() => {
-    // on new focus state
-    if (isFocused !== prevIsFocused) {
-      toggleGestureEnabled(!isFocused);
-    }
-
-    // on page blur
-    if (!isFocused && prevIsFocused) {
-      handleApplyFavoritesQueue();
-      restoreFocusOnSwapModal?.();
+    if (!fromDiscover) {
+      if (isFocused !== prevIsFocused) {
+        toggleGestureEnabled(!isFocused);
+      }
+      if (!isFocused && prevIsFocused) {
+        handleApplyFavoritesQueue();
+        restoreFocusOnSwapModal?.();
+      }
     }
   }, [
     handleApplyFavoritesQueue,
@@ -318,6 +346,8 @@ export default function CurrencySelectModal() {
           <Column flex={1}>
             <CurrencySelectModalHeader
               handleBackButton={handleBackButton}
+              showBackButton={!fromDiscover}
+              showHandle={fromDiscover}
               testID="currency-select-header"
               type={type}
             />
@@ -343,7 +373,7 @@ export default function CurrencySelectModal() {
                 listItems={currencyList}
                 loading={swapCurrencyListLoading}
                 query={searchQueryForSearch}
-                showList={isFocused}
+                showList={showList}
                 testID="currency-select-list"
                 type={type}
               />

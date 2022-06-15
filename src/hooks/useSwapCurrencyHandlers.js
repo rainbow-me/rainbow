@@ -1,6 +1,6 @@
 import { useRoute } from '@react-navigation/native';
-import { useCallback, useLayoutEffect, useMemo } from 'react';
-import { InteractionManager, TextInput } from 'react-native';
+import { useCallback, useEffect, useMemo } from 'react';
+import { InteractionManager, Keyboard, TextInput } from 'react-native';
 import { MMKV } from 'react-native-mmkv';
 import { useDispatch } from 'react-redux';
 import { STORAGE_IDS } from '../model/mmkv';
@@ -9,7 +9,6 @@ import useTimeout from './useTimeout';
 import {
   CurrencySelectionTypes,
   ExchangeModalTypes,
-  Network,
 } from '@rainbow-me/helpers';
 import { useSwapCurrencies } from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
@@ -36,17 +35,17 @@ export default function useSwapCurrencyHandlers({
   defaultInputAsset,
   defaultOutputAsset,
   fromDiscover,
+  ignoreInitialTypeCheck = false,
   inputFieldRef,
   setLastFocusedInputHandle,
   outputFieldRef,
+  shouldUpdate = true,
   title,
   type,
-}) {
+} = {}) {
   const dispatch = useDispatch();
   const { navigate, setParams, dangerouslyGetParent } = useNavigation();
-  const {
-    params: { blockInteractions },
-  } = useRoute();
+  const { params: { blockInteractions } = {} } = useRoute();
 
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
@@ -76,8 +75,14 @@ export default function useSwapCurrencyHandlers({
       };
     }
     if (type === ExchangeModalTypes.swap) {
+      const defaultInputItemInWallet = defaultInputAsset
+        ? {
+            ...defaultInputAsset,
+            type: ethereumUtils.getNetworkFromType(defaultInputAsset?.type),
+          }
+        : null;
       return {
-        defaultInputItemInWallet: defaultInputAsset ?? null,
+        defaultInputItemInWallet,
         defaultOutputItem: defaultOutputAsset ?? null,
       };
     }
@@ -87,10 +92,27 @@ export default function useSwapCurrencyHandlers({
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  useLayoutEffect(() => {
-    dispatch(updateSwapInputCurrency(defaultInputItemInWallet));
-    dispatch(updateSwapOutputCurrency(defaultOutputItem));
-  }, [defaultInputItemInWallet, dispatch, defaultOutputItem]);
+  useEffect(() => {
+    if (shouldUpdate) {
+      dispatch(updateSwapInputCurrency(defaultInputItemInWallet));
+
+      /**
+       * Note: `ignoreInitialTypeCheck` is truthy when the user comes from the "Get {currency}" swap button flow.
+       * In this flow, we prepopulate the output currency, but we also do not want to clear the selected input
+       * currency.
+       */
+      dispatch(
+        updateSwapOutputCurrency(defaultOutputItem, ignoreInitialTypeCheck)
+      );
+    }
+  }, [
+    defaultInputItemInWallet,
+    dispatch,
+    defaultOutputItem,
+    shouldUpdate,
+    fromDiscover,
+    ignoreInitialTypeCheck,
+  ]);
 
   const [startFlipFocusTimeout] = useTimeout();
   const flipCurrencies = useCallback(() => {
@@ -105,40 +127,21 @@ export default function useSwapCurrencyHandlers({
   }, [dispatch, inputFieldRef, outputFieldRef, startFlipFocusTimeout]);
 
   const updateInputCurrency = useCallback(
-    (newInputCurrency, handleNavigate) => {
-      if (
-        !fromDiscover &&
-        !inputCurrency &&
-        outputCurrency?.implementations?.[
-          ethereumUtils.getNetworkFromType(newInputCurrency?.type)
-        ]?.address
-      ) {
-        const newNewtork = ethereumUtils.getNetworkFromType(
-          newInputCurrency?.type
-        );
-        let newOutputCurrency = outputCurrency;
-        if (newNewtork !== Network.mainnet)
-          newOutputCurrency.mainnet_address = outputCurrency.address;
+    (inputCurrency, handleNavigate) => {
+      const newInputCurrency = inputCurrency
+        ? {
+            ...inputCurrency,
+            type: ethereumUtils.getNetworkFromType(inputCurrency?.type),
+          }
+        : null;
 
-        newOutputCurrency.address =
-          outputCurrency.implementations[
-            ethereumUtils.getNetworkFromType(newInputCurrency?.type)
-          ].address;
-        newOutputCurrency.type = newInputCurrency?.type;
-        newOutputCurrency.uniqueId =
-          newNewtork === Network.mainnet
-            ? newOutputCurrency?.address
-            : `${newOutputCurrency?.address}_${newOutputCurrency?.type}`;
-        dispatch(updateSwapInputCurrency(newInputCurrency, true));
-        dispatch(updateSwapOutputCurrency(newOutputCurrency));
-        setLastFocusedInputHandle(inputFieldRef);
-        handleNavigate();
-      } else if (
+      if (
         outputCurrency &&
         newInputCurrency?.type !== outputCurrency?.type &&
         !hasShownWarning
       ) {
         InteractionManager.runAfterInteractions(() => {
+          android && Keyboard.dismiss();
           Navigation.handleAction(Routes.EXPLAIN_SHEET, {
             network: newInputCurrency?.type,
             onClose: () => {
@@ -146,8 +149,8 @@ export default function useSwapCurrencyHandlers({
                 setTimeout(() => {
                   setHasShownWarning();
                   dispatch(updateSwapInputCurrency(newInputCurrency));
-                  setLastFocusedInputHandle(inputFieldRef);
-                  handleNavigate();
+                  setLastFocusedInputHandle?.(inputFieldRef);
+                  handleNavigate?.();
                 }, 250);
               });
             },
@@ -156,22 +159,21 @@ export default function useSwapCurrencyHandlers({
         });
       } else {
         dispatch(updateSwapInputCurrency(newInputCurrency));
-        setLastFocusedInputHandle(inputFieldRef);
-        handleNavigate();
+        setLastFocusedInputHandle?.(inputFieldRef);
+        handleNavigate?.();
       }
     },
-    [
-      dispatch,
-      fromDiscover,
-      inputCurrency,
-      inputFieldRef,
-      outputCurrency,
-      setLastFocusedInputHandle,
-    ]
+    [dispatch, inputFieldRef, outputCurrency, setLastFocusedInputHandle]
   );
 
   const updateOutputCurrency = useCallback(
-    (newOutputCurrency, handleNavigate) => {
+    (outputCurrency, handleNavigate) => {
+      const newOutputCurrency = outputCurrency
+        ? {
+            ...outputCurrency,
+            type: ethereumUtils.getNetworkFromType(outputCurrency?.type),
+          }
+        : null;
       if (
         inputCurrency &&
         newOutputCurrency?.type !== inputCurrency?.type &&
@@ -185,8 +187,8 @@ export default function useSwapCurrencyHandlers({
                 setTimeout(() => {
                   setHasShownWarning();
                   dispatch(updateSwapOutputCurrency(newOutputCurrency));
-                  setLastFocusedInputHandle(inputFieldRef);
-                  handleNavigate();
+                  setLastFocusedInputHandle?.(inputFieldRef);
+                  handleNavigate?.();
                 }, 250);
               });
             },
@@ -195,8 +197,8 @@ export default function useSwapCurrencyHandlers({
         });
       } else {
         dispatch(updateSwapOutputCurrency(newOutputCurrency));
-        setLastFocusedInputHandle(inputFieldRef);
-        handleNavigate();
+        setLastFocusedInputHandle?.(inputFieldRef);
+        handleNavigate?.();
       }
     },
     [dispatch, inputCurrency, inputFieldRef, setLastFocusedInputHandle]

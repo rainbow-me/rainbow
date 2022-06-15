@@ -2,7 +2,14 @@ import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { Alert } from 'react-native';
 import SheetActionButton from './SheetActionButton';
-import { useExpandedStateNavigation } from '@rainbow-me/hooks';
+import {
+  CurrencySelectionTypes,
+  ExchangeModalTypes,
+} from '@rainbow-me/helpers';
+import {
+  useExpandedStateNavigation,
+  useSwapCurrencyHandlers,
+} from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 
 function SwapActionButton({
@@ -17,16 +24,40 @@ function SwapActionButton({
   const { colors } = useTheme();
   const color = givenColor || colors.swapPurple;
 
+  const { updateInputCurrency } = useSwapCurrencyHandlers({
+    shouldUpdate: false,
+    type: ExchangeModalTypes.swap,
+  });
+
   const navigate = useExpandedStateNavigation(inputType);
   const goToSwap = useCallback(() => {
-    navigate(Routes.EXCHANGE_MODAL, params => ({
-      params: {
-        params,
-        screen: Routes.MAIN_EXCHANGE_SCREEN,
-      },
-      screen: Routes.MAIN_EXCHANGE_NAVIGATOR,
-    }));
-  }, [navigate]);
+    navigate(Routes.EXCHANGE_MODAL, params => {
+      if (params.outputAsset) {
+        return {
+          params: {
+            fromDiscover: true,
+            onSelectCurrency: updateInputCurrency,
+            params: {
+              ...params,
+              ignoreInitialTypeCheck: true,
+            },
+            title: lang.t('swap.modal_types.get_symbol_with', {
+              symbol: params.outputAsset.symbol,
+            }),
+            type: CurrencySelectionTypes.input,
+          },
+          screen: Routes.CURRENCY_SELECT_SCREEN,
+        };
+      }
+      return {
+        params: {
+          params,
+          screen: Routes.MAIN_EXCHANGE_SCREEN,
+        },
+        screen: Routes.MAIN_EXCHANGE_NAVIGATOR,
+      };
+    });
+  }, [navigate, updateInputCurrency]);
   const handlePress = useCallback(() => {
     if (requireVerification && !verified) {
       Alert.alert(
