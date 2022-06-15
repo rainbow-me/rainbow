@@ -130,6 +130,7 @@ export default function usePriceImpactDetails(
   return {
     inputPriceValue,
     isHighPriceImpact,
+    isSeverePriceImpact,
     outputPriceValue,
     priceImpactColor,
     priceImpactNativeAmount,
