@@ -39,9 +39,8 @@ const GasEmoji = styled(Emoji).attrs({
 })(({ top }) => margin.object(top, 0, 0, 0));
 
 const GasSpeedEmoji = ({ label }) => {
-  const gasSpeed = EmojiForGasSpeedType.hasOwnProperty(label)
-    ? EmojiForGasSpeedType[label]
-    : EmojiForGasSpeedType[gasUtils.NORMAL];
+  const gasSpeed =
+    EmojiForGasSpeedType[label] || EmojiForGasSpeedType[gasUtils.NORMAL];
 
   return <GasEmoji name={gasSpeed.emoji} top={gasSpeed.top} />;
 };
