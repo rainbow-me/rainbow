@@ -360,6 +360,7 @@
       "use_defaults": "Use Defaults",
       "done": "Done",
       "losing": "Losing",
+      "high": "High",
       "slippage_tolerance": "Max Slippage",
       "source_picker": "Route Swaps via",
       "use_flashbots": "Use Flashbots",

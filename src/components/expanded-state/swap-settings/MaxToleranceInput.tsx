@@ -16,6 +16,7 @@ import {
   Box,
   Column,
   Columns,
+  Inline,
   Stack,
   Text,
 } from '@rainbow-me/design-system';
@@ -120,18 +121,16 @@ export const MaxToleranceInput: React.FC<{
   return (
     <Columns alignVertical="center">
       <Stack space="10px">
-        <Box>
+        <Inline alignVertical="center" space="2px">
           <Text size="18px" weight="bold">
             {`${lang.t('exchange.slippage_tolerance')} `}
-            {hasPriceImpact && (
-              <Icon
-                color={priceImpactColor}
-                name="warning"
-                size={android ? 14 : 18}
-              />
-            )}
           </Text>
-        </Box>
+          {hasPriceImpact && (
+            <Box paddingTop={android ? '2px' : '1px'}>
+              <Icon color={priceImpactColor} name="warning" size={18} />
+            </Box>
+          )}
+        </Inline>
         {hasPriceImpact && (
           <Box>
             <Text size={android ? '12px' : '14px'}>
@@ -141,7 +140,7 @@ export const MaxToleranceInput: React.FC<{
                   size={android ? '12px' : '14px'}
                   weight="bold"
                 >
-                  High
+                  {lang.t('exchange.high')}
                 </Text>
               </AccentColorProvider>
               <Text
