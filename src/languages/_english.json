@@ -1023,6 +1023,7 @@
       "modal_types": {
         "confirm": "Confirm",
         "deposit": "Deposit",
+        "receive": "Receive",
         "swap": "Swap",
         "get_symbol_with": "Get %{symbol} With",
         "withdraw": "Withdraw",

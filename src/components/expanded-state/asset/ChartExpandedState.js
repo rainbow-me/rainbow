@@ -383,7 +383,11 @@ export default function ChartExpandedState({ asset }) {
       ) : (
         <SheetActionButtonRow paddingBottom={isL2 ? 19 : undefined}>
           {showSwapButton && (
-            <SwapActionButton color={color} inputType={AssetInputTypes.in} />
+            <SwapActionButton
+              asset={ogAsset}
+              color={color}
+              inputType={AssetInputTypes.in}
+            />
           )}
           {hasBalance ? (
             <SendActionButton

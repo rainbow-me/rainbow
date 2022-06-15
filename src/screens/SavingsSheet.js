@@ -111,7 +111,7 @@ const SavingsSheet = () => {
         params: {
           params: {
             cTokenBalance,
-            defaultInputAsset: underlying,
+            inputAsset: underlying,
             supplyBalanceUnderlying,
           },
           screen: Routes.MAIN_EXCHANGE_SCREEN,

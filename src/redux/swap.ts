@@ -145,7 +145,7 @@ export const updateSwapInputCurrency = (
       newInputCurrency &&
       !ignoreTypeCheck
     ) {
-      dispatch({ payload: null, type: SWAP_UPDATE_OUTPUT_CURRENCY });
+      dispatch(updateSwapOutputCurrency(null, true));
     }
 
     if (newInputCurrency) {
@@ -182,7 +182,7 @@ export const updateSwapOutputCurrency = (
       newOutputCurrency &&
       !ignoreTypeCheck
     ) {
-      dispatch({ payload: null, type: SWAP_UPDATE_INPUT_CURRENCY });
+      dispatch(updateSwapInputCurrency(null, true));
     }
 
     dispatch({ payload: newOutputCurrency, type: SWAP_UPDATE_OUTPUT_CURRENCY });

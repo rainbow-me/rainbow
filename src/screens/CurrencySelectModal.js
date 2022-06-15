@@ -78,6 +78,8 @@ export default function CurrencySelectModal() {
   const dispatch = useDispatch();
   const {
     params: {
+      defaultOutputAsset,
+      defaultInputAsset,
       chainId,
       fromDiscover,
       onSelectCurrency,
@@ -201,45 +203,66 @@ export default function CurrencySelectModal() {
     [type]
   );
 
+  const handleNavigate = useCallback(
+    item => {
+      delayNext();
+      dangerouslyGetState().index = 1;
+      if (fromDiscover) {
+        goBack();
+        setTimeout(
+          () => {
+            navigate(Routes.EXCHANGE_MODAL, {
+              params: {
+                inputAsset:
+                  type === CurrencySelectionTypes.output
+                    ? defaultInputAsset
+                    : item,
+                outputAsset:
+                  type === CurrencySelectionTypes.input
+                    ? defaultOutputAsset
+                    : item,
+                ...params,
+              },
+              screen: Routes.MAIN_EXCHANGE_SCREEN,
+            });
+            setSearchQuery('');
+            setCurrentChainId(ethereumUtils.getChainIdFromType(item.type));
+          },
+          android ? 500 : 0
+        );
+      } else {
+        navigate(Routes.MAIN_EXCHANGE_SCREEN);
+        setSearchQuery('');
+        setCurrentChainId(ethereumUtils.getChainIdFromType(item.type));
+      }
+      if (searchQueryForSearch) {
+        analytics.track('Selected a search result in Swap', {
+          name: item.name,
+          searchQueryForSearch,
+          symbol: item.symbol,
+          tokenAddress: item.address,
+          type,
+        });
+      }
+    },
+    [
+      dangerouslyGetState,
+      defaultInputAsset,
+      defaultOutputAsset,
+      fromDiscover,
+      goBack,
+      navigate,
+      params,
+      searchQueryForSearch,
+      type,
+    ]
+  );
+
   const handleSelectAsset = useCallback(
     item => {
       dispatch(emitChartsRequest(item.mainnet_address || item.address));
       const isMainnet = currentChainId === 1;
 
-      const handleNavigate = () => {
-        delayNext();
-        dangerouslyGetState().index = 1;
-        if (fromDiscover) {
-          goBack();
-          setTimeout(
-            () => {
-              navigate(Routes.EXCHANGE_MODAL, {
-                params: {
-                  inputAsset: item,
-                  ...params,
-                },
-                screen: Routes.MAIN_EXCHANGE_SCREEN,
-              });
-              setSearchQuery('');
-              setCurrentChainId(ethereumUtils.getChainIdFromType(item.type));
-            },
-            android ? 500 : 0
-          );
-        } else {
-          navigate(Routes.MAIN_EXCHANGE_SCREEN);
-          setSearchQuery('');
-          setCurrentChainId(ethereumUtils.getChainIdFromType(item.type));
-        }
-        if (searchQueryForSearch) {
-          analytics.track('Selected a search result in Swap', {
-            name: item.name,
-            searchQueryForSearch,
-            symbol: item.symbol,
-            tokenAddress: item.address,
-            type,
-          });
-        }
-      };
       onSelectCurrency(
         isMainnet && type === CurrencySelectionTypes.output
           ? { ...item, type: 'token' }
@@ -247,18 +270,7 @@ export default function CurrencySelectModal() {
         handleNavigate
       );
     },
-    [
-      dispatch,
-      currentChainId,
-      onSelectCurrency,
-      type,
-      dangerouslyGetState,
-      fromDiscover,
-      searchQueryForSearch,
-      goBack,
-      navigate,
-      params,
-    ]
+    [dispatch, currentChainId, onSelectCurrency, type, handleNavigate]
   );
 
   const itemProps = useMemo(() => {
