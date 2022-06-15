@@ -266,8 +266,8 @@ export default function TransactionConfirmationScreen() {
 
   const {
     gasLimit,
-    isSufficientGas,
     isValidGas,
+    isSufficientGas,
     startPollingGasFees,
     stopPollingGasFees,
     updateGasFeeOption,
@@ -275,7 +275,7 @@ export default function TransactionConfirmationScreen() {
     selectedGasFee,
     selectedGasFeeOption,
     gasFeeParamsBySpeed,
-  } = useGas();
+  } = useGas({ nativeAsset });
 
   useEffect(() => {
     if (
@@ -542,7 +542,7 @@ export default function TransactionConfirmationScreen() {
     }
 
     const { gasFee } = selectedGasFee;
-    if (!gasFee.estimatedFee) {
+    if (!gasFee?.estimatedFee) {
       setIsBalanceEnough(false);
       return;
     }
