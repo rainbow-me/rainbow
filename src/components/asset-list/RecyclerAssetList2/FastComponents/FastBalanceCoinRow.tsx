@@ -290,6 +290,7 @@ const cx = StyleSheet.create({
   container: {
     flexDirection: 'row',
     marginRight: 18,
+    paddingLeft: 9,
   },
   flex: {
     flex: 1,
@@ -303,7 +304,7 @@ const cx = StyleSheet.create({
     marginLeft: 10,
   },
   nonEditMode: {
-    paddingLeft: 19,
+    paddingLeft: 10,
   },
   rootContainer: {
     alignItems: 'center',
