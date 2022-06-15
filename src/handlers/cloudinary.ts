@@ -20,7 +20,9 @@ export const signUrl = memoFn(
       ...widthAndHeight,
     }).split("'")[1];
     return cloudinaryImg;
-  }
+  },
+  (url, options) =>
+    `${url}-${options.width}-${options.height}-${options.format}`
 );
 
 export function isCloudinaryStorageLink(url: string): boolean {

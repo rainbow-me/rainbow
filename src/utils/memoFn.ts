@@ -15,7 +15,8 @@ import logger from './logger';
  * @returns {Function} - same function with a cache
  */
 export function memoFn<TArgs extends unknown[], TReturn extends unknown>(
-  fn: (...args: TArgs) => TReturn
+  fn: (...args: TArgs) => TReturn,
+  keyMaker?: (...args: TArgs) => string
 ): typeof fn {
   const cache = new Map<string, TReturn>();
 
@@ -35,31 +36,35 @@ export function memoFn<TArgs extends unknown[], TReturn extends unknown>(
       return fn.apply(this, args);
     }
 
-    // we check for arguments to be number/boolean/string
-    for (let i = 1; i < args.length; i++) {
-      const arg = args[i];
-      if (
-        typeof arg !== 'number' &&
-        typeof arg !== 'boolean' &&
-        typeof arg !== 'string'
-      ) {
-        if (__DEV__) {
-          logger.warn(
-            `memoized function ${
-              fn.name
-            } was called with non-supported arguments: ${JSON.stringify(
-              args
-            )}. Typeof of ${i + 1} argument is ${typeof arg}`
-          );
-        }
+    if (!keyMaker) {
+      // we check for arguments to be number/boolean/string
+      for (let i = 1; i < args.length; i++) {
+        const arg = args[i];
+        if (
+          typeof arg !== 'number' &&
+          typeof arg !== 'boolean' &&
+          typeof arg !== 'string'
+        ) {
+          if (__DEV__) {
+            logger.warn(
+              `memoized function ${
+                fn.name
+              } was called with non-supported arguments: ${JSON.stringify(
+                args
+              )}. Typeof of ${i + 1} argument is ${typeof arg}`
+            );
+          }
 
-        // Call it anyway to not break stuff
-        // eslint-disable-next-line babel/no-invalid-this
-        return fn.apply(this, args);
+          // Call it anyway to not break stuff
+          // eslint-disable-next-line babel/no-invalid-this
+          return fn.apply(this, args);
+        }
       }
     }
 
-    const key = `key ${args.join(' ~ ')}`;
+    const key = keyMaker
+      ? keyMaker.apply(null, args)
+      : `key ${args.join(' ~ ')}`;
 
     if (cache.has(key)) {
       // For debugging
