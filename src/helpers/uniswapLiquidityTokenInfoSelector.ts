@@ -1,5 +1,5 @@
 import { ChainId, WETH } from '@uniswap/sdk';
-import { compact, isEmpty, join, map, orderBy, sumBy, toLower } from 'lodash';
+import { compact, isEmpty, map, orderBy, sumBy, toLower } from 'lodash';
 import { createSelector } from 'reselect';
 import { Asset, ParsedAddressAsset } from '@rainbow-me/entities';
 import { parseAssetNative } from '@rainbow-me/parsers';
@@ -123,10 +123,7 @@ const transformPool = (
     value: handleSignificantDecimalsWithThreshold(token.balance, 4),
   }));
 
-  const tokenNames = join(
-    map(formattedTokens, token => token.symbol),
-    '-'
-  );
+  const tokenNames = map(formattedTokens, token => token.symbol).join('-');
 
   return {
     ...liquidityTokenWithNative,

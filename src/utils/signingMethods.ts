@@ -1,4 +1,4 @@
-import { concat, includes } from 'lodash';
+import { includes } from 'lodash';
 
 export const PERSONAL_SIGN = 'personal_sign';
 export const SEND_TRANSACTION = 'eth_sendTransaction';
@@ -14,7 +14,7 @@ const displayTypes = {
 const firstParamSigning = [PERSONAL_SIGN];
 const secondParamSigning = [SIGN, SIGN_TYPED_DATA, SIGN_TYPED_DATA_V4];
 
-const allTypes = concat(displayTypes.message, ...displayTypes.transaction);
+const allTypes = displayTypes.message.concat(displayTypes.transaction);
 
 export const isSigningMethod = (method: string) => includes(allTypes, method);
 

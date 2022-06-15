@@ -447,3 +447,8 @@ export const pickBy = <T>(
       return acc;
     }, {} as Dictionary<T>);
 };
+
+export const flattenDeep = (arr: unknown[]): unknown[] =>
+  arr.flatMap(subArray =>
+    Array.isArray(subArray) ? flattenDeep(subArray) : subArray
+  );

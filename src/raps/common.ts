@@ -3,7 +3,7 @@ import { Wallet } from '@ethersproject/wallet';
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import { Trade } from '@uniswap/sdk';
-import { join, map } from 'lodash';
+import { map } from 'lodash';
 import {
   depositCompound,
   ens,
@@ -267,7 +267,7 @@ const findENSActionByType = (type: RapActionType) => {
 
 const getRapFullName = (actions: RapAction[]) => {
   const actionTypes = map(actions, 'type');
-  return join(actionTypes, ' + ');
+  return actionTypes.join(' + ');
 };
 
 const parseError = (error: EthersError): string => {

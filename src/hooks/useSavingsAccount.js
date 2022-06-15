@@ -1,5 +1,5 @@
 import { useQuery } from '@apollo/client';
-import { concat, isEmpty, isNil, keyBy, map, orderBy, toLower } from 'lodash';
+import { isEmpty, isNil, keyBy, map, orderBy, toLower } from 'lodash';
 import { useMemo } from 'react';
 import { useMMKVObject } from 'react-native-mmkv';
 import { useDispatch, useSelector } from 'react-redux';
@@ -212,8 +212,7 @@ export default function useSavingsAccount(includeDefaultDai) {
       includeDefaultDai && !accountHasCDAI && !isEmpty(daiMarketData);
 
     if (shouldAddDai) {
-      savings = concat(
-        orderedAccountTokens,
+      savings = orderedAccountTokens.concat(
         getUnderlyingPrice(daiMarketData, genericAssets)
       );
     }

@@ -1,13 +1,11 @@
 import {
   chunk,
   compact,
-  concat,
   forEach,
   get,
   groupBy,
   includes,
   isEmpty,
-  reduce,
   slice,
   sortBy,
 } from 'lodash';
@@ -79,21 +77,16 @@ const addEthPlaceholder = (
       type: 'token',
       uniqueId: 'eth',
     };
-
-    return { addedEth: true, assets: concat([zeroEth], assets) };
+    return { addedEth: true, assets: [zeroEth].concat(assets) };
   }
   return { addedEth: false, assets };
 };
 
 const getTotal = assets =>
-  reduce(
-    assets,
-    (acc, asset) => {
-      const balance = asset?.native?.balance?.amount ?? 0;
-      return add(acc, balance);
-    },
-    0
-  );
+  assets.reduce((acc, asset) => {
+    const balance = asset?.native?.balance?.amount ?? 0;
+    return add(acc, balance);
+  }, 0);
 
 export const buildCoinsList = (
   sortedAssets,
@@ -146,7 +139,7 @@ export const buildCoinsList = (
   });
 
   // decide which assets to show above or below the coin divider
-  const nonHidden = concat(pinnedAssets, standardAssets);
+  const nonHidden = pinnedAssets.concat(standardAssets);
   const dividerIndex = Math.max(pinnedAssets.length, COINS_TO_SHOW);
 
   let assetsAboveDivider = slice(nonHidden, 0, dividerIndex);
@@ -157,7 +150,7 @@ export const buildCoinsList = (
     assetsBelowDivider = slice(smallAssets, COINS_TO_SHOW);
   } else {
     const remainderBelowDivider = slice(nonHidden, dividerIndex);
-    assetsBelowDivider = concat(remainderBelowDivider, smallAssets);
+    assetsBelowDivider = remainderBelowDivider.concat(smallAssets);
   }
 
   // calculate small balance and overall totals
@@ -168,7 +161,7 @@ export const buildCoinsList = (
   const defaultToEditButton = assetsBelowDivider.length === 0;
   // include hidden assets if in edit mode
   if (isCoinListEdited) {
-    assetsBelowDivider = concat(assetsBelowDivider, hiddenAssets);
+    assetsBelowDivider = assetsBelowDivider.concat(hiddenAssets);
   }
   const allAssets = assetsAboveDivider;
 
