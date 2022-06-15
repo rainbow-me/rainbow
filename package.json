@@ -4,10 +4,12 @@
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn ds:install && yarn allow-scripts && yarn postinstall",
+    "setup-ci": "./scripts/setup-ci.sh",
     "android": "yarn uninstall:android && react-native run-android",
     "android:apk": "yarn gradle assembleRelease && yarn uninstall:android && yarn android:load-apk",
     "android:bundle": "./scripts/check-env.sh && yarn gradle bundleRelease && open android/app/build/outputs/bundle/release/",
     "android:load-apk": "adb install android/app/build/outputs/apk/release/app-release.apk",
+    "check-lockfile": "./scripts/check-lockfile.sh",
     "clean:android": "yarn uninstall:android && yarn gradle clean",
     "detox:android": "detox build -c android.emu.debug && detox test -R 1 -c android.emu.debug --loglevel verbose",
     "detox:android:release": "detox build -c android.emu.release && detox test -R 1 -c android.emu.release",
@@ -301,7 +303,7 @@
     "babel-plugin-styled-components": "1.11.1",
     "babel-plugin-transform-remove-console": "6.9.4",
     "chai": "4.2.0",
-    "detox": "19.5.7",
+    "detox": "19.7.1",
     "dotenv": "8.2.0",
     "eslint": "7.32.0",
     "eslint-config-rainbow": "2.0.0",
@@ -390,8 +392,7 @@
       "simulator": {
         "type": "ios.simulator",
         "device": {
-          "type": "iPhone 11 Pro Max",
-          "os": "13.7"
+          "type": "iPhone 11"
         }
       }
     },
