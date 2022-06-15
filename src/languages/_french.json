@@ -187,7 +187,7 @@
       "confirm_exchange": {
         "deposit": "Tenir pour Déposer",
         "enter_amount": "Entrez un Montant",
-        "fetching_quote": "Fetching Quote... :)",
+        "fetching_quote": "Fetching Quote :)",
         "insufficient_eth": "ETH Insuffisants",
         "insufficient_funds": "Fonds Insuffisants",
         "insufficient_liquidity": "Insufficient Liquidity :)",
