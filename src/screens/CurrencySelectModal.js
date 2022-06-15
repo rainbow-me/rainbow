@@ -252,9 +252,12 @@ export default function CurrencySelectModal() {
       currentChainId,
       onSelectCurrency,
       type,
-      searchQueryForSearch,
       dangerouslyGetState,
+      fromDiscover,
+      searchQueryForSearch,
+      goBack,
       navigate,
+      params,
     ]
   );
 
@@ -304,6 +307,7 @@ export default function CurrencySelectModal() {
     prevIsFocused,
     restoreFocusOnSwapModal,
     toggleGestureEnabled,
+    fromDiscover,
   ]);
 
   const isFocusedAndroid = useIsFocused() && android;
