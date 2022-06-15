@@ -29,7 +29,7 @@ jobs:
       - name: Set up ENV vars & scripts
         run: |
           # read local env vars
-          source ~/.zshrc
+          source ~/.bashrc
           # fetch env vars
           git clone git@github.com:rainbow-me/rainbow-env.git
           # unpack dotenv
