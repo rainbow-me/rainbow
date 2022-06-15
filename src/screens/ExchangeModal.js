@@ -35,6 +35,7 @@ import {
 import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
+import { Inset } from '@rainbow-me/design-system';
 import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
 import {
   ExchangeModalTypes,
@@ -581,7 +582,8 @@ export default function ExchangeModal({
 
   const confirmButtonProps = useMemoOne(
     () => ({
-      disabled: !Number(inputAmount) || (!tradeDetails && !isSavings),
+      disabled:
+        !Number(inputAmount) || (!loading && !tradeDetails && !isSavings),
       inputAmount,
       insufficientLiquidity,
       isAuthorizing,
@@ -774,26 +776,25 @@ export default function ExchangeModal({
           )}
 
           {isWithdrawal && <Spacer />}
-
-          {showConfirmSection && (
+        </FloatingPanels>
+        {showConfirmSection && (
+          <Inset bottom="30px">
             <ConfirmExchangeButton
               {...confirmButtonProps}
               flashbots={flashbots}
               onPressViewDetails={navigateToSwapDetailsModal}
               testID={`${testID}-confirm-button`}
             />
-          )}
-        </FloatingPanels>
-        {showConfirmSection && (
-          <GasSpeedButton
-            asset={outputCurrency}
-            bottom={insets.bottom - 7}
-            currentNetwork={currentNetwork}
-            dontBlur
-            onCustomGasBlur={handleCustomGasBlur}
-            testID={`${testID}-gas`}
-          />
+          </Inset>
         )}
+        <GasSpeedButton
+          asset={outputCurrency}
+          bottom={insets.bottom - 7}
+          currentNetwork={currentNetwork}
+          dontBlur
+          onCustomGasBlur={handleCustomGasBlur}
+          testID={`${testID}-gas`}
+        />
       </InnerWrapper>
     </Wrapper>
   );
