@@ -351,10 +351,16 @@
         "losing_prefix": "Losing",
         "small_market": "Small Market"
       },
+      "source": {
+        "rainbow": "Auto",
+        "0x": "0x",
+        "1inch": "1inch"
+      },
       "settings": "Settings",
       "use_defaults": "Use Defaults",
       "done": "Done",
       "slippage_tolerance": "Slippage Tolerance",
+      "source_picker": "Route Swaps via",
       "use_flashbots": "Use Flashbots",
       "flashbots_protected": "Flashbots Protect enabled",
       "swapping_for_prefix": "Swapping for",
