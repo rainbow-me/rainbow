@@ -694,7 +694,7 @@ export default function ExchangeModal({
     }
   }, [currentNetwork, navigate]);
 
-  const showConfirmSection = isSavings
+  const showConfirmButton = isSavings
     ? !!inputCurrency
     : !!inputCurrency && !!outputCurrency;
 
@@ -763,7 +763,7 @@ export default function ExchangeModal({
               testID="deposit-info-button"
             />
           )}
-          {!isSavings && showConfirmSection && (
+          {!isSavings && showConfirmButton && (
             <ExchangeDetailsRow
               isHighPriceImpact={isHighPriceImpact}
               onFlipCurrencies={flipCurrencies}
@@ -777,7 +777,7 @@ export default function ExchangeModal({
 
           {isWithdrawal && <Spacer />}
         </FloatingPanels>
-        {showConfirmSection && (
+        {showConfirmButton && (
           <Inset bottom="30px">
             <ConfirmExchangeButton
               {...confirmButtonProps}
