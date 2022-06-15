@@ -8,7 +8,7 @@ import { ButtonPressAnimation } from '../../animations';
 import { ExchangeHeader } from '../../exchange';
 import { FloatingPanel } from '../../floating-panels';
 import { SlackSheet } from '../../sheet';
-import RoutePicker from './RoutePicker';
+import SourcePicker from './SourcePicker';
 import StepButtonInput from './StepButtonInput';
 import {
   Box,
@@ -85,7 +85,7 @@ export default function SwapSettingsState({ asset }) {
 
   const colorForAsset = useColorForAsset(asset || {}, null, false, true);
 
-  const sheetHeightWithoutKeyboard = 185;
+  const sheetHeightWithoutKeyboard = android ? 210 : 185;
 
   const sheetHeightWithKeyboard =
     sheetHeightWithoutKeyboard +
@@ -180,7 +180,7 @@ export default function SwapSettingsState({ asset }) {
         <ExchangeHeader />
         <Inset bottom="24px" horizontal="24px" top="10px">
           <Stack backgroundColor="green" space="10px">
-            <RoutePicker
+            <SourcePicker
               currentSource={currentSource}
               onSelect={updateSource}
             />
