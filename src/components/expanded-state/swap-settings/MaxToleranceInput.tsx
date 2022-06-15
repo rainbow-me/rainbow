@@ -34,6 +34,8 @@ import { AppState } from '@rainbow-me/redux/store';
 const convertBipsToPercent = (bips: number) => (bips / 100).toString();
 const convertPercentToBips = (percent: number) => (percent * 100).toString();
 
+const SLIPPAGE_INCREMENT = 0.1;
+
 export const MaxToleranceInput: React.FC<{
   colorForAsset: string;
 }> = forwardRef(({ colorForAsset }, ref) => {
@@ -93,7 +95,6 @@ export const MaxToleranceInput: React.FC<{
     [slippageValue, updateSwapSlippage]
   );
 
-  const SLIPPAGE_INCREMENT = 0.1;
   const addSlippage = useCallback(() => {
     updateSlippage(SLIPPAGE_INCREMENT);
   }, [updateSlippage]);
