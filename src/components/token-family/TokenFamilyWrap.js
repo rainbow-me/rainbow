@@ -1,9 +1,9 @@
-import { times } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import TokenFamilyHeader, {
   TokenFamilyHeaderAnimationDuration,
 } from './TokenFamilyHeader';
+import { times } from '@rainbow-me/helpers/utilities';
 import { useTimeout } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 

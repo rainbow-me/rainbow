@@ -3,10 +3,8 @@ import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { getUnixTime, startOfMinute, sub } from 'date-fns';
 import isValidDomain from 'is-valid-domain';
 import {
-  filter,
   find,
   get,
-  includes,
   isEmpty,
   isNil,
   keyBy,
@@ -1059,7 +1057,7 @@ export const transactionsRemoved = (
   logger.log('[data] - remove txn hashes', removeHashes);
   const [updatedTransactions, removedTransactions] = partition(
     transactions,
-    txn => !includes(removeHashes, ethereumUtils.getHash(txn))
+    txn => !removeHashes.includes(ethereumUtils.getHash(txn) || '')
   );
 
   dispatch({
@@ -1126,8 +1124,7 @@ export const addressAssetsReceived = (
     [id: string]: ParsedAddressAsset;
   };
 
-  const liquidityTokens = filter(
-    parsedAssets,
+  const liquidityTokens = Object.values(parsedAssets).filter(
     asset => asset?.type === AssetTypes.uniswapV2
   );
 
@@ -1167,7 +1164,7 @@ export const addressAssetsReceived = (
   });
   if (!change) {
     const missingPriceAssetAddresses: string[] = map(
-      filter(parsedAssets, asset => isNil(asset?.price)),
+      Object.values(parsedAssets).filter(asset => isNil(asset?.price)),
       property('address')
     );
     dispatch(subscribeToMissingPrices(missingPriceAssetAddresses));
@@ -1175,8 +1172,7 @@ export const addressAssetsReceived = (
 
   //Hide tokens with a url as their token name
   const assetsWithScamURL: string[] = map(
-    filter(
-      parsedAssets,
+    Object.values(parsedAssets).filter(
       asset => isValidDomain(asset.name) && !asset.isVerified
     ),
     property('uniqueId')
@@ -1713,7 +1709,7 @@ export const dataUpdateTransaction = (
 const updatePurchases = (updatedTransactions: RainbowTransaction[]) => (
   dispatch: ThunkDispatch<AppState, unknown, never>
 ) => {
-  const confirmedPurchases = filter(updatedTransactions, txn => {
+  const confirmedPurchases = updatedTransactions.filter(txn => {
     return (
       txn.type === TransactionTypes.purchase &&
       txn.status !== TransactionStatus.purchasing
