@@ -55,4 +55,4 @@ jobs:
         run: cd ios && pod install && cd ..
 
       - name: Run iOS e2e tests (Release mode)
-        run: yarn detox:ios:release
+        run: ./node_modules/.bin/detox build --configuration ios.sim.release &&  ./node_modules/.bin/detox test -R 5 --configuration ios.sim.release --forceExit
