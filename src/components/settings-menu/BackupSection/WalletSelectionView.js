@@ -7,6 +7,7 @@ import Divider from '../../Divider';
 import { ButtonPressAnimation } from '../../animations';
 import { BottomRowText } from '../../coin-row';
 import { ContactAvatar } from '../../contacts';
+import ImageAvatar from '../../contacts/ImageAvatar';
 import { Icon } from '../../icons';
 import { Centered, Column, ColumnWithMargins, Row } from '../../layout';
 import { Text, TruncatedAddress } from '../../text';
@@ -124,7 +125,7 @@ const WalletSelectionView = () => {
           const visibleAccounts = wallet.addresses.filter(a => a.visible);
           const account = visibleAccounts[0];
           const totalAccounts = visibleAccounts.length;
-          const { color, label, index, address } = account;
+          const { color, image, label, index, address } = account;
           if (wallet.backupType === WalletBackupTypes.cloud) {
             cloudBackedUpWallets += 1;
           }
@@ -145,13 +146,22 @@ const WalletSelectionView = () => {
               >
                 <Row height={56}>
                   <Row alignSelf="center" flex={1} marginLeft={15}>
-                    <ContactAvatar
-                      alignSelf="center"
-                      color={color}
-                      marginRight={10}
-                      size="smedium"
-                      value={labelOrName || `${index + 1}`}
-                    />
+                    {image ? (
+                      <ImageAvatar
+                        alignSelf="center"
+                        image={image}
+                        marginRight={10}
+                        size="smedium"
+                      />
+                    ) : (
+                      <ContactAvatar
+                        alignSelf="center"
+                        color={color}
+                        marginRight={10}
+                        size="smedium"
+                        value={labelOrName || `${index + 1}`}
+                      />
+                    )}
                     <ColumnWithMargins margin={3} marginBottom={0.5}>
                       <Row>
                         {labelOrName ? (
