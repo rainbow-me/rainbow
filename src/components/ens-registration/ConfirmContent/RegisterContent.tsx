@@ -71,7 +71,7 @@ const RegisterContent = ({
                   onPress={openPrimaryENSNameHelper}
                   scaleTo={0.9}
                 >
-                  <Text color="secondary80" size="16px" weight="bold">
+                  <Text color="secondary30" size="16px" weight="bold">
                     􀅵
                   </Text>
                 </ButtonPressAnimation>
