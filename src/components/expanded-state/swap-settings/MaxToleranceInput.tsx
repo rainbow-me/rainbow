@@ -124,19 +124,31 @@ export const MaxToleranceInput: React.FC<{
           <Text size="18px" weight="bold">
             {`${lang.t('exchange.slippage_tolerance')} `}
             {hasPriceImpact && (
-              <Icon color={priceImpactColor} name="warning" size={18} />
+              <Icon
+                color={priceImpactColor}
+                name="warning"
+                size={android ? 14 : 18}
+              />
             )}
           </Text>
         </Box>
         {hasPriceImpact && (
           <Box>
-            <Text size="14px">
+            <Text size={android ? '12px' : '14px'}>
               <AccentColorProvider color={priceImpactColor!}>
-                <Text color="accent" size="14px" weight="bold">
+                <Text
+                  color="accent"
+                  size={android ? '12px' : '14px'}
+                  weight="bold"
+                >
                   High
                 </Text>
               </AccentColorProvider>
-              <Text color="secondary50" size="14px" weight="bold">{` · ${lang.t(
+              <Text
+                color="secondary50"
+                size={android ? '12px' : '14px'}
+                weight="bold"
+              >{` · ${lang.t(
                 'exchange.losing'
               )} ${priceImpactNativeAmount}`}</Text>
             </Text>
