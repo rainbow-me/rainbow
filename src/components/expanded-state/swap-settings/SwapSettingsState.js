@@ -85,7 +85,7 @@ export default function SwapSettingsState({ asset }) {
 
   const colorForAsset = useColorForAsset(asset || {}, null, false, true);
 
-  const sheetHeightWithoutKeyboard = android ? 210 : 185;
+  const sheetHeightWithoutKeyboard = android ? 245 : 215;
 
   const sheetHeightWithKeyboard =
     sheetHeightWithoutKeyboard +

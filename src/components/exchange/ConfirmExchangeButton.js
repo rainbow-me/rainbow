@@ -5,11 +5,12 @@ import React, { useMemo } from 'react';
 import { darkModeThemeColors } from '../../styles/colors';
 import { HoldToAuthorizeButton } from '../buttons';
 import ImgixImage from '../images/ImgixImage';
-import { Centered } from '../layout';
 import {
+  Box,
   ColorModeProvider,
-  Column,
-  Columns,
+  Inline,
+  Row,
+  Rows,
   Text,
 } from '@rainbow-me/design-system';
 import { ExchangeModalTypes } from '@rainbow-me/helpers';
@@ -21,24 +22,8 @@ import {
 } from '@rainbow-me/hooks';
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
-import { lightModeThemeColors, padding } from '@rainbow-me/styles';
+import { lightModeThemeColors } from '@rainbow-me/styles';
 import { useTheme } from '@rainbow-me/theme';
-
-const paddingHorizontal = 19;
-
-const ConfirmButton = styled(HoldToAuthorizeButton).attrs({
-  hideInnerBorder: true,
-  parentHorizontalPadding: paddingHorizontal,
-  theme: 'dark',
-})({
-  flex: 1,
-});
-
-const Container = styled(Centered)({
-  ...padding.object(5, paddingHorizontal, 0),
-  width: '100%',
-});
 
 export default function ConfirmExchangeButton({
   disabled,
@@ -142,52 +127,55 @@ export default function ConfirmExchangeButton({
     !isSufficientGas;
 
   return (
-    <Container>
-      {flashbots && (
-        <ColorModeProvider value="dark">
-          <Columns alignHorizontal="center" height="content">
-            <Column height="content" width="content">
-              <ImgixImage
-                source={{
-                  uri: 'https://docs.flashbots.net/img/logo.png',
-                }}
-                style={{ height: 24, marginTop: -7, width: 24 }}
-              />
-            </Column>
-            <Column height="content" width="content">
-              <Text color="primary" weight="semibold">
-                {` ${lang.t('exchange.flashbots_protected')} 􀅵`}
-              </Text>
-            </Column>
-          </Columns>
-        </ColorModeProvider>
-      )}
-      <ConfirmButton
-        backgroundColor={buttonColor}
-        disableLongPress={shouldOpenSwapDetails}
-        disabled={isDisabled}
-        disabledBackgroundColor={
-          isSwapDetailsRoute
-            ? isDarkMode
-              ? darkModeThemeColors.blueGreyDark04
-              : lightModeThemeColors.blueGreyDark50
-            : darkModeThemeColors.blueGreyDark04
-        }
-        label={label}
-        loading={loading}
-        marginTop={ios ? 15 : 0}
-        onLongPress={shouldOpenSwapDetails ? onPressViewDetails : onSubmit}
-        shadows={
-          isSwapDetailsRoute
-            ? isDisabled
-              ? shadows.disabled
-              : shadowsForAsset
-            : shadows.default
-        }
-        showBiometryIcon={isSwapDetailsRoute}
-        testID={testID}
-        {...props}
-      />
-    </Container>
+    <Box>
+      <Rows alignHorizontal="center" alignVertical="bottom" space="8px">
+        {flashbots && (
+          <Row height="content">
+            <ColorModeProvider value="dark">
+              <Inline alignHorizontal="center">
+                <ImgixImage
+                  source={{
+                    uri: 'https://docs.flashbots.net/img/logo.png',
+                  }}
+                  style={{ height: 24, marginTop: -7, width: 24 }}
+                />
+                <Text color="primary" weight="semibold">
+                  {` ${lang.t('exchange.flashbots_protected')} 􀅵`}
+                </Text>
+              </Inline>
+            </ColorModeProvider>
+          </Row>
+        )}
+        <Row height="content">
+          <HoldToAuthorizeButton
+            backgroundColor={buttonColor}
+            disableLongPress={shouldOpenSwapDetails}
+            disabled={isDisabled}
+            disabledBackgroundColor={
+              isSwapDetailsRoute
+                ? isDarkMode
+                  ? darkModeThemeColors.blueGreyDark04
+                  : lightModeThemeColors.blueGreyDark50
+                : darkModeThemeColors.blueGreyDark04
+            }
+            hideInnerBorder
+            label={label}
+            loading={loading}
+            onLongPress={shouldOpenSwapDetails ? onPressViewDetails : onSubmit}
+            shadows={
+              isSwapDetailsRoute
+                ? isDisabled
+                  ? shadows.disabled
+                  : shadowsForAsset
+                : shadows.default
+            }
+            showBiometryIcon={isSwapDetailsRoute}
+            testID={testID}
+            {...props}
+            parentHorizontalPadding={19}
+          />
+        </Row>
+      </Rows>
+    </Box>
   );
 }
