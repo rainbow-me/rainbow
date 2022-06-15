@@ -52,8 +52,7 @@
         "src/react-native-yet-another-bottom-sheet"
       ],
       "@rainbow-me/animated-charts": ["src/react-native-animated-charts/src"],
-      "react-native-shadow-stack": ["src/react-native-shadow-stack"],
-      "react-native-bignumber": ["node_modules/react-native-bignumber/lib/commonjs/index.js"]
+      "react-native-shadow-stack": ["src/react-native-shadow-stack"]
     },
     "resolveJsonModule": true
   },
