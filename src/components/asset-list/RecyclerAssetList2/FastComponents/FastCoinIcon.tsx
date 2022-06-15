@@ -33,10 +33,12 @@ const CoinIconWithBackground = React.memo(function CoinIconWithBackground({
   imageUrl,
   symbol,
   shadowColor,
+  children,
 }: {
   imageUrl: string;
   symbol: string;
   shadowColor: string;
+  children: () => React.ReactNode;
 }) {
   const key = `${symbol}-${imageUrl}`;
 
@@ -81,6 +83,8 @@ const CoinIconWithBackground = React.memo(function CoinIconWithBackground({
           style={[cx.coinIconFallback, isCached && cx.withBackground]}
         />
       )}
+
+      {!isCached && <View style={cx.fallbackWrapper}>{children()}</View>}
     </View>
   );
 });
@@ -96,9 +100,16 @@ export default React.memo(function FastCoinIcon({
   assetType?: AssetType;
   theme: any;
 }) {
-  const imageUrl = getUrlForTrustIconFallback(address)!;
+  const imageUrl = getUrlForTrustIconFallback(
+    address,
+    assetType ?? AssetType.token
+  )!;
 
-  const fallbackIconColor = useColorForAsset({ address });
+  const fallbackIconColor = useColorForAsset({
+    address,
+    type: assetType,
+  });
+
   const tokenMetadata = getTokenMetadata(address);
 
   const shadowColor = theme.isDarkMode
@@ -109,21 +120,19 @@ export default React.memo(function FastCoinIcon({
 
   if (ios) {
     return (
-      // @ts-ignore
-      <CoinIcon address={address} size={40} symbol={symbol} type={assetType} />
+      <View style={cx.container}>
+        {/* @ts-ignore */}
+        <CoinIcon
+          address={address}
+          size={40}
+          symbol={symbol}
+          type={assetType}
+        />
+      </View>
     );
   }
   return (
     <View style={cx.container}>
-      <FallbackIcon
-        color={fallbackIconColor}
-        height={40}
-        style={fallbackIconStyle}
-        symbol={symbol}
-        textStyles={fallbackTextStyles}
-        width={40}
-      />
-
       {eth ? (
         <Image source={EthIcon} style={cx.coinIconFallback} />
       ) : (
@@ -131,7 +140,18 @@ export default React.memo(function FastCoinIcon({
           imageUrl={imageUrl}
           shadowColor={shadowColor}
           symbol={symbol}
-        />
+        >
+          {() => (
+            <FallbackIcon
+              color={fallbackIconColor}
+              height={40}
+              style={fallbackIconStyle}
+              symbol={symbol}
+              textStyles={fallbackTextStyles}
+              width={40}
+            />
+          )}
+        </CoinIconWithBackground>
       )}
 
       {assetType && <FastChainBadge assetType={assetType} theme={theme} />}
@@ -147,6 +167,7 @@ const cx = StyleSheet.create({
     height: 40,
     justifyContent: 'center',
     overflow: 'hidden',
+    // overflow: 'visible',
     width: 40,
   },
   coinIconFallback: {
@@ -157,7 +178,14 @@ const cx = StyleSheet.create({
   },
   container: {
     elevation: 6,
+    height: 60,
     overflow: 'visible',
+    paddingTop: 9.5,
+  },
+  fallbackWrapper: {
+    left: 0,
+    position: 'absolute',
+    top: 0,
   },
   withBackground: {
     backgroundColor: 'white',
