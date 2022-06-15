@@ -1,15 +1,15 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
-import { Keyboard } from 'react-native';
 import React, { useCallback, useEffect } from 'react';
+import { Keyboard } from 'react-native';
 import { Switch } from 'react-native-gesture-handler';
 import { useDispatch } from 'react-redux';
-import SourcePicker from './SourcePicker';
 import { ButtonPressAnimation } from '../../animations';
 import { ExchangeHeader } from '../../exchange';
 import { FloatingPanel } from '../../floating-panels';
 import { SlackSheet } from '../../sheet';
 import { MaxToleranceInput } from './MaxToleranceInput';
+import SourcePicker from './SourcePicker';
 
 import {
   Box,

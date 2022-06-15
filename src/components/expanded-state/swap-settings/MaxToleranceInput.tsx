@@ -132,7 +132,7 @@ export const MaxToleranceInput: React.FC<{
           <Box>
             <Text size="14px">
               <AccentColorProvider color={priceImpactColor!}>
-                <Text size="14px" weight="bold" color="accent">
+                <Text color="accent" size="14px" weight="bold">
                   High
                 </Text>
               </AccentColorProvider>
