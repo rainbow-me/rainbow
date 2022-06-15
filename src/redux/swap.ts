@@ -16,6 +16,12 @@ export enum SwapModalField {
   output = 'outputAmount',
 }
 
+export enum Source {
+  AggregatorRainbow = 'rainbow',
+  Aggregator0x = '0x',
+  Aggregator1inch = '1inch',
+}
+
 export interface TypeSpecificParameters {
   cTokenBalance: string;
   supplyBalanceUnderlying: string;
@@ -29,6 +35,7 @@ interface SwapState {
   independentField: SwapModalField;
   independentValue: string | null;
   slippageInBips: number;
+  source: Source;
   type: string;
   tradeDetails: Quote | null;
   typeSpecificParameters?: TypeSpecificParameters | null;
@@ -38,6 +45,7 @@ interface SwapState {
 // -- Constants --------------------------------------- //
 const SWAP_UPDATE_DEPOSIT_CURRENCY = 'swap/SWAP_UPDATE_DEPOSIT_CURRENCY';
 const SWAP_UPDATE_SLIPPAGE = 'swap/SWAP_UPDATE_SLIPPAGE';
+const SWAP_UPDATE_SOURCE = 'swap/SWAP_UPDATE_SOURCE';
 const SWAP_UPDATE_INPUT_AMOUNT = 'swap/SWAP_UPDATE_INPUT_AMOUNT';
 const SWAP_UPDATE_NATIVE_AMOUNT = 'swap/SWAP_UPDATE_NATIVE_AMOUNT';
 const SWAP_UPDATE_OUTPUT_AMOUNT = 'swap/SWAP_UPDATE_OUTPUT_AMOUNT';
@@ -68,6 +76,15 @@ export const updateSwapSlippage = (slippage: number) => (
   dispatch({
     payload: slippage,
     type: SWAP_UPDATE_SLIPPAGE,
+  });
+};
+
+export const updateSwapSource = (newSource: Source) => (
+  dispatch: AppDispatch
+) => {
+  dispatch({
+    payload: newSource,
+    type: SWAP_UPDATE_SOURCE,
   });
 };
 
@@ -224,6 +241,7 @@ const INITIAL_STATE: SwapState = {
   inputCurrency: null,
   outputCurrency: null,
   slippageInBips: 100,
+  source: Source.AggregatorRainbow,
   tradeDetails: null,
   type: ExchangeModalTypes.swap,
   typeSpecificParameters: null,
@@ -248,6 +266,11 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
       return {
         ...state,
         slippageInBips: action.payload,
+      };
+    case SWAP_UPDATE_SOURCE:
+      return {
+        ...state,
+        source: action.payload,
       };
     case SWAP_UPDATE_INPUT_AMOUNT:
       return {

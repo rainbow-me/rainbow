@@ -17,7 +17,11 @@ import { EthereumAddress } from '@rainbow-me/entities';
 import { isNativeAsset } from '@rainbow-me/handlers/assets';
 import { ExchangeModalTypes } from '@rainbow-me/helpers';
 import { AppState } from '@rainbow-me/redux/store';
-import { SwapModalField, updateSwapQuote } from '@rainbow-me/redux/swap';
+import {
+  Source,
+  SwapModalField,
+  updateSwapQuote,
+} from '@rainbow-me/redux/swap';
 import {
   convertAmountFromNativeValue,
   convertAmountToNativeAmount,
@@ -41,6 +45,8 @@ const getInputAmount = async (
   inputToken: Token,
   outputToken: Token | null,
   inputPrice: string | null,
+  slippage: number,
+  source: Source | null,
   fromAddress: EthereumAddress,
   chainId = 1
 ) => {
@@ -72,7 +78,9 @@ const getInputAmount = async (
       chainId: Number(chainId),
       fromAddress,
       sellTokenAddress,
-      slippage: IS_TESTING !== 'true' ? 1 : 5, // Add 5% slippage for testing to prevent flaky tests
+      // Add 5% slippage for testing to prevent flaky tests
+      slippage: IS_TESTING !== 'true' ? slippage : 5,
+      source: source,
     };
 
     const rand = Math.floor(Math.random() * 100);
@@ -144,6 +152,7 @@ const getOutputAmount = async (
   outputToken: Token | null,
   outputPrice: string | number | null | undefined,
   slippage: number,
+  source: Source,
   fromAddress: EthereumAddress,
   chainId = 1
 ) => {
@@ -176,7 +185,9 @@ const getOutputAmount = async (
       fromAddress,
       sellAmount,
       sellTokenAddress,
-      slippage: IS_TESTING !== 'true' ? slippage : 5, // Add 5% slippage for testing to prevent flaky tests
+      // Add 5% slippage for testing to prevent flaky tests
+      slippage: IS_TESTING !== 'true' ? slippage : 5,
+      source,
     };
 
     const rand = Math.floor(Math.random() * 100);
@@ -283,6 +294,9 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
   const slippageInBips = useSelector(
     (state: AppState) => state.swap.slippageInBips
   );
+
+  const source = useSelector((state: AppState) => state.swap.source);
+
   const derivedValuesFromRedux = useSelector(
     (state: AppState) => state.swap.derivedValues
   );
@@ -380,6 +394,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
           outputToken,
           outputPrice,
           slippagePercentage,
+          source,
           accountAddress,
           chainId
         );
@@ -426,6 +441,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
           outputToken,
           outputPrice,
           slippagePercentage,
+          source,
           accountAddress,
           chainId
         );
@@ -457,6 +473,8 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
           inputToken,
           outputToken,
           inputPrice.toString(),
+          slippagePercentage,
+          source,
           accountAddress,
           chainId
         );
@@ -494,7 +512,6 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
       setResult(data);
       setLoading(false);
     };
-
     getTradeDetails();
   }, [
     accountAddress,
@@ -507,6 +524,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
     outputCurrency,
     outputPrice,
     slippageInBips,
+    source,
     derivedValuesFromRedux,
     isSavings,
   ]);

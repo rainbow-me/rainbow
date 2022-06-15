@@ -50,6 +50,7 @@ function SwapActionButton({
               ...params,
               ignoreInitialTypeCheck: true,
             },
+            showCoinIcon: true,
             title: lang.t('swap.modal_types.get_symbol_with', {
               symbol: params.outputAsset.symbol,
             }),

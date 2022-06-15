@@ -1,6 +1,12 @@
 /* eslint-disable no-undef */
 /* eslint-disable jest/expect-expect */
+import { exec } from 'child_process';
 import * as Helpers from './helpers';
+
+beforeAll(async () => {
+  // Connect to hardhat
+  await exec('yarn hardhat');
+});
 
 describe('Swap Sheet Interaction Flow', () => {
   it('Should show the welcome screen', async () => {
@@ -40,6 +46,22 @@ describe('Swap Sheet Interaction Flow', () => {
     }
     await Helpers.checkIfVisible('wallet-screen', 40000);
     await Helpers.enableSynchronization();
+  });
+
+  it('Should send ETH to test wallet"', async () => {
+    await Helpers.sendETHtoTestWallet();
+  });
+
+  it('Should connect to hardhat', async () => {
+    await Helpers.swipe('wallet-screen', 'right', 'slow');
+    await Helpers.checkIfVisible('profile-screen');
+    await Helpers.waitAndTap('settings-button');
+    await Helpers.checkIfVisible('settings-modal');
+    await Helpers.waitAndTap('developer-section');
+    await Helpers.checkIfVisible('developer-settings-modal');
+    await Helpers.waitAndTap('hardhat-section');
+    await Helpers.checkIfVisible('testnet-toast-Hardhat');
+    await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
   it('Should display currency selection screen on swap-fab press', async () => {
@@ -295,7 +317,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.waitAndTap(
       'currency-select-list-exchange-coin-row-ZRX-token'
     );
-    await Helpers.typeText('exchange-modal-input', '0.546', false);
+    await Helpers.typeText('exchange-modal-input', '500000000000', false);
     await Helpers.checkForElementByLabel('Insufficient Funds');
     if (device.getPlatform() === 'android') {
       await device.pressBack();
@@ -479,6 +501,7 @@ describe('Swap Sheet Interaction Flow', () => {
   afterAll(async () => {
     // Reset the app state
     await device.clearKeychain();
+    await exec('kill $(lsof -t -i:8545)');
     await Helpers.delay(2000);
   });
 });

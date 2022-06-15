@@ -58,15 +58,14 @@ const NetworkSwitcher = ({
     [setCurrentChainId]
   );
   const onPressAndroid = useCallback(() => {
+    const networkActions = androidNetworkMenuItems();
     showActionSheetWithOptions(
       {
-        options: androidNetworkMenuItems,
+        options: networkActions,
         showSeparators: true,
       },
       idx => {
         if (idx !== undefined) {
-          const networkActions = androidNetworkMenuItems();
-
           setCurrentChainId(
             ethereumUtils.getChainIdFromNetwork(networkActions[idx])
           );
