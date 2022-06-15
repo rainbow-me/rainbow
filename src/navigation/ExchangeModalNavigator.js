@@ -67,12 +67,19 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
           name={Routes.MAIN_EXCHANGE_SCREEN}
         />
         {android && (
-          <Stack.Screen
-            component={ExpandedAssetSheet}
-            initialParams={params}
-            name={Routes.SWAP_DETAILS_SHEET}
-            options={expandedPreset}
-          />
+          <>
+            <Stack.Screen
+              component={ExpandedAssetSheet}
+              initialParams={params}
+              name={Routes.SWAP_DETAILS_SHEET}
+              options={expandedPreset}
+            />
+            <Stack.Screen
+              component={ExpandedAssetSheet}
+              name={Routes.SWAP_SETTINGS_SHEET}
+              options={expandedPreset}
+            />
+          </>
         )}
       </Stack.Navigator>
     );
