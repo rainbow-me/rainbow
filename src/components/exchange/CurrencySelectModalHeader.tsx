@@ -1,15 +1,17 @@
+import { ThemeContextProps } from '@rainbow-me/theme';
 import { useRoute } from '@react-navigation/native';
 import React, { useCallback } from 'react';
 import { delayNext } from '../../hooks/useMagicAutofocus';
+import { CoinIcon } from '../coin-icon';
 import { BackButton } from '../header';
 import { Centered } from '../layout';
 import { SheetHandleFixedToTop } from '../sheet';
 import { TruncatedText } from '../text';
+import { Inset } from '@rainbow-me/design-system';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { borders, padding } from '@rainbow-me/styles';
-import { ThemeContextProps } from '@rainbow-me/theme';
 
 const BackButtonWrapper = styled(Centered)({
   bottom: 0,
@@ -50,7 +52,7 @@ export default function CurrencySelectModalHeader({
 }) {
   const { navigate, dangerouslyGetState } = useNavigation();
   const {
-    params: { setPointerEvents, title },
+    params: { defaultOutputAsset, setPointerEvents, title, showCoinIcon },
   } = useRoute<any>();
 
   const handlePressBack = useCallback(() => {
@@ -78,6 +80,11 @@ export default function CurrencySelectModalHeader({
             throttle
           />
         </BackButtonWrapper>
+      )}
+      {showCoinIcon && (
+        <Inset right="4px" top="3px">
+          <CoinIcon size={20} {...defaultOutputAsset} />
+        </Inset>
       )}
       <Title>{title}</Title>
     </HeaderContainer>
