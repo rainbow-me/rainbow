@@ -56,3 +56,27 @@ jobs:
 
       - name: Run iOS e2e tests (Release mode)
         run: ./node_modules/.bin/detox build --configuration ios.sim.release &&  ./node_modules/.bin/detox test -R 5 --configuration ios.sim.release --forceExit
+
+      - name: Post to a Slack channel
+        id: slack
+        uses: slackapi/slack-github-action@v1.19.0
+        with:
+          # Slack channel id, channel name, or user id to post message.
+          # See also: https://api.slack.com/methods/chat.postMessage#channels
+          channel-id: '#bitrise'
+          # For posting a rich message using Block Kit
+          payload: |
+            {
+              "text": "iOS Build: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "GitHub Action build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
