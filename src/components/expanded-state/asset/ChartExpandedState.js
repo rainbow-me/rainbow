@@ -393,6 +393,7 @@ export default function ChartExpandedState({ asset }) {
             />
           ) : (
             <SwapActionButton
+              asset={ogAsset}
               color={color}
               fromDiscover={fromDiscover}
               inputType={AssetInputTypes.out}

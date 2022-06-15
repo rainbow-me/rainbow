@@ -13,6 +13,7 @@ import {
 import Routes from '@rainbow-me/routes';
 
 function SwapActionButton({
+  asset,
   color: givenColor,
   inputType,
   label,
@@ -35,12 +36,14 @@ function SwapActionButton({
       if (params.outputAsset) {
         return {
           params: {
+            defaultOutputAsset: asset,
             fromDiscover: true,
             onSelectCurrency: updateInputCurrency,
             params: {
               ...params,
               ignoreInitialTypeCheck: true,
             },
+            showCoinIcon: true,
             title: lang.t('swap.modal_types.get_symbol_with', {
               symbol: params.outputAsset.symbol,
             }),
@@ -57,7 +60,7 @@ function SwapActionButton({
         screen: Routes.MAIN_EXCHANGE_NAVIGATOR,
       };
     });
-  }, [navigate, updateInputCurrency]);
+  }, [asset, navigate, updateInputCurrency]);
   const handlePress = useCallback(() => {
     if (requireVerification && !verified) {
       Alert.alert(
