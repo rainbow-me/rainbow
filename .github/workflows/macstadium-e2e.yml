@@ -27,7 +27,17 @@ jobs:
         run: git config core.sshCommand "ssh -i ~/.ssh/id_ed25519 -F /dev/null"
 
       - name: Set up ENV vars & scripts
-        run: git clone git@github.com:rainbow-me/rainbow-env.git && mv rainbow-env/dotenv .env && rm -rf rainbow-env && eval $CI_SCRIPTS && sed -i''-e "s/\IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
+        run: |
+          # read local env vars
+          source ~/.zshrc
+          # fetch env vars
+          git clone git@github.com:rainbow-me/rainbow-env.git
+          # unpack dotenv
+          mv rainbow-env/dotenv .env && rm -rf rainbow-env 
+          # run CI scripts
+          eval $CI_SCRIPTS
+          # tweak dotenv for e2e 
+          sed -i''-e "s/\IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
 
       - name: Install deps via Yarn
         run: yarn setup-ci
