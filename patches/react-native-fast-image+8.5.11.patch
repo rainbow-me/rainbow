@@ -10,6 +10,32 @@ index db0fada..54d8d5b 100644
 +  s.dependency 'SDWebImage', '~> 5.12.5'
    s.dependency 'SDWebImageWebPCoder', '~> 0.8.4'
  end
+diff --git a/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageRequestListener.java b/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageRequestListener.java
+index 361417b..f167e91 100644
+--- a/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageRequestListener.java
++++ b/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageRequestListener.java
+@@ -40,7 +40,20 @@ public class FastImageRequestListener implements RequestListener<Drawable> {
+         ThemedReactContext context = (ThemedReactContext) view.getContext();
+         RCTEventEmitter eventEmitter = context.getJSModule(RCTEventEmitter.class);
+         int viewId = view.getId();
+-        eventEmitter.receiveEvent(viewId, REACT_ON_ERROR_EVENT, new WritableNativeMap());
++        WritableMap error = new WritableNativeMap();
++
++        String message = "Error";
++
++        if (e != null) {
++            Throwable throwable = e.getRootCauses().get(0);
++            if (throwable != null) {
++                message = throwable.getMessage();
++            }
++
++        }
++
++        error.putString("message", message);
++        eventEmitter.receiveEvent(viewId, REACT_ON_ERROR_EVENT, error);
+         eventEmitter.receiveEvent(viewId, REACT_ON_LOAD_END_EVENT, new WritableNativeMap());
+         return false;
+     }
 diff --git a/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageSource.java b/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageSource.java
 index 888b38e..bb7ffc2 100644
 --- a/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageSource.java
@@ -28,14 +54,14 @@ index 888b38e..bb7ffc2 100644
      }
  }
 diff --git a/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageViewModule.java b/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageViewModule.java
-index 019032b..99c1e88 100644
+index 019032b..aae8e6c 100644
 --- a/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageViewModule.java
 +++ b/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageViewModule.java
 @@ -1,9 +1,15 @@
  package com.dylanvann.fastimage;
  
  import android.app.Activity;
-+import android.support.annotation.Nullable;
++import androidx.annotation.Nullable;
  
  import com.bumptech.glide.Glide;
 +import com.bumptech.glide.load.DataSource;
