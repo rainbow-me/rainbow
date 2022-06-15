@@ -68,7 +68,7 @@ function SwapActionButton({
               ...params,
               ignoreInitialTypeCheck: true,
             },
-            title: 'swap',
+            title: lang.t('swap.modal_types.swap'),
             type: CurrencySelectionTypes.output,
           },
           screen: Routes.CURRENCY_SELECT_SCREEN,
