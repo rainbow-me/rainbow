@@ -301,7 +301,7 @@ export default function ExchangeModal({
     inputCurrency,
     outputCurrency,
     currentNetwork,
-    loading || equal(lastTradeDetails, tradeDetails)
+    loading
   );
 
   const flashbots = currentNetwork === Network.mainnet && flashbotsEnabled;
