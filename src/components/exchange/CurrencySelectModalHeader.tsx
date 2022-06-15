@@ -1,4 +1,3 @@
-import { ThemeContextProps } from '@rainbow-me/theme';
 import { useRoute } from '@react-navigation/native';
 import React, { useCallback } from 'react';
 import { delayNext } from '../../hooks/useMagicAutofocus';
@@ -12,6 +11,7 @@ import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
 import { borders, padding } from '@rainbow-me/styles';
+import { ThemeContextProps } from '@rainbow-me/theme';
 
 const BackButtonWrapper = styled(Centered)({
   bottom: 0,
