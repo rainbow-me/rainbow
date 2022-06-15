@@ -8,7 +8,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { ActivityIndicator, InteractionManager } from 'react-native';
+import { ActivityIndicator, InteractionManager, View } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import ChainLogo from '../components/ChainLogo';
 import Divider from '../components/Divider';
