@@ -4,7 +4,6 @@ import { fetchAssetPrices } from './explorer';
 import { SwappableAsset } from '@rainbow-me/entities';
 import { ExchangeModalTypes } from '@rainbow-me/helpers';
 import { AppDispatch, AppGetState } from '@rainbow-me/redux/store';
-import logger from 'logger';
 
 export interface SwapAmount {
   display: string | null;
@@ -158,7 +157,6 @@ export const updateSwapOutputCurrency = (
     newOutputCurrency?.address === inputCurrency?.address &&
     newOutputCurrency
   ) {
-    logger.log('2');
     dispatch(flipSwapCurrencies());
   } else {
     if (
