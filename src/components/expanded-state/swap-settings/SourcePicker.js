@@ -10,22 +10,25 @@ import { ImgixImage } from '@rainbow-me/images';
 import { Source } from '@rainbow-me/redux/swap';
 import { showActionSheetWithOptions } from '@rainbow-me/utils';
 
-const routeMenuItems = () => {
-  return Object.values(Source).map(route => ({
-    actionKey: route,
-    actionTitle: lang.t(`exchange.source.${route}`),
+const sourceMenuItems = () => {
+  return Object.values(Source).map(source => ({
+    actionKey: source,
+    actionTitle: lang.t(`exchange.source.${source}`),
     icon: {
       iconType: 'ASSET',
-      iconValue: `${route}`,
+      iconValue: `${source}`,
     },
   }));
 };
 
-const androidRouteMenuItems = () => {
-  return Object.values(Source);
+const androidSourceMenuItems = () => {
+  return Object.values(Source).reduce(
+    (obj, key) => ((obj[key] = lang.t(`exchange.source.${key}`)), obj),
+    {}
+  );
 };
 
-export default function SwapSettingsState({ onSelect, currentSource }) {
+export default function SourcePicker({ onSelect, currentSource }) {
   const imageSource = useMemo(() => {
     let source = null;
     switch (currentSource) {
@@ -50,15 +53,16 @@ export default function SwapSettingsState({ onSelect, currentSource }) {
     [onSelect]
   );
   const onPressAndroid = useCallback(() => {
+    const menuOptions = Object.values(androidSourceMenuItems());
     showActionSheetWithOptions(
       {
-        options: androidRouteMenuItems,
+        options: menuOptions,
         showSeparators: true,
       },
       idx => {
         if (idx !== undefined) {
-          const routeOptions = androidRouteMenuItems();
-          onSelect(routeOptions[idx]);
+          const menuOptionsKeys = Object.keys(androidSourceMenuItems());
+          onSelect(menuOptionsKeys[idx]);
         }
       }
     );
@@ -68,12 +72,12 @@ export default function SwapSettingsState({ onSelect, currentSource }) {
     <Columns alignHorizontal="justify" alignVertical="center">
       <Column>
         <Text size="18px" weight="bold">
-          {lang.t('exchange.route_picker')}
+          {lang.t('exchange.source_picker')}
         </Text>
       </Column>
       <Column width="content">
         <ContextMenuButton
-          menuItems={routeMenuItems()}
+          menuItems={sourceMenuItems()}
           menuTitle=""
           onPressAndroid={onPressAndroid}
           onPressMenuItem={handleOnPressMenuItem}
