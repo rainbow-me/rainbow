@@ -79,7 +79,7 @@ export default function useSwapCurrencyHandlers({
       const defaultInputItemInWallet = defaultInputAsset
         ? {
             ...defaultInputAsset,
-            type: ethereumUtils.getNetworkFromType(defaultInputAsset?.type),
+            type: inputCurrency?.type ?? AssetType.token,
           }
         : null;
 
