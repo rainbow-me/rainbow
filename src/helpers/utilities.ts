@@ -413,11 +413,9 @@ export const delay = (ms: number): Promise<void> => {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
 
-// /**
-//  * Creates an object composed of the omitted object properties by some predicate function.
-//  * @param obj The source object
-//  * @param paths The property paths to omit
-//  */
+/**
+ * @desc Creates an object composed of the omitted object properties by some predicate function.
+ */
 export const omitBy = <T>(
   obj: Dictionary<T>,
   predicate: ValueKeyIteratee<T>
@@ -431,17 +429,20 @@ export const omitBy = <T>(
 };
 
 /**
- * @desc Can omit only flattened key, will not work with 'key.someObj.value'
+ * @desc Can omit only flattened key, will not work with nested props like 'key.someObj.value'
  */
 export const omitFlatten = <T extends object, K extends keyof T>(
   obj: T | null | undefined,
-  keysToOmit: K[] | K
+  keys: K[] | K
 ): Omit<T, K> => {
-  const keys = Array.isArray(keysToOmit) ? keysToOmit : [keysToOmit];
-  const keysToUse = keys.map(String);
+  const keysArr = Array.isArray(keys) ? keys : [keys];
   const newObj: any = {};
+  const keysArrObj: any = {};
+  for (const key of keysArr) {
+    keysArrObj[key] = true;
+  }
   for (const key in obj) {
-    if (!keysToUse.includes(key)) newObj[key] = obj[key];
+    if (!keysArrObj[key]) newObj[key] = obj[key];
   }
   return newObj;
 };
