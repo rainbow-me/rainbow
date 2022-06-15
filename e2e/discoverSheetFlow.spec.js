@@ -247,6 +247,5 @@ describe('Discover Sheet Flow', () => {
   afterAll(async () => {
     // Reset the app state
     await device.clearKeychain();
-    await Helpers.delay(2000);
   });
 });

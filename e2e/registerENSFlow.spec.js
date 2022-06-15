@@ -310,6 +310,5 @@ describe('Register ENS Flow', () => {
     // Reset the app state
     await device.clearKeychain();
     await exec('kill $(lsof -t -i:8545)');
-    await Helpers.delay(2000);
   });
 });
