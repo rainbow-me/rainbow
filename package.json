@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.6.12-1",
+  "version": "1.6.13-1",
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn ds:install && yarn allow-scripts && yarn postinstall",
@@ -164,7 +164,7 @@
     "qs": "6.9.4",
     "querystring-es3": "0.2.1",
     "react": "17.0.2",
-    "react-coin-icon": "0.1.44",
+    "react-coin-icon": "osdnk/react-coin-icon#06464588a3d986f6ef3a7d7341b2d7ea0c5ac50b",
     "react-fast-compare": "2.0.4",
     "react-flatten-children": "1.1.2",
     "react-native": "0.68.1",
