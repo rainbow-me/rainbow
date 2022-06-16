@@ -110,6 +110,15 @@ const ENS_OWNER_TITLE = `What is the .eth name owner?`;
 
 const ENS_OWNER_EXPLAINER = `The owner of a .eth name has full and ultimate control over that name. They can transfer ownership of the name and allow someone else to manage the name for them if they choose (setting records etc). The owner is also known as the ENS name’s registrant.`;
 
+const ENS_RESOLVER_TITLE = `What is a .eth resolver?`;
+
+const ENS_RESOLVER_EXPLAINER = `A resolver is a contract that maps from name to the resource (e.g., cryptocurrency addresses, content hash, etc). Resolvers are pointed to by the resolver field of the registry.`;
+
+const ENS_CONFIGURATION_TITLE = 'What do these options mean?';
+
+const ENS_CONFIGURATION_EXPLAINER =
+  'When sending an ENS name to someone else and making them the new ENS name owner, you may want to configure it for them in advance and save them a future transaction. Rainbow allows you to clear any profile information currently set for the name, configure the ENS name to point to the recipient’s address and make the recipient address the manager of the name.';
+
 export const explainers = network => ({
   floor_price: {
     emoji: '📊',
@@ -142,6 +151,18 @@ export const explainers = network => ({
     emoji: '❓',
     text: ENS_OWNER_EXPLAINER,
     title: ENS_OWNER_TITLE,
+  },
+  ens_resolver: {
+    extraHeight: -60,
+    emoji: '❓',
+    text: ENS_RESOLVER_EXPLAINER,
+    title: ENS_RESOLVER_TITLE,
+  },
+  ens_configuration: {
+    extraHeight: android ? 100 : 80,
+    emoji: '❓',
+    text: ENS_CONFIGURATION_EXPLAINER,
+    title: ENS_CONFIGURATION_TITLE,
   },
   ensOnChainDataWarning: {
     extraHeight: -30,
