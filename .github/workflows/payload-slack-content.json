@@ -4,7 +4,7 @@
         "type": "section",
         "text": {
             "type": "mrkdwn",
-            "text": "iOS Build triggered by ${{ github.actor }}\n#${{ github.event.pull_request.number }} - ${{ }}\nStatus: ${{ job.status }}"
+            "text": "Build triggered by ${{ github.actor }}\n#${{ github.event.pull_request.number }} - ${{ }}\nStatus: ${{ job.status }}"
           }
     }]
 }
