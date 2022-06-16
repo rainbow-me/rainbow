@@ -72,11 +72,14 @@ const shouldSignUri = (
     // Firstly, we check if the url is a Cloudinary link.
     // Then, obviously, we use Cloudinary to transform the size and format.
     if (isCloudinaryStorageLink(externalImageUri)) {
-      return signUrl(externalImageUri, {
+      const signedExternalImageUri = signUrl(externalImageUri, {
         format: updatedOptions.fm,
         height: updatedOptions.h,
         width: updatedOptions.w,
       });
+      const signature = `${externalImageUri}-${options?.w}`;
+      staticSignatureLRU.set(signature, signedExternalImageUri);
+      return signedExternalImageUri;
     }
 
     // We'll only attempt to sign if there's an available client. A client
