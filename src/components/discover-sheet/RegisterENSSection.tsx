@@ -17,7 +17,11 @@ import {
   Text,
   useForegroundColor,
 } from '@rainbow-me/design-system';
-import { useWallets } from '@rainbow-me/hooks';
+import {
+  prefetchENSProfileRecords,
+  useAccountENSDomainGroups,
+  useWallets,
+} from '@rainbow-me/hooks';
 import { ensIntroMarqueeNames } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { useTheme } from '@rainbow-me/theme';
@@ -27,6 +31,13 @@ export default function RegisterENSSection() {
   const { navigate } = useNavigation();
   const { colors } = useTheme();
   const { isReadOnlyWallet } = useWallets();
+  const { uniqueDomain } = useAccountENSDomainGroups();
+
+  useEffect(() => {
+    if (uniqueDomain?.name) {
+      prefetchENSProfileRecords({ name: uniqueDomain.name });
+    }
+  }, [uniqueDomain]);
 
   const handlePress = useCallback(() => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {

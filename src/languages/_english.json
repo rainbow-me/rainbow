@@ -787,6 +787,7 @@
         },
         "find_your_name": "Find your name",
         "use_name": "Use %{name}",
+        "edit_name": "Edit %{name}",
         "use_existing_name": "Use an existing ENS name",
         "search_new_name": "Search for a new ENS name",
         "choose_another_name": "Choose another ENS name",
