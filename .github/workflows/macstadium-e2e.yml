@@ -69,7 +69,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "iOS Build for \\n#${{ github.event.pull_request.number }}\\nAutohr:${{ github.actor }}\\nStatus: ${{ job.status }}*"
+                    "text": "iOS Build for \n#${{ github.event.pull_request.number }}\nAuthor:${{ github.actor }}\nStatus: ${{ job.status }}*"
                   }
                 },
                 {
