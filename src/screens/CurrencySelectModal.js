@@ -11,7 +11,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Linking, StatusBar } from 'react-native';
+import { Keyboard, Linking, StatusBar } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
@@ -276,6 +276,7 @@ export default function CurrencySelectModal() {
             network && network?.toLowerCase() === currentL2Name?.toLowerCase()
         );
         if (currentL2WalletAssets?.length < 1) {
+          android && Keyboard.dismiss();
           navigate(Routes.EXPLAIN_SHEET, {
             assetName: item?.name,
             network: ethereumUtils.getNetworkFromChainId(currentChainId),

@@ -584,6 +584,9 @@
       "obtain_l2_asset": {
         "text": "You'll need to get other tokens on %{networkName} to swap for %{networkName} %{tokenName}. Bridging tokens to %{networkName} is easy using a bridge like Hop.",
         "title": "No Tokens on %{networkName}"
+      },
+      "go_to_hop_with_icon": {
+        "text": "Go to the Hop Bridge 􀮶"
       }
     },
     "fields": {

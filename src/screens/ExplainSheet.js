@@ -385,7 +385,7 @@ export const explainers = (params, colors) => ({
     ),
   },
   obtainL2Assets: {
-    buttonText: 'Go to the Hop Bridge 􀮶',
+    buttonText: lang.t('explain.go_to_hop_with_icon.text'),
     buttonColor: colors?.networkColors[params?.network],
     secondaryButtonText: lang.t('explain.learn_more'),
     logo: (
@@ -450,9 +450,6 @@ const ExplainSheet = () => {
 
   const buttons = useMemo(() => {
     const missingL2Assets = type === 'obtainL2Assets';
-    const secondaryButtonTextColor = missingL2Assets
-      ? 'primary'
-      : colors.blueGreyDark60;
     const secondaryButton = explainSheetConfig.readMoreLink && (
       <Column height={60}>
         <SheetActionButton
@@ -464,7 +461,7 @@ const ExplainSheet = () => {
           }
           onPress={handleReadMore}
           size="big"
-          textColor={secondaryButtonTextColor}
+          textColor={missingL2Assets ? 'primary' : colors.blueGreyDark60}
           weight="heavy"
         />
       </Column>
