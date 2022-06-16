@@ -73,11 +73,11 @@ export function useCoinListFinishEditingOptions() {
   const selectedItemsNonReactive = useRef<string[]>();
   selectedItemsNonReactive.current = selectedItems;
 
-  const [hiddenCoins = {}, setHiddenCoinsArray] = useMMKVObject<BooleanMap>(
+  const [hiddenCoins = {}, setHiddenCoinsObject] = useMMKVObject<BooleanMap>(
     'hidden-coins-obj-' + accountAddress
   );
 
-  const [pinnedCoins = {}, setPinnedCoinsArray] = useMMKVObject<BooleanMap>(
+  const [pinnedCoins = {}, setPinnedCoinsObject] = useMMKVObject<BooleanMap>(
     'pinned-coins-obj-' + accountAddress
   );
 
@@ -88,15 +88,13 @@ export function useCoinListFinishEditingOptions() {
       return EditAction.none;
     } else if (
       newSelectedCoinsLength > 0 &&
-      difference(Object.keys(hiddenCoins), Object.keys(selectedItems))
-        .length ===
+      difference(Object.keys(hiddenCoins), selectedItems).length ===
         Object.keys(hiddenCoins).length - newSelectedCoinsLength
     ) {
       return EditAction.unhide;
     } else if (
       newSelectedCoinsLength > 0 &&
-      difference(Object.keys(pinnedCoins), Object.keys(selectedItems))
-        .length ===
+      difference(Object.keys(pinnedCoins), selectedItems).length ===
         Object.keys(pinnedCoins).length - newSelectedCoinsLength
     ) {
       return EditAction.unpin;
@@ -109,7 +107,7 @@ export function useCoinListFinishEditingOptions() {
   currentActionNonReactive.current = currentAction;
 
   const setPinnedCoins = useCallback(() => {
-    setPinnedCoinsArray((pinnedCoins: BooleanMap) => {
+    setPinnedCoinsObject((pinnedCoins: BooleanMap) => {
       return [
         ...Object.keys(pinnedCoins ?? []).filter(
           i => !selectedItemsNonReactive.current!.includes(i)
@@ -123,12 +121,12 @@ export function useCoinListFinishEditingOptions() {
       }, {} as BooleanMap);
     });
     setSelectedItems([]);
-  }, [setSelectedItems, setPinnedCoinsArray]);
+  }, [setSelectedItems, setPinnedCoinsObject]);
 
   const dispatch = useDispatch();
 
   const setHiddenCoins = useCallback(() => {
-    setHiddenCoinsArray((hiddenCoins: BooleanMap) => {
+    setHiddenCoinsObject((hiddenCoins: BooleanMap) => {
       const newList = [
         ...Object.keys(hiddenCoins ?? []).filter(
           i => !selectedItemsNonReactive.current!.includes(i)
@@ -145,7 +143,7 @@ export function useCoinListFinishEditingOptions() {
     });
 
     setSelectedItems([]);
-  }, [dispatch, setSelectedItems, setHiddenCoinsArray]);
+  }, [dispatch, setSelectedItems, setHiddenCoinsObject]);
 
   return {
     currentAction,
