@@ -64,12 +64,11 @@ jobs:
           payload: |
             {
               "username": "iOS Build Bot",
-              "icon_emoji": ":apple:",
               "blocks": [{
                   "type": "section",
                   "text": {
                       "type": "mrkdwn",
-                      "text": "iOS Build: ${{ job.status }}\n"
+                      "text": "iOS Build triggered by ${{ github.actor }}\n#${{ github.event.pull_request.number }} - ${{ }}\nStatus: ${{ job.status }}"
                     },
                     "accessory": {
                         "type": "button",
@@ -79,17 +78,7 @@ jobs:
                           "emoji": true
                         },
                         "url": "${{ github.event.pull_request.html_url || github.event.head_commit.url }}",
-                    },
-                    "accessory": {
-                        "type": "button",
-                        "text": {
-                          "type": "plain_text",
-                          "text": "View Build",
-                          "emoji": true
-                        },
-                        "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
-                    },
-                  
+                    }                  
               }]
             }
         env:
