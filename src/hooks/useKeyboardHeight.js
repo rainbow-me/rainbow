@@ -1,3 +1,4 @@
+import { useIsFocused } from '@react-navigation/core';
 import { useCallback, useEffect } from 'react';
 import { Keyboard } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -16,11 +17,18 @@ export default function useKeyboardHeight(options = {}) {
   const cachedKeyboardHeights = useSelector(keyboardHeightsSelector);
   const heightForKeyboardType = cachedKeyboardHeights?.[keyboardType];
 
+  const isFocused = useIsFocused();
+
   const handleKeyboardDidShow = useCallback(
     event => {
       const newHeight = Math.floor(event.endCoordinates.height);
 
-      if (!heightForKeyboardType || newHeight !== heightForKeyboardType) {
+      if (
+        // We don't want to set the height cache when the screen is out of focus.
+        isFocused &&
+        // Only update if there is no existing height in the cache.
+        (!heightForKeyboardType || newHeight !== heightForKeyboardType)
+      ) {
         dispatch(
           setKeyboardHeight({
             height: newHeight,
@@ -30,7 +38,7 @@ export default function useKeyboardHeight(options = {}) {
         Keyboard.scheduleLayoutAnimation(event);
       }
     },
-    [dispatch, heightForKeyboardType, keyboardType]
+    [dispatch, heightForKeyboardType, isFocused, keyboardType]
   );
 
   useEffect(() => {
