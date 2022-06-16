@@ -267,7 +267,7 @@ export default function GasCard() {
       <ButtonPressAnimation
         onPress={handlePress}
         scaleTo={1}
-        testID="ens-register-name-banner"
+        testID="gas-button"
       >
         <AccentColorProvider color={cardColor}>
           <Box

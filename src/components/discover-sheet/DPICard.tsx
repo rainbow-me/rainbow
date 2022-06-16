@@ -64,7 +64,7 @@ export default function DPICard() {
     <ButtonPressAnimation
       onPress={handlePress}
       scaleTo={0.92}
-      testID="ens-register-name-banner"
+      testID="dpi-button"
     >
       <AccentColorProvider color={shadowColor}>
         <Box
