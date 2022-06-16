@@ -52,9 +52,6 @@ interface ImgOptions {
   fm?: string;
 }
 
-// We use this to reduce our quota for Cloudinary and Imgix
-const roundUpTo50 = (value: number) => Math.ceil(value / 50) * 50;
-
 const shouldSignUri = (
   externalImageUri: string,
   options?: ImgOptions
@@ -62,14 +59,10 @@ const shouldSignUri = (
   try {
     const updatedOptions: ImgOptions = {};
     if (options?.w) {
-      updatedOptions.w = roundUpTo50(
-        PixelRatio.getPixelSizeForLayoutSize(options.w)
-      );
+      updatedOptions.w = PixelRatio.getPixelSizeForLayoutSize(options.w);
     }
     if (options?.h) {
-      updatedOptions.h = roundUpTo50(
-        PixelRatio.getPixelSizeForLayoutSize(options.h)
-      );
+      updatedOptions.h = PixelRatio.getPixelSizeForLayoutSize(options.h);
     }
 
     if (options?.fm) {
