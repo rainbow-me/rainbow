@@ -75,29 +75,15 @@ jobs:
                 {
                   "type": "divider"
                 },
-                {
-                  "type": "actions",
-                  "elements": [
-                      {
-                          "type": "button",
-                          "text": {
-                              "type": "plain_text",
-                              "text": "View Pull Request",
-                              "emoji": true
-                          },
-                          "url": "${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
-                      },
-                      {
-                          "type": "button",
-                          "text": {
-                              "type": "plain_text",
-                              "text": "View Build",
-                              "emoji": true
-                          },
-                          "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-                      }
-                  ]
-                }
+                "accessory": {
+                    "type": "button",
+                    "text": {
+                      "type": "plain_text",
+                      "text": "View Pull Request",
+                      "emoji": true
+                    },
+                    "url": "${{ github.event.pull_request.html_url || github.event.head_commit.url }}",
+                },
               ]
             }
         env:
