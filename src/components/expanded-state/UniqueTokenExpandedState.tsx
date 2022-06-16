@@ -1,4 +1,5 @@
 import { BlurView } from '@react-native-community/blur';
+import { useFocusEffect } from '@react-navigation/core';
 import c from 'chroma-js';
 import lang from 'i18n-js';
 import React, {
@@ -15,9 +16,7 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import URL from 'url-parse';
-import { CardSize } from '../../components/unique-token/CardSize';
 import useWallets from '../../hooks/useWallets';
-import { lightModeThemeColors } from '../../styles/colors';
 import L2Disclaimer from '../L2Disclaimer';
 import Link from '../Link';
 import { ButtonPressAnimation } from '../animations';
@@ -31,6 +30,7 @@ import {
 } from '../sheet';
 import { ToastPositionContainer, ToggleStateToast } from '../toasts';
 import { UniqueTokenAttributes, UniqueTokenImage } from '../unique-token';
+import { CardSize } from '../unique-token/CardSize';
 import ConfigurationSection from './ens/ConfigurationSection';
 import ProfileInfoSection from './ens/ProfileInfoSection';
 import {
@@ -73,7 +73,7 @@ import {
 import { useNavigation, useUntrustedUrlOpener } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
+import { lightModeThemeColors, position } from '@rainbow-me/styles';
 import { useTheme } from '@rainbow-me/theme';
 import {
   buildRainbowUrl,
@@ -226,7 +226,7 @@ const UniqueTokenExpandedState = ({
 }: UniqueTokenExpandedStateProps) => {
   const { accountAddress, accountENS } = useAccountProfile();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
-  const { navigate } = useNavigation();
+  const { navigate, setOptions } = useNavigation();
   const { colors, isDarkMode } = useTheme();
   const { isReadOnlyWallet } = useWallets();
 
@@ -252,9 +252,21 @@ const UniqueTokenExpandedState = ({
   const isNFT = uniqueTokenType === 'NFT';
 
   // Fetch the ENS profile if the unique token is an ENS name.
-  const cleanENSName = isENS && uniqueId ? uniqueId?.split(' ')?.[0] : uniqueId;
+  const cleanENSName = isENS
+    ? uniqueId
+      ? uniqueId?.split(' ')?.[0]
+      : uniqueId
+    : '';
   const ensProfile = useENSProfile(cleanENSName, { enabled: isENS });
   const ensData = ensProfile.data;
+
+  useFocusEffect(
+    useCallback(() => {
+      if (uniqueTokenType === UniqueTokenType.ENS) {
+        setOptions({ limitActiveModals: false });
+      }
+    }, [setOptions, uniqueTokenType])
+  );
 
   useEffect(() => {
     if (cleanENSName) {

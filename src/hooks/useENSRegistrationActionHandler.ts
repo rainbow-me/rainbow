@@ -1,5 +1,6 @@
+import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { useNavigation } from '@react-navigation/core';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Image } from 'react-native-image-crop-picker';
 import { useDispatch } from 'react-redux';
 import { useRecoilValue } from 'recoil';
@@ -7,11 +8,17 @@ import { avatarMetadataAtom } from '../components/ens-registration/RegistrationA
 import { coverMetadataAtom } from '../components/ens-registration/RegistrationCover/RegistrationCover';
 import { ENSActionParameters, RapActionTypes } from '../raps/common';
 import usePendingTransactions from './usePendingTransactions';
-import { useAccountSettings, useCurrentNonce, useENSRegistration } from '.';
+import {
+  useAccountSettings,
+  useCurrentNonce,
+  useENSRegistration,
+  useWalletENSAvatar,
+} from '.';
 import { Records, RegistrationParameters } from '@rainbow-me/entities';
 import { fetchResolver } from '@rainbow-me/handlers/ens';
 import { saveNameFromLabelhash } from '@rainbow-me/handlers/localstorage/ens';
 import { uploadImage } from '@rainbow-me/handlers/pinata';
+import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
 import {
   ENS_DOMAIN,
   generateSalt,
@@ -57,15 +64,37 @@ export default function useENSRegistrationActionHandler(
   const { registrationParameters } = useENSRegistration();
   const { navigate } = useNavigation();
   const { getPendingTransactionByHash } = usePendingTransactions();
+  const { updateWalletENSAvatars } = useWalletENSAvatar();
 
   const avatarMetadata = useRecoilValue(avatarMetadataAtom);
   const coverMetadata = useRecoilValue(coverMetadataAtom);
 
   const duration = yearsDuration * timeUnits.secs.year;
 
+  const updateAvatarsOnNextBlock = useRef(false);
+  useEffect(() => {
+    let provider: StaticJsonRpcProvider;
+
+    const updateAvatars = () => {
+      if (updateAvatarsOnNextBlock.current) {
+        updateWalletENSAvatars();
+        updateAvatarsOnNextBlock.current = false;
+      }
+    };
+
+    (async () => {
+      provider = await getProviderForNetwork();
+      provider.on('block', updateAvatars);
+    })();
+    return () => {
+      provider?.off('block', updateAvatars);
+    };
+  }, [updateWalletENSAvatars]);
+
   // actions
   const commitAction = useCallback(
     async (callback: () => void) => {
+      updateAvatarsOnNextBlock.current = true;
       const wallet = await loadWallet();
       if (!wallet) {
         return;
@@ -172,6 +201,8 @@ export default function useENSRegistrationActionHandler(
         registerEnsRegistrationParameters,
         callback
       );
+
+      updateAvatarsOnNextBlock.current = true;
     },
     [
       accountAddress,
@@ -274,6 +305,8 @@ export default function useENSRegistrationActionHandler(
         setRecordsEnsRegistrationParameters,
         callback
       );
+
+      updateAvatarsOnNextBlock.current = true;
     },
     [
       accountAddress,
