@@ -6,7 +6,7 @@ name: iOS e2e (MacStadium)
 on:
   # Triggers the workflow on push or pull request events but only for the "develop" branch
   pull_request:
-    branches: ["@bruno/ci"]
+    branches: ["macstadium"]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -70,7 +70,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "iOS Build for #${{ github.event.pull_request.number }} - ${{ github.event.pull_request.title }}\nAuthor:${{ github.actor }}\nStatus: ✅ ${{ job.status }}"
+                    "text": "iOS Build for #${{ github.event.pull_request.number }} - ${{ github.event.pull_request.title }}\nAuthor: ${{ github.actor }}\nStatus:  ✅  ${{ job.status }}"
                   }
                 },
                 {
@@ -86,7 +86,7 @@ jobs:
                               "text": "View Pull Request",
                               "emoji": true
                           },
-                          "url": "https://rainbow.me"
+                          "url": "${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
                       },
                       {
                           "type": "button",
@@ -95,7 +95,7 @@ jobs:
                               "text": "View Build",
                               "emoji": true
                           },
-                          "url": "https://rainbow.me"
+                          "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
                       }
                   ]
                 }
@@ -117,7 +117,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "iOS Build for #${{ github.event.pull_request.number }} - ${{ github.event.pull_request.title }}\nAuthor:${{ github.actor }}\nStatus: ❌  ${{ job.status }}"
+                    "text": "iOS Build for #${{ github.event.pull_request.number }} - ${{ github.event.pull_request.title }}\nAuthor: ${{ github.actor }}\nStatus:  ❌  ${{ job.status }}"
                   }
                 },
                 {
@@ -133,7 +133,7 @@ jobs:
                               "text": "View Pull Request",
                               "emoji": true
                           },
-                          "url": "https://rainbow.me"
+                          "url": "${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
                       },
                       {
                           "type": "button",
@@ -142,7 +142,7 @@ jobs:
                               "text": "View Build",
                               "emoji": true
                           },
-                          "url": "https://rainbow.me"
+                          "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
                       }
                   ]
                 }
