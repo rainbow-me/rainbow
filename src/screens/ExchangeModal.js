@@ -43,6 +43,7 @@ import {
   isKeyboardOpen,
   Network,
 } from '@rainbow-me/helpers';
+import KeyboardTypes from '@rainbow-me/helpers/keyboardTypes';
 import { divide, greaterThan, multiply } from '@rainbow-me/helpers/utilities';
 import {
   useAccountSettings,
@@ -709,7 +710,7 @@ export default function ExchangeModal({
     : !!inputCurrency && !!outputCurrency;
 
   return (
-    <Wrapper>
+    <Wrapper keyboardType={KeyboardTypes.numpad}>
       <InnerWrapper isSmallPhone={isSmallPhone}>
         <FloatingPanels>
           <FloatingPanel
