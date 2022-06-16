@@ -92,8 +92,8 @@ const getPrice = (contractAddress, updatedAt, genericAssets, quoteRate) => {
 
   // Overrides
   const fallbackAsset =
-    ethereumUtils.getAccountAsset(contractAddress) ||
-    genericAssets[toLower(contractAddress)];
+    ethereumUtils.getAccountAsset(contractAddress?.toLowerCase()) ||
+    genericAssets[contractAddress?.toLowerCase()];
 
   if (fallbackAsset) {
     price = {
