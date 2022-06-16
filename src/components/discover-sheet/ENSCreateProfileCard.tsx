@@ -58,7 +58,7 @@ export default function ENSCreateProfileCard() {
     <ButtonPressAnimation
       onPress={handlePress}
       scaleTo={0.92}
-      testID="ens-register-name-banner"
+      testID="ens-create-profile-card"
     >
       <AccentColorProvider color={shadowColor}>
         <Box

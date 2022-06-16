@@ -168,7 +168,7 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should go to ENS flow pressing the ENS banner', async () => {
-    await Helpers.waitAndTap('ens-register-name-banner');
+    await Helpers.waitAndTap('ens-create-profile-card');
     await Helpers.checkIfVisible('ens-intro-sheet');
   });
 
