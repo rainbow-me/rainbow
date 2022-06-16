@@ -262,7 +262,7 @@ const UniqueTokenExpandedState = ({
 
   useFocusEffect(
     useCallback(() => {
-      if (uniqueTokenType === UniqueTokenType.ENS) {
+      if (uniqueTokenType === 'ENS') {
         setOptions({ limitActiveModals: false });
       }
     }, [setOptions, uniqueTokenType])
