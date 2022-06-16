@@ -54,8 +54,11 @@ jobs:
       - name: Install Pods
         run: cd ios && pod install && cd ..
 
-      - name: Run iOS e2e tests (Release mode)
-        run: ./node_modules/.bin/detox build --configuration ios.sim.release &&  ./node_modules/.bin/detox test -R 5 --configuration ios.sim.release --forceExit
+      - name: Build the app in Release mode
+        run: ./node_modules/.bin/detox build --configuration ios.sim.release
+      
+      - name: Run iOS e2e tests
+        run: ./node_modules/.bin/detox test -R 5 --configuration ios.sim.release --forceExit
 
       - name: Send success message to slack
         id: slack-success
