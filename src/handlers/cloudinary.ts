@@ -19,6 +19,10 @@ export const signUrl = memoFn(
       sign_url: true,
       ...widthAndHeight,
     }).split("'")[1];
+
+    if (cloudinaryImg.startsWith('http:')) {
+      return 'https' + cloudinaryImg.substring(4);
+    }
     return cloudinaryImg;
   },
   (url, options) =>
