@@ -318,7 +318,7 @@ export default function WalletConnectApprovalSheet() {
             <DappLogo dappName={dappName || ''} imageUrl={imageUrl} />
             <Centered paddingHorizontal={24}>
               <Column>
-                <Row marginBottom={12}>
+                <Row justify="center" marginBottom={12}>
                   <Text
                     align="center"
                     color="primary"
