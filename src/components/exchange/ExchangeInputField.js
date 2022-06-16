@@ -6,7 +6,7 @@ import ExchangeNativeField from './ExchangeNativeField';
 import styled from '@rainbow-me/styled-components';
 
 const Container = styled(ColumnWithMargins).attrs({ margin: 5 })({
-  paddingTop: 6,
+  paddingTop: android ? 0 : 6,
   width: '100%',
   zIndex: 1,
 });

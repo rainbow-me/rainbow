@@ -3,12 +3,10 @@ import { Row } from '../layout';
 import ExchangeField from './ExchangeField';
 import styled from '@rainbow-me/styled-components';
 
-const paddingTop = android ? 15 : 32;
-
 const Container = styled(Row).attrs({ align: 'center' })({
   overflow: 'hidden',
-  paddingBottom: 21,
-  paddingTop,
+  paddingBottom: android ? 8 : 21,
+  paddingTop: android ? 20 : 32,
   width: '100%',
 });
 
