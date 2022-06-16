@@ -136,7 +136,10 @@ export default function SwapDetailsState({
 
   useEffect(() => {
     contentScroll.value = withSpring(0, springConfig);
-    setParams({ longFormHeight: sheetHeightWithoutKeyboard });
+    setParams({
+      longFormHeight: sheetHeightWithoutKeyboard,
+      springDamping: 0.7,
+    });
   }, [contentScroll, sheetHeightWithoutKeyboard, setParams]);
 
   return (
