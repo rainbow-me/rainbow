@@ -70,12 +70,8 @@ jobs:
                   "text": {
                     "type": "mrkdwn",
                     "text": "iOS Build for #${{ github.event.pull_request.number }} - ${{ github.event.pull_request.title }}\nAuthor:${{ github.actor }}\nStatus: ${{ job.status }}"
-                  }
-                },
-                {
-                  "type": "divider"
-                },
-                "accessory": {
+                  },
+                  "accessory": {
                     "type": "button",
                     "text": {
                       "type": "plain_text",
@@ -83,6 +79,10 @@ jobs:
                       "emoji": true
                     },
                     "url": "${{ github.event.pull_request.html_url || github.event.head_commit.url }}",
+                  },
+                },
+                {
+                  "type": "divider"
                 },
               ]
             }
