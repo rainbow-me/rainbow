@@ -23,39 +23,39 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
-      # - name: Set up github keys
-      #   run: git config core.sshCommand "ssh -i ~/.ssh/id_ed25519 -F /dev/null"
+      - name: Set up github keys
+        run: git config core.sshCommand "ssh -i ~/.ssh/id_ed25519 -F /dev/null"
 
-      # - name: Set up ENV vars & scripts
-      #   run: |
-      #     # read local env vars
-      #     source ~/.bashrc
-      #     # fetch env vars
-      #     git clone git@github.com:rainbow-me/rainbow-env.git
-      #     # unpack dotenv
-      #     mv rainbow-env/dotenv .env && rm -rf rainbow-env 
-      #     # run CI scripts
-      #     eval $CI_SCRIPTS
-      #     # tweak dotenv for e2e 
-      #     sed -i''-e "s/\IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
+      - name: Set up ENV vars & scripts
+        run: |
+          # read local env vars
+          source ~/.bashrc
+          # fetch env vars
+          git clone git@github.com:rainbow-me/rainbow-env.git
+          # unpack dotenv
+          mv rainbow-env/dotenv .env && rm -rf rainbow-env 
+          # run CI scripts
+          eval $CI_SCRIPTS
+          # tweak dotenv for e2e 
+          sed -i''-e "s/\IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
 
-      # - name: Install deps via Yarn
-      #   run: yarn setup-ci
+      - name: Install deps via Yarn
+        run: yarn setup-ci
 
-      # - name: Check for frozen lockfile
-      #   run: yarn check-lockfile
+      - name: Check for frozen lockfile
+        run: yarn check-lockfile
         
-      # - name: Audit CI
-      #   run:  yarn audit-ci --moderate --config audit-ci.json
+      - name: Audit CI
+        run:  yarn audit-ci --moderate --config audit-ci.json
 
-      # - name: Lint
-      #   run: yarn lint
+      - name: Lint
+        run: yarn lint
         
-      # - name: Install Pods
-      #   run: cd ios && pod install && cd ..
+      - name: Install Pods
+        run: cd ios && pod install && cd ..
 
-      # - name: Run iOS e2e tests (Release mode)
-      #   run: ./node_modules/.bin/detox build --configuration ios.sim.release &&  ./node_modules/.bin/detox test -R 5 --configuration ios.sim.release --forceExit
+      - name: Run iOS e2e tests (Release mode)
+        run: ./node_modules/.bin/detox build --configuration ios.sim.release &&  ./node_modules/.bin/detox test -R 5 --configuration ios.sim.release --forceExit
 
       - name: Send success message to slack
         id: slack-success
