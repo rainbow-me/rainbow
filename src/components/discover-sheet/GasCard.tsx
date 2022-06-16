@@ -23,10 +23,10 @@ import {
   useColorMode,
   useForegroundColor,
 } from '@rainbow-me/design-system';
+import { add } from '@rainbow-me/helpers/utilities';
 import { useDimensions, useGas } from '@rainbow-me/hooks';
 import { useTheme } from '@rainbow-me/theme';
 import { gasUtils } from '@rainbow-me/utils';
-import { add } from '@rainbow-me/helpers/utilities';
 
 type AnimationConfigOptions = {
   duration: number;

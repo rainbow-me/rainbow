@@ -139,11 +139,7 @@ export default forwardRef(function DiscoverSearchContainer(
   return (
     <>
       <Row>
-        <Column
-          flex={1}
-          marginHorizontal={4}
-          marginTop={19}
-        >
+        <Column flex={1} marginHorizontal={4} marginTop={19}>
           <ExchangeSearch
             clearTextOnFocus={false}
             isDiscover

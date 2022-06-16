@@ -90,8 +90,9 @@ export default function ENSCreateProfileCard() {
               background="accent"
               borderRadius={24}
               style={{
-                borderColor: `rgba(0, 0, 0, ${colorMode === 'dark' ? '0' : '0.1'
-                  })`,
+                borderColor: `rgba(0, 0, 0, ${
+                  colorMode === 'dark' ? '0' : '0.1'
+                })`,
                 borderWidth: 0.25,
                 overflow: 'hidden',
               }}
