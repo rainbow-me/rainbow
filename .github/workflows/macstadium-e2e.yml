@@ -86,7 +86,7 @@ jobs:
                               "text": "View Pull Request",
                               "emoji": true
                           },
-                          "url": "https://rainbow.me"
+                          "url": "${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
                       },
                       {
                           "type": "button",
@@ -95,7 +95,7 @@ jobs:
                               "text": "View Build",
                               "emoji": true
                           },
-                          "url": "https://rainbow.me"
+                          "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
                       }
                   ]
                 }
@@ -133,7 +133,7 @@ jobs:
                               "text": "View Pull Request",
                               "emoji": true
                           },
-                          "url": "https://rainbow.me"
+                          "url": "${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
                       },
                       {
                           "type": "button",
@@ -142,7 +142,7 @@ jobs:
                               "text": "View Build",
                               "emoji": true
                           },
-                          "url": "https://rainbow.me"
+                          "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
                       }
                   ]
                 }
