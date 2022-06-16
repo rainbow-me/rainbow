@@ -15,7 +15,7 @@ export const L2_TXS = 'L2 Transactions';
 export const defaultConfig = {
   [L2_TXS]: { needsRestart: true, settings: true, value: false }, // this flag is not reactive. We use this in a static context
   [LANGUAGE_SETTINGS]: { settings: false, value: false },
-  [PROFILES]: { settings: true, value: false },
+  [PROFILES]: { settings: true, value: true },
   [REVIEW_ANDROID]: { settings: false, value: false },
 };
 
