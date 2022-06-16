@@ -44,20 +44,22 @@ export default function SwapSettingsState({ asset }) {
     flashbotsEnabled,
     settingsChangeFlashbotsEnabled,
   } = useAccountSettings();
+  const {
+    params: { swapSupportsFlashbots = false },
+  } = useRoute();
   const { colors } = useTheme();
   const { setParams, goBack } = useNavigation();
-  useAndroidDisableGesturesOnFocus();
   const dispatch = useDispatch();
+  const keyboardHeight = useKeyboardHeight();
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(true);
+  const slippageRef = useRef(null);
+  const { updateSwapSource, source } = useSwapSettings();
+
+  useAndroidDisableGesturesOnFocus();
 
   const toggleFlashbotsEnabled = useCallback(async () => {
     await dispatch(settingsChangeFlashbotsEnabled(!flashbotsEnabled));
   }, [dispatch, flashbotsEnabled, settingsChangeFlashbotsEnabled]);
-
-  const keyboardHeight = useKeyboardHeight();
-  const [isKeyboardOpen, setIsKeyboardOpen] = useState(true);
-
-  const slippageRef = useRef(null);
-  const { updateSwapSource, source } = useSwapSettings();
 
   useEffect(() => {
     const keyboardDidShow = () => {
@@ -86,7 +88,8 @@ export default function SwapSettingsState({ asset }) {
     [updateSwapSource]
   );
 
-  const sheetHeightWithoutKeyboard = android ? 275 : 245;
+  const sheetHeightWithoutKeyboard =
+    (android ? 225 : 195) + (swapSupportsFlashbots ? 55 : 0);
 
   const sheetHeightWithKeyboard =
     sheetHeightWithoutKeyboard +
@@ -127,7 +130,7 @@ export default function SwapSettingsState({ asset }) {
               colorForAsset={colorForAsset}
               ref={slippageRef}
             />
-            {asset?.type === 'token' && (
+            {swapSupportsFlashbots && (
               <Columns alignHorizontal="justify" alignVertical="center">
                 <Text color="primary" size="18px" weight="bold">
                   {lang.t('exchange.use_flashbots')}

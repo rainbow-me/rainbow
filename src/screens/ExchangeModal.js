@@ -305,7 +305,8 @@ export default function ExchangeModal({
     loading
   );
 
-  const flashbots = currentNetwork === Network.mainnet && flashbotsEnabled;
+  const swapSupportsFlashbots = currentNetwork === Network.mainnet;
+  const flashbots = swapSupportsFlashbots && flashbotsEnabled;
 
   const isDismissing = useRef(false);
   useEffect(() => {
@@ -634,6 +635,7 @@ export default function ExchangeModal({
             (lastFocusedInputHandle.current = lastFocusedInputHandleTemporary);
           setParams({ focused: true });
         },
+        swapSupportsFlashbots,
         type: 'swap_settings',
       });
       analytics.track('Opened Swap Settings');
@@ -648,6 +650,7 @@ export default function ExchangeModal({
     navigate,
     outputCurrency,
     outputFieldRef,
+    swapSupportsFlashbots,
     setParams,
   ]);
 
