@@ -55,6 +55,7 @@ const RegistrationAvatar = ({
     values,
     onBlurField,
     onRemoveField,
+    setDisabled,
   } = useENSRegistrationForm();
   const { navigate } = useNavigation();
 
@@ -132,13 +133,16 @@ const RegistrationAvatar = ({
       setAvatarUrl('');
       onChangeAvatarUrl('');
       setAvatarMetadata(undefined);
+      setDisabled(false);
     },
     onUploadError: () => {
       onBlurField({ key: 'avatar', value: '' });
       setAvatarUrl('');
     },
+    onUploading: () => setDisabled(true),
     onUploadSuccess: ({ data }: { data: UploadImageReturnData }) => {
       onBlurField({ key: 'avatar', value: data.url });
+      setDisabled(false);
     },
     showRemove: Boolean(avatarUrl),
     testID: 'avatar',

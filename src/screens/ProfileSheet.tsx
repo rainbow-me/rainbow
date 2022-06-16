@@ -110,12 +110,12 @@ export default function ProfileSheet() {
                   <ProfileSheetHeader isLoading />
                   <PlaceholderList />
                 </Stack>
-              ) : profileAddress ? (
+              ) : (
                 <RecyclerAssetList2
-                  externalAddress={profileAddress}
+                  externalAddress={profileAddress || ''}
                   type="ens-profile"
                 />
-              ) : null}
+              )}
             </Box>
           </Box>
         </AccentColorProvider>
