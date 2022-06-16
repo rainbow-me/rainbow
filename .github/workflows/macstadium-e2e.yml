@@ -70,20 +70,34 @@ jobs:
                   "text": {
                     "type": "mrkdwn",
                     "text": "iOS Build for #${{ github.event.pull_request.number }} - ${{ github.event.pull_request.title }}\nAuthor:${{ github.actor }}\nStatus: ${{ job.status }}"
-                  },
-                  "accessory": {
-                    "type": "button",
-                    "text": {
-                      "type": "plain_text",
-                      "text": "View Pull Request",
-                      "emoji": true
-                    },
-                    "url": "https://rainbow.me/",
-                  },
+                  }
                 },
                 {
                   "type": "divider"
                 },
+                {
+                  "type": "actions",
+                  "elements": [
+                      {
+                          "type": "button",
+                          "text": {
+                              "type": "plain_text",
+                              "text": "View Pull Request",
+                              "emoji": true
+                          },
+                          "url": "https://rainbow.me"
+                      },
+                      {
+                          "type": "button",
+                          "text": {
+                              "type": "plain_text",
+                              "text": "View Build",
+                              "emoji": true
+                          },
+                          "url": "https://rainbow.me"
+                      }
+                  ]
+                }
               ]
             }
         env:
