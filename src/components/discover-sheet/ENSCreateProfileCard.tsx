@@ -58,7 +58,7 @@ export default function ENSCreateProfileCard() {
     <ButtonPressAnimation
       onPress={handlePress}
       scaleTo={0.92}
-      testID="ens-register-name-banner"
+      testID="ens-create-profile-card"
     >
       <AccentColorProvider color={shadowColor}>
         <Box
@@ -90,14 +90,16 @@ export default function ENSCreateProfileCard() {
               background="accent"
               borderRadius={24}
               style={{
-                borderColor: `rgba(0, 0, 0, ${colorMode === 'dark' ? '0' : '0.1'
-                  })`,
+                borderColor: `rgba(0, 0, 0, ${
+                  colorMode === 'dark' ? '0' : '0.1'
+                })`,
                 borderWidth: 0.25,
                 overflow: 'hidden',
               }}
             >
               <Inset space={{ custom: -0.25 }}>
                 <Cover alignHorizontal="center" alignVertical="top">
+                  {/* @ts-expect-error JavaScript component */}
                   <Box
                     as={ImgixImage}
                     height={{ custom: 200 }}

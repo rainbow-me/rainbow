@@ -23,10 +23,10 @@ import {
   useColorMode,
   useForegroundColor,
 } from '@rainbow-me/design-system';
+import { add } from '@rainbow-me/helpers/utilities';
 import { useDimensions, useGas } from '@rainbow-me/hooks';
 import { useTheme } from '@rainbow-me/theme';
 import { gasUtils } from '@rainbow-me/utils';
-import { add } from '@rainbow-me/helpers/utilities';
 
 type AnimationConfigOptions = {
   duration: number;
@@ -311,10 +311,7 @@ export default function GasCard() {
                         formatter={formatGasPrice}
                         interval={2}
                         renderContent={renderGweiText}
-                        timing={(progress: number) => {
-                          var t = progress;
-                          return 1 - --t * t * t * t;
-                        }}
+                        timing={(t: number) => 1 - --t * t * t * t}
                         value={currentGwei || lastKnownGwei}
                       />
                       <Text color="accent" size="18px" weight="bold">

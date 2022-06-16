@@ -6,6 +6,7 @@ import ENSCreateProfileCard from './ENSCreateProfileCard';
 import ENSSearchCard from './ENSSearchCard';
 import GasCard from './GasCard';
 import Lists from './ListsSection';
+import PulseIndex from './PulseIndexSection';
 // import Strategies from './StrategiesSection';
 import TopMoversSection from './TopMoversSection';
 import UniswapPools from './UniswapPoolsSection';
