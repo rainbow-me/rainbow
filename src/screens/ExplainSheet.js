@@ -1,7 +1,7 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Linking, StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { ChainBadge, CoinIcon } from '../components/coin-icon';
@@ -384,6 +384,28 @@ export const explainers = (params, colors) => ({
       </Row>
     ),
   },
+  obtainL2Assets: {
+    buttonText: 'Go to the Hop Bridge 􀮶',
+    buttonColor: colors?.networkColors[params?.network],
+    secondaryButtonText: lang.t('explain.learn_more'),
+    logo: (
+      <ChainBadge
+        assetType={params?.network}
+        marginBottom={8}
+        position="relative"
+        size="large"
+      />
+    ),
+    readMoreLink:
+      'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+    text: lang.t('explain.obtain_l2_asset.text', {
+      tokenName: params?.assetName,
+      networkName: params?.networkName,
+    }),
+    title: lang.t('explain.obtain_l2_asset.title', {
+      networkName: params?.networkName,
+    }),
+  },
 });
 
 const ExplainSheet = () => {
@@ -425,6 +447,57 @@ const ExplainSheet = () => {
 
   const sheetHeight =
     ExplainSheetHeight + (explainSheetConfig?.extraHeight || 0);
+
+  const buttons = useMemo(() => {
+    const missingL2Assets = type === 'obtainL2Assets';
+    const secondaryButtonTextColor = missingL2Assets
+      ? 'primary'
+      : colors.blueGreyDark60;
+    const secondaryButton = explainSheetConfig.readMoreLink && (
+      <Column height={60}>
+        <SheetActionButton
+          color={colors.blueGreyDarkLight}
+          isTransparent
+          label={
+            explainSheetConfig.secondaryButtonText ||
+            lang.t('explain.read_more')
+          }
+          onPress={handleReadMore}
+          size="big"
+          textColor={secondaryButtonTextColor}
+          weight="heavy"
+        />
+      </Column>
+    );
+    const accentCta = (
+      <SheetActionButton
+        color={colors.alpha(
+          explainSheetConfig.buttonColor || colors.appleBlue,
+          0.04
+        )}
+        isTransparent
+        label={explainSheetConfig.buttonText || lang.t('button.got_it')}
+        onPress={handleClose}
+        size="big"
+        textColor={explainSheetConfig.buttonColor || colors.appleBlue}
+        weight="heavy"
+      />
+    );
+    const buttonArray = [secondaryButton, accentCta];
+    if (type === 'obtainL2Assets') {
+      buttonArray.reverse();
+    }
+    return buttonArray;
+  }, [
+    colors,
+    explainSheetConfig.buttonColor,
+    explainSheetConfig.buttonText,
+    explainSheetConfig.readMoreLink,
+    explainSheetConfig.secondaryButtonText,
+    handleClose,
+    handleReadMore,
+    type,
+  ]);
 
   return (
     <Container deviceHeight={deviceHeight} height={sheetHeight} insets={insets}>
@@ -484,31 +557,7 @@ const ExplainSheet = () => {
             >
               {explainSheetConfig.text}
             </Text>
-            {explainSheetConfig.readMoreLink && (
-              <Column height={60}>
-                <SheetActionButton
-                  color={colors.blueGreyDarkLight}
-                  isTransparent
-                  label={lang.t('explain.read_more')}
-                  onPress={handleReadMore}
-                  size="big"
-                  textColor={colors.blueGreyDark60}
-                  weight="heavy"
-                />
-              </Column>
-            )}
-            <SheetActionButton
-              color={colors.alpha(
-                explainSheetConfig.buttonColor || colors.appleBlue,
-                0.04
-              )}
-              isTransparent
-              label={explainSheetConfig.buttonText || lang.t('button.got_it')}
-              onPress={handleClose}
-              size="big"
-              textColor={explainSheetConfig.buttonColor || colors.appleBlue}
-              weight="heavy"
-            />
+            {buttons}
           </ColumnWithMargins>
         </Centered>
       </SlackSheet>

@@ -11,7 +11,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { StatusBar } from 'react-native';
+import { Linking, StatusBar } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
@@ -131,6 +131,10 @@ export default function CurrencySelectModal() {
     const viewingExplainer = routeName === Routes.EXPLAIN_SHEET;
     return isFocused || viewingExplainer;
   }, [isFocused, routeName]);
+
+  const linkToHop = useCallback(() => {
+    Linking.openURL('https://app.hop.exchange/#/send');
+  }, []);
 
   const getWalletCurrencyList = useCallback(() => {
     if (type === CurrencySelectionTypes.input) {
@@ -257,9 +261,39 @@ export default function CurrencySelectModal() {
       type,
     ]
   );
+  const checkForRequiredAssets = useCallback(
+    item => {
+      if (
+        type === CurrencySelectionTypes.output &&
+        currentChainId &&
+        currentChainId !== ChainId.mainnet
+      ) {
+        const currentL2Name = ethereumUtils.getNetworkNameFromChainId(
+          currentChainId
+        );
+        const currentL2WalletAssets = assetsInWallet.filter(
+          ({ network }) =>
+            network && network?.toLowerCase() === currentL2Name?.toLowerCase()
+        );
+        if (currentL2WalletAssets?.length < 1) {
+          navigate(Routes.EXPLAIN_SHEET, {
+            assetName: item?.name,
+            network: ethereumUtils.getNetworkFromChainId(currentChainId),
+            networkName: currentL2Name,
+            onClose: linkToHop,
+            type: 'obtainL2Assets',
+          });
+          return true;
+        }
+        return false;
+      }
+    },
+    [assetsInWallet, currentChainId, linkToHop, navigate, type]
+  );
 
   const handleSelectAsset = useCallback(
     item => {
+      if (checkForRequiredAssets(item)) return;
       dispatch(emitChartsRequest(item.mainnet_address || item.address));
       const isMainnet = currentChainId === 1;
 
@@ -270,7 +304,14 @@ export default function CurrencySelectModal() {
         handleNavigate
       );
     },
-    [dispatch, currentChainId, onSelectCurrency, type, handleNavigate]
+    [
+      dispatch,
+      checkForRequiredAssets,
+      currentChainId,
+      onSelectCurrency,
+      type,
+      handleNavigate,
+    ]
   );
 
   const itemProps = useMemo(() => {
