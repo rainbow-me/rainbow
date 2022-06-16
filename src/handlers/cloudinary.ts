@@ -1,5 +1,5 @@
 // @ts-ignore
-import { image as cloudinaryImage } from 'cloudinary/lib/cloudinary';
+import { url as cloudinaryURL } from 'cloudinary/lib/cloudinary';
 import { memoFn } from '@rainbow-me/utils/memoFn';
 
 type CloudinaryConfig = {
@@ -15,10 +15,10 @@ export const signUrl = memoFn(
     if (format) {
       internalAddress = internalAddress.split('.')[0] + '.' + format;
     }
-    const cloudinaryImg = cloudinaryImage(internalAddress, {
+    const cloudinaryImg = cloudinaryURL(internalAddress, {
       sign_url: true,
       ...widthAndHeight,
-    }).split("'")[1];
+    });
 
     if (cloudinaryImg.startsWith('http:')) {
       return 'https' + cloudinaryImg.substring(4);
