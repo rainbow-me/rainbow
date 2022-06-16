@@ -69,16 +69,7 @@ jobs:
                   "text": {
                       "type": "mrkdwn",
                       "text": "iOS Build triggered by ${{ github.actor }}\n#${{ github.event.pull_request.number }} - ${{ }}\nStatus: ${{ job.status }}"
-                    },
-                    "accessory": {
-                        "type": "button",
-                        "text": {
-                          "type": "plain_text",
-                          "text": "View Pull Request",
-                          "emoji": true
-                        },
-                        "url": "${{ github.event.pull_request.html_url || github.event.head_commit.url }}",
-                    }                  
+                    }
               }]
             }
         env:
