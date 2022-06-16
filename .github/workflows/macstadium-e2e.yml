@@ -62,17 +62,7 @@ jobs:
         uses: slackapi/slack-github-action@v1.19.0
         with:
           # This data can be any valid JSON from a previous step in the GitHub Action
-          payload: |
-            {
-              "username": "iOS Build Bot",
-              "blocks": [{
-                  "type": "section",
-                  "text": {
-                      "type": "mrkdwn",
-                      "text": "iOS Build triggered by ${{ github.actor }}\n#${{ github.event.pull_request.number }} - ${{ }}\nStatus: ${{ job.status }}"
-                    }
-              }]
-            }
+          payload-file-path: "./payload-slack-content.json"
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
