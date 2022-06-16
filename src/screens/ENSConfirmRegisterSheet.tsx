@@ -146,7 +146,9 @@ export default function ENSConfirmRegisterSheet() {
   });
 
   const [sendReverseRecord, setSendReverseRecord] = useState(
-    !accountProfile.accountENS || mode === REGISTRATION_MODES.EDIT
+    !isEmpty(changedRecords) ||
+      !accountProfile.accountENS ||
+      mode === REGISTRATION_MODES.EDIT
   );
   const { step, secondsSinceCommitConfirmed } = useENSRegistrationStepHandler(
     false
@@ -372,14 +374,6 @@ export default function ENSConfirmRegisterSheet() {
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
   );
-
-  useEffect(() => {
-    if (step === REGISTRATION_STEPS.REGISTER) {
-      setSendReverseRecord(
-        !isEmpty(changedRecords) || !accountProfile.accountENS
-      );
-    }
-  }, [accountProfile.accountENS, changedRecords, step]);
 
   useEffect(
     () => () => {
