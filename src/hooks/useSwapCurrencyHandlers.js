@@ -79,7 +79,7 @@ export default function useSwapCurrencyHandlers({
       const defaultInputItemInWallet = defaultInputAsset
         ? {
             ...defaultInputAsset,
-            type: inputCurrency?.type ?? AssetType.token,
+            type: defaultInputAsset?.type ?? AssetType.token,
           }
         : null;
 
