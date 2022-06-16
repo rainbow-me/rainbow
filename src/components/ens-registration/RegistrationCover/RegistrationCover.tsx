@@ -38,6 +38,7 @@ const RegistrationCover = ({
     isLoading,
     onBlurField,
     onRemoveField,
+    setDisabled,
     values,
   } = useENSRegistrationForm();
 
@@ -101,9 +102,12 @@ const RegistrationCover = ({
       onRemoveField({ key: 'cover' });
       setCoverUrl('');
       setCoverMetadata(undefined);
+      setDisabled(false);
     },
+    onUploading: () => setDisabled(true),
     onUploadSuccess: ({ data }: { data: UploadImageReturnData }) => {
       onBlurField({ key: 'cover', value: data.url });
+      setDisabled(false);
     },
     showRemove: Boolean(coverUrl),
     testID: 'cover',

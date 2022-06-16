@@ -369,9 +369,10 @@ export default function useENSRegistrationCosts({
   useEffect(() => {
     if (
       !isEmpty(useGasGasFeeParamsBySpeed) &&
-      gasFeeParams.gasFeeParamsBySpeed !== useGasGasFeeParamsBySpeed &&
-      gasFeeParams.currentBaseFee !== useGasCurrentBlockParams.baseFeePerGas &&
-      useGasCurrentBlockParams.baseFeePerGas
+      gasFeeParams?.gasFeeParamsBySpeed !== useGasGasFeeParamsBySpeed &&
+      gasFeeParams?.currentBaseFee !==
+        useGasCurrentBlockParams?.baseFeePerGas &&
+      useGasCurrentBlockParams?.baseFeePerGas
     ) {
       setGasFeeParams({
         currentBaseFee: useGasCurrentBlockParams.baseFeePerGas,

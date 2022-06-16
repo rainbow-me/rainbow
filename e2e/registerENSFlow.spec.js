@@ -234,10 +234,7 @@ describe('Register ENS Flow', () => {
     await Helpers.delay(60000);
   });
 
-  it('Should see confirm registration screen and set reverse records', async () => {
-    await Helpers.checkIfVisible(`ens-reverse-record-switch`);
-    // set RANDOM_NAME as primary name
-    await Helpers.waitAndTap('ens-reverse-record-switch');
+  it('Should see confirm registration screen', async () => {
     await Helpers.checkIfVisible(`ens-transaction-action-REGISTER`);
     await Helpers.waitAndTap(`ens-transaction-action-REGISTER`);
   });
