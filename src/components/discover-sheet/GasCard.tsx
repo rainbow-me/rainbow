@@ -311,10 +311,7 @@ export default function GasCard() {
                         formatter={formatGasPrice}
                         interval={2}
                         renderContent={renderGweiText}
-                        timing={(progress: number) => {
-                          var t = progress;
-                          return 1 - --t * t * t * t;
-                        }}
+                        timing={(t: number) => 1 - --t * t * t * t}
                         value={currentGwei || lastKnownGwei}
                       />
                       <Text color="accent" size="18px" weight="bold">
