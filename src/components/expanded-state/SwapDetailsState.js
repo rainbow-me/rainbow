@@ -40,9 +40,7 @@ const AnimatedContainer = styled(Animated.View)({
 });
 
 const Footer = styled(Column).attrs({
-  align: 'end',
   grow: 1,
-  justify: 'end',
   shrink: 0,
 })({
   ...padding.object(6, 0, 0),
@@ -138,7 +136,10 @@ export default function SwapDetailsState({
 
   useEffect(() => {
     contentScroll.value = withSpring(0, springConfig);
-    setParams({ longFormHeight: sheetHeightWithoutKeyboard });
+    setParams({
+      longFormHeight: sheetHeightWithoutKeyboard,
+      springDamping: 0.7,
+    });
   }, [contentScroll, sheetHeightWithoutKeyboard, setParams]);
 
   return (

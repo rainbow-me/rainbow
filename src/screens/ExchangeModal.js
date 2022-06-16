@@ -17,7 +17,7 @@ import {
   Keyboard,
   NativeModules,
 } from 'react-native';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMemoOne } from 'use-memo-one';
@@ -44,6 +44,7 @@ import {
   isKeyboardOpen,
   Network,
 } from '@rainbow-me/helpers';
+import KeyboardTypes from '@rainbow-me/helpers/keyboardTypes';
 import { divide, greaterThan, multiply } from '@rainbow-me/helpers/utilities';
 import {
   useAccountSettings,
@@ -120,7 +121,7 @@ export default function ExchangeModal({
 }) {
   const { isSmallPhone } = useDimensions();
   const dispatch = useDispatch();
-  const insets = useSafeArea();
+  const insets = useSafeAreaInsets();
   const {
     params: { inputAsset: defaultInputAsset, outputAsset: defaultOutputAsset },
   } = useRoute();
@@ -302,7 +303,7 @@ export default function ExchangeModal({
     inputCurrency,
     outputCurrency,
     currentNetwork,
-    loading || equal(lastTradeDetails, tradeDetails)
+    loading
   );
 
   const flashbots = currentNetwork === Network.mainnet && flashbotsEnabled;
@@ -711,7 +712,7 @@ export default function ExchangeModal({
     : !!inputCurrency && !!outputCurrency;
 
   return (
-    <Wrapper>
+    <Wrapper keyboardType={KeyboardTypes.numpad}>
       <InnerWrapper isSmallPhone={isSmallPhone}>
         <FloatingPanels>
           <FloatingPanel
