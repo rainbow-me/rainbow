@@ -4,7 +4,7 @@ import { useTheme } from '../../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered, InnerBorder } from '../../layout';
 import { Text } from '../../text';
-import { pickFlatten } from '@rainbow-me/helpers/utilities';
+import { pickShallow } from '@rainbow-me/helpers/utilities';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 
@@ -76,7 +76,7 @@ export default function Button({
 }) {
   const borderRadius = type === 'rounded' ? 14 : 50;
   const { colors, isDarkMode } = useTheme();
-  const buttonPressAnimationProps = pickFlatten(
+  const buttonPressAnimationProps = pickShallow(
     props,
     Object.keys(ButtonPressAnimation.propTypes)
   );

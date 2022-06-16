@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useEthUSDMonthChart, useEthUSDPrice } from '../utils/ethereumUtils';
 import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';
 import { getUniswapV2Pools } from '@rainbow-me/handlers/dispersion';
-import { pickFlatten } from '@rainbow-me/helpers/utilities';
+import { pickShallow } from '@rainbow-me/helpers/utilities';
 import {
   emitAssetRequest,
   emitChartsRequest,
@@ -259,7 +259,7 @@ export default function useUniswapPools(sortField, sortDirection, token) {
         oneDayVolumeUSD: pair.oneDayVolumeUSD * currenciesRate,
       };
 
-      return pickFlatten(pairAdjustedForCurrency, [
+      return pickShallow(pairAdjustedForCurrency, [
         'address',
         'annualized_fees',
         'liquidity',

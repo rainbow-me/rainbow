@@ -418,7 +418,7 @@ export const delay = (ms: number): Promise<void> => {
  * @param obj The source object
  * @param paths The property paths to pick
  */
-export const pickFlatten = <T, K extends keyof T>(
+export const pickShallow = <T, K extends keyof T>(
   obj: T,
   paths: K[]
 ): Pick<T, K> => {

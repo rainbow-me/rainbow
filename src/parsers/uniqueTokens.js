@@ -14,7 +14,7 @@ import { fetchMetadata, isUnknownOpenSeaENS } from '@rainbow-me/handlers/ens';
 import { maybeSignUri } from '@rainbow-me/handlers/imgix';
 import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
 import { Network } from '@rainbow-me/helpers/networkTypes';
-import { pickFlatten } from '@rainbow-me/helpers/utilities';
+import { pickShallow } from '@rainbow-me/helpers/utilities';
 import {
   ENS_NFT_CONTRACT_ADDRESS,
   polygonAllowList,
@@ -82,7 +82,7 @@ export const parseAccountUniqueTokens = data => {
           asset.image_preview_url
         );
         return {
-          ...pickFlatten(asset, [
+          ...pickShallow(asset, [
             'animation_url',
             'current_price',
             'description',
@@ -93,7 +93,7 @@ export const parseAccountUniqueTokens = data => {
             'sell_orders',
             'traits',
           ]),
-          asset_contract: pickFlatten(asset_contract, [
+          asset_contract: pickShallow(asset_contract, [
             'address',
             'name',
             'nft_version',
@@ -102,7 +102,7 @@ export const parseAccountUniqueTokens = data => {
             'total_supply',
           ]),
           background: background_color ? `#${background_color}` : null,
-          collection: pickFlatten(collection, [
+          collection: pickShallow(collection, [
             'description',
             'discord_url',
             'external_url',
@@ -165,14 +165,14 @@ export const parseAccountUniqueTokensPolygon = data => {
         asset.image_preview_url
       );
       return {
-        ...pickFlatten(metadata, [
+        ...pickShallow(metadata, [
           'animation_url',
           'description',
           'external_link',
           'name',
           'traits',
         ]),
-        asset_contract: pickFlatten(asset_contract, [
+        asset_contract: pickShallow(asset_contract, [
           'address',
           'name',
           'contract_standard',
@@ -180,7 +180,7 @@ export const parseAccountUniqueTokensPolygon = data => {
         background: metadata.background_color
           ? `#${metadata.background_color}`
           : null,
-        collection: pickFlatten(collection, [
+        collection: pickShallow(collection, [
           'description',
           'discord_url',
           'external_url',
