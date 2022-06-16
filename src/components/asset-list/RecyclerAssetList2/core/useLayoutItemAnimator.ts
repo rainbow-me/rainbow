@@ -1,6 +1,6 @@
 import { MutableRefObject, useMemo } from 'react';
 import { LayoutAnimation } from 'react-native';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BaseItemAnimator } from 'recyclerlistview';
 import {
   FabWrapperBottomPosition,
@@ -82,7 +82,7 @@ export default function useLayoutItemAnimator(
   ref: MutableRefObject<RecyclerListViewRef | undefined>,
   topMarginRef: MutableRefObject<number>
 ) {
-  const insets = useSafeArea();
+  const insets = useSafeAreaInsets();
   const paddingBottom =
     insets.bottom +
     FabSizeWithPadding -
