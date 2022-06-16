@@ -4,7 +4,7 @@ import React, { Fragment, useMemo } from 'react';
 import { convertAmountToPercentageDisplay } from '../../../helpers/utilities';
 import Pill from '../../Pill';
 import { ButtonPressAnimation } from '../../animations';
-import SwapDetailsRow, { SwapDetailsValue } from './SwapDetailsRow';
+import { SwapDetailsValue } from './SwapDetailsRow';
 import {
   Bleed,
   Box,
@@ -12,6 +12,7 @@ import {
   Columns,
   Cover,
   Inline,
+  Rows,
   Stack,
   Text,
   useForegroundColor,
@@ -148,32 +149,39 @@ export default function SwapDetailsExchangeRow(props) {
   if (protocols?.length > 1) {
     return (
       <ButtonPressAnimation onPress={nextStep} scaleTo={1.06}>
-        <SwapDetailsRow
-          label={lang.t('expanded_state.swap.swapping_via')}
-          truncated={false}
-        >
+        <Rows>
           <Columns alignHorizontal="right" alignVertical="center" space="4px">
+            <Column>
+              <Text color="secondary50" size="14px" weight="semibold">
+                {lang.t('expanded_state.swap.swapping_via')}
+              </Text>
+            </Column>
             <Column width="content">
               <ExchangeIconStack protocols={steps[step]} />
             </Column>
             <Column width="content">
               <SwapDetailsValue>{steps[step].label}</SwapDetailsValue>
             </Column>
-            {steps[step].part && (
+            {steps?.[step]?.part && (
               <Column width="content">
-                <Bleed style={{ marginLeft: 10 }}>
+                <Bleed right="6px" vertical="6px">
                   <Pill textColor={defaultColor}>{steps[step].part}</Pill>
                 </Bleed>
               </Column>
             )}
           </Columns>
-        </SwapDetailsRow>
+        </Rows>
       </ButtonPressAnimation>
     );
   } else if (protocols?.length > 0) {
     return (
-      <SwapDetailsRow label={lang.t('expanded_state.swap.swapping_via')}>
+      <Rows>
         <Columns alignVertical="center" space="4px">
+          <Column>
+            <Text color="secondary50" size="14px" weight="semibold">
+              {lang.t('expanded_state.swap.swapping_via')}
+            </Text>
+          </Column>
           <Column width="content">
             <ExchangeIcon
               icon={getExchangeIconUrl(parseExchangeName(protocols[0].name))}
@@ -183,12 +191,13 @@ export default function SwapDetailsExchangeRow(props) {
           <Column width="content">
             <SwapDetailsValue>{steps[step].label}</SwapDetailsValue>
           </Column>
-
           <Column width="content">
-            <Pill textColor={defaultColor}>{`${protocols[0].part}%`}</Pill>
+            <Bleed right="6px" vertical="6px">
+              <Pill textColor={defaultColor}>{`${protocols[0].part}%`}</Pill>
+            </Bleed>
           </Column>
         </Columns>
-      </SwapDetailsRow>
+      </Rows>
     );
   }
   return null;
