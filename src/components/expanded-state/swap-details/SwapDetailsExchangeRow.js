@@ -164,7 +164,7 @@ export default function SwapDetailsExchangeRow(props) {
             </Column>
             {steps?.[step]?.part && (
               <Column width="content">
-                <Bleed right="4px" vertical="6px">
+                <Bleed right="6px" vertical="6px">
                   <Pill textColor={defaultColor}>{steps[step].part}</Pill>
                 </Bleed>
               </Column>
