@@ -26,7 +26,10 @@ import {
 
 // eslint-disable-next-line import/default
 import RNIOS11DeviceCheck from 'react-native-ios11-devicecheck';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import {
+  initialWindowMetrics,
+  SafeAreaProvider,
+} from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import VersionNumber from 'react-native-version-number';
 import { QueryClientProvider } from 'react-query';
@@ -323,7 +326,7 @@ class App extends Component {
       <RainbowContextWrapper>
         <ErrorBoundary>
           <Portal>
-            <SafeAreaProvider>
+            <SafeAreaProvider initialMetrics={initialWindowMetrics}>
               <QueryClientProvider client={queryClient}>
                 <Provider store={store}>
                   <RecoilRoot>
