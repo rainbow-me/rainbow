@@ -59,9 +59,9 @@ describe('Discover Sheet Flow', () => {
     await Helpers.checkIfNotVisible('lists-section');
   });
 
-  it('Should open Discover Search on pressing search fab', async () => {
+  it('Should open Discover Search on pressing search input', async () => {
     await Helpers.swipe('discover-header', 'up');
-    await Helpers.waitAndTap('search-fab');
+    await Helpers.waitAndTap('discover-search');
     await Helpers.checkIfVisible('done-button');
   });
 
@@ -223,7 +223,7 @@ describe('Discover Sheet Flow', () => {
   });
 
   it('Should search and open Profile for rainbowwallet.eth', async () => {
-    await Helpers.waitAndTap('search-fab');
+    await Helpers.waitAndTap('discover-search');
     await Helpers.typeText(
       'discover-search-input',
       'rainbowwallet.eth\n',
