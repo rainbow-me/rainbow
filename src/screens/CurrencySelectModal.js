@@ -106,7 +106,7 @@ export default function CurrencySelectModal() {
 
   const [currentChainId, setCurrentChainId] = useState(chainId);
   useEffect(() => {
-    if (chainId) {
+    if (chainId && typeof chainId === 'number') {
       setCurrentChainId(chainId);
     }
   }, [chainId]);
