@@ -17,7 +17,6 @@ import {
   Keyboard,
   NativeModules,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMemoOne } from 'use-memo-one';
@@ -27,7 +26,6 @@ import {
   ConfirmExchangeButton,
   DepositInfo,
   ExchangeDetailsRow,
-  ExchangeFloatingPanels,
   ExchangeHeader,
   ExchangeInputField,
   ExchangeNotch,
@@ -35,8 +33,8 @@ import {
 } from '../components/exchange';
 import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
-import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
-import { Inset } from '@rainbow-me/design-system';
+import { Column, KeyboardFixedOpenLayout } from '../components/layout';
+import { Box } from '@rainbow-me/design-system';
 import { AssetType } from '@rainbow-me/entities';
 import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
 import {
@@ -71,18 +69,16 @@ import { ethereumUtils } from '@rainbow-me/utils';
 import { useEthUSDPrice } from '@rainbow-me/utils/ethereumUtils';
 import logger from 'logger';
 
-const FloatingPanels = ios
-  ? AnimatedExchangeFloatingPanels
-  : ExchangeFloatingPanels;
+const FloatingPanels = AnimatedExchangeFloatingPanels;
 
 const Wrapper = KeyboardFixedOpenLayout;
 
-const InnerWrapper = styled(Centered).attrs({
+const InnerWrapper = styled(Column).attrs({
   direction: 'column',
-})(({ isSmallPhone, theme: { colors } }) => ({
+  justify: 'space-between',
+})(({ theme: { colors } }) => ({
   ...position.sizeAsObject('100%'),
-  ...(ios && isSmallPhone && { maxHeight: 354 }),
-  backgroundColor: colors.transparent,
+  backgroundColor: colors.swapPurple,
 }));
 
 const Spacer = styled.View({
@@ -121,7 +117,6 @@ export default function ExchangeModal({
 }) {
   const { isSmallPhone } = useDimensions();
   const dispatch = useDispatch();
-  const insets = useSafeAreaInsets();
   const {
     params: { inputAsset: defaultInputAsset, outputAsset: defaultOutputAsset },
   } = useRoute();
@@ -790,24 +785,24 @@ export default function ExchangeModal({
 
           {isWithdrawal && <Spacer />}
         </FloatingPanels>
-        {showConfirmButton && (
-          <Inset bottom="30px">
+        <Box style={{ backgroundColor: 'green' }}>
+          {showConfirmButton && (
             <ConfirmExchangeButton
               {...confirmButtonProps}
               flashbots={flashbots}
               onPressViewDetails={navigateToSwapDetailsModal}
               testID={`${testID}-confirm-button`}
             />
-          </Inset>
-        )}
-        <GasSpeedButton
-          asset={outputCurrency}
-          bottom={insets.bottom - 7}
-          currentNetwork={currentNetwork}
-          dontBlur
-          onCustomGasBlur={handleCustomGasBlur}
-          testID={`${testID}-gas`}
-        />
+          )}
+          <GasSpeedButton
+            asset={outputCurrency}
+            currentNetwork={currentNetwork}
+            dontBlur
+            marginBottom={0}
+            onCustomGasBlur={handleCustomGasBlur}
+            testID={`${testID}-gas`}
+          />
+        </Box>
       </InnerWrapper>
     </Wrapper>
   );
