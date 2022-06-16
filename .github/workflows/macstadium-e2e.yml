@@ -57,10 +57,11 @@ jobs:
       # - name: Run iOS e2e tests (Release mode)
       #   run: ./node_modules/.bin/detox build --configuration ios.sim.release &&  ./node_modules/.bin/detox test -R 5 --configuration ios.sim.release --forceExit
 
-      - name: Post to a Slack channel
+      - name: Send custom JSON data to Slack workflow
         id: slack
         uses: slackapi/slack-github-action@v1.19.0
         with:
+          # This data can be any valid JSON from a previous step in the GitHub Action
           payload: |
             {
               "username": "iOS Build Bot",
@@ -74,6 +75,8 @@ jobs:
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+
 
 
 
