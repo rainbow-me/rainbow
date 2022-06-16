@@ -1,4 +1,5 @@
 import { ChainId } from '@rainbow-me/swaps';
+import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
@@ -36,6 +37,7 @@ import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
 import { Inset } from '@rainbow-me/design-system';
+import { AssetType } from '@rainbow-me/entities';
 import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
 import {
   ExchangeModalTypes,
@@ -110,8 +112,6 @@ const getShowOutputField = type => {
 };
 
 export default function ExchangeModal({
-  defaultInputAsset,
-  defaultOutputAsset,
   fromDiscover,
   ignoreInitialTypeCheck,
   testID,
@@ -121,6 +121,9 @@ export default function ExchangeModal({
   const { isSmallPhone } = useDimensions();
   const dispatch = useDispatch();
   const insets = useSafeArea();
+  const {
+    params: { inputAsset: defaultInputAsset, outputAsset: defaultOutputAsset },
+  } = useRoute();
 
   useLayoutEffect(() => {
     dispatch(updateSwapTypeDetails(type, typeSpecificParams));
@@ -144,10 +147,18 @@ export default function ExchangeModal({
   // we want to update the output to be on the same, if its not available -> null
   const defaultOutputAssetOverride = useMemo(() => {
     let newOutput = defaultOutputAsset;
-    if (defaultInputAsset && defaultOutputAsset) {
+
+    if (
+      defaultInputAsset &&
+      defaultOutputAsset &&
+      defaultInputAsset.type !== defaultOutputAsset.type
+    ) {
       if (
-        defaultInputAsset.type !== defaultOutputAsset.type &&
-        defaultOutputAsset?.implementations?.[defaultInputAsset?.type]?.address
+        defaultOutputAsset?.implementations?.[
+          defaultInputAsset?.type === AssetType.token
+            ? 'ethereum'
+            : defaultInputAsset?.type
+        ]?.address
       ) {
         if (defaultInputAsset.type !== Network.mainnet) {
           newOutput.mainnet_address = defaultOutputAsset.address;
@@ -197,6 +208,7 @@ export default function ExchangeModal({
   });
 
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
+
   const {
     handleFocus,
     inputFieldRef,

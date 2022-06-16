@@ -16,25 +16,57 @@
 default_platform(:android)
 
 platform :android do
+  lane :bump_version_code do |options|
+    track = options[:track]
+    path = '../app/build.gradle'
+    re = /versionCode\s+(\d+)/ 
+
+    versionCode = google_play_track_version_codes(
+      json_key: "./rainbow-google-play-key.json",
+      package_name: "me.rainbow", 
+      track: track
+    )
+
+    updatedCode = versionCode[0] + 1
+  
+    s = File.read(path)
+    versionCode = s[re, 1].to_i
+    s[re, 1] = (updatedCode).to_s
+  
+    f = File.new(path, 'w')
+    f.write(s)
+    f.close
+
+    versionCode
+  end
+
+  desc "Upload a new version to the Google Play"
+  lane :release_version do |options|
+    track = options[:track]
+    version_code = bump_version_code(track: track)
+
+    gradle(task: 'clean')
+    gradle(task: 'bundle', build_type: 'Release')
+    upload_to_play_store(
+      json_key: "./rainbow-google-play-key.json", 
+      track: track
+    )
+  end
+
   lane :internal do
-    gradle(task: 'assemble', build_type: 'Release')
-    upload_to_play_store(track: 'internal')
+    release_version(track: "internal")
   end
 
   lane :alpha do
-    gradle(task: 'assemble', build_type: 'Release')
-    upload_to_play_store(track: 'alpha')
+    release_version(track: "alpha")
   end
   
   lane :beta do
-    gradle(task: 'assemble', build_type: 'Release')
-    upload_to_play_store(track: 'beta')
+    release_version(track: "beta")
   end
 
-  desc "Deploy a new version to the Google Play"
   lane :production do
-    gradle(task: "clean assembleRelease")
-    upload_to_play_store
+    release_version(track: "production")
   end
 
 end

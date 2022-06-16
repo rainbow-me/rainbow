@@ -341,7 +341,9 @@ const getNetworkNameFromChainId = (chainId: number): string | undefined => {
  * @param  {String} network
  */
 const getChainIdFromNetwork = (network: Network): number => {
-  const chainData = chains.find(chain => chain.network === network);
+  const chainData = chains.find(
+    chain => chain.network === network?.toLowerCase()
+  );
   return chainData?.chain_id ?? 1;
 };
 

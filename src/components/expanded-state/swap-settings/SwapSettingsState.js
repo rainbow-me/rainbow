@@ -1,6 +1,6 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { InteractionManager, Keyboard } from 'react-native';
 import { Switch } from 'react-native-gesture-handler';
 import { useDispatch } from 'react-redux';
@@ -8,6 +8,7 @@ import { ButtonPressAnimation } from '../../animations';
 import { ExchangeHeader } from '../../exchange';
 import { FloatingPanel } from '../../floating-panels';
 import { SlackSheet } from '../../sheet';
+import SourcePicker from './SourcePicker';
 import StepButtonInput from './StepButtonInput';
 import {
   Box,
@@ -28,9 +29,10 @@ import {
   useAccountSettings,
   useColorForAsset,
   useKeyboardHeight,
-  useSwapSlippage,
+  useSwapSettings,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
+import { Source } from '@rainbow-me/redux/swap';
 import { deviceUtils } from '@rainbow-me/utils';
 
 function useAndroidDisableGesturesOnFocus() {
@@ -58,7 +60,12 @@ export default function SwapSettingsState({ asset }) {
   const keyboardHeight = useKeyboardHeight();
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(true);
 
-  const { slippageInBips, updateSwapSlippage } = useSwapSlippage();
+  const {
+    slippageInBips,
+    updateSwapSlippage,
+    updateSwapSource,
+    source,
+  } = useSwapSettings();
 
   useEffect(() => {
     const keyboardDidShow = () => {
@@ -78,7 +85,7 @@ export default function SwapSettingsState({ asset }) {
 
   const colorForAsset = useColorForAsset(asset || {}, null, false, true);
 
-  const sheetHeightWithoutKeyboard = 185;
+  const sheetHeightWithoutKeyboard = android ? 210 : 185;
 
   const sheetHeightWithKeyboard =
     sheetHeightWithoutKeyboard +
@@ -91,6 +98,15 @@ export default function SwapSettingsState({ asset }) {
 
   const convertBipsToPercent = bips => bips / 100;
   const convertPercentToBips = percent => percent * 100;
+
+  const [currentSource, setCurrentSource] = useState(source);
+  const updateSource = useCallback(
+    newSource => {
+      setCurrentSource(newSource);
+      updateSwapSource(newSource);
+    },
+    [updateSwapSource]
+  );
 
   const [slippageValue, setSlippageValue] = useState(
     convertBipsToPercent(slippageInBips)
@@ -145,7 +161,8 @@ export default function SwapSettingsState({ asset }) {
   const resetToDefaults = useCallback(() => {
     onSlippageChange(1);
     settingsChangeFlashbotsEnabled(false);
-  }, [onSlippageChange, settingsChangeFlashbotsEnabled]);
+    updateSource(Source.AggregatorRainbow);
+  }, [onSlippageChange, settingsChangeFlashbotsEnabled, updateSource]);
 
   return (
     <SlackSheet
@@ -163,6 +180,10 @@ export default function SwapSettingsState({ asset }) {
         <ExchangeHeader />
         <Inset bottom="24px" horizontal="24px" top="10px">
           <Stack backgroundColor="green" space="10px">
+            <SourcePicker
+              currentSource={currentSource}
+              onSelect={updateSource}
+            />
             <Columns alignVertical="center">
               <Text size="18px" weight="bold">
                 {lang.t('exchange.slippage_tolerance')}
