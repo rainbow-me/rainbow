@@ -76,10 +76,9 @@ const Wrapper = KeyboardFixedOpenLayout;
 const InnerWrapper = styled(Column).attrs({
   direction: 'column',
   justify: 'space-between',
-})(({ theme: { colors } }) => ({
+})({
   ...position.sizeAsObject('100%'),
-  backgroundColor: colors.swapPurple,
-}));
+});
 
 const Spacer = styled.View({
   height: 20,
@@ -785,7 +784,7 @@ export default function ExchangeModal({
 
           {isWithdrawal && <Spacer />}
         </FloatingPanels>
-        <Box style={{ backgroundColor: 'green' }}>
+        <Box>
           {showConfirmButton && (
             <ConfirmExchangeButton
               {...confirmButtonProps}

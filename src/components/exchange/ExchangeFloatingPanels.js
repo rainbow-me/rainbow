@@ -9,7 +9,7 @@ const ExchangeFloatingPanels = React.forwardRef(
       paddingTop={paddingTop}
       pointerEvents="box-none"
       ref={ref}
-      style={[props.style, { backgroundColor: 'red' }]}
+      style={props.style}
     />
   )
 );
