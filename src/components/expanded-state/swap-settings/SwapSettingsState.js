@@ -86,7 +86,7 @@ export default function SwapSettingsState({ asset }) {
     [updateSwapSource]
   );
 
-  const sheetHeightWithoutKeyboard = android ? 210 : 185;
+  const sheetHeightWithoutKeyboard = android ? 275 : 245;
 
   const sheetHeightWithKeyboard =
     sheetHeightWithoutKeyboard +
@@ -119,6 +119,14 @@ export default function SwapSettingsState({ asset }) {
         <ExchangeHeader />
         <Inset bottom="24px" horizontal="24px" top="10px">
           <Stack backgroundColor="green" space="24px">
+            <SourcePicker
+              currentSource={currentSource}
+              onSelect={updateSource}
+            />
+            <MaxToleranceInput
+              colorForAsset={colorForAsset}
+              ref={slippageRef}
+            />
             {asset?.type === 'token' && (
               <Columns alignHorizontal="justify" alignVertical="center">
                 <Text color="primary" size="18px" weight="bold">
@@ -134,14 +142,6 @@ export default function SwapSettingsState({ asset }) {
                 </Column>
               </Columns>
             )}
-            <SourcePicker
-              currentSource={currentSource}
-              onSelect={updateSource}
-            />
-            <MaxToleranceInput
-              colorForAsset={colorForAsset}
-              ref={slippageRef}
-            />
           </Stack>
         </Inset>
       </FloatingPanel>

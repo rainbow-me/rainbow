@@ -40,9 +40,7 @@ const AnimatedContainer = styled(Animated.View)({
 });
 
 const Footer = styled(Column).attrs({
-  align: 'end',
   grow: 1,
-  justify: 'end',
   shrink: 0,
 })({
   ...padding.object(6, 0, 0),
