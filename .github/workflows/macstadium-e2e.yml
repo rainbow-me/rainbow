@@ -58,7 +58,7 @@ jobs:
       #   run: ./node_modules/.bin/detox build --configuration ios.sim.release &&  ./node_modules/.bin/detox test -R 5 --configuration ios.sim.release --forceExit
 
       - name: Send success message to slack
-        id: slack
+        id: slack-success
         uses: slackapi/slack-github-action@v1.19.0
         if: ${{ job.status == 'success' }}
         with:
@@ -68,7 +68,7 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
       - name: Send error message to slack
-        id: slack
+        id: slack-error
         uses: slackapi/slack-github-action@v1.19.0
         if: ${{ job.status != 'success' }}
         with:
