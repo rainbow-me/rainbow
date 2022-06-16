@@ -1,8 +1,8 @@
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
-import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
+import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '../../navigation/Navigation';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
@@ -29,6 +29,7 @@ import { ethereumUtils } from '@rainbow-me/utils';
 export default function DPICard() {
   const { nativeCurrency } = useAccountSettings();
   const { navigate } = useNavigation();
+  // @ts-expect-error FIXME: Property 'data' does not exist on type 'DefaultRootState'.
   const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
     genericAssets,
   }));
@@ -117,6 +118,7 @@ export default function DPICard() {
                     </Stack>
                     <Column width="content">
                       <Bleed top="5px">
+                        {/* @ts-expect-error JavaScript component */}
                         <CoinIcon
                           address={DPI_ADDRESS}
                           forcedShadowColor={colors.shadowBlack}

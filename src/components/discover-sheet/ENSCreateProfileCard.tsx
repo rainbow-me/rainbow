@@ -99,6 +99,7 @@ export default function ENSCreateProfileCard() {
             >
               <Inset space={{ custom: -0.25 }}>
                 <Cover alignHorizontal="center" alignVertical="top">
+                  {/* @ts-expect-error JavaScript component */}
                   <Box
                     as={ImgixImage}
                     height={{ custom: 200 }}
