@@ -1,48 +1,44 @@
 {
-	"blocks": [
-		{
-			"type": "section",
-			"text": {
-				"type": "mrkdwn",
-				"text": "iOS Build for \n#${{ github.event.pull_request.number }}\nAutohr:${{ github.actor }}\nStatus: ${{ job.status }}*"
-			}
-		},
-		{
-			"type": "divider"
-		},
-		{
-			"type": "actions",
-			"elements": [
-				{
-					"type": "button",
-					"text": {
-						"type": "plain_text",
-						"text": "Farmhouse",
-						"emoji": true
-					},
-					"value": "click_me_123"
-				},
-				{
-					"type": "button",
-					"text": {
-						"type": "plain_text",
-						"text": "View Pull Request",
-						"emoji": true
-					},
-					"value": "click_me_123",
-					"url": "${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
-				},
-				{
-					"type": "button",
-					"text": {
-						"type": "plain_text",
-						"text": "View Build",
-						"emoji": true
-					},
-					"value": "click_me_123",
-					"url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-				}
-			]
-		}
-	]
+    "attachments": [
+        {
+            "color": "#d90000",
+            "blocks": [
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "iOS Build for \n#${{ github.event.pull_request.number }}\nAutohr:${{ github.actor }}\nStatus: ${{ job.status }}*"
+                    }
+                },
+                {
+                    "type": "divider"
+                },
+                {
+                    "type": "actions",
+                    "elements": [
+                        {
+                            "type": "button",
+                            "text": {
+                                "type": "plain_text",
+                                "text": "View Pull Request",
+                                "emoji": true
+                            },
+                            "value": "click_me_123",
+                            "url": "${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+                        },
+                        {
+                            "type": "button",
+                            "text": {
+                                "type": "plain_text",
+                                "text": "View Build",
+                                "emoji": true
+                            },
+                            "value": "click_me_123",
+                            "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
 }
