@@ -4,7 +4,7 @@ import React, { Fragment, useMemo } from 'react';
 import { convertAmountToPercentageDisplay } from '../../../helpers/utilities';
 import Pill from '../../Pill';
 import { ButtonPressAnimation } from '../../animations';
-import { SwapDetailsValue } from './SwapDetailsRow';
+import { SwapDetailsLabel, SwapDetailsValue } from './SwapDetailsRow';
 import {
   Bleed,
   Box,
@@ -152,9 +152,9 @@ export default function SwapDetailsExchangeRow(props) {
         <Rows>
           <Columns alignHorizontal="right" alignVertical="center" space="4px">
             <Column>
-              <Text color="secondary50" size="14px" weight="semibold">
+              <SwapDetailsLabel>
                 {lang.t('expanded_state.swap.swapping_via')}
-              </Text>
+              </SwapDetailsLabel>
             </Column>
             <Column width="content">
               <ExchangeIconStack protocols={steps[step]} />
@@ -164,7 +164,7 @@ export default function SwapDetailsExchangeRow(props) {
             </Column>
             {steps?.[step]?.part && (
               <Column width="content">
-                <Bleed right="6px" vertical="6px">
+                <Bleed right="4px" vertical="6px">
                   <Pill textColor={defaultColor}>{steps[step].part}</Pill>
                 </Bleed>
               </Column>
@@ -178,9 +178,9 @@ export default function SwapDetailsExchangeRow(props) {
       <Rows>
         <Columns alignVertical="center" space="4px">
           <Column>
-            <Text color="secondary50" size="14px" weight="semibold">
+            <SwapDetailsLabel>
               {lang.t('expanded_state.swap.swapping_via')}
-            </Text>
+            </SwapDetailsLabel>
           </Column>
           <Column width="content">
             <ExchangeIcon
