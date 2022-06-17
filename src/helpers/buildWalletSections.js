@@ -70,6 +70,7 @@ const balancesRenderItem = item => <TokenItem {...item} assetType="token" />;
 export const tokenFamilyItem = item => (
   <CollectibleTokenFamily {...item} uniqueId={item.uniqueId} />
 );
+
 const uniswapRenderItem = item => (
   <UniswapInvestmentRow {...item} assetType="uniswap" isCollapsible />
 );

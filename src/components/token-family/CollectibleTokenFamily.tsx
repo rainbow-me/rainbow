@@ -2,16 +2,27 @@ import React, { useCallback } from 'react';
 import { UniqueTokenRow } from '../unique-token';
 import TokenFamilyWrap from './TokenFamilyWrap';
 import { useOpenFamilies } from '@rainbow-me/hooks';
+import { ThemeContextProps } from '@rainbow-me/theme';
+
+type Props = {
+  childrenAmount: number;
+  external: boolean;
+  familyName: string;
+  familyImage: string;
+  showcase: boolean;
+  item: any;
+  theme: ThemeContextProps;
+};
 
 const CollectibleTokenFamily = ({
+  childrenAmount,
   external,
-  familyId,
   familyImage,
   familyName,
   showcase,
   item,
-  ...props
-}) => {
+  theme,
+}: Props) => {
   const { openFamilies, updateOpenFamilies } = useOpenFamilies();
   const isFamilyOpen = openFamilies[familyName + (showcase ? '-showcase' : '')];
 
@@ -36,13 +47,13 @@ const CollectibleTokenFamily = ({
 
   return (
     <TokenFamilyWrap
-      {...props}
-      familyId={familyId}
+      childrenAmount={childrenAmount}
       familyImage={familyImage}
       isOpen={isFamilyOpen}
       item={item}
       onToggle={handleToggle}
       renderItem={renderChild}
+      theme={theme}
       title={familyName}
     />
   );

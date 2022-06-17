@@ -3,11 +3,11 @@ import { Animated, Easing, StyleSheet, View } from 'react-native';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
 import { ButtonPressAnimation } from '../animations';
 import { RowWithMargins } from '../layout';
-import TokenFamilyHeaderIcon from './FastTokenFamilyHeaderIcon';
+import TokenFamilyHeaderIcon from './TokenFamilyHeaderIcon';
 import { Text } from '@rainbow-me/design-system';
 import { ImgixImage } from '@rainbow-me/images';
 import { padding } from '@rainbow-me/styles';
-import { useTheme } from '@rainbow-me/theme';
+import { ThemeContextProps } from '@rainbow-me/theme';
 
 const AnimatedImgixImage = Animated.createAnimatedComponent(ImgixImage);
 
@@ -37,6 +37,7 @@ const TokenFamilyHeader = ({
   onPress,
   testID,
   title,
+  theme,
 }: {
   childrenAmount?: number;
   emoji?: string;
@@ -46,8 +47,8 @@ const TokenFamilyHeader = ({
   onPress?: () => void;
   testID?: string;
   title: string;
+  theme: ThemeContextProps;
 }) => {
-  const theme = useTheme(); // TODO up
   const { colors } = theme;
 
   const toValue = Number(!!isOpen);
