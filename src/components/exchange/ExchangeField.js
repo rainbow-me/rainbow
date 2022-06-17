@@ -105,9 +105,10 @@ const ExchangeField = (
           )}
 
           <Input
-            {...(android && {
-              selectionColor: colors.alpha(colorForAsset, 0.4),
-            })}
+            {...(android &&
+              address && {
+                selectionColor: colors.alpha(colorForAsset, 0.4),
+              })}
             color={colorForAsset}
             editable={editable}
             onBlur={onBlur}
