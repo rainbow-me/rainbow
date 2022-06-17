@@ -93,7 +93,7 @@ export default function CurrencySelectModal() {
   const scrollPosition = usePagerPosition();
 
   const searchInputRef = useRef();
-  const { handleFocus } = useMagicAutofocus(searchInputRef, undefined, true);
+  const { handleFocus } = useMagicAutofocus(searchInputRef, null, true);
 
   const [assetsToFavoriteQueue, setAssetsToFavoriteQueue] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
