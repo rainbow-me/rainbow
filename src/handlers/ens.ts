@@ -632,13 +632,16 @@ export const estimateENSSetNameGasLimit = async ({
 
 export const estimateENSReclaimGasLimit = async ({
   name,
+  ownerAddress,
   toAddress,
 }: {
   name: string;
+  ownerAddress: string;
   toAddress: string;
 }) =>
   estimateENSTransactionGasLimit({
     name,
+    ownerAddress,
     toAddress,
     type: ENSRegistrationTransactionType.RECLAIM,
   });

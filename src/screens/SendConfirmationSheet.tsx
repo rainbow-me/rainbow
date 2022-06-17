@@ -390,6 +390,7 @@ export default function SendConfirmationSheet() {
         promises.push(
           estimateENSReclaimGasLimit({
             name: cleanENSName,
+            ownerAddress: accountAddress,
             toAddress,
           })
         );
