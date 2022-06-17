@@ -38,7 +38,7 @@ const transition = (
   />
 );
 
-export default function TokenFamilyWrap({
+export default React.memo(function TokenFamilyWrap({
   childrenAmount,
   isFirst,
   isHeader,
@@ -99,4 +99,4 @@ export default function TokenFamilyWrap({
       </Transitioning.View>
     </View>
   );
-}
+});
