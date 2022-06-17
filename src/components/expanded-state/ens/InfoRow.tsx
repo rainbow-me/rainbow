@@ -114,14 +114,14 @@ export default function InfoRow({
       {wrapValue(
         isImage ? (
           <>
-            {value && (
+            {value ? (
               <ImagePreviewOverlayTarget
                 aspectRatioType="cover"
                 imageUrl={value}
               >
                 <Box as={ImgixImage} height="full" source={{ uri: value }} />
               </ImagePreviewOverlayTarget>
-            )}
+            ) : null}
           </>
         ) : (
           <Box
@@ -148,7 +148,7 @@ export default function InfoRow({
             }}
           >
             <Inline alignVertical="center" space="6px">
-              {icon && (
+              {icon ? (
                 <Bleed vertical="6px">
                   <Icon
                     color={colors.whiteLabel}
@@ -157,8 +157,8 @@ export default function InfoRow({
                     width="18"
                   />
                 </Bleed>
-              )}
-              {value && (
+              ) : null}
+              {value ? (
                 <Text
                   align={isMultiline ? 'left' : 'center'}
                   color={useAccentColor ? 'accent' : undefined}
@@ -167,7 +167,7 @@ export default function InfoRow({
                 >
                   {value}
                 </Text>
-              )}
+              ) : null}
               {isSwitch && (
                 <Switch
                   disabled={switchDisabled || switchValue}
