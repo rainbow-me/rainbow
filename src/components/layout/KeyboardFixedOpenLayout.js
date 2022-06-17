@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from 'react';
-import { KeyboardAvoidingView } from 'react-native';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
 import Centered from './Centered';
