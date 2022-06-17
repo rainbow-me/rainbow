@@ -421,9 +421,12 @@ const getENSRegistryContract = async () => {
   return new Contract(ensRegistryAddress, ENSRegistryWithFallbackABI, provider);
 };
 
-const getAvailable = async (name: string): Promise<boolean> => {
-  const contract = await getENSRegistrarControllerContract();
-  return contract.available(name);
+const getAvailable = async (
+  name: string,
+  contract?: Contract
+): Promise<boolean> => {
+  const ensContract = contract ?? (await getENSRegistrarControllerContract());
+  return ensContract.available(name);
 };
 
 const getNameExpires = async (name: string): Promise<string> => {
@@ -436,9 +439,13 @@ const getNameOwner = async (name: string): Promise<string> => {
   return contract.owner(hash(name));
 };
 
-const getRentPrice = async (name: string, duration: number): Promise<any> => {
-  const contract = await getENSRegistrarControllerContract();
-  return contract.rentPrice(name, duration);
+const getRentPrice = async (
+  name: string,
+  duration: number,
+  contract?: Contract
+): Promise<any> => {
+  const ensContract = contract ?? (await getENSRegistrarControllerContract());
+  return ensContract.rentPrice(name, duration);
 };
 
 const setupMulticallRecords = (
