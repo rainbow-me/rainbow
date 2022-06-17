@@ -103,7 +103,7 @@ const ExchangeField = (
             />
           ) : (
             <View>
-              <CoinIconSkeleton network={network} />
+              <CoinIconSkeleton />
               <ChainBadge assetType={network} />
             </View>
           )}
