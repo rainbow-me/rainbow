@@ -8,7 +8,6 @@ import React, {
   useMemo,
   useRef,
 } from 'react';
-import RadialGradient from 'react-native-radial-gradient';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, {
   Easing,
@@ -34,8 +33,8 @@ const ExchangeSearchWidth = deviceUtils.dimensions.width - 40;
 const Container = styled(Row)(({ isSearchModeEnabled }) => ({
   ...(isSearchModeEnabled ? padding.object(0, 37, 0, 12) : padding.object(0)),
   backgroundColor: 'transparent',
-  height: ExchangeSearchHeight,
   borderRadius: ExchangeSearchHeight / 2,
+  height: ExchangeSearchHeight,
 }));
 
 const ShadowContainer = styled(ShadowStack)(() => ({
@@ -49,14 +48,14 @@ const BackgroundGradient = styled(LinearGradient).attrs(
     start: { x: 0.5, y: 0 },
   })
 )({
+  borderRadius: ExchangeSearchHeight / 2,
   height: ExchangeSearchWidth,
+  left: 0,
+  overflow: 'hidden',
   position: 'absolute',
   top: -(ExchangeSearchWidth - ExchangeSearchHeight) / 2,
-  left: 0,
   transform: [{ scaleY: ExchangeSearchHeight / ExchangeSearchWidth }],
   width: ExchangeSearchWidth,
-  borderRadius: ExchangeSearchHeight / 2,
-  overflow: 'hidden',
 });
 
 const SearchIcon = styled(Text).attrs(({ theme: { colors } }) => ({
@@ -201,8 +200,8 @@ const ExchangeSearch = (
     <ShadowContainer
       backgroundColor={colors.white}
       borderRadius={ExchangeSearchHeight / 2}
-      shadows={shadows}
       height={ExchangeSearchHeight}
+      shadows={shadows}
       width={ExchangeSearchWidth}
     >
       <BackgroundGradient />
