@@ -141,7 +141,6 @@ const GasSpeedButton = ({
 
   const {
     gasFeeParamsBySpeed,
-    isSufficientGas,
     updateGasFeeOption,
     selectedGasFee,
     selectedGasFeeOption,
@@ -175,9 +174,8 @@ const GasSpeedButton = ({
     () =>
       isNil(price) ||
       isEmpty(gasFeeParamsBySpeed) ||
-      isEmpty(selectedGasFee?.gasFee) ||
-      isSufficientGas === null,
-    [gasFeeParamsBySpeed, isSufficientGas, price, selectedGasFee]
+      isEmpty(selectedGasFee?.gasFee),
+    [gasFeeParamsBySpeed, price, selectedGasFee]
   );
 
   const formatGasPrice = useCallback(

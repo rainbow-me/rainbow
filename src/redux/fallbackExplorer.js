@@ -77,6 +77,36 @@ const findNewAssetsToWatch = () => async (dispatch, getState) => {
   }
 };
 
+const getPrice = (contractAddress, updatedAt, genericAssets, quoteRate) => {
+  const isETH =
+    contractAddress.toLowerCase() === COVALENT_ETH_ADDRESS.toLowerCase;
+  if (isETH) {
+    contractAddress = ETH_ADDRESS;
+  }
+
+  let price = {
+    changed_at: updatedAt,
+    relative_change_24h: 0,
+    value: isETH ? quoteRate : 0,
+  };
+
+  // Overrides
+  const fallbackAsset =
+    ethereumUtils.getAccountAsset(contractAddress) ||
+    genericAssets[contractAddress?.toLowerCase()];
+
+  if (fallbackAsset) {
+    price = {
+      ...price,
+      ...fallbackAsset.price,
+    };
+  }
+  return {
+    value: 0,
+    ...price,
+  };
+};
+
 const getMainnetAssetsFromCovalent = async (
   chainId,
   accountAddress,
@@ -96,23 +126,6 @@ const getMainnetAssetsFromCovalent = async (
       }
 
       const coingeckoId = coingeckoIds[toLower(contractAddress)];
-      let price = {
-        changed_at: updatedAt,
-        relative_change_24h: 0,
-        value: isETH ? item.quote_rate : 0,
-      };
-
-      // Overrides
-      const fallbackAsset =
-        ethereumUtils.getAccountAsset(contractAddress) ||
-        genericAssets[toLower(contractAddress)];
-
-      if (fallbackAsset) {
-        price = {
-          ...price,
-          ...fallbackAsset.price,
-        };
-      }
 
       return {
         asset: {
@@ -121,10 +134,12 @@ const getMainnetAssetsFromCovalent = async (
           decimals: item.contract_decimals,
           icon_url: item.logo_url,
           name: item.contract_name,
-          price: {
-            value: 0,
-            ...price,
-          },
+          price: getPrice(
+            contractAddress,
+            updatedAt,
+            genericAssets,
+            item.quote_rate
+          ),
           symbol: item.contract_ticker_symbol,
           type,
         },
@@ -473,12 +488,33 @@ export const fetchOnchainBalances = ({
   };
 
   if (network === NetworkTypes.mainnet) {
+    const receiveCovalentResponse = assets => {
+      // Fix prices
+      const parsedAssets = {};
+      for (let [key, asset] of Object.entries(assets)) {
+        parsedAssets[key] = {
+          ...asset,
+          asset: {
+            ...asset.asset,
+            price: getPrice(
+              asset.asset.asset_code,
+              asset.asset.price?.updatedAt,
+              genericAssets,
+              asset.asset.price?.value
+            ),
+          },
+        };
+      }
+
+      callback(parsedAssets);
+    };
+
     dispatch(emitMainnetAssetDiscoveryRequest);
     const queueKey =
       accountAddress.toLowerCase() + nativeCurrency.toLowerCase();
     assetDiscoveryCallbackQueue[queueKey] =
       assetDiscoveryCallbackQueue[queueKey] ?? [];
-    assetDiscoveryCallbackQueue[queueKey].push(callback);
+    assetDiscoveryCallbackQueue[queueKey].push(receiveCovalentResponse);
   } else {
     const chainId = ethereumUtils.getChainIdFromNetwork(network);
     const covalentMainnetAssets = await getMainnetAssetsFromCovalent(
