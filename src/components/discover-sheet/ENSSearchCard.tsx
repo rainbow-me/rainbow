@@ -1,6 +1,6 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import lang from 'i18n-js';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, {
   useAnimatedStyle,
@@ -9,6 +9,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useNavigation } from '../../navigation/Navigation';
 import { ButtonPressAnimation } from '../animations';
+import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config';
 import {
   AccentColorProvider,
   Box,
@@ -21,9 +22,14 @@ import {
   useForegroundColor,
 } from '@rainbow-me/design-system';
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
-import { useDimensions, useENSPendingRegistrations } from '@rainbow-me/hooks';
+import {
+  useDimensions,
+  useENSPendingRegistrations,
+  useWallets,
+} from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { useTheme } from '@rainbow-me/theme';
+import { watchingAlert } from '@rainbow-me/utils';
 
 const springConfig = {
   damping: 20,
@@ -36,6 +42,7 @@ export default function ENSSearchCard() {
   const { pendingRegistrations } = useENSPendingRegistrations();
   const { navigate } = useNavigation();
   const { colors } = useTheme();
+  const { isReadOnlyWallet } = useWallets();
 
   const pendingBadgeProgress = useSharedValue(0);
 
@@ -48,14 +55,18 @@ export default function ENSSearchCard() {
     } else {
       pendingBadgeProgress.value = withSpring(0, springConfig);
     }
-  }, [pendingRegistrations?.length]);
+  }, [pendingBadgeProgress, pendingRegistrations?.length]);
 
   const handlePress = useCallback(() => {
-    navigate(Routes.REGISTER_ENS_NAVIGATOR, {
-      fromDiscover: true,
-      mode: REGISTRATION_MODES.SEARCH,
-    });
-  }, [navigate]);
+    if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
+      navigate(Routes.REGISTER_ENS_NAVIGATOR, {
+        fromDiscover: true,
+        mode: REGISTRATION_MODES.SEARCH,
+      });
+    } else {
+      watchingAlert();
+    }
+  }, [isReadOnlyWallet, navigate]);
 
   const shadow = useForegroundColor('shadow');
   const shadowColor = useForegroundColor({
@@ -97,23 +108,26 @@ export default function ENSSearchCard() {
         <Box
           background="body"
           borderRadius={24}
-          shadow={{
-            custom: {
-              android: {
-                color: 'accent',
-                elevation: 24,
-                opacity: 0.5,
-              },
-              ios: [
-                {
-                  blur: 24,
+          shadow={useMemo(
+            () => ({
+              custom: {
+                android: {
                   color: 'accent',
-                  offset: { x: 0, y: 8 },
-                  opacity: 0.35,
+                  elevation: 24,
+                  opacity: 0.5,
                 },
-              ],
-            },
-          }}
+                ios: [
+                  {
+                    blur: 24,
+                    color: 'accent',
+                    offset: { x: 0, y: 8 },
+                    opacity: 0.35,
+                  },
+                ],
+              },
+            }),
+            []
+          )}
         >
           <ColorModeProvider value="darkTinted">
             <Box
@@ -177,7 +191,7 @@ export default function ENSSearchCard() {
                             >
                               <Text
                                 align="center"
-                                size="icon19px"
+                                size="icon 19px"
                                 weight="bold"
                               >
                                 􀊫

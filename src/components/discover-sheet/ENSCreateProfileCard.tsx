@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import RainbowGrid from '../../assets/discover-profiles-card.png';
 import { useNavigation } from '../../navigation/Navigation';
 import { ButtonPressAnimation } from '../animations';
@@ -64,38 +64,44 @@ export default function ENSCreateProfileCard() {
         <Box
           background="body"
           borderRadius={24}
-          shadow={{
-            custom: {
-              android: {
-                elevation: 24,
-                opacity: 0.5,
+          shadow={useMemo(
+            () => ({
+              custom: {
+                android: {
+                  elevation: 24,
+                  opacity: 0.5,
+                },
+                ios: [
+                  {
+                    blur: 24,
+                    offset: { x: 0, y: 8 },
+                    opacity: colorMode === 'dark' ? 0.3 : 0.1,
+                  },
+                  {
+                    blur: 6,
+                    offset: { x: 0, y: 2 },
+                    opacity: 0.02,
+                  },
+                ],
               },
-              ios: [
-                {
-                  blur: 24,
-                  offset: { x: 0, y: 8 },
-                  opacity: colorMode === 'dark' ? 0.3 : 0.1,
-                },
-                {
-                  blur: 6,
-                  offset: { x: 0, y: 2 },
-                  opacity: 0.02,
-                },
-              ],
-            },
-          }}
+            }),
+            [colorMode]
+          )}
         >
           <AccentColorProvider color="#E8E8E8">
             <Box
               background="accent"
               borderRadius={24}
-              style={{
-                borderColor: `rgba(0, 0, 0, ${
-                  colorMode === 'dark' ? '0' : '0.1'
-                })`,
-                borderWidth: 0.25,
-                overflow: 'hidden',
-              }}
+              style={useMemo(
+                () => ({
+                  borderColor: `rgba(0, 0, 0, ${
+                    colorMode === 'dark' ? '0' : '0.1'
+                  })`,
+                  borderWidth: 0.25,
+                  overflow: 'hidden' as 'hidden',
+                }),
+                [colorMode]
+              )}
             >
               <Inset space={{ custom: -0.25 }}>
                 <Cover alignHorizontal="center" alignVertical="top">

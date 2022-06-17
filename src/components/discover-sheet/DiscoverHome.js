@@ -7,7 +7,6 @@ import ENSSearchCard from './ENSSearchCard';
 import GasCard from './GasCard';
 import Lists from './ListsSection';
 import PulseIndex from './PulseIndexSection';
-// import Strategies from './StrategiesSection';
 import TopMoversSection from './TopMoversSection';
 import UniswapPools from './UniswapPoolsSection';
 import { Columns, Inset, Stack } from '@rainbow-me/design-system';
@@ -39,8 +38,6 @@ export default function DiscoverHome() {
           )}
           <Stack space="30px">
             <Lists />
-            {/* <Strategies /> */}
-            {/* profilesEnabled ? <TopMoversSection /> : null */}
             {accountAddress ? <UniswapPools /> : null}
           </Stack>
         </Stack>

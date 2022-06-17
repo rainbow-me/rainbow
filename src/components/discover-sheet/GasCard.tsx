@@ -1,9 +1,9 @@
-// @ts-ignore
+// @ts-expect-error
 import AnimateNumber from '@bankify/react-native-animate-number';
 import { useIsFocused } from '@react-navigation/native';
 import lang from 'i18n-js';
 import { isNaN } from 'lodash';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -76,9 +76,13 @@ export default function GasCard() {
 
   const { NORMAL } = gasUtils;
 
-  const currentGwei = add(
-    currentBlockParams?.baseFeePerGas?.gwei,
-    gasFeeParamsBySpeed[NORMAL]?.maxPriorityFeePerGas?.gwei
+  const currentGwei = useMemo(
+    () =>
+      add(
+        currentBlockParams?.baseFeePerGas?.gwei,
+        gasFeeParamsBySpeed[NORMAL]?.maxPriorityFeePerGas?.gwei
+      ),
+    [NORMAL, currentBlockParams?.baseFeePerGas?.gwei, gasFeeParamsBySpeed]
   );
   const isCurrentGweiLoaded = currentGwei && Number(currentGwei) > 0;
 
@@ -96,7 +100,7 @@ export default function GasCard() {
         </Heading>
       );
     },
-    [currentGwei, lastKnownGwei]
+    [currentGwei, isCurrentGweiLoaded, lastKnownGwei]
   );
 
   const formatGasPrice = useCallback(animatedValue => {
@@ -124,7 +128,7 @@ export default function GasCard() {
       withTiming(1, fadeOutConfig),
       withTiming(0, { duration: 0 })
     );
-  }, []);
+  }, [container, opacity, scale]);
 
   const cardColor = useForegroundColor({
     custom: {
@@ -174,6 +178,7 @@ export default function GasCard() {
       return pink;
     }
   };
+
   const getCurrentPriceComparison = (
     currentGwei: string,
     lastKnownGwei: string
@@ -219,7 +224,14 @@ export default function GasCard() {
         withTiming(0, { duration: 0 })
       );
     }
-  }, [currentGwei]);
+  }, [
+    container,
+    currentGwei,
+    isCurrentGweiLoaded,
+    lastKnownGwei,
+    opacity,
+    scale,
+  ]);
 
   const containerStyle = useAnimatedStyle(() => {
     return {
@@ -274,26 +286,29 @@ export default function GasCard() {
             background="accent"
             borderRadius={24}
             height={{ custom: (deviceWidth - 19 * 3) / 2 }}
-            shadow={{
-              custom: {
-                android: {
-                  elevation: 24,
-                  opacity: 0.5,
+            shadow={useMemo(
+              () => ({
+                custom: {
+                  android: {
+                    elevation: 24,
+                    opacity: 0.5,
+                  },
+                  ios: [
+                    {
+                      blur: 24,
+                      offset: { x: 0, y: 8 },
+                      opacity: colorMode === 'dark' ? 0.3 : 0.1,
+                    },
+                    {
+                      blur: 6,
+                      offset: { x: 0, y: 2 },
+                      opacity: 0.02,
+                    },
+                  ],
                 },
-                ios: [
-                  {
-                    blur: 24,
-                    offset: { x: 0, y: 8 },
-                    opacity: colorMode === 'dark' ? 0.3 : 0.1,
-                  },
-                  {
-                    blur: 6,
-                    offset: { x: 0, y: 2 },
-                    opacity: 0.02,
-                  },
-                ],
-              },
-            }}
+              }),
+              [colorMode]
+            )}
           >
             <AccentColorProvider
               color={getColorForGwei(currentGwei, lastKnownGwei)}
