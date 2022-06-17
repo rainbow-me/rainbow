@@ -11,7 +11,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Keyboard, Linking, StatusBar } from 'react-native';
+import { InteractionManager, Keyboard, Linking, StatusBar } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
@@ -277,12 +277,14 @@ export default function CurrencySelectModal() {
         );
         if (currentL2WalletAssets?.length < 1) {
           android && Keyboard.dismiss();
-          navigate(Routes.EXPLAIN_SHEET, {
-            assetName: item?.name,
-            network: ethereumUtils.getNetworkFromChainId(currentChainId),
-            networkName: currentL2Name,
-            onClose: linkToHop,
-            type: 'obtainL2Assets',
+          InteractionManager.runAfterInteractions(() => {
+            navigate(Routes.EXPLAIN_SHEET, {
+              assetName: item?.name,
+              network: ethereumUtils.getNetworkFromChainId(currentChainId),
+              networkName: currentL2Name,
+              onClose: linkToHop,
+              type: 'obtainL2Assets',
+            });
           });
           return true;
         }

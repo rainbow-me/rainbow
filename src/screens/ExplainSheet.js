@@ -451,7 +451,10 @@ const ExplainSheet = () => {
   const buttons = useMemo(() => {
     const missingL2Assets = type === 'obtainL2Assets';
     const secondaryButton = explainSheetConfig.readMoreLink && (
-      <Column height={60}>
+      <Column
+        height={60}
+        style={android && missingL2Assets && { marginTop: 16 }}
+      >
         <SheetActionButton
           color={colors.blueGreyDarkLight}
           isTransparent
