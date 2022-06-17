@@ -243,8 +243,11 @@ export default function ExchangeModal({
   });
 
   const chainId = useMemo(
-    () => ethereumUtils.getChainIdFromType(inputCurrency?.type),
-    [inputCurrency]
+    () =>
+      ethereumUtils.getChainIdFromType(
+        inputCurrency?.type || outputCurrency?.type
+      ),
+    [inputCurrency, outputCurrency]
   );
 
   const currentNetwork = useMemo(
@@ -736,6 +739,7 @@ export default function ExchangeModal({
               nativeAmount={nativeAmountDisplay}
               nativeCurrency={nativeCurrency}
               nativeFieldRef={nativeFieldRef}
+              network={currentNetwork}
               onFocus={handleFocus}
               onPressMaxBalance={handlePressMaxBalance}
               onPressSelectInputCurrency={navigateToSelectInputCurrency}

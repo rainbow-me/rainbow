@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect } from 'react';
-import { TouchableWithoutFeedback } from 'react-native';
+import { TouchableWithoutFeedback, View } from 'react-native';
 import { useDebounce } from 'use-debounce';
 import { TokenSelectionButton } from '../buttons';
-import { CoinIcon, CoinIconSize } from '../coin-icon';
+import { ChainBadge, CoinIcon, CoinIconSize } from '../coin-icon';
 import { Row, RowWithMargins } from '../layout';
 import { EnDash } from '../text';
 import ExchangeInput from './ExchangeInput';
@@ -52,6 +52,7 @@ const ExchangeField = (
     disableCurrencySelection,
     editable,
     type,
+    network,
     onBlur,
     onFocus,
     onPressSelectCurrency,
@@ -101,7 +102,10 @@ const ExchangeField = (
               type={type}
             />
           ) : (
-            <CoinIconSkeleton />
+            <View>
+              <CoinIconSkeleton network={network} />
+              <ChainBadge assetType={network} />
+            </View>
           )}
 
           <Input

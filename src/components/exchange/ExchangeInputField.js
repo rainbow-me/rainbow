@@ -30,6 +30,7 @@ export default function ExchangeInputField({
   nativeAmount,
   nativeCurrency,
   nativeFieldRef,
+  network,
   inputCurrencyAssetType,
   onFocus,
   onPressMaxBalance,
@@ -46,6 +47,7 @@ export default function ExchangeInputField({
         disableCurrencySelection={disableInputCurrencySelection}
         editable={editable}
         mainnetAddress={inputCurrencyMainnetAddress}
+        network={network}
         onFocus={onFocus}
         onPressSelectCurrency={onPressSelectInputCurrency}
         ref={inputFieldRef}
