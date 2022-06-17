@@ -147,7 +147,7 @@ export const typeHierarchy = {
         ios: -0.3,
       },
     },
-    'icon12px': {
+    'icon 12px': {
       fontSize: 12,
       letterSpacing: 0,
       lineHeight: 14,
@@ -156,7 +156,7 @@ export const typeHierarchy = {
         ios: 0,
       },
     },
-    'icon14px': {
+    'icon 14px': {
       fontSize: 14,
       letterSpacing: 0,
       lineHeight: 19,
@@ -165,7 +165,7 @@ export const typeHierarchy = {
         ios: 0,
       },
     },
-    'icon16px': {
+    'icon 16px': {
       fontSize: 16,
       letterSpacing: 0,
       lineHeight: 22,
@@ -174,7 +174,7 @@ export const typeHierarchy = {
         ios: 0,
       },
     },
-    'icon19px': {
+    'icon 19px': {
       fontSize: 19,
       letterSpacing: 0,
       lineHeight: 24,
@@ -183,7 +183,7 @@ export const typeHierarchy = {
         ios: 0,
       },
     },
-    'icon20px': {
+    'icon 20px': {
       fontSize: 20,
       letterSpacing: 0,
       lineHeight: 24,
