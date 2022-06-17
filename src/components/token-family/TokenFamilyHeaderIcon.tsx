@@ -7,6 +7,14 @@ import { ThemeContextProps } from '@rainbow-me/theme';
 import { FallbackIcon, initials } from '@rainbow-me/utils';
 import ShadowStack from 'react-native-shadow-stack';
 
+type Props = {
+  familyName: string;
+  theme: ThemeContextProps;
+  isCoinRow?: boolean;
+  familyImage?: string;
+  style?: any;
+};
+
 const shadowsFactory = (colors: ThemeContextProps['colors']) => [
   [0, 3, android ? 5 : 9, colors.shadow, 0.1],
 ];
@@ -17,19 +25,13 @@ const cx = StyleSheet.create({
   },
 });
 
-export default React.memo(function FastTokenFamilyHeaderIcon({
+export default React.memo(function TokenFamilyHeaderIcon({
   familyImage,
   familyName,
   isCoinRow,
   style,
   theme,
-}: {
-  familyName: string;
-  theme: ThemeContextProps;
-  isCoinRow?: boolean;
-  familyImage?: string;
-  style?: any;
-}) {
+}: Props) {
   const { colors } = theme;
   const circleStyle = useMemo(
     () => borders.buildCircleAsObject(isCoinRow ? 40 : 32),

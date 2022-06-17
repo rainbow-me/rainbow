@@ -1,11 +1,5 @@
 import { times } from 'lodash';
-import React, {
-  LegacyRef,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import TokenFamilyHeader, {
@@ -52,7 +46,7 @@ export default React.memo(function TokenFamilyWrap({
 }: Props) {
   const [areChildrenVisible, setAreChildrenVisible] = useState(false);
   const [startTimeout, stopTimeout] = useTimeout();
-  const transitionRef = useRef();
+  const transitionRef = useRef<any | null>(null);
 
   const showChildren = useCallback(() => {
     if (!areChildrenVisible) {
@@ -89,7 +83,7 @@ export default React.memo(function TokenFamilyWrap({
         />
       ) : null}
       <Transitioning.View
-        ref={transitionRef as LegacyRef<any>}
+        ref={transitionRef}
         style={{
           paddingTop: areChildrenVisible ? TokenFamilyWrapPaddingTop : 0,
         }}
