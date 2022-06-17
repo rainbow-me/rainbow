@@ -17,7 +17,8 @@ export const isString = (str: any): str is string => {
   }
   return false;
 };
-export const isNumber = (value: any) => typeof value === 'number';
+export const isNumber = (value: any) =>
+  typeof value === 'number' && !Number.isNaN(value);
 
 export const abs = (value: BigNumberish): string =>
   new BigNumber(value).abs().toFixed();
