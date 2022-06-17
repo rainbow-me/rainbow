@@ -39,6 +39,7 @@ export async function rainbowFetch(
     },
     signal: controller.signal,
   });
+
   clearTimeout(id);
 
   const responseBody = await getBody(response);
