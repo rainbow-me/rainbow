@@ -11,7 +11,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { StatusBar } from 'react-native';
+import { InteractionManager, Keyboard, Linking, StatusBar } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
@@ -38,7 +38,10 @@ import {
   useSwapCurrencyList,
 } from '@rainbow-me/hooks';
 import { delayNext } from '@rainbow-me/hooks/useMagicAutofocus';
-import { useNavigation } from '@rainbow-me/navigation/Navigation';
+import {
+  getActiveRoute,
+  useNavigation,
+} from '@rainbow-me/navigation/Navigation';
 import { emitChartsRequest } from '@rainbow-me/redux/explorer';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
@@ -75,6 +78,8 @@ export default function CurrencySelectModal() {
   const dispatch = useDispatch();
   const {
     params: {
+      defaultOutputAsset,
+      defaultInputAsset,
       chainId,
       fromDiscover,
       onSelectCurrency,
@@ -101,7 +106,7 @@ export default function CurrencySelectModal() {
 
   const [currentChainId, setCurrentChainId] = useState(chainId);
   useEffect(() => {
-    if (chainId) {
+    if (chainId && typeof chainId === 'number') {
       setCurrentChainId(chainId);
     }
   }, [chainId]);
@@ -120,6 +125,16 @@ export default function CurrencySelectModal() {
     swapCurrencyListLoading,
     updateFavorites,
   } = useSwapCurrencyList(searchQueryForSearch, currentChainId);
+
+  const routeName = getActiveRoute()?.name;
+  const showList = useMemo(() => {
+    const viewingExplainer = routeName === Routes.EXPLAIN_SHEET;
+    return isFocused || viewingExplainer;
+  }, [isFocused, routeName]);
+
+  const linkToHop = useCallback(() => {
+    Linking.openURL('https://app.hop.exchange/#/send');
+  }, []);
 
   const getWalletCurrencyList = useCallback(() => {
     if (type === CurrencySelectionTypes.input) {
@@ -192,45 +207,99 @@ export default function CurrencySelectModal() {
     [type]
   );
 
+  const handleNavigate = useCallback(
+    item => {
+      delayNext();
+      dangerouslyGetState().index = 1;
+      if (fromDiscover) {
+        goBack();
+        setTimeout(
+          () => {
+            navigate(Routes.EXCHANGE_MODAL, {
+              params: {
+                inputAsset:
+                  type === CurrencySelectionTypes.output
+                    ? defaultInputAsset
+                    : item,
+                outputAsset:
+                  type === CurrencySelectionTypes.input
+                    ? defaultOutputAsset
+                    : item,
+                ...params,
+              },
+              screen: Routes.MAIN_EXCHANGE_SCREEN,
+            });
+            setSearchQuery('');
+            setCurrentChainId(ethereumUtils.getChainIdFromType(item.type));
+          },
+          android ? 500 : 0
+        );
+      } else {
+        navigate(Routes.MAIN_EXCHANGE_SCREEN);
+        setSearchQuery('');
+        setCurrentChainId(ethereumUtils.getChainIdFromType(item.type));
+      }
+      if (searchQueryForSearch) {
+        analytics.track('Selected a search result in Swap', {
+          name: item.name,
+          searchQueryForSearch,
+          symbol: item.symbol,
+          tokenAddress: item.address,
+          type,
+        });
+      }
+    },
+    [
+      dangerouslyGetState,
+      defaultInputAsset,
+      defaultOutputAsset,
+      fromDiscover,
+      goBack,
+      navigate,
+      params,
+      searchQueryForSearch,
+      type,
+    ]
+  );
+  const checkForRequiredAssets = useCallback(
+    item => {
+      if (
+        type === CurrencySelectionTypes.output &&
+        currentChainId &&
+        currentChainId !== ChainId.mainnet
+      ) {
+        const currentL2Name = ethereumUtils.getNetworkNameFromChainId(
+          currentChainId
+        );
+        const currentL2WalletAssets = assetsInWallet.filter(
+          ({ network }) =>
+            network && network?.toLowerCase() === currentL2Name?.toLowerCase()
+        );
+        if (currentL2WalletAssets?.length < 1) {
+          android && Keyboard.dismiss();
+          InteractionManager.runAfterInteractions(() => {
+            navigate(Routes.EXPLAIN_SHEET, {
+              assetName: item?.name,
+              network: ethereumUtils.getNetworkFromChainId(currentChainId),
+              networkName: currentL2Name,
+              onClose: linkToHop,
+              type: 'obtainL2Assets',
+            });
+          });
+          return true;
+        }
+        return false;
+      }
+    },
+    [assetsInWallet, currentChainId, linkToHop, navigate, type]
+  );
+
   const handleSelectAsset = useCallback(
     item => {
+      if (checkForRequiredAssets(item)) return;
       dispatch(emitChartsRequest(item.mainnet_address || item.address));
       const isMainnet = currentChainId === 1;
 
-      const handleNavigate = () => {
-        delayNext();
-        dangerouslyGetState().index = 1;
-        if (fromDiscover) {
-          goBack();
-          setTimeout(
-            () => {
-              navigate(Routes.EXCHANGE_MODAL, {
-                params: {
-                  inputAsset: item,
-                  ...params,
-                },
-                screen: Routes.MAIN_EXCHANGE_SCREEN,
-              });
-              setSearchQuery('');
-              setCurrentChainId(ethereumUtils.getChainIdFromType(item.type));
-            },
-            android ? 500 : 0
-          );
-        } else {
-          navigate(Routes.MAIN_EXCHANGE_SCREEN);
-          setSearchQuery('');
-          setCurrentChainId(ethereumUtils.getChainIdFromType(item.type));
-        }
-        if (searchQueryForSearch) {
-          analytics.track('Selected a search result in Swap', {
-            name: item.name,
-            searchQueryForSearch,
-            symbol: item.symbol,
-            tokenAddress: item.address,
-            type,
-          });
-        }
-      };
       onSelectCurrency(
         isMainnet && type === CurrencySelectionTypes.output
           ? { ...item, type: 'token' }
@@ -240,12 +309,11 @@ export default function CurrencySelectModal() {
     },
     [
       dispatch,
+      checkForRequiredAssets,
       currentChainId,
       onSelectCurrency,
       type,
-      searchQueryForSearch,
-      dangerouslyGetState,
-      navigate,
+      handleNavigate,
     ]
   );
 
@@ -295,6 +363,7 @@ export default function CurrencySelectModal() {
     prevIsFocused,
     restoreFocusOnSwapModal,
     toggleGestureEnabled,
+    fromDiscover,
   ]);
 
   const isFocusedAndroid = useIsFocused() && android;
@@ -364,7 +433,7 @@ export default function CurrencySelectModal() {
                 listItems={currencyList}
                 loading={swapCurrencyListLoading}
                 query={searchQueryForSearch}
-                showList={isFocused}
+                showList={showList}
                 testID="currency-select-list"
                 type={type}
               />

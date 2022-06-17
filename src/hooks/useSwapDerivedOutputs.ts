@@ -15,8 +15,13 @@ import { Token } from '../entities/tokens';
 import useAccountSettings from './useAccountSettings';
 import { EthereumAddress } from '@rainbow-me/entities';
 import { isNativeAsset } from '@rainbow-me/handlers/assets';
+import { ExchangeModalTypes } from '@rainbow-me/helpers';
 import { AppState } from '@rainbow-me/redux/store';
-import { SwapModalField, updateSwapQuote } from '@rainbow-me/redux/swap';
+import {
+  Source,
+  SwapModalField,
+  updateSwapQuote,
+} from '@rainbow-me/redux/swap';
 import {
   convertAmountFromNativeValue,
   convertAmountToNativeAmount,
@@ -40,6 +45,8 @@ const getInputAmount = async (
   inputToken: Token,
   outputToken: Token | null,
   inputPrice: string | null,
+  slippage: number,
+  source: Source | null,
   fromAddress: EthereumAddress,
   chainId = 1
 ) => {
@@ -71,7 +78,9 @@ const getInputAmount = async (
       chainId: Number(chainId),
       fromAddress,
       sellTokenAddress,
-      slippage: IS_TESTING !== 'true' ? 1 : 5, // Add 5% slippage for testing to prevent flaky tests
+      // Add 5% slippage for testing to prevent flaky tests
+      slippage: IS_TESTING !== 'true' ? slippage : 5,
+      source: source,
     };
 
     const rand = Math.floor(Math.random() * 100);
@@ -143,6 +152,7 @@ const getOutputAmount = async (
   outputToken: Token | null,
   outputPrice: string | number | null | undefined,
   slippage: number,
+  source: Source,
   fromAddress: EthereumAddress,
   chainId = 1
 ) => {
@@ -175,7 +185,9 @@ const getOutputAmount = async (
       fromAddress,
       sellAmount,
       sellTokenAddress,
-      slippage: IS_TESTING !== 'true' ? slippage : 5, // Add 5% slippage for testing to prevent flaky tests
+      // Add 5% slippage for testing to prevent flaky tests
+      slippage: IS_TESTING !== 'true' ? slippage : 5,
+      source,
     };
 
     const rand = Math.floor(Math.random() * 100);
@@ -252,10 +264,14 @@ const displayValues: { [key in DisplayValue]: string | null } = {
   [DisplayValue.native]: null,
 };
 
-export default function useSwapDerivedOutputs(chainId: number) {
+export default function useSwapDerivedOutputs(chainId: number, type: string) {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [insufficientLiquidity, setInsufficientLiquidity] = useState(false);
+
+  const isDeposit = type === ExchangeModalTypes.deposit;
+  const isWithdrawal = type === ExchangeModalTypes.withdrawal;
+  const isSavings = isDeposit || isWithdrawal;
 
   const [result, setResult] = useState({
     derivedValues,
@@ -278,6 +294,9 @@ export default function useSwapDerivedOutputs(chainId: number) {
   const slippageInBips = useSelector(
     (state: AppState) => state.swap.slippageInBips
   );
+
+  const source = useSelector((state: AppState) => state.swap.source);
+
   const derivedValuesFromRedux = useSelector(
     (state: AppState) => state.swap.derivedValues
   );
@@ -338,7 +357,7 @@ export default function useSwapDerivedOutputs(chainId: number) {
         return;
       }
 
-      if (!inputCurrency || !outputCurrency) {
+      if ((!inputCurrency || !outputCurrency) && !isSavings) {
         setInsufficientLiquidity(false);
         setResult({
           derivedValues,
@@ -375,6 +394,7 @@ export default function useSwapDerivedOutputs(chainId: number) {
           outputToken,
           outputPrice,
           slippagePercentage,
+          source,
           accountAddress,
           chainId
         );
@@ -421,6 +441,7 @@ export default function useSwapDerivedOutputs(chainId: number) {
           outputToken,
           outputPrice,
           slippagePercentage,
+          source,
           accountAddress,
           chainId
         );
@@ -452,6 +473,8 @@ export default function useSwapDerivedOutputs(chainId: number) {
           inputToken,
           outputToken,
           inputPrice.toString(),
+          slippagePercentage,
+          source,
           accountAddress,
           chainId
         );
@@ -489,7 +512,6 @@ export default function useSwapDerivedOutputs(chainId: number) {
       setResult(data);
       setLoading(false);
     };
-
     getTradeDetails();
   }, [
     accountAddress,
@@ -502,7 +524,9 @@ export default function useSwapDerivedOutputs(chainId: number) {
     outputCurrency,
     outputPrice,
     slippageInBips,
+    source,
     derivedValuesFromRedux,
+    isSavings,
   ]);
 
   return {

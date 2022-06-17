@@ -1,4 +1,5 @@
 import { ChainId } from '@rainbow-me/swaps';
+import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
@@ -35,12 +36,14 @@ import {
 import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
+import { AssetType } from '@rainbow-me/entities';
 import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
 import {
   ExchangeModalTypes,
   isKeyboardOpen,
   Network,
 } from '@rainbow-me/helpers';
+import KeyboardTypes from '@rainbow-me/helpers/keyboardTypes';
 import { divide, greaterThan, multiply } from '@rainbow-me/helpers/utilities';
 import {
   useAccountSettings,
@@ -109,8 +112,6 @@ const getShowOutputField = type => {
 };
 
 export default function ExchangeModal({
-  defaultInputAsset,
-  defaultOutputAsset,
   fromDiscover,
   ignoreInitialTypeCheck,
   testID,
@@ -120,6 +121,9 @@ export default function ExchangeModal({
   const { isSmallPhone } = useDimensions();
   const dispatch = useDispatch();
   const insets = useSafeArea();
+  const {
+    params: { inputAsset: defaultInputAsset, outputAsset: defaultOutputAsset },
+  } = useRoute();
 
   useLayoutEffect(() => {
     dispatch(updateSwapTypeDetails(type, typeSpecificParams));
@@ -143,10 +147,18 @@ export default function ExchangeModal({
   // we want to update the output to be on the same, if its not available -> null
   const defaultOutputAssetOverride = useMemo(() => {
     let newOutput = defaultOutputAsset;
-    if (defaultInputAsset && defaultOutputAsset) {
+
+    if (
+      defaultInputAsset &&
+      defaultOutputAsset &&
+      defaultInputAsset.type !== defaultOutputAsset.type
+    ) {
       if (
-        defaultInputAsset.type !== defaultOutputAsset.type &&
-        defaultOutputAsset?.implementations?.[defaultInputAsset?.type]?.address
+        defaultOutputAsset?.implementations?.[
+          defaultInputAsset?.type === AssetType.token
+            ? 'ethereum'
+            : defaultInputAsset?.type
+        ]?.address
       ) {
         if (defaultInputAsset.type !== Network.mainnet) {
           newOutput.mainnet_address = defaultOutputAsset.address;
@@ -196,6 +208,7 @@ export default function ExchangeModal({
   });
 
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
+
   const {
     handleFocus,
     inputFieldRef,
@@ -273,7 +286,7 @@ export default function ExchangeModal({
     loading,
     resetSwapInputs,
     insufficientLiquidity,
-  } = useSwapDerivedOutputs(chainId);
+  } = useSwapDerivedOutputs(chainId, type);
 
   const lastTradeDetails = usePrevious(tradeDetails);
 
@@ -289,10 +302,11 @@ export default function ExchangeModal({
     inputCurrency,
     outputCurrency,
     currentNetwork,
-    loading || equal(lastTradeDetails, tradeDetails)
+    loading
   );
 
-  const flashbots = currentNetwork === Network.mainnet && flashbotsEnabled;
+  const swapSupportsFlashbots = currentNetwork === Network.mainnet;
+  const flashbots = swapSupportsFlashbots && flashbotsEnabled;
 
   const isDismissing = useRef(false);
   useEffect(() => {
@@ -581,7 +595,7 @@ export default function ExchangeModal({
 
   const confirmButtonProps = useMemoOne(
     () => ({
-      disabled: !Number(inputAmount) || !tradeDetails,
+      disabled: !Number(inputAmount) || (!tradeDetails && !isSavings),
       inputAmount,
       insufficientLiquidity,
       isAuthorizing,
@@ -621,6 +635,7 @@ export default function ExchangeModal({
             (lastFocusedInputHandle.current = lastFocusedInputHandleTemporary);
           setParams({ focused: true });
         },
+        swapSupportsFlashbots,
         type: 'swap_settings',
       });
       analytics.track('Opened Swap Settings');
@@ -635,6 +650,7 @@ export default function ExchangeModal({
     navigate,
     outputCurrency,
     outputFieldRef,
+    swapSupportsFlashbots,
     setParams,
   ]);
 
@@ -692,12 +708,12 @@ export default function ExchangeModal({
     }
   }, [currentNetwork, navigate]);
 
-  const showConfirmButton = isSavings
+  const showConfirmSection = isSavings
     ? !!inputCurrency
     : !!inputCurrency && !!outputCurrency;
 
   return (
-    <Wrapper>
+    <Wrapper keyboardType={KeyboardTypes.numpad}>
       <InnerWrapper isSmallPhone={isSmallPhone}>
         <FloatingPanels>
           <FloatingPanel
@@ -761,7 +777,7 @@ export default function ExchangeModal({
               testID="deposit-info-button"
             />
           )}
-          {!isSavings && showConfirmButton && (
+          {!isSavings && showConfirmSection && (
             <ExchangeDetailsRow
               isHighPriceImpact={isHighPriceImpact}
               onFlipCurrencies={flipCurrencies}
@@ -775,7 +791,7 @@ export default function ExchangeModal({
 
           {isWithdrawal && <Spacer />}
 
-          {showConfirmButton && (
+          {showConfirmSection && (
             <ConfirmExchangeButton
               {...confirmButtonProps}
               flashbots={flashbots}
@@ -784,16 +800,15 @@ export default function ExchangeModal({
             />
           )}
         </FloatingPanels>
-        {inputCurrency && outputCurrency && (
-          <GasSpeedButton
-            asset={outputCurrency}
-            bottom={insets.bottom - 7}
-            currentNetwork={currentNetwork}
-            dontBlur
-            onCustomGasBlur={handleCustomGasBlur}
-            testID={`${testID}-gas`}
-          />
-        )}
+
+        <GasSpeedButton
+          asset={outputCurrency}
+          bottom={insets.bottom}
+          currentNetwork={currentNetwork}
+          dontBlur
+          onCustomGasBlur={handleCustomGasBlur}
+          testID={`${testID}-gas`}
+        />
       </InnerWrapper>
     </Wrapper>
   );

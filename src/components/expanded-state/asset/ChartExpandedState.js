@@ -42,7 +42,6 @@ import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 import {
   useAccountSettings,
   useAdditionalAssetData,
-  useAssetsInWallet,
   useChartThrottledPoints,
   useDelayedValueWithLayoutAnimation,
   useDimensions,
@@ -275,15 +274,6 @@ export default function ChartExpandedState({ asset }) {
     ),
   });
 
-  const assetsInWallet = useAssetsInWallet();
-  const showSwapButton = useMemo(
-    () =>
-      assetsInWallet.find(
-        assetInWallet => assetInWallet.address === assetWithPrice.address
-      ),
-    [assetWithPrice.address, assetsInWallet]
-  );
-
   const needsEth =
     asset?.address === ETH_ADDRESS && asset?.balance?.amount === '0';
 
@@ -382,8 +372,12 @@ export default function ChartExpandedState({ asset }) {
         </SheetActionButtonRow>
       ) : (
         <SheetActionButtonRow paddingBottom={isL2 ? 19 : undefined}>
-          {showSwapButton && (
-            <SwapActionButton color={color} inputType={AssetInputTypes.in} />
+          {hasBalance && (
+            <SwapActionButton
+              asset={ogAsset}
+              color={color}
+              inputType={AssetInputTypes.in}
+            />
           )}
           {hasBalance ? (
             <SendActionButton
@@ -393,6 +387,7 @@ export default function ChartExpandedState({ asset }) {
             />
           ) : (
             <SwapActionButton
+              asset={ogAsset}
               color={color}
               fromDiscover={fromDiscover}
               inputType={AssetInputTypes.out}

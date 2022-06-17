@@ -212,7 +212,7 @@
       "edit": "Edit",
       "exchange": "Exchange",
       "exchange_again": "Exchange Again",
-      "exchange_search_placeholder": "Search",
+      "exchange_search_placeholder": "Search tokens",
       "go_back": "Go Back",
       "got_it": "Got it",
       "hide": "Hide",
@@ -351,10 +351,18 @@
         "losing_prefix": "Losing",
         "small_market": "Small Market"
       },
+      "source": {
+        "rainbow": "Auto",
+        "0x": "0x",
+        "1inch": "1inch"
+      },
       "settings": "Settings",
       "use_defaults": "Use Defaults",
       "done": "Done",
-      "slippage_tolerance": "Slippage Tolerance",
+      "losing": "Losing",
+      "high": "High",
+      "slippage_tolerance": "Max Slippage",
+      "source_picker": "Route Swaps via",
       "use_flashbots": "Use Flashbots",
       "flashbots_protected": "Flashbots Protect enabled",
       "swapping_for_prefix": "Swapping for",
@@ -445,7 +453,7 @@
         "exchange_rate": "Exchange rate",
         "rainbow_fee": "Included Rainbow fee",
         "review": "Review",
-        "show_details": "Show details",
+        "show_details": "More details",
         "hide_details": "Hide details",
         "price_impact": "Difference in value",
         "minimum_received": "Minimum received",
@@ -516,7 +524,7 @@
         "title": "Output Amount Disabled"
       },
       "available_networks": {
-        "text": "%{tokenSymbol} is also available on %{networks}. To get %{tokenSymbol} on these networks, use a Bridge like Hop.",
+        "text": "%{tokenSymbol} is available on %{networks}. To move %{tokenSymbol} between networks, use a Bridge like Hop.",
         "title_plural": "Available on %{length} Networks",
         "title_singular": "Available on the %{network} Network"
       },
@@ -564,6 +572,7 @@
         "title": "What's Polygon?"
       },
       "read_more": "Read More",
+      "learn_more": "Learn More",
       "sending_to_contract": {
         "text": "The address you entered is for a smart contract.\n\nExcept for rare situations, you probably shouldn't do this. You could lose your assets or they might go to the wrong place.\n\nDouble check the address, verify it with the recipient, or contact support first.",
         "title": "Hold your horses!"
@@ -571,6 +580,13 @@
       "verified": {
         "text": "Tokens with a verified badge mean they have appeared on at least 3 other outside token lists.\n\nAlways do your own research to ensure you are interacting with a token you trust.",
         "title": "Verified Tokens"
+      },
+      "obtain_l2_asset": {
+        "text": "You'll need to get other tokens on %{networkName} to swap for %{networkName} %{tokenName}. Bridging tokens to %{networkName} is easy using a bridge like Hop.",
+        "title": "No Tokens on %{networkName}"
+      },
+      "go_to_hop_with_icon": {
+        "text": "Go to the Hop Bridge 􀮶"
       }
     },
     "fields": {
@@ -1017,6 +1033,7 @@
       "modal_types": {
         "confirm": "Confirm",
         "deposit": "Deposit",
+        "receive": "Receive",
         "swap": "Swap",
         "get_symbol_with": "Get %{symbol} With",
         "withdraw": "Withdraw",

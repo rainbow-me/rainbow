@@ -86,7 +86,7 @@ export default function SwapDetailsContent({
           {tradeDetails.feePercentageBasisPoints !== 0 && (
             <SwapDetailsFeeRow tradeDetails={tradeDetails} />
           )}
-          {!detailsExpanded ? (
+          {!detailsExpanded && (
             <ButtonPressAnimation
               onPress={() => setDetailsExpanded(!detailsExpanded)}
               scaleTo={1.06}
@@ -97,41 +97,37 @@ export default function SwapDetailsContent({
                     ? lang.t('expanded_state.swap_details.hide_details')
                     : lang.t('expanded_state.swap_details.show_details')
                 }
-                labelColor="accent"
               >
-                <SwapDetailsValue color="accent">
-                  {detailsExpanded ? '􀁰' : '􀯼'}
+                <SwapDetailsValue>
+                  {detailsExpanded ? '􀁮' : '􀁰'}
                 </SwapDetailsValue>
               </SwapDetailsRow>
             </ButtonPressAnimation>
-          ) : (
-            <Divider />
           )}
-          <Box>
-            {detailsExpanded && (
-              <Rows space="24px">
-                <SwapDetailsPriceRow tradeDetails={tradeDetails} />
-                {!isNativeAsset(
-                  inputCurrency?.address,
-                  ethereumUtils.getNetworkFromType(inputCurrency?.type)
-                ) && (
-                  <SwapDetailsContractRow
-                    asset={inputCurrency}
-                    onCopySwapDetailsText={onCopySwapDetailsText}
-                  />
-                )}
-                {!isNativeAsset(
-                  outputCurrency?.address,
-                  ethereumUtils.getNetworkFromType(inputCurrency?.type)
-                ) && (
-                  <SwapDetailsContractRow
-                    asset={outputCurrency}
-                    onCopySwapDetailsText={onCopySwapDetailsText}
-                  />
-                )}
-              </Rows>
-            )}
-          </Box>
+          {detailsExpanded && (
+            <Rows space="24px">
+              <Divider />
+              <SwapDetailsPriceRow tradeDetails={tradeDetails} />
+              {!isNativeAsset(
+                inputCurrency?.address,
+                ethereumUtils.getNetworkFromType(inputCurrency?.type)
+              ) && (
+                <SwapDetailsContractRow
+                  asset={inputCurrency}
+                  onCopySwapDetailsText={onCopySwapDetailsText}
+                />
+              )}
+              {!isNativeAsset(
+                outputCurrency?.address,
+                ethereumUtils.getNetworkFromType(inputCurrency?.type)
+              ) && (
+                <SwapDetailsContractRow
+                  asset={outputCurrency}
+                  onCopySwapDetailsText={onCopySwapDetailsText}
+                />
+              )}
+            </Rows>
+          )}
         </Rows>
       </Container>
     </AccentColorProvider>
