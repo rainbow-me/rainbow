@@ -3543,15 +3543,21 @@
     "@babel/runtime" "^7.7.2"
     regenerator-runtime "^0.13.3"
 
-"@lavamoat/allow-scripts@1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@lavamoat/allow-scripts/-/allow-scripts-1.0.3.tgz#8fa54a3f250977fdc85484d0870ae65c4e50a0c8"
+"@lavamoat/aa@^3.0.0":
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/@lavamoat/aa/-/aa-3.1.0.tgz#28df51a17f529a5b04d6a3b6e5a727aefc8e474a"
+  integrity sha512-/j5LSZb1hlOksUs2z1FP9WyQjv7LZIq/BqkExzGx2eiDpbdDdANZuCe5bcIZseqW9VrtoTtoggMP0Ob7HrTluA==
   dependencies:
+    resolve "^1.20.0"
+
+"@lavamoat/allow-scripts@2.0.3":
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@lavamoat/allow-scripts/-/allow-scripts-2.0.3.tgz#9c50e8c1ab58e3c701fe8996f27b376efa13c029"
+  integrity sha512-OVm/eUFB62JY1kyG91aYh/K5mDp3LfHvY7EqwoKV5M/0Pup4buKf9zsKiYVod/1kkuNV6nJwoMW33EZXM+ZAPg==
+  dependencies:
+    "@lavamoat/aa" "^3.0.0"
     "@npmcli/run-script" "^1.8.1"
-    "@yarnpkg/lockfile" "^1.1.0"
-    semver "^7.3.4"
     yargs "^16.2.0"
-    yarn-logical-tree "^1.0.2"
 
 "@lavamoat/preinstall-always-fail@1.0.0":
   version "1.0.0"
@@ -10621,6 +10627,11 @@ human-signals@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/human-signals/-/human-signals-1.1.1.tgz#c5b1cd14f50aeae09ab6c59fe63ba3395fe4dfa3"
 
+husky@8.0.1:
+  version "8.0.1"
+  resolved "https://registry.yarnpkg.com/husky/-/husky-8.0.1.tgz#511cb3e57de3e3190514ae49ed50f6bc3f50b3e9"
+  integrity sha512-xs7/chUH/CKdOCs7Zy0Aev9e/dKOMZf3K1Az1nar3tzlv0jfqnYtu235bstsWTmXOR0EfINrPa97yy4Lz6RiKw==
+
 i18n-js@3.8.0:
   version "3.8.0"
   resolved "https://registry.yarnpkg.com/i18n-js/-/i18n-js-3.8.0.tgz#b8fd6b12e1d88cb71f9806c29bca7c31c012e504"
@@ -13834,10 +13845,6 @@ normalize-url@^4.1.0:
   version "4.5.1"
   resolved "https://registry.yarnpkg.com/normalize-url/-/normalize-url-4.5.1.tgz#0dd90cf1288ee1d1313b87081c9a5932ee48518a"
 
-npm-logical-tree@^1.2.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/npm-logical-tree/-/npm-logical-tree-1.2.1.tgz#44610141ca24664cad35d1e607176193fd8f5b88"
-
 npm-normalize-package-bin@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/npm-normalize-package-bin/-/npm-normalize-package-bin-1.0.1.tgz#6e79a41f23fd235c0623218228da7d9c23b8f6e2"
@@ -15779,6 +15786,7 @@ read-pkg@^1.0.0:
 read-pkg@^5.2.0:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/read-pkg/-/read-pkg-5.2.0.tgz#7bf295438ca5a33e56cd30e053b34ee7250c93cc"
+  integrity sha512-Ug69mNOpfvKDAc2Q8DRpMjjzdtrnv9HcSMX+4VsZxD1aZ6ZzrIE7rlzXBtWTyhULSMKg076AW6WR5iZpD0JiOg==
   dependencies:
     "@types/normalize-package-data" "^2.4.0"
     normalize-package-data "^2.5.0"
@@ -16416,7 +16424,7 @@ semver-compare@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/semver-compare/-/semver-compare-1.0.0.tgz#0dee216a1c941ab37e9efb1788f6afc5ff5537fc"
 
-"semver@2 || 3 || 4 || 5", semver@7.0.0, semver@7.3.2, semver@^5.0.1, semver@^5.3.0, semver@^5.5.0, semver@^5.5.1, semver@^5.6.0, semver@^5.7.0, semver@^6.0.0, semver@^6.1.1, semver@^6.1.2, semver@^6.3.0, semver@^7.0.0, semver@^7.2.1, semver@^7.3.2, semver@^7.3.4, semver@^7.3.5, semver@~2.3.1, semver@~5.4.1:
+"semver@2 || 3 || 4 || 5", semver@7.0.0, semver@7.3.2, semver@^5.0.1, semver@^5.3.0, semver@^5.5.0, semver@^5.5.1, semver@^5.6.0, semver@^5.7.0, semver@^6.0.0, semver@^6.1.1, semver@^6.1.2, semver@^6.3.0, semver@^7.0.0, semver@^7.2.1, semver@^7.3.2, semver@^7.3.5, semver@~2.3.1, semver@~5.4.1:
   version "7.3.2"
   resolved "https://registry.yarnpkg.com/semver/-/semver-7.3.2.tgz#604962b052b81ed0786aae84389ffba70ffd3938"
 
@@ -18976,13 +18984,6 @@ yargs@^4.7.1:
     window-size "^0.2.0"
     y18n "^3.2.1"
     yargs-parser "^2.4.1"
-
-yarn-logical-tree@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/yarn-logical-tree/-/yarn-logical-tree-1.0.2.tgz#11130e00333b02174efcfd5599a5e68ca356fa14"
-  dependencies:
-    npm-logical-tree "^1.2.1"
-    semver "^5.5.0"
 
 yazl@^2.5.1:
   version "2.5.1"
