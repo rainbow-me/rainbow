@@ -27,7 +27,7 @@ import {
 } from '@rainbow-me/design-system';
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import {
-  useAccountENSDomainGroups,
+  useAccountENSDomains,
   useDimensions,
   useENSProfileRecords,
   useENSRegistration,
@@ -54,7 +54,7 @@ export default function ENSIntroSheet() {
     uniqueDomain,
     isLoading,
     isSuccess,
-  } = useAccountENSDomainGroups();
+  } = useAccountENSDomains();
 
   // We are not using `isSmallPhone` from `useDimensions` here as we
   // want to explicitly set a min height.

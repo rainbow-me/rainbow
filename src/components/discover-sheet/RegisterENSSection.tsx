@@ -19,7 +19,7 @@ import {
 } from '@rainbow-me/design-system';
 import {
   prefetchENSProfileRecords,
-  useAccountENSDomainGroups,
+  useAccountENSDomains,
   useWallets,
 } from '@rainbow-me/hooks';
 import { ensIntroMarqueeNames } from '@rainbow-me/references';
@@ -31,7 +31,7 @@ export default function RegisterENSSection() {
   const { navigate } = useNavigation();
   const { colors } = useTheme();
   const { isReadOnlyWallet } = useWallets();
-  const { uniqueDomain } = useAccountENSDomainGroups();
+  const { uniqueDomain } = useAccountENSDomains();
 
   useEffect(() => {
     if (uniqueDomain?.name) {
