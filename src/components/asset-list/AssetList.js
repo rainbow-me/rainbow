@@ -1,7 +1,6 @@
 import lang from 'i18n-js';
 import React from 'react';
 import { useSafeArea } from 'react-native-safe-area-context';
-import { magicMemo } from '../../utils';
 import { FabWrapperBottomPosition, FloatingActionButtonSize } from '../fab';
 import { ListFooter } from '../list';
 import EmptyAssetList from './EmptyAssetList';
@@ -19,6 +18,7 @@ const AssetList = ({
   network,
   scrollViewTracker,
   sections,
+  walletBriefSectionsData,
   ...props
 }) => {
   const insets = useSafeArea();
@@ -43,13 +43,8 @@ const AssetList = ({
       {...props}
     />
   ) : (
-    <RecyclerAssetList2 />
+    <RecyclerAssetList2 walletBriefSectionsData={walletBriefSectionsData} />
   );
 };
 
-export default magicMemo(AssetList, [
-  'isEmpty',
-  'isLoading',
-  'isWalletEthZero',
-  'sections',
-]);
+export default React.memo(AssetList);

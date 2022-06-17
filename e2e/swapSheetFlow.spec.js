@@ -66,7 +66,6 @@ describe('Swap Sheet Interaction Flow', () => {
 
   it('Should display currency selection screen on swap-fab press', async () => {
     await Helpers.checkIfVisible('wallet-screen');
-    await Helpers.delay(5000);
     await Helpers.waitAndTap('exchange-fab');
     await Helpers.checkIfVisible('currency-select-list');
   });
@@ -460,7 +459,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.typeText('max-base-fee-input', '200\n', false);
   });
 
-  it('Should display warning on high custom priority fee price', async () => {
+  xit('Should display warning on high custom priority fee price', async () => {
     await Helpers.clearField('max-priority-fee-input');
     await Helpers.typeText('max-priority-fee-input', '999\n', false);
     await Helpers.checkIfElementByTextToExist('High · overpaying');
@@ -502,6 +501,5 @@ describe('Swap Sheet Interaction Flow', () => {
     // Reset the app state
     await device.clearKeychain();
     await exec('kill $(lsof -t -i:8545)');
-    await Helpers.delay(2000);
   });
 });
