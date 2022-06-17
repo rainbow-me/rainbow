@@ -120,8 +120,8 @@ const timingConfig = {
   duration: 300,
 };
 
-const DiscoverButtonShadowsFactory = colors => [
-  [0, 7, 21, colors.shadow, 0.06],
+const ExchangeSearchShadowsFactory = colors => [
+  [0, 7, 21, colors.shadow, 0.15],
   [0, 3.5, 10.5, colors.shadow, 0.04],
 ];
 
@@ -157,7 +157,7 @@ const ExchangeSearch = (
 
   const spinnerTimeout = useRef();
   const { colors } = useTheme();
-  const shadows = useMemo(() => DiscoverButtonShadowsFactory(colors), [colors]);
+  const shadows = useMemo(() => ExchangeSearchShadowsFactory(colors), [colors]);
 
   useEffect(() => {
     if ((isFetching || isSearching) && !isEmpty(searchQuery)) {
