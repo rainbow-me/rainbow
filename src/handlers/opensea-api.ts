@@ -18,6 +18,7 @@ import logger from 'logger';
 export const UNIQUE_TOKENS_LIMIT_PER_PAGE: number = 50;
 export const UNIQUE_TOKENS_LIMIT_TOTAL: number = 2000;
 
+// limiting our opensea api requests to 10/sec so we don't max out
 const queue = new PQueue({ interval: 1000, intervalCap: 10 });
 
 export const apiGetAccountUniqueTokens = async (
