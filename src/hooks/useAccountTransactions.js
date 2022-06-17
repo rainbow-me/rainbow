@@ -2,22 +2,33 @@ import { useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { buildTransactionsSectionsSelector } from '../helpers/buildTransactionsSectionsSelector';
 import NetworkTypes from '../helpers/networkTypes';
+import useAccountSettings from './useAccountSettings';
 import useContacts from './useContacts';
 import useRequests from './useRequests';
+import { transactionPressBuilder } from '@rainbow-me/helpers/transactionPressHandler';
+import { useNavigation } from '@rainbow-me/navigation';
+import { useTheme } from '@rainbow-me/theme';
 
 export const NOE_PAGE = 30;
 
 export default function useAccountTransactions(initialized, isFocused) {
   const {
+    accountAssetsData,
     isLoadingTransactions,
     network,
     pendingTransactions,
     transactions,
   } = useSelector(
     ({
-      data: { isLoadingTransactions, pendingTransactions, transactions },
+      data: {
+        isLoadingTransactions,
+        pendingTransactions,
+        transactions,
+        accountAssetsData,
+      },
       settings: { network },
     }) => ({
+      accountAssetsData,
       isLoadingTransactions,
       network,
       pendingTransactions,
@@ -40,12 +51,22 @@ export default function useAccountTransactions(initialized, isFocused) {
 
   const { contacts } = useContacts();
   const { requests } = useRequests();
+  const { accountAddress } = useAccountSettings();
+  const theme = useTheme();
+  const { navigate } = useNavigation();
+  const onTransactionPress = useCallback(transactionPressBuilder(navigate), [
+    navigate,
+  ]);
 
   const accountState = {
+    accountAddress,
+    accountAssetsData,
     contacts,
     initialized,
     isFocused,
+    onTransactionPress,
     requests,
+    theme,
     transactions: slicedTransaction,
   };
 

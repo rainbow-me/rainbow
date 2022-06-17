@@ -1,2 +1,2 @@
 export { default as ActivityList } from './ActivityList';
-export { default as ActivityListHeader } from './ActivityListHeader';
+export { default as ActivityListHeader } from './FastActivityListHeader';

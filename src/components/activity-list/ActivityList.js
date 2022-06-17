@@ -1,6 +1,6 @@
 import lang from 'i18n-js';
 import React, { useEffect, useMemo, useState } from 'react';
-import { SectionList } from 'react-native';
+import { SectionList, StyleSheet, View } from 'react-native';
 import networkTypes from '../../helpers/networkTypes';
 import { useTheme } from '../../theme/ThemeContext';
 import ActivityIndicator from '../ActivityIndicator';
@@ -9,9 +9,15 @@ import { ButtonPressAnimation } from '../animations';
 import { CoinRowHeight } from '../coin-row';
 import Text from '../text/Text';
 import ActivityListEmptyState from './ActivityListEmptyState';
-import ActivityListHeader from './ActivityListHeader';
-import RecyclerActivityList from './RecyclerActivityList';
+import ActivityListHeader from './FastActivityListHeader';
 import styled from '@rainbow-me/styled-components';
+
+const cx = StyleSheet.create({
+  sectionHeader: {
+    marginBottom: 17,
+    marginTop: 17,
+  },
+});
 
 const getItemLayout = (data, index) => ({
   index,
@@ -24,7 +30,9 @@ const keyExtractor = ({ hash, timestamp, transactionDisplayDetails }) =>
   (timestamp ? timestamp.ms : transactionDisplayDetails?.timestampInMs || 0);
 
 const renderSectionHeader = ({ section }) => (
-  <ActivityListHeader {...section} />
+  <View style={cx.sectionHeader}>
+    <ActivityListHeader {...section} />
+  </View>
 );
 
 const LoadingSpinner = android ? Spinner : ActivityIndicator;
@@ -76,12 +84,8 @@ const ActivityList = ({
   sections,
   requests,
   transactionsCount,
-  addCashAvailable,
   isEmpty,
-  isLoading,
-  navigation,
   network,
-  recyclerListView,
   nextPage,
   remainingItemsLabel,
 }) => {
@@ -95,16 +99,7 @@ const ActivityList = ({
     return currentPendingTransactionsCount;
   }, [sections, requests]);
   return network === networkTypes.mainnet || sections.length ? (
-    recyclerListView ? (
-      <RecyclerActivityList
-        addCashAvailable={addCashAvailable}
-        header={header}
-        isEmpty={isEmpty}
-        isLoading={isLoading}
-        navigation={navigation}
-        sections={sections}
-      />
-    ) : isEmpty ? (
+    isEmpty ? (
       <ActivityListEmptyState>{header}</ActivityListEmptyState>
     ) : (
       <SectionList

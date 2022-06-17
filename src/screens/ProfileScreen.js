@@ -7,7 +7,6 @@ import { Icon } from '../components/icons';
 import { Page } from '../components/layout';
 import { ProfileMasthead } from '../components/profile';
 import TransactionList from '../components/transaction-list/TransactionList';
-import useNativeTransactionListAvailable from '../helpers/isNativeTransactionListAvailable';
 import NetworkTypes from '../helpers/networkTypes';
 import { useNavigation } from '../navigation/Navigation';
 import { useTheme } from '../theme/ThemeContext';
@@ -29,12 +28,11 @@ const ProfileScreenPage = styled(Page)({
   flex: 1,
 });
 
-export default function ProfileScreen({ navigation }) {
+export default function ProfileScreen() {
   const { colors } = useTheme();
   const [activityListInitialized, setActivityListInitialized] = useState(false);
   const isFocused = useIsFocused();
   const { navigate } = useNavigation();
-  const nativeTransactionListAvailable = useNativeTransactionListAvailable();
 
   const accountTransactions = useAccountTransactions(
     activityListInitialized,
@@ -106,7 +104,7 @@ export default function ProfileScreen({ navigation }) {
           onPress={onPressBackButton}
         />
       </Header>
-      {network === NetworkTypes.mainnet && nativeTransactionListAvailable ? (
+      {network === NetworkTypes.mainnet && ios ? (
         <TransactionList
           addCashAvailable={addCashAvailable}
           contacts={contacts}
@@ -118,7 +116,6 @@ export default function ProfileScreen({ navigation }) {
         />
       ) : (
         <ActivityList
-          addCashAvailable={addCashAvailable}
           header={
             <ProfileMasthead
               addCashAvailable={addCashAvailable}
@@ -126,10 +123,7 @@ export default function ProfileScreen({ navigation }) {
             />
           }
           isEmpty={isEmpty}
-          isLoading={isLoading}
-          navigation={navigation}
           network={network}
-          recyclerListView={ios}
           sections={sections}
           {...accountTransactions}
         />

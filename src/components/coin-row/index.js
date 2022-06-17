@@ -19,5 +19,7 @@ export {
   default as TopMoverCoinRow,
   measureTopMoverCoinRow,
 } from './TopMoverCoinRow';
+export { default as FastTransactionCoinRow } from './FastTransactionCoinRow';
+export { default as FastRequestCoinRow } from './FastRequestCoinRow';
 export { default as TransactionCoinRow } from './TransactionCoinRow';
 export { default as UnderlyingAssetCoinRow } from './UnderlyingAssetCoinRow';
