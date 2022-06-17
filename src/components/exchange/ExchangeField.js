@@ -106,7 +106,7 @@ const ExchangeField = (
 
           <Input
             {...(android &&
-              address && {
+              colorForAsset && {
                 selectionColor: colors.alpha(colorForAsset, 0.4),
               })}
             color={colorForAsset}
