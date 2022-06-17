@@ -20,7 +20,7 @@ import {
 } from '../coin-row';
 import { Centered } from '../layout';
 import { SavingsListHeader } from '../savings';
-import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
+import TokenFamilyHeader from '../token-family/FastTokenFamilyHeader';
 import { ImgixImage } from '@rainbow-me/images';
 import styled from '@rainbow-me/styled-components';
 

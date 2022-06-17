@@ -3,5 +3,5 @@ export {
   default as TokenFamilyHeader,
   TokenFamilyHeaderAnimationDuration,
   TokenFamilyHeaderHeight,
-} from './TokenFamilyHeader';
+} from './FastTokenFamilyHeader';
 export { default as TokenFamilyWrap } from './TokenFamilyWrap';

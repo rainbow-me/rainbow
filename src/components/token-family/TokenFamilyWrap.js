@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import TokenFamilyHeader, {
   TokenFamilyHeaderAnimationDuration,
-} from './TokenFamilyHeader';
+} from './FastTokenFamilyHeader';
 import { useTimeout } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 
