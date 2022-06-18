@@ -2,7 +2,6 @@ import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import { useSelector } from 'react-redux';
 import { useNavigation } from '../../navigation/Navigation';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
@@ -21,6 +20,7 @@ import {
   useForegroundColor,
 } from '@rainbow-me/design-system';
 import { useAccountSettings } from '@rainbow-me/hooks';
+import store from '@rainbow-me/redux/store';
 import { DPI_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { useTheme } from '@rainbow-me/theme';
@@ -29,15 +29,11 @@ import { ethereumUtils } from '@rainbow-me/utils';
 export default function DPICard() {
   const { nativeCurrency } = useAccountSettings();
   const { navigate } = useNavigation();
-  // @ts-expect-error FIXME: Property 'data' does not exist on type 'DefaultRootState'.
-  const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
-    genericAssets,
-  }));
   const { colors } = useTheme();
 
   const handlePress = useCallback(() => {
     const asset = ethereumUtils.formatGenericAsset(
-      genericAssets[DPI_ADDRESS],
+      store.getState().data?.genericAssets?.[DPI_ADDRESS],
       nativeCurrency
     );
 
@@ -50,7 +46,7 @@ export default function DPICard() {
       fromDiscover: true,
       type: 'token_index',
     });
-  }, [genericAssets, nativeCurrency, navigate]);
+  }, [nativeCurrency, navigate]);
 
   const shadow = useForegroundColor('shadow');
   const shadowColor = useForegroundColor({
