@@ -5,3 +5,6 @@ export { default as isKeyboardOpen } from './isKeyboardOpen';
 export { default as isReanimatedAvailable } from './isReanimatedAvailable';
 export { default as NetworkTypes, Network } from './networkTypes';
 export { default as TokenSectionTypes } from './tokenSectionTypes';
+export { default as assetCharts } from './assetCharts.json';
+export { default as existingCharts } from './existingCharts.json';
+export { default as newAssetPricesTest } from './newAssetPricesTest.json';

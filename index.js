@@ -18,15 +18,23 @@ import {
   pick as _pick,
   pickBy as _pickBy,
   reduce as _reduce,
+  reverse as _reverse,
   times as _times,
 } from 'lodash';
 import { StartTime } from './src/performance/start-time';
 import { PerformanceTracking } from './src/performance/tracking';
 import { PerformanceMetrics } from './src/performance/tracking/types/PerformanceMetrics';
 import {
+  assetCharts,
+  existingCharts,
+  newAssetPricesTest,
+} from '@rainbow-me/helpers';
+import {
   addValue,
   addValueDestructuring,
   arr,
+  assetsTest,
+  assetsTestTwice,
   forLikeMap,
   forLoop,
   forLoopReduce,
@@ -42,8 +50,10 @@ import {
   omitBy,
   omitForEach,
   omitForIn,
+  omitForInWithObject,
   omitForInWithSet,
   omitReduce,
+  parseAssetTest,
   pathsArr,
   payloadForLoop,
   pickBy,
@@ -93,277 +103,305 @@ function getAvgRunTime(func, rep) {
 
 export default function measurement() {
   measureEventStart('1: map lodash');
-  getAvgRunTime(() => _map(arr, addValue), 10000);
+  getAvgRunTime(
+    () =>
+      _map(assetsTest, item => {
+        return parseAssetTest(item.asset);
+      }),
+    5000
+  );
   measureEventEnd('1: map lodash');
 
   measureEventStart('1: array.map');
-  getAvgRunTime(() => arr.map(addValue), 10000);
+  getAvgRunTime(() => assetsTest.map(item => parseAssetTest(item.asset)), 5000);
   measureEventEnd('1: array.map');
 
+  measureEventStart('1: map lodash with destructuring');
+  getAvgRunTime(
+    () =>
+      _map(assetsTest, ({ asset }) => {
+        return parseAssetTest(asset);
+      }),
+    5000
+  );
+  measureEventEnd('1: map lodash with destructuring');
+
   measureEventStart('1: array.map with destructuring');
-  getAvgRunTime(() => arr.map(addValueDestructuring), 10000);
+
+  getAvgRunTime(
+    () => assetsTest.map(({ asset }) => parseAssetTest(asset)),
+    5000
+  );
   measureEventEnd('1: array.map with destructuring');
 
-  measureEventStart('1:for..of');
-  getAvgRunTime(() => forOfLikeMap(arr, addValue), 10000);
-  measureEventEnd('1:for..of');
+  measureEventStart('1: for..of');
+  getAvgRunTime(() => forOfLikeMap(arr, parseAssetTest), 5000);
+  measureEventEnd('1: for..of');
 
   measureEventStart('1: for loop');
-  getAvgRunTime(() => forLikeMap(arr, addValue), 10000);
+  getAvgRunTime(() => forLikeMap(arr, parseAssetTest), 5000);
   measureEventEnd('1: for loop');
 
   //----------------------------------------------------------------
+
   measureEventStart('2: forEch lodash');
-  getAvgRunTime(() => _forEach(arr, payloadForLoop), 10000);
+  getAvgRunTime(() => _forEach(assetsTest, payloadForLoop), 5000);
   measureEventEnd('2: forEch lodash');
 
   measureEventStart('2: arr.forEch');
-  getAvgRunTime(() => arr.forEach(payloadForLoop), 10000);
+  getAvgRunTime(() => assetsTest.forEach(payloadForLoop), 5000);
   measureEventEnd('2: arr.forEch');
 
   measureEventStart('2: for..of arr');
-  getAvgRunTime(() => forOfArr(arr), 10000);
+  getAvgRunTime(() => forOfArr(assetsTest), 5000);
   measureEventEnd('2: for..of arr');
 
   measureEventStart('2: for loop');
-  getAvgRunTime(() => forLoop(arr), 10000);
+  getAvgRunTime(() => forLoop(assetsTest), 5000);
   measureEventEnd('2: for loop');
+
   //----------------------------------------------------------------
+
   measureEventStart('3: reduce lodash');
   getAvgRunTime(
     () =>
       _reduce(
-        arr,
-        (acc, { a, b }) => {
-          acc += a + b;
+        assetsTest,
+        (acc, { asset }) => {
+          acc += asset.price.value;
           return acc;
         },
         0
       ),
-    10000
+    5000
   );
   measureEventEnd('3: reduce lodash');
 
   measureEventStart('3: arr.reduce');
   getAvgRunTime(
     () =>
-      arr.reduce((acc, { a, b }) => {
-        acc += a + b;
+      assetsTest.reduce((acc, { asset }) => {
+        acc += asset.price.value;
         return acc;
       }, 0),
-    10000
+    5000
   );
   measureEventEnd('3: arr.reduce');
 
   measureEventStart('3: for..of  like a reduce');
-  getAvgRunTime(() => forOfLikeReduce(arr), 10000);
+  getAvgRunTime(() => forOfLikeReduce(assetsTest), 5000);
   measureEventEnd('3: for..of  like a reduce');
 
   measureEventStart('3: for loop  like a reduce');
-  getAvgRunTime(() => forLoopReduce(arr), 10000);
+  getAvgRunTime(() => forLoopReduce(assetsTest), 5000);
   measureEventEnd('3: for loop  like a reduce');
 
-  measureEventStart('3.1: reduce lodash');
+  measureEventStart('3.1: reduce lodash with object');
   getAvgRunTime(
     () =>
       _reduce(
         arr,
-        (acc, value) => {
-          acc[value.id] = value;
+        ((acc, { asset }) => {
+          acc[asset.asset_code] = asset;
           return acc;
         },
-        0
+        {})
       ),
-    10000
+    5000
   );
-  measureEventEnd('3.1: reduce lodash');
+  measureEventEnd('3.1: reduce lodash with object');
 
-  measureEventStart('3.1: arr.reduce');
+  measureEventStart('3.1: arr.reduce with object');
   getAvgRunTime(
     () =>
-      arr.reduce((acc, value) => {
-        acc[value.id] = value;
+      assetsTest.reduce((acc, { asset }) => {
+        acc[asset.asset_code] = asset;
         return acc;
       }, {}),
-    10000
+    5000
   );
-  measureEventEnd('3.1: arr.reduce');
+  measureEventEnd('3.1: arr.reduce with object');
 
-  measureEventStart('3.1: for..of  like a reduce');
-  getAvgRunTime(() => forOfLikeReduceObj(arr), 10000);
-  measureEventEnd('3.1: for..of  like a reduce');
+  measureEventStart('3.1: for..of  like a reduce with object');
+  getAvgRunTime(() => forOfLikeReduceObj(assetsTest), 5000);
+  measureEventEnd('3.1: for..of  like a reduce with object');
 
-  measureEventStart('3.1: for loop  like a reduce');
-  getAvgRunTime(() => forLoopReduceObj(arr), 10000);
-  measureEventEnd('3.1: for loop  like a reduce');
+  measureEventStart('3.1: for loop  like a reduce with object');
+  getAvgRunTime(() => forLoopReduceObj(assetsTest), 5000);
+  measureEventEnd('3.1: for loop  like a reduce with object');
   //
-  measureEventStart('3.1: reduce lodash with spread');
+  measureEventStart('3.2: reduce lodash with spread');
   getAvgRunTime(
     () =>
       _reduce(
-        arr,
-        (acc, value) => {
-          acc[value.id] = { ...value, newField: value.a + value.b };
+        assetsTest,
+        (acc, { asset }) => {
+          acc[asset.asset_code] = { ...asset, uniqueId: asset.asset_code };
           return acc;
         },
         {}
       ),
-    10000
+    5000
   );
-  measureEventEnd('3.1: reduce lodash with spread');
+  measureEventEnd('3.2: reduce lodash with spread');
 
-  measureEventStart('3.1: arr.reduce with spread');
+  measureEventStart('3.2: arr.reduce with spread');
   getAvgRunTime(
     () =>
-      arr.reduce((acc, value) => {
-        acc[value.id] = { ...value, newField: value.a + value.b };
+      assetsTest.reduce((acc, { asset }) => {
+        acc[asset.asset_code] = { ...asset, uniqueId: asset.asset_code };
         return acc;
       }, {}),
-    10000
+    5000
   );
-  measureEventEnd('3.1: arr.reduce with spread');
+  measureEventEnd('3.2: arr.reduce with spread');
 
-  measureEventStart('3.1: for..of  like a reduce with spread');
-  getAvgRunTime(() => forOfLikeReduceObjSpread(arr), 10000);
-  measureEventEnd('3.1: for..of  like a reduce with spread');
-
-  measureEventStart('3.1: for loop  like a reduce with spread');
-  getAvgRunTime(() => forLoopReduceObjSpread(arr), 10000);
-  measureEventEnd('3.1: for loop  like a reduce with spread');
-
-  //
-  measureEventStart('3.1: arr.reduce with spread');
+  measureEventStart('3.2: arr.reduce Object.assign');
   getAvgRunTime(
     () =>
-      arr.reduce((acc, value) => {
-        acc[value.id] = { ...value };
+      assetsTest.reduce((acc, { asset }) => {
+        acc[asset.asset_code] = Object.assign(asset, {
+          uniqueId: asset.asset_code,
+        });
         return acc;
       }, {}),
-    10000
+    5000
   );
-  measureEventEnd('3.1: arr.reduce with spread');
-  measureEventStart('3.1: arr.reduce without spread');
+  measureEventEnd('3.2: arr.reduce Object.assign');
+
+  measureEventStart('3.2: arr.reduce with acc spread');
   getAvgRunTime(
     () =>
-      arr.reduce((acc, value) => {
-        acc[value.id] = value;
+      assetsTest.reduce(
+        (acc, { asset }) => ({
+          ...acc,
+          [asset.asset_code]: { ...asset, uniqueId: asset.asset_code },
+        }),
+        {}
+      ),
+    5000
+  );
+  measureEventEnd('3.2: arr.reduce with acc spread');
+
+  measureEventStart('3.2: for..of  like a reduce with spread');
+  getAvgRunTime(() => forOfLikeReduceObjSpread(assetsTest), 5000);
+  measureEventEnd('3.2: for..of  like a reduce with spread');
+
+  measureEventStart('3.2: for loop  like a reduce with spread');
+  getAvgRunTime(() => forLoopReduceObjSpread(assetsTest), 5000);
+  measureEventEnd('3.2: for loop  like a reduce with spread');
+
+  measureEventStart('3.3: arr.reduce without spread');
+  getAvgRunTime(
+    () =>
+      assetsTest.reduce((acc, { asset }) => {
+        acc[asset.asset_code] = asset;
         return acc;
       }, {}),
-    10000
+    5000
   );
-  measureEventEnd('3.1: arr.reduce without spread');
-  //----------------------------------------------------------------
+  measureEventEnd('3.3: arr.reduce without spread');
+  measureEventStart('3.3: arr.reduce with spread');
+  getAvgRunTime(
+    () =>
+      assetsTest.reduce((acc, { asset }) => {
+        acc[asset.asset_code] = { ...asset };
+        return acc;
+      }, {}),
+    5000
+  );
+  measureEventEnd('3.3: arr.reduce with spread');
+  // ////--------
   measureEventStart('4: pick lodash');
-  getAvgRunTime(() => _pick(largeObj, pathsArr), 10000);
+  getAvgRunTime(() => _pick(existingCharts, pathsArr), 5000);
   measureEventEnd('4: pick lodash');
 
   measureEventStart('4: pick with reduce paths');
-  getAvgRunTime(() => pickFlattenReduce(largeObj, pathsArr), 10000);
+  getAvgRunTime(() => pickFlattenReduce(existingCharts, pathsArr), 5000);
   measureEventEnd('4: pick with reduce paths');
-
+  /////--------
   measureEventStart('4: pick with spread');
   getAvgRunTime(() => {
-    const {
-      eight,
-      one,
-      seven,
-      two,
-      five,
-      three,
-      four,
-      six,
-      ...rest
-    } = largeObj;
-  }, 10000);
+    const { eth, btc, ...rest } = existingCharts;
+  }, 5000);
   measureEventEnd('4: pick with spread');
 
   measureEventStart('4: pick with keys -> filter -> reduce');
-  getAvgRunTime(() => pickFlattenKeys(largeObj, pathsArr), 10000);
+  getAvgRunTime(() => pickFlattenKeys(existingCharts, pathsArr), 5000);
   measureEventEnd('4: pick with keys -> filter -> reduce');
 
   measureEventStart('4: pick with fromEntries -> entries -> filter');
-  getAvgRunTime(() => pickFlattenFromEntries(largeObj, pathsArr), 10000);
+  getAvgRunTime(() => pickFlattenFromEntries(existingCharts, pathsArr), 5000);
   measureEventEnd('4: pick with fromEntries -> entries -> filter');
   //----------------------------------------------------------------
   measureEventStart('5: pickBy lodash');
-  getAvgRunTime(() => _pickBy(largeObj, isIdEven), 10000);
+  getAvgRunTime(() => _pickBy(existingCharts, isIdEven), 5000);
   measureEventEnd('5: pickBy lodash');
 
   measureEventStart('5: pickBy reduce');
-  getAvgRunTime(() => pickBy(largeObj, isIdEven), 10000);
+  getAvgRunTime(() => pickBy(existingCharts, isIdEven), 5000);
   measureEventEnd('5: pickBy reduce');
   //----------------------------------------------------------------
   measureEventStart('6: omit lodash');
-  getAvgRunTime(() => _omit(largeObj, pathsArr), 10000);
+  getAvgRunTime(() => _omit(existingCharts, pathsArr), 5000);
   measureEventEnd('6: omit lodash');
 
   measureEventStart('6: omit with spread');
   getAvgRunTime(() => {
-    const {
-      eight,
-      one,
-      seven,
-      two,
-      five,
-      three,
-      four,
-      six,
-      ...rest
-    } = largeObj;
-  }, 10000);
+    const { eth, btc, ...rest } = existingCharts;
+  }, 5000);
   measureEventEnd('6: omit with spread');
 
   measureEventStart('6: omit forIn');
-  getAvgRunTime(() => omitForIn(largeObj, pathsArr), 10000);
+  getAvgRunTime(() => omitForIn(existingCharts, pathsArr), 5000);
   measureEventEnd('6: omit forIn');
 
   measureEventStart('6: omit forIn with Set');
-  getAvgRunTime(() => omitForInWithSet(largeObj, pathsArr), 10000);
+  getAvgRunTime(() => omitForInWithSet(existingCharts, pathsArr), 5000);
   measureEventEnd('6: omit forIn with Set');
 
   measureEventStart('6: omit reduce');
-  getAvgRunTime(() => omitReduce(largeObj, pathsArr), 10000);
+  getAvgRunTime(() => omitReduce(existingCharts, pathsArr), 5000);
   measureEventEnd('6: omit reduce');
 
   measureEventStart('6: omit forEach');
-  getAvgRunTime(() => omitForEach(largeObj, pathsArr), 10000);
+  getAvgRunTime(() => omitForEach(existingCharts, pathsArr), 5000);
   measureEventEnd('6: omit forEach');
+
+  measureEventStart('6: omit forinWithObject');
+  getAvgRunTime(() => omitForInWithObject(existingCharts, pathsArr), 5000);
+  measureEventEnd('6: omit forinWithObject');
   //----------------------------------------------------------------
   measureEventStart('7: omitBy lodash');
-  getAvgRunTime(() => _omitBy(largeObj, isIdEven), 10000);
+  getAvgRunTime(() => _omitBy(existingCharts, isIdEven), 5000);
   measureEventEnd('7: omitBy lodash');
 
   measureEventStart('7: omitBy keys+reduce');
-  getAvgRunTime(() => omitBy(largeObj, isIdEven), 10000);
+  getAvgRunTime(() => omitBy(existingCharts, isIdEven), 5000);
   measureEventEnd('7: omitBy keys+reduce');
   //----------------------------------------------------------------
+  const chartType = 'y';
+  //----------------------------------------------------------------
   measureEventStart('8: mapValues lodash');
-  getAvgRunTime(
-    () =>
-      _mapValues(largeObj, ({ company, id, country }) => ({
-        company: company.toLowerCase(),
-        country,
-        id,
-      })),
-    10000
-  );
+  getAvgRunTime(() => {
+    _mapValues(assetCharts, (chartData, address) => ({
+      ...existingCharts[address],
+      [chartType]: chartData?.slice().reverse(),
+    }));
+  }, 5000);
   measureEventEnd('8: mapValues lodash');
 
   measureEventStart('8: mapValues entries + reduce');
   getAvgRunTime(
     () =>
-      Object.entries(largeObj).reduce(
-        (acc, [key, { company, id, country }]) => {
-          acc[key] = {
-            company: company.toLowerCase(),
-            country,
-            id,
-          };
-          return acc;
-        },
-        {}
-      ),
-    10000
+      Object.entries(assetCharts).reduce((acc, [address, chartData]) => {
+        acc[address] = {
+          ...existingCharts[address],
+          [chartType]: chartData?.slice()?.reverse(),
+        };
+        return acc;
+      }, {}),
+    5000
   );
   measureEventEnd('8: mapValues entries + reduce');
 
@@ -371,86 +409,81 @@ export default function measurement() {
   getAvgRunTime(
     () =>
       Object.fromEntries(
-        Object.entries(largeObj).map(([key, { company, id, country }]) => [
+        Object.entries(assetCharts).map(([key, value]) => [
           key,
           {
-            company: company.toLowerCase(),
-            country,
-            id,
+            ...existingCharts[key],
+            [chartType]: value?.slice().reverse(),
           },
         ])
       ),
-    10000
+    5000
   );
   measureEventEnd('8: mapValues fromEntries + entries + map');
-
-  measureEventStart('8: mapValues lodash with spread value');
-  getAvgRunTime(
-    () =>
-      _mapValues(largeObj, value => ({
-        ...value,
-        company: value.company.toLowerCase(),
-      })),
-    10000
-  );
-  measureEventEnd('8: mapValues lodash with spread value');
+  ////////////////////////////////////////////////////////////////
 
   measureEventStart('8: mapValues entries + reduce with spread value');
   getAvgRunTime(
     () =>
-      Object.entries(largeObj).reduce((acc, [key, value]) => {
-        acc[key] = {
-          ...value,
-          company: value.company.toLowerCase(),
+      Object.entries(assetCharts).reduce((acc, [address, chartData]) => {
+        acc[address] = {
+          ...existingCharts[address],
+          [chartType]: chartData?.slice()?.reverse(),
         };
         return acc;
       }, {}),
-    10000
+    5000
   );
   measureEventEnd('8: mapValues entries + reduce with spread value');
 
   measureEventStart('8: mapValues entries + reduce with spread acc');
   getAvgRunTime(
     () =>
-      Object.entries(largeObj).reduce(
-        (acc, [key, value]) => ({
+      Object.entries(assetCharts).reduce(
+        (acc, [address, chartData]) => ({
           ...acc,
-          [key]: {
-            ...value,
-            company: value.company.toLowerCase(),
+          [address]: {
+            ...existingCharts[address],
+            [chartType]: chartData?.slice()?.reverse(),
           },
         }),
         {}
       ),
-    10000
+    5000
   );
   measureEventEnd('8: mapValues entries + reduce with spread acc');
   //----------------------------------------------------------------
   measureEventStart('9: concat lodash');
-  getAvgRunTime(() => _concat(arr, smallArr), 10000);
+  getAvgRunTime(() => _concat(assetsTest, assetsTest), 5000);
   measureEventEnd('9: concat lodash');
 
   measureEventStart('9: concat arr.concat');
-  getAvgRunTime(() => arr.concat(smallArr), 10000);
+  getAvgRunTime(() => assetsTest.concat(assetsTest), 5000);
   measureEventEnd('9: concat arr.concat');
 
   measureEventStart('9: times lodash');
-  getAvgRunTime(() => _times(2, _constant('unicorn')), 10000);
+  getAvgRunTime(() => _times(2, _constant('unicorn')), 5000);
   measureEventEnd('9: times lodash');
 
   measureEventStart('9: times Array.from(length)');
-  getAvgRunTime(() => times(2, () => 'unicorn'), 10000);
+  getAvgRunTime(() => times(2, () => 'unicorn'), 5000);
   measureEventEnd('9: times Array.from(length)');
 
   measureEventStart('9: filter lodash');
-  getAvgRunTime(() => _filter(arr, value => value.id % 2), 10000);
+  getAvgRunTime(
+    () => _filter(assetsTest, ({ asset }) => asset.price.value > 1),
+    5000
+  );
   measureEventEnd('9: filter lodash');
 
   measureEventStart('9: filter arr.filter');
-  getAvgRunTime(() => arr.filter(value => value.id % 2), 10000);
+  getAvgRunTime(
+    () => assetsTest.filter(({ asset }) => asset.price.value > 1),
+    5000
+  );
   measureEventEnd('9: filter arr.filter');
 
-  const { name, ...restObj } = smallObj;
+  const { name, company, ...restObj } = smallObj;
   const [first, second, ...restArr] = arr;
 
   return null;
