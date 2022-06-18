@@ -16,7 +16,7 @@ jobs:
   # This workflow contains a single job called "ios-e2e"
   ios-e2e:
     # The type of runner that the job will run on
-    runs-on: self-hosted
+    runs-on: ["self-hosted", "CI-1"]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
