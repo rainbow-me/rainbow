@@ -1,7 +1,9 @@
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
+import { ViewStyle } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import { CustomShadow } from '../../design-system/layout/shadow';
 import { useNavigation } from '../../navigation/Navigation';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
@@ -25,6 +27,31 @@ import { DPI_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { useTheme } from '@rainbow-me/theme';
 import { ethereumUtils } from '@rainbow-me/utils';
+
+const ButtonShadow: ViewStyle = {
+  shadowColor: 'black',
+  shadowOffset: { height: 4, width: 0 },
+  shadowOpacity: 0.15,
+  shadowRadius: 6,
+};
+
+const CardShadow: CustomShadow = {
+  custom: {
+    android: {
+      color: 'accent',
+      elevation: 24,
+      opacity: 0.5,
+    },
+    ios: [
+      {
+        blur: 24,
+        color: 'accent',
+        offset: { x: 0, y: 8 },
+        opacity: 0.35,
+      },
+    ],
+  },
+};
 
 export default function DPICard() {
   const { nativeCurrency } = useAccountSettings();
@@ -63,27 +90,7 @@ export default function DPICard() {
       testID="dpi-button"
     >
       <AccentColorProvider color={shadowColor}>
-        <Box
-          background="body"
-          borderRadius={24}
-          shadow={{
-            custom: {
-              android: {
-                color: 'accent',
-                elevation: 24,
-                opacity: 0.5,
-              },
-              ios: [
-                {
-                  blur: 24,
-                  color: 'accent',
-                  offset: { x: 0, y: 8 },
-                  opacity: 0.35,
-                },
-              ],
-            },
-          }}
-        >
+        <Box background="body" borderRadius={24} shadow={CardShadow}>
           <ColorModeProvider value="darkTinted">
             <Box
               as={LinearGradient}
@@ -125,14 +132,7 @@ export default function DPICard() {
                     </Column>
                   </Columns>
                   <ButtonPressAnimation onPress={handlePress} scaleTo={0.92}>
-                    <Box
-                      style={{
-                        shadowColor: colors.shadowBlack,
-                        shadowOffset: { height: 4, width: 0 },
-                        shadowOpacity: 0.15,
-                        shadowRadius: 6,
-                      }}
-                    >
+                    <Box style={ButtonShadow}>
                       <Box
                         as={LinearGradient}
                         background="body"
