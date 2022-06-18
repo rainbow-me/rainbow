@@ -65,6 +65,30 @@ export default function GasCard() {
   const opacity = useSharedValue(0);
   const scale = useSharedValue(0);
 
+  const cardShadow = useMemo(
+    () => ({
+      custom: {
+        android: {
+          elevation: 24,
+          opacity: 0.5,
+        },
+        ios: [
+          {
+            blur: 24,
+            offset: { x: 0, y: 8 },
+            opacity: colorMode === 'dark' ? 0.3 : 0.1,
+          },
+          {
+            blur: 6,
+            offset: { x: 0, y: 2 },
+            opacity: 0.02,
+          },
+        ],
+      },
+    }),
+    [colorMode]
+  );
+
   // Listen to gas prices
   useEffect(() => {
     if (isFocused) {
@@ -286,29 +310,7 @@ export default function GasCard() {
             background="accent"
             borderRadius={24}
             height={{ custom: (deviceWidth - 19 * 3) / 2 }}
-            shadow={useMemo(
-              () => ({
-                custom: {
-                  android: {
-                    elevation: 24,
-                    opacity: 0.5,
-                  },
-                  ios: [
-                    {
-                      blur: 24,
-                      offset: { x: 0, y: 8 },
-                      opacity: colorMode === 'dark' ? 0.3 : 0.1,
-                    },
-                    {
-                      blur: 6,
-                      offset: { x: 0, y: 2 },
-                      opacity: 0.02,
-                    },
-                  ],
-                },
-              }),
-              [colorMode]
-            )}
+            shadow={cardShadow}
           >
             <AccentColorProvider
               color={getColorForGwei(currentGwei, lastKnownGwei)}

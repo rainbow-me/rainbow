@@ -24,10 +24,45 @@ import { ensIntroMarqueeNames } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { watchingAlert } from '@rainbow-me/utils';
 
+const CARD_BORDER_WIDTH = 0.25;
+
 export default function ENSCreateProfileCard() {
   const { colorMode } = useColorMode();
   const { navigate } = useNavigation();
   const { isReadOnlyWallet } = useWallets();
+
+  const cardShadow = useMemo(
+    () => ({
+      custom: {
+        android: {
+          elevation: 24,
+          opacity: 0.5,
+        },
+        ios: [
+          {
+            blur: 24,
+            offset: { x: 0, y: 8 },
+            opacity: colorMode === 'dark' ? 0.3 : 0.1,
+          },
+          {
+            blur: 6,
+            offset: { x: 0, y: 2 },
+            opacity: 0.02,
+          },
+        ],
+      },
+    }),
+    [colorMode]
+  );
+
+  const cardStyle = useMemo(
+    () => ({
+      borderColor: `rgba(0, 0, 0, ${colorMode === 'dark' ? '0' : '0.1'})`,
+      borderWidth: CARD_BORDER_WIDTH,
+      overflow: 'hidden' as 'hidden',
+    }),
+    [colorMode]
+  );
 
   const handlePress = useCallback(() => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
@@ -61,49 +96,10 @@ export default function ENSCreateProfileCard() {
       testID="ens-create-profile-card"
     >
       <AccentColorProvider color={shadowColor}>
-        <Box
-          background="body"
-          borderRadius={24}
-          shadow={useMemo(
-            () => ({
-              custom: {
-                android: {
-                  elevation: 24,
-                  opacity: 0.5,
-                },
-                ios: [
-                  {
-                    blur: 24,
-                    offset: { x: 0, y: 8 },
-                    opacity: colorMode === 'dark' ? 0.3 : 0.1,
-                  },
-                  {
-                    blur: 6,
-                    offset: { x: 0, y: 2 },
-                    opacity: 0.02,
-                  },
-                ],
-              },
-            }),
-            [colorMode]
-          )}
-        >
+        <Box background="body" borderRadius={24} shadow={cardShadow}>
           <AccentColorProvider color="#E8E8E8">
-            <Box
-              background="accent"
-              borderRadius={24}
-              style={useMemo(
-                () => ({
-                  borderColor: `rgba(0, 0, 0, ${
-                    colorMode === 'dark' ? '0' : '0.1'
-                  })`,
-                  borderWidth: 0.25,
-                  overflow: 'hidden' as 'hidden',
-                }),
-                [colorMode]
-              )}
-            >
-              <Inset space={{ custom: -0.25 }}>
+            <Box background="accent" borderRadius={24} style={cardStyle}>
+              <Inset space={{ custom: -CARD_BORDER_WIDTH }}>
                 <Cover alignHorizontal="center" alignVertical="top">
                   {/* @ts-expect-error JavaScript component */}
                   <Box

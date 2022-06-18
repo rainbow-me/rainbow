@@ -1,12 +1,13 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import lang from 'i18n-js';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
+import { CustomShadow } from '../../design-system/layout/shadow';
 import { useNavigation } from '../../navigation/Navigation';
 import { ButtonPressAnimation } from '../animations';
 import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config';
@@ -30,6 +31,24 @@ import {
 import Routes from '@rainbow-me/routes';
 import { useTheme } from '@rainbow-me/theme';
 import { watchingAlert } from '@rainbow-me/utils';
+
+const CardShadow: CustomShadow = {
+  custom: {
+    android: {
+      color: 'accent',
+      elevation: 24,
+      opacity: 0.5,
+    },
+    ios: [
+      {
+        blur: 24,
+        color: 'accent',
+        offset: { x: 0, y: 8 },
+        opacity: 0.35,
+      },
+    ],
+  },
+};
 
 const springConfig = {
   damping: 20,
@@ -105,30 +124,7 @@ export default function ENSSearchCard() {
       testID="ens-register-name-banner"
     >
       <AccentColorProvider color={shadowColor}>
-        <Box
-          background="body"
-          borderRadius={24}
-          shadow={useMemo(
-            () => ({
-              custom: {
-                android: {
-                  color: 'accent',
-                  elevation: 24,
-                  opacity: 0.5,
-                },
-                ios: [
-                  {
-                    blur: 24,
-                    color: 'accent',
-                    offset: { x: 0, y: 8 },
-                    opacity: 0.35,
-                  },
-                ],
-              },
-            }),
-            []
-          )}
-        >
+        <Box background="body" borderRadius={24} shadow={CardShadow}>
           <ColorModeProvider value="darkTinted">
             <Box
               as={LinearGradient}
