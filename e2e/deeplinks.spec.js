@@ -8,7 +8,11 @@ const testEthereumDeeplink = async (url, coldStart = true) => {
     : await Helpers.openDeeplinkFromBackground(url);
   await Helpers.checkIfVisible('send-sheet-confirm-action-button', 30000);
   // Because we don't have ETH in this wallet
-  await Helpers.checkIfElementByTextIsVisible('Insufficient ETH', 15000);
+  try {
+    await Helpers.checkIfElementByTextIsVisible('􀕹 Review', 15000);
+  } catch (e) {
+    await Helpers.checkIfElementByTextIsVisible('Insufficient ETH', 15000);
+  }
   await Helpers.swipe('send-sheet', 'down');
 };
 
