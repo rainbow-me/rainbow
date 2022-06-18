@@ -2,7 +2,7 @@ import { AssetType, EthereumAddress } from '@rainbow-me/entities';
 
 export default function getUrlForTrustIconFallback(
   address: EthereumAddress,
-  type: AssetType
+  type?: AssetType
 ): string | null {
   if (!address) return null;
   const lowercasedAddress = address.toLowerCase();

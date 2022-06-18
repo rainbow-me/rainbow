@@ -20,8 +20,10 @@ import { emitMainnetAssetDiscoveryRequest, explorerInitL2 } from './explorer';
 import { AppGetState, AppState } from './store';
 import {
   AssetType,
+  ParsedAddressAsset,
   ZerionAsset,
   ZerionAssetFallback,
+  ZerionAssetPrice,
 } from '@rainbow-me/entities';
 import { getAssetsFromCovalent } from '@rainbow-me/handlers/covalent';
 import { web3Provider } from '@rainbow-me/handlers/web3';
@@ -273,6 +275,55 @@ const findNewAssetsToWatch = () => async (
 };
 
 /**
+ * Gets the price for an asset from the given data.
+ *
+ * @param contractAddress The asset's contract address.
+ * @param updatedAt When the asset price was updated.
+ * @param genericAssets An object mapping addresses to generic assets.
+ * @param quoteRate The ETH quote rate.
+ * @returns The asset price.
+ */
+const getPrice = (
+  contractAddress: string,
+  updatedAt: number,
+  genericAssets: {
+    [assetAddress: string]: ParsedAddressAsset;
+  },
+  quoteRate: number
+): ZerionAssetPrice => {
+  const isETH =
+    // @ts-expect-error This incorrectly compares the result of a function call
+    // to a function.
+    contractAddress.toLowerCase() === COVALENT_ETH_ADDRESS.toLowerCase;
+  if (isETH) {
+    contractAddress = ETH_ADDRESS;
+  }
+
+  let price = {
+    changed_at: updatedAt,
+    relative_change_24h: 0,
+    value: isETH ? quoteRate : 0,
+  };
+
+  // Overrides
+  const fallbackAsset =
+    ethereumUtils.getAccountAsset(contractAddress) ||
+    genericAssets[contractAddress?.toLowerCase()];
+
+  if (fallbackAsset) {
+    price = {
+      ...price,
+      ...fallbackAsset.price,
+    };
+  }
+  return {
+    // @ts-expect-error 'value' is specified more than once.
+    value: 0,
+    ...price,
+  };
+};
+
+/**
  * Fetches asset data for an account from Covalent.
  *
  * @param chainId The chain ID.
@@ -304,23 +355,6 @@ const getMainnetAssetsFromCovalent = async (
       }
 
       const coingeckoId = coingeckoIds[toLower(contractAddress)];
-      let price = {
-        changed_at: updatedAt,
-        relative_change_24h: 0,
-        value: isETH ? item.quote_rate : 0,
-      };
-
-      // Overrides
-      const fallbackAsset =
-        ethereumUtils.getAccountAsset(contractAddress) ||
-        genericAssets[toLower(contractAddress)];
-
-      if (fallbackAsset) {
-        price = {
-          ...price,
-          ...fallbackAsset.price,
-        };
-      }
 
       return {
         asset: {
@@ -329,11 +363,12 @@ const getMainnetAssetsFromCovalent = async (
           decimals: item.contract_decimals,
           icon_url: item.logo_url,
           name: item.contract_name,
-          price: {
-            // @ts-expect-error "value" specified more than once.
-            value: 0,
-            ...price,
-          },
+          price: getPrice(
+            contractAddress,
+            updatedAt,
+            genericAssets,
+            item.quote_rate
+          ),
           symbol: item.contract_ticker_symbol,
           type,
         },
@@ -778,12 +813,35 @@ export const fetchOnchainBalances = ({
   };
 
   if (network === Network.mainnet) {
+    const receiveCovalentResponse = (
+      assets: Parameters<AssetDiscoveryCallback>[0]
+    ) => {
+      // Fix prices
+      const parsedAssets: Parameters<AssetDiscoveryCallback>[0] = {};
+      for (let [key, asset] of Object.entries(assets!)) {
+        parsedAssets[key] = {
+          ...asset,
+          asset: {
+            ...asset.asset,
+            price: getPrice(
+              asset.asset.asset_code,
+              (asset.asset.price as any)?.updatedAt,
+              genericAssets,
+              asset.asset.price?.value!
+            ),
+          },
+        } as typeof parsedAssets[keyof typeof parsedAssets];
+      }
+
+      callback(parsedAssets);
+    };
+
     dispatch(emitMainnetAssetDiscoveryRequest);
     const queueKey =
       accountAddress.toLowerCase() + nativeCurrency.toLowerCase();
     assetDiscoveryCallbackQueue[queueKey] =
       assetDiscoveryCallbackQueue[queueKey] ?? [];
-    assetDiscoveryCallbackQueue[queueKey]!.push(callback);
+    assetDiscoveryCallbackQueue[queueKey]!.push(receiveCovalentResponse);
   } else {
     const chainId = ethereumUtils.getChainIdFromNetwork(network);
     const covalentMainnetAssets = await getMainnetAssetsFromCovalent(

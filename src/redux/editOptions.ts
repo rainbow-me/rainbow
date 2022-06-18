@@ -14,14 +14,14 @@ interface EditOptionsState {
   /**
    * The `uniqueId`s of coins to hide.
    */
-  hiddenCoins: string[];
+  hiddenCoins: { [id: string]: boolean };
 }
 
 /**
  * The action for updating the hidden coins.
  */
 interface EditOptionsSetHiddenCoinsAction {
-  payload: string[];
+  payload: EditOptionsState['hiddenCoins'];
   type: typeof SET_HIDDEN_COINS;
 }
 
@@ -37,7 +37,7 @@ type EditOptionsAction = EditOptionsSetHiddenCoinsAction;
  *
  * @param coins The `uniqueId`s of the new hidden coins.
  */
-export const setHiddenCoins = (coins: string[]) => (
+export const setHiddenCoins = (coins: EditOptionsState['hiddenCoins']) => (
   dispatch: Dispatch<EditOptionsSetHiddenCoinsAction>
 ) => {
   dispatch({
@@ -48,7 +48,7 @@ export const setHiddenCoins = (coins: string[]) => (
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE: EditOptionsState = {
-  hiddenCoins: [],
+  hiddenCoins: {},
 };
 
 export default (state = INITIAL_STATE, action: EditOptionsAction) => {
