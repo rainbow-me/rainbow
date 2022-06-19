@@ -187,6 +187,7 @@ export default function GasCard() {
   });
 
   const getColorForGwei = (currentGwei: string, lastKnownGwei: string) => {
+    'worklet';
     const gwei =
       Math.round(Number(currentGwei)) || Math.round(Number(lastKnownGwei));
 
@@ -268,21 +269,7 @@ export default function GasCard() {
   }, [currentGwei, lastKnownGwei]);
 
   const pulseStyle = useAnimatedStyle(() => {
-    const gwei =
-      Math.round(Number(currentGwei)) || Math.round(Number(lastKnownGwei));
-    let color;
-
-    if (!gwei) {
-      color = grey;
-    } else if (gwei < 40) {
-      color = green;
-    } else if (gwei < 100) {
-      color = blue;
-    } else if (gwei < 200) {
-      color = orange;
-    } else {
-      color = pink;
-    }
+    const color = getColorForGwei(currentGwei, lastKnownGwei);
 
     return {
       backgroundColor: color,
