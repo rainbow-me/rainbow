@@ -204,10 +204,7 @@ export default function ENSSearchCard() {
                               <Box background="accent">
                                 <Box
                                   as={LinearGradient}
-                                  colors={[
-                                    colors.alpha(colors.whiteLabel, 0.8),
-                                    colors.alpha(colors.whiteLabel, 0),
-                                  ]}
+                                  colors={colors.gradients.white80ToTransparent}
                                   end={{ x: 0.5, y: 1 }}
                                   height={{ custom: 30 }}
                                   start={{ x: 0.5, y: 0 }}
