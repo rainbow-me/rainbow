@@ -133,7 +133,7 @@ export default function SendSheet(props) {
   });
 
   const savings = useSendSavingsAccount();
-  const { hiddenCoins, pinnedCoins } = useCoinListEditOptions();
+  const { hiddenCoinsObj, pinnedCoinsObj } = useCoinListEditOptions();
   const [toAddress, setToAddress] = useState();
   const [amountDetails, setAmountDetails] = useState({
     assetAmount: '',
@@ -924,11 +924,11 @@ export default function SendSheet(props) {
         )}
         {showAssetList && (
           <SendAssetList
-            hiddenCoins={hiddenCoins}
+            hiddenCoins={hiddenCoinsObj}
             nativeCurrency={nativeCurrency}
             network={network}
             onSelectAsset={sendUpdateSelected}
-            pinnedCoins={pinnedCoins}
+            pinnedCoins={pinnedCoinsObj}
             savings={savings}
             sortedAssets={sortedAssets}
             uniqueTokens={sendableUniqueTokens}

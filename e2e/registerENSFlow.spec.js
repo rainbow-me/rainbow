@@ -199,7 +199,6 @@ describe('Register ENS Flow', () => {
   it('Should be able to type a name that is not available', async () => {
     await Helpers.checkIfVisible('ens-search-input');
     await Helpers.typeText('ens-search-input', 'rainbowwallet', false);
-    await Helpers.delay(3000);
     await Helpers.waitAndTap('ens-search-clear-button');
   });
 
@@ -243,7 +242,6 @@ describe('Register ENS Flow', () => {
   it('Should go to review registration and start it', async () => {
     await Helpers.checkIfVisible(`ens-transaction-action-COMMIT`);
     await Helpers.waitAndTap(`ens-transaction-action-COMMIT`);
-    await Helpers.delay(5000);
     await Helpers.checkIfVisible(
       `ens-confirm-register-label-WAIT_ENS_COMMITMENT`
     );
@@ -256,7 +254,6 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should confirm that the name is not available anymore', async () => {
-    await Helpers.delay(4000);
     const ensAvailable = await nameIsAvailable(RANDOM_NAME);
     if (ensAvailable) throw new Error('ENS name is available');
   });
@@ -273,7 +270,6 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should confirm RANDOM_NAME is primary name', async () => {
-    await Helpers.delay(3000);
     await validatePrimaryName(RANDOM_NAME_ETH);
   });
 
@@ -294,12 +290,10 @@ describe('Register ENS Flow', () => {
     await Helpers.swipe('unique-token-expanded-state', 'up', 'slow');
     await Helpers.waitAndTap('ens-reverse-record-switch');
     await Helpers.checkIfVisible(`ens-transaction-action-SET_NAME`);
-    await Helpers.delay(3000);
     await Helpers.waitAndTap(`ens-transaction-action-SET_NAME`);
   });
 
   it('Should confirm rainbowtestwallet.eth is primary name', async () => {
-    await Helpers.delay(3000);
     await validatePrimaryName(RAINBOW_TEST_WALLET_NAME);
   });
 
@@ -368,6 +362,5 @@ describe('Register ENS Flow', () => {
     // Reset the app state
     await device.clearKeychain();
     await exec('kill $(lsof -t -i:8545)');
-    await Helpers.delay(2000);
   });
 });
