@@ -61,6 +61,8 @@ describe('Discover Sheet Flow', () => {
 
   it('Should open Discover Search on pressing search input', async () => {
     await Helpers.swipe('discover-header', 'up');
+    await Helpers.swipe('discover-home', 'down');
+    await Helpers.waitAndTap('discover-search-input');
     await Helpers.checkIfVisible('done-button');
   });
 
