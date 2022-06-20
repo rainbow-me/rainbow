@@ -16,7 +16,7 @@ import {
   useENSRegistrationForm,
   useSelectImageMenu,
 } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
+import { TransformationImage } from '@rainbow-me/images';
 import { magicMemo, stringifyENSNFTRecord } from '@rainbow-me/utils';
 
 export const coverMetadataAtom = atom<Image | undefined>({
@@ -144,7 +144,7 @@ const RegistrationCover = ({
         >
           {coverUrl ? (
             <Box
-              as={ImgixImage}
+              as={TransformationImage}
               height="126px"
               source={{ uri: coverUrl }}
               width="full"

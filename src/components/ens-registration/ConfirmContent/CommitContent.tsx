@@ -13,7 +13,7 @@ import {
 } from '@rainbow-me/design-system';
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import { useDimensions } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
+import { TransformationImage } from '@rainbow-me/images';
 
 const CommitContent = ({
   duration,
@@ -37,7 +37,7 @@ const CommitContent = ({
           wrap={false}
         >
           <Box>
-            <ImgixImage
+            <TransformationImage
               source={brain as Source}
               style={{ height: 20, width: 20 }}
             />

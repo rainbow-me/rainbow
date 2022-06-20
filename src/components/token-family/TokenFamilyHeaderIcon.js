@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Emoji } from '../text';
 import { Box } from '@rainbow-me/design-system';
-import { ImgixImage } from '@rainbow-me/images';
+import { TransformationImage } from '@rainbow-me/images';
 import { borders } from '@rainbow-me/styles';
 import { FallbackIcon, initials } from '@rainbow-me/utils';
 import ShadowStack from 'react-native-shadow-stack';
@@ -43,7 +43,7 @@ const TokenFamilyHeaderIcon = ({
       style={style}
     >
       {familyImage ? (
-        <ImgixImage
+        <TransformationImage
           size={isCoinRow ? 40 : 32}
           source={{ uri: familyImage }}
           style={circleStyle}

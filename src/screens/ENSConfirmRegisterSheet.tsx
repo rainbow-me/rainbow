@@ -44,7 +44,7 @@ import {
   useENSSearch,
   usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
+import { TransformationImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
@@ -400,7 +400,7 @@ export default function ENSConfirmRegisterSheet() {
                       width={{ custom: avatarSize }}
                     >
                       <Box
-                        as={ImgixImage}
+                        as={TransformationImage}
                         borderRadius={avatarSize / 2}
                         height={{ custom: avatarSize }}
                         source={{ uri: avatarUrl }}

@@ -15,7 +15,7 @@ import QRCodeScannerCrosshair from './QRCodeScannerCrosshair';
 import QRCodeScannerNeedsAuthorization from './QRCodeScannerNeedsAuthorization';
 import SimulatorFakeCameraImageSource from '@rainbow-me/assets/simulator-fake-camera-image.jpg';
 import { useAsyncEffect, useHardwareBack, useScanner } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
+import { TransformationImage } from '@rainbow-me/images';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';
@@ -45,7 +45,7 @@ const ContentOverlay = styled(Centered)(({ contentPositionTop }) => ({
   top: contentPositionTop || 0,
 }));
 
-const EmulatorCameraFallback = styled(ImgixImage).attrs({
+const EmulatorCameraFallback = styled(TransformationImage).attrs({
   source: SimulatorFakeCameraImageSource,
 })({
   ...position.coverAsObject,

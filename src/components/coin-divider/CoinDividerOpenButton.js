@@ -9,7 +9,7 @@ import Animated, {
 import Caret from '../../assets/family-dropdown-arrow.png';
 import { ButtonPressAnimation, RoundButtonCapSize } from '../animations';
 import { Text } from '../text';
-import { ImgixImage } from '@rainbow-me/images';
+import { TransformationImage } from '@rainbow-me/images';
 import styled from '@rainbow-me/styled-components';
 import { magicMemo } from '@rainbow-me/utils';
 
@@ -18,10 +18,12 @@ const AnimatedText = Animated.createAnimatedComponent(Text);
 const closedWidth = 52.5;
 const openWidth = 78;
 
-const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
-  source: Caret,
-  tintColor: colors.blueGreyDark,
-}))({
+const CaretIcon = styled(TransformationImage).attrs(
+  ({ theme: { colors } }) => ({
+    source: Caret,
+    tintColor: colors.blueGreyDark,
+  })
+)({
   height: 18,
   width: 8,
 });

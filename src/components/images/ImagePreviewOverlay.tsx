@@ -42,7 +42,7 @@ import {
   useColorMode,
 } from '@rainbow-me/design-system';
 import { useDimensions, usePersistentAspectRatio } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
+import { TransformationImage } from '@rainbow-me/images';
 import { colors, position } from '@rainbow-me/styles';
 import { safeAreaInsetValues } from '@rainbow-me/utils';
 
@@ -321,7 +321,7 @@ function ImagePreview({
                 >
                   <Box style={position.coverAsObject}>
                     <Box
-                      as={ImgixImage}
+                      as={TransformationImage}
                       height="full"
                       source={{ uri: imageUrl }}
                       width="full"

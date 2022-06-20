@@ -39,7 +39,7 @@ import {
   getNameOwner,
 } from '@rainbow-me/helpers/ens';
 import { add } from '@rainbow-me/helpers/utilities';
-import { ImgixImage } from '@rainbow-me/images';
+import { TransformationImage } from '@rainbow-me/images';
 import { handleAndSignImages } from '@rainbow-me/parsers';
 import { queryClient } from '@rainbow-me/react-query/queryClient';
 import {
@@ -324,7 +324,7 @@ export const fetchImages = async (ensName: string) => {
         type: 'cover',
       }),
     ]);
-    ImgixImage.preload([
+    TransformationImage.preload([
       ...(avatarUrl ? [{ uri: avatarUrl }] : []),
       ...(coverUrl ? [{ uri: coverUrl }] : []),
     ]);

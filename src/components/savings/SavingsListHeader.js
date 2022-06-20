@@ -9,10 +9,12 @@ import { ButtonPressAnimation } from '../animations';
 import { Row, RowWithMargins } from '../layout';
 import { Emoji, Text, TruncatedText } from '../text';
 import { useAccountSettings } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
+import { TransformationImage } from '@rainbow-me/images';
 import styled from '@rainbow-me/styled-components';
 
-const AnimatedImgixImage = Animated.createAnimatedComponent(ImgixImage);
+const AnimatedTransformationImage = Animated.createAnimatedComponent(
+  TransformationImage
+);
 
 const TokenFamilyHeaderAnimationDuration = 200;
 const TokenFamilyHeaderHeight = 44;
@@ -120,8 +122,8 @@ const SavingsListHeader = ({
               </SumValueText>
             </Animated.View>
           )}
-          <AnimatedImgixImage
-            resizeMode={ImgixImage.resizeMode.contain}
+          <AnimatedTransformationImage
+            resizeMode={TransformationImage.resizeMode.contain}
             source={CaretImageSource}
             style={imageAnimatedStyles}
             tintColor={colors.dark}

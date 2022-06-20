@@ -15,7 +15,7 @@ import {
   Text,
   useForegroundColor,
 } from '@rainbow-me/design-system';
-import { ImgixImage } from '@rainbow-me/images';
+import { TransformationImage } from '@rainbow-me/images';
 import Routes from '@rainbow-me/routes';
 
 export function InfoRowSkeleton() {
@@ -119,7 +119,11 @@ export default function InfoRow({
                 aspectRatioType="cover"
                 imageUrl={value}
               >
-                <Box as={ImgixImage} height="full" source={{ uri: value }} />
+                <Box
+                  as={TransformationImage}
+                  height="full"
+                  source={{ uri: value }}
+                />
               </ImagePreviewOverlayTarget>
             )}
           </>

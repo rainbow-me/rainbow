@@ -25,7 +25,7 @@ import {
   useClipboard,
   useDimensions,
 } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
+import { TransformationImage } from '@rainbow-me/images';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
@@ -141,7 +141,7 @@ const FamilyImageWrapper = styled(View)({
   width: 20,
 });
 
-const FamilyImage = styled(ImgixImage)({
+const FamilyImage = styled(TransformationImage)({
   ...position.coverAsObject,
   borderRadius: 10,
 });

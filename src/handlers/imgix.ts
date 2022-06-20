@@ -46,7 +46,7 @@ const staticImgixClient = shouldCreateImgixClient();
 const capacity = 512;
 export const staticSignatureLRU = new LRUCache<string, string>(capacity);
 
-interface ImgOptions {
+export interface ImgOptions {
   w?: number;
   h?: number;
   fm?: string;
@@ -137,6 +137,10 @@ export const maybeSignUri = (
   options?: ImgOptions,
   skipCaching: boolean = false
 ): string | undefined => {
+  // If no options applied we don't need anything
+  if (!options || Object.keys(options).length === 0) {
+    return externalImageUri;
+  }
   // If the image has already been signed, return this quickly.
   const signature = `${externalImageUri}-${options?.w}`;
   if (
@@ -156,12 +160,19 @@ export const maybeSignUri = (
   return externalImageUri;
 };
 
-export const maybeSignSource = (source: Source, options?: {}): Source => {
+export const maybeSignSource = (
+  source: Source,
+  options?: ImgOptions
+): Source => {
   if (!!source && typeof source === 'object') {
     const { uri: externalImageUri, ...extras } = source;
+    const isTransformationRedundant =
+      !options?.w && !options?.h && !options?.fm;
     return {
       ...extras,
-      uri: maybeSignUri(externalImageUri, options),
+      uri: isTransformationRedundant
+        ? externalImageUri
+        : maybeSignUri(externalImageUri, options),
     };
   }
   return source;

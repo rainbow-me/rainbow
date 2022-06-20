@@ -9,7 +9,7 @@ import { Centered, Row } from '../layout';
 import { Text } from '../text';
 import ContactRow from './ContactRow';
 import showDeleteContactActionSheet from './showDeleteContactActionSheet';
-import { ImgixImage } from '@rainbow-me/images';
+import { TransformationImage } from '@rainbow-me/images';
 import { margin, position } from '@rainbow-me/styles';
 
 const AnimatedCentered = Animated.createAnimatedComponent(Centered);
@@ -35,7 +35,10 @@ const RightAction = ({ onPress, progress, text, x }) => {
       style={{ transform: [{ translateX }] }}
     >
       <ButtonPressAnimation onPress={onPress} scaleTo={0.9}>
-        <ImgixImage source={isEdit ? EditIcon : DeleteIcon} style={styles} />
+        <TransformationImage
+          source={isEdit ? EditIcon : DeleteIcon}
+          style={styles}
+        />
         <Text
           align="center"
           color={colors.alpha(colors.blueGreyDark, 0.4)}
