@@ -45,6 +45,7 @@ android/app/src/main/java/me/rainbow/NativeModules/Internals/
 local.properties
 *.iml
 android/app/google-services.json
+android/rainbow-google-play-key.json
 
 # node.js
 #
