@@ -101,7 +101,7 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
 
     useEffect(() => {
       // Workaround to fix weird keyboard focus issues upon immediate screen focus then unfocus
-      if (android) {
+      if (android && params.fromDiscover) {
         addListener('gestureStart', cancelNext);
         addListener('blur', uncancelNext);
         addListener('focus', uncancelNext);
@@ -111,7 +111,7 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
           removeListener('focus', uncancelNext);
         };
       }
-    }, [addListener, removeListener]);
+    }, [addListener, removeListener, params]);
 
     const [swipeEnabled, setSwipeEnabled] = useStateCallback(false);
 
