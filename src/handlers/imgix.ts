@@ -137,10 +137,6 @@ export const maybeSignUri = (
   options?: ImgOptions,
   skipCaching: boolean = false
 ): string | undefined => {
-  // If no options applied we don't need anything
-  if (!options || Object.keys(options).length === 0) {
-    return externalImageUri;
-  }
   // If the image has already been signed, return this quickly.
   const signature = `${externalImageUri}-${options?.w}`;
   if (
@@ -166,6 +162,7 @@ export const maybeSignSource = (
 ): Source => {
   if (!!source && typeof source === 'object') {
     const { uri: externalImageUri, ...extras } = source;
+    // If no options applied we don't need anything
     const isTransformationRedundant =
       !options?.w && !options?.h && !options?.fm;
     return {
