@@ -1,4 +1,4 @@
-import { isArray, isString, pick } from 'lodash';
+import { isArray, isString } from 'lodash';
 import React from 'react';
 import { useTheme } from '../../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../../animations';
@@ -78,7 +78,7 @@ export default function Button({
 
   return (
     <ButtonPressAnimation
-      {...pick(props, Object.keys(ButtonPressAnimation.propTypes))}
+      {...props}
       disabled={disabled}
       onPress={onPress}
       testID={testID}
