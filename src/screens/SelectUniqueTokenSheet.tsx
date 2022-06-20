@@ -2,10 +2,7 @@ import { useNavigation, useRoute } from '@react-navigation/core';
 import React, { useContext, useEffect, useMemo } from 'react';
 import { Animated as RNAnimated } from 'react-native';
 import { useMemoOne } from 'use-memo-one';
-import {
-  RecyclerAssetListContext,
-  RecyclerAssetListScrollPositionContext,
-} from '../components/asset-list/RecyclerAssetList2/core/Contexts';
+import { RecyclerAssetListScrollPositionContext } from '../components/asset-list/RecyclerAssetList2/core/Contexts';
 import RawMemoRecyclerAssetList from '../components/asset-list/RecyclerAssetList2/core/RawRecyclerList';
 import { StickyHeaderManager } from '../components/asset-list/RecyclerAssetList2/core/StickyHeaders';
 import useMemoBriefSectionData from '../components/asset-list/RecyclerAssetList2/core/useMemoBriefSectionData';
@@ -29,7 +26,7 @@ export default function SelectUniqueTokenSheet() {
   } = useMemoBriefSectionData({ type: 'select-nft' });
   const position = useMemoOne(() => new RNAnimated.Value(0), []);
 
-  const value = useMemo(
+  const extendedState = useMemo(
     () => ({
       additionalData,
       onPressUniqueToken: (asset: UniqueAsset) => {
@@ -48,11 +45,13 @@ export default function SelectUniqueTokenSheet() {
         <SheetHandle />
       </Box>
       <RecyclerAssetListScrollPositionContext.Provider value={position}>
-        <RecyclerAssetListContext.Provider value={value}>
-          <StickyHeaderManager>
-            <RawMemoRecyclerAssetList briefSectionsData={briefSectionsData} />
-          </StickyHeaderManager>
-        </RecyclerAssetListContext.Provider>
+        <StickyHeaderManager>
+          <RawMemoRecyclerAssetList
+            briefSectionsData={briefSectionsData}
+            extendedState={extendedState}
+            type="select-nft"
+          />
+        </StickyHeaderManager>
       </RecyclerAssetListScrollPositionContext.Provider>
     </Box>
   );
