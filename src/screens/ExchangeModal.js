@@ -36,6 +36,7 @@ import {
 import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
+import { delayNext } from '../hooks/useMagicAutofocus';
 import { AssetType } from '@rainbow-me/entities';
 import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
 import {
@@ -627,6 +628,7 @@ export default function ExchangeModal({
     outputFieldRef?.current?.blur();
     nativeFieldRef?.current?.blur();
     const internalNavigate = () => {
+      delayNext();
       android && Keyboard.removeListener('keyboardDidHide', internalNavigate);
       setParams({ focused: false });
       navigate(Routes.SWAP_SETTINGS_SHEET, {
