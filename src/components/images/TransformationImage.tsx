@@ -33,26 +33,6 @@ class TransformationImage extends React.PureComponent<
       }),
     };
 
-    // UNCOMMENT FOR DEBUGGING
-    // if (__DEV__ && typeof source === 'object') {
-    //   if (!props.size && !props.fm) {
-    //     // eslint-disable-next-line no-console
-    //     console.log(
-    //       `You use image transformation without specifying neither expected size nor format.
-    //       This is wrong because either you forgot this, or the ImgIx usage is pointless (and generates costs).`,
-    //       source
-    //     );
-    //   }
-    //   if ((props.source as Source)?.uri?.includes('imgix')) {
-    //     // eslint-disable-next-line no-console
-    //     console.log(
-    //       `You use image transformation for an image that is already using transformation. Something is wrong.`,
-    //       source,
-    //       options
-    //     );
-    //   }
-    // }
-
     return {
       source:
         !!source && typeof source === 'object'
