@@ -13,7 +13,7 @@ import {
 } from '@rainbow-me/helpers/ens';
 import { Network } from '@rainbow-me/helpers/networkTypes';
 import { timeUnits } from '@rainbow-me/references';
-import { ethereumUtils, promiseUtils, validateENS } from '@rainbow-me/utils';
+import { ethereumUtils, validateENS } from '@rainbow-me/utils';
 
 const formatTime = (timestamp: string, abbreviated: boolean = true) => {
   const style = abbreviated ? 'MMM d, y' : 'MMMM d, y';
@@ -55,17 +55,24 @@ export default function useENSSearch({
         valid: false,
       };
     }
+
+    const errors: (Error | undefined)[] = [];
+
     const [
       isAvailable,
       rentPrice,
       registrationDate,
       nameExpires,
-    ] = await promiseUtils.PromiseAllWithFails([
-      getAvailable(name, contract),
-      getRentPrice(name, duration, contract),
-      fetchRegistrationDate(name + ENS_DOMAIN),
-      getNameExpires(name),
+    ] = await Promise.all([
+      getAvailable(name, contract).catch(e => (errors[0] = e)),
+      getRentPrice(name, duration, contract).catch(e => (errors[1] = e)),
+      fetchRegistrationDate(name + ENS_DOMAIN).catch(e => (errors[2] = e)),
+      getNameExpires(name).catch(e => (errors[3] = e)),
     ]);
+
+    if (errors[0]) throw errors[0];
+    if (errors[1]) throw errors[1];
+
     const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
       Network.mainnet
     );
@@ -82,11 +89,14 @@ export default function useENSSearch({
         valid: true,
       };
     } else {
+      if (errors[2]) throw errors[2];
+      if (errors[3]) throw errors[3];
+
       const formattedRegistrarionDate = formatTime(registrationDate, false);
       const formattedExpirationDate = formatTime(nameExpires);
 
       return {
-        available: isAvailable,
+        available: null,
         expirationDate: formattedExpirationDate,
         registrationDate: formattedRegistrarionDate,
         rentPrice: formattedRentPrice,
