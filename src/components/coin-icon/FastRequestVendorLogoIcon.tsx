@@ -73,6 +73,15 @@ export default React.memo(function RequestVendorLogoIcon({
 
   const dappInitials = useMemo(() => initials(dappName), [dappName]);
 
+  let shadowStyle: keyof ReturnType<typeof RVLIShadows>;
+  if (noShadow) {
+    shadowStyle = 'none';
+  } else if (showLargeShadow) {
+    shadowStyle = 'large';
+  } else {
+    shadowStyle = 'default';
+  }
+
   return (
     <View>
       {/* @ts-ignore ShadowStack is not in TS */}
@@ -80,11 +89,7 @@ export default React.memo(function RequestVendorLogoIcon({
         {...position.sizeAsObject(size)}
         backgroundColor={colors.white}
         borderRadius={borderRadius}
-        shadows={
-          RVLIShadows(colors)[
-            noShadow ? 'none' : showLargeShadow ? 'large' : 'default'
-          ]
-        }
+        shadows={RVLIShadows(colors)[shadowStyle]}
       >
         <View
           style={[

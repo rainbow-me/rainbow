@@ -87,7 +87,7 @@ const BottomRow = React.memo(function BottomRow({
       </Text>
       <Text
         align="right"
-        color={{ custom: balanceTextColor || colors.dark }}
+        color={{ custom: balanceTextColor ?? colors.dark }}
         size="16px"
         weight={isReceived ? 'medium' : undefined}
       >

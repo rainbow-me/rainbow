@@ -43,22 +43,23 @@ const getPercentageOfTimeElapsed = (startDate: Date, endDate: Date) => {
   return Math.floor((currentDifference * 100) / originalDifference);
 };
 
-export default React.memo(function RequestCoinRow({
-  item,
-  theme,
-}: {
+type Props = {
   item: any;
   theme: ThemeContextProps;
-}) {
+};
+
+type State = {
+  expirationColor: string;
+  expiresAt: Date | null;
+  percentElapsed: number;
+};
+
+export default React.memo(function RequestCoinRow({ item, theme }: Props) {
   const buttonRef = useRef();
   const dispatch = useDispatch();
   const { navigate } = useNavigation();
 
-  const [state, setState] = useState<{
-    expirationColor: string;
-    expiresAt: Date | null;
-    percentElapsed: number;
-  }>({
+  const [state, setState] = useState<State>({
     expirationColor: '',
     expiresAt: null,
     percentElapsed: 0,

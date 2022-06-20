@@ -75,6 +75,7 @@ export const transactionPressBuilder = ({
       blockExplorerAction,
       ...(ios ? [TransactionActions.close] : []),
     ];
+
     if (showContactInfo) {
       buttons.unshift(
         contact
@@ -83,19 +84,24 @@ export const transactionPressBuilder = ({
       );
     }
 
+    let title;
+    if (pending) {
+      title = `${headerInfo.type}${
+        showContactInfo
+          ? ' ' + headerInfo.divider + ' ' + headerInfo.address
+          : ''
+      }`;
+    } else if (showContactInfo) {
+      title = `${headerInfo.type} ${date} ${headerInfo.divider} ${headerInfo.address}`;
+    } else {
+      title = `${headerInfo.type} ${date}`;
+    }
+
     showActionSheetWithOptions(
       {
         cancelButtonIndex: buttons.length - 1,
         options: buttons,
-        title: pending
-          ? `${headerInfo.type}${
-              showContactInfo
-                ? ' ' + headerInfo.divider + ' ' + headerInfo.address
-                : ''
-            }`
-          : showContactInfo
-          ? `${headerInfo.type} ${date} ${headerInfo.divider} ${headerInfo.address}`
-          : `${headerInfo.type} ${date}`,
+        title,
       },
       (buttonIndex: number) => {
         const action = buttons[buttonIndex];

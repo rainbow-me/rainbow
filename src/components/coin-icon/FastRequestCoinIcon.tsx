@@ -1,10 +1,17 @@
 import React, { useCallback } from 'react';
+import { StyleSheet } from 'react-native';
 // @ts-ignore
 import { CircularProgress } from 'react-native-circular-progress';
 import FastRequestVendorLogoIcon from './FastRequestVendorLogoIcon';
 import { ThemeContextProps } from '@rainbow-me/theme';
 
 const RequestCoinIconSize = 48;
+
+const cx = StyleSheet.create({
+  circularProgress: {
+    overflow: 'visible',
+  },
+});
 
 const RequestCoinIcon = ({
   dappName,
@@ -37,9 +44,7 @@ const RequestCoinIcon = ({
 
   return (
     <CircularProgress
-      childrenContainerStyle={{
-        overflow: 'visible',
-      }}
+      childrenContainerStyle={cx.circularProgress}
       fill={percentElapsed}
       lineCap="round"
       prefill={percentElapsed}
