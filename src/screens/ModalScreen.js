@@ -1,6 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import React, { createElement } from 'react';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import {
   ContactProfileState,
@@ -26,7 +26,7 @@ const Container = styled(Centered).attrs({ direction: 'column' })(
 );
 
 export default function ModalScreen(props) {
-  const insets = useSafeArea();
+  const insets = useSafeAreaInsets();
   const { goBack } = useNavigation();
   const { params } = useRoute();
 

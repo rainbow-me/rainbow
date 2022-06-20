@@ -14,7 +14,7 @@ import Animated, {
   useAnimatedScrollHandler,
   useSharedValue,
 } from 'react-native-reanimated';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
 import { Centered } from '../layout';
 import SheetHandleFixedToTop, {
@@ -111,7 +111,7 @@ export default forwardRef(function SlackSheet(
   const yPosition = givenYPosition || useSharedValue(0);
   const { height: deviceHeight } = useDimensions();
   const { goBack } = useNavigation();
-  const insets = useSafeArea();
+  const insets = useSafeAreaInsets();
   const bottomInset = useMemo(
     () => (insets.bottom || scrollEnabled ? 42 : 30),
     [insets.bottom, scrollEnabled]

@@ -14,7 +14,7 @@ import {
   Keyboard,
   NativeModules,
 } from 'react-native';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMemoOne } from 'use-memo-one';
@@ -111,7 +111,7 @@ export default function ExchangeModal({
 }) {
   const { isSmallPhone } = useDimensions();
   const dispatch = useDispatch();
-  const insets = useSafeArea();
+  const insets = useSafeAreaInsets();
 
   useLayoutEffect(() => {
     dispatch(updateSwapTypeDetails(type, typeSpecificParams));
