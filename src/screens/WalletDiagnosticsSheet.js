@@ -5,7 +5,6 @@ import lang from 'i18n-js';
 import { toLower } from 'lodash';
 import React, { Fragment, useCallback, useEffect } from 'react';
 import { Alert, StatusBar, TextInput, View } from 'react-native';
-import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import ActivityIndicator from '../components/ActivityIndicator';
 import Divider from '../components/Divider';
 import Spinner from '../components/Spinner';
@@ -341,7 +340,7 @@ const WalletDiagnosticsSheet = () => {
       <ColumnWithMargins
         margin={15}
         style={{
-          paddingBottom: ios ? 60 : 40 + getSoftMenuBarHeight(),
+          paddingBottom: ios ? 60 : 40,
           paddingHorizontal: 19,
           paddingTop: 19,
           width: '100%',

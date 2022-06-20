@@ -2,7 +2,6 @@ import { useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
 import { toLower } from 'lodash';
 import React, { Fragment, useEffect, useMemo } from 'react';
-import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useDispatch } from 'react-redux';
 import { UniBalanceHeightDifference } from '../../hooks/charts/useChartThrottledPoints';
 import deviceUtils from '../../utils/deviceUtils';
@@ -45,7 +44,7 @@ const Spacer = styled.View({
   height: safeAreaInsetValues.bottom + 20,
 });
 export const underlyingAssetsHeight = 70;
-const heightWithoutChart = 452 + (android ? 20 - getSoftMenuBarHeight() : 0);
+const heightWithoutChart = 452;
 const heightWithChart = heightWithoutChart + 293;
 
 export const initialLiquidityPoolExpandedStateSheetHeight = android

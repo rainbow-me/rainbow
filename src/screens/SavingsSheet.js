@@ -3,7 +3,6 @@ import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
 import { StatusBar } from 'react-native';
-import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Divider from '../components/Divider';
 import { SavingsCoinRow } from '../components/coin-row';
@@ -37,9 +36,7 @@ import { position } from '@rainbow-me/styles';
 import { watchingAlert } from '@rainbow-me/utils';
 
 export const SavingsSheetEmptyHeight = 313;
-export const SavingsSheetHeight = android
-  ? 424 - getSoftMenuBarHeight() / 2
-  : 352;
+export const SavingsSheetHeight = android ? 400 : 352;
 
 const Container = styled(Centered).attrs({
   direction: 'column',

@@ -5,7 +5,7 @@ import { forEach } from 'lodash';
 import React, { useCallback } from 'react';
 import { Alert, InteractionManager, StatusBar } from 'react-native';
 import RNCloudFs from 'react-native-cloud-fs';
-import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import RestoreCloudStep from '../components/backup/RestoreCloudStep';
 import RestoreSheetFirstStep from '../components/backup/RestoreSheetFirstStep';
 import { Column } from '../components/layout';
@@ -93,31 +93,32 @@ export default function RestoreSheet() {
     });
   }, [goBack, navigate]);
 
-  const wrapperHeight =
-    deviceHeight + longFormHeight + (android ? getSoftMenuBarHeight() / 2 : 0);
+  const wrapperHeight = deviceHeight + longFormHeight;
   return (
-    <Column height={wrapperHeight}>
-      <StatusBar barStyle="light-content" />
-      <SlackSheet
-        contentHeight={longFormHeight}
-        deferredHeight={android}
-        testID="restore-sheet"
-      >
-        {step === WalletBackupStepTypes.cloud ? (
-          <RestoreCloudStep
-            backupSelected={backupSelected}
-            fromSettings={fromSettings}
-            userData={userData}
-          />
-        ) : (
-          <RestoreSheetFirstStep
-            onCloudRestore={onCloudRestore}
-            onManualRestore={onManualRestore}
-            onWatchAddress={onWatchAddress}
-            userData={userData}
-          />
-        )}
-      </SlackSheet>
-    </Column>
+    <SafeAreaView>
+      <Column height={wrapperHeight}>
+        <StatusBar barStyle="light-content" />
+        <SlackSheet
+          contentHeight={longFormHeight}
+          deferredHeight={android}
+          testID="restore-sheet"
+        >
+          {step === WalletBackupStepTypes.cloud ? (
+            <RestoreCloudStep
+              backupSelected={backupSelected}
+              fromSettings={fromSettings}
+              userData={userData}
+            />
+          ) : (
+            <RestoreSheetFirstStep
+              onCloudRestore={onCloudRestore}
+              onManualRestore={onManualRestore}
+              onWatchAddress={onWatchAddress}
+              userData={userData}
+            />
+          )}
+        </SlackSheet>
+      </Column>
+    </SafeAreaView>
   );
 }

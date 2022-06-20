@@ -3,8 +3,6 @@ import lang from 'i18n-js';
 import { toLower } from 'lodash';
 import React, { useCallback } from 'react';
 import { StatusBar } from 'react-native';
-import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Divider from '../components/Divider';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import { ButtonPressAnimation } from '../components/animations';
@@ -66,14 +64,13 @@ const ListEmoji = styled(Emoji).attrs({
 
 const WRITEABLE_LISTS = ['watchlist', 'favorites'];
 
-export const sheetHeight = android ? 490 - getSoftMenuBarHeight() : 394;
+export const sheetHeight = android ? 420 : 394;
 
 export default function AddTokenSheet() {
   const { goBack } = useNavigation();
   const { height: deviceHeight } = useDimensions();
   const { network } = useAccountSettings();
   const { favorites, lists, updateList } = useUserLists();
-  const insets = useSafeAreaInsets();
   const {
     params: { item },
   } = useRoute();
@@ -97,7 +94,7 @@ export default function AddTokenSheet() {
   const { colors } = useTheme();
 
   return (
-    <Container deviceHeight={deviceHeight} height={sheetHeight} insets={insets}>
+    <Container deviceHeight={deviceHeight} height={sheetHeight}>
       {ios && <StatusBar barStyle="light-content" />}
       {ios && <TouchableBackdrop onPress={goBack} />}
 

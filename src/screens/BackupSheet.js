@@ -4,7 +4,7 @@ import { captureMessage } from '@sentry/react-native';
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { InteractionManager, StatusBar } from 'react-native';
-import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { DelayedAlert } from '../components/alerts';
 import {
   BackupCloudStep,
@@ -210,14 +210,9 @@ export default function BackupSheet() {
     step,
   ]);
 
-  let sheetHeight =
-    android && !nativeScreen
-      ? AndroidHeight
-      : longFormHeight + getSoftMenuBarHeight();
+  let sheetHeight = android && !nativeScreen ? AndroidHeight : longFormHeight;
   let wrapperHeight =
-    deviceHeight +
-    (android && !nativeScreen ? AndroidHeight : longFormHeight) +
-    getSoftMenuBarHeight();
+    deviceHeight + (android && !nativeScreen ? AndroidHeight : longFormHeight);
   let additionalTopPadding = android && !nativeScreen;
 
   //If the sheet is full screen we should handle the sheet heights and padding differently
@@ -231,14 +226,16 @@ export default function BackupSheet() {
   }
 
   return (
-    <Column height={wrapperHeight} testID="backup-sheet">
-      <StatusBar barStyle="light-content" />
-      <SlackSheet
-        additionalTopPadding={additionalTopPadding}
-        contentHeight={sheetHeight}
-      >
-        {renderStep()}
-      </SlackSheet>
-    </Column>
+    <SafeAreaView>
+      <Column height={wrapperHeight} testID="backup-sheet">
+        <StatusBar barStyle="light-content" />
+        <SlackSheet
+          additionalTopPadding={additionalTopPadding}
+          contentHeight={sheetHeight}
+        >
+          {renderStep()}
+        </SlackSheet>
+      </Column>
+    </SafeAreaView>
   );
 }

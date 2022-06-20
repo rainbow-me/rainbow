@@ -1,6 +1,7 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useContext, useMemo } from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import AddCashSheet from '../screens/AddCashSheet';
 import AddTokenSheet from '../screens/AddTokenSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
@@ -298,76 +299,81 @@ function MainOuterNavigator() {
 
 function BSNavigator() {
   return (
-    <BSStack.Navigator>
-      <BSStack.Screen
-        component={MainOuterNavigator}
-        name={Routes.MAIN_NAVIGATOR_WRAPPER}
-      />
-      <BSStack.Screen
-        component={SendFlowNavigator}
-        name={Routes.SEND_SHEET_NAVIGATOR}
-      />
-      <BSStack.Screen
-        component={ExpandedAssetSheet}
-        name={Routes.TOKEN_INDEX_SHEET}
-      />
-      <BSStack.Screen
-        component={ShowcaseSheet}
-        name={Routes.SHOWCASE_SHEET}
-        options={{
-          height: '95%',
-        }}
-      />
-      <BSStack.Screen
-        component={SelectUniqueTokenSheet}
-        name={Routes.SELECT_UNIQUE_TOKEN_SHEET}
-        options={{
-          height: '95%',
-        }}
-      />
-      <BSStack.Screen
-        component={ExpandedAssetSheet}
-        name={Routes.EXPANDED_ASSET_SHEET}
-      />
-      <BSStack.Screen
-        component={ExpandedAssetSheet}
-        name={Routes.EXPANDED_ASSET_SHEET_POOLS}
-        options={expandedPresetWithSmallGestureResponseDistance}
-      />
-      <BSStack.Screen
-        component={ExplainSheet}
-        name={Routes.EXPLAIN_SHEET}
-        options={bottomSheetPreset}
-      />
-      <BSStack.Screen
-        component={ExternalLinkWarningSheet}
-        name={Routes.EXTERNAL_LINK_WARNING_SHEET}
-        options={bottomSheetPreset}
-      />
-      <BSStack.Screen
-        component={ModalScreen}
-        {...closeKeyboardOnClose}
-        name={Routes.MODAL_SCREEN}
-      />
-      <BSStack.Screen
-        component={SendConfirmationSheet}
-        name={Routes.SEND_CONFIRMATION_SHEET}
-        options={sheetPreset}
-      />
-      <BSStack.Screen
-        component={ExpandedAssetSheet}
-        name={Routes.CUSTOM_GAS_SHEET}
-        options={{
-          backdropOpacity: 1,
-        }}
-      />
-      <BSStack.Screen
-        component={WalletDiagnosticsSheet}
-        name={Routes.WALLET_DIAGNOSTICS_SHEET}
-      />
-      <BSStack.Screen component={SavingsSheet} name={Routes.SAVINGS_SHEET} />
-      <BSStack.Screen component={SettingsModal} name={Routes.SETTINGS_MODAL} />
-    </BSStack.Navigator>
+    <SafeAreaProvider>
+      <BSStack.Navigator>
+        <BSStack.Screen
+          component={MainOuterNavigator}
+          name={Routes.MAIN_NAVIGATOR_WRAPPER}
+        />
+        <BSStack.Screen
+          component={SendFlowNavigator}
+          name={Routes.SEND_SHEET_NAVIGATOR}
+        />
+        <BSStack.Screen
+          component={ExpandedAssetSheet}
+          name={Routes.TOKEN_INDEX_SHEET}
+        />
+        <BSStack.Screen
+          component={ShowcaseSheet}
+          name={Routes.SHOWCASE_SHEET}
+          options={{
+            height: '95%',
+          }}
+        />
+        <BSStack.Screen
+          component={SelectUniqueTokenSheet}
+          name={Routes.SELECT_UNIQUE_TOKEN_SHEET}
+          options={{
+            height: '95%',
+          }}
+        />
+        <BSStack.Screen
+          component={ExpandedAssetSheet}
+          name={Routes.EXPANDED_ASSET_SHEET}
+        />
+        <BSStack.Screen
+          component={ExpandedAssetSheet}
+          name={Routes.EXPANDED_ASSET_SHEET_POOLS}
+          options={expandedPresetWithSmallGestureResponseDistance}
+        />
+        <BSStack.Screen
+          component={ExplainSheet}
+          name={Routes.EXPLAIN_SHEET}
+          options={bottomSheetPreset}
+        />
+        <BSStack.Screen
+          component={ExternalLinkWarningSheet}
+          name={Routes.EXTERNAL_LINK_WARNING_SHEET}
+          options={bottomSheetPreset}
+        />
+        <BSStack.Screen
+          component={ModalScreen}
+          {...closeKeyboardOnClose}
+          name={Routes.MODAL_SCREEN}
+        />
+        <BSStack.Screen
+          component={SendConfirmationSheet}
+          name={Routes.SEND_CONFIRMATION_SHEET}
+          options={sheetPreset}
+        />
+        <BSStack.Screen
+          component={ExpandedAssetSheet}
+          name={Routes.CUSTOM_GAS_SHEET}
+          options={{
+            backdropOpacity: 1,
+          }}
+        />
+        <BSStack.Screen
+          component={WalletDiagnosticsSheet}
+          name={Routes.WALLET_DIAGNOSTICS_SHEET}
+        />
+        <BSStack.Screen component={SavingsSheet} name={Routes.SAVINGS_SHEET} />
+        <BSStack.Screen
+          component={SettingsModal}
+          name={Routes.SETTINGS_MODAL}
+        />
+      </BSStack.Navigator>
+    </SafeAreaProvider>
   );
 }
 
