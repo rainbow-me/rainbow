@@ -152,7 +152,7 @@ const MemoizedBalanceCoinRow = React.memo(
             <View style={[cx.innerContainer, isHidden && cx.hiddenRow]}>
               <View style={cx.row}>
                 <View style={cx.textWrapper}>
-                  <Text align="left" numberOfLines={1} size="16px">
+                  <Text numberOfLines={1} size="16px">
                     {item.name}
                   </Text>
                 </View>
@@ -166,7 +166,6 @@ const MemoizedBalanceCoinRow = React.memo(
               <View style={[cx.row, cx.bottom]}>
                 <View style={cx.textWrapper}>
                   <Text
-                    align="left"
                     color={{ custom: theme.colors.blueGreyDark50 }}
                     numberOfLines={1}
                     size="14px"
