@@ -5,6 +5,7 @@ import { ButtonPressAnimation } from '../animations';
 import { InnerBorder, RowWithMargins } from '../layout';
 import { Text } from '../text';
 import CaretImageSource from '@rainbow-me/assets/family-dropdown-arrow.png';
+import { AssetType } from '@rainbow-me/entities';
 import { useColorForAsset } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import styled from '@rainbow-me/styled-components';
@@ -40,11 +41,16 @@ export default function TokenSelectionButton({
   onPress,
   symbol,
   testID,
+  type,
 }) {
   const { isDarkMode, colors } = useTheme();
 
   const colorForAsset = useColorForAsset(
-    { address, mainnet_address: mainnetAddress },
+    {
+      address,
+      mainnet_address: mainnetAddress,
+      type: mainnetAddress ? AssetType.token : type,
+    },
     address ? undefined : colors.appleBlue
   );
 
