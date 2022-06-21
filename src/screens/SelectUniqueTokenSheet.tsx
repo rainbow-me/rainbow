@@ -5,6 +5,7 @@ import { SheetHandle } from '../components/sheet';
 import { ModalContext } from '../react-native-cool-modals/NativeStackView';
 import { Box } from '@rainbow-me/design-system';
 import { UniqueAsset } from '@rainbow-me/entities';
+import { useWalletSectionsData } from '@rainbow-me/hooks';
 
 export default function SelectUniqueTokenSheet() {
   const { params } = useRoute<any>();
@@ -22,6 +23,9 @@ export default function SelectUniqueTokenSheet() {
     },
     [goBack, params]
   );
+  const {
+    briefSectionsData: walletBriefSectionsData,
+  } = useWalletSectionsData();
 
   return (
     <Box background="body" height="full" paddingTop="34px">
@@ -32,6 +36,7 @@ export default function SelectUniqueTokenSheet() {
       <RecyclerAssetList2
         onPressUniqueToken={handlePressUniqueToken}
         type="select-nft"
+        walletBriefSectionsData={walletBriefSectionsData}
       />
     </Box>
   );

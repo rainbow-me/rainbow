@@ -23,7 +23,10 @@ export default function useWalletSectionsData({ type } = {}) {
   const uniswap = useSelector(readableUniswapSelector);
   const { showcaseTokens } = useShowcaseTokens();
 
-  const { hiddenCoins, pinnedCoins } = useCoinListEditOptions();
+  const {
+    hiddenCoinsObj: hiddenCoins,
+    pinnedCoinsObj: pinnedCoins,
+  } = useCoinListEditOptions();
 
   const { refetchSavings, savings, shouldRefetchSavings } = useSavingsAccount(
     true
