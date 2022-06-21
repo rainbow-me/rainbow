@@ -21,7 +21,6 @@ import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMemoOne } from 'use-memo-one';
 import { dismissingScreenListener } from '../../shim';
-import { BUTTON_HEIGHT } from '../components/buttons/hold-to-authorize/constants';
 import {
   AnimatedExchangeFloatingPanels,
   ConfirmExchangeButton,
@@ -719,7 +718,7 @@ export default function ExchangeModal({
   return (
     <Wrapper keyboardType={KeyboardTypes.numpad}>
       <InnerWrapper isSmallPhone={isSmallPhone}>
-        <FloatingPanels>
+        <FloatingPanels {...(isSmallPhone && { paddingTop: 0 })}>
           <FloatingPanel
             overflow="visible"
             paddingBottom={showOutputField ? 0 : 26}
@@ -784,7 +783,7 @@ export default function ExchangeModal({
               testID="deposit-info-button"
             />
           )}
-          {!isSavings && showConfirmButton ? (
+          {!isSavings && showConfirmButton && (
             <ExchangeDetailsRow
               isHighPriceImpact={isHighPriceImpact}
               onFlipCurrencies={flipCurrencies}
@@ -794,22 +793,18 @@ export default function ExchangeModal({
               priceImpactPercentDisplay={priceImpactPercentDisplay}
               type={type}
             />
-          ) : (
-            <Spacer height={60} />
           )}
 
           {isWithdrawal && <Spacer />}
         </FloatingPanels>
         <Rows alignVertical="bottom" height="content" space="19px">
           <Row height="content">
-            {showConfirmButton ? (
+            {showConfirmButton && (
               <ConfirmExchangeButton
                 {...confirmButtonProps}
                 onPressViewDetails={navigateToSwapDetailsModal}
                 testID={`${testID}-confirm-button`}
               />
-            ) : (
-              <Spacer height={BUTTON_HEIGHT} />
             )}
           </Row>
           <Row height="content">
