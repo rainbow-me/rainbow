@@ -14,7 +14,7 @@ PerformanceTracking.logDirectly(
   PerformanceMetrics.loadJSBundle,
   Date.now() - StartTime.START_TIME
 );
-PerformanceTracking.startMeasuring(PerformanceMetrics.loadJSBundle);
+PerformanceTracking.startMeasuring(PerformanceMetrics.loadRootAppComponent);
 PerformanceTracking.startMeasuring(PerformanceMetrics.timeToInteractive);
 
 /*

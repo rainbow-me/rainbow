@@ -1,23 +1,14 @@
 import React from 'react';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import { StyleSheet, View } from 'react-native';
 import { Icon } from '../icons';
-import { Centered } from '../layout';
-import { useIsCoinListEditedSharedValue } from '@rainbow-me/helpers/SharedValuesContext';
-import styled from '@rainbow-me/styled-components';
 import { borders, shadow } from '@rainbow-me/styles';
 
-const IndicatorIcon = styled(Icon).attrs(({ isPinned, theme: { colors } }) => ({
-  color: colors.whiteLabel,
-  name: isPinned ? 'pin' : 'hidden',
-}))(({ isPinned }) => ({
-  height: isPinned ? 13 : 10,
-  marginTop: isPinned ? 1 : 0,
-  width: isPinned ? 8 : 14,
-}));
+function CoinIconIndicator({ theme, style, isPinned }) {
+  // this is used inside of FastBalanceCoinRow where we have theme from props
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const { colors, isDarkMode } = theme ?? useTheme();
 
-const IndicatorIconContainer = styled(Centered)(
-  ({ theme: { isDarkMode, colors } }) => ({
-    ...borders.buildCircleAsObject(22),
+  const dynamicStyles = {
     ...shadow.buildAsObject(
       0,
       4,
@@ -25,30 +16,34 @@ const IndicatorIconContainer = styled(Centered)(
       isDarkMode ? colors.shadow : colors.blueGreyDark,
       0.4
     ),
-    alignSelf: 'center',
     backgroundColor: colors.blueGreyDark50,
-    bottom: 9,
-    left: 19,
-    position: 'absolute',
-  })
-);
+  };
 
-export default function CoinIconIndicator({ isFirstCoinRow, isPinned }) {
-  const isCoinListEditedSharedValue = useIsCoinListEditedSharedValue();
-  const style = useAnimatedStyle(
-    () => ({
-      opacity: isCoinListEditedSharedValue.value ? 1 : 0,
-    }),
-    []
-  );
+  const iconStyle = {
+    alignSelf: 'center',
+    height: isPinned ? 13 : 10,
+    marginTop: isPinned ? 1 : 0,
+    width: isPinned ? 8 : 14,
+  };
 
   return (
-    <IndicatorIconContainer
-      as={Animated.View}
-      isFirstCoinRow={isFirstCoinRow}
-      style={style}
-    >
-      <IndicatorIcon isPinned={isPinned} />
-    </IndicatorIconContainer>
+    <View style={[cx.container, dynamicStyles, style]}>
+      <Icon
+        color={colors.whiteLabel}
+        name={isPinned ? 'pin' : 'hidden'}
+        style={iconStyle}
+      />
+    </View>
   );
 }
+
+export default React.memo(CoinIconIndicator);
+
+const cx = StyleSheet.create({
+  container: {
+    justifyContent: 'center',
+    ...borders.buildCircleAsObject(22),
+    alignSelf: 'center',
+    position: 'absolute',
+  },
+});

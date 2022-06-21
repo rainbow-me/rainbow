@@ -88,14 +88,12 @@ export default function CurrencySelectModal() {
     searchQuery,
   ]);
   const uniswapAssetsInWallet = useUniswapAssetsInWallet();
-  const { hiddenCoins } = useCoinListEditOptions();
+  const { hiddenCoinsObj } = useCoinListEditOptions();
 
   const filteredUniswapAssetsInWallet = useMemo(
     () =>
-      uniswapAssetsInWallet.filter(
-        ({ uniqueId }) => !hiddenCoins.includes(uniqueId)
-      ),
-    [uniswapAssetsInWallet, hiddenCoins]
+      uniswapAssetsInWallet.filter(({ uniqueId }) => !hiddenCoinsObj[uniqueId]),
+    [uniswapAssetsInWallet, hiddenCoinsObj]
   );
 
   const {
