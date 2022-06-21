@@ -56,22 +56,10 @@ export default function useENSSearch({
       };
     }
 
-    const errors: (Error | undefined)[] = [];
-
-    const [
-      isAvailable,
-      rentPrice,
-      registrationDate,
-      nameExpires,
-    ] = await Promise.all([
-      getAvailable(name, contract).catch(e => (errors[0] = e)),
-      getRentPrice(name, duration, contract).catch(e => (errors[1] = e)),
-      fetchRegistrationDate(name + ENS_DOMAIN).catch(e => (errors[2] = e)),
-      getNameExpires(name).catch(e => (errors[3] = e)),
+    const [isAvailable, rentPrice] = await Promise.all([
+      getAvailable(name, contract),
+      getRentPrice(name, duration, contract),
     ]);
-
-    if (errors[0]) throw errors[0];
-    if (errors[1]) throw errors[1];
 
     const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
       Network.mainnet
@@ -84,19 +72,21 @@ export default function useENSSearch({
     );
     if (isAvailable) {
       return {
-        available: isAvailable,
+        available: true,
         rentPrice: formattedRentPrice,
         valid: true,
       };
     } else {
-      if (errors[2]) throw errors[2];
-      if (errors[3]) throw errors[3];
+      const [registrationDate, nameExpires] = await Promise.all([
+        fetchRegistrationDate(name + ENS_DOMAIN),
+        getNameExpires(name),
+      ]);
 
       const formattedRegistrarionDate = formatTime(registrationDate, false);
       const formattedExpirationDate = formatTime(nameExpires);
 
       return {
-        available: null,
+        available: false,
         expirationDate: formattedExpirationDate,
         registrationDate: formattedRegistrarionDate,
         rentPrice: formattedRentPrice,
