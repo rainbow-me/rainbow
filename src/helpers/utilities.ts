@@ -408,3 +408,13 @@ export const fromWei = (number: BigNumberish): string =>
 export const delay = (ms: number): Promise<void> => {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
+
+/**
+ * @desc Converts the first character of string to upper case and the remaining to lower case
+ */
+export const capitalize = (string?: string | undefined) => {
+  if (!string) return '';
+  return string
+    ? string.charAt(0).toUpperCase() + string.slice(1).toLowerCase()
+    : '';
+};
