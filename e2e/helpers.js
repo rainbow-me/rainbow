@@ -233,3 +233,22 @@ export async function sendETHtoTestWallet() {
   });
   return true;
 }
+
+export async function openDeeplinkColdStart(url) {
+  await device.terminateApp();
+  await device.launchApp({
+    launchArgs: { detoxEnableSynchronization: 0 },
+    newInstance: true,
+    url,
+  });
+}
+
+export async function openDeeplinkFromBackground(url) {
+  await device.disableSynchronization();
+  await device.sendToHome();
+  await device.enableSynchronization();
+  await device.launchApp({
+    newInstance: false,
+    url,
+  });
+}
