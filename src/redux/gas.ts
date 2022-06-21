@@ -123,21 +123,6 @@ const getSelectedGasFee = (
   const selectedTxFee = gasFeesBySpeed[selectedGasFeeOption];
   // this is going to be undefined for type 0 transactions
   const maxFee = (selectedTxFee as GasFee)?.maxFee;
-
-  // console.log(
-  //   JSON.stringify(
-  //     {
-  //       isSufficientGas,
-  //       isValidGas,
-  //       network,
-  //       selectedGasParams,
-  //       selectedTxFee,
-  //     },
-  //     null,
-  //     2
-  //   )
-  // );
-
   return {
     selectedGasFee: {
       estimatedTime: selectedGasParams?.estimatedTime,

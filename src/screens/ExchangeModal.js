@@ -225,11 +225,25 @@ export default function ExchangeModal({
     updateOutputAmount,
   } = useSwapInputHandlers();
 
+  const chainId = useMemo(
+    () =>
+      ethereumUtils.getChainIdFromType(
+        inputCurrency?.type || outputCurrency?.type
+      ),
+    [inputCurrency, outputCurrency]
+  );
+
+  const currentNetwork = useMemo(
+    () => ethereumUtils.getNetworkFromChainId(chainId || 1),
+    [chainId]
+  );
+
   const {
     flipCurrencies,
     navigateToSelectInputCurrency,
     navigateToSelectOutputCurrency,
   } = useSwapCurrencyHandlers({
+    currentNetwork,
     defaultInputAsset,
     defaultOutputAsset: defaultOutputAssetOverride,
     fromDiscover,
@@ -241,16 +255,6 @@ export default function ExchangeModal({
     title,
     type,
   });
-
-  const chainId = useMemo(
-    () => ethereumUtils.getChainIdFromType(inputCurrency?.type),
-    [inputCurrency]
-  );
-
-  const currentNetwork = useMemo(
-    () => ethereumUtils.getNetworkFromChainId(chainId || 1),
-    [chainId]
-  );
 
   const basicSwap =
     ChainId.arbitrum === chainId
@@ -700,13 +704,19 @@ export default function ExchangeModal({
   ]);
 
   const handleTapWhileDisabled = useCallback(() => {
-    if (currentNetwork === Network.arbitrum) {
-      navigate(Routes.EXPLAIN_SHEET, {
-        network: currentNetwork,
-        type: 'output_disabled',
-      });
-    }
-  }, [currentNetwork, navigate]);
+    lastFocusedInputHandle?.current?.blur();
+    navigate(Routes.EXPLAIN_SHEET, {
+      network: currentNetwork,
+      onClose: () => {
+        InteractionManager.runAfterInteractions(() => {
+          setTimeout(() => {
+            lastFocusedInputHandle?.current?.focus();
+          }, 250);
+        });
+      },
+      type: 'output_disabled',
+    });
+  }, [currentNetwork, lastFocusedInputHandle, navigate]);
 
   const showConfirmSection = isSavings
     ? !!inputCurrency
@@ -736,6 +746,7 @@ export default function ExchangeModal({
               nativeAmount={nativeAmountDisplay}
               nativeCurrency={nativeCurrency}
               nativeFieldRef={nativeFieldRef}
+              network={currentNetwork}
               onFocus={handleFocus}
               onPressMaxBalance={handlePressMaxBalance}
               onPressSelectInputCurrency={navigateToSelectInputCurrency}
@@ -745,15 +756,18 @@ export default function ExchangeModal({
             />
             {showOutputField && (
               <ExchangeOutputField
-                editable={!!outputCurrency}
+                editable={
+                  !!outputCurrency && currentNetwork !== Network.arbitrum
+                }
                 network={currentNetwork}
                 onFocus={handleFocus}
                 onPressSelectOutputCurrency={() =>
                   navigateToSelectOutputCurrency(chainId)
                 }
-                {...(currentNetwork === Network.arbitrum && {
-                  onTapWhileDisabled: handleTapWhileDisabled,
-                })}
+                {...(currentNetwork === Network.arbitrum &&
+                  !!outputCurrency && {
+                    onTapWhileDisabled: handleTapWhileDisabled,
+                  })}
                 outputAmount={outputAmountDisplay}
                 outputCurrencyAddress={outputCurrency?.address}
                 outputCurrencyAssetType={outputCurrency?.type}
