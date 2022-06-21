@@ -1,11 +1,10 @@
-export { contains, interpolate, runSpring, timing, updateState } from './procs';
+export { contains, interpolate, runSpring } from './procs';
 export {
   default as ButtonPressAnimation,
   ScaleButtonZoomableAndroid,
 } from './ButtonPressAnimation';
 export { default as FlyInAnimation } from './FlyInAnimation';
 export { default as OpacityToggler } from './OpacityToggler';
-export { default as ScaleInAnimation } from './ScaleInAnimation';
 export { default as ShimmerAnimation } from './ShimmerAnimation';
 export { SpinAnimation } from './SpinAnimation';
 export { default as HourglassAnimation } from './HourglassAnimation';
