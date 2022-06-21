@@ -69,6 +69,9 @@ export default () => {
   const processPhoto = useCallback(
     (image: any) => {
       const stringIndex = image?.path.indexOf('/tmp');
+      const imagePath = ios
+        ? `~${image?.path.slice(stringIndex)}`
+        : image?.path;
       const newWallets = {
         ...wallets,
         [selectedWallet.id]: {
@@ -77,7 +80,7 @@ export default () => {
             selectedWallet.id
           ].addresses.map((account: RainbowAccount) =>
             toLower(account.address) === toLower(accountAddress)
-              ? { ...account, image: `~${image?.path.slice(stringIndex)}` }
+              ? { ...account, image: imagePath }
               : account
           ),
         },
@@ -101,6 +104,7 @@ export default () => {
       cropperCircleOverlay: true,
       cropping: true,
     });
+    if (!image) return;
     processPhoto(image);
   }, [openPicker, processPhoto]);
 

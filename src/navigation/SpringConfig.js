@@ -1,8 +1,5 @@
-// import Animated from 'react-native-reanimated';
 import { sortList } from '../helpers/sortList';
 import { reduceArrayToObject } from '../utils';
-
-// const { SpringUtils } = Animated;
 
 const DefaultConfig = {
   damping: 42,
