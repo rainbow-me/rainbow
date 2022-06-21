@@ -20,6 +20,11 @@ const errorsAtom = atom<{ [name: string]: string }>({
   key: 'ensProfileForm.errors',
 });
 
+const isValidatingAtom = atom({
+  default: false,
+  key: 'ensProfileForm.isValidating',
+});
+
 const selectedFieldsAtom = atom<TextRecordField[]>({
   default: [],
   key: 'ensProfileForm.selectedFields',
@@ -81,7 +86,7 @@ export default function useENSRegistrationForm({
 
   const [errors, setErrors] = useRecoilState(errorsAtom);
   const [submitting, setSubmitting] = useRecoilState(submittingAtom);
-  const [evaluatingErrors, setEvaluatingErrors] = useState(false);
+  const [isValidating, setIsValidating] = useRecoilState(isValidatingAtom);
 
   const [disabled, setDisabled] = useRecoilState(disabledAtom);
   useEffect(() => {
@@ -89,13 +94,8 @@ export default function useENSRegistrationForm({
     // when there are no changed records.
     // Note: We don't want to do this in create mode as we have the "Skip"
     // button.
-    !evaluatingErrors &&
-      setDisabled(
-        mode === REGISTRATION_MODES.EDIT
-          ? isEmpty(changedRecords) || !isEmpty(errors)
-          : !isEmpty(errors)
-      );
-  }, [changedRecords, disabled, errors, evaluatingErrors, mode, setDisabled]);
+    setDisabled(mode === REGISTRATION_MODES.EDIT && isEmpty(changedRecords));
+  }, [changedRecords, mode, setDisabled]);
 
   const [selectedFields, setSelectedFields] = useRecoilState(
     selectedFieldsAtom
@@ -199,7 +199,7 @@ export default function useENSRegistrationForm({
 
   const onChangeField = useCallback(
     ({ key, value }) => {
-      setEvaluatingErrors(true);
+      setIsValidating(true);
       const validation = textRecordFields[key as ENS_RECORDS]?.validation;
       if (validation) {
         const { message, validator } = validation;
@@ -208,21 +208,14 @@ export default function useENSRegistrationForm({
           ? key in errors && setErrors(omit(errors, key))
           : setErrors({ ...errors, [key]: message });
       }
-      setEvaluatingErrors(false);
+      setIsValidating(false);
       setValuesMap(values => ({
         ...values,
         [name]: { ...values?.[name], [key]: value },
       }));
       updateRecordByKey(key, value);
     },
-    [
-      errors,
-      name,
-      setErrors,
-      setEvaluatingErrors,
-      setValuesMap,
-      updateRecordByKey,
-    ]
+    [errors, name, setErrors, setIsValidating, setValuesMap, updateRecordByKey]
   );
 
   const blurFields = useCallback(() => {
@@ -272,6 +265,7 @@ export default function useENSRegistrationForm({
     errors,
     isEmpty: empty,
     isLoading,
+    isValidating,
     onAddField,
     onBlurField,
     onChangeField,

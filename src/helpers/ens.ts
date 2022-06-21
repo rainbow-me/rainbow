@@ -193,7 +193,7 @@ export const textRecordFields = {
     startsWith: '@',
     validation: {
       message: lang.t('profiles.create.discord_submit_message'),
-      validator: value => /^([\w.])*$/.test(value),
+      validator: value => /^([\w#.])*$/.test(value),
     },
   },
   [ENS_RECORDS.github]: {
