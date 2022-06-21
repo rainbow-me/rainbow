@@ -248,7 +248,7 @@ export default function TransactionList({
         );
       }
     },
-    [accountAddress, contacts, ens, navigate, setAddress, transactions]
+    [accountAddress, contacts, ens, navigate, transactions]
   );
 
   const onCopyAddressPress = useCallback(

@@ -203,7 +203,7 @@ export default function TransactionCoinRow({ item, ...props }) {
       setEns(ensName);
     };
     if (contact?.address) fetchEns();
-  }, [contact?.address, setEns]);
+  }, [contact?.address]);
 
   return (
     <ButtonPressAnimation onPress={onPressTransaction} scaleTo={0.96}>

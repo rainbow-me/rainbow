@@ -11,8 +11,8 @@ import {
   setMigrationVersion,
 } from '../handlers/localstorage/migrations';
 import WalletTypes from '../helpers/walletTypes';
-import { rainbowProfileQueryKey } from '../hooks/useRainbowProfile';
 import { BooleanMap } from '../hooks/useCoinListEditOptions';
+import { rainbowProfileQueryKey } from '../hooks/useRainbowProfile';
 import store from '../redux/store';
 import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
 import {
