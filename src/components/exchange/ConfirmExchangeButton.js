@@ -4,15 +4,7 @@ import makeColorMoreChill from 'make-color-more-chill';
 import React, { useMemo } from 'react';
 import { darkModeThemeColors } from '../../styles/colors';
 import { HoldToAuthorizeButton } from '../buttons';
-import ImgixImage from '../images/ImgixImage';
-import {
-  Box,
-  ColorModeProvider,
-  Inline,
-  Row,
-  Rows,
-  Text,
-} from '@rainbow-me/design-system';
+import { Box, Row, Rows } from '@rainbow-me/design-system';
 import { ExchangeModalTypes } from '@rainbow-me/helpers';
 import {
   useColorForAsset,
@@ -35,7 +27,6 @@ export default function ConfirmExchangeButton({
   onSubmit,
   testID,
   tradeDetails,
-  flashbots,
   type = ExchangeModalTypes.swap,
   ...props
 }) {
@@ -129,23 +120,6 @@ export default function ConfirmExchangeButton({
   return (
     <Box>
       <Rows alignHorizontal="center" alignVertical="bottom" space="8px">
-        {flashbots && (
-          <Row height="content">
-            <ColorModeProvider value="dark">
-              <Inline alignHorizontal="center">
-                <ImgixImage
-                  source={{
-                    uri: 'https://docs.flashbots.net/img/logo.png',
-                  }}
-                  style={{ height: 24, marginTop: -7, width: 24 }}
-                />
-                <Text color="primary" weight="semibold">
-                  {` ${lang.t('exchange.flashbots_protected')} 􀅵`}
-                </Text>
-              </Inline>
-            </ColorModeProvider>
-          </Row>
-        )}
         <Row height="content">
           <HoldToAuthorizeButton
             backgroundColor={buttonColor}
