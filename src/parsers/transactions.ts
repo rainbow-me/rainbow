@@ -1,5 +1,4 @@
 import {
-  compact,
   concat,
   findIndex,
   flatten,
@@ -37,6 +36,7 @@ import { ETH_ADDRESS, savingsAssetsList } from '@rainbow-me/references';
 import {
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
+  notEmpty,
 } from '@rainbow-me/utilities';
 import { ethereumUtils, getTokenMetadata } from '@rainbow-me/utils';
 
@@ -148,7 +148,7 @@ const transformTradeRefund = (
       value: txnOut.value - refund.value,
     };
   }
-  return compact([updatedOut, txnIn]);
+  return [updatedOut, txnIn].filter(notEmpty);
 };
 
 const overrideFailedCompound = (

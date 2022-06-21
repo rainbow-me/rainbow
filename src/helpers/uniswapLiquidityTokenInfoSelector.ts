@@ -1,5 +1,5 @@
 import { ChainId, WETH } from '@uniswap/sdk';
-import { compact, isEmpty, join, map, orderBy, sumBy, toLower } from 'lodash';
+import { isEmpty, join, map, orderBy, sumBy, toLower } from 'lodash';
 import { createSelector } from 'reselect';
 import { Asset, ParsedAddressAsset } from '@rainbow-me/entities';
 import { parseAssetNative } from '@rainbow-me/parsers';
@@ -15,6 +15,7 @@ import {
   handleSignificantDecimals,
   handleSignificantDecimalsWithThreshold,
   multiply,
+  notEmpty,
 } from '@rainbow-me/utilities';
 import { getTokenMetadata } from '@rainbow-me/utils';
 
@@ -147,14 +148,13 @@ const buildUniswapCards = (
 ): UniswapCard => {
   const uniswapLiquidityPositions =
     allUniswapLiquidityPositions?.[accountAddress];
-  const uniswapPools = compact(
-    map(uniswapLiquidityPositions, position => {
-      const liquidityToken = uniswapLiquidityTokens.find(
-        token => token.address === position?.pair?.id
-      );
-      return transformPool(liquidityToken, position, nativeCurrency, chainId);
-    })
-  );
+  const uniswapPools = map(uniswapLiquidityPositions, position => {
+    const liquidityToken = uniswapLiquidityTokens.find(
+      token => token.address === position?.pair?.id
+    );
+    return transformPool(liquidityToken, position, nativeCurrency, chainId);
+  }).filter(notEmpty);
+
   const orderedUniswapPools = orderBy(
     uniswapPools,
     [({ totalBalancePrice }) => Number(totalBalancePrice)],
@@ -170,7 +170,7 @@ const buildUniswapCards = (
   }
 
   return {
-    uniswap: orderedUniswapPools,
+    uniswap: orderedUniswapPools.filter(notEmpty),
     uniswapTotal,
   };
 };

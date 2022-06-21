@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { compact, flattenDeep, get, groupBy, map, property } from 'lodash';
+import { flattenDeep, get, groupBy, map, property } from 'lodash';
 import React from 'react';
 import { LayoutAnimation } from 'react-native';
 import { createSelector } from 'reselect';
@@ -16,7 +16,12 @@ import {
   buildUniqueTokenList,
 } from './assets';
 import networkTypes from './networkTypes';
-import { add, convertAmountToNativeDisplay, multiply } from './utilities';
+import {
+  add,
+  convertAmountToNativeDisplay,
+  multiply,
+  notEmpty,
+} from './utilities';
 import { Network } from '.';
 import { ImgixImage } from '@rainbow-me/images';
 import Routes from '@rainbow-me/routes';
@@ -430,7 +435,7 @@ const buildImagesToPreloadArray = (family, index, families) => {
 };
 
 const sortImagesToPreload = images => {
-  const filtered = compact(flattenDeep(images));
+  const filtered = flattenDeep(images).filter(notEmpty);
   const grouped = groupBy(filtered, property('priority'));
   return [
     ...get(grouped, 'high', []),

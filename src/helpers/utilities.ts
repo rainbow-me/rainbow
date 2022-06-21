@@ -418,3 +418,19 @@ export const capitalize = (string?: string | undefined) => {
     ? string.charAt(0).toUpperCase() + string.slice(1).toLowerCase()
     : '';
 };
+
+/**
+ * @desc Converts the first character of string to upper case and the remaining to lower case
+ */
+export const startCase = (string?: string | undefined): string => {
+  if (!string) return '';
+  return string
+    ? string.charAt(0).toUpperCase() + string.slice(1).toLowerCase()
+    : '';
+};
+
+export const notEmpty = <TValue>(
+  value: TValue | null | undefined
+): value is TValue => {
+  return value !== null && value !== undefined;
+};

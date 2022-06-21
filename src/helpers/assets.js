@@ -1,6 +1,5 @@
 import {
   chunk,
-  compact,
   concat,
   forEach,
   get,
@@ -11,7 +10,12 @@ import {
   slice,
   sortBy,
 } from 'lodash';
-import { add, convertAmountToNativeDisplay, greaterThan } from './utilities';
+import {
+  add,
+  convertAmountToNativeDisplay,
+  greaterThan,
+  notEmpty,
+} from './utilities';
 import store from '@rainbow-me/redux/store';
 import {
   ETH_ADDRESS,
@@ -27,7 +31,7 @@ export const buildAssetUniqueIdentifier = item => {
   const nativePrice = get(item, 'native.price.display', '');
   const uniqueId = get(item, 'uniqueId');
 
-  return compact([balance, nativePrice, uniqueId]).join('_');
+  return [balance, nativePrice, uniqueId].filter(notEmpty).join('_');
 };
 
 const addEthPlaceholder = (
@@ -268,7 +272,7 @@ export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
         tokensRow.push([grouped[families[i]][j]]);
       }
     }
-    let tokens = compact(tokensRow);
+    let tokens = tokensRow.filter(notEmpty);
     tokens = chunk(tokens, 50);
     // eslint-disable-next-line no-loop-func
     tokens.forEach((tokenChunk, index) => {
