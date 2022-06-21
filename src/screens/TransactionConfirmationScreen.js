@@ -1,4 +1,4 @@
-import { useRoute } from '@react-navigation/native';
+import { useIsFocused, useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import BigNumber from 'bignumber.js';
@@ -186,6 +186,7 @@ export default function TransactionConfirmationScreen() {
   const dispatch = useDispatch();
   const { params: routeParams } = useRoute();
   const { goBack, navigate } = useNavigation();
+  const isFocused = useIsFocused();
 
   const pendingRedirect = useSelector(
     ({ walletconnect }) => walletconnect.pendingRedirect
@@ -266,8 +267,8 @@ export default function TransactionConfirmationScreen() {
 
   const {
     gasLimit,
-    isSufficientGas,
     isValidGas,
+    isSufficientGas,
     startPollingGasFees,
     stopPollingGasFees,
     updateGasFeeOption,
@@ -275,7 +276,7 @@ export default function TransactionConfirmationScreen() {
     selectedGasFee,
     selectedGasFeeOption,
     gasFeeParamsBySpeed,
-  } = useGas();
+  } = useGas({ nativeAsset });
 
   useEffect(() => {
     if (
@@ -441,7 +442,7 @@ export default function TransactionConfirmationScreen() {
   const onPressCancel = useCallback(() => onCancel(), [onCancel]);
 
   useEffect(() => {
-    if (!peerId || !walletConnector) {
+    if (isFocused && (!peerId || !walletConnector)) {
       Alert.alert(
         lang.t('wallet.transaction.alert.connection_expired'),
         lang.t('wallet.transaction.alert.please_go_back_and_reconnect'),
@@ -452,7 +453,7 @@ export default function TransactionConfirmationScreen() {
         ]
       );
     }
-  }, [goBack, onCancel, peerId, walletConnector]);
+  }, [isFocused, goBack, onCancel, peerId, walletConnector]);
 
   const calculateGasLimit = useCallback(async () => {
     calculatingGasLimit.current = true;
@@ -542,7 +543,7 @@ export default function TransactionConfirmationScreen() {
     }
 
     const { gasFee } = selectedGasFee;
-    if (!gasFee.estimatedFee) {
+    if (!gasFee?.estimatedFee) {
       setIsBalanceEnough(false);
       return;
     }
@@ -681,7 +682,7 @@ export default function TransactionConfirmationScreen() {
         }
       }
       analytics.track('Approved WalletConnect transaction request');
-      if (requestId) {
+      if (isFocused && requestId) {
         dispatch(removeRequest(requestId));
         await dispatch(
           walletConnectSendStatus(peerId, requestId, { result: result.hash })
@@ -729,6 +730,7 @@ export default function TransactionConfirmationScreen() {
     provider,
     accountInfo.address,
     callback,
+    isFocused,
     requestId,
     closeScreen,
     displayDetails?.request?.value,
@@ -1065,10 +1067,11 @@ export default function TransactionConfirmationScreen() {
                   network={currentNetwork}
                 />
                 <Row marginBottom={android ? -6 : 5}>
-                  <Row marginBottom={android ? 16 : 8}>
+                  <Row marginBottom={android ? 16 : 8} marginHorizontal={32}>
                     <Text
                       align="center"
                       color="secondary80"
+                      numberOfLines={1}
                       size="18px"
                       weight="bold"
                     >
