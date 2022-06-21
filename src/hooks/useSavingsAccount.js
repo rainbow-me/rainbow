@@ -220,9 +220,12 @@ export default function useSavingsAccount(includeDefaultDai) {
     return savings;
   }, [includeDefaultDai, result, genericAssets]);
 
+  // savings returns the same object with the new reference over and over
+  const memoizedSavings = useDeepCompareMemo(() => savings, [savings]);
+
   return {
     refetchSavings,
-    savings,
+    savings: memoizedSavings,
     shouldRefetchSavings,
   };
 }
