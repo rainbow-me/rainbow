@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeArea } from 'react-native-safe-area-context';
 import Centered from './Centered';
 import keyboardTypes from '@rainbow-me/helpers/keyboardTypes';
 import { useDimensions, useKeyboardHeight } from '@rainbow-me/hooks';
@@ -31,7 +31,7 @@ export default function KeyboardFixedOpenLayout({
   position = android ? 'relative' : 'absolute',
   ...props
 }) {
-  const insets = useSafeAreaInsets();
+  const insets = useSafeArea();
   const { height: screenHeight } = useDimensions();
   const keyboardHeight = useKeyboardHeight({
     keyboardType,

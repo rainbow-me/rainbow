@@ -11,7 +11,7 @@ import Reanimated, {
   timing,
 } from 'react-native-reanimated';
 import { useValue } from 'react-native-redash/src/v1';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeArea } from 'react-native-safe-area-context';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { useMemoOne } from 'use-memo-one';
 import RainbowGreyNeon from '../assets/rainbows/greyneon.png';
@@ -359,7 +359,7 @@ function colorAnimation(rValue) {
 }
 
 export default function WelcomeScreen() {
-  const insets = useSafeAreaInsets();
+  const insets = useSafeArea();
   const { colors, isDarkMode } = useTheme();
   const { replace, navigate, dangerouslyGetState } = useNavigation();
   const contentAnimation = useAnimatedValue(1);

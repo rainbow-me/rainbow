@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeArea } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
@@ -12,7 +12,7 @@ const PageElement = styled.View({
 });
 
 const Page = ({ color, showBottomInset, showTopInset, ...props }, ref) => {
-  const insets = useSafeAreaInsets();
+  const insets = useSafeArea();
   const { colors } = useTheme();
   return (
     <PageElement

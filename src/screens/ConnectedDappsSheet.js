@@ -1,6 +1,6 @@
 import lang from 'i18n-js';
 import React, { useEffect } from 'react';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeArea } from 'react-native-safe-area-context';
 import Divider from '../components/Divider';
 import { Row } from '../components/layout';
 import { Sheet, SheetHandleFixedToTop, SheetTitle } from '../components/sheet';
@@ -26,7 +26,7 @@ const SheetTitleWithPadding = styled(SheetTitle)({
 export default function ConnectedDappsSheet() {
   const { mostRecentWalletConnectors } = useWalletConnectConnections();
   const { goBack } = useNavigation();
-  const insets = useSafeAreaInsets();
+  const insets = useSafeArea();
   const { colors } = useTheme();
 
   useEffect(() => {

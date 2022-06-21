@@ -2,7 +2,7 @@ import ConditionalWrap from 'conditional-wrap';
 import { times } from 'lodash';
 import React, { useMemo } from 'react';
 import { RefreshControl, ScrollView } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeArea } from 'react-native-safe-area-context';
 import AddFundsInterstitial from '../AddFundsInterstitial';
 import { FabWrapperBottomPosition } from '../fab';
 import { Centered, Column } from '../layout';
@@ -23,7 +23,7 @@ const EmptyAssetList = ({
   title,
   ...props
 }) => {
-  const { bottom: bottomInset } = useSafeAreaInsets();
+  const { bottom: bottomInset } = useSafeArea();
 
   const interstitialOffset = useMemo(() => {
     let offset = bottomInset + FabWrapperBottomPosition;

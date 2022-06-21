@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import Animated from 'react-native-reanimated';
 import { useSpringTransition } from 'react-native-redash/src/v1';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeArea } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
 import { interpolate } from '../animations';
 import { Icon } from '../icons';
@@ -59,7 +59,7 @@ export default function Toast({
 }) {
   const { colors, isDarkMode } = useTheme();
   const { width: deviceWidth } = useDimensions();
-  const insets = useSafeAreaInsets();
+  const insets = useSafeArea();
 
   const animation = useSpringTransition(isVisible, springConfig);
 

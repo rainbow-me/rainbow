@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeArea } from 'react-native-safe-area-context';
 import { useNavigation } from '../../navigation/Navigation';
 import { useTheme } from '../../theme/ThemeContext';
 
@@ -20,7 +20,7 @@ const Sheet = ({
 }) => {
   const { width } = useDimensions();
   const { goBack } = useNavigation();
-  const insets = useSafeAreaInsets();
+  const insets = useSafeArea();
   const { colors } = useTheme();
 
   return (

@@ -1,6 +1,6 @@
 import lang from 'i18n-js';
 import React from 'react';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeArea } from 'react-native-safe-area-context';
 import { magicMemo } from '../../utils';
 import { FabWrapperBottomPosition, FloatingActionButtonSize } from '../fab';
 import { ListFooter } from '../list';
@@ -21,7 +21,7 @@ const AssetList = ({
   sections,
   ...props
 }) => {
-  const insets = useSafeAreaInsets();
+  const insets = useSafeArea();
 
   return isEmpty || isLoading ? (
     <EmptyAssetList
