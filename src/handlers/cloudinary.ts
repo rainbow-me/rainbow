@@ -49,7 +49,7 @@ export const signUrl = memoFn(
       sign_url: true,
       ...widthAndHeight,
     });
-
+    
     return cloudinaryImg;
   },
   (url, options) =>

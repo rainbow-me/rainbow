@@ -18,6 +18,7 @@ import {
   adjustSize,
   isGoogleUserContent,
 } from '@rainbow-me/handlers/googleUserContent';
+
 import { STORAGE_IDS } from '@rainbow-me/model/mmkv';
 import logger from 'logger';
 
@@ -132,10 +133,11 @@ const shouldSignUri = (
     if (options?.fm) {
       updatedOptions.fm = options.fm;
     }
-
+    
     if (isGoogleUserContent(externalImageUri) && !options?.fm) {
       return adjustSize(externalImageUri, updatedOptions.w, updatedOptions.h);
     }
+
 
     // Firstly, we check if the url is a Cloudinary link.
     // Then, obviously, we use Cloudinary to transform the size and format.
