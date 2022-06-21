@@ -9,7 +9,7 @@ import { ButtonPressAnimation } from '../animations';
 import { CoinRowHeight } from '../coin-row';
 import Text from '../text/Text';
 import ActivityListEmptyState from './ActivityListEmptyState';
-import ActivityListHeader from './FastActivityListHeader';
+import ActivityListHeader from './ActivityListHeader';
 import styled from '@rainbow-me/styled-components';
 
 const cx = StyleSheet.create({
