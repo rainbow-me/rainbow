@@ -91,7 +91,7 @@ const CoinIconWithBackground = React.memo(function CoinIconWithBackground({
           imageUrl={imageUrl}
           onError={onError}
           onLoad={onLoad}
-          size={32}
+          size={40}
           style={[cx.coinIconFallback, isLoaded && cx.withBackground]}
         />
       )}
@@ -179,7 +179,6 @@ const cx = StyleSheet.create({
     height: 40,
     justifyContent: 'center',
     overflow: 'hidden',
-    // overflow: 'visible',
     width: 40,
   },
   coinIconFallback: {
@@ -190,9 +189,9 @@ const cx = StyleSheet.create({
   },
   container: {
     elevation: 6,
-    height: 60,
+    height: 59,
     overflow: 'visible',
-    paddingTop: 9.5,
+    paddingTop: 9,
   },
   fallbackWrapper: {
     left: 0,

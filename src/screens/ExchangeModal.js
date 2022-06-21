@@ -226,8 +226,11 @@ export default function ExchangeModal({
   } = useSwapInputHandlers();
 
   const chainId = useMemo(
-    () => ethereumUtils.getChainIdFromType(inputCurrency?.type),
-    [inputCurrency]
+    () =>
+      ethereumUtils.getChainIdFromType(
+        inputCurrency?.type || outputCurrency?.type
+      ),
+    [inputCurrency, outputCurrency]
   );
 
   const currentNetwork = useMemo(
@@ -729,7 +732,7 @@ export default function ExchangeModal({
             radius={39}
             testID={testID}
           >
-            {showOutputField && <ExchangeNotch />}
+            {showOutputField && <ExchangeNotch testID={testID} />}
             <ExchangeHeader testID={testID} title={title} />
             <ExchangeInputField
               disableInputCurrencySelection={isWithdrawal}
@@ -743,6 +746,7 @@ export default function ExchangeModal({
               nativeAmount={nativeAmountDisplay}
               nativeCurrency={nativeCurrency}
               nativeFieldRef={nativeFieldRef}
+              network={currentNetwork}
               onFocus={handleFocus}
               onPressMaxBalance={handlePressMaxBalance}
               onPressSelectInputCurrency={navigateToSelectInputCurrency}

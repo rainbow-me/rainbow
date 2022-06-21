@@ -23,16 +23,17 @@ import { Row } from '../layout';
 import { Text } from '../text';
 import { ImgixImage } from '@rainbow-me/images';
 import styled from '@rainbow-me/styled-components';
-import { margin, padding } from '@rainbow-me/styles';
+import { colors, margin, padding } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';
 import ShadowStack from 'react-native-shadow-stack';
 
 export const ExchangeSearchHeight = 40;
+const DoneButtonWidth = 52;
 const ExchangeSearchWidth = deviceUtils.dimensions.width - 40;
 
 const Container = styled(Row)(({ isSearchModeEnabled }) => ({
   ...(isSearchModeEnabled ? padding.object(0, 37, 0, 12) : padding.object(0)),
-  backgroundColor: 'transparent',
+  backgroundColor: colors.transparent,
   borderRadius: ExchangeSearchHeight / 2,
   height: ExchangeSearchHeight,
 }));
@@ -151,6 +152,10 @@ const ExchangeSearch = (
     onChangeText?.('');
   }, [isDiscover, searchQuery, ref, onChangeText]);
 
+  const ExchangeSearchWidthFocused = isDiscover
+    ? ExchangeSearchWidth - DoneButtonWidth
+    : ExchangeSearchWidth;
+
   const spinnerRotation = useSharedValue(0);
   const spinnerScale = useSharedValue(0);
   const { isSearchModeEnabled = true } = useContext(DiscoverSheetContext) || {};
@@ -201,11 +206,14 @@ const ExchangeSearch = (
       backgroundColor={colors.white}
       borderRadius={ExchangeSearchHeight / 2}
       height={ExchangeSearchHeight}
+      isSearchModeEnabled={isSearchModeEnabled}
       shadows={shadows}
-      width={ExchangeSearchWidth}
+      width={
+        isSearchModeEnabled ? ExchangeSearchWidthFocused : ExchangeSearchWidth
+      }
     >
-      <BackgroundGradient />
       <Container isSearchModeEnabled={isSearchModeEnabled}>
+        <BackgroundGradient />
         {isSearchModeEnabled && (
           <>
             <SearchIconWrapper style={searchIconStyle}>
