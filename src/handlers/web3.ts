@@ -68,7 +68,7 @@ type GasParamsInput = { gasPrice: BigNumberish } & {
  */
 type TransactionDetailsInput = Pick<
   NewTransactionNonNullable,
-  'from' | 'to' | 'data' | 'gasLimit' | 'network'
+  'from' | 'to' | 'data' | 'gasLimit' | 'network' | 'nonce'
 > &
   Pick<NewTransaction, 'amount'> &
   GasParamsInput;
@@ -83,6 +83,7 @@ type TransactionDetailsReturned = {
   network?: Network | string;
   to?: TransactionRequest['to'];
   value?: TransactionRequest['value'];
+  nonce?: TransactionRequest['nonce'];
 } & GasParamsReturned;
 
 /**
@@ -453,7 +454,7 @@ export const getTransactionGasParams = (
 export const getTxDetails = async (
   transaction: TransactionDetailsInput
 ): Promise<TransactionDetailsReturned> => {
-  const { to } = transaction;
+  const { nonce, to } = transaction;
   const data = transaction?.data ?? '0x';
   const value = transaction.amount ? toHex(toWei(transaction.amount)) : '0x0';
   const gasLimit = transaction.gasLimit
@@ -462,14 +463,17 @@ export const getTxDetails = async (
   const baseTx = {
     data,
     gasLimit,
+    nonce,
     to,
     value,
   };
+
   const gasParams = getTransactionGasParams(transaction);
   const tx = {
     ...baseTx,
     ...gasParams,
   };
+
   return tx;
 };
 
