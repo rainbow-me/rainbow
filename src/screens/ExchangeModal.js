@@ -21,6 +21,7 @@ import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMemoOne } from 'use-memo-one';
 import { dismissingScreenListener } from '../../shim';
+import { BUTTON_HEIGHT } from '../components/buttons/hold-to-authorize/constants';
 import {
   AnimatedExchangeFloatingPanels,
   ConfirmExchangeButton,
@@ -34,7 +35,7 @@ import {
 import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Column, KeyboardFixedOpenLayout } from '../components/layout';
-import { Box } from '@rainbow-me/design-system';
+import { Row, Rows } from '@rainbow-me/design-system';
 import { AssetType } from '@rainbow-me/entities';
 import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
 import {
@@ -81,7 +82,7 @@ const InnerWrapper = styled(Column).attrs({
 });
 
 const Spacer = styled.View({
-  height: 20,
+  height: ({ height }) => height ?? 20,
 });
 
 const getInputHeaderTitle = (type, defaultInputAsset) => {
@@ -783,7 +784,7 @@ export default function ExchangeModal({
               testID="deposit-info-button"
             />
           )}
-          {!isSavings && showConfirmButton && (
+          {!isSavings && showConfirmButton ? (
             <ExchangeDetailsRow
               isHighPriceImpact={isHighPriceImpact}
               onFlipCurrencies={flipCurrencies}
@@ -793,28 +794,36 @@ export default function ExchangeModal({
               priceImpactPercentDisplay={priceImpactPercentDisplay}
               type={type}
             />
+          ) : (
+            <Spacer height={60} />
           )}
 
           {isWithdrawal && <Spacer />}
         </FloatingPanels>
-        <Box>
-          {showConfirmButton && (
-            <ConfirmExchangeButton
-              {...confirmButtonProps}
-              flashbots={flashbots}
-              onPressViewDetails={navigateToSwapDetailsModal}
-              testID={`${testID}-confirm-button`}
+        <Rows alignVertical="bottom" height="content" space="19px">
+          <Row height="content">
+            {showConfirmButton ? (
+              <ConfirmExchangeButton
+                {...confirmButtonProps}
+                onPressViewDetails={navigateToSwapDetailsModal}
+                testID={`${testID}-confirm-button`}
+              />
+            ) : (
+              <Spacer height={BUTTON_HEIGHT} />
+            )}
+          </Row>
+          <Row height="content">
+            <GasSpeedButton
+              asset={outputCurrency}
+              currentNetwork={currentNetwork}
+              dontBlur
+              marginBottom={0}
+              marginTop={0}
+              onCustomGasBlur={handleCustomGasBlur}
+              testID={`${testID}-gas`}
             />
-          )}
-          <GasSpeedButton
-            asset={outputCurrency}
-            currentNetwork={currentNetwork}
-            dontBlur
-            marginBottom={0}
-            onCustomGasBlur={handleCustomGasBlur}
-            testID={`${testID}-gas`}
-          />
-        </Box>
+          </Row>
+        </Rows>
       </InnerWrapper>
     </Wrapper>
   );
