@@ -114,7 +114,7 @@ export default function ExchangeModal({
   type,
   typeSpecificParams,
 }) {
-  const { isSmallPhone } = useDimensions();
+  const { isSmallPhone, isSmallAndroidPhone } = useDimensions();
   const dispatch = useDispatch();
   const {
     params: { inputAsset: defaultInputAsset, outputAsset: defaultOutputAsset },
@@ -720,8 +720,12 @@ export default function ExchangeModal({
 
   return (
     <Wrapper keyboardType={KeyboardTypes.numpad}>
-      <InnerWrapper isSmallPhone={isSmallPhone}>
-        <FloatingPanels {...(isSmallPhone && { paddingTop: 0 })}>
+      <InnerWrapper>
+        <FloatingPanels
+          {...((isSmallPhone || (android && isSmallAndroidPhone)) && {
+            paddingTop: 0,
+          })}
+        >
           <FloatingPanel
             overflow="visible"
             paddingBottom={showOutputField ? 0 : 26}
