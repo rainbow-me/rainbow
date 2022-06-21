@@ -29,6 +29,7 @@ export default async function handleDeeplink(
   url: any,
   initialRoute: any = null
 ) {
+  return 
   if (!url) return;
   // We need to wait till the wallet is ready
   // to handle any deeplink
