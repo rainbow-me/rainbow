@@ -173,9 +173,11 @@ export default () => {
               ]),
         ]
       : [isENSProfile && lang.t('profiles.profile_avatar.view_profile')]
-    )
-      .filter(option => Boolean(option))
-      .concat(ios ? ['Cancel'] : []);
+    ).filter(option => Boolean(option));
+
+    if (ios && avatarActionSheetOptions.length) {
+      avatarActionSheetOptions.push('Cancel');
+    }
 
     const callback = async (buttonIndex: Number) => {
       switch (buttonIndex) {
@@ -228,15 +230,17 @@ export default () => {
       }
     };
 
-    showActionSheetWithOptions(
-      {
-        cancelButtonIndex: avatarActionSheetOptions.length - 1,
-        destructiveButtonIndex:
-          !isReadOnly && !hasENSAvatar && accountImage ? 1 : undefined,
-        options: avatarActionSheetOptions,
-      },
-      (buttonIndex: Number) => callback(buttonIndex)
-    );
+    if (avatarActionSheetOptions.length) {
+      showActionSheetWithOptions(
+        {
+          cancelButtonIndex: avatarActionSheetOptions.length - 1,
+          destructiveButtonIndex:
+            !isReadOnly && !hasENSAvatar && accountImage ? 1 : undefined,
+          options: avatarActionSheetOptions,
+        },
+        (buttonIndex: Number) => callback(buttonIndex)
+      );
+    }
   }, [
     ensProfile,
     profileEnabled,
