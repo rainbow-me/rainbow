@@ -247,7 +247,9 @@ export function ENSAssignRecordsBottomActions({
   const [fromRoute, setFromRoute] = useState(previousRouteName);
   const {
     disabled,
-    isEmpty,
+    errors,
+    isValidating,
+    isEmpty: isEmptyForm,
     selectedFields,
     onAddField,
     onRemoveField,
@@ -365,7 +367,7 @@ export function ENSAssignRecordsBottomActions({
                       {lang.t('profiles.create.back')}
                     </TintButton>
                   )}
-                  {isEmpty && mode === REGISTRATION_MODES.CREATE ? (
+                  {isEmptyForm && mode === REGISTRATION_MODES.CREATE ? (
                     <TintButton
                       disabled={disabled}
                       onPress={handlePressContinue}
@@ -378,6 +380,7 @@ export function ENSAssignRecordsBottomActions({
                       {!disabled ? (
                         <SheetActionButton
                           color={accentColor}
+                          disabled={isValidating || !isEmpty(errors)}
                           // @ts-expect-error JavaScript component
                           label={lang.t('profiles.create.review')}
                           onPress={handlePressContinue}
