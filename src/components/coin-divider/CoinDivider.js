@@ -18,7 +18,6 @@ import CoinDividerOpenButton from './CoinDividerOpenButton';
 import EditAction from '@rainbow-me/helpers/EditAction';
 import {
   useAccountSettings,
-  useCoinListEdited,
   useCoinListEditOptions,
   useCoinListFinishEditingOptions,
   useDimensions,
@@ -60,8 +59,7 @@ const EditButtonWrapper = styled(Row).attrs({
   right: 0,
 });
 
-const useInterpolationRange = () => {
-  const { isCoinListEdited } = useCoinListEdited();
+const useInterpolationRange = isCoinListEdited => {
   const position = useRecyclerAssetListPosition();
   const ref = useRef();
 
@@ -100,8 +98,13 @@ const useInterpolationRange = () => {
   };
 };
 
-export default function CoinDivider({ balancesSum, defaultToEditButton }) {
-  const interpolation = useInterpolationRange();
+export default function CoinDivider({
+  balancesSum,
+  defaultToEditButton,
+  extendedState,
+}) {
+  const { isCoinListEdited, setIsCoinListEdited } = extendedState;
+  const interpolation = useInterpolationRange(isCoinListEdited);
   const { nativeCurrency } = useAccountSettings();
   const dispatch = useDispatch();
   const assets = useSelector(({ data: { assets } }) => assets);
@@ -116,8 +119,6 @@ export default function CoinDivider({ balancesSum, defaultToEditButton }) {
     setHiddenCoins,
     setPinnedCoins,
   } = useCoinListFinishEditingOptions();
-
-  const { isCoinListEdited, setIsCoinListEdited } = useCoinListEdited();
 
   const {
     isSmallBalancesOpen,

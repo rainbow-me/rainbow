@@ -17,6 +17,7 @@ import {
   fallbackExplorerClearState,
   fallbackExplorerInit,
   fetchOnchainBalances,
+  onMainnetAssetDiscoveryResponse,
 } from './fallbackExplorer';
 // eslint-disable-next-line import/no-cycle
 import { optimismExplorerInit } from './optimismExplorer';
@@ -84,6 +85,7 @@ const messages = {
   CONNECT: 'connect',
   DISCONNECT: 'disconnect',
   ERROR: 'error',
+  MAINNET_ASSET_DISCOVERY: 'received address mainnet-assets-discovery',
   RECONNECT_ATTEMPT: 'reconnect_attempt',
 };
 
@@ -118,6 +120,17 @@ const portfolioSubscription = (address, currency, action = 'get') => [
       portfolio_fields: 'all',
     },
     scope: ['portfolio'],
+  },
+];
+
+const mainnetAssetDisovery = (address, currency, action = 'get') => [
+  action,
+  {
+    payload: {
+      address,
+      currency: toLower(currency),
+    },
+    scope: ['mainnet-assets-discovery'],
   },
 ];
 
@@ -363,6 +376,12 @@ export const explorerInit = () => async (dispatch, getState) => {
       type: EXPLORER_SET_FALLBACK_HANDLER,
     });
   }
+};
+
+export const emitMainnetAssetDiscoveryRequest = (dispatch, getState) => {
+  const { addressSocket } = getState().explorer;
+  const { accountAddress, nativeCurrency } = getState().settings;
+  addressSocket.emit(...mainnetAssetDisovery(accountAddress, nativeCurrency));
 };
 
 export const emitPortfolioRequest = (address, currency) => (
@@ -636,6 +655,10 @@ const listenOnAddressMessages = socket => dispatch => {
     // Fetch balances onchain to override zerion's
     // which is likely behind
     dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
+  });
+
+  socket.on(messages.MAINNET_ASSET_DISCOVERY, message => {
+    onMainnetAssetDiscoveryResponse(message);
   });
 };
 

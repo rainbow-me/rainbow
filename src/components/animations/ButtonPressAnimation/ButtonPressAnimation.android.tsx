@@ -10,6 +10,7 @@ import {
   processColor,
   requireNativeComponent,
   StyleProp,
+  StyleSheet,
   View,
   ViewStyle,
 } from 'react-native';
@@ -33,7 +34,6 @@ import { normalizeTransformOrigin } from './NativeButton';
 import { ScaleButtonContext } from './ScaleButtonZoomable';
 import { BaseButtonAnimationProps } from './types';
 import { useLongPressEvents } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
 
 interface BaseProps extends BaseButtonAnimationProps {
   backgroundColor: string;
@@ -75,10 +75,7 @@ const AnimatedRawButton = createNativeWrapper<
 
 const OVERFLOW_MARGIN = 5;
 
-// @ts-expect-error Property 'View' does not exist on type...
-const Content = styled.View({
-  overflow: 'visible',
-});
+const transparentColor = processColor('transparent');
 
 const ScaleButton = ({
   children,
@@ -148,15 +145,15 @@ const ScaleButton = ({
   );
 
   return (
-    <View style={[{ overflow: 'visible' }, wrapperStyle]}>
+    <View style={[cx.overflow, wrapperStyle]}>
       <View style={{ margin: -overflowMargin }}>
         <AnimatedRawButton
           hitSlop={-overflowMargin}
           onGestureEvent={gestureHandler}
-          rippleColor={processColor('transparent')}
-          style={{ overflow: 'visible' }}
+          rippleColor={transparentColor}
+          style={cx.overflow}
         >
-          <View style={{ backgroundColor: 'transparent' }}>
+          <View style={cx.transparentBackground}>
             <View style={{ padding: overflowMargin }}>
               <Animated.View style={[sz, contentContainerStyle]}>
                 {children}
@@ -201,6 +198,10 @@ const SimpleScaleButton = ({
     [onLongPress, onLongPressEnded, onPress, shouldLongPressHoldPress]
   );
 
+  // we won't guess if there are any animated styles in there but we can
+  // not render the Animated.View if we don't use that prop at all
+  const Wrapper = contentContainerStyle ? Animated.View : View;
+
   return (
     <View
       onLayout={onLayout}
@@ -225,22 +226,21 @@ const SimpleScaleButton = ({
           isLongPress={isLongPress}
           minLongPressDuration={minLongPressDuration}
           onPress={onNativePress}
-          rippleColor={processColor('transparent')}
+          rippleColor={transparentColor}
           scaleTo={scaleTo}
           shouldLongPressHoldPress={shouldLongPressHoldPress}
-          style={{ overflow: 'visible' }}
+          style={cx.overflow}
           transformOrigin={transformOrigin}
         >
-          <View style={{ backgroundColor: 'transparent' }}>
+          <View style={cx.transparentBackground}>
             <View
               style={{
                 padding: overflowMargin,
                 paddingTop: skipTopMargin ? OVERFLOW_MARGIN : overflowMargin,
               }}
             >
-              <Animated.View style={contentContainerStyle}>
-                {children}
-              </Animated.View>
+              {/* @ts-expect-error TS can't infer types where we use this dynamic wrapper */}
+              <Wrapper style={contentContainerStyle}>{children}</Wrapper>
             </View>
           </View>
         </ZoomableButton>
@@ -277,9 +277,9 @@ export default function ButtonPressAnimation({
 
   const ButtonElement = reanimatedButton ? ScaleButton : SimpleScaleButton;
   return disabled ? (
-    <Content onLayout={onLayout} style={style}>
+    <View onLayout={onLayout} style={[cx.overflow, style]}>
       {children}
-    </Content>
+    </View>
   ) : (
     <ButtonElement
       backgroundColor={backgroundColor}
@@ -300,9 +300,18 @@ export default function ButtonPressAnimation({
       transformOrigin={normalizedTransformOrigin}
       wrapperStyle={wrapperStyle}
     >
-      <Content pointerEvents="box-only" style={style}>
+      <View pointerEvents="box-only" style={[cx.overflow, style]}>
         {children}
-      </Content>
+      </View>
     </ButtonElement>
   );
 }
+
+const cx = StyleSheet.create({
+  overflow: {
+    overflow: 'visible',
+  },
+  transparentBackground: {
+    backgroundColor: 'transparent',
+  },
+});
