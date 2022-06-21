@@ -652,7 +652,7 @@ export default async function runMigrations() {
   migrations.push(v16);
 
   /*
-   *************** Migration v17 ******************
+   *************** Migration v18 ******************
    * Switch wallet "color" property from index to hex.
    * Create new wallet property "emoji".
    * Remove first emoji from wallet property "label".
@@ -660,8 +660,8 @@ export default async function runMigrations() {
    * Remove first emoji from contact property "nickname"
    * Enabled web data for all wallets.
    */
-  const v17 = async () => {
-    logger.log('Start migration v17');
+  const v18 = async () => {
+    logger.log('Start migration v18');
     try {
       const { selected, wallets } = store.getState().wallets;
       if (!wallets) return;
@@ -731,13 +731,13 @@ export default async function runMigrations() {
       );
       await saveContacts(updatedContacts);
     } catch (error) {
-      logger.sentry('Migration v17 failed: ', error);
-      const migrationError = new Error('Migration 17 failed');
+      logger.sentry('Migration v18 failed: ', error);
+      const migrationError = new Error('Migration 18 failed');
       captureException(migrationError);
     }
   };
 
-  migrations.push(v17);
+  migrations.push(v18);
 
   logger.sentry(
     `Migrations: ready to run migrations starting on number ${currentVersion}`
