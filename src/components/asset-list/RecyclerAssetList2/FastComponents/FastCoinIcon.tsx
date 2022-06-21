@@ -91,7 +91,7 @@ const CoinIconWithBackground = React.memo(function CoinIconWithBackground({
           imageUrl={imageUrl}
           onError={onError}
           onLoad={onLoad}
-          size={32}
+          size={40}
           style={[cx.coinIconFallback, isLoaded && cx.withBackground]}
         />
       )}
