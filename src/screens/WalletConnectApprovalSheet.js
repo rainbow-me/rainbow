@@ -317,23 +317,31 @@ export default function WalletConnectApprovalSheet() {
           >
             <DappLogo dappName={dappName || ''} imageUrl={imageUrl} />
             <Centered paddingHorizontal={24}>
-              <Row>
+              <Column>
+                <Row justify="center" marginBottom={12}>
+                  <Text
+                    align="center"
+                    color="primary"
+                    numberOfLines={1}
+                    size="23px"
+                    weight="heavy"
+                  >
+                    {dappName}
+                  </Text>
+                </Row>
                 <Text
                   align="center"
                   color="secondary60"
                   size="23px"
                   weight="semibold"
                 >
-                  <Text color="primary" size="23px" weight="heavy">
-                    {dappName}
-                  </Text>{' '}
                   {type === WalletConnectApprovalSheetType.connect
                     ? `wants to connect to your wallet`
                     : `wants to connect to the ${ethereumUtils.getNetworkNameFromChainId(
                         Number(chainId)
                       )} network`}
                 </Text>
-              </Row>
+              </Column>
             </Centered>
             <Row marginBottom={30} marginTop={30}>
               <Text color="action" size="18px" weight="heavy">
