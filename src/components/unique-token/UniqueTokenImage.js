@@ -64,7 +64,6 @@ const UniqueTokenImage = ({
       ) : imageUrl && !error ? (
         <Fragment>
           <ImageTile
-            {...(isCard && { fm: 'png' })}
             onError={handleError}
             onLoad={onLoad}
             resizeMode={TransformationImage.resizeMode[resizeMode]}
