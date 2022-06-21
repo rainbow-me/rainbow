@@ -321,7 +321,6 @@ export function ENSAssignRecordsBottomActions({
     [keyboardHeight]
   );
 
-  // console.log(isValidating);
   return (
     <>
       {visible && (
