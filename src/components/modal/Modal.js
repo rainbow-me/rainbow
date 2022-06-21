@@ -12,6 +12,7 @@ const Container = styled(Centered).attrs(({ fixedToTop }) => ({
   direction: 'column',
   justify: fixedToTop ? 'start' : 'center',
 }))({
+  marginTop: getStatusBarHeight(),
   padding: ({ containerPadding }) => containerPadding,
   ...position.sizeAsObject('100%'),
   shadowColor: ({ shadowColor }) => shadowColor,
