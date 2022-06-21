@@ -12,6 +12,7 @@ const Container = styled(Row).attrs({ align: 'center' })({
 
 export default function ExchangeOutputField({
   editable,
+  network,
   onFocus,
   onPressSelectOutputCurrency,
   onTapWhileDisabled,
@@ -31,6 +32,7 @@ export default function ExchangeOutputField({
         amount={outputAmount}
         editable={editable}
         mainnetAddress={outputCurrencyMainnetAddress}
+        network={network}
         onFocus={onFocus}
         onPressSelectCurrency={onPressSelectOutputCurrency}
         onTapWhileDisabled={onTapWhileDisabled}
