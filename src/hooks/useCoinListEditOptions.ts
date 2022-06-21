@@ -12,16 +12,20 @@ const selectedItemsAtom = atom<string[]>({
   key: 'selectedItemsAtom',
 });
 
+export interface BooleanMap {
+  [index: string]: boolean;
+}
+
 export default function useCoinListEditOptions() {
   const { accountAddress } = useAccountSettings();
 
   const setSelectedItems = useSetRecoilState(selectedItemsAtom);
-  const [hiddenCoins = []] = useMMKVObject<string[]>(
-    'hidden-coins-' + accountAddress
+  const [hiddenCoins = {}] = useMMKVObject<BooleanMap>(
+    'hidden-coins-obj-' + accountAddress
   );
 
-  const [pinnedCoins = []] = useMMKVObject<string[]>(
-    'pinned-coins-' + accountAddress
+  const [pinnedCoins = {}] = useMMKVObject<BooleanMap>(
+    'pinned-coins-obj-' + accountAddress
   );
   const pushSelectedCoin = useCallback(
     (item: string) =>
@@ -54,8 +58,8 @@ export default function useCoinListEditOptions() {
 
   return {
     clearSelectedCoins,
-    hiddenCoins,
-    pinnedCoins,
+    hiddenCoinsObj: hiddenCoins,
+    pinnedCoinsObj: pinnedCoins,
     pushSelectedCoin,
     removeSelectedCoin,
     toggleSelectedCoin,
@@ -69,12 +73,12 @@ export function useCoinListFinishEditingOptions() {
   const selectedItemsNonReactive = useRef<string[]>();
   selectedItemsNonReactive.current = selectedItems;
 
-  const [hiddenCoins = [], setHiddenCoinsArray] = useMMKVObject<string[]>(
-    'hidden-coins-' + accountAddress
+  const [hiddenCoins = {}, setHiddenCoinsObject] = useMMKVObject<BooleanMap>(
+    'hidden-coins-obj-' + accountAddress
   );
 
-  const [pinnedCoins = [], setPinnedCoinsArray] = useMMKVObject<string[]>(
-    'pinned-coins-' + accountAddress
+  const [pinnedCoins = {}, setPinnedCoinsObject] = useMMKVObject<BooleanMap>(
+    'pinned-coins-obj-' + accountAddress
   );
 
   const currentAction = useMemo(() => {
@@ -84,14 +88,14 @@ export function useCoinListFinishEditingOptions() {
       return EditAction.none;
     } else if (
       newSelectedCoinsLength > 0 &&
-      difference(hiddenCoins, selectedItems).length ===
-        hiddenCoins.length - newSelectedCoinsLength
+      difference(Object.keys(hiddenCoins), selectedItems).length ===
+        Object.keys(hiddenCoins).length - newSelectedCoinsLength
     ) {
       return EditAction.unhide;
     } else if (
       newSelectedCoinsLength > 0 &&
-      difference(pinnedCoins, selectedItems).length ===
-        pinnedCoins.length - newSelectedCoinsLength
+      difference(Object.keys(pinnedCoins), selectedItems).length ===
+        Object.keys(pinnedCoins).length - newSelectedCoinsLength
     ) {
       return EditAction.unpin;
     } else {
@@ -103,37 +107,43 @@ export function useCoinListFinishEditingOptions() {
   currentActionNonReactive.current = currentAction;
 
   const setPinnedCoins = useCallback(() => {
-    setPinnedCoinsArray((pinnedCoins: string[]) => {
+    setPinnedCoinsObject((pinnedCoins: BooleanMap) => {
       return [
-        ...(pinnedCoins ?? []).filter(
+        ...Object.keys(pinnedCoins ?? []).filter(
           i => !selectedItemsNonReactive.current!.includes(i)
         ),
         ...(currentActionNonReactive.current === EditAction.standard
           ? selectedItemsNonReactive.current!
           : []),
-      ];
+      ].reduce((acc, curr) => {
+        acc[curr] = true;
+        return acc;
+      }, {} as BooleanMap);
     });
     setSelectedItems([]);
-  }, [setSelectedItems, setPinnedCoinsArray]);
+  }, [setSelectedItems, setPinnedCoinsObject]);
 
   const dispatch = useDispatch();
 
   const setHiddenCoins = useCallback(() => {
-    setHiddenCoinsArray(hiddenCoins => {
+    setHiddenCoinsObject((hiddenCoins: BooleanMap) => {
       const newList = [
-        ...(hiddenCoins ?? []).filter(
+        ...Object.keys(hiddenCoins ?? []).filter(
           i => !selectedItemsNonReactive.current!.includes(i)
         ),
         ...(currentActionNonReactive.current === EditAction.standard
           ? selectedItemsNonReactive.current!
           : []),
-      ];
+      ].reduce((acc, curr) => {
+        acc[curr] = true;
+        return acc;
+      }, {} as BooleanMap);
       dispatch(reduxSetHiddenCoins(newList));
       return newList;
     });
 
     setSelectedItems([]);
-  }, [dispatch, setSelectedItems, setHiddenCoinsArray]);
+  }, [dispatch, setSelectedItems, setHiddenCoinsObject]);
 
   return {
     currentAction,
