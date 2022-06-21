@@ -1,25 +1,8 @@
 diff --git a/node_modules/react-native-reanimated/react-native-reanimated.d.ts b/node_modules/react-native-reanimated/react-native-reanimated.d.ts
-index 7402bc5..90a2a1d 100644
+index a6489ae..02becb2 100644
 --- a/node_modules/react-native-reanimated/react-native-reanimated.d.ts
 +++ b/node_modules/react-native-reanimated/react-native-reanimated.d.ts
-@@ -40,7 +40,6 @@ declare module 'react-native-reanimated' {
-   } from 'react-native-gesture-handler';
- 
-   export {
--    Animation,
-     TimingAnimation,
-     SpringAnimation,
-     DecayAnimation,
-@@ -50,6 +49,8 @@ declare module 'react-native-reanimated' {
-     StyleLayoutAnimation,
-   } from './src/reanimated2/animation/index';
- 
-+  export { Animation } from './src/reanimated2/commonTypes';
-+
-   namespace Animated {
-     type Nullable<T> = T | null | undefined;
-     class AnimatedNode<T> {
-@@ -1146,4 +1147,17 @@ declare module 'react-native-reanimated' {
+@@ -1184,4 +1184,17 @@ declare module 'react-native-reanimated' {
    export const useValue: typeof Animated.useValue;
    export const ReverseAnimation: typeof Animated.ReverseAnimation;
    export function enableLayoutAnimations(flag: boolean): void;
