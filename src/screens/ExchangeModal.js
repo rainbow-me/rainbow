@@ -81,7 +81,7 @@ const InnerWrapper = styled(Column).attrs({
 });
 
 const Spacer = styled.View({
-  height: ({ height }) => height ?? 20,
+  height: 20,
 });
 
 const getInputHeaderTitle = (type, defaultInputAsset) => {
