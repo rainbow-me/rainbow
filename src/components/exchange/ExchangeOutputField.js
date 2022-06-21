@@ -6,7 +6,7 @@ import styled from '@rainbow-me/styled-components';
 const Container = styled(Row).attrs({ align: 'center' })({
   overflow: 'hidden',
   paddingBottom: android ? 8 : 21,
-  paddingTop: android ? 20 : 32,
+  paddingTop: android ? 22 : 32,
   width: '100%',
 });
 
