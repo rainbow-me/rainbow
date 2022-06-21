@@ -10,6 +10,7 @@ import { AssetType } from '@rainbow-me/entities';
 import {
   CurrencySelectionTypes,
   ExchangeModalTypes,
+  Network,
 } from '@rainbow-me/helpers';
 import { useSwapCurrencies } from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
@@ -33,6 +34,7 @@ const setHasShownWarning = () =>
 const { currentlyFocusedInput, focusTextInput } = TextInput.State;
 
 export default function useSwapCurrencyHandlers({
+  currentNetwork,
   defaultInputAsset,
   defaultOutputAsset,
   fromDiscover,
@@ -79,7 +81,7 @@ export default function useSwapCurrencyHandlers({
       const defaultInputItemInWallet = defaultInputAsset
         ? {
             ...defaultInputAsset,
-            type: inputCurrency?.type ?? AssetType.token,
+            type: defaultInputAsset?.type ?? AssetType.token,
           }
         : null;
 
@@ -123,13 +125,22 @@ export default function useSwapCurrencyHandlers({
   const flipCurrencies = useCallback(() => {
     dispatch(flipSwapCurrencies());
     startFlipFocusTimeout(() => {
-      if (inputFieldRef.current === currentlyFocusedInput()) {
+      if (
+        inputFieldRef.current === currentlyFocusedInput() &&
+        currentNetwork !== Network.arbitrum
+      ) {
         focusTextInput(outputFieldRef.current);
       } else if (outputFieldRef.current === currentlyFocusedInput()) {
         focusTextInput(inputFieldRef.current);
       }
     }, 50);
-  }, [dispatch, inputFieldRef, outputFieldRef, startFlipFocusTimeout]);
+  }, [
+    currentNetwork,
+    dispatch,
+    inputFieldRef,
+    outputFieldRef,
+    startFlipFocusTimeout,
+  ]);
 
   const updateInputCurrency = useCallback(
     (inputCurrency, handleNavigate) => {

@@ -64,14 +64,15 @@ const ExchangeField = (
   },
   ref
 ) => {
+  const { colors } = useTheme();
   const colorForAsset = useColorForAsset({
     address,
+    fallbackColor: colors.appleBlue,
     mainnet_address: mainnetAddress,
   });
   const handleFocusField = useCallback(() => {
     ref?.current?.focus();
   }, [ref]);
-  const { colors } = useTheme();
 
   const [value, setValue] = useState(amount);
   const [debouncedValue] = useDebounce(value, 300);
@@ -104,6 +105,10 @@ const ExchangeField = (
           )}
 
           <Input
+            {...(android &&
+              colorForAsset && {
+                selectionColor: colors.alpha(colorForAsset, 0.4),
+              })}
             color={colorForAsset}
             editable={editable}
             onBlur={onBlur}

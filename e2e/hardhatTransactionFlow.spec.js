@@ -340,10 +340,22 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.waitAndTap('send-sheet-confirm-action-button', 20000);
     await Helpers.tapAndLongPress('send-confirmation-button');
     await Helpers.checkIfVisible('profile-screen');
-    await Helpers.swipe('profile-screen', 'left', 'slow');
     const isOwnerRecipient = await isNFTOwner(RAINBOW_WALLET_DOT_ETH);
-    if (!isOwnerRecipient)
+    if (!isOwnerRecipient) {
       throw new Error('Recepient did not recieve Cryptokitty');
+    }
+  });
+
+  it('Should show completed send NFT (Cryptokitties)', async () => {
+    try {
+      await Helpers.checkIfVisible('Sent-Arun Cattybinky-1.00 CryptoKitties');
+    } catch (e) {
+      await Helpers.checkIfVisible(
+        'Sending-Arun Cattybinky-1.00 CryptoKitties'
+      );
+    }
+
+    await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
   it('Should send ERC20 (BAT)', async () => {
@@ -361,14 +373,22 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.waitAndTap('send-sheet-confirm-action-button');
     await Helpers.tapAndLongPress('send-confirmation-button');
     await Helpers.checkIfVisible('profile-screen');
-    await Helpers.swipe('profile-screen', 'left', 'slow');
     const postSendBalance = await getOnchainBalance(
       RAINBOW_WALLET_DOT_ETH,
       BAT_TOKEN_ADDRESS
     );
-    if (!postSendBalance.gt(preSendBalance))
+    if (!postSendBalance.gt(preSendBalance)) {
       throw new Error('Recepient did not recieve BAT');
-    await Helpers.delay(2000);
+    }
+  });
+
+  it('Should show completed send ERC20 (BAT)', async () => {
+    try {
+      await Helpers.checkIfVisible('Sent-Basic Attention Token-1.02 BAT');
+    } catch (e) {
+      await Helpers.checkIfVisible('Sending-Basic Attention Token-1.02 BAT');
+    }
+    await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
   it('Should send ETH', async () => {
@@ -390,8 +410,18 @@ describe('Hardhat Transaction Flow', () => {
       RAINBOW_WALLET_DOT_ETH,
       ETH_ADDRESS
     );
-    if (!postSendBalance.gt(preSendBalance))
+    if (!postSendBalance.gt(preSendBalance)) {
       throw new Error('Recepient did not recieve ETH');
+    }
+  });
+
+  it('Should show completed send ETH', async () => {
+    try {
+      await Helpers.checkIfVisible('Sent-Ethereum-0.003 ETH');
+    } catch (e) {
+      await Helpers.checkIfVisible('Sending-Ethereum-0.003 ETH');
+    }
+    await Helpers.checkIfVisible('profile-screen');
   });
 
   it('Should receive the WC connect request and approve it', async () => {
@@ -404,7 +434,6 @@ describe('Hardhat Transaction Flow', () => {
         url: 'https://walletconnect.org',
       },
     });
-    await Helpers.delay(3000);
 
     await connector.createSession();
     uri = connector.uri;
@@ -430,9 +459,6 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.disableSynchronization();
     await device.sendToHome();
     await Helpers.enableSynchronization();
-
-    await Helpers.delay(2000);
-
     await device.launchApp({
       newInstance: false,
       url: fullUrl,
@@ -450,7 +476,7 @@ describe('Hardhat Transaction Flow', () => {
     const result = connector.signPersonalMessage(['My msg', account]);
     await Helpers.checkIfVisible('wc-request-sheet');
     await Helpers.waitAndTap('wc-confirm-action-button');
-    await Helpers.delay(1000);
+
     if (!result) throw new Error('WC Connection failed');
     const signature = await result;
     if (
@@ -468,7 +494,6 @@ describe('Hardhat Transaction Flow', () => {
     const result = connector.signMessage(msgParams);
     await Helpers.checkIfVisible('wc-request-sheet');
     await Helpers.waitAndTap('wc-confirm-action-button');
-    await Helpers.delay(1000);
 
     if (!result) throw new Error('WC Connection failed');
     const signature = await result;
@@ -537,7 +562,7 @@ describe('Hardhat Transaction Flow', () => {
     const result = connector.signTypedData([account, JSON.stringify(msg)]);
     await Helpers.checkIfVisible('wc-request-sheet');
     await Helpers.waitAndTap('wc-confirm-action-button');
-    await Helpers.delay(1000);
+
     const signature = await result;
     if (
       signature !==
@@ -560,46 +585,20 @@ describe('Hardhat Transaction Flow', () => {
       data: '0x',
     });
     await Helpers.checkIfVisible('wc-request-sheet');
-    await Helpers.delay(3000);
+
     await Helpers.waitAndTap('wc-confirm-action-button');
-    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('profile-screen');
     const hash = await result;
     if (!hash) {
       throw new Error('WC approving tx failed');
     }
-    await Helpers.delay(3000);
+
     const postSendBalance = await getOnchainBalance(
       RAINBOW_WALLET_DOT_ETH,
       ETH_ADDRESS
     );
     if (!postSendBalance.gt(preSendBalance))
       throw new Error('Recepient did not recieve ETH');
-  });
-
-  it('Should show completed send NFT (Cryptokitties)', async () => {
-    try {
-      await Helpers.checkIfVisible('Sent-Arun Cattybinky-1.00 CryptoKitties');
-    } catch (e) {
-      await Helpers.checkIfVisible(
-        'Sending-Arun Cattybinky-1.00 CryptoKitties'
-      );
-    }
-  });
-
-  it('Should show completed send ERC20 (BAT)', async () => {
-    try {
-      await Helpers.checkIfVisible('Sent-Basic Attention Token-1.02 BAT');
-    } catch (e) {
-      await Helpers.checkIfVisible('Sending-Basic Attention Token-1.02 BAT');
-    }
-  });
-
-  it('Should show completed send ETH', async () => {
-    try {
-      await Helpers.checkIfVisible('Sent-Ethereum-0.003 ETH');
-    } catch (e) {
-      await Helpers.checkIfVisible('Sending-Ethereum-0.003 ETH');
-    }
   });
 
   it('Should show completed send ETH (WC)', async () => {
@@ -616,6 +615,5 @@ describe('Hardhat Transaction Flow', () => {
     connector = null;
     await device.clearKeychain();
     await exec('kill $(lsof -t -i:8545)');
-    await Helpers.delay(2000);
   });
 });

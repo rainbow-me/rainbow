@@ -72,13 +72,21 @@ else
 fi
 
 if [ -n "$RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK" ]; then
-  eval $RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK;
-  echo "✅ executed ios prebuild hook"
+  if [ -n "$CI" ]; then
+    eval $RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK > /dev/null 2>&1;
+  else
+    eval $RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK;
+    echo "✅ executed ios prebuild hook"
+  fi
 fi
 
 if [ -n "$RAINBOW_SCRIPTS_APP_ANDROID_PREBUILD_HOOK" ]; then
-  eval $RAINBOW_SCRIPTS_APP_ANDROID_PREBUILD_HOOK;
-  echo "✅ executed android prebuild hook"
+  if [ -n "$CI" ]; then
+    eval $RAINBOW_SCRIPTS_APP_ANDROID_PREBUILD_HOOK > /dev/null 2>&1;
+  else
+    eval $RAINBOW_SCRIPTS_APP_ANDROID_PREBUILD_HOOK;
+    echo "✅ executed android prebuild hook"
+  fi
 fi
 
 # Ignore any potential tracked changes to mutable development files.
