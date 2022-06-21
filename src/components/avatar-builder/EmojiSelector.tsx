@@ -93,7 +93,8 @@ export const EmojiSelector = ({
           if (type === EMOJI_CONTAINER) {
             const entry = allEmojiList[i] as AllEmojiContentEntry;
             dim.height =
-              Math.floor(entry.data.length / 7 + 1) * ((width - 21) / columns);
+              Math.floor(entry.data.length / columns + 1) *
+              ((width - 21) / columns);
             dim.width = deviceUtils.dimensions.width;
           } else if (type === HEADER_ROW) {
             dim.height = 34.7;
