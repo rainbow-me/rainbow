@@ -91,9 +91,8 @@ export default function useENSRegistrationForm({
     // button.
     !evaluatingErrors &&
       setDisabled(
-        mode === REGISTRATION_MODES.EDIT
-          ? isEmpty(changedRecords) || !isEmpty(errors)
-          : !isEmpty(errors)
+        !isEmpty(errors) ||
+        (mode === REGISTRATION_MODES.EDIT && isEmpty(changedRecords))
       );
   }, [changedRecords, disabled, errors, evaluatingErrors, mode, setDisabled]);
 
