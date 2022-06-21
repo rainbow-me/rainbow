@@ -13,6 +13,10 @@ import {
   isCloudinaryStorageLink,
   signUrl,
 } from '@rainbow-me/handlers/cloudinary';
+import {
+  adjustSize,
+  isGoogleUserContent,
+} from '@rainbow-me/handlers/googleUserContent';
 import logger from 'logger';
 
 const shouldCreateImgixClient = (): ImgixClient | null => {
@@ -67,6 +71,10 @@ const shouldSignUri = (
 
     if (options?.fm) {
       updatedOptions.fm = options.fm;
+    }
+
+    if (isGoogleUserContent(externalImageUri) && !options?.fm) {
+      return adjustSize(externalImageUri, updatedOptions.w, updatedOptions.h);
     }
 
     // Firstly, we check if the url is a Cloudinary link.
@@ -132,11 +140,31 @@ const isPossibleToSignUri = (externalImageUri: string | undefined): boolean => {
   return false;
 };
 
+const TRUSTED_URLS = {
+  'assets.poap.xyz': true,
+  'lh3.googleusercontent.com': true,
+  'openseauserdata.com': true,
+  'rainbow.imgix.net': true,
+  'rainbowme-res.cloudinary.com': true,
+  // 'img.seadn.io': true,
+} as { [key: string]: boolean };
+
 export const maybeSignUri = (
   externalImageUri: string | undefined,
   options?: ImgOptions,
   skipCaching: boolean = false
 ): string | undefined => {
+  // If no options applied we don't need anything
+  const isTransformationRedundant =
+    !options?.w &&
+    !options?.h &&
+    !options?.fm &&
+    TRUSTED_URLS[externalImageUri?.split('/')[2] ?? ''];
+
+  if (isTransformationRedundant) {
+    return externalImageUri;
+  }
+
   // If the image has already been signed, return this quickly.
   const signature = `${externalImageUri}-${options?.w}`;
   if (
@@ -162,14 +190,9 @@ export const maybeSignSource = (
 ): Source => {
   if (!!source && typeof source === 'object') {
     const { uri: externalImageUri, ...extras } = source;
-    // If no options applied we don't need anything
-    const isTransformationRedundant =
-      !options?.w && !options?.h && !options?.fm;
     return {
       ...extras,
-      uri: isTransformationRedundant
-        ? externalImageUri
-        : maybeSignUri(externalImageUri, options),
+      uri: maybeSignUri(externalImageUri, options),
     };
   }
   return source;

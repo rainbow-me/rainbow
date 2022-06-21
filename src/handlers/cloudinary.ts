@@ -44,13 +44,12 @@ export const signUrl = memoFn(
     }
 
     const cloudinaryImg = cloudinaryURL(internalAddress, {
+      private_cdn: 'rainbowme',
+      secure: true,
       sign_url: true,
       ...widthAndHeight,
     });
 
-    if (cloudinaryImg.startsWith('http:')) {
-      return 'https' + cloudinaryImg.substring(4);
-    }
     return cloudinaryImg;
   },
   (url, options) =>
@@ -58,5 +57,5 @@ export const signUrl = memoFn(
 );
 
 export function isCloudinaryStorageLink(url: string): boolean {
-  return url.includes('rainbowme-res.cloudinary.com');
+  return url.startsWith('https://rainbowme-res.cloudinary.com/image/upload');
 }

@@ -27,6 +27,8 @@ function svgToPng(url: any, big = false) {
   const encoded = encodeURI(url);
   const rainbowedUrl = `${RAINBOW_PROXY}${encoded}&v=2`;
   const cloudinaryUrl = cloudinaryURL(rainbowedUrl, {
+    private_cdn: 'rainbowme',
+    secure: true,
     sign_url: true,
     transformation: [{ fetch_format: 'png' }],
     type: 'fetch',
