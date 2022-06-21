@@ -90,7 +90,11 @@ export default function CurrencyTile({
           symbol={symbol}
           type={assetType}
         />
-        <ColumnWithMargins centered margin={4} paddingHorizontal={8}>
+        <ColumnWithMargins
+          centered
+          margin={android ? -6 : 4}
+          paddingHorizontal={8}
+        >
           <NativePriceText>
             {isOther && '~'}
             {amountDisplay} {symbol}
