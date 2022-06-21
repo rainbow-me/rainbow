@@ -1,5 +1,5 @@
 import React from 'react';
-import Animated from 'react-native-reanimated';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 
 export default function JellySelectorColorIndicator({
   backgroundColor,
@@ -8,16 +8,22 @@ export default function JellySelectorColorIndicator({
   width,
   ...props
 }) {
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: translateX.value }],
+    width: width.value,
+  }));
+
   return (
     <Animated.View
       {...props}
       borderRadius={height / 2}
       height={height}
-      style={{
-        backgroundColor,
-        transform: [{ translateX }],
-        width,
-      }}
+      style={[
+        {
+          backgroundColor,
+        },
+        animatedStyle,
+      ]}
     />
   );
 }
