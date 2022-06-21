@@ -12,6 +12,7 @@ import {
 } from '../handlers/localstorage/migrations';
 import WalletTypes from '../helpers/walletTypes';
 import { rainbowProfileQueryKey } from '../hooks/useRainbowProfile';
+import { BooleanMap } from '../hooks/useCoinListEditOptions';
 import store from '../redux/store';
 import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
 import {
@@ -650,6 +651,46 @@ export default async function runMigrations() {
   };
 
   migrations.push(v16);
+
+  /*
+  *************** Migration v17 ******************
+  Pinned coins: list -> obj
+  */
+  const v17 = async () => {
+    const { wallets } = store.getState().wallets;
+    if (!wallets) return;
+    for (let wallet of Object.values(wallets)) {
+      for (let account of (wallet as RainbowWallet).addresses) {
+        const pinnedCoins = JSON.parse(
+          mmkv.getString('pinned-coins-' + account.address) ?? '[]'
+        );
+        const hiddenCoins = JSON.parse(
+          mmkv.getString('hidden-coins-' + account.address) ?? '[]'
+        );
+        mmkv.set(
+          'hidden-coins-obj-' + account.address,
+          JSON.stringify(
+            hiddenCoins.reduce((acc: BooleanMap, curr: string) => {
+              acc[curr] = true;
+              return acc;
+            }, {} as BooleanMap)
+          )
+        );
+
+        mmkv.set(
+          'pinned-coins-obj-' + account.address,
+          JSON.stringify(
+            pinnedCoins.reduce((acc: BooleanMap, curr: string) => {
+              acc[curr] = true;
+              return acc;
+            }, {} as BooleanMap)
+          )
+        );
+      }
+    }
+  };
+
+  migrations.push(v17);
 
   /*
    *************** Migration v18 ******************

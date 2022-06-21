@@ -61,7 +61,10 @@ export default function ProfileSheet() {
   });
 
   // Prefetch asset list
-  const { isSuccess: hasListFetched } = useExternalWalletSectionsData({
+  const {
+    isSuccess: hasListFetched,
+    briefSectionsData,
+  } = useExternalWalletSectionsData({
     address: profileAddress,
   });
 
@@ -109,6 +112,7 @@ export default function ProfileSheet() {
                 <RecyclerAssetList2
                   externalAddress={profileAddress}
                   type="ens-profile"
+                  walletBriefSectionsData={briefSectionsData}
                 />
               ) : (
                 <ProfileSheetHeader ensName={params?.ensName} isPreview />
