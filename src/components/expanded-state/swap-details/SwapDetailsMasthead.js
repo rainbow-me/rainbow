@@ -74,12 +74,7 @@ export default function SwapDetailsMasthead({
           left: '50%',
           position: 'absolute',
           top: '50%',
-          transform: [
-            {
-              translateX: 2,
-            },
-            { translateY: 24 },
-          ],
+          transform: [{ translateX: 2 }, { translateY: 24 }],
         }}
         width={{ custom: 32 }}
       >
