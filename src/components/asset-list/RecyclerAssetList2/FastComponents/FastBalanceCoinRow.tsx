@@ -153,22 +153,12 @@ const MemoizedBalanceCoinRow = React.memo(
             <View style={[sx.innerContainer, isHidden && sx.hiddenRow]}>
               <View style={sx.row}>
                 <View style={sx.textWrapper}>
-                  <Text
-                    align="left"
-                    numberOfLines={1}
-                    size="16px"
-                    weight="medium"
-                  >
+                  <Text numberOfLines={1} size="16px">
                     {item.name}
                   </Text>
                 </View>
 
-                <Text
-                  align="left"
-                  color={{ custom: valueColor }}
-                  size="16px"
-                  weight="medium"
-                >
+                <Text align="right" color={{ custom: valueColor }} size="16px">
                   {item?.native?.balance?.display ??
                     `${nativeCurrencySymbol}0.00`}
                 </Text>
@@ -177,7 +167,6 @@ const MemoizedBalanceCoinRow = React.memo(
               <View style={[sx.row, sx.bottom]}>
                 <View style={sx.textWrapper}>
                   <Text
-                    align="left"
                     color={{ custom: theme.colors.blueGreyDark50 }}
                     numberOfLines={1}
                     size="14px"
@@ -186,7 +175,7 @@ const MemoizedBalanceCoinRow = React.memo(
                   </Text>
                 </View>
 
-                <Text color={{ custom: changeColor }} size="14px">
+                <Text align="right" color={{ custom: changeColor }} size="14px">
                   {percentageChangeDisplay}
                 </Text>
               </View>
@@ -257,7 +246,7 @@ export default React.memo(function BalanceCoinRow({
 
 const sx = StyleSheet.create({
   bottom: {
-    marginTop: 11.5,
+    marginTop: 10,
   },
   checkboxContainer: {
     alignSelf: 'center',
@@ -290,8 +279,9 @@ const sx = StyleSheet.create({
     position: 'absolute',
   },
   container: {
+    alignItems: 'center',
     flexDirection: 'row',
-    marginRight: 18,
+    marginRight: 19,
     overflow: 'visible',
     paddingLeft: 9,
   },
@@ -303,8 +293,8 @@ const sx = StyleSheet.create({
   },
   innerContainer: {
     flex: 1,
+    marginBottom: 1,
     marginLeft: 10,
-    paddingTop: 14.5,
   },
   nonEditMode: {
     paddingLeft: 10,
@@ -312,7 +302,6 @@ const sx = StyleSheet.create({
   rootContainer: {
     flex: 1,
     flexDirection: 'row',
-    marginTop: -1,
     overflow: 'visible',
   },
   row: {
@@ -321,6 +310,6 @@ const sx = StyleSheet.create({
   },
   textWrapper: {
     flex: 1,
-    paddingRight: 20,
+    paddingRight: 19,
   },
 });
