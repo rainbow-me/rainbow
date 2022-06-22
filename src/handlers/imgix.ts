@@ -133,11 +133,10 @@ const shouldSignUri = (
     if (options?.fm) {
       updatedOptions.fm = options.fm;
     }
-    
+
     if (isGoogleUserContent(externalImageUri) && !options?.fm) {
       return adjustSize(externalImageUri, updatedOptions.w, updatedOptions.h);
     }
-
 
     // Firstly, we check if the url is a Cloudinary link.
     // Then, obviously, we use Cloudinary to transform the size and format.
@@ -204,11 +203,11 @@ const isPossibleToSignUri = (externalImageUri: string | undefined): boolean => {
 
 const TRUSTED_URLS = {
   'assets.poap.xyz': true,
+  'img.seadn.io': true,
   'lh3.googleusercontent.com': true,
   'openseauserdata.com': true,
   'rainbow.imgix.net': true,
   'rainbowme-res.cloudinary.com': true,
-  // 'img.seadn.io': true,
 } as { [key: string]: boolean };
 
 export const maybeSignUri = (
