@@ -3,6 +3,7 @@ import React, { useMemo } from 'react';
 import { ButtonPressAnimation } from '../../animations';
 import SwapDetailsRow, { SwapDetailsValue } from './SwapDetailsRow';
 import {
+  convertRawAmountToDecimalFormat,
   divide,
   handleSignificantDecimals,
 } from '@rainbow-me/helpers/utilities';
@@ -11,14 +12,22 @@ import { useStepper, useSwapCurrencies } from '@rainbow-me/hooks';
 export default function SwapDetailsPriceRow({ tradeDetails, ...props }) {
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
-  const outputExecutionRateRaw = divide(
+  const convertedSellAmount = convertRawAmountToDecimalFormat(
     tradeDetails?.sellAmount,
-    tradeDetails?.buyAmount
+    inputCurrency.decimals
   );
-  const inputExecutionRateRaw = divide(
+
+  const convertedBuyAmount = convertRawAmountToDecimalFormat(
     tradeDetails?.buyAmount,
-    tradeDetails?.sellAmount
+    outputCurrency.decimals
   );
+
+  const outputExecutionRateRaw = divide(
+    convertedSellAmount,
+    convertedBuyAmount
+  );
+
+  const inputExecutionRateRaw = divide(convertedBuyAmount, convertedSellAmount);
 
   const inputExecutionRate = handleSignificantDecimals(
     inputExecutionRateRaw,
