@@ -5,7 +5,10 @@ import { FastChainBadge } from './FastCoinBadge';
 import EthIcon from '@rainbow-me/assets/eth-icon.png';
 import { AssetType } from '@rainbow-me/entities';
 import { useColorForAsset, useForceUpdate } from '@rainbow-me/hooks';
-import { ImageWithCachedMetadata, ImgixImage } from '@rainbow-me/images';
+import {
+  ImageWithCachedMetadata,
+  TransformationImage,
+} from '@rainbow-me/images';
 import { borders, fonts } from '@rainbow-me/styles';
 import {
   FallbackIcon,
@@ -87,7 +90,7 @@ const CoinIconWithBackground = React.memo(function CoinIconWithBackground({
     >
       {shouldShowImage && (
         <ImageWithCachedMetadata
-          cache={ImgixImage.cacheControl.immutable}
+          cache={TransformationImage.cacheControl.immutable}
           imageUrl={imageUrl}
           onError={onError}
           onLoad={onLoad}
