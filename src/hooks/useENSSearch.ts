@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 import { useCallback, useMemo } from 'react';
 import { useQuery } from 'react-query';
-import { useAccountSettings } from '.';
+import { useAccountSettings, useENSPendingTransactions } from '.';
 import { fetchRegistrationDate } from '@rainbow-me/handlers/ens';
 import {
   ENS_DOMAIN,
@@ -28,8 +28,15 @@ export default function useENSSearch({
 }) {
   const name = inputName.replace(ENS_DOMAIN, '');
   const { nativeCurrency } = useAccountSettings();
+
+  const { pendingRegistrationTransaction } = useENSPendingTransactions({
+    name: `${name}${ENS_DOMAIN}`,
+  });
+
   const isValidLength = useMemo(() => name.length > 2, [name.length]);
+
   const duration = yearsDuration * timeUnits.secs.year;
+
   const getRegistrationValues = useCallback(async () => {
     const ensValidation = validateENS(`${name}${ENS_DOMAIN}`, {
       includeSubdomains: false,
@@ -40,6 +47,13 @@ export default function useENSSearch({
         code: ensValidation.code,
         hint: ensValidation.hint,
         valid: false,
+      };
+    }
+
+    if (pendingRegistrationTransaction) {
+      return {
+        available: false,
+        valid: true,
       };
     }
 
@@ -56,7 +70,7 @@ export default function useENSSearch({
     );
     if (isAvailable) {
       return {
-        available: isAvailable,
+        available: true,
         rentPrice: formattedRentPrice,
         valid: true,
       };
@@ -75,10 +89,25 @@ export default function useENSSearch({
         valid: true,
       };
     }
-  }, [duration, name, nativeCurrency, yearsDuration]);
+  }, [
+    name,
+    pendingRegistrationTransaction,
+    duration,
+    yearsDuration,
+    nativeCurrency,
+  ]);
 
   const { data, status, isIdle, isLoading } = useQuery(
-    ['getRegistrationValues', [duration, name, nativeCurrency]],
+    [
+      'getRegistrationValues',
+      [
+        duration,
+        name,
+        nativeCurrency,
+        yearsDuration,
+        pendingRegistrationTransaction,
+      ],
+    ],
     getRegistrationValues,
     { enabled: isValidLength, retry: 0, staleTime: Infinity }
   );

@@ -184,10 +184,12 @@ export default function ENSSearchSheet() {
                     type="availability"
                   />
                   {isRegistered ? (
-                    <SearchResultGradientIndicator
-                      expirationDate={registrationData?.expirationDate}
-                      type="expiration"
-                    />
+                    registrationData?.expirationDate ? (
+                      <SearchResultGradientIndicator
+                        expirationDate={registrationData?.expirationDate}
+                        type="expiration"
+                      />
+                    ) : null
                   ) : (
                     <SearchResultGradientIndicator
                       price={registrationData?.rentPrice?.perYear?.display}
@@ -196,14 +198,18 @@ export default function ENSSearchSheet() {
                     />
                   )}
                 </Inline>
-                <Inset horizontal="15px">
-                  {isRegistered ? (
-                    <Text color="secondary60" size="16px" weight="bold">
-                      {lang.t('profiles.search.registered_on', {
-                        content: registrationData?.registrationDate,
-                      })}
-                    </Text>
-                  ) : (
+                {isRegistered ? (
+                  registrationData?.registrationDate ? (
+                    <Inset horizontal="15px">
+                      <Text color="secondary60" size="16px" weight="bold">
+                        {lang.t('profiles.search.registered_on', {
+                          content: registrationData?.registrationDate,
+                        })}
+                      </Text>
+                    </Inset>
+                  ) : null
+                ) : (
+                  <Inset horizontal="15px">
                     <Inline>
                       {registrationCostsDataIsAvailable ? (
                         <Text
@@ -224,8 +230,8 @@ export default function ENSSearchSheet() {
                         </Text>
                       )}
                     </Inline>
-                  )}
-                </Inset>
+                  </Inset>
+                )}
               </Stack>
             </Inset>
           )}

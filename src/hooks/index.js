@@ -38,6 +38,7 @@ export { default as useDPI } from './useDPI';
 export { default as useEffectDebugger } from './useEffectDebugger';
 export { default as useEmailRainbow } from './useEmailRainbow';
 export { default as useENSPendingRegistrations } from './useENSPendingRegistrations';
+export { default as useENSPendingTransactions } from './useENSPendingTransactions';
 export { default as useENSProfile, ensProfileQueryKey } from './useENSProfile';
 export { default as useENSProfileImages } from './useENSProfileImages';
 export { default as useFadeImage } from './useFadeImage';
