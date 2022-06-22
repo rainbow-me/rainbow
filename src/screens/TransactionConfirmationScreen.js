@@ -1067,10 +1067,11 @@ export default function TransactionConfirmationScreen() {
                   network={currentNetwork}
                 />
                 <Row marginBottom={android ? -6 : 5}>
-                  <Row marginBottom={android ? 16 : 8}>
+                  <Row marginBottom={android ? 16 : 8} marginHorizontal={32}>
                     <Text
                       align="center"
                       color="secondary80"
+                      numberOfLines={1}
                       size="18px"
                       weight="bold"
                     >
