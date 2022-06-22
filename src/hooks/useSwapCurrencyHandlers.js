@@ -5,7 +5,6 @@ import { MMKV } from 'react-native-mmkv';
 import { useDispatch } from 'react-redux';
 import { STORAGE_IDS } from '../model/mmkv';
 import { delayNext } from './useMagicAutofocus';
-import useTimeout from './useTimeout';
 import { AssetType } from '@rainbow-me/entities';
 import {
   CurrencySelectionTypes,
@@ -121,26 +120,26 @@ export default function useSwapCurrencyHandlers({
     ignoreInitialTypeCheck,
   ]);
 
-  const [startFlipFocusTimeout] = useTimeout();
   const flipCurrencies = useCallback(() => {
-    dispatch(flipSwapCurrencies());
-    startFlipFocusTimeout(() => {
-      if (
-        inputFieldRef.current === currentlyFocusedInput() &&
-        currentNetwork !== Network.arbitrum
-      ) {
-        focusTextInput(outputFieldRef.current);
-      } else if (outputFieldRef.current === currentlyFocusedInput()) {
-        focusTextInput(inputFieldRef.current);
-      }
-    }, 50);
-  }, [
-    currentNetwork,
-    dispatch,
-    inputFieldRef,
-    outputFieldRef,
-    startFlipFocusTimeout,
-  ]);
+    const flipSwapCurrenciesWithTimeout = (outputIndependentField = false) =>
+      setTimeout(
+        () => dispatch(flipSwapCurrencies(outputIndependentField)),
+        50
+      );
+
+    if (
+      inputFieldRef.current === currentlyFocusedInput() &&
+      currentNetwork !== Network.arbitrum
+    ) {
+      inputFieldRef.current?.clear();
+      focusTextInput(outputFieldRef.current);
+      flipSwapCurrenciesWithTimeout(true);
+    } else if (outputFieldRef.current === currentlyFocusedInput()) {
+      outputFieldRef.current?.clear();
+      focusTextInput(inputFieldRef.current);
+      flipSwapCurrenciesWithTimeout();
+    }
+  }, [currentNetwork, dispatch, inputFieldRef, outputFieldRef]);
 
   const updateInputCurrency = useCallback(
     (inputCurrency, handleNavigate) => {
