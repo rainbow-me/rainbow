@@ -4,7 +4,7 @@ import ActionSheet from 'react-native-actionsheet';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
-import { pickFlatten } from '@rainbow-me/helpers/utilities';
+import { pickShallow } from '@rainbow-me/helpers/utilities';
 import { padding } from '@rainbow-me/styles';
 const style = padding.object(12, 8);
 
@@ -66,7 +66,7 @@ export default function ContextMenu({
         </ButtonPressAnimation>
       )}
       <ActionSheet
-        {...pickFlatten(props, ActionSheetProps)}
+        {...pickShallow(props, ActionSheetProps)}
         cancelButtonIndex={
           Number.isInteger(cancelButtonIndex)
             ? cancelButtonIndex

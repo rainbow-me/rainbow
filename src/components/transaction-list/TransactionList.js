@@ -14,7 +14,7 @@ import {
   getHumanReadableDate,
   hasAddableContact,
 } from '@rainbow-me/helpers/transactions';
-import { pickFlatten } from '@rainbow-me/helpers/utilities';
+import { pickShallow } from '@rainbow-me/helpers/utilities';
 import { isValidDomainFormat } from '@rainbow-me/helpers/validators';
 import {
   useAccountProfile,
@@ -299,7 +299,7 @@ export default function TransactionList({
   const data = useMemo(() => {
     const requestsNative = requests.map(request => {
       const { displayDetails: { timestampInMs } = {} } = request;
-      const pickProps = pickFlatten(request, [
+      const pickProps = pickShallow(request, [
         'clientId',
         'dappName',
         'imageUrl',
