@@ -14,7 +14,7 @@ import {
 } from 'ethereumjs-util';
 import { hdkey } from 'ethereumjs-wallet';
 import { Contract } from 'ethers';
-import { isEmpty, isString, replace, toLower } from 'lodash';
+import { isEmpty, isString, replace } from 'lodash';
 import {
   Alert,
   InteractionManager,
@@ -110,7 +110,7 @@ const getNativeAssetForNetwork = async (
 ): Promise<ParsedAddressAsset | undefined> => {
   const networkNativeAsset = getNetworkNativeAsset(network);
   const { accountAddress } = store.getState().settings;
-  let differentWallet = toLower(address) !== toLower(accountAddress);
+  let differentWallet = address.toLowerCase() !== accountAddress.toLowerCase();
   let nativeAsset = (!differentWallet && networkNativeAsset) || undefined;
 
   // If the asset is on a different wallet, or not available in this wallet
@@ -148,14 +148,14 @@ const getAsset = (
   accountAssets: Record<string, ParsedAddressAsset>,
   uniqueId: EthereumAddress = ETH_ADDRESS
 ) => {
-  const loweredUniqueId = toLower(uniqueId);
+  const loweredUniqueId = uniqueId.toLowerCase();
   return accountAssets[loweredUniqueId];
 };
 
 const getAccountAsset = (
   uniqueId: EthereumAddress
 ): ParsedAddressAsset | undefined => {
-  const loweredUniqueId = toLower(uniqueId);
+  const loweredUniqueId = uniqueId.toLowerCase();
   const accountAsset = store.getState().data?.accountAssetsData?.[
     loweredUniqueId
   ];
@@ -266,7 +266,7 @@ export const checkWalletEthZero = () => {
  * @param  {String} hex
  * @return {String}
  */
-const removeHexPrefix = (hex: string) => replace(toLower(hex), '0x', '');
+const removeHexPrefix = (hex: string) => replace(hex.toLowerCase(), '0x', '');
 
 /**
  * @desc pad string to specific width and padding
@@ -424,13 +424,13 @@ const checkIfUrlIsAScam = async (url: string) => {
   try {
     const { hostname } = new URL(url);
     const exceptions = ['twitter.com'];
-    if (exceptions.includes(toLower(hostname))) {
+    if (exceptions.includes(hostname?.toLowerCase())) {
       return false;
     }
     const request = await fetch('https://api.cryptoscamdb.org/v1/scams');
     const { result } = await request.json();
     const found = result.find(
-      (s: any) => toLower(s.name) === toLower(hostname)
+      (s: any) => s?.name?.toLowerCase() === hostname?.toLowerCase()
     );
     if (found) {
       return true;

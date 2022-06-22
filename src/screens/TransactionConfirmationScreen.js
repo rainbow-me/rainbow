@@ -678,7 +678,8 @@ export default function TransactionConfirmationScreen() {
           value: result.value.toString(),
           ...gasParams,
         };
-        if (accountAddress?.toLowerCase() === txDetails.from?.toLowerCase()) {
+
+        if (accountAddress.toLowerCase() === txDetails.from?.toLowerCase()) {
           dispatch(dataAddNewTransaction(txDetails, null, false, provider));
           txSavedInCurrentWallet = true;
         }

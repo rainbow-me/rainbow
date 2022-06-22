@@ -1,4 +1,3 @@
-import { toLower } from 'lodash';
 import React, { useCallback } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
@@ -39,7 +38,7 @@ export default function UnderlyingAsset({
     const asset =
       ethereumUtils.getAccountAsset(address) ||
       ethereumUtils.formatGenericAsset(
-        genericAssets[toLower(address)],
+        genericAssets[address.toLowerCase()],
         nativeCurrency
       );
 

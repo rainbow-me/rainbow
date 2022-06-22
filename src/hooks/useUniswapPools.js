@@ -1,4 +1,4 @@
-import { sortBy, toLower } from 'lodash';
+import { sortBy } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
@@ -237,22 +237,22 @@ export default function useUniswapPools(sortField, sortDirection, token) {
     const tmpAllTokens = [];
     // Override with tokens from generic assets
     sortedPairs = sortedPairs.map(pair => {
-      const token0 = (toLower(pair.token0?.id) === WETH_ADDRESS
+      const token0 = (pair.token0?.id?.toLowerCase() === WETH_ADDRESS
         ? genericAssets['eth']
-        : genericAssets[toLower(pair.token0?.id)]) || {
+        : genericAssets[pair.token0?.id?.toLowerCase()]) || {
         ...pair.token0,
         address: pair.token0?.id,
       };
       const token1 =
-        toLower(pair.token1?.id) === WETH_ADDRESS
+        pair.token1?.id?.toLowerCase() === WETH_ADDRESS
           ? genericAssets['eth']
-          : genericAssets[toLower(pair.token1?.id)] || {
+          : genericAssets[pair.token1?.id?.toLowerCase()] || {
               ...pair.token1,
               address: pair.token1?.id,
             };
       pair.tokens = [token0, token1];
-      tmpAllTokens.push(toLower(pair.tokens[0]?.id));
-      tmpAllTokens.push(toLower(pair.tokens[1]?.id));
+      tmpAllTokens.push(pair.tokens[0]?.id?.toLowerCase());
+      tmpAllTokens.push(pair.tokens[1]?.id?.toLowerCase());
       const pairAdjustedForCurrency = {
         ...pair,
         liquidity: pair.liquidity * currenciesRate,

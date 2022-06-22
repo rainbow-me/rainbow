@@ -1,5 +1,5 @@
 import { ChainId, Pair, Token } from '@uniswap/sdk';
-import { map, toLower, uniqBy } from 'lodash';
+import { map, uniqBy } from 'lodash';
 import { useMemo } from 'react';
 import { getTokenForCurrency } from '../handlers/uniswap';
 import useAccountSettings from './useAccountSettings';
@@ -49,14 +49,14 @@ export default function useUniswapCalls() {
     );
 
     const uniqCombos = uniqBy(validCombos, ([inputToken, outputToken]) =>
-      toLower(Pair.getAddress(inputToken, outputToken))
+      Pair.getAddress(inputToken, outputToken)?.toLowerCase()
     );
     return uniqCombos;
   }, [bases, inputToken, outputToken]);
 
   const pairAddresses = useMemo(() => {
     return map(allPairCombinations, ([inputToken, outputToken]) =>
-      toLower(Pair.getAddress(inputToken, outputToken))
+      Pair.getAddress(inputToken, outputToken)?.toLowerCase()
     );
   }, [allPairCombinations]);
 

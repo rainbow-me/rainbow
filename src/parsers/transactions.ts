@@ -6,7 +6,6 @@ import {
   partition,
   reverse,
   slice,
-  toLower,
   toUpper,
   uniqBy,
   upperFirst,
@@ -163,7 +162,8 @@ const overrideFailedCompound = (
     ...txn,
   };
   newTxn.status = ZerionTransactionStatus.failed;
-  const asset = savingsAssetsList[network][toLower(txn?.address_to ?? '')];
+  const asset =
+    savingsAssetsList[network][txn?.address_to?.toLowerCase() ?? ''];
 
   const assetInternalTransaction = {
     address_from: txn.address_from,
@@ -331,7 +331,7 @@ const parseTransaction = async (
     const internalTransactions = map(
       txn?.changes,
       (internalTxn, index): RainbowTransaction => {
-        const address = toLower(internalTxn?.asset?.asset_code);
+        const address = internalTxn?.asset?.asset_code?.toLowerCase() ?? '';
         const metadata = getTokenMetadata(address);
         const updatedAsset = {
           address,
@@ -350,7 +350,7 @@ const parseTransaction = async (
           nativeCurrency
         );
 
-        if (purchaseTransactionsHashes.includes(toLower(txn.hash))) {
+        if (purchaseTransactionsHashes.includes(txn.hash.toLowerCase())) {
           txn.type = TransactionType.purchase;
         }
 
@@ -375,7 +375,7 @@ const parseTransaction = async (
         });
         return {
           address:
-            toLower(updatedAsset.address) === ETH_ADDRESS
+            updatedAsset.address.toLowerCase() === ETH_ADDRESS
               ? ETH_ADDRESS
               : updatedAsset.address,
           balance: convertRawAmountToBalance(valueUnit, updatedAsset),

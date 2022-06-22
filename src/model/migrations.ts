@@ -1,7 +1,7 @@
 import path from 'path';
 import AsyncStorage from '@react-native-community/async-storage';
 import { captureException } from '@sentry/react-native';
-import { findKey, isNumber, keys, toLower } from 'lodash';
+import { findKey, isNumber, keys } from 'lodash';
 import RNFS from 'react-native-fs';
 import { MMKV } from 'react-native-mmkv';
 import { removeLocal } from '../handlers/localstorage/common';
@@ -497,7 +497,7 @@ export default async function runMigrations() {
 
         const pinnedCoinsMigrated = pinnedCoins.map((address: string) => {
           const asset = assets?.find(
-            (asset: any) => asset.address === toLower(address)
+            (asset: any) => asset.address === address.toLowerCase()
           );
           if (asset?.type && isL2Asset(asset.type)) {
             return `${asset.address}_${asset.network}`;
