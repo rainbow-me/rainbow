@@ -1,5 +1,5 @@
 import { differenceInDays, differenceInYears } from 'date-fns';
-import { findIndex, sumBy, take } from 'lodash';
+import { findIndex } from 'lodash';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { TransactionStatusTypes } from '@rainbow-me/entities';
@@ -9,14 +9,18 @@ const DEFAULT_YEARLY_LIMIT = 5000;
 
 const findRemainingAmount = (limit, purchaseTransactions, index) => {
   const transactionsInTimeline =
-    index >= 0 ? take(purchaseTransactions, index) : purchaseTransactions;
-  const purchasedAmount = sumBy(transactionsInTimeline, txn =>
-    txn.status === TransactionStatusTypes.failed
-      ? 0
-      : txn.sourceAmount
-      ? Number(txn.sourceAmount)
-      : 0
-  );
+    index >= 0 ? purchaseTransactions.slice(0, index) : purchaseTransactions;
+
+  const purchasedAmount = transactionsInTimeline.reduce((acc, txn) => {
+    const amount =
+      txn.status === TransactionStatusTypes.failed
+        ? 0
+        : txn.sourceAmount
+        ? Number(txn.sourceAmount)
+        : 0;
+    return acc + amount;
+  }, 0);
+
   return limit - purchasedAmount;
 };
 

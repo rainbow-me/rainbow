@@ -445,3 +445,8 @@ export const chunk = <T>(input: T[], size: number): T[][] => {
 
 export const isObjectLike = (val: any) =>
   val !== null && typeof val === 'object';
+
+export const upperFirst = (string?: string | undefined): string => {
+  if (!string) return '';
+  return string ? string.charAt(0).toUpperCase() + string.slice(1) : '';
+};
