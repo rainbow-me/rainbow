@@ -23,14 +23,15 @@ const EmptyValue = styled(Column)({
 
 const PinValue = ({ translateX, value, ...props }) => {
   const { colors } = useTheme();
+
+  const animatedStyles = useAnimatedStyle(() => ({
+    flexDirection: 'row',
+    transform: [{ translateX: translateX?.value ?? 0 }],
+  }));
+
   return (
     <Flex {...props}>
-      <Animated.View
-        style={useAnimatedStyle(() => ({
-          flexDirection: 'row',
-          transform: [{ translateX: translateX?.value ?? 0 }],
-        }))}
-      >
+      <Animated.View style={animatedStyles}>
         {value && value.length ? (
           <FilledValue backgroundColor={colors.appleBlue} />
         ) : (
