@@ -33,7 +33,7 @@ export const signUrl = memoFn(
       internalAddress = internalAddress.split('.')[0] + '.' + format;
     }
 
-    let { width } = widthAndHeight;
+    const { width } = widthAndHeight;
 
     const directory = internalAddress.split('/')[0];
 
