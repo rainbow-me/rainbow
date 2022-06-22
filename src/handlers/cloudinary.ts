@@ -1,15 +1,16 @@
 // @ts-ignore
 import { url as cloudinaryURL } from 'cloudinary/lib/cloudinary';
+// @ts-ignore
+import { pickScale } from 'react-native/Libraries/Image/AssetUtils';
 import { memoFn } from '@rainbow-me/utils/memoFn';
-import logger from 'logger';
 
 type CloudinaryConfig = {
   width: number;
   height: number;
-  format: string;
+  format?: string;
 };
 
-const PixelRatios = [1, 1.5, 2, 3, 3.5];
+const PixelRatios = [1, 1.5, 2, 2.625, 2.75, 3, 3.5]; // popular ratios.
 const IconsSizes = [40, 36]; // Remove 36 with TopMover
 const allowedIconSizes = PixelRatios.reduce((acc, ratio) => {
   for (let size of IconsSizes) {
@@ -22,30 +23,25 @@ const supportedSizeTransformations = {
   assets: allowedIconSizes,
 } as { [key: string]: number[] };
 
+// NOTE: currently, we assume that width and height are always equal and provided.
+// We use this storage only for assets.
 export const signUrl = memoFn(
-  (url: string, config: Partial<CloudinaryConfig>) => {
+  (url: string, config: CloudinaryConfig) => {
     const { format, ...widthAndHeight } = config;
     let internalAddress = url.split('/upload/')[1];
     if (format) {
       internalAddress = internalAddress.split('.')[0] + '.' + format;
     }
 
+    let { width } = widthAndHeight;
+
     const directory = internalAddress.split('/')[0];
 
-    if (supportedSizeTransformations[directory] && widthAndHeight.width) {
-      if (
-        !(supportedSizeTransformations[directory] as number[]).includes(
-          widthAndHeight.width
-        )
-      ) {
-        logger.error(url, 'Incorrect size sent to Cloudinary');
-        return null;
-      }
-    }
-
+    const usedWidth = pickScale(supportedSizeTransformations[directory], width);
     const cloudinaryImg = cloudinaryURL(internalAddress, {
+      height: usedWidth,
       sign_url: true,
-      ...widthAndHeight,
+      width: usedWidth,
     });
 
     if (cloudinaryImg.startsWith('http:')) {
