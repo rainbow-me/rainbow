@@ -9,6 +9,7 @@ import { getWalletProfileMeta } from '@rainbow-me/helpers/walletProfileHandler';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
+import { delay } from '@rainbow-me/utilities';
 import { profileUtils } from '@rainbow-me/utils';
 
 export default function WalletProfileState({
@@ -52,7 +53,8 @@ export default function WalletProfileState({
 
   const handleSubmit = useCallback(() => {
     analytics.track('Tapped "Submit" on Wallet Profile modal');
-    InteractionManager.runAfterInteractions(() => {
+    InteractionManager.runAfterInteractions(async () => {
+      android && (await delay(600));
       onCloseModal({
         color:
           typeof nameColor === 'string'
