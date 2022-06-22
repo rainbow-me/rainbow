@@ -2,10 +2,9 @@ import { useRoute } from '@react-navigation/core';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { Fragment, useCallback, useState } from 'react';
-import { Clock } from 'react-native-reanimated';
+import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
 import useWallets from '../../hooks/useWallets';
 import { Alert } from '../alerts';
-import { runSpring } from '../animations';
 import { Centered, ColumnWithMargins } from '../layout';
 import { Numpad, NumpadValue } from '../numpad';
 import AddCashFooter from './AddCashFooter';
@@ -23,6 +22,20 @@ import { abbreviations } from '@rainbow-me/utils';
 
 const currencies = [DAI_ADDRESS, ETH_ADDRESS];
 const minimumPurchaseAmountUSD = 1;
+const springConfig = {
+  damping: 40,
+  stiffness: 400,
+  velocity: 0,
+};
+
+interface Props {
+  limitWeekly: number;
+  onClearError: () => void;
+  onLimitExceeded: (limit: 'weekly' | 'yearly') => void;
+  onPurchase: (params: { address: string; value: string }) => void;
+  onShake: () => void;
+  shakeAnim: Animated.SharedValue<number>;
+}
 
 const AddCashForm = ({
   limitWeekly,
@@ -31,17 +44,18 @@ const AddCashForm = ({
   onPurchase,
   onShake,
   shakeAnim,
-}) => {
+}: Props) => {
   const isWalletEthZero = useIsWalletEthZero();
   const { params } = useRoute();
   const [paymentSheetVisible, setPaymentSheetVisible] = useState(false);
 
   const { isNarrowPhone, isSmallPhone, isTallPhone } = useDimensions();
-  const [scaleAnim, setScaleAnim] = useState(1);
+  const scale = useSharedValue(1);
 
   const initialCurrencyIndex = 1;
   const [currency, setCurrency] = useState(currencies[initialCurrencyIndex]);
-  const [value, setValue] = useState(
+  const [value, setValue] = useState<string>(
+    // @ts-expect-error not fully typed navigation
     params?.amount ? params?.amount?.toString() : ''
   );
 
@@ -50,12 +64,15 @@ const AddCashForm = ({
 
   const onSubmit = useCallback(async () => {
     if (paymentSheetVisible) return;
+
+    const numberValue = Number(value);
+
     async function handlePurchase() {
       try {
         analytics.track('Submitted Purchase', {
           category: 'add cash',
           label: currency,
-          value: Number(value),
+          value: numberValue,
         });
         setPaymentSheetVisible(true);
         await onPurchase({ address: currency, value });
@@ -68,7 +85,7 @@ const AddCashForm = ({
 
     if (isReadOnlyWallet) {
       const truncatedAddress = abbreviations.formatAddressForDisplay(
-        toChecksumAddress(accountAddress),
+        toChecksumAddress(accountAddress) ?? '',
         4,
         6
       );
@@ -82,7 +99,7 @@ const AddCashForm = ({
         }),
         title: lang.t('wallet.add_cash.watching_mode_confirm_title'),
       });
-    } else if (value <= 50) {
+    } else if (numberValue <= 50) {
       Alert({
         buttons: [
           { style: 'cancel', text: 'Cancel' },
@@ -114,8 +131,7 @@ const AddCashForm = ({
           !prevValue &&
           (newValue === '0' || newValue === '.' || newValue === 'back');
 
-        const isMaxDecimalCount =
-          prevValue && prevValue.includes('.') && newValue === '.';
+        const isMaxDecimalCount = prevValue?.includes('.') && newValue === '.';
 
         const isMaxDecimalLength =
           prevValue &&
@@ -144,17 +160,12 @@ const AddCashForm = ({
 
         onClearError();
 
-        let prevPosition = 1;
-        if (prevValue && prevValue.length > 3) {
-          prevPosition = 1 - (prevValue.length - 3) * 0.075;
-        }
         if (nextValue.length > 3) {
-          const characterCount = 1 - (nextValue.length - 3) * 0.075;
-          setScaleAnim(
-            runSpring(new Clock(), prevPosition, characterCount, 0, 400, 40)
-          );
+          const characterCountFactor = 1 - (nextValue.length - 3) * 0.075;
+
+          scale.value = withSpring(characterCountFactor, springConfig);
         } else if (nextValue.length === 3) {
-          setScaleAnim(runSpring(new Clock(), prevPosition, 1, 0, 400, 40));
+          scale.value = withSpring(1, springConfig);
         }
 
         return nextValue;
@@ -164,7 +175,7 @@ const AddCashForm = ({
         category: 'add cash',
       });
     },
-    [limitWeekly, onClearError, onLimitExceeded, onShake]
+    [limitWeekly, onClearError, onLimitExceeded, onShake, scale]
   );
 
   const onCurrencyChange = useCallback(
@@ -202,7 +213,7 @@ const AddCashForm = ({
           style={padding.object(0, 24, isNarrowPhone ? 12 : 24)}
           width="100%"
         >
-          <NumpadValue scale={scaleAnim} translateX={shakeAnim} value={value} />
+          <NumpadValue scale={scale} translateX={shakeAnim} value={value} />
           <AddCashSelector
             currencies={currencies}
             initialCurrencyIndex={initialCurrencyIndex}

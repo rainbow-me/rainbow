@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 const sx = StyleSheet.create({
@@ -23,6 +23,7 @@ function buildFallbackFontSize(symbol, width) {
 
 function formatSymbol(symbol, width) {
   if (!symbol) return '';
+
   return symbol.replace(/[^a-zA-Z0-9]/g, '').substring(0, width < 30 ? 1 : 5);
 }
 
@@ -35,25 +36,24 @@ const FallbackIcon = ({
   width,
   ...props
 }) => {
-  const formattedSymbol = useMemo(() => formatSymbol(symbol, width), [
-    symbol,
-    width,
-  ]);
+  const formattedSymbol = formatSymbol(symbol, width);
 
-  const fontSize = useMemo(
-    () => ({ fontSize: buildFallbackFontSize(formattedSymbol, width) }),
-    [formattedSymbol, width]
-  );
+  const fontSize = buildFallbackFontSize(formattedSymbol, width);
 
   return (
     <View
       {...props}
-      backgroundColor={color}
-      height={height}
-      style={[sx.container, style]}
-      width={width}
+      style={[
+        sx.container,
+        {
+          backgroundColor: color,
+          height,
+          width,
+        },
+        style,
+      ]}
     >
-      <Text style={[sx.text, fontSize, textStyles]}>{formattedSymbol}</Text>
+      <Text style={[sx.text, { fontSize }, textStyles]}>{formattedSymbol}</Text>
     </View>
   );
 };

@@ -14,7 +14,7 @@ export const setHiddenCoins = coins => dispatch => {
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
-  hiddenCoins: [],
+  hiddenCoins: {},
 };
 
 export default (state = INITIAL_STATE, action) => {
