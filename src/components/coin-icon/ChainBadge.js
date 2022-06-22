@@ -60,7 +60,7 @@ export default function ChainBadge({
   badgeXPosition = -7,
   badgeYPosition = 0,
   marginBottom = 0,
-  position,
+  position = 'absolute',
   size = 'small',
 }) {
   const { isDarkMode } = useTheme();

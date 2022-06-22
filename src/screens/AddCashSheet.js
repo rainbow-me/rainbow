@@ -30,6 +30,8 @@ const sheetHeight =
   statusBarHeight -
   (isNativeStackAvailable ? (deviceHeight >= 812 ? 10 : 20) : 0);
 
+const subtitleInterval = 3000;
+
 const SheetContainer = styled(Column)({
   ...borders.buildRadiusAsObject('top', isNativeStackAvailable ? 0 : 16),
   backgroundColor: ({ colors }) => colors.white,
@@ -37,8 +39,6 @@ const SheetContainer = styled(Column)({
   top: isNativeStackAvailable ? 0 : statusBarHeight,
   width: '100%',
 });
-
-const SubtitleInterval = 3000;
 
 export default function AddCashSheet() {
   const { colors } = useTheme();
@@ -86,7 +86,7 @@ export default function AddCashSheet() {
     limit => {
       stopErrorTimeout();
       setErrorIndex(Object.keys(cashLimits).indexOf(limit));
-      startErrorTimeout(() => onClearError(), SubtitleInterval);
+      startErrorTimeout(() => onClearError(), subtitleInterval);
     },
     [stopErrorTimeout, cashLimits, startErrorTimeout, onClearError]
   );
@@ -109,11 +109,10 @@ export default function AddCashSheet() {
             <SheetTitle>{lang.t('button.add_cash')}</SheetTitle>
             {!isPaymentComplete && (
               <SheetSubtitleCycler
-                animatedValue={errorAnimation}
                 errorIndex={errorIndex}
-                interval={SubtitleInterval}
+                interval={subtitleInterval}
                 items={Object.values(cashLimits)}
-                paddingVertical={14}
+                sharedValue={errorAnimation}
               />
             )}
           </ColumnWithMargins>
