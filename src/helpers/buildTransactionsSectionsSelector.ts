@@ -11,17 +11,17 @@ import {
 } from './transactions';
 import { TransactionStatusTypes } from '@rainbow-me/entities';
 
-const contactsSelector = state => state.contacts;
-const requestsSelector = state => state.requests;
-const transactionsSelector = state => state.transactions;
-const focusedSelector = state => state.isFocused;
-const initializedSelector = state => state.initialized;
+const contactsSelector = (state: any) => state.contacts;
+const requestsSelector = (state: any) => state.requests;
+const transactionsSelector = (state: any) => state.transactions;
+const focusedSelector = (state: any) => state.isFocused;
+const initializedSelector = (state: any) => state.initialized;
 
-const renderItemElement = renderItem =>
-  function InternarSectionListRender(renderItemProps) {
+const renderItemElement = (renderItem: any) =>
+  function InternarSectionListRender(renderItemProps: any) {
     return createElement(renderItem, renderItemProps);
   };
-const groupTransactionByDate = ({ pending, minedAt }) => {
+const groupTransactionByDate = ({ pending, minedAt }: any) => {
   if (pending) return 'Pending';
 
   const ts = parseInt(minedAt, 10) * 1000;
@@ -33,7 +33,7 @@ const groupTransactionByDate = ({ pending, minedAt }) => {
   return format(ts, `MMMM${ts > thisYearTimestamp ? '' : ' yyyy'}`);
 };
 
-const addContactInfo = contacts => txn => {
+const addContactInfo = (contacts: any) => (txn: any) => {
   const { from, to, status } = txn;
   const isSent = status === TransactionStatusTypes.sent;
   const contactAddress = isSent ? to : from;
@@ -45,17 +45,17 @@ const addContactInfo = contacts => txn => {
 };
 
 const buildTransactionsSections = (
-  contacts,
-  requests,
-  transactions,
-  isFocused,
-  initialized
+  contacts: any,
+  requests: any,
+  transactions: any,
+  isFocused: any,
+  initialized: any
 ) => {
   if (!isFocused && !initialized) {
     return { sections: [] };
   }
 
-  let sectionedTransactions = [];
+  let sectionedTransactions: any = [];
 
   const transactionsWithContacts = map(transactions, addContactInfo(contacts));
 
@@ -70,6 +70,7 @@ const buildTransactionsSections = (
       title: section,
     }));
     const pendingSectionIndex = sectionedTransactions.findIndex(
+      // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'title' implicitly has an 'any' ty... Remove this comment to see the full error message
       ({ title }) => title === 'Pending'
     );
     if (pendingSectionIndex > 0) {
@@ -81,7 +82,7 @@ const buildTransactionsSections = (
     }
   }
 
-  let requestsToApprove = [];
+  let requestsToApprove: any = [];
   if (!isEmpty(requests)) {
     requestsToApprove = [
       {
