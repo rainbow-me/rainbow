@@ -54,7 +54,7 @@ export default function WalletProfileState({
   const handleSubmit = useCallback(() => {
     analytics.track('Tapped "Submit" on Wallet Profile modal');
     InteractionManager.runAfterInteractions(async () => {
-      android && (await delay(600));
+      android && (await delay(700));
       onCloseModal({
         color:
           typeof nameColor === 'string'
