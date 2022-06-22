@@ -5,7 +5,7 @@ import isEqual from 'react-fast-compare';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import { addressAssetsReceived, fetchAssetPricesWithCoingecko } from './data';
 // eslint-disable-next-line import/no-cycle
-import { explorerInitL2 } from './explorer';
+import { emitMainnetAssetDiscoveryRequest, explorerInitL2 } from './explorer';
 import { AssetTypes } from '@rainbow-me/entities';
 import { getAssetsFromCovalent } from '@rainbow-me/handlers/covalent';
 import { web3Provider } from '@rainbow-me/handlers/web3';
@@ -47,66 +47,6 @@ const getCurrentAddress = address => {
   return migratedTokens[address] || address;
 };
 
-const getMainnetAssetsFromCovalent = async (
-  chainId,
-  accountAddress,
-  type,
-  currency,
-  coingeckoIds,
-  genericAssets
-) => {
-  const data = await getAssetsFromCovalent(chainId, accountAddress, currency);
-  if (data) {
-    const updatedAt = new Date(data.updated_at).getTime();
-    const assets = data.items.map(item => {
-      let contractAddress = item.contract_address;
-      const isETH = toLower(contractAddress) === toLower(COVALENT_ETH_ADDRESS);
-      if (isETH) {
-        contractAddress = ETH_ADDRESS;
-      }
-
-      const coingeckoId = coingeckoIds[toLower(contractAddress)];
-      let price = {
-        changed_at: updatedAt,
-        relative_change_24h: 0,
-        value: isETH ? item.quote_rate : 0,
-      };
-
-      // Overrides
-      const fallbackAsset =
-        ethereumUtils.getAccountAsset(contractAddress) ||
-        genericAssets[toLower(contractAddress)];
-
-      if (fallbackAsset) {
-        price = {
-          ...price,
-          ...fallbackAsset.price,
-        };
-      }
-
-      return {
-        asset: {
-          asset_code: contractAddress,
-          coingecko_id: coingeckoId,
-          decimals: item.contract_decimals,
-          icon_url: item.logo_url,
-          name: item.contract_name,
-          price: {
-            value: 0,
-            ...price,
-          },
-          symbol: item.contract_ticker_symbol,
-          type,
-        },
-        quantity: item.balance,
-      };
-    });
-
-    return keyBy(assets, 'asset.asset_code');
-  }
-  return null;
-};
-
 const findNewAssetsToWatch = () => async (dispatch, getState) => {
   const { accountAddress } = getState().settings;
   const { mainnetAssets, latestTxBlockNumber } = getState().fallbackExplorer;
@@ -135,6 +75,81 @@ const findNewAssetsToWatch = () => async (dispatch, getState) => {
       type: FALLBACK_EXPLORER_SET_ASSETS,
     });
   }
+};
+
+const getPrice = (contractAddress, updatedAt, genericAssets, quoteRate) => {
+  const isETH =
+    contractAddress.toLowerCase() === COVALENT_ETH_ADDRESS.toLowerCase;
+  if (isETH) {
+    contractAddress = ETH_ADDRESS;
+  }
+
+  let price = {
+    changed_at: updatedAt,
+    relative_change_24h: 0,
+    value: isETH ? quoteRate : 0,
+  };
+
+  // Overrides
+  const fallbackAsset =
+    ethereumUtils.getAccountAsset(contractAddress) ||
+    genericAssets[contractAddress?.toLowerCase()];
+
+  if (fallbackAsset) {
+    price = {
+      ...price,
+      ...fallbackAsset.price,
+    };
+  }
+  return {
+    value: 0,
+    ...price,
+  };
+};
+
+const getMainnetAssetsFromCovalent = async (
+  chainId,
+  accountAddress,
+  type,
+  currency,
+  coingeckoIds,
+  genericAssets
+) => {
+  const data = await getAssetsFromCovalent(chainId, accountAddress, currency);
+  if (data) {
+    const updatedAt = new Date(data.updated_at).getTime();
+    const assets = data.items.map(item => {
+      let contractAddress = item.contract_address;
+      const isETH = toLower(contractAddress) === toLower(COVALENT_ETH_ADDRESS);
+      if (isETH) {
+        contractAddress = ETH_ADDRESS;
+      }
+
+      const coingeckoId = coingeckoIds[toLower(contractAddress)];
+
+      return {
+        asset: {
+          asset_code: contractAddress,
+          coingecko_id: coingeckoId,
+          decimals: item.contract_decimals,
+          icon_url: item.logo_url,
+          name: item.contract_name,
+          price: getPrice(
+            contractAddress,
+            updatedAt,
+            genericAssets,
+            item.quote_rate
+          ),
+          symbol: item.contract_ticker_symbol,
+          type,
+        },
+        quantity: item.balance,
+      };
+    });
+
+    return keyBy(assets, 'asset.asset_code');
+  }
+  return null;
 };
 
 const findAssetsToWatch = async (
@@ -289,6 +304,22 @@ const fetchAssetBalances = async (tokens, address, network) => {
   }
 };
 
+const assetDiscoveryCallbackQueue = {};
+
+export const onMainnetAssetDiscoveryResponse = response => {
+  const queueKey =
+    response?.meta?.address?.toLowerCase() +
+    response?.meta?.currency?.toLowerCase();
+  const callbacks = assetDiscoveryCallbackQueue[queueKey];
+  if (!callbacks) {
+    return;
+  }
+  assetDiscoveryCallbackQueue[queueKey] = undefined;
+  for (let callback of callbacks) {
+    callback(response.payload.assets);
+  }
+};
+
 export const fetchOnchainBalances = ({
   keepPolling = true,
   withPrices = true,
@@ -299,169 +330,202 @@ export const fetchOnchainBalances = ({
   const { coingeckoIds } = getState().additionalAssetsData;
   const formattedNativeCurrency = toLower(nativeCurrency);
   const { mainnetAssets } = getState().fallbackExplorer;
-  const chainId = ethereumUtils.getChainIdFromNetwork(network);
-  const covalentMainnetAssets = await getMainnetAssetsFromCovalent(
-    chainId,
-    accountAddress,
-    AssetTypes.token,
-    formattedNativeCurrency,
-    coingeckoIds,
-    genericAssets
-  );
+  const callback = async covalentMainnetAssets => {
+    const chainAssetsMap = keyBy(chainAssets[network], 'asset.asset_code');
 
-  const chainAssetsMap = keyBy(chainAssets[network], 'asset.asset_code');
+    let assets =
+      network === NetworkTypes.mainnet
+        ? covalentMainnetAssets
+          ? {
+              ...mainnetAssets,
+              ...covalentMainnetAssets,
+            }
+          : mainnetAssets
+        : chainAssetsMap;
 
-  let assets =
-    network === NetworkTypes.mainnet
-      ? covalentMainnetAssets
-        ? {
-            ...mainnetAssets,
-            ...covalentMainnetAssets,
-          }
-        : mainnetAssets
-      : chainAssetsMap;
-
-  const isEmptyAssets = isEmpty(assets);
-  if (isEmptyAssets && !isEmpty(accountAssetsData)) {
-    assets = mapValues(accountAssetsData, asset => ({
-      asset: {
-        asset_code: asset.address,
-        decimals: asset.decimals,
-        icon_url: asset.icon_url,
-        name: asset.name,
-        price: asset.price,
-        symbol: asset.symbol,
-      },
-      quantity: 0,
-    }));
-  }
-
-  if (isEmptyAssets || (isEmptyAssets && keepPolling)) {
-    const fallbackExplorerBalancesHandle = setTimeout(
-      () => dispatch(fetchOnchainBalances({ keepPolling, withPrices })),
-      10000
-    );
-    dispatch({
-      payload: {
-        fallbackExplorerBalancesHandle,
-      },
-      type: FALLBACK_EXPLORER_SET_BALANCE_HANDLER,
-    });
-    return;
-  }
-
-  const tokenAddresses = map(assets, ({ asset: { asset_code } }) =>
-    asset_code === ETH_ADDRESS
-      ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
-      : toLower(asset_code)
-  );
-
-  const balances = await fetchAssetBalances(
-    tokenAddresses,
-    accountAddress,
-    network
-  );
-
-  let updatedAssets = assets;
-  if (balances) {
-    updatedAssets = mapValues(assets, assetAndQuantity => {
-      const assetCode = toLower(assetAndQuantity.asset.asset_code);
-      return {
+    const isEmptyAssets = isEmpty(assets);
+    if (isEmptyAssets && !isEmpty(accountAssetsData)) {
+      assets = mapValues(accountAssetsData, asset => ({
         asset: {
-          ...assetAndQuantity.asset,
-          asset_code:
-            assetCode === ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
-              ? ETH_ADDRESS
-              : assetCode,
+          asset_code: asset.address,
+          decimals: asset.decimals,
+          icon_url: asset.icon_url,
+          name: asset.name,
+          price: asset.price,
+          symbol: asset.symbol,
         },
-        quantity:
-          balances?.[
-            assetCode === ETH_ADDRESS
-              ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
-              : assetCode
-          ],
-      };
-    });
-  }
+        quantity: 0,
+      }));
+    }
 
-  if (withPrices) {
-    const coingeckoIds = map(
-      updatedAssets,
-      ({ asset: { coingecko_id } }) => coingecko_id
-    );
-    const prices = await fetchAssetPricesWithCoingecko(
-      coingeckoIds,
-      formattedNativeCurrency
+    if (isEmptyAssets || (isEmptyAssets && keepPolling)) {
+      const fallbackExplorerBalancesHandle = setTimeout(
+        () => dispatch(fetchOnchainBalances({ keepPolling, withPrices })),
+        10000
+      );
+      dispatch({
+        payload: {
+          fallbackExplorerBalancesHandle,
+        },
+        type: FALLBACK_EXPLORER_SET_BALANCE_HANDLER,
+      });
+      return;
+    }
+
+    const tokenAddresses = map(assets, ({ asset: { asset_code } }) =>
+      asset_code === ETH_ADDRESS
+        ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
+        : toLower(asset_code)
     );
 
-    if (prices) {
-      updatedAssets = mapValues(updatedAssets, asset => {
-        const assetCoingeckoId = toLower(asset.asset.coingecko_id);
-        if (prices[assetCoingeckoId]) {
-          return {
-            ...asset,
-            asset: {
-              ...asset.asset,
-              price: {
-                changed_at: prices[assetCoingeckoId].last_updated_at,
-                relative_change_24h:
-                  prices[assetCoingeckoId][
-                    `${formattedNativeCurrency}_24h_change`
-                  ],
-                value: prices[assetCoingeckoId][`${formattedNativeCurrency}`],
-              },
-            },
-          };
-        }
-        return asset;
+    const balances = await fetchAssetBalances(
+      tokenAddresses,
+      accountAddress,
+      network
+    );
+
+    let updatedAssets = assets;
+    if (balances) {
+      updatedAssets = mapValues(assets, assetAndQuantity => {
+        const assetCode = toLower(assetAndQuantity.asset.asset_code);
+        return {
+          asset: {
+            ...assetAndQuantity.asset,
+            asset_code:
+              assetCode === ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
+                ? ETH_ADDRESS
+                : assetCode,
+          },
+          quantity:
+            balances?.[
+              assetCode === ETH_ADDRESS
+                ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
+                : assetCode
+            ],
+        };
       });
     }
-  }
 
-  logger.log('😬 FallbackExplorer updating assets');
-
-  const newPayload = { assets: updatedAssets };
-
-  if (balances && (!keepPolling || !isEqual(lastUpdatePayload, newPayload))) {
-    dispatch(
-      addressAssetsReceived(
-        {
-          meta: {
-            address: accountAddress,
-            currency: nativeCurrency,
-            status: 'ok',
-          },
-          payload: newPayload,
-        },
-        false,
-        false,
-        false,
-        network
-      )
-    );
-    lastUpdatePayload = newPayload;
-  }
-
-  if (keepPolling) {
-    const fallbackExplorerBalancesHandle = setTimeout(
-      () => dispatch(fetchOnchainBalances({ keepPolling, withPrices })),
-      UPDATE_BALANCE_AND_PRICE_FREQUENCY
-    );
-    let fallbackExplorerAssetsHandle = null;
-    if (NetworkTypes.mainnet === network) {
-      fallbackExplorerAssetsHandle = setTimeout(
-        () => dispatch(findNewAssetsToWatch()),
-        DISCOVER_NEW_ASSETS_FREQUENCY
+    if (withPrices) {
+      const coingeckoIds = map(
+        updatedAssets,
+        ({ asset: { coingecko_id } }) => coingecko_id
       );
+      const prices = await fetchAssetPricesWithCoingecko(
+        coingeckoIds,
+        formattedNativeCurrency
+      );
+
+      if (prices) {
+        updatedAssets = mapValues(updatedAssets, asset => {
+          const assetCoingeckoId = toLower(asset.asset.coingecko_id);
+          if (prices[assetCoingeckoId]) {
+            return {
+              ...asset,
+              asset: {
+                ...asset.asset,
+                price: {
+                  changed_at: prices[assetCoingeckoId].last_updated_at,
+                  relative_change_24h:
+                    prices[assetCoingeckoId][
+                      `${formattedNativeCurrency}_24h_change`
+                    ],
+                  value: prices[assetCoingeckoId][`${formattedNativeCurrency}`],
+                },
+              },
+            };
+          }
+          return asset;
+        });
+      }
     }
 
-    dispatch({
-      payload: {
-        fallbackExplorerAssetsHandle,
-        fallbackExplorerBalancesHandle,
-      },
-      type: FALLBACK_EXPLORER_SET_HANDLERS,
-    });
+    logger.log('😬 FallbackExplorer updating assets');
+
+    const newPayload = { assets: updatedAssets };
+
+    if (balances && (!keepPolling || !isEqual(lastUpdatePayload, newPayload))) {
+      dispatch(
+        addressAssetsReceived(
+          {
+            meta: {
+              address: accountAddress,
+              currency: nativeCurrency,
+              status: 'ok',
+            },
+            payload: newPayload,
+          },
+          false,
+          false,
+          false,
+          network
+        )
+      );
+      lastUpdatePayload = newPayload;
+    }
+
+    if (keepPolling) {
+      const fallbackExplorerBalancesHandle = setTimeout(
+        () => dispatch(fetchOnchainBalances({ keepPolling, withPrices })),
+        UPDATE_BALANCE_AND_PRICE_FREQUENCY
+      );
+      let fallbackExplorerAssetsHandle = null;
+      if (NetworkTypes.mainnet === network) {
+        fallbackExplorerAssetsHandle = setTimeout(
+          () => dispatch(findNewAssetsToWatch()),
+          DISCOVER_NEW_ASSETS_FREQUENCY
+        );
+      }
+
+      dispatch({
+        payload: {
+          fallbackExplorerAssetsHandle,
+          fallbackExplorerBalancesHandle,
+        },
+        type: FALLBACK_EXPLORER_SET_HANDLERS,
+      });
+    }
+  };
+
+  if (network === NetworkTypes.mainnet) {
+    const receiveCovalentResponse = assets => {
+      // Fix prices
+      const parsedAssets = {};
+      for (let [key, asset] of Object.entries(assets)) {
+        parsedAssets[key] = {
+          ...asset,
+          asset: {
+            ...asset.asset,
+            price: getPrice(
+              asset.asset.asset_code,
+              asset.asset.price?.updatedAt,
+              genericAssets,
+              asset.asset.price?.value
+            ),
+          },
+        };
+      }
+
+      callback(parsedAssets);
+    };
+
+    dispatch(emitMainnetAssetDiscoveryRequest);
+    const queueKey =
+      accountAddress.toLowerCase() + nativeCurrency.toLowerCase();
+    assetDiscoveryCallbackQueue[queueKey] =
+      assetDiscoveryCallbackQueue[queueKey] ?? [];
+    assetDiscoveryCallbackQueue[queueKey].push(receiveCovalentResponse);
+  } else {
+    const chainId = ethereumUtils.getChainIdFromNetwork(network);
+    const covalentMainnetAssets = await getMainnetAssetsFromCovalent(
+      chainId,
+      accountAddress,
+      AssetTypes.token,
+      formattedNativeCurrency,
+      coingeckoIds,
+      genericAssets
+    );
+    callback(covalentMainnetAssets);
   }
 };
 
