@@ -86,8 +86,8 @@ const Container = styled(Column).attrs({
   alignItems: 'center',
   hapticType: 'impactHeavy',
   justifyContent: 'center',
-})(({ marginBottom, horizontalPadding }) => ({
-  ...margin.object(18, 0, marginBottom),
+})(({ marginBottom, marginTop, horizontalPadding }) => ({
+  ...margin.object(marginTop, 0, marginBottom),
   ...padding.object(0, horizontalPadding),
   width: '100%',
 }));
@@ -121,10 +121,10 @@ const TransactionTimeLabel = ({ formatter, theme }) => {
 
 const GasSpeedButton = ({
   asset,
-  bottom = 0,
   currentNetwork,
   horizontalPadding = 19,
   marginBottom = 20,
+  marginTop = 18,
   speeds = null,
   showGasOptions = false,
   testID,
@@ -483,9 +483,9 @@ const GasSpeedButton = ({
 
   return (
     <Container
-      bottom={bottom}
       horizontalPadding={horizontalPadding}
       marginBottom={marginBottom}
+      marginTop={marginTop}
       testID={testID}
     >
       <Row justify="space-between">

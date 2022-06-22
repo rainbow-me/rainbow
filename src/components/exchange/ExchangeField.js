@@ -6,6 +6,7 @@ import { ChainBadge, CoinIcon, CoinIconSize } from '../coin-icon';
 import { Row, RowWithMargins } from '../layout';
 import { EnDash } from '../text';
 import ExchangeInput from './ExchangeInput';
+import { AssetType } from '@rainbow-me/entities';
 import { useColorForAsset } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { borders } from '@rainbow-me/styles';
@@ -70,6 +71,7 @@ const ExchangeField = (
     address,
     fallbackColor: colors.appleBlue,
     mainnet_address: mainnetAddress,
+    type: mainnetAddress ? AssetType.token : type,
   });
   const handleFocusField = useCallback(() => {
     ref?.current?.focus();

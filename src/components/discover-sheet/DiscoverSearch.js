@@ -194,6 +194,7 @@ export default function DiscoverSearch() {
     searchQueryForSearch,
     setIsFetchingEns,
     setIsSearching,
+    profilesEnabled,
   ]);
 
   useEffect(() => {

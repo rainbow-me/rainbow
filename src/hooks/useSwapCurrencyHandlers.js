@@ -156,10 +156,10 @@ export default function useSwapCurrencyHandlers({
         newInputCurrency?.type !== outputCurrency?.type &&
         !hasShownWarning
       ) {
+        android && Keyboard.dismiss();
         InteractionManager.runAfterInteractions(() => {
-          android && Keyboard.dismiss();
           Navigation.handleAction(Routes.EXPLAIN_SHEET, {
-            network: newInputCurrency?.type,
+            network: newInputCurrency?.type || Network.mainnet,
             onClose: () => {
               InteractionManager.runAfterInteractions(() => {
                 setTimeout(() => {
@@ -195,9 +195,10 @@ export default function useSwapCurrencyHandlers({
         newOutputCurrency?.type !== inputCurrency?.type &&
         !hasShownWarning
       ) {
+        android && Keyboard.dismiss();
         InteractionManager.runAfterInteractions(() => {
           Navigation.handleAction(Routes.EXPLAIN_SHEET, {
-            network: newOutputCurrency?.type,
+            network: newOutputCurrency?.type || Network.mainnet,
             onClose: () => {
               InteractionManager.runAfterInteractions(() => {
                 setTimeout(() => {

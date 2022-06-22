@@ -17,7 +17,6 @@ import {
   Keyboard,
   NativeModules,
 } from 'react-native';
-import { useSafeArea } from 'react-native-safe-area-context';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMemoOne } from 'use-memo-one';
@@ -27,7 +26,6 @@ import {
   ConfirmExchangeButton,
   DepositInfo,
   ExchangeDetailsRow,
-  ExchangeFloatingPanels,
   ExchangeHeader,
   ExchangeInputField,
   ExchangeNotch,
@@ -35,8 +33,9 @@ import {
 } from '../components/exchange';
 import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
-import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
+import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { delayNext } from '../hooks/useMagicAutofocus';
+import { Row, Rows } from '@rainbow-me/design-system';
 import { AssetType } from '@rainbow-me/entities';
 import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
 import {
@@ -71,19 +70,16 @@ import { ethereumUtils } from '@rainbow-me/utils';
 import { useEthUSDPrice } from '@rainbow-me/utils/ethereumUtils';
 import logger from 'logger';
 
-const FloatingPanels = ios
-  ? AnimatedExchangeFloatingPanels
-  : ExchangeFloatingPanels;
+const FloatingPanels = AnimatedExchangeFloatingPanels;
 
 const Wrapper = KeyboardFixedOpenLayout;
 
-const InnerWrapper = styled(Centered).attrs({
+const InnerWrapper = styled(Column).attrs({
   direction: 'column',
-})(({ isSmallPhone, theme: { colors } }) => ({
+  justify: 'space-between',
+})({
   ...position.sizeAsObject('100%'),
-  ...(ios && isSmallPhone && { maxHeight: 354 }),
-  backgroundColor: colors.transparent,
-}));
+});
 
 const Spacer = styled.View({
   height: 20,
@@ -119,9 +115,8 @@ export default function ExchangeModal({
   type,
   typeSpecificParams,
 }) {
-  const { isSmallPhone } = useDimensions();
+  const { isSmallPhone, isSmallAndroidPhone } = useDimensions();
   const dispatch = useDispatch();
-  const insets = useSafeArea();
   const {
     params: { inputAsset: defaultInputAsset, outputAsset: defaultOutputAsset },
   } = useRoute();
@@ -600,7 +595,8 @@ export default function ExchangeModal({
 
   const confirmButtonProps = useMemoOne(
     () => ({
-      disabled: !Number(inputAmount) || (!tradeDetails && !isSavings),
+      disabled:
+        !Number(inputAmount) || (!loading && !tradeDetails && !isSavings),
       inputAmount,
       insufficientLiquidity,
       isAuthorizing,
@@ -720,14 +716,18 @@ export default function ExchangeModal({
     });
   }, [currentNetwork, lastFocusedInputHandle, navigate]);
 
-  const showConfirmSection = isSavings
+  const showConfirmButton = isSavings
     ? !!inputCurrency
     : !!inputCurrency && !!outputCurrency;
 
   return (
     <Wrapper keyboardType={KeyboardTypes.numpad}>
-      <InnerWrapper isSmallPhone={isSmallPhone}>
-        <FloatingPanels>
+      <InnerWrapper>
+        <FloatingPanels
+          {...((isSmallPhone || (android && isSmallAndroidPhone)) && {
+            paddingTop: 0,
+          })}
+        >
           <FloatingPanel
             overflow="visible"
             paddingBottom={showOutputField ? 0 : 26}
@@ -793,7 +793,7 @@ export default function ExchangeModal({
               testID="deposit-info-button"
             />
           )}
-          {!isSavings && showConfirmSection && (
+          {!isSavings && showConfirmButton && (
             <ExchangeDetailsRow
               isHighPriceImpact={isHighPriceImpact}
               onFlipCurrencies={flipCurrencies}
@@ -806,25 +806,29 @@ export default function ExchangeModal({
           )}
 
           {isWithdrawal && <Spacer />}
-
-          {showConfirmSection && (
-            <ConfirmExchangeButton
-              {...confirmButtonProps}
-              flashbots={flashbots}
-              onPressViewDetails={navigateToSwapDetailsModal}
-              testID={`${testID}-confirm-button`}
-            />
-          )}
         </FloatingPanels>
-
-        <GasSpeedButton
-          asset={outputCurrency}
-          bottom={insets.bottom}
-          currentNetwork={currentNetwork}
-          dontBlur
-          onCustomGasBlur={handleCustomGasBlur}
-          testID={`${testID}-gas`}
-        />
+        <Rows alignVertical="bottom" height="content" space="19px">
+          <Row height="content">
+            {showConfirmButton && (
+              <ConfirmExchangeButton
+                {...confirmButtonProps}
+                onPressViewDetails={navigateToSwapDetailsModal}
+                testID={`${testID}-confirm-button`}
+              />
+            )}
+          </Row>
+          <Row height="content">
+            <GasSpeedButton
+              asset={outputCurrency}
+              currentNetwork={currentNetwork}
+              dontBlur
+              marginBottom={0}
+              marginTop={0}
+              onCustomGasBlur={handleCustomGasBlur}
+              testID={`${testID}-gas`}
+            />
+          </Row>
+        </Rows>
       </InnerWrapper>
     </Wrapper>
   );
