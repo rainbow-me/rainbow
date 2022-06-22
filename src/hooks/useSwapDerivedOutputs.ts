@@ -227,13 +227,10 @@ const getOutputAmount = async (
       quote.buyAmount.toString(),
       outputToken.decimals
     );
-
-    const outputAmountDisplay =
-      outputAmount && outputPrice
-        ? updatePrecisionToDisplay(outputAmount, outputPrice)
-        : outputAmount
-        ? outputAmount
-        : null;
+    const outputAmountDisplay = updatePrecisionToDisplay(
+      outputAmount,
+      outputPrice
+    );
 
     quote.inputTokenDecimals = inputToken.decimals;
     quote.outputTokenDecimals = outputToken.decimals;
@@ -426,10 +423,11 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
         displayValues[DisplayValue.native] = independentValue;
         derivedValues[SwapModalField.input] = inputAmount;
 
-        const inputAmountDisplay =
-          inputAmount && inputPrice
-            ? updatePrecisionToDisplay(inputAmount, inputPrice, true)
-            : inputAmount;
+        const inputAmountDisplay = updatePrecisionToDisplay(
+          inputAmount,
+          inputPrice,
+          true
+        );
         displayValues[DisplayValue.input] = inputAmountDisplay;
         const {
           outputAmount,
