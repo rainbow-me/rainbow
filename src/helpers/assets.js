@@ -115,6 +115,7 @@ export const buildCoinsList = (
     emptyCollectibles
   );
 
+  // separate into standard, pinned, small balances, hidden assets
   assets?.forEach(asset => {
     if (hiddenCoins && hiddenCoins[asset.uniqueId]) {
       hiddenAssets.push({
