@@ -19,8 +19,7 @@ import {
 } from '@rainbow-me/utils';
 
 const SwapDetailsText = styled(Text).attrs({
-  lineHeight: 17,
-  size: 'smedium',
+  lineHeight: android ? 18 : 17,
 })({});
 
 export const SwapDetailsValue = styled(SwapDetailsText).attrs(
