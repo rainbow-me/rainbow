@@ -11,7 +11,7 @@ jobs:
   ios-e2e:
     # The type of runner that the job will run on
     runs-on: ["self-hosted"]
-    # Cancel current builds if there's a newer commit
+    # Cancel current builds if there's a newer commit on the same branch
     concurrency: 
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
