@@ -40,7 +40,7 @@ function formatSymbol(symbol: string) {
  * @param param0 - optional mainnetAddress, address and optional assetType
  * @returns a proper type and address to use for the url
  */
-function getTypeAndAddress({
+function resolveTypeAndAddress({
   mainnetAddress,
   address,
   assetType,
@@ -75,7 +75,7 @@ export default React.memo(function FastCoinIcon({
   assetType?: AssetType;
   theme: any;
 }) {
-  const { resolvedType, resolvedAddress } = getTypeAndAddress({
+  const { resolvedType, resolvedAddress } = resolveTypeAndAddress({
     address,
     assetType,
     mainnetAddress,
@@ -124,7 +124,7 @@ export default React.memo(function FastCoinIcon({
         <Image source={ContractInteraction} style={sx.contract} />
       ) : (
         <FastFallbackCoinIconImage
-          address={mainnetAddress ?? address}
+          address={resolvedAddress}
           assetType={resolvedType}
           shadowColor={shadowColor}
           symbol={symbol}
@@ -142,9 +142,7 @@ export default React.memo(function FastCoinIcon({
         </FastFallbackCoinIconImage>
       )}
 
-      {resolvedType && (
-        <FastChainBadge assetType={resolvedType} theme={theme} />
-      )}
+      {assetType && <FastChainBadge assetType={assetType} theme={theme} />}
     </View>
   );
 });
