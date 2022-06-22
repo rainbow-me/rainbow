@@ -14,12 +14,18 @@ export default React.memo(function WrappedNFT({
   onPress,
   uniqueId,
   placement,
+  externalAddress,
 }: {
   onPress?: (asset: UniqueAsset) => void;
   uniqueId: string;
   placement: 'left' | 'right';
+  externalAddress?: string;
 }) {
-  const assetCollectible = useCollectible({ uniqueId });
+  const assetCollectible = useCollectible(
+    { uniqueId },
+    undefined,
+    externalAddress
+  );
 
   const asset = useMemo(
     () => ({

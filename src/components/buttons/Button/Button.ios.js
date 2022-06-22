@@ -4,7 +4,6 @@ import { useTheme } from '../../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered, InnerBorder } from '../../layout';
 import { Text } from '../../text';
-import { pickShallow } from '@rainbow-me/helpers/utilities';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 
@@ -76,13 +75,10 @@ export default function Button({
 }) {
   const borderRadius = type === 'rounded' ? 14 : 50;
   const { colors, isDarkMode } = useTheme();
-  const buttonPressAnimationProps = pickShallow(
-    props,
-    Object.keys(ButtonPressAnimation.propTypes)
-  );
+
   return (
     <ButtonPressAnimation
-      {...buttonPressAnimationProps}
+      {...props}
       disabled={disabled}
       onPress={onPress}
       testID={testID}

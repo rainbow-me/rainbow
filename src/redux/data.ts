@@ -29,6 +29,7 @@ import {
   UNISWAP_24HOUR_PRICE_QUERY,
   UNISWAP_PRICES_QUERY,
 } from '../apollo/queries';
+import { BooleanMap } from '../hooks/useCoinListEditOptions';
 import { addCashUpdatePurchases } from './addCash';
 import { decrementNonce, incrementNonce } from './nonceManager';
 import { AppGetState, AppState } from './store';
@@ -109,12 +110,18 @@ function addHiddenCoins(
   dispatch: ThunkDispatch<AppState, unknown, never>,
   address: string
 ) {
-  const storageKey = 'hidden-coins-' + address;
+  const storageKey = 'hidden-coins-obj-' + address;
   const storageEntity = storage.getString(storageKey);
-  const list = storageEntity ? JSON.parse(storageEntity) : [];
-  const newList = [...list.filter((i: string) => !coins.includes(i)), ...coins];
-  dispatch(setHiddenCoins(newList));
-  storage.set(storageKey, JSON.stringify(newList));
+  const list = Object.keys(storageEntity ? JSON.parse(storageEntity) : {});
+  const newHiddenCoins = [
+    ...list.filter((i: string) => !coins.includes(i)),
+    ...coins,
+  ].reduce((acc, curr) => {
+    acc[curr] = true;
+    return acc;
+  }, {} as BooleanMap);
+  dispatch(setHiddenCoins(newHiddenCoins));
+  storage.set(storageKey, JSON.stringify(newHiddenCoins));
 }
 
 const BACKUP_SHEET_DELAY_MS = android ? 10000 : 3000;
