@@ -291,6 +291,7 @@
       "installing_update": "Installing update :)",
       "no_update": "No update :)",
       "not_applied": "NOT APPLIED :)",
+      "notifications_debug": "Notifications Debug :)",
       "remove_all_backups": "Remove all backups :)",
       "reset_keychain": "Reset Keychain :)",
       "restart_app": "Restart app :)",
