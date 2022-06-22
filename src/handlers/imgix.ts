@@ -8,8 +8,23 @@ import {
   IMGIX_TOKEN as secureURLToken,
 } from 'react-native-dotenv';
 import { Source } from 'react-native-fast-image';
+import { MMKV } from 'react-native-mmkv';
 import parse from 'url-parse';
+import {
+  isCloudinaryStorageLink,
+  signUrl,
+} from '@rainbow-me/handlers/cloudinary';
+import { STORAGE_IDS } from '@rainbow-me/model/mmkv';
 import logger from 'logger';
+
+export const imgixCacheStorage = new MMKV({
+  id: STORAGE_IDS.IMGIX_CACHE,
+});
+
+const ATTRIBUTES = {
+  KEYS: 'keys',
+  VALUES: 'values',
+};
 
 const shouldCreateImgixClient = (): ImgixClient | null => {
   if (
@@ -39,8 +54,57 @@ const staticImgixClient = shouldCreateImgixClient();
 // TODO: We need to find a suitable upper limit.
 //       This might be conditional based upon either the runtime
 //       hardware or the number of unique tokens a user may have.
-const capacity = 512;
-export const staticSignatureLRU = new LRUCache<string, string>(capacity);
+const capacity = 1024;
+export let staticSignatureLRU: LRUCache<string, string> = new LRUCache(
+  capacity
+);
+
+const maybeReadCacheFromMemory = async (): Promise<
+  LRUCache<string, string>
+> => {
+  try {
+    const cache = new LRUCache<string, string>(capacity);
+    const keys = imgixCacheStorage.getString(ATTRIBUTES.KEYS)?.split(',') ?? [];
+    const values =
+      imgixCacheStorage.getString(ATTRIBUTES.VALUES)?.split(',') ?? [];
+
+    for (let i = 0; i < keys.length; i++) {
+      cache.set(keys[i], values[i]);
+    }
+
+    logger.log(`Loaded IMGIX cache.`);
+    return cache;
+  } catch (error) {
+    logger.error(error);
+    return new LRUCache<string, string>(capacity);
+  }
+};
+
+const saveToMemory = async () => {
+  try {
+    const keys = [];
+    const values = [];
+
+    for (let [key, value] of staticSignatureLRU.entries()) {
+      keys.push(key);
+      values.push(value);
+    }
+
+    imgixCacheStorage.set(ATTRIBUTES.KEYS, keys.join(','));
+    imgixCacheStorage.set(ATTRIBUTES.VALUES, values.join(','));
+  } catch (error) {
+    logger.error(`Failed to persist IMGIX cache: ${error}`);
+  }
+};
+
+const timeout = 30000;
+setInterval(() => {
+  saveToMemory();
+}, timeout);
+
+maybeReadCacheFromMemory().then(cache => {
+  staticSignatureLRU = cache;
+});
 
 interface ImgOptions {
   w?: number;
@@ -53,23 +117,35 @@ const shouldSignUri = (
   options?: ImgOptions
 ): string | undefined => {
   try {
+    const updatedOptions: ImgOptions = {};
+    if (options?.w) {
+      updatedOptions.w = PixelRatio.getPixelSizeForLayoutSize(options.w);
+    }
+    if (options?.h) {
+      updatedOptions.h = PixelRatio.getPixelSizeForLayoutSize(options.h);
+    }
+
+    if (options?.fm) {
+      updatedOptions.fm = options.fm;
+    }
+
+    // Firstly, we check if the url is a Cloudinary link.
+    // Then, obviously, we use Cloudinary to transform the size and format.
+    if (isCloudinaryStorageLink(externalImageUri)) {
+      const signedExternalImageUri = signUrl(externalImageUri, {
+        format: updatedOptions.fm,
+        height: updatedOptions.h,
+        width: updatedOptions.w,
+      });
+      const signature = `${externalImageUri}-${options?.w}`;
+      staticSignatureLRU.set(signature, signedExternalImageUri);
+      return signedExternalImageUri;
+    }
+
     // We'll only attempt to sign if there's an available client. A client
     // will not exist if the .env hasn't been configured correctly.
     if (staticImgixClient) {
       // Attempt to sign the image.
-      let updatedOptions: ImgOptions = {};
-
-      updatedOptions = {
-        ...(options?.w && {
-          w: PixelRatio.getPixelSizeForLayoutSize(options.w),
-        }),
-        ...(options?.h && {
-          h: PixelRatio.getPixelSizeForLayoutSize(options.h),
-        }),
-        ...(options?.fm && {
-          fm: options.fm,
-        }),
-      };
 
       const signedExternalImageUri = staticImgixClient.buildURL(
         externalImageUri,

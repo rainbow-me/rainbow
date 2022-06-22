@@ -2,15 +2,15 @@ import React, { useRef } from 'react';
 import { StyleSheet } from 'react-native';
 import {
   PanGestureHandler,
-  State,
   TapGestureHandler,
 } from 'react-native-gesture-handler';
-import Animated from 'react-native-reanimated';
-import { useMemoOne } from 'use-memo-one';
+import Animated, {
+  runOnJS,
+  useAnimatedGestureHandler,
+} from 'react-native-reanimated';
 import { useDimensions } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 
-const { call, cond, event, eq } = Animated;
 const NOOP = () => null;
 
 const Container = styled.View(({ type, height }) => ({
@@ -26,18 +26,11 @@ export default function GestureBlocker({ onTouchEnd = NOOP, type }) {
   const tab = useRef(null);
   const pan = useRef(null);
 
-  const onHandlerStateChange = useMemoOne(
-    () =>
-      event([
-        {
-          nativeEvent: {
-            state: s =>
-              cond(cond(cond(eq(State.END, s), call([], onTouchEnd)))),
-          },
-        },
-      ]),
-    [onTouchEnd]
-  );
+  const onHandlerStateChange = useAnimatedGestureHandler({
+    onEnd: () => {
+      runOnJS(onTouchEnd)();
+    },
+  });
 
   return (
     <Container height={screenHeight} type={type}>

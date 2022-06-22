@@ -243,7 +243,7 @@ function RecyclerAssetList({
   disableRefreshControl,
   ...extras
 }: RecyclerAssetListProps): JSX.Element {
-  const { isCoinListEdited } = useCoinListEdited();
+  const { isCoinListEdited, setIsCoinListEdited } = useCoinListEdited();
   const {
     isInvestmentCardsOpen: openInvestmentCards,
   } = useOpenInvestmentCards();
@@ -768,6 +768,14 @@ function RecyclerAssetList({
 
   const isInsideBottomSheet = !!useContext(BottomSheetContext);
 
+  const coinDividerExtendedState = useMemo(
+    () => ({
+      isCoinListEdited,
+      setIsCoinListEdited,
+    }),
+    [isCoinListEdited, setIsCoinListEdited]
+  );
+
   return (
     <StyledContainer onLayout={onLayout}>
       {/* @ts-ignore */}
@@ -809,7 +817,11 @@ function RecyclerAssetList({
           },
         ]}
       >
-        <CoinDivider balancesSum={0} defaultToEditButton={false} />
+        <CoinDivider
+          balancesSum={0}
+          defaultToEditButton={false}
+          extendedState={coinDividerExtendedState}
+        />
       </View>
     </StyledContainer>
   );

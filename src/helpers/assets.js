@@ -55,7 +55,7 @@ const addEthPlaceholder = (
       decimals: 18,
       icon_url: ETH_ICON_URL,
       isCoin: true,
-      isPinned: pinnedCoins.includes('eth'),
+      isPinned: pinnedCoins['eth'],
       isSmall: false,
       name: 'Ethereum',
       native: {
@@ -115,16 +115,15 @@ export const buildCoinsList = (
     emptyCollectibles
   );
 
-  // separate into standard, pinned, small balances, hidden assets
   assets?.forEach(asset => {
-    if (hiddenCoins && hiddenCoins.includes(asset.uniqueId)) {
+    if (hiddenCoins && hiddenCoins[asset.uniqueId]) {
       hiddenAssets.push({
         isCoin: true,
         isHidden: true,
         isSmall: true,
         ...asset,
       });
-    } else if (pinnedCoins.includes(asset.uniqueId)) {
+    } else if (pinnedCoins[asset.uniqueId]) {
       pinnedAssets.push({
         isCoin: true,
         isPinned: true,
