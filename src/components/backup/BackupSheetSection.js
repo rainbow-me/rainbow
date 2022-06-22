@@ -8,7 +8,7 @@ import { SheetActionButton } from '../sheet';
 import { Text } from '../text';
 import BackupIcon from '@rainbow-me/assets/backupIcon.png';
 import BackupIconDark from '@rainbow-me/assets/backupIconDark.png';
-import { ImgixImage } from '@rainbow-me/images';
+import { TransformationImage } from '@rainbow-me/images';
 import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 
@@ -34,8 +34,8 @@ const MastheadDescription = styled(Text).attrs(({ theme: { colors } }) => ({
   size: 'large',
 }))({ ...padding.object(12, 42, 30) });
 
-const MastheadIcon = styled(ImgixImage).attrs({
-  resizeMode: ImgixImage.resizeMode.contain,
+const MastheadIcon = styled(TransformationImage).attrs({
+  resizeMode: TransformationImage.resizeMode.contain,
 })({
   height: 74,
   marginBottom: -1,

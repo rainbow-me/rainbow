@@ -32,7 +32,7 @@ import {
 import { cloudPlatform } from '../utils/platform';
 
 import { useHideSplashScreen } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
+import { TransformationImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
@@ -277,7 +277,7 @@ const traversedRainbows = rainbows.map(
   }
 );
 
-const RainbowImage = styled(ImgixImage)({
+const RainbowImage = styled(TransformationImage)({
   height: INITIAL_SIZE,
   position: 'absolute',
   width: INITIAL_SIZE,

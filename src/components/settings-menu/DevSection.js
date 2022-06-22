@@ -29,7 +29,7 @@ import {
   useUpdateAssetOnchainBalance,
   useWallets,
 } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
+import { TransformationImage } from '@rainbow-me/images';
 import { wipeKeychain } from '@rainbow-me/model/keychain';
 import { clearAllStorages } from '@rainbow-me/model/mmkv';
 import { Navigation } from '@rainbow-me/navigation';
@@ -152,8 +152,8 @@ const DevSection = () => {
   };
 
   const clearImageCache = async () => {
-    ImgixImage.clearDiskCache();
-    ImgixImage.clearImageCache();
+    TransformationImage.clearDiskCache();
+    TransformationImage.clearImageCache();
   };
 
   const [errorObj, setErrorObj] = useState(null);

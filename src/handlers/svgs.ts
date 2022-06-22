@@ -1,5 +1,5 @@
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'clou... Remove this comment to see the full error message
-import { image as cloudinaryImage } from 'cloudinary/lib/cloudinary';
+import { url as cloudinaryURL } from 'cloudinary/lib/cloudinary';
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'clou... Remove this comment to see the full error message
 import cloudinaryConfig from 'cloudinary/lib/config';
 import { PixelRatio } from 'react-native';
@@ -26,7 +26,9 @@ const RAINBOW_PROXY = 'https://images.rainbow.me/proxy?url=';
 function svgToPng(url: any, big = false) {
   const encoded = encodeURI(url);
   const rainbowedUrl = `${RAINBOW_PROXY}${encoded}&v=2`;
-  const cloudinaryImg = cloudinaryImage(rainbowedUrl, {
+  const cloudinaryUrl = cloudinaryURL(rainbowedUrl, {
+    private_cdn: 'rainbowme',
+    secure: true,
     sign_url: true,
     transformation: [{ fetch_format: 'png' }],
     type: 'fetch',
@@ -40,7 +42,6 @@ function svgToPng(url: any, big = false) {
         ) / 50
       ) * 50,
   });
-  const cloudinaryUrl = cloudinaryImg.split("'")[1];
   return cloudinaryUrl;
 }
 

@@ -6,7 +6,7 @@ import Skeleton from '../../skeleton/Skeleton';
 import AvatarCoverPhotoMaskSvg from '../../svg/AvatarCoverPhotoMaskSvg';
 import { BackgroundProvider, Box, Cover } from '@rainbow-me/design-system';
 import { useFadeImage } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
+import { TransformationImage } from '@rainbow-me/images';
 import { sharedCoolModalTopOffset } from '@rainbow-me/navigation/config';
 
 const imagePreviewOverlayTopOffset = ios ? 68 + sharedCoolModalTopOffset : 107;
@@ -80,7 +80,7 @@ export default function ProfileAvatar({
             <Animated.View style={style}>
               {avatarUrl ? (
                 <Box
-                  as={ImgixImage}
+                  as={TransformationImage}
                   height={{ custom: size }}
                   onLoadEnd={onLoadEnd}
                   source={{ uri: avatarUrl }}

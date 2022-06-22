@@ -15,7 +15,7 @@ import DiscoverSheetContext from '../discover-sheet/DiscoverSheetContext';
 import { ClearInputDecorator, Input } from '../inputs';
 import { Row } from '../layout';
 import { Text } from '../text';
-import { ImgixImage } from '@rainbow-me/images';
+import { TransformationImage } from '@rainbow-me/images';
 import styled from '@rainbow-me/styled-components';
 import { margin, padding } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';
@@ -81,11 +81,13 @@ const SearchInput = styled(Input).attrs(
     isSearchModeEnabled ? 'left' : 'center',
 });
 
-const SearchSpinner = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
-  resizeMode: ImgixImage.resizeMode.contain,
-  source: Spinner,
-  tintColor: colors.alpha(colors.blueGreyDark, 0.6),
-}))({
+const SearchSpinner = styled(TransformationImage).attrs(
+  ({ theme: { colors } }) => ({
+    resizeMode: TransformationImage.resizeMode.contain,
+    source: Spinner,
+    tintColor: colors.alpha(colors.blueGreyDark, 0.6),
+  })
+)({
   height: 20,
   width: 20,
 });

@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { WebView } from 'react-native-webview';
-import { ImgixImage } from '@rainbow-me/images';
+import { TransformationImage } from '@rainbow-me/images';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import logger from 'logger';
 
-const ImageTile = styled(ImgixImage)({
+const ImageTile = styled(TransformationImage)({
   alignItems: 'center',
   justifyContent: 'center',
 });
@@ -146,14 +146,14 @@ class SvgImage extends Component {
         <View style={[props.style, props.containerStyle]}>
           {!this.state.trulyLoaded && props.lowResFallbackUri && (
             <ImageTile
-              resizeMode={ImgixImage.resizeMode.cover}
+              resizeMode={TransformationImage.resizeMode.cover}
               source={{ uri: props.lowResFallbackUri }}
               style={position.coverAsObject}
             />
           )}
           {!this.state.trulyLoaded && props.fallbackUri && (
             <ImageTile
-              resizeMode={ImgixImage.resizeMode.cover}
+              resizeMode={TransformationImage.resizeMode.cover}
               source={{ uri: props.fallbackUri }}
               style={position.coverAsObject}
             />

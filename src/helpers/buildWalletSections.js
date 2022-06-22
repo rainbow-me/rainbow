@@ -18,7 +18,7 @@ import {
 import networkTypes from './networkTypes';
 import { add, convertAmountToNativeDisplay, multiply } from './utilities';
 import { Network } from '.';
-import { ImgixImage } from '@rainbow-me/images';
+import { TransformationImage } from '@rainbow-me/images';
 import Routes from '@rainbow-me/routes';
 
 const LOADING_ASSETS_PLACEHOLDER = [
@@ -402,17 +402,17 @@ const buildImagesToPreloadArray = (family, index, families) => {
   const isTopFold = index < Math.max(families.length / 2, minTopFoldThreshold);
 
   return family.tokens.map((token, rowIndex) => {
-    let priority = ImgixImage.priority[isTopFold ? 'high' : 'normal'];
+    let priority = TransformationImage.priority[isTopFold ? 'high' : 'normal'];
 
     if (isTopFold && isLargeFamily) {
       if (rowIndex <= largeFamilyThreshold) {
-        priority = ImgixImage.priority.high;
+        priority = TransformationImage.priority.high;
       } else if (isJumboFamily) {
         const isMedium =
           rowIndex > largeFamilyThreshold && rowIndex <= jumboFamilyThreshold;
-        priority = ImgixImage.priority[isMedium ? 'normal' : 'low'];
+        priority = TransformationImage.priority[isMedium ? 'normal' : 'low'];
       } else {
-        priority = ImgixImage.priority.normal;
+        priority = TransformationImage.priority.normal;
       }
     }
 
@@ -446,7 +446,7 @@ const withUniqueTokenFamiliesSection = (uniqueTokens, data) => {
       data.map(buildImagesToPreloadArray)
     );
     isPreloadComplete = !!imagesToPreload.length;
-    ImgixImage.preload(imagesToPreload, 200);
+    TransformationImage.preload(imagesToPreload, 200);
   }
 
   return {

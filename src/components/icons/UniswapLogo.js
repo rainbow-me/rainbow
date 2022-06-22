@@ -1,6 +1,6 @@
 import React from 'react';
 import UniswapLogoImage from '../../assets/uniswap-logo.png';
-import ImgixImage from '../images/ImgixImage';
+import TransformationImage from '../images/TransformationImage';
 import { Centered } from '../layout';
 import styled from '@rainbow-me/styled-components';
 
@@ -10,7 +10,7 @@ const Container = styled(Centered).attrs(({ theme: { colors } }) => ({
 
 const UniswapLogo = ({ imageStyle, ...props }) => (
   <Container {...props}>
-    <ImgixImage source={UniswapLogoImage} style={imageStyle} />
+    <TransformationImage source={UniswapLogoImage} style={imageStyle} />
   </Container>
 );
 

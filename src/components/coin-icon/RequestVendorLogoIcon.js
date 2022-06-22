@@ -6,7 +6,7 @@ import ChainBadge from '../coin-icon/ChainBadge';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { CoinIconSize } from './CoinIcon';
-import { ImgixImage } from '@rainbow-me/images';
+import { TransformationImage } from '@rainbow-me/images';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
@@ -50,7 +50,9 @@ export default function RequestVendorLogoIcon({
   const imageSource = useMemo(
     () => ({
       priority:
-        ImgixImage.priority[shouldPrioritizeImageLoading ? 'high' : 'low'],
+        TransformationImage.priority[
+          shouldPrioritizeImageLoading ? 'high' : 'low'
+        ],
       uri: imageUrl,
     }),
     [imageUrl, shouldPrioritizeImageLoading]
@@ -71,7 +73,7 @@ export default function RequestVendorLogoIcon({
       >
         <Content color={bgColor} size={size}>
           {imageUrl && !error ? (
-            <ImgixImage
+            <TransformationImage
               onError={setError}
               source={imageSource}
               style={position.sizeAsObject('100%')}

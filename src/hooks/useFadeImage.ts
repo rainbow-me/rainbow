@@ -7,7 +7,7 @@ import {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { ImgixImage } from '@rainbow-me/images';
+import { TransformationImage } from '@rainbow-me/images';
 
 export default function useFadeImage({
   source,
@@ -23,7 +23,7 @@ export default function useFadeImage({
   useEffect(() => {
     (async () => {
       if (source) {
-        const cachedPath = await ImgixImage.getCachePath(source);
+        const cachedPath = await TransformationImage.getCachePath(source);
         setIsLoading(!cachedPath);
       }
     })();

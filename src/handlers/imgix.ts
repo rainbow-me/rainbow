@@ -14,6 +14,11 @@ import {
   isCloudinaryStorageLink,
   signUrl,
 } from '@rainbow-me/handlers/cloudinary';
+import {
+  adjustSize,
+  isGoogleUserContent,
+} from '@rainbow-me/handlers/googleUserContent';
+
 import { STORAGE_IDS } from '@rainbow-me/model/mmkv';
 import logger from 'logger';
 
@@ -106,7 +111,7 @@ maybeReadCacheFromMemory().then(cache => {
   staticSignatureLRU = cache;
 });
 
-interface ImgOptions {
+export interface ImgOptions {
   w?: number;
   h?: number;
   fm?: string;
@@ -127,6 +132,10 @@ const shouldSignUri = (
 
     if (options?.fm) {
       updatedOptions.fm = options.fm;
+    }
+
+    if (isGoogleUserContent(externalImageUri) && !options?.fm) {
+      return adjustSize(externalImageUri, updatedOptions.w, updatedOptions.h);
     }
 
     // Firstly, we check if the url is a Cloudinary link.
@@ -192,11 +201,31 @@ const isPossibleToSignUri = (externalImageUri: string | undefined): boolean => {
   return false;
 };
 
+const TRUSTED_URLS = {
+  'assets.poap.xyz': true,
+  'img.seadn.io': true,
+  'lh3.googleusercontent.com': true,
+  'openseauserdata.com': true,
+  'rainbow.imgix.net': true,
+  'rainbowme-res.cloudinary.com': true,
+} as { [key: string]: boolean };
+
 export const maybeSignUri = (
   externalImageUri: string | undefined,
   options?: ImgOptions,
   skipCaching: boolean = false
 ): string | undefined => {
+  // If no options applied we don't need anything
+  const isTransformationRedundant =
+    !options?.w &&
+    !options?.h &&
+    !options?.fm &&
+    TRUSTED_URLS[externalImageUri?.split('/')[2] ?? ''];
+
+  if (isTransformationRedundant) {
+    return externalImageUri;
+  }
+
   // If the image has already been signed, return this quickly.
   const signature = `${externalImageUri}-${options?.w}`;
   if (
@@ -216,7 +245,10 @@ export const maybeSignUri = (
   return externalImageUri;
 };
 
-export const maybeSignSource = (source: Source, options?: {}): Source => {
+export const maybeSignSource = (
+  source: Source,
+  options?: ImgOptions
+): Source => {
   if (!!source && typeof source === 'object') {
     const { uri: externalImageUri, ...extras } = source;
     return {

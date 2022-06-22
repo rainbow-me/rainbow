@@ -161,7 +161,7 @@ export default function ProfileMasthead({
       marginBottom={24}
       marginTop={0}
     >
-      {/* [AvatarCircle -> ImageAvatar -> ImgixImage], so no need to sign accountImage here. */}
+      {/* [AvatarCircle -> ImageAvatar -> TransformationImage], so no need to sign accountImage here. */}
       <AvatarCircle
         accountColor={accountColor}
         accountSymbol={accountSymbol}

@@ -11,7 +11,7 @@ import BackupIcon from '@rainbow-me/assets/backupIcon.png';
 import BackupIconDark from '@rainbow-me/assets/backupIconDark.png';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import { useWallets } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
+import { TransformationImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@rainbow-me/styled-components';
@@ -59,8 +59,8 @@ const Title = styled(Text).attrs({
   paddingHorizontal: 11,
 });
 
-const TopIcon = styled(ImgixImage).attrs({
-  resizeMode: ImgixImage.resizeMode.contain,
+const TopIcon = styled(TransformationImage).attrs({
+  resizeMode: TransformationImage.resizeMode.contain,
 })({
   height: 74,
   width: 75,

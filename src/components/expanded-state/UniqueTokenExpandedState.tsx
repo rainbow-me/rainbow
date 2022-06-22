@@ -16,7 +16,7 @@ import L2Disclaimer from '../L2Disclaimer';
 import Link from '../Link';
 import { ButtonPressAnimation } from '../animations';
 import ImagePreviewOverlay from '../images/ImagePreviewOverlay';
-import ImgixImage from '../images/ImgixImage';
+import TransformationImage from '../images/TransformationImage';
 import {
   SendActionButton,
   SheetActionButton,
@@ -164,7 +164,7 @@ const Section = ({
           {titleImageUrl && (
             <Bleed vertical="8px">
               <Box
-                as={ImgixImage}
+                as={TransformationImage}
                 borderRadius={24}
                 height={{ custom: 24 }}
                 source={{ uri: titleImageUrl }}

@@ -9,13 +9,13 @@ import { Text } from '../../text';
 import RainbowButtonBackground from './RainbowButtonBackground';
 import RainbowButtonTypes from './RainbowButtonTypes';
 import { useDimensions } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
+import { TransformationImage } from '@rainbow-me/images';
 import styled from '@rainbow-me/styled-components';
 import { position, shadow } from '@rainbow-me/styles';
 import ShadowView from 'react-native-shadow-stack/ShadowView';
 
-const AddCashIcon = styled(ImgixImage).attrs({
-  resizeMode: ImgixImage.resizeMode.contain,
+const AddCashIcon = styled(TransformationImage).attrs({
+  resizeMode: TransformationImage.resizeMode.contain,
   source: AddCashIconSource,
 })({
   ...position.sizeAsObject(45),

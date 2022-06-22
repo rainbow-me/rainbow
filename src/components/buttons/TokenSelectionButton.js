@@ -6,7 +6,7 @@ import { InnerBorder, RowWithMargins } from '../layout';
 import { Text } from '../text';
 import CaretImageSource from '@rainbow-me/assets/family-dropdown-arrow.png';
 import { useColorForAsset } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
+import { TransformationImage } from '@rainbow-me/images';
 import styled from '@rainbow-me/styled-components';
 import { padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
@@ -23,11 +23,13 @@ const Content = styled(RowWithMargins).attrs({
   zIndex: 1,
 });
 
-const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
-  resizeMode: ImgixImage.resizeMode.contain,
-  source: CaretImageSource,
-  tintColor: colors.whiteLabel,
-}))({
+const CaretIcon = styled(TransformationImage).attrs(
+  ({ theme: { colors } }) => ({
+    resizeMode: TransformationImage.resizeMode.contain,
+    source: CaretImageSource,
+    tintColor: colors.whiteLabel,
+  })
+)({
   height: 18,
   top: 0.5,
   width: 8,

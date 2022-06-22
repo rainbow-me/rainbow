@@ -5,7 +5,7 @@ import SpinnerImageSource from '../assets/spinner.png';
 import { useTheme } from '../theme/ThemeContext';
 import { SpinAnimation } from './animations';
 import { Centered } from './layout';
-import { ImgixImage } from '@rainbow-me/images';
+import { TransformationImage } from '@rainbow-me/images';
 import { position } from '@rainbow-me/styles';
 
 type SpinnerProps = {
@@ -38,7 +38,7 @@ const Spinner = ({
     <Centered {...props}>
       {IS_TESTING !== 'true' && (
         <SpinAnimation duration={duration}>
-          <ImgixImage
+          <TransformationImage
             source={SpinnerImageSource as any}
             style={style}
             tintColor={color ?? colors.whiteLabel}

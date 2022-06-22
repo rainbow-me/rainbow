@@ -16,7 +16,7 @@ import Labels from './ExtremeLabels';
 import TimespanSelector from './TimespanSelector';
 import { ChartDot, ChartPath, useChartData } from '@rainbow-me/animated-charts';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
-import { ImgixImage } from '@rainbow-me/images';
+import { TransformationImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
@@ -36,8 +36,8 @@ const ChartContainer = styled.View({
   marginVertical: ({ showChart }) => (showChart ? 17 : 0),
 });
 
-const ChartSpinner = styled(ImgixImage).attrs(({ color }) => ({
-  resizeMode: ImgixImage.resizeMode.contain,
+const ChartSpinner = styled(TransformationImage).attrs(({ color }) => ({
+  resizeMode: TransformationImage.resizeMode.contain,
   source: Spinner,
   tintColor: color,
 }))({

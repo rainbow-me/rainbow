@@ -7,7 +7,7 @@ import ChainBadge from './ChainBadge';
 import CoinIconFallback from './CoinIconFallback';
 import { AssetTypes } from '@rainbow-me/entities';
 import { useColorForAsset } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
+import { TransformationImage } from '@rainbow-me/images';
 import styled from '@rainbow-me/styled-components';
 import {
   getTokenMetadata,
@@ -18,7 +18,7 @@ import {
 
 export const CoinIconSize = 40;
 
-const ContractInteractionIcon = styled(ImgixImage)(({ size }) => ({
+const ContractInteractionIcon = styled(TransformationImage)(({ size }) => ({
   height: size,
   width: size,
 }));

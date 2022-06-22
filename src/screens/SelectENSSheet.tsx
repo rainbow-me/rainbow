@@ -20,7 +20,7 @@ import {
   useAccountProfile,
   useAccountSettings,
 } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
+import { TransformationImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import { deviceUtils } from '@rainbow-me/utils';
 
@@ -93,7 +93,7 @@ export default function SelectENSSheet() {
                 >
                   {item.images.avatarUrl ? (
                     <Box
-                      as={ImgixImage}
+                      as={TransformationImage}
                       borderRadius={rowHeight / 2}
                       height={{ custom: rowHeight }}
                       source={{ uri: item.images.avatarUrl }}

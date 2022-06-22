@@ -6,7 +6,7 @@ import { Centered } from '../layout';
 import RemoteSvg from '../svg/RemoteSvg';
 import { Monospace } from '../text';
 import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
-import { ImgixImage } from '@rainbow-me/images';
+import { TransformationImage } from '@rainbow-me/images';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
@@ -25,7 +25,7 @@ const getFallbackTextColor = (bg, darkMode, colors) =>
     FallbackTextColorVariants(darkMode, colors)
   );
 
-const ImageTile = styled(ImgixImage)({
+const ImageTile = styled(TransformationImage)({
   alignItems: 'center',
   justifyContent: 'center',
 });
@@ -35,7 +35,7 @@ const UniqueTokenImage = ({
   imageUrl,
   item,
   isCard = false,
-  resizeMode = ImgixImage.resizeMode.cover,
+  resizeMode = TransformationImage.resizeMode.cover,
   size,
   transformSvgs = true,
 }) => {
@@ -64,19 +64,17 @@ const UniqueTokenImage = ({
       ) : imageUrl && !error ? (
         <Fragment>
           <ImageTile
-            {...(isCard && { fm: 'png' })}
             onError={handleError}
             onLoad={onLoad}
-            resizeMode={ImgixImage.resizeMode[resizeMode]}
+            resizeMode={TransformationImage.resizeMode[resizeMode]}
             size={size}
             source={{ uri: imageUrl }}
             style={position.coverAsObject}
           />
           {!loadedImg && (
             <ImageTile
-              fm="png"
               playing={false}
-              resizeMode={ImgixImage.resizeMode[resizeMode]}
+              resizeMode={TransformationImage.resizeMode[resizeMode]}
               source={{ uri: item.lowResUrl }}
               style={position.coverAsObject}
             />

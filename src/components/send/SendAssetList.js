@@ -21,7 +21,7 @@ import {
 import { Centered } from '../layout';
 import { SavingsListHeader } from '../savings';
 import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
-import { ImgixImage } from '@rainbow-me/images';
+import { TransformationImage } from '@rainbow-me/images';
 import styled from '@rainbow-me/styled-components';
 
 const dividerMargin = 5;
@@ -116,7 +116,7 @@ export default class SendAssetList extends React.Component {
       });
     });
 
-    ImgixImage.preload(imageTokens, 45);
+    TransformationImage.preload(imageTokens, 45);
 
     this._layoutProvider = new LayoutProvider(
       i => {

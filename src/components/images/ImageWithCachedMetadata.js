@@ -1,9 +1,9 @@
 import React, { useCallback, useMemo } from 'react';
-import ImgixImage from './ImgixImage';
+import TransformationImage from './TransformationImage';
 import { useImageMetadata } from '@rainbow-me/hooks';
 
 const ImageWithCachedMetadata = (
-  { cache = ImgixImage.cacheControl.web, imageUrl, onLoad, ...props },
+  { cache = TransformationImage.cacheControl.web, imageUrl, onLoad, ...props },
   ref
 ) => {
   const { onCacheImageMetadata } = useImageMetadata(imageUrl);
@@ -21,7 +21,12 @@ const ImageWithCachedMetadata = (
   );
 
   return (
-    <ImgixImage {...props} onLoad={handleLoad} ref={ref} source={source} />
+    <TransformationImage
+      {...props}
+      onLoad={handleLoad}
+      ref={ref}
+      source={source}
+    />
   );
 };
 

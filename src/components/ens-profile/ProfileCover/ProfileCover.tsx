@@ -6,7 +6,7 @@ import { ImagePreviewOverlayTarget } from '../../images/ImagePreviewOverlay';
 import Skeleton from '../../skeleton/Skeleton';
 import { Box, useForegroundColor } from '@rainbow-me/design-system';
 import { useFadeImage } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
+import { TransformationImage } from '@rainbow-me/images';
 import { sharedCoolModalTopOffset } from '@rainbow-me/navigation/config';
 
 const imagePreviewOverlayTopOffset = ios ? 68 + sharedCoolModalTopOffset : 107;
@@ -79,7 +79,7 @@ export default function ProfileCover({
             topOffset={imagePreviewOverlayTopOffset}
           >
             <Box
-              as={ImgixImage}
+              as={TransformationImage}
               height="126px"
               onLoadEnd={onLoadEnd}
               source={{ uri: coverUrl || '' }}

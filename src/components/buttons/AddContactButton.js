@@ -6,7 +6,7 @@ import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import Button from './Button';
-import { ImgixImage } from '@rainbow-me/images';
+import { TransformationImage } from '@rainbow-me/images';
 import { neverRerender } from '@rainbow-me/utils';
 
 const duration = 200;
@@ -50,7 +50,7 @@ const AddButton = neverRerender(({ onPress }) => {
       testID="add-contact-button"
       type="pill"
     >
-      <ImgixImage
+      <TransformationImage
         source={AddContactIcon}
         style={{
           height: 14.7,

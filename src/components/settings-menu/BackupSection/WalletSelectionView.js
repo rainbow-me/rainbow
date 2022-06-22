@@ -14,16 +14,18 @@ import Caret from '@rainbow-me/assets/family-dropdown-arrow.png';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { useManageCloudBackups, useWallets } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
+import { TransformationImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import styled from '@rainbow-me/styled-components';
 import { fonts, padding } from '@rainbow-me/styles';
 import { abbreviations } from '@rainbow-me/utils';
 
-const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
-  source: Caret,
-  tintColor: colors.alpha(colors.blueGreyDark, 0.6),
-}))({
+const CaretIcon = styled(TransformationImage).attrs(
+  ({ theme: { colors } }) => ({
+    source: Caret,
+    tintColor: colors.alpha(colors.blueGreyDark, 0.6),
+  })
+)({
   height: 18,
   marginTop: 15,
   width: 8,

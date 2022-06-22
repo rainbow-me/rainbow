@@ -25,7 +25,7 @@ import {
   useENSRegistrationForm,
   useSelectImageMenu,
 } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
+import { TransformationImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { magicMemo, stringifyENSNFTRecord } from '@rainbow-me/utils';
@@ -191,7 +191,7 @@ const RegistrationAvatar = ({
               >
                 {avatarUrl ? (
                   <Box
-                    as={ImgixImage}
+                    as={TransformationImage}
                     borderRadius={size / 2}
                     height={{ custom: size }}
                     source={{ uri: avatarUrl }}

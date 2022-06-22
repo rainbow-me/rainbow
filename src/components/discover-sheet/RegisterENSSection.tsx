@@ -5,7 +5,7 @@ import { useNavigation } from '../../navigation/Navigation';
 import { ButtonPressAnimation } from '../animations';
 import { ensAvatarUrl } from '../ens-registration/IntroMarquee/IntroMarquee';
 import ENSIcon from '../icons/svg/ENSIcon';
-import ImgixImage from '../images/ImgixImage';
+import TransformationImage from '../images/TransformationImage';
 import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config';
 import {
   AccentColorProvider,
@@ -40,7 +40,7 @@ export default function RegisterENSSection() {
 
   useEffect(() => {
     // Preload intro screen preview marquee ENS images
-    ImgixImage.preload(
+    TransformationImage.preload(
       ensIntroMarqueeNames.map(name => ({ uri: ensAvatarUrl(name) }))
     );
   }, []);

@@ -34,7 +34,7 @@ import { withThemeContext } from '../../theme/ThemeContext';
 import { deviceUtils } from '../../utils';
 import { Categories } from './Categories';
 import TabBar from './TabBar';
-import { ImgixImage } from '@rainbow-me/images';
+import { TransformationImage } from '@rainbow-me/images';
 import { fonts, position } from '@rainbow-me/styles';
 
 // TODO width attribute is temporary solution that will be removed as soon as I figure out why proper scaling does not work
@@ -524,7 +524,7 @@ class EmojiSelector extends PureComponent {
                 { opacity: isDarkMode ? 0.3 : 0.6 },
               ]}
             >
-              <ImgixImage
+              <TransformationImage
                 pointerEvents="none"
                 source={EmojiTabBarShadow}
                 style={StyleSheet.absoluteFill}

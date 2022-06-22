@@ -8,7 +8,7 @@ import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { MarqueeList } from '../../list';
 import { Box, Stack, Text } from '@rainbow-me/design-system';
 import { fetchRecords } from '@rainbow-me/handlers/ens';
-import { ImgixImage } from '@rainbow-me/images';
+import { TransformationImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import { ensIntroMarqueeNames } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
@@ -123,7 +123,7 @@ function ENSAvatarPlaceholder({
       <Box paddingHorizontal="12px">
         <Stack alignHorizontal="center" space={{ custom: 13 }}>
           <Box
-            as={ImgixImage}
+            as={TransformationImage}
             background="body"
             borderRadius={80}
             height={{ custom: 80 }}

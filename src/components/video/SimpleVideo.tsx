@@ -15,7 +15,7 @@ import {
 // @ts-ignore
 import Video from 'react-native-video';
 import convertToProxyURL from 'react-native-video-cache';
-import { ImgixImage } from '@rainbow-me/images';
+import { TransformationImage } from '@rainbow-me/images';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import logger from 'logger';
@@ -43,7 +43,9 @@ const StyledVideo = styled(Video)(absoluteFill);
 
 const StyledPosterContainer = styled(Animated.View)(absoluteFill);
 
-const StyledImgixImage = styled(ImgixImage)(position.sizeAsObject('100%'));
+const StyledTransformationImage = styled(TransformationImage)(
+  position.sizeAsObject('100%')
+);
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
@@ -106,7 +108,7 @@ export default function SimpleVideo({
           pointerEvents={loading ? 'auto' : 'none'}
           style={{ opacity }}
         >
-          <StyledImgixImage source={{ uri: posterUri }} />
+          <StyledTransformationImage source={{ uri: posterUri }} />
         </StyledPosterContainer>
       </View>
     </TouchableWithoutFeedback>

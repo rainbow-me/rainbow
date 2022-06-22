@@ -29,7 +29,7 @@ import {
   useENSRegistrationStepHandler,
   useENSSearch,
 } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
+import { TransformationImage } from '@rainbow-me/images';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 import { normalizeENS } from '@rainbow-me/utils';
@@ -139,7 +139,7 @@ export default function ENSSearchSheet() {
                 wrap={false}
               >
                 <Box>
-                  <ImgixImage
+                  <TransformationImage
                     source={dice as Source}
                     style={{ height: 20, top: -0.5, width: 20 }}
                   />
