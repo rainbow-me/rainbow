@@ -1,5 +1,4 @@
 import {
-  chunk,
   concat,
   forEach,
   get,
@@ -12,6 +11,7 @@ import {
 } from 'lodash';
 import {
   add,
+  chunk,
   convertAmountToNativeDisplay,
   greaterThan,
   notEmpty,

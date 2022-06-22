@@ -1,10 +1,11 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import { ChainId } from '@uniswap/sdk';
-import { chunk, forEach, get, keys, map } from 'lodash';
+import { forEach, get, keys, map } from 'lodash';
 import { web3Provider } from '../handlers/web3';
 import { MULTICALL_ABI, MULTICALL_NETWORKS } from '../references/uniswap';
 import { AppDispatch, AppGetState } from './store';
+import { chunk } from '@rainbow-me/helpers/utilities';
 import logger from 'logger';
 
 // -- Constants ------------------------------------------------------------- //
