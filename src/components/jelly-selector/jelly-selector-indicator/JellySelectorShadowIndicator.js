@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import Animated from 'react-native-reanimated';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import ShadowStack from 'react-native-shadow-stack';
 
 const AnimatedShadowStack = Animated.createAnimatedComponent(ShadowStack);
@@ -21,12 +21,17 @@ export default function JellySelectorShadowIndicator({
     [colors.shadowGrey]
   );
 
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: translateX.value }],
+    width: width.value,
+  }));
+
   return (
     <AnimatedShadowStack
       borderRadius={height / 2}
       height={height}
       shadows={JellySelectorIndicatorShadow}
-      style={{ transform: [{ translateX }], width }}
+      style={animatedStyle}
       {...props}
     />
   );
