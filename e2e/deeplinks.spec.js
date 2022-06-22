@@ -2,19 +2,18 @@
 /* eslint-disable jest/expect-expect */
 import * as Helpers from './helpers';
 
-const openDeeplink = async url => {
-  await device.terminateApp();
-  await device.launchApp({
-    launchArgs: { detoxEnableSynchronization: 0 },
-    newInstance: true,
-    url,
-  });
-};
-
-const testEthereumDeeplink = async url => {
-  await openDeeplink(url);
+const testEthereumDeeplink = async (url, coldStart = true) => {
+  coldStart
+    ? await Helpers.openDeeplinkColdStart(url)
+    : await Helpers.openDeeplinkFromBackground(url);
   await Helpers.checkIfVisible('send-sheet-confirm-action-button', 30000);
-  await Helpers.checkIfElementByTextIsVisible('􀕹 Review', 15000);
+  // Because we don't have ETH in this wallet
+  try {
+    await Helpers.checkIfElementByTextIsVisible('􀕹 Review', 15000);
+  } catch (e) {
+    await Helpers.checkIfElementByTextIsVisible('Insufficient ETH', 15000);
+  }
+  await Helpers.swipe('send-sheet', 'down');
 };
 
 describe('Deeplinks spec', () => {
@@ -56,24 +55,49 @@ describe('Deeplinks spec', () => {
     await Helpers.enableSynchronization();
   });
 
-  xit('should be able to handle ethereum payments urls for ETH (mainnet)', async () => {
-    const url = 'ethereum:payment-brunobarbieri.eth@1?value=1e15';
+  it('should reject ethereum urls for assets that are not in the wallet', async () => {
+    const url =
+      'ethereum:0xef2e9966eb61bb494e5375d5df8d67b7db8a780d@1/transfer?address=brunobarbieri.eth&uint256=1e15';
+    await Helpers.openDeeplinkFromBackground(url);
+    await Helpers.checkIfElementByTextIsVisible('Ooops!', 30000);
+    await Helpers.tapAlertWithButton('OK');
+  });
+
+  it('should show the Showcase Sheet for rainbow.me universal links with ENS names', async () => {
+    await Helpers.openDeeplinkFromBackground(
+      'https://rainbow.me/rainbowwallet.eth'
+    );
+    await Helpers.checkIfVisible('showcase-sheet', 30000);
+    await Helpers.checkIfElementByTextIsVisible('rainbowwallet.eth', 30000);
+    await Helpers.swipe('showcase-sheet', 'down');
+  });
+  it('should show the Showcase Sheet for rainbow.me universal links with 0x addresses', async () => {
+    await Helpers.openDeeplinkFromBackground(
+      'https://rainbow.me/0xE46aBAf75cFbFF815c0b7FfeD6F02B0760eA27f1'
+    );
+    await Helpers.checkIfVisible('showcase-sheet', 30000);
+    await Helpers.checkIfElementByTextIsVisible('0xE46aBAf7...27f1', 30000);
+    await Helpers.swipe('showcase-sheet', 'down');
+  });
+
+  it('should be able to handle ethereum payments urls for ETH (mainnet)', async () => {
+    const url = 'ethereum:payment-brunobarbieri.eth@1?value=1e2';
+    await testEthereumDeeplink(url, false);
+  });
+
+  it('should be able to handle ethereum payments urls for ETH (optimism)', async () => {
+    const url = 'ethereum:payment-brunobarbieri.eth@10?value=1e15';
+    await testEthereumDeeplink(url, false);
+  });
+
+  it('should be able to handle ethereum payments urls for DAI (mainnet)', async () => {
+    const url =
+      'ethereum:0x6b175474e89094c44da98b954eedeac495271d0f@1/transfer?address=brunobarbieri.eth&uint256=1e18';
     await testEthereumDeeplink(url);
   });
 
   xit('should be able to handle ethereum payments urls for ETH (arbitrum)', async () => {
     const url = 'ethereum:payment-brunobarbieri.eth@42161?value=1e15';
-    await testEthereumDeeplink(url);
-  });
-
-  xit('should be able to handle ethereum payments urls for ETH (optimism)', async () => {
-    const url = 'ethereum:payment-brunobarbieri.eth@10?value=1e15';
-    await testEthereumDeeplink(url);
-  });
-
-  xit('should be able to handle ethereum payments urls for DAI (mainnet)', async () => {
-    const url =
-      'ethereum:0x6b175474e89094c44da98b954eedeac495271d0f@1/transfer?address=brunobarbieri.eth&uint256=1e18';
     await testEthereumDeeplink(url);
   });
 
@@ -86,26 +110,6 @@ describe('Deeplinks spec', () => {
   xit('should be able to handle ethereum payments urls for MATIC (polygon)', async () => {
     const url = 'ethereum:payment-brunobarbieri.eth@137?value=1e15';
     await testEthereumDeeplink(url);
-  });
-
-  it('should reject ethereum urls for assets that are not in the wallet', async () => {
-    const url =
-      'ethereum:0xef2e9966eb61bb494e5375d5df8d67b7db8a780d@1/transfer?address=brunobarbieri.eth&uint256=1e15';
-    await openDeeplink(url);
-    await Helpers.checkIfElementByTextIsVisible('Ooops!', 30000);
-  });
-
-  it('should show the Showcase Sheet for rainbow.me universal links with ENS names', async () => {
-    await openDeeplink('https://rainbow.me/rainbowwallet.eth');
-    await Helpers.checkIfVisible('showcase-sheet', 30000);
-    await Helpers.checkIfElementByTextIsVisible('rainbowwallet.eth', 30000);
-  });
-  it('should show the Showcase Sheet for rainbow.me universal links with 0x addresses', async () => {
-    await openDeeplink(
-      'https://rainbow.me/0xE46aBAf75cFbFF815c0b7FfeD6F02B0760eA27f1'
-    );
-    await Helpers.checkIfVisible('showcase-sheet', 30000);
-    await Helpers.checkIfElementByTextIsVisible('0xE46aBAf7...27f1', 30000);
   });
 
   afterAll(async () => {

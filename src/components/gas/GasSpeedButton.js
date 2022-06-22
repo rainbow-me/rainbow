@@ -279,7 +279,7 @@ const GasSpeedButton = ({
   );
 
   const formatTransactionTime = useCallback(() => {
-    if (!gasPriceReady) return '';
+    if (!gasPriceReady || !selectedGasFee?.estimatedTime?.display) return '';
     const estimatedTime = (selectedGasFee?.estimatedTime?.display || '').split(
       ' '
     );
@@ -287,7 +287,7 @@ const GasSpeedButton = ({
     const time = parseFloat(estimatedTimeValue).toFixed(0);
 
     let timeSymbol = estimatedTimeUnit === 'hr' ? '>' : '~';
-    if (time === '0' && estimatedTimeUnit === 'min') {
+    if (!estimatedTime || (time === '0' && estimatedTimeUnit === 'min')) {
       return '';
     }
     return `${timeSymbol}${time} ${estimatedTimeUnit}`;

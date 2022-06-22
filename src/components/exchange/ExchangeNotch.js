@@ -36,11 +36,11 @@ const NotchSide = styled(FastImage)({
   width: notchSideWidth,
 });
 
-export default function ExchangeNotch() {
+export default function ExchangeNotch({ testID }) {
   const { width: deviceWidth } = useDimensions();
   const { isDarkMode } = useTheme();
   return (
-    <Container>
+    <Container testID={`${testID}-notch`}>
       <NotchSide
         source={isDarkMode ? ExchangeNotchLeftDark : ExchangeNotchLeft}
       />
