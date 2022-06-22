@@ -37,7 +37,10 @@ export default function useColorForAsset(
             ? colors.appleBlue
             : colors.brighten(lightModeThemeColors.dark)
           : colors.dark
-        : pseudoRandomArrayItemFromString(address, colors.avatarBackgrounds);
+        : pseudoRandomArrayItemFromString(
+            mainnet_address || address,
+            colors.avatarBackgrounds
+          );
     return color;
   }, [address, colors, forceETHColor, isDarkMode, mainnet_address]);
 
