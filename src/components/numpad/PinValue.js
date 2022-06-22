@@ -1,5 +1,5 @@
 import React from 'react';
-import Animated from 'react-native-reanimated';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { Column, Flex } from '../../components/layout';
 import styled from '@rainbow-me/styled-components';
 
@@ -26,10 +26,10 @@ const PinValue = ({ translateX, value, ...props }) => {
   return (
     <Flex {...props}>
       <Animated.View
-        style={{
+        style={useAnimatedStyle(() => ({
           flexDirection: 'row',
-          transform: [{ translateX }],
-        }}
+          transform: [{ translateX: translateX?.value ?? 0 }],
+        }))}
       >
         {value && value.length ? (
           <FilledValue backgroundColor={colors.appleBlue} />
