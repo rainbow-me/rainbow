@@ -1,8 +1,27 @@
-import React, { createContext, useCallback, useContext, useMemo } from 'react';
-import { processColor, requireNativeComponent, View } from 'react-native';
-import { createNativeWrapper } from 'react-native-gesture-handler';
+/* eslint-disable react/no-unused-prop-types */
+/* 👆 Had to disable this ESLint rule it was false positive on shared Props interface */
+import React, {
+  PropsWithChildren,
+  useCallback,
+  useContext,
+  useMemo,
+} from 'react';
+import {
+  processColor,
+  requireNativeComponent,
+  StyleProp,
+  StyleSheet,
+  View,
+  ViewStyle,
+} from 'react-native';
+import {
+  createNativeWrapper,
+  NativeViewGestureHandlerGestureEvent,
+  RawButtonProps,
+} from 'react-native-gesture-handler';
 import { PureNativeButton } from 'react-native-gesture-handler/src/components/GestureButtons';
 import Animated, {
+  AnimateProps,
   Easing,
   runOnJS,
   useAnimatedGestureHandler,
@@ -12,59 +31,51 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { normalizeTransformOrigin } from './NativeButton';
+import { ScaleButtonContext } from './ScaleButtonZoomable';
+import { BaseButtonAnimationProps } from './types';
 import { useLongPressEvents } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
 
-const ZoomableRawButton = requireNativeComponent('RNZoomableButton');
+interface BaseProps extends BaseButtonAnimationProps {
+  backgroundColor: string;
+  borderRadius: number;
+  contentContainerStyle: StyleProp<ViewStyle>;
+  isLongPress?: boolean;
+  onLongPressEnded: () => void;
+  overflowMargin: number;
+  reanimatedButton?: boolean;
+  shouldLongPressHoldPress?: boolean;
+  skipTopMargin?: boolean;
+  wrapperStyle: StyleProp<ViewStyle>;
+}
+
+type Props = PropsWithChildren<BaseProps>;
+
+const ZoomableRawButton = requireNativeComponent<
+  Omit<
+    Props,
+    | 'contentContainerStyle'
+    | 'overflowMargin'
+    | 'backgroundColor'
+    | 'borderRadius'
+    | 'onLongPressEnded'
+    | 'wrapperStyle'
+    | 'onLongPress'
+  > &
+    Pick<RawButtonProps, 'rippleColor'>
+>('RNZoomableButton');
 
 const ZoomableButton = createNativeWrapper(ZoomableRawButton);
 
-const AnimatedRawButton = createNativeWrapper(
-  Animated.createAnimatedComponent(PureNativeButton),
-  {
-    shouldActivateOnStart: true,
-    shouldCancelWhenOutside: true,
-  }
-);
+const AnimatedRawButton = createNativeWrapper<
+  AnimateProps<PropsWithChildren<RawButtonProps>>
+>(Animated.createAnimatedComponent(PureNativeButton), {
+  shouldActivateOnStart: true,
+  shouldCancelWhenOutside: true,
+});
 
 const OVERFLOW_MARGIN = 5;
 
-const ScaleButtonContext = createContext(null);
-
-const Content = styled.View({
-  overflow: 'visible',
-});
-
-// I managed to implement partially overflow in scale button (up to 5px),
-// but overflow is not visible beyond small boundaries. Hence, to make it reactive to touches
-// I couldn't just expend boundaries, because then it intercepts touches, so I managed to
-// extract animated component to external value
-
-export const ScaleButtonZoomable = ({ children, style, duration = 160 }) => {
-  const scale = useSharedValue(1);
-  const scaleTraversed = useDerivedValue(() => {
-    const value = withTiming(scale.value, {
-      duration,
-      easing: Easing.bezier(0.25, 0.1, 0.25, 1),
-    });
-    return value;
-  });
-  const sz = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {
-          scale: scaleTraversed.value,
-        },
-      ],
-    };
-  });
-
-  return (
-    <ScaleButtonContext.Provider value={scale}>
-      <Animated.View style={[style, sz]}>{children}</Animated.View>
-    </ScaleButtonContext.Provider>
-  );
-};
+const transparentColor = processColor('transparent');
 
 const ScaleButton = ({
   children,
@@ -74,11 +85,9 @@ const ScaleButton = ({
   onLongPress,
   onPress,
   overflowMargin,
-  scaleTo,
+  scaleTo = 0.86,
   wrapperStyle,
-  onPressStart,
-  onPressCancel,
-}) => {
+}: PropsWithChildren<Props>) => {
   const parentScale = useContext(ScaleButtonContext);
   const childScale = useSharedValue(1);
   const scale = parentScale || childScale;
@@ -108,43 +117,43 @@ const ScaleButton = ({
     minLongPressDuration,
     onLongPress,
     onPress,
-    onPressCancel,
-    onPressStart,
   });
 
-  const gestureHandler = useAnimatedGestureHandler({
-    onActive: () => {
-      runOnJS(handleStartPress)();
-      if (hasScaledDown.value === 0) {
-        scale.value = scaleTo;
-      }
-      hasScaledDown.value = 1;
-    },
-    onCancel: () => {
-      scale.value = 1;
-      hasScaledDown.value = 0;
-      runOnJS(handleCancel)();
-    },
-    onEnd: () => {
-      hasScaledDown.value = 0;
-      scale.value = 1;
-      runOnJS(handlePress)();
-    },
-    onFail: () => {
-      runOnJS(handleCancel)();
-    },
-  });
+  const gestureHandler = useAnimatedGestureHandler<NativeViewGestureHandlerGestureEvent>(
+    {
+      onActive: () => {
+        runOnJS(handleStartPress)();
+        if (hasScaledDown.value === 0) {
+          scale.value = scaleTo;
+        }
+        hasScaledDown.value = 1;
+      },
+      onCancel: () => {
+        scale.value = 1;
+        hasScaledDown.value = 0;
+        runOnJS(handleCancel)();
+      },
+      onEnd: () => {
+        hasScaledDown.value = 0;
+        scale.value = 1;
+        runOnJS(handlePress)();
+      },
+      onFail: () => {
+        runOnJS(handleCancel)();
+      },
+    }
+  );
 
   return (
-    <View style={[{ overflow: 'visible' }, wrapperStyle]}>
+    <View style={[cx.overflow, wrapperStyle]}>
       <View style={{ margin: -overflowMargin }}>
         <AnimatedRawButton
           hitSlop={-overflowMargin}
           onGestureEvent={gestureHandler}
-          rippleColor={processColor('transparent')}
-          style={{ overflow: 'visible' }}
+          rippleColor={transparentColor}
+          style={cx.overflow}
         >
-          <View style={{ backgroundColor: 'transparent' }}>
+          <View style={cx.transparentBackground}>
             <View style={{ padding: overflowMargin }}>
               <Animated.View style={[sz, contentContainerStyle]}>
                 {children}
@@ -175,7 +184,7 @@ const SimpleScaleButton = ({
   skipTopMargin,
   transformOrigin,
   wrapperStyle,
-}) => {
+}: Props) => {
   const onNativePress = useCallback(
     ({ nativeEvent: { type } }) => {
       if (type === 'longPress') {
@@ -188,6 +197,10 @@ const SimpleScaleButton = ({
     },
     [onLongPress, onLongPressEnded, onPress, shouldLongPressHoldPress]
   );
+
+  // we won't guess if there are any animated styles in there but we can
+  // not render the Animated.View if we don't use that prop at all
+  const Wrapper = contentContainerStyle ? Animated.View : View;
 
   return (
     <View
@@ -213,22 +226,21 @@ const SimpleScaleButton = ({
           isLongPress={isLongPress}
           minLongPressDuration={minLongPressDuration}
           onPress={onNativePress}
-          rippleColor={processColor('transparent')}
+          rippleColor={transparentColor}
           scaleTo={scaleTo}
           shouldLongPressHoldPress={shouldLongPressHoldPress}
-          style={{ overflow: 'visible' }}
+          style={cx.overflow}
           transformOrigin={transformOrigin}
         >
-          <View style={{ backgroundColor: 'transparent' }}>
+          <View style={cx.transparentBackground}>
             <View
               style={{
                 padding: overflowMargin,
                 paddingTop: skipTopMargin ? OVERFLOW_MARGIN : overflowMargin,
               }}
             >
-              <Animated.View style={contentContainerStyle}>
-                {children}
-              </Animated.View>
+              {/* @ts-expect-error TS can't infer types where we use this dynamic wrapper */}
+              <Wrapper style={contentContainerStyle}>{children}</Wrapper>
             </View>
           </View>
         </ZoomableButton>
@@ -236,24 +248,19 @@ const SimpleScaleButton = ({
     </View>
   );
 };
-
 export default function ButtonPressAnimation({
-  // eslint-disable-next-line no-unused-vars
-  activeOpacity = 1, // TODO
   backgroundColor = 'transparent',
   borderRadius = 0,
   children,
   contentContainerStyle,
   disabled,
   duration = 160,
-  hitSlop,
   minLongPressDuration = 500,
   onLayout,
   onLongPress,
   onLongPressEnded,
   shouldLongPressHoldPress,
   onPress,
-  onPressStart,
   overflowMargin = OVERFLOW_MARGIN,
   reanimatedButton,
   scaleTo = 0.86,
@@ -262,8 +269,7 @@ export default function ButtonPressAnimation({
   testID,
   transformOrigin,
   wrapperStyle,
-  onPressCancel,
-}) {
+}: Props) {
   const normalizedTransformOrigin = useMemo(
     () => normalizeTransformOrigin(transformOrigin),
     [transformOrigin]
@@ -271,24 +277,21 @@ export default function ButtonPressAnimation({
 
   const ButtonElement = reanimatedButton ? ScaleButton : SimpleScaleButton;
   return disabled ? (
-    <Content onLayout={onLayout} style={style}>
+    <View onLayout={onLayout} style={[cx.overflow, style]}>
       {children}
-    </Content>
+    </View>
   ) : (
     <ButtonElement
       backgroundColor={backgroundColor}
       borderRadius={borderRadius}
       contentContainerStyle={contentContainerStyle}
       duration={duration}
-      hitSlop={hitSlop}
       isLongPress={!!onLongPress}
       minLongPressDuration={minLongPressDuration}
       onLayout={onLayout}
       onLongPress={onLongPress}
       onLongPressEnded={onLongPressEnded}
       onPress={onPress}
-      onPressCancel={onPressCancel}
-      onPressStart={onPressStart}
       overflowMargin={overflowMargin}
       scaleTo={scaleTo}
       shouldLongPressHoldPress={shouldLongPressHoldPress}
@@ -297,9 +300,18 @@ export default function ButtonPressAnimation({
       transformOrigin={normalizedTransformOrigin}
       wrapperStyle={wrapperStyle}
     >
-      <Content pointerEvents="box-only" style={style}>
+      <View pointerEvents="box-only" style={[cx.overflow, style]}>
         {children}
-      </Content>
+      </View>
     </ButtonElement>
   );
 }
+
+const cx = StyleSheet.create({
+  overflow: {
+    overflow: 'visible',
+  },
+  transparentBackground: {
+    backgroundColor: 'transparent',
+  },
+});
