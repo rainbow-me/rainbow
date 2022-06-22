@@ -620,8 +620,8 @@ export const createWallet = async (
         setTimeout(
           () =>
             Alert.alert(
-              'Oops!',
-              'Looks like you already imported this wallet!'
+              lang.t('wallet.new.alert.oops'),
+              lang.t('wallet.new.alert.looks_like_already_imported')
             ),
           1
         );
@@ -925,8 +925,10 @@ export const getPrivateKey = async (
 
     if (pkey === -2) {
       Alert.alert(
-        'Error',
-        'Your current authentication method (Face Recognition) is not secure enough, please go to "Settings > Biometrics & Security" and enable an alternative biometric method like Fingerprint or Iris.'
+        lang.t('wallet.authenticate.alert.error'),
+        lang.t(
+          'wallet.authenticate.alert.current_authentication_not_secure_enough'
+        )
       );
       return null;
     }
@@ -965,8 +967,10 @@ export const getSeedPhrase = async (
 
     if (seedPhraseData === -2) {
       Alert.alert(
-        'Error',
-        'Your current authentication method (Face Recognition) is not secure enough, please go to "Settings > Biometrics & Security" and enable an alternative biometric method like Fingerprint or Iris'
+        lang.t('wallet.authenticate.alert.error'),
+        lang.t(
+          'wallet.authenticate.alert.current_authentication_not_secure_enough'
+        )
       );
       return null;
     }
