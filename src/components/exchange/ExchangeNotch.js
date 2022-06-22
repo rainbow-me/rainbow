@@ -18,6 +18,7 @@ const Container = styled(Row).attrs({
   pointerEvents: 'none',
 })({
   height: notchHeight,
+  left: android ? -4.5 : 0,
   position: 'absolute',
   top: 132,
   width: '100%',

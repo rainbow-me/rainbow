@@ -76,9 +76,7 @@ const Label = styled(BiometricButtonContent).attrs(
     size: smallButton || tinyButton ? 'large' : 'larger',
     weight: 'heavy',
   })
-)({
-  bottom: 2,
-});
+)({});
 
 const LoadingSpinner = styled(Spinner).attrs(
   ({ theme: { colors } }: LoadingSpinnerProps) => ({
