@@ -1,6 +1,7 @@
-import { get, keys, upperFirst } from 'lodash';
+import { get, keys } from 'lodash';
 import { orderExceptions } from './orderExceptions';
 import { wyreSupportedCountries } from './supportedCountries';
+import { upperFirst } from '@rainbow-me/helpers/utilities';
 
 const WYRE_SUPPORTED_COUNTRIES_ISO = keys(wyreSupportedCountries);
 

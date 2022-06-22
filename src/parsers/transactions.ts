@@ -12,7 +12,6 @@ import {
   toLower,
   toUpper,
   uniqBy,
-  upperFirst,
 } from 'lodash';
 import { parseAllTxnsOnReceive } from '../config/debug';
 import {
@@ -37,6 +36,7 @@ import {
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
   notEmpty,
+  upperFirst,
 } from '@rainbow-me/utilities';
 import { ethereumUtils, getTokenMetadata } from '@rainbow-me/utils';
 

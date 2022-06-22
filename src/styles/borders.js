@@ -1,6 +1,6 @@
-import { upperFirst } from 'lodash';
 import colors from './colors';
 import position from './position';
+import { upperFirst } from '@rainbow-me/helpers/utilities';
 import { css } from '@rainbow-me/styled-components';
 
 const border = {};
