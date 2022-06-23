@@ -102,7 +102,7 @@ export default function CurrencySelectModal() {
     searchQuery,
   ]);
   const assetsInWallet = useAssetsInWallet();
-  const { hiddenCoins } = useCoinListEditOptions();
+  const { hiddenCoinsObj } = useCoinListEditOptions();
 
   const [currentChainId, setCurrentChainId] = useState(chainId);
   useEffect(() => {
@@ -113,12 +113,10 @@ export default function CurrencySelectModal() {
 
   const filteredAssetsInWallet = useMemo(() => {
     if (type === CurrencySelectionTypes.input) {
-      return assetsInWallet?.filter(asset => {
-        return !hiddenCoins?.includes(asset.uniqueId);
-      });
+      return assetsInWallet?.filter(asset => !hiddenCoinsObj[asset.uniqueId]);
     }
     return [];
-  }, [type, assetsInWallet, hiddenCoins]);
+  }, [type, assetsInWallet, hiddenCoinsObj]);
 
   const {
     swapCurrencyList,
