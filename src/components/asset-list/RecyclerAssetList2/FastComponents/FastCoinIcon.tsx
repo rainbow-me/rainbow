@@ -103,18 +103,20 @@ const CoinIconWithBackground = React.memo(function CoinIconWithBackground({
 
 export default React.memo(function FastCoinIcon({
   address,
+  mainnetAddress,
   symbol,
-  assetType,
+  assetType = AssetType.token,
   theme,
 }: {
   address: string;
+  mainnetAddress: string;
   symbol: string;
   assetType?: AssetType;
   theme: any;
 }) {
   const imageUrl = getUrlForTrustIconFallback(
-    address,
-    assetType ?? AssetType.token
+    mainnetAddress ?? address,
+    mainnetAddress ? AssetType.token : assetType
   )!;
 
   const fallbackIconColor = useColorForAsset({
@@ -136,6 +138,7 @@ export default React.memo(function FastCoinIcon({
         {/* @ts-ignore */}
         <CoinIcon
           address={address}
+          mainnet_address={mainnetAddress}
           size={40}
           symbol={symbol}
           type={assetType}
