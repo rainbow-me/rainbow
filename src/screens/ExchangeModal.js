@@ -793,6 +793,7 @@ export default function ExchangeModal({
           )}
           {!isSavings && showConfirmButton && (
             <ExchangeDetailsRow
+              flipDisabled={loading}
               isHighPriceImpact={isHighPriceImpact}
               onFlipCurrencies={flipCurrencies}
               onPressSettings={navigateToSwapSettingsSheet}
@@ -810,6 +811,7 @@ export default function ExchangeModal({
             {showConfirmButton && (
               <ConfirmExchangeButton
                 {...confirmButtonProps}
+                disabled={loading}
                 onPressViewDetails={navigateToSwapDetailsModal}
                 testID={`${testID}-confirm-button`}
               />
