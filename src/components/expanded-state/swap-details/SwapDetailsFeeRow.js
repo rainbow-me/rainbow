@@ -29,6 +29,7 @@ export default function SwapDetailsUniswapRow(tradeDetails) {
 
   const handleLabelPress = useCallback(() => {
     navigate(Routes.EXPLAIN_SHEET, {
+      feePercentage: rainbowFeePercentageDisplay,
       type: 'rainbow_fee',
     });
   }, [navigate]);
