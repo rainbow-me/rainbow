@@ -2,7 +2,7 @@ import { formatsByCoinType, formatsByName } from '@ensdomains/address-encoder';
 import { Resolver } from '@ethersproject/providers';
 import { captureException } from '@sentry/react-native';
 import { Duration, sub } from 'date-fns';
-import { isZeroAddress } from 'ethereumjs-util';
+import { isValidAddress, isZeroAddress } from 'ethereumjs-util';
 import { BigNumber } from 'ethers';
 import { debounce, isEmpty, sortBy } from 'lodash';
 import { ensClient } from '../apollo/client';
@@ -209,6 +209,34 @@ export const fetchSuggestions = async (
   setIsFetching = (_unused: any) => {},
   profilesEnabled = false
 ) => {
+  if (isValidAddress(recipient)) {
+    const ens = await fetchReverseRecord(recipient);
+    if (!ens) {
+      setSuggestions([]);
+      setIsFetching(false);
+      return [];
+    }
+    let images;
+    try {
+      images = await fetchImages(ens);
+      queryClient.setQueryData(ensProfileImagesQueryKey(ens), images);
+      // eslint-disable-next-line no-empty
+    } catch (e) {}
+    const suggestion = [
+      {
+        address: recipient,
+        color: profileUtils.addressHashedColorIndex(recipient),
+        ens: true,
+        image: images?.avatarUrl,
+        network: 'mainnet',
+        nickname: ens,
+        uniqueId: recipient,
+      },
+    ];
+    setSuggestions(suggestion);
+    setIsFetching(false);
+    return suggestion;
+  }
   if (recipient.length > 2) {
     let suggestions: {
       address: any;
