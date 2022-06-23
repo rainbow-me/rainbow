@@ -102,8 +102,6 @@ const ARBITRUM_EXPLAINER = lang.t('explain.arbitrum.text');
 
 const POLYGON_EXPLAINER = lang.t('explain.polygon.text');
 
-const RAINBOW_FEE_EXPLAINER = `The Rainbow fee is the fee charged by the Rainbow network to make $$$.`;
-
 const SWAP_RESET_EXPLAINER = `Rainbow doesn’t have the ability to swap across networks yet, but we’re on it. For now, Rainbow will match networks between selected tokens.`;
 
 const BACKUP_EXPLAINER = lang.t('back_up.explainers.backup', {
@@ -306,7 +304,9 @@ export const explainers = (params, colors) => ({
   rainbow_fee: {
     emoji: '🔐',
     extraHeight: -100,
-    text: RAINBOW_FEE_EXPLAINER,
+    text: lang.t('explain.rainbow_fee.text', {
+      feePercentage: params?.feePercentage,
+    }),
     title: 'Rainbow Fee',
   },
   swapResetInputs: {
