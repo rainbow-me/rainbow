@@ -1,4 +1,4 @@
-import { filter, groupBy } from 'lodash';
+import { filter } from 'lodash';
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 
@@ -6,7 +6,10 @@ const uniqueTokensSelector = state => state.uniqueTokens.uniqueTokens;
 
 const sendableUniqueTokens = uniqueTokens => {
   const sendableUniqueTokens = filter(uniqueTokens, ['isSendable', true]);
-  const grouped = groupBy(sendableUniqueTokens, token => token.familyName);
+  const grouped = sendableUniqueTokens.reduce((acc, token) => {
+    Object.assign(acc, { [token.familyName]: [token] });
+    return acc;
+  }, {});
   const families = Object.keys(grouped).sort();
   let sendableTokens = [];
   for (let i = 0; i < families.length; i++) {

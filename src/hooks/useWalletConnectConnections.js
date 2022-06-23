@@ -1,4 +1,4 @@
-import { groupBy, mapValues, values } from 'lodash';
+import { mapValues, values } from 'lodash';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
@@ -26,9 +26,16 @@ const walletConnectSelector = createSelector(
   state => state.walletconnect.walletConnectors,
   walletConnectors => {
     const sorted = sortList(values(walletConnectors), 'peerMeta.name');
-    const groupedByDappName = groupBy(sorted, 'peerMeta.url');
+    const groupedByDappName = sorted.reduce((acc, walletConnector) => {
+      Object.assign(acc, { [walletConnector.peerMeta.ur]: [walletConnector] });
+      return acc;
+    }, {});
     const mostRecent = sortList(sorted, '_handshakeId', 'desc');
-    const sortedByMostRecentHandshake = groupBy(mostRecent, 'peerMeta.url');
+
+    const sortedByMostRecentHandshake = mostRecent.reduce((acc, handshake) => {
+      Object.assign(acc, { [handshake.peerMeta.url]: [handshake] });
+      return acc;
+    }, {});
     return {
       mostRecentWalletConnectors: formatDappData(sortedByMostRecentHandshake),
       sortedWalletConnectors: sorted,

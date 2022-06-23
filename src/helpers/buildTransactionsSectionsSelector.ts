@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { get, groupBy, isEmpty, map, toLower } from 'lodash';
+import { get, isEmpty, map, toLower } from 'lodash';
 import { createElement } from 'react';
 import { createSelector } from 'reselect';
 import { RequestCoinRow, TransactionCoinRow } from '../components/coin-row';
@@ -60,9 +60,14 @@ const buildTransactionsSections = (
   const transactionsWithContacts = map(transactions, addContactInfo(contacts));
 
   if (!isEmpty(transactionsWithContacts)) {
-    const transactionsByDate = groupBy(
-      transactionsWithContacts,
-      groupTransactionByDate
+    const transactionsByDate = transactionsWithContacts.reduce(
+      (acc, transaction) => {
+        Object.assign(acc, {
+          [groupTransactionByDate(transaction)]: [transaction],
+        });
+        return acc;
+      },
+      {}
     );
     sectionedTransactions = Object.keys(transactionsByDate).map(section => ({
       data: transactionsByDate[section],
