@@ -174,7 +174,7 @@ export const updateSwapOutputCurrency = (
     newOutputCurrency?.address === inputCurrency?.address &&
     newOutputCurrency
   ) {
-    dispatch(flipSwapCurrencies());
+    dispatch(flipSwapCurrencies(true));
   } else {
     if (
       type === ExchangeModalTypes.swap &&
@@ -195,29 +195,21 @@ export const updateSwapOutputCurrency = (
   }
 };
 
-export const flipSwapCurrencies = () => (
+export const flipSwapCurrencies = (outputIndependentField?: Boolean) => (
   dispatch: AppDispatch,
   getState: AppGetState
 ) => {
-  // const { genericAssets } = getState().data;
-  const {
-    // independentField,
-    // independentValue,
-    inputCurrency,
-    outputCurrency,
-    derivedValues,
-  } = getState().swap;
+  const { inputCurrency, outputCurrency } = getState().swap;
   dispatch({
     payload: {
+      independentField: outputIndependentField
+        ? SwapModalField.output
+        : SwapModalField.input,
       newInputCurrency: outputCurrency,
       newOutputCurrency: inputCurrency,
     },
     type: SWAP_FLIP_CURRENCIES,
   });
-
-  // This is not like uniswap anymore
-  // we should always try to get a quote based on the input
-  dispatch(updateSwapInputAmount(derivedValues?.outputAmount));
 };
 
 export const updateSwapQuote = (value: any) => (dispatch: AppDispatch) => {
@@ -308,6 +300,7 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
     case SWAP_FLIP_CURRENCIES:
       return {
         ...state,
+        independentField: action.payload.independentField,
         inputCurrency: action.payload.newInputCurrency,
         outputCurrency: action.payload.newOutputCurrency,
       };
