@@ -1,10 +1,11 @@
-import { pick, sortBy, toLower } from 'lodash';
+import { pick, toLower } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEthUSDMonthChart, useEthUSDPrice } from '../utils/ethereumUtils';
 import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';
 import { getUniswapV2Pools } from '@rainbow-me/handlers/dispersion';
+import { sortByKeyHelper } from '@rainbow-me/helpers/utilities';
 import {
   emitAssetRequest,
   emitChartsRequest,
@@ -220,7 +221,7 @@ export default function useUniswapPools(sortField, sortDirection, token) {
 
   const top40PairsSorted = useMemo(() => {
     if (!pairs) return null;
-    let sortedPairs = sortBy(pairs, sortField);
+    let sortedPairs = pairs.sort(sortByKeyHelper(sortField));
     if (sortDirection === SORT_DIRECTION.DESC) {
       sortedPairs = sortedPairs.reverse();
     }

@@ -254,7 +254,13 @@ export const buildUniqueTokenList = (
   const showcaseTokens = [];
   const bundledShowcaseTokens = [];
   const grouped = uniqueTokens.reduce((acc, token) => {
-    Object.assign(acc, { [token.familyName!]: [token] });
+    if (acc[token.familyName!]) {
+      acc[token.familyName!].push(token);
+    } else {
+      Object.assign(acc, {
+        [token.familyName!]: [token],
+      });
+    }
     return acc;
   }, {} as Dictionary<UniqueAsset[]>);
 
@@ -335,6 +341,18 @@ export const buildUniqueTokenList = (
 
 const regex = RegExp(/\s*(the)\s/, 'i');
 
+const sorterFamilies = (a: any, b: any) => {
+  if (a.replace(regex, '').toLowerCase() < b.replace(regex, '').toLowerCase()) {
+    return -1;
+  } else if (
+    a.replace(regex, '').toLowerCase() > b.replace(regex, '').toLowerCase()
+  ) {
+    return 1;
+  } else {
+    return 0;
+  }
+};
+
 export const buildBriefUniqueTokenList = (
   uniqueTokens: UniqueAsset[],
   selectedShowcaseTokens: any,
@@ -345,12 +363,19 @@ export const buildBriefUniqueTokenList = (
     .map(({ uniqueId }: any) => uniqueId);
 
   const grouped2 = uniqueTokens.reduce((acc, token) => {
-    Object.assign(acc, { [token.familyName!]: [token] });
+    if (acc[token.familyName!]) {
+      acc[token.familyName!].push(token);
+    } else {
+      Object.assign(acc, {
+        [token.familyName!]: [token],
+      });
+    }
+
     return acc;
   }, {} as Dictionary<UniqueAsset[]>);
-  const families2 = sortBy(Object.keys(grouped2), row =>
-    row.replace(regex, '').toLowerCase()
-  );
+
+  const families2 = Object.keys(grouped2).sort(sorterFamilies);
+
   const result = [
     { type: 'NFTS_HEADER_SPACE_BEFORE', uid: 'nfts-header-space-before' },
     { type: 'NFTS_HEADER', uid: 'nfts-header' },
