@@ -37,7 +37,7 @@ export default function useSwapInputHandlers() {
     const inputCurrencyAddress = inputCurrency?.address;
     const inputCurrencyUniqueId = inputCurrency?.uniqueId;
     if (type === ExchangeModalTypes.withdrawal) {
-      dispatch(updateSwapInputAmount(supplyBalanceUnderlying));
+      dispatch(updateSwapInputAmount(supplyBalanceUnderlying, true));
     } else {
       const accountAsset = ethereumUtils.getAccountAsset(inputCurrencyUniqueId);
       const oldAmount = accountAsset?.balance?.amount ?? '0';
@@ -86,7 +86,7 @@ export default function useSwapInputHandlers() {
           return;
         }
       }
-      dispatch(updateSwapInputAmount(newAmount));
+      dispatch(updateSwapInputAmount(newAmount, true));
     }
   }, [
     dispatch,
