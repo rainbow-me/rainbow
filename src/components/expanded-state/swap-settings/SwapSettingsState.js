@@ -156,7 +156,7 @@ export default function SwapSettingsState({ asset }) {
             <Column width="content">
               <ButtonPressAnimation
                 onPress={() => {
-                  slippageRef?.current?.blur();
+                  ios && slippageRef?.current?.blur();
                   goBack();
                 }}
               >
