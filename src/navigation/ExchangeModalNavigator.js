@@ -6,6 +6,7 @@ import { Keyboard } from 'react-native';
 import { useValue } from 'react-native-redash/src/v1';
 import { useMemoOne } from 'use-memo-one';
 import { FlexItem } from '../components/layout';
+import { cancelNext, uncancelNext } from '../hooks/useMagicAutofocus';
 import CurrencySelectModal from '../screens/CurrencySelectModal';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import SwapModalScreen from '../screens/SwapModal';
@@ -91,12 +92,26 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
 
   return function ExchangeModalNavigator() {
     const { width } = useDimensions();
-    const { setOptions } = useNavigation();
+    const { setOptions, addListener, removeListener } = useNavigation();
     const pointerEvents = useRef('auto');
     const ref = useRef();
     const { params } = useRoute();
 
     const tabTransitionPosition = useValue(0);
+
+    useEffect(() => {
+      // Workaround to fix weird keyboard focus issues upon immediate screen focus then unfocus
+      if (android && params.fromDiscover) {
+        addListener('gestureStart', cancelNext);
+        addListener('blur', uncancelNext);
+        addListener('focus', uncancelNext);
+        return () => {
+          removeListener('gestureStart', cancelNext);
+          removeListener('blur', uncancelNext);
+          removeListener('focus', uncancelNext);
+        };
+      }
+    }, [addListener, removeListener, params]);
 
     const [swipeEnabled, setSwipeEnabled] = useStateCallback(false);
 

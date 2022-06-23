@@ -2,7 +2,6 @@ import React, { useCallback } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import TextInputMask from 'react-native-text-input-mask';
 import { Row } from '../../../components/layout';
-import { ButtonPressAnimation } from '../../animations';
 import { Text } from '../../text';
 import styled from '@rainbow-me/styled-components';
 import { buildTextStyles, margin, padding } from '@rainbow-me/styles';
@@ -68,16 +67,7 @@ const Label = styled(Text).attrs(() => ({
 });
 
 function InputPill(
-  {
-    color,
-    label,
-    onPress,
-    onChange: onChangeCallback,
-    onFocus,
-    onBlur,
-    testID,
-    value,
-  },
+  { color, label, onChange: onChangeCallback, onFocus, onBlur, testID, value },
   ref
 ) {
   const { colors } = useTheme();
@@ -91,29 +81,27 @@ function InputPill(
   );
 
   return (
-    <ButtonPressAnimation onPress={onPress}>
-      <PillGradient>
-        <Row alignSelf="center" marginHorizontal={-40}>
-          <NumberInput
-            allowFontScaling={false}
-            contextMenuHidden
-            mask="[9999]{.}[999]"
-            onBlur={onBlur}
-            onChangeText={onChangeText}
-            onFocus={onFocus}
-            placeholder="0"
-            placeholderTextColor={colors.alpha(colors.blueGreyDark, 0.4)}
-            ref={ref}
-            selectionColor={color}
-            spellCheck={false}
-            style={{ color: colors.dark }}
-            testID={testID}
-            value={value}
-          />
-          <Label>{label}</Label>
-        </Row>
-      </PillGradient>
-    </ButtonPressAnimation>
+    <PillGradient>
+      <Row alignSelf="center" marginHorizontal={-40}>
+        <NumberInput
+          allowFontScaling={false}
+          contextMenuHidden
+          mask="[9999]{.}[999]"
+          onBlur={onBlur}
+          onChangeText={onChangeText}
+          onFocus={onFocus}
+          placeholder="0"
+          placeholderTextColor={colors.alpha(colors.blueGreyDark, 0.4)}
+          ref={ref}
+          selectionColor={color}
+          spellCheck={false}
+          style={{ color: colors.dark }}
+          testID={testID}
+          value={value}
+        />
+        <Label>{label}</Label>
+      </Row>
+    </PillGradient>
   );
 }
 

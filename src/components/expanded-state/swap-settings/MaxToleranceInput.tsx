@@ -2,12 +2,10 @@ import lang from 'i18n-js';
 import React, {
   forwardRef,
   useCallback,
-  useEffect,
   useImperativeHandle,
   useRef,
   useState,
 } from 'react';
-import { InteractionManager } from 'react-native';
 import { useSelector } from 'react-redux';
 import { Icon } from '../../icons';
 import StepButtonInput from './StepButtonInput';
@@ -26,6 +24,7 @@ import {
   toFixedDecimals,
 } from '@rainbow-me/helpers/utilities';
 import {
+  useMagicAutofocus,
   usePriceImpactDetails,
   useSwapCurrencies,
   useSwapSettings,
@@ -55,6 +54,8 @@ export const MaxToleranceInput: React.FC<{
   };
   const slippageRef = useRef<{ blur: () => void; focus: () => void }>(null);
 
+  const { handleFocus } = useMagicAutofocus(slippageRef, undefined, true);
+
   useImperativeHandle(ref, () => ({
     blur: () => {
       slippageRef?.current?.blur();
@@ -76,14 +77,6 @@ export const MaxToleranceInput: React.FC<{
     outputCurrency
   );
 
-  useEffect(() => {
-    InteractionManager.runAfterInteractions(() => {
-      setTimeout(() => {
-        slippageRef?.current?.focus();
-      }, 200);
-    });
-  }, []);
-
   const updateSlippage = useCallback(
     increment => {
       const newSlippage = add(slippageValue, increment);
@@ -103,10 +96,6 @@ export const MaxToleranceInput: React.FC<{
   const minusSlippage = useCallback(() => {
     updateSlippage(-SLIPPAGE_INCREMENT);
   }, [updateSlippage]);
-
-  const handleSlippagePress = useCallback(() => slippageRef?.current?.focus(), [
-    slippageRef,
-  ]);
 
   const onSlippageChange = useCallback(
     value => {
@@ -162,7 +151,7 @@ export const MaxToleranceInput: React.FC<{
           minusAction={minusSlippage}
           onBlur={null}
           onChange={onSlippageChange}
-          onPress={handleSlippagePress}
+          onFocus={handleFocus}
           plusAction={addSlippage}
           testID="swap-slippage-input"
           value={slippageValue}

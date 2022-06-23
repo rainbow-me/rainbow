@@ -56,9 +56,9 @@ export default function StepButtonInput({
   inputLabel,
   plusAction,
   minusAction,
-  onChange,
-  onPress,
   onBlur,
+  onChange,
+  onFocus,
   buttonColor,
   testID,
   inputRef,
@@ -105,11 +105,6 @@ export default function StepButtonInput({
     onLongPress();
   }, [onLongPress]);
 
-  const onInputPress = useCallback(() => {
-    inputRef?.current?.focus();
-    onPress?.();
-  }, [inputRef, onPress]);
-
   useEffect(() => {
     if (!prevTrigger && trigger) {
       if (actionType === PLUS_ACTION_TYPE) {
@@ -141,8 +136,7 @@ export default function StepButtonInput({
         label={inputLabel}
         onBlur={onBlur}
         onChange={onChange}
-        onFocus={onInputPress}
-        onPress={onInputPress}
+        onFocus={onFocus}
         ref={inputRef}
         testID={testID}
         value={value}
