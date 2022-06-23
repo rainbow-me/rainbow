@@ -62,9 +62,14 @@ const buildTransactionsSections = (
   if (!isEmpty(transactionsWithContacts)) {
     const transactionsByDate = transactionsWithContacts.reduce(
       (acc, transaction) => {
-        Object.assign(acc, {
-          [groupTransactionByDate(transaction)]: [transaction],
-        });
+        const key = groupTransactionByDate(transaction);
+        if (acc[key]) {
+          acc[key].push(transaction);
+        } else {
+          Object.assign(acc, {
+            [key]: [transaction],
+          });
+        }
         return acc;
       },
       {}

@@ -7,7 +7,13 @@ const uniqueTokensSelector = state => state.uniqueTokens.uniqueTokens;
 const sendableUniqueTokens = uniqueTokens => {
   const sendableUniqueTokens = filter(uniqueTokens, ['isSendable', true]);
   const grouped = sendableUniqueTokens.reduce((acc, token) => {
-    Object.assign(acc, { [token.familyName]: [token] });
+    if (acc[token.familyName]) {
+      acc[token.familyName].push(token);
+    } else {
+      Object.assign(acc, {
+        [token.familyName]: [token],
+      });
+    }
     return acc;
   }, {});
   const families = Object.keys(grouped).sort();

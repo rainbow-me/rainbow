@@ -27,13 +27,25 @@ const walletConnectSelector = createSelector(
   walletConnectors => {
     const sorted = sortList(values(walletConnectors), 'peerMeta.name');
     const groupedByDappName = sorted.reduce((acc, walletConnector) => {
-      Object.assign(acc, { [walletConnector.peerMeta.ur]: [walletConnector] });
+      if (acc[walletConnector.peerMeta.ur]) {
+        acc[walletConnector.peerMeta.ur].push(walletConnector);
+      } else {
+        Object.assign(acc, {
+          [walletConnector.peerMeta.ur]: [walletConnector],
+        });
+      }
       return acc;
     }, {});
     const mostRecent = sortList(sorted, '_handshakeId', 'desc');
 
     const sortedByMostRecentHandshake = mostRecent.reduce((acc, handshake) => {
-      Object.assign(acc, { [handshake.peerMeta.url]: [handshake] });
+      if (acc[handshake.peerMeta.url]) {
+        acc[handshake.peerMeta.url].push(handshake);
+      } else {
+        Object.assign(acc, {
+          [handshake.peerMeta.url]: [handshake],
+        });
+      }
       return acc;
     }, {});
     return {

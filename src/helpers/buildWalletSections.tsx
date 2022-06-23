@@ -451,7 +451,13 @@ const buildImagesToPreloadArray = (
 const sortImagesToPreload = (images: PreloadImage[]) => {
   const filtered = compact(flattenDeep(images));
   const grouped = filtered?.reduce<Dictionary<PreloadImage[]>>((acc, image) => {
-    Object.assign(acc, { [image.priority]: [image] });
+    if (acc[image.priority]) {
+      acc[image.priority].push(image);
+    } else {
+      Object.assign(acc, {
+        [image.priority]: [image],
+      });
+    }
     return acc;
   }, {});
   return [
