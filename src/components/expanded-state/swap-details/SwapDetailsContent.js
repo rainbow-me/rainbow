@@ -27,7 +27,7 @@ import { ethereumUtils } from '@rainbow-me/utils';
 const Container = styled(Box).attrs({
   flex: 1,
 })(({ isHighPriceImpact }) =>
-  padding.object(isHighPriceImpact ? 24 : 30, 19, 0)
+  padding.object(isHighPriceImpact ? 24 : 30, 19, 30)
 );
 
 export default function SwapDetailsContent({

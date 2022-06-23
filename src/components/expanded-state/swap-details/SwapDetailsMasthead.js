@@ -1,22 +1,12 @@
 import React from 'react';
 import { RowWithMargins } from '../../layout';
 import CurrencyTile, { CurrencyTileHeight } from './CurrencyTile';
-import { Bleed, Box, Cover, Text } from '@rainbow-me/design-system';
+import { Bleed, Box, Columns, Cover, Text } from '@rainbow-me/design-system';
 import { useSwapCurrencies } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
-import { padding } from '@rainbow-me/styles';
 
 const containerPaddingTop = 34;
 export const SwapDetailsMastheadHeight =
   CurrencyTileHeight + containerPaddingTop;
-
-const Container = styled(RowWithMargins).attrs({
-  align: 'center',
-  margin: 0,
-})({
-  ...padding.object(containerPaddingTop, 24, 0),
-  width: '100%',
-});
 
 const DoubleChevron = () => (
   <Cover alignHorizontal="center" alignVertical="center">
@@ -48,39 +38,53 @@ export default function SwapDetailsMasthead({
   const { colors, isDarkMode } = useTheme();
 
   return (
-    <Container {...props}>
-      <CurrencyTile
-        amount={inputAmount}
-        amountDisplay={inputAmountDisplay}
-        asset={inputCurrency}
-        priceValue={inputPriceValue}
-        type="input"
-      />
-      <Bleed shadow="21px heavy" space="15px">
-        <Box
-          borderRadius={16}
-          height={{ custom: 32 }}
-          shadow="21px heavy"
-          style={{
-            alignItems: 'center',
-            backgroundColor: isDarkMode ? colors.darkGrey : colors.white,
-            justifyContent: 'center',
-          }}
-          width={{ custom: 32 }}
-        >
-          <DoubleChevron />
-        </Box>
-      </Bleed>
-      <CurrencyTile
-        amount={outputAmount}
-        amountDisplay={outputAmountDisplay}
-        asset={outputCurrency}
-        isHighPriceImpact={isHighPriceImpact}
-        priceImpactColor={priceImpactColor}
-        priceValue={outputPriceValue}
-        style={{ zIndex: -1 }}
-        type="output"
-      />
-    </Container>
+    <Box
+      {...props}
+      alignItems="center"
+      paddingHorizontal="19px"
+      paddingTop="42px"
+    >
+      <Columns space={{ custom: 9 }}>
+        <CurrencyTile
+          amount={inputAmount}
+          amountDisplay={inputAmountDisplay}
+          asset={inputCurrency}
+          priceValue={inputPriceValue}
+          type="input"
+        />
+        <CurrencyTile
+          amount={outputAmount}
+          amountDisplay={outputAmountDisplay}
+          asset={outputCurrency}
+          isHighPriceImpact={isHighPriceImpact}
+          priceImpactColor={priceImpactColor}
+          priceValue={outputPriceValue}
+          style={{ zIndex: -1 }}
+          type="output"
+        />
+      </Columns>
+      <Box
+        borderRadius={16}
+        height={{ custom: 32 }}
+        shadow="21px heavy"
+        style={{
+          alignItems: 'center',
+          backgroundColor: isDarkMode ? colors.darkGrey : colors.white,
+          justifyContent: 'center',
+          left: '50%',
+          position: 'absolute',
+          top: '50%',
+          transform: [
+            {
+              translateX: 2,
+            },
+            { translateY: 24 },
+          ],
+        }}
+        width={{ custom: 32 }}
+      >
+        <DoubleChevron />
+      </Box>
+    </Box>
   );
 }

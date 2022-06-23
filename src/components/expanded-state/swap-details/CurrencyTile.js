@@ -10,7 +10,7 @@ import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth, position } from '@rainbow-me/styles';
 import { convertAmountAndPriceToNativeDisplay } from '@rainbow-me/utilities';
 
-export const CurrencyTileHeight = 143;
+export const CurrencyTileHeight = android ? 153 : 143;
 
 const AmountText = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.8),
@@ -27,6 +27,7 @@ const Container = styled(Centered).attrs({
   height: CurrencyTileHeight,
   overflow: 'hidden',
   zIndex: 0,
+  ...(android ? { paddingTop: 4 } : {}),
 });
 
 const Gradient = styled(Box).attrs(({ theme: { colors }, color }) => ({
@@ -91,16 +92,19 @@ export default function CurrencyTile({
         />
         <ColumnWithMargins centered margin={4} paddingHorizontal={8}>
           <NativePriceText>
-            {priceDisplay}
-            {isHighPriceImpact && (
-              <NativePriceText color={priceImpactColor}>{` 􀇿`}</NativePriceText>
-            )}
+            {isOther && '~'}
+            {amountDisplay} {symbol}
           </NativePriceText>
+
           <Row align="center">
             <TruncatedAmountText as={TruncatedText}>
-              {`${isOther ? '~' : ''}${amountDisplay}`}
+              {priceDisplay}
+              {isHighPriceImpact && (
+                <NativePriceText
+                  color={priceImpactColor}
+                >{` 􀇿`}</NativePriceText>
+              )}
             </TruncatedAmountText>
-            <AmountText>{` ${symbol}`}</AmountText>
           </Row>
         </ColumnWithMargins>
       </ColumnWithMargins>
