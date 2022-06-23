@@ -407,7 +407,7 @@ export default function CurrencySelectModal() {
           overflow="hidden"
           radius={30}
         >
-          {isFocusedAndroid && <StatusBar barStyle="dark-content" />}
+          {isFocusedAndroid && <StatusBar barStyle="light-content" />}
           <GestureBlocker type="top" />
           <Column flex={1}>
             <CurrencySelectModalHeader
