@@ -69,6 +69,8 @@ import { ethereumUtils } from '@rainbow-me/utils';
 import { useEthUSDPrice } from '@rainbow-me/utils/ethereumUtils';
 import logger from 'logger';
 
+const NOOP = () => null;
+
 const FloatingPanels = AnimatedExchangeFloatingPanels;
 
 const Wrapper = KeyboardFixedOpenLayout;
@@ -793,9 +795,8 @@ export default function ExchangeModal({
           )}
           {!isSavings && showConfirmButton && (
             <ExchangeDetailsRow
-              flipDisabled={loading}
               isHighPriceImpact={isHighPriceImpact}
-              onFlipCurrencies={flipCurrencies}
+              onFlipCurrencies={loading ? NOOP : flipCurrencies}
               onPressSettings={navigateToSwapSettingsSheet}
               priceImpactColor={priceImpactColor}
               priceImpactNativeAmount={priceImpactNativeAmount}
@@ -811,8 +812,7 @@ export default function ExchangeModal({
             {showConfirmButton && (
               <ConfirmExchangeButton
                 {...confirmButtonProps}
-                disabled={loading}
-                onPressViewDetails={navigateToSwapDetailsModal}
+                onPressViewDetails={loading ? NOOP : navigateToSwapDetailsModal}
                 testID={`${testID}-confirm-button`}
               />
             )}
