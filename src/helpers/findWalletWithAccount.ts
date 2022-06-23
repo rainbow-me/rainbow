@@ -9,7 +9,7 @@ export function findWalletWithAccount(
   sortedKeys.forEach(key => {
     const wallet = wallets[key];
     const found = wallet.addresses.find(
-      account => account.address === accountAddress
+      (account: any) => account.address === accountAddress
     );
     if (found) {
       walletWithAccount = wallet;
