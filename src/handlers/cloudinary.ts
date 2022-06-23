@@ -7,7 +7,7 @@ import { memoFn } from '@rainbow-me/utils/memoFn';
 type CloudinaryConfig = {
   width: number;
   height: number;
-  format?: string;
+  format: string;
 };
 
 const PixelRatios = [1, 1.5, 2, 2.625, 2.75, 3, 3.5]; // popular ratios.
@@ -26,7 +26,7 @@ const supportedSizeTransformations = {
 // NOTE: currently, we assume that width and height are always equal and provided.
 // We use this storage only for assets.
 export const signUrl = memoFn(
-  (url: string, config: CloudinaryConfig) => {
+  (url: string, config: Partial<CloudinaryConfig>) => {
     const { format, ...widthAndHeight } = config;
     let internalAddress = url.split('/upload/')[1];
     if (format) {
