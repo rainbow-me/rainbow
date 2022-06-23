@@ -23,7 +23,7 @@ import { STORAGE_IDS } from '@rainbow-me/model/mmkv';
 import logger from 'logger';
 
 export const imgixCacheStorage = new MMKV({
-  id: STORAGE_IDS.IMGIX_CACHE,
+  id: STORAGE_IDS.IMAGE_TRANSFORMATION_CACHE,
 });
 
 const ATTRIBUTES = {

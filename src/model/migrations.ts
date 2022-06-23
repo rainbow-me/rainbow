@@ -680,6 +680,19 @@ export default async function runMigrations() {
 
   migrations.push(v17);
 
+  /*
+   *************** Migration v18 ******************
+   * Removes old MMKV cache
+   */
+  const v18 = async () => {
+    const imgixMMKV = new MMKV({
+      id: 'IMGIX_CACHE',
+    });
+    imgixMMKV.clearAll();
+  };
+
+  migrations.push(v18);
+
   logger.sentry(
     `Migrations: ready to run migrations starting on number ${currentVersion}`
   );
