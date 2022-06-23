@@ -126,11 +126,12 @@ export default function CurrencySelectModal() {
     updateFavorites,
   } = useSwapCurrencyList(searchQueryForSearch, currentChainId);
 
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const routeName = getActiveRoute()?.name;
   const showList = useMemo(() => {
     const viewingExplainer = routeName === Routes.EXPLAIN_SHEET;
-    return isFocused || viewingExplainer;
-  }, [isFocused, routeName]);
+    return isFocused || viewingExplainer || isTransitioning;
+  }, [isFocused, routeName, isTransitioning]);
 
   const linkToHop = useCallback(() => {
     Linking.openURL('https://app.hop.exchange/#/send');
@@ -299,6 +300,7 @@ export default function CurrencySelectModal() {
       if (checkForRequiredAssets(item)) return;
       dispatch(emitChartsRequest(item.mainnet_address || item.address));
       const isMainnet = currentChainId === 1;
+      setIsTransitioning(true); // continue to display list during transition
 
       onSelectCurrency(
         isMainnet && type === CurrencySelectionTypes.output
@@ -354,6 +356,9 @@ export default function CurrencySelectModal() {
       if (!isFocused && prevIsFocused) {
         handleApplyFavoritesQueue();
         restoreFocusOnSwapModal?.();
+        setTimeout(() => {
+          setIsTransitioning(false); // hide list now that we have arrived on main exchange modal
+        }, 750);
       }
     }
   }, [
@@ -371,6 +376,7 @@ export default function CurrencySelectModal() {
   const handleBackButton = useCallback(() => {
     setSearchQuery('');
     setCurrentChainId(chainId);
+    setIsTransitioning(true); // continue to display list while transitiong back
   }, [chainId]);
 
   const shouldUpdateFavoritesRef = useRef(false);
