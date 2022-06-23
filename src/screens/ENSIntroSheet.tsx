@@ -1,7 +1,7 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import { useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { InteractionManager } from 'react-native';
 import {
   ContextMenuButton,
@@ -27,11 +27,9 @@ import {
 } from '@rainbow-me/design-system';
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import {
-  prefetchENSProfileRecords,
   useAccountENSDomains,
-  useAccountProfile,
-  useAccountSettings,
   useDimensions,
+  useENSProfileRecords,
   useENSRegistration,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
@@ -50,9 +48,13 @@ export default function ENSIntroSheet() {
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
   const { colors } = useTheme();
   const { params } = useRoute<any>();
-  const { accountAddress } = useAccountSettings();
-  const { data: domains, isLoading, isSuccess } = useAccountENSDomains();
-  const { accountENS } = useAccountProfile();
+  const {
+    ownedDomains,
+    nonPrimaryDomains,
+    uniqueDomain,
+    isLoading,
+    isSuccess,
+  } = useAccountENSDomains();
 
   // We are not using `isSmallPhone` from `useDimensions` here as we
   // want to explicitly set a min height.
@@ -61,31 +63,21 @@ export default function ENSIntroSheet() {
   const contentHeight = params?.contentHeight;
   const contentWidth = Math.min(deviceWidth - 72, 300);
 
-  const { ownedDomains, primaryDomain, nonPrimaryDomains } = useMemo(() => {
-    const ownedDomains = domains?.filter(
-      ({ owner }) => owner?.id?.toLowerCase() === accountAddress.toLowerCase()
-    );
-    return {
-      nonPrimaryDomains:
-        ownedDomains?.filter(({ name }) => accountENS !== name) || [],
-      ownedDomains,
-      primaryDomain: ownedDomains?.find(({ name }) => accountENS === name),
-    };
-  }, [accountAddress, accountENS, domains]);
-
-  const uniqueDomain = useMemo(() => {
-    return primaryDomain
-      ? primaryDomain
-      : nonPrimaryDomains?.length === 1
-      ? nonPrimaryDomains?.[0]
-      : null;
-  }, [nonPrimaryDomains, primaryDomain]);
-
-  useEffect(() => {
-    if (uniqueDomain?.name) {
-      prefetchENSProfileRecords({ name: uniqueDomain.name });
+  const { data: uniqueDomainRecords } = useENSProfileRecords(
+    uniqueDomain?.name || '',
+    {
+      enabled: Boolean(uniqueDomain?.name),
     }
-  }, [uniqueDomain]);
+  );
+
+  const profileExists = useMemo(
+    () =>
+      Object.keys(uniqueDomainRecords?.coinAddresses || {}).length > 1 ||
+      uniqueDomainRecords?.images?.avatarUrl ||
+      uniqueDomainRecords?.images?.coverUrl ||
+      Object.keys(uniqueDomainRecords?.records || {}).length > 0,
+    [uniqueDomainRecords]
+  );
 
   const { navigate } = useNavigation();
   const { startRegistration } = useENSRegistration();
@@ -275,9 +267,14 @@ export default function ENSIntroSheet() {
                             <SheetActionButton
                               color={colors.appleBlue}
                               // @ts-expect-error JavaScript component
-                              label={lang.t('profiles.intro.use_name', {
-                                name: uniqueDomain?.name,
-                              })}
+                              label={lang.t(
+                                profileExists
+                                  ? 'profiles.intro.edit_name'
+                                  : 'profiles.intro.use_name',
+                                {
+                                  name: uniqueDomain?.name,
+                                }
+                              )}
                               lightShadows
                               onPress={handleSelectUniqueDomain}
                               weight="heavy"
