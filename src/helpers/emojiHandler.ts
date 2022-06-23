@@ -6,6 +6,7 @@ const regex = /(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\
 export const removeFirstEmojiFromString = memoFn(string => {
   if (!string) return '';
 
+  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'unknown' is not assignable to pa... Remove this comment to see the full error message
   const grapheme = new GraphemeSplitter().splitGraphemes(string);
   const first = grapheme[0];
 
@@ -18,6 +19,7 @@ export const removeFirstEmojiFromString = memoFn(string => {
 export const returnStringFirstEmoji = memoFn(string => {
   if (!string) return false;
 
+  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'unknown' is not assignable to pa... Remove this comment to see the full error message
   const grapheme = new GraphemeSplitter().splitGraphemes(string);
   const first = grapheme[0];
 
