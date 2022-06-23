@@ -16,7 +16,7 @@ const ButtonWrapper = styled(Column).attrs({
   ...padding.object(0, 19, 15),
   marginBottom: 21,
   width: '100%',
-  zIndex: 3,
+  ...(ios ? { zIndex: 3 } : {}),
 });
 
 const Footer = styled(Column).attrs({ justify: 'end' })({
