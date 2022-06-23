@@ -87,8 +87,10 @@ const saveToMemory = async () => {
     const values = [];
 
     for (let [key, value] of staticSignatureLRU.entries()) {
-      keys.push(key);
-      values.push(value);
+      if (!key.includes(SEPARATOR) && !value.includes(SEPARATOR)) {
+        keys.push(key);
+        values.push(value);
+      }
     }
 
     imgixCacheStorage.set(ATTRIBUTES.KEYS, keys.join(SEPARATOR));
