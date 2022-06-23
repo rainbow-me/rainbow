@@ -7,9 +7,7 @@ import { useDispatch } from 'react-redux';
 import { RainbowAccount } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import useAccountProfile from './useAccountProfile';
-import useENSProfile from './useENSProfile';
-import { prefetchENSProfileImages } from './useENSProfileImages';
-import { prefetchENSProfileRecords } from './useENSProfileRecords';
+import useENSProfile, { prefetchENSProfile } from './useENSProfile';
 import useENSRegistration from './useENSRegistration';
 import useImagePicker from './useImagePicker';
 import useWallets from './useWallets';
@@ -38,12 +36,16 @@ export default () => {
   const profileEnabled = Boolean(accountENS);
   const ensProfile = useENSProfile(accountENS, {
     enabled: profileEnabled && profilesEnabled,
+    select: ['owner'],
   });
   const { openPicker } = useImagePicker();
 
   useEffect(() => {
     if (accountENS) {
-      prefetchENSProfileRecords(accountENS);
+      prefetchENSProfile({
+        name: accountENS,
+        select: ['coinAddresses', 'images', 'records'],
+      });
     }
   }, [accountENS]);
 
@@ -120,11 +122,6 @@ export default () => {
   const onAvatarPress = useCallback(() => {
     const isENSProfile =
       profilesEnabled && profileEnabled && ensProfile?.isOwner;
-
-    if (isENSProfile) {
-      // Prefetch profile images
-      prefetchENSProfileImages({ name: accountENS });
-    }
 
     const avatarActionSheetOptions = (isENSProfile
       ? [

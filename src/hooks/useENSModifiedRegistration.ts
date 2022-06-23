@@ -1,7 +1,7 @@
 import { differenceWith, isEqual } from 'lodash';
 import { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import useENSProfileRecords from './useENSProfileRecords';
+import useENSProfile from './useENSProfile';
 import useENSRegistration from './useENSRegistration';
 import { usePrevious } from '.';
 import { Records, UniqueAsset } from '@rainbow-me/entities';
@@ -74,11 +74,12 @@ export default function useENSModifiedRegistration({
   const uniqueTokens = useSelector(
     ({ uniqueTokens }: AppState) => uniqueTokens.uniqueTokens
   );
-  const profileQuery = useENSProfileRecords(name, {
+  const profileQuery = useENSProfile(name, {
     enabled:
       mode === REGISTRATION_MODES.EDIT ||
       mode === REGISTRATION_MODES.RENEW ||
       mode === REGISTRATION_MODES.SET_NAME,
+    select: ['coinAddresses', 'images', 'records'],
   });
 
   useEffect(() => {
@@ -166,7 +167,7 @@ export default function useENSModifiedRegistration({
       records,
       changedRecords,
       uniqueTokens,
-      profileQuery.data?.images.avatarUrl,
+      profileQuery.data?.images?.avatarUrl,
       mode
     );
     const coverUrl = getImageUrl(
@@ -174,7 +175,7 @@ export default function useENSModifiedRegistration({
       records,
       changedRecords,
       uniqueTokens,
-      profileQuery.data?.images.coverUrl,
+      profileQuery.data?.images?.coverUrl,
       mode
     );
 
@@ -183,8 +184,8 @@ export default function useENSModifiedRegistration({
       coverUrl,
     };
   }, [
-    profileQuery.data?.images.avatarUrl,
-    profileQuery.data?.images.coverUrl,
+    profileQuery.data?.images?.avatarUrl,
+    profileQuery.data?.images?.coverUrl,
     records,
     uniqueTokens,
     changedRecords,

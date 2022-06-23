@@ -16,7 +16,7 @@ import {
 import {
   useAccountSettings,
   useContacts,
-  useENSProfileImages,
+  useENSProfile,
   usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
 import {
@@ -78,8 +78,9 @@ const ContactProfileState = ({ address, color, contact, ens, nickname }) => {
     android && Keyboard.dismiss();
   }, [goBack]);
 
-  const { data: images } = useENSProfileImages(ens, {
+  const { data: images } = useENSProfile(ens, {
     enabled: Boolean(ens),
+    select: ['images'],
   });
 
   const avatarUrl = profilesEnabled ? images?.avatarUrl : undefined;

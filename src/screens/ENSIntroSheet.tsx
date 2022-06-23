@@ -27,7 +27,7 @@ import {
 } from '@rainbow-me/design-system';
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import {
-  prefetchENSProfileRecords,
+  prefetchENSProfile,
   useAccountENSDomains,
   useAccountProfile,
   useAccountSettings,
@@ -83,7 +83,10 @@ export default function ENSIntroSheet() {
 
   useEffect(() => {
     if (uniqueDomain?.name) {
-      prefetchENSProfileRecords({ name: uniqueDomain.name });
+      prefetchENSProfile({
+        name: uniqueDomain.name,
+        select: ['coinAddresses', 'images', 'records'],
+      });
     }
   }, [uniqueDomain]);
 

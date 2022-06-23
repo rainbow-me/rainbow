@@ -32,7 +32,10 @@ export default function ENSBriefTokenInfoRow({
   const { navigate } = useNavigation();
   const { startRegistration } = useENSRegistration();
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const { data } = useENSProfile(ensName, { enabled: profilesEnabled });
+  const { data } = useENSProfile(ensName, {
+    enabled: profilesEnabled,
+    select: ['images'],
+  });
   const [showExpiryDistance, setShowExpiryDistance] = useState(true);
   const handlePressExpiryDate = useCallback(() => {
     setShowExpiryDistance(x => !x);

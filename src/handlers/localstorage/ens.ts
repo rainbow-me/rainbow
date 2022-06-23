@@ -1,12 +1,11 @@
+import { DataType } from '../../hooks/useENSProfile';
 import { getGlobal, saveGlobal } from './common';
 
-const ensProfileVersion = '0.1.0';
+const ensProfileVersion = '0.2.0';
 
 const ensLabelhashesKey = (key: string) => `ensLabelhashes.${key}`;
-const ensProfileKey = (key: string) => `ensProfile.${key}`;
-const ensProfileImagesKey = (key: string) => `ensProfileImages.${key}`;
-const ensProfileRecordsKey = (key: string) => `ensProfileRecords.${key}`;
-const ensResolveNameKey = (key: string) => `ensResolveName.${key}`;
+const ensProfileKey = (dataType: DataType, key: string) =>
+  `ensProfile.${dataType}.${key}`;
 const ensDomains = (key: string) => `ensDomains.${key}`;
 const ensSeenOnchainDataDisclaimerKey = 'ensProfile.seenOnchainDisclaimer';
 
@@ -22,55 +21,21 @@ export const getNameFromLabelhash = async (key: string) => {
 export const saveNameFromLabelhash = (key: string, value: Object) =>
   saveGlobal(ensLabelhashesKey(key), value, ensProfileVersion);
 
-export const getProfile = async (key: string) => {
-  const profile = await getGlobal(ensProfileKey(key), null, ensProfileVersion);
-  return profile ? JSON.parse(profile) : null;
-};
-
-export const saveProfile = (key: string, value: Object) =>
-  saveGlobal(ensProfileKey(key), JSON.stringify(value), ensProfileVersion);
-
-export const getProfileImages = async (key: string) => {
-  try {
-    const images = await getGlobal(
-      ensProfileImagesKey(key),
-      null,
-      ensProfileVersion
-    );
-    return images ? JSON.parse(images) : null;
-  } catch {
-    return null;
-  }
-};
-
-export const saveProfileImages = (key: string, value: Object) =>
-  saveGlobal(
-    ensProfileImagesKey(key),
-    JSON.stringify(value),
-    ensProfileVersion
-  );
-
-export const getProfileRecords = async (key: string) => {
-  const records = await getGlobal(
-    ensProfileRecordsKey(key),
+export const getProfile = async (dataType: DataType, key: string) => {
+  const profile = await getGlobal(
+    ensProfileKey(dataType, key),
     null,
     ensProfileVersion
   );
-  return records ? JSON.parse(records) : null;
+  return profile ? JSON.parse(profile) : null;
 };
 
-export const saveProfileRecords = (key: string, value: Object) =>
+export const saveProfile = (dataType: DataType, key: string, value: Object) =>
   saveGlobal(
-    ensProfileRecordsKey(key),
+    ensProfileKey(dataType, key),
     JSON.stringify(value),
     ensProfileVersion
   );
-
-export const getResolveName = (key: string) =>
-  getGlobal(ensResolveNameKey(key), null);
-
-export const saveResolveName = (key: string, value: string) =>
-  saveGlobal(ensResolveNameKey(key), value);
 
 export const getSeenOnchainDataDisclaimer = () =>
   getGlobal(ensSeenOnchainDataDisclaimerKey, false);

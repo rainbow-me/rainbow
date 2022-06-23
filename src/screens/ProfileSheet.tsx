@@ -19,8 +19,6 @@ import {
   useAccountSettings,
   useDimensions,
   useENSProfile,
-  useENSProfileImages,
-  useENSResolveName,
   useExternalWalletSectionsData,
   useFirstTransactionTimestamp,
   usePersistentDominantColorFromImage,
@@ -45,13 +43,16 @@ export default function ProfileSheet() {
   const contentHeight = deviceHeight - sharedCoolModalTopOffset;
 
   const ensName = params?.address;
-  const { isSuccess } = useENSProfile(ensName);
-  const { data: images, isFetched: isImagesFetched } = useENSProfileImages(
-    ensName
-  );
-  const avatarUrl = images?.avatarUrl;
+  const { data, isSuccess } = useENSProfile(ensName, {
+    select: ['primary'],
+  });
+  const profileAddress = data?.primary?.address;
 
-  const { data: profileAddress } = useENSResolveName(ensName);
+  const {
+    data: { images },
+    isFetched: isImagesFetched,
+  } = useENSProfile(ensName, { select: ['images'] });
+  const avatarUrl = images?.avatarUrl;
 
   // Prefetch first transaction timestamp
   useFirstTransactionTimestamp({

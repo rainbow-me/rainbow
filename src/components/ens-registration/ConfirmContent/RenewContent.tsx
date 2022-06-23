@@ -19,7 +19,10 @@ const RenewContent = ({
 }) => {
   const { isSmallPhone } = useDimensions();
 
-  const ensProfile = useENSProfile(name + ENS_DOMAIN, { enabled: true });
+  const ensProfile = useENSProfile(name + ENS_DOMAIN, {
+    enabled: true,
+    select: ['registration'],
+  });
   const expiryDate = ensProfile?.data?.registration?.expiryDate || 0;
 
   const newExpiryDateFormatted = format(

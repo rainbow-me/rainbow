@@ -25,7 +25,6 @@ import { UniqueAsset } from '@rainbow-me/entities';
 import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 import {
   useENSProfile,
-  useENSProfileImages,
   useFetchUniqueTokens,
   useFirstTransactionTimestamp,
 } from '@rainbow-me/hooks';
@@ -50,13 +49,15 @@ export default function ProfileSheetHeader({
   const ensName = defaultEnsName || params?.address;
   const { data: profile } = useENSProfile(ensName, {
     enabled: profilesEnabled,
+    select: ['coinAddresses', 'primary', 'records'],
   });
-  const { data: images, isFetched: isImagesFetched } = useENSProfileImages(
-    ensName,
-    {
-      enabled: profilesEnabled,
-    }
-  );
+  const {
+    data: { images },
+    isFetched: isImagesFetched,
+  } = useENSProfile(ensName, {
+    enabled: profilesEnabled,
+    select: ['images'],
+  });
   const profileAddress = profile?.primary?.address ?? '';
   const { navigate } = useNavigation();
   const { data: uniqueTokens } = useFetchUniqueTokens({

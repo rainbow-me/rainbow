@@ -16,7 +16,7 @@ import {
   useForegroundColor,
 } from '@rainbow-me/design-system';
 import {
-  prefetchENSProfileRecords,
+  prefetchENSProfile,
   useAccountENSDomains,
   useAccountProfile,
   useAccountSettings,
@@ -44,7 +44,10 @@ export default function SelectENSSheet() {
 
   const handleSelectENS = useCallback(
     ensName => {
-      prefetchENSProfileRecords({ name: ensName });
+      prefetchENSProfile({
+        name: ensName,
+        select: ['coinAddresses', 'images', 'records'],
+      });
       goBack();
       params?.onSelectENS(ensName);
     },

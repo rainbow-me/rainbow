@@ -42,7 +42,7 @@ import {
   useColorForAsset,
   useContacts,
   useDimensions,
-  useENSProfileImages,
+  useENSProfile,
   useUserAccounts,
   useWallets,
 } from '@rainbow-me/hooks';
@@ -356,8 +356,11 @@ export default function SendConfirmationSheet() {
     realSheetHeight -= 80;
   }
 
-  const { data: images } = useENSProfileImages(to, {
+  const {
+    data: { images },
+  } = useENSProfile(to, {
     enabled: isENSAddressFormat(to),
+    select: ['images'],
   });
 
   const accountImage = profilesEnabled
