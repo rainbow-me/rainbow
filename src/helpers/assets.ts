@@ -21,7 +21,7 @@ import { ethereumUtils } from '@rainbow-me/utils';
 
 const COINS_TO_SHOW = 5;
 
-export const buildAssetUniqueIdentifier = item => {
+export const buildAssetUniqueIdentifier = (item: any) => {
   const balance = get(item, 'balance.amount', '');
   const nativePrice = get(item, 'native.price.display', '');
   const uniqueId = get(item, 'uniqueId');
@@ -30,11 +30,11 @@ export const buildAssetUniqueIdentifier = item => {
 };
 
 const addEthPlaceholder = (
-  assets,
-  includePlaceholder,
-  pinnedCoins,
-  nativeCurrency,
-  emptyCollectibles
+  assets: any,
+  includePlaceholder: any,
+  pinnedCoins: any,
+  nativeCurrency: any,
+  emptyCollectibles: any
 ) => {
   const hasEth = !!ethereumUtils.getAccountAsset(ETH_ADDRESS);
 
@@ -84,9 +84,10 @@ const addEthPlaceholder = (
   return { addedEth: false, assets };
 };
 
-const getTotal = assets =>
+const getTotal = (assets: any) =>
   reduce(
     assets,
+    // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
     (acc, asset) => {
       const balance = asset?.native?.balance?.amount ?? 0;
       return add(acc, balance);
@@ -95,18 +96,18 @@ const getTotal = assets =>
   );
 
 export const buildCoinsList = (
-  sortedAssets,
-  nativeCurrency,
-  isCoinListEdited,
-  pinnedCoins,
-  hiddenCoins,
+  sortedAssets: any,
+  nativeCurrency: any,
+  isCoinListEdited: any,
+  pinnedCoins: any,
+  hiddenCoins: any,
   includePlaceholder = false,
-  emptyCollectibles
+  emptyCollectibles: any
 ) => {
-  let standardAssets = [],
-    pinnedAssets = [],
-    smallAssets = [],
-    hiddenAssets = [];
+  let standardAssets: any = [],
+    pinnedAssets: any = [],
+    smallAssets: any = [],
+    hiddenAssets: any = [];
 
   const { addedEth, assets } = addEthPlaceholder(
     sortedAssets,
@@ -118,7 +119,7 @@ export const buildCoinsList = (
 
   // separate into standard, pinned, small balances, hidden assets
   forEach(assets, asset => {
-    if (hiddenCoins && hiddenCoins[asset.uniqueId]) {
+    if (!!hiddenCoins && hiddenCoins[asset.uniqueId]) {
       hiddenAssets.push({
         isCoin: true,
         isHidden: true,
@@ -135,6 +136,7 @@ export const buildCoinsList = (
     } else if (
       greaterThan(
         asset.native?.balance?.amount,
+        // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
         supportedNativeCurrencies[nativeCurrency].smallThreshold
       )
     ) {
@@ -194,13 +196,13 @@ export const buildCoinsList = (
 
 // TODO make it better
 export const buildBriefCoinsList = (
-  sortedAssets,
-  nativeCurrency,
-  isCoinListEdited,
-  pinnedCoins,
-  hiddenCoins,
+  sortedAssets: any,
+  nativeCurrency: any,
+  isCoinListEdited: any,
+  pinnedCoins: any,
+  hiddenCoins: any,
   includePlaceholder = false,
-  emptyCollectibles
+  emptyCollectibles: any
 ) => {
   const { assets, smallBalancesValue, totalBalancesValue } = buildCoinsList(
     sortedAssets,
@@ -243,31 +245,29 @@ export const buildBriefCoinsList = (
 };
 
 export const buildUniqueTokenList = (
-  uniqueTokens,
-  selectedShowcaseTokens = []
+  uniqueTokens: any,
+  selectedShowcaseTokens: any[] = []
 ) => {
-  let rows = [];
+  let rows: any = [];
   const showcaseTokens = [];
   const bundledShowcaseTokens = [];
 
   const grouped = groupBy(uniqueTokens, token => token.familyName);
   const families = Object.keys(grouped);
 
-  for (let i = 0; i < families.length; i++) {
-    const tokensRow = [];
-    for (let j = 0; j < grouped[families[i]].length; j += 2) {
-      if (selectedShowcaseTokens.includes(grouped[families[i]][j].uniqueId)) {
-        showcaseTokens.push(grouped[families[i]][j]);
+  for (let family of families) {
+    const tokensRow: any = [];
+    for (let j = 0; j < grouped[family].length; j += 2) {
+      if (selectedShowcaseTokens.includes(grouped[family][j].uniqueId)) {
+        showcaseTokens.push(grouped[family][j]);
       }
-      if (grouped[families[i]][j + 1]) {
-        if (
-          selectedShowcaseTokens.includes(grouped[families[i]][j + 1].uniqueId)
-        ) {
-          showcaseTokens.push(grouped[families[i]][j + 1]);
+      if (grouped[family][j + 1]) {
+        if (selectedShowcaseTokens.includes(grouped[family][j + 1].uniqueId)) {
+          showcaseTokens.push(grouped[family][j + 1]);
         }
-        tokensRow.push([grouped[families[i]][j], grouped[families[i]][j + 1]]);
+        tokensRow.push([grouped[family][j], grouped[family][j + 1]]);
       } else {
-        tokensRow.push([grouped[families[i]][j]]);
+        tokensRow.push([grouped[family][j]]);
       }
     }
     let tokens = compact(tokensRow);
@@ -275,12 +275,12 @@ export const buildUniqueTokenList = (
     // eslint-disable-next-line no-loop-func
     tokens.forEach((tokenChunk, index) => {
       const id = tokensRow[0]
-        .map(({ uniqueId }) => uniqueId)
+        .map(({ uniqueId }: any) => uniqueId)
         .join(`__${index}`);
       rows.push({
-        childrenAmount: grouped[families[i]].length,
+        childrenAmount: grouped[family].length,
         familyImage: get(tokensRow, '[0][0].familyImage', null),
-        familyName: families[i],
+        familyName: family,
         isHeader: index === 0,
         stableId: id,
         tokens: tokenChunk,
@@ -320,6 +320,7 @@ export const buildUniqueTokenList = (
     ].concat(rows);
   }
 
+  // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'row' implicitly has an 'any' type.
   rows.forEach((row, i) => {
     row.familyId = i;
     row.tokens[0][0].rowNumber = i;
@@ -330,13 +331,13 @@ export const buildUniqueTokenList = (
 const regex = RegExp(/\s*(the)\s/, 'i');
 
 export const buildBriefUniqueTokenList = (
-  uniqueTokens,
-  selectedShowcaseTokens,
-  sellingTokens = []
+  uniqueTokens: any,
+  selectedShowcaseTokens: any,
+  sellingTokens: any[] = []
 ) => {
   const uniqueTokensInShowcase = uniqueTokens
-    .filter(({ uniqueId }) => selectedShowcaseTokens?.includes(uniqueId))
-    .map(({ uniqueId }) => uniqueId);
+    .filter(({ uniqueId }: any) => selectedShowcaseTokens?.includes(uniqueId))
+    .map(({ uniqueId }: any) => uniqueId);
   const grouped2 = groupBy(uniqueTokens, token => token.familyName);
   const families2 = sortBy(Object.keys(grouped2), row =>
     row.replace(regex, '').toLowerCase()
@@ -348,6 +349,7 @@ export const buildBriefUniqueTokenList = (
   ];
   if (uniqueTokensInShowcase.length > 0) {
     result.push({
+      // @ts-expect-error "name" does not exist in type.
       name: 'Showcase',
       total: uniqueTokensInShowcase.length,
       type: 'FAMILY_HEADER',
@@ -356,6 +358,7 @@ export const buildBriefUniqueTokenList = (
     for (let index = 0; index < uniqueTokensInShowcase.length; index++) {
       const uniqueId = uniqueTokensInShowcase[index];
       result.push({
+        // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
         index,
         type: 'NFT',
         uid: `showcase-${uniqueId}`,
@@ -367,6 +370,7 @@ export const buildBriefUniqueTokenList = (
   }
   if (sellingTokens.length > 0) {
     result.push({
+      // @ts-expect-error "name" does not exist in type.
       name: 'Selling',
       total: sellingTokens.length,
       type: 'FAMILY_HEADER',
@@ -375,6 +379,7 @@ export const buildBriefUniqueTokenList = (
     for (let index = 0; index < sellingTokens.length; index++) {
       const uniqueId = sellingTokens[index].uniqueId;
       result.push({
+        // @ts-expect-error "index" does not exist in type.
         index,
         type: 'NFT',
         uid: uniqueId,
@@ -385,6 +390,7 @@ export const buildBriefUniqueTokenList = (
   }
   for (let family of families2) {
     result.push({
+      // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
       image: grouped2[family][0].familyImage,
       name: family,
       total: grouped2[family].length,
@@ -395,6 +401,7 @@ export const buildBriefUniqueTokenList = (
     for (let index = 0; index < tokens.length; index++) {
       const uniqueId = tokens[index];
 
+      // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
       result.push({ index, type: 'NFT', uid: uniqueId, uniqueId });
     }
 
@@ -403,5 +410,5 @@ export const buildBriefUniqueTokenList = (
   return result;
 };
 
-export const buildUniqueTokenName = ({ collection, id, name }) =>
+export const buildUniqueTokenName = ({ collection, id, name }: any) =>
   name || `${collection?.name} #${id}`;

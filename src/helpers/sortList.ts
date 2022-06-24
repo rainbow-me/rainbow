@@ -1,11 +1,11 @@
 import { get, isFunction, isString, toLower } from 'lodash';
 
 export const sortList = (
-  array = [],
-  sortByKey,
-  direction,
-  defaultValue,
-  formatter
+  array: any[] = [],
+  sortByKey: any,
+  direction: any,
+  defaultValue?: any,
+  formatter?: any
 ) =>
   array.slice(0).sort((a, b) => {
     const isAscending = direction === 'asc';
