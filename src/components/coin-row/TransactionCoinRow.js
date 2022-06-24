@@ -215,6 +215,9 @@ export default function TransactionCoinRow({ item, ...props }) {
               },
             }
           : {})}
+        testID={`${item.status[0].toUpperCase() + item.status.substring(1)}-${
+          item.name
+        }`}
         topRowRender={TopRow}
         type={item.network}
       />

@@ -27,6 +27,7 @@ export const ScaleButtonZoomable = ({
   children,
   style,
   duration = 160,
+  testID,
 }: Props) => {
   const scale = useSharedValue(1);
   const scaleTraversed = useDerivedValue(() => {
@@ -48,7 +49,7 @@ export const ScaleButtonZoomable = ({
 
   return (
     <ScaleButtonContext.Provider value={scale}>
-      <Animated.View style={[style, scaleAnimatedStyle]}>
+      <Animated.View style={[style, scaleAnimatedStyle]} testID={testID}>
         {children}
       </Animated.View>
     </ScaleButtonContext.Provider>

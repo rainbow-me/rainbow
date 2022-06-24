@@ -87,6 +87,7 @@ const ScaleButton = ({
   overflowMargin,
   scaleTo = 0.86,
   wrapperStyle,
+  testID,
 }: PropsWithChildren<Props>) => {
   const parentScale = useContext(ScaleButtonContext);
   const childScale = useSharedValue(1);
@@ -145,7 +146,7 @@ const ScaleButton = ({
   );
 
   return (
-    <View style={[cx.overflow, wrapperStyle]}>
+    <View style={[cx.overflow, wrapperStyle]} testID={testID}>
       <View style={{ margin: -overflowMargin }}>
         <AnimatedRawButton
           hitSlop={-overflowMargin}
@@ -184,6 +185,7 @@ const SimpleScaleButton = ({
   skipTopMargin,
   transformOrigin,
   wrapperStyle,
+  testID,
 }: Props) => {
   const onNativePress = useCallback(
     ({ nativeEvent: { type } }) => {
@@ -213,6 +215,7 @@ const SimpleScaleButton = ({
         },
         wrapperStyle,
       ]}
+      testID={testID}
     >
       <View
         style={{
