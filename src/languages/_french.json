@@ -432,7 +432,17 @@
         "swapping_via": "Swapping via :)",
         "unicorn_one": "that unicorn one :)",
         "uniswap_v2": "Uniswap v2 :)",
-        "view_on": "View on %{blockExplorerName} :)"
+        "view_on": "View on %{blockExplorerName} :)",
+        "swap_max_alert": {
+          "title": "Are you sure? :)",
+          "message": "You are about to swap all the %{inputCurrencyAddress} available in your wallet. If you want to swap back to %{inputCurrencyAddress}, you may not be able to afford the fee.\n\nWould you like to auto adjust the balance to leave some %{inputCurrencyAddress}? :)",
+          "no_thanks": "No thanks :)",
+          "auto_adjust": "Auto adjust :)"
+        },
+        "swap_max_insufficient_alert": {
+          "title": "Insufficient %{symbol} :)",
+          "message": "You have insufficient %{symbol} to cover the fees to swap the maximum amount. :)"
+        }
       },
       "swap_details": {
         "review": "Review :)"
