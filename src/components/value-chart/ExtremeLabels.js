@@ -1,24 +1,15 @@
 import { get } from 'lodash';
 import React, { useCallback, useMemo, useState } from 'react';
+import { View } from 'react-native';
 import { formatNative } from '../expanded-state/chart/chart-data-labels/ChartPriceLabel';
-import { Text } from '../text';
 import { useChartData } from '@rainbow-me/animated-charts';
+import { Text } from '@rainbow-me/design-system';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
-import styled from '@rainbow-me/styled-components';
-import { fonts } from '@rainbow-me/styles';
 
 function trim(val) {
   return Math.min(Math.max(val, 0.05), 0.95);
 }
-
-const Label = styled(Text)({
-  fontSize: fonts.size.smedium,
-  fontWeight: fonts.weight.bold,
-  letterSpacing: fonts.letterSpacing.roundedTighter,
-  position: 'absolute',
-  textAlign: 'center',
-});
 
 const CenteredLabel = ({ position, style, width, ...props }) => {
   const [componentWidth, setWidth] = useState(0);
@@ -47,15 +38,19 @@ const CenteredLabel = ({ position, style, width, ...props }) => {
     [componentWidth, position, width]
   );
   return (
-    <Label
-      {...props}
+    <View
       onLayout={onLayout}
       style={{
         ...style,
         left,
         opacity: componentWidth ? 1 : 0,
+        position: 'absolute',
       }}
-    />
+    >
+      <Text color={{ custom: props.color }} size="14px" weight="bold">
+        {props.children}
+      </Text>
+    </View>
   );
 };
 

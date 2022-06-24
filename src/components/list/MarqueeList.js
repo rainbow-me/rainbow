@@ -13,22 +13,11 @@ import Animated, {
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
-  Value,
   withDecay,
 } from 'react-native-reanimated';
 import { withSpeed } from '@rainbow-me/utils';
 
 const DECCELERATION = 0.998;
-
-export const useReanimatedValue = initialValue => {
-  const value = useRef();
-
-  if (!value.current) {
-    value.current = new Value(initialValue);
-  }
-
-  return value.current;
-};
 
 const SAFETY_MARGIN = 100;
 // beginning of the component should be within -100 and inf

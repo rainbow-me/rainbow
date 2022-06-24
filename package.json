@@ -215,7 +215,7 @@
     "react-native-quick-md5": "3.0.3",
     "react-native-radial-gradient": "rainbow-me/react-native-radial-gradient#1266cd8f6ac3321bcf27357f8771bd088f9f27ef",
     "react-native-randombytes": "3.5.3",
-    "react-native-reanimated": "2.4.1",
+    "react-native-reanimated": "2.8.0",
     "react-native-redash": "16.2.2",
     "react-native-restart": "0.0.22",
     "react-native-safe-area-context": "0.5.0",
@@ -330,6 +330,9 @@
   },
   "resolutions": {
     "**/async": "2.6.4",
+    "**/got": "11.8.5",
+    "**/jpeg-js": "0.4.4",
+    "**/shell-quote": "1.7.3",
     "**/node-fetch": "2.6.7",
     "**/web3": "1.6.1",
     "**/bn.js": "5.2.1",
