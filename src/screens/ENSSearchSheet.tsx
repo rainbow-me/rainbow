@@ -189,7 +189,7 @@ export default function ENSSearchSheet() {
               </Stack>
             </Inset>
           )}
-          {(isAvailable || isRegistered) && (
+          {!isPending && (isAvailable || isRegistered) && (
             <Inset horizontal="19px">
               <Stack
                 separator={
@@ -258,7 +258,7 @@ export default function ENSSearchSheet() {
           )}
         </Box>
         <SheetActionButtonRow>
-          {isPending && (
+          {isPending && !isRegistered && (
             <SheetActionButton
               // @ts-expect-error JavaScript component
               label={lang.t('profiles.search.finish')}

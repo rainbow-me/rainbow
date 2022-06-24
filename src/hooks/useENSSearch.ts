@@ -67,26 +67,10 @@ export default function useENSSearch({
       };
     }
 
-    if (pendingRegistrationTransaction) {
-      return {
-        available: false,
-        pending: true,
-        valid: true,
-      };
-    }
-
-    if (commitTransactionHash && !confirmedRegistrationTransaction) {
-      return {
-        pending: true,
-        valid: true,
-      };
-    }
-
     const [isAvailable, rentPrice] = await Promise.all([
       getAvailable(name, contract),
       getRentPrice(name, duration, contract),
     ]);
-
     const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
       Network.mainnet
     );
@@ -96,7 +80,33 @@ export default function useENSSearch({
       nativeCurrency,
       nativeAssetPrice
     );
+
     if (isAvailable) {
+      if (confirmedRegistrationTransaction) {
+        return {
+          available: false,
+          pending: false,
+          valid: true,
+        };
+      }
+
+      if (pendingRegistrationTransaction) {
+        return {
+          available: false,
+          pending: true,
+          rentPrice: formattedRentPrice,
+          valid: true,
+        };
+      }
+
+      if (commitTransactionHash) {
+        return {
+          pending: true,
+          rentPrice: formattedRentPrice,
+          valid: true,
+        };
+      }
+
       return {
         available: true,
         rentPrice: formattedRentPrice,
@@ -133,7 +143,15 @@ export default function useENSSearch({
   const { data, status, isIdle, isLoading } = useQuery(
     [
       'getRegistrationValues',
-      [duration, name, nativeCurrency, yearsDuration, commitTransactionHash],
+      [
+        duration,
+        name,
+        nativeCurrency,
+        yearsDuration,
+        commitTransactionHash,
+        pendingRegistrationTransaction,
+        confirmedRegistrationTransaction,
+      ],
     ],
     getRegistrationValues,
     {
