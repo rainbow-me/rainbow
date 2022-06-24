@@ -889,7 +889,7 @@ export default function SendSheet(props) {
   );
 
   return (
-    <Container>
+    <Container testID="send-sheet">
       {ios && <StatusBar barStyle="light-content" />}
       <SheetContainer>
         <SendHeader
