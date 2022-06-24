@@ -136,9 +136,9 @@ export default function AddTokenSheet() {
             <Divider color={colors.rowDividerExtraLight} inset={[0, 143.5]} />
           </Centered>
 
-          <Column align="center" marginBottom={8}>
+          <Column align="center" marginBottom={isL2 ? 63 : 8}>
             {DefaultTokenLists[network]
-              .filter(list => writeableLists.indexOf(list?.id) !== -1)
+              .filter(list => writeableLists.includes(list?.id))
               .map(list => {
                 const alreadyAdded = isTokenInList(list?.id);
                 const handleAdd = () => {
