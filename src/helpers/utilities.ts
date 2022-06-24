@@ -99,7 +99,8 @@ export const updatePrecisionToDisplay = (
 ): string => {
   if (!amount) return '0';
   const roundingMode = roundUp ? BigNumber.ROUND_UP : BigNumber.ROUND_DOWN;
-  if (!nativePrice) return new BigNumber(amount).toPrecision(6, roundingMode);
+  if (!nativePrice)
+    return new BigNumber(amount).decimalPlaces(6, roundingMode).toFixed();
   const bnAmount = new BigNumber(amount);
   const significantDigitsOfNativePriceInteger = new BigNumber(nativePrice)
     .decimalPlaces(0, BigNumber.ROUND_DOWN)

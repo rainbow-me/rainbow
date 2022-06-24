@@ -29,6 +29,7 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { Source } from '@rainbow-me/redux/swap';
+import Routes from '@rainbow-me/routes';
 import { deviceUtils } from '@rainbow-me/utils';
 
 function useAndroidDisableGesturesOnFocus() {
@@ -53,19 +54,35 @@ export default function SwapSettingsState({ asset }) {
   const keyboardHeight = useKeyboardHeight();
   const slippageRef = useRef(null);
   const { updateSwapSource, source } = useSwapSettings();
+  const isFocused = useIsFocused();
+  const { navigate } = useNavigation();
 
   useAndroidDisableGesturesOnFocus();
 
+  const handleKeyboardDidHide = useCallback(() => {
+    if (isFocused) {
+      goBack();
+    }
+  }, [goBack, isFocused]);
+  const handleKeyboardDidShow = useCallback(() => {
+    if (!isFocused) {
+      Keyboard.dismiss();
+    }
+  }, [isFocused]);
   const toggleFlashbotsEnabled = useCallback(async () => {
     await dispatch(settingsChangeFlashbotsEnabled(!flashbotsEnabled));
   }, [dispatch, flashbotsEnabled, settingsChangeFlashbotsEnabled]);
 
   useEffect(() => {
-    android && Keyboard.addListener('keyboardDidHide', goBack);
+    if (android) {
+      Keyboard.addListener('keyboardDidShow', handleKeyboardDidShow);
+      Keyboard.addListener('keyboardDidHide', handleKeyboardDidHide);
+    }
     return () => {
-      Keyboard.removeListener('keyboardDidHide', goBack);
+      Keyboard.removeListener('keyboardDidHide', handleKeyboardDidHide);
+      Keyboard.removeListener('keyboardDidShow', handleKeyboardDidShow);
     };
-  }, [goBack]);
+  }, [handleKeyboardDidHide, handleKeyboardDidShow]);
 
   const colorForAsset = useColorForAsset(asset || {}, null, false, true);
 
@@ -79,7 +96,7 @@ export default function SwapSettingsState({ asset }) {
   );
 
   const sheetHeightWithoutKeyboard =
-    (android ? 225 : 195) + (swapSupportsFlashbots ? 55 : 0);
+    (android ? 275 : 245) + (swapSupportsFlashbots ? 55 : 0);
 
   const sheetHeightWithKeyboard =
     sheetHeightWithoutKeyboard +
@@ -96,6 +113,13 @@ export default function SwapSettingsState({ asset }) {
     updateSource(Source.AggregatorRainbow);
   }, [settingsChangeFlashbotsEnabled, updateSource]);
 
+  const openExplainer = () => {
+    android && Keyboard.dismiss();
+    navigate(Routes.EXPLAIN_SHEET, {
+      type: 'flashbots',
+    });
+  };
+
   return (
     <SlackSheet
       additionalTopPadding
@@ -110,15 +134,23 @@ export default function SwapSettingsState({ asset }) {
         <ExchangeHeader />
         <Inset bottom="24px" horizontal="24px" top="10px">
           <Stack backgroundColor="body" space="24px">
+            <Text align="center" color="primary" size="18px" weight="bold">
+              {lang.t('exchange.settings')}
+            </Text>
             <SourcePicker
               currentSource={currentSource}
               onSelect={updateSource}
             />
             {swapSupportsFlashbots && (
               <Columns alignHorizontal="justify" alignVertical="center">
-                <Text color="primary" size="18px" weight="bold">
-                  {lang.t('exchange.use_flashbots')}
-                </Text>
+                <ButtonPressAnimation onPress={openExplainer}>
+                  <Text color="primary" size="16px" weight="bold">
+                    {lang.t('exchange.use_flashbots')}
+                    <Text color="secondary30" size="16px" weight="bold">
+                      {' 􀅵'}
+                    </Text>
+                  </Text>
+                </ButtonPressAnimation>
                 <Column width="content">
                   <Switch
                     onValueChange={toggleFlashbotsEnabled}

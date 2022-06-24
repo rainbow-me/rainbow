@@ -600,6 +600,33 @@
       },
       "rainbow_fee": {
         "text": "Rainbow takes a %{feePercentage} fee from swaps. It’s part of what enables us to give you the best Ethereum experience possible."
+      },
+      "swap_routing": {
+        "text": "By default, Rainbow chooses the cheapest route possible for your swap. If you prefer to specifically use either 0x or 1inch, you can do that too.",
+        "title": "Swap Routing",
+        "still_curious": {
+          "fragment1": "Still Curious? ",
+          "fragment2": "Read more",
+          "fragment3": " about our approach to routing swaps."
+        }
+      },
+      "slippage": {
+        "text": "Slippage occurs when the price of a swap changes during the time between you submitting your transaction and its confirmation. \n\nSetting a higher slippage tolerance increases the likelihood your swap will be successful, but may result in you getting a worse price.",
+        "title": "Slippage",
+        "still_curious": {
+          "fragment1": "Still Curious? ",
+          "fragment2": "Read more",
+          "fragment3": " about slippage and how it affects swaps."
+        }
+      },
+      "flashbots": {
+        "text": "Flashbots protects your transactions from frontrunning and sandwich attacks which might result in you getting a worse price or your transaction failing.",
+        "title": "Flashbots", 
+        "still_curious": {
+          "fragment1": "Still Curious? ",
+          "fragment2": "Read more",
+          "fragment3": " about Flashbots and the protection it offers."
+        }
       }
     },
     "fields": {

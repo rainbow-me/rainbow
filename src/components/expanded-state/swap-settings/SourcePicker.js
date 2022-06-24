@@ -1,13 +1,17 @@
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
+import { Keyboard } from 'react-native';
 import RainbowExchange from '../../../assets/exchanges/both.png';
 import OneInchExchange from '../../../assets/exchanges/oneinch.png';
 import ZeroXExchange from '../../../assets/exchanges/zerox.png';
+import { ButtonPressAnimation } from '../../animations';
 import { ContextMenuButton } from '../../context-menu';
 import { Box, Column, Columns, Inline, Text } from '@rainbow-me/design-system';
-
 import { ImgixImage } from '@rainbow-me/images';
+import { useNavigation } from '@rainbow-me/navigation';
 import { Source } from '@rainbow-me/redux/swap';
+import Routes from '@rainbow-me/routes';
+
 import { showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const sourceMenuItems = () => {
@@ -29,6 +33,7 @@ const androidSourceMenuItems = () => {
 };
 
 export default function SourcePicker({ onSelect, currentSource }) {
+  const { navigate } = useNavigation();
   const imageSource = useMemo(() => {
     let source = null;
     switch (currentSource) {
@@ -68,12 +73,24 @@ export default function SourcePicker({ onSelect, currentSource }) {
     );
   }, [onSelect]);
 
+  const openExplainer = () => {
+    android && Keyboard.dismiss();
+    navigate(Routes.EXPLAIN_SHEET, {
+      type: 'routeSwaps',
+    });
+  };
+
   return (
     <Columns alignHorizontal="justify" alignVertical="center">
-      <Column>
-        <Text size="18px" weight="bold">
-          {lang.t('exchange.source_picker')}
-        </Text>
+      <Column width="content">
+        <ButtonPressAnimation onPress={openExplainer}>
+          <Text size="16px" weight="bold">
+            {lang.t('exchange.source_picker')}
+            <Text color="secondary30" size="16px" weight="bold">
+              {' 􀅵'}
+            </Text>
+          </Text>
+        </ButtonPressAnimation>
       </Column>
       <Column width="content">
         <ContextMenuButton
