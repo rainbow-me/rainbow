@@ -179,9 +179,6 @@ export default function SwapDetailsState({
           isHighPriceImpact={isHighPriceImpact}
           onCopySwapDetailsText={onCopySwapDetailsText}
           onLayout={setContentHeight}
-          priceImpactColor={priceImpactColor}
-          priceImpactNativeAmount={priceImpactNativeAmount}
-          priceImpactPercentDisplay={priceImpactPercentDisplay}
           tradeDetails={tradeDetails}
         />
         <Footer onLayout={setFooterHeight}>

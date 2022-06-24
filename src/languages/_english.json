@@ -599,7 +599,7 @@
         "text": "Go to the Hop Bridge 􀮶"
       },
       "rainbow_fee": {
-        "text": "Rainbow takes a %{feePercentage} fee from swaps. It's part of what enables us to give you the best Ethereum experience possible."
+        "text": "Rainbow takes a %{feePercentage} fee from swaps. It’s part of what enables us to give you the best Ethereum experience possible."
       }
     },
     "fields": {

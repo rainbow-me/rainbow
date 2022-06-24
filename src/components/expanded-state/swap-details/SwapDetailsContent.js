@@ -33,9 +33,6 @@ const Container = styled(Box).attrs({
 export default function SwapDetailsContent({
   isHighPriceImpact,
   onCopySwapDetailsText,
-  priceImpactColor,
-  priceImpactNativeAmount,
-  priceImpactPercentDisplay,
   tradeDetails,
   ...props
 }) {
@@ -46,10 +43,6 @@ export default function SwapDetailsContent({
   const inputAsExact = useSelector(
     state => state.swap.independentField !== SwapModalField.output
   );
-
-  const showPriceImpact =
-    (!isHighPriceImpact || priceImpactNativeAmount) &&
-    priceImpactPercentDisplay;
 
   const [detailsExpanded, setDetailsExpanded] = useState(false);
 
@@ -63,17 +56,6 @@ export default function SwapDetailsContent({
         {...props}
       >
         <Rows space="24px">
-          {showPriceImpact && (
-            <AccentColorProvider color={priceImpactColor}>
-              <SwapDetailsRow
-                label={lang.t('expanded_state.swap_details.price_impact')}
-              >
-                <SwapDetailsValue color="accent" letterSpacing="roundedTight">
-                  {`-${priceImpactPercentDisplay}`}
-                </SwapDetailsValue>
-              </SwapDetailsRow>
-            </AccentColorProvider>
-          )}
           <SwapDetailsRow label={receivedSoldLabel}>
             <SwapDetailsValue letterSpacing="roundedTight">
               {amountReceivedSold}{' '}

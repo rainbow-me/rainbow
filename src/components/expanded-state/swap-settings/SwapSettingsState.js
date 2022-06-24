@@ -114,10 +114,6 @@ export default function SwapSettingsState({ asset }) {
               currentSource={currentSource}
               onSelect={updateSource}
             />
-            <MaxToleranceInput
-              colorForAsset={colorForAsset}
-              ref={slippageRef}
-            />
             {swapSupportsFlashbots && (
               <Columns alignHorizontal="justify" alignVertical="center">
                 <Text color="primary" size="18px" weight="bold">
@@ -133,6 +129,10 @@ export default function SwapSettingsState({ asset }) {
                 </Column>
               </Columns>
             )}
+            <MaxToleranceInput
+              colorForAsset={colorForAsset}
+              ref={slippageRef}
+            />
           </Stack>
         </Inset>
       </FloatingPanel>

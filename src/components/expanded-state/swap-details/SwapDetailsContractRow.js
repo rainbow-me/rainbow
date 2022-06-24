@@ -20,7 +20,7 @@ import {
 
 const SwapDetailsText = styled(Text).attrs({
   lineHeight: android ? 18 : 17,
-})({});
+})();
 
 export const SwapDetailsValue = styled(SwapDetailsText).attrs(
   ({ theme: { colors }, color = colors.alpha(colors.blueGreyDark, 0.8) }) => ({
@@ -69,8 +69,7 @@ function SwapDetailsContractRowContent({
   scaleTo = 1.06,
   ...props
 }) {
-  const defaultColor = useForegroundColor('secondary');
-
+  const defaultColor = useForegroundColor('secondary80');
   const colorForAsset = useColorForAsset(asset);
   const animation = useTimingTransition(menuVisible, { duration: 80 });
   const animationColor = useTimingTransition(menuVisible, { duration: 250 });
@@ -190,6 +189,11 @@ export default function SwapDetailsContractRow({
       onPressMenuItem={handlePressMenuItem}
       useActionSheetFallback={false}
       {...props}
+      style={{
+        // bigger tap area otherwise touch events can get ignored
+        marginVertical: -12,
+        paddingVertical: 12,
+      }}
     >
       <SwapDetailsContractRowContent asset={asset} menuVisible={menuVisible} />
     </ContextMenuButton>

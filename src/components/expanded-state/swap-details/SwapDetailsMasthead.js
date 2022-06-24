@@ -35,7 +35,6 @@ export default function SwapDetailsMasthead({
   ...props
 }) {
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
-  const { colors, isDarkMode } = useTheme();
 
   return (
     <Box
@@ -63,18 +62,19 @@ export default function SwapDetailsMasthead({
           type="output"
         />
       </Columns>
+
       <Box
+        background="body"
         borderRadius={16}
         height={{ custom: 32 }}
-        shadow="21px heavy"
+        shadow="21px light"
         style={{
           alignItems: 'center',
-          backgroundColor: isDarkMode ? colors.darkGrey : colors.white,
           justifyContent: 'center',
           left: '50%',
           position: 'absolute',
           top: '50%',
-          transform: [{ translateX: 2 }, { translateY: 24 }],
+          transform: [{ translateX: 3 }, { translateY: 24 }],
         }}
         width={{ custom: 32 }}
       >
