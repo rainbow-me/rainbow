@@ -55,6 +55,7 @@ const staticImgixClient = shouldCreateImgixClient();
 //       This might be conditional based upon either the runtime
 //       hardware or the number of unique tokens a user may have.
 const capacity = 1024;
+const SEPARATOR = '>';
 export let staticSignatureLRU: LRUCache<string, string> = new LRUCache(
   capacity
 );
@@ -64,10 +65,10 @@ const maybeReadCacheFromMemory = async (): Promise<
 > => {
   try {
     const cache = new LRUCache<string, string>(capacity);
-    const keys = imgixCacheStorage.getString(ATTRIBUTES.KEYS)?.split(',') ?? [];
+    const keys =
+      imgixCacheStorage.getString(ATTRIBUTES.KEYS)?.split(SEPARATOR) ?? [];
     const values =
-      imgixCacheStorage.getString(ATTRIBUTES.VALUES)?.split(',') ?? [];
-
+      imgixCacheStorage.getString(ATTRIBUTES.VALUES)?.split(SEPARATOR) ?? [];
     for (let i = 0; i < keys.length; i++) {
       cache.set(keys[i], values[i]);
     }
@@ -90,8 +91,8 @@ const saveToMemory = async () => {
       values.push(value);
     }
 
-    imgixCacheStorage.set(ATTRIBUTES.KEYS, keys.join(','));
-    imgixCacheStorage.set(ATTRIBUTES.VALUES, values.join(','));
+    imgixCacheStorage.set(ATTRIBUTES.KEYS, keys.join(SEPARATOR));
+    imgixCacheStorage.set(ATTRIBUTES.VALUES, values.join(SEPARATOR));
   } catch (error) {
     logger.error(`Failed to persist IMGIX cache: ${error}`);
   }
