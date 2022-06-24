@@ -5,13 +5,13 @@ import {
   saveAccountEmptyState,
 } from '../handlers/localstorage/accountLocal';
 import useAccountSettings from './useAccountSettings';
-import useWalletSectionsData from './useWalletSectionsData';
+import { AppState } from '@rainbow-me/redux/store';
 
-export default function useAccountEmptyState() {
+export default function useAccountEmptyState(isSectionsEmpty: any) {
   const { network, accountAddress } = useAccountSettings();
-  const { isEmpty: isSectionsEmpty } = useWalletSectionsData();
-  // @ts-expect-error ts-migrate(2339) FIXME: Property 'data' does not exist on type 'DefaultRoo... Remove this comment to see the full error message
-  const isLoadingAssets = useSelector(state => state.data.isLoadingAssets);
+  const isLoadingAssets = useSelector(
+    (state: AppState) => state.data.isLoadingAssets
+  );
   const isAccountEmptyInStorage = useMemo(
     () => getAccountEmptyState(accountAddress, network),
     [accountAddress, network]

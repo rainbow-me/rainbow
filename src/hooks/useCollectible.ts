@@ -1,14 +1,14 @@
 import { useEffect, useMemo } from 'react';
 import { useQueryClient } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
-import { useAdditionalRecyclerAssetListData } from '../components/asset-list/RecyclerAssetList2/core/Contexts';
 import useAccountSettings from './useAccountSettings';
 import { uniqueTokensQueryKey } from './useFetchUniqueTokens';
 import { revalidateUniqueToken } from '@rainbow-me/redux/uniqueTokens';
 
 export default function useCollectible(
   initialAsset: any,
-  { revalidateInBackground = false } = {}
+  { revalidateInBackground = false } = {},
+  externalAddress: any
 ) {
   // Retrieve the unique tokens belonging to the current account address.
   const selfUniqueTokens = useSelector(
@@ -16,11 +16,6 @@ export default function useCollectible(
     ({ uniqueTokens: { uniqueTokens } }) => uniqueTokens
   );
   const { accountAddress } = useAccountSettings();
-  // Retrieve the unique tokens belonging to the targeted asset list account
-  // (e.g. viewing another persons ENS profile via `ProfileSheet`)
-  // "External" unique tokens are tokens that belong to another address (not the current account address).
-  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'number' is not assignable to par... Remove this comment to see the full error message
-  const { externalAddress } = useAdditionalRecyclerAssetListData(0);
   const queryClient = useQueryClient();
   const externalUniqueTokens = useMemo(() => {
     return (
