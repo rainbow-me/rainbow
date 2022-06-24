@@ -21,7 +21,7 @@ const AmountText = styled(Text).attrs(({ theme: { colors } }) => ({
   letterSpacing: 'roundedTight',
   size: 'smedium',
   weight: 'semibold',
-}))({});
+}))();
 
 const Container = styled(Centered).attrs({
   direction: 'column',
@@ -46,7 +46,6 @@ const NativePriceText = styled(TruncatedText).attrs({
   weight: 'heavy',
 })({
   maxWidth: ({ maxWidth }) => maxWidth,
-  paddingRight: 4,
 });
 
 const TruncatedAmountText = styled(AmountText)({
@@ -101,7 +100,7 @@ export default function CurrencyTile({
             <Box width="full">
               <Rows space={ios && '4px'}>
                 <Row height="content">
-                  <Columns alignHorizontal="center">
+                  <Columns alignHorizontal="center" space="4px">
                     <Column width="content">
                       <NativePriceText maxWidth={width / 4}>
                         {isOther && '~'}
