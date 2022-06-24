@@ -633,6 +633,9 @@ export default function TransactionConfirmationScreen() {
       ...gasParams,
       nonce,
     };
+    txPayloadUpdated.chainId = Number(
+      convertHexToString(txPayloadUpdated.chainId)
+    );
     if (calculatedGasLimit) {
       txPayloadUpdated.gasLimit = calculatedGasLimit;
     }
