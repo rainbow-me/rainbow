@@ -47,13 +47,13 @@ const CoinCheckButton = React.memo(function CoinCheckButton({
   };
 
   return (
-    <View style={cx.checkboxContainer}>
+    <View style={sx.checkboxContainer}>
       <ButtonPressAnimation onPress={onPress}>
-        <View style={cx.checkboxInnerContainer}>
+        <View style={sx.checkboxInnerContainer}>
           {showOutline && (
             <View
               style={[
-                cx.circleOutline,
+                sx.circleOutline,
                 { borderColor: colors.alpha(colors.blueGreyDark, 0.12) },
               ]}
             />
@@ -62,14 +62,14 @@ const CoinCheckButton = React.memo(function CoinCheckButton({
           {coinIconPlaceholder && (
             <CoinIconIndicator
               isPinned={isPinned}
-              style={cx.coinIconIndicator}
+              style={sx.coinIconIndicator}
               theme={theme}
             />
           )}
 
           {selected && (
             <View
-              style={[cx.checkmarkBackground, checkmarkBackgroundDynamicStyle]}
+              style={[sx.checkmarkBackground, checkmarkBackgroundDynamicStyle]}
             >
               <Icon color="white" name="checkmark" />
             </View>
@@ -135,23 +135,24 @@ const MemoizedBalanceCoinRow = React.memo(
       : theme.colors.blueGreyLight;
 
     return (
-      <View style={cx.flex}>
+      <View style={sx.flex}>
         <ButtonPressAnimation
           onPress={handlePress}
           scaleTo={0.96}
           testID={`balance-coin-row-${item.name}`}
         >
-          <View style={[cx.container]}>
+          <View style={[sx.container]}>
             <FastCoinIcon
-              address={item.mainnet_address ?? item.address}
+              address={item.address}
               assetType={item.type}
+              mainnetAddress={item.mainnet_address}
               symbol={item.symbol}
               theme={theme}
             />
 
-            <View style={[cx.innerContainer, isHidden && cx.hiddenRow]}>
-              <View style={cx.row}>
-                <View style={cx.textWrapper}>
+            <View style={[sx.innerContainer, isHidden && sx.hiddenRow]}>
+              <View style={sx.row}>
+                <View style={sx.textWrapper}>
                   <Text numberOfLines={1} size="16px">
                     {item.name}
                   </Text>
@@ -163,8 +164,8 @@ const MemoizedBalanceCoinRow = React.memo(
                 </Text>
               </View>
 
-              <View style={[cx.row, cx.bottom]}>
-                <View style={cx.textWrapper}>
+              <View style={[sx.row, sx.bottom]}>
+                <View style={sx.textWrapper}>
                   <Text
                     color={{ custom: theme.colors.blueGreyDark50 }}
                     numberOfLines={1}
@@ -219,7 +220,7 @@ export default React.memo(function BalanceCoinRow({
   const isPinned = pinnedCoins[uniqueId];
 
   return (
-    <View style={[cx.rootContainer, !isCoinListEdited && cx.nonEditMode]}>
+    <View style={[sx.rootContainer, !isCoinListEdited && sx.nonEditMode]}>
       {isCoinListEdited && (
         <CoinCheckButton
           isHidden={isHidden}
@@ -243,7 +244,7 @@ export default React.memo(function BalanceCoinRow({
   );
 });
 
-const cx = StyleSheet.create({
+const sx = StyleSheet.create({
   bottom: {
     marginTop: 10,
   },
