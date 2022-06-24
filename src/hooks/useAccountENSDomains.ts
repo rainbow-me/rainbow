@@ -1,6 +1,5 @@
 import { useQuery } from 'react-query';
-import useAccountSettings from './useAccountSettings';
-import { fetchENSAvatar } from './useENSAvatar';
+import { prefetchENSAvatar } from './useENSAvatar';
 import { EnsAccountRegistratonsData } from '@rainbow-me/apollo/queries';
 import { fetchAccountRegistrations } from '@rainbow-me/handlers/ens';
 import {
@@ -21,20 +20,12 @@ async function fetchAccountENSDomains({
 }: {
   accountAddress: string;
 }) {
-  if (!accountAddress) return [];
   const result = await fetchAccountRegistrations(accountAddress);
   const registrations = result.data?.account?.registrations || [];
-  const domains = await Promise.all(
-    registrations.map(async ({ domain }) => {
-      const avatar = await fetchENSAvatar(domain.name);
-      return {
-        ...domain,
-        avatar,
-      };
-    })
-  );
-
-  return domains;
+  return registrations.map(({ domain }) => {
+    prefetchENSAvatar(domain.name, { cacheFirst: true });
+    return domain;
+  });
 }
 
 async function fetchENSDomainsWithCache({
@@ -62,12 +53,18 @@ export async function prefetchAccountENSDomains({
   );
 }
 
-export default function useAccountENSDomains() {
-  const { accountAddress } = useAccountSettings();
-
+export default function useAccountENSDomains({
+  accountAddress,
+}: {
+  accountAddress: string;
+}) {
   return useQuery<
     EnsAccountRegistratonsData['account']['registrations'][number]['domain'][]
-  >(queryKey({ accountAddress }), async () =>
-    fetchENSDomainsWithCache({ accountAddress })
+  >(
+    queryKey({ accountAddress }),
+    async () => fetchENSDomainsWithCache({ accountAddress }),
+    {
+      enabled: Boolean(accountAddress),
+    }
   );
 }

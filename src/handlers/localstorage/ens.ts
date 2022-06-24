@@ -64,7 +64,8 @@ export const getSeenOnchainDataDisclaimer = () =>
 export const saveSeenOnchainDataDisclaimer = (value: boolean) =>
   saveGlobal(ensSeenOnchainDataDisclaimerKey, value);
 
-export const getENSDomains = (key: string) => getGlobal(ensDomains(key), []);
+export const getENSDomains = (key: string) =>
+  getGlobal(ensDomains(key), null, ensProfileVersion);
 
 export const setENSDomains = (
   key: string,

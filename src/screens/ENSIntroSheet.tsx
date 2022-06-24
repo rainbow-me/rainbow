@@ -53,7 +53,9 @@ export default function ENSIntroSheet() {
   const { colors } = useTheme();
   const { params } = useRoute<any>();
   const { accountAddress } = useAccountSettings();
-  const { data: domains, isLoading, isSuccess } = useAccountENSDomains();
+  const { data: domains, isLoading, isSuccess } = useAccountENSDomains({
+    accountAddress,
+  });
   const { accountENS } = useAccountProfile();
 
   // We are not using `isSmallPhone` from `useDimensions` here as we

@@ -22,7 +22,10 @@ import {
   EnsGetRecordsData,
   EnsGetRegistrationData,
 } from '../apollo/queries';
-import { fetchENSAvatar } from '../hooks/useENSAvatar';
+import { prefetchENSAddress } from '../hooks/useENSAddress';
+import { fetchENSAvatar, prefetchENSAvatar } from '../hooks/useENSAvatar';
+import { prefetchENSCover } from '../hooks/useENSCover';
+import { prefetchENSRecords } from '../hooks/useENSRecords';
 import { ENSActionParameters } from '../raps/common';
 import {
   getENSData,
@@ -46,7 +49,11 @@ import {
 import { add } from '@rainbow-me/helpers/utilities';
 import { ImgixImage } from '@rainbow-me/images';
 import { handleAndSignImages } from '@rainbow-me/parsers';
-import { ENS_NFT_CONTRACT_ADDRESS, ethUnits } from '@rainbow-me/references';
+import {
+  ENS_NFT_CONTRACT_ADDRESS,
+  ensIntroMarqueeNames,
+  ethUnits,
+} from '@rainbow-me/references';
 import { labelhash, logger, profileUtils } from '@rainbow-me/utils';
 import { AvatarResolver } from 'ens-avatar';
 
@@ -476,6 +483,15 @@ export const fetchAccountPrimary = async (accountAddress: string) => {
     ensName,
   };
 };
+
+export function prefetchENSIntroData() {
+  for (const name of ensIntroMarqueeNames) {
+    prefetchENSAddress(name, { cacheFirst: true });
+    prefetchENSAvatar(name, { cacheFirst: true });
+    prefetchENSCover(name, { cacheFirst: true });
+    prefetchENSRecords(name, { cacheFirst: true });
+  }
+}
 
 export const estimateENSCommitGasLimit = async ({
   name,
