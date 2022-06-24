@@ -6,7 +6,9 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { Keyboard } from 'react-native';
 import { useSelector } from 'react-redux';
+import { ButtonPressAnimation } from '../../animations';
 import { Icon } from '../../icons';
 import StepButtonInput from './StepButtonInput';
 import {
@@ -29,7 +31,9 @@ import {
   useSwapCurrencies,
   useSwapSettings,
 } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
 import { AppState } from '@rainbow-me/redux/store';
+import Routes from '@rainbow-me/routes';
 
 const convertBipsToPercent = (bips: number) => (bips / 100).toString();
 const convertPercentToBips = (percent: number) => (percent * 100).toString();
@@ -41,6 +45,7 @@ export const MaxToleranceInput: React.FC<{
 }> = forwardRef(({ colorForAsset }, ref) => {
   const { slippageInBips, updateSwapSlippage } = useSwapSettings();
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
+  const { navigate } = useNavigation();
 
   const [slippageValue, setSlippageValue] = useState(
     convertBipsToPercent(slippageInBips)
@@ -105,21 +110,35 @@ export const MaxToleranceInput: React.FC<{
     [updateSwapSlippage, setSlippageValue]
   );
 
-  const hasPriceImpact = isSeverePriceImpact || isHighPriceImpact;
+  const hasPriceImpact = isHighPriceImpact || isSeverePriceImpact;
+
+  const openExplainer = () => {
+    android && Keyboard.dismiss();
+    navigate(Routes.EXPLAIN_SHEET, {
+      type: 'slippage',
+    });
+  };
 
   return (
     <Columns alignVertical="center">
       <Stack space="10px">
-        <Inline alignVertical="center" space="2px">
-          <Text size="18px" weight="bold">
-            {`${lang.t('exchange.slippage_tolerance')} `}
-          </Text>
-          {hasPriceImpact && (
-            <Box paddingTop={android ? '2px' : '1px'}>
-              <Icon color={priceImpactColor} name="warning" size={18} />
-            </Box>
-          )}
-        </Inline>
+        <ButtonPressAnimation onPress={openExplainer}>
+          <Inline alignVertical="center" space="2px">
+            <Text size="16px" weight="bold">
+              {`${lang.t('exchange.slippage_tolerance')} `}
+              {!hasPriceImpact && (
+                <Text color="secondary30" size="16px" weight="bold">
+                  {' 􀅵'}
+                </Text>
+              )}
+            </Text>
+            {hasPriceImpact && (
+              <Box paddingTop={android ? '2px' : '1px'}>
+                <Icon color={priceImpactColor} name="warning" size={18} />
+              </Box>
+            )}
+          </Inline>
+        </ButtonPressAnimation>
         {hasPriceImpact && (
           <Box>
             <Text size={android ? '12px' : '14px'}>

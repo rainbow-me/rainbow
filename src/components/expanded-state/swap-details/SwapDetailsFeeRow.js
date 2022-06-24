@@ -32,7 +32,7 @@ export default function SwapDetailsUniswapRow(tradeDetails) {
       feePercentage: rainbowFeePercentageDisplay,
       type: 'rainbow_fee',
     });
-  }, [navigate]);
+  }, [navigate, rainbowFeePercentageDisplay]);
 
   return (
     <SwapDetailsRow
