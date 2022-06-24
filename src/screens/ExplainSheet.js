@@ -426,7 +426,7 @@ export const explainers = (params, colors) => ({
     emoji: '🤖',
     stillCurious: (
       <Text {...getBodyTextPropsWithColor(colors)}>
-        {'Still curious? '}
+        {lang.t('explain.flashbots.still_curious.fragment1')}
         <Text
           color={colors?.appleBlue}
           lineHeight="loose"
@@ -439,9 +439,9 @@ export const explainers = (params, colors) => ({
           suppressHighlighting
           weight="semibold"
         >
-          Read more
+          {lang.t('explain.flashbots.still_curious.fragment2')}
         </Text>
-        {' about Flashbots and the protection it offers.'}
+        {lang.t('explain.flashbots.still_curious.fragment3')}
       </Text>
     ),
     text: lang.t('explain.flashbots.text'),
@@ -451,7 +451,7 @@ export const explainers = (params, colors) => ({
     emoji: '🔀',
     stillCurious: (
       <Text {...getBodyTextPropsWithColor(colors)}>
-        {'Still curious? '}
+        {lang.t('explain.swap_routing.still_curious.fragment1')}
         <Text
           color={colors?.appleBlue}
           lineHeight="loose"
@@ -464,9 +464,9 @@ export const explainers = (params, colors) => ({
           suppressHighlighting
           weight="semibold"
         >
-          Read more
+          {lang.t('explain.swap_routing.still_curious.fragment2')}
         </Text>
-        {' about our approach to routing swaps.'}
+        {lang.t('explain.swap_routing.still_curious.fragment3')}
       </Text>
     ),
     text: lang.t('explain.swap_routing.text'),
@@ -477,7 +477,7 @@ export const explainers = (params, colors) => ({
     emoji: '🌊',
     stillCurious: (
       <Text {...getBodyTextPropsWithColor(colors)}>
-        {'Still curious? '}
+        {lang.t('explain.slippage.still_curious.fragment1')}
         <Text
           color={colors?.appleBlue}
           lineHeight="loose"
@@ -490,9 +490,9 @@ export const explainers = (params, colors) => ({
           suppressHighlighting
           weight="semibold"
         >
-          Read more
+          {lang.t('explain.slippage.still_curious.fragment2')}
         </Text>
-        {' about slippage and how it affects swaps.'}
+        {lang.t('explain.slippage.still_curious.fragment3')}
       </Text>
     ),
     text: lang.t('explain.slippage.text'),
