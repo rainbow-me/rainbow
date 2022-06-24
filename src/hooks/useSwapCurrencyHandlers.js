@@ -158,7 +158,9 @@ export default function useSwapCurrencyHandlers({
         android && Keyboard.dismiss();
         InteractionManager.runAfterInteractions(() => {
           Navigation.handleAction(Routes.EXPLAIN_SHEET, {
-            network: newInputCurrency?.type || Network.mainnet,
+            network: newInputCurrency?.type
+              ? ethereumUtils.getNetworkFromType(newInputCurrency?.type)
+              : Network.mainnet,
             onClose: () => {
               InteractionManager.runAfterInteractions(() => {
                 setTimeout(() => {
@@ -197,7 +199,9 @@ export default function useSwapCurrencyHandlers({
         android && Keyboard.dismiss();
         InteractionManager.runAfterInteractions(() => {
           Navigation.handleAction(Routes.EXPLAIN_SHEET, {
-            network: newOutputCurrency?.type || Network.mainnet,
+            network: newOutputCurrency?.type
+              ? ethereumUtils.getNetworkFromType(newOutputCurrency?.type)
+              : Network.mainnet,
             onClose: () => {
               InteractionManager.runAfterInteractions(() => {
                 setTimeout(() => {
