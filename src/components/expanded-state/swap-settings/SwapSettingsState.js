@@ -74,17 +74,15 @@ export default function SwapSettingsState({ asset }) {
   }, [dispatch, flashbotsEnabled, settingsChangeFlashbotsEnabled]);
 
   useEffect(() => {
-    android && Keyboard.addListener('keyboardDidShow', handleKeyboardDidShow);
-    return () => {
-      Keyboard.removeListener('keyboardDidShow', handleKeyboardDidShow);
-    };
-  }, [handleKeyboardDidShow]);
-  useEffect(() => {
-    android && Keyboard.addListener('keyboardDidHide', handleKeyboardDidHide);
+    if (android) {
+      Keyboard.addListener('keyboardDidShow', handleKeyboardDidShow);
+      Keyboard.addListener('keyboardDidHide', handleKeyboardDidHide);
+    }
     return () => {
       Keyboard.removeListener('keyboardDidHide', handleKeyboardDidHide);
+      Keyboard.removeListener('keyboardDidShow', handleKeyboardDidShow);
     };
-  }, [handleKeyboardDidHide]);
+  }, [handleKeyboardDidHide, handleKeyboardDidShow]);
 
   const colorForAsset = useColorForAsset(asset || {}, null, false, true);
 
