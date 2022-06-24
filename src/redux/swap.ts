@@ -34,6 +34,7 @@ interface SwapState {
   inputCurrency: SwappableAsset | null;
   independentField: SwapModalField;
   independentValue: string | null;
+  maxInputUpdate: boolean;
   slippageInBips: number;
   source: Source;
   type: string;
@@ -88,11 +89,12 @@ export const updateSwapSource = (newSource: Source) => (
   });
 };
 
-export const updateSwapInputAmount = (value: string | null) => (
-  dispatch: AppDispatch
-) => {
+export const updateSwapInputAmount = (
+  value: string | null,
+  maxInputUpdate = false
+) => (dispatch: AppDispatch) => {
   dispatch({
-    payload: { independentValue: value },
+    payload: { independentValue: value, maxInputUpdate },
     type: SWAP_UPDATE_INPUT_AMOUNT,
   });
 };
@@ -231,6 +233,7 @@ const INITIAL_STATE: SwapState = {
   independentField: SwapModalField.input,
   independentValue: null,
   inputCurrency: null,
+  maxInputUpdate: false,
   outputCurrency: null,
   slippageInBips: 100,
   source: Source.AggregatorRainbow,
@@ -269,6 +272,7 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
         ...state,
         independentField: SwapModalField.input,
         independentValue: action.payload.independentValue,
+        maxInputUpdate: action.payload.maxInputUpdate,
       };
     case SWAP_UPDATE_NATIVE_AMOUNT:
       return {

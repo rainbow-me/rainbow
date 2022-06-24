@@ -282,6 +282,9 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
   const independentValue = useSelector(
     (state: AppState) => state.swap.independentValue
   );
+  const maxInputUpdate = useSelector(
+    (state: AppState) => state.swap.maxInputUpdate
+  );
   const inputCurrency = useSelector(
     (state: AppState) => state.swap.inputCurrency
   );
@@ -371,7 +374,9 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
 
       if (independentField === SwapModalField.input) {
         derivedValues[SwapModalField.input] = independentValue;
-        displayValues[DisplayValue.input] = independentValue;
+        displayValues[DisplayValue.input] = maxInputUpdate
+          ? updatePrecisionToDisplay(independentValue, null, true)
+          : independentValue;
 
         const nativeValue = inputPrice
           ? convertAmountToNativeAmount(independentValue, inputPrice)
@@ -525,6 +530,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
     source,
     derivedValuesFromRedux,
     isSavings,
+    maxInputUpdate,
   ]);
 
   return {
