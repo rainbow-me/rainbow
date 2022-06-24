@@ -172,7 +172,9 @@ const RegistrationAvatar = ({
         </Skeleton>
       ) : (
         <ConditionalWrap
-          condition={hasSeenExplainSheet && !isTesting && enableNFTs}
+          condition={
+            hasSeenExplainSheet && !isTesting && (enableNFTs || !!avatarUrl)
+          }
           wrap={children => <ContextMenu>{children}</ContextMenu>}
         >
           <ButtonPressAnimation

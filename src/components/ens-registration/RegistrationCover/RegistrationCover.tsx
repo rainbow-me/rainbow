@@ -127,7 +127,7 @@ const RegistrationCover = ({
   }
   return (
     <ConditionalWrap
-      condition={hasSeenExplainSheet && enableNFTs}
+      condition={hasSeenExplainSheet && (enableNFTs || !!coverUrl)}
       wrap={children => <ContextMenu>{children}</ContextMenu>}
     >
       <ButtonPressAnimation
