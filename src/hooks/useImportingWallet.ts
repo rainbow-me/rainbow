@@ -242,7 +242,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
 
   useEffect(() => {
     if (!wasImporting && isImporting) {
-      // @ts-expect-error ts-migrate(2349) FIXME: This expression is not callable.
       startAnalyticsTimeout(async () => {
         const input = resolvedAddress
           ? resolvedAddress

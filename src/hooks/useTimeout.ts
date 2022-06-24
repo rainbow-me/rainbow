@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useRef } from 'react';
 
-export default function useTimeout() {
+export default function useTimeout(): [
+  (func: any, ms: any) => void,
+  () => void,
+  React.MutableRefObject<unknown>
+] {
   const handle = useRef();
 
   const start = useCallback((func, ms) => {

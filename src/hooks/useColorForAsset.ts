@@ -11,7 +11,7 @@ import {
 
 export default function useColorForAsset(
   asset = {},
-  fallbackColor: any,
+  fallbackColor?: any,
   forceLightMode = false,
   forceETHColor = false
 ) {

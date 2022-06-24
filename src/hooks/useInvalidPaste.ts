@@ -8,7 +8,6 @@ export default function useInvalidPaste() {
   const { isInvalidPaste = false, setGlobalState } = useContext(RainbowContext);
 
   const onInvalidPaste = useCallback(() => {
-    // @ts-expect-error ts-migrate(2349) FIXME: This expression is not callable.
     stopTimeout();
     setGlobalState({ isInvalidPaste: true });
   }, [setGlobalState, stopTimeout]);
@@ -16,9 +15,7 @@ export default function useInvalidPaste() {
   // ⏰️ Reset isInvalidPaste value after 3 seconds.
   useEffect(() => {
     if (isInvalidPaste) {
-      // @ts-expect-error ts-migrate(2349) FIXME: This expression is not callable.
       stopTimeout();
-      // @ts-expect-error ts-migrate(2349) FIXME: This expression is not callable.
       startTimeout(() => setGlobalState({ isInvalidPaste: false }), 3000);
     }
   }, [isInvalidPaste, setGlobalState, startTimeout, stopTimeout]);

@@ -10,16 +10,13 @@ export default function useBooleanState(
   const [startTimeout, stopTimeout] = useTimeout();
 
   const setFalse = useCallback(() => {
-    // @ts-expect-error ts-migrate(2349) FIXME: This expression is not callable.
     !!duration && stopTimeout();
     setBool(false);
   }, [duration, stopTimeout]);
 
   const setTrue = useCallback(() => {
-    // @ts-expect-error ts-migrate(2349) FIXME: This expression is not callable.
     !!duration && stopTimeout();
     setBool(true);
-    // @ts-expect-error ts-migrate(2349) FIXME: This expression is not callable.
     !!duration && startTimeout(setFalse, duration);
   }, [duration, setFalse, startTimeout, stopTimeout]);
 
