@@ -59,21 +59,32 @@ export default function SwapSettingsState({ asset }) {
 
   useAndroidDisableGesturesOnFocus();
 
-  const handleKeyboardDismissal = useCallback(() => {
+  const handleKeyboardDidHide = useCallback(() => {
     if (isFocused) {
       goBack();
     }
   }, [goBack, isFocused]);
+  const handleKeyboardDidShow = useCallback(() => {
+    if (!isFocused) {
+      Keyboard.dismiss();
+    }
+  }, [isFocused]);
   const toggleFlashbotsEnabled = useCallback(async () => {
     await dispatch(settingsChangeFlashbotsEnabled(!flashbotsEnabled));
   }, [dispatch, flashbotsEnabled, settingsChangeFlashbotsEnabled]);
 
   useEffect(() => {
-    android && Keyboard.addListener('keyboardDidHide', handleKeyboardDismissal);
+    android && Keyboard.addListener('keyboardDidShow', handleKeyboardDidShow);
     return () => {
-      Keyboard.removeListener('keyboardDidHide', handleKeyboardDismissal);
+      Keyboard.removeListener('keyboardDidShow', handleKeyboardDidShow);
     };
-  }, [handleKeyboardDismissal]);
+  }, [handleKeyboardDidShow]);
+  useEffect(() => {
+    android && Keyboard.addListener('keyboardDidHide', handleKeyboardDidHide);
+    return () => {
+      Keyboard.removeListener('keyboardDidHide', handleKeyboardDidHide);
+    };
+  }, [handleKeyboardDidHide]);
 
   const colorForAsset = useColorForAsset(asset || {}, null, false, true);
 
