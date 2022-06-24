@@ -3,7 +3,7 @@ import { ButtonPressAnimation } from '../../animations';
 import { Row } from '../../layout';
 import { Text } from '@rainbow-me/design-system';
 
-export const SwapDetailsLabel = ({ children, color = 'secondary50' }) => {
+export const SwapDetailsLabel = ({ children, color = 'secondary60' }) => {
   return (
     <Text color={color} size="14px" weight="semibold">
       {children}
@@ -11,7 +11,7 @@ export const SwapDetailsLabel = ({ children, color = 'secondary50' }) => {
   );
 };
 
-export const SwapDetailsValue = ({ children, color = 'secondary' }) => {
+export const SwapDetailsValue = ({ children, color = 'secondary80' }) => {
   return (
     <Text color={color} size="14px" weight="bold">
       {children}

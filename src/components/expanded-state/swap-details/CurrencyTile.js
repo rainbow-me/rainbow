@@ -1,23 +1,27 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { CoinIcon } from '../../coin-icon';
-import { Centered, ColumnWithMargins, Row } from '../../layout';
+import { Centered } from '../../layout';
 import { Text, TruncatedText } from '../../text';
-import { Box } from '@rainbow-me/design-system';
-import { useAccountSettings, useColorForAsset } from '@rainbow-me/hooks';
+import { Box, Column, Columns, Row, Rows } from '@rainbow-me/design-system';
+import {
+  useAccountSettings,
+  useColorForAsset,
+  useDimensions,
+} from '@rainbow-me/hooks';
 import { SwapModalField } from '@rainbow-me/redux/swap';
 import styled from '@rainbow-me/styled-components';
-import { fonts, fontWithWidth, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 import { convertAmountAndPriceToNativeDisplay } from '@rainbow-me/utilities';
 
-export const CurrencyTileHeight = 143;
+export const CurrencyTileHeight = android ? 153 : 143;
 
 const AmountText = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.8),
   letterSpacing: 'roundedTight',
   size: 'smedium',
   weight: 'semibold',
-}))({});
+}))();
 
 const Container = styled(Centered).attrs({
   direction: 'column',
@@ -27,6 +31,7 @@ const Container = styled(Centered).attrs({
   height: CurrencyTileHeight,
   overflow: 'hidden',
   zIndex: 0,
+  ...(android ? { paddingTop: 4 } : {}),
 });
 
 const Gradient = styled(Box).attrs(({ theme: { colors }, color }) => ({
@@ -40,14 +45,12 @@ const NativePriceText = styled(TruncatedText).attrs({
   size: 'lmedium',
   weight: 'heavy',
 })({
-  ...fontWithWidth(fonts.weight.heavy),
+  maxWidth: ({ maxWidth }) => maxWidth,
 });
 
 const TruncatedAmountText = styled(AmountText)({
   flexGrow: 0,
   flexShrink: 1,
-
-  ...(android ? { height: 26.7 } : {}),
 });
 
 export default function CurrencyTile({
@@ -60,6 +63,7 @@ export default function CurrencyTile({
   type = 'input',
   ...props
 }) {
+  const { width } = useDimensions();
   const inputAsExact = useSelector(
     state => state.swap.independentField !== SwapModalField.output
   );
@@ -80,30 +84,56 @@ export default function CurrencyTile({
   return (
     <Container {...props}>
       <Gradient color={colorForAsset} />
-      <ColumnWithMargins centered margin={15}>
-        <CoinIcon
-          address={mainnet_address || address}
-          badgeXPosition={-5}
-          badgeYPosition={15}
-          size={50}
-          symbol={symbol}
-          type={assetType}
-        />
-        <ColumnWithMargins centered margin={4} paddingHorizontal={8}>
-          <NativePriceText>
-            {priceDisplay}
-            {isHighPriceImpact && (
-              <NativePriceText color={priceImpactColor}>{` 􀇿`}</NativePriceText>
-            )}
-          </NativePriceText>
-          <Row align="center">
-            <TruncatedAmountText as={TruncatedText}>
-              {`${isOther ? '~' : ''}${amountDisplay}`}
-            </TruncatedAmountText>
-            <AmountText>{` ${symbol}`}</AmountText>
+      <Box paddingHorizontal="15px">
+        <Rows alignHorizontal="center" alignVertical="center" space="10px">
+          <Row height="content">
+            <CoinIcon
+              address={mainnet_address || address}
+              badgeXPosition={-5}
+              badgeYPosition={0}
+              size={50}
+              symbol={symbol}
+              type={assetType}
+            />
           </Row>
-        </ColumnWithMargins>
-      </ColumnWithMargins>
+          <Row height="content">
+            <Box width="full">
+              <Rows space={ios && '4px'}>
+                <Row height="content">
+                  <Columns alignHorizontal="center" space="4px">
+                    <Column width="content">
+                      <NativePriceText maxWidth={width / 4}>
+                        {isOther && '~'}
+                        {amountDisplay}
+                      </NativePriceText>
+                    </Column>
+                    <Column alignHorizontal="center" width="content">
+                      <NativePriceText>{symbol}</NativePriceText>
+                    </Column>
+                  </Columns>
+                </Row>
+                <Row height="content">
+                  <Box
+                    alignItems="center"
+                    justifyContent="center"
+                    marginTop={android && '-6px'}
+                    width="full"
+                  >
+                    <TruncatedAmountText as={TruncatedText}>
+                      {priceDisplay}
+                      {isHighPriceImpact && (
+                        <NativePriceText
+                          color={priceImpactColor}
+                        >{` 􀇿`}</NativePriceText>
+                      )}
+                    </TruncatedAmountText>
+                  </Box>
+                </Row>
+              </Rows>
+            </Box>
+          </Row>
+        </Rows>
+      </Box>
     </Container>
   );
 }

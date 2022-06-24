@@ -4,7 +4,7 @@ import RainbowExchange from '../../../assets/exchanges/both.png';
 import OneInchExchange from '../../../assets/exchanges/oneinch.png';
 import ZeroXExchange from '../../../assets/exchanges/zerox.png';
 import { ContextMenuButton } from '../../context-menu';
-import { Column, Columns, Inline, Text } from '@rainbow-me/design-system';
+import { Box, Column, Columns, Inline, Text } from '@rainbow-me/design-system';
 
 import { ImgixImage } from '@rainbow-me/images';
 import { Source } from '@rainbow-me/redux/swap';
@@ -82,20 +82,28 @@ export default function SourcePicker({ onSelect, currentSource }) {
           onPressAndroid={onPressAndroid}
           onPressMenuItem={handleOnPressMenuItem}
         >
-          <Inline alignVertical="center" horizontalSpace="4px">
-            <ImgixImage
-              height={20}
-              source={imageSource}
-              style={{
-                height: 20,
-                width: 20,
-              }}
-              width={20}
-            />
-            <Text size="18px" weight="bold">
-              {`${lang.t(`exchange.source.${currentSource}`)} 􀆈`}
-            </Text>
-          </Inline>
+          <Box
+            background="body"
+            borderRadius={40}
+            paddingHorizontal="10px"
+            paddingVertical="6px"
+            shadow="21px light"
+          >
+            <Inline alignVertical="center" horizontalSpace="4px">
+              <ImgixImage
+                height={20}
+                source={imageSource}
+                style={{
+                  height: 20,
+                  width: 20,
+                }}
+                width={20}
+              />
+              <Text size="18px" weight="bold">
+                {`${lang.t(`exchange.source.${currentSource}`)} 􀆈`}
+              </Text>
+            </Inline>
+          </Box>
         </ContextMenuButton>
       </Column>
     </Columns>

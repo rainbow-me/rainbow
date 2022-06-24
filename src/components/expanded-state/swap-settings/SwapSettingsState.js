@@ -114,10 +114,6 @@ export default function SwapSettingsState({ asset }) {
               currentSource={currentSource}
               onSelect={updateSource}
             />
-            <MaxToleranceInput
-              colorForAsset={colorForAsset}
-              ref={slippageRef}
-            />
             {swapSupportsFlashbots && (
               <Columns alignHorizontal="justify" alignVertical="center">
                 <Text color="primary" size="18px" weight="bold">
@@ -133,6 +129,10 @@ export default function SwapSettingsState({ asset }) {
                 </Column>
               </Columns>
             )}
+            <MaxToleranceInput
+              colorForAsset={colorForAsset}
+              ref={slippageRef}
+            />
           </Stack>
         </Inset>
       </FloatingPanel>
@@ -145,7 +145,7 @@ export default function SwapSettingsState({ asset }) {
                   borderRadius={20}
                   style={{ borderColor: colorForAsset, borderWidth: 2 }}
                 >
-                  <Inset space="8px">
+                  <Inset space="8px" top={{ custom: android ? 6 : 8 }}>
                     <Text color="primary" weight="bold">
                       {lang.t('exchange.use_defaults')}
                     </Text>
@@ -164,7 +164,7 @@ export default function SwapSettingsState({ asset }) {
                   borderRadius={20}
                   style={{ borderColor: colorForAsset, borderWidth: 2 }}
                 >
-                  <Inset space="8px">
+                  <Inset space="8px" top={{ custom: android ? 6 : 8 }}>
                     <Text color="primary" weight="bold">
                       {lang.t('exchange.done')}
                     </Text>

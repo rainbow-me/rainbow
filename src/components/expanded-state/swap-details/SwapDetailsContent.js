@@ -27,15 +27,12 @@ import { ethereumUtils } from '@rainbow-me/utils';
 const Container = styled(Box).attrs({
   flex: 1,
 })(({ isHighPriceImpact }) =>
-  padding.object(isHighPriceImpact ? 24 : 30, 19, 0)
+  padding.object(isHighPriceImpact ? 24 : 30, 19, 30)
 );
 
 export default function SwapDetailsContent({
   isHighPriceImpact,
   onCopySwapDetailsText,
-  priceImpactColor,
-  priceImpactNativeAmount,
-  priceImpactPercentDisplay,
   tradeDetails,
   ...props
 }) {
@@ -46,10 +43,6 @@ export default function SwapDetailsContent({
   const inputAsExact = useSelector(
     state => state.swap.independentField !== SwapModalField.output
   );
-
-  const showPriceImpact =
-    (!isHighPriceImpact || priceImpactNativeAmount) &&
-    priceImpactPercentDisplay;
 
   const [detailsExpanded, setDetailsExpanded] = useState(false);
 
@@ -63,17 +56,6 @@ export default function SwapDetailsContent({
         {...props}
       >
         <Rows space="24px">
-          {showPriceImpact && (
-            <AccentColorProvider color={priceImpactColor}>
-              <SwapDetailsRow
-                label={lang.t('expanded_state.swap_details.price_impact')}
-              >
-                <SwapDetailsValue color="accent" letterSpacing="roundedTight">
-                  {`-${priceImpactPercentDisplay}`}
-                </SwapDetailsValue>
-              </SwapDetailsRow>
-            </AccentColorProvider>
-          )}
           <SwapDetailsRow label={receivedSoldLabel}>
             <SwapDetailsValue letterSpacing="roundedTight">
               {amountReceivedSold}{' '}

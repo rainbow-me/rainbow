@@ -302,7 +302,7 @@ export const explainers = (params, colors) => ({
     title: lang.t('explain.backup.title'),
   },
   rainbow_fee: {
-    emoji: '🔐',
+    emoji: '🌈',
     extraHeight: -100,
     text: lang.t('explain.rainbow_fee.text', {
       feePercentage: params?.feePercentage,
