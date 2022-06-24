@@ -145,7 +145,7 @@ export default function SwapSettingsState({ asset }) {
                   borderRadius={20}
                   style={{ borderColor: colorForAsset, borderWidth: 2 }}
                 >
-                  <Inset space="8px">
+                  <Inset space="8px" top={{ custom: android ? 6 : 8 }}>
                     <Text color="primary" weight="bold">
                       {lang.t('exchange.use_defaults')}
                     </Text>
@@ -164,7 +164,7 @@ export default function SwapSettingsState({ asset }) {
                   borderRadius={20}
                   style={{ borderColor: colorForAsset, borderWidth: 2 }}
                 >
-                  <Inset space="8px">
+                  <Inset space="8px" top={{ custom: android ? 6 : 8 }}>
                     <Text color="primary" weight="bold">
                       {lang.t('exchange.done')}
                     </Text>
