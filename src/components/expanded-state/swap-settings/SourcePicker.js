@@ -1,5 +1,6 @@
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
+import { Keyboard } from 'react-native';
 import RainbowExchange from '../../../assets/exchanges/both.png';
 import OneInchExchange from '../../../assets/exchanges/oneinch.png';
 import ZeroXExchange from '../../../assets/exchanges/zerox.png';
@@ -73,6 +74,7 @@ export default function SourcePicker({ onSelect, currentSource }) {
   }, [onSelect]);
 
   const openExplainer = () => {
+    android && Keyboard.dismiss();
     navigate(Routes.EXPLAIN_SHEET, {
       type: 'routeSwaps',
     });

@@ -1,7 +1,7 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect } from 'react';
-import { Keyboard } from 'react-native';
+import { InteractionManager, Keyboard } from 'react-native';
 import { Switch } from 'react-native-gesture-handler';
 import { useDispatch } from 'react-redux';
 import { ButtonPressAnimation } from '../../animations';
@@ -54,20 +54,26 @@ export default function SwapSettingsState({ asset }) {
   const keyboardHeight = useKeyboardHeight();
   const slippageRef = useRef(null);
   const { updateSwapSource, source } = useSwapSettings();
+  const isFocused = useIsFocused();
   const { navigate } = useNavigation();
 
   useAndroidDisableGesturesOnFocus();
 
+  const handleKeyboardDismissal = useCallback(() => {
+    if (isFocused) {
+      goBack();
+    }
+  }, [goBack, isFocused]);
   const toggleFlashbotsEnabled = useCallback(async () => {
     await dispatch(settingsChangeFlashbotsEnabled(!flashbotsEnabled));
   }, [dispatch, flashbotsEnabled, settingsChangeFlashbotsEnabled]);
 
   useEffect(() => {
-    android && Keyboard.addListener('keyboardDidHide', goBack);
+    android && Keyboard.addListener('keyboardDidHide', handleKeyboardDismissal);
     return () => {
-      Keyboard.removeListener('keyboardDidHide', goBack);
+      Keyboard.removeListener('keyboardDidHide', handleKeyboardDismissal);
     };
-  }, [goBack]);
+  }, [handleKeyboardDismissal]);
 
   const colorForAsset = useColorForAsset(asset || {}, null, false, true);
 
@@ -81,7 +87,7 @@ export default function SwapSettingsState({ asset }) {
   );
 
   const sheetHeightWithoutKeyboard =
-    (android ? 225 : 195) + (swapSupportsFlashbots ? 55 : 0);
+    (android ? 275 : 245) + (swapSupportsFlashbots ? 55 : 0);
 
   const sheetHeightWithKeyboard =
     sheetHeightWithoutKeyboard +
@@ -99,8 +105,11 @@ export default function SwapSettingsState({ asset }) {
   }, [settingsChangeFlashbotsEnabled, updateSource]);
 
   const openExplainer = () => {
-    navigate(Routes.EXPLAIN_SHEET, {
-      type: 'flashbots',
+    InteractionManager.runAfterInteractions(() => {
+      android && Keyboard.dismiss();
+      navigate(Routes.EXPLAIN_SHEET, {
+        type: 'flashbots',
+      });
     });
   };
 
@@ -118,13 +127,9 @@ export default function SwapSettingsState({ asset }) {
         <ExchangeHeader />
         <Inset bottom="24px" horizontal="24px" top="10px">
           <Stack backgroundColor="green" space="24px">
-            <Columns alignHorizontal="center">
-              <Column width="content">
-                <Text color="primary" size="18px" weight="bold">
-                  Settings
-                </Text>
-              </Column>
-            </Columns>
+            <Text align="center" color="primary" size="18px" weight="bold">
+              Settings
+            </Text>
             <SourcePicker
               currentSource={currentSource}
               onSelect={updateSource}

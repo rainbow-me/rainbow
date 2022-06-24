@@ -6,6 +6,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { Keyboard } from 'react-native';
 import { useSelector } from 'react-redux';
 import { ButtonPressAnimation } from '../../animations';
 import { Icon } from '../../icons';
@@ -112,6 +113,7 @@ export const MaxToleranceInput: React.FC<{
   const hasPriceImpact = isHighPriceImpact || isSeverePriceImpact;
 
   const openExplainer = () => {
+    android && Keyboard.dismiss();
     navigate(Routes.EXPLAIN_SHEET, {
       type: 'slippage',
     });
