@@ -1,22 +1,20 @@
 # This is a basic workflow to help you get started with Actions
 
-name: iOS e2e (MacStadium)
+name: iOS e2e tests
 
 # Controls when the workflow will run
-on:
-  # Triggers the workflow on push or pull request events but only for the "develop" branch
-  pull_request:
-    branches: ["macstadium"]
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+on: [pull_request, workflow_dispatch]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
+  # This workflow contains a single job called "ios-e2e"
+  ios-e2e:
     # The type of runner that the job will run on
-    runs-on: self-hosted
+    runs-on: ["self-hosted"]
+    # Cancel current builds if there's a newer commit on the same branch
+    concurrency: 
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -38,7 +36,6 @@ jobs:
           eval $CI_SCRIPTS
           # tweak dotenv for e2e 
           sed -i''-e "s/\IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
-
       - name: Install deps via Yarn
         run: yarn setup-ci
 
@@ -54,15 +51,103 @@ jobs:
       - name: Install Pods
         run: cd ios && pod install && cd ..
 
-      - name: Run iOS e2e tests (Release mode)
-        run: ./node_modules/.bin/detox build --configuration ios.sim.release &&  ./node_modules/.bin/detox test -R 5 --configuration ios.sim.release --forceExit
+      - name: Build the app in Release mode
+        run: ./node_modules/.bin/detox build --configuration ios.sim.release
+      
+      - name: Run iOS e2e tests
+        run: ./node_modules/.bin/detox test -R 5 --configuration ios.sim.release --forceExit
 
-      - name: Send custom JSON data to Slack workflow
-        id: slack
+      - name: Send success message to slack
+        id: slack-success-msg
         uses: slackapi/slack-github-action@v1.19.0
+        if: ${{ job.status == 'success' }}
         with:
           # This data can be any valid JSON from a previous step in the GitHub Action
-          payload-file-path: "./payload-slack-content.json"
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "iOS Build for #${{ github.event.pull_request.number }} - ${{ github.event.pull_request.title }}\nAuthor: ${{ github.actor }}\nStatus: ✅  ${{ job.status }}"
+                  }
+                },
+                {
+                  "type": "divider"
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                      {
+                          "type": "button",
+                          "text": {
+                              "type": "plain_text",
+                              "text": "View Pull Request",
+                              "emoji": true
+                          },
+                          "url": "${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+                      },
+                      {
+                          "type": "button",
+                          "text": {
+                              "type": "plain_text",
+                              "text": "View Build",
+                              "emoji": true
+                          },
+                          "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                      }
+                  ]
+                }
+              ]
+            }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+      - name: Send error message to slack
+        id: slack-error-msg
+        uses: slackapi/slack-github-action@v1.19.0
+        if: ${{ job.status != 'success' }}
+        with:
+          # This data can be any valid JSON from a previous step in the GitHub Action
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "iOS Build for #${{ github.event.pull_request.number }} - ${{ github.event.pull_request.title }}\nAuthor: ${{ github.actor }}\nStatus: ❌  ${{ job.status }}"
+                  }
+                },
+                {
+                  "type": "divider"
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                      {
+                          "type": "button",
+                          "text": {
+                              "type": "plain_text",
+                              "text": "View Pull Request",
+                              "emoji": true
+                          },
+                          "url": "${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+                      },
+                      {
+                          "type": "button",
+                          "text": {
+                              "type": "plain_text",
+                              "text": "View Build",
+                              "emoji": true
+                          },
+                          "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                      }
+                  ]
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK

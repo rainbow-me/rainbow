@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQuery } from 'react-query';
 import { useAccountSettings } from '.';
 import { fetchRegistrationDate } from '@rainbow-me/handlers/ens';
@@ -7,6 +7,7 @@ import {
   ENS_DOMAIN,
   formatRentPrice,
   getAvailable,
+  getENSRegistrarControllerContract,
   getNameExpires,
   getRentPrice,
 } from '@rainbow-me/helpers/ens';
@@ -26,6 +27,18 @@ export default function useENSSearch({
   yearsDuration?: number;
   name: string;
 }) {
+  const [contract, setContract]: any = useState(null);
+
+  useEffect(() => {
+    const getContract = async () => {
+      const theContract = await getENSRegistrarControllerContract();
+      setContract(theContract);
+    };
+    if (!contract) {
+      getContract();
+    }
+  }, [contract, setContract]);
+
   const name = inputName.replace(ENS_DOMAIN, '');
   const { nativeCurrency } = useAccountSettings();
   const isValidLength = useMemo(() => name.length > 2, [name.length]);
@@ -43,8 +56,11 @@ export default function useENSSearch({
       };
     }
 
-    const isAvailable = await getAvailable(name);
-    const rentPrice = await getRentPrice(name, duration);
+    const [isAvailable, rentPrice] = await Promise.all([
+      getAvailable(name, contract),
+      getRentPrice(name, duration, contract),
+    ]);
+
     const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
       Network.mainnet
     );
@@ -56,31 +72,37 @@ export default function useENSSearch({
     );
     if (isAvailable) {
       return {
-        available: isAvailable,
+        available: true,
         rentPrice: formattedRentPrice,
         valid: true,
       };
     } else {
-      // we need the expiration and registration date when is not available
-      const registrationDate = await fetchRegistrationDate(name + ENS_DOMAIN);
-      const nameExpires = await getNameExpires(name);
+      const [registrationDate, nameExpires] = await Promise.all([
+        fetchRegistrationDate(name + ENS_DOMAIN),
+        getNameExpires(name),
+      ]);
+
       const formattedRegistrarionDate = formatTime(registrationDate, false);
       const formattedExpirationDate = formatTime(nameExpires);
 
       return {
-        available: isAvailable,
+        available: false,
         expirationDate: formattedExpirationDate,
         registrationDate: formattedRegistrarionDate,
         rentPrice: formattedRentPrice,
         valid: true,
       };
     }
-  }, [duration, name, nativeCurrency, yearsDuration]);
+  }, [contract, duration, name, nativeCurrency, yearsDuration]);
 
   const { data, status, isIdle, isLoading } = useQuery(
     ['getRegistrationValues', [duration, name, nativeCurrency]],
     getRegistrationValues,
-    { enabled: isValidLength, retry: 0, staleTime: Infinity }
+    {
+      enabled: isValidLength && Boolean(contract),
+      retry: 0,
+      staleTime: Infinity,
+    }
   );
 
   const isAvailable = status === 'success' && data?.available === true;
