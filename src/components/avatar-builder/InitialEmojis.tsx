@@ -1,41 +1,57 @@
 import React from 'react';
-import { Dimensions, Text, View } from 'react-native';
-import { getBrand } from 'react-native-device-info';
+import { StyleSheet, Text, View } from 'react-native';
+import {
+  EMOJIS_CONTAINER_HORIZONTAL_MARGIN,
+  EMOJIS_TOP_OFFSET,
+} from './constants';
 import { useTheme } from '@rainbow-me/theme';
-import { deviceUtils, magicMemo } from '@rainbow-me/utils';
-
-const { width } = Dimensions.get('screen');
+import { magicMemo } from '@rainbow-me/utils';
 
 interface Props {
-  columnSize: number;
   emojisRows: string[][];
-  columns: number;
+  cellSize: number;
+  fontSize: number;
 }
 
-const InitialEmojis = ({ columnSize, emojisRows, columns }: Props) => {
+const InitialEmojis = ({ emojisRows, cellSize, fontSize }: Props) => {
   const { colors } = useTheme();
 
   return (
-    <View style={{ marginTop: 34 }}>
+    <View style={cx.container}>
       {emojisRows.map(emojis => (
-        <Text
-          key={`emojiRow${emojis[0]}`}
-          style={{
-            color: colors.black,
-            fontSize: Math.floor(columnSize) - (ios ? 15 : 22),
-            height: (width - 21) / columns,
-            letterSpacing: ios ? 8 : getBrand() === 'google' ? 11 : 8,
-            marginHorizontal: 10,
-            top: 0.8,
-            width: deviceUtils.dimensions.width,
-          }}
+        <View
+          key={`previewEmojiRow${emojis[0]}`}
+          style={[cx.rowContainer, { height: cellSize }]}
         >
-          {emojis}
-        </Text>
+          {emojis.map(emoji => (
+            <Text
+              key={`previewEmoji${emoji}`}
+              style={{
+                backgroundColor: colors.white,
+                color: colors.black,
+                fontSize,
+                height: cellSize,
+                textAlign: 'center',
+                width: cellSize,
+              }}
+            >
+              {emoji}
+            </Text>
+          ))}
+        </View>
       ))}
     </View>
   );
 };
+
+const cx = StyleSheet.create({
+  container: { marginTop: EMOJIS_TOP_OFFSET },
+  rowContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginHorizontal: EMOJIS_CONTAINER_HORIZONTAL_MARGIN,
+  },
+});
 
 export default magicMemo(InitialEmojis, [
   'columnSize',

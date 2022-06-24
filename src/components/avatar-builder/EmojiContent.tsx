@@ -1,22 +1,26 @@
 import React, { useMemo } from 'react';
-import { Dimensions, Text, TouchableOpacity, View } from 'react-native';
-import { getBrand } from 'react-native-device-info';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { TouchableOpacity as GHTouchableOpacity } from 'react-native-gesture-handler';
+import { EMOJIS_CONTAINER_HORIZONTAL_MARGIN } from './constants';
 import { charFromEmojiObject } from './helpers/charFromEmojiObject';
 import { AllEmojiContentEntry } from './helpers/getFormattedAllEmojiList';
 import { EmojiEntry } from './types';
 import { useTheme } from '@rainbow-me/theme';
-import { deviceUtils } from '@rainbow-me/utils';
-
-const { width } = Dimensions.get('screen');
 
 type Props = AllEmojiContentEntry & {
   columns: number;
-  columnSize: number;
   onEmojiSelect: (emoji: EmojiEntry) => void;
+  cellSize: number;
+  fontSize: number;
 };
 
-const EmojiContent = ({ data, columns, columnSize, onEmojiSelect }: Props) => {
+const EmojiContent = ({
+  data,
+  columns,
+  onEmojiSelect,
+  cellSize,
+  fontSize,
+}: Props) => {
   const { colors } = useTheme();
 
   const categoryEmojis = useMemo(() => {
@@ -39,51 +43,66 @@ const EmojiContent = ({ data, columns, columnSize, onEmojiSelect }: Props) => {
   }, [columns, data]);
 
   return (
-    <View>
+    <>
       {categoryEmojis.map(({ rowContent, touchableNet }) => (
-        <View key={`categoryEmoji${rowContent[0]}`}>
-          <Text
-            style={{
-              backgroundColor: colors.white,
-              color: colors.black,
-              fontSize: Math.floor(columnSize) - (ios ? 15 : 22),
-              height: (width - 21) / columns,
-              letterSpacing: ios ? 8 : getBrand() === 'google' ? 11 : 8,
-              marginHorizontal: 10,
-              width: deviceUtils.dimensions.width,
-            }}
-          >
-            {rowContent}
-          </Text>
-          <View
-            style={{
-              flexDirection: 'row',
-              marginHorizontal: 10,
-              position: 'absolute',
-            }}
-          >
-            {touchableNet.map(singleLine => {
-              const touchableProps = {
-                key: `categoryEmojiTouchableOpacity${rowContent[0]}${singleLine.sort_order}`,
-                onPress: () => onEmojiSelect(singleLine),
-                style: {
-                  backgroundColor: colors.white,
-                  height: (width - 21) / columns,
-                  opacity: 0,
-                  width: (width - 21) / columns,
-                },
-              };
-              return ios ? (
-                <TouchableOpacity activeOpacity={0.5} {...touchableProps} />
-              ) : (
-                <GHTouchableOpacity activeOpacity={0.7} {...touchableProps} />
-              );
-            })}
-          </View>
+        <View
+          key={`categoryEmoji${rowContent[0]}`}
+          style={[cx.rowContainer, { height: cellSize }]}
+        >
+          {touchableNet.map((singleLine, index) => {
+            const touchableProps = {
+              key: `categoryEmojiTouchableOpacity${rowContent[0]}${singleLine.sort_order}`,
+              onPress: () => onEmojiSelect(singleLine),
+              style: {
+                backgroundColor: colors.white,
+                height: cellSize,
+                width: cellSize,
+              },
+            };
+            return ios ? (
+              <TouchableOpacity activeOpacity={0.5} {...touchableProps}>
+                <Text
+                  style={{
+                    backgroundColor: colors.white,
+                    color: colors.black,
+                    fontSize,
+                    height: cellSize,
+                    textAlign: 'center',
+                    width: cellSize,
+                  }}
+                >
+                  {rowContent[index]}
+                </Text>
+              </TouchableOpacity>
+            ) : (
+              <GHTouchableOpacity activeOpacity={0.7} {...touchableProps}>
+                <Text
+                  style={{
+                    backgroundColor: colors.white,
+                    color: colors.black,
+                    fontSize,
+                    height: cellSize,
+                    textAlign: 'center',
+                    width: cellSize,
+                  }}
+                >
+                  {rowContent[index]}
+                </Text>
+              </GHTouchableOpacity>
+            );
+          })}
         </View>
       ))}
-    </View>
+    </>
   );
 };
+
+const cx = StyleSheet.create({
+  rowContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginHorizontal: EMOJIS_CONTAINER_HORIZONTAL_MARGIN,
+  },
+});
 
 export default EmojiContent;

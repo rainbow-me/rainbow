@@ -31,6 +31,7 @@ import EmojisStickyListItem from './EmojisStickyListItem';
 import InitialEmojis from './InitialEmojis';
 import TabsWithShadows from './TabsWithShadows';
 import { charFromEmojiObject } from './helpers/charFromEmojiObject';
+import getEmojiCellsProperties from './helpers/getEmojiCellProperties';
 import getFormattedAllEmojiList, {
   AllEmojiContentEntry,
   AllEmojiEntry,
@@ -69,13 +70,14 @@ export const EmojiSelector = ({
   const [allEmojiList, setAllEmojiList] = useState<AllEmojiEntry[]>([]);
   const [isReady, setIsReady] = useState(false);
   const [category, setCategory] = useState(Categories.people);
-  const [colSize, setColSize] = useState(0);
   const scrollPosition = useSharedValue(0);
   const nextCategoryOffset = useSharedValue(1);
 
   const recyclerListView = useRef<ComponentType<any>>();
   const currentIndex = useRef(0);
   const blockCategories = useRef(true);
+
+  const { cellSize, fontSize } = getEmojiCellsProperties(columns);
 
   const layoutProvider = useMemo(
     () =>
@@ -92,9 +94,7 @@ export const EmojiSelector = ({
         (type, dim, i) => {
           if (type === EMOJI_CONTAINER) {
             const entry = allEmojiList[i] as AllEmojiContentEntry;
-            dim.height =
-              Math.floor(entry.data.length / columns + 1) *
-              ((width - 21) / columns);
+            dim.height = Math.floor(entry.data.length / columns + 1) * cellSize;
             dim.width = deviceUtils.dimensions.width;
           } else if (type === HEADER_ROW) {
             dim.height = 34.7;
@@ -124,7 +124,6 @@ export const EmojiSelector = ({
     const allEmojiList = getFormattedAllEmojiList(categoryKeys, columns);
 
     setAllEmojiList(allEmojiList);
-    setColSize(width / columns);
   };
 
   const onTapChange = ({
@@ -137,14 +136,22 @@ export const EmojiSelector = ({
 
   const handleTabSelect = (category: EmojiCategory) => {
     blockCategories.current = true;
-    scrollToOffset(
+
+    const nextSection = allEmojiList[
+      (currentIndex.current + 1) * 2
+    ] as AllEmojiContentEntry;
+
+    const offsetY =
       category.index * 2 - 1 > 0
         ? (allEmojiList[category.index * 2] as AllEmojiContentEntry).offset ?? 0
-        : 0,
-      true
-    );
+        : 0;
+
+    scrollToOffset(offsetY, true);
     currentIndex.current = category.index;
     setCategory(category);
+
+    nextCategoryOffset.value =
+      -offsetY + (nextSection.offset ?? 0) < 550 || offsetY < 1 ? 1 : 0;
   };
 
   const scrollToOffset = (position: number, animated?: boolean) => {
@@ -168,7 +175,7 @@ export const EmojiSelector = ({
     offsetX: number,
     offsetY: number
   ) => {
-    if (!blockCategories) {
+    if (ios && !blockCategories.current) {
       const nextSection = allEmojiList[
         (currentIndex.current + 1) * 2
       ] as AllEmojiContentEntry;
@@ -195,7 +202,7 @@ export const EmojiSelector = ({
           ? 1
           : (-offsetY + (nextSection.offset ?? 0)) / 40;
       nextCategoryOffset.value =
-        -offsetY + (nextSection.offset ?? 0) < 400 || offsetY < 1 ? 1 : 0;
+        -offsetY + (nextSection.offset ?? 0) < 550 || offsetY < 1 ? 1 : 0;
     }
   };
 
@@ -240,15 +247,15 @@ export const EmojiSelector = ({
             children
           ) : (
             <InitialEmojis
-              columnSize={colSize}
-              columns={columns}
+              cellSize={cellSize}
               emojisRows={emojiRows}
+              fontSize={fontSize}
             />
           )}
         </ScrollView>
       );
     },
-    [allEmojiList, colSize, columns, isReady]
+    [allEmojiList, columns, isReady]
   );
 
   const renderItem = useCallback(
@@ -273,10 +280,9 @@ export const EmojiSelector = ({
         return ios ? (
           <View
             style={[
-              sx.header,
+              cx.header,
               {
                 backgroundColor: colors.white,
-                width: width,
               },
               overlayStyle,
             ]}
@@ -286,28 +292,22 @@ export const EmojiSelector = ({
       return (
         <EmojiContent
           {...(item as AllEmojiContentEntry)}
-          columnSize={colSize}
+          cellSize={cellSize}
           columns={columns}
+          fontSize={fontSize}
           onEmojiSelect={handleEmojiSelect}
         />
       );
     },
-    [
-      colSize,
-      columns,
-      handleEmojiSelect,
-      colors,
-      nextCategoryOffset,
-      showSectionTitles,
-    ]
+    [columns, handleEmojiSelect, colors, nextCategoryOffset, showSectionTitles]
   );
 
   return (
-    <View style={sx.frame} {...other}>
+    <View style={cx.frame} {...other}>
       <TapGestureHandler onHandlerStateChange={onTapChange}>
-        <View style={sx.outerContainer}>
+        <View style={cx.outerContainer}>
           {!isReady ? <EmojisLoader /> : null}
-          <View style={sx.container}>
+          <View style={cx.container}>
             <StickyContainer
               overrideRowRenderer={renderStickyItem}
               stickyHeaderIndices={[1, 3, 5, 7, 9, 11, 13, 15, 17]}
@@ -327,7 +327,7 @@ export const EmojiSelector = ({
                 // @ts-expect-error
                 rowRenderer={renderItem}
                 scrollIndicatorInsets={[15, 0, 15, 0]}
-                style={{ width: deviceUtils.dimensions.width }}
+                style={cx.listStyle}
               />
             </StickyContainer>
           </View>
@@ -340,7 +340,7 @@ export const EmojiSelector = ({
   );
 };
 
-const sx = StyleSheet.create({
+const cx = StyleSheet.create({
   container: {
     alignItems: 'center',
     flex: 1,
@@ -351,7 +351,10 @@ const sx = StyleSheet.create({
   frame: {
     flex: 1,
   },
-  header: { height: 400, position: 'absolute' },
+  header: { height: 400, position: 'absolute', width },
+  listStyle: {
+    width,
+  },
   outerContainer: {
     alignItems: 'center',
     flex: 1,

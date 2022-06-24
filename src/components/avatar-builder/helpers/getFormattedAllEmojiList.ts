@@ -1,6 +1,10 @@
 import emoji from 'emoji-datasource';
 import { Dimensions } from 'react-native';
 import { Categories } from '../Categories';
+import {
+  EMOJIS_CONTAINER_HORIZONTAL_MARGIN,
+  EMOJIS_TOP_OFFSET,
+} from '../constants';
 import { EmojiEntry } from '../types';
 
 const { width } = Dimensions.get('screen');
@@ -56,10 +60,10 @@ export default function getFormattedAllEmojiList(
 
     if (emojiSection[1].data.length > 0) {
       const height =
-        Math.floor(emojiSection[1].data.length / 7 + 1) *
-        ((width - 21) / columnsCount);
+        Math.floor(emojiSection[1].data.length / columnsCount + 1) *
+        ((width - 2 * EMOJIS_CONTAINER_HORIZONTAL_MARGIN) / columnsCount);
       emojiSection[1].height = height;
-      offset += height + 35;
+      offset += height + EMOJIS_TOP_OFFSET;
       emojiSection[1].offset = offset;
       allEmojiList = allEmojiList.concat(emojiSection);
     }
