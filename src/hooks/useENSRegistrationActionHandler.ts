@@ -61,10 +61,7 @@ export default function useENSRegistrationActionHandler(
   const dispatch = useDispatch();
   const { accountAddress, network } = useAccountSettings();
   const getNextNonce = useCurrentNonce(accountAddress, network);
-  const {
-    registrationParameters,
-    removeRegistrationByName,
-  } = useENSRegistration();
+  const { registrationParameters } = useENSRegistration();
   const { navigate } = useNavigation();
   const { getPendingTransactionByHash } = usePendingTransactions();
   const { updateWalletENSAvatars } = useWalletENSAvatar();
@@ -206,8 +203,6 @@ export default function useENSRegistrationActionHandler(
       );
 
       updateAvatarsOnNextBlock.current = true;
-
-      removeRegistrationByName(name);
     },
     [
       accountAddress,
@@ -215,7 +210,6 @@ export default function useENSRegistrationActionHandler(
       coverMetadata,
       getNextNonce,
       registrationParameters,
-      removeRegistrationByName,
       sendReverseRecord,
     ]
   );

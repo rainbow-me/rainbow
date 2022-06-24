@@ -42,7 +42,11 @@ export default function useENSSearch({
   const name = inputName.replace(ENS_DOMAIN, '');
   const { nativeCurrency } = useAccountSettings();
 
-  const { commitTransactionHash } = useENSLocalTransactions({
+  const {
+    commitTransactionHash,
+    confirmedRegistrationTransaction,
+    pendingRegistrationTransaction,
+  } = useENSLocalTransactions({
     name: `${name}${ENS_DOMAIN}`,
   });
 
@@ -63,9 +67,16 @@ export default function useENSSearch({
       };
     }
 
-    if (commitTransactionHash) {
+    if (pendingRegistrationTransaction) {
       return {
         available: false,
+        pending: true,
+        valid: true,
+      };
+    }
+
+    if (commitTransactionHash && !confirmedRegistrationTransaction) {
+      return {
         pending: true,
         valid: true,
       };
@@ -110,7 +121,9 @@ export default function useENSSearch({
     }
   }, [
     name,
+    pendingRegistrationTransaction,
     commitTransactionHash,
+    confirmedRegistrationTransaction,
     contract,
     duration,
     yearsDuration,
@@ -132,6 +145,7 @@ export default function useENSSearch({
 
   const isAvailable = status === 'success' && data?.available === true;
   const isRegistered = status === 'success' && data?.available === false;
+  const isPending = status === 'success' && data?.pending === true;
   const isInvalid = status === 'success' && !data?.valid;
 
   return {
@@ -140,6 +154,7 @@ export default function useENSSearch({
     isIdle,
     isInvalid,
     isLoading,
+    isPending,
     isRegistered,
   };
 }

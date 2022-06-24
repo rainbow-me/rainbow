@@ -817,7 +817,8 @@
         "estimated_total_cost_2": "with current network fees",
         "loading_fees": "Loading network fees…",
         "clear": "􀅉 Clear",
-        "continue": "Continue 􀆊"
+        "continue": "Continue 􀆊",
+        "finish": "Finish 􀆊"
       },
       "create": {
         "label": "Create your profile",
