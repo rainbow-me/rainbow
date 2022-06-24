@@ -29,6 +29,7 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { Source } from '@rainbow-me/redux/swap';
+import Routes from '@rainbow-me/routes';
 import { deviceUtils } from '@rainbow-me/utils';
 
 function useAndroidDisableGesturesOnFocus() {
@@ -53,6 +54,7 @@ export default function SwapSettingsState({ asset }) {
   const keyboardHeight = useKeyboardHeight();
   const slippageRef = useRef(null);
   const { updateSwapSource, source } = useSwapSettings();
+  const { navigate } = useNavigation();
 
   useAndroidDisableGesturesOnFocus();
 
@@ -96,6 +98,12 @@ export default function SwapSettingsState({ asset }) {
     updateSource(Source.AggregatorRainbow);
   }, [settingsChangeFlashbotsEnabled, updateSource]);
 
+  const openExplainer = () => {
+    navigate(Routes.EXPLAIN_SHEET, {
+      type: 'flashbots',
+    });
+  };
+
   return (
     <SlackSheet
       additionalTopPadding
@@ -110,15 +118,27 @@ export default function SwapSettingsState({ asset }) {
         <ExchangeHeader />
         <Inset bottom="24px" horizontal="24px" top="10px">
           <Stack backgroundColor="green" space="24px">
+            <Columns alignHorizontal="center">
+              <Column width="content">
+                <Text color="primary" size="18px" weight="bold">
+                  Settings
+                </Text>
+              </Column>
+            </Columns>
             <SourcePicker
               currentSource={currentSource}
               onSelect={updateSource}
             />
             {swapSupportsFlashbots && (
               <Columns alignHorizontal="justify" alignVertical="center">
-                <Text color="primary" size="18px" weight="bold">
-                  {lang.t('exchange.use_flashbots')}
-                </Text>
+                <ButtonPressAnimation onPress={openExplainer}>
+                  <Text color="primary" size="16px" weight="bold">
+                    {lang.t('exchange.use_flashbots')}
+                    <Text color="secondary30" size="16px" weight="bold">
+                      {' 􀅵'}
+                    </Text>
+                  </Text>
+                </ButtonPressAnimation>
                 <Column width="content">
                   <Switch
                     onValueChange={toggleFlashbotsEnabled}

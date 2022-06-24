@@ -23,6 +23,22 @@ import { cloudPlatformAccountName } from '@rainbow-me/utils/platform';
 const { GAS_TRENDS } = gasUtils;
 export const ExplainSheetHeight = android ? 454 : 434;
 
+const getBodyTextPropsWithColor = colors =>
+  colors
+    ? {
+        align: 'center',
+        color: colors.alpha(colors.blueGreyDark, 0.6),
+        lineHeight: 'looser',
+        size: 'large',
+        style: {
+          alignSelf: 'center',
+          maxWidth: 376,
+          paddingBottom: 15,
+          paddingHorizontal: 23,
+        },
+      }
+    : {};
+
 const GasTrendHeader = styled(Text).attrs(({ theme: { colors }, color }) => ({
   align: 'center',
   alignItems: 'center',
@@ -406,6 +422,82 @@ export const explainers = (params, colors) => ({
       networkName: params?.networkName,
     }),
   },
+  flashbots: {
+    emoji: '🤖',
+    stillCurious: (
+      <Text {...getBodyTextPropsWithColor(colors)}>
+        {'Still curious? '}
+        <Text
+          color={colors?.appleBlue}
+          lineHeight="loose"
+          onPress={() =>
+            Linking.openURL(
+              'https://learn.rainbow.me/protecting-transactions-with-flashbots'
+            )
+          }
+          size="large"
+          suppressHighlighting
+          weight="semibold"
+        >
+          Read more
+        </Text>
+        {' about Flashbots and the protection it offers.'}
+      </Text>
+    ),
+    text: lang.t('explain.flashbots.text'),
+    title: lang.t('explain.flashbots.title'),
+  },
+  routeSwaps: {
+    emoji: '🔀',
+    stillCurious: (
+      <Text {...getBodyTextPropsWithColor(colors)}>
+        {'Still curious? '}
+        <Text
+          color={colors?.appleBlue}
+          lineHeight="loose"
+          onPress={() =>
+            Linking.openURL(
+              'https://learn.rainbow.me/swap-with-confidence-with-rainbow'
+            )
+          }
+          size="large"
+          suppressHighlighting
+          weight="semibold"
+        >
+          Read more
+        </Text>
+        {' about our approach to routing swaps.'}
+      </Text>
+    ),
+    text: lang.t('explain.swap_routing.text'),
+    title: lang.t('explain.swap_routing.title'),
+  },
+  slippage: {
+    extraHeight: 126,
+    emoji: '🌊',
+    stillCurious: (
+      <Text {...getBodyTextPropsWithColor(colors)}>
+        {'Still curious? '}
+        <Text
+          color={colors?.appleBlue}
+          lineHeight="loose"
+          onPress={() =>
+            Linking.openURL(
+              'https://academy.shrimpy.io/post/what-is-slippage-how-to-avoid-slippage-on-defi-exchanges'
+            )
+          }
+          size="large"
+          suppressHighlighting
+          weight="semibold"
+        >
+          Read more
+        </Text>
+        {' about slippage and how it affects swaps.'}
+      </Text>
+    ),
+    text: lang.t('explain.slippage.text'),
+    title: lang.t('explain.slippage.title'),
+  },
 });
 
 const ExplainSheet = () => {
@@ -543,20 +635,11 @@ const ExplainSheet = () => {
             {/** base fee explainer */}
             {renderBaseFeeIndicator}
 
-            <Text
-              align="center"
-              color={colors.alpha(colors.blueGreyDark, 0.6)}
-              lineHeight="looser"
-              size="large"
-              style={{
-                alignSelf: 'center',
-                maxWidth: 376,
-                paddingBottom: 15,
-                paddingHorizontal: 23,
-              }}
-            >
+            <Text {...getBodyTextPropsWithColor(colors)}>
               {explainSheetConfig.text}
             </Text>
+            {explainSheetConfig?.stillCurious &&
+              explainSheetConfig.stillCurious}
             {buttons}
           </ColumnWithMargins>
         </Centered>
