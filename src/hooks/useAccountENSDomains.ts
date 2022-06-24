@@ -1,10 +1,8 @@
 import { useQuery } from 'react-query';
 import useAccountSettings from './useAccountSettings';
+import { fetchENSAvatar } from './useENSAvatar';
 import { EnsAccountRegistratonsData } from '@rainbow-me/apollo/queries';
-import {
-  fetchAccountRegistrations,
-  fetchImages,
-} from '@rainbow-me/handlers/ens';
+import { fetchAccountRegistrations } from '@rainbow-me/handlers/ens';
 import {
   getENSDomains,
   setENSDomains,
@@ -15,8 +13,6 @@ const queryKey = ({ accountAddress }: { accountAddress: string }) => [
   'domains',
   accountAddress,
 ];
-
-const imagesQueryKey = ({ name }: { name: string }) => ['domainImages', name];
 
 const STALE_TIME = 10000;
 
@@ -30,10 +26,10 @@ async function fetchAccountENSDomains({
   const registrations = result.data?.account?.registrations || [];
   const domains = await Promise.all(
     registrations.map(async ({ domain }) => {
-      const images = await fetchAccountENSImages(domain.name);
+      const avatar = await fetchENSAvatar(domain.name);
       return {
         ...domain,
-        images,
+        avatar,
       };
     })
   );
@@ -63,16 +59,6 @@ export async function prefetchAccountENSDomains({
     queryKey({ accountAddress }),
     async () => await fetchENSDomainsWithCache({ accountAddress }),
     { staleTime: STALE_TIME }
-  );
-}
-
-async function fetchAccountENSImages(name: string) {
-  return queryClient.fetchQuery(
-    imagesQueryKey({ name }),
-    async () => await fetchImages(name),
-    {
-      staleTime: 120000,
-    }
   );
 }
 

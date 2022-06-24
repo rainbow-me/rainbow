@@ -9,6 +9,7 @@ import {
 } from '../handlers/localstorage/walletNames';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import WalletTypes from '../helpers/walletTypes';
+import { fetchENSAvatar } from '../hooks/useENSAvatar';
 import { hasKey } from '../model/keychain';
 import { PreferenceActionType, setPreference } from '../model/preferences';
 import {
@@ -34,7 +35,7 @@ import {
   fetchReverseRecordWithRetry,
 } from '../utils/profileUtils';
 import { updateWebDataEnabled } from './showcaseTokens';
-import { fetchImages, fetchReverseRecord } from '@rainbow-me/handlers/ens';
+import { fetchReverseRecord } from '@rainbow-me/handlers/ens';
 import { lightModeThemeColors } from '@rainbow-me/styles';
 
 // -- Constants --------------------------------------- //
@@ -242,11 +243,11 @@ export const getWalletENSAvatars = async (walletsState, dispatch) => {
         (await fetchReverseRecord(account.address)) ||
         walletNames[account.address];
       if (ens) {
-        const images = await fetchImages(ens);
+        const avatar = await fetchENSAvatar(ens);
         const newImage =
-          typeof images?.avatarUrl === 'string' &&
-          images?.avatarUrl !== account?.image
-            ? images?.avatarUrl
+          typeof avatar?.imageUrl === 'string' &&
+          avatar?.imageUrl !== account?.image
+            ? avatar?.imageUrl
             : account.image;
         return {
           account: {

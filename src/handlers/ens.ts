@@ -22,9 +22,13 @@ import {
   EnsGetRecordsData,
   EnsGetRegistrationData,
 } from '../apollo/queries';
-import { ensProfileImagesQueryKey } from '../hooks/useENSProfileImages';
+import { fetchENSAvatar } from '../hooks/useENSAvatar';
 import { ENSActionParameters } from '../raps/common';
-import { getNameFromLabelhash, getProfileImages } from './localstorage/ens';
+import {
+  getENSData,
+  getNameFromLabelhash,
+  saveENSData,
+} from './localstorage/ens';
 import { estimateGasWithPadding, getProviderForNetwork } from './web3';
 import {
   ENSRegistrationRecords,
@@ -42,12 +46,7 @@ import {
 import { add } from '@rainbow-me/helpers/utilities';
 import { ImgixImage } from '@rainbow-me/images';
 import { handleAndSignImages } from '@rainbow-me/parsers';
-import { queryClient } from '@rainbow-me/react-query/queryClient';
-import {
-  ENS_NFT_CONTRACT_ADDRESS,
-  ensPublicResolverAddress,
-  ethUnits,
-} from '@rainbow-me/references';
+import { ENS_NFT_CONTRACT_ADDRESS, ethUnits } from '@rainbow-me/references';
 import { labelhash, logger, profileUtils } from '@rainbow-me/utils';
 import { AvatarResolver } from 'ens-avatar';
 
@@ -246,14 +245,12 @@ export const fetchSuggestions = async (
               );
               if (!!hasAvatar && profilesEnabled) {
                 try {
-                  const images = await fetchImages(domain.name);
-                  queryClient.setQueryData(
-                    ensProfileImagesQueryKey(domain.name),
-                    images
-                  );
+                  const avatar = await fetchENSAvatar(domain.name, {
+                    cacheFirst: true,
+                  });
                   return {
                     ...domain,
-                    avatar: images.avatarUrl,
+                    avatar: avatar?.imageUrl,
                   };
                   // eslint-disable-next-line no-empty
                 } catch (e) {}
@@ -323,37 +320,27 @@ export const fetchAccountRegistrations = async (address: string) => {
   return registrations;
 };
 
-export const fetchImages = async (ensName: string) => {
-  let avatarUrl;
-  let coverUrl;
+export const fetchImage = async (
+  imageType: 'avatar' | 'cover',
+  ensName: string
+) => {
+  let imageUrl;
   const provider = await getProviderForNetwork();
   try {
     const avatarResolver = new AvatarResolver(provider);
-    [avatarUrl, coverUrl] = await Promise.all([
-      avatarResolver.getImage(ensName, {
-        allowNonOwnerNFTs: true,
-        type: 'avatar',
-      }),
-      avatarResolver.getImage(ensName, {
-        allowNonOwnerNFTs: true,
-        type: 'cover',
-      }),
-    ]);
-    ImgixImage.preload([
-      ...(avatarUrl ? [{ uri: avatarUrl }] : []),
-      ...(coverUrl ? [{ uri: coverUrl }] : []),
-    ]);
+    imageUrl = await avatarResolver.getImage(ensName, {
+      allowNonOwnerNFTs: true,
+      type: imageType,
+    });
+    ImgixImage.preload([...(imageUrl ? [{ uri: imageUrl }] : [])]);
+    saveENSData(imageType, ensName, { imageUrl });
   } catch (err) {
     // Fallback to storage images
-    const images = await getProfileImages(ensName);
-    avatarUrl = images.avatarUrl;
-    coverUrl = images.coverUrl;
+    const data = await getENSData(imageType, ensName);
+    imageUrl = data?.imageUrl as string;
   }
 
-  return {
-    avatarUrl,
-    coverUrl,
-  };
+  return { imageUrl };
 };
 
 export const fetchRecords = async (ensName: string) => {
@@ -487,56 +474,6 @@ export const fetchAccountPrimary = async (accountAddress: string) => {
   const ensName = await fetchReverseRecord(accountAddress);
   return {
     ensName,
-  };
-};
-
-export const fetchProfile = async (ensName: string) => {
-  const [
-    resolver,
-    records,
-    coinAddresses,
-    images,
-    owner,
-    { registrant, registration },
-    primary,
-  ] = await Promise.all([
-    fetchResolver(ensName),
-    fetchRecords(ensName),
-    fetchCoinAddresses(ensName),
-    fetchImages(ensName),
-    fetchOwner(ensName),
-    fetchRegistration(ensName),
-    fetchPrimary(ensName),
-  ]);
-
-  const resolverData = {
-    address: resolver?.address,
-    type: resolver?.address === ensPublicResolverAddress ? 'default' : 'custom',
-  };
-
-  return {
-    coinAddresses,
-    images,
-    owner,
-    primary,
-    records,
-    registrant,
-    registration,
-    resolver: resolverData,
-  };
-};
-
-export const fetchProfileRecords = async (ensName: string) => {
-  const [records, coinAddresses, images] = await Promise.all([
-    fetchRecords(ensName),
-    fetchCoinAddresses(ensName),
-    fetchImages(ensName),
-  ]);
-
-  return {
-    coinAddresses,
-    images,
-    records,
   };
 };
 

@@ -27,7 +27,9 @@ import {
 } from '@rainbow-me/design-system';
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import {
-  prefetchENSProfileRecords,
+  prefetchENSAvatar,
+  prefetchENSCover,
+  prefetchENSRecords,
   useAccountENSDomains,
   useAccountProfile,
   useAccountSettings,
@@ -83,7 +85,9 @@ export default function ENSIntroSheet() {
 
   useEffect(() => {
     if (uniqueDomain?.name) {
-      prefetchENSProfileRecords({ name: uniqueDomain.name });
+      prefetchENSAvatar(uniqueDomain.name);
+      prefetchENSCover(uniqueDomain.name);
+      prefetchENSRecords(uniqueDomain.name);
     }
   }, [uniqueDomain]);
 

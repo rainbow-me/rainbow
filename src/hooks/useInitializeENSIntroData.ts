@@ -1,16 +1,22 @@
 import { useCallback } from 'react';
-import { prefetchENSProfile } from './useENSProfile';
-import { prefetchENSProfileImages } from './useENSProfileImages';
-import { prefetchENSResolveName } from './useENSResolveName';
+import { prefetchENSAddress } from './useENSAddress';
+import { prefetchENSAvatar } from './useENSAvatar';
+import { prefetchENSCover } from './useENSCover';
+import { prefetchENSRecords } from './useENSRecords';
 import { ensIntroMarqueeNames } from '@rainbow-me/references';
 
 export default function useInitializeENSIntroData() {
   const initializeENSIntroData = useCallback(async () => {
+    // We won't prefetch ENS data on Android – invoking RPC calls is
+    // not performant on Android & causes some of the UI to hang.
+    if (android) return;
+
     await Promise.all(
       ensIntroMarqueeNames.map(async name => {
-        prefetchENSResolveName(name);
-        prefetchENSProfileImages({ name });
-        prefetchENSProfile({ name });
+        prefetchENSAddress(name, { cacheFirst: true });
+        prefetchENSAvatar(name, { cacheFirst: true });
+        prefetchENSCover(name, { cacheFirst: true });
+        prefetchENSRecords(name, { cacheFirst: true });
       })
     );
   }, []);

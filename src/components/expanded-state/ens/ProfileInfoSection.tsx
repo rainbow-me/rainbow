@@ -10,13 +10,6 @@ import { useENSRecordDisplayProperties } from '@rainbow-me/hooks';
 const omitRecordKeys = [ENS_RECORDS.avatar];
 const topRecordKeys = [ENS_RECORDS.cover, ENS_RECORDS.description];
 
-const imageKeyMap = {
-  [ENS_RECORDS.avatar]: 'avatarUrl',
-  [ENS_RECORDS.cover]: 'coverUrl',
-} as {
-  [key: string]: 'avatarUrl' | 'coverUrl';
-};
-
 export default function ProfileInfoSection({
   allowEdit,
   coinAddresses: coinAddressMap,
@@ -29,8 +22,8 @@ export default function ProfileInfoSection({
   coinAddresses?: { [key: string]: string };
   ensName?: string;
   images?: {
-    avatarUrl?: string | null;
-    coverUrl?: string | null;
+    avatar?: { imageUrl: string | null };
+    cover?: { imageUrl: string | null };
   };
   isLoading?: boolean;
   records?: Partial<Records>;
@@ -40,8 +33,8 @@ export default function ProfileInfoSection({
       Object.entries(records || {})
         .filter(([key]) => !omitRecordKeys.includes(key as ENS_RECORDS))
         .map(([key, value]) =>
-          images?.[imageKeyMap[key]]
-            ? [key, images[imageKeyMap[key]] as string]
+          key === 'avatar' || key === 'cover'
+            ? [key, images?.[key]?.imageUrl as string]
             : [key, value]
         ),
     [images, records]

@@ -16,7 +16,9 @@ import {
   useForegroundColor,
 } from '@rainbow-me/design-system';
 import {
-  prefetchENSProfileRecords,
+  prefetchENSAvatar,
+  prefetchENSCover,
+  prefetchENSRecords,
   useAccountENSDomains,
   useAccountProfile,
   useAccountSettings,
@@ -44,7 +46,9 @@ export default function SelectENSSheet() {
 
   const handleSelectENS = useCallback(
     ensName => {
-      prefetchENSProfileRecords({ name: ensName });
+      prefetchENSAvatar(ensName);
+      prefetchENSCover(ensName);
+      prefetchENSRecords(ensName);
       goBack();
       params?.onSelectENS(ensName);
     },
@@ -93,12 +97,12 @@ export default function SelectENSSheet() {
                   justifyContent="center"
                   width={{ custom: rowHeight }}
                 >
-                  {item.images.avatarUrl ? (
+                  {item.avatar?.imageUrl ? (
                     <Box
                       as={ImgixImage}
                       borderRadius={rowHeight / 2}
                       height={{ custom: rowHeight }}
-                      source={{ uri: item.images.avatarUrl }}
+                      source={{ uri: item.avatar?.imageUrl }}
                       width={{ custom: rowHeight }}
                     />
                   ) : (
