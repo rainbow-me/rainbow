@@ -135,7 +135,7 @@ export default function SwapSettingsState({ asset }) {
         <Inset bottom="24px" horizontal="24px" top="10px">
           <Stack backgroundColor="green" space="24px">
             <Text align="center" color="primary" size="18px" weight="bold">
-              Settings
+              {lang.t('exchange.settings')}
             </Text>
             <SourcePicker
               currentSource={currentSource}
