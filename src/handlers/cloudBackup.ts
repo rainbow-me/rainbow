@@ -6,7 +6,7 @@ import { RAINBOW_MASTER_KEY } from 'react-native-dotenv';
 import RNFS from 'react-native-fs';
 import AesEncryptor from '../handlers/aesEncryption';
 import { logger } from '../utils';
-import { sortByKeyHelper } from '@rainbow-me/helpers/utilities';
+import { reversedSortByKeyHelper } from '@rainbow-me/helpers/utilities';
 const REMOTE_BACKUP_WALLET_DIR = 'rainbow.me/wallet-backups';
 const USERDATA_FILE = 'UserData.json';
 const encryptor = new AesEncryptor();
@@ -164,9 +164,9 @@ export async function getDataFromCloud(backupPassword: any, filename = null) {
       throw error;
     }
   } else {
-    const sortedBackups = backups.files
-      .sort(sortByKeyHelper('lastModified'))
-      .reverse();
+    const sortedBackups = backups.files.sort(
+      reversedSortByKeyHelper('lastModified')
+    );
     document = sortedBackups[0];
   }
   const encryptedData = ios

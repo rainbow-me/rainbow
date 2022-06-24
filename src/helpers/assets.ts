@@ -9,7 +9,6 @@ import {
   isEmpty,
   reduce,
   slice,
-  sortBy,
 } from 'lodash';
 import { add, convertAmountToNativeDisplay, greaterThan } from './utilities';
 import { UniqueAsset } from '@rainbow-me/entities';
@@ -246,6 +245,23 @@ export const buildBriefCoinsList = (
   return { briefAssets, totalBalancesValue };
 };
 
+const regex = RegExp(/\s*(the)\s/, 'i');
+const sorterByFamiliesName = (a: any, b: any) => {
+  if (
+    a.familyName.replace(regex, '').toLowerCase() <
+    b.familyName.replace(regex, '').toLowerCase()
+  ) {
+    return -1;
+  } else if (
+    a.familyName.replace(regex, '').toLowerCase() >
+    b.familyName.replace(regex, '').toLowerCase()
+  ) {
+    return 1;
+  } else {
+    return 0;
+  }
+};
+
 export const buildUniqueTokenList = (
   uniqueTokens: UniqueAsset[],
   selectedShowcaseTokens: any
@@ -299,8 +315,7 @@ export const buildUniqueTokenList = (
       });
     });
   }
-  const regex = RegExp(/\s*(the)\s/, 'i');
-  rows = sortBy(rows, row => row.familyName.replace(regex, '').toLowerCase());
+  rows = rows.sort(sorterByFamiliesName);
 
   showcaseTokens.sort(function (a, b) {
     return (
@@ -339,9 +354,7 @@ export const buildUniqueTokenList = (
   return rows;
 };
 
-const regex = RegExp(/\s*(the)\s/, 'i');
-
-const sorterFamilies = (a: any, b: any) => {
+const groupedKeys = (a: any, b: any) => {
   if (a.replace(regex, '').toLowerCase() < b.replace(regex, '').toLowerCase()) {
     return -1;
   } else if (
@@ -374,7 +387,7 @@ export const buildBriefUniqueTokenList = (
     return acc;
   }, {} as Dictionary<UniqueAsset[]>);
 
-  const families2 = Object.keys(grouped2).sort(sorterFamilies);
+  const families2 = Object.keys(grouped2).sort(groupedKeys);
 
   const result = [
     { type: 'NFTS_HEADER_SPACE_BEFORE', uid: 'nfts-header-space-before' },

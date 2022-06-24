@@ -4,7 +4,7 @@ import { captureException } from '@sentry/react-native';
 import { Duration, sub } from 'date-fns';
 import { isZeroAddress } from 'ethereumjs-util';
 import { BigNumber } from 'ethers';
-import { debounce, isEmpty, sortBy } from 'lodash';
+import { debounce, isEmpty } from 'lodash';
 import { ensClient } from '../apollo/client';
 import {
   ENS_ACCOUNT_REGISTRATIONS,
@@ -260,14 +260,21 @@ export const fetchSuggestions = async (
           uniqueId: ensDomain?.resolver?.addr?.id || ensDomain.name,
         }))
         .filter((domain: any) => !domain?.nickname?.includes?.('['));
-      suggestions = sortBy(ensSuggestions, domain => domain.nickname.length, [
-        'asc',
-      ]);
+      suggestions = ensSuggestions.sort(sorterByNicknameLengthASC);
     }
     setSuggestions(suggestions);
     setIsFetching(false);
 
     return suggestions;
+  }
+};
+const sorterByNicknameLengthASC = (a: any, b: any) => {
+  if (a.nickname.length < b.nickname.length) {
+    return -1;
+  } else if (a.nickname.length > b.nickname.length) {
+    return 1;
+  } else {
+    return 0;
   }
 };
 

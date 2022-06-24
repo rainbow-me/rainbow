@@ -412,3 +412,6 @@ export const delay = (ms: number): Promise<void> => {
 export const sortByKeyHelper = (key: string) => {
   return (a: any, b: any) => (a[key] > b[key] ? 1 : b[key] > a[key] ? -1 : 0);
 };
+export const reversedSortByKeyHelper = (key: string) => {
+  return (a: any, b: any) => (a[key] > b[key] ? -1 : b[key] > a[key] ? 1 : 0);
+};

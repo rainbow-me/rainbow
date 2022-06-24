@@ -28,7 +28,7 @@ import {
   divide,
   handleSignificantDecimals,
   multiply,
-  sortByKeyHelper,
+  reversedSortByKeyHelper,
 } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
@@ -105,8 +105,7 @@ export default function TokenIndexExpandedState({ asset }) {
 
     return underlyingAssets
       .filter(asset => asset !== null)
-      .sort(sortByKeyHelper('percentageAllocation'))
-      .reverse();
+      .sort(reversedSortByKeyHelper('percentageAllocation'));
   }, [dpi, genericAssets, nativeCurrency, nativeCurrencySymbol]);
 
   const hasUnderlying = underlying.length !== 0;
