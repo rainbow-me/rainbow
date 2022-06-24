@@ -1,7 +1,7 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect } from 'react';
-import { InteractionManager, Keyboard } from 'react-native';
+import { Keyboard } from 'react-native';
 import { Switch } from 'react-native-gesture-handler';
 import { useDispatch } from 'react-redux';
 import { ButtonPressAnimation } from '../../animations';
@@ -105,11 +105,9 @@ export default function SwapSettingsState({ asset }) {
   }, [settingsChangeFlashbotsEnabled, updateSource]);
 
   const openExplainer = () => {
-    InteractionManager.runAfterInteractions(() => {
-      android && Keyboard.dismiss();
-      navigate(Routes.EXPLAIN_SHEET, {
-        type: 'flashbots',
-      });
+    android && Keyboard.dismiss();
+    navigate(Routes.EXPLAIN_SHEET, {
+      type: 'flashbots',
     });
   };
 
