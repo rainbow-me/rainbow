@@ -1969,7 +1969,6 @@ export function loadingAssetsMiddleware({
   );
 
   return (next: Dispatch<AnyAction>) => (action: any) => {
-    // global.console.log(action.type);
     // If we have received data from the websockets, we want to debounce
     // the finalize state as there could be another event streaming in
     // shortly after.
