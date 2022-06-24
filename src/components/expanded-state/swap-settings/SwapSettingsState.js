@@ -109,7 +109,7 @@ export default function SwapSettingsState({ asset }) {
       <FloatingPanel radius={android ? 30 : 39} testID="swap-settings">
         <ExchangeHeader />
         <Inset bottom="24px" horizontal="24px" top="10px">
-          <Stack backgroundColor="green" space="24px">
+          <Stack backgroundColor="body" space="24px">
             <SourcePicker
               currentSource={currentSource}
               onSelect={updateSource}

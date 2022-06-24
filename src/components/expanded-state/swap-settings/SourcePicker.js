@@ -88,6 +88,7 @@ export default function SourcePicker({ onSelect, currentSource }) {
             paddingHorizontal="10px"
             paddingVertical="6px"
             shadow="21px light"
+            // shadow clipped on android by ButtonPressAnimation.android.tsx inside <ContextMenuButton>
           >
             <Inline alignVertical="center" horizontalSpace="4px">
               <ImgixImage
