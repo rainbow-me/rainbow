@@ -1,4 +1,5 @@
 import { formatsByCoinType, formatsByName } from '@ensdomains/address-encoder';
+import { getAddress } from '@ethersproject/address';
 import { Resolver } from '@ethersproject/providers';
 import { captureException } from '@sentry/react-native';
 import { Duration, sub } from 'date-fns';
@@ -210,7 +211,8 @@ export const fetchSuggestions = async (
   profilesEnabled = false
 ) => {
   if (isValidAddress(recipient)) {
-    const ens = await fetchReverseRecord(recipient);
+    const address = getAddress(recipient);
+    const ens = await fetchReverseRecord(address);
     if (!ens) {
       setSuggestions([]);
       setIsFetching(false);
@@ -224,13 +226,13 @@ export const fetchSuggestions = async (
     } catch (e) {}
     const suggestion = [
       {
-        address: recipient,
+        address: address,
         color: profileUtils.addressHashedColorIndex(recipient),
         ens: true,
         image: images?.avatarUrl,
         network: 'mainnet',
         nickname: ens,
-        uniqueId: recipient,
+        uniqueId: address,
       },
     ];
     setSuggestions(suggestion);
@@ -939,8 +941,9 @@ export const shouldUseMulticallTransaction = (
 
 export const fetchReverseRecord = async (address: string) => {
   try {
+    const checksumAddress = getAddress(address);
     const provider = await getProviderForNetwork();
-    const reverseRecord = await provider.lookupAddress(address);
+    const reverseRecord = await provider.lookupAddress(checksumAddress);
     return reverseRecord ?? '';
   } catch (e) {
     return '';
