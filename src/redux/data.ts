@@ -1410,6 +1410,34 @@ export const assetPricesReceived = (
   }
 };
 
+const debouncedUpdateGenericAssets = ((
+  action: DataUpdateGenericAssetsAction,
+  dispatch: Dispatch<DataUpdateGenericAssetsAction>
+) => {
+  clearTimeout(debouncedUpdateGenericAssets.timeout!);
+
+  debouncedUpdateGenericAssets.payload = {
+    ...debouncedUpdateGenericAssets.payload,
+    ...action.payload,
+  };
+
+  debouncedUpdateGenericAssets.timeout = setTimeout(() => {
+    dispatch({
+      payload: debouncedUpdateGenericAssets.payload,
+      type: action.type,
+    });
+
+    debouncedUpdateGenericAssets.payload = {};
+  }, 500);
+}) as {
+  (
+    action: DataUpdateGenericAssetsAction,
+    dispatch: Dispatch<DataUpdateGenericAssetsAction>
+  ): void;
+  timeout: undefined | NodeJS.Timeout;
+  payload: DataUpdateGenericAssetsAction['payload'];
+};
+
 /**
  * Handles a `AssetPricesChangedMessage` from Zerion and updates state.
  *
@@ -1440,10 +1468,13 @@ export const assetPricesChanged = (
       [address: string]: ParsedAddressAsset;
     };
 
-    dispatch({
-      payload: updatedAssets,
-      type: DATA_UPDATE_GENERIC_ASSETS,
-    });
+    debouncedUpdateGenericAssets(
+      {
+        payload: updatedAssets,
+        type: DATA_UPDATE_GENERIC_ASSETS,
+      },
+      dispatch
+    );
   }
   if (
     message?.meta?.currency?.toLowerCase() ===
@@ -1938,6 +1969,7 @@ export function loadingAssetsMiddleware({
   );
 
   return (next: Dispatch<AnyAction>) => (action: any) => {
+    // global.console.log(action.type);
     // If we have received data from the websockets, we want to debounce
     // the finalize state as there could be another event streaming in
     // shortly after.
