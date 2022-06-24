@@ -102,7 +102,7 @@ export default function CurrencySelectModal() {
     searchQuery,
   ]);
   const assetsInWallet = useAssetsInWallet();
-  const { hiddenCoins } = useCoinListEditOptions();
+  const { hiddenCoinsObj } = useCoinListEditOptions();
 
   const [currentChainId, setCurrentChainId] = useState(chainId);
   useEffect(() => {
@@ -113,12 +113,10 @@ export default function CurrencySelectModal() {
 
   const filteredAssetsInWallet = useMemo(() => {
     if (type === CurrencySelectionTypes.input) {
-      return assetsInWallet?.filter(asset => {
-        return !hiddenCoins?.includes(asset.uniqueId);
-      });
+      return assetsInWallet?.filter(asset => !hiddenCoinsObj[asset.uniqueId]);
     }
     return [];
-  }, [type, assetsInWallet, hiddenCoins]);
+  }, [type, assetsInWallet, hiddenCoinsObj]);
 
   const {
     swapCurrencyList,
@@ -126,11 +124,12 @@ export default function CurrencySelectModal() {
     updateFavorites,
   } = useSwapCurrencyList(searchQueryForSearch, currentChainId);
 
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const routeName = getActiveRoute()?.name;
   const showList = useMemo(() => {
     const viewingExplainer = routeName === Routes.EXPLAIN_SHEET;
-    return isFocused || viewingExplainer;
-  }, [isFocused, routeName]);
+    return isFocused || viewingExplainer || isTransitioning;
+  }, [isFocused, routeName, isTransitioning]);
 
   const linkToHop = useCallback(() => {
     Linking.openURL('https://app.hop.exchange/#/send');
@@ -299,6 +298,7 @@ export default function CurrencySelectModal() {
       if (checkForRequiredAssets(item)) return;
       dispatch(emitChartsRequest(item.mainnet_address || item.address));
       const isMainnet = currentChainId === 1;
+      setIsTransitioning(true); // continue to display list during transition
 
       onSelectCurrency(
         isMainnet && type === CurrencySelectionTypes.output
@@ -354,6 +354,9 @@ export default function CurrencySelectModal() {
       if (!isFocused && prevIsFocused) {
         handleApplyFavoritesQueue();
         restoreFocusOnSwapModal?.();
+        setTimeout(() => {
+          setIsTransitioning(false); // hide list now that we have arrived on main exchange modal
+        }, 750);
       }
     }
   }, [
@@ -371,6 +374,7 @@ export default function CurrencySelectModal() {
   const handleBackButton = useCallback(() => {
     setSearchQuery('');
     setCurrentChainId(chainId);
+    setIsTransitioning(true); // continue to display list while transitiong back
   }, [chainId]);
 
   const shouldUpdateFavoritesRef = useRef(false);
@@ -401,7 +405,7 @@ export default function CurrencySelectModal() {
           overflow="hidden"
           radius={30}
         >
-          {isFocusedAndroid && <StatusBar barStyle="dark-content" />}
+          {isFocusedAndroid && <StatusBar barStyle="light-content" />}
           <GestureBlocker type="top" />
           <Column flex={1}>
             <CurrencySelectModalHeader

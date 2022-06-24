@@ -51,7 +51,6 @@ export default function SwapSettingsState({ asset }) {
   const { setParams, goBack } = useNavigation();
   const dispatch = useDispatch();
   const keyboardHeight = useKeyboardHeight();
-  const [isKeyboardOpen, setIsKeyboardOpen] = useState(true);
   const slippageRef = useRef(null);
   const { updateSwapSource, source } = useSwapSettings();
 
@@ -62,20 +61,11 @@ export default function SwapSettingsState({ asset }) {
   }, [dispatch, flashbotsEnabled, settingsChangeFlashbotsEnabled]);
 
   useEffect(() => {
-    const keyboardDidShow = () => {
-      setIsKeyboardOpen(true);
-    };
-
-    const keyboardDidHide = () => {
-      setIsKeyboardOpen(false);
-    };
-    android && Keyboard.addListener('keyboardDidShow', keyboardDidShow);
-    android && Keyboard.addListener('keyboardDidHide', keyboardDidHide);
+    android && Keyboard.addListener('keyboardDidHide', goBack);
     return () => {
-      Keyboard.removeListener('keyboardDidShow', keyboardDidShow);
-      Keyboard.removeListener('keyboardDidHide', keyboardDidHide);
+      Keyboard.removeListener('keyboardDidHide', goBack);
     };
-  }, []);
+  }, [goBack]);
 
   const colorForAsset = useColorForAsset(asset || {}, null, false, true);
 
@@ -110,9 +100,7 @@ export default function SwapSettingsState({ asset }) {
     <SlackSheet
       additionalTopPadding
       backgroundColor={colors.transparent}
-      contentHeight={
-        isKeyboardOpen ? sheetHeightWithKeyboard : sheetHeightWithoutKeyboard
-      }
+      contentHeight={sheetHeightWithKeyboard}
       hideHandle
       radius={0}
       scrollEnabled={false}
@@ -168,7 +156,7 @@ export default function SwapSettingsState({ asset }) {
             <Column width="content">
               <ButtonPressAnimation
                 onPress={() => {
-                  slippageRef?.current?.blur();
+                  ios && slippageRef?.current?.blur();
                   goBack();
                 }}
               >

@@ -34,6 +34,7 @@ interface SwapState {
   inputCurrency: SwappableAsset | null;
   independentField: SwapModalField;
   independentValue: string | null;
+  maxInputUpdate: boolean;
   slippageInBips: number;
   source: Source;
   type: string;
@@ -88,11 +89,12 @@ export const updateSwapSource = (newSource: Source) => (
   });
 };
 
-export const updateSwapInputAmount = (value: string | null) => (
-  dispatch: AppDispatch
-) => {
+export const updateSwapInputAmount = (
+  value: string | null,
+  maxInputUpdate = false
+) => (dispatch: AppDispatch) => {
   dispatch({
-    payload: { independentValue: value },
+    payload: { independentValue: value, maxInputUpdate },
     type: SWAP_UPDATE_INPUT_AMOUNT,
   });
 };
@@ -174,7 +176,7 @@ export const updateSwapOutputCurrency = (
     newOutputCurrency?.address === inputCurrency?.address &&
     newOutputCurrency
   ) {
-    dispatch(flipSwapCurrencies());
+    dispatch(flipSwapCurrencies(true));
   } else {
     if (
       type === ExchangeModalTypes.swap &&
@@ -195,29 +197,21 @@ export const updateSwapOutputCurrency = (
   }
 };
 
-export const flipSwapCurrencies = () => (
+export const flipSwapCurrencies = (outputIndependentField?: Boolean) => (
   dispatch: AppDispatch,
   getState: AppGetState
 ) => {
-  // const { genericAssets } = getState().data;
-  const {
-    // independentField,
-    // independentValue,
-    inputCurrency,
-    outputCurrency,
-    derivedValues,
-  } = getState().swap;
+  const { inputCurrency, outputCurrency } = getState().swap;
   dispatch({
     payload: {
+      independentField: outputIndependentField
+        ? SwapModalField.output
+        : SwapModalField.input,
       newInputCurrency: outputCurrency,
       newOutputCurrency: inputCurrency,
     },
     type: SWAP_FLIP_CURRENCIES,
   });
-
-  // This is not like uniswap anymore
-  // we should always try to get a quote based on the input
-  dispatch(updateSwapInputAmount(derivedValues?.outputAmount));
 };
 
 export const updateSwapQuote = (value: any) => (dispatch: AppDispatch) => {
@@ -239,6 +233,7 @@ const INITIAL_STATE: SwapState = {
   independentField: SwapModalField.input,
   independentValue: null,
   inputCurrency: null,
+  maxInputUpdate: false,
   outputCurrency: null,
   slippageInBips: 100,
   source: Source.AggregatorRainbow,
@@ -277,6 +272,7 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
         ...state,
         independentField: SwapModalField.input,
         independentValue: action.payload.independentValue,
+        maxInputUpdate: action.payload.maxInputUpdate,
       };
     case SWAP_UPDATE_NATIVE_AMOUNT:
       return {
@@ -308,6 +304,7 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
     case SWAP_FLIP_CURRENCIES:
       return {
         ...state,
+        independentField: action.payload.independentField,
         inputCurrency: action.payload.newInputCurrency,
         outputCurrency: action.payload.newOutputCurrency,
       };

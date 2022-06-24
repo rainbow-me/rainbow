@@ -41,6 +41,7 @@ const ExchangeFab = ({ disabled, isReadOnlyWallet, ...props }) => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
       android && delayNext();
       navigate(Routes.EXCHANGE_MODAL, {
+        fromDiscover: true,
         params: {
           fromDiscover: true,
           onSelectCurrency: updateInputCurrency,

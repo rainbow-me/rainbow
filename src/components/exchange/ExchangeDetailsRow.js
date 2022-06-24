@@ -46,6 +46,7 @@ export default function ExchangeDetailsRow({
   priceImpactNativeAmount,
   priceImpactPercentDisplay,
   type,
+  flipDisabled,
   ...props
 }) {
   const detailsRowOpacity = useSharedValue(1);
@@ -118,6 +119,7 @@ export default function ExchangeDetailsRow({
         style={detailsRowAnimatedStyle}
       >
         <ExchangeDetailsButton
+          disabled={flipDisabled}
           onPress={onFlipCurrencies}
           testID="exchange-flip-button"
         >

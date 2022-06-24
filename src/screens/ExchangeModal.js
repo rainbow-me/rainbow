@@ -34,6 +34,7 @@ import {
 import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Column, KeyboardFixedOpenLayout } from '../components/layout';
+import { delayNext } from '../hooks/useMagicAutofocus';
 import { Row, Rows } from '@rainbow-me/design-system';
 import { AssetType } from '@rainbow-me/entities';
 import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
@@ -68,6 +69,8 @@ import { position } from '@rainbow-me/styles';
 import { ethereumUtils } from '@rainbow-me/utils';
 import { useEthUSDPrice } from '@rainbow-me/utils/ethereumUtils';
 import logger from 'logger';
+
+const NOOP = () => null;
 
 const FloatingPanels = AnimatedExchangeFloatingPanels;
 
@@ -626,6 +629,7 @@ export default function ExchangeModal({
     outputFieldRef?.current?.blur();
     nativeFieldRef?.current?.blur();
     const internalNavigate = () => {
+      delayNext();
       android && Keyboard.removeListener('keyboardDidHide', internalNavigate);
       setParams({ focused: false });
       navigate(Routes.SWAP_SETTINGS_SHEET, {
@@ -794,7 +798,7 @@ export default function ExchangeModal({
           {!isSavings && showConfirmButton && (
             <ExchangeDetailsRow
               isHighPriceImpact={isHighPriceImpact}
-              onFlipCurrencies={flipCurrencies}
+              onFlipCurrencies={loading ? NOOP : flipCurrencies}
               onPressSettings={navigateToSwapSettingsSheet}
               priceImpactColor={priceImpactColor}
               priceImpactNativeAmount={priceImpactNativeAmount}
@@ -810,7 +814,7 @@ export default function ExchangeModal({
             {showConfirmButton && (
               <ConfirmExchangeButton
                 {...confirmButtonProps}
-                onPressViewDetails={navigateToSwapDetailsModal}
+                onPressViewDetails={loading ? NOOP : navigateToSwapDetailsModal}
                 testID={`${testID}-confirm-button`}
               />
             )}
