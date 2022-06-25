@@ -1,16 +1,17 @@
-import React, { useCallback } from 'react';
+import React from 'react';
+// @ts-expect-error // no declaration for this yet
+import * as CoinIconsImages from 'react-coin-icon/lib/pngs';
 import { Image, StyleSheet, View } from 'react-native';
-import CoinIcon from '../../../coin-icon/CoinIcon';
 import { FastChainBadge } from './FastCoinBadge';
+import { FastFallbackCoinIconImage } from './FastFallbackCoinIconImage';
+import ContractInteraction from '@rainbow-me/assets/contractInteraction.png';
 import EthIcon from '@rainbow-me/assets/eth-icon.png';
 import { AssetType } from '@rainbow-me/entities';
-import { useColorForAsset, useForceUpdate } from '@rainbow-me/hooks';
-import { ImageWithCachedMetadata, ImgixImage } from '@rainbow-me/images';
+import { useColorForAsset } from '@rainbow-me/hooks';
 import { borders, fonts } from '@rainbow-me/styles';
 import {
-  FallbackIcon,
+  FallbackIcon as CoinIconTextFallback,
   getTokenMetadata,
-  getUrlForTrustIconFallback,
   isETH,
 } from '@rainbow-me/utils';
 
@@ -27,134 +28,109 @@ const fallbackIconStyle = {
   position: 'absolute',
 };
 
-const ImageState = {
-  ERROR: 'ERROR',
-  LOADED: 'LOADED',
-  NOT_FOUND: 'NOT_FOUND',
-} as const;
+function formatSymbol(symbol: string) {
+  return symbol
+    ? symbol.charAt(0).toUpperCase() + symbol.slice(1).toLowerCase()
+    : '';
+}
 
-const imagesCache: { [imageUrl: string]: keyof typeof ImageState } = {};
-
-const CoinIconWithBackground = React.memo(function CoinIconWithBackground({
-  imageUrl,
-  symbol,
-  shadowColor,
-  children,
+/**
+ * If mainnet asset is available, get the token under /ethereum/ (token) url.
+ * Otherwise let it use whatever type it has
+ * @param param0 - optional mainnetAddress, address and optional assetType
+ * @returns a proper type and address to use for the url
+ */
+function resolveTypeAndAddress({
+  mainnetAddress,
+  address,
+  assetType,
 }: {
-  imageUrl: string;
-  symbol: string;
-  shadowColor: string;
-  children: () => React.ReactNode;
+  mainnetAddress?: string;
+  address: string;
+  assetType?: AssetType;
 }) {
-  const key = `${symbol}-${imageUrl}`;
+  if (mainnetAddress) {
+    return {
+      resolvedAddress: mainnetAddress,
+      resolvedType: AssetType.token,
+    };
+  }
 
-  const shouldShowImage = imagesCache[key] !== ImageState.NOT_FOUND;
-  const isLoaded = imagesCache[key] === ImageState.LOADED;
-
-  // we store data inside the object outside the component
-  // so we can share it between component instances
-  // but we still want the component to pick up new changes
-  const forceUpdate = useForceUpdate();
-
-  const onLoad = useCallback(() => {
-    if (imagesCache[key] === ImageState.LOADED) {
-      return;
-    }
-
-    imagesCache[key] = ImageState.LOADED;
-    forceUpdate();
-  }, [key, forceUpdate]);
-  const onError = useCallback(
-    err => {
-      const newError = err.nativeEvent.message?.includes('404')
-        ? ImageState.NOT_FOUND
-        : ImageState.ERROR;
-
-      if (imagesCache[key] === newError) {
-        return;
-      } else {
-        imagesCache[key] = newError;
-      }
-
-      forceUpdate();
-    },
-    [key, forceUpdate]
-  );
-
-  return (
-    <View
-      style={[cx.coinIconContainer, { shadowColor }, isLoaded && cx.withShadow]}
-    >
-      {shouldShowImage && (
-        <ImageWithCachedMetadata
-          cache={ImgixImage.cacheControl.immutable}
-          imageUrl={imageUrl}
-          onError={onError}
-          onLoad={onLoad}
-          size={40}
-          style={[cx.coinIconFallback, isLoaded && cx.withBackground]}
-        />
-      )}
-
-      {!isLoaded && <View style={cx.fallbackWrapper}>{children()}</View>}
-    </View>
-  );
-});
+  return {
+    resolvedAddress: address,
+    resolvedType: assetType,
+  };
+}
 
 export default React.memo(function FastCoinIcon({
   address,
+  mainnetAddress,
   symbol,
   assetType,
   theme,
 }: {
   address: string;
+  mainnetAddress?: string;
   symbol: string;
   assetType?: AssetType;
   theme: any;
 }) {
-  const imageUrl = getUrlForTrustIconFallback(
+  const { resolvedType, resolvedAddress } = resolveTypeAndAddress({
     address,
-    assetType ?? AssetType.token
-  )!;
-
-  const fallbackIconColor = useColorForAsset({
-    address,
-    type: assetType,
+    assetType,
+    mainnetAddress,
   });
 
-  const tokenMetadata = getTokenMetadata(address);
+  const tokenMetadata = getTokenMetadata(resolvedAddress);
+
+  const fallbackIconColor = useColorForAsset({
+    address: resolvedAddress,
+    type: resolvedType,
+  });
 
   const shadowColor = theme.isDarkMode
     ? theme.colors.shadow
     : tokenMetadata?.shadowColor ?? fallbackIconColor;
 
-  const eth = isETH(address);
+  const eth = isETH(resolvedAddress);
 
-  if (ios) {
-    return (
-      <View style={cx.container}>
-        {/* @ts-ignore */}
-        <CoinIcon
-          address={address}
-          size={40}
-          symbol={symbol}
-          type={assetType}
-        />
-      </View>
-    );
-  }
+  const formattedSymbol = formatSymbol(symbol);
+
+  const shouldRenderFallback = !eth && !tokenMetadata;
+  const shouldRenderLocalCoinIconImage =
+    !shouldRenderFallback && CoinIconsImages[formattedSymbol];
+  const shouldRenderContract = symbol === 'contract';
+
   return (
-    <View style={cx.container}>
+    <View style={sx.container}>
       {eth ? (
-        <Image source={EthIcon} style={cx.coinIconFallback} />
+        <Image source={EthIcon} style={sx.coinIconFallback} />
+      ) : shouldRenderLocalCoinIconImage ? (
+        <View
+          style={[
+            sx.coinIconFallback,
+            sx.reactCoinIconContainer,
+            sx.withShadow,
+            { shadowColor },
+          ]}
+        >
+          <Image
+            resizeMode="contain"
+            source={CoinIconsImages[formattedSymbol]}
+            style={sx.reactCoinIconImage}
+          />
+        </View>
+      ) : shouldRenderContract ? (
+        <Image source={ContractInteraction} style={sx.contract} />
       ) : (
-        <CoinIconWithBackground
-          imageUrl={imageUrl}
+        <FastFallbackCoinIconImage
+          address={resolvedAddress}
+          assetType={resolvedType}
           shadowColor={shadowColor}
           symbol={symbol}
         >
           {() => (
-            <FallbackIcon
+            <CoinIconTextFallback
               color={fallbackIconColor}
               height={40}
               style={fallbackIconStyle}
@@ -163,7 +139,7 @@ export default React.memo(function FastCoinIcon({
               width={40}
             />
           )}
-        </CoinIconWithBackground>
+        </FastFallbackCoinIconImage>
       )}
 
       {assetType && <FastChainBadge assetType={assetType} theme={theme} />}
@@ -171,16 +147,7 @@ export default React.memo(function FastCoinIcon({
   );
 });
 
-const cx = StyleSheet.create({
-  coinIconContainer: {
-    alignItems: 'center',
-    backgroundColor: 'transparent',
-    borderRadius: 20,
-    height: 40,
-    justifyContent: 'center',
-    overflow: 'hidden',
-    width: 40,
-  },
+const sx = StyleSheet.create({
   coinIconFallback: {
     borderRadius: 20,
     height: 40,
@@ -193,13 +160,17 @@ const cx = StyleSheet.create({
     overflow: 'visible',
     paddingTop: 9,
   },
-  fallbackWrapper: {
-    left: 0,
-    position: 'absolute',
-    top: 0,
+  contract: {
+    height: 40,
+    width: 40,
   },
-  withBackground: {
-    backgroundColor: 'white',
+  reactCoinIconContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  reactCoinIconImage: {
+    height: '100%',
+    width: '100%',
   },
   withShadow: {
     elevation: 6,
