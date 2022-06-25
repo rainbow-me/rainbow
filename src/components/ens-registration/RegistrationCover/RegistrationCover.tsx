@@ -12,6 +12,7 @@ import { UniqueAsset } from '@rainbow-me/entities';
 import { UploadImageReturnData } from '@rainbow-me/handlers/pinata';
 import {
   useENSModifiedRegistration,
+  useENSRegistration,
   useENSRegistrationForm,
   useSelectImageMenu,
 } from '@rainbow-me/hooks';
@@ -40,7 +41,7 @@ const RegistrationCover = ({
     setDisabled,
     values,
   } = useENSRegistrationForm();
-
+  const { name } = useENSRegistration();
   const [coverUpdateAllowed, setCoverUpdateAllowed] = useState(true);
   const [coverUrl, setCoverUrl] = useState(initialCoverUrl || values?.cover);
   useEffect(() => {
@@ -52,7 +53,7 @@ const RegistrationCover = ({
   }, [initialCoverUrl, coverUpdateAllowed, values, coverUrl]);
 
   // We want to allow cover state update when the screen is first focussed.
-  useEffect(() => setCoverUpdateAllowed(true), [setCoverUpdateAllowed]);
+  useEffect(() => setCoverUpdateAllowed(true), [setCoverUpdateAllowed, name]);
 
   const accentColor = useForegroundColor('accent');
 

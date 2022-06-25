@@ -21,6 +21,7 @@ import { UniqueAsset } from '@rainbow-me/entities';
 import { UploadImageReturnData } from '@rainbow-me/handlers/pinata';
 import {
   useENSModifiedRegistration,
+  useENSRegistration,
   useENSRegistrationForm,
   useSelectImageMenu,
 } from '@rainbow-me/hooks';
@@ -56,6 +57,7 @@ const RegistrationAvatar = ({
     onRemoveField,
     setDisabled,
   } = useENSRegistrationForm();
+  const { name } = useENSRegistration();
   const { navigate } = useNavigation();
 
   const [avatarUpdateAllowed, setAvatarUpdateAllowed] = useState(true);
@@ -74,9 +76,7 @@ const RegistrationAvatar = ({
   }, [initialAvatarUrl, avatarUpdateAllowed]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // We want to allow avatar state update when the screen is first focussed.
-  useEffect(() => {
-    setAvatarUpdateAllowed(true);
-  }, [setAvatarUpdateAllowed]);
+  useEffect(() => setAvatarUpdateAllowed(true), [setAvatarUpdateAllowed, name]);
 
   const setAvatarMetadata = useSetRecoilState(avatarMetadataAtom);
 
