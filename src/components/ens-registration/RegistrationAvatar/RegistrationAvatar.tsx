@@ -1,4 +1,3 @@
-import { useFocusEffect } from '@react-navigation/core';
 import ConditionalWrap from 'conditional-wrap';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
@@ -75,7 +74,9 @@ const RegistrationAvatar = ({
   }, [initialAvatarUrl, avatarUpdateAllowed]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // We want to allow avatar state update when the screen is first focussed.
-  useFocusEffect(useCallback(() => setAvatarUpdateAllowed(true), []));
+  useEffect(() => {
+    setAvatarUpdateAllowed(true);
+  }, [setAvatarUpdateAllowed]);
 
   const setAvatarMetadata = useSetRecoilState(avatarMetadataAtom);
 

@@ -1,7 +1,6 @@
-import { useFocusEffect } from '@react-navigation/core';
 import ConditionalWrap from 'conditional-wrap';
 import lang from 'i18n-js';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { Image } from 'react-native-image-crop-picker';
 import RadialGradient from 'react-native-radial-gradient';
@@ -53,7 +52,7 @@ const RegistrationCover = ({
   }, [initialCoverUrl, coverUpdateAllowed, values, coverUrl]);
 
   // We want to allow cover state update when the screen is first focussed.
-  useFocusEffect(useCallback(() => setCoverUpdateAllowed(true), []));
+  useEffect(() => setCoverUpdateAllowed(true), [setCoverUpdateAllowed]);
 
   const accentColor = useForegroundColor('accent');
 
@@ -77,7 +76,13 @@ const RegistrationCover = ({
       // to avoid avatar flashing (from temp URL to uploaded URL).
       setCoverUpdateAllowed(false);
       setCoverMetadata(image);
-      setCoverUrl(image?.tmpPath);
+      setCoverUrl(
+        image?.tmpPath ||
+          asset?.image_url ||
+          asset?.lowResUrl ||
+          asset?.image_thumbnail_url ||
+          ''
+      );
 
       if (asset) {
         const standard = asset.asset_contract?.schema_name || '';
