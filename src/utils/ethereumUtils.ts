@@ -153,9 +153,9 @@ const getAsset = (
 };
 
 const getAccountAsset = (
-  uniqueId: EthereumAddress
+  uniqueId: EthereumAddress | undefined
 ): ParsedAddressAsset | undefined => {
-  const loweredUniqueId = uniqueId.toLowerCase();
+  const loweredUniqueId = uniqueId?.toLowerCase() ?? '';
   const accountAsset = store.getState().data?.accountAssetsData?.[
     loweredUniqueId
   ];
