@@ -14,9 +14,9 @@ export interface BaseButtonAnimationProps
   activeOpacity?: number;
   disabled?: boolean;
   duration?: number;
-  minLongPressDuration: number;
+  minLongPressDuration?: number;
   onPress: (event?: NativeSyntheticEvent<NativeTouchEvent>) => void;
-  onLongPress: () => void;
+  onLongPress?: () => void;
   transformOrigin?: TransformOrigin | Direction;
   scaleTo?: number;
 }
