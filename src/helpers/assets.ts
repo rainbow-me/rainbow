@@ -1,13 +1,11 @@
 import {
   chunk,
   compact,
-  concat,
   forEach,
   get,
   groupBy,
   includes,
   isEmpty,
-  reduce,
   slice,
   sortBy,
 } from 'lodash';
@@ -31,7 +29,7 @@ export const buildAssetUniqueIdentifier = (item: any) => {
 };
 
 const addEthPlaceholder = (
-  assets: any,
+  assets: any[],
   includePlaceholder: any,
   pinnedCoins: any,
   nativeCurrency: any,
@@ -79,22 +77,17 @@ const addEthPlaceholder = (
       type: 'token',
       uniqueId: 'eth',
     };
-
-    return { addedEth: true, assets: concat([zeroEth], assets) };
+    return { addedEth: true, assets: [zeroEth].concat(assets) };
   }
   return { addedEth: false, assets };
 };
 
 const getTotal = (assets: any) =>
-  reduce(
-    assets,
-    // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
-    (acc, asset) => {
-      const balance = asset?.native?.balance?.amount ?? 0;
-      return add(acc, balance);
-    },
-    0
-  );
+  // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
+  assets.reduce((acc, asset) => {
+    const balance = asset?.native?.balance?.amount ?? 0;
+    return add(acc, balance);
+  }, 0);
 
 export const buildCoinsList = (
   sortedAssets: any,
@@ -148,7 +141,8 @@ export const buildCoinsList = (
   });
 
   // decide which assets to show above or below the coin divider
-  const nonHidden = concat(pinnedAssets, standardAssets);
+  // FIXME: Parameter 'allAssets' implicitly has an 'any' type.
+  const nonHidden = pinnedAssets.concat(standardAssets) as any[];
   const dividerIndex = Math.max(pinnedAssets.length, COINS_TO_SHOW);
 
   let assetsAboveDivider = slice(nonHidden, 0, dividerIndex);
@@ -159,7 +153,7 @@ export const buildCoinsList = (
     assetsBelowDivider = slice(smallAssets, COINS_TO_SHOW);
   } else {
     const remainderBelowDivider = slice(nonHidden, dividerIndex);
-    assetsBelowDivider = concat(remainderBelowDivider, smallAssets);
+    assetsBelowDivider = remainderBelowDivider.concat(smallAssets);
   }
 
   // calculate small balance and overall totals
@@ -170,7 +164,7 @@ export const buildCoinsList = (
   const defaultToEditButton = assetsBelowDivider.length === 0;
   // include hidden assets if in edit mode
   if (isCoinListEdited) {
-    assetsBelowDivider = concat(assetsBelowDivider, hiddenAssets);
+    assetsBelowDivider = assetsBelowDivider.concat(hiddenAssets);
   }
   const allAssets = assetsAboveDivider;
 

@@ -408,3 +408,8 @@ export const fromWei = (number: BigNumberish): string =>
 export const delay = (ms: number): Promise<void> => {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
+
+export const flattenDeep = (arr: unknown[]): unknown[] =>
+  arr.flatMap(subArray =>
+    Array.isArray(subArray) ? flattenDeep(subArray) : subArray
+  );

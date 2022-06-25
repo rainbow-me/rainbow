@@ -1,4 +1,4 @@
-import { concat, isEmpty, isNil, keyBy, keys } from 'lodash';
+import { isEmpty, isNil, keyBy, keys } from 'lodash';
 import io from 'socket.io-client';
 import { getExperimetalFlag, L2_TXS } from '../config/experimental';
 import config from '../model/config';
@@ -139,8 +139,7 @@ const assetPricesSubscription = (
   currency,
   action = 'subscribe'
 ) => {
-  const assetCodes = concat(
-    tokenAddresses,
+  const assetCodes = tokenAddresses.concat(
     ETH_ADDRESS,
     DPI_ADDRESS,
     MATIC_MAINNET_ADDRESS
