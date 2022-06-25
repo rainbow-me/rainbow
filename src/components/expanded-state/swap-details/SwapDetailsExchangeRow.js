@@ -68,14 +68,22 @@ const ExchangeIcon = ({ index = 1, icon, protocol }) => {
             width={{ custom: 20 }}
           >
             <Cover alignHorizontal="center" alignVertical="center">
-              <Text
-                align="center"
-                color="secondary80"
-                size="14px"
-                weight="semibold"
+              <Box
+                style={
+                  android && {
+                    top: 1,
+                  }
+                }
               >
-                {protocol?.substring(0, 1)}
-              </Text>
+                <Text
+                  align="center"
+                  color="secondary80"
+                  size="14px"
+                  weight="semibold"
+                >
+                  {protocol?.substring(0, 1)}
+                </Text>
+              </Box>
             </Cover>
           </Box>
         </Stack>
@@ -157,15 +165,32 @@ export default function SwapDetailsExchangeRow(props) {
               </SwapDetailsLabel>
             </Column>
             <Column width="content">
-              <ExchangeIconStack protocols={steps[step]} />
+              <Box
+                style={{
+                  top: android ? -1.5 : 0,
+                }}
+              >
+                <ExchangeIconStack protocols={steps[step]} />
+              </Box>
             </Column>
             <Column width="content">
               <SwapDetailsValue>{steps[step].label}</SwapDetailsValue>
             </Column>
             {steps?.[step]?.part && (
               <Column width="content">
-                <Bleed right="6px" vertical="6px">
-                  <Pill textColor={defaultColor}>{steps[step].part}</Pill>
+                <Bleed right={android ? '5px' : '6px'} vertical="6px">
+                  <Pill
+                    height={android && 20}
+                    style={
+                      android && {
+                        lineHeight: 22,
+                        top: -1,
+                      }
+                    }
+                    textColor={defaultColor}
+                  >
+                    {steps[step].part}
+                  </Pill>
                 </Bleed>
               </Column>
             )}
