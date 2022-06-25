@@ -73,9 +73,6 @@ const RegistrationCover = ({
       asset?: UniqueAsset;
       image?: Image & { tmpPath?: string };
     }) => {
-      // We want to disallow future avatar state changes (i.e. when upload successful)
-      // to avoid avatar flashing (from temp URL to uploaded URL).
-      setCoverUpdateAllowed(false);
       setCoverMetadata(image);
       setCoverUrl(
         image?.tmpPath ||
@@ -98,6 +95,9 @@ const RegistrationCover = ({
           }),
         });
       } else if (image?.tmpPath) {
+        // We want to disallow future avatar state changes (i.e. when upload successful)
+        // to avoid avatar flashing (from temp URL to uploaded URL).
+        setCoverUpdateAllowed(false);
         onBlurField({
           key: 'cover',
           value: image.tmpPath,

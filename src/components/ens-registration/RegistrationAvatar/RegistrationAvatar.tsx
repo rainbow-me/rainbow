@@ -94,9 +94,6 @@ const RegistrationAvatar = ({
       setAvatarUrl(
         image?.tmpPath || asset?.lowResUrl || asset?.image_thumbnail_url || ''
       );
-      // We want to disallow future avatar state changes (i.e. when upload successful)
-      // to avoid avatar flashing (from temp URL to uploaded URL).
-      setAvatarUpdateAllowed(false);
       onChangeAvatarUrl(
         image?.path || asset?.lowResUrl || asset?.image_thumbnail_url || ''
       );
@@ -113,6 +110,9 @@ const RegistrationAvatar = ({
           }),
         });
       } else if (image?.tmpPath) {
+        // We want to disallow future avatar state changes (i.e. when upload successful)
+        // to avoid avatar flashing (from temp URL to uploaded URL).
+        setAvatarUpdateAllowed(false);
         onBlurField({
           key: 'avatar',
           value: image.tmpPath,
