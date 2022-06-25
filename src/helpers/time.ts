@@ -3,14 +3,14 @@ import { findKey, isObjectLike, isString } from 'lodash';
 import parseMilliseconds from 'parse-ms';
 import { convertStringToNumber, omitBy } from './utilities';
 
-const buildLocalizedTimeUnitString = ({ plural, short, unit }) => {
+const buildLocalizedTimeUnitString = ({ plural, short, unit }: any) => {
   const length = short ? 'short' : 'long';
   const plurality = plural ? 'plural' : 'singular';
 
   return lang.t(`time.${unit}.${length}.${plurality}`);
 };
 
-const getHighestResolutionUnit = timeUnitValues => {
+const getHighestResolutionUnit = (timeUnitValues: any) => {
   const highestResolutionUnit = findKey(timeUnitValues) || 'seconds';
   return {
     unit: highestResolutionUnit,
@@ -18,7 +18,7 @@ const getHighestResolutionUnit = timeUnitValues => {
   };
 };
 
-const isZero = number => number === 0;
+const isZero = (number: any) => number === 0;
 
 /**
  * @desc get time string for minimal unit
@@ -28,9 +28,9 @@ const isZero = number => number === 0;
  * @return {String}
  */
 export const getMinimalTimeUnitStringForMs = (
-  value = 0,
+  value: string | number = 0,
   short = true,
-  plural
+  plural?: any
 ) => {
   const ms =
     isObjectLike(value) || isString(value)
