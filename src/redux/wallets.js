@@ -1,6 +1,6 @@
 import { captureException, captureMessage } from '@sentry/react-native';
 import { toChecksumAddress } from 'ethereumjs-util';
-import { filter, flatMap, get, isEmpty, keys, map, values } from 'lodash';
+import { get, isEmpty, keys, map } from 'lodash';
 import { backupUserDataIntoCloud } from '../handlers/cloudBackup';
 import { saveKeychainIntegrityState } from '../handlers/localstorage/globalSettings';
 import {
@@ -289,13 +289,15 @@ export const fetchWalletENSAvatars = () => async (dispatch, getState) =>
   getWalletENSAvatars(getState().wallets, dispatch);
 
 export const fetchWalletNames = () => async (dispatch, getState) => {
-  const { wallets } = getState().wallets;
+  const { wallets = {} } = getState().wallets;
   const updatedWalletNames = {};
 
   // Fetch ENS names
   await Promise.all(
-    flatMap(values(wallets), wallet => {
-      const visibleAccounts = filter(wallet.addresses, 'visible');
+    Object.values(wallets).flatMap(wallet => {
+      const visibleAccounts = wallet.addresses?.filter(
+        address => address.visible
+      );
       return map(visibleAccounts, async account => {
         try {
           const ens = await fetchReverseRecordWithRetry(account.address);

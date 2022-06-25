@@ -451,3 +451,6 @@ export const omitFlatten = <T extends object, K extends keyof T>(
   }
   return newObj;
 };
+
+export const times = (n: number, fn: (i: number) => unknown) =>
+  Array.from({ length: n }, (_, i) => fn(i));
