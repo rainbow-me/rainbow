@@ -4,6 +4,10 @@ import { get, isNil } from 'lodash';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 
 type BigNumberish = number | string | BigNumber;
+interface Dictionary<T> {
+  [index: string]: T;
+}
+type ValueKeyIteratee<T> = (value: T, key: string) => unknown;
 
 export const abs = (value: BigNumberish): string =>
   new BigNumber(value).abs().toFixed();
@@ -413,3 +417,37 @@ export const flattenDeep = (arr: unknown[]): unknown[] =>
   arr.flatMap(subArray =>
     Array.isArray(subArray) ? flattenDeep(subArray) : subArray
   );
+
+/**
+ * @desc Creates an object composed of the omitted object properties by some predicate function.
+ */
+export const omitBy = <T>(
+  obj: Dictionary<T>,
+  predicate: ValueKeyIteratee<T>
+): Dictionary<T> => {
+  return Object.keys(obj)
+    .filter(k => !predicate(obj[k], k))
+    .reduce((acc, key) => {
+      acc[key] = obj[key];
+      return acc;
+    }, {} as Dictionary<T>);
+};
+
+/**
+ * @desc Can omit only flattened key, will not work with nested props like 'key.someObj.value'
+ */
+export const omitFlatten = <T extends object, K extends keyof T>(
+  obj: T | null | undefined,
+  keys: K[] | K
+): Omit<T, K> => {
+  const keysArr = Array.isArray(keys) ? keys : [keys];
+  const newObj: any = {};
+  const keysArrObj: any = {};
+  for (const key of keysArr) {
+    keysArrObj[key] = true;
+  }
+  for (const key in obj) {
+    if (!keysArrObj[key]) newObj[key] = obj[key];
+  }
+  return newObj;
+};
