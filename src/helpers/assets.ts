@@ -29,7 +29,7 @@ export const buildAssetUniqueIdentifier = (item: any) => {
 };
 
 const addEthPlaceholder = (
-  assets: any,
+  assets: any[],
   includePlaceholder: any,
   pinnedCoins: any,
   nativeCurrency: any,
@@ -141,7 +141,8 @@ export const buildCoinsList = (
   });
 
   // decide which assets to show above or below the coin divider
-  const nonHidden = pinnedAssets.concat(standardAssets);
+  // FIXME: Parameter 'allAssets' implicitly has an 'any' type.
+  const nonHidden = pinnedAssets.concat(standardAssets) as any[];
   const dividerIndex = Math.max(pinnedAssets.length, COINS_TO_SHOW);
 
   let assetsAboveDivider = slice(nonHidden, 0, dividerIndex);
