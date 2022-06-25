@@ -474,7 +474,6 @@ const withUniqueTokenFamiliesSection = (uniqueTokens: any, data: any) => {
       data.map(buildImagesToPreloadArray)
     );
     isPreloadComplete = !!imagesToPreload.length;
-    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '(false | "" | 0 | null | undefin... Remove this comment to see the full error message
     ImgixImage.preload(imagesToPreload, 200);
   }
 
