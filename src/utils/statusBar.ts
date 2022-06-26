@@ -1,4 +1,4 @@
-import { debounce } from 'lodash';
+import debounce from 'lodash.debounce';
 import { StatusBar } from 'react-native';
 
 export const setBarStyle = debounce((...args) => {

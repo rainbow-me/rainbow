@@ -1,4 +1,4 @@
-import { debounce } from 'lodash';
+import debounce from 'lodash.debounce';
 import { useCallback, useMemo } from 'react';
 import Mailer from 'react-native-mail';
 import { Alert } from '../components/alerts';

@@ -1,6 +1,6 @@
 import Clipboard from '@react-native-community/clipboard';
 import lang from 'i18n-js';
-import { debounce } from 'lodash';
+import debounce from 'lodash.debounce';
 import { useCallback } from 'react';
 import Mailer from 'react-native-mail';
 import { Alert } from '../components/alerts';
