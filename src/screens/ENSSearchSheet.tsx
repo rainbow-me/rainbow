@@ -24,6 +24,7 @@ import {
 } from '@rainbow-me/design-system';
 import { ENS_DOMAIN, REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import {
+  useENSPendingRegistrations,
   useENSRegistration,
   useENSRegistrationCosts,
   useENSRegistrationStepHandler,
@@ -40,6 +41,7 @@ export default function ENSSearchSheet() {
   const topPadding = android ? 29 : 19;
 
   const { startRegistration, name } = useENSRegistration();
+  const { finishRegistration } = useENSPendingRegistrations();
 
   const [searchQuery, setSearchQuery] = useState(name?.replace(ENS_DOMAIN, ''));
   const [inputValue, setInputValue] = useState(name?.replace(ENS_DOMAIN, ''));
@@ -49,6 +51,7 @@ export default function ENSSearchSheet() {
     data: registrationData,
     isIdle,
     isRegistered,
+    isPending,
     isLoading,
     isInvalid,
     isAvailable,
@@ -77,6 +80,10 @@ export default function ENSSearchSheet() {
     Keyboard.dismiss();
     navigate(Routes.ENS_ASSIGN_RECORDS_SHEET);
   }, [navigate, searchQuery, startRegistration]);
+
+  const handlePressFinish = useCallback(() => {
+    finishRegistration(`${searchQuery}${ENS_DOMAIN}`);
+  }, [finishRegistration, searchQuery]);
 
   useFocusEffect(
     useCallback(() => {
@@ -168,7 +175,21 @@ export default function ENSSearchSheet() {
               </Text>
             </Inset>
           )}
-          {(isAvailable || isRegistered) && (
+          {isPending && (
+            <Inset horizontal="30px">
+              <Stack space="15px">
+                <Text
+                  align="center"
+                  color="secondary50"
+                  size="16px"
+                  weight="bold"
+                >
+                  {lang.t('profiles.search.already_registering_name')}
+                </Text>
+              </Stack>
+            </Inset>
+          )}
+          {!isPending && (isAvailable || isRegistered) && (
             <Inset horizontal="19px">
               <Stack
                 separator={
@@ -184,10 +205,12 @@ export default function ENSSearchSheet() {
                     type="availability"
                   />
                   {isRegistered ? (
-                    <SearchResultGradientIndicator
-                      expirationDate={registrationData?.expirationDate}
-                      type="expiration"
-                    />
+                    registrationData?.expirationDate ? (
+                      <SearchResultGradientIndicator
+                        expirationDate={registrationData?.expirationDate}
+                        type="expiration"
+                      />
+                    ) : null
                   ) : (
                     <SearchResultGradientIndicator
                       price={registrationData?.rentPrice?.perYear?.display}
@@ -196,14 +219,18 @@ export default function ENSSearchSheet() {
                     />
                   )}
                 </Inline>
-                <Inset horizontal="15px">
-                  {isRegistered ? (
-                    <Text color="secondary60" size="16px" weight="bold">
-                      {lang.t('profiles.search.registered_on', {
-                        content: registrationData?.registrationDate,
-                      })}
-                    </Text>
-                  ) : (
+                {isRegistered ? (
+                  registrationData?.registrationDate ? (
+                    <Inset horizontal="15px">
+                      <Text color="secondary60" size="16px" weight="bold">
+                        {lang.t('profiles.search.registered_on', {
+                          content: registrationData?.registrationDate,
+                        })}
+                      </Text>
+                    </Inset>
+                  ) : null
+                ) : (
+                  <Inset horizontal="15px">
                     <Inline>
                       {registrationCostsDataIsAvailable ? (
                         <Text
@@ -224,13 +251,25 @@ export default function ENSSearchSheet() {
                         </Text>
                       )}
                     </Inline>
-                  )}
-                </Inset>
+                  </Inset>
+                )}
               </Stack>
             </Inset>
           )}
         </Box>
         <SheetActionButtonRow>
+          {isPending && !isRegistered && (
+            <SheetActionButton
+              // @ts-expect-error JavaScript component
+              label={lang.t('profiles.search.finish')}
+              onPress={handlePressFinish}
+              // @ts-expect-error JavaScript component
+              size="big"
+              // @ts-expect-error JavaScript component
+              testID="ens-search-continue"
+              weight="heavy"
+            />
+          )}
           {isAvailable && (
             <SheetActionButton
               color={colors.green}

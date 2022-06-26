@@ -3,7 +3,7 @@ import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { MarqueeList } from '../../list';
 import { Box, Stack, Text } from '@rainbow-me/design-system';
-import { ensProfileQueryKey, useENSProfile } from '@rainbow-me/hooks';
+import { ensRecordsQueryKey, useENSRecords } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import { queryClient } from '@rainbow-me/react-query/queryClient';
@@ -23,10 +23,10 @@ export default function IntroMarquee() {
 
   const handlePressENS = useCallback(
     (ensName: string) => {
-      const profile = queryClient.getQueryData<
-        ReturnType<typeof useENSProfile>['data']
-      >(ensProfileQueryKey(ensName));
-      const description = profile?.records?.description || '';
+      const data = queryClient.getQueryData<
+        ReturnType<typeof useENSRecords>['data']
+      >(ensRecordsQueryKey({ name: ensName }));
+      const description = data?.records?.description || '';
       navigate(Routes.PROFILE_PREVIEW_SHEET, {
         address: ensName,
         descriptionProfilePreviewHeight: estimateDescriptionProfilePreviewHeight(

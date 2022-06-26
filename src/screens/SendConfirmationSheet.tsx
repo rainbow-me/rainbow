@@ -67,7 +67,7 @@ import {
   useColorForAsset,
   useContacts,
   useDimensions,
-  useENSProfileImages,
+  useENSAvatar,
   useGas,
   useUserAccounts,
   useWallets,
@@ -110,8 +110,7 @@ const doesNamePointToRecipient = (
   ensProfile?: ENSProfile,
   recipientAddress?: string
 ) =>
-  ensProfile?.data?.primary?.address?.toLowerCase() ===
-  recipientAddress?.toLowerCase();
+  ensProfile?.data?.address?.toLowerCase() === recipientAddress?.toLowerCase();
 const isRegistrant = (ensProfile?: ENSProfile) => ensProfile?.isRegistrant;
 
 const gasOffset = 120;
@@ -124,7 +123,7 @@ function getDefaultCheckboxes({
   toAddress,
 }: {
   isENS: boolean;
-  ensProfile: any;
+  ensProfile: ENSProfile;
   network: string;
   toAddress: string;
 }): Checkbox[] {
@@ -530,12 +529,12 @@ export default function SendConfirmationSheet() {
     contact?.color ||
     addressHashedColorIndex(toAddress);
 
-  const { data: images } = useENSProfileImages(to, {
+  const { data: avatar } = useENSAvatar(to, {
     enabled: isENSAddressFormat(to),
   });
 
   const accountImage = profilesEnabled
-    ? images?.avatarUrl || existingAccount?.image
+    ? avatar?.imageUrl || existingAccount?.image
     : existingAccount?.image;
 
   const imageUrl = svgToPngIfNeeded(
