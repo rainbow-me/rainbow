@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { startCase, toLower } from 'lodash';
+import { toLower } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import { Linking, View } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
@@ -20,6 +20,7 @@ import {
 } from '@rainbow-me/design-system';
 import { UniqueAsset } from '@rainbow-me/entities';
 import { Network } from '@rainbow-me/helpers';
+import { toTitleCase } from '@rainbow-me/helpers/utilities';
 import {
   useAccountProfile,
   useClipboard,
@@ -68,7 +69,9 @@ const getAssetActions = (network: Network) =>
       actionTitle: lang.t(
         'expanded_state.unique_expanded.view_on_block_explorer',
         {
-          blockExplorerName: startCase(ethereumUtils.getBlockExplorer(network)),
+          blockExplorerName: toTitleCase(
+            ethereumUtils.getBlockExplorer(network)
+          ),
         }
       ),
       icon: {
@@ -370,7 +373,7 @@ const UniqueTokenExpandedStateHeader = ({
     const androidContractActions = [
       lang.t('expanded_state.unique_expanded.view_on_web'),
       lang.t('expanded_state.unique_expanded.view_on_block_explorer', {
-        blockExplorerName: startCase(
+        blockExplorerName: toTitleCase(
           // @ts-expect-error network could be undefined?
           ethereumUtils.getBlockExplorer(asset?.network)
         ),

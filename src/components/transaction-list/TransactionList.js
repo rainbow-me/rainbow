@@ -1,7 +1,7 @@
 import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
-import { pick, startCase, toLower } from 'lodash';
+import { pick, toLower } from 'lodash';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { requireNativeComponent } from 'react-native';
 import { useDispatch } from 'react-redux';
@@ -14,6 +14,7 @@ import {
   getHumanReadableDate,
   hasAddableContact,
 } from '@rainbow-me/helpers/transactions';
+import { toTitleCase } from '@rainbow-me/helpers/utilities';
 import { isValidDomainFormat } from '@rainbow-me/helpers/validators';
 import {
   useAccountProfile,
@@ -167,7 +168,7 @@ export default function TransactionList({
         canBeResubmitted && status !== TransactionStatusTypes.cancelling;
 
       const blockExplorerAction = lang.t('wallet.action.view_on', {
-        blockExplorerName: startCase(ethereumUtils.getBlockExplorer(network)),
+        blockExplorerName: toTitleCase(ethereumUtils.getBlockExplorer(network)),
       });
 
       if (hash) {
