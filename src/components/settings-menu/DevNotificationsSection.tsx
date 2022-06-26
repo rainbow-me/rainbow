@@ -196,8 +196,8 @@ const DevNotificationsSection = () => {
                   />
                 </Box>
                 <Box>
-                  <Text containsEmoji size="18px" weight="bold">
-                    {wallet.label}
+                  <Text size="18px" weight="bold">
+                    {wallet.label || wallet.color}
                   </Text>
                 </Box>
                 <Box paddingTop="15px">
