@@ -1,20 +1,27 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { Animated, Easing, StyleSheet, View } from 'react-native';
+import FastImage from 'react-native-fast-image';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
+import { useLatestCallback } from '../../hooks';
 import { ButtonPressAnimation } from '../animations';
-import { RowWithMargins } from '../layout';
 import TokenFamilyHeaderIcon from './TokenFamilyHeaderIcon';
 import { Text } from '@rainbow-me/design-system';
 import { ImgixImage } from '@rainbow-me/images';
-import { padding } from '@rainbow-me/styles';
 import { ThemeContextProps } from '@rainbow-me/theme';
-
-const AnimatedImgixImage = Animated.createAnimatedComponent(ImgixImage);
 
 export const TokenFamilyHeaderAnimationDuration = 200;
 export const TokenFamilyHeaderHeight = 50;
 
-const cx = StyleSheet.create({
+const sx = StyleSheet.create({
+  center: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  chevron: {
+    height: 18,
+    width: 8,
+  },
   content: {
     alignItems: 'center',
     flexDirection: 'row',
@@ -53,22 +60,38 @@ const TokenFamilyHeader = ({
 
   const toValue = Number(!!isOpen);
 
-  const [animation] = useState(() => new Animated.Value(toValue));
+  const aRef = useRef<{
+    animation: Animated.Value;
+    toValue: number;
+  } | null>(null);
 
-  useEffect(() => {
+  if (aRef.current === null || aRef.current.toValue !== toValue) {
+    aRef.current = {
+      animation: new Animated.Value(toValue),
+      toValue,
+    };
+  }
+
+  const { animation } = aRef.current!;
+
+  const handlePress = useLatestCallback(() => {
     Animated.timing(animation, {
       duration: TokenFamilyHeaderAnimationDuration,
       easing: Easing.bezier(0.25, 0.1, 0.25, 1),
-      toValue,
+      toValue: isOpen ? 0 : 1,
       useNativeDriver: true,
     }).start();
-  }, [toValue, animation]);
+
+    if (onPress) {
+      onPress();
+    }
+  });
 
   const imageAnimatedStyles = useMemo(
     () => ({
       height: 18,
       marginBottom: 1,
-      right: 5,
+      marginLeft: 8,
       transform: [
         {
           rotate: animation.interpolate({
@@ -93,22 +116,17 @@ const TokenFamilyHeader = ({
   );
 
   return (
-    <ButtonPressAnimation
-      key={`token_family_header_${emoji || familyImage || title}`}
-      onPress={onPress}
-      scaleTo={1.05}
-      testID={testID}
-    >
+    <ButtonPressAnimation onPress={handlePress} scaleTo={1.05} testID={testID}>
       <View
         style={[
-          cx.content,
+          sx.content,
           {
             backgroundColor: colors.white,
-            ...padding.object(0, isCoinRow ? 19 : 19),
+            padding: 19,
           },
         ]}
       >
-        <RowWithMargins align="center" margin={emoji ? 5 : 9}>
+        <View style={[sx.center, { marginRight: emoji ? 5 : 0 }]}>
           {emoji ? (
             <Text containsEmoji size="16px">
               {emoji}
@@ -121,28 +139,30 @@ const TokenFamilyHeader = ({
               theme={theme}
             />
           )}
-        </RowWithMargins>
+        </View>
         <View
-          style={[cx.title, { paddingLeft: title === 'Showcase' ? 1 : 10 }]}
+          style={[sx.title, { paddingLeft: title === 'Showcase' ? 1 : 10 }]}
         >
           <Text numberOfLines={1} size="18px" weight="heavy">
             {title}
           </Text>
         </View>
-        <RowWithMargins align="center" margin={10}>
+        <View style={[sx.center, { marginRight: 10 }]}>
           <Animated.View style={amountAnimatedStyles}>
             <Text align="right" size="18px">
               {childrenAmount}
             </Text>
           </Animated.View>
-          <AnimatedImgixImage
-            resizeMode={ImgixImage.resizeMode.contain}
-            // @ts-expect-error Typing mismatch.
-            source={CaretImageSource}
-            style={imageAnimatedStyles}
-            tintColor={colors.dark}
-          />
-        </RowWithMargins>
+          <Animated.View style={imageAnimatedStyles}>
+            <FastImage
+              resizeMode={ImgixImage.resizeMode.contain}
+              // @ts-expect-error static image
+              source={CaretImageSource}
+              style={sx.chevron}
+              tintColor={colors.dark}
+            />
+          </Animated.View>
+        </View>
       </View>
     </ButtonPressAnimation>
   );
