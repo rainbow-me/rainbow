@@ -342,9 +342,9 @@ export const buildBriefUniqueTokenList = (
   listType: any
 ) => {
   const uniqueTokensInShowcase = uniqueTokens
-    .filter(({ uniqueId }) => selectedShowcaseTokens?.includes(uniqueId))
-    .map(({ uniqueId }) => uniqueId);
-  const filteredUniqueTokens = uniqueTokens.filter(token => {
+    .filter(({ uniqueId }: any) => selectedShowcaseTokens?.includes(uniqueId))
+    .map(({ uniqueId }: any) => uniqueId);
+  const filteredUniqueTokens = uniqueTokens.filter((token: any) => {
     if (listType === 'select-nft') {
       const format = getUniqueTokenFormat(token);
       const type = getUniqueTokenType(token);

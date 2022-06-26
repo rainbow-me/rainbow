@@ -72,6 +72,6 @@ export const setENSDomains = (
   value: {
     name: string;
     owner: { id: string };
-    avatar: { imageUrl?: string | null };
+    labelhash: string;
   }[]
 ) => saveGlobal(ensDomains(key), value);
