@@ -1,6 +1,6 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { TokenFamilyHeader } from '../../token-family';
-import { useOpenFamilies } from '@rainbow-me/hooks';
+import { useLatestCallback, useOpenFamilies } from '@rainbow-me/hooks';
 import { ThemeContextProps } from '@rainbow-me/theme';
 
 export default React.memo(function WrappedTokenFamilyHeader({
@@ -17,12 +17,10 @@ export default React.memo(function WrappedTokenFamilyHeader({
   const { openFamilies, updateOpenFamilies } = useOpenFamilies();
   const isFamilyOpen = openFamilies[name];
 
-  const handleToggle = useCallback(
-    () =>
-      updateOpenFamilies({
-        [name]: !isFamilyOpen,
-      }),
-    [name, isFamilyOpen, updateOpenFamilies]
+  const handleToggle = useLatestCallback(() =>
+    updateOpenFamilies({
+      [name]: !isFamilyOpen,
+    })
   );
 
   return (
