@@ -22,8 +22,8 @@ export default function ProfileInfoSection({
   coinAddresses?: { [key: string]: string };
   ensName?: string;
   images?: {
-    avatar?: { imageUrl: string | null };
-    cover?: { imageUrl: string | null };
+    avatar?: { imageUrl?: string | null };
+    cover?: { imageUrl?: string | null };
   };
   isLoading?: boolean;
   records?: Partial<Records>;
