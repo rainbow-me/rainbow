@@ -184,7 +184,7 @@ export default function ENSSearchSheet() {
                   size="16px"
                   weight="bold"
                 >
-                  You are already registering this name.
+                  {lang.t('profiles.search.already_registering_name')}
                 </Text>
               </Stack>
             </Inset>
