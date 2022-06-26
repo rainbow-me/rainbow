@@ -68,7 +68,7 @@ export default function useENSRegistrationForm({
     updateRecordByKey,
     updateRecords,
   } = useENSRegistration();
-  const { changedRecords, profileQuery } = useENSModifiedRegistration();
+  const { changedRecords, isSuccess } = useENSModifiedRegistration();
 
   // The initial records will be the existing records belonging to the profile in "edit mode",
   // but will be all of the records in "create mode".
@@ -213,20 +213,21 @@ export default function useENSRegistrationForm({
     updateRecords(values);
   }, [updateRecords, values]);
 
+  const isEmptyValues = Object.values(values).filter(x => x).length === 0;
+
   const [isLoading, setIsLoading] = useState(
-    mode === REGISTRATION_MODES.EDIT &&
-      (!profileQuery.isSuccess || isEmpty(values))
+    mode === REGISTRATION_MODES.EDIT && (!isSuccess || isEmptyValues)
   );
 
   useEffect(() => {
     if (mode === REGISTRATION_MODES.EDIT) {
-      if (profileQuery.isSuccess || !isEmpty(values)) {
+      if (isSuccess || !isEmptyValues) {
         setTimeout(() => setIsLoading(false), 200);
       } else {
         setIsLoading(true);
       }
     }
-  }, [mode, profileQuery.isSuccess, values]);
+  }, [mode, isSuccess, isEmptyValues]);
 
   const clearValues = useCallback(() => {
     setValuesMap({});
@@ -285,11 +286,11 @@ export default function useENSRegistrationForm({
     errors,
     isEmpty: empty,
     isLoading,
+    isSuccess,
     onAddField,
     onBlurField,
     onChangeField,
     onRemoveField,
-    profileQuery,
     selectedFields,
     setDisabled,
     submit,

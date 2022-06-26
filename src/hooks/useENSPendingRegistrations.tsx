@@ -1,14 +1,19 @@
 import { useCallback, useMemo } from 'react';
+import { Keyboard } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAccountSettings, useENSRegistration } from '.';
 import { ENSRegistrationState } from '@rainbow-me/entities';
+import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
+import { useNavigation } from '@rainbow-me/navigation';
 import { removeExpiredRegistrations } from '@rainbow-me/redux/ensRegistration';
 import { AppState } from '@rainbow-me/redux/store';
+import Routes from '@rainbow-me/routes';
 import { getENSNFTAvatarUrl } from '@rainbow-me/utils';
 
 export default function useENSPendingRegistrations() {
   const { accountAddress } = useAccountSettings();
-  const { removeRegistrationByName } = useENSRegistration();
+  const { removeRegistrationByName, startRegistration } = useENSRegistration();
+  const { navigate } = useNavigation();
   const dispatch = useDispatch();
 
   const { pendingRegistrations, accountRegistrations } = useSelector(
@@ -63,8 +68,20 @@ export default function useENSPendingRegistrations() {
     dispatch(removeExpiredRegistrations());
   }, [dispatch]);
 
+  const finishRegistration = useCallback(
+    name => {
+      startRegistration(name, REGISTRATION_MODES.CREATE);
+      android && Keyboard.dismiss();
+      setTimeout(() => {
+        navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {});
+      }, 100);
+    },
+    [navigate, startRegistration]
+  );
+
   return {
     accountRegistrations,
+    finishRegistration,
     pendingRegistrations,
     registrationImages,
     removeExpiredRegistrations: refreshRegistrations,

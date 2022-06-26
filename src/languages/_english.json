@@ -813,11 +813,13 @@
         "price": "%{content} / Year",
         "expiration": "Til %{content}",
         "3_char_min": "Minimum 3 characters",
+        "already_registering_name": "You are already registering this name",
         "estimated_total_cost_1": "Estimated total cost of",
         "estimated_total_cost_2": "with current network fees",
         "loading_fees": "Loading network fees…",
         "clear": "􀅉 Clear",
-        "continue": "Continue 􀆊"
+        "continue": "Continue 􀆊",
+        "finish": "Finish 􀆊"
       },
       "create": {
         "label": "Create your profile",

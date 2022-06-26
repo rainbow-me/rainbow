@@ -2,13 +2,7 @@ import { BlurView } from '@react-native-community/blur';
 import { useFocusEffect } from '@react-navigation/core';
 import c from 'chroma-js';
 import lang from 'i18n-js';
-import React, {
-  ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-} from 'react';
+import React, { ReactNode, useCallback, useMemo, useRef } from 'react';
 import { InteractionManager, Linking, Share, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
@@ -61,7 +55,6 @@ import { AssetTypes, UniqueAsset } from '@rainbow-me/entities';
 import { buildUniqueTokenName } from '@rainbow-me/helpers/assets';
 import { ENS_RECORDS, REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import {
-  prefetchENSProfileRecords,
   useAccountProfile,
   useBooleanState,
   useDimensions,
@@ -268,7 +261,9 @@ const UniqueTokenExpandedState = ({
       ? uniqueId?.split(' ')?.[0]
       : uniqueId
     : '';
-  const ensProfile = useENSProfile(cleanENSName, { enabled: isENS });
+  const ensProfile = useENSProfile(cleanENSName, {
+    enabled: isENS,
+  });
   const ensData = ensProfile.data;
 
   useFocusEffect(
@@ -278,12 +273,6 @@ const UniqueTokenExpandedState = ({
       }
     }, [setOptions, uniqueTokenType])
   );
-
-  useEffect(() => {
-    if (cleanENSName) {
-      prefetchENSProfileRecords({ name: cleanENSName });
-    }
-  }, [cleanENSName]);
 
   const profileInfoSectionAvailable = useMemo(() => {
     const available = Object.keys(ensData?.records || {}).some(
@@ -562,10 +551,10 @@ const UniqueTokenExpandedState = ({
                             <ENSBriefTokenInfoRow
                               color={imageColor}
                               ensName={uniqueId}
-                              expiryDate={ensData?.registration.expiryDate}
+                              expiryDate={ensData?.registration?.expiryDate}
                               externalAvatarUrl={asset?.lowResUrl}
                               registrationDate={
-                                ensData?.registration.registrationDate
+                                ensData?.registration?.registrationDate
                               }
                               showExtendDuration={hasExtendDurationButton}
                             />

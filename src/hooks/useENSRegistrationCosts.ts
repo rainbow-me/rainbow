@@ -212,9 +212,9 @@ export default function useENSRegistrationCosts({
       enabled:
         (step === REGISTRATION_STEPS.COMMIT ||
           step === REGISTRATION_STEPS.REGISTER) &&
-        nameUpdated,
+        Boolean(accountAddress),
       queryFn: getReverseRecord,
-      queryKey: [QUERY_KEYS.GET_REVERSE_RECORD, name],
+      queryKey: [QUERY_KEYS.GET_REVERSE_RECORD, accountAddress],
       staleTime: QUERY_STALE_TIME,
     },
     {

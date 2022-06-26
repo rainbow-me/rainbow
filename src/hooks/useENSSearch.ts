@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQuery } from 'react-query';
-import { useAccountSettings } from '.';
+import { useAccountSettings, useENSLocalTransactions } from '.';
 import { fetchRegistrationDate } from '@rainbow-me/handlers/ens';
 import {
   ENS_DOMAIN,
@@ -41,8 +41,19 @@ export default function useENSSearch({
 
   const name = inputName.replace(ENS_DOMAIN, '');
   const { nativeCurrency } = useAccountSettings();
+
+  const {
+    commitTransactionHash,
+    confirmedRegistrationTransaction,
+    pendingRegistrationTransaction,
+  } = useENSLocalTransactions({
+    name: `${name}${ENS_DOMAIN}`,
+  });
+
   const isValidLength = useMemo(() => name.length > 2, [name.length]);
+
   const duration = yearsDuration * timeUnits.secs.year;
+
   const getRegistrationValues = useCallback(async () => {
     const ensValidation = validateENS(`${name}${ENS_DOMAIN}`, {
       includeSubdomains: false,
@@ -60,7 +71,6 @@ export default function useENSSearch({
       getAvailable(name, contract),
       getRentPrice(name, duration, contract),
     ]);
-
     const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
       Network.mainnet
     );
@@ -70,7 +80,33 @@ export default function useENSSearch({
       nativeCurrency,
       nativeAssetPrice
     );
+
     if (isAvailable) {
+      if (confirmedRegistrationTransaction) {
+        return {
+          available: false,
+          pending: false,
+          valid: true,
+        };
+      }
+
+      if (pendingRegistrationTransaction) {
+        return {
+          available: false,
+          pending: true,
+          rentPrice: formattedRentPrice,
+          valid: true,
+        };
+      }
+
+      if (commitTransactionHash) {
+        return {
+          pending: true,
+          rentPrice: formattedRentPrice,
+          valid: true,
+        };
+      }
+
       return {
         available: true,
         rentPrice: formattedRentPrice,
@@ -93,10 +129,30 @@ export default function useENSSearch({
         valid: true,
       };
     }
-  }, [contract, duration, name, nativeCurrency, yearsDuration]);
+  }, [
+    name,
+    pendingRegistrationTransaction,
+    commitTransactionHash,
+    confirmedRegistrationTransaction,
+    contract,
+    duration,
+    yearsDuration,
+    nativeCurrency,
+  ]);
 
   const { data, status, isIdle, isLoading } = useQuery(
-    ['getRegistrationValues', [duration, name, nativeCurrency]],
+    [
+      'getRegistrationValues',
+      [
+        duration,
+        name,
+        nativeCurrency,
+        yearsDuration,
+        commitTransactionHash,
+        pendingRegistrationTransaction,
+        confirmedRegistrationTransaction,
+      ],
+    ],
     getRegistrationValues,
     {
       enabled: isValidLength && Boolean(contract),
@@ -107,6 +163,7 @@ export default function useENSSearch({
 
   const isAvailable = status === 'success' && data?.available === true;
   const isRegistered = status === 'success' && data?.available === false;
+  const isPending = status === 'success' && data?.pending === true;
   const isInvalid = status === 'success' && !data?.valid;
 
   return {
@@ -115,6 +172,7 @@ export default function useENSSearch({
     isIdle,
     isInvalid,
     isLoading,
+    isPending,
     isRegistered,
   };
 }

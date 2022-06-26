@@ -27,7 +27,9 @@ import {
 } from '@rainbow-me/design-system';
 import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import {
-  prefetchENSProfileRecords,
+  prefetchENSAvatar,
+  prefetchENSCover,
+  prefetchENSRecords,
   useAccountENSDomains,
   useAccountProfile,
   useAccountSettings,
@@ -51,7 +53,9 @@ export default function ENSIntroSheet() {
   const { colors } = useTheme();
   const { params } = useRoute<any>();
   const { accountAddress } = useAccountSettings();
-  const { data: domains, isLoading, isSuccess } = useAccountENSDomains();
+  const { data: domains, isLoading, isSuccess } = useAccountENSDomains({
+    accountAddress,
+  });
   const { accountENS } = useAccountProfile();
 
   // We are not using `isSmallPhone` from `useDimensions` here as we
@@ -83,7 +87,9 @@ export default function ENSIntroSheet() {
 
   useEffect(() => {
     if (uniqueDomain?.name) {
-      prefetchENSProfileRecords({ name: uniqueDomain.name });
+      prefetchENSAvatar(uniqueDomain.name);
+      prefetchENSCover(uniqueDomain.name);
+      prefetchENSRecords(uniqueDomain.name);
     }
   }, [uniqueDomain]);
 

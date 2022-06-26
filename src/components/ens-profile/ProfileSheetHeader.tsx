@@ -24,8 +24,10 @@ import {
 import { UniqueAsset } from '@rainbow-me/entities';
 import { ENS_RECORDS } from '@rainbow-me/helpers/ens';
 import {
-  useENSProfile,
-  useENSProfileImages,
+  useENSAddress,
+  useENSAvatar,
+  useENSCover,
+  useENSRecords,
   useFetchUniqueTokens,
   useFirstTransactionTimestamp,
 } from '@rainbow-me/hooks';
@@ -48,19 +50,24 @@ export default function ProfileSheetHeader({
   const { layout } = useContext(ModalContext) || {};
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const ensName = defaultEnsName || params?.address;
-  const { data: profile } = useENSProfile(ensName, {
+
+  const { data: profileAddress } = useENSAddress(ensName, {
     enabled: profilesEnabled,
   });
-  const { data: images, isFetched: isImagesFetched } = useENSProfileImages(
-    ensName,
-    {
-      enabled: profilesEnabled,
-    }
-  );
-  const profileAddress = profile?.primary?.address ?? '';
+  const { data: { coinAddresses, records } = {} } = useENSRecords(ensName, {
+    enabled: profilesEnabled,
+  });
+  const { data: avatar, isFetched: isAvatarFetched } = useENSAvatar(ensName, {
+    enabled: profilesEnabled,
+  });
+  const { data: cover, isFetched: isCoverFetched } = useENSCover(ensName, {
+    enabled: profilesEnabled,
+  });
+  const isImagesFetched = isAvatarFetched && isCoverFetched;
+
   const { navigate } = useNavigation();
   const { data: uniqueTokens } = useFetchUniqueTokens({
-    address: profileAddress,
+    address: profileAddress ?? '',
   });
 
   const handleSelectNFT = useCallback(
@@ -92,10 +99,10 @@ export default function ProfileSheetHeader({
     [uniqueTokens]
   );
 
-  const avatarUrl = images?.avatarUrl;
+  const avatarUrl = avatar?.imageUrl;
 
   const { enableZoomOnPressAvatar, onPressAvatar } = useMemo(() => {
-    const avatar = profile?.records?.avatar;
+    const avatar = records?.avatar;
 
     const isNFTAvatar = avatar && isENSNFTRecord(avatar);
     const avatarUniqueToken = isNFTAvatar && getUniqueToken(avatar);
@@ -110,17 +117,12 @@ export default function ProfileSheetHeader({
       enableZoomOnPressAvatar,
       onPressAvatar,
     };
-  }, [
-    enableZoomableImages,
-    getUniqueToken,
-    handleSelectNFT,
-    profile?.records?.avatar,
-  ]);
+  }, [enableZoomableImages, getUniqueToken, handleSelectNFT, records?.avatar]);
 
-  const coverUrl = images?.coverUrl;
+  const coverUrl = cover?.imageUrl;
 
   const { enableZoomOnPressCover, onPressCover } = useMemo(() => {
-    const cover = profile?.records?.cover;
+    const cover = records?.cover;
 
     const isNFTCover = cover && isENSNFTRecord(cover);
     const coverUniqueToken = isNFTCover && getUniqueToken(cover);
@@ -141,7 +143,7 @@ export default function ProfileSheetHeader({
     enableZoomableImages,
     getUniqueToken,
     handleSelectNFT,
-    profile?.records?.cover,
+    records?.cover,
   ]);
 
   const { data: firstTransactionTimestamp } = useFirstTransactionTimestamp({
@@ -180,7 +182,7 @@ export default function ProfileSheetHeader({
               {!isLoading && (
                 <Inset top="34px">
                   <ActionButtons
-                    address={profileAddress}
+                    address={profileAddress ?? ''}
                     avatarUrl={avatarUrl}
                     ensName={ensName}
                   />
@@ -195,10 +197,8 @@ export default function ProfileSheetHeader({
             <>
               {isLoading ? (
                 <DescriptionPlaceholder />
-              ) : profile?.records?.description ? (
-                <ProfileDescription
-                  description={profile?.records?.description}
-                />
+              ) : records?.description ? (
+                <ProfileDescription description={records?.description} />
               ) : null}
             </>
             <Bleed horizontal="19px">
@@ -206,12 +206,12 @@ export default function ProfileSheetHeader({
                 <RecordTagsPlaceholder />
               ) : (
                 <>
-                  {profile?.records && (
+                  {records && (
                     <RecordTags
                       firstTransactionTimestamp={firstTransactionTimestamp}
                       records={{
-                        ...profile?.records,
-                        ...profile?.coinAddresses,
+                        ...records,
+                        ...coinAddresses,
                       }}
                       show={[
                         ENS_RECORDS.displayName,
