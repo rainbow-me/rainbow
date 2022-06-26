@@ -7,9 +7,10 @@ import { useDispatch } from 'react-redux';
 import { RainbowAccount } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import useAccountProfile from './useAccountProfile';
-import useENSProfile from './useENSProfile';
-import { prefetchENSProfileImages } from './useENSProfileImages';
-import { prefetchENSProfileRecords } from './useENSProfileRecords';
+import { prefetchENSAvatar } from './useENSAvatar';
+import { prefetchENSCover } from './useENSCover';
+import useENSOwner from './useENSOwner';
+import { prefetchENSRecords } from './useENSRecords';
 import useENSRegistration from './useENSRegistration';
 import useImagePicker from './useImagePicker';
 import useWallets from './useWallets';
@@ -36,14 +37,18 @@ export default () => {
   } = useAccountProfile();
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const profileEnabled = Boolean(accountENS);
-  const ensProfile = useENSProfile(accountENS, {
+
+  const { isOwner } = useENSOwner(accountENS, {
     enabled: profileEnabled && profilesEnabled,
   });
+
   const { openPicker } = useImagePicker();
 
   useEffect(() => {
     if (accountENS) {
-      prefetchENSProfileRecords(accountENS);
+      prefetchENSAvatar(accountENS);
+      prefetchENSCover(accountENS);
+      prefetchENSRecords(accountENS);
     }
   }, [accountENS]);
 
@@ -122,13 +127,7 @@ export default () => {
   const { startRegistration } = useENSRegistration();
 
   const onAvatarPress = useCallback(() => {
-    const isENSProfile =
-      profilesEnabled && profileEnabled && ensProfile?.isOwner;
-
-    if (isENSProfile) {
-      // Prefetch profile images
-      prefetchENSProfileImages({ name: accountENS });
-    }
+    const isENSProfile = profilesEnabled && profileEnabled && isOwner;
 
     const avatarActionSheetOptions = (isENSProfile
       ? [
@@ -201,13 +200,13 @@ export default () => {
       (buttonIndex: Number) => callback(buttonIndex)
     );
   }, [
-    ensProfile,
-    profileEnabled,
     profilesEnabled,
+    profileEnabled,
+    isOwner,
     isReadOnlyWallet,
     accountImage,
-    navigate,
     accountENS,
+    navigate,
     startRegistration,
     onAvatarChooseImage,
     onAvatarRemovePhoto,
