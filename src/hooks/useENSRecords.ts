@@ -61,7 +61,7 @@ export default function useENSRecords(
   {
     supportedOnly = true,
     ...config
-  }: QueryConfig<typeof fetchENSRecords> & { supportedOnly?: boolean }
+  }: QueryConfig<typeof fetchENSRecords> & { supportedOnly?: boolean } = {}
 ) {
   return useQuery<UseQueryData<typeof fetchENSRecords>>(
     ensRecordsQueryKey({ name, supportedOnly }),
