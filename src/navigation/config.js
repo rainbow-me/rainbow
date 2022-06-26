@@ -351,15 +351,6 @@ export const exchangeTabNavigatorConfig = {
   transparentCard: true,
 };
 
-const transitionConfig = {
-  damping: 35,
-  mass: 1,
-  overshootClamping: false,
-  restDisplacementThreshold: 0.01,
-  restSpeedThreshold: 0.01,
-  stiffness: 450,
-};
-
 const BackArrow = styled(Icon).attrs({
   color: colors.themedColors.appleBlue,
   direction: 'left',
