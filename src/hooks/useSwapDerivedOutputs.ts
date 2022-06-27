@@ -306,7 +306,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
 
   const inputPrice = useMemo(() => {
     const price = ethereumUtils.getAssetPrice(
-      inputCurrency?.mainnet_address || inputCurrency?.address
+      inputCurrency?.mainnet_address ?? inputCurrency?.address
     );
     return price !== 0 ? price : inputCurrency?.price?.value;
   }, [inputCurrency]);
