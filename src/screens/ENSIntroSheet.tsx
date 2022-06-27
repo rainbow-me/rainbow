@@ -29,7 +29,8 @@ import { REGISTRATION_MODES } from '@rainbow-me/helpers/ens';
 import {
   useAccountENSDomains,
   useDimensions,
-  useENSProfileRecords,
+  useENSAvatar,
+  useENSRecords,
   useENSRegistration,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
@@ -48,13 +49,30 @@ export default function ENSIntroSheet() {
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
   const { colors } = useTheme();
   const { params } = useRoute<any>();
+
   const {
-    ownedDomains,
+    isLoading: isDomainsLoading,
+    isSuccess: isDomainsSuccess,
     nonPrimaryDomains,
+    ownedDomains,
     uniqueDomain,
-    isLoading,
-    isSuccess,
   } = useAccountENSDomains();
+  const {
+    data: ensRecords,
+    isLoading: isRecordsLoading,
+    isSuccess: isRecordsSuccess,
+  } = useENSRecords(uniqueDomain?.name || '', {
+    enabled: Boolean(uniqueDomain?.name),
+  });
+  const {
+    data: ensAvatar,
+    isLoading: isAvatarLoading,
+    isSuccess: isAvatarSuccess,
+  } = useENSAvatar(uniqueDomain?.name || '', {
+    enabled: Boolean(uniqueDomain?.name),
+  });
+  const isLoading = isDomainsLoading || isRecordsLoading || isAvatarLoading;
+  const isSuccess = isDomainsSuccess && isRecordsSuccess && isAvatarSuccess;
 
   // We are not using `isSmallPhone` from `useDimensions` here as we
   // want to explicitly set a min height.
@@ -63,20 +81,12 @@ export default function ENSIntroSheet() {
   const contentHeight = params?.contentHeight;
   const contentWidth = Math.min(deviceWidth - 72, 300);
 
-  const { data: uniqueDomainRecords } = useENSProfileRecords(
-    uniqueDomain?.name || '',
-    {
-      enabled: Boolean(uniqueDomain?.name),
-    }
-  );
-
   const profileExists = useMemo(
     () =>
-      Object.keys(uniqueDomainRecords?.coinAddresses || {}).length > 1 ||
-      uniqueDomainRecords?.images?.avatarUrl ||
-      uniqueDomainRecords?.images?.coverUrl ||
-      Object.keys(uniqueDomainRecords?.records || {}).length > 0,
-    [uniqueDomainRecords]
+      Object.keys(ensRecords?.coinAddresses || {}).length > 1 ||
+      ensAvatar?.imageUrl ||
+      Object.keys(ensRecords?.records || {}).length > 0,
+    [ensAvatar?.imageUrl, ensRecords?.coinAddresses, ensRecords?.records]
   );
 
   const { navigate } = useNavigation();

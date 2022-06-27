@@ -18,7 +18,8 @@ import {
   useForegroundColor,
 } from '@rainbow-me/design-system';
 import {
-  prefetchENSProfileRecords,
+  prefetchENSAvatar,
+  prefetchENSRecords,
   useAccountENSDomains,
   useWallets,
 } from '@rainbow-me/hooks';
@@ -35,7 +36,8 @@ export default function RegisterENSSection() {
 
   useEffect(() => {
     if (uniqueDomain?.name) {
-      prefetchENSProfileRecords({ name: uniqueDomain.name });
+      prefetchENSAvatar(uniqueDomain.name);
+      prefetchENSRecords(uniqueDomain.name);
     }
   }, [uniqueDomain]);
 

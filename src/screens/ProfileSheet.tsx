@@ -18,9 +18,8 @@ import { maybeSignUri } from '@rainbow-me/handlers/imgix';
 import {
   useAccountSettings,
   useDimensions,
-  useENSProfile,
-  useENSProfileImages,
-  useENSResolveName,
+  useENSAddress,
+  useENSAvatar,
   useExternalWalletSectionsData,
   useFirstTransactionTimestamp,
   usePersistentDominantColorFromImage,
@@ -45,13 +44,10 @@ export default function ProfileSheet() {
   const contentHeight = deviceHeight - sharedCoolModalTopOffset;
 
   const ensName = params?.address;
-  const { isSuccess } = useENSProfile(ensName);
-  const { data: images, isFetched: isImagesFetched } = useENSProfileImages(
+  const { data: profileAddress, isSuccess: isAddressSuccess } = useENSAddress(
     ensName
   );
-  const avatarUrl = images?.avatarUrl;
-
-  const { data: profileAddress } = useENSResolveName(ensName);
+  const { data: avatar, isFetched: isAvatarFetched } = useENSAvatar(ensName);
 
   // Prefetch first transaction timestamp
   useFirstTransactionTimestamp({
@@ -72,7 +68,7 @@ export default function ProfileSheet() {
   );
 
   const { result: dominantColor, state } = usePersistentDominantColorFromImage(
-    maybeSignUri(avatarUrl || '') || ''
+    maybeSignUri(avatar?.imageUrl || '') || ''
   );
 
   const wrapperStyle = useMemo(() => ({ height: contentHeight }), [
@@ -82,7 +78,7 @@ export default function ProfileSheet() {
   const accentColor =
     // Set accent color when ENS images have fetched & dominant
     // color is not loading.
-    isImagesFetched && state !== 1 && typeof colorIndex === 'number'
+    isAvatarFetched && state !== 1 && typeof colorIndex === 'number'
       ? dominantColor ||
         colors.avatarBackgrounds[colorIndex] ||
         colors.appleBlue
@@ -108,7 +104,7 @@ export default function ProfileSheet() {
         <AccentColorProvider color={accentColor}>
           <Box background="body">
             <Box style={wrapperStyle}>
-              {!isPreview && (!isSuccess || !hasListFetched) ? (
+              {!isPreview && (!isAddressSuccess || !hasListFetched) ? (
                 <Stack space="19px">
                   <ProfileSheetHeader isLoading />
                   <PlaceholderList />

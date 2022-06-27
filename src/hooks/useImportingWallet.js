@@ -6,6 +6,7 @@ import { Alert, InteractionManager, Keyboard } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import { useDispatch } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
+import { fetchENSAvatar } from './useENSAvatar';
 import useInitializeWallet from './useInitializeWallet';
 import useIsWalletEthZero from './useIsWalletEthZero';
 import useMagicAutofocus from './useMagicAutofocus';
@@ -14,7 +15,7 @@ import useTimeout from './useTimeout';
 import useWalletENSAvatar from './useWalletENSAvatar';
 import useWallets from './useWallets';
 import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
-import { fetchImages, fetchReverseRecord } from '@rainbow-me/handlers/ens';
+import { fetchReverseRecord } from '@rainbow-me/handlers/ens';
 import {
   resolveUnstoppableDomain,
   web3Provider,
@@ -131,9 +132,9 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
       // Validate ENS
       if (isENSAddressFormat(input)) {
         try {
-          const [address, images] = await Promise.all([
+          const [address, avatar] = await Promise.all([
             web3Provider.resolveName(input),
-            !avatarUrl && profilesEnabled && fetchImages(input),
+            !avatarUrl && profilesEnabled && fetchENSAvatar(input),
           ]);
           if (!address) {
             Alert.alert('This is not a valid ENS name');
@@ -141,7 +142,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           }
           setResolvedAddress(address);
           name = forceEmoji ? `${forceEmoji} ${input}` : input;
-          avatarUrl = avatarUrl || images?.avatarUrl;
+          avatarUrl = avatarUrl || avatar?.imageUrl;
           startImportProfile(name, guardedForceColor, address, avatarUrl);
           analytics.track('Show wallet profile modal for ENS address', {
             address,
@@ -180,8 +181,8 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           if (ens && ens !== input) {
             name = forceEmoji ? `${forceEmoji} ${ens}` : ens;
             if (!avatarUrl && profilesEnabled) {
-              const images = await fetchImages(name);
-              avatarUrl = images?.avatarUrl;
+              const avatar = await fetchENSAvatar(name);
+              avatarUrl = avatar?.imageUrl;
             }
           }
           analytics.track('Show wallet profile modal for read only wallet', {
@@ -204,8 +205,8 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             if (ens && ens !== input) {
               name = forceEmoji ? `${forceEmoji} ${ens}` : ens;
               if (!avatarUrl && profilesEnabled) {
-                const images = await fetchImages(name);
-                avatarUrl = images?.avatarUrl;
+                const avatar = await fetchENSAvatar(name);
+                avatarUrl = avatar?.imageUrl;
               }
             }
             setBusy(false);

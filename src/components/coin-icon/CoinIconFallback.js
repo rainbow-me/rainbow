@@ -43,6 +43,14 @@ const FallbackImage = styled(ImageWithCachedMetadata)(
   })
 );
 
+// If th size is e.g., 20, we can use 40 that is the default icon size in the (used in discover and wallet list)
+const getIconSize = size => {
+  if (40 % size === 0) {
+    return 40;
+  }
+  return size;
+};
+
 function WrappedFallbackImage({
   color,
   elevation = 6,
@@ -70,7 +78,7 @@ function WrappedFallbackImage({
         overlayColor={color || colors.dark}
         shadowOpacity={shadowOpacity}
         showImage={showImage}
-        size={size}
+        size={getIconSize(size)}
         type={type}
       />
     </Centered>
@@ -127,7 +135,7 @@ const CoinIconFallback = fallbackProps => {
         onError={hideFallbackImage}
         onLoad={showFallbackImage}
         showImage={showImage}
-        size={width}
+        size={ios ? getIconSize(width) : width}
       />
     </Centered>
   );

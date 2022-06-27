@@ -16,8 +16,11 @@ import {
   useForegroundColor,
 } from '@rainbow-me/design-system';
 import {
-  prefetchENSProfileRecords,
+  prefetchENSAvatar,
+  prefetchENSCover,
+  prefetchENSRecords,
   useAccountENSDomains,
+  useENSAvatar,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
@@ -31,20 +34,21 @@ const maxListHeight = deviceHeight - 220;
 
 export default function SelectENSSheet() {
   const {
+    isSuccess,
     nonPrimaryDomains,
     primaryDomain,
-    isSuccess,
   } = useAccountENSDomains();
 
   const secondary06 = useForegroundColor('secondary06');
-  const secondary30 = useForegroundColor('secondary30');
 
   const { goBack } = useNavigation();
   const { params } = useRoute<any>();
 
   const handleSelectENS = useCallback(
     ensName => {
-      prefetchENSProfileRecords({ name: ensName });
+      prefetchENSAvatar(ensName);
+      prefetchENSCover(ensName);
+      prefetchENSRecords(ensName);
       goBack();
       params?.onSelectENS(ensName);
     },
@@ -86,26 +90,7 @@ export default function SelectENSSheet() {
                   justifyContent="center"
                   width={{ custom: rowHeight }}
                 >
-                  {item.images.avatarUrl ? (
-                    <Box
-                      as={ImgixImage}
-                      borderRadius={rowHeight / 2}
-                      height={{ custom: rowHeight }}
-                      source={{ uri: item.images.avatarUrl }}
-                      width={{ custom: rowHeight }}
-                    />
-                  ) : (
-                    <AccentColorProvider color={secondary30}>
-                      <Text
-                        align="right"
-                        color="accent"
-                        size="20px"
-                        weight="bold"
-                      >
-                        􀉭
-                      </Text>
-                    </AccentColorProvider>
-                  )}
+                  <ENSAvatar name={item.name} />
                 </Box>
                 <Box paddingLeft="10px">
                   <Text size="16px" weight="bold">
@@ -118,7 +103,7 @@ export default function SelectENSSheet() {
         </ButtonPressAnimation>
       );
     },
-    [handleSelectENS, secondary06, secondary30]
+    [handleSelectENS, secondary06]
   );
 
   return (
@@ -152,5 +137,30 @@ export default function SelectENSSheet() {
         </Stack>
       </Inset>
     </Sheet>
+  );
+}
+
+function ENSAvatar({ name }: { name: string }) {
+  const secondary30 = useForegroundColor('secondary30');
+
+  const { data: avatar } = useENSAvatar(name);
+
+  if (avatar?.imageUrl) {
+    return (
+      <Box
+        as={ImgixImage}
+        borderRadius={rowHeight / 2}
+        height={{ custom: rowHeight }}
+        source={{ uri: avatar?.imageUrl }}
+        width={{ custom: rowHeight }}
+      />
+    );
+  }
+  return (
+    <AccentColorProvider color={secondary30}>
+      <Text align="right" color="accent" size="20px" weight="bold">
+        􀉭
+      </Text>
+    </AccentColorProvider>
   );
 }

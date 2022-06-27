@@ -53,6 +53,7 @@ import {
 import {
   useDimensions,
   useENSModifiedRegistration,
+  useENSRecords,
   useENSRegistration,
   useENSRegistrationCosts,
   useENSRegistrationForm,
@@ -93,14 +94,17 @@ export default function ENSAssignRecordsSheet() {
       ].map(fieldName => textRecordFields[fieldName] as TextRecordField),
     []
   );
-  const { profileQuery, isLoading } = useENSRegistrationForm({
+
+  const { isLoading } = useENSRegistrationForm({
     defaultFields,
     initializeForm: true,
   });
 
+  const { data: { records } = {} } = useENSRecords(name);
+  const isEmptyProfile = isEmpty(records);
+
   const displayTitleLabel =
     params.mode !== REGISTRATION_MODES.EDIT || !isLoading;
-  const isEmptyProfile = isEmpty(profileQuery.data?.records);
 
   useENSRegistrationCosts({
     name,
@@ -256,7 +260,7 @@ export function ENSAssignRecordsBottomActions({
     submit,
     values,
   } = useENSRegistrationForm();
-  const { profileQuery } = useENSModifiedRegistration();
+  const { isSuccess } = useENSModifiedRegistration();
   const handlePressBack = useCallback(() => {
     delayNext();
     navigate(fromRoute);
@@ -296,11 +300,11 @@ export function ENSAssignRecordsBottomActions({
   const [visible, setVisible] = useState(false);
   useEffect(() => {
     if (mode === REGISTRATION_MODES.EDIT) {
-      setTimeout(() => setVisible(profileQuery.isSuccess), 200);
+      setTimeout(() => setVisible(isSuccess), 200);
     } else {
       setVisible(defaultVisible);
     }
-  }, [defaultVisible, mode, profileQuery.isSuccess]);
+  }, [defaultVisible, mode, isSuccess]);
 
   const bottomActionHeight = isSmallPhone
     ? BottomActionHeightSmall

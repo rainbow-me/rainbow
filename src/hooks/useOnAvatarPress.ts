@@ -7,9 +7,10 @@ import { useDispatch } from 'react-redux';
 import { RainbowAccount } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import useAccountProfile from './useAccountProfile';
-import useENSProfile from './useENSProfile';
-import { prefetchENSProfileImages } from './useENSProfileImages';
-import { prefetchENSProfileRecords } from './useENSProfileRecords';
+import useENSAvatar, { prefetchENSAvatar } from './useENSAvatar';
+import { prefetchENSCover } from './useENSCover';
+import useENSOwner from './useENSOwner';
+import { prefetchENSRecords } from './useENSRecords';
 import useENSRegistration from './useENSRegistration';
 import useImagePicker from './useImagePicker';
 import useWallets from './useWallets';
@@ -36,16 +37,24 @@ export default () => {
   } = useAccountProfile();
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const profileEnabled = Boolean(accountENS);
-  const ensProfile = useENSProfile(accountENS, {
+
+  const { isOwner } = useENSOwner(accountENS, {
     enabled: profileEnabled && profilesEnabled,
   });
-  const hasENSAvatar = Boolean(ensProfile?.data?.images?.avatarUrl);
+
+  const { data: avatar } = useENSAvatar(accountENS, {
+    enabled: profileEnabled && profilesEnabled,
+  });
+  const hasENSAvatar = Boolean(avatar?.imageUrl);
+
   const { openPicker } = useImagePicker();
   const { startRegistration } = useENSRegistration();
 
   useEffect(() => {
     if (accountENS) {
-      prefetchENSProfileRecords(accountENS);
+      prefetchENSAvatar(accountENS);
+      prefetchENSCover(accountENS);
+      prefetchENSRecords(accountENS);
     }
   }, [accountENS]);
 
@@ -71,6 +80,9 @@ export default () => {
   const processPhoto = useCallback(
     (image: any) => {
       const stringIndex = image?.path.indexOf('/tmp');
+      const imagePath = ios
+        ? `~${image?.path.slice(stringIndex)}`
+        : image?.path;
       const newWallets = {
         ...wallets,
         [selectedWallet.id]: {
@@ -79,7 +91,7 @@ export default () => {
             selectedWallet.id
           ].addresses.map((account: RainbowAccount) =>
             toLower(account.address) === toLower(accountAddress)
-              ? { ...account, image: `~${image?.path.slice(stringIndex)}` }
+              ? { ...account, image: imagePath }
               : account
           ),
         },
@@ -103,6 +115,7 @@ export default () => {
       cropperCircleOverlay: true,
       cropping: true,
     });
+    if (!image) return;
     processPhoto(image);
   }, [openPicker, processPhoto]);
 
@@ -140,13 +153,7 @@ export default () => {
   const isReadOnly = isReadOnlyWallet && !enableActionsOnReadOnlyWallet;
 
   const onAvatarPress = useCallback(() => {
-    const isENSProfile =
-      profilesEnabled && profileEnabled && ensProfile?.isOwner;
-
-    if (isENSProfile) {
-      // Prefetch profile images
-      prefetchENSProfileImages({ name: accountENS });
-    }
+    const isENSProfile = profilesEnabled && profileEnabled && isOwner;
 
     const avatarActionSheetOptions = (!isReadOnly
       ? [
@@ -242,19 +249,18 @@ export default () => {
       );
     }
   }, [
-    ensProfile,
-    profileEnabled,
     profilesEnabled,
+    profileEnabled,
+    isOwner,
     isReadOnly,
-    accountImage,
-    accountENS,
     hasENSAvatar,
+    accountImage,
+    onAvatarViewProfile,
     onAvatarChooseImage,
+    onAvatarEditProfile,
     onAvatarRemovePhoto,
     onAvatarPickEmoji,
     onAvatarCreateProfile,
-    onAvatarEditProfile,
-    onAvatarViewProfile,
   ]);
 
   const avatarOptions = useMemo(
