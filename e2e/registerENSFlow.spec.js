@@ -265,6 +265,7 @@ describe('Register ENS Flow', () => {
 
   it('Should open ENS rainbowtestwallet.eth', async () => {
     await Helpers.swipe('wallet-screen', 'up', 'slow');
+    await Helpers.swipe('wallet-screen', 'up', 'slow');
     await Helpers.tapByText('ENS');
     await Helpers.swipe('wallet-screen', 'up', 'slow');
     await Helpers.waitAndTap('wrapped-nft-rainbowtestwallet.eth');
