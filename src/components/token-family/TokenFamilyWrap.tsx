@@ -1,7 +1,6 @@
 import { times } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
-import { Transition, Transitioning } from 'react-native-reanimated';
 import TokenFamilyHeader, {
   TokenFamilyHeaderAnimationDuration,
 } from './TokenFamilyHeader';
@@ -22,15 +21,6 @@ type Props = {
 };
 
 export const TokenFamilyWrapPaddingTop = 6;
-
-const transition = (
-  <Transition.In
-    durationMs={75}
-    interpolation="easeIn"
-    propagation="top"
-    type="fade"
-  />
-);
 
 export default React.memo(function TokenFamilyWrap({
   childrenAmount,
@@ -82,15 +72,13 @@ export default React.memo(function TokenFamilyWrap({
           title={title}
         />
       ) : null}
-      <Transitioning.View
-        ref={transitionRef}
+      <View
         style={{
           paddingTop: areChildrenVisible ? TokenFamilyWrapPaddingTop : 0,
         }}
-        transition={transition}
       >
         {areChildrenVisible ? times(item.length, renderItem) : null}
-      </Transitioning.View>
+      </View>
     </View>
   );
 });
