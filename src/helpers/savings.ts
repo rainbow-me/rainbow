@@ -35,7 +35,7 @@ const calculateCompoundInterestInDays = memoFn((principal, apr, days) => {
 
 const formatSavingsAmount = memoFn(amount => {
   // @ts-ignore
-  return Number(amount.toString()).toFixed(MAX_DECIMALS_TO_SHOW);
+  return Number(amount?.toString() ?? 0).toFixed(MAX_DECIMALS_TO_SHOW);
 });
 
 // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
