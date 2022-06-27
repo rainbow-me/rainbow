@@ -35,13 +35,17 @@ export default React.memo(function TokenFamilyHeaderIcon({
 
   const shadows = useMemo(() => shadowsFactory(colors), [colors]);
 
-  return familyName === 'Showcase' ? (
-    <View style={sx.trophy}>
-      <Text align="center" containsEmoji size="16px">
-        🏆
-      </Text>
-    </View>
-  ) : (
+  if (familyName === 'Showcase') {
+    return (
+      <View style={sx.trophy}>
+        <Text align="center" containsEmoji size="16px">
+          🏆
+        </Text>
+      </View>
+    );
+  }
+
+  return (
     // @ts-expect-error ShadowStack is not migrated to TS.
     <ShadowStack
       {...circleStyle}
