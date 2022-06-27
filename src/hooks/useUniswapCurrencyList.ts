@@ -150,7 +150,7 @@ const useUniswapCurrencyList = (searchQuery: string) => {
   const currencyList = useMemo(() => {
     const list = [];
     if (searching) {
-      if (favoriteAssets.length) {
+      if (favoriteAssets?.length) {
         list.push({
           color: colors.yellowFavorite,
           data: favoriteAssets,
@@ -158,7 +158,7 @@ const useUniswapCurrencyList = (searchQuery: string) => {
           title: tokenSectionTypes.favoriteTokenSection,
         });
       }
-      if (verifiedAssets.length) {
+      if (verifiedAssets?.length) {
         list.push({
           data: verifiedAssets,
           key: 'verified',
@@ -166,7 +166,7 @@ const useUniswapCurrencyList = (searchQuery: string) => {
           useGradientText: IS_TESTING === 'true' ? false : true,
         });
       }
-      if (highLiquidityAssets.length) {
+      if (highLiquidityAssets?.length) {
         list.push({
           data: highLiquidityAssets,
           key: 'highLiquidity',
@@ -181,7 +181,7 @@ const useUniswapCurrencyList = (searchQuery: string) => {
         });
       }
     } else {
-      if (unfilteredFavorites.length) {
+      if (unfilteredFavorites?.length) {
         list.push({
           color: colors.yellowFavorite,
           data: unfilteredFavorites,
@@ -190,7 +190,7 @@ const useUniswapCurrencyList = (searchQuery: string) => {
         });
       }
       const curatedAssets = getCurated();
-      if (curatedAssets.length) {
+      if (curatedAssets?.length) {
         list.push({
           data: curatedAssets,
           key: 'curated',
