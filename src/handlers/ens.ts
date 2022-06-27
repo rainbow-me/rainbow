@@ -25,6 +25,7 @@ import {
 import { prefetchENSAddress } from '../hooks/useENSAddress';
 import { fetchENSAvatar, prefetchENSAvatar } from '../hooks/useENSAvatar';
 import { prefetchENSCover } from '../hooks/useENSCover';
+import { prefetchENSFirstTransactionTimestamp } from '../hooks/useENSFirstTransactionTimestamp';
 import { prefetchENSRecords } from '../hooks/useENSRecords';
 import { ENSActionParameters } from '../raps/common';
 import {
@@ -490,6 +491,7 @@ export function prefetchENSIntroData() {
     prefetchENSAvatar(name, { cacheFirst: true });
     prefetchENSCover(name, { cacheFirst: true });
     prefetchENSRecords(name, { cacheFirst: true });
+    prefetchENSFirstTransactionTimestamp(name, { cacheFirst: true });
   }
 }
 

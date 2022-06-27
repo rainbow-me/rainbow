@@ -20,8 +20,8 @@ import {
   useDimensions,
   useENSAddress,
   useENSAvatar,
+  useENSFirstTransactionTimestamp,
   useExternalWalletSectionsData,
-  useFirstTransactionTimestamp,
   usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
 import { sharedCoolModalTopOffset } from '@rainbow-me/navigation/config';
@@ -50,8 +50,10 @@ export default function ProfileSheet() {
   const { data: avatar, isFetched: isAvatarFetched } = useENSAvatar(ensName);
 
   // Prefetch first transaction timestamp
-  useFirstTransactionTimestamp({
-    ensName,
+  const {
+    isSuccess: hasFirstTxTimestampFetched,
+  } = useENSFirstTransactionTimestamp({
+    name: ensName,
   });
 
   // Prefetch asset list
@@ -104,7 +106,10 @@ export default function ProfileSheet() {
         <AccentColorProvider color={accentColor}>
           <Box background="body">
             <Box style={wrapperStyle}>
-              {!isPreview && (!isAddressSuccess || !hasListFetched) ? (
+              {!isPreview &&
+              (!isAddressSuccess ||
+                !hasListFetched ||
+                !hasFirstTxTimestampFetched) ? (
                 <Stack space="19px">
                   <ProfileSheetHeader isLoading />
                   <PlaceholderList />

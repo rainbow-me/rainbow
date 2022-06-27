@@ -1,0 +1,67 @@
+import PQueue from 'p-queue/dist';
+import { useQuery } from 'react-query';
+import { getENSData, saveENSData } from '@rainbow-me/handlers/localstorage/ens';
+import { web3Provider } from '@rainbow-me/handlers/web3';
+import { queryClient } from '@rainbow-me/react-query/queryClient';
+import { getFirstTransactionTimestamp } from '@rainbow-me/utils/ethereumUtils';
+
+const ensFirstTxTimestampQueryKey = (name: string) => [
+  'first-transaction-timestamp',
+  name,
+];
+
+const queue = new PQueue({ interval: 1000, intervalCap: 5 });
+
+export async function fetchENSFirstTransactionTimestamp(
+  name: string,
+  { cacheFirst }: { cacheFirst?: boolean } = {}
+) {
+  const cachedData = await getENSData('firstTxTimestamp', name);
+  if (cachedData) {
+    queryClient.setQueryData(
+      ensFirstTxTimestampQueryKey(name),
+      cachedData?.firstTxTimestamp
+    );
+    if (cacheFirst) return cachedData?.firstTxTimestamp;
+  }
+
+  const address = await web3Provider.resolveName(name);
+  const timestamp = address
+    ? await queue.add(async () => getFirstTransactionTimestamp(address))
+    : undefined;
+
+  timestamp
+    ? saveENSData('firstTxTimestamp', name, { firstTxTimestamp: timestamp })
+    : queryClient.invalidateQueries(ensFirstTxTimestampQueryKey(name));
+
+  return timestamp;
+}
+
+export async function prefetchENSFirstTransactionTimestamp(
+  name: string,
+  { cacheFirst }: { cacheFirst?: boolean } = {}
+) {
+  queryClient.prefetchQuery(
+    ensFirstTxTimestampQueryKey(name),
+    async () => fetchENSFirstTransactionTimestamp(name, { cacheFirst }),
+    { cacheTime: Infinity, staleTime: Infinity }
+  );
+}
+
+export default function useENSFirstTransactionTimestamp({
+  name,
+}: {
+  name: string;
+}) {
+  return useQuery(
+    ensFirstTxTimestampQueryKey(name),
+    async () => fetchENSFirstTransactionTimestamp(name),
+    {
+      cacheTime: Infinity,
+      enabled: Boolean(name),
+      // First transaction timestamp will obviously never be stale.
+      // So we won't fetch / refetch it again.
+      staleTime: Infinity,
+    }
+  );
+}

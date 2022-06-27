@@ -7,7 +7,8 @@ export type ENSDataType =
   | 'owner'
   | 'address'
   | 'records'
-  | 'resolver';
+  | 'resolver'
+  | 'firstTxTimestamp';
 
 const ensProfileVersion = '0.2.0';
 
