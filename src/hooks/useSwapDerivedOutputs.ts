@@ -4,6 +4,7 @@ import {
   Quote,
   QuoteError,
 } from '@rainbow-me/swaps';
+import { debounce } from 'lodash';
 import { useEffect, useState } from 'react';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { NativeModules } from 'react-native';
@@ -282,6 +283,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
   const independentValue = useSelector(
     (state: AppState) => state.swap.independentValue
   );
+
   const maxInputUpdate = useSelector(
     (state: AppState) => state.swap.maxInputUpdate
   );
@@ -326,7 +328,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
   };
 
   useEffect(() => {
-    const getTradeDetails = async () => {
+    const getTradeDetails = debounce(async () => {
       let tradeDetails = null;
 
       if (independentValue === '0.') {
@@ -514,7 +516,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
       // @ts-ignore next-line
       setResult(data);
       setLoading(false);
-    };
+    }, 175);
     getTradeDetails();
   }, [
     accountAddress,
