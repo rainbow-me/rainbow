@@ -408,3 +408,14 @@ export const fromWei = (number: BigNumberish): string =>
 export const delay = (ms: number): Promise<void> => {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
+
+export const upperFirst = (string?: string | undefined): string => {
+  if (!string) return '';
+  return string ? string.charAt(0).toUpperCase() + string.slice(1) : '';
+};
+
+export const toTitleCase = (string?: string | undefined): string => {
+  // Used to convert `Network` to TitleCase. It currently consists of one word and it is unclear what the two words will look like camelcase or snake case. So I use upperFirst for transformation
+  if (!string) return '';
+  return upperFirst(string);
+};
