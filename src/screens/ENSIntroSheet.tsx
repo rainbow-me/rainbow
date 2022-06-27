@@ -51,28 +51,18 @@ export default function ENSIntroSheet() {
   const { params } = useRoute<any>();
 
   const {
-    isLoading: isDomainsLoading,
-    isSuccess: isDomainsSuccess,
+    isLoading,
+    isFetched,
     nonPrimaryDomains,
     ownedDomains,
     uniqueDomain,
   } = useAccountENSDomains();
-  const {
-    data: ensRecords,
-    isLoading: isRecordsLoading,
-    isSuccess: isRecordsSuccess,
-  } = useENSRecords(uniqueDomain?.name || '', {
+  const { data: ensRecords } = useENSRecords(uniqueDomain?.name || '', {
     enabled: Boolean(uniqueDomain?.name),
   });
-  const {
-    data: ensAvatar,
-    isLoading: isAvatarLoading,
-    isSuccess: isAvatarSuccess,
-  } = useENSAvatar(uniqueDomain?.name || '', {
+  const { data: ensAvatar } = useENSAvatar(uniqueDomain?.name || '', {
     enabled: Boolean(uniqueDomain?.name),
   });
-  const isLoading = isDomainsLoading || isRecordsLoading || isAvatarLoading;
-  const isSuccess = isDomainsSuccess && isRecordsSuccess && isAvatarSuccess;
 
   // We are not using `isSmallPhone` from `useDimensions` here as we
   // want to explicitly set a min height.
@@ -257,7 +247,7 @@ export default function ENSIntroSheet() {
                       <ActivityIndicator />
                     </Box>
                   )}
-                  {isSuccess && (
+                  {isFetched && (
                     <>
                       {ownedDomains?.length === 0 ? (
                         <SheetActionButton

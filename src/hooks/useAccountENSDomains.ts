@@ -58,7 +58,7 @@ export async function prefetchAccountENSDomains({
 export default function useAccountENSDomains() {
   const { accountAddress, accountENS } = useAccountProfile();
 
-  const { data: domains, isLoading, isSuccess } = useQuery<
+  const { data: domains, isLoading, isFetched, isSuccess } = useQuery<
     EnsAccountRegistratonsData['account']['registrations'][number]['domain'][]
   >(
     queryKey({ accountAddress }),
@@ -90,6 +90,7 @@ export default function useAccountENSDomains() {
 
   return {
     domains,
+    isFetched,
     isLoading,
     isSuccess,
     nonPrimaryDomains,
