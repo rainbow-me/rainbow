@@ -191,7 +191,10 @@ export const updateSwapOutputCurrency = (
     if (newOutputCurrency) {
       dispatch(fetchAssetPrices(newOutputCurrency.address));
     }
-    if (independentField === SwapModalField.output) {
+    if (
+      independentField === SwapModalField.output ||
+      newOutputCurrency === null
+    ) {
       dispatch(updateSwapOutputAmount(null));
     }
   }
