@@ -26,8 +26,6 @@ import {
   useSelectImageMenu,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
-import { useNavigation } from '@rainbow-me/navigation';
-import Routes from '@rainbow-me/routes';
 import { magicMemo, stringifyENSNFTRecord } from '@rainbow-me/utils';
 
 export const avatarMetadataAtom = atom<Image | undefined>({
@@ -42,10 +40,12 @@ const RegistrationAvatar = ({
   hasSeenExplainSheet,
   onChangeAvatarUrl,
   onShowExplainSheet,
+  enableNFTs,
 }: {
   hasSeenExplainSheet: boolean;
   onChangeAvatarUrl: (url: string) => void;
   onShowExplainSheet: () => void;
+  enableNFTs: boolean;
 }) => {
   const {
     images: { avatarUrl: initialAvatarUrl },
@@ -58,7 +58,6 @@ const RegistrationAvatar = ({
     setDisabled,
   } = useENSRegistrationForm();
   const { name } = useENSRegistration();
-  const { navigate } = useNavigation();
 
   const [avatarUpdateAllowed, setAvatarUpdateAllowed] = useState(true);
   const [avatarUrl, setAvatarUrl] = useState(
@@ -122,12 +121,16 @@ const RegistrationAvatar = ({
     [onBlurField, onChangeAvatarUrl, setAvatarMetadata]
   );
 
-  const { ContextMenu } = useSelectImageMenu({
+  const {
+    ContextMenu,
+    handleSelectImage,
+    handleSelectNFT,
+  } = useSelectImageMenu({
     imagePickerOptions: {
       cropperCircleOverlay: true,
       cropping: true,
     },
-    menuItems: ['library', 'nft'],
+    menuItems: enableNFTs ? ['library', 'nft'] : ['library'],
     onChangeImage,
     onRemoveImage: () => {
       onRemoveField({ key: 'avatar' });
@@ -150,14 +153,6 @@ const RegistrationAvatar = ({
     uploadToIPFS: true,
   });
 
-  const handleSelectNFT = useCallback(() => {
-    navigate(Routes.SELECT_UNIQUE_TOKEN_SHEET, {
-      onSelect: (asset: any) => onChangeImage?.({ asset }),
-      springDamping: 1,
-      topOffset: 0,
-    });
-  }, [navigate, onChangeImage]);
-
   return (
     <Box height={{ custom: size }} width={{ custom: size }}>
       <Cover alignHorizontal="center">
@@ -178,7 +173,9 @@ const RegistrationAvatar = ({
         </Skeleton>
       ) : (
         <ConditionalWrap
-          condition={hasSeenExplainSheet && !isTesting}
+          condition={
+            hasSeenExplainSheet && !isTesting && (enableNFTs || !!avatarUrl)
+          }
           wrap={children => <ContextMenu>{children}</ContextMenu>}
         >
           <ButtonPressAnimation
@@ -187,7 +184,9 @@ const RegistrationAvatar = ({
                 ? onShowExplainSheet
                 : isTesting
                 ? handleSelectNFT
-                : undefined
+                : enableNFTs
+                ? undefined
+                : handleSelectImage
             }
             testID="use-select-image-avatar"
           >

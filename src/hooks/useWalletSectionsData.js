@@ -19,7 +19,8 @@ export default function useWalletSectionsData({ type } = {}) {
   const isWalletEthZero = useIsWalletEthZero();
 
   const { language, network, nativeCurrency } = useAccountSettings();
-  const uniqueTokens = useSendableUniqueTokens();
+  const sendableUniqueTokens = useSendableUniqueTokens();
+  const allUniqueTokens = useSelector(state => state.uniqueTokens.uniqueTokens);
   const uniswap = useSelector(readableUniswapSelector);
   const { showcaseTokens } = useShowcaseTokens();
 
@@ -44,7 +45,7 @@ export default function useWalletSectionsData({ type } = {}) {
       pinnedCoins,
       savings,
       ...sortedAccountData,
-      ...uniqueTokens,
+      ...sendableUniqueTokens,
       ...uniswap,
       ...isWalletEthZero,
       listType: type,
@@ -53,8 +54,10 @@ export default function useWalletSectionsData({ type } = {}) {
 
     const sectionsData = buildWalletSectionsSelector(accountInfo);
     const briefSectionsData = buildBriefWalletSectionsSelector(accountInfo);
+    const hasNFTs = allUniqueTokens.length > 0;
 
     return {
+      hasNFTs,
       isWalletEthZero,
       refetchSavings,
       shouldRefetchSavings,
@@ -62,6 +65,7 @@ export default function useWalletSectionsData({ type } = {}) {
       briefSectionsData,
     };
   }, [
+    allUniqueTokens,
     hiddenCoins,
     isCoinListEdited,
     isWalletEthZero,
@@ -75,7 +79,7 @@ export default function useWalletSectionsData({ type } = {}) {
     showcaseTokens,
     sortedAccountData,
     type,
-    uniqueTokens,
+    sendableUniqueTokens,
     uniswap,
   ]);
   return walletSections;

@@ -61,6 +61,7 @@ import {
   useENSSearch,
   useKeyboardHeight,
   usePersistentDominantColorFromImage,
+  useWalletSectionsData,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 
@@ -72,6 +73,7 @@ export default function ENSAssignRecordsSheet() {
   const { colors } = useTheme();
   const { isSmallPhone } = useDimensions();
   const { name } = useENSRegistration();
+  const { hasNFTs } = useWalletSectionsData();
   const {
     images: { avatarUrl: initialAvatarUrl },
   } = useENSModifiedRegistration({
@@ -184,12 +186,14 @@ export default function ENSAssignRecordsSheet() {
       >
         <Stack space="19px">
           <RegistrationCover
+            enableNFTs={hasNFTs}
             hasSeenExplainSheet={hasSeenExplainSheet}
             onShowExplainSheet={handleFocus}
           />
           <Bleed top={{ custom: 38 }}>
             <Box alignItems="center">
               <RegistrationAvatar
+                enableNFTs={hasNFTs}
                 hasSeenExplainSheet={hasSeenExplainSheet}
                 onChangeAvatarUrl={setAvatarUrl}
                 onShowExplainSheet={handleFocus}

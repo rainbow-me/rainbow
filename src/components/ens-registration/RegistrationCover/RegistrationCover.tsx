@@ -27,9 +27,11 @@ export const coverMetadataAtom = atom<Image | undefined>({
 const RegistrationCover = ({
   hasSeenExplainSheet,
   onShowExplainSheet,
+  enableNFTs,
 }: {
   hasSeenExplainSheet: boolean;
   onShowExplainSheet: () => void;
+  enableNFTs: boolean;
 }) => {
   const {
     images: { coverUrl: initialCoverUrl },
@@ -59,13 +61,13 @@ const RegistrationCover = ({
 
   const setCoverMetadata = useSetRecoilState(coverMetadataAtom);
 
-  const { ContextMenu } = useSelectImageMenu({
+  const { ContextMenu, handleSelectImage } = useSelectImageMenu({
     imagePickerOptions: {
       cropping: true,
       height: 500,
       width: 1500,
     },
-    menuItems: ['library', 'nft'],
+    menuItems: enableNFTs ? ['library', 'nft'] : ['library'],
     onChangeImage: ({
       asset,
       image,
@@ -131,11 +133,17 @@ const RegistrationCover = ({
   }
   return (
     <ConditionalWrap
-      condition={hasSeenExplainSheet}
+      condition={hasSeenExplainSheet && (enableNFTs || !!coverUrl)}
       wrap={children => <ContextMenu>{children}</ContextMenu>}
     >
       <ButtonPressAnimation
-        onPress={!hasSeenExplainSheet ? onShowExplainSheet : undefined}
+        onPress={
+          !hasSeenExplainSheet
+            ? onShowExplainSheet
+            : enableNFTs
+            ? undefined
+            : handleSelectImage
+        }
         scaleTo={1}
       >
         <Box
