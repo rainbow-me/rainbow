@@ -13,6 +13,9 @@ export const TokenFamilyHeaderAnimationDuration = 200;
 export const TokenFamilyHeaderHeight = 50;
 
 const sx = StyleSheet.create({
+  amountContainer: {
+    marginRight: 10,
+  },
   center: {
     alignItems: 'center',
     flexDirection: 'row',
@@ -27,6 +30,8 @@ const sx = StyleSheet.create({
     flexDirection: 'row',
     height: TokenFamilyHeaderHeight,
     justifyContent: 'space-between',
+    padding: 19,
+    paddingRight: 14,
     width: '100%',
   },
   title: {
@@ -39,7 +44,6 @@ const TokenFamilyHeader = ({
   childrenAmount,
   emoji,
   familyImage,
-  isCoinRow,
   isOpen,
   onPress,
   testID,
@@ -49,7 +53,6 @@ const TokenFamilyHeader = ({
   childrenAmount?: number;
   emoji?: string;
   familyImage?: string;
-  isCoinRow?: boolean;
   isOpen?: boolean;
   onPress?: () => void;
   testID?: string;
@@ -63,11 +66,21 @@ const TokenFamilyHeader = ({
   const aRef = useRef<{
     animation: Animated.Value;
     toValue: number;
+    isRunning: boolean;
   } | null>(null);
 
-  if (aRef.current === null || aRef.current.toValue !== toValue) {
+  // HACK ALERT
+  // we are reusing the same animated value across rows when we recycle them
+  // only happens when previous and next row are both open or closed
+  // but also we don't want the animated value to change
+  // during the animation too
+  if (
+    aRef.current === null ||
+    (aRef.current.toValue !== toValue && !aRef.current.isRunning)
+  ) {
     aRef.current = {
       animation: new Animated.Value(toValue),
+      isRunning: false,
       toValue,
     };
   }
@@ -80,7 +93,11 @@ const TokenFamilyHeader = ({
       easing: Easing.bezier(0.25, 0.1, 0.25, 1),
       toValue: isOpen ? 0 : 1,
       useNativeDriver: true,
-    }).start();
+    }).start(() => {
+      aRef.current!.isRunning = false;
+    });
+
+    aRef.current!.isRunning = true;
 
     if (onPress) {
       onPress();
@@ -89,9 +106,8 @@ const TokenFamilyHeader = ({
 
   const imageAnimatedStyles = useMemo(
     () => ({
-      height: 18,
       marginBottom: 1,
-      marginLeft: 8,
+      marginLeft: 5,
       transform: [
         {
           rotate: animation.interpolate({
@@ -100,7 +116,6 @@ const TokenFamilyHeader = ({
           }),
         },
       ],
-      width: 8,
     }),
     [animation]
   );
@@ -122,7 +137,6 @@ const TokenFamilyHeader = ({
           sx.content,
           {
             backgroundColor: colors.white,
-            padding: 19,
           },
         ]}
       >
@@ -135,7 +149,6 @@ const TokenFamilyHeader = ({
             <TokenFamilyHeaderIcon
               familyImage={familyImage}
               familyName={title}
-              isCoinRow={isCoinRow}
               theme={theme}
             />
           )}
@@ -147,7 +160,7 @@ const TokenFamilyHeader = ({
             {title}
           </Text>
         </View>
-        <View style={[sx.center, { marginRight: 10 }]}>
+        <View style={[sx.center, sx.amountContainer]}>
           <Animated.View style={amountAnimatedStyles}>
             <Text align="right" size="18px">
               {childrenAmount}
@@ -156,7 +169,7 @@ const TokenFamilyHeader = ({
           <Animated.View style={imageAnimatedStyles}>
             <FastImage
               resizeMode={ImgixImage.resizeMode.contain}
-              // @ts-expect-error static image
+              // @ts-expect-error static image source
               source={CaretImageSource}
               style={sx.chevron}
               tintColor={colors.dark}

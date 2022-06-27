@@ -10,7 +10,6 @@ import ShadowStack from 'react-native-shadow-stack';
 type Props = {
   familyName: string;
   theme: ThemeContextProps;
-  isCoinRow?: boolean;
   familyImage?: string;
   style?: any;
 };
@@ -19,7 +18,7 @@ const shadowsFactory = (colors: ThemeContextProps['colors']) => [
   [0, 3, android ? 5 : 9, colors.shadow, 0.1],
 ];
 
-const cx = StyleSheet.create({
+const sx = StyleSheet.create({
   trophy: {
     marginRight: 4,
   },
@@ -28,20 +27,16 @@ const cx = StyleSheet.create({
 export default React.memo(function TokenFamilyHeaderIcon({
   familyImage,
   familyName,
-  isCoinRow,
   style,
   theme,
 }: Props) {
   const { colors } = theme;
-  const circleStyle = useMemo(
-    () => borders.buildCircleAsObject(isCoinRow ? 40 : 32),
-    [isCoinRow]
-  );
+  const circleStyle = useMemo(() => borders.buildCircleAsObject(40), []);
 
   const shadows = useMemo(() => shadowsFactory(colors), [colors]);
 
   return familyName === 'Showcase' ? (
-    <View style={cx.trophy}>
+    <View style={sx.trophy}>
       <Text align="center" containsEmoji size="16px">
         🏆
       </Text>
@@ -56,11 +51,12 @@ export default React.memo(function TokenFamilyHeaderIcon({
     >
       {familyImage ? (
         <ImgixImage
-          size={isCoinRow ? 40 : 32}
-          source={{ uri: familyImage }}
+          size={40}
+          source={{ cache: ImgixImage.cacheControl.web, uri: familyImage }}
           style={circleStyle}
         />
       ) : (
+        // @ts-expect-error FallbackIcon is not migrated to TS.
         <FallbackIcon {...circleStyle} symbol={initials(familyName)} />
       )}
     </ShadowStack>
