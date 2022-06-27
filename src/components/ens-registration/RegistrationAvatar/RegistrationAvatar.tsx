@@ -1,4 +1,3 @@
-import { useFocusEffect } from '@react-navigation/core';
 import ConditionalWrap from 'conditional-wrap';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
@@ -22,6 +21,7 @@ import { UniqueAsset } from '@rainbow-me/entities';
 import { UploadImageReturnData } from '@rainbow-me/handlers/pinata';
 import {
   useENSModifiedRegistration,
+  useENSRegistration,
   useENSRegistrationForm,
   useSelectImageMenu,
 } from '@rainbow-me/hooks';
@@ -57,6 +57,7 @@ const RegistrationAvatar = ({
     onRemoveField,
     setDisabled,
   } = useENSRegistrationForm();
+  const { name } = useENSRegistration();
   const { navigate } = useNavigation();
 
   const [avatarUpdateAllowed, setAvatarUpdateAllowed] = useState(true);
@@ -75,7 +76,7 @@ const RegistrationAvatar = ({
   }, [initialAvatarUrl, avatarUpdateAllowed]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // We want to allow avatar state update when the screen is first focussed.
-  useFocusEffect(useCallback(() => setAvatarUpdateAllowed(true), []));
+  useEffect(() => setAvatarUpdateAllowed(true), [setAvatarUpdateAllowed, name]);
 
   const setAvatarMetadata = useSetRecoilState(avatarMetadataAtom);
 
@@ -93,9 +94,6 @@ const RegistrationAvatar = ({
       setAvatarUrl(
         image?.tmpPath || asset?.lowResUrl || asset?.image_thumbnail_url || ''
       );
-      // We want to disallow future avatar state changes (i.e. when upload successful)
-      // to avoid avatar flashing (from temp URL to uploaded URL).
-      setAvatarUpdateAllowed(false);
       onChangeAvatarUrl(
         image?.path || asset?.lowResUrl || asset?.image_thumbnail_url || ''
       );
@@ -112,6 +110,9 @@ const RegistrationAvatar = ({
           }),
         });
       } else if (image?.tmpPath) {
+        // We want to disallow future avatar state changes (i.e. when upload successful)
+        // to avoid avatar flashing (from temp URL to uploaded URL).
+        setAvatarUpdateAllowed(false);
         onBlurField({
           key: 'avatar',
           value: image.tmpPath,
