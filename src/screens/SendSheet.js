@@ -17,7 +17,6 @@ import {
   SendHeader,
 } from '../components/send';
 import { SheetActionButton } from '../components/sheet';
-import { prefetchENSProfileImages } from '../hooks/useENSProfileImages';
 import { PROFILES, useExperimentalFlag } from '@rainbow-me/config';
 import { AssetTypes } from '@rainbow-me/entities';
 import { isL2Asset, isNativeAsset } from '@rainbow-me/handlers/assets';
@@ -38,6 +37,8 @@ import {
   isENSAddressFormat,
 } from '@rainbow-me/helpers/validators';
 import {
+  prefetchENSAvatar,
+  prefetchENSCover,
   useAccountSettings,
   useCoinListEditOptions,
   useColorForAsset,
@@ -726,7 +727,8 @@ export default function SendSheet(props) {
       setRecipient(event);
       setNickname(event);
       if (profilesEnabled && isENSAddressFormat(event)) {
-        prefetchENSProfileImages(event);
+        prefetchENSAvatar(event);
+        prefetchENSCover(event);
       }
     },
     [profilesEnabled]
@@ -832,7 +834,7 @@ export default function SendSheet(props) {
   );
 
   return (
-    <Container>
+    <Container testID="send-sheet">
       {ios && <StatusBar barStyle="light-content" />}
       <SheetContainer>
         <SendHeader

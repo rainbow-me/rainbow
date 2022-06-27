@@ -18,13 +18,13 @@ import { Page, RowWithMargins } from '../components/layout';
 import useExperimentalFlag, {
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
+import { prefetchENSIntroData } from '@rainbow-me/handlers/ens';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import {
   useAccountEmptyState,
   useAccountSettings,
   useCoinListEdited,
   useInitializeDiscoverData,
-  useInitializeENSIntroData,
   useInitializeWallet,
   useLoadAccountLateData,
   useLoadGlobalLateData,
@@ -74,7 +74,6 @@ export default function WalletScreen() {
   const loadAccountLateData = useLoadAccountLateData();
   const loadGlobalLateData = useLoadGlobalLateData();
   const initializeDiscoverData = useInitializeDiscoverData();
-  const initializeENSIntroData = useInitializeENSIntroData();
 
   const walletReady = useSelector(
     ({ appState: { walletReady } }) => walletReady
@@ -183,11 +182,15 @@ export default function WalletScreen() {
   useEffect(() => {
     if (walletReady && profilesEnabled) {
       InteractionManager.runAfterInteractions(() => {
-        initializeENSIntroData();
+        // We are not prefetching intro profiles data on Android
+        // as the RPC call queue is considerably slower.
+        if (ios) {
+          prefetchENSIntroData();
+        }
         trackENSProfile();
       });
     }
-  }, [initializeENSIntroData, profilesEnabled, trackENSProfile, walletReady]);
+  }, [profilesEnabled, trackENSProfile, walletReady]);
 
   // Show the exchange fab only for supported networks
   // (mainnet & rinkeby)

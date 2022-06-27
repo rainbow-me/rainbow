@@ -16,7 +16,7 @@ import {
 import {
   useAccountSettings,
   useContacts,
-  useENSProfileImages,
+  useENSAvatar,
   usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
 import {
@@ -78,11 +78,8 @@ const ContactProfileState = ({ address, color, contact, ens, nickname }) => {
     android && Keyboard.dismiss();
   }, [goBack]);
 
-  const { data: images } = useENSProfileImages(ens, {
-    enabled: Boolean(ens),
-  });
-
-  const avatarUrl = profilesEnabled ? images?.avatarUrl : undefined;
+  const { data: avatar } = useENSAvatar(ens, { enabled: Boolean(ens) });
+  const avatarUrl = profilesEnabled ? avatar?.imageUrl : undefined;
 
   const { result: dominantColor } = usePersistentDominantColorFromImage(
     maybeSignUri(avatarUrl || '') || ''

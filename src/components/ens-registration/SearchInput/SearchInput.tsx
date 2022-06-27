@@ -102,6 +102,7 @@ const SearchInput = ({
           <Columns alignHorizontal="justify" alignVertical="center">
             <Column width="content">
               <MaskedView
+                androidRenderingMode="software"
                 maskElement={
                   <Box height={`${height}px`} paddingTop={{ custom: 22 }}>
                     {isLoading ? (

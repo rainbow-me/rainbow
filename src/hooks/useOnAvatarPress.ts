@@ -7,9 +7,10 @@ import { useDispatch } from 'react-redux';
 import { RainbowAccount } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import useAccountProfile from './useAccountProfile';
-import useENSProfile from './useENSProfile';
-import { prefetchENSProfileImages } from './useENSProfileImages';
-import { prefetchENSProfileRecords } from './useENSProfileRecords';
+import useENSAvatar, { prefetchENSAvatar } from './useENSAvatar';
+import { prefetchENSCover } from './useENSCover';
+import useENSOwner from './useENSOwner';
+import { prefetchENSRecords } from './useENSRecords';
 import useENSRegistration from './useENSRegistration';
 import useImagePicker from './useImagePicker';
 import useWallets from './useWallets';
@@ -36,14 +37,24 @@ export default () => {
   } = useAccountProfile();
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const profileEnabled = Boolean(accountENS);
-  const ensProfile = useENSProfile(accountENS, {
+
+  const { isOwner } = useENSOwner(accountENS, {
     enabled: profileEnabled && profilesEnabled,
   });
+
+  const { data: avatar } = useENSAvatar(accountENS, {
+    enabled: profileEnabled && profilesEnabled,
+  });
+  const hasENSAvatar = Boolean(avatar?.imageUrl);
+
   const { openPicker } = useImagePicker();
+  const { startRegistration } = useENSRegistration();
 
   useEffect(() => {
     if (accountENS) {
-      prefetchENSProfileRecords(accountENS);
+      prefetchENSAvatar(accountENS);
+      prefetchENSCover(accountENS);
+      prefetchENSRecords(accountENS);
     }
   }, [accountENS]);
 
@@ -69,6 +80,9 @@ export default () => {
   const processPhoto = useCallback(
     (image: any) => {
       const stringIndex = image?.path.indexOf('/tmp');
+      const imagePath = ios
+        ? `~${image?.path.slice(stringIndex)}`
+        : image?.path;
       const newWallets = {
         ...wallets,
         [selectedWallet.id]: {
@@ -77,7 +91,7 @@ export default () => {
             selectedWallet.id
           ].addresses.map((account: RainbowAccount) =>
             toLower(account.address) === toLower(accountAddress)
-              ? { ...account, image: `~${image?.path.slice(stringIndex)}` }
+              ? { ...account, image: imagePath }
               : account
           ),
         },
@@ -101,6 +115,7 @@ export default () => {
       cropperCircleOverlay: true,
       cropping: true,
     });
+    if (!image) return;
     processPhoto(image);
   }, [openPicker, processPhoto]);
 
@@ -115,97 +130,134 @@ export default () => {
     }
   }, [accountAddress, accountENS]);
 
-  const { startRegistration } = useENSRegistration();
+  const onAvatarViewProfile = useCallback(() => {
+    analytics.track('Viewed ENS profile', {
+      category: 'profiles',
+      ens: accountENS,
+      from: 'Transaction list',
+    });
+    navigate(Routes.PROFILE_SHEET, {
+      address: accountENS,
+      fromRoute: 'ProfileAvatar',
+    });
+  }, [accountENS, navigate]);
+
+  const onAvatarEditProfile = useCallback(() => {
+    startRegistration(accountENS, REGISTRATION_MODES.EDIT);
+    navigate(Routes.REGISTER_ENS_NAVIGATOR, {
+      ensName: accountENS,
+      mode: REGISTRATION_MODES.EDIT,
+    });
+  }, [accountENS, navigate, startRegistration]);
+
+  const isReadOnly = isReadOnlyWallet && !enableActionsOnReadOnlyWallet;
 
   const onAvatarPress = useCallback(() => {
-    const isENSProfile =
-      profilesEnabled && profileEnabled && ensProfile?.isOwner;
+    const isENSProfile = profilesEnabled && profileEnabled && isOwner;
 
-    if (isENSProfile) {
-      // Prefetch profile images
-      prefetchENSProfileImages({ name: accountENS });
+    const avatarActionSheetOptions = (!isReadOnly
+      ? [
+          ...(isENSProfile
+            ? [
+                ...(!hasENSAvatar
+                  ? [
+                      lang.t('profiles.profile_avatar.choose_from_library'),
+                      !accountImage
+                        ? lang.t(`profiles.profile_avatar.pick_emoji`)
+                        : lang.t(`profiles.profile_avatar.remove_photo`),
+                    ]
+                  : []),
+                lang.t('profiles.profile_avatar.view_profile'),
+                lang.t('profiles.profile_avatar.edit_profile'),
+              ]
+            : [
+                lang.t('profiles.profile_avatar.choose_from_library'),
+                !accountImage
+                  ? lang.t(`profiles.profile_avatar.pick_emoji`)
+                  : lang.t(`profiles.profile_avatar.remove_photo`),
+                profilesEnabled &&
+                  lang.t('profiles.profile_avatar.create_profile'),
+              ]),
+        ]
+      : [isENSProfile && lang.t('profiles.profile_avatar.view_profile')]
+    ).filter(option => Boolean(option));
+
+    if (ios && avatarActionSheetOptions.length) {
+      avatarActionSheetOptions.push('Cancel');
     }
 
-    const avatarActionSheetOptions = (isENSProfile
-      ? [
-          lang.t('profiles.profile_avatar.view_profile'),
-          (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) &&
-            lang.t('profiles.profile_avatar.edit_profile'),
-        ]
-      : [
-          lang.t('profiles.profile_avatar.choose_from_library'),
-          !accountImage
-            ? lang.t(`profiles.profile_avatar.pick_emoji`)
-            : lang.t(`profiles.profile_avatar.remove_photo`),
-          profilesEnabled &&
-            (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) &&
-            lang.t('profiles.profile_avatar.create_profile'),
-        ]
-    )
-      .filter(option => Boolean(option))
-      .concat(ios ? ['Cancel'] : []);
-
     const callback = async (buttonIndex: Number) => {
-      if (isENSProfile) {
-        if (buttonIndex === 0) {
-          analytics.track('Viewed ENS profile', {
-            category: 'profiles',
-            ens: accountENS,
-            from: 'Transaction list',
-          });
-          navigate(Routes.PROFILE_SHEET, {
-            address: accountENS,
-            fromRoute: 'ProfileAvatar',
-          });
-        } else if (buttonIndex === 1 && !isReadOnlyWallet) {
-          startRegistration(accountENS, REGISTRATION_MODES.EDIT);
-          navigate(Routes.REGISTER_ENS_NAVIGATOR, {
-            ensName: accountENS,
-            mode: REGISTRATION_MODES.EDIT,
-          });
-        }
-      } else {
-        if (buttonIndex === 0) {
-          onAvatarChooseImage();
-        } else if (buttonIndex === 1) {
-          if (accountImage) {
-            onAvatarRemovePhoto();
+      switch (buttonIndex) {
+        case 0:
+          if (isReadOnly) {
+            if (isENSProfile) {
+              onAvatarViewProfile();
+            }
           } else {
-            onAvatarPickEmoji();
+            if (hasENSAvatar) {
+              onAvatarViewProfile();
+            } else {
+              onAvatarChooseImage();
+            }
           }
-        } else if (buttonIndex === 2) {
-          if (accountImage) {
-            onAvatarRemovePhoto();
-          } else {
-            onAvatarCreateProfile();
+          break;
+        case 1:
+          if (!isReadOnly) {
+            if (isENSProfile && hasENSAvatar) {
+              onAvatarEditProfile();
+            } else {
+              if (accountImage) {
+                onAvatarRemovePhoto();
+              } else {
+                onAvatarPickEmoji();
+              }
+            }
           }
-        } else if (buttonIndex === 2 && profilesEnabled) {
-          onAvatarCreateProfile();
-        }
+          break;
+        case 2:
+          if (!isReadOnly) {
+            if (isENSProfile) {
+              if (!hasENSAvatar) {
+                onAvatarViewProfile();
+              }
+            } else {
+              onAvatarCreateProfile();
+            }
+          }
+          break;
+        case 3:
+          if (!isReadOnly) {
+            if (isENSProfile && !hasENSAvatar) {
+              onAvatarEditProfile();
+            }
+          }
+          break;
+        default:
+          break;
       }
     };
 
-    showActionSheetWithOptions(
-      {
-        cancelButtonIndex: avatarActionSheetOptions.length - 1,
-        destructiveButtonIndex:
-          !isENSProfile && accountImage
-            ? avatarActionSheetOptions.length - (profilesEnabled ? 3 : 2)
-            : undefined,
-        options: avatarActionSheetOptions,
-      },
-      (buttonIndex: Number) => callback(buttonIndex)
-    );
+    if (avatarActionSheetOptions.length) {
+      showActionSheetWithOptions(
+        {
+          cancelButtonIndex: avatarActionSheetOptions.length - 1,
+          destructiveButtonIndex:
+            !isReadOnly && !hasENSAvatar && accountImage ? 1 : undefined,
+          options: avatarActionSheetOptions,
+        },
+        (buttonIndex: Number) => callback(buttonIndex)
+      );
+    }
   }, [
-    ensProfile,
-    profileEnabled,
     profilesEnabled,
-    isReadOnlyWallet,
+    profileEnabled,
+    isOwner,
+    isReadOnly,
+    hasENSAvatar,
     accountImage,
-    navigate,
-    accountENS,
-    startRegistration,
+    onAvatarViewProfile,
     onAvatarChooseImage,
+    onAvatarEditProfile,
     onAvatarRemovePhoto,
     onAvatarPickEmoji,
     onAvatarCreateProfile,

@@ -321,13 +321,7 @@ describe('Hardhat Transaction Flow', () => {
     const encodedUri = encodeURIComponent(uri);
     const fullUrl = `${baseUrl}/wc?uri=${encodedUri}`;
 
-    await Helpers.disableSynchronization();
-    await device.sendToHome();
-    await Helpers.enableSynchronization();
-    await device.launchApp({
-      newInstance: false,
-      url: fullUrl,
-    });
+    await Helpers.openDeeplinkFromBackground(fullUrl);
 
     await Helpers.checkIfVisible('wc-approval-sheet', 30000);
     await Helpers.waitAndTap('wc-connect-action-button');
