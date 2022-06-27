@@ -102,7 +102,7 @@ const text = {
 };
 
 const calcGasParamRetryValue = prevWeiValue => {
-  const prevWeiValueBN = BigNumber.from(prevWeiValue);
+  const prevWeiValueBN = BigNumber.from(prevWeiValue ?? 0);
 
   const newWeiValueBN = prevWeiValueBN.mul('110').div('100');
   const newWeiValue = newWeiValueBN.toNumber().toFixed(0);
