@@ -1,17 +1,27 @@
-import { useCallback, useEffect, useRef } from 'react';
-import { InteractionManager } from 'react-native';
+import { MutableRefObject, useCallback, useEffect, useRef } from 'react';
+import { Handle, InteractionManager } from 'react-native';
 
-export default function useInteraction() {
-  const interactionHandle = useRef<any>();
+type CreateHandleType = (callback?: () => void) => void;
+type RemoveHandleType = () => void;
+type HandleType = Handle | null;
 
-  const createInteractionHandle = useCallback(callback => {
-    interactionHandle.current = callback
-      ? InteractionManager.runAfterInteractions(callback)
-      : InteractionManager.createInteractionHandle();
+export default function useInteraction(): [
+  CreateHandleType,
+  RemoveHandleType,
+  MutableRefObject<HandleType>
+] {
+  const interactionHandle = useRef<HandleType>(null);
+
+  const createInteractionHandle = useCallback<CreateHandleType>(callback => {
+    if (callback) {
+      InteractionManager.runAfterInteractions(callback);
+    } else {
+      interactionHandle.current = InteractionManager.createInteractionHandle();
+    }
   }, []);
 
-  const removeInteractionHandle = useCallback(() => {
-    if (interactionHandle.current) {
+  const removeInteractionHandle = useCallback<RemoveHandleType>(() => {
+    if (interactionHandle.current !== null) {
       InteractionManager.clearInteractionHandle(interactionHandle.current);
       interactionHandle.current = null;
     }

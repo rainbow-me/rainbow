@@ -1,11 +1,22 @@
-import { useCallback, useState } from 'react';
-import { Clock, Value } from 'react-native-reanimated';
-import { runSpring } from '../components/animations';
+import { useCallback } from 'react';
+import {
+  useSharedValue,
+  withSpring,
+  WithSpringConfig,
+} from 'react-native-reanimated';
 
-const shake = () => runSpring(new Clock(), -10, 0, -1000, 5500, 35);
+const springConfig: WithSpringConfig = {
+  damping: 35,
+  stiffness: 5500,
+  velocity: -1000,
+};
 
 export default function useShakeAnimation() {
-  const [animation, setAnimation] = useState(new Value(0));
-  const onShake = useCallback(() => setAnimation(shake()), []);
+  const animation = useSharedValue<number>(0);
+  const onShake = useCallback(() => {
+    animation.value = -10;
+    animation.value = withSpring(0, springConfig);
+  }, [animation]);
+
   return [animation, onShake];
 }
