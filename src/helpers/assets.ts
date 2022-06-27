@@ -250,7 +250,7 @@ export const buildBriefCoinsList = (
 };
 
 export const buildUniqueTokenList = (
-  uniqueTokens: any,
+  uniqueTokens: any[],
   selectedShowcaseTokens: any
 ) => {
   let rows: any = [];
@@ -261,7 +261,7 @@ export const buildUniqueTokenList = (
   const families = Object.keys(grouped);
 
   for (let family of families) {
-    const tokensRow: any = [];
+    const tokensRow: any[] = [];
     for (let j = 0; j < grouped[family].length; j += 2) {
       if (includes(selectedShowcaseTokens, grouped[family][j].uniqueId)) {
         showcaseTokens.push(grouped[family][j]);
