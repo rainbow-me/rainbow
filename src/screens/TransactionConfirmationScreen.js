@@ -48,7 +48,6 @@ import {
   estimateGas,
   estimateGasWithPadding,
   getProviderForNetwork,
-  isHexString,
   isL2Network,
   isTestnetNetwork,
   toHex,
@@ -623,11 +622,7 @@ export default function TransactionConfirmationScreen() {
       ...gasParams,
       nonce,
     };
-    if (isHexString(txPayloadUpdated?.chainId)) {
-      txPayloadUpdated.chainId = Number(
-        convertHexToString(txPayloadUpdated.chainId)
-      );
-    }
+    delete txPayloadUpdated?.chainId;
     if (calculatedGasLimit) {
       txPayloadUpdated.gasLimit = calculatedGasLimit;
     }
