@@ -52,7 +52,6 @@ export default function useMagicAutofocus(
 
   const [createRefocusInteraction] = useInteraction();
   const fallbackRefocusLastInput = useCallback(() => {
-    // @ts-expect-error ts-migrate(2349) FIXME: This expression is not callable.
     createRefocusInteraction(() => {
       if (isScreenFocused) {
         triggerFocus();
