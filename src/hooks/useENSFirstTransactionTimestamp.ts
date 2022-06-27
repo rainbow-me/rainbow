@@ -3,6 +3,7 @@ import { useQuery } from 'react-query';
 import { getENSData, saveENSData } from '@rainbow-me/handlers/localstorage/ens';
 import { web3Provider } from '@rainbow-me/handlers/web3';
 import { queryClient } from '@rainbow-me/react-query/queryClient';
+import { QueryConfig, UseQueryData } from '@rainbow-me/react-query/types';
 import { getFirstTransactionTimestamp } from '@rainbow-me/utils/ethereumUtils';
 
 const ensFirstTxTimestampQueryKey = (name: string) => [
@@ -48,15 +49,15 @@ export async function prefetchENSFirstTransactionTimestamp(
   );
 }
 
-export default function useENSFirstTransactionTimestamp({
-  name,
-}: {
-  name: string;
-}) {
-  return useQuery(
+export default function useENSFirstTransactionTimestamp(
+  name: string,
+  config?: QueryConfig<typeof fetchENSFirstTransactionTimestamp>
+) {
+  return useQuery<UseQueryData<typeof fetchENSFirstTransactionTimestamp>>(
     ensFirstTxTimestampQueryKey(name),
     async () => fetchENSFirstTransactionTimestamp(name),
     {
+      ...config,
       cacheTime: Infinity,
       enabled: Boolean(name),
       // First transaction timestamp will obviously never be stale.

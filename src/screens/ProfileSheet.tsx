@@ -49,12 +49,12 @@ export default function ProfileSheet() {
   );
   const { data: avatar, isFetched: isAvatarFetched } = useENSAvatar(ensName);
 
-  // Prefetch first transaction timestamp
+  const isPreview = name === Routes.PROFILE_PREVIEW_SHEET;
+
+  // Prefetch first transaction timestamp unless already fetched for intro marquee
   const {
     isSuccess: hasFirstTxTimestampFetched,
-  } = useENSFirstTransactionTimestamp({
-    name: ensName,
-  });
+  } = useENSFirstTransactionTimestamp(name, { enabled: !isPreview });
 
   // Prefetch asset list
   const {
@@ -86,7 +86,6 @@ export default function ProfileSheet() {
         colors.appleBlue
       : colors.skeleton;
 
-  const isPreview = name === Routes.PROFILE_PREVIEW_SHEET;
   const enableZoomableImages = !isPreview;
 
   useEffect(() => {

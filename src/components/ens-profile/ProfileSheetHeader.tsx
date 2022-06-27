@@ -146,9 +146,9 @@ export default function ProfileSheetHeader({
     records?.cover,
   ]);
 
-  const { data: firstTransactionTimestamp } = useENSFirstTransactionTimestamp({
-    name: ensName,
-  });
+  const { data: firstTransactionTimestamp } = useENSFirstTransactionTimestamp(
+    ensName
+  );
 
   const emoji = useMemo(
     () => (profileAddress ? addressHashedEmoji(profileAddress) : ''),
