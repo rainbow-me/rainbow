@@ -135,9 +135,7 @@ export const parseRainbowMeteorologyData = (
       Number(weiToGwei(maxPriorityFee)).toFixed(2)
     );
     // clean max base fee to only parser int gwei
-    const cleanMaxBaseFee = numberGweiToWei(
-      Number(weiToGwei(speedMaxBaseFee)).toFixed(2)
-    );
+    const cleanMaxBaseFee = Number(speedMaxBaseFee);
     parsedFees[speed] = {
       estimatedTime: parseGasDataConfirmationTime(
         cleanMaxBaseFee,
