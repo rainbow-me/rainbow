@@ -15,14 +15,23 @@ import {
 import { queryClient } from '@rainbow-me/react-query/queryClient';
 import { QueryConfig, UseQueryData } from '@rainbow-me/react-query/types';
 
-const queryKey = (name: string) => ['ens-profile', name];
+const queryKey = (
+  name: string,
+  { supportedRecordsOnly }: { supportedRecordsOnly?: boolean } = {}
+) => ['ens-profile', name, { supportedRecordsOnly }];
 
 const STALE_TIME = 10000;
 
-async function fetchENSProfile(name: string) {
+async function fetchENSProfile(
+  name: string,
+  { supportedRecordsOnly = true }: { supportedRecordsOnly?: boolean } = {}
+) {
   const cachedProfile = await getENSProfile(name);
   if (cachedProfile) {
-    queryClient.setQueryData(queryKey(name), cachedProfile);
+    queryClient.setQueryData(
+      queryKey(name, { supportedRecordsOnly }),
+      cachedProfile
+    );
   }
 
   const [
@@ -40,8 +49,8 @@ async function fetchENSProfile(name: string) {
     queryClient.fetchQuery(ensAvatarQueryKey(name), () => fetchENSAvatar(name)),
     queryClient.fetchQuery(ensCoverQueryKey(name), () => fetchENSCover(name)),
     queryClient.fetchQuery(ensOwnerQueryKey(name), () => fetchENSOwner(name)),
-    queryClient.fetchQuery(ensRecordsQueryKey(name), () =>
-      fetchENSRecords(name)
+    queryClient.fetchQuery(ensRecordsQueryKey({ name }), () =>
+      fetchENSRecords(name, { supportedOnly: supportedRecordsOnly })
     ),
     queryClient.fetchQuery(ensRegistrantQueryKey(name), () =>
       fetchENSRegistrant(name)
@@ -83,20 +92,31 @@ export async function prefetchENSProfile(name: string) {
  */
 export default function useENSProfile(
   name: string,
-  config?: QueryConfig<typeof fetchENSProfile>
+  {
+    supportedRecordsOnly = true,
+    ...config
+  }: QueryConfig<typeof fetchENSProfile> & {
+    supportedRecordsOnly?: boolean;
+  } = {}
 ) {
   const { accountAddress } = useAccountSettings();
   const { walletNames } = useWallets();
   const { data, isLoading, isSuccess } = useQuery<
     UseQueryData<typeof fetchENSProfile>
-  >(queryKey(name), async () => fetchENSProfile(name), {
-    ...config,
-    // Data will be stale for 10s to avoid dupe queries
-    staleTime: STALE_TIME,
-  });
+  >(
+    queryKey(name, { supportedRecordsOnly }),
+    async () => fetchENSProfile(name, { supportedRecordsOnly }),
+    {
+      ...config,
+      // Data will be stale for 10s to avoid dupe queries
+      staleTime: STALE_TIME,
+    }
+  );
 
   const isOwner =
     data?.owner?.address?.toLowerCase() === accountAddress?.toLowerCase();
+  const isRegistrant =
+    data?.registrant?.address?.toLowerCase() === accountAddress?.toLowerCase();
 
   // if a ENS NFT is sent, the ETH coinAddress record doesn't change
   // if the user tries to use it to set primary name the tx will go through
@@ -112,6 +132,7 @@ export default function useENSProfile(
     isLoading,
     isOwner,
     isPrimaryName,
+    isRegistrant,
     isSetNameEnabled,
     isSuccess,
   };

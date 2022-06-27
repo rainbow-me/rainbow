@@ -49,12 +49,12 @@ const formatENSActionParams = (
 
 export default function useENSRegistrationActionHandler(
   {
-    sendReverseRecord,
-    yearsDuration,
+    sendReverseRecord = false,
+    yearsDuration = 1,
     step: registrationStep,
   }: {
-    yearsDuration: number;
-    sendReverseRecord: boolean;
+    yearsDuration?: number;
+    sendReverseRecord?: boolean;
     step: keyof typeof REGISTRATION_STEPS;
   } = {} as any
 ) {
@@ -318,6 +318,44 @@ export default function useENSRegistrationActionHandler(
     ]
   );
 
+  const transferAction = useCallback(
+    async (
+      callback: () => void,
+      { clearRecords, records, name, setAddress, toAddress, transferControl }
+    ) => {
+      const wallet = await loadWallet();
+      if (!wallet) {
+        return;
+      }
+
+      const nonce = await getNextNonce();
+
+      const transferEnsParameters: ENSActionParameters = {
+        ...formatENSActionParams({
+          ...registrationParameters,
+          records: records ?? registrationParameters.records,
+        }),
+        clearRecords,
+        name,
+        nonce,
+        ownerAddress: accountAddress,
+        setAddress,
+        toAddress,
+        transferControl,
+      };
+
+      await executeRap(
+        wallet,
+        RapActionTypes.transferENS,
+        transferEnsParameters,
+        callback
+      );
+
+      return nonce;
+    },
+    [accountAddress, getNextNonce, registrationParameters]
+  );
+
   const actions = useMemo(
     () => ({
       [REGISTRATION_STEPS.COMMIT]: commitAction,
@@ -325,6 +363,7 @@ export default function useENSRegistrationActionHandler(
       [REGISTRATION_STEPS.REGISTER]: registerAction,
       [REGISTRATION_STEPS.RENEW]: renewAction,
       [REGISTRATION_STEPS.SET_NAME]: setNameAction,
+      [REGISTRATION_STEPS.TRANSFER]: transferAction,
       [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: speedUpCommitAction,
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: () => null,
     }),
@@ -335,6 +374,7 @@ export default function useENSRegistrationActionHandler(
       setNameAction,
       setRecordsAction,
       speedUpCommitAction,
+      transferAction,
     ]
   );
 
