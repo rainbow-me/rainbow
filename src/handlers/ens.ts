@@ -4,7 +4,8 @@ import { captureException } from '@sentry/react-native';
 import { Duration, sub } from 'date-fns';
 import { isZeroAddress } from 'ethereumjs-util';
 import { BigNumber } from 'ethers';
-import { debounce, isEmpty, sortBy } from 'lodash';
+import { isEmpty, sortBy } from 'lodash';
+import debounce from 'lodash.debounce';
 import { ensClient } from '../apollo/client';
 import {
   ENS_ACCOUNT_REGISTRATIONS,
