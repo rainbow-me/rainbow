@@ -1,6 +1,12 @@
 /* eslint-disable no-undef */
 /* eslint-disable jest/expect-expect */
+import { exec } from 'child_process';
 import * as Helpers from './helpers';
+
+beforeAll(async () => {
+  // Connect to hardhat
+  await exec('yarn hardhat');
+});
 
 describe('Send Sheet Interaction Flow', () => {
   it('Should show the welcome screen', async () => {
@@ -50,6 +56,22 @@ describe('Send Sheet Interaction Flow', () => {
     }
     await Helpers.checkIfVisible('wallet-screen', 40000);
     await Helpers.enableSynchronization();
+  });
+
+  it('Should send ETH to test wallet"', async () => {
+    await Helpers.sendETHtoTestWallet();
+  });
+
+  it('Should connect to hardhat', async () => {
+    await Helpers.swipe('wallet-screen', 'right', 'slow');
+    await Helpers.checkIfVisible('profile-screen');
+    await Helpers.waitAndTap('settings-button');
+    await Helpers.checkIfVisible('settings-modal');
+    await Helpers.waitAndTap('developer-section');
+    await Helpers.checkIfVisible('developer-settings-modal');
+    await Helpers.waitAndTap('hardhat-section');
+    await Helpers.checkIfVisible('testnet-toast-Hardhat');
+    await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
   // Saving for now in case we want to test iCloud back up sheet
@@ -244,7 +266,7 @@ describe('Send Sheet Interaction Flow', () => {
   it('Should show Add Contact Screen after tapping Add Contact Button', async () => {
     await Helpers.checkIfVisible('add-contact-button');
     await Helpers.waitAndTap('add-contact-button');
-    await Helpers.checkIfVisible('contact-profile-name-input');
+    await Helpers.checkIfVisible('wallet-info-input');
   });
 
   it('Should do nothing on Add Contact cancel', async () => {
@@ -256,9 +278,9 @@ describe('Send Sheet Interaction Flow', () => {
 
   it('Should update address field to show contact name & show edit contact button', async () => {
     await Helpers.waitAndTap('add-contact-button');
-    await Helpers.clearField('contact-profile-name-input');
-    await Helpers.typeText('contact-profile-name-input', 'testcoin.test', true);
-    await Helpers.waitAndTap('contact-profile-add-button');
+    await Helpers.clearField('wallet-info-input');
+    await Helpers.typeText('wallet-info-input', 'testcoin.test', true);
+    await Helpers.waitAndTap('wallet-info-submit-button');
     await Helpers.checkIfElementByTextIsVisible('testcoin.test');
     await Helpers.checkIfVisible('edit-contact-button');
   });
@@ -273,9 +295,10 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('edit-contact-button');
     await Helpers.waitAndTap('edit-contact-button');
     await Helpers.tapByText('Edit Contact');
-    await Helpers.clearField('contact-profile-name-input');
-    await Helpers.typeText('contact-profile-name-input', 'testcoin.eth', true);
-    await Helpers.tapByText('Done');
+    await Helpers.clearField('wallet-info-input');
+    await Helpers.typeText('wallet-info-input', 'testcoin.eth', true);
+    await Helpers.waitAndTap('wallet-info-submit-button');
+    // await Helpers.tapByText('Done');
     await Helpers.checkIfElementByTextIsVisible('testcoin.eth');
   });
 
@@ -304,6 +327,6 @@ describe('Send Sheet Interaction Flow', () => {
   afterAll(async () => {
     // Reset the app state
     await device.clearKeychain();
-    await Helpers.delay(2000);
+    await exec('kill $(lsof -t -i:8545)');
   });
 });

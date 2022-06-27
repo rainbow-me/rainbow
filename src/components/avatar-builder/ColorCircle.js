@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-native';
-import { EasingNode } from 'react-native-reanimated';
-import { useTheme } from '../../context/ThemeContext';
+import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 
 const ColorCircle = ({ backgroundColor, isSelected, onPressColor }) => {
@@ -13,7 +12,6 @@ const ColorCircle = ({ backgroundColor, isSelected, onPressColor }) => {
       <ButtonPressAnimation
         alignSelf="center"
         duration={100}
-        easing={EasingNode.bezier(0.19, 1, 0.22, 1)}
         enableHapticFeedback
         justifyContent="center"
         onPress={onPressColor}

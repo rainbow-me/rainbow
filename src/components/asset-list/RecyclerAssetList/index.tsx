@@ -28,7 +28,7 @@ import {
   RecyclerListViewState,
 } from 'recyclerlistview/dist/reactnative/core/RecyclerListView';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
-import { withThemeContext } from '../../../context/ThemeContext';
+import { withThemeContext } from '../../../theme/ThemeContext';
 import { CoinDivider, CoinDividerHeight } from '../../coin-divider';
 import { CoinRowHeight } from '../../coin-row';
 import AssetListHeader, { AssetListHeaderHeight } from '../AssetListHeader';
@@ -243,7 +243,7 @@ function RecyclerAssetList({
   disableRefreshControl,
   ...extras
 }: RecyclerAssetListProps): JSX.Element {
-  const { isCoinListEdited } = useCoinListEdited();
+  const { isCoinListEdited, setIsCoinListEdited } = useCoinListEdited();
   const {
     isInvestmentCardsOpen: openInvestmentCards,
   } = useOpenInvestmentCards();
@@ -774,6 +774,14 @@ function RecyclerAssetList({
 
   const isInsideBottomSheet = !!useContext(BottomSheetContext);
 
+  const coinDividerExtendedState = useMemo(
+    () => ({
+      isCoinListEdited,
+      setIsCoinListEdited,
+    }),
+    [isCoinListEdited, setIsCoinListEdited]
+  );
+
   return (
     <StyledContainer onLayout={onLayout}>
       {/* @ts-ignore */}
@@ -815,7 +823,11 @@ function RecyclerAssetList({
           },
         ]}
       >
-        <CoinDivider balancesSum={0} defaultToEditButton={false} />
+        <CoinDivider
+          balancesSum={0}
+          defaultToEditButton={false}
+          extendedState={coinDividerExtendedState}
+        />
       </View>
     </StyledContainer>
   );

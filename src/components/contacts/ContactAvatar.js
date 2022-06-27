@@ -1,7 +1,7 @@
 import { toUpper } from 'lodash';
 import React, { useMemo } from 'react';
-import { useTheme } from '../../context/ThemeContext';
 import { darkModeThemeColors } from '../../styles/colors';
+import { useTheme } from '../../theme/ThemeContext';
 import { getFirstGrapheme } from '../../utils';
 import { Centered } from '../layout';
 import { Text } from '../text';

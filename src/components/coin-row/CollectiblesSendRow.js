@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { Fragment, useMemo } from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
-import { useTheme } from '../../context/ThemeContext';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
+import { useTheme } from '../../theme/ThemeContext';
 import { deviceUtils, magicMemo } from '../../utils';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';

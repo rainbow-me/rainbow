@@ -1,8 +1,11 @@
+import { useMemo } from 'react';
 import { useDeepCompareMemo } from 'use-deep-compare';
+import { AssetListType } from '..';
 import { CellType, CoinExtraData, NFTFamilyExtraData } from './ViewTypes';
 import {
   useCoinListEdited,
   useCoinListEditOptions,
+  useExternalWalletSectionsData,
   useOpenFamilies,
   useOpenInvestmentCards,
   useOpenSavings,
@@ -10,25 +13,71 @@ import {
   useWalletSectionsData,
 } from '@rainbow-me/hooks';
 
-export default function useMemoBriefSectionData() {
-  const { briefSectionsData } = useWalletSectionsData();
-  const { isSmallBalancesOpen, stagger } = useOpenSmallBalances();
+const FILTER_TYPES = {
+  'ens-profile': [
+    CellType.NFT_SPACE_AFTER,
+    CellType.NFT,
+    CellType.FAMILY_HEADER,
+  ],
+  'select-nft': [
+    CellType.NFT_SPACE_AFTER,
+    CellType.NFT,
+    CellType.FAMILY_HEADER,
+  ],
+} as { [key in AssetListType]: CellType[] };
+
+export default function useMemoBriefSectionData({
+  externalAddress,
+  type,
+  briefSectionsData,
+}: {
+  externalAddress?: string;
+  type?: AssetListType;
+  briefSectionsData?: any[];
+} = {}) {
+  let sectionsDataToUse: any[];
+
+  if (externalAddress) {
+    // `externalAddress` is a static prop, so hooks will always execute in order.
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    sectionsDataToUse = useExternalWalletSectionsData({
+      address: externalAddress,
+    }).briefSectionsData;
+  } else if (!briefSectionsData) {
+    // briefSectionsData is an optional thing - we might send it from the tree
+    // so we run it only once for a tree
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    sectionsDataToUse = useWalletSectionsData().briefSectionsData!;
+  } else {
+    sectionsDataToUse = briefSectionsData;
+  }
+
+  const { isSmallBalancesOpen } = useOpenSmallBalances();
   const { isSavingsOpen } = useOpenSavings();
   const { isInvestmentCardsOpen } = useOpenInvestmentCards();
   const { isCoinListEdited } = useCoinListEdited();
-  const { hiddenCoins } = useCoinListEditOptions();
+  const { hiddenCoinsObj } = useCoinListEditOptions();
   const { openFamilies } = useOpenFamilies();
 
-  const result = useDeepCompareMemo(() => {
+  const result = useMemo(() => {
     let afterDivider = false;
     let isGroupOpen = true;
     const stickyHeaders = [];
     let index = 0;
     let afterCoins = false;
     // load firstly 12, then the rest after 1 sec
-    let numberOfSmallBalancesAllowed = stagger ? 12 : briefSectionsData.length;
-    const briefSectionsDataFiltered = briefSectionsData
+    let numberOfSmallBalancesAllowed = sectionsDataToUse.length;
+    const filterTypes = type ? FILTER_TYPES[type as AssetListType] : [];
+    const briefSectionsDataFiltered = sectionsDataToUse
       .filter((data, arrIndex, arr) => {
+        if (
+          filterTypes &&
+          filterTypes.length !== 0 &&
+          !filterTypes.includes(data.type)
+        ) {
+          return false;
+        }
+
         if (
           arr[arrIndex - 1]?.type === CellType.COIN &&
           data.type !== CellType.COIN_DIVIDER &&
@@ -61,7 +110,7 @@ export default function useMemoBriefSectionData() {
         }
         if (
           data.type === CellType.COIN &&
-          hiddenCoins.includes((data as CoinExtraData).uniqueId) &&
+          hiddenCoinsObj[(data as CoinExtraData).uniqueId] &&
           !isCoinListEdited
         ) {
           return false;
@@ -109,25 +158,28 @@ export default function useMemoBriefSectionData() {
         index++;
         return true;
       })
-      .map(({ uid, type }) => ({ type, uid }));
+      .map(({ uid, type: cellType }) => {
+        return { type: cellType, uid };
+      });
     return briefSectionsDataFiltered;
   }, [
-    briefSectionsData,
+    type,
+    sectionsDataToUse,
     isSmallBalancesOpen,
     isSavingsOpen,
     isInvestmentCardsOpen,
     isCoinListEdited,
     openFamilies,
-    stagger,
+    hiddenCoinsObj,
   ]);
   const memoizedResult = useDeepCompareMemo(() => result, [result]);
   const additionalData = useDeepCompareMemo(
     () =>
-      briefSectionsData.reduce((acc, data) => {
+      sectionsDataToUse.reduce((acc, data) => {
         acc[data.uid] = data;
         return acc;
       }, {}),
-    [briefSectionsData]
+    [sectionsDataToUse]
   );
   return { additionalData, memoizedResult };
 }

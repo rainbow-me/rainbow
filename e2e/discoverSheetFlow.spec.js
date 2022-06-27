@@ -42,7 +42,13 @@ describe('Discover Sheet Flow', () => {
     await Helpers.enableSynchronization();
   });
 
+  it('Should navigate to the Profile screen after swiping right', async () => {
+    await Helpers.swipe('wallet-screen', 'right', 'slow');
+    await Helpers.checkIfVisible('profile-screen');
+  });
+
   it('Should navigate to Discover screen after tapping Discover Button', async () => {
+    await Helpers.swipe('profile-screen', 'left', 'slow');
     await Helpers.waitAndTap('discover-button');
     await Helpers.checkIfVisible('discover-header');
   });
@@ -182,9 +188,64 @@ describe('Discover Sheet Flow', () => {
     await Helpers.waitAndTap('pools-list-oneDayVolumeUSD');
     await Helpers.checkIfVisible('pools-section-oneDayVolumeUSD');
   });
+
+  it('Should navigate to the Wallet screen after swiping right', async () => {
+    await Helpers.swipe('discover-home', 'down', 'slow');
+    await Helpers.swipe('discover-sheet', 'right', 'slow');
+    await Helpers.checkIfVisible('wallet-screen');
+  });
+
+  it('Should navigate to the Profile screen after swiping right again', async () => {
+    await Helpers.swipe('wallet-screen', 'right', 'slow');
+    await Helpers.checkIfVisible('profile-screen');
+  });
+
+  it('Should navigate to Settings Modal after tapping Settings Button', async () => {
+    await Helpers.waitAndTap('settings-button');
+    await Helpers.checkIfVisible('settings-modal');
+  });
+
+  it('Should navigate to Developer Settings after tapping Developer Section', async () => {
+    await Helpers.waitAndTap('developer-section');
+    await Helpers.checkIfVisible('developer-settings-modal');
+  });
+
+  it('Should make ENS Profiles available', async () => {
+    await Helpers.swipe('developer-settings-modal', 'up', 'slow');
+    await Helpers.tapByText('ENS Profiles');
+    await Helpers.tapByText('Done');
+  });
+
+  it('Should go to Discover screen', async () => {
+    await Helpers.swipe('profile-screen', 'left', 'slow');
+    await Helpers.swipe('wallet-screen', 'left', 'slow');
+    await Helpers.checkIfVisible('ens-register-name-banner');
+  });
+
+  it('Should search and open Profile for rainbowwallet.eth', async () => {
+    await Helpers.waitAndTap('search-fab');
+    await Helpers.typeText(
+      'discover-search-input',
+      'rainbowwallet.eth\n',
+      true
+    );
+    await Helpers.checkIfVisible(
+      'discover-currency-select-list-contact-row-rainbowwallet.eth'
+    );
+    await Helpers.checkIfNotVisible(
+      'discover-currency-select-list-exchange-coin-row-ETH'
+    );
+    await Helpers.waitAndTap(
+      'discover-currency-select-list-contact-row-rainbowwallet.eth'
+    );
+  });
+
+  it('Should watch wallet from Profile sheet', async () => {
+    await Helpers.waitAndTap('profile-sheet-watch-button');
+  });
+
   afterAll(async () => {
     // Reset the app state
     await device.clearKeychain();
-    await Helpers.delay(2000);
   });
 });

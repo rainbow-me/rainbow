@@ -1,7 +1,7 @@
 import chroma from 'chroma-js';
 import { toLower } from 'lodash';
 import PropTypes from 'prop-types';
-import currentColors from '../context/currentColors';
+import currentColors from '../theme/currentColors';
 import { memoFn } from '../utils/memoFn';
 
 export type Colors = ReturnType<typeof getColorsByTheme>;
@@ -11,7 +11,7 @@ const buildRgba = memoFn(
 );
 
 const darkModeColors = {
-  appleBlue: '#0E76FD',
+  appleBlue: '#1F87FF',
   black: '#FFFFFF',
   blueGreyDark: '#E0E8FF',
   blueGreyDark04: '#222326',
@@ -34,6 +34,7 @@ const darkModeColors = {
   lightOrange: '#FFA64D',
   offWhite: '#1F222A',
   offWhite80: '#1C1F27',
+  placeholder: 'rgba(224, 232, 255, 0.4)',
   rowDivider: 'rgba(60, 66, 82, 0.075)',
   rowDividerExtraLight: 'rgba(60, 66, 82, 0.0375)',
   rowDividerFaint: 'rgba(60, 66, 82, 0.025)',
@@ -186,6 +187,10 @@ const getColorsByTheme = (darkMode?: boolean) => {
   };
 
   let gradients = {
+    appleBlueTintToAppleBlue: ['#15B1FE', base.appleBlue],
+    blueToGreen: ['#4764F7', '#23D67F'],
+    checkmarkAnimation: ['#1FC24A10', '#1FC24A10', '#1FC24A00'],
+    ens: ['#513eff', '#3e80ff'],
     lighterGrey: [buildRgba('#ECF1F5', 0.15), buildRgba('#DFE4EB', 0.5)],
     lightestGrey: ['#FFFFFF', '#F2F4F7'],
     lightestGreyReverse: ['#F2F4F7', '#FFFFFF'],
@@ -202,10 +207,17 @@ const getColorsByTheme = (darkMode?: boolean) => {
     sendBackground: ['#FAFAFA00', '#FAFAFAFF'],
     success: ['#FAFF00', '#2CCC00'],
     successTint: ['#FFFFF0', '#FCFEFB'],
-    transparentToGreen: ['transparent', buildRgba(base.green, 0.06)],
-    transparentToLightGrey: ['transparent', buildRgba(base.blueGreyDark, 0.06)],
+    transparentToAppleBlue: [
+      buildRgba(base.appleBlue, 0.02),
+      buildRgba(base.appleBlue, 0.06),
+    ],
+    transparentToGreen: [buildRgba(base.green, 0), buildRgba(base.green, 0.06)],
+    transparentToLightGrey: [
+      buildRgba(base.blueGreyDark, 0),
+      buildRgba(base.blueGreyDark, 0.06),
+    ],
     transparentToLightOrange: [
-      'transparent',
+      buildRgba(base.lightOrange, 0),
       buildRgba(base.lightOrange, 0.06),
     ],
     vividRainbow: ['#FFB114', '#FF54BB', '#00F0FF'],
@@ -283,6 +295,10 @@ const getColorsByTheme = (darkMode?: boolean) => {
     };
 
     gradients = {
+      appleBlueTintToAppleBlue: ['#2FC3FF', base.appleBlue],
+      blueToGreen: ['#4764F7', '#23D67F'],
+      checkmarkAnimation: ['#1FC24A10', '#1FC24A10', '#1FC24A00'],
+      ens: ['#513eff', '#3e80ff'],
       lighterGrey: [buildRgba('#1F222A', 0.8), buildRgba('#1F222A', 0.6)],
       lightestGrey: [buildRgba('#1F222A', 0.8), buildRgba('#1F222A', 0.3)],
       lightestGreyReverse: [
@@ -291,8 +307,8 @@ const getColorsByTheme = (darkMode?: boolean) => {
       ],
       lightGrey: ['#1F222A', buildRgba('#1F222A', 0.8)],
       lightGreyTransparent: [
+        buildRgba(base.blueGreyDark, 0.02),
         buildRgba(base.blueGreyDark, 0.06),
-        buildRgba(base.blueGreyDark, 0.025),
       ],
       lightGreyWhite: [buildRgba('#F0F2F5', 0.05), buildRgba('#FFFFFF', 0.01)],
       offWhite: ['#1F222A', '#1F222A'],
@@ -302,13 +318,20 @@ const getColorsByTheme = (darkMode?: boolean) => {
       sendBackground: ['#12131A00', '#12131AFF'],
       success: ['#FAFF00', '#2CCC00'],
       successTint: ['#202118', '#141E18'],
-      transparentToGreen: ['transparent', buildRgba(base.green, 0.06)],
+      transparentToAppleBlue: [
+        buildRgba(base.appleBlue, 0.02),
+        buildRgba(base.appleBlue, 0.06),
+      ],
+      transparentToGreen: [
+        buildRgba(base.green, 0),
+        buildRgba(base.green, 0.06),
+      ],
       transparentToLightGrey: [
-        'transparent',
+        buildRgba(base.blueGreyDark, 0),
         buildRgba(base.blueGreyDark, 0.06),
       ],
       transparentToLightOrange: [
-        'transparent',
+        buildRgba(base.lightOrange, 0),
         buildRgba(base.lightOrange, 0.06),
       ],
       vividRainbow: ['#FFB114', '#FF54BB', '#00F0FF'],

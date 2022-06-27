@@ -193,7 +193,7 @@ const PulseIndexMemo = React.memo(function PulseIndexMemo({
             color={colors.dpiLight}
             numberOfLines={1}
             size="smedium"
-            weight="semibold"
+            weight="bold"
           >
             Trading at{' '}
             <Text
@@ -220,7 +220,7 @@ const PulseIndexMemo = React.memo(function PulseIndexMemo({
               align="right"
               color={isPositive ? colors.green : colors.red}
               size="smedium"
-              weight="semibold"
+              weight="bold"
             >
               {' '}
               {lang.t('discover.pulse.today_suffix')}

@@ -3,9 +3,9 @@ import { Animated, View } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { HeaderHeightWithStatusBar } from '../components/header';
 import { AvatarCircle } from '../components/profile';
-import { currentColors as colors } from '@rainbow-me/context';
 import Routes from '@rainbow-me/routes';
 import { lightModeThemeColors } from '@rainbow-me/styles';
+import { currentColors as colors } from '@rainbow-me/theme';
 import { deviceUtils } from '@rainbow-me/utils';
 
 const statusBarHeight = getStatusBarHeight(true);
@@ -330,6 +330,18 @@ export const exchangePreset = {
   cardShadowEnabled: true,
   cardStyle: { backgroundColor: 'transparent' },
   cardStyleInterpolator: exchangeStyleInterpolator,
+  cardTransparent: true,
+  gestureDirection: 'vertical',
+  gestureEnabled: true,
+  gestureResponseDistance,
+  transitionSpec: { close: closeSpec, open: sheetOpenSpec },
+};
+
+export const ensPreset = {
+  cardOverlayEnabled: true,
+  cardShadowEnabled: true,
+  cardStyle: { backgroundColor: 'transparent' },
+  cardStyleInterpolator: speedUpAndCancelStyleInterpolator,
   cardTransparent: true,
   gestureDirection: 'vertical',
   gestureEnabled: true,
