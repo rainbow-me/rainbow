@@ -1,8 +1,9 @@
 import { formatsByCoinType, formatsByName } from '@ensdomains/address-encoder';
+import { getAddress } from '@ethersproject/address';
 import { Resolver } from '@ethersproject/providers';
 import { captureException } from '@sentry/react-native';
 import { Duration, sub } from 'date-fns';
-import { isZeroAddress } from 'ethereumjs-util';
+import { isValidAddress, isZeroAddress } from 'ethereumjs-util';
 import { BigNumber } from 'ethers';
 import { debounce, isEmpty, sortBy } from 'lodash';
 import { ensClient } from '../apollo/client';
@@ -215,6 +216,35 @@ export const fetchSuggestions = async (
   setIsFetching = (_unused: any) => {},
   profilesEnabled = false
 ) => {
+  if (isValidAddress(recipient)) {
+    const address = getAddress(recipient);
+    const ens = await fetchReverseRecord(address);
+    if (!ens) {
+      setSuggestions([]);
+      setIsFetching(false);
+      return [];
+    }
+    let images;
+    try {
+      images = await fetchImages(ens);
+      queryClient.setQueryData(ensProfileImagesQueryKey(ens), images);
+      // eslint-disable-next-line no-empty
+    } catch (e) {}
+    const suggestion = [
+      {
+        address: address,
+        color: profileUtils.addressHashedColorIndex(recipient),
+        ens: true,
+        image: images?.avatarUrl,
+        network: 'mainnet',
+        nickname: ens,
+        uniqueId: address,
+      },
+    ];
+    setSuggestions(suggestion);
+    setIsFetching(false);
+    return suggestion;
+  }
   if (recipient.length > 2) {
     let suggestions: {
       address: any;
@@ -864,8 +894,9 @@ export const shouldUseMulticallTransaction = (
 
 export const fetchReverseRecord = async (address: string) => {
   try {
+    const checksumAddress = getAddress(address);
     const provider = await getProviderForNetwork();
-    const reverseRecord = await provider.lookupAddress(address);
+    const reverseRecord = await provider.lookupAddress(checksumAddress);
     return reverseRecord ?? '';
   } catch (e) {
     return '';
