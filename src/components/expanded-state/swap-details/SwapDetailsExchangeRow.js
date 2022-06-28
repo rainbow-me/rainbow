@@ -113,9 +113,13 @@ const ExchangeIconStack = ({ protocols }) => {
   );
 };
 
-export default function SwapDetailsExchangeRow(props) {
-  const { protocols } = props;
-
+export default function SwapDetailsExchangeRow() {
+  // const { protocols } = props;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const protocols = [
+    { name: 'SushiSwap', part: 50 },
+    { name: 'UNISWAP_V2', part: 50 },
+  ];
   const steps = useMemo(() => {
     const sortedProtocols = protocols?.sort((a, b) => b.part - a.part);
     const defaultCase = {
