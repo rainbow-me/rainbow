@@ -517,12 +517,14 @@ export default function SendSheet(props) {
         } catch (e) {}
       }
 
+      let nextNonce: number;
+
       if (
         isENS &&
         toAddress &&
         (clearRecords || setAddress || transferControl)
       ) {
-        await transferENS(() => null, {
+        const nonce = await transferENS(() => null, {
           clearRecords,
           name: ensName,
           records: {
@@ -533,6 +535,7 @@ export default function SendSheet(props) {
           toAddress,
           transferControl,
         });
+        nextNonce = nonce + 1;
       }
 
       const gasLimitToUse =
@@ -547,7 +550,7 @@ export default function SendSheet(props) {
         from: accountAddress,
         gasLimit: gasLimitToUse,
         network: currentNetwork,
-        nonce: await getNextNonce(),
+        nonce: nextNonce || (await getNextNonce()),
         to: toAddress,
         ...gasParams,
       };

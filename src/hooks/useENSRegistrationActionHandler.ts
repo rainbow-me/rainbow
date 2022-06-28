@@ -350,6 +350,8 @@ export default function useENSRegistrationActionHandler(
         transferEnsParameters,
         callback
       );
+
+      return nonce;
     },
     [accountAddress, getNextNonce, registrationParameters]
   );
