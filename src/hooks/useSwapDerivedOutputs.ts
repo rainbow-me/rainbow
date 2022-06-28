@@ -5,7 +5,7 @@ import {
   QuoteError,
 } from '@rainbow-me/swaps';
 import { debounce } from 'lodash';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { NativeModules } from 'react-native';
 // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
@@ -40,6 +40,8 @@ enum DisplayValue {
   output = 'outputAmountDisplay',
   native = 'nativeAmountDisplay',
 }
+
+const DEBOUNCE_MS = 500;
 
 const getInputAmount = async (
   outputAmount: string | null,
@@ -327,136 +329,40 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
     setInsufficientLiquidity(false);
   };
 
-  useEffect(() => {
-    const getTradeDetails = debounce(async () => {
-      let tradeDetails = null;
+  const getTradeDetails = useMemo(
+    () =>
+      debounce(async (independentValue, derivedValuesFromRedux) => {
+        let tradeDetails = null;
 
-      if (independentValue === '0.') {
-        switch (independentField) {
-          case SwapModalField.input:
-            displayValues[DisplayValue.input] = independentValue;
-            break;
-          case SwapModalField.output:
-            displayValues[DisplayValue.output] = independentValue;
-            break;
-          case SwapModalField.native:
-            displayValues[DisplayValue.native] = independentValue;
-            break;
-        }
-        setResult({
-          derivedValues,
-          displayValues,
-          tradeDetails,
-        });
-        return;
-      }
-
-      if (
-        (isZero(independentValue) && independentValue.length === 1) ||
-        !independentValue
-      ) {
-        resetSwapInputs();
-        return;
-      }
-
-      if ((!inputCurrency || !outputCurrency) && !isSavings) {
-        setInsufficientLiquidity(false);
-        setResult({
-          derivedValues,
-          displayValues,
-          tradeDetails,
-        });
-        return;
-      }
-
-      setLoading(true);
-      const inputToken = inputCurrency;
-      const outputToken = outputCurrency;
-      const slippagePercentage = slippageInBips / 100;
-
-      if (independentField === SwapModalField.input) {
-        derivedValues[SwapModalField.input] = independentValue;
-        displayValues[DisplayValue.input] = maxInputUpdate
-          ? updatePrecisionToDisplay(independentValue, null, true)
-          : independentValue;
-
-        const nativeValue = inputPrice
-          ? convertAmountToNativeAmount(independentValue, inputPrice)
-          : null;
-
-        derivedValues[SwapModalField.native] = nativeValue;
-        displayValues[DisplayValue.native] = nativeValue;
-
-        const {
-          outputAmount,
-          outputAmountDisplay,
-          tradeDetails: newTradeDetails,
-          noLiquidity,
-        } = await getOutputAmount(
-          independentValue,
-          inputToken,
-          outputToken,
-          outputPrice,
-          slippagePercentage,
-          source,
-          accountAddress,
-          chainId
-        );
-        setInsufficientLiquidity(!!noLiquidity);
-        tradeDetails = newTradeDetails;
-        derivedValues[SwapModalField.output] = outputAmount;
-        displayValues[DisplayValue.output] =
-          outputAmountDisplay?.toString() || null;
-      } else if (independentField === SwapModalField.native) {
-        const inputAmount =
-          independentValue && inputPrice
-            ? convertAmountFromNativeValue(
-                independentValue,
-                inputPrice,
-                inputCurrency.decimals
-              )
-            : null;
-
-        // The quote is the same
-        if (
-          derivedValuesFromRedux &&
-          independentValue === derivedValuesFromRedux[SwapModalField.native]
-        ) {
-          setLoading(false);
+        if (independentValue === '0.') {
+          switch (independentField) {
+            case SwapModalField.input:
+              displayValues[DisplayValue.input] = independentValue;
+              break;
+            case SwapModalField.output:
+              displayValues[DisplayValue.output] = independentValue;
+              break;
+            case SwapModalField.native:
+              displayValues[DisplayValue.native] = independentValue;
+              break;
+          }
+          setResult({
+            derivedValues,
+            displayValues,
+            tradeDetails,
+          });
           return;
         }
 
-        derivedValues[SwapModalField.native] = independentValue;
-        displayValues[DisplayValue.native] = independentValue;
-        derivedValues[SwapModalField.input] = inputAmount;
+        if (
+          (isZero(independentValue) && independentValue.length === 1) ||
+          !independentValue
+        ) {
+          resetSwapInputs();
+          return;
+        }
 
-        const inputAmountDisplay = updatePrecisionToDisplay(
-          inputAmount,
-          inputPrice,
-          true
-        );
-        displayValues[DisplayValue.input] = inputAmountDisplay;
-        const {
-          outputAmount,
-          outputAmountDisplay,
-          tradeDetails: newTradeDetails,
-        } = await getOutputAmount(
-          inputAmount,
-          inputToken,
-          outputToken,
-          outputPrice,
-          slippagePercentage,
-          source,
-          accountAddress,
-          chainId
-        );
-        tradeDetails = newTradeDetails;
-        derivedValues[SwapModalField.output] = outputAmount;
-        displayValues[DisplayValue.output] =
-          outputAmountDisplay?.toString() || null;
-      } else {
-        if (!outputToken || !inputToken) {
-          setLoading(false);
+        if ((!inputCurrency || !outputCurrency) && !isSavings) {
           setInsufficientLiquidity(false);
           setResult({
             derivedValues,
@@ -465,75 +371,174 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
           });
           return;
         }
-        derivedValues[SwapModalField.output] = independentValue;
-        displayValues[DisplayValue.output] = independentValue;
 
-        const {
-          inputAmount,
-          inputAmountDisplay,
-          tradeDetails: newTradeDetails,
-          noLiquidity,
-        } = await getInputAmount(
-          independentValue,
-          inputToken,
-          outputToken,
-          inputPrice.toString(),
-          slippagePercentage,
-          source,
-          accountAddress,
-          chainId
-        );
+        setLoading(true);
+        const inputToken = inputCurrency;
+        const outputToken = outputCurrency;
+        const slippagePercentage = slippageInBips / 100;
 
-        setInsufficientLiquidity(!!noLiquidity);
+        if (independentField === SwapModalField.input) {
+          derivedValues[SwapModalField.input] = independentValue;
+          displayValues[DisplayValue.input] = maxInputUpdate
+            ? updatePrecisionToDisplay(independentValue, null, true)
+            : independentValue;
 
-        tradeDetails = newTradeDetails;
-        derivedValues[SwapModalField.input] = inputAmount || '0';
-        // @ts-ignore next-line
-        displayValues[DisplayValue.input] = inputAmountDisplay;
-        const nativeValue =
-          inputPrice && inputAmount
-            ? convertAmountToNativeAmount(inputAmount, inputPrice)
+          const nativeValue = inputPrice
+            ? convertAmountToNativeAmount(independentValue, inputPrice)
             : null;
 
-        derivedValues[SwapModalField.native] = nativeValue;
-        displayValues[DisplayValue.native] = nativeValue;
-      }
+          derivedValues[SwapModalField.native] = nativeValue;
+          displayValues[DisplayValue.native] = nativeValue;
 
-      const data = {
-        derivedValues,
-        displayValues,
-        doneLoadingReserves: true,
-        tradeDetails,
-      };
+          const {
+            outputAmount,
+            outputAmountDisplay,
+            tradeDetails: newTradeDetails,
+            noLiquidity,
+          } = await getOutputAmount(
+            independentValue,
+            inputToken,
+            outputToken,
+            outputPrice,
+            slippagePercentage,
+            source,
+            accountAddress,
+            chainId
+          );
+          setInsufficientLiquidity(!!noLiquidity);
+          tradeDetails = newTradeDetails;
+          derivedValues[SwapModalField.output] = outputAmount;
+          displayValues[DisplayValue.output] =
+            outputAmountDisplay?.toString() || null;
+        } else if (independentField === SwapModalField.native) {
+          const inputAmount =
+            independentValue && inputPrice
+              ? convertAmountFromNativeValue(
+                  independentValue,
+                  inputPrice,
+                  inputCurrency.decimals
+                )
+              : null;
 
-      dispatch(
-        updateSwapQuote({
-          derivedValues: data.derivedValues,
-          displayValues: data.displayValues,
-          tradeDetails: data.tradeDetails,
-        })
-      );
-      // @ts-ignore next-line
-      setResult(data);
-      setLoading(false);
-    }, 175);
-    getTradeDetails();
-  }, [
-    accountAddress,
-    chainId,
-    dispatch,
-    independentField,
-    independentValue,
-    inputCurrency,
-    inputPrice,
-    outputCurrency,
-    outputPrice,
-    slippageInBips,
-    source,
-    derivedValuesFromRedux,
-    isSavings,
-    maxInputUpdate,
-  ]);
+          // The quote is the same
+          if (
+            derivedValuesFromRedux &&
+            independentValue === derivedValuesFromRedux[SwapModalField.native]
+          ) {
+            setLoading(false);
+            return;
+          }
+
+          derivedValues[SwapModalField.native] = independentValue;
+          displayValues[DisplayValue.native] = independentValue;
+          derivedValues[SwapModalField.input] = inputAmount;
+
+          const inputAmountDisplay = updatePrecisionToDisplay(
+            inputAmount,
+            inputPrice,
+            true
+          );
+          displayValues[DisplayValue.input] = inputAmountDisplay;
+          const {
+            outputAmount,
+            outputAmountDisplay,
+            tradeDetails: newTradeDetails,
+          } = await getOutputAmount(
+            inputAmount,
+            inputToken,
+            outputToken,
+            outputPrice,
+            slippagePercentage,
+            source,
+            accountAddress,
+            chainId
+          );
+          tradeDetails = newTradeDetails;
+          derivedValues[SwapModalField.output] = outputAmount;
+          displayValues[DisplayValue.output] =
+            outputAmountDisplay?.toString() || null;
+        } else {
+          if (!outputToken || !inputToken) {
+            setLoading(false);
+            setInsufficientLiquidity(false);
+            setResult({
+              derivedValues,
+              displayValues,
+              tradeDetails,
+            });
+            return;
+          }
+          derivedValues[SwapModalField.output] = independentValue;
+          displayValues[DisplayValue.output] = independentValue;
+
+          const {
+            inputAmount,
+            inputAmountDisplay,
+            tradeDetails: newTradeDetails,
+            noLiquidity,
+          } = await getInputAmount(
+            independentValue,
+            inputToken,
+            outputToken,
+            inputPrice.toString(),
+            slippagePercentage,
+            source,
+            accountAddress,
+            chainId
+          );
+
+          setInsufficientLiquidity(!!noLiquidity);
+
+          tradeDetails = newTradeDetails;
+          derivedValues[SwapModalField.input] = inputAmount || '0';
+          // @ts-ignore next-line
+          displayValues[DisplayValue.input] = inputAmountDisplay;
+          const nativeValue =
+            inputPrice && inputAmount
+              ? convertAmountToNativeAmount(inputAmount, inputPrice)
+              : null;
+
+          derivedValues[SwapModalField.native] = nativeValue;
+          displayValues[DisplayValue.native] = nativeValue;
+        }
+
+        const data = {
+          derivedValues,
+          displayValues,
+          doneLoadingReserves: true,
+          tradeDetails,
+        };
+
+        dispatch(
+          updateSwapQuote({
+            derivedValues: data.derivedValues,
+            displayValues: data.displayValues,
+            tradeDetails: data.tradeDetails,
+          })
+        );
+        // @ts-ignore next-line
+        setResult(data);
+        setLoading(false);
+      }, DEBOUNCE_MS),
+    [
+      accountAddress,
+      chainId,
+      dispatch,
+      isSavings,
+      maxInputUpdate,
+      inputPrice,
+      outputPrice,
+      slippageInBips,
+      source,
+      inputCurrency,
+      outputCurrency,
+      independentField,
+    ]
+  );
+
+  useEffect(() => {
+    getTradeDetails(independentValue, derivedValuesFromRedux);
+  }, [getTradeDetails, independentValue, derivedValuesFromRedux]);
 
   return {
     insufficientLiquidity,
