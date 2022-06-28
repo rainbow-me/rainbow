@@ -29,6 +29,7 @@ export default React.memo(function WrappedTokenFamilyHeader({
       familyImage={image}
       isOpen={isFamilyOpen}
       onPress={handleToggle}
+      testID={`${name?.toLowerCase()}-family-header`}
       title={name}
     />
   );
