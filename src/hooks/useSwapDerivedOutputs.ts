@@ -4,7 +4,7 @@ import {
   Quote,
   QuoteError,
 } from '@rainbow-me/swaps';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { NativeModules } from 'react-native';
 // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
@@ -304,9 +304,13 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
     (state: AppState) => state.data.genericAssets
   );
 
-  const inputPrice = ethereumUtils.getAssetPrice(
-    inputCurrency?.mainnet_address || inputCurrency?.address
-  );
+  const inputPrice = useMemo(() => {
+    const price = ethereumUtils.getAssetPrice(
+      inputCurrency?.mainnet_address ?? inputCurrency?.address
+    );
+    return price !== 0 ? price : inputCurrency?.price?.value;
+  }, [inputCurrency]);
+
   const outputPrice =
     genericAssets[outputCurrency?.mainnet_address || outputCurrency?.address]
       ?.price?.value;
