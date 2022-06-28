@@ -1,23 +1,26 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from 'react';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import Animated, {
+  Easing,
   interpolate,
   useAnimatedStyle,
+  useSharedValue,
+  withTiming,
 } from 'react-native-reanimated';
-import { magicMemo } from '../../utils';
 import { Centered } from '../layout';
 import { SheetSubtitleCyclerItem } from './SheetSubtitleCyclerItem';
-
 import { useInterval, useTimeout } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled-components';
-import { position } from '@rainbow-me/styles';
-
-const Container = styled(Animated.View)({ ...position.coverAsObject });
 
 interface Props {
   sharedValue: Animated.SharedValue<number>;
   errorIndex: number;
   interval?: number;
+  isPaymentComplete?: boolean;
   items: [string, string];
 }
 
@@ -25,9 +28,18 @@ const SheetSubtitleCycler = ({
   sharedValue,
   errorIndex,
   items,
+  isPaymentComplete,
   interval = 3000,
 }: Props) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const fadeOutAnimation = useSharedValue(isPaymentComplete ? 0 : 1);
+
+  useLayoutEffect(() => {
+    fadeOutAnimation.value = withTiming(isPaymentComplete ? 0 : 1, {
+      duration: 150,
+      easing: Easing.out(Easing.ease),
+    });
+  }, [isPaymentComplete, fadeOutAnimation]);
 
   const [startInterval, stopInterval] = useInterval();
   const [startTimeout, stopTimeout] = useTimeout();
@@ -78,10 +90,14 @@ const SheetSubtitleCycler = ({
     };
   });
 
+  const opacityStyle = useAnimatedStyle(() => ({
+    opacity: fadeOutAnimation.value,
+  }));
+
   return (
-    <TouchableWithoutFeedback onPress={handlePress}>
-      <Centered paddingVertical={14} width="100%">
-        <Container style={scaleStyle}>
+    <Animated.View style={[scaleStyle, opacityStyle]}>
+      <TouchableWithoutFeedback onPress={handlePress}>
+        <Centered paddingVertical={14} width="100%">
           {items.map((subtitle, index) => (
             <SheetSubtitleCyclerItem
               error={index === errorIndex}
@@ -90,15 +106,10 @@ const SheetSubtitleCycler = ({
               subtitle={subtitle}
             />
           ))}
-        </Container>
-      </Centered>
-    </TouchableWithoutFeedback>
+        </Centered>
+      </TouchableWithoutFeedback>
+    </Animated.View>
   );
 };
 
-export default magicMemo(SheetSubtitleCycler, [
-  'sharedValue',
-  'errorIndex',
-  'interval',
-  'items',
-]);
+export default SheetSubtitleCycler;
