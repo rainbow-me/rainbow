@@ -1,8 +1,10 @@
+import lang from 'i18n-js';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Alert } from '../components/alerts';
 import { ExchangeModalTypes } from '@rainbow-me/helpers';
 import {
+  greaterThan,
   multiply,
   subtract,
   toFixedDecimals,
@@ -43,27 +45,44 @@ export default function useSwapInputHandlers() {
           ethereumUtils.getBalanceAmount(selectedGasFee, accountAsset),
           6
         );
+        const transactionFee = subtract(oldAmount, newAmount);
+        const newAmountMinusFee = toFixedDecimals(
+          subtract(newAmount, multiply(transactionFee, 1.5)),
+          6
+        );
 
-        Alert({
-          buttons: [
-            { style: 'cancel', text: 'No thanks' },
-            {
-              onPress: () => {
-                const transactionFee = subtract(oldAmount, newAmount);
-                newAmount = toFixedDecimals(
-                  subtract(newAmount, multiply(transactionFee, 1.5)),
-                  6
-                );
-                dispatch(updateSwapInputAmount(newAmount));
+        if (greaterThan(newAmountMinusFee, 0)) {
+          Alert({
+            buttons: [
+              {
+                style: 'cancel',
+                text: lang.t('expanded_state.swap.swap_max_alert.no_thanks'),
               },
-              text: 'Auto adjust',
-            },
-          ],
-          message: `You are about to swap all the ${inputCurrencyAddress.toUpperCase()} available in your wallet. If you want to swap back to ${inputCurrencyAddress.toUpperCase()}, you may not be able to afford the fee.
-    
-Would you like to auto adjust the balance to leave some ${inputCurrencyAddress.toUpperCase()}?`,
-          title: 'Are you sure?',
-        });
+              {
+                onPress: () => {
+                  dispatch(updateSwapInputAmount(newAmountMinusFee));
+                },
+                text: lang.t('expanded_state.swap.swap_max_alert.auto_adjust'),
+              },
+            ],
+            message: lang.t('expanded_state.swap.swap_max_alert.message', {
+              inputCurrencyAddress: inputCurrencyAddress.toUpperCase(),
+            }),
+            title: lang.t('expanded_state.swap.swap_max_alert.title'),
+          });
+        } else {
+          Alert({
+            message: lang.t(
+              'expanded_state.swap.swap_max_insufficient_alert.message',
+              { symbol: accountAsset.symbol }
+            ),
+            title: lang.t(
+              'expanded_state.swap.swap_max_insufficient_alert.title',
+              { symbol: accountAsset.symbol }
+            ),
+          });
+          return;
+        }
       }
       dispatch(updateSwapInputAmount(newAmount));
     }
