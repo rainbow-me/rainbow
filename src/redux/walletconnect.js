@@ -6,7 +6,6 @@ import lang from 'i18n-js';
 import {
   clone,
   forEach,
-  get,
   isEmpty,
   mapValues,
   omitBy,
@@ -238,7 +237,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
         const { peerId, peerMeta, chainId } = payload.params[0];
 
         const imageUrl =
-          dappLogoOverride(peerMeta?.url) || get(peerMeta, 'icons[0]');
+          dappLogoOverride(peerMeta?.url) || peerMeta?.icons?.[0];
         const dappName = dappNameOverride(peerMeta?.url) || peerMeta?.name;
         const dappUrl = peerMeta?.url;
         const dappScheme = peerMeta?.scheme;
@@ -340,8 +339,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
       throw error;
     }
     const { clientId, peerId, peerMeta } = walletConnector;
-    const imageUrl =
-      dappLogoOverride(peerMeta?.url) || get(peerMeta, 'icons[0]');
+    const imageUrl = dappLogoOverride(peerMeta?.url) || peerMeta?.icons?.[0];
     const dappName = dappNameOverride(peerMeta?.url) || peerMeta?.name;
     const dappUrl = peerMeta?.url;
     const requestId = payload.id;

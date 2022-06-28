@@ -1,4 +1,3 @@
-import { get } from 'lodash';
 import React, { forwardRef } from 'react';
 import { View } from 'react-native';
 import { magicMemo } from '../../utils';
@@ -36,7 +35,7 @@ const CurrencySelectionList = (
   },
   ref
 ) => {
-  const noResults = get(listItems, '[0].data', []).length === 0;
+  const noResults = !listItems?.[0]?.data?.length;
   const showGhost = !loading && noResults;
   const showSkeleton = noResults && loading;
 
