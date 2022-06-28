@@ -622,11 +622,10 @@ export default function TransactionConfirmationScreen() {
       ...gasParams,
       nonce,
     };
-    delete txPayloadUpdated?.chainId;
     if (calculatedGasLimit) {
       txPayloadUpdated.gasLimit = calculatedGasLimit;
     }
-    txPayloadUpdated = omit(txPayloadUpdated, ['from', 'gas']);
+    txPayloadUpdated = omit(txPayloadUpdated, ['from', 'gas', 'chainId']);
     let response = null;
 
     try {
