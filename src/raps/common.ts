@@ -35,6 +35,7 @@ import {
   estimateENSSetNameGasLimit,
   estimateENSSetRecordsGasLimit,
 } from '@rainbow-me/handlers/ens';
+import { ExchangeModalTypes } from '@rainbow-me/helpers';
 import logger from 'logger';
 
 const {
@@ -157,6 +158,18 @@ export const RapActionTypes = {
   swap: 'swap' as RapActionType,
   unlock: 'unlock' as RapActionType,
   withdrawCompound: 'withdrawCompound' as RapActionType,
+};
+
+export const getSwapRapTypeByExchangeType = (type: string) => {
+  switch (type) {
+    case ExchangeModalTypes.withdrawal:
+      return RapActionTypes.withdrawCompound;
+    case ExchangeModalTypes.deposit:
+      return RapActionTypes.depositCompound;
+
+    default:
+      return RapActionTypes.swap;
+  }
 };
 
 const createSwapRapByType = (

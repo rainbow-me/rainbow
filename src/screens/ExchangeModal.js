@@ -33,7 +33,6 @@ import {
 import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
-import { RapActionTypes } from '../raps/common';
 import { ExchangeModalTypes, isKeyboardOpen } from '@rainbow-me/helpers';
 import { divide, greaterThan, multiply } from '@rainbow-me/helpers/utilities';
 import {
@@ -52,7 +51,11 @@ import {
 } from '@rainbow-me/hooks';
 import { loadWallet } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
-import { executeRap, getSwapRapEstimationByType } from '@rainbow-me/raps';
+import {
+  executeRap,
+  getSwapRapEstimationByType,
+  getSwapRapTypeByExchangeType,
+} from '@rainbow-me/raps';
 import { multicallClearState } from '@rainbow-me/redux/multicall';
 import { swapClearState, updateSwapTypeDetails } from '@rainbow-me/redux/swap';
 import { ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
@@ -260,18 +263,8 @@ export default function ExchangeModal({
         outputAmount,
         tradeDetails,
       };
-      let rapType = type;
-      switch (type) {
-        case ExchangeModalTypes.withdrawal:
-          rapType = RapActionTypes.withdrawCompound;
-          break;
-        case ExchangeModalTypes.deposit:
-          rapType = RapActionTypes.depositCompound;
-          break;
-        default:
-          rapType = RapActionTypes.swap;
-          break;
-      }
+
+      const rapType = getSwapRapTypeByExchangeType(type);
       const gasLimit = await getSwapRapEstimationByType(
         rapType,
         swapParameters
@@ -436,18 +429,7 @@ export default function ExchangeModal({
         outputAmount,
         tradeDetails,
       };
-      let rapType = type;
-      switch (type) {
-        case ExchangeModalTypes.withdrawal:
-          rapType = RapActionTypes.withdrawCompound;
-          break;
-        case ExchangeModalTypes.deposit:
-          rapType = RapActionTypes.depositCompound;
-          break;
-        default:
-          rapType = RapActionTypes.swap;
-          break;
-      }
+      const rapType = getSwapRapTypeByExchangeType(type);
       await executeRap(wallet, rapType, swapParameters, callback);
       logger.log('[exchange - handle submit] executed rap!');
       analytics.track(`Completed ${type}`, {
