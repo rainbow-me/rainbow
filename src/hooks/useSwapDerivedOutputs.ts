@@ -515,7 +515,8 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
       setResult(data);
       setLoading(false);
     };
-    getTradeDetails();
+    const debounce = setTimeout(() => getTradeDetails(), 1000);
+    return () => clearTimeout(debounce);
   }, [
     accountAddress,
     chainId,
