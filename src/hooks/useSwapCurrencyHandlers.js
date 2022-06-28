@@ -13,6 +13,7 @@ import {
 import { updatePrecisionToDisplay } from '@rainbow-me/helpers/utilities';
 import { useSwapCurrencies, useSwapDerivedValues } from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
+import { emitAssetRequest } from '@rainbow-me/redux/explorer';
 import {
   flipSwapCurrencies,
   updateSwapDepositCurrency,
@@ -178,6 +179,13 @@ export default function useSwapCurrencyHandlers({
           }
         : null;
 
+      const updateCurrency = () => {
+        dispatch(emitAssetRequest(newInputCurrency.mainnet_address));
+        dispatch(updateSwapInputCurrency(newInputCurrency));
+        setLastFocusedInputHandle?.(inputFieldRef);
+        handleNavigate?.(newInputCurrency);
+      };
+
       if (
         outputCurrency &&
         newInputCurrency?.type !== outputCurrency?.type &&
@@ -193,9 +201,7 @@ export default function useSwapCurrencyHandlers({
               InteractionManager.runAfterInteractions(() => {
                 setTimeout(() => {
                   setHasShownWarning();
-                  dispatch(updateSwapInputCurrency(newInputCurrency));
-                  setLastFocusedInputHandle?.(inputFieldRef);
-                  handleNavigate?.(newInputCurrency);
+                  updateCurrency();
                 }, 250);
               });
             },
@@ -203,9 +209,7 @@ export default function useSwapCurrencyHandlers({
           });
         });
       } else {
-        dispatch(updateSwapInputCurrency(newInputCurrency));
-        setLastFocusedInputHandle?.(inputFieldRef);
-        handleNavigate?.(newInputCurrency);
+        updateCurrency();
       }
     },
     [dispatch, inputFieldRef, outputCurrency, setLastFocusedInputHandle]
@@ -219,6 +223,12 @@ export default function useSwapCurrencyHandlers({
             type: outputCurrency?.type ?? AssetType.token,
           }
         : null;
+      const updateCurrency = () => {
+        dispatch(emitAssetRequest(newOutputCurrency.mainnet_address));
+        dispatch(updateSwapOutputCurrency(newOutputCurrency));
+        setLastFocusedInputHandle?.(inputFieldRef);
+        handleNavigate?.(newOutputCurrency);
+      };
       if (
         inputCurrency &&
         newOutputCurrency?.type !== inputCurrency?.type &&
@@ -234,9 +244,7 @@ export default function useSwapCurrencyHandlers({
               InteractionManager.runAfterInteractions(() => {
                 setTimeout(() => {
                   setHasShownWarning();
-                  dispatch(updateSwapOutputCurrency(newOutputCurrency));
-                  setLastFocusedInputHandle?.(inputFieldRef);
-                  handleNavigate?.(newOutputCurrency);
+                  updateCurrency();
                 }, 250);
               });
             },
@@ -244,9 +252,7 @@ export default function useSwapCurrencyHandlers({
           });
         });
       } else {
-        dispatch(updateSwapOutputCurrency(newOutputCurrency));
-        setLastFocusedInputHandle?.(inputFieldRef);
-        handleNavigate?.(newOutputCurrency);
+        updateCurrency();
       }
     },
     [dispatch, inputCurrency, inputFieldRef, setLastFocusedInputHandle]
