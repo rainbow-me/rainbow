@@ -33,6 +33,7 @@ import {
 import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
+import { RapActionTypes } from '../raps/common';
 import { ExchangeModalTypes, isKeyboardOpen } from '@rainbow-me/helpers';
 import { divide, greaterThan, multiply } from '@rainbow-me/helpers/utilities';
 import {
@@ -259,7 +260,22 @@ export default function ExchangeModal({
         outputAmount,
         tradeDetails,
       };
-      const gasLimit = await getSwapRapEstimationByType(type, swapParameters);
+      let rapType = type;
+      switch (type) {
+        case ExchangeModalTypes.withdrawal:
+          rapType = RapActionTypes.withdrawCompound;
+          break;
+        case ExchangeModalTypes.deposit:
+          rapType = RapActionTypes.depositCompound;
+          break;
+        default:
+          rapType = RapActionTypes.swap;
+          break;
+      }
+      const gasLimit = await getSwapRapEstimationByType(
+        rapType,
+        swapParameters
+      );
       if (gasLimit) {
         updateTxFee(gasLimit);
       }
@@ -420,7 +436,19 @@ export default function ExchangeModal({
         outputAmount,
         tradeDetails,
       };
-      await executeRap(wallet, type, swapParameters, callback);
+      let rapType = type;
+      switch (type) {
+        case ExchangeModalTypes.withdrawal:
+          rapType = RapActionTypes.withdrawCompound;
+          break;
+        case ExchangeModalTypes.deposit:
+          rapType = RapActionTypes.depositCompound;
+          break;
+        default:
+          rapType = RapActionTypes.swap;
+          break;
+      }
+      await executeRap(wallet, rapType, swapParameters, callback);
       logger.log('[exchange - handle submit] executed rap!');
       analytics.track(`Completed ${type}`, {
         amountInUSD,
