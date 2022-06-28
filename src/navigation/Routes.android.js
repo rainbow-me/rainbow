@@ -24,7 +24,7 @@ import SelectENSSheet from '../screens/SelectENSSheet';
 import SelectUniqueTokenSheet from '../screens/SelectUniqueTokenSheet';
 import SendConfirmationSheet from '../screens/SendConfirmationSheet';
 import SendSheet from '../screens/SendSheet';
-import SettingsModal from '../screens/SettingsModal';
+import SettingsSheet from '../screens/SettingsSheet';
 import ShowcaseSheet from '../screens/ShowcaseSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
@@ -368,8 +368,8 @@ function BSNavigator() {
       />
       <BSStack.Screen component={SavingsSheet} name={Routes.SAVINGS_SHEET} />
       <BSStack.Screen
-        component={SettingsModal}
-        name={Routes.SETTINGS_MODAL}
+        component={SettingsSheet}
+        name={Routes.SETTINGS_SHEET}
         options={{ ...bottomSheetPreset, height: '97%' }}
       />
     </BSStack.Navigator>

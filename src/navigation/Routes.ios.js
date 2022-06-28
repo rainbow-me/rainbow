@@ -25,7 +25,7 @@ import SelectENSSheet from '../screens/SelectENSSheet';
 import SelectUniqueTokenSheet from '../screens/SelectUniqueTokenSheet';
 import SendConfirmationSheet from '../screens/SendConfirmationSheet';
 import SendSheet from '../screens/SendSheet';
-import SettingsModal from '../screens/SettingsModal';
+import SettingsSheet from '../screens/SettingsSheet';
 import ShowcaseScreen from '../screens/ShowcaseSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
@@ -249,8 +249,8 @@ function NativeStackNavigator() {
         }}
       />
       <NativeStack.Screen
-        component={SettingsModal}
-        name={Routes.SETTINGS_MODAL}
+        component={SettingsSheet}
+        name={Routes.SETTINGS_SHEET}
         {...settingsSheetConfig}
       />
       <NativeStack.Screen

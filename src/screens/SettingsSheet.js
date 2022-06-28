@@ -99,7 +99,7 @@ const SettingsPages = {
 
 const Stack = createStackNavigator();
 
-export default function SettingsModal() {
+export default function SettingsSheet() {
   const { goBack, navigate } = useNavigation();
   const { wallets, selectedWallet } = useWallets();
   const { params } = useRoute();
@@ -165,6 +165,7 @@ export default function SettingsModal() {
     <Box
       background="body"
       flexGrow={1}
+      testID="settings-sheet"
       {...(android && { borderTopRadius: 30 })}
     >
       <Stack.Navigator

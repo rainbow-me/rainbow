@@ -62,11 +62,11 @@ export function onNavigationStateChange(currentState) {
       const wasCustomSlackOpen =
         oldBottomSheetStackRoute === Routes.CONFIRM_REQUEST ||
         oldBottomSheetStackRoute === Routes.RECEIVE_MODAL ||
-        oldBottomSheetStackRoute === Routes.SETTINGS_MODAL;
+        oldBottomSheetStackRoute === Routes.SETTINGS_SHEET;
       const isCustomSlackOpen =
         newBottomSheetStackRoute === Routes.CONFIRM_REQUEST ||
         newBottomSheetStackRoute === Routes.RECEIVE_MODAL ||
-        newBottomSheetStackRoute === Routes.SETTINGS_MODAL;
+        newBottomSheetStackRoute === Routes.SETTINGS_SHEET;
 
       if (wasCustomSlackOpen !== isCustomSlackOpen) {
         StatusBar.setBarStyle(

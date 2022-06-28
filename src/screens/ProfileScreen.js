@@ -62,7 +62,7 @@ export default function ProfileScreen({ navigation }) {
     navigate,
   ]);
 
-  const onPressSettings = useCallback(() => navigate(Routes.SETTINGS_MODAL), [
+  const onPressSettings = useCallback(() => navigate(Routes.SETTINGS_SHEET), [
     navigate,
   ]);
 
