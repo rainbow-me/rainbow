@@ -1,5 +1,6 @@
 import lang from 'i18n-js';
-import React, { useCallback, useEffect, useState } from 'react';
+import { debounce } from 'lodash';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { isHexString } from '../../handlers/web3';
 import { checkIsValidAddressOrDomain } from '../../helpers/validators';
@@ -48,13 +49,22 @@ const formatValue = value =>
     : value;
 
 const AddressField = (
-  { address, autoFocus, editable, name, onChange, onFocus, testID, ...props },
+  {
+    address,
+    autoFocus,
+    editable,
+    name,
+    onChangeText,
+    onFocus,
+    testID,
+    ...props
+  },
   ref
 ) => {
   const { isTinyPhone } = useDimensions();
   const { colors } = useTheme();
   const { clipboard, setClipboard } = useClipboard();
-  const [inputValue, setInputValue] = useState(address || '');
+  const [inputValue, setInputValue] = useState(address ?? '');
   const [isValid, setIsValid] = useState(false);
 
   const expandAbbreviatedClipboard = useCallback(() => {
@@ -68,13 +78,19 @@ const AddressField = (
     return setIsValid(newIsValid);
   }, []);
 
-  const handleChange = useCallback(
-    ({ nativeEvent: { text } }) => {
-      onChange(text);
+  const debouncedOnChange = useMemo(
+    () => debounce(onChangeText, 269, { leading: false, trailing: true }),
+    [onChangeText]
+  );
+
+  const handleChangeText = useCallback(
+    text => {
       validateAddress(text);
       expandAbbreviatedClipboard();
+      setInputValue(text);
+      debouncedOnChange(text);
     },
-    [expandAbbreviatedClipboard, onChange, validateAddress]
+    [setInputValue, expandAbbreviatedClipboard, debouncedOnChange]
   );
 
   useEffect(() => {
@@ -82,7 +98,7 @@ const AddressField = (
       setInputValue(name);
       validateAddress(address);
     }
-  }, [address, editable, inputValue, name, validateAddress]);
+  }, [address, editable, name, validateAddress]);
 
   return (
     <Row flex={1}>
@@ -92,8 +108,7 @@ const AddressField = (
         color={isValid ? colors.appleBlue : colors.dark}
         editable={editable}
         onBlur={expandAbbreviatedClipboard}
-        onChange={handleChange}
-        onChangeText={setInputValue}
+        onChangeText={handleChangeText}
         onFocus={onFocus}
         ref={ref}
         testID={testID}
