@@ -230,6 +230,12 @@ export const fetchSuggestions = async (
       avatar = await fetchENSAvatar(ens, {
         cacheFirst: true,
       });
+      prefetchENSAddress(ens, { cacheFirst: true });
+      prefetchENSCover(ens, { cacheFirst: true });
+      prefetchENSRecords(ens, { cacheFirst: true });
+      prefetchENSFirstTransactionTimestamp(ens, {
+        cacheFirst: true,
+      });
       // eslint-disable-next-line no-empty
     } catch (e) {}
     const suggestion = [
@@ -274,11 +280,14 @@ export const fetchSuggestions = async (
               !isZeroAddress(domain.owner.id)
           )
           .map(
-            async (domain: {
-              name: string;
-              resolver: { texts: string[] };
-              owner: { id: string };
-            }) => {
+            async (
+              domain: {
+                name: string;
+                resolver: { texts: string[] };
+                owner: { id: string };
+              },
+              i: number
+            ) => {
               const hasAvatar = domain?.resolver?.texts?.find(
                 text => text === ENS_RECORDS.avatar
               );
@@ -287,6 +296,14 @@ export const fetchSuggestions = async (
                   const avatar = await fetchENSAvatar(domain.name, {
                     cacheFirst: true,
                   });
+                  if (i === 0) {
+                    prefetchENSAddress(domain.name, { cacheFirst: true });
+                    prefetchENSCover(domain.name, { cacheFirst: true });
+                    prefetchENSRecords(domain.name, { cacheFirst: true });
+                    prefetchENSFirstTransactionTimestamp(domain.name, {
+                      cacheFirst: true,
+                    });
+                  }
                   return {
                     ...domain,
                     avatar: avatar?.imageUrl,
