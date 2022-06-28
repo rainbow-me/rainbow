@@ -117,7 +117,6 @@ export const buildCoinsList = (
   );
 
   // separate into standard, pinned, small balances, hidden assets
-  // (assets as ParsedAddressAsset[])?.forEach(asset => {
   assets?.forEach(asset => {
     if (!!hiddenCoins && hiddenCoins[asset.uniqueId]) {
       hiddenAssets.push({
