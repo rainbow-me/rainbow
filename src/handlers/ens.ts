@@ -224,10 +224,11 @@ export const fetchSuggestions = async (
       setIsFetching(false);
       return [];
     }
-    let images;
+    let avatar;
     try {
-      images = await fetchImages(ens);
-      queryClient.setQueryData(ensProfileImagesQueryKey(ens), images);
+      avatar = await fetchENSAvatar(ens, {
+        cacheFirst: true,
+      });
       // eslint-disable-next-line no-empty
     } catch (e) {}
     const suggestion = [
@@ -235,7 +236,7 @@ export const fetchSuggestions = async (
         address: address,
         color: profileUtils.addressHashedColorIndex(recipient),
         ens: true,
-        image: images?.avatarUrl,
+        image: avatar?.imageUrl,
         network: 'mainnet',
         nickname: ens,
         uniqueId: address,
