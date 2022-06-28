@@ -332,6 +332,7 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
   useEffect(() => {
     const getTradeDetails = async () => {
       let tradeDetails = null;
+      // let tradeIndependentValue = independentValue;
 
       if (independentValue === '0.') {
         switch (independentField) {

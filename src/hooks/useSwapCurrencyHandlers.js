@@ -10,7 +10,8 @@ import {
   ExchangeModalTypes,
   Network,
 } from '@rainbow-me/helpers';
-import { useSwapCurrencies } from '@rainbow-me/hooks';
+import { updatePrecisionToDisplay } from '@rainbow-me/helpers/utilities';
+import { useSwapCurrencies, useSwapDerivedValues } from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import {
   flipSwapCurrencies,
@@ -38,8 +39,9 @@ export default function useSwapCurrencyHandlers({
   fromDiscover,
   ignoreInitialTypeCheck = false,
   inputFieldRef,
-  setLastFocusedInputHandle,
+  nativeFieldRef,
   outputFieldRef,
+  setLastFocusedInputHandle,
   shouldUpdate = true,
   title,
   type,
@@ -48,6 +50,7 @@ export default function useSwapCurrencyHandlers({
   const { navigate, setParams, dangerouslyGetParent } = useNavigation();
 
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
+  const { derivedValues } = useSwapDerivedValues();
 
   const { defaultInputItemInWallet, defaultOutputItem } = useMemo(() => {
     if (type === ExchangeModalTypes.withdrawal) {
@@ -118,18 +121,37 @@ export default function useSwapCurrencyHandlers({
     ignoreInitialTypeCheck,
   ]);
 
-  const flipCurrencies = useCallback(() => {
-    const flipSwapCurrenciesWithTimeout = (outputIndependentField = false) =>
+  const flipSwapCurrenciesWithTimeout = useCallback(
+    (outputIndependentField = false, independentValue = null) =>
       setTimeout(
-        () => dispatch(flipSwapCurrencies(outputIndependentField)),
+        () =>
+          dispatch(
+            flipSwapCurrencies(outputIndependentField, independentValue)
+          ),
         50
-      );
+      ),
+    [dispatch]
+  );
 
-    if (
-      inputFieldRef.current === currentlyFocusedInput() &&
-      currentNetwork !== Network.arbitrum
-    ) {
+  const flipCurrencies = useCallback(() => {
+    if (currentNetwork === Network.arbitrum) {
+      outputFieldRef.current?.clear();
+      focusTextInput(inputFieldRef.current);
+      flipSwapCurrenciesWithTimeout(
+        false,
+        updatePrecisionToDisplay(derivedValues?.outputAmount)
+      );
+    } else if (nativeFieldRef.current === currentlyFocusedInput()) {
       inputFieldRef.current?.clear();
+      nativeFieldRef.current?.clear();
+      focusTextInput(outputFieldRef.current);
+      flipSwapCurrenciesWithTimeout(
+        true,
+        updatePrecisionToDisplay(derivedValues?.inputAmount)
+      );
+    } else if (inputFieldRef.current === currentlyFocusedInput()) {
+      inputFieldRef.current?.clear();
+      nativeFieldRef.current?.clear();
       focusTextInput(outputFieldRef.current);
       flipSwapCurrenciesWithTimeout(true);
     } else if (outputFieldRef.current === currentlyFocusedInput()) {
@@ -137,7 +159,15 @@ export default function useSwapCurrencyHandlers({
       focusTextInput(inputFieldRef.current);
       flipSwapCurrenciesWithTimeout();
     }
-  }, [currentNetwork, dispatch, inputFieldRef, outputFieldRef]);
+  }, [
+    currentNetwork,
+    nativeFieldRef,
+    inputFieldRef,
+    outputFieldRef,
+    flipSwapCurrenciesWithTimeout,
+    derivedValues?.outputAmount,
+    derivedValues?.inputAmount,
+  ]);
 
   const updateInputCurrency = useCallback(
     (inputCurrency, handleNavigate) => {

@@ -248,6 +248,7 @@ export default function ExchangeModal({
     ignoreInitialTypeCheck,
     inputFieldRef,
     lastFocusedInputHandle,
+    nativeFieldRef,
     outputFieldRef,
     setLastFocusedInputHandle,
     title,

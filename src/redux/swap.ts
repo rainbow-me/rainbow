@@ -138,7 +138,7 @@ export const updateSwapInputCurrency = (
     newInputCurrency?.address === outputCurrency?.address &&
     newInputCurrency
   ) {
-    dispatch(flipSwapCurrencies());
+    dispatch(flipSwapCurrencies(false));
   } else {
     dispatch({ payload: newInputCurrency, type: SWAP_UPDATE_INPUT_CURRENCY });
     if (
@@ -200,16 +200,17 @@ export const updateSwapOutputCurrency = (
   }
 };
 
-export const flipSwapCurrencies = (outputIndependentField?: Boolean) => (
-  dispatch: AppDispatch,
-  getState: AppGetState
-) => {
+export const flipSwapCurrencies = (
+  outputIndependentField: Boolean,
+  independentValue?: string | null
+) => (dispatch: AppDispatch, getState: AppGetState) => {
   const { inputCurrency, outputCurrency } = getState().swap;
   dispatch({
     payload: {
       independentField: outputIndependentField
         ? SwapModalField.output
         : SwapModalField.input,
+      independentValue,
       newInputCurrency: outputCurrency,
       newOutputCurrency: inputCurrency,
     },
@@ -308,6 +309,8 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
       return {
         ...state,
         independentField: action.payload.independentField,
+        independentValue:
+          action.payload.independentValue ?? state.independentValue,
         inputCurrency: action.payload.newInputCurrency,
         outputCurrency: action.payload.newOutputCurrency,
       };
