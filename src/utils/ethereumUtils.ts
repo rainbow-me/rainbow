@@ -78,6 +78,7 @@ import {
   optimismGasOracleAbi,
   OVM_GAS_PRICE_ORACLE,
   POLYGON_BLOCK_EXPLORER_URL,
+  supportedNativeCurrencies,
 } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
@@ -236,7 +237,7 @@ const getHash = (txn: RainbowTransaction) => txn.hash?.split('-').shift();
 
 const formatGenericAsset = (
   asset: ParsedAddressAsset,
-  nativeCurrency: string
+  nativeCurrency: keyof typeof supportedNativeCurrencies
 ) => {
   return {
     ...asset,

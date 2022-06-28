@@ -1,5 +1,4 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
-import { get } from 'lodash';
 import React from 'react';
 import {
   CoinDivider,
@@ -191,7 +190,7 @@ export const ViewTypes = {
         item: item.tokens,
         shouldPrioritizeImageLoading:
           index <
-          get(sections, '[0].data.length', 0) +
+          (sections?.[0]?.data?.length ?? 0) +
             amountOfImagesWithForcedPrioritizeLoading,
         uniqueId: item.uniqueId,
       });
