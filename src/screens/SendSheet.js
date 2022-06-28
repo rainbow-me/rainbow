@@ -517,7 +517,7 @@ export default function SendSheet(props) {
         } catch (e) {}
       }
 
-      let nextNonce: number;
+      let nextNonce;
 
       if (
         isENS &&
