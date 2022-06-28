@@ -361,16 +361,6 @@ export default function useSwapDerivedOutputs(chainId: number, type: string) {
         return;
       }
 
-      if ((!inputCurrency || !outputCurrency) && !isSavings) {
-        setInsufficientLiquidity(false);
-        setResult({
-          derivedValues,
-          displayValues,
-          tradeDetails,
-        });
-        return;
-      }
-
       setLoading(true);
       const inputToken = inputCurrency;
       const outputToken = outputCurrency;
