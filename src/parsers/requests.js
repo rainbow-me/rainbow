@@ -187,8 +187,8 @@ const getTransactionDisplayDetails = (
         asset: nativeAsset,
         data: transaction.data,
         from: transaction.from,
-        gasLimit: BigNumber.from(transaction.gasLimit),
-        gasPrice: BigNumber.from(transaction.gasPrice),
+        gasLimit: BigNumber.from(transaction.gasLimit ?? 0),
+        gasPrice: BigNumber.from(transaction.gasPrice ?? 0),
         ...(!isNil(transaction.nonce)
           ? { nonce: Number(convertHexToString(transaction.nonce)) }
           : {}),
