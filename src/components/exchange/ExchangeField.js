@@ -90,6 +90,8 @@ const ExchangeField = (
 
   const placeholderText = symbol ? '0' : EnDash.unicode;
 
+  const isInputFocused = ref?.current?.isFocused();
+
   return (
     <Container {...props}>
       <TouchableWithoutFeedback
@@ -126,7 +128,7 @@ const ExchangeField = (
             ref={ref}
             testID={testID}
             useCustomAndroidMask={useCustomAndroidMask}
-            value={amount}
+            value={isInputFocused ? value : amount}
           />
         </FieldRow>
       </TouchableWithoutFeedback>

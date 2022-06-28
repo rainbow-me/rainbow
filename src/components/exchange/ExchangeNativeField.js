@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
+import { useDebounce } from 'use-debounce';
 import { Row } from '../layout';
 import { Text } from '../text';
 import ExchangeInput from './ExchangeInput';
@@ -39,6 +40,9 @@ const ExchangeNativeField = (
 ) => {
   const colorForAsset = useColorForAsset({ address });
   const [isFocused, setIsFocused] = useState(false);
+  const [value, setValue] = useState(nativeAmount);
+  const [debouncedValue] = useDebounce(value, 300);
+
   const { mask, placeholder, symbol } = supportedNativeCurrencies[
     nativeCurrency
   ];
@@ -57,6 +61,10 @@ const ExchangeNativeField = (
   );
   const { colors } = useTheme();
 
+  useEffect(() => {
+    setNativeAmount(debouncedValue);
+  }, [debouncedValue, setNativeAmount]);
+
   const nativeAmountColor = useMemo(() => {
     const nativeAmountExists =
       typeof nativeAmount === 'string' && nativeAmount.length > 0;
@@ -66,6 +74,8 @@ const ExchangeNativeField = (
 
     return colors.alpha(color, opacity);
   }, [colors, isFocused, nativeAmount]);
+
+  const isInputFocused = ref?.current?.isFocused();
 
   return (
     <TouchableWithoutFeedback onPress={handleFocusNativeField}>
@@ -79,13 +89,13 @@ const ExchangeNativeField = (
           height={android ? height : 58}
           mask={mask}
           onBlur={handleBlur}
-          onChangeText={setNativeAmount}
+          onChangeText={setValue}
           onFocus={handleFocus}
           placeholder={placeholder}
           ref={ref}
           selectionColor={colorForAsset}
           testID={testID}
-          value={nativeAmount}
+          value={isInputFocused ? value : nativeAmount}
         />
       </Row>
     </TouchableWithoutFeedback>
