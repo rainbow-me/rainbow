@@ -766,6 +766,7 @@ export default function SendSheet(props) {
       !recipientOverride &&
       recipient?.length
     ) {
+      setLoadingEnsSuggestions(true);
       debouncedFetchSuggestions(
         recipient,
         setEnsSuggestions,
