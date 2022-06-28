@@ -11,6 +11,7 @@ import {
   constant as _constant,
   filter as _filter,
   forEach as _forEach,
+  get as _get,
   groupBy as _groupBy,
   map as _map,
   mapValues as _mapValues,
@@ -108,11 +109,12 @@ const getPercent = (current, etalon) => {
   let res = (+current * 100) / +etalon - 100;
   const formated = res.toFixed(0);
   return res >= 1 ? `(+${formated}%)` : `($1%)`;
+  // return `(${current}*100/${etalon}-100=${res})`;
 
   // if (+etalon <= 0 || +current === +etalon) {
   //   return '';
   // }
-  // let res = (+current * 100) / +etalon - 100;
+  // let res = (+current * 4) / +etalon - 4;
   // const formatted = res > 0 && res < 1 ? 1 : res.toFixed(0);
   // return res > 0 ? `(+${formatted}%)` : ``;
 };
@@ -121,13 +123,16 @@ function measure(title, count, func) {
   executionCount = count;
   func();
   const min = values.reduce((acc, el) => {
-    return acc.average > el.average ? el : acc;
+    return +acc.average > +el.average ? el : acc;
   });
-
+  // console.log('measure.1.0', min);
+  // console.log('measure.1.1', values);
+  // global.console.log('measure.1.0 ', JSON.stringify(values));
+  // global.console.log('measure.1.1 ', JSON.stringify(min));
   const res = values.map(i => {
     const _average = getPercent(i.average, min.average);
-    const _max = getPercent(i.max, min.max);
-    const _min = getPercent(i.min, min.min);
+    const _max = getPercent(i.max, min.max, i.title);
+    const _min = getPercent(i.min, min.min, i.title);
 
     const len = 35 - i.title.length;
     const spaces = '-'.repeat(len > 0 ? len : 0);
@@ -135,7 +140,7 @@ function measure(title, count, func) {
     `;
   });
 
-  global.console.log(`${title}: 
+  global.console.log(`${title}:
   ${res.join('')}`);
   values = [];
 }
@@ -159,18 +164,21 @@ function average(title, func) {
 
   const count = val.length;
   const average = (total / val.length).toFixed(3);
+  // console.log('measure.1.0001', total);
+  // console.log('measure.1.0002', val.length, val);
+  // console.log('measure.1.0003', average);
   const blockAverage = (
     (endAverageTime - startAverageTime) /
     val.length
   ).toFixed(2);
 
-  return values.push({ average, blockAverage, count, max, min, title });
+  return values.push({ average, blockAverage, count, max, min, title, val });
 }
 
 const chartType = 'y';
 
 export default function measurement() {
-  measure('1: map', 50, () => {
+  measure('1: map', 200, () => {
     average('lodash map', () =>
       _map(assetsTestTwice, item => {
         return parseAssetTest(item.asset);
@@ -187,16 +195,24 @@ export default function measurement() {
     average('JS map with destructuring', () =>
       assetsTestTwice.map(({ asset }) => parseAssetTest(asset))
     );
+    average('lodash map with get', () =>
+      _map(assetsTestTwice, item => {
+        return parseAssetTest(_get(item, 'asset'));
+      })
+    );
+    average('JS map with get', () =>
+      assetsTestTwice.map(item => parseAssetTest(_get(item, 'asset')))
+    );
   });
 
-  measure('2: forEch', 50, () => {
-    average('lodash forEch', () => _forEach(assetsTestTwice, payloadForLoop));
-    average('JS forEch', () => assetsTestTwice.forEach(payloadForLoop));
+  measure('2: forEach', 200, () => {
+    average('lodash forEach', () => _forEach(assetsTestTwice, payloadForLoop));
+    average('JS forEach', () => assetsTestTwice.forEach(payloadForLoop));
     average('for..of', () => forOfArr(assetsTestTwice));
     average('for loop', () => forLoop(assetsTestTwice));
   });
 
-  measure('3: reduce with number acc', 50, () => {
+  measure('3: reduce with number acc', 200, () => {
     average('lodash reduce', () =>
       _reduce(
         assetsTestTwice,
@@ -215,27 +231,8 @@ export default function measurement() {
     );
     average('for..of', () => forOfLikeReduce(assetsTestTwice));
   });
-  measure('30: reduce with number acc', 50, () => {
-    average('lodash reduce', () =>
-      _reduce(
-        assetsTest,
-        (acc, { asset }) => {
-          acc += asset.price.value;
-          return acc;
-        },
-        0
-      )
-    );
-    average('JS reduce', () =>
-      assetsTest.reduce((acc, { asset }) => {
-        acc += asset.price.value;
-        return acc;
-      }, 0)
-    );
-    average('for..of', () => forOfLikeReduce(assetsTest));
-  });
 
-  measure('3.1: reduce with object acc', 50, () => {
+  measure('3.1: reduce with object acc', 200, () => {
     average('lodash reduce', () =>
       _reduce(
         assetsTestTwice,
@@ -252,9 +249,16 @@ export default function measurement() {
         return acc;
       }, {})
     );
+
+    average('JS reduce with Object.assign', () =>
+      assetsTestTwice.reduce(
+        (acc, { asset }) => Object.assign(acc, { [asset.asset_code]: asset }),
+        {}
+      )
+    );
     average('for..of', () => forOfLikeReduceObj(assetsTestTwice));
   });
-  measure('3.2: reduce with object and spread', 50, () => {
+  measure('3.2: reduce with object and spread', 200, () => {
     average('lodash reduce', () =>
       _reduce(
         assetsTestTwice,
@@ -271,10 +275,18 @@ export default function measurement() {
         return acc;
       }, {})
     );
-    average('JS reduce with Object.assign', () =>
+    average('JS reduce with Object.assign value', () =>
       assetsTestTwice.reduce((acc, { asset }) => {
         acc[asset.asset_code] = Object.assign(asset, {
           uniqueId: asset.asset_code,
+        });
+        return acc;
+      }, {})
+    );
+    average('JS reduce with Object.assign whole item', () =>
+      assetsTestTwice.reduce((acc, { asset }) => {
+        Object.assign(acc, {
+          [asset.asset_code]: { ...asset, uniqueId: asset.asset_code },
         });
         return acc;
       }, {})
@@ -291,7 +303,41 @@ export default function measurement() {
     average('for..of', () => forOfLikeReduceObjSpread(assetsTestTwice));
   });
 
-  measure('3.3: comparing reduce with and without spread', 50, () => {
+  // measure('3.2.1: reduce with object and spread', 200, () => {
+  //   average('lodash reduce ||||', () =>
+  //     _reduce(
+  //       testRows,
+  //       (acc, val) => {
+  //         acc[val.uniqueId] = val;
+  //         return acc;
+  //       },
+  //       {}
+  //     )
+  //   );
+  //   average('JS reduce ||||', () =>
+  //     testRows.reduce((acc, val) => {
+  //       acc[val.uniqueId] = val;
+  //       return acc;
+  //     }, {})
+  //   );
+  //   average('JS reduce with Object.assign ||||', () =>
+  //     testRows.reduce(
+  //       (acc, val) => Object.assign(acc, { [val.uniqueId]: val }),
+  //       {}
+  //     )
+  //   );
+  //   average('JS reduce with acc spread ||||', () =>
+  //     testRows.reduce(
+  //       (acc, val) => ({
+  //         ...acc,
+  //         [val.uniqueId]: val,
+  //       }),
+  //       {}
+  //     )
+  //   );
+  // });
+
+  measure('3.3: comparing reduce with and without spread', 200, () => {
     average('lodash with spread', () =>
       _reduce(
         assetsTestTwice,
@@ -326,7 +372,7 @@ export default function measurement() {
     );
   });
 
-  measure('4: pick(obj, [path])', 50, () => {
+  measure('4: pick(obj, [path])', 200, () => {
     average('lodash', () => _pick(existingCharts, pathsArr));
     average('JS reduce paths', () =>
       pickFlattenReduce(existingCharts, pathsArr)
@@ -339,12 +385,12 @@ export default function measurement() {
     );
   });
 
-  measure('5: pickBy(obj, predicate)', 50, () => {
+  measure('5: pickBy(obj, predicate)', 200, () => {
     average('lodash', () => _pickBy(existingCharts, isIdEven));
     average('JS reduce', () => pickBy(existingCharts, isIdEven));
   });
 
-  measure('6: omit(obj, keysToOmit)', 50, () => {
+  measure('6: omit(obj, keysToOmit)', 200, () => {
     average('lodash', () => _omit(existingCharts, pathsArr));
     average('spread', () => {
       const { eth, btc, ...rest } = existingCharts;
@@ -354,17 +400,17 @@ export default function measurement() {
       omitForInWithSet(existingCharts, pathsArr)
     );
     average('reduce', () => omitReduce(existingCharts, pathsArr));
-    average('forEch', () => omitForEach(existingCharts, pathsArr));
+    average('forEach', () => omitForEach(existingCharts, pathsArr));
     average('omit forIn with object', () =>
       omitForInWithObject(existingCharts, pathsArr)
     );
   });
-  measure('7: omitBy(obj, predicate)', 50, () => {
+  measure('7: omitBy(obj, predicate)', 200, () => {
     average('lodash', () => _omit(existingCharts, pathsArr));
     average('spread', () => omitBy(existingCharts, isIdEven));
   });
 
-  measure('8: mapValues', 50, () => {
+  measure('8: mapValues', 200, () => {
     average('lodash', () => {
       _mapValues(assetCharts, (chartData, address) => ({
         ...existingCharts[address],
@@ -414,15 +460,11 @@ export default function measurement() {
     );
   });
 
-  measure('9: Other', 50, () => {
+  measure('9: Other', 200, () => {
     average('lodash concat', () => _concat(assetsTestTwice, assetsTestTwice));
     average('JS concat', () => assetsTestTwice.concat(assetsTestTwice));
   });
-  // measure('10: Other', 50, () => {
-  //   average('lodash times', () => _times(20, _constant('unicorn')));
-  //   average('JS times', () => times(20, () => 'unicorn'));
-  // });
-  // measure('11: Other', 50, () => {
+  // measure('11: Other', 200, () => {
   //   average('lodash filter', () =>
   //     _filter(assetsTestTwice, ({ asset }) => asset.price.value > 1)
   //   );
@@ -430,7 +472,7 @@ export default function measurement() {
   //     assetsTestTwice.filter(({ asset }) => asset.price.value > 1)
   //   );
   // });
-  measure('11.1: Other', 50, () => {
+  measure('10: Filter', 200, () => {
     average('lodash filter', () =>
       _filter(testRows, ({ familyName }) => familyName === 'CRYPTODRAGOON')
     );
@@ -438,7 +480,7 @@ export default function measurement() {
       testRows.filter(({ familyName }) => familyName === 'CRYPTODRAGOON')
     );
   });
-  // measure('12: Other', 50, () => {
+  // measure('12: Other', 200, () => {
   //   average('lodash filter', () =>
   //     _groupBy(uniqueTokensLarge, token => token.familyName)
   //   );
@@ -455,7 +497,7 @@ export default function measurement() {
   //     }, {})
   //   );
   // });
-  measure('12.1: groupBy', 50, () => {
+  measure('11: groupBy', 200, () => {
     average('lodash groupBy', () =>
       _groupBy(uniqueTokensLarge, token => token.familyName)
     );
@@ -469,15 +511,27 @@ export default function measurement() {
         return acc;
       }, {})
     );
-    average('JS reduce assign', () => groupBy(uniqueTokensLarge, 'familyName'));
+    average('JS reduce assign', () =>
+      uniqueTokensLarge.reduce((acc, token) => {
+        if (acc[token.familyName]) {
+          acc[token.familyName].push(token);
+        } else {
+          Object.assign(acc, { [token.familyName]: [token] });
+        }
+        return acc;
+      }, {})
+    );
+    average('JS reduce imported', () =>
+      groupBy(uniqueTokensLarge, 'familyName')
+    );
   });
-  measure('13: sortBy', 50, () => {
+  measure('12: sortBy', 200, () => {
     average('lodash sortBy', () =>
       _sortBy(testRows, row => row.familyName.replace(regex, '').toLowerCase())
     );
     average('JS sort', () => testRows.sort(sorterByFamiliesName));
   });
-  // measure('13: Other', 50, () => {
+  // measure('13: Other', 200, () => {
   //   average('lodash filter', () =>
   //     _sortBy(testRows, ({ familyName }) =>
   //       familyName.replace(regex, '').toLowerCase()
@@ -485,7 +539,7 @@ export default function measurement() {
   //   );
   //   average('JS filter', () => testRows.sort(sorterByFamiliesNameWithDestr));
   // });
-  // measure('13: Other', 50, () => {
+  // measure('13: Other', 200, () => {
   //   average('lodash filter', () =>
   //     _reverse(
   //       _sortBy(testRows, row =>
@@ -495,7 +549,7 @@ export default function measurement() {
   //   );
   //   average('JS filter', () => testRows.sort(sorterByFamiliesNameReverse));
   // });
-  // measure('13: Other', 50, () => {
+  // measure('13: Other', 200, () => {
   //   average('lodash filter', () =>
   //     _sortBy(testRows, ({ familyName }) =>
   //       familyName.replace(regex, '').toLowerCase()
@@ -539,27 +593,27 @@ export default function measurement() {
   //   5
   // );
 
-  // measureAverage('1: for..of', () => forOfLikeMap(arr, parseAssetTest), 50);
+  // measureAverage('1: for..of', () => forOfLikeMap(arr, parseAssetTest), 4);
 
-  // measureAverage('1: for loop', () => forLikeMap(arr, parseAssetTest), 50);
+  // measureAverage('1: for loop', () => forLikeMap(arr, parseAssetTest), 4);
 
   // //----------------------------------------------------------------
 
   // measureAverage(
-  //   '2: forEch lodash',
+  //   '2: forEach lodash',
   //   () => _forEach(assetsTest, payloadForLoop),
   //   5
   // );
 
   // measureAverage(
-  //   '2: arr.forEch',
+  //   '2: arr.forEach',
   //   () => assetsTest.forEach(payloadForLoop),
   //   5
   // );
 
-  // measureAverage('2: for..of arr', () => forOfArr(assetsTest), 50);
+  // measureAverage('2: for..of arr', () => forOfArr(assetsTest), 4);
 
-  // measureAverage('2: for loop', () => forLoop(assetsTest), 50);
+  // measureAverage('2: for loop', () => forLoop(assetsTest), 4);
 
   // //----------------------------------------------------------------
 
@@ -715,7 +769,7 @@ export default function measurement() {
   //   5
   // );
   // // ////--------
-  // measureAverage('4: pick lodash', () => _pick(existingCharts, pathsArr), 50);
+  // measureAverage('4: pick lodash', () => _pick(existingCharts, pathsArr), 4);
 
   // measureAverage(
   //   '4: pick with reduce paths',
@@ -755,7 +809,7 @@ export default function measurement() {
   //   5
   // );
   // //----------------------------------------------------------------
-  // measureAverage('6: omit lodash', () => _omit(existingCharts, pathsArr), 50);
+  // measureAverage('6: omit lodash', () => _omit(existingCharts, pathsArr), 4);
 
   // measureAverage(
   //   '6: omit with spread',
