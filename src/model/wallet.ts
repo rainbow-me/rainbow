@@ -1034,6 +1034,13 @@ export const getAllWallets = async (): Promise<null | AllRainbowWalletsData> => 
     return null;
   }
 };
+let callbackAfterSeeds: null | (() => void) = null;
+
+export function setCallbackAfterObtainingSeedsFromKeychainOrError(
+  callback: () => void
+) {
+  callbackAfterSeeds = callback;
+}
 
 export const generateAccount = async (
   id: RainbowWallet['id'],
@@ -1063,6 +1070,8 @@ export const generateAccount = async (
           userPIN = await authenticateWithPINAndCreateIfNeeded();
           dispatch(setIsWalletLoading(WalletLoadingStates.CREATING_WALLET));
         } catch (e) {
+          callbackAfterSeeds?.();
+          callbackAfterSeeds = null;
           return null;
         }
       }
@@ -1070,6 +1079,8 @@ export const generateAccount = async (
 
     if (!seedphrase) {
       const seedData = await getSeedPhrase(id);
+      callbackAfterSeeds?.();
+      callbackAfterSeeds = null;
       seedphrase = seedData?.seedphrase;
       if (userPIN) {
         try {
