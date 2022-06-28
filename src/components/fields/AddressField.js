@@ -1,6 +1,5 @@
 import lang from 'i18n-js';
-import { debounce } from 'lodash';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { isHexString } from '../../handlers/web3';
 import { checkIsValidAddressOrDomain } from '../../helpers/validators';
@@ -78,19 +77,14 @@ const AddressField = (
     return setIsValid(newIsValid);
   }, []);
 
-  const debouncedOnChange = useMemo(
-    () => debounce(onChangeText, 269, { leading: false, trailing: true }),
-    [onChangeText]
-  );
-
   const handleChangeText = useCallback(
     text => {
       validateAddress(text);
       expandAbbreviatedClipboard();
       setInputValue(text);
-      debouncedOnChange(text);
+      onChangeText(text);
     },
-    [setInputValue, expandAbbreviatedClipboard, debouncedOnChange]
+    [setInputValue, expandAbbreviatedClipboard, onChangeText]
   );
 
   useEffect(() => {
