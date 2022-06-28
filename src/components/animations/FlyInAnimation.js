@@ -8,8 +8,8 @@ const AnimatedContainer = styled(Animated.View)({
 });
 
 export default function FlyInAnimation({
-  distance = 30,
-  duration = 175,
+  distance = 16,
+  duration = 100,
   ...props
 }) {
   return (
