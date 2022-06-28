@@ -419,28 +419,21 @@ export const reversedSortByKeyHelper = (key: string) => {
   return (a: any, b: any) => (a[key] > b[key] ? -1 : b[key] > a[key] ? 1 : 0);
 };
 
-//the only difference between groupByProp and groupByFunc is that groupByProp is faster
-export const groupByProp = <T extends Record<PropertyKey, any>>(
+/**
+ * @desc Creates an object composed of keys generated from
+ * the results of running each element of `array` thru `keyOrMapper`.
+ * If `keyOrMapper` is a string then it should be shallow
+ */
+export const groupBy = <
+  T extends Record<PropertyKey, any>,
+  Func extends (arg: T) => string
+>(
   arr: T[],
-  key: string
+  keyOrMapper: string | Func
 ): Dictionary<T[]> => {
   return arr.reduce<Dictionary<T[]>>((acc, val) => {
-    const groupedKey = val[key];
-    if (!acc[groupedKey]) {
-      acc[groupedKey] = [val];
-      return acc;
-    }
-    acc[groupedKey].push(val);
-    return acc;
-  }, {});
-};
-
-export const groupByFunc = <T, Func extends (arg: T) => string>(
-  arr: T[],
-  mapper: Func
-): Dictionary<T[]> => {
-  return arr.reduce<Dictionary<T[]>>((acc, val) => {
-    const groupedKey = mapper(val);
+    const groupedKey =
+      typeof keyOrMapper === 'function' ? keyOrMapper(val) : val[keyOrMapper];
     if (!acc[groupedKey]) {
       acc[groupedKey] = [val];
       return acc;

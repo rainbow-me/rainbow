@@ -19,7 +19,7 @@ import networkTypes from './networkTypes';
 import {
   add,
   convertAmountToNativeDisplay,
-  groupByProp,
+  groupBy,
   multiply,
 } from './utilities';
 import { Network } from '.';
@@ -454,7 +454,7 @@ const buildImagesToPreloadArray = (
 
 const sortImagesToPreload = (images: PreloadImage[]) => {
   const filtered = compact(flattenDeep(images));
-  const grouped = groupByProp(filtered, 'priority');
+  const grouped = groupBy(filtered, 'priority');
   return [
     ...get(grouped, 'high', []),
     ...get(grouped, 'normal', []),

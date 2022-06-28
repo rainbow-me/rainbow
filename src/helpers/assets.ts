@@ -4,7 +4,6 @@ import {
   concat,
   forEach,
   get,
-  groupBy,
   includes,
   isEmpty,
   reduce,
@@ -14,7 +13,7 @@ import {
   add,
   convertAmountToNativeDisplay,
   greaterThan,
-  groupByProp,
+  groupBy,
 } from './utilities';
 import { UniqueAsset } from '@rainbow-me/entities';
 import store from '@rainbow-me/redux/store';
@@ -274,7 +273,7 @@ export const buildUniqueTokenList = (
   let rows: any = [];
   const showcaseTokens = [];
   const bundledShowcaseTokens = [];
-  const grouped = groupByProp(uniqueTokens, 'familyName');
+  const grouped = groupBy(uniqueTokens, 'familyName');
 
   const families = Object.keys(grouped);
 

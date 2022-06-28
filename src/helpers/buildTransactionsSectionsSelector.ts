@@ -9,7 +9,7 @@ import {
   todayTimestamp,
   yesterdayTimestamp,
 } from './transactions';
-import { groupByFunc } from './utilities';
+import { groupBy } from './utilities';
 import { TransactionStatusTypes } from '@rainbow-me/entities';
 
 const contactsSelector = (state: any) => state.contacts;
@@ -61,7 +61,7 @@ const buildTransactionsSections = (
   const transactionsWithContacts = map(transactions, addContactInfo(contacts));
 
   if (!isEmpty(transactionsWithContacts)) {
-    const transactionsByDate = groupByFunc(
+    const transactionsByDate = groupBy(
       transactionsWithContacts,
       groupTransactionByDate
     );
