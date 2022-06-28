@@ -88,7 +88,6 @@ const addEthPlaceholder = (
 const getTotal = (assets: any) =>
   reduce(
     assets,
-    // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
     (acc, asset) => {
       const balance = asset?.native?.balance?.amount ?? 0;
       return add(acc, balance);
