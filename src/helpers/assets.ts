@@ -1,16 +1,21 @@
-import { Dictionary } from '@unstoppabledomains/resolution/build/types';
 import {
   chunk,
   compact,
   concat,
   forEach,
   get,
+  groupBy,
   includes,
   isEmpty,
   reduce,
   slice,
 } from 'lodash';
-import { add, convertAmountToNativeDisplay, greaterThan } from './utilities';
+import {
+  add,
+  convertAmountToNativeDisplay,
+  greaterThan,
+  groupByProp,
+} from './utilities';
 import { UniqueAsset } from '@rainbow-me/entities';
 import store from '@rainbow-me/redux/store';
 import {
@@ -269,16 +274,7 @@ export const buildUniqueTokenList = (
   let rows: any = [];
   const showcaseTokens = [];
   const bundledShowcaseTokens = [];
-  const grouped = uniqueTokens.reduce((acc, token) => {
-    if (acc[token.familyName!]) {
-      acc[token.familyName!].push(token);
-    } else {
-      Object.assign(acc, {
-        [token.familyName!]: [token],
-      });
-    }
-    return acc;
-  }, {} as Dictionary<UniqueAsset[]>);
+  const grouped = groupByProp(uniqueTokens, 'familyName');
 
   const families = Object.keys(grouped);
 
@@ -374,18 +370,7 @@ export const buildBriefUniqueTokenList = (
   const uniqueTokensInShowcase = uniqueTokens
     .filter(({ uniqueId }: any) => selectedShowcaseTokens?.includes(uniqueId))
     .map(({ uniqueId }: any) => uniqueId);
-
-  const grouped2 = uniqueTokens.reduce((acc, token) => {
-    if (acc[token.familyName!]) {
-      acc[token.familyName!].push(token);
-    } else {
-      Object.assign(acc, {
-        [token.familyName!]: [token],
-      });
-    }
-
-    return acc;
-  }, {} as Dictionary<UniqueAsset[]>);
+  const grouped2 = groupBy(uniqueTokens, 'familyName');
 
   const families2 = Object.keys(grouped2).sort(groupedKeys);
 

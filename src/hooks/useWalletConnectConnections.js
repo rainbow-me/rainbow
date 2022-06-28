@@ -8,6 +8,7 @@ import {
   walletConnectOnSessionRequest as rawWalletConnectOnSessionRequest,
   walletConnectUpdateSessionConnectorByDappUrl as rawWalletConnectUpdateSessionConnectorByDappUrl,
 } from '../redux/walletconnect';
+import { groupByFunc } from '@rainbow-me/helpers/utilities';
 
 const formatDappData = connections =>
   values(
@@ -26,28 +27,16 @@ const walletConnectSelector = createSelector(
   state => state.walletconnect.walletConnectors,
   walletConnectors => {
     const sorted = sortList(values(walletConnectors), 'peerMeta.name');
-    const groupedByDappName = sorted.reduce((acc, walletConnector) => {
-      if (acc[walletConnector.peerMeta.ur]) {
-        acc[walletConnector.peerMeta.ur].push(walletConnector);
-      } else {
-        Object.assign(acc, {
-          [walletConnector.peerMeta.ur]: [walletConnector],
-        });
-      }
-      return acc;
-    }, {});
+    const groupedByDappName = groupByFunc(
+      sorted,
+      ({ peerMeta }) => peerMeta.url
+    );
     const mostRecent = sortList(sorted, '_handshakeId', 'desc');
 
-    const sortedByMostRecentHandshake = mostRecent.reduce((acc, handshake) => {
-      if (acc[handshake.peerMeta.url]) {
-        acc[handshake.peerMeta.url].push(handshake);
-      } else {
-        Object.assign(acc, {
-          [handshake.peerMeta.url]: [handshake],
-        });
-      }
-      return acc;
-    }, {});
+    const sortedByMostRecentHandshake = groupByFunc(
+      mostRecent,
+      ({ peerMeta }) => peerMeta.url
+    );
     return {
       mostRecentWalletConnectors: formatDappData(sortedByMostRecentHandshake),
       sortedWalletConnectors: sorted,

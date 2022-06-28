@@ -4,6 +4,9 @@ import { get, isNil } from 'lodash';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 
 type BigNumberish = number | string | BigNumber;
+interface Dictionary<T> {
+  [index: string]: T;
+}
 
 export const abs = (value: BigNumberish): string =>
   new BigNumber(value).abs().toFixed();
@@ -414,4 +417,35 @@ export const sortByKeyHelper = (key: string) => {
 };
 export const reversedSortByKeyHelper = (key: string) => {
   return (a: any, b: any) => (a[key] > b[key] ? -1 : b[key] > a[key] ? 1 : 0);
+};
+
+//the only difference between groupByProp and groupByFunc is that groupByProp is faster
+export const groupByProp = <T extends Record<PropertyKey, any>>(
+  arr: T[],
+  key: string
+): Dictionary<T[]> => {
+  return arr.reduce<Dictionary<T[]>>((acc, val) => {
+    const groupedKey = val[key];
+    if (!acc[groupedKey]) {
+      acc[groupedKey] = [val];
+      return acc;
+    }
+    acc[groupedKey].push(val);
+    return acc;
+  }, {});
+};
+
+export const groupByFunc = <T, Func extends (arg: T) => string>(
+  arr: T[],
+  mapper: Func
+): Dictionary<T[]> => {
+  return arr.reduce<Dictionary<T[]>>((acc, val) => {
+    const groupedKey = mapper(val);
+    if (!acc[groupedKey]) {
+      acc[groupedKey] = [val];
+      return acc;
+    }
+    acc[groupedKey].push(val);
+    return acc;
+  }, {});
 };

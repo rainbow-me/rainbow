@@ -1,4 +1,3 @@
-import { Dictionary } from '@unstoppabledomains/resolution/build/types';
 import lang from 'i18n-js';
 import { compact, flattenDeep, get, map } from 'lodash';
 import React from 'react';
@@ -17,7 +16,12 @@ import {
   buildUniqueTokenList,
 } from './assets';
 import networkTypes from './networkTypes';
-import { add, convertAmountToNativeDisplay, multiply } from './utilities';
+import {
+  add,
+  convertAmountToNativeDisplay,
+  groupByProp,
+  multiply,
+} from './utilities';
 import { Network } from '.';
 import { ImgixImage } from '@rainbow-me/images';
 import Routes from '@rainbow-me/routes';
@@ -450,16 +454,7 @@ const buildImagesToPreloadArray = (
 
 const sortImagesToPreload = (images: PreloadImage[]) => {
   const filtered = compact(flattenDeep(images));
-  const grouped = filtered?.reduce<Dictionary<PreloadImage[]>>((acc, image) => {
-    if (acc[image.priority]) {
-      acc[image.priority].push(image);
-    } else {
-      Object.assign(acc, {
-        [image.priority]: [image],
-      });
-    }
-    return acc;
-  }, {});
+  const grouped = groupByProp(filtered, 'priority');
   return [
     ...get(grouped, 'high', []),
     ...get(grouped, 'normal', []),
