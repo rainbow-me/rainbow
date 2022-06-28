@@ -1,20 +1,40 @@
 import { Contract } from '@ethersproject/contracts';
+import { isEmpty } from 'lodash';
 import { web3Provider } from '../handlers/web3';
 import namesOverrides from '../references/method-names-overrides.json';
 import methodRegistryABI from '../references/method-registry-abi.json';
+import { metadataClient } from '@rainbow-me/apollo/client';
+import { CONTRACT_FUNCTION } from '@rainbow-me/apollo/queries';
 
 const METHOD_REGISTRY_ADDRESS = '0x44691B39d1a75dC4E0A0346CBB15E310e6ED1E86';
 
 export const methodRegistryLookupAndParse = async (
   methodSignatureBytes: any
 ) => {
-  const registry = new Contract(
-    METHOD_REGISTRY_ADDRESS,
-    methodRegistryABI,
-    web3Provider
+  let signature = '';
+
+  const response = await metadataClient.queryWithTimeout(
+    {
+      query: CONTRACT_FUNCTION,
+      variables: {
+        chainID: 1,
+        hex: methodSignatureBytes,
+      },
+    },
+    800
   );
 
-  const signature = await registry.entries(methodSignatureBytes);
+  if (!isEmpty(response?.data?.contractFunction?.text)) {
+    signature = response.data.contractFunction.text;
+  } else {
+    const registry = new Contract(
+      METHOD_REGISTRY_ADDRESS,
+      methodRegistryABI,
+      web3Provider
+    );
+
+    signature = await registry.entries(methodSignatureBytes);
+  }
 
   const rawName = signature.match(new RegExp('^([^)(]*)\\((.*)\\)([^)(]*)$'));
   let parsedName;
