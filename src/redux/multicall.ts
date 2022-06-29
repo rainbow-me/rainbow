@@ -1,7 +1,7 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import { ChainId } from '@uniswap/sdk';
-import { chunk, keys, map } from 'lodash';
+import { chunk, keys } from 'lodash';
 import { web3Provider } from '../handlers/web3';
 import { MULTICALL_ABI, MULTICALL_NETWORKS } from '../references/uniswap';
 import { AppDispatch, AppGetState } from './store';
@@ -202,7 +202,7 @@ export const multicallUpdateOutdatedListeners = (
     latestBlockNumber
   );
 
-  const calls = map(outdatedCallKeys, key => parseCallKey(key));
+  const calls = outdatedCallKeys.map(key => parseCallKey(key));
   const chunkedCalls = chunk(calls, CALL_CHUNK_SIZE);
 
   const multicallContract = new Contract(
@@ -214,7 +214,7 @@ export const multicallUpdateOutdatedListeners = (
   chunkedCalls.forEach((chunk, chunkIndex) => {
     multicallContract
       .aggregate(
-        map(chunk, obj => {
+        chunk.map(obj => {
           return [obj.address, obj.callData];
         })
       )

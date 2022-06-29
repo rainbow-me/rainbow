@@ -1,6 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
-import { endsWith, map } from 'lodash';
+import { endsWith } from 'lodash';
 import {
   Options,
   requestSharedWebCredentials,
@@ -44,8 +44,7 @@ async function extractSecretsForWallet(wallet: RainbowWallet) {
   if (!allKeys) throw new Error(CLOUD_BACKUP_ERRORS.KEYCHAIN_ACCESS_ERROR);
   const secrets = {} as { [key: string]: string };
 
-  const allowedPkeysKeys = map(
-    wallet?.addresses,
+  const allowedPkeysKeys = wallet?.addresses?.map(
     account => `${account.address}_${privateKeyKey}`
   );
 
@@ -71,7 +70,7 @@ async function extractSecretsForWallet(wallet: RainbowWallet) {
     // Ignore other wallets PKeys
     if (
       item.username.indexOf(`_${privateKeyKey}`) !== -1 &&
-      allowedPkeysKeys.indexOf(item.username) === -1
+      !(allowedPkeysKeys?.indexOf(item.username) > -1)
     ) {
       return;
     }
