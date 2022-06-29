@@ -3,6 +3,7 @@ import React, {
   forwardRef,
   useCallback,
   useImperativeHandle,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -48,6 +49,12 @@ export const MaxToleranceInput = forwardRef(
 
     const { handleFocus } = useMagicAutofocus(slippageRef, undefined, true);
 
+    const { hasPriceImpact, priceImpactColor } = useMemo(() => {
+      const hasPriceImpact = Number(slippageValue) >= 3;
+      const priceImpactColor = hasPriceImpact ? colors.orange : null;
+      return { hasPriceImpact, priceImpactColor };
+    }, [slippageValue]);
+
     useImperativeHandle(ref, () => ({
       blur: () => {
         slippageRef?.current?.blur();
@@ -84,9 +91,6 @@ export const MaxToleranceInput = forwardRef(
       },
       [updateSwapSlippage, setSlippageValue]
     );
-
-    const hasPriceImpact = Number(slippageValue) > 3;
-    const priceImpactColor = Number(slippageValue) > 3 ? colors.orange : null;
 
     const openExplainer = () => {
       android && Keyboard.dismiss();
