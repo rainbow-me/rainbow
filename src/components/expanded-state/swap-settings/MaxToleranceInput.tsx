@@ -122,24 +122,14 @@ export const MaxToleranceInput: React.FC<{
   return (
     <Columns alignVertical="center">
       <Stack space="10px">
-        <ButtonPressAnimation
-          contentContainerStyle={
-            android && {
-              // bigger tap area otherwise touch events can get ignored
-              marginVertical: -10,
-              paddingVertical: 20,
-            }
-          }
-          onPress={openExplainer}
-          style={
-            ios && {
-              // bigger tap area otherwise touch events can get ignored
-              marginVertical: -20,
-              paddingVertical: 20,
-            }
-          }
-        >
-          <Inline alignVertical="center" space="2px">
+        <Inline alignVertical="center" space="2px">
+          <Box
+            as={ButtonPressAnimation}
+            margin="-12px"
+            // @ts-expect-error
+            onPress={openExplainer}
+            padding="12px"
+          >
             <Text size="16px" weight="bold">
               {`${lang.t('exchange.slippage_tolerance')} `}
               {!hasPriceImpact && (
@@ -153,8 +143,8 @@ export const MaxToleranceInput: React.FC<{
                 <Icon color={priceImpactColor} name="warning" size={18} />
               </Box>
             )}
-          </Inline>
-        </ButtonPressAnimation>
+          </Box>
+        </Inline>
         {hasPriceImpact && (
           <Box>
             <Text size={android ? '12px' : '14px'}>

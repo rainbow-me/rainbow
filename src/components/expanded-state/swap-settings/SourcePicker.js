@@ -83,22 +83,12 @@ export default function SourcePicker({ onSelect, currentSource }) {
   return (
     <Columns alignHorizontal="justify" alignVertical="center">
       <Column width="content">
-        <ButtonPressAnimation
-          contentContainerStyle={
-            android && {
-              // bigger tap area otherwise touch events can get ignored
-              marginVertical: -10,
-              paddingVertical: 20,
-            }
-          }
+        <Box
+          as={ButtonPressAnimation}
+          margin="-12px"
+          // @ts-expect-error
           onPress={openExplainer}
-          style={
-            ios && {
-              // bigger tap area otherwise touch events can get ignored
-              marginVertical: -20,
-              paddingVertical: 20,
-            }
-          }
+          padding="12px"
         >
           <Text size="16px" weight="bold">
             {lang.t('exchange.source_picker')}
@@ -106,7 +96,7 @@ export default function SourcePicker({ onSelect, currentSource }) {
               {' 􀅵'}
             </Text>
           </Text>
-        </ButtonPressAnimation>
+        </Box>
       </Column>
       <Column width="content">
         <ContextMenuButton
