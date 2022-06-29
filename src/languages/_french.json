@@ -191,6 +191,7 @@
         "insufficient_eth": "ETH Insuffisants",
         "insufficient_funds": "Fonds Insuffisants",
         "insufficient_liquidity": "Insufficient Liquidity :)",
+        "insufficient_matic": "MATIC Insuffisants",
         "insufficient_token": "Insufficient %{tokenName} :)",
         "invalid_fee": "Frais Non Valides",
         "invalid_fee_lowercase": "Frais non valides",
@@ -350,7 +351,8 @@
       },
       "price_impact": {
         "losing_prefix": "Losing :)",
-        "small_market": "Small Market :)"
+        "small_market": "Small Market :)",
+        "label": "Possible loss :)"
       },
       "source": {
         "rainbow": "Auto :)",

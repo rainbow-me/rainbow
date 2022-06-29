@@ -248,6 +248,7 @@ export default function ExchangeModal({
     ignoreInitialTypeCheck,
     inputFieldRef,
     lastFocusedInputHandle,
+    nativeFieldRef,
     outputFieldRef,
     setLastFocusedInputHandle,
     title,
@@ -597,6 +598,7 @@ export default function ExchangeModal({
 
   const confirmButtonProps = useMemoOne(
     () => ({
+      currentNetwork,
       disabled:
         !Number(inputAmount) || (!loading && !tradeDetails && !isSavings),
       inputAmount,
@@ -609,6 +611,7 @@ export default function ExchangeModal({
       type,
     }),
     [
+      currentNetwork,
       loading,
       handleSubmit,
       inputAmount,
@@ -799,6 +802,7 @@ export default function ExchangeModal({
             <ExchangeDetailsRow
               isHighPriceImpact={isHighPriceImpact}
               onFlipCurrencies={loading ? NOOP : flipCurrencies}
+              onPressImpactWarning={navigateToSwapDetailsModal}
               onPressSettings={navigateToSwapSettingsSheet}
               priceImpactColor={priceImpactColor}
               priceImpactNativeAmount={priceImpactNativeAmount}

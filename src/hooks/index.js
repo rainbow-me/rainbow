@@ -111,6 +111,7 @@ export { default as useSwapInputHandlers } from './useSwapInputHandlers';
 export { default as useSwapIsSufficientBalance } from './useSwapIsSufficientBalance';
 export { default as useSwapSettings } from './useSwapSettings';
 export { default as useSwapDerivedOutputs } from './useSwapDerivedOutputs';
+export { default as useSwapDerivedValues } from './useSwapDerivedValues';
 export { default as useTimeout } from './useTimeout';
 export { default as useTopMovers } from './useTopMovers';
 export { default as useTransactionConfirmation } from './useTransactionConfirmation';

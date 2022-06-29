@@ -66,6 +66,7 @@ import { uniswapPairsInit } from './redux/uniswap';
 import { walletConnectLoadState } from './redux/walletconnect';
 import { rainbowTokenList } from './references';
 import { MainThemeProvider } from './theme/ThemeContext';
+import { ethereumUtils } from './utils';
 import { branchListener } from './utils/branch';
 import { analyticsUserIdentifier } from './utils/keychainConstants';
 import {
@@ -295,7 +296,9 @@ class App extends Component {
   };
 
   handleTransactionConfirmed = tx => {
-    const network = tx.network || networkTypes.mainnet;
+    const network = tx.chainId
+      ? ethereumUtils.getNetworkFromChainId(tx.chainId)
+      : tx.network || networkTypes.mainnet;
     const isL2 = isL2Network(network);
     const updateBalancesAfter = (timeout, isL2, network) => {
       setTimeout(() => {
