@@ -343,7 +343,7 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should confirm the ENS was sent correctly', async () => {
-    await Helpers.delay(4000);
+    await Helpers.delay(1000);
     const { displayName } = await getRecords(RAINBOW_TEST_WALLET_NAME);
     const { address, primaryName } = await resolveName(
       RAINBOW_TEST_WALLET_NAME
