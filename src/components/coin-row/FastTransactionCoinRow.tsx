@@ -133,7 +133,7 @@ export default React.memo(function TransactionCoinRow({
             />
             <View style={cx.balance}>
               <Text
-                color={{ custom: colors.alpha(colors.blueGreyDark, 0.5) }}
+                color={{ custom: colors.balanceText }}
                 numberOfLines={1}
                 size="14px"
               >
