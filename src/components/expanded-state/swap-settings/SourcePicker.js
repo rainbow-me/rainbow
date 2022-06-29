@@ -83,7 +83,23 @@ export default function SourcePicker({ onSelect, currentSource }) {
   return (
     <Columns alignHorizontal="justify" alignVertical="center">
       <Column width="content">
-        <ButtonPressAnimation onPress={openExplainer}>
+        <ButtonPressAnimation
+          contentContainerStyle={
+            android && {
+              // bigger tap area otherwise touch events can get ignored
+              marginVertical: -10,
+              paddingVertical: 20,
+            }
+          }
+          onPress={openExplainer}
+          style={
+            ios && {
+              // bigger tap area otherwise touch events can get ignored
+              marginVertical: -20,
+              paddingVertical: 20,
+            }
+          }
+        >
           <Text size="16px" weight="bold">
             {lang.t('exchange.source_picker')}
             <Text color="secondary30" size="16px" weight="bold">

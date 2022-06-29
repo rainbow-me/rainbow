@@ -122,7 +122,23 @@ export const MaxToleranceInput: React.FC<{
   return (
     <Columns alignVertical="center">
       <Stack space="10px">
-        <ButtonPressAnimation onPress={openExplainer}>
+        <ButtonPressAnimation
+          contentContainerStyle={
+            android && {
+              // bigger tap area otherwise touch events can get ignored
+              marginVertical: -10,
+              paddingVertical: 20,
+            }
+          }
+          onPress={openExplainer}
+          style={
+            ios && {
+              // bigger tap area otherwise touch events can get ignored
+              marginVertical: -20,
+              paddingVertical: 20,
+            }
+          }
+        >
           <Inline alignVertical="center" space="2px">
             <Text size="16px" weight="bold">
               {`${lang.t('exchange.slippage_tolerance')} `}

@@ -143,7 +143,23 @@ export default function SwapSettingsState({ asset }) {
             />
             {swapSupportsFlashbots && (
               <Columns alignHorizontal="justify" alignVertical="center">
-                <ButtonPressAnimation onPress={openExplainer}>
+                <ButtonPressAnimation
+                  contentContainerStyle={
+                    android && {
+                      // bigger tap area otherwise touch events can get ignored
+                      marginVertical: -10,
+                      paddingVertical: 20,
+                    }
+                  }
+                  onPress={openExplainer}
+                  style={
+                    ios && {
+                      // bigger tap area otherwise touch events can get ignored
+                      marginVertical: -20,
+                      paddingVertical: 20,
+                    }
+                  }
+                >
                   <Text color="primary" size="16px" weight="bold">
                     {lang.t('exchange.use_flashbots')}
                     <Text color="secondary30" size="16px" weight="bold">
