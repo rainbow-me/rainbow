@@ -17,7 +17,7 @@ import { useDimensions } from '@rainbow-me/hooks';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@rainbow-me/references';
 import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth, padding, position } from '@rainbow-me/styles';
-import { gasUtils } from '@rainbow-me/utils';
+import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import { cloudPlatformAccountName } from '@rainbow-me/utils/platform';
 
 const { GAS_TRENDS } = gasUtils;
@@ -256,6 +256,37 @@ export const explainers = (params, colors) => ({
     emoji: '􀇻',
     text: VERIFIED_EXPLAINER,
     title: lang.t('explain.verified.title'),
+  },
+  unverified: {
+    extraHeight: android ? 150 : 120,
+    emoji: '🚨',
+    buttonText: lang.t('button.proceed_anyway'),
+    buttonColor: colors?.red,
+    secondaryButtonText: lang.t('button.go_back'),
+    title: lang.t('explain.unverified.title', {
+      symbol: params?.asset?.symbol,
+    }),
+    stillCurious: (
+      <Text {...getBodyTextPropsWithColor(colors)}>
+        {lang.t('explain.unverified.fragment1')}
+        <Text
+          color={colors?.appleBlue}
+          lineHeight="loose"
+          onPress={() =>
+            ethereumUtils.openTokenEtherscanURL(
+              params?.asset.address,
+              ethereumUtils.getNetworkFromType(params?.asset?.type)
+            )
+          }
+          size="large"
+          suppressHighlighting
+          weight="semibold"
+        >
+          {lang.t('explain.unverified.fragment2')}
+        </Text>
+        {lang.t('explain.unverified.fragment3')}
+      </Text>
+    ),
   },
   optimism: {
     emoji: '⛽️',
@@ -544,7 +575,7 @@ const ExplainSheet = () => {
 
   const buttons = useMemo(() => {
     const missingL2Assets = type === 'obtainL2Assets';
-    const secondaryButton = explainSheetConfig.readMoreLink && (
+    const secondaryButton = explainSheetConfig?.secondaryButtonText && (
       <Column
         height={60}
         style={android && missingL2Assets && { marginTop: 16 }}
@@ -556,7 +587,7 @@ const ExplainSheet = () => {
             explainSheetConfig.secondaryButtonText ||
             lang.t('explain.read_more')
           }
-          onPress={handleReadMore}
+          onPress={explainSheetConfig?.readMoreLink ? handleReadMore : goBack}
           size="big"
           textColor={missingL2Assets ? 'primary' : colors.blueGreyDark60}
           weight="heavy"
@@ -578,7 +609,7 @@ const ExplainSheet = () => {
       />
     );
     const buttonArray = [secondaryButton, accentCta];
-    if (type === 'obtainL2Assets') {
+    if (type === 'obtainL2Assets' || type === 'unverified') {
       buttonArray.reverse();
     }
     return buttonArray;
@@ -586,8 +617,9 @@ const ExplainSheet = () => {
     colors,
     explainSheetConfig.buttonColor,
     explainSheetConfig.buttonText,
-    explainSheetConfig.readMoreLink,
+    explainSheetConfig?.readMoreLink,
     explainSheetConfig.secondaryButtonText,
+    goBack,
     handleClose,
     handleReadMore,
     type,
@@ -637,9 +669,11 @@ const ExplainSheet = () => {
             {/** base fee explainer */}
             {renderBaseFeeIndicator}
 
-            <Text {...getBodyTextPropsWithColor(colors)}>
-              {explainSheetConfig.text}
-            </Text>
+            {explainSheetConfig.text && (
+              <Text {...getBodyTextPropsWithColor(colors)}>
+                {explainSheetConfig.text}
+              </Text>
+            )}
             {explainSheetConfig?.stillCurious &&
               explainSheetConfig.stillCurious}
             {buttons}

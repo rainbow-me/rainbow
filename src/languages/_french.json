@@ -364,11 +364,6 @@
       "route_picker": "Route Swaps via :)",
       "use_flashbots": "Use Flashbots :)",
       "swapping_for_prefix": "Swapping for :)",
-      "unverified_token": {
-        "go_back": "Go Back :)",
-        "token_not_verified": "This token has not been verified! Rainbow surfaces all tokens that exist on Uniswap. Anyone can create a token, including fake versions of existing tokens and tokens that claim to represent projects that do not have a token. Please do your own research and be careful when interacting with unverified tokens! :)",
-        "unverified_token_title": "Unverified Token :)"
-      },
       "view_details": "View Details :)"
     },
     "expanded_state": {
@@ -588,6 +583,12 @@
       "verified": {
         "text": "Tokens with a verified badge mean they have appeared on at least 3 other outside token lists.\n\nAlways do your own research to ensure you are interacting with a token you trust. :)",
         "title": "Verified Tokens :)"
+      },
+      "unverified": {
+        "fragment1": "Rainbow surfaces all tokens that exist on Ethereum. Anyone can create a token, including fake versions of existing tokens and tokens that claim to represent projects that do not have a token. \n\n Please check the :)",
+        "fragment2": "token contract :)",
+        "fragment3": " and do your own research. Be careful when interacting with unverified tokens! :)",
+        "title": "%{symbol} has not been verified :)"
       }
     },
     "fields": {
