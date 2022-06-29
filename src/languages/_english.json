@@ -349,7 +349,8 @@
       },
       "price_impact": {
         "losing_prefix": "Losing",
-        "small_market": "Small Market"
+        "small_market": "Small Market",
+        "label": "Possible loss"
       },
       "source": {
         "rainbow": "Auto",
@@ -621,7 +622,7 @@
       },
       "flashbots": {
         "text": "Flashbots protects your transactions from frontrunning and sandwich attacks which might result in you getting a worse price or your transaction failing.",
-        "title": "Flashbots", 
+        "title": "Flashbots",
         "still_curious": {
           "fragment1": "Still curious? ",
           "fragment2": "Read more",
