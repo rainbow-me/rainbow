@@ -129,7 +129,7 @@ export default function useSavingsAccount(includeDefaultDai: any) {
       const markets = keyBy(data?.markets, 'id');
       const resultTokens = data?.account?.tokens ?? [];
 
-      const accountTokens = resultTokens.map(token => {
+      const accountTokens = resultTokens.map((token: any) => {
         const [cTokenAddress] = token.id.split('-');
         const marketData = markets[cTokenAddress] || {};
 
@@ -161,7 +161,7 @@ export default function useSavingsAccount(includeDefaultDai: any) {
         daiMarketData,
       };
       const underlyingAddresses = accountTokens.map(
-        token => token?.underlying?.address
+        (token: any) => token?.underlying?.address
       );
       dispatch(emitAssetRequest([DAI_ADDRESS, ...underlyingAddresses]));
       setBackupSavings(result);
