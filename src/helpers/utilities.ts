@@ -337,9 +337,15 @@ export const convertAmountToBalanceDisplay = (
 export const convertAmountToPercentageDisplay = (
   value: BigNumberish,
   decimals: number = 2,
-  buffer?: number
+  buffer?: number,
+  skipDecimals?: boolean
 ): string => {
-  const display = handleSignificantDecimals(value, decimals, buffer);
+  const display = handleSignificantDecimals(
+    value,
+    decimals,
+    buffer,
+    skipDecimals
+  );
   return `${display}%`;
 };
 

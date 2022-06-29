@@ -134,6 +134,7 @@ export default function SwapDetailsExchangeRow() {
     if (sortedProtocols.length === 1) {
       const protocol = sortedProtocols[0];
       const protocolName = parseExchangeName(protocol.name);
+
       return [
         {
           icons: [getExchangeIconUrl(protocolName)],
@@ -145,11 +146,13 @@ export default function SwapDetailsExchangeRow() {
     }
     const mappedExchanges = sortedProtocols.map(protocol => {
       const protocolName = parseExchangeName(protocol.name);
+      const part = convertAmountToPercentageDisplay(protocol.part, 0, 3, true);
+
       return {
         icons: [getExchangeIconUrl(protocolName)],
         label: capitalize(protocolName.replace('_', ' ')),
         name: protocolName,
-        part: convertAmountToPercentageDisplay(protocol.part),
+        part,
       };
     });
     return [defaultCase, ...mappedExchanges];
@@ -182,15 +185,12 @@ export default function SwapDetailsExchangeRow() {
             </Column>
             {steps?.[step]?.part && (
               <Column width="content">
-                <Bleed right={android ? '5px' : '6px'} vertical="6px">
+                <Bleed right="5px" vertical="6px">
                   <Pill
-                    height={android && 20}
-                    style={
-                      android && {
-                        lineHeight: 22,
-                        top: -1,
-                      }
-                    }
+                    height={20}
+                    style={{
+                      top: 0,
+                    }}
                     textColor={defaultColor}
                   >
                     {steps[step].part}
