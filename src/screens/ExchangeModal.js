@@ -598,6 +598,7 @@ export default function ExchangeModal({
 
   const confirmButtonProps = useMemoOne(
     () => ({
+      currentNetwork,
       disabled:
         !Number(inputAmount) || (!loading && !tradeDetails && !isSavings),
       inputAmount,
@@ -610,6 +611,7 @@ export default function ExchangeModal({
       type,
     }),
     [
+      currentNetwork,
       loading,
       handleSubmit,
       inputAmount,

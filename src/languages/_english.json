@@ -192,6 +192,7 @@
         "insufficient_eth": "Insufficient ETH",
         "insufficient_funds": "Insufficient Funds",
         "insufficient_liquidity": "Insufficient Liquidity",
+        "insufficient_matic": "Insufficient MATIC",
         "insufficient_token": "Insufficient %{tokenName}",
         "invalid_fee": "Invalid Fee",
         "invalid_fee_lowercase": "Invalid fee",
