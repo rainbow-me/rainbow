@@ -1,7 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
-import { forEach } from 'lodash';
 import React, { useCallback } from 'react';
 import { Alert, InteractionManager, StatusBar } from 'react-native';
 import RNCloudFs from 'react-native-cloud-fs';
@@ -43,17 +42,19 @@ export default function RestoreSheet() {
       if (isAvailable) {
         try {
           const data = await fetchUserDataFromCloud();
-          forEach(data?.wallets, wallet => {
-            if (
-              wallet.backedUp &&
-              wallet.backupType === WalletBackupTypes.cloud
-            ) {
-              proceed = true;
-            }
-          });
+          if (data?.wallets) {
+            Object.values(data.wallets).forEach(wallet => {
+              if (
+                wallet.backedUp &&
+                wallet.backupType === WalletBackupTypes.cloud
+              ) {
+                proceed = true;
+              }
+            });
 
-          if (proceed) {
-            setParams({ userData: data });
+            if (proceed) {
+              setParams({ userData: data });
+            }
           }
 
           logger.log(`Downloaded ${cloudPlatform} backup info`);

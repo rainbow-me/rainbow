@@ -1,9 +1,10 @@
 import BigNumber from 'bignumber.js';
 import currency from 'currency.js';
-import { get, isNil } from 'lodash';
+import { isNil } from 'lodash';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 
 type BigNumberish = number | string | BigNumber;
+type nativeCurrencyType = typeof supportedNativeCurrencies;
 
 export const abs = (value: BigNumberish): string =>
   new BigNumber(value).abs().toFixed();
@@ -261,7 +262,7 @@ export const convertAmountToNativeAmount = (
 export const convertAmountAndPriceToNativeDisplay = (
   amount: BigNumberish,
   priceUnit: BigNumberish,
-  nativeCurrency: string,
+  nativeCurrency: keyof nativeCurrencyType,
   buffer?: number,
   skipDecimals: boolean = false
 ): { amount: string; display: string } => {
@@ -285,7 +286,7 @@ export const convertRawAmountToNativeDisplay = (
   rawAmount: BigNumberish,
   assetDecimals: number,
   priceUnit: BigNumberish,
-  nativeCurrency: string,
+  nativeCurrency: keyof nativeCurrencyType,
   buffer?: number
 ) => {
   const assetBalance = convertRawAmountToDecimalFormat(
@@ -308,7 +309,7 @@ export const convertRawAmountToBalance = (
   asset: { decimals: number },
   buffer?: number
 ) => {
-  const decimals = get(asset, 'decimals', 18);
+  const decimals = asset?.decimals ?? 18;
   const assetBalance = convertRawAmountToDecimalFormat(value, decimals);
 
   return {
@@ -322,12 +323,12 @@ export const convertRawAmountToBalance = (
  */
 export const convertAmountToBalanceDisplay = (
   value: BigNumberish,
-  asset: { decimals: number },
+  asset: { decimals: number; symbol?: string },
   buffer?: number
 ) => {
-  const decimals = get(asset, 'decimals', 18);
+  const decimals = asset?.decimals ?? 18;
   const display = handleSignificantDecimals(value, decimals, buffer);
-  return `${display} ${get(asset, 'symbol', '')}`;
+  return `${display} ${asset?.symbol || ''}`;
 };
 
 /**
@@ -372,11 +373,11 @@ export const convertBipsToPercentage = (
  */
 export const convertAmountToNativeDisplay = (
   value: BigNumberish,
-  nativeCurrency: string,
+  nativeCurrency: keyof nativeCurrencyType,
   buffer?: number,
   skipDecimals?: boolean
 ) => {
-  const nativeSelected = get(supportedNativeCurrencies, `${nativeCurrency}`);
+  const nativeSelected = supportedNativeCurrencies?.[nativeCurrency];
   const { decimals } = nativeSelected;
   const display = handleSignificantDecimals(
     value,
