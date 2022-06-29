@@ -1,6 +1,6 @@
 import { isHexString } from '@ethersproject/bytes';
 import lang from 'i18n-js';
-import { get, isEmpty } from 'lodash';
+import { isEmpty } from 'lodash';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
 import { ActivityIndicator, Keyboard } from 'react-native';
 import { useNavigation } from '../../navigation/Navigation';
@@ -93,7 +93,6 @@ export default function SendHeader({
   const { isSmallPhone, isTinyPhone } = useDimensions();
   const { navigate } = useNavigation();
   const { colors } = useTheme();
-
   const [hexAddress, setHexAddress] = useState('');
 
   useEffect(() => {
@@ -141,7 +140,7 @@ export default function SendHeader({
       : recipient;
     let color = '';
     if (!profilesEnabled) {
-      color = get(contact, 'color');
+      color = contact?.color;
       if (color !== 0 && !color) {
         const emoji = profileUtils.addressHashedEmoji(hexAddress);
         color = profileUtils.addressHashedColorIndex(hexAddress) || 0;

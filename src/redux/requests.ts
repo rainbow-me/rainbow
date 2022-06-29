@@ -1,4 +1,3 @@
-import get from 'lodash/get';
 import { Dispatch } from 'redux';
 import { AppGetState } from './store';
 import { maybeSignUri } from '@rainbow-me/handlers/imgix';
@@ -163,6 +162,7 @@ export const addRequestToApprove = (
         name?: string;
         url?: string;
         scheme?: string;
+        icons?: string;
       }
 ) => (
   dispatch: Dispatch<RequestsUpdateRequestsToApproveAction>,
@@ -189,7 +189,7 @@ export const addRequestToApprove = (
     return;
   }
   const unsafeImageUrl =
-    dappLogoOverride(peerMeta?.url) || get(peerMeta, 'icons[0]');
+    dappLogoOverride(peerMeta?.url) || peerMeta?.icons?.[0];
   const imageUrl = maybeSignUri(unsafeImageUrl);
   const dappName =
     dappNameOverride(peerMeta?.url) || peerMeta?.name || 'Unknown Dapp';

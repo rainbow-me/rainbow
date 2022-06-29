@@ -1,4 +1,4 @@
-import { map, mapValues } from 'lodash';
+import mapValues from 'lodash/mapValues';
 import { useMemo } from 'react';
 import useWalletBalances from './useWalletBalances';
 import useWallets from './useWallets';
@@ -10,7 +10,7 @@ export default function useWalletsWithBalancesAndNames() {
   const walletsWithBalancesAndNames = useMemo(
     () =>
       mapValues(wallets, wallet => {
-        const updatedAccounts = map(wallet.addresses, account => ({
+        const updatedAccounts = (wallet.addresses ?? []).map(account => ({
           ...account,
           balance: walletBalances[account.address],
           ens: walletNames[account.address],

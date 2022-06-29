@@ -46,7 +46,7 @@ import {
   parseRainbowMeteorologyData,
   weiToGwei,
 } from '@rainbow-me/parsers';
-import { ethUnits } from '@rainbow-me/references';
+import { ethUnits, supportedNativeCurrencies } from '@rainbow-me/references';
 import { multiply } from '@rainbow-me/utilities';
 import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
@@ -137,7 +137,7 @@ const getUpdatedGasFeeParams = (
   currentBaseFee: GasFeeParam,
   gasFeeParamsBySpeed: GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed,
   gasLimit: string,
-  nativeCurrency: string,
+  nativeCurrency: keyof typeof supportedNativeCurrencies,
   selectedGasFeeOption: string,
   txNetwork: Network,
   l1GasFeeOptimism: BigNumber | null = null
