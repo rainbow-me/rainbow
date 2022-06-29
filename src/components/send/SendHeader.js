@@ -1,12 +1,7 @@
 import { isHexString } from '@ethersproject/bytes';
 import lang from 'i18n-js';
-// <<<<<<< HEAD
-// import { isEmpty, toLower } from 'lodash';
-// import React, { Fragment, useCallback, useMemo } from 'react';
-// =======
 import { isEmpty, toLower } from 'lodash';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
-// >>>>>>> aa3a3bcdb0e0ce1f3d96800f79c3ccbdd88e23b0
 import { ActivityIndicator, Keyboard } from 'react-native';
 import { useNavigation } from '../../navigation/Navigation';
 import { useTheme } from '../../theme/ThemeContext';
