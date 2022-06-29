@@ -3,15 +3,7 @@ import { captureException } from '@sentry/react-native';
 import WalletConnect from '@walletconnect/client';
 import { parseWalletConnectUri } from '@walletconnect/utils';
 import lang from 'i18n-js';
-import {
-  clone,
-  forEach,
-  isEmpty,
-  mapValues,
-  omitBy,
-  pickBy,
-  values,
-} from 'lodash';
+import { clone, isEmpty, mapValues, omitBy, pickBy, values } from 'lodash';
 import { Alert, AppState, InteractionManager, Linking } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import Minimizer from 'react-native-minimizer';
@@ -651,9 +643,11 @@ export const walletConnectDisconnectAllByDappUrl = (
       )
     );
     await removeWalletConnectSessions(peerIds);
+
     if (killSession) {
-      forEach(matchingWalletConnectors, connector => connector?.killSession());
+      matchingWalletConnectors.forEach(connector => connector?.killSession());
     }
+
     dispatch({
       payload: omitBy(
         walletConnectors,
