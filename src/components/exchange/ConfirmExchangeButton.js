@@ -95,9 +95,10 @@ export default function ConfirmExchangeButton({
   } else if (!isSufficientBalance) {
     label = lang.t('button.confirm_exchange.insufficient_funds');
   } else if (isSufficientGas != null && !isSufficientGas) {
-    const nativeToken =
-      currentNetwork === NetworkTypes.polygon ? 'MATIC' : 'ETH';
-    label = lang.t('button.confirm_exchange.insufficient_gas', { nativeToken });
+    label =
+      currentNetwork === NetworkTypes.polygon
+        ? lang.t('button.confirm_exchange.insufficient_matic')
+        : lang.t('button.confirm_exchange.insufficient_eth');
   } else if (!isValidGas) {
     label = lang.t('button.confirm_exchange.invalid_fee');
   } else if (isSwapDetailsRoute) {
