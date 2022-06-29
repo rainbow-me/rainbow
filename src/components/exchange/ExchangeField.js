@@ -90,10 +90,11 @@ const ExchangeField = (
   );
   const handleFocus = useCallback(
     event => {
+      setValue(amount);
       setIsFocused(true);
       onFocus?.(event);
     },
-    [onFocus]
+    [amount, onFocus]
   );
 
   useEffect(() => {

@@ -54,10 +54,11 @@ const ExchangeNativeField = (
   const handleBlur = useCallback(() => setIsFocused(false), []);
   const handleFocus = useCallback(
     event => {
+      setValue(nativeAmount);
       setIsFocused(true);
       onFocus?.(event);
     },
-    [onFocus]
+    [nativeAmount, onFocus]
   );
   const { colors } = useTheme();
 
