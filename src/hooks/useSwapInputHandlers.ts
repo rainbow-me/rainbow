@@ -54,24 +54,7 @@ export default function useSwapInputHandlers() {
         );
 
         if (greaterThan(newAmountMinusFee, 0)) {
-          Alert({
-            buttons: [
-              {
-                style: 'cancel',
-                text: lang.t('expanded_state.swap.swap_max_alert.no_thanks'),
-              },
-              {
-                onPress: () => {
-                  dispatch(updateSwapInputAmount(newAmountMinusFee));
-                },
-                text: lang.t('expanded_state.swap.swap_max_alert.auto_adjust'),
-              },
-            ],
-            message: lang.t('expanded_state.swap.swap_max_alert.message', {
-              inputCurrencyAddress: inputCurrencyAddress.toUpperCase(),
-            }),
-            title: lang.t('expanded_state.swap.swap_max_alert.title'),
-          });
+          dispatch(updateSwapInputAmount(newAmountMinusFee));
         } else {
           Alert({
             message: lang.t(
