@@ -3,16 +3,7 @@ import { captureException } from '@sentry/react-native';
 import WalletConnect from '@walletconnect/client';
 import { parseWalletConnectUri } from '@walletconnect/utils';
 import lang from 'i18n-js';
-import {
-  clone,
-  forEach,
-  get,
-  isEmpty,
-  mapValues,
-  omitBy,
-  pickBy,
-  values,
-} from 'lodash';
+import { clone, isEmpty, mapValues, omitBy, pickBy, values } from 'lodash';
 import { Alert, AppState, InteractionManager, Linking } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import Minimizer from 'react-native-minimizer';
@@ -238,7 +229,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
         const { peerId, peerMeta, chainId } = payload.params[0];
 
         const imageUrl =
-          dappLogoOverride(peerMeta?.url) || get(peerMeta, 'icons[0]');
+          dappLogoOverride(peerMeta?.url) || peerMeta?.icons?.[0];
         const dappName = dappNameOverride(peerMeta?.url) || peerMeta?.name;
         const dappUrl = peerMeta?.url;
         const dappScheme = peerMeta?.scheme;
@@ -340,8 +331,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
       throw error;
     }
     const { clientId, peerId, peerMeta } = walletConnector;
-    const imageUrl =
-      dappLogoOverride(peerMeta?.url) || get(peerMeta, 'icons[0]');
+    const imageUrl = dappLogoOverride(peerMeta?.url) || peerMeta?.icons?.[0];
     const dappName = dappNameOverride(peerMeta?.url) || peerMeta?.name;
     const dappUrl = peerMeta?.url;
     const requestId = payload.id;
@@ -653,9 +643,11 @@ export const walletConnectDisconnectAllByDappUrl = (
       )
     );
     await removeWalletConnectSessions(peerIds);
+
     if (killSession) {
-      forEach(matchingWalletConnectors, connector => connector?.killSession());
+      matchingWalletConnectors.forEach(connector => connector?.killSession());
     }
+
     dispatch({
       payload: omitBy(
         walletConnectors,
