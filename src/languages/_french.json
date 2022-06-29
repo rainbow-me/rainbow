@@ -350,7 +350,8 @@
       },
       "price_impact": {
         "losing_prefix": "Losing :)",
-        "small_market": "Small Market :)"
+        "small_market": "Small Market :)",
+        "label": "Possible loss :)"
       },
       "source": {
         "rainbow": "Auto :)",
