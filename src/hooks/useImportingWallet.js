@@ -134,7 +134,9 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         try {
           const [address, avatar] = await Promise.all([
             web3Provider.resolveName(input),
-            !avatarUrl && profilesEnabled && fetchENSAvatar(input),
+            !avatarUrl &&
+              profilesEnabled &&
+              fetchENSAvatar(input, { swallowError: true }),
           ]);
           if (!address) {
             Alert.alert('This is not a valid ENS name');
@@ -181,7 +183,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           if (ens && ens !== input) {
             name = forceEmoji ? `${forceEmoji} ${ens}` : ens;
             if (!avatarUrl && profilesEnabled) {
-              const avatar = await fetchENSAvatar(name);
+              const avatar = await fetchENSAvatar(name, { swallowError: true });
               avatarUrl = avatar?.imageUrl;
             }
           }
@@ -205,7 +207,9 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             if (ens && ens !== input) {
               name = forceEmoji ? `${forceEmoji} ${ens}` : ens;
               if (!avatarUrl && profilesEnabled) {
-                const avatar = await fetchENSAvatar(name);
+                const avatar = await fetchENSAvatar(name, {
+                  swallowError: true,
+                });
                 avatarUrl = avatar?.imageUrl;
               }
             }

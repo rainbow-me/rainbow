@@ -43,7 +43,7 @@ export default function MoreButton({
 
   const isSelectedWallet = useMemo(() => {
     const visibleWallet = selectedWallet.addresses.find(
-      (wallet: { visible: boolean }) => wallet.visible === true
+      (wallet: { visible: boolean }) => wallet.visible
     );
 
     return visibleWallet.address.toLowerCase() === address?.toLowerCase();
