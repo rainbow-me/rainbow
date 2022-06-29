@@ -1,4 +1,3 @@
-import { get } from 'lodash';
 import React, { Fragment, useCallback } from 'react';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIconSize } from '../coin-icon';
@@ -32,7 +31,7 @@ const containerStyles = padding.object(
 );
 
 const BottomRow = ({ native }) => {
-  const percentChange = get(native, 'change');
+  const percentChange = native?.change;
   const isPositive = percentChange && percentChange.charAt(0) !== '-';
 
   const formatPercentageString = percentString =>
