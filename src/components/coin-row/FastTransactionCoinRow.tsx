@@ -43,13 +43,13 @@ const cx = StyleSheet.create({
 
 const BottomRow = React.memo(function BottomRow({
   description,
-  native,
+  nativeDisplay,
   status,
   type,
   theme,
 }: {
   description: string;
-  native: any;
+  nativeDisplay: any;
   status: keyof typeof TransactionStatusTypes;
   type: keyof typeof TransactionTypes;
   theme: ThemeContextProps;
@@ -75,7 +75,6 @@ const BottomRow = React.memo(function BottomRow({
   if (isIncomingSwap) balanceTextColor = colors.swapPurple;
   if (isOutgoingSwap) balanceTextColor = colors.dark;
 
-  const nativeDisplay = native?.display;
   const balanceText = nativeDisplay
     ? [isFailed || isSent ? '-' : null, nativeDisplay].filter(Boolean).join(' ')
     : '';
@@ -144,7 +143,7 @@ export default React.memo(function TransactionCoinRow({
           </View>
           <BottomRow
             description={item.description}
-            native={item.native}
+            nativeDisplay={item.native?.display}
             status={item.status}
             theme={theme}
             type={item.type}

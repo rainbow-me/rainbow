@@ -120,10 +120,7 @@ export default React.memo(function FastTransactionStatusBadge({
     statusColor = colors.swapPurple;
   }
 
-  const showIcon = useMemo(
-    () => status && Object.keys(StatusProps).includes(status),
-    [status]
-  );
+  const showIcon = useMemo(() => !!StatusProps[status], [status]);
 
   return (
     <View style={[cx.row, style]}>

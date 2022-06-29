@@ -288,6 +288,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
   };
 
   const statusColor = buildRgba(base.blueGreyDark, 0.7);
+  const balanceText = colors.alpha(colors.blueGreyDark, 0.5);
 
   if (darkMode) {
     base = {
@@ -365,6 +366,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
     assetIcon,
     avatarBackgrounds,
     avatarColor,
+    balanceText,
     brighten,
     getFallbackTextColor,
     getTextColorForBackground,
