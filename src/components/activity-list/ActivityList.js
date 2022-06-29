@@ -12,7 +12,7 @@ import ActivityListEmptyState from './ActivityListEmptyState';
 import ActivityListHeader from './ActivityListHeader';
 import styled from '@rainbow-me/styled-components';
 
-const cx = StyleSheet.create({
+const sx = StyleSheet.create({
   sectionHeader: {
     marginBottom: 17,
     marginTop: 17,
@@ -30,7 +30,7 @@ const keyExtractor = ({ hash, timestamp, transactionDisplayDetails }) =>
   (timestamp ? timestamp.ms : transactionDisplayDetails?.timestampInMs || 0);
 
 const renderSectionHeader = ({ section }) => (
-  <View style={cx.sectionHeader}>
+  <View style={sx.sectionHeader}>
     <ActivityListHeader {...section} />
   </View>
 );

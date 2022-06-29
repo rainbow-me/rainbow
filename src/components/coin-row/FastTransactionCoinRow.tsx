@@ -7,7 +7,7 @@ import { Text } from '@rainbow-me/design-system';
 import { TransactionStatusTypes, TransactionTypes } from '@rainbow-me/entities';
 import { ThemeContextProps } from '@rainbow-me/theme';
 
-const cx = StyleSheet.create({
+const sx = StyleSheet.create({
   balance: {
     flex: 1,
     flexDirection: 'row',
@@ -80,7 +80,7 @@ const BottomRow = React.memo(function BottomRow({
     : '';
 
   return (
-    <View style={cx.bottomRow}>
+    <View style={sx.bottomRow}>
       <Text color={{ custom: coinNameColor || colors.dark }} size="16px">
         {description}
       </Text>
@@ -114,8 +114,8 @@ export default React.memo(function TransactionCoinRow({
 
   return (
     <ButtonPressAnimation onPress={handleTransactionPress} scaleTo={0.96}>
-      <View style={cx.wholeRow}>
-        <View style={cx.icon}>
+      <View style={sx.wholeRow}>
+        <View style={sx.icon}>
           <FastCoinIcon
             address={mainnetAddress || item.address}
             assetType={item.assetType}
@@ -123,15 +123,15 @@ export default React.memo(function TransactionCoinRow({
             theme={theme}
           />
         </View>
-        <View style={cx.column}>
-          <View style={cx.topRow}>
+        <View style={sx.column}>
+          <View style={sx.topRow}>
             <FastTransactionStatusBadge
               colors={colors}
               pending={item.pending}
               status={item.status}
               title={item.title}
             />
-            <View style={cx.balance}>
+            <View style={sx.balance}>
               <Text
                 color={{ custom: colors.balanceText }}
                 numberOfLines={1}

@@ -11,7 +11,7 @@ import { removeRequest } from '@rainbow-me/redux/requests';
 import Routes from '@rainbow-me/routes';
 import { ThemeContextProps } from '@rainbow-me/theme';
 
-const cx = StyleSheet.create({
+const sx = StyleSheet.create({
   bottomRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -106,8 +106,8 @@ export default React.memo(function RequestCoinRow({ item, theme }: Props) {
       scaleTo={0.98}
       waitFor={buttonRef}
     >
-      <View style={cx.wholeRow}>
-        <View style={cx.icon}>
+      <View style={sx.wholeRow}>
+        <View style={sx.icon}>
           <FastRequestCoinIcon
             dappName={item.dappName}
             expirationColor={state.expirationColor}
@@ -116,8 +116,8 @@ export default React.memo(function RequestCoinRow({ item, theme }: Props) {
             theme={theme}
           />
         </View>
-        <View style={cx.column}>
-          <View style={cx.topRow}>
+        <View style={sx.column}>
+          <View style={sx.topRow}>
             <Text
               color={{ custom: state.expirationColor }}
               size="14px"
@@ -128,7 +128,7 @@ export default React.memo(function RequestCoinRow({ item, theme }: Props) {
               })}
             </Text>
           </View>
-          <View style={cx.bottomRow}>
+          <View style={sx.bottomRow}>
             <Text
               color={{ custom: state.expirationColor }}
               size="16px"

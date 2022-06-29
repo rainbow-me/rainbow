@@ -83,7 +83,7 @@ const StatusProps = {
   },
 };
 
-const cx = StyleSheet.create({
+const sx = StyleSheet.create({
   icon: {
     ...position.maxSizeAsObject(10),
   },
@@ -123,7 +123,7 @@ export default React.memo(function FastTransactionStatusBadge({
   const showIcon = useMemo(() => !!StatusProps[status], [status]);
 
   return (
-    <View style={[cx.row, style]}>
+    <View style={[sx.row, style]}>
       {pending && (
         <Spinner
           color={isSwapping ? colors.swapPurple : colors.appleBlue}
@@ -131,7 +131,7 @@ export default React.memo(function FastTransactionStatusBadge({
         />
       )}
       {showIcon && (
-        <Icon color={statusColor} style={cx.icon} {...StatusProps[status]} />
+        <Icon color={statusColor} style={sx.icon} {...StatusProps[status]} />
       )}
       <Text color={{ custom: statusColor }} size="14px" weight="semibold">
         {title}

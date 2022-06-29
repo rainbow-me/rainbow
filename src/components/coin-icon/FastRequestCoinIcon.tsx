@@ -7,7 +7,7 @@ import { ThemeContextProps } from '@rainbow-me/theme';
 
 const RequestCoinIconSize = 48;
 
-const cx = StyleSheet.create({
+const sx = StyleSheet.create({
   circularProgress: {
     overflow: 'visible',
   },
@@ -44,7 +44,7 @@ const RequestCoinIcon = ({
 
   return (
     <CircularProgress
-      childrenContainerStyle={cx.circularProgress}
+      childrenContainerStyle={sx.circularProgress}
       fill={percentElapsed}
       lineCap="round"
       prefill={percentElapsed}

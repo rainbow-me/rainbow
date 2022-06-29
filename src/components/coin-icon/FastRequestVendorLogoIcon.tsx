@@ -16,7 +16,7 @@ const RVLIShadows = (colors: ThemeContextProps['colors']) => ({
   none: [[0, 0, 0, colors.transparent, 0]],
 });
 
-const cx = StyleSheet.create({
+const sx = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -93,7 +93,7 @@ export default React.memo(function RequestVendorLogoIcon({
       >
         <View
           style={[
-            cx.container,
+            sx.container,
             {
               backgroundColor: bgColor,
               ...position.sizeAsObject(size),
@@ -104,7 +104,7 @@ export default React.memo(function RequestVendorLogoIcon({
             <ImgixImage
               onError={onError}
               source={imageSource}
-              style={cx.imgix}
+              style={sx.imgix}
             />
           ) : (
             <Text
