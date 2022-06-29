@@ -682,7 +682,7 @@ export default async function runMigrations() {
 
   /*
    *************** Migration v18 ******************
-   * Removes old MMKV cache
+   * Removes old MMKV cache for Imgix images
    */
   const v18 = async () => {
     const imgixMMKV = new MMKV({
