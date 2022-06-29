@@ -51,7 +51,11 @@ import {
 } from '@rainbow-me/hooks';
 import { loadWallet } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
-import { executeRap, getSwapRapEstimationByType } from '@rainbow-me/raps';
+import {
+  executeRap,
+  getSwapRapEstimationByType,
+  getSwapRapTypeByExchangeType,
+} from '@rainbow-me/raps';
 import { multicallClearState } from '@rainbow-me/redux/multicall';
 import { swapClearState, updateSwapTypeDetails } from '@rainbow-me/redux/swap';
 import { ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
@@ -259,7 +263,12 @@ export default function ExchangeModal({
         outputAmount,
         tradeDetails,
       };
-      const gasLimit = await getSwapRapEstimationByType(type, swapParameters);
+
+      const rapType = getSwapRapTypeByExchangeType(type);
+      const gasLimit = await getSwapRapEstimationByType(
+        rapType,
+        swapParameters
+      );
       if (gasLimit) {
         updateTxFee(gasLimit);
       }
@@ -420,7 +429,8 @@ export default function ExchangeModal({
         outputAmount,
         tradeDetails,
       };
-      await executeRap(wallet, type, swapParameters, callback);
+      const rapType = getSwapRapTypeByExchangeType(type);
+      await executeRap(wallet, rapType, swapParameters, callback);
       logger.log('[exchange - handle submit] executed rap!');
       analytics.track(`Completed ${type}`, {
         amountInUSD,

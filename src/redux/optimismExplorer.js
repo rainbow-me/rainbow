@@ -1,6 +1,6 @@
 import { Contract } from '@ethersproject/contracts';
 import { captureException } from '@sentry/react-native';
-import { isEmpty, keyBy, map, mapValues, pickBy } from 'lodash';
+import { isEmpty, keyBy, mapValues, pickBy } from 'lodash';
 import isEqual from 'react-fast-compare';
 import { addressAssetsReceived, fetchAssetPricesWithCoingecko } from './data';
 // eslint-disable-next-line import/no-cycle
@@ -71,9 +71,9 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
       asset => `${asset.asset.asset_code}_${optimismNetwork}`
     );
 
-    const tokenAddresses = map(assets, ({ asset: { asset_code } }) =>
-      asset_code.toLowerCase()
-    );
+    const tokenAddresses = Object.values(
+      assets
+    ).map(({ asset: { asset_code } }) => asset_code.toLowerCase());
 
     const balances = await fetchAssetBalances(
       tokenAddresses,
@@ -100,7 +100,9 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
       dispatch(emitAssetRequest(tokenAddresses));
       dispatch(emitChartsRequest(tokenAddresses));
 
-      const coingeckoIds = map(assetsWithBalance, 'asset.coingecko_id');
+      const coingeckoIds = Object.values(assetsWithBalance).map(
+        ({ asset }) => asset.coingecko_id
+      );
       const prices = await fetchAssetPricesWithCoingecko(
         coingeckoIds,
         formattedNativeCurrency
