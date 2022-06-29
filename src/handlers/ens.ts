@@ -104,6 +104,7 @@ const buildEnsToken = ({
     familyName: 'ENS',
     id: tokenId,
     image_original_url: imageUrl,
+    image_thumbnail_url: lowResUrl,
     image_url: imageUrl,
     isSendable: true,
     last_sale: null,
