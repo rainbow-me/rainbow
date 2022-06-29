@@ -1,6 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException, captureMessage } from '@sentry/react-native';
-import { map, toLower } from 'lodash';
+import toLower from 'lodash/toLower';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { dataAddNewTransaction } from './data';
@@ -200,7 +200,7 @@ export const addCashUpdatePurchases = (purchases: RainbowTransaction[]) => (
   const { purchaseTransactions } = getState().addCash;
   const { accountAddress, network } = getState().settings;
 
-  const updatedPurchases = map(purchaseTransactions, txn => {
+  const updatedPurchases = purchaseTransactions.map(txn => {
     if (txn.status === TransactionStatus.purchasing) {
       const updatedPurchase = purchases.find(
         purchase =>

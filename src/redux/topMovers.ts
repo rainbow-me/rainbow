@@ -1,4 +1,3 @@
-import { map } from 'lodash';
 import {
   getTopMovers,
   saveTopGainers,
@@ -97,12 +96,13 @@ export const updateTopMovers = (message: ZerionAssetInfoResponse) => (
 ) => {
   const { nativeCurrency } = getState().settings;
   const orderByDirection = message.meta.order_by['relative_changes.1d'];
-  const assets = map(message.payload.info, ({ asset }) => {
+  const assets = message?.payload?.info?.map(({ asset }) => {
     return parseAsset(asset);
   });
-  const info = parseAssetsNative(assets, nativeCurrency);
 
-  const assetCodes = map(info, asset => asset.address);
+  const info: TopMover[] = parseAssetsNative(assets, nativeCurrency);
+
+  const assetCodes = info.map(asset => asset.address);
   dispatch(emitChartsRequest(assetCodes));
 
   if (orderByDirection === 'asc') {

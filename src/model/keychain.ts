@@ -1,5 +1,5 @@
 import { captureException, captureMessage } from '@sentry/react-native';
-import { forEach, isNil } from 'lodash';
+import isNil from 'lodash/isNil';
 import DeviceInfo from 'react-native-device-info';
 // @ts-expect-error
 import { IS_TESTING } from 'react-native-dotenv';
@@ -183,7 +183,7 @@ export async function loadAllKeys(): Promise<null | UserCredentials[]> {
 export async function getAllKeysAnonymized(): Promise<null | AnonymousKeyData> {
   const data: AnonymousKeyData = {};
   const results = await loadAllKeys();
-  forEach(results, result => {
+  results?.forEach(result => {
     data[result?.username] = {
       length: result?.password?.length,
       nil: isNil(result?.password),

@@ -2,7 +2,7 @@ import { AddressZero } from '@ethersproject/constants';
 import { useRoute } from '@react-navigation/native';
 import { toChecksumAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
-import { capitalize, get, isEmpty, toLower } from 'lodash';
+import { capitalize, isEmpty, toLower } from 'lodash';
 import React, {
   Fragment,
   useCallback,
@@ -324,7 +324,7 @@ export default function SendConfirmationSheet() {
   }, [isSendingToUserAccount, network, toAddress, transactions]);
 
   const contact = useMemo(() => {
-    return get(contacts, `${[toLower(toAddress)]}`);
+    return contacts?.[toAddress?.toLowerCase()];
   }, [contacts, toAddress]);
 
   const uniqueTokenType = getUniqueTokenType(asset);

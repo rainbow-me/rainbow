@@ -10,16 +10,24 @@ const STALE_TIME = 10000;
 
 export async function fetchENSAvatar(
   name: string,
-  { cacheFirst }: { cacheFirst?: boolean } = {}
+  {
+    cacheFirst,
+    swallowError,
+  }: { cacheFirst?: boolean; swallowError?: boolean } = {}
 ) {
-  const cachedAvatar = await getENSData('avatar', name);
-  if (cachedAvatar) {
-    queryClient.setQueryData(ensAvatarQueryKey(name), cachedAvatar);
-    if (cacheFirst) return cachedAvatar as { imageUrl: string };
+  try {
+    const cachedAvatar = await getENSData('avatar', name);
+    if (cachedAvatar) {
+      queryClient.setQueryData(ensAvatarQueryKey(name), cachedAvatar);
+      if (cacheFirst) return cachedAvatar as { imageUrl: string };
+    }
+    const avatar = await fetchImage('avatar', name);
+    saveENSData('avatar', name, avatar);
+    return avatar;
+  } catch (err) {
+    if (swallowError) return undefined;
+    throw err;
   }
-  const avatar = await fetchImage('avatar', name);
-  saveENSData('avatar', name, avatar);
-  return avatar;
 }
 
 export async function prefetchENSAvatar(
