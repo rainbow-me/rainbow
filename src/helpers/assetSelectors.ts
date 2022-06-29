@@ -29,6 +29,7 @@ const sortAssetsByNativeAmount = (
         const relativePriceChange =
           // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
           assetPricesFromUniswap[asset.address]?.relativePriceChange;
+
         if (assetPrice) {
           return {
             // @ts-expect-error ts-migrate(2698) FIXME: Spread types may only be created from object types... Remove this comment to see the full error message

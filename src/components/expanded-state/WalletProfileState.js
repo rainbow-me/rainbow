@@ -1,11 +1,11 @@
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { InteractionManager } from 'react-native';
 import useUpdateEmoji from '../../../src/hooks/useUpdateEmoji';
 import ProfileModal from './profile/ProfileModal';
 import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
 import { getWalletProfileMeta } from '@rainbow-me/helpers/walletProfileHandler';
+import { setCallbackAfterObtainingSeedsFromKeychainOrError } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
@@ -52,20 +52,25 @@ export default function WalletProfileState({
 
   const handleSubmit = useCallback(() => {
     analytics.track('Tapped "Submit" on Wallet Profile modal');
-    InteractionManager.runAfterInteractions(() => {
-      onCloseModal({
-        color:
-          typeof nameColor === 'string'
-            ? profileUtils.colorHexToIndex(nameColor)
-            : nameColor,
-        image: profileImage,
-        name: nameEmoji ? `${nameEmoji} ${value}` : value,
-      });
+    onCloseModal({
+      color:
+        typeof nameColor === 'string'
+          ? profileUtils.colorHexToIndex(nameColor)
+          : nameColor,
+      image: profileImage,
+      name: nameEmoji ? `${nameEmoji} ${value}` : value,
+    });
+    const callback = () => {
       goBack();
       if (actionType === 'Create' && isNewProfile) {
         navigate(Routes.CHANGE_WALLET_SHEET);
       }
-    });
+    };
+    if (ios || actionType !== 'Create') {
+      callback();
+    } else {
+      setCallbackAfterObtainingSeedsFromKeychainOrError(callback);
+    }
   }, [
     actionType,
     nameColor,
