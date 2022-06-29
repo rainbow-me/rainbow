@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { compact, flattenDeep, get, groupBy, map, property } from 'lodash';
+import { compact, flattenDeep, groupBy, property } from 'lodash';
 import React from 'react';
 import { LayoutAnimation } from 'react-native';
 import { createSelector } from 'reselect';
@@ -79,7 +79,7 @@ const uniswapRenderItem = (item: any) => (
 
 const filterWalletSections = (sections: any) =>
   sections.filter(({ data, header }: any) =>
-    data ? get(header, 'totalItems') : true
+    data ? header?.totalItems : true
   );
 
 const buildWalletSections = (
@@ -166,9 +166,9 @@ const withBriefUniswapSection = (
   return [];
 };
 
-const withBalanceSavingsSection = (savings: any, network: any) => {
+const withBalanceSavingsSection = (savings: any[], network: any) => {
   let totalUnderlyingNativeValue = '0';
-  const savingsAssets = map(savings, asset => {
+  const savingsAssets = savings.map(asset => {
     const {
       lifetimeSupplyInterestAccrued,
       underlyingBalanceNativeValue,
@@ -305,7 +305,7 @@ const withBalanceSection = (
 
   const totalBalanceWithSavingsValue = add(
     totalBalancesValue,
-    get(savingsSection, 'totalValue', 0)
+    savingsSection?.totalValue ?? 0
   );
   const totalBalanceWithAllSectionValues = add(
     totalBalanceWithSavingsValue,
@@ -441,9 +441,9 @@ const sortImagesToPreload = (images: any) => {
   const filtered = compact(flattenDeep(images));
   const grouped = groupBy(filtered, property('priority'));
   return [
-    ...get(grouped, 'high', []),
-    ...get(grouped, 'normal', []),
-    ...get(grouped, 'low', []),
+    ...(grouped?.high ?? []),
+    ...(grouped?.normal ?? []),
+    ...(grouped?.low ?? []),
   ];
 };
 
