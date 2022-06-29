@@ -1,6 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
-import { endsWith, forEach } from 'lodash';
+import { endsWith } from 'lodash';
 import {
   Options,
   requestSharedWebCredentials,
@@ -115,26 +115,29 @@ export async function addWalletToCloudBackup(
   return encryptAndSaveDataToCloud(backup, password, filename);
 }
 
-export function findLatestBackUp(wallets: AllRainbowWallets): string | null {
+export function findLatestBackUp(
+  wallets: AllRainbowWallets | null
+): string | null {
   let latestBackup: string | null = null;
   let filename: string | null = null;
 
-  forEach(wallets, wallet => {
-    // Check if there's a wallet backed up
-    if (
-      wallet.backedUp &&
-      wallet.backupDate &&
-      wallet.backupFile &&
-      wallet.backupType === WalletBackupTypes.cloud
-    ) {
-      // If there is one, let's grab the latest backup
-      if (!latestBackup || wallet.backupDate > latestBackup) {
-        filename = wallet.backupFile;
-        latestBackup = wallet.backupDate;
+  if (wallets) {
+    Object.values(wallets).forEach(wallet => {
+      // Check if there's a wallet backed up
+      if (
+        wallet.backedUp &&
+        wallet.backupDate &&
+        wallet.backupFile &&
+        wallet.backupType === WalletBackupTypes.cloud
+      ) {
+        // If there is one, let's grab the latest backup
+        if (!latestBackup || wallet.backupDate > latestBackup) {
+          filename = wallet.backupFile;
+          latestBackup = wallet.backupDate;
+        }
       }
-    }
-  });
-
+    });
+  }
   return filename;
 }
 
@@ -167,7 +170,7 @@ export async function restoreCloudBackup(
       // Restore only wallets that were backed up in cloud
       // or wallets that are read-only
       const walletsToRestore: AllRainbowWallets = {};
-      forEach(userData.wallets, wallet => {
+      Object.values(userData?.wallets ?? {}).forEach(wallet => {
         if (
           (wallet.backedUp &&
             wallet.backupDate &&

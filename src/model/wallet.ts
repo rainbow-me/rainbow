@@ -17,7 +17,7 @@ import {
   default as LibWallet,
 } from 'ethereumjs-wallet';
 import lang from 'i18n-js';
-import { findKey, forEach, isEmpty } from 'lodash';
+import { findKey, isEmpty } from 'lodash';
 import { Alert } from 'react-native';
 import { getSupportedBiometryType } from 'react-native-keychain';
 import { lightModeThemeColors } from '../styles/colors';
@@ -748,7 +748,8 @@ export const createWallet = async (
 
         let discoveredAccount: RainbowAccount | undefined;
         let discoveredWalletId: RainbowWallet['id'] | undefined;
-        forEach(allWallets, someWallet => {
+
+        Object.values(allWallets).forEach(someWallet => {
           const existingAccount = someWallet.addresses.find(
             account =>
               toChecksumAddress(account.address) ===
