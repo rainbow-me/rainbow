@@ -365,6 +365,19 @@ const fetchTxWithAlwaysCache = async (address: EthereumAddress) => {
   return txTime;
 };
 
+export const fetchContractABI = async (address: EthereumAddress) => {
+  const url = `https://api.etherscan.io/api?module=contract&action=getabi&address=${address}&apikey=${ETHERSCAN_API_KEY}`;
+  const cachedAbi = await AsyncStorage.getItem(`abi-${address}`);
+  if (cachedAbi) {
+    return cachedAbi;
+  }
+  const response = await fetch(url);
+  const parsedResponse = await response.json();
+  const abi = parsedResponse.result;
+  AsyncStorage.setItem(`abi-${address}`, abi);
+  return abi;
+};
+
 export const daysFromTheFirstTx = (address: EthereumAddress) => {
   return new Promise(async resolve => {
     try {

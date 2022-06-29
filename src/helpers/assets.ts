@@ -2,7 +2,6 @@ import {
   chunk,
   compact,
   concat,
-  forEach,
   groupBy,
   includes,
   isEmpty,
@@ -30,7 +29,7 @@ export const buildAssetUniqueIdentifier = (item: any) => {
 };
 
 const addEthPlaceholder = (
-  assets: any,
+  assets: any[],
   includePlaceholder: any,
   pinnedCoins: any,
   nativeCurrency: any,
@@ -118,7 +117,7 @@ export const buildCoinsList = (
   );
 
   // separate into standard, pinned, small balances, hidden assets
-  forEach(assets, asset => {
+  assets?.forEach(asset => {
     if (!!hiddenCoins && hiddenCoins[asset.uniqueId]) {
       hiddenAssets.push({
         isCoin: true,

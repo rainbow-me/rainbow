@@ -1,5 +1,5 @@
 import { Contract } from '@ethersproject/contracts';
-import { forEach, isEmpty, keys, values } from 'lodash';
+import { isEmpty, keys } from 'lodash';
 import { useCallback } from 'react';
 import { useQuery } from 'react-query';
 import useAccountSettings from './useAccountSettings';
@@ -20,12 +20,11 @@ const useWalletBalances = (wallets: any) => {
   const { network } = useAccountSettings();
 
   const fetchBalances = useCallback(async () => {
-    const walletBalances = {};
+    const walletBalances: { [address: string]: string } = {};
 
     // Get list of addresses to get balances for
-    forEach(values(wallets), wallet => {
-      forEach(wallet.addresses, account => {
-        // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+    Object.values(wallets).forEach((wallet: any) => {
+      wallet.addresses.forEach((account: any) => {
         walletBalances[account.address] = '0.00';
       });
     });
@@ -43,10 +42,9 @@ const useWalletBalances = (wallets: any) => {
         [ETH_ADDRESS]
       );
 
-      forEach(keys(walletBalances), (address, index) => {
+      Object.keys(walletBalances).forEach((address, index) => {
         const amountInETH = fromWei(balances[index].toString());
         const formattedBalance = handleSignificantDecimals(amountInETH, 4);
-        // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
         walletBalances[address] = formattedBalance;
       });
       saveWalletBalances(walletBalances);
