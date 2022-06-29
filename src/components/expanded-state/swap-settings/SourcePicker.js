@@ -85,10 +85,10 @@ export default function SourcePicker({ onSelect, currentSource }) {
       <Column width="content">
         <Box
           as={ButtonPressAnimation}
-          margin="-12px"
+          {...(ios ? { marginVertical: '-12px' } : {})}
           // @ts-expect-error
           onPress={openExplainer}
-          padding="12px"
+          paddingVertical="12px"
         >
           <Text size="16px" weight="bold">
             {lang.t('exchange.source_picker')}

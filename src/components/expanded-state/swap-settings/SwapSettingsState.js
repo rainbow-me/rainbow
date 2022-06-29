@@ -146,10 +146,10 @@ export default function SwapSettingsState({ asset }) {
                 <Column width="content">
                   <Box
                     as={ButtonPressAnimation}
-                    margin="-12px"
+                    {...(ios ? { marginVertical: '-12px' } : {})}
                     // @ts-expect-error
                     onPress={openExplainer}
-                    padding="12px"
+                    paddingVertical="12px"
                   >
                     <Text color="primary" size="16px" weight="bold">
                       {lang.t('exchange.use_flashbots')}
