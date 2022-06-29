@@ -423,6 +423,7 @@ export const explainers = (params, colors) => ({
     }),
   },
   flashbots: {
+    extraHeight: android ? 20 : 0,
     emoji: '🤖',
     stillCurious: (
       <Text {...getBodyTextPropsWithColor(colors)}>
@@ -448,6 +449,7 @@ export const explainers = (params, colors) => ({
     title: lang.t('explain.flashbots.title'),
   },
   routeSwaps: {
+    extraHeight: android ? 20 : 0,
     emoji: '🔀',
     stillCurious: (
       <Text {...getBodyTextPropsWithColor(colors)}>
