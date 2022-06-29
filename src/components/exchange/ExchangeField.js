@@ -79,7 +79,6 @@ const ExchangeField = (
 
   const [value, setValue] = useState(amount);
   const [debouncedValue] = useDebounce(value, 300);
-
   useEffect(() => {
     setAmount(debouncedValue);
   }, [debouncedValue, setAmount]);

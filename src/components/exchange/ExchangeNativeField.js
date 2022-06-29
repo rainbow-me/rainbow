@@ -75,8 +75,6 @@ const ExchangeNativeField = (
     return colors.alpha(color, opacity);
   }, [colors, isFocused, nativeAmount]);
 
-  const isInputFocused = ref?.current?.isFocused();
-
   return (
     <TouchableWithoutFeedback onPress={handleFocusNativeField}>
       <Row align="center" flex={1} height={height}>
@@ -95,7 +93,7 @@ const ExchangeNativeField = (
           ref={ref}
           selectionColor={colorForAsset}
           testID={testID}
-          value={isInputFocused ? value : nativeAmount}
+          value={isFocused ? value : nativeAmount}
         />
       </Row>
     </TouchableWithoutFeedback>
