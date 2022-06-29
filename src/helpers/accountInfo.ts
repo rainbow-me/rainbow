@@ -1,4 +1,3 @@
-import { get } from 'lodash';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
@@ -24,7 +23,7 @@ export function getAccountProfileInfo(
     return {};
   }
 
-  const accountENS = get(walletNames, `${accountAddress}`);
+  const accountENS = walletNames?.[accountAddress];
 
   const selectedAccount = selectedWallet.addresses.find(
     (account: any) => account.address === accountAddress
