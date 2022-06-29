@@ -264,7 +264,7 @@ export const explainers = (params, colors) => ({
     buttonColor: colors?.blueGreyDark60,
     secondaryButtonColor: colors?.alpha(colors?.appleBlue, 0.04),
     secondaryButtonTextColor: colors?.appleBlue,
-    secondaryButtonText: lang.t('explain.unverified.go_back'),
+    secondaryButtonText: lang.t('button.go_back_lowercase'),
     title: lang.t('explain.unverified.title', {
       symbol: params?.asset?.symbol,
     }),
@@ -434,9 +434,37 @@ export const explainers = (params, colors) => ({
     ),
   },
   obtainL2Assets: {
+    extraHeight: 40,
     buttonText: lang.t('explain.go_to_hop_with_icon.text'),
-    buttonColor: colors?.networkColors[params?.network],
-    secondaryButtonText: lang.t('explain.learn_more'),
+    buttonColor: colors?.blueGreyDark60,
+    secondaryButtonColor: colors?.alpha(colors?.appleBlue, 0.04),
+    secondaryButtonTextColor: colors?.appleBlue,
+    secondaryButtonText: lang.t('button.go_back_lowercase'),
+    stillCurious: (
+      <Text {...getBodyTextPropsWithColor(colors)}>
+        {lang.t('explain.obtain_l2_asset.fragment1', {
+          networkName: params?.networkName,
+          tokenName: params?.assetName,
+        })}
+        <Text
+          color={colors?.appleBlue}
+          lineHeight="loose"
+          onPress={() =>
+            Linking.openURL(
+              'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks'
+            )
+          }
+          size="large"
+          suppressHighlighting
+          weight="semibold"
+        >
+          {lang.t('explain.obtain_l2_asset.fragment2', {
+            networkName: params?.networkName,
+          })}
+        </Text>
+        {lang.t('explain.obtain_l2_asset.fragment3')}
+      </Text>
+    ),
     logo: (
       <ChainBadge
         assetType={params?.network}
@@ -445,12 +473,6 @@ export const explainers = (params, colors) => ({
         size="large"
       />
     ),
-    readMoreLink:
-      'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
-    text: lang.t('explain.obtain_l2_asset.text', {
-      tokenName: params?.assetName,
-      networkName: params?.networkName,
-    }),
     title: lang.t('explain.obtain_l2_asset.title', {
       networkName: params?.networkName,
     }),
@@ -576,11 +598,11 @@ const ExplainSheet = () => {
     ExplainSheetHeight + (explainSheetConfig?.extraHeight || 0);
 
   const buttons = useMemo(() => {
-    const missingL2Assets = type === 'obtainL2Assets';
+    const reverseButtons = type === 'obtainL2Assets' || type === 'unverified';
     const secondaryButton = explainSheetConfig?.secondaryButtonText && (
       <Column
         height={60}
-        style={android && missingL2Assets && { marginTop: 16 }}
+        style={android && reverseButtons && { marginTop: 16 }}
       >
         <SheetActionButton
           color={
@@ -594,10 +616,7 @@ const ExplainSheet = () => {
           onPress={explainSheetConfig?.readMoreLink ? handleReadMore : goBack}
           size="big"
           textColor={
-            missingL2Assets
-              ? 'primary'
-              : explainSheetConfig.secondaryButtonTextColor ??
-                colors.blueGreyDark60
+            explainSheetConfig.secondaryButtonTextColor ?? colors.blueGreyDark60
           }
           weight="heavy"
         />
@@ -618,7 +637,7 @@ const ExplainSheet = () => {
       />
     );
     const buttonArray = [secondaryButton, accentCta];
-    if (type === 'obtainL2Assets' || type === 'unverified') {
+    if (reverseButtons) {
       buttonArray.reverse();
     }
     return buttonArray;
