@@ -5,7 +5,7 @@ import React, { useMemo } from 'react';
 import { darkModeThemeColors } from '../../styles/colors';
 import { HoldToAuthorizeButton } from '../buttons';
 import { Box, Row, Rows } from '@rainbow-me/design-system';
-import { ExchangeModalTypes } from '@rainbow-me/helpers';
+import { ExchangeModalTypes, NetworkTypes } from '@rainbow-me/helpers';
 import {
   useColorForAsset,
   useGas,
@@ -18,6 +18,7 @@ import { lightModeThemeColors } from '@rainbow-me/styles';
 import { useTheme } from '@rainbow-me/theme';
 
 export default function ConfirmExchangeButton({
+  currentNetwork,
   disabled,
   loading,
   inputAmount,
@@ -94,7 +95,22 @@ export default function ConfirmExchangeButton({
   } else if (!isSufficientBalance) {
     label = lang.t('button.confirm_exchange.insufficient_funds');
   } else if (isSufficientGas != null && !isSufficientGas) {
-    label = lang.t('button.confirm_exchange.insufficient_eth');
+    let nativeToken = 'gas';
+    switch (currentNetwork) {
+      case NetworkTypes.arbitrum:
+      case NetworkTypes.mainnet:
+        nativeToken = 'ETH';
+        break;
+      case NetworkTypes.polygon:
+        nativeToken = 'MATIC';
+        break;
+      case NetworkTypes.optimism:
+        nativeToken = 'OP';
+        break;
+      default:
+        break;
+    }
+    label = lang.t('button.confirm_exchange.insufficient_gas', { nativeToken });
   } else if (!isValidGas) {
     label = lang.t('button.confirm_exchange.invalid_fee');
   } else if (isSwapDetailsRoute) {

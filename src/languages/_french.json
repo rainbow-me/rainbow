@@ -188,7 +188,7 @@
         "deposit": "Tenir pour Déposer",
         "enter_amount": "Entrez un Montant",
         "fetching_quote": "Fetching Quote :)",
-        "insufficient_eth": "ETH Insuffisants",
+        "insufficient_gas": "%{nativeToken} Insuffisants",
         "insufficient_funds": "Fonds Insuffisants",
         "insufficient_liquidity": "Insufficient Liquidity :)",
         "insufficient_token": "Insufficient %{tokenName} :)",

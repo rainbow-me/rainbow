@@ -189,7 +189,7 @@
         "deposit": "Hold to Deposit",
         "enter_amount": "Enter an Amount",
         "fetching_quote": "Fetching Quote",
-        "insufficient_eth": "Insufficient ETH",
+        "insufficient_gas": "Insufficient %{nativeToken}",
         "insufficient_funds": "Insufficient Funds",
         "insufficient_liquidity": "Insufficient Liquidity",
         "insufficient_token": "Insufficient %{tokenName}",
@@ -621,7 +621,7 @@
       },
       "flashbots": {
         "text": "Flashbots protects your transactions from frontrunning and sandwich attacks which might result in you getting a worse price or your transaction failing.",
-        "title": "Flashbots", 
+        "title": "Flashbots",
         "still_curious": {
           "fragment1": "Still Curious? ",
           "fragment2": "Read more",
