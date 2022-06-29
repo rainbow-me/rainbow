@@ -2,6 +2,7 @@ import lang from 'i18n-js';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Alert } from '../components/alerts';
+import { isNativeAsset } from '@rainbow-me/handlers/assets';
 import { ExchangeModalTypes } from '@rainbow-me/helpers';
 import {
   greaterThan,
@@ -16,7 +17,6 @@ import {
   updateSwapNativeAmount,
   updateSwapOutputAmount,
 } from '@rainbow-me/redux/swap';
-import { ETH_ADDRESS } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 export default function useSwapInputHandlers() {
@@ -36,13 +36,20 @@ export default function useSwapInputHandlers() {
   const updateMaxInputAmount = useCallback(() => {
     const inputCurrencyAddress = inputCurrency?.address;
     const inputCurrencyUniqueId = inputCurrency?.uniqueId;
+    const inputCurrencyNetwork = ethereumUtils.getNetworkFromType(
+      inputCurrency?.type
+    );
+
     if (type === ExchangeModalTypes.withdrawal) {
       dispatch(updateSwapInputAmount(supplyBalanceUnderlying, true));
     } else {
       const accountAsset = ethereumUtils.getAccountAsset(inputCurrencyUniqueId);
       const oldAmount = accountAsset?.balance?.amount ?? '0';
       let newAmount = oldAmount;
-      if (inputCurrencyAddress === ETH_ADDRESS && accountAsset) {
+      if (
+        isNativeAsset(inputCurrencyAddress, inputCurrencyNetwork) &&
+        accountAsset
+      ) {
         newAmount = toFixedDecimals(
           ethereumUtils.getBalanceAmount(selectedGasFee, accountAsset),
           6
@@ -74,6 +81,7 @@ export default function useSwapInputHandlers() {
   }, [
     dispatch,
     inputCurrency?.address,
+    inputCurrency?.type,
     inputCurrency?.uniqueId,
     selectedGasFee,
     supplyBalanceUnderlying,
