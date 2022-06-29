@@ -42,6 +42,7 @@ export default function ExchangeDetailsRow({
   isHighPriceImpact,
   onFlipCurrencies,
   onPressSettings,
+  onPressImpactWarning,
   priceImpactColor,
   priceImpactNativeAmount,
   priceImpactPercentDisplay,
@@ -107,7 +108,7 @@ export default function ExchangeDetailsRow({
     <Container {...props}>
       <PriceImpactWarning
         isHighPriceImpact={isHighPriceImpact}
-        onPress={onPressSettings}
+        onPress={onPressImpactWarning}
         pointerEvents={isHighPriceImpact ? 'auto' : 'none'}
         priceImpactColor={priceImpactColor}
         priceImpactNativeAmount={priceImpactNativeAmount}
