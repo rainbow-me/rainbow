@@ -1,6 +1,5 @@
 import { times } from 'lodash';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Transition, Transitioning } from 'react-native-reanimated';
+import React, { useCallback, useEffect, useState } from 'react';
 import TokenFamilyHeader, {
   TokenFamilyHeaderAnimationDuration,
 } from './TokenFamilyHeader';
@@ -9,22 +8,13 @@ import styled from '@rainbow-me/styled-components';
 
 export const TokenFamilyWrapPaddingTop = 6;
 
-const transition = (
-  <Transition.In
-    durationMs={75}
-    interpolation="easeIn"
-    propagation="top"
-    type="fade"
-  />
-);
-
 const Container = styled.View({
   backgroundColor: ({ theme: { colors } }) => colors.white,
   overflow: 'hidden',
   paddingTop: ({ isFirst }) => (isFirst ? TokenFamilyWrapPaddingTop : 0),
 });
 
-const Content = styled(Transitioning.View).attrs({ transition })({
+const Content = styled.View({
   paddingTop: ({ areChildrenVisible }) =>
     areChildrenVisible ? TokenFamilyWrapPaddingTop : 0,
 });
@@ -42,12 +32,10 @@ export default function TokenFamilyWrap({
 }) {
   const [areChildrenVisible, setAreChildrenVisible] = useState(false);
   const [startTimeout, stopTimeout] = useTimeout();
-  const transitionRef = useRef();
 
   const showChildren = useCallback(() => {
     if (!areChildrenVisible) {
       setAreChildrenVisible(true);
-      transitionRef.current?.animateNextTransition();
     }
   }, [areChildrenVisible]);
 
@@ -71,7 +59,7 @@ export default function TokenFamilyWrap({
           title={title}
         />
       ) : null}
-      <Content areChildrenVisible={areChildrenVisible} ref={transitionRef}>
+      <Content areChildrenVisible={areChildrenVisible}>
         {areChildrenVisible ? times(item.length, renderItem) : null}
       </Content>
     </Container>
