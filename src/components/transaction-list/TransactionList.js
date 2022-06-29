@@ -14,7 +14,7 @@ import {
   getHumanReadableDate,
   hasAddableContact,
 } from '@rainbow-me/helpers/transactions';
-import { toTitleCase } from '@rainbow-me/helpers/utilities';
+import { toStartCaseStr } from '@rainbow-me/helpers/utilities';
 import { isValidDomainFormat } from '@rainbow-me/helpers/validators';
 import {
   useAccountProfile,
@@ -168,7 +168,9 @@ export default function TransactionList({
         canBeResubmitted && status !== TransactionStatusTypes.cancelling;
 
       const blockExplorerAction = lang.t('wallet.action.view_on', {
-        blockExplorerName: toTitleCase(ethereumUtils.getBlockExplorer(network)),
+        blockExplorerName: toStartCaseStr(
+          ethereumUtils.getBlockExplorer(network)
+        ),
       });
 
       if (hash) {

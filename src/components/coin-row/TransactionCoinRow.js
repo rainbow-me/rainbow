@@ -18,7 +18,7 @@ import {
   getHumanReadableDate,
   hasAddableContact,
 } from '@rainbow-me/helpers/transactions';
-import { toTitleCase } from '@rainbow-me/helpers/utilities';
+import { toStartCaseStr } from '@rainbow-me/helpers/utilities';
 import { isValidDomainFormat } from '@rainbow-me/helpers/validators';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
@@ -125,7 +125,9 @@ export default function TransactionCoinRow({ item, ...props }) {
     }
 
     const blockExplorerAction = lang.t('exchange.coin_row.view_on', {
-      blockExplorerName: toTitleCase(ethereumUtils.getBlockExplorer(network)),
+      blockExplorerName: toStartCaseStr(
+        ethereumUtils.getBlockExplorer(network)
+      ),
     });
     if (hash) {
       let buttons = [

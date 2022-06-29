@@ -20,7 +20,7 @@ import {
 } from '@rainbow-me/design-system';
 import { UniqueAsset } from '@rainbow-me/entities';
 import { Network } from '@rainbow-me/helpers';
-import { toTitleCase } from '@rainbow-me/helpers/utilities';
+import { toStartCaseStr } from '@rainbow-me/helpers/utilities';
 import {
   useAccountProfile,
   useClipboard,
@@ -69,7 +69,7 @@ const getAssetActions = (network: Network) =>
       actionTitle: lang.t(
         'expanded_state.unique_expanded.view_on_block_explorer',
         {
-          blockExplorerName: toTitleCase(
+          blockExplorerName: toStartCaseStr(
             ethereumUtils.getBlockExplorer(network)
           ),
         }
@@ -373,7 +373,7 @@ const UniqueTokenExpandedStateHeader = ({
     const androidContractActions = [
       lang.t('expanded_state.unique_expanded.view_on_web'),
       lang.t('expanded_state.unique_expanded.view_on_block_explorer', {
-        blockExplorerName: toTitleCase(
+        blockExplorerName: toStartCaseStr(
           // @ts-expect-error network could be undefined?
           ethereumUtils.getBlockExplorer(asset?.network)
         ),

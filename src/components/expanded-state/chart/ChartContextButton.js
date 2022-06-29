@@ -2,7 +2,7 @@ import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { ContextCircleButton } from '../../context-menu';
 import EditAction from '@rainbow-me/helpers/EditAction';
-import { toTitleCase } from '@rainbow-me/helpers/utilities';
+import { toStartCaseStr } from '@rainbow-me/helpers/utilities';
 import {
   useCoinListEditOptions,
   useCoinListFinishEditingOptions,
@@ -65,7 +65,7 @@ export default function ChartContextButton({ asset, color }) {
         ? []
         : [
             `🔍 ${lang.t('wallet.action.view_on', {
-              blockExplorerName: toTitleCase(
+              blockExplorerName: toStartCaseStr(
                 ethereumUtils.getBlockExplorer(asset?.type)
               ),
             })}`,

@@ -415,8 +415,23 @@ export const upperFirst = (string?: string | undefined): string => {
   return string ? string.charAt(0).toUpperCase() + string.slice(1) : '';
 };
 
-export const toTitleCase = (string?: string | undefined): string => {
-  // Used to convert `Network` to TitleCase. It currently consists of one word and it is unclear what the two words will look like camelcase or snake case. So I use upperFirst for transformation
+/**
+ * Converts a string, including strings in camelCase or snake_case, into Start Case (a variant
+ * of Title Case where all words start with a capital letter), it keeps original single quote
+ * and hyphen in the word.
+ *
+ *   'management_companies' to 'Management Companies'
+ *   'managementCompanies' to 'Management Companies'
+ *   `hell's kitchen` to `Hell's Kitchen`
+ *   `co-op` to `Co-op`
+ *
+ * @param {String} str
+ * @returns {String}
+ */
+export const toStartCaseStr = (string?: string | undefined): string => {
   if (!string) return '';
-  return upperFirst(string);
+  return string
+    .replace(/_/g, ' ')
+    .replace(/([a-z])([A-Z])/g, (string, $1, $2) => $1 + ' ' + $2)
+    .replace(/(\s|^)(\w)/g, (string, $1, $2) => $1 + $2.toUpperCase());
 };

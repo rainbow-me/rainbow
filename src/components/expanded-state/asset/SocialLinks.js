@@ -2,7 +2,7 @@ import lang from 'i18n-js';
 import React from 'react';
 import Link from '../../Link';
 import EdgeFade from '../../discover-sheet/EdgeFade';
-import { toTitleCase } from '@rainbow-me/helpers/utilities';
+import { toStartCaseStr } from '@rainbow-me/helpers/utilities';
 import styled from '@rainbow-me/styled-components';
 import { ethereumUtils } from '@rainbow-me/utils';
 
@@ -47,7 +47,7 @@ export default function SocialLinks({
         {!isNativeAsset && (
           <CommunityLink
             color={color}
-            display={` ${toTitleCase(blockExplorerName)}`}
+            display={` ${toStartCaseStr(blockExplorerName)}`}
             emoji="􀉣"
             transformOrigin="center"
             url={`https://${etherscanURL}/token/${address}`}
