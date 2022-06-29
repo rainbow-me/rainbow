@@ -4,17 +4,14 @@ import { getUnixTime, startOfMinute, sub } from 'date-fns';
 import isValidDomain from 'is-valid-domain';
 import {
   find,
-  get,
   isEmpty,
   isNil,
   keyBy,
   keys,
-  map,
   mapKeys,
   mapValues,
   partition,
   pickBy,
-  property,
   toLower,
   toUpper,
   uniqBy,
@@ -1061,7 +1058,7 @@ export const transactionsRemoved = (
   }
   const { accountAddress, network } = getState().settings;
   const { transactions } = getState().data;
-  const removeHashes = map(transactionData, txn => txn.hash);
+  const removeHashes = transactionData.map(txn => txn.hash);
   logger.log('[data] - remove txn hashes', removeHashes);
   const [updatedTransactions, removedTransactions] = partition(
     transactions,
@@ -1171,20 +1168,17 @@ export const addressAssetsReceived = (
     type: DATA_LOAD_ACCOUNT_ASSETS_DATA_RECEIVED,
   });
   if (!change) {
-    const missingPriceAssetAddresses: string[] = map(
-      Object.values(parsedAssets).filter(asset => isNil(asset?.price)),
-      property('address')
-    );
+    const missingPriceAssetAddresses: string[] = Object.values(parsedAssets)
+      .filter(asset => isNil(asset?.price))
+      .map(asset => asset.address);
+
     dispatch(subscribeToMissingPrices(missingPriceAssetAddresses));
   }
 
-  //Hide tokens with a url as their token name
-  const assetsWithScamURL: string[] = map(
-    Object.values(parsedAssets).filter(
-      asset => isValidDomain(asset.name) && !asset.isVerified
-    ),
-    property('uniqueId')
-  );
+  const assetsWithScamURL: string[] = Object.values(parsedAssets)
+    .filter(asset => isValidDomain(asset.name) && !asset.isVerified)
+    .map(asset => asset.uniqueId);
+
   addHiddenCoins(assetsWithScamURL, dispatch, accountAddress);
 };
 
@@ -1224,7 +1218,7 @@ const subscribeToMissingPrices = (addresses: string[]) => (
         try {
           if (data?.tokens) {
             const nativePriceOfEth = ethereumUtils.getEthPriceUnit();
-            const tokenAddresses: string[] = map(data.tokens, property('id'));
+            const tokenAddresses: string[] = data.tokens.map(token => token.id);
 
             const yesterday = getUnixTime(
               startOfMinute(sub(Date.now(), { days: 1 }))
@@ -1233,7 +1227,7 @@ const subscribeToMissingPrices = (addresses: string[]) => (
               yesterday,
             ]);
 
-            const historicalPriceCalls = map(tokenAddresses, address =>
+            const historicalPriceCalls = tokenAddresses.map(address =>
               get24HourPrice(address, yesterdayBlock)
             );
             const historicalPriceResults = await Promise.all(
@@ -1255,17 +1249,12 @@ const subscribeToMissingPrices = (addresses: string[]) => (
             const missingPriceInfo = mapValues(
               missingPrices,
               (currentPrice, key) => {
-                const historicalPrice = get(
-                  missingHistoricalPrices,
-                  `[${key}]`
-                );
+                const historicalPrice = missingHistoricalPrices?.[key];
                 // mappedPricingData[key].id will be a `string`, assuming `key`
                 // is present, but `get` resolves to an incorrect type, so must
                 // be casted.
-                const tokenAddress: string = get(
-                  mappedPricingData,
-                  `[${key}].id`
-                ) as any;
+                const tokenAddress: string = mappedPricingData?.[key]
+                  ?.id as any;
                 const relativePriceChange = historicalPrice
                   ? // @ts-expect-error TypeScript disallows string arithmetic,
                     // even though it works correctly.
@@ -1426,7 +1415,7 @@ export const assetPricesChanged = (
   if (nativeCurrency?.toLowerCase() === message?.meta?.currency) {
     const { genericAssets } = getState().data;
     const genericAsset = {
-      ...get(genericAssets, assetAddress),
+      ...genericAssets?.[assetAddress],
       price,
     };
     const updatedAssets = {

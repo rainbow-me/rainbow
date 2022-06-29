@@ -1,6 +1,5 @@
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
-import { get } from 'lodash';
 import React, {
   useCallback,
   useContext,
@@ -308,7 +307,7 @@ function RecyclerAssetList({
       return ctx;
     }, []);
     items.push({ item: { isLastPlaceholder: true }, renderItem: () => null });
-    const areSmallCollectibles = (c => c && get(c, 'type') === 'small')(
+    const areSmallCollectibles = (c => c && c?.type === 'small')(
       sections.find(e => e.collectibles)
     );
     return {
@@ -496,11 +495,7 @@ function RecyclerAssetList({
             collectiblesIndex < 0) &&
           (index <= sectionsIndices[poolsIndex] || poolsIndex < 0)
         ) {
-          const balanceItemsCount = get(
-            sections,
-            `[${balancesIndex}].data.length`,
-            0
-          );
+          const balanceItemsCount = sections?.[balancesIndex]?.data.length ?? 0;
           const lastBalanceIndex =
             sectionsIndices[balancesIndex] + balanceItemsCount;
           if (index === lastBalanceIndex - 2) {
@@ -578,11 +573,9 @@ function RecyclerAssetList({
               sections[collectiblesIndex].data[familyIndex].isHeader;
             return {
               height: ViewTypes.UNIQUE_TOKEN_ROW.calculateHeight({
-                amountOfRows: get(
-                  sections,
-                  `[${collectiblesIndex}].data[${familyIndex}].tokens`,
-                  []
-                ).length,
+                amountOfRows:
+                  sections?.[collectiblesIndex]?.data?.[familyIndex]?.tokens
+                    ?.length ?? 0,
                 isFirst,
                 isHeader,
                 isOpen:

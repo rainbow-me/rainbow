@@ -6,7 +6,7 @@ import {
   TransactionType,
 } from '@rainbow-me/entities';
 import { isL2Network } from '@rainbow-me/handlers/web3';
-import { ETH_ADDRESS } from '@rainbow-me/references';
+import { ETH_ADDRESS, supportedNativeCurrencies } from '@rainbow-me/references';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToBalanceDisplay,
@@ -21,7 +21,7 @@ import { ethereumUtils } from '@rainbow-me/utils';
  */
 export const parseNewTransaction = async (
   txDetails: NewTransactionOrAddCashTransaction,
-  nativeCurrency: string = ''
+  nativeCurrency: keyof typeof supportedNativeCurrencies
 ): Promise<RainbowTransaction> => {
   let balance = null;
   const {
