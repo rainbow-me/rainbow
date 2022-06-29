@@ -1,6 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
-import { endsWith, forEach, map } from 'lodash';
+import { endsWith } from 'lodash';
 import {
   Options,
   requestSharedWebCredentials,
@@ -44,8 +44,7 @@ async function extractSecretsForWallet(wallet: RainbowWallet) {
   if (!allKeys) throw new Error(CLOUD_BACKUP_ERRORS.KEYCHAIN_ACCESS_ERROR);
   const secrets = {} as { [key: string]: string };
 
-  const allowedPkeysKeys = map(
-    wallet?.addresses,
+  const allowedPkeysKeys = wallet?.addresses?.map(
     account => `${account.address}_${privateKeyKey}`
   );
 
@@ -71,7 +70,7 @@ async function extractSecretsForWallet(wallet: RainbowWallet) {
     // Ignore other wallets PKeys
     if (
       item.username.indexOf(`_${privateKeyKey}`) !== -1 &&
-      allowedPkeysKeys.indexOf(item.username) === -1
+      !(allowedPkeysKeys?.indexOf(item.username) > -1)
     ) {
       return;
     }
@@ -116,26 +115,29 @@ export async function addWalletToCloudBackup(
   return encryptAndSaveDataToCloud(backup, password, filename);
 }
 
-export function findLatestBackUp(wallets: AllRainbowWallets): string | null {
+export function findLatestBackUp(
+  wallets: AllRainbowWallets | null
+): string | null {
   let latestBackup: string | null = null;
   let filename: string | null = null;
 
-  forEach(wallets, wallet => {
-    // Check if there's a wallet backed up
-    if (
-      wallet.backedUp &&
-      wallet.backupDate &&
-      wallet.backupFile &&
-      wallet.backupType === WalletBackupTypes.cloud
-    ) {
-      // If there is one, let's grab the latest backup
-      if (!latestBackup || wallet.backupDate > latestBackup) {
-        filename = wallet.backupFile;
-        latestBackup = wallet.backupDate;
+  if (wallets) {
+    Object.values(wallets).forEach(wallet => {
+      // Check if there's a wallet backed up
+      if (
+        wallet.backedUp &&
+        wallet.backupDate &&
+        wallet.backupFile &&
+        wallet.backupType === WalletBackupTypes.cloud
+      ) {
+        // If there is one, let's grab the latest backup
+        if (!latestBackup || wallet.backupDate > latestBackup) {
+          filename = wallet.backupFile;
+          latestBackup = wallet.backupDate;
+        }
       }
-    }
-  });
-
+    });
+  }
   return filename;
 }
 
@@ -168,7 +170,7 @@ export async function restoreCloudBackup(
       // Restore only wallets that were backed up in cloud
       // or wallets that are read-only
       const walletsToRestore: AllRainbowWallets = {};
-      forEach(userData.wallets, wallet => {
+      Object.values(userData?.wallets ?? {}).forEach(wallet => {
         if (
           (wallet.backedUp &&
             wallet.backupDate &&

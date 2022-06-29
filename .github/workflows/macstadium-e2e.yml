@@ -3,13 +3,7 @@
 name: iOS e2e tests
 
 # Controls when the workflow will run
-on:
-  # Triggers the workflow on push or pull request events but only for the "develop" branch
-  pull_request:
-    branches: ["*"]
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+on: [pull_request, workflow_dispatch]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -17,6 +11,10 @@ jobs:
   ios-e2e:
     # The type of runner that the job will run on
     runs-on: ["self-hosted"]
+    # Cancel current builds if there's a newer commit on the same branch
+    concurrency: 
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:

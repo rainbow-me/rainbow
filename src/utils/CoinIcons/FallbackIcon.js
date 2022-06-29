@@ -21,10 +21,19 @@ function buildFallbackFontSize(symbol, width) {
   return 11;
 }
 
+const _cache = {};
 function formatSymbol(symbol, width) {
   if (!symbol) return '';
 
-  return symbol.replace(/[^a-zA-Z0-9]/g, '').substring(0, width < 30 ? 1 : 5);
+  const key = `${symbol}-${width}`;
+
+  if (!_cache[key]) {
+    _cache[key] = symbol
+      .replace(/[^a-zA-Z0-9]/g, '')
+      .substring(0, width < 30 ? 1 : 5);
+  }
+
+  return _cache[key];
 }
 
 const FallbackIcon = ({

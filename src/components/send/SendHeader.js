@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { get, isEmpty, toLower } from 'lodash';
+import { isEmpty, toLower } from 'lodash';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
 import { ActivityIndicator, Keyboard } from 'react-native';
 import { useNavigation } from '../../navigation/Navigation';
@@ -91,7 +91,6 @@ export default function SendHeader({
   const { isSmallPhone, isTinyPhone } = useDimensions();
   const { navigate } = useNavigation();
   const { colors } = useTheme();
-
   const [hexAddress, setHexAddress] = useState('');
 
   useEffect(() => {
@@ -110,7 +109,7 @@ export default function SendHeader({
   }, [isValidAddress, recipient, setHexAddress]);
 
   const contact = useMemo(() => {
-    return get(contacts, `${[toLower(hexAddress)]}`, defaultContactItem);
+    return contacts?.[hexAddress.toLowerCase()] ?? defaultContactItem;
   }, [contacts, hexAddress]);
 
   const userWallet = useMemo(() => {
