@@ -1,5 +1,5 @@
 import { BigNumberish, ethers } from 'ethers';
-import { map, zipObject } from 'lodash';
+import zipObject from 'lodash/zipObject';
 import { gasUtils } from '../utils';
 import {
   BlocksToConfirmation,
@@ -19,7 +19,11 @@ import {
 } from '@rainbow-me/entities';
 import { isHexString, toHex } from '@rainbow-me/handlers/web3';
 import { getMinimalTimeUnitStringForMs } from '@rainbow-me/helpers/time';
-import { ethUnits, timeUnits } from '@rainbow-me/references';
+import {
+  ethUnits,
+  supportedNativeCurrencies,
+  timeUnits,
+} from '@rainbow-me/references';
 import {
   add,
   convertHexToString,
@@ -239,10 +243,10 @@ export const parseLegacyGasFeesBySpeed = (
   legacyGasFees: LegacyGasFeeParamsBySpeed,
   gasLimit: BigNumberish,
   priceUnit: BigNumberish,
-  nativeCurrency: string,
+  nativeCurrency: keyof typeof supportedNativeCurrencies,
   l1GasFeeOptimism: BigNumberish | null = null
 ): LegacyGasFeesBySpeed => {
-  const gasFeesBySpeed = map(GasSpeedOrder, speed => {
+  const gasFeesBySpeed = GasSpeedOrder.map(speed => {
     const gasPrice = legacyGasFees?.[speed]?.gasPrice?.amount || 0;
     const estimatedFee = getTxFee(
       gasPrice,
@@ -263,7 +267,7 @@ export const parseGasFees = (
   baseFeePerGas: GasFeeParam,
   gasLimit: BigNumberish,
   priceUnit: BigNumberish,
-  nativeCurrency: string
+  nativeCurrency: keyof typeof supportedNativeCurrencies
 ) => {
   const { maxPriorityFeePerGas, maxFeePerGas } = gasFeeParams || {};
   const priorityFee = maxPriorityFeePerGas?.amount || 0;
@@ -301,9 +305,9 @@ export const parseGasFeesBySpeed = (
   baseFeePerGas: GasFeeParam,
   gasLimit: BigNumberish,
   priceUnit: BigNumberish,
-  nativeCurrency: string
+  nativeCurrency: keyof typeof supportedNativeCurrencies
 ): GasFeesBySpeed => {
-  const gasFeesBySpeed = map(GasSpeedOrder, speed =>
+  const gasFeesBySpeed = GasSpeedOrder.map(speed =>
     parseGasFees(
       gasFeeParamsBySpeed[speed],
       baseFeePerGas,
@@ -319,7 +323,7 @@ const getTxFee = (
   gasPrice: BigNumberish,
   gasLimit: BigNumberish,
   priceUnit: BigNumberish,
-  nativeCurrency: string,
+  nativeCurrency: keyof typeof supportedNativeCurrencies,
   l1GasFeeOptimism: BigNumberish | null = null
 ) => {
   const normalizedGasLimit = isHexString(gasLimit.toString())

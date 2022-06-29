@@ -1,14 +1,4 @@
-import {
-  get,
-  isEmpty,
-  isNil,
-  map,
-  pick,
-  pickBy,
-  remove,
-  toLower,
-  uniq,
-} from 'lodash';
+import { isEmpty, isNil, pick, pickBy, remove, toLower, uniq } from 'lodash';
 import { CardSize } from '../components/unique-token/CardSize';
 import { AssetTypes } from '@rainbow-me/entities';
 import { fetchMetadata, isUnknownOpenSeaENS } from '@rainbow-me/handlers/ens';
@@ -67,7 +57,7 @@ export const handleAndSignImages = (imageUrl, previewUrl, originalUrl) => {
  */
 
 export const parseAccountUniqueTokens = data => {
-  const erc721s = get(data, 'data.assets', null);
+  const erc721s = data?.data?.assets ?? null;
   if (isNil(erc721s)) throw new Error('Invalid data from OpenSea');
   return erc721s
     .map(
@@ -148,8 +138,8 @@ export const parseAccountUniqueTokens = data => {
           uniqueId:
             asset_contract.address === ENS_NFT_CONTRACT_ADDRESS
               ? asset.name
-              : `${get(asset_contract, 'address')}_${token_id}`,
-          urlSuffixForAsset: `${get(asset_contract, 'address')}/${token_id}`,
+              : `${asset_contract?.address}_${token_id}`,
+          urlSuffixForAsset: `${asset_contract?.address}/${token_id}`,
         };
       }
     )
@@ -221,11 +211,8 @@ export const parseAccountUniqueTokensPolygon = data => {
         network: Network.polygon,
         permalink: asset.permalink,
         type: AssetTypes.nft,
-        uniqueId: `${Network.polygon}_${get(
-          asset_contract,
-          'address'
-        )}_${token_id}`,
-        urlSuffixForAsset: `${get(asset_contract, 'address')}/${token_id}`,
+        uniqueId: `${Network.polygon}_${asset_contract?.address}_${token_id}`,
+        urlSuffixForAsset: `${asset_contract?.address}/${token_id}`,
       };
     })
     .filter(token => !!token.familyName && token.familyName !== 'POAP');
@@ -273,7 +260,7 @@ export const applyENSMetadataFallbackToTokens = async data => {
 };
 
 export const getFamilies = uniqueTokens =>
-  uniq(map(uniqueTokens, u => get(u, 'asset_contract.address', '')));
+  uniq(uniqueTokens.map(u => u?.asset_contract?.address ?? ''));
 
 export const dedupeUniqueTokens = (newAssets, uniqueTokens) => {
   const uniqueTokenFamilies = getFamilies(uniqueTokens);

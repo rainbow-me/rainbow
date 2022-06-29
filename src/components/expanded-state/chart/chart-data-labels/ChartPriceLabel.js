@@ -1,4 +1,3 @@
-import { get } from 'lodash';
 import React from 'react';
 import { PixelRatio, Text } from 'react-native';
 import { useWorkletCallback } from 'react-native-reanimated';
@@ -82,7 +81,7 @@ export default function ChartPriceLabel({
   tabularNums,
 }) {
   const { nativeCurrency } = useAccountSettings();
-  const nativeSelected = get(supportedNativeCurrencies, `${nativeCurrency}`);
+  const nativeSelected = supportedNativeCurrencies?.[nativeCurrency];
 
   const format = useWorkletCallback(
     value => {

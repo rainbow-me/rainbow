@@ -1,12 +1,12 @@
 import analytics from '@segment/analytics-react-native';
-import { get, keys, pickBy } from 'lodash';
+import { keys, pickBy } from 'lodash';
 import React, { useCallback } from 'react';
 import { resources, supportedLanguages } from '../../languages';
 import { RadioList, RadioListItem } from '../radio-list';
 import { useAccountSettings } from '@rainbow-me/hooks';
 
 // Only show languages that have 'wallet' translations available.
-const hasWalletTranslations = language => get(language, 'translation.wallet');
+const hasWalletTranslations = language => language?.translation?.wallet;
 const languagesWithWalletTranslations = keys(
   pickBy(resources, hasWalletTranslations)
 );
