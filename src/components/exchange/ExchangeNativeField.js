@@ -55,7 +55,7 @@ const ExchangeNativeField = (
   const handleFocus = useCallback(
     event => {
       setIsFocused(true);
-      if (onFocus) onFocus(event);
+      onFocus?.(event);
     },
     [onFocus]
   );

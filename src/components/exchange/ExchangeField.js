@@ -84,14 +84,14 @@ const ExchangeField = (
   const handleBlur = useCallback(
     event => {
       setIsFocused(false);
-      if (onBlur) onBlur(event);
+      onBlur?.(event);
     },
     [onBlur]
   );
   const handleFocus = useCallback(
     event => {
       setIsFocused(true);
-      if (onFocus) onFocus(event);
+      onFocus?.(event);
     },
     [onFocus]
   );
