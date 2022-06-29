@@ -79,6 +79,23 @@ const ExchangeField = (
 
   const [value, setValue] = useState(amount);
   const [debouncedValue] = useDebounce(value, 300);
+  const [isFocused, setIsFocused] = useState(ref?.current?.isFocused());
+
+  const handleBlur = useCallback(
+    event => {
+      setIsFocused(false);
+      if (onBlur) onBlur(event);
+    },
+    [onBlur]
+  );
+  const handleFocus = useCallback(
+    event => {
+      setIsFocused(true);
+      if (onFocus) onFocus(event);
+    },
+    [onFocus]
+  );
+
   useEffect(() => {
     setAmount(debouncedValue);
   }, [debouncedValue, setAmount]);
@@ -88,8 +105,6 @@ const ExchangeField = (
     : colors.alpha(colors.blueGreyDark, 0.1);
 
   const placeholderText = symbol ? '0' : EnDash.unicode;
-
-  const isInputFocused = ref?.current?.isFocused();
 
   return (
     <Container {...props}>
@@ -118,16 +133,16 @@ const ExchangeField = (
               })}
             color={colorForAsset}
             editable={editable}
-            onBlur={onBlur}
+            onBlur={handleBlur}
             onChangeText={setValue}
-            onFocus={onFocus}
+            onFocus={handleFocus}
             placeholder={placeholderText}
             placeholderTextColor={placeholderTextColor}
             {...(onTapWhileDisabled && { pointerEvents: 'none' })}
             ref={ref}
             testID={testID}
             useCustomAndroidMask={useCustomAndroidMask}
-            value={isInputFocused ? value : amount}
+            value={isFocused ? value : amount}
           />
         </FieldRow>
       </TouchableWithoutFeedback>
