@@ -95,21 +95,8 @@ export default function ConfirmExchangeButton({
   } else if (!isSufficientBalance) {
     label = lang.t('button.confirm_exchange.insufficient_funds');
   } else if (isSufficientGas != null && !isSufficientGas) {
-    let nativeToken = 'gas';
-    switch (currentNetwork) {
-      case NetworkTypes.arbitrum:
-      case NetworkTypes.mainnet:
-        nativeToken = 'ETH';
-        break;
-      case NetworkTypes.polygon:
-        nativeToken = 'MATIC';
-        break;
-      case NetworkTypes.optimism:
-        nativeToken = 'OP';
-        break;
-      default:
-        break;
-    }
+    const nativeToken =
+      currentNetwork === NetworkTypes.polygon ? 'MATIC' : 'ETH';
     label = lang.t('button.confirm_exchange.insufficient_gas', { nativeToken });
   } else if (!isValidGas) {
     label = lang.t('button.confirm_exchange.invalid_fee');
