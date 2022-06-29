@@ -131,18 +131,20 @@ export default () => {
           (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) &&
             lang.t('profiles.profile_avatar.edit_profile'),
         ]
-      : [
+      : !isReadOnlyWallet || enableActionsOnReadOnlyWallet
+      ? [
           lang.t('profiles.profile_avatar.choose_from_library'),
           !accountImage
             ? lang.t(`profiles.profile_avatar.pick_emoji`)
             : lang.t(`profiles.profile_avatar.remove_photo`),
-          profilesEnabled &&
-            (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) &&
-            lang.t('profiles.profile_avatar.create_profile'),
+          profilesEnabled && lang.t('profiles.profile_avatar.create_profile'),
         ]
-    )
-      .filter(option => Boolean(option))
-      .concat(ios ? ['Cancel'] : []);
+      : []
+    ).filter(option => Boolean(option));
+
+    if (ios && avatarActionSheetOptions.length) {
+      avatarActionSheetOptions.push('Cancel');
+    }
 
     const callback = async (buttonIndex: Number) => {
       if (isENSProfile) {
@@ -177,18 +179,19 @@ export default () => {
         }
       }
     };
-
-    showActionSheetWithOptions(
-      {
-        cancelButtonIndex: avatarActionSheetOptions.length - 1,
-        destructiveButtonIndex:
-          !isENSProfile && accountImage
-            ? avatarActionSheetOptions.length - (profilesEnabled ? 3 : 2)
-            : undefined,
-        options: avatarActionSheetOptions,
-      },
-      (buttonIndex: Number) => callback(buttonIndex)
-    );
+    if (avatarActionSheetOptions.length) {
+      showActionSheetWithOptions(
+        {
+          cancelButtonIndex: avatarActionSheetOptions.length - 1,
+          destructiveButtonIndex:
+            !isENSProfile && accountImage
+              ? avatarActionSheetOptions.length - (profilesEnabled ? 3 : 2)
+              : undefined,
+          options: avatarActionSheetOptions,
+        },
+        (buttonIndex: Number) => callback(buttonIndex)
+      );
+    }
   }, [
     ensProfile,
     profileEnabled,
