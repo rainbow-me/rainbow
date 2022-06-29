@@ -1,7 +1,7 @@
 import PQueue from 'p-queue/dist';
 import { useQuery } from 'react-query';
+import { fetchENSAddress } from './useENSAddress';
 import { getENSData, saveENSData } from '@rainbow-me/handlers/localstorage/ens';
-import { web3Provider } from '@rainbow-me/handlers/web3';
 import { queryClient } from '@rainbow-me/react-query/queryClient';
 import { QueryConfig, UseQueryData } from '@rainbow-me/react-query/types';
 import { getFirstTransactionTimestamp } from '@rainbow-me/utils/ethereumUtils';
@@ -26,7 +26,7 @@ export async function fetchENSFirstTransactionTimestamp(
     if (cacheFirst) return cachedData?.firstTxTimestamp;
   }
 
-  const address = await web3Provider.resolveName(name);
+  const address = await fetchENSAddress(name);
   const timestamp = address
     ? await queue.add(async () => getFirstTransactionTimestamp(address))
     : undefined;
