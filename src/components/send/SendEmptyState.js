@@ -13,13 +13,13 @@ const SendEmptyState = () => {
       color={colors.alpha(colors.blueGreyDark, 0.06)}
       height={88}
       name="send"
-      style={cx.icon}
+      style={sx.icon}
       width={91}
     />
   );
 
   if (android) {
-    return <View style={cx.androidContainer}>{icon}</View>;
+    return <View style={sx.androidContainer}>{icon}</View>;
   }
 
   return (
@@ -36,7 +36,7 @@ const SendEmptyState = () => {
 
 export default SendEmptyState;
 
-const cx = StyleSheet.create({
+const sx = StyleSheet.create({
   androidContainer: { alignItems: 'center', flex: 1 },
   icon: {
     marginBottom: ios ? 0 : 150,
