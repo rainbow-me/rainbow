@@ -35,7 +35,7 @@ import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { delayNext } from '../hooks/useMagicAutofocus';
-import { Row, Rows } from '@rainbow-me/design-system';
+import { Box } from '@rainbow-me/design-system';
 import { AssetType } from '@rainbow-me/entities';
 import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
 import {
@@ -76,10 +76,16 @@ const FloatingPanels = AnimatedExchangeFloatingPanels;
 
 const Wrapper = KeyboardFixedOpenLayout;
 
-const InnerWrapper = styled(Column).attrs({
+const InnerWrapper = styled(Column).attrs(props => ({
   direction: 'column',
-  justify: 'space-between',
-})({
+  ...(props.isSmallPhone
+    ? {
+        paddingTop: 8,
+      }
+    : {
+        justify: 'center',
+      }),
+}))({
   ...position.sizeAsObject('100%'),
 });
 
@@ -725,12 +731,10 @@ export default function ExchangeModal({
 
   return (
     <Wrapper keyboardType={KeyboardTypes.numpad}>
-      <InnerWrapper>
-        <FloatingPanels
-          {...((isSmallPhone || (android && isSmallAndroidPhone)) && {
-            paddingTop: 0,
-          })}
-        >
+      <InnerWrapper
+        isSmallPhone={isSmallPhone || (android && isSmallAndroidPhone)}
+      >
+        <FloatingPanels>
           <FloatingPanel
             overflow="visible"
             paddingBottom={showOutputField ? 0 : 26}
@@ -809,29 +813,26 @@ export default function ExchangeModal({
           )}
 
           {isWithdrawal && <Spacer />}
-        </FloatingPanels>
-        <Rows alignVertical="bottom" height="content" space="19px">
-          <Row height="content">
-            {showConfirmButton && (
-              <ConfirmExchangeButton
-                {...confirmButtonProps}
-                onPressViewDetails={loading ? NOOP : navigateToSwapDetailsModal}
-                testID={`${testID}-confirm-button`}
-              />
-            )}
-          </Row>
-          <Row height="content">
-            <GasSpeedButton
-              asset={outputCurrency}
-              currentNetwork={currentNetwork}
-              dontBlur
-              marginBottom={0}
-              marginTop={0}
-              onCustomGasBlur={handleCustomGasBlur}
-              testID={`${testID}-gas`}
+
+          {showConfirmButton && (
+            <ConfirmExchangeButton
+              {...confirmButtonProps}
+              onPressViewDetails={loading ? NOOP : navigateToSwapDetailsModal}
+              testID={`${testID}-confirm-button`}
             />
-          </Row>
-        </Rows>
+          )}
+        </FloatingPanels>
+        <Box bottom="0px" position="absolute" width="full">
+          <GasSpeedButton
+            asset={outputCurrency}
+            currentNetwork={currentNetwork}
+            dontBlur
+            marginBottom={0}
+            marginTop={0}
+            onCustomGasBlur={handleCustomGasBlur}
+            testID={`${testID}-gas`}
+          />
+        </Box>
       </InnerWrapper>
     </Wrapper>
   );
