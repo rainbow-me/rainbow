@@ -18,6 +18,7 @@ import { Network } from '@rainbow-me/helpers/networkTypes';
 import { dataResetState } from '@rainbow-me/redux/data';
 import { explorerClearState, explorerInit } from '@rainbow-me/redux/explorer';
 import { AppState } from '@rainbow-me/redux/store';
+import { supportedNativeCurrencies } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
@@ -44,7 +45,7 @@ interface SettingsState {
   accountAddress: string;
   chainId: number;
   language: string;
-  nativeCurrency: string;
+  nativeCurrency: keyof typeof supportedNativeCurrencies;
   network: Network;
   testnetsEnabled: boolean;
 }
@@ -198,7 +199,9 @@ export const settingsChangeLanguage = (language: string) => async (
   }
 };
 
-export const settingsChangeNativeCurrency = (nativeCurrency: string) => async (
+export const settingsChangeNativeCurrency = (
+  nativeCurrency: keyof typeof supportedNativeCurrencies
+) => async (
   dispatch: ThunkDispatch<
     AppState,
     unknown,

@@ -1,6 +1,5 @@
 import messaging from '@react-native-firebase/messaging';
 import lang from 'i18n-js';
-import { get } from 'lodash';
 import { requestNotifications } from 'react-native-permissions';
 import { Alert } from '../components/alerts';
 import { getLocal, saveLocal } from '../handlers/localstorage/common';
@@ -9,7 +8,7 @@ import logger from 'logger';
 export const getFCMToken = async () => {
   const fcmTokenLocal = await getLocal('rainbowFcmToken');
 
-  const fcmToken = get(fcmTokenLocal, 'data', null);
+  const fcmToken = fcmTokenLocal?.data ?? null;
 
   if (!fcmToken) {
     throw new Error('Push notification token unavailable.');

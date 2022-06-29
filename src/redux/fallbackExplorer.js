@@ -1,6 +1,6 @@
 import { Contract } from '@ethersproject/contracts';
 import { captureException } from '@sentry/react-native';
-import { get, isEmpty, keyBy, mapValues, toLower, uniqBy } from 'lodash';
+import { isEmpty, keyBy, mapValues, toLower, uniqBy } from 'lodash';
 import isEqual from 'react-fast-compare';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import { addressAssetsReceived, fetchAssetPricesWithCoingecko } from './data';
@@ -278,7 +278,7 @@ const getTokenTxDataFromEtherscan = async (
 
 const fetchAssetBalances = async (tokens, address, network) => {
   const balanceCheckerContract = new Contract(
-    get(networkInfo[network], 'balance_checker_contract_address'),
+    networkInfo[network]?.balance_checker_contract_address,
     balanceCheckerContractAbi,
     web3Provider
   );

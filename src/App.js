@@ -2,7 +2,6 @@ import './languages';
 import messaging from '@react-native-firebase/messaging';
 import analytics from '@segment/analytics-react-native';
 import * as Sentry from '@sentry/react-native';
-import { get } from 'lodash';
 import { nanoid } from 'nanoid/non-secure';
 import PropTypes from 'prop-types';
 import React, { Component, createRef } from 'react';
@@ -168,8 +167,7 @@ class App extends Component {
     this.backgroundNotificationListener = messaging().setBackgroundMessageHandler(
       async remoteMessage => {
         setTimeout(() => {
-          const topic = get(remoteMessage, 'data.topic');
-          this.onPushNotificationOpened(topic);
+          this.onPushNotificationOpened(remoteMessage?.data?.topic);
         }, WALLETCONNECT_SYNC_DELAY);
       }
     );
@@ -228,9 +226,8 @@ class App extends Component {
   }
 
   onRemoteNotification = notification => {
-    const topic = get(notification, 'data.topic');
     setTimeout(() => {
-      this.onPushNotificationOpened(topic);
+      this.onPushNotificationOpened(notification?.data?.topic);
     }, WALLETCONNECT_SYNC_DELAY);
   };
 
