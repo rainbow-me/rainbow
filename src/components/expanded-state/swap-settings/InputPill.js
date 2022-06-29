@@ -6,7 +6,7 @@ import { Text } from '../../text';
 import styled from '@rainbow-me/styled-components';
 import { buildTextStyles, margin, padding } from '@rainbow-me/styles';
 
-const ANDROID_EXTRA_LINE_HEIGHT = 6;
+const ANDROID_EXTRA_LINE_HEIGHT = 8;
 
 const PillGradient = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
   colors: colors.gradients.lightGreyTransparent,
@@ -63,7 +63,8 @@ const Label = styled(Text).attrs(() => ({
     android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
     0
   ),
-  ...(ios ? { right: 40, top: 9 } : {}),
+  ...(ios ? { right: 40 } : {}),
+  top: android ? -0.5 : 8.5,
 });
 
 function InputPill(
