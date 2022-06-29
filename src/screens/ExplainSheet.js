@@ -259,10 +259,12 @@ export const explainers = (params, colors) => ({
   },
   unverified: {
     extraHeight: android ? 150 : 120,
-    emoji: '🚨',
-    buttonText: lang.t('button.proceed_anyway'),
-    buttonColor: colors?.red,
-    secondaryButtonText: lang.t('button.go_back'),
+    emoji: '⚠️',
+    buttonText: lang.t('button.continue'),
+    buttonColor: colors?.blueGreyDark60,
+    secondaryButtonColor: colors?.alpha(colors?.appleBlue, 0.04),
+    secondaryButtonTextColor: colors?.appleBlue,
+    secondaryButtonText: lang.t('explain.unverified.go_back'),
     title: lang.t('explain.unverified.title', {
       symbol: params?.asset?.symbol,
     }),
@@ -581,7 +583,9 @@ const ExplainSheet = () => {
         style={android && missingL2Assets && { marginTop: 16 }}
       >
         <SheetActionButton
-          color={colors.blueGreyDarkLight}
+          color={
+            explainSheetConfig?.secondaryButtonColor ?? colors.blueGreyDarkLight
+          }
           isTransparent
           label={
             explainSheetConfig.secondaryButtonText ||
@@ -589,7 +593,12 @@ const ExplainSheet = () => {
           }
           onPress={explainSheetConfig?.readMoreLink ? handleReadMore : goBack}
           size="big"
-          textColor={missingL2Assets ? 'primary' : colors.blueGreyDark60}
+          textColor={
+            missingL2Assets
+              ? 'primary'
+              : explainSheetConfig.secondaryButtonTextColor ??
+                colors.blueGreyDark60
+          }
           weight="heavy"
         />
       </Column>
@@ -618,7 +627,9 @@ const ExplainSheet = () => {
     explainSheetConfig.buttonColor,
     explainSheetConfig.buttonText,
     explainSheetConfig?.readMoreLink,
+    explainSheetConfig?.secondaryButtonColor,
     explainSheetConfig.secondaryButtonText,
+    explainSheetConfig.secondaryButtonTextColor,
     goBack,
     handleClose,
     handleReadMore,

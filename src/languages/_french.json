@@ -204,6 +204,7 @@
       },
       "connect": "Connect :)",
       "connect_walletconnect": "Utiliser WalletConnect",
+      "continue": "Continue :)",
       "delete": "Effacer",
       "donate": "Donner de l’ETH",
       "done": "Terminé",
@@ -585,10 +586,11 @@
         "title": "Verified Tokens :)"
       },
       "unverified": {
-        "fragment1": "Rainbow surfaces all tokens that exist on Ethereum. Anyone can create a token, including fake versions of existing tokens and tokens that claim to represent projects that do not have a token. \n\n Please check the :)",
+        "fragment1": "Rainbow surfaces as many tokens as possible to serve all users, but anyone can create a token, or claim to represent a project with a fake contract. \n\n Please check the :)",
         "fragment2": "token contract :)",
-        "fragment3": " and do your own research. Be careful when interacting with unverified tokens! :)",
-        "title": "%{symbol} has not been verified :)"
+        "fragment3": " and always do your own research to ensure that you are interacting with a token you trust. :)",
+        "title": "%{symbol} is Unverified :)",
+        "go_back": "Go back :)"
       }
     },
     "fields": {
