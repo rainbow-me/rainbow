@@ -35,7 +35,7 @@ import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { delayNext } from '../hooks/useMagicAutofocus';
-import { Box } from '@rainbow-me/design-system';
+import { Box, Row, Rows } from '@rainbow-me/design-system';
 import { AssetType } from '@rainbow-me/entities';
 import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
 import {
@@ -76,16 +76,9 @@ const FloatingPanels = AnimatedExchangeFloatingPanels;
 
 const Wrapper = KeyboardFixedOpenLayout;
 
-const InnerWrapper = styled(Column).attrs(props => ({
+const InnerWrapper = styled(Column).attrs({
   direction: 'column',
-  ...(props.isSmallPhone
-    ? {
-        paddingTop: 8,
-      }
-    : {
-        justify: 'center',
-      }),
-}))({
+})({
   ...position.sizeAsObject('100%'),
 });
 
@@ -813,25 +806,32 @@ export default function ExchangeModal({
           )}
 
           {isWithdrawal && <Spacer />}
-
-          {showConfirmButton && (
-            <ConfirmExchangeButton
-              {...confirmButtonProps}
-              onPressViewDetails={loading ? NOOP : navigateToSwapDetailsModal}
-              testID={`${testID}-confirm-button`}
-            />
-          )}
         </FloatingPanels>
-        <Box bottom="0px" position="absolute" width="full">
-          <GasSpeedButton
-            asset={outputCurrency}
-            currentNetwork={currentNetwork}
-            dontBlur
-            marginBottom={0}
-            marginTop={0}
-            onCustomGasBlur={handleCustomGasBlur}
-            testID={`${testID}-gas`}
-          />
+        <Box height="content">
+          <Rows alignVertical="bottom" space="19px">
+            <Row height="content">
+              {showConfirmButton && (
+                <ConfirmExchangeButton
+                  {...confirmButtonProps}
+                  onPressViewDetails={
+                    loading ? NOOP : navigateToSwapDetailsModal
+                  }
+                  testID={`${testID}-confirm-button`}
+                />
+              )}
+            </Row>
+            <Row height="content">
+              <GasSpeedButton
+                asset={outputCurrency}
+                currentNetwork={currentNetwork}
+                dontBlur
+                marginBottom={0}
+                marginTop={0}
+                onCustomGasBlur={handleCustomGasBlur}
+                testID={`${testID}-gas`}
+              />
+            </Row>
+          </Rows>
         </Box>
       </InnerWrapper>
     </Wrapper>
