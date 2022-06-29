@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import { toChecksumAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
-import { capitalize, get, toLower } from 'lodash';
+import { capitalize, toLower } from 'lodash';
 import React, { Fragment, useCallback, useEffect } from 'react';
 import { Keyboard, StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
@@ -239,7 +239,7 @@ export default function SendConfirmationSheet() {
   }, [isSendingToUserAccount, network, toAddress, transactions]);
 
   const contact = useMemo(() => {
-    return get(contacts, `${[toLower(toAddress)]}`);
+    return contacts?.[toAddress?.toLowerCase()];
   }, [contacts, toAddress]);
 
   const [checkboxes, setCheckboxes] = useState([
