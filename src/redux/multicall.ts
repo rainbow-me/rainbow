@@ -1,7 +1,7 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import { ChainId } from '@uniswap/sdk';
-import { chunk, forEach, keys, map } from 'lodash';
+import { chunk, keys, map } from 'lodash';
 import { web3Provider } from '../handlers/web3';
 import { MULTICALL_ABI, MULTICALL_NETWORKS } from '../references/uniswap';
 import { AppDispatch, AppGetState } from './store';
@@ -88,7 +88,7 @@ export const multicallAddListeners = ({
     ...updatedListeners[chainId],
   };
 
-  forEach(calls, call => {
+  calls.forEach(call => {
     const callKey = toCallKey(call);
     listenersForChainId[callKey] =
       (updatedListeners?.[chainId]?.[callKey] ?? 0) + 1;
@@ -120,14 +120,16 @@ const multicallUpdateResults = ({
     ...updatedResults[chainId],
   };
 
-  forEach(keys(results), callKey => {
-    const current = existingResults?.[chainId]?.[callKey];
-    if ((current?.blockNumber ?? 0) > blockNumber) return;
-    resultsForChainId[callKey] = {
-      blockNumber,
-      data: results[callKey],
-    };
-  });
+  if (results) {
+    Object.keys(results).forEach(callKey => {
+      const current = existingResults?.[chainId]?.[callKey];
+      if ((current?.blockNumber ?? 0) > blockNumber) return;
+      resultsForChainId[callKey] = {
+        blockNumber,
+        data: results[callKey],
+      };
+    });
+  }
 
   updatedResults[chainId] = resultsForChainId;
 
@@ -209,7 +211,7 @@ export const multicallUpdateOutdatedListeners = (
     web3Provider!
   );
 
-  forEach(chunkedCalls, (chunk, chunkIndex) => {
+  chunkedCalls.forEach((chunk, chunkIndex) => {
     multicallContract
       .aggregate(
         map(chunk, obj => {
