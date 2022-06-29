@@ -40,6 +40,17 @@ const sx = StyleSheet.create({
   },
 });
 
+type Props = {
+  childrenAmount?: number;
+  emoji?: string;
+  familyImage?: string;
+  isOpen?: boolean;
+  onPress?: () => void;
+  testID?: string;
+  title: string;
+  theme: ThemeContextProps;
+};
+
 const TokenFamilyHeader = ({
   childrenAmount,
   emoji,
@@ -49,16 +60,7 @@ const TokenFamilyHeader = ({
   testID,
   title,
   theme,
-}: {
-  childrenAmount?: number;
-  emoji?: string;
-  familyImage?: string;
-  isOpen?: boolean;
-  onPress?: () => void;
-  testID?: string;
-  title: string;
-  theme: ThemeContextProps;
-}) => {
+}: Props) => {
   const { colors } = theme;
 
   const toValue = Number(!!isOpen);
