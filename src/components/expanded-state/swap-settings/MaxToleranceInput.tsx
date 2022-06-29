@@ -105,7 +105,7 @@ export const MaxToleranceInput = forwardRef(
           <Stack space="4px">
             <Box
               as={ButtonPressAnimation}
-              {...(ios ? { marginVertical: '-12px' } : {})}
+              marginVertical="-12px"
               // @ts-expect-error
               onPress={openExplainer}
               paddingVertical="12px"
