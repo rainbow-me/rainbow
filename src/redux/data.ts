@@ -10,7 +10,6 @@ import {
   keys,
   mapKeys,
   mapValues,
-  partition,
   toLower,
   toUpper,
   uniqBy,
@@ -82,7 +81,13 @@ import {
   shitcoins,
 } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
-import { delay, isZero, multiply, pickBy } from '@rainbow-me/utilities';
+import {
+  delay,
+  isZero,
+  multiply,
+  partition,
+  pickBy,
+} from '@rainbow-me/utilities';
 import {
   ethereumUtils,
   getBlocksFromTimestamps,

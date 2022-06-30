@@ -4,7 +4,6 @@ import {
   flatten,
   isEmpty,
   orderBy,
-  partition,
   reverse,
   slice,
   toLower,
@@ -38,6 +37,7 @@ import {
 import {
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
+  partition,
 } from '@rainbow-me/utilities';
 import { ethereumUtils, getTokenMetadata } from '@rainbow-me/utils';
 
