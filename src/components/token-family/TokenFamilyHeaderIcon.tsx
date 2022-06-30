@@ -24,6 +24,8 @@ const sx = StyleSheet.create({
   },
 });
 
+const circleStyle = borders.buildCircleAsObject(40);
+
 export default React.memo(function TokenFamilyHeaderIcon({
   familyImage,
   familyName,
@@ -31,7 +33,6 @@ export default React.memo(function TokenFamilyHeaderIcon({
   theme,
 }: Props) {
   const { colors } = theme;
-  const circleStyle = useMemo(() => borders.buildCircleAsObject(40), []);
 
   const shadows = useMemo(() => shadowsFactory(colors), [colors]);
 
@@ -45,6 +46,12 @@ export default React.memo(function TokenFamilyHeaderIcon({
     );
   }
 
+  const source = {
+    uri: familyImage,
+  };
+
+  const symbol = initials(familyName);
+
   return (
     // @ts-expect-error ShadowStack is not migrated to TS.
     <ShadowStack
@@ -54,14 +61,10 @@ export default React.memo(function TokenFamilyHeaderIcon({
       style={style}
     >
       {familyImage ? (
-        <ImgixImage
-          size={40}
-          source={{ cache: ImgixImage.cacheControl.web, uri: familyImage }}
-          style={circleStyle}
-        />
+        <ImgixImage size={40} source={source} style={circleStyle} />
       ) : (
         // @ts-expect-error FallbackIcon is not migrated to TS.
-        <FallbackIcon {...circleStyle} symbol={initials(familyName)} />
+        <FallbackIcon {...circleStyle} symbol={symbol} />
       )}
     </ShadowStack>
   );
