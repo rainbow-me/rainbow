@@ -79,6 +79,23 @@ const ExchangeField = (
 
   const [value, setValue] = useState(amount);
   const [debouncedValue] = useDebounce(value, 300);
+  const [isFocused, setIsFocused] = useState(ref?.current?.isFocused());
+
+  const handleBlur = useCallback(
+    event => {
+      setIsFocused(false);
+      onBlur?.(event);
+    },
+    [onBlur]
+  );
+  const handleFocus = useCallback(
+    event => {
+      setValue(amount);
+      setIsFocused(true);
+      onFocus?.(event);
+    },
+    [amount, onFocus]
+  );
 
   useEffect(() => {
     setAmount(debouncedValue);
@@ -117,16 +134,16 @@ const ExchangeField = (
               })}
             color={colorForAsset}
             editable={editable}
-            onBlur={onBlur}
+            onBlur={handleBlur}
             onChangeText={setValue}
-            onFocus={onFocus}
+            onFocus={handleFocus}
             placeholder={placeholderText}
             placeholderTextColor={placeholderTextColor}
             {...(onTapWhileDisabled && { pointerEvents: 'none' })}
             ref={ref}
             testID={testID}
             useCustomAndroidMask={useCustomAndroidMask}
-            value={amount}
+            value={isFocused ? value : amount}
           />
         </FieldRow>
       </TouchableWithoutFeedback>
