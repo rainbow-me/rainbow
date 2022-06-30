@@ -707,6 +707,7 @@ export default function ExchangeModal({
   const handleTapWhileDisabled = useCallback(() => {
     lastFocusedInputHandle?.current?.blur();
     navigate(Routes.EXPLAIN_SHEET, {
+      inputToken: inputCurrency?.symbol,
       network: currentNetwork,
       onClose: () => {
         InteractionManager.runAfterInteractions(() => {
@@ -715,9 +716,16 @@ export default function ExchangeModal({
           }, 250);
         });
       },
+      outputToken: outputCurrency?.symbol,
       type: 'output_disabled',
     });
-  }, [currentNetwork, lastFocusedInputHandle, navigate]);
+  }, [
+    currentNetwork,
+    inputCurrency?.symbol,
+    lastFocusedInputHandle,
+    navigate,
+    outputCurrency?.symbol,
+  ]);
 
   const showConfirmButton = isSavings
     ? !!inputCurrency
