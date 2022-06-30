@@ -448,3 +448,22 @@ export const pickBy = <T>(
       return acc;
     }, {} as Dictionary<T>);
 };
+
+export const partition = <
+  T extends Record<PropertyKey, any>,
+  Func extends (arg: T) => boolean
+>(
+  arr: T[],
+  predicate: Func
+): [T[], T[]] =>
+  arr.reduce<[T[], T[]]>(
+    (acc, val) => {
+      if (predicate(val)) {
+        acc[0].push(val);
+      } else {
+        acc[1].push(val);
+      }
+      return acc;
+    },
+    [[], []]
+  );
