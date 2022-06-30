@@ -527,8 +527,8 @@
     },
     "explain": {
       "output_disabled": {
-        "text": "Currently specifying an output amount isn't supported on %{network}.\n Enter an input amount instead.",
-        "title": "Output Amount Disabled"
+        "text": "For %{network}, Rainbow can't prepare swaps based on the number of %{outputToken} you'd like to receive. \n\n Try entering the number of %{inputToken} tokens you want to exchange instead.",
+        "title": "Enter %{inputToken} Instead"
       },
       "available_networks": {
         "text": "%{tokenSymbol} is available on %{networks}. To move %{tokenSymbol} between networks, use a Bridge like Hop.",
@@ -596,7 +596,7 @@
          "go_back": "Go back"
       },
       "obtain_l2_asset": {
-        "fragment1": "You'll need to get other tokens on %{networkName} to swap for %{networkName} %{tokenName}. Bridging tokens to %{networkName} is easy using a bridge like Hop. Still curious? \n\n",
+        "fragment1": "You'll need to get other tokens on %{networkName} to swap for %{networkName} %{tokenName}. \n\n Bridging tokens to %{networkName} is easy using a bridge like Hop. Still curious? ",
         "fragment2": "Read more",
         "fragment3": " about bridges.",
         "title": "No Tokens on %{networkName}"

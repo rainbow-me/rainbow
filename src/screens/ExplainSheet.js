@@ -148,9 +148,15 @@ const ENS_RESOLVER_EXPLAINER = `A resolver is a contract that maps from name to 
 
 export const explainers = (params, colors) => ({
   output_disabled: {
-    extraHeight: -100,
-    title: lang.t('explain.output_disabled.title'),
-    text: lang.t('explain.output_disabled.text', { network: params?.network }),
+    extraHeight: -30,
+    title: lang.t('explain.output_disabled.title', {
+      inputToken: params?.inputToken,
+    }),
+    text: lang.t('explain.output_disabled.text', {
+      network: networkInfo[params?.network]?.name,
+      inputToken: params?.inputToken,
+      outputToken: params?.outputToken,
+    }),
     logo: (
       <ChainBadge
         assetType={params?.network}
