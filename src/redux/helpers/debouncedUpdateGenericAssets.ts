@@ -30,6 +30,10 @@ const debounced = debounce(
   }
 );
 
+export const cancelDebouncedUpdateGenericAssets = () => {
+  debounced.cancel();
+};
+
 export const debouncedUpdateGenericAssets = (
   action: DataUpdateGenericAssetsAction,
   dispatch: Dispatch<DataUpdateGenericAssetsAction>

@@ -31,7 +31,10 @@ import {
 } from '../apollo/queries';
 import { BooleanMap } from '../hooks/useCoinListEditOptions';
 import { addCashUpdatePurchases } from './addCash';
-import { debouncedUpdateGenericAssets } from './helpers/debouncedUpdateGenericAssets';
+import {
+  cancelDebouncedUpdateGenericAssets,
+  debouncedUpdateGenericAssets,
+} from './helpers/debouncedUpdateGenericAssets';
 import { decrementNonce, incrementNonce } from './nonceManager';
 import { AppGetState, AppState } from './store';
 import { uniqueTokensRefreshState } from './uniqueTokens';
@@ -789,8 +792,12 @@ export const dataResetState = () => (
 ) => {
   const { uniswapPricesSubscription } = getState().data;
   uniswapPricesSubscription?.unsubscribe?.();
+  // cancel any debounced updates so we won't override any new data with stale debounced ones
+  cancelDebouncedUpdateGenericAssets();
+
   pendingTransactionsHandle && clearTimeout(pendingTransactionsHandle);
   genericAssetsHandle && clearTimeout(genericAssetsHandle);
+
   dispatch({ type: DATA_CLEAR_STATE });
 };
 
