@@ -264,7 +264,7 @@ export const explainers = (params, colors) => ({
     title: lang.t('explain.verified.title'),
   },
   unverified: {
-    extraHeight: android ? 150 : 120,
+    extraHeight: 120,
     emoji: '⚠️',
     buttonText: lang.t('button.continue'),
     buttonColor: colors?.blueGreyDark60,
