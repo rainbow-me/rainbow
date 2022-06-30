@@ -99,6 +99,7 @@ function HoldToAuthorizeButtonContent2({
   deviceDimensions,
   disabled = false,
   disabledBackgroundColor,
+  disableShimmerAnimation = false,
   enableLongPress,
   hideInnerBorder,
   label,
@@ -221,7 +222,6 @@ function HoldToAuthorizeButtonContent2({
       }
     }
   };
-
   return (
     <TapGestureHandler onHandlerStateChange={onTapChange}>
       <LongPressGestureHandler
@@ -273,7 +273,7 @@ function HoldToAuthorizeButtonContent2({
               )}
               <ShimmerAnimation
                 color={colors.whiteLabel}
-                enabled={!disabled}
+                enabled={!disableShimmerAnimation && !disabled}
                 width={width}
               />
               {!hideInnerBorder && <InnerBorder radius={height} />}

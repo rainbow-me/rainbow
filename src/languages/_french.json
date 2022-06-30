@@ -590,6 +590,12 @@
       "verified": {
         "text": "Tokens with a verified badge mean they have appeared on at least 3 other outside token lists.\n\nAlways do your own research to ensure you are interacting with a token you trust. :)",
         "title": "Verified Tokens :)"
+      },
+      "insufficient_liquidity": {
+        "fragment1": "The exchanges don't have enough of the tokens you requested to complete this transaction. \n\n Still curious? :)",
+        "fragment2": "Read more :)",
+        "fragment3": " about AMMs and token liquidity. :)",
+        "title": "Insufficient Liquidity :)"
       }
     },
     "fields": {

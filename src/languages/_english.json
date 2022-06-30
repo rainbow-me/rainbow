@@ -597,6 +597,12 @@
         "text": "You'll need to get other tokens on %{networkName} to swap for %{networkName} %{tokenName}. Bridging tokens to %{networkName} is easy using a bridge like Hop.",
         "title": "No Tokens on %{networkName}"
       },
+      "insufficient_liquidity": {
+        "fragment1": "The exchanges don't have enough of the tokens you requested to complete this transaction. \n\n Still curious? ",
+        "fragment2": "Read more",
+        "fragment3": " about AMMs and token liquidity.",
+        "title": "Insufficient Liquidity"
+      },
       "go_to_hop_with_icon": {
         "text": "Go to the Hop Bridge 􀮶"
       },

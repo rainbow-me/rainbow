@@ -2,6 +2,7 @@ import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import makeColorMoreChill from 'make-color-more-chill';
 import React, { useMemo } from 'react';
+import { Keyboard } from 'react-native';
 import { darkModeThemeColors } from '../../styles/colors';
 import { HoldToAuthorizeButton } from '../buttons';
 import { Box, Row, Rows } from '@rainbow-me/design-system';
@@ -12,6 +13,7 @@ import {
   useSwapCurrencies,
   useSwapIsSufficientBalance,
 } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { lightModeThemeColors } from '@rainbow-me/styles';
@@ -36,6 +38,7 @@ export default function ConfirmExchangeButton({
   const asset = outputCurrency ?? inputCurrency;
   const { isSufficientGas, isValidGas } = useGas();
   const { name: routeName } = useRoute();
+  const { navigate } = useNavigation();
 
   const isSwapDetailsRoute = routeName === Routes.SWAP_DETAILS_SHEET;
   const shouldOpenSwapDetails = tradeDetails && !isSwapDetailsRoute;
@@ -61,16 +64,23 @@ export default function ConfirmExchangeButton({
 
   const colorForAsset = useColorForAsset(asset, undefined, true, true);
 
+  const disabledButtonColor = isSwapDetailsRoute
+    ? isDarkMode
+      ? darkModeThemeColors.blueGreyDark04
+      : lightModeThemeColors.blueGreyDark50
+    : darkModeThemeColors.blueGreyDark04;
+
   const { buttonColor, shadowsForAsset } = useMemo(() => {
-    const color =
-      asset.address === ETH_ADDRESS
-        ? colors.appleBlue
-        : isSwapDetailsRoute
-        ? colorForAsset
-        : makeColorMoreChill(
-            colorForAsset,
-            (isSwapDetailsRoute ? colors : darkModeThemeColors).light
-          );
+    const color = insufficientLiquidity
+      ? disabledButtonColor
+      : asset.address === ETH_ADDRESS
+      ? colors.appleBlue
+      : isSwapDetailsRoute
+      ? colorForAsset
+      : makeColorMoreChill(
+          colorForAsset,
+          (isSwapDetailsRoute ? colors : darkModeThemeColors).light
+        );
 
     return {
       buttonColor: color,
@@ -79,7 +89,15 @@ export default function ConfirmExchangeButton({
         [0, 5, 15, isDarkMode ? colors.trueBlack : color, 0.4],
       ],
     };
-  }, [asset.address, colorForAsset, colors, isDarkMode, isSwapDetailsRoute]);
+  }, [
+    asset.address,
+    colorForAsset,
+    colors,
+    disabledButtonColor,
+    insufficientLiquidity,
+    isDarkMode,
+    isSwapDetailsRoute,
+  ]);
 
   let label = '';
   if (type === ExchangeModalTypes.deposit) {
@@ -113,10 +131,16 @@ export default function ConfirmExchangeButton({
     label = lang.t('button.confirm_exchange.insufficient_liquidity');
   }
 
+  const handleShowLiquidityExplainer = useCallback(() => {
+    android && Keyboard.dismiss();
+    navigate(Routes.EXPLAIN_SHEET, {
+      type: 'insufficientLiquidity',
+    });
+  }, [navigate]);
+
   const isDisabled =
     disabled ||
     !isSufficientBalance ||
-    insufficientLiquidity ||
     !isSufficientGas ||
     !isValidGas ||
     !isSufficientGas;
@@ -127,22 +151,23 @@ export default function ConfirmExchangeButton({
         <Row height="content">
           <HoldToAuthorizeButton
             backgroundColor={buttonColor}
-            disableLongPress={shouldOpenSwapDetails}
-            disabled={isDisabled}
-            disabledBackgroundColor={
-              isSwapDetailsRoute
-                ? isDarkMode
-                  ? darkModeThemeColors.blueGreyDark04
-                  : lightModeThemeColors.blueGreyDark50
-                : darkModeThemeColors.blueGreyDark04
-            }
+            disableLongPress={shouldOpenSwapDetails && !insufficientLiquidity}
+            disableShimmerAnimation={insufficientLiquidity}
+            disabled={isDisabled && !insufficientLiquidity}
+            disabledBackgroundColor={disabledButtonColor}
             hideInnerBorder
             label={label}
             loading={loading}
-            onLongPress={shouldOpenSwapDetails ? onPressViewDetails : onSubmit}
+            onLongPress={
+              insufficientLiquidity
+                ? handleShowLiquidityExplainer
+                : shouldOpenSwapDetails
+                ? onPressViewDetails
+                : onSubmit
+            }
             shadows={
               isSwapDetailsRoute
-                ? isDisabled
+                ? isDisabled || insufficientLiquidity
                   ? shadows.disabled
                   : shadowsForAsset
                 : shadows.default
