@@ -122,11 +122,19 @@ const buildEnsToken = ({
   } as UniqueAsset;
 };
 
-export const isUnknownOpenSeaENS = (asset?: any) =>
-  asset?.description?.includes('This is an unknown ENS name with the hash') ||
-  !asset?.uniqueId?.includes('.eth') ||
-  !asset?.image_url ||
-  false;
+export const isUnknownOpenSeaENS = (asset?: any) => {
+  const isENS =
+    asset?.asset_contract?.address.toLowerCase() ===
+    ENS_NFT_CONTRACT_ADDRESS.toLowerCase();
+  return (
+    isENS &&
+    (asset?.description?.includes(
+      'This is an unknown ENS name with the hash'
+    ) ||
+      !asset?.uniqueId?.includes('.eth') ||
+      !asset?.image_url)
+  );
+};
 
 export const fetchMetadata = async ({
   contractAddress = ENS_NFT_CONTRACT_ADDRESS,

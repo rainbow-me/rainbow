@@ -437,6 +437,7 @@ const UniqueTokenExpandedState = ({
                 // @ts-expect-error JavaScript component
                 sheetRef={sheetRef}
                 textColor={textColor}
+                uniqueId={asset.uniqueId}
                 yPosition={yPosition}
               />
               <Animated.View style={opacityStyle}>
