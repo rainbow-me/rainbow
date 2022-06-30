@@ -81,10 +81,6 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.waitAndTap('exchange-modal-input-max');
   });
 
-  it('Should display token depletion alert after tapping the Max Button', async () => {
-    await Helpers.tapAlertWithButton('No thanks');
-  });
-
   it('Should display Swap Asset List after tapping Input Section Button', async () => {
     await Helpers.waitAndTap('exchange-modal-input-selection-button');
     await Helpers.checkIfVisible('currency-select-list');
