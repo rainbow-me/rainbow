@@ -156,7 +156,6 @@ export default function useSwapCurrencyHandlers({
       inputFieldRef.current?.clear();
       nativeFieldRef.current?.clear();
       flipSwapCurrenciesWithTimeout(outputFieldRef, true, null);
-      inputFieldRef.current?.clear();
     } else if (outputFieldRef.current === currentlyFocusedInput()) {
       outputFieldRef.current?.clear();
       flipSwapCurrenciesWithTimeout(inputFieldRef, false, null);
