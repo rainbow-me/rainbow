@@ -17,14 +17,15 @@ export default function SwapDetailsUniswapRow(tradeDetails) {
     tradeDetails
   );
 
-  const rainbowFeeNativeDisplay = convertAmountToNativeDisplay(
-    rainbowFeeNative,
-    nativeCurrency
-  );
+  const rainbowFeeNativeDisplay =
+    rainbowFeeNative &&
+    convertAmountToNativeDisplay(rainbowFeeNative, nativeCurrency);
   const rainbowFeePercentageDisplay = convertAmountToPercentageDisplayWithThreshold(
     rainbowFeePercentage
   );
-  const steps = [rainbowFeeNativeDisplay, rainbowFeePercentageDisplay];
+  const steps = rainbowFeeNativeDisplay
+    ? [rainbowFeeNativeDisplay, rainbowFeePercentageDisplay]
+    : [rainbowFeePercentageDisplay];
   const [step, nextStep] = useStepper(steps.length);
 
   const handleLabelPress = useCallback(() => {
