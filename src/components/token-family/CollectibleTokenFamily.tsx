@@ -50,6 +50,7 @@ const CollectibleTokenFamily = ({
     <TokenFamilyWrap
       childrenAmount={childrenAmount}
       familyImage={familyImage}
+      isHeader
       isOpen={isFamilyOpen}
       item={item}
       onToggle={handleToggle}
