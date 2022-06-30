@@ -7,21 +7,22 @@ const AnimatedContainer = styled(Animated.View)({
   width: '100%',
 });
 
+const easing = Easing.bezier(0.4, 0, 0.22, 1);
+
 export default function FlyInAnimation({
   distance = 16,
   duration = 100,
   ...props
 }) {
+  const exitDuration = duration / 3;
   return (
     <AnimatedContainer
       {...props}
       entering={FadeInDown.duration(duration)
-        .easing(Easing.bezier(0.165, 0.84, 0.44, 1))
+        .easing(easing)
         .withInitialValues({ transform: [{ translateY: distance }] })
-        .delay(duration / 3)}
-      exiting={FadeOut.duration(duration / 3).easing(
-        Easing.bezier(0.165, 0.84, 0.44, 1)
-      )}
+        .delay(exitDuration)}
+      exiting={FadeOut.duration(exitDuration).easing(easing)}
     />
   );
 }
