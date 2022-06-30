@@ -4,7 +4,6 @@ import {
   StackActions,
   useIsFocused,
 } from '@react-navigation/native';
-import { get } from 'lodash';
 import React from 'react';
 import { Value } from 'react-native-reanimated';
 import { useCallbackOne } from 'use-memo-one';
@@ -110,7 +109,7 @@ function getActiveOptions() {
  */
 function getActiveRouteName(navigationState) {
   const route = getActiveRoute(navigationState);
-  return get(route, 'name');
+  return route?.name;
 }
 
 /**

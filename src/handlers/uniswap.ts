@@ -13,7 +13,7 @@ import {
   wrapNativeAsset,
   WRAPPED_ASSET,
 } from '@rainbow-me/swaps';
-import { get, mapKeys, mapValues, toLower } from 'lodash';
+import { mapKeys, mapValues, toLower } from 'lodash';
 import { Token } from '../entities/tokens';
 import { loadWallet } from '../model/wallet';
 import {
@@ -42,11 +42,9 @@ export enum Field {
 export const getTestnetUniswapPairs = (
   network: Network
 ): { [key: string]: Asset } => {
-  const pairs: { [address: string]: Asset } = get(
-    UNISWAP_TESTNET_TOKEN_LIST,
-    network,
-    {}
-  );
+  const pairs: { [address: string]: Asset } =
+    (UNISWAP_TESTNET_TOKEN_LIST as any)?.[network] ?? {};
+
   const loweredPairs = mapKeys(pairs, (_, key) => toLower(key));
   return mapValues(loweredPairs, value => ({
     ...value,

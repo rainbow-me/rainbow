@@ -1,9 +1,9 @@
 import lang from 'i18n-js';
 import { isEmpty, toLower } from 'lodash';
 import LottieView from 'lottie-react-native';
-import React, { Fragment, useEffect, useMemo, useRef } from 'react';
+import React, { Fragment, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
-import { Transition, Transitioning } from 'react-native-reanimated';
+import Animated, { Easing, FadeOut, Keyframe } from 'react-native-reanimated';
 import jumpingDaiAnimation from '../../assets/lottie/jumping-dai.json';
 import jumpingEthAnimation from '../../assets/lottie/jumping-eth.json';
 import { CoinIcon } from '../coin-icon';
@@ -17,7 +17,7 @@ import {
   ADD_CASH_DISPLAYED_STATUS_TYPES,
   WYRE_ORDER_STATUS_TYPES,
 } from '@rainbow-me/helpers/wyreStatusTypes';
-import { useDimensions, usePrevious, useTimeout } from '@rainbow-me/hooks';
+import { useDimensions, useTimeout } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import { ETH_ADDRESS, getWyreErrorOverride } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
@@ -50,34 +50,7 @@ const sx = StyleSheet.create({
   },
 });
 
-const duration = 420;
-const transition = (
-  <Transition.Sequence>
-    <Transition.Out
-      durationMs={duration / 2}
-      interpolation="easeIn"
-      propagation="bottom"
-      type="fade"
-    />
-    <Transition.Change durationMs={duration} interpolation="easeInOut" />
-    <Transition.Together>
-      <Transition.In
-        delayMs={duration / 3}
-        durationMs={duration}
-        interpolation="easeOut"
-        propagation="top"
-        type="fade"
-      />
-      <Transition.In
-        delayMs={duration / 3}
-        durationMs={duration / 3}
-        interpolation="easeOut"
-        propagation="top"
-        type="scale"
-      />
-    </Transition.Together>
-  </Transition.Sequence>
-);
+const duration = 150;
 
 const Content = props => {
   const { width } = useDimensions();
@@ -195,6 +168,19 @@ const AddCashSuccess = ({ currency }) => {
   );
 };
 
+const keyframe = new Keyframe({
+  0: {
+    easing: Easing.in(Easing.ease),
+    opacity: 0,
+    transform: [{ scale: 0.0001 }],
+  },
+  100: {
+    easing: Easing.in(Easing.ease),
+    opacity: 1,
+    transform: [{ scale: 1 }],
+  },
+});
+
 const AddCashStatus = ({
   error,
   orderCurrency,
@@ -203,8 +189,6 @@ const AddCashStatus = ({
   resetAddCashForm,
   transferStatus,
 }) => {
-  const ref = useRef();
-
   const status = useMemo(() => {
     if (
       orderStatus === WYRE_ORDER_STATUS_TYPES.success ||
@@ -227,14 +211,6 @@ const AddCashStatus = ({
     return ADD_CASH_DISPLAYED_STATUS_TYPES.checking;
   }, [orderStatus, transferStatus]);
 
-  const previousStatus = usePrevious(status);
-
-  useEffect(() => {
-    if (status !== previousStatus) {
-      if (ref.current) ref.current.animateNextTransition();
-    }
-  }, [previousStatus, status]);
-
   const currency = toLower(orderCurrency || 'ETH');
 
   const updatedError = useMemo(() => {
@@ -242,7 +218,11 @@ const AddCashStatus = ({
   }, [error]);
 
   return (
-    <Transitioning.View ref={ref} style={sx.container} transition={transition}>
+    <Animated.View
+      entering={keyframe.duration(duration)}
+      exiting={FadeOut.duration(duration).easing(Easing.out(Easing.ease))}
+      style={sx.container}
+    >
       {status === ADD_CASH_DISPLAYED_STATUS_TYPES.failed ? (
         <AddCashFailed
           error={updatedError}
@@ -264,7 +244,7 @@ const AddCashStatus = ({
           )}
         </FloatingEmojisTapper>
       )}
-    </Transitioning.View>
+    </Animated.View>
   );
 };
 

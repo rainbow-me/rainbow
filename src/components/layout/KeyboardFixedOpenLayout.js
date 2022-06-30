@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { Transition, Transitioning } from 'react-native-reanimated';
+import React from 'react';
+import { KeyboardAvoidingView } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 import Centered from './Centered';
 import keyboardTypes from '@rainbow-me/helpers/keyboardTypes';
@@ -7,7 +7,7 @@ import { useDimensions, useKeyboardHeight } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 
-const Container = styled(Transitioning.View)({
+const Container = styled.View({
   height: ({ height }) => height,
   left: 0,
   position: ({ position }) => position,
@@ -21,10 +21,6 @@ const InnerWrapper = styled(Centered)({
   paddingTop: ({ insets }) => insets.top,
 });
 
-const transition = (
-  <Transition.Change durationMs={150} interpolation="easeOut" />
-);
-
 export default function KeyboardFixedOpenLayout({
   additionalPadding = 0,
   keyboardType = keyboardTypes.default,
@@ -33,23 +29,15 @@ export default function KeyboardFixedOpenLayout({
 }) {
   const insets = useSafeArea();
   const { height: screenHeight } = useDimensions();
-  const keyboardHeight = useKeyboardHeight({
-    keyboardType,
-  });
-  const ref = useRef();
+  const keyboardHeight = useKeyboardHeight({ keyboardType });
 
   const containerHeight = screenHeight - keyboardHeight - additionalPadding;
 
-  useEffect(() => ref.current.animateNextTransition(), [containerHeight]);
-
   return (
-    <Container
-      height={containerHeight}
-      position={position}
-      ref={ref}
-      transition={transition}
-    >
-      <InnerWrapper {...props} insets={insets} />
+    <Container height={containerHeight} position={position}>
+      <KeyboardAvoidingView behavior="height" enabled={!!keyboardHeight}>
+        <InnerWrapper {...props} insets={insets} />
+      </KeyboardAvoidingView>
     </Container>
   );
 }
