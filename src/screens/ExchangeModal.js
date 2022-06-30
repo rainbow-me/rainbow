@@ -19,6 +19,7 @@ import {
 } from 'react-native';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { useDispatch, useSelector } from 'react-redux';
+import { useDebounce } from 'use-debounce/lib';
 import { useMemoOne } from 'use-memo-one';
 import { dismissingScreenListener } from '../../shim';
 import {
@@ -57,6 +58,7 @@ import {
   useSwapDerivedOutputs,
   useSwapInputHandlers,
   useSwapInputRefs,
+  useSwapIsSufficientBalance,
 } from '@rainbow-me/hooks';
 import { loadWallet } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
@@ -295,9 +297,10 @@ export default function ExchangeModal({
   } = useSwapDerivedOutputs(chainId, type);
 
   const lastTradeDetails = usePrevious(tradeDetails);
+  const isSufficientBalance = useSwapIsSufficientBalance(inputAmount);
 
   const {
-    isHighPriceImpact,
+    isHighPriceImpact: useIsHighPriceImpact,
     outputPriceValue,
     priceImpactColor,
     priceImpactNativeAmount,
@@ -310,7 +313,7 @@ export default function ExchangeModal({
     currentNetwork,
     loading
   );
-
+  const [isHighPriceImpact] = useDebounce(useIsHighPriceImpact, 500);
   const swapSupportsFlashbots = currentNetwork === Network.mainnet;
   const flashbots = swapSupportsFlashbots && flashbotsEnabled;
 
@@ -611,6 +614,7 @@ export default function ExchangeModal({
       insufficientLiquidity,
       isAuthorizing,
       isHighPriceImpact,
+      isSufficientBalance,
       loading,
       onSubmit: handleSubmit,
       tradeDetails,
@@ -627,6 +631,7 @@ export default function ExchangeModal({
       tradeDetails,
       type,
       insufficientLiquidity,
+      isSufficientBalance,
     ]
   );
 
@@ -804,7 +809,12 @@ export default function ExchangeModal({
           )}
           {!isSavings && showConfirmButton && (
             <ExchangeDetailsRow
-              isHighPriceImpact={isHighPriceImpact}
+              isHighPriceImpact={
+                !confirmButtonProps.disabled &&
+                !confirmButtonProps.loading &&
+                isHighPriceImpact &&
+                isSufficientBalance
+              }
               onFlipCurrencies={loading ? NOOP : flipCurrencies}
               onPressImpactWarning={navigateToSwapDetailsModal}
               onPressSettings={navigateToSwapSettingsSheet}
