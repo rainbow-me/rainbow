@@ -100,46 +100,54 @@ export const MaxToleranceInput = forwardRef(
     };
 
     return (
-      <Columns alignVertical="center">
-        <Stack space="10px">
-          <ButtonPressAnimation onPress={openExplainer}>
-            <Inline alignVertical="center" space="2px">
-              <Text size="16px" weight="bold">
-                {`${lang.t('exchange.slippage_tolerance')} `}
-                {!hasPriceImpact && (
-                  <Text color="secondary30" size="16px" weight="bold">
-                    {' 􀅵'}
-                  </Text>
+      <Columns alignHorizontal="justify" alignVertical="center">
+        <Column width="content">
+          <Stack space="4px">
+            <Box
+              as={ButtonPressAnimation}
+              marginVertical="-12px"
+              // @ts-expect-error
+              onPress={openExplainer}
+              paddingVertical="12px"
+            >
+              <Inline alignVertical="center">
+                <Text size="16px" weight="bold">
+                  {`${lang.t('exchange.slippage_tolerance')} `}
+                  {!hasPriceImpact && (
+                    <Text color="secondary30" size="16px" weight="bold">
+                      {' 􀅵'}
+                    </Text>
+                  )}
+                </Text>
+                {hasPriceImpact && (
+                  <Box paddingTop={android ? '2px' : '1px'}>
+                    <Icon color={priceImpactColor} name="warning" size={18} />
+                  </Box>
                 )}
-              </Text>
-              {hasPriceImpact && (
-                <Box paddingTop={android ? '2px' : '1px'}>
-                  <Icon color={priceImpactColor} name="warning" size={18} />
-                </Box>
-              )}
-            </Inline>
-          </ButtonPressAnimation>
-          {hasPriceImpact && (
-            <Box>
-              <Text size={android ? '12px' : '14px'}>
-                <AccentColorProvider color={priceImpactColor!}>
+              </Inline>
+            </Box>
+            {hasPriceImpact && (
+              <Box>
+                <Text size={android ? '12px' : '14px'}>
+                  <AccentColorProvider color={priceImpactColor!}>
+                    <Text
+                      color="accent"
+                      size={android ? '12px' : '14px'}
+                      weight="bold"
+                    >
+                      {lang.t('exchange.high')}
+                    </Text>
+                  </AccentColorProvider>
                   <Text
-                    color="accent"
+                    color="secondary50"
                     size={android ? '12px' : '14px'}
                     weight="bold"
-                  >
-                    {lang.t('exchange.high')}
-                  </Text>
-                </AccentColorProvider>
-                <Text
-                  color="secondary50"
-                  size={android ? '12px' : '14px'}
-                  weight="bold"
-                >{` · ${lang.t('exchange.price_impact.label')}`}</Text>
-              </Text>
-            </Box>
-          )}
-        </Stack>
+                  >{` · ${lang.t('exchange.price_impact.label')}`}</Text>
+                </Text>
+              </Box>
+            )}
+          </Stack>
+        </Column>
         <Column width="content">
           <StepButtonInput
             buttonColor={colorForAsset}

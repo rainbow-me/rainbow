@@ -83,14 +83,20 @@ export default function SourcePicker({ onSelect, currentSource }) {
   return (
     <Columns alignHorizontal="justify" alignVertical="center">
       <Column width="content">
-        <ButtonPressAnimation onPress={openExplainer}>
+        <Box
+          as={ButtonPressAnimation}
+          {...(ios ? { marginVertical: '-12px' } : {})}
+          // @ts-expect-error
+          onPress={openExplainer}
+          paddingVertical="12px"
+        >
           <Text size="16px" weight="bold">
             {lang.t('exchange.source_picker')}
             <Text color="secondary30" size="16px" weight="bold">
               {' 􀅵'}
             </Text>
           </Text>
-        </ButtonPressAnimation>
+        </Box>
       </Column>
       <Column width="content">
         <ContextMenuButton

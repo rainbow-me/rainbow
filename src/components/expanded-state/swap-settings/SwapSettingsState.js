@@ -143,14 +143,22 @@ export default function SwapSettingsState({ asset }) {
             />
             {swapSupportsFlashbots && (
               <Columns alignHorizontal="justify" alignVertical="center">
-                <ButtonPressAnimation onPress={openExplainer}>
-                  <Text color="primary" size="16px" weight="bold">
-                    {lang.t('exchange.use_flashbots')}
-                    <Text color="secondary30" size="16px" weight="bold">
-                      {' 􀅵'}
+                <Column width="content">
+                  <Box
+                    as={ButtonPressAnimation}
+                    {...(ios ? { marginVertical: '-12px' } : {})}
+                    // @ts-expect-error
+                    onPress={openExplainer}
+                    paddingVertical="12px"
+                  >
+                    <Text color="primary" size="16px" weight="bold">
+                      {lang.t('exchange.use_flashbots')}
+                      <Text color="secondary30" size="16px" weight="bold">
+                        {' 􀅵'}
+                      </Text>
                     </Text>
-                  </Text>
-                </ButtonPressAnimation>
+                  </Box>
+                </Column>
                 <Column width="content">
                   <Switch
                     onValueChange={toggleFlashbotsEnabled}
