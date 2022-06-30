@@ -185,7 +185,8 @@ export default function SwapDetailsExchangeRow(props) {
                   <Pill
                     height={20}
                     style={{
-                      top: 0,
+                      lineHeight: android && 18,
+                      top: android ? -1 : 0,
                     }}
                     textColor={defaultColor}
                   >
