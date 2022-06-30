@@ -137,10 +137,18 @@ export default function useSwapCurrencyHandlers({
   const flipCurrencies = useCallback(() => {
     if (currentNetwork === Network.arbitrum) {
       outputFieldRef.current?.clear();
-      nativeFieldRef.current?.focus?.();
-      inputFieldRef.current?.focus?.();
+      if (nativeFieldRef.current === currentlyFocusedInput()) {
+        focusTextInput(inputFieldRef.current);
+        focusTextInput(nativeFieldRef.current);
+      } else {
+        focusTextInput(nativeFieldRef.current);
+        focusTextInput(inputFieldRef.current);
+      }
+
       flipSwapCurrenciesWithTimeout(
-        inputFieldRef,
+        nativeFieldRef.current === currentlyFocusedInput()
+          ? nativeFieldRef
+          : inputFieldRef,
         false,
         updatePrecisionToDisplay(derivedValues?.outputAmount)
       );
