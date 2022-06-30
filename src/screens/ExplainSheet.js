@@ -279,7 +279,6 @@ export const explainers = (params, colors) => ({
         {lang.t('explain.unverified.fragment1')}
         <Text
           color={colors?.appleBlue}
-          lineHeight="loose"
           onPress={() =>
             ethereumUtils.openTokenEtherscanURL(
               params?.asset.address,
@@ -454,7 +453,6 @@ export const explainers = (params, colors) => ({
         })}
         <Text
           color={colors?.appleBlue}
-          lineHeight="loose"
           onPress={() =>
             Linking.openURL(
               'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks'
@@ -491,7 +489,6 @@ export const explainers = (params, colors) => ({
         {lang.t('explain.flashbots.still_curious.fragment1')}
         <Text
           color={colors?.appleBlue}
-          lineHeight="loose"
           onPress={() =>
             Linking.openURL(
               'https://learn.rainbow.me/protecting-transactions-with-flashbots'
@@ -517,7 +514,6 @@ export const explainers = (params, colors) => ({
         {lang.t('explain.swap_routing.still_curious.fragment1')}
         <Text
           color={colors?.appleBlue}
-          lineHeight="loose"
           onPress={() =>
             Linking.openURL(
               'https://learn.rainbow.me/swap-with-confidence-with-rainbow'
@@ -543,7 +539,6 @@ export const explainers = (params, colors) => ({
         {lang.t('explain.slippage.still_curious.fragment1')}
         <Text
           color={colors?.appleBlue}
-          lineHeight="loose"
           onPress={() =>
             Linking.openURL(
               'https://academy.shrimpy.io/post/what-is-slippage-how-to-avoid-slippage-on-defi-exchanges'
