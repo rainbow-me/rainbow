@@ -11,7 +11,7 @@ If we make breaking changes we will be able to take it into consideration when d
 const performanceTrackingVersion = 1;
 const shouldLogToConsole = __DEV__ || SENTRY_ENVIRONMENT === 'LocalRelease';
 const shouldReportMeasurement =
-  !IS_TESTING && !__DEV__ && SENTRY_ENVIRONMENT !== 'LocalRelease';
+  IS_TESTING === 'false' && !__DEV__ && SENTRY_ENVIRONMENT !== 'LocalRelease';
 const logTag = '[PERFORMANCE]: ';
 
 function logDurationIfAppropriate(
