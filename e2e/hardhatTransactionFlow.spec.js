@@ -66,17 +66,6 @@ const acceptAlertIfGasPriceIsHigh = async () => {
   } catch (e) {}
 };
 
-const acceptAlertIfTokenNotVerified = async () => {
-  // Depending on current gas prices, we might get an alert
-  // saying that the fees are higher than the swap amount
-  try {
-    if (await Helpers.checkIfElementByTextIsVisible('Proceed Anyway')) {
-      await Helpers.tapAlertWithButton('Proceed Anyway');
-    }
-    // eslint-disable-next-line no-empty
-  } catch (e) {}
-};
-
 // eslint-disable-next-line no-unused-vars
 const checkIfSwapCompleted = async (assetName, amount) => {
   // Disabling this because there's a view blocking (The portal)
@@ -174,7 +163,7 @@ describe('Hardhat Transaction Flow', () => {
       true
     );
     await Helpers.tap('currency-select-list-exchange-coin-row-SWYF-token');
-    await acceptAlertIfTokenNotVerified();
+    await Helpers.tapByText('Continue');
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.typeText('exchange-modal-input', '0.001', true);
     await Helpers.tapAndLongPress('exchange-modal-confirm-button');
