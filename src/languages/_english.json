@@ -527,7 +527,7 @@
     },
     "explain": {
       "output_disabled": {
-        "text": "For %{network}, Rainbow can't prepare swaps based on the number of %{outputToken} you'd like to receive. \n\n Try entering the number of %{inputToken} tokens you want to exchange instead.",
+        "text": "For %{network}, Rainbow can't prepare swaps based on the amount of %{outputToken} you'd like to receive. \n\n Try entering the amount of %{inputToken} you’d like to swap instead.",
         "title": "Enter %{inputToken} Instead"
       },
       "available_networks": {
