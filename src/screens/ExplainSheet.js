@@ -600,7 +600,8 @@ const ExplainSheet = () => {
 
   const buttons = useMemo(() => {
     const reverseButtons = type === 'obtainL2Assets' || type === 'unverified';
-    const secondaryButton = explainSheetConfig?.secondaryButtonText && (
+    const secondaryButton = (explainSheetConfig?.readMoreLink ||
+      explainSheetConfig?.secondaryButtonText) && (
       <Column
         height={60}
         style={android && reverseButtons && { marginTop: 16 }}
