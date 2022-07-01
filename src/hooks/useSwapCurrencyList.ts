@@ -306,7 +306,7 @@ const useSwapCurrencyList = (
           verifiedAssetsWithImport = [importedAsset, ...verifiedAssets];
         } else {
           if (
-            highLiquidityAddresses.includes(
+            !highLiquidityAddresses.includes(
               importedAsset?.address.toLowerCase()
             )
           ) {
