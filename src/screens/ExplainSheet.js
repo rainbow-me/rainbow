@@ -27,7 +27,7 @@ const getBodyTextPropsWithColor = colors =>
   colors
     ? {
         align: 'center',
-        color: colors.alpha(colors.blueGreyDark, 0.6),
+        color: colors.blueGreyDark60,
         lineHeight: 'looser',
         size: 'large',
         style: {
@@ -267,8 +267,8 @@ export const explainers = (params, colors) => ({
     extraHeight: 120,
     emoji: '⚠️',
     buttonText: lang.t('button.continue'),
-    buttonColor: colors?.blueGreyDark60,
-    secondaryButtonColor: colors?.alpha(colors?.appleBlue, 0.04),
+    buttonColor: colors?.blueGreyDark80,
+    secondaryButtonColor: colors?.clearBlue,
     secondaryButtonTextColor: colors?.appleBlue,
     secondaryButtonText: lang.t('button.go_back_lowercase'),
     title: lang.t('explain.unverified.title', {
@@ -441,8 +441,8 @@ export const explainers = (params, colors) => ({
   obtainL2Assets: {
     extraHeight: 40,
     buttonText: lang.t('explain.go_to_hop_with_icon.text'),
-    buttonColor: colors?.blueGreyDark60,
-    secondaryButtonColor: colors?.alpha(colors?.appleBlue, 0.04),
+    buttonColor: colors?.blueGreyDark80,
+    secondaryButtonColor: colors?.clearBlue,
     secondaryButtonTextColor: colors?.appleBlue,
     secondaryButtonText: lang.t('button.go_back_lowercase'),
     stillCurious: (
@@ -617,7 +617,7 @@ const ExplainSheet = () => {
           onPress={explainSheetConfig?.readMoreLink ? handleReadMore : goBack}
           size="big"
           textColor={
-            explainSheetConfig.secondaryButtonTextColor ?? colors.blueGreyDark60
+            explainSheetConfig.secondaryButtonTextColor ?? colors.blueGreyDark80
           }
           weight="heavy"
         />
