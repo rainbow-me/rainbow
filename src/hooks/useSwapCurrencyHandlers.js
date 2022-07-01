@@ -137,14 +137,7 @@ export default function useSwapCurrencyHandlers({
   const flipCurrencies = useCallback(() => {
     if (currentNetwork === Network.arbitrum) {
       outputFieldRef.current?.clear();
-      if (nativeFieldRef.current === currentlyFocusedInput()) {
-        focusTextInput(inputFieldRef.current);
-        focusTextInput(nativeFieldRef.current);
-      } else {
-        focusTextInput(nativeFieldRef.current);
-        focusTextInput(inputFieldRef.current);
-      }
-
+      inputFieldRef.current?.clear();
       flipSwapCurrenciesWithTimeout(
         nativeFieldRef.current === currentlyFocusedInput()
           ? nativeFieldRef
