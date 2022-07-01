@@ -195,7 +195,7 @@ function HoldToAuthorizeButtonContent2({
               buttonScale.value = withTiming(1, {
                 duration: BUTTON_SCALE_DURATION_IN_MS,
               });
-            })
+            })()
         );
       }
     } else {
