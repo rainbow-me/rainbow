@@ -7,7 +7,7 @@ import { Row, RowWithMargins } from '../layout';
 import { EnDash } from '../text';
 import ExchangeInput from './ExchangeInput';
 import { AssetType } from '@rainbow-me/entities';
-import { useColorForAsset } from '@rainbow-me/hooks';
+import { useColorForAsset, useTimeout } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { borders } from '@rainbow-me/styles';
 
@@ -80,6 +80,7 @@ const ExchangeField = (
   const [value, setValue] = useState(amount);
   const [editing, setEditing] = useState(false);
   const [debouncedValue] = useDebounce(value, 300);
+  const [startTimeout, stopTimeout] = useTimeout();
 
   const handleBlur = useCallback(
     event => {
@@ -101,9 +102,9 @@ const ExchangeField = (
 
   useEffect(() => {
     setEditing(true);
-    const c = setTimeout(() => setEditing(false), 1000);
-    return () => clearTimeout(c);
-  }, [value, setAmount]);
+    startTimeout(() => setEditing(false), 1000);
+    return () => stopTimeout();
+  }, [value, startTimeout, stopTimeout]);
 
   const placeholderTextColor = symbol
     ? colors.alpha(colors.blueGreyDark, 0.3)
