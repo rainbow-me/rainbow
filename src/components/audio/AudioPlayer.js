@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
-import { StatusBar, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
 import Spinner from '../Spinner';
 import { Centered, FlexItem } from '../layout';
+import { StatusBarService } from '@rainbow-me/services';
 import styled from '@rainbow-me/styled-components';
 
 const Container = styled(FlexItem)({
@@ -34,9 +35,11 @@ export default function WyreWebview({ fontColor, imageColor, uri }) {
   const { colors } = useTheme();
   const [ready, setReady] = useState(false);
   useEffect(() => {
-    StatusBar.setBackgroundColor('transparent', false);
-    StatusBar.setTranslucent(true);
-    StatusBar.setBarStyle('dark-content', true);
+    if (android) {
+      // StatusBarService.setBackgroundColor('transparent', false);
+      // StatusBarService.setTranslucent(true);
+    }
+    StatusBarService.setBarStyle('dark-content', true);
   }, []);
 
   const playerUri = useMemo(() => {

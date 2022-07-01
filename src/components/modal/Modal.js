@@ -1,5 +1,4 @@
 import React from 'react';
-import { StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { useTheme } from '../../theme/ThemeContext';
 import TouchableBackdrop from '../TouchableBackdrop';
@@ -37,21 +36,21 @@ export default function Modal({
   height,
   onCloseModal,
   radius = 12,
-  statusBarStyle = 'light-content',
+  // statusBarStyle = 'light-content',
   fullScreenOnAndroid,
-  skipStatusBar,
+  // skipStatusBar,
   ...props
 }) {
   const { height: deviceHeight } = useDimensions();
   const { colors } = useTheme();
-
+  //TODO:skipStatusBar
   return (
     <Container
       containerPadding={containerPadding}
       fixedToTop={fixedToTop}
       shadowColor={colors.shadowBlack}
     >
-      {skipStatusBar || <StatusBar barStyle={statusBarStyle} />}
+      {/* {skipStatusBar || <StatusBar barStyle={statusBarStyle} />} */}
       {ios && <TouchableBackdrop onPress={onCloseModal} />}
       <Content
         fullScreenOnAndroid={fullScreenOnAndroid}
