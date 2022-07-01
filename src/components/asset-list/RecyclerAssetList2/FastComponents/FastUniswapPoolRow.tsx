@@ -23,21 +23,15 @@ export default React.memo(function UniswapCoinRow({
   item: UniswapCoinRowItem;
 }) {
   return (
-    <View style={[cx.rootContainer, cx.nonEditMode]}>
-      <View style={cx.flex}>
+    <View style={[sx.rootContainer, sx.nonEditMode]}>
+      <View style={sx.flex}>
         <ButtonPressAnimation
           onPress={item.onPress}
           scaleTo={0.96}
           testID="balance-coin-row"
         >
-          <View style={[cx.container]}>
-            <View
-              style={{
-                flexDirection: 'row-reverse',
-                justifyContent: 'flex-end',
-                width: 60,
-              }}
-            >
+          <View style={sx.container}>
+            <View style={sx.reverseRow}>
               <View style={{ transform: [{ translateX: -20 }] }}>
                 <FastCoinIcon
                   address={item.tokens[1].address.toLowerCase()}
@@ -53,8 +47,8 @@ export default React.memo(function UniswapCoinRow({
               />
             </View>
 
-            <View style={cx.innerContainer}>
-              <View style={cx.row}>
+            <View style={sx.innerContainer}>
+              <View style={sx.row}>
                 <Text
                   align="right"
                   numberOfLines={1}
@@ -64,7 +58,7 @@ export default React.memo(function UniswapCoinRow({
                   {item.tokenNames}
                 </Text>
               </View>
-              <View style={[cx.row, cx.bottom]}>
+              <View style={[sx.row, sx.bottom]}>
                 <Text
                   color={{ custom: item.theme.colors.blueGreyDark50 }}
                   size="14px"
@@ -86,7 +80,7 @@ export default React.memo(function UniswapCoinRow({
   );
 });
 
-const cx = StyleSheet.create({
+const sx = StyleSheet.create({
   bottom: {
     marginTop: 12,
   },
@@ -94,7 +88,7 @@ const cx = StyleSheet.create({
     flexDirection: 'row',
     marginLeft: 2,
     marginRight: 19,
-    marginVertical: 9.5,
+    marginVertical: 4,
   },
   flex: {
     flex: 1,
@@ -107,9 +101,13 @@ const cx = StyleSheet.create({
   nonEditMode: {
     paddingLeft: 19,
   },
+  reverseRow: {
+    flexDirection: 'row-reverse',
+    justifyContent: 'flex-end',
+    width: 60,
+  },
   rootContainer: {
     alignItems: 'center',
-    flex: 1,
     flexDirection: 'row',
   },
   row: {
