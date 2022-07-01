@@ -2,7 +2,6 @@ import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
-import { StatusBar } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useSafeArea } from 'react-native-safe-area-context';
 import Divider from '../components/Divider';
@@ -162,7 +161,6 @@ const SavingsSheet = () => {
       height={isEmpty ? SavingsSheetEmptyHeight : SavingsSheetHeight}
       insets={insets}
     >
-      <StatusBar barStyle="light-content" />
       <SlackSheet
         additionalTopPadding={android}
         contentHeight={isEmpty ? SavingsSheetEmptyHeight : SavingsSheetHeight}

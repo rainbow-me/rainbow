@@ -11,7 +11,6 @@ import {
   InteractionManager,
   Linking,
   LogBox,
-  StatusBar,
   View,
 } from 'react-native';
 // eslint-disable-next-line import/default
@@ -79,8 +78,6 @@ import { Portal } from 'react-native-cool-modals/Portal';
 const WALLETCONNECT_SYNC_DELAY = 500;
 
 const FedoraToastRef = createRef();
-
-StatusBar.pushStackEntry({ animated: true, barStyle: 'dark-content' });
 
 // We need to disable React Navigation instrumentation for E2E tests
 // because detox doesn't like setTimeout calls that are used inside

@@ -153,7 +153,6 @@ export default function RegisterENSNavigator() {
         removeTopPadding
         scrollEnabled
       >
-        <StatusBar barStyle="light-content" />
         <Box
           style={{
             height: wrapperHeight,

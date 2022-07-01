@@ -1,6 +1,5 @@
 import { useRoute } from '@react-navigation/native';
 import React from 'react';
-import { StatusBar } from 'react-native';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import { RainbowButton } from '../buttons';
 import { Column } from '../layout';
@@ -48,7 +47,6 @@ export default function BackupSheetKeyboardLayout({
 
   return (
     <Column height={nativeScreen ? undefined : sheetRegionAboveKeyboardHeight}>
-      <StatusBar barStyle="light-content" />
       {children}
       <Footer isTallPhone={isTallPhone}>
         <RainbowButton

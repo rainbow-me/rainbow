@@ -2,7 +2,6 @@ import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import { toLower } from 'lodash';
 import React, { useCallback } from 'react';
-import { StatusBar } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useSafeArea } from 'react-native-safe-area-context';
 import Divider from '../components/Divider';
@@ -98,7 +97,6 @@ export default function AddTokenSheet() {
 
   return (
     <Container deviceHeight={deviceHeight} height={sheetHeight} insets={insets}>
-      {ios && <StatusBar barStyle="light-content" />}
       {ios && <TouchableBackdrop onPress={goBack} />}
 
       <SlackSheet
